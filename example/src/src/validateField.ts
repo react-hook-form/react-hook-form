@@ -6,7 +6,7 @@ export default ({ ref, required, maxLength, minLength, min, max, pattern }: Regi
 
   if (
     (ref.type !== 'radio' && required && ref.value === '') ||
-    (ref.type === 'radio' && required && !getValidRadioValue(fields, ref.name).isValid)
+    (ref.type === 'radio' && required && !getValidRadioValue(fields[ref.name].options).isValid)
   ) {
     copy[ref.name] = {
       required: true,

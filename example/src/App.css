@@ -2,124 +2,17 @@
   text-align: center;
   background-color: #081229;
   overflow: hidden;
-}
-
-.App-logo {
-  animation: App-logo-spin infinite 20s linear;
-  height: 40vmin;
-}
-
-.App-header {
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
   color: white;
+  padding: 0 50px;
 }
 
-.App-header h1 {
-  font-size: 19px;
-  margin-top: 100px;
+.App form > input {
+  display: block;
+  height: 30px;
+  width: 500px;
 }
 
-.App-header h3 {
-  font-weight: 300;
-  font-size: 14px;
-  margin-top: -5px;
-}
-
-.App-link {
-  color: #61dafb;
-}
-
-.App-slider {
-  padding: 10px 20px 20px;
-  width: 90%;
-  text-align: left;
-  font-size: 14px;
-  max-width: 800px;
-}
-
-.App-slider p {
-  margin-top: 50px;
-}
-
-.Github {
-  color: white;
-  text-decoration: none;
-  font-size: 14px;
-  position: absolute;
-  top: 10px;
-  right: 10px;
-}
-
-.GithubStar {
-  position: absolute;
-  top: 10px;
-  right: 10px;
-}
-
-@media (min-width: 375px) {
-  .App-header h1 {
-    font-size: 24px;
-  }
-
-  .App-header h3 {
-    font-size: 15px;
-  }
-
-  .Github {
-    top: 20px;
-    right: 20px;
-  }
-
-  .GithubStar {
-    position: absolute;
-    top: 20px;
-    right: 20px;
-  }
-}
-
-@media (min-width: 414px) {
-  .App-header h1 {
-    font-size: 27px;
-  }
-
-  .App-header h3 {
-    font-size: 18px;
-  }
-}
-
-@media (min-width: 768px) {
-  .App-slider {
-    width: 80%;
-  }
-
-  .App-header h1 {
-    font-size: 35px;
-  }
-
-  .App-header h3 {
-    font-size: 24px;
-  }
-
-  .Github {
-    top: 20px;
-    right: 20px;
-  }
-
-  .App-slider {
-    font-size: 20px;
-  }
-}
-
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+.App code,
+.App form {
+  flex: 1
 }

@@ -14,6 +14,7 @@ export interface RegisterInput {
   pattern?: RegExp;
   validate?: (any) => boolean;
   minLength?: number;
+  options?: Array<any>;
 }
 
 export default function useForm() {
@@ -25,13 +26,14 @@ export default function useForm() {
     const ref = fields.current[e.target.name];
     const error = validateField(ref, fields.current);
 
-    if (!Object.keys(error).length) return;
-
+    // need more thoughts on this one
+    // if (localErrorMessages.current[e.target.name] && !Object.keys(error).length) {
     const copy = { ...localErrorMessages.current };
     delete copy[e.target.name];
 
     updateErrorMessage({ ...copy });
     localErrorMessages.current = { ...copy };
+    // }
   }
 
   function register(data: any) {
@@ -40,21 +42,63 @@ export default function useForm() {
       console.warn('Oops missing the name for field:', data.ref);
       return;
     }
-    if (fields.current && fields[data.ref.name]) return;
 
-    if (['text', 'email', 'password', 'search', 'tel', 'url'].includes(data.ref.type)) {
-      data.ref.addEventListener('input', validateWithStateUpdate);
+    if (fields.current && fields.current[data.ref.name]) return; // need to work on the radio button here
+
+    const {
+      ref,
+      required,
+      ref: { name, type },
+    } = data;
+
+    if (
+      [
+        'text',
+        'email',
+        'date',
+        'time',
+        'datetime',
+        'datetime-local',
+        'month',
+        'week',
+        'password',
+        'search',
+        'tel',
+        'number',
+        'url',
+      ].includes(type)
+    ) {
+      ref.addEventListener('input', validateWithStateUpdate);
     } else {
-      data.ref.addEventListener('change', validateWithStateUpdate);
+      ref.addEventListener('change', validateWithStateUpdate);
     }
     if (!fields.current) fields.current = {};
 
-    // if (data.ref.type === 'radio') {
-    //   if (!fields.current[data.ref.name]) fields.current[data.ref.name] = [];
-    //   fields.current[data.ref.name].push(data);
-    // } else {
-    fields.current[data.ref.name] = data;
-    // }
+    if (type === 'radio') {
+      if (!fields.current[name]) fields.current[name] = { options: [], required, ref: { type: 'radio', name } };
+      fields.current[name].options.push(data);
+    } else {
+      fields.current[name] = data;
+    }
+  }
+
+  function findMissDomAndCLean(data, fields) {
+    if (data.ref.type === 'radio') {
+      return data.options.reduce((previous, { ref }) => {
+        if (!document.body.contains(ref)) {
+          ref.removeEventListener('input', validateWithStateUpdate);
+          ref.removeEventListener('change', validateWithStateUpdate);
+          delete fields[ref.name];
+          return true;
+        }
+        return previous;
+      }, false);
+    } else if (data.ref && !document.body.contains(data.ref)) {
+      data.ref.removeEventListener('input', validateWithStateUpdate);
+      data.ref.removeEventListener('change', validateWithStateUpdate);
+      delete fields[data.ref.name];
+      return true;
+    }
   }
 
   function select(filedName?: string) {
@@ -72,11 +116,8 @@ export default function useForm() {
 
     Object.values(fields.current).forEach((data: any) => {
       const { ref } = data;
-      // @ts-ignore:
-      if (!document.body.contains(ref) && fields.current) {
-        delete fields.current[ref.name];
-        return;
-      }
+
+      if (findMissDomAndCLean(data, fields.current)) return;
 
       // required section
       localError = validateField(data, fields.current, localError);
@@ -88,7 +129,7 @@ export default function useForm() {
       } else if (ref.type === 'select-multiple') {
         values[ref.name] = getMultipleSelectValue([...ref.options]);
       } else if (ref.type === 'radio') {
-        values[ref.name] = getValidRadioValue(fields.current, ref.name).value;
+        values[ref.name] = getValidRadioValue(fields.current[ref.name].options).value;
       } else {
         values[ref.name] = ref.value;
       }
@@ -104,7 +145,6 @@ export default function useForm() {
     () => () =>
       Array.isArray(fields.current) &&
       Object.values(fields.current).forEach(({ ref }: any) => {
-        ref.removeEventListener('blur', validateWithStateUpdate);
         ref.removeEventListener('input', validateWithStateUpdate);
         ref.removeEventListener('change', validateWithStateUpdate);
       }),

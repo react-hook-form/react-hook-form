@@ -9,7 +9,7 @@ export default (fields: Object, filedNames?: string | Array<string>) => {
   return Array.isArray(data)
     ? data.reduce((previous, { ref }: any) => {
         if (ref.type === 'radio') {
-          tempValue = getValidRadioValue(fields, ref.name).value;
+          tempValue = getValidRadioValue(fields[ref.name].options).value;
         } else if (ref.type === 'select-multiple') {
           tempValue = getMultipleSelectValue([...ref.options])
         } else if (ref.type === 'checkbox') {
