@@ -1,0 +1,13 @@
+{
+  "compilerOptions": {
+    "sourceMap": true,
+    "module": "es2015",
+    "target": "es2017",
+    "moduleResolution": "node",
+    "outDir": "./dist",
+    "declaration": true,
+    "jsx": "react"
+  },
+  "include": ["src"],
+  "exclude": ["node_modules", "test"]
+}

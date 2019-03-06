@@ -1,0 +1,301 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`SliderIndicator should render correctly 1`] = `
+<div
+  style={
+    Object {
+      "display": "flex",
+      "justifyContent": "space-around",
+      "minHeight": "10px",
+      "paddingTop": "15px",
+      "width": "100%",
+    }
+  }
+>
+  <span
+    style={
+      Object {
+        "background": undefined,
+        "height": "10px",
+        "width": "1px",
+      }
+    }
+  />
+  <span
+    style={
+      Object {
+        "background": undefined,
+        "height": "10px",
+        "width": "1px",
+      }
+    }
+  />
+  <span
+    style={
+      Object {
+        "background": undefined,
+        "height": "10px",
+        "width": "1px",
+      }
+    }
+  />
+  <span
+    style={
+      Object {
+        "background": undefined,
+        "height": "10px",
+        "width": "1px",
+      }
+    }
+  />
+  <span
+    style={
+      Object {
+        "background": undefined,
+        "height": "10px",
+        "width": "1px",
+      }
+    }
+  />
+  <span
+    style={
+      Object {
+        "background": undefined,
+        "height": "10px",
+        "width": "1px",
+      }
+    }
+  />
+  <span
+    style={
+      Object {
+        "background": undefined,
+        "height": "10px",
+        "width": "1px",
+      }
+    }
+  />
+  <span
+    style={
+      Object {
+        "background": undefined,
+        "height": "10px",
+        "width": "1px",
+      }
+    }
+  />
+  <span
+    style={
+      Object {
+        "background": undefined,
+        "height": "10px",
+        "width": "1px",
+      }
+    }
+  />
+  <span
+    style={
+      Object {
+        "background": undefined,
+        "height": "10px",
+        "width": "1px",
+      }
+    }
+  />
+  <span
+    style={
+      Object {
+        "background": undefined,
+        "height": "10px",
+        "width": "1px",
+      }
+    }
+  />
+  <span
+    style={
+      Object {
+        "background": undefined,
+        "height": "10px",
+        "width": "1px",
+      }
+    }
+  />
+  <span
+    style={
+      Object {
+        "background": undefined,
+        "height": "10px",
+        "width": "1px",
+      }
+    }
+  />
+  <span
+    style={
+      Object {
+        "background": undefined,
+        "height": "10px",
+        "width": "1px",
+      }
+    }
+  />
+  <span
+    style={
+      Object {
+        "background": undefined,
+        "height": "10px",
+        "width": "1px",
+      }
+    }
+  />
+  <span
+    style={
+      Object {
+        "background": undefined,
+        "height": "10px",
+        "width": "1px",
+      }
+    }
+  />
+  <span
+    style={
+      Object {
+        "background": undefined,
+        "height": "10px",
+        "width": "1px",
+      }
+    }
+  />
+  <span
+    style={
+      Object {
+        "background": undefined,
+        "height": "10px",
+        "width": "1px",
+      }
+    }
+  />
+  <span
+    style={
+      Object {
+        "background": undefined,
+        "height": "10px",
+        "width": "1px",
+      }
+    }
+  />
+  <span
+    style={
+      Object {
+        "background": undefined,
+        "height": "10px",
+        "width": "1px",
+      }
+    }
+  />
+  <span
+    style={
+      Object {
+        "background": undefined,
+        "height": "10px",
+        "width": "1px",
+      }
+    }
+  />
+  <span
+    style={
+      Object {
+        "background": undefined,
+        "height": "10px",
+        "width": "1px",
+      }
+    }
+  />
+  <span
+    style={
+      Object {
+        "background": undefined,
+        "height": "10px",
+        "width": "1px",
+      }
+    }
+  />
+  <span
+    style={
+      Object {
+        "background": undefined,
+        "height": "10px",
+        "width": "1px",
+      }
+    }
+  />
+  <span
+    style={
+      Object {
+        "background": undefined,
+        "height": "10px",
+        "width": "1px",
+      }
+    }
+  />
+  <span
+    style={
+      Object {
+        "background": undefined,
+        "height": "10px",
+        "width": "1px",
+      }
+    }
+  />
+  <span
+    style={
+      Object {
+        "background": undefined,
+        "height": "10px",
+        "width": "1px",
+      }
+    }
+  />
+  <span
+    style={
+      Object {
+        "background": undefined,
+        "height": "10px",
+        "width": "1px",
+      }
+    }
+  />
+  <span
+    style={
+      Object {
+        "background": undefined,
+        "height": "10px",
+        "width": "1px",
+      }
+    }
+  />
+  <span
+    style={
+      Object {
+        "background": undefined,
+        "height": "10px",
+        "width": "1px",
+      }
+    }
+  />
+</div>
+`;
+
+exports[`SliderIndicator should render the correct background 1`] = `
+<div
+  style={
+    Object {
+      "background": undefined,
+      "borderRadius": "4px",
+      "display": "flex",
+      "justifyContent": "space-around",
+      "minHeight": "10px",
+      "width": "100%",
+    }
+  }
+/>
+`;
