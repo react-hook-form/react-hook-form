@@ -1,11 +1,10 @@
 import { useRef, useState, useEffect } from 'react';
-import getValidRadioValue from './getValidRadioValue';
-import getFieldValues from './getFieldsValue';
+import getFieldValues from './logic/getFieldsValues';
 import validateField from './validateField';
-import getMultipleSelectValue from './getMultipleSelectValue';
-import detectRegistered from './detectRegistered';
 import findDomElmAndClean from './findDomElmAndClean';
 import { TEXT_INPUTS } from './constants';
+import detectRegistered from './detectRegistered';
+import getFieldValue from './logic/getFieldValue';
 
 export interface RegisterInput {
   ref: any;
@@ -19,8 +18,11 @@ export interface RegisterInput {
   options?: Array<any>;
 }
 
-export default function useForm() {
+export default function useForm(
+  { validateMode }: { validateMode: 'onSubmit' | 'onBlur' | 'onChange' } = { validateMode: 'onSubmit' },
+) {
   const fields = useRef({});
+  const watchList = useRef({});
   const localErrorMessages = useRef({});
   const [errors, updateErrorMessage] = useState({});
 
@@ -28,14 +30,17 @@ export default function useForm() {
     const ref = fields.current[e.target.name];
     const error = validateField(ref, fields.current);
 
-    // need more thoughts on this one
-    // if (localErrorMessages.current[e.target.name] && !Object.keys(error).length) {
-    const copy = { ...localErrorMessages.current };
-    delete copy[e.target.name];
+    if (
+      localErrorMessages.current[e.target.name] !== error[e.target.name] ||
+      validateMode === 'onChange' ||
+      (validateMode === 'onBlur' && e.type === 'blur')
+    ) {
+      const copy = { ...localErrorMessages.current };
+      delete copy[e.target.name];
 
-    updateErrorMessage({ ...copy });
-    localErrorMessages.current = { ...copy };
-    // }
+      updateErrorMessage({ ...copy });
+      localErrorMessages.current = { ...copy };
+    }
   }
 
   function register(data: any) {
@@ -45,20 +50,42 @@ export default function useForm() {
       return;
     }
 
-    if (fields.current && fields.current[data.ref.name]) return; // need to work on the radio button here
-
     const {
       ref,
       required,
+      options,
       ref: { name, type },
     } = data;
 
-    if (TEXT_INPUTS.includes(type)) {
-      ref.addEventListener('input', validateWithStateUpdate);
-    } else {
-      ref.addEventListener('change', validateWithStateUpdate);
+    if (fields.current[data.ref.name] && !fields.current[data.ref.name].eventAttched) {
+      if (validateMode === 'onChange' || watchList.current[ref.name]) {
+        if (TEXT_INPUTS.includes(type)) {
+          ref.addEventListener('input', validateWithStateUpdate);
+        } else {
+          if (options) {
+            options.forEach(({ ref }) => {
+              ref.addEventListener('change', validateWithStateUpdate);
+            });
+          } else {
+            ref.addEventListener('change', validateWithStateUpdate);
+          }
+        }
+
+        fields.current[data.ref.name].eventAttched = true;
+      } else if (validateMode === 'onBlur') {
+        if (options) {
+          options.forEach(({ ref }) => {
+            ref.addEventListener('blur', validateWithStateUpdate);
+          });
+        } else {
+          ref.addEventListener('blur', validateWithStateUpdate);
+        }
+
+        fields.current[data.ref.name].eventAttched = true;
+      }
     }
-    if (!fields.current) fields.current = {};
+
+    if (detectRegistered(fields.current, data)) return;
 
     if (type === 'radio') {
       if (!fields.current[name]) fields.current[name] = { options: [], required, ref: { type: 'radio', name } };
@@ -68,33 +95,59 @@ export default function useForm() {
     }
   }
 
-  function select(filedName?: string) {
+  function watch(filedName?: string) {
+    if (typeof filedName === 'string') {
+      watchList.current[filedName] = true;
+    } else if (Array.isArray(filedName)) {
+      filedName.forEach(name => {
+        watchList.current[name] = true;
+      });
+    } else {
+      Object.values(fields.current).forEach(({ ref }: any) => {
+        watchList.current[ref.name] = true;
+      });
+    }
+
     return !fields.current ? undefined : getFieldValues(fields.current, filedName);
   }
 
   const prepareSubmit = (callback: (Object) => void) => (e: any) => {
     e.preventDefault();
+    const fieldsRef = fields.current;
+    console.log(fieldsRef);
 
-    const { localErrors, values } = Object.values(fields.current).reduce(
+    const { localErrors, values } = Object.values(fieldsRef).reduce(
       (previous: any, data: any) => {
-        const { ref } = data;
+        const {
+          ref,
+          ref: { name, type },
+          options,
+        } = data;
 
-        if (findDomElmAndClean(data, fields.current, validateWithStateUpdate)) return previous;
+        if (findDomElmAndClean(data, fieldsRef, validateWithStateUpdate)) return previous;
 
         // required section
-        previous.localErrors = { ...previous.localErrors, ...validateField(data, fields.current) };
+        const fieldError = validateField(data, fieldsRef);
 
-        if (previous.localErrors[ref.name]) return previous;
-
-        if (ref.type === 'checkbox') {
-          previous.values[ref.name] = ref.checked;
-        } else if (ref.type === 'select-multiple') {
-          previous.values[ref.name] = getMultipleSelectValue([...ref.options]);
-        } else if (ref.type === 'radio') {
-          previous.values[ref.name] = getValidRadioValue(fields.current[ref.name].options).value;
-        } else {
-          previous.values[ref.name] = ref.value;
+        if (fieldError[name] && !watchList.current[name]) {
+          if (TEXT_INPUTS.includes(type)) {
+            ref.addEventListener('input', validateWithStateUpdate);
+          } else {
+            if (options) {
+              options.forEach(({ ref }) => {
+                ref.addEventListener('change', validateWithStateUpdate);
+              });
+            } else {
+              ref.addEventListener('change', validateWithStateUpdate);
+            }
+          }
         }
+
+        previous.localErrors = { ...previous.localErrors, ...fieldError };
+
+        if (previous.localErrors[name]) return previous;
+
+        previous.values[name] = getFieldValue(fieldsRef, ref);
 
         return previous;
       },
@@ -114,18 +167,24 @@ export default function useForm() {
     () => () =>
       Array.isArray(fields.current) &&
       Object.values(fields.current).forEach(({ ref }: any) => {
+        if (ref.options) {
+          ref.options.forEach(({ ref }) => {
+            ref.removeEventListener('input', validateWithStateUpdate);
+            ref.removeEventListener('change', validateWithStateUpdate);
+            ref.removeEventListener('blur', validateWithStateUpdate);
+          });
+        }
         ref.removeEventListener('input', validateWithStateUpdate);
         ref.removeEventListener('change', validateWithStateUpdate);
+        ref.removeEventListener('blur', validateWithStateUpdate);
       }),
     [],
   );
-
-  console.log('errors', errors)
 
   return {
     register,
     prepareSubmit,
     errors,
-    select,
+    watch,
   };
 }

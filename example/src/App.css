@@ -1,6 +1,9 @@
+body {
+  background-color: #081229;
+}
+
 .App {
   text-align: center;
-  background-color: #081229;
   overflow: hidden;
   color: white;
   padding: 0 50px;

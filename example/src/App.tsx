@@ -3,7 +3,9 @@ import useForm from './src';
 import './App.css';
 
 function App() {
-  const { register, errors, prepareSubmit, select } = useForm();
+  const { register, errors, prepareSubmit, watch } = useForm({
+    validateMode: 'onChange'
+  });
   const [submitData, updateSubmitData] = useState({});
 
   const onSubmit = data => {
@@ -73,20 +75,20 @@ function App() {
               width: 0,
             }}
           >
-            {JSON.stringify(select(), null, 4)}
+            {JSON.stringify(watch(), null, 4)}
           </pre>
         </code>
 
-        <code>
-          <h2>Submit data</h2>
-          <pre
-            style={{
-              width: 0,
-            }}
-          >
-            {Object.keys(submitData).length ? JSON.stringify(submitData, null, 4) : ''}
-          </pre>
-        </code>
+        {/*<code>*/}
+          {/*<h2>Submit data</h2>*/}
+          {/*<pre*/}
+            {/*style={{*/}
+              {/*width: 0,*/}
+            {/*}}*/}
+          {/*>*/}
+            {/*{Object.keys(submitData).length ? JSON.stringify(submitData, null, 4) : ''}*/}
+          {/*</pre>*/}
+        {/*</code>*/}
       </div>
     </div>
   );
