@@ -1,6 +1,7 @@
 import getValidRadioValue from './getValidRadioValue';
+import { RegisterInput } from './index';
 
-export default ({ ref, required, maxlength, min, max, pattern }, fields, errorsRef = {}) => {
+export default ({ ref, required, maxLength, min, max, pattern }: RegisterInput, fields, errorsRef = {}) => {
   const copy = { ...errorsRef };
 
   if (
@@ -27,14 +28,20 @@ export default ({ ref, required, maxlength, min, max, pattern }, fields, errorsR
     };
   }
 
-  if (maxlength && ref.type === 'text' && maxlength && ref.value.length > max) {
+  if (maxLength && ref.type === 'text' && maxLength && typeof ref.value === 'string' && ref.value.length > max) {
     copy[ref.name] = {
       ...copy[ref.name],
-      maxlength: true,
+      maxLength: true,
     };
   }
 
-  if (pattern && ref.type === 'text' && !pattern.test(ref.value)) {
+  if (
+    pattern &&
+    ref.type === 'text' &&
+    typeof ref.value === 'string' &&
+    pattern instanceof RegExp &&
+    !pattern.test(ref.value)
+  ) {
     copy[ref.name] = {
       ...copy[ref.name],
       pattern: true,

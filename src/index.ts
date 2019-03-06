@@ -3,14 +3,28 @@ import getValidRadioValue from './getValidRadioValue';
 import getFieldValues from './getFieldsValue';
 import validateField from './validateField';
 
+export interface RegisterInput {
+  ref: {
+    name: string,
+    checked: boolean,
+    value: string | number | boolean,
+    type: string,
+    addEventListener: (string, any) => void,
+    removeEventListener: (string, any) => void,
+  };
+  required?: boolean;
+  min?: number;
+  max?: number;
+  maxLength?: number;
+  pattern: RegExp;
+}
+
 export default function useForm() {
-  const fields: {
-    current: Object,
-  } = useRef({});
+  const fields = useRef({});
   const localErrorMessages = useRef({});
   const [errors, updateErrorMessage] = useState({});
 
-  function validateWithStateUpdate(e: any) {
+  function validateWithStateUpdate(e: React.ChangeEvent<HTMLInputElement>) {
     const ref = fields.current[e.target.name];
     const error = validateField(ref, fields.current);
 
@@ -23,7 +37,7 @@ export default function useForm() {
     localErrorMessages.current = { ...copy };
   }
 
-  function register(data: any) {
+  function register(data: RegisterInput) {
     if (!data || !data.ref) return;
     if (!data.ref.name && data.ref.name) {
       console.warn('Oops missing the name for field:', data.ref);
@@ -45,14 +59,14 @@ export default function useForm() {
     return typeof results === 'object' ? results : results;
   }
 
-  const prepareSubmit = (callback: any) => (e: any) => {
+  const prepareSubmit = (callback: (Object) => void) => (e: Event) => {
     let localError = {};
     const values = {};
     e.preventDefault();
 
-    Object.values(fields.current).forEach((data: any) => {
+    Object.values(fields.current).forEach((data: RegisterInput) => {
       const { ref } = data;
-      // $FlowIgnoreLine
+      // @ts-ignore:
       if (!document.body.contains(ref) && fields.current) {
         delete fields.current[ref.name];
         return;
