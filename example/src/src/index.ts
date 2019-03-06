@@ -4,6 +4,8 @@ import getFieldValues from './getFieldsValue';
 import validateField from './validateField';
 import getMultipleSelectValue from './getMultipleSelectValue';
 import detectRegistered from './detectRegistered';
+import findDomElmAndClean from './findDomElmAndClean';
+import { TEXT_INPUTS } from './constants';
 
 export interface RegisterInput {
   ref: any;
@@ -51,23 +53,7 @@ export default function useForm() {
       ref: { name, type },
     } = data;
 
-    if (
-      [
-        'text',
-        'email',
-        'date',
-        'time',
-        'datetime',
-        'datetime-local',
-        'month',
-        'week',
-        'password',
-        'search',
-        'tel',
-        'number',
-        'url',
-      ].includes(type)
-    ) {
+    if (TEXT_INPUTS.includes(type)) {
       ref.addEventListener('input', validateWithStateUpdate);
     } else {
       ref.addEventListener('change', validateWithStateUpdate);
@@ -82,63 +68,46 @@ export default function useForm() {
     }
   }
 
-  function findMissDomAndCLean(data, fields) {
-    if (data.ref.type === 'radio') {
-      return data.options.reduce((previous, { ref }) => {
-        if (!document.body.contains(ref)) {
-          ref.removeEventListener('input', validateWithStateUpdate);
-          ref.removeEventListener('change', validateWithStateUpdate);
-          delete fields[ref.name];
-          return true;
-        }
-        return previous;
-      }, false);
-    } else if (data.ref && !document.body.contains(data.ref)) {
-      data.ref.removeEventListener('input', validateWithStateUpdate);
-      data.ref.removeEventListener('change', validateWithStateUpdate);
-      delete fields[data.ref.name];
-      return true;
-    }
-  }
-
   function select(filedName?: string) {
-    if (!fields.current) return null;
-    const results = getFieldValues(fields.current, filedName);
-
-    // if object need a good flat
-    return typeof results === 'object' ? results : results;
+    return !fields.current ? undefined : getFieldValues(fields.current, filedName);
   }
 
-  const prepareSubmit = (callback: any) => (e: any) => {
-    let localError = {};
-    const values = {};
+  const prepareSubmit = (callback: (Object) => void) => (e: any) => {
     e.preventDefault();
 
-    Object.values(fields.current).forEach((data: any) => {
-      const { ref } = data;
+    const { localErrors, values } = Object.values(fields.current).reduce(
+      (previous: any, data: any) => {
+        const { ref } = data;
 
-      if (findMissDomAndCLean(data, fields.current)) return;
+        if (findDomElmAndClean(data, fields.current, validateWithStateUpdate)) return previous;
 
-      // required section
-      localError = validateField(data, fields.current, localError);
+        // required section
+        previous.localErrors = { ...previous.localErrors, ...validateField(data, fields.current) };
 
-      if (localError[ref.name]) return;
+        if (previous.localErrors[ref.name]) return previous;
 
-      if (ref.type === 'checkbox') {
-        values[ref.name] = ref.checked;
-      } else if (ref.type === 'select-multiple') {
-        values[ref.name] = getMultipleSelectValue([...ref.options]);
-      } else if (ref.type === 'radio') {
-        values[ref.name] = getValidRadioValue(fields.current[ref.name].options).value;
-      } else {
-        values[ref.name] = ref.value;
-      }
-    });
+        if (ref.type === 'checkbox') {
+          previous.values[ref.name] = ref.checked;
+        } else if (ref.type === 'select-multiple') {
+          previous.values[ref.name] = getMultipleSelectValue([...ref.options]);
+        } else if (ref.type === 'radio') {
+          previous.values[ref.name] = getValidRadioValue(fields.current[ref.name].options).value;
+        } else {
+          previous.values[ref.name] = ref.value;
+        }
 
-    updateErrorMessage({ ...localError });
-    localErrorMessages.current = { ...localError };
+        return previous;
+      },
+      {
+        localErrors: {},
+        values: {},
+      },
+    );
 
-    if (!Object.values(localError).length) callback(values);
+    updateErrorMessage({ ...localErrors });
+    localErrorMessages.current = { ...localErrors };
+
+    if (!Object.values(localErrors).length) callback(values);
   };
 
   useEffect(
@@ -150,6 +119,8 @@ export default function useForm() {
       }),
     [],
   );
+
+  console.log('errors', errors)
 
   return {
     register,

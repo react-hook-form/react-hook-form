@@ -1,8 +1,8 @@
 import getValidRadioValue from './getValidRadioValue';
 import { RegisterInput } from '.';
 
-export default ({ ref, required, maxLength, minLength, min, max, pattern }: RegisterInput, fields, errorsRef = {}) => {
-  const copy = { ...errorsRef };
+export default ({ ref, required, maxLength, minLength, min, max, pattern }: RegisterInput, fields) => {
+  const copy = { };
 
   if (
     (ref.type !== 'radio' && required && ref.value === '') ||
