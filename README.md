@@ -4,8 +4,6 @@
 
     $ npm install react-forme
 
-## Example
-
 ## Quickstart
 
 ```jsx
