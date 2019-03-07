@@ -79,16 +79,16 @@ function App() {
           </pre>
         </code>
 
-        {/*<code>*/}
-          {/*<h2>Submit data</h2>*/}
-          {/*<pre*/}
-            {/*style={{*/}
-              {/*width: 0,*/}
-            {/*}}*/}
-          {/*>*/}
-            {/*{Object.keys(submitData).length ? JSON.stringify(submitData, null, 4) : ''}*/}
-          {/*</pre>*/}
-        {/*</code>*/}
+        <code>
+          <h2>Submit data</h2>
+          <pre
+            style={{
+              width: 0,
+            }}
+          >
+            {Object.keys(submitData).length ? JSON.stringify(submitData, null, 4) : ''}
+          </pre>
+        </code>
       </div>
     </div>
   );

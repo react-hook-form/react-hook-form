@@ -1,0 +1,15 @@
+export const TEXT_INPUTS = [
+  'text',
+  'email',
+  'date',
+  'time',
+  'datetime',
+  'datetime-local',
+  'month',
+  'week',
+  'password',
+  'search',
+  'tel',
+  'number',
+  'url',
+];

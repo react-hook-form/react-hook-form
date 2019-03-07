@@ -7,7 +7,7 @@ import detectRegistered from './logic/detectRegistered';
 import getFieldValue from './logic/getFieldValue';
 
 export interface RegisterInput {
-  ref: HTMLInputElement;
+  ref: any;
   required?: boolean;
   min?: number;
   max?: number;
@@ -113,7 +113,7 @@ export default function useForm(
     return !fields.current ? undefined : getFieldsValues(fields.current, filedName);
   }
 
-  const prepareSubmit = (callback: (Object) => void) => (e: React.FormEvent<HTMLInputElement>) => {
+  const prepareSubmit = (callback: (Object) => void) => (e) => {
     e.preventDefault();
     const fieldsRef = fields.current;
     console.log(fieldsRef);
