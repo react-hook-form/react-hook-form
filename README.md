@@ -1,4 +1,4 @@
-# 📋 React forme 
+# 📋 React forme  🚧 (under development)
 
 ## Install
 
@@ -7,6 +7,22 @@
 ## Example
 
 ## Quickstart
+
+```
+import useForm from 'react-forme';
+
+function App() {
+    const { register, prepareSubmit } = useForm();
+    const onSubmit = (data) => { console.log(data); }
+    
+    return <form onSubmit={prepareSubmit(onSubmit}>
+        <input name="firstname" ref={(ref) => register({ ref })} />
+        <input name="lastname" ref={(ref) => register({ ref })} />
+        <input type="submit" />
+    </form>
+}
+
+```
 
 ## Props
 
