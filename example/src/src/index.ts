@@ -1,9 +1,9 @@
 import { useRef, useState, useEffect } from 'react';
-import getFieldValues from './logic/getFieldsValues';
-import validateField from './validateField';
-import findDomElmAndClean from './findDomElmAndClean';
+import getFieldsValues from './logic/getFieldsValues';
+import validateField from './logic/validateField';
+import findDomElmAndClean from './logic/findDomElmAndClean';
 import { TEXT_INPUTS } from './constants';
-import detectRegistered from './detectRegistered';
+import detectRegistered from './logic/detectRegistered';
 import getFieldValue from './logic/getFieldValue';
 
 export interface RegisterInput {
@@ -15,7 +15,9 @@ export interface RegisterInput {
   pattern?: RegExp;
   validate?: (data: string | number) => boolean;
   minLength?: number;
-  options?: Array<any>;
+  options?: Array<{
+    ref: HTMLInputElement;
+  }>;
 }
 
 export default function useForm(
@@ -26,7 +28,7 @@ export default function useForm(
   const localErrorMessages = useRef({});
   const [errors, updateErrorMessage] = useState({});
 
-  function validateWithStateUpdate(e: React.ChangeEvent<HTMLInputElement>) {
+  function validateWithStateUpdate(e: any) {
     const ref = fields.current[e.target.name];
     const error = validateField(ref, fields.current);
 
@@ -43,7 +45,7 @@ export default function useForm(
     }
   }
 
-  function register(data: any) {
+  function register(data: RegisterInput) {
     if (!data || !data.ref) return;
     if (!data.ref.name) {
       console.warn('Oops missing the name for field:', data.ref);
@@ -57,7 +59,7 @@ export default function useForm(
       ref: { name, type },
     } = data;
 
-    if (detectRegistered(fields.current, data)) return;
+    if (fields.current && detectRegistered(fields.current, data)) return;
 
     if (type === 'radio') {
       if (!fields.current[name]) fields.current[name] = { options: [], required, ref: { type: 'radio', name } };
@@ -108,10 +110,10 @@ export default function useForm(
       });
     }
 
-    return !fields.current ? undefined : getFieldValues(fields.current, filedName);
+    return !fields.current ? undefined : getFieldsValues(fields.current, filedName);
   }
 
-  const prepareSubmit = (callback: (Object) => void) => (e: any) => {
+  const prepareSubmit = (callback: (Object) => void) => (e: React.FormEvent<HTMLInputElement>) => {
     e.preventDefault();
     const fieldsRef = fields.current;
     console.log(fieldsRef);
@@ -126,7 +128,6 @@ export default function useForm(
 
         if (findDomElmAndClean(data, fieldsRef, validateWithStateUpdate)) return previous;
 
-        // required section
         const fieldError = validateField(data, fieldsRef);
 
         if (fieldError[name] && !watchList.current[name]) {
@@ -171,9 +172,9 @@ export default function useForm(
         ref.removeEventListener('blur', validateWithStateUpdate);
       };
       Array.isArray(fields.current) &&
-        Object.values(fields.current).forEach(({ ref }: any) => {
-          if (ref.options) {
-            ref.options.forEach(({ ref }) => {
+        Object.values(fields.current).forEach(({ ref, options }: RegisterInput) => {
+          if (options) {
+            options.forEach(({ ref }) => {
               removeEventListeners(ref);
             });
           } else {

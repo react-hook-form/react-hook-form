@@ -1,18 +1,15 @@
-import getValidRadioValue from "../getValidRadioValue";
-import getMultipleSelectValue from "../getMultipleSelectValue";
+import getValidRadioValue from './getValidRadioValue';
+import getMultipleSelectValue from './getMultipleSelectValue';
+import { RegisterInput } from '../index';
 
-export default function getFieldValue(fields, ref) {
-  let value;
-
+export default function getFieldValue(fields: { [key: string]: RegisterInput }, ref: any) {
   if (ref.type === 'radio') {
-    value = getValidRadioValue(fields[ref.name].options).value;
+    return getValidRadioValue(fields[ref.name].options).value;
   } else if (ref.type === 'select-multiple') {
-    value = getMultipleSelectValue([...ref.options])
+    return getMultipleSelectValue([...ref.options]);
   } else if (ref.type === 'checkbox') {
-    value = ref.checked;
-  } else {
-    value = ref.value;
+    return ref.checked;
   }
 
-  return value;
+  return ref.value;
 }

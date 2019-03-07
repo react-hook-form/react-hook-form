@@ -1,7 +1,6 @@
-// @flow
 import getFieldValue from './getFieldValue';
 
-export default (fields: Object, filedNames?: string | Array<string>) => {
+export default function getFieldsValues(fields, filedNames?: string | Array<string>) {
   let value;
   const data: Array<Object> = Object.values(fields);
 
@@ -28,4 +27,4 @@ export default (fields: Object, filedNames?: string | Array<string>) => {
         return previous;
       }, undefined)
     : undefined;
-};
+}

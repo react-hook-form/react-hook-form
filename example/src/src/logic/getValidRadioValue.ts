@@ -1,4 +1,4 @@
-export default function getValidRadioValue(fields: any) {
+export default function getValidRadioValue(fields) {
   return fields.reduce(
     (previous, { ref: { name, checked, value } }: any) => {
       return checked
