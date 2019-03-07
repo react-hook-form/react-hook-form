@@ -21,7 +21,7 @@ export interface RegisterInput {
 }
 
 export default function useForm(
-  { validateMode }: { validateMode: 'onSubmit' | 'onBlur' | 'onChange' } = { validateMode: 'onSubmit' },
+  { mode }: { mode: 'onSubmit' | 'onBlur' | 'onChange' } = { mode: 'onSubmit' },
 ) {
   const fields = useRef({});
   const watchList = useRef({});
@@ -34,8 +34,8 @@ export default function useForm(
 
     if (
       localErrorMessages.current[e.target.name] !== error[e.target.name] ||
-      validateMode === 'onChange' ||
-      (validateMode === 'onBlur' && e.type === 'blur')
+      mode === 'onChange' ||
+      (mode === 'onBlur' && e.type === 'blur')
     ) {
       const copy = { ...localErrorMessages.current };
       delete copy[e.target.name];
@@ -69,21 +69,22 @@ export default function useForm(
     }
 
     if (!fields.current[name].eventAttched) {
-      if (validateMode === 'onChange' || watchList.current[ref.name]) {
+      if (mode === 'onChange' || watchList.current[ref.name]) {
         if (TEXT_INPUTS.includes(type)) {
           ref.addEventListener('input', validateWithStateUpdate);
         } else {
-          if (options) {
-            options.forEach(({ ref }) => {
-              ref.addEventListener('change', validateWithStateUpdate);
-            });
+          if (fields.current[name].options) {
+            const index = fields.current[name].options.length - 1;
+            if (!fields.current[name].options[index].eventAttched) {
+              fields.current[name].options[index].ref.addEventListener('change', validateWithStateUpdate);
+              fields.current[name].options[index].eventAttched = true;
+            }
           } else {
             ref.addEventListener('change', validateWithStateUpdate);
+            fields.current[name].eventAttched = true;
           }
         }
-
-        fields.current[name].eventAttched = true;
-      } else if (validateMode === 'onBlur') {
+      } else if (mode === 'onBlur') {
         if (options) {
           options.forEach(({ ref }) => {
             ref.addEventListener('blur', validateWithStateUpdate);

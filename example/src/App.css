@@ -7,15 +7,95 @@ body {
   overflow: hidden;
   color: white;
   padding: 0 50px;
+  position: relative;
 }
 
+.App-h1 {
+  font-family: "Fjalla One", sans-serif;
+  font-weight: 100;
+  font-size: 48px;
+  margin-bottom: 10px;
+}
+
+.App-h2:before,
+.App-h2:after {
+  background-color: #4f6294;
+  content: "";
+  display: inline-block;
+  height: 1px;
+  position: relative;
+  vertical-align: middle;
+  width: 25%;
+}
+
+.App-h2:before {
+  right: 0.5em;
+  margin-left: -50%;
+}
+
+.App-h2:after {
+  left: 0.5em;
+  margin-right: -50%;
+}
+
+.App form > select,
 .App form > input {
   display: block;
-  height: 30px;
-  width: 500px;
+  box-sizing: border-box;
+  width: 100%;
+  border-radius: 4px;
+  border: none;
+  padding: 10px 15px;
+  margin-bottom: 10px;
+  font-size: 14px;
+}
+
+.App form > select {
+  width: 100%;
+}
+
+.App form > select:not([multiple]) {
+  height: 37px;
+}
+
+.App-submit {
+  background: #bf1650;
+  height: 55px;
+  color: white;
+  letter-spacing: 0.5rem;
+  text-transform: uppercase;
+  width: 100%;
+  padding: 20px;
+  font-size: 16px;
+}
+
+.App-radio-group {
+  display: flex;
+  margin-bottom: 20px;
+}
+
+.App-radio-group label {
+  display: block;
+  flex: 1
 }
 
 .App code,
 .App form {
   flex: 1
+}
+
+.App-setting {
+  fill: #bf1650;
+  position: absolute;
+  right: 30px;
+  top: 30px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  font-size: 12px;
+}
+
+.App-setting svg {
+  width: 33px;
 }

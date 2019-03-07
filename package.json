@@ -41,7 +41,7 @@
   },
   "dependencies": {
     "react-flip-numbers": "^2.1.3",
-    "react-simple-animate": "^2.6.0"
+    "react-simple-animate": "^2.6.4"
   },
   "peerDependencies": {
     "react": "^16.7.0",
