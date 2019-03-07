@@ -21,7 +21,7 @@ export interface RegisterInput {
 }
 
 export default function useForm(
-  { validateMode }: { validateMode: 'onSubmit' | 'onBlur' | 'onChange' } = { validateMode: 'onSubmit' },
+  { mode }: { mode: 'onSubmit' | 'onBlur' | 'onChange' } = { mode: 'onSubmit' },
 ) {
   const fields = useRef({});
   const watchList = useRef({});
@@ -34,11 +34,16 @@ export default function useForm(
 
     if (
       localErrorMessages.current[e.target.name] !== error[e.target.name] ||
-      validateMode === 'onChange' ||
-      (validateMode === 'onBlur' && e.type === 'blur')
+      mode === 'onChange' ||
+      (mode === 'onBlur' && e.type === 'blur')
     ) {
-      const copy = { ...localErrorMessages.current };
-      delete copy[e.target.name];
+      const copy = { ...localErrorMessages.current, ...error };
+      if (!error[e.target.name]) {
+        delete copy[e.target.name];
+      }
+
+      console.log('error', error)
+      console.log(copy)
 
       updateErrorMessage({ ...copy });
       localErrorMessages.current = { ...copy };
@@ -69,21 +74,22 @@ export default function useForm(
     }
 
     if (!fields.current[name].eventAttched) {
-      if (validateMode === 'onChange' || watchList.current[ref.name]) {
+      if (mode === 'onChange' || watchList.current[ref.name]) {
         if (TEXT_INPUTS.includes(type)) {
           ref.addEventListener('input', validateWithStateUpdate);
         } else {
-          if (options) {
-            options.forEach(({ ref }) => {
-              ref.addEventListener('change', validateWithStateUpdate);
-            });
+          if (fields.current[name].options) {
+            const index = fields.current[name].options.length - 1;
+            if (!fields.current[name].options[index].eventAttched) {
+              fields.current[name].options[index].ref.addEventListener('change', validateWithStateUpdate);
+              fields.current[name].options[index].eventAttched = true;
+            }
           } else {
             ref.addEventListener('change', validateWithStateUpdate);
+            fields.current[name].eventAttched = true;
           }
         }
-
-        fields.current[name].eventAttched = true;
-      } else if (validateMode === 'onBlur') {
+      } else if (mode === 'onBlur') {
         if (options) {
           options.forEach(({ ref }) => {
             ref.addEventListener('blur', validateWithStateUpdate);
@@ -97,7 +103,7 @@ export default function useForm(
     }
   }
 
-  function watch(filedName?: string) {
+  function watch(filedName?: string | Array<string>) {
     if (typeof filedName === 'string') {
       watchList.current[filedName] = true;
     } else if (Array.isArray(filedName)) {
@@ -116,7 +122,6 @@ export default function useForm(
   const prepareSubmit = (callback: (Object) => void) => (e) => {
     e.preventDefault();
     const fieldsRef = fields.current;
-    console.log(fieldsRef);
 
     const { localErrors, values } = Object.values(fieldsRef).reduce(
       (previous: any, data: any) => {

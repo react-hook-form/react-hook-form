@@ -1,6 +1,6 @@
 {
-  "name": "react-smooth-range-input",
-  "version": "0.2.9",
+  "name": "react-forme",
+  "version": "0.0.1-beta",
   "main": "dist/index.js",
   "module": "dist/index.es.js",
   "types": "dist/index.d.ts",
@@ -15,7 +15,7 @@
     "testw": "yarn test -- --watchAll",
     "prepublish": "yarn test && yarn run clean && yarn build"
   },
-  "repository": "https://github.com/bluebill1049/react-simple-input-range.git",
+  "repository": "https://github.com/bluebill1049/react-forme.git",
   "author": "<bluebill1049@hotmail.com>",
   "license": "MIT",
   "devDependencies": {
