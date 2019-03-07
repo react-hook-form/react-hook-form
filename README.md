@@ -16,14 +16,10 @@ function App() {
     const onSubmit = (data) => { console.log(data); }
     
     return <form onSubmit={prepareSubmit(onSubmit}>
-        <input name="firstname" ref={(ref) => register({ ref })} />
-        <input name="lastname" ref={(ref) => register({ ref })} />
+        <input name="firstname" ref={(ref) => register({ ref, required: true })} />
+        <input name="lastname" ref={(ref) => register({ ref, pattern: "[a-z]{1,15}" })} />
         <input type="submit" />
     </form>
 }
 
 ```
-
-## Props
-
-| Prop               | Type                                             | Required | Description                                  |
