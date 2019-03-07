@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import useForm from './src';
 import Setting from './Setting';
 import { Animate } from 'react-simple-animate';
@@ -6,13 +6,14 @@ import './App.css';
 
 function App() {
   const [submitData, updateSubmitData] = useState({});
+  const settingButton = useRef(null);
   const [showSetting, toggleSetting] = useState(false);
   const [setting, setConfig] = useState({
     mode: 'onChange',
     showError: true,
     showWatch: true,
     showSubmit: true,
-  })
+  });
   const { register, errors, prepareSubmit, watch } = useForm({
     mode: 'onChange',
   });
@@ -21,30 +22,29 @@ function App() {
     updateSubmitData(data);
   };
 
+  if (!showSetting && settingButton.current) {
+    // @ts-ignore
+    settingButton.current.focus();
+  }
+
   return (
     <div className="App">
       <h1 className="App-h1">📋 React Forme</h1>
       <p
         style={{
           marginBottom: '40px',
+          color: '#ec5990',
         }}
       >
         Performance, flexible and extensible forms with easy to use feedback for validation.
       </p>
 
-      <Animate
-        play={showSetting}
-        easeType="ease-in"
-        endStyle={{
-          transform: 'translateX(0)',
-        }}
-        startStyle={{
-          transform: 'translateX(500px)',
-        }}
-        render={({style}) => <Setting toggleSetting={toggleSetting} style={style} />}
-      />
-
-      <div className="App-setting" tabIndex={0} onClick={() => toggleSetting(!showSetting)}>
+      <button
+        className="App-setting"
+        onClick={() => toggleSetting(!showSetting)}
+        style={{ cursor: 'pointer' }}
+        ref={settingButton}
+      >
         <svg viewBox="0 0 100 110">
           <g>
             <path
@@ -60,12 +60,13 @@ function App() {
           </g>
         </svg>
         Setting
-      </div>
+      </button>
 
       <div
         style={{
           display: 'grid',
-          gridTemplateColumns: 'repeat(4, 1fr)',
+          transition: '1s all',
+          gridTemplateColumns: `repeat(${Object.values(setting).filter(Boolean).length}, 1fr)`,
           gridColumnGap: '25px',
         }}
       >
@@ -116,42 +117,68 @@ function App() {
           <input type="submit" value="Submit" className="App-submit" />
         </form>
 
-        <code>
-          <h2 className="App-h2">Errors</h2>
-          <pre
-            style={{
-              textAlign: 'left',
-              padding: '0 20px',
-            }}
-          >
-            {Object.keys(errors).length ? JSON.stringify(errors, null, 2) : ''}
-          </pre>
-        </code>
+        {setting.showError && (
+          <code>
+            <h2 className="App-h2">Errors</h2>
+            <pre
+              style={{
+                textAlign: 'left',
+                padding: '0 20px',
+              }}
+            >
+              {Object.keys(errors).length ? JSON.stringify(errors, null, 2) : ''}
+            </pre>
+          </code>
+        )}
 
-        <code>
-          <h2 className="App-h2">Watch</h2>
-          <pre
-            style={{
-              textAlign: 'left',
-              padding: '0 20px',
-            }}
-          >
-            {JSON.stringify(watch(), null, 2)}
-          </pre>
-        </code>
+        {setting.showWatch && (
+          <code>
+            <h2 className="App-h2">Watch</h2>
+            <pre
+              style={{
+                textAlign: 'left',
+                padding: '0 20px',
+              }}
+            >
+              {JSON.stringify(watch(), null, 2)}
+            </pre>
+          </code>
+        )}
 
-        <code>
-          <h2 className="App-h2">Prepare Submit</h2>
-          <pre
-            style={{
-              textAlign: 'left',
-              padding: '0 20px',
-            }}
-          >
-            {Object.keys(submitData).length ? JSON.stringify(submitData, null, 2) : ''}
-          </pre>
-        </code>
+        {setting.showSubmit && (
+          <code>
+            <h2 className="App-h2">Submit</h2>
+            <pre
+              style={{
+                textAlign: 'left',
+                padding: '0 20px',
+              }}
+            >
+              {Object.keys(submitData).length ? JSON.stringify(submitData, null, 2) : ''}
+            </pre>
+          </code>
+        )}
       </div>
+      <Animate
+        play={showSetting}
+        easeType="ease-in"
+        endStyle={{
+          transform: 'translateX(0)',
+        }}
+        startStyle={{
+          pointerEvents: 'none',
+          transform: 'translateX(500px)',
+        }}
+        render={({ style }) => (
+          <Setting
+            toggleSetting={toggleSetting}
+            setting={setting}
+            showSetting={showSetting}
+            setConfig={setConfig}
+            style={style}
+          />
+        )}
+      />
     </div>
   );
 }

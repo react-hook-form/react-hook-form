@@ -1,30 +1,41 @@
-import React from 'react';
+import React, { useRef } from 'react';
 import useForm from './src';
 import './Setting.css';
 
-export default function Setting({ style, toggleSetting }) {
+export default function Setting({ style, toggleSetting, showSetting, setting, setConfig }) {
+  const buttonRef = useRef(null);
   const { register, prepareSubmit } = useForm();
   const onSubmit = data => {
+    setConfig(data);
     toggleSetting(false);
   };
 
+  if (showSetting && buttonRef.current) {
+    // @ts-ignore
+    buttonRef.current.focus();
+  }
+
   return (
     <div className="Setting" style={style}>
-      <span
+      <button
         style={{
           position: 'absolute',
           fontSize: 35,
           padding: 20,
-          right: 20,
+          right: 0,
           top: 15,
+          background: 'none',
+          color: 'white',
           cursor: 'pointer',
-          fontWeight: 200
+          border: 'none',
+          fontWeight: 200,
         }}
+        ref={buttonRef}
         tabIndex={0}
         onClick={() => toggleSetting(false)}
       >
         &#10005;
-      </span>
+      </button>
       <h2 className="Setting-h2">Setting</h2>
 
       <h2 className="Setting-h3">️Form config</h2>
@@ -36,24 +47,53 @@ export default function Setting({ style, toggleSetting }) {
         >
           <p>Mode: How is the form validation behave</p>
 
-          <select name="mode" ref={ref => register({ ref })} className="Setting-select">
-            <option value="onSubmit">validation on submit</option>
-            <option value="onChange">validation on change</option>
-            <option value="onBlur">validation on blur</option>
+          <select name="mode" ref={ref => register({ ref })} className="Setting-select" defaultValue={setting.mode}>
+            {[
+              {
+                value: 'onSubmit',
+                name: 'validation on submit',
+              },
+              {
+                value: 'onChange',
+                name: 'validation on change',
+              },
+              {
+                value: 'onBlur',
+                name: 'validation on blur',
+              },
+            ].map(({ value, name }) => {
+              return (
+                <option key={name} value={value}>
+                  {name}
+                </option>
+              );
+            })}
           </select>
         </div>
 
         <h2 className="Setting-h3">Display columns</h2>
         <div>
           <label className="Setting-label">
-            <input name="errors" className="Setting-styled-checkbox" type="checkbox" ref={ref => register({ ref })} />
+            <input
+              name="showError"
+              className="Setting-styled-checkbox"
+              type="checkbox"
+              ref={ref => register({ ref })}
+              defaultChecked={setting.showError}
+            />
             Errors
           </label>
         </div>
 
         <div>
           <label className="Setting-label">
-            <input name="watch" className="Setting-styled-checkbox" type="checkbox" ref={ref => register({ ref })} />
+            <input
+              name="showWatch"
+              className="Setting-styled-checkbox"
+              type="checkbox"
+              ref={ref => register({ ref })}
+              defaultChecked={setting.showWatch}
+            />
             Watch
           </label>
         </div>
@@ -61,9 +101,10 @@ export default function Setting({ style, toggleSetting }) {
         <div>
           <label className="Setting-label">
             <input
-              name="prepare submit"
+              name="showSubmit"
               className="Setting-styled-checkbox"
               type="checkbox"
+              defaultChecked={setting.showSubmit}
               ref={ref => register({ ref })}
             />
             Prepare Submit

@@ -37,8 +37,13 @@ export default function useForm(
       mode === 'onChange' ||
       (mode === 'onBlur' && e.type === 'blur')
     ) {
-      const copy = { ...localErrorMessages.current };
-      delete copy[e.target.name];
+      const copy = { ...localErrorMessages.current, ...error };
+      if (!error[e.target.name]) {
+        delete copy[e.target.name];
+      }
+
+      console.log('error', error)
+      console.log(copy)
 
       updateErrorMessage({ ...copy });
       localErrorMessages.current = { ...copy };
@@ -117,7 +122,6 @@ export default function useForm(
   const prepareSubmit = (callback: (Object) => void) => (e) => {
     e.preventDefault();
     const fieldsRef = fields.current;
-    console.log(fieldsRef);
 
     const { localErrors, values } = Object.values(fieldsRef).reduce(
       (previous: any, data: any) => {
