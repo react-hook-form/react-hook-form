@@ -5,7 +5,7 @@ export default {
   plugins: [
     typescript(),
   ],
-  external: ['react', 'react-flip-numbers', 'react-simple-animate'],
+  external: ['react'],
   output: [
     {
       file: 'dist/index.js',
