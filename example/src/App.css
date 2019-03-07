@@ -11,7 +11,7 @@ body {
 }
 
 .App-h1 {
-  font-family: "Fjalla One", sans-serif;
+  font-family: 'Fjalla One', sans-serif;
   font-weight: 100;
   font-size: 48px;
   margin-bottom: 10px;
@@ -20,7 +20,7 @@ body {
 .App-h2:before,
 .App-h2:after {
   background-color: #4f6294;
-  content: "";
+  content: '';
   display: inline-block;
   height: 1px;
   position: relative;
@@ -76,12 +76,12 @@ body {
 
 .App-radio-group label {
   display: block;
-  flex: 1
+  flex: 1;
 }
 
 .App code,
 .App form {
-  flex: 1
+  flex: 1;
 }
 
 .App-setting {
@@ -100,5 +100,24 @@ body {
 }
 
 .App-setting svg {
+  width: 33px;
+}
+
+.App-build {
+  fill: #bf1650;
+  position: absolute;
+  left: 20px;
+  top: 30px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  font-size: 12px;
+  background: none;
+  color: white;
+  border: none;
+}
+
+.App-build svg {
   width: 33px;
 }
