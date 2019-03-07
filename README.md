@@ -8,7 +8,7 @@
 
 ## Quickstart
 
-```
+```jsx
 import useForm from 'react-forme';
 
 function App() {
