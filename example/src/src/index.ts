@@ -7,13 +7,13 @@ import detectRegistered from './detectRegistered';
 import getFieldValue from './logic/getFieldValue';
 
 export interface RegisterInput {
-  ref: any;
+  ref: HTMLInputElement;
   required?: boolean;
   min?: number;
   max?: number;
   maxLength?: number;
   pattern?: RegExp;
-  validate?: (any) => boolean;
+  validate?: (data: string | number) => boolean;
   minLength?: number;
   options?: Array<any>;
 }
@@ -57,7 +57,16 @@ export default function useForm(
       ref: { name, type },
     } = data;
 
-    if (fields.current[data.ref.name] && !fields.current[data.ref.name].eventAttched) {
+    if (detectRegistered(fields.current, data)) return;
+
+    if (type === 'radio') {
+      if (!fields.current[name]) fields.current[name] = { options: [], required, ref: { type: 'radio', name } };
+      fields.current[name].options.push(data);
+    } else {
+      fields.current[name] = data;
+    }
+
+    if (!fields.current[name].eventAttched) {
       if (validateMode === 'onChange' || watchList.current[ref.name]) {
         if (TEXT_INPUTS.includes(type)) {
           ref.addEventListener('input', validateWithStateUpdate);
@@ -71,7 +80,7 @@ export default function useForm(
           }
         }
 
-        fields.current[data.ref.name].eventAttched = true;
+        fields.current[name].eventAttched = true;
       } else if (validateMode === 'onBlur') {
         if (options) {
           options.forEach(({ ref }) => {
@@ -83,15 +92,6 @@ export default function useForm(
 
         fields.current[data.ref.name].eventAttched = true;
       }
-    }
-
-    if (detectRegistered(fields.current, data)) return;
-
-    if (type === 'radio') {
-      if (!fields.current[name]) fields.current[name] = { options: [], required, ref: { type: 'radio', name } };
-      fields.current[name].options.push(data);
-    } else {
-      fields.current[name] = data;
     }
   }
 
@@ -164,20 +164,23 @@ export default function useForm(
   };
 
   useEffect(
-    () => () =>
-      Array.isArray(fields.current) &&
-      Object.values(fields.current).forEach(({ ref }: any) => {
-        if (ref.options) {
-          ref.options.forEach(({ ref }) => {
-            ref.removeEventListener('input', validateWithStateUpdate);
-            ref.removeEventListener('change', validateWithStateUpdate);
-            ref.removeEventListener('blur', validateWithStateUpdate);
-          });
-        }
+    () => () => {
+      const removeEventListeners = ref => {
         ref.removeEventListener('input', validateWithStateUpdate);
         ref.removeEventListener('change', validateWithStateUpdate);
         ref.removeEventListener('blur', validateWithStateUpdate);
-      }),
+      };
+      Array.isArray(fields.current) &&
+        Object.values(fields.current).forEach(({ ref }: any) => {
+          if (ref.options) {
+            ref.options.forEach(({ ref }) => {
+              removeEventListeners(ref);
+            });
+          } else {
+            removeEventListeners(ref);
+          }
+        });
+    },
     [],
   );
 
