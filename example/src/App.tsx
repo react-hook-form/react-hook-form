@@ -22,11 +22,6 @@ function App() {
     updateSubmitData(data);
   };
 
-  if (!showSetting && settingButton.current) {
-    // @ts-ignore
-    settingButton.current.focus();
-  }
-
   return (
     <div className="App">
       <h1 className="App-h1">📋 React Forme</h1>
@@ -171,6 +166,7 @@ function App() {
         }}
         render={({ style }) => (
           <Setting
+            settingButton={settingButton}
             toggleSetting={toggleSetting}
             setting={setting}
             showSetting={showSetting}

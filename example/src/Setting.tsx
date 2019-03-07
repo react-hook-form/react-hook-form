@@ -2,12 +2,13 @@ import React, { useRef } from 'react';
 import useForm from './src';
 import './Setting.css';
 
-export default function Setting({ style, toggleSetting, showSetting, setting, setConfig }) {
+export default function Setting({ style, settingButton, toggleSetting, showSetting, setting, setConfig }) {
   const buttonRef = useRef(null);
   const { register, prepareSubmit } = useForm();
   const onSubmit = data => {
     setConfig(data);
     toggleSetting(false);
+    settingButton.current.focus();
   };
 
   if (showSetting && buttonRef.current) {
@@ -32,7 +33,10 @@ export default function Setting({ style, toggleSetting, showSetting, setting, se
         }}
         ref={buttonRef}
         tabIndex={0}
-        onClick={() => toggleSetting(false)}
+        onClick={() => {
+          settingButton.current.focus();
+          toggleSetting(false);
+        }}
       >
         &#10005;
       </button>
