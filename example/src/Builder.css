@@ -16,21 +16,59 @@
 
 .Builder-wrapper {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  grid-column-gap: 25px;
+  grid-template-columns: 1fr 500px 1fr;
+  grid-column-gap: 50px;
 }
 
-.Builder-wrapper > h2 {
+.Builder-h2 {
   text-align: center;
 }
 
-.Builder-form {
+.Builder-h2:before,
+.Builder-h2:after {
+  background-color: #4f6294;
+  content: '';
+  display: inline-block;
+  height: 1px;
+  position: relative;
+  vertical-align: middle;
+  width: 25%;
+}
+
+.Builder-h2:before {
+  right: 0.5em;
+  margin-left: -50%;
+}
+
+.Builder-h2:after {
+  left: 0.5em;
+  margin-right: -50%;
+}
+
+.Builder-form fieldset {
+  border-radius: 4px;
+  border: 1px solid #6a6b7f;
+  display: flex;
+  padding: 10px 20px;
+}
+
+.Builder-form fieldset > input {
+  display: block;
+  box-sizing: border-box;
+  width: 100%;
+  border-radius: 4px;
+  border: none;
+  padding: 10px 15px;
+  margin-bottom: 10px;
+  font-size: 14px;
 }
 
 .Builder-form label {
   line-height: 2;
   text-align: left;
   display: block;
+  margin-bottom: 15px;
+  margin-top: 20px;
 }
 
 .Builder-form-submit {
@@ -44,5 +82,11 @@
 .Builder code {
   text-align: left;
   color: white;
+  overflow-x: auto;
+  white-space: pre-wrap;
+  white-space: -moz-pre-wrap;
+  white-space: -pre-wrap;
+  white-space: -o-pre-wrap;
+  word-wrap: break-word;
   background: none !important;
 }

@@ -3,7 +3,6 @@ body {
 }
 
 .App {
-  text-align: center;
   overflow: hidden;
   color: white;
   padding: 0 50px;
@@ -15,6 +14,13 @@ body {
   font-weight: 100;
   font-size: 48px;
   margin-bottom: 10px;
+  text-align: center;
+}
+
+.App-sub-heading {
+  margin-bottom: 40px;
+  color: #ec5990;
+  text-align: center;
 }
 
 .App-h2:before,
@@ -44,10 +50,10 @@ body {
   box-sizing: border-box;
   width: 100%;
   border-radius: 4px;
-  border: none;
   padding: 10px 15px;
   margin-bottom: 10px;
   font-size: 14px;
+  border: 1px solid white;
 }
 
 .App form > select {
@@ -58,7 +64,7 @@ body {
   height: 37px;
 }
 
-.App-submit {
+.App form > input.App-submit {
   background: #bf1650;
   height: 55px;
   color: white;
@@ -67,6 +73,7 @@ body {
   width: 100%;
   padding: 20px;
   font-size: 16px;
+  border: 1px solid transparent;
 }
 
 .App-radio-group {
@@ -84,11 +91,15 @@ body {
   flex: 1;
 }
 
+.App code > h2 {
+  text-align: center;
+}
+
 .App-setting {
   fill: #bf1650;
   position: absolute;
   right: 30px;
-  top: 30px;
+  top: 10px;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -107,7 +118,7 @@ body {
   fill: #bf1650;
   position: absolute;
   left: 20px;
-  top: 30px;
+  top: 10px;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -120,4 +131,13 @@ body {
 
 .App-build svg {
   width: 33px;
+}
+
+.App form > input.form-error {
+  border: 1px solid #bf1650;
+}
+
+.form-error-msg {
+  font-size: 12px;
+  color: #ec5990;
 }

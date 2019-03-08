@@ -20,30 +20,27 @@ export interface RegisterInput {
   }>;
 }
 
-export default function useForm(
-  { mode }: { mode: 'onSubmit' | 'onBlur' | 'onChange' } = { mode: 'onSubmit' },
-) {
+export default function useForm({ mode }: { mode: 'onSubmit' | 'onBlur' | 'onChange' } = { mode: 'onSubmit' }) {
   const fields = useRef({});
   const watchList = useRef({});
   const localErrorMessages = useRef({});
   const [errors, updateErrorMessage] = useState({});
 
   function validateWithStateUpdate(e: any) {
-    const ref = fields.current[e.target.name];
+    const { name } = e.target;
+    const ref = fields.current[name];
     const error = validateField(ref, fields.current);
 
     if (
-      localErrorMessages.current[e.target.name] !== error[e.target.name] ||
+      localErrorMessages.current[name] !== error[name] ||
       mode === 'onChange' ||
-      (mode === 'onBlur' && e.type === 'blur')
+      (mode === 'onBlur' && e.type === 'blur') ||
+      watchList.current[name]
     ) {
       const copy = { ...localErrorMessages.current, ...error };
-      if (!error[e.target.name]) {
-        delete copy[e.target.name];
+      if (!error[name]) {
+        delete copy[name];
       }
-
-      console.log('error', error)
-      console.log(copy)
 
       updateErrorMessage({ ...copy });
       localErrorMessages.current = { ...copy };
@@ -119,7 +116,7 @@ export default function useForm(
     return !fields.current ? undefined : getFieldsValues(fields.current, filedName);
   }
 
-  const prepareSubmit = (callback: (Object) => void) => (e) => {
+  const prepareSubmit = (callback: (Object, e) => void) => e => {
     e.preventDefault();
     const fieldsRef = fields.current;
 
@@ -166,7 +163,7 @@ export default function useForm(
     updateErrorMessage({ ...localErrors });
     localErrorMessages.current = { ...localErrors };
 
-    if (!Object.values(localErrors).length) callback(values);
+    if (!Object.values(localErrors).length) callback(values, e);
   };
 
   useEffect(

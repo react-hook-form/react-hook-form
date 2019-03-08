@@ -16,25 +16,42 @@ function App() {
     showWatch: true,
     showSubmit: true,
   });
+  // @ts-ignore
   const { register, errors, prepareSubmit, watch } = useForm({
-    mode: 'onChange',
+    mode: setting.mode,
   });
 
-  const onSubmit = data => {
+  const onSubmit = (data, event) => {
     updateSubmitData(data);
   };
 
   return (
     <div className="App">
-      <Builder showBuilder={showBuilder} />
-      <div>
+      <Builder showBuilder={showBuilder} toggleBuilder={toggleBuilder} />
+      <Animate
+        play={showSetting}
+        easeType="ease-in"
+        endStyle={{
+          transform: 'translateX(0)',
+        }}
+        startStyle={{
+          pointerEvents: 'none',
+          transform: 'translateX(600px)',
+        }}
+        render={({ style }) => (
+          <Setting
+            settingButton={settingButton}
+            toggleSetting={toggleSetting}
+            setting={setting}
+            showSetting={showSetting}
+            setConfig={setConfig}
+            style={style}
+          />
+        )}
+      />
+      <Animate play={showBuilder || showSetting} startStyle={{ filter: 'blur(0)' }} endStyle={{ filter: 'blur(3px)' }}>
         <h1 className="App-h1">📋 React Forme</h1>
-        <p
-          style={{
-            marginBottom: '40px',
-            color: '#ec5990',
-          }}
-        >
+        <p className="App-sub-heading">
           Performance, flexible and extensible forms with easy to use feedback for validation.
         </p>
 
@@ -82,6 +99,17 @@ function App() {
             </code>
             <input name="input" placeholder="input" ref={ref => register({ ref })} />
             <input type="range" name="range" ref={ref => register({ ref })} />
+            <input
+              type="regex"
+              name="regex"
+              placeholder="regex"
+              ref={ref =>
+                register({
+                  ref,
+                  pattern: /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/,
+                })
+              }
+            />
             <input type="date" name="date" ref={ref => register({ ref, required: true })} />
             <input type="datetime-local" name="datetime-local" ref={ref => register({ ref, required: true })} />
             <input type="email" placeholder="email" name="email" ref={ref => register({ ref, required: true })} />
@@ -165,28 +193,7 @@ function App() {
             </code>
           )}
         </div>
-      </div>
-      <Animate
-        play={showSetting}
-        easeType="ease-in"
-        endStyle={{
-          transform: 'translateX(0)',
-        }}
-        startStyle={{
-          pointerEvents: 'none',
-          transform: 'translateX(500px)',
-        }}
-        render={({ style }) => (
-          <Setting
-            settingButton={settingButton}
-            toggleSetting={toggleSetting}
-            setting={setting}
-            showSetting={showSetting}
-            setConfig={setConfig}
-            style={style}
-          />
-        )}
-      />
+      </Animate>
     </div>
   );
 }
