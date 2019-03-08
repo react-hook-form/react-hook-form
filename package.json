@@ -39,7 +39,9 @@
     "typescript": "^3.3.3333",
     "uglify-es": "^3.3.9"
   },
-  "dependencies": {},
+  "dependencies": {
+    "styled-components": "^4.1.3"
+  },
   "peerDependencies": {
     "react": "^16.8.0",
     "react-dom": "^16.8.0"
