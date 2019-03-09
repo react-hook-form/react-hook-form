@@ -60,30 +60,33 @@ export default function useForm({ mode }: { mode: 'onSubmit' | 'onBlur' | 'onCha
       options,
       ref: { name, type },
     } = data;
+    const allFields = fields.current;
 
-    if (fields.current && detectRegistered(fields.current, data)) return;
+    findDomElmAndClean(data, allFields, validateWithStateUpdate);
+    if (allFields && detectRegistered(allFields, data)) return;
 
     if (type === 'radio') {
-      if (!fields.current[name]) fields.current[name] = { options: [], required, ref: { type: 'radio', name } };
-      fields.current[name].options.push(data);
+      if (!allFields[name]) allFields[name] = { options: [], required, ref: { type: 'radio', name } };
+      allFields[name].options.push(data);
     } else {
-      fields.current[name] = data;
+      allFields[name] = data;
     }
 
-    if (!fields.current[name].eventAttched) {
+    if (!allFields[name].eventAttched) {
       if (mode === 'onChange' || watchList.current[ref.name]) {
         if (TEXT_INPUTS.includes(type)) {
           ref.addEventListener('input', validateWithStateUpdate);
         } else {
-          if (fields.current[name].options) {
-            const index = fields.current[name].options.length - 1;
-            if (!fields.current[name].options[index].eventAttched) {
-              fields.current[name].options[index].ref.addEventListener('change', validateWithStateUpdate);
-              fields.current[name].options[index].eventAttched = true;
+          const options = allFields[name].options;
+          if (options) {
+            const index = options.length - 1;
+            if (!options[index].eventAttched) {
+              options[index].ref.addEventListener('change', validateWithStateUpdate);
+              options[index].eventAttched = true;
             }
           } else {
             ref.addEventListener('change', validateWithStateUpdate);
-            fields.current[name].eventAttched = true;
+            allFields[name].eventAttched = true;
           }
         }
       } else if (mode === 'onBlur') {
@@ -95,7 +98,7 @@ export default function useForm({ mode }: { mode: 'onSubmit' | 'onBlur' | 'onCha
           ref.addEventListener('blur', validateWithStateUpdate);
         }
 
-        fields.current[data.ref.name].eventAttched = true;
+        allFields[data.ref.name].eventAttched = true;
       }
     }
   }

@@ -19,6 +19,8 @@ function Form() {
 ${formData.reduce((previous, { type, name, required, max, min, maxLength, minLength, pattern, options }, index) => {
     const ref = ` ref={ref => register({ ref${required ? ', required: true' : ''}})}`;
     
+    console.log(options);
+    
     if (type === 'select') {
       const select = `      <select name="${name}"${ref}>\n${options.split(';').filter(Boolean).reduce((temp, option) => {
         return temp + `        <option value="${option}">${option}</option>\n`;
@@ -65,7 +67,7 @@ export default function Builder({ showBuilder, toggleBuilder }) {
   return (
     <Animate
       play={showBuilder}
-      durationSeconds={0.8}
+      durationSeconds={0}
       type="ease-in"
       startStyle={{
         transform: 'translateY(100%)'

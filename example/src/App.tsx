@@ -27,7 +27,7 @@ function App() {
 
   return (
     <div className="App">
-      <Builder showBuilder={showBuilder} toggleBuilder={toggleBuilder} />
+      <Builder showBuilder={!showBuilder} toggleBuilder={toggleBuilder} />
       <Animate
         play={showSetting}
         easeType="ease-in"
