@@ -50,7 +50,7 @@ function App() {
         )}
       />
       <Animate play={showBuilder || showSetting} startStyle={{ filter: 'blur(0)' }} endStyle={{ filter: 'blur(3px)' }}>
-        <h1 className="App-h1">📋 React Forme</h1>
+        <h1 className="App-h1">React Forme</h1>
         <p className="App-sub-heading">
           Performance, flexible and extensible forms with easy to use feedback for validation.
         </p>

@@ -106,7 +106,7 @@ export default function Builder({ showBuilder, toggleBuilder }) {
               >
                 &#10005;
               </button>
-              <h1 className="App-h1">🛠 React Forme Builder</h1>
+              <h1 className="App-h1">Builder</h1>
               <p className="App-sub-heading">Build your own form with code and example</p>
 
               <div className="Builder-wrapper">
