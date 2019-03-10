@@ -5,6 +5,7 @@ import findDomElmAndClean from './logic/findDomElmAndClean';
 import { TEXT_INPUTS } from './constants';
 import detectRegistered from './logic/detectRegistered';
 import getFieldValue from './logic/getFieldValue';
+import removeAllEventListeners from './logic/removeAllEventListeners';
 
 export interface RegisterInput {
   ref: any;
@@ -47,6 +48,10 @@ export default function useForm({ mode }: { mode: 'onSubmit' | 'onBlur' | 'onCha
     }
   }
 
+  function removeReference(e) {
+    fields.current = findDomElmAndClean({ ref: e.target }, fields.current, validateWithStateUpdate, removeReference, true);
+  }
+
   function register(data: RegisterInput) {
     if (!data || !data.ref) return;
     if (!data.ref.name) {
@@ -61,8 +66,6 @@ export default function useForm({ mode }: { mode: 'onSubmit' | 'onBlur' | 'onCha
       ref: { name, type },
     } = data;
     const allFields = fields.current;
-
-    findDomElmAndClean(data, allFields, validateWithStateUpdate);
     if (allFields && detectRegistered(allFields, data)) return;
 
     if (type === 'radio') {
@@ -101,6 +104,8 @@ export default function useForm({ mode }: { mode: 'onSubmit' | 'onBlur' | 'onCha
         allFields[data.ref.name].eventAttched = true;
       }
     }
+
+    ref.addEventListener('DOMNodeRemoved', removeReference);
   }
 
   function watch(filedName?: string) {
@@ -131,7 +136,11 @@ export default function useForm({ mode }: { mode: 'onSubmit' | 'onBlur' | 'onCha
           options,
         } = data;
 
-        if (findDomElmAndClean(data, fieldsRef, validateWithStateUpdate)) return previous;
+        const result = findDomElmAndClean(data, fieldsRef, validateWithStateUpdate, removeReference)
+        if (result) {
+          fields.current = result;
+          return previous;
+        }
 
         const fieldError = validateField(data, fieldsRef);
 
@@ -172,9 +181,7 @@ export default function useForm({ mode }: { mode: 'onSubmit' | 'onBlur' | 'onCha
   useEffect(
     () => () => {
       const removeEventListeners = ref => {
-        ref.removeEventListener('input', validateWithStateUpdate);
-        ref.removeEventListener('change', validateWithStateUpdate);
-        ref.removeEventListener('blur', validateWithStateUpdate);
+        removeAllEventListeners(ref, validateWithStateUpdate, removeReference)
       };
       Array.isArray(fields.current) &&
         Object.values(fields.current).forEach(({ ref, options }: RegisterInput) => {
