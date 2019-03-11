@@ -2,7 +2,7 @@ export default formData => {
   return `import React from 'react';
 import useForm from 'react-forme';
 
-function Form() {
+export default function Form() {
   const { register, handleSubmit } = useForm();
   const onSubmit = data => console.log(data);
   
@@ -21,7 +21,7 @@ ${Array.isArray(formData) ? formData.reduce((previous, { type, name, required, m
 
     if (type === 'radio') {
       const select = `\n${options.split(';').filter(Boolean).reduce((temp, option) => {
-        return temp + `        <input type="${type}" value="${option}"${ref}/>\n`;
+        return temp + `      <input type="${type}" value="${option}"${ref}/>\n`;
       }, '')}\n`;
 
       return previous + select;
@@ -33,7 +33,7 @@ ${Array.isArray(formData) ? formData.reduce((previous, { type, name, required, m
         required ? ', required: true' : ''
         }${max ? `, max: ${max}` : ''}${minLength ? `, minLength: ${minLength}` : ''}${
         minLength ? `, maxLength: ${maxLength}` : ''
-        }${pattern ? `, pattern: /${pattern}/` : ''}${min ? `, min: ${min}` : ''} })} />\n`
+        }${pattern ? `, pattern: ${pattern}` : ''}${min ? `, min: ${min}` : ''} })} />\n`
     );
   }, '') : ''}
       <input type="submit" />

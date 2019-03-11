@@ -74,6 +74,7 @@
 
 .Builder pre,
 .Builder code {
+  font-size: 14px;
   text-align: left;
   color: white;
   overflow-x: auto;

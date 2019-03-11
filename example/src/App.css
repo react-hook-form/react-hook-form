@@ -144,3 +144,21 @@ input {
   font-size: 12px;
   color: #ec5990;
 }
+
+select:hover,
+input:hover {
+  border: 1px solid #ec5990;
+}
+
+input[type="button"]:active,
+input[type="submit"]:active {
+  transition: 0.3s all;
+  transform: translateY(3px);
+  border: 1px solid transparent;
+}
+
+input[type="button"]:active,
+input[type="submit"]:hover {
+  transition: 0.3s all;
+  opacity: 0.8;
+}

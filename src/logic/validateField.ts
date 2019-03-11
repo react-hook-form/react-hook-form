@@ -2,7 +2,7 @@ import getValidRadioValue from './getValidRadioValue';
 import { RegisterInput } from '..';
 
 export default (
-  { ref: { type, value, name }, required, maxLength, minLength, min, max, pattern, validate }: RegisterInput,
+  { ref: { type, value, name }, required, maxLength, minLength, min, max, pattern, custom }: RegisterInput,
   fields: { [key: string]: RegisterInput },
 ) => {
   const copy = {};
@@ -61,11 +61,11 @@ export default (
     };
   }
 
-  if (validate && !validate(value)) {
-    return (copy[name] = {
+  if (custom && !custom(value)) {
+    copy[name] = {
       ...copy[name],
-      validate: true,
-    });
+      custom: true,
+    };
   }
 
   return copy;

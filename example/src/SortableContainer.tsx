@@ -34,6 +34,17 @@ const EditPanel = styled.div`
     border-radius: 4px;
     border: none;
     background: ${colors.lightBlue};
+    
+    &:hover {
+      transition: 0.3s all;
+      opacity: 0.8;
+    }
+    
+    &:active {
+      transition: 0.3s all;
+      transform: translateY(2px);
+      position: relative;
+    }
   }
 
   & > button:first-child {
@@ -115,6 +126,10 @@ export default function SortableContainer({ updateFormData, formData, editIndex,
 
                   <EditPanel>
                     <button
+                      style={{
+                        transition: '0.5s all',
+                        ...(editIndex === index ? { background: colors.lightPink } : null),
+                      }}
                       onClick={() => {
                         if (editIndex === index) {
                           setEditIndex(-1);

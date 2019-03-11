@@ -14,7 +14,7 @@ export interface RegisterInput {
   max?: number;
   maxLength?: number;
   pattern?: RegExp;
-  validate?: (data: string | number) => boolean;
+  custom?: (data: string | number) => boolean;
   minLength?: number;
   options?: Array<{
     ref: HTMLInputElement;

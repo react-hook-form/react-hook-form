@@ -3,7 +3,7 @@ import './Builder.css';
 import { Animate } from 'react-simple-animate';
 import SyntaxHighlighter from 'react-syntax-highlighter';
 import useForm from './src';
-import { atomOneDark } from 'react-syntax-highlighter/dist/esm/styles/hljs';
+import { monokaiSublime } from 'react-syntax-highlighter/dist/esm/styles/hljs';
 import generateCode from './logic/generateCode';
 import styled from 'styled-components';
 import colors from './styles/colors';
@@ -31,34 +31,45 @@ const CopyButton = styled.button`
   position: absolute;
   bottom: 20px;
   right: 40px;
+
+  &:hover {
+    transition: 0.3s all;
+    opacity: 0.8;
+  }
+
+  &:active {
+    transition: 0.3s all;
+    transform: translateY(2px);
+  }
 `;
 
-export default function Builder({ showBuilder, toggleBuilder, editFormData, setFormData }) {
-  const { register, handleSubmit, errors, watch } = useForm();
+export default function Builder({ formData, updateFormData, showBuilder, toggleBuilder, editFormData, setFormData }) {
+  const { register, handleSubmit, errors = {}, watch } = useForm();
   const [editIndex, setEditIndex] = useState(-1);
-  const [formData, updateFormData] = useState([]);
   const copyFormData = useRef([]);
-  const closeButton = useRef({ current: {} });
+  const closeButton = useRef(null);
   const [showValidation, toggleValidation] = useState(false);
   const onSubmit = (data, event) => {
+    // @ts-ignore
     updateFormData([...formData, ...[data]]);
     event.target.reset();
   };
   const type = watch('type');
   copyFormData.current = formData;
 
-  function validate(value) {
-    return !copyFormData.current.find(data => data.name === value);
+  function custom(value) {
+    return !copyFormData.current.find(data => data[name] === value);
   }
 
   if (showBuilder) {
-    closeButton.current.focus();
+    // closeButton.current.focus();
   }
 
   return (
     <Animate
       play={showBuilder}
       type="ease-in"
+      durationSeconds={0.8}
       startStyle={{
         transform: 'translateY(100%)',
       }}
@@ -126,7 +137,7 @@ export default function Builder({ showBuilder, toggleBuilder, editFormData, setF
 
                   <label>Name: </label>
                   <input
-                    className={errors.name && 'form-error'}
+                    className={errors['name'] && 'form-error'}
                     autoComplete="off"
                     defaultValue={editFormData.name}
                     name="name"
@@ -134,12 +145,13 @@ export default function Builder({ showBuilder, toggleBuilder, editFormData, setF
                       register({
                         ref,
                         required: true,
-                        validate,
+                        custom,
                       })
                     }
                   />
-                  {errors.name && <p className="form-error-msg">This is required.</p>}
-                  {errors.validate && <p className="form-error-msg">Name required to be unique.</p>}
+                  {errors['name'] && <p className="form-error-msg">This is required.</p>}
+                  {errors['name'] &&
+                    errors['name']['custom'] && <p className="form-error-msg">Name required to be unique.</p>}
 
                   <label>Type: </label>
                   <select name="type" ref={ref => register({ ref })} value={editFormData.type}>
@@ -166,18 +178,19 @@ export default function Builder({ showBuilder, toggleBuilder, editFormData, setF
                   {(type === 'select' ||
                     type === 'radio' ||
                     editFormData.type === 'select' ||
-                    editFormData.type === 'radio') && (
-                    <>
-                      <label>Options:</label>
-                      <input
-                        defaultValue={editFormData.options}
-                        type="text"
-                        name="options"
-                        placeholder="Enter options separate by ;"
-                        ref={ref => register({ ref })}
-                      />
-                    </>
-                  )}
+                    editFormData.type === 'radio') &&
+                    editFormData.options && (
+                      <>
+                        <label>Options:</label>
+                        <input
+                          defaultValue={editFormData.options}
+                          type="text"
+                          name="options"
+                          placeholder="Enter options separate by ;"
+                          ref={ref => register({ ref })}
+                        />
+                      </>
+                    )}
 
                   <label>
                     <input
@@ -241,6 +254,16 @@ export default function Builder({ showBuilder, toggleBuilder, editFormData, setF
                     className="Builder-form-submit"
                   />
 
+                  <h2
+                    className="Builder-h2"
+                    style={{
+                      marginTop: 30,
+                      fontSize: 14,
+                    }}
+                  >
+                    or
+                  </h2>
+
                   <Animate
                     play={formData.length > 0}
                     startStyle={{
@@ -258,7 +281,7 @@ export default function Builder({ showBuilder, toggleBuilder, editFormData, setF
                         color="white"
                         onClick={() => toggleBuilder(false)}
                         background={colors.secondary}
-                        value="Apply From"
+                        value="Generate From"
                         className="Builder-form-submit"
                       />
                     )}
@@ -280,7 +303,7 @@ export default function Builder({ showBuilder, toggleBuilder, editFormData, setF
                   >
                     Copy to clipboard
                   </CopyButton>
-                  <SyntaxHighlighter style={atomOneDark}>{generateCode(formData)}</SyntaxHighlighter>
+                  <SyntaxHighlighter style={monokaiSublime}>{generateCode(formData)}</SyntaxHighlighter>
                 </div>
               </div>
             </div>

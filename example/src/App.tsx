@@ -6,6 +6,7 @@ import Builder from './Builder';
 import './App.css';
 import ButtonGroup from './ButtonGroup';
 import styled from 'styled-components';
+import FORM_DATA from './constants/formData';
 
 const Footer = styled.footer`
   padding: 40px 0;
@@ -24,13 +25,18 @@ function App() {
   const [editFormData, setFormData] = useState({});
   const [showSetting, toggleSetting] = useState(false);
   const [showBuilder, toggleBuilder] = useState(false);
-  const [setting, setConfig] = useState({
+  const [formData, updateFormData] = useState(FORM_DATA);
+  const [setting, setConfig] = useState<{
+    mode: 'onSubmit' | 'onBlur' | 'onChange';
+    showError: boolean;
+    showWatch: boolean;
+    showSubmit: boolean;
+  }>({
     mode: 'onChange',
     showError: true,
     showWatch: true,
     showSubmit: true,
   });
-  // @ts-ignore
   const { register, errors, handleSubmit, watch } = useForm({
     mode: setting.mode,
   });
@@ -46,6 +52,8 @@ function App() {
         toggleBuilder={toggleBuilder}
         editFormData={editFormData}
         setFormData={setFormData}
+        formData={formData}
+        updateFormData={updateFormData}
       />
       <Animate
         play={showSetting}
@@ -68,7 +76,11 @@ function App() {
           />
         )}
       />
-      <Animate play={showBuilder || showSetting} startStyle={{ filter: 'blur(0)' }} endStyle={{ filter: 'blur(3px)' }}>
+      <Animate
+        play={showBuilder || showSetting}
+        startStyle={{ filter: 'blur(0)', transform: 'scale(1)' }}
+        endStyle={{ filter: 'blur(3px)', transform: 'scale(0.9)' }}
+      >
         <h1 className="App-h1">React Forme</h1>
         <p className="App-sub-heading">
           Performance, flexible and extensible forms with easy to use feedback for validation.
