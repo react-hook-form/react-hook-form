@@ -16,12 +16,13 @@
 
 .Builder-wrapper {
   display: grid;
-  grid-template-columns: 1fr 500px 1fr;
+  grid-template-columns: minmax(300px, 500px) 500px 1fr;
   grid-column-gap: 50px;
 }
 
 .Builder-h2 {
   text-align: center;
+  font-weight: 200;
 }
 
 .Builder-h2:before,
@@ -67,15 +68,8 @@
   line-height: 2;
   text-align: left;
   display: block;
-  margin-bottom: 15px;
+  margin-bottom: 13px;
   margin-top: 20px;
-}
-
-.Builder-form-submit {
-  margin-top: 30px;
-  height: 55px;
-  text-transform: uppercase;
-  letter-spacing: 0.5rem;
 }
 
 .Builder pre,
@@ -84,9 +78,6 @@
   color: white;
   overflow-x: auto;
   white-space: pre-wrap;
-  white-space: -moz-pre-wrap;
-  white-space: -pre-wrap;
-  white-space: -o-pre-wrap;
   word-wrap: break-word;
   background: none !important;
 }

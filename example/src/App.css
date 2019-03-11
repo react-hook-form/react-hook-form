@@ -52,7 +52,10 @@ body {
   border-radius: 4px;
   padding: 10px 15px;
   margin-bottom: 10px;
-  font-size: 14px;
+  font-size: 16px;
+}
+
+input {
   border: 1px solid white;
 }
 
@@ -98,8 +101,8 @@ body {
 .App-setting {
   fill: #bf1650;
   position: absolute;
-  right: 30px;
-  top: 10px;
+  right: 0;
+  top: 0;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -111,14 +114,14 @@ body {
 }
 
 .App-setting svg {
-  width: 33px;
+  height: 50px;
 }
 
 .App-build {
   fill: #bf1650;
   position: absolute;
-  left: 20px;
-  top: 10px;
+  right: 90px;
+  top: 0;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -130,7 +133,7 @@ body {
 }
 
 .App-build svg {
-  width: 33px;
+  height: 50px;
 }
 
 .App form > input.form-error {

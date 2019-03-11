@@ -1,76 +1,48 @@
-// @flow
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import './Builder.css';
 import { Animate } from 'react-simple-animate';
 import SyntaxHighlighter from 'react-syntax-highlighter';
 import useForm from './src';
 import { monokai } from 'react-syntax-highlighter/dist/esm/styles/hljs';
+import generateCode from './logic/generateCode';
+import styled from 'styled-components';
+import colors from './styles/colors';
+import SortableContainer from './SortableContainer';
 
-const code = formData => {
-  return `import React from 'react';
-import useForm from 'react-forme';
+const SubmitButton = styled.input`
+  margin-top: 30px;
+  height: 55px;
+  text-transform: uppercase;
+  letter-spacing: 0.5rem;
+  background: ${props => props.background || 'white'};
+  color: ${props => props.color || 'black'};
+  border: none;
+`;
 
-function Form() {
-  const { register, prepareSubmit } = useForm();
-  const onSubmit = data => console.log(data);
-  
-  return (
-    <form onSubmit={prepareSubmit(onSubmit)}>
-${formData.reduce((previous, { type, name, required, max, min, maxLength, minLength, pattern, options }, index) => {
-    const ref = ` ref={ref => register({ ref${required ? ', required: true' : ''}})}`;
-    
-    console.log(options);
-    
-    if (type === 'select') {
-      const select = `      <select name="${name}"${ref}>\n${options.split(';').filter(Boolean).reduce((temp, option) => {
-        return temp + `        <option value="${option}">${option}</option>\n`;
-      }, '')}      </select>\n`;
-
-      return previous + select;
-    }
-
-    if (type === 'radio') {
-      const select = `\n${options.split(';').filter(Boolean).reduce((temp, option) => {
-        return temp + `        <input type="${type}" value="${option}"${ref}/>\n`;
-      }, '')}\n`;
-
-      return previous + select;
-    }
-    
-    return (
-      previous +
-      `      <input type="${type}" name="${name}" ref={ref => register({ ref${
-        required ? ', required: true' : ''
-        }${max ? `, max: ${max}` : ''}${minLength ? `, minLength: ${minLength}` : ''}${
-        minLength ? `, maxLength: ${maxLength}` : ''
-        }${pattern ? `, pattern: /${pattern}/` : ''}${min ? `, min: ${min}` : ''} })} />\n`
-    );
-  }, '')}
-      <input type="submit" />
-    </form>
-  );
-}`;
-}
-
-export default function Builder({ showBuilder, toggleBuilder }) {
+export default function Builder({ showBuilder, toggleBuilder, editFormData, setFormData }) {
   const { register, prepareSubmit, errors, watch } = useForm();
+  const [editIndex, setEditIndex] = useState(-1);
   const [formData, updateFormData] = useState([]);
+  const copyFormData = useRef([]);
   const [showValidation, toggleValidation] = useState(false);
   const onSubmit = (data, event) => {
-    console.log(formData);
     updateFormData([...formData, ...[data]]);
-    console.log(data);
     event.target.reset();
   };
   const type = watch('type');
+  copyFormData.current = formData;
+
+  function validate(value) {
+    return !copyFormData.current.find(data => data.name === value);
+  }
+  console.log('editFormData', editFormData)
 
   return (
     <Animate
       play={showBuilder}
-      durationSeconds={0}
       type="ease-in"
       startStyle={{
-        transform: 'translateY(100%)'
+        transform: 'translateY(100%)',
       }}
       endStyle={{
         transform: 'translateY(0)',
@@ -97,10 +69,8 @@ export default function Builder({ showBuilder, toggleBuilder }) {
                   border: 'none',
                   fontWeight: 200,
                 }}
-                // ref={buttonRef}
                 tabIndex={0}
                 onClick={() => {
-                  // settingButton.current.focus();
                   toggleBuilder(false);
                 }}
               >
@@ -116,21 +86,42 @@ export default function Builder({ showBuilder, toggleBuilder }) {
                   }}
                 >
                   <h2 className="Builder-h2">Form</h2>
+
+                  <SortableContainer {...{ updateFormData, formData, editIndex, setEditIndex, setFormData, editFormData }} />
+
+                  {formData.length === 0 && (
+                    <p
+                      style={{
+                        textAlign: 'center',
+                      }}
+                    >
+                      You can start adding fields with Fields Creator ▸
+                    </p>
+                  )}
                 </div>
 
                 <form className="Builder-form" onSubmit={prepareSubmit(onSubmit)}>
-                  <h2 className="Builder-h2">Builder</h2>
+                  <h2 className="Builder-h2">Field Creator</h2>
 
                   <label>Name: </label>
                   <input
                     className={errors.name && 'form-error'}
+                    autoComplete="off"
+                    defaultValue={editFormData.name}
                     name="name"
-                    ref={ref => register({ ref, required: true })}
+                    ref={ref =>
+                      register({
+                        ref,
+                        required: true,
+                        validate,
+                      })
+                    }
                   />
-                  {errors.name && <p className="form-error-msg">This is required</p>}
+                  {errors.name && <p className="form-error-msg">This is required.</p>}
+                  {errors.validate && <p className="form-error-msg">Name required to be unique.</p>}
 
                   <label>Type: </label>
-                  <select name="type" ref={ref => register({ ref })}>
+                  <select name="type" ref={ref => register({ ref })} value={editFormData.type}>
                     <option value="text">Text</option>
                     <option value="select">Select</option>
                     <option value="checkbox">Checkbox</option>
@@ -146,12 +137,20 @@ export default function Builder({ showBuilder, toggleBuilder }) {
                     <option value="datetime-local">datetime-local</option>
                     <option value="week">week</option>
                     <option value="month">month</option>
+                    <option value="custom" disabled>
+                      custom
+                    </option>
                   </select>
 
-                  {(type === 'select' || type === 'radio') && (
+                  {(type === 'select' ||
+                    type === 'radio' ||
+                    editFormData.type ||
+                    'select' ||
+                    editFormData.type === 'radio') && (
                     <>
                       <label>Options:</label>
                       <input
+                        defaultValue={editFormData.options}
                         type="text"
                         name="options"
                         placeholder="Enter options separate by ;"
@@ -161,32 +160,85 @@ export default function Builder({ showBuilder, toggleBuilder }) {
                   )}
 
                   <label>
-                    <input type="checkbox" onClick={() => toggleValidation(!showValidation)} />
+                    <input
+                      type="checkbox"
+                      defaultChecked={editFormData.checkbox}
+                      onClick={() => toggleValidation(!showValidation)}
+                    />
                     &nbsp; Toggle Validation Panel
                   </label>
 
-                  {showValidation && (
-                    <>
-                      <label>Validation</label>
-                      <fieldset>
-                        <label>
-                          <input type="checkbox" name="required" ref={ref => register({ ref })} /> required
-                        </label>
-                        <label>Max</label>
-                        <input name="max" type="number" ref={ref => register({ ref })} />
-                        <label>Min</label>
-                        <input name="min" type="number" ref={ref => register({ ref })} />
-                        <label>MaxLength</label>
-                        <input name="maxLength" type="number" ref={ref => register({ ref })} />
-                        <label>MinLength</label>
-                        <input name="minLength" type="number" ref={ref => register({ ref })} />
-                        <label>Pattern</label>
-                        <input name="pattern" type="text" ref={ref => register({ ref })} />
-                      </fieldset>
-                    </>
-                  )}
+                  <Animate
+                    play={showValidation}
+                    startStyle={{
+                      maxHeight: 0,
+                      overflow: 'hidden',
+                    }}
+                    endStyle={{
+                      maxHeight: 800,
+                      overflow: 'hidden',
+                    }}
+                  >
+                    <label>Validation</label>
+                    <fieldset>
+                      <label>
+                        <input
+                          defaultChecked={editFormData.required}
+                          type="checkbox"
+                          name="required"
+                          ref={ref => register({ ref })}
+                        />{' '}
+                        required
+                      </label>
+                      <label defaultValue={editFormData.max}>Max</label>
+                      <input name="max" type="number" ref={ref => register({ ref })} />
+                      <label defaultValue={editFormData.min}>Min</label>
+                      <input name="min" type="number" ref={ref => register({ ref })} />
+                      <label defaultValue={editFormData.maxLength}>MaxLength</label>
+                      <input name="maxLength" type="number" ref={ref => register({ ref })} />
+                      <label defaultValue={editFormData.minLength}>MinLength</label>
+                      <input name="minLength" type="number" ref={ref => register({ ref })} />
+                      <label>Pattern</label>
+                      <input
+                        defaultValue={editFormData.pattern}
+                        style={{
+                          marginBottom: '20px',
+                        }}
+                        name="pattern"
+                        type="text"
+                        ref={ref => register({ ref })}
+                      />
+                    </fieldset>
+                  </Animate>
 
-                  <input type="submit" value="Insert" className="Builder-form-submit" />
+                  <SubmitButton
+                    type="submit"
+                    value={editIndex >= 0 ? 'Update' : 'Create'}
+                    className="Builder-form-submit"
+                  />
+
+                  <Animate
+                    play={formData.length > 0}
+                    startStyle={{
+                      opacity: 0,
+                      pointerEvents: 'none',
+                    }}
+                    endStyle={{
+                      opacity: 1,
+                      pointerEvents: 'auto',
+                    }}
+                    render={({ style }) => (
+                      <SubmitButton
+                        style={style}
+                        type="button"
+                        color="white"
+                        onClick={() => toggleBuilder(false)}
+                        background={colors.secondary}
+                        value="Apply From"
+                        className="Builder-form-submit"
+                      />
+                    )}
+                  />
                 </form>
 
                 <div
@@ -196,7 +248,7 @@ export default function Builder({ showBuilder, toggleBuilder }) {
                 >
                   <h2 className="Builder-h2">Code</h2>
 
-                  <SyntaxHighlighter style={monokai}>{code(formData)}</SyntaxHighlighter>
+                  <SyntaxHighlighter style={monokai}>{generateCode(formData)}</SyntaxHighlighter>
                 </div>
               </div>
             </div>
