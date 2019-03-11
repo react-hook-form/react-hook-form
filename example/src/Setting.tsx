@@ -4,7 +4,7 @@ import './Setting.css';
 
 export default function Setting({ style, settingButton, toggleSetting, showSetting, setting, setConfig }) {
   const buttonRef = useRef(null);
-  const { register, prepareSubmit } = useForm();
+  const { register, handleSubmit } = useForm();
   const onSubmit = data => {
     setConfig(data);
     toggleSetting(false);
@@ -43,7 +43,7 @@ export default function Setting({ style, settingButton, toggleSetting, showSetti
       <h2 className="Setting-h2">Setting</h2>
 
       <h2 className="Setting-h3">️Form config</h2>
-      <form onSubmit={prepareSubmit(onSubmit)}>
+      <form onSubmit={handleSubmit(onSubmit)}>
         <div
           style={{
             marginBottom: '30px',

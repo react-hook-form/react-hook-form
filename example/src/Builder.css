@@ -16,7 +16,7 @@
 
 .Builder-wrapper {
   display: grid;
-  grid-template-columns: minmax(300px, 500px) 500px 1fr;
+  grid-template-columns: 1fr 500px 1fr;
   grid-column-gap: 50px;
 }
 

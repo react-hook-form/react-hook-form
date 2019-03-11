@@ -3,12 +3,12 @@ export default formData => {
 import useForm from 'react-forme';
 
 function Form() {
-  const { register, prepareSubmit } = useForm();
+  const { register, handleSubmit } = useForm();
   const onSubmit = data => console.log(data);
   
   return (
-    <form onSubmit={prepareSubmit(onSubmit)}>
-${formData.reduce((previous, { type, name, required, max, min, maxLength, minLength, pattern, options }, index) => {
+    <form onSubmit={handleSubmit(onSubmit)}>
+${Array.isArray(formData) ? formData.reduce((previous, { type, name, required, max, min, maxLength, minLength, pattern, options }, index) => {
     const ref = ` ref={ref => register({ ref${required ? ', required: true' : ''} })}`;
 
     if (type === 'select') {
@@ -35,7 +35,7 @@ ${formData.reduce((previous, { type, name, required, max, min, maxLength, minLen
         minLength ? `, maxLength: ${maxLength}` : ''
         }${pattern ? `, pattern: /${pattern}/` : ''}${min ? `, min: ${min}` : ''} })} />\n`
     );
-  }, '')}
+  }, '') : ''}
       <input type="submit" />
     </form>
   );

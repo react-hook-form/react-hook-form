@@ -5,6 +5,18 @@ import { Animate } from 'react-simple-animate';
 import Builder from './Builder';
 import './App.css';
 import ButtonGroup from './ButtonGroup';
+import styled from 'styled-components';
+
+const Footer = styled.footer`
+  padding: 40px 0;
+  font-size: 20px;
+  font-weight: 200;
+
+  & > a {
+    color: white;
+    text-decoration: none;
+  }
+`;
 
 function App() {
   const [submitData, updateSubmitData] = useState({});
@@ -19,18 +31,18 @@ function App() {
     showSubmit: true,
   });
   // @ts-ignore
-  const { register, errors, prepareSubmit, watch } = useForm({
+  const { register, errors, handleSubmit, watch } = useForm({
     mode: setting.mode,
   });
 
-  const onSubmit = (data) => {
+  const onSubmit = data => {
     updateSubmitData(data);
   };
 
   return (
     <div className="App">
       <Builder
-        showBuilder={!showBuilder}
+        showBuilder={showBuilder}
         toggleBuilder={toggleBuilder}
         editFormData={editFormData}
         setFormData={setFormData}
@@ -77,7 +89,7 @@ function App() {
             gridColumnGap: '25px',
           }}
         >
-          <form onSubmit={prepareSubmit(onSubmit)}>
+          <form onSubmit={handleSubmit(onSubmit)}>
             <code>
               <h2 className="App-h2">Form</h2>
             </code>
@@ -177,6 +189,17 @@ function App() {
             </code>
           )}
         </div>
+
+        <Footer>
+          Build ♡ by <a href="https://twitter.com/bluebill1049">@Bill Luo</a> &{' '}
+          <a href="https://react-forme.now.sh/" target="_blank">
+            React Forme
+          </a>{' '}
+          +{' '}
+          <a href="https://react-simple-animate.now.sh/" target="_blank">
+            React Simple Animate
+          </a>
+        </Footer>
       </Animate>
     </div>
   );

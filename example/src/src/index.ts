@@ -124,7 +124,7 @@ export default function useForm({ mode }: { mode: 'onSubmit' | 'onBlur' | 'onCha
     return !fields.current ? undefined : getFieldsValues(fields.current, filedName);
   }
 
-  const prepareSubmit = (callback: (Object, e) => void) => e => {
+  const handleSubmit = (callback: (Object, e) => void) => e => {
     e.preventDefault();
     const fieldsRef = fields.current;
 
@@ -199,7 +199,7 @@ export default function useForm({ mode }: { mode: 'onSubmit' | 'onBlur' | 'onCha
 
   return {
     register,
-    prepareSubmit,
+    handleSubmit,
     errors,
     watch,
   };

@@ -3,11 +3,12 @@ import './Builder.css';
 import { Animate } from 'react-simple-animate';
 import SyntaxHighlighter from 'react-syntax-highlighter';
 import useForm from './src';
-import { monokai } from 'react-syntax-highlighter/dist/esm/styles/hljs';
+import { atomOneDark } from 'react-syntax-highlighter/dist/esm/styles/hljs';
 import generateCode from './logic/generateCode';
 import styled from 'styled-components';
 import colors from './styles/colors';
 import SortableContainer from './SortableContainer';
+import copyClipBoard from './utils/copyClipBoard';
 
 const SubmitButton = styled.input`
   margin-top: 30px;
@@ -19,11 +20,25 @@ const SubmitButton = styled.input`
   border: none;
 `;
 
+const CopyButton = styled.button`
+  background: ${colors.lightBlue};
+  border: none;
+  color: white;
+  border-radius: 4px;
+  font-size: 16px;
+  padding: 5px 10px;
+  display: inline-block;
+  position: absolute;
+  bottom: 20px;
+  right: 40px;
+`;
+
 export default function Builder({ showBuilder, toggleBuilder, editFormData, setFormData }) {
-  const { register, prepareSubmit, errors, watch } = useForm();
+  const { register, handleSubmit, errors, watch } = useForm();
   const [editIndex, setEditIndex] = useState(-1);
   const [formData, updateFormData] = useState([]);
   const copyFormData = useRef([]);
+  const closeButton = useRef({ current: {} });
   const [showValidation, toggleValidation] = useState(false);
   const onSubmit = (data, event) => {
     updateFormData([...formData, ...[data]]);
@@ -35,7 +50,10 @@ export default function Builder({ showBuilder, toggleBuilder, editFormData, setF
   function validate(value) {
     return !copyFormData.current.find(data => data.name === value);
   }
-  console.log('editFormData', editFormData)
+
+  if (showBuilder) {
+    closeButton.current.focus();
+  }
 
   return (
     <Animate
@@ -69,6 +87,7 @@ export default function Builder({ showBuilder, toggleBuilder, editFormData, setF
                   border: 'none',
                   fontWeight: 200,
                 }}
+                ref={closeButton}
                 tabIndex={0}
                 onClick={() => {
                   toggleBuilder(false);
@@ -87,7 +106,9 @@ export default function Builder({ showBuilder, toggleBuilder, editFormData, setF
                 >
                   <h2 className="Builder-h2">Form</h2>
 
-                  <SortableContainer {...{ updateFormData, formData, editIndex, setEditIndex, setFormData, editFormData }} />
+                  <SortableContainer
+                    {...{ updateFormData, formData, editIndex, setEditIndex, setFormData, editFormData }}
+                  />
 
                   {formData.length === 0 && (
                     <p
@@ -100,7 +121,7 @@ export default function Builder({ showBuilder, toggleBuilder, editFormData, setF
                   )}
                 </div>
 
-                <form className="Builder-form" onSubmit={prepareSubmit(onSubmit)}>
+                <form className="Builder-form" onSubmit={handleSubmit(onSubmit)}>
                   <h2 className="Builder-h2">Field Creator</h2>
 
                   <label>Name: </label>
@@ -144,8 +165,7 @@ export default function Builder({ showBuilder, toggleBuilder, editFormData, setF
 
                   {(type === 'select' ||
                     type === 'radio' ||
-                    editFormData.type ||
-                    'select' ||
+                    editFormData.type === 'select' ||
                     editFormData.type === 'radio') && (
                     <>
                       <label>Options:</label>
@@ -181,7 +201,11 @@ export default function Builder({ showBuilder, toggleBuilder, editFormData, setF
                   >
                     <label>Validation</label>
                     <fieldset>
-                      <label>
+                      <label
+                        style={{
+                          marginTop: 0,
+                        }}
+                      >
                         <input
                           defaultChecked={editFormData.required}
                           type="checkbox"
@@ -244,11 +268,19 @@ export default function Builder({ showBuilder, toggleBuilder, editFormData, setF
                 <div
                   style={{
                     paddingRight: '20px',
+                    position: 'relative',
                   }}
                 >
                   <h2 className="Builder-h2">Code</h2>
 
-                  <SyntaxHighlighter style={monokai}>{generateCode(formData)}</SyntaxHighlighter>
+                  <CopyButton
+                    onClick={() => {
+                      copyClipBoard(generateCode(formData));
+                    }}
+                  >
+                    Copy to clipboard
+                  </CopyButton>
+                  <SyntaxHighlighter style={atomOneDark}>{generateCode(formData)}</SyntaxHighlighter>
                 </div>
               </div>
             </div>

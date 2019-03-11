@@ -119,7 +119,7 @@ export default function useForm(
     return !fields.current ? undefined : getFieldsValues(fields.current, filedName);
   }
 
-  const prepareSubmit = (callback: (Object) => void) => (e) => {
+  const handleSubmit = (callback: (Object) => void) => (e) => {
     e.preventDefault();
     const fieldsRef = fields.current;
 
@@ -192,7 +192,7 @@ export default function useForm(
 
   return {
     register,
-    prepareSubmit,
+    handleSubmit,
     errors,
     watch,
   };
