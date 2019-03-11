@@ -98,44 +98,6 @@ input {
   text-align: center;
 }
 
-.App-setting {
-  fill: #bf1650;
-  position: absolute;
-  right: 0;
-  top: 0;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  font-size: 12px;
-  background: none;
-  color: white;
-  border: none;
-}
-
-.App-setting svg {
-  height: 50px;
-}
-
-.App-build {
-  fill: #bf1650;
-  position: absolute;
-  right: 90px;
-  top: 0;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  font-size: 12px;
-  background: none;
-  color: white;
-  border: none;
-}
-
-.App-build svg {
-  height: 50px;
-}
-
 .App form > input.form-error {
   border: 1px solid #bf1650;
 }

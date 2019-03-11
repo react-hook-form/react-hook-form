@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, {useState, useRef, useEffect} from 'react';
 import './Builder.css';
 import { Animate } from 'react-simple-animate';
 import SyntaxHighlighter from 'react-syntax-highlighter';
@@ -61,9 +61,12 @@ export default function Builder({ formData, updateFormData, showBuilder, toggleB
     return !copyFormData.current.find(data => data[name] === value);
   }
 
-  if (showBuilder) {
-    // closeButton.current.focus();
-  }
+  useEffect(() => {
+    if (showBuilder) {
+      // @ts-ignore
+      closeButton.current.focus();
+    }
+  });
 
   return (
     <Animate

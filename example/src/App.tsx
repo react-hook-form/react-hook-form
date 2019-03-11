@@ -55,31 +55,17 @@ function App() {
         formData={formData}
         updateFormData={updateFormData}
       />
-      <Animate
-        play={showSetting}
-        easeType="ease-in"
-        endStyle={{
-          transform: 'translateX(0)',
-        }}
-        startStyle={{
-          pointerEvents: 'none',
-          transform: 'translateX(600px)',
-        }}
-        render={({ style }) => (
-          <Setting
-            settingButton={settingButton}
-            toggleSetting={toggleSetting}
-            setting={setting}
-            showSetting={showSetting}
-            setConfig={setConfig}
-            style={style}
-          />
-        )}
+      <Setting
+        settingButton={settingButton}
+        toggleSetting={toggleSetting}
+        setting={setting}
+        showSetting={showSetting}
+        setConfig={setConfig}
       />
       <Animate
         play={showBuilder || showSetting}
-        startStyle={{ filter: 'blur(0)', transform: 'scale(1)' }}
-        endStyle={{ filter: 'blur(3px)', transform: 'scale(0.9)' }}
+        startStyle={{ minHeight: '100vh', filter: 'blur(0)', transform: 'scale(1)' }}
+        endStyle={{ minHeight: '100vh', filter: 'blur(3px)', transform: 'scale(0.9)' }}
       >
         <h1 className="App-h1">React Forme</h1>
         <p className="App-sub-heading">
@@ -105,57 +91,57 @@ function App() {
             <code>
               <h2 className="App-h2">Form</h2>
             </code>
-            <input name="input" placeholder="input" ref={ref => register({ ref })} />
-            <input type="range" name="range" ref={ref => register({ ref })} />
-            <input
-              type="regex"
-              name="regex"
-              placeholder="regex"
-              ref={ref =>
-                register({
-                  ref,
-                  pattern: /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/,
-                })
+            {formData.map(field => {
+              switch (field.type) {
+                case 'select':
+                  return (
+                    <select
+                      name={field.name}
+                      ref={ref => register({ ref })}
+                      key={field.name}
+                      style={{ marginBottom: 20 }}
+                    >
+                      <option value="">Select...</option>
+                      {field.options &&
+                        field.options
+                          .split(';')
+                          .filter(Boolean)
+                          .map(option => {
+                            return <option key={option}>{option}</option>;
+                          })}
+                    </select>
+                  );
+                case 'radio':
+                  return (
+                    <div className="App-radio-group" key={field.name} style={{ marginBottom: 20 }}>
+                      {field.options &&
+                        field.options
+                          .split(';')
+                          .filter(Boolean)
+                          .map(name => {
+                            return (
+                              <label key={name}>
+                                {name}
+                                &nbsp;
+                                <input type="radio" name={field.name} value={name} ref={ref => register({ ref })} />
+                              </label>
+                            );
+                          })}
+                    </div>
+                  );
+                default:
+                  return (
+                    <input
+                      style={{ marginBottom: 20 }}
+                      key={field.name}
+                      type={field.type}
+                      name={field.name}
+                      placeholder={field.name}
+                      ref={ref => register({ ref })}
+                    />
+                  );
               }
-            />
-            <input type="date" name="date" ref={ref => register({ ref, required: true })} />
-            <input type="datetime-local" name="datetime-local" ref={ref => register({ ref, required: true })} />
-            <input type="email" placeholder="email" name="email" ref={ref => register({ ref, required: true })} />
-            <input name="inputRequired" placeholder="input required" ref={ref => register({ ref, required: true })} />
-            <input
-              name="inputMaxLength"
-              placeholder="max 8"
-              ref={ref => register({ ref, required: true, maxLength: 8 })}
-            />
-            <input
-              type="number"
-              name="number"
-              placeholder="max 250 min 20"
-              ref={ref => register({ ref, required: true, max: 250, min: 20 })}
-            />
-
-            <select name="select" ref={ref => register({ ref, required: true })}>
-              <option value="">select</option>
-              <option value="1">1</option>
-              <option value="2">2</option>
-            </select>
-
-            <select name="selectMultiple" multiple ref={ref => register({ ref, required: true })}>
-              <option value="1">1</option>
-              <option value="2">2</option>
-              <option value="3">3</option>
-              <option value="4">4</option>
-            </select>
-
-            <div className="App-radio-group">
-              <label>
-                Option 1: <input type="radio" name="radio" value={1} ref={ref => register({ ref, required: true })} />
-              </label>
-              <label>
-                Option 2: <input type="radio" name="radio" value={2} ref={ref => register({ ref, required: true })} />
-              </label>
-            </div>
-
+            })}
             <input type="submit" value="Submit" className="App-submit" />
           </form>
 
