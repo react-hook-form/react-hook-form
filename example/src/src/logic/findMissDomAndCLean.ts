@@ -4,6 +4,7 @@ export default function findMissDomAndCLean({
   target: {
     ref,
     ref: { name, type },
+    isMutationWatch,
     options,
   },
   fields,
@@ -21,9 +22,10 @@ export default function findMissDomAndCLean({
       return fields;
     }
 
-    return options.reduce((previous, { ref }, index) => {
+    return options.reduce((previous, { ref, isMutationWatch }, index) => {
       if (!document.body.contains(ref)) {
         removeAllEventListeners(ref, validateWithStateUpdate);
+        isMutationWatch.options[index].disconnect();
         delete fields[name].option[index];
         return fields;
       }
@@ -31,6 +33,7 @@ export default function findMissDomAndCLean({
     }, {});
   } else if (ref && (!document.body.contains(ref) || forceDelete)) {
     removeAllEventListeners(ref, validateWithStateUpdate);
+    if (isMutationWatch) isMutationWatch.disconnect();
     delete fields[name];
     return fields;
   }

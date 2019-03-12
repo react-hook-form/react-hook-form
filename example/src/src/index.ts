@@ -50,15 +50,41 @@ export default function useForm({ mode }: { mode: 'onSubmit' | 'onBlur' | 'onCha
     }
   }
 
-  function removeReference(ref: HTMLInputElement) {
+  function attachEventListeners({ optionIndex, ref, type }) {
+    const allFields = fields.current;
+
+    if (!allFields[name]) return;
+
+    if (mode === 'onChange' || allFields[ref.name].watch) {
+      if (type === 'radio') {
+        const options = allFields[name].options;
+
+        options[optionIndex].ref.addEventListener('change', validateWithStateUpdate);
+        options[optionIndex].eventAttached = true;
+      } else {
+        ref.addEventListener('input', validateWithStateUpdate);
+        allFields[name].eventAttached = true;
+      }
+    } else if (mode === 'onBlur') {
+      if (type === 'radio') {
+        const options = allFields[name].options;
+
+        options[optionIndex].ref.addEventListener('blur', validateWithStateUpdate);
+        options[optionIndex].eventAttached = true;
+      } else {
+        ref.addEventListener('blur', validateWithStateUpdate);
+        allFields[name].eventAttached = true;
+      }
+    }
+  }
+
+  function removeReferenceAndEventListeners(ref: HTMLInputElement) {
     fields.current = findMissDomAndCLean({
       target: { ref },
       fields: fields.current,
       validateWithStateUpdate,
       forceDelete: true,
     });
-    // mutationWatchList.current[ref.name].disconnect();
-    // delete mutationWatchList.current[ref.name];
   }
 
   function register(data: RegisterInput) {
@@ -71,8 +97,7 @@ export default function useForm({ mode }: { mode: 'onSubmit' | 'onBlur' | 'onCha
     const {
       ref,
       required,
-      options,
-      ref: { name, type },
+      ref: { name, type, value },
     } = data;
 
     const allFields = fields.current;
@@ -80,61 +105,43 @@ export default function useForm({ mode }: { mode: 'onSubmit' | 'onBlur' | 'onCha
 
     if (type === 'radio') {
       if (!allFields[name]) {
-        allFields[name] = { options: [], mutationWatchList: { options: [] }, required, ref: { type: 'radio', name } };
+        allFields[name] = { options: [], isMutationWatch: { options: [] }, required, ref: { type: 'radio', name } };
       }
 
       allFields[name].options.push(data);
-      allFields[name].mutationWatchList.options.push(onDomRemove(ref, () => removeReference(ref)));
+      allFields[name].isMutationWatch.options.push(onDomRemove(ref, () => removeReferenceAndEventListeners(ref)));
     } else {
       allFields[name] = data;
-      allFields[name].mutationWatchList = onDomRemove(ref, () => removeReference(ref));
+      allFields[name].isMutationWatch = onDomRemove(ref, () => removeReferenceAndEventListeners(ref));
     }
 
-    if (
-      allFields[name].eventAttached ||
-      (type === 'radio' && allFields[name].options.find(({ ref, eventAttached }) => eventAttached && name === ref.name))
-    )
-      return;
+    const optionIndex =
+      type === 'radio' &&
+      allFields[name].options.find(({ ref, eventAttached }) => eventAttached && value === ref.value);
 
-    if (mode === 'onChange' || allFields[ref.name].watch) {
-      if (TEXT_INPUTS.includes(type)) {
-        ref.addEventListener('input', validateWithStateUpdate);
-      } else {
-        const options = allFields[name].options;
-        if (options) {
-          const index = options.length - 1;
-          if (!options[index].eventAttached) {
-            options[index].ref.addEventListener('change', validateWithStateUpdate);
-            options[index].eventAttached = true;
-          }
-        } else {
-          ref.addEventListener('change', validateWithStateUpdate);
-          allFields[name].eventAttached = true;
-        }
-      }
-    } else if (mode === 'onBlur') {
-      if (options) {
-        options.forEach(({ ref }) => {
-          ref.addEventListener('blur', validateWithStateUpdate);
-        });
-      } else {
-        ref.addEventListener('blur', validateWithStateUpdate);
-      }
+    if (allFields[name].eventAttached || optionIndex >= 0) return;
 
-      allFields[data.ref.name].eventAttached = true;
-    }
+    attachEventListeners({ optionIndex, ref, type });
   }
 
   function watch(filedNames?: string | Array<string> | undefined) {
-    if (typeof filedNames === 'string') {
+    if (!fields.current) return undefined;
+
+    if (typeof filedNames === 'string' && fields.current[filedNames]) {
       fields.current[filedNames].watch = true;
     } else if (Array.isArray(filedNames)) {
-      filedNames.forEach(name => (fields.current[name].watch = true));
+      filedNames.forEach(name => {
+        if (!fields.current[name]) return;
+        fields.current[name].watch = true;
+      });
     } else {
-      Object.values(fields.current).forEach(({ ref }: RegisterInput) => (fields.current[ref.name] = true));
+      Object.values(fields.current).forEach(({ ref }: RegisterInput) => {
+        if (!fields.current[name]) return;
+        fields.current[ref.name] = true;
+      });
     }
 
-    return fields.current ? getFieldsValues(fields.current, filedNames) : undefined;
+    return getFieldsValues(fields.current, filedNames);
   }
 
   const handleSubmit = (callback: (Object, e) => void) => e => {
@@ -142,7 +149,7 @@ export default function useForm({ mode }: { mode: 'onSubmit' | 'onBlur' | 'onCha
     const fieldsRef = fields.current;
 
     const { localErrors, values } = Object.values(fieldsRef).reduce(
-      (previous: any, data: any) => {
+      (previous: ErrorMessages, data: RegisterInput) => {
         const {
           ref,
           ref: { name, type },
