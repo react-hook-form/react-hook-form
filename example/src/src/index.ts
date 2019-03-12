@@ -1,7 +1,7 @@
 import { useRef, useState, useEffect } from 'react';
 import getFieldsValues from './logic/getFieldsValues';
 import validateField from './logic/validateField';
-import findDomElmAndClean from './logic/findDomElmAndClean';
+import findMissDomAndCLean from './logic/findMissDomAndCLean';
 import { TEXT_INPUTS } from './constants';
 import detectRegistered from './logic/detectRegistered';
 import getFieldValue from './logic/getFieldValue';
@@ -18,40 +18,47 @@ export interface RegisterInput {
   custom?: (data: string | number) => boolean;
   minLength?: number;
   options?: Array<{
-    ref: HTMLInputElement;
+    ref: any;
   }>;
+}
+
+interface ErrorMessages {
+  [key: string]: { [key: string]: boolean };
 }
 
 export default function useForm({ mode }: { mode: 'onSubmit' | 'onBlur' | 'onChange' } = { mode: 'onSubmit' }) {
   const fields = useRef<{ [key: string]: any }>({});
-  const watchList = useRef({});
+  const watchList = useRef<{ [key: string]: boolean }>({});
   const mutationWatchList = useRef<{ [key: string]: MutationObserver }>({});
-  const localErrorMessages = useRef({});
-  const [errors, updateErrorMessage] = useState({});
+  const localErrorMessages = useRef<ErrorMessages>({});
+  const [errors, updateErrorMessage] = useState<ErrorMessages>({});
 
-  function validateWithStateUpdate(e: any) {
-    const { name } = e.target;
+  function validateWithStateUpdate({ target: { name }, type }: any) {
     const ref = fields.current[name];
     const error = validateField(ref, fields.current);
 
     if (
       localErrorMessages.current[name] !== error[name] ||
       mode === 'onChange' ||
-      (mode === 'onBlur' && e.type === 'blur') ||
+      (mode === 'onBlur' && type === 'blur') ||
       watchList.current[name]
     ) {
       const copy = { ...localErrorMessages.current, ...error };
-      if (!error[name]) {
-        delete copy[name];
-      }
+
+      if (!error[name]) delete copy[name];
 
       updateErrorMessage({ ...copy });
       localErrorMessages.current = { ...copy };
     }
   }
 
-  function removeReference(ref) {
-    fields.current = findDomElmAndClean({ ref }, fields.current, validateWithStateUpdate, true);
+  function removeReference(ref: HTMLInputElement) {
+    fields.current = findMissDomAndCLean({
+      target: { ref },
+      fields: fields.current,
+      validateWithStateUpdate,
+      forceDelete: true,
+    });
     delete mutationWatchList.current[ref.name];
   }
 
@@ -68,6 +75,7 @@ export default function useForm({ mode }: { mode: 'onSubmit' | 'onBlur' | 'onCha
       options,
       ref: { name, type },
     } = data;
+
     const allFields = fields.current;
     if (allFields && detectRegistered(allFields, data)) return;
 
@@ -141,7 +149,12 @@ export default function useForm({ mode }: { mode: 'onSubmit' | 'onBlur' | 'onCha
           options,
         } = data;
 
-        const result = findDomElmAndClean(data, fieldsRef, validateWithStateUpdate);
+        const result = findMissDomAndCLean({
+          target: data,
+          fields: fieldsRef,
+          validateWithStateUpdate,
+        });
+
         if (result) {
           fields.current = result;
           return previous;

@@ -1,9 +1,13 @@
 import { RegisterInput } from '..';
 
-export default function detectRegistered(fields: { [key: string]: RegisterInput }, data: any) {
-  return data.ref.type === 'radio'
-    ? !!Object.values(fields).find(({ ref: { name }, options }) => {
-        return name === data.ref.name && options ? !!options.find(radioField => radioField.ref.value === data.ref.value) : false;
-      })
-    : !!fields[data.ref.name];
+export default function detectRegistered(
+  fields: { [key: string]: RegisterInput },
+  { ref: { type, name, value } }: any,
+): boolean {
+  return !!(type === 'radio'
+    ? Object.values(fields).find(
+        ({ ref: { name: localName }, options }) =>
+          name === localName && options ? !!options.find(option => option.ref.value === value) : false,
+      )
+    : fields[name]);
 }
