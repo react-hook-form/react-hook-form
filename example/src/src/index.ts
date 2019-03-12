@@ -28,8 +28,6 @@ interface ErrorMessages {
 
 export default function useForm({ mode }: { mode: 'onSubmit' | 'onBlur' | 'onChange' } = { mode: 'onSubmit' }) {
   const fields = useRef<{ [key: string]: any }>({});
-  const watchList = useRef<{ [key: string]: boolean }>({});
-  const mutationWatchList = useRef<{ [key: string]: MutationObserver }>({});
   const localErrorMessages = useRef<ErrorMessages>({});
   const [errors, updateErrorMessage] = useState<ErrorMessages>({});
 
@@ -41,7 +39,7 @@ export default function useForm({ mode }: { mode: 'onSubmit' | 'onBlur' | 'onCha
       localErrorMessages.current[name] !== error[name] ||
       mode === 'onChange' ||
       (mode === 'onBlur' && type === 'blur') ||
-      watchList.current[name]
+      fields.current[name].watch
     ) {
       const copy = { ...localErrorMessages.current, ...error };
 
@@ -59,7 +57,8 @@ export default function useForm({ mode }: { mode: 'onSubmit' | 'onBlur' | 'onCha
       validateWithStateUpdate,
       forceDelete: true,
     });
-    delete mutationWatchList.current[ref.name];
+    // mutationWatchList.current[ref.name].disconnect();
+    // delete mutationWatchList.current[ref.name];
   }
 
   function register(data: RegisterInput) {
@@ -79,33 +78,38 @@ export default function useForm({ mode }: { mode: 'onSubmit' | 'onBlur' | 'onCha
     const allFields = fields.current;
     if (allFields && detectRegistered(allFields, data)) return;
 
-    if (!mutationWatchList.current[name]) {
-      mutationWatchList.current[name] = onDomRemove(ref, () => removeReference(ref));
-    }
-
     if (type === 'radio') {
-      if (!allFields[name]) allFields[name] = { options: [], required, ref: { type: 'radio', name } };
+      if (!allFields[name]) {
+        allFields[name] = { options: [], mutationWatchList: { options: [] }, required, ref: { type: 'radio', name } };
+      }
+
       allFields[name].options.push(data);
+      allFields[name].mutationWatchList.options.push(onDomRemove(ref, () => removeReference(ref)));
     } else {
       allFields[name] = data;
+      allFields[name].mutationWatchList = onDomRemove(ref, () => removeReference(ref));
     }
 
-    if (allFields[name].eventAttched) return;
+    if (
+      allFields[name].eventAttached ||
+      (type === 'radio' && allFields[name].options.find(({ ref, eventAttached }) => eventAttached && name === ref.name))
+    )
+      return;
 
-    if (mode === 'onChange' || watchList.current[ref.name]) {
+    if (mode === 'onChange' || allFields[ref.name].watch) {
       if (TEXT_INPUTS.includes(type)) {
         ref.addEventListener('input', validateWithStateUpdate);
       } else {
         const options = allFields[name].options;
         if (options) {
           const index = options.length - 1;
-          if (!options[index].eventAttched) {
+          if (!options[index].eventAttached) {
             options[index].ref.addEventListener('change', validateWithStateUpdate);
-            options[index].eventAttched = true;
+            options[index].eventAttached = true;
           }
         } else {
           ref.addEventListener('change', validateWithStateUpdate);
-          allFields[name].eventAttched = true;
+          allFields[name].eventAttached = true;
         }
       }
     } else if (mode === 'onBlur') {
@@ -117,24 +121,20 @@ export default function useForm({ mode }: { mode: 'onSubmit' | 'onBlur' | 'onCha
         ref.addEventListener('blur', validateWithStateUpdate);
       }
 
-      allFields[data.ref.name].eventAttched = true;
+      allFields[data.ref.name].eventAttached = true;
     }
   }
 
-  function watch(filedName?: string | Array<string>) {
-    if (typeof filedName === 'string') {
-      watchList.current[filedName] = true;
-    } else if (Array.isArray(filedName)) {
-      filedName.forEach(name => {
-        watchList.current[name] = true;
-      });
+  function watch(filedNames?: string | Array<string> | undefined) {
+    if (typeof filedNames === 'string') {
+      fields.current[filedNames].watch = true;
+    } else if (Array.isArray(filedNames)) {
+      filedNames.forEach(name => (fields.current[name].watch = true));
     } else {
-      Object.values(fields.current).forEach(({ ref }: any) => {
-        watchList.current[ref.name] = true;
-      });
+      Object.values(fields.current).forEach(({ ref }: RegisterInput) => (fields.current[ref.name] = true));
     }
 
-    return !fields.current ? undefined : getFieldsValues(fields.current, filedName);
+    return fields.current ? getFieldsValues(fields.current, filedNames) : undefined;
   }
 
   const handleSubmit = (callback: (Object, e) => void) => e => {
@@ -162,7 +162,7 @@ export default function useForm({ mode }: { mode: 'onSubmit' | 'onBlur' | 'onCha
 
         const fieldError = validateField(data, fieldsRef);
 
-        if (fieldError[name] && !watchList.current[name]) {
+        if (fieldError[name] && !fields.current[name].watch) {
           if (TEXT_INPUTS.includes(type)) {
             ref.addEventListener('input', validateWithStateUpdate);
           } else {
@@ -198,10 +198,6 @@ export default function useForm({ mode }: { mode: 'onSubmit' | 'onBlur' | 'onCha
 
   useEffect(
     () => () => {
-      Object.values(mutationWatchList.current[name]).forEach(observer => {
-        observer.disconnect();
-      });
-
       Array.isArray(fields.current) &&
         Object.values(fields.current).forEach(({ ref, options }: RegisterInput) => {
           if (options) {
