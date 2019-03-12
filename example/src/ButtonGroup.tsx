@@ -5,6 +5,14 @@ const GithubIcon = styled.span`
   position: absolute;
   top: 0;
   left: 0;
+  
+  & svg {
+    height: 40px;
+    
+    @media screen and (min-width: 1024px) {
+      height: 50px;    
+    }
+  }
 `;
 
 const SettingButton = styled.button`

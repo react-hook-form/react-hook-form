@@ -3,7 +3,7 @@ import { Animate } from 'react-simple-animate';
 import useForm from './src';
 import './Setting.css';
 
-export default function Setting({ settingButton, toggleSetting, showSetting, setting, setConfig }) {
+function Setting({ settingButton, toggleSetting, showSetting, setting, setConfig }) {
   const buttonRef = useRef(null);
   const { register, handleSubmit } = useForm();
   const onSubmit = data => {
@@ -134,3 +134,5 @@ export default function Setting({ settingButton, toggleSetting, showSetting, set
     />
   );
 }
+
+export default React.memo(Setting);

@@ -50,30 +50,29 @@ export default function useForm({ mode }: { mode: 'onSubmit' | 'onBlur' | 'onCha
     }
   }
 
-  function attachEventListeners({ optionIndex, ref, type }) {
-    const allFields = fields.current;
-
+  function attachEventListeners({ allFields, optionIndex, ref, type, name }) {
     if (!allFields[name]) return;
+    const field = allFields[name];
 
     if (mode === 'onChange' || allFields[ref.name].watch) {
       if (type === 'radio') {
-        const options = allFields[name].options;
+        const options = field.options;
 
         options[optionIndex].ref.addEventListener('change', validateWithStateUpdate);
         options[optionIndex].eventAttached = true;
       } else {
         ref.addEventListener('input', validateWithStateUpdate);
-        allFields[name].eventAttached = true;
+        field.eventAttached = true;
       }
     } else if (mode === 'onBlur') {
       if (type === 'radio') {
-        const options = allFields[name].options;
+        const options = field.options;
 
         options[optionIndex].ref.addEventListener('blur', validateWithStateUpdate);
         options[optionIndex].eventAttached = true;
       } else {
         ref.addEventListener('blur', validateWithStateUpdate);
-        allFields[name].eventAttached = true;
+        field.eventAttached = true;
       }
     }
   }
@@ -116,12 +115,12 @@ export default function useForm({ mode }: { mode: 'onSubmit' | 'onBlur' | 'onCha
     }
 
     const optionIndex =
-      type === 'radio' &&
-      allFields[name].options.find(({ ref, eventAttached }) => eventAttached && value === ref.value);
+      type === 'radio' ?
+      allFields[name].options.findIndex(({ ref }) => value === ref.value) : -1;
 
-    if (allFields[name].eventAttached || optionIndex >= 0) return;
+    if (allFields[name].eventAttached || (type === 'radio' && optionIndex < 0)) return;
 
-    attachEventListeners({ optionIndex, ref, type });
+    attachEventListeners({ allFields, optionIndex, ref, type, name });
   }
 
   function watch(filedNames?: string | Array<string> | undefined) {
@@ -146,9 +145,9 @@ export default function useForm({ mode }: { mode: 'onSubmit' | 'onBlur' | 'onCha
 
   const handleSubmit = (callback: (Object, e) => void) => e => {
     e.preventDefault();
-    const fieldsRef = fields.current;
+    const allFields = fields.current;
 
-    const { localErrors, values } = Object.values(fieldsRef).reduce(
+    const { localErrors, values } = Object.values(allFields).reduce(
       (previous: ErrorMessages, data: RegisterInput) => {
         const {
           ref,
@@ -158,37 +157,36 @@ export default function useForm({ mode }: { mode: 'onSubmit' | 'onBlur' | 'onCha
 
         const result = findMissDomAndCLean({
           target: data,
-          fields: fieldsRef,
+          fields: allFields,
           validateWithStateUpdate,
         });
 
-        if (result) {
+        if (!result[name]) {
           fields.current = result;
           return previous;
         }
 
-        const fieldError = validateField(data, fieldsRef);
+        const fieldError = validateField(data, allFields);
+        const hasError = fieldError[name];
 
-        if (fieldError[name] && !fields.current[name].watch) {
+        if (hasError && !fields.current[name].watch) {
           if (TEXT_INPUTS.includes(type)) {
             ref.addEventListener('input', validateWithStateUpdate);
           } else {
-            if (options) {
-              options.forEach(({ ref }) => {
-                ref.addEventListener('change', validateWithStateUpdate);
-              });
+            if (Array.isArray(options)) {
+              options.forEach(({ ref }) => ref.addEventListener('change', validateWithStateUpdate));
             } else {
               ref.addEventListener('change', validateWithStateUpdate);
             }
           }
         }
 
-        previous.localErrors = { ...previous.localErrors, ...fieldError };
+        if (hasError) {
+          previous.localErrors = { ...previous.localErrors, ...fieldError };
+          return previous;
+        }
 
-        if (previous.localErrors[name]) return previous;
-
-        previous.values[name] = getFieldValue(fieldsRef, ref);
-
+        previous.values[name] = getFieldValue(allFields, ref);
         return previous;
       },
       {
@@ -205,7 +203,7 @@ export default function useForm({ mode }: { mode: 'onSubmit' | 'onBlur' | 'onCha
 
   useEffect(
     () => () => {
-      Array.isArray(fields.current) &&
+      fields.current &&
         Object.values(fields.current).forEach(({ ref, options }: RegisterInput) => {
           if (options) {
             options.forEach(({ ref }) => {
@@ -215,8 +213,11 @@ export default function useForm({ mode }: { mode: 'onSubmit' | 'onBlur' | 'onCha
             removeAllEventListeners(ref, validateWithStateUpdate);
           }
         });
+      fields.current = {};
+      localErrorMessages.current = {};
+      updateErrorMessage({})
     },
-    [],
+    [mode],
   );
 
   return {

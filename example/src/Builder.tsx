@@ -43,7 +43,7 @@ const CopyButton = styled.button`
   }
 `;
 
-export default function Builder({ formData, updateFormData, showBuilder, toggleBuilder, editFormData, setFormData }) {
+function Builder({ formData, updateFormData, showBuilder, toggleBuilder, editFormData, setFormData }) {
   const { register, handleSubmit, errors = {}, watch } = useForm();
   const [editIndex, setEditIndex] = useState(-1);
   const copyFormData = useRef([]);
@@ -316,3 +316,5 @@ export default function Builder({ formData, updateFormData, showBuilder, toggleB
     />
   );
 }
+
+export default React.memo(Builder);

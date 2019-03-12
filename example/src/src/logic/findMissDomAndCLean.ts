@@ -37,4 +37,6 @@ export default function findMissDomAndCLean({
     delete fields[name];
     return fields;
   }
+
+  return fields;
 }

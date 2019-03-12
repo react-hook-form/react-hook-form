@@ -1,6 +1,7 @@
 body {
   margin: 0;
   padding: 0;
+  background-color: #081229;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
     'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
     sans-serif;
@@ -8,11 +9,28 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
-code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
-    monospace;
+input {
+  border: 1px solid white;
 }
 
-.fieldset {
+select {
+  min-height: 37px;
+}
 
+select:hover,
+input:hover {
+  border: 1px solid #ec5990;
+}
+
+input[type="button"]:active,
+input[type="submit"]:active {
+  transition: 0.3s all;
+  transform: translateY(3px);
+  border: 1px solid transparent;
+}
+
+input[type="button"]:active,
+input[type="submit"]:hover {
+  transition: 0.3s all;
+  opacity: 0.8;
 }

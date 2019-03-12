@@ -7,16 +7,42 @@ import './App.css';
 import ButtonGroup from './ButtonGroup';
 import styled from 'styled-components';
 import FORM_DATA from './constants/formData';
+import colors from './styles/colors';
 
 const Footer = styled.footer`
   padding: 40px 0;
-  font-size: 20px;
+  font-size: 16px;
   font-weight: 200;
 
   & > a {
     color: white;
     text-decoration: none;
+    transition: 0.3s all;
+
+    &:hover {
+      color: ${colors.lightPink};
+    }
   }
+`;
+
+const Logo = styled.svg`
+  height: 45px;
+  fill: white;
+  top: 0;
+  left: 0;
+  background: #333;
+  padding: 9px;
+  border-radius: 12px;
+  margin-bottom: -10px;
+  margin-right: 20px;
+  background: ${colors.lightPink};
+`;
+
+const Wrapper = styled.div`
+  display: grid;
+  transition: 1s all;
+  grid-template-columns: repeat(auto-fit, minmax(12rem, 1fr));
+  grid-column-gap: 25px;
 `;
 
 function App() {
@@ -26,6 +52,7 @@ function App() {
   const [showSetting, toggleSetting] = useState(false);
   const [showBuilder, toggleBuilder] = useState(false);
   const [formData, updateFormData] = useState(FORM_DATA);
+  console.log('rendering...')
   const [setting, setConfig] = useState<{
     mode: 'onSubmit' | 'onBlur' | 'onChange';
     showError: boolean;
@@ -67,7 +94,19 @@ function App() {
         startStyle={{ minHeight: '100vh', filter: 'blur(0)', transform: 'scale(1)' }}
         endStyle={{ minHeight: '100vh', filter: 'blur(3px)', transform: 'scale(0.9)' }}
       >
-        <h1 className="App-h1">React Forme</h1>
+        <h1
+          className="App-h1"
+        >
+          <Logo viewBox="0 0 100 100">
+            <title>118all</title>
+            <path d="M73.56,13.32H58.14a8.54,8.54,0,0,0-16.27,0H26.44a11,11,0,0,0-11,11V81.63a11,11,0,0,0,11,11H73.56a11,11,0,0,0,11-11V24.32A11,11,0,0,0,73.56,13.32Zm-30.92,2a1,1,0,0,0,1-.79,6.54,6.54,0,0,1,12.78,0,1,1,0,0,0,1,.79h5.38v6.55a3,3,0,0,1-3,3H40.25a3,3,0,0,1-3-3V15.32ZM82.56,81.63a9,9,0,0,1-9,9H26.44a9,9,0,0,1-9-9V24.32a9,9,0,0,1,9-9h8.81v6.55a5,5,0,0,0,5,5h19.5a5,5,0,0,0,5-5V15.32h8.81a9,9,0,0,1,9,9Z" />
+            <path style={{ transform: 'translateX(-25px)' }} d="M71.6,45.92H54a1,1,0,0,0,0,2H71.6a1,1,0,0,0,0-2Z" />
+            <path d="M71.6,45.92H54a1,1,0,0,0,0,2H71.6a1,1,0,0,0,0-2Z" />
+            <path style={{ transform: 'translateX(-25px)' }} d="M71.1,69.49H53.45a1,1,0,1,0,0,2H71.1a1,1,0,0,0,0-2Z" />
+            <path d="M71.1,69.49H53.45a1,1,0,1,0,0,2H71.1a1,1,0,0,0,0-2Z" />
+          </Logo>
+          React Forme
+        </h1>
         <p className="App-sub-heading">
           Performance, flexible and extensible forms with easy to use feedback for validation.
         </p>
@@ -79,14 +118,7 @@ function App() {
           settingButton={settingButton}
         />
 
-        <div
-          style={{
-            display: 'grid',
-            transition: '1s all',
-            gridTemplateColumns: `repeat(${Object.values(setting).filter(Boolean).length}, 1fr)`,
-            gridColumnGap: '25px',
-          }}
-        >
+        <Wrapper>
           <form onSubmit={handleSubmit(onSubmit)}>
             <code>
               <h2 className="App-h2">Form</h2>
@@ -160,19 +192,20 @@ function App() {
             </code>
           )}
 
-          {setting.showWatch && (
-            <code>
-              <h2 className="App-h2">Watch</h2>
-              <pre
-                style={{
-                  textAlign: 'left',
-                  padding: '0 20px',
-                }}
-              >
-                {JSON.stringify(watch(), null, 2)}
-              </pre>
-            </code>
-          )}
+          {setting.showWatch &&
+            setting.mode !== 'onSubmit' && (
+              <code>
+                <h2 className="App-h2">Watch</h2>
+                <pre
+                  style={{
+                    textAlign: 'left',
+                    padding: '0 20px',
+                  }}
+                >
+                  {JSON.stringify(watch(), null, 2)}
+                </pre>
+              </code>
+            )}
 
           {setting.showSubmit && (
             <code>
@@ -187,14 +220,14 @@ function App() {
               </pre>
             </code>
           )}
-        </div>
+        </Wrapper>
 
         <Footer>
-          Build ♡ by <a href="https://twitter.com/bluebill1049">@Bill Luo</a> &{' '}
+          Build ♡ by <a href="https://twitter.com/bluebill1049">@Bill Luo</a> with{' '}
           <a href="https://react-forme.now.sh/" target="_blank">
             React Forme
           </a>{' '}
-          +{' '}
+          &{' '}
           <a href="https://react-simple-animate.now.sh/" target="_blank">
             React Simple Animate
           </a>
@@ -204,4 +237,4 @@ function App() {
   );
 }
 
-export default App;
+export default React.memo(App);
