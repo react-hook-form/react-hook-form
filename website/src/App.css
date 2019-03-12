@@ -58,18 +58,6 @@
   height: 37px;
 }
 
-.App form > input.App-submit {
-  background: #bf1650;
-  height: 55px;
-  color: white;
-  letter-spacing: 0.5rem;
-  text-transform: uppercase;
-  width: 100%;
-  padding: 20px;
-  font-size: 16px;
-  border: 1px solid transparent;
-}
-
 .App-radio-group {
   display: flex;
   margin-bottom: 20px;

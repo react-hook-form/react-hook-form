@@ -45,8 +45,8 @@ export default function useForm({ mode }: { mode: 'onSubmit' | 'onBlur' | 'onCha
 
       if (!error[name]) delete copy[name];
 
-      updateErrorMessage({ ...copy });
-      localErrorMessages.current = { ...copy };
+      updateErrorMessage(copy);
+      localErrorMessages.current = copy;
     }
   }
 
@@ -114,9 +114,7 @@ export default function useForm({ mode }: { mode: 'onSubmit' | 'onBlur' | 'onCha
       allFields[name].isMutationWatch = onDomRemove(ref, () => removeReferenceAndEventListeners(ref));
     }
 
-    const optionIndex =
-      type === 'radio' ?
-      allFields[name].options.findIndex(({ ref }) => value === ref.value) : -1;
+    const optionIndex = type === 'radio' ? allFields[name].options.findIndex(({ ref }) => value === ref.value) : -1;
 
     if (allFields[name].eventAttached || (type === 'radio' && optionIndex < 0)) return;
 
@@ -124,8 +122,6 @@ export default function useForm({ mode }: { mode: 'onSubmit' | 'onBlur' | 'onCha
   }
 
   function watch(filedNames?: string | Array<string> | undefined) {
-    if (!fields.current) return undefined;
-
     if (typeof filedNames === 'string' && fields.current[filedNames]) {
       fields.current[filedNames].watch = true;
     } else if (Array.isArray(filedNames)) {
@@ -195,8 +191,8 @@ export default function useForm({ mode }: { mode: 'onSubmit' | 'onBlur' | 'onCha
       },
     );
 
-    updateErrorMessage({ ...localErrors });
-    localErrorMessages.current = { ...localErrors };
+    updateErrorMessage(localErrors);
+    localErrorMessages.current = localErrors;
 
     if (!Object.values(localErrors).length) callback(values, e);
   };
@@ -215,7 +211,7 @@ export default function useForm({ mode }: { mode: 'onSubmit' | 'onBlur' | 'onCha
         });
       fields.current = {};
       localErrorMessages.current = {};
-      updateErrorMessage({})
+      updateErrorMessage({});
     },
     [mode],
   );

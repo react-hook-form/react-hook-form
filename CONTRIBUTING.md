@@ -1,4 +1,4 @@
-# Contributing to React Simple Animate
+# Contributing to React Forme
 
 ## Pull Requests
 

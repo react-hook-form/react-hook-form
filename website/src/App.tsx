@@ -45,6 +45,18 @@ const Wrapper = styled.div`
   grid-column-gap: 25px;
 `;
 
+const SubmitButton = styled.input`
+  background: #bf1650;
+  height: 55px;
+  color: white;
+  letter-spacing: 0.5rem;
+  text-transform: uppercase;
+  width: 100%;
+  padding: 20px;
+  font-size: 16px;
+  border: 1px solid transparent;
+`;
+
 function App() {
   const [submitData, updateSubmitData] = useState({});
   const settingButton = useRef(null);
@@ -52,7 +64,6 @@ function App() {
   const [showSetting, toggleSetting] = useState(false);
   const [showBuilder, toggleBuilder] = useState(false);
   const [formData, updateFormData] = useState(FORM_DATA);
-  console.log('rendering...')
   const [setting, setConfig] = useState<{
     mode: 'onSubmit' | 'onBlur' | 'onChange';
     showError: boolean;
@@ -94,9 +105,7 @@ function App() {
         startStyle={{ minHeight: '100vh', filter: 'blur(0)', transform: 'scale(1)' }}
         endStyle={{ minHeight: '100vh', filter: 'blur(3px)', transform: 'scale(0.9)' }}
       >
-        <h1
-          className="App-h1"
-        >
+        <h1 className="App-h1">
           <Logo viewBox="0 0 100 100">
             <title>118all</title>
             <path d="M73.56,13.32H58.14a8.54,8.54,0,0,0-16.27,0H26.44a11,11,0,0,0-11,11V81.63a11,11,0,0,0,11,11H73.56a11,11,0,0,0,11-11V24.32A11,11,0,0,0,73.56,13.32Zm-30.92,2a1,1,0,0,0,1-.79,6.54,6.54,0,0,1,12.78,0,1,1,0,0,0,1,.79h5.38v6.55a3,3,0,0,1-3,3H40.25a3,3,0,0,1-3-3V15.32ZM82.56,81.63a9,9,0,0,1-9,9H26.44a9,9,0,0,1-9-9V24.32a9,9,0,0,1,9-9h8.81v6.55a5,5,0,0,0,5,5h19.5a5,5,0,0,0,5-5V15.32h8.81a9,9,0,0,1,9,9Z" />
@@ -175,7 +184,28 @@ function App() {
               }
             })}
 
-            <input type="submit" value="Submit" className="App-submit" />
+            <SubmitButton type="submit" value="Submit" className="App-submit" />
+
+            <h2
+              className="Builder-h2"
+              style={{
+                marginTop: 30,
+                fontSize: 14,
+              }}
+            >
+              or
+            </h2>
+
+            <SubmitButton
+              type="button"
+              value="Edit"
+              onClick={() => toggleBuilder(true)}
+              style={{
+                background: 'white',
+                marginTop: 20,
+                color: 'black'
+              }}
+            />
           </form>
 
           {setting.showError && (
