@@ -12,7 +12,8 @@ export default function findMissDomAndCLean(
       delete fields[data.ref.name];
       return fields;
     }
-    data.options.reduce((previous, { ref }) => {
+
+    return data.options.reduce((previous, { ref }) => {
       if (!document.body.contains(ref)) {
         removeAllEventListeners(ref, validateWithStateUpdate, removeReference);
         delete fields[ref.name];
@@ -20,7 +21,6 @@ export default function findMissDomAndCLean(
       }
       return previous;
     }, false);
-    return fields;
   } else if (data.ref && (!document.body.contains(data.ref) || forceDelete)) {
     removeAllEventListeners(data.ref, validateWithStateUpdate, removeReference);
     delete fields[data.ref.name];

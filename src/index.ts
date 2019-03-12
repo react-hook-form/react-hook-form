@@ -6,6 +6,7 @@ import { TEXT_INPUTS } from './constants';
 import detectRegistered from './logic/detectRegistered';
 import getFieldValue from './logic/getFieldValue';
 import removeAllEventListeners from './logic/removeAllEventListeners';
+import {debug} from "util";
 
 export interface RegisterInput {
   ref: any;
@@ -49,7 +50,13 @@ export default function useForm({ mode }: { mode: 'onSubmit' | 'onBlur' | 'onCha
   }
 
   function removeReference(e) {
-    fields.current = findDomElmAndClean({ ref: e.target }, fields.current, validateWithStateUpdate, removeReference, true);
+    fields.current = findDomElmAndClean(
+      { ref: e.target },
+      fields.current,
+      validateWithStateUpdate,
+      removeReference,
+      true,
+    );
   }
 
   function register(data: RegisterInput) {
@@ -108,7 +115,7 @@ export default function useForm({ mode }: { mode: 'onSubmit' | 'onBlur' | 'onCha
     ref.addEventListener('DOMNodeRemoved', removeReference);
   }
 
-  function watch(filedName?: string | Array<string>) {
+  function watch(filedName?: string) {
     if (typeof filedName === 'string') {
       watchList.current[filedName] = true;
     } else if (Array.isArray(filedName)) {
@@ -136,7 +143,7 @@ export default function useForm({ mode }: { mode: 'onSubmit' | 'onBlur' | 'onCha
           options,
         } = data;
 
-        const result = findDomElmAndClean(data, fieldsRef, validateWithStateUpdate, removeReference)
+        const result = findDomElmAndClean(data, fieldsRef, validateWithStateUpdate, removeReference);
         if (result) {
           fields.current = result;
           return previous;
@@ -181,7 +188,7 @@ export default function useForm({ mode }: { mode: 'onSubmit' | 'onBlur' | 'onCha
   useEffect(
     () => () => {
       const removeEventListeners = ref => {
-        removeAllEventListeners(ref, validateWithStateUpdate, removeReference)
+        removeAllEventListeners(ref, validateWithStateUpdate, removeReference);
       };
       Array.isArray(fields.current) &&
         Object.values(fields.current).forEach(({ ref, options }: RegisterInput) => {

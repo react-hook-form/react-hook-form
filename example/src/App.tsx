@@ -45,6 +45,8 @@ function App() {
     updateSubmitData(data);
   };
 
+  const isDeveloper = watch('Developer');
+
   return (
     <div className="App">
       <Builder
@@ -142,6 +144,8 @@ function App() {
                   );
               }
             })}
+
+            {isDeveloper === 'Yes' && <input type="text" name="bill" ref={ref => register({ ref })} />}
             <input type="submit" value="Submit" className="App-submit" />
           </form>
 
