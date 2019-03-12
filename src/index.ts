@@ -112,10 +112,10 @@ export default function useForm({ mode }: { mode: 'onSubmit' | 'onBlur' | 'onCha
       }
     }
 
-    ref.addEventListener('DOMNodeRemoved', removeReference);
+    ref.addEventListener('DOMNodeRemovedFromDocument', removeReference);
   }
 
-  function watch(filedName?: string) {
+  function watch(filedName?: string | Array<string>) {
     if (typeof filedName === 'string') {
       watchList.current[filedName] = true;
     } else if (Array.isArray(filedName)) {
