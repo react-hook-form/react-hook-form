@@ -6,7 +6,7 @@ import { TEXT_INPUTS } from './constants';
 import detectRegistered from './logic/detectRegistered';
 import getFieldValue from './logic/getFieldValue';
 import removeAllEventListeners from './logic/removeAllEventListeners';
-import {debug} from "util";
+import onDomRemove from './utils/onDomRemove';
 
 export interface RegisterInput {
   ref: any;
@@ -23,8 +23,9 @@ export interface RegisterInput {
 }
 
 export default function useForm({ mode }: { mode: 'onSubmit' | 'onBlur' | 'onChange' } = { mode: 'onSubmit' }) {
-  const fields = useRef({});
+  const fields = useRef<{ [key: string]: any }>({});
   const watchList = useRef({});
+  const mutationWatchList = useRef<{ [key: string]: MutationObserver }>({});
   const localErrorMessages = useRef({});
   const [errors, updateErrorMessage] = useState({});
 
@@ -49,14 +50,9 @@ export default function useForm({ mode }: { mode: 'onSubmit' | 'onBlur' | 'onCha
     }
   }
 
-  function removeReference(e) {
-    fields.current = findDomElmAndClean(
-      { ref: e.target },
-      fields.current,
-      validateWithStateUpdate,
-      removeReference,
-      true,
-    );
+  function removeReference(ref) {
+    fields.current = findDomElmAndClean({ ref }, fields.current, validateWithStateUpdate, true);
+    delete mutationWatchList.current[ref.name];
   }
 
   function register(data: RegisterInput) {
@@ -75,6 +71,10 @@ export default function useForm({ mode }: { mode: 'onSubmit' | 'onBlur' | 'onCha
     const allFields = fields.current;
     if (allFields && detectRegistered(allFields, data)) return;
 
+    if (!mutationWatchList.current[name]) {
+      mutationWatchList.current[name] = onDomRemove(ref, () => removeReference(ref));
+    }
+
     if (type === 'radio') {
       if (!allFields[name]) allFields[name] = { options: [], required, ref: { type: 'radio', name } };
       allFields[name].options.push(data);
@@ -82,37 +82,35 @@ export default function useForm({ mode }: { mode: 'onSubmit' | 'onBlur' | 'onCha
       allFields[name] = data;
     }
 
-    if (!allFields[name].eventAttched) {
-      if (mode === 'onChange' || watchList.current[ref.name]) {
-        if (TEXT_INPUTS.includes(type)) {
-          ref.addEventListener('input', validateWithStateUpdate);
-        } else {
-          const options = allFields[name].options;
-          if (options) {
-            const index = options.length - 1;
-            if (!options[index].eventAttched) {
-              options[index].ref.addEventListener('change', validateWithStateUpdate);
-              options[index].eventAttched = true;
-            }
-          } else {
-            ref.addEventListener('change', validateWithStateUpdate);
-            allFields[name].eventAttched = true;
-          }
-        }
-      } else if (mode === 'onBlur') {
+    if (allFields[name].eventAttched) return;
+
+    if (mode === 'onChange' || watchList.current[ref.name]) {
+      if (TEXT_INPUTS.includes(type)) {
+        ref.addEventListener('input', validateWithStateUpdate);
+      } else {
+        const options = allFields[name].options;
         if (options) {
-          options.forEach(({ ref }) => {
-            ref.addEventListener('blur', validateWithStateUpdate);
-          });
+          const index = options.length - 1;
+          if (!options[index].eventAttched) {
+            options[index].ref.addEventListener('change', validateWithStateUpdate);
+            options[index].eventAttched = true;
+          }
         } else {
-          ref.addEventListener('blur', validateWithStateUpdate);
+          ref.addEventListener('change', validateWithStateUpdate);
+          allFields[name].eventAttched = true;
         }
-
-        allFields[data.ref.name].eventAttched = true;
       }
-    }
+    } else if (mode === 'onBlur') {
+      if (options) {
+        options.forEach(({ ref }) => {
+          ref.addEventListener('blur', validateWithStateUpdate);
+        });
+      } else {
+        ref.addEventListener('blur', validateWithStateUpdate);
+      }
 
-    ref.addEventListener('DOMNodeRemovedFromDocument', removeReference);
+      allFields[data.ref.name].eventAttched = true;
+    }
   }
 
   function watch(filedName?: string | Array<string>) {
@@ -143,7 +141,7 @@ export default function useForm({ mode }: { mode: 'onSubmit' | 'onBlur' | 'onCha
           options,
         } = data;
 
-        const result = findDomElmAndClean(data, fieldsRef, validateWithStateUpdate, removeReference);
+        const result = findDomElmAndClean(data, fieldsRef, validateWithStateUpdate);
         if (result) {
           fields.current = result;
           return previous;
@@ -187,17 +185,18 @@ export default function useForm({ mode }: { mode: 'onSubmit' | 'onBlur' | 'onCha
 
   useEffect(
     () => () => {
-      const removeEventListeners = ref => {
-        removeAllEventListeners(ref, validateWithStateUpdate, removeReference);
-      };
+      Object.values(mutationWatchList.current[name]).forEach(observer => {
+        observer.disconnect();
+      });
+
       Array.isArray(fields.current) &&
         Object.values(fields.current).forEach(({ ref, options }: RegisterInput) => {
           if (options) {
             options.forEach(({ ref }) => {
-              removeEventListeners(ref);
+              removeAllEventListeners(ref, validateWithStateUpdate);
             });
           } else {
-            removeEventListeners(ref);
+            removeAllEventListeners(ref, validateWithStateUpdate);
           }
         });
     },

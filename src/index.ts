@@ -6,7 +6,7 @@ import { TEXT_INPUTS } from './constants';
 import detectRegistered from './logic/detectRegistered';
 import getFieldValue from './logic/getFieldValue';
 import removeAllEventListeners from './logic/removeAllEventListeners';
-import {debug} from "util";
+import onDomRemove from './utils/onDomRemove';
 
 export interface RegisterInput {
   ref: any;

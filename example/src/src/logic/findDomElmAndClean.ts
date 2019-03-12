@@ -4,7 +4,6 @@ export default function findMissDomAndCLean(
   data,
   fields,
   validateWithStateUpdate,
-  removeReference,
   forceDelete = false,
 ) {
   if (data.ref.type === 'radio' && data.options) {
@@ -15,14 +14,14 @@ export default function findMissDomAndCLean(
 
     return data.options.reduce((previous, { ref }) => {
       if (!document.body.contains(ref)) {
-        removeAllEventListeners(ref, validateWithStateUpdate, removeReference);
+        removeAllEventListeners(ref, validateWithStateUpdate);
         delete fields[ref.name];
         return true;
       }
       return previous;
     }, false);
   } else if (data.ref && (!document.body.contains(data.ref) || forceDelete)) {
-    removeAllEventListeners(data.ref, validateWithStateUpdate, removeReference);
+    removeAllEventListeners(data.ref, validateWithStateUpdate);
     delete fields[data.ref.name];
     return fields;
   }
