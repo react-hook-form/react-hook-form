@@ -1,7 +1,7 @@
 import { useRef, useState, useEffect } from 'react';
 import getFieldsValues from './logic/getFieldsValues';
 import validateField from './logic/validateField';
-import findMissDomAndCLean from './logic/findMissDomAndCLean';
+import findMissDomAndClean from './logic/findMissDomAndClean';
 import { TEXT_INPUTS } from './constants';
 import detectRegistered from './logic/detectRegistered';
 import getFieldValue from './logic/getFieldValue';
@@ -52,7 +52,7 @@ export default function useForm({ mode }: { mode: 'onSubmit' | 'onBlur' | 'onCha
   }
 
   function removeReferenceAndEventListeners(data, forceDelete = false) {
-    findMissDomAndCLean({
+    findMissDomAndClean({
       target: data,
       fields: fields.current,
       validateWithStateUpdate,
@@ -105,13 +105,13 @@ export default function useForm({ mode }: { mode: 'onSubmit' | 'onBlur' | 'onCha
 
     if (isRadioInput(type)) {
       if (!allFields[name]) {
-        allFields[name] = { options: [], mutationWatcher: { options: [] }, required, ref: { type: 'radio', name } };
+        allFields[name] = { options: [], required, ref: { type: 'radio', name } };
       }
 
-      allFields[name].options.push(data);
-      allFields[name].mutationWatcher.options.push(
-        onDomRemove(ref, () => removeReferenceAndEventListeners(data, true)),
-      );
+      allFields[name].options.push({
+        ...data,
+        mutationWatcher: onDomRemove(ref, () => removeReferenceAndEventListeners(data, true))
+      });
     } else {
       allFields[name] = data;
       allFields[name].mutationWatcher = onDomRemove(ref, () => removeReferenceAndEventListeners(data, true));

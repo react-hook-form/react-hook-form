@@ -1,5 +1,5 @@
 import { RegisterInput } from '..';
-import isRadioInput from "../utils/isRadioInput";
+import isRadioInput from '../utils/isRadioInput';
 
 export default function detectRegistered(
   fields: { [key: string]: RegisterInput },

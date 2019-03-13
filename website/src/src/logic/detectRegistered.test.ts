@@ -11,11 +11,17 @@ describe('detectRegistered', () => {
       type: 'select',
     },
     radioBill: {
-      ref: {},
+      ref: {
+        name: 'radioBill'
+      },
       type: 'radio',
+      name: 'radioBill',
       options: [
         {
-          ref: 'bill',
+          ref: {
+            value: 'bill',
+          },
+          name: 'radioBill',
         },
       ],
     },
@@ -42,5 +48,17 @@ describe('detectRegistered', () => {
         },
       }),
     ).toBeTruthy();
+  });
+
+  it('should return false for type is radio when not found', () => {
+    expect(
+      detectRegistered(inputs, {
+        ref: {
+          type: 'radio',
+          name: 'radioBill1',
+          value: 'bill',
+        },
+      }),
+    ).toBeFalsy();
   });
 });
