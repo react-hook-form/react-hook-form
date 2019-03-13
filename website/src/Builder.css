@@ -17,7 +17,7 @@
 .Builder-wrapper {
   display: grid;
   grid-template-columns: 1fr 500px 1fr;
-  grid-column-gap: 50px;
+  grid-column-gap: 60px;
 }
 
 .Builder-h2 {
@@ -33,7 +33,7 @@
   height: 1px;
   position: relative;
   vertical-align: middle;
-  width: 25%;
+  width: 30%;
 }
 
 .Builder-h2:before {

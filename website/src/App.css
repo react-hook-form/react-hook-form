@@ -1,9 +1,3 @@
-.App {
-  overflow: hidden;
-  color: white;
-  padding: 0 50px;
-  position: relative;
-}
 
 .App-h1 {
   font-weight: 100;
@@ -26,7 +20,7 @@
   height: 1px;
   position: relative;
   vertical-align: middle;
-  width: 25%;
+  width: 35%;
 }
 
 .App-h2:before {
@@ -37,48 +31,6 @@
 .App-h2:after {
   left: 0.5em;
   margin-right: -50%;
-}
-
-.App form > select,
-.App form > input {
-  display: block;
-  box-sizing: border-box;
-  width: 100%;
-  border-radius: 4px;
-  padding: 10px 15px;
-  margin-bottom: 10px;
-  font-size: 16px;
-}
-
-.App form > select {
-  width: 100%;
-}
-
-.App form > select:not([multiple]) {
-  height: 37px;
-}
-
-.App-radio-group {
-  display: flex;
-  margin-bottom: 20px;
-}
-
-.App-radio-group label {
-  display: block;
-  flex: 1;
-}
-
-.App code,
-.App form {
-  flex: 1;
-}
-
-.App code > h2 {
-  text-align: center;
-}
-
-.App form > input.form-error {
-  border: 1px solid #bf1650;
 }
 
 .form-error-msg {

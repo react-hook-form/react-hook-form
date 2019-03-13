@@ -15,8 +15,8 @@ const SubmitButton = styled.input`
   height: 55px;
   text-transform: uppercase;
   letter-spacing: 0.5rem;
-  background: ${props => props.background || 'white'};
-  color: ${props => props.color || 'black'};
+  background: ${props => props.background || colors.lightPink};
+  color: ${props => props.color || 'white'};
   border: none;
 `;
 
@@ -44,7 +44,6 @@ const CopyButton = styled.button`
 `;
 
 function Builder({ formData, updateFormData, showBuilder, toggleBuilder, editFormData, setFormData }) {
-  return null;
   const { register, handleSubmit, errors = {}, watch } = useForm();
   const [editIndex, setEditIndex] = useState(-1);
   const copyFormData = useRef([]);
@@ -82,7 +81,7 @@ function Builder({ formData, updateFormData, showBuilder, toggleBuilder, editFor
       }}
       render={({ style }) => {
         return (
-          <div style={style} className="Builder">
+          <main style={style} className="Builder">
             <div
               style={{
                 overflow: 'auto',
@@ -284,7 +283,7 @@ function Builder({ formData, updateFormData, showBuilder, toggleBuilder, editFor
                         type="button"
                         color="white"
                         onClick={() => toggleBuilder(false)}
-                        background={colors.secondary}
+                        background="black"
                         value="Generate From"
                         className="Builder-form-submit"
                       />
@@ -311,7 +310,7 @@ function Builder({ formData, updateFormData, showBuilder, toggleBuilder, editFor
                 </div>
               </div>
             </div>
-          </div>
+          </main>
         );
       }}
     />

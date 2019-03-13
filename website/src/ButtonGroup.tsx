@@ -1,5 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
+import colors from './styles/colors'
 
 const GithubIcon = styled.span`
   position: absolute;
@@ -16,7 +17,7 @@ const GithubIcon = styled.span`
 `;
 
 const SettingButton = styled.button`
-  fill: #bf1650;
+  fill: ${colors.lightPink};
   position: absolute;
   right: 0;
   top: 0;
@@ -39,7 +40,7 @@ const SettingButton = styled.button`
 `;
 
 const BuildButotn = styled.button`
-  fill: #bf1650;
+  fill: ${colors.lightPink};
   position: absolute;
   right: 90px;
   top: 0;

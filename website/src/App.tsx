@@ -9,6 +9,45 @@ import styled from 'styled-components';
 import FORM_DATA from './constants/formData';
 import colors from './styles/colors';
 
+const Root = styled.div`
+  overflow: hidden;
+  color: white;
+  padding: 0 50px;
+  position: relative;
+
+  & form > select,
+  & form > input {
+    display: block;
+    box-sizing: border-box;
+    width: 100%;
+    border-radius: 4px;
+    padding: 10px 15px;
+    margin-bottom: 10px;
+    font-size: 16px;
+  }
+
+  & form > select {
+    width: 100%;
+  }
+
+  & form > select:not([multiple]) {
+    height: 37px;
+  }
+
+  & code,
+  & form {
+    flex: 1;
+  }
+
+  & code > h2 {
+    text-align: center;
+  }
+
+  & form > input.form-error {
+    border: 1px solid #bf1650;
+  }
+`;
+
 const Footer = styled.footer`
   padding: 40px 0;
   font-size: 16px;
@@ -40,13 +79,14 @@ const Logo = styled.svg`
 
 const Wrapper = styled.div`
   display: grid;
+  min-height: 80vh;
   transition: 1s all;
   grid-template-columns: repeat(auto-fit, minmax(12rem, 1fr));
-  grid-column-gap: 25px;
+  grid-column-gap: 40px;
 `;
 
 const SubmitButton = styled.input`
-  background: #bf1650;
+  background: ${colors.lightPink};
   height: 55px;
   color: white;
   letter-spacing: 0.5rem;
@@ -55,6 +95,15 @@ const SubmitButton = styled.input`
   padding: 20px;
   font-size: 16px;
   border: 1px solid transparent;
+`;
+
+const RadioGroup = styled.div`
+  display: flex;
+  margin-bottom: 20px;
+
+  & > label:first-child {
+    margin-right: 20px;
+  }
 `;
 
 function App() {
@@ -84,7 +133,7 @@ function App() {
   };
 
   return (
-    <div className="App">
+    <Root>
       <Builder
         showBuilder={showBuilder}
         toggleBuilder={toggleBuilder}
@@ -100,62 +149,65 @@ function App() {
         showSetting={showSetting}
         setConfig={setConfig}
       />
-      <Animate
-        play={showBuilder || showSetting}
-        startStyle={{ minHeight: '100vh', filter: 'blur(0)', transform: 'scale(1)' }}
-        endStyle={{ minHeight: '100vh', filter: 'blur(3px)', transform: 'scale(0.9)' }}
-      >
-        <h1 className="App-h1">
-          <Logo viewBox="0 0 100 100">
-            <title>118all</title>
-            <path d="M73.56,13.32H58.14a8.54,8.54,0,0,0-16.27,0H26.44a11,11,0,0,0-11,11V81.63a11,11,0,0,0,11,11H73.56a11,11,0,0,0,11-11V24.32A11,11,0,0,0,73.56,13.32Zm-30.92,2a1,1,0,0,0,1-.79,6.54,6.54,0,0,1,12.78,0,1,1,0,0,0,1,.79h5.38v6.55a3,3,0,0,1-3,3H40.25a3,3,0,0,1-3-3V15.32ZM82.56,81.63a9,9,0,0,1-9,9H26.44a9,9,0,0,1-9-9V24.32a9,9,0,0,1,9-9h8.81v6.55a5,5,0,0,0,5,5h19.5a5,5,0,0,0,5-5V15.32h8.81a9,9,0,0,1,9,9Z" />
-            <path style={{ transform: 'translateX(-25px)' }} d="M71.6,45.92H54a1,1,0,0,0,0,2H71.6a1,1,0,0,0,0-2Z" />
-            <path d="M71.6,45.92H54a1,1,0,0,0,0,2H71.6a1,1,0,0,0,0-2Z" />
-            <path style={{ transform: 'translateX(-25px)' }} d="M71.1,69.49H53.45a1,1,0,1,0,0,2H71.1a1,1,0,0,0,0-2Z" />
-            <path d="M71.1,69.49H53.45a1,1,0,1,0,0,2H71.1a1,1,0,0,0,0-2Z" />
-          </Logo>
-          React Forme
-        </h1>
-        <p className="App-sub-heading">
-          Performance, flexible and extensible forms with easy to use feedback for validation.
-        </p>
+      <main style={{
+        perspective: '800px'
+      }}>
+        <Animate
+          play={showBuilder || showSetting}
+          startStyle={{ minHeight: '100vh', filter: 'blur(0)', transform: 'scale(1)' }}
+          endStyle={{ minHeight: '100vh', filter: 'blur(3px)', transform: 'scale(0.9) rotateX(5deg)' }}
+        >
+          <h1 className="App-h1">
+            <Logo viewBox="0 0 100 100">
+              <title>118all</title>
+              <path d="M73.56,13.32H58.14a8.54,8.54,0,0,0-16.27,0H26.44a11,11,0,0,0-11,11V81.63a11,11,0,0,0,11,11H73.56a11,11,0,0,0,11-11V24.32A11,11,0,0,0,73.56,13.32Zm-30.92,2a1,1,0,0,0,1-.79,6.54,6.54,0,0,1,12.78,0,1,1,0,0,0,1,.79h5.38v6.55a3,3,0,0,1-3,3H40.25a3,3,0,0,1-3-3V15.32ZM82.56,81.63a9,9,0,0,1-9,9H26.44a9,9,0,0,1-9-9V24.32a9,9,0,0,1,9-9h8.81v6.55a5,5,0,0,0,5,5h19.5a5,5,0,0,0,5-5V15.32h8.81a9,9,0,0,1,9,9Z" />
+              <path style={{ transform: 'translateX(-25px)' }} d="M71.6,45.92H54a1,1,0,0,0,0,2H71.6a1,1,0,0,0,0-2Z" />
+              <path d="M71.6,45.92H54a1,1,0,0,0,0,2H71.6a1,1,0,0,0,0-2Z" />
+              <path style={{ transform: 'translateX(-25px)' }} d="M71.1,69.49H53.45a1,1,0,1,0,0,2H71.1a1,1,0,0,0,0-2Z" />
+              <path d="M71.1,69.49H53.45a1,1,0,1,0,0,2H71.1a1,1,0,0,0,0-2Z" />
+            </Logo>
+            React Forme
+          </h1>
+          <p className="App-sub-heading">
+            Performance, flexible and extensible forms with easy to use feedback for validation.
+          </p>
 
-        <ButtonGroup
-          toggleBuilder={toggleBuilder}
-          toggleSetting={toggleSetting}
-          showSetting={showSetting}
-          settingButton={settingButton}
-        />
+          <ButtonGroup
+            toggleBuilder={toggleBuilder}
+            toggleSetting={toggleSetting}
+            showSetting={showSetting}
+            settingButton={settingButton}
+          />
 
-        <Wrapper>
-          <form onSubmit={handleSubmit(onSubmit)}>
-            <code>
-              <h2 className="App-h2">Form</h2>
-            </code>
-            {formData.map(field => {
-              switch (field.type) {
-                case 'select':
-                  return (
-                    <select
-                      name={field.name}
-                      ref={ref => register({ ref })}
-                      key={field.name}
-                      style={{ marginBottom: 20 }}
-                    >
-                      <option value="">Select...</option>
-                      {field.options &&
+          <Wrapper>
+            <form onSubmit={handleSubmit(onSubmit)}>
+              <code>
+                <h2 className="App-h2">Form</h2>
+              </code>
+              {formData.map(field => {
+                switch (field.type) {
+                  case 'select':
+                    return (
+                      <select
+                        name={field.name}
+                        ref={ref => register({ ref })}
+                        key={field.name}
+                        style={{ marginBottom: 20 }}
+                      >
+                        <option value="">Select...</option>
+                        {field.options &&
                         field.options
                           .split(';')
                           .filter(Boolean)
                           .map(option => {
                             return <option key={option}>{option}</option>;
                           })}
-                    </select>
-                  );
-                case 'radio':
-                  return (
-                    <div className="App-radio-group" key={field.name} style={{ marginBottom: 20 }}>
-                      {field.options &&
+                      </select>
+                    );
+                  case 'radio':
+                    return (
+                      <RadioGroup key={field.name} style={{ marginBottom: 20 }}>
+                        {field.options &&
                         field.options
                           .split(';')
                           .filter(Boolean)
@@ -164,65 +216,70 @@ function App() {
                               <label key={name}>
                                 {name}
                                 &nbsp;
-                                <input type="radio" name={field.name} value={name} ref={ref => register({ ref, required: field.required })} />
+                                <input
+                                  type="radio"
+                                  name={field.name}
+                                  value={name}
+                                  ref={ref => register({ ref, required: field.required })}
+                                />
                               </label>
                             );
                           })}
-                    </div>
-                  );
-                default:
-                  return (
-                    <input
-                      style={{ marginBottom: 20 }}
-                      key={field.name}
-                      type={field.type}
-                      name={field.name}
-                      placeholder={field.name}
-                      ref={ref => register({ ref, required: field.required })}
-                    />
-                  );
-              }
-            })}
+                      </RadioGroup>
+                    );
+                  default:
+                    return (
+                      <input
+                        style={{ marginBottom: 20 }}
+                        key={field.name}
+                        type={field.type}
+                        name={field.name}
+                        placeholder={field.name}
+                        ref={ref => register({ ref, required: field.required })}
+                      />
+                    );
+                }
+              })}
 
-            <SubmitButton type="submit" value="Submit" className="App-submit" />
+              <SubmitButton type="submit" value="Submit" className="App-submit" />
 
-            <h2
-              className="Builder-h2"
-              style={{
-                marginTop: 30,
-                fontSize: 14,
-              }}
-            >
-              or
-            </h2>
-
-            <SubmitButton
-              type="button"
-              value="Edit"
-              onClick={() => toggleBuilder(true)}
-              style={{
-                background: 'white',
-                marginTop: 20,
-                color: 'black'
-              }}
-            />
-          </form>
-
-          {setting.showError && (
-            <code>
-              <h2 className="App-h2">Errors</h2>
-              <pre
+              <h2
+                className="Builder-h2"
                 style={{
-                  textAlign: 'left',
-                  padding: '0 20px',
+                  marginTop: 30,
+                  fontSize: 14,
                 }}
               >
+                or
+              </h2>
+
+              <SubmitButton
+                type="button"
+                value="Edit"
+                onClick={() => toggleBuilder(true)}
+                style={{
+                  background: 'black',
+                  marginTop: 20,
+                  color: 'white',
+                }}
+              />
+            </form>
+
+            {setting.showError && (
+              <code>
+                <h2 className="App-h2">Errors</h2>
+                <pre
+                  style={{
+                    textAlign: 'left',
+                    padding: '0 20px',
+                  }}
+                >
                 {Object.keys(errors).length ? JSON.stringify(errors, null, 2) : ''}
               </pre>
-            </code>
-          )}
+              </code>
+            )}
 
-          {setting.showWatch &&
+            {setting.showWatch &&
             setting.mode !== 'onSubmit' && (
               <code>
                 <h2 className="App-h2">Watch</h2>
@@ -237,33 +294,34 @@ function App() {
               </code>
             )}
 
-          {setting.showSubmit && (
-            <code>
-              <h2 className="App-h2">Submit</h2>
-              <pre
-                style={{
-                  textAlign: 'left',
-                  padding: '0 20px',
-                }}
-              >
+            {setting.showSubmit && (
+              <code>
+                <h2 className="App-h2">Submit</h2>
+                <pre
+                  style={{
+                    textAlign: 'left',
+                    padding: '0 20px',
+                  }}
+                >
                 {Object.keys(submitData).length ? JSON.stringify(submitData, null, 2) : ''}
               </pre>
-            </code>
-          )}
-        </Wrapper>
+              </code>
+            )}
+          </Wrapper>
 
-        <Footer>
-          Build ♡ by <a href="https://twitter.com/bluebill1049">@Bill Luo</a> with{' '}
-          <a href="https://react-forme.now.sh/" target="_blank">
-            React Forme
-          </a>{' '}
-          &{' '}
-          <a href="https://react-simple-animate.now.sh/" target="_blank">
-            React Simple Animate
-          </a>
-        </Footer>
-      </Animate>
-    </div>
+          <Footer>
+            Build ♡ by <a href="https://twitter.com/bluebill1049">@Bill Luo</a> with{' '}
+            <a href="https://react-forme.now.sh/" target="_blank">
+              React Forme
+            </a>{' '}
+            &{' '}
+            <a href="https://react-simple-animate.now.sh/" target="_blank">
+              React Simple Animate
+            </a>
+          </Footer>
+        </Animate>
+      </main>
+    </Root>
   );
 }
 
