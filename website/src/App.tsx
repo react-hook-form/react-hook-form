@@ -164,7 +164,7 @@ function App() {
                               <label key={name}>
                                 {name}
                                 &nbsp;
-                                <input type="radio" name={field.name} value={name} ref={ref => register({ ref })} />
+                                <input type="radio" name={field.name} value={name} ref={ref => register({ ref, required: field.required })} />
                               </label>
                             );
                           })}
@@ -178,7 +178,7 @@ function App() {
                       type={field.type}
                       name={field.name}
                       placeholder={field.name}
-                      ref={ref => register({ ref })}
+                      ref={ref => register({ ref, required: field.required })}
                     />
                   );
               }

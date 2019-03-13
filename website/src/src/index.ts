@@ -51,6 +51,15 @@ export default function useForm({ mode }: { mode: 'onSubmit' | 'onBlur' | 'onCha
     }
   }
 
+  function removeReferenceAndEventListeners(data, forceDelete = false) {
+    findMissDomAndCLean({
+      target: data,
+      fields: fields.current,
+      validateWithStateUpdate,
+      forceDelete,
+    });
+  }
+
   function attachEventListeners({ allFields, optionIndex, ref, type, name }) {
     const field = allFields[name];
     if (!field) return;
@@ -78,15 +87,6 @@ export default function useForm({ mode }: { mode: 'onSubmit' | 'onBlur' | 'onCha
     }
   }
 
-  function removeReferenceAndEventListeners(data, forceDelete = false) {
-    findMissDomAndCLean({
-      target: data,
-      fields: fields.current,
-      validateWithStateUpdate,
-      forceDelete,
-    });
-  }
-
   function register(data: RegisterInput) {
     if (!data || !data.ref) return;
     if (!data.ref.name) {
@@ -101,7 +101,7 @@ export default function useForm({ mode }: { mode: 'onSubmit' | 'onBlur' | 'onCha
     } = data;
 
     const allFields = fields.current;
-    if (allFields && detectRegistered(allFields, data)) return;
+    if (detectRegistered(allFields, data)) return;
 
     if (isRadioInput(type)) {
       if (!allFields[name]) {
@@ -109,13 +109,17 @@ export default function useForm({ mode }: { mode: 'onSubmit' | 'onBlur' | 'onCha
       }
 
       allFields[name].options.push(data);
-      allFields[name].mutationWatcher.options.push(onDomRemove(ref, () => removeReferenceAndEventListeners(data, true)));
+      allFields[name].mutationWatcher.options.push(
+        onDomRemove(ref, () => removeReferenceAndEventListeners(data, true)),
+      );
     } else {
       allFields[name] = data;
       allFields[name].mutationWatcher = onDomRemove(ref, () => removeReferenceAndEventListeners(data, true));
     }
 
-    const optionIndex = isRadioInput(type) ? allFields[name].options.findIndex(({ ref }) => value === ref.value) : -1;
+    const optionIndex = isRadioInput(type)
+      ? allFields[name].options.findIndex(({ ref, eventAttached }) => value === ref.value && !eventAttached)
+      : -1;
 
     if (allFields[name].eventAttached || (isRadioInput(type) && optionIndex < 0)) return;
 
@@ -187,8 +191,10 @@ export default function useForm({ mode }: { mode: 'onSubmit' | 'onBlur' | 'onCha
       },
     );
 
-    updateErrorMessage(localErrors);
-    localErrorMessages.current = localErrors;
+    if (JSON.stringify(localErrorMessages.current) !== JSON.stringify(localErrors)) {
+      updateErrorMessage(localErrors);
+      localErrorMessages.current = localErrors;
+    }
 
     if (!Object.values(localErrors).length) callback(values, e);
   };
