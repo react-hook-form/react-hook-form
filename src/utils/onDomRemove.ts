@@ -20,4 +20,6 @@ export default function onDomRemove(element, onDetachCallback) {
     childList: true,
     subtree: true,
   });
+
+  return observer;
 }

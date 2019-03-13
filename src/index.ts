@@ -1,12 +1,13 @@
 import { useRef, useState, useEffect } from 'react';
 import getFieldsValues from './logic/getFieldsValues';
 import validateField from './logic/validateField';
-import findDomElmAndClean from './logic/findDomElmAndClean';
+import findMissDomAndCLean from './logic/findMissDomAndCLean';
 import { TEXT_INPUTS } from './constants';
 import detectRegistered from './logic/detectRegistered';
 import getFieldValue from './logic/getFieldValue';
 import removeAllEventListeners from './logic/removeAllEventListeners';
 import onDomRemove from './utils/onDomRemove';
+import isRadioInput from './utils/isRadioInput';
 
 export interface RegisterInput {
   ref: any;
@@ -18,45 +19,72 @@ export interface RegisterInput {
   custom?: (data: string | number) => boolean;
   minLength?: number;
   options?: Array<{
-    ref: HTMLInputElement;
+    ref: any;
   }>;
 }
 
-export default function useForm({ mode }: { mode: 'onSubmit' | 'onBlur' | 'onChange' } = { mode: 'onSubmit' }) {
-  const fields = useRef({});
-  const watchList = useRef({});
-  const localErrorMessages = useRef({});
-  const [errors, updateErrorMessage] = useState({});
+interface ErrorMessages {
+  [key: string]: { [key: string]: boolean };
+}
 
-  function validateWithStateUpdate(e: any) {
-    const { name } = e.target;
+export default function useForm({ mode }: { mode: 'onSubmit' | 'onBlur' | 'onChange' } = { mode: 'onSubmit' }) {
+  const fields = useRef<{ [key: string]: any }>({});
+  const localErrorMessages = useRef<ErrorMessages>({});
+  const [errors, updateErrorMessage] = useState<ErrorMessages>({});
+
+  function validateWithStateUpdate({ target: { name }, type }: any) {
     const ref = fields.current[name];
     const error = validateField(ref, fields.current);
 
     if (
       localErrorMessages.current[name] !== error[name] ||
       mode === 'onChange' ||
-      (mode === 'onBlur' && e.type === 'blur') ||
-      watchList.current[name]
+      (mode === 'onBlur' && type === 'blur') ||
+      fields.current[name].watch
     ) {
       const copy = { ...localErrorMessages.current, ...error };
-      if (!error[name]) {
-        delete copy[name];
-      }
 
-      updateErrorMessage({ ...copy });
-      localErrorMessages.current = { ...copy };
+      if (!error[name]) delete copy[name];
+
+      updateErrorMessage(copy);
+      localErrorMessages.current = copy;
     }
   }
 
-  function removeReference(e) {
-    fields.current = findDomElmAndClean(
-      { ref: e.target },
-      fields.current,
+  function removeReferenceAndEventListeners(data, forceDelete = false) {
+    findMissDomAndCLean({
+      target: data,
+      fields: fields.current,
       validateWithStateUpdate,
-      removeReference,
-      true,
-    );
+      forceDelete,
+    });
+  }
+
+  function attachEventListeners({ allFields, optionIndex, ref, type, name }) {
+    const field = allFields[name];
+    if (!field) return;
+
+    if (mode === 'onChange' || allFields[ref.name].watch) {
+      if (isRadioInput(type)) {
+        const options = field.options;
+
+        options[optionIndex].ref.addEventListener('change', validateWithStateUpdate);
+        options[optionIndex].eventAttached = true;
+      } else {
+        ref.addEventListener('input', validateWithStateUpdate);
+        field.eventAttached = true;
+      }
+    } else if (mode === 'onBlur') {
+      if (isRadioInput(type)) {
+        const options = field.options;
+
+        options[optionIndex].ref.addEventListener('blur', validateWithStateUpdate);
+        options[optionIndex].eventAttached = true;
+      } else {
+        ref.addEventListener('blur', validateWithStateUpdate);
+        field.eventAttached = true;
+      }
+    }
   }
 
   function register(data: RegisterInput) {
@@ -69,108 +97,92 @@ export default function useForm({ mode }: { mode: 'onSubmit' | 'onBlur' | 'onCha
     const {
       ref,
       required,
-      options,
-      ref: { name, type },
+      ref: { name, type, value },
     } = data;
-    const allFields = fields.current;
-    if (allFields && detectRegistered(allFields, data)) return;
 
-    if (type === 'radio') {
-      if (!allFields[name]) allFields[name] = { options: [], required, ref: { type: 'radio', name } };
+    const allFields = fields.current;
+    if (detectRegistered(allFields, data)) return;
+
+    if (isRadioInput(type)) {
+      if (!allFields[name]) {
+        allFields[name] = { options: [], mutationWatcher: { options: [] }, required, ref: { type: 'radio', name } };
+      }
+
       allFields[name].options.push(data);
+      allFields[name].mutationWatcher.options.push(
+        onDomRemove(ref, () => removeReferenceAndEventListeners(data, true)),
+      );
     } else {
       allFields[name] = data;
+      allFields[name].mutationWatcher = onDomRemove(ref, () => removeReferenceAndEventListeners(data, true));
     }
 
-    if (!allFields[name].eventAttched) {
-      if (mode === 'onChange' || watchList.current[ref.name]) {
-        if (TEXT_INPUTS.includes(type)) {
-          ref.addEventListener('input', validateWithStateUpdate);
-        } else {
-          const options = allFields[name].options;
-          if (options) {
-            const index = options.length - 1;
-            if (!options[index].eventAttched) {
-              options[index].ref.addEventListener('change', validateWithStateUpdate);
-              options[index].eventAttched = true;
-            }
-          } else {
-            ref.addEventListener('change', validateWithStateUpdate);
-            allFields[name].eventAttched = true;
-          }
-        }
-      } else if (mode === 'onBlur') {
-        if (options) {
-          options.forEach(({ ref }) => {
-            ref.addEventListener('blur', validateWithStateUpdate);
-          });
-        } else {
-          ref.addEventListener('blur', validateWithStateUpdate);
-        }
+    const optionIndex = isRadioInput(type)
+      ? allFields[name].options.findIndex(({ ref, eventAttached }) => value === ref.value && !eventAttached)
+      : -1;
 
-        allFields[data.ref.name].eventAttched = true;
-      }
-    }
+    if (allFields[name].eventAttached || (isRadioInput(type) && optionIndex < 0)) return;
 
-    ref.addEventListener('DOMNodeRemovedFromDocument', removeReference);
+    attachEventListeners({ allFields, optionIndex, ref, type, name });
   }
 
-  function watch(filedName?: string | Array<string>) {
-    if (typeof filedName === 'string') {
-      watchList.current[filedName] = true;
-    } else if (Array.isArray(filedName)) {
-      filedName.forEach(name => {
-        watchList.current[name] = true;
+  function watch(filedNames?: string | Array<string> | undefined) {
+    if (typeof filedNames === 'string' && fields.current[filedNames]) {
+      fields.current[filedNames].watch = true;
+    } else if (Array.isArray(filedNames)) {
+      filedNames.forEach(name => {
+        if (!fields.current[name]) return;
+        fields.current[name].watch = true;
       });
     } else {
-      Object.values(fields.current).forEach(({ ref }: any) => {
-        watchList.current[ref.name] = true;
+      Object.values(fields.current).forEach(({ ref }: RegisterInput) => {
+        if (!fields.current[name]) return;
+        fields.current[ref.name] = true;
       });
     }
 
-    return !fields.current ? undefined : getFieldsValues(fields.current, filedName);
+    return getFieldsValues(fields.current, filedNames);
   }
 
   const handleSubmit = (callback: (Object, e) => void) => e => {
     e.preventDefault();
-    const fieldsRef = fields.current;
+    const allFields = fields.current;
 
-    const { localErrors, values } = Object.values(fieldsRef).reduce(
-      (previous: any, data: any) => {
+    const { localErrors, values } = Object.values(allFields).reduce(
+      (previous: ErrorMessages, data: RegisterInput) => {
         const {
           ref,
           ref: { name, type },
           options,
         } = data;
 
-        const result = findDomElmAndClean(data, fieldsRef, validateWithStateUpdate, removeReference);
-        if (result) {
-          fields.current = result;
+        removeReferenceAndEventListeners(data);
+
+        if (!fields.current[name]) {
           return previous;
         }
 
-        const fieldError = validateField(data, fieldsRef);
+        const fieldError = validateField(data, allFields);
+        const hasError = fieldError[name];
 
-        if (fieldError[name] && !watchList.current[name]) {
+        if (hasError && !fields.current[name].watch) {
           if (TEXT_INPUTS.includes(type)) {
             ref.addEventListener('input', validateWithStateUpdate);
           } else {
-            if (options) {
-              options.forEach(({ ref }) => {
-                ref.addEventListener('change', validateWithStateUpdate);
-              });
+            if (Array.isArray(options)) {
+              options.forEach(({ ref }) => ref.addEventListener('change', validateWithStateUpdate));
             } else {
               ref.addEventListener('change', validateWithStateUpdate);
             }
           }
         }
 
-        previous.localErrors = { ...previous.localErrors, ...fieldError };
+        if (hasError) {
+          previous.localErrors = { ...previous.localErrors, ...fieldError };
+          return previous;
+        }
 
-        if (previous.localErrors[name]) return previous;
-
-        previous.values[name] = getFieldValue(fieldsRef, ref);
-
+        previous.values[name] = getFieldValue(allFields, ref);
         return previous;
       },
       {
@@ -179,29 +191,31 @@ export default function useForm({ mode }: { mode: 'onSubmit' | 'onBlur' | 'onCha
       },
     );
 
-    updateErrorMessage({ ...localErrors });
-    localErrorMessages.current = { ...localErrors };
+    if (JSON.stringify(localErrorMessages.current) !== JSON.stringify(localErrors)) {
+      updateErrorMessage(localErrors);
+      localErrorMessages.current = localErrors;
+    }
 
     if (!Object.values(localErrors).length) callback(values, e);
   };
 
   useEffect(
     () => () => {
-      const removeEventListeners = ref => {
-        removeAllEventListeners(ref, validateWithStateUpdate, removeReference);
-      };
-      Array.isArray(fields.current) &&
+      fields.current &&
         Object.values(fields.current).forEach(({ ref, options }: RegisterInput) => {
           if (options) {
             options.forEach(({ ref }) => {
-              removeEventListeners(ref);
+              removeAllEventListeners(ref, validateWithStateUpdate);
             });
           } else {
-            removeEventListeners(ref);
+            removeAllEventListeners(ref, validateWithStateUpdate);
           }
         });
+      fields.current = {};
+      localErrorMessages.current = {};
+      updateErrorMessage({});
     },
-    [],
+    [mode],
   );
 
   return {

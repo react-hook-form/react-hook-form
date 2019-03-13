@@ -1,4 +1,5 @@
-import getValidRadioValue from './getValidRadioValue';
+import getRadioValue from './getRadioValue';
+import isRadioInput from '../utils/isRadioInput';
 import { RegisterInput } from '..';
 
 export default (
@@ -8,8 +9,8 @@ export default (
   const copy = {};
 
   if (
-    (type !== 'radio' && required && value === '') ||
-    (type === 'radio' && required && !getValidRadioValue(fields[name].options).isValid)
+    (!isRadioInput(type) && required && value === '') ||
+    (isRadioInput(type) && required && !getRadioValue(fields[name].options).isValid)
   ) {
     copy[name] = {
       required: true,
