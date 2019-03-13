@@ -44,6 +44,7 @@ const CopyButton = styled.button`
 `;
 
 function Builder({ formData, updateFormData, showBuilder, toggleBuilder, editFormData, setFormData }) {
+  return null;
   const { register, handleSubmit, errors = {}, watch } = useForm();
   const [editIndex, setEditIndex] = useState(-1);
   const copyFormData = useRef([]);

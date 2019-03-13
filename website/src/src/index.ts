@@ -51,8 +51,8 @@ export default function useForm({ mode }: { mode: 'onSubmit' | 'onBlur' | 'onCha
   }
 
   function attachEventListeners({ allFields, optionIndex, ref, type, name }) {
-    if (!allFields[name]) return;
     const field = allFields[name];
+    if (!field) return;
 
     if (mode === 'onChange' || allFields[ref.name].watch) {
       if (type === 'radio') {
@@ -77,12 +77,12 @@ export default function useForm({ mode }: { mode: 'onSubmit' | 'onBlur' | 'onCha
     }
   }
 
-  function removeReferenceAndEventListeners(ref: HTMLInputElement) {
-    fields.current = findMissDomAndCLean({
-      target: { ref },
+  function removeReferenceAndEventListeners(data, forceDelete = false) {
+    findMissDomAndCLean({
+      target: data,
       fields: fields.current,
       validateWithStateUpdate,
-      forceDelete: true,
+      forceDelete,
     });
   }
 
@@ -104,14 +104,14 @@ export default function useForm({ mode }: { mode: 'onSubmit' | 'onBlur' | 'onCha
 
     if (type === 'radio') {
       if (!allFields[name]) {
-        allFields[name] = { options: [], isMutationWatch: { options: [] }, required, ref: { type: 'radio', name } };
+        allFields[name] = { options: [], mutationWatcher: { options: [] }, required, ref: { type: 'radio', name } };
       }
 
       allFields[name].options.push(data);
-      allFields[name].isMutationWatch.options.push(onDomRemove(ref, () => removeReferenceAndEventListeners(ref)));
+      allFields[name].mutationWatcher.options.push(onDomRemove(ref, () => removeReferenceAndEventListeners(data, true)));
     } else {
       allFields[name] = data;
-      allFields[name].isMutationWatch = onDomRemove(ref, () => removeReferenceAndEventListeners(ref));
+      allFields[name].mutationWatcher = onDomRemove(ref, () => removeReferenceAndEventListeners(data, true));
     }
 
     const optionIndex = type === 'radio' ? allFields[name].options.findIndex(({ ref }) => value === ref.value) : -1;
@@ -151,14 +151,9 @@ export default function useForm({ mode }: { mode: 'onSubmit' | 'onBlur' | 'onCha
           options,
         } = data;
 
-        const result = findMissDomAndCLean({
-          target: data,
-          fields: allFields,
-          validateWithStateUpdate,
-        });
+        removeReferenceAndEventListeners(data);
 
-        if (!result[name]) {
-          fields.current = result;
+        if (!fields.current[name]) {
           return previous;
         }
 

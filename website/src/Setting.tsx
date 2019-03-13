@@ -4,6 +4,7 @@ import useForm from './src';
 import './Setting.css';
 
 function Setting({ settingButton, toggleSetting, showSetting, setting, setConfig }) {
+  return null;
   const buttonRef = useRef(null);
   const { register, handleSubmit } = useForm();
   const onSubmit = data => {

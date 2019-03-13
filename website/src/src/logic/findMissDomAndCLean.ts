@@ -4,7 +4,7 @@ export default function findMissDomAndCLean({
   target: {
     ref,
     ref: { name, type },
-    isMutationWatch,
+    mutationWatcher,
     options,
   },
   fields,
@@ -12,28 +12,28 @@ export default function findMissDomAndCLean({
   forceDelete = false,
 }: {
   target: any;
-  fields: { [key: string]: any },
+  fields: { [key: string]: any };
   validateWithStateUpdate: Function;
   forceDelete?: boolean;
 }) {
   if (type === 'radio' && options) {
-    if (!options.length) {
-      delete fields[name];
-      return fields;
-    }
-
-    return options.reduce((previous, { ref, isMutationWatch }, index) => {
+    options.forEach(({ ref, mutationWatcher }, index) => {
       if (!document.body.contains(ref)) {
         removeAllEventListeners(ref, validateWithStateUpdate);
-        isMutationWatch.options[index].disconnect();
+        mutationWatcher.options[index].disconnect();
         delete fields[name].option[index];
-        return fields;
+        delete fields[name].mutationWatcher[index];
       }
-      return previous;
-    }, {});
+    });
+
+    if (!options.length) {
+      delete fields[name];
+      delete fields[name].mutationWatcher;
+      return fields;
+    }
   } else if (ref && (!document.body.contains(ref) || forceDelete)) {
     removeAllEventListeners(ref, validateWithStateUpdate);
-    if (isMutationWatch) isMutationWatch.disconnect();
+    mutationWatcher.disconnect();
     delete fields[name];
     return fields;
   }
