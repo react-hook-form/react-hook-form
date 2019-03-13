@@ -12,6 +12,11 @@
   text-align: center;
 }
 
+.App-h2 {
+  text-align: center;
+  font-weight: 200;
+}
+
 .App-h2:before,
 .App-h2:after {
   background-color: #4f6294;

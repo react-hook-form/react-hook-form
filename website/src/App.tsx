@@ -34,13 +34,8 @@ const Root = styled.div`
     height: 37px;
   }
 
-  & code,
   & form {
     flex: 1;
-  }
-
-  & code > h2 {
-    text-align: center;
   }
 
   & form > input.form-error {
@@ -181,9 +176,7 @@ function App() {
 
           <Wrapper>
             <form onSubmit={handleSubmit(onSubmit)}>
-              <code>
-                <h2 className="App-h2">Form</h2>
-              </code>
+              <h2 className="App-h2">Form</h2>
               {formData.map(field => {
                 switch (field.type) {
                   case 'select':
@@ -266,7 +259,7 @@ function App() {
             </form>
 
             {setting.showError && (
-              <code>
+              <section>
                 <h2 className="App-h2">Errors</h2>
                 <pre
                   style={{
@@ -276,12 +269,12 @@ function App() {
                 >
                 {Object.keys(errors).length ? JSON.stringify(errors, null, 2) : ''}
               </pre>
-              </code>
+              </section>
             )}
 
             {setting.showWatch &&
             setting.mode !== 'onSubmit' && (
-              <code>
+              <section>
                 <h2 className="App-h2">Watch</h2>
                 <pre
                   style={{
@@ -291,11 +284,11 @@ function App() {
                 >
                   {JSON.stringify(watch(), null, 2)}
                 </pre>
-              </code>
+              </section>
             )}
 
             {setting.showSubmit && (
-              <code>
+              <section>
                 <h2 className="App-h2">Submit</h2>
                 <pre
                   style={{
@@ -305,7 +298,7 @@ function App() {
                 >
                 {Object.keys(submitData).length ? JSON.stringify(submitData, null, 2) : ''}
               </pre>
-              </code>
+              </section>
             )}
           </Wrapper>
 
