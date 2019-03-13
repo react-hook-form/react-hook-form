@@ -9,7 +9,7 @@ export default function getFieldsValues(fields, filedNames?: string | Array<stri
         return value;
       }
     } else {
-      const copy = { ...previous };
+      const copy = { ...previous || {} };
       if (Array.isArray(filedNames) && filedNames.includes(ref.name)) {
         copy[ref.name] = value;
       } else {
