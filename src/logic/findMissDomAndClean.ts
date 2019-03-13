@@ -1,7 +1,7 @@
 import removeAllEventListeners from './removeAllEventListeners';
-import isRadioInput from "../utils/isRadioInput";
+import isRadioInput from '../utils/isRadioInput';
 
-export default function findMissDomAndCLean({
+export default function findMissDomAndClean({
   target: {
     ref,
     ref: { name, type },
@@ -18,18 +18,16 @@ export default function findMissDomAndCLean({
   forceDelete?: boolean;
 }) {
   if (isRadioInput(type) && options) {
-    options.forEach(({ ref, mutationWatcher }, index) => {
-      if (!document.body.contains(ref)) {
-        removeAllEventListeners(ref, validateWithStateUpdate);
-        mutationWatcher.options[index].disconnect();
-        delete fields[name].option[index];
-        delete fields[name].mutationWatcher[index];
+    options.forEach(({ ref }, index) => {
+      if (!document.body.contains(ref) && fields[name] && fields[name].options && fields[name].options[index]) {
+        removeAllEventListeners(fields[name].options[index], validateWithStateUpdate);
+        fields[name].options[index].mutationWatcher.disconnect();
+        fields[name].options.splice(index, 1);
       }
     });
 
-    if (!options.length) {
+    if (!fields[name].options.length) {
       delete fields[name];
-      delete fields[name].mutationWatcher;
       return fields;
     }
   } else if (ref && (!document.body.contains(ref) || forceDelete)) {
