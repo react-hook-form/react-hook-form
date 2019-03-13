@@ -7,6 +7,7 @@ import detectRegistered from './logic/detectRegistered';
 import getFieldValue from './logic/getFieldValue';
 import removeAllEventListeners from './logic/removeAllEventListeners';
 import onDomRemove from './utils/onDomRemove';
+import isRadioInput from './utils/isRadioInput';
 
 export interface RegisterInput {
   ref: any;
@@ -55,7 +56,7 @@ export default function useForm({ mode }: { mode: 'onSubmit' | 'onBlur' | 'onCha
     if (!field) return;
 
     if (mode === 'onChange' || allFields[ref.name].watch) {
-      if (type === 'radio') {
+      if (isRadioInput(type)) {
         const options = field.options;
 
         options[optionIndex].ref.addEventListener('change', validateWithStateUpdate);
@@ -65,7 +66,7 @@ export default function useForm({ mode }: { mode: 'onSubmit' | 'onBlur' | 'onCha
         field.eventAttached = true;
       }
     } else if (mode === 'onBlur') {
-      if (type === 'radio') {
+      if (isRadioInput(type)) {
         const options = field.options;
 
         options[optionIndex].ref.addEventListener('blur', validateWithStateUpdate);
@@ -102,7 +103,7 @@ export default function useForm({ mode }: { mode: 'onSubmit' | 'onBlur' | 'onCha
     const allFields = fields.current;
     if (allFields && detectRegistered(allFields, data)) return;
 
-    if (type === 'radio') {
+    if (isRadioInput(type)) {
       if (!allFields[name]) {
         allFields[name] = { options: [], mutationWatcher: { options: [] }, required, ref: { type: 'radio', name } };
       }
@@ -114,9 +115,9 @@ export default function useForm({ mode }: { mode: 'onSubmit' | 'onBlur' | 'onCha
       allFields[name].mutationWatcher = onDomRemove(ref, () => removeReferenceAndEventListeners(data, true));
     }
 
-    const optionIndex = type === 'radio' ? allFields[name].options.findIndex(({ ref }) => value === ref.value) : -1;
+    const optionIndex = isRadioInput(type) ? allFields[name].options.findIndex(({ ref }) => value === ref.value) : -1;
 
-    if (allFields[name].eventAttached || (type === 'radio' && optionIndex < 0)) return;
+    if (allFields[name].eventAttached || (isRadioInput(type) && optionIndex < 0)) return;
 
     attachEventListeners({ allFields, optionIndex, ref, type, name });
   }

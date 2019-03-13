@@ -1,4 +1,5 @@
 import removeAllEventListeners from './removeAllEventListeners';
+import isRadioInput from "../utils/isRadioInput";
 
 export default function findMissDomAndCLean({
   target: {
@@ -16,7 +17,7 @@ export default function findMissDomAndCLean({
   validateWithStateUpdate: Function;
   forceDelete?: boolean;
 }) {
-  if (type === 'radio' && options) {
+  if (isRadioInput(type) && options) {
     options.forEach(({ ref, mutationWatcher }, index) => {
       if (!document.body.contains(ref)) {
         removeAllEventListeners(ref, validateWithStateUpdate);
