@@ -1,27 +1,29 @@
-import isRadioInput from "../utils/isRadioInput";
+import isRadioInput from '../utils/isRadioInput';
 
-export default function attachEventListeners({ mode, allFields, optionIndex, ref, type, name, validateWithStateUpdate }) {
+export default function attachEventListeners({
+  mode,
+  radioOptionIndexes,
+  allFields,
+  ref,
+  type,
+  name,
+  validateWithStateUpdate,
+}) {
   const field = allFields[name];
   if (!field) return;
+  const isOnChange = mode === 'onChange' || allFields[ref.name].watch;
+  const isOnBlur = mode === 'onBlur';
 
-  if (mode === 'onChange' || allFields[ref.name].watch) {
+  if (isOnChange || isOnBlur) {
     if (isRadioInput(type)) {
-      const options = field.options;
-
-      options[optionIndex].ref.addEventListener('change', validateWithStateUpdate);
-      options[optionIndex].eventAttached = true;
+      radioOptionIndexes.forEach(index => {
+        if (field.options[index]) {
+          field.options[index].ref.addEventListener(isOnChange ? 'change' : 'blur', validateWithStateUpdate);
+          field.options[index].eventAttached = true;
+        }
+      });
     } else {
-      ref.addEventListener('input', validateWithStateUpdate);
-      field.eventAttached = true;
-    }
-  } else if (mode === 'onBlur') {
-    if (isRadioInput(type)) {
-      const options = field.options;
-
-      options[optionIndex].ref.addEventListener('blur', validateWithStateUpdate);
-      options[optionIndex].eventAttached = true;
-    } else {
-      ref.addEventListener('blur', validateWithStateUpdate);
+      ref.addEventListener(isOnChange ? 'input' : 'blur', validateWithStateUpdate);
       field.eventAttached = true;
     }
   }

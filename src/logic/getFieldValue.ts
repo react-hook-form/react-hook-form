@@ -1,10 +1,10 @@
 import getRadioValue from './getRadioValue';
 import getMultipleSelectValue from './getMultipleSelectValue';
-import { RegisterInput } from '../index';
+import { Field } from '../index';
 import isRadioInput from "../utils/isRadioInput";
 
 export default function getFieldValue(
-  fields: { [key: string]: RegisterInput },
+  fields: { [key: string]: Field },
   { type, name, options, checked, value }: any,
 ) {
   if (isRadioInput(type)) {

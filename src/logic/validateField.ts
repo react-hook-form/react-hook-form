@@ -1,11 +1,11 @@
 import getRadioValue from './getRadioValue';
 import isRadioInput from '../utils/isRadioInput';
 import { DATE_INPUTS, STRING_INPUTS } from '../constants';
-import { RegisterInput } from '..';
+import { Field } from '..';
 
 export default (
-  { ref: { type, value, name, checked }, required, maxLength, minLength, min, max, pattern, custom }: RegisterInput,
-  fields: { [key: string]: RegisterInput },
+  { ref: { type, value, name, checked }, required, maxLength, minLength, min, max, pattern, custom }: Field,
+  fields: { [key: string]: Field },
 ) => {
   const copy = {};
 

@@ -19,8 +19,23 @@ export interface RegisterInput {
   pattern?: RegExp;
   custom?: (data: string | number) => boolean;
   minLength?: number;
+}
+
+export interface Field {
+  ref: any;
+  required?: boolean;
+  min?: number | Date;
+  max?: number | Date;
+  maxLength?: number;
+  pattern?: RegExp;
+  custom?: (data: string | number) => boolean;
+  minLength?: number;
+  eventAttached?: boolean;
+  mutationWatcher?: boolean;
   options?: Array<{
     ref: any;
+    eventAttached?: boolean;
+    mutationWatcher?: boolean;
   }>;
 }
 
@@ -91,13 +106,15 @@ export default function useForm({ mode }: { mode: 'onSubmit' | 'onBlur' | 'onCha
       allFields[name].mutationWatcher = onDomRemove(ref, () => removeReferenceAndEventListeners(data, true));
     }
 
-    const optionIndex = isRadioInput(type)
-      ? allFields[name].options.findIndex(({ ref, eventAttached }) => value === ref.value && !eventAttached)
-      : -1;
+    const radioOptionIndexes =
+      isRadioInput(type) &&
+      allFields[name].options.map(({ ref, eventAttached }, index) => {
+        if (value === ref.value && !eventAttached) return index;
+      }).filter(Boolean);
 
-    if (allFields[name].eventAttached || (isRadioInput(type) && optionIndex < 0)) return;
+    if (allFields[name].eventAttached || !radioOptionIndexes.length) return;
 
-    attachEventListeners({ allFields, optionIndex, ref, type, name, mode, validateWithStateUpdate });
+    attachEventListeners({ allFields, ref, type, radioOptionIndexes, name, mode, validateWithStateUpdate });
   }
 
   function watch(filedNames?: string | Array<string> | undefined) {
@@ -123,7 +140,7 @@ export default function useForm({ mode }: { mode: 'onSubmit' | 'onBlur' | 'onCha
     const allFields = fields.current;
 
     const { localErrors, values } = Object.values(allFields).reduce(
-      (previous: ErrorMessages, data: RegisterInput) => {
+      (previous: ErrorMessages, data: Field) => {
         const {
           ref,
           ref: { name, type },
@@ -176,7 +193,7 @@ export default function useForm({ mode }: { mode: 'onSubmit' | 'onBlur' | 'onCha
   useEffect(
     () => () => {
       fields.current &&
-        Object.values(fields.current).forEach(({ ref, options }: RegisterInput) => {
+        Object.values(fields.current).forEach(({ ref, options }: Field) => {
           if (options) {
             options.forEach(({ ref }) => {
               removeAllEventListeners(ref, validateWithStateUpdate);
