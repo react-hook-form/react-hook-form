@@ -1,16 +1,19 @@
 import getRadioValue from './getRadioValue';
 import isRadioInput from '../utils/isRadioInput';
+import { DATE_INPUTS, STRING_INPUTS } from '../constants';
 import { RegisterInput } from '..';
 
 export default (
-  { ref: { type, value, name }, required, maxLength, minLength, min, max, pattern, custom }: RegisterInput,
+  { ref: { type, value, name, checked }, required, maxLength, minLength, min, max, pattern, custom }: RegisterInput,
   fields: { [key: string]: RegisterInput },
 ) => {
   const copy = {};
 
   if (
-    (!isRadioInput(type) && required && value === '') ||
-    (isRadioInput(type) && required && !getRadioValue(fields[name].options).isValid)
+    required &&
+    ((type === 'checkbox' && !checked) ||
+      (!isRadioInput(type) && type !== 'checkbox' && value === '') ||
+      (isRadioInput(type) && !getRadioValue(fields[name].options).isValid))
   ) {
     copy[name] = {
       required: true,
@@ -26,7 +29,7 @@ export default (
     if (type === 'number') {
       exceedMax = max && valueNumber > max;
       exceedMin = min && valueNumber < min;
-    } else if (['date', 'time', 'month', 'datetime', 'datetime-local', 'week'].includes(type)) {
+    } else if (DATE_INPUTS.includes(type)) {
       exceedMax = max && new Date(value) > new Date(max);
       exceedMin = min && new Date(value) < new Date(min);
     }
@@ -41,9 +44,9 @@ export default (
   }
 
   if (maxLength || minLength) {
-    if (['text', 'email', 'password', 'search', 'tel', 'url'].includes(type) && typeof value === 'string') {
-      const exceedMax = maxLength && value.length > maxLength;
-      const exceedMin = minLength && value.length < minLength;
+    if (STRING_INPUTS.includes(type)) {
+      const exceedMax = maxLength && value.toString().length > maxLength;
+      const exceedMin = minLength && value.toString().length < minLength;
 
       if (exceedMax || exceedMin) {
         copy[name] = {
@@ -55,7 +58,7 @@ export default (
     }
   }
 
-  if (pattern && type === 'text' && typeof value === 'string' && pattern instanceof RegExp && !pattern.test(value)) {
+  if (pattern && pattern instanceof RegExp && !pattern.test(value)) {
     copy[name] = {
       ...copy[name],
       pattern: true,
