@@ -9,6 +9,7 @@ import removeAllEventListeners from './logic/removeAllEventListeners';
 import onDomRemove from './utils/onDomRemove';
 import isRadioInput from './utils/isRadioInput';
 import attachEventListeners from './logic/attachEventListeners';
+import getOptionNonEventAttached from './logic/getOptionNonEventAttached';
 
 export interface RegisterInput {
   ref: any;
@@ -106,15 +107,11 @@ export default function useForm({ mode }: { mode: 'onSubmit' | 'onBlur' | 'onCha
       allFields[name].mutationWatcher = onDomRemove(ref, () => removeReferenceAndEventListeners(data, true));
     }
 
-    const radioOptionIndexes =
-      isRadioInput(type) &&
-      allFields[name].options.map(({ ref, eventAttached }, index) => {
-        if (value === ref.value && !eventAttached) return index;
-      }).filter(Boolean);
+    const radioOptionIndex = getOptionNonEventAttached(allFields[name], type, value);
 
-    if (allFields[name].eventAttached || !radioOptionIndexes.length) return;
+    if (allFields[name].eventAttached || radioOptionIndex < 0) return;
 
-    attachEventListeners({ allFields, ref, type, radioOptionIndexes, name, mode, validateWithStateUpdate });
+    attachEventListeners({ allFields, ref, type, radioOptionIndex, name, mode, validateWithStateUpdate });
   }
 
   function watch(filedNames?: string | Array<string> | undefined) {

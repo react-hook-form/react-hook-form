@@ -6,7 +6,7 @@ describe('attachEventListeners', () => {
       attachEventListeners({
         mode: 'onchange',
         allFields: {},
-        radioOptionIndexes: [0, 1],
+        radioOptionIndex: 0,
         ref: {},
         type: 'radio',
         name: 'test',
@@ -37,7 +37,7 @@ describe('attachEventListeners', () => {
       attachEventListeners({
         mode: 'onChange',
         allFields,
-        radioOptionIndexes: [0, 1],
+        radioOptionIndex: 0,
         ref: {
           name: 'test',
         },
@@ -73,7 +73,7 @@ describe('attachEventListeners', () => {
       attachEventListeners({
         mode: 'onSubmit',
         allFields,
-        radioOptionIndexes: [0, 1],
+        radioOptionIndex: 0,
         ref: {
           name: 'test',
         },
@@ -103,7 +103,7 @@ describe('attachEventListeners', () => {
       attachEventListeners({
         mode: 'onChange',
         allFields,
-        radioOptionIndexes: [0, 1],
+        radioOptionIndex: 0,
         ref: {
           name: 'test',
           addEventListener,
@@ -135,7 +135,7 @@ describe('attachEventListeners', () => {
       attachEventListeners({
         mode: 'onSubmit',
         allFields,
-        radioOptionIndexes: [0, 1],
+        radioOptionIndex: 0,
         ref: {
           name: 'test',
           addEventListener,
@@ -171,7 +171,7 @@ describe('attachEventListeners', () => {
       attachEventListeners({
         mode: 'onBlur',
         allFields,
-        radioOptionIndexes: [0, 1],
+        radioOptionIndex: 0,
         ref: {
           name: 'test',
         },
@@ -201,7 +201,7 @@ describe('attachEventListeners', () => {
       attachEventListeners({
         mode: 'onBlur',
         allFields,
-        radioOptionIndexes: [0, 1],
+        radioOptionIndex: 0,
         ref: {
           name: 'test',
           addEventListener,
