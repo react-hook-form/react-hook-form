@@ -5,9 +5,9 @@ export default function onDomRemove(element, onDetachCallback) {
         return false;
       } else if (el.parentNode === null) {
         return true;
-      } else {
-        return isDetached(el.parentNode);
       }
+
+      return isDetached(el.parentNode);
     }
 
     if (isDetached(element)) {

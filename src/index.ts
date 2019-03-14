@@ -8,12 +8,13 @@ import getFieldValue from './logic/getFieldValue';
 import removeAllEventListeners from './logic/removeAllEventListeners';
 import onDomRemove from './utils/onDomRemove';
 import isRadioInput from './utils/isRadioInput';
+import attachEventListeners from './logic/attachEventListeners';
 
 export interface RegisterInput {
   ref: any;
   required?: boolean;
-  min?: number;
-  max?: number;
+  min?: number | Date;
+  max?: number | Date;
   maxLength?: number;
   pattern?: RegExp;
   custom?: (data: string | number) => boolean;
@@ -60,33 +61,6 @@ export default function useForm({ mode }: { mode: 'onSubmit' | 'onBlur' | 'onCha
     });
   }
 
-  function attachEventListeners({ allFields, optionIndex, ref, type, name }) {
-    const field = allFields[name];
-    if (!field) return;
-
-    if (mode === 'onChange' || allFields[ref.name].watch) {
-      if (isRadioInput(type)) {
-        const options = field.options;
-
-        options[optionIndex].ref.addEventListener('change', validateWithStateUpdate);
-        options[optionIndex].eventAttached = true;
-      } else {
-        ref.addEventListener('input', validateWithStateUpdate);
-        field.eventAttached = true;
-      }
-    } else if (mode === 'onBlur') {
-      if (isRadioInput(type)) {
-        const options = field.options;
-
-        options[optionIndex].ref.addEventListener('blur', validateWithStateUpdate);
-        options[optionIndex].eventAttached = true;
-      } else {
-        ref.addEventListener('blur', validateWithStateUpdate);
-        field.eventAttached = true;
-      }
-    }
-  }
-
   function register(data: RegisterInput) {
     if (!data || !data.ref) return;
     if (!data.ref.name) {
@@ -110,7 +84,7 @@ export default function useForm({ mode }: { mode: 'onSubmit' | 'onBlur' | 'onCha
 
       allFields[name].options.push({
         ...data,
-        mutationWatcher: onDomRemove(ref, () => removeReferenceAndEventListeners(data, true))
+        mutationWatcher: onDomRemove(ref, () => removeReferenceAndEventListeners(data, true)),
       });
     } else {
       allFields[name] = data;
@@ -123,7 +97,7 @@ export default function useForm({ mode }: { mode: 'onSubmit' | 'onBlur' | 'onCha
 
     if (allFields[name].eventAttached || (isRadioInput(type) && optionIndex < 0)) return;
 
-    attachEventListeners({ allFields, optionIndex, ref, type, name });
+    attachEventListeners({ allFields, optionIndex, ref, type, name, mode, validateWithStateUpdate });
   }
 
   function watch(filedNames?: string | Array<string> | undefined) {
