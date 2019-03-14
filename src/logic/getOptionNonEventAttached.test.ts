@@ -14,19 +14,6 @@ describe('getOptionNonEventAttached', () => {
     }, 'radio', 'value')).toBe(0);
   });
 
-  it('should return -1 when type not radio', () => {
-    expect(getOptionNonEventAttached({
-      options: [
-        {
-          ref: {
-            value: 'value',
-          },
-          eventAttached: false
-        }
-      ]
-    }, 'text', 'value')).toBe(-1);
-  });
-
   it('should return -1 when option not found', () => {
     expect(getOptionNonEventAttached({
       options: [

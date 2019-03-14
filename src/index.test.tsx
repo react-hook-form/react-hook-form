@@ -29,6 +29,24 @@ describe('useForm', () => {
 
     mount(<Test />);
     expect(detectRegistered).toBeCalled();
+  });
+
+  it('should detect event listeners and attach events', () => {
+    let tempRegister;
+    function Test() {
+      const { register } = useForm({
+        mode: 'onChange',
+      });
+      tempRegister = register;
+      return (
+        <div>
+          <input name="test" ref={ref => register({ ref })} />
+        </div>
+      );
+    }
+
+    mount(<Test />);
+    expect(detectRegistered).toBeCalled();
     expect(attachEventListeners).toBeCalled();
   });
 

@@ -10,6 +10,7 @@ import onDomRemove from './utils/onDomRemove';
 import isRadioInput from './utils/isRadioInput';
 import attachEventListeners from './logic/attachEventListeners';
 import getOptionNonEventAttached from './logic/getOptionNonEventAttached';
+import {clone} from "@babel/types";
 
 export interface RegisterInput {
   ref: any;
@@ -84,6 +85,7 @@ export default function useForm({ mode }: { mode: 'onSubmit' | 'onBlur' | 'onCha
       return;
     }
 
+    let radioOptionIndex;
     const {
       ref,
       required,
@@ -92,6 +94,8 @@ export default function useForm({ mode }: { mode: 'onSubmit' | 'onBlur' | 'onCha
 
     const allFields = fields.current;
     if (detectRegistered(allFields, data)) return;
+
+    const isRadio = isRadioInput(type);
 
     if (isRadioInput(type)) {
       if (!allFields[name]) {
@@ -107,9 +111,12 @@ export default function useForm({ mode }: { mode: 'onSubmit' | 'onBlur' | 'onCha
       allFields[name].mutationWatcher = onDomRemove(ref, () => removeReferenceAndEventListeners(data, true));
     }
 
-    const radioOptionIndex = getOptionNonEventAttached(allFields[name], type, value);
-
-    if (allFields[name].eventAttached || radioOptionIndex < 0) return;
+    if (isRadio) {
+      radioOptionIndex = getOptionNonEventAttached(allFields[name], type, value);
+      if (radioOptionIndex < 0) return;
+    } else {
+      if (allFields[name].eventAttached) return;
+    }
 
     attachEventListeners({ allFields, ref, type, radioOptionIndex, name, mode, validateWithStateUpdate });
   }
