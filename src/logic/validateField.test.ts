@@ -177,4 +177,21 @@ describe('validateField', () => {
       ),
     ).toEqual({});
   });
+
+  it('should validate for custom validation', () => {
+    expect(
+      validateField(
+        {
+          ref: { type: 'text', name: 'test', value: 'This is a long text input' },
+          required: true,
+          custom: (value) => value.toString().length < 3,
+        },
+        {},
+      ),
+    ).toEqual({
+      test: {
+        custom: true,
+      },
+    });
+  });
 });
