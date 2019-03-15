@@ -101,6 +101,8 @@ const RadioGroup = styled.div`
   }
 `;
 
+const errorStyle = { border: `1px solid ${colors.secondary}`, background: colors.errorPink };
+
 function App() {
   const [submitData, updateSubmitData] = useState({});
   const settingButton = useRef(null);
@@ -144,9 +146,11 @@ function App() {
         showSetting={showSetting}
         setConfig={setConfig}
       />
-      <main style={{
-        perspective: '800px'
-      }}>
+      <main
+        style={{
+          perspective: '800px',
+        }}
+      >
         <Animate
           play={showBuilder || showSetting}
           startStyle={{ minHeight: '100vh', filter: 'blur(0)', transform: 'scale(1)' }}
@@ -158,7 +162,10 @@ function App() {
               <path d="M73.56,13.32H58.14a8.54,8.54,0,0,0-16.27,0H26.44a11,11,0,0,0-11,11V81.63a11,11,0,0,0,11,11H73.56a11,11,0,0,0,11-11V24.32A11,11,0,0,0,73.56,13.32Zm-30.92,2a1,1,0,0,0,1-.79,6.54,6.54,0,0,1,12.78,0,1,1,0,0,0,1,.79h5.38v6.55a3,3,0,0,1-3,3H40.25a3,3,0,0,1-3-3V15.32ZM82.56,81.63a9,9,0,0,1-9,9H26.44a9,9,0,0,1-9-9V24.32a9,9,0,0,1,9-9h8.81v6.55a5,5,0,0,0,5,5h19.5a5,5,0,0,0,5-5V15.32h8.81a9,9,0,0,1,9,9Z" />
               <path style={{ transform: 'translateX(-25px)' }} d="M71.6,45.92H54a1,1,0,0,0,0,2H71.6a1,1,0,0,0,0-2Z" />
               <path d="M71.6,45.92H54a1,1,0,0,0,0,2H71.6a1,1,0,0,0,0-2Z" />
-              <path style={{ transform: 'translateX(-25px)' }} d="M71.1,69.49H53.45a1,1,0,1,0,0,2H71.1a1,1,0,0,0,0-2Z" />
+              <path
+                style={{ transform: 'translateX(-25px)' }}
+                d="M71.1,69.49H53.45a1,1,0,1,0,0,2H71.1a1,1,0,0,0,0-2Z"
+              />
               <path d="M71.1,69.49H53.45a1,1,0,1,0,0,2H71.1a1,1,0,0,0,0-2Z" />
             </Logo>
             React Forme
@@ -183,47 +190,59 @@ function App() {
                     return (
                       <select
                         name={field.name}
-                        ref={ref => register({ ref })}
+                        ref={ref => register({ ref, required: field.required })}
                         key={field.name}
-                        style={{ marginBottom: 20 }}
+                        style={{
+                          marginBottom: 20,
+                          ...(errors[field.name] ? errorStyle : null),
+                        }}
                       >
                         <option value="">Select...</option>
                         {field.options &&
-                        field.options
-                          .split(';')
-                          .filter(Boolean)
-                          .map(option => {
-                            return <option key={option}>{option}</option>;
-                          })}
+                          field.options
+                            .split(';')
+                            .filter(Boolean)
+                            .map(option => {
+                              return <option key={option}>{option}</option>;
+                            })}
                       </select>
                     );
                   case 'radio':
                     return (
                       <RadioGroup key={field.name} style={{ marginBottom: 20 }}>
                         {field.options &&
-                        field.options
-                          .split(';')
-                          .filter(Boolean)
-                          .map(name => {
-                            return (
-                              <label key={name}>
-                                {name}
-                                &nbsp;
-                                <input
-                                  type="radio"
-                                  name={field.name}
-                                  value={name}
-                                  ref={ref => register({ ref, required: field.required })}
-                                />
-                              </label>
-                            );
-                          })}
+                          field.options
+                            .split(';')
+                            .filter(Boolean)
+                            .map(name => {
+                              return (
+                                <label
+                                  key={name}
+                                  style={{
+                                    ...(errors[field.name] ? { color: colors.lightPink } : null),
+                                  }}
+                                >
+                                  {name}
+                                  &nbsp;
+                                  <input
+                                    type="radio"
+                                    name={field.name}
+                                    value={name}
+                                    ref={ref => register({ ref, required: field.required })}
+                                  />
+                                </label>
+                              );
+                            })}
                       </RadioGroup>
                     );
                   default:
                     return (
                       <input
-                        style={{ marginBottom: 20 }}
+                        style={{
+                          marginBottom: 20,
+                          ...(errors[field.name] ? errorStyle : null),
+                        }}
+                        autoComplete="off"
                         key={field.name}
                         type={field.type}
                         name={field.name}
@@ -267,25 +286,25 @@ function App() {
                     padding: '0 20px',
                   }}
                 >
-                {Object.keys(errors).length ? JSON.stringify(errors, null, 2) : ''}
-              </pre>
+                  {Object.keys(errors).length ? JSON.stringify(errors, null, 2) : ''}
+                </pre>
               </section>
             )}
 
             {setting.showWatch &&
-            setting.mode !== 'onSubmit' && (
-              <section>
-                <h2 className="App-h2">Watch</h2>
-                <pre
-                  style={{
-                    textAlign: 'left',
-                    padding: '0 20px',
-                  }}
-                >
-                  {JSON.stringify(watch(), null, 2)}
-                </pre>
-              </section>
-            )}
+              setting.mode !== 'onSubmit' && (
+                <section>
+                  <h2 className="App-h2">Watch</h2>
+                  <pre
+                    style={{
+                      textAlign: 'left',
+                      padding: '0 20px',
+                    }}
+                  >
+                    {JSON.stringify(watch(), null, 2)}
+                  </pre>
+                </section>
+              )}
 
             {setting.showSubmit && (
               <section>
@@ -296,8 +315,8 @@ function App() {
                     padding: '0 20px',
                   }}
                 >
-                {Object.keys(submitData).length ? JSON.stringify(submitData, null, 2) : ''}
-              </pre>
+                  {Object.keys(submitData).length ? JSON.stringify(submitData, null, 2) : ''}
+                </pre>
               </section>
             )}
           </Wrapper>

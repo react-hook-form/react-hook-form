@@ -1,5 +1,5 @@
 export default function onDomRemove(element, onDetachCallback) {
-  const observer = new MutationObserver(function() {
+  const observer = new MutationObserver(() => {
     function isDetached(el) {
       if (el.parentNode === window.document) {
         return false;

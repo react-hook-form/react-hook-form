@@ -3,4 +3,5 @@ export default {
   secondary: '#bf1650',
   lightBlue: '#516391',
   lightPink: '#ec5990',
+  errorPink: '#fbecf2',
 };

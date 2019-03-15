@@ -1,14 +1,7 @@
 import validateField from './validateField';
-import getRadioValue from './getRadioValue';
-
-jest.mock('./getRadioValue');
 
 describe('validateField', () => {
   it('should return required true when input not filled with required', () => {
-    getRadioValue.mockImplementation(() => ({
-      isValid: false,
-    }));
-
     expect(
       validateField(
         {
@@ -45,6 +38,7 @@ describe('validateField', () => {
         },
         {
           test: {
+            ref: {},
             options: [],
           },
         },
@@ -182,5 +176,22 @@ describe('validateField', () => {
         {},
       ),
     ).toEqual({});
+  });
+
+  it('should validate for custom validation', () => {
+    expect(
+      validateField(
+        {
+          ref: { type: 'text', name: 'test', value: 'This is a long text input' },
+          required: true,
+          custom: (value) => value.toString().length < 3,
+        },
+        {},
+      ),
+    ).toEqual({
+      test: {
+        custom: true,
+      },
+    });
   });
 });

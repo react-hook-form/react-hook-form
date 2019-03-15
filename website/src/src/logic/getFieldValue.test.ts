@@ -1,7 +1,13 @@
 import getFieldValue from './getFieldValue';
 
-jest.mock('./getRadioValue', () => () => ({ value: 2 }));
-jest.mock('./getMultipleSelectValue', () => () => 3);
+jest.mock('./getRadioValue', () => ({
+  default: () => ({
+    value: 2
+  }),
+}));
+jest.mock('./getMultipleSelectValue', () => ({
+  default: () => 3,
+}));
 
 describe('getFieldValue', () => {
   it('should return correct value when type is radio', () => {
