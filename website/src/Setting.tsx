@@ -2,7 +2,6 @@ import React, { useRef } from 'react';
 import { Animate } from 'react-simple-animate';
 import styled from 'styled-components';
 import useForm from './src';
-import colors from './styles/colors';
 
 const Root = styled.div`
   background: #bf1650;
@@ -16,16 +15,8 @@ const Root = styled.div`
   box-shadow: -5px 0px 9px 0px black;
   padding: 20px;
 
-  & > form > div > select:hover {
-    border: 1px solid ${colors.primary};
-  }
-  
   & > button {
     color: white;
-  }
-
-  & > button:hover {
-    color: ${colors.primary};
   }
 `;
 
@@ -137,7 +128,15 @@ function Setting({ settingButton, toggleSetting, showSetting, setting, setConfig
               </select>
             </div>
 
-            <h2>Display columns</h2>
+            <h2
+              style={{
+                fontSize: 20,
+                fontWeight: 500,
+                marginTop: 10,
+              }}
+            >
+              Display columns
+            </h2>
             <label
               style={{
                 marginBottom: 10,
@@ -198,8 +197,11 @@ function Setting({ settingButton, toggleSetting, showSetting, setting, setConfig
                 height: 55,
                 textTransform: 'uppercase',
                 letterSpacing: '0.5rem',
-                background: 'white'
-              }} type="submit" value="Update" />
+                background: 'white',
+              }}
+              type="submit"
+              value="Update"
+            />
           </form>
         </Root>
       )}

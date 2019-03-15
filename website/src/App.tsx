@@ -2,9 +2,8 @@ import React, { useState, useRef } from 'react';
 import useForm from './src';
 import Setting from './Setting';
 import { Animate } from 'react-simple-animate';
-import { SubHeading, Heading } from './styles/typography';
+import { SubHeading, Heading, Title } from './styles/typography';
 import Builder from './Builder';
-import './App.css';
 import ButtonGroup from './ButtonGroup';
 import styled from 'styled-components';
 import FORM_DATA from './constants/formData';
@@ -138,7 +137,7 @@ function App() {
   return (
     <Root>
       <Builder
-        showBuilder={showBuilder}
+        showBuilder={!showBuilder}
         toggleBuilder={toggleBuilder}
         editFormData={editFormData}
         setFormData={setFormData}
@@ -176,9 +175,7 @@ function App() {
             </Logo>
             React Forme
           </Heading>
-          <SubHeading>
-            Performance, flexible and extensible forms with easy to use for validation.
-          </SubHeading>
+          <SubHeading>Performance, flexible and extensible forms with easy to use for validation.</SubHeading>
 
           <ButtonGroup
             toggleBuilder={toggleBuilder}
@@ -189,7 +186,7 @@ function App() {
 
           <Wrapper>
             <form onSubmit={handleSubmit(onSubmit)}>
-              <h2 className="App-h2">Form</h2>
+              <Title>Form</Title>
               {formData.map(field => {
                 switch (field.type) {
                   case 'select':
@@ -285,7 +282,7 @@ function App() {
 
             {setting.showError && (
               <section>
-                <h2 className="App-h2">Errors</h2>
+                <Title>Errors</Title>
                 {!Object.keys(errors).length && <p>ⓘ Press submit to trigger validation error.</p>}
                 <Animate play={Object.keys(errors).length} startStyle={{ opacity: 0 }} endStyle={{ opacity: 1 }}>
                   <Pre>{Object.keys(errors).length ? JSON.stringify(errors, null, 2) : ''}</Pre>
@@ -296,7 +293,7 @@ function App() {
             {setting.showWatch &&
               setting.mode !== 'onSubmit' && (
                 <section>
-                  <h2 className="App-h2">Watch</h2>
+                  <Title>Watch</Title>
                   {!Object.keys(watch() || {}).length && <p>ⓘ Change input value to see watched values.</p>}
                   <Animate
                     play={Object.keys(watch() || {}).length > 0}
@@ -310,13 +307,9 @@ function App() {
 
             {setting.showSubmit && (
               <section>
-                <h2 className="App-h2">Submit</h2>
+                <Title>Submit</Title>
                 {!Object.keys(submitData).length && <p>ⓘ Successful submission values will display here.</p>}
-                <Animate
-                  play={Object.keys(submitData).length}
-                  startStyle={{ opacity: 0 }}
-                  endStyle={{ opacity: 1 }}
-                >
+                <Animate play={Object.keys(submitData).length} startStyle={{ opacity: 0 }} endStyle={{ opacity: 1 }}>
                   <Pre>{Object.keys(submitData).length ? JSON.stringify(submitData, null, 2) : ''}</Pre>
                 </Animate>
               </section>

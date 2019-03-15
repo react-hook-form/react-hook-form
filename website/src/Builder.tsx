@@ -1,5 +1,4 @@
 import React, { useState, useRef, useEffect } from 'react';
-import './Builder.css';
 import { Animate } from 'react-simple-animate';
 import SyntaxHighlighter from 'react-syntax-highlighter';
 import useForm from './src';
@@ -9,7 +8,7 @@ import styled from 'styled-components';
 import colors from './styles/colors';
 import SortableContainer from './SortableContainer';
 import copyClipBoard from './utils/copyClipBoard';
-import { SubHeading, Heading } from './styles/typography';
+import { SubHeading, Heading, Error, Title } from './styles/typography';
 
 const Root = styled.main`
   position: fixed;
@@ -20,6 +19,23 @@ const Root = styled.main`
   background: #0e101c;
   z-index: 4;
   color: white;
+
+  & pre,
+  & code {
+    font-size: 14px;
+    text-align: left;
+    color: white;
+    overflow-x: auto;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    background: none !important;
+  }
+`;
+
+const Wrapper = styled.div`
+  display: grid;
+  grid-template-columns: 1fr 500px 1fr;
+  grid-column-gap: 60px;
 `;
 
 const SubmitButton = styled.input`
@@ -30,6 +46,34 @@ const SubmitButton = styled.input`
   background: ${props => props.background || colors.lightPink};
   color: ${props => props.color || 'white'};
   border: none;
+`;
+
+const Form = styled.form`
+  fieldset {
+    border-radius: 4px;
+    border: 1px solid #6a6b7f;
+    display: flex;
+    padding: 10px 20px;
+  }
+
+  fieldset > input {
+    display: block;
+    box-sizing: border-box;
+    width: 100%;
+    border-radius: 4px;
+    border: none;
+    padding: 10px 15px;
+    margin-bottom: 10px;
+    font-size: 14px;
+  }
+
+  label {
+    line-height: 2;
+    text-align: left;
+    display: block;
+    margin-bottom: 13px;
+    margin-top: 20px;
+  }
 `;
 
 const CopyButton = styled.button`
@@ -96,8 +140,8 @@ function Builder({ formData, updateFormData, showBuilder, toggleBuilder, editFor
       }}
       render={({ style }) => {
         return (
-          <Root style={style} className="Builder">
-            <div
+          <Root style={style}>
+            <Wrapper
               style={{
                 overflow: 'auto',
                 height: '100vh',
@@ -129,13 +173,13 @@ function Builder({ formData, updateFormData, showBuilder, toggleBuilder, editFor
               <Heading>Builder</Heading>
               <SubHeading>Build your own form with code and example.</SubHeading>
 
-              <div className="Builder-wrapper">
+              <Form>
                 <div
                   style={{
                     paddingLeft: '20px',
                   }}
                 >
-                  <h2 className="Builder-h2">Form</h2>
+                  <Title>Form</Title>
 
                   <SortableContainer
                     {...{ updateFormData, formData, editIndex, setEditIndex, setFormData, editFormData }}
@@ -152,8 +196,8 @@ function Builder({ formData, updateFormData, showBuilder, toggleBuilder, editFor
                   )}
                 </div>
 
-                <form className="Builder-form" onSubmit={handleSubmit(onSubmit)}>
-                  <h2 className="Builder-h2">Field Creator</h2>
+                <Form className="Builder-form" onSubmit={handleSubmit(onSubmit)}>
+                  <Title>Field Creator</Title>
 
                   <label>Name: </label>
                   <input
@@ -177,9 +221,8 @@ function Builder({ formData, updateFormData, showBuilder, toggleBuilder, editFor
                     }}
                     endStyle={{ maxHeight: 20 }}
                   >
-                    {errors['name'] && <p className="form-error-msg">This is required.</p>}
-                    {errors['name'] &&
-                      errors['name']['custom'] && <p className="form-error-msg">Name required to be unique.</p>}
+                    {errors['name'] && <Error>This is required.</Error>}
+                    {errors['name'] && errors['name']['custom'] && <Error>Name required to be unique.</Error>}
                   </Animate>
 
                   <label>Type: </label>
@@ -311,7 +354,7 @@ function Builder({ formData, updateFormData, showBuilder, toggleBuilder, editFor
                       />
                     )}
                   />
-                </form>
+                </Form>
 
                 <div
                   style={{
@@ -319,7 +362,7 @@ function Builder({ formData, updateFormData, showBuilder, toggleBuilder, editFor
                     position: 'relative',
                   }}
                 >
-                  <h2 className="Builder-h2">Code</h2>
+                  <Title>Code</Title>
 
                   <CopyButton
                     onClick={() => {
@@ -330,8 +373,8 @@ function Builder({ formData, updateFormData, showBuilder, toggleBuilder, editFor
                   </CopyButton>
                   <SyntaxHighlighter style={monokaiSublime}>{generateCode(formData)}</SyntaxHighlighter>
                 </div>
-              </div>
-            </div>
+              </Form>
+            </Wrapper>
           </Root>
         );
       }}
