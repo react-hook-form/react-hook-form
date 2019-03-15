@@ -9,6 +9,18 @@ import styled from 'styled-components';
 import colors from './styles/colors';
 import SortableContainer from './SortableContainer';
 import copyClipBoard from './utils/copyClipBoard';
+import { SubHeading, Heading } from './styles/typography';
+
+const Root = styled.main`
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100vw;
+  background: #0e101c;
+  z-index: 4;
+  color: white;
+`;
 
 const SubmitButton = styled.input`
   margin-top: 30px;
@@ -84,7 +96,7 @@ function Builder({ formData, updateFormData, showBuilder, toggleBuilder, editFor
       }}
       render={({ style }) => {
         return (
-          <main style={style} className="Builder">
+          <Root style={style} className="Builder">
             <div
               style={{
                 overflow: 'auto',
@@ -97,7 +109,7 @@ function Builder({ formData, updateFormData, showBuilder, toggleBuilder, editFor
                   fontSize: 35,
                   padding: 20,
                   right: 20,
-                  top: 10,
+                  top: 15,
                   color: 'white',
                   cursor: 'pointer',
                   border: 'none',
@@ -114,8 +126,8 @@ function Builder({ formData, updateFormData, showBuilder, toggleBuilder, editFor
               >
                 &#10005;
               </button>
-              <h1 className="App-h1">Builder</h1>
-              <p className="App-sub-heading">Build your own form with code and example</p>
+              <Heading>Builder</Heading>
+              <SubHeading>Build your own form with code and example.</SubHeading>
 
               <div className="Builder-wrapper">
                 <div
@@ -200,6 +212,7 @@ function Builder({ formData, updateFormData, showBuilder, toggleBuilder, editFor
                       <>
                         <label>Options:</label>
                         <input
+                          key={editFormData.name}
                           defaultValue={editFormData.options}
                           type="text"
                           name="options"
@@ -319,7 +332,7 @@ function Builder({ formData, updateFormData, showBuilder, toggleBuilder, editFor
                 </div>
               </div>
             </div>
-          </main>
+          </Root>
         );
       }}
     />

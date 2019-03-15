@@ -1,7 +1,33 @@
 import React, { useRef } from 'react';
 import { Animate } from 'react-simple-animate';
+import styled from 'styled-components';
 import useForm from './src';
-import './Setting.css';
+import colors from './styles/colors';
+
+const Root = styled.div`
+  background: #bf1650;
+  position: fixed;
+  height: 100vh;
+  top: 0;
+  right: 0;
+  z-index: 3;
+  width: 20%;
+  text-align: left;
+  box-shadow: -5px 0px 9px 0px black;
+  padding: 20px;
+
+  & > form > div > select:hover {
+    border: 1px solid ${colors.primary};
+  }
+  
+  & > button {
+    color: white;
+  }
+
+  & > button:hover {
+    color: ${colors.primary};
+  }
+`;
 
 function Setting({ settingButton, toggleSetting, showSetting, setting, setConfig }) {
   const buttonRef = useRef(null);
@@ -29,16 +55,15 @@ function Setting({ settingButton, toggleSetting, showSetting, setting, setConfig
         transform: 'translateX(600px)',
       }}
       render={({ style }) => (
-        <div className="Setting" style={style}>
+        <Root style={style}>
           <button
             style={{
               position: 'absolute',
               fontSize: 35,
               padding: 20,
-              right: 0,
+              right: 20,
               top: 15,
               background: 'none',
-              color: 'white',
               cursor: 'pointer',
               border: 'none',
               fontWeight: 200,
@@ -52,9 +77,25 @@ function Setting({ settingButton, toggleSetting, showSetting, setting, setConfig
           >
             &#10005;
           </button>
-          <h2 className="Setting-h2">Setting</h2>
+          <h2
+            style={{
+              fontSize: 40,
+              fontWeight: 200,
+              marginTop: 10,
+            }}
+          >
+            Setting
+          </h2>
 
-          <h2 className="Setting-h3">️Form config</h2>
+          <h2
+            style={{
+              fontSize: 20,
+              fontWeight: 500,
+              marginTop: 10,
+            }}
+          >
+            ️Form config
+          </h2>
           <form onSubmit={handleSubmit(onSubmit)}>
             <div
               style={{
@@ -67,9 +108,10 @@ function Setting({ settingButton, toggleSetting, showSetting, setting, setConfig
                 name="mode"
                 style={{
                   height: 37,
+                  fontSize: 16,
+                  width: '100%',
                 }}
                 ref={ref => register({ ref })}
-                className="Setting-select"
                 defaultValue={setting.mode}
               >
                 {[
@@ -95,49 +137,71 @@ function Setting({ settingButton, toggleSetting, showSetting, setting, setConfig
               </select>
             </div>
 
-            <h2 className="Setting-h3">Display columns</h2>
-            <div>
-              <label className="Setting-label">
-                <input
-                  name="showError"
-                  className="Setting-styled-checkbox"
-                  type="checkbox"
-                  ref={ref => register({ ref })}
-                  defaultChecked={setting.showError}
-                />
-                Errors
-              </label>
-            </div>
+            <h2>Display columns</h2>
+            <label
+              style={{
+                marginBottom: 10,
+                display: 'block',
+              }}
+            >
+              <input
+                name="showError"
+                type="checkbox"
+                style={{
+                  marginRight: 10,
+                }}
+                ref={ref => register({ ref })}
+                defaultChecked={setting.showError}
+              />
+              Errors
+            </label>
 
-            <div>
-              <label className="Setting-label">
-                <input
-                  name="showWatch"
-                  className="Setting-styled-checkbox"
-                  type="checkbox"
-                  ref={ref => register({ ref })}
-                  defaultChecked={setting.showWatch}
-                />
-                Watch
-              </label>
-            </div>
+            <label
+              style={{
+                marginBottom: 10,
+                display: 'block',
+              }}
+            >
+              <input
+                name="showWatch"
+                type="checkbox"
+                style={{
+                  marginRight: 10,
+                }}
+                ref={ref => register({ ref })}
+                defaultChecked={setting.showWatch}
+              />
+              Watch
+            </label>
 
-            <div>
-              <label className="Setting-label">
-                <input
-                  name="showSubmit"
-                  className="Setting-styled-checkbox"
-                  type="checkbox"
-                  defaultChecked={setting.showSubmit}
-                  ref={ref => register({ ref })}
-                />
-                Prepare Submit
-              </label>
-            </div>
+            <label
+              style={{
+                marginBottom: 10,
+                display: 'block',
+              }}
+            >
+              <input
+                name="showSubmit"
+                type="checkbox"
+                style={{
+                  marginRight: 10,
+                }}
+                defaultChecked={setting.showSubmit}
+                ref={ref => register({ ref })}
+              />
+              Prepare Submit
+            </label>
 
-            <input type="submit" value="Update" className="Setting-submit" />
+            <input
+              style={{
+                marginTop: 30,
+                height: 55,
+                textTransform: 'uppercase',
+                letterSpacing: '0.5rem',
+                background: 'white'
+              }} type="submit" value="Update" />
           </form>
-        </div>
+        </Root>
       )}
     />
   );

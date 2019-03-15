@@ -1,14 +1,3 @@
-.Builder {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100vw;
-  background: #0e101c;
-  z-index: 4;
-  color: white;
-}
-
 .Builder > h1 {
   font-weight: 300;
   color: white;

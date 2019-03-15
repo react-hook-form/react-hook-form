@@ -2,6 +2,7 @@ import React, { useState, useRef } from 'react';
 import useForm from './src';
 import Setting from './Setting';
 import { Animate } from 'react-simple-animate';
+import { SubHeading, Heading } from './styles/typography';
 import Builder from './Builder';
 import './App.css';
 import ButtonGroup from './ButtonGroup';
@@ -161,7 +162,7 @@ function App() {
           startStyle={{ minHeight: '100vh', filter: 'blur(0)', transform: 'scale(1)' }}
           endStyle={{ minHeight: '100vh', filter: 'blur(3px)', transform: 'scale(0.9) rotateX(5deg)' }}
         >
-          <h1 className="App-h1">
+          <Heading>
             <Logo viewBox="0 0 100 100">
               <title>118all</title>
               <path d="M73.56,13.32H58.14a8.54,8.54,0,0,0-16.27,0H26.44a11,11,0,0,0-11,11V81.63a11,11,0,0,0,11,11H73.56a11,11,0,0,0,11-11V24.32A11,11,0,0,0,73.56,13.32Zm-30.92,2a1,1,0,0,0,1-.79,6.54,6.54,0,0,1,12.78,0,1,1,0,0,0,1,.79h5.38v6.55a3,3,0,0,1-3,3H40.25a3,3,0,0,1-3-3V15.32ZM82.56,81.63a9,9,0,0,1-9,9H26.44a9,9,0,0,1-9-9V24.32a9,9,0,0,1,9-9h8.81v6.55a5,5,0,0,0,5,5h19.5a5,5,0,0,0,5-5V15.32h8.81a9,9,0,0,1,9,9Z" />
@@ -174,10 +175,10 @@ function App() {
               <path d="M71.1,69.49H53.45a1,1,0,1,0,0,2H71.1a1,1,0,0,0,0-2Z" />
             </Logo>
             React Forme
-          </h1>
-          <p className="App-sub-heading">
-            Performance, flexible and extensible forms with easy to use feedback for validation.
-          </p>
+          </Heading>
+          <SubHeading>
+            Performance, flexible and extensible forms with easy to use for validation.
+          </SubHeading>
 
           <ButtonGroup
             toggleBuilder={toggleBuilder}
