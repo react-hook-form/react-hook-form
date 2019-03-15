@@ -2,7 +2,6 @@ import { useRef, useState, useEffect } from 'react';
 import getFieldsValues from './logic/getFieldsValues';
 import validateField from './logic/validateField';
 import findMissDomAndClean from './logic/findMissDomAndClean';
-import { TEXT_INPUTS } from './constants';
 import detectRegistered from './logic/detectRegistered';
 import getFieldValue from './logic/getFieldValue';
 import removeAllEventListeners from './logic/removeAllEventListeners';

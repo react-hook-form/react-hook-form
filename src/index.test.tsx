@@ -89,30 +89,4 @@ describe('useForm', () => {
       .simulate('submit');
     expect(onSubmit).toBeCalled();
   });
-
-  it('should remove all event listeners when mode changes', () => {
-    const onSubmit = jest.fn();
-
-    function Test({ mode = 'onChange' }) {
-      // @ts-ignore
-      const { register, handleSubmit, errors } = useForm({ mode });
-      return (
-        <form onSubmit={handleSubmit(onSubmit)}>
-          <input type="text" name="test" ref={ref => register({ ref, required: true })} />
-          {errors.test && errors.test.required && <span>error</span>}
-          <input type="text" value="2" name="test1" ref={ref => register({ ref })} />
-          <input type="text" name="test2" ref={ref => register({ ref })} />
-          <input type="text" name="test3" ref={ref => register({ ref })} />
-          <input type="text" name="test4" ref={ref => register({ ref })} />
-        </form>
-      );
-    }
-
-    const tree = mount(<Test />);
-    tree
-      .find('form')
-      .at(0)
-      .simulate('submit');
-    expect(onSubmit).not.toBeCalled();
-  });
 });
