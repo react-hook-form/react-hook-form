@@ -59,6 +59,11 @@ const Footer = styled.footer`
   }
 `;
 
+const Pre = styled.pre`
+  text-align: left;
+  padding: 0 20px;
+`;
+
 const Logo = styled.svg`
   height: 45px;
   fill: white;
@@ -280,14 +285,10 @@ function App() {
             {setting.showError && (
               <section>
                 <h2 className="App-h2">Errors</h2>
-                <pre
-                  style={{
-                    textAlign: 'left',
-                    padding: '0 20px',
-                  }}
-                >
-                  {Object.keys(errors).length ? JSON.stringify(errors, null, 2) : ''}
-                </pre>
+                {!Object.keys(errors).length && <p>ⓘ Press submit to trigger validation error.</p>}
+                <Animate play={Object.keys(errors).length} startStyle={{ opacity: 0 }} endStyle={{ opacity: 1 }}>
+                  <Pre>{Object.keys(errors).length ? JSON.stringify(errors, null, 2) : ''}</Pre>
+                </Animate>
               </section>
             )}
 
@@ -295,28 +296,28 @@ function App() {
               setting.mode !== 'onSubmit' && (
                 <section>
                   <h2 className="App-h2">Watch</h2>
-                  <pre
-                    style={{
-                      textAlign: 'left',
-                      padding: '0 20px',
-                    }}
+                  {!Object.keys(watch() || {}).length && <p>ⓘ Change input value to see watched values.</p>}
+                  <Animate
+                    play={Object.keys(watch() || {}).length > 0}
+                    startStyle={{ opacity: 0 }}
+                    endStyle={{ opacity: 1 }}
                   >
-                    {JSON.stringify(watch(), null, 2)}
-                  </pre>
+                    <pre>{JSON.stringify(watch(), null, 2)}</pre>
+                  </Animate>
                 </section>
               )}
 
             {setting.showSubmit && (
               <section>
                 <h2 className="App-h2">Submit</h2>
-                <pre
-                  style={{
-                    textAlign: 'left',
-                    padding: '0 20px',
-                  }}
+                {!Object.keys(submitData).length && <p>ⓘ Successful submission values will display here.</p>}
+                <Animate
+                  play={Object.keys(submitData).length}
+                  startStyle={{ opacity: 0 }}
+                  endStyle={{ opacity: 1 }}
                 >
-                  {Object.keys(submitData).length ? JSON.stringify(submitData, null, 2) : ''}
-                </pre>
+                  <Pre>{Object.keys(submitData).length ? JSON.stringify(submitData, null, 2) : ''}</Pre>
+                </Animate>
               </section>
             )}
           </Wrapper>

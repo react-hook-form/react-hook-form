@@ -104,7 +104,7 @@ export default function useForm({ mode }: { mode: 'onSubmit' | 'onBlur' | 'onCha
       allFields[name].options.push({
         ...data,
         mutationWatcher: onDomRemove(ref, () => removeReferenceAndEventListeners(data, true)),
-      });register
+      });
     } else {
       allFields[name] = data;
       allFields[name].mutationWatcher = onDomRemove(ref, () => removeReferenceAndEventListeners(data, true));

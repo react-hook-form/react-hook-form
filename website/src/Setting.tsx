@@ -61,21 +61,29 @@ function Setting({ settingButton, toggleSetting, showSetting, setting, setConfig
                 marginBottom: '30px',
               }}
             >
-              <p>Mode: How is the form validation behave</p>
+              <p>When to trigger validation?</p>
 
-              <select name="mode" ref={ref => register({ ref })} className="Setting-select" defaultValue={setting.mode}>
+              <select
+                name="mode"
+                style={{
+                  height: 37,
+                }}
+                ref={ref => register({ ref })}
+                className="Setting-select"
+                defaultValue={setting.mode}
+              >
                 {[
                   {
                     value: 'onSubmit',
-                    name: 'validation on submit',
+                    name: 'on submit',
                   },
                   {
                     value: 'onChange',
-                    name: 'validation on change',
+                    name: 'on change',
                   },
                   {
                     value: 'onBlur',
-                    name: 'validation on blur',
+                    name: 'on blur',
                   },
                 ].map(({ value, name }) => {
                   return (

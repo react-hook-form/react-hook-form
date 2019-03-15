@@ -1,4 +1,4 @@
-import React, {useState, useRef, useEffect} from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import './Builder.css';
 import { Animate } from 'react-simple-animate';
 import SyntaxHighlighter from 'react-syntax-highlighter';
@@ -61,12 +61,15 @@ function Builder({ formData, updateFormData, showBuilder, toggleBuilder, editFor
     return !copyFormData.current.find(data => data[name] === value);
   }
 
-  useEffect(() => {
-    if (showBuilder) {
-      // @ts-ignore
-      closeButton.current.focus();
-    }
-  });
+  useEffect(
+    () => {
+      if (showBuilder && closeButton.current) {
+        // @ts-ignore
+        closeButton.current.focus();
+      }
+    },
+    [showBuilder],
+  );
 
   return (
     <Animate
@@ -95,11 +98,13 @@ function Builder({ formData, updateFormData, showBuilder, toggleBuilder, editFor
                   padding: 20,
                   right: 20,
                   top: 10,
-                  background: 'none',
                   color: 'white',
                   cursor: 'pointer',
                   border: 'none',
                   fontWeight: 200,
+                  zIndex: 5,
+                  background: colors.primary,
+                  borderRadius: 10,
                 }}
                 ref={closeButton}
                 tabIndex={0}
@@ -152,9 +157,18 @@ function Builder({ formData, updateFormData, showBuilder, toggleBuilder, editFor
                       })
                     }
                   />
-                  {errors['name'] && <p className="form-error-msg">This is required.</p>}
-                  {errors['name'] &&
-                    errors['name']['custom'] && <p className="form-error-msg">Name required to be unique.</p>}
+                  <Animate
+                    play={errors['name']}
+                    durationSeconds={0.6}
+                    startStyle={{
+                      maxHeight: 0,
+                    }}
+                    endStyle={{ maxHeight: 20 }}
+                  >
+                    {errors['name'] && <p className="form-error-msg">This is required.</p>}
+                    {errors['name'] &&
+                      errors['name']['custom'] && <p className="form-error-msg">Name required to be unique.</p>}
+                  </Animate>
 
                   <label>Type: </label>
                   <select name="type" ref={ref => register({ ref })} value={editFormData.type}>
@@ -251,11 +265,7 @@ function Builder({ formData, updateFormData, showBuilder, toggleBuilder, editFor
                     </fieldset>
                   </Animate>
 
-                  <SubmitButton
-                    type="submit"
-                    value={editIndex >= 0 ? 'Update' : 'Create'}
-                    className="Builder-form-submit"
-                  />
+                  <SubmitButton type="submit" value={editIndex >= 0 ? 'Update' : 'Create'} />
 
                   <h2
                     className="Builder-h2"
@@ -285,7 +295,6 @@ function Builder({ formData, updateFormData, showBuilder, toggleBuilder, editFor
                         onClick={() => toggleBuilder(false)}
                         background="black"
                         value="Generate From"
-                        className="Builder-form-submit"
                       />
                     )}
                   />
