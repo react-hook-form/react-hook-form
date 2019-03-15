@@ -49,14 +49,14 @@ const SubmitButton = styled.input`
 `;
 
 const Form = styled.form`
-  fieldset {
+  & fieldset {
     border-radius: 4px;
     border: 1px solid #6a6b7f;
     display: flex;
     padding: 10px 20px;
   }
 
-  fieldset > input {
+  & fieldset > input {
     display: block;
     box-sizing: border-box;
     width: 100%;
@@ -67,7 +67,7 @@ const Form = styled.form`
     font-size: 14px;
   }
 
-  label {
+  & label {
     line-height: 2;
     text-align: left;
     display: block;
@@ -141,7 +141,7 @@ function Builder({ formData, updateFormData, showBuilder, toggleBuilder, editFor
       render={({ style }) => {
         return (
           <Root style={style}>
-            <Wrapper
+            <div
               style={{
                 overflow: 'auto',
                 height: '100vh',
@@ -173,7 +173,7 @@ function Builder({ formData, updateFormData, showBuilder, toggleBuilder, editFor
               <Heading>Builder</Heading>
               <SubHeading>Build your own form with code and example.</SubHeading>
 
-              <Form>
+              <Wrapper>
                 <div
                   style={{
                     paddingLeft: '20px',
@@ -373,8 +373,8 @@ function Builder({ formData, updateFormData, showBuilder, toggleBuilder, editFor
                   </CopyButton>
                   <SyntaxHighlighter style={monokaiSublime}>{generateCode(formData)}</SyntaxHighlighter>
                 </div>
-              </Form>
-            </Wrapper>
+              </Wrapper>
+            </div>
           </Root>
         );
       }}

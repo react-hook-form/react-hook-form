@@ -137,7 +137,7 @@ function App() {
   return (
     <Root>
       <Builder
-        showBuilder={!showBuilder}
+        showBuilder={showBuilder}
         toggleBuilder={toggleBuilder}
         editFormData={editFormData}
         setFormData={setFormData}
