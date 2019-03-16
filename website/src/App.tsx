@@ -1,14 +1,15 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, Suspense } from 'react';
 import useForm from './src';
-import Setting from './Setting';
 import { Animate } from 'react-simple-animate';
 import { SubHeading, Heading } from './styles/typography';
-import Builder from './Builder';
 import ButtonGroup from './ButtonGroup';
 import styled from 'styled-components';
 import FORM_DATA from './constants/formData';
 import colors from './styles/colors';
 import Home from './Home';
+
+const Setting = React.lazy(() => import('./Setting'));
+const Builder = React.lazy(() => import('./Builder'));
 
 const Root = styled.div`
   overflow: hidden;
@@ -96,6 +97,7 @@ function App() {
   const builderButton = useRef(null);
   const [editFormData, setFormData] = useState({});
   const [showSetting, toggleSetting] = useState(false);
+  const [showApi, toggleApi] = useState(false);
   const [showBuilder, toggleBuilder] = useState(false);
   const [formData, updateFormData] = useState(FORM_DATA);
   const [setting, setConfig] = useState<{
@@ -119,23 +121,28 @@ function App() {
 
   return (
     <Root>
-      <Builder
-        showBuilder={showBuilder}
-        toggleBuilder={toggleBuilder}
-        editFormData={editFormData}
-        setFormData={setFormData}
-        formData={formData}
-        updateFormData={updateFormData}
-        builderButton={builderButton}
-        isMobile={isMobile}
-      />
-      <Setting
-        settingButton={settingButton}
-        toggleSetting={toggleSetting}
-        setting={setting}
-        showSetting={showSetting}
-        setConfig={setConfig}
-      />
+      <Suspense fallback={<span></span>}>
+        <Builder
+          showBuilder={showBuilder}
+          toggleBuilder={toggleBuilder}
+          editFormData={editFormData}
+          setFormData={setFormData}
+          formData={formData}
+          updateFormData={updateFormData}
+          builderButton={builderButton}
+          isMobile={isMobile}
+        />
+      </Suspense>
+
+      <Suspense fallback={<span></span>}>
+        <Setting
+          settingButton={settingButton}
+          toggleSetting={toggleSetting}
+          setting={setting}
+          showSetting={showSetting}
+          setConfig={setConfig}
+        />
+      </Suspense>
 
       {isMobile && (
         <ButtonGroup
