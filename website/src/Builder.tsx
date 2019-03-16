@@ -9,6 +9,7 @@ import colors from './styles/colors';
 import SortableContainer from './SortableContainer';
 import copyClipBoard from './utils/copyClipBoard';
 import { SubHeading, Heading, Error, Title } from './styles/typography';
+const errorStyle = { border: `1px solid ${colors.secondary}`, background: colors.errorPink };
 
 const Root = styled.main`
   position: fixed;
@@ -99,7 +100,7 @@ const CopyButton = styled.button`
   }
 `;
 
-function Builder({ formData, updateFormData, showBuilder, toggleBuilder, editFormData, setFormData }) {
+function Builder({ formData, updateFormData, showBuilder, toggleBuilder, editFormData, setFormData, builderButton }) {
   const { register, handleSubmit, errors = {}, watch } = useForm();
   const [editIndex, setEditIndex] = useState(-1);
   const copyFormData = useRef([]);
@@ -166,6 +167,7 @@ function Builder({ formData, updateFormData, showBuilder, toggleBuilder, editFor
                 tabIndex={0}
                 onClick={() => {
                   toggleBuilder(false);
+                  builderButton.current.focus();
                 }}
               >
                 &#10005;
@@ -196,15 +198,17 @@ function Builder({ formData, updateFormData, showBuilder, toggleBuilder, editFor
                   )}
                 </div>
 
-                <Form className="Builder-form" onSubmit={handleSubmit(onSubmit)}>
+                <Form onSubmit={handleSubmit(onSubmit)}>
                   <Title>Field Creator</Title>
 
                   <label>Name: </label>
                   <input
-                    className={errors['name'] && 'form-error'}
                     autoComplete="off"
                     defaultValue={editFormData.name}
                     name="name"
+                    style={{
+                      ...(errors['name'] ? errorStyle : null),
+                    }}
                     ref={ref =>
                       register({
                         ref,
@@ -323,15 +327,14 @@ function Builder({ formData, updateFormData, showBuilder, toggleBuilder, editFor
 
                   <SubmitButton type="submit" value={editIndex >= 0 ? 'Update' : 'Create'} />
 
-                  <h2
-                    className="Builder-h2"
+                  <Title
                     style={{
                       marginTop: 30,
                       fontSize: 14,
                     }}
                   >
                     or
-                  </h2>
+                  </Title>
 
                   <Animate
                     play={formData.length > 0}
@@ -348,7 +351,10 @@ function Builder({ formData, updateFormData, showBuilder, toggleBuilder, editFor
                         style={style}
                         type="button"
                         color="white"
-                        onClick={() => toggleBuilder(false)}
+                        onClick={() => {
+                          toggleBuilder(false);
+                          builderButton.current.focus();
+                        }}
                         background="black"
                         value="Generate From"
                       />

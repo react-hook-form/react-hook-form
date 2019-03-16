@@ -59,9 +59,10 @@ const Footer = styled.footer`
   }
 `;
 
-const Pre = styled.pre`
+const Code = styled.pre`
   text-align: left;
   padding: 0 20px;
+  white-space: pre-wrap;
 `;
 
 const Logo = styled.svg`
@@ -111,6 +112,7 @@ const errorStyle = { border: `1px solid ${colors.secondary}`, background: colors
 function App() {
   const [submitData, updateSubmitData] = useState({});
   const settingButton = useRef(null);
+  const builderButton = useRef(null);
   const [editFormData, setFormData] = useState({});
   const [showSetting, toggleSetting] = useState(false);
   const [showBuilder, toggleBuilder] = useState(false);
@@ -143,6 +145,7 @@ function App() {
         setFormData={setFormData}
         formData={formData}
         updateFormData={updateFormData}
+        builderButton={builderButton}
       />
       <Setting
         settingButton={settingButton}
@@ -178,6 +181,7 @@ function App() {
           <SubHeading>Performance, flexible and extensible forms with easy to use for validation.</SubHeading>
 
           <ButtonGroup
+            builderButton={builderButton}
             toggleBuilder={toggleBuilder}
             toggleSetting={toggleSetting}
             showSetting={showSetting}
@@ -250,7 +254,18 @@ function App() {
                         type={field.type}
                         name={field.name}
                         placeholder={field.name}
-                        ref={ref => register({ ref, required: field.required })}
+                        ref={ref =>
+                          // @ts-ignore
+                          register({
+                            ref,
+                            required: field.required,
+                            ...(field.pattern ? { pattern: field.pattern } : null),
+                            ...(field.max ? { max: field.max } : null),
+                            ...(field.min ? { min: field.min } : null),
+                            ...(field.maxLength ? { maxLength: field.maxLength } : null),
+                            ...(field.minLength ? { minLength: field.minLength } : null),
+                          })
+                        }
                       />
                     );
                 }
@@ -258,15 +273,14 @@ function App() {
 
               <SubmitButton type="submit" value="Submit" className="App-submit" />
 
-              <h2
-                className="Builder-h2"
+              <Title
                 style={{
                   marginTop: 30,
                   fontSize: 14,
                 }}
               >
                 or
-              </h2>
+              </Title>
 
               <SubmitButton
                 type="button"
@@ -284,8 +298,13 @@ function App() {
               <section>
                 <Title>Errors</Title>
                 {!Object.keys(errors).length && <p>ⓘ Press submit to trigger validation error.</p>}
-                <Animate play={Object.keys(errors).length} startStyle={{ opacity: 0 }} endStyle={{ opacity: 1 }}>
-                  <Pre>{Object.keys(errors).length ? JSON.stringify(errors, null, 2) : ''}</Pre>
+                <Animate
+                  durationSeconds={0.8}
+                  play={Object.keys(errors).length}
+                  startStyle={{ opacity: 0 }}
+                  endStyle={{ opacity: 1 }}
+                >
+                  <Code>{Object.keys(errors).length ? JSON.stringify(errors, null, 2) : ''}</Code>
                 </Animate>
               </section>
             )}
@@ -296,11 +315,12 @@ function App() {
                   <Title>Watch</Title>
                   {!Object.keys(watch() || {}).length && <p>ⓘ Change input value to see watched values.</p>}
                   <Animate
+                    durationSeconds={0.8}
                     play={Object.keys(watch() || {}).length > 0}
                     startStyle={{ opacity: 0 }}
                     endStyle={{ opacity: 1 }}
                   >
-                    <pre>{JSON.stringify(watch(), null, 2)}</pre>
+                    <Code>{JSON.stringify(watch(), null, 2)}</Code>
                   </Animate>
                 </section>
               )}
@@ -309,8 +329,13 @@ function App() {
               <section>
                 <Title>Submit</Title>
                 {!Object.keys(submitData).length && <p>ⓘ Successful submission values will display here.</p>}
-                <Animate play={Object.keys(submitData).length} startStyle={{ opacity: 0 }} endStyle={{ opacity: 1 }}>
-                  <Pre>{Object.keys(submitData).length ? JSON.stringify(submitData, null, 2) : ''}</Pre>
+                <Animate
+                  durationSeconds={0.8}
+                  play={Object.keys(submitData).length}
+                  startStyle={{ opacity: 0 }}
+                  endStyle={{ opacity: 1 }}
+                >
+                  <Code>{Object.keys(submitData).length ? JSON.stringify(submitData, null, 2) : ''}</Code>
                 </Animate>
               </section>
             )}
