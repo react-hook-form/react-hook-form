@@ -9,11 +9,11 @@ const Root = styled.div`
   position: fixed;
   height: 100vh;
   top: 0;
-  right: 0;
+  left: 0;
   z-index: 3;
   width: 20%;
   text-align: left;
-  box-shadow: -5px 0px 9px 0px ${colors.primary};
+  box-shadow: 5px 0px 9px 0px ${colors.primary};
   padding: 20px;
   min-width: 260px;
 
@@ -45,7 +45,7 @@ function Setting({ settingButton, toggleSetting, showSetting, setting, setConfig
       }}
       startStyle={{
         pointerEvents: 'none',
-        transform: 'translateX(600px)',
+        transform: 'translateX(-600px)',
       }}
       render={({ style }) => (
         <Root style={style}>

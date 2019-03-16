@@ -94,10 +94,14 @@ const Form = styled.form`
     box-sizing: border-box;
     width: 100%;
     border-radius: 4px;
-    border: none;
+    border: 1px solid white;
     padding: 10px 15px;
     margin-bottom: 10px;
     font-size: 14px;
+    
+    &:hover {
+      border: 1px solid ${colors.lightPink}
+    }
   }
 
   & label {
@@ -121,18 +125,11 @@ const CopyButton = styled.button`
   bottom: -30px;
   left: 0;
 
-  @media (min-width: 678px) {
-    bottom: 20px;
-    right: 40px;
-  }
-
   &:hover {
-    transition: 0.3s all;
     opacity: 0.8;
   }
 
   &:active {
-    transition: 0.3s all;
     transform: translateY(2px);
   }
 `;
@@ -154,8 +151,8 @@ const CloseButton = styled.button`
   @media (min-width: 768px) {
     font-size: 35px;
     padding: 20px;
-    right: 20px;
     top: 15px;
+    left: 20px;
   }
 `;
 
@@ -175,8 +172,14 @@ function Builder({
   const closeButton = useRef(null);
   const [showValidation, toggleValidation] = useState(false);
   const onSubmit = (data, event) => {
-    // @ts-ignore
-    updateFormData([...formData, ...[data]]);
+    if (editIndex >= 0) {
+      formData[editIndex] = data;
+      updateFormData([...formData]);
+      setEditIndex(-1);
+    } else {
+      // @ts-ignore
+      updateFormData([...formData, ...[data]]);
+    }
     event.target.reset();
   };
   const type = watch('type');
@@ -200,7 +203,7 @@ function Builder({
     <Animate
       play={showBuilder}
       type="ease-in"
-      durationSeconds={isMobile ? 0.3 : 0.8}
+      durationSeconds={isMobile ? 0.3 : 0.5}
       startStyle={{
         transform: 'translateY(100vh)',
       }}
@@ -356,15 +359,15 @@ function Builder({
                         required
                       </label>
                       <label defaultValue={editFormData.max}>Max</label>
-                      <input name="max" type="number" ref={ref => register({ ref })} />
+                      <input autoComplete="false" name="max" type="number" ref={ref => register({ ref })} />
                       <label defaultValue={editFormData.min}>Min</label>
-                      <input name="min" type="number" ref={ref => register({ ref })} />
+                      <input autoComplete="false" name="min" type="number" ref={ref => register({ ref })} />
                       <label defaultValue={editFormData.maxLength}>MaxLength</label>
-                      <input name="maxLength" type="number" ref={ref => register({ ref })} />
+                      <input autoComplete="false" name="maxLength" type="number" ref={ref => register({ ref })} />
                       <label defaultValue={editFormData.minLength}>MinLength</label>
-                      <input name="minLength" type="number" ref={ref => register({ ref })} />
+                      <input autoComplete="false" name="minLength" type="number" ref={ref => register({ ref })} />
                       <label>Pattern</label>
-                      <input
+                      <input autoComplete="false"
                         defaultValue={editFormData.pattern}
                         style={{
                           marginBottom: '20px',
