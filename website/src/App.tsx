@@ -12,8 +12,12 @@ import colors from './styles/colors';
 const Root = styled.div`
   overflow: hidden;
   color: white;
-  padding: 0 50px;
+  padding: 0 20px 50px;
   position: relative;
+
+  @media (min-width: 1024px) {
+    padding: 0 50px;
+  }
 
   & form > select,
   & form > input {
@@ -45,8 +49,12 @@ const Root = styled.div`
 
 const Footer = styled.footer`
   padding: 40px 0;
-  font-size: 16px;
+  font-size: 12px;
   font-weight: 200;
+  
+  @media (min-width: 768px) {
+    font-size: 16px;
+  }
 
   & > a {
     color: white;
@@ -66,16 +74,23 @@ const Code = styled.pre`
 `;
 
 const Logo = styled.svg`
-  height: 45px;
   fill: white;
+  height: 25px;
   top: 0;
   left: 0;
   background: #333;
-  padding: 9px;
-  border-radius: 12px;
-  margin-bottom: -10px;
-  margin-right: 20px;
+  padding: 5px;
+  border-radius: 8px;
+  margin-right: 10px;
+  margin-bottom: -5px;
   background: ${colors.lightPink};
+
+  @media (min-width: 1024px) {
+    height: 45px;
+    margin-bottom: -10px;
+    margin-right: 20px;
+    border-radius: 12px;
+  }
 `;
 
 const Wrapper = styled.div`
@@ -108,6 +123,7 @@ const RadioGroup = styled.div`
 `;
 
 const errorStyle = { border: `1px solid ${colors.secondary}`, background: colors.errorPink };
+const isMobile = window.matchMedia('(max-width: 768px)').matches;
 
 function App() {
   const [submitData, updateSubmitData] = useState({});
@@ -146,6 +162,7 @@ function App() {
         formData={formData}
         updateFormData={updateFormData}
         builderButton={builderButton}
+        isMobile={isMobile}
       />
       <Setting
         settingButton={settingButton}
@@ -154,7 +171,22 @@ function App() {
         showSetting={showSetting}
         setConfig={setConfig}
       />
+
+      {isMobile && <ButtonGroup
+        builderButton={builderButton}
+        toggleBuilder={toggleBuilder}
+        toggleSetting={toggleSetting}
+        showSetting={showSetting}
+        settingButton={settingButton}
+      />}
+
       <main
+        onClick={() => {
+          if (showSetting || showBuilder) {
+            toggleSetting(false);
+            toggleBuilder(false);
+          }
+        }}
         style={{
           perspective: '800px',
         }}
@@ -180,13 +212,13 @@ function App() {
           </Heading>
           <SubHeading>Performance, flexible and extensible forms with easy to use for validation.</SubHeading>
 
-          <ButtonGroup
+          {!isMobile && <ButtonGroup
             builderButton={builderButton}
             toggleBuilder={toggleBuilder}
             toggleSetting={toggleSetting}
             showSetting={showSetting}
             settingButton={settingButton}
-          />
+          />}
 
           <Wrapper>
             <form onSubmit={handleSubmit(onSubmit)}>

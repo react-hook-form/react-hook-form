@@ -2,9 +2,10 @@ import React, { useRef } from 'react';
 import { Animate } from 'react-simple-animate';
 import styled from 'styled-components';
 import useForm from './src';
+import colors from './styles/colors';
 
 const Root = styled.div`
-  background: #bf1650;
+  background: ${colors.secondary};
   position: fixed;
   height: 100vh;
   top: 0;
@@ -12,8 +13,9 @@ const Root = styled.div`
   z-index: 3;
   width: 20%;
   text-align: left;
-  box-shadow: -5px 0px 9px 0px black;
+  box-shadow: -5px 0px 9px 0px ${colors.primary};
   padding: 20px;
+  min-width: 260px;
 
   & > button {
     color: white;

@@ -6,7 +6,6 @@ import colors from './styles/colors';
 
 const List = styled.li`
   border: 1px solid #4e6294;
-  margin-left: -20px;
   list-style: none;
   padding: 14px 14px 14px 50px;
   border-radius: 3px;
@@ -34,12 +33,12 @@ const EditPanel = styled.div`
     border-radius: 4px;
     border: none;
     background: ${colors.lightBlue};
-    
+
     &:hover {
       transition: 0.3s all;
       opacity: 0.8;
     }
-    
+
     &:active {
       transition: 0.3s all;
       transform: translateY(2px);
@@ -54,6 +53,11 @@ const EditPanel = styled.div`
 
 const SortableWrapper = styled.div`
   margin-top: 30px;
+
+  & > ul {
+    margin-left: 0;
+    padding-left: 0;
+  }
 `;
 
 export default function SortableContainer({ updateFormData, formData, editIndex, setEditIndex, setFormData }) {

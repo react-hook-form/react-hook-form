@@ -16,10 +16,13 @@ const Root = styled.main`
   top: 0;
   left: 0;
   width: 100%;
-  height: 100vw;
+  height: 100vh;
   background: #0e101c;
   z-index: 4;
   color: white;
+  padding: 0 20px;
+  box-sizing: border-box;
+  -webkit-overflow-scrolling: touch;
 
   & pre,
   & code {
@@ -35,8 +38,37 @@ const Root = styled.main`
 
 const Wrapper = styled.div`
   display: grid;
-  grid-template-columns: 1fr 500px 1fr;
+  grid-template-columns: repeat(auto-fit, minmax(12rem, 1fr));
   grid-column-gap: 60px;
+  padding-bottom: 100px;
+
+  & > div:first-child {
+    margin-top: 50px;
+    order: 3;
+  }
+
+  & > form:nth-child(2) {
+    order: 1;
+  }
+
+  & > div:nth-child(3) {
+    order: 2;
+  }
+
+  @media (min-width: 768px) {
+    & > div:first-child {
+      margin-top: 0;
+      order: 1;
+    }
+
+    & > form:nth-child(2) {
+      order: 2;
+    }
+
+    & > div:nth-child(3) {
+      order: 3;
+    }
+  }
 `;
 
 const SubmitButton = styled.input`
@@ -86,8 +118,13 @@ const CopyButton = styled.button`
   padding: 5px 10px;
   display: inline-block;
   position: absolute;
-  bottom: 20px;
-  right: 40px;
+  bottom: -30px;
+  left: 0;
+
+  @media (min-width: 678px) {
+    bottom: 20px;
+    right: 40px;
+  }
 
   &:hover {
     transition: 0.3s all;
@@ -100,7 +137,38 @@ const CopyButton = styled.button`
   }
 `;
 
-function Builder({ formData, updateFormData, showBuilder, toggleBuilder, editFormData, setFormData, builderButton }) {
+const CloseButton = styled.button`
+  font-size: 30px;
+  top: 0;
+  right: 0;
+  padding: 20px;
+  position: absolute;
+  cursor: pointer;
+  border: none;
+  font-weight: 200;
+  z-index: 5;
+  border-radius: 10px;
+  color: white;
+  background: rgba(14, 16, 28, 0.5294117647058824);
+
+  @media (min-width: 768px) {
+    font-size: 35px;
+    padding: 20px;
+    right: 20px;
+    top: 15px;
+  }
+`;
+
+function Builder({
+  formData,
+  updateFormData,
+  showBuilder,
+  toggleBuilder,
+  editFormData,
+  setFormData,
+  builderButton,
+  isMobile,
+}) {
   const { register, handleSubmit, errors = {}, watch } = useForm();
   const [editIndex, setEditIndex] = useState(-1);
   const copyFormData = useRef([]);
@@ -132,9 +200,9 @@ function Builder({ formData, updateFormData, showBuilder, toggleBuilder, editFor
     <Animate
       play={showBuilder}
       type="ease-in"
-      durationSeconds={0.8}
+      durationSeconds={isMobile ? 0.3 : 0.8}
       startStyle={{
-        transform: 'translateY(100%)',
+        transform: 'translateY(100vh)',
       }}
       endStyle={{
         transform: 'translateY(0)',
@@ -146,23 +214,10 @@ function Builder({ formData, updateFormData, showBuilder, toggleBuilder, editFor
               style={{
                 overflow: 'auto',
                 height: '100vh',
+                background: colors.primary,
               }}
             >
-              <button
-                style={{
-                  position: 'absolute',
-                  fontSize: 35,
-                  padding: 20,
-                  right: 20,
-                  top: 15,
-                  color: 'white',
-                  cursor: 'pointer',
-                  border: 'none',
-                  fontWeight: 200,
-                  zIndex: 5,
-                  background: colors.primary,
-                  borderRadius: 10,
-                }}
+              <CloseButton
                 ref={closeButton}
                 tabIndex={0}
                 onClick={() => {
@@ -171,16 +226,12 @@ function Builder({ formData, updateFormData, showBuilder, toggleBuilder, editFor
                 }}
               >
                 &#10005;
-              </button>
+              </CloseButton>
               <Heading>Builder</Heading>
               <SubHeading>Build your own form with code and example.</SubHeading>
 
               <Wrapper>
-                <div
-                  style={{
-                    paddingLeft: '20px',
-                  }}
-                >
+                <div>
                   <Title>Form</Title>
 
                   <SortableContainer
@@ -199,7 +250,7 @@ function Builder({ formData, updateFormData, showBuilder, toggleBuilder, editFor
                 </div>
 
                 <Form onSubmit={handleSubmit(onSubmit)}>
-                  <Title>Field Creator</Title>
+                  <Title>Input Creator</Title>
 
                   <label>Name: </label>
                   <input
