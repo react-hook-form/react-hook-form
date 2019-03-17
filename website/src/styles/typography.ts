@@ -25,6 +25,12 @@ export const Heading = styled.h1`
   }
 `;
 
+export const HeadingWithTopMargin = styled(Heading)`
+  @media (min-width: 768px) {
+    margin-top: 130px;
+  }
+`;
+
 export const Title = styled.h2`
   text-align: center;
   font-weight: 200;

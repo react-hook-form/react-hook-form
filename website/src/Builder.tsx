@@ -23,6 +23,10 @@ const Root = styled.main`
   padding: 0 20px;
   box-sizing: border-box;
   -webkit-overflow-scrolling: touch;
+  
+  @media (min-width: 768px) {
+    padding-top: 87px;
+  }
 
   & pre,
   & code {

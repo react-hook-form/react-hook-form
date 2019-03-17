@@ -10,6 +10,7 @@ import Home from './Home';
 
 const Setting = React.lazy(() => import('./Setting'));
 const Builder = React.lazy(() => import('./Builder'));
+const Api = React.lazy(() => import('./Api'));
 
 const Root = styled.div`
   overflow: hidden;
@@ -83,9 +84,10 @@ const Logo = styled.svg`
 
   @media (min-width: 1024px) {
     height: 45px;
-    margin-bottom: -10px;
+    margin-bottom: -15px;
     margin-right: 20px;
     border-radius: 12px;
+    padding: 12px;
   }
 `;
 
@@ -95,6 +97,7 @@ function App() {
   const [submitData, updateSubmitData] = useState({});
   const settingButton = useRef(null);
   const builderButton = useRef(null);
+  const apiButton = useRef(null);
   const [editFormData, setFormData] = useState({});
   const [showSetting, toggleSetting] = useState(false);
   const [showApi, toggleApi] = useState(false);
@@ -119,9 +122,35 @@ function App() {
     updateSubmitData(data);
   };
 
+  const Buttons = (
+    <ButtonGroup
+      builderButton={builderButton}
+      toggleBuilder={toggleBuilder}
+      toggleSetting={toggleSetting}
+      showSetting={showSetting}
+      settingButton={settingButton}
+      showBuilder={showBuilder}
+      apiButton={apiButton}
+      showApi={showApi}
+      toggleApi={toggleApi}
+    />
+  );
+
   return (
     <Root>
-      <Suspense fallback={<span></span>}>
+      {!isMobile && Buttons}
+
+      <Suspense fallback={<span />}>
+        <Setting
+          settingButton={settingButton}
+          toggleSetting={toggleSetting}
+          setting={setting}
+          showSetting={showSetting}
+          setConfig={setConfig}
+        />
+      </Suspense>
+
+      <Suspense fallback={<span />}>
         <Builder
           showBuilder={showBuilder}
           toggleBuilder={toggleBuilder}
@@ -134,26 +163,21 @@ function App() {
         />
       </Suspense>
 
-      <Suspense fallback={<span></span>}>
-        <Setting
-          settingButton={settingButton}
-          toggleSetting={toggleSetting}
-          setting={setting}
-          showSetting={showSetting}
-          setConfig={setConfig}
+      <Suspense fallback={<span />}>
+        <Api
+          showApi={showApi}
+          toggleApi={toggleApi}
+          editFormData={editFormData}
+          setFormData={setFormData}
+          formData={formData}
+          updateFormData={updateFormData}
+          builderButton={builderButton}
+          isMobile={isMobile}
+          apiButton={apiButton}
         />
       </Suspense>
 
-      {isMobile && (
-        <ButtonGroup
-          builderButton={builderButton}
-          toggleBuilder={toggleBuilder}
-          toggleSetting={toggleSetting}
-          showSetting={showSetting}
-          settingButton={settingButton}
-          showBuilder={showBuilder}
-        />
-      )}
+      {isMobile && Buttons}
 
       <main
         onClick={() => {
@@ -167,7 +191,7 @@ function App() {
         }}
       >
         <Animate
-          play={showBuilder || showSetting}
+          play={showBuilder || showSetting || showApi}
           startStyle={{ minHeight: '100vh', filter: 'blur(0)', transform: 'scale(1)' }}
           endStyle={{ minHeight: '100vh', filter: 'blur(3px)', transform: 'scale(0.9) rotateX(5deg)' }}
         >
@@ -185,17 +209,6 @@ function App() {
             React Forme
           </Heading>
           <SubHeading>Performance, flexible and extensible forms with easy to use for validation.</SubHeading>
-
-          {!isMobile && (
-            <ButtonGroup
-              builderButton={builderButton}
-              toggleBuilder={toggleBuilder}
-              toggleSetting={toggleSetting}
-              showSetting={showSetting}
-              settingButton={settingButton}
-              showBuilder={showBuilder}
-            />
-          )}
 
           <Home
             {...{

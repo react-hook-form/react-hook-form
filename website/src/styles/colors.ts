@@ -4,4 +4,5 @@ export default {
   lightBlue: '#516391',
   lightPink: '#ec5990',
   errorPink: '#fbecf2',
+  buttonBlue: '#191d3a',
 };

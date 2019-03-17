@@ -9,8 +9,8 @@ const GithubIcon = styled.span`
   transition: 0.3s all;
 
   @media (min-width: 768px) {
-    right: 0;
-    top: 6px;
+    right: 20px;
+    top: 20px;
   }
 
   & svg {
@@ -24,6 +24,21 @@ const GithubIcon = styled.span`
   &:hover {
     opacity: 0.5;
   }
+`;
+
+const buttonStyle = `
+  cursor: pointer;
+  top: 0;
+  fill: ${colors.lightPink};
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  font-size: 12px;
+  background: none;
+  color: white;
+  border: none;
+  transition: 0.3s all;
 `;
 
 const hoverStyle = `
@@ -45,67 +60,30 @@ const hoverStyle = `
 `;
 
 const SettingButton = styled.button`
-  fill: ${colors.lightPink};
   left: 0;
-  top: 0;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  font-size: 12px;
-  background: none;
-  color: white;
-  border: none;
-  transition: 0.3s all;
+  ${buttonStyle};
 
   @media (min-width: 768px) {
-    position: absolute;
-    top: 6px;
   }
 
   ${hoverStyle};
 `;
 
-const ApiButton = styled.div`
-  fill: ${colors.lightPink};
-  left: 200px;
-  top: 0;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  font-size: 12px;
-  background: none;
-  color: white;
-  border: none;
-  transition: 0.3s all;
+const ApiButton = styled.button`
+  left: 160px;
+  ${buttonStyle};
 
   @media (min-width: 768px) {
-    position: absolute;
-    top: 6px;
   }
 
   ${hoverStyle};
 `;
 
 const BuildButton = styled.button`
-  fill: ${colors.lightPink};
-  left: 90px;
-  top: 0;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  font-size: 12px;
-  background: none;
-  color: white;
-  border: none;
-  transition: 0.3s all;
-  cursor: pointer;
+  left: 70px;
+  ${buttonStyle};
 
   @media (min-width: 768px) {
-    position: absolute;
-    top: 6px;
   }
 
   ${hoverStyle};
@@ -124,6 +102,14 @@ const ActionButtonGroup = styled.div`
 
   @media (min-width: 768px) {
     position: inherit;
+    background: none;
+    border: none;
+    max-width: 500px;
+    margin: 0 auto;
+    padding: 20px;
+    background: ${colors.buttonBlue};
+    border-radius: 0 0 30px 30px;
+    box-shadow: 0 0 10px 0 #000;
   }
 
   & > button {
@@ -138,7 +124,7 @@ const ActionButtonGroup = styled.div`
   }
 
   & > button:first-child {
-    border-right: 1px solid #191d3a;
+    border-right: 1px solid ${colors.buttonBlue};
 
     @media (min-width: 768px) {
       border: none;
@@ -163,13 +149,9 @@ export default function ButtonGroup({
   showBuilder,
   settingButton,
   builderButton,
-}: {
-  toggleBuilder?: any;
-  toggleSetting?: any;
-  showSetting?: any;
-  showBuilder?: any;
-  settingButton?: any;
-  builderButton?: any;
+  apiButton,
+  showApi,
+  toggleApi,
 }) {
   return (
     <>
@@ -184,7 +166,7 @@ export default function ButtonGroup({
         </a>
       </GithubIcon>
       <ActionButtonGroup>
-        <ApiButton>
+        <ApiButton onClick={() => toggleApi(!showApi)} ref={apiButton}>
           <svg viewBox="0 10 100 100">
             <g>
               <path d="M15.6,84.8h68.8c5.5,0,10-4.5,10-10V32.6v-7.4c0-5.5-4.5-10-10-10H15.6c-5.5,0-10,4.5-10,10v7.4v42.2   C5.6,80.3,10.1,84.8,15.6,84.8z M7.6,25.2c0-4.4,3.6-8,8-8h68.8c4.4,0,8,3.6,8,8v5.4H7.6V25.2z M7.6,32.6h84.8v42.2   c0,4.4-3.6,8-8,8H15.6c-4.4,0-8-3.6-8-8V32.6z" />
@@ -208,7 +190,6 @@ export default function ButtonGroup({
         <SettingButton
           className="App-setting"
           onClick={() => toggleSetting(!showSetting)}
-          style={{ cursor: 'pointer' }}
           ref={settingButton}
         >
           <svg viewBox="0 0 100 110">
