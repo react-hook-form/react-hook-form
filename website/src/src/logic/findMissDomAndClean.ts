@@ -32,7 +32,7 @@ export default function findMissDomAndClean({
     }
   } else if (ref && (!document.body.contains(ref) || forceDelete)) {
     removeAllEventListeners(ref, validateWithStateUpdate);
-    if (mutationWatcher) mutationWatcher.disconnect();
+    mutationWatcher.disconnect();
     delete fields[name];
     return fields;
   }
