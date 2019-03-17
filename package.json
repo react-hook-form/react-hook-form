@@ -1,6 +1,6 @@
 {
   "name": "react-forme",
-  "version": "0.0.1-beta.4",
+  "version": "0.0.1",
   "main": "dist/index.js",
   "module": "dist/index.es.js",
   "types": "dist/index.d.ts",
