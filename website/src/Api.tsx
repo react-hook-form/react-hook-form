@@ -240,7 +240,9 @@ function Builder({ formData, updateFormData, showApi, toggleApi, apiButton, isMo
                   </h2>
                 </code>
                 <p>
-                  function to register <code>Ref</code> into <code>react-forme</code>
+                  function to register <code>Ref</code> into <code>react-forme</code> and also includes validation
+                  rules. Validation rules are all based on html input validation standard except there one method{' '}
+                  <code>custom</code> which allow you to do some custom validations.
                 </p>
                 <p
                   style={{

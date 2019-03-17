@@ -1,28 +1,8 @@
 import React from 'react';
-import { Heading, SubHeading, Title } from './styles/typography';
+import { Title } from './styles/typography';
 import colors from './styles/colors';
 import { Animate } from 'react-simple-animate';
 import styled from 'styled-components';
-
-const Logo = styled.svg`
-  fill: white;
-  height: 25px;
-  top: 0;
-  left: 0;
-  background: #333;
-  padding: 5px;
-  border-radius: 8px;
-  margin-right: 10px;
-  margin-bottom: -5px;
-  background: ${colors.lightPink};
-
-  @media (min-width: 1024px) {
-    height: 45px;
-    margin-bottom: -10px;
-    margin-right: 20px;
-    border-radius: 12px;
-  }
-`;
 
 const Code = styled.pre`
   text-align: left;
