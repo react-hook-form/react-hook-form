@@ -1,5 +1,5 @@
 import * as React from 'react';
-import useForm from './';
+import useForm from '.';
 import { mount } from 'enzyme';
 import detectRegistered from './logic/detectRegistered';
 

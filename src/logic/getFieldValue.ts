@@ -1,6 +1,6 @@
 import getRadioValue from './getRadioValue';
 import getMultipleSelectValue from './getMultipleSelectValue';
-import { Field } from '../index';
+import { Field } from '..';
 import isRadioInput from "../utils/isRadioInput";
 
 export default function getFieldValue(

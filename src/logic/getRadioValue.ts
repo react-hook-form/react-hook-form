@@ -1,4 +1,4 @@
-import { RegisterInput } from '../index';
+import { RegisterInput } from '..';
 
 const defaultReturn = {
   isValid: false,
