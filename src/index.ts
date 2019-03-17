@@ -160,7 +160,7 @@ export default function useForm({ mode }: { mode: 'onSubmit' | 'onBlur' | 'onCha
         const hasError = fieldError && fieldError[name];
 
         if (hasError && !fields.current[name].eventAttached) {
-          if (isRadioInput(type)) {
+          if (isRadioInput(type) && Array.isArray(options)) {
             options.forEach(option => {
               if (!option.eventAttached) return;
               option.ref.addEventListener('change', validateWithStateUpdate);

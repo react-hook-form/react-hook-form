@@ -5,6 +5,7 @@ import { monokaiSublime } from 'react-syntax-highlighter/dist/esm/styles/hljs';
 import styled from 'styled-components';
 import colors from './styles/colors';
 import { SubHeading, HeadingWithTopMargin, Title } from './styles/typography';
+import { setHomePage } from './ButtonGroup';
 
 const code = `import React from 'react'
 import useForm from 'react-forme // import react-form
@@ -55,9 +56,7 @@ const Root = styled.main`
   padding: 0 20px;
   box-sizing: border-box;
   -webkit-overflow-scrolling: touch;
-  
-  @media (min-width: 768px) {
-  }
+  overflow: hidden;
   
   & hr {
     border: none;
@@ -89,6 +88,11 @@ const Table = styled.table`
   }
 `;
 
+const TableWrapper = styled.div`
+  overflow: scroll;
+  -webkit-overflow-scrolling: touch;
+`;
+
 const Type = styled.span`
   font-weight: 100;
   font-size: 16px;
@@ -98,6 +102,7 @@ const Type = styled.span`
 const Wrapper = styled.div`
   max-width: 1024px;
   margin: 0 auto;
+  overflow: hidden;
 `;
 
 const CloseButton = styled.button`
@@ -164,6 +169,7 @@ function Builder({ formData, updateFormData, showApi, toggleApi, apiButton, isMo
                 onClick={() => {
                   toggleApi(false);
                   apiButton.current.focus();
+                  setHomePage();
                 }}
               >
                 &#10005;
@@ -195,42 +201,44 @@ function Builder({ formData, updateFormData, showApi, toggleApi, apiButton, isMo
                   <p>you need to initialize react form hook before you can start register your inputs.</p>
                 </code>
 
-                <Table>
-                  <tbody>
-                    <tr>
-                      <th>Name</th>
-                      <th>Type</th>
-                      <th>Description</th>
-                    </tr>
-                    <tr>
-                      <td>onSubmit</td>
-                      <td>
-                        <Type>string</Type>
-                      </td>
-                      <td>
-                        This is the default option, validation will trigger on submit and then attach{' '}
-                        <code>onchange</code> event to those fields which are invalid.
-                      </td>
-                    </tr>
-                    <tr>
-                      <td>onBlur</td>
-                      <td>
-                        <Type>string</Type>
-                      </td>
-                      <td>Validation will trigger on each input blur event.</td>
-                    </tr>
-                    <tr>
-                      <td>onChange</td>
-                      <td>
-                        <Type>string</Type>
-                      </td>
-                      <td>
-                        Not recommended as validation will go through each on change to your input, consider this as a
-                        bad performance practice.
-                      </td>
-                    </tr>
-                  </tbody>
-                </Table>
+                <TableWrapper>
+                  <Table>
+                    <tbody>
+                      <tr>
+                        <th>Name</th>
+                        <th>Type</th>
+                        <th>Description</th>
+                      </tr>
+                      <tr>
+                        <td>onSubmit</td>
+                        <td>
+                          <Type>string</Type>
+                        </td>
+                        <td>
+                          This is the default option, validation will trigger on submit and then attach{' '}
+                          <code>onchange</code> event to those fields which are invalid.
+                        </td>
+                      </tr>
+                      <tr>
+                        <td>onBlur</td>
+                        <td>
+                          <Type>string</Type>
+                        </td>
+                        <td>Validation will trigger on each input blur event.</td>
+                      </tr>
+                      <tr>
+                        <td>onChange</td>
+                        <td>
+                          <Type>string</Type>
+                        </td>
+                        <td>
+                          Not recommended as validation will go through each on change to your input, consider this as a
+                          bad performance practice.
+                        </td>
+                      </tr>
+                    </tbody>
+                  </Table>
+                </TableWrapper>
 
                 <hr />
 
@@ -253,146 +261,147 @@ function Builder({ formData, updateFormData, showApi, toggleApi, apiButton, isMo
                   the input.
                 </p>
 
-                <Table>
-                  <tbody>
-                    <tr>
-                      <th>name</th>
-                      <th>type</th>
-                      <th>description</th>
-                      <th>example</th>
-                    </tr>
-                    <tr>
-                      <td>
-                        <code>ref</code>
-                      </td>
-                      <td>
-                        <code>
-                          <Type>HTMLInputElement</Type>
-                        </code>
-                      </td>
-                      <td>React element ref</td>
-                      <td>
-                        <SyntaxHighlighter
-                          style={monokaiSublime}
-                        >{`<input name="test" ref={ref => register({ ref })}`}</SyntaxHighlighter>
-                      </td>
-                    </tr>
-                    <tr>
-                      <td>
-                        <code>required</code>
-                      </td>
-                      <td>
-                        <code>
-                          <Type>boolean</Type>
-                        </code>
-                      </td>
-                      <td>
-                        A Boolean which, if true, indicates that the input must have a value before the form can be
-                        submitted
-                      </td>
-                      <td>
-                        <SyntaxHighlighter
-                          style={monokaiSublime}
-                        >{`<input name="test" ref={ref => register({ ref, required: true })}`}</SyntaxHighlighter>
-                      </td>
-                    </tr>
-                    <tr>
-                      <td>
-                        <code>maxLength</code>
-                      </td>
-                      <td>
-                        <code>
+                <TableWrapper>
+                  <Table>
+                    <tbody>
+                      <tr>
+                        <th>name</th>
+                        <th>type</th>
+                        <th>description</th>
+                        <th>example</th>
+                      </tr>
+                      <tr>
+                        <td>
+                          <code>ref</code>
+                        </td>
+                        <td>
+                          <code>
+                            <Type>HTMLInputElement</Type>
+                          </code>
+                        </td>
+                        <td>React element ref</td>
+                        <td>
+                          <SyntaxHighlighter
+                            style={monokaiSublime}
+                          >{`<input name="test" ref={ref => register({ ref })}`}</SyntaxHighlighter>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td>
+                          <code>required</code>
+                        </td>
+                        <td>
+                          <code>
+                            <Type>boolean</Type>
+                          </code>
+                        </td>
+                        <td>
+                          A Boolean which, if true, indicates that the input must have a value before the form can be
+                          submitted
+                        </td>
+                        <td>
+                          <SyntaxHighlighter
+                            style={monokaiSublime}
+                          >{`<input name="test" ref={ref => register({ ref, required: true })}`}</SyntaxHighlighter>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td>
+                          <code>maxLength</code>
+                        </td>
+                        <td>
+                          <code>
+                            <Type>number</Type>
+                          </code>
+                        </td>
+                        <td>The maximum length of the value to accept for this input</td>
+                        <td>
+                          <SyntaxHighlighter
+                            style={monokaiSublime}
+                          >{`<input name="test" ref={ref => register({ ref, maxLength: 2 })}`}</SyntaxHighlighter>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td>
+                          <code>minLength</code>
+                        </td>
+                        <td>
+                          <code>
+                            <Type>number</Type>
+                          </code>
+                        </td>
+                        <td>The minimum length of the value to accept for this input</td>
+                        <td>
+                          <SyntaxHighlighter
+                            style={monokaiSublime}
+                          >{`<input name="test" ref={ref => register({ ref, minLength: 1 })}`}</SyntaxHighlighter>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td>
+                          <code>max</code>
+                        </td>
+                        <td>
+                          <code>
+                            <Type>number</Type>
+                          </code>
+                        </td>
+                        <td>The maximum value to accept for this input</td>
+                        <td>
+                          <SyntaxHighlighter
+                            style={monokaiSublime}
+                          >{`<input name="test" ref={ref => register({ ref, max: 3 })}`}</SyntaxHighlighter>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td>
+                          <code>min</code>
+                        </td>
+                        <td>
                           <Type>number</Type>
-                        </code>
-                      </td>
-                      <td>The maximum length of the value to accept for this input</td>
-                      <td>
-                        <SyntaxHighlighter
-                          style={monokaiSublime}
-                        >{`<input name="test" ref={ref => register({ ref, maxLength: 2 })}`}</SyntaxHighlighter>
-                      </td>
-                    </tr>
-                    <tr>
-                      <td>
-                        <code>minLength</code>
-                      </td>
-                      <td>
-                        <code>
-                          <Type>number</Type>
-                        </code>
-                      </td>
-                      <td>The minimum length of the value to accept for this input</td>
-                      <td>
-                        <SyntaxHighlighter
-                          style={monokaiSublime}
-                        >{`<input name="test" ref={ref => register({ ref, minLength: 1 })}`}</SyntaxHighlighter>
-                      </td>
-                    </tr>
-                    <tr>
-                      <td>
-                        <code>max</code>
-                      </td>
-                      <td>
-                        <code>
-                          <Type>number</Type>
-                        </code>
-                      </td>
-                      <td>The maximum value to accept for this input</td>
-                      <td>
-                        <SyntaxHighlighter
-                          style={monokaiSublime}
-                        >{`<input name="test" ref={ref => register({ ref, max: 3 })}`}</SyntaxHighlighter>
-                      </td>
-                    </tr>
-                    <tr>
-                      <td>
-                        <code>min</code>
-                      </td>
-                      <td>
-                        <Type>number</Type>
-                      </td>
-                      <td>The minimum value to accept for this input</td>
-                      <td>
-                        <SyntaxHighlighter
-                          style={monokaiSublime}
-                        >{`<input name="test" ref={ref => register({ ref, min: 3 })}`}</SyntaxHighlighter>
-                      </td>
-                    </tr>
-                    <tr>
-                      <td>
-                        <code>pattern</code>
-                      </td>
-                      <td>
-                        <code>
-                          <Type>RegExp</Type>
-                        </code>
-                      </td>
-                      <td>The pattern for the input</td>
-                      <td>
-                        <SyntaxHighlighter
-                          style={monokaiSublime}
-                        >{`<input name="test" ref={ref => register({ ref, pattern: \[A-Za-z]{3}\ })}`}</SyntaxHighlighter>
-                      </td>
-                    </tr>
-                    <tr>
-                      <td>
-                        <code>custom</code>
-                      </td>
-                      <td>
-                        <code>
-                          <Type>(Object) => Boolean</Type>
-                        </code>
-                      </td>
-                      <td>call back with input value as the argument</td>
-                      <td>
-                        <SyntaxHighlighter
-                          style={monokaiSublime}
-                        >{`<input name="test" ref={ref => register({ ref, custom: (value) => value === 'test'  })}`}</SyntaxHighlighter>
-                      </td>
-                    </tr>
-                  </tbody>
-                </Table>
-                <p />
+                        </td>
+                        <td>The minimum value to accept for this input</td>
+                        <td>
+                          <SyntaxHighlighter
+                            style={monokaiSublime}
+                          >{`<input name="test" ref={ref => register({ ref, min: 3 })}`}</SyntaxHighlighter>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td>
+                          <code>pattern</code>
+                        </td>
+                        <td>
+                          <code>
+                            <Type>RegExp</Type>
+                          </code>
+                        </td>
+                        <td>The pattern for the input</td>
+                        <td>
+                          <SyntaxHighlighter
+                            style={monokaiSublime}
+                          >{`<input name="test" ref={ref => register({ ref, pattern: \[A-Za-z]{3}\ })}`}</SyntaxHighlighter>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td>
+                          <code>custom</code>
+                        </td>
+                        <td>
+                          <code>
+                            <Type>(Object) => Boolean</Type>
+                          </code>
+                        </td>
+                        <td>call back with input value as the argument</td>
+                        <td>
+                          <SyntaxHighlighter
+                            style={monokaiSublime}
+                          >{`<input name="test" ref={ref => register({ ref, custom: (value) => value === 'test'  })}`}</SyntaxHighlighter>
+                        </td>
+                      </tr>
+                    </tbody>
+                  </Table>
+                </TableWrapper>
 
                 <hr />
                 <code>
@@ -410,42 +419,44 @@ function Builder({ formData, updateFormData, showApi, toggleApi, apiButton, isMo
                   </h2>
                 </code>
                 <p>Watch over input or selection change.</p>
-                <Table>
-                  <tbody>
-                    <tr>
-                      <th>type</th>
-                      <th>description</th>
-                      <th>example</th>
-                    </tr>
-                    <tr>
-                      <td>
-                        <Type>string</Type>
-                      </td>
-                      <td>Target on individual input</td>
-                      <td>
-                        <code>const value = watch('inputName');</code>
-                      </td>
-                    </tr>
-                    <tr>
-                      <td>
-                        <Type>{`Array<string>`}</Type>
-                      </td>
-                      <td>Watch multiple inputs over the form</td>
-                      <td>
-                        <code>const values = watch(['inputName1', 'inputName2']);</code>
-                      </td>
-                    </tr>
-                    <tr>
-                      <td>
-                        <Type>undefined</Type>
-                      </td>
-                      <td>Watch every input fields in the form</td>
-                      <td>
-                        <code>const values = watch();</code>
-                      </td>
-                    </tr>
-                  </tbody>
-                </Table>
+                <TableWrapper>
+                  <Table>
+                    <tbody>
+                      <tr>
+                        <th>type</th>
+                        <th>description</th>
+                        <th>example</th>
+                      </tr>
+                      <tr>
+                        <td>
+                          <Type>string</Type>
+                        </td>
+                        <td>Target on individual input</td>
+                        <td>
+                          <code>const value = watch('inputName');</code>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td>
+                          <Type>{`Array<string>`}</Type>
+                        </td>
+                        <td>Watch multiple inputs over the form</td>
+                        <td>
+                          <code>const values = watch(['inputName1', 'inputName2']);</code>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td>
+                          <Type>undefined</Type>
+                        </td>
+                        <td>Watch every input fields in the form</td>
+                        <td>
+                          <code>const values = watch();</code>
+                        </td>
+                      </tr>
+                    </tbody>
+                  </Table>
+                </TableWrapper>
 
                 <hr />
                 <code>

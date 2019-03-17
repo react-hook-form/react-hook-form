@@ -9,6 +9,8 @@ import colors from './styles/colors';
 import SortableContainer from './SortableContainer';
 import copyClipBoard from './utils/copyClipBoard';
 import { SubHeading, Heading, Error, Title } from './styles/typography';
+import {setHomePage} from './ButtonGroup';
+
 const errorStyle = { border: `1px solid ${colors.secondary}`, background: colors.errorPink };
 
 const Root = styled.main`
@@ -45,6 +47,7 @@ const Wrapper = styled.div`
   grid-template-columns: repeat(auto-fit, minmax(12rem, 1fr));
   grid-column-gap: 60px;
   padding-bottom: 100px;
+  overflow: hidden;
 
   & > div:first-child {
     margin-top: 50px;
@@ -230,6 +233,7 @@ function Builder({
                 onClick={() => {
                   toggleBuilder(false);
                   builderButton.current.focus();
+                  setHomePage();
                 }}
               >
                 &#10005;
