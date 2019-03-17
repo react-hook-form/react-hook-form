@@ -20,7 +20,7 @@
 
 - [API](https://react-forme.now.sh/api)
 - [Demo](https://react-forme.now.sh)
-- [Form Builder](https://react-simple-animate.now.sh/builder)
+- [Form Builder](https://react-forme.now.sh/builder)
 
 ## Quickstart
 
