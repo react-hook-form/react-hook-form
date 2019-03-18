@@ -106,7 +106,7 @@ export default function useForm({ mode }: { mode: 'onSubmit' | 'onBlur' | 'onCha
         mutationWatcher: onDomRemove(ref, () => removeReferenceAndEventListeners(data, true)),
       });
 
-      radioOptionIndex = getOptionNonEventAttached(allFields[name], type, value);
+      radioOptionIndex = getOptionNonEventAttached(allFields[name].options, type, value);
       if (radioOptionIndex < 0) return;
     } else {
       allFields[name] = data;

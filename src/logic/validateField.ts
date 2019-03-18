@@ -6,7 +6,7 @@ import { Field } from '..';
 export default (
   { ref: { type, value, name, checked }, required, maxLength, minLength, min, max, pattern, custom }: Field,
   fields: { [key: string]: Field },
-) => {
+): { [key: string]: any } => {
   const copy = {};
 
   if (
@@ -43,18 +43,16 @@ export default (
     }
   }
 
-  if (maxLength || minLength) {
-    if (STRING_INPUTS.includes(type)) {
-      const exceedMax = maxLength && value.toString().length > maxLength;
-      const exceedMin = minLength && value.toString().length < minLength;
+  if ((maxLength || minLength) && STRING_INPUTS.includes(type)) {
+    const exceedMax = maxLength && value.toString().length > maxLength;
+    const exceedMin = minLength && value.toString().length < minLength;
 
-      if (exceedMax || exceedMin) {
-        copy[name] = {
-          ...copy[name],
-          ...(exceedMax ? { maxLength: true } : null),
-          ...(exceedMin ? { minLength: true } : null),
-        };
-      }
+    if (exceedMax || exceedMin) {
+      copy[name] = {
+        ...copy[name],
+        ...(exceedMax ? { maxLength: true } : null),
+        ...(exceedMin ? { minLength: true } : null),
+      };
     }
   }
 

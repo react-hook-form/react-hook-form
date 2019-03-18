@@ -1,24 +1,26 @@
 import getFieldValue from './getFieldValue';
 
 export default function getFieldsValues(fields, filedNames?: string | Array<string>) {
-  return Object.values(fields).reduce((previous, { ref }: any) => {
+  return Object.values(fields).reduce((previous, { ref, ref: { name } }: any) => {
     const value = getFieldValue(fields, ref);
 
     if (typeof filedNames === 'string') {
-      if (ref.name === filedNames){
+      if (name === filedNames) {
         return value;
       }
 
       return previous;
-    } else {
-      const copy = { ...previous || {} };
-      if (Array.isArray(filedNames) && filedNames.includes(ref.name)) {
-        copy[ref.name] = value;
-      } else {
-        copy[ref.name] = value;
-      }
-
-      return copy;
     }
+
+    const copy = { ...(previous || {}) };
+    if (Array.isArray(filedNames)) {
+      if (filedNames.includes(name)) {
+        copy[name] = value;
+      }
+    } else {
+      copy[name] = value;
+    }
+
+    return copy;
   }, undefined);
 }

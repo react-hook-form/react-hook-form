@@ -165,6 +165,7 @@ function Builder({ formData, updateFormData, showApi, toggleApi, apiButton, isMo
               }}
             >
               <CloseButton
+                aria-label="close api"
                 ref={closeButton}
                 tabIndex={0}
                 onClick={() => {

@@ -6,13 +6,13 @@ const defaultReturn = {
 };
 
 export default function getRadioValue(
-  fields?: Array<RegisterInput>,
+  options?: Array<RegisterInput>,
 ): {
   isValid: boolean;
   value: null | number | string,
 } {
-  return Array.isArray(fields)
-    ? fields.reduce(
+  return Array.isArray(options)
+    ? options.reduce(
         (previous, { ref: { name, checked, value } }: RegisterInput) =>
           checked
             ? {

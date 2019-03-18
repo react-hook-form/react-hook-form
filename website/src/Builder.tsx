@@ -230,6 +230,7 @@ function Builder({
               }}
             >
               <CloseButton
+                aria-label="close builder"
                 ref={closeButton}
                 tabIndex={0}
                 onClick={() => {

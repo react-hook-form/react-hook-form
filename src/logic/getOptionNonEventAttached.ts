@@ -1,3 +1,3 @@
-export default function getOptionNonEventAttached(field, type, value) {
-  return field.options.findIndex(({ ref, eventAttached }) => value === ref.value && !eventAttached);
+export default function getOptionNonEventAttached(options, type, value): number {
+  return options.findIndex(({ ref, eventAttached }) => value === ref.value && !eventAttached);
 }
