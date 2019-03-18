@@ -64,8 +64,8 @@ export default function useForm({ mode }: { mode: 'onSubmit' | 'onBlur' | 'onCha
 
       if (!error[name]) delete copy[name];
 
-      updateErrorMessage(copy);
       localErrorMessages.current = copy;
+      updateErrorMessage(copy);
     }
   }
 
@@ -95,26 +95,22 @@ export default function useForm({ mode }: { mode: 'onSubmit' | 'onBlur' | 'onCha
     const allFields = fields.current;
     if (detectRegistered(allFields, data)) return;
 
-    const isRadio = isRadioInput(type);
-
     if (isRadioInput(type)) {
       if (!allFields[name]) {
         allFields[name] = { options: [], required, ref: { type: 'radio', name } };
       }
 
+      // detect if contains
       allFields[name].options.push({
         ...data,
         mutationWatcher: onDomRemove(ref, () => removeReferenceAndEventListeners(data, true)),
       });
-    } else {
-      allFields[name] = data;
-      allFields[name].mutationWatcher = onDomRemove(ref, () => removeReferenceAndEventListeners(data, true));
-    }
 
-    if (isRadio) {
       radioOptionIndex = getOptionNonEventAttached(allFields[name], type, value);
       if (radioOptionIndex < 0) return;
     } else {
+      allFields[name] = data;
+      allFields[name].mutationWatcher = onDomRemove(ref, () => removeReferenceAndEventListeners(data, true));
       if (allFields[name].eventAttached) return;
     }
 
@@ -153,17 +149,20 @@ export default function useForm({ mode }: { mode: 'onSubmit' | 'onBlur' | 'onCha
 
         removeReferenceAndEventListeners(data);
 
-        if (!fields.current[name]) {
-          return previous;
-        }
+        if (!fields.current[name]) return previous;
 
         const fieldError = validateField(data, allFields);
         const hasError = fieldError && fieldError[name];
 
-        if (hasError && !fields.current[name].eventAttached) {
+        if (!hasError) {
+          previous.values[name] = getFieldValue(allFields, ref);
+          return previous;
+        }
+
+        if (!fields.current[name].eventAttached) {
           if (isRadioInput(type) && Array.isArray(options)) {
             options.forEach(option => {
-              if (!option.eventAttached) return;
+              if (option.eventAttached) return;
               option.ref.addEventListener('change', validateWithStateUpdate);
               option.eventAttached = true;
             });
@@ -173,12 +172,7 @@ export default function useForm({ mode }: { mode: 'onSubmit' | 'onBlur' | 'onCha
           }
         }
 
-        if (hasError) {
-          previous.localErrors = { ...previous.localErrors, ...fieldError };
-          return previous;
-        }
-
-        previous.values[name] = getFieldValue(allFields, ref);
+        previous.localErrors = { ...previous.localErrors, ...fieldError };
         return previous;
       },
       {
@@ -198,15 +192,12 @@ export default function useForm({ mode }: { mode: 'onSubmit' | 'onBlur' | 'onCha
   useEffect(
     () => () => {
       fields.current &&
-        Object.values(fields.current).forEach(({ ref, options }: Field) => {
-          if (options) {
-            options.forEach(({ ref }) => {
-              removeAllEventListeners(ref, validateWithStateUpdate);
-            });
-          } else {
-            removeAllEventListeners(ref, validateWithStateUpdate);
-          }
-        });
+        Object.values(fields.current).forEach(
+          ({ ref, options }: Field) =>
+            isRadioInput(ref.type) && Array.isArray(options)
+              ? options.forEach(({ ref }) => removeAllEventListeners(ref, validateWithStateUpdate))
+              : removeAllEventListeners(ref, validateWithStateUpdate),
+        );
       fields.current = {};
       watchFields.current = {};
       localErrorMessages.current = {};
