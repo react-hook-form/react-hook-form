@@ -58,7 +58,7 @@ export default function useForm({ mode }: { mode: 'onSubmit' | 'onBlur' | 'onCha
       localErrorMessages.current[name] !== error[name] ||
       mode === 'onChange' ||
       (mode === 'onBlur' && type === 'blur') ||
-      fields.current[name].watch
+      watchFields.current[name]
     ) {
       const copy = { ...localErrorMessages.current, ...error };
 
