@@ -48,6 +48,7 @@ const Wrapper = styled.div`
   grid-column-gap: 60px;
   padding-bottom: 100px;
   overflow: hidden;
+  margin-bottom: 100px;
 
   & > div:first-child {
     margin-top: 50px;

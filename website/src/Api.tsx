@@ -175,21 +175,29 @@ function Builder({ formData, updateFormData, showApi, toggleApi, apiButton, isMo
                 &#10005;
               </CloseButton>
               <HeadingWithTopMargin>API</HeadingWithTopMargin>
-              <SubHeading>React forme focus on provide the best DX by simplify its API.</SubHeading>
+              <SubHeading>React forme focus on providing the best DX by simplify the API.</SubHeading>
 
               <Wrapper>
                 <Title>Quick Start</Title>
                 <h2>» Installation</h2>
                 <p>Installing react-forme only takes a single command and you're ready to roll.</p>
                 <code>npm install react-form</code>
+
                 <h2>» Example</h2>
                 <p>The following code will demonstrate the basic usage of react-forme.</p>
                 <SyntaxHighlighter style={monokaiSublime}>{code}</SyntaxHighlighter>
 
                 <Title>API</Title>
                 <p>
-                  React forme use hook behind the scene by invoke <code>useForm</code>, you will receive 4 methods.
+                  React forme use hook behind the scene by invoke <code>useForm</code>, you will receive the following methods.
                 </p>
+
+                {/*<ul>*/}
+                  {/*<li><code>register</code></li>*/}
+                  {/*<li><code>errors</code></li>*/}
+                  {/*<li><code>watch</code></li>*/}
+                  {/*<li><code>handleSubmit</code></li>*/}
+                {/*</ul>*/}
 
                 <code>
                   <h2>
@@ -197,8 +205,6 @@ function Builder({ formData, updateFormData, showApi, toggleApi, apiButton, isMo
                     <Type
                     >{`({ mode: 'onSubmit' | 'onBlur' | 'onChange' }): { register, errors, handleSubmit, watch }`}</Type>
                   </h2>
-
-                  <p>you need to initialize react form hook before you can start register your inputs.</p>
                 </code>
 
                 <TableWrapper>
@@ -247,8 +253,9 @@ function Builder({ formData, updateFormData, showApi, toggleApi, apiButton, isMo
                     »register: <Type>(args: Object):void</Type>
                   </h2>
                 </code>
+                <p>You need to initialize react form hook before you can start register your inputs.</p>
                 <p>
-                  function to register <code>Ref</code> into <code>react-forme</code> and also includes validation
+                  This is the function to register <code>Ref</code> into <code>react-forme</code> and also includes validation
                   rules. Validation rules are all based on html input validation standard except there one method{' '}
                   <code>custom</code> which allow you to do some custom validations.
                 </p>
@@ -466,7 +473,7 @@ function Builder({ formData, updateFormData, showApi, toggleApi, apiButton, isMo
                 </code>
                 <p
                   style={{
-                    marginBottom: 50,
+                    marginBottom: 100,
                   }}
                 >
                   This function will pass you the form data when validation pass
