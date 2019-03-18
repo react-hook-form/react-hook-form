@@ -319,8 +319,7 @@ function Builder({
                   {(type === 'select' ||
                     type === 'radio' ||
                     editFormData.type === 'select' ||
-                    editFormData.type === 'radio') &&
-                    editFormData.options && (
+                    editFormData.type === 'radio') && (
                       <>
                         <label>Options:</label>
                         <input
