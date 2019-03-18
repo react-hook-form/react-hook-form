@@ -10,7 +10,7 @@ describe('attachEventListeners', () => {
         ref: {},
         type: 'radio',
         name: 'test',
-        watchFields: {},
+        watchFields: { current: {} },
         validateWithStateUpdate: () => {},
       }),
     ).toBeUndefined();
@@ -73,7 +73,7 @@ describe('attachEventListeners', () => {
     expect(
       attachEventListeners({
         watchFields: {
-          test: true,
+          current: { test: true },
         },
         mode: 'onSubmit',
         allFields,
@@ -139,7 +139,7 @@ describe('attachEventListeners', () => {
     expect(
       attachEventListeners({
         watchFields: {
-          test: true,
+          current: { test: true },
         },
         mode: 'onSubmit',
         allFields,
@@ -177,7 +177,7 @@ describe('attachEventListeners', () => {
 
     expect(
       attachEventListeners({
-        watchFields: {},
+        watchFields: { current: { test: true } },
         mode: 'onBlur',
         allFields,
         radioOptionIndex: 0,
@@ -190,7 +190,7 @@ describe('attachEventListeners', () => {
       }),
     ).toBeUndefined();
 
-    expect(addEventListener).toBeCalledWith('blur', validateWithStateUpdate);
+    expect(addEventListener).toBeCalledWith('change', validateWithStateUpdate);
     expect(allFields.test.options[0].eventAttached).toBeTruthy();
   });
 
@@ -208,7 +208,11 @@ describe('attachEventListeners', () => {
 
     expect(
       attachEventListeners({
-        watchFields: {},
+        watchFields: {
+          current: {
+            test: true,
+          },
+        },
         mode: 'onBlur',
         allFields,
         radioOptionIndex: 0,
@@ -222,7 +226,7 @@ describe('attachEventListeners', () => {
       }),
     ).toBeUndefined();
 
-    expect(addEventListener).toBeCalledWith('blur', validateWithStateUpdate);
+    expect(addEventListener).toBeCalledWith('input', validateWithStateUpdate);
     expect(allFields.test.eventAttached).toBeTruthy();
   });
 });
