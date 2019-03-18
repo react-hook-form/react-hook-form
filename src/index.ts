@@ -123,7 +123,7 @@ export default function useForm({ mode }: { mode: 'onSubmit' | 'onBlur' | 'onCha
 
   function watch(filedNames?: string | Array<string> | undefined) {
     if (typeof filedNames === 'string') {
-      if (watchFields.current[filedNames]) watchFields.current[filedNames] = true;
+      if (!watchFields.current[filedNames]) watchFields.current[filedNames] = true;
     } else if (Array.isArray(filedNames)) {
       filedNames.forEach(name => {
         if (!watchFields.current[name]) return;

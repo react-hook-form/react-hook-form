@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Animate } from 'react-simple-animate';
 import SyntaxHighlighter from 'react-syntax-highlighter';
-import useForm from './src';
+import useForm from 'react-forme';
 import { monokaiSublime } from 'react-syntax-highlighter/dist/esm/styles/hljs';
 import generateCode from './logic/generateCode';
 import styled from 'styled-components';
