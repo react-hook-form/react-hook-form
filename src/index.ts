@@ -47,6 +47,7 @@ interface ErrorMessages {
 export default function useForm({ mode }: { mode: 'onSubmit' | 'onBlur' | 'onChange' } = { mode: 'onSubmit' }) {
   const fields = useRef<{ [key: string]: any }>({});
   const localErrorMessages = useRef<ErrorMessages>({});
+  const watchFields = useRef<{ [key: string]: boolean }>({});
   const [errors, updateErrorMessage] = useState<ErrorMessages>({});
 
   function validateWithStateUpdate({ target: { name }, type }: any) {
@@ -117,21 +118,21 @@ export default function useForm({ mode }: { mode: 'onSubmit' | 'onBlur' | 'onCha
       if (allFields[name].eventAttached) return;
     }
 
-    attachEventListeners({ allFields, ref, type, radioOptionIndex, name, mode, validateWithStateUpdate });
+    attachEventListeners({ allFields, watchFields, ref, type, radioOptionIndex, name, mode, validateWithStateUpdate });
   }
 
   function watch(filedNames?: string | Array<string> | undefined) {
     if (typeof filedNames === 'string') {
-      if (fields.current[filedNames]) fields.current[filedNames].watch = true;
+      if (watchFields.current[filedNames]) watchFields.current[filedNames] = true;
     } else if (Array.isArray(filedNames)) {
       filedNames.forEach(name => {
-        if (!fields.current[name]) return;
-        fields.current[name].watch = true;
+        if (!watchFields.current[name]) return;
+        watchFields.current[name] = true;
       });
     } else {
       Object.values(fields.current).forEach(({ ref }: RegisterInput) => {
-        if (!fields.current[name]) return;
-        fields.current[ref.name] = true;
+        if (!watchFields.current[ref.name]) return;
+        watchFields.current[ref.name] = true;
       });
     }
 
@@ -207,6 +208,7 @@ export default function useForm({ mode }: { mode: 'onSubmit' | 'onBlur' | 'onCha
           }
         });
       fields.current = {};
+      watchFields.current = {};
       localErrorMessages.current = {};
       updateErrorMessage({});
     },

@@ -1,9 +1,9 @@
 import isRadioInput from "../utils/isRadioInput";
 
-export default function attachEventListeners({ mode, allFields, radioOptionIndex, ref, type, name, validateWithStateUpdate }) {
+export default function attachEventListeners({ mode, allFields, watchFields, radioOptionIndex, ref, type, name, validateWithStateUpdate }) {
   const field = allFields[name];
   if (!field) return;
-  const isOnChange = mode === 'onChange' || allFields[ref.name].watch;
+  const isOnChange = mode === 'onChange' || watchFields[ref.name];
   const isOnBlur = mode === 'onBlur';
 
   if (isOnChange || isOnBlur) {

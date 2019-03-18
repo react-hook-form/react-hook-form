@@ -10,13 +10,13 @@ describe('attachEventListeners', () => {
         ref: {},
         type: 'radio',
         name: 'test',
+        watchFields: {},
         validateWithStateUpdate: () => {},
       }),
     ).toBeUndefined();
   });
 
-  it('should' +
-    'e input', () => {
+  it('should return undefined', () => {
     const validateWithStateUpdate = jest.fn();
     const addEventListener = jest.fn();
     const allFields = {
@@ -35,6 +35,7 @@ describe('attachEventListeners', () => {
 
     expect(
       attachEventListeners({
+        watchFields: {},
         mode: 'onChange',
         allFields,
         radioOptionIndex: 0,
@@ -71,6 +72,9 @@ describe('attachEventListeners', () => {
 
     expect(
       attachEventListeners({
+        watchFields: {
+          test: true,
+        },
         mode: 'onSubmit',
         allFields,
         radioOptionIndex: 0,
@@ -101,6 +105,7 @@ describe('attachEventListeners', () => {
 
     expect(
       attachEventListeners({
+        watchFields: {},
         mode: 'onChange',
         allFields,
         radioOptionIndex: 0,
@@ -133,6 +138,9 @@ describe('attachEventListeners', () => {
 
     expect(
       attachEventListeners({
+        watchFields: {
+          test: true,
+        },
         mode: 'onSubmit',
         allFields,
         radioOptionIndex: 0,
@@ -169,6 +177,7 @@ describe('attachEventListeners', () => {
 
     expect(
       attachEventListeners({
+        watchFields: {},
         mode: 'onBlur',
         allFields,
         radioOptionIndex: 0,
@@ -199,6 +208,7 @@ describe('attachEventListeners', () => {
 
     expect(
       attachEventListeners({
+        watchFields: {},
         mode: 'onBlur',
         allFields,
         radioOptionIndex: 0,
