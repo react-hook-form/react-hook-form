@@ -8,6 +8,8 @@ export default function getFieldsValues(fields, filedNames?: string | Array<stri
       if (ref.name === filedNames){
         return value;
       }
+
+      return previous;
     } else {
       const copy = { ...previous || {} };
       if (Array.isArray(filedNames) && filedNames.includes(ref.name)) {
