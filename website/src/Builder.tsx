@@ -222,6 +222,7 @@ function Builder({
         return (
           <Root style={style}>
             <div
+              id="builder"
               style={{
                 overflow: 'auto',
                 height: '100vh',

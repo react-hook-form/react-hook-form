@@ -52,12 +52,12 @@ const Button = styled.button`
   justify-content: center;
   align-items: center;
   font-size: 12px;
-  background: ${props => props.active ? 'black' : 'none'};
+  background: ${props => (props.active ? 'black' : 'none')};
   color: white;
   border: none;
   margin: 0;
   transition: 0.3s all;
-  
+
   & > svg {
     fill: white;
   }
@@ -105,7 +105,7 @@ const ActionButtonGroup = styled.div`
 
   & > button {
     border-left: 1px solid ${colors.buttonBlue};
-    
+
     &:first-child {
       border-left: 0;
     }
@@ -126,8 +126,7 @@ const ActionButtonGroup = styled.div`
   }
 `;
 export const setHomePage = () => {
-  document.title =
-    'React forme - Performance, flexible and extensible forms with easy to use for validation.';
+  document.title = 'React forme - Performance, flexible and extensible forms with easy to use for validation.';
   window.history.pushState(
     { page: 'React forme - Performance, flexible and extensible forms with easy to use for validation.' },
     'React forme - Performance, flexible and extensible forms with easy to use for validation.',
@@ -173,6 +172,7 @@ export default function ButtonGroup({
               'React forme - Performance, flexible and extensible forms with easy to use for validation.',
               '/',
             );
+            window.scrollTo(0, 0);
           }}
           ref={apiButton}
         >
@@ -197,6 +197,9 @@ export default function ButtonGroup({
               document.title = 'React forme - API';
               window.history.pushState({ page: 'React forme - API' }, 'React forme - API', '/api');
             }
+
+            // @ts-ignore
+            document.getElementById('api').scrollTop = 0;
           }}
           ref={apiButton}
         >
@@ -225,6 +228,9 @@ export default function ButtonGroup({
               document.title = 'React forme - Builder';
               window.history.pushState({ page: 'React forme - Builder' }, 'React forme - Builder', '/builder');
             }
+
+            // @ts-ignore
+            document.getElementById('builder').scrollTop = 0;
           }}
           ref={builderButton}
         >

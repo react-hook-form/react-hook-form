@@ -157,6 +157,7 @@ function Builder({ formData, updateFormData, showApi, toggleApi, apiButton, isMo
         return (
           <Root style={style}>
             <div
+              id="api"
               style={{
                 overflow: 'auto',
                 height: '100vh',
