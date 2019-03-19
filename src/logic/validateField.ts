@@ -1,12 +1,12 @@
 import getRadioValue from './getRadioValue';
 import isRadioInput from '../utils/isRadioInput';
 import { DATE_INPUTS, STRING_INPUTS } from '../constants';
-import { Field } from '..';
+import { ErrorMessages, Field } from '..';
 
 export default (
   { ref: { type, value, name, checked }, required, maxLength, minLength, min, max, pattern, custom }: Field,
   fields: { [key: string]: Field },
-): { [key: string]: any } => {
+): ErrorMessages => {
   const copy = {};
 
   if (

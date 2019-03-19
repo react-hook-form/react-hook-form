@@ -11,7 +11,7 @@ import attachEventListeners from './logic/attachEventListeners';
 import getOptionNonEventAttached from './logic/getOptionNonEventAttached';
 
 export interface RegisterInput {
-  ref: any;
+  ref: HTMLInputElement;
   required?: boolean;
   min?: number | Date;
   max?: number | Date;
@@ -32,20 +32,20 @@ export interface Field {
   minLength?: number;
   eventAttached?: boolean;
   watch?: boolean;
-  mutationWatcher?: boolean;
+  mutationWatcher?: any;
   options?: Array<{
     ref: any;
     eventAttached?: boolean;
-    mutationWatcher?: boolean;
+    mutationWatcher?: any;
   }>;
 }
 
-interface ErrorMessages {
-  [key: string]: { [key: string]: boolean };
+export interface ErrorMessages {
+  [key: string]: { string: boolean } | {};
 }
 
 export default function useForm({ mode }: { mode: 'onSubmit' | 'onBlur' | 'onChange' } = { mode: 'onSubmit' }) {
-  const fields = useRef<{ [key: string]: any }>({});
+  const fields = useRef<{ [key: string]: Field }>({});
   const localErrorMessages = useRef<ErrorMessages>({});
   const watchFields = useRef<{ [key: string]: boolean }>({});
   const [errors, updateErrorMessage] = useState<ErrorMessages>({});
@@ -168,7 +168,7 @@ export default function useForm({ mode }: { mode: 'onSubmit' | 'onBlur' | 'onCha
             });
           } else {
             ref.addEventListener('input', validateWithStateUpdate);
-            ref.eventAttached = true;
+            data.eventAttached = true;
           }
         }
 
