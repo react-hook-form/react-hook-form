@@ -172,6 +172,7 @@ function Builder({
   editFormData,
   setFormData,
   builderButton,
+  HomeRef,
   isMobile,
 }) {
   const { register, handleSubmit, errors = {}, watch } = useForm();
@@ -420,6 +421,7 @@ function Builder({
                         onClick={() => {
                           toggleBuilder(false);
                           builderButton.current.focus();
+                          HomeRef.current.scrollIntoView({ behavior: 'smooth' });
                         }}
                         background="black"
                         value="Generate From"

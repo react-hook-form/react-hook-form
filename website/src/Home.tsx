@@ -152,7 +152,11 @@ export default function Home({
           <SubmitButton
             type="button"
             value="Edit"
-            onClick={() => toggleBuilder(true)}
+            onClick={() => {
+              toggleBuilder(true);
+              document.title = 'React forme - Builder';
+              window.history.pushState({ page: 'React forme - Builder' }, 'React forme - Builder', '/builder');
+            }}
             style={{
               background: 'black',
               marginTop: 20,

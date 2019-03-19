@@ -286,6 +286,7 @@ function App() {
           updateFormData={updateFormData}
           builderButton={builderButton}
           isMobile={isMobile}
+          HomeRef={HomeRef}
         />
       </Suspense>
 
