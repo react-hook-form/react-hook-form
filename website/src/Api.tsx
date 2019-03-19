@@ -177,7 +177,7 @@ const Code = styled.span`
   font-size: 14px;
 `;
 
-const links = ['Quick Start', 'useform', 'Register', 'errors', 'watch', 'handleSubmit'];
+const links = ['Quick Start', 'useform', 'register', 'errors', 'watch', 'handleSubmit'];
 
 function Builder({ formData, updateFormData, showApi, toggleApi, apiButton, isMobile }: any) {
   const copyFormData = useRef([]);
