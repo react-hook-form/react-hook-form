@@ -43,6 +43,7 @@ const Head = styled.div`
 
   & > h1 {
     font-size: 40px;
+    text-shadow: 2px 2px 4px ${colors.lightBlue};
 
     @media (min-width: 768px) {
       font-size: 65px;
