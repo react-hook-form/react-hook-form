@@ -8,16 +8,18 @@ import { SubHeading, HeadingWithTopMargin, Title } from './styles/typography';
 import { setHomePage } from './ButtonGroup';
 
 const code = `import React from 'react'
-import useForm from 'react-forme // import react-form
+import useForm from 'react-forme'
 
 function YourForm() {
   const { register, handleSubmit } = useForm();
-  const onSubmit = (data) => {} // your form submit function which will invoke after validation
+  const onSubmit = (data) => {} // your form submit function which will invoke after successful validation
   
   return (
-    <form onsubmit={handleSubmit(onSubmit)}> // handleSubmit will validation your inputs before onSubmit
-      // you will have to register your input into react-forme, by invoke the register function with ref as the argument      
+    <form onsubmit={handleSubmit(onSubmit)}> // handleSubmit will validation your inputs before onSubmit    
       <input type="text" name="example" ref={ ref => { register({ ref })} } />
+      // you will have to register your input into react-forme, by invoke the register function with ref as the argument
+      <input type="text" name="example" ref={ ref => { register({ ref, required: true })} } />
+      // include validation with required field or other standard html validation rules  
       <input type="submit" /> 
     </form>
   )
@@ -298,12 +300,12 @@ function Builder({ formData, updateFormData, showApi, toggleApi, apiButton, isMo
                     </h2>
                   </code>
                   <p>
-                    React forme use hook behind the scene by invoke <code>useForm</code>, you will receive the following
-                    methods.
-                  </p>
-                  <p>
                     You need to initialize <code>useForm</code> before you can start register your inputs, run this
                     function before render.
+                  </p>
+                  <p>
+                    React forme use hook behind the scene by invoke <code>useForm</code>, you will receive the 4
+                    methods.
                   </p>
 
                   <TableWrapper>
@@ -321,7 +323,7 @@ function Builder({ formData, updateFormData, showApi, toggleApi, apiButton, isMo
                           </td>
                           <td>
                             This is the default option, validation will trigger on submit and then attach{' '}
-                            <code>onchange</code> event to those fields which are invalid.
+                            <code>onchange</code> event listeners to re-validate them.
                           </td>
                         </tr>
                         <tr>
@@ -337,7 +339,7 @@ function Builder({ formData, updateFormData, showApi, toggleApi, apiButton, isMo
                             <Type>string</Type>
                           </td>
                           <td>
-                            Not recommended as validation will go through each on change to your input, consider this as
+                            Not recommended as validation will go through each change on your input, consider this as
                             a bad performance practice.
                           </td>
                         </tr>
@@ -354,8 +356,8 @@ function Builder({ formData, updateFormData, showApi, toggleApi, apiButton, isMo
                   </code>
                   <p>
                     This is the function to register <code>Ref</code> into <code>react-forme</code> and also includes
-                    validation rules. Validation rules are all based on html input validation standard except there one
-                    method <code>custom</code> which allow you to do some custom validations.
+                    validation rules. Validation rules are all based on html input/select validation standard except there one
+                    method <code>custom</code> which allow you to do some custom validation.
                   </p>
                   <p
                     style={{
@@ -402,7 +404,7 @@ function Builder({ formData, updateFormData, showApi, toggleApi, apiButton, isMo
                           </td>
                           <td>
                             A Boolean which, if true, indicates that the input must have a value before the form can be
-                            submitted
+                            submitted.
                           </td>
                           <td>
                             <SyntaxHighlighter
@@ -419,7 +421,7 @@ function Builder({ formData, updateFormData, showApi, toggleApi, apiButton, isMo
                               <Type>number</Type>
                             </code>
                           </td>
-                          <td>The maximum length of the value to accept for this input</td>
+                          <td>The maximum length of the value to accept for this input.</td>
                           <td>
                             <SyntaxHighlighter
                               style={monokaiSublime}
@@ -435,7 +437,7 @@ function Builder({ formData, updateFormData, showApi, toggleApi, apiButton, isMo
                               <Type>number</Type>
                             </code>
                           </td>
-                          <td>The minimum length of the value to accept for this input</td>
+                          <td>The minimum length of the value to accept for this input.</td>
                           <td>
                             <SyntaxHighlighter
                               style={monokaiSublime}
@@ -451,7 +453,7 @@ function Builder({ formData, updateFormData, showApi, toggleApi, apiButton, isMo
                               <Type>number</Type>
                             </code>
                           </td>
-                          <td>The maximum value to accept for this input</td>
+                          <td>The maximum value to accept for this input.</td>
                           <td>
                             <SyntaxHighlighter
                               style={monokaiSublime}
@@ -465,7 +467,7 @@ function Builder({ formData, updateFormData, showApi, toggleApi, apiButton, isMo
                           <td>
                             <Type>number</Type>
                           </td>
-                          <td>The minimum value to accept for this input</td>
+                          <td>The minimum value to accept for this input.</td>
                           <td>
                             <SyntaxHighlighter
                               style={monokaiSublime}
@@ -481,7 +483,7 @@ function Builder({ formData, updateFormData, showApi, toggleApi, apiButton, isMo
                               <Type>RegExp</Type>
                             </code>
                           </td>
-                          <td>The pattern for the input</td>
+                          <td>The regex pattern for the input.</td>
                           <td>
                             <SyntaxHighlighter
                               style={monokaiSublime}
@@ -497,7 +499,7 @@ function Builder({ formData, updateFormData, showApi, toggleApi, apiButton, isMo
                               <Type>(Object) => Boolean</Type>
                             </code>
                           </td>
-                          <td>call back with input value as the argument</td>
+                          <td>Callback function with input value as the argument, then you will have to return true/false as result.</td>
                           <td>
                             <SyntaxHighlighter
                               style={monokaiSublime}
@@ -574,7 +576,7 @@ function Builder({ formData, updateFormData, showApi, toggleApi, apiButton, isMo
                       marginBottom: 200,
                     }}
                   >
-                    This function will pass you the form data when validation pass
+                    This function will pass you the form data when from validation is successful.
                   </p>
                 </div>
               </Wrapper>

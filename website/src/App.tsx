@@ -377,8 +377,8 @@ function App() {
               <div>
                 <h3>Performance</h3>
                 <p>
-                  Minimises the volume that is triggered with component re-rendering, try to your users the best
-                  experience
+                  Minimises the volume that is triggered with component re-rendering, try to provide your users with the
+                  best experience.
                 </p>
               </div>
 
