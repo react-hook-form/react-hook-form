@@ -26,6 +26,7 @@
 ## Quickstart
 
 ```jsx
+import React from 'react';
 import useForm from 'react-forme';
 
 function App() {
