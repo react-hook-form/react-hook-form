@@ -172,6 +172,20 @@ export default function SortableContainer({ updateFormData, formData, editIndex,
           );
         })}
       </Sortable>
+
+      {formData.length > 0 ? (
+        <EditPanel>
+          <button
+            onClick={() => {
+              if (window.confirm('Are you sure to delete all fields?')) {
+                updateFormData([]);
+              }
+            }}
+          >
+            Clear all fields
+          </button>
+        </EditPanel>
+      ) : null}
     </SortableWrapper>
   );
 }
