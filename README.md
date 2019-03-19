@@ -18,6 +18,7 @@
 
 ## [Website](https://react-forme.now.sh/api)
 
+- [Get started](https://react-forme.now.sh/api)
 - [API](https://react-forme.now.sh/api)
 - [Demo](https://react-forme.now.sh)
 - [Form Builder](https://react-forme.now.sh/builder)
