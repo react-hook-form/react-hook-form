@@ -571,7 +571,7 @@ function Builder({ formData, updateFormData, showApi, toggleApi, apiButton, isMo
                   </code>
                   <p
                     style={{
-                      marginBottom: 100,
+                      marginBottom: 200,
                     }}
                   >
                     This function will pass you the form data when validation pass
