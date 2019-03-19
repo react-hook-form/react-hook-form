@@ -35,5 +35,9 @@
     "@types/react-dom": "^16.8.2",
     "react-scripts": "^2.1.8",
     "typescript": "^3.3.3333"
+  },
+  "peerDependencies": {
+    "react": ">= 16.8.0",
+    "react-dom": ">= 16.8.0"
   }
 }
