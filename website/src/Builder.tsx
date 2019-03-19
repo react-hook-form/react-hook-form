@@ -9,7 +9,7 @@ import colors from './styles/colors';
 import SortableContainer from './SortableContainer';
 import copyClipBoard from './utils/copyClipBoard';
 import { SubHeading, Heading, Error, Title } from './styles/typography';
-import {setHomePage} from './ButtonGroup';
+import { setHomePage } from './ButtonGroup';
 
 const errorStyle = { border: `1px solid ${colors.secondary}`, background: colors.errorPink };
 
@@ -25,7 +25,7 @@ const Root = styled.main`
   padding: 0 20px;
   box-sizing: border-box;
   -webkit-overflow-scrolling: touch;
-  
+
   @media (min-width: 768px) {
     padding-top: 87px;
   }
@@ -106,9 +106,9 @@ const Form = styled.form`
     padding: 10px 15px;
     margin-bottom: 10px;
     font-size: 14px;
-    
+
     &:hover {
-      border: 1px solid ${colors.lightPink}
+      border: 1px solid ${colors.lightPink};
     }
   }
 
@@ -320,18 +320,18 @@ function Builder({
                     type === 'radio' ||
                     editFormData.type === 'select' ||
                     editFormData.type === 'radio') && (
-                      <>
-                        <label>Options:</label>
-                        <input
-                          key={editFormData.name}
-                          defaultValue={editFormData.options}
-                          type="text"
-                          name="options"
-                          placeholder="Enter options separate by ;"
-                          ref={ref => register({ ref })}
-                        />
-                      </>
-                    )}
+                    <>
+                      <label>Options:</label>
+                      <input
+                        key={editFormData.name}
+                        defaultValue={editFormData.options}
+                        type="text"
+                        name="options"
+                        placeholder="Enter options separate by ;"
+                        ref={ref => register({ ref })}
+                      />
+                    </>
+                  )}
 
                   <label>
                     <input
@@ -377,7 +377,8 @@ function Builder({
                       <label defaultValue={editFormData.minLength}>MinLength</label>
                       <input autoComplete="false" name="minLength" type="number" ref={ref => register({ ref })} />
                       <label>Pattern</label>
-                      <input autoComplete="false"
+                      <input
+                        autoComplete="false"
                         defaultValue={editFormData.pattern}
                         style={{
                           marginBottom: '20px',
@@ -393,8 +394,9 @@ function Builder({
 
                   <Title
                     style={{
-                      marginTop: 30,
                       fontSize: 14,
+                      maxWidth: '80%',
+                      margin: '20px auto 0',
                     }}
                   >
                     or

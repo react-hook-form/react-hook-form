@@ -56,7 +56,7 @@ export default function Home({
     <>
       <Wrapper>
         <form onSubmit={handleSubmit(onSubmit)}>
-          <Title>Form</Title>
+          <Title>Example</Title>
           {formData.map(field => {
             switch (field.type) {
               case 'select':
@@ -141,8 +141,9 @@ export default function Home({
 
           <Title
             style={{
-              marginTop: 30,
               fontSize: 14,
+              maxWidth: '80%',
+              margin: '20px auto 0',
             }}
           >
             or

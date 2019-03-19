@@ -36,6 +36,8 @@ export const Title = styled.h2`
   font-weight: 200;
   margin-top: 10px;
   font-size: 1.1rem;
+  overflow: hidden;
+  margin-bottom: 30px;
   
   @media (min-width: 768px) {
     margin-top: 20px;
@@ -50,7 +52,7 @@ export const Title = styled.h2`
     height: 1px;
     position: relative;
     vertical-align: middle;
-    width: 35%;
+    width: 50%;
   }
 
   &:before {

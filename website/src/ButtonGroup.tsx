@@ -64,6 +64,7 @@ const Button = styled.button`
 
   @media (min-width: 768px) {
     background: none;
+    color: ${props => (props.active ? colors.lightPink : 'white')};
   }
 
   ${hoverStyle};
