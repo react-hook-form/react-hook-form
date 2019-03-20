@@ -1,4 +1,4 @@
-<div align="center"><a href="https://react-forme.now.sh/"><img src="https://raw.githubusercontent.com/bluebill1049/react-forme/master/website/logo.png" alt="React forme Logo - React hook form valiation" width="500px" /></a></div>
+<div align="center"><a href="https://react-forme.now.sh/"><img src="https://raw.githubusercontent.com/bluebill1049/react-forme/master/website/logo.png" alt="React forme Logo - React hook form valiation" width="350px" /></a></div>
 
 > React hook form management without the hassle 
 
