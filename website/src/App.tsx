@@ -350,8 +350,8 @@ function App() {
               <button
                 onClick={() => {
                   toggleApi(true);
-                  document.title = 'React forme - API';
-                  window.history.pushState({ page: 'React forme - API' }, 'React forme - API', '/api');
+                  document.title = 'React hook form - API';
+                  window.history.pushState({ page: 'React hook form - API' }, 'React hook form - API', '/api');
                 }}
               >
                 Get Started

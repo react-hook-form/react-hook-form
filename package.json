@@ -1,5 +1,5 @@
 {
-  "name": "react-forme",
+  "name": "react-hook-form",
   "version": "0.0.12",
   "main": "dist/index.js",
   "module": "dist/index.es.js",

@@ -266,7 +266,7 @@ function Builder({ formData, updateFormData, showApi, toggleApi, apiButton, isMo
                 &#10005;
               </CloseButton>
               <HeadingWithTopMargin>API</HeadingWithTopMargin>
-              <SubHeading>React forme focus on providing the best DX by simplify the API.</SubHeading>
+              <SubHeading>React hook form focus on providing the best DX by simplify the API.</SubHeading>
 
               <Wrapper>
                 <Menu>
@@ -304,7 +304,7 @@ function Builder({ formData, updateFormData, showApi, toggleApi, apiButton, isMo
                     function before render.
                   </p>
                   <p>
-                    React forme use hook behind the scene by invoke <code>useForm</code>, you will receive the 4
+                    React hook form use hook behind the scene by invoke <code>useForm</code>, you will receive the 4
                     methods.
                   </p>
 

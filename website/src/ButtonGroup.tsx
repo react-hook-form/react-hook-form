@@ -127,10 +127,10 @@ const ActionButtonGroup = styled.div`
   }
 `;
 export const setHomePage = () => {
-  document.title = 'React forme - Performance, flexible and extensible forms with easy to use for validation.';
+  document.title = 'React hook form - Performance, flexible and extensible forms with easy to use for validation.';
   window.history.pushState(
-    { page: 'React forme - Performance, flexible and extensible forms with easy to use for validation.' },
-    'React forme - Performance, flexible and extensible forms with easy to use for validation.',
+    { page: 'React hook form - Performance, flexible and extensible forms with easy to use for validation.' },
+    'React hook form - Performance, flexible and extensible forms with easy to use for validation.',
     '/',
   );
 };
@@ -167,10 +167,10 @@ export default function ButtonGroup({
             toggleApi(false);
             toggleBuilder(false);
             document.title =
-              'React forme - Performance, flexible and extensible forms with easy to use for validation.';
+              'React hook form - Performance, flexible and extensible forms with easy to use for validation.';
             window.history.pushState(
-              { page: 'React forme - Performance, flexible and extensible forms with easy to use for validation.' },
-              'React forme - Performance, flexible and extensible forms with easy to use for validation.',
+              { page: 'React hook form - Performance, flexible and extensible forms with easy to use for validation.' },
+              'React hook form - Performance, flexible and extensible forms with easy to use for validation.',
               '/',
             );
             window.scrollTo(0, 0);
@@ -195,8 +195,8 @@ export default function ButtonGroup({
               setHomePage();
             } else {
               toggleApi(true);
-              document.title = 'React forme - API';
-              window.history.pushState({ page: 'React forme - API' }, 'React forme - API', '/api');
+              document.title = 'React hook form - API';
+              window.history.pushState({ page: 'React hook form - API' }, 'React hook form - API', '/api');
             }
 
             // @ts-ignore
@@ -226,8 +226,8 @@ export default function ButtonGroup({
               setHomePage();
             } else {
               toggleBuilder(true);
-              document.title = 'React forme - Builder';
-              window.history.pushState({ page: 'React forme - Builder' }, 'React forme - Builder', '/builder');
+              document.title = 'React hook form - Builder';
+              window.history.pushState({ page: 'React hook form - Builder' }, 'React hook form - Builder', '/builder');
             }
 
             // @ts-ignore

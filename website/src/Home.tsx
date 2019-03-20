@@ -154,8 +154,8 @@ export default function Home({
             value="Edit"
             onClick={() => {
               toggleBuilder(true);
-              document.title = 'React forme - Builder';
-              window.history.pushState({ page: 'React forme - Builder' }, 'React forme - Builder', '/builder');
+              document.title = 'React hook form - Builder';
+              window.history.pushState({ page: 'React hook form - Builder' }, 'React hook form - Builder', '/builder');
             }}
             style={{
               background: 'black',
