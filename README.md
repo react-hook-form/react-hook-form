@@ -27,7 +27,7 @@
 
 ```jsx
 import React from 'react';
-import useForm from 'react-forme';
+import useForm from 'react-hook-form';
 
 function App() {
     const { register, handleSubmit, errors } = useForm();
