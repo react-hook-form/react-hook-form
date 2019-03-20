@@ -277,7 +277,7 @@ function Builder({
                     }}
                     ref={ref =>
                       register({
-                        ref,
+                          ref,
                         required: true,
                         custom,
                       })
