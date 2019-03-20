@@ -11,7 +11,7 @@ import attachEventListeners from './logic/attachEventListeners';
 import getOptionNonEventAttached from './logic/getOptionNonEventAttached';
 
 export interface RegisterInput {
-  ref: HTMLInputElement | HTMLSelectElement | null;
+  ref: any;
   required?: boolean;
   min?: number | Date;
   max?: number | Date;
