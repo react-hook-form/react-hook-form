@@ -11,15 +11,19 @@ const code = `import React from 'react'
 import useForm from 'react-hook-form'
 
 function YourForm() {
-  const { register, handleSubmit } = useForm();
-  const onSubmit = (data) => {} // your form submit function which will invoke after successful validation
+  const { register, handleSubmit, watch, errors } = useForm();
+  const onSubmit = (data) => { console.log(data) } {/* your form submit function which will invoke after successful validation */}
+  
+  console.log(watch('example')) {/* you can watch individual input by pass the name of the input */}
   
   return (
-    <form onsubmit={handleSubmit(onSubmit)}> // handleSubmit will validation your inputs before onSubmit    
+   // handleSubmit will validation your inputs before onSubmit
+    <form onsubmit={handleSubmit(onSubmit)}>    
+      {/* you will have to register your input into react-hook-form, by invoke the register function with ref as the argument */}
       <input type="text" name="example" ref={ ref => { register({ ref })} } />
-      // you will have to register your input into react-hook-form, by invoke the register function with ref as the argument
-      <input type="text" name="example" ref={ ref => { register({ ref, required: true })} } />
-      // include validation with required field or other standard html validation rules  
+      {/* include validation with required field or other standard html validation rules  */}
+      <input type="text" name="exampleRequired" ref={ ref => { register({ ref, required: true, max: 10 })} } />
+      {errors.example && '<span>This field is required</span>'}
       <input type="submit" /> 
     </form>
   )
