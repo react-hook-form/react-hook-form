@@ -13,12 +13,12 @@ describe('getRadioValue', () => {
       getRadioValue([
         // @ts-ignore
         { ref: { name: 'bill', checked: false, value: '1' } },
-        // @ts-ignore 
+        // @ts-ignore
         { ref: { name: 'bill', checked: true, value: '2' } },
       ]),
     ).toEqual({
       isValid: true,
-      value: 2,
+      value: '2',
     });
   });
 });
