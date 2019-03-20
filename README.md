@@ -1,4 +1,4 @@
-<div align="center"><a href="https://react-forme.now.sh/"><img src="https://raw.githubusercontent.com/bluebill1049/react-forme/master/website/logo.png" alt="React forme Logo - React hook form valiation" width="350px" /></a></div>
+<div align="center"><a href="https://react-hook-form.now.sh/"><img src="https://raw.githubusercontent.com/bluebill1049/react-forme/master/website/logo.png" alt="React forme Logo - React hook form valiation" width="350px" /></a></div>
 
 > React hook form management without the hassle 
 
@@ -10,18 +10,18 @@
 - Build with React hook, performance and developer experience in mind
 - Follow html standard for validation
 - Tiny size without other dependency 2 kB (minified + gzipped)
-- Build a quick form with [form builder](https://react-forme.now.sh/builder)
+- Build a quick form with [form builder](https://react-hook-form.now.sh/builder)
 
 ## Install
 
     $ npm install react-forme
 
-## [Website](https://react-forme.now.sh/api)
+## [Website](https://react-hook-form.now.sh/api)
 
-- [Get started](https://react-forme.now.sh/api)
-- [API](https://react-forme.now.sh/api)
-- [Demo](https://react-forme.now.sh)
-- [Form Builder](https://react-forme.now.sh/builder)
+- [Get started](https://react-hook-form.now.sh/api)
+- [API](https://react-hook-form.now.sh/api)
+- [Demo](https://react-hook-form.now.sh)
+- [Form Builder](https://react-hook-form.now.sh/builder)
 
 ## Quickstart
 
