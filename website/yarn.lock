@@ -8159,10 +8159,10 @@ react-error-overlay@^5.1.4:
   resolved "https://registry.yarnpkg.com/react-error-overlay/-/react-error-overlay-5.1.4.tgz#88dfb88857c18ceb3b9f95076f850d7121776991"
   integrity sha512-fp+U98OMZcnduQ+NSEiQa4s/XMsbp+5KlydmkbESOw4P69iWZ68ZMFM5a2BuE0FgqPBKApJyRuYHR95jM8lAmg==
 
-react-forme@0.0.11:
-  version "0.0.11"
-  resolved "https://registry.yarnpkg.com/react-forme/-/react-forme-0.0.11.tgz#00d36b58168476425cfe98938716b688ccb8c69a"
-  integrity sha512-u6nJKfBsZwmt4XkzNG/I6duB9XIK/Fue9qn5ynYV6i61fpAwTlJBuJSIhdVtL6YxbgbJzxHjJlHJMrEBpBiw/g==
+react-forme@0.0.12:
+  version "0.0.12"
+  resolved "https://registry.yarnpkg.com/react-forme/-/react-forme-0.0.12.tgz#8ac1b03c1e7d27eb3cc6c47e075078da3397ff58"
+  integrity sha512-PDbdBM4B3kn3yA32/KcOMd0GCxe811RTaTYQUtdZHpDBdxlE8R07YqXAXjoTZHbXGejwpJQz8uxz3yakyunW0w==
   dependencies:
     styled-components "^4.1.3"
 
