@@ -1,5 +1,5 @@
 import React, { useState, useRef, Suspense, useEffect } from 'react';
-import useForm from 'react-forme';
+import useForm from 'react-hook-form';
 import { Animate } from 'react-simple-animate';
 import { SubHeading, Heading, Title } from './styles/typography';
 import ButtonGroup from './ButtonGroup';
@@ -333,7 +333,7 @@ function App() {
               />
               <path d="M71.1,69.49H53.45a1,1,0,1,0,0,2H71.1a1,1,0,0,0,0-2Z" />
             </Logo>
-            <Heading>React Forme</Heading>
+            <Heading>React Hook Form</Heading>
             <SubHeading>Performance, flexible and extensible forms with easy to use for validation.</SubHeading>
 
             <HeadingButtons>
@@ -407,8 +407,8 @@ function App() {
 
           <Footer>
             Build ♡ by <a href="https://twitter.com/bluebill1049">@Bill Luo</a> with{' '}
-            <a href="https://react-forme.now.sh/" target="_blank">
-              React Forme
+            <a href="https://react-hook-form.now.sh/" target="_blank">
+              React Hook Form
             </a>{' '}
             &{' '}
             <a href="https://react-simple-animate.now.sh/" target="_blank">

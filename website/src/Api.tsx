@@ -8,7 +8,7 @@ import { SubHeading, HeadingWithTopMargin, Title } from './styles/typography';
 import { setHomePage } from './ButtonGroup';
 
 const code = `import React from 'react'
-import useForm from 'react-forme'
+import useForm from 'react-hook-form'
 
 function YourForm() {
   const { register, handleSubmit } = useForm();
@@ -17,7 +17,7 @@ function YourForm() {
   return (
     <form onsubmit={handleSubmit(onSubmit)}> // handleSubmit will validation your inputs before onSubmit    
       <input type="text" name="example" ref={ ref => { register({ ref })} } />
-      // you will have to register your input into react-forme, by invoke the register function with ref as the argument
+      // you will have to register your input into react-hook-form, by invoke the register function with ref as the argument
       <input type="text" name="example" ref={ ref => { register({ ref, required: true })} } />
       // include validation with required field or other standard html validation rules  
       <input type="submit" /> 
@@ -27,7 +27,7 @@ function YourForm() {
 `;
 
 const errorCode = `import React from 'react'
-import useForm from 'react-forme
+import useForm from 'react-hook-form
 
 function YourForm() {
   const { register, errors, handleSubmit } = useForm();
@@ -283,11 +283,11 @@ function Builder({ formData, updateFormData, showApi, toggleApi, apiButton, isMo
                 <div>
                   <Title>Quick Start</Title>
                   <h2 ref={quickStartRef}>Installation</h2>
-                  <p>Installing react-forme only takes a single command and you're ready to roll.</p>
+                  <p>Installing react-hook-form only takes a single command and you're ready to roll.</p>
                   <code>npm install react-form</code>
 
                   <h2>Example</h2>
-                  <p>The following code will demonstrate the basic usage of react-forme.</p>
+                  <p>The following code will demonstrate the basic usage of react-hook-form.</p>
                   <SyntaxHighlighter style={monokaiSublime}>{code}</SyntaxHighlighter>
 
                   <Title>API</Title>
@@ -355,7 +355,7 @@ function Builder({ formData, updateFormData, showApi, toggleApi, apiButton, isMo
                     </h2>
                   </code>
                   <p>
-                    This is the function to register <code>Ref</code> into <code>react-forme</code> and also includes
+                    This is the function to register <code>Ref</code> into <code>react-hook-form</code> and also includes
                     validation rules. Validation rules are all based on html input/select validation standard except there one
                     method <code>custom</code> which allow you to do some custom validation.
                   </p>
@@ -364,7 +364,7 @@ function Builder({ formData, updateFormData, showApi, toggleApi, apiButton, isMo
                       color: colors.secondary,
                     }}
                   >
-                    <b>Important:</b> input name is <b>required</b> and <b>unique</b> for react-forme in order to
+                    <b>Important:</b> input name is <b>required</b> and <b>unique</b> for react-hook-form in order to
                     register the input.
                   </p>
 

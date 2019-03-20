@@ -151,7 +151,7 @@ export default function ButtonGroup({
   return (
     <>
       <GithubIcon>
-        <a href="https://github.com/bluebill1049/react-forme" target="_blank">
+        <a href="https://github.com/bluebill1049/react-hook-form" target="_blank">
           <svg viewBox="0 0 496 512" height="40" aria-hidden="true" focusable="false" fill="currentColor">
             <path
               fill="white"
