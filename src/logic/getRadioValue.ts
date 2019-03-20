@@ -9,11 +9,11 @@ export default function getRadioValue(
   options?: Array<RegisterInput>,
 ): {
   isValid: boolean;
-  value: null | number | string,
+  value: null | number | string;
 } {
   return Array.isArray(options)
     ? options.reduce(
-        (previous, { ref: { name, checked, value } }: RegisterInput) =>
+        (previous, { ref: { name, checked, value } }: { ref: HTMLInputElement }) =>
           checked
             ? {
                 isValid: true,
