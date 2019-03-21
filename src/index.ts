@@ -133,7 +133,7 @@ export default function useForm({ mode }: { mode: 'onSubmit' | 'onBlur' | 'onCha
     }
 
     const result = getFieldsValues(fields.current, filedNames);
-    return result === undefined ? result : defaultValue;
+    return result === undefined ? defaultValue : result;
   }
 
   const handleSubmit = (callback: (Object, e) => void) => e => {
