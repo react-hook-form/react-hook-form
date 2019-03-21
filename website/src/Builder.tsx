@@ -424,7 +424,7 @@ function Builder({
                           HomeRef.current.scrollIntoView({ behavior: 'smooth' });
                         }}
                         background="black"
-                        value="Generate From"
+                        value="Generate Form"
                       />
                     )}
                   />
