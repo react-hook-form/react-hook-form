@@ -117,7 +117,7 @@ export default function useForm({ mode }: { mode: 'onSubmit' | 'onBlur' | 'onCha
     attachEventListeners({ allFields, watchFields, ref, type, radioOptionIndex, name, mode, validateWithStateUpdate });
   }
 
-  function watch(filedNames?: string | Array<string> | undefined) {
+  function watch(filedNames?: string | Array<string> | undefined, defaultValue?: string | Array<string> | undefined) {
     if (typeof filedNames === 'string') {
       if (!watchFields.current[filedNames]) watchFields.current[filedNames] = true;
     } else if (Array.isArray(filedNames)) {
@@ -132,7 +132,8 @@ export default function useForm({ mode }: { mode: 'onSubmit' | 'onBlur' | 'onCha
       });
     }
 
-    return getFieldsValues(fields.current, filedNames);
+    const result = getFieldsValues(fields.current, filedNames);
+    return result === undefined ? result : defaultValue;
   }
 
   const handleSubmit = (callback: (Object, e) => void) => e => {
