@@ -20,6 +20,8 @@ export default (
     };
   }
 
+  if (value === '') return copy;
+
   // min and max section
   if (min || max) {
     let exceedMax;
