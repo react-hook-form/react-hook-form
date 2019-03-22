@@ -8,6 +8,7 @@ const GithubIcon = styled.span`
   top: 25px;
   right: 20px;
   transition: 0.3s all;
+  z-index: 10;
 
   @media (min-width: 768px) {
     right: 20px;

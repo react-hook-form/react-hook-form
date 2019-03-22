@@ -4,7 +4,7 @@ import { DATE_INPUTS, STRING_INPUTS } from '../constants';
 import { ErrorMessages, Field } from '..';
 
 export default (
-  { ref: { type, value, name, checked }, required, maxLength, minLength, min, max, pattern, custom }: Field,
+  { ref: { type, value, name, checked }, required, maxLength, minLength, min, max, pattern, validate }: Field,
   fields: { [key: string]: Field },
 ): ErrorMessages => {
   const copy = {};
@@ -65,11 +65,25 @@ export default (
     };
   }
 
-  if (custom && !custom(value)) {
-    copy[name] = {
-      ...copy[name],
-      custom: true,
-    };
+  if (validate) {
+    if (typeof validate === 'function') {
+      if (!validate(value)) {
+        copy[name] = {
+          ...copy[name],
+          validate: true,
+        };
+      }
+    } else if (typeof validate === 'object') {
+      return {
+        ...copy[name],
+        validate: Object.entries(validate).reduce((previous, [key, validate]) => {
+          if (typeof validate === 'function' && !validate(value)) {
+            previous[key] = true;
+          }
+          return previous;
+        }, {}),
+      };
+    }
   }
 
   return copy;

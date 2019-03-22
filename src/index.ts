@@ -21,6 +21,8 @@ export interface RegisterInput {
   minLength?: number;
 }
 
+type Validate = (data: string | number) => boolean;
+
 export interface Field {
   ref: any;
   required?: boolean;
@@ -28,7 +30,7 @@ export interface Field {
   max?: number | Date;
   maxLength?: number;
   pattern?: RegExp;
-  custom?: (data: string | number) => boolean;
+  validate?: Validate | { [key: string]: Validate };
   minLength?: number;
   eventAttached?: boolean;
   watch?: boolean;

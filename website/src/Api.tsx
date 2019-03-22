@@ -7,27 +7,44 @@ import colors from './styles/colors';
 import { SubHeading, HeadingWithTopMargin, Title } from './styles/typography';
 import { setHomePage } from './ButtonGroup';
 
-const code = `import React from 'react'
-import useForm from 'react-hook-form'
+const code = `import React from 'react';
+import useForm from 'react-hook-form';
 
 function YourForm() {
   const { register, handleSubmit, watch, errors } = useForm();
-  const onSubmit = (data) => { console.log(data) } {/* your form submit function which will invoke after successful validation */}
-  
-  console.log(watch('example')) {/* you can watch individual input by pass the name of the input */}
-  
+  const onSubmit = data => {
+    console.log(data);
+  };
+  {/* your form submit function which will invoke after successful validation */}
+
+  console.log(watch('example'));
+  {/* you can watch individual input by pass the name of the input */}
+
   return (
-   // handleSubmit will validation your inputs before onSubmit
-    <form onsubmit={handleSubmit(onSubmit)}>    
+    // handleSubmit will validation your inputs before onSubmit
+    <form onsubmit={handleSubmit(onSubmit)}>
       {/* you will have to register your input into react-hook-form, by invoke the register function with ref as the argument */}
-      <input type="text" name="example" ref={ ref => { register({ ref })} } />
+      <input
+        type="text"
+        name="example"
+        ref={ref => {
+          register({ ref });
+        }}
+      />
       {/* include validation with required field or other standard html validation rules  */}
-      <input type="text" name="exampleRequired" ref={ ref => { register({ ref, required: true, max: 10 })} } />
+      <input
+        type="text"
+        name="exampleRequired"
+        ref={ref => {
+          register({ ref, required: true, max: 10 });
+        }}
+      />
       {errors.example && '<span>This field is required</span>'}
-      <input type="submit" /> 
+      <input type="submit" />
     </form>
-  )
+  );
 }
+
 `;
 
 const errorCode = `import React from 'react'
@@ -80,6 +97,7 @@ const Root = styled.main`
     white-space: pre-wrap;
     word-wrap: break-word;
     background: none !important;
+    line-height: 1.3;
   }
 `;
 
@@ -343,8 +361,8 @@ function Builder({ formData, updateFormData, showApi, toggleApi, apiButton, isMo
                             <Type>string</Type>
                           </td>
                           <td>
-                            Not recommended as validation will go through each change on your input, consider this as
-                            a bad performance practice.
+                            Not recommended as validation will go through each change on your input, consider this as a
+                            bad performance practice.
                           </td>
                         </tr>
                       </tbody>
@@ -359,9 +377,9 @@ function Builder({ formData, updateFormData, showApi, toggleApi, apiButton, isMo
                     </h2>
                   </code>
                   <p>
-                    This is the function to register <code>Ref</code> into <code>react-hook-form</code> and also includes
-                    validation rules. Validation rules are all based on html input/select validation standard except there one
-                    method <code>custom</code> which allow you to do some custom validation.
+                    This is the function to register <code>Ref</code> into <code>react-hook-form</code> and also
+                    includes validation rules. Validation rules are all based on html input/select validation standard
+                    except there one method <code>validate</code> which allow you to do some custom validation.
                   </p>
                   <p
                     style={{
@@ -496,7 +514,7 @@ function Builder({ formData, updateFormData, showApi, toggleApi, apiButton, isMo
                         </tr>
                         <tr>
                           <td>
-                            <code>custom</code>
+                            <code>validate</code>
                           </td>
                           <td>
                             <code>
@@ -507,7 +525,7 @@ function Builder({ formData, updateFormData, showApi, toggleApi, apiButton, isMo
                           <td>
                             <SyntaxHighlighter
                               style={monokaiSublime}
-                            >{`<input name="test" ref={ref => register({ ref, custom: (value) => value === 'test'  })}`}</SyntaxHighlighter>
+                            >{`<input name="test" ref={ref => register({ ref, validate: (value) => value === 'test'  })}`}</SyntaxHighlighter>
                           </td>
                         </tr>
                       </tbody>
