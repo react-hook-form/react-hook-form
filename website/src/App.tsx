@@ -23,7 +23,7 @@ const Logo = styled.svg`
   background: ${colors.lightPink};
   text-align: center;
   display: block;
-  margin: 0 auto 0;
+  margin: -50px auto 0;
 
   @media (min-width: 768px) {
     display: none;

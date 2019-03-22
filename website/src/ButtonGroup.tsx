@@ -6,7 +6,7 @@ import { Animate } from 'react-simple-animate';
 const GithubIcon = styled.span`
   position: absolute;
   top: 25px;
-  right: 20px;
+  left: 20px;
   transition: 0.3s all;
   z-index: 10;
 
