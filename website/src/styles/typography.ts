@@ -38,6 +38,7 @@ export const Title = styled.h2`
   font-size: 1.1rem;
   overflow: hidden;
   margin-bottom: 30px;
+  position: relative;
   
   @media (min-width: 768px) {
     margin-top: 20px;

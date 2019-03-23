@@ -3,6 +3,7 @@ import { Title } from './styles/typography';
 import colors from './styles/colors';
 import { Animate } from 'react-simple-animate';
 import styled from 'styled-components';
+import Setting from './svgs/setting';
 
 const Code = styled.pre`
   text-align: left;
@@ -39,6 +40,35 @@ const RadioGroup = styled.div`
   }
 `;
 
+const SettingIcon = styled.button`
+  -webkit-appearance: none;
+  border: none;
+  color: white;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: absolute;
+  font-size: 14px;
+  right: 0;
+  top: 5px;
+  z-index: 1;
+  padding-left: 10px;
+  background: ${colors.primary};
+  cursor: pointer;
+  
+  &:hover {
+    transition: 0.3s all;
+    color: ${colors.lightPink};
+  }
+
+  & > svg {
+    fill: white;
+    width: 20px;
+    margin-right: 5px;
+    display: inline-block;
+  }
+`;
+
 const errorStyle = { border: `1px solid ${colors.secondary}`, background: colors.errorPink };
 
 export default function Home({
@@ -51,12 +81,20 @@ export default function Home({
   watch,
   toggleBuilder,
   setting,
+  showSetting,
+  toggleSetting,
 }) {
   return (
     <>
       <Wrapper>
         <form onSubmit={handleSubmit(onSubmit)}>
-          <Title>Example</Title>
+          <Title>
+            Example{' '}
+            <SettingIcon onClick={() => toggleSetting(!showSetting)}>
+              <Setting />
+              Setting
+            </SettingIcon>
+          </Title>
           {formData.map(field => {
             switch (field.type) {
               case 'select':

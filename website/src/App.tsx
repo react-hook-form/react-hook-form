@@ -392,6 +392,8 @@ function App() {
           <div ref={HomeRef}>
             <Home
               {...{
+                showSetting,
+                toggleSetting,
                 handleSubmit,
                 onSubmit,
                 submitData,
