@@ -21,7 +21,7 @@ function YourForm() {
   {/* you can watch individual input by pass the name of the input */}
 
   return (
-    // handleSubmit will validation your inputs before onSubmit
+    {/* handleSubmit will validation your inputs before onSubmit */}
     <form onsubmit={handleSubmit(onSubmit)}>
       {/* you will have to register your input into react-hook-form, by invoke the register function with ref as the argument */}
       <input
@@ -39,6 +39,7 @@ function YourForm() {
           register({ ref, required: true, max: 10 });
         }}
       />
+      {/* errors will return true if particular field validation is invalid  */}
       {errors.example && '<span>This field is required</span>'}
       <input type="submit" />
     </form>
@@ -59,6 +60,7 @@ function YourForm() {
       <input type="text" name="textInput" ref={ ref => { register({ ref, required, maxLength: 50 })} } />
       {errors.textInput && errors.textInput.required && 'Your input is required'}
       {errors.textInput && errors.textInput.maxLength && 'Your input exceed maxLength'}
+      
       <input type="number" name="numberInput" ref={ ref => { register({ ref, min: 50 })} } />
       {errors.numberInput && errors.numberInput.min && 'Your input required to be more than 50'}
       <input type="submit" /> 
@@ -94,6 +96,7 @@ const Root = styled.main`
     text-align: left;
     color: white;
     overflow-x: auto;
+    overflow-y:hidden;
     white-space: pre-wrap;
     word-wrap: break-word;
     background: none !important;
@@ -192,7 +195,7 @@ const CloseButton = styled.button`
     font-size: 35px;
     padding: 20px;
     top: 15px;
-    left: 20px;
+    right: 20px;
   }
 `;
 
@@ -397,7 +400,13 @@ function Builder({ formData, updateFormData, showApi, toggleApi, apiButton, isMo
                           <th>Name</th>
                           <th>Type</th>
                           <th>Description</th>
-                          <th>Example</th>
+                          <th
+                            style={{
+                              minWidth: 310,
+                            }}
+                          >
+                            Example
+                          </th>
                         </tr>
                         <tr>
                           <td>
@@ -412,7 +421,14 @@ function Builder({ formData, updateFormData, showApi, toggleApi, apiButton, isMo
                           <td>
                             <SyntaxHighlighter
                               style={monokaiSublime}
-                            >{`<input name="test" ref={ref => register({ ref })}`}</SyntaxHighlighter>
+                            >{`<input
+  name="test"
+  ref={ref =>
+    register({
+      ref
+    })
+  }
+/>`}</SyntaxHighlighter>
                           </td>
                         </tr>
                         <tr>
@@ -431,7 +447,15 @@ function Builder({ formData, updateFormData, showApi, toggleApi, apiButton, isMo
                           <td>
                             <SyntaxHighlighter
                               style={monokaiSublime}
-                            >{`<input name="test" ref={ref => register({ ref, required: true })}`}</SyntaxHighlighter>
+                            >{`<input
+  name="test"
+  ref={ref =>
+    register({
+      ref,
+      required: true
+    })
+  }
+/>`}</SyntaxHighlighter>
                           </td>
                         </tr>
                         <tr>
@@ -447,7 +471,15 @@ function Builder({ formData, updateFormData, showApi, toggleApi, apiButton, isMo
                           <td>
                             <SyntaxHighlighter
                               style={monokaiSublime}
-                            >{`<input name="test" ref={ref => register({ ref, maxLength: 2 })}`}</SyntaxHighlighter>
+                            >{`<input
+  name="test"
+  ref={ref =>
+    register({
+      ref,
+      maxLength: 2
+    })
+  }
+/>`}</SyntaxHighlighter>
                           </td>
                         </tr>
                         <tr>
@@ -463,7 +495,15 @@ function Builder({ formData, updateFormData, showApi, toggleApi, apiButton, isMo
                           <td>
                             <SyntaxHighlighter
                               style={monokaiSublime}
-                            >{`<input name="test" ref={ref => register({ ref, minLength: 1 })}`}</SyntaxHighlighter>
+                            >{`<input
+  name="test"
+  ref={ref =>
+    register({
+      ref,
+      minLength: 1
+    })
+  }
+/>`}</SyntaxHighlighter>
                           </td>
                         </tr>
                         <tr>
@@ -479,7 +519,15 @@ function Builder({ formData, updateFormData, showApi, toggleApi, apiButton, isMo
                           <td>
                             <SyntaxHighlighter
                               style={monokaiSublime}
-                            >{`<input name="test" ref={ref => register({ ref, max: 3 })}`}</SyntaxHighlighter>
+                            >{`<input
+  name="test"
+  ref={ref =>
+    register({
+      ref,
+      max: 3
+    })
+  }
+/>`}</SyntaxHighlighter>
                           </td>
                         </tr>
                         <tr>
@@ -493,7 +541,15 @@ function Builder({ formData, updateFormData, showApi, toggleApi, apiButton, isMo
                           <td>
                             <SyntaxHighlighter
                               style={monokaiSublime}
-                            >{`<input name="test" ref={ref => register({ ref, min: 3 })}`}</SyntaxHighlighter>
+                            >{`<input
+  name="test"
+  ref={ref =>
+    register({
+      ref,
+      min: 3
+    })
+  }
+/>`}</SyntaxHighlighter>
                           </td>
                         </tr>
                         <tr>
@@ -509,7 +565,16 @@ function Builder({ formData, updateFormData, showApi, toggleApi, apiButton, isMo
                           <td>
                             <SyntaxHighlighter
                               style={monokaiSublime}
-                            >{`<input name="test" ref={ref => register({ ref, pattern: \[A-Za-z]{3}\ })}`}</SyntaxHighlighter>
+                            >{`<input
+  name="test"
+  ref={ref =>
+    register({
+      ref,
+      pattern: \\[A-Za-z]{3}\\
+
+    })
+  }
+/>`}</SyntaxHighlighter>
                           </td>
                         </tr>
                         <tr>
@@ -518,14 +583,40 @@ function Builder({ formData, updateFormData, showApi, toggleApi, apiButton, isMo
                           </td>
                           <td>
                             <code>
-                              <Type>(Object) => Boolean</Type>
+                              <Type>{`(Object) => Boolean | {[key: string]: (Object) => Boolean}`}</Type>
                             </code>
                           </td>
-                          <td>Callback function with input value as the argument, then you will have to return true/false as result.</td>
+                          <td>
+                            You can pass a callback function with value as the argument to validate, or you can pass an object of callback functions to validate all of them. (refer to the examples)
+                          </td>
                           <td>
                             <SyntaxHighlighter
                               style={monokaiSublime}
-                            >{`<input name="test" ref={ref => register({ ref, validate: (value) => value === 'test'  })}`}</SyntaxHighlighter>
+                            >{`<input
+  name="single"
+  ref={ref =>
+    register({
+      ref,
+      validate:
+        (value) => value === '1'
+    })
+  }
+/>
+<input
+  name="multiple"
+  ref={ref =>
+    register({
+      ref,
+      validate: {
+        isMoreThanOne:
+          (value) => value > 1,
+        isLessThanTen:
+          (value) => value < 10,
+      }
+    })
+  }
+/>
+`}</SyntaxHighlighter>
                           </td>
                         </tr>
                       </tbody>

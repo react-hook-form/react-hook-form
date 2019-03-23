@@ -36,6 +36,8 @@ const Root = styled.main`
     text-align: left;
     color: white;
     overflow-x: auto;
+    overflow-y: hidden;
+    line-height: 1.3;
     white-space: pre-wrap;
     word-wrap: break-word;
     background: none !important;
@@ -160,7 +162,7 @@ const CloseButton = styled.button`
     font-size: 35px;
     padding: 20px;
     top: 15px;
-    left: 20px;
+    right: 20px;
   }
 `;
 
