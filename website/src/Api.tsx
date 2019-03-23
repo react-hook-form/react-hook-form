@@ -6,6 +6,7 @@ import styled from 'styled-components';
 import colors from './styles/colors';
 import { SubHeading, HeadingWithTopMargin, Title } from './styles/typography';
 import { setHomePage } from './ButtonGroup';
+import copyClipBoard from './utils/copyClipBoard';
 
 const code = `import React from 'react';
 import useForm from 'react-hook-form';
@@ -21,7 +22,7 @@ function YourForm() {
   {/* you can watch individual input by pass the name of the input */}
 
   return (
-    {/* handleSubmit will validation your inputs before onSubmit */}
+    {/* handleSubmit will validation your inputs before calling onSubmit */}
     <form onsubmit={handleSubmit(onSubmit)}>
       {/* you will have to register your input into react-hook-form, by invoke the register function with ref as the argument */}
       <input
@@ -31,7 +32,7 @@ function YourForm() {
           register({ ref });
         }}
       />
-      {/* include validation with required field or other standard html validation rules  */}
+      {/* include validation with required field or other standard html validation rules */}
       <input
         type="text"
         name="exampleRequired"
@@ -64,6 +65,27 @@ function YourForm() {
       <input type="number" name="numberInput" ref={ ref => { register({ ref, min: 50 })} } />
       {errors.numberInput && errors.numberInput.min && 'Your input required to be more than 50'}
       <input type="submit" /> 
+    </form>
+  )
+}
+`;
+
+const watchCode  = `import React from 'react'
+import useForm from 'react-hook-form
+
+function YourForm(props) {
+  const { register, watch } = useForm()
+  const watchYes = watch('yes', props.yes) {/* you can supply default value as second argument */}
+  const watchAllFields = watch() {/* when pass nothing as argument, you are watching everything */}
+  const watchFields = watch(['yes', 'number']) {/* you can also target specific fields by their names */}
+  
+  return (
+    <form>
+      <input type="text" name="textInput" ref={ ref => { register({ ref, required, maxLength: 50 })} } />
+      <input type="checkbox" name="yes" ref={ ref => { register({ ref })} } />
+      
+      {watchYes && <input type="number" name="numberInput" ref={ ref => { register({ ref, min: 50 })} } />}
+      {/* based on yes selection to display numberInput */}
     </form>
   )
 }
@@ -205,9 +227,34 @@ const Code = styled.span`
   font-size: 14px;
 `;
 
+const InstallCode = styled.span`
+  background: #191d3a !important;
+  padding: 13px 20px;
+  border-radius: 4px;
+  margin-top: 20px;
+  display: block;
+`;
+
+const CopyButton = styled.button`
+  background: #516391;
+  border: none;
+  color: white;
+  border-radius: 4px;
+  font-size: 16px;
+  float: right;
+
+  &:hover {
+    opacity: 0.8;
+  }
+
+  &:active {
+    transform: translateY(2px);
+  }
+`;
+
 const links = ['Quick Start', 'useform', 'register', 'errors', 'watch', 'handleSubmit'];
 
-function Builder({ formData, updateFormData, showApi, toggleApi, apiButton, isMobile }: any) {
+function Builder({ formData, updateFormData, showApi, toggleApi, apiButton }: any) {
   const copyFormData = useRef([]);
   const closeButton = useRef(null);
   const quickStartRef = useRef(null);
@@ -261,7 +308,8 @@ function Builder({ formData, updateFormData, showApi, toggleApi, apiButton, isMo
     <Animate
       play={showApi}
       type="ease-in"
-      durationSeconds={isMobile ? 0.3 : 0.5}
+      durationSeconds={0}
+      // durationSeconds={isMobile ? 0.3 : 0.5}
       startStyle={{
         transform: 'translateY(100vh)',
       }}
@@ -310,9 +358,24 @@ function Builder({ formData, updateFormData, showApi, toggleApi, apiButton, isMo
                   <Title>Quick Start</Title>
                   <h2 ref={quickStartRef}>Installation</h2>
                   <p>Installing react-hook-form only takes a single command and you're ready to roll.</p>
-                  <code>npm install react-form</code>
+                  <InstallCode>
+                    npm install react-hook-form
+                    <CopyButton
+                      onClick={() => {
+                        copyClipBoard('npm install react-hook-form');
+                      }}
+                    >
+                      Copy
+                    </CopyButton>
+                  </InstallCode>
 
-                  <h2>Example</h2>
+                  <h2
+                    style={{
+                      marginTop: 50,
+                    }}
+                  >
+                    Example
+                  </h2>
                   <p>The following code will demonstrate the basic usage of react-hook-form.</p>
                   <SyntaxHighlighter style={monokaiSublime}>{code}</SyntaxHighlighter>
 
@@ -330,7 +393,7 @@ function Builder({ formData, updateFormData, showApi, toggleApi, apiButton, isMo
                     function before render.
                   </p>
                   <p>
-                    React hook form use hook behind the scene by invoke <code>useForm</code>, you will receive the 4
+                    React hook form use hook behind the scene by invoking <code>useForm</code>, you will receive the 4
                     methods.
                   </p>
 
@@ -348,8 +411,8 @@ function Builder({ formData, updateFormData, showApi, toggleApi, apiButton, isMo
                             <Type>string</Type>
                           </td>
                           <td>
-                            This is the default option, validation will trigger on submit and then attach{' '}
-                            <code>onchange</code> event listeners to re-validate them.
+                            This is the default option, validation will trigger on submit, and then attach{' '}
+                            <code>onchange | blur | input</code> event listeners to re-validate them.
                           </td>
                         </tr>
                         <tr>
@@ -357,7 +420,9 @@ function Builder({ formData, updateFormData, showApi, toggleApi, apiButton, isMo
                           <td>
                             <Type>string</Type>
                           </td>
-                          <td>Validation will trigger on each input blur event.</td>
+                          <td>
+                            Validation will trigger on each input <code>blur</code> event.
+                          </td>
                         </tr>
                         <tr>
                           <td>onChange</td>
@@ -365,8 +430,8 @@ function Builder({ formData, updateFormData, showApi, toggleApi, apiButton, isMo
                             <Type>string</Type>
                           </td>
                           <td>
-                            Not recommended as validation will go through each change on your input, consider this as a
-                            bad performance practice.
+                            Not recommended as validation will go through each change on your input, and hence trigger
+                            render. Consider this as a bad performance practice.
                           </td>
                         </tr>
                       </tbody>
@@ -381,16 +446,16 @@ function Builder({ formData, updateFormData, showApi, toggleApi, apiButton, isMo
                     </h2>
                   </code>
                   <p>
-                    This is the function to register <code>Ref</code> into <code>react-hook-form</code> and also
-                    includes validation rules. Validation rules are all based on html input/select validation standard
-                    except there one method <code>validate</code> which allow you to do some custom validation.
+                    This is the function to register <code>Ref</code> and validation into <code>react-hook-form</code>.
+                    Validation rules are all based on html input/select's standard validation, however <code>react-hook-form</code> do allow
+                    custom validation with method <code>validate</code>.
                   </p>
                   <p
                     style={{
                       color: colors.secondary,
                     }}
                   >
-                    <b>Important:</b> input name is <b>required</b> and <b>unique</b> for react-hook-form in order to
+                    <b>Important:</b> input name is <b>required</b> and <b>unique</b> for <code>react-hook-form</code> in order to
                     register the input.
                   </p>
 
@@ -672,6 +737,7 @@ function Builder({ formData, updateFormData, showApi, toggleApi, apiButton, isMo
                       </tbody>
                     </Table>
                   </TableWrapper>
+                  <SyntaxHighlighter style={monokaiSublime}>{watchCode}</SyntaxHighlighter>
 
                   <hr />
                   <code ref={handleSubmitRef}>

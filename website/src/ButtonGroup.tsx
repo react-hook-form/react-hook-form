@@ -31,9 +31,13 @@ const GithubIcon = styled.span`
 
 const hoverStyle = `
   &:hover {
-    fill: ${colors.secondary};
+    > svg {
+      transition: 0.3s all;
+      fill: ${colors.secondary};
+    }
 
     & > span {
+      transition: 0.3s all;
       opacity: 0.6;
     }
   }
