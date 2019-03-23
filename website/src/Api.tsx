@@ -16,10 +16,10 @@ function YourForm() {
   const onSubmit = data => {
     console.log(data);
   };
-  {/* your form submit function which will invoke after successful validation */}
+  // your form submit function which will invoke after successful validation
 
   console.log(watch('example'));
-  {/* you can watch individual input by pass the name of the input */}
+  // you can watch individual input by pass the name of the input
 
   return (
     {/* handleSubmit will validation your inputs before calling onSubmit */}
@@ -63,7 +63,7 @@ function YourForm() {
       {errors.textInput && errors.textInput.maxLength && 'Your input exceed maxLength'}
       
       <input type="number" name="numberInput" ref={ ref => { register({ ref, min: 50 })} } />
-      {errors.numberInput && errors.numberInput.min && 'Your input required to be more than 50'}
+      {errors.numberInput && 'Your input required to be more than 50'}
       <input type="submit" /> 
     </form>
   )
@@ -75,9 +75,9 @@ import useForm from 'react-hook-form
 
 function YourForm(props) {
   const { register, watch } = useForm()
-  const watchYes = watch('yes', props.yes) {/* you can supply default value as second argument */}
-  const watchAllFields = watch() {/* when pass nothing as argument, you are watching everything */}
-  const watchFields = watch(['yes', 'number']) {/* you can also target specific fields by their names */}
+  const watchYes = watch('yes', props.yes) // you can supply default value as second argument
+  const watchAllFields = watch() // when pass nothing as argument, you are watching everything
+  const watchFields = watch(['yes', 'number']) // you can also target specific fields by their names
   
   return (
     <form>
@@ -254,7 +254,7 @@ const CopyButton = styled.button`
 
 const links = ['Quick Start', 'useform', 'register', 'errors', 'watch', 'handleSubmit'];
 
-function Builder({ formData, updateFormData, showApi, toggleApi, apiButton }: any) {
+function Builder({ formData, updateFormData, showApi, toggleApi, apiButton, isMobile }: any) {
   const copyFormData = useRef([]);
   const closeButton = useRef(null);
   const quickStartRef = useRef(null);
@@ -308,8 +308,7 @@ function Builder({ formData, updateFormData, showApi, toggleApi, apiButton }: an
     <Animate
       play={showApi}
       type="ease-in"
-      durationSeconds={0}
-      // durationSeconds={isMobile ? 0.3 : 0.5}
+      durationSeconds={isMobile ? 0.3 : 0.5}
       startStyle={{
         transform: 'translateY(100vh)',
       }}
