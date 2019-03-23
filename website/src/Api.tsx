@@ -122,8 +122,9 @@ const Table = styled.table`
 `;
 
 const TableWrapper = styled.div`
-  overflow: scroll;
   -webkit-overflow-scrolling: touch;
+  overflow-y: hidden;
+  overflow-x: auto;
 `;
 
 const Type = styled.span`
@@ -419,9 +420,7 @@ function Builder({ formData, updateFormData, showApi, toggleApi, apiButton, isMo
                           </td>
                           <td>React element ref</td>
                           <td>
-                            <SyntaxHighlighter
-                              style={monokaiSublime}
-                            >{`<input
+                            <SyntaxHighlighter style={monokaiSublime}>{`<input
   name="test"
   ref={ref =>
     register({
@@ -445,9 +444,7 @@ function Builder({ formData, updateFormData, showApi, toggleApi, apiButton, isMo
                             submitted.
                           </td>
                           <td>
-                            <SyntaxHighlighter
-                              style={monokaiSublime}
-                            >{`<input
+                            <SyntaxHighlighter style={monokaiSublime}>{`<input
   name="test"
   ref={ref =>
     register({
@@ -469,9 +466,7 @@ function Builder({ formData, updateFormData, showApi, toggleApi, apiButton, isMo
                           </td>
                           <td>The maximum length of the value to accept for this input.</td>
                           <td>
-                            <SyntaxHighlighter
-                              style={monokaiSublime}
-                            >{`<input
+                            <SyntaxHighlighter style={monokaiSublime}>{`<input
   name="test"
   ref={ref =>
     register({
@@ -493,9 +488,7 @@ function Builder({ formData, updateFormData, showApi, toggleApi, apiButton, isMo
                           </td>
                           <td>The minimum length of the value to accept for this input.</td>
                           <td>
-                            <SyntaxHighlighter
-                              style={monokaiSublime}
-                            >{`<input
+                            <SyntaxHighlighter style={monokaiSublime}>{`<input
   name="test"
   ref={ref =>
     register({
@@ -517,9 +510,7 @@ function Builder({ formData, updateFormData, showApi, toggleApi, apiButton, isMo
                           </td>
                           <td>The maximum value to accept for this input.</td>
                           <td>
-                            <SyntaxHighlighter
-                              style={monokaiSublime}
-                            >{`<input
+                            <SyntaxHighlighter style={monokaiSublime}>{`<input
   name="test"
   ref={ref =>
     register({
@@ -539,9 +530,7 @@ function Builder({ formData, updateFormData, showApi, toggleApi, apiButton, isMo
                           </td>
                           <td>The minimum value to accept for this input.</td>
                           <td>
-                            <SyntaxHighlighter
-                              style={monokaiSublime}
-                            >{`<input
+                            <SyntaxHighlighter style={monokaiSublime}>{`<input
   name="test"
   ref={ref =>
     register({
@@ -563,9 +552,7 @@ function Builder({ formData, updateFormData, showApi, toggleApi, apiButton, isMo
                           </td>
                           <td>The regex pattern for the input.</td>
                           <td>
-                            <SyntaxHighlighter
-                              style={monokaiSublime}
-                            >{`<input
+                            <SyntaxHighlighter style={monokaiSublime}>{`<input
   name="test"
   ref={ref =>
     register({
@@ -587,12 +574,11 @@ function Builder({ formData, updateFormData, showApi, toggleApi, apiButton, isMo
                             </code>
                           </td>
                           <td>
-                            You can pass a callback function with value as the argument to validate, or you can pass an object of callback functions to validate all of them. (refer to the examples)
+                            You can pass a callback function with value as the argument to validate, or you can pass an
+                            object of callback functions to validate all of them. (refer to the examples)
                           </td>
                           <td>
-                            <SyntaxHighlighter
-                              style={monokaiSublime}
-                            >{`<input
+                            <SyntaxHighlighter style={monokaiSublime}>{`<input
   name="single"
   ref={ref =>
     register({
@@ -635,10 +621,19 @@ function Builder({ formData, updateFormData, showApi, toggleApi, apiButton, isMo
                   <hr />
                   <code ref={watchRef}>
                     <h2>
-                      watch: <Type>({`string | Array<string> | undefined`}) => string | number | boolean</Type>
+                      watch:{' '}
+                      <Type>
+                        (watchName: {`string | Array<string> | undefined`}, defaultValue:{' '}
+                        {`string | Array<string> | undefined`}) => string | number | boolean
+                      </Type>
                     </h2>
                   </code>
-                  <p>Watch over input or selection change.</p>
+                  <p>
+                    Watch over input or selection change. Inital <code>watch</code> will always return{' '}
+                    <code>undefined</code>, because watch will run <strong>before</strong> the render fucntion . however
+                    you can set default value as the second argument, this is normally useful when you have some inital
+                    value to overwrite when <code>watch</code> return <code>undefined</code> on inital run.
+                  </p>
                   <TableWrapper>
                     <Table>
                       <tbody>
