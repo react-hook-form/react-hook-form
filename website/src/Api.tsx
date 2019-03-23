@@ -8,18 +8,16 @@ import { SubHeading, HeadingWithTopMargin, Title } from './styles/typography';
 import { setHomePage } from './ButtonGroup';
 import copyClipBoard from './utils/copyClipBoard';
 
-const code = `import React from 'react';
-import useForm from 'react-hook-form';
+const code = `import React from 'react'
+import useForm from 'react-hook-form
 
 function YourForm() {
-  const { register, handleSubmit, watch, errors } = useForm();
+  const { register, handleSubmit, watch, errors } = useForm()
   const onSubmit = data => {
-    console.log(data);
-  };
-  // your form submit function which will invoke after successful validation
+    console.log(data)
+  }; // your form submit function which will invoke after successful validation
 
-  console.log(watch('example'));
-  // you can watch individual input by pass the name of the input
+  console.log(watch('example')) // you can watch individual input by pass the name of the input
 
   return (
     {/* handleSubmit will validation your inputs before calling onSubmit */}
@@ -46,7 +44,6 @@ function YourForm() {
     </form>
   );
 }
-
 `;
 
 const errorCode = `import React from 'react'
