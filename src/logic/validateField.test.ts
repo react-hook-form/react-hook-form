@@ -207,9 +207,11 @@ describe('validateField', () => {
         {},
       ),
     ).toEqual({
-      validate: {
-        test: true,
-        test1: true,
+      test: {
+        validate: {
+          test: true,
+          test1: true,
+        }
       },
     });
   });

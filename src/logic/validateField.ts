@@ -74,7 +74,7 @@ export default (
         };
       }
     } else if (typeof validate === 'object') {
-      return {
+      copy[name] = {
         ...copy[name],
         validate: Object.entries(validate).reduce((previous, [key, validate]) => {
           if (typeof validate === 'function' && !validate(value)) {
