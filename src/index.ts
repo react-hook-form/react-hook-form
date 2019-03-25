@@ -10,28 +10,24 @@ import attachEventListeners from './logic/attachEventListeners';
 
 type Validate = (data: string | number) => boolean;
 
-type NumberOrDate = number | Date;
+type NumberOrString = number | string;
 
 export interface RegisterInput {
   ref: HTMLInputElement | HTMLSelectElement | null;
-  required?: boolean;
-  min?: NumberOrDate;
-  max?: NumberOrDate;
-  maxLength?: number;
-  pattern?: RegExp;
-  validate?: Validate | { [key: string]: Validate };
-  minLength?: number;
+  required?: boolean | string;
+  min?: NumberOrString | { value: NumberOrString; message: string };
+  max?: NumberOrString | { value: NumberOrString; message: string };
+  maxLength?: number | { value: number; message: string };
+  minLength?: number | { value: number; message: string };
+  pattern?: RegExp | { value: RegExp; message: string };
+  validate?:
+    | Validate
+    | { [key: string]: Validate }
+    | { value: Validate | { [key: string]: Validate }; message: string };
 }
 
-export interface Field {
+export interface Field extends RegisterInput {
   ref: any;
-  required?: boolean;
-  min?: NumberOrDate;
-  max?: NumberOrDate;
-  maxLength?: number;
-  pattern?: RegExp;
-  validate?: Validate | { [key: string]: Validate };
-  minLength?: number;
   eventAttached?: boolean;
   watch?: boolean;
   mutationWatcher?: any;
@@ -43,7 +39,7 @@ export interface Field {
 }
 
 export interface ErrorMessages {
-  [key: string]: { string: boolean } | {};
+  [key: string]: { string: boolean | string } | {};
 }
 
 export default function useForm({ mode }: { mode: 'onSubmit' | 'onBlur' | 'onChange' } = { mode: 'onSubmit' }) {
