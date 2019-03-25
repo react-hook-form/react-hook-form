@@ -6,7 +6,7 @@ import ButtonGroup from './ButtonGroup';
 import styled from 'styled-components';
 import FORM_DATA from './constants/formData';
 import colors from './styles/colors';
-import Home from './Home';
+import Form from './Form';
 
 const Setting = React.lazy(() => import('./Setting'));
 const Builder = React.lazy(() => import('./Builder'));
@@ -390,7 +390,7 @@ function App() {
           </Features>
 
           <div ref={HomeRef}>
-            <Home
+            <Form
               {...{
                 showSetting,
                 toggleSetting,

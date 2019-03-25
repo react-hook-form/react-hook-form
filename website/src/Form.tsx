@@ -71,7 +71,7 @@ const SettingIcon = styled.button`
 
 const errorStyle = { border: `1px solid ${colors.secondary}`, background: colors.errorPink };
 
-export default function Home({
+export default function Form({
   formData,
   handleSubmit,
   onSubmit,

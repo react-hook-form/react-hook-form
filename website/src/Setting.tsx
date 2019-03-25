@@ -10,7 +10,7 @@ const Root = styled.div`
   height: 100vh;
   top: 0;
   left: 0;
-  z-index: 6;
+  z-index: 10;
   width: 20%;
   text-align: left;
   box-shadow: 5px 0px 9px 0px ${colors.primary};
