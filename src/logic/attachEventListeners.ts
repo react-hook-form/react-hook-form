@@ -1,5 +1,4 @@
 import isRadioInput from '../utils/isRadioInput';
-import removeAllEventListeners from './removeAllEventListeners';
 
 export default function attachEventListeners({
   mode,
@@ -22,22 +21,15 @@ export default function attachEventListeners({
     const options = field.options;
 
     if (!options[radioOptionIndex]) return;
-    const eventAttached = options[radioOptionIndex].eventAttached;
 
-    if (eventAttached) {
-      removeAllEventListeners(ref, validateWithStateUpdate);
-    } else {
+    if (!options[radioOptionIndex].eventAttached) {
       options[radioOptionIndex].ref.addEventListener(isOnChange ? 'change' : 'blur', validateWithStateUpdate);
+      options[radioOptionIndex].eventAttached = true;
     }
-
-    options[radioOptionIndex].eventAttached = !eventAttached;
   } else {
-    const eventAttached = field.eventAttached;
-    if (eventAttached) {
-      removeAllEventListeners(ref, validateWithStateUpdate);
-    } else {
+    if (!field.eventAttached) {
       ref.addEventListener(isOnChange ? 'input' : 'blur', validateWithStateUpdate);
+      field.eventAttached = true;
     }
-    field.eventAttached = !eventAttached;
   }
 }
