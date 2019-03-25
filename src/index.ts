@@ -21,6 +21,8 @@ export interface RegisterInput {
 
 type Validate = (data: string | number) => boolean;
 
+type ValidationSchema = any;
+
 export interface Field {
   ref: any;
   required?: boolean;
@@ -44,7 +46,11 @@ export interface ErrorMessages {
   [key: string]: { string: boolean } | {};
 }
 
-export default function useForm({ mode }: { mode: 'onSubmit' | 'onBlur' | 'onChange' } = { mode: 'onSubmit' }) {
+export default function useForm(
+  { mode, validationSchema }: { mode: 'onSubmit' | 'onBlur' | 'onChange'; validationSchema?: ValidationSchema } = {
+    mode: 'onSubmit',
+  },
+) {
   const fields = useRef<{ [key: string]: Field }>({});
   const localErrorMessages = useRef<ErrorMessages>({});
   const watchFields = useRef<{ [key: string]: boolean }>({});
@@ -144,9 +150,15 @@ export default function useForm({ mode }: { mode: 'onSubmit' | 'onBlur' | 'onCha
     return result === undefined ? defaultValue : result;
   }
 
-  const handleSubmit = (callback: (Object, e) => void) => e => {
+  const handleSubmit = (callback: (Object, e) => void) => async e => {
     e.preventDefault();
     const allFields = fields.current;
+
+    if (validationSchema) {
+      const result = Object.values(allFields).map((ref) => getFieldValue(allFields, ref));
+      await validateWithSchema(result);
+      return;
+    }
 
     const { localErrors, values } = Object.values(allFields).reduce(
       (previous: ErrorMessages, data: Field) => {
