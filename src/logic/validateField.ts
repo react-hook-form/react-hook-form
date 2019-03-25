@@ -74,15 +74,19 @@ export default (
         };
       }
     } else if (typeof validate === 'object') {
-      copy[name] = {
-        ...copy[name],
-        validate: Object.entries(validate).reduce((previous, [key, validate]) => {
-          if (typeof validate === 'function' && !validate(value)) {
-            previous[key] = true;
-          }
-          return previous;
-        }, {}),
-      };
+      const result = Object.entries(validate).reduce((previous, [key, validate]) => {
+        if (typeof validate === 'function' && !validate(value)) {
+          previous[key] = true;
+        }
+        return previous;
+      }, {});
+
+      if (Object.keys(result).length) {
+        copy[name] = {
+          ...copy[name],
+          validate: result,
+        };
+      }
     }
   }
 

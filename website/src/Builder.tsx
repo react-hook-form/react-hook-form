@@ -196,8 +196,9 @@ function Builder({
   const type = watch('type');
   copyFormData.current = formData;
 
-  function custom(value) {
-    return !copyFormData.current.find(data => data[name] === value);
+  function validate(value) {
+    // @ts-ignore
+    return !Object.values(copyFormData.current).find(data => data.name === value);
   }
 
   useEffect(
@@ -281,7 +282,7 @@ function Builder({
                       register({
                         ref,
                         required: true,
-                        custom,
+                        validate,
                       })
                     }
                   />
@@ -293,8 +294,8 @@ function Builder({
                     }}
                     endStyle={{ maxHeight: 20 }}
                   >
-                    {errors['name'] && <Error>This is required.</Error>}
-                    {errors['name'] && errors['name']['custom'] && <Error>Name required to be unique.</Error>}
+                    {errors['name'] && errors['name']['required'] && <Error>This is required.</Error>}
+                    {errors['name'] && errors['name']['validate'] && <Error>Name required to be unique.</Error>}
                   </Animate>
 
                   <label>Type: </label>
@@ -314,8 +315,8 @@ function Builder({
                     <option value="datetime-local">datetime-local</option>
                     <option value="week">week</option>
                     <option value="month">month</option>
-                    <option value="custom" disabled>
-                      custom
+                    <option value="validate" disabled>
+                      validate
                     </option>
                   </select>
 
