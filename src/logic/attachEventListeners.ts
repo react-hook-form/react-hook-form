@@ -20,6 +20,8 @@ export default function attachEventListeners({
 
   if (isRadio) {
     const options = field.options;
+
+    if (!options[radioOptionIndex]) return;
     const eventAttached = options[radioOptionIndex].eventAttached;
 
     if (eventAttached) {
