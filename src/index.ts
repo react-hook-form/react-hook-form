@@ -2,13 +2,11 @@ import { useRef, useState, useEffect } from 'react';
 import getFieldsValues from './logic/getFieldsValues';
 import validateField from './logic/validateField';
 import findMissDomAndClean from './logic/findMissDomAndClean';
-import detectRegistered from './logic/detectRegistered';
 import getFieldValue from './logic/getFieldValue';
 import removeAllEventListeners from './logic/removeAllEventListeners';
 import onDomRemove from './utils/onDomRemove';
 import isRadioInput from './utils/isRadioInput';
 import attachEventListeners from './logic/attachEventListeners';
-import getOptionNonEventAttached from './logic/getOptionNonEventAttached';
 
 export interface RegisterInput {
   ref: HTMLInputElement | HTMLSelectElement | null;
@@ -95,25 +93,33 @@ export default function useForm({ mode }: { mode: 'onSubmit' | 'onBlur' | 'onCha
     } = data;
 
     const allFields = fields.current;
-    if (detectRegistered(allFields, data)) return;
 
     if (isRadioInput(type)) {
       if (!allFields[name]) {
         allFields[name] = { options: [], required, ref: { type: 'radio', name } };
       }
 
-      // detect if contains
-      allFields[name].options.push({
-        ...data,
-        mutationWatcher: onDomRemove(ref, () => removeReferenceAndEventListeners(data, true)),
-      });
+      const options = allFields[name].options || [];
+      const index = options.findIndex(({ ref }) => value === ref.value);
 
-      radioOptionIndex = getOptionNonEventAttached(allFields[name].options, type, value);
-      if (radioOptionIndex < 0) return;
+      if (index > -1) {
+        options[index] = {
+          ...options[index],
+          ...data,
+        };
+      } else {
+        options.push({
+          ...data,
+          mutationWatcher: onDomRemove(ref, () => removeReferenceAndEventListeners(data, true)),
+        });
+      }
+
+      radioOptionIndex = index;
     } else {
       allFields[name] = data;
-      allFields[name].mutationWatcher = onDomRemove(ref, () => removeReferenceAndEventListeners(data, true));
-      if (allFields[name].eventAttached) return;
+      if (!allFields[name]) {
+        allFields[name].mutationWatcher = onDomRemove(ref, () => removeReferenceAndEventListeners(data, true));
+      }
     }
 
     attachEventListeners({ allFields, watchFields, ref, type, radioOptionIndex, name, mode, validateWithStateUpdate });
@@ -129,6 +135,7 @@ export default function useForm({ mode }: { mode: 'onSubmit' | 'onBlur' | 'onCha
       });
     } else {
       Object.values(fields.current).forEach(({ ref }: RegisterInput) => {
+        if (!ref) return;
         if (!watchFields.current[ref.name]) return;
         watchFields.current[ref.name] = true;
       });
