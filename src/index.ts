@@ -10,22 +10,24 @@ import attachEventListeners from './logic/attachEventListeners';
 
 type Validate = (data: string | number) => boolean;
 
+type NumberOrDate = number | Date;
+
 export interface RegisterInput {
   ref: HTMLInputElement | HTMLSelectElement | null;
   required?: boolean;
-  min?: number | Date;
-  max?: number | Date;
+  min?: NumberOrDate;
+  max?: NumberOrDate;
   maxLength?: number;
   pattern?: RegExp;
-  validate?: Validate;
+  validate?: Validate | { [key: string]: Validate };
   minLength?: number;
 }
 
 export interface Field {
   ref: any;
   required?: boolean;
-  min?: number | Date;
-  max?: number | Date;
+  min?: NumberOrDate;
+  max?: NumberOrDate;
   maxLength?: number;
   pattern?: RegExp;
   validate?: Validate | { [key: string]: Validate };
