@@ -117,7 +117,10 @@ export default function useForm({ mode }: { mode: 'onSubmit' | 'onBlur' | 'onCha
         radioOptionIndex = options.length - 1;
       }
     } else {
-      allFields[name] = data;
+      allFields[name] = {
+        ...allFields[name],
+        ...data,
+      };
       if (!allFields[name]) {
         allFields[name].mutationWatcher = onDomRemove(ref, () => removeReferenceAndEventListeners(data, true));
       }
