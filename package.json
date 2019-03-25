@@ -15,6 +15,16 @@
     "testw": "yarn test -- --watchAll",
     "prepublish": "yarn test && yarn run clean && yarn build"
   },
+  "keywords": [
+    "react",
+    "hooks",
+    "form",
+    "forms",
+    "form-validation",
+    "validation",
+    "typescript",
+    "react-hooks"
+  ],
   "repository": "https://github.com/bluebill1049/react-forme.git",
   "author": "<bluebill1049@hotmail.com>",
   "license": "MIT",
