@@ -8,6 +8,8 @@ import onDomRemove from './utils/onDomRemove';
 import isRadioInput from './utils/isRadioInput';
 import attachEventListeners from './logic/attachEventListeners';
 
+type Validate = (data: string | number) => boolean;
+
 export interface RegisterInput {
   ref: HTMLInputElement | HTMLSelectElement | null;
   required?: boolean;
@@ -15,11 +17,9 @@ export interface RegisterInput {
   max?: number | Date;
   maxLength?: number;
   pattern?: RegExp;
-  custom?: (data: string | number) => boolean;
+  validate?: Validate;
   minLength?: number;
 }
-
-type Validate = (data: string | number) => boolean;
 
 export interface Field {
   ref: any;
