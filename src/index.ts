@@ -100,11 +100,11 @@ export default function useForm({ mode }: { mode: 'onSubmit' | 'onBlur' | 'onCha
       }
 
       const options = allFields[name].options || [];
-      const index = options.findIndex(({ ref }) => value === ref.value);
+      radioOptionIndex = options.findIndex(({ ref }) => value === ref.value);
 
-      if (index > -1) {
-        options[index] = {
-          ...options[index],
+      if (radioOptionIndex > -1) {
+        options[radioOptionIndex] = {
+          ...options[radioOptionIndex],
           ...data,
         };
       } else {
@@ -113,8 +113,6 @@ export default function useForm({ mode }: { mode: 'onSubmit' | 'onBlur' | 'onCha
           mutationWatcher: onDomRemove(ref, () => removeReferenceAndEventListeners(data, true)),
         });
       }
-
-      radioOptionIndex = index;
     } else {
       allFields[name] = data;
       if (!allFields[name]) {
