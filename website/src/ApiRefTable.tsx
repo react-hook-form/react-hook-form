@@ -1,5 +1,5 @@
 // @flow
-import React from 'react';
+import React, { useState } from 'react';
 import colors from './styles/colors';
 import styled from 'styled-components';
 import SyntaxHighlighter from 'react-syntax-highlighter';
@@ -7,16 +7,30 @@ import { monokaiSublime } from 'react-syntax-highlighter/dist/esm/styles/hljs';
 import { TableWrapper, Table, Type } from './Api';
 
 const Option = styled.fieldset`
-  padding: 30px;
+  padding: 10px 15px;
   border: 1px solid ${colors.lightBlue};
   border-radius: 3px;
-  
+
+  & > legend {
+    text-align: center;
+  }
+
   & > label {
+    &:nth-child(2) {
+      padding-top: 10px;
+    }
+
+    padding-bottom: 15px;
     display: block;
+
+    & > input {
+      margin-right: 10px;
+    }
   }
 `;
 
 export default function ApiRefTable() {
+  const [isStandard, toggleOption] = useState(true);
   return (
     <>
       <p>
@@ -34,14 +48,14 @@ export default function ApiRefTable() {
       </p>
 
       <Option>
-        <legend>Register with or without error message</legend>
+        <legend>Register options</legend>
         <label>
-          <input type="radio" name="errorMessage" defaultChecked />
-          only trigger errors
+          <input onChange={() => toggleOption(true)} type="radio" name="errorMessage" defaultChecked />
+          Standard register with validation
         </label>
         <label>
-          <input type="radio" name="errorMessage" />
-          trigger errors with message
+          <input onChange={() => toggleOption(false)} type="radio" name="errorMessage" />
+          Register with validation and error message
         </label>
       </Option>
 
@@ -85,7 +99,7 @@ export default function ApiRefTable() {
               </td>
               <td>
                 <code>
-                  <Type>boolean</Type>
+                  <Type>{isStandard ? 'boolean' : 'string'}</Type>
                 </code>
               </td>
               <td>
@@ -98,7 +112,7 @@ export default function ApiRefTable() {
   ref={ref =>
     register({
       ref,
-      required: true
+      ${isStandard ? 'required: true' : `required: 'error message'`}
     })
   }
 />`}</SyntaxHighlighter>
@@ -110,7 +124,14 @@ export default function ApiRefTable() {
               </td>
               <td>
                 <code>
-                  <Type>number</Type>
+                  <Type>
+                    {isStandard
+                      ? 'number'
+                      : `{
+  value: number,
+  message: string
+}`}
+                  </Type>
                 </code>
               </td>
               <td>The maximum length of the value to accept for this input.</td>
@@ -120,7 +141,14 @@ export default function ApiRefTable() {
   ref={ref =>
     register({
       ref,
-      maxLength: 2
+      ${
+        isStandard
+          ? 'maxLength: 2'
+          : `maxLength : {
+        value: 2,
+        message: 'error message'
+      }`
+      }
     })
   }
 />`}</SyntaxHighlighter>
@@ -132,7 +160,14 @@ export default function ApiRefTable() {
               </td>
               <td>
                 <code>
-                  <Type>number</Type>
+                  <Type>
+                    {isStandard
+                      ? 'number'
+                      : `{
+  value: number,
+  message: string
+}`}
+                  </Type>
                 </code>
               </td>
               <td>The minimum length of the value to accept for this input.</td>
@@ -142,7 +177,10 @@ export default function ApiRefTable() {
   ref={ref =>
     register({
       ref,
-      minLength: 1
+      minLength: ${isStandard ? 1 : `{
+        value: 1,
+        message: 'error message'
+      }`}
     })
   }
 />`}</SyntaxHighlighter>
@@ -154,7 +192,14 @@ export default function ApiRefTable() {
               </td>
               <td>
                 <code>
-                  <Type>number</Type>
+                  <Type>
+                    {isStandard
+                      ? 'number'
+                      : `{
+  value: number,
+  message: string
+}`}
+                  </Type>
                 </code>
               </td>
               <td>The maximum value to accept for this input.</td>
@@ -164,7 +209,10 @@ export default function ApiRefTable() {
   ref={ref =>
     register({
       ref,
-      max: 3
+      max: ${isStandard ? 3 : `{
+        value: 3,
+        message: 'error message'
+      }`}
     })
   }
 />`}</SyntaxHighlighter>
@@ -175,7 +223,16 @@ export default function ApiRefTable() {
                 <code>min</code>
               </td>
               <td>
-                <Type>number</Type>
+                <code>
+                  <Type>
+                    {isStandard
+                      ? 'number'
+                      : `{
+  value: number,
+  message: string
+}`}
+                  </Type>
+                </code>
               </td>
               <td>The minimum value to accept for this input.</td>
               <td>
@@ -184,7 +241,10 @@ export default function ApiRefTable() {
   ref={ref =>
     register({
       ref,
-      min: 3
+      min: ${isStandard ? 3 : `{
+        value: 3,
+        message: 'error message'
+      }`}
     })
   }
 />`}</SyntaxHighlighter>
@@ -196,7 +256,14 @@ export default function ApiRefTable() {
               </td>
               <td>
                 <code>
-                  <Type>RegExp</Type>
+                  <Type>
+                    {isStandard
+                      ? 'RegExp'
+                      : `{
+  value: RegExp,
+  message: string
+}`}
+                  </Type>
                 </code>
               </td>
               <td>The regex pattern for the input.</td>
@@ -206,8 +273,10 @@ export default function ApiRefTable() {
   ref={ref =>
     register({
       ref,
-      pattern: \\[A-Za-z]{3}\\
-
+      pattern: ${isStandard ? '\\[A-Za-z]{3}\\' : `{
+        value: \\[A-Za-z]{3}\\,
+        message: 'error message'
+      }`}
     })
   }
 />`}</SyntaxHighlighter>
@@ -219,7 +288,14 @@ export default function ApiRefTable() {
               </td>
               <td>
                 <code>
-                  <Type>{`(Object) => Boolean | {[key: string]: (Object) => Boolean}`}</Type>
+                  <Type>
+                    {isStandard
+                      ? `(Object) => Boolean | {[key: string]: (Object) => Boolean}`
+                      : `{
+  value: (Object) => Boolean | {[key: string]: (Object) => Boolean},
+  message: string
+}`}
+                  </Type>
                 </code>
               </td>
               <td>
@@ -232,8 +308,11 @@ export default function ApiRefTable() {
   ref={ref =>
     register({
       ref,
-      validate:
-        (value) => value === '1'
+      validate: ${ isStandard ?
+        `(value) => value === '1'`:
+        `(value) => {
+          return value === '1' ? 'error message' : true;
+        }`}
     })
   }
 />
@@ -244,9 +323,13 @@ export default function ApiRefTable() {
       ref,
       validate: {
         isMoreThanOne:
-          (value) => value > 1,
+          (value) => ${isStandard ? 'value > 1' : `{
+            return value > 1 ? 'error message': true;
+          }`},
         isLessThanTen:
-          (value) => value < 10,
+          (value) => ${isStandard ? 'value > 1' : `{
+            return value < 10 ? 'error message': true;
+          }`},
       }
     })
   }
