@@ -367,14 +367,14 @@ function Builder({
                         />{' '}
                         required
                       </label>
-                      <label defaultValue={editFormData.max}>Max</label>
-                      <input autoComplete="false" name="max" type="number" ref={ref => register({ ref })} />
-                      <label defaultValue={editFormData.min}>Min</label>
-                      <input autoComplete="false" name="min" type="number" ref={ref => register({ ref })} />
-                      <label defaultValue={editFormData.maxLength}>MaxLength</label>
-                      <input autoComplete="false" name="maxLength" type="number" ref={ref => register({ ref })} />
-                      <label defaultValue={editFormData.minLength}>MinLength</label>
-                      <input autoComplete="false" name="minLength" type="number" ref={ref => register({ ref })} />
+                      <label>Max</label>
+                      <input defaultValue={editFormData.max} autoComplete="false" name="max" type="number" ref={ref => register({ ref })} />
+                      <label >Min</label>
+                      <input defaultValue={editFormData.min} autoComplete="false" name="min" type="number" ref={ref => register({ ref })} />
+                      <label>MaxLength</label>
+                      <input defaultValue={editFormData.maxLength} autoComplete="false" name="maxLength" type="number" ref={ref => register({ ref })} />
+                      <label>MinLength</label>
+                      <input defaultValue={editFormData.minLength} autoComplete="false" name="minLength" type="number" ref={ref => register({ ref })} />
                       <label>Pattern</label>
                       <input
                         autoComplete="false"
