@@ -66,7 +66,7 @@ export default (
   }
 
   if (validate) {
-    const fieldValue = isRadioInput(type) ? getRadioValue(options) : value;
+    const fieldValue = isRadioInput(type) ? getRadioValue(options).value : value;
     if (typeof validate === 'function') {
       if (!validate(fieldValue)) {
         copy[name] = {
