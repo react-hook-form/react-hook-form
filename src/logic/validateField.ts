@@ -17,7 +17,7 @@ export default (
       (isRadioInput(type) && !getRadioValue(fields[name].options).isValid))
   ) {
     copy[name] = {
-      required: required,
+      required,
     };
   }
 
