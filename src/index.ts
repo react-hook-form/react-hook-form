@@ -28,13 +28,6 @@ export interface RegisterInput {
 
 export interface Field extends RegisterInput {
   ref: any;
-  required?: boolean;
-  min?: NumberOrString;
-  max?: NumberOrString;
-  maxLength?: number;
-  pattern?: RegExp;
-  validate?: Validate | { [key: string]: Validate };
-  minLength?: number;
   eventAttached?: Array<string>;
   watch?: boolean;
   mutationWatcher?: any;
