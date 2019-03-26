@@ -101,7 +101,6 @@ const Root = styled.main`
   background: #0e101c;
   z-index: 4;
   color: white;
-  padding: 0 20px;
   box-sizing: border-box;
   -webkit-overflow-scrolling: touch;
   overflow: hidden;

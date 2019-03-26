@@ -14,7 +14,6 @@ const Root = styled.div`
   width: 20%;
   text-align: left;
   box-shadow: 5px 0px 9px 0px ${colors.primary};
-  padding: 20px;
   min-width: 260px;
 
   & > button {

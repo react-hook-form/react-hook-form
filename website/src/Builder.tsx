@@ -8,7 +8,7 @@ import styled from 'styled-components';
 import colors from './styles/colors';
 import SortableContainer from './SortableContainer';
 import copyClipBoard from './utils/copyClipBoard';
-import { SubHeading, Heading, Error, Title } from './styles/typography';
+import { SubHeading, HeadingWithTopMargin, Error, Title } from './styles/typography';
 import { setHomePage } from './ButtonGroup';
 
 const errorStyle = { border: `1px solid ${colors.secondary}`, background: colors.errorPink };
@@ -22,13 +22,8 @@ const Root = styled.main`
   background: #0e101c;
   z-index: 4;
   color: white;
-  padding: 0 20px;
   box-sizing: border-box;
   -webkit-overflow-scrolling: touch;
-
-  @media (min-width: 768px) {
-    padding-top: 87px;
-  }
 
   & pre,
   & code {
@@ -245,7 +240,7 @@ function Builder({
               >
                 &#10005;
               </CloseButton>
-              <Heading>Builder</Heading>
+              <HeadingWithTopMargin>Builder</HeadingWithTopMargin>
               <SubHeading>Build your own form with code and example.</SubHeading>
 
               <Wrapper>
