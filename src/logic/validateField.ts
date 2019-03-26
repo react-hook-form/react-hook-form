@@ -6,7 +6,7 @@ import { ErrorMessages, Field } from '..';
 function getValueAndMessage(
   item,
 ): {
-  value: any;
+  value: number | string | RegExp;
   message: string;
 } {
   return {
@@ -89,16 +89,18 @@ export default (
   if (validate) {
     const fieldValue = isRadioInput(type) ? getRadioValue(options).value : value;
     if (typeof validate === 'function') {
-      if (!validate(fieldValue)) {
+      const result = validate(fieldValue);
+      if (typeof result !== 'boolean' || !result) {
         copy[name] = {
           ...copy[name],
-          validate: true,
+          validate: result || true,
         };
       }
     } else if (typeof validate === 'object') {
       const result = Object.entries(validate).reduce((previous, [key, validate]) => {
-        if (typeof validate === 'function' && !validate(fieldValue)) {
-          previous[key] = true;
+        const result = typeof validate === 'function' && validate(fieldValue);
+        if (typeof result !== 'boolean' || !result) {
+          previous[key] = result || true;
         }
         return previous;
       }, {});
