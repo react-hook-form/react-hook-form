@@ -2,6 +2,7 @@ import getRadioValue from './getRadioValue';
 import isRadioInput from '../utils/isRadioInput';
 import { DATE_INPUTS, STRING_INPUTS } from '../constants';
 import { ErrorMessages, Field } from '..';
+import getValueAndMessage from './getValueAndMessage';
 
 export default (
   { ref: { type, value, name, checked }, options, required, maxLength, minLength, min, max, pattern, validate }: Field,
@@ -16,7 +17,7 @@ export default (
       (isRadioInput(type) && !getRadioValue(fields[name].options).isValid))
   ) {
     copy[name] = {
-      required: true,
+      required: required,
     };
   }
 
@@ -28,56 +29,68 @@ export default (
     let exceedMin;
     const valueNumber = parseFloat(value);
 
+    const { value: maxValue, message: maxMessage } = getValueAndMessage(max);
+    const { value: minValue, message: minMessage } = getValueAndMessage(min);
+
     if (type === 'number') {
-      exceedMax = max && valueNumber > max;
-      exceedMin = min && valueNumber < min;
+      exceedMax = maxValue && valueNumber > maxValue;
+      exceedMin = minValue && valueNumber < minValue;
     } else if (DATE_INPUTS.includes(type)) {
-      exceedMax = max && new Date(value) > new Date(max);
-      exceedMin = min && new Date(value) < new Date(min);
+      if (typeof maxValue === 'string') exceedMax = maxValue && new Date(value) > new Date(maxValue);
+      if (typeof minValue === 'string') exceedMin = minValue && new Date(value) < new Date(minValue);
     }
 
     if (exceedMax || exceedMin) {
       copy[name] = {
         ...copy[name],
-        ...(exceedMax ? { max: true } : null),
-        ...(exceedMin ? { min: true } : null),
+        ...(exceedMax ? { max: maxMessage } : null),
+        ...(exceedMin ? { min: minMessage } : null),
       };
     }
   }
 
   if ((maxLength || minLength) && STRING_INPUTS.includes(type)) {
-    const exceedMax = maxLength && value.toString().length > maxLength;
-    const exceedMin = minLength && value.toString().length < minLength;
+    const { value: maxLengthValue, message: maxLengthMessage } = getValueAndMessage(maxLength);
+    const { value: minLengthValue, message: minLengthMessage } = getValueAndMessage(minLength);
+
+    const exceedMax = maxLength && value.toString().length > maxLengthValue;
+    const exceedMin = minLength && value.toString().length < minLengthValue;
 
     if (exceedMax || exceedMin) {
       copy[name] = {
         ...copy[name],
-        ...(exceedMax ? { maxLength: true } : null),
-        ...(exceedMin ? { minLength: true } : null),
+        ...(exceedMax ? { maxLength: maxLengthMessage } : null),
+        ...(exceedMin ? { minLength: minLengthMessage } : null),
       };
     }
   }
 
-  if (pattern && pattern instanceof RegExp && !pattern.test(value)) {
-    copy[name] = {
-      ...copy[name],
-      pattern: true,
-    };
+  if (pattern) {
+    const { value: patternValue, message: patternMessage } = getValueAndMessage(pattern);
+    if (patternValue instanceof RegExp && !patternValue.test(value)) {
+      copy[name] = {
+        ...copy[name],
+        pattern: patternMessage,
+      };
+    }
   }
 
   if (validate) {
     const fieldValue = isRadioInput(type) ? getRadioValue(options).value : value;
+
     if (typeof validate === 'function') {
-      if (!validate(fieldValue)) {
+      const result = validate(fieldValue);
+      if (typeof result !== 'boolean' || !result) {
         copy[name] = {
           ...copy[name],
-          validate: true,
+          validate: result || true,
         };
       }
     } else if (typeof validate === 'object') {
       const result = Object.entries(validate).reduce((previous, [key, validate]) => {
-        if (typeof validate === 'function' && !validate(fieldValue)) {
-          previous[key] = true;
+        const result = typeof validate === 'function' && validate(fieldValue);
+        if (typeof result !== 'boolean' || !result) {
+          previous[key] = result || true;
         }
         return previous;
       }, {});

@@ -8,30 +8,26 @@ import onDomRemove from './utils/onDomRemove';
 import isRadioInput from './utils/isRadioInput';
 import attachEventListeners from './logic/attachEventListeners';
 
-type Validate = (data: string | number) => boolean;
+type Validate = (data: string | number) => boolean | string | number | Date;
 
-type NumberOrDate = number | Date;
+type NumberOrString = number | string;
 
 export interface RegisterInput {
   ref: HTMLInputElement | HTMLSelectElement | null;
-  required?: boolean;
-  min?: NumberOrDate;
-  max?: NumberOrDate;
-  maxLength?: number;
-  pattern?: RegExp;
-  validate?: Validate | { [key: string]: Validate };
-  minLength?: number;
+  required?: boolean | string;
+  min?: NumberOrString | { value: NumberOrString; message: string };
+  max?: NumberOrString | { value: NumberOrString; message: string };
+  maxLength?: number | { value: number; message: string };
+  minLength?: number | { value: number; message: string };
+  pattern?: RegExp | { value: RegExp; message: string };
+  validate?:
+    | Validate
+    | { [key: string]: Validate }
+    | { value: Validate | { [key: string]: Validate }; message: string };
 }
 
-export interface Field {
+export interface Field extends RegisterInput {
   ref: any;
-  required?: boolean;
-  min?: NumberOrDate;
-  max?: NumberOrDate;
-  maxLength?: number;
-  pattern?: RegExp;
-  validate?: Validate | { [key: string]: Validate };
-  minLength?: number;
   eventAttached?: Array<string>;
   watch?: boolean;
   mutationWatcher?: any;
@@ -43,7 +39,7 @@ export interface Field {
 }
 
 export interface ErrorMessages {
-  [key: string]: { string: boolean } | {};
+  [key: string]: { string: boolean | string } | {};
 }
 
 export default function useForm({ mode }: { mode: 'onSubmit' | 'onBlur' | 'onChange' } = { mode: 'onSubmit' }) {
@@ -186,10 +182,10 @@ export default function useForm({ mode }: { mode: 'onSubmit' | 'onBlur' | 'onCha
           });
         } else if (fields.current[name].eventAttached && !fields.current[name].eventAttached.includes('input')) {
           ref.addEventListener('input', validateWithStateUpdate);
-          data.eventAttached = [...data.eventAttached || [], 'input'];
+          data.eventAttached = [...(data.eventAttached || []), 'input'];
         }
 
-        previous.localErrors = { ...previous.localErrors || [], ...fieldError };
+        previous.localErrors = { ...(previous.localErrors || []), ...fieldError };
         return previous;
       },
       {

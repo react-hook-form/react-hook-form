@@ -7,6 +7,7 @@ import colors from './styles/colors';
 import { SubHeading, HeadingWithTopMargin, Title } from './styles/typography';
 import { setHomePage } from './ButtonGroup';
 import copyClipBoard from './utils/copyClipBoard';
+import ApiRefTable from './ApiRefTable';
 
 const code = `import React from 'react'
 import useForm from 'react-hook-form
@@ -60,7 +61,10 @@ function YourForm() {
       {errors.textInput && errors.textInput.maxLength && 'Your input exceed maxLength'}
       
       <input type="number" name="numberInput" ref={ ref => { register({ ref, min: 50 })} } />
+      {/* if you have register input with standard, then you have to define error message like below in code */}
       {errors.numberInput && 'Your input required to be more than 50'}
+      {/* if you have register input with error message, then your errors will contain error message */}
+      {errors.numberInput} 
       <input type="submit" /> 
     </form>
   )
@@ -123,7 +127,7 @@ const Root = styled.main`
   }
 `;
 
-const Table = styled.table`
+export const Table = styled.table`
   margin-top: 40px;
 
   th {
@@ -140,13 +144,13 @@ const Table = styled.table`
   }
 `;
 
-const TableWrapper = styled.div`
+export const TableWrapper = styled.div`
   -webkit-overflow-scrolling: touch;
   overflow-y: hidden;
   overflow-x: auto;
 `;
 
-const Type = styled.span`
+export const Type = styled.span`
   font-weight: 100;
   font-size: 15px;
   color: ${colors.lightPink};
@@ -441,234 +445,8 @@ function Builder({ formData, updateFormData, showApi, toggleApi, apiButton, isMo
                       register: <Type>(args: Object):void</Type>
                     </h2>
                   </code>
-                  <p>
-                    This is the function to register <code>Ref</code> and validation into <code>react-hook-form</code>.
-                    Validation rules are all based on html input/select's standard validation, however <code>react-hook-form</code> do allow
-                    custom validation with method <code>validate</code>.
-                  </p>
-                  <p
-                    style={{
-                      color: colors.secondary,
-                    }}
-                  >
-                    <b>Important:</b> input name is <b>required</b> and <b>unique</b> for <code>react-hook-form</code> in order to
-                    register the input.
-                  </p>
 
-                  <TableWrapper>
-                    <Table>
-                      <tbody>
-                        <tr>
-                          <th>Name</th>
-                          <th>Type</th>
-                          <th>Description</th>
-                          <th
-                            style={{
-                              minWidth: 310,
-                            }}
-                          >
-                            Example
-                          </th>
-                        </tr>
-                        <tr>
-                          <td>
-                            <code>ref</code>
-                          </td>
-                          <td>
-                            <code>
-                              <Type>HTMLInputElement</Type>
-                            </code>
-                          </td>
-                          <td>React element ref</td>
-                          <td>
-                            <SyntaxHighlighter style={monokaiSublime}>{`<input
-  name="test"
-  ref={ref =>
-    register({
-      ref
-    })
-  }
-/>`}</SyntaxHighlighter>
-                          </td>
-                        </tr>
-                        <tr>
-                          <td>
-                            <code>required</code>
-                          </td>
-                          <td>
-                            <code>
-                              <Type>boolean</Type>
-                            </code>
-                          </td>
-                          <td>
-                            A Boolean which, if true, indicates that the input must have a value before the form can be
-                            submitted.
-                          </td>
-                          <td>
-                            <SyntaxHighlighter style={monokaiSublime}>{`<input
-  name="test"
-  ref={ref =>
-    register({
-      ref,
-      required: true
-    })
-  }
-/>`}</SyntaxHighlighter>
-                          </td>
-                        </tr>
-                        <tr>
-                          <td>
-                            <code>maxLength</code>
-                          </td>
-                          <td>
-                            <code>
-                              <Type>number</Type>
-                            </code>
-                          </td>
-                          <td>The maximum length of the value to accept for this input.</td>
-                          <td>
-                            <SyntaxHighlighter style={monokaiSublime}>{`<input
-  name="test"
-  ref={ref =>
-    register({
-      ref,
-      maxLength: 2
-    })
-  }
-/>`}</SyntaxHighlighter>
-                          </td>
-                        </tr>
-                        <tr>
-                          <td>
-                            <code>minLength</code>
-                          </td>
-                          <td>
-                            <code>
-                              <Type>number</Type>
-                            </code>
-                          </td>
-                          <td>The minimum length of the value to accept for this input.</td>
-                          <td>
-                            <SyntaxHighlighter style={monokaiSublime}>{`<input
-  name="test"
-  ref={ref =>
-    register({
-      ref,
-      minLength: 1
-    })
-  }
-/>`}</SyntaxHighlighter>
-                          </td>
-                        </tr>
-                        <tr>
-                          <td>
-                            <code>max</code>
-                          </td>
-                          <td>
-                            <code>
-                              <Type>number</Type>
-                            </code>
-                          </td>
-                          <td>The maximum value to accept for this input.</td>
-                          <td>
-                            <SyntaxHighlighter style={monokaiSublime}>{`<input
-  name="test"
-  ref={ref =>
-    register({
-      ref,
-      max: 3
-    })
-  }
-/>`}</SyntaxHighlighter>
-                          </td>
-                        </tr>
-                        <tr>
-                          <td>
-                            <code>min</code>
-                          </td>
-                          <td>
-                            <Type>number</Type>
-                          </td>
-                          <td>The minimum value to accept for this input.</td>
-                          <td>
-                            <SyntaxHighlighter style={monokaiSublime}>{`<input
-  name="test"
-  ref={ref =>
-    register({
-      ref,
-      min: 3
-    })
-  }
-/>`}</SyntaxHighlighter>
-                          </td>
-                        </tr>
-                        <tr>
-                          <td>
-                            <code>pattern</code>
-                          </td>
-                          <td>
-                            <code>
-                              <Type>RegExp</Type>
-                            </code>
-                          </td>
-                          <td>The regex pattern for the input.</td>
-                          <td>
-                            <SyntaxHighlighter style={monokaiSublime}>{`<input
-  name="test"
-  ref={ref =>
-    register({
-      ref,
-      pattern: \\[A-Za-z]{3}\\
-
-    })
-  }
-/>`}</SyntaxHighlighter>
-                          </td>
-                        </tr>
-                        <tr>
-                          <td>
-                            <code>validate</code>
-                          </td>
-                          <td>
-                            <code>
-                              <Type>{`(Object) => Boolean | {[key: string]: (Object) => Boolean}`}</Type>
-                            </code>
-                          </td>
-                          <td>
-                            You can pass a callback function with value as the argument to validate, or you can pass an
-                            object of callback functions to validate all of them. (refer to the examples)
-                          </td>
-                          <td>
-                            <SyntaxHighlighter style={monokaiSublime}>{`<input
-  name="single"
-  ref={ref =>
-    register({
-      ref,
-      validate:
-        (value) => value === '1'
-    })
-  }
-/>
-<input
-  name="multiple"
-  ref={ref =>
-    register({
-      ref,
-      validate: {
-        isMoreThanOne:
-          (value) => value > 1,
-        isLessThanTen:
-          (value) => value < 10,
-      }
-    })
-  }
-/>
-`}</SyntaxHighlighter>
-                          </td>
-                        </tr>
-                      </tbody>
-                    </Table>
-                  </TableWrapper>
+                  <ApiRefTable />
 
                   <hr />
                   <code ref={errorsRef}>
