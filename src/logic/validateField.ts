@@ -4,7 +4,7 @@ import { DATE_INPUTS, STRING_INPUTS } from '../constants';
 import { ErrorMessages, Field } from '..';
 
 export default (
-  { ref: { type, value, name, checked }, required, maxLength, minLength, min, max, pattern, validate }: Field,
+  { ref: { type, value, name, checked }, options, required, maxLength, minLength, min, max, pattern, validate }: Field,
   fields: { [key: string]: Field },
 ): ErrorMessages => {
   const copy = {};
@@ -66,8 +66,9 @@ export default (
   }
 
   if (validate) {
+    const fieldValue = isRadioInput(type) ? getRadioValue(options) : value;
     if (typeof validate === 'function') {
-      if (!validate(value)) {
+      if (!validate(fieldValue)) {
         copy[name] = {
           ...copy[name],
           validate: true,
@@ -75,7 +76,7 @@ export default (
       }
     } else if (typeof validate === 'object') {
       const result = Object.entries(validate).reduce((previous, [key, validate]) => {
-        if (typeof validate === 'function' && !validate(value)) {
+        if (typeof validate === 'function' && !validate(fieldValue)) {
           previous[key] = true;
         }
         return previous;
