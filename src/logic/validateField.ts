@@ -16,7 +16,7 @@ function getValueAndMessage(
 }
 
 export default (
-  { ref: { type, value, name, checked }, required, maxLength, minLength, min, max, pattern, validate }: Field,
+  { ref: { type, value, name, checked }, options, required, maxLength, minLength, min, max, pattern, validate }: Field,
   fields: { [key: string]: Field },
 ): ErrorMessages => {
   const copy = {};
@@ -87,24 +87,28 @@ export default (
   }
 
   if (validate) {
+    const fieldValue = isRadioInput(type) ? getRadioValue(options).value : value;
     if (typeof validate === 'function') {
-      const result = validate(value);
-      if (result === true) return;
-
-      copy[name] = {
-        ...copy[name],
-        validate: result,
-      };
+      if (!validate(fieldValue)) {
+        copy[name] = {
+          ...copy[name],
+          validate: true,
+        };
+      }
     } else if (typeof validate === 'object') {
-      copy[name] = {
-        ...copy[name],
-        validate: Object.entries(validate).reduce((previous, [key, validate]) => {
-          const result = typeof validate === 'function' && validate(value);
-          if (result === true) return previous;
+      const result = Object.entries(validate).reduce((previous, [key, validate]) => {
+        if (typeof validate === 'function' && !validate(fieldValue)) {
+          previous[key] = true;
+        }
+        return previous;
+      }, {});
 
-          previous[key] = result;
-        }, {}),
-      };
+      if (Object.keys(result).length) {
+        copy[name] = {
+          ...copy[name],
+          validate: result,
+        };
+      }
     }
   }
 

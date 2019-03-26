@@ -28,12 +28,19 @@ export interface RegisterInput {
 
 export interface Field extends RegisterInput {
   ref: any;
-  eventAttached?: boolean;
+  required?: boolean;
+  min?: NumberOrString;
+  max?: NumberOrString;
+  maxLength?: number;
+  pattern?: RegExp;
+  validate?: Validate | { [key: string]: Validate };
+  minLength?: number;
+  eventAttached?: Array<string>;
   watch?: boolean;
   mutationWatcher?: any;
   options?: Array<{
     ref: any;
-    eventAttached?: boolean;
+    eventAttached?: Array<string>;
     mutationWatcher?: any;
   }>;
 }
@@ -87,6 +94,7 @@ export default function useForm({ mode }: { mode: 'onSubmit' | 'onBlur' | 'onCha
     const {
       ref,
       required,
+      validate,
       ref: { name, type, value },
     } = data;
 
@@ -94,7 +102,11 @@ export default function useForm({ mode }: { mode: 'onSubmit' | 'onBlur' | 'onCha
 
     if (isRadioInput(type)) {
       if (!allFields[name]) {
-        allFields[name] = { options: [], required, ref: { type: 'radio', name } };
+        allFields[name] = { options: [], required, validate, ref: { type: 'radio', name } };
+      }
+
+      if (!allFields[name].validate && validate) {
+        allFields[name].validate = validate;
       }
 
       const options = allFields[name].options || [];
@@ -113,7 +125,10 @@ export default function useForm({ mode }: { mode: 'onSubmit' | 'onBlur' | 'onCha
         radioOptionIndex = options.length - 1;
       }
     } else {
-      allFields[name] = data;
+      allFields[name] = {
+        ...allFields[name],
+        ...data,
+      };
       if (!allFields[name]) {
         allFields[name].mutationWatcher = onDomRemove(ref, () => removeReferenceAndEventListeners(data, true));
       }
@@ -166,20 +181,18 @@ export default function useForm({ mode }: { mode: 'onSubmit' | 'onBlur' | 'onCha
           return previous;
         }
 
-        if (!fields.current[name].eventAttached) {
-          if (isRadioInput(type) && Array.isArray(options)) {
-            options.forEach(option => {
-              if (option.eventAttached) return;
-              option.ref.addEventListener('change', validateWithStateUpdate);
-              option.eventAttached = true;
-            });
-          } else {
-            ref.addEventListener('input', validateWithStateUpdate);
-            data.eventAttached = true;
-          }
+        if (isRadioInput(type) && Array.isArray(options)) {
+          options.forEach(option => {
+            if (option.eventAttached && option.eventAttached.includes('change')) return;
+            option.ref.addEventListener('change', validateWithStateUpdate);
+            option.eventAttached = [...option.eventAttached, 'change'];
+          });
+        } else if (fields.current[name].eventAttached && !fields.current[name].eventAttached.includes('input')) {
+          ref.addEventListener('input', validateWithStateUpdate);
+          data.eventAttached = [...data.eventAttached || [], 'input'];
         }
 
-        previous.localErrors = { ...previous.localErrors, ...fieldError };
+        previous.localErrors = { ...previous.localErrors || [], ...fieldError };
         return previous;
       },
       {
