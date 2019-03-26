@@ -26,12 +26,12 @@ export default function attachEventListeners({
 
     if (!attachedEvents || (attachedEvents && !attachedEvents.includes(event))) {
       options[radioOptionIndex].ref.addEventListener(event, validateWithStateUpdate);
-      options[radioOptionIndex].eventAttached = [...attachedEvents, event];
+      options[radioOptionIndex].eventAttached = [...attachedEvents || [], event];
     }
   } else {
     if (!field.eventAttached || (field.eventAttached && !field.eventAttached.includes(event))) {
       ref.addEventListener(event, validateWithStateUpdate);
-      field.eventAttached = [...field.eventAttached, event];
+      field.eventAttached = [...field.eventAttached || [], event];
     }
   }
 }
