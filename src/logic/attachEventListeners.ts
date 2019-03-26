@@ -16,20 +16,22 @@ export default function attachEventListeners({
   if (!field || (!isOnChange && !isOnBlur)) return;
 
   const isRadio = isRadioInput(type);
+  const event = isOnChange ? (isRadio ? 'change' : 'input') : 'blur';
 
   if (isRadio) {
     const options = field.options;
+    const attachedEvents = options[radioOptionIndex].eventAttached;
 
     if (!options[radioOptionIndex]) return;
 
-    if (!options[radioOptionIndex].eventAttached) {
-      options[radioOptionIndex].ref.addEventListener(isOnChange ? 'change' : 'blur', validateWithStateUpdate);
-      options[radioOptionIndex].eventAttached = true;
+    if (!attachedEvents || (attachedEvents && !attachedEvents.includes(event))) {
+      options[radioOptionIndex].ref.addEventListener(event, validateWithStateUpdate);
+      options[radioOptionIndex].eventAttached = [...attachedEvents, event];
     }
   } else {
-    if (!field.eventAttached) {
-      ref.addEventListener(isOnChange ? 'input' : 'blur', validateWithStateUpdate);
-      field.eventAttached = true;
+    if (!field.eventAttached || (field.eventAttached && !field.eventAttached.includes(event))) {
+      ref.addEventListener(event, validateWithStateUpdate);
+      field.eventAttached = [...field.eventAttached, event];
     }
   }
 }

@@ -32,12 +32,12 @@ export interface Field {
   pattern?: RegExp;
   validate?: Validate | { [key: string]: Validate };
   minLength?: number;
-  eventAttached?: boolean;
+  eventAttached?: Array<string>;
   watch?: boolean;
   mutationWatcher?: any;
   options?: Array<{
     ref: any;
-    eventAttached?: boolean;
+    eventAttached?: Array<string>;
     mutationWatcher?: any;
   }>;
 }
@@ -178,17 +178,15 @@ export default function useForm({ mode }: { mode: 'onSubmit' | 'onBlur' | 'onCha
           return previous;
         }
 
-        if (!fields.current[name].eventAttached) {
-          if (isRadioInput(type) && Array.isArray(options)) {
-            options.forEach(option => {
-              if (option.eventAttached) return;
-              option.ref.addEventListener('change', validateWithStateUpdate);
-              option.eventAttached = true;
-            });
-          } else {
-            ref.addEventListener('input', validateWithStateUpdate);
-            data.eventAttached = true;
-          }
+        if (isRadioInput(type) && Array.isArray(options)) {
+          options.forEach(option => {
+            if (option.eventAttached && option.eventAttached.includes('change')) return;
+            option.ref.addEventListener('change', validateWithStateUpdate);
+            option.eventAttached = [...option.eventAttached, 'change'];
+          });
+        } else if (fields.current[name].eventAttached && !fields.current[name].eventAttached.includes('input')) {
+          ref.addEventListener('input', validateWithStateUpdate);
+          data.eventAttached = [...data.eventAttached, 'input'];
         }
 
         previous.localErrors = { ...previous.localErrors, ...fieldError };

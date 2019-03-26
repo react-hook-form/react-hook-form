@@ -27,7 +27,7 @@ describe('attachEventListeners', () => {
             ref: {
               addEventListener,
             },
-            eventAttached: false,
+            eventAttached: [],
           },
         ],
       },
@@ -64,7 +64,7 @@ describe('attachEventListeners', () => {
             ref: {
               addEventListener,
             },
-            eventAttached: false,
+            eventAttached: [],
           },
         ],
       },
@@ -99,7 +99,7 @@ describe('attachEventListeners', () => {
         ref: {
           addEventListener,
         },
-        eventAttached: false,
+        eventAttached: [],
       },
     };
 
@@ -131,7 +131,7 @@ describe('attachEventListeners', () => {
         ref: {
           addEventListener,
         },
-        eventAttached: false,
+        eventAttached: [],
         watch: true,
       },
     };
@@ -169,7 +169,7 @@ describe('attachEventListeners', () => {
             ref: {
               addEventListener,
             },
-            eventAttached: false,
+            eventAttached: [],
           },
         ],
       },
@@ -202,7 +202,7 @@ describe('attachEventListeners', () => {
         ref: {
           addEventListener,
         },
-        eventAttached: false,
+        eventAttached: [],
       },
     };
 
