@@ -1,7 +1,14 @@
 import validateField from './validateField';
+import getRadioValue from './getRadioValue';
+
+jest.mock('./getRadioValue');
 
 describe('validateField', () => {
   it('should return required true when input not filled with required', () => {
+    // @ts-ignore
+    getRadioValue.mockImplementation(() => ({
+      value: '2',
+    }));
     expect(
       validateField(
         {
@@ -48,6 +55,20 @@ describe('validateField', () => {
         required: true,
       },
     });
+
+    expect(
+      validateField(
+        {
+          ref: { type: 'text', value: '', name: 'test' },
+          required: 'test',
+        },
+        {},
+      ),
+    ).toEqual({
+      test: {
+        required: 'test',
+      },
+    });
   });
 
   it('should return max error', () => {
@@ -69,9 +90,9 @@ describe('validateField', () => {
     expect(
       validateField(
         {
-          ref: { type: 'date', name: 'test', value: new Date('2019-2-12') },
+          ref: { type: 'date', name: 'test', value: '2019-2-12' },
           required: true,
-          max: new Date('2019-1-12'),
+          max: '2019-1-12',
         },
         {},
       ),
@@ -101,9 +122,9 @@ describe('validateField', () => {
     expect(
       validateField(
         {
-          ref: { type: 'date', name: 'test', value: new Date('2019-2-12') },
+          ref: { type: 'date', name: 'test', value: '2019-2-12' },
           required: true,
-          min: new Date('2019-3-12'),
+          min: '2019-3-12',
         },
         {},
       ),
@@ -169,6 +190,24 @@ describe('validateField', () => {
     expect(
       validateField(
         {
+          ref: { type: 'text', name: 'test', value: 'This is a long text input' },
+          required: true,
+          pattern: {
+            value: emailRegex,
+            message: 'regex failed'
+          },
+        },
+        {},
+      ),
+    ).toEqual({
+      test: {
+        pattern: 'regex failed',
+      },
+    });
+
+    expect(
+      validateField(
+        {
           ref: { type: 'text', name: 'test', value: 'test@test.com' },
           required: true,
           pattern: emailRegex,
@@ -211,7 +250,32 @@ describe('validateField', () => {
         validate: {
           test: true,
           test1: true,
-        }
+        },
+      },
+    });
+  });
+
+  it('should return error message when it is defined', () => {
+    expect(
+      validateField(
+        {
+          ref: { type: 'text', name: 'test', value: 'This is a long text input' },
+          validate: {
+            test: value => {
+              if (value.toString().length > 3) {
+                return 'max 3';
+              }
+              return true;
+            },
+          },
+        },
+        {},
+      ),
+    ).toEqual({
+      test: {
+        validate: {
+          test: 'max 3',
+        },
       },
     });
   });

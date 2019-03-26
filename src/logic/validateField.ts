@@ -2,18 +2,7 @@ import getRadioValue from './getRadioValue';
 import isRadioInput from '../utils/isRadioInput';
 import { DATE_INPUTS, STRING_INPUTS } from '../constants';
 import { ErrorMessages, Field } from '..';
-
-function getValueAndMessage(
-  item,
-): {
-  value: number | string | RegExp;
-  message: string;
-} {
-  return {
-    value: typeof item === 'object' ? item.value : item,
-    message: typeof item === 'object' ? item.message : true,
-  };
-}
+import getValueAndMessage from './getValueAndMessage';
 
 export default (
   { ref: { type, value, name, checked }, options, required, maxLength, minLength, min, max, pattern, validate }: Field,
@@ -28,7 +17,7 @@ export default (
       (isRadioInput(type) && !getRadioValue(fields[name].options).isValid))
   ) {
     copy[name] = {
-      required: required || true,
+      required: required,
     };
   }
 
@@ -77,7 +66,7 @@ export default (
   }
 
   if (pattern) {
-    const { value: patternValue, message: patternMessage } = getValueAndMessage(max);
+    const { value: patternValue, message: patternMessage } = getValueAndMessage(pattern);
     if (patternValue instanceof RegExp && !patternValue.test(value)) {
       copy[name] = {
         ...copy[name],
@@ -88,6 +77,7 @@ export default (
 
   if (validate) {
     const fieldValue = isRadioInput(type) ? getRadioValue(options).value : value;
+
     if (typeof validate === 'function') {
       const result = validate(fieldValue);
       if (typeof result !== 'boolean' || !result) {

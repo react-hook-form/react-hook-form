@@ -8,7 +8,7 @@ import onDomRemove from './utils/onDomRemove';
 import isRadioInput from './utils/isRadioInput';
 import attachEventListeners from './logic/attachEventListeners';
 
-type Validate = (data: string | number) => boolean;
+type Validate = (data: string | number) => boolean | string | number | Date;
 
 type NumberOrString = number | string;
 
@@ -182,10 +182,10 @@ export default function useForm({ mode }: { mode: 'onSubmit' | 'onBlur' | 'onCha
           });
         } else if (fields.current[name].eventAttached && !fields.current[name].eventAttached.includes('input')) {
           ref.addEventListener('input', validateWithStateUpdate);
-          data.eventAttached = [...data.eventAttached || [], 'input'];
+          data.eventAttached = [...(data.eventAttached || []), 'input'];
         }
 
-        previous.localErrors = { ...previous.localErrors || [], ...fieldError };
+        previous.localErrors = { ...(previous.localErrors || []), ...fieldError };
         return previous;
       },
       {
