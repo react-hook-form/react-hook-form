@@ -43,9 +43,9 @@ const Wrapper = styled.div`
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(20rem, 1fr));
   grid-column-gap: 60px;
-  padding-bottom: 100px;
   overflow: hidden;
   margin-bottom: 100px;
+  padding: 20px 20px 100px 20px;
 
   & > div:first-child {
     margin-top: 50px;

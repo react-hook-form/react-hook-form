@@ -12,6 +12,7 @@ const Root = styled.div`
   left: 0;
   z-index: 10;
   width: 20%;
+  padding: 20px;
   text-align: left;
   box-shadow: 5px 0px 9px 0px ${colors.primary};
   min-width: 260px;
