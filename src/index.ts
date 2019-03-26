@@ -91,6 +91,7 @@ export default function useForm({ mode }: { mode: 'onSubmit' | 'onBlur' | 'onCha
     const {
       ref,
       required,
+      validate,
       ref: { name, type, value },
     } = data;
 
@@ -98,7 +99,11 @@ export default function useForm({ mode }: { mode: 'onSubmit' | 'onBlur' | 'onCha
 
     if (isRadioInput(type)) {
       if (!allFields[name]) {
-        allFields[name] = { options: [], required, ref: { type: 'radio', name } };
+        allFields[name] = { options: [], required, validate, ref: { type: 'radio', name } };
+      }
+
+      if (!allFields[name].validate && validate) {
+        allFields[name].validate = validate;
       }
 
       const options = allFields[name].options || [];
