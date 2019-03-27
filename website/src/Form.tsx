@@ -49,7 +49,7 @@ const SettingIcon = styled.button`
   align-items: center;
   position: absolute;
   font-size: 14px;
-  right: 0;
+  right: -2px;
   top: 0;
   z-index: 1;
   padding-left: 10px;
