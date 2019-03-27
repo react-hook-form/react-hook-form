@@ -38,11 +38,7 @@ export default function ApiRefTable() {
         rules are all based on html input/select's standard validation, however <code>react-hook-form</code> do allow
         custom validation with method <code>validate</code>.
       </p>
-      <p
-        style={{
-          color: colors.secondary,
-        }}
-      >
+      <p>
         <b>Important:</b> input name is <b>required</b> and <b>unique</b> for <code>react-hook-form</code> in order to
         register the input.
       </p>

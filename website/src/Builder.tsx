@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Animate } from 'react-simple-animate';
-import SyntaxHighlighter from 'react-syntax-highlighter';
 import useForm from 'react-hook-form';
+import SyntaxHighlighter from 'react-syntax-highlighter';
 import { monokaiSublime } from 'react-syntax-highlighter/dist/esm/styles/hljs';
 import generateCode from './logic/generateCode';
 import styled from 'styled-components';
@@ -10,6 +10,7 @@ import SortableContainer from './SortableContainer';
 import copyClipBoard from './utils/copyClipBoard';
 import { SubHeading, HeadingWithTopMargin, Error, Title } from './styles/typography';
 import { setHomePage } from './ButtonGroup';
+import SyntaxHighlighterWithCopy from './SyntaxHighlighterWithCopy';
 
 const errorStyle = { border: `1px solid ${colors.secondary}`, background: colors.errorPink };
 
@@ -115,27 +116,6 @@ const Form = styled.form`
     display: block;
     margin-bottom: 13px;
     margin-top: 20px;
-  }
-`;
-
-const CopyButton = styled.button`
-  background: ${colors.lightBlue};
-  border: none;
-  color: white;
-  border-radius: 4px;
-  font-size: 16px;
-  padding: 5px 10px;
-  display: inline-block;
-  position: absolute;
-  bottom: -30px;
-  left: 0;
-
-  &:hover {
-    opacity: 0.8;
-  }
-
-  &:active {
-    transform: translateY(2px);
   }
 `;
 
@@ -436,14 +416,7 @@ function Builder({
                 >
                   <Title>Code</Title>
 
-                  <CopyButton
-                    onClick={() => {
-                      copyClipBoard(generateCode(formData));
-                    }}
-                  >
-                    Copy to clipboard
-                  </CopyButton>
-                  <SyntaxHighlighter style={monokaiSublime}>{generateCode(formData)}</SyntaxHighlighter>
+                  <SyntaxHighlighterWithCopy data={formData} />
                 </div>
               </Wrapper>
             </div>

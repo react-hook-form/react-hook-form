@@ -1,6 +1,5 @@
 import React, { useRef, useEffect } from 'react';
 import { Animate } from 'react-simple-animate';
-import SyntaxHighlighter from 'react-syntax-highlighter';
 import { monokaiSublime } from 'react-syntax-highlighter/dist/esm/styles/hljs';
 import styled from 'styled-components';
 import colors from './styles/colors';
@@ -8,88 +7,15 @@ import { SubHeading, HeadingWithTopMargin, Title } from './styles/typography';
 import { setHomePage } from './ButtonGroup';
 import copyClipBoard from './utils/copyClipBoard';
 import ApiRefTable from './ApiRefTable';
+import watchCode from './codeExamples/watchCode';
+import validationSchemaCode from './codeExamples/validationSchema';
+import Link from './styles/link';
+import code from './codeExamples/defaultExample';
+import errorCode from './codeExamples/errorCode';
+import SyntaxHighlighterWithCopy from './SyntaxHighlighterWithCopy';
 
-const code = `import React from 'react'
-import useForm from 'react-hook-form
-
-function YourForm() {
-  const { register, handleSubmit, watch, errors } = useForm()
-  const onSubmit = data => {
-    console.log(data)
-  }; // your form submit function which will invoke after successful validation
-
-  console.log(watch('example')) // you can watch individual input by pass the name of the input
-
-  return (
-    {/* handleSubmit will validation your inputs before calling onSubmit */}
-    <form onsubmit={handleSubmit(onSubmit)}>
-      {/* you will have to register your input into react-hook-form, by invoke the register function with ref as the argument */}
-      <input
-        type="text"
-        name="example"
-        ref={ref => {
-          register({ ref });
-        }}
-      />
-      {/* include validation with required field or other standard html validation rules */}
-      <input
-        type="text"
-        name="exampleRequired"
-        ref={ref => {
-          register({ ref, required: true, max: 10 });
-        }}
-      />
-      {/* errors will return true if particular field validation is invalid  */}
-      {errors.example && '<span>This field is required</span>'}
-      <input type="submit" />
-    </form>
-  );
-}
-`;
-
-const errorCode = `import React from 'react'
-import useForm from 'react-hook-form
-
-function YourForm() {
-  const { register, errors, handleSubmit } = useForm();
-  const onSubmit = (data) => {};
-  
-  return (
-    <form onsubmit={handleSubmit(onSubmit)}>
-      <input type="text" name="textInput" ref={ ref => { register({ ref, required, maxLength: 50 })} } />
-      {errors.textInput && errors.textInput.required && 'Your input is required'}
-      {errors.textInput && errors.textInput.maxLength && 'Your input exceed maxLength'}
-      
-      <input type="number" name="numberInput" ref={ ref => { register({ ref, min: 50 })} } />
-      {/* if you have register input with standard, then you have to define error message like below in code */}
-      {errors.numberInput && 'Your input required to be more than 50'}
-      {/* if you have register input with error message, then your errors will contain error message */}
-      {errors.numberInput} 
-      <input type="submit" /> 
-    </form>
-  )
-}
-`;
-
-const watchCode  = `import React from 'react'
-import useForm from 'react-hook-form
-
-function YourForm(props) {
-  const { register, watch } = useForm()
-  const watchYes = watch('yes', props.yes) // you can supply default value as second argument
-  const watchAllFields = watch() // when pass nothing as argument, you are watching everything
-  const watchFields = watch(['yes', 'number']) // you can also target specific fields by their names
-  
-  return (
-    <form>
-      <input type="text" name="textInput" ref={ ref => { register({ ref, required, maxLength: 50 })} } />
-      <input type="checkbox" name="yes" ref={ ref => { register({ ref })} } />
-      
-      {watchYes && <input type="number" name="numberInput" ref={ ref => { register({ ref, min: 50 })} } />}
-      {/* based on yes selection to display numberInput */}
-    </form>
-  )
-}
+const CodeAsLink = styled(Link)`
+  cursor: pointer;
 `;
 
 const Root = styled.main`
@@ -253,7 +179,7 @@ const CopyButton = styled.button`
   }
 `;
 
-const links = ['Quick Start', 'useform', 'register', 'errors', 'watch', 'handleSubmit'];
+const links = ['Quick Start', 'useform', 'register', 'errors', 'watch', 'handleSubmit', 'validationSchema'];
 
 function Builder({ formData, updateFormData, showApi, toggleApi, apiButton, isMobile }: any) {
   const copyFormData = useRef([]);
@@ -263,6 +189,7 @@ function Builder({ formData, updateFormData, showApi, toggleApi, apiButton, isMo
   const registerRef = useRef(null);
   const errorsRef = useRef(null);
   const watchRef = useRef(null);
+  const validationSchemaRef = useRef(null);
   const handleSubmitRef = useRef(null);
   copyFormData.current = formData;
 
@@ -291,6 +218,10 @@ function Builder({ formData, updateFormData, showApi, toggleApi, apiButton, isMo
       case links[5]:
         // @ts-ignore
         if (handleSubmitRef) handleSubmitRef.current.scrollIntoView({ behavior: 'smooth' });
+        break;
+      case links[6]:
+        // @ts-ignore
+        if (validationSchemaRef) validationSchemaRef.current.scrollIntoView({ behavior: 'smooth' });
         break;
     }
   };
@@ -377,15 +308,13 @@ function Builder({ formData, updateFormData, showApi, toggleApi, apiButton, isMo
                     Example
                   </h2>
                   <p>The following code will demonstrate the basic usage of react-hook-form.</p>
-                  <SyntaxHighlighter style={monokaiSublime}>{code}</SyntaxHighlighter>
+                  <SyntaxHighlighterWithCopy rawData={code} />
 
                   <Title>API</Title>
 
                   <code ref={useFormRef}>
                     <h2>
-                      useForm:{' '}
-                      <Type
-                      >{`({ mode: 'onSubmit' | 'onBlur' | 'onChange' }):{ register, errors, handleSubmit, watch }`}</Type>
+                      useForm: <Type>{`({ mode: 'onSubmit' | 'onBlur' | 'onChange', validationSchema: any })`}</Type>
                     </h2>
                   </code>
                   <p>
@@ -395,6 +324,10 @@ function Builder({ formData, updateFormData, showApi, toggleApi, apiButton, isMo
                   <p>
                     React hook form use hook behind the scene by invoking <code>useForm</code>, you will receive the 4
                     methods.
+                  </p>
+                  <p>
+                    If you would like to apply form validation rules at a schema level, please refer the{' '}
+                    <CodeAsLink onClick={() => goToSection('validationSchemaCode')}>validationSchema</CodeAsLink> section.
                   </p>
 
                   <TableWrapper>
@@ -455,7 +388,7 @@ function Builder({ formData, updateFormData, showApi, toggleApi, apiButton, isMo
                     </h2>
                   </code>
                   <p>Object contain error info about the individual input.</p>
-                  <SyntaxHighlighter style={monokaiSublime}>{errorCode}</SyntaxHighlighter>
+                  <SyntaxHighlighterWithCopy rawData={errorCode} />
 
                   <hr />
                   <code ref={watchRef}>
@@ -511,7 +444,7 @@ function Builder({ formData, updateFormData, showApi, toggleApi, apiButton, isMo
                       </tbody>
                     </Table>
                   </TableWrapper>
-                  <SyntaxHighlighter style={monokaiSublime}>{watchCode}</SyntaxHighlighter>
+                  <SyntaxHighlighterWithCopy rawData={watchCode} />
 
                   <hr />
                   <code ref={handleSubmitRef}>
@@ -519,13 +452,25 @@ function Builder({ formData, updateFormData, showApi, toggleApi, apiButton, isMo
                       handleSubmit: <Type>({`{ [key: string]: string | number | boolean }`}) => void</Type>
                     </h2>
                   </code>
-                  <p
-                    style={{
-                      marginBottom: 200,
-                    }}
-                  >
-                    This function will pass you the form data when from validation is successful.
+                  <p>This function will pass you the form data when from validation is successful.</p>
+
+                  <hr />
+
+                  <code ref={validationSchemaRef}>
+                    <h2>
+                      validationSchema: <Type>any</Type>
+                    </h2>
+                  </code>
+
+                  <p>
+                    If you would like to centralise your validation rules or external validation schema, you can apply
+                    <code>validationSchema</code> when you invoke <code>useForm</code>. we use{' '}
+                    <Link href="https://github.com/jquense/yup" target="_blank">
+                      Yup
+                    </Link>{' '}
+                    for object schema validation and the example below demonstrate the usage.
                   </p>
+                  <SyntaxHighlighterWithCopy rawData={validationSchemaCode} />
                 </div>
               </Wrapper>
             </div>
