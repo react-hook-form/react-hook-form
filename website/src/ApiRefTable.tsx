@@ -288,7 +288,10 @@ export default function ApiRefTable() {
                     {isStandard
                       ? `(Object) => Boolean | {[key: string]: (Object) => Boolean}`
                       : `{
-  value: (Object) => Boolean | {[key: string]: (Object) => Boolean},
+  value: (Object) => Boolean |
+
+{
+  [key: string]: (Object) => Boolean},
   message: string
 }`}
                   </Type>

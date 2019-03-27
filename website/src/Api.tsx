@@ -62,6 +62,7 @@ export const Table = styled.table`
   td {
     vertical-align: top;
     padding: 10px 20px 10px 0;
+    line-height: 1.4;
 
     & > pre {
       margin: 0;
@@ -314,7 +315,7 @@ function Builder({ formData, updateFormData, showApi, toggleApi, apiButton, isMo
 
                   <code ref={useFormRef}>
                     <h2>
-                      useForm: <Type>{`({ mode?: 'onSubmit' | 'onBlur' | 'onChange', validationSchema?: any })`}</Type>
+                      useForm: <Type>{`{ mode?: 'onSubmit' | 'onBlur' | 'onChange', validationSchema?: any }`}</Type>
                     </h2>
                   </code>
                   <p>
@@ -327,7 +328,8 @@ function Builder({ formData, updateFormData, showApi, toggleApi, apiButton, isMo
                   </p>
                   <p>
                     If you would like to apply form validation rules at a schema level, please refer the{' '}
-                    <CodeAsLink onClick={() => goToSection('validationSchemaCode')}>validationSchema</CodeAsLink> section.
+                    <CodeAsLink onClick={() => goToSection('validationSchemaCode')}>validationSchema</CodeAsLink>{' '}
+                    section.
                   </p>
 
                   <TableWrapper>
@@ -384,7 +386,7 @@ function Builder({ formData, updateFormData, showApi, toggleApi, apiButton, isMo
                   <hr />
                   <code ref={errorsRef}>
                     <h2>
-                      errors: <Type>{`{[key: string]: Object}`}</Type>
+                      errors: <Type>{`{ [key: string]: Object }`}</Type>
                     </h2>
                   </code>
                   <p>Object contain error info about the individual input.</p>
