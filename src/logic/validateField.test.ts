@@ -19,7 +19,9 @@ describe('validateField', () => {
       ),
     ).toEqual({
       test: {
-        required: true,
+        ref: { type: 'checkbox', checked: false, name: 'test' },
+        message: true,
+        type: 'required',
       },
     });
 
@@ -33,7 +35,9 @@ describe('validateField', () => {
       ),
     ).toEqual({
       test: {
-        required: true,
+        ref: { type: 'text', value: '', name: 'test' },
+        message: true,
+        type: 'required',
       },
     });
 
@@ -52,7 +56,9 @@ describe('validateField', () => {
       ),
     ).toEqual({
       test: {
-        required: true,
+        message: true,
+        type: 'required',
+        ref: { type: 'radio', name: 'test' },
       },
     });
 
@@ -66,7 +72,9 @@ describe('validateField', () => {
       ),
     ).toEqual({
       test: {
-        required: 'test',
+        message: 'test',
+        type: 'required',
+        ref: { type: 'text', name: 'test', value: '' },
       },
     });
   });
@@ -83,7 +91,9 @@ describe('validateField', () => {
       ),
     ).toEqual({
       test: {
-        max: true,
+        type: 'max',
+        message: true,
+        ref: { type: 'number', name: 'test', value: 10 },
       },
     });
 
@@ -98,7 +108,9 @@ describe('validateField', () => {
       ),
     ).toEqual({
       test: {
-        max: true,
+        type: 'max',
+        message: true,
+        ref: { type: 'date', name: 'test', value: '2019-2-12' },
       },
     });
   });
@@ -115,7 +127,9 @@ describe('validateField', () => {
       ),
     ).toEqual({
       test: {
-        min: true,
+        type: 'min',
+        message: true,
+        ref: { type: 'number', name: 'test', value: 10 },
       },
     });
 
@@ -130,7 +144,9 @@ describe('validateField', () => {
       ),
     ).toEqual({
       test: {
-        min: true,
+        type: 'min',
+        message: true,
+        ref: { type: 'date', name: 'test', value: '2019-2-12' },
       },
     });
   });
@@ -147,7 +163,9 @@ describe('validateField', () => {
       ),
     ).toEqual({
       test: {
-        maxLength: true,
+        ref: { type: 'text', name: 'test', value: 'This is a long text input' },
+        message: true,
+        type: 'maxLength',
       },
     });
   });
@@ -164,7 +182,9 @@ describe('validateField', () => {
       ),
     ).toEqual({
       test: {
-        minLength: true,
+        ref: { type: 'text', name: 'test', value: 'This is a long text input' },
+        message: true,
+        type: 'minLength',
       },
     });
   });
@@ -183,7 +203,9 @@ describe('validateField', () => {
       ),
     ).toEqual({
       test: {
-        pattern: true,
+        ref: { type: 'text', name: 'test', value: 'This is a long text input' },
+        message: true,
+        type: 'pattern',
       },
     });
 
@@ -194,14 +216,16 @@ describe('validateField', () => {
           required: true,
           pattern: {
             value: emailRegex,
-            message: 'regex failed'
+            message: 'regex failed',
           },
         },
         {},
       ),
     ).toEqual({
       test: {
-        pattern: 'regex failed',
+        ref: { type: 'text', name: 'test', value: 'This is a long text input' },
+        message: 'regex failed',
+        type: 'pattern',
       },
     });
 
@@ -229,7 +253,9 @@ describe('validateField', () => {
       ),
     ).toEqual({
       test: {
-        validate: true,
+        message: true,
+        ref: { type: 'text', name: 'test', value: 'This is a long text input' },
+        type: 'validate',
       },
     });
 
@@ -247,10 +273,9 @@ describe('validateField', () => {
       ),
     ).toEqual({
       test: {
-        validate: {
-          test: true,
-          test1: true,
-        },
+        ref: { type: 'text', name: 'test', value: 'This is a long text input' },
+        type: 'test',
+        message: true,
       },
     });
   });
@@ -273,9 +298,9 @@ describe('validateField', () => {
       ),
     ).toEqual({
       test: {
-        validate: {
-          test: 'max 3',
-        },
+        type: 'test',
+        message: 'max 3',
+        ref: { type: 'text', name: 'test', value: 'This is a long text input' },
       },
     });
   });

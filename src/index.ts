@@ -42,7 +42,13 @@ export interface Field extends RegisterInput {
 }
 
 export interface ErrorMessages {
-  [key: string]: { string: boolean | string } | {};
+  [key: string]:
+    | {
+        ref: any;
+        message: string | boolean;
+        type: string;
+      }
+    | {};
 }
 
 export default function useForm(

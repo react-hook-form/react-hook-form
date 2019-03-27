@@ -5,7 +5,7 @@ import { ErrorMessages, Field } from '..';
 import getValueAndMessage from './getValueAndMessage';
 
 export default (
-  { ref: { type, value, name, checked }, options, required, maxLength, minLength, min, max, pattern, validate }: Field,
+  { ref, ref: { type, value, name, checked }, options, required, maxLength, minLength, min, max, pattern, validate }: Field,
   fields: { [key: string]: Field },
 ): ErrorMessages => {
   const copy = {};
@@ -17,11 +17,12 @@ export default (
       (isRadioInput(type) && !getRadioValue(fields[name].options).isValid))
   ) {
     copy[name] = {
-      required,
+      type: 'required',
+      message: required,
+      ref,
     };
+    return copy;
   }
-
-  if (value === '') return copy;
 
   // min and max section
   if (min || max) {
@@ -40,12 +41,24 @@ export default (
       if (typeof minValue === 'string') exceedMin = minValue && new Date(value) < new Date(minValue);
     }
 
-    if (exceedMax || exceedMin) {
+    if (exceedMax) {
       copy[name] = {
         ...copy[name],
-        ...(exceedMax ? { max: maxMessage } : null),
-        ...(exceedMin ? { min: minMessage } : null),
+        type: 'max',
+        message: maxMessage,
+        ref,
       };
+      return copy;
+    }
+
+    if (exceedMin) {
+      copy[name] = {
+        ...copy[name],
+        type: 'min',
+        message: minMessage,
+        ref,
+      };
+      return copy;
     }
   }
 
@@ -56,12 +69,24 @@ export default (
     const exceedMax = maxLength && value.toString().length > maxLengthValue;
     const exceedMin = minLength && value.toString().length < minLengthValue;
 
-    if (exceedMax || exceedMin) {
+    if (exceedMax) {
       copy[name] = {
         ...copy[name],
-        ...(exceedMax ? { maxLength: maxLengthMessage } : null),
-        ...(exceedMin ? { minLength: minLengthMessage } : null),
+        type: 'maxLength',
+        message: maxLengthMessage,
+        ref,
       };
+      return copy;
+    }
+
+    if (exceedMin) {
+      copy[name] = {
+        ...copy[name],
+        type: 'minLength',
+        message: minLengthMessage,
+        ref,
+      };
+      return copy;
     }
   }
 
@@ -70,8 +95,11 @@ export default (
     if (patternValue instanceof RegExp && !patternValue.test(value)) {
       copy[name] = {
         ...copy[name],
-        pattern: patternMessage,
+        type: 'pattern',
+        message: patternMessage,
+        ref,
       };
+      return copy;
     }
   }
 
@@ -83,23 +111,32 @@ export default (
       if (typeof result !== 'boolean' || !result) {
         copy[name] = {
           ...copy[name],
-          validate: result || true,
+          type: 'validate',
+          message: result || true,
+          ref,
         };
+        return copy;
       }
     } else if (typeof validate === 'object') {
       const result = Object.entries(validate).reduce((previous, [key, validate]) => {
         const result = typeof validate === 'function' && validate(fieldValue);
+        if (Object.keys(previous).length) return previous;
+
         if (typeof result !== 'boolean' || !result) {
-          previous[key] = result || true;
+          return {
+            type: key,
+            message: result || true,
+          };
         }
-        return previous;
       }, {});
 
       if (Object.keys(result).length) {
         copy[name] = {
           ...copy[name],
-          validate: result,
+          ref,
+          ...result,
         };
+        return copy;
       }
     }
   }
