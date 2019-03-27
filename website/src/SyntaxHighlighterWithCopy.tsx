@@ -14,10 +14,14 @@ const CopyButton = styled.button`
   border-radius: 4px;
   font-size: 16px;
   padding: 5px 10px;
-  display: inline-block;
   position: absolute;
   right: 0;
+  display: none;
 
+  @media (min-width: 768px) {
+    display: inline-block;
+  }
+  
   &:hover {
     opacity: 0.8;
   }

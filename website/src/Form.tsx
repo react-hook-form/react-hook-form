@@ -50,11 +50,16 @@ const SettingIcon = styled.button`
   position: absolute;
   font-size: 14px;
   right: 0;
-  top: 5px;
+  top: 0;
   z-index: 1;
   padding-left: 10px;
-  background: ${colors.primary};
+  background: #04102e;
+  border-radius: 2px;
   cursor: pointer;
+  
+  @media (min-width: 768px) {
+    top: 5px;
+  }
   
   &:hover {
     transition: 0.3s all;
