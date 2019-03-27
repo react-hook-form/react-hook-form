@@ -1,26 +1,53 @@
-import * as yup from 'yup';
-// import validateWithSchema from './validateWithSchema';
+import validateWithSchema, { parseErrorSchema } from './validateWithSchema';
+
+const errors = {
+  name: 'ValidationError',
+  value: { createdOn: '2019-03-27T04:05:51.503Z' },
+  path: undefined,
+  type: undefined,
+  errors: ['name is a required field', 'age is a required field'],
+  inner: [
+    {
+      name: 'ValidationError',
+      value: undefined,
+      path: 'name',
+      type: 'required',
+      errors: [],
+      inner: [],
+      message: 'name is a required field',
+      params: [],
+    },
+    {
+      name: 'ValidationError',
+      value: undefined,
+      path: 'age',
+      type: 'required',
+      errors: [],
+      inner: [],
+      message: 'age is a required field',
+      params: [],
+    },
+  ],
+};
+
+describe('parseErrorSchema', () => {
+  it('should parse the validaiton errors into react hook form errors format', () => {
+    expect(parseErrorSchema(errors)).toMatchSnapshot();
+  });
+});
 
 describe('validateWithSchema', () => {
-  it('', async () => {
-    const data  = {};
-    const SignupSchema = yup.object().shape({
-      name: yup.string().required(),
-      age: yup
-        .number()
-        .required()
-        .positive()
-        .integer(),
-      email: yup.string().email(),
-      website: yup.string().url(),
-      createdOn: yup.date().default(function() {
-        return new Date();
-      }),
-    });
-    try {
-      await SignupSchema.validate(data, { abortEarly: false });
-      return true;
-    } catch (e) {
-    }
+  it('should return undefined when no error reported', async () => {
+    expect(
+      await validateWithSchema(
+        {
+          validate: () => {
+            // @ts-ignore
+            throw errors;
+          },
+        },
+        {},
+      ),
+    ).toMatchSnapshot();
   });
 });

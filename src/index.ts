@@ -13,6 +13,8 @@ type Validate = (data: string | number) => boolean | string | number | Date;
 
 type NumberOrString = number | string;
 
+type Props = { mode: 'onSubmit' | 'onBlur' | 'onChange'; validationSchema?: any };
+
 export interface RegisterInput {
   ref: HTMLInputElement | HTMLSelectElement | null;
   required?: boolean | string;
@@ -39,14 +41,12 @@ export interface Field extends RegisterInput {
   }>;
 }
 
-type ValidationSchema = any;
-
 export interface ErrorMessages {
   [key: string]: { string: boolean | string } | {};
 }
 
 export default function useForm(
-  { mode, validationSchema }: { mode: 'onSubmit' | 'onBlur' | 'onChange'; validationSchema?: ValidationSchema } = {
+  { mode, validationSchema }: Props = {
     mode: 'onSubmit',
   },
 ) {
@@ -164,7 +164,10 @@ export default function useForm(
     let values;
 
     if (validationSchema) {
-      values = Object.values(allFields).map((ref) => getFieldValue(allFields, ref));
+      values = Object.values(allFields).reduce((previous, { ref }) => {
+        previous[ref.name] = getFieldValue(allFields, ref);
+        return previous;
+      }, {});
       localErrors = await validateWithSchema(validationSchema, values);
 
       if (localErrors === undefined) {
