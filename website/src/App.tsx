@@ -412,12 +412,12 @@ function App() {
           </div>
 
           <Footer>
-            Build ♡ by <a href="https://twitter.com/bluebill1049">@Bill Luo</a> with{' '}
-            <a href="https://react-hook-form.now.sh/" target="_blank">
+            Build ♡ by <a href="https://twitter.com/bluebill1049" target="_blank">@Bill Luo</a> with{' '}
+            <a href="https://github.com/bluebill1049/react-hook-form" target="_blank">
               React Hook Form
             </a>{' '}
             &{' '}
-            <a href="https://react-simple-animate.now.sh/" target="_blank">
+            <a href="https://github.com/bluebill1049/react-simple-animate" target="_blank">
               React Simple Animate
             </a>
           </Footer>
