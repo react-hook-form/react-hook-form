@@ -60,7 +60,11 @@ export default function ApiRefTable() {
           <tbody>
             <tr>
               <th>Name</th>
-              <th>Type</th>
+              <th
+                style={{
+                  minWidth: 200,
+                }}
+              >Type</th>
               <th>Description</th>
               <th
                 style={{
