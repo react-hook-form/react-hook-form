@@ -8,7 +8,7 @@ import styled from 'styled-components';
 import colors from './styles/colors';
 import SortableContainer from './SortableContainer';
 import copyClipBoard from './utils/copyClipBoard';
-import { SubHeading, Heading, Error, Title } from './styles/typography';
+import { SubHeading, HeadingWithTopMargin, Error, Title } from './styles/typography';
 import { setHomePage } from './ButtonGroup';
 
 const errorStyle = { border: `1px solid ${colors.secondary}`, background: colors.errorPink };
@@ -22,13 +22,8 @@ const Root = styled.main`
   background: #0e101c;
   z-index: 4;
   color: white;
-  padding: 0 20px;
   box-sizing: border-box;
   -webkit-overflow-scrolling: touch;
-
-  @media (min-width: 768px) {
-    padding-top: 87px;
-  }
 
   & pre,
   & code {
@@ -48,9 +43,9 @@ const Wrapper = styled.div`
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(20rem, 1fr));
   grid-column-gap: 60px;
-  padding-bottom: 100px;
   overflow: hidden;
   margin-bottom: 100px;
+  padding: 20px 20px 100px 20px;
 
   & > div:first-child {
     margin-top: 50px;
@@ -196,8 +191,9 @@ function Builder({
   const type = watch('type');
   copyFormData.current = formData;
 
-  function custom(value) {
-    return !copyFormData.current.find(data => data[name] === value);
+  function validate(value) {
+    // @ts-ignore
+    return !Object.values(copyFormData.current).find(data => data.name === value);
   }
 
   useEffect(
@@ -244,7 +240,7 @@ function Builder({
               >
                 &#10005;
               </CloseButton>
-              <Heading>Builder</Heading>
+              <HeadingWithTopMargin>Builder</HeadingWithTopMargin>
               <SubHeading>Build your own form with code and example.</SubHeading>
 
               <Wrapper>
@@ -281,7 +277,7 @@ function Builder({
                       register({
                         ref,
                         required: true,
-                        custom,
+                        validate,
                       })
                     }
                   />
@@ -293,8 +289,8 @@ function Builder({
                     }}
                     endStyle={{ maxHeight: 20 }}
                   >
-                    {errors['name'] && <Error>This is required.</Error>}
-                    {errors['name'] && errors['name']['custom'] && <Error>Name required to be unique.</Error>}
+                    {errors['name'] && errors['name']['required'] && <Error>This is required.</Error>}
+                    {errors['name'] && errors['name']['validate'] && <Error>Name required to be unique.</Error>}
                   </Animate>
 
                   <label>Type: </label>
@@ -314,8 +310,8 @@ function Builder({
                     <option value="datetime-local">datetime-local</option>
                     <option value="week">week</option>
                     <option value="month">month</option>
-                    <option value="custom" disabled>
-                      custom
+                    <option value="validate" disabled>
+                      validate
                     </option>
                   </select>
 
@@ -371,14 +367,14 @@ function Builder({
                         />{' '}
                         required
                       </label>
-                      <label defaultValue={editFormData.max}>Max</label>
-                      <input autoComplete="false" name="max" type="number" ref={ref => register({ ref })} />
-                      <label defaultValue={editFormData.min}>Min</label>
-                      <input autoComplete="false" name="min" type="number" ref={ref => register({ ref })} />
-                      <label defaultValue={editFormData.maxLength}>MaxLength</label>
-                      <input autoComplete="false" name="maxLength" type="number" ref={ref => register({ ref })} />
-                      <label defaultValue={editFormData.minLength}>MinLength</label>
-                      <input autoComplete="false" name="minLength" type="number" ref={ref => register({ ref })} />
+                      <label>Max</label>
+                      <input defaultValue={editFormData.max} autoComplete="false" name="max" type="number" ref={ref => register({ ref })} />
+                      <label >Min</label>
+                      <input defaultValue={editFormData.min} autoComplete="false" name="min" type="number" ref={ref => register({ ref })} />
+                      <label>MaxLength</label>
+                      <input defaultValue={editFormData.maxLength} autoComplete="false" name="maxLength" type="number" ref={ref => register({ ref })} />
+                      <label>MinLength</label>
+                      <input defaultValue={editFormData.minLength} autoComplete="false" name="minLength" type="number" ref={ref => register({ ref })} />
                       <label>Pattern</label>
                       <input
                         autoComplete="false"

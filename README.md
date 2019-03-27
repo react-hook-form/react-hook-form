@@ -27,19 +27,21 @@
 ## Quickstart
 
 ```jsx
-import React from 'react';
-import useForm from 'react-hook-form';
+import React from 'react'
+import useForm from 'react-hook-form'
 
 function App() {
-    const { register, handleSubmit, errors } = useForm();
-    const onSubmit = (data) => { console.log(data); }
-    console.log(errors);
+  const { register, handleSubmit, errors } = useForm()
+  const onSubmit = (data) => { console.log(data) }
+  console.log(errors)
     
-    return <form onSubmit={handleSubmit(onSubmit}>
-        <input name="firstname" ref={(ref) => register({ ref, required: true })} />
-        <input name="lastname" ref={(ref) => register({ ref, pattern: "[a-z]{1,15}" })} />
-        <input type="submit" />
+  return (
+    <form onSubmit={handleSubmit(onSubmit}>
+      <input name="firstname" ref={(ref) => register({ ref, required: true })} />
+      <input name="lastname" ref={(ref) => register({ ref, pattern: "[a-z]{1,15}" })} />
+      <input type="submit" />
     </form>
+  )
 }
 
 ```

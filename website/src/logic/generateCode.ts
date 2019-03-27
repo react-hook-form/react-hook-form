@@ -8,7 +8,7 @@ export default function Form() {
   
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
-${Array.isArray(formData) ? formData.reduce((previous, { type, name, required, max, min, maxLength, minLength, pattern, options }, index) => {
+${Array.isArray(formData) ? formData.reduce((previous, { type, name, required, max, min, maxLength, minLength, pattern, options }) => {
     const ref = ` ref={ref => register({ ref${required ? ', required: true' : ''} })}`;
 
     if (type === 'select') {
@@ -32,7 +32,7 @@ ${Array.isArray(formData) ? formData.reduce((previous, { type, name, required, m
       `      <input type="${type}" name="${name}" ref={ref => register({ ref${
         required ? ', required: true' : ''
         }${max ? `, max: ${max}` : ''}${minLength ? `, minLength: ${minLength}` : ''}${
-        minLength ? `, maxLength: ${maxLength}` : ''
+        maxLength ? `, maxLength: ${maxLength}` : ''
         }${pattern ? `, pattern: ${pattern}` : ''}${min ? `, min: ${min}` : ''} })} />\n`
     );
   }, '') : ''}
