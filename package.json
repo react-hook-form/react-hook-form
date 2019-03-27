@@ -47,8 +47,7 @@
     "rollup-plugin-typescript2": "^0.19.2",
     "ts-jest": "^24.0.0",
     "typescript": "^3.3.3333",
-    "uglify-es": "^3.3.9",
-    "yup": "^0.27.0"
+    "uglify-es": "^3.3.9"
   },
   "dependencies": {
     "styled-components": "^4.1.3"
