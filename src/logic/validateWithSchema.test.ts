@@ -3,6 +3,7 @@ import * as yup from 'yup';
 
 describe('validateWithSchema', () => {
   it('', async () => {
+    const data  = {};
     const SignupSchema = yup.object().shape({
       name: yup.string().required(),
       age: yup
@@ -17,15 +18,9 @@ describe('validateWithSchema', () => {
       }),
     });
     try {
-      const result = await SignupSchema.validate(
-        {
-        },
-        { abortEarly: false },
-      );
+      await SignupSchema.validate(data, { abortEarly: false });
+      return true;
     } catch (e) {
-      console.log(e);
     }
-
-    // console.log(result);
   });
 });

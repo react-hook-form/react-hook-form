@@ -7,6 +7,7 @@ import removeAllEventListeners from './logic/removeAllEventListeners';
 import onDomRemove from './utils/onDomRemove';
 import isRadioInput from './utils/isRadioInput';
 import attachEventListeners from './logic/attachEventListeners';
+import validateWithSchema from './logic/validateWithSchema';
 
 type Validate = (data: string | number) => boolean | string | number | Date;
 
@@ -159,52 +160,61 @@ export default function useForm(
   const handleSubmit = (callback: (Object, e) => void) => async e => {
     e.preventDefault();
     const allFields = fields.current;
+    let localErrors;
+    let values;
 
     if (validationSchema) {
-      const result = Object.values(allFields).map((ref) => getFieldValue(allFields, ref));
-      await validateWithSchema(result);
-      return;
-    }
+      values = Object.values(allFields).map((ref) => getFieldValue(allFields, ref));
+      localErrors = await validateWithSchema(validationSchema, values);
 
-    const { localErrors, values } = Object.values(allFields).reduce(
-      (previous: ErrorMessages, data: Field) => {
-        const {
-          ref,
-          ref: { name, type },
-          options,
-        } = data;
+      if (localErrors === undefined) {
+        callback(values, e);
+        return;
+      }
+    } else {
+      const result = Object.values(allFields).reduce(
+        (previous: ErrorMessages, data: Field) => {
+          const {
+            ref,
+            ref: { name, type },
+            options,
+          } = data;
 
-        removeReferenceAndEventListeners(data);
+          removeReferenceAndEventListeners(data);
 
-        if (!fields.current[name]) return previous;
+          if (!fields.current[name]) return previous;
 
-        const fieldError = validateField(data, allFields);
-        const hasError = fieldError && fieldError[name];
+          const fieldError = validateField(data, allFields);
+          const hasError = fieldError && fieldError[name];
 
-        if (!hasError) {
-          previous.values[name] = getFieldValue(allFields, ref);
+          if (!hasError) {
+            previous.values[name] = getFieldValue(allFields, ref);
+            return previous;
+          }
+
+          if (isRadioInput(type) && Array.isArray(options)) {
+            options.forEach(option => {
+              if (option.eventAttached && option.eventAttached.includes('change')) return;
+              option.ref.addEventListener('change', validateWithStateUpdate);
+              option.eventAttached = [...option.eventAttached, 'change'];
+            });
+          } else if (fields.current[name].eventAttached && !fields.current[name].eventAttached.includes('input')) {
+            ref.addEventListener('input', validateWithStateUpdate);
+            data.eventAttached = [...(data.eventAttached || []), 'input'];
+          }
+
+          previous.localErrors = { ...(previous.localErrors || []), ...fieldError };
           return previous;
-        }
+        },
+        {
+          localErrors: {},
+          values: {},
+        },
+      );
 
-        if (isRadioInput(type) && Array.isArray(options)) {
-          options.forEach(option => {
-            if (option.eventAttached && option.eventAttached.includes('change')) return;
-            option.ref.addEventListener('change', validateWithStateUpdate);
-            option.eventAttached = [...option.eventAttached, 'change'];
-          });
-        } else if (fields.current[name].eventAttached && !fields.current[name].eventAttached.includes('input')) {
-          ref.addEventListener('input', validateWithStateUpdate);
-          data.eventAttached = [...(data.eventAttached || []), 'input'];
-        }
-
-        previous.localErrors = { ...(previous.localErrors || []), ...fieldError };
-        return previous;
-      },
-      {
-        localErrors: {},
-        values: {},
-      },
-    );
+      localErrors = result.localErrors;
+      values = result.values;
+    }
 
     if (JSON.stringify(localErrorMessages.current) !== JSON.stringify(localErrors)) {
       updateErrorMessage(localErrors);
