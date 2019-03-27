@@ -314,7 +314,7 @@ function Builder({ formData, updateFormData, showApi, toggleApi, apiButton, isMo
 
                   <code ref={useFormRef}>
                     <h2>
-                      useForm: <Type>{`({ mode: 'onSubmit' | 'onBlur' | 'onChange', validationSchema: any })`}</Type>
+                      useForm: <Type>{`({ mode?: 'onSubmit' | 'onBlur' | 'onChange', validationSchema?: any })`}</Type>
                     </h2>
                   </code>
                   <p>
