@@ -386,7 +386,15 @@ function Builder({ formData, updateFormData, showApi, toggleApi, apiButton, isMo
                   <hr />
                   <code ref={errorsRef}>
                     <h2>
-                      errors: <Type>{`{ [key: string]: Object }`}</Type>
+                      errors: <Type>{`{
+  [key: string]:
+    | {
+        ref: any;
+        message: string | boolean;
+        type: string;
+      }
+    | {};
+}`}</Type>
                     </h2>
                   </code>
                   <p>Object contain error info about the individual input.</p>
