@@ -225,10 +225,10 @@ export default function useForm(
       values = result.values;
     }
 
-    if (JSON.stringify(localErrorMessages.current) !== JSON.stringify(localErrors)) {
-      updateErrorMessage(localErrors);
-      localErrorMessages.current = localErrors;
-    }
+    // if (JSON.stringify(localErrorMessages.current) !== JSON.stringify(localErrors)) {
+    updateErrorMessage(localErrors);
+    localErrorMessages.current = localErrors;
+    // }
 
     if (!Object.values(localErrors).length) callback(values, e);
   };
