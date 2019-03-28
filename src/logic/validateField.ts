@@ -20,17 +20,18 @@ export default async (
   fields: { [key: string]: Field },
 ) => {
   const copy = {};
+  const isRadio = isRadioInput(type);
 
   if (
     required &&
     ((type === 'checkbox' && !checked) ||
-      (!isRadioInput(type) && type !== 'checkbox' && value === '') ||
-      (isRadioInput(type) && !getRadioValue(fields[name].options).isValid))
+      (!isRadio && type !== 'checkbox' && value === '') ||
+      (isRadio && !getRadioValue(fields[name].options).isValid))
   ) {
     copy[name] = {
       type: 'required',
       message: required,
-      ref,
+      ref: isRadio ? fields[name].options[0].ref : ref,
     };
     return copy;
   }
@@ -115,7 +116,7 @@ export default async (
   }
 
   if (validate) {
-    const fieldValue = isRadioInput(type) ? getRadioValue(options).value : value;
+    const fieldValue = isRadio ? getRadioValue(options).value : value;
 
     if (typeof validate === 'function') {
       const result = await validate(fieldValue);
@@ -124,7 +125,7 @@ export default async (
           ...copy[name],
           type: 'validate',
           message: result || true,
-          ref,
+          ref: isRadio ? options[0].ref : ref,
         };
         return copy;
       }
@@ -151,7 +152,7 @@ export default async (
       if (Object.keys(result).length) {
         copy[name] = {
           ...copy[name],
-          ref,
+          ref: isRadio ? options[0].ref : ref,
           ...result,
         };
         return copy;

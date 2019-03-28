@@ -56,11 +56,11 @@ const SettingIcon = styled.button`
   background: #04102e;
   border-radius: 2px;
   cursor: pointer;
-  
+
   @media (min-width: 768px) {
     top: 5px;
   }
-  
+
   &:hover {
     transition: 0.3s all;
     color: ${colors.lightPink};
@@ -100,6 +100,22 @@ export default function Form({
               Setting
             </SettingIcon>
           </Title>
+          {/*<input*/}
+            {/*type="text"*/}
+            {/*name="fuck me"*/}
+            {/*placeholder="Fuck"*/}
+            {/*ref={ref =>*/}
+              {/*register({*/}
+                {/*ref,*/}
+                {/*validate: async () => {*/}
+                  {/*const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));*/}
+                  {/*await sleep(2000);*/}
+                  {/*console.log('why not awa')*/}
+                  {/*return false;*/}
+                {/*},*/}
+              {/*})*/}
+            {/*}*/}
+          {/*/>*/}
           {formData.map(field => {
             switch (field.type) {
               case 'select':
@@ -218,7 +234,19 @@ export default function Form({
               startStyle={{ opacity: 0 }}
               endStyle={{ opacity: 1 }}
             >
-              <Code>{Object.keys(errors).length ? JSON.stringify(errors, null, 2) : ''}</Code>
+              <Code>
+                {Object.keys(errors).length
+                  ? JSON.stringify(
+                      // @ts-ignore
+                      Object.entries(errors).reduce((previous, [key, { ref, ...rest }]) => {
+                        previous[key] = rest;
+                        return previous;
+                      }, {}),
+                      null,
+                      2,
+                    )
+                  : ''}
+              </Code>
             </Animate>
           </section>
         )}

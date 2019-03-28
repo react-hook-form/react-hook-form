@@ -8,6 +8,7 @@ import onDomRemove from './utils/onDomRemove';
 import isRadioInput from './utils/isRadioInput';
 import attachEventListeners from './logic/attachEventListeners';
 import validateWithSchema from './logic/validateWithSchema';
+import omitRefs from './utils/omitRefs';
 
 type Validate = (data: string | number) => boolean | string | number | Date;
 
@@ -41,15 +42,20 @@ export interface Field extends RegisterInput {
   }>;
 }
 
+type Error = {
+  ref: any;
+  message: string | boolean;
+  type: string;
+};
+
 export interface ErrorMessages {
-  [key: string]:
-    | {
-        ref: any;
-        message: string | boolean;
-        type: string;
-      }
-    | {};
+  [key: string]: Error | {};
 }
+
+type ErrorWithValue = Promise<{
+  localErrors: ErrorMessages;
+  values: Array<string | boolean | number>;
+}>;
 
 export default function useForm(
   { mode, validationSchema }: Props = {
@@ -61,9 +67,9 @@ export default function useForm(
   const watchFields = useRef<{ [key: string]: boolean }>({});
   const [errors, updateErrorMessage] = useState<ErrorMessages>({});
 
-  function validateWithStateUpdate({ target: { name }, type }: any) {
+  async function validateWithStateUpdate({ target: { name }, type }: any) {
     const ref = fields.current[name];
-    const error = validateField(ref, fields.current);
+    const error = await validateField(ref, fields.current);
 
     if (
       localErrorMessages.current[name] !== error[name] ||
@@ -168,6 +174,7 @@ export default function useForm(
     const allFields = fields.current;
     let localErrors;
     let values;
+    let result;
 
     if (validationSchema) {
       values = Object.values(allFields).reduce((previous, { ref }) => {
@@ -182,10 +189,10 @@ export default function useForm(
       }
     } else {
       const allFieldsValues = Object.values(allFields);
-      const result = await new Promise(resolve =>
-        values.reduce(
-          // @ts-ignore
-          async (previous: ErrorMessages, data: Field, index: number) => {
+      result = await new Promise(resolve =>
+        allFieldsValues.reduce(
+          async (previous: any, data: Field, index: number): ErrorWithValue => {
+            const resolvedPrevious = await previous;
             const {
               ref,
               ref: { name, type },
@@ -195,14 +202,14 @@ export default function useForm(
 
             removeReferenceAndEventListeners(data);
 
-            if (!fields.current[name]) return lastChild ? resolve(previous) : previous;
+            if (!fields.current[name]) return lastChild ? resolve(resolvedPrevious) : resolvedPrevious;
 
             const fieldError = await validateField(data, allFields);
             const hasError = fieldError && fieldError[name];
 
             if (!hasError) {
-              previous.values[name] = getFieldValue(allFields, ref);
-              return lastChild ? resolve(previous) : previous;
+              resolvedPrevious.values[name] = getFieldValue(allFields, ref);
+              return lastChild ? resolve(resolvedPrevious) : resolvedPrevious;
             }
 
             if (isRadioInput(type) && Array.isArray(options)) {
@@ -216,23 +223,21 @@ export default function useForm(
               data.eventAttached = [...(data.eventAttached || []), 'input'];
             }
 
-            previous.localErrors = { ...(previous.localErrors || []), ...fieldError };
-            return lastChild ? resolve(previous) : previous;
+            resolvedPrevious.localErrors = { ...(resolvedPrevious.localErrors || []), ...fieldError };
+            return lastChild ? resolve(resolvedPrevious) : resolvedPrevious;
           },
-          {
+          Promise.resolve({
             localErrors: {},
             values: {},
-          },
+          }),
         ),
       );
-
-      // @ts-ignore
-      localErrors = result.localErrors;
-      // @ts-ignore
-      values = result.values;
     }
 
-    if (JSON.stringify(localErrorMessages.current) !== JSON.stringify(localErrors)) {
+    localErrors = result.localErrors;
+    values = result.values;
+
+    if (JSON.stringify(omitRefs(localErrorMessages.current)) !== JSON.stringify(omitRefs(localErrors))) {
       updateErrorMessage(localErrors);
       localErrorMessages.current = localErrors;
     }
