@@ -181,47 +181,54 @@ export default function useForm(
         return;
       }
     } else {
-      const result = Object.values(allFields).reduce(
-        (previous: ErrorMessages, data: Field) => {
-          const {
-            ref,
-            ref: { name, type },
-            options,
-          } = data;
+      const allFieldsValues = Object.values(allFields);
+      const result = await new Promise(resolve =>
+        values.reduce(
+          // @ts-ignore
+          async (previous: ErrorMessages, data: Field, index: number) => {
+            const {
+              ref,
+              ref: { name, type },
+              options,
+            } = data;
+            const lastChild = allFieldsValues.length - 1 === index;
 
-          removeReferenceAndEventListeners(data);
+            removeReferenceAndEventListeners(data);
 
-          if (!fields.current[name]) return previous;
+            if (!fields.current[name]) return lastChild ? resolve(previous) : previous;
 
-          const fieldError = validateField(data, allFields);
-          const hasError = fieldError && fieldError[name];
+            const fieldError = await validateField(data, allFields);
+            const hasError = fieldError && fieldError[name];
 
-          if (!hasError) {
-            previous.values[name] = getFieldValue(allFields, ref);
-            return previous;
-          }
+            if (!hasError) {
+              previous.values[name] = getFieldValue(allFields, ref);
+              return lastChild ? resolve(previous) : previous;
+            }
 
-          if (isRadioInput(type) && Array.isArray(options)) {
-            options.forEach(option => {
-              if (option.eventAttached && option.eventAttached.includes('change')) return;
-              option.ref.addEventListener('change', validateWithStateUpdate);
-              option.eventAttached = [...option.eventAttached, 'change'];
-            });
-          } else if (fields.current[name].eventAttached && !fields.current[name].eventAttached.includes('input')) {
-            ref.addEventListener('input', validateWithStateUpdate);
-            data.eventAttached = [...(data.eventAttached || []), 'input'];
-          }
+            if (isRadioInput(type) && Array.isArray(options)) {
+              options.forEach(option => {
+                if (option.eventAttached && option.eventAttached.includes('change')) return;
+                option.ref.addEventListener('change', validateWithStateUpdate);
+                option.eventAttached = [...option.eventAttached, 'change'];
+              });
+            } else if (fields.current[name].eventAttached && !fields.current[name].eventAttached.includes('input')) {
+              ref.addEventListener('input', validateWithStateUpdate);
+              data.eventAttached = [...(data.eventAttached || []), 'input'];
+            }
 
-          previous.localErrors = { ...(previous.localErrors || []), ...fieldError };
-          return previous;
-        },
-        {
-          localErrors: {},
-          values: {},
-        },
+            previous.localErrors = { ...(previous.localErrors || []), ...fieldError };
+            return lastChild ? resolve(previous) : previous;
+          },
+          {
+            localErrors: {},
+            values: {},
+          },
+        ),
       );
 
+      // @ts-ignore
       localErrors = result.localErrors;
+      // @ts-ignore
       values = result.values;
     }
 
