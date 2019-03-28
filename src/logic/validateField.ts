@@ -1,13 +1,24 @@
 import getRadioValue from './getRadioValue';
 import isRadioInput from '../utils/isRadioInput';
 import { DATE_INPUTS, STRING_INPUTS } from '../constants';
-import { ErrorMessages, Field } from '..';
+import { Field } from '..';
 import getValueAndMessage from './getValueAndMessage';
 
-export default (
-  { ref, ref: { type, value, name, checked }, options, required, maxLength, minLength, min, max, pattern, validate }: Field,
+export default async (
+  {
+    ref,
+    ref: { type, value, name, checked },
+    options,
+    required,
+    maxLength,
+    minLength,
+    min,
+    max,
+    pattern,
+    validate,
+  }: Field,
   fields: { [key: string]: Field },
-): ErrorMessages => {
+) => {
   const copy = {};
 
   if (
@@ -107,7 +118,7 @@ export default (
     const fieldValue = isRadioInput(type) ? getRadioValue(options).value : value;
 
     if (typeof validate === 'function') {
-      const result = validate(fieldValue);
+      const result = await validate(fieldValue);
       if (typeof result !== 'boolean' || !result) {
         copy[name] = {
           ...copy[name],
@@ -118,17 +129,24 @@ export default (
         return copy;
       }
     } else if (typeof validate === 'object') {
-      const result = Object.entries(validate).reduce((previous, [key, validate]) => {
-        const result = typeof validate === 'function' && validate(fieldValue);
-        if (Object.keys(previous).length) return previous;
+      const result = await new Promise(resolve => {
+        const values = Object.entries(validate);
+        values.reduce(async (previous, [key, validate], index) => {
+          const result = typeof validate === 'function' && (await validate(fieldValue));
+          const lastChild = values.length - 1 === index;
+          if (Object.keys(previous).length) return lastChild ? resolve(previous) : previous;
 
-        if (typeof result !== 'boolean' || !result) {
-          return {
-            type: key,
-            message: result || true,
-          };
-        }
-      }, {});
+          if (typeof result !== 'boolean' || !result) {
+            const temp = {
+              type: key,
+              message: result || true,
+            };
+            return lastChild ? resolve(temp) : temp;
+          }
+
+          if (lastChild) return resolve(previous);
+        }, {});
+      });
 
       if (Object.keys(result).length) {
         copy[name] = {
