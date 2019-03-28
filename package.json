@@ -1,6 +1,6 @@
 {
   "name": "react-hook-form",
-  "version": "1.1.0-beta.1",
+  "version": "1.1.0-beta.5",
   "main": "dist/index.js",
   "module": "dist/index.es.js",
   "types": "dist/index.d.ts",
@@ -48,9 +48,6 @@
     "ts-jest": "^24.0.0",
     "typescript": "^3.3.3333",
     "uglify-es": "^3.3.9"
-  },
-  "dependencies": {
-    "styled-components": "^4.1.3"
   },
   "peerDependencies": {
     "react": "^16.8.0",

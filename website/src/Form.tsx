@@ -100,22 +100,6 @@ export default function Form({
               Setting
             </SettingIcon>
           </Title>
-          {/*<input*/}
-            {/*type="text"*/}
-            {/*name="fuck me"*/}
-            {/*placeholder="Fuck"*/}
-            {/*ref={ref =>*/}
-              {/*register({*/}
-                {/*ref,*/}
-                {/*validate: async () => {*/}
-                  {/*const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));*/}
-                  {/*await sleep(2000);*/}
-                  {/*console.log('why not awa')*/}
-                  {/*return false;*/}
-                {/*},*/}
-              {/*})*/}
-            {/*}*/}
-          {/*/>*/}
           {formData.map(field => {
             switch (field.type) {
               case 'select':

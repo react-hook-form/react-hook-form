@@ -1,13 +1,10 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Animate } from 'react-simple-animate';
 import useForm from 'react-hook-form';
-import SyntaxHighlighter from 'react-syntax-highlighter';
 import { monokaiSublime } from 'react-syntax-highlighter/dist/esm/styles/hljs';
-import generateCode from './logic/generateCode';
 import styled from 'styled-components';
 import colors from './styles/colors';
 import SortableContainer from './SortableContainer';
-import copyClipBoard from './utils/copyClipBoard';
 import { SubHeading, HeadingWithTopMargin, Error, Title } from './styles/typography';
 import { setHomePage } from './ButtonGroup';
 import SyntaxHighlighterWithCopy from './SyntaxHighlighterWithCopy';
@@ -166,7 +163,8 @@ function Builder({
       // @ts-ignore
       updateFormData([...formData, ...[data]]);
     }
-    event.target.reset();
+    console.log(event.target);
+    // event.target.reset();
   };
   const type = watch('type');
   copyFormData.current = formData;
@@ -269,8 +267,8 @@ function Builder({
                     }}
                     endStyle={{ maxHeight: 20 }}
                   >
-                    {errors['name'] && errors['name']['required'] && <Error>This is required.</Error>}
-                    {errors['name'] && errors['name']['validate'] && <Error>Name required to be unique.</Error>}
+                    {errors.name && errors.name['type'] === 'required' && <Error>This is required.</Error>}
+                    {errors.name && errors.name['type'] === 'validate' && <Error>Name required to be unique.</Error>}
                   </Animate>
 
                   <label>Type: </label>
@@ -399,7 +397,9 @@ function Builder({
                         onClick={() => {
                           toggleBuilder(false);
                           builderButton.current.focus();
+                          document.body.style.overflow = 'auto';
                           HomeRef.current.scrollIntoView({ behavior: 'smooth' });
+                          setHomePage();
                         }}
                         background="black"
                         value="Generate Form"

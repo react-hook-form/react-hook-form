@@ -171,6 +171,7 @@ export default function useForm(
 
   const handleSubmit = (callback: (Object, e) => void) => async e => {
     e.preventDefault();
+    e.persist();
     const allFields = fields.current;
     let localErrors;
     let values;
@@ -216,9 +217,9 @@ export default function useForm(
               options.forEach(option => {
                 if (option.eventAttached && option.eventAttached.includes('change')) return;
                 option.ref.addEventListener('change', validateWithStateUpdate);
-                option.eventAttached = [...option.eventAttached, 'change'];
+                option.eventAttached = [...option.eventAttached || [], 'change'];
               });
-            } else if (fields.current[name].eventAttached && !fields.current[name].eventAttached.includes('input')) {
+            } else if (!fields.current[name].eventAttached || !fields.current[name].eventAttached.includes('input')) {
               ref.addEventListener('input', validateWithStateUpdate);
               data.eventAttached = [...(data.eventAttached || []), 'input'];
             }
