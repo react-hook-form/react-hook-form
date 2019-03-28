@@ -8,6 +8,7 @@ import onDomRemove from './utils/onDomRemove';
 import isRadioInput from './utils/isRadioInput';
 import attachEventListeners from './logic/attachEventListeners';
 import validateWithSchema from './logic/validateWithSchema';
+import omitRefs from './utils/omitRefs';
 
 type Validate = (data: string | number) => boolean | string | number | Date;
 
@@ -41,15 +42,20 @@ export interface Field extends RegisterInput {
   }>;
 }
 
+type Error = {
+  ref: any;
+  message: string | boolean;
+  type: string;
+};
+
 export interface ErrorMessages {
-  [key: string]:
-    | {
-        ref: any;
-        message: string | boolean;
-        type: string;
-      }
-    | {};
+  [key: string]: Error | {};
 }
+
+type ErrorWithValue = Promise<{
+  localErrors: ErrorMessages;
+  values: Array<string | boolean | number>;
+}>;
 
 export default function useForm(
   { mode, validationSchema }: Props = {
@@ -61,9 +67,9 @@ export default function useForm(
   const watchFields = useRef<{ [key: string]: boolean }>({});
   const [errors, updateErrorMessage] = useState<ErrorMessages>({});
 
-  function validateWithStateUpdate({ target: { name }, type }: any) {
+  async function validateWithStateUpdate({ target: { name }, type }: any) {
     const ref = fields.current[name];
-    const error = validateField(ref, fields.current);
+    const error = await validateField(ref, fields.current);
 
     if (
       localErrorMessages.current[name] !== error[name] ||
@@ -168,6 +174,7 @@ export default function useForm(
     const allFields = fields.current;
     let localErrors;
     let values;
+    let result;
 
     if (validationSchema) {
       values = Object.values(allFields).reduce((previous, { ref }) => {
@@ -181,54 +188,59 @@ export default function useForm(
         return;
       }
     } else {
-      const result = Object.values(allFields).reduce(
-        (previous: ErrorMessages, data: Field) => {
-          const {
-            ref,
-            ref: { name, type },
-            options,
-          } = data;
+      const allFieldsValues = Object.values(allFields);
+      result = await new Promise(resolve =>
+        allFieldsValues.reduce(
+          async (previous: any, data: Field, index: number): ErrorWithValue => {
+            const resolvedPrevious = await previous;
+            const {
+              ref,
+              ref: { name, type },
+              options,
+            } = data;
+            const lastChild = allFieldsValues.length - 1 === index;
 
-          removeReferenceAndEventListeners(data);
+            removeReferenceAndEventListeners(data);
 
-          if (!fields.current[name]) return previous;
+            if (!fields.current[name]) return lastChild ? resolve(resolvedPrevious) : resolvedPrevious;
 
-          const fieldError = validateField(data, allFields);
-          const hasError = fieldError && fieldError[name];
+            const fieldError = await validateField(data, allFields);
+            const hasError = fieldError && fieldError[name];
 
-          if (!hasError) {
-            previous.values[name] = getFieldValue(allFields, ref);
-            return previous;
-          }
+            if (!hasError) {
+              resolvedPrevious.values[name] = getFieldValue(allFields, ref);
+              return lastChild ? resolve(resolvedPrevious) : resolvedPrevious;
+            }
 
-          if (isRadioInput(type) && Array.isArray(options)) {
-            options.forEach(option => {
-              if (option.eventAttached && option.eventAttached.includes('change')) return;
-              option.ref.addEventListener('change', validateWithStateUpdate);
-              option.eventAttached = [...option.eventAttached, 'change'];
-            });
-          } else if (fields.current[name].eventAttached && !fields.current[name].eventAttached.includes('input')) {
-            ref.addEventListener('input', validateWithStateUpdate);
-            data.eventAttached = [...(data.eventAttached || []), 'input'];
-          }
+            if (isRadioInput(type) && Array.isArray(options)) {
+              options.forEach(option => {
+                if (option.eventAttached && option.eventAttached.includes('change')) return;
+                option.ref.addEventListener('change', validateWithStateUpdate);
+                option.eventAttached = [...option.eventAttached, 'change'];
+              });
+            } else if (fields.current[name].eventAttached && !fields.current[name].eventAttached.includes('input')) {
+              ref.addEventListener('input', validateWithStateUpdate);
+              data.eventAttached = [...(data.eventAttached || []), 'input'];
+            }
 
-          previous.localErrors = { ...(previous.localErrors || []), ...fieldError };
-          return previous;
-        },
-        {
-          localErrors: {},
-          values: {},
-        },
+            resolvedPrevious.localErrors = { ...(resolvedPrevious.localErrors || []), ...fieldError };
+            return lastChild ? resolve(resolvedPrevious) : resolvedPrevious;
+          },
+          Promise.resolve({
+            localErrors: {},
+            values: {},
+          }),
+        ),
       );
-
-      localErrors = result.localErrors;
-      values = result.values;
     }
 
-    // if (JSON.stringify(localErrorMessages.current) !== JSON.stringify(localErrors)) {
-    updateErrorMessage(localErrors);
-    localErrorMessages.current = localErrors;
-    // }
+    localErrors = result.localErrors;
+    values = result.values;
+
+    if (JSON.stringify(omitRefs(localErrorMessages.current)) !== JSON.stringify(omitRefs(localErrors))) {
+      updateErrorMessage(localErrors);
+      localErrorMessages.current = localErrors;
+    }
 
     if (!Object.values(localErrors).length) callback(values, e);
   };

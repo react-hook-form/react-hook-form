@@ -4,13 +4,13 @@ import getRadioValue from './getRadioValue';
 jest.mock('./getRadioValue');
 
 describe('validateField', () => {
-  it('should return required true when input not filled with required', () => {
+  it('should return required true when input not filled with required', async () => {
     // @ts-ignore
     getRadioValue.mockImplementation(() => ({
       value: '2',
     }));
     expect(
-      validateField(
+      await validateField(
         {
           ref: { type: 'checkbox', checked: false, name: 'test' },
           required: true,
@@ -26,7 +26,7 @@ describe('validateField', () => {
     });
 
     expect(
-      validateField(
+      await validateField(
         {
           ref: { type: 'text', value: '', name: 'test' },
           required: true,
@@ -42,7 +42,7 @@ describe('validateField', () => {
     });
 
     expect(
-      validateField(
+      await validateField(
         {
           ref: { type: 'radio', name: 'test' },
           required: true,
@@ -50,7 +50,11 @@ describe('validateField', () => {
         {
           test: {
             ref: {},
-            options: [],
+            options: [
+              {
+                ref: 'test',
+              },
+            ],
           },
         },
       ),
@@ -58,12 +62,12 @@ describe('validateField', () => {
       test: {
         message: true,
         type: 'required',
-        ref: { type: 'radio', name: 'test' },
+        ref: 'test',
       },
     });
 
     expect(
-      validateField(
+      await validateField(
         {
           ref: { type: 'text', value: '', name: 'test' },
           required: 'test',
@@ -79,9 +83,9 @@ describe('validateField', () => {
     });
   });
 
-  it('should return max error', () => {
+  it('should return max error', async () => {
     expect(
-      validateField(
+      await validateField(
         {
           ref: { type: 'number', name: 'test', value: 10 },
           required: true,
@@ -98,7 +102,7 @@ describe('validateField', () => {
     });
 
     expect(
-      validateField(
+      await validateField(
         {
           ref: { type: 'date', name: 'test', value: '2019-2-12' },
           required: true,
@@ -115,9 +119,9 @@ describe('validateField', () => {
     });
   });
 
-  it('should return min error', () => {
+  it('should return min error', async () => {
     expect(
-      validateField(
+      await validateField(
         {
           ref: { type: 'number', name: 'test', value: 10 },
           required: true,
@@ -134,7 +138,7 @@ describe('validateField', () => {
     });
 
     expect(
-      validateField(
+      await validateField(
         {
           ref: { type: 'date', name: 'test', value: '2019-2-12' },
           required: true,
@@ -151,9 +155,9 @@ describe('validateField', () => {
     });
   });
 
-  it('should return max length error ', () => {
+  it('should return max length error ', async () => {
     expect(
-      validateField(
+      await validateField(
         {
           ref: { type: 'text', name: 'test', value: 'This is a long text input' },
           required: true,
@@ -170,9 +174,9 @@ describe('validateField', () => {
     });
   });
 
-  it('should return min length error ', () => {
+  it('should return min length error ', async () => {
     expect(
-      validateField(
+      await validateField(
         {
           ref: { type: 'text', name: 'test', value: 'This is a long text input' },
           required: true,
@@ -189,11 +193,11 @@ describe('validateField', () => {
     });
   });
 
-  it('should return pattern error when not matching', () => {
+  it('should return pattern error when not matching', async () => {
     const emailRegex = /(?:[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*|"(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21\x23-\x5b\x5d-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])*")@(?:(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?|\[(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?|[a-z0-9-]*[a-z0-9]:(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21-\x5a\x53-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])+)\])/;
 
     expect(
-      validateField(
+      await validateField(
         {
           ref: { type: 'text', name: 'test', value: 'This is a long text input' },
           required: true,
@@ -210,7 +214,7 @@ describe('validateField', () => {
     });
 
     expect(
-      validateField(
+      await validateField(
         {
           ref: { type: 'text', name: 'test', value: 'This is a long text input' },
           required: true,
@@ -230,7 +234,7 @@ describe('validateField', () => {
     });
 
     expect(
-      validateField(
+      await validateField(
         {
           ref: { type: 'text', name: 'test', value: 'test@test.com' },
           required: true,
@@ -241,9 +245,9 @@ describe('validateField', () => {
     ).toEqual({});
   });
 
-  it('should validate for custom validation', () => {
+  it('should validate for custom validation', async () => {
     expect(
-      validateField(
+      await validateField(
         {
           ref: { type: 'text', name: 'test', value: 'This is a long text input' },
           required: true,
@@ -260,13 +264,13 @@ describe('validateField', () => {
     });
 
     expect(
-      validateField(
+      await validateField(
         {
           ref: { type: 'text', name: 'test', value: 'This is a long text input' },
           required: true,
           validate: {
             test: value => value.toString().length < 3,
-            test1: value => value.toString().length < 3,
+            test1: value => value.toString().length > 10,
           },
         },
         {},
@@ -280,9 +284,9 @@ describe('validateField', () => {
     });
   });
 
-  it('should return error message when it is defined', () => {
+  it('should return error message when it is defined', async () => {
     expect(
-      validateField(
+      await validateField(
         {
           ref: { type: 'text', name: 'test', value: 'This is a long text input' },
           validate: {

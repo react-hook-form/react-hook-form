@@ -1,5 +1,5 @@
 import React, { useState, useRef, Suspense, useEffect } from 'react';
-import useForm from 'react-hook-form';
+import useForm from './src';
 import { Animate } from 'react-simple-animate';
 import { SubHeading, Heading, Title } from './styles/typography';
 import ButtonGroup from './ButtonGroup';
