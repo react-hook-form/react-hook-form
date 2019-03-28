@@ -50,7 +50,11 @@ describe('validateField', () => {
         {
           test: {
             ref: {},
-            options: [],
+            options: [
+              {
+                ref: 'test',
+              },
+            ],
           },
         },
       ),
@@ -58,7 +62,7 @@ describe('validateField', () => {
       test: {
         message: true,
         type: 'required',
-        ref: { type: 'radio', name: 'test' },
+        ref: 'test',
       },
     });
 
