@@ -32,16 +32,16 @@ function App() {
         type="radio"
         name="test"
         value="yes"
-        ref={ref => register({ ref })}
+        ref={register}
       />
       <input
         type="radio"
         name="test"
         value="no"
-        ref={ref => register({ ref })}
+        ref={register}
       />
-      <input type="text" name="first name" ref={ref => register({ ref })} />
-      <input type="text" name="last name" ref={ref => register({ ref })} />
+      <input type="text" name="first name" ref={register} />
+      <input type="text" name="last name" ref={register} />
       <input type="submit" />
     </form>
   );

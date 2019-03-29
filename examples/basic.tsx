@@ -17,14 +17,14 @@ function App() {
         <input
           name="firstName"
           placeholder="Jane"
-          ref={ref => register({ ref })}
+          ref={register}
         />
 
         <label htmlFor="lastName">Last Name</label>
         <input
           name="lastName"
           placeholder="Doe"
-          ref={ref => register({ ref })}
+          ref={register}
         />
 
         <label htmlFor="email">Email</label>
@@ -32,7 +32,7 @@ function App() {
           name="email"
           placeholder="jane@acme.com"
           type="email"
-          ref={ref => register({ ref })}
+          ref={register}
         />
         <button type="submit">Submit</button>
       </form>
