@@ -172,7 +172,6 @@ export default function ApiRefTable() {
   name="test"
   ref={
     register({
-      ref,
       minLength: ${isStandard ? 1 : `{
         value: 1,
         message: 'error message'
@@ -204,7 +203,6 @@ export default function ApiRefTable() {
   name="test"
   ref={
     register({
-      ref,
       max: ${isStandard ? 3 : `{
         value: 3,
         message: 'error message'
@@ -236,7 +234,6 @@ export default function ApiRefTable() {
   name="test"
   ref={
     register({
-      ref,
       min: ${isStandard ? 3 : `{
         value: 3,
         message: 'error message'
@@ -268,7 +265,6 @@ export default function ApiRefTable() {
   name="test"
   ref={
     register({
-      ref,
       pattern: ${isStandard ? '\\[A-Za-z]{3}\\' : `{
         value: \\[A-Za-z]{3}\\,
         message: 'error message'
@@ -306,7 +302,6 @@ export default function ApiRefTable() {
   name="single"
   ref={
     register({
-      ref,
       validate: ${ isStandard ?
         `(value) => value === '1'`:
         `(value) => {
@@ -319,7 +314,6 @@ export default function ApiRefTable() {
   name="multiple"
   ref={
     register({
-      ref,
       validate: {
         isMoreThanOne:
           (value) => ${isStandard ? 'value > 1' : `{
