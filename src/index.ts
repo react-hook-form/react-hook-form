@@ -16,8 +16,10 @@ type NumberOrString = number | string;
 
 type Props = { mode: 'onSubmit' | 'onBlur' | 'onChange'; validationSchema?: any };
 
+type Ref = HTMLInputElement | HTMLSelectElement | null;
+
 export interface RegisterInput {
-  ref: HTMLInputElement | HTMLSelectElement | null;
+  ref: Ref;
   required?: boolean | string;
   min?: NumberOrString | { value: NumberOrString; message: string };
   max?: NumberOrString | { value: NumberOrString; message: string };
@@ -43,7 +45,7 @@ export interface Field extends RegisterInput {
 }
 
 type Error = {
-  ref: any;
+  ref: Ref;
   message: string | boolean;
   type: string;
 };
@@ -51,11 +53,6 @@ type Error = {
 export interface ErrorMessages {
   [key: string]: Error | {};
 }
-
-type ErrorWithValue = Promise<{
-  localErrors: ErrorMessages;
-  values: Array<string | boolean | number>;
-}>;
 
 export default function useForm(
   { mode, validationSchema }: Props = {

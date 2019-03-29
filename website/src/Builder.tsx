@@ -163,8 +163,7 @@ function Builder({
       // @ts-ignore
       updateFormData([...formData, ...[data]]);
     }
-    console.log(event.target);
-    // event.target.reset();
+    event.target.reset();
   };
   const type = watch('type');
   copyFormData.current = formData;
