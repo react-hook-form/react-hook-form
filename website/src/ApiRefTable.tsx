@@ -87,9 +87,7 @@ export default function ApiRefTable() {
               <td>
                 <SyntaxHighlighter style={monokaiSublime}>{`<input
   name="test"
-  ref={ref =>
-    register({ ref })
-  }
+  ref={register${isStandard ? '' : `(required: 'error message')`}}
 />`}</SyntaxHighlighter>
               </td>
             </tr>
@@ -109,9 +107,8 @@ export default function ApiRefTable() {
               <td>
                 <SyntaxHighlighter style={monokaiSublime}>{`<input
   name="test"
-  ref={ref =>
+  ref={
     register({
-      ref,
       ${isStandard ? 'required: true' : `required: 'error message'`}
     })
   }
@@ -138,9 +135,8 @@ export default function ApiRefTable() {
               <td>
                 <SyntaxHighlighter style={monokaiSublime}>{`<input
   name="test"
-  ref={ref =>
+  ref={
     register({
-      ref,
       ${
         isStandard
           ? 'maxLength: 2'
@@ -174,7 +170,7 @@ export default function ApiRefTable() {
               <td>
                 <SyntaxHighlighter style={monokaiSublime}>{`<input
   name="test"
-  ref={ref =>
+  ref={
     register({
       ref,
       minLength: ${isStandard ? 1 : `{
@@ -206,7 +202,7 @@ export default function ApiRefTable() {
               <td>
                 <SyntaxHighlighter style={monokaiSublime}>{`<input
   name="test"
-  ref={ref =>
+  ref={
     register({
       ref,
       max: ${isStandard ? 3 : `{
@@ -238,7 +234,7 @@ export default function ApiRefTable() {
               <td>
                 <SyntaxHighlighter style={monokaiSublime}>{`<input
   name="test"
-  ref={ref =>
+  ref={
     register({
       ref,
       min: ${isStandard ? 3 : `{
@@ -270,7 +266,7 @@ export default function ApiRefTable() {
               <td>
                 <SyntaxHighlighter style={monokaiSublime}>{`<input
   name="test"
-  ref={ref =>
+  ref={
     register({
       ref,
       pattern: ${isStandard ? '\\[A-Za-z]{3}\\' : `{
@@ -308,7 +304,7 @@ export default function ApiRefTable() {
               <td>
                 <SyntaxHighlighter style={monokaiSublime}>{`<input
   name="single"
-  ref={ref =>
+  ref={
     register({
       ref,
       validate: ${ isStandard ?
@@ -321,7 +317,7 @@ export default function ApiRefTable() {
 />
 <input
   name="multiple"
-  ref={ref =>
+  ref={
     register({
       ref,
       validate: {

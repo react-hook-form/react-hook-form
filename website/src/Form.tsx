@@ -106,7 +106,7 @@ export default function Form({
                 return (
                   <select
                     name={field.name}
-                    ref={ref => register({ ref, required: field.required })}
+                    ref={register({ required: field.required })}
                     key={field.name}
                     style={{
                       marginBottom: 20,
@@ -144,7 +144,7 @@ export default function Form({
                                 type="radio"
                                 name={field.name}
                                 value={name}
-                                ref={ref => register({ ref, required: field.required })}
+                                ref={register({ required: field.required })}
                               />
                             </label>
                           );
@@ -163,10 +163,8 @@ export default function Form({
                     type={field.type}
                     name={field.name}
                     placeholder={field.name}
-                    ref={ref =>
-                      // @ts-ignore
+                    ref={
                       register({
-                        ref,
                         required: field.required,
                         ...(field.pattern ? { pattern: field.pattern } : null),
                         ...(field.max ? { max: field.max } : null),

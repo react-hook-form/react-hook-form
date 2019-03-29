@@ -95,12 +95,16 @@ export default function useForm(
     });
   }
 
-  function register(data: RegisterInput) {
-    if (!data || !data.ref) return;
-    if (!data.ref.name) {
-      console.warn('Oops missing the name for field:', data.ref);
+  function registerIntoAllFields(elementRef: any, data: any = {}) {
+    if (elementRef && !elementRef.name) {
+      console.warn('Oops missing the name for field:', elementRef);
       return;
     }
+
+    const inputData = {
+      ...data,
+      ref: elementRef,
+    };
 
     let radioOptionIndex;
     const {
@@ -108,7 +112,7 @@ export default function useForm(
       required,
       validate,
       ref: { name, type, value },
-    } = data;
+    } = inputData;
 
     const allFields = fields.current;
 
@@ -127,26 +131,51 @@ export default function useForm(
       if (radioOptionIndex > -1) {
         options[radioOptionIndex] = {
           ...options[radioOptionIndex],
-          ...data,
+          ...inputData,
         };
       } else {
         options.push({
-          ...data,
-          mutationWatcher: onDomRemove(ref, () => removeReferenceAndEventListeners(data, true)),
+          ...inputData,
+          mutationWatcher: onDomRemove(ref, () => removeReferenceAndEventListeners(inputData, true)),
         });
         radioOptionIndex = options.length - 1;
       }
     } else {
       allFields[name] = {
         ...allFields[name],
-        ...data,
+        ...inputData,
       };
       if (!allFields[name]) {
-        allFields[name].mutationWatcher = onDomRemove(ref, () => removeReferenceAndEventListeners(data, true));
+        allFields[name].mutationWatcher = onDomRemove(ref, () => removeReferenceAndEventListeners(inputData, true));
       }
     }
 
-    attachEventListeners({ allFields, watchFields, ref, type, radioOptionIndex, name, mode, validateWithStateUpdate });
+    attachEventListeners({
+      allFields,
+      watchFields,
+      ref,
+      type,
+      radioOptionIndex,
+      name,
+      mode,
+      validateWithStateUpdate,
+    });
+  }
+
+  function register(data: any) {
+    if (!data) {
+      console.error('Looks like ref is missing.');
+      return;
+    }
+    if (data instanceof HTMLElement) {
+      registerIntoAllFields(data);
+    }
+
+    return ref => {
+      if (ref) {
+        registerIntoAllFields(ref, data);
+      }
+    };
   }
 
   function watch(filedNames?: string | Array<string> | undefined, defaultValue?: string | Array<string> | undefined) {
@@ -192,7 +221,7 @@ export default function useForm(
       const allFieldsValues = Object.values(allFields);
       result = await new Promise(resolve =>
         allFieldsValues.reduce(
-          async (previous: any, data: Field, index: number): ErrorWithValue => {
+          async (previous: any, data: Field, index: number) => {
             const resolvedPrevious = await previous;
             const {
               ref,
@@ -217,8 +246,9 @@ export default function useForm(
               options.forEach(option => {
                 if (option.eventAttached && option.eventAttached.includes('change')) return;
                 option.ref.addEventListener('change', validateWithStateUpdate);
-                option.eventAttached = [...option.eventAttached || [], 'change'];
+                option.eventAttached = [...(option.eventAttached || []), 'change'];
               });
+              // @ts-ignore
             } else if (!fields.current[name].eventAttached || !fields.current[name].eventAttached.includes('input')) {
               ref.addEventListener('input', validateWithStateUpdate);
               data.eventAttached = [...(data.eventAttached || []), 'input'];

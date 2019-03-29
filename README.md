@@ -36,9 +36,9 @@ function App() {
   console.log(errors)
     
   return (
-    <form onSubmit={handleSubmit(onSubmit}>
-      <input name="firstname" ref={(ref) => register({ ref, required: true })} />
-      <input name="lastname" ref={(ref) => register({ ref, pattern: "[a-z]{1,15}" })} />
+    <form onSubmit={handleSubmit(onSubmit)}>
+      <input name="firstname" ref={register} />
+      <input name="lastname" ref={register({ pattern: "[a-z]{1,15}" })} />
       <input type="submit" />
     </form>
   )

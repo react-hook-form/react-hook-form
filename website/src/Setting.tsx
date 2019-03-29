@@ -104,7 +104,7 @@ function Setting({ settingButton, toggleSetting, showSetting, setting, setConfig
                   fontSize: 16,
                   width: '100%',
                 }}
-                ref={ref => register({ ref })}
+                ref={register({ required: true })}
                 defaultValue={setting.mode}
               >
                 {[
@@ -151,7 +151,7 @@ function Setting({ settingButton, toggleSetting, showSetting, setting, setConfig
                 style={{
                   marginRight: 10,
                 }}
-                ref={ref => register({ ref })}
+                ref={register}
                 defaultChecked={setting.showError}
               />
               Errors
@@ -169,7 +169,7 @@ function Setting({ settingButton, toggleSetting, showSetting, setting, setConfig
                 style={{
                   marginRight: 10,
                 }}
-                ref={ref => register({ ref })}
+                ref={register}
                 defaultChecked={setting.showWatch}
               />
               Watch
@@ -188,7 +188,7 @@ function Setting({ settingButton, toggleSetting, showSetting, setting, setConfig
                   marginRight: 10,
                 }}
                 defaultChecked={setting.showSubmit}
-                ref={ref => register({ ref })}
+                ref={register}
               />
               Prepare Submit
             </label>

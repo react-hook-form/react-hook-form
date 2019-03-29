@@ -251,13 +251,10 @@ function Builder({
                     style={{
                       ...(errors['name'] ? errorStyle : null),
                     }}
-                    ref={ref =>
-                      register({
-                        ref,
-                        required: true,
-                        validate,
-                      })
-                    }
+                    ref={register({
+                      required: true,
+                      validate,
+                    })}
                   />
                   <Animate
                     play={errors['name']}
@@ -272,7 +269,7 @@ function Builder({
                   </Animate>
 
                   <label>Type: </label>
-                  <select name="type" ref={ref => register({ ref })} value={editFormData.type}>
+                  <select name="type" ref={register} value={editFormData.type}>
                     <option value="text">Text</option>
                     <option value="select">Select</option>
                     <option value="checkbox">Checkbox</option>
@@ -305,7 +302,7 @@ function Builder({
                         type="text"
                         name="options"
                         placeholder="Enter options separate by ;"
-                        ref={ref => register({ ref })}
+                        ref={register}
                       />
                     </>
                   )}
@@ -337,22 +334,41 @@ function Builder({
                           marginTop: 0,
                         }}
                       >
-                        <input
-                          defaultChecked={editFormData.required}
-                          type="checkbox"
-                          name="required"
-                          ref={ref => register({ ref })}
-                        />{' '}
+                        <input defaultChecked={editFormData.required} type="checkbox" name="required" ref={register} />{' '}
                         required
                       </label>
                       <label>Max</label>
-                      <input defaultValue={editFormData.max} autoComplete="false" name="max" type="number" ref={ref => register({ ref })} />
-                      <label >Min</label>
-                      <input defaultValue={editFormData.min} autoComplete="false" name="min" type="number" ref={ref => register({ ref })} />
+                      <input
+                        defaultValue={editFormData.max}
+                        autoComplete="false"
+                        name="max"
+                        type="number"
+                        ref={register}
+                      />
+                      <label>Min</label>
+                      <input
+                        defaultValue={editFormData.min}
+                        autoComplete="false"
+                        name="min"
+                        type="number"
+                        ref={register}
+                      />
                       <label>MaxLength</label>
-                      <input defaultValue={editFormData.maxLength} autoComplete="false" name="maxLength" type="number" ref={ref => register({ ref })} />
+                      <input
+                        defaultValue={editFormData.maxLength}
+                        autoComplete="false"
+                        name="maxLength"
+                        type="number"
+                        ref={register}
+                      />
                       <label>MinLength</label>
-                      <input defaultValue={editFormData.minLength} autoComplete="false" name="minLength" type="number" ref={ref => register({ ref })} />
+                      <input
+                        defaultValue={editFormData.minLength}
+                        autoComplete="false"
+                        name="minLength"
+                        type="number"
+                        ref={register}
+                      />
                       <label>Pattern</label>
                       <input
                         autoComplete="false"
@@ -362,7 +378,7 @@ function Builder({
                         }}
                         name="pattern"
                         type="text"
-                        ref={ref => register({ ref })}
+                        ref={register}
                       />
                     </fieldset>
                   </Animate>
