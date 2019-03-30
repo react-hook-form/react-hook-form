@@ -1,4 +1,4 @@
-# Contributing to React Forme
+# Contributing to React Hook Form
 
 ## Pull Requests
 
