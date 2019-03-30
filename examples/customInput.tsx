@@ -3,13 +3,11 @@ import ReactDOM from "react-dom";
 import useForm from "react-hook-form";
 import Input from "@material-ui/core/Input";
 
-import "./styles.css";
-
 const MyInput = ({ name, label, register }) => {
   return (
     <>
       <label htmlFor={name}>{label}</label>
-      <input name={name} placeholder="Bill" ref={register} />
+      <input name={name} placeholder="Jane" ref={register} />
     </>
   );
 };
@@ -23,27 +21,34 @@ function App() {
   return (
     <div className="App">
       <form onSubmit={handleSubmit(onSubmit)}>
-        <MyInput name="firstName" label="First Name" register={register} />
+        <div>
+          <MyInput name="firstName" label="First Name" register={register} />
+        </div>
+        <div>
+          <Input
+            name="HelloWorld"
+            inputRef={register}
+            defaultValue="Hello world"
+            inputProps={{
+              "aria-label": "Description"
+            }}
+          />
+        </div>
 
-        <Input
-          name="HelloWorld"
-          inputRef={register}
-          defaultValue="Hello world"
-          inputProps={{
-            "aria-label": "Description"
-          }}
-        />
+        <div>
+          <label htmlFor="lastName">Last Name</label>
+          <input name="lastName" placeholder="Luo" ref={register} />
+        </div>
 
-        <label htmlFor="lastName">Last Name</label>
-        <input name="lastName" placeholder="Luo" ref={register} />
-
-        <label htmlFor="email">Email</label>
-        <input
-          name="email"
-          placeholder="bluebill1049@hotmail.com"
-          type="email"
-          ref={register}
-        />
+        <div>
+          <label htmlFor="email">Email</label>
+          <input
+            name="email"
+            placeholder="bluebill1049@hotmail.com"
+            type="email"
+            ref={register}
+          />
+        </div>
         <button type="submit">Submit</button>
       </form>
     </div>

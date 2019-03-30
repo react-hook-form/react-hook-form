@@ -2,8 +2,6 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import useForm from 'react-hook-form';
 
-import './styles.css';
-
 const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
 
 function App() {
@@ -15,23 +13,29 @@ function App() {
   return (
     <div className="App">
       <form onSubmit={handleSubmit(onSubmit)}>
-        <label htmlFor="username">User Name</label>
-        <input
-          name="username"
-          placeholder="Bill"
-          ref={register({
-            validate: async (value) => {
-              await sleep(3000);
-              return (value === 'bill');
-            },
-          })}
-        />
+        <div>
+          <label htmlFor="username">User Name</label>
+          <input
+            name="username"
+            placeholder="Bill"
+            ref={register({
+              validate: async value => {
+                await sleep(3000);
+                return value === 'bill';
+              },
+            })}
+          />
+        </div>
 
-        <label htmlFor="lastName">Last Name</label>
-        <input name="lastName" placeholder="Luo" ref={register} />
+        <div>
+          <label htmlFor="lastName">Last Name</label>
+          <input name="lastName" placeholder="Luo" ref={register} />
+        </div>
 
-        <label htmlFor="email">Email</label>
-        <input name="email" placeholder="bluebill1049@hotmail.com" type="email" ref={register} />
+        <div>
+          <label htmlFor="email">Email</label>
+          <input name="email" placeholder="bluebill1049@hotmail.com" type="email" ref={register} />
+        </div>
         <button type="submit">Submit</button>
       </form>
     </div>
