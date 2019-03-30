@@ -1,13 +1,13 @@
-import React from "react";
-import ReactDOM from "react-dom";
-import useForm from "react-hook-form";
+import React from 'react';
+import ReactDOM from 'react-dom';
+import useForm from 'react-hook-form';
 
 function App() {
   const { register, errors, handleSubmit } = useForm({
-    mode: "onChange"
+    mode: 'onChange',
   });
   const onSubmit = data => {
-    console.log(data);
+    alert(JSON.stringify(data));
   };
 
   return (
@@ -15,22 +15,14 @@ function App() {
       <form onSubmit={handleSubmit(onSubmit)}>
         <div>
           <label htmlFor="firstName">First Name</label>
-          <input
-            name="firstName"
-            placeholder="bill"
-            ref={register({ required: true })}
-          />
-          {errors.firstName && "This is required"}
+          <input name="firstName" placeholder="bill" ref={register({ required: true })} />
+          {errors.firstName && 'This is required'}
         </div>
 
         <div>
           <label htmlFor="lastName">Last Name</label>
-          <input
-            name="lastName"
-            placeholder="luo"
-            ref={register({ required: true })}
-          />
-          {errors.lastName && "This is required"}
+          <input name="lastName" placeholder="luo" ref={register({ required: true })} />
+          {errors.lastName && 'This is required'}
         </div>
 
         <div>
@@ -38,7 +30,7 @@ function App() {
             Email
           </label>
           <input name="email" ref={register({ required: true })} />
-          {errors.email && "This is required"}
+          {errors.email && 'This is required'}
         </div>
         <button type="submit">Submit</button>
       </form>
@@ -46,5 +38,5 @@ function App() {
   );
 }
 
-const rootElement = document.getElementById("root");
+const rootElement = document.getElementById('root');
 ReactDOM.render(<App />, rootElement);

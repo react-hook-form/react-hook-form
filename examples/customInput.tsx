@@ -1,7 +1,7 @@
-import React from "react";
-import ReactDOM from "react-dom";
-import useForm from "react-hook-form";
-import Input from "@material-ui/core/Input";
+import React from 'react';
+import ReactDOM from 'react-dom';
+import useForm from 'react-hook-form';
+import Input from '@material-ui/core/Input';
 
 const MyInput = ({ name, label, register }) => {
   return (
@@ -15,24 +15,25 @@ const MyInput = ({ name, label, register }) => {
 function App() {
   const { register, handleSubmit } = useForm();
   const onSubmit = data => {
-    console.log(data);
+    alert(JSON.stringify(data, null));
   };
 
   return (
     <div className="App">
       <form onSubmit={handleSubmit(onSubmit)}>
         <div>
-          <MyInput name="firstName" label="First Name" register={register} />
-        </div>
-        <div>
           <Input
             name="HelloWorld"
             inputRef={register}
             defaultValue="Hello world"
             inputProps={{
-              "aria-label": "Description"
+              'aria-label': 'Description',
             }}
           />
+        </div>
+
+        <div>
+          <MyInput name="firstName" label="First Name" register={register} />
         </div>
 
         <div>
@@ -42,12 +43,7 @@ function App() {
 
         <div>
           <label htmlFor="email">Email</label>
-          <input
-            name="email"
-            placeholder="bluebill1049@hotmail.com"
-            type="email"
-            ref={register}
-          />
+          <input name="email" placeholder="bluebill1049@hotmail.com" type="email" ref={register} />
         </div>
         <button type="submit">Submit</button>
       </form>
@@ -55,5 +51,5 @@ function App() {
   );
 }
 
-const rootElement = document.getElementById("root");
+const rootElement = document.getElementById('root');
 ReactDOM.render(<App />, rootElement);

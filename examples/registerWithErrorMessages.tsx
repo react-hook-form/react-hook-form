@@ -1,14 +1,12 @@
-import React from "react";
-import ReactDOM from "react-dom";
-import useForm from "react-hook-form";
+import React from 'react';
+import ReactDOM from 'react-dom';
+import useForm from 'react-hook-form';
 
 function App() {
   const { register, errors, handleSubmit } = useForm();
   const onSubmit = data => {
-    console.log(data);
+    alert(JSON.stringify(data));
   };
-
-  console.log(errors);
 
   return (
     <div className="App">
@@ -18,11 +16,11 @@ function App() {
           name="firstName"
           placeholder="Bill"
           ref={register({
-            required: "this is a required",
+            required: 'this is a required',
             maxLength: {
               value: 2,
-              message: "Max length is 2"
-            }
+              message: 'Max length is 2',
+            },
           })}
         />
         <br />
@@ -34,11 +32,11 @@ function App() {
           name="lastName"
           placeholder="Luo"
           ref={register({
-            required: "this is required",
+            required: 'this is required',
             minLength: {
               value: 2,
-              message: "Min length is 2"
-            }
+              message: 'Min length is 2',
+            },
           })}
         />
         <br />
@@ -51,11 +49,11 @@ function App() {
           placeholder="bluebill1049@hotmail.com"
           type="text"
           ref={register({
-            required: "this is required",
+            required: 'this is required',
             pattern: {
               value: /^[a-zA-Z0-9.!#$%&’*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/,
-              message: "Invalid email address"
-            }
+              message: 'Invalid email address',
+            },
           })}
         />
         <br />
@@ -67,5 +65,5 @@ function App() {
   );
 }
 
-const rootElement = document.getElementById("root");
+const rootElement = document.getElementById('root');
 ReactDOM.render(<App />, rootElement);

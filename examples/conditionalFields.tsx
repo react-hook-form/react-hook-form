@@ -1,14 +1,14 @@
-import React from "react";
-import ReactDOM from "react-dom";
-import useForm from "react-hook-form";
+import React from 'react';
+import ReactDOM from 'react-dom';
+import useForm from 'react-hook-form';
 
 function App() {
   const { register, watch, handleSubmit } = useForm();
   const onSubmit = data => {
-    console.log(data);
+    alert(JSON.stringify(data));
   };
 
-  const moreDetail = watch("moreDetail");
+  const moreDetail = watch('moreDetail');
 
   return (
     <div className="App">
@@ -25,12 +25,7 @@ function App() {
 
         <div>
           <label htmlFor="email">Email</label>
-          <input
-            name="email"
-            placeholder="bluebill1049@hotmail.com"
-            type="email"
-            ref={register}
-          />
+          <input name="email" placeholder="bluebill1049@hotmail.com" type="email" ref={register} />
         </div>
 
         <div>
@@ -38,14 +33,17 @@ function App() {
           <input name="moreDetail" type="checkbox" ref={register} />
         </div>
 
-        <div>
-          {moreDetail && <input type="text" name="Interests" ref={register} />}
-        </div>
+        {moreDetail && (
+          <div>
+            <label>Interests</label>
+            <input type="text" name="Interests" ref={register} />
+          </div>
+        )}
         <button type="submit">Submit</button>
       </form>
     </div>
   );
 }
 
-const rootElement = document.getElementById("root");
+const rootElement = document.getElementById('root');
 ReactDOM.render(<App />, rootElement);

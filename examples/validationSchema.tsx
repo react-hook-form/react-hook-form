@@ -1,51 +1,59 @@
-import React from "react";
-import ReactDOM from "react-dom";
-import useForm from "react-hook-form";
-import * as yup from "yup";
+import React from 'react';
+import ReactDOM from 'react-dom';
+import useForm from 'react-hook-form';
+import * as yup from 'yup';
 
 const SignupSchema = yup.object().shape({
-  name: yup.string().required(),
+  firstName: yup.string().required(),
   age: yup
     .number()
     .required()
     .positive()
     .integer(),
-  email: yup.string().email(),
   website: yup.string().url(),
-  createdOn: yup.date().default(function() {
-    return new Date();
-  })
 });
 
 function App() {
   const { register, handleSubmit, errors } = useForm({
-    validationSchema: SignupSchema
+    validationSchema: SignupSchema,
   });
   const onSubmit = data => {
-    console.log(data);
+    alert(JSON.stringify(data));
   };
-  console.log(errors);
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
-      <input
-        type="radio"
-        name="test"
-        value="yes"
-        ref={register}
-      />
-      <input
-        type="radio"
-        name="test"
-        value="no"
-        ref={register}
-      />
-      <input type="text" name="first name" ref={register} />
-      <input type="text" name="last name" ref={register} />
+      <div>
+        <label>Develop?</label>
+        Yes
+        <input type="radio" name="test" value="yes" ref={register} />
+        No
+        <input type="radio" name="test" value="no" ref={register} />
+      </div>
+      <div>
+        <label>First Name</label>
+        <input type="text" name="firstName" ref={register} />
+      </div>
+      <div>
+        <label>Last Name</label>
+        <input type="text" name="lastName" ref={register} />
+      </div>
+      <div>
+        <label>Age</label>
+        <input type="text" name="age" ref={register} />
+      </div>
+      <div>
+        <label>Website</label>
+        <input type="text" name="website" ref={register} />
+      </div>
+
+      <div style={{ color: 'red' }}>
+        <pre>{Object.keys(errors).length > 0 && <label>Errors: {JSON.stringify(errors, null, 2)}</label>}</pre>
+      </div>
       <input type="submit" />
     </form>
   );
 }
 
-const rootElement = document.getElementById("root");
+const rootElement = document.getElementById('root');
 ReactDOM.render(<App />, rootElement);

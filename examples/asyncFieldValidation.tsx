@@ -5,10 +5,12 @@ import useForm from 'react-hook-form';
 const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
 
 function App() {
-  const { register, handleSubmit } = useForm();
+  const { register, handleSubmit, errors } = useForm();
   const onSubmit = data => {
-    console.log(data);
+    alert(JSON.stringify(data));
   };
+
+  console.log(errors);
 
   return (
     <div className="App">
@@ -34,8 +36,10 @@ function App() {
 
         <div>
           <label htmlFor="email">Email</label>
-          <input name="email" placeholder="bluebill1049@hotmail.com" type="email" ref={register} />
+          <input name="email" placeholder="bluebill1049@hotmail.com" type="text" ref={register} />
         </div>
+
+        <div style={{ color: 'red' }}>{Object.keys(errors).length > 0 && 'There are errors, check your console.'}</div>
         <button type="submit">Submit</button>
       </form>
     </div>

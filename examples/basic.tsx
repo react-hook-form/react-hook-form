@@ -2,12 +2,10 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import useForm from 'react-hook-form';
 
-import './styles.css';
-
 function App() {
   const { register, handleSubmit } = useForm();
   const onSubmit = data => {
-    console.log(data);
+    alert(JSON.stringify(data));
   };
 
   return (
@@ -15,12 +13,12 @@ function App() {
       <form onSubmit={handleSubmit(onSubmit)}>
         <div>
           <label htmlFor="firstName">First Name</label>
-          <input name="firstName" placeholder="Bill" ref={register} />
+          <input name="firstName" placeholder="bill" ref={register} />
         </div>
 
         <div>
           <label htmlFor="lastName">Last Name</label>
-          <input name="lastName" placeholder="Luo" ref={register} />
+          <input name="lastName" placeholder="luo" ref={register} />
         </div>
 
         <div>
