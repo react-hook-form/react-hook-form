@@ -21,9 +21,9 @@
 
 - [Get started](https://react-hook-form.now.sh/api)
 - [API](https://react-hook-form.now.sh/api)
+- [Examples](https://github.com/bluebill1049/react-hook-form/tree/master/examples)
 - [Demo](https://react-hook-form.now.sh)
 - [Form Builder](https://react-hook-form.now.sh/builder)
-- [Examples](https://github.com/bluebill1049/react-hook-form/tree/master/examples)
 
 ## Quickstart
 
