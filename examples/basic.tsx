@@ -1,8 +1,8 @@
-import React from "react";
-import ReactDOM from "react-dom";
-import useForm from "react-hook-form";
+import React from 'react';
+import ReactDOM from 'react-dom';
+import useForm from 'react-hook-form';
 
-import "./styles.css";
+import './styles.css';
 
 function App() {
   const { register, handleSubmit } = useForm();
@@ -13,32 +13,25 @@ function App() {
   return (
     <div className="App">
       <form onSubmit={handleSubmit(onSubmit)}>
-        <label htmlFor="firstName">First Name</label>
-        <input
-          name="firstName"
-          placeholder="Jane"
-          ref={register}
-        />
+        <div>
+          <label htmlFor="firstName">First Name</label>
+          <input name="firstName" placeholder="Bill" ref={register} />
+        </div>
 
-        <label htmlFor="lastName">Last Name</label>
-        <input
-          name="lastName"
-          placeholder="Doe"
-          ref={register}
-        />
+        <div>
+          <label htmlFor="lastName">Last Name</label>
+          <input name="lastName" placeholder="Luo" ref={register} />
+        </div>
 
-        <label htmlFor="email">Email</label>
-        <input
-          name="email"
-          placeholder="jane@acme.com"
-          type="email"
-          ref={register}
-        />
+        <div>
+          <label htmlFor="email">Email</label>
+          <input name="email" placeholder="bluebill1049@hotmail.com" type="email" ref={register} />
+        </div>
         <button type="submit">Submit</button>
       </form>
     </div>
   );
 }
 
-const rootElement = document.getElementById("root");
+const rootElement = document.getElementById('root');
 ReactDOM.render(<App />, rootElement);

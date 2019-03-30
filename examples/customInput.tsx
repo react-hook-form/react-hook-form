@@ -9,7 +9,7 @@ const MyInput = ({ name, label, register }) => {
   return (
     <>
       <label htmlFor={name}>{label}</label>
-      <input name={name} placeholder="Jane" ref={register} />
+      <input name={name} placeholder="Bill" ref={register} />
     </>
   );
 };
@@ -35,12 +35,12 @@ function App() {
         />
 
         <label htmlFor="lastName">Last Name</label>
-        <input name="lastName" placeholder="Doe" ref={register} />
+        <input name="lastName" placeholder="Luo" ref={register} />
 
         <label htmlFor="email">Email</label>
         <input
           name="email"
-          placeholder="jane@acme.com"
+          placeholder="bluebill1049@hotmail.com"
           type="email"
           ref={register}
         />

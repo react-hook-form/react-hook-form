@@ -18,7 +18,7 @@ function App() {
         <label htmlFor="username">User Name</label>
         <input
           name="username"
-          placeholder="Jane"
+          placeholder="Bill"
           ref={register({
             validate: async (value) => {
               await sleep(3000);
@@ -28,10 +28,10 @@ function App() {
         />
 
         <label htmlFor="lastName">Last Name</label>
-        <input name="lastName" placeholder="Doe" ref={register} />
+        <input name="lastName" placeholder="Luo" ref={register} />
 
         <label htmlFor="email">Email</label>
-        <input name="email" placeholder="jane@acme.com" type="email" ref={register} />
+        <input name="email" placeholder="bluebill1049@hotmail.com" type="email" ref={register} />
         <button type="submit">Submit</button>
       </form>
     </div>

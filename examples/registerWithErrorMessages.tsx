@@ -18,7 +18,7 @@ function App() {
         <label htmlFor="firstName">First Name</label>
         <input
           name="firstName"
-          placeholder="Jane"
+          placeholder="Bill"
           ref={register({
             required: "this is a required",
             maxLength: {
@@ -34,7 +34,7 @@ function App() {
         <label htmlFor="lastName">Last Name</label>
         <input
           name="lastName"
-          placeholder="Doe"
+          placeholder="Luo"
           ref={register({
             required: "this is required",
             minLength: {
@@ -50,7 +50,7 @@ function App() {
         <label htmlFor="email">Email</label>
         <input
           name="email"
-          placeholder="jane@acme.com"
+          placeholder="bluebill1049@hotmail.com"
           type="text"
           ref={register({
             required: "this is required",

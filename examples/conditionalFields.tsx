@@ -15,19 +15,19 @@ function App() {
       <form onSubmit={handleSubmit(onSubmit)}>
         <div>
           <label htmlFor="firstName">First Name</label>
-          <input name="firstName" placeholder="Jane" ref={register} />
+          <input name="firstName" placeholder="Bill" ref={register} />
         </div>
 
         <div>
           <label htmlFor="lastName">Last Name</label>
-          <input name="lastName" placeholder="Doe" ref={register} />
+          <input name="lastName" placeholder="Luo" ref={register} />
         </div>
 
         <div>
           <label htmlFor="email">Email</label>
           <input
             name="email"
-            placeholder="jane@acme.com"
+            placeholder="bluebill1049@hotmail.com"
             type="email"
             ref={register}
           />
