@@ -40,6 +40,23 @@ function App() {
         </div>
 
         <div>
+          <label htmlFor="DOB">DOB</label>
+          <input
+            name="DOB"
+            onChange={e => {
+              const value = e.target.value;
+              if (value.match(/^\d{2}$/) !== null) {
+                e.target.value = value + "/";
+              } else if (value.match(/^\d{2}\/\d{2}$/) !== null) {
+                e.target.value = value + "/";
+              }
+            }}
+            placeholder="12/12/1999"
+            ref={register}
+          />
+        </div>
+
+        <div>
           <label htmlFor="email">Email</label>
           <input
             name="email"
