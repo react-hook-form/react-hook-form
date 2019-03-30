@@ -17,7 +17,7 @@
 
     $ npm install react-hook-form
 
-## [Website](https://react-hook-form.now.sh/api)
+## [Docs](https://react-hook-form.now.sh/api)
 
 - [Get started](https://react-hook-form.now.sh/api)
 - [API](https://react-hook-form.now.sh/api)
