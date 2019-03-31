@@ -87,7 +87,7 @@ export default function ApiRefTable() {
               <td>
                 <SyntaxHighlighter style={monokaiSublime}>{`<input
   name="test"
-  ref={register${isStandard ? '' : `(required: 'error message')`}}
+  ref={register}
 />`}</SyntaxHighlighter>
               </td>
             </tr>
