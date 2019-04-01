@@ -138,11 +138,12 @@ export default function useForm(
         radioOptionIndex = options.length - 1;
       }
     } else {
+      const isInitialCreate = !allFields[name];
       allFields[name] = {
         ...allFields[name],
         ...inputData,
       };
-      if (!allFields[name]) {
+      if (isInitialCreate) {
         allFields[name].mutationWatcher = onDomRemove(ref, () => removeReferenceAndEventListeners(inputData, true));
       }
     }
