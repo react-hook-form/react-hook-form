@@ -158,6 +158,7 @@ function Builder({
     if (editIndex >= 0) {
       formData[editIndex] = data;
       updateFormData([...formData]);
+      setFormData({});
       setEditIndex(-1);
     } else {
       // @ts-ignore
@@ -170,7 +171,7 @@ function Builder({
 
   function validate(value) {
     // @ts-ignore
-    return !Object.values(copyFormData.current).find(data => data.name === value);
+    return !Object.values(copyFormData.current).find(data => data.name === value) || editIndex !== -1;
   }
 
   useEffect(
