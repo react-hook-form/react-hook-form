@@ -8,6 +8,7 @@ import onDomRemove from './utils/onDomRemove';
 import isRadioInput from './utils/isRadioInput';
 import attachEventListeners from './logic/attachEventListeners';
 import validateWithSchema from './logic/validateWithSchema';
+import getArrayFields from './logic/getArrayFields';
 import omitRefs from './utils/omitRefs';
 
 type Validate = (data: string | number) => boolean | string | number | Date;
@@ -113,13 +114,23 @@ export default function useForm(
 
     const allFields = fields.current;
 
+    const index = getArrayFields(name, allFields);
+
     if (isRadioInput(type)) {
       if (!allFields[name]) {
-        allFields[name] = { options: [], required, validate, ref: { type: 'radio', name } };
+        if (index >= 0) {
+          allFields[name][index] = { options: [], required, validate, ref: { type: 'radio', name } };
+        } else {
+          allFields[name] = { options: [], required, validate, ref: { type: 'radio', name } };
+        }
       }
 
       if (!allFields[name].validate && validate) {
-        allFields[name].validate = validate;
+        if (index >= 0) {
+          allFields[name][index].validate = validate;
+        } else {
+          allFields[name].validate = validate;
+        }
       }
 
       const options = allFields[name].options || [];
@@ -138,10 +149,18 @@ export default function useForm(
         radioOptionIndex = options.length - 1;
       }
     } else {
-      allFields[name] = {
-        ...allFields[name],
-        ...inputData,
-      };
+      if (index >= 0) {
+        allFields[name][index] = {
+          ...allFields[name],
+          ...inputData,
+        };
+      } else {
+        allFields[name] = {
+          ...allFields[name],
+          ...inputData,
+        };
+      }
+      
       if (!allFields[name]) {
         allFields[name].mutationWatcher = onDomRemove(ref, () => removeReferenceAndEventListeners(inputData, true));
       }
