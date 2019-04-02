@@ -1,15 +1,21 @@
-export default function getArrayFields(name: string, allFields: Object = {}): number {
+export default function getArrayFields(name: string, allFields: Object = {}) {
   const arrayIndex = name.match(/\[\d+\]$/gi);
   if (arrayIndex) {
     const index = arrayIndex[0].slice(1, -1);
-    const filedName = name.substr(0, name.indexOf('['));
-    if (!allFields[filedName]) {
-      allFields[filedName] = [];
-      allFields[filedName][index] = {};
+    const arrayFieldName = name.substr(0, name.indexOf('['));
+    if (!allFields[arrayFieldName]) {
+      allFields[arrayFieldName] = [];
+      allFields[arrayFieldName][index] = {};
     }
 
-    return parseInt(index);
+    return {
+      index: parseInt(index),
+      arrayFieldName,
+    };
   }
 
-  return -1;
+  return {
+    index: -1,
+    arrayFieldName: '',
+  };
 }

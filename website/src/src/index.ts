@@ -114,13 +114,13 @@ export default function useForm(
       ref: { name, type, value },
     } = inputData;
     const allFields = fields.current;
-    const index = getArrayFields(name, allFields);
+    const { index, arrayFieldName } = getArrayFields(name, allFields);
 
     if (isRadioInput(type)) {
       if (!allFields[name]) {
         tempField = { options: [], required, validate, ref: { type: 'radio', name } };
         if (index >= 0) {
-          allFields[name][index] = tempField;
+          allFields[arrayFieldName][index] = tempField;
         } else {
           allFields[name] = tempField;
         }
@@ -128,13 +128,13 @@ export default function useForm(
 
       if (!allFields[name].validate && validate) {
         if (index >= 0) {
-          allFields[name][index].validate = validate;
+          allFields[arrayFieldName][index].validate = validate;
         } else {
           allFields[name].validate = validate;
         }
       }
 
-      const options = index >= 0 ? allFields[name][index].options : allFields[name].options || [];
+      const options = index >= 0 ? allFields[arrayFieldName][index].options : allFields[name].options || [];
       radioOptionIndex = options.findIndex(({ ref }) => value === ref.value);
 
       if (radioOptionIndex > -1) {
@@ -157,14 +157,14 @@ export default function useForm(
       };
 
       if (index >= 0) {
-        allFields[name][index] = tempField;
+        allFields[arrayFieldName][index] = tempField;
       } else {
         allFields[name] = tempField;
       }
 
       if (isInitialCreate) {
         if (index >= 0) {
-          allFields[name][index].mutationWatcher = onDomRemove(ref, () =>
+          allFields[arrayFieldName][index].mutationWatcher = onDomRemove(ref, () =>
             removeReferenceAndEventListeners(inputData, true),
           );
         } else {
@@ -242,20 +242,24 @@ export default function useForm(
       result = await new Promise(resolve =>
         allFieldsValues.reduce(
           async (previous: any, [name, data]: any, index: number) => {
-            if (Array.isArray(data.fields)) {
-              previous[name] = await new Promise(
-                data.fields.reduce(
-                  async (previous: any, data: Field, index: number) => {
-                    return await validateAllFields({
-                      previous,
-                      data,
-                      index,
-                      allFieldsValues,
-                      resolve,
+            if (Array.isArray(data)) {
+              const arrayFieldName = data[0].ref.name.substring(0, data[0].ref.name.indexOf('['));
+              const test = await new Promise(arrayFieldResolve =>
+                data.reduce(
+                  async (arrayFieldPrevious: any, arrayFieldData: Field, arrayFieldIndex: number) => {
+                    const temp = await validateAllFields({
+                      arrayFieldName,
+                      previous: arrayFieldPrevious,
+                      data: arrayFieldData,
+                      index: arrayFieldIndex,
+                      allFieldsValues: [data],
+                      resolve: arrayFieldResolve,
                       allFields,
                       removeReferenceAndEventListeners,
                       validateWithStateUpdate,
                     });
+                    console.log('temp', temp)
+                    return arrayFieldPrevious;
                   },
                   Promise.resolve({
                     localErrors: {},

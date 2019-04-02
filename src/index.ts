@@ -115,6 +115,12 @@ export default function useForm(
     } = inputData;
     const allFields = fields.current;
     const index = getArrayFields(name, allFields);
+    console.log('index', index)
+
+    if (index >= 0 && !allFields[name]) {
+      // @ts-ignore
+      allFields[name] = [];
+    }
 
     if (isRadioInput(type)) {
       if (!allFields[name]) {
@@ -238,29 +244,30 @@ export default function useForm(
         return;
       }
     } else {
-      const allFieldsValues = Object.entries(allFields);
+      const fieldsEntries = Object.entries(allFields);
+      const defaultResolver = Promise.resolve({
+        localErrors: {},
+        values: {},
+      });
       result = await new Promise(resolve =>
-        allFieldsValues.reduce(
+        fieldsEntries.reduce(
           async (previous: any, [name, data]: any, index: number) => {
             if (Array.isArray(data.fields)) {
-              previous[name] = await new Promise(
+              previous[name] = await new Promise(arrayFieldResolve =>
                 data.fields.reduce(
                   async (previous: any, data: Field, index: number) => {
                     return await validateAllFields({
                       previous,
                       data,
                       index,
-                      allFieldsValues,
-                      resolve,
+                      resolve: arrayFieldResolve,
+                      fieldsEntries,
                       allFields,
                       removeReferenceAndEventListeners,
                       validateWithStateUpdate,
                     });
                   },
-                  Promise.resolve({
-                    localErrors: {},
-                    values: {},
-                  }),
+                  defaultResolver,
                 ),
               );
               return previous;
@@ -269,7 +276,7 @@ export default function useForm(
                 previous,
                 data,
                 index,
-                allFieldsValues,
+                fieldsEntries,
                 resolve,
                 allFields,
                 removeReferenceAndEventListeners,
@@ -277,10 +284,7 @@ export default function useForm(
               });
             }
           },
-          Promise.resolve({
-            localErrors: {},
-            values: {},
-          }),
+          defaultResolver,
         ),
       );
 

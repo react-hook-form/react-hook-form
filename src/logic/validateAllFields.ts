@@ -7,13 +7,13 @@ export default async function validateAllFields({
   previous,
   data,
   index,
-  allFieldsValues,
+  fieldsEntries,
   removeReferenceAndEventListeners,
   validateWithStateUpdate,
   resolve,
   allFields,
 }: {
-  allFieldsValues: any;
+  fieldsEntries: any;
   allFields: any;
   previous: any;
   data: Field;
@@ -28,7 +28,7 @@ export default async function validateAllFields({
     ref: { name, type },
     options,
   } = data;
-  const lastChild = allFieldsValues.length - 1 === index;
+  const lastChild = fieldsEntries[0].length - 1 === index;
 
   removeReferenceAndEventListeners(data);
 

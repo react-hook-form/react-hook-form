@@ -12,7 +12,9 @@ export default async function validateAllFields({
   validateWithStateUpdate,
   resolve,
   allFields,
+  arrayFieldName = '',
 }: {
+  arrayFieldName?: string;
   allFieldsValues: any;
   allFields: any;
   previous: any;
@@ -32,10 +34,16 @@ export default async function validateAllFields({
 
   removeReferenceAndEventListeners(data);
 
-  if (!allFields[name]) return lastChild ? resolve(resolvedPrevious) : resolvedPrevious;
+  if (!allFields[name] && !allFields[arrayFieldName]) return lastChild ? resolve(resolvedPrevious) : resolvedPrevious;
 
   const fieldError = await validateField(data, allFields);
+
   const hasError = fieldError && fieldError[name];
+
+  console.log(name);
+  if (name.includes('bill')) {
+    console.log('fucked', fieldError);
+  }
 
   if (!hasError) {
     resolvedPrevious.values[name] = getFieldValue(allFields, ref);
@@ -49,7 +57,7 @@ export default async function validateAllFields({
       option.eventAttached = [...(option.eventAttached || []), 'change'];
     });
     // @ts-ignore
-  } else if (!fields.current[name].eventAttached || !fields.current[name].eventAttached.includes('input')) {
+  } else if (!allFields[name].eventAttached || !allFields[name].eventAttached.includes('input')) {
     ref.addEventListener('input', validateWithStateUpdate);
     data.eventAttached = [...(data.eventAttached || []), 'input'];
   }

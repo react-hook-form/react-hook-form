@@ -100,6 +100,8 @@ export default function Form({
               Setting
             </SettingIcon>
           </Title>
+          <input name="bill[0]" ref={register({ required: true })} />
+          <input name="bill[1]" ref={register({ required: true })} />
           {formData.map(field => {
             switch (field.type) {
               case 'select':
@@ -163,16 +165,14 @@ export default function Form({
                     type={field.type}
                     name={field.name}
                     placeholder={field.name}
-                    ref={
-                      register({
-                        required: field.required,
-                        ...(field.pattern ? { pattern: field.pattern } : null),
-                        ...(field.max ? { max: field.max } : null),
-                        ...(field.min ? { min: field.min } : null),
-                        ...(field.maxLength ? { maxLength: field.maxLength } : null),
-                        ...(field.minLength ? { minLength: field.minLength } : null),
-                      })
-                    }
+                    ref={register({
+                      required: field.required,
+                      ...(field.pattern ? { pattern: field.pattern } : null),
+                      ...(field.max ? { max: field.max } : null),
+                      ...(field.min ? { min: field.min } : null),
+                      ...(field.maxLength ? { maxLength: field.maxLength } : null),
+                      ...(field.minLength ? { minLength: field.minLength } : null),
+                    })}
                   />
                 );
             }
