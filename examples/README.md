@@ -9,6 +9,7 @@ you can view the source code within the folder or visit code sand box to see how
 | Register Error Messages     | https://codesandbox.io/s/o766kp4z05 |
 | Conditional Fields          | https://codesandbox.io/s/13ykqx4wx7 |
 | Async Submit Validation     | https://codesandbox.io/s/xrjv48o0qp |
+| Array Fields                | https://codesandbox.io/s/6j1760jkjk |
 | Async Field Validation      | https://codesandbox.io/s/m5pj55yj7x |
 | Normalize/Format/Mask Field | https://codesandbox.io/s/387z7njwzp |
 | initial form value          | https://codesandbox.io/s/l3mxpvmm9  |
