@@ -10,7 +10,7 @@ export default function attachEventListeners({
   type,
   name,
   validateWithStateUpdate,
-  isWatchAll,
+  isWatchAll = false,
 }: {
   mode: string;
   fields: any;
@@ -20,7 +20,7 @@ export default function attachEventListeners({
   type: string;
   name: string;
   validateWithStateUpdate: any;
-  isWatchAll: boolean;
+  isWatchAll?: boolean;
 }) {
   const field = fields[name];
   const isOnChange = mode === 'onChange' || watchFields[ref.name] || isWatchAll;
