@@ -10,7 +10,7 @@ describe('attachEventListeners', () => {
         ref: {},
         type: 'radio',
         name: 'test',
-        watchFields: { current: {} },
+        watchFields: {},
         validateWithStateUpdate: () => {},
       }),
     ).toBeUndefined();
@@ -73,7 +73,7 @@ describe('attachEventListeners', () => {
     expect(
       attachEventListeners({
         watchFields: {
-          current: { test: true },
+          test: true,
         },
         mode: 'onSubmit',
         fields,
@@ -139,7 +139,7 @@ describe('attachEventListeners', () => {
     expect(
       attachEventListeners({
         watchFields: {
-          current: { test: true },
+          test: true,
         },
         mode: 'onSubmit',
         fields,
@@ -177,7 +177,7 @@ describe('attachEventListeners', () => {
 
     expect(
       attachEventListeners({
-        watchFields: { current: { test: true } },
+        watchFields: { test: true },
         mode: 'onBlur',
         fields,
         radioOptionIndex: 0,
@@ -209,9 +209,7 @@ describe('attachEventListeners', () => {
     expect(
       attachEventListeners({
         watchFields: {
-          current: {
-            test: true,
-          },
+          test: true,
         },
         mode: 'onBlur',
         fields,

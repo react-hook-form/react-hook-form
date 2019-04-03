@@ -10,6 +10,7 @@ import attachEventListeners from './logic/attachEventListeners';
 import validateWithSchema from './logic/validateWithSchema';
 import omitRefs from './utils/omitRefs';
 import validateAllFields from './logic/validateAllFields';
+import combineFieldValues from './logic/combineFieldValues';
 
 type Validate = (data: string | number) => boolean | string | number | Date;
 
@@ -214,7 +215,7 @@ export default function useForm(
       fieldErrors = await validateWithSchema(validationSchema, fieldValues);
 
       if (fieldErrors === undefined) {
-        callback(fieldValues, e);
+        callback(combineFieldValues(fieldValues), e);
         return;
       }
     } else {
@@ -248,7 +249,7 @@ export default function useForm(
       errorMessagesRef.current = fieldErrors;
     }
 
-    if (!Object.values(fieldErrors).length) callback(fieldValues, e);
+    if (!Object.values(fieldErrors).length) callback(combineFieldValues(fieldValues), e);
   };
 
   useEffect(
