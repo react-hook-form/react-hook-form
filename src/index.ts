@@ -9,7 +9,6 @@ import isRadioInput from './utils/isRadioInput';
 import attachEventListeners from './logic/attachEventListeners';
 import validateWithSchema from './logic/validateWithSchema';
 import omitRefs from './utils/omitRefs';
-import validateAllFields from './logic/validateAllFields';
 import combineFieldValues from './logic/combineFieldValues';
 
 type Validate = (data: string | number) => boolean | string | number | Date;
@@ -221,20 +220,20 @@ export default function useForm(
     } else {
       const result: { errors: any; values: any } = await new Promise(resolve =>
         currentFieldValues.reduce(
-          async (previous: any, data: Field, index: number) => {
+          async (previous: any, field: Field, index: number) => {
             const resolvedPrevious = await previous;
             const {
               ref,
               ref: { name, type },
               options,
-            } = data;
+            } = field;
             const lastChild = fieldsLength - 1 === index;
 
-            removeReferenceAndEventListeners(data);
+            removeReferenceAndEventListeners(field);
 
-            if (!fields.current[name]) return lastChild ? resolve(resolvedPrevious) : resolvedPrevious;
+            if (!fields[name]) return lastChild ? resolve(resolvedPrevious) : resolvedPrevious;
 
-            const fieldError = await validateField(data, fields);
+            const fieldError = await validateField(field, fields);
             const hasError = fieldError && fieldError[name];
 
             if (!hasError) {
@@ -249,12 +248,12 @@ export default function useForm(
                 option.eventAttached = [...(option.eventAttached || []), 'change'];
               });
               // @ts-ignore
-            } else if (!fields.current[name].eventAttached || !fields.current[name].eventAttached.includes('input')) {
+            } else if (!field.eventAttached || !field.eventAttached.includes('input')) {
               ref.addEventListener('input', validateWithStateUpdate);
-              data.eventAttached = [...(data.eventAttached || []), 'input'];
+              field.eventAttached = [...(field.eventAttached || []), 'input'];
             }
 
-            resolvedPrevious.localErrors = { ...(resolvedPrevious.localErrors || []), ...fieldError };
+            resolvedPrevious.errors = { ...(resolvedPrevious.localErrors || []), ...fieldError };
             return lastChild ? resolve(resolvedPrevious) : resolvedPrevious;
           },
           Promise.resolve({

@@ -5,6 +5,7 @@ you can view the source code within the folder or visit code sand box to see how
 | Name                        | Link                                |
 | --------------------------- | ----------------------------------- |
 | Basic                       | https://codesandbox.io/s/yj07z1639  |
+| Basic Validation            | https://codesandbox.io/s/rwpz2jn6ln |
 | Custom Input                | https://codesandbox.io/s/72j69vnk1x |
 | Register Error Messages     | https://codesandbox.io/s/o766kp4z05 |
 | Conditional Fields          | https://codesandbox.io/s/13ykqx4wx7 |
