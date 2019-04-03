@@ -9,17 +9,17 @@ export default async function validateAllFields({
   index,
   fieldsLength,
   resolve,
-  allFields,
+  fields,
   removeReferenceAndEventListeners,
   validateWithStateUpdate,
 }: {
-  allFields: { [key: string]: Field };
+  fields: { [key: string]: Field };
   removeReferenceAndEventListeners: (Field) => void;
   validateWithStateUpdate: (any) => void;
   fieldsLength: number;
   previous: Promise<{
-    values: { [key: string]: any },
-    errors: { [key: string]: any },
+    values: { [key: string]: any };
+    errors: { [key: string]: any };
   }>;
   data: Field;
   index: number;
@@ -35,14 +35,14 @@ export default async function validateAllFields({
 
   removeReferenceAndEventListeners(data);
 
-  if (!allFields[name]) return lastChild ? resolve(resolvedPrevious) : resolvedPrevious;
+  if (!fields[name]) return lastChild ? resolve(resolvedPrevious) : resolvedPrevious;
 
-  const fieldError = await validateField(data, allFields);
+  const fieldError = await validateField(data, fields);
 
   const hasError = fieldError && fieldError[name];
 
   if (!hasError) {
-    resolvedPrevious.values[name] = getFieldValue(allFields, ref);
+    resolvedPrevious.values[name] = getFieldValue(fields, ref);
 
     return lastChild ? resolve(resolvedPrevious) : resolvedPrevious;
   }

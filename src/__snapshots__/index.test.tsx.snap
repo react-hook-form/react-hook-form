@@ -1,3 +1,0 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
-
-exports[`useForm should handle submit when there is no error 1`] = `ReactWrapper {}`;

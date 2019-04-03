@@ -221,17 +221,41 @@ export default function useForm(
     } else {
       const result: { errors: any; values: any } = await new Promise(resolve =>
         currentFieldValues.reduce(
-          async (previous: any, [name, data]: any, index: number) => {
-            return await validateAllFields({
-              previous,
-              data,
-              index,
-              fieldsLength,
-              allFields: fields,
-              removeReferenceAndEventListeners,
-              validateWithStateUpdate,
-              resolve,
-            });
+          async (previous: any, data: Field, index: number) => {
+            const resolvedPrevious = await previous;
+            const {
+              ref,
+              ref: { name, type },
+              options,
+            } = data;
+            const lastChild = fieldsLength - 1 === index;
+
+            removeReferenceAndEventListeners(data);
+
+            if (!fields.current[name]) return lastChild ? resolve(resolvedPrevious) : resolvedPrevious;
+
+            const fieldError = await validateField(data, fields);
+            const hasError = fieldError && fieldError[name];
+
+            if (!hasError) {
+              resolvedPrevious.values[name] = getFieldValue(fields, ref);
+              return lastChild ? resolve(resolvedPrevious) : resolvedPrevious;
+            }
+
+            if (isRadioInput(type) && Array.isArray(options)) {
+              options.forEach(option => {
+                if (option.eventAttached && option.eventAttached.includes('change')) return;
+                option.ref.addEventListener('change', validateWithStateUpdate);
+                option.eventAttached = [...(option.eventAttached || []), 'change'];
+              });
+              // @ts-ignore
+            } else if (!fields.current[name].eventAttached || !fields.current[name].eventAttached.includes('input')) {
+              ref.addEventListener('input', validateWithStateUpdate);
+              data.eventAttached = [...(data.eventAttached || []), 'input'];
+            }
+
+            resolvedPrevious.localErrors = { ...(resolvedPrevious.localErrors || []), ...fieldError };
+            return lastChild ? resolve(resolvedPrevious) : resolvedPrevious;
           },
           Promise.resolve({
             errors: {},
