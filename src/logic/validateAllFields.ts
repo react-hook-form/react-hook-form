@@ -13,11 +13,14 @@ export default async function validateAllFields({
   removeReferenceAndEventListeners,
   validateWithStateUpdate,
 }: {
-  allFields: any;
-  removeReferenceAndEventListeners: any;
-  validateWithStateUpdate: any;
-  fieldsLength: any;
-  previous: any;
+  allFields: { [key: string]: Field };
+  removeReferenceAndEventListeners: (Field) => void;
+  validateWithStateUpdate: (any) => void;
+  fieldsLength: number;
+  previous: Promise<{
+    values: { [key: string]: any },
+    errors: { [key: string]: any },
+  }>;
   data: Field;
   index: number;
   resolve: any;
