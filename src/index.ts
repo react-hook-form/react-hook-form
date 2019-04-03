@@ -153,7 +153,7 @@ export default function useForm(
 
     attachEventListeners({
       fields,
-      watchFields: watchFieldsRef,
+      watchFields: watchFieldsRef.current,
       ref,
       type,
       radioOptionIndex,
