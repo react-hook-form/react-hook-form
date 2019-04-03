@@ -1,0 +1,19 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`combineFieldValues should combine all the array fields 1`] = `
+Object {
+  "email": Array [
+    "asdasd@dsad.com",
+    "asdasd@.com",
+  ],
+  "firstName": Array [
+    "asdasd",
+    "asdasd",
+  ],
+  "lastName": Array [
+    "asdasd",
+    "asd",
+  ],
+  "test": "test",
+}
+`;

@@ -31,6 +31,7 @@ export default async (
     copy[name] = {
       type: 'required',
       message: required,
+      // @ts-ignore
       ref: isRadio ? fields[name].options[0].ref : ref,
     };
     return copy;
@@ -125,7 +126,7 @@ export default async (
           ...copy[name],
           type: 'validate',
           message: result || true,
-          ref: isRadio ? options[0].ref : ref,
+          ref: isRadio && options ? options[0].ref : ref,
         };
         return copy;
       }
@@ -152,7 +153,7 @@ export default async (
       if (Object.keys(result).length) {
         copy[name] = {
           ...copy[name],
-          ref: isRadio ? options[0].ref : ref,
+          ref: isRadio && options ? options[0].ref : ref,
           ...result,
         };
         return copy;

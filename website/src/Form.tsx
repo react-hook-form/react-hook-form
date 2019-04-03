@@ -163,16 +163,14 @@ export default function Form({
                     type={field.type}
                     name={field.name}
                     placeholder={field.name}
-                    ref={
-                      register({
-                        required: field.required,
-                        ...(field.pattern ? { pattern: field.pattern } : null),
-                        ...(field.max ? { max: field.max } : null),
-                        ...(field.min ? { min: field.min } : null),
-                        ...(field.maxLength ? { maxLength: field.maxLength } : null),
-                        ...(field.minLength ? { minLength: field.minLength } : null),
-                      })
-                    }
+                    ref={register({
+                      required: field.required,
+                      ...(field.pattern ? { pattern: field.pattern } : null),
+                      ...(field.max ? { max: field.max } : null),
+                      ...(field.min ? { min: field.min } : null),
+                      ...(field.maxLength ? { maxLength: field.maxLength } : null),
+                      ...(field.minLength ? { minLength: field.minLength } : null),
+                    })}
                   />
                 );
             }
