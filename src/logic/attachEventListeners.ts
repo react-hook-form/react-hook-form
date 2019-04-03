@@ -1,4 +1,5 @@
 import isRadioInput from '../utils/isRadioInput';
+import { Field } from '../index';
 
 export default function attachEventListeners({
   mode,
@@ -10,6 +11,16 @@ export default function attachEventListeners({
   name,
   validateWithStateUpdate,
   isWatchAll,
+}: {
+  mode: string;
+  fields: any;
+  watchFields: { [key: string]: boolean };
+  radioOptionIndex: number;
+  ref: any;
+  type: string;
+  name: string;
+  validateWithStateUpdate: any;
+  isWatchAll: boolean;
 }) {
   const field = fields[name];
   const isOnChange = mode === 'onChange' || watchFields[ref.name] || isWatchAll;
