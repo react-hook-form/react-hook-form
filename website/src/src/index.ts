@@ -8,7 +8,6 @@ import onDomRemove from './utils/onDomRemove';
 import isRadioInput from './utils/isRadioInput';
 import attachEventListeners from './logic/attachEventListeners';
 import validateWithSchema from './logic/validateWithSchema';
-import getArrayFields from './logic/getArrayFields';
 import omitRefs from './utils/omitRefs';
 import validateAllFields from './logic/validateAllFields';
 
@@ -102,7 +101,6 @@ export default function useForm(
     }
 
     let radioOptionIndex;
-    let tempField;
     const inputData = {
       ...data,
       ref: elementRef,
@@ -114,27 +112,17 @@ export default function useForm(
       ref: { name, type, value },
     } = inputData;
     const allFields = fields.current;
-    const { index, arrayFieldName } = getArrayFields(name, allFields);
 
     if (isRadioInput(type)) {
       if (!allFields[name]) {
-        tempField = { options: [], required, validate, ref: { type: 'radio', name } };
-        if (index >= 0) {
-          allFields[arrayFieldName][index] = tempField;
-        } else {
-          allFields[name] = tempField;
-        }
+        allFields[name] = { options: [], required, validate, ref: { type: 'radio', name } };
       }
 
       if (!allFields[name].validate && validate) {
-        if (index >= 0) {
-          allFields[arrayFieldName][index].validate = validate;
-        } else {
-          allFields[name].validate = validate;
-        }
+        allFields[name].validate = validate;
       }
 
-      const options = index >= 0 ? allFields[arrayFieldName][index].options : allFields[name].options || [];
+      const options = allFields[name].options || [];
       radioOptionIndex = options.findIndex(({ ref }) => value === ref.value);
 
       if (radioOptionIndex > -1) {
@@ -151,25 +139,14 @@ export default function useForm(
       }
     } else {
       const isInitialCreate = !allFields[name];
-      tempField = {
+
+      allFields[name] = {
         ...allFields[name],
         ...inputData,
       };
 
-      if (index >= 0) {
-        allFields[arrayFieldName][index] = tempField;
-      } else {
-        allFields[name] = tempField;
-      }
-
       if (isInitialCreate) {
-        if (index >= 0) {
-          allFields[arrayFieldName][index].mutationWatcher = onDomRemove(ref, () =>
-            removeReferenceAndEventListeners(inputData, true),
-          );
-        } else {
-          allFields[name].mutationWatcher = onDomRemove(ref, () => removeReferenceAndEventListeners(inputData, true));
-        }
+        allFields[name].mutationWatcher = onDomRemove(ref, () => removeReferenceAndEventListeners(inputData, true));
       }
     }
 
@@ -239,47 +216,20 @@ export default function useForm(
       }
     } else {
       const allFieldsValues = Object.entries(allFields);
+      const fieldsLength = allFieldsValues.length;
       result = await new Promise(resolve =>
         allFieldsValues.reduce(
           async (previous: any, [name, data]: any, index: number) => {
-            if (Array.isArray(data)) {
-              const arrayFieldName = data[0].ref.name.substring(0, data[0].ref.name.indexOf('['));
-              const test = await new Promise(arrayFieldResolve =>
-                data.reduce(
-                  async (arrayFieldPrevious: any, arrayFieldData: Field, arrayFieldIndex: number) => {
-                    const temp = await validateAllFields({
-                      arrayFieldName,
-                      previous: arrayFieldPrevious,
-                      data: arrayFieldData,
-                      index: arrayFieldIndex,
-                      allFieldsValues: [data],
-                      resolve: arrayFieldResolve,
-                      allFields,
-                      removeReferenceAndEventListeners,
-                      validateWithStateUpdate,
-                    });
-                    console.log('temp', temp)
-                    return arrayFieldPrevious;
-                  },
-                  Promise.resolve({
-                    localErrors: {},
-                    values: {},
-                  }),
-                ),
-              );
-              return previous;
-            } else {
-              return await validateAllFields({
-                previous,
-                data,
-                index,
-                allFieldsValues,
-                resolve,
-                allFields,
-                removeReferenceAndEventListeners,
-                validateWithStateUpdate,
-              });
-            }
+            return await validateAllFields({
+              previous,
+              data,
+              index,
+              fieldsLength,
+              allFields,
+              removeReferenceAndEventListeners,
+              validateWithStateUpdate,
+              resolve,
+            });
           },
           Promise.resolve({
             localErrors: {},
