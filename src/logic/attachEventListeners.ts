@@ -9,9 +9,10 @@ export default function attachEventListeners({
   type,
   name,
   validateWithStateUpdate,
+  isWatchAll,
 }) {
   const field = fields[name];
-  const isOnChange = mode === 'onChange' || watchFields[ref.name];
+  const isOnChange = mode === 'onChange' || watchFields[ref.name] || isWatchAll;
   const isOnBlur = mode === 'onBlur';
   if (!field || (!isOnChange && !isOnBlur)) return;
 
@@ -26,12 +27,12 @@ export default function attachEventListeners({
 
     if (!attachedEvents || (attachedEvents && !attachedEvents.includes(event))) {
       options[radioOptionIndex].ref.addEventListener(event, validateWithStateUpdate);
-      options[radioOptionIndex].eventAttached = [...attachedEvents || [], event];
+      options[radioOptionIndex].eventAttached = [...(attachedEvents || []), event];
     }
   } else {
     if (!field.eventAttached || (field.eventAttached && !field.eventAttached.includes(event))) {
       ref.addEventListener(event, validateWithStateUpdate);
-      field.eventAttached = [...field.eventAttached || [], event];
+      field.eventAttached = [...(field.eventAttached || []), event];
     }
   }
 }

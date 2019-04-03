@@ -63,6 +63,7 @@ export default function useForm(
 ) {
   const fieldsRef = useRef<{ [key: string]: Field }>({});
   const errorMessagesRef = useRef<ErrorMessages>({});
+  const isWatchAll = useRef<boolean>(false);
   const watchFieldsRef = useRef<{ [key: string]: boolean }>({});
   const [errors, setErrors] = useState<ErrorMessages>({});
 
@@ -75,7 +76,8 @@ export default function useForm(
       errorMessage[name] !== error[name] ||
       mode === 'onChange' ||
       (mode === 'onBlur' && type === 'blur') ||
-      watchFieldsRef.current[name]
+      watchFieldsRef.current[name] ||
+      watchFieldsRef.current
     ) {
       const copy = { ...errorMessage, ...error };
 
@@ -157,6 +159,7 @@ export default function useForm(
       ref,
       type,
       radioOptionIndex,
+      isWatchAll: isWatchAll.current,
       name,
       mode,
       validateWithStateUpdate,
@@ -187,10 +190,7 @@ export default function useForm(
         watchFields[name] = true;
       });
     } else {
-      Object.values(fieldsRef.current).forEach(({ ref }: RegisterInput) => {
-        if (!ref || !watchFields[ref.name]) return;
-        watchFields[ref.name] = true;
-      });
+      isWatchAll.current = true;
     }
 
     const result = getFieldsValues(fieldsRef.current, filedNames);
@@ -287,6 +287,7 @@ export default function useForm(
       fieldsRef.current = {};
       watchFieldsRef.current = {};
       errorMessagesRef.current = {};
+      isWatchAll.current = false;
       setErrors({});
     },
     [mode],
