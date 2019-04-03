@@ -100,8 +100,6 @@ export default function Form({
               Setting
             </SettingIcon>
           </Title>
-          <input name="bill[0]" ref={register({ required: true })} />
-          <input name="bill[1]" ref={register({ required: true })} />
           {formData.map(field => {
             switch (field.type) {
               case 'select':
