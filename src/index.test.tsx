@@ -27,10 +27,6 @@ describe('useForm', () => {
     }
 
     const tree = mount(<Test />);
-    // tree
-    //   .find('form')
-    //   .at(0)
-    //   .simulate('submit');
-    // expect(onSubmit).toBeCalled();
+    expect(tree).toMatchSnapshot();
   });
 });

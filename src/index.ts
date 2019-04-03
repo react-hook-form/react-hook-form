@@ -8,7 +8,6 @@ import onDomRemove from './utils/onDomRemove';
 import isRadioInput from './utils/isRadioInput';
 import attachEventListeners from './logic/attachEventListeners';
 import validateWithSchema from './logic/validateWithSchema';
-import getArrayFields from './logic/getArrayFields';
 import omitRefs from './utils/omitRefs';
 import validateAllFields from './logic/validateAllFields';
 
@@ -62,34 +61,35 @@ export default function useForm(
     mode: 'onSubmit',
   },
 ) {
-  const fields = useRef<{ [key: string]: Field }>({});
-  const localErrorMessages = useRef<ErrorMessages>({});
-  const watchFields = useRef<{ [key: string]: boolean }>({});
-  const [errors, updateErrorMessage] = useState<ErrorMessages>({});
+  const fieldsRef = useRef<{ [key: string]: Field }>({});
+  const errorMessagesRef = useRef<ErrorMessages>({});
+  const watchFieldsRef = useRef<{ [key: string]: boolean }>({});
+  const [errors, setErrors] = useState<ErrorMessages>({});
 
   async function validateWithStateUpdate({ target: { name }, type }: any) {
-    const ref = fields.current[name];
-    const error = await validateField(ref, fields.current);
+    const ref = fieldsRef.current[name];
+    const error = await validateField(ref, fieldsRef.current);
+    const errorMessage = errorMessagesRef.current;
 
     if (
-      localErrorMessages.current[name] !== error[name] ||
+      errorMessage[name] !== error[name] ||
       mode === 'onChange' ||
       (mode === 'onBlur' && type === 'blur') ||
-      watchFields.current[name]
+      watchFieldsRef.current[name]
     ) {
-      const copy = { ...localErrorMessages.current, ...error };
+      const copy = { ...errorMessage, ...error };
 
       if (!error[name]) delete copy[name];
 
-      localErrorMessages.current = copy;
-      updateErrorMessage(copy);
+      errorMessagesRef.current = copy;
+      setErrors(copy);
     }
   }
 
   function removeReferenceAndEventListeners(data, forceDelete = false) {
     findMissDomAndClean({
       target: data,
-      fields: fields.current,
+      fields: fieldsRef.current,
       validateWithStateUpdate,
       forceDelete,
     });
@@ -102,7 +102,6 @@ export default function useForm(
     }
 
     let radioOptionIndex;
-    let tempField;
     const inputData = {
       ...data,
       ref: elementRef,
@@ -113,34 +112,18 @@ export default function useForm(
       validate,
       ref: { name, type, value },
     } = inputData;
-    const allFields = fields.current;
-    const index = getArrayFields(name, allFields);
-    console.log('index', index)
-
-    if (index >= 0 && !allFields[name]) {
-      // @ts-ignore
-      allFields[name] = [];
-    }
+    const fields = fieldsRef.current;
 
     if (isRadioInput(type)) {
-      if (!allFields[name]) {
-        tempField = { options: [], required, validate, ref: { type: 'radio', name } };
-        if (index >= 0) {
-          allFields[name][index] = tempField;
-        } else {
-          allFields[name] = tempField;
-        }
+      if (!fields[name]) {
+        fields[name] = { options: [], required, validate, ref: { type: 'radio', name } };
       }
 
-      if (!allFields[name].validate && validate) {
-        if (index >= 0) {
-          allFields[name][index].validate = validate;
-        } else {
-          allFields[name].validate = validate;
-        }
+      if (!fields[name].validate && validate) {
+        fields[name].validate = validate;
       }
 
-      const options = index >= 0 ? allFields[name][index].options : allFields[name].options || [];
+      const options = fields[name].options || [];
       radioOptionIndex = options.findIndex(({ ref }) => value === ref.value);
 
       if (radioOptionIndex > -1) {
@@ -156,32 +139,21 @@ export default function useForm(
         radioOptionIndex = options.length - 1;
       }
     } else {
-      const isInitialCreate = !allFields[name];
-      tempField = {
-        ...allFields[name],
+      const isInitialCreate = !fields[name];
+
+      fields[name] = {
+        ...fields[name],
         ...inputData,
       };
 
-      if (index >= 0) {
-        allFields[name][index] = tempField;
-      } else {
-        allFields[name] = tempField;
-      }
-
       if (isInitialCreate) {
-        if (index >= 0) {
-          allFields[name][index].mutationWatcher = onDomRemove(ref, () =>
-            removeReferenceAndEventListeners(inputData, true),
-          );
-        } else {
-          allFields[name].mutationWatcher = onDomRemove(ref, () => removeReferenceAndEventListeners(inputData, true));
-        }
+        fields[name].mutationWatcher = onDomRemove(ref, () => removeReferenceAndEventListeners(inputData, true));
       }
     }
 
     attachEventListeners({
-      allFields,
-      watchFields,
+      fields,
+      watchFields: watchFieldsRef,
       ref,
       type,
       radioOptionIndex,
@@ -205,114 +177,93 @@ export default function useForm(
   }
 
   function watch(filedNames?: string | Array<string> | undefined, defaultValue?: string | Array<string> | undefined) {
+    const watchFields = watchFieldsRef.current;
+
     if (typeof filedNames === 'string') {
-      if (!watchFields.current[filedNames]) watchFields.current[filedNames] = true;
+      if (!watchFields[filedNames]) watchFields[filedNames] = true;
     } else if (Array.isArray(filedNames)) {
       filedNames.forEach(name => {
-        if (!watchFields.current[name]) return;
-        watchFields.current[name] = true;
+        if (!watchFields[name]) return;
+        watchFields[name] = true;
       });
     } else {
-      Object.values(fields.current).forEach(({ ref }: RegisterInput) => {
-        if (!ref) return;
-        if (!watchFields.current[ref.name]) return;
-        watchFields.current[ref.name] = true;
+      Object.values(fieldsRef.current).forEach(({ ref }: RegisterInput) => {
+        if (!ref || !watchFields[ref.name]) return;
+        watchFields[ref.name] = true;
       });
     }
 
-    const result = getFieldsValues(fields.current, filedNames);
+    const result = getFieldsValues(fieldsRef.current, filedNames);
     return result === undefined ? defaultValue : result;
   }
 
   const handleSubmit = (callback: (Object, e) => void) => async e => {
     e.preventDefault();
     e.persist();
-    const allFields = fields.current;
-    let localErrors;
-    let values;
-    let result;
+    let fieldErrors;
+    let fieldValues;
+    const fields = fieldsRef.current;
+    const currentFieldValues = Object.values(fields);
+    const fieldsLength = currentFieldValues.length;
 
     if (validationSchema) {
-      values = Object.values(allFields).reduce((previous, { ref }) => {
-        previous[ref.name] = getFieldValue(allFields, ref);
+      fieldValues = currentFieldValues.reduce((previous, { ref }) => {
+        previous[ref.name] = getFieldValue(fields, ref);
         return previous;
       }, {});
-      localErrors = await validateWithSchema(validationSchema, values);
+      fieldErrors = await validateWithSchema(validationSchema, fieldValues);
 
-      if (localErrors === undefined) {
-        callback(values, e);
+      if (fieldErrors === undefined) {
+        callback(fieldValues, e);
         return;
       }
     } else {
-      const fieldsEntries = Object.entries(allFields);
-      const defaultResolver = Promise.resolve({
-        localErrors: {},
-        values: {},
-      });
-      result = await new Promise(resolve =>
-        fieldsEntries.reduce(
+      const result: { errors: any; values: any } = await new Promise(resolve =>
+        currentFieldValues.reduce(
           async (previous: any, [name, data]: any, index: number) => {
-            if (Array.isArray(data.fields)) {
-              previous[name] = await new Promise(arrayFieldResolve =>
-                data.fields.reduce(
-                  async (previous: any, data: Field, index: number) => {
-                    return await validateAllFields({
-                      previous,
-                      data,
-                      index,
-                      resolve: arrayFieldResolve,
-                      fieldsEntries,
-                      allFields,
-                      removeReferenceAndEventListeners,
-                      validateWithStateUpdate,
-                    });
-                  },
-                  defaultResolver,
-                ),
-              );
-              return previous;
-            } else {
-              return await validateAllFields({
-                previous,
-                data,
-                index,
-                fieldsEntries,
-                resolve,
-                allFields,
-                removeReferenceAndEventListeners,
-                validateWithStateUpdate,
-              });
-            }
+            return await validateAllFields({
+              previous,
+              data,
+              index,
+              fieldsLength,
+              allFields: fields,
+              removeReferenceAndEventListeners,
+              validateWithStateUpdate,
+              resolve,
+            });
           },
-          defaultResolver,
+          Promise.resolve({
+            errors: {},
+            values: {},
+          }),
         ),
       );
 
-      localErrors = result.localErrors;
-      values = result.values;
+      fieldErrors = result.errors;
+      fieldValues = result.values;
     }
 
-    if (JSON.stringify(omitRefs(localErrorMessages.current)) !== JSON.stringify(omitRefs(localErrors))) {
-      updateErrorMessage(localErrors);
-      localErrorMessages.current = localErrors;
+    if (JSON.stringify(omitRefs(errorMessagesRef.current)) !== JSON.stringify(omitRefs(fieldErrors))) {
+      setErrors(fieldErrors);
+      errorMessagesRef.current = fieldErrors;
     }
 
-    if (!Object.values(localErrors).length) callback(values, e);
+    if (!Object.values(fieldErrors).length) callback(fieldValues, e);
   };
 
   useEffect(
     () => () => {
-      fields.current &&
-        Object.values(fields.current).forEach(
+      fieldsRef.current &&
+        Object.values(fieldsRef.current).forEach(
           ({ ref, options }: Field) =>
             isRadioInput(ref.type) && Array.isArray(options)
               ? options.forEach(({ ref }) => removeAllEventListeners(ref, validateWithStateUpdate))
               : removeAllEventListeners(ref, validateWithStateUpdate),
         );
-      fields.current = {};
-      watchFields.current = {};
-      localErrorMessages.current = {};
-      updateErrorMessage({});
+      fieldsRef.current = {};
+      watchFieldsRef.current = {};
+      errorMessagesRef.current = {};
+      setErrors({});
     },
     [mode],
   );

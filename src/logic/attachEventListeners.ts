@@ -2,7 +2,7 @@ import isRadioInput from '../utils/isRadioInput';
 
 export default function attachEventListeners({
   mode,
-  allFields,
+  fields,
   watchFields,
   radioOptionIndex,
   ref,
@@ -10,8 +10,8 @@ export default function attachEventListeners({
   name,
   validateWithStateUpdate,
 }) {
-  const field = allFields[name];
-  const isOnChange = mode === 'onChange' || watchFields.current[ref.name];
+  const field = fields[name];
+  const isOnChange = mode === 'onChange' || watchFields[ref.name];
   const isOnBlur = mode === 'onBlur';
   if (!field || (!isOnChange && !isOnBlur)) return;
 

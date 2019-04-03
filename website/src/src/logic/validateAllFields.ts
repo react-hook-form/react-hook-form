@@ -56,6 +56,6 @@ export default async function validateAllFields({
     data.eventAttached = [...(data.eventAttached || []), 'input'];
   }
 
-  resolvedPrevious.localErrors = { ...(resolvedPrevious.localErrors || []), ...fieldError };
+  resolvedPrevious.errors = { ...(resolvedPrevious.errors || []), ...fieldError };
   return lastChild ? resolve(resolvedPrevious) : resolvedPrevious;
 }

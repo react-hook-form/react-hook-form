@@ -5,7 +5,7 @@ describe('attachEventListeners', () => {
     expect(
       attachEventListeners({
         mode: 'onchange',
-        allFields: {},
+        fields: {},
         radioOptionIndex: 0,
         ref: {},
         type: 'radio',
@@ -19,7 +19,7 @@ describe('attachEventListeners', () => {
   it('should return undefined', () => {
     const validateWithStateUpdate = jest.fn();
     const addEventListener = jest.fn();
-    const allFields = {
+    const fields = {
       test: {
         ref: {},
         options: [
@@ -37,7 +37,7 @@ describe('attachEventListeners', () => {
       attachEventListeners({
         watchFields: {},
         mode: 'onChange',
-        allFields,
+        fields,
         radioOptionIndex: 0,
         ref: {
           name: 'test',
@@ -49,13 +49,13 @@ describe('attachEventListeners', () => {
     ).toBeUndefined();
 
     expect(addEventListener).toBeCalledWith('change', validateWithStateUpdate);
-    expect(allFields.test.options[0].eventAttached).toBeTruthy();
+    expect(fields.test.options[0].eventAttached).toBeTruthy();
   });
 
   it('should attach on change event on radio type input when it is watched', () => {
     const validateWithStateUpdate = jest.fn();
     const addEventListener = jest.fn();
-    const allFields = {
+    const fields = {
       test: {
         ref: {},
         watch: true,
@@ -76,7 +76,7 @@ describe('attachEventListeners', () => {
           current: { test: true },
         },
         mode: 'onSubmit',
-        allFields,
+        fields,
         radioOptionIndex: 0,
         ref: {
           name: 'test',
@@ -88,13 +88,13 @@ describe('attachEventListeners', () => {
     ).toBeUndefined();
 
     expect(addEventListener).toBeCalledWith('change', validateWithStateUpdate);
-    expect(allFields.test.options[0].eventAttached).toBeTruthy();
+    expect(fields.test.options[0].eventAttached).toBeTruthy();
   });
 
   it('should attach input event on none radio type input', () => {
     const validateWithStateUpdate = jest.fn();
     const addEventListener = jest.fn();
-    const allFields = {
+    const fields = {
       test: {
         ref: {
           addEventListener,
@@ -107,7 +107,7 @@ describe('attachEventListeners', () => {
       attachEventListeners({
         watchFields: {},
         mode: 'onChange',
-        allFields,
+        fields,
         radioOptionIndex: 0,
         ref: {
           name: 'test',
@@ -120,13 +120,13 @@ describe('attachEventListeners', () => {
     ).toBeUndefined();
 
     expect(addEventListener).toBeCalledWith('input', validateWithStateUpdate);
-    expect(allFields.test.eventAttached).toBeTruthy();
+    expect(fields.test.eventAttached).toBeTruthy();
   });
 
   it('should attach input event on none radio type input when it is watched', () => {
     const validateWithStateUpdate = jest.fn();
     const addEventListener = jest.fn();
-    const allFields = {
+    const fields = {
       test: {
         ref: {
           addEventListener,
@@ -142,7 +142,7 @@ describe('attachEventListeners', () => {
           current: { test: true },
         },
         mode: 'onSubmit',
-        allFields,
+        fields,
         radioOptionIndex: 0,
         ref: {
           name: 'test',
@@ -155,13 +155,13 @@ describe('attachEventListeners', () => {
     ).toBeUndefined();
 
     expect(addEventListener).toBeCalledWith('input', validateWithStateUpdate);
-    expect(allFields.test.eventAttached).toBeTruthy();
+    expect(fields.test.eventAttached).toBeTruthy();
   });
 
   it('should attach on blur event on radio type input', () => {
     const validateWithStateUpdate = jest.fn();
     const addEventListener = jest.fn();
-    const allFields = {
+    const fields = {
       test: {
         ref: {},
         options: [
@@ -179,7 +179,7 @@ describe('attachEventListeners', () => {
       attachEventListeners({
         watchFields: { current: { test: true } },
         mode: 'onBlur',
-        allFields,
+        fields,
         radioOptionIndex: 0,
         ref: {
           name: 'test',
@@ -191,13 +191,13 @@ describe('attachEventListeners', () => {
     ).toBeUndefined();
 
     expect(addEventListener).toBeCalledWith('change', validateWithStateUpdate);
-    expect(allFields.test.options[0].eventAttached).toBeTruthy();
+    expect(fields.test.options[0].eventAttached).toBeTruthy();
   });
 
   it('should attach input event on none radio type input', () => {
     const validateWithStateUpdate = jest.fn();
     const addEventListener = jest.fn();
-    const allFields = {
+    const fields = {
       test: {
         ref: {
           addEventListener,
@@ -214,7 +214,7 @@ describe('attachEventListeners', () => {
           },
         },
         mode: 'onBlur',
-        allFields,
+        fields,
         radioOptionIndex: 0,
         ref: {
           name: 'test',
@@ -227,6 +227,6 @@ describe('attachEventListeners', () => {
     ).toBeUndefined();
 
     expect(addEventListener).toBeCalledWith('input', validateWithStateUpdate);
-    expect(allFields.test.eventAttached).toBeTruthy();
+    expect(fields.test.eventAttached).toBeTruthy();
   });
 });
