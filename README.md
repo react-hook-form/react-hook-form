@@ -39,7 +39,7 @@ function App() {
     <form onSubmit={handleSubmit(onSubmit)}>
       <input name="firstname" ref={register} />
       <input name="lastname" ref={register({ required: true })} />
-      <input name="lastname" ref={register({ pattern: "[a-z]{1,15}" })} />
+      <input name="age" ref={register({ pattern: /\d+/ })} />
       <input type="submit" />
     </form>
   )

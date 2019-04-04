@@ -26,6 +26,7 @@
     "react-hooks"
   ],
   "repository": "https://github.com/bluebill1049/react-forme.git",
+  "homepage": "https://react-hook-form.now.sh",
   "author": "<bluebill1049@hotmail.com>",
   "license": "MIT",
   "devDependencies": {
