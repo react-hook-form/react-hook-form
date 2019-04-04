@@ -267,7 +267,7 @@ export default function useForm(
       fieldValues = result.values;
     }
 
-    if (JSON.stringify(omitRefs(errorMessagesRef.current)) !== JSON.stringify(omitRefs(fieldErrors))) {
+    if (Object.values(fieldErrors).length) {
       setErrors(fieldErrors);
       errorMessagesRef.current = fieldErrors;
     }
