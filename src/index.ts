@@ -253,7 +253,7 @@ export default function useForm(
               field.eventAttached = [...(field.eventAttached || []), 'input'];
             }
 
-            resolvedPrevious.errors = { ...(resolvedPrevious.localErrors || []), ...fieldError };
+            resolvedPrevious.errors = { ...(resolvedPrevious.errors || []), ...fieldError };
             return lastChild ? resolve(resolvedPrevious) : resolvedPrevious;
           },
           Promise.resolve({
