@@ -374,7 +374,7 @@ function App() {
               <div>
                 <h3>Super Light</h3>
                 <p>
-                  Performance is important, and pack size matters. it is only 2k gzipped and without any dependencies.
+                  Performance is important, and package size matters. it is only 2k gzipped and without any dependencies.
                 </p>
               </div>
 
