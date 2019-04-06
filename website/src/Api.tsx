@@ -1,6 +1,5 @@
 import React, { useRef, useEffect } from 'react';
 import { Animate } from 'react-simple-animate';
-import { monokaiSublime } from 'react-syntax-highlighter/dist/esm/styles/hljs';
 import styled from 'styled-components';
 import colors from './styles/colors';
 import { SubHeading, HeadingWithTopMargin, Title } from './styles/typography';
@@ -141,9 +140,11 @@ const CloseButton = styled.button`
   border-radius: 10px;
   color: white;
   background: rgba(14, 16, 28, 0.5294117647058824);
+  display: none;
 
   @media (min-width: 768px) {
     font-size: 35px;
+    display: block;
     padding: 20px;
     top: 15px;
     right: 20px;
@@ -182,7 +183,7 @@ const CopyButton = styled.button`
 
 const links = ['Quick Start', 'useform', 'register', 'errors', 'watch', 'handleSubmit', 'validationSchema'];
 
-function Builder({ formData, updateFormData, showApi, toggleApi, apiButton, isMobile }: any) {
+function Builder({ formData, showApi, toggleApi, apiButton, isMobile }: any) {
   const copyFormData = useRef([]);
   const closeButton = useRef(null);
   const quickStartRef = useRef(null);

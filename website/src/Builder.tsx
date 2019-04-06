@@ -1,7 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Animate } from 'react-simple-animate';
 import useForm from 'react-hook-form';
-import { monokaiSublime } from 'react-syntax-highlighter/dist/esm/styles/hljs';
 import styled from 'styled-components';
 import colors from './styles/colors';
 import SortableContainer from './SortableContainer';
@@ -128,10 +127,12 @@ const CloseButton = styled.button`
   z-index: 5;
   border-radius: 10px;
   color: white;
+  display: none;
   background: rgba(14, 16, 28, 0.5294117647058824);
 
   @media (min-width: 768px) {
     font-size: 35px;
+    display: block;
     padding: 20px;
     top: 15px;
     right: 20px;
@@ -275,6 +276,7 @@ function Builder({
                     <option value="checkbox">Checkbox</option>
                     <option value="radio">Radio</option>
                     <option value="number">Number</option>
+                    <option value="textarea">Textarea</option>
                     <option value="email">Email</option>
                     <option value="range">Range</option>
                     <option value="search">Search</option>

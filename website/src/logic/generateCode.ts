@@ -28,14 +28,21 @@ ${Array.isArray(formData) ? formData.reduce((previous, { type, name, required, m
 
       return previous + select;
     }
+    
+    const attributes = anyAttribute ? `({ ${
+      required ? 'required: true' : ''
+      }${max ? `, max: ${max}` : ''}${minLength ? `, minLength: ${minLength}` : ''}${
+      maxLength ? `, maxLength: ${maxLength}` : ''
+      }${pattern ? `, pattern: ${pattern}` : ''}${min ? `, min: ${min}` : ''} })`: '';
+
+    if (type === 'textarea') {
+      const select = `      <textarea name="${name}" ref={register${attributes}} />\n`;
+      return previous + select;
+    }
 
     return (
       previous +
-      `      <input type="${type}" name="${name}" ref={register${anyAttribute ? `({ ${
-        required ? 'required: true' : ''
-        }${max ? `, max: ${max}` : ''}${minLength ? `, minLength: ${minLength}` : ''}${
-        maxLength ? `, maxLength: ${maxLength}` : ''
-        }${pattern ? `, pattern: ${pattern}` : ''}${min ? `, min: ${min}` : ''} })`: ''}} />\n`
+      `      <input type="${type}" name="${name}" ref={register${attributes}} />\n`
     );
   }, '') : ''}
       <input type="submit" />

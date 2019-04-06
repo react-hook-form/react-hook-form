@@ -123,6 +123,22 @@ export default function Form({
                         })}
                   </select>
                 );
+              case 'textarea':
+                return (
+                  <textarea
+                    name={field.name}
+                    ref={register({
+                      required: field.required,
+                      ...(field.maxLength ? { maxLength: field.maxLength } : null),
+                      ...(field.minLength ? { minLength: field.minLength } : null),
+                    })}
+                    key={field.name}
+                    style={{
+                      marginBottom: 20,
+                      ...(errors[field.name] ? errorStyle : null),
+                    }}
+                  />
+                );
               case 'radio':
                 return (
                   <RadioGroup key={field.name} style={{ marginBottom: 20 }}>

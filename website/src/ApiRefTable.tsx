@@ -5,6 +5,7 @@ import styled from 'styled-components';
 import SyntaxHighlighter from 'react-syntax-highlighter';
 import { monokaiSublime } from 'react-syntax-highlighter/dist/esm/styles/hljs';
 import { TableWrapper, Table, Type } from './Api';
+import Link from './styles/link';
 
 const Option = styled.fieldset`
   padding: 10px 15px;
@@ -42,6 +43,17 @@ export default function ApiRefTable() {
         <b>Important:</b> input name is <b>required</b> and <b>unique</b> for <code>react-hook-form</code> in order to
         register the input.
       </p>
+      <p>
+        If you working on arrays/array fields, you can assign input name as <code>name[index]</code>. Check out the
+        example{' '}
+        <Link
+          href="https://github.com/bluebill1049/react-hook-form/blob/master/examples/arrayFields.tsx"
+          title="example for array fields"
+        >
+          here
+        </Link>
+        .
+      </p>
 
       <Option>
         <legend>Register options</legend>
@@ -64,7 +76,9 @@ export default function ApiRefTable() {
                 style={{
                   minWidth: 200,
                 }}
-              >Type</th>
+              >
+                Type
+              </th>
               <th>Description</th>
               <th
                 style={{
@@ -172,10 +186,14 @@ export default function ApiRefTable() {
   name="test"
   ref={
     register({
-      minLength: ${isStandard ? 1 : `{
+      minLength: ${
+        isStandard
+          ? 1
+          : `{
         value: 1,
         message: 'error message'
-      }`}
+      }`
+      }
     })
   }
 />`}</SyntaxHighlighter>
@@ -203,10 +221,14 @@ export default function ApiRefTable() {
   name="test"
   ref={
     register({
-      max: ${isStandard ? 3 : `{
+      max: ${
+        isStandard
+          ? 3
+          : `{
         value: 3,
         message: 'error message'
-      }`}
+      }`
+      }
     })
   }
 />`}</SyntaxHighlighter>
@@ -234,10 +256,14 @@ export default function ApiRefTable() {
   name="test"
   ref={
     register({
-      min: ${isStandard ? 3 : `{
+      min: ${
+        isStandard
+          ? 3
+          : `{
         value: 3,
         message: 'error message'
-      }`}
+      }`
+      }
     })
   }
 />`}</SyntaxHighlighter>
@@ -265,10 +291,14 @@ export default function ApiRefTable() {
   name="test"
   ref={
     register({
-      pattern: ${isStandard ? '\\[A-Za-z]{3}\\' : `{
+      pattern: ${
+        isStandard
+          ? '\\[A-Za-z]{3}\\'
+          : `{
         value: \\[A-Za-z]{3}\\,
         message: 'error message'
-      }`}
+      }`
+      }
     })
   }
 />`}</SyntaxHighlighter>
@@ -302,11 +332,13 @@ export default function ApiRefTable() {
   name="single"
   ref={
     register({
-      validate: ${ isStandard ?
-        `(value) => value === '1'`:
-        `(value) => {
+      validate: ${
+        isStandard
+          ? `(value) => value === '1'`
+          : `(value) => {
           return value === '1' ? 'error message' : true;
-        }`}
+        }`
+      }
     })
   }
 />
@@ -316,13 +348,21 @@ export default function ApiRefTable() {
     register({
       validate: {
         isMoreThanOne:
-          (value) => ${isStandard ? 'value > 1' : `{
+          (value) => ${
+            isStandard
+              ? 'value > 1'
+              : `{
             return value > 1 ? 'error message': true;
-          }`},
+          }`
+          },
         isLessThanTen:
-          (value) => ${isStandard ? 'value > 1' : `{
+          (value) => ${
+            isStandard
+              ? 'value > 1'
+              : `{
             return value < 10 ? 'error message': true;
-          }`},
+          }`
+          },
       }
     })
   }

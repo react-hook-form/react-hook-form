@@ -3,6 +3,8 @@
   <head>
     <meta charset="utf-8" />
     <link rel="shortcut icon" href="%PUBLIC_URL%/favicon.ico" />
+    <meta name="title" content="React Hook Form - form validation without the hassle">
+    <meta name="description" content="Performance, flexible and extensible forms with easy to use for validation.">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" />
     <meta name="theme-color" content="#0e101c" />
     <!--
@@ -49,7 +51,20 @@
         background: white;
       }
 
+      textarea {
+        margin-bottom: 20px;
+        display: block;
+        width: calc(100% - 5px);
+        height: 70px;
+        border: none;
+        border-radius: 4px;
+        padding: 10px;
+        box-sizing: border-box;
+        font-size: 16px;
+      }
+
       select:hover,
+      textarea:hover,
       input:hover {
         border: 1px solid #ec5990;
       }
