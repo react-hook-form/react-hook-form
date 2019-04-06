@@ -1,4 +1,6 @@
-export default function onDomRemove(element, onDetachCallback) {
+import { Ref } from '..';
+
+export default function onDomRemove(element: Ref, onDetachCallback: () => void): any {
   const observer = new MutationObserver(() => {
     function isDetached(el) {
       if (el.parentNode === window.document) {

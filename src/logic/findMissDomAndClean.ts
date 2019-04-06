@@ -1,22 +1,22 @@
 import removeAllEventListeners from './removeAllEventListeners';
 import isRadioInput from '../utils/isRadioInput';
 
-export default function findMissDomAndClean({
-  target: {
-    ref,
-    ref: { name, type },
-    mutationWatcher,
-    options,
+export default function findMissDomAndClean(
+  fields: { [key: string]: any },
+  validateWithStateUpdate: Function,
+  {
+    target: {
+      ref,
+      ref: { name, type },
+      mutationWatcher,
+      options,
+    },
+    forceDelete = false,
+  }: {
+    target: any;
+    forceDelete?: boolean;
   },
-  fields,
-  validateWithStateUpdate,
-  forceDelete = false,
-}: {
-  target: any;
-  fields: { [key: string]: any };
-  validateWithStateUpdate: Function;
-  forceDelete?: boolean;
-}) {
+) {
   if (isRadioInput(type) && options) {
     options.forEach(({ ref }, index) => {
       if (!document.body.contains(ref) && fields[name] && fields[name].options && fields[name].options[index]) {

@@ -16,7 +16,9 @@ type NumberOrString = number | string;
 
 type Props = { mode: 'onSubmit' | 'onBlur' | 'onChange'; validationSchema?: any };
 
-type Ref = HTMLInputElement | HTMLSelectElement | null;
+type MutationWatcher = (arg1: Ref, arg2: () => void) => any;
+
+export type Ref = HTMLInputElement | HTMLSelectElement | null;
 
 export interface RegisterInput {
   ref: Ref;
@@ -36,12 +38,12 @@ export interface Field extends RegisterInput {
   ref: any;
   eventAttached?: Array<string>;
   watch?: boolean;
-  mutationWatcher?: any;
-  fields?: Array<any>;
+  mutationWatcher?: MutationWatcher;
+  fields?: Array<RegisterInput>;
   options?: Array<{
-    ref: any;
+    ref: Ref;
     eventAttached?: Array<string>;
-    mutationWatcher?: any;
+    mutationWatcher?: MutationWatcher;
   }>;
 }
 
@@ -62,7 +64,7 @@ export default function useForm(
 ) {
   const fieldsRef = useRef<{ [key: string]: Field }>({});
   const errorMessagesRef = useRef<ErrorMessages>({});
-  const isWatchAll = useRef<boolean>(false);
+  const isWatchAllRef = useRef<boolean>(false);
   const watchFieldsRef = useRef<{ [key: string]: boolean }>({});
   const [errors, setErrors] = useState<ErrorMessages>({});
 
@@ -76,7 +78,7 @@ export default function useForm(
       mode === 'onChange' ||
       (mode === 'onBlur' && type === 'blur') ||
       watchFieldsRef.current[name] ||
-      watchFieldsRef.current
+      isWatchAllRef.current
     ) {
       const copy = { ...errorMessage, ...error };
 
@@ -87,16 +89,9 @@ export default function useForm(
     }
   }
 
-  function removeReferenceAndEventListeners(data, forceDelete = false) {
-    findMissDomAndClean({
-      target: data,
-      fields: fieldsRef.current,
-      validateWithStateUpdate,
-      forceDelete,
-    });
-  }
+  const removeReferenceAndEventListeners = findMissDomAndClean.bind(null, fieldsRef.current, validateWithStateUpdate);
 
-  function registerIntoAllFields(elementRef: any, data: any = {}) {
+  function registerIntoAllFields(elementRef, data = { required: false, validate: null }) {
     if (elementRef && !elementRef.name) {
       console.warn('Oops missing the name for field:', elementRef);
       return;
@@ -158,24 +153,11 @@ export default function useForm(
       ref,
       type,
       radioOptionIndex,
-      isWatchAll: isWatchAll.current,
+      isWatchAll: isWatchAllRef.current,
       name,
       mode,
       validateWithStateUpdate,
     });
-  }
-
-  function register(data: any) {
-    if (!data) return;
-    if (data instanceof HTMLElement) {
-      registerIntoAllFields(data);
-    }
-
-    return ref => {
-      if (ref) {
-        registerIntoAllFields(ref, data);
-      }
-    };
   }
 
   function watch(filedNames?: string | Array<string> | undefined, defaultValue?: string | Array<string> | undefined) {
@@ -189,11 +171,22 @@ export default function useForm(
         watchFields[name] = true;
       });
     } else {
-      isWatchAll.current = true;
+      isWatchAllRef.current = true;
     }
 
     const result = getFieldsValues(fieldsRef.current, filedNames);
     return result === undefined ? defaultValue : result;
+  }
+
+  function register(data: any) {
+    if (!data) return;
+    if (data instanceof HTMLElement) {
+      registerIntoAllFields(data);
+    }
+
+    return ref => {
+      if (ref) registerIntoAllFields(ref, data);
+    };
   }
 
   const handleSubmit = (callback: (Object, e) => void) => async e => {
@@ -217,7 +210,10 @@ export default function useForm(
         return;
       }
     } else {
-      const result: { errors: any; values: any } = await new Promise(resolve =>
+      const result: {
+        errors: { [key: string]: Error };
+        values: { [key: string]: number | string | boolean };
+      } = await new Promise(resolve =>
         currentFieldValues.reduce(
           async (previous: any, field: Field, index: number) => {
             const resolvedPrevious = await previous;
@@ -246,7 +242,6 @@ export default function useForm(
                 option.ref.addEventListener('change', validateWithStateUpdate);
                 option.eventAttached = [...(option.eventAttached || []), 'change'];
               });
-              // @ts-ignore
             } else if (!field.eventAttached || !field.eventAttached.includes('input')) {
               ref.addEventListener('input', validateWithStateUpdate);
               field.eventAttached = [...(field.eventAttached || []), 'input'];
@@ -286,7 +281,7 @@ export default function useForm(
       fieldsRef.current = {};
       watchFieldsRef.current = {};
       errorMessagesRef.current = {};
-      isWatchAll.current = false;
+      isWatchAllRef.current = false;
       setErrors({});
     },
     [mode],

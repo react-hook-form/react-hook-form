@@ -9,15 +9,11 @@ describe('findMissDomAndClean', () => {
     const fields = {
       test: 'test',
     };
-
-    const props = {
-      target: {
-        ref: { name: 'bill', type: 'radio' },
-      },
-      fields,
-      validateWithStateUpdate: () => {},
-    };
-    expect(findMissDomAndClean(props)).toEqual(fields);
+    expect(
+      findMissDomAndClean(fields, () => {}, {
+        target: { ref: { name: 'bill', type: 'radio' } },
+      }),
+    ).toEqual(fields);
   });
 
   it('should remove options completely if option found and no option left', () => {
@@ -38,22 +34,21 @@ describe('findMissDomAndClean', () => {
       },
     };
 
-    const props = {
-      target: {
-        ref: { name: 'test', type: 'radio' },
-        options: [
-          {
-            mutationWatcher: {
-              disconnect,
+    expect(
+      findMissDomAndClean(fields, () => {}, {
+        target: {
+          ref: { name: 'test', type: 'radio' },
+          options: [
+            {
+              mutationWatcher: {
+                disconnect,
+              },
+              ref: {},
             },
-            ref: {},
-          },
-        ],
-      },
-      fields,
-      validateWithStateUpdate: () => {},
-    };
-    expect(findMissDomAndClean(props)).toMatchSnapshot();
+          ],
+        },
+      }),
+    ).toMatchSnapshot();
   });
 
   it('should remove none radio field when found', () => {
@@ -73,17 +68,16 @@ describe('findMissDomAndClean', () => {
       },
     };
 
-    const props = {
-      target: {
-        ref: { name: 'test', type: 'text' },
-        mutationWatcher: {
-          disconnect,
-        },
-      },
-      fields,
-      validateWithStateUpdate: () => {},
-    };
     expect(removeAllEventListeners).toBeCalled();
-    expect(findMissDomAndClean(props)).toMatchSnapshot();
+    expect(
+      findMissDomAndClean(fields, () => {}, {
+        target: {
+          ref: { name: 'test', type: 'text' },
+          mutationWatcher: {
+            disconnect,
+          },
+        },
+      }),
+    ).toMatchSnapshot();
   });
 });
