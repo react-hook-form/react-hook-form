@@ -8,7 +8,6 @@ import onDomRemove from './utils/onDomRemove';
 import isRadioInput from './utils/isRadioInput';
 import attachEventListeners from './logic/attachEventListeners';
 import validateWithSchema from './logic/validateWithSchema';
-import omitRefs from './utils/omitRefs';
 import combineFieldValues from './logic/combineFieldValues';
 
 type Validate = (data: string | number) => boolean | string | number | Date;
