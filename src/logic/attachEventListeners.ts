@@ -39,7 +39,7 @@ export default function attachEventListeners({
     options[radioOptionIndex].ref.addEventListener(event, validateAndStateUpdate);
     options[radioOptionIndex].eventAttached = [...(attachedEvents || []), event];
   } else {
-    if (field.eventAttached && field.eventAttached.includes(event)) return;
+    if (field && field.eventAttached && field.eventAttached.includes(event)) return;
 
     ref.addEventListener(event, validateAndStateUpdate);
     field.eventAttached = [...(field.eventAttached || []), event];

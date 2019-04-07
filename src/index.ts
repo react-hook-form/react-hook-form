@@ -121,11 +121,11 @@ export default function useForm(
       }
 
       const options = fields[name].options || [];
-      const index = options.findIndex(({ ref }) => value === ref.value);
+      radioOptionIndex = options.findIndex(({ ref }) => value === ref.value);
 
-      if (index > -1) {
-        options[index] = {
-          ...options[index],
+      if (radioOptionIndex  > -1) {
+        options[radioOptionIndex] = {
+          ...options[radioOptionIndex],
           ...inputData,
         };
       } else {
