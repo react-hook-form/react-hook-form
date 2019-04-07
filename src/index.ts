@@ -73,8 +73,8 @@ export default function useForm(
     const error = await validateField(ref, fieldsRef.current);
 
     if (
-      errorMessages[name].type !== error[name].type ||
-      errorMessages[name].message !== error[name].messasge ||
+      (Object.keys(error).length &&
+        (errorMessages[name].type !== error[name].type || errorMessages[name].message !== error[name].messasge)) ||
       mode === 'onChange' ||
       (mode === 'onBlur' && type === 'blur') ||
       watchFieldsRef.current[name] ||
@@ -123,7 +123,7 @@ export default function useForm(
       const options = fields[name].options || [];
       radioOptionIndex = options.findIndex(({ ref }) => value === ref.value);
 
-      if (radioOptionIndex  > -1) {
+      if (radioOptionIndex > -1) {
         options[radioOptionIndex] = {
           ...options[radioOptionIndex],
           ...inputData,
