@@ -181,7 +181,7 @@ export default function Form({
                     placeholder={field.name}
                     ref={register({
                       required: field.required,
-                      ...(field.pattern ? { pattern: field.pattern } : null),
+                      ...(field.pattern ? { pattern: new RegExp(field.pattern) } : null),
                       ...(field.max ? { max: field.max } : null),
                       ...(field.min ? { min: field.min } : null),
                       ...(field.maxLength ? { maxLength: field.maxLength } : null),
