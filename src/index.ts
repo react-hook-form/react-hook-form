@@ -3,7 +3,6 @@ import getFieldsValues from './logic/getFieldsValues';
 import validateField from './logic/validateField';
 import findMissDomAndClean from './logic/findMissDomAndClean';
 import getFieldValue from './logic/getFieldValue';
-import removeAllEventListeners from './logic/removeAllEventListeners';
 import onDomRemove from './utils/onDomRemove';
 import isRadioInput from './utils/isRadioInput';
 import attachEventListeners from './logic/attachEventListeners';
@@ -54,7 +53,7 @@ type Error = {
 };
 
 export interface ErrorMessages {
-  [key: string]: Error | {};
+  [key: string]: Error;
 }
 
 export default function useForm(
@@ -68,19 +67,20 @@ export default function useForm(
   const watchFieldsRef = useRef<{ [key: string]: boolean }>({});
   const [errors, setErrors] = useState<ErrorMessages>({});
 
-  async function validateWithStateUpdate({ target: { name }, type }: any) {
+  async function validateAndStateUpdate({ target: { name }, type }: any) {
     const ref = fieldsRef.current[name];
+    const errorMessages = errorMessagesRef.current;
     const error = await validateField(ref, fieldsRef.current);
-    const errorMessage = errorMessagesRef.current;
 
     if (
-      errorMessage[name] !== error[name] ||
+      errorMessages[name].type !== error[name].type ||
+      errorMessages[name].message !== error[name].messasge ||
       mode === 'onChange' ||
       (mode === 'onBlur' && type === 'blur') ||
       watchFieldsRef.current[name] ||
       isWatchAllRef.current
     ) {
-      const copy = { ...errorMessage, ...error };
+      const copy = { ...errorMessages, ...error };
 
       if (!error[name]) delete copy[name];
 
@@ -89,7 +89,7 @@ export default function useForm(
     }
   }
 
-  const removeReferenceAndEventListeners = findMissDomAndClean.bind(null, fieldsRef.current, validateWithStateUpdate);
+  const removeReferenceAndEventListeners = findMissDomAndClean.bind(null, fieldsRef.current, validateAndStateUpdate);
 
   function registerIntoAllFields(elementRef, data = { required: false, validate: null }) {
     if (elementRef && !elementRef.name) {
@@ -109,8 +109,9 @@ export default function useForm(
       ref: { name, type, value },
     } = inputData;
     const fields = fieldsRef.current;
+    const isRadio = isRadioInput(type);
 
-    if (isRadioInput(type)) {
+    if (isRadio) {
       if (!fields[name]) {
         fields[name] = { options: [], required, validate, ref: { type: 'radio', name } };
       }
@@ -120,11 +121,11 @@ export default function useForm(
       }
 
       const options = fields[name].options || [];
-      radioOptionIndex = options.findIndex(({ ref }) => value === ref.value);
+      const index = options.findIndex(({ ref }) => value === ref.value);
 
-      if (radioOptionIndex > -1) {
-        options[radioOptionIndex] = {
-          ...options[radioOptionIndex],
+      if (index > -1) {
+        options[index] = {
+          ...options[index],
           ...inputData,
         };
       } else {
@@ -148,15 +149,15 @@ export default function useForm(
     }
 
     attachEventListeners({
-      fields,
+      field: fields[name],
       watchFields: watchFieldsRef.current,
       ref,
+      isRadio,
       type,
       radioOptionIndex,
       isWatchAll: isWatchAllRef.current,
-      name,
       mode,
-      validateWithStateUpdate,
+      validateAndStateUpdate,
     });
   }
 
@@ -167,7 +168,6 @@ export default function useForm(
       if (!watchFields[filedNames]) watchFields[filedNames] = true;
     } else if (Array.isArray(filedNames)) {
       filedNames.forEach(name => {
-        if (!watchFields[name]) return;
         watchFields[name] = true;
       });
     } else {
@@ -224,8 +224,6 @@ export default function useForm(
             } = field;
             const lastChild = fieldsLength - 1 === index;
 
-            removeReferenceAndEventListeners(field);
-
             if (!fields[name]) return lastChild ? resolve(resolvedPrevious) : resolvedPrevious;
 
             const fieldError = await validateField(field, fields);
@@ -239,15 +237,15 @@ export default function useForm(
             if (isRadioInput(type) && Array.isArray(options)) {
               options.forEach(option => {
                 if (option.eventAttached && option.eventAttached.includes('change')) return;
-                option.ref.addEventListener('change', validateWithStateUpdate);
+                option.ref.addEventListener('change', validateAndStateUpdate);
                 option.eventAttached = [...(option.eventAttached || []), 'change'];
               });
             } else if (!field.eventAttached || !field.eventAttached.includes('input')) {
-              ref.addEventListener('input', validateWithStateUpdate);
+              ref.addEventListener('input', validateAndStateUpdate);
               field.eventAttached = [...(field.eventAttached || []), 'input'];
             }
 
-            resolvedPrevious.errors = { ...(resolvedPrevious.errors || []), ...fieldError };
+            resolvedPrevious.errors = { ...(resolvedPrevious.errors || {}), ...fieldError };
             return lastChild ? resolve(resolvedPrevious) : resolvedPrevious;
           },
           Promise.resolve({
@@ -264,9 +262,10 @@ export default function useForm(
     if (Object.values(fieldErrors).length) {
       setErrors(fieldErrors);
       errorMessagesRef.current = fieldErrors;
+      return;
     }
 
-    if (!Object.values(fieldErrors).length) callback(combineFieldValues(fieldValues), e);
+    callback(combineFieldValues(fieldValues), e);
   };
 
   useEffect(
@@ -275,8 +274,8 @@ export default function useForm(
         Object.values(fieldsRef.current).forEach(
           ({ ref, options }: Field) =>
             isRadioInput(ref.type) && Array.isArray(options)
-              ? options.forEach(({ ref }) => removeAllEventListeners(ref, validateWithStateUpdate))
-              : removeAllEventListeners(ref, validateWithStateUpdate),
+              ? options.forEach(({ ref }) => removeReferenceAndEventListeners(ref))
+              : removeReferenceAndEventListeners(ref),
         );
       fieldsRef.current = {};
       watchFieldsRef.current = {};

@@ -11,7 +11,7 @@ describe('findMissDomAndClean', () => {
     };
     expect(
       findMissDomAndClean(fields, () => {}, {
-        target: { ref: { name: 'bill', type: 'radio' } },
+        ref: { name: 'bill', type: 'radio' },
       }),
     ).toEqual(fields);
   });
@@ -36,17 +36,15 @@ describe('findMissDomAndClean', () => {
 
     expect(
       findMissDomAndClean(fields, () => {}, {
-        target: {
-          ref: { name: 'test', type: 'radio' },
-          options: [
-            {
-              mutationWatcher: {
-                disconnect,
-              },
-              ref: {},
+        ref: { name: 'test', type: 'radio' },
+        options: [
+          {
+            mutationWatcher: {
+              disconnect,
             },
-          ],
-        },
+            ref: {},
+          },
+        ],
       }),
     ).toMatchSnapshot();
   });
@@ -71,11 +69,9 @@ describe('findMissDomAndClean', () => {
     expect(removeAllEventListeners).toBeCalled();
     expect(
       findMissDomAndClean(fields, () => {}, {
-        target: {
-          ref: { name: 'test', type: 'text' },
-          mutationWatcher: {
-            disconnect,
-          },
+        ref: { name: 'test', type: 'text' },
+        mutationWatcher: {
+          disconnect,
         },
       }),
     ).toMatchSnapshot();

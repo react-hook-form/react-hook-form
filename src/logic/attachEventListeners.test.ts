@@ -5,19 +5,19 @@ describe('attachEventListeners', () => {
     expect(
       attachEventListeners({
         mode: 'onchange',
-        fields: {},
         radioOptionIndex: 0,
         ref: {},
-        type: 'radio',
-        name: 'test',
+        // @ts-ignore
+        field: {},
+        isRadio: true,
         watchFields: {},
-        validateWithStateUpdate: () => {},
+        validateAndStateUpdate: () => {},
       }),
     ).toBeUndefined();
   });
 
-  it('should return undefined', () => {
-    const validateWithStateUpdate = jest.fn();
+  it('should attach change event for radio and return undefined', () => {
+    const validateAndStateUpdate = jest.fn();
     const addEventListener = jest.fn();
     const fields = {
       test: {
@@ -36,24 +36,25 @@ describe('attachEventListeners', () => {
     expect(
       attachEventListeners({
         watchFields: {},
+        isRadio: true,
         mode: 'onChange',
-        fields,
+        // @ts-ignore
+        field: fields.test,
         radioOptionIndex: 0,
         ref: {
           name: 'test',
         },
         type: 'radio',
-        name: 'test',
-        validateWithStateUpdate,
+        validateAndStateUpdate,
       }),
     ).toBeUndefined();
 
-    expect(addEventListener).toBeCalledWith('change', validateWithStateUpdate);
+    expect(addEventListener).toBeCalledWith('change', validateAndStateUpdate);
     expect(fields.test.options[0].eventAttached).toBeTruthy();
   });
 
   it('should attach on change event on radio type input when it is watched', () => {
-    const validateWithStateUpdate = jest.fn();
+    const validateAndStateUpdate = jest.fn();
     const addEventListener = jest.fn();
     const fields = {
       test: {
@@ -76,23 +77,23 @@ describe('attachEventListeners', () => {
           test: true,
         },
         mode: 'onSubmit',
-        fields,
+        // @ts-ignore
+        field: fields.test,
         radioOptionIndex: 0,
         ref: {
           name: 'test',
         },
-        type: 'radio',
-        name: 'test',
-        validateWithStateUpdate,
+        isRadio: true,
+        validateAndStateUpdate,
       }),
     ).toBeUndefined();
 
-    expect(addEventListener).toBeCalledWith('change', validateWithStateUpdate);
+    expect(addEventListener).toBeCalledWith('change', validateAndStateUpdate);
     expect(fields.test.options[0].eventAttached).toBeTruthy();
   });
 
   it('should attach input event on none radio type input', () => {
-    const validateWithStateUpdate = jest.fn();
+    const validateAndStateUpdate = jest.fn();
     const addEventListener = jest.fn();
     const fields = {
       test: {
@@ -107,24 +108,24 @@ describe('attachEventListeners', () => {
       attachEventListeners({
         watchFields: {},
         mode: 'onChange',
-        fields,
+        // @ts-ignore
+        field: fields.test,
         radioOptionIndex: 0,
         ref: {
           name: 'test',
           addEventListener,
         },
-        type: 'text',
-        name: 'test',
-        validateWithStateUpdate,
+        isRadio: false,
+        validateAndStateUpdate,
       }),
     ).toBeUndefined();
 
-    expect(addEventListener).toBeCalledWith('input', validateWithStateUpdate);
+    expect(addEventListener).toBeCalledWith('input', validateAndStateUpdate);
     expect(fields.test.eventAttached).toBeTruthy();
   });
 
   it('should attach input event on none radio type input when it is watched', () => {
-    const validateWithStateUpdate = jest.fn();
+    const validateAndStateUpdate = jest.fn();
     const addEventListener = jest.fn();
     const fields = {
       test: {
@@ -142,24 +143,24 @@ describe('attachEventListeners', () => {
           test: true,
         },
         mode: 'onSubmit',
-        fields,
+        // @ts-ignore
+        field: fields.test,
         radioOptionIndex: 0,
         ref: {
           name: 'test',
           addEventListener,
         },
-        type: 'text',
-        name: 'test',
-        validateWithStateUpdate,
+        isRadio: false,
+        validateAndStateUpdate,
       }),
     ).toBeUndefined();
 
-    expect(addEventListener).toBeCalledWith('input', validateWithStateUpdate);
+    expect(addEventListener).toBeCalledWith('input', validateAndStateUpdate);
     expect(fields.test.eventAttached).toBeTruthy();
   });
 
   it('should attach on blur event on radio type input', () => {
-    const validateWithStateUpdate = jest.fn();
+    const validateAndStateUpdate = jest.fn();
     const addEventListener = jest.fn();
     const fields = {
       test: {
@@ -179,23 +180,24 @@ describe('attachEventListeners', () => {
       attachEventListeners({
         watchFields: { test: true },
         mode: 'onBlur',
-        fields,
+        // @ts-ignore
+        field: fields.test,
         radioOptionIndex: 0,
         ref: {
           name: 'test',
         },
         type: 'radio',
-        name: 'test',
-        validateWithStateUpdate,
+        isRadio: true,
+        validateAndStateUpdate,
       }),
     ).toBeUndefined();
 
-    expect(addEventListener).toBeCalledWith('change', validateWithStateUpdate);
+    expect(addEventListener).toBeCalledWith('change', validateAndStateUpdate);
     expect(fields.test.options[0].eventAttached).toBeTruthy();
   });
 
   it('should attach input event on none radio type input', () => {
-    const validateWithStateUpdate = jest.fn();
+    const validateAndStateUpdate = jest.fn();
     const addEventListener = jest.fn();
     const fields = {
       test: {
@@ -212,19 +214,20 @@ describe('attachEventListeners', () => {
           test: true,
         },
         mode: 'onBlur',
-        fields,
+        // @ts-ignore
+        field: fields.test,
         radioOptionIndex: 0,
         ref: {
           name: 'test',
           addEventListener,
         },
-        type: 'text',
-        name: 'test',
-        validateWithStateUpdate,
+        isRadio: false,
+        // @ts-ignore
+        validateAndStateUpdate,
       }),
     ).toBeUndefined();
 
-    expect(addEventListener).toBeCalledWith('input', validateWithStateUpdate);
+    expect(addEventListener).toBeCalledWith('input', validateAndStateUpdate);
     expect(fields.test.eventAttached).toBeTruthy();
   });
 });

@@ -1,49 +1,47 @@
-import isRadioInput from '../utils/isRadioInput';
 import { Field } from '../index';
 
 export default function attachEventListeners({
   mode,
-  fields,
+  field,
   watchFields,
   radioOptionIndex,
   ref,
-  type,
-  name,
-  validateWithStateUpdate,
+  validateAndStateUpdate,
   isWatchAll = false,
+  isRadio,
 }: {
   mode: string;
-  fields: any;
+  field: Field;
   watchFields: { [key: string]: boolean };
   radioOptionIndex: number;
   ref: any;
-  type: string;
-  name: string;
-  validateWithStateUpdate: any;
+  isRadio: boolean;
+  validateAndStateUpdate: (
+    {
+      target: { name },
+      type,
+    }: any,
+  ) => void;
   isWatchAll?: boolean;
 }) {
-  const field = fields[name];
   const isOnChange = mode === 'onChange' || watchFields[ref.name] || isWatchAll;
   const isOnBlur = mode === 'onBlur';
-  if (!field || (!isOnChange && !isOnBlur)) return;
+  if (!isOnChange && !isOnBlur) return;
 
-  const isRadio = isRadioInput(type);
   const event = isOnChange ? (isRadio ? 'change' : 'input') : 'blur';
 
   if (isRadio) {
     const options = field.options;
-    const attachedEvents = options[radioOptionIndex].eventAttached;
+    const attachedEvents = options[radioOptionIndex].eventAttached || '';
 
-    if (!options[radioOptionIndex]) return;
+    if (!options[radioOptionIndex] || attachedEvents.includes(event)) return;
 
-    if (!attachedEvents || (attachedEvents && !attachedEvents.includes(event))) {
-      options[radioOptionIndex].ref.addEventListener(event, validateWithStateUpdate);
-      options[radioOptionIndex].eventAttached = [...(attachedEvents || []), event];
-    }
+    options[radioOptionIndex].ref.addEventListener(event, validateAndStateUpdate);
+    options[radioOptionIndex].eventAttached = [...(attachedEvents || []), event];
   } else {
-    if (!field.eventAttached || (field.eventAttached && !field.eventAttached.includes(event))) {
-      ref.addEventListener(event, validateWithStateUpdate);
-      field.eventAttached = [...(field.eventAttached || []), event];
-    }
+    if (field.eventAttached && field.eventAttached.includes(event)) return;
+
+    ref.addEventListener(event, validateAndStateUpdate);
+    field.eventAttached = [...(field.eventAttached || []), event];
   }
 }

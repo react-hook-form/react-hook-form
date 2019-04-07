@@ -1,9 +1,12 @@
 import getFieldValue from './getFieldValue';
+import { Field } from '../index';
 
 export default function getFieldsValues(fields, filedNames?: string | Array<string>) {
-  return Object.values(fields).reduce((previous, data: any) => {
-    if (Array.isArray(data)) return;
-    const { ref, ref: { name } } = data;
+  return Object.values(fields).reduce((previous, data: Field) => {
+    const {
+      ref,
+      ref: { name },
+    } = data;
     const value = getFieldValue(fields, ref);
 
     if (typeof filedNames === 'string') {
