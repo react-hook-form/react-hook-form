@@ -153,7 +153,6 @@ export default function useForm(
       watchFields: watchFieldsRef.current,
       ref,
       isRadio,
-      type,
       radioOptionIndex,
       isWatchAll: isWatchAllRef.current,
       mode,
