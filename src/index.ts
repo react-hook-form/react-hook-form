@@ -73,7 +73,6 @@ export default function useForm(
     const errorMessages = errorMessagesRef.current;
 
     if (!isSubmitted.current && mode === 'onSubmit' && (isWatchAllRef.current || watchFieldsRef.current[name])) {
-      // @ts-ignore
       setErrors({});
     } else {
       const error = await validateField(ref, fieldsRef.current);
