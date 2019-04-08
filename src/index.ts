@@ -73,25 +73,25 @@ export default function useForm(
     const errorMessages = errorMessagesRef.current;
 
     if (!isSubmitted.current && mode === 'onSubmit' && (isWatchAllRef.current || watchFieldsRef.current[name])) {
-      setErrors(errorMessages);
-      return;
-    }
+      // @ts-ignore
+      setErrors({});
+    } else {
+      const error = await validateField(ref, fieldsRef.current);
 
-    const error = await validateField(ref, fieldsRef.current);
+      if (
+        error !== errorMessages ||
+        mode === 'onChange' ||
+        (mode === 'onBlur' && type === 'blur') ||
+        watchFieldsRef.current[name] ||
+        isWatchAllRef.current
+      ) {
+        const copy = { ...errorMessages, ...error };
 
-    if (
-      error !== errorMessages ||
-      mode === 'onChange' ||
-      (mode === 'onBlur' && type === 'blur') ||
-      watchFieldsRef.current[name] ||
-      isWatchAllRef.current
-    ) {
-      const copy = { ...errorMessages, ...error };
+        if (!error[name]) delete copy[name];
 
-      if (!error[name]) delete copy[name];
-
-      errorMessagesRef.current = copy;
-      setErrors(copy);
+        errorMessagesRef.current = copy;
+        setErrors(copy);
+      }
     }
   }
 
