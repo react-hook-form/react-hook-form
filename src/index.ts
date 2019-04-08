@@ -286,6 +286,7 @@ export default function useForm(
       watchFieldsRef.current = {};
       errorMessagesRef.current = {};
       isWatchAllRef.current = false;
+      isSubmitted.current = false;
       setErrors({});
     },
     [mode],
@@ -296,5 +297,6 @@ export default function useForm(
     handleSubmit,
     errors,
     watch,
+    isSubmitted: isSubmitted.current,
   };
 }
