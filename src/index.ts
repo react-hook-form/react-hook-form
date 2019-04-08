@@ -8,7 +8,6 @@ import isRadioInput from './utils/isRadioInput';
 import attachEventListeners from './logic/attachEventListeners';
 import validateWithSchema from './logic/validateWithSchema';
 import combineFieldValues from './logic/combineFieldValues';
-import isEquivalent from './utils/isEquivalent';
 
 type Validate = (data: string | number) => boolean | string | number | Date;
 
@@ -67,16 +66,21 @@ export default function useForm(
   const isWatchAllRef = useRef<boolean>(false);
   const watchFieldsRef = useRef<{ [key: string]: boolean }>({});
   const [errors, setErrors] = useState<ErrorMessages>({});
+  const isSubmitted = useRef<boolean>(false);
 
   async function validateAndStateUpdate({ target: { name }, type }: any) {
     const ref = fieldsRef.current[name];
     const errorMessages = errorMessagesRef.current;
+
+    if (!isSubmitted.current && mode === 'onSubmit' && (isWatchAllRef.current || watchFieldsRef.current[name])) {
+      setErrors(errorMessages);
+      return;
+    }
+
     const error = await validateField(ref, fieldsRef.current);
 
     if (
-      (!error && errorMessages) ||
-      (error && !errorMessages) ||
-      (error && errorMessages && !isEquivalent(error, errorMessages)) ||
+      error !== errorMessages ||
       mode === 'onChange' ||
       (mode === 'onBlur' && type === 'blur') ||
       watchFieldsRef.current[name] ||
@@ -198,6 +202,7 @@ export default function useForm(
     const fields = fieldsRef.current;
     const currentFieldValues = Object.values(fields);
     const fieldsLength = currentFieldValues.length;
+    isSubmitted.current = true;
 
     if (validationSchema) {
       fieldValues = currentFieldValues.reduce((previous, { ref }) => {
