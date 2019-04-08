@@ -10,6 +10,7 @@ describe('findMissDomAndClean', () => {
       test: 'test',
     };
     expect(
+      // @ts-ignore
       findMissDomAndClean(fields, () => {}, {
         ref: { name: 'bill', type: 'radio' },
       }),
@@ -35,6 +36,7 @@ describe('findMissDomAndClean', () => {
     };
 
     expect(
+      // @ts-ignore
       findMissDomAndClean(fields, () => {}, {
         ref: { name: 'test', type: 'radio' },
         options: [
