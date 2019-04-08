@@ -136,7 +136,6 @@ export default async (
         values.reduce(async (previous, [key, validate], index) => {
           const result = typeof validate === 'function' && (await validate(fieldValue));
           const lastChild = values.length - 1 === index;
-          if (Object.keys(previous).length) return lastChild ? resolve(previous) : previous;
 
           if (typeof result !== 'boolean' || !result) {
             const temp = {
@@ -146,11 +145,11 @@ export default async (
             return lastChild ? resolve(temp) : temp;
           }
 
-          if (lastChild) return resolve(previous);
+          return lastChild ? resolve(previous) : previous;
         }, {});
       });
 
-      if (Object.keys(result).length) {
+      if (result && Object.keys(result).length) {
         copy[name] = {
           ...copy[name],
           ref: isRadio && options ? options[0].ref : ref,

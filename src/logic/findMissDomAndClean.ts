@@ -4,9 +4,12 @@ import isRadioInput from '../utils/isRadioInput';
 export default function findMissDomAndClean(
   fields: { [key: string]: any },
   validateWithStateUpdate: Function,
-  { ref, ref: { name, type }, mutationWatcher, options }: any,
+  { ref, mutationWatcher, options }: any,
   forceDelete = false,
 ) {
+  if (!ref) return;
+
+  const { name, type } = ref;
   if (isRadioInput(type) && options) {
     options.forEach(({ ref }, index) => {
       if (!document.body.contains(ref) && fields[name] && fields[name].options && fields[name].options[index]) {
