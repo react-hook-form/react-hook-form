@@ -37,7 +37,6 @@ export default async (
     return copy;
   }
 
-  // min and max section
   if (min || max) {
     let exceedMax;
     let exceedMin;
