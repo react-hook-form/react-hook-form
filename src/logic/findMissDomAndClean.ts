@@ -1,10 +1,11 @@
 import removeAllEventListeners from './removeAllEventListeners';
 import isRadioInput from '../utils/isRadioInput';
+import {Field} from "../index";
 
 export default function findMissDomAndClean(
-  fields: { [key: string]: any },
+  fields: { [key: string]: Field },
   validateWithStateUpdate: Function,
-  { ref, mutationWatcher, options }: any,
+  { ref, mutationWatcher, options }: Field,
   forceDelete = false,
 ) {
   if (!ref) return;

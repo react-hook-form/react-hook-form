@@ -15,7 +15,9 @@ type NumberOrString = number | string;
 
 type Props = { mode: 'onSubmit' | 'onBlur' | 'onChange'; validationSchema?: any };
 
-type MutationWatcher = (arg1: Ref, arg2: () => void) => any;
+type MutationWatcher = {
+  disconnect: () => void,
+};
 
 export type Ref = HTMLInputElement | HTMLSelectElement | null;
 
