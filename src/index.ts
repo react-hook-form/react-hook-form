@@ -8,6 +8,7 @@ import isRadioInput from './utils/isRadioInput';
 import attachEventListeners from './logic/attachEventListeners';
 import validateWithSchema from './logic/validateWithSchema';
 import combineFieldValues from './logic/combineFieldValues';
+import isEquivalent from './utils/isEquivalent';
 
 type Validate = (data: string | number) => boolean | string | number | Date;
 
@@ -73,8 +74,9 @@ export default function useForm(
     const error = await validateField(ref, fieldsRef.current);
 
     if (
-      (Object.keys(error).length &&
-        (errorMessages[name].type !== error[name].type || errorMessages[name].message !== error[name].messasge)) ||
+      (!error && errorMessages) ||
+      (error && !errorMessages) ||
+      (error && errorMessages && !isEquivalent(error, errorMessages)) ||
       mode === 'onChange' ||
       (mode === 'onBlur' && type === 'blur') ||
       watchFieldsRef.current[name] ||
