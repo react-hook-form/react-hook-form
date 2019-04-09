@@ -1,3 +1,5 @@
+<div align="right">English | 中文</div>
+
 <div align="center"><a href="https://react-hook-form.now.sh/"><img src="https://raw.githubusercontent.com/bluebill1049/react-hook-form/master/website/logo.png" alt="React forme Logo - React hook form valiation" width="350px" /></a></div>
 
 > React hook form validation without the hassle 
