@@ -196,8 +196,10 @@ export default function useForm(
   }
 
   const handleSubmit = (callback: (Object, e) => void) => async e => {
-    e.preventDefault();
-    e.persist();
+    if (e.preventDefault && e.persist) {
+      e.preventDefault();
+      e.persist();
+    }
     let fieldErrors;
     let fieldValues;
     const fields = fieldsRef.current;
