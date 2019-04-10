@@ -9,7 +9,7 @@
 - 使创建表单和集成更加便捷
 - 基于React hook构建，更注重性能和开发体验
 - 遵循html标准进行校验
-- 迷你的体积而没有其他依赖(经过minified + gzipped优化后包只有2kb大小)
+- 迷你的体积而没有其他依赖(经过minified + gzipped优化后包只有2.8kb大小)
 - 从[这里](https://react-hook-form.now.sh/builder)快速构建你的表单
 
 ## 安装
