@@ -8,10 +8,10 @@
 [![npm](https://img.shields.io/npm/dt/react-hook-form.svg?style=flat-square)](https://www.npmjs.com/package/react-hook-form)
 [![npm](https://img.shields.io/npm/l/react-hook-form.svg?style=flat-square)](https://www.npmjs.com/package/react-lazyload-image)
 
-- Super easy to create forms and integrate
+- Easy to build forms with validation and integrate
 - Build with React hook, performance and developer experience in mind
 - Follow html standard for validation
-- Tiny size without other dependency 2 kB (minified + gzipped)
+- Tiny size without other dependency 2.8 kB (minified + gzipped)
 - Build a quick form with [form builder](https://react-hook-form.now.sh/builder)
 
 ## Install
