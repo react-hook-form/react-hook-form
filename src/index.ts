@@ -196,8 +196,8 @@ export default function useForm(
   }
 
   const handleSubmit = (callback: (Object, e) => void) => async e => {
-    if (e.preventDefault && e.persist) {
-      e.preventDefault();
+    if (e) {
+      e.preventDefault(); 
       e.persist();
     }
     let fieldErrors;
