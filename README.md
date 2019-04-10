@@ -56,7 +56,7 @@ function App() {
 Thanks goes to these wonderful people:
 
 <p float="left">
-    <img src="https://avatars3.githubusercontent.com/u/14857042?s=60&v=4" width="50" height="50" />
-    <img src="https://avatars0.githubusercontent.com/u/1332741?s=64&v=4" width="50" height="50" />
-    <img src="https://avatars3.githubusercontent.com/u/4396759?s=60&v=4" width="50" height="50" />
+    <a href="https://github.com/AyumiKai"><img src="https://avatars3.githubusercontent.com/u/14857042?s=60&v=4" width="50" height="50" /></a>
+    <a href="https://github.com/garthmcrae"><img src="https://avatars0.githubusercontent.com/u/1332741?s=64&v=4" width="50" height="50" /></a>
+    <a href="https://github.com/erikras"><img src="https://avatars3.githubusercontent.com/u/4396759?s=60&v=4" width="50" height="50" /></a>
 </p>
