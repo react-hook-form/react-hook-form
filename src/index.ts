@@ -186,7 +186,7 @@ export default function useForm(
 
   function register(data: any) {
     if (!data) return;
-    if (data instanceof HTMLElement) {
+    if (data.name) {
       registerIntoAllFields(data);
     }
 
