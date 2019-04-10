@@ -1,4 +1,4 @@
-<div align="right">English | [简体中文](https://github.com/bluebill1049/react-hook-form/docs/README.zh-CN.md)</div>
+<div align="right">English | <a href="https://github.com/bluebill1049/react-hook-form/docs/README.zh-CN.md">简体中文</a></div>
 
 <div align="center"><a href="https://react-hook-form.now.sh/"><img src="https://raw.githubusercontent.com/bluebill1049/react-hook-form/master/website/logo.png" alt="React forme Logo - React hook form valiation" width="350px" /></a></div>
 
