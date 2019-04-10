@@ -1,4 +1,4 @@
-<div align="right">English | 中文</div>
+<div align="right">English | [简体中文](https://github.com/bluebill1049/react-hook-form/docs/README.zh-CN.md)</div>
 
 <div align="center"><a href="https://react-hook-form.now.sh/"><img src="https://raw.githubusercontent.com/bluebill1049/react-hook-form/master/website/logo.png" alt="React forme Logo - React hook form valiation" width="350px" /></a></div>
 
@@ -13,8 +13,6 @@
 - Follow html standard for validation
 - Tiny size without other dependency 2 kB (minified + gzipped)
 - Build a quick form with [form builder](https://react-hook-form.now.sh/builder)
-
-English | [简体中文](https://github.com/bluebill1049/react-hook-form/docs/README.zh-CN.md)
 
 ## Install
 
