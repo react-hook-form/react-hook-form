@@ -15,7 +15,7 @@
 - Easy to build forms with validation and integrate
 - Build with React hook, performance and developer experience in mind
 - Follow html standard for validation
-- Tiny size without other dependency 2.8 kB (minified + gzipped)
+- Tiny size without other dependency
 - Build a quick form with [form builder](https://react-hook-form.now.sh/builder)
 
 ## Install
