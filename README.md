@@ -11,11 +11,11 @@
 [![npm](https://img.shields.io/npm/dt/react-hook-form.svg?style=flat-square)](https://www.npmjs.com/package/react-hook-form)
 [![npm](https://badgen.net/bundlephobia/minzip/react-hook-form)](https://badgen.net/bundlephobia/minzip/react-hook-form)
 
-- Easy to build forms with validation and integrate
-- Build with React hook, performance and developer experience in mind
-- Follow html standard for validation
-- Tiny size without other dependency
-- Build a quick form with [form builder](https://react-hook-form.now.sh/builder)
+- Super easy to integrate and create forms
+- Built with React Hooks with performance and developer experience in mind
+- Follows HTML standard for validation
+- Tiny size without other any dependency
+- Build forms quickly with the [form builder](https://react-hook-form.now.sh/builder)
 
 ## Install
 
