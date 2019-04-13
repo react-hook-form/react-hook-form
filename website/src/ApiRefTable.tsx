@@ -79,7 +79,13 @@ export default function ApiRefTable() {
               >
                 Type
               </th>
-              <th>Description</th>
+              <th
+                style={{
+                  minWidth: 310,
+                }}
+              >
+                Description
+              </th>
               <th
                 style={{
                   minWidth: 310,

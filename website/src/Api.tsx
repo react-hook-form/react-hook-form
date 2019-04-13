@@ -4,7 +4,7 @@ import styled from 'styled-components';
 import colors from './styles/colors';
 import { SubHeading, HeadingWithTopMargin, Title } from './styles/typography';
 import { setHomePage } from './ButtonGroup';
-import copyClipBoard from './utils/copyClipBoard';
+import GetStarted from './GetStarted';
 import ApiRefTable from './ApiRefTable';
 import watchCode from './codeExamples/watchCode';
 import validationSchemaCode from './codeExamples/validationSchema';
@@ -103,6 +103,10 @@ const Menu = styled.div`
       position: fixed;
       list-style: none;
       padding: 0;
+      
+      & > li:first-child > button {
+        font-size: 1.5rem;
+      }
 
       & > li {
         line-height: 22px;
@@ -154,31 +158,6 @@ const CloseButton = styled.button`
 const Code = styled.span`
   color: ${colors.lightPink};
   font-size: 14px;
-`;
-
-const InstallCode = styled.span`
-  background: #191d3a !important;
-  padding: 13px 20px;
-  border-radius: 4px;
-  margin-top: 20px;
-  display: block;
-`;
-
-const CopyButton = styled.button`
-  background: #516391;
-  border: none;
-  color: white;
-  border-radius: 4px;
-  font-size: 16px;
-  float: right;
-
-  &:hover {
-    opacity: 0.8;
-  }
-
-  &:active {
-    transform: translateY(2px);
-  }
 `;
 
 const links = ['Quick Start', 'useform', 'register', 'errors', 'watch', 'handleSubmit', 'validationSchema'];
@@ -287,30 +266,8 @@ function Builder({ formData, showApi, toggleApi, apiButton, isMobile }: any) {
                     })}
                   </ul>
                 </Menu>
-                <div>
-                  <Title>Quick Start</Title>
-                  <h2 ref={quickStartRef}>Installation</h2>
-                  <p>Installing react-hook-form only takes a single command and you're ready to roll.</p>
-                  <InstallCode>
-                    npm install react-hook-form
-                    <CopyButton
-                      onClick={() => {
-                        copyClipBoard('npm install react-hook-form');
-                      }}
-                    >
-                      Copy
-                    </CopyButton>
-                  </InstallCode>
-
-                  <h2
-                    style={{
-                      marginTop: 50,
-                    }}
-                  >
-                    Example
-                  </h2>
-                  <p>The following code will demonstrate the basic usage of react-hook-form.</p>
-                  <SyntaxHighlighterWithCopy rawData={code} />
+                <main>
+                  <GetStarted quickStartRef={quickStartRef} />
 
                   <Title>API</Title>
 
@@ -399,7 +356,7 @@ function Builder({ formData, showApi, toggleApi, apiButton, isMobile }: any) {
                     </h2>
                   </code>
                   <p>Object contain error info about the individual input.</p>
-                  <SyntaxHighlighterWithCopy rawData={errorCode} />
+                  <SyntaxHighlighterWithCopy rawData={errorCode} url="https://codesandbox.io/s/nrr4n9p8n4" />
 
                   <hr />
                   <code ref={watchRef}>
@@ -455,7 +412,7 @@ function Builder({ formData, showApi, toggleApi, apiButton, isMobile }: any) {
                       </tbody>
                     </Table>
                   </TableWrapper>
-                  <SyntaxHighlighterWithCopy rawData={watchCode} />
+                  <SyntaxHighlighterWithCopy rawData={watchCode} url="https://codesandbox.io/s/pp1l40q7wx" />
 
                   <hr />
                   <code ref={handleSubmitRef}>
@@ -481,8 +438,8 @@ function Builder({ formData, showApi, toggleApi, apiButton, isMobile }: any) {
                     </Link>{' '}
                     for object schema validation and the example below demonstrate the usage.
                   </p>
-                  <SyntaxHighlighterWithCopy rawData={validationSchemaCode} />
-                </div>
+                  <SyntaxHighlighterWithCopy rawData={validationSchemaCode} url="https://codesandbox.io/s/928po918qr" />
+                </main>
               </Wrapper>
             </div>
           </Root>
