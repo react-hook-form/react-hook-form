@@ -1,7 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import useForm from 'react-hook-form';
-import Input from '@material-ui/core/Input';
+import Input from '@material-ui/core/Input'; // you will need to install masterial ui
 
 const MyInput = ({ name, label, register }) => {
   return (
