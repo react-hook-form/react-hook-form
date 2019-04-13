@@ -1,8 +1,8 @@
 export default `
-import React from "react";
-import ReactDOM from "react-dom";
-import useForm from "react-hook-form";
-import * as yup from "yup";
+import React from 'react'
+import ReactDOM from 'react-dom'
+import useForm from 'react-hook-form'
+import * as yup from 'yup'
 
 const SignupSchema = yup.object().shape({
   name: yup.string().required(),
@@ -24,6 +24,6 @@ function App() {
       <input type="number" name="age" ref={register} />
       <input type="submit" />
     </form>
-  );
+  )
 }
 `

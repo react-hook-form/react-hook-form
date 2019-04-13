@@ -1,5 +1,5 @@
 export default `import React from 'react'
-import useForm from 'react-hook-form
+import useForm from 'react-hook-form'
 
 function YourForm() {
   const { register, handleSubmit, watch, errors } = useForm()
@@ -28,6 +28,6 @@ function YourForm() {
       {errors.example && '<span>This field is required</span>'}
       <input type="submit" />
     </form>
-  );
+  )
 }
 `;
