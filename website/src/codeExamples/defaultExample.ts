@@ -16,17 +16,13 @@ function YourForm() {
       <input
         type="text"
         name="example"
-        ref={ref => {
-          register({ ref });
-        }}
+        ref={register}
       />
       {/* include validation with required field or other standard html validation rules */}
       <input
         type="text"
         name="exampleRequired"
-        ref={ref => {
-          register({ ref, required: true, max: 10 });
-        }}
+        ref={register({ required: true, maxLength: 10 })}
       />
       {/* errors will return true if particular field validation is invalid  */}
       {errors.example && '<span>This field is required</span>'}

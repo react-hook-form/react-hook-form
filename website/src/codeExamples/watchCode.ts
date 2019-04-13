@@ -9,10 +9,10 @@ function YourForm(props) {
   
   return (
     <form>
-      <input type="text" name="textInput" ref={ ref => { register({ ref, required, maxLength: 50 })} } />
-      <input type="checkbox" name="yes" ref={ ref => { register({ ref })} } />
+      <input type="text" name="textInput" ref={register({ required: true, maxLength: 50 })} />
+      <input type="checkbox" name="yes" ref={register} />
       
-      {watchYes && <input type="number" name="numberInput" ref={ ref => { register({ ref, min: 50 })} } />}
+      {watchYes && <input type="number" name="numberInput" ref={register({ min: 50 })} />}
       {/* based on yes selection to display numberInput */}
     </form>
   )

@@ -20,8 +20,8 @@ function App() {
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
-      <input type="text" name="name" ref={ref => register({ ref })} />
-      <input type="number" name="age" ref={ref => register({ ref })} />
+      <input type="text" name="name" ref={register} />
+      <input type="number" name="age" ref={register} />
       <input type="submit" />
     </form>
   );
