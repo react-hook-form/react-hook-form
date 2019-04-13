@@ -186,7 +186,8 @@ export default function useForm(
 
   function register(data: any) {
     if (!data) return;
-    if (data.name) {
+    if (data.type) {
+      if (!data.name) console.warn('Oops missing the name for field:', data);
       registerIntoAllFields(data);
     }
 
@@ -197,7 +198,7 @@ export default function useForm(
 
   const handleSubmit = (callback: (Object, e) => void) => async e => {
     if (e) {
-      e.preventDefault(); 
+      e.preventDefault();
       e.persist();
     }
     let fieldErrors;
