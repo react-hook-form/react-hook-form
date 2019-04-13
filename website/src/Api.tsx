@@ -103,7 +103,7 @@ const Menu = styled.div`
       position: fixed;
       list-style: none;
       padding: 0;
-      
+
       & > li:first-child > button {
         font-size: 1.5rem;
       }
@@ -112,6 +112,12 @@ const Menu = styled.div`
         line-height: 22px;
         margin-bottom: 22px;
 
+        & > a {
+          text-decoration: none;
+          padding-left: 30px;
+        }
+
+        & > a,
         & > button {
           font-size: 20px;
           color: white;
@@ -264,6 +270,11 @@ function Builder({ formData, showApi, toggleApi, apiButton, isMobile }: any) {
                         </li>
                       );
                     })}
+                    <li>
+                      <a href="https://github.com/bluebill1049/react-hook-form/tree/master/examples" target="_blank">
+                        Examples
+                      </a>
+                    </li>
                   </ul>
                 </Menu>
                 <main>
@@ -344,7 +355,8 @@ function Builder({ formData, showApi, toggleApi, apiButton, isMobile }: any) {
                   <hr />
                   <code ref={errorsRef}>
                     <h2>
-                      errors: <Type>{`{
+                      errors:{' '}
+                      <Type>{`{
   [key: string]:
     | {
         ref: any;
