@@ -1,4 +1,4 @@
-# React Smooth Range Input Example
+# React Hook Form
 
 ## Install and start
 
