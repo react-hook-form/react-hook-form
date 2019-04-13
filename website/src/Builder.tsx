@@ -337,7 +337,7 @@ function Builder({
                         }}
                       >
                         <input defaultChecked={editFormData.required} type="checkbox" name="required" ref={register} />{' '}
-                        required
+                        Required
                       </label>
                       <label>Max</label>
                       <input

@@ -35,17 +35,16 @@ export default function ApiRefTable() {
   return (
     <>
       <p>
-        This is the function to register <code>Ref</code> and validation into <code>react-hook-form</code>. Validation
-        rules are all based on html input/select's standard validation, however <code>react-hook-form</code> do allow
-        custom validation with method <code>validate</code>.
+        Register <code>Ref</code> and validation rules into <code>react-hook-form</code>. Validation rules are all based
+        on html standard. In addition, <code>react-hook-form</code> do allow custom validation too.
       </p>
       <p>
-        <b>Important:</b> input name is <b>required</b> and <b>unique</b> for <code>react-hook-form</code> in order to
-        register the input.
+        <b>Important:</b> input <code>name</code> is <b>required</b> and <b>unique</b> for <code>react-hook-form</code>{' '}
+        to register them uniquely.
       </p>
       <p>
-        If you working on arrays/array fields, you can assign input name as <code>name[index]</code>. Check out the
-        example{' '}
+        If you working on <code>arrays/array fields</code> (inject additional form section by action), you can assign
+        input name as <code>name[index]</code>. Check out the example{' '}
         <Link
           href="https://github.com/bluebill1049/react-hook-form/blob/master/examples/arrayFields.tsx"
           title="example for array fields"
@@ -330,7 +329,7 @@ export default function ApiRefTable() {
                 </code>
               </td>
               <td>
-                You can pass a callback function with value as the argument to validate, or you can pass an object of
+                You can pass a callback function as the argument to validate, or you can pass an object of
                 callback functions to validate all of them. (refer to the examples)
               </td>
               <td>

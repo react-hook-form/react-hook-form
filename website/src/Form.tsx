@@ -266,7 +266,7 @@ export default function Form({
         {setting.showSubmit && (
           <section>
             <Title>Submit</Title>
-            {!Object.keys(submitData).length && <p>ⓘ Successful submission values will display here.</p>}
+            {!Object.keys(submitData).length && <p>ⓘ Successful submit values will display here.</p>}
             <Animate
               durationSeconds={0.8}
               play={Object.keys(submitData).length}

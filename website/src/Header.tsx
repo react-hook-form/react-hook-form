@@ -177,20 +177,20 @@ export default function Header({ homeRef, toggleApi }: any) {
         <FeaturesContent>
           <div>
             <h3>HTML standard</h3>
-            <p>Leverage your existing html markup and start validation your forms with standard validation.</p>
+            <p>Leverage your existing HTML markup, and start validating your forms with standard validation.</p>
           </div>
 
           <div>
             <h3>Super Light</h3>
             <p>
-              Performance is important, and package size matters. it is tiny and without any dependencies.
+              Performance is important and package size matters. it is tiny and without any dependencies.
             </p>
           </div>
 
           <div>
             <h3>Performance</h3>
             <p>
-              Minimises the volume that is triggered with component re-rendering, try to provide your users with the
+              Minimises the volume that is triggered re-rendering, try to provide your users with the
               best experience.
             </p>
           </div>

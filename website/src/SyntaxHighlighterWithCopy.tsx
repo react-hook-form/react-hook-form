@@ -75,7 +75,7 @@ export default function SyntaxHighlighterWithCopy({ rawData, data, url }: { rawD
         Copy to clipboard
       </CopyButton>
 
-      <LinkToSandBox href={url} target="_blank">CodeSandbox</LinkToSandBox>
+      {url && <LinkToSandBox href={url} target="_blank">CodeSandbox</LinkToSandBox>}
       <SyntaxHighlighter style={monokaiSublime}>{rawData || generateCode(data)}</SyntaxHighlighter>
     </div>
   );

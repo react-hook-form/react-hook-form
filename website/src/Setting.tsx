@@ -137,7 +137,7 @@ function Setting({ settingButton, toggleSetting, showSetting, setting, setConfig
                 marginTop: 10,
               }}
             >
-              Display columns
+              Columns display
             </h2>
             <label
               style={{
