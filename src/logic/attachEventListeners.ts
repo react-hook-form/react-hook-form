@@ -1,4 +1,5 @@
 import { Field } from '../index';
+import isCheckbox from '../utils/isCheckBox';
 
 export default function attachEventListeners({
   mode,
@@ -28,7 +29,7 @@ export default function attachEventListeners({
   const isOnBlur = mode === 'onBlur';
   if (!isOnChange && !isOnBlur) return;
 
-  const event = isOnChange ? (isRadio ? 'change' : 'input') : 'blur';
+  const event = isOnChange ? (isRadio || isCheckbox(ref.type) ? 'change' : 'input') : 'blur';
 
   if (isRadio) {
     const options = field.options;
