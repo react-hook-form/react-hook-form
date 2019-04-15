@@ -10,7 +10,7 @@ const Root = styled.div`
   height: 100vh;
   top: 0;
   left: 0;
-  z-index: 10;
+  z-index: 12;
   width: 20%;
   padding: 20px;
   text-align: left;
@@ -55,7 +55,7 @@ function Setting({ settingButton, toggleSetting, showSetting, setting, setConfig
               fontSize: 35,
               padding: 20,
               right: 20,
-              top: 15,
+              top: 10,
               background: 'none',
               cursor: 'pointer',
               border: 'none',
@@ -137,7 +137,7 @@ function Setting({ settingButton, toggleSetting, showSetting, setting, setConfig
                 marginTop: 10,
               }}
             >
-              Display columns
+              Columns display
             </h2>
             <label
               style={{

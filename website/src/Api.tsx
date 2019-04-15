@@ -4,7 +4,7 @@ import styled from 'styled-components';
 import colors from './styles/colors';
 import { SubHeading, HeadingWithTopMargin, Title } from './styles/typography';
 import { setHomePage } from './ButtonGroup';
-import copyClipBoard from './utils/copyClipBoard';
+import GetStarted from './GetStarted';
 import ApiRefTable from './ApiRefTable';
 import watchCode from './codeExamples/watchCode';
 import validationSchemaCode from './codeExamples/validationSchema';
@@ -104,10 +104,20 @@ const Menu = styled.div`
       list-style: none;
       padding: 0;
 
+      & > li:first-child > button {
+        font-size: 1.5rem;
+      }
+
       & > li {
         line-height: 22px;
         margin-bottom: 22px;
 
+        & > a {
+          text-decoration: none;
+          padding-left: 30px;
+        }
+
+        & > a,
         & > button {
           font-size: 20px;
           color: white;
@@ -154,31 +164,6 @@ const CloseButton = styled.button`
 const Code = styled.span`
   color: ${colors.lightPink};
   font-size: 14px;
-`;
-
-const InstallCode = styled.span`
-  background: #191d3a !important;
-  padding: 13px 20px;
-  border-radius: 4px;
-  margin-top: 20px;
-  display: block;
-`;
-
-const CopyButton = styled.button`
-  background: #516391;
-  border: none;
-  color: white;
-  border-radius: 4px;
-  font-size: 16px;
-  float: right;
-
-  &:hover {
-    opacity: 0.8;
-  }
-
-  &:active {
-    transform: translateY(2px);
-  }
 `;
 
 const links = ['Quick Start', 'useform', 'register', 'errors', 'watch', 'handleSubmit', 'validationSchema'];
@@ -285,32 +270,15 @@ function Builder({ formData, showApi, toggleApi, apiButton, isMobile }: any) {
                         </li>
                       );
                     })}
+                    <li>
+                      <a href="https://github.com/bluebill1049/react-hook-form/tree/master/examples" target="_blank">
+                        Examples
+                      </a>
+                    </li>
                   </ul>
                 </Menu>
-                <div>
-                  <Title>Quick Start</Title>
-                  <h2 ref={quickStartRef}>Installation</h2>
-                  <p>Installing react-hook-form only takes a single command and you're ready to roll.</p>
-                  <InstallCode>
-                    npm install react-hook-form
-                    <CopyButton
-                      onClick={() => {
-                        copyClipBoard('npm install react-hook-form');
-                      }}
-                    >
-                      Copy
-                    </CopyButton>
-                  </InstallCode>
-
-                  <h2
-                    style={{
-                      marginTop: 50,
-                    }}
-                  >
-                    Example
-                  </h2>
-                  <p>The following code will demonstrate the basic usage of react-hook-form.</p>
-                  <SyntaxHighlighterWithCopy rawData={code} />
+                <main>
+                  <GetStarted quickStartRef={quickStartRef} />
 
                   <Title>API</Title>
 
@@ -320,17 +288,12 @@ function Builder({ formData, showApi, toggleApi, apiButton, isMobile }: any) {
                     </h2>
                   </code>
                   <p>
-                    You need to initialize <code>useForm</code> before you can start register your inputs, run this
-                    function before render.
+                    By invoking <code>useForm</code>, you will receive methods to register, watch, validate and print
+                    errors. (run <code>useForm</code> before <code>render</code>)
                   </p>
                   <p>
-                    React hook form use hook behind the scene by invoking <code>useForm</code>, you will receive the 4
-                    methods.
-                  </p>
-                  <p>
-                    If you would like to apply form validation rules at a schema level, please refer the{' '}
-                    <CodeAsLink onClick={() => goToSection('validationSchemaCode')}>validationSchema</CodeAsLink>{' '}
-                    section.
+                    Apply form validation rules at schema level, please refer the{' '}
+                    <CodeAsLink onClick={() => goToSection('validationSchema')}>validationSchema</CodeAsLink> section.
                   </p>
 
                   <TableWrapper>
@@ -342,13 +305,13 @@ function Builder({ formData, showApi, toggleApi, apiButton, isMobile }: any) {
                           <th>Description</th>
                         </tr>
                         <tr>
-                          <td>onSubmit</td>
+                          <td>onSubmit (Default)</td>
                           <td>
                             <Type>string</Type>
                           </td>
                           <td>
-                            This is the default option, validation will trigger on submit, and then attach{' '}
-                            <code>onchange | blur | input</code> event listeners to re-validate them.
+                            Validation will trigger on submit, and then attach <code>onchange | blur | input</code>{' '}
+                            event listeners to re-validate them.
                           </td>
                         </tr>
                         <tr>
@@ -357,7 +320,7 @@ function Builder({ formData, showApi, toggleApi, apiButton, isMobile }: any) {
                             <Type>string</Type>
                           </td>
                           <td>
-                            Validation will trigger on each input <code>blur</code> event.
+                            Validation will trigger on input <code>blur</code> event.
                           </td>
                         </tr>
                         <tr>
@@ -366,8 +329,8 @@ function Builder({ formData, showApi, toggleApi, apiButton, isMobile }: any) {
                             <Type>string</Type>
                           </td>
                           <td>
-                            Not recommended as validation will go through each change on your input, and hence trigger
-                            render. Consider this as a bad performance practice.
+                            (Not recommended) Validation will trigger <code>onChange</code> with each inputs, and lead
+                            to multiple render. Consider this as a bad performance practice.
                           </td>
                         </tr>
                       </tbody>
@@ -387,7 +350,8 @@ function Builder({ formData, showApi, toggleApi, apiButton, isMobile }: any) {
                   <hr />
                   <code ref={errorsRef}>
                     <h2>
-                      errors: <Type>{`{
+                      errors:{' '}
+                      <Type>{`{
   [key: string]:
     | {
         ref: any;
@@ -398,8 +362,8 @@ function Builder({ formData, showApi, toggleApi, apiButton, isMobile }: any) {
 }`}</Type>
                     </h2>
                   </code>
-                  <p>Object contain error info about the individual input.</p>
-                  <SyntaxHighlighterWithCopy rawData={errorCode} />
+                  <p>Object contain form errors or error messages belong to each input.</p>
+                  <SyntaxHighlighterWithCopy rawData={errorCode} url="https://codesandbox.io/s/nrr4n9p8n4" />
 
                   <hr />
                   <code ref={watchRef}>
@@ -412,10 +376,9 @@ function Builder({ formData, showApi, toggleApi, apiButton, isMobile }: any) {
                     </h2>
                   </code>
                   <p>
-                    Watch over input or selection change. Inital <code>watch</code> will always return{' '}
-                    <code>undefined</code>, because watch will run <strong>before</strong> the render fucntion . however
-                    you can set default value as the second argument, this is normally useful when you have some inital
-                    value to overwrite when <code>watch</code> return <code>undefined</code> on inital run.
+                    Watch over input change and return its value. first time run <code>watch</code> will always return{' '}
+                    <code>undefined</code> because called before <code>render</code>. You can set default value as the
+                    second argument.
                   </p>
                   <TableWrapper>
                     <Table>
@@ -455,7 +418,7 @@ function Builder({ formData, showApi, toggleApi, apiButton, isMobile }: any) {
                       </tbody>
                     </Table>
                   </TableWrapper>
-                  <SyntaxHighlighterWithCopy rawData={watchCode} />
+                  <SyntaxHighlighterWithCopy rawData={watchCode} url="https://codesandbox.io/s/pp1l40q7wx" />
 
                   <hr />
                   <code ref={handleSubmitRef}>
@@ -474,15 +437,15 @@ function Builder({ formData, showApi, toggleApi, apiButton, isMobile }: any) {
                   </code>
 
                   <p>
-                    If you would like to centralise your validation rules or external validation schema, you can apply
+                    If you would like to centralise your validation rules or external validation schema, you can apply{' '}
                     <code>validationSchema</code> when you invoke <code>useForm</code>. we use{' '}
                     <Link href="https://github.com/jquense/yup" target="_blank">
                       Yup
                     </Link>{' '}
                     for object schema validation and the example below demonstrate the usage.
                   </p>
-                  <SyntaxHighlighterWithCopy rawData={validationSchemaCode} />
-                </div>
+                  <SyntaxHighlighterWithCopy rawData={validationSchemaCode} url="https://codesandbox.io/s/928po918qr" />
+                </main>
               </Wrapper>
             </div>
           </Root>

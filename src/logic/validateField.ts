@@ -3,6 +3,7 @@ import isRadioInput from '../utils/isRadioInput';
 import { DATE_INPUTS, STRING_INPUTS } from '../constants';
 import { Field } from '..';
 import getValueAndMessage from './getValueAndMessage';
+import isCheckBox from '../utils/isCheckBox';
 
 export default async (
   {
@@ -24,7 +25,7 @@ export default async (
 
   if (
     required &&
-    ((type === 'checkbox' && !checked) ||
+    ((isCheckBox(type) && !checked) ||
       (!isRadio && type !== 'checkbox' && value === '') ||
       (isRadio && !getRadioValue(fields[name].options).isValid))
   ) {

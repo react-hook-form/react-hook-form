@@ -1,12 +1,15 @@
-export default `import React from 'react'
+export default `
+import React from 'react'
 import useForm from 'react-hook-form'
 
 function YourForm() {
   const { register, errors, handleSubmit } = useForm();
-  const onSubmit = (data) => {};
+  const onSubmit = data => {
+    console.log(data);
+  };
   
   return (
-    <form onsubmit={handleSubmit(onSubmit)}>
+    <form onSubmit={handleSubmit(onSubmit)}>
       <input type="text" name="singleErrorInput" ref={register({ required: true })} />
       {errors.textInput && 'Your input is required'}
     

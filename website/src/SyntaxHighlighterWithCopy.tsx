@@ -17,6 +17,7 @@ const CopyButton = styled.button`
   position: absolute;
   right: 0;
   top: 10px;
+  box-shadow: 0 0 10px #000;
   display: none;
 
   @media (min-width: 768px) {
@@ -32,7 +33,34 @@ const CopyButton = styled.button`
   }
 `;
 
-export default function SyntaxHighlighterWithCopy({ rawData, data }: { rawData?: string; data?: string }) {
+const LinkToSandBox = styled.a`
+  background: ${colors.lightPink};
+  border: none;
+  color: white;
+  border-radius: 4px;
+  font-size: 16px;
+  padding: 5px 10px;
+  position: absolute;
+  top: 10px;
+  right: 0;
+  box-shadow: 0 0 10px #000;
+  text-decoration: none;
+
+  @media (min-width: 768px) {
+    display: inline-block;
+    right: 170px;
+  }
+  
+  &:hover {
+    opacity: 0.8;
+  }
+
+  &:active {
+    transform: translateY(2px);
+  }
+`;
+
+export default function SyntaxHighlighterWithCopy({ rawData, data, url }: { rawData?: string; data?: string, url?: string }) {
   return (
     <div
       style={{
@@ -46,6 +74,8 @@ export default function SyntaxHighlighterWithCopy({ rawData, data }: { rawData?:
       >
         Copy to clipboard
       </CopyButton>
+
+      {url && <LinkToSandBox href={url} target="_blank">CodeSandbox</LinkToSandBox>}
       <SyntaxHighlighter style={monokaiSublime}>{rawData || generateCode(data)}</SyntaxHighlighter>
     </div>
   );

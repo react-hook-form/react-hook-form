@@ -11,11 +11,11 @@
 [![npm](https://img.shields.io/npm/dt/react-hook-form.svg?style=flat-square)](https://www.npmjs.com/package/react-hook-form)
 [![npm](https://badgen.net/bundlephobia/minzip/react-hook-form)](https://badgen.net/bundlephobia/minzip/react-hook-form)
 
-- Easy to build forms with validation and integrate
-- Build with React hook, performance and developer experience in mind
-- Follow html standard for validation
-- Tiny size without other dependency
-- Build a quick form with [form builder](https://react-hook-form.now.sh/builder)
+- Super easy to integrate and create forms
+- Built with React Hooks with performance and developer experience in mind
+- Follows HTML standard for validation
+- Tiny size without other any dependency
+- Build forms quickly with the [form builder](https://react-hook-form.now.sh/builder)
 
 ## Install
 
@@ -36,18 +36,18 @@ import React from 'react'
 import useForm from 'react-hook-form'
 
 function App() {
-  const { register, handleSubmit, errors } = useForm()
-  const onSubmit = (data) => { console.log(data) }
+  const { register, handleSubmit, errors } = useForm() // initialise the hook
+  const onSubmit = (data) => { console.log(data) } // callback when validation pass
     
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
-      <input name="firstname" ref={register} />
+      <input name="firstname" ref={register} /> {/* register an input */}
       
-      <input name="lastname" ref={register({ required: true })} />
-      {errors.lastname && 'Last name is required.'}
+      <input name="lastname" ref={register({ required: true })} /> {/* apply required validation */}
+      {errors.lastname && 'Last name is required.'} {/* error message */}
       
-      <input name="age" ref={register({ pattern: /\d+/ })} />
-      {errors.age && 'Please enter number for age.'}
+      <input name="age" ref={register({ pattern: /\d+/ })} /> {/* apply a Refex validation */}
+      {errors.age && 'Please enter number for age.'} {/* error message */}
       
       <input type="submit" />
     </form>

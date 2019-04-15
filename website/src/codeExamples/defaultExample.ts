@@ -1,4 +1,5 @@
-export default `import React from 'react'
+export default `
+import React from 'react'
 import useForm from 'react-hook-form'
 
 function YourForm() {
@@ -11,7 +12,7 @@ function YourForm() {
 
   return (
     {/* handleSubmit will validation your inputs before calling onSubmit */}
-    <form onsubmit={handleSubmit(onSubmit)}>
+    <form onSubmit={handleSubmit(onSubmit)}>
       {/* you will have to register your input into react-hook-form, by invoke the register function with ref as the argument */}
       <input
         type="text"
