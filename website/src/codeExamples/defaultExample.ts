@@ -17,7 +17,7 @@ function YourForm() {
       <input
         type="text"
         name="example"
-        ref={register}
+        ref={register({ required: true })}
       />
       {/* include validation with required field or other standard html validation rules */}
       <input
