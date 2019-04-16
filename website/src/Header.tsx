@@ -183,21 +183,20 @@ export default function Header({ homeRef, toggleApi }: any) {
           <div>
             <h3>Super Light</h3>
             <p>
-              Performance is important and package size matters. it is tiny and without any dependencies.
+              Performance is important and packages size matters. it is tiny and without any dependencies.
             </p>
           </div>
 
           <div>
             <h3>Performance</h3>
             <p>
-              Minimises the volume that is triggered re-rendering, try to provide your users with the
-              best experience.
+              Minimizes the volume that is triggered re-rendering, try to provide your users with the best experience.
             </p>
           </div>
 
           <div>
             <h3>Adoptable</h3>
-            <p>Since form state is inherently local, it can be easily adopted without other dependency.</p>
+            <p>Since form state is inherently local, it can be easily adopted without other dependencies.</p>
           </div>
         </FeaturesContent>
       </Features>

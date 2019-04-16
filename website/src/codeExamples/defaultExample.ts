@@ -6,20 +6,20 @@ function YourForm() {
   const { register, handleSubmit, watch, errors } = useForm()
   const onSubmit = data => {
     console.log(data)
-  }; // your form submit function which will invoke after successful validation
+  }; // form submit function will invoke after successful validation
 
-  console.log(watch('example')) // you can watch individual input by pass the name of the input
+  console.log(watch('example')) // watch individual input by passing the name of the input
 
   return (
     {/* handleSubmit will validation your inputs before calling onSubmit */}
     <form onSubmit={handleSubmit(onSubmit)}>
-      {/* you will have to register your input into react-hook-form, by invoke the register function with ref as the argument */}
+      {/* you will have to register your input into Hook by invoking the register function with Ref as the argument */}
       <input
         type="text"
         name="example"
-        ref={register({ required: true })}
+        ref={register}
       />
-      {/* include validation with required field or other standard html validation rules */}
+      {/* include validation with required field or other standard HTML validation rules */}
       <input
         type="text"
         name="exampleRequired"

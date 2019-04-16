@@ -292,7 +292,7 @@ function Builder({ formData, showApi, toggleApi, apiButton, isMobile }: any) {
                     errors. (run <code>useForm</code> before <code>render</code>)
                   </p>
                   <p>
-                    Apply form validation rules at schema level, please refer the{' '}
+                    Apply form validation rules at the schema level, please refer the{' '}
                     <CodeAsLink onClick={() => goToSection('validationSchema')}>validationSchema</CodeAsLink> section.
                   </p>
 
@@ -376,8 +376,8 @@ function Builder({ formData, showApi, toggleApi, apiButton, isMobile }: any) {
                     </h2>
                   </code>
                   <p>
-                    Watch over input change and return its value. first time run <code>watch</code> will always return{' '}
-                    <code>undefined</code> because called before <code>render</code>. You can set default value as the
+                    Watch over input change and return its value. first-time run <code>watch</code> will always return{' '}
+                    <code>undefined</code> because called before <code>render</code>. You can set the default value as the
                     second argument.
                   </p>
                   <TableWrapper>
@@ -426,7 +426,7 @@ function Builder({ formData, showApi, toggleApi, apiButton, isMobile }: any) {
                       handleSubmit: <Type>({`{ [key: string]: string | number | boolean }`}) => void</Type>
                     </h2>
                   </code>
-                  <p>This function will pass you the form data when from validation is successful.</p>
+                  <p>This function will pass you the form data when form validation is successful.</p>
 
                   <hr />
 
@@ -437,7 +437,7 @@ function Builder({ formData, showApi, toggleApi, apiButton, isMobile }: any) {
                   </code>
 
                   <p>
-                    If you would like to centralise your validation rules or external validation schema, you can apply{' '}
+                    If you would like to centralize your validation rules or external validation schema, you can apply{' '}
                     <code>validationSchema</code> when you invoke <code>useForm</code>. we use{' '}
                     <Link href="https://github.com/jquense/yup" target="_blank">
                       Yup
