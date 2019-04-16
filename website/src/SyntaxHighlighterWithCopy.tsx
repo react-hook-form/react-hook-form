@@ -43,6 +43,7 @@ const LinkToSandBox = styled.a`
   position: absolute;
   top: 10px;
   right: 0;
+  z-index: 1;
   box-shadow: 0 0 10px #000;
   text-decoration: none;
 
