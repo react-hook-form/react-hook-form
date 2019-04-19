@@ -244,12 +244,14 @@ export default function useForm(
               return lastChild ? resolve(resolvedPrevious) : resolvedPrevious;
             }
 
-            if (isRadioInput(type) && Array.isArray(options)) {
-              options.forEach(option => {
-                if (option.eventAttached && option.eventAttached.includes('change')) return;
-                option.ref.addEventListener('change', validateAndStateUpdate);
-                option.eventAttached = [...(option.eventAttached || []), 'change'];
-              });
+            if (isRadioInput(type)) {
+              if (Array.isArray(options)) {
+                options.forEach(option => {
+                  if (option.eventAttached && option.eventAttached.includes('change')) return;
+                  option.ref.addEventListener('change', validateAndStateUpdate);
+                  option.eventAttached = [...(option.eventAttached || []), 'change'];
+                });
+              }
             } else if (!field.eventAttached || !field.eventAttached.includes('input')) {
               ref.addEventListener('input', validateAndStateUpdate);
               field.eventAttached = [...(field.eventAttached || []), 'input'];
