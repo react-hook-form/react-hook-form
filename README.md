@@ -16,6 +16,7 @@
 - Follows HTML standard for validation
 - Tiny size without other any dependency
 - Build forms quickly with the [form builder](https://react-hook-form.now.sh/builder)
+- [Read more](https://medium.com/@bruce1049/form-validation-with-hook-in-3kb-c5414edf7d64) on the package motivation
 
 ## Install
 
