@@ -1,4 +1,4 @@
-import { RegisterInput } from '..';
+import { IRegisterInput } from '..';
 
 const defaultReturn = {
   isValid: false,
@@ -6,7 +6,7 @@ const defaultReturn = {
 };
 
 export default function getRadioValue(
-  options?: Array<RegisterInput>,
+  options?: Array<IRegisterInput>,
 ): {
   isValid: boolean;
   value: null | number | string;

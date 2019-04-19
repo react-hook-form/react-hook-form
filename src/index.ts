@@ -21,7 +21,7 @@ type MutationWatcher = {
 
 export type Ref = HTMLInputElement | HTMLSelectElement | null;
 
-export interface RegisterInput {
+export interface IRegisterInput {
   ref: Ref;
   required?: boolean | string;
   min?: NumberOrString | { value: NumberOrString; message: string };
@@ -35,12 +35,12 @@ export interface RegisterInput {
     | { value: Validate | { [key: string]: Validate }; message: string };
 }
 
-export interface Field extends RegisterInput {
+export interface IField extends IRegisterInput {
   ref: any;
   eventAttached?: Array<string>;
   watch?: boolean;
   mutationWatcher?: MutationWatcher;
-  fields?: Array<RegisterInput>;
+  fields?: Array<IRegisterInput>;
   options?: Array<{
     ref: Ref;
     eventAttached?: Array<string>;
@@ -54,7 +54,7 @@ type Error = {
   type: string;
 };
 
-export interface ErrorMessages {
+export interface IErrorMessages {
   [key: string]: Error;
 }
 
@@ -63,11 +63,11 @@ export default function useForm(
     mode: 'onSubmit',
   },
 ) {
-  const fieldsRef = useRef<{ [key: string]: Field }>({});
-  const errorMessagesRef = useRef<ErrorMessages>({});
+  const fieldsRef = useRef<{ [key: string]: IField }>({});
+  const errorMessagesRef = useRef<IErrorMessages>({});
   const isWatchAllRef = useRef<boolean>(false);
   const watchFieldsRef = useRef<{ [key: string]: boolean }>({});
-  const [errors, setErrors] = useState<ErrorMessages>({});
+  const [errors, setErrors] = useState<IErrorMessages>({});
   const isSubmitted = useRef<boolean>(false);
 
   async function validateAndStateUpdate({ target: { name }, type }: any) {
@@ -225,7 +225,7 @@ export default function useForm(
         values: { [key: string]: number | string | boolean };
       } = await new Promise(resolve =>
         currentFieldValues.reduce(
-          async (previous: any, field: Field, index: number) => {
+          async (previous: any, field: IField, index: number) => {
             const resolvedPrevious = await previous;
             const {
               ref,
@@ -282,7 +282,7 @@ export default function useForm(
     () => () => {
       fieldsRef.current &&
         Object.values(fieldsRef.current).forEach(
-          ({ ref, options }: Field) =>
+          ({ ref, options }: IField) =>
             isRadioInput(ref.type) && Array.isArray(options)
               ? options.forEach(({ ref }) => removeReferenceAndEventListeners(ref))
               : removeReferenceAndEventListeners(ref),

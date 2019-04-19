@@ -1,4 +1,4 @@
-import { Field } from '../index';
+import { IField } from '../index';
 import isCheckbox from '../utils/isCheckBox';
 
 export default function attachEventListeners({
@@ -12,7 +12,7 @@ export default function attachEventListeners({
   isRadio,
 }: {
   mode: string;
-  field: Field;
+  field: IField;
   watchFields: { [key: string]: boolean };
   radioOptionIndex: number;
   ref: any;
