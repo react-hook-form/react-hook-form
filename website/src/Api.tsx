@@ -89,7 +89,7 @@ const Wrapper = styled.div`
 
   @media (min-width: 768px) {
     display: grid;
-    grid-template-columns: 250px 1fr;
+    grid-template-columns: 250px minmax(0, 1fr);
   }
 `;
 
