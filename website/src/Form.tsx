@@ -127,6 +127,7 @@ export default function Form({
                 return (
                   <textarea
                     name={field.name}
+                    placeholder={field.name}
                     ref={register({
                       required: field.required,
                       ...(field.maxLength ? { maxLength: field.maxLength } : null),
