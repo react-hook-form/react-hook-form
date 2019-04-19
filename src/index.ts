@@ -16,7 +16,7 @@ type NumberOrString = number | string;
 type Props = { mode: 'onSubmit' | 'onBlur' | 'onChange'; validationSchema?: any };
 
 type MutationWatcher = {
-  disconnect: () => void,
+  disconnect: () => void;
 };
 
 export type Ref = any;
@@ -69,30 +69,49 @@ export default function useForm(
   const watchFieldsRef = useRef<{ [key: string]: boolean }>({});
   const [errors, setErrors] = useState<IErrorMessages>({});
   const isSubmitted = useRef<boolean>(false);
+  const isDirty = useRef<boolean>(false);
+  const touched = useRef<Array<string>>([]);
 
   async function validateAndStateUpdate({ target: { name }, type }: any) {
     const ref = fieldsRef.current[name];
     const errorMessages = errorMessagesRef.current;
+    let shouldUpdateState = false;
+
+    if (!isDirty.current) {
+      isDirty.current = true;
+      shouldUpdateState = true;
+    }
+
+    if (!touched.current.includes(name)) {
+      touched.current.push(name);
+      shouldUpdateState = true;
+    }
 
     if (!isSubmitted.current && mode === 'onSubmit' && (isWatchAllRef.current || watchFieldsRef.current[name])) {
       setErrors({});
-    } else {
-      const error = await validateField(ref, fieldsRef.current);
+      return;
+    }
 
-      if (
-        error !== errorMessages ||
-        mode === 'onChange' ||
-        (mode === 'onBlur' && type === 'blur') ||
-        watchFieldsRef.current[name] ||
-        isWatchAllRef.current
-      ) {
-        const copy = { ...errorMessages, ...error };
+    const error = await validateField(ref, fieldsRef.current);
 
-        if (!error[name]) delete copy[name];
+    if (
+      error !== errorMessages ||
+      mode === 'onChange' ||
+      (mode === 'onBlur' && type === 'blur') ||
+      watchFieldsRef.current[name] ||
+      isWatchAllRef.current
+    ) {
+      const copy = { ...errorMessages, ...error };
 
-        errorMessagesRef.current = copy;
-        setErrors(copy);
-      }
+      if (!error[name]) delete copy[name];
+
+      errorMessagesRef.current = copy;
+      setErrors(copy);
+      return;
+    }
+
+    if (shouldUpdateState) {
+      setErrors(errorMessages);
     }
   }
 
@@ -294,6 +313,8 @@ export default function useForm(
       errorMessagesRef.current = {};
       isWatchAllRef.current = false;
       isSubmitted.current = false;
+      isDirty.current = false;
+      touched.current = [];
       setErrors({});
     },
     [mode],
@@ -304,6 +325,8 @@ export default function useForm(
     handleSubmit,
     errors,
     watch,
+    dirty: isDirty.current,
     isSubmitted: isSubmitted.current,
+    touched: touched.current,
   };
 }

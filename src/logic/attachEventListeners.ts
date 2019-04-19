@@ -29,20 +29,20 @@ export default function attachEventListeners({
   const isOnBlur = mode === 'onBlur';
   if (!isOnChange && !isOnBlur) return;
 
-  const event = isOnChange ? (isRadio || isCheckbox(ref.type) ? 'change' : 'input') : 'blur';
-
   if (isRadio && field.options) {
     const options = field.options;
     const attachedEvents = options[radioOptionIndex].eventAttached || '';
 
-    if (!options[radioOptionIndex] || attachedEvents.includes(event)) return;
+    if (!options[radioOptionIndex] || attachedEvents) return;
 
-    options[radioOptionIndex].ref.addEventListener(event, validateAndStateUpdate);
-    options[radioOptionIndex].eventAttached = [...(attachedEvents || []), event];
+    options[radioOptionIndex].ref.addEventListener('change', validateAndStateUpdate);
+    options[radioOptionIndex].ref.addEventListener('blur', validateAndStateUpdate);
+    options[radioOptionIndex].eventAttached = [...(attachedEvents || []), 'change', 'blur'];
   } else {
-    if (field && field.eventAttached && field.eventAttached.includes(event)) return;
+    if (field && field.eventAttached) return;
 
-    ref.addEventListener(event, validateAndStateUpdate);
-    field.eventAttached = [...(field.eventAttached || []), event];
+    ref.addEventListener(isCheckbox(ref.type) ? 'change' : 'input', validateAndStateUpdate);
+    ref.addEventListener('blur', validateAndStateUpdate);
+    field.eventAttached = [...(field.eventAttached || []), isCheckbox(ref.type) ? 'change' : 'input', 'blur'];
   }
 }
