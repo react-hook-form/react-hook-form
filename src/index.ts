@@ -19,7 +19,7 @@ type MutationWatcher = {
   disconnect: () => void,
 };
 
-export type Ref = HTMLInputElement | HTMLSelectElement | null;
+export type Ref = any;
 
 export interface IRegisterInput {
   ref: Ref;
@@ -36,7 +36,7 @@ export interface IRegisterInput {
 }
 
 export interface IField extends IRegisterInput {
-  ref: any;
+  ref: Ref;
   eventAttached?: Array<string>;
   watch?: boolean;
   mutationWatcher?: MutationWatcher;
@@ -98,7 +98,7 @@ export default function useForm(
 
   const removeReferenceAndEventListeners = findMissDomAndClean.bind(null, fieldsRef.current, validateAndStateUpdate);
 
-  function registerIntoAllFields(elementRef, data = { required: false, validate: null }) {
+  function registerIntoAllFields(elementRef, data = { required: false, validate: {} }) {
     if (elementRef && !elementRef.name) {
       console.warn('Oops missing the name for field:', elementRef);
       return;

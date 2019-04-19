@@ -12,15 +12,19 @@ export default function findMissDomAndClean(
 
   const { name, type } = ref;
   if (isRadioInput(type) && options) {
+    const optionsCopy = fields[name].options;
     options.forEach(({ ref }, index) => {
-      if (!document.body.contains(ref) && fields[name] && fields[name].options && fields[name].options[index]) {
-        removeAllEventListeners(fields[name].options[index], validateWithStateUpdate);
-        fields[name].options[index].mutationWatcher.disconnect();
-        fields[name].options.splice(index, 1);
+      if (!document.body.contains(ref) && fields[name] && optionsCopy && optionsCopy[index]) {
+        removeAllEventListeners(optionsCopy[index], validateWithStateUpdate);
+        if (optionsCopy[index].mutationWatcher) {
+          // @ts-ignore
+          optionsCopy[index].mutationWatcher.disconnect();
+        }
+        optionsCopy.splice(index, 1);
       }
     });
 
-    if (!fields[name].options.length) {
+    if (Array.isArray(optionsCopy) && !optionsCopy.length) {
       delete fields[name];
       return fields;
     }

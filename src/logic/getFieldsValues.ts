@@ -1,8 +1,7 @@
 import getFieldValue from './getFieldValue';
-import { IField } from '../index';
 
 export default function getFieldsValues(fields, filedNames?: string | Array<string>) {
-  return Object.values(fields).reduce((previous, data: IField) => {
+  return Object.values(fields).reduce((previous, data: any) => {
     const {
       ref,
       ref: { name },
