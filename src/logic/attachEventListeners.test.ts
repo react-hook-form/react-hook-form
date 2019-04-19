@@ -44,7 +44,6 @@ describe('attachEventListeners', () => {
         ref: {
           name: 'test',
         },
-        type: 'radio',
         validateAndStateUpdate,
       }),
     ).toBeUndefined();
@@ -186,7 +185,6 @@ describe('attachEventListeners', () => {
         ref: {
           name: 'test',
         },
-        type: 'radio',
         isRadio: true,
         validateAndStateUpdate,
       }),
