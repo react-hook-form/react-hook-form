@@ -31,8 +31,8 @@ export default function attachEventListeners({
 
   const event = isOnChange ? (isRadio || isCheckbox(ref.type) ? 'change' : 'input') : 'blur';
 
-  if (isRadio) {
-    const options = field.options || {};
+  if (isRadio && field.options) {
+    const options = field.options;
     const attachedEvents = options[radioOptionIndex].eventAttached || '';
 
     if (!options[radioOptionIndex] || attachedEvents.includes(event)) return;
