@@ -37,13 +37,11 @@ export interface IRegisterInput {
 
 export interface IField extends IRegisterInput {
   ref: Ref;
-  eventAttached?: Array<string>;
   watch?: boolean;
   mutationWatcher?: MutationWatcher;
   fields?: Array<IRegisterInput>;
   options?: Array<{
     ref: Ref;
-    eventAttached?: Array<string>;
     mutationWatcher?: MutationWatcher;
   }>;
 }
@@ -203,12 +201,13 @@ export default function useForm(
     return result === undefined ? defaultValue : result;
   }
 
-  function register(data: any) {
+  function register(data: Ref) {
     if (!data) return;
     if (data.type) {
       if (!data.name) console.warn('Oops missing the name for field:', data);
       registerIntoAllFields(data);
     }
+    if (fieldsRef.current[data.name]) return;
 
     return ref => {
       if (ref) registerIntoAllFields(ref, data);
@@ -248,8 +247,7 @@ export default function useForm(
             const resolvedPrevious = await previous;
             const {
               ref,
-              ref: { name, type },
-              options,
+              ref: { name },
             } = field;
             const lastChild = fieldsLength - 1 === index;
 
@@ -261,19 +259,6 @@ export default function useForm(
             if (!hasError) {
               resolvedPrevious.values[name] = getFieldValue(fields, ref);
               return lastChild ? resolve(resolvedPrevious) : resolvedPrevious;
-            }
-
-            if (isRadioInput(type)) {
-              if (Array.isArray(options)) {
-                options.forEach(option => {
-                  if (option.eventAttached && option.eventAttached.includes('change')) return;
-                  option.ref.addEventListener('change', validateAndStateUpdate);
-                  option.eventAttached = [...(option.eventAttached || []), 'change'];
-                });
-              }
-            } else if (!field.eventAttached || !field.eventAttached.includes('input')) {
-              ref.addEventListener('input', validateAndStateUpdate);
-              field.eventAttached = [...(field.eventAttached || []), 'input'];
             }
 
             resolvedPrevious.errors = { ...(resolvedPrevious.errors || {}), ...fieldError };
