@@ -6,7 +6,6 @@ export default function attachEventListeners({
   field,
   watchFields,
   radioOptionIndex,
-  ref,
   validateAndStateUpdate,
   isWatchAll = false,
   isRadio,
@@ -15,7 +14,6 @@ export default function attachEventListeners({
   field: IField;
   watchFields: { [key: string]: boolean };
   radioOptionIndex: number;
-  ref: any;
   isRadio: boolean;
   validateAndStateUpdate: (
     {
@@ -25,6 +23,7 @@ export default function attachEventListeners({
   ) => void;
   isWatchAll?: boolean;
 }) {
+  const { ref } = field;
   const isOnChange = mode === 'onChange' || watchFields[ref.name] || isWatchAll;
   const isOnBlur = mode === 'onBlur';
   if (!isOnChange && !isOnBlur) return;

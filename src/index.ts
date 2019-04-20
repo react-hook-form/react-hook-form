@@ -32,7 +32,8 @@ export interface IRegisterInput {
   validate?:
     | Validate
     | { [key: string]: Validate }
-    | { value: Validate | { [key: string]: Validate }; message: string };
+    | { value: Validate | { [key: string]: Validate }; message: string }
+    | undefined;
 }
 
 export interface IField extends IRegisterInput {
@@ -115,7 +116,7 @@ export default function useForm(
 
   const removeReferenceAndEventListeners = findMissDomAndClean.bind(null, fieldsRef.current, validateAndStateUpdate);
 
-  function registerIntoAllFields(elementRef, data = { required: false, validate: {} }) {
+  function registerIntoAllFields(elementRef, data = { required: false, validate: undefined }) {
     if (elementRef && !elementRef.name) {
       console.warn('Oops missing the name for field:', elementRef);
       return;
@@ -175,7 +176,6 @@ export default function useForm(
     attachEventListeners({
       field: fields[name],
       watchFields: watchFieldsRef.current,
-      ref,
       isRadio,
       radioOptionIndex,
       isWatchAll: isWatchAllRef.current,
@@ -223,7 +223,6 @@ export default function useForm(
     let fieldValues;
     const fields = fieldsRef.current;
     const currentFieldValues = Object.values(fields);
-    const fieldsLength = currentFieldValues.length;
     isSubmitted.current = true;
 
     if (validationSchema) {
@@ -241,34 +240,45 @@ export default function useForm(
       const result: {
         errors: { [key: string]: Error };
         values: { [key: string]: number | string | boolean };
-      } = await new Promise(resolve =>
-        currentFieldValues.reduce(
-          async (previous: any, field: IField, index: number) => {
-            const resolvedPrevious = await previous;
-            const {
-              ref,
-              ref: { name },
-            } = field;
-            const lastChild = fieldsLength - 1 === index;
+      } = await currentFieldValues.reduce(
+        async (previous: any, field: IField) => {
+          const resolvedPrevious = await previous;
+          const {
+            ref,
+            ref: { name, type },
+            options,
+          } = field;
 
-            if (!fields[name]) return lastChild ? resolve(resolvedPrevious) : resolvedPrevious;
+          if (!fields[name]) return Promise.resolve(resolvedPrevious);
 
-            const fieldError = await validateField(field, fields);
-            const hasError = fieldError && fieldError[name];
+          const fieldError = await validateField(field, fields);
+          const hasError = fieldError && fieldError[name];
 
-            if (!hasError) {
-              resolvedPrevious.values[name] = getFieldValue(fields, ref);
-              return lastChild ? resolve(resolvedPrevious) : resolvedPrevious;
+          if (!hasError) {
+            resolvedPrevious.values[name] = getFieldValue(fields, ref);
+            return Promise.resolve(resolvedPrevious);
+          }
+
+          if (isRadioInput(type)) {
+            if (Array.isArray(options)) {
+              options.forEach(option => {
+                if (option.eventAttached && option.eventAttached.includes('change')) return;
+                option.ref.addEventListener('change', validateAndStateUpdate);
+                option.eventAttached = [...(option.eventAttached || []), 'change'];
+              });
             }
+          } else if (!field.eventAttached || !field.eventAttached.includes('input')) {
+            ref.addEventListener('input', validateAndStateUpdate);
+            field.eventAttached = [...(field.eventAttached || []), 'input'];
+          }
 
-            resolvedPrevious.errors = { ...(resolvedPrevious.errors || {}), ...fieldError };
-            return lastChild ? resolve(resolvedPrevious) : resolvedPrevious;
-          },
-          Promise.resolve({
-            errors: {},
-            values: {},
-          }),
-        ),
+          resolvedPrevious.errors = { ...(resolvedPrevious.errors || {}), ...fieldError };
+          return Promise.resolve(resolvedPrevious);
+        },
+        Promise.resolve({
+          errors: {},
+          values: {},
+        }),
       );
 
       fieldErrors = result.errors;
@@ -287,12 +297,12 @@ export default function useForm(
   useEffect(
     () => () => {
       fieldsRef.current &&
-        Object.values(fieldsRef.current).forEach(
-          ({ ref, options }: IField) =>
-            isRadioInput(ref.type) && Array.isArray(options)
-              ? options.forEach(({ ref }) => removeReferenceAndEventListeners(ref))
-              : removeReferenceAndEventListeners(ref),
-        );
+        Object.values(fieldsRef.current).forEach((field: IField) => {
+          const { ref, options } = field;
+          isRadioInput(ref.type) && Array.isArray(options)
+            ? options.forEach(fieldRef => removeReferenceAndEventListeners(fieldRef, true))
+            : removeReferenceAndEventListeners(field, true);
+        });
       fieldsRef.current = {};
       watchFieldsRef.current = {};
       errorMessagesRef.current = {};

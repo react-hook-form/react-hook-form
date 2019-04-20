@@ -6,9 +6,12 @@ describe('attachEventListeners', () => {
       attachEventListeners({
         mode: 'onchange',
         radioOptionIndex: 0,
-        ref: {},
         // @ts-ignore
-        field: {},
+        field: {
+          ref: {
+            name: 'test',
+          },
+        },
         isRadio: true,
         watchFields: {},
         validateAndStateUpdate: () => {},
@@ -22,6 +25,7 @@ describe('attachEventListeners', () => {
     const fields = {
       test: {
         ref: {},
+        name: 'test',
         options: [
           {
             ref: {
@@ -41,9 +45,6 @@ describe('attachEventListeners', () => {
         // @ts-ignore
         field: fields.test,
         radioOptionIndex: 0,
-        ref: {
-          name: 'test',
-        },
         validateAndStateUpdate,
       }),
     ).toBeUndefined();
@@ -57,7 +58,9 @@ describe('attachEventListeners', () => {
     const addEventListener = jest.fn();
     const fields = {
       test: {
-        ref: {},
+        ref: {
+          name: 'test',
+        },
         watch: true,
         options: [
           {
@@ -79,9 +82,6 @@ describe('attachEventListeners', () => {
         // @ts-ignore
         field: fields.test,
         radioOptionIndex: 0,
-        ref: {
-          name: 'test',
-        },
         isRadio: true,
         validateAndStateUpdate,
       }),
@@ -98,6 +98,7 @@ describe('attachEventListeners', () => {
       test: {
         ref: {
           addEventListener,
+          name: 'test',
         },
         eventAttached: [],
       },
@@ -110,10 +111,6 @@ describe('attachEventListeners', () => {
         // @ts-ignore
         field: fields.test,
         radioOptionIndex: 0,
-        ref: {
-          name: 'test',
-          addEventListener,
-        },
         isRadio: false,
         validateAndStateUpdate,
       }),
@@ -129,6 +126,7 @@ describe('attachEventListeners', () => {
     const fields = {
       test: {
         ref: {
+          name: 'test',
           addEventListener,
         },
         eventAttached: [],
@@ -145,10 +143,6 @@ describe('attachEventListeners', () => {
         // @ts-ignore
         field: fields.test,
         radioOptionIndex: 0,
-        ref: {
-          name: 'test',
-          addEventListener,
-        },
         isRadio: false,
         validateAndStateUpdate,
       }),
@@ -163,7 +157,8 @@ describe('attachEventListeners', () => {
     const addEventListener = jest.fn();
     const fields = {
       test: {
-        ref: {},
+        ref: {
+          name: 'test',},
         options: [
           {
             ref: {
@@ -182,9 +177,6 @@ describe('attachEventListeners', () => {
         // @ts-ignore
         field: fields.test,
         radioOptionIndex: 0,
-        ref: {
-          name: 'test',
-        },
         isRadio: true,
         validateAndStateUpdate,
       }),
@@ -200,6 +192,7 @@ describe('attachEventListeners', () => {
     const fields = {
       test: {
         ref: {
+          name: 'test',
           addEventListener,
         },
         eventAttached: [],
@@ -215,10 +208,6 @@ describe('attachEventListeners', () => {
         // @ts-ignore
         field: fields.test,
         radioOptionIndex: 0,
-        ref: {
-          name: 'test',
-          addEventListener,
-        },
         isRadio: false,
         // @ts-ignore
         validateAndStateUpdate,
