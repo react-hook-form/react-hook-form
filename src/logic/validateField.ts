@@ -116,7 +116,7 @@ export default async (
     }
   }
 
-  if (validate) {
+  if (validate && Object.entries(validate).length !== 0) {
     const fieldValue = isRadio ? getRadioValue(options).value : value;
 
     if (typeof validate === 'function') {
