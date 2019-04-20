@@ -16,7 +16,7 @@ type NumberOrString = number | string;
 type Props = { mode: 'onSubmit' | 'onBlur' | 'onChange'; validationSchema?: any };
 
 type MutationWatcher = {
-  disconnect: () => void,
+  disconnect: () => void;
 };
 
 export type Ref = any;
@@ -158,7 +158,6 @@ export default function useForm(
     attachEventListeners({
       field: fields[name],
       watchFields: watchFieldsRef.current,
-      ref,
       isRadio,
       radioOptionIndex,
       isWatchAll: isWatchAllRef.current,
@@ -283,12 +282,12 @@ export default function useForm(
   useEffect(
     () => () => {
       fieldsRef.current &&
-        Object.values(fieldsRef.current).forEach(
-          ({ ref, options }: IField) =>
-            isRadioInput(ref.type) && Array.isArray(options)
-              ? options.forEach(({ ref }) => removeReferenceAndEventListeners(ref))
-              : removeReferenceAndEventListeners(ref),
-        );
+        Object.values(fieldsRef.current).forEach((field: IField) => {
+          const { ref, options } = field;
+          isRadioInput(ref.type) && Array.isArray(options)
+            ? options.forEach((fieldRef) => removeReferenceAndEventListeners(fieldRef))
+            : removeReferenceAndEventListeners(field);
+        });
       fieldsRef.current = {};
       watchFieldsRef.current = {};
       errorMessagesRef.current = {};
