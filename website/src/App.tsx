@@ -1,5 +1,5 @@
 import React, { useState, useRef, Suspense, useEffect } from 'react';
-import useForm from 'react-hook-form';
+import useForm from './src';
 import { Animate } from 'react-simple-animate';
 import ButtonGroup from './ButtonGroup';
 import styled from 'styled-components';
@@ -94,9 +94,11 @@ function App() {
     showWatch: true,
     showSubmit: true,
   });
-  const { register, errors, handleSubmit, watch } = useForm({
+  const { register, errors, handleSubmit, watch, dirty, touched } = useForm({
     mode: setting.mode,
   });
+  console.log('dirty', dirty);
+  console.log('touched', touched);
 
   const onSubmit = data => {
     updateSubmitData(data);
