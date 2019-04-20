@@ -32,7 +32,8 @@ export interface IRegisterInput {
   validate?:
     | Validate
     | { [key: string]: Validate }
-    | { value: Validate | { [key: string]: Validate }; message: string };
+    | { value: Validate | { [key: string]: Validate }; message: string }
+    | undefined;
 }
 
 export interface IField extends IRegisterInput {
@@ -98,7 +99,7 @@ export default function useForm(
 
   const removeReferenceAndEventListeners = findMissDomAndClean.bind(null, fieldsRef.current, validateAndStateUpdate);
 
-  function registerIntoAllFields(elementRef, data = { required: false, validate: {} }) {
+  function registerIntoAllFields(elementRef, data = { required: false, validate: undefined }) {
     if (elementRef && !elementRef.name) {
       console.warn('Oops missing the name for field:', elementRef);
       return;
