@@ -262,14 +262,11 @@ export default function useForm(
           if (isRadioInput(type)) {
             if (Array.isArray(options)) {
               options.forEach(option => {
-                if (option.eventAttached && option.eventAttached.includes('change')) return;
                 option.ref.addEventListener('change', validateAndStateUpdate);
-                option.eventAttached = [...(option.eventAttached || []), 'change'];
               });
             }
-          } else if (!field.eventAttached || !field.eventAttached.includes('input')) {
+          } else {
             ref.addEventListener('input', validateAndStateUpdate);
-            field.eventAttached = [...(field.eventAttached || []), 'input'];
           }
 
           resolvedPrevious.errors = { ...(resolvedPrevious.errors || {}), ...fieldError };
