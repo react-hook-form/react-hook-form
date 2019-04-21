@@ -103,8 +103,6 @@ function App() {
   } = useForm({
     mode: setting.mode,
   });
-  console.log('dirty', dirty);
-  console.log('touched', touched);
 
   const onSubmit = data => {
     updateSubmitData(data);
