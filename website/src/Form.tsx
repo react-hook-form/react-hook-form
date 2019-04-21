@@ -15,7 +15,7 @@ const Wrapper = styled.div`
   display: grid;
   min-height: 80vh;
   transition: 1s all;
-  grid-template-columns: repeat(auto-fit, minmax(20rem, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(10rem, 1fr));
   grid-column-gap: 40px;
 `;
 
@@ -88,6 +88,7 @@ export default function Form({
   setting,
   showSetting,
   toggleSetting,
+  touched,
 }) {
   return (
     <>
@@ -263,6 +264,19 @@ export default function Form({
               </Animate>
             </section>
           )}
+
+        <section>
+          <Title>Touched</Title>
+          {!Object.keys(touched).length && <p>ⓘ Touched fields will display here.</p>}
+          <Animate
+            durationSeconds={0.8}
+            play={touched.length}
+            startStyle={{ opacity: 0 }}
+            endStyle={{ opacity: 1 }}
+          >
+            <Code>{JSON.stringify(touched, null, 2)}</Code>
+          </Animate>
+        </section>
 
         {setting.showSubmit && (
           <section>

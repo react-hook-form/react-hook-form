@@ -1,12 +1,12 @@
 import React, { useState, useRef, Suspense, useEffect } from 'react';
-import useForm from './src';
+import useForm from 'react-hook-form';
 import { Animate } from 'react-simple-animate';
 import ButtonGroup from './ButtonGroup';
 import styled from 'styled-components';
 import FORM_DATA from './constants/formData';
 import colors from './styles/colors';
 import Form from './Form';
-import Header from "./Header";
+import Header from './Header';
 
 const Setting = React.lazy(() => import('./Setting'));
 const Builder = React.lazy(() => import('./Builder'));
@@ -94,7 +94,13 @@ function App() {
     showWatch: true,
     showSubmit: true,
   });
-  const { register, errors, handleSubmit, watch, dirty, touched } = useForm({
+  const {
+    register,
+    errors,
+    handleSubmit,
+    watch,
+    formState: { dirty, touched },
+  } = useForm({
     mode: setting.mode,
   });
   console.log('dirty', dirty);
@@ -209,6 +215,7 @@ function App() {
                 register,
                 errors,
                 watch,
+                touched,
                 formData,
                 toggleBuilder,
                 setting,
@@ -217,7 +224,11 @@ function App() {
           </div>
 
           <Footer>
-            Build ♡ by <a href="https://twitter.com/bluebill1049" target="_blank">@Bill Luo</a> with{' '}
+            Build ♡ by{' '}
+            <a href="https://twitter.com/bluebill1049" target="_blank">
+              @Bill Luo
+            </a>{' '}
+            with{' '}
             <a href="https://github.com/bluebill1049/react-hook-form" target="_blank">
               React Hook Form
             </a>{' '}
