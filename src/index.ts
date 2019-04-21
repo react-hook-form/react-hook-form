@@ -8,6 +8,7 @@ import isRadioInput from './utils/isRadioInput';
 import attachEventListeners from './logic/attachEventListeners';
 import validateWithSchema from './logic/validateWithSchema';
 import combineFieldValues from './logic/combineFieldValues';
+import shouldUpdateWithError from './logic/shouldUpdateWithError';
 
 type Validate = (data: string | number) => boolean | string | number | Date;
 
@@ -38,13 +39,11 @@ export interface IRegisterInput {
 
 export interface IField extends IRegisterInput {
   ref: Ref;
-  eventAttached?: Array<string>;
   watch?: boolean;
   mutationWatcher?: MutationWatcher;
   fields?: Array<IRegisterInput>;
   options?: Array<{
     ref: Ref;
-    eventAttached?: Array<string>;
     mutationWatcher?: MutationWatcher;
   }>;
 }
@@ -70,30 +69,47 @@ export default function useForm(
   const watchFieldsRef = useRef<{ [key: string]: boolean }>({});
   const [errors, setErrors] = useState<IErrorMessages>({});
   const isSubmitted = useRef<boolean>(false);
+  const isDirty = useRef<boolean>(false);
+  const touched = useRef<Array<string>>([]);
 
   async function validateAndStateUpdate({ target: { name }, type }: any) {
     const ref = fieldsRef.current[name];
     const errorMessages = errorMessagesRef.current;
+    let shouldUpdateState = isWatchAllRef.current;
+
+    if (!isDirty.current) {
+      isDirty.current = true;
+      shouldUpdateState = true;
+    }
+
+    if (!touched.current.includes(name)) {
+      touched.current.push(name);
+      shouldUpdateState = true;
+    }
 
     if (!isSubmitted.current && mode === 'onSubmit' && (isWatchAllRef.current || watchFieldsRef.current[name])) {
-      setErrors({});
-    } else {
-      const error = await validateField(ref, fieldsRef.current);
+      return setErrors({});
+    }
 
-      if (
-        error !== errorMessages ||
-        mode === 'onChange' ||
-        (mode === 'onBlur' && type === 'blur') ||
-        watchFieldsRef.current[name] ||
-        isWatchAllRef.current
-      ) {
-        const copy = { ...errorMessages, ...error };
+    const error = await validateField(ref, fieldsRef.current);
 
-        if (!error[name]) delete copy[name];
+    if (
+      shouldUpdateWithError(errorMessages, name, error) ||
+      mode === 'onChange' ||
+      (mode === 'onBlur' && type === 'blur') ||
+      watchFieldsRef.current[name]
+    ) {
+      const copy = { ...errorMessages, ...error };
 
-        errorMessagesRef.current = copy;
-        setErrors(copy);
-      }
+      if (!error[name]) delete copy[name];
+
+      errorMessagesRef.current = copy;
+      setErrors(copy);
+      return;
+    }
+
+    if (shouldUpdateState) {
+      setErrors(errorMessages);
     }
   }
 
@@ -118,6 +134,8 @@ export default function useForm(
     } = inputData;
     const fields = fieldsRef.current;
     const isRadio = isRadioInput(type);
+
+    if (fieldsRef.current[name]) return;
 
     if (isRadio) {
       if (!fields[name]) {
@@ -158,11 +176,8 @@ export default function useForm(
 
     attachEventListeners({
       field: fields[name],
-      watchFields: watchFieldsRef.current,
       isRadio,
       radioOptionIndex,
-      isWatchAll: isWatchAllRef.current,
-      mode,
       validateAndStateUpdate,
     });
   }
@@ -184,12 +199,13 @@ export default function useForm(
     return result === undefined ? defaultValue : result;
   }
 
-  function register(data: any) {
+  function register(data: Ref) {
     if (!data) return;
     if (data.type) {
       if (!data.name) console.warn('Oops missing the name for field:', data);
       registerIntoAllFields(data);
     }
+    if (fieldsRef.current[data.name]) return;
 
     return ref => {
       if (ref) registerIntoAllFields(ref, data);
@@ -227,8 +243,7 @@ export default function useForm(
           const resolvedPrevious = await previous;
           const {
             ref,
-            ref: { name, type },
-            options,
+            ref: { name },
           } = field;
 
           if (!fields[name]) return Promise.resolve(resolvedPrevious);
@@ -239,19 +254,6 @@ export default function useForm(
           if (!hasError) {
             resolvedPrevious.values[name] = getFieldValue(fields, ref);
             return Promise.resolve(resolvedPrevious);
-          }
-
-          if (isRadioInput(type)) {
-            if (Array.isArray(options)) {
-              options.forEach(option => {
-                if (option.eventAttached && option.eventAttached.includes('change')) return;
-                option.ref.addEventListener('change', validateAndStateUpdate);
-                option.eventAttached = [...(option.eventAttached || []), 'change'];
-              });
-            }
-          } else if (!field.eventAttached || !field.eventAttached.includes('input')) {
-            ref.addEventListener('input', validateAndStateUpdate);
-            field.eventAttached = [...(field.eventAttached || []), 'input'];
           }
 
           resolvedPrevious.errors = { ...(resolvedPrevious.errors || {}), ...fieldError };
@@ -290,6 +292,8 @@ export default function useForm(
       errorMessagesRef.current = {};
       isWatchAllRef.current = false;
       isSubmitted.current = false;
+      isDirty.current = false;
+      touched.current = [];
       setErrors({});
     },
     [mode],
@@ -300,6 +304,10 @@ export default function useForm(
     handleSubmit,
     errors,
     watch,
-    isSubmitted: isSubmitted.current,
+    formState: {
+      dirty: isDirty.current,
+      isSubmitted: isSubmitted.current,
+      touched: touched.current,
+    },
   };
 }

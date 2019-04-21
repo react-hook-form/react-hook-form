@@ -1,24 +1,6 @@
 import attachEventListeners from './attachEventListeners';
 
 describe('attachEventListeners', () => {
-  it('should return undefined when filed not found', () => {
-    expect(
-      attachEventListeners({
-        mode: 'onchange',
-        radioOptionIndex: 0,
-        // @ts-ignore
-        field: {
-          ref: {
-            name: 'test',
-          },
-        },
-        isRadio: true,
-        watchFields: {},
-        validateAndStateUpdate: () => {},
-      }),
-    ).toBeUndefined();
-  });
-
   it('should attach change event for radio and return undefined', () => {
     const validateAndStateUpdate = jest.fn();
     const addEventListener = jest.fn();
@@ -39,9 +21,7 @@ describe('attachEventListeners', () => {
 
     expect(
       attachEventListeners({
-        watchFields: {},
         isRadio: true,
-        mode: 'onChange',
         // @ts-ignore
         field: fields.test,
         radioOptionIndex: 0,
@@ -75,10 +55,6 @@ describe('attachEventListeners', () => {
 
     expect(
       attachEventListeners({
-        watchFields: {
-          test: true,
-        },
-        mode: 'onSubmit',
         // @ts-ignore
         field: fields.test,
         radioOptionIndex: 0,
@@ -106,8 +82,6 @@ describe('attachEventListeners', () => {
 
     expect(
       attachEventListeners({
-        watchFields: {},
-        mode: 'onChange',
         // @ts-ignore
         field: fields.test,
         radioOptionIndex: 0,
@@ -136,10 +110,6 @@ describe('attachEventListeners', () => {
 
     expect(
       attachEventListeners({
-        watchFields: {
-          test: true,
-        },
-        mode: 'onSubmit',
         // @ts-ignore
         field: fields.test,
         radioOptionIndex: 0,
@@ -172,9 +142,7 @@ describe('attachEventListeners', () => {
 
     expect(
       attachEventListeners({
-        watchFields: { test: true },
-        mode: 'onBlur',
-        // @ts-ignore
+          // @ts-ignore
         field: fields.test,
         radioOptionIndex: 0,
         isRadio: true,
@@ -201,10 +169,6 @@ describe('attachEventListeners', () => {
 
     expect(
       attachEventListeners({
-        watchFields: {
-          test: true,
-        },
-        mode: 'onBlur',
         // @ts-ignore
         field: fields.test,
         radioOptionIndex: 0,
