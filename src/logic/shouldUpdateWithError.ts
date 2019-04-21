@@ -1,4 +1,8 @@
-export default function shouldUpdateWithError(errorMessages, name, error) {
+export default function shouldUpdateWithError({ errorMessages, name, error, mode, onSubmitModeNotSubmitted, type }) {
+  if (onSubmitModeNotSubmitted || (mode === 'onBlur' && type !== 'blur')) {
+    return false;
+  }
+
   if (!Object.keys(error).length && !Object.keys(errorMessages)) {
     return false;
   }

@@ -75,6 +75,7 @@ export default function useForm(
   async function validateAndStateUpdate({ target: { name }, type }: any) {
     const ref = fieldsRef.current[name];
     const errorMessages = errorMessagesRef.current;
+    const onSubmitModeNotSubmitted = !isSubmitted.current && mode === 'onSubmit';
     let shouldUpdateState = isWatchAllRef.current;
 
     if (!isDirty.current) {
@@ -87,14 +88,14 @@ export default function useForm(
       shouldUpdateState = true;
     }
 
-    if (!isSubmitted.current && mode === 'onSubmit' && (isWatchAllRef.current || watchFieldsRef.current[name])) {
+    if (onSubmitModeNotSubmitted && (isWatchAllRef.current || watchFieldsRef.current[name])) {
       return setErrors({});
     }
 
     const error = await validateField(ref, fieldsRef.current);
 
     if (
-      shouldUpdateWithError(errorMessages, name, error) ||
+      shouldUpdateWithError({ errorMessages, name, error, mode, onSubmitModeNotSubmitted, type }) ||
       mode === 'onChange' ||
       (mode === 'onBlur' && type === 'blur') ||
       watchFieldsRef.current[name]
