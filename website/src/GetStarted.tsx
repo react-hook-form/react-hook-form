@@ -3,6 +3,7 @@ import { Title } from './styles/typography';
 import copyClipBoard from '../src/utils/copyClipBoard';
 import SyntaxHighlighterWithCopy from '../src/SyntaxHighlighterWithCopy';
 import code from '../src/codeExamples/defaultExample';
+import colors from './styles/colors';
 import React from 'react';
 
 const InstallCode = styled.span`
@@ -14,7 +15,7 @@ const InstallCode = styled.span`
 `;
 
 const CopyButton = styled.button`
-  background: #516391;
+  background: ${colors.lightBlue};
   border: none;
   color: white;
   border-radius: 4px;

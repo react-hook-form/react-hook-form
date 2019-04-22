@@ -297,7 +297,7 @@ function Builder({ formData, showApi, toggleApi, apiButton, isMobile }: any) {
                                 style={{
                                   marginBottom: '10px',
                                   fontSize: '14px',
-                                  color: '#6d7baf',
+                                  color: colors.lightBlue,
                                 }}
                               >
                                 API
