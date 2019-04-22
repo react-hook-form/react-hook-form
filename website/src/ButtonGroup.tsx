@@ -82,7 +82,7 @@ const ActionButtonGroup = styled.div`
   justify-content: center;
   position: fixed;
   bottom: 0;
-  z-index: 5;
+  z-index: 1;
   left: 0;
   background: #1e2a4a;
   box-shadow: 0 0 4px 0 #000;

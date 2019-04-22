@@ -110,11 +110,11 @@ const Menu = styled.div`
 
       & > li {
         line-height: 22px;
-        margin-bottom: 22px;
+        margin-bottom: 10px;
 
         & > a {
           text-decoration: none;
-          padding-left: 30px;
+          padding-left: 10px;
         }
 
         & > a,
@@ -168,6 +168,7 @@ const Code = styled.span`
 
 const links = [
   'Quick Start',
+  'Examples',
   'useform',
   'register',
   'errors',
@@ -197,31 +198,31 @@ function Builder({ formData, showApi, toggleApi, apiButton, isMobile }: any) {
         // @ts-ignore
         if (quickStartRef) quickStartRef.current.scrollIntoView({ behavior: 'smooth' });
         break;
-      case links[1]:
+      case links[2]:
         // @ts-ignore
         if (useFormRef) useFormRef.current.scrollIntoView({ behavior: 'smooth' });
         break;
-      case links[2]:
+      case links[3]:
         // @ts-ignore
         if (registerRef) registerRef.current.scrollIntoView({ behavior: 'smooth' });
         break;
-      case links[3]:
+      case links[4]:
         // @ts-ignore
         if (errorsRef) errorsRef.current.scrollIntoView({ behavior: 'smooth' });
         break;
-      case links[4]:
+      case links[5]:
         // @ts-ignore
         if (watchRef) watchRef.current.scrollIntoView({ behavior: 'smooth' });
         break;
-      case links[5]:
+      case links[6]:
         // @ts-ignore
         if (handleSubmitRef) handleSubmitRef.current.scrollIntoView({ behavior: 'smooth' });
         break;
-      case links[6]:
+      case links[7]:
         // @ts-ignore
         if (validationSchemaRef) validationSchemaRef.current.scrollIntoView({ behavior: 'smooth' });
         break;
-      case links[7]:
+      case links[8]:
         // @ts-ignore
         if (formStateRef) formStateRef.current.scrollIntoView({ behavior: 'smooth' });
         break;
@@ -279,17 +280,38 @@ function Builder({ formData, showApi, toggleApi, apiButton, isMobile }: any) {
                 <Menu>
                   <ul>
                     {links.map(link => {
+                      if (link === 'Examples') {
+                        return (
+                          <React.Fragment key="examples">
+                            <li>
+                              <Code>{`</>`}</Code>
+                              <a
+                                href="https://github.com/bluebill1049/react-hook-form/tree/master/examples"
+                                target="_blank"
+                              >
+                                Examples
+                              </a>
+                            </li>
+                            <li>
+                              <Title
+                                style={{
+                                  marginBottom: '10px',
+                                  fontSize: '14px',
+                                  color: '#6d7baf',
+                                }}
+                              >
+                                API
+                              </Title>
+                            </li>
+                          </React.Fragment>
+                        );
+                      }
                       return (
                         <li key={link} onClick={() => goToSection(link)}>
                           {link !== 'Quick Start' && <Code>{`</>`}</Code>} <button>{link}</button>
                         </li>
                       );
                     })}
-                    <li>
-                      <a href="https://github.com/bluebill1049/react-hook-form/tree/master/examples" target="_blank">
-                        Examples
-                      </a>
-                    </li>
                   </ul>
                 </Menu>
                 <main>

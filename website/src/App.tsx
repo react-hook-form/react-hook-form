@@ -99,7 +99,7 @@ function App() {
     errors,
     handleSubmit,
     watch,
-    formState: { dirty, touched },
+    formState: { touched },
   } = useForm({
     mode: setting.mode,
   });
