@@ -166,16 +166,27 @@ const Code = styled.span`
   font-size: 14px;
 `;
 
-const links = ['Quick Start', 'useform', 'register', 'errors', 'watch', 'handleSubmit', 'validationSchema'];
+const links = [
+  'Quick Start',
+  'useform',
+  'register',
+  'errors',
+  'watch',
+  'handleSubmit',
+  'validationSchema',
+  'formState',
+];
 
 function Builder({ formData, showApi, toggleApi, apiButton, isMobile }: any) {
   const copyFormData = useRef([]);
   const closeButton = useRef(null);
   const quickStartRef = useRef(null);
+  const formStateRef = useRef(null);
   const useFormRef = useRef(null);
   const registerRef = useRef(null);
   const errorsRef = useRef(null);
   const watchRef = useRef(null);
+  const root = useRef(null);
   const validationSchemaRef = useRef(null);
   const handleSubmitRef = useRef(null);
   copyFormData.current = formData;
@@ -210,6 +221,10 @@ function Builder({ formData, showApi, toggleApi, apiButton, isMobile }: any) {
         // @ts-ignore
         if (validationSchemaRef) validationSchemaRef.current.scrollIntoView({ behavior: 'smooth' });
         break;
+      case links[7]:
+        // @ts-ignore
+        if (formStateRef) formStateRef.current.scrollIntoView({ behavior: 'smooth' });
+        break;
     }
   };
 
@@ -236,7 +251,7 @@ function Builder({ formData, showApi, toggleApi, apiButton, isMobile }: any) {
       }}
       render={({ style }) => {
         return (
-          <Root style={style}>
+          <Root style={style} ref={root}>
             <div
               id="api"
               style={{
@@ -288,8 +303,13 @@ function Builder({ formData, showApi, toggleApi, apiButton, isMobile }: any) {
                     </h2>
                   </code>
                   <p>
-                    By invoking <code>useForm</code>, you will receive methods to register, watch, validate and print
-                    errors. (run <code>useForm</code> before <code>render</code>)
+                    By invoking <code>useForm</code>, you will receive methods to{' '}
+                    <CodeAsLink onClick={() => goToSection('register')}>register</CodeAsLink>,{' '}
+                    <CodeAsLink onClick={() => goToSection('errors')}>errors</CodeAsLink>,{' '}
+                    <CodeAsLink onClick={() => goToSection('handleSubmit')}>handleSubmit</CodeAsLink>,{' '}
+                    <CodeAsLink onClick={() => goToSection('watch')}>watch</CodeAsLink> and{' '}
+                    <CodeAsLink onClick={() => goToSection('formState')}>formState</CodeAsLink>. (run{' '}
+                    <code>useForm</code> before <code>render</code>)
                   </p>
                   <p>
                     Apply form validation rules at the schema level, please refer the{' '}
@@ -377,8 +397,8 @@ function Builder({ formData, showApi, toggleApi, apiButton, isMobile }: any) {
                   </code>
                   <p>
                     Watch over input change and return its value. first-time run <code>watch</code> will always return{' '}
-                    <code>undefined</code> because called before <code>render</code>. You can set the default value as the
-                    second argument.
+                    <code>undefined</code> because called before <code>render</code>. You can set the default value as
+                    the second argument.
                   </p>
                   <TableWrapper>
                     <Table>
@@ -427,6 +447,14 @@ function Builder({ formData, showApi, toggleApi, apiButton, isMobile }: any) {
                     </h2>
                   </code>
                   <p>This function will pass you the form data when form validation is successful.</p>
+
+                  <hr />
+                  <code ref={formStateRef}>
+                    <h2>
+                      formState: <Type>{`{ dirty: boolean, isSubmitted: boolean, touched: Array<string> }`}</Type>
+                    </h2>
+                  </code>
+                  <p>This object contain information about the form state.</p>
 
                   <hr />
 
