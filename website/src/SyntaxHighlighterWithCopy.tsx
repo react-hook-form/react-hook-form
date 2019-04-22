@@ -33,7 +33,7 @@ const CopyButton = styled.button`
   }
 `;
 
-const LinkToSandBox = styled.a`
+export const LinkToSandBox = styled.a`
   background: ${colors.lightPink};
   border: none;
   color: white;

@@ -11,7 +11,7 @@ import validationSchemaCode from './codeExamples/validationSchema';
 import Link from './styles/link';
 import code from './codeExamples/defaultExample';
 import errorCode from './codeExamples/errorCode';
-import SyntaxHighlighterWithCopy from './SyntaxHighlighterWithCopy';
+import SyntaxHighlighterWithCopy, { LinkToSandBox } from './SyntaxHighlighterWithCopy';
 
 const CodeAsLink = styled(Link)`
   cursor: pointer;
@@ -447,6 +447,16 @@ function Builder({ formData, showApi, toggleApi, apiButton, isMobile }: any) {
                     </h2>
                   </code>
                   <p>This function will pass you the form data when form validation is successful.</p>
+                  <LinkToSandBox
+                    style={{
+                      position: 'relative',
+                      left: 0,
+                    }}
+                    href="https://codesandbox.io/s/yj07z1639"
+                    target="_blank"
+                  >
+                    CodeSandbox
+                  </LinkToSandBox>
 
                   <hr />
                   <code ref={formStateRef}>
@@ -455,6 +465,16 @@ function Builder({ formData, showApi, toggleApi, apiButton, isMobile }: any) {
                     </h2>
                   </code>
                   <p>This object contain information about the form state.</p>
+                  <LinkToSandBox
+                    style={{
+                      position: 'relative',
+                      left: 0,
+                    }}
+                    href="https://codesandbox.io/s/7o2wrp86k6"
+                    target="_blank"
+                  >
+                    CodeSandbox
+                  </LinkToSandBox>
 
                   <hr />
 
