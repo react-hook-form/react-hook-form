@@ -308,7 +308,14 @@ function Builder({ formData, showApi, toggleApi, apiButton, isMobile }: any) {
                       }
                       return (
                         <li key={link} onClick={() => goToSection(link)}>
-                          {link !== 'Quick Start' && <Code>{`</>`}</Code>} <button>{link}</button>
+                          {link !== 'Quick Start' && <Code>{`</>`}</Code>}{' '}
+                          <button
+                            style={{
+                              ...(link === 'Quick Start' ? { paddingLeft: 0 } : null),
+                            }}
+                          >
+                            {link}
+                          </button>
                         </li>
                       );
                     })}
