@@ -83,12 +83,13 @@ export default function useForm(
       ref,
       required,
       validate,
-      ref: { name, type },
+      ref: { name, type, value },
     } = inputData;
     const fields = fieldsRef.current;
     const isRadio = isRadioInput(type);
+    const radioOptionIndex = isRadio ? fields[name].options.findIndex(({ ref }) => value === ref.value) : -1;
 
-    if (fieldsRef.current[name]) return;
+    if (fieldsRef.current[name] && radioOptionIndex > -1) return;
 
     if (isRadio) {
       if (!fields[name]) {
@@ -106,7 +107,7 @@ export default function useForm(
     } else {
       fields[name] = {
         ...inputData,
-        mutationWatcher: onDomRemove(ref, () => removeReferenceAndEventListeners(inputData, true))
+        mutationWatcher: onDomRemove(ref, () => removeReferenceAndEventListeners(inputData, true)),
       };
     }
 
@@ -215,12 +216,12 @@ export default function useForm(
 
   const unSubscribe = () => {
     fieldsRef.current &&
-    Object.values(fieldsRef.current).forEach((field: IField) => {
-      const { ref, options } = field;
-      isRadioInput(ref.type) && Array.isArray(options)
-        ? options.forEach(fieldRef => removeReferenceAndEventListeners(fieldRef, true))
-        : removeReferenceAndEventListeners(field, true);
-    });
+      Object.values(fieldsRef.current).forEach((field: IField) => {
+        const { ref, options } = field;
+        isRadioInput(ref.type) && Array.isArray(options)
+          ? options.forEach(fieldRef => removeReferenceAndEventListeners(fieldRef, true))
+          : removeReferenceAndEventListeners(field, true);
+      });
     fieldsRef.current = {};
     watchFieldsRef.current = {};
     errorMessagesRef.current = {};
@@ -231,10 +232,7 @@ export default function useForm(
     setErrors({});
   };
 
-  useEffect(
-    () => () => unSubscribe,
-    [mode],
-  );
+  useEffect(() => () => unSubscribe, [mode]);
 
   return {
     register,
