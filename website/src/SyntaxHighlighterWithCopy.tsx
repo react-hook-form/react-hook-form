@@ -71,6 +71,7 @@ export default function SyntaxHighlighterWithCopy({ rawData, data, url }: { rawD
       <CopyButton
         onClick={() => {
           rawData || copyClipBoard(generateCode(data));
+          alert('Code copied into your clipboard.');
         }}
       >
         Copy to clipboard
