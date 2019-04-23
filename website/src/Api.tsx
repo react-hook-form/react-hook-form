@@ -78,6 +78,7 @@ export const TableWrapper = styled.div`
 export const Type = styled.span`
   font-weight: 100;
   font-size: 15px;
+  font-family: monospace;
   color: ${colors.lightPink};
 `;
 
@@ -494,6 +495,34 @@ function Builder({ formData, showApi, toggleApi, apiButton, isMobile }: any) {
                     </h2>
                   </code>
                   <p>This object contain information about the form state.</p>
+
+                  <TableWrapper>
+                    <Table>
+                      <tbody>
+                      <tr>
+                        <th>Name</th>
+                        <th>Type</th>
+                        <th>Description</th>
+                      </tr>
+                      <tr>
+                        <td><code>dirty</code></td>
+                        <td><Type>boolean</Type></td>
+                        <td>Set to true after user interacted with any of the input.</td>
+                      </tr>
+                      <tr>
+                        <td><code>isSubmitted</code></td>
+                        <td><Type>boolean</Type></td>
+                        <td>Set true after user submit the form.</td>
+                      </tr>
+                      <tr>
+                        <td><code>touched</code></td>
+                        <td><Type>{`Array<string>`}</Type></td>
+                        <td>An array of all inputs which have been interacted.</td>
+                      </tr>
+                      </tbody>
+                    </Table>
+                  </TableWrapper>
+
                   <LinkToSandBox
                     style={{
                       position: 'relative',

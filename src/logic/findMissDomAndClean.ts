@@ -6,7 +6,7 @@ export default function findMissDomAndClean(
   fields: { [key: string]: IField },
   validateWithStateUpdate: Function,
   { ref, mutationWatcher, options }: IField,
-  forceDelete = false,
+  forceDelete: boolean = false,
 ) {
   if (!ref) return;
 
@@ -28,7 +28,7 @@ export default function findMissDomAndClean(
       delete fields[name];
       return fields;
     }
-  } else if (ref && (!document.body.contains(ref) || forceDelete)) {
+  } else if (!document.body.contains(ref) || forceDelete) {
     removeAllEventListeners(ref, validateWithStateUpdate);
     if (mutationWatcher) mutationWatcher.disconnect();
     delete fields[name];

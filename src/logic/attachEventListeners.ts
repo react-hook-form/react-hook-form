@@ -8,15 +8,9 @@ export default function attachEventListeners({
 }: {
   field: IField;
   isRadio: boolean;
-  validateAndStateUpdate: (
-    {
-      target: { name },
-      type,
-    }: any,
-  ) => void;
+  validateAndStateUpdate: (any) => void;
 }) {
   const { ref } = field;
-
   ref.addEventListener(isCheckbox(ref.type) || isRadio ? 'change' : 'input', validateAndStateUpdate);
   ref.addEventListener('blur', validateAndStateUpdate);
 }
