@@ -87,9 +87,10 @@ export default function useForm(
     } = inputData;
     const fields = fieldsRef.current;
     const isRadio = isRadioInput(type);
-    const radioOptionIndex = isRadio ? fields[name].options.findIndex(({ ref }) => value === ref.value) : -1;
+    const radioOptionIndex =
+      isRadio && fields[name] ? fields[name].options.findIndex(({ ref }) => value === ref.value) : -1;
 
-    if (fieldsRef.current[name] && radioOptionIndex > -1) return;
+    if ((!isRadio && fields[name]) || (isRadio && radioOptionIndex >= 0)) return;
 
     if (isRadio) {
       if (!fields[name]) {
