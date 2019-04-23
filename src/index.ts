@@ -9,7 +9,7 @@ import attachEventListeners from './logic/attachEventListeners';
 import validateWithSchema from './logic/validateWithSchema';
 import combineFieldValues from './logic/combineFieldValues';
 import shouldUpdateWithError from './logic/shouldUpdateWithError';
-import { Props, IField, IErrorMessages, Ref } from './type'
+import { Props, IField, IErrorMessages, Ref } from './type';
 
 export default function useForm(
   { mode, validationSchema }: Props = {
@@ -29,7 +29,8 @@ export default function useForm(
     const ref = fieldsRef.current[name];
     const errorMessages = errorMessagesRef.current;
     const onSubmitModeNotSubmitted = !isSubmitted.current && mode === 'onSubmit';
-    let shouldUpdateState = isWatchAllRef.current;
+    const isWatchAll = isWatchAllRef.current;
+    let shouldUpdateState = isWatchAll;
 
     if (!isDirty.current) {
       isDirty.current = true;
@@ -41,7 +42,7 @@ export default function useForm(
       shouldUpdateState = true;
     }
 
-    if (onSubmitModeNotSubmitted && (isWatchAllRef.current || watchFieldsRef.current[name])) {
+    if (onSubmitModeNotSubmitted && (isWatchAll || watchFieldsRef.current[name])) {
       return setErrors({});
     }
 
@@ -71,11 +72,9 @@ export default function useForm(
 
   function registerIntoAllFields(elementRef, data = { required: false, validate: undefined }) {
     if (elementRef && !elementRef.name) {
-      console.warn('Oops missing the name for field:', elementRef);
-      return;
+      return console.warn('Oops missing the name for field:', elementRef);
     }
 
-    let radioOptionIndex;
     const inputData = {
       ...data,
       ref: elementRef,
@@ -84,7 +83,7 @@ export default function useForm(
       ref,
       required,
       validate,
-      ref: { name, type, value },
+      ref: { name, type },
     } = inputData;
     const fields = fieldsRef.current;
     const isRadio = isRadioInput(type);
@@ -100,38 +99,20 @@ export default function useForm(
         fields[name].validate = validate;
       }
 
-      const options = fields[name].options || [];
-      radioOptionIndex = options.findIndex(({ ref }) => value === ref.value);
-
-      if (radioOptionIndex > -1) {
-        options[radioOptionIndex] = {
-          ...options[radioOptionIndex],
-          ...inputData,
-        };
-      } else {
-        options.push({
-          ...inputData,
-          mutationWatcher: onDomRemove(ref, () => removeReferenceAndEventListeners(inputData, true)),
-        });
-        radioOptionIndex = options.length - 1;
-      }
-    } else {
-      const isInitialCreate = !fields[name];
-
-      fields[name] = {
-        ...fields[name],
+      fields[name].options.push({
         ...inputData,
+        mutationWatcher: onDomRemove(ref, () => removeReferenceAndEventListeners(inputData, true)),
+      });
+    } else {
+      fields[name] = {
+        ...inputData,
+        mutationWatcher: onDomRemove(ref, () => removeReferenceAndEventListeners(inputData, true))
       };
-
-      if (isInitialCreate) {
-        fields[name].mutationWatcher = onDomRemove(ref, () => removeReferenceAndEventListeners(inputData, true));
-      }
     }
 
     attachEventListeners({
-      field: fields[name],
+      field: isRadio ? fields[name].options[fields[name].options.length - 1] : fields[name],
       isRadio,
-      radioOptionIndex,
       validateAndStateUpdate,
     });
   }
@@ -232,24 +213,26 @@ export default function useForm(
     callback(combineFieldValues(fieldValues), e);
   };
 
+  const unSubscribe = () => {
+    fieldsRef.current &&
+    Object.values(fieldsRef.current).forEach((field: IField) => {
+      const { ref, options } = field;
+      isRadioInput(ref.type) && Array.isArray(options)
+        ? options.forEach(fieldRef => removeReferenceAndEventListeners(fieldRef, true))
+        : removeReferenceAndEventListeners(field, true);
+    });
+    fieldsRef.current = {};
+    watchFieldsRef.current = {};
+    errorMessagesRef.current = {};
+    isWatchAllRef.current = false;
+    isSubmitted.current = false;
+    isDirty.current = false;
+    touched.current = [];
+    setErrors({});
+  };
+
   useEffect(
-    () => () => {
-      fieldsRef.current &&
-        Object.values(fieldsRef.current).forEach((field: IField) => {
-          const { ref, options } = field;
-          isRadioInput(ref.type) && Array.isArray(options)
-            ? options.forEach(fieldRef => removeReferenceAndEventListeners(fieldRef, true))
-            : removeReferenceAndEventListeners(field, true);
-        });
-      fieldsRef.current = {};
-      watchFieldsRef.current = {};
-      errorMessagesRef.current = {};
-      isWatchAllRef.current = false;
-      isSubmitted.current = false;
-      isDirty.current = false;
-      touched.current = [];
-      setErrors({});
-    },
+    () => () => unSubscribe,
     [mode],
   );
 
@@ -258,6 +241,7 @@ export default function useForm(
     handleSubmit,
     errors,
     watch,
+    unSubscribe,
     formState: {
       dirty: isDirty.current,
       isSubmitted: isSubmitted.current,
