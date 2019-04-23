@@ -1,6 +1,6 @@
 import removeAllEventListeners from './removeAllEventListeners';
 import isRadioInput from '../utils/isRadioInput';
-import { IField } from '../index';
+import { IField } from '../type';
 
 export default function findMissDomAndClean(
   fields: { [key: string]: IField },

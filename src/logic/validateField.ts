@@ -1,7 +1,7 @@
 import getRadioValue from './getRadioValue';
 import isRadioInput from '../utils/isRadioInput';
 import { DATE_INPUTS, STRING_INPUTS } from '../constants';
-import { IField } from '..';
+import { IField } from '../type';
 import getValueAndMessage from './getValueAndMessage';
 import isCheckBox from '../utils/isCheckBox';
 

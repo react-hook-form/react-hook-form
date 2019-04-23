@@ -1,6 +1,6 @@
 import getRadioValue from './getRadioValue';
 import getMultipleSelectValue from './getMultipleSelectValue';
-import { IField } from '..';
+import { IField } from '../type';
 import isRadioInput from '../utils/isRadioInput';
 import isCheckBox from '../utils/isCheckBox';
 

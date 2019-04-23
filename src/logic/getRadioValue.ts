@@ -1,4 +1,4 @@
-import { IRegisterInput } from '..';
+import { IRegisterInput } from '../type';
 
 const defaultReturn = {
   isValid: false,

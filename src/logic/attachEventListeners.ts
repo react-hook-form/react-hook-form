@@ -1,4 +1,4 @@
-import { IField } from '../index';
+import { IField } from '../type';
 import isCheckbox from '../utils/isCheckBox';
 
 export default function attachEventListeners({
