@@ -5,7 +5,7 @@
   "dependencies": {
     "react": "^16.8.4",
     "react-dom": "^16.8.4",
-    "react-hook-form": "3.0.1-beta.6",
+    "react-hook-form": "3.0.2-beta.2",
     "react-simple-animate": "^2.6.5",
     "react-sortablejs": "^1.5.1",
     "react-syntax-highlighter": "^10.1.3",
