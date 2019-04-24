@@ -2,8 +2,8 @@ import React from 'react';
 import styled from 'styled-components';
 import copyClipBoard from './utils/copyClipBoard';
 import generateCode from './logic/generateCode';
-import SyntaxHighlighter from 'react-syntax-highlighter';
-import { monokaiSublime } from 'react-syntax-highlighter/dist/esm/styles/hljs';
+import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
+import { xonokai } from 'react-syntax-highlighter/dist/styles/prism';
 import colors from './styles/colors';
 
 const CopyButton = styled.button`
@@ -22,7 +22,7 @@ const CopyButton = styled.button`
   @media (min-width: 768px) {
     display: inline-block;
   }
-  
+
   &:hover {
     opacity: 0.8;
   }
@@ -50,7 +50,7 @@ export const LinkToSandBox = styled.a`
     display: inline-block;
     right: 170px;
   }
-  
+
   &:hover {
     opacity: 0.8;
   }
@@ -60,7 +60,15 @@ export const LinkToSandBox = styled.a`
   }
 `;
 
-export default function SyntaxHighlighterWithCopy({ rawData, data, url }: { rawData?: string; data?: string, url?: string }) {
+export default function SyntaxHighlighterWithCopy({
+  rawData,
+  data,
+  url,
+}: {
+  rawData?: string;
+  data?: string;
+  url?: string;
+}) {
   return (
     <div
       style={{
@@ -76,8 +84,20 @@ export default function SyntaxHighlighterWithCopy({ rawData, data, url }: { rawD
         Copy to clipboard
       </CopyButton>
 
-      {url && <LinkToSandBox href={url} target="_blank">CodeSandbox</LinkToSandBox>}
-      <SyntaxHighlighter style={monokaiSublime}>{rawData || generateCode(data)}</SyntaxHighlighter>
+      {url && (
+        <LinkToSandBox href={url} target="_blank">
+          CodeSandbox
+        </LinkToSandBox>
+      )}
+      <SyntaxHighlighter
+        customStyle={{
+          border: 'none',
+        }}
+        style={xonokai}
+        language={'jsx'}
+      >
+        {rawData || generateCode(data)}
+      </SyntaxHighlighter>
     </div>
   );
 }

@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import colors from './styles/colors';
 import styled from 'styled-components';
-import SyntaxHighlighter from 'react-syntax-highlighter';
-import { monokaiSublime } from 'react-syntax-highlighter/dist/esm/styles/hljs';
+import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
+import { xonokai as monokaiSublime } from 'react-syntax-highlighter/dist/styles/prism';
 import { TableWrapper, Table, Type } from './Api';
 import Link from './styles/link';
 
@@ -103,7 +103,12 @@ export default function ApiRefTable() {
               </td>
               <td>React element ref</td>
               <td>
-                <SyntaxHighlighter style={monokaiSublime}>{`<input
+                <SyntaxHighlighter
+                  customStyle={{
+                    border: 'none',
+                  }}
+                  style={monokaiSublime}
+                >{`<input
   name="test"
   ref={register}
 />`}</SyntaxHighlighter>
@@ -123,7 +128,12 @@ export default function ApiRefTable() {
                 you can assign as string to return error message in the <code>errors</code> object.
               </td>
               <td>
-                <SyntaxHighlighter style={monokaiSublime}>{`<input
+                <SyntaxHighlighter
+                  customStyle={{
+                    border: 'none',
+                  }}
+                  style={monokaiSublime}
+                >{`<input
   name="test"
   ref={
     register({
@@ -151,7 +161,12 @@ export default function ApiRefTable() {
               </td>
               <td>The maximum length of the value to accept for this input.</td>
               <td>
-                <SyntaxHighlighter style={monokaiSublime}>{`<input
+                <SyntaxHighlighter
+                  customStyle={{
+                    border: 'none',
+                  }}
+                  style={monokaiSublime}
+                >{`<input
   name="test"
   ref={
     register({
@@ -186,7 +201,12 @@ export default function ApiRefTable() {
               </td>
               <td>The minimum length of the value to accept for this input.</td>
               <td>
-                <SyntaxHighlighter style={monokaiSublime}>{`<input
+                <SyntaxHighlighter
+                  customStyle={{
+                    border: 'none',
+                  }}
+                  style={monokaiSublime}
+                >{`<input
   name="test"
   ref={
     register({
@@ -221,7 +241,12 @@ export default function ApiRefTable() {
               </td>
               <td>The maximum value to accept for this input.</td>
               <td>
-                <SyntaxHighlighter style={monokaiSublime}>{`<input
+                <SyntaxHighlighter
+                  customStyle={{
+                    border: 'none',
+                  }}
+                  style={monokaiSublime}
+                >{`<input
   name="test"
   ref={
     register({
@@ -256,7 +281,12 @@ export default function ApiRefTable() {
               </td>
               <td>The minimum value to accept for this input.</td>
               <td>
-                <SyntaxHighlighter style={monokaiSublime}>{`<input
+                <SyntaxHighlighter
+                  customStyle={{
+                    border: 'none',
+                  }}
+                  style={monokaiSublime}
+                >{`<input
   name="test"
   ref={
     register({
@@ -291,7 +321,12 @@ export default function ApiRefTable() {
               </td>
               <td>The regex pattern for the input.</td>
               <td>
-                <SyntaxHighlighter style={monokaiSublime}>{`<input
+                <SyntaxHighlighter
+                  customStyle={{
+                    border: 'none',
+                  }}
+                  style={monokaiSublime}
+                >{`<input
   name="test"
   ref={
     register({
@@ -328,11 +363,16 @@ export default function ApiRefTable() {
                 </code>
               </td>
               <td>
-                You can pass a callback function as the argument to validate, or you can pass an object of
-                callback functions to validate all of them. (refer to the examples)
+                You can pass a callback function as the argument to validate, or you can pass an object of callback
+                functions to validate all of them. (refer to the examples)
               </td>
               <td>
-                <SyntaxHighlighter style={monokaiSublime}>{`<input
+                <SyntaxHighlighter
+                  customStyle={{
+                    border: 'none',
+                  }}
+                  style={monokaiSublime}
+                >{`<input
   name="single"
   ref={
     register({
