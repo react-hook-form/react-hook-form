@@ -78,7 +78,8 @@ export default function useForm(
     const fields = fieldsRef.current;
     const isRadio = isRadioInput(type);
     const field = fields[name];
-    const existRadioOptionIndex = isRadio && field ? field.options.findIndex(({ ref }) => value === ref.value) : -1;
+    const existRadioOptionIndex =
+      isRadio && field && Array.isArray(field.options) ? field.options.findIndex(({ ref }) => value === ref.value) : -1;
 
     if ((!isRadio && field) || (isRadio && existRadioOptionIndex > -1)) return;
 
@@ -86,7 +87,7 @@ export default function useForm(
       if (!field) fields[name] = { options: [], required, validate, ref: { type: 'radio', name } };
       if (validate) fields[name].validate = validate;
 
-      fields[name].options.push({
+      (fields[name].options || []).push({
         ...inputData,
         mutationWatcher: onDomRemove(elementRef, () => removeReferenceAndEventListeners(inputData, true)),
       });
@@ -98,7 +99,10 @@ export default function useForm(
     }
 
     attachEventListeners({
-      field: isRadio ? fields[name].options[fields[name].options.length - 1] : fields[name],
+      field:
+        isRadio
+          ? (fields[name].options || [])[(fields[name].options || []).length - 1]
+          : fields[name],
       isRadio,
       validateAndStateUpdate,
     });
@@ -119,14 +123,14 @@ export default function useForm(
     return result === undefined ? defaultValue : result;
   }
 
-  function register(data: Ref | Function) {
+  function register(data: Ref | Function): any {
     if (!data) return;
     if (data.type) {
       if (!data.name) return console.warn('Oops missing the name for field:', data);
       registerIntoAllFields(data);
     }
 
-    return ref => (ref ? registerIntoAllFields(ref, data) : null);
+    return ref => (ref ? registerIntoAllFields(ref, data) : () => {});
   }
 
   const handleSubmit = (callback: (Object, e) => void) => async e => {
