@@ -3,7 +3,7 @@ export default function shouldUpdateWithError({ errorMessages, name, error, mode
     return false;
   }
 
-  if (!Object.keys(error).length && !Object.keys(errorMessages)) {
+  if (!Object.keys(error).length && !Object.keys(errorMessages).length) {
     return false;
   }
 
