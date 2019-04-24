@@ -2,12 +2,14 @@ import * as React from 'react';
 import useForm from './';
 import { act } from 'react-dom/test-utils';
 import attachEventListeners from './logic/attachEventListeners';
+import getFieldsValues from './logic/getFieldsValues';
 import { mount } from 'enzyme';
 
 jest.mock('./utils/onDomRemove', () => ({
   default: () => {},
 }));
 jest.mock('./logic/attachEventListeners');
+jest.mock('./logic/getFieldsValues');
 
 const TestHook = ({ callback }) => {
   callback();
@@ -70,7 +72,38 @@ describe('useForm', () => {
     });
   });
 
-  // test('should have correct name', () => {
-  //   expect(hookForm.name).toBe('name');
-  // });
+  describe('watch', () => {
+    it('should watch individual input', () => {
+      expect(hookForm.watch('test')).toBeUndefined();
+      // @ts-ignore
+      getFieldsValues.mockImplementation((_, name) => {
+        if (name === 'test') {
+          return 'data';
+        }
+      });
+      expect(hookForm.watch('test')).toBe('data');
+    });
+
+    it('should watch array of inputs', () => {
+      expect(hookForm.watch(['test', 'test1'])).toBeUndefined();
+      // @ts-ignore
+      getFieldsValues.mockImplementation((_, name) => {
+        if (name && name.includes('test1') && name.includes('test')) {
+          return ['data1', 'data2'];
+        }
+      });
+      expect(hookForm.watch(['test', 'test1'])).toEqual(['data1', 'data2']);
+    });
+
+    it('should watch every fields', () => {
+      expect(hookForm.watch()).toBeUndefined();
+      // @ts-ignore
+      getFieldsValues.mockImplementation((_, name) => {
+        if (name === undefined) {
+          return ['data1', 'data2'];
+        }
+      });
+      expect(hookForm.watch()).toEqual(['data1', 'data2']);
+    });
+  });
 });
