@@ -96,6 +96,7 @@ const Wrapper = styled.div`
 
 const Menu = styled.div`
   display: none;
+  position: relative;
 
   @media (min-width: 768px) {
     display: block;
@@ -111,7 +112,8 @@ const Menu = styled.div`
 
       & > li {
         line-height: 22px;
-        margin-bottom: 10px;
+        padding-bottom: 15px;
+        font-size: 20px;
 
         & > a {
           text-decoration: none;
@@ -120,7 +122,7 @@ const Menu = styled.div`
 
         & > a,
         & > button {
-          font-size: 20px;
+          font-size: inherit;
           color: white;
           text-decoration: none;
           transition: 0.3s all;
@@ -162,8 +164,30 @@ const CloseButton = styled.button`
   }
 `;
 
+const Arrow = styled.span`
+  top: -1px;
+  position: relative;
+  color: #ec5990;
+
+  ${props =>
+    props.last
+      ? `
+  :before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 50%;
+    border-left: 1px solid #ec5990;
+  }
+  `
+      : ''}
+`;
+
 const Code = styled.span`
   color: ${colors.lightPink};
+  position: relative;
+  top: -4px;
   font-size: 14px;
 `;
 
@@ -230,15 +254,12 @@ function Builder({ formData, showApi, toggleApi, apiButton, isMobile }: any) {
     }
   };
 
-  useEffect(
-    () => {
-      if (showApi && closeButton.current) {
-        // @ts-ignore
-        closeButton.current.focus();
-      }
-    },
-    [showApi],
-  );
+  useEffect(() => {
+    if (showApi && closeButton.current) {
+      // @ts-ignore
+      closeButton.current.focus();
+    }
+  }, [showApi]);
 
   return (
     <Animate
@@ -280,7 +301,7 @@ function Builder({ formData, showApi, toggleApi, apiButton, isMobile }: any) {
               <Wrapper>
                 <Menu>
                   <ul>
-                    {links.map(link => {
+                    {links.map((link, index) => {
                       if (link === 'Examples') {
                         return (
                           <React.Fragment key="examples">
@@ -297,7 +318,7 @@ function Builder({ formData, showApi, toggleApi, apiButton, isMobile }: any) {
                               <Title
                                 style={{
                                   marginBottom: '10px',
-                                  fontSize: '14px',
+                                  fontSize: 16,
                                   color: colors.lightBlue,
                                 }}
                               >
@@ -308,10 +329,24 @@ function Builder({ formData, showApi, toggleApi, apiButton, isMobile }: any) {
                         );
                       }
                       return (
-                        <li key={link} onClick={() => goToSection(link)}>
+                        <li
+                          key={link}
+                          onClick={() => goToSection(link)}
+                          style={{
+                            ...(index > 2
+                              ? {
+                                  marginLeft: 10,
+                                  ...(index !== links.length - 1 ? { borderLeft: '1px solid #ec5990' } : null),
+                                }
+                              : null),
+                          }}
+                        >
+                          <Arrow last={index === links.length - 1}>{index > 2 && '╴'}</Arrow>
                           {link !== 'Quick Start' && <Code>{`</>`}</Code>}{' '}
                           <button
                             style={{
+                              top: '-3px',
+                              position: 'relative',
                               ...(link === 'Quick Start' ? { paddingLeft: 0 } : null),
                             }}
                           >
@@ -499,26 +534,38 @@ function Builder({ formData, showApi, toggleApi, apiButton, isMobile }: any) {
                   <TableWrapper>
                     <Table>
                       <tbody>
-                      <tr>
-                        <th>Name</th>
-                        <th>Type</th>
-                        <th>Description</th>
-                      </tr>
-                      <tr>
-                        <td><code>dirty</code></td>
-                        <td><Type>boolean</Type></td>
-                        <td>Set to true after user interacted with any of the input.</td>
-                      </tr>
-                      <tr>
-                        <td><code>isSubmitted</code></td>
-                        <td><Type>boolean</Type></td>
-                        <td>Set true after user submit the form.</td>
-                      </tr>
-                      <tr>
-                        <td><code>touched</code></td>
-                        <td><Type>{`Array<string>`}</Type></td>
-                        <td>An array of all inputs which have been interacted.</td>
-                      </tr>
+                        <tr>
+                          <th>Name</th>
+                          <th>Type</th>
+                          <th>Description</th>
+                        </tr>
+                        <tr>
+                          <td>
+                            <code>dirty</code>
+                          </td>
+                          <td>
+                            <Type>boolean</Type>
+                          </td>
+                          <td>Set to true after user interacted with any of the input.</td>
+                        </tr>
+                        <tr>
+                          <td>
+                            <code>isSubmitted</code>
+                          </td>
+                          <td>
+                            <Type>boolean</Type>
+                          </td>
+                          <td>Set true after user submit the form.</td>
+                        </tr>
+                        <tr>
+                          <td>
+                            <code>touched</code>
+                          </td>
+                          <td>
+                            <Type>{`Array<string>`}</Type>
+                          </td>
+                          <td>An array of all inputs which have been interacted.</td>
+                        </tr>
                       </tbody>
                     </Table>
                   </TableWrapper>
