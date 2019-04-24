@@ -6,11 +6,10 @@ import getFieldsValues from './logic/getFieldsValues';
 import findMissDomAndClean from './logic/findMissDomAndClean';
 import validateWithSchema from './logic/validateWithSchema';
 import validateField from './logic/validateField';
+import onDomRemove from './utils/onDomRemove';
 import { mount } from 'enzyme';
 
-jest.mock('./utils/onDomRemove', () => ({
-  default: () => {},
-}));
+jest.mock('./utils/onDomRemove');
 jest.mock('./logic/findMissDomAndClean');
 jest.mock('./logic/validateField');
 jest.mock('./logic/attachEventListeners');
@@ -72,6 +71,7 @@ describe('useForm', () => {
         isRadio: false,
         validateAndStateUpdate: expect.any(Function),
       });
+      expect(onDomRemove).toBeCalled();
     });
 
     it('should register field for radio type and call attachEventListeners method', () => {
@@ -89,6 +89,7 @@ describe('useForm', () => {
         isRadio: true,
         validateAndStateUpdate: expect.any(Function),
       });
+      expect(onDomRemove).toBeCalled();
     });
   });
 
