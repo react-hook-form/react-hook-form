@@ -3,11 +3,13 @@ import useForm from './';
 import { act } from 'react-dom/test-utils';
 import attachEventListeners from './logic/attachEventListeners';
 import getFieldsValues from './logic/getFieldsValues';
+import findMissDomAndClean from './logic/findMissDomAndClean';
 import { mount } from 'enzyme';
 
 jest.mock('./utils/onDomRemove', () => ({
   default: () => {},
 }));
+jest.mock('./logic/findMissDomAndClean');
 jest.mock('./logic/attachEventListeners');
 jest.mock('./logic/getFieldsValues');
 
@@ -28,6 +30,10 @@ beforeEach(() => {
 });
 
 describe('useForm', () => {
+  beforeEach(() => {
+    jest.resetAllMocks();
+  });
+
   describe('register', () => {
     it('should return undefined when ref is undefined', () => {
       expect(hookForm.register(undefined)).toBeUndefined();
@@ -104,6 +110,32 @@ describe('useForm', () => {
         }
       });
       expect(hookForm.watch()).toEqual(['data1', 'data2']);
+    });
+  });
+
+  describe('unSubscribe', () => {
+    it('should remove all reference when mode change', () => {
+      hookForm.register({ type: 'input', name: 'test' });
+      expect(attachEventListeners).toBeCalledWith({
+        field: {
+          mutationWatcher: undefined,
+          ref: {
+            name: 'test',
+            type: 'input',
+          },
+          required: false,
+          validate: undefined,
+        },
+        isRadio: false,
+        validateAndStateUpdate: expect.any(Function),
+      });
+      hookForm.register({ type: 'input', name: 'test' });
+      act(() => {
+        hookForm.unSubscribe();
+      });
+      expect(findMissDomAndClean).toBeCalled();
+      hookForm.register({ type: 'input', name: 'test' });
+      expect(attachEventListeners).toBeCalledTimes(2);
     });
   });
 });
