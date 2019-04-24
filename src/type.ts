@@ -45,3 +45,8 @@ export type Error = {
 export interface IErrorMessages {
   [key: string]: Error;
 }
+
+export type SubmitPromiseResult = {
+  errors: { [key: string]: Error };
+  values: { [key: string]: number | string | boolean };
+};

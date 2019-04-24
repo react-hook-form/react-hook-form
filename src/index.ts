@@ -9,7 +9,7 @@ import attachEventListeners from './logic/attachEventListeners';
 import validateWithSchema from './logic/validateWithSchema';
 import combineFieldValues from './logic/combineFieldValues';
 import shouldUpdateWithError from './logic/shouldUpdateWithError';
-import { Props, IField, IErrorMessages, Ref } from './type';
+import { Props, IField, IErrorMessages, Ref, SubmitPromiseResult } from './type';
 
 export default function useForm(
   { mode, validationSchema }: Props = {
@@ -26,8 +26,9 @@ export default function useForm(
   const touched = useRef<Array<string>>([]);
 
   async function validateAndStateUpdate({ target: { name }, type }: any) {
-    const ref = fieldsRef.current[name];
+    const fields = fieldsRef.current;
     const errorMessages = errorMessagesRef.current;
+    const ref = fields[name];
     const onSubmitModeNotSubmitted = !isSubmitted.current && mode === 'onSubmit';
     const isWatchAll = isWatchAllRef.current;
     let shouldUpdateState = isWatchAll;
@@ -42,11 +43,9 @@ export default function useForm(
       shouldUpdateState = true;
     }
 
-    if (onSubmitModeNotSubmitted && (isWatchAll || watchFieldsRef.current[name])) {
-      return setErrors({});
-    }
+    if (onSubmitModeNotSubmitted && (isWatchAll || watchFieldsRef.current[name])) return setErrors({});
 
-    const error = await validateField(ref, fieldsRef.current);
+    const error = await validateField(ref, fields);
 
     if (
       shouldUpdateWithError({ errorMessages, name, error, mode, onSubmitModeNotSubmitted, type }) ||
@@ -54,66 +53,52 @@ export default function useForm(
       (mode === 'onBlur' && type === 'blur') ||
       watchFieldsRef.current[name]
     ) {
-      const copy = { ...errorMessages, ...error };
+      const errorsCopy = { ...errorMessages, ...error };
 
-      if (!error[name]) delete copy[name];
+      if (!error[name]) delete errorsCopy[name];
 
-      errorMessagesRef.current = copy;
-      setErrors(copy);
-      return;
+      errorMessagesRef.current = errorsCopy;
+      return setErrors(errorsCopy);
     }
 
-    if (shouldUpdateState) {
-      setErrors(errorMessages);
-    }
+    if (shouldUpdateState) setErrors(errorMessages);
   }
 
   const removeReferenceAndEventListeners = findMissDomAndClean.bind(null, fieldsRef.current, validateAndStateUpdate);
 
   function registerIntoAllFields(elementRef, data = { required: false, validate: undefined }) {
-    if (elementRef && !elementRef.name) {
-      return console.warn('Oops missing the name for field:', elementRef);
-    }
+    if (elementRef && !elementRef.name) return console.warn('Oops missing the name for field:', elementRef);
 
+    const { name, type, value } = elementRef;
+    const { required, validate } = data;
     const inputData = {
       ...data,
       ref: elementRef,
     };
-    const {
-      ref,
-      required,
-      validate,
-      ref: { name, type, value },
-    } = inputData;
     const fields = fieldsRef.current;
     const isRadio = isRadioInput(type);
-    const radioOptionIndex =
-      isRadio && fields[name] ? fields[name].options.findIndex(({ ref }) => value === ref.value) : -1;
+    const field = fields[name];
+    const existRadioOptionIndex = isRadio && field ? field.options.findIndex(({ ref }) => value === ref.value) : -1;
 
-    if ((!isRadio && fields[name]) || (isRadio && radioOptionIndex >= 0)) return;
+    if ((!isRadio && field) || (isRadio && existRadioOptionIndex > -1)) return;
 
     if (isRadio) {
-      if (!fields[name]) {
-        fields[name] = { options: [], required, validate, ref: { type: 'radio', name } };
-      }
-
-      if (!fields[name].validate && validate) {
-        fields[name].validate = validate;
-      }
+      if (!field) fields[name] = { options: [], required, validate, ref: { type: 'radio', name } };
+      if (validate) fields[name].validate = validate;
 
       fields[name].options.push({
         ...inputData,
-        mutationWatcher: onDomRemove(ref, () => removeReferenceAndEventListeners(inputData, true)),
+        mutationWatcher: onDomRemove(elementRef, () => removeReferenceAndEventListeners(inputData, true)),
       });
     } else {
       fields[name] = {
         ...inputData,
-        mutationWatcher: onDomRemove(ref, () => removeReferenceAndEventListeners(inputData, true)),
+        mutationWatcher: onDomRemove(elementRef, () => removeReferenceAndEventListeners(inputData, true)),
       };
     }
 
     attachEventListeners({
-      field: isRadio ? fields[name].options[fields[name].options.length - 1] : fields[name],
+      field: isRadio ? field.options[fields[name].options.length - 1] : field,
       isRadio,
       validateAndStateUpdate,
     });
@@ -123,11 +108,9 @@ export default function useForm(
     const watchFields = watchFieldsRef.current;
 
     if (typeof filedNames === 'string') {
-      if (!watchFields[filedNames]) watchFields[filedNames] = true;
+      watchFields[filedNames] = true;
     } else if (Array.isArray(filedNames)) {
-      filedNames.forEach(name => {
-        watchFields[name] = true;
-      });
+      filedNames.forEach(name => (watchFields[name] = true));
     } else {
       isWatchAllRef.current = true;
     }
@@ -144,9 +127,7 @@ export default function useForm(
     }
     if (fieldsRef.current[data.name]) return;
 
-    return ref => {
-      if (ref) registerIntoAllFields(ref, data);
-    };
+    return ref => (ref ? registerIntoAllFields(ref, data) : null);
   }
 
   const handleSubmit = (callback: (Object, e) => void) => async e => {
@@ -161,22 +142,17 @@ export default function useForm(
     isSubmitted.current = true;
 
     if (validationSchema) {
-      fieldValues = currentFieldValues.reduce((previous, { ref }) => {
-        previous[ref.name] = getFieldValue(fields, ref);
+      fieldValues = currentFieldValues.reduce((previous, { ref, ref: { name } }) => {
+        previous[name] = getFieldValue(fields, ref);
         return previous;
       }, {});
+
       fieldErrors = await validateWithSchema(validationSchema, fieldValues);
 
-      if (fieldErrors === undefined) {
-        callback(combineFieldValues(fieldValues), e);
-        return;
-      }
+      if (fieldErrors === undefined) return callback(combineFieldValues(fieldValues), e);
     } else {
-      const result: {
-        errors: { [key: string]: Error };
-        values: { [key: string]: number | string | boolean };
-      } = await currentFieldValues.reduce(
-        async (previous: any, field: IField) => {
+      const result: SubmitPromiseResult = await currentFieldValues.reduce(
+        async (previous: Promise<SubmitPromiseResult>, field: IField) => {
           const resolvedPrevious = await previous;
           const {
             ref,
