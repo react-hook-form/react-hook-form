@@ -175,20 +175,17 @@ function Builder({
     return !Object.values(copyFormData.current).find(data => data.name === value) || editIndex !== -1;
   }
 
-  useEffect(
-    () => {
-      if (showBuilder && closeButton.current) {
-        // @ts-ignore
-        closeButton.current.focus();
-      }
-    },
-    [showBuilder],
-  );
+  useEffect(() => {
+    if (showBuilder && closeButton.current) {
+      // @ts-ignore
+      closeButton.current.focus();
+    }
+  }, [showBuilder]);
 
   return (
     <Animate
       play={showBuilder}
-      type="ease-in"
+      easeType="ease-in"
       durationSeconds={isMobile ? 0.3 : 0.5}
       startStyle={{
         transform: 'translateY(100vh)',
@@ -258,7 +255,7 @@ function Builder({
                     })}
                   />
                   <Animate
-                    play={errors['name']}
+                    play={!!errors['name']}
                     durationSeconds={0.6}
                     startStyle={{
                       maxHeight: 0,

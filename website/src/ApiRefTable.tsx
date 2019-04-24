@@ -1,4 +1,3 @@
-// @flow
 import React, { useState } from 'react';
 import colors from './styles/colors';
 import styled from 'styled-components';
@@ -58,7 +57,7 @@ export default function ApiRefTable() {
         <legend>Register options</legend>
         <label>
           <input onChange={() => toggleOption(true)} type="radio" name="errorMessage" defaultChecked />
-          Standard register with validation
+          Register with validation
         </label>
         <label>
           <input onChange={() => toggleOption(false)} type="radio" name="errorMessage" />

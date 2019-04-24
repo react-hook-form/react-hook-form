@@ -14,11 +14,7 @@ function YourForm() {
     {/* handleSubmit will validation your inputs before calling onSubmit */}
     <form onSubmit={handleSubmit(onSubmit)}>
       {/* you will have to register your input into Hook by invoking the register function with Ref as the argument */}
-      <input
-        type="text"
-        name="example"
-        ref={register}
-      />
+      <input type="text" name="example" ref={register} />
       {/* include validation with required field or other standard HTML validation rules */}
       <input
         type="text"

@@ -12,6 +12,7 @@ import Link from './styles/link';
 import code from './codeExamples/defaultExample';
 import errorCode from './codeExamples/errorCode';
 import SyntaxHighlighterWithCopy, { LinkToSandBox } from './SyntaxHighlighterWithCopy';
+import ApiMenu from "./ApiMenu";
 
 const CodeAsLink = styled(Link)`
   cursor: pointer;
@@ -94,52 +95,6 @@ const Wrapper = styled.div`
   }
 `;
 
-const Menu = styled.div`
-  display: none;
-  position: relative;
-
-  @media (min-width: 768px) {
-    display: block;
-
-    & > ul {
-      position: fixed;
-      list-style: none;
-      padding: 0;
-
-      & > li:first-child > button {
-        font-size: 1.5rem;
-      }
-
-      & > li {
-        line-height: 22px;
-        padding-bottom: 15px;
-        font-size: 20px;
-
-        & > a {
-          text-decoration: none;
-          padding-left: 10px;
-        }
-
-        & > a,
-        & > button {
-          font-size: inherit;
-          color: white;
-          text-decoration: none;
-          transition: 0.3s all;
-          background: none;
-          border: none;
-          cursor: pointer;
-          border-bottom: 1px solid transparent;
-
-          &:hover {
-            border-bottom: 1px solid ${colors.lightPink};
-          }
-        }
-      }
-    }
-  }
-`;
-
 const CloseButton = styled.button`
   font-size: 30px;
   top: 0;
@@ -162,33 +117,6 @@ const CloseButton = styled.button`
     top: 15px;
     right: 20px;
   }
-`;
-
-const Arrow = styled.span`
-  top: -1px;
-  position: relative;
-  color: #ec5990;
-
-  ${props =>
-    props.last
-      ? `
-  :before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    height: 50%;
-    border-left: 1px solid #ec5990;
-  }
-  `
-      : ''}
-`;
-
-const Code = styled.span`
-  color: ${colors.lightPink};
-  position: relative;
-  top: -4px;
-  font-size: 14px;
 `;
 
 const links = [
@@ -264,7 +192,7 @@ function Builder({ formData, showApi, toggleApi, apiButton, isMobile }: any) {
   return (
     <Animate
       play={showApi}
-      type="ease-in"
+      easeType="ease-in"
       durationSeconds={isMobile ? 0.3 : 0.5}
       startStyle={{
         transform: 'translateY(100vh)',
@@ -299,64 +227,7 @@ function Builder({ formData, showApi, toggleApi, apiButton, isMobile }: any) {
               <SubHeading>React hook form focus on providing the best DX by simplify the API.</SubHeading>
 
               <Wrapper>
-                <Menu>
-                  <ul>
-                    {links.map((link, index) => {
-                      if (link === 'Examples') {
-                        return (
-                          <React.Fragment key="examples">
-                            <li>
-                              <Code>{`</>`}</Code>
-                              <a
-                                href="https://github.com/bluebill1049/react-hook-form/tree/master/examples"
-                                target="_blank"
-                              >
-                                Examples
-                              </a>
-                            </li>
-                            <li>
-                              <Title
-                                style={{
-                                  marginBottom: '10px',
-                                  fontSize: 16,
-                                  color: colors.lightBlue,
-                                }}
-                              >
-                                API
-                              </Title>
-                            </li>
-                          </React.Fragment>
-                        );
-                      }
-                      return (
-                        <li
-                          key={link}
-                          onClick={() => goToSection(link)}
-                          style={{
-                            ...(index > 2
-                              ? {
-                                  marginLeft: 10,
-                                  ...(index !== links.length - 1 ? { borderLeft: '1px solid #ec5990' } : null),
-                                }
-                              : null),
-                          }}
-                        >
-                          <Arrow last={index === links.length - 1}>{index > 2 && '╴'}</Arrow>
-                          {link !== 'Quick Start' && <Code>{`</>`}</Code>}{' '}
-                          <button
-                            style={{
-                              top: '-3px',
-                              position: 'relative',
-                              ...(link === 'Quick Start' ? { paddingLeft: 0 } : null),
-                            }}
-                          >
-                            {link}
-                          </button>
-                        </li>
-                      );
-                    })}
-                  </ul>
-                </Menu>
+                <ApiMenu links={links} goToSection={goToSection} />
                 <main>
                   <GetStarted quickStartRef={quickStartRef} />
 
@@ -437,13 +308,11 @@ function Builder({ formData, showApi, toggleApi, apiButton, isMobile }: any) {
                     <h2>
                       errors:{' '}
                       <Type>{`{
-  [key: string]:
-    | {
-        ref: any;
-        message: string | boolean;
-        type: string;
-      }
-    | {};
+  [key: string]: {
+    ref: any;
+    message: string | boolean;
+    type: string;
+  }
 }`}</Type>
                     </h2>
                   </code>
@@ -524,64 +393,6 @@ function Builder({ formData, showApi, toggleApi, apiButton, isMobile }: any) {
                   </LinkToSandBox>
 
                   <hr />
-                  <code ref={formStateRef}>
-                    <h2>
-                      formState: <Type>{`{ dirty: boolean, isSubmitted: boolean, touched: Array<string> }`}</Type>
-                    </h2>
-                  </code>
-                  <p>This object contain information about the form state.</p>
-
-                  <TableWrapper>
-                    <Table>
-                      <tbody>
-                        <tr>
-                          <th>Name</th>
-                          <th>Type</th>
-                          <th>Description</th>
-                        </tr>
-                        <tr>
-                          <td>
-                            <code>dirty</code>
-                          </td>
-                          <td>
-                            <Type>boolean</Type>
-                          </td>
-                          <td>Set to true after user interacted with any of the input.</td>
-                        </tr>
-                        <tr>
-                          <td>
-                            <code>isSubmitted</code>
-                          </td>
-                          <td>
-                            <Type>boolean</Type>
-                          </td>
-                          <td>Set true after user submit the form.</td>
-                        </tr>
-                        <tr>
-                          <td>
-                            <code>touched</code>
-                          </td>
-                          <td>
-                            <Type>{`Array<string>`}</Type>
-                          </td>
-                          <td>An array of all inputs which have been interacted.</td>
-                        </tr>
-                      </tbody>
-                    </Table>
-                  </TableWrapper>
-
-                  <LinkToSandBox
-                    style={{
-                      position: 'relative',
-                      left: 0,
-                    }}
-                    href="https://codesandbox.io/s/7o2wrp86k6"
-                    target="_blank"
-                  >
-                    CodeSandbox
-                  </LinkToSandBox>
-
-                  <hr />
 
                   <code ref={validationSchemaRef}>
                     <h2>
@@ -598,6 +409,67 @@ function Builder({ formData, showApi, toggleApi, apiButton, isMobile }: any) {
                     for object schema validation and the example below demonstrate the usage.
                   </p>
                   <SyntaxHighlighterWithCopy rawData={validationSchemaCode} url="https://codesandbox.io/s/928po918qr" />
+
+                  <hr/>
+
+                  <code ref={formStateRef}>
+                    <h2>
+                      formState: <Type>{`{ dirty: boolean, isSubmitted: boolean, touched: Array<string> }`}</Type>
+                    </h2>
+                  </code>
+                  <p>This object contain information about the form state.</p>
+
+                  <TableWrapper>
+                    <Table>
+                      <tbody>
+                      <tr>
+                        <th>Name</th>
+                        <th>Type</th>
+                        <th>Description</th>
+                      </tr>
+                      <tr>
+                        <td>
+                          <code>dirty</code>
+                        </td>
+                        <td>
+                          <Type>boolean</Type>
+                        </td>
+                        <td>Set to true after user interacted with any of the input.</td>
+                      </tr>
+                      <tr>
+                        <td>
+                          <code>isSubmitted</code>
+                        </td>
+                        <td>
+                          <Type>boolean</Type>
+                        </td>
+                        <td>Set true after user submit the form.</td>
+                      </tr>
+                      <tr>
+                        <td>
+                          <code>touched</code>
+                        </td>
+                        <td>
+                          <Type>{`Array<string>`}</Type>
+                        </td>
+                        <td>An array of all inputs which have been interacted.</td>
+                      </tr>
+                      </tbody>
+                    </Table>
+                  </TableWrapper>
+
+                  <LinkToSandBox
+                    style={{
+                      position: 'relative',
+                      left: 0,
+                    }}
+                    href="https://codesandbox.io/s/7o2wrp86k6"
+                    target="_blank"
+                  >
+                    CodeSandbox
+                  </LinkToSandBox>
+
+                  <hr />
                 </main>
               </Wrapper>
             </div>

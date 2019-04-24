@@ -228,7 +228,7 @@ export default function Form({
             {!Object.keys(errors).length && <p>ⓘ Press submit to trigger validation error.</p>}
             <Animate
               durationSeconds={0.8}
-              play={Object.keys(errors).length}
+              play={!!Object.keys(errors).length}
               startStyle={{ opacity: 0 }}
               endStyle={{ opacity: 1 }}
             >
@@ -284,7 +284,7 @@ export default function Form({
             {!Object.keys(submitData).length && <p>ⓘ Successful submit values will display here.</p>}
             <Animate
               durationSeconds={0.8}
-              play={Object.keys(submitData).length}
+              play={!!Object.keys(submitData).length}
               startStyle={{ opacity: 0 }}
               endStyle={{ opacity: 1 }}
             >
