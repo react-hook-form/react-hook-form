@@ -4,18 +4,22 @@ import { act } from 'react-dom/test-utils';
 import attachEventListeners from './logic/attachEventListeners';
 import getFieldsValues from './logic/getFieldsValues';
 import findMissDomAndClean from './logic/findMissDomAndClean';
+import validateWithSchema from './logic/validateWithSchema';
+import validateField from './logic/validateField';
 import { mount } from 'enzyme';
 
 jest.mock('./utils/onDomRemove', () => ({
   default: () => {},
 }));
 jest.mock('./logic/findMissDomAndClean');
+jest.mock('./logic/validateField');
 jest.mock('./logic/attachEventListeners');
 jest.mock('./logic/getFieldsValues');
+jest.mock('./logic/validateWithSchema');
 
 const TestHook = ({ callback }) => {
-  callback();
-  return null;
+  const { errors } = callback();
+  return errors ? <div>errors</div> : null;
 };
 
 export const testHook = callback => {
@@ -23,9 +27,19 @@ export const testHook = callback => {
 };
 
 let hookForm;
+let hookFormWithValidationSchema;
 beforeEach(() => {
   testHook(() => {
     hookForm = useForm();
+    return hookForm;
+  });
+
+  testHook(() => {
+    hookFormWithValidationSchema = useForm({
+      mode: 'onSubmit',
+      validationSchema: {},
+    });
+    return hookFormWithValidationSchema;
   });
 });
 
@@ -116,6 +130,11 @@ describe('useForm', () => {
   describe('unSubscribe', () => {
     it('should remove all reference when mode change', () => {
       hookForm.register({ type: 'input', name: 'test' });
+      hookForm.register({
+        type: 'radio',
+        name: 'test1',
+        options: [{ type: 'radio', name: 'test3' }, { type: 'radio', name: 'test4' }],
+      });
       expect(attachEventListeners).toBeCalledWith({
         field: {
           mutationWatcher: undefined,
@@ -135,7 +154,51 @@ describe('useForm', () => {
       });
       expect(findMissDomAndClean).toBeCalled();
       hookForm.register({ type: 'input', name: 'test' });
-      expect(attachEventListeners).toBeCalledTimes(2);
+      expect(attachEventListeners).toBeCalledTimes(3);
+    });
+  });
+
+  describe('handleSubmit', () => {
+    it('should invoke the callback when validation pass', async () => {
+      const callback = jest.fn();
+      const preventDefault = jest.fn();
+      const persist = jest.fn();
+      await hookForm.handleSubmit(callback)({
+        preventDefault,
+        persist,
+      });
+      expect(callback).toBeCalled();
+    });
+
+    it('should not invoke callback when there are errors', async () => {
+      hookForm.register({ value: '', type: 'input', name: 'test' }, { required: true });
+      const callback = jest.fn();
+      // @ts-ignore
+      validateField.mockImplementation(async () => {
+        return { test: { type: 'test' } };
+      });
+      const test = hookForm.handleSubmit(callback);
+      await test({
+        preventDefault: () => {},
+        persist: () => {},
+      });
+      expect(callback).not.toBeCalled();
+    });
+  });
+
+  describe('handleSubmit with validationSchema', () => {
+    it('should invoke callback when error not found', async () => {
+      hookFormWithValidationSchema.register({ value: '', type: 'input', name: 'test' }, { required: true });
+      const callback = jest.fn();
+      // @ts-ignore
+      validateWithSchema.mockImplementation(async () => {
+        return undefined;
+      });
+      await hookFormWithValidationSchema.handleSubmit(callback)({
+        preventDefault: () => {},
+        persist: () => {},
+      });
+      expect(callback).toBeCalled();
     });
   });
 });
