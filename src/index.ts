@@ -98,7 +98,7 @@ export default function useForm(
     }
 
     attachEventListeners({
-      field: isRadio ? field.options[fields[name].options.length - 1] : field,
+      field: isRadio ? fields[name].options[fields[name].options.length - 1] : fields[name],
       isRadio,
       validateAndStateUpdate,
     });
@@ -119,13 +119,12 @@ export default function useForm(
     return result === undefined ? defaultValue : result;
   }
 
-  function register(data: Ref) {
+  function register(data: Ref | Function) {
     if (!data) return;
     if (data.type) {
-      if (!data.name) console.warn('Oops missing the name for field:', data);
+      if (!data.name) return console.warn('Oops missing the name for field:', data);
       registerIntoAllFields(data);
     }
-    if (fieldsRef.current[data.name]) return;
 
     return ref => (ref ? registerIntoAllFields(ref, data) : null);
   }
