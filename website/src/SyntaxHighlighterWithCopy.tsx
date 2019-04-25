@@ -15,6 +15,7 @@ const CopyButton = styled.button`
   padding: 5px 10px;
   position: absolute;
   right: 0;
+  z-index: 1;
   top: 10px;
   box-shadow: 0 0 10px #000;
   display: none;

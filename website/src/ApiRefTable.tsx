@@ -86,7 +86,7 @@ export default function ApiRefTable() {
               </th>
               <th
                 style={{
-                  minWidth: 310,
+                  minWidth: 320,
                 }}
               >
                 Example
@@ -386,6 +386,7 @@ export default function ApiRefTable() {
     })
   }
 />
+
 <input
   name="multiple"
   ref={
@@ -402,7 +403,7 @@ export default function ApiRefTable() {
         isLessThanTen:
           (value) => ${
             isStandard
-              ? 'value > 1'
+              ? 'value < 10'
               : `{
             return value < 10 ? 'error message': true;
           }`
