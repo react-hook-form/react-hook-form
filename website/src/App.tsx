@@ -7,6 +7,7 @@ import FORM_DATA from './constants/formData';
 import colors from './styles/colors';
 import Form from './Form';
 import Header from './Header';
+import CodeCompareSection from './CodeCompareSection';
 
 const Setting = React.lazy(() => import('./Setting'));
 const Builder = React.lazy(() => import('./Builder'));
@@ -201,6 +202,8 @@ function App() {
           endStyle={{ minHeight: '100vh', filter: 'blur(3px)', transform: 'scale(0.9) rotateX(5deg)' }}
         >
           <Header homeRef={HomeRef} toggleApi={toggleApi} />
+
+          <CodeCompareSection />
 
           <div ref={HomeRef}>
             <Form

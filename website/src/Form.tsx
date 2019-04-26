@@ -1,5 +1,5 @@
 import React from 'react';
-import { Title } from './styles/typography';
+import { Title, H1 } from './styles/typography';
 import colors from './styles/colors';
 import { Animate } from 'react-simple-animate';
 import styled from 'styled-components';
@@ -92,6 +92,13 @@ export default function Form({
 }) {
   return (
     <>
+      <div
+        style={{
+          textAlign: 'center',
+        }}
+      >
+        <H1><code>{`</>`}</code> Code Demo</H1>
+      </div>
       <Wrapper>
         <form onSubmit={handleSubmit(onSubmit)}>
           <Title>
@@ -249,31 +256,25 @@ export default function Form({
           </section>
         )}
 
-        {setting.showWatch &&
-          setting.mode !== 'onSubmit' && (
-            <section>
-              <Title>Watch</Title>
-              {!Object.keys(watch() || {}).length && <p>ⓘ Change input value to see watched values.</p>}
-              <Animate
-                durationSeconds={0.8}
-                play={Object.keys(watch() || {}).length > 0}
-                startStyle={{ opacity: 0 }}
-                endStyle={{ opacity: 1 }}
-              >
-                <Code>{JSON.stringify(watch(), null, 2)}</Code>
-              </Animate>
-            </section>
-          )}
+        {setting.showWatch && setting.mode !== 'onSubmit' && (
+          <section>
+            <Title>Watch</Title>
+            {!Object.keys(watch() || {}).length && <p>ⓘ Change input value to see watched values.</p>}
+            <Animate
+              durationSeconds={0.8}
+              play={Object.keys(watch() || {}).length > 0}
+              startStyle={{ opacity: 0 }}
+              endStyle={{ opacity: 1 }}
+            >
+              <Code>{JSON.stringify(watch(), null, 2)}</Code>
+            </Animate>
+          </section>
+        )}
 
         <section>
           <Title>Touched</Title>
           {!Object.keys(touched).length && <p>ⓘ Touched fields will display here.</p>}
-          <Animate
-            durationSeconds={0.8}
-            play={touched.length}
-            startStyle={{ opacity: 0 }}
-            endStyle={{ opacity: 1 }}
-          >
+          <Animate durationSeconds={0.8} play={touched.length} startStyle={{ opacity: 0 }} endStyle={{ opacity: 1 }}>
             <Code>{JSON.stringify(touched, null, 2)}</Code>
           </Animate>
         </section>
