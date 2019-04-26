@@ -19,28 +19,32 @@ function validateUsername(value) {
   return error;
 }
 
-const Example = () => (
-  <div>
-    <Formik
-      initialValues={{
-        username: '',
-        email: '',
-      }}
-      onSubmit={values => {
-        console.log(values);
-      }}
-    >
-      {({ errors, touched, validateField, validateForm }) => (
-        <Form>
-          <Field name="email" validate={validateEmail} />
-          {errors.email && touched.email && errors.email}
-
-          <Field name="username" validate={validateUsername} />
-          {errors.username && touched.username && errors.username}
-          
-          <button type="submit">Submit</button>
-        </Form>
-      )}
-    </Formik>
-  </div>
-);`;
+const Example = () => {
+  const onSubmit = values => {
+    console.log(values);
+  };
+  
+  return (
+    <div>
+      <Formik
+        initialValues={{
+          username: '',
+          email: '',
+        }}
+        onSubmit={onSubmit}
+      >
+        {({ errors, touched, validateField, validateForm }) => (
+          <Form>
+            <Field name="email" validate={validateEmail} />
+            {errors.email && touched.email && errors.email}
+  
+            <Field name="username" validate={validateUsername} />
+            {errors.username && touched.username && errors.username}
+            
+            <button type="submit">Submit</button>
+          </Form>
+        )}
+      </Formik>
+    </div>
+  )
+;`;
