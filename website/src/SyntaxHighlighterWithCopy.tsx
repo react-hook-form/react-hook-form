@@ -74,6 +74,7 @@ export default function SyntaxHighlighterWithCopy({ rawData, data, url, tabIndex
           rawData || copyClipBoard(generateCode(data));
           alert('Code copied into your clipboard.');
         }}
+        aria-label="Copy code into your clipboard"
       >
         Copy to clipboard
       </CopyButton>
