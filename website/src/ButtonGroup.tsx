@@ -152,6 +152,7 @@ export default function ButtonGroup({
   apiButton,
   showApi,
   toggleApi,
+                                      tabIndex,
 }) {
   const pathname = window.location.pathname;
 
@@ -186,6 +187,7 @@ export default function ButtonGroup({
       </MediumIcon>
       <ActionButtonGroup>
         <Button
+          tabIndex={tabIndex}
           active={pathname === '/'}
           onClick={() => {
             toggleApi(false);
@@ -211,6 +213,7 @@ export default function ButtonGroup({
           <span>Form</span>
         </Button>
         <Button
+          tabIndex={tabIndex}
           active={pathname === '/api'}
           onClick={() => {
             toggleBuilder(false);
@@ -242,6 +245,7 @@ export default function ButtonGroup({
           <span>API</span>
         </Button>
         <Button
+          tabIndex={tabIndex}
           active={pathname === '/builder'}
           onClick={() => {
             toggleApi(false);

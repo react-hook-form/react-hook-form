@@ -76,7 +76,7 @@ const Code = styled.span`
   font-size: 14px;
 `;
 
-export default function ApiMenu({ links, goToSection }: any) {
+export default function ApiMenu({ links, goToSection, tabIndex }: any) {
   return (
     <Menu>
       <ul>
@@ -86,7 +86,7 @@ export default function ApiMenu({ links, goToSection }: any) {
               <React.Fragment key="examples">
                 <li>
                   <Code>{`</>`}</Code>
-                  <a href="https://github.com/bluebill1049/react-hook-form/tree/master/examples" target="_blank">
+                  <a href="https://github.com/bluebill1049/react-hook-form/tree/master/examples" target="_blank" tabIndex={tabIndex}>
                     Examples
                   </a>
                 </li>
@@ -132,6 +132,7 @@ export default function ApiMenu({ links, goToSection }: any) {
               </Arrow>
               {link !== 'Quick Start' && <Code>{`</>`}</Code>}{' '}
               <button
+                tabIndex={tabIndex}
                 style={{
                   top: '-3px',
                   position: 'relative',

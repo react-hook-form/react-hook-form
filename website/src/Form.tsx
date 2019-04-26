@@ -77,6 +77,7 @@ const SettingIcon = styled.button`
 const errorStyle = { border: `1px solid ${colors.secondary}`, background: colors.errorPink };
 
 export default function Form({
+  tabIndex,
   formData,
   handleSubmit,
   onSubmit,
@@ -103,7 +104,7 @@ export default function Form({
         <form onSubmit={handleSubmit(onSubmit)}>
           <Title>
             Example{' '}
-            <SettingIcon onClick={() => toggleSetting(!showSetting)}>
+            <SettingIcon tabIndex={tabIndex} onClick={() => toggleSetting(!showSetting)}>
               <Setting />
               Setting
             </SettingIcon>
@@ -113,6 +114,7 @@ export default function Form({
               case 'select':
                 return (
                   <select
+                    tabIndex={tabIndex}
                     name={field.name}
                     ref={register({ required: field.required })}
                     key={field.name}
@@ -134,6 +136,7 @@ export default function Form({
               case 'textarea':
                 return (
                   <textarea
+                    tabIndex={tabIndex}
                     name={field.name}
                     placeholder={field.name}
                     ref={register({
@@ -166,6 +169,7 @@ export default function Form({
                               {name}
                               &nbsp;
                               <input
+                                tabIndex={tabIndex}
                                 type="radio"
                                 name={field.name}
                                 value={name}
@@ -186,6 +190,7 @@ export default function Form({
                     autoComplete="off"
                     key={field.name}
                     type={field.type}
+                    tabIndex={tabIndex}
                     name={field.name}
                     placeholder={field.name}
                     ref={register({
@@ -215,6 +220,7 @@ export default function Form({
 
           <SubmitButton
             type="button"
+            tabIndex={tabIndex}
             value="Edit"
             onClick={() => {
               toggleBuilder(true);

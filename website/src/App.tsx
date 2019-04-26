@@ -105,6 +105,7 @@ function App() {
   } = useForm({
     mode: setting.mode,
   });
+  const tabIndex = showApi || showBuilder ? -1 : 0;
 
   const onSubmit = data => {
     updateSubmitData(data);
@@ -130,6 +131,7 @@ function App() {
 
   const Buttons = (
     <ButtonGroup
+      tabIndex={tabIndex}
       builderButton={builderButton}
       toggleBuilder={toggleBuilder}
       toggleSetting={toggleSetting}
@@ -145,6 +147,65 @@ function App() {
   return (
     <Root>
       {!isMobile && Buttons}
+
+      {isMobile && Buttons}
+
+      <main
+        onClick={() => {
+          if (showSetting || showBuilder) {
+            toggleSetting(false);
+            toggleBuilder(false);
+          }
+        }}
+        style={{
+          perspective: '800px',
+        }}
+      >
+        <Animate
+          play={showBuilder || showSetting || showApi}
+          startStyle={{ minHeight: '100vh', filter: 'blur(0)', transform: 'scale(1)' }}
+          endStyle={{ minHeight: '100vh', filter: 'blur(3px)', transform: 'scale(0.9) rotateX(5deg)' }}
+        >
+          <Header tabIndex={tabIndex} homeRef={HomeRef} toggleApi={toggleApi} />
+
+          <CodeCompareSection />
+
+          <div ref={HomeRef}>
+            <Form
+              {...{
+                tabIndex,
+                showSetting,
+                toggleSetting,
+                handleSubmit,
+                onSubmit,
+                submitData,
+                register,
+                errors,
+                watch,
+                touched,
+                formData,
+                toggleBuilder,
+                setting,
+              }}
+            />
+          </div>
+
+          <Footer>
+            Build ♡ by{' '}
+            <a href="https://twitter.com/bluebill1049" target="_blank" tabIndex={tabIndex}>
+              @Bill Luo
+            </a>{' '}
+            with{' '}
+            <a href="https://github.com/bluebill1049/react-hook-form" target="_blank" tabIndex={tabIndex}>
+              React Hook Form
+            </a>{' '}
+            &{' '}
+            <a href="https://github.com/bluebill1049/react-simple-animate" target="_blank" tabIndex={tabIndex}>
+              React Simple Animate
+            </a>
+          </Footer>
+        </Animate>
+      </main>
 
       <Suspense fallback={<span />}>
         <Setting
@@ -183,64 +244,6 @@ function App() {
           apiButton={apiButton}
         />
       </Suspense>
-
-      {isMobile && Buttons}
-
-      <main
-        onClick={() => {
-          if (showSetting || showBuilder) {
-            toggleSetting(false);
-            toggleBuilder(false);
-          }
-        }}
-        style={{
-          perspective: '800px',
-        }}
-      >
-        <Animate
-          play={showBuilder || showSetting || showApi}
-          startStyle={{ minHeight: '100vh', filter: 'blur(0)', transform: 'scale(1)' }}
-          endStyle={{ minHeight: '100vh', filter: 'blur(3px)', transform: 'scale(0.9) rotateX(5deg)' }}
-        >
-          <Header homeRef={HomeRef} toggleApi={toggleApi} />
-
-          <CodeCompareSection />
-
-          <div ref={HomeRef}>
-            <Form
-              {...{
-                showSetting,
-                toggleSetting,
-                handleSubmit,
-                onSubmit,
-                submitData,
-                register,
-                errors,
-                watch,
-                touched,
-                formData,
-                toggleBuilder,
-                setting,
-              }}
-            />
-          </div>
-
-          <Footer>
-            Build ♡ by{' '}
-            <a href="https://twitter.com/bluebill1049" target="_blank">
-              @Bill Luo
-            </a>{' '}
-            with{' '}
-            <a href="https://github.com/bluebill1049/react-hook-form" target="_blank">
-              React Hook Form
-            </a>{' '}
-            &{' '}
-            <a href="https://github.com/bluebill1049/react-simple-animate" target="_blank">
-              React Simple Animate
-            </a>
-          </Footer>
-        </Animate>
-      </main>
     </Root>
   );
 }

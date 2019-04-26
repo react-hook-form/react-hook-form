@@ -143,6 +143,7 @@ function Builder({ formData, showApi, toggleApi, apiButton, isMobile }: any) {
   const root = useRef(null);
   const validationSchemaRef = useRef(null);
   const handleSubmitRef = useRef(null);
+  const tabIndex = showApi ? 0 : -1;
   copyFormData.current = formData;
 
   const goToSection = name => {
@@ -214,7 +215,7 @@ function Builder({ formData, showApi, toggleApi, apiButton, isMobile }: any) {
               <CloseButton
                 aria-label="close api"
                 ref={closeButton}
-                tabIndex={0}
+                tabIndex={tabIndex}
                 onClick={() => {
                   toggleApi(false);
                   apiButton.current.focus();
@@ -227,9 +228,9 @@ function Builder({ formData, showApi, toggleApi, apiButton, isMobile }: any) {
               <SubHeading>React hook form focus on providing the best DX by simplify the API.</SubHeading>
 
               <Wrapper>
-                <ApiMenu links={links} goToSection={goToSection} />
+                <ApiMenu tabIndex={tabIndex} links={links} goToSection={goToSection} />
                 <main>
-                  <GetStarted quickStartRef={quickStartRef} />
+                  <GetStarted tabIndex={tabIndex} quickStartRef={quickStartRef} />
 
                   <Title>API</Title>
 
@@ -301,7 +302,7 @@ function Builder({ formData, showApi, toggleApi, apiButton, isMobile }: any) {
                     </h2>
                   </code>
 
-                  <ApiRefTable />
+                  <ApiRefTable tabIndex={tabIndex} />
 
                   <hr />
                   <code ref={errorsRef}>
@@ -317,7 +318,7 @@ function Builder({ formData, showApi, toggleApi, apiButton, isMobile }: any) {
                     </h2>
                   </code>
                   <p>Object contain form errors or error messages belong to each input.</p>
-                  <SyntaxHighlighterWithCopy rawData={errorCode} url="https://codesandbox.io/s/nrr4n9p8n4" />
+                  <SyntaxHighlighterWithCopy tabIndex={tabIndex} rawData={errorCode} url="https://codesandbox.io/s/nrr4n9p8n4" />
 
                   <hr />
                   <code ref={watchRef}>
@@ -372,7 +373,7 @@ function Builder({ formData, showApi, toggleApi, apiButton, isMobile }: any) {
                       </tbody>
                     </Table>
                   </TableWrapper>
-                  <SyntaxHighlighterWithCopy rawData={watchCode} url="https://codesandbox.io/s/pp1l40q7wx" />
+                  <SyntaxHighlighterWithCopy tabIndex={tabIndex} rawData={watchCode} url="https://codesandbox.io/s/pp1l40q7wx" />
 
                   <hr />
                   <code ref={handleSubmitRef}>
@@ -382,6 +383,7 @@ function Builder({ formData, showApi, toggleApi, apiButton, isMobile }: any) {
                   </code>
                   <p>This function will pass you the form data when form validation is successful.</p>
                   <LinkToSandBox
+                    tabIndex={tabIndex}
                     style={{
                       position: 'relative',
                       left: 0,
@@ -403,12 +405,12 @@ function Builder({ formData, showApi, toggleApi, apiButton, isMobile }: any) {
                   <p>
                     If you would like to centralize your validation rules or external validation schema, you can apply{' '}
                     <code>validationSchema</code> when you invoke <code>useForm</code>. we use{' '}
-                    <Link href="https://github.com/jquense/yup" target="_blank">
+                    <Link href="https://github.com/jquense/yup" target="_blank" tabIndex={tabIndex}>
                       Yup
                     </Link>{' '}
                     for object schema validation and the example below demonstrate the usage.
                   </p>
-                  <SyntaxHighlighterWithCopy rawData={validationSchemaCode} url="https://codesandbox.io/s/928po918qr" />
+                  <SyntaxHighlighterWithCopy tabIndex={tabIndex} rawData={validationSchemaCode} url="https://codesandbox.io/s/928po918qr" />
 
                   <hr/>
 
@@ -459,6 +461,7 @@ function Builder({ formData, showApi, toggleApi, apiButton, isMobile }: any) {
                   </TableWrapper>
 
                   <LinkToSandBox
+                    tabIndex={tabIndex}
                     style={{
                       position: 'relative',
                       left: 0,

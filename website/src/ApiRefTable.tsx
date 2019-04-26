@@ -29,7 +29,7 @@ const Option = styled.fieldset`
   }
 `;
 
-export default function ApiRefTable() {
+export default function ApiRefTable({ tabIndex }: any) {
   const [isStandard, toggleOption] = useState(true);
   return (
     <>
@@ -45,6 +45,7 @@ export default function ApiRefTable() {
         If you working on <code>arrays/array fields</code> (inject additional form section by action), you can assign
         input name as <code>name[index]</code>. Check out the example{' '}
         <Link
+          tabIndex={tabIndex}
           href="https://github.com/bluebill1049/react-hook-form/blob/master/examples/arrayFields.tsx"
           title="example for array fields"
         >
@@ -56,11 +57,11 @@ export default function ApiRefTable() {
       <Option>
         <legend>Register options</legend>
         <label>
-          <input onChange={() => toggleOption(true)} type="radio" name="errorMessage" defaultChecked />
+          <input tabIndex={tabIndex} onChange={() => toggleOption(true)} type="radio" name="errorMessage" defaultChecked />
           Register with validation
         </label>
         <label>
-          <input onChange={() => toggleOption(false)} type="radio" name="errorMessage" />
+          <input tabIndex={tabIndex} onChange={() => toggleOption(false)} type="radio" name="errorMessage" />
           Register with validation and error message
         </label>
       </Option>

@@ -135,7 +135,7 @@ const HeadingButtons = styled.div`
   }
 `;
 
-export default function Header({ homeRef, toggleApi }: any) {
+export default function Header({ homeRef, toggleApi, tabIndex }: any) {
   return (
     <>
       <Head>
@@ -151,6 +151,7 @@ export default function Header({ homeRef, toggleApi }: any) {
 
         <HeadingButtons>
           <button
+            tabIndex={tabIndex}
             onClick={() => {
               if (homeRef.current) {
                 // @ts-ignore
@@ -161,6 +162,7 @@ export default function Header({ homeRef, toggleApi }: any) {
             Demo
           </button>
           <button
+            tabIndex={tabIndex}
             onClick={() => {
               toggleApi(true);
               document.title = 'React hook form - API';

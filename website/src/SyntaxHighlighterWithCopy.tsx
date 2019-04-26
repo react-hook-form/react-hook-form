@@ -61,15 +61,7 @@ export const LinkToSandBox = styled.a`
   }
 `;
 
-export default function SyntaxHighlighterWithCopy({
-  rawData,
-  data,
-  url,
-}: {
-  rawData?: string;
-  data?: string;
-  url?: string;
-}) {
+export default function SyntaxHighlighterWithCopy({ rawData, data, url, tabIndex }: any) {
   return (
     <div
       style={{
@@ -77,6 +69,7 @@ export default function SyntaxHighlighterWithCopy({
       }}
     >
       <CopyButton
+        tabIndex={tabIndex}
         onClick={() => {
           rawData || copyClipBoard(generateCode(data));
           alert('Code copied into your clipboard.');
@@ -86,7 +79,7 @@ export default function SyntaxHighlighterWithCopy({
       </CopyButton>
 
       {url && (
-        <LinkToSandBox href={url} target="_blank">
+        <LinkToSandBox tabIndex={tabIndex} href={url} target="_blank">
           CodeSandbox
         </LinkToSandBox>
       )}

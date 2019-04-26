@@ -168,6 +168,7 @@ function Builder({
     event.target.reset();
   };
   const type = watch('type');
+  const tabIndex = showBuilder ? 0 : -1;
   copyFormData.current = formData;
 
   function validate(value) {
@@ -207,7 +208,7 @@ function Builder({
               <CloseButton
                 aria-label="close builder"
                 ref={closeButton}
-                tabIndex={0}
+                tabIndex={tabIndex}
                 onClick={() => {
                   toggleBuilder(false);
                   builderButton.current.focus();
@@ -224,7 +225,7 @@ function Builder({
                   <Title>Form</Title>
 
                   <SortableContainer
-                    {...{ updateFormData, formData, editIndex, setEditIndex, setFormData, editFormData }}
+                    {...{ updateFormData, tabIndex, formData, editIndex, setEditIndex, setFormData, editFormData }}
                   />
 
                   {formData.length === 0 && (
@@ -246,6 +247,7 @@ function Builder({
                     autoComplete="off"
                     defaultValue={editFormData.name}
                     name="name"
+                    tabIndex={tabIndex}
                     style={{
                       ...(errors['name'] ? errorStyle : null),
                     }}
@@ -267,7 +269,7 @@ function Builder({
                   </Animate>
 
                   <label>Type: </label>
-                  <select name="type" ref={register} value={editFormData.type}>
+                  <select name="type" ref={register} value={editFormData.type} tabIndex={tabIndex}>
                     <option value="text">Text</option>
                     <option value="select">Select</option>
                     <option value="checkbox">Checkbox</option>
@@ -296,6 +298,7 @@ function Builder({
                     <>
                       <label>Options:</label>
                       <input
+                        tabIndex={tabIndex}
                         key={editFormData.name}
                         defaultValue={editFormData.options}
                         type="text"
@@ -309,6 +312,7 @@ function Builder({
                   <label>
                     <input
                       type="checkbox"
+                      tabIndex={tabIndex}
                       defaultChecked={editFormData.checkbox}
                       onClick={() => toggleValidation(!showValidation)}
                     />
@@ -333,11 +337,12 @@ function Builder({
                           marginTop: 0,
                         }}
                       >
-                        <input defaultChecked={editFormData.required} type="checkbox" name="required" ref={register} />{' '}
+                        <input tabIndex={showValidation ? 0 : -1} defaultChecked={editFormData.required} type="checkbox" name="required" ref={register} />{' '}
                         Required
                       </label>
                       <label>Max</label>
                       <input
+                        tabIndex={showValidation ? 0 : -1}
                         defaultValue={editFormData.max}
                         autoComplete="false"
                         name="max"
@@ -349,6 +354,7 @@ function Builder({
                         defaultValue={editFormData.min}
                         autoComplete="false"
                         name="min"
+                        tabIndex={showValidation ? 0 : -1}
                         type="number"
                         ref={register}
                       />
@@ -358,10 +364,12 @@ function Builder({
                         autoComplete="false"
                         name="maxLength"
                         type="number"
+                        tabIndex={showValidation ? 0 : -1}
                         ref={register}
                       />
                       <label>MinLength</label>
                       <input
+                        tabIndex={showValidation ? 0 : -1}
                         defaultValue={editFormData.minLength}
                         autoComplete="false"
                         name="minLength"
@@ -370,6 +378,7 @@ function Builder({
                       />
                       <label>Pattern</label>
                       <input
+                        tabIndex={showValidation ? 0 : -1}
                         autoComplete="false"
                         defaultValue={editFormData.pattern}
                         style={{
@@ -382,7 +391,7 @@ function Builder({
                     </fieldset>
                   </Animate>
 
-                  <SubmitButton type="submit" value={editIndex >= 0 ? 'Update' : 'Create'} />
+                  <SubmitButton tabIndex={tabIndex} type="submit" value={editIndex >= 0 ? 'Update' : 'Create'} />
 
                   <Title
                     style={{
@@ -406,6 +415,7 @@ function Builder({
                     }}
                     render={({ style }) => (
                       <SubmitButton
+                        tabIndex={tabIndex}
                         style={style}
                         type="button"
                         color="white"
@@ -431,7 +441,7 @@ function Builder({
                 >
                   <Title>Code</Title>
 
-                  <SyntaxHighlighterWithCopy data={formData} />
+                  <SyntaxHighlighterWithCopy tabIndex={tabIndex} data={formData} />
                 </div>
               </Wrapper>
             </div>
