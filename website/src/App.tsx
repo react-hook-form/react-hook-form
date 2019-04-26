@@ -55,6 +55,7 @@ const Footer = styled.footer`
   padding: 40px 0;
   font-size: 12px;
   font-weight: 200;
+  margin-bottom: 60px;
 
   @media (min-width: 768px) {
     font-size: 16px;
