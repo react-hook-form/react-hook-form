@@ -8,7 +8,7 @@ import reactHookFormCode from './codeExamples/reactHookFormCode';
 import reduxFormCode from './codeExamples/reduxFormCode';
 
 const GridView = styled.section`
-  @media (min-width: 768px) {
+  @media (min-width: 1100px) {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
     grid-column-gap: 40px;
