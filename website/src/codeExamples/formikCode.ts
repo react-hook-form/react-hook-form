@@ -1,20 +1,20 @@
-export default `import React from 'react';
-import { Formik, Form, Field } from 'formik';
+export default `import React from "react";
+import { Formik, Form, Field } from "formik";
 
 function validateEmail(value) {
   let error;
   if (!value) {
-    error = 'Required';
+    error = "Required";
   } else if (!/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\\.[A-Z]{2,4}$/i.test(value)) {
-    error = 'Invalid email address';
+    error = "Invalid email address";
   }
   return error;
 }
 
 function validateUsername(value) {
   let error;
-  if (value === 'admin') {
-    error = 'Nice try!';
+  if (value === "admin") {
+    error = "Nice try!";
   }
   return error;
 }
@@ -23,28 +23,29 @@ const Example = () => {
   const onSubmit = values => {
     console.log(values);
   };
-  
+
   return (
     <div>
       <Formik
         initialValues={{
-          username: '',
-          email: '',
+          username: "",
+          email: ""
         }}
         onSubmit={onSubmit}
       >
         {({ errors, touched, validateField, validateForm }) => (
           <Form>
             <Field name="email" validate={validateEmail} />
-            {errors.email && errors.email}
-  
+            {errors.email && touched.email && errors.email}
+
             <Field name="username" validate={validateUsername} />
-            {errors.username && errors.username}
-            
+            {errors.username && touched.username && errors.username}
+
             <button type="submit">Submit</button>
           </Form>
         )}
       </Formik>
     </div>
-  )
-;`;
+  );
+};
+`;
