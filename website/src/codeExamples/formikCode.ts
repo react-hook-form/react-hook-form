@@ -36,10 +36,10 @@ const Example = () => {
         {({ errors, touched, validateField, validateForm }) => (
           <Form>
             <Field name="email" validate={validateEmail} />
-            {errors.email && touched.email && errors.email}
+            {errors.email && errors.email}
   
             <Field name="username" validate={validateUsername} />
-            {errors.username && touched.username && errors.username}
+            {errors.username && errors.username}
             
             <button type="submit">Submit</button>
           </Form>
