@@ -52,6 +52,7 @@ const Example = props => {
 };
 
 reduxForm({
-  form: "syncValidation"
+  form: "syncValidation",
+  validate,
 })(SyncValidationForm);
 `;
