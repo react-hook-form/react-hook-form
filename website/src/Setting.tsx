@@ -78,7 +78,7 @@ function Setting({ settingButton, toggleSetting, showSetting, setting, setConfig
               marginTop: 10,
             }}
           >
-            Setting
+            Demo Setting
           </h2>
 
           <h2

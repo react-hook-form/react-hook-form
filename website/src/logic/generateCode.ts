@@ -1,5 +1,6 @@
 export default formData => {
-  return `import React from 'react';
+  return `
+import React from 'react';
 import useForm from 'react-hook-form';
 
 export default function Form() {
