@@ -87,7 +87,7 @@ export default function CodeCompareSection() {
         </section>
 
         <section>
-          <Title>Redx Form</Title>
+          <Title>Redux Form</Title>
           <SyntaxHighlighter
             customStyle={{
               border: 'none',
