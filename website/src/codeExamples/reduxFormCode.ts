@@ -33,18 +33,20 @@ const Example = props => {
   };
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)}>
-      <Field name="email" type="email" component={renderField} label="Email" />
-
-      <Field
-        name="username"
-        type="text"
-        component={renderField}
-        label="Username"
-      />
-
-      <button type="submit">Submit</button>
-    </form>
+    <div>
+      <form onSubmit={handleSubmit(onSubmit)}>
+        <Field name="email" type="email" component={renderField} label="Email" />
+  
+        <Field
+          name="username"
+          type="text"
+          component={renderField}
+          label="Username"
+        />
+  
+        <button type="submit">Submit</button>
+      </form>
+    </div>
   );
 };
 
