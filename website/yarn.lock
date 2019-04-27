@@ -8223,10 +8223,10 @@ react-scripts@^2.1.8:
   optionalDependencies:
     fsevents "1.2.4"
 
-react-simple-animate@2.6.15:
-  version "2.6.15"
-  resolved "https://registry.yarnpkg.com/react-simple-animate/-/react-simple-animate-2.6.15.tgz#0831a1d44744a4df88d77e4a29b3d247db312714"
-  integrity sha512-wEFdf9dDhDhX2f2VWW1O0QunsuEsV8eoi+LiKuQGTLRNgDk9g9BDpkYepJ7Ft77pnm1VKQP2IUR4phMItcVhjg==
+react-simple-animate@2.6.16:
+  version "2.6.16"
+  resolved "https://registry.yarnpkg.com/react-simple-animate/-/react-simple-animate-2.6.16.tgz#1728cab1836a5ffbad9209c2ddf0d4c53d66b4e4"
+  integrity sha512-+LTQK1uuNcaI/DwLk1ZtWrIYF9z2067CIKnoMZhHGIBw/C/JEK78lEFKQ677pI6eCg64q1kumcyPhT2KKBAWzw==
 
 react-sortablejs@^1.5.1:
   version "1.5.1"

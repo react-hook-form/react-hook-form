@@ -2,6 +2,7 @@ import { Heading, SubHeading, Title } from './styles/typography';
 import React from 'react';
 import styled from 'styled-components';
 import colors from './styles/colors';
+import { AnimateGroup, Animate } from 'react-simple-animate';
 
 const Logo = styled.svg`
   height: 80px;
@@ -138,7 +139,7 @@ const HeadingButtons = styled.div`
 
 export default function Header({ homeRef, toggleApi, tabIndex }: any) {
   return (
-    <>
+    <AnimateGroup play>
       <Head>
         <Logo viewBox="0 0 100 100">
           <path d="M73.56,13.32H58.14a8.54,8.54,0,0,0-16.27,0H26.44a11,11,0,0,0-11,11V81.63a11,11,0,0,0,11,11H73.56a11,11,0,0,0,11-11V24.32A11,11,0,0,0,73.56,13.32Zm-30.92,2a1,1,0,0,0,1-.79,6.54,6.54,0,0,1,12.78,0,1,1,0,0,0,1,.79h5.38v6.55a3,3,0,0,1-3,3H40.25a3,3,0,0,1-3-3V15.32ZM82.56,81.63a9,9,0,0,1-9,9H26.44a9,9,0,0,1-9-9V24.32a9,9,0,0,1,9-9h8.81v6.55a5,5,0,0,0,5,5h19.5a5,5,0,0,0,5-5V15.32h8.81a9,9,0,0,1,9,9Z" />
@@ -176,9 +177,9 @@ export default function Header({ homeRef, toggleApi, tabIndex }: any) {
       </Head>
 
       <Features>
-        <Title>Why?</Title>
+        <Title>Features</Title>
         <FeaturesContent>
-          <div>
+          <Animate delaySeconds={0.5} startStyle={{ opacity: 0 }} endStyle={{opacity: 1}} sequenceIndex={0}>
             <svg
               version="1.1"
               x="0px"
@@ -269,9 +270,9 @@ export default function Header({ homeRef, toggleApi, tabIndex }: any) {
             </svg>
             <h3>HTML standard</h3>
             <p>Leverage your existing HTML markup, and start validating your forms with standard validation.</p>
-          </div>
+          </Animate>
 
-          <div>
+          <Animate startStyle={{ opacity: 0 }} endStyle={{opacity: 1}} sequenceIndex={1}>
             <svg
               viewBox="0 0 100 125"
               style={{
@@ -285,9 +286,9 @@ export default function Header({ homeRef, toggleApi, tabIndex }: any) {
             </svg>
             <h3>Super Light</h3>
             <p>Performance is important and packages size matters. it is tiny and without any dependencies.</p>
-          </div>
+          </Animate>
 
-          <div>
+          <Animate startStyle={{ opacity: 0 }} endStyle={{opacity: 1}} sequenceIndex={2}>
             <svg
               data-name="Layer 1"
               viewBox="0 0 24 30"
@@ -308,9 +309,9 @@ export default function Header({ homeRef, toggleApi, tabIndex }: any) {
             <p>
               Minimizes the volume that is triggered re-rendering, try to provide your users with the best experience.
             </p>
-          </div>
+          </Animate>
 
-          <div>
+          <Animate startStyle={{ opacity: 0 }} endStyle={{opacity: 1}} sequenceIndex={3}>
             <svg x="0px" y="0px" viewBox="0 0 100 125" enable-background="new 0 0 100 100" style={{
               fill: 'white',
               width: 50,
@@ -335,9 +336,9 @@ export default function Header({ homeRef, toggleApi, tabIndex }: any) {
             </svg>
             <h3>Adoptable</h3>
             <p>Since form state is inherently local, it can be easily adopted without other dependencies.</p>
-          </div>
+          </Animate>
         </FeaturesContent>
       </Features>
-    </>
+    </AnimateGroup>
   );
 }

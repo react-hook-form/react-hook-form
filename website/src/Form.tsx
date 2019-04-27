@@ -98,7 +98,8 @@ export default function Form({
           textAlign: 'center',
         }}
       >
-        <H1><code>{`</>`}</code> Code Demo</H1>
+        <H1>Live Demo</H1>
+        <p>The following form demonstrate React Hook Form in action, and changing validation mode from setting.</p>
       </div>
       <Wrapper>
         <form onSubmit={handleSubmit(onSubmit)}>
