@@ -29,27 +29,25 @@ const Example = () => {
   };
 
   return (
-    <div>
-      <Formik
-        initialValues={{
-          username: "",
-          email: ""
-        }}
-        onSubmit={onSubmit}
-      >
-        {({ errors, touched, validateField, validateForm }) => (
-          <Form>
-            <Field name="email" validate={validateEmail} />
-            {errors.email && touched.email && errors.email}
+    <Formik
+      initialValues={{
+        username: "",
+        email: ""
+      }}
+      onSubmit={onSubmit}
+    >
+      {({ errors, touched, validateField, validateForm }) => (
+        <Form>
+          <Field name="email" validate={validateEmail} />
+          {errors.email && touched.email && errors.email}
 
-            <Field name="username" validate={validateUsername} />
-            {errors.username && touched.username && errors.username}
+          <Field name="username" validate={validateUsername} />
+          {errors.username && touched.username && errors.username}
 
-            <button type="submit">Submit</button>
-          </Form>
-        )}
-      </Formik>
-    </div>
+          <button type="submit">Submit</button>
+        </Form>
+      )}
+    </Formik>
   );
 };
 `;

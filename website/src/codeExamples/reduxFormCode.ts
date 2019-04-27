@@ -17,13 +17,16 @@ const validate = values => {
   return errors;
 };
 
-const renderField = ({ input, label, type }) => (
-  <div>
-    <label>{label}</label>
-    <div>
-      <input {...input} placeholder={label} type={type} />
-    </div>
-  </div>
+const renderField = ({
+  input,
+  label,
+  type,
+  meta: { touched, error }
+}) => (
+  <>
+    <input {...input} placeholder={label} type={type} />
+    {touched && error && <span>{error}</span>}
+  </>
 );
 
 const Example = props => {
@@ -33,20 +36,18 @@ const Example = props => {
   };
 
   return (
-    <div>
-      <form onSubmit={handleSubmit(onSubmit)}>
-        <Field name="email" type="email" component={renderField} label="Email" />
-  
-        <Field
-          name="username"
-          type="text"
-          component={renderField}
-          label="Username"
-        />
-  
-        <button type="submit">Submit</button>
-      </form>
-    </div>
+    <form onSubmit={handleSubmit(onSubmit)}>
+      <Field name="email" type="email" component={renderField} label="Email" />
+
+      <Field
+        name="username"
+        type="text"
+        component={renderField}
+        label="Username"
+      />
+
+      <button type="submit">Submit</button>
+    </form>
   );
 };
 

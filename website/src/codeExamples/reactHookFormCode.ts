@@ -8,31 +8,29 @@ const Example = () => {
   };
 
   return (
-    <div>
-      <form onSubmit={handleSubmit(onSubmit)}>
-        <input
-          name="email"
-          ref={register({
-            required: 'Required',
-            pattern: {
-              value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\\.[A-Z]{2,4}$/i,
-              message: "invalid email address"
-            }
-          })}
-        />
-        {errors.email && errors.email.message}
+    <form onSubmit={handleSubmit(onSubmit)}>
+      <input
+        name="email"
+        ref={register({
+          required: 'Required',
+          pattern: {
+            value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\\.[A-Z]{2,4}$/i,
+            message: "invalid email address"
+          }
+        })}
+      />
+      {errors.email && errors.email.message}
 
-        <input
-          name="username"
-          ref={register({
-            validate: value => value === "admin" || "Nice try!"
-          })}
-        />
-        {errors.username && errors.username.message}
+      <input
+        name="username"
+        ref={register({
+          validate: value => value === "admin" || "Nice try!"
+        })}
+      />
+      {errors.username && errors.username.message}
 
-        <button type="submit">Submit</button>
-      </form>
-    </div>
+      <button type="submit">Submit</button>
+    </form>
   );
 };
 `;
