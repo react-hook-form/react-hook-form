@@ -151,6 +151,44 @@ function App() {
 
       {isMobile && Buttons}
 
+      <Suspense fallback={<span />}>
+        <Setting
+          settingButton={settingButton}
+          toggleSetting={toggleSetting}
+          setting={setting}
+          showSetting={showSetting}
+          setConfig={setConfig}
+        />
+      </Suspense>
+
+      <Suspense fallback={<span />}>
+        <Builder
+          showBuilder={showBuilder}
+          toggleBuilder={toggleBuilder}
+          editFormData={editFormData}
+          setFormData={setFormData}
+          formData={formData}
+          updateFormData={updateFormData}
+          builderButton={builderButton}
+          isMobile={isMobile}
+          HomeRef={HomeRef}
+        />
+      </Suspense>
+
+      <Suspense fallback={<span />}>
+        <Api
+          showApi={showApi}
+          toggleApi={toggleApi}
+          editFormData={editFormData}
+          setFormData={setFormData}
+          formData={formData}
+          updateFormData={updateFormData}
+          builderButton={builderButton}
+          isMobile={isMobile}
+          apiButton={apiButton}
+        />
+      </Suspense>
+
       <main
         onClick={() => {
           if (showSetting || showBuilder) {
@@ -208,44 +246,6 @@ function App() {
           </Footer>
         </Animate>
       </main>
-
-      <Suspense fallback={<span />}>
-        <Setting
-          settingButton={settingButton}
-          toggleSetting={toggleSetting}
-          setting={setting}
-          showSetting={showSetting}
-          setConfig={setConfig}
-        />
-      </Suspense>
-
-      <Suspense fallback={<span />}>
-        <Builder
-          showBuilder={showBuilder}
-          toggleBuilder={toggleBuilder}
-          editFormData={editFormData}
-          setFormData={setFormData}
-          formData={formData}
-          updateFormData={updateFormData}
-          builderButton={builderButton}
-          isMobile={isMobile}
-          HomeRef={HomeRef}
-        />
-      </Suspense>
-
-      <Suspense fallback={<span />}>
-        <Api
-          showApi={showApi}
-          toggleApi={toggleApi}
-          editFormData={editFormData}
-          setFormData={setFormData}
-          formData={formData}
-          updateFormData={updateFormData}
-          builderButton={builderButton}
-          isMobile={isMobile}
-          apiButton={apiButton}
-        />
-      </Suspense>
     </Root>
   );
 }
