@@ -130,6 +130,23 @@ function App() {
     });
   }, []);
 
+  useEffect(() => {
+    const pathName = window.location.pathname;
+    if (pathName === '/api') {
+      toggleApi(true);
+      toggleBuilder(false);
+      document.body.style.overflow = 'hidden';
+    } else if (pathName === '/builder') {
+      toggleApi(false);
+      toggleBuilder(true);
+      document.body.style.overflow = 'hidden';
+    } else {
+      toggleApi(false);
+      toggleBuilder(false);
+      document.body.style.overflow = 'auto';
+    }
+  }, [window.location.pathname]);
+
   const Buttons = (
     <ButtonGroup
       tabIndex={tabIndex}
