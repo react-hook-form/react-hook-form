@@ -11,9 +11,22 @@ const Code = styled.pre`
   white-space: pre-wrap;
 `;
 
+const Button = styled.button`
+  display: block;
+  box-sizing: border-box;
+  border-radius: 4px;
+  padding: 12px 40px;
+  margin: 40px auto;
+  font-size: 18px;
+  background: ${colors.primary};
+  color: white;
+  border: 1px solid ${colors.lightBlue};
+  transition: 0.3s all;
+`;
+
 const Wrapper = styled.div`
   display: grid;
-  min-height: 80vh;
+  min-height: 70vh;
   transition: 1s all;
   grid-template-columns: repeat(auto-fit, minmax(10rem, 1fr));
   grid-column-gap: 40px;
@@ -78,6 +91,7 @@ const errorStyle = { border: `1px solid ${colors.secondary}`, background: colors
 
 export default function Form({
   tabIndex,
+  toggleApi,
   formData,
   handleSubmit,
   onSubmit,
@@ -301,6 +315,16 @@ export default function Form({
           </section>
         )}
       </Wrapper>
+
+      <section
+        style={{
+          textAlign: 'center',
+        }}
+      >
+        <H1>Find it useful and interesting?</H1>
+        <p>Checkout the full API documentation in a single page</p>
+        <Button onClick={() => toggleApi(true)}>Checkout Hook API</Button>
+      </section>
     </>
   );
 }

@@ -176,6 +176,7 @@ function App() {
               {...{
                 tabIndex,
                 showSetting,
+                toggleApi,
                 toggleSetting,
                 handleSubmit,
                 onSubmit,

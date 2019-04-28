@@ -97,7 +97,7 @@ const FeaturesContent = styled.div`
   }
 `;
 
-const HeadingButtons = styled.div`
+export const HeadingButtons = styled.div`
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   grid-column-gap: 20px;
