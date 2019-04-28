@@ -47,7 +47,7 @@ function App() {
       <input name="lastname" ref={register({ required: true })} /> {/* apply required validation */}
       {errors.lastname && 'Last name is required.'} {/* error message */}
       
-      <input name="age" ref={register({ pattern: /\d+/ })} /> {/* apply a Refex validation */}
+      <input name="age" ref={register({ pattern: /\d+/ })} /> {/* apply pattern validation */}
       {errors.age && 'Please enter number for age.'} {/* error message */}
       
       <input type="submit" />
