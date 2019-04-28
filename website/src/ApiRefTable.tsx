@@ -1,9 +1,8 @@
-// @flow
 import React, { useState } from 'react';
 import colors from './styles/colors';
 import styled from 'styled-components';
-import SyntaxHighlighter from 'react-syntax-highlighter';
-import { monokaiSublime } from 'react-syntax-highlighter/dist/esm/styles/hljs';
+import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
+import { xonokai as monokaiSublime } from 'react-syntax-highlighter/dist/styles/prism';
 import { TableWrapper, Table, Type } from './Api';
 import Link from './styles/link';
 
@@ -30,7 +29,7 @@ const Option = styled.fieldset`
   }
 `;
 
-export default function ApiRefTable() {
+export default function ApiRefTable({ tabIndex }: any) {
   const [isStandard, toggleOption] = useState(true);
   return (
     <>
@@ -46,6 +45,7 @@ export default function ApiRefTable() {
         If you working on <code>arrays/array fields</code> (inject additional form section by action), you can assign
         input name as <code>name[index]</code>. Check out the example{' '}
         <Link
+          tabIndex={tabIndex}
           href="https://github.com/bluebill1049/react-hook-form/blob/master/examples/arrayFields.tsx"
           title="example for array fields"
         >
@@ -57,11 +57,11 @@ export default function ApiRefTable() {
       <Option>
         <legend>Register options</legend>
         <label>
-          <input onChange={() => toggleOption(true)} type="radio" name="errorMessage" defaultChecked />
-          Standard register with validation
+          <input tabIndex={tabIndex} onChange={() => toggleOption(true)} type="radio" name="errorMessage" defaultChecked />
+          Register with validation
         </label>
         <label>
-          <input onChange={() => toggleOption(false)} type="radio" name="errorMessage" />
+          <input tabIndex={tabIndex} onChange={() => toggleOption(false)} type="radio" name="errorMessage" />
           Register with validation and error message
         </label>
       </Option>
@@ -87,7 +87,7 @@ export default function ApiRefTable() {
               </th>
               <th
                 style={{
-                  minWidth: 310,
+                  minWidth: 320,
                 }}
               >
                 Example
@@ -104,7 +104,12 @@ export default function ApiRefTable() {
               </td>
               <td>React element ref</td>
               <td>
-                <SyntaxHighlighter style={monokaiSublime}>{`<input
+                <SyntaxHighlighter
+                  customStyle={{
+                    border: 'none',
+                  }}
+                  style={monokaiSublime}
+                >{`<input
   name="test"
   ref={register}
 />`}</SyntaxHighlighter>
@@ -124,7 +129,12 @@ export default function ApiRefTable() {
                 you can assign as string to return error message in the <code>errors</code> object.
               </td>
               <td>
-                <SyntaxHighlighter style={monokaiSublime}>{`<input
+                <SyntaxHighlighter
+                  customStyle={{
+                    border: 'none',
+                  }}
+                  style={monokaiSublime}
+                >{`<input
   name="test"
   ref={
     register({
@@ -152,7 +162,12 @@ export default function ApiRefTable() {
               </td>
               <td>The maximum length of the value to accept for this input.</td>
               <td>
-                <SyntaxHighlighter style={monokaiSublime}>{`<input
+                <SyntaxHighlighter
+                  customStyle={{
+                    border: 'none',
+                  }}
+                  style={monokaiSublime}
+                >{`<input
   name="test"
   ref={
     register({
@@ -187,7 +202,12 @@ export default function ApiRefTable() {
               </td>
               <td>The minimum length of the value to accept for this input.</td>
               <td>
-                <SyntaxHighlighter style={monokaiSublime}>{`<input
+                <SyntaxHighlighter
+                  customStyle={{
+                    border: 'none',
+                  }}
+                  style={monokaiSublime}
+                >{`<input
   name="test"
   ref={
     register({
@@ -222,7 +242,12 @@ export default function ApiRefTable() {
               </td>
               <td>The maximum value to accept for this input.</td>
               <td>
-                <SyntaxHighlighter style={monokaiSublime}>{`<input
+                <SyntaxHighlighter
+                  customStyle={{
+                    border: 'none',
+                  }}
+                  style={monokaiSublime}
+                >{`<input
   name="test"
   ref={
     register({
@@ -257,7 +282,12 @@ export default function ApiRefTable() {
               </td>
               <td>The minimum value to accept for this input.</td>
               <td>
-                <SyntaxHighlighter style={monokaiSublime}>{`<input
+                <SyntaxHighlighter
+                  customStyle={{
+                    border: 'none',
+                  }}
+                  style={monokaiSublime}
+                >{`<input
   name="test"
   ref={
     register({
@@ -292,7 +322,12 @@ export default function ApiRefTable() {
               </td>
               <td>The regex pattern for the input.</td>
               <td>
-                <SyntaxHighlighter style={monokaiSublime}>{`<input
+                <SyntaxHighlighter
+                  customStyle={{
+                    border: 'none',
+                  }}
+                  style={monokaiSublime}
+                >{`<input
   name="test"
   ref={
     register({
@@ -329,11 +364,16 @@ export default function ApiRefTable() {
                 </code>
               </td>
               <td>
-                You can pass a callback function as the argument to validate, or you can pass an object of
-                callback functions to validate all of them. (refer to the examples)
+                You can pass a callback function as the argument to validate, or you can pass an object of callback
+                functions to validate all of them. (refer to the examples)
               </td>
               <td>
-                <SyntaxHighlighter style={monokaiSublime}>{`<input
+                <SyntaxHighlighter
+                  customStyle={{
+                    border: 'none',
+                  }}
+                  style={monokaiSublime}
+                >{`<input
   name="single"
   ref={
     register({
@@ -347,6 +387,7 @@ export default function ApiRefTable() {
     })
   }
 />
+
 <input
   name="multiple"
   ref={
@@ -363,7 +404,7 @@ export default function ApiRefTable() {
         isLessThanTen:
           (value) => ${
             isStandard
-              ? 'value > 1'
+              ? 'value < 10'
               : `{
             return value < 10 ? 'error message': true;
           }`

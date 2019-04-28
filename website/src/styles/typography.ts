@@ -25,9 +25,22 @@ export const Heading = styled.h1`
   }
 `;
 
+export const H1 = styled.h1`
+  font-size: 24px;
+  display: inline-block;
+  margin: 40px auto 30px;
+  font-weight: 300;
+  padding-bottom: 5px;
+  border-bottom: 2px solid ${colors.secondary};
+  
+  @media (min-width: 768px) {
+    font-size: 36px;
+  }
+`;
+
 export const HeadingWithTopMargin = styled(Heading)`
   @media (min-width: 768px) {
-    margin-top: 130px;
+    margin-top: 60px;
   }
 `;
 

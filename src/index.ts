@@ -8,161 +8,102 @@ import isRadioInput from './utils/isRadioInput';
 import attachEventListeners from './logic/attachEventListeners';
 import validateWithSchema from './logic/validateWithSchema';
 import combineFieldValues from './logic/combineFieldValues';
-
-type Validate = (data: string | number) => boolean | string | number | Date;
-
-type NumberOrString = number | string;
-
-type Props = { mode: 'onSubmit' | 'onBlur' | 'onChange'; validationSchema?: any };
-
-type MutationWatcher = {
-  disconnect: () => void,
-};
-
-export type Ref = HTMLInputElement | HTMLSelectElement | null;
-
-export interface RegisterInput {
-  ref: Ref;
-  required?: boolean | string;
-  min?: NumberOrString | { value: NumberOrString; message: string };
-  max?: NumberOrString | { value: NumberOrString; message: string };
-  maxLength?: number | { value: number; message: string };
-  minLength?: number | { value: number; message: string };
-  pattern?: RegExp | { value: RegExp; message: string };
-  validate?:
-    | Validate
-    | { [key: string]: Validate }
-    | { value: Validate | { [key: string]: Validate }; message: string };
-}
-
-export interface Field extends RegisterInput {
-  ref: any;
-  eventAttached?: Array<string>;
-  watch?: boolean;
-  mutationWatcher?: MutationWatcher;
-  fields?: Array<RegisterInput>;
-  options?: Array<{
-    ref: Ref;
-    eventAttached?: Array<string>;
-    mutationWatcher?: MutationWatcher;
-  }>;
-}
-
-type Error = {
-  ref: Ref;
-  message: string | boolean;
-  type: string;
-};
-
-export interface ErrorMessages {
-  [key: string]: Error;
-}
+import shouldUpdateWithError from './logic/shouldUpdateWithError';
+import { Props, IField, IErrorMessages, Ref, SubmitPromiseResult } from './type';
 
 export default function useForm(
   { mode, validationSchema }: Props = {
     mode: 'onSubmit',
   },
 ) {
-  const fieldsRef = useRef<{ [key: string]: Field }>({});
-  const errorMessagesRef = useRef<ErrorMessages>({});
+  const fieldsRef = useRef<{ [key: string]: IField }>({});
+  const errorMessagesRef = useRef<IErrorMessages>({});
   const isWatchAllRef = useRef<boolean>(false);
   const watchFieldsRef = useRef<{ [key: string]: boolean }>({});
-  const [errors, setErrors] = useState<ErrorMessages>({});
+  const [errors, setErrors] = useState<IErrorMessages>({});
   const isSubmitted = useRef<boolean>(false);
+  const isDirty = useRef<boolean>(false);
+  const touched = useRef<Array<string>>([]);
 
   async function validateAndStateUpdate({ target: { name }, type }: any) {
-    const ref = fieldsRef.current[name];
+    const fields = fieldsRef.current;
     const errorMessages = errorMessagesRef.current;
+    const ref = fields[name];
+    const onSubmitModeNotSubmitted = !isSubmitted.current && mode === 'onSubmit';
+    const isWatchAll = isWatchAllRef.current;
+    let shouldUpdateState = isWatchAll;
 
-    if (!isSubmitted.current && mode === 'onSubmit' && (isWatchAllRef.current || watchFieldsRef.current[name])) {
-      setErrors({});
-    } else {
-      const error = await validateField(ref, fieldsRef.current);
-
-      if (
-        error !== errorMessages ||
-        mode === 'onChange' ||
-        (mode === 'onBlur' && type === 'blur') ||
-        watchFieldsRef.current[name] ||
-        isWatchAllRef.current
-      ) {
-        const copy = { ...errorMessages, ...error };
-
-        if (!error[name]) delete copy[name];
-
-        errorMessagesRef.current = copy;
-        setErrors(copy);
-      }
+    if (!isDirty.current) {
+      isDirty.current = true;
+      shouldUpdateState = true;
     }
+
+    if (!touched.current.includes(name)) {
+      touched.current.push(name);
+      shouldUpdateState = true;
+    }
+
+    if (onSubmitModeNotSubmitted && (isWatchAll || watchFieldsRef.current[name])) return setErrors({});
+
+    const error = await validateField(ref, fields);
+
+    if (
+      shouldUpdateWithError({ errorMessages, name, error, mode, onSubmitModeNotSubmitted, type }) ||
+      mode === 'onChange' ||
+      (mode === 'onBlur' && type === 'blur') ||
+      watchFieldsRef.current[name]
+    ) {
+      const errorsCopy = { ...errorMessages, ...error };
+
+      if (!error[name]) delete errorsCopy[name];
+
+      errorMessagesRef.current = errorsCopy;
+      return setErrors(errorsCopy);
+    }
+
+    if (shouldUpdateState) setErrors(errorMessages);
   }
 
   const removeReferenceAndEventListeners = findMissDomAndClean.bind(null, fieldsRef.current, validateAndStateUpdate);
 
-  function registerIntoAllFields(elementRef, data = { required: false, validate: null }) {
-    if (elementRef && !elementRef.name) {
-      console.warn('Oops missing the name for field:', elementRef);
-      return;
-    }
+  function registerIntoAllFields(elementRef, data = { required: false, validate: undefined }) {
+    if (elementRef && !elementRef.name) return console.warn('Oops missing the name for field:', elementRef);
 
-    let radioOptionIndex;
+    const { name, type, value } = elementRef;
+    const { required, validate } = data;
     const inputData = {
       ...data,
       ref: elementRef,
     };
-    const {
-      ref,
-      required,
-      validate,
-      ref: { name, type, value },
-    } = inputData;
     const fields = fieldsRef.current;
     const isRadio = isRadioInput(type);
+    const field = fields[name];
+    const existRadioOptionIndex =
+      isRadio && field && Array.isArray(field.options) ? field.options.findIndex(({ ref }) => value === ref.value) : -1;
+
+    if ((!isRadio && field) || (isRadio && existRadioOptionIndex > -1)) return;
 
     if (isRadio) {
-      if (!fields[name]) {
-        fields[name] = { options: [], required, validate, ref: { type: 'radio', name } };
-      }
+      if (!field) fields[name] = { options: [], required, validate, ref: { type: 'radio', name } };
+      if (validate) fields[name].validate = validate;
 
-      if (!fields[name].validate && validate) {
-        fields[name].validate = validate;
-      }
-
-      const options = fields[name].options || [];
-      radioOptionIndex = options.findIndex(({ ref }) => value === ref.value);
-
-      if (radioOptionIndex > -1) {
-        options[radioOptionIndex] = {
-          ...options[radioOptionIndex],
-          ...inputData,
-        };
-      } else {
-        options.push({
-          ...inputData,
-          mutationWatcher: onDomRemove(ref, () => removeReferenceAndEventListeners(inputData, true)),
-        });
-        radioOptionIndex = options.length - 1;
-      }
-    } else {
-      const isInitialCreate = !fields[name];
-
-      fields[name] = {
-        ...fields[name],
+      (fields[name].options || []).push({
         ...inputData,
+        mutationWatcher: onDomRemove(elementRef, () => removeReferenceAndEventListeners(inputData, true)),
+      });
+    } else {
+      fields[name] = {
+        ...inputData,
+        mutationWatcher: onDomRemove(elementRef, () => removeReferenceAndEventListeners(inputData, true)),
       };
-
-      if (isInitialCreate) {
-        fields[name].mutationWatcher = onDomRemove(ref, () => removeReferenceAndEventListeners(inputData, true));
-      }
     }
 
     attachEventListeners({
-      field: fields[name],
-      watchFields: watchFieldsRef.current,
-      ref,
+      field:
+        isRadio
+          ? (fields[name].options || [])[(fields[name].options || []).length - 1]
+          : fields[name],
       isRadio,
-      radioOptionIndex,
-      isWatchAll: isWatchAllRef.current,
-      mode,
       validateAndStateUpdate,
     });
   }
@@ -171,11 +112,9 @@ export default function useForm(
     const watchFields = watchFieldsRef.current;
 
     if (typeof filedNames === 'string') {
-      if (!watchFields[filedNames]) watchFields[filedNames] = true;
+      watchFields[filedNames] = true;
     } else if (Array.isArray(filedNames)) {
-      filedNames.forEach(name => {
-        watchFields[name] = true;
-      });
+      filedNames.forEach(name => (watchFields[name] = true));
     } else {
       isWatchAllRef.current = true;
     }
@@ -184,16 +123,14 @@ export default function useForm(
     return result === undefined ? defaultValue : result;
   }
 
-  function register(data: any) {
+  function register(data: Ref | Function): any {
     if (!data) return;
     if (data.type) {
-      if (!data.name) console.warn('Oops missing the name for field:', data);
+      if (!data.name) return console.warn('Oops missing the name for field:', data);
       registerIntoAllFields(data);
     }
 
-    return ref => {
-      if (ref) registerIntoAllFields(ref, data);
-    };
+    return ref => (ref ? registerIntoAllFields(ref, data) : () => {});
   }
 
   const handleSubmit = (callback: (Object, e) => void) => async e => {
@@ -205,64 +142,43 @@ export default function useForm(
     let fieldValues;
     const fields = fieldsRef.current;
     const currentFieldValues = Object.values(fields);
-    const fieldsLength = currentFieldValues.length;
     isSubmitted.current = true;
 
     if (validationSchema) {
-      fieldValues = currentFieldValues.reduce((previous, { ref }) => {
-        previous[ref.name] = getFieldValue(fields, ref);
+      fieldValues = currentFieldValues.reduce((previous, { ref, ref: { name } }) => {
+        previous[name] = getFieldValue(fields, ref);
         return previous;
       }, {});
+
       fieldErrors = await validateWithSchema(validationSchema, fieldValues);
 
-      if (fieldErrors === undefined) {
-        callback(combineFieldValues(fieldValues), e);
-        return;
-      }
+      if (fieldErrors === undefined) return callback(combineFieldValues(fieldValues), e);
     } else {
-      const result: {
-        errors: { [key: string]: Error };
-        values: { [key: string]: number | string | boolean };
-      } = await new Promise(resolve =>
-        currentFieldValues.reduce(
-          async (previous: any, field: Field, index: number) => {
-            const resolvedPrevious = await previous;
-            const {
-              ref,
-              ref: { name, type },
-              options,
-            } = field;
-            const lastChild = fieldsLength - 1 === index;
+      const result: SubmitPromiseResult = await currentFieldValues.reduce(
+        async (previous: Promise<SubmitPromiseResult>, field: IField) => {
+          const resolvedPrevious = await previous;
+          const {
+            ref,
+            ref: { name },
+          } = field;
 
-            if (!fields[name]) return lastChild ? resolve(resolvedPrevious) : resolvedPrevious;
+          if (!fields[name]) return Promise.resolve(resolvedPrevious);
 
-            const fieldError = await validateField(field, fields);
-            const hasError = fieldError && fieldError[name];
+          const fieldError = await validateField(field, fields);
+          const hasError = fieldError && fieldError[name];
 
-            if (!hasError) {
-              resolvedPrevious.values[name] = getFieldValue(fields, ref);
-              return lastChild ? resolve(resolvedPrevious) : resolvedPrevious;
-            }
+          if (!hasError) {
+            resolvedPrevious.values[name] = getFieldValue(fields, ref);
+            return Promise.resolve(resolvedPrevious);
+          }
 
-            if (isRadioInput(type) && Array.isArray(options)) {
-              options.forEach(option => {
-                if (option.eventAttached && option.eventAttached.includes('change')) return;
-                option.ref.addEventListener('change', validateAndStateUpdate);
-                option.eventAttached = [...(option.eventAttached || []), 'change'];
-              });
-            } else if (!field.eventAttached || !field.eventAttached.includes('input')) {
-              ref.addEventListener('input', validateAndStateUpdate);
-              field.eventAttached = [...(field.eventAttached || []), 'input'];
-            }
-
-            resolvedPrevious.errors = { ...(resolvedPrevious.errors || {}), ...fieldError };
-            return lastChild ? resolve(resolvedPrevious) : resolvedPrevious;
-          },
-          Promise.resolve({
-            errors: {},
-            values: {},
-          }),
-        ),
+          resolvedPrevious.errors = { ...(resolvedPrevious.errors || {}), ...fieldError };
+          return Promise.resolve(resolvedPrevious);
+        },
+        Promise.resolve({
+          errors: {},
+          values: {},
+        }),
       );
 
       fieldErrors = result.errors;
@@ -278,30 +194,36 @@ export default function useForm(
     callback(combineFieldValues(fieldValues), e);
   };
 
-  useEffect(
-    () => () => {
-      fieldsRef.current &&
-        Object.values(fieldsRef.current).forEach(
-          ({ ref, options }: Field) =>
-            isRadioInput(ref.type) && Array.isArray(options)
-              ? options.forEach(({ ref }) => removeReferenceAndEventListeners(ref))
-              : removeReferenceAndEventListeners(ref),
-        );
-      fieldsRef.current = {};
-      watchFieldsRef.current = {};
-      errorMessagesRef.current = {};
-      isWatchAllRef.current = false;
-      isSubmitted.current = false;
-      setErrors({});
-    },
-    [mode],
-  );
+  const unSubscribe = () => {
+    fieldsRef.current &&
+      Object.values(fieldsRef.current).forEach((field: IField) => {
+        const { ref, options } = field;
+        isRadioInput(ref.type) && Array.isArray(options)
+          ? options.forEach(fieldRef => removeReferenceAndEventListeners(fieldRef, true))
+          : removeReferenceAndEventListeners(field, true);
+      });
+    fieldsRef.current = {};
+    watchFieldsRef.current = {};
+    errorMessagesRef.current = {};
+    isWatchAllRef.current = false;
+    isSubmitted.current = false;
+    isDirty.current = false;
+    touched.current = [];
+    setErrors({});
+  };
+
+  useEffect(() => unSubscribe, [mode]);
 
   return {
     register,
     handleSubmit,
     errors,
     watch,
-    isSubmitted: isSubmitted.current,
+    unSubscribe,
+    formState: {
+      dirty: isDirty.current,
+      isSubmitted: isSubmitted.current,
+      touched: touched.current,
+    },
   };
 }

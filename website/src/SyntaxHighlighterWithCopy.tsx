@@ -1,10 +1,9 @@
-// @flow
 import React from 'react';
 import styled from 'styled-components';
 import copyClipBoard from './utils/copyClipBoard';
 import generateCode from './logic/generateCode';
-import SyntaxHighlighter from 'react-syntax-highlighter';
-import { monokaiSublime } from 'react-syntax-highlighter/dist/esm/styles/hljs';
+import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
+import { xonokai } from 'react-syntax-highlighter/dist/styles/prism';
 import colors from './styles/colors';
 
 const CopyButton = styled.button`
@@ -16,6 +15,7 @@ const CopyButton = styled.button`
   padding: 5px 10px;
   position: absolute;
   right: 0;
+  z-index: 1;
   top: 10px;
   box-shadow: 0 0 10px #000;
   display: none;
@@ -23,7 +23,7 @@ const CopyButton = styled.button`
   @media (min-width: 768px) {
     display: inline-block;
   }
-  
+
   &:hover {
     opacity: 0.8;
   }
@@ -33,7 +33,7 @@ const CopyButton = styled.button`
   }
 `;
 
-const LinkToSandBox = styled.a`
+export const LinkToSandBox = styled.a`
   background: ${colors.lightPink};
   border: none;
   color: white;
@@ -43,6 +43,7 @@ const LinkToSandBox = styled.a`
   position: absolute;
   top: 10px;
   right: 0;
+  z-index: 1;
   box-shadow: 0 0 10px #000;
   text-decoration: none;
 
@@ -50,7 +51,7 @@ const LinkToSandBox = styled.a`
     display: inline-block;
     right: 170px;
   }
-  
+
   &:hover {
     opacity: 0.8;
   }
@@ -60,7 +61,7 @@ const LinkToSandBox = styled.a`
   }
 `;
 
-export default function SyntaxHighlighterWithCopy({ rawData, data, url }: { rawData?: string; data?: string, url?: string }) {
+export default function SyntaxHighlighterWithCopy({ rawData, data, url, tabIndex }: any) {
   return (
     <div
       style={{
@@ -68,15 +69,30 @@ export default function SyntaxHighlighterWithCopy({ rawData, data, url }: { rawD
       }}
     >
       <CopyButton
+        tabIndex={tabIndex}
         onClick={() => {
           rawData || copyClipBoard(generateCode(data));
+          alert('Code copied into your clipboard.');
         }}
+        aria-label="Copy code into your clipboard"
       >
         Copy to clipboard
       </CopyButton>
 
-      {url && <LinkToSandBox href={url} target="_blank">CodeSandbox</LinkToSandBox>}
-      <SyntaxHighlighter style={monokaiSublime}>{rawData || generateCode(data)}</SyntaxHighlighter>
+      {url && (
+        <LinkToSandBox tabIndex={tabIndex} href={url} target="_blank">
+          CodeSandbox
+        </LinkToSandBox>
+      )}
+      <SyntaxHighlighter
+        customStyle={{
+          border: 'none',
+        }}
+        style={xonokai}
+        language={'jsx'}
+      >
+        {rawData || generateCode(data)}
+      </SyntaxHighlighter>
     </div>
   );
 }

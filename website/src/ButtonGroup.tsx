@@ -19,15 +19,15 @@ const GithubIcon = styled.span`
 
   & svg {
     height: 30px;
-
-    @media (min-width: 1024px) {
-      height: 40px;
-    }
   }
 
   &:hover {
     opacity: 0.5;
   }
+`;
+
+const MediumIcon = styled(GithubIcon)`
+  left: 65px;
 `;
 
 const hoverStyle = `
@@ -82,7 +82,7 @@ const ActionButtonGroup = styled.div`
   justify-content: center;
   position: fixed;
   bottom: 0;
-  z-index: 5;
+  z-index: 1;
   left: 0;
   background: #1e2a4a;
   box-shadow: 0 0 4px 0 #000;
@@ -152,6 +152,7 @@ export default function ButtonGroup({
   apiButton,
   showApi,
   toggleApi,
+                                      tabIndex,
 }) {
   const pathname = window.location.pathname;
 
@@ -167,8 +168,26 @@ export default function ButtonGroup({
           </svg>
         </a>
       </GithubIcon>
+      <MediumIcon>
+        <a href="https://medium.com/@bruce1049/form-validation-with-hook-in-3kb-c5414edf7d64" target="_blank">
+          <svg
+            viewBox="0 0 512 512"
+            height="25"
+            aria-hidden="true"
+            focusable="false"
+            fill="#fff"
+            className="Social__StyledIcon-sc-4j9mhd-3 isQvWb sc-EHOje xsqAG"
+          >
+            <path
+              fill="#fff"
+              d="M71.5 142.3c.6-5.9-1.7-11.8-6.1-15.8L20.3 72.1V64h140.2l108.4 237.7L364.2 64h133.7v8.1l-38.6 37c-3.3 2.5-5 6.7-4.3 10.8v272c-.7 4.1 1 8.3 4.3 10.8l37.7 37v8.1H307.3v-8.1l39.1-37.9c3.8-3.8 3.8-5 3.8-10.8V171.2L241.5 447.1h-14.7L100.4 171.2v184.9c-1.1 7.8 1.5 15.6 7 21.2l50.8 61.6v8.1h-144v-8L65 377.3c5.4-5.6 7.9-13.5 6.5-21.2V142.3z"
+            />
+          </svg>
+        </a>
+      </MediumIcon>
       <ActionButtonGroup>
         <Button
+          tabIndex={tabIndex}
           active={pathname === '/'}
           onClick={() => {
             toggleApi(false);
@@ -194,6 +213,7 @@ export default function ButtonGroup({
           <span>Form</span>
         </Button>
         <Button
+          tabIndex={tabIndex}
           active={pathname === '/api'}
           onClick={() => {
             toggleBuilder(false);
@@ -225,6 +245,7 @@ export default function ButtonGroup({
           <span>API</span>
         </Button>
         <Button
+          tabIndex={tabIndex}
           active={pathname === '/builder'}
           onClick={() => {
             toggleApi(false);

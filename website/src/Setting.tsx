@@ -30,6 +30,7 @@ function Setting({ settingButton, toggleSetting, showSetting, setting, setConfig
     toggleSetting(false);
     settingButton.current.focus();
   };
+  const tabIndex = showSetting ? 0 : -1;
 
   if (showSetting && buttonRef.current) {
     // @ts-ignore
@@ -62,7 +63,7 @@ function Setting({ settingButton, toggleSetting, showSetting, setting, setConfig
               fontWeight: 200,
             }}
             ref={buttonRef}
-            tabIndex={0}
+            tabIndex={tabIndex}
             onClick={() => {
               settingButton.current.focus();
               toggleSetting(false);
@@ -77,7 +78,7 @@ function Setting({ settingButton, toggleSetting, showSetting, setting, setConfig
               marginTop: 10,
             }}
           >
-            Setting
+            Demo Setting
           </h2>
 
           <h2
@@ -104,6 +105,7 @@ function Setting({ settingButton, toggleSetting, showSetting, setting, setConfig
                   fontSize: 16,
                   width: '100%',
                 }}
+                tabIndex={tabIndex}
                 ref={register({ required: true })}
                 defaultValue={setting.mode}
               >
@@ -151,6 +153,7 @@ function Setting({ settingButton, toggleSetting, showSetting, setting, setConfig
                 style={{
                   marginRight: 10,
                 }}
+                tabIndex={tabIndex}
                 ref={register}
                 defaultChecked={setting.showError}
               />
@@ -169,6 +172,7 @@ function Setting({ settingButton, toggleSetting, showSetting, setting, setConfig
                 style={{
                   marginRight: 10,
                 }}
+                tabIndex={tabIndex}
                 ref={register}
                 defaultChecked={setting.showWatch}
               />
@@ -187,6 +191,7 @@ function Setting({ settingButton, toggleSetting, showSetting, setting, setConfig
                 style={{
                   marginRight: 10,
                 }}
+                tabIndex={tabIndex}
                 defaultChecked={setting.showSubmit}
                 ref={register}
               />
@@ -201,6 +206,7 @@ function Setting({ settingButton, toggleSetting, showSetting, setting, setConfig
                 letterSpacing: '0.5rem',
                 background: 'white',
               }}
+              tabIndex={tabIndex}
               type="submit"
               value="Update"
             />

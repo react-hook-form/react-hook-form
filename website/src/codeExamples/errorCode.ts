@@ -13,17 +13,18 @@ function YourForm() {
       <input type="text" name="singleErrorInput" ref={register({ required: true })} />
       {errors.textInput && 'Your input is required'}
     
-      {/* When you have multiple error messages to support your validation, you can refer to the type of errors */}
+      {/* refer to the type of error to display message accordingly */}
       <input type="text" name="multipleErrorInput" ref={register({ required: true, maxLength: 50 })} />
       {errors.textInput && errors.textInput.type === 'required' && 'Your input is required'}
       {errors.textInput && errors.textInput.type === 'maxLength' && 'Your input exceed maxLength'}
       
-      {/* if you have register input with standard, then you have to define error message like below in code */}
+      {/* register with validation */}
       <input type="number" name="numberInput" ref={register({ min: 50 })} />
       {errors.numberInput && 'Your input required to be more than 50'}
       
-      {/* if you have register input with error message, then your errors will contain error message */}
-      {errors.numberInput && errors.numberInput.message} 
+      {/* register with validation and error message */}
+      <input type="text" name="errorMessage" ref={register({ required: 'This is required' })} />
+      {errors.errorMessage && errors.errorMessage.message} 
       <input type="submit" /> 
     </form>
   )

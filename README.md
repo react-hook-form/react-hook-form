@@ -23,6 +23,7 @@
 
 ## [Docs](https://react-hook-form.now.sh/api)
 
+- [Motivation](https://medium.com/@bruce1049/form-validation-with-hook-in-3kb-c5414edf7d64)
 - [Get started](https://react-hook-form.now.sh/api)
 - [API](https://react-hook-form.now.sh/api)
 - [Examples](https://github.com/bluebill1049/react-hook-form/tree/master/examples)

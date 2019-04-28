@@ -3,6 +3,7 @@ import { Title } from './styles/typography';
 import copyClipBoard from '../src/utils/copyClipBoard';
 import SyntaxHighlighterWithCopy from '../src/SyntaxHighlighterWithCopy';
 import code from '../src/codeExamples/defaultExample';
+import colors from './styles/colors';
 import React from 'react';
 
 const InstallCode = styled.span`
@@ -14,7 +15,7 @@ const InstallCode = styled.span`
 `;
 
 const CopyButton = styled.button`
-  background: #516391;
+  background: ${colors.lightBlue};
   border: none;
   color: white;
   border-radius: 4px;
@@ -30,7 +31,7 @@ const CopyButton = styled.button`
   }
 `;
 
-export default function GetStarted({ quickStartRef }: any) {
+export default function GetStarted({ quickStartRef, tabIndex }: any) {
   return (
     <>
       <Title>Quick Start</Title>
@@ -39,8 +40,10 @@ export default function GetStarted({ quickStartRef }: any) {
       <InstallCode>
         npm install react-hook-form
         <CopyButton
+          tabIndex={tabIndex}
           onClick={() => {
             copyClipBoard('npm install react-hook-form');
+            alert('Code copied into your clipboard.');
           }}
         >
           Copy
@@ -55,7 +58,7 @@ export default function GetStarted({ quickStartRef }: any) {
         Example
       </h2>
       <p>The following code will demonstrate the basic usage of react-hook-form.</p>
-      <SyntaxHighlighterWithCopy rawData={code} url="https://codesandbox.io/s/kw7z2q2n15" />
+      <SyntaxHighlighterWithCopy tabIndex={tabIndex} rawData={code} url="https://codesandbox.io/s/kw7z2q2n15" />
     </>
   );
 }

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Title } from './styles/typography';
+import { Title, H1 } from './styles/typography';
 import colors from './styles/colors';
 import { Animate } from 'react-simple-animate';
 import styled from 'styled-components';
@@ -15,7 +15,7 @@ const Wrapper = styled.div`
   display: grid;
   min-height: 80vh;
   transition: 1s all;
-  grid-template-columns: repeat(auto-fit, minmax(20rem, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(10rem, 1fr));
   grid-column-gap: 40px;
 `;
 
@@ -77,6 +77,7 @@ const SettingIcon = styled.button`
 const errorStyle = { border: `1px solid ${colors.secondary}`, background: colors.errorPink };
 
 export default function Form({
+  tabIndex,
   formData,
   handleSubmit,
   onSubmit,
@@ -88,14 +89,23 @@ export default function Form({
   setting,
   showSetting,
   toggleSetting,
+  touched,
 }) {
   return (
     <>
+      <div
+        style={{
+          textAlign: 'center',
+        }}
+      >
+        <H1>Live Demo</H1>
+        <p>The following form demonstrate React Hook Form in action, and changing validation mode from setting.</p>
+      </div>
       <Wrapper>
         <form onSubmit={handleSubmit(onSubmit)}>
           <Title>
             Example{' '}
-            <SettingIcon onClick={() => toggleSetting(!showSetting)}>
+            <SettingIcon tabIndex={tabIndex} onClick={() => toggleSetting(!showSetting)}>
               <Setting />
               Setting
             </SettingIcon>
@@ -105,6 +115,7 @@ export default function Form({
               case 'select':
                 return (
                   <select
+                    tabIndex={tabIndex}
                     name={field.name}
                     ref={register({ required: field.required })}
                     key={field.name}
@@ -126,7 +137,9 @@ export default function Form({
               case 'textarea':
                 return (
                   <textarea
+                    tabIndex={tabIndex}
                     name={field.name}
+                    placeholder={field.name}
                     ref={register({
                       required: field.required,
                       ...(field.maxLength ? { maxLength: field.maxLength } : null),
@@ -157,6 +170,7 @@ export default function Form({
                               {name}
                               &nbsp;
                               <input
+                                tabIndex={tabIndex}
                                 type="radio"
                                 name={field.name}
                                 value={name}
@@ -177,6 +191,7 @@ export default function Form({
                     autoComplete="off"
                     key={field.name}
                     type={field.type}
+                    tabIndex={tabIndex}
                     name={field.name}
                     placeholder={field.name}
                     ref={register({
@@ -206,6 +221,7 @@ export default function Form({
 
           <SubmitButton
             type="button"
+            tabIndex={tabIndex}
             value="Edit"
             onClick={() => {
               toggleBuilder(true);
@@ -226,7 +242,7 @@ export default function Form({
             {!Object.keys(errors).length && <p>ⓘ Press submit to trigger validation error.</p>}
             <Animate
               durationSeconds={0.8}
-              play={Object.keys(errors).length}
+              play={!!Object.keys(errors).length}
               startStyle={{ opacity: 0 }}
               endStyle={{ opacity: 1 }}
             >
@@ -247,21 +263,28 @@ export default function Form({
           </section>
         )}
 
-        {setting.showWatch &&
-          setting.mode !== 'onSubmit' && (
-            <section>
-              <Title>Watch</Title>
-              {!Object.keys(watch() || {}).length && <p>ⓘ Change input value to see watched values.</p>}
-              <Animate
-                durationSeconds={0.8}
-                play={Object.keys(watch() || {}).length > 0}
-                startStyle={{ opacity: 0 }}
-                endStyle={{ opacity: 1 }}
-              >
-                <Code>{JSON.stringify(watch(), null, 2)}</Code>
-              </Animate>
-            </section>
-          )}
+        {setting.showWatch && setting.mode !== 'onSubmit' && (
+          <section>
+            <Title>Watch</Title>
+            {!Object.keys(watch() || {}).length && <p>ⓘ Change input value to see watched values.</p>}
+            <Animate
+              durationSeconds={0.8}
+              play={Object.keys(watch() || {}).length > 0}
+              startStyle={{ opacity: 0 }}
+              endStyle={{ opacity: 1 }}
+            >
+              <Code>{JSON.stringify(watch(), null, 2)}</Code>
+            </Animate>
+          </section>
+        )}
+
+        <section>
+          <Title>Touched</Title>
+          {!Object.keys(touched).length && <p>ⓘ Touched fields will display here.</p>}
+          <Animate durationSeconds={0.8} play={touched.length} startStyle={{ opacity: 0 }} endStyle={{ opacity: 1 }}>
+            <Code>{JSON.stringify(touched, null, 2)}</Code>
+          </Animate>
+        </section>
 
         {setting.showSubmit && (
           <section>
@@ -269,7 +292,7 @@ export default function Form({
             {!Object.keys(submitData).length && <p>ⓘ Successful submit values will display here.</p>}
             <Animate
               durationSeconds={0.8}
-              play={Object.keys(submitData).length}
+              play={!!Object.keys(submitData).length}
               startStyle={{ opacity: 0 }}
               endStyle={{ opacity: 1 }}
             >

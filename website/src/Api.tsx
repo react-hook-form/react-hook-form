@@ -11,7 +11,8 @@ import validationSchemaCode from './codeExamples/validationSchema';
 import Link from './styles/link';
 import code from './codeExamples/defaultExample';
 import errorCode from './codeExamples/errorCode';
-import SyntaxHighlighterWithCopy from './SyntaxHighlighterWithCopy';
+import SyntaxHighlighterWithCopy, { LinkToSandBox } from './SyntaxHighlighterWithCopy';
+import ApiMenu from "./ApiMenu";
 
 const CodeAsLink = styled(Link)`
   cursor: pointer;
@@ -78,6 +79,7 @@ export const TableWrapper = styled.div`
 export const Type = styled.span`
   font-weight: 100;
   font-size: 15px;
+  font-family: monospace;
   color: ${colors.lightPink};
 `;
 
@@ -89,51 +91,7 @@ const Wrapper = styled.div`
 
   @media (min-width: 768px) {
     display: grid;
-    grid-template-columns: 250px 1fr;
-  }
-`;
-
-const Menu = styled.div`
-  display: none;
-
-  @media (min-width: 768px) {
-    display: block;
-
-    & > ul {
-      position: fixed;
-      list-style: none;
-      padding: 0;
-
-      & > li:first-child > button {
-        font-size: 1.5rem;
-      }
-
-      & > li {
-        line-height: 22px;
-        margin-bottom: 22px;
-
-        & > a {
-          text-decoration: none;
-          padding-left: 30px;
-        }
-
-        & > a,
-        & > button {
-          font-size: 20px;
-          color: white;
-          text-decoration: none;
-          transition: 0.3s all;
-          background: none;
-          border: none;
-          cursor: pointer;
-          border-bottom: 1px solid transparent;
-
-          &:hover {
-            border-bottom: 1px solid ${colors.lightPink};
-          }
-        }
-      }
-    }
+    grid-template-columns: 250px minmax(0, 1fr);
   }
 `;
 
@@ -161,23 +119,31 @@ const CloseButton = styled.button`
   }
 `;
 
-const Code = styled.span`
-  color: ${colors.lightPink};
-  font-size: 14px;
-`;
-
-const links = ['Quick Start', 'useform', 'register', 'errors', 'watch', 'handleSubmit', 'validationSchema'];
+const links = [
+  'Quick Start',
+  'Examples',
+  'useform',
+  'register',
+  'errors',
+  'watch',
+  'handleSubmit',
+  'validationSchema',
+  'formState',
+];
 
 function Builder({ formData, showApi, toggleApi, apiButton, isMobile }: any) {
   const copyFormData = useRef([]);
   const closeButton = useRef(null);
   const quickStartRef = useRef(null);
+  const formStateRef = useRef(null);
   const useFormRef = useRef(null);
   const registerRef = useRef(null);
   const errorsRef = useRef(null);
   const watchRef = useRef(null);
+  const root = useRef(null);
   const validationSchemaRef = useRef(null);
   const handleSubmitRef = useRef(null);
+  const tabIndex = showApi ? 0 : -1;
   copyFormData.current = formData;
 
   const goToSection = name => {
@@ -186,47 +152,48 @@ function Builder({ formData, showApi, toggleApi, apiButton, isMobile }: any) {
         // @ts-ignore
         if (quickStartRef) quickStartRef.current.scrollIntoView({ behavior: 'smooth' });
         break;
-      case links[1]:
+      case links[2]:
         // @ts-ignore
         if (useFormRef) useFormRef.current.scrollIntoView({ behavior: 'smooth' });
         break;
-      case links[2]:
+      case links[3]:
         // @ts-ignore
         if (registerRef) registerRef.current.scrollIntoView({ behavior: 'smooth' });
         break;
-      case links[3]:
+      case links[4]:
         // @ts-ignore
         if (errorsRef) errorsRef.current.scrollIntoView({ behavior: 'smooth' });
         break;
-      case links[4]:
+      case links[5]:
         // @ts-ignore
         if (watchRef) watchRef.current.scrollIntoView({ behavior: 'smooth' });
         break;
-      case links[5]:
+      case links[6]:
         // @ts-ignore
         if (handleSubmitRef) handleSubmitRef.current.scrollIntoView({ behavior: 'smooth' });
         break;
-      case links[6]:
+      case links[7]:
         // @ts-ignore
         if (validationSchemaRef) validationSchemaRef.current.scrollIntoView({ behavior: 'smooth' });
+        break;
+      case links[8]:
+        // @ts-ignore
+        if (formStateRef) formStateRef.current.scrollIntoView({ behavior: 'smooth' });
         break;
     }
   };
 
-  useEffect(
-    () => {
-      if (showApi && closeButton.current) {
-        // @ts-ignore
-        closeButton.current.focus();
-      }
-    },
-    [showApi],
-  );
+  useEffect(() => {
+    if (showApi && closeButton.current) {
+      // @ts-ignore
+      closeButton.current.focus();
+    }
+  }, [showApi]);
 
   return (
     <Animate
       play={showApi}
-      type="ease-in"
+      easeType="ease-in"
       durationSeconds={isMobile ? 0.3 : 0.5}
       startStyle={{
         transform: 'translateY(100vh)',
@@ -236,7 +203,7 @@ function Builder({ formData, showApi, toggleApi, apiButton, isMobile }: any) {
       }}
       render={({ style }) => {
         return (
-          <Root style={style}>
+          <Root style={style} ref={root}>
             <div
               id="api"
               style={{
@@ -248,7 +215,7 @@ function Builder({ formData, showApi, toggleApi, apiButton, isMobile }: any) {
               <CloseButton
                 aria-label="close api"
                 ref={closeButton}
-                tabIndex={0}
+                tabIndex={tabIndex}
                 onClick={() => {
                   toggleApi(false);
                   apiButton.current.focus();
@@ -261,24 +228,9 @@ function Builder({ formData, showApi, toggleApi, apiButton, isMobile }: any) {
               <SubHeading>React hook form focus on providing the best DX by simplify the API.</SubHeading>
 
               <Wrapper>
-                <Menu>
-                  <ul>
-                    {links.map(link => {
-                      return (
-                        <li key={link} onClick={() => goToSection(link)}>
-                          {link !== 'Quick Start' && <Code>{`</>`}</Code>} <button>{link}</button>
-                        </li>
-                      );
-                    })}
-                    <li>
-                      <a href="https://github.com/bluebill1049/react-hook-form/tree/master/examples" target="_blank">
-                        Examples
-                      </a>
-                    </li>
-                  </ul>
-                </Menu>
+                <ApiMenu tabIndex={tabIndex} links={links} goToSection={goToSection} />
                 <main>
-                  <GetStarted quickStartRef={quickStartRef} />
+                  <GetStarted tabIndex={tabIndex} quickStartRef={quickStartRef} />
 
                   <Title>API</Title>
 
@@ -288,11 +240,16 @@ function Builder({ formData, showApi, toggleApi, apiButton, isMobile }: any) {
                     </h2>
                   </code>
                   <p>
-                    By invoking <code>useForm</code>, you will receive methods to register, watch, validate and print
-                    errors. (run <code>useForm</code> before <code>render</code>)
+                    By invoking <code>useForm</code>, you will receive methods to{' '}
+                    <CodeAsLink onClick={() => goToSection('register')}>register</CodeAsLink>,{' '}
+                    <CodeAsLink onClick={() => goToSection('errors')}>errors</CodeAsLink>,{' '}
+                    <CodeAsLink onClick={() => goToSection('handleSubmit')}>handleSubmit</CodeAsLink>,{' '}
+                    <CodeAsLink onClick={() => goToSection('watch')}>watch</CodeAsLink> and{' '}
+                    <CodeAsLink onClick={() => goToSection('formState')}>formState</CodeAsLink>. (run{' '}
+                    <code>useForm</code> before <code>render</code>)
                   </p>
                   <p>
-                    Apply form validation rules at schema level, please refer the{' '}
+                    Apply form validation rules at the schema level, please refer the{' '}
                     <CodeAsLink onClick={() => goToSection('validationSchema')}>validationSchema</CodeAsLink> section.
                   </p>
 
@@ -345,25 +302,23 @@ function Builder({ formData, showApi, toggleApi, apiButton, isMobile }: any) {
                     </h2>
                   </code>
 
-                  <ApiRefTable />
+                  <ApiRefTable tabIndex={tabIndex} />
 
                   <hr />
                   <code ref={errorsRef}>
                     <h2>
                       errors:{' '}
                       <Type>{`{
-  [key: string]:
-    | {
-        ref: any;
-        message: string | boolean;
-        type: string;
-      }
-    | {};
+  [key: string]: {
+    ref: any;
+    message: string | boolean;
+    type: string;
+  }
 }`}</Type>
                     </h2>
                   </code>
                   <p>Object contain form errors or error messages belong to each input.</p>
-                  <SyntaxHighlighterWithCopy rawData={errorCode} url="https://codesandbox.io/s/nrr4n9p8n4" />
+                  <SyntaxHighlighterWithCopy tabIndex={tabIndex} rawData={errorCode} url="https://codesandbox.io/s/nrr4n9p8n4" />
 
                   <hr />
                   <code ref={watchRef}>
@@ -376,9 +331,9 @@ function Builder({ formData, showApi, toggleApi, apiButton, isMobile }: any) {
                     </h2>
                   </code>
                   <p>
-                    Watch over input change and return its value. first time run <code>watch</code> will always return{' '}
-                    <code>undefined</code> because called before <code>render</code>. You can set default value as the
-                    second argument.
+                    Watch over input change and return its value. first-time run <code>watch</code> will always return{' '}
+                    <code>undefined</code> because called before <code>render</code>. You can set the default value as
+                    the second argument.
                   </p>
                   <TableWrapper>
                     <Table>
@@ -418,7 +373,7 @@ function Builder({ formData, showApi, toggleApi, apiButton, isMobile }: any) {
                       </tbody>
                     </Table>
                   </TableWrapper>
-                  <SyntaxHighlighterWithCopy rawData={watchCode} url="https://codesandbox.io/s/pp1l40q7wx" />
+                  <SyntaxHighlighterWithCopy tabIndex={tabIndex} rawData={watchCode} url="https://codesandbox.io/s/pp1l40q7wx" />
 
                   <hr />
                   <code ref={handleSubmitRef}>
@@ -426,7 +381,18 @@ function Builder({ formData, showApi, toggleApi, apiButton, isMobile }: any) {
                       handleSubmit: <Type>({`{ [key: string]: string | number | boolean }`}) => void</Type>
                     </h2>
                   </code>
-                  <p>This function will pass you the form data when from validation is successful.</p>
+                  <p>This function will pass you the form data when form validation is successful.</p>
+                  <LinkToSandBox
+                    tabIndex={tabIndex}
+                    style={{
+                      position: 'relative',
+                      left: 0,
+                    }}
+                    href="https://codesandbox.io/s/yj07z1639"
+                    target="_blank"
+                  >
+                    CodeSandbox
+                  </LinkToSandBox>
 
                   <hr />
 
@@ -437,14 +403,76 @@ function Builder({ formData, showApi, toggleApi, apiButton, isMobile }: any) {
                   </code>
 
                   <p>
-                    If you would like to centralise your validation rules or external validation schema, you can apply{' '}
+                    If you would like to centralize your validation rules or external validation schema, you can apply{' '}
                     <code>validationSchema</code> when you invoke <code>useForm</code>. we use{' '}
-                    <Link href="https://github.com/jquense/yup" target="_blank">
+                    <Link href="https://github.com/jquense/yup" target="_blank" tabIndex={tabIndex}>
                       Yup
                     </Link>{' '}
                     for object schema validation and the example below demonstrate the usage.
                   </p>
-                  <SyntaxHighlighterWithCopy rawData={validationSchemaCode} url="https://codesandbox.io/s/928po918qr" />
+                  <SyntaxHighlighterWithCopy tabIndex={tabIndex} rawData={validationSchemaCode} url="https://codesandbox.io/s/928po918qr" />
+
+                  <hr/>
+
+                  <code ref={formStateRef}>
+                    <h2>
+                      formState: <Type>{`{ dirty: boolean, isSubmitted: boolean, touched: Array<string> }`}</Type>
+                    </h2>
+                  </code>
+                  <p>This object contain information about the form state.</p>
+
+                  <TableWrapper>
+                    <Table>
+                      <tbody>
+                      <tr>
+                        <th>Name</th>
+                        <th>Type</th>
+                        <th>Description</th>
+                      </tr>
+                      <tr>
+                        <td>
+                          <code>dirty</code>
+                        </td>
+                        <td>
+                          <Type>boolean</Type>
+                        </td>
+                        <td>Set to true after user interacted with any of the input.</td>
+                      </tr>
+                      <tr>
+                        <td>
+                          <code>isSubmitted</code>
+                        </td>
+                        <td>
+                          <Type>boolean</Type>
+                        </td>
+                        <td>Set true after user submit the form.</td>
+                      </tr>
+                      <tr>
+                        <td>
+                          <code>touched</code>
+                        </td>
+                        <td>
+                          <Type>{`Array<string>`}</Type>
+                        </td>
+                        <td>An array of all inputs which have been interacted.</td>
+                      </tr>
+                      </tbody>
+                    </Table>
+                  </TableWrapper>
+
+                  <LinkToSandBox
+                    tabIndex={tabIndex}
+                    style={{
+                      position: 'relative',
+                      left: 0,
+                    }}
+                    href="https://codesandbox.io/s/7o2wrp86k6"
+                    target="_blank"
+                  >
+                    CodeSandbox
+                  </LinkToSandBox>
+
+                  <hr />
                 </main>
               </Wrapper>
             </div>

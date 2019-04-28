@@ -1,5 +1,6 @@
 export default formData => {
-  return `import React from 'react';
+  return `
+import React from 'react';
 import useForm from 'react-hook-form';
 
 export default function Form() {
@@ -23,7 +24,7 @@ ${Array.isArray(formData) ? formData.reduce((previous, { type, name, required, m
 
     if (type === 'radio') {
       const select = `\n${options.split(';').filter(Boolean).reduce((temp, option) => {
-        return temp + `      <input name="${option}" type="${type}" value="${option}"${ref}/>\n`;
+        return temp + `      <input name="${name}" type="${type}" value="${option}"${ref}/>\n`;
       }, '')}\n`;
 
       return previous + select;
