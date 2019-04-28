@@ -147,6 +147,8 @@ function App() {
 
   return (
     <Root>
+      {!isMobile && Buttons}
+
       <Suspense fallback={<span />}>
         <Setting
           settingButton={settingButton}
@@ -170,8 +172,6 @@ function App() {
           HomeRef={HomeRef}
         />
       </Suspense>
-
-      {!isMobile && Buttons}
 
       {isMobile && Buttons}
 
