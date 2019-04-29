@@ -31,32 +31,36 @@ const renderField = ({
   </>
 );
 
-const Example = props => {
+const Form = props => {
   const { handleSubmit } = props;
   const onSubmit = values => {
     console.log(values);
   };
 
   return (
-    <Provider store={store}>
-      <form onSubmit={handleSubmit(onSubmit)}>
-        <Field name="email" type="email" component={renderField} label="Email" />
-  
-        <Field
-          name="username"
-          type="text"
-          component={renderField}
-          label="Username"
-        />
-  
-        <button type="submit">Submit</button>
-      </form>
-    </Provider>
+    <form onSubmit={handleSubmit(onSubmit)}>
+      <Field name="email" type="email" component={renderField} label="Email" />
+    
+      <Field
+        name="username"
+        type="text"
+        component={renderField}
+        label="Username"
+      />
+    
+      <button type="submit">Submit</button>
+    </form>
   );
 };
 
-reduxForm({
+const FormRedux = reduxForm({
   form: "syncValidation",
   validate,
 })(Example);
+
+const Example = () => (
+  <Provider store={store}>
+    <Example/>
+  </Provider>
+);
 `;
