@@ -1,5 +1,7 @@
 export default `import React from "react";
+import { Provider } from "react-redux";
 import { Field, reduxForm } from "redux-form";
+import store from "./store";
 
 const validate = values => {
   const errors = {};
@@ -36,23 +38,25 @@ const Example = props => {
   };
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)}>
-      <Field name="email" type="email" component={renderField} label="Email" />
-
-      <Field
-        name="username"
-        type="text"
-        component={renderField}
-        label="Username"
-      />
-
-      <button type="submit">Submit</button>
-    </form>
+    <Provider store={store}>
+      <form onSubmit={handleSubmit(onSubmit)}>
+        <Field name="email" type="email" component={renderField} label="Email" />
+  
+        <Field
+          name="username"
+          type="text"
+          component={renderField}
+          label="Username"
+        />
+  
+        <button type="submit">Submit</button>
+      </form>
+    </Provider>
   );
 };
 
 reduxForm({
   form: "syncValidation",
   validate,
-})(SyncValidationForm);
+})(Example);
 `;

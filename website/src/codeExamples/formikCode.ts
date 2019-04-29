@@ -36,7 +36,7 @@ const Example = () => {
       }}
       onSubmit={onSubmit}
     >
-      {({ errors, touched, validateField, validateForm }) => (
+      {({ errors, touched }) => (
         <Form>
           <Field name="email" validate={validateEmail} />
           {errors.email && touched.email && errors.email}
