@@ -4,7 +4,7 @@ describe('shouldUpdateWithError', () => {
   it('should return false when onSubmitModeNotSubmitted set to true', () => {
     expect(
       shouldUpdateWithError({
-        errorMessages: {},
+        errors: {},
         name,
         error: { test: 'test' },
         mode: '',
@@ -17,7 +17,7 @@ describe('shouldUpdateWithError', () => {
   it('should return false when type is onBlur and and type is not blur', () => {
     expect(
       shouldUpdateWithError({
-        errorMessages: {},
+        errors: {},
         name,
         error: { test: 'test' },
         mode: 'onBlur',
@@ -30,7 +30,7 @@ describe('shouldUpdateWithError', () => {
   it('should return false when error message and error both empty', () => {
     expect(
       shouldUpdateWithError({
-        errorMessages: {},
+        errors: {},
         name: '',
         error: {},
         mode: '',
@@ -43,7 +43,7 @@ describe('shouldUpdateWithError', () => {
   it('should return true when error message empty and error exists', () => {
     expect(
       shouldUpdateWithError({
-        errorMessages: {},
+        errors: {},
         name,
         error: { test: 'test' },
         mode: '',
@@ -56,7 +56,7 @@ describe('shouldUpdateWithError', () => {
   it('should return true when error disappeared', () => {
     expect(
       shouldUpdateWithError({
-        errorMessages: { test: 'test' },
+        errors: { test: 'test' },
         name: 'test',
         error: {},
         mode: '',
@@ -69,7 +69,7 @@ describe('shouldUpdateWithError', () => {
   it('should return true when error return and not found in error message', () => {
     expect(
       shouldUpdateWithError({
-        errorMessages: { test: 'test' },
+        errors: { test: 'test' },
         name: '',
         error: { data: 'bill' },
         mode: '',
@@ -82,7 +82,7 @@ describe('shouldUpdateWithError', () => {
   it('should return true when error type or message not match in error message', () => {
     expect(
       shouldUpdateWithError({
-        errorMessages: { test: { type: 'test' } },
+        errors: { test: { type: 'test' } },
         name: '',
         error: { test: { type: 'bill' } },
         mode: '',
@@ -93,7 +93,7 @@ describe('shouldUpdateWithError', () => {
 
     expect(
       shouldUpdateWithError({
-        errorMessages: { test: { message: 'test' } },
+        errors: { test: { message: 'test' } },
         name: '',
         error: { test: { message: 'bill' } },
         mode: '',

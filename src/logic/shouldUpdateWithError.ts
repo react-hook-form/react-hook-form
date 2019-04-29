@@ -1,24 +1,24 @@
-export default function shouldUpdateWithError({ errorMessages, name, error, mode, onSubmitModeNotSubmitted, type }) {
+export default function shouldUpdateWithError({ errors, name, error, mode, onSubmitModeNotSubmitted, type }) {
   if (onSubmitModeNotSubmitted || (mode === 'onBlur' && type !== 'blur')) {
     return false;
   }
 
-  if (!Object.keys(error).length && !Object.keys(errorMessages).length) {
+  if (!Object.keys(error).length && !Object.keys(errors).length) {
     return false;
   }
 
-  if (!Object.keys(errorMessages).length && Object.keys(error).length) {
+  if (!Object.keys(errors).length && Object.keys(error).length) {
     return true;
   }
 
-  if (!Object.keys(error).length && errorMessages[name]) {
+  if (!Object.keys(error).length && errors[name]) {
     return true;
   }
 
   if (Object.keys(error).length) {
-    if (!errorMessages[name]) {
+    if (!errors[name]) {
       return true;
-    } else if (errorMessages[name].type !== error[name].type || errorMessages[name].message !== error[name].message) {
+    } else if (errors[name].type !== error[name].type || errors[name].message !== error[name].message) {
       return true;
     }
   }

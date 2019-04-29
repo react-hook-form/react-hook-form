@@ -17,29 +17,29 @@ export default function useForm(
   },
 ) {
   const fieldsRef = useRef<{ [key: string]: IField }>({});
-  const errorMessagesRef = useRef<IErrorMessages>({});
+  const errorsRef = useRef<IErrorMessages>({});
   const isWatchAllRef = useRef<boolean>(false);
+  const isSubmittedRef = useRef<boolean>(false);
+  const isDirtyRef = useRef<boolean>(false);
+  const touchedFieldsRef = useRef<Array<string>>([]);
   const watchFieldsRef = useRef<{ [key: string]: boolean }>({});
   const [errors, setErrors] = useState<IErrorMessages>({});
-  const isSubmitted = useRef<boolean>(false);
-  const isDirty = useRef<boolean>(false);
-  const touched = useRef<Array<string>>([]);
 
   async function validateAndStateUpdate({ target: { name }, type }: any) {
     const fields = fieldsRef.current;
-    const errorMessages = errorMessagesRef.current;
+    const errors = errorsRef.current;
     const ref = fields[name];
-    const onSubmitModeNotSubmitted = !isSubmitted.current && mode === 'onSubmit';
+    const onSubmitModeNotSubmitted = !isSubmittedRef.current && mode === 'onSubmit';
     const isWatchAll = isWatchAllRef.current;
     let shouldUpdateState = isWatchAll;
 
-    if (!isDirty.current) {
-      isDirty.current = true;
+    if (!isDirtyRef.current) {
+      isDirtyRef.current = true;
       shouldUpdateState = true;
     }
 
-    if (!touched.current.includes(name)) {
-      touched.current.push(name);
+    if (!touchedFieldsRef.current.includes(name)) {
+      touchedFieldsRef.current.push(name);
       shouldUpdateState = true;
     }
 
@@ -48,20 +48,20 @@ export default function useForm(
     const error = await validateField(ref, fields);
 
     if (
-      shouldUpdateWithError({ errorMessages, name, error, mode, onSubmitModeNotSubmitted, type }) ||
+      shouldUpdateWithError({ errors, name, error, mode, onSubmitModeNotSubmitted, type }) ||
       mode === 'onChange' ||
       (mode === 'onBlur' && type === 'blur') ||
       watchFieldsRef.current[name]
     ) {
-      const errorsCopy = { ...errorMessages, ...error };
+      const errorsCopy = { ...errors, ...error };
 
       if (!error[name]) delete errorsCopy[name];
 
-      errorMessagesRef.current = errorsCopy;
+      errorsRef.current = errorsCopy;
       return setErrors(errorsCopy);
     }
 
-    if (shouldUpdateState) setErrors(errorMessages);
+    if (shouldUpdateState) setErrors(errors);
   }
 
   const removeReferenceAndEventListeners = findMissDomAndClean.bind(null, fieldsRef.current, validateAndStateUpdate);
@@ -117,6 +117,7 @@ export default function useForm(
       filedNames.forEach(name => (watchFields[name] = true));
     } else {
       isWatchAllRef.current = true;
+      watchFieldsRef.current = {};
     }
 
     const result = getFieldsValues(fieldsRef.current, filedNames);
@@ -142,7 +143,7 @@ export default function useForm(
     let fieldValues;
     const fields = fieldsRef.current;
     const currentFieldValues = Object.values(fields);
-    isSubmitted.current = true;
+    isSubmittedRef.current = true;
 
     if (validationSchema) {
       fieldValues = currentFieldValues.reduce((previous, { ref, ref: { name } }) => {
@@ -187,7 +188,7 @@ export default function useForm(
 
     if (Object.values(fieldErrors).length) {
       setErrors(fieldErrors);
-      errorMessagesRef.current = fieldErrors;
+      errorsRef.current = fieldErrors;
       return;
     }
 
@@ -204,11 +205,11 @@ export default function useForm(
       });
     fieldsRef.current = {};
     watchFieldsRef.current = {};
-    errorMessagesRef.current = {};
+    errorsRef.current = {};
     isWatchAllRef.current = false;
-    isSubmitted.current = false;
-    isDirty.current = false;
-    touched.current = [];
+    isSubmittedRef.current = false;
+    isDirtyRef.current = false;
+    touchedFieldsRef.current = [];
     setErrors({});
   };
 
@@ -221,9 +222,9 @@ export default function useForm(
     watch,
     unSubscribe,
     formState: {
-      dirty: isDirty.current,
-      isSubmitted: isSubmitted.current,
-      touched: touched.current,
+      dirty: isDirtyRef.current,
+      isSubmitted: isSubmittedRef.current,
+      touched: touchedFieldsRef.current,
     },
   };
 }
