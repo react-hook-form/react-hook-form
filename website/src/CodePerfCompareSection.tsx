@@ -5,10 +5,11 @@ import hookFrom from './assets/hookForm.png';
 import reduxForm from './assets/reduxForm.png';
 import { H1, Title } from './styles/typography';
 import { SimpleImg } from 'react-simple-img';
+import colors from './styles/colors';
 
 const Wrapper = styled.section`
   text-align: center;
-  
+
   & > p {
     max-width: 1033px;
     display: block;
@@ -23,11 +24,46 @@ const Wrapper = styled.section`
       border-radius: 10px;
     }
   }
-  
+
   & > h2 {
     margin-left: auto;
     margin-right: auto;
     max-width: 600px;
+  }
+`;
+
+const ImgSection = styled.div`
+  display: flex;
+  flex-direction: column;
+  
+  @media (min-width: 768px) {
+    flex-direction: row;
+  }
+
+  & > img {
+    align-self: center;
+    border-radius: 4px;
+    max-width: 100%;
+    margin: 20px 0;
+    
+    @media (min-width: 768px) {
+      max-width: 80%;
+      margin: 0;
+      margin-bottom: 40px;
+    }
+  }
+
+  & ul {
+    max-width: 100%;
+    list-style: none;
+    min-width: 250px;
+    padding-left: 0;
+    margin: 0;
+
+    & > li {
+      text-align: left;
+      padding: 2px 0;
+    }
   }
 `;
 
@@ -40,11 +76,60 @@ export default function CodePerfCompareSection() {
         and code is from section above 'Library Code Comparison'.
       </p>
       <Title>React Hook Form</Title>
-      <SimpleImg src={hookFrom} placeholder={false} />
+      <ImgSection>
+        <ul>
+          <li>No. of mount: 1</li>
+          <li>No. of committing change: 1</li>
+          <li style={{ fontWeight: 'bold' }}>
+            Total time:{' '}
+            <span
+              style={{
+                color: colors.lightPink,
+              }}
+            >
+              1800ms
+            </span>
+          </li>
+        </ul>
+        <SimpleImg src={hookFrom} placeholder={false} />
+      </ImgSection>
       <Title>Formik</Title>
-      <SimpleImg src={formik} placeholder={false} />
+      <ImgSection>
+        <ul>
+          <li>No. of mount: 6</li>
+          <li>No. of committing change: 1</li>
+          <li style={{ fontWeight: 'bold' }}>
+            Total time:{' '}
+            <span
+              style={{
+                color: colors.lightPink,
+              }}
+            >
+              2070ms
+            </span>
+          </li>
+        </ul>
+        <SimpleImg src={formik} placeholder={false} />
+      </ImgSection>
       <Title>Redux Form</Title>
-      <SimpleImg src={reduxForm} placeholder={false} />
+      <ImgSection>
+        <ul>
+          <li>No. of mount: 17</li>
+          <li>No. of committing change: 2</li>
+          <li>No. of update: 2</li>
+          <li style={{ fontWeight: 'bold' }}>
+            Total time:{' '}
+            <span
+              style={{
+                color: colors.lightPink,
+              }}
+            >
+              2380ms
+            </span>
+          </li>
+        </ul>
+        <SimpleImg src={reduxForm} placeholder={false} />
+      </ImgSection>
     </Wrapper>
   );
 }
