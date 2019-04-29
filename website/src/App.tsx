@@ -8,6 +8,7 @@ import colors from './styles/colors';
 import Form from './Form';
 import Header from './Header';
 import CodeCompareSection from './CodeCompareSection';
+import CodePerfCompareSection from './CodePerfCompareSection';
 
 const Setting = React.lazy(() => import('./Setting'));
 const Builder = React.lazy(() => import('./Builder'));
@@ -130,22 +131,25 @@ function App() {
     });
   }, []);
 
-  useEffect(() => {
-    const pathName = window.location.pathname;
-    if (pathName === '/api') {
-      toggleApi(true);
-      toggleBuilder(false);
-      document.body.style.overflow = 'hidden';
-    } else if (pathName === '/builder') {
-      toggleApi(false);
-      toggleBuilder(true);
-      document.body.style.overflow = 'hidden';
-    } else {
-      toggleApi(false);
-      toggleBuilder(false);
-      document.body.style.overflow = 'auto';
-    }
-  }, [window.location.pathname]);
+  useEffect(
+    () => {
+      const pathName = window.location.pathname;
+      if (pathName === '/api') {
+        toggleApi(true);
+        toggleBuilder(false);
+        document.body.style.overflow = 'hidden';
+      } else if (pathName === '/builder') {
+        toggleApi(false);
+        toggleBuilder(true);
+        document.body.style.overflow = 'hidden';
+      } else {
+        toggleApi(false);
+        toggleBuilder(false);
+        document.body.style.overflow = 'auto';
+      }
+    },
+    [window.location.pathname],
+  );
 
   const Buttons = (
     <ButtonGroup
@@ -226,6 +230,8 @@ function App() {
 
           <CodeCompareSection />
 
+          <CodePerfCompareSection />
+
           <div ref={HomeRef}>
             <Form
               {...{
@@ -256,9 +262,13 @@ function App() {
             <a href="https://github.com/bluebill1049/react-hook-form" target="_blank" tabIndex={tabIndex}>
               React Hook Form
             </a>{' '}
-            &{' '}
+            +{' '}
             <a href="https://github.com/bluebill1049/react-simple-animate" target="_blank" tabIndex={tabIndex}>
               React Simple Animate
+            </a>{' '}
+            +{' '}
+            <a href="https://github.com/bluebill1049/react-simple-img" target="_blank" tabIndex={tabIndex}>
+              React Simple Img
             </a>
           </Footer>
         </Animate>
