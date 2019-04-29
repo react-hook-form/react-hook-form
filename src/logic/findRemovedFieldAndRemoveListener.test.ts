@@ -1,4 +1,4 @@
-import findMissDomAndClean from './findMissDomAndClean';
+import findRemovedFieldAndRemoveListener from './findRemovedFieldAndRemoveListener';
 import removeAllEventListeners from './removeAllEventListeners';
 
 jest.mock('./removeAllEventListeners');
@@ -11,7 +11,7 @@ describe('findMissDomAndClean', () => {
     };
     expect(
       // @ts-ignore
-      findMissDomAndClean(fields, () => {}, {
+      findRemovedFieldAndRemoveListener(fields, () => {}, {
         ref: { name: 'bill', type: 'radio' },
       }),
     ).toEqual(fields);
@@ -37,7 +37,7 @@ describe('findMissDomAndClean', () => {
 
     expect(
       // @ts-ignore
-      findMissDomAndClean(fields, () => {}, {
+      findRemovedFieldAndRemoveListener(fields, () => {}, {
         ref: { name: 'test', type: 'radio' },
         options: [
           {
@@ -70,7 +70,7 @@ describe('findMissDomAndClean', () => {
 
     expect(removeAllEventListeners).toBeCalled();
     expect(
-      findMissDomAndClean(fields, () => {}, {
+      findRemovedFieldAndRemoveListener(fields, () => {}, {
         ref: { name: 'test', type: 'text' },
         mutationWatcher: {
           disconnect,

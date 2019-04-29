@@ -1,6 +1,6 @@
 import getFieldValue from './getFieldValue';
 
-export default function getFieldsValues(fields, filedNames?: string | Array<string>) {
+export default function getFieldsValues(fields, filedName?: string | Array<string>) {
   return Object.values(fields).reduce((previous, data: any) => {
     const {
       ref,
@@ -8,8 +8,8 @@ export default function getFieldsValues(fields, filedNames?: string | Array<stri
     } = data;
     const value = getFieldValue(fields, ref);
 
-    if (typeof filedNames === 'string') {
-      if (name === filedNames) {
+    if (typeof filedName === 'string') {
+      if (name === filedName) {
         return value;
       }
 
@@ -17,8 +17,8 @@ export default function getFieldsValues(fields, filedNames?: string | Array<stri
     }
 
     const copy = { ...(previous || {}) };
-    if (Array.isArray(filedNames)) {
-      if (filedNames.includes(name)) {
+    if (Array.isArray(filedName)) {
+      if (filedName.includes(name)) {
         copy[name] = value;
       }
     } else {

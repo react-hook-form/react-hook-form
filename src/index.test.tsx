@@ -3,14 +3,14 @@ import useForm from './';
 import { act } from 'react-dom/test-utils';
 import attachEventListeners from './logic/attachEventListeners';
 import getFieldsValues from './logic/getFieldsValues';
-import findMissDomAndClean from './logic/findMissDomAndClean';
+import findRemovedFieldAndRemoveListener from './logic/findRemovedFieldAndRemoveListener';
 import validateWithSchema from './logic/validateWithSchema';
 import validateField from './logic/validateField';
 import onDomRemove from './utils/onDomRemove';
 import { mount } from 'enzyme';
 
 jest.mock('./utils/onDomRemove');
-jest.mock('./logic/findMissDomAndClean');
+jest.mock('./logic/findRemovedFieldAndRemoveListener');
 jest.mock('./logic/validateField');
 jest.mock('./logic/attachEventListeners');
 jest.mock('./logic/getFieldsValues');
@@ -153,7 +153,7 @@ describe('useForm', () => {
       act(() => {
         hookForm.unSubscribe();
       });
-      expect(findMissDomAndClean).toBeCalled();
+      expect(findRemovedFieldAndRemoveListener).toBeCalled();
       hookForm.register({ type: 'input', name: 'test' });
       expect(attachEventListeners).toBeCalledTimes(3);
     });

@@ -2,7 +2,7 @@ import removeAllEventListeners from './removeAllEventListeners';
 import isRadioInput from '../utils/isRadioInput';
 import { IField } from '../type';
 
-export default function findMissDomAndClean(
+export default function findRemovedFieldAndRemoveListener(
   fields: { [key: string]: IField },
   validateWithStateUpdate: Function,
   { ref, mutationWatcher, options }: IField,

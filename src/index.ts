@@ -1,7 +1,7 @@
 import { useRef, useState, useEffect } from 'react';
 import getFieldsValues from './logic/getFieldsValues';
 import validateField from './logic/validateField';
-import findMissDomAndClean from './logic/findMissDomAndClean';
+import findRemovedFieldAndRemoveListener from './logic/findRemovedFieldAndRemoveListener';
 import getFieldValue from './logic/getFieldValue';
 import onDomRemove from './utils/onDomRemove';
 import isRadioInput from './utils/isRadioInput';
@@ -64,7 +64,7 @@ export default function useForm(
     if (shouldUpdateState) setErrors(errors);
   }
 
-  const removeReferenceAndEventListeners = findMissDomAndClean.bind(null, fieldsRef.current, validateAndStateUpdate);
+  const removeEventListener = findRemovedFieldAndRemoveListener.bind(null, fieldsRef.current, validateAndStateUpdate);
 
   function registerIntoAllFields(elementRef, data = { required: false, validate: undefined }) {
     if (elementRef && !elementRef.name) return console.warn('Oops missing the name for field:', elementRef);
@@ -89,12 +89,12 @@ export default function useForm(
 
       (fields[name].options || []).push({
         ...inputData,
-        mutationWatcher: onDomRemove(elementRef, () => removeReferenceAndEventListeners(inputData, true)),
+        mutationWatcher: onDomRemove(elementRef, () => removeEventListener(inputData, true)),
       });
     } else {
       fields[name] = {
         ...inputData,
-        mutationWatcher: onDomRemove(elementRef, () => removeReferenceAndEventListeners(inputData, true)),
+        mutationWatcher: onDomRemove(elementRef, () => removeEventListener(inputData, true)),
       };
     }
 
@@ -200,8 +200,8 @@ export default function useForm(
       Object.values(fieldsRef.current).forEach((field: IField) => {
         const { ref, options } = field;
         isRadioInput(ref.type) && Array.isArray(options)
-          ? options.forEach(fieldRef => removeReferenceAndEventListeners(fieldRef, true))
-          : removeReferenceAndEventListeners(field, true);
+          ? options.forEach(fieldRef => removeEventListener(fieldRef, true))
+          : removeEventListener(field, true);
       });
     fieldsRef.current = {};
     watchFieldsRef.current = {};

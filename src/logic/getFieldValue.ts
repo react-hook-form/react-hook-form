@@ -7,9 +7,13 @@ import isCheckBox from '../utils/isCheckBox';
 export default function getFieldValue(fields: { [key: string]: IField }, { type, name, options, checked, value }: any) {
   if (isRadioInput(type)) {
     return getRadioValue(fields[name].options).value;
-  } else if (type === 'select-multiple') {
+  }
+
+  if (type === 'select-multiple') {
     return getMultipleSelectValue(options);
-  } else if (isCheckBox(type)) {
+  }
+
+  if (isCheckBox(type)) {
     return checked;
   }
 

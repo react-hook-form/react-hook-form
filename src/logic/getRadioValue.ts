@@ -13,7 +13,7 @@ export default function getRadioValue(
 } {
   return Array.isArray(options)
     ? options.reduce(
-        (previous, { ref: { checked, value } }: { ref: any }) =>
+        (previous, { ref: { checked, value } }: any) =>
           checked
             ? {
                 isValid: true,
