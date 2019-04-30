@@ -4,6 +4,7 @@ import formik from './assets/formik.png';
 import hookFrom from './assets/hookForm.png';
 import reduxForm from './assets/reduxForm.png';
 import { H1, Title } from './styles/typography';
+import Link from './styles/link';
 import { SimpleImg } from 'react-simple-img';
 import colors from './styles/colors';
 
@@ -136,6 +137,12 @@ export default function CodePerfCompareSection() {
         </ul>
         <SimpleImg src={reduxForm} placeholder={false} />
       </ImgSection>
+
+      <p style={{ marginBottom: 40 }}>
+        <span style={{ fontSize: 20 }}>⚠</span> Wants to see more intense performance test? Check out the result for
+        1000 fields within a form{' '}
+        <Link href="https://github.com/bluebill1049/react-hook-form-performance-compare">here</Link>.
+      </p>
     </Wrapper>
   );
 }
