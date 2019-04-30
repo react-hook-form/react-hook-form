@@ -49,7 +49,11 @@ export default function CodeCompareSection() {
 
       <GridView>
         <section>
-          <Title>
+          <Title
+            style={{
+              marginTop: 50,
+            }}
+          >
             <svg
               style={{
                 display: 'inline',

@@ -35,7 +35,7 @@ const Wrapper = styled.section`
 const ImgSection = styled.div`
   display: flex;
   flex-direction: column;
-  
+
   @media (min-width: 768px) {
     flex-direction: row;
   }
@@ -45,7 +45,7 @@ const ImgSection = styled.div`
     border-radius: 4px;
     max-width: 100%;
     margin: 20px 0;
-    
+
     @media (min-width: 768px) {
       max-width: 80%;
       margin: 0;
@@ -75,7 +75,13 @@ export default function CodePerfCompareSection() {
         The following results are captured under 6x CPU slow down on App start with Chrome devtool's performance tab,
         and code is from section above 'Library Code Comparison'.
       </p>
-      <Title>React Hook Form</Title>
+      <Title
+        style={{
+          marginTop: 50,
+        }}
+      >
+        React Hook Form
+      </Title>
       <ImgSection>
         <ul>
           <li>No. of mount: 1</li>

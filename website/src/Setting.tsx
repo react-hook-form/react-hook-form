@@ -73,7 +73,7 @@ function Setting({ settingButton, toggleSetting, showSetting, setting, setConfig
           </button>
           <h2
             style={{
-              fontSize: 40,
+              fontSize: 34,
               fontWeight: 200,
               marginTop: 10,
             }}
