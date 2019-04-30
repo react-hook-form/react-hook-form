@@ -34,7 +34,7 @@ export default function CodeCompareSection() {
         style={{
           textAlign: 'center',
           maxWidth: 1033,
-          margin: '0 auto',
+          margin: '0 auto 50px',
         }}
       >
         <H1>
@@ -49,11 +49,7 @@ export default function CodeCompareSection() {
 
       <GridView>
         <section>
-          <Title
-            style={{
-              marginTop: 50,
-            }}
-          >
+          <Title>
             <svg
               style={{
                 display: 'inline',
