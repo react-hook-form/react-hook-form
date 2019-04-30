@@ -12,7 +12,7 @@
 [![npm](https://badgen.net/bundlephobia/minzip/react-hook-form)](https://badgen.net/bundlephobia/minzip/react-hook-form)
 
 - Super easy to integrate and create forms
-- Built with React Hooks with performance and developer experience in mind
+- Built with performance and developer experience in mind
 - Follows HTML standard for validation
 - Tiny size without other any dependency
 - Build forms quickly with the [form builder](https://react-hook-form.now.sh/builder)
