@@ -192,6 +192,10 @@ describe('useForm', () => {
       hookFormWithValidationSchema.register({ value: '', type: 'input', name: 'test' }, { required: true });
       const callback = jest.fn();
       // @ts-ignore
+      getFieldsValues.mockImplementation(async () => {
+        return { test: 'test' };
+      });
+      // @ts-ignore
       validateWithSchema.mockImplementation(async () => {
         return undefined;
       });

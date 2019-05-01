@@ -1,6 +1,6 @@
 import getFieldValue from './getFieldValue';
 
-export default function getFieldsValues(fields, filedName?: string | Array<string>) {
+export default function getFieldsValues(fields, filedName: string | Array<string> = undefined) {
   return Object.values(fields).reduce((previous, data: any) => {
     const {
       ref,

@@ -5,7 +5,7 @@ describe('shouldUpdateWithError', () => {
     expect(
       shouldUpdateWithError({
         errors: {},
-        name,
+        name: 'test',
         error: { test: 'test' },
         mode: '',
         onSubmitModeNotSubmitted: true,
@@ -18,7 +18,7 @@ describe('shouldUpdateWithError', () => {
     expect(
       shouldUpdateWithError({
         errors: {},
-        name,
+        name: 'test',
         error: { test: 'test' },
         mode: 'onBlur',
         onSubmitModeNotSubmitted: false,
@@ -44,7 +44,7 @@ describe('shouldUpdateWithError', () => {
     expect(
       shouldUpdateWithError({
         errors: {},
-        name,
+        name: 'test',
         error: { test: 'test' },
         mode: '',
         onSubmitModeNotSubmitted: false,
@@ -83,7 +83,7 @@ describe('shouldUpdateWithError', () => {
     expect(
       shouldUpdateWithError({
         errors: { test: { type: 'test' } },
-        name: '',
+        name: 'test',
         error: { test: { type: 'bill' } },
         mode: '',
         onSubmitModeNotSubmitted: false,
@@ -94,7 +94,7 @@ describe('shouldUpdateWithError', () => {
     expect(
       shouldUpdateWithError({
         errors: { test: { message: 'test' } },
-        name: '',
+        name: 'test',
         error: { test: { message: 'bill' } },
         mode: '',
         onSubmitModeNotSubmitted: false,

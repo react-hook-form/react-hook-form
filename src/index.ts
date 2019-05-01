@@ -9,8 +9,8 @@ import attachEventListeners from './logic/attachEventListeners';
 import validateWithSchema from './logic/validateWithSchema';
 import combineFieldValues from './logic/combineFieldValues';
 import shouldUpdateWithError from './logic/shouldUpdateWithError';
+import warnMissingRef from './utils/warnMissingRef';
 import { Props, IField, IErrorMessages, Ref, SubmitPromiseResult } from './type';
-import warnMissingRef from "./utils/warnMissingRef";
 
 export default function useForm(
   { mode, validationSchema }: Props = {
@@ -30,10 +30,10 @@ export default function useForm(
     const fields = fieldsRef.current;
     const errors = errorsRef.current;
     const ref = fields[name];
-    const onSubmitModeNotSubmitted = !isSubmittedRef.current && mode === 'onSubmit';
+    const onSubmitModeNotSubmitted = !isSubmittedRef.current && (mode === 'onSubmit' || !mode);
     const isWatchAll = isWatchAllRef.current;
-    const shouldWatchUpdate = isWatchAll || watchFieldsRef.current[name];
-    const shouldModeUpdate = mode === 'onChange' || (mode === 'onBlur' && type === 'blur');
+    const shouldUpdateWatchMode = isWatchAll || watchFieldsRef.current[name];
+    const shouldUpdateMode = mode === 'onChange' || (mode === 'onBlur' && type === 'blur');
     let shouldUpdateState = isWatchAll;
 
     if (!isDirtyRef.current) {
@@ -46,18 +46,38 @@ export default function useForm(
       shouldUpdateState = true;
     }
 
-    if (onSubmitModeNotSubmitted && shouldWatchUpdate) return setErrors({});
+    if (onSubmitModeNotSubmitted && shouldUpdateWatchMode) return setErrors({});
 
-    const error = await validateField(ref, fields);
-    const shouldUpdate = shouldUpdateWithError({ errors, error, onSubmitModeNotSubmitted, name, mode, type });
+    if (validationSchema) {
+      const result = getFieldsValues(fields);
+      const error = await validateWithSchema(validationSchema, result) || {};
+      const shouldUpdate = !error[name] && errors[name] || error[name];
 
-    if (shouldUpdate || shouldModeUpdate || shouldWatchUpdate) {
-      const errorsCopy = { ...errors, ...error };
+      if ((shouldUpdateMode && shouldUpdate) || shouldUpdateWatchMode) {
+        const errorsCopy = { ...errors, ...{ [name]: error[name] } };
+        if (!error[name]) delete errorsCopy[name];
 
-      if (!error[name]) delete errorsCopy[name];
+        errorsRef.current = errorsCopy;
+        return setErrors(errorsCopy);
+      }
+    } else {
+      const error = await validateField(ref, fields);
+      const shouldUpdate = shouldUpdateWithError({
+        errors,
+        error,
+        onSubmitModeNotSubmitted,
+        name,
+        mode,
+        type,
+      });
 
-      errorsRef.current = errorsCopy;
-      return setErrors(errorsCopy);
+      if (shouldUpdate || shouldUpdateMode || shouldUpdateWatchMode) {
+        const errorsCopy = { ...errors, ...error };
+        if (!error[name]) delete errorsCopy[name];
+
+        errorsRef.current = errorsCopy;
+        return setErrors(errorsCopy);
+      }
     }
 
     if (shouldUpdateState) setErrors(errors);
@@ -142,11 +162,7 @@ export default function useForm(
     isSubmittedRef.current = true;
 
     if (validationSchema) {
-      fieldValues = currentFieldValues.reduce((previous, { ref, ref: { name } }) => {
-        previous[name] = getFieldValue(fields, ref);
-        return previous;
-      }, {});
-
+      fieldValues = getFieldsValues(fields);
       fieldErrors = await validateWithSchema(validationSchema, fieldValues);
 
       if (fieldErrors === undefined) return callback(combineFieldValues(fieldValues), e);

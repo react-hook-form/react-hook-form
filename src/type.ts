@@ -39,7 +39,7 @@ export interface IField extends IRegisterInput {
 export type Error = {
   ref: Ref;
   message: string | boolean;
-  type: string;
+  typeError?: string;
 };
 
 export interface IErrorMessages {
