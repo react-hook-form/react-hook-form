@@ -33,7 +33,7 @@ export default function useForm(
     const onSubmitModeNotSubmitted = !isSubmittedRef.current && (mode === 'onSubmit' || !mode);
     const isWatchAll = isWatchAllRef.current;
     const shouldUpdateWatchMode = isWatchAll || watchFieldsRef.current[name];
-    const shouldUpdateMode = mode === 'onChange' || (mode === 'onBlur' && type === 'blur');
+    const shouldUpdateValidateMode = mode === 'onChange' || (mode === 'onBlur' && type === 'blur');
     let shouldUpdateState = isWatchAll;
 
     if (!isDirtyRef.current) {
@@ -50,10 +50,10 @@ export default function useForm(
 
     if (validationSchema) {
       const result = getFieldsValues(fields);
-      const error = await validateWithSchema(validationSchema, result) || {};
-      const shouldUpdate = !error[name] && errors[name] || error[name];
+      const error = (await validateWithSchema(validationSchema, result)) || {};
+      const shouldUpdate = ((!error[name] && errors[name]) || error[name]) && shouldUpdateValidateMode;
 
-      if ((shouldUpdateMode && shouldUpdate) || shouldUpdateWatchMode) {
+      if (shouldUpdate || shouldUpdateWatchMode) {
         const errorsCopy = { ...errors, ...{ [name]: error[name] } };
         if (!error[name]) delete errorsCopy[name];
 
@@ -71,7 +71,7 @@ export default function useForm(
         type,
       });
 
-      if (shouldUpdate || shouldUpdateMode || shouldUpdateWatchMode) {
+      if (shouldUpdate || shouldUpdateValidateMode || shouldUpdateWatchMode) {
         const errorsCopy = { ...errors, ...error };
         if (!error[name]) delete errorsCopy[name];
 
