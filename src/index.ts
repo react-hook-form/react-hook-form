@@ -10,6 +10,7 @@ import validateWithSchema from './logic/validateWithSchema';
 import combineFieldValues from './logic/combineFieldValues';
 import shouldUpdateWithError from './logic/shouldUpdateWithError';
 import { Props, IField, IErrorMessages, Ref, SubmitPromiseResult } from './type';
+import warnMissingRef from "./utils/warnMissingRef";
 
 export default function useForm(
   { mode, validationSchema }: Props = {
@@ -31,6 +32,8 @@ export default function useForm(
     const ref = fields[name];
     const onSubmitModeNotSubmitted = !isSubmittedRef.current && mode === 'onSubmit';
     const isWatchAll = isWatchAllRef.current;
+    const shouldWatchUpdate = isWatchAll || watchFieldsRef.current[name];
+    const shouldModeUpdate = mode === 'onChange' || (mode === 'onBlur' && type === 'blur');
     let shouldUpdateState = isWatchAll;
 
     if (!isDirtyRef.current) {
@@ -43,16 +46,12 @@ export default function useForm(
       shouldUpdateState = true;
     }
 
-    if (onSubmitModeNotSubmitted && (isWatchAll || watchFieldsRef.current[name])) return setErrors({});
+    if (onSubmitModeNotSubmitted && shouldWatchUpdate) return setErrors({});
 
     const error = await validateField(ref, fields);
+    const shouldUpdate = shouldUpdateWithError({ errors, error, onSubmitModeNotSubmitted, name, mode, type });
 
-    if (
-      shouldUpdateWithError({ errors, name, error, mode, onSubmitModeNotSubmitted, type }) ||
-      mode === 'onChange' ||
-      (mode === 'onBlur' && type === 'blur') ||
-      watchFieldsRef.current[name]
-    ) {
+    if (shouldUpdate || shouldModeUpdate || shouldWatchUpdate) {
       const errorsCopy = { ...errors, ...error };
 
       if (!error[name]) delete errorsCopy[name];
@@ -67,7 +66,7 @@ export default function useForm(
   const removeEventListener = findRemovedFieldAndRemoveListener.bind(null, fieldsRef.current, validateAndStateUpdate);
 
   function registerIntoAllFields(elementRef, data = { required: false, validate: undefined }) {
-    if (elementRef && !elementRef.name) return console.warn('Oops missing the name for field:', elementRef);
+    if (elementRef && !elementRef.name) return warnMissingRef(elementRef);
 
     const { name, type, value } = elementRef;
     const { required, validate } = data;
@@ -99,10 +98,7 @@ export default function useForm(
     }
 
     attachEventListeners({
-      field:
-        isRadio
-          ? (fields[name].options || [])[(fields[name].options || []).length - 1]
-          : fields[name],
+      field: isRadio ? (fields[name].options || [])[(fields[name].options || []).length - 1] : fields[name],
       isRadio,
       validateAndStateUpdate,
     });
@@ -127,7 +123,7 @@ export default function useForm(
   function register(data: Ref | Function): any {
     if (!data) return;
     if (data.type) {
-      if (!data.name) return console.warn('Oops missing the name for field:', data);
+      if (!data.name) return warnMissingRef(data);
       registerIntoAllFields(data);
     }
 
