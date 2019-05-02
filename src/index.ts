@@ -225,7 +225,7 @@ export default function useForm(
     setErrors({});
   };
 
-  useEffect(() => unSubscribe, [mode]);
+  useEffect((): () => void => unSubscribe, [mode]);
 
   return {
     register,
