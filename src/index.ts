@@ -93,7 +93,11 @@ export default function useForm(
     if (shouldUpdateState) setErrors(errors);
   }
 
-  const removeEventListener: Function = findRemovedFieldAndRemoveListener.bind(null, fieldsRef.current, validateAndStateUpdate);
+  const removeEventListener: Function = findRemovedFieldAndRemoveListener.bind(
+    null,
+    fieldsRef.current,
+    validateAndStateUpdate,
+  );
 
   function registerIntoAllFields(elementRef, data = { required: false, validate: undefined }): void {
     if (elementRef && !elementRef.name) return warnMissingRef(elementRef);
@@ -156,7 +160,8 @@ export default function useForm(
     }
 
     const values = getFieldsValues(fieldsRef.current, filedNames);
-    const result = values === undefined || Object.keys(values).length === 0 ? undefined : values;
+    const result =
+      values === undefined || (values.constructor === Object && Object.keys(values).length === 0) ? undefined : values;
     return result === undefined ? defaultValue : result;
   }
 
