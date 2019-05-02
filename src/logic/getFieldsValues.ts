@@ -1,9 +1,7 @@
 import getFieldValue from './getFieldValue';
+import { FieldValue } from '../type';
 
-export default function getFieldsValues(
-  fields,
-  filedName: string | string[] = undefined,
-): { [key: string]: string | number } {
+export default function getFieldsValues(fields, filedName: string | string[] = undefined): FieldValue | undefined | {} {
   return Object.values(fields).reduce((previous, data: any) => {
     const {
       ref,

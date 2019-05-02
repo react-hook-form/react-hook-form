@@ -14,7 +14,7 @@
     "postrelease": "yarn publish && git push --follow-tags",
     "test": "jest --coverage",
     "testw": "yarn test -- --watchAll",
-    "prepublish": "yarn test && yarn run clean && yarn build"
+    "prepublish": "yarn lint && yarn test && yarn run clean && yarn build"
   },
   "keywords": [
     "react",
