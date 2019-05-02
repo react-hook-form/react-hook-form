@@ -13,7 +13,7 @@ export default function findRemovedFieldAndRemoveListener(
   const { name, type } = ref;
   if (isRadioInput(type) && options) {
     const optionsCopy = fields[name].options;
-    options.forEach(({ ref }, index) => {
+    options.forEach(({ ref }, index): void => {
       if (!document.body.contains(ref) && fields[name] && optionsCopy && optionsCopy[index]) {
         removeAllEventListeners(optionsCopy[index], validateWithStateUpdate);
         if (optionsCopy[index].mutationWatcher) {

@@ -1,5 +1,7 @@
-export default function combineFieldValues(data): { [key: string]: string | number | boolean } {
-  const output = Object.entries(data).reduce((previous, [key, value]) => {
+import { FieldValue } from '../type';
+
+export default function combineFieldValues(data): FieldValue {
+  const output = Object.entries(data).reduce((previous, [key, value]): FieldValue => {
     const arrayIndex = key.match(/\[\d+\]$/gi);
 
     if (arrayIndex) {
@@ -13,7 +15,7 @@ export default function combineFieldValues(data): { [key: string]: string | numb
     return previous;
   }, {});
 
-  return Object.entries(output).reduce((previous, [key, value]) => {
+  return Object.entries(output).reduce((previous, [key, value]): FieldValue => {
     if (Array.isArray(value)) {
       previous[key] = value.filter(Boolean);
       return previous;

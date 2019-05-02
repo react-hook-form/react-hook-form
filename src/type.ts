@@ -2,7 +2,7 @@ export type Validate = (data: string | number) => boolean | string | number | Da
 
 export type NumberOrString = number | string;
 
-export type FieldValue = boolean | string | string[] | number;
+export type FieldValue = boolean | string | string[] | number | {};
 
 export interface Props {
   mode: 'onSubmit' | 'onBlur' | 'onChange';
