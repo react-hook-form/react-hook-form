@@ -5,6 +5,14 @@ import { Field, Ref } from '../type';
 import getValueAndMessage from './getValueAndMessage';
 import isCheckBox from '../utils/isCheckBox';
 
+type ValidatePromiseResult =
+  | {}
+  | void
+  | {
+      type: string;
+      message: string | number | boolean | Date;
+    };
+
 export default async (
   {
     ref,
@@ -137,23 +145,25 @@ export default async (
         return copy;
       }
     } else if (typeof validate === 'object') {
-      const result = await new Promise(resolve => {
-        const values = Object.entries(validate);
-        values.reduce(async (previous, [key, validate], index) => {
-          const result = typeof validate === 'function' && (await validate(fieldValue));
-          const lastChild = values.length - 1 === index;
+      const result = await new Promise(
+        (resolve): ValidatePromiseResult => {
+          const values = Object.entries(validate);
+          values.reduce(async (previous, [key, validate], index): Promise<ValidatePromiseResult> => {
+            const result = typeof validate === 'function' && (await validate(fieldValue));
+            const lastChild = values.length - 1 === index;
 
-          if (typeof result !== 'boolean' || !result) {
-            const temp = {
-              type: key,
-              message: result || true,
-            };
-            return lastChild ? resolve(temp) : temp;
-          }
+            if (typeof result !== 'boolean' || !result) {
+              const temp = {
+                type: key,
+                message: result || true,
+              };
+              return lastChild ? resolve(temp) : temp;
+            }
 
-          return lastChild ? resolve(previous) : previous;
-        }, {});
-      });
+            return lastChild ? resolve(previous) : previous;
+          }, {});
+        },
+      );
 
       if (result && Object.keys(result).length) {
         copy[name] = {
