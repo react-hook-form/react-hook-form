@@ -1,7 +1,7 @@
 import getRadioValue from './getRadioValue';
 import isRadioInput from '../utils/isRadioInput';
 import { DATE_INPUTS, STRING_INPUTS } from '../constants';
-import { Field } from '../type';
+import { Field, Ref } from '../type';
 import getValueAndMessage from './getValueAndMessage';
 import isCheckBox from '../utils/isCheckBox';
 
@@ -23,7 +23,7 @@ export default async (
   [key: string]: {
     type: string;
     message: string;
-    ref: any;
+    ref: Ref;
   };
 }> => {
   const copy = {};
