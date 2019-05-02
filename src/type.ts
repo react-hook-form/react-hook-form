@@ -16,7 +16,6 @@ export interface MutationWatcher {
 export type Ref = any;
 
 export interface RegisterInput {
-  ref: Ref;
   required?: boolean | string;
   min?: NumberOrString | { value: NumberOrString; message: string };
   max?: NumberOrString | { value: NumberOrString; message: string };
@@ -62,8 +61,10 @@ export interface SubmitPromiseResult {
 
 export type VoidFunction = () => void;
 
+export type RegisterFunction = (Ref, RegisterInput) => void;
+
 export interface UseFormFunctions {
-  register: Function;
+  register: RegisterFunction;
   handleSubmit: Function;
   errors: ErrorMessages;
   watch: Function;

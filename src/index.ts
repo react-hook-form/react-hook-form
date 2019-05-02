@@ -19,6 +19,7 @@ import {
   FieldsObject,
   VoidFunction,
   UseFormFunctions,
+  RegisterFunction,
 } from './type';
 
 export default function useForm(
@@ -158,17 +159,20 @@ export default function useForm(
     return result === undefined ? defaultValue : result;
   }
 
-  function register(data: Ref | Function): any {
+  function register(data: Ref | Function): RegisterFunction | undefined {
     if (!data) return;
     if (data.type) {
-      if (!data.name) return warnMissingRef(data);
+      if (!data.name) {
+        warnMissingRef(data);
+        return;
+      }
       registerIntoAllFields(data);
     }
 
-    return ref => (ref ? registerIntoAllFields(ref, data) : () => {});
+    return (ref): void => registerIntoAllFields(ref, data);
   }
 
-  const handleSubmit = (callback: (Object, e) => void) => async e => {
+  const handleSubmit = (callback: (Object, e) => void): Function => async e => {
     if (e) {
       e.preventDefault();
       e.persist();
