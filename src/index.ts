@@ -93,7 +93,7 @@ export default function useForm(
     if (shouldUpdateState) setErrors(errors);
   }
 
-  const removeEventListener = findRemovedFieldAndRemoveListener.bind(null, fieldsRef.current, validateAndStateUpdate);
+  const removeEventListener: Function = findRemovedFieldAndRemoveListener.bind(null, fieldsRef.current, validateAndStateUpdate);
 
   function registerIntoAllFields(elementRef, data = { required: false, validate: undefined }): void {
     if (elementRef && !elementRef.name) return warnMissingRef(elementRef);
@@ -120,12 +120,12 @@ export default function useForm(
 
       (fields[name].options || []).push({
         ...inputData,
-        mutationWatcher: onDomRemove(elementRef, (): void => removeEventListener(inputData, true)),
+        mutationWatcher: onDomRemove(elementRef, (): Function => removeEventListener(inputData, true)),
       });
     } else {
       fields[name] = {
         ...inputData,
-        mutationWatcher: onDomRemove(elementRef, (): void => removeEventListener(inputData, true)),
+        mutationWatcher: onDomRemove(elementRef, (): Function => removeEventListener(inputData, true)),
       };
     }
 

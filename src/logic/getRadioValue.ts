@@ -5,7 +5,7 @@ interface RadioReturn {
   value: null | number | string;
 }
 
-const defaultReturn = {
+const defaultReturn: RadioReturn = {
   isValid: false,
   value: null,
 };
