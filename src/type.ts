@@ -2,6 +2,8 @@ export type Validate = (data: string | number) => boolean | string | number | Da
 
 export type NumberOrString = number | string;
 
+export type FieldValue = boolean | string | string[] | number;
+
 export interface Props {
   mode: 'onSubmit' | 'onBlur' | 'onChange';
   validationSchema?: any;
@@ -39,6 +41,10 @@ export interface Field extends RegisterInput {
   }[];
 }
 
+export interface FieldsObject {
+  [key: string]: Field;
+}
+
 export interface Error {
   ref: Ref;
   message: string | boolean;
@@ -51,5 +57,5 @@ export interface ErrorMessages {
 
 export interface SubmitPromiseResult {
   errors: { [key: string]: Error };
-  values: { [key: string]: number | string | boolean };
+  values: { [key: string]: FieldValue };
 }

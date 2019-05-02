@@ -1,10 +1,10 @@
 import getRadioValue from './getRadioValue';
 import getMultipleSelectValue from './getMultipleSelectValue';
-import { Field } from '../type';
+import { FieldsObject, FieldValue, Ref } from '../type';
 import isRadioInput from '../utils/isRadioInput';
 import isCheckBox from '../utils/isCheckBox';
 
-export default function getFieldValue(fields: { [key: string]: Field }, { type, name, options, checked, value }: any) {
+export default function getFieldValue(fields: FieldsObject, { type, name, options, checked, value }: Ref): FieldValue {
   if (isRadioInput(type)) {
     return getRadioValue(fields[name].options).value;
   }

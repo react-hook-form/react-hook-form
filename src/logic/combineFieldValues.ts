@@ -1,4 +1,4 @@
-export default function combineFieldValues(data) {
+export default function combineFieldValues(data): { [key: string]: string | number | boolean } {
   const output = Object.entries(data).reduce((previous, [key, value]) => {
     const arrayIndex = key.match(/\[\d+\]$/gi);
 

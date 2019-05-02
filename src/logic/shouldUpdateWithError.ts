@@ -1,4 +1,4 @@
-export default function shouldUpdateWithError({ errors, name, error, mode, onSubmitModeNotSubmitted, type }) {
+export default function shouldUpdateWithError({ errors, name, error, mode, onSubmitModeNotSubmitted, type }): boolean {
   if (onSubmitModeNotSubmitted || (mode === 'onBlur' && type !== 'blur')) {
     return false;
   }

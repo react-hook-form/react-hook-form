@@ -1,5 +1,9 @@
-export function parseErrorSchema(error): { [key: string]: string } {
-  return error.inner.reduce((previous, current, index) => {
+interface ValidationReturn {
+  [key: string]: string;
+}
+
+export function parseErrorSchema(error): ValidationReturn {
+  return error.inner.reduce((previous, current, index): ValidationReturn => {
     if (!previous[current.path]) previous[current.path] = {};
     previous[current.path] = error.errors[index];
     return previous;
@@ -9,7 +13,7 @@ export function parseErrorSchema(error): { [key: string]: string } {
 export default async function validateWithSchema(
   ValidationSchema,
   data,
-): Promise<{ [key: string]: string } | undefined> {
+): Promise<ValidationReturn | undefined> {
   try {
     await ValidationSchema.validate(data, { abortEarly: false });
     return undefined;

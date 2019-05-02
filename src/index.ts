@@ -10,14 +10,14 @@ import validateWithSchema from './logic/validateWithSchema';
 import combineFieldValues from './logic/combineFieldValues';
 import shouldUpdateWithError from './logic/shouldUpdateWithError';
 import warnMissingRef from './utils/warnMissingRef';
-import { Props, Field, ErrorMessages, Ref, SubmitPromiseResult } from './type';
+import { Props, Field, ErrorMessages, Ref, SubmitPromiseResult, FieldsObject } from './type';
 
 export default function useForm(
   { mode, validationSchema }: Props = {
     mode: 'onSubmit',
   },
 ) {
-  const fieldsRef = useRef<{ [key: string]: Field }>({});
+  const fieldsRef = useRef<FieldsObject>({});
   const errorsRef = useRef<ErrorMessages>({});
   const isWatchAllRef = useRef<boolean>(false);
   const isSubmittedRef = useRef<boolean>(false);

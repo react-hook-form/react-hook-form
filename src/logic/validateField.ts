@@ -19,7 +19,13 @@ export default async (
     validate,
   }: Field,
   fields: { [key: string]: Field },
-): Promise<{ [key: string]: any }> => {
+): Promise<{
+  [key: string]: {
+    type: string;
+    message: string;
+    ref: any;
+  };
+}> => {
   const copy = {};
   const isRadio = isRadioInput(type);
 
