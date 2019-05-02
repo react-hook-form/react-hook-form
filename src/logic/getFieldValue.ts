@@ -6,7 +6,8 @@ import isCheckBox from '../utils/isCheckBox';
 
 export default function getFieldValue(fields: FieldsObject, { type, name, options, checked, value }: Ref): FieldValue {
   if (isRadioInput(type)) {
-    return getRadioValue(fields[name].options).value;
+    const result = getRadioValue(fields[name].options).value;
+    return result === null ? {} : result;
   }
 
   if (type === 'select-multiple') {

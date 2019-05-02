@@ -155,7 +155,8 @@ export default function useForm(
       watchFieldsRef.current = {};
     }
 
-    const result = getFieldsValues(fieldsRef.current, filedNames);
+    const values = getFieldsValues(fieldsRef.current, filedNames);
+    const result = values === undefined || Object.keys(values).length === 0 ? undefined : values;
     return result === undefined ? defaultValue : result;
   }
 

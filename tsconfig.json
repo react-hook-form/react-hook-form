@@ -6,6 +6,7 @@
     "moduleResolution": "node",
     "outDir": "./dist",
     "declaration": true,
+    "strictNullChecks": true,
     "jsx": "react"
   },
   "include": ["src"],

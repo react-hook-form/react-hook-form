@@ -16,6 +16,7 @@ export interface MutationWatcher {
 export type Ref = any;
 
 export interface RegisterInput {
+  ref?: Ref;
   required?: boolean | string;
   min?: NumberOrString | { value: NumberOrString; message: string };
   max?: NumberOrString | { value: NumberOrString; message: string };
@@ -33,7 +34,6 @@ export interface Field extends RegisterInput {
   ref: Ref;
   watch?: boolean;
   mutationWatcher?: MutationWatcher;
-  fields?: RegisterInput[];
   options?: {
     ref: Ref;
     mutationWatcher?: MutationWatcher;
