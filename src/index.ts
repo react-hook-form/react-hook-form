@@ -10,21 +10,21 @@ import validateWithSchema from './logic/validateWithSchema';
 import combineFieldValues from './logic/combineFieldValues';
 import shouldUpdateWithError from './logic/shouldUpdateWithError';
 import warnMissingRef from './utils/warnMissingRef';
-import { Props, IField, IErrorMessages, Ref, SubmitPromiseResult } from './type';
+import { Props, Field, ErrorMessages, Ref, SubmitPromiseResult } from './type';
 
 export default function useForm(
   { mode, validationSchema }: Props = {
     mode: 'onSubmit',
   },
 ) {
-  const fieldsRef = useRef<{ [key: string]: IField }>({});
-  const errorsRef = useRef<IErrorMessages>({});
+  const fieldsRef = useRef<{ [key: string]: Field }>({});
+  const errorsRef = useRef<ErrorMessages>({});
   const isWatchAllRef = useRef<boolean>(false);
   const isSubmittedRef = useRef<boolean>(false);
   const isDirtyRef = useRef<boolean>(false);
-  const touchedFieldsRef = useRef<Array<string>>([]);
+  const touchedFieldsRef = useRef<string[]>([]);
   const watchFieldsRef = useRef<{ [key: string]: boolean }>({});
-  const [errors, setErrors] = useState<IErrorMessages>({});
+  const [errors, setErrors] = useState<ErrorMessages>({});
 
   async function validateAndStateUpdate({ target: { name }, type }: any) {
     const fields = fieldsRef.current;
@@ -124,7 +124,7 @@ export default function useForm(
     });
   }
 
-  function watch(filedNames?: string | Array<string> | undefined, defaultValue?: string | Array<string> | undefined) {
+  function watch(filedNames?: string | string[] | undefined, defaultValue?: string | string[] | undefined) {
     const watchFields = watchFieldsRef.current;
 
     if (typeof filedNames === 'string') {
@@ -168,7 +168,7 @@ export default function useForm(
       if (fieldErrors === undefined) return callback(combineFieldValues(fieldValues), e);
     } else {
       const result: SubmitPromiseResult = await currentFieldValues.reduce(
-        async (previous: Promise<SubmitPromiseResult>, field: IField) => {
+        async (previous: Promise<SubmitPromiseResult>, field: Field) => {
           const resolvedPrevious = await previous;
           const {
             ref,
@@ -209,7 +209,7 @@ export default function useForm(
 
   const unSubscribe = () => {
     fieldsRef.current &&
-      Object.values(fieldsRef.current).forEach((field: IField) => {
+      Object.values(fieldsRef.current).forEach((field: Field) => {
         const { ref, options } = field;
         isRadioInput(ref.type) && Array.isArray(options)
           ? options.forEach(fieldRef => removeEventListener(fieldRef, true))

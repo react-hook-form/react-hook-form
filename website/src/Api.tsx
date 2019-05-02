@@ -325,8 +325,8 @@ function Builder({ formData, showApi, toggleApi, apiButton, isMobile }: any) {
                     <h2>
                       watch:{' '}
                       <Type>
-                        (watchName: {`string | Array<string> | undefined`}, defaultValue:{' '}
-                        {`string | Array<string> | undefined`}) => string | number | boolean
+                        (watchName: {`string | string[] | undefined`}, defaultValue:{' '}
+                        {`string | string[] | undefined`}) => string | number | boolean
                       </Type>
                     </h2>
                   </code>
@@ -354,7 +354,7 @@ function Builder({ formData, showApi, toggleApi, apiButton, isMobile }: any) {
                         </tr>
                         <tr>
                           <td>
-                            <Type>{`Array<string>`}</Type>
+                            <Type>{`string[]`}</Type>
                           </td>
                           <td>Watch multiple inputs over the form</td>
                           <td>
@@ -416,7 +416,7 @@ function Builder({ formData, showApi, toggleApi, apiButton, isMobile }: any) {
 
                   <code ref={formStateRef}>
                     <h2>
-                      formState: <Type>{`{ dirty: boolean, isSubmitted: boolean, touched: Array<string> }`}</Type>
+                      formState: <Type>{`{ dirty: boolean, isSubmitted: boolean, touched: string[] }`}</Type>
                     </h2>
                   </code>
                   <p>This object contain information about the form state.</p>
@@ -452,7 +452,7 @@ function Builder({ formData, showApi, toggleApi, apiButton, isMobile }: any) {
                           <code>touched</code>
                         </td>
                         <td>
-                          <Type>{`Array<string>`}</Type>
+                          <Type>{`string[]`}</Type>
                         </td>
                         <td>An array of all inputs which have been interacted.</td>
                       </tr>

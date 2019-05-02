@@ -1,11 +1,11 @@
 import removeAllEventListeners from './removeAllEventListeners';
 import isRadioInput from '../utils/isRadioInput';
-import { IField } from '../type';
+import { Field } from '../type';
 
 export default function findRemovedFieldAndRemoveListener(
-  fields: { [key: string]: IField },
+  fields: { [key: string]: Field },
   validateWithStateUpdate: Function,
-  { ref, mutationWatcher, options }: IField,
+  { ref, mutationWatcher, options }: Field,
   forceDelete: boolean = false,
 ) {
   if (!ref) return;

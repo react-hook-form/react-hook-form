@@ -1,7 +1,7 @@
 import getRadioValue from './getRadioValue';
 import isRadioInput from '../utils/isRadioInput';
 import { DATE_INPUTS, STRING_INPUTS } from '../constants';
-import { IField } from '../type';
+import { Field } from '../type';
 import getValueAndMessage from './getValueAndMessage';
 import isCheckBox from '../utils/isCheckBox';
 
@@ -17,9 +17,9 @@ export default async (
     max,
     pattern,
     validate,
-  }: IField,
-  fields: { [key: string]: IField },
-) => {
+  }: Field,
+  fields: { [key: string]: Field },
+): Promise<{ [key: string]: any }> => {
   const copy = {};
   const isRadio = isRadioInput(type);
 

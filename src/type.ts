@@ -2,15 +2,18 @@ export type Validate = (data: string | number) => boolean | string | number | Da
 
 export type NumberOrString = number | string;
 
-export type Props = { mode: 'onSubmit' | 'onBlur' | 'onChange'; validationSchema?: any };
+export interface Props {
+  mode: 'onSubmit' | 'onBlur' | 'onChange';
+  validationSchema?: any;
+}
 
-export type MutationWatcher = {
+export interface MutationWatcher {
   disconnect: () => void;
-};
+}
 
 export type Ref = any;
 
-export interface IRegisterInput {
+export interface RegisterInput {
   ref: Ref;
   required?: boolean | string;
   min?: NumberOrString | { value: NumberOrString; message: string };
@@ -25,28 +28,28 @@ export interface IRegisterInput {
     | undefined;
 }
 
-export interface IField extends IRegisterInput {
+export interface Field extends RegisterInput {
   ref: Ref;
   watch?: boolean;
   mutationWatcher?: MutationWatcher;
-  fields?: Array<IRegisterInput>;
-  options?: Array<{
+  fields?: RegisterInput[];
+  options?: {
     ref: Ref;
     mutationWatcher?: MutationWatcher;
-  }>;
+  }[];
 }
 
-export type Error = {
+export interface Error {
   ref: Ref;
   message: string | boolean;
   typeError?: string;
-};
+}
 
-export interface IErrorMessages {
+export interface ErrorMessages {
   [key: string]: Error;
 }
 
-export type SubmitPromiseResult = {
+export interface SubmitPromiseResult {
   errors: { [key: string]: Error };
   values: { [key: string]: number | string | boolean };
-};
+}

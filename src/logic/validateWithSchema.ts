@@ -1,4 +1,4 @@
-export function parseErrorSchema(error) {
+export function parseErrorSchema(error): { [key: string]: string } {
   return error.inner.reduce((previous, current, index) => {
     if (!previous[current.path]) previous[current.path] = {};
     previous[current.path] = error.errors[index];
@@ -6,7 +6,10 @@ export function parseErrorSchema(error) {
   }, {});
 }
 
-export default async function validateWithSchema(ValidationSchema, data) {
+export default async function validateWithSchema(
+  ValidationSchema,
+  data,
+): Promise<{ [key: string]: string } | undefined> {
   try {
     await ValidationSchema.validate(data, { abortEarly: false });
     return undefined;

@@ -1,3 +1,3 @@
-export default function isCheckbox(type: string) {
-  return type === 'checkbox'
+export default function isCheckbox(type: string): boolean {
+  return type === 'checkbox';
 }
