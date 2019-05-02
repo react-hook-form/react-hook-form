@@ -10,13 +10,22 @@ import validateWithSchema from './logic/validateWithSchema';
 import combineFieldValues from './logic/combineFieldValues';
 import shouldUpdateWithError from './logic/shouldUpdateWithError';
 import warnMissingRef from './utils/warnMissingRef';
-import { Props, Field, ErrorMessages, Ref, SubmitPromiseResult, FieldsObject } from './type';
+import {
+  Props,
+  Field,
+  ErrorMessages,
+  Ref,
+  SubmitPromiseResult,
+  FieldsObject,
+  VoidFunction,
+  UseFormFunctions,
+} from './type';
 
 export default function useForm(
   { mode, validationSchema }: Props = {
     mode: 'onSubmit',
   },
-) {
+): UseFormFunctions {
   const fieldsRef = useRef<FieldsObject>({});
   const errorsRef = useRef<ErrorMessages>({});
   const isWatchAllRef = useRef<boolean>(false);
@@ -26,7 +35,7 @@ export default function useForm(
   const watchFieldsRef = useRef<{ [key: string]: boolean }>({});
   const [errors, setErrors] = useState<ErrorMessages>({});
 
-  async function validateAndStateUpdate({ target: { name }, type }: any) {
+  async function validateAndStateUpdate({ target: { name }, type }: any): Promise<void> {
     const fields = fieldsRef.current;
     const errors = errorsRef.current;
     const ref = fields[name];
@@ -85,7 +94,7 @@ export default function useForm(
 
   const removeEventListener = findRemovedFieldAndRemoveListener.bind(null, fieldsRef.current, validateAndStateUpdate);
 
-  function registerIntoAllFields(elementRef, data = { required: false, validate: undefined }) {
+  function registerIntoAllFields(elementRef, data = { required: false, validate: undefined }): void {
     if (elementRef && !elementRef.name) return warnMissingRef(elementRef);
 
     const { name, type, value } = elementRef;
@@ -98,7 +107,9 @@ export default function useForm(
     const isRadio = isRadioInput(type);
     const field = fields[name];
     const existRadioOptionIndex =
-      isRadio && field && Array.isArray(field.options) ? field.options.findIndex(({ ref }) => value === ref.value) : -1;
+      isRadio && field && Array.isArray(field.options)
+        ? field.options.findIndex(({ ref }): boolean => value === ref.value)
+        : -1;
 
     if ((!isRadio && field) || (isRadio && existRadioOptionIndex > -1)) return;
 
@@ -108,12 +119,12 @@ export default function useForm(
 
       (fields[name].options || []).push({
         ...inputData,
-        mutationWatcher: onDomRemove(elementRef, () => removeEventListener(inputData, true)),
+        mutationWatcher: onDomRemove(elementRef, (): void => removeEventListener(inputData, true)),
       });
     } else {
       fields[name] = {
         ...inputData,
-        mutationWatcher: onDomRemove(elementRef, () => removeEventListener(inputData, true)),
+        mutationWatcher: onDomRemove(elementRef, (): void => removeEventListener(inputData, true)),
       };
     }
 
@@ -124,13 +135,20 @@ export default function useForm(
     });
   }
 
-  function watch(filedNames?: string | string[] | undefined, defaultValue?: string | string[] | undefined) {
+  function watch(
+    filedNames?: string | string[] | undefined,
+    defaultValue?: string | string[] | undefined,
+  ): string | undefined | (string | number | boolean)[] | {} {
     const watchFields = watchFieldsRef.current;
 
     if (typeof filedNames === 'string') {
       watchFields[filedNames] = true;
     } else if (Array.isArray(filedNames)) {
-      filedNames.forEach(name => (watchFields[name] = true));
+      filedNames.forEach(
+        (name): void => {
+          watchFields[name] = true;
+        },
+      );
     } else {
       isWatchAllRef.current = true;
       watchFieldsRef.current = {};
@@ -168,7 +186,7 @@ export default function useForm(
       if (fieldErrors === undefined) return callback(combineFieldValues(fieldValues), e);
     } else {
       const result: SubmitPromiseResult = await currentFieldValues.reduce(
-        async (previous: Promise<SubmitPromiseResult>, field: Field) => {
+        async (previous: Promise<SubmitPromiseResult>, field: Field): Promise<SubmitPromiseResult> => {
           const resolvedPrevious = await previous;
           const {
             ref,
@@ -207,14 +225,16 @@ export default function useForm(
     callback(combineFieldValues(fieldValues), e);
   };
 
-  const unSubscribe = () => {
+  const unSubscribe = (): void => {
     fieldsRef.current &&
-      Object.values(fieldsRef.current).forEach((field: Field) => {
-        const { ref, options } = field;
-        isRadioInput(ref.type) && Array.isArray(options)
-          ? options.forEach(fieldRef => removeEventListener(fieldRef, true))
-          : removeEventListener(field, true);
-      });
+      Object.values(fieldsRef.current).forEach(
+        (field: Field): void => {
+          const { ref, options } = field;
+          isRadioInput(ref.type) && Array.isArray(options)
+            ? options.forEach((fieldRef): void => removeEventListener(fieldRef, true))
+            : removeEventListener(field, true);
+        },
+      );
     fieldsRef.current = {};
     watchFieldsRef.current = {};
     errorsRef.current = {};
@@ -225,7 +245,7 @@ export default function useForm(
     setErrors({});
   };
 
-  useEffect((): () => void => unSubscribe, [mode]);
+  useEffect((): VoidFunction => unSubscribe, [mode]);
 
   return {
     register,

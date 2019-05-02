@@ -59,3 +59,18 @@ export interface SubmitPromiseResult {
   errors: { [key: string]: Error };
   values: { [key: string]: FieldValue };
 }
+
+export type VoidFunction = () => void;
+
+export interface UseFormFunctions {
+  register: Function;
+  handleSubmit: Function;
+  errors: ErrorMessages;
+  watch: Function;
+  unSubscribe: Function;
+  formState: {
+    dirty: boolean;
+    isSubmitted: boolean;
+    touched: string[];
+  };
+}
