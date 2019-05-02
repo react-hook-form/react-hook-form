@@ -20,6 +20,7 @@ import {
   VoidFunction,
   UseFormFunctions,
   RegisterFunction,
+  FieldValue,
 } from './type';
 
 export default function useForm(
@@ -143,7 +144,7 @@ export default function useForm(
   function watch(
     filedNames?: string | string[] | undefined,
     defaultValue?: string | string[] | undefined,
-  ): string | undefined | (string | number | boolean)[] | {} {
+  ): FieldValue | FieldValue[] | undefined {
     const watchFields = watchFieldsRef.current;
 
     if (typeof filedNames === 'string') {
@@ -260,9 +261,9 @@ export default function useForm(
   return {
     register,
     handleSubmit,
-    errors,
     watch,
     unSubscribe,
+    errors,
     formState: {
       dirty: isDirtyRef.current,
       isSubmitted: isSubmittedRef.current,

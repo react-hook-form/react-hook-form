@@ -1,8 +1,12 @@
+import * as React from 'react';
+
 export type Validate = (data: string | number) => boolean | string | number | Date;
 
 export type NumberOrString = number | string;
 
 export type FieldValue = boolean | string | string[] | number | {};
+
+type OnSubmit = (data: { [key: string]: FieldValue }, e: React.SyntheticEvent) => void;
 
 export interface Props {
   mode: 'onSubmit' | 'onBlur' | 'onChange';
@@ -65,10 +69,13 @@ export type RegisterFunction = (Ref, RegisterInput) => void;
 
 export interface UseFormFunctions {
   register: RegisterFunction;
-  handleSubmit: Function;
+  handleSubmit: (func: OnSubmit) => void;
   errors: ErrorMessages;
-  watch: Function;
-  unSubscribe: Function;
+  watch: (
+    filedNames?: string | string[] | undefined,
+    defaultValue?: string | string[] | undefined,
+  ) => FieldValue | FieldValue[] | undefined;
+  unSubscribe: VoidFunction;
   formState: {
     dirty: boolean;
     isSubmitted: boolean;
