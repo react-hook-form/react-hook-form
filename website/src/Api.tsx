@@ -13,6 +13,7 @@ import code from './codeExamples/defaultExample';
 import errorCode from './codeExamples/errorCode';
 import SyntaxHighlighterWithCopy, { LinkToSandBox } from './SyntaxHighlighterWithCopy';
 import ApiMenu from "./ApiMenu";
+import {Ref, RegisterInput} from "../../src/type";
 
 const CodeAsLink = styled(Link)`
   cursor: pointer;
@@ -236,7 +237,7 @@ function Builder({ formData, showApi, toggleApi, apiButton, isMobile }: any) {
 
                   <code ref={useFormRef}>
                     <h2>
-                      useForm: <Type>{`{ mode?: 'onSubmit' | 'onBlur' | 'onChange', validationSchema?: any }`}</Type>
+                      useForm: <Type>Function</Type>
                     </h2>
                   </code>
                   <p>
@@ -298,7 +299,7 @@ function Builder({ formData, showApi, toggleApi, apiButton, isMobile }: any) {
 
                   <code ref={registerRef}>
                     <h2>
-                      register: <Type>(args: Object):void</Type>
+                      register: <Type>Function</Type>
                     </h2>
                   </code>
 
@@ -308,13 +309,7 @@ function Builder({ formData, showApi, toggleApi, apiButton, isMobile }: any) {
                   <code ref={errorsRef}>
                     <h2>
                       errors:{' '}
-                      <Type>{`{
-  [key: string]: {
-    ref: any;
-    message: string | boolean;
-    type: string;
-  }
-}`}</Type>
+                      <Type>Object</Type>
                     </h2>
                   </code>
                   <p>Object contain form errors or error messages belong to each input.</p>
@@ -324,10 +319,7 @@ function Builder({ formData, showApi, toggleApi, apiButton, isMobile }: any) {
                   <code ref={watchRef}>
                     <h2>
                       watch:{' '}
-                      <Type>
-                        (watchName: {`string | string[] | undefined`}, defaultValue:{' '}
-                        {`string | string[] | undefined`}) => string | number | boolean
-                      </Type>
+                      <Type>Function</Type>
                     </h2>
                   </code>
                   <p>
@@ -378,7 +370,7 @@ function Builder({ formData, showApi, toggleApi, apiButton, isMobile }: any) {
                   <hr />
                   <code ref={handleSubmitRef}>
                     <h2>
-                      handleSubmit: <Type>({`{ [key: string]: string | number | boolean }`}) => void</Type>
+                      handleSubmit: <Type>Function</Type>
                     </h2>
                   </code>
                   <p>This function will pass you the form data when form validation is successful.</p>
@@ -398,7 +390,7 @@ function Builder({ formData, showApi, toggleApi, apiButton, isMobile }: any) {
 
                   <code ref={validationSchemaRef}>
                     <h2>
-                      validationSchema: <Type>any</Type>
+                      validationSchema: <Type>Object</Type>
                     </h2>
                   </code>
 

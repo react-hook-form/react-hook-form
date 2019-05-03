@@ -351,15 +351,7 @@ export default function ApiRefTable({ tabIndex }: any) {
               <td>
                 <code>
                   <Type>
-                    {isStandard
-                      ? `(Object) => Boolean | {[key: string]: (Object) => Boolean}`
-                      : `{
-  value: (Object) => Boolean |
-
-{
-  [key: string]: (Object) => Boolean},
-  message: string
-}`}
+                      Function | Object
                   </Type>
                 </code>
               </td>
