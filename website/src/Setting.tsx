@@ -186,6 +186,25 @@ function Setting({ settingButton, toggleSetting, showSetting, setting, setConfig
               }}
             >
               <input
+                name="showTouch"
+                type="checkbox"
+                style={{
+                  marginRight: 10,
+                }}
+                tabIndex={tabIndex}
+                defaultChecked={setting.showTouch}
+                ref={register}
+              />
+              Touch
+            </label>
+
+            <label
+              style={{
+                marginBottom: 10,
+                display: 'block',
+              }}
+            >
+              <input
                 name="showSubmit"
                 type="checkbox"
                 style={{
@@ -195,7 +214,7 @@ function Setting({ settingButton, toggleSetting, showSetting, setting, setConfig
                 defaultChecked={setting.showSubmit}
                 ref={register}
               />
-              Prepare Submit
+              Submit
             </label>
 
             <input

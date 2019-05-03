@@ -72,7 +72,7 @@ export type RegisterFunction = (
 
 export interface UseFormFunctions {
   register: RegisterFunction;
-  handleSubmit: (func: OnSubmit) => void;
+  handleSubmit: (func: OnSubmit) => any;
   errors: ErrorMessages;
   watch: (
     filedNames?: string | string[] | undefined,

@@ -21,6 +21,7 @@ import {
   UseFormFunctions,
   RegisterFunction,
   FieldValue,
+  RegisterInput,
 } from './type';
 
 export default function useForm(
@@ -166,7 +167,7 @@ export default function useForm(
     return result === undefined ? defaultValue : result;
   }
 
-  function register(data: Ref | Function): RegisterFunction | undefined {
+  function register(data: Ref | RegisterInput): RegisterFunction | undefined {
     if (!data) return;
     if (data.type) {
       if (!data.name) {
@@ -176,7 +177,7 @@ export default function useForm(
       registerIntoAllFields(data);
     }
 
-    return (ref): void => registerIntoAllFields(ref, data);
+    return (ref): void => ref && registerIntoAllFields(ref, data);
   }
 
   const handleSubmit = (callback: (Object, e) => void): Function => async e => {

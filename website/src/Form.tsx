@@ -292,13 +292,13 @@ export default function Form({
           </section>
         )}
 
-        <section>
+        {setting.showTouch &&<section>
           <Title>Touched</Title>
           {!Object.keys(touched).length && <p>ⓘ Touched fields will display here.</p>}
           <Animate durationSeconds={0.8} play={touched.length} startStyle={{ opacity: 0 }} endStyle={{ opacity: 1 }}>
             <Code>{JSON.stringify(touched, null, 2)}</Code>
           </Animate>
-        </section>
+        </section>}
 
         {setting.showSubmit && (
           <section>

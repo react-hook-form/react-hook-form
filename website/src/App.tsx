@@ -90,11 +90,13 @@ function App() {
     mode: 'onSubmit' | 'onBlur' | 'onChange';
     showError: boolean;
     showWatch: boolean;
+    showTouch: boolean;
     showSubmit: boolean;
   }>({
     mode: 'onChange',
     showError: true,
     showWatch: true,
+    showTouch: true,
     showSubmit: true,
   });
   const {
