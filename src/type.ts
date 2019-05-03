@@ -65,7 +65,10 @@ export interface SubmitPromiseResult {
 
 export type VoidFunction = () => void;
 
-export type RegisterFunction = (Ref, RegisterInput) => void;
+export type RegisterFunction = (
+  refOrValidateRule: RegisterInput | Ref,
+  validateRule?: RegisterInput
+) => any;
 
 export interface UseFormFunctions {
   register: RegisterFunction;
