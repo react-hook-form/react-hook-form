@@ -38,7 +38,7 @@ export default function useForm(
   const isDirtyRef = useRef<boolean>(false);
   const touchedFieldsRef = useRef<string[]>([]);
   const watchFieldsRef = useRef<{ [key: string]: boolean }>({});
-  const [errors, reRenderForm] = useState<ErrorMessages>({});
+  const reRenderForm = useState({})[1];
 
   async function validateAndStateUpdate({ target: { name }, type }: any): Promise<void> {
     const fields = fieldsRef.current;
@@ -72,7 +72,7 @@ export default function useForm(
         if (!error[name]) delete errorsCopy[name];
 
         errorsRef.current = errorsCopy;
-        return reRenderForm(errorsCopy);
+        return reRenderForm({});
       }
     } else {
       const error = await validateField(ref, fields);
@@ -90,11 +90,11 @@ export default function useForm(
         if (!error[name]) delete errorsCopy[name];
 
         errorsRef.current = errorsCopy;
-        return reRenderForm(errorsCopy);
+        return reRenderForm({});
       }
     }
 
-    if (shouldUpdateState) reRenderForm(errors);
+    if (shouldUpdateState) reRenderForm({});
   }
 
   const removeEventListener: Function = findRemovedFieldAndRemoveListener.bind(
@@ -193,7 +193,7 @@ export default function useForm(
     const currentFieldValues = Object.values(fields);
     isSubmittedRef.current = true;
     isSubmittingRef.current = true;
-    reRenderForm(Object.keys(errors).length ? errors : {});
+    reRenderForm({});
     submitCountRef.current += 1;
 
     if (validationSchema) {
@@ -202,7 +202,7 @@ export default function useForm(
 
       if (fieldErrors === undefined) {
         isSubmittingRef.current = false;
-        reRenderForm(errors);
+        reRenderForm({});
         return callback(combineFieldValues(fieldValues), e);
       }
     } else {
@@ -238,14 +238,14 @@ export default function useForm(
     }
 
     isSubmittingRef.current = false;
-    reRenderForm(fieldErrors || {});
 
     if (Object.values(fieldErrors).length) {
       errorsRef.current = fieldErrors;
-      return;
+    } else {
+      callback(combineFieldValues(fieldValues), e);
     }
 
-    callback(combineFieldValues(fieldValues), e);
+    reRenderForm({});
   };
 
   const unSubscribe = (): void => {
@@ -265,7 +265,6 @@ export default function useForm(
     isSubmittedRef.current = false;
     isDirtyRef.current = false;
     touchedFieldsRef.current = [];
-    reRenderForm({});
   };
 
   useEffect((): VoidFunction => unSubscribe, [mode]);
@@ -275,7 +274,7 @@ export default function useForm(
     handleSubmit,
     watch,
     unSubscribe,
-    errors,
+    errors: errorsRef.current,
     formState: {
       dirty: isDirtyRef.current,
       isSubmitted: isSubmittedRef.current,
