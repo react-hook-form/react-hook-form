@@ -13,7 +13,6 @@ import code from './codeExamples/defaultExample';
 import errorCode from './codeExamples/errorCode';
 import SyntaxHighlighterWithCopy, { LinkToSandBox } from './SyntaxHighlighterWithCopy';
 import ApiMenu from "./ApiMenu";
-import {Ref, RegisterInput} from "../../src/type";
 
 const CodeAsLink = styled(Link)`
   cursor: pointer;

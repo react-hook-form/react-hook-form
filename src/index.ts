@@ -32,11 +32,13 @@ export default function useForm(
   const fieldsRef = useRef<FieldsObject>({});
   const errorsRef = useRef<ErrorMessages>({});
   const isWatchAllRef = useRef<boolean>(false);
+  const submitCountRef = useRef<number>(0);
+  const isSubmittingRef = useRef<boolean>(false);
   const isSubmittedRef = useRef<boolean>(false);
   const isDirtyRef = useRef<boolean>(false);
   const touchedFieldsRef = useRef<string[]>([]);
   const watchFieldsRef = useRef<{ [key: string]: boolean }>({});
-  const [errors, setErrors] = useState<ErrorMessages>({});
+  const [errors, reRenderForm] = useState<ErrorMessages>({});
 
   async function validateAndStateUpdate({ target: { name }, type }: any): Promise<void> {
     const fields = fieldsRef.current;
@@ -58,7 +60,7 @@ export default function useForm(
       shouldUpdateState = true;
     }
 
-    if (onSubmitModeNotSubmitted && shouldUpdateWatchMode) return setErrors({});
+    if (onSubmitModeNotSubmitted && shouldUpdateWatchMode) return reRenderForm({});
 
     if (validationSchema) {
       const result = getFieldsValues(fields);
@@ -70,7 +72,7 @@ export default function useForm(
         if (!error[name]) delete errorsCopy[name];
 
         errorsRef.current = errorsCopy;
-        return setErrors(errorsCopy);
+        return reRenderForm(errorsCopy);
       }
     } else {
       const error = await validateField(ref, fields);
@@ -88,11 +90,11 @@ export default function useForm(
         if (!error[name]) delete errorsCopy[name];
 
         errorsRef.current = errorsCopy;
-        return setErrors(errorsCopy);
+        return reRenderForm(errorsCopy);
       }
     }
 
-    if (shouldUpdateState) setErrors(errors);
+    if (shouldUpdateState) reRenderForm(errors);
   }
 
   const removeEventListener: Function = findRemovedFieldAndRemoveListener.bind(
@@ -190,12 +192,18 @@ export default function useForm(
     const fields = fieldsRef.current;
     const currentFieldValues = Object.values(fields);
     isSubmittedRef.current = true;
+    isSubmittingRef.current = true;
+    submitCountRef.current += 1;
+    reRenderForm(errors);
 
     if (validationSchema) {
       fieldValues = getFieldsValues(fields);
       fieldErrors = await validateWithSchema(validationSchema, fieldValues);
 
-      if (fieldErrors === undefined) return callback(combineFieldValues(fieldValues), e);
+      if (fieldErrors === undefined) {
+        reRenderForm(errors);
+        return callback(combineFieldValues(fieldValues), e);
+      }
     } else {
       const result: SubmitPromiseResult = await currentFieldValues.reduce(
         async (previous: Promise<SubmitPromiseResult>, field: Field): Promise<SubmitPromiseResult> => {
@@ -229,11 +237,12 @@ export default function useForm(
     }
 
     if (Object.values(fieldErrors).length) {
-      setErrors(fieldErrors);
+      reRenderForm(fieldErrors);
       errorsRef.current = fieldErrors;
       return;
     }
 
+    reRenderForm(errors);
     callback(combineFieldValues(fieldValues), e);
   };
 
@@ -254,7 +263,7 @@ export default function useForm(
     isSubmittedRef.current = false;
     isDirtyRef.current = false;
     touchedFieldsRef.current = [];
-    setErrors({});
+    reRenderForm({});
   };
 
   useEffect((): VoidFunction => unSubscribe, [mode]);
@@ -268,7 +277,9 @@ export default function useForm(
     formState: {
       dirty: isDirtyRef.current,
       isSubmitted: isSubmittedRef.current,
+      submitCount: submitCountRef.current,
       touched: touchedFieldsRef.current,
+      isSubmitting: isSubmittingRef.current,
     },
   };
 }

@@ -82,6 +82,8 @@ export interface UseFormFunctions {
   formState: {
     dirty: boolean;
     isSubmitted: boolean;
+    isSubmitting: boolean;
+    submitCount: number;
     touched: string[];
   };
 }
