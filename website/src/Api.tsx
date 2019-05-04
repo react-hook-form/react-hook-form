@@ -407,7 +407,7 @@ function Builder({ formData, showApi, toggleApi, apiButton, isMobile }: any) {
 
                   <code ref={formStateRef}>
                     <h2>
-                      formState: <Type>{`{ dirty: boolean, isSubmitted: boolean, touched: string[] }`}</Type>
+                      formState: <Type>Object</Type>
                     </h2>
                   </code>
                   <p>This object contain information about the form state.</p>
@@ -427,7 +427,7 @@ function Builder({ formData, showApi, toggleApi, apiButton, isMobile }: any) {
                         <td>
                           <Type>boolean</Type>
                         </td>
-                        <td>Set to true after user interacted with any of the input.</td>
+                        <td>Set to true after user interacted with any of the inputs.</td>
                       </tr>
                       <tr>
                         <td>
@@ -436,7 +436,7 @@ function Builder({ formData, showApi, toggleApi, apiButton, isMobile }: any) {
                         <td>
                           <Type>boolean</Type>
                         </td>
-                        <td>Set true after user submit the form.</td>
+                        <td>Set true after user submitted the form.</td>
                       </tr>
                       <tr>
                         <td>
@@ -446,6 +446,24 @@ function Builder({ formData, showApi, toggleApi, apiButton, isMobile }: any) {
                           <Type>{`string[]`}</Type>
                         </td>
                         <td>An array of all inputs which have been interacted.</td>
+                      </tr>
+                      <tr>
+                        <td>
+                          <code>isSubmitting</code>
+                        </td>
+                        <td>
+                          <Type>boolean</Type>
+                        </td>
+                        <td>During form submitting will set to true and after submitting set to false.</td>
+                      </tr>
+                      <tr>
+                        <td>
+                          <code>submitCount</code>
+                        </td>
+                        <td>
+                          <Type>number</Type>
+                        </td>
+                        <td>Number of forms submit.</td>
                       </tr>
                       </tbody>
                     </Table>

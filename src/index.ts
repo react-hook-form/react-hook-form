@@ -193,14 +193,15 @@ export default function useForm(
     const currentFieldValues = Object.values(fields);
     isSubmittedRef.current = true;
     isSubmittingRef.current = true;
+    reRenderForm(Object.keys(errors).length ? errors : {});
     submitCountRef.current += 1;
-    reRenderForm(errors);
 
     if (validationSchema) {
       fieldValues = getFieldsValues(fields);
       fieldErrors = await validateWithSchema(validationSchema, fieldValues);
 
       if (fieldErrors === undefined) {
+        isSubmittingRef.current = false;
         reRenderForm(errors);
         return callback(combineFieldValues(fieldValues), e);
       }
@@ -236,13 +237,14 @@ export default function useForm(
       fieldValues = result.values;
     }
 
+    isSubmittingRef.current = false;
+    reRenderForm(fieldErrors || {});
+
     if (Object.values(fieldErrors).length) {
-      reRenderForm(fieldErrors);
       errorsRef.current = fieldErrors;
       return;
     }
 
-    reRenderForm(errors);
     callback(combineFieldValues(fieldValues), e);
   };
 

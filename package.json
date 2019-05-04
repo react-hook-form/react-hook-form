@@ -1,6 +1,6 @@
 {
   "name": "react-hook-form",
-  "version": "3.1.0",
+  "version": "3.2.0-beta.6",
   "main": "dist/index.js",
   "module": "dist/index.es.js",
   "types": "dist/index.d.ts",
@@ -26,7 +26,7 @@
     "typescript",
     "react-hooks"
   ],
-  "repository": "https://github.com/bluebill1049/react-forme.git",
+  "repository": "https://github.com/bluebill1049/react-hook-form.git",
   "homepage": "https://react-hook-form.now.sh",
   "author": "<bluebill1049@hotmail.com>",
   "license": "MIT",
