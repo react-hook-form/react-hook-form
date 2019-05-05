@@ -99,7 +99,7 @@ export default function ApiRefTable({ tabIndex }: any) {
               </td>
               <td>
                 <code>
-                  <Type>HTMLInputElement</Type>
+                  <Type>React.RefObject</Type>
                 </code>
               </td>
               <td>React element ref</td>
