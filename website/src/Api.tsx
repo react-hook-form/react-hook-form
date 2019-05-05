@@ -12,7 +12,7 @@ import Link from './styles/link';
 import code from './codeExamples/defaultExample';
 import errorCode from './codeExamples/errorCode';
 import SyntaxHighlighterWithCopy, { LinkToSandBox } from './SyntaxHighlighterWithCopy';
-import ApiMenu from "./ApiMenu";
+import ApiMenu from './ApiMenu';
 
 const CodeAsLink = styled(Link)`
   cursor: pointer;
@@ -277,7 +277,7 @@ function Builder({ formData, showApi, toggleApi, apiButton, isMobile }: any) {
                             <Type>string</Type>
                           </td>
                           <td>
-                            Validation will trigger on input <code>blur</code> event.
+                            Validation will trigger on <code>blur</code> event.
                           </td>
                         </tr>
                         <tr>
@@ -286,8 +286,8 @@ function Builder({ formData, showApi, toggleApi, apiButton, isMobile }: any) {
                             <Type>string</Type>
                           </td>
                           <td>
-                            (Not recommended) Validation will trigger <code>onChange</code> with each inputs, and lead
-                            to multiple render. Consider this as a bad performance practice.
+                            Validation will trigger <code>onChange</code> with each inputs, and lead to multiple
+                            re-render. Not recommended: Consider this as a bad performance practice.
                           </td>
                         </tr>
                       </tbody>
@@ -307,8 +307,7 @@ function Builder({ formData, showApi, toggleApi, apiButton, isMobile }: any) {
                   <hr />
                   <code ref={errorsRef}>
                     <h2>
-                      errors:{' '}
-                      <Type>Object</Type>
+                      errors: <Type>Object</Type>
                     </h2>
                   </code>
                   <p>Object contain form errors or error messages belong to each input.</p>
@@ -316,49 +315,52 @@ function Builder({ formData, showApi, toggleApi, apiButton, isMobile }: any) {
                   <TableWrapper>
                     <Table>
                       <tbody>
-                      <tr>
-                        <th>Name</th>
-                        <th>Type</th>
-                        <th>Description</th>
-                      </tr>
-                      <tr>
-                        <td>
-                          <code>type</code>
-                        </td>
-                        <td>
-                          <Type>string</Type>
-                        </td>
-                        <td>Error type which according to your validation rules. eg: required, min, max </td>
-                      </tr>
-                      <tr>
-                        <td>
-                          <code>message</code>
-                        </td>
-                        <td>
-                          <Type>string</Type>
-                        </td>
-                        <td>Register with validation and error message, then error message will return in this .</td>
-                      </tr>
-                      <tr>
-                        <td>
-                          <code>ref</code>
-                        </td>
-                        <td>
-                          <Type>React.RefObject</Type>
-                        </td>
-                        <td>Reference fo your error input element.</td>
-                      </tr>
+                        <tr>
+                          <th>Name</th>
+                          <th>Type</th>
+                          <th>Description</th>
+                        </tr>
+                        <tr>
+                          <td>
+                            <code>type</code>
+                          </td>
+                          <td>
+                            <Type>string</Type>
+                          </td>
+                          <td>Error type which according to your validation rules. eg: required, min, max </td>
+                        </tr>
+                        <tr>
+                          <td>
+                            <code>message</code>
+                          </td>
+                          <td>
+                            <Type>string</Type>
+                          </td>
+                          <td>Register with validation and error message, then error message will return in this .</td>
+                        </tr>
+                        <tr>
+                          <td>
+                            <code>ref</code>
+                          </td>
+                          <td>
+                            <Type>React.RefObject</Type>
+                          </td>
+                          <td>Reference fo your error input element.</td>
+                        </tr>
                       </tbody>
                     </Table>
                   </TableWrapper>
 
-                  <SyntaxHighlighterWithCopy tabIndex={tabIndex} rawData={errorCode} url="https://codesandbox.io/s/nrr4n9p8n4" />
+                  <SyntaxHighlighterWithCopy
+                    tabIndex={tabIndex}
+                    rawData={errorCode}
+                    url="https://codesandbox.io/s/nrr4n9p8n4"
+                  />
 
                   <hr />
                   <code ref={watchRef}>
                     <h2>
-                      watch:{' '}
-                      <Type>Function</Type>
+                      watch: <Type>Function</Type>
                     </h2>
                   </code>
                   <p>
@@ -404,7 +406,11 @@ function Builder({ formData, showApi, toggleApi, apiButton, isMobile }: any) {
                       </tbody>
                     </Table>
                   </TableWrapper>
-                  <SyntaxHighlighterWithCopy tabIndex={tabIndex} rawData={watchCode} url="https://codesandbox.io/s/pp1l40q7wx" />
+                  <SyntaxHighlighterWithCopy
+                    tabIndex={tabIndex}
+                    rawData={watchCode}
+                    url="https://codesandbox.io/s/pp1l40q7wx"
+                  />
 
                   <hr />
                   <code ref={handleSubmitRef}>
@@ -441,9 +447,13 @@ function Builder({ formData, showApi, toggleApi, apiButton, isMobile }: any) {
                     </Link>{' '}
                     for object schema validation and the example below demonstrate the usage.
                   </p>
-                  <SyntaxHighlighterWithCopy tabIndex={tabIndex} rawData={validationSchemaCode} url="https://codesandbox.io/s/928po918qr" />
+                  <SyntaxHighlighterWithCopy
+                    tabIndex={tabIndex}
+                    rawData={validationSchemaCode}
+                    url="https://codesandbox.io/s/928po918qr"
+                  />
 
-                  <hr/>
+                  <hr />
 
                   <code ref={formStateRef}>
                     <h2>
@@ -455,56 +465,56 @@ function Builder({ formData, showApi, toggleApi, apiButton, isMobile }: any) {
                   <TableWrapper>
                     <Table>
                       <tbody>
-                      <tr>
-                        <th>Name</th>
-                        <th>Type</th>
-                        <th>Description</th>
-                      </tr>
-                      <tr>
-                        <td>
-                          <code>dirty</code>
-                        </td>
-                        <td>
-                          <Type>boolean</Type>
-                        </td>
-                        <td>Set to true after user interacted with any of the inputs.</td>
-                      </tr>
-                      <tr>
-                        <td>
-                          <code>isSubmitted</code>
-                        </td>
-                        <td>
-                          <Type>boolean</Type>
-                        </td>
-                        <td>Set true after user submitted the form.</td>
-                      </tr>
-                      <tr>
-                        <td>
-                          <code>touched</code>
-                        </td>
-                        <td>
-                          <Type>{`string[]`}</Type>
-                        </td>
-                        <td>An array of all inputs which have been interacted.</td>
-                      </tr>
-                      <tr>
-                        <td>
-                          <code>isSubmitting</code>
-                        </td>
-                        <td>
-                          <Type>boolean</Type>
-                        </td>
-                        <td>During form submitting will set to true and after submitting set to false.</td>
-                      </tr>
-                      <tr>
-                        <td>
-                          <code>submitCount</code>
-                        </td>
-                        <td>
-                          <Type>number</Type>
-                        </td>
-                        <td>Number of forms submit.</td>
-                      </tr>
+                        <tr>
+                          <th>Name</th>
+                          <th>Type</th>
+                          <th>Description</th>
+                        </tr>
+                        <tr>
+                          <td>
+                            <code>dirty</code>
+                          </td>
+                          <td>
+                            <Type>boolean</Type>
+                          </td>
+                          <td>Set to true after user interacted with any of the inputs.</td>
+                        </tr>
+                        <tr>
+                          <td>
+                            <code>isSubmitted</code>
+                          </td>
+                          <td>
+                            <Type>boolean</Type>
+                          </td>
+                          <td>Set true after user submitted the form.</td>
+                        </tr>
+                        <tr>
+                          <td>
+                            <code>touched</code>
+                          </td>
+                          <td>
+                            <Type>{`string[]`}</Type>
+                          </td>
+                          <td>An array of all inputs which have been interacted.</td>
+                        </tr>
+                        <tr>
+                          <td>
+                            <code>isSubmitting</code>
+                          </td>
+                          <td>
+                            <Type>boolean</Type>
+                          </td>
+                          <td>During form submitting will set to true and after submitting set to false.</td>
+                        </tr>
+                        <tr>
+                          <td>
+                            <code>submitCount</code>
+                          </td>
+                          <td>
+                            <Type>number</Type>
+                          </td>
+                          <td>Number of forms submit.</td>
+                        </tr>
                       </tbody>
                     </Table>
                   </TableWrapper>
