@@ -1,4 +1,4 @@
-import { Ref, MutationWatcher } from '../type';
+import { Ref, MutationWatcher } from '../types';
 
 export default function onDomRemove(element: Ref, onDetachCallback: () => void): MutationWatcher {
   const observer = new MutationObserver((): void => {

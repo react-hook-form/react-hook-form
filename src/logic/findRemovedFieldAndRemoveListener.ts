@@ -1,6 +1,6 @@
 import removeAllEventListeners from './removeAllEventListeners';
 import isRadioInput from '../utils/isRadioInput';
-import { Field, FieldsObject } from '../type';
+import { Field, FieldsObject } from '../types';
 
 export default function findRemovedFieldAndRemoveListener(
   fields: { [key: string]: Field },

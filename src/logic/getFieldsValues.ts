@@ -1,5 +1,5 @@
 import getFieldValue from './getFieldValue';
-import { FieldValue, Ref } from '../type';
+import { FieldValue, Ref } from '../types';
 
 export default function getFieldsValues(fields, filedName?: string | string[]): FieldValue {
   return Object.values(fields).reduce((previous, data: Ref): FieldValue => {

@@ -256,7 +256,7 @@ function App() {
           </div>
 
           <Footer>
-            Build ♡ by{' '}
+            Build with ♡ by{' '}
             <a href="https://twitter.com/bluebill1049" target="_blank" tabIndex={tabIndex}>
               @Bill Luo
             </a>{' '}

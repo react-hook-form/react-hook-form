@@ -24,7 +24,7 @@ import {
   RegisterFunction,
   FieldValue,
   RegisterInput,
-} from './type';
+} from './types';
 
 export default function useForm(
   { mode, validationSchema }: Props = {
@@ -106,7 +106,7 @@ export default function useForm(
     validateAndStateUpdate,
   );
 
-  function registerIntoAllFields(elementRef, data = { required: false, validate: undefined }): void {
+  function registerIntoFieldsRef(elementRef, data = { required: false, validate: undefined }): void {
     if (elementRef && !elementRef.name) return warnMissingRef(elementRef);
 
     const { name, type, value } = elementRef;
@@ -178,10 +178,10 @@ export default function useForm(
         warnMissingRef(data);
         return;
       }
-      registerIntoAllFields(data);
+      registerIntoFieldsRef(data);
     }
 
-    return (ref): void => ref && registerIntoAllFields(ref, data);
+    return (ref): void => ref && registerIntoFieldsRef(ref, data);
   }
 
   const handleSubmit = (callback: (Object, e) => void): Function => async (e): Promise<void> => {

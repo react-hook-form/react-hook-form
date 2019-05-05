@@ -1,4 +1,4 @@
-import { Ref, RegisterInput } from '../type';
+import { Ref, RegisterInput } from '../types';
 
 interface RadioReturn {
   isValid: boolean;

@@ -1,4 +1,4 @@
-import { FieldValue } from '../type';
+import { FieldValue } from '../types';
 
 export default function combineFieldValues(data): FieldValue {
   const output = Object.entries(data).reduce((previous, [key, value]): FieldValue => {
