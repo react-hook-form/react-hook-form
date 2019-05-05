@@ -220,7 +220,7 @@ function App() {
           }
         }}
         style={{
-          perspective: '800px',
+          perspective: '2000px',
         }}
       >
         <Animate

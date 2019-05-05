@@ -65,7 +65,6 @@ function Setting({ settingButton, toggleSetting, showSetting, setting, setConfig
             ref={buttonRef}
             tabIndex={tabIndex}
             onClick={() => {
-              settingButton.current.focus();
               toggleSetting(false);
             }}
           >
