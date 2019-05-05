@@ -277,7 +277,7 @@ export default function Form({
           </section>
         )}
 
-        {setting.showWatch && setting.mode !== 'onSubmit' && (
+        {setting.showWatch && setting.mode === 'onChange' && (
           <section>
             <Title>Watch</Title>
             {!Object.keys(watch() || {}).length && <p>ⓘ Change input value to see watched values.</p>}
