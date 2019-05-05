@@ -184,7 +184,7 @@ export default function useForm(
     return (ref): void => ref && registerIntoAllFields(ref, data);
   }
 
-  const handleSubmit = (callback: (Object, e) => void): Function => async e => {
+  const handleSubmit = (callback: (Object, e) => void): Function => async (e): Promise<void> => {
     if (e) {
       e.preventDefault();
       e.persist();
