@@ -1,5 +1,12 @@
-export default function shouldUpdateWithError({ errors, name, error, mode, onSubmitModeNotSubmitted, type }): boolean {
-  if (onSubmitModeNotSubmitted || (mode === 'onBlur' && type !== 'blur')) {
+export default function shouldUpdateWithError({
+  errors,
+  name,
+  error,
+  isOnBlur,
+  onSubmitModeNotSubmitted,
+  type,
+}): boolean {
+  if (onSubmitModeNotSubmitted || (isOnBlur && type !== 'blur')) {
     return false;
   }
 

@@ -3,13 +3,15 @@ import getFieldsValues from './logic/getFieldsValues';
 import validateField from './logic/validateField';
 import findRemovedFieldAndRemoveListener from './logic/findRemovedFieldAndRemoveListener';
 import getFieldValue from './logic/getFieldValue';
-import onDomRemove from './utils/onDomRemove';
-import isRadioInput from './utils/isRadioInput';
 import attachEventListeners from './logic/attachEventListeners';
 import validateWithSchema from './logic/validateWithSchema';
 import combineFieldValues from './logic/combineFieldValues';
 import shouldUpdateWithError from './logic/shouldUpdateWithError';
 import warnMissingRef from './utils/warnMissingRef';
+import modeChecker from './utils/validationModeChecker';
+import onDomRemove from './utils/onDomRemove';
+import isRadioInput from './utils/isRadioInput';
+import isEmptyObject from './utils/isEmptyObject';
 import {
   Props,
   Field,
@@ -31,23 +33,24 @@ export default function useForm(
 ): UseFormFunctions {
   const fieldsRef = useRef<FieldsObject>({});
   const errorsRef = useRef<ErrorMessages>({});
-  const isWatchAllRef = useRef<boolean>(false);
   const submitCountRef = useRef<number>(0);
+  const touchedFieldsRef = useRef<string[]>([]);
+  const watchFieldsRef = useRef<{ [key: string]: boolean }>({});
+  const isWatchAllRef = useRef<boolean>(false);
   const isSubmittingRef = useRef<boolean>(false);
   const isSubmittedRef = useRef<boolean>(false);
   const isDirtyRef = useRef<boolean>(false);
-  const touchedFieldsRef = useRef<string[]>([]);
-  const watchFieldsRef = useRef<{ [key: string]: boolean }>({});
   const reRenderForm = useState({})[1];
 
-  async function validateAndStateUpdate({ target: { name }, type }: any): Promise<void> {
+  async function validateAndStateUpdate({ target: { name }, type }: Ref): Promise<void> {
     const fields = fieldsRef.current;
     const errors = errorsRef.current;
     const ref = fields[name];
-    const onSubmitModeNotSubmitted = !isSubmittedRef.current && (mode === 'onSubmit' || !mode);
+    const { isOnChange, isOnSubmit, isOnBlur } = modeChecker(mode);
+    const onSubmitModeNotSubmitted = !isSubmittedRef.current && (isOnSubmit || !mode);
     const isWatchAll = isWatchAllRef.current;
     const shouldUpdateWatchMode = isWatchAll || watchFieldsRef.current[name];
-    const shouldUpdateValidateMode = mode === 'onChange' || (mode === 'onBlur' && type === 'blur');
+    const shouldUpdateValidateMode = isOnChange || (isOnBlur && type === 'blur');
     let shouldUpdateState = isWatchAll;
 
     if (!isDirtyRef.current) {
@@ -80,8 +83,8 @@ export default function useForm(
         errors,
         error,
         onSubmitModeNotSubmitted,
+        isOnBlur,
         name,
-        mode,
         type,
       });
 
@@ -164,8 +167,7 @@ export default function useForm(
     }
 
     const values = getFieldsValues(fieldsRef.current, filedNames);
-    const result =
-      values === undefined || (values.constructor === Object && Object.keys(values).length === 0) ? undefined : values;
+    const result = values === undefined || isEmptyObject(values) ? undefined : values;
     return result === undefined ? defaultValue : result;
   }
 
@@ -239,7 +241,7 @@ export default function useForm(
 
     isSubmittingRef.current = false;
 
-    if (Object.values(fieldErrors).length) {
+    if (!isEmptyObject(fieldErrors)) {
       errorsRef.current = fieldErrors;
     } else {
       callback(combineFieldValues(fieldValues), e);
