@@ -14,7 +14,7 @@ export interface Props {
 }
 
 export interface MutationWatcher {
-  disconnect?: () => void;
+  disconnect: () => void;
   observe?: any;
 }
 
