@@ -87,6 +87,14 @@ const SettingIcon = styled.button`
   }
 `;
 
+const SettingWords = styled.span`
+  display: none;
+  
+  @media (min-width: 1500px) {
+    display: inline-block;
+  }
+`
+
 const errorStyle = { border: `1px solid ${colors.secondary}`, background: colors.errorPink };
 
 export default function Form({
@@ -121,7 +129,7 @@ export default function Form({
             Example{' '}
             <SettingIcon tabIndex={tabIndex} onClick={() => toggleSetting(!showSetting)}>
               <Setting />
-              Setting
+              <SettingWords>Setting</SettingWords>
             </SettingIcon>
           </Title>
           {formData.map(field => {
