@@ -20,7 +20,7 @@ describe('validateField', () => {
     ).toEqual({
       test: {
         ref: { type: 'checkbox', checked: false, name: 'test' },
-        message: true,
+        message: '',
         type: 'required',
       },
     });
@@ -36,7 +36,7 @@ describe('validateField', () => {
     ).toEqual({
       test: {
         ref: { type: 'text', value: '', name: 'test' },
-        message: true,
+        message: '',
         type: 'required',
       },
     });
@@ -60,7 +60,7 @@ describe('validateField', () => {
       ),
     ).toEqual({
       test: {
-        message: true,
+        message: '',
         type: 'required',
         ref: 'test',
       },
@@ -96,7 +96,7 @@ describe('validateField', () => {
     ).toEqual({
       test: {
         type: 'max',
-        message: true,
+        message: '',
         ref: { type: 'number', name: 'test', value: 10 },
       },
     });
@@ -113,7 +113,7 @@ describe('validateField', () => {
     ).toEqual({
       test: {
         type: 'max',
-        message: true,
+        message: '',
         ref: { type: 'date', name: 'test', value: '2019-2-12' },
       },
     });
@@ -132,7 +132,7 @@ describe('validateField', () => {
     ).toEqual({
       test: {
         type: 'min',
-        message: true,
+        message: '',
         ref: { type: 'number', name: 'test', value: 10 },
       },
     });
@@ -149,7 +149,7 @@ describe('validateField', () => {
     ).toEqual({
       test: {
         type: 'min',
-        message: true,
+        message: '',
         ref: { type: 'date', name: 'test', value: '2019-2-12' },
       },
     });
@@ -168,7 +168,7 @@ describe('validateField', () => {
     ).toEqual({
       test: {
         ref: { type: 'text', name: 'test', value: 'This is a long text input' },
-        message: true,
+        message: '',
         type: 'maxLength',
       },
     });
@@ -187,7 +187,7 @@ describe('validateField', () => {
     ).toEqual({
       test: {
         ref: { type: 'text', name: 'test', value: 'This is a long text input' },
-        message: true,
+        message: '',
         type: 'minLength',
       },
     });
@@ -208,7 +208,7 @@ describe('validateField', () => {
     ).toEqual({
       test: {
         ref: { type: 'text', name: 'test', value: 'This is a long text input' },
-        message: true,
+        message: '',
         type: 'pattern',
       },
     });
@@ -257,7 +257,7 @@ describe('validateField', () => {
       ),
     ).toEqual({
       test: {
-        message: true,
+        message: '',
         ref: { type: 'text', name: 'test', value: 'This is a long text input' },
         type: 'validate',
       },
@@ -279,7 +279,7 @@ describe('validateField', () => {
       test: {
         ref: { type: 'text', name: 'test', value: 'This is a long text input' },
         type: 'test1',
-        message: true,
+        message: '',
       },
     });
   });

@@ -45,7 +45,7 @@ export default async (
   ) {
     copy[name] = {
       type: 'required',
-      message: required,
+      message: typeof required === 'string' ? required : '',
       ref: isRadio && fields[name] ? (fields[name].options || [{ ref: '' }])[0].ref : ref,
     };
     return copy;
@@ -138,7 +138,7 @@ export default async (
         copy[name] = {
           ...copy[name],
           type: 'validate',
-          message: result || true,
+          message: typeof result === 'string' ? result : '',
           ref: isRadio && options ? options[0].ref : ref,
         };
         return copy;
@@ -148,15 +148,19 @@ export default async (
         (resolve): ValidatePromiseResult => {
           const values = Object.entries(validate);
           values.reduce(async (previous, [key, validate], index): Promise<ValidatePromiseResult> => {
-            const result = typeof validate === 'function' ? (await validate(fieldValue)) : undefined;
             const lastChild = values.length - 1 === index;
 
-            if (result !== undefined) {
-              const temp = {
-                type: key,
-                message: result || true,
-              };
-              return lastChild ? resolve(temp) : temp;
+            if (typeof validate === 'function') {
+              const result = await validate(fieldValue);
+
+              if (result !== undefined) {
+                const temp = {
+                  type: key,
+                  message: typeof result === 'string' ? result : '',
+                  ref: isRadio && options ? options[0].ref : ref,
+                };
+                return lastChild ? resolve(temp) : temp;
+              }
             }
 
             return lastChild ? resolve(previous) : previous;

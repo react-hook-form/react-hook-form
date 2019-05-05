@@ -6,6 +6,6 @@ export default function getValueAndMessage(
 } {
   return {
     value: typeof item === 'object' && item.value ? item.value : item,
-    message: typeof item === 'object' && item.message ? item.message : true,
+    message: typeof item === 'object' && item.message ? item.message : '',
   };
 }
