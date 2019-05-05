@@ -267,8 +267,8 @@ function Builder({ formData, showApi, toggleApi, apiButton, isMobile }: any) {
                             <Type>string</Type>
                           </td>
                           <td>
-                            Validation will trigger on submit, and then attach <code>onchange | blur | input</code>{' '}
-                            event listeners to re-validate them.
+                            Validation will trigger on submit, invalid inputs will attach <code>onChange</code> event
+                            listeners to re-validate them.
                           </td>
                         </tr>
                         <tr>
