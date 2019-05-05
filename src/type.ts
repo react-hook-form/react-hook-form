@@ -15,6 +15,7 @@ export interface Props {
 
 export interface MutationWatcher {
   disconnect: () => void;
+  observe: any;
 }
 
 export type Ref = any;
@@ -65,10 +66,7 @@ export interface SubmitPromiseResult {
 
 export type VoidFunction = () => void;
 
-export type RegisterFunction = (
-  refOrValidateRule: RegisterInput | Ref,
-  validateRule?: RegisterInput
-) => any;
+export type RegisterFunction = (refOrValidateRule: RegisterInput | Ref, validateRule?: RegisterInput) => any;
 
 export interface UseFormFunctions {
   register: RegisterFunction;
