@@ -13,16 +13,15 @@ export default function findRemovedFieldAndRemoveListener(
   const { name, type } = ref;
   if (isRadioInput(type) && options) {
     const optionsCopy = fields[name].options;
-    options.forEach(({ ref }, index): void => {
-      if (!document.body.contains(ref) && fields[name] && optionsCopy && optionsCopy[index]) {
-        removeAllEventListeners(optionsCopy[index], validateWithStateUpdate);
-        if (optionsCopy[index].mutationWatcher) {
-          // @ts-ignore
-          optionsCopy[index].mutationWatcher.disconnect();
+    options.forEach(
+      ({ ref }, index): void => {
+        if (!document.body.contains(ref) && fields[name] && optionsCopy && optionsCopy[index]) {
+          removeAllEventListeners(optionsCopy[index], validateWithStateUpdate);
+          (optionsCopy[index].mutationWatcher || { disconnect: (): void => {} }).disconnect();
+          optionsCopy.splice(index, 1);
         }
-        optionsCopy.splice(index, 1);
-      }
-    });
+      },
+    );
 
     if (Array.isArray(optionsCopy) && !optionsCopy.length) {
       delete fields[name];

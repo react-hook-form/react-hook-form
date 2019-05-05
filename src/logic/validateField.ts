@@ -46,8 +46,7 @@ export default async (
     copy[name] = {
       type: 'required',
       message: required,
-      // @ts-ignore
-      ref: isRadio ? fields[name].options[0].ref : ref,
+      ref: isRadio && fields[name] ? (fields[name].options || [{ ref: '' }])[0].ref : ref,
     };
     return copy;
   }
@@ -149,10 +148,10 @@ export default async (
         (resolve): ValidatePromiseResult => {
           const values = Object.entries(validate);
           values.reduce(async (previous, [key, validate], index): Promise<ValidatePromiseResult> => {
-            const result = typeof validate === 'function' && (await validate(fieldValue));
+            const result = typeof validate === 'function' ? (await validate(fieldValue)) : undefined;
             const lastChild = values.length - 1 === index;
 
-            if (typeof result !== 'boolean' || !result) {
+            if (result !== undefined) {
               const temp = {
                 type: key,
                 message: result || true,

@@ -278,7 +278,7 @@ describe('validateField', () => {
     ).toEqual({
       test: {
         ref: { type: 'text', name: 'test', value: 'This is a long text input' },
-        type: 'test',
+        type: 'test1',
         message: true,
       },
     });
