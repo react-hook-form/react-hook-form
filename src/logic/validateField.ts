@@ -73,7 +73,7 @@ export default async (
       copy[name] = {
         ...copy[name],
         type: exceedMax ? 'max' : 'min',
-        message: maxMessage,
+        message: exceedMax ? maxMessage : minMessage,
         ref,
       };
       return copy;
