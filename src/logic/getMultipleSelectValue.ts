@@ -1,3 +1,2 @@
-export default function getMultipleSelectValue(options: HTMLOptionElement[]): string[] {
-  return options.filter(({ selected }): boolean => selected).map(({ value }): string => value);
-}
+export default (options: HTMLOptionElement[]): string[] =>
+  options.filter(({ selected }): boolean => selected).map(({ value }): string => value);

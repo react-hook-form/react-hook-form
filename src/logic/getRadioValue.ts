@@ -2,12 +2,12 @@ import { Ref, RegisterInput } from '../types';
 
 interface RadioReturn {
   isValid: boolean;
-  value: null | number | string;
+  value: number | string;
 }
 
 const defaultReturn: RadioReturn = {
   isValid: false,
-  value: null,
+  value: '',
 };
 
 export default function getRadioValue(options?: RegisterInput[]): RadioReturn {

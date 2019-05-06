@@ -1,3 +1,5 @@
+import isEmptyObject from '../utils/isEmptyObject';
+
 export default function shouldUpdateWithError({
   errors,
   name,
@@ -10,19 +12,19 @@ export default function shouldUpdateWithError({
     return false;
   }
 
-  if (!Object.keys(error).length && !Object.keys(errors).length) {
+  if (isEmptyObject(error) && isEmptyObject(errors)) {
     return false;
   }
 
-  if (!Object.keys(errors).length && Object.keys(error).length) {
+  if (isEmptyObject(errors) && !isEmptyObject(error)) {
     return true;
   }
 
-  if (!Object.keys(error).length && errors[name]) {
+  if (isEmptyObject(error) && errors[name]) {
     return true;
   }
 
-  if (Object.keys(error).length) {
+  if (!isEmptyObject(error)) {
     if (!errors[name]) {
       return true;
     } else if (errors[name].type !== error[name].type || errors[name].message !== error[name].message) {
