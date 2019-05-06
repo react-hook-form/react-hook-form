@@ -183,12 +183,15 @@ function Builder({ formData, showApi, toggleApi, apiButton, isMobile }: any) {
     }
   };
 
-  useEffect(() => {
-    if (showApi && closeButton.current) {
-      // @ts-ignore
-      closeButton.current.focus();
-    }
-  }, [showApi]);
+  useEffect(
+    () => {
+      if (showApi && closeButton.current) {
+        // @ts-ignore
+        closeButton.current.focus();
+      }
+    },
+    [showApi],
+  );
 
   return (
     <Animate
@@ -259,7 +262,13 @@ function Builder({ formData, showApi, toggleApi, apiButton, isMobile }: any) {
                         <tr>
                           <th>Name</th>
                           <th>Type</th>
-                          <th>Description</th>
+                          <th
+                            style={{
+                              minWidth: 300,
+                            }}
+                          >
+                            Description
+                          </th>
                         </tr>
                         <tr>
                           <td>onSubmit (Default)</td>
@@ -318,7 +327,13 @@ function Builder({ formData, showApi, toggleApi, apiButton, isMobile }: any) {
                         <tr>
                           <th>Name</th>
                           <th>Type</th>
-                          <th>Description</th>
+                          <th
+                            style={{
+                              minWidth: 300,
+                            }}
+                          >
+                            Description
+                          </th>
                         </tr>
                         <tr>
                           <td>
@@ -373,7 +388,13 @@ function Builder({ formData, showApi, toggleApi, apiButton, isMobile }: any) {
                       <tbody>
                         <tr>
                           <th>Type</th>
-                          <th>Description</th>
+                          <th
+                            style={{
+                              minWidth: 300,
+                            }}
+                          >
+                            Description
+                          </th>
                           <th>Example</th>
                         </tr>
                         <tr>

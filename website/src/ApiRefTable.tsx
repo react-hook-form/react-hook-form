@@ -73,14 +73,14 @@ export default function ApiRefTable({ tabIndex }: any) {
               <th>Name</th>
               <th
                 style={{
-                  minWidth: 200,
+                  minWidth: 130,
                 }}
               >
                 Type
               </th>
               <th
                 style={{
-                  minWidth: 310,
+                  minWidth: 300,
                 }}
               >
                 Description
