@@ -1,5 +1,5 @@
 import { Field } from '../types';
-import isCheckbox from '../utils/isCheckBox';
+import isCheckBoxInput from '../utils/isCheckBoxInput';
 
 export default function attachEventListeners({
   field,
@@ -11,6 +11,6 @@ export default function attachEventListeners({
   validateAndStateUpdate: (any) => void;
 }): void {
   const { ref } = field;
-  ref.addEventListener(isCheckbox(ref.type) || isRadio ? 'change' : 'input', validateAndStateUpdate);
+  ref.addEventListener(isCheckBoxInput(ref.type) || isRadio ? 'change' : 'input', validateAndStateUpdate);
   ref.addEventListener('blur', validateAndStateUpdate);
 }

@@ -3,7 +3,8 @@ import isRadioInput from '../utils/isRadioInput';
 import { DATE_INPUTS, STRING_INPUTS } from '../constants';
 import { Field, Ref } from '../types';
 import getValueAndMessage from './getValueAndMessage';
-import isCheckBox from '../utils/isCheckBox';
+import isCheckBoxInput from '../utils/isCheckBoxInput';
+import isString from '../utils/isString';
 
 type ValidatePromiseResult =
   | {}
@@ -36,16 +37,17 @@ export default async (
 }> => {
   const copy = {};
   const isRadio = isRadioInput(type);
+  const isCheckBox = isCheckBoxInput(type);
 
   if (
     required &&
-    ((isCheckBox(type) && !checked) ||
-      (!isRadio && type !== 'checkbox' && value === '') ||
+    ((isCheckBox && !checked) ||
+      (!isCheckBox && !isRadio && value === '') ||
       (isRadio && !getRadioValue(fields[name].options).isValid))
   ) {
     copy[name] = {
       type: 'required',
-      message: typeof required === 'string' ? required : '',
+      message: isString(required) ? required : '',
       ref: isRadio && fields[name] ? (fields[name].options || [{ ref: '' }])[0].ref : ref,
     };
     return copy;
@@ -67,21 +69,11 @@ export default async (
       if (typeof minValue === 'string') exceedMin = minValue && new Date(value) < new Date(minValue);
     }
 
-    if (exceedMax) {
+    if (exceedMax || exceedMin) {
       copy[name] = {
         ...copy[name],
-        type: 'max',
+        type: exceedMax ? 'max' : 'min',
         message: maxMessage,
-        ref,
-      };
-      return copy;
-    }
-
-    if (exceedMin) {
-      copy[name] = {
-        ...copy[name],
-        type: 'min',
-        message: minMessage,
         ref,
       };
       return copy;
@@ -91,25 +83,14 @@ export default async (
   if ((maxLength || minLength) && STRING_INPUTS.includes(type)) {
     const { value: maxLengthValue, message: maxLengthMessage } = getValueAndMessage(maxLength);
     const { value: minLengthValue, message: minLengthMessage } = getValueAndMessage(minLength);
-
     const exceedMax = maxLength && value.toString().length > maxLengthValue;
     const exceedMin = minLength && value.toString().length < minLengthValue;
 
-    if (exceedMax) {
+    if (exceedMax || exceedMin) {
       copy[name] = {
         ...copy[name],
-        type: 'maxLength',
-        message: maxLengthMessage,
-        ref,
-      };
-      return copy;
-    }
-
-    if (exceedMin) {
-      copy[name] = {
-        ...copy[name],
-        type: 'minLength',
-        message: minLengthMessage,
+        type: exceedMax ? 'maxLength' : 'minLength',
+        message: exceedMax ? maxLengthMessage : minLengthMessage,
         ref,
       };
       return copy;
@@ -131,6 +112,7 @@ export default async (
 
   if (validate) {
     const fieldValue = isRadio ? getRadioValue(options).value : value;
+    const validateRef = isRadio && options ? options[0].ref : ref;
 
     if (typeof validate === 'function') {
       const result = await validate(fieldValue);
@@ -138,13 +120,13 @@ export default async (
         copy[name] = {
           ...copy[name],
           type: 'validate',
-          message: typeof result === 'string' ? result : '',
-          ref: isRadio && options ? options[0].ref : ref,
+          message: isString(result) ? result : '',
+          ref: validateRef,
         };
         return copy;
       }
     } else if (typeof validate === 'object') {
-      const result = await new Promise(
+      const validationResult = await new Promise(
         (resolve): ValidatePromiseResult => {
           const values = Object.entries(validate);
           values.reduce(async (previous, [key, validate], index): Promise<ValidatePromiseResult> => {
@@ -154,12 +136,12 @@ export default async (
               const result = await validate(fieldValue);
 
               if (result !== undefined) {
-                const temp = {
+                const data = {
                   type: key,
-                  message: typeof result === 'string' ? result : '',
-                  ref: isRadio && options ? options[0].ref : ref,
+                  message: isString(result) ? result : '',
+                  ref: validateRef,
                 };
-                return lastChild ? resolve(temp) : temp;
+                return lastChild ? resolve(data) : data;
               }
             }
 
@@ -168,11 +150,11 @@ export default async (
         },
       );
 
-      if (result && Object.keys(result).length) {
+      if (validationResult && Object.keys(validationResult).length) {
         copy[name] = {
           ...copy[name],
-          ref: isRadio && options ? options[0].ref : ref,
-          ...result,
+          ref: validateRef,
+          ...validationResult,
         };
         return copy;
       }

@@ -1,5 +1,6 @@
 import getFieldValue from './getFieldValue';
 import { FieldValue, Ref } from '../types';
+import isString from "../utils/isString";
 
 export default function getFieldsValues(fields, filedName?: string | string[]): FieldValue {
   return Object.values(fields).reduce((previous, data: Ref): FieldValue => {
@@ -9,7 +10,7 @@ export default function getFieldsValues(fields, filedName?: string | string[]): 
     } = data;
     const value = getFieldValue(fields, ref);
 
-    if (typeof filedName === 'string') {
+    if (isString(filedName)) {
       if (name === filedName) {
         return value;
       }

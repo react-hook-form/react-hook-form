@@ -12,6 +12,7 @@ import modeChecker from './utils/validationModeChecker';
 import onDomRemove from './utils/onDomRemove';
 import isRadioInput from './utils/isRadioInput';
 import isEmptyObject from './utils/isEmptyObject';
+import isString from './utils/isString';
 import {
   Props,
   Field,

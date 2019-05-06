@@ -2,7 +2,7 @@ import getRadioValue from './getRadioValue';
 import getMultipleSelectValue from './getMultipleSelectValue';
 import { FieldsObject, FieldValue, Ref } from '../types';
 import isRadioInput from '../utils/isRadioInput';
-import isCheckBox from '../utils/isCheckBox';
+import isCheckBox from '../utils/isCheckBoxInput';
 
 export default function getFieldValue(fields: FieldsObject, { type, name, options, checked, value }: Ref): FieldValue {
   if (isRadioInput(type)) {
