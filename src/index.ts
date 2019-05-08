@@ -193,22 +193,14 @@ export default function useForm(
     let fieldValues;
     const fields = fieldsRef.current;
     const currentFieldValues = Object.values(fields);
-    isSubmittedRef.current = true;
     isSubmittingRef.current = true;
     reRenderForm({});
-    submitCountRef.current += 1;
 
     if (validationSchema) {
       fieldValues = getFieldsValues(fields);
       fieldErrors = await validateWithSchema(validationSchema, fieldValues);
-
-      if (fieldErrors === undefined) {
-        isSubmittingRef.current = false;
-        reRenderForm({});
-        return callback(combineFieldValues(fieldValues), e);
-      }
     } else {
-      const result: SubmitPromiseResult = await currentFieldValues.reduce(
+      const { errors, values }: SubmitPromiseResult = await currentFieldValues.reduce(
         async (previous: Promise<SubmitPromiseResult>, field: Field): Promise<SubmitPromiseResult> => {
           const resolvedPrevious = await previous;
           const {
@@ -235,13 +227,15 @@ export default function useForm(
         }),
       );
 
-      fieldErrors = result.errors;
-      fieldValues = result.values;
+      fieldErrors = errors;
+      fieldValues = values;
     }
 
+    isSubmittedRef.current = true;
+    submitCountRef.current += 1;
     isSubmittingRef.current = false;
 
-    if (!isEmptyObject(fieldErrors)) {
+    if (!fieldErrors || !isEmptyObject(fieldErrors)) {
       errorsRef.current = fieldErrors;
     } else {
       callback(combineFieldValues(fieldValues), e);
