@@ -14,7 +14,7 @@
 - Super easy to integrate and create forms
 - Built with performance and developer experience in mind
 - Follows HTML standard for validation
-- Tiny size without other any dependency
+- Tiny size without any dependency
 - Build forms quickly with the [form builder](https://react-hook-form.now.sh/builder)
 
 ## Install
