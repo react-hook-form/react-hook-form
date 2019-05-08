@@ -35,7 +35,7 @@ export default async (
     ref: Ref;
   };
 }> => {
-  const copy = {};
+  const error = {};
   const isRadio = isRadioInput(type);
   const isCheckBox = isCheckBoxInput(type);
 
@@ -45,12 +45,12 @@ export default async (
       (!isCheckBox && !isRadio && value === '') ||
       (isRadio && !getRadioValue(fields[name].options).isValid))
   ) {
-    copy[name] = {
+    error[name] = {
       type: 'required',
       message: isString(required) ? required : '',
       ref: isRadio && fields[name] ? (fields[name].options || [{ ref: '' }])[0].ref : ref,
     };
-    return copy;
+    return error;
   }
 
   if (min || max) {
@@ -70,13 +70,13 @@ export default async (
     }
 
     if (exceedMax || exceedMin) {
-      copy[name] = {
-        ...copy[name],
+      error[name] = {
+        ...error[name],
         type: exceedMax ? 'max' : 'min',
         message: exceedMax ? maxMessage : minMessage,
         ref,
       };
-      return copy;
+      return error;
     }
   }
 
@@ -87,26 +87,26 @@ export default async (
     const exceedMin = minLength && value.toString().length < minLengthValue;
 
     if (exceedMax || exceedMin) {
-      copy[name] = {
-        ...copy[name],
+      error[name] = {
+        ...error[name],
         type: exceedMax ? 'maxLength' : 'minLength',
         message: exceedMax ? maxLengthMessage : minLengthMessage,
         ref,
       };
-      return copy;
+      return error;
     }
   }
 
   if (pattern) {
     const { value: patternValue, message: patternMessage } = getValueAndMessage(pattern);
     if (patternValue instanceof RegExp && !patternValue.test(value)) {
-      copy[name] = {
-        ...copy[name],
+      error[name] = {
+        ...error[name],
         type: 'pattern',
         message: patternMessage,
         ref,
       };
-      return copy;
+      return error;
     }
   }
 
@@ -117,13 +117,13 @@ export default async (
     if (typeof validate === 'function') {
       const result = await validate(fieldValue);
       if (typeof result !== 'boolean' || !result) {
-        copy[name] = {
-          ...copy[name],
+        error[name] = {
+          ...error[name],
           type: 'validate',
           message: isString(result) ? result : '',
           ref: validateRef,
         };
-        return copy;
+        return error;
       }
     } else if (typeof validate === 'object') {
       const validationResult = await new Promise(
@@ -151,15 +151,15 @@ export default async (
       );
 
       if (validationResult && Object.keys(validationResult).length) {
-        copy[name] = {
-          ...copy[name],
+        error[name] = {
+          ...error[name],
           ref: validateRef,
           ...validationResult,
         };
-        return copy;
+        return error;
       }
     }
   }
 
-  return copy;
+  return error;
 };

@@ -211,14 +211,13 @@ export default function useForm(
           if (!fields[name]) return Promise.resolve(resolvedPrevious);
 
           const fieldError = await validateField(field, fields);
-          const hasError = fieldError && fieldError[name];
 
-          if (!hasError) {
-            resolvedPrevious.values[name] = getFieldValue(fields, ref);
+          if (fieldError[name]) {
+            resolvedPrevious.errors = { ...(resolvedPrevious.errors || {}), ...fieldError };
             return Promise.resolve(resolvedPrevious);
           }
 
-          resolvedPrevious.errors = { ...(resolvedPrevious.errors || {}), ...fieldError };
+          resolvedPrevious.values[name] = getFieldValue(fields, ref);
           return Promise.resolve(resolvedPrevious);
         },
         Promise.resolve({
