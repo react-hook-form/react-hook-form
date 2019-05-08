@@ -235,10 +235,10 @@ export default function useForm(
     submitCountRef.current += 1;
     isSubmittingRef.current = false;
 
-    if (!fieldErrors || !isEmptyObject(fieldErrors)) {
-      errorsRef.current = fieldErrors;
-    } else {
+    if (fieldErrors === undefined || isEmptyObject(fieldErrors)) {
       callback(combineFieldValues(fieldValues), e);
+    } else {
+      errorsRef.current = fieldErrors;
     }
 
     reRenderForm({});
