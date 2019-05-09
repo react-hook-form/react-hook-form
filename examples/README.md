@@ -13,7 +13,7 @@ you can view the source code within the folder or visit code sand box to see how
 | Array Fields                | https://codesandbox.io/s/6j1760jkjk |
 | Async Field Validation      | https://codesandbox.io/s/m5pj55yj7x |
 | Normalize/Format/Mask Field | https://codesandbox.io/s/387z7njwzp |
-| Initial Form Value          | https://codesandbox.io/s/l3mxpvmm9  |
+| Default/Initial Form Value  | https://codesandbox.io/s/l3mxpvmm9  |
 | ValidationSchema            | https://codesandbox.io/s/928po918qr |
 | Dirty/Touched/Submitted     | https://codesandbox.io/s/7o2wrp86k6 |
 | Validation On Blur          | https://codesandbox.io/s/w7p3km6nyw |
