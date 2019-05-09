@@ -197,7 +197,7 @@ describe('useForm', () => {
       });
       // @ts-ignore
       validateWithSchema.mockImplementation(async () => {
-        return undefined;
+        return {};
       });
       await hookFormWithValidationSchema.handleSubmit(callback)({
         preventDefault: () => {},
