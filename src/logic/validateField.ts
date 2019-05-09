@@ -5,6 +5,7 @@ import { Field, Ref } from '../types';
 import getValueAndMessage from './getValueAndMessage';
 import isCheckBoxInput from '../utils/isCheckBoxInput';
 import isString from '../utils/isString';
+import isEmptyObject from "../utils/isEmptyObject";
 
 type ValidatePromiseResult =
   | {}
@@ -38,22 +39,23 @@ export default async (
   const error = {};
   const isRadio = isRadioInput(type);
   const isCheckBox = isCheckBoxInput(type);
+  const isSelectOrInput = !isCheckBox && !isRadio;
 
   if (
     required &&
     ((isCheckBox && !checked) ||
-      (!isCheckBox && !isRadio && value === '') ||
+      (isSelectOrInput && value === '') ||
       (isRadio && !getRadioValue(fields[name].options).isValid))
   ) {
     error[name] = {
       type: 'required',
       message: isString(required) ? required : '',
-      ref: isRadio && fields[name] ? (fields[name].options || [{ ref: '' }])[0].ref : ref,
+      ref: isRadio ? (fields[name].options || [{ ref: '' }])[0].ref : ref,
     };
     return error;
   }
 
-  if (min || max) {
+  if ((min || max) && !STRING_INPUTS.includes(type)) {
     let exceedMax;
     let exceedMin;
     const valueNumber = parseFloat(value);
@@ -99,6 +101,7 @@ export default async (
 
   if (pattern) {
     const { value: patternValue, message: patternMessage } = getValueAndMessage(pattern);
+
     if (patternValue instanceof RegExp && !patternValue.test(value)) {
       error[name] = {
         ...error[name],
@@ -132,7 +135,7 @@ export default async (
           values.reduce(async (previous, [key, validate], index): Promise<ValidatePromiseResult> => {
             const lastChild = values.length - 1 === index;
 
-            if (typeof validate === 'function') {
+            if (isEmptyObject(previous) && typeof validate === 'function') {
               const result = await validate(fieldValue);
 
               if (result !== undefined) {
@@ -150,7 +153,7 @@ export default async (
         },
       );
 
-      if (validationResult && Object.keys(validationResult).length) {
+      if (validationResult && !isEmptyObject(validationResult)) {
         error[name] = {
           ...error[name],
           ref: validateRef,

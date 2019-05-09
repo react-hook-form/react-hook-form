@@ -16,7 +16,7 @@ export default async function validateWithSchema(
 ): Promise<ValidationReturn | undefined> {
   try {
     await ValidationSchema.validate(data, { abortEarly: false });
-    return undefined;
+    return {};
   } catch (e) {
     return parseErrorSchema(e);
   }

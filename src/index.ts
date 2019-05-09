@@ -1,8 +1,8 @@
 import { useRef, useState, useEffect } from 'react';
 import getFieldsValues from './logic/getFieldsValues';
+import getFieldValue from './logic/getFieldValue';
 import validateField from './logic/validateField';
 import findRemovedFieldAndRemoveListener from './logic/findRemovedFieldAndRemoveListener';
-import getFieldValue from './logic/getFieldValue';
 import attachEventListeners from './logic/attachEventListeners';
 import validateWithSchema from './logic/validateWithSchema';
 import combineFieldValues from './logic/combineFieldValues';
@@ -234,7 +234,7 @@ export default function useForm(
     submitCountRef.current += 1;
     isSubmittingRef.current = false;
 
-    if (fieldErrors === undefined || isEmptyObject(fieldErrors)) {
+    if (isEmptyObject(fieldErrors)) {
       callback(combineFieldValues(fieldValues), e);
     } else {
       errorsRef.current = fieldErrors;
