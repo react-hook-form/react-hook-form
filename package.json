@@ -1,6 +1,6 @@
 {
   "name": "react-hook-form",
-  "version": "3.2.5-beta.3",
+  "version": "3.2.5",
   "main": "dist/index.js",
   "module": "dist/index.es.js",
   "types": "dist/index.d.ts",
