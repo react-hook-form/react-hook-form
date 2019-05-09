@@ -135,10 +135,10 @@ export default async (
           values.reduce(async (previous, [key, validate], index): Promise<ValidatePromiseResult> => {
             const lastChild = values.length - 1 === index;
 
-            if (isEmptyObject(previous) && typeof validate === 'function') {
+            if (typeof validate === 'function') {
               const result = await validate(fieldValue);
 
-              if (result !== undefined) {
+              if (typeof result !== 'boolean' || !result) {
                 const data = {
                   type: key,
                   message: isString(result) ? result : '',
