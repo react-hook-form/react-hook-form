@@ -13,6 +13,8 @@ import code from './codeExamples/defaultExample';
 import errorCode from './codeExamples/errorCode';
 import SyntaxHighlighterWithCopy, { LinkToSandBox } from './SyntaxHighlighterWithCopy';
 import ApiMenu from './ApiMenu';
+import ApiFormState from './utils/ApiFormState';
+import resetCode from './codeExamples/resetCode';
 
 const CodeAsLink = styled(Link)`
   cursor: pointer;
@@ -127,8 +129,9 @@ const links = [
   'errors',
   'watch',
   'handleSubmit',
-  'validationSchema',
+  'reset',
   'formState',
+  'validationSchema',
 ];
 
 function Builder({ formData, showApi, toggleApi, apiButton, isMobile }: any) {
@@ -138,6 +141,7 @@ function Builder({ formData, showApi, toggleApi, apiButton, isMobile }: any) {
   const formStateRef = useRef(null);
   const useFormRef = useRef(null);
   const registerRef = useRef(null);
+  const resetRef = useRef(null);
   const errorsRef = useRef(null);
   const watchRef = useRef(null);
   const root = useRef(null);
@@ -174,11 +178,15 @@ function Builder({ formData, showApi, toggleApi, apiButton, isMobile }: any) {
         break;
       case links[7]:
         // @ts-ignore
-        if (validationSchemaRef) validationSchemaRef.current.scrollIntoView({ behavior: 'smooth' });
+        if (resetRef) resetRef.current.scrollIntoView({ behavior: 'smooth' });
         break;
       case links[8]:
         // @ts-ignore
         if (formStateRef) formStateRef.current.scrollIntoView({ behavior: 'smooth' });
+        break;
+      case links[9]:
+        // @ts-ignore
+        if (validationSchemaRef) validationSchemaRef.current.scrollIntoView({ behavior: 'smooth' });
         break;
     }
   };
@@ -436,7 +444,7 @@ function Builder({ formData, showApi, toggleApi, apiButton, isMobile }: any) {
                   <hr />
                   <code ref={handleSubmitRef}>
                     <h2>
-                      handleSubmit: <Type>Function</Type>
+                      handleSubmit: <Type>(data: Object, e: Event) => void</Type>
                     </h2>
                   </code>
                   <p>This function will pass you the form data when form validation is successful.</p>
@@ -453,6 +461,25 @@ function Builder({ formData, showApi, toggleApi, apiButton, isMobile }: any) {
                   </LinkToSandBox>
 
                   <hr />
+
+                  <code ref={resetRef}>
+                    <h2>
+                      reset: <Type>Function</Type>
+                    </h2>
+                  </code>
+                  <p>This function will reset fields value and errors within the form.</p>
+
+                  <SyntaxHighlighterWithCopy
+                    tabIndex={tabIndex}
+                    rawData={resetCode}
+                    url="https://codesandbox.io/s/jjm3wyqmjy"
+                  />
+
+                  <hr />
+
+                  <section ref={formStateRef}>
+                    <ApiFormState tabIndex={tabIndex} />
+                  </section>
 
                   <code ref={validationSchemaRef}>
                     <h2>
@@ -473,84 +500,6 @@ function Builder({ formData, showApi, toggleApi, apiButton, isMobile }: any) {
                     rawData={validationSchemaCode}
                     url="https://codesandbox.io/s/928po918qr"
                   />
-
-                  <hr />
-
-                  <code ref={formStateRef}>
-                    <h2>
-                      formState: <Type>Object</Type>
-                    </h2>
-                  </code>
-                  <p>This object contain information about the form state.</p>
-
-                  <TableWrapper>
-                    <Table>
-                      <tbody>
-                        <tr>
-                          <th>Name</th>
-                          <th>Type</th>
-                          <th>Description</th>
-                        </tr>
-                        <tr>
-                          <td>
-                            <code>dirty</code>
-                          </td>
-                          <td>
-                            <Type>boolean</Type>
-                          </td>
-                          <td>Set to true after user interacted with any of the inputs.</td>
-                        </tr>
-                        <tr>
-                          <td>
-                            <code>isSubmitted</code>
-                          </td>
-                          <td>
-                            <Type>boolean</Type>
-                          </td>
-                          <td>Set true after user submitted the form.</td>
-                        </tr>
-                        <tr>
-                          <td>
-                            <code>touched</code>
-                          </td>
-                          <td>
-                            <Type>{`string[]`}</Type>
-                          </td>
-                          <td>An array of all inputs which have been interacted.</td>
-                        </tr>
-                        <tr>
-                          <td>
-                            <code>isSubmitting</code>
-                          </td>
-                          <td>
-                            <Type>boolean</Type>
-                          </td>
-                          <td>During form submitting will set to true and after submitting set to false.</td>
-                        </tr>
-                        <tr>
-                          <td>
-                            <code>submitCount</code>
-                          </td>
-                          <td>
-                            <Type>number</Type>
-                          </td>
-                          <td>Number of forms submit.</td>
-                        </tr>
-                      </tbody>
-                    </Table>
-                  </TableWrapper>
-
-                  <LinkToSandBox
-                    tabIndex={tabIndex}
-                    style={{
-                      position: 'relative',
-                      left: 0,
-                    }}
-                    href="https://codesandbox.io/s/7o2wrp86k6"
-                    target="_blank"
-                  >
-                    CodeSandbox
-                  </LinkToSandBox>
 
                   <hr />
                 </main>

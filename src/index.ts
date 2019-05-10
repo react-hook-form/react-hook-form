@@ -254,7 +254,7 @@ export default function useForm(
   };
 
   const reset = () => {
-    Object.values(fieldsRef.current)[0].ref.cloest().reset();
+    Object.values(fieldsRef.current)[0].ref.closest('form').reset();
     resetAllRef();
   };
 
