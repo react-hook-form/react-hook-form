@@ -16,6 +16,7 @@ you can view the source code within the folder or visit code sand box to see how
 | Default/Initial Form Value  | https://codesandbox.io/s/l3mxpvmm9  |
 | Dirty/Touched/Submitted     | https://codesandbox.io/s/7o2wrp86k6 |
 | Normalize/Format/Mask Field | https://codesandbox.io/s/387z7njwzp |
+| Reset Form                  | https://codesandbox.io/s/jjm3wyqmjy |
 | Register Error Messages     | https://codesandbox.io/s/o766kp4z05 |
 | ValidationSchema            | https://codesandbox.io/s/928po918qr |
 | Validation On Blur          | https://codesandbox.io/s/w7p3km6nyw |

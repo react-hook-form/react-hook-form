@@ -243,11 +243,6 @@ export default function useForm(
     reRenderForm({});
   };
 
-  const reset = () => {
-    Object.values(fieldsRef.current)[0].ref.cloest().reset();
-    resetAllRef();
-  };
-
   const resetAllRef = () => {
     fieldsRef.current = {};
     watchFieldsRef.current = {};
@@ -256,6 +251,11 @@ export default function useForm(
     isSubmittedRef.current = false;
     isDirtyRef.current = false;
     touchedFieldsRef.current = [];
+  };
+
+  const reset = () => {
+    Object.values(fieldsRef.current)[0].ref.cloest().reset();
+    resetAllRef();
   };
 
   const unSubscribe = (): void => {
