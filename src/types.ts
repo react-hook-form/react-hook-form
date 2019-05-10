@@ -77,6 +77,7 @@ export interface UseFormFunctions {
     defaultValue?: string | string[] | undefined,
   ) => FieldValue | FieldValue[] | undefined;
   unSubscribe: VoidFunction;
+  reset: VoidFunction;
   formState: {
     dirty: boolean;
     isSubmitted: boolean;

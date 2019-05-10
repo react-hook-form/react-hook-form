@@ -243,6 +243,21 @@ export default function useForm(
     reRenderForm({});
   };
 
+  const reset = () => {
+    Object.values(fieldsRef.current)[0].ref.cloest().reset();
+    resetAllRef();
+  };
+
+  const resetAllRef = () => {
+    fieldsRef.current = {};
+    watchFieldsRef.current = {};
+    errorsRef.current = {};
+    isWatchAllRef.current = false;
+    isSubmittedRef.current = false;
+    isDirtyRef.current = false;
+    touchedFieldsRef.current = [];
+  };
+
   const unSubscribe = (): void => {
     fieldsRef.current &&
       Object.values(fieldsRef.current).forEach(
@@ -253,13 +268,7 @@ export default function useForm(
             : removeEventListener(field, true);
         },
       );
-    fieldsRef.current = {};
-    watchFieldsRef.current = {};
-    errorsRef.current = {};
-    isWatchAllRef.current = false;
-    isSubmittedRef.current = false;
-    isDirtyRef.current = false;
-    touchedFieldsRef.current = [];
+    resetAllRef();
   };
 
   useEffect((): VoidFunction => unSubscribe, [mode]);
@@ -269,6 +278,7 @@ export default function useForm(
     handleSubmit,
     watch,
     unSubscribe,
+    reset,
     errors: errorsRef.current,
     formState: {
       dirty: isDirtyRef.current,
