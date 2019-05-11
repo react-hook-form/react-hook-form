@@ -1,11 +1,11 @@
 import getRadioValue from './getRadioValue';
 import isRadioInput from '../utils/isRadioInput';
 import { DATE_INPUTS, STRING_INPUTS } from '../constants';
-import { Field, Ref } from '../types';
+import { Field, ErrorMessages } from '../types';
 import getValueAndMessage from './getValueAndMessage';
 import isCheckBoxInput from '../utils/isCheckBoxInput';
 import isString from '../utils/isString';
-import isEmptyObject from "../utils/isEmptyObject";
+import isEmptyObject from '../utils/isEmptyObject';
 
 type ValidatePromiseResult =
   | {}
@@ -29,13 +29,7 @@ export default async (
     validate,
   }: Field,
   fields: { [key: string]: Field },
-): Promise<{
-  [key: string]: {
-    type: string;
-    message: string;
-    ref: Ref;
-  };
-}> => {
+): Promise<ErrorMessages> => {
   const error = {};
   const isRadio = isRadioInput(type);
   const isCheckBox = isCheckBoxInput(type);

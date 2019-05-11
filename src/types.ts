@@ -51,8 +51,8 @@ export interface FieldsObject {
 
 export interface Error {
   ref: Ref;
-  message: string | boolean;
-  typeError?: string;
+  message?: string;
+  type?: string;
 }
 
 export interface ErrorMessages {
@@ -78,6 +78,7 @@ export interface UseFormFunctions {
   ) => FieldValue | FieldValue[] | undefined;
   unSubscribe: VoidFunction;
   reset: VoidFunction;
+  setError: (name: string, type: string, message?: string, ref?: Ref) => void;
   formState: {
     dirty: boolean;
     isSubmitted: boolean;

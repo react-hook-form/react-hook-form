@@ -25,6 +25,7 @@ import {
   FieldValue,
   RegisterInput,
 } from './types';
+import filterUndefinedErrors from "./utils/filterUndefinedErrors";
 
 export default function useForm(
   { mode, validationSchema }: Props = {
@@ -89,7 +90,7 @@ export default function useForm(
       });
 
       if (shouldUpdate || shouldUpdateValidateMode || shouldUpdateWatchMode) {
-        const errorsCopy = { ...errors, ...error };
+        const errorsCopy = { ...filterUndefinedErrors(errors), ...error };
         if (!error[name]) delete errorsCopy[name];
 
         errorsRef.current = errorsCopy;
@@ -226,7 +227,7 @@ export default function useForm(
         }),
       );
 
-      fieldErrors = errors;
+      fieldErrors = filterUndefinedErrors(errors);
       fieldValues = values;
     }
 
@@ -272,6 +273,15 @@ export default function useForm(
     resetAllRef();
   };
 
+  const setError = (name: string, type: string, message?: string, ref?: Ref) => {
+    errorsRef.current[name] = {
+      type,
+      message,
+      ref,
+    };
+    reRenderForm({});
+  };
+
   useEffect((): VoidFunction => unSubscribe, [mode]);
 
   return {
@@ -281,6 +291,7 @@ export default function useForm(
     unSubscribe,
     reset,
     errors: errorsRef.current,
+    setError,
     formState: {
       dirty: isDirtyRef.current,
       isSubmitted: isSubmittedRef.current,
