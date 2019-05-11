@@ -164,7 +164,6 @@ function Builder({ formData, showApi, toggleApi, apiButton, isMobile }: any) {
   };
 
   useEffect(() => {
-    console.log(apiSectionsRef.current);
     if (showApi && closeButton.current) {
       // @ts-ignore
       closeButton.current.focus();
