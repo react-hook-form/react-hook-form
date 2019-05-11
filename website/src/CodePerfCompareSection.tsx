@@ -139,9 +139,11 @@ export default function CodePerfCompareSection() {
       </ImgSection>
 
       <p style={{ marginBottom: 40 }}>
-        <span style={{ fontSize: 20 }}>⚠</span> Wants to see more intense performance test? Check out the result for
-        1000 fields within a form{' '}
-        <Link href="https://github.com/bluebill1049/react-hook-form-performance-compare">here</Link>.
+        <span style={{ fontSize: 20 }}>⚠</span> Wants to see more intense performance test?{' '}
+        <Link href="https://github.com/bluebill1049/react-hook-form-performance-compare">
+          Check out the result for 1000 fields within a form here
+        </Link>
+        .
       </p>
     </Wrapper>
   );

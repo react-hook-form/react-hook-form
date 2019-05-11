@@ -3,8 +3,8 @@
   <head>
     <meta charset="utf-8" />
     <link rel="shortcut icon" href="%PUBLIC_URL%/favicon.ico" />
-    <meta name="title" content="React Hook Form - form validation without the hassle">
-    <meta name="description" content="Performance, flexible and extensible forms with easy to use for validation.">
+    <meta name="title" content="React Hook Form - form validation without the hassle" />
+    <meta name="description" content="Performance, flexible and extensible forms with easy to use for validation." />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" />
     <meta name="theme-color" content="#0e101c" />
     <!--
@@ -52,7 +52,8 @@
       }
 
       @media (max-width: 768px) {
-        pre, code {
+        pre,
+        code {
           -webkit-overflow-scrolling: touch;
           white-space: pre !important;
         }
@@ -100,12 +101,47 @@
       pre code {
         color: white !important;
       }
+
+      @keyframes fade {
+        from {
+          opacity: 0;
+        }
+
+        to {
+          opacity: 1;
+        }
+      }
+
+      .logo {
+        fill: white;
+        width: 200px;
+        margin: 100px auto 0;
+        display: block;
+        animation: 1s alternate infinite fade;
+      }
+
+      .h2 {
+        color: white;
+        text-align: center;
+        font-weight: 300;
+      }
     </style>
     <title>React Hook Form - Simple React forms validation</title>
   </head>
   <body>
     <noscript>You need to enable JavaScript to run this app.</noscript>
-    <div id="root"></div>
+    <div id="root">
+      <svg class="logo" viewBox="0 0 100 100">
+        <path
+          d="M73.56,13.32H58.14a8.54,8.54,0,0,0-16.27,0H26.44a11,11,0,0,0-11,11V81.63a11,11,0,0,0,11,11H73.56a11,11,0,0,0,11-11V24.32A11,11,0,0,0,73.56,13.32Zm-30.92,2a1,1,0,0,0,1-.79,6.54,6.54,0,0,1,12.78,0,1,1,0,0,0,1,.79h5.38v6.55a3,3,0,0,1-3,3H40.25a3,3,0,0,1-3-3V15.32ZM82.56,81.63a9,9,0,0,1-9,9H26.44a9,9,0,0,1-9-9V24.32a9,9,0,0,1,9-9h8.81v6.55a5,5,0,0,0,5,5h19.5a5,5,0,0,0,5-5V15.32h8.81a9,9,0,0,1,9,9Z"
+        />
+        <path style="transform: translateX(-25px)" d="M71.6,45.92H54a1,1,0,0,0,0,2H71.6a1,1,0,0,0,0-2Z" />
+        <path d="M71.6,45.92H54a1,1,0,0,0,0,2H71.6a1,1,0,0,0,0-2Z" />
+        <path style="transform: translateX(-25px)" d="M71.1,69.49H53.45a1,1,0,1,0,0,2H71.1a1,1,0,0,0,0-2Z" />
+        <path d="M71.1,69.49H53.45a1,1,0,1,0,0,2H71.1a1,1,0,0,0,0-2Z" />
+      </svg>
+      <h1 class="h2">React Hook Form</h1>
+    </div>
     <!--
       This HTML file is a template.
       If you open it directly in the browser, you will see an empty page.
@@ -121,7 +157,9 @@
     <script async src="https://www.googletagmanager.com/gtag/js?id=UA-139961497-1"></script>
     <script>
       window.dataLayer = window.dataLayer || [];
-      function gtag(){dataLayer.push(arguments);}
+      function gtag() {
+        dataLayer.push(arguments);
+      }
       gtag('js', new Date());
 
       gtag('config', 'UA-139961497-1');

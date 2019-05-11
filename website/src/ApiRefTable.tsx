@@ -43,13 +43,13 @@ export default function ApiRefTable({ tabIndex }: any) {
       </p>
       <p>
         If you working on <code>arrays/array fields</code> (inject additional form section by action), you can assign
-        input name as <code>name[index]</code>. Check out the example{' '}
+        input name as <code>name[index]</code>.{' '}
         <Link
           tabIndex={tabIndex}
           href="https://github.com/bluebill1049/react-hook-form/blob/master/examples/arrayFields.tsx"
           title="example for array fields"
         >
-          here
+          Check out the example
         </Link>
         .
       </p>
@@ -57,7 +57,13 @@ export default function ApiRefTable({ tabIndex }: any) {
       <Option>
         <legend>Register options</legend>
         <label>
-          <input tabIndex={tabIndex} onChange={() => toggleOption(true)} type="radio" name="errorMessage" defaultChecked />
+          <input
+            tabIndex={tabIndex}
+            onChange={() => toggleOption(true)}
+            type="radio"
+            name="errorMessage"
+            defaultChecked
+          />
           Register with validation
         </label>
         <label>
@@ -350,9 +356,7 @@ export default function ApiRefTable({ tabIndex }: any) {
               </td>
               <td>
                 <code>
-                  <Type>
-                      Function | Object
-                  </Type>
+                  <Type>Function | Object</Type>
                 </code>
               </td>
               <td>
