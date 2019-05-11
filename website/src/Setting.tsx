@@ -98,6 +98,7 @@ function Setting({ settingButton, toggleSetting, showSetting, setting, setConfig
               <p>When to trigger validation?</p>
 
               <select
+                aria-label="Select mode"
                 name="mode"
                 style={{
                   height: 37,
@@ -147,6 +148,7 @@ function Setting({ settingButton, toggleSetting, showSetting, setting, setConfig
               }}
             >
               <input
+                aria-label="Show Error?"
                 name="showError"
                 type="checkbox"
                 style={{
@@ -166,6 +168,7 @@ function Setting({ settingButton, toggleSetting, showSetting, setting, setConfig
               }}
             >
               <input
+                aria-label="Display Watch?"
                 name="showWatch"
                 type="checkbox"
                 style={{
@@ -185,6 +188,7 @@ function Setting({ settingButton, toggleSetting, showSetting, setting, setConfig
               }}
             >
               <input
+                aria-label="Show touched?"
                 name="showTouch"
                 type="checkbox"
                 style={{
@@ -204,6 +208,7 @@ function Setting({ settingButton, toggleSetting, showSetting, setting, setConfig
               }}
             >
               <input
+                aria-label="Show submit result?"
                 name="showSubmit"
                 type="checkbox"
                 style={{
@@ -217,6 +222,7 @@ function Setting({ settingButton, toggleSetting, showSetting, setting, setConfig
             </label>
 
             <input
+              aria-label="Submit"
               style={{
                 marginTop: 30,
                 height: 55,

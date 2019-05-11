@@ -257,19 +257,19 @@ function App() {
 
           <Footer>
             Build with ♡ by{' '}
-            <a href="https://twitter.com/bluebill1049" target="_blank" tabIndex={tabIndex}>
+            <a href="https://twitter.com/bluebill1049" target="_blank" tabIndex={tabIndex} title="Bill Luo Twitter">
               @Bill Luo
             </a>{' '}
             with{' '}
-            <a href="https://github.com/bluebill1049/react-hook-form" target="_blank" tabIndex={tabIndex}>
+            <a href="https://github.com/bluebill1049/react-hook-form" target="_blank" tabIndex={tabIndex} title="React Hook Form Github">
               React Hook Form
             </a>{' '}
             +{' '}
-            <a href="https://github.com/bluebill1049/react-simple-animate" target="_blank" tabIndex={tabIndex}>
+            <a href="https://github.com/bluebill1049/react-simple-animate" target="_blank" tabIndex={tabIndex} title="React Simple Animate Github">
               React Simple Animate
             </a>{' '}
             +{' '}
-            <a href="https://github.com/bluebill1049/react-simple-img" target="_blank" tabIndex={tabIndex}>
+            <a href="https://github.com/bluebill1049/react-simple-img" target="_blank" tabIndex={tabIndex} title="React Simple Img Github">
               React Simple Img
             </a>
           </Footer>

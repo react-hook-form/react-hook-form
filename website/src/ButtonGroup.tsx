@@ -160,7 +160,7 @@ export default function ButtonGroup({
   return (
     <>
       <GithubIcon>
-        <a href="https://github.com/bluebill1049/react-hook-form" target="_blank">
+        <a href="https://github.com/bluebill1049/react-hook-form" target="_blank" title="React Hook Form Github">
           <svg viewBox="0 0 496 512" height="40" aria-hidden="true" focusable="false" fill="currentColor">
             <path
               fill="white"
@@ -170,7 +170,7 @@ export default function ButtonGroup({
         </a>
       </GithubIcon>
       <MediumIcon>
-        <a href="https://medium.com/@bruce1049/form-validation-with-hook-in-3kb-c5414edf7d64" target="_blank">
+        <a href="https://medium.com/@bruce1049/form-validation-with-hook-in-3kb-c5414edf7d64" target="_blank" title="React Form validation under 3K">
           <svg
             viewBox="0 0 512 512"
             height="25"

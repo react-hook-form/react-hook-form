@@ -98,7 +98,7 @@ export default function CodePerfCompareSection() {
             </span>
           </li>
         </ul>
-        <SimpleImg src={hookFrom} placeholder={false} />
+        <SimpleImg src={hookFrom} placeholder={false} alt="React Hook Form performance" />
       </ImgSection>
       <Title>Formik</Title>
       <ImgSection>
@@ -116,7 +116,7 @@ export default function CodePerfCompareSection() {
             </span>
           </li>
         </ul>
-        <SimpleImg src={formik} placeholder={false} />
+        <SimpleImg src={formik} placeholder={false} alt="Formik performance" />
       </ImgSection>
       <Title>Redux Form</Title>
       <ImgSection>
@@ -135,7 +135,7 @@ export default function CodePerfCompareSection() {
             </span>
           </li>
         </ul>
-        <SimpleImg src={reduxForm} placeholder={false} />
+        <SimpleImg src={reduxForm} placeholder={false} alt="Redux Form performance" />
       </ImgSection>
 
       <p style={{ marginBottom: 40 }}>

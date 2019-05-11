@@ -246,6 +246,7 @@ function Builder({
                   <input
                     autoComplete="off"
                     defaultValue={editFormData.name}
+                    aria-label="name"
                     name="name"
                     tabIndex={tabIndex}
                     style={{
@@ -269,7 +270,7 @@ function Builder({
                   </Animate>
 
                   <label>Type: </label>
-                  <select name="type" ref={register} value={editFormData.type} tabIndex={tabIndex}>
+                  <select aria-label="Select type" name="type" ref={register} value={editFormData.type} tabIndex={tabIndex}>
                     <option value="text">Text</option>
                     <option value="select">Select</option>
                     <option value="checkbox">Checkbox</option>
@@ -344,6 +345,7 @@ function Builder({
                       <input
                         tabIndex={showValidation ? 0 : -1}
                         defaultValue={editFormData.max}
+                        aria-label="max"
                         autoComplete="false"
                         name="max"
                         type="number"
@@ -353,6 +355,7 @@ function Builder({
                       <input
                         defaultValue={editFormData.min}
                         autoComplete="false"
+                        aria-label="min"
                         name="min"
                         tabIndex={showValidation ? 0 : -1}
                         type="number"
@@ -362,6 +365,7 @@ function Builder({
                       <input
                         defaultValue={editFormData.maxLength}
                         autoComplete="false"
+                        aria-label="max length"
                         name="maxLength"
                         type="number"
                         tabIndex={showValidation ? 0 : -1}
@@ -371,6 +375,7 @@ function Builder({
                       <input
                         tabIndex={showValidation ? 0 : -1}
                         defaultValue={editFormData.minLength}
+                        aria-label="min length"
                         autoComplete="false"
                         name="minLength"
                         type="number"
@@ -384,6 +389,7 @@ function Builder({
                         style={{
                           marginBottom: '20px',
                         }}
+                        aria-label="pattern"
                         name="pattern"
                         type="text"
                         ref={register}

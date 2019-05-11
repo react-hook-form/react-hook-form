@@ -127,7 +127,7 @@ export default function Form({
         <form onSubmit={handleSubmit(onSubmit)}>
           <Title>
             Example{' '}
-            <SettingIcon tabIndex={tabIndex} onClick={() => toggleSetting(!showSetting)}>
+            <SettingIcon aria-label="Demo form setting" tabIndex={tabIndex} onClick={() => toggleSetting(!showSetting)}>
               <Setting />
               <SettingWords>Setting</SettingWords>
             </SettingIcon>
@@ -137,6 +137,7 @@ export default function Form({
               case 'select':
                 return (
                   <select
+                    aria-label={field.name}
                     tabIndex={tabIndex}
                     name={field.name}
                     ref={register({ required: field.required })}
@@ -159,6 +160,7 @@ export default function Form({
               case 'textarea':
                 return (
                   <textarea
+                    aria-label={field.name}
                     tabIndex={tabIndex}
                     name={field.name}
                     placeholder={field.name}
@@ -176,7 +178,7 @@ export default function Form({
                 );
               case 'radio':
                 return (
-                  <RadioGroup key={field.name} style={{ marginBottom: 20 }}>
+                  <RadioGroup key={field.name} style={{ marginBottom: 20 }} aria-label={field.name}>
                     {field.options &&
                       field.options
                         .split(';')
@@ -210,6 +212,7 @@ export default function Form({
                       marginBottom: 20,
                       ...(errors[field.name] ? errorStyle : null),
                     }}
+                    aria-label={field.name}
                     autoComplete="off"
                     key={field.name}
                     type={field.type}
