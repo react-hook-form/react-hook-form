@@ -9,7 +9,7 @@ const SignupSchema = yup.object().shape({
   age: yup.number().required(),
 });
 
-function App() {
+export default function YourForm() {
   const { register, handleSubmit, errors } = useForm({
     validationSchema: SignupSchema
   });

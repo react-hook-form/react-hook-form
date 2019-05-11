@@ -53,6 +53,7 @@ export interface Error {
   ref: Ref;
   message?: string;
   type?: string;
+  isManual?: boolean;
 }
 
 export interface ErrorMessages {

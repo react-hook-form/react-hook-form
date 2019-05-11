@@ -12,6 +12,7 @@ import modeChecker from './utils/validationModeChecker';
 import onDomRemove from './utils/onDomRemove';
 import isRadioInput from './utils/isRadioInput';
 import isEmptyObject from './utils/isEmptyObject';
+import filterUndefinedErrors from './utils/filterUndefinedErrors';
 import {
   Props,
   Field,
@@ -25,7 +26,6 @@ import {
   FieldValue,
   RegisterInput,
 } from './types';
-import filterUndefinedErrors from "./utils/filterUndefinedErrors";
 
 export default function useForm(
   { mode, validationSchema }: Props = {
@@ -227,7 +227,10 @@ export default function useForm(
         }),
       );
 
-      fieldErrors = filterUndefinedErrors(errors);
+      fieldErrors = {
+        ...errors,
+        ...filterUndefinedErrors(errorsRef.current),
+      };
       fieldValues = values;
     }
 
@@ -255,7 +258,9 @@ export default function useForm(
   };
 
   const reset = () => {
-    Object.values(fieldsRef.current)[0].ref.closest('form').reset();
+    Object.values(fieldsRef.current)[0]
+      .ref.closest('form')
+      .reset();
     resetAllRef();
     reRenderForm({});
   };
@@ -278,6 +283,7 @@ export default function useForm(
       type,
       message,
       ref,
+      isManual: true,
     };
     reRenderForm({});
   };

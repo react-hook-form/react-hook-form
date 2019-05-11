@@ -15,6 +15,10 @@ import SyntaxHighlighterWithCopy, { LinkToSandBox } from './SyntaxHighlighterWit
 import ApiMenu from './ApiMenu';
 import ApiFormState from './utils/ApiFormState';
 import resetCode from './codeExamples/resetCode';
+import ApiWatch from './ApiWatch';
+import ApiErrors from './ApiErrors';
+import handleSubmitCode from './codeExamples/handleSubmitCode';
+import setError from "./codeExamples/setError";
 
 const CodeAsLink = styled(Link)`
   cursor: pointer;
@@ -130,6 +134,7 @@ const links = [
   'watch',
   'handleSubmit',
   'reset',
+  'setError',
   'formState',
   'validationSchema',
 ];
@@ -137,69 +142,34 @@ const links = [
 function Builder({ formData, showApi, toggleApi, apiButton, isMobile }: any) {
   const copyFormData = useRef([]);
   const closeButton = useRef(null);
-  const quickStartRef = useRef(null);
-  const formStateRef = useRef(null);
-  const useFormRef = useRef(null);
-  const registerRef = useRef(null);
-  const resetRef = useRef(null);
-  const errorsRef = useRef(null);
-  const watchRef = useRef(null);
+  const apiSectionsRef = useRef({
+    quickStartRef: null,
+    formStateRef: null,
+    useFormRef: null,
+    registerRef: null,
+    resetRef: null,
+    errorsRef: null,
+    watchRef: null,
+    setErrorRef: null,
+    validationSchemaRef: null,
+    handleSubmitRef: null,
+  });
   const root = useRef(null);
-  const validationSchemaRef = useRef(null);
-  const handleSubmitRef = useRef(null);
   const tabIndex = showApi ? 0 : -1;
   copyFormData.current = formData;
 
   const goToSection = name => {
-    switch (name) {
-      case links[0]:
-        // @ts-ignore
-        if (quickStartRef) quickStartRef.current.scrollIntoView({ behavior: 'smooth' });
-        break;
-      case links[2]:
-        // @ts-ignore
-        if (useFormRef) useFormRef.current.scrollIntoView({ behavior: 'smooth' });
-        break;
-      case links[3]:
-        // @ts-ignore
-        if (registerRef) registerRef.current.scrollIntoView({ behavior: 'smooth' });
-        break;
-      case links[4]:
-        // @ts-ignore
-        if (errorsRef) errorsRef.current.scrollIntoView({ behavior: 'smooth' });
-        break;
-      case links[5]:
-        // @ts-ignore
-        if (watchRef) watchRef.current.scrollIntoView({ behavior: 'smooth' });
-        break;
-      case links[6]:
-        // @ts-ignore
-        if (handleSubmitRef) handleSubmitRef.current.scrollIntoView({ behavior: 'smooth' });
-        break;
-      case links[7]:
-        // @ts-ignore
-        if (resetRef) resetRef.current.scrollIntoView({ behavior: 'smooth' });
-        break;
-      case links[8]:
-        // @ts-ignore
-        if (formStateRef) formStateRef.current.scrollIntoView({ behavior: 'smooth' });
-        break;
-      case links[9]:
-        // @ts-ignore
-        if (validationSchemaRef) validationSchemaRef.current.scrollIntoView({ behavior: 'smooth' });
-        break;
-    }
+    const refName = `${name}Ref`;
+    if (apiSectionsRef.current[refName]) apiSectionsRef.current[refName].scrollIntoView({ behavior: 'smooth' });
   };
 
-  useEffect(
-    () => {
-      if (showApi && closeButton.current) {
-        // @ts-ignore
-        closeButton.current.focus();
-      }
-    },
-    [showApi],
-  );
+  useEffect(() => {
+    console.log(apiSectionsRef.current);
+    if (showApi && closeButton.current) {
+      // @ts-ignore
+      closeButton.current.focus();
+    }
+  }, [showApi]);
 
   return (
     <Animate
@@ -241,11 +211,22 @@ function Builder({ formData, showApi, toggleApi, apiButton, isMobile }: any) {
               <Wrapper>
                 <ApiMenu tabIndex={tabIndex} links={links} goToSection={goToSection} />
                 <main>
-                  <GetStarted tabIndex={tabIndex} quickStartRef={quickStartRef} />
+                  <GetStarted
+                    tabIndex={tabIndex}
+                    quickStartRef={ref => {
+                      // @ts-ignore
+                      apiSectionsRef.current.quickStartRef = ref;
+                    }}
+                  />
 
                   <Title>API</Title>
 
-                  <code ref={useFormRef}>
+                  <code
+                    ref={ref => {
+                      // @ts-ignore
+                      apiSectionsRef.current.useFormRef = ref;
+                    }}
+                  >
                     <h2>
                       useForm: <Type>Function</Type>
                     </h2>
@@ -313,7 +294,12 @@ function Builder({ formData, showApi, toggleApi, apiButton, isMobile }: any) {
 
                   <hr />
 
-                  <code ref={registerRef}>
+                  <code
+                    ref={ref => {
+                      // @ts-ignore
+                      apiSectionsRef.current.registerRef = ref;
+                    }}
+                  >
                     <h2>
                       register: <Type>Function</Type>
                     </h2>
@@ -322,147 +308,48 @@ function Builder({ formData, showApi, toggleApi, apiButton, isMobile }: any) {
                   <ApiRefTable tabIndex={tabIndex} />
 
                   <hr />
-                  <code ref={errorsRef}>
-                    <h2>
-                      errors: <Type>Object</Type>
-                    </h2>
-                  </code>
-                  <p>Object contain form errors or error messages belong to each input.</p>
+                  <section
+                    ref={ref => {
+                      // @ts-ignore
+                      apiSectionsRef.current.errorsRef = ref;
+                    }}
+                  >
+                    <ApiErrors tabIndex={tabIndex} />
+                  </section>
 
-                  <TableWrapper>
-                    <Table>
-                      <tbody>
-                        <tr>
-                          <th>Name</th>
-                          <th>Type</th>
-                          <th
-                            style={{
-                              minWidth: 300,
-                            }}
-                          >
-                            Description
-                          </th>
-                        </tr>
-                        <tr>
-                          <td>
-                            <code>type</code>
-                          </td>
-                          <td>
-                            <Type>string</Type>
-                          </td>
-                          <td>Error type which according to your validation rules. eg: required, min, max </td>
-                        </tr>
-                        <tr>
-                          <td>
-                            <code>message</code>
-                          </td>
-                          <td>
-                            <Type>string</Type>
-                          </td>
-                          <td>Register with validation and error message, then error message will return in this .</td>
-                        </tr>
-                        <tr>
-                          <td>
-                            <code>ref</code>
-                          </td>
-                          <td>
-                            <Type>React.RefObject</Type>
-                          </td>
-                          <td>Reference fo your error input element.</td>
-                        </tr>
-                      </tbody>
-                    </Table>
-                  </TableWrapper>
-
-                  <SyntaxHighlighterWithCopy
-                    tabIndex={tabIndex}
-                    rawData={errorCode}
-                    url="https://codesandbox.io/s/nrr4n9p8n4"
-                  />
-
-                  <hr />
-                  <code ref={watchRef}>
-                    <h2>
-                      watch: <Type>Function</Type>
-                    </h2>
-                  </code>
-                  <p>
-                    Watch over input change and return its value. first-time run <code>watch</code> will always return{' '}
-                    <code>undefined</code> because called before <code>render</code>. You can set the default value as
-                    the second argument.
-                  </p>
-                  <TableWrapper>
-                    <Table>
-                      <tbody>
-                        <tr>
-                          <th>Type</th>
-                          <th
-                            style={{
-                              minWidth: 300,
-                            }}
-                          >
-                            Description
-                          </th>
-                          <th>Example</th>
-                        </tr>
-                        <tr>
-                          <td>
-                            <Type>string</Type>
-                          </td>
-                          <td>Target on individual input</td>
-                          <td>
-                            <code>const value = watch('inputName');</code>
-                          </td>
-                        </tr>
-                        <tr>
-                          <td>
-                            <Type>{`string[]`}</Type>
-                          </td>
-                          <td>Watch multiple inputs over the form</td>
-                          <td>
-                            <code>const values = watch(['inputName1', 'inputName2']);</code>
-                          </td>
-                        </tr>
-                        <tr>
-                          <td>
-                            <Type>undefined</Type>
-                          </td>
-                          <td>Watch every input fields in the form</td>
-                          <td>
-                            <code>const values = watch();</code>
-                          </td>
-                        </tr>
-                      </tbody>
-                    </Table>
-                  </TableWrapper>
-                  <SyntaxHighlighterWithCopy
-                    tabIndex={tabIndex}
-                    rawData={watchCode}
-                    url="https://codesandbox.io/s/pp1l40q7wx"
-                  />
-
-                  <hr />
-                  <code ref={handleSubmitRef}>
+                  <section
+                    ref={ref => {
+                      // @ts-ignore
+                      apiSectionsRef.current.watchRef = ref;
+                    }}
+                  >
+                    <ApiWatch tabIndex={tabIndex} />
+                  </section>
+                  <code
+                    ref={ref => {
+                      // @ts-ignore
+                      apiSectionsRef.current.handleSubmitRef = ref;
+                    }}
+                  >
                     <h2>
                       handleSubmit: <Type>(data: Object, e: Event) => void</Type>
                     </h2>
                   </code>
                   <p>This function will pass you the form data when form validation is successful.</p>
-                  <LinkToSandBox
+                  <SyntaxHighlighterWithCopy
                     tabIndex={tabIndex}
-                    style={{
-                      position: 'relative',
-                      left: 0,
-                    }}
-                    href="https://codesandbox.io/s/yj07z1639"
-                    target="_blank"
-                  >
-                    CodeSandbox
-                  </LinkToSandBox>
+                    rawData={handleSubmitCode}
+                    url="https://codesandbox.io/s/yj07z1639"
+                  />
 
                   <hr />
 
-                  <code ref={resetRef}>
+                  <code
+                    ref={ref => {
+                      // @ts-ignore
+                      apiSectionsRef.current.resetRef = ref;
+                    }}
+                  >
                     <h2>
                       reset: <Type>Function</Type>
                     </h2>
@@ -477,11 +364,41 @@ function Builder({ formData, showApi, toggleApi, apiButton, isMobile }: any) {
 
                   <hr />
 
-                  <section ref={formStateRef}>
+                  <code
+                    ref={ref => {
+                      // @ts-ignore
+                      apiSectionsRef.current.setErrorRef = ref;
+                    }}
+                  >
+                    <h2>
+                      setError: <Type>(name: string, type: string, message: string, ref: Ref) => void</Type>
+                    </h2>
+                  </code>
+                  <p>This function allows you to manually set an input error or clear one.</p>
+
+                  <SyntaxHighlighterWithCopy
+                    tabIndex={tabIndex}
+                    rawData={setError}
+                    url="https://codesandbox.io/s/o7rxyym3q5"
+                  />
+
+                  <hr />
+
+                  <section
+                    ref={ref => {
+                      // @ts-ignore
+                      apiSectionsRef.current.formStateRef = ref;
+                    }}
+                  >
                     <ApiFormState tabIndex={tabIndex} />
                   </section>
 
-                  <code ref={validationSchemaRef}>
+                  <code
+                    ref={ref => {
+                      // @ts-ignore
+                      apiSectionsRef.current.validationSchemaRef = ref;
+                    }}
+                  >
                     <h2>
                       validationSchema: <Type>Object</Type>
                     </h2>

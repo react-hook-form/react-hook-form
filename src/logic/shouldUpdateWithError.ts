@@ -12,6 +12,10 @@ export default function shouldUpdateWithError({
     return false;
   }
 
+  if (errors[name] && errors[name].isManual && errors[name].type) {
+    return false;
+  }
+
   if (isEmptyObject(error) && isEmptyObject(errors)) {
     return false;
   }
