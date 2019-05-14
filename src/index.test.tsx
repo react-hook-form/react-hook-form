@@ -27,23 +27,22 @@ export const testHook = callback => {
 
 let hookForm;
 let hookFormWithValidationSchema;
-beforeEach(() => {
-  testHook(() => {
-    hookForm = useForm();
-    return hookForm;
-  });
-
-  testHook(() => {
-    hookFormWithValidationSchema = useForm({
-      mode: 'onSubmit',
-      validationSchema: {},
-    });
-    return hookFormWithValidationSchema;
-  });
-});
 
 describe('useForm', () => {
   beforeEach(() => {
+    testHook(() => {
+      hookForm = useForm();
+      return hookForm;
+    });
+
+    testHook(() => {
+      hookFormWithValidationSchema = useForm({
+        mode: 'onSubmit',
+        validationSchema: {},
+      });
+      return hookFormWithValidationSchema;
+    });
+    
     jest.resetAllMocks();
   });
 
