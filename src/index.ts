@@ -247,7 +247,16 @@ export default function useForm(
     reRenderForm({});
   };
 
-  const resetAllRef = () => {
+  const unSubscribe = (): void => {
+    fieldsRef.current &&
+      Object.values(fieldsRef.current).forEach(
+        (field: Field): void => {
+          const { ref, options } = field;
+          isRadioInput(ref.type) && Array.isArray(options)
+            ? options.forEach((fieldRef): void => removeEventListener(fieldRef, true))
+            : removeEventListener(field, true);
+        },
+      );
     fieldsRef.current = {};
     watchFieldsRef.current = {};
     errorsRef.current = {};
@@ -261,21 +270,8 @@ export default function useForm(
     Object.values(fieldsRef.current)[0]
       .ref.closest('form')
       .reset();
-    resetAllRef();
+    unSubscribe();
     reRenderForm({});
-  };
-
-  const unSubscribe = (): void => {
-    fieldsRef.current &&
-      Object.values(fieldsRef.current).forEach(
-        (field: Field): void => {
-          const { ref, options } = field;
-          isRadioInput(ref.type) && Array.isArray(options)
-            ? options.forEach((fieldRef): void => removeEventListener(fieldRef, true))
-            : removeEventListener(field, true);
-        },
-      );
-    resetAllRef();
   };
 
   const setError = (name: string, type: string, message?: string, ref?: Ref) => {
