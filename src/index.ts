@@ -42,69 +42,72 @@ export default function useForm(
   const isSubmittedRef = useRef<boolean>(false);
   const isDirtyRef = useRef<boolean>(false);
   const reRenderForm = useState({})[1];
+  const validateAndStateUpdate = useRef<any>();
 
-  async function validateAndStateUpdate({ target: { name }, type }: Ref): Promise<void> {
-    const fields = fieldsRef.current;
-    const errors = errorsRef.current;
-    const ref = fields[name];
-    const { isOnChange, isOnSubmit, isOnBlur } = modeChecker(mode);
-    const onSubmitModeNotSubmitted = !isSubmittedRef.current && (isOnSubmit || !mode);
-    const isWatchAll = isWatchAllRef.current;
-    const shouldUpdateWatchMode = isWatchAll || watchFieldsRef.current[name];
-    const shouldUpdateValidateMode = isOnChange || (isOnBlur && type === 'blur');
-    let shouldUpdateState = isWatchAll;
+  validateAndStateUpdate.current = validateAndStateUpdate.current
+    ? validateAndStateUpdate.current
+    : async ({ target: { name }, type }: Ref): Promise<void> => {
+        const fields = fieldsRef.current;
+        const errors = errorsRef.current;
+        const ref = fields[name];
+        const { isOnChange, isOnSubmit, isOnBlur } = modeChecker(mode);
+        const onSubmitModeNotSubmitted = !isSubmittedRef.current && (isOnSubmit || !mode);
+        const isWatchAll = isWatchAllRef.current;
+        const shouldUpdateWatchMode = isWatchAll || watchFieldsRef.current[name];
+        const shouldUpdateValidateMode = isOnChange || (isOnBlur && type === 'blur');
+        let shouldUpdateState = isWatchAll;
 
-    if (!isDirtyRef.current) {
-      isDirtyRef.current = true;
-      shouldUpdateState = true;
-    }
+        if (!isDirtyRef.current) {
+          isDirtyRef.current = true;
+          shouldUpdateState = true;
+        }
 
-    if (!touchedFieldsRef.current.includes(name)) {
-      touchedFieldsRef.current.push(name);
-      shouldUpdateState = true;
-    }
+        if (!touchedFieldsRef.current.includes(name)) {
+          touchedFieldsRef.current.push(name);
+          shouldUpdateState = true;
+        }
 
-    if (onSubmitModeNotSubmitted && shouldUpdateWatchMode) return reRenderForm({});
+        if (onSubmitModeNotSubmitted && shouldUpdateWatchMode) return reRenderForm({});
 
-    if (validationSchema) {
-      const result = getFieldsValues(fields);
-      const error = (await validateWithSchema(validationSchema, result)) || {};
-      const shouldUpdate = ((!error[name] && errors[name]) || error[name]) && shouldUpdateValidateMode;
+        if (validationSchema) {
+          const result = getFieldsValues(fields);
+          const error = (await validateWithSchema(validationSchema, result)) || {};
+          const shouldUpdate = ((!error[name] && errors[name]) || error[name]) && shouldUpdateValidateMode;
 
-      if (shouldUpdate || shouldUpdateWatchMode) {
-        const errorsCopy = { ...errors, ...{ [name]: error[name] } };
-        if (!error[name]) delete errorsCopy[name];
+          if (shouldUpdate || shouldUpdateWatchMode) {
+            const errorsCopy = { ...errors, ...{ [name]: error[name] } };
+            if (!error[name]) delete errorsCopy[name];
 
-        errorsRef.current = errorsCopy;
-        return reRenderForm({});
-      }
-    } else {
-      const error = await validateField(ref, fields);
-      const shouldUpdate = shouldUpdateWithError({
-        errors,
-        error,
-        onSubmitModeNotSubmitted,
-        isOnBlur,
-        name,
-        type,
-      });
+            errorsRef.current = errorsCopy;
+            return reRenderForm({});
+          }
+        } else {
+          const error = await validateField(ref, fields);
+          const shouldUpdate = shouldUpdateWithError({
+            errors,
+            error,
+            onSubmitModeNotSubmitted,
+            isOnBlur,
+            name,
+            type,
+          });
 
-      if (shouldUpdate || shouldUpdateValidateMode || shouldUpdateWatchMode) {
-        const errorsCopy = { ...filterUndefinedErrors(errors), ...error };
-        if (!error[name]) delete errorsCopy[name];
+          if (shouldUpdate || shouldUpdateValidateMode || shouldUpdateWatchMode) {
+            const errorsCopy = { ...filterUndefinedErrors(errors), ...error };
+            if (!error[name]) delete errorsCopy[name];
 
-        errorsRef.current = errorsCopy;
-        return reRenderForm({});
-      }
-    }
+            errorsRef.current = errorsCopy;
+            return reRenderForm({});
+          }
+        }
 
-    if (shouldUpdateState) reRenderForm({});
-  }
+        if (shouldUpdateState) reRenderForm({});
+      };
 
   const removeEventListener: Function = findRemovedFieldAndRemoveListener.bind(
     null,
     fieldsRef.current,
-    validateAndStateUpdate,
+    validateAndStateUpdate.current,
   );
 
   function registerIntoFieldsRef(elementRef, data = { required: false, validate: undefined }): void {
@@ -144,7 +147,7 @@ export default function useForm(
     attachEventListeners({
       field: isRadio ? (fields[name].options || [])[(fields[name].options || []).length - 1] : fields[name],
       isRadio,
-      validateAndStateUpdate,
+      validateAndStateUpdate: validateAndStateUpdate.current,
     });
   }
 
@@ -292,8 +295,8 @@ export default function useForm(
     watch,
     unSubscribe,
     reset,
-    errors: errorsRef.current,
     setError,
+    errors: errorsRef.current,
     formState: {
       dirty: isDirtyRef.current,
       isSubmitted: isSubmittedRef.current,
