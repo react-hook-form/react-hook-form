@@ -42,7 +42,7 @@ export default function useForm(
   const isSubmittedRef = useRef<boolean>(false);
   const isDirtyRef = useRef<boolean>(false);
   const reRenderForm = useState({})[1];
-  const validateAndStateUpdate = useRef<any>();
+  const validateAndStateUpdate = useRef<Function>();
 
   validateAndStateUpdate.current = validateAndStateUpdate.current
     ? validateAndStateUpdate.current
@@ -269,7 +269,7 @@ export default function useForm(
     touchedFieldsRef.current = [];
   };
 
-  const reset = () => {
+  const reset = (): void => {
     Object.values(fieldsRef.current)[0]
       .ref.closest('form')
       .reset();
@@ -277,7 +277,7 @@ export default function useForm(
     reRenderForm({});
   };
 
-  const setError = (name: string, type: string, message?: string, ref?: Ref) => {
+  const setError = (name: string, type: string, message?: string, ref?: Ref): void => {
     errorsRef.current[name] = {
       type,
       message,
