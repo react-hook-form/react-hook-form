@@ -77,10 +77,10 @@ export default function SortableContainer({ updateFormData, formData, editIndex,
           return (
             <Animate
               play
-              startStyle={{
+              start={{
                 opacity: 0,
               }}
-              endStyle={{
+              end={{
                 opacity: 1,
               }}
               key={field.name}

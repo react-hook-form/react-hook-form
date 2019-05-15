@@ -266,10 +266,10 @@ export default function Form({
             <Title>Errors</Title>
             {!Object.keys(errors).length && <p>ⓘ Press submit to trigger validation error.</p>}
             <Animate
-              durationSeconds={0.8}
+              duration={0.8}
               play={!!Object.keys(errors).length}
-              startStyle={{ opacity: 0 }}
-              endStyle={{ opacity: 1 }}
+              start={{ opacity: 0 }}
+              end={{ opacity: 1 }}
             >
               <Code>
                 {Object.keys(errors).length
@@ -293,10 +293,10 @@ export default function Form({
             <Title>Watch</Title>
             {!Object.keys(watch() || {}).length && <p>ⓘ Change input value to see watched values.</p>}
             <Animate
-              durationSeconds={0.8}
+              duration={0.8}
               play={Object.keys(watch() || {}).length > 0}
-              startStyle={{ opacity: 0 }}
-              endStyle={{ opacity: 1 }}
+              start={{ opacity: 0 }}
+              end={{ opacity: 1 }}
             >
               <Code>{JSON.stringify(watch(), null, 2)}</Code>
             </Animate>
@@ -306,7 +306,7 @@ export default function Form({
         {setting.showTouch &&<section>
           <Title>Touched</Title>
           {!Object.keys(touched).length && <p>ⓘ Touched fields will display here.</p>}
-          <Animate durationSeconds={0.8} play={touched.length} startStyle={{ opacity: 0 }} endStyle={{ opacity: 1 }}>
+          <Animate duration={0.8} play={touched.length} start={{ opacity: 0 }} end={{ opacity: 1 }}>
             <Code>{JSON.stringify(touched, null, 2)}</Code>
           </Animate>
         </section>}
@@ -316,10 +316,10 @@ export default function Form({
             <Title>Submit</Title>
             {!Object.keys(submitData).length && <p>ⓘ Successful submit values will display here.</p>}
             <Animate
-              durationSeconds={0.8}
+              duration={0.8}
               play={!!Object.keys(submitData).length}
-              startStyle={{ opacity: 0 }}
-              endStyle={{ opacity: 1 }}
+              start={{ opacity: 0 }}
+              end={{ opacity: 1 }}
             >
               <Code>{Object.keys(submitData).length ? JSON.stringify(submitData, null, 2) : ''}</Code>
             </Animate>

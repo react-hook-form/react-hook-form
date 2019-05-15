@@ -225,8 +225,8 @@ function App() {
       >
         <Animate
           play={showBuilder || showSetting || showApi}
-          startStyle={{ minHeight: '100vh', filter: 'blur(0)', transform: 'scale(1)' }}
-          endStyle={{ minHeight: '100vh', filter: 'blur(3px)', transform: 'scale(0.9) rotateX(5deg)' }}
+          start={{ minHeight: '100vh', filter: 'blur(0)', transform: 'scale(1)' }}
+          end={{ minHeight: '100vh', filter: 'blur(3px)', transform: 'scale(0.9) rotateX(5deg)' }}
         >
           <Header tabIndex={tabIndex} homeRef={HomeRef} toggleApi={toggleApi} />
 

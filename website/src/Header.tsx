@@ -179,7 +179,7 @@ export default function Header({ homeRef, toggleApi, tabIndex }: any) {
       <Features>
         <Title>Features</Title>
         <FeaturesContent>
-          <Animate delaySeconds={0.5} startStyle={{ opacity: 0 }} endStyle={{opacity: 1}} sequenceIndex={0}>
+          <Animate delay={0.5} start={{ opacity: 0 }} end={{opacity: 1}} sequenceIndex={0}>
             <svg
               version="1.1"
               x="0px"
@@ -267,7 +267,7 @@ export default function Header({ homeRef, toggleApi, tabIndex }: any) {
             <p>Leverage your existing HTML markup, and start validating your forms with standard validation.</p>
           </Animate>
 
-          <Animate startStyle={{ opacity: 0 }} endStyle={{opacity: 1}} sequenceIndex={1}>
+          <Animate start={{ opacity: 0 }} end={{opacity: 1}} sequenceIndex={1}>
             <svg
               viewBox="0 0 100 125"
               style={{
@@ -283,7 +283,7 @@ export default function Header({ homeRef, toggleApi, tabIndex }: any) {
             <p>Performance is important and packages size matters. it is tiny and without any dependencies.</p>
           </Animate>
 
-          <Animate startStyle={{ opacity: 0 }} endStyle={{opacity: 1}} sequenceIndex={2}>
+          <Animate start={{ opacity: 0 }} end={{opacity: 1}} sequenceIndex={2}>
             <svg
               data-name="Layer 1"
               viewBox="0 0 24 30"
@@ -306,7 +306,7 @@ export default function Header({ homeRef, toggleApi, tabIndex }: any) {
             </p>
           </Animate>
 
-          <Animate startStyle={{ opacity: 0 }} endStyle={{opacity: 1}} sequenceIndex={3}>
+          <Animate start={{ opacity: 0 }} end={{opacity: 1}} sequenceIndex={3}>
             <svg x="0px" y="0px" viewBox="0 0 100 125" style={{
               fill: 'white',
               width: 50,

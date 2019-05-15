@@ -8164,10 +8164,10 @@ react-error-overlay@^5.1.4:
   resolved "https://registry.yarnpkg.com/react-error-overlay/-/react-error-overlay-5.1.4.tgz#88dfb88857c18ceb3b9f95076f850d7121776991"
   integrity sha512-fp+U98OMZcnduQ+NSEiQa4s/XMsbp+5KlydmkbESOw4P69iWZ68ZMFM5a2BuE0FgqPBKApJyRuYHR95jM8lAmg==
 
-react-hook-form@3.4.0:
-  version "3.4.0"
-  resolved "https://registry.yarnpkg.com/react-hook-form/-/react-hook-form-3.4.0.tgz#5e300c0ead2c6de38e00f90da8ad40c4543e8a0d"
-  integrity sha512-3NeBQ/W8fPeBii6bm8o5VnaKvbVHu/3v22Dhqa2ovamT+uzXbG8j+H+R2xAIqERrPPnHLdNAd4NJIdLFpDrUPQ==
+react-hook-form@^3.5.0:
+  version "3.5.0"
+  resolved "https://registry.yarnpkg.com/react-hook-form/-/react-hook-form-3.5.0.tgz#a00953bcd3da523110cdd9a78ab542624d47e83e"
+  integrity sha512-2CwdNCmgO4353s+nPvfNwqEp65rSLnxOUakmP4TA90EyAwSoZMWZmh8xm1UPkzhduWB19fCgIsTYXKP4m7JC+Q==
 
 react-is@^16.6.0, react-is@^16.8.1:
   version "16.8.4"
@@ -8228,10 +8228,10 @@ react-scripts@^2.1.8:
   optionalDependencies:
     fsevents "1.2.4"
 
-react-simple-animate@2.6.16:
-  version "2.6.16"
-  resolved "https://registry.yarnpkg.com/react-simple-animate/-/react-simple-animate-2.6.16.tgz#1728cab1836a5ffbad9209c2ddf0d4c53d66b4e4"
-  integrity sha512-+LTQK1uuNcaI/DwLk1ZtWrIYF9z2067CIKnoMZhHGIBw/C/JEK78lEFKQ677pI6eCg64q1kumcyPhT2KKBAWzw==
+react-simple-animate@^3.0.1:
+  version "3.0.1"
+  resolved "https://registry.yarnpkg.com/react-simple-animate/-/react-simple-animate-3.0.1.tgz#4f0768069a5b99744069e8815f7a5d5c848bb093"
+  integrity sha512-HlXVleShQvDiwvv7C1sEet166XskRT5TLf2IRdlianz5XJPV/kXALTBB6sJFD3JuvPEvL6siP5+uozCXeZwPYg==
 
 react-simple-img@^2.1.9:
   version "2.1.9"

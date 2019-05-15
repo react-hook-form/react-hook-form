@@ -187,11 +187,11 @@ function Builder({
     <Animate
       play={showBuilder}
       easeType="ease-in"
-      durationSeconds={isMobile ? 0.3 : 0.5}
-      startStyle={{
+      duration={isMobile ? 0.3 : 0.5}
+      start={{
         transform: 'translateY(100vh)',
       }}
-      endStyle={{
+      end={{
         transform: 'translateY(0)',
       }}
       render={({ style }) => {
@@ -259,11 +259,11 @@ function Builder({
                   />
                   <Animate
                     play={!!errors['name']}
-                    durationSeconds={0.6}
-                    startStyle={{
+                    duration={0.6}
+                    start={{
                       maxHeight: 0,
                     }}
-                    endStyle={{ maxHeight: 20 }}
+                    end={{ maxHeight: 20 }}
                   >
                     {errors.name && errors.name['type'] === 'required' && <Error>This is required.</Error>}
                     {errors.name && errors.name['type'] === 'validate' && <Error>Name required to be unique.</Error>}
@@ -322,11 +322,11 @@ function Builder({
 
                   <Animate
                     play={showValidation}
-                    startStyle={{
+                    start={{
                       maxHeight: 0,
                       overflow: 'hidden',
                     }}
-                    endStyle={{
+                    end={{
                       maxHeight: 800,
                       overflow: 'hidden',
                     }}
@@ -411,11 +411,11 @@ function Builder({
 
                   <Animate
                     play={formData.length > 0}
-                    startStyle={{
+                    start={{
                       opacity: 0,
                       pointerEvents: 'none',
                     }}
-                    endStyle={{
+                    end={{
                       opacity: 1,
                       pointerEvents: 'auto',
                     }}

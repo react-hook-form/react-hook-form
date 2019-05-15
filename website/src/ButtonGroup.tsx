@@ -271,8 +271,8 @@ export default function ButtonGroup({
         </Button>
 
         <Animate
-          startStyle={{ maxWidth: 125, overflow: 'hidden' }}
-          endStyle={{ maxWidth: 0, overflow: 'hidden', borderRight: 0 }}
+          start={{ maxWidth: 125, overflow: 'hidden' }}
+          end={{ maxWidth: 0, overflow: 'hidden', borderRight: 0 }}
           play={window.location.pathname !== '/'}
           render={({ style }) => (
             <Button

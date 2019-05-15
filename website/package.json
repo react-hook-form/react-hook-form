@@ -5,8 +5,8 @@
   "dependencies": {
     "react": "^16.8.6",
     "react-dom": "^16.8.6",
-    "react-hook-form": "3.4.0",
-    "react-simple-animate": "2.6.16",
+    "react-hook-form": "^3.5.0",
+    "react-simple-animate": "^3.0.1",
     "react-simple-img": "^2.1.9",
     "react-sortablejs": "^1.5.1",
     "react-syntax-highlighter": "^10.2.1",

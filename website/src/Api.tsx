@@ -174,11 +174,11 @@ function Builder({ formData, showApi, toggleApi, apiButton, isMobile }: any) {
     <Animate
       play={showApi}
       easeType="ease-in"
-      durationSeconds={isMobile ? 0.3 : 0.5}
-      startStyle={{
+      duration={isMobile ? 0.3 : 0.5}
+      start={{
         transform: 'translateY(100vh)',
       }}
-      endStyle={{
+      end={{
         transform: 'translateY(0)',
       }}
       render={({ style }) => {

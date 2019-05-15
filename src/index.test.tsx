@@ -42,7 +42,7 @@ describe('useForm', () => {
       });
       return hookFormWithValidationSchema;
     });
-    
+
     jest.resetAllMocks();
   });
 

@@ -41,10 +41,10 @@ function Setting({ settingButton, toggleSetting, showSetting, setting, setConfig
     <Animate
       play={showSetting}
       easeType="ease-in"
-      endStyle={{
+      end={{
         transform: 'translateX(0)',
       }}
-      startStyle={{
+      start={{
         pointerEvents: 'none',
         transform: 'translateX(-600px)',
       }}
