@@ -202,6 +202,7 @@ export default function ButtonGroup({
       <GitHubButtonWrap>
         <GitHubButton
           href="https://github.com/bluebill1049/react-hook-form"
+          data-icon="octicon-star"
           data-size="large"
           data-show-count="true"
           aria-label="Star bluebill1049/react-hook-form on GitHub"
