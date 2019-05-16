@@ -81,6 +81,26 @@ describe('validateField', () => {
         ref: { type: 'text', name: 'test', value: '' },
       },
     });
+
+    expect(
+      await validateField(
+        {
+          ref: { type: 'radio', value: '', name: 'test' },
+          required: 'test',
+        },
+        {
+          test: {
+            ref: 'test',
+          },
+        },
+      ),
+    ).toEqual({
+      test: {
+        message: 'test',
+        type: 'required',
+        ref: '',
+      },
+    });
   });
 
   it('should return max error', async () => {
@@ -282,6 +302,69 @@ describe('validateField', () => {
         message: '',
       },
     });
+
+    // @ts-ignore
+    getRadioValue.mockImplementation(() => {
+      return {
+        isValid: false,
+        value: 'test',
+      };
+    });
+
+    expect(
+      await validateField(
+        {
+          ref: { type: 'radio', name: 'test', value: 'This is a long text input!' },
+          validate: {
+            test: value => value.toString().length < 3,
+            test1: value => value.toString().length > 10,
+          },
+        },
+        {
+          test: {
+            ref: '',
+          },
+        },
+      ),
+    ).toEqual({
+      test: {
+        ref: {
+          name: 'test',
+          type: 'radio',
+          value: 'This is a long text input!',
+        },
+        type: 'test1',
+        message: '',
+      },
+    });
+
+    expect(
+      await validateField(
+        {
+          ref: { type: 'radio', name: 'test', value: 'This is a long text input!' },
+          validate: {
+            test: value => value.toString().length < 3,
+            test1: value => value.toString().length > 10,
+          },
+          options: [
+            {
+              ref: 'data',
+            },
+          ],
+        },
+        {
+          test: {
+            ref: '',
+          },
+        },
+      ),
+    ).toEqual({
+      test: {
+        ref: 'data',
+        type: 'test1',
+        message: '',
+      },
+    });
   });
 
   it('should return error message when it is defined', async () => {
@@ -304,6 +387,24 @@ describe('validateField', () => {
       test: {
         type: 'test',
         message: 'max 3',
+        ref: { type: 'text', name: 'test', value: 'This is a long text input' },
+      },
+    });
+  });
+
+  it('should return result or empty string when validate has error', async () => {
+    expect(
+      await validateField(
+        {
+          ref: { type: 'text', name: 'test', value: 'This is a long text input' },
+          validate: value => value.toString().length < 3 || 'bill',
+        },
+        {},
+      ),
+    ).toEqual({
+      test: {
+        type: 'validate',
+        message: 'bill',
         ref: { type: 'text', name: 'test', value: 'This is a long text input' },
       },
     });
