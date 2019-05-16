@@ -5,26 +5,19 @@ export default function shouldUpdateWithError({
   name,
   error,
   isOnBlur,
+  isBlurType,
   onSubmitModeNotSubmitted,
-  type,
 }): boolean {
-  if (onSubmitModeNotSubmitted || (isOnBlur && type !== 'blur')) {
+  if (
+    onSubmitModeNotSubmitted ||
+    (isOnBlur && !isBlurType) ||
+    (errors[name] && errors[name].isManual && errors[name].type) ||
+    (isEmptyObject(error) && isEmptyObject(errors))
+  ) {
     return false;
   }
 
-  if (errors[name] && errors[name].isManual && errors[name].type) {
-    return false;
-  }
-
-  if (isEmptyObject(error) && isEmptyObject(errors)) {
-    return false;
-  }
-
-  if (isEmptyObject(errors) && !isEmptyObject(error)) {
-    return true;
-  }
-
-  if (isEmptyObject(error) && errors[name]) {
+  if ((isEmptyObject(errors) && !isEmptyObject(error)) || (isEmptyObject(error) && errors[name])) {
     return true;
   }
 
