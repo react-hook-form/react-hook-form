@@ -4,6 +4,10 @@ import removeAllEventListeners from './removeAllEventListeners';
 jest.mock('./removeAllEventListeners');
 
 describe('findMissDomAndClean', () => {
+  beforeEach(() => {
+    jest.resetAllMocks();
+  });
+
   it('should return default fields value if nothing matches', () => {
     document.body.contains = jest.fn(() => true);
     const fields = {
@@ -68,10 +72,51 @@ describe('findMissDomAndClean', () => {
       },
     };
 
-    expect(removeAllEventListeners).toBeCalled();
     expect(
       findRemovedFieldAndRemoveListener(fields, () => {}, {
         ref: { name: 'test', type: 'text' },
+        mutationWatcher: {
+          disconnect,
+        },
+      }),
+    ).toMatchSnapshot();
+  });
+
+  it('should return undefined when empty ref', () => {
+    const fields = {
+      test: 'test',
+    };
+    expect(
+      // @ts-ignore
+      findRemovedFieldAndRemoveListener(fields, () => {}, {}),
+    ).toEqual(undefined);
+  });
+
+  it('should work for radio type input', () => {
+    document.body.contains = jest.fn(() => false);
+    const disconnect = jest.fn();
+    const fields = {
+      test: {
+        name: 'test',
+        ref: {},
+        mutationWatcher: {
+          disconnect,
+        },
+      },
+      test1: {
+        name: 'test',
+        ref: {
+          type: 'radio',
+        },
+      },
+    };
+
+    expect(
+      findRemovedFieldAndRemoveListener(fields, () => {}, {
+        ref: { name: 'test', type: 'radio' },
+        options: [
+          { ref: 'test'}
+        ],
         mutationWatcher: {
           disconnect,
         },
