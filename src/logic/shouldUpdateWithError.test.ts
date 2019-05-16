@@ -9,7 +9,7 @@ describe('shouldUpdateWithError', () => {
         error: { test: 'test' },
         isOnBlur: false,
         onSubmitModeNotSubmitted: true,
-        type: 'test',
+        isBlurType: false,
       }),
     ).toBeFalsy();
   });
@@ -22,7 +22,7 @@ describe('shouldUpdateWithError', () => {
         error: { test: 'test' },
         isOnBlur: true,
         onSubmitModeNotSubmitted: false,
-        type: 'input',
+        isBlurType: false,
       }),
     ).toBeFalsy();
   });
@@ -35,7 +35,7 @@ describe('shouldUpdateWithError', () => {
         error: {},
         isOnBlur: false,
         onSubmitModeNotSubmitted: false,
-        type: 'test',
+        isBlurType: false,
       }),
     ).toBeFalsy();
   });
@@ -48,7 +48,7 @@ describe('shouldUpdateWithError', () => {
         error: { test: 'test' },
         isOnBlur: false,
         onSubmitModeNotSubmitted: false,
-        type: 'test',
+        isBlurType: false,
       }),
     ).toBeTruthy();
   });
@@ -61,7 +61,7 @@ describe('shouldUpdateWithError', () => {
         error: {},
         isOnBlur: false,
         onSubmitModeNotSubmitted: false,
-        type: 'test',
+        isBlurType: false,
       }),
     ).toBeTruthy();
   });
@@ -74,7 +74,7 @@ describe('shouldUpdateWithError', () => {
         error: { data: 'bill' },
         isOnBlur: false,
         onSubmitModeNotSubmitted: false,
-        type: 'test',
+        isBlurType: false,
       }),
     ).toBeTruthy();
   });
@@ -87,7 +87,7 @@ describe('shouldUpdateWithError', () => {
         error: { test: { type: 'bill' } },
         isOnBlur: false,
         onSubmitModeNotSubmitted: false,
-        type: 'test',
+        isBlurType: false,
       }),
     ).toBeTruthy();
 
@@ -98,8 +98,19 @@ describe('shouldUpdateWithError', () => {
         error: { test: { message: 'bill' } },
         isOnBlur: false,
         onSubmitModeNotSubmitted: false,
-        type: 'test',
+        isBlurType: false,
       }),
     ).toBeTruthy();
+  });
+
+  it('should return false if nothing matches', () => {
+    expect(shouldUpdateWithError({
+      errors: { test: { message: 'test', type: 'input' } },
+      name: 'test',
+      error: { test: {type: 'input', message: 'test'}},
+      isOnBlur: false,
+      onSubmitModeNotSubmitted: false,
+      isBlurType: false,
+    })).toBeFalsy();
   });
 });

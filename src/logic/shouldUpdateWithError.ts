@@ -21,12 +21,10 @@ export default function shouldUpdateWithError({
     return true;
   }
 
-  if (!isEmptyObject(error)) {
-    if (!errors[name]) {
-      return true;
-    } else if (errors[name].type !== error[name].type || errors[name].message !== error[name].message) {
-      return true;
-    }
+  if (!errors[name]) {
+    return true;
+  } else if (errors[name].type !== error[name].type || errors[name].message !== error[name].message) {
+    return true;
   }
 
   return false;

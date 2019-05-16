@@ -4,7 +4,6 @@ interface ValidationReturn {
 
 export function parseErrorSchema(error): ValidationReturn {
   return error.inner.reduce((previous, current, index): ValidationReturn => {
-    if (!previous[current.path]) previous[current.path] = {};
     previous[current.path] = error.errors[index];
     return previous;
   }, {});
