@@ -4260,6 +4260,11 @@ getpass@^0.1.1:
   dependencies:
     assert-plus "^1.0.0"
 
+github-buttons@^2.2.9:
+  version "2.2.9"
+  resolved "https://registry.yarnpkg.com/github-buttons/-/github-buttons-2.2.9.tgz#fb426fa469a2050a1c5d69b6413da0d1537f235b"
+  integrity sha512-G/UGx6GKUL3747gTUULGGqWDjKANVbLCnCHdYMqf1iUGYxIj+wMHK9WG4e4J/V0bG03auI4o6bZJQf7IjHyE1A==
+
 glob-base@^0.3.0:
   version "0.3.0"
   resolved "https://registry.yarnpkg.com/glob-base/-/glob-base-0.3.0.tgz#dbb164f6221b1c0b1ccf82aea328b497df0ea3c4"
@@ -8163,6 +8168,13 @@ react-error-overlay@^5.1.4:
   version "5.1.4"
   resolved "https://registry.yarnpkg.com/react-error-overlay/-/react-error-overlay-5.1.4.tgz#88dfb88857c18ceb3b9f95076f850d7121776991"
   integrity sha512-fp+U98OMZcnduQ+NSEiQa4s/XMsbp+5KlydmkbESOw4P69iWZ68ZMFM5a2BuE0FgqPBKApJyRuYHR95jM8lAmg==
+
+react-github-btn@^1.0.5:
+  version "1.0.5"
+  resolved "https://registry.yarnpkg.com/react-github-btn/-/react-github-btn-1.0.5.tgz#03ee7c6cd51f04ef940543b5ec247fbe4fe09a05"
+  integrity sha512-wE3s2e3Rrs6I9n2TDdBSUzTQXJy68EetFBxrYPosAVp/OSP5DwI9u/npf/Eu0/Uww1pTh60yvYO2wOS63HihkQ==
+  dependencies:
+    github-buttons "^2.2.9"
 
 react-hook-form@^3.5.0:
   version "3.5.0"

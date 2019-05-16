@@ -3,6 +3,7 @@ import styled from 'styled-components';
 import colors from './styles/colors';
 import { Animate } from 'react-simple-animate';
 import Setting from './svgs/setting';
+import GitHubButton from 'react-github-btn';
 
 const GithubIcon = styled.span`
   position: absolute;
@@ -134,6 +135,13 @@ const ActionButtonGroup = styled.div`
     }
   }
 `;
+
+const GitHubButtonWrap = styled.span`
+  position: absolute;
+  right: 20px;
+  top: 26px;
+`;
+
 export const setHomePage = () => {
   document.title = 'React hook form - Performance, flexible and extensible forms with easy to use for validation.';
   window.history.pushState(
@@ -153,7 +161,7 @@ export default function ButtonGroup({
   apiButton,
   showApi,
   toggleApi,
-                                      tabIndex,
+  tabIndex,
 }) {
   const pathname = window.location.pathname;
 
@@ -170,7 +178,11 @@ export default function ButtonGroup({
         </a>
       </GithubIcon>
       <MediumIcon>
-        <a href="https://medium.com/@bruce1049/form-validation-with-hook-in-3kb-c5414edf7d64" target="_blank" title="React Form validation under 3K">
+        <a
+          href="https://medium.com/@bruce1049/form-validation-with-hook-in-3kb-c5414edf7d64"
+          target="_blank"
+          title="React Form validation under 3K"
+        >
           <svg
             viewBox="0 0 512 512"
             height="25"
@@ -186,6 +198,18 @@ export default function ButtonGroup({
           </svg>
         </a>
       </MediumIcon>
+
+      <GitHubButtonWrap>
+        <GitHubButton
+          href="https://github.com/bluebill1049/react-hook-form"
+          data-size="large"
+          data-show-count="true"
+          aria-label="Star bluebill1049/react-hook-form on GitHub"
+        >
+          Star
+        </GitHubButton>
+      </GitHubButtonWrap>
+
       <ActionButtonGroup>
         <Button
           tabIndex={tabIndex}

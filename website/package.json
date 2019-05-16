@@ -5,6 +5,7 @@
   "dependencies": {
     "react": "^16.8.6",
     "react-dom": "^16.8.6",
+    "react-github-btn": "^1.0.5",
     "react-hook-form": "^3.5.0",
     "react-simple-animate": "^3.0.1",
     "react-simple-img": "^2.1.9",
