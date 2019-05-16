@@ -377,7 +377,7 @@ export default function ApiRefTable({ tabIndex }: any) {
         isStandard
           ? `(value) => value === '1'`
           : `(value) => {
-          return value === '1' ? 'error message' : true;
+          return value === '1' || 'error message';
         }`
       }
     })
@@ -394,7 +394,7 @@ export default function ApiRefTable({ tabIndex }: any) {
             isStandard
               ? 'value > 1'
               : `{
-            return value > 1 ? 'error message': true;
+            return value > 1 || 'error message';
           }`
           },
         isLessThanTen:
@@ -402,7 +402,7 @@ export default function ApiRefTable({ tabIndex }: any) {
             isStandard
               ? 'value < 10'
               : `{
-            return value < 10 ? 'error message': true;
+            return value < 10 || 'error message';
           }`
           },
       }
