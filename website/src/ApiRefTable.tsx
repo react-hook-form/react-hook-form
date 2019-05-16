@@ -376,35 +376,7 @@ export default function ApiRefTable({ tabIndex }: any) {
       validate: ${
         isStandard
           ? `(value) => value === '1'`
-          : `(value) => {
-          return value === '1' || 'error message';
-        }`
-      }
-    })
-  }
-/>
-
-<input
-  name="multiple"
-  ref={
-    register({
-      validate: {
-        isMoreThanOne:
-          (value) => ${
-            isStandard
-              ? 'value > 1'
-              : `{
-            return value > 1 || 'error message';
-          }`
-          },
-        isLessThanTen:
-          (value) => ${
-            isStandard
-              ? 'value < 10'
-              : `{
-            return value < 10 || 'error message';
-          }`
-          },
+          : `(value) => value === '1' || 'error message';`
       }
     })
   }
