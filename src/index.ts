@@ -248,8 +248,6 @@ export default function useForm(
     } else {
       errorsRef.current = fieldErrors;
     }
-
-    reRenderForm({});
   };
 
   const unSubscribe = (): void => {
