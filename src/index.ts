@@ -247,6 +247,7 @@ export default function useForm(
       callback(combineFieldValues(fieldValues), e);
     } else {
       errorsRef.current = fieldErrors;
+      reRenderForm({});
     }
   };
 
