@@ -1,5 +1,4 @@
 import findRemovedFieldAndRemoveListener from './findRemovedFieldAndRemoveListener';
-import removeAllEventListeners from './removeAllEventListeners';
 
 jest.mock('./removeAllEventListeners');
 
