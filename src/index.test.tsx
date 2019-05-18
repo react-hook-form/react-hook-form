@@ -21,7 +21,7 @@ const TestHook = ({ callback }) => {
   return errors ? <div>errors</div> : null;
 };
 
-export const testHook = callback => {
+const testComponent = callback => {
   mount(<TestHook callback={callback} />);
 };
 
@@ -30,12 +30,12 @@ let hookFormWithValidationSchema;
 
 describe('useForm', () => {
   beforeEach(() => {
-    testHook(() => {
+    testComponent(() => {
       hookForm = useForm();
       return hookForm;
     });
 
-    testHook(() => {
+    testComponent(() => {
       hookFormWithValidationSchema = useForm({
         mode: 'onSubmit',
         validationSchema: {},
