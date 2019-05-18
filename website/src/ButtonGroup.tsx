@@ -94,11 +94,11 @@ const ActionButtonGroup = styled.div`
     position: inherit;
     background: none;
     border: none;
-    max-width: 500px;
+    max-width: 470px;
     margin: 0 auto;
-    padding: 20px;
+    padding: 15px 10px;
     background: ${colors.buttonBlue};
-    border-radius: 0 0 30px 30px;
+    border-radius: 0 0 15px 15px;
     box-shadow: 0 0 10px 0 #000;
   }
 
@@ -130,8 +130,8 @@ const ActionButtonGroup = styled.div`
     height: 23px;
 
     @media (min-width: 768px) {
-      width: 50px;
-      height: 50px;
+      width: 40px;
+      height: 40px;
     }
   }
 `;

@@ -10,7 +10,7 @@ export const SubHeading = styled.p`
 
   @media (min-width: 768px) {
     font-size: 16px;
-    margin-bottom: 40px;
+    margin-bottom: 30px;
   }
 `;
 
@@ -21,7 +21,7 @@ export const Heading = styled.h1`
 
   @media (min-width: 768px) {
     font-size: 55px !important;
-    margin-bottom: 20px;
+    margin-bottom: 10px;
   }
 `;
 
