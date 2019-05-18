@@ -26,10 +26,12 @@ import {
   FieldValue,
   RegisterInput,
 } from './types';
+import isCheckBoxInput from './utils/isCheckBoxInput';
 
 export default function useForm(
-  { mode, validationSchema }: Props = {
+  { mode, validationSchema, defaultValues }: Props = {
     mode: 'onSubmit',
+    defaultValues: {},
   },
 ): UseFormFunctions {
   const fieldsRef = useRef<FieldsObject>({});
@@ -130,6 +132,9 @@ export default function useForm(
         : -1;
 
     if ((!isRadio && field) || (isRadio && existRadioOptionIndex > -1)) return;
+    if (defaultValues && defaultValues[name]) {
+      elementRef[isCheckBoxInput(type) ? 'checked' : 'value'] = defaultValues[name];
+    }
 
     if (isRadio) {
       if (!field) fields[name] = { options: [], required, validate, ref: { type: 'radio', name } };

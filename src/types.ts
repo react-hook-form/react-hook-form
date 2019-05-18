@@ -10,6 +10,7 @@ type OnSubmit = (data: { [key: string]: FieldValue }, e: React.SyntheticEvent) =
 
 export interface Props {
   mode: 'onSubmit' | 'onBlur' | 'onChange';
+  defaultValues?: { [key: string]: string | number };
   validationSchema?: any;
 }
 
