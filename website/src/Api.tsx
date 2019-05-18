@@ -93,7 +93,7 @@ const Wrapper = styled.div`
   max-width: 1200px;
   margin: 0 auto;
   overflow: hidden;
-  padding: 20px 20px 100px 20px;
+  padding: 0 20px 100px 20px;
 
   @media (min-width: 768px) {
     display: grid;

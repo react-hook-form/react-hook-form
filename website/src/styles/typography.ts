@@ -40,7 +40,7 @@ export const H1 = styled.h1`
 
 export const HeadingWithTopMargin = styled(Heading)`
   @media (min-width: 768px) {
-    margin-top: 60px;
+    margin-top: 30px;
   }
 `;
 
