@@ -20,7 +20,7 @@ export const Heading = styled.h1`
   margin-bottom: 10px;
 
   @media (min-width: 768px) {
-    font-size: 55px;
+    font-size: 55px !important;
     margin-bottom: 20px;
   }
 `;
