@@ -32,9 +32,22 @@ export const H1 = styled.h1`
   font-weight: 300;
   padding-bottom: 5px;
   border-bottom: 2px solid ${colors.secondary};
-  
+
   @media (min-width: 768px) {
     font-size: 36px;
+  }
+`;
+
+export const H5 = styled.h5`
+  font-size: 18px;
+  text-align: center;
+  font-weight: 500;
+  border-bottom: 1px solid ${colors.lightPink};
+  margin: 0;
+  padding-bottom: 8px;
+  
+  & > code {
+    font-size: 18px !important;
   }
 `;
 
@@ -52,7 +65,7 @@ export const Title = styled.h2`
   overflow: hidden;
   margin-bottom: 30px;
   position: relative;
-  
+
   @media (min-width: 768px) {
     margin-top: 20px;
     font-size: 1.5rem;

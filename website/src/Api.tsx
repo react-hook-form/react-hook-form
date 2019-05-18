@@ -2,23 +2,21 @@ import React, { useRef, useEffect } from 'react';
 import { Animate } from 'react-simple-animate';
 import styled from 'styled-components';
 import colors from './styles/colors';
-import { SubHeading, HeadingWithTopMargin, Title } from './styles/typography';
+import { SubHeading, HeadingWithTopMargin, Title, H5 } from './styles/typography';
 import { setHomePage } from './ButtonGroup';
 import GetStarted from './GetStarted';
 import ApiRefTable from './ApiRefTable';
-import watchCode from './codeExamples/watchCode';
 import validationSchemaCode from './codeExamples/validationSchema';
 import Link from './styles/link';
 import code from './codeExamples/defaultExample';
-import errorCode from './codeExamples/errorCode';
-import SyntaxHighlighterWithCopy, { LinkToSandBox } from './SyntaxHighlighterWithCopy';
+import SyntaxHighlighterWithCopy from './SyntaxHighlighterWithCopy';
 import ApiMenu from './ApiMenu';
 import ApiFormState from './utils/ApiFormState';
 import resetCode from './codeExamples/resetCode';
 import ApiWatch from './ApiWatch';
 import ApiErrors from './ApiErrors';
 import handleSubmitCode from './codeExamples/handleSubmitCode';
-import setError from "./codeExamples/setError";
+import setError from './codeExamples/setError';
 
 const CodeAsLink = styled(Link)`
   cursor: pointer;
@@ -59,7 +57,7 @@ const Root = styled.main`
 `;
 
 export const Table = styled.table`
-  margin-top: 40px;
+  margin-top: 20px;
 
   th {
     text-align: left;
@@ -128,7 +126,7 @@ const CloseButton = styled.button`
 const links = [
   'Quick Start',
   'Examples',
-  'useform',
+  'useForm',
   'register',
   'errors',
   'watch',
@@ -136,7 +134,7 @@ const links = [
   'reset',
   'setError',
   'formState',
-  'validationSchema',
+  // 'validationSchema',
 ];
 
 function Builder({ formData, showApi, toggleApi, apiButton, isMobile }: any) {
@@ -160,7 +158,9 @@ function Builder({ formData, showApi, toggleApi, apiButton, isMobile }: any) {
 
   const goToSection = name => {
     const refName = `${name}Ref`;
-    if (apiSectionsRef.current[refName]) apiSectionsRef.current[refName].scrollIntoView({ behavior: 'smooth' });
+    if (apiSectionsRef.current[refName]) {
+      apiSectionsRef.current[refName].scrollIntoView({ behavior: 'smooth' });
+    }
   };
 
   useEffect(() => {
@@ -214,7 +214,7 @@ function Builder({ formData, showApi, toggleApi, apiButton, isMobile }: any) {
                     tabIndex={tabIndex}
                     quickStartRef={ref => {
                       // @ts-ignore
-                      apiSectionsRef.current.quickStartRef = ref;
+                      apiSectionsRef.current['Quick StartRef'] = ref;
                     }}
                   />
 
@@ -235,14 +235,28 @@ function Builder({ formData, showApi, toggleApi, apiButton, isMobile }: any) {
                     <CodeAsLink onClick={() => goToSection('register')}>register</CodeAsLink>,{' '}
                     <CodeAsLink onClick={() => goToSection('errors')}>errors</CodeAsLink>,{' '}
                     <CodeAsLink onClick={() => goToSection('handleSubmit')}>handleSubmit</CodeAsLink>,{' '}
+                    <CodeAsLink onClick={() => goToSection('reset')}>reset</CodeAsLink>,{' '}
+                    <CodeAsLink onClick={() => goToSection('setError')}>setError</CodeAsLink>,{' '}
+                    <CodeAsLink onClick={() => goToSection('formState')}>formState</CodeAsLink>,{' '}
                     <CodeAsLink onClick={() => goToSection('watch')}>watch</CodeAsLink> and{' '}
-                    <CodeAsLink onClick={() => goToSection('formState')}>formState</CodeAsLink>. (run{' '}
-                    <code>useForm</code> before <code>render</code>)
+                    <CodeAsLink onClick={() => goToSection('formState')}>formState</CodeAsLink>.
                   </p>
+
                   <p>
-                    Apply form validation rules at the schema level, please refer the{' '}
-                    <CodeAsLink onClick={() => goToSection('validationSchema')}>validationSchema</CodeAsLink> section.
+                    <code>useForm</code> also has <b>optional</b> argument, which is <code>mode</code> and{' '}
+                    <code>validationSchema</code>.
                   </p>
+
+                  <SyntaxHighlighterWithCopy
+                    tabIndex={tabIndex}
+                    withOutCopy
+                    rawData={`const { register } = useForm({
+  mode: 'onBlur',
+  validationSchema: {},
+});`}
+                  />
+
+                  <H5><code>mode</code></H5>
 
                   <TableWrapper>
                     <Table>
@@ -290,6 +304,13 @@ function Builder({ formData, showApi, toggleApi, apiButton, isMobile }: any) {
                       </tbody>
                     </Table>
                   </TableWrapper>
+
+                  <H5 style={{ marginTop: 20 }}><code>validationSchema</code></H5>
+
+                  <p>
+                    Apply form validation rules at the schema level, please refer the{' '}
+                    <CodeAsLink onClick={() => goToSection('validationSchema')}>validationSchema</CodeAsLink> section.
+                  </p>
 
                   <hr />
 

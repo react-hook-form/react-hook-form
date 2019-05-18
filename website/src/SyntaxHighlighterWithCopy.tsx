@@ -61,14 +61,14 @@ export const LinkToSandBox = styled.a`
   }
 `;
 
-export default function SyntaxHighlighterWithCopy({ rawData, data, url, tabIndex }: any) {
+export default function SyntaxHighlighterWithCopy({ rawData, data, url, tabIndex, withOutCopy }: any) {
   return (
     <div
       style={{
         position: 'relative',
       }}
     >
-      <CopyButton
+      {!withOutCopy && <CopyButton
         tabIndex={tabIndex}
         onClick={() => {
           rawData || copyClipBoard(generateCode(data));
@@ -77,7 +77,7 @@ export default function SyntaxHighlighterWithCopy({ rawData, data, url, tabIndex
         aria-label="Copy code into your clipboard"
       >
         Copy to clipboard
-      </CopyButton>
+      </CopyButton>}
 
       {url && (
         <LinkToSandBox tabIndex={tabIndex} href={url} target="_blank">
