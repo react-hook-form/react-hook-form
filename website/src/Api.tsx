@@ -326,7 +326,13 @@ function Builder({ formData, showApi, toggleApi, apiButton, isMobile }: any) {
 
                   <p>
                     You can set set input default value with <code>defaultValue/defaultChecked</code>{' '}
-                    <Link href="https://reactjs.org/docs/uncontrolled-components.html">
+                    <Link href="https://reactjs.org/docs/uncontrolled-components.html" onClick={() => {
+                      track({
+                        category: 'API',
+                        label: 'read more at React doc',
+                        action: 'go to React Doc'
+                      })
+                    }}>
                       (read more at React doc for uncontrolled input default value)
                     </Link>{' '}
                     or invoke <code>useForm</code> and pass `defaultValues` for the entire form.

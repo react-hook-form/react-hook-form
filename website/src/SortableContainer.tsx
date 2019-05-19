@@ -3,6 +3,7 @@ import Sortable from 'react-sortablejs';
 import { Animate } from 'react-simple-animate';
 import styled from 'styled-components';
 import colors from './styles/colors';
+import track from "./utils/track";
 
 const List = styled.li`
   border: 1px solid #4e6294;
@@ -136,6 +137,11 @@ export default function SortableContainer({ updateFormData, formData, editIndex,
                         ...(editIndex === index ? { background: colors.lightPink } : null),
                       }}
                       onClick={() => {
+                        track({
+                          category: 'Builder',
+                          label: 'Edit',
+                          action: 'edit field'
+                        })
                         if (editIndex === index) {
                           setEditIndex(-1);
                           setFormData({});
@@ -153,6 +159,11 @@ export default function SortableContainer({ updateFormData, formData, editIndex,
                       onClick={() => {
                         if (window.confirm('Are you sure to delete?')) {
                           const index = formData.findIndex(data => field.name === data.name);
+                          track({
+                            category: 'Builder',
+                            label: 'Delete',
+                            action: 'delete field'
+                          })
 
                           if (index >= 0) {
                             updateFormData([...formData.slice(0, index), ...formData.slice(index + 1)]);
@@ -183,6 +194,11 @@ export default function SortableContainer({ updateFormData, formData, editIndex,
               if (window.confirm('Are you sure to delete all fields?')) {
                 updateFormData([]);
               }
+              track({
+                category: 'Builder',
+                label: 'Clear all fields',
+                action: 'clear all'
+              })
             }}
           >
             Clear all fields

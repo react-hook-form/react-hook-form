@@ -2,6 +2,7 @@ import React from 'react';
 import { Title } from './styles/typography';
 import colors from './styles/colors';
 import styled from 'styled-components';
+import track from "./utils/track";
 
 const Menu = styled.div`
   display: none;
@@ -86,7 +87,13 @@ export default function ApiMenu({ links, goToSection, tabIndex }: any) {
               <React.Fragment key="examples">
                 <li>
                   <Code>{`</>`}</Code>
-                  <a href="https://github.com/bluebill1049/react-hook-form/tree/master/examples" target="_blank" tabIndex={tabIndex}>
+                  <a onClick={() => {
+                    track({
+                      category: 'API',
+                      label: 'Examples',
+                      action: 'go to examples'
+                    })
+                  }} href="https://github.com/bluebill1049/react-hook-form/tree/master/examples" target="_blank" tabIndex={tabIndex}>
                     Examples
                   </a>
                 </li>

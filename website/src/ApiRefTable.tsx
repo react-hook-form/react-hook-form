@@ -5,6 +5,7 @@ import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { xonokai as monokaiSublime } from 'react-syntax-highlighter/dist/styles/prism';
 import { TableWrapper, Table, Type } from './Api';
 import Link from './styles/link';
+import track from "./utils/track";
 
 const Option = styled.fieldset`
   padding: 10px 15px;
@@ -48,8 +49,15 @@ export default function ApiRefTable({ tabIndex }: any) {
           tabIndex={tabIndex}
           href="https://github.com/bluebill1049/react-hook-form/blob/master/examples/arrayFields.tsx"
           title="example for array fields"
+          onClick={() => {
+            track({
+              category: 'API',
+              label: 'check out array field example',
+              action: 'go to array field example'
+            })
+          }}
         >
-          Check out the example
+          Check out the array fields example
         </Link>
         .
       </p>

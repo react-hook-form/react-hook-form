@@ -9,6 +9,7 @@ import Form from './Form';
 import Header from './Header';
 import CodeCompareSection from './CodeCompareSection';
 import CodePerfCompareSection from './CodePerfCompareSection';
+import track from './utils/track';
 
 const Setting = React.lazy(() => import('./Setting'));
 const Builder = React.lazy(() => import('./Builder'));
@@ -133,25 +134,22 @@ function App() {
     });
   }, []);
 
-  useEffect(
-    () => {
-      const pathName = window.location.pathname;
-      if (pathName === '/api') {
-        toggleApi(true);
-        toggleBuilder(false);
-        document.body.style.overflow = 'hidden';
-      } else if (pathName === '/builder') {
-        toggleApi(false);
-        toggleBuilder(true);
-        document.body.style.overflow = 'hidden';
-      } else {
-        toggleApi(false);
-        toggleBuilder(false);
-        document.body.style.overflow = 'auto';
-      }
-    },
-    [window.location.pathname],
-  );
+  useEffect(() => {
+    const pathName = window.location.pathname;
+    if (pathName === '/api') {
+      toggleApi(true);
+      toggleBuilder(false);
+      document.body.style.overflow = 'hidden';
+    } else if (pathName === '/builder') {
+      toggleApi(false);
+      toggleBuilder(true);
+      document.body.style.overflow = 'hidden';
+    } else {
+      toggleApi(false);
+      toggleBuilder(false);
+      document.body.style.overflow = 'auto';
+    }
+  }, [window.location.pathname]);
 
   const Buttons = (
     <ButtonGroup
@@ -257,19 +255,67 @@ function App() {
 
           <Footer>
             Build with ♡ by{' '}
-            <a href="https://twitter.com/bluebill1049" target="_blank" tabIndex={tabIndex} title="Bill Luo Twitter">
+            <a
+              href="https://twitter.com/bluebill1049"
+              onClick={() => {
+                track({
+                  category: 'Home Footer CTA',
+                  label: 'Twitter',
+                  action: 'go to Twitter',
+                });
+              }}
+              target="_blank"
+              tabIndex={tabIndex}
+              title="Bill Luo Twitter"
+            >
               @Bill Luo
             </a>{' '}
             with{' '}
-            <a href="https://github.com/bluebill1049/react-hook-form" target="_blank" tabIndex={tabIndex} title="React Hook Form Github">
+            <a
+              onClick={() => {
+                track({
+                  category: 'Home Footer CTA',
+                  label: 'React Hook Form',
+                  action: 'go to github',
+                });
+              }}
+              href="https://github.com/bluebill1049/react-hook-form"
+              target="_blank"
+              tabIndex={tabIndex}
+              title="React Hook Form Github"
+            >
               React Hook Form
             </a>{' '}
             +{' '}
-            <a href="https://github.com/bluebill1049/react-simple-animate" target="_blank" tabIndex={tabIndex} title="React Simple Animate Github">
+            <a
+              onClick={() => {
+                track({
+                  category: 'Home Footer CTA',
+                  label: 'RSA',
+                  action: 'go to RSA',
+                });
+              }}
+              href="https://github.com/bluebill1049/react-simple-animate"
+              target="_blank"
+              tabIndex={tabIndex}
+              title="React Simple Animate Github"
+            >
               React Simple Animate
             </a>{' '}
             +{' '}
-            <a href="https://github.com/bluebill1049/react-simple-img" target="_blank" tabIndex={tabIndex} title="React Simple Img Github">
+            <a
+              onClick={() => {
+                track({
+                  category: 'Home Footer CTA',
+                  label: 'RSI',
+                  action: 'go to RSI',
+                });
+              }}
+              href="https://github.com/bluebill1049/react-simple-img"
+              target="_blank"
+              tabIndex={tabIndex}
+              title="React Simple Img Github"
+            >
               React Simple Img
             </a>
           </Footer>

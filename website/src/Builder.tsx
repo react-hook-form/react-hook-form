@@ -7,6 +7,7 @@ import SortableContainer from './SortableContainer';
 import { SubHeading, HeadingWithTopMargin, Error, Title } from './styles/typography';
 import { setHomePage } from './ButtonGroup';
 import SyntaxHighlighterWithCopy from './SyntaxHighlighterWithCopy';
+import track from "./utils/track";
 
 const errorStyle = { border: `1px solid ${colors.secondary}`, background: colors.errorPink };
 
@@ -397,7 +398,13 @@ function Builder({
                     </fieldset>
                   </Animate>
 
-                  <SubmitButton tabIndex={tabIndex} type="submit" value={editIndex >= 0 ? 'Update' : 'Create'} />
+                  <SubmitButton onClick={() => {
+                    track({
+                      category: 'Builder',
+                      label: editIndex >= 0 ? 'Update' : 'Create',
+                      action: 'Builder Submit'
+                    })
+                  }} tabIndex={tabIndex} type="submit" value={editIndex >= 0 ? 'Update' : 'Create'} />
 
                   <Title
                     style={{
@@ -426,6 +433,11 @@ function Builder({
                         type="button"
                         color="white"
                         onClick={() => {
+                          track({
+                            category: 'Builder',
+                            label: 'Generate form',
+                            action: 'Generate form'
+                          })
                           toggleBuilder(false);
                           builderButton.current.focus();
                           document.body.style.overflow = 'auto';
