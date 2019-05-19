@@ -114,6 +114,13 @@ export default function useForm(
     validateAndStateUpdateRef.current,
   );
 
+  const setValue = (name: string, value: string | number | boolean): void => {
+    const field = fieldsRef.current[name];
+    if (!field) return;
+    const elm = field.ref;
+    if (elm.type) elm[isCheckBoxInput(elm.type) ? 'checked' : 'value'] = value;
+  };
+
   function registerIntoFieldsRef(elementRef, data = { required: false, validate: undefined }): void {
     if (elementRef && !elementRef.name) return warnMissingRef(elementRef);
 
@@ -132,9 +139,6 @@ export default function useForm(
         : -1;
 
     if ((!isRadio && field) || (isRadio && existRadioOptionIndex > -1)) return;
-    if (defaultValues && defaultValues[name]) {
-      elementRef[isCheckBoxInput(type) ? 'checked' : 'value'] = defaultValues[name];
-    }
 
     if (isRadio) {
       if (!field) fields[name] = { options: [], required, validate, ref: { type: 'radio', name } };
@@ -149,6 +153,10 @@ export default function useForm(
         ...inputData,
         mutationWatcher: onDomRemove(elementRef, (): Function => removeEventListener(inputData, true)),
       };
+    }
+
+    if (defaultValues && defaultValues[name]) {
+      setValue(name, defaultValues[name]);
     }
 
     attachEventListeners({
@@ -302,6 +310,7 @@ export default function useForm(
     unSubscribe,
     reset,
     setError,
+    setValue,
     errors: errorsRef.current,
     formState: {
       dirty: isDirtyRef.current,

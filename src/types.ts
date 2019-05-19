@@ -80,6 +80,7 @@ export interface UseFormFunctions {
   ) => FieldValue | FieldValue[] | undefined;
   unSubscribe: VoidFunction;
   reset: VoidFunction;
+  setValue: (name: string, value: string | number | boolean) => void;
   setError: (name: string, type: string, message?: string, ref?: Ref) => void;
   formState: {
     dirty: boolean;
