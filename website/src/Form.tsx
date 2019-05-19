@@ -96,7 +96,7 @@ const SettingWords = styled.span`
   }
 `;
 
-const errorStyle = { border: `1px solid ${colors.secondary}`, background: colors.errorPink };
+const errorStyle = { border: `1px solid ${colors.secondary}`, background: colors.errorPink, borderLeft: `10px solid ${colors.lightPink}` };
 
 export default function Form({
   tabIndex,
