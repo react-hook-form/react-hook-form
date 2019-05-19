@@ -17,6 +17,7 @@ import ApiWatch from './ApiWatch';
 import ApiErrors from './ApiErrors';
 import handleSubmitCode from './codeExamples/handleSubmitCode';
 import setError from './codeExamples/setError';
+import setValue from "./codeExamples/setValue";
 
 const CodeAsLink = styled(Link)`
   cursor: pointer;
@@ -133,6 +134,7 @@ const links = [
   'handleSubmit',
   'reset',
   'setError',
+  'setValue',
   'formState',
   // 'validationSchema',
 ];
@@ -237,6 +239,7 @@ function Builder({ formData, showApi, toggleApi, apiButton, isMobile }: any) {
                     <CodeAsLink onClick={() => goToSection('handleSubmit')}>handleSubmit</CodeAsLink>,{' '}
                     <CodeAsLink onClick={() => goToSection('reset')}>reset</CodeAsLink>,{' '}
                     <CodeAsLink onClick={() => goToSection('setError')}>setError</CodeAsLink>,{' '}
+                    <CodeAsLink onClick={() => goToSection('setValue')}>setValue</CodeAsLink>,{' '}
                     <CodeAsLink onClick={() => goToSection('formState')}>formState</CodeAsLink>,{' '}
                     <CodeAsLink onClick={() => goToSection('watch')}>watch</CodeAsLink> and{' '}
                     <CodeAsLink onClick={() => goToSection('formState')}>formState</CodeAsLink>.
@@ -432,6 +435,26 @@ function Builder({ formData, showApi, toggleApi, apiButton, isMobile }: any) {
                     tabIndex={tabIndex}
                     rawData={setError}
                     url="https://codesandbox.io/s/o7rxyym3q5"
+                  />
+
+                  <hr />
+
+                  <code
+                    ref={ref => {
+                      // @ts-ignore
+                      apiSectionsRef.current.setValueRef = ref;
+                    }}
+                  >
+                    <h2>
+                      setValue: <Type>(name: string, value: string | number | boolean) => void</Type>
+                    </h2>
+                  </code>
+                  <p>This function allows you to dynamically set input/select value.</p>
+
+                  <SyntaxHighlighterWithCopy
+                    tabIndex={tabIndex}
+                    rawData={setValue}
+                    url="https://codesandbox.io/s/react-hook-form-set-inputselect-value-c46ly"
                   />
 
                   <hr />
