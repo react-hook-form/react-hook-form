@@ -61,6 +61,16 @@ export const LinkToSandBox = styled.a`
   }
 `;
 
+const SyntaxHighlighterWrapper = styled.div`
+  pre {
+    padding-top: 50px !important;
+    
+    @media (min-width: 1024px) {
+      padding-top: 20px !important;  
+    }
+  }
+`;
+
 export default function SyntaxHighlighterWithCopy({ rawData, data, url, tabIndex, withOutCopy }: any) {
   return (
     <div
@@ -84,6 +94,7 @@ export default function SyntaxHighlighterWithCopy({ rawData, data, url, tabIndex
           CodeSandbox
         </LinkToSandBox>
       )}
+      <SyntaxHighlighterWrapper>
       <SyntaxHighlighter
         customStyle={{
           border: 'none',
@@ -93,6 +104,7 @@ export default function SyntaxHighlighterWithCopy({ rawData, data, url, tabIndex
       >
         {rawData || generateCode(data)}
       </SyntaxHighlighter>
+      </SyntaxHighlighterWrapper>
     </div>
   );
 }

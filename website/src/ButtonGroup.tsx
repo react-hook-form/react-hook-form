@@ -94,12 +94,17 @@ const ActionButtonGroup = styled.div`
     position: inherit;
     background: none;
     border: none;
-    max-width: 470px;
+    max-width: 400px;
     margin: 0 auto;
-    padding: 15px 10px;
+    padding: 15px 0;
     background: ${colors.buttonBlue};
     border-radius: 0 0 15px 15px;
     box-shadow: 0 0 10px 0 #000;
+  }
+    
+  @media (min-width: 1024px) {
+    max-width: 470px;
+    padding: 15px 10px;
   }
 
   & > button {
@@ -202,7 +207,6 @@ export default function ButtonGroup({
       <GitHubButtonWrap>
         <GitHubButton
           href="https://github.com/bluebill1049/react-hook-form"
-          data-icon="octicon-star"
           data-size="large"
           data-show-count="true"
           aria-label="Star bluebill1049/react-hook-form on GitHub"

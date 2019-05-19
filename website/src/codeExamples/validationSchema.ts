@@ -1,5 +1,4 @@
-export default `
-import React from 'react'
+export default `import React from 'react'
 import ReactDOM from 'react-dom'
 import useForm from 'react-hook-form'
 import * as yup from 'yup'
