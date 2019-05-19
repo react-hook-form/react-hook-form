@@ -243,8 +243,8 @@ function Builder({ formData, showApi, toggleApi, apiButton, isMobile }: any) {
                   </p>
 
                   <p>
-                    <code>useForm</code> also has <b>optional</b> argument, which is <code>mode</code> and{' '}
-                    <code>validationSchema</code>.
+                    <code>useForm</code> also has <b>optional</b> argument, which are <code>mode</code>,{' '}
+                    <code>defaultValues</code> and <code>validationSchema</code>.
                   </p>
 
                   <SyntaxHighlighterWithCopy
@@ -252,11 +252,17 @@ function Builder({ formData, showApi, toggleApi, apiButton, isMobile }: any) {
                     withOutCopy
                     rawData={`const { register } = useForm({
   mode: 'onBlur',
+  defaultValues: {
+    firstName: 'bill',
+    lastName: 'luo'
+  },
   validationSchema: {},
 });`}
                   />
 
-                  <H5><code>mode</code></H5>
+                  <H5>
+                    <code>mode</code>
+                  </H5>
 
                   <TableWrapper>
                     <Table>
@@ -305,7 +311,33 @@ function Builder({ formData, showApi, toggleApi, apiButton, isMobile }: any) {
                     </Table>
                   </TableWrapper>
 
-                  <H5 style={{ marginTop: 20 }}><code>validationSchema</code></H5>
+                  <H5 style={{ marginTop: 20 }}>
+                    <code>defaultValues</code>
+                  </H5>
+
+                  <p>
+                    You can set set input default value with <code>defaultValue/defaultChecked</code>{' '}
+                    <Link href="https://reactjs.org/docs/uncontrolled-components.html">
+                      (read more at React doc for uncontrolled input default value)
+                    </Link>{' '}
+                    or invoke <code>useForm</code> and pass `defaultValues` for the entire form.
+                  </p>
+
+                  <SyntaxHighlighterWithCopy
+                    url="https://codesandbox.io/s/react-hook-form-defaultvalues-n5gvx"
+                    tabIndex={tabIndex}
+                    rawData={`const { register } = useForm({
+  defaultValues: {
+    firstName: "bill",
+    lastName: "luo",
+    email: "bluebill1049@hotmail.com"
+  }
+});`}
+                  />
+
+                  <H5 style={{ marginTop: 20 }}>
+                    <code>validationSchema</code>
+                  </H5>
 
                   <p>
                     Apply form validation rules at the schema level, please refer the{' '}

@@ -12,16 +12,13 @@ function YourForm() {
     {/* handleSubmit will validation your inputs before invoking onSubmit */}
     <form onSubmit={handleSubmit(onSubmit)}>
       {/* register your input into Hook by invoking the register function */}
-      <input type="text" name="example" ref={register} />
+      <input type="text" name="example" defaultValue="test" ref={register} />
       
       {/* include validation with required or other standard HTML validation rules */}
-      <input
-        type="text"
-        name="exampleRequired"
-        ref={register({ required: true, maxLength: 10 })}
-      />
+      <input type="text" name="exampleRequired" ref={register({ required: true })} />
       {/* errors will return when field validation failed  */}
       {errors.example && '<span>This field is required</span>'}
+      
       <input type="submit" />
     </form>
   )
