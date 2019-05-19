@@ -5,6 +5,7 @@ import colors from './styles/colors';
 import { AnimateGroup, Animate } from 'react-simple-animate';
 import video from './assets/react-hook-form-demo-video.mp4';
 import FeaturesList from './FeaturesList';
+import track from "./utils/track";
 
 const Logo = styled.svg`
   height: 80px;
@@ -125,6 +126,11 @@ export default function Header({ homeRef, toggleApi, tabIndex }: any) {
           <button
             tabIndex={tabIndex}
             onClick={() => {
+              track({
+                category: 'Home CTA',
+                label: 'Demo',
+                action: 'go to demo'
+              })
               if (homeRef.current) {
                 // @ts-ignore
                 homeRef.current.scrollIntoView({ behavior: 'smooth' });
@@ -137,6 +143,11 @@ export default function Header({ homeRef, toggleApi, tabIndex }: any) {
             tabIndex={tabIndex}
             onClick={() => {
               toggleApi(true);
+              track({
+                category: 'Home CTA',
+                label: 'API',
+                action: 'go to API'
+              })
               document.title = 'React hook form - API';
               window.history.pushState({ page: 'React hook form - API' }, 'React hook form - API', '/api');
             }}
@@ -146,7 +157,13 @@ export default function Header({ homeRef, toggleApi, tabIndex }: any) {
         </HeadingButtons>
       </Head>
 
-      <Video controls autoPlay playsInline muted>
+      <Video controls autoPlay playsInline muted onClick={() => {
+        track({
+          category: 'video',
+          label: 'video',
+          action: 'play/pause video'
+        })
+      }}>
         <source src={video} type="video/mp4" />
       </Video>
 

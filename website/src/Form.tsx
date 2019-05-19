@@ -4,6 +4,7 @@ import colors from './styles/colors';
 import { Animate } from 'react-simple-animate';
 import styled from 'styled-components';
 import Setting from './svgs/setting';
+import track from './utils/track';
 
 const Code = styled.pre`
   text-align: left;
@@ -89,11 +90,11 @@ const SettingIcon = styled.button`
 
 const SettingWords = styled.span`
   display: none;
-  
+
   @media (min-width: 1500px) {
     display: inline-block;
   }
-`
+`;
 
 const errorStyle = { border: `1px solid ${colors.secondary}`, background: colors.errorPink };
 
@@ -265,12 +266,7 @@ export default function Form({
           <section>
             <Title>Errors</Title>
             {!Object.keys(errors).length && <p>ⓘ Press submit to trigger validation error.</p>}
-            <Animate
-              duration={0.8}
-              play={!!Object.keys(errors).length}
-              start={{ opacity: 0 }}
-              end={{ opacity: 1 }}
-            >
+            <Animate duration={0.8} play={!!Object.keys(errors).length} start={{ opacity: 0 }} end={{ opacity: 1 }}>
               <Code>
                 {Object.keys(errors).length
                   ? JSON.stringify(
@@ -303,24 +299,21 @@ export default function Form({
           </section>
         )}
 
-        {setting.showTouch &&<section>
-          <Title>Touched</Title>
-          {!Object.keys(touched).length && <p>ⓘ Touched fields will display here.</p>}
-          <Animate duration={0.8} play={touched.length} start={{ opacity: 0 }} end={{ opacity: 1 }}>
-            <Code>{JSON.stringify(touched, null, 2)}</Code>
-          </Animate>
-        </section>}
+        {setting.showTouch && (
+          <section>
+            <Title>Touched</Title>
+            {!Object.keys(touched).length && <p>ⓘ Touched fields will display here.</p>}
+            <Animate duration={0.8} play={touched.length} start={{ opacity: 0 }} end={{ opacity: 1 }}>
+              <Code>{JSON.stringify(touched, null, 2)}</Code>
+            </Animate>
+          </section>
+        )}
 
         {setting.showSubmit && (
           <section>
             <Title>Submit</Title>
             {!Object.keys(submitData).length && <p>ⓘ Successful submit values will display here.</p>}
-            <Animate
-              duration={0.8}
-              play={!!Object.keys(submitData).length}
-              start={{ opacity: 0 }}
-              end={{ opacity: 1 }}
-            >
+            <Animate duration={0.8} play={!!Object.keys(submitData).length} start={{ opacity: 0 }} end={{ opacity: 1 }}>
               <Code>{Object.keys(submitData).length ? JSON.stringify(submitData, null, 2) : ''}</Code>
             </Animate>
           </section>
@@ -334,7 +327,18 @@ export default function Form({
       >
         <H1>Find it useful and interesting?</H1>
         <p>Checkout the full API documentation in a single page</p>
-        <Button onClick={() => toggleApi(true)}>Checkout Hook API</Button>
+        <Button
+          onClick={() => {
+            track({
+              category: 'CTA',
+              label: 'Checkout hook API',
+              action: 'Go to API section',
+            });
+            toggleApi(true);
+          }}
+        >
+          Checkout Hook API
+        </Button>
       </section>
     </>
   );

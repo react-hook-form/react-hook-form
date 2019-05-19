@@ -4,6 +4,7 @@ import colors from './styles/colors';
 import { Animate } from 'react-simple-animate';
 import Setting from './svgs/setting';
 import GitHubButton from 'react-github-btn';
+import track from "./utils/track";
 
 const GithubIcon = styled.span`
   position: absolute;
@@ -173,7 +174,13 @@ export default function ButtonGroup({
   return (
     <>
       <GithubIcon>
-        <a href="https://github.com/bluebill1049/react-hook-form" target="_blank" title="React Hook Form Github">
+        <a onClick={() => {
+          track({
+            category: 'Github',
+            label: 'Github',
+            action: 'Go to Github'
+          })
+        }} href="https://github.com/bluebill1049/react-hook-form" target="_blank" title="React Hook Form Github">
           <svg viewBox="0 0 496 512" height="40" aria-hidden="true" focusable="false" fill="currentColor">
             <path
               fill="white"
@@ -184,6 +191,13 @@ export default function ButtonGroup({
       </GithubIcon>
       <MediumIcon>
         <a
+          onClick={() =>  {
+            track({
+              category: 'Medium',
+              label: 'Medium',
+              action: 'Go to Medium'
+            })
+          }}
           href="https://medium.com/@bruce1049/form-validation-with-hook-in-3kb-c5414edf7d64"
           target="_blank"
           title="React Form validation under 3K"
@@ -206,6 +220,13 @@ export default function ButtonGroup({
 
       <GitHubButtonWrap>
         <GitHubButton
+          onClick={() =>  {
+            track({
+              category: 'Github',
+              label: 'Github',
+              action: 'star repo'
+            })
+          }}
           href="https://github.com/bluebill1049/react-hook-form"
           data-size="large"
           data-show-count="true"
@@ -220,6 +241,11 @@ export default function ButtonGroup({
           tabIndex={tabIndex}
           active={pathname === '/'}
           onClick={() => {
+            track({
+              category: 'mainNav',
+              label: 'form',
+              action: 'go to Demo'
+            })
             toggleApi(false);
             toggleBuilder(false);
             document.title =
@@ -252,6 +278,11 @@ export default function ButtonGroup({
               setHomePage();
             } else {
               toggleApi(true);
+              track({
+                category: 'mainNav',
+                label: 'builder',
+                action: 'go to API'
+              })
               document.title = 'React hook form - API';
               window.history.pushState({ page: 'React hook form - API' }, 'React hook form - API', '/api');
             }
@@ -307,7 +338,14 @@ export default function ButtonGroup({
             <Button
               className="App-setting"
               style={style}
-              onClick={() => toggleSetting(!showSetting)}
+              onClick={() => {
+                toggleSetting(!showSetting);
+                track({
+                  category: 'mainNav',
+                  label: 'setting',
+                  action: 'go to setting'
+                })
+              }}
               ref={settingButton}
             >
               <Setting />

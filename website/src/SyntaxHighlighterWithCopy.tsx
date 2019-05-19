@@ -5,6 +5,7 @@ import generateCode from './logic/generateCode';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { xonokai } from 'react-syntax-highlighter/dist/styles/prism';
 import colors from './styles/colors';
+import track from './utils/track';
 
 const CopyButton = styled.button`
   background: ${colors.lightBlue};
@@ -64,9 +65,9 @@ export const LinkToSandBox = styled.a`
 const SyntaxHighlighterWrapper = styled.div`
   pre {
     padding-top: 50px !important;
-    
+
     @media (min-width: 1024px) {
-      padding-top: 20px !important;  
+      padding-top: 20px !important;
     }
   }
 `;
@@ -78,32 +79,50 @@ export default function SyntaxHighlighterWithCopy({ rawData, data, url, tabIndex
         position: 'relative',
       }}
     >
-      {!withOutCopy && <CopyButton
-        tabIndex={tabIndex}
-        onClick={() => {
-          rawData || copyClipBoard(generateCode(data));
-          alert('Code copied into your clipboard.');
-        }}
-        aria-label="Copy code into your clipboard"
-      >
-        Copy to clipboard
-      </CopyButton>}
+      {!withOutCopy && (
+        <CopyButton
+          tabIndex={tabIndex}
+          onClick={() => {
+            track({
+              label: 'copy',
+              category: 'CodeExample',
+              action: 'copy code',
+            });
+            rawData || copyClipBoard(generateCode(data));
+            alert('Code copied into your clipboard.');
+          }}
+          aria-label="Copy code into your clipboard"
+        >
+          Copy to clipboard
+        </CopyButton>
+      )}
 
       {url && (
-        <LinkToSandBox tabIndex={tabIndex} href={url} target="_blank">
+        <LinkToSandBox
+          onClick={() => {
+            track({
+              label: 'CodeSandbox',
+              category: 'CodeExample',
+              action: `Go to codeSandBox ${url}`,
+            });
+          }}
+          tabIndex={tabIndex}
+          href={url}
+          target="_blank"
+        >
           CodeSandbox
         </LinkToSandBox>
       )}
       <SyntaxHighlighterWrapper>
-      <SyntaxHighlighter
-        customStyle={{
-          border: 'none',
-        }}
-        style={xonokai}
-        language={'jsx'}
-      >
-        {rawData || generateCode(data)}
-      </SyntaxHighlighter>
+        <SyntaxHighlighter
+          customStyle={{
+            border: 'none',
+          }}
+          style={xonokai}
+          language={'jsx'}
+        >
+          {rawData || generateCode(data)}
+        </SyntaxHighlighter>
       </SyntaxHighlighterWrapper>
     </div>
   );

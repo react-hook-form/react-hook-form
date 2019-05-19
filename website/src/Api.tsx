@@ -17,7 +17,8 @@ import ApiWatch from './ApiWatch';
 import ApiErrors from './ApiErrors';
 import handleSubmitCode from './codeExamples/handleSubmitCode';
 import setError from './codeExamples/setError';
-import setValue from "./codeExamples/setValue";
+import setValue from './codeExamples/setValue';
+import track from './utils/track';
 
 const CodeAsLink = styled(Link)`
   cursor: pointer;
@@ -160,6 +161,11 @@ function Builder({ formData, showApi, toggleApi, apiButton, isMobile }: any) {
 
   const goToSection = name => {
     const refName = `${name}Ref`;
+    track({
+      category: 'GoToSection',
+      label: 'Go to section',
+      action: `Go to section ${refName}`,
+    });
     if (apiSectionsRef.current[refName]) {
       apiSectionsRef.current[refName].scrollIntoView({ behavior: 'smooth' });
     }
