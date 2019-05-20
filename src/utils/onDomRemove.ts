@@ -2,14 +2,16 @@ import { Ref, MutationWatcher } from '../types';
 
 export default function onDomRemove(element: Ref, onDetachCallback: () => void): MutationWatcher {
   const observer = new MutationObserver((): void => {
-    function isDetached(el): boolean {
-      if (el.parentNode === window.document) {
+    function isDetached(element): boolean {
+      if (!element || !element.parentNode) return true;
+
+      if (element.parentNode === window.document) {
         return false;
-      } else if (el.parentNode === null) {
+      } else if (element.parentNode === null) {
         return true;
       }
 
-      return isDetached(el.parentNode);
+      return isDetached(element.parentNode);
     }
 
     if (isDetached(element)) {

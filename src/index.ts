@@ -118,7 +118,7 @@ export default function useForm(
     const field = fieldsRef.current[name];
     if (!field) return;
     const elm = field.ref;
-    if (elm.type) elm[isCheckBoxInput(elm.type) ? 'checked' : 'value'] = value;
+    elm[isCheckBoxInput(elm.type) ? 'checked' : 'value'] = value;
   };
 
   function registerIntoFieldsRef(elementRef, data: RegisterInput | undefined): void {
@@ -138,7 +138,11 @@ export default function useForm(
         ? field.options.findIndex(({ ref }): boolean => value === ref.value)
         : -1;
 
-    if (!type || (!isRadio && field) || (isRadio && existRadioOptionIndex > -1)) return;
+    if ((!isRadio && field) || (isRadio && existRadioOptionIndex > -1)) return;
+    if (!type) {
+      fields[name] = { ref: { name } };
+      return;
+    }
 
     if (isRadio) {
       if (!field) fields[name] = { options: [], required, validate, ref: { type: 'radio', name } };
