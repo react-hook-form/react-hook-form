@@ -1,7 +1,16 @@
-import React from 'react';
-import ReactDOM from 'react-dom';
-import useForm from 'react-hook-form';
-import Input from '@material-ui/core/Input'; // you will need to install masterial ui
+import React, { useState } from "react";
+import ReactDOM from "react-dom";
+import useForm from "react-hook-form";
+import Input from "@material-ui/core/Input";
+import Select from "react-select";
+
+import "./index.css";
+
+const options = [
+  { value: "chocolate", label: "Chocolate" },
+  { value: "strawberry", label: "Strawberry" },
+  { value: "vanilla", label: "Vanilla" }
+];
 
 const MyInput = ({ name, label, register }) => {
   return (
@@ -13,9 +22,17 @@ const MyInput = ({ name, label, register }) => {
 };
 
 function App() {
-  const { register, handleSubmit } = useForm();
+  const { register, handleSubmit, setValue } = useForm();
   const onSubmit = data => {
     alert(JSON.stringify(data, null));
+  };
+  const [values, setReactSelect] = useState({
+    selectedOption: []
+  });
+
+  const handleMultiChange = selectedOption => {
+    setValue("reactSelect", selectedOption);
+    setReactSelect({ selectedOption });
   };
 
   return (
@@ -23,12 +40,29 @@ function App() {
       <form onSubmit={handleSubmit(onSubmit)}>
         <div>
           <Input
+            style={{
+              marginBottom: "20px"
+            }}
             name="HelloWorld"
             inputRef={register}
-            defaultValue="Hello world"
+            placeholder="Title"
             inputProps={{
-              'aria-label': 'Description',
+              "aria-label": "Description"
             }}
+          />
+        </div>
+
+        <div>
+          <lable className="reactSelectLabel">React select</lable>
+          <Select
+            className="reactSelect"
+            name="filters"
+            placeholder="Filters"
+            value={values.selectedOption}
+            options={options}
+            onChange={handleMultiChange}
+            ref={e => register({ name: "reactSelect" })}
+            isMulti
           />
         </div>
 
@@ -43,7 +77,12 @@ function App() {
 
         <div>
           <label htmlFor="email">Email</label>
-          <input name="email" placeholder="bluebill1049@hotmail.com" type="email" ref={register} />
+          <input
+            name="email"
+            placeholder="bluebill1049@hotmail.com"
+            type="email"
+            ref={register}
+          />
         </div>
         <button type="submit">Submit</button>
       </form>
@@ -51,5 +90,5 @@ function App() {
   );
 }
 
-const rootElement = document.getElementById('root');
+const rootElement = document.getElementById("root");
 ReactDOM.render(<App />, rootElement);

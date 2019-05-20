@@ -8176,10 +8176,10 @@ react-github-btn@^1.0.5:
   dependencies:
     github-buttons "^2.2.9"
 
-react-hook-form@^3.5.0:
-  version "3.5.0"
-  resolved "https://registry.yarnpkg.com/react-hook-form/-/react-hook-form-3.5.0.tgz#a00953bcd3da523110cdd9a78ab542624d47e83e"
-  integrity sha512-2CwdNCmgO4353s+nPvfNwqEp65rSLnxOUakmP4TA90EyAwSoZMWZmh8xm1UPkzhduWB19fCgIsTYXKP4m7JC+Q==
+react-hook-form@3.7.1:
+  version "3.7.1"
+  resolved "https://registry.yarnpkg.com/react-hook-form/-/react-hook-form-3.7.1.tgz#b6ff83cf7a1379de342e1e33b1700ded9ced062b"
+  integrity sha512-wWI5GR7NpANEvb0jUI8AVUTpjvEz5uQKjV8lwawGPVN1yhS28xRxx8CNBXJvrRRixAGRhSX1KwUHV5Am1S4t0g==
 
 react-is@^16.6.0, react-is@^16.8.1:
   version "16.8.4"
