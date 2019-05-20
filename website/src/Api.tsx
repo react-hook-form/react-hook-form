@@ -163,7 +163,7 @@ function Builder({ formData, showApi, toggleApi, apiButton, isMobile }: any) {
     const refName = `${name}Ref`;
     track({
       category: 'GoToSection',
-      label: 'Go to section',
+      label: `Go to section ${refName}`,
       action: `Go to section ${refName}`,
     });
     if (apiSectionsRef.current[refName]) {
