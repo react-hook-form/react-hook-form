@@ -1,11 +1,8 @@
 # React Hook Form
 
+https://github.com/bluebill1049/react-hook-form-website
+
 ## Install and start
-
-create a `.env` file and include the following line
-
-`SKIP_PREFLIGHT_CHECK=true`
-
 
     $ yarn && yarn start
     or
