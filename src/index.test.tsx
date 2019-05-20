@@ -52,7 +52,7 @@ describe('useForm', () => {
     });
 
     it('should return undefined when ref name is missing', () => {
-      expect(hookForm.register({ type: 'input' })).toBeUndefined();
+      expect(hookForm.register({ type: 'input' }, {})).toBeUndefined();
     });
 
     it('should register field and call attachEventListeners method', () => {
@@ -64,8 +64,6 @@ describe('useForm', () => {
             name: 'test',
             type: 'input',
           },
-          required: false,
-          validate: undefined,
         },
         isRadio: false,
         validateAndStateUpdate: expect.any(Function),
@@ -82,8 +80,6 @@ describe('useForm', () => {
             name: 'test',
             type: 'radio',
           },
-          required: false,
-          validate: undefined,
         },
         isRadio: true,
         validateAndStateUpdate: expect.any(Function),
@@ -142,8 +138,6 @@ describe('useForm', () => {
             name: 'test',
             type: 'input',
           },
-          required: false,
-          validate: undefined,
         },
         isRadio: false,
         validateAndStateUpdate: expect.any(Function),

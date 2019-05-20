@@ -121,11 +121,11 @@ export default function useForm(
     if (elm.type) elm[isCheckBoxInput(elm.type) ? 'checked' : 'value'] = value;
   };
 
-  function registerIntoFieldsRef(elementRef, data = { required: false, validate: undefined }): void {
+  function registerIntoFieldsRef(elementRef, data: RegisterInput | undefined): void {
     if (elementRef && !elementRef.name) return warnMissingRef(elementRef);
 
     const { name, type, value } = elementRef;
-    const { required, validate } = data;
+    const { required = false, validate = undefined } = data || {};
     const inputData = {
       ...data,
       ref: elementRef,
@@ -138,7 +138,7 @@ export default function useForm(
         ? field.options.findIndex(({ ref }): boolean => value === ref.value)
         : -1;
 
-    if ((!isRadio && field) || (isRadio && existRadioOptionIndex > -1)) return;
+    if (!type || (!isRadio && field) || (isRadio && existRadioOptionIndex > -1)) return;
 
     if (isRadio) {
       if (!field) fields[name] = { options: [], required, validate, ref: { type: 'radio', name } };
@@ -190,14 +190,16 @@ export default function useForm(
     return result === undefined ? defaultValue : result;
   }
 
-  function register(data: Ref | RegisterInput): RegisterFunction | undefined {
-    if (!data) return;
-    if (data.type) {
-      if (!data.name) {
-        warnMissingRef(data);
-        return;
-      }
-      registerIntoFieldsRef(data);
+  function register(data: Ref | RegisterInput, rules?: RegisterInput): RegisterFunction | undefined {
+    if (!data || typeof window === 'undefined') return;
+
+    if (rules && !data.name) {
+      warnMissingRef(data);
+      return;
+    }
+
+    if (data.name) {
+      registerIntoFieldsRef(data, rules);
     }
 
     return (ref): void => ref && registerIntoFieldsRef(ref, data);
