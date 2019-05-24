@@ -140,7 +140,7 @@ export default function useForm(
 
     if ((!isRadio && field) || (isRadio && existRadioOptionIndex > -1)) return;
     if (!type) {
-      fields[name] = { ref: { name } };
+      fields[name] = { ref: { name }, ...data };
       return;
     }
 

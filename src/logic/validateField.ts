@@ -39,7 +39,8 @@ export default async (
     required &&
     ((isCheckBox && !checked) ||
       (isSelectOrInput && value === '') ||
-      (isRadio && !getRadioValue(fields[name].options).isValid))
+      (isRadio && !getRadioValue(fields[name].options).isValid) ||
+      (!type && !value))
   ) {
     error[name] = {
       type: 'required',
