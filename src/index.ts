@@ -298,12 +298,19 @@ export default function useForm(
   };
 
   const setError = (name: string, type: string, message?: string, ref?: Ref): void => {
-    errorsRef.current[name] = {
-      type,
-      message,
-      ref,
-      isManual: true,
-    };
+    const errors = errorsRef.current;
+
+    if (!type && errors[name]) {
+      delete errors[name];
+    } else {
+      errors[name] = {
+        type,
+        message,
+        ref,
+        isManual: true,
+      };
+    }
+
     reRenderForm({});
   };
 
