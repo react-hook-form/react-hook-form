@@ -15,6 +15,7 @@
 - Built with performance and developer experience in mind
 - Follows HTML standard for validation
 - Tiny size without any dependency
+- uncontrolled form validation
 - Build forms quickly with the [form builder](https://react-hook-form.now.sh/builder)
 
 ## Install
