@@ -29,6 +29,7 @@
 - [Examples](https://github.com/bluebill1049/react-hook-form/tree/master/examples)
 - [Demo](https://react-hook-form.now.sh)
 - [Form Builder](https://react-hook-form.now.sh/builder)
+- [FAQs](https://react-hook-form.now.sh/faq)
 
 ## Quickstart
 
