@@ -25,17 +25,18 @@ import {
   RegisterFunction,
   FieldValue,
   RegisterInput,
+  DataType,
 } from './types';
 import isCheckBoxInput from './utils/isCheckBoxInput';
 
-export default function useForm(
+export default function useForm<Data extends DataType = DataType>(
   { mode, validationSchema, defaultValues }: Props = {
     mode: 'onSubmit',
     defaultValues: {},
   },
-): UseFormFunctions {
-  const fieldsRef = useRef<FieldsObject>({});
-  const errorsRef = useRef<ErrorMessages>({});
+): UseFormFunctions<Data> {
+  const fieldsRef = useRef({} as FieldsObject<Data>);
+  const errorsRef = useRef({} as ErrorMessages<Data>);
   const submitCountRef = useRef<number>(0);
   const touchedFieldsRef = useRef<string[]>([]);
   const watchFieldsRef = useRef<{ [key: string]: boolean }>({});
@@ -114,7 +115,7 @@ export default function useForm(
     validateAndStateUpdateRef.current,
   );
 
-  const setValue = (name: string, value: string | number | boolean): void => {
+  const setValue = <Name extends keyof Data>(name: Name, value: Data[Name]): void => {
     const field = fieldsRef.current[name];
     if (!field) return;
     const elm = field.ref;
@@ -225,8 +226,8 @@ export default function useForm(
       fieldValues = getFieldsValues(fields);
       fieldErrors = await validateWithSchema(validationSchema, fieldValues);
     } else {
-      const { errors, values }: SubmitPromiseResult = await currentFieldValues.reduce(
-        async (previous: Promise<SubmitPromiseResult>, field: Field): Promise<SubmitPromiseResult> => {
+      const { errors, values }: SubmitPromiseResult<Data> = await currentFieldValues.reduce(
+        async (previous: Promise<SubmitPromiseResult<Data>>, field: Field) => {
           const resolvedPrevious = await previous;
           const {
             ref,
@@ -248,7 +249,7 @@ export default function useForm(
         Promise.resolve({
           errors: {},
           values: {},
-        }),
+        } as SubmitPromiseResult<Data>),
       );
 
       fieldErrors = {
@@ -280,9 +281,9 @@ export default function useForm(
             : removeEventListener(field, true);
         },
       );
-    fieldsRef.current = {};
+    fieldsRef.current = {} as FieldsObject<Data>;
     watchFieldsRef.current = {};
-    errorsRef.current = {};
+    errorsRef.current = {} as ErrorMessages<Data>;
     isWatchAllRef.current = false;
     isSubmittedRef.current = false;
     isDirtyRef.current = false;
