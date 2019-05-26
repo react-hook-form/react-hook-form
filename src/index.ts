@@ -26,6 +26,7 @@ import {
   FieldValue,
   RegisterInput,
   DataType,
+  WatchFunction,
 } from './types';
 import isCheckBoxInput from './utils/isCheckBoxInput';
 
@@ -173,8 +174,8 @@ export default function useForm<Data extends DataType = DataType>(
 
   function watch(
     filedNames?: string | string[] | undefined,
-    defaultValue?: string | string[] | undefined,
-  ): FieldValue | FieldValue[] | undefined {
+    defaultValue?: string | Partial<Data> | undefined,
+  ): FieldValue | Partial<Data> | void {
     const watchFields = watchFieldsRef.current;
 
     if (typeof filedNames === 'string') {
@@ -320,7 +321,7 @@ export default function useForm<Data extends DataType = DataType>(
   return {
     register,
     handleSubmit,
-    watch,
+    watch: watch as WatchFunction<Data>,
     unSubscribe,
     reset,
     setError,

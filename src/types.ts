@@ -72,14 +72,15 @@ export type VoidFunction = () => void;
 
 export type RegisterFunction = (refOrValidateRule: RegisterInput | Ref, validateRule?: RegisterInput) => any;
 
+export type WatchFunction<Data extends DataType> = ((name?: undefined) => void)
+  & (<Name extends keyof Data>(fieldName: Name, defaultValue?: Data[Name]) => Data[Name])
+  & (<Names extends keyof Data>(fieldNames: Names[], defaultValue?: Pick<Data, Names>) => Pick<Data, Names>);
+
 export interface UseFormFunctions<Data extends DataType = DataType> {
   register: RegisterFunction;
   handleSubmit: (func: OnSubmit<Data>) => any;
   errors: ErrorMessages<Data>;
-  watch: (
-    filedNames?: keyof Data | Array<keyof Data> | undefined,
-    defaultValue?: keyof Data | Array<keyof Data> | undefined,
-  ) => FieldValue | FieldValue[] | undefined;
+  watch: WatchFunction<Data>;
   unSubscribe: VoidFunction;
   reset: VoidFunction;
   setValue: <Name extends keyof Data>(name: Name, value: Data[Name]) => void;
