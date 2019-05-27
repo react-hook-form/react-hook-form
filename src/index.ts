@@ -303,7 +303,7 @@ export default function useForm(
     if (!type && errors[name]) {
       delete errors[name];
       reRenderForm({});
-    } else if (type) {
+    } else if (type) { // can be improved with performance
       errors[name] = {
         type,
         message,
