@@ -22,6 +22,11 @@ describe('findMissDomAndClean', () => {
 
   it('should remove options completely if option found and no option left', () => {
     document.body.contains = jest.fn(() => false);
+
+    const ref = document.createElement('input');
+    ref.setAttribute('name', 'test');
+    ref.setAttribute('type', 'radio');
+
     const disconnect = jest.fn();
     const fields = {
       test: {
@@ -47,7 +52,7 @@ describe('findMissDomAndClean', () => {
             mutationWatcher: {
               disconnect,
             },
-            ref: {},
+            ref,
           },
         ],
       }),
@@ -55,6 +60,9 @@ describe('findMissDomAndClean', () => {
   });
 
   it('should remove none radio field when found', () => {
+    const ref = document.createElement('input');
+    ref.setAttribute('name', 'test');
+    ref.setAttribute('type', 'radio');
     document.body.contains = jest.fn(() => false);
     const disconnect = jest.fn();
     const fields = {
@@ -73,7 +81,7 @@ describe('findMissDomAndClean', () => {
 
     expect(
       findRemovedFieldAndRemoveListener(fields, () => {}, {
-        ref: { name: 'test', type: 'text' },
+        ref,
         mutationWatcher: {
           disconnect,
         },
@@ -92,6 +100,9 @@ describe('findMissDomAndClean', () => {
   });
 
   it('should work for radio type input', () => {
+    const ref = document.createElement('input');
+    ref.setAttribute('name', 'test');
+    ref.setAttribute('type', 'radio');
     document.body.contains = jest.fn(() => false);
     const disconnect = jest.fn();
     const fields = {
@@ -113,12 +124,52 @@ describe('findMissDomAndClean', () => {
     expect(
       findRemovedFieldAndRemoveListener(fields, () => {}, {
         ref: { name: 'test', type: 'radio' },
-        options: [
-          { ref: 'test'}
-        ],
+        options: [{ ref }],
         mutationWatcher: {
           disconnect,
         },
+      }),
+    ).toMatchSnapshot();
+  });
+
+  it('should not remove event listner when type is not Element', () => {
+    document.body.contains = jest.fn(() => false);
+
+    const disconnect = jest.fn();
+    const fields = {
+      test: {
+        name: 'test',
+        ref: {},
+        options: [
+          {
+            ref: 'test',
+            mutationWatcher: {
+              disconnect,
+            },
+          },
+        ],
+      },
+    };
+
+    expect(
+      // @ts-ignore
+      findRemovedFieldAndRemoveListener(fields, () => {}, {
+        ref: { name: 'test', type: 'text' },
+        options: [
+          {
+            mutationWatcher: {
+              disconnect,
+            },
+            ref: {},
+          },
+        ],
+      }),
+    ).toMatchSnapshot();
+
+    expect(
+      // @ts-ignore
+      findRemovedFieldAndRemoveListener(fields, () => {}, {
+        ref: { name: 'test', type: 'text' },
       }),
     ).toMatchSnapshot();
   });

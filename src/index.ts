@@ -79,7 +79,7 @@ export default function useForm(
           const shouldUpdate = ((!error && errors[name]) || error) && shouldUpdateValidateMode;
 
           if (shouldUpdate || shouldUpdateWatchMode) {
-            const errorsCopy = { ...errors, ...{ [name]: error } };
+            const errorsCopy = { ...filterUndefinedErrors(errors), ...{ [name]: error } };
             if (!error) delete errorsCopy[name];
 
             errorsRef.current = errorsCopy;
@@ -302,16 +302,16 @@ export default function useForm(
 
     if (!type && errors[name]) {
       delete errors[name];
-    } else {
+      reRenderForm({});
+    } else if (type) {
       errors[name] = {
         type,
         message,
         ref,
         isManual: true,
       };
+      reRenderForm({});
     }
-
-    reRenderForm({});
   };
 
   useEffect((): VoidFunction => unSubscribe, [mode]);
