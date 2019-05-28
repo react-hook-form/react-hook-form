@@ -16,21 +16,21 @@
 - Follows HTML standard for validation
 - Tiny size without any dependency
 - uncontrolled form validation
-- Build forms quickly with the [form builder](https://react-hook-form.now.sh/builder)
+- Build forms quickly with the [form builder](https://react-hook-form.com/builder)
 
 ## Install
 
     $ npm install react-hook-form
 
-## [Docs](https://react-hook-form.now.sh/api)
+## [Docs](https://react-hook-form.com/api)
 
 - [Motivation](https://medium.com/@bruce1049/form-validation-with-hook-in-3kb-c5414edf7d64)
-- [Get started](https://react-hook-form.now.sh/api)
-- [API](https://react-hook-form.now.sh/api)
+- [Get started](https://react-hook-form.com/api)
+- [API](https://react-hook-form.com/api)
 - [Examples](https://github.com/bluebill1049/react-hook-form/tree/master/examples)
-- [Demo](https://react-hook-form.now.sh)
-- [Form Builder](https://react-hook-form.now.sh/builder)
-- [FAQs](https://react-hook-form.now.sh/faq)
+- [Demo](https://react-hook-form.com)
+- [Form Builder](https://react-hook-form.com/builder)
+- [FAQs](https://react-hook-form.com/faq)
 
 ## Quickstart
 
