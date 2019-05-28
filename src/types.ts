@@ -85,7 +85,9 @@ export interface UseFormFunctions<Data extends DataType = DataType> {
   reset: VoidFunction;
   setValue: <Name extends keyof Data>(name: Name, value: Data[Name]) => void;
   setError: (name: keyof Data, type: string, message?: string, ref?: Ref) => void;
+  getValues: () => { [key: string]: FieldValue };
   formState: {
+    formState: {
     dirty: boolean;
     isSubmitted: boolean;
     isSubmitting: boolean;

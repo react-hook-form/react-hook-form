@@ -2,7 +2,7 @@ import getFieldValue from './getFieldValue';
 import isString from '../utils/isString';
 import { FieldValue, Ref } from '../types';
 
-export default function getFieldsValues(fields, filedName?: string | string[]): FieldValue {
+export default function getFieldsValues(fields, filedName?: string | string[]): { [key: string]: FieldValue } | {} {
   return Object.values(fields).reduce((previous, data: Ref): FieldValue => {
     const {
       ref,

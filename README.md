@@ -1,6 +1,6 @@
 <div align="right">English | <a href="https://github.com/bluebill1049/react-hook-form/blob/master/docs/README.zh-CN.md">简体中文</a></div>
 
-<div align="center"><a href="https://react-hook-form.now.sh/" title="React Hook Form - Simple React forms validation"><img src="https://raw.githubusercontent.com/bluebill1049/react-hook-form/master/website/logo.png" alt="React Hook Form Logo - React hook form validation" width="350px" /></a></div>
+<div align="center"><a href="https://react-hook-form.com" title="React Hook Form - Simple React forms validation"><img src="https://raw.githubusercontent.com/bluebill1049/react-hook-form/master/website/logo.png" alt="React Hook Form Logo - React hook form validation" width="350px" /></a></div>
 
 > React hook form validation without the hassle 
 
@@ -16,21 +16,21 @@
 - Follows HTML standard for validation
 - Tiny size without any dependency
 - uncontrolled form validation
-- Build forms quickly with the [form builder](https://react-hook-form.now.sh/builder)
+- Build forms quickly with the [form builder](https://react-hook-form.com/builder)
 
 ## Install
 
     $ npm install react-hook-form
 
-## [Docs](https://react-hook-form.now.sh/api)
+## [Docs](https://react-hook-form.com/api)
 
 - [Motivation](https://medium.com/@bruce1049/form-validation-with-hook-in-3kb-c5414edf7d64)
-- [Get started](https://react-hook-form.now.sh/api)
-- [API](https://react-hook-form.now.sh/api)
+- [Get started](https://react-hook-form.com/api)
+- [API](https://react-hook-form.com/api)
 - [Examples](https://github.com/bluebill1049/react-hook-form/tree/master/examples)
-- [Demo](https://react-hook-form.now.sh)
-- [Form Builder](https://react-hook-form.now.sh/builder)
-- [FAQs](https://react-hook-form.now.sh/faq)
+- [Demo](https://react-hook-form.com)
+- [Form Builder](https://react-hook-form.com/builder)
+- [FAQs](https://react-hook-form.com/faq)
 
 ## Quickstart
 

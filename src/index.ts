@@ -81,7 +81,7 @@ export default function useForm<Data extends DataType = DataType>(
           const shouldUpdate = ((!error && errors[name]) || error) && shouldUpdateValidateMode;
 
           if (shouldUpdate || shouldUpdateWatchMode) {
-            const errorsCopy = { ...errors, ...{ [name]: error } };
+            const errorsCopy = { ...filterUndefinedErrors(errors), ...{ [name]: error } };
             if (!error) delete errorsCopy[name];
 
             errorsRef.current = errorsCopy;
@@ -304,17 +304,19 @@ export default function useForm<Data extends DataType = DataType>(
 
     if (!type && errors[name]) {
       delete errors[name];
-    } else {
+      reRenderForm({});
+    } else if (type) { // can be improved with performance
       errors[name] = {
         type,
         message,
         ref,
         isManual: true,
       };
+      reRenderForm({});
     }
-
-    reRenderForm({});
   };
+
+  const getValues = (): { [key: string]: FieldValue } => getFieldsValues(fieldsRef.current);
 
   useEffect((): VoidFunction => unSubscribe, [mode]);
 
@@ -326,6 +328,7 @@ export default function useForm<Data extends DataType = DataType>(
     reset,
     setError,
     setValue,
+    getValues,
     errors: errorsRef.current,
     formState: {
       dirty: isDirtyRef.current,

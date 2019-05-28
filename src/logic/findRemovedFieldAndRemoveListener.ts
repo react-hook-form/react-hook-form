@@ -14,7 +14,7 @@ export default function findRemovedFieldAndRemoveListener<Data extends DataType>
   if (isRadioInput(type) && options) {
     options.forEach(
       ({ ref }, index): void => {
-        if (!document.body.contains(ref) && options && options[index]) {
+        if (ref instanceof HTMLElement && !document.body.contains(ref) && options && options[index]) {
           removeAllEventListeners(options[index], validateWithStateUpdate);
           (options[index].mutationWatcher || { disconnect: (): void => {} }).disconnect();
           options.splice(index, 1);
@@ -26,7 +26,7 @@ export default function findRemovedFieldAndRemoveListener<Data extends DataType>
       delete fields[name];
       return fields;
     }
-  } else if (!document.body.contains(ref) || forceDelete) {
+  } else if ((ref instanceof HTMLElement && !document.body.contains(ref)) || forceDelete) {
     removeAllEventListeners(ref, validateWithStateUpdate);
     if (mutationWatcher) mutationWatcher.disconnect();
     delete fields[name];
