@@ -117,8 +117,16 @@ export default function useForm(
   const setValue = (name: string, value: string | number | boolean): void => {
     const field = fieldsRef.current[name];
     if (!field) return;
-    const elm = field.ref;
-    elm[isCheckBoxInput(elm.type) ? 'checked' : 'value'] = value;
+    const { ref, options } = field;
+
+    if (isRadioInput(ref.type) && options) {
+      options.forEach(({ ref: radioRef }): void => {
+        if (radioRef.value === value) radioRef.checked = true;
+      });
+      return;
+    }
+
+    ref[isCheckBoxInput(ref.type) ? 'checked' : 'value'] = value;
   };
 
   function registerIntoFieldsRef(elementRef, data: RegisterInput | undefined): void {
@@ -303,7 +311,8 @@ export default function useForm(
     if (!type && errors[name]) {
       delete errors[name];
       reRenderForm({});
-    } else if (type) { // can be improved with performance
+    } else if (type) {
+      // can be improved with performance
       errors[name] = {
         type,
         message,
