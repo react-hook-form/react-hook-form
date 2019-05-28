@@ -314,6 +314,8 @@ export default function useForm(
     }
   };
 
+  const getValues = (): { [key: string]: FieldValue } => getFieldsValues(fieldsRef.current);
+
   useEffect((): VoidFunction => unSubscribe, [mode]);
 
   return {
@@ -324,6 +326,7 @@ export default function useForm(
     reset,
     setError,
     setValue,
+    getValues,
     errors: errorsRef.current,
     formState: {
       dirty: isDirtyRef.current,

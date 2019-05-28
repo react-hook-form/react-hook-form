@@ -82,7 +82,8 @@ export interface UseFormFunctions {
   reset: VoidFunction;
   setValue: (name: string, value: string | number | boolean) => void;
   setError: (name: string, type: string, message?: string, ref?: Ref) => void;
-  formState: {
+  getValues: () => { [key: string]: FieldValue };
+    formState: {
     dirty: boolean;
     isSubmitted: boolean;
     isSubmitting: boolean;
