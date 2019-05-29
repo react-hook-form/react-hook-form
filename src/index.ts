@@ -70,7 +70,7 @@ export default function useForm(
           shouldUpdateState = true;
         }
 
-        if (onSubmitModeNotSubmitted && shouldUpdateWatchMode) return reRenderForm({});
+        if (onSubmitModeNotSubmitted && !shouldUpdateWatchMode) return reRenderForm({});
 
         if (validationSchema) {
           const result = getFieldsValues(fields);

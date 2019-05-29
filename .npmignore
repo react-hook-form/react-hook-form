@@ -21,3 +21,8 @@ tsconfig.json
 tsconfig.jest.json
 /coverage
 /website
+.github
+/docs
+/examples
+.eslintrc.js
+CODE_OF_CONDUCT.md
