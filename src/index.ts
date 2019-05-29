@@ -36,8 +36,8 @@ export default function useForm<Data extends DataType = DataType>(
     defaultValues: {},
   },
 ): UseFormFunctions<Data> {
-  const fieldsRef = useRef({} as FieldsObject<Data>);
-  const errorsRef = useRef({} as ErrorMessages<Data>);
+  const fieldsRef = useRef<FieldsObject<Data>>({} as any);
+  const errorsRef = useRef<ErrorMessages<Data>>({} as any);
   const submitCountRef = useRef<number>(0);
   const touchedFieldsRef = useRef<string[]>([]);
   const watchFieldsRef = useRef<{ [key: string]: boolean }>({});
@@ -247,10 +247,10 @@ export default function useForm<Data extends DataType = DataType>(
           resolvedPrevious.values[name] = getFieldValue(fields, ref);
           return Promise.resolve(resolvedPrevious);
         },
-        Promise.resolve({
+        Promise.resolve<SubmitPromiseResult<Data>>({
           errors: {},
           values: {},
-        } as SubmitPromiseResult<Data>),
+        } as any),
       );
 
       fieldErrors = {
@@ -282,9 +282,9 @@ export default function useForm<Data extends DataType = DataType>(
             : removeEventListener(field, true);
         },
       );
-    fieldsRef.current = {} as FieldsObject<Data>;
+    fieldsRef.current = {} as any;
     watchFieldsRef.current = {};
-    errorsRef.current = {} as ErrorMessages<Data>;
+    errorsRef.current = {} as any;
     isWatchAllRef.current = false;
     isSubmittedRef.current = false;
     isDirtyRef.current = false;

@@ -4,7 +4,7 @@ export type Validate = (data: string | number) => boolean | string | number | Da
 
 export type NumberOrString = number | string;
 
-export type DataType = { [key: string]: FieldValue }
+export interface DataType { [key: string]: FieldValue }
 
 export type FieldValue = boolean | string | string[] | number | {};
 
@@ -87,11 +87,10 @@ export interface UseFormFunctions<Data extends DataType = DataType> {
   setError: (name: keyof Data, type: string, message?: string, ref?: Ref) => void;
   getValues: () => { [key: string]: FieldValue };
   formState: {
-    formState: {
-    dirty: boolean;
-    isSubmitted: boolean;
-    isSubmitting: boolean;
-    submitCount: number;
-    touched: string[];
-  };
+      dirty: boolean;
+      isSubmitted: boolean;
+      isSubmitting: boolean;
+      submitCount: number;
+      touched: string[];
+    };
 }
