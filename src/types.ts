@@ -4,9 +4,11 @@ export type Validate = (data: string | number) => boolean | string | number | Da
 
 export type NumberOrString = number | string;
 
+export interface DataType { [key: string]: FieldValue }
+
 export type FieldValue = boolean | string | string[] | number | {};
 
-type OnSubmit = (data: { [key: string]: FieldValue }, e: React.SyntheticEvent) => void;
+type OnSubmit<Data extends DataType = DataType> = (data: Data, e: React.SyntheticEvent) => void;
 
 export interface Props {
   mode: 'onSubmit' | 'onBlur' | 'onChange';
@@ -46,8 +48,8 @@ export interface Field extends RegisterInput {
   }[];
 }
 
-export interface FieldsObject {
-  [key: string]: Field;
+export type FieldsObject<Data extends DataType> = {
+  [Key in keyof Data]: Field;
 }
 
 export interface Error {
@@ -57,37 +59,38 @@ export interface Error {
   isManual?: boolean;
 }
 
-export interface ErrorMessages {
-  [key: string]: Error;
+export type ErrorMessages<Data extends DataType = DataType> = {
+  [Key in keyof Data]: Error;
 }
 
-export interface SubmitPromiseResult {
-  errors: { [key: string]: Error };
-  values: { [key: string]: FieldValue };
+export interface SubmitPromiseResult<Data extends DataType = DataType> {
+  errors: ErrorMessages<Data>;
+  values: Data;
 }
 
 export type VoidFunction = () => void;
 
 export type RegisterFunction = (refOrValidateRule: RegisterInput | Ref, validateRule?: RegisterInput) => any;
 
-export interface UseFormFunctions {
+export type WatchFunction<Data extends DataType> = ((name?: undefined) => void)
+  & (<Name extends keyof Data>(fieldName: Name, defaultValue?: Data[Name]) => Data[Name])
+  & (<Names extends keyof Data>(fieldNames: Names[], defaultValue?: Pick<Data, Names>) => Pick<Data, Names>);
+
+export interface UseFormFunctions<Data extends DataType = DataType> {
   register: RegisterFunction;
-  handleSubmit: (func: OnSubmit) => any;
-  errors: ErrorMessages;
-  watch: (
-    filedNames?: string | string[] | undefined,
-    defaultValue?: string | string[] | undefined,
-  ) => FieldValue | FieldValue[] | undefined;
+  handleSubmit: (func: OnSubmit<Data>) => any;
+  errors: ErrorMessages<Data>;
+  watch: WatchFunction<Data>;
   unSubscribe: VoidFunction;
   reset: VoidFunction;
-  setValue: (name: string, value: string | number | boolean) => void;
-  setError: (name: string, type: string, message?: string, ref?: Ref) => void;
+  setValue: <Name extends keyof Data>(name: Name, value: Data[Name]) => void;
+  setError: (name: keyof Data, type: string, message?: string, ref?: Ref) => void;
   getValues: () => { [key: string]: FieldValue };
-    formState: {
-    dirty: boolean;
-    isSubmitted: boolean;
-    isSubmitting: boolean;
-    submitCount: number;
-    touched: string[];
-  };
+  formState: {
+      dirty: boolean;
+      isSubmitted: boolean;
+      isSubmitting: boolean;
+      submitCount: number;
+      touched: string[];
+    };
 }

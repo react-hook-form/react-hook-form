@@ -1,13 +1,13 @@
 import removeAllEventListeners from './removeAllEventListeners';
 import isRadioInput from '../utils/isRadioInput';
-import { Field, FieldsObject } from '../types';
+import { Field, FieldsObject, DataType } from '../types';
 
-export default function findRemovedFieldAndRemoveListener(
-  fields: { [key: string]: Field },
+export default function findRemovedFieldAndRemoveListener<Data extends DataType>(
+  fields: FieldsObject<Data>,
   validateWithStateUpdate: Function,
   { ref, mutationWatcher, options }: Field,
   forceDelete: boolean = false,
-): FieldsObject | undefined {
+): FieldsObject<Data> | undefined {
   if (!ref || !ref.type) return;
 
   const { name, type } = ref;
