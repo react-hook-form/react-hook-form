@@ -57,10 +57,8 @@ export default function useForm<Data extends DataType = DataType>(
         const isBlurType = type === 'blur';
         const { isOnChange, isOnSubmit, isOnBlur } = modeChecker(mode);
         const onSubmitModeNotSubmitted = !isSubmittedRef.current && (isOnSubmit || !mode);
-        const isWatchAll = isWatchAllRef.current;
-        const shouldUpdateWatchMode = isWatchAll || watchFieldsRef.current[name];
         const shouldUpdateValidateMode = isOnChange || (isOnBlur && isBlurType);
-        let shouldUpdateState = isWatchAll;
+        let shouldUpdateState = isWatchAllRef.current || watchFieldsRef.current[name];
 
         if (!isDirtyRef.current) {
           isDirtyRef.current = true;
@@ -72,15 +70,15 @@ export default function useForm<Data extends DataType = DataType>(
           shouldUpdateState = true;
         }
 
-        if (onSubmitModeNotSubmitted && !shouldUpdateWatchMode) return reRenderForm({});
+        if (onSubmitModeNotSubmitted && !shouldUpdateState) return reRenderForm({});
 
         if (validationSchema) {
           const result = getFieldsValues(fields);
           const schemaValidateErrors = (await validateWithSchema(validationSchema, result)) || {};
           const error = schemaValidateErrors[name];
-          const shouldUpdate = ((!error && errors[name]) || error) && shouldUpdateValidateMode;
+          shouldUpdateState = shouldUpdateState || ((!error && errors[name]) || error) && shouldUpdateValidateMode;
 
-          if (shouldUpdate || shouldUpdateWatchMode) {
+          if (shouldUpdateState) {
             const errorsCopy = { ...filterUndefinedErrors(errors), ...{ [name]: error } };
             if (!error) delete errorsCopy[name];
 
@@ -89,7 +87,7 @@ export default function useForm<Data extends DataType = DataType>(
           }
         } else {
           const error = await validateField(ref, fields);
-          const shouldUpdate = shouldUpdateWithError({
+          shouldUpdateState = shouldUpdateState || shouldUpdateWithError({
             errors,
             error,
             onSubmitModeNotSubmitted,
@@ -98,7 +96,7 @@ export default function useForm<Data extends DataType = DataType>(
             name,
           });
 
-          if (shouldUpdate || shouldUpdateValidateMode || shouldUpdateWatchMode) {
+          if (shouldUpdateValidateMode || shouldUpdateState) {
             const errorsCopy = { ...filterUndefinedErrors(errors), ...error };
             if (!error[name]) delete errorsCopy[name];
 
