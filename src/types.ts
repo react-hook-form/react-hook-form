@@ -72,7 +72,7 @@ export type VoidFunction = () => void;
 
 export type RegisterFunction = (refOrValidateRule: RegisterInput | Ref, validateRule?: RegisterInput) => any;
 
-export type WatchFunction<Data extends DataType> = ((name?: undefined) => void)
+export type WatchFunction<Data extends DataType> = ((name?: undefined) => FieldValue[])
   & (<Name extends keyof Data>(fieldName: Name, defaultValue?: Data[Name]) => Data[Name])
   & (<Names extends keyof Data>(fieldNames: Names[], defaultValue?: Pick<Data, Names>) => Pick<Data, Names>);
 
