@@ -114,6 +114,39 @@ export default function useForm<Data extends DataType = DataType>(
     validateAndStateUpdateRef.current,
   );
 
+  const setValue = <Name extends keyof Data>(name: string, value: Data[Name]): void => {
+    const field = fieldsRef.current[name];
+    if (!field) return;
+    const { ref, options } = field;
+
+    if (isRadioInput(ref.type) && options) {
+      options.forEach(({ ref: radioRef }): void => {
+        if (radioRef.value === value) radioRef.checked = true;
+      });
+      return;
+    }
+
+    ref[isCheckBoxInput(ref.type) ? 'checked' : 'value'] = value;
+  };
+
+  const setError = (name: string, type: string, message?: string, ref?: Ref): void => {
+    const errors = errorsRef.current;
+
+    if (!type && errors[name]) {
+      delete errors[name];
+      reRenderForm({});
+    } else if (type) {
+      // can be improved with performance
+      errors[name] = {
+        type,
+        message,
+        ref,
+        isManual: true,
+      };
+      reRenderForm({});
+    }
+  };
+
   function registerIntoFieldsRef(elementRef, data: RegisterInput | undefined): void {
     if (elementRef && !elementRef.name) return warnMissingRef(elementRef);
 
@@ -219,7 +252,7 @@ export default function useForm<Data extends DataType = DataType>(
       fieldErrors = await validateWithSchema(validationSchema, fieldValues);
     } else {
       const { errors, values }: SubmitPromiseResult = await currentFieldValues.reduce(
-        async (previous: Promise<SubmitPromiseResult>, field: Field) => {
+        async (previous: Promise<SubmitPromiseResult>, field: Field): Promise<SubmitPromiseResult> => {
           const resolvedPrevious = await previous;
           const {
             ref,
@@ -288,39 +321,6 @@ export default function useForm<Data extends DataType = DataType>(
       .reset();
     unSubscribe();
     reRenderForm({});
-  };
-
-  const setValue = <Name extends keyof Data>(name: string, value: Data[Name]): void => {
-    const field = fieldsRef.current[name];
-    if (!field) return;
-    const { ref, options } = field;
-
-    if (isRadioInput(ref.type) && options) {
-      options.forEach(({ ref: radioRef }): void => {
-        if (radioRef.value === value) radioRef.checked = true;
-      });
-      return;
-    }
-
-    ref[isCheckBoxInput(ref.type) ? 'checked' : 'value'] = value;
-  };
-
-  const setError = (name: string, type: string, message?: string, ref?: Ref): void => {
-    const errors = errorsRef.current;
-
-    if (!type && errors[name]) {
-      delete errors[name];
-      reRenderForm({});
-    } else if (type) {
-      // can be improved with performance
-      errors[name] = {
-        type,
-        message,
-        ref,
-        isManual: true,
-      };
-      reRenderForm({});
-    }
   };
 
   const getValues = (): { [key: string]: FieldValue } | {} => getFieldsValues(fieldsRef.current);
