@@ -90,17 +90,6 @@ describe('shouldUpdateWithError', () => {
         isBlurType: false,
       }),
     ).toBeTruthy();
-
-    expect(
-      shouldUpdateWithError({
-        errors: { test: { message: 'test' } },
-        name: 'test',
-        error: { test: { message: 'bill' } },
-        isOnBlur: false,
-        onSubmitModeNotSubmitted: false,
-        isBlurType: false,
-      }),
-    ).toBeTruthy();
   });
 
   it('should return false if nothing matches', () => {

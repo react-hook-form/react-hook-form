@@ -141,7 +141,6 @@ export default function useForm<Data extends DataType = DataType>(
         type,
         message,
         ref,
-        isManual: true,
       };
       reRenderForm({});
     }

@@ -11,7 +11,6 @@ export default function shouldUpdateWithError({
   if (
     onSubmitModeNotSubmitted ||
     (isOnBlur && !isBlurType) ||
-    (errors[name] && errors[name].isManual && errors[name].type) ||
     (isEmptyObject(error) && isEmptyObject(errors))
   ) {
     return false;
