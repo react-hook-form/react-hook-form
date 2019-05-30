@@ -12,7 +12,7 @@ type OnSubmit<Data extends DataType = DataType> = (data: Data, e: React.Syntheti
 
 export interface Props {
   mode: 'onSubmit' | 'onBlur' | 'onChange';
-  defaultValues?: { [key: string]: string | number | boolean };
+  defaultValues?: { [key: string]: any };
   validationSchema?: any;
 }
 
@@ -50,7 +50,7 @@ export interface Field extends RegisterInput {
 
 export type FieldsObject<Data extends DataType> = {
   [Key in keyof Data]: Field;
-}
+} | {}
 
 export interface Error {
   ref: Ref;
@@ -61,7 +61,7 @@ export interface Error {
 
 export type ErrorMessages<Data extends DataType = DataType> = {
   [Key in keyof Data]: Error;
-}
+} | {}
 
 export interface SubmitPromiseResult<Data extends DataType = DataType> {
   errors: ErrorMessages<Data>;
@@ -83,8 +83,8 @@ export interface UseFormFunctions<Data extends DataType = DataType> {
   watch: WatchFunction<Data>;
   unSubscribe: VoidFunction;
   reset: VoidFunction;
-  setValue: <Name extends keyof Data>(name: Name, value: Data[Name]) => void;
-  setError: (name: keyof Data, type: string, message?: string, ref?: Ref) => void;
+  setValue: <Name extends keyof Data>(name: string, value: Data[Name]) => void;
+  setError: (name: string, type: string, message?: string, ref?: Ref) => void;
   getValues: () => { [key: string]: FieldValue };
   formState: {
       dirty: boolean;

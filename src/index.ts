@@ -36,8 +36,8 @@ export default function useForm<Data extends DataType = DataType>(
     defaultValues: {},
   },
 ): UseFormFunctions<Data> {
-  const fieldsRef = useRef<FieldsObject<Data>>({} as any);
-  const errorsRef = useRef<ErrorMessages<Data>>({} as any);
+  const fieldsRef = useRef<FieldsObject<Data>>({});
+  const errorsRef = useRef<ErrorMessages<Data>>({});
   const submitCountRef = useRef<number>(0);
   const touchedFieldsRef = useRef<string[]>([]);
   const watchFieldsRef = useRef<{ [key: string]: boolean }>({});
@@ -115,21 +115,6 @@ export default function useForm<Data extends DataType = DataType>(
     fieldsRef.current,
     validateAndStateUpdateRef.current,
   );
-
-  const setValue = <Name extends keyof Data>(name: Name, value: Data[Name]): void => {
-    const field = fieldsRef.current[name];
-    if (!field) return;
-    const { ref, options } = field;
-
-    if (isRadioInput(ref.type) && options) {
-      options.forEach(({ ref: radioRef }): void => {
-        if (radioRef.value === value) radioRef.checked = true;
-      });
-      return;
-    }
-
-    ref[isCheckBoxInput(ref.type) ? 'checked' : 'value'] = value;
-  };
 
   function registerIntoFieldsRef(elementRef, data: RegisterInput | undefined): void {
     if (elementRef && !elementRef.name) return warnMissingRef(elementRef);
@@ -235,8 +220,8 @@ export default function useForm<Data extends DataType = DataType>(
       fieldValues = getFieldsValues(fields);
       fieldErrors = await validateWithSchema(validationSchema, fieldValues);
     } else {
-      const { errors, values }: SubmitPromiseResult<Data> = await currentFieldValues.reduce(
-        async (previous: Promise<SubmitPromiseResult<Data>>, field: Field) => {
+      const { errors, values }: SubmitPromiseResult = await currentFieldValues.reduce(
+        async (previous: Promise<SubmitPromiseResult>, field: Field) => {
           const resolvedPrevious = await previous;
           const {
             ref,
@@ -307,6 +292,21 @@ export default function useForm<Data extends DataType = DataType>(
     reRenderForm({});
   };
 
+  const setValue = <Name extends keyof Data>(name: string, value: Data[Name]): void => {
+    const field = fieldsRef.current[name];
+    if (!field) return;
+    const { ref, options } = field;
+
+    if (isRadioInput(ref.type) && options) {
+      options.forEach(({ ref: radioRef }): void => {
+        if (radioRef.value === value) radioRef.checked = true;
+      });
+      return;
+    }
+
+    ref[isCheckBoxInput(ref.type) ? 'checked' : 'value'] = value;
+  };
+
   const setError = (name: string, type: string, message?: string, ref?: Ref): void => {
     const errors = errorsRef.current;
 
@@ -325,7 +325,7 @@ export default function useForm<Data extends DataType = DataType>(
     }
   };
 
-  const getValues = (): { [key: string]: FieldValue } => getFieldsValues(fieldsRef.current);
+  const getValues = (): { [key: string]: FieldValue } | {} => getFieldsValues(fieldsRef.current);
 
   useEffect((): VoidFunction => unSubscribe, [mode]);
 
