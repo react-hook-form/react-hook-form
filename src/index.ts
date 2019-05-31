@@ -76,7 +76,7 @@ export default function useForm<Data extends DataType = DataType>(
           const result = getFieldsValues(fields);
           const schemaValidateErrors = (await validateWithSchema(validationSchema, result)) || {};
           const error = schemaValidateErrors[name];
-          shouldUpdateState = shouldUpdateState || ((!error && errors[name]) || error) && shouldUpdateValidateMode;
+          shouldUpdateState = shouldUpdateState || (((!error && errors[name]) || error) && shouldUpdateValidateMode);
 
           if (shouldUpdateState) {
             const errorsCopy = { ...filterUndefinedErrors(errors), ...{ [name]: error } };
@@ -87,14 +87,16 @@ export default function useForm<Data extends DataType = DataType>(
           }
         } else {
           const error = await validateField(ref, fields);
-          shouldUpdateState = shouldUpdateState || shouldUpdateWithError({
-            errors,
-            error,
-            onSubmitModeNotSubmitted,
-            isOnBlur,
-            isBlurType,
-            name,
-          });
+          shouldUpdateState =
+            shouldUpdateState ||
+            shouldUpdateWithError({
+              errors,
+              error,
+              onSubmitModeNotSubmitted,
+              isOnBlur,
+              isBlurType,
+              name,
+            });
 
           if (shouldUpdateValidateMode || shouldUpdateState) {
             const errorsCopy = { ...filterUndefinedErrors(errors), ...error };
@@ -123,9 +125,11 @@ export default function useForm<Data extends DataType = DataType>(
     const { ref, options } = field;
 
     if (isRadioInput(ref.type) && options) {
-      options.forEach(({ ref: radioRef }): void => {
-        if (radioRef.value === value) radioRef.checked = true;
-      });
+      options.forEach(
+        ({ ref: radioRef }): void => {
+          if (radioRef.value === value) radioRef.checked = true;
+        },
+      );
       return;
     }
 
@@ -318,9 +322,11 @@ export default function useForm<Data extends DataType = DataType>(
   };
 
   const reset = (): void => {
-    Object.values(fieldsRef.current)[0]
-      .ref.closest('form')
-      .reset();
+    try {
+      Object.values(fieldsRef.current)[0]
+        .ref.closest('form')
+        .reset();
+    } catch {}
     unSubscribe();
     reRenderForm({});
   };
