@@ -326,7 +326,9 @@ export default function useForm<Data extends DataType = DataType>(
       Object.values(fieldsRef.current)[0]
         .ref.closest('form')
         .reset();
-    } catch {}
+    } catch {
+      console.warn(`⚠ No HTML input found, hence <form> look up failed.`);
+    }
     unSubscribe();
     reRenderForm({});
   };
