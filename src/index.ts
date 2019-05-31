@@ -117,6 +117,9 @@ export default function useForm<Data extends DataType = DataType>(
   const setValue = <Name extends keyof Data>(name: string, value: Data[Name]): void => {
     const field = fieldsRef.current[name];
     if (!field) return;
+    if (!touchedFieldsRef.current.includes(name)) {
+      touchedFieldsRef.current.push(name);
+    }
     const { ref, options } = field;
 
     if (isRadioInput(ref.type) && options) {
