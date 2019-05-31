@@ -1,8 +1,9 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import ReactDOM from "react-dom";
 import useForm from "react-hook-form";
 import Input from "@material-ui/core/Input";
 import Select from "react-select";
+import { Input as StrapInput } from "reactstrap";
 
 import "./index.css";
 
@@ -35,6 +36,10 @@ function App() {
     setReactSelect({ selectedOption });
   };
 
+  useEffect(() => {
+    register({ name: "reactSelect" });
+  }, []);
+
   return (
     <div className="App">
       <form onSubmit={handleSubmit(onSubmit)}>
@@ -45,10 +50,18 @@ function App() {
             }}
             name="HelloWorld"
             inputRef={register}
-            placeholder="Title"
+            placeholder="Material UI - Input"
             inputProps={{
               "aria-label": "Description"
             }}
+          />
+        </div>
+
+        <div>
+          <StrapInput
+            placeholder="Strap - Input"
+            name="strapInput"
+            innerRef={register}
           />
         </div>
 
@@ -61,7 +74,6 @@ function App() {
             value={values.selectedOption}
             options={options}
             onChange={handleMultiChange}
-            ref={e => register({ name: "reactSelect" })}
             isMulti
           />
         </div>
