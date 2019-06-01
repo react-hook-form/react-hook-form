@@ -1,3 +1,3 @@
-# 👇🏻 React Hook Form Web site
+# 👇🏻 React Hook Form website
 
 https://github.com/bluebill1049/react-hook-form-website
