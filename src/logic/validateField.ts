@@ -29,7 +29,7 @@ export default async (
     validate,
   }: Field,
   fields: { [key: string]: Field },
-): Promise<ErrorMessages> => {
+): Promise<ErrorMessages<any>> => {
   const error = {};
   const isRadio = isRadioInput(type);
   const isCheckBox = isCheckBoxInput(type);

@@ -22,15 +22,15 @@ import {
   FieldsObject,
   VoidFunction,
   UseFormFunctions,
-  RegisterFunction,
   FieldValue,
   RegisterInput,
   DataType,
   WatchFunction,
+  SetValueFunction, SetErrorFunction,
 } from './types';
 import isCheckBoxInput from './utils/isCheckBoxInput';
 
-export default function useForm<Data extends DataType = DataType>(
+export default function useForm<Data extends DataType>(
   { mode, validationSchema, defaultValues }: Props = {
     mode: 'onSubmit',
     defaultValues: {},
@@ -116,7 +116,8 @@ export default function useForm<Data extends DataType = DataType>(
     validateAndStateUpdateRef.current,
   );
 
-  const setValue = <Name extends keyof Data>(name: string, value: Data[Name]): void => {
+  const setValue = <Name extends keyof Data>(name: Extract<keyof Data, string>, value: Data[Name]): void => {
+    // @ts-ignore
     const field = fieldsRef.current[name];
     if (!field) return;
     if (!touchedFieldsRef.current.includes(name)) {
@@ -136,14 +137,17 @@ export default function useForm<Data extends DataType = DataType>(
     ref[isCheckBoxInput(ref.type) ? 'checked' : 'value'] = value;
   };
 
-  const setError = (name: string, type: string, message?: string, ref?: Ref): void => {
+  const setError = <Name extends keyof Data>(name: Extract<keyof Data, string>, type: string, message?: string, ref?: Ref): void => {
     const errors = errorsRef.current;
 
+    // @ts-ignore
     if (!type && errors[name]) {
+      // @ts-ignore
       delete errors[name];
       reRenderForm({});
     } else if (type) {
       // can be improved with performance
+      // @ts-ignore
       errors[name] = {
         type,
         message,
@@ -226,7 +230,7 @@ export default function useForm<Data extends DataType = DataType>(
     return result === undefined ? defaultValue : result;
   }
 
-  function register(data: Ref | RegisterInput, rules?: RegisterInput): RegisterFunction | undefined {
+  function register(data: Ref | RegisterInput, rules?: RegisterInput): any {
     if (!data || typeof window === 'undefined') return;
 
     if (rules && !data.name) {
@@ -257,8 +261,8 @@ export default function useForm<Data extends DataType = DataType>(
       fieldValues = getFieldsValues(fields);
       fieldErrors = await validateWithSchema(validationSchema, fieldValues);
     } else {
-      const { errors, values }: SubmitPromiseResult = await currentFieldValues.reduce(
-        async (previous: Promise<SubmitPromiseResult>, field: Field): Promise<SubmitPromiseResult> => {
+      const { errors, values }: SubmitPromiseResult<Data> = await currentFieldValues.reduce(
+        async (previous: Promise<SubmitPromiseResult<Data>>, field: Field): Promise<SubmitPromiseResult<Data>> => {
           const resolvedPrevious = await previous;
           const {
             ref,
@@ -274,6 +278,7 @@ export default function useForm<Data extends DataType = DataType>(
             return Promise.resolve(resolvedPrevious);
           }
 
+          // @ts-ignore
           resolvedPrevious.values[name] = getFieldValue(fields, ref);
           return Promise.resolve(resolvedPrevious);
         },
@@ -343,8 +348,8 @@ export default function useForm<Data extends DataType = DataType>(
     watch: watch as WatchFunction<Data>,
     unSubscribe,
     reset,
-    setError,
-    setValue,
+    setError: setError as SetErrorFunction<Data>,
+    setValue: setValue as SetValueFunction<Data>,
     getValues,
     errors: errorsRef.current,
     formState: {

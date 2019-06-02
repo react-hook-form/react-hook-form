@@ -10,7 +10,7 @@ export interface DataType {
 
 export type FieldValue = boolean | string | string[] | number | {};
 
-type OnSubmit<Data extends DataType = DataType> = (data: Data, e: React.SyntheticEvent) => void;
+type OnSubmit<Data extends DataType> = (data: Data, e: React.SyntheticEvent) => void;
 
 export interface Props {
   mode: 'onSubmit' | 'onBlur' | 'onChange';
@@ -58,30 +58,34 @@ export interface Error {
   type?: string;
 }
 
-export type ErrorMessages<Data extends DataType = DataType> = { [Key in keyof Data]: Error } | {};
+export type ErrorMessages<Data extends DataType> = { [Key in keyof Data]: Error } | {};
 
-export interface SubmitPromiseResult<Data extends DataType = DataType> {
+export interface SubmitPromiseResult<Data extends DataType> {
   errors: ErrorMessages<Data>;
   values: Data;
 }
 
 export type VoidFunction = () => void;
 
-export type RegisterFunction = (refOrValidateRule: RegisterInput | Ref, validateRule?: RegisterInput) => void;
+export type RegisterFunction = (refOrValidateRule: RegisterInput | Ref, validateRule?: RegisterInput) => any;
 
 export type WatchFunction<Data extends DataType> = ((name?: undefined) => DataType) &
   (<Name extends keyof Data>(fieldName: Name, defaultValue?: Data[Name]) => Data[Name]) &
   (<Names extends keyof Data>(fieldNames: Names[], defaultValue?: Pick<Data, Names>) => Pick<Data, Names>);
 
-export interface UseFormFunctions<Data extends DataType = DataType> {
+export type SetValueFunction<Data extends DataType> = <Name extends keyof Data>(name: Name, value: Data[Name]) => void;
+
+export type SetErrorFunction<Data extends DataType> = <Name extends keyof Data>(name: Name, type: string, message?: string, ref?: Ref) => void;
+
+export interface UseFormFunctions<Data extends DataType> {
   register: RegisterFunction;
   handleSubmit: (func: OnSubmit<Data>) => any;
   errors: ErrorMessages<Data>;
   watch: WatchFunction<Data>;
   unSubscribe: VoidFunction;
   reset: VoidFunction;
-  setValue: <Name extends keyof Data>(name: string, value: Data[Name]) => void;
-  setError: (name: string, type: string, message?: string, ref?: Ref) => void;
+  setValue: SetValueFunction<Data>;
+  setError: SetErrorFunction<Data>;
   getValues: () => { [key: string]: FieldValue };
   formState: {
     dirty: boolean;
