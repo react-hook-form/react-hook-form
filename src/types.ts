@@ -58,7 +58,7 @@ export interface Error {
   type?: string;
 }
 
-export type ErrorMessages<Data extends DataType> = { [Key in keyof Data]: Error };
+export type ErrorMessages<Data extends DataType> = { [Key in keyof Data]?: Error };
 
 export interface SubmitPromiseResult<Data extends DataType> {
   errors: ErrorMessages<Data>;
