@@ -38,6 +38,7 @@ export default function useForm<Data extends DataType>(
   },
 ): UseFormFunctions<Data> {
   const fieldsRef = useRef<FieldsObject<Data>>({});
+  // @ts-ignore
   const errorsRef = useRef<ErrorMessages<Data>>({});
   const submitCountRef = useRef<number>(0);
   const touchedFieldsRef = useRef<string[]>([]);
