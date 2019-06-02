@@ -118,7 +118,7 @@ export default function useForm<Data extends DataType>(
 
   const setValue = <Name extends keyof Data>(name: Extract<keyof Data, string>, value: Data[Name]): void => {
     // @ts-ignore
-    const field = fieldsRef.current[name];
+    const field = fieldsRef.current[name] as any;
     if (!field) return;
     if (!touchedFieldsRef.current.includes(name)) {
       touchedFieldsRef.current.push(name);
