@@ -26,7 +26,8 @@ import {
   RegisterInput,
   DataType,
   WatchFunction,
-  SetValueFunction, SetErrorFunction,
+  SetValueFunction,
+  SetErrorFunction,
 } from './types';
 import isCheckBoxInput from './utils/isCheckBoxInput';
 
@@ -57,8 +58,10 @@ export default function useForm<Data extends DataType>(
         const isBlurType = type === 'blur';
         const { isOnChange, isOnSubmit, isOnBlur } = modeChecker(mode);
         const onSubmitModeNotSubmitted = !isSubmittedRef.current && (isOnSubmit || !mode);
+        const isWatchAll = isWatchAllRef.current;
+        const shouldUpdateWatchMode = isWatchAll || watchFieldsRef.current[name];
         const shouldUpdateValidateMode = isOnChange || (isOnBlur && isBlurType);
-        let shouldUpdateState = isWatchAllRef.current || watchFieldsRef.current[name];
+        let shouldUpdateState = isWatchAll;
 
         if (!isDirtyRef.current) {
           isDirtyRef.current = true;
@@ -70,16 +73,16 @@ export default function useForm<Data extends DataType>(
           shouldUpdateState = true;
         }
 
-        if (onSubmitModeNotSubmitted && !shouldUpdateState) return reRenderForm({});
+        if (onSubmitModeNotSubmitted && shouldUpdateWatchMode) return reRenderForm({});
 
         if (validationSchema) {
           const result = getFieldsValues(fields);
           const schemaValidateErrors = (await validateWithSchema(validationSchema, result)) || {};
           const error = schemaValidateErrors[name];
-          shouldUpdateState = shouldUpdateState || (((!error && errors[name]) || error) && shouldUpdateValidateMode);
+          const shouldUpdate = ((!error && errors[name]) || error) && shouldUpdateValidateMode;
 
-          if (shouldUpdateState) {
-            const errorsCopy = { ...filterUndefinedErrors(errors), ...{ [name]: error } };
+          if (shouldUpdate || shouldUpdateWatchMode) {
+            const errorsCopy = { ...errors, ...{ [name]: error } };
             if (!error) delete errorsCopy[name];
 
             errorsRef.current = errorsCopy;
@@ -87,18 +90,16 @@ export default function useForm<Data extends DataType>(
           }
         } else {
           const error = await validateField(ref, fields);
-          shouldUpdateState =
-            shouldUpdateState ||
-            shouldUpdateWithError({
-              errors,
-              error,
-              onSubmitModeNotSubmitted,
-              isOnBlur,
-              isBlurType,
-              name,
-            });
+          const shouldUpdate = shouldUpdateWithError({
+            errors,
+            error,
+            onSubmitModeNotSubmitted,
+            isOnBlur,
+            isBlurType,
+            name,
+          });
 
-          if (shouldUpdateValidateMode || shouldUpdateState) {
+          if (shouldUpdate || shouldUpdateValidateMode || shouldUpdateWatchMode) {
             const errorsCopy = { ...filterUndefinedErrors(errors), ...error };
             if (!error[name]) delete errorsCopy[name];
 
@@ -137,7 +138,12 @@ export default function useForm<Data extends DataType>(
     ref[isCheckBoxInput(ref.type) ? 'checked' : 'value'] = value;
   };
 
-  const setError = <Name extends keyof Data>(name: Extract<keyof Data, string>, type: string, message?: string, ref?: Ref): void => {
+  const setError = <Name extends keyof Data>(
+    name: Extract<keyof Data, string>,
+    type: string,
+    message?: string,
+    ref?: Ref,
+  ): void => {
     const errors = errorsRef.current;
 
     // @ts-ignore
