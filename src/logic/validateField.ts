@@ -15,7 +15,7 @@ type ValidatePromiseResult =
       message: string | number | boolean | Date;
     };
 
-export default async (
+export default async <Data>(
   {
     ref,
     ref: { type, value, name, checked },
@@ -28,7 +28,7 @@ export default async (
     pattern,
     validate,
   }: Field,
-  fields: { [key: string]: Field },
+  fields: { [Key in keyof Data]?: Field },
 ): Promise<ErrorMessages<any>> => {
   const error = {};
   const isRadio = isRadioInput(type);

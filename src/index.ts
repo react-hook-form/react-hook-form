@@ -55,6 +55,7 @@ export default function useForm<Data extends DataType>(
         const fields = fieldsRef.current;
         const errors = errorsRef.current;
         const ref = fields[name];
+        if (!ref) return;
         const isBlurType = type === 'blur';
         const { isOnChange, isOnSubmit, isOnBlur } = modeChecker(mode);
         const onSubmitModeNotSubmitted = !isSubmittedRef.current && (isOnSubmit || !mode);
@@ -89,7 +90,7 @@ export default function useForm<Data extends DataType>(
             return reRenderForm({});
           }
         } else {
-          const error = await validateField(ref, fields);
+          const error = await validateField<Data>(ref, fields);
           const shouldUpdate = shouldUpdateWithError({
             errors,
             error,
@@ -118,13 +119,13 @@ export default function useForm<Data extends DataType>(
   );
 
   const setValue = <Name extends keyof Data>(name: Extract<keyof Data, string>, value: Data[Name]): void => {
-    // @ts-ignore
-    const field = fieldsRef.current[name] as any;
+    const field = fieldsRef.current[name];
     if (!field) return;
     if (!touchedFieldsRef.current.includes(name)) {
       touchedFieldsRef.current.push(name);
     }
-    const { ref, options } = field;
+    const ref = field.ref;
+    const options = field.options;
 
     if (isRadioInput(ref.type) && options) {
       options.forEach(
@@ -146,14 +147,11 @@ export default function useForm<Data extends DataType>(
   ): void => {
     const errors = errorsRef.current;
 
-    // @ts-ignore
     if (!type && errors[name]) {
-      // @ts-ignore
       delete errors[name];
       reRenderForm({});
     } else if (type) {
       // can be improved with performance
-      // @ts-ignore
       errors[name] = {
         type,
         message,
@@ -180,7 +178,7 @@ export default function useForm<Data extends DataType>(
         ? field.options.findIndex(({ ref }): boolean => value === ref.value)
         : -1;
 
-    if ((!isRadio && field) || (isRadio && existRadioOptionIndex > -1)) return;
+    if ((!isRadio && field) || (isRadio && existRadioOptionIndex > -1) || !fields[name]) return;
     if (!type) {
       fields[name] = { ref: { name }, ...data };
       return;
@@ -188,9 +186,9 @@ export default function useForm<Data extends DataType>(
 
     if (isRadio) {
       if (!field) fields[name] = { options: [], required, validate, ref: { type: 'radio', name } };
-      if (validate) fields[name].validate = validate;
+      if (validate) fields[name]!.validate = validate;
 
-      (fields[name].options || []).push({
+      (fields[name]!.options || []).push({
         ...inputData,
         mutationWatcher: onDomRemove(elementRef, (): Function => removeEventListener(inputData, true)),
       });
@@ -205,8 +203,12 @@ export default function useForm<Data extends DataType>(
       setValue(name, defaultValues[name]);
     }
 
+    const fieldData = isRadio ? (fields[name]!.options || [])[(fields[name]!.options || []).length - 1] : fields[name];
+
+    if (!fieldData) return;
+
     attachEventListeners({
-      field: isRadio ? (fields[name].options || [])[(fields[name].options || []).length - 1] : fields[name],
+      field: fieldData,
       isRadio,
       validateAndStateUpdate: validateAndStateUpdateRef.current,
     });
@@ -284,7 +286,6 @@ export default function useForm<Data extends DataType>(
             return Promise.resolve(resolvedPrevious);
           }
 
-          // @ts-ignore
           resolvedPrevious.values[name] = getFieldValue(fields, ref);
           return Promise.resolve(resolvedPrevious);
         },
@@ -323,9 +324,9 @@ export default function useForm<Data extends DataType>(
             : removeEventListener(field, true);
         },
       );
-    fieldsRef.current = {} as any;
+    fieldsRef.current = {};
     watchFieldsRef.current = {};
-    errorsRef.current = {} as any;
+    errorsRef.current = {};
     isWatchAllRef.current = false;
     isSubmittedRef.current = false;
     isDirtyRef.current = false;
@@ -334,6 +335,7 @@ export default function useForm<Data extends DataType>(
 
   const reset = (): void => {
     try {
+      // @ts-ignore
       Object.values(fieldsRef.current)[0]
         .ref.closest('form')
         .reset();

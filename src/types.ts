@@ -50,7 +50,7 @@ export interface Field extends RegisterInput {
   }[];
 }
 
-export type FieldsObject<Data extends DataType> = { [Key in keyof Data]: Field } | {};
+export type FieldsObject<Data extends DataType> = { [Key in keyof Data]?: Field };
 
 export interface Error {
   ref: Ref;
