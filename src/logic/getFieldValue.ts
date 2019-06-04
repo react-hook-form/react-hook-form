@@ -7,7 +7,7 @@ import isCheckBox from '../utils/isCheckBoxInput';
 export default function getFieldValue<Data extends DataType>(fields: FieldsObject<Data>, { type, name, options, checked, value }: Ref): FieldValue {
   if (isRadioInput(type)) {
     let fieldValue = fields[name];
-    if (!fieldValue) {
+    if (fieldValue === undefined) {
       throw new Error(`Expected Field Value for ${name}`)
     }
     return getRadioValue(fieldValue.options).value;

@@ -28,11 +28,12 @@ import {
   WatchFunction,
   SetValueFunction,
   SetErrorFunction,
+  ValidateFunction,
 } from './types';
 import isCheckBoxInput from './utils/isCheckBoxInput';
 
 export default function useForm<Data extends DataType>(
-  { mode, validationSchema, defaultValues }: Props = {
+  { mode, validationSchema, defaultValues, validationFields }: Props = {
     mode: 'onSubmit',
     defaultValues: {},
   },
@@ -261,7 +262,7 @@ export default function useForm<Data extends DataType>(
     let fieldErrors;
     let fieldValues;
     const fields = fieldsRef.current;
-    const currentFieldValues = Object.values(fields);
+    const currentFieldValues = validationFields ? (validationFields as []) : Object.values(fields);
     isSubmittingRef.current = true;
     reRenderForm({});
 
@@ -348,6 +349,12 @@ export default function useForm<Data extends DataType>(
 
   const getValues = (): { [key: string]: FieldValue } | {} => getFieldsValues(fieldsRef.current);
 
+  const validate = async <Name extends keyof Data>(name: Name) => {
+    const field = fieldsRef.current[name]!;
+    if (field) return false;
+    return isEmptyObject(await validateField(field, fieldsRef.current));
+  };
+
   useEffect((): VoidFunction => unSubscribe, [mode]);
 
   return {
@@ -358,6 +365,7 @@ export default function useForm<Data extends DataType>(
     reset,
     setError: setError as SetErrorFunction<Data>,
     setValue: setValue as SetValueFunction<Data>,
+    validate: validate as ValidateFunction<Data>,
     getValues,
     errors: errorsRef.current,
     formState: {
