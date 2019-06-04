@@ -5,8 +5,8 @@ import isRadioInput from '../utils/isRadioInput';
 import isCheckBox from '../utils/isCheckBoxInput';
 
 export default function getFieldValue<Data extends DataType>(fields: FieldsObject<Data>, { type, name, options, checked, value }: Ref): FieldValue {
-  if (isRadioInput(type)) { // @ts-ignore
-    return getRadioValue(fields[name].options).value;
+  if (isRadioInput(type)) {
+    return getRadioValue(fields[name]!.options).value;
   }
 
   if (type === 'select-multiple') return getMultipleSelectValue(options);
