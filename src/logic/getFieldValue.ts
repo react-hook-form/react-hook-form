@@ -9,7 +9,7 @@ export default function getFieldValue<Data extends DataType>(fields: FieldsObjec
 
   if (type === 'select-multiple') return getMultipleSelectValue(options);
 
-  if (isCheckBox(type)) return checked;
+  if (isCheckBox(type)) return checked ? value || checked : false;
 
   return value;
 }
