@@ -178,7 +178,7 @@ export default function useForm<Data extends DataType>(
         ? field.options.findIndex(({ ref }): boolean => value === ref.value)
         : -1;
 
-    if ((!isRadio && field) || (isRadio && existRadioOptionIndex > -1) || !fields[name]) return;
+    if ((!isRadio && field) || (isRadio && existRadioOptionIndex > -1)) return;
     if (!type) {
       fields[name] = { ref: { name }, ...data };
       return;

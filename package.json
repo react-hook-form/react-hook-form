@@ -36,8 +36,8 @@
     "@types/jest": "^24.0.11",
     "@types/react": "^16.8.13",
     "@types/react-test-renderer": "^16.8.1",
-    "@typescript-eslint/eslint-plugin": "^1.7.0",
-    "@typescript-eslint/parser": "^1.7.0",
+    "@typescript-eslint/eslint-plugin": "^1.9.0",
+    "@typescript-eslint/parser": "^1.9.0",
     "coveralls": "^3.0.3",
     "enzyme": "^3.9.0",
     "enzyme-adapter-react-16": "^1.12.1",
@@ -57,5 +57,8 @@
   "peerDependencies": {
     "react": "^16.8.0",
     "react-dom": "^16.8.0"
+  },
+  "dependencies": {
+    "eslint-plugin-react": "^7.13.0"
   }
 }
