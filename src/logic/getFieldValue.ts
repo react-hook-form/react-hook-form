@@ -5,7 +5,13 @@ import isRadioInput from '../utils/isRadioInput';
 import isCheckBox from '../utils/isCheckBoxInput';
 
 export default function getFieldValue<Data extends DataType>(fields: FieldsObject<Data>, { type, name, options, checked, value }: Ref): FieldValue {
-  if (isRadioInput(type)) return getRadioValue(fields[name].options).value;
+  if (isRadioInput(type)) {
+    let fieldValue = fields[name];
+    if (fieldValue === undefined) {
+      throw new Error(`Expected Field Value for ${name}`)
+    }
+    return getRadioValue(fieldValue.options).value;
+  }
 
   if (type === 'select-multiple') return getMultipleSelectValue(options);
 

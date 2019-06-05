@@ -15,6 +15,7 @@ type OnSubmit<Data extends DataType> = (data: Data, e: React.SyntheticEvent) => 
 export interface Props {
   mode: 'onSubmit' | 'onBlur' | 'onChange';
   defaultValues?: { [key: string]: any };
+  validationFields?: string[];
   validationSchema?: any;
 }
 
@@ -50,7 +51,7 @@ export interface Field extends RegisterInput {
   }[];
 }
 
-export type FieldsObject<Data extends DataType> = { [Key in keyof Data]: Field } | {};
+export type FieldsObject<Data extends DataType> = { [Key in keyof Data]?: Field };
 
 export interface Error {
   ref: Ref;
@@ -75,7 +76,14 @@ export type WatchFunction<Data extends DataType> = ((name?: undefined) => DataTy
 
 export type SetValueFunction<Data extends DataType> = <Name extends keyof Data>(name: Name, value: Data[Name]) => void;
 
-export type SetErrorFunction<Data extends DataType> = <Name extends keyof Data>(name: Name, type: string, message?: string, ref?: Ref) => void;
+export type SetErrorFunction<Data extends DataType> = <Name extends keyof Data>(
+  name: Name,
+  type: string,
+  message?: string,
+  ref?: Ref,
+) => void;
+
+export type ValidateFunction<Data extends DataType> = <Name extends keyof Data>(name: Name) => Promise<boolean>;
 
 export interface UseFormFunctions<Data extends DataType> {
   register: RegisterFunction;
@@ -87,6 +95,7 @@ export interface UseFormFunctions<Data extends DataType> {
   setValue: SetValueFunction<Data>;
   setError: SetErrorFunction<Data>;
   getValues: () => { [key: string]: FieldValue };
+  validate: ValidateFunction<Data>;
   formState: {
     dirty: boolean;
     isSubmitted: boolean;
