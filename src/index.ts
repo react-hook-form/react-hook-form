@@ -1,7 +1,7 @@
 import { useRef, useState, useEffect } from 'react';
 import getFieldsValues from './logic/getFieldsValues';
 import getFieldValue from './logic/getFieldValue';
-import validateSingleField from './logic/validateField';
+import validateField from './logic/validateField';
 import findRemovedFieldAndRemoveListener from './logic/findRemovedFieldAndRemoveListener';
 import attachEventListeners from './logic/attachEventListeners';
 import validateWithSchema from './logic/validateWithSchema';
@@ -92,7 +92,7 @@ export default function useForm<Data extends DataType>(
             return reRenderForm({});
           }
         } else {
-          const error = await validateSingleField<Data>(ref, fields);
+          const error = await validateField<Data>(ref, fields);
           const shouldUpdate = shouldUpdateWithError({
             errors,
             error,
@@ -283,7 +283,7 @@ export default function useForm<Data extends DataType>(
 
           if (!fields[name]) return Promise.resolve(resolvedPrevious);
 
-          const fieldError = await validateSingleField(field, fields);
+          const fieldError = await validateField(field, fields);
 
           if (fieldError[name]) {
             resolvedPrevious.errors = { ...(resolvedPrevious.errors || {}), ...fieldError };
@@ -352,10 +352,10 @@ export default function useForm<Data extends DataType>(
 
   const getValues = (): { [key: string]: FieldValue } | {} => getFieldsValues(fieldsRef.current);
 
-  const validateField = async <Name extends keyof Data>(name: Name) => {
+  const validate = async <Name extends keyof Data>(name: Name) => {
     const field = fieldsRef.current[name]!;
     if (!field) return false;
-    const error = await validateSingleField(field, fieldsRef.current);
+    const error = await validateField(field, fieldsRef.current);
     errorsRef.current = { ...filterUndefinedErrors(errorsRef.current), ...error };
     if (!error[name]) delete errorsRef.current[name];
     reRenderForm({});
@@ -372,7 +372,7 @@ export default function useForm<Data extends DataType>(
     reset,
     setError: setError as SetErrorFunction<Data>,
     setValue: setValue as SetValueFunction<Data>,
-    validateField: validateField as ValidateFunction<Data>,
+    validate: validate as ValidateFunction<Data>,
     getValues,
     errors: errorsRef.current,
     formState: {
