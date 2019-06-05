@@ -95,7 +95,7 @@ export interface UseFormFunctions<Data extends DataType> {
   setValue: SetValueFunction<Data>;
   setError: SetErrorFunction<Data>;
   getValues: () => { [key: string]: FieldValue };
-  validate: ValidateFunction<Data>;
+  trigger: ValidateFunction<Data>;
   formState: {
     dirty: boolean;
     isSubmitted: boolean;

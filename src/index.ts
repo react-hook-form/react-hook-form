@@ -59,7 +59,7 @@ export default function useForm<Data extends DataType>(
     }
   };
 
-  const validate = async <Name extends keyof Data>(name: Name): Promise<boolean> => {
+  const trigger = async <Name extends keyof Data>(name: Name): Promise<boolean> => {
     const field = fieldsRef.current[name]!;
     if (!field) return false;
     const error = await validateField(field, fieldsRef.current);
@@ -378,7 +378,7 @@ export default function useForm<Data extends DataType>(
     reset,
     setError: setError as SetErrorFunction<Data>,
     setValue: setValue as SetValueFunction<Data>,
-    validate: validate as ValidateFunction<Data>,
+    trigger: trigger as ValidateFunction<Data>,
     getValues,
     errors: errorsRef.current,
     formState: {
