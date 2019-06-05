@@ -1,6 +1,6 @@
 import * as React from 'react';
 
-export type Validate = (data: string | number) => boolean | string | number | Date;
+export type Validate = (data: string | number) => string | boolean;
 
 export type NumberOrString = number | string;
 

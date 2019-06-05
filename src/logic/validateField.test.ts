@@ -271,6 +271,17 @@ describe('validateField', () => {
         {
           ref: { type: 'text', name: 'test', value: 'This is a long text input' },
           required: true,
+          validate: value => value.toString().length > 3,
+        },
+        {},
+      ),
+    ).toEqual({});
+
+    expect(
+      await validateField(
+        {
+          ref: { type: 'text', name: 'test', value: 'This is a long text input' },
+          required: true,
           validate: value => value.toString().length < 3,
         },
         {},
