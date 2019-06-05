@@ -1,7 +1,7 @@
 import { useRef, useState, useEffect } from 'react';
 import getFieldsValues from './logic/getFieldsValues';
 import getFieldValue from './logic/getFieldValue';
-import validateField from './logic/validateField';
+import validateSingleField from './logic/validateField';
 import findRemovedFieldAndRemoveListener from './logic/findRemovedFieldAndRemoveListener';
 import attachEventListeners from './logic/attachEventListeners';
 import validateWithSchema from './logic/validateWithSchema';
@@ -53,6 +53,7 @@ export default function useForm<Data extends DataType>(
   validateAndStateUpdateRef.current = validateAndStateUpdateRef.current
     ? validateAndStateUpdateRef.current
     : async ({ target: { name }, type }: Ref): Promise<void> => {
+        if (Array.isArray(validationFields) && !validationFields.includes(name)) return;
         const fields = fieldsRef.current;
         const errors = errorsRef.current;
         const ref = fields[name];
@@ -91,7 +92,7 @@ export default function useForm<Data extends DataType>(
             return reRenderForm({});
           }
         } else {
-          const error = await validateField<Data>(ref, fields);
+          const error = await validateSingleField<Data>(ref, fields);
           const shouldUpdate = shouldUpdateWithError({
             errors,
             error,
@@ -262,7 +263,9 @@ export default function useForm<Data extends DataType>(
     let fieldErrors;
     let fieldValues;
     const fields = fieldsRef.current;
-    const currentFieldValues = validationFields ? (validationFields as []) : Object.values(fields);
+    const currentFieldValues = validationFields
+      ? (validationFields.map(name => fieldsRef.current[name]) as [])
+      : Object.values(fields);
     isSubmittingRef.current = true;
     reRenderForm({});
 
@@ -280,7 +283,7 @@ export default function useForm<Data extends DataType>(
 
           if (!fields[name]) return Promise.resolve(resolvedPrevious);
 
-          const fieldError = await validateField(field, fields);
+          const fieldError = await validateSingleField(field, fields);
 
           if (fieldError[name]) {
             resolvedPrevious.errors = { ...(resolvedPrevious.errors || {}), ...fieldError };
@@ -349,10 +352,14 @@ export default function useForm<Data extends DataType>(
 
   const getValues = (): { [key: string]: FieldValue } | {} => getFieldsValues(fieldsRef.current);
 
-  const validate = async <Name extends keyof Data>(name: Name) => {
+  const validateField = async <Name extends keyof Data>(name: Name) => {
     const field = fieldsRef.current[name]!;
-    if (field) return false;
-    return isEmptyObject(await validateField(field, fieldsRef.current));
+    if (!field) return false;
+    const error = await validateSingleField(field, fieldsRef.current);
+    errorsRef.current = { ...filterUndefinedErrors(errorsRef.current), ...error };
+    if (!error[name]) delete errorsRef.current[name];
+    reRenderForm({});
+    return isEmptyObject(error);
   };
 
   useEffect((): VoidFunction => unSubscribe, [mode]);
@@ -365,7 +372,7 @@ export default function useForm<Data extends DataType>(
     reset,
     setError: setError as SetErrorFunction<Data>,
     setValue: setValue as SetValueFunction<Data>,
-    validate: validate as ValidateFunction<Data>,
+    validateField: validateField as ValidateFunction<Data>,
     getValues,
     errors: errorsRef.current,
     formState: {
