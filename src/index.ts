@@ -50,7 +50,7 @@ export default function useForm<Data extends DataType>(
   const reRenderForm = useState({})[1];
   const validateAndStateUpdateRef = useRef<Function>();
 
-  const renderBaseOnError = (errors, error) => {
+  const renderBaseOnError = (errors, error): void => {
     if (errors[name] && !error[name]) {
       delete errorsRef.current[name];
       reRenderForm({});
@@ -59,7 +59,7 @@ export default function useForm<Data extends DataType>(
     }
   };
 
-  const validate = async <Name extends keyof Data>(name: Name) => {
+  const validate = async <Name extends keyof Data>(name: Name): Promise<boolean> => {
     const field = fieldsRef.current[name]!;
     if (!field) return false;
     const error = await validateField(field, fieldsRef.current);
@@ -67,7 +67,7 @@ export default function useForm<Data extends DataType>(
 
     errorsRef.current = { ...filterUndefinedErrors(errorsRef.current), ...error };
     renderBaseOnError(errors, error);
-    return error[name];
+    return isEmptyObject(error);
   };
 
   validateAndStateUpdateRef.current = validateAndStateUpdateRef.current
