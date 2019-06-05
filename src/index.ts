@@ -50,6 +50,26 @@ export default function useForm<Data extends DataType>(
   const reRenderForm = useState({})[1];
   const validateAndStateUpdateRef = useRef<Function>();
 
+  const renderBaseOnError = (errors, error) => {
+    if (errors[name] && !error[name]) {
+      delete errorsRef.current[name];
+      reRenderForm({});
+    } else if (error[name]) {
+      reRenderForm({});
+    }
+  };
+
+  const validate = async <Name extends keyof Data>(name: Name) => {
+    const field = fieldsRef.current[name]!;
+    if (!field) return false;
+    const error = await validateField(field, fieldsRef.current);
+    const errors = errorsRef.current;
+
+    errorsRef.current = { ...filterUndefinedErrors(errorsRef.current), ...error };
+    renderBaseOnError(errors, error);
+    return error[name];
+  };
+
   validateAndStateUpdateRef.current = validateAndStateUpdateRef.current
     ? validateAndStateUpdateRef.current
     : async ({ target: { name }, type }: Ref): Promise<void> => {
@@ -85,10 +105,9 @@ export default function useForm<Data extends DataType>(
           const shouldUpdate = ((!error && errors[name]) || error) && shouldUpdateValidateMode;
 
           if (shouldUpdate || shouldUpdateWatchMode) {
-            const errorsCopy = { ...errors, ...{ [name]: error } };
-            if (!error) delete errorsCopy[name];
+            errorsRef.current = { ...errors, ...{ [name]: error } };
+            if (!error) delete errorsRef.current[name];
 
-            errorsRef.current = errorsCopy;
             return reRenderForm({});
           }
         } else {
@@ -103,11 +122,8 @@ export default function useForm<Data extends DataType>(
           });
 
           if (shouldUpdate || shouldUpdateValidateMode || shouldUpdateWatchMode) {
-            const errorsCopy = { ...filterUndefinedErrors(errors), ...error };
-            if (!error[name]) delete errorsCopy[name];
-
-            errorsRef.current = errorsCopy;
-            return reRenderForm({});
+            errorsRef.current = { ...filterUndefinedErrors(errors), ...error };
+            renderBaseOnError(errorsRef.current, error);
           }
         }
 
@@ -351,16 +367,6 @@ export default function useForm<Data extends DataType>(
   };
 
   const getValues = (): { [key: string]: FieldValue } | {} => getFieldsValues(fieldsRef.current);
-
-  const validate = async <Name extends keyof Data>(name: Name) => {
-    const field = fieldsRef.current[name]!;
-    if (!field) return false;
-    const error = await validateField(field, fieldsRef.current);
-    errorsRef.current = { ...filterUndefinedErrors(errorsRef.current), ...error };
-    if (!error[name]) delete errorsRef.current[name];
-    reRenderForm({});
-    return isEmptyObject(error);
-  };
 
   useEffect((): VoidFunction => unSubscribe, [mode]);
 
