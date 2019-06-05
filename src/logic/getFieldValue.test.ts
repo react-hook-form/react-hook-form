@@ -45,7 +45,7 @@ describe('getFieldValue', () => {
     ).toBe(3);
   });
 
-  it('should return checked status if type is checked', () => {
+  it('should return checked value if type is checked', () => {
     expect(
       getFieldValue(
         {
@@ -58,11 +58,30 @@ describe('getFieldValue', () => {
         },
         {
           type: 'checkbox',
+          checked: 'test',
+        },
+      ),
+    ).toBeTruthy();
+  });
+
+  it('should return checked if type is checked without value', () => {
+    expect(
+      getFieldValue(
+        {
+          test: {
+            ref: {
+              name: 'bill',
+            },
+          },
+        },
+        {
+          type: 'checkbox',
           checked: true,
         },
       ),
     ).toBeTruthy();
   });
+
 
   it('should return it value for other types', () => {
     expect(
