@@ -12,10 +12,10 @@ export type FieldValue = boolean | string | string[] | number | {};
 
 type OnSubmit<Data extends DataType> = (data: Data, e: React.SyntheticEvent) => void;
 
-export interface Props {
+export interface Props<Data> {
   mode: 'onSubmit' | 'onBlur' | 'onChange';
   defaultValues?: { [key: string]: any };
-  validationFields?: string[];
+  validationFields?: Array<keyof Data>;
   validationSchema?: any;
 }
 

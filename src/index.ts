@@ -33,7 +33,7 @@ import {
 import isCheckBoxInput from './utils/isCheckBoxInput';
 
 export default function useForm<Data extends DataType>(
-  { mode, validationSchema, defaultValues, validationFields }: Props = {
+  { mode, validationSchema, defaultValues, validationFields }: Props<Data> = {
     mode: 'onSubmit',
     defaultValues: {},
   },
