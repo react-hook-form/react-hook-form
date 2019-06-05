@@ -15,7 +15,7 @@ type OnSubmit<Data extends DataType> = (data: Data, e: React.SyntheticEvent) => 
 export interface Props<Data> {
   mode: 'onSubmit' | 'onBlur' | 'onChange';
   defaultValues?: { [key: string]: any };
-  validationFields?: Array<keyof Data>;
+  validationFields?: (keyof Data)[];
   validationSchema?: any;
 }
 
