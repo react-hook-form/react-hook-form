@@ -124,7 +124,7 @@ export default async <Data>(
 
     if (typeof validate === 'function') {
       const result = await validate(fieldValue);
-      if (typeof result === 'string' && !!result) {
+      if (typeof result === 'string' && result) {
         error[name] = {
           ...error[name],
           type: 'validate',
@@ -138,8 +138,6 @@ export default async <Data>(
           message: '',
           ref: validateRef,
         };
-      } else {
-        delete error[name];
       }
     } else if (typeof validate === 'object') {
       const validationResult = await new Promise(
