@@ -1,6 +1,8 @@
 import * as React from 'react';
 
-export type Validate = (data: string | number) => string | boolean;
+export type FieldValue = any;
+
+export type Validate = (data: FieldValue) => string | boolean;
 
 export type NumberOrString = number | string;
 
@@ -8,7 +10,6 @@ export interface DataType {
   [key: string]: FieldValue;
 }
 
-export type FieldValue = boolean | string | string[] | number | {};
 
 type OnSubmit<Data extends DataType> = (data: Data, e: React.SyntheticEvent) => void;
 

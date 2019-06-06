@@ -6,10 +6,10 @@ export default function shouldUpdateWithError({
   error,
   isOnBlur,
   isBlurType,
-  onSubmitModeNotSubmitted,
+  shouldValidate,
 }): boolean {
   if (
-    onSubmitModeNotSubmitted ||
+    !shouldValidate ||
     (isOnBlur && !isBlurType) ||
     (isEmptyObject(error) && isEmptyObject(errors))
   ) {
