@@ -50,7 +50,7 @@ export default function useForm<Data extends DataType>(
   const reRenderForm = useState({})[1];
   const validateAndStateUpdateRef = useRef<Function>();
 
-  const renderBaseOnError = (name, errors, error): void => {
+  const renderBaseOnError = (name: keyof Data, errors: ErrorMessages<Data>, error: ErrorMessages<Data>): void => {
     if (errors[name] && !error[name]) {
       delete errorsRef.current[name];
       reRenderForm({});

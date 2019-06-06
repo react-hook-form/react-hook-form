@@ -62,8 +62,10 @@ export default async <Data>(
       exceedMax = maxValue && valueNumber > maxValue;
       exceedMin = minValue && valueNumber < minValue;
     } else if (DATE_INPUTS.includes(type)) {
-      if (typeof maxValue === 'string') exceedMax = maxValue && new Date(value) > new Date(maxValue);
-      if (typeof minValue === 'string') exceedMin = minValue && new Date(value) < new Date(minValue);
+      if (typeof maxValue === 'string')
+        exceedMax = maxValue && new Date(value) > new Date(maxValue);
+      if (typeof minValue === 'string')
+        exceedMin = minValue && new Date(value) < new Date(minValue);
     }
 
     if (exceedMax || exceedMin) {
@@ -78,8 +80,14 @@ export default async <Data>(
   }
 
   if ((maxLength || minLength) && STRING_INPUTS.includes(type)) {
-    const { value: maxLengthValue, message: maxLengthMessage } = getValueAndMessage(maxLength);
-    const { value: minLengthValue, message: minLengthMessage } = getValueAndMessage(minLength);
+    const {
+      value: maxLengthValue,
+      message: maxLengthMessage,
+    } = getValueAndMessage(maxLength);
+    const {
+      value: minLengthValue,
+      message: minLengthMessage,
+    } = getValueAndMessage(minLength);
     const exceedMax = maxLength && value.toString().length > maxLengthValue;
     const exceedMin = minLength && value.toString().length < minLengthValue;
 
@@ -95,7 +103,9 @@ export default async <Data>(
   }
 
   if (pattern) {
-    const { value: patternValue, message: patternMessage } = getValueAndMessage(pattern);
+    const { value: patternValue, message: patternMessage } = getValueAndMessage(
+      pattern,
+    );
 
     if (patternValue instanceof RegExp && !patternValue.test(value)) {
       error[name] = {
@@ -114,20 +124,28 @@ export default async <Data>(
 
     if (typeof validate === 'function') {
       const result = await validate(fieldValue);
-      if (typeof result !== 'boolean' || !result) {
+      if (typeof result === 'string' && result) {
         error[name] = {
           ...error[name],
           type: 'validate',
-          message: isString(result) ? result : '',
+          message: result,
           ref: validateRef,
         };
-        return error;
+      } else if (typeof result === 'boolean' && !result) {
+        error[name] = {
+          ...error[name],
+          type: 'validate',
+          message: '',
+          ref: validateRef,
+        };
       }
     } else if (typeof validate === 'object') {
       const validationResult = await new Promise(
         (resolve): ValidatePromiseResult => {
           const values = Object.entries(validate);
-          values.reduce(async (previous, [key, validate], index): Promise<ValidatePromiseResult> => {
+          values.reduce(async (previous, [key, validate], index): Promise<
+            ValidatePromiseResult
+          > => {
             const lastChild = values.length - 1 === index;
 
             if (typeof validate === 'function') {
