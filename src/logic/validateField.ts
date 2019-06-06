@@ -131,6 +131,7 @@ export default async <Data>(
           message: result,
           ref: validateRef,
         };
+        return error;
       } else if (typeof result === 'boolean' && !result) {
         error[name] = {
           ...error[name],
@@ -138,6 +139,7 @@ export default async <Data>(
           message: '',
           ref: validateRef,
         };
+        return error;
       }
     } else if (typeof validate === 'object') {
       const validationResult = await new Promise(
