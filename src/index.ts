@@ -50,7 +50,7 @@ export default function useForm<Data extends DataType>(
   const reRenderForm = useState({})[1];
   const validateAndStateUpdateRef = useRef<Function>();
 
-  const renderBaseOnError = (errors, error, name) => {
+  const renderBaseOnError = (name: keyof Data, errors: ErrorMessages<Data>, error: ErrorMessages<Data>): void => {
     if (errors[name] && !error[name]) {
       delete errorsRef.current[name];
       reRenderForm({});
@@ -66,7 +66,7 @@ export default function useForm<Data extends DataType>(
     const errors = errorsRef.current;
 
     errorsRef.current = { ...filterUndefinedErrors(errorsRef.current), ...error };
-    renderBaseOnError(errors, error, name);
+    renderBaseOnError(name, errors, error);
     return isEmptyObject(error);
   };
 
@@ -123,7 +123,7 @@ export default function useForm<Data extends DataType>(
 
           if (shouldUpdate || shouldUpdateValidateMode || shouldUpdateWatchMode) {
             errorsRef.current = { ...filterUndefinedErrors(errors), ...error };
-            renderBaseOnError(errorsRef.current, error, name);
+            renderBaseOnError(name, errorsRef.current, error);
           }
         }
 
