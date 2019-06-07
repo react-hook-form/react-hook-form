@@ -302,10 +302,11 @@ export default function useForm<Data extends DataType>(
     return result === undefined ? defaultValue : result;
   }
 
+  // TODO - can this be typed toward the React.Ref type?
   function register(
     refOrValidateRule: RegisterInput | Ref,
     validateRule?: RegisterInput,
-  ): undefined | Function {
+  ): any {
     if (!refOrValidateRule || typeof window === 'undefined') return;
 
     if (validateRule && !refOrValidateRule.name) {
