@@ -2,7 +2,7 @@ import getFieldValue from './getFieldValue';
 import isString from '../utils/isString';
 import { FieldValue, Ref } from '../types';
 
-export default function getFieldsValues(fields, filedName?: string | string[]): { [key: string]: FieldValue } | {} {
+export default function getFieldsValues(fields, fieldName?: string | string[]): { [key: string]: FieldValue } {
   return Object.values(fields).reduce((previous: {}, data: Ref): FieldValue => {
     const {
       ref,
@@ -10,12 +10,12 @@ export default function getFieldsValues(fields, filedName?: string | string[]): 
     } = data;
     const value = getFieldValue(fields, ref);
 
-    if (isString(filedName)) {
-      return name === filedName ? value : previous;
+    if (isString(fieldName)) {
+      return name === fieldName ? value : previous;
     }
 
-    if (Array.isArray(filedName)) {
-      if (filedName.includes(name)) {
+    if (Array.isArray(fieldName)) {
+      if (fieldName.includes(name)) {
         previous[name] = value;
       }
     } else {
