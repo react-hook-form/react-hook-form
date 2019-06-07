@@ -1,43 +1,39 @@
-import { useRef, useState, useEffect } from 'react';
+import { useEffect, useRef, useState } from 'react';
+import attachEventListeners from './logic/attachEventListeners';
+import combineFieldValues from './logic/combineFieldValues';
+import findRemovedFieldAndRemoveListener from './logic/findRemovedFieldAndRemoveListener';
 import getFieldsValues from './logic/getFieldsValues';
 import getFieldValue from './logic/getFieldValue';
-import validateField from './logic/validateField';
-import findRemovedFieldAndRemoveListener from './logic/findRemovedFieldAndRemoveListener';
-import attachEventListeners from './logic/attachEventListeners';
-import validateWithSchema from './logic/validateWithSchema';
-import combineFieldValues from './logic/combineFieldValues';
 import shouldUpdateWithError from './logic/shouldUpdateWithError';
-import warnMissingRef from './utils/warnMissingRef';
-import modeChecker from './utils/validationModeChecker';
-import onDomRemove from './utils/onDomRemove';
-import isRadioInput from './utils/isRadioInput';
-import isEmptyObject from './utils/isEmptyObject';
-import filterUndefinedErrors from './utils/filterUndefinedErrors';
+import validateField from './logic/validateField';
+import validateWithSchema from './logic/validateWithSchema';
 import {
-  Props,
-  Field,
-  ErrorMessages,
-  Ref,
-  SubmitPromiseResult,
-  FieldsObject,
-  VoidFunction,
-  UseFormFunctions,
-  FieldValue,
-  RegisterInput,
   DataType,
-  WatchFunction,
-  SetValueFunction,
-  SetErrorFunction,
-  ValidateFunction,
+  ErrorMessages,
+  Field,
+  FieldsObject,
+  FieldValue,
+  Props,
+  Ref,
+  RegisterInput,
+  SubmitPromiseResult,
+  VoidFunction,
+  OnSubmit,
 } from './types';
+import filterUndefinedErrors from './utils/filterUndefinedErrors';
 import isCheckBoxInput from './utils/isCheckBoxInput';
+import isEmptyObject from './utils/isEmptyObject';
+import isRadioInput from './utils/isRadioInput';
+import onDomRemove from './utils/onDomRemove';
+import modeChecker from './utils/validationModeChecker';
+import warnMissingRef from './utils/warnMissingRef';
 
 export default function useForm<Data extends DataType>(
   { mode, validationSchema, defaultValues, validationFields }: Props<Data> = {
     mode: 'onSubmit',
     defaultValues: {},
   },
-): UseFormFunctions<Data> {
+) {
   const fieldsRef = useRef<FieldsObject<Data>>({});
   const errorsRef = useRef<ErrorMessages<Data>>({});
   const submitCountRef = useRef<number>(0);
@@ -50,7 +46,11 @@ export default function useForm<Data extends DataType>(
   const reRenderForm = useState({})[1];
   const validateAndStateUpdateRef = useRef<Function>();
 
-  const renderBaseOnError = (name: keyof Data, errors: ErrorMessages<Data>, error: ErrorMessages<Data>): void => {
+  const renderBaseOnError = (
+    name: keyof Data,
+    errors: ErrorMessages<Data>,
+    error: ErrorMessages<Data>,
+  ): void => {
     if (errors[name] && !error[name]) {
       delete errorsRef.current[name];
       reRenderForm({});
@@ -59,7 +59,10 @@ export default function useForm<Data extends DataType>(
     }
   };
 
-  const setValue = <Name extends keyof Data>(name: Extract<keyof Data, string>, value: Data[Name]): void => {
+  const setValue = <Name extends keyof Data>(
+    name: Extract<Name, string>,
+    value: Data[Name],
+  ): void => {
     const field = fieldsRef.current[name];
     if (!field) return;
     if (!touchedFieldsRef.current.includes(name)) {
@@ -89,7 +92,7 @@ export default function useForm<Data extends DataType>(
     forceValidation,
   }: {
     name: Extract<keyof Data, string>;
-    value?: FieldValue;
+    value?: Data[Name];
     forceValidation?: boolean;
   }): Promise<boolean> => {
     const field = fieldsRef.current[name]!;
@@ -100,7 +103,10 @@ export default function useForm<Data extends DataType>(
     if (value !== undefined) setValue(name, value);
 
     const error = await validateField(field, fieldsRef.current);
-    errorsRef.current = { ...filterUndefinedErrors(errorsRef.current), ...error };
+    errorsRef.current = {
+      ...filterUndefinedErrors(errorsRef.current),
+      ...error,
+    };
     renderBaseOnError(name, errors, error);
     return isEmptyObject(error);
   };
@@ -108,7 +114,8 @@ export default function useForm<Data extends DataType>(
   validateAndStateUpdateRef.current = validateAndStateUpdateRef.current
     ? validateAndStateUpdateRef.current
     : async ({ target: { name }, type }: Ref): Promise<void> => {
-        if (Array.isArray(validationFields) && !validationFields.includes(name)) return;
+        if (Array.isArray(validationFields) && !validationFields.includes(name))
+          return;
         const fields = fieldsRef.current;
         const errors = errorsRef.current;
         const ref = fields[name];
@@ -117,7 +124,8 @@ export default function useForm<Data extends DataType>(
         const { isOnChange, isOnBlur } = modeChecker(mode);
         const validateDisabled = isValidateDisabled();
         const isWatchAll = isWatchAllRef.current;
-        const shouldUpdateWatchMode = isWatchAll || watchFieldsRef.current[name];
+        const shouldUpdateWatchMode =
+          isWatchAll || watchFieldsRef.current[name];
         const shouldUpdateValidateMode = isOnChange || (isOnBlur && isBlurType);
         let shouldUpdateState = isWatchAll;
 
@@ -135,9 +143,11 @@ export default function useForm<Data extends DataType>(
 
         if (validationSchema) {
           const result = getFieldsValues(fields);
-          const schemaValidateErrors = (await validateWithSchema(validationSchema, result)) || {};
+          const schemaValidateErrors =
+            (await validateWithSchema(validationSchema, result)) || {};
           const error = schemaValidateErrors[name];
-          const shouldUpdate = ((!error && errors[name]) || error) && shouldUpdateValidateMode;
+          const shouldUpdate =
+            ((!error && errors[name]) || error) && shouldUpdateValidateMode;
 
           if (shouldUpdate || shouldUpdateWatchMode) {
             errorsRef.current = { ...errors, ...{ [name]: error } };
@@ -156,7 +166,11 @@ export default function useForm<Data extends DataType>(
             name,
           });
 
-          if (shouldUpdate || shouldUpdateValidateMode || shouldUpdateWatchMode) {
+          if (
+            shouldUpdate ||
+            shouldUpdateValidateMode ||
+            shouldUpdateWatchMode
+          ) {
             errorsRef.current = { ...filterUndefinedErrors(errors), ...error };
             renderBaseOnError(name, errorsRef.current, error);
           }
@@ -172,7 +186,7 @@ export default function useForm<Data extends DataType>(
   );
 
   const setError = <Name extends keyof Data>(
-    name: Extract<keyof Data, string>,
+    name: Extract<Name, string>,
     type: string,
     message?: string,
     ref?: Ref,
@@ -193,7 +207,10 @@ export default function useForm<Data extends DataType>(
     }
   };
 
-  function registerIntoFieldsRef(elementRef, data: RegisterInput | undefined): void {
+  function registerIntoFieldsRef(
+    elementRef,
+    data: RegisterInput | undefined,
+  ): void {
     if (elementRef && !elementRef.name) return warnMissingRef(elementRef);
 
     const { name, type, value } = elementRef;
@@ -217,17 +234,29 @@ export default function useForm<Data extends DataType>(
     }
 
     if (isRadio) {
-      if (!field) fields[name] = { options: [], required, validate, ref: { type: 'radio', name } };
+      if (!field)
+        fields[name] = {
+          options: [],
+          required,
+          validate,
+          ref: { type: 'radio', name },
+        };
       if (validate) fields[name]!.validate = validate;
 
       (fields[name]!.options || []).push({
         ...inputData,
-        mutationWatcher: onDomRemove(elementRef, (): Function => removeEventListener(inputData, true)),
+        mutationWatcher: onDomRemove(
+          elementRef,
+          (): Function => removeEventListener(inputData, true),
+        ),
       });
     } else {
       fields[name] = {
         ...inputData,
-        mutationWatcher: onDomRemove(elementRef, (): Function => removeEventListener(inputData, true)),
+        mutationWatcher: onDomRemove(
+          elementRef,
+          (): Function => removeEventListener(inputData, true),
+        ),
       };
     }
 
@@ -235,7 +264,9 @@ export default function useForm<Data extends DataType>(
       setValue(name, defaultValues[name]);
     }
 
-    const fieldData = isRadio ? (fields[name]!.options || [])[(fields[name]!.options || []).length - 1] : fields[name];
+    const fieldData = isRadio
+      ? (fields[name]!.options || [])[(fields[name]!.options || []).length - 1]
+      : fields[name];
 
     if (!fieldData) return;
 
@@ -266,26 +297,34 @@ export default function useForm<Data extends DataType>(
     }
 
     const values = getFieldsValues(fieldsRef.current, fieldNames);
-    const result = values === undefined || isEmptyObject(values) ? undefined : values;
+    const result =
+      values === undefined || isEmptyObject(values) ? undefined : values;
     return result === undefined ? defaultValue : result;
   }
 
-  function register(data: Ref | RegisterInput, rules?: RegisterInput): any {
-    if (!data || typeof window === 'undefined') return;
+  // TODO - can this be typed toward the React.Ref type?
+  function register(
+    refOrValidateRule: RegisterInput | Ref,
+    validateRule?: RegisterInput,
+  ): any {
+    if (!refOrValidateRule || typeof window === 'undefined') return;
 
-    if (rules && !data.name) {
-      warnMissingRef(data);
+    if (validateRule && !refOrValidateRule.name) {
+      warnMissingRef(refOrValidateRule);
       return;
     }
 
-    if (data.name) {
-      registerIntoFieldsRef(data, rules);
+    if (refOrValidateRule.name) {
+      registerIntoFieldsRef(refOrValidateRule, validateRule);
     }
 
-    return (ref): void => ref && registerIntoFieldsRef(ref, data);
+    return (ref: Ref): void =>
+      ref && registerIntoFieldsRef(ref, refOrValidateRule);
   }
 
-  const handleSubmit = (callback: (Object, e) => void): Function => async (e): Promise<void> => {
+  const handleSubmit = (callback: OnSubmit<Data>) => async (
+    e: React.SyntheticEvent,
+  ): Promise<void> => {
     if (e) {
       e.preventDefault();
       e.persist();
@@ -303,8 +342,14 @@ export default function useForm<Data extends DataType>(
       fieldValues = getFieldsValues(fields);
       fieldErrors = await validateWithSchema(validationSchema, fieldValues);
     } else {
-      const { errors, values }: SubmitPromiseResult<Data> = await currentFieldValues.reduce(
-        async (previous: Promise<SubmitPromiseResult<Data>>, field: Field): Promise<SubmitPromiseResult<Data>> => {
+      const {
+        errors,
+        values,
+      }: SubmitPromiseResult<Data> = await currentFieldValues.reduce(
+        async (
+          previous: Promise<SubmitPromiseResult<Data>>,
+          field: Field,
+        ): Promise<SubmitPromiseResult<Data>> => {
           const resolvedPrevious = await previous;
           const {
             ref,
@@ -316,7 +361,10 @@ export default function useForm<Data extends DataType>(
           const fieldError = await validateField(field, fields);
 
           if (fieldError[name]) {
-            resolvedPrevious.errors = { ...(resolvedPrevious.errors || {}), ...fieldError };
+            resolvedPrevious.errors = {
+              ...(resolvedPrevious.errors || {}),
+              ...fieldError,
+            };
             return Promise.resolve(resolvedPrevious);
           }
 
@@ -354,7 +402,9 @@ export default function useForm<Data extends DataType>(
         (field: Field): void => {
           const { ref, options } = field;
           isRadioInput(ref.type) && Array.isArray(options)
-            ? options.forEach((fieldRef): void => removeEventListener(fieldRef, true))
+            ? options.forEach(
+                (fieldRef): void => removeEventListener(fieldRef, true),
+              )
             : removeEventListener(field, true);
         },
       );
@@ -380,19 +430,20 @@ export default function useForm<Data extends DataType>(
     reRenderForm({});
   };
 
-  const getValues = (): { [key: string]: FieldValue } | {} => getFieldsValues(fieldsRef.current);
+  const getValues = (): { [key: string]: FieldValue } =>
+    getFieldsValues(fieldsRef.current);
 
   useEffect((): VoidFunction => unSubscribe, [mode]);
 
   return {
     register,
     handleSubmit,
-    watch: watch as WatchFunction<Data>,
+    watch,
     unSubscribe,
     reset,
-    setError: setError as SetErrorFunction<Data>,
-    setValue: setValue as SetValueFunction<Data>,
-    triggerValidation: triggerValidation as ValidateFunction<Data>,
+    setError,
+    setValue,
+    triggerValidation,
     getValues,
     errors: errorsRef.current,
     formState: {

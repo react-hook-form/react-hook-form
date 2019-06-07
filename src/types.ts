@@ -10,7 +10,7 @@ export interface DataType {
   [key: string]: FieldValue;
 }
 
-type OnSubmit<Data extends DataType> = (data: Data, e: React.SyntheticEvent) => void;
+export type OnSubmit<Data extends DataType> = (data: Data, e: React.SyntheticEvent) => void;
 
 export interface Props<Data> {
   mode: 'onSubmit' | 'onBlur' | 'onChange';
@@ -67,48 +67,3 @@ export interface SubmitPromiseResult<Data extends DataType> {
 }
 
 export type VoidFunction = () => void;
-
-export type RegisterFunction = (refOrValidateRule: RegisterInput | Ref, validateRule?: RegisterInput) => any;
-
-export type WatchFunction<Data extends DataType> = ((name?: undefined) => DataType) &
-  (<Name extends keyof Data>(fieldName: Name, defaultValue?: Data[Name]) => Data[Name]) &
-  (<Names extends keyof Data>(fieldNames: Names[], defaultValue?: Pick<Data, Names>) => Pick<Data, Names>);
-
-export type SetValueFunction<Data extends DataType> = <Name extends keyof Data>(name: Name, value: Data[Name]) => void;
-
-export type SetErrorFunction<Data extends DataType> = <Name extends keyof Data>(
-  name: Name,
-  type: string,
-  message?: string,
-  ref?: Ref,
-) => void;
-
-export type ValidateFunction<Data extends DataType> = <Name extends keyof Data>({
-  name,
-  value,
-  forceValidation,
-}: {
-  name: Extract<keyof Data, string>;
-  value?: FieldValue;
-  forceValidation?: boolean;
-}) => Promise<boolean>;
-
-export interface UseFormFunctions<Data extends DataType> {
-  register: RegisterFunction;
-  handleSubmit: (func: OnSubmit<Data>) => any;
-  errors: ErrorMessages<Data>;
-  watch: WatchFunction<Data>;
-  unSubscribe: VoidFunction;
-  reset: VoidFunction;
-  setValue: SetValueFunction<Data>;
-  setError: SetErrorFunction<Data>;
-  getValues: () => { [key: string]: FieldValue };
-  triggerValidation: ValidateFunction<Data>;
-  formState: {
-    dirty: boolean;
-    isSubmitted: boolean;
-    isSubmitting: boolean;
-    submitCount: number;
-    touched: string[];
-  };
-}
