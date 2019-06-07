@@ -86,7 +86,7 @@ export default function useForm<Data extends DataType>(
   const triggerValidation = async <Name extends keyof Data>({
     name,
     value,
-    forceValidation = true,
+    forceValidation,
   }: {
     name: Extract<keyof Data, string>;
     value?: FieldValue;
