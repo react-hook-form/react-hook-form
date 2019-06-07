@@ -83,7 +83,15 @@ export type SetErrorFunction<Data extends DataType> = <Name extends keyof Data>(
   ref?: Ref,
 ) => void;
 
-export type ValidateFunction<Data extends DataType> = <Name extends keyof Data>(name: Name) => Promise<boolean>;
+export type ValidateFunction<Data extends DataType> = <Name extends keyof Data>({
+  name,
+  value,
+  forceValidation,
+}: {
+  name: Extract<keyof Data, string>;
+  value?: FieldValue;
+  forceValidation?: boolean;
+}) => Promise<boolean>;
 
 export interface UseFormFunctions<Data extends DataType> {
   register: RegisterFunction;
