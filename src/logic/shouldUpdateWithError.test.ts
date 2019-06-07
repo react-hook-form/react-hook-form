@@ -1,7 +1,7 @@
 import shouldUpdateWithError from './shouldUpdateWithError';
 
 describe('shouldUpdateWithError', () => {
-  it('should return false when validateDisabled set to false', () => {
+  it('should return false when validateDisabled set to true', () => {
     expect(
       shouldUpdateWithError({
         errors: {},
