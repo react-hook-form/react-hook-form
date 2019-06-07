@@ -42,7 +42,7 @@ export default function useForm<Data extends DataType>(
   const errorsRef = useRef<ErrorMessages<Data>>({});
   const submitCountRef = useRef<number>(0);
   const touchedFieldsRef = useRef<string[]>([]);
-  const watchFieldsRef = useRef<{ [key: string]: boolean }>({});
+  const watchFieldsRef = useRef<{ [key in keyof Data]?: boolean }>({});
   const isWatchAllRef = useRef<boolean>(false);
   const isSubmittingRef = useRef<boolean>(false);
   const isSubmittedRef = useRef<boolean>(false);
@@ -59,12 +59,21 @@ export default function useForm<Data extends DataType>(
     }
   };
 
+  const isValidateEnabled = <Name extends keyof Data>(): boolean => {
+    const { isOnSubmit } = modeChecker(mode);
+    const onSubmitModeNotSubmitted = !isSubmittedRef.current && (isOnSubmit || !mode);
+    return !onSubmitModeNotSubmitted;
+  }
+
   const trigger = async <Name extends keyof Data>(name: Name): Promise<boolean> => {
     const field = fieldsRef.current[name]!;
     if (!field) return false;
-    const error = await validateField(field, fieldsRef.current);
+    
     const errors = errorsRef.current;
 
+    if (!isValidateEnabled()) return isEmptyObject(errors)
+
+    const error = await validateField(field, fieldsRef.current);
     errorsRef.current = { ...filterUndefinedErrors(errorsRef.current), ...error };
     renderBaseOnError(name, errors, error);
     return isEmptyObject(error);
@@ -79,8 +88,8 @@ export default function useForm<Data extends DataType>(
         const ref = fields[name];
         if (!ref) return;
         const isBlurType = type === 'blur';
-        const { isOnChange, isOnSubmit, isOnBlur } = modeChecker(mode);
-        const onSubmitModeNotSubmitted = !isSubmittedRef.current && (isOnSubmit || !mode);
+        const { isOnChange, isOnBlur } = modeChecker(mode);
+        const shouldValidate = isValidateEnabled();
         const isWatchAll = isWatchAllRef.current;
         const shouldUpdateWatchMode = isWatchAll || watchFieldsRef.current[name];
         const shouldUpdateValidateMode = isOnChange || (isOnBlur && isBlurType);
@@ -96,7 +105,7 @@ export default function useForm<Data extends DataType>(
           shouldUpdateState = true;
         }
 
-        if (onSubmitModeNotSubmitted && shouldUpdateWatchMode) return reRenderForm({});
+        if (!shouldValidate && shouldUpdateWatchMode) return reRenderForm({});
 
         if (validationSchema) {
           const result = getFieldsValues(fields);
@@ -115,7 +124,7 @@ export default function useForm<Data extends DataType>(
           const shouldUpdate = shouldUpdateWithError({
             errors,
             error,
-            onSubmitModeNotSubmitted,
+            shouldValidate,
             isOnBlur,
             isBlurType,
             name,
@@ -233,15 +242,15 @@ export default function useForm<Data extends DataType>(
   }
 
   function watch(
-    filedNames?: string | string[] | undefined,
+    fieldNames?: string | string[] | undefined,
     defaultValue?: string | Partial<Data> | undefined,
   ): FieldValue | Partial<Data> | void {
     const watchFields = watchFieldsRef.current;
 
-    if (typeof filedNames === 'string') {
-      watchFields[filedNames] = true;
-    } else if (Array.isArray(filedNames)) {
-      filedNames.forEach(
+    if (typeof fieldNames === 'string') {
+      watchFields[fieldNames] = true;
+    } else if (Array.isArray(fieldNames)) {
+      fieldNames.forEach(
         (name): void => {
           watchFields[name] = true;
         },
@@ -251,7 +260,7 @@ export default function useForm<Data extends DataType>(
       watchFieldsRef.current = {};
     }
 
-    const values = getFieldsValues(fieldsRef.current, filedNames);
+    const values = getFieldsValues(fieldsRef.current, fieldNames);
     const result = values === undefined || isEmptyObject(values) ? undefined : values;
     return result === undefined ? defaultValue : result;
   }
