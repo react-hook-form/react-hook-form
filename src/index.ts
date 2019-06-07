@@ -89,7 +89,7 @@ export default function useForm<Data extends DataType>(
     forceValidation = true,
   }: {
     name: Extract<keyof Data, string>;
-    value?: any;
+    value?: FieldValue;
     forceValidation?: boolean;
   }): Promise<boolean> => {
     const field = fieldsRef.current[name]!;
