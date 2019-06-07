@@ -20,8 +20,10 @@ you can view the source code within the folder or visit code sand box to see how
 | Normalize/Format/Mask Field | https://codesandbox.io/s/387z7njwzp                                  |
 | Reset Form                  | https://codesandbox.io/s/jjm3wyqmjy                                  |
 | Register Error Messages     | https://codesandbox.io/s/o766kp4z05                                  |
+| Restrict validation fields  | https://codesandbox.io/s/react-hook-form-validationfields-1xb91      |
 | Set input/select value      | https://codesandbox.io/s/react-hook-form-set-inputselect-value-c46ly |
 | Set input/select Error      | https://codesandbox.io/s/o7rxyym3q5                                  |
+| Trigger field validation    | https://codesandbox.io/s/react-hook-form-trigger-validation-w1g0m    |
 | ValidationSchema            | https://codesandbox.io/s/928po918qr                                  |
 | Validation On Blur          | https://codesandbox.io/s/w7p3km6nyw                                  |
 | Validation On Change        | https://codesandbox.io/s/74zw1oqozx                                  |
