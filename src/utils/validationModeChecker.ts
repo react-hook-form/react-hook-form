@@ -7,7 +7,7 @@ export default (
   isOnBlur: boolean;
   isOnChange: boolean;
 } => ({
-  isOnSubmit: mode === VALIDATION_MODE.onSubmit,
+  isOnSubmit: !mode || mode === VALIDATION_MODE.onSubmit,
   isOnBlur: mode === VALIDATION_MODE.onBlur,
   isOnChange: mode === VALIDATION_MODE.onchange,
 });

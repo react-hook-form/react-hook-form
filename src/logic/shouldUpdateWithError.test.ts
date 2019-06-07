@@ -1,14 +1,14 @@
 import shouldUpdateWithError from './shouldUpdateWithError';
 
 describe('shouldUpdateWithError', () => {
-  it('should return false when shouldValidate set to false', () => {
+  it('should return false when validateDisabled set to false', () => {
     expect(
       shouldUpdateWithError({
         errors: {},
         name: 'test',
         error: { test: 'test' },
         isOnBlur: false,
-        shouldValidate: false,
+        validateDisabled: true,
         isBlurType: false,
       }),
     ).toBeFalsy();
@@ -21,7 +21,7 @@ describe('shouldUpdateWithError', () => {
         name: 'test',
         error: { test: 'test' },
         isOnBlur: true,
-        shouldValidate: true,
+        validateDisabled: false,
         isBlurType: false,
       }),
     ).toBeFalsy();
@@ -34,7 +34,7 @@ describe('shouldUpdateWithError', () => {
         name: '',
         error: {},
         isOnBlur: false,
-        shouldValidate: true,
+        validateDisabled: false,
         isBlurType: false,
       }),
     ).toBeFalsy();
@@ -47,7 +47,7 @@ describe('shouldUpdateWithError', () => {
         name: 'test',
         error: { test: 'test' },
         isOnBlur: false,
-        shouldValidate: true,
+        validateDisabled: false,
         isBlurType: false,
       }),
     ).toBeTruthy();
@@ -60,7 +60,7 @@ describe('shouldUpdateWithError', () => {
         name: 'test',
         error: {},
         isOnBlur: false,
-        shouldValidate: true,
+        validateDisabled: false,
         isBlurType: false,
       }),
     ).toBeTruthy();
@@ -73,7 +73,7 @@ describe('shouldUpdateWithError', () => {
         name: '',
         error: { data: 'bill' },
         isOnBlur: false,
-        shouldValidate: true,
+        validateDisabled: false,
         isBlurType: false,
       }),
     ).toBeTruthy();
@@ -86,7 +86,7 @@ describe('shouldUpdateWithError', () => {
         name: 'test',
         error: { test: { type: 'bill' } },
         isOnBlur: false,
-        shouldValidate: true,
+        validateDisabled: false,
         isBlurType: false,
       }),
     ).toBeTruthy();
@@ -98,7 +98,7 @@ describe('shouldUpdateWithError', () => {
       name: 'test',
       error: { test: {type: 'input', message: 'test'}},
       isOnBlur: false,
-      shouldValidate: true,
+      validateDisabled: false,
       isBlurType: false,
     })).toBeFalsy();
   });

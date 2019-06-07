@@ -6,10 +6,10 @@ export default function shouldUpdateWithError({
   error,
   isOnBlur,
   isBlurType,
-  shouldValidate,
+  validateDisabled,
 }): boolean {
   if (
-    !shouldValidate ||
+    validateDisabled ||
     (isOnBlur && !isBlurType) ||
     (isEmptyObject(error) && isEmptyObject(errors))
   ) {

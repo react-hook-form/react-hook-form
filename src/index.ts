@@ -59,19 +59,15 @@ export default function useForm<Data extends DataType>(
     }
   };
 
-  const isValidateEnabled = <Name extends keyof Data>(): boolean => {
-    const { isOnSubmit } = modeChecker(mode);
-    const onSubmitModeNotSubmitted = !isSubmittedRef.current && (isOnSubmit || !mode);
-    return !onSubmitModeNotSubmitted;
-  }
+  const isValidateDisabled = <Name extends keyof Data>(): boolean =>
+    !isSubmittedRef.current && modeChecker(mode).isOnSubmit;
 
   const trigger = async <Name extends keyof Data>(name: Name): Promise<boolean> => {
     const field = fieldsRef.current[name]!;
-    if (!field) return false;
-    
     const errors = errorsRef.current;
 
-    if (!isValidateEnabled()) return isEmptyObject(errors)
+    if (!field) return false;
+    if (isValidateDisabled()) return isEmptyObject(errors);
 
     const error = await validateField(field, fieldsRef.current);
     errorsRef.current = { ...filterUndefinedErrors(errorsRef.current), ...error };
@@ -89,7 +85,7 @@ export default function useForm<Data extends DataType>(
         if (!ref) return;
         const isBlurType = type === 'blur';
         const { isOnChange, isOnBlur } = modeChecker(mode);
-        const shouldValidate = isValidateEnabled();
+        const validateDisabled = isValidateDisabled();
         const isWatchAll = isWatchAllRef.current;
         const shouldUpdateWatchMode = isWatchAll || watchFieldsRef.current[name];
         const shouldUpdateValidateMode = isOnChange || (isOnBlur && isBlurType);
@@ -105,7 +101,7 @@ export default function useForm<Data extends DataType>(
           shouldUpdateState = true;
         }
 
-        if (!shouldValidate && shouldUpdateWatchMode) return reRenderForm({});
+        if (validateDisabled && shouldUpdateWatchMode) return reRenderForm({});
 
         if (validationSchema) {
           const result = getFieldsValues(fields);
@@ -124,7 +120,7 @@ export default function useForm<Data extends DataType>(
           const shouldUpdate = shouldUpdateWithError({
             errors,
             error,
-            shouldValidate,
+            validateDisabled,
             isOnBlur,
             isBlurType,
             name,
