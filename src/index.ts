@@ -59,15 +59,45 @@ export default function useForm<Data extends DataType>(
     }
   };
 
+  const setValue = <Name extends keyof Data>(name: Extract<keyof Data, string>, value: Data[Name]): void => {
+    const field = fieldsRef.current[name];
+    if (!field) return;
+    if (!touchedFieldsRef.current.includes(name)) {
+      touchedFieldsRef.current.push(name);
+    }
+    const ref = field.ref;
+    const options = field.options;
+
+    if (isRadioInput(ref.type) && options) {
+      options.forEach(
+        ({ ref: radioRef }): void => {
+          if (radioRef.value === value) radioRef.checked = true;
+        },
+      );
+      return;
+    }
+
+    ref[isCheckBoxInput(ref.type) ? 'checked' : 'value'] = value;
+  };
+
   const isValidateDisabled = <Name extends keyof Data>(): boolean =>
     !isSubmittedRef.current && modeChecker(mode).isOnSubmit;
 
-  const trigger = async <Name extends keyof Data>(name: Name): Promise<boolean> => {
+  const triggerValidation = async <Name extends keyof Data>({
+    name,
+    value,
+    forceValidation = true,
+  }: {
+    name: Extract<keyof Data, string>;
+    value?: any;
+    forceValidation?: boolean;
+  }): Promise<boolean> => {
     const field = fieldsRef.current[name]!;
     const errors = errorsRef.current;
 
     if (!field) return false;
-    if (isValidateDisabled()) return isEmptyObject(errors);
+    if (isValidateDisabled() && !forceValidation) return isEmptyObject(errors);
+    if (value) setValue(name, value);
 
     const error = await validateField(field, fieldsRef.current);
     errorsRef.current = { ...filterUndefinedErrors(errorsRef.current), ...error };
@@ -140,27 +170,6 @@ export default function useForm<Data extends DataType>(
     fieldsRef.current,
     validateAndStateUpdateRef.current,
   );
-
-  const setValue = <Name extends keyof Data>(name: Extract<keyof Data, string>, value: Data[Name]): void => {
-    const field = fieldsRef.current[name];
-    if (!field) return;
-    if (!touchedFieldsRef.current.includes(name)) {
-      touchedFieldsRef.current.push(name);
-    }
-    const ref = field.ref;
-    const options = field.options;
-
-    if (isRadioInput(ref.type) && options) {
-      options.forEach(
-        ({ ref: radioRef }): void => {
-          if (radioRef.value === value) radioRef.checked = true;
-        },
-      );
-      return;
-    }
-
-    ref[isCheckBoxInput(ref.type) ? 'checked' : 'value'] = value;
-  };
 
   const setError = <Name extends keyof Data>(
     name: Extract<keyof Data, string>,
@@ -383,7 +392,7 @@ export default function useForm<Data extends DataType>(
     reset,
     setError: setError as SetErrorFunction<Data>,
     setValue: setValue as SetValueFunction<Data>,
-    trigger: trigger as ValidateFunction<Data>,
+    triggerValidation: triggerValidation as ValidateFunction<Data>,
     getValues,
     errors: errorsRef.current,
     formState: {

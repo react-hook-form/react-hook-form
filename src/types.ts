@@ -10,7 +10,6 @@ export interface DataType {
   [key: string]: FieldValue;
 }
 
-
 type OnSubmit<Data extends DataType> = (data: Data, e: React.SyntheticEvent) => void;
 
 export interface Props<Data> {
@@ -96,7 +95,7 @@ export interface UseFormFunctions<Data extends DataType> {
   setValue: SetValueFunction<Data>;
   setError: SetErrorFunction<Data>;
   getValues: () => { [key: string]: FieldValue };
-  trigger: ValidateFunction<Data>;
+  triggerValidation: ValidateFunction<Data>;
   formState: {
     dirty: boolean;
     isSubmitted: boolean;
