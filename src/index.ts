@@ -341,11 +341,11 @@ export default function useForm<Data extends DataType>(
     isSubmittingRef.current = false;
 
     if (isEmptyObject(fieldErrors)) {
-      callback(combineFieldValues(fieldValues), e);
+      await callback(combineFieldValues(fieldValues), e);
     } else {
       errorsRef.current = fieldErrors;
-      reRenderForm({});
     }
+    reRenderForm({});
   };
 
   const unSubscribe = (): void => {
