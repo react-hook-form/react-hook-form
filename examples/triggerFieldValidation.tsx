@@ -5,7 +5,7 @@ import useForm from "react-hook-form";
 import "./styles.css";
 
 function App() {
-  const { register, errors, trigger } = useForm();
+  const { register, errors, triggerValidation } = useForm();
 
   console.log("errors", errors);
 
@@ -21,8 +21,14 @@ function App() {
       <button
         type="button"
         onClick={async () => {
-          console.log("firstName", await trigger("firstName"));
-          console.log("lastName", await trigger("lastName"));
+          console.log(
+            "firstName",
+            await triggerValidation({ name: "firstName" })
+          );
+          console.log(
+            "lastName",
+            await triggerValidation({ name: "lastName", value: "test" })
+          );
         }}
       >
         Trigger
