@@ -18,6 +18,8 @@
 - uncontrolled form validation
 - Build forms quickly with the [form builder](https://react-hook-form.com/builder)
 
+<div align="center"><p align="center"><a href="https://react-hook-form.com" title="React Hook Form - Simple React forms validation"><img src="https://raw.githubusercontent.com/bluebill1049/react-hook-form/master/website/example.gif" alt="React Hook Form Logo - React hook form validation" width="800px" /></a></p></div>
+
 ## Install
 
     $ npm install react-hook-form
