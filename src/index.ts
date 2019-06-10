@@ -228,40 +228,44 @@ export default function useForm<Data extends DataType>(
         : -1;
 
     if ((!isRadio && field) || (isRadio && existRadioOptionIndex > -1)) return;
+
     if (!type) {
       fields[name] = { ref: { name }, ...data };
-      return;
-    }
-
-    if (isRadio) {
-      if (!field)
-        fields[name] = {
-          options: [],
-          required,
-          validate,
-          ref: { type: 'radio', name },
-        };
-      if (validate) fields[name]!.validate = validate;
-
-      (fields[name]!.options || []).push({
-        ...inputData,
-        mutationWatcher: onDomRemove(
-          elementRef,
-          (): Function => removeEventListener(inputData, true),
-        ),
-      });
     } else {
-      fields[name] = {
-        ...inputData,
-        mutationWatcher: onDomRemove(
-          elementRef,
-          (): Function => removeEventListener(inputData, true),
-        ),
-      };
+      if (isRadio) {
+        if (!field)
+          fields[name] = {
+            options: [],
+            required,
+            validate,
+            ref: { type: 'radio', name },
+          };
+        if (validate) fields[name]!.validate = validate;
+
+        (fields[name]!.options || []).push({
+          ...inputData,
+          mutationWatcher: onDomRemove(
+            elementRef,
+            (): Function => removeEventListener(inputData, true),
+          ),
+        });
+      } else {
+        fields[name] = {
+          ...inputData,
+          mutationWatcher: onDomRemove(
+            elementRef,
+            (): Function => removeEventListener(inputData, true),
+          ),
+        };
+      }
     }
 
     if (defaultValues && defaultValues[name]) {
       setValue(name, defaultValues[name]);
+    }
+
+    if (!type) {
+      return;
     }
 
     const fieldData = isRadio
