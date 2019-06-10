@@ -387,15 +387,14 @@ export default function useForm<Data extends DataType>(
       fieldValues = values;
     }
 
-    isSubmittedRef.current = true;
-    submitCountRef.current += 1;
-    isSubmittingRef.current = false;
-
     if (isEmptyObject(fieldErrors)) {
       await callback(combineFieldValues(fieldValues), e);
     } else {
       errorsRef.current = fieldErrors;
     }
+    isSubmittedRef.current = true;
+    submitCountRef.current += 1;
+    isSubmittingRef.current = false;
     reRenderForm({});
   };
 
