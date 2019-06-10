@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, useCallback } from 'react';
 import attachEventListeners from './logic/attachEventListeners';
 import combineFieldValues from './logic/combineFieldValues';
 import findRemovedFieldAndRemoveListener from './logic/findRemovedFieldAndRemoveListener';
@@ -302,25 +302,24 @@ export default function useForm<Data extends DataType>(
     return result === undefined ? defaultValue : result;
   }
 
-  // TODO - can this be typed toward the React.Ref type?
-  function register(
-    refOrValidateRule: RegisterInput | Ref,
-    validateRule?: RegisterInput,
-  ): any {
-    if (!refOrValidateRule || typeof window === 'undefined') return;
+  const register = useCallback(
+    (refOrValidateRule: RegisterInput | Ref, validateRule?: RegisterInput) => {
+      if (!refOrValidateRule || typeof window === 'undefined') return;
 
-    if (validateRule && !refOrValidateRule.name) {
-      warnMissingRef(refOrValidateRule);
-      return;
-    }
+      if (validateRule && !refOrValidateRule.name) {
+        warnMissingRef(refOrValidateRule);
+        return;
+      }
 
-    if (refOrValidateRule.name) {
-      registerIntoFieldsRef(refOrValidateRule, validateRule);
-    }
+      if (refOrValidateRule.name) {
+        registerIntoFieldsRef(refOrValidateRule, validateRule);
+      }
 
-    return (ref: Ref): void =>
-      ref && registerIntoFieldsRef(ref, refOrValidateRule);
-  }
+      return (ref: Ref): void =>
+        ref && registerIntoFieldsRef(ref, refOrValidateRule);
+    },
+    [],
+  );
 
   const handleSubmit = (callback: OnSubmit<Data>) => async (
     e: React.SyntheticEvent,
