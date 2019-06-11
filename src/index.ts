@@ -62,12 +62,18 @@ export default function useForm<Data extends DataType>(
   const setValue = <Name extends keyof Data>(
     name: Extract<Name, string>,
     value: Data[Name],
+    shouldRender: boolean = true,
   ): void => {
     const field = fieldsRef.current[name];
     if (!field) return;
-    if (!touchedFieldsRef.current.includes(name)) {
-      touchedFieldsRef.current.push(name);
+
+    if (shouldRender) {
+      if (!touchedFieldsRef.current.includes(name)) {
+        touchedFieldsRef.current.push(name);
+      }
+      isDirtyRef.current = true;
     }
+
     const ref = field.ref;
     const options = field.options;
 
@@ -81,6 +87,7 @@ export default function useForm<Data extends DataType>(
     }
 
     ref[isCheckBoxInput(ref.type) ? 'checked' : 'value'] = value;
+    if (shouldRender) reRenderForm({});
   };
 
   const isValidateDisabled = <Name extends keyof Data>(): boolean =>
@@ -261,7 +268,7 @@ export default function useForm<Data extends DataType>(
     }
 
     if (defaultValues && defaultValues[name]) {
-      setValue(name, defaultValues[name]);
+      setValue(name, defaultValues[name], false);
     }
 
     if (!type) {
