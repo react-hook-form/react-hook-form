@@ -69,7 +69,8 @@ Thanks goes to these wonderful people:
     <a href="https://github.com/AyumiKai"><img src="https://avatars3.githubusercontent.com/u/14857042?s=60&v=4" width="50" height="50" /></a>
     <a href="https://github.com/abihf"><img src="https://avatars1.githubusercontent.com/u/1484485?s=180&v=4" width="50" height="50" />
     <a href="https://github.com/lightsound"><img src="https://avatars2.githubusercontent.com/u/8220973?s=460&v=4" width="50" height="50" /></a>
-    <a href="https://github.com/kabriel"><img src="https://avatars3.githubusercontent.com/u/153115?s=180&v=4" width="50" height="50" /></a>
+    <a href="https://github.com/kabriel"><img src="https://avatars3.githubusercontent.com/u/153115?s=180&v=4" width="50" height="50" /></a>    
+    <a href="https://github.com/ejuo"><img src="https://avatars2.githubusercontent.com/u/1243837?s=460&v=4" width="50" height="50" /></a>
     <a href="https://github.com/garthmcrae"><img src="https://avatars0.githubusercontent.com/u/1332741?s=64&v=4" width="50" height="50" /></a>
     <a href="https://github.com/erikras"><img src="https://avatars3.githubusercontent.com/u/4396759?s=60&v=4" width="50" height="50" /></a>
 </p>
