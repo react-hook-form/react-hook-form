@@ -4,24 +4,32 @@ export default function combineFieldValues(data): FieldValue {
   const output = Object.entries(data).reduce(
     (previous, [key, value]): FieldValue => {
       const arrayIndex = key.match(/\[\d+\]$/gi);
+      const isObjectArray = /^\S+\[\d+\]\.\S+$/gi.test(key);
+      const isObject = /[a-z0-9_]+\.[a-z0-9_]+/gi.test(key);
 
       if (arrayIndex) {
         const index = arrayIndex[0].slice(1, -1);
-        const filedName = key.substr(0, key.indexOf('['));
-        if (!previous[filedName]) previous[filedName] = [];
-        previous[filedName][index] = value;
-      } else if (key.startsWith('{') && key.endsWith('}')) {
-        try {
-          const obj = JSON.parse(key);
-          const objKey = obj[0];
-          const objValue = obj[objKey];
-          previous[objKey][objValue] = value;
-        } catch (e) {
-          console.error(`Fields name paring error: ${e}`);
+        const fieldName = key.substr(0, key.indexOf('['));
+
+        if (isObjectArray) {
+          const attributeName = key.substr(key.indexOf('.'));
+          if (!previous[fieldName]) previous[fieldName] = {};
+          previous[fieldName][index] = {
+            [attributeName]: value,
+          };
+        } else {
+          if (!previous[fieldName]) previous[fieldName] = [];
+          previous[fieldName][index] = value;
         }
-      } else {
-        previous[key] = value;
+
+        return previous;
       }
+
+      if (isObject) {
+
+      }
+
+      previous[key] = value;
       return previous;
     },
     {},
