@@ -199,12 +199,16 @@ export default function useForm<Data extends DataType>(
     ref?: Ref,
   ): void => {
     const errors = errorsRef.current;
+    const error = errors[name];
 
-    if (!type && errors[name]) {
+    if (!type && error) {
       delete errors[name];
       reRenderForm({});
-    } else if (type) {
-      // can be improved with performance
+    } else if (
+      type &&
+      error &&
+      (error.type !== type || error.message !== message)
+    ) {
       errors[name] = {
         type,
         message,
