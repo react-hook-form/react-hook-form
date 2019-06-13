@@ -14,4 +14,25 @@ describe('combineFieldValues', () => {
       }),
     ).toMatchSnapshot();
   });
+
+  it('should combine array object correctly', () => {
+    expect(
+      combineFieldValues({
+        'name[0].firstName': 'testFirst',
+        'name[0].lastName': 'testLast',
+        'test[1].what': 'testLast',
+        'test[1].task': 'testLast',
+        'test[2].what': 'testLast',
+      }),
+    ).toMatchSnapshot();
+  });
+
+  it('should combine object correctly', () => {
+    expect(
+      combineFieldValues({
+        'name.firstName': 'testFirst',
+        'name.lastName': 'testLast',
+      }),
+    ).toMatchSnapshot();
+  });
 });
