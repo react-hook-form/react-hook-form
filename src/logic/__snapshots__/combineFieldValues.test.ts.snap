@@ -32,7 +32,12 @@ Object {
       "what": "testLast",
     },
     Object {
-      "what": "testLast",
+      "what": Array [
+        undefined,
+        Object {
+          "test": "testLast",
+        },
+      ],
     },
   ],
 }
@@ -42,7 +47,11 @@ exports[`combineFieldValues should combine object correctly 1`] = `
 Object {
   "name": Object {
     "firstName": "testFirst",
-    "lastName": "testLast",
+    "lastName": Object {
+      "bill": Object {
+        "luo": "testLast",
+      },
+    },
   },
 }
 `;

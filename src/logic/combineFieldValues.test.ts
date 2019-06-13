@@ -23,6 +23,7 @@ describe('combineFieldValues', () => {
         'test[1].what': 'testLast',
         'test[1].task': 'testLast',
         'test[2].what': 'testLast',
+        'test[2].what[1].test': 'testLast',
       }),
     ).toMatchSnapshot();
   });
@@ -32,6 +33,7 @@ describe('combineFieldValues', () => {
       combineFieldValues({
         'name.firstName': 'testFirst',
         'name.lastName': 'testLast',
+        'name.lastName.bill.luo': 'testLast',
       }),
     ).toMatchSnapshot();
   });
