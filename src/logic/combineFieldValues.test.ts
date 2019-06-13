@@ -27,7 +27,7 @@ describe('combineFieldValues', () => {
     ).toMatchSnapshot();
   });
 
-  it.only('should combine object correctly', () => {
+  it('should combine object correctly', () => {
     expect(
       combineFieldValues({
         'name.firstName': 'testFirst',
