@@ -16,7 +16,6 @@ describe('attachEventListeners', () => {
 
     expect(
       attachEventListeners({
-        isOnBlurMode: false,
         isRadio: true,
         // @ts-ignore
         field: fields.test,
@@ -44,7 +43,6 @@ describe('attachEventListeners', () => {
     expect(
       attachEventListeners({
         // @ts-ignore
-        isOnBlurMode: false,
         field: fields.test,
         isRadio: true,
         validateAndStateUpdate,
@@ -71,7 +69,6 @@ describe('attachEventListeners', () => {
     expect(
       attachEventListeners({
         // @ts-ignore
-        isOnBlurMode: false,
         field: fields.test,
         isRadio: false,
         validateAndStateUpdate,
@@ -99,7 +96,6 @@ describe('attachEventListeners', () => {
     expect(
       attachEventListeners({
         // @ts-ignore
-        isOnBlurMode: false,
         field: fields.test,
         isRadio: false,
         validateAndStateUpdate,
@@ -125,7 +121,6 @@ describe('attachEventListeners', () => {
     expect(
       attachEventListeners({
         // @ts-ignore
-        isOnBlurMode: false,
         field: fields.test,
         isRadio: true,
         validateAndStateUpdate,
@@ -152,7 +147,6 @@ describe('attachEventListeners', () => {
     expect(
       attachEventListeners({
         // @ts-ignore
-        isOnBlurMode: false,
         field: fields.test,
         isRadio: false,
         // @ts-ignore
@@ -162,58 +156,5 @@ describe('attachEventListeners', () => {
 
     expect(addEventListener).toBeCalledWith('input', validateAndStateUpdate);
     expect(fields.test.eventAttached).toBeTruthy();
-  });
-
-  it('should not attach input event on none radio type input and isOnBlurMode enabled', () => {
-    const validateAndStateUpdate = jest.fn();
-    const addEventListener = jest.fn();
-    const fields = {
-      test: {
-        ref: {
-          name: 'test',
-          addEventListener,
-        },
-        eventAttached: [],
-      },
-    };
-
-    expect(
-      attachEventListeners({
-        // @ts-ignore
-        isOnBlurMode: true,
-        field: fields.test,
-        isRadio: false,
-        // @ts-ignore
-        validateAndStateUpdate,
-      }),
-    ).toBeUndefined();
-
-    expect(addEventListener).not.toBeCalledWith('input', validateAndStateUpdate);
-  });
-
-  it('should not attach input event on radio type input and isOnBlurMode enabled', () => {
-    const validateAndStateUpdate = jest.fn();
-    const addEventListener = jest.fn();
-    const fields = {
-      test: {
-        ref: {
-          addEventListener,
-        },
-        eventAttached: [],
-        name: 'test',
-      },
-    };
-
-    expect(
-      attachEventListeners({
-        isOnBlurMode: true,
-        isRadio: true,
-        // @ts-ignore
-        field: fields.test,
-        validateAndStateUpdate,
-      }),
-    ).toBeUndefined();
-
-    expect(addEventListener).not.toBeCalledWith('change', validateAndStateUpdate);
   });
 });

@@ -58,7 +58,6 @@ describe('useForm', () => {
     it('should register field and call attachEventListeners method', () => {
       hookForm.register({ type: 'input', name: 'test' });
       expect(attachEventListeners).toBeCalledWith({
-        isOnBlurMode: false,
         field: {
           mutationWatcher: undefined,
           ref: {
@@ -75,7 +74,6 @@ describe('useForm', () => {
     it('should register field for radio type and call attachEventListeners method', () => {
       hookForm.register({ type: 'radio', name: 'test' });
       expect(attachEventListeners).toBeCalledWith({
-        isOnBlurMode: false,
         field: {
           mutationWatcher: undefined,
           ref: {
@@ -134,7 +132,6 @@ describe('useForm', () => {
         options: [{ type: 'radio', name: 'test3' }, { type: 'radio', name: 'test4' }],
       });
       expect(attachEventListeners).toBeCalledWith({
-        isOnBlurMode: false,
         field: {
           mutationWatcher: undefined,
           ref: {
@@ -176,8 +173,8 @@ describe('useForm', () => {
       });
       const test = hookForm.handleSubmit(callback);
       await test({
-        preventDefault: () => { },
-        persist: () => { },
+        preventDefault: () => {},
+        persist: () => {},
       });
       expect(callback).not.toBeCalled();
     });
@@ -196,8 +193,8 @@ describe('useForm', () => {
         return {};
       });
       await hookFormWithValidationSchema.handleSubmit(callback)({
-        preventDefault: () => { },
-        persist: () => { },
+        preventDefault: () => {},
+        persist: () => {},
       });
       expect(callback).toBeCalled();
     });

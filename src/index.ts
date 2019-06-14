@@ -286,7 +286,6 @@ export default function useForm<Data extends DataType>(
     if (!fieldData) return;
 
     attachEventListeners({
-      isOnBlurMode: modeChecker(mode).isOnBlur,
       field: fieldData,
       isRadio,
       validateAndStateUpdate: validateAndStateUpdateRef.current,
