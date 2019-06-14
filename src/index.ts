@@ -50,13 +50,16 @@ export default function useForm<Data extends DataType>(
     name: keyof Data,
     errors: ErrorMessages<Data>,
     error: ErrorMessages<Data>,
-  ): void => {
+  ): boolean => {
     if (errors[name] && !error[name]) {
       delete errorsRef.current[name];
       reRenderForm({});
+      return true;
     } else if (error[name]) {
       reRenderForm({});
+      return true;
     }
+    return false;
   };
 
   const setValue = <Name extends keyof Data>(
@@ -134,7 +137,7 @@ export default function useForm<Data extends DataType>(
         const shouldUpdateWatchMode =
           isWatchAll || watchFieldsRef.current[name];
         const shouldUpdateValidateMode = isOnChange || (isOnBlur && isBlurType);
-        let shouldUpdateState = isWatchAll;
+        let shouldUpdateState = shouldUpdateWatchMode;
 
         if (!isDirtyRef.current) {
           isDirtyRef.current = true;
@@ -179,7 +182,7 @@ export default function useForm<Data extends DataType>(
             shouldUpdateWatchMode
           ) {
             errorsRef.current = { ...filterUndefinedErrors(errors), ...error };
-            renderBaseOnError(name, errorsRef.current, error);
+            if (renderBaseOnError(name, errorsRef.current, error)) return;
           }
         }
 
