@@ -35,14 +35,6 @@ describe('useForm', () => {
       return hookForm;
     });
 
-    testComponent(() => {
-      hookFormWithValidationSchema = useForm({
-        mode: 'onSubmit',
-        validationSchema: {},
-      });
-      return hookFormWithValidationSchema;
-    });
-
     jest.resetAllMocks();
   });
 
@@ -123,6 +115,15 @@ describe('useForm', () => {
     });
   });
 
+  describe('reset', () => {
+    it('should reset the form and re-render the form', () => {
+      hookForm.register({ name: 'test' });
+      hookForm.setValue('test', 'data');
+      hookForm.reset();
+      expect(findRemovedFieldAndRemoveListener).toBeCalled();
+    });
+  });
+
   describe('unSubscribe', () => {
     it('should remove all reference when mode change', () => {
       hookForm.register({ type: 'input', name: 'test' });
@@ -182,6 +183,14 @@ describe('useForm', () => {
 
   describe('handleSubmit with validationSchema', () => {
     it('should invoke callback when error not found', async () => {
+      testComponent(() => {
+        hookFormWithValidationSchema = useForm({
+          mode: 'onSubmit',
+          validationSchema: {},
+        });
+        return hookFormWithValidationSchema;
+      });
+
       hookFormWithValidationSchema.register({ value: '', type: 'input', name: 'test' }, { required: true });
       const callback = jest.fn();
       // @ts-ignore
