@@ -4,10 +4,10 @@ import set from '../utils/set';
 export default function combineFieldValues(data): FieldValue {
   const output = Object.entries(data).reduce(
     (previous, [key, value]): FieldValue => {
-      const arrayIndex = key.match(/\[\d+\]/gi);
-      const dotPosition = key.indexOf('.');
+      const isArray = key.match(/\[\d+\]/gi);
+      const isObject = key.indexOf('.') >= 0;
 
-      if (arrayIndex || dotPosition) {
+      if (isArray || isObject) {
         set(previous, key, value);
         return previous;
       }
