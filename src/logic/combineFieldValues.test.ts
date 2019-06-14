@@ -37,4 +37,12 @@ describe('combineFieldValues', () => {
       }),
     ).toMatchSnapshot();
   });
+
+  it('should return default name value', () => {
+    expect(
+      combineFieldValues({
+        'name': 'testFirst',
+      }),
+    ).toMatchSnapshot();
+  });
 });

@@ -55,3 +55,9 @@ Object {
   },
 }
 `;
+
+exports[`combineFieldValues should return default name value 1`] = `
+Object {
+  "name": "testFirst",
+}
+`;
