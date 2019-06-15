@@ -31,6 +31,7 @@
   "author": "<bluebill1049@hotmail.com>",
   "license": "MIT",
   "devDependencies": {
+    "@babel/preset-env": "^7.4.5",
     "@types/enzyme": "^3.9.1",
     "@types/enzyme-adapter-react-16": "^1.0.5",
     "@types/jest": "^24.0.11",
@@ -50,6 +51,7 @@
     "react-test-renderer": "^16.8.6",
     "rimraf": "^2.6.3",
     "rollup": "^1.9.3",
+    "rollup-plugin-babel": "^4.3.2",
     "rollup-plugin-typescript2": "^0.20.1",
     "ts-jest": "^24.0.2",
     "typescript": "3.4.3",
