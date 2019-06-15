@@ -34,6 +34,7 @@ export default function useForm<Data extends DataType>(
     defaultValues: {},
   },
 ) {
+  const unMount = useRef(false);
   const fieldsRef = useRef<FieldsObject<Data>>({});
   const errorsRef = useRef<ErrorMessages<Data>>({});
   const submitCountRef = useRef<number>(0);
@@ -406,6 +407,7 @@ export default function useForm<Data extends DataType>(
     } else {
       errorsRef.current = fieldErrors;
     }
+    if (unMount.current) return;
     isSubmittedRef.current = true;
     submitCountRef.current += 1;
     isSubmittingRef.current = false;
@@ -449,7 +451,12 @@ export default function useForm<Data extends DataType>(
   const getValues = (): { [key: string]: FieldValue } =>
     getFieldsValues(fieldsRef.current);
 
-  useEffect((): VoidFunction => unSubscribe, [mode]);
+  useEffect((): VoidFunction => {
+    return () => {
+      unMount.current = true;
+      unSubscribe();
+    }
+  }, [mode, unMount.current]);
 
   return {
     register,
