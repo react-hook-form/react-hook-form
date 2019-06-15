@@ -16,12 +16,12 @@ jest.mock('./logic/attachEventListeners');
 jest.mock('./logic/getFieldsValues');
 jest.mock('./logic/validateWithSchema');
 
-const TestHook = ({ callback }) => {
-  const { errors } = callback();
-  return errors ? <div>errors</div> : null;
-};
-
 const testComponent = callback => {
+  const TestHook = ({ callback }) => {
+    const { errors } = callback();
+    return errors ? <div>errors</div> : null;
+  };
+
   mount(<TestHook callback={callback} />);
 };
 
@@ -178,6 +178,14 @@ describe('useForm', () => {
         persist: () => {},
       });
       expect(callback).not.toBeCalled();
+    });
+  });
+
+  describe('getValues', () => {
+    it('should call getFieldsValues and return all values', () => {
+      hookForm.register({ value: 'test', type: 'input', name: 'test' });
+      hookForm.getValues();
+      expect(getFieldsValues).toBeCalled();
     });
   });
 
