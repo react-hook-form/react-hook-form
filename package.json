@@ -1,8 +1,8 @@
 {
   "name": "react-hook-form",
   "version": "3.11.4",
-  "main": "dist/index.js",
-  "module": "dist/index.es.js",
+  "main": "dist/react-hook-form.js",
+  "module": "dist/react-hook-form.es.js",
   "types": "dist/index.d.ts",
   "scripts": {
     "clean": "rimraf dist/*",
