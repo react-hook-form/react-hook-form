@@ -39,10 +39,10 @@ function App() {
       <input name="firstname" ref={register} /> {/* register an input */}
       
       <input name="lastname" ref={register({ required: true })} /> {/* apply required validation */}
-      {errors.lastname && 'Last name is required.'} {/* error message */}
+      {errors.lastname && 'Last name is required.'}
       
       <input name="age" ref={register({ pattern: /\d+/ })} /> {/* apply pattern validation */}
-      {errors.age && 'Please enter number for age.'} {/* error message */}
+      {errors.age && 'Please enter number for age.'}
       
       <input type="submit" />
     </form>
