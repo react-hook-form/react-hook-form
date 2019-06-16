@@ -473,6 +473,7 @@ export default function useForm<Data extends DataType>(
       submitCount: submitCountRef.current,
       touched: touchedFieldsRef.current,
       isSubmitting: isSubmittingRef.current,
+      isValid: isEmptyObject(errorsRef.current),
     },
   };
 }
