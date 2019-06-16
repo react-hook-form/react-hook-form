@@ -79,6 +79,22 @@ describe('useForm', () => {
       });
       expect(onDomRemove).toBeCalled();
     });
+
+    it('should support register passed to ref', async () => {
+      hookForm.register({ required: true })({ type: 'text', name: 'test', value: 'testData' });
+      // @ts-ignore
+      validateField.mockImplementation(async () => {
+        return {};
+      });
+      await hookForm.handleSubmit(data => {
+        expect(data).toEqual({
+          test: 'testData',
+        });
+      })({
+        preventDefault: () => {},
+        persist: () => {},
+      });
+    });
   });
 
   describe('watch', () => {
