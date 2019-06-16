@@ -204,15 +204,13 @@ export default function useForm<Data extends DataType>(
   ): void => {
     const errors = errorsRef.current;
     const error = errors[name];
+    const isSameError =
+      error && (error.type === type && error.message === message);
 
     if (!type && error) {
       delete errors[name];
       reRenderForm({});
-    } else if (
-      type &&
-      error &&
-      (error.type !== type || error.message !== message)
-    ) {
+    } else if (!isSameError) {
       errors[name] = {
         type,
         message,
@@ -455,7 +453,7 @@ export default function useForm<Data extends DataType>(
     return () => {
       unMount.current = true;
       unSubscribe();
-    }
+    };
   }, [mode, unMount.current]);
 
   return {
