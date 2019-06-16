@@ -9,7 +9,7 @@ function isIndex(value) {
   return reIsUint.test(value) && value > -1;
 }
 
-function isKey(value) {
+export function isKey(value) {
   if (isArray(value)) return false;
   return reIsPlainProp.test(value) || !reIsDeepProp.test(value);
 }
