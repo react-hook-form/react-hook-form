@@ -95,6 +95,23 @@ describe('useForm', () => {
         persist: () => {},
       });
     });
+
+    it('should not register the same radio input', async () => {
+      hookForm.register({ type: 'radio', name: 'test', value: '' });
+      hookForm.register({ type: 'radio', name: 'test', value: '' });
+      // @ts-ignore
+      validateField.mockImplementation(async () => {
+        return {};
+      });
+      await hookForm.handleSubmit(data => {
+        expect(data).toEqual({
+          test: '',
+        });
+      })({
+        preventDefault: () => {},
+        persist: () => {},
+      });
+    });
   });
 
   describe('watch', () => {
