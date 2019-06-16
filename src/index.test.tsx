@@ -196,11 +196,10 @@ describe('useForm', () => {
         return hookForm;
       });
       hookForm.register(
-        { value: '', type: 'input', name: 'test1' }, { required: true}
+        { value: '', type: 'input', name: 'test1' },
+        { required: true },
       );
-      hookForm.register(
-        { value: '', type: 'input', name: 'test' },
-      );
+      hookForm.register({ value: '', type: 'input', name: 'test' });
       // @ts-ignore
       validateField.mockImplementation(async () => {
         return {};
@@ -254,6 +253,33 @@ describe('useForm', () => {
       hookForm.register({ type: 'text', name: 'test' });
       wrapper.unmount();
       expect(findRemovedFieldAndRemoveListener).toBeCalled();
+    });
+  });
+
+  describe('when defaultValues is supplied', () => {
+    it('should populate the input with them', async () => {
+      testComponent(() => {
+        hookForm = useForm({
+          mode: 'onSubmit',
+          defaultValues: {
+            test: 'data',
+          },
+        });
+        return hookForm;
+      });
+      // @ts-ignore
+      validateField.mockImplementation(async () => {
+        return {};
+      });
+      hookForm.register({ type: 'text', name: 'test' });
+      await hookForm.handleSubmit(data => {
+        expect(data).toEqual({
+          test: 'data',
+        });
+      })({
+        preventDefault: () => {},
+        persist: () => {},
+      });
     });
   });
 });
