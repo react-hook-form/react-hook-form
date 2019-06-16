@@ -16,17 +16,18 @@ jest.mock('./logic/attachEventListeners');
 jest.mock('./logic/getFieldsValues');
 jest.mock('./logic/validateWithSchema');
 
+let hookForm;
+let hookFormWithValidationSchema;
+let wrapper;
+
 const testComponent = callback => {
   const TestHook = ({ callback }) => {
     const { errors } = callback();
     return errors ? <div>errors</div> : null;
   };
 
-  mount(<TestHook callback={callback} />);
+  wrapper = mount(<TestHook callback={callback} />);
 };
-
-let hookForm;
-let hookFormWithValidationSchema;
 
 describe('useForm', () => {
   beforeEach(() => {
@@ -214,6 +215,14 @@ describe('useForm', () => {
         persist: () => {},
       });
       expect(callback).toBeCalled();
+    });
+  });
+
+  describe('when component unMount', () => {
+    it('should call unSubscribe', () => {
+      hookForm.register({ type: 'text', name: 'test' });
+      wrapper.unmount();
+      expect(findRemovedFieldAndRemoveListener).toBeCalled();
     });
   });
 });
