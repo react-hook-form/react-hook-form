@@ -81,7 +81,11 @@ describe('useForm', () => {
     });
 
     it('should support register passed to ref', async () => {
-      hookForm.register({ required: true })({ type: 'text', name: 'test', value: 'testData' });
+      hookForm.register({ required: true })({
+        type: 'text',
+        name: 'test',
+        value: 'testData',
+      });
       // @ts-ignore
       validateField.mockImplementation(async () => {
         return {};
@@ -278,6 +282,29 @@ describe('useForm', () => {
         persist: () => {},
       });
       expect(callback).toBeCalled();
+    });
+  });
+
+  describe('setError', () => {
+    it('should only set an error when it is not existed', () => {
+      hookForm.setError('input', 'test');
+      expect(hookForm.errors).toEqual({
+        input: {
+          type: 'test',
+        },
+      });
+      hookForm.setError('input', 'test');
+      expect(hookForm.errors).toEqual({
+        input: {
+          type: 'test',
+        },
+      });
+    });
+
+    it('should remove error', () => {
+      hookForm.setError('input', 'test');
+      hookForm.setError('input');
+      expect(hookForm.errors).toEqual({})
     });
   });
 

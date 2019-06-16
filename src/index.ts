@@ -198,7 +198,7 @@ export default function useForm<Data extends DataType>(
 
   const setError = <Name extends keyof Data>(
     name: Extract<Name, string>,
-    type: string,
+    type?: string,
     message?: string,
     ref?: Ref,
   ): void => {
