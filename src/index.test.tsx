@@ -131,7 +131,10 @@ describe('useForm', () => {
       hookForm.register({
         type: 'radio',
         name: 'test1',
-        options: [{ type: 'radio', name: 'test3' }, { type: 'radio', name: 'test4' }],
+        options: [
+          { type: 'radio', name: 'test3' },
+          { type: 'radio', name: 'test4' },
+        ],
       });
       expect(attachEventListeners).toBeCalledWith({
         field: {
@@ -167,18 +170,43 @@ describe('useForm', () => {
     });
 
     it('should not invoke callback when there are errors', async () => {
-      hookForm.register({ value: '', type: 'input', name: 'test' }, { required: true });
+      hookForm.register(
+        { value: '', type: 'input', name: 'test' },
+        { required: true },
+      );
       const callback = jest.fn();
       // @ts-ignore
       validateField.mockImplementation(async () => {
         return { test: { type: 'test' } };
       });
-      const test = hookForm.handleSubmit(callback);
-      await test({
+      await hookForm.handleSubmit(callback)({
         preventDefault: () => {},
         persist: () => {},
       });
       expect(callback).not.toBeCalled();
+    });
+
+    it('should only validate fields which have been specified', async () => {
+      const callback = jest.fn();
+      testComponent(() => {
+        hookForm = useForm({
+          mode: 'onSubmit',
+          validationFields: ['test'],
+        });
+        return hookForm;
+      });
+      hookForm.register(
+        { value: '', type: 'input', name: 'test1' }, { required: true}
+      );
+      hookForm.register(
+        { value: '', type: 'input', name: 'test' },
+      );
+      // @ts-ignore
+      validateField.mockImplementation(async () => {
+        return {};
+      });
+      await hookForm.handleSubmit(callback)();
+      expect(validateField).toHaveBeenCalledTimes(1);
     });
   });
 
@@ -200,7 +228,10 @@ describe('useForm', () => {
         return hookFormWithValidationSchema;
       });
 
-      hookFormWithValidationSchema.register({ value: '', type: 'input', name: 'test' }, { required: true });
+      hookFormWithValidationSchema.register(
+        { value: '', type: 'input', name: 'test' },
+        { required: true },
+      );
       const callback = jest.fn();
       // @ts-ignore
       getFieldsValues.mockImplementation(async () => {
