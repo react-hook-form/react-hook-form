@@ -181,6 +181,36 @@ describe('useForm', () => {
         persist: () => {},
       });
     });
+
+    it('should return undefined when filed not found', () => {
+      expect(hookForm.setValue('test', '1')).toBeUndefined();
+    });
+  });
+
+  describe('triggerValidation', () => {
+    it('should return false when field is not found', async () => {
+      expect(await hookForm.triggerValidation({ name: 'test' })).toBeFalsy();
+    });
+
+    it('should return false when field is not found', async () => {
+      hookForm.register({ type: 'input', name: 'test' });
+      expect(await hookForm.triggerValidation({ name: 'test', forceValidation:false })).toBeTruthy();
+    });
+
+    it('should update value when value is supplied', async () => {
+      testComponent(() => {
+        hookForm = useForm({
+          mode: 'onChange'
+        });
+        return hookForm;
+      });
+      hookForm.register({ type: 'input', name: 'test' }, { required: true });
+      // @ts-ignore
+      validateField.mockImplementation(async () => {
+        return {};
+      });
+      expect(await hookForm.triggerValidation({ name: 'test' })).toBeTruthy();
+    });
   });
 
   describe('unSubscribe', () => {
