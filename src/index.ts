@@ -419,7 +419,7 @@ export default function useForm<Data extends DataType>(
     isSubmittedRef.current = false;
     isDirtyRef.current = false;
     touchedFieldsRef.current = [];
-  }
+  };
 
   const unSubscribe = (): void => {
     fieldsRef.current &&
@@ -477,7 +477,11 @@ export default function useForm<Data extends DataType>(
       submitCount: submitCountRef.current,
       touched: touchedFieldsRef.current,
       isSubmitting: isSubmittingRef.current,
-      isValid: isEmptyObject(errorsRef.current),
+      isValid:
+        touchedFieldsRef.current.length &&
+        touchedFieldsRef.current.length ===
+          Object.keys(fieldsRef.current).length &&
+        isEmptyObject(errorsRef.current),
     },
   };
 }
