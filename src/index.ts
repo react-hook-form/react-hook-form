@@ -412,6 +412,15 @@ export default function useForm<Data extends DataType>(
     reRenderForm({});
   };
 
+  const resetRefs = () => {
+    watchFieldsRef.current = {};
+    errorsRef.current = {};
+    isWatchAllRef.current = false;
+    isSubmittedRef.current = false;
+    isDirtyRef.current = false;
+    touchedFieldsRef.current = [];
+  }
+
   const unSubscribe = (): void => {
     fieldsRef.current &&
       Object.values(fieldsRef.current).forEach(
@@ -425,12 +434,7 @@ export default function useForm<Data extends DataType>(
         },
       );
     fieldsRef.current = {};
-    watchFieldsRef.current = {};
-    errorsRef.current = {};
-    isWatchAllRef.current = false;
-    isSubmittedRef.current = false;
-    isDirtyRef.current = false;
-    touchedFieldsRef.current = [];
+    resetRefs();
   };
 
   const reset = (): void => {
@@ -442,7 +446,7 @@ export default function useForm<Data extends DataType>(
     } catch {
       console.warn(`⚠ No HTML input found, hence <form> look up failed.`);
     }
-    unSubscribe();
+    resetRefs();
     reRenderForm({});
   };
 
