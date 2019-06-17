@@ -162,6 +162,27 @@ describe('useForm', () => {
     });
   });
 
+  describe('setValue', () => {
+    it('should set value of radio input correctly', async () => {
+      hookForm.register({ name: 'test', type: 'radio', value: '1' });
+      hookForm.register({ name: 'test', type: 'radio', value: '2' });
+      hookForm.setValue('test', '1');
+      // @ts-ignore
+      validateField.mockImplementation(async () => {
+        return {};
+      });
+      hookForm.register({ type: 'text', name: 'test' });
+      await hookForm.handleSubmit(data => {
+        expect(data).toEqual({
+          test: '1',
+        });
+      })({
+        preventDefault: () => {},
+        persist: () => {},
+      });
+    });
+  });
+
   describe('unSubscribe', () => {
     it('should remove all reference when mode change', () => {
       hookForm.register({ type: 'input', name: 'test' });
@@ -304,7 +325,7 @@ describe('useForm', () => {
     it('should remove error', () => {
       hookForm.setError('input', 'test');
       hookForm.setError('input');
-      expect(hookForm.errors).toEqual({})
+      expect(hookForm.errors).toEqual({});
     });
   });
 
