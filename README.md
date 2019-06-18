@@ -43,9 +43,7 @@ import useForm from "react-hook-form";
 
 function App() {
   const { register, handleSubmit, errors } = useForm(); // initialise the hook
-  const onSubmit = data => {
-    console.log(data);
-  }; // callback when validation pass
+  const onSubmit = data => { console.log(data) }; // callback when validation pass
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
