@@ -37,28 +37,39 @@
 
 ## Quickstart
 
-```jsx
-import React from 'react'
-import useForm from 'react-hook-form'
+```jsximport React from "react";
+import useForm from "react-hook-form";
 
 function App() {
-  const { register, handleSubmit, errors } = useForm() // initialise the hook
-  const onSubmit = (data) => { console.log(data) } // callback when validation pass
-    
+  const { register, handleSubmit, errors } = useForm(); // initialise the hook
+  const onSubmit = data => {
+    console.log(data);
+  }; // callback when validation pass
+
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
       <input name="firstname" ref={register} /> {/* register an input */}
+      <input
+        aria-invalid={errors.lastname ? "true" : "false"}
+        name="lastname"
+        ref={register({ required: true })}
+      />
+      {/* apply required validation */}
       
-      <input name="lastname" ref={register({ required: true })} /> {/* apply required validation */}
-      {errors.lastname && 'Last name is required.'}
-      
-      <input name="age" ref={register({ pattern: /\d+/ })} /> {/* apply pattern validation */}
-      {errors.age && 'Please enter number for age.'}
+      {errors.lastname && "Last name is required."}
+      <input
+        aria-invalid={errors.age ? "true" : "false"}
+        name="age"
+        ref={register({ pattern: /\d+/ })}
+      />
+      {/* apply pattern validation */}
+      {errors.age && "Please enter number for age."}
       
       <input type="submit" />
     </form>
-  )
+  );
 }
+
 ```
 
 ## Contributors 
