@@ -154,11 +154,25 @@ describe('useForm', () => {
   });
 
   describe('reset', () => {
-    it('should reset the form and re-render the form', () => {
+    it('should reset the form and re-render the form', async () => {
       hookForm.register({ name: 'test' });
       hookForm.setValue('test', 'data');
+      // @ts-ignore
+      validateField.mockImplementation(async () => {
+        return {};
+      });
+      hookForm.register({ type: 'text', name: 'test' });
+      await hookForm.handleSubmit(data => {
+        expect(data).toEqual({
+          test: 'data',
+        });
+      })({
+        preventDefault: () => {},
+        persist: () => {},
+      });
+      expect(hookForm.formState.isSubmitted).toBeTruthy();
       hookForm.reset();
-      // expect(findRemovedFieldAndRemoveListener).toBeCalled();
+      expect(hookForm.formState.isSubmitted).toBeFalsy();
     });
   });
 
