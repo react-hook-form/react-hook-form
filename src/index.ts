@@ -193,6 +193,7 @@ export default function useForm<Data extends DataType>(
   const removeEventListener: Function = findRemovedFieldAndRemoveListener.bind(
     null,
     fieldsRef.current,
+    touchedFieldsRef,
     validateAndStateUpdateRef.current,
   );
 
