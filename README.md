@@ -50,14 +50,12 @@ function App() {
       <input name="firstname" ref={register} /> {/* register an input */}
       
       <input
-        aria-invalid={errors.lastname ? "true" : "false"}
         name="lastname"
         ref={register({ required: true })}
       />
       {errors.lastname && "Last name is required."}
       
       <input
-        aria-invalid={errors.age ? "true" : "false"}
         name="age"
         ref={register({ pattern: /\d+/ })}
       />
