@@ -37,7 +37,8 @@
 
 ## Quickstart
 
-```jsximport React from "react";
+```jsx
+import React from "react";
 import useForm from "react-hook-form";
 
 function App() {
