@@ -50,20 +50,19 @@ function App() {
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
       <input name="firstname" ref={register} /> {/* register an input */}
+      
       <input
         aria-invalid={errors.lastname ? "true" : "false"}
         name="lastname"
         ref={register({ required: true })}
       />
-      {/* apply required validation */}
-      
       {errors.lastname && "Last name is required."}
+      
       <input
         aria-invalid={errors.age ? "true" : "false"}
         name="age"
         ref={register({ pattern: /\d+/ })}
       />
-      {/* apply pattern validation */}
       {errors.age && "Please enter number for age."}
       
       <input type="submit" />
