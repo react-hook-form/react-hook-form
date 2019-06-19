@@ -20,6 +20,23 @@ describe('findMissDomAndClean', () => {
     ).toEqual(fields);
   });
 
+  it('should remove touched Fields reference', () => {
+    const touchedRefs = { current: ['test', 'test1', 'test3'] };
+    // @ts-ignore
+    findRemovedFieldAndRemoveListener({}, touchedRefs, () => {}, {
+      ref: { name: 'test', type: 'radio' },
+      options: [
+        {
+          mutationWatcher: {
+            disconnect: () => {},
+          },
+          ref: {},
+        },
+      ],
+    });
+    expect(touchedRefs.current).toEqual(['test1', 'test3']);
+  });
+
   it('should remove options completely if option found and no option left', () => {
     document.body.contains = jest.fn(() => false);
 
@@ -132,7 +149,7 @@ describe('findMissDomAndClean', () => {
     ).toMatchSnapshot();
   });
 
-  it('should not remove event listner when type is not Element', () => {
+  it('should not remove event listener when type is not Element', () => {
     document.body.contains = jest.fn(() => false);
 
     const disconnect = jest.fn();

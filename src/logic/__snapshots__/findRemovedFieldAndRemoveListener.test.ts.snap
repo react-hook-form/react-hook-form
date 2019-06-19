@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`findMissDomAndClean should not remove event listner when type is not Element 1`] = `
+exports[`findMissDomAndClean should not remove event listener when type is not Element 1`] = `
 Object {
   "test": Object {
     "name": "test",
@@ -17,7 +17,7 @@ Object {
 }
 `;
 
-exports[`findMissDomAndClean should not remove event listner when type is not Element 2`] = `
+exports[`findMissDomAndClean should not remove event listener when type is not Element 2`] = `
 Object {
   "test": Object {
     "name": "test",
