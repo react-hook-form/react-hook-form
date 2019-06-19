@@ -26,7 +26,7 @@
 ## [Docs](https://react-hook-form.com/api)
 
 - [Motivation](https://medium.com/@bruce1049/form-validation-with-hook-in-3kb-c5414edf7d64)
-- [Get started](https://react-hook-form.com/api)
+- [Get started](https://react-hook-form.com/get-started)
 - [API](https://react-hook-form.com/api)
 - [Examples](https://github.com/bluebill1049/react-hook-form/tree/master/examples)
 - [Demo](https://react-hook-form.com)
