@@ -14,7 +14,7 @@ describe('findMissDomAndClean', () => {
     };
     expect(
       // @ts-ignore
-      findRemovedFieldAndRemoveListener(fields, () => {}, {
+      findRemovedFieldAndRemoveListener(fields, { current: [] }, () => {}, {
         ref: { name: 'bill', type: 'radio' },
       }),
     ).toEqual(fields);
@@ -45,7 +45,7 @@ describe('findMissDomAndClean', () => {
 
     expect(
       // @ts-ignore
-      findRemovedFieldAndRemoveListener(fields, () => {}, {
+      findRemovedFieldAndRemoveListener(fields, { current: [] }, () => {}, {
         ref: { name: 'test', type: 'radio' },
         options: [
           {
@@ -80,7 +80,7 @@ describe('findMissDomAndClean', () => {
     };
 
     expect(
-      findRemovedFieldAndRemoveListener(fields, () => {}, {
+      findRemovedFieldAndRemoveListener(fields, { current: [] }, () => {}, {
         ref,
         mutationWatcher: {
           disconnect,
@@ -95,7 +95,7 @@ describe('findMissDomAndClean', () => {
     };
     expect(
       // @ts-ignore
-      findRemovedFieldAndRemoveListener(fields, () => {}, {}),
+      findRemovedFieldAndRemoveListener(fields, { current: [] }, () => {}, {}),
     ).toEqual(undefined);
   });
 
@@ -122,7 +122,7 @@ describe('findMissDomAndClean', () => {
     };
 
     expect(
-      findRemovedFieldAndRemoveListener(fields, () => {}, {
+      findRemovedFieldAndRemoveListener(fields, { current: [] }, () => {}, {
         ref: { name: 'test', type: 'radio' },
         options: [{ ref }],
         mutationWatcher: {
@@ -153,7 +153,7 @@ describe('findMissDomAndClean', () => {
 
     expect(
       // @ts-ignore
-      findRemovedFieldAndRemoveListener(fields, () => {}, {
+      findRemovedFieldAndRemoveListener(fields, { current: [] }, () => {}, {
         ref: { name: 'test', type: 'text' },
         options: [
           {
@@ -168,7 +168,7 @@ describe('findMissDomAndClean', () => {
 
     expect(
       // @ts-ignore
-      findRemovedFieldAndRemoveListener(fields, () => {}, {
+      findRemovedFieldAndRemoveListener(fields, { current: [] }, () => {}, {
         ref: { name: 'test', type: 'text' },
       }),
     ).toMatchSnapshot();
