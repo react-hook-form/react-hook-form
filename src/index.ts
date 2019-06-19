@@ -46,6 +46,8 @@ export default function useForm<Data extends DataType>(
   const isDirtyRef = useRef<boolean>(false);
   const reRenderForm = useState({})[1];
   const validateAndStateUpdateRef = useRef<Function>();
+  const isSubmitMode = modeChecker(mode).isOnSubmit;
+  const fieldsWithValidation: string[] = [];
 
   const renderBaseOnError = (
     name: keyof Data,
@@ -82,11 +84,9 @@ export default function useForm<Data extends DataType>(
     const options = field.options;
 
     if (isRadioInput(ref.type) && options) {
-      options.forEach(
-        ({ ref: radioRef }): void => {
-          if (radioRef.value === value) radioRef.checked = true;
-        },
-      );
+      options.forEach(({ ref: radioRef }): void => {
+        if (radioRef.value === value) radioRef.checked = true;
+      });
       return;
     }
 
@@ -228,6 +228,16 @@ export default function useForm<Data extends DataType>(
     if (elementRef && !elementRef.name) return warnMissingRef(elementRef);
 
     const { name, type, value } = elementRef;
+
+    if (
+      !isSubmitMode &&
+      data &&
+      !isEmptyObject(data) &&
+      !fieldsWithValidation.includes(name)
+    ) {
+      fieldsWithValidation.push(name);
+    }
+
     const { required = false, validate = undefined } = data || {};
     const inputData = {
       ...data,
@@ -304,11 +314,9 @@ export default function useForm<Data extends DataType>(
     if (typeof fieldNames === 'string') {
       watchFields[fieldNames] = true;
     } else if (Array.isArray(fieldNames)) {
-      fieldNames.forEach(
-        (name): void => {
-          watchFields[name] = true;
-        },
-      );
+      fieldNames.forEach((name): void => {
+        watchFields[name] = true;
+      });
     } else {
       isWatchAllRef.current = true;
       watchFieldsRef.current = {};
@@ -424,16 +432,14 @@ export default function useForm<Data extends DataType>(
 
   const unSubscribe = (): void => {
     fieldsRef.current &&
-      Object.values(fieldsRef.current).forEach(
-        (field: Field): void => {
-          const { ref, options } = field;
-          isRadioInput(ref.type) && Array.isArray(options)
-            ? options.forEach(
-                (fieldRef): void => removeEventListener(fieldRef, true),
-              )
-            : removeEventListener(field, true);
-        },
-      );
+      Object.values(fieldsRef.current).forEach((field: Field): void => {
+        const { ref, options } = field;
+        isRadioInput(ref.type) && Array.isArray(options)
+          ? options.forEach((fieldRef): void =>
+              removeEventListener(fieldRef, true),
+            )
+          : removeEventListener(field, true);
+      });
     fieldsRef.current = {};
     resetRefs();
   };
@@ -478,11 +484,14 @@ export default function useForm<Data extends DataType>(
       submitCount: submitCountRef.current,
       touched: touchedFieldsRef.current,
       isSubmitting: isSubmittingRef.current,
-      isValid:
-        touchedFieldsRef.current.length &&
-        touchedFieldsRef.current.length ===
-          Object.keys(fieldsRef.current).length &&
-        isEmptyObject(errorsRef.current),
+      ...(!isSubmitMode
+        ? {
+            isValid:
+              fieldsWithValidation.reduce((previous, field) => {
+                return previous && touchedFieldsRef.current.includes(field);
+              }, true) && isEmptyObject(errorsRef.current) && !fieldsWithValidation.length,
+          }
+        : null),
     },
   };
 }
