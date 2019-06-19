@@ -29,9 +29,16 @@ import modeChecker from './utils/validationModeChecker';
 import warnMissingRef from './utils/warnMissingRef';
 
 export default function useForm<Data extends DataType>(
-  { mode, validationSchema, defaultValues, validationFields }: Props<Data> = {
+  {
+    mode,
+    validationSchema,
+    defaultValues,
+    validationFields,
+    nativeValidation,
+  }: Props<Data> = {
     mode: 'onSubmit',
     defaultValues: {},
+    nativeValidation: false,
   },
 ) {
   const unMount = useRef(false);
@@ -82,11 +89,9 @@ export default function useForm<Data extends DataType>(
     const options = field.options;
 
     if (isRadioInput(ref.type) && options) {
-      options.forEach(
-        ({ ref: radioRef }): void => {
-          if (radioRef.value === value) radioRef.checked = true;
-        },
-      );
+      options.forEach(({ ref: radioRef }): void => {
+        if (radioRef.value === value) radioRef.checked = true;
+      });
       return;
     }
 
@@ -139,6 +144,12 @@ export default function useForm<Data extends DataType>(
           isWatchAll || watchFieldsRef.current[name];
         const shouldUpdateValidateMode = isOnChange || (isOnBlur && isBlurType);
         let shouldUpdateState = shouldUpdateWatchMode;
+
+        if (nativeValidation) {
+          // @ts-ignore
+          ref.checkValidity();
+          return;
+        }
 
         if (!isDirtyRef.current) {
           isDirtyRef.current = true;
@@ -293,6 +304,20 @@ export default function useForm<Data extends DataType>(
       isRadio,
       validateAndStateUpdate: validateAndStateUpdateRef.current,
     });
+
+    if (nativeValidation && data) {
+      Object.entries(data).forEach(([key, value]) => {
+        if (key === 'required') elementRef[key] = true;
+        if (
+          key === 'max' ||
+          key === 'min' ||
+          key === 'minLength' ||
+          key === 'maxLength'
+        )
+          elementRef[key] = value;
+        if (key === 'pattern') elementRef[key] = value.source;
+      });
+    }
   }
 
   function watch(
@@ -304,11 +329,9 @@ export default function useForm<Data extends DataType>(
     if (typeof fieldNames === 'string') {
       watchFields[fieldNames] = true;
     } else if (Array.isArray(fieldNames)) {
-      fieldNames.forEach(
-        (name): void => {
-          watchFields[name] = true;
-        },
-      );
+      fieldNames.forEach((name): void => {
+        watchFields[name] = true;
+      });
     } else {
       isWatchAllRef.current = true;
       watchFieldsRef.current = {};
@@ -424,16 +447,14 @@ export default function useForm<Data extends DataType>(
 
   const unSubscribe = (): void => {
     fieldsRef.current &&
-      Object.values(fieldsRef.current).forEach(
-        (field: Field): void => {
-          const { ref, options } = field;
-          isRadioInput(ref.type) && Array.isArray(options)
-            ? options.forEach(
-                (fieldRef): void => removeEventListener(fieldRef, true),
-              )
-            : removeEventListener(field, true);
-        },
-      );
+      Object.values(fieldsRef.current).forEach((field: Field): void => {
+        const { ref, options } = field;
+        isRadioInput(ref.type) && Array.isArray(options)
+          ? options.forEach((fieldRef): void =>
+              removeEventListener(fieldRef, true),
+            )
+          : removeEventListener(field, true);
+      });
     fieldsRef.current = {};
     resetRefs();
   };

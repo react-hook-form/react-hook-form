@@ -15,6 +15,7 @@ export type OnSubmit<Data extends DataType> = (data: Data, e: React.SyntheticEve
 export interface Props<Data> {
   mode: 'onSubmit' | 'onBlur' | 'onChange';
   defaultValues?: { [key: string]: any };
+  nativeValidation?: boolean;
   validationFields?: (keyof Data)[];
   validationSchema?: any;
 }
