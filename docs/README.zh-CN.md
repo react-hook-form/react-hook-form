@@ -18,7 +18,7 @@
 
 ## [文档](https://react-hook-form.now.sh/api)
 - [动机](https://medium.com/@bruce1049/form-validation-with-hook-in-3kb-c5414edf7d64)
-- [开始](https://react-hook-form.now.sh/api)
+- [开始](https://react-hook-form.com/get-started)
 - [API](https://react-hook-form.now.sh/api)
 - [示例](https://github.com/bluebill1049/react-hook-form/tree/master/examples)
 - [Demo](https://react-hook-form.now.sh)
