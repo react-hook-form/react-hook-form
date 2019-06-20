@@ -458,7 +458,7 @@ export default function useForm<Data extends DataType>(
         .ref.closest('form')
         .reset();
     } catch {
-      console.warn(`⚠ No HTML input found, hence <form> look up failed.`);
+      console.warn(`⚠ Input not found & form reset failed`);
     }
     resetRefs();
     reRenderForm({});
