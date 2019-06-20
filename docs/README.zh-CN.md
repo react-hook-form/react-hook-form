@@ -23,6 +23,7 @@
 - [示例](https://github.com/bluebill1049/react-hook-form/tree/master/examples)
 - [Demo](https://react-hook-form.now.sh)
 - [Form Builder](https://react-hook-form.now.sh/builder)
+- [常见问题](https://react-hook-form.com/faq)
 
 ## 快速开始
 
