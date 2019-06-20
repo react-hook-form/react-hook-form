@@ -434,6 +434,7 @@ export default function useForm<Data extends DataType>(
     touchedFieldsRef.current = new Set();
     fieldsWithValidation.current = new Set();
     validFields.current = new Set();
+    submitCountRef.current = 0;
   };
 
   const unSubscribe = (): void => {

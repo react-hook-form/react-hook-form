@@ -6,8 +6,8 @@ export default function findRemovedFieldAndRemoveListener<
   Data extends DataType
 >(
   fields: FieldsObject<Data>,
-  touchedFieldsRef: { current: Set<any> },
-  fieldsWithValidation: { current: Set<any> },
+  touchedFieldsRef: { current: Set<string> },
+  fieldsWithValidation: { current: Set<string> },
   validateWithStateUpdate: Function,
   { ref, mutationWatcher, options }: Field,
   forceDelete: boolean = false,
