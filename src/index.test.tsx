@@ -391,7 +391,7 @@ describe('useForm', () => {
         return hookForm;
       });
 
-      expect(hookForm.formState.isValid).toBeTruthy();
+      expect(hookForm.formState.isValid).toBeFalsy();
     });
 
     it('should return true when no validation is registered', () => {
@@ -403,7 +403,7 @@ describe('useForm', () => {
       });
       hookForm.register({ type: 'text', name: 'test' });
 
-      expect(hookForm.formState.isValid).toBeTruthy();
+      expect(hookForm.formState.isValid).toBeFalsy();
     });
   });
 
