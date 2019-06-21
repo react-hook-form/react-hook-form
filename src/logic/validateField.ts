@@ -29,6 +29,7 @@ export default async <Data>(
     validate,
   }: Field,
   fields: { [Key in keyof Data]?: Field },
+  nativeValidation?: boolean,
 ): Promise<ErrorMessages<any>> => {
   const error = {};
   const isRadio = isRadioInput(type);
@@ -47,6 +48,7 @@ export default async <Data>(
       message: isString(required) ? required : '',
       ref: isRadio ? (fields[name].options || [{ ref: '' }])[0].ref : ref,
     };
+    if (nativeValidation && isString(required)) ref.setCustomValidity(required);
     return error;
   }
 
@@ -57,6 +59,7 @@ export default async <Data>(
 
     const { value: maxValue, message: maxMessage } = getValueAndMessage(max);
     const { value: minValue, message: minMessage } = getValueAndMessage(min);
+    const message = exceedMax ? maxMessage : minMessage;
 
     if (type === 'number') {
       exceedMax = maxValue && valueNumber > maxValue;
@@ -72,9 +75,10 @@ export default async <Data>(
       error[name] = {
         ...error[name],
         type: exceedMax ? 'max' : 'min',
-        message: exceedMax ? maxMessage : minMessage,
+        message,
         ref,
       };
+      if (nativeValidation && message) ref.setCustomValidity(message);
       return error;
     }
   }
@@ -90,14 +94,16 @@ export default async <Data>(
     } = getValueAndMessage(minLength);
     const exceedMax = maxLength && value.toString().length > maxLengthValue;
     const exceedMin = minLength && value.toString().length < minLengthValue;
+    const message = exceedMax ? maxLengthMessage : minLengthMessage;
 
     if (exceedMax || exceedMin) {
       error[name] = {
         ...error[name],
         type: exceedMax ? 'maxLength' : 'minLength',
-        message: exceedMax ? maxLengthMessage : minLengthMessage,
+        message,
         ref,
       };
+      if (nativeValidation && message) ref.setCustomValidity(message);
       return error;
     }
   }
@@ -114,6 +120,7 @@ export default async <Data>(
         message: patternMessage,
         ref,
       };
+      if (nativeValidation && patternMessage) ref.setCustomValidity(patternMessage);
       return error;
     }
   }
@@ -131,6 +138,7 @@ export default async <Data>(
           message: result,
           ref: validateRef,
         };
+        if (nativeValidation && result) ref.setCustomValidity(result);
         return error;
       } else if (typeof result === 'boolean' && !result) {
         error[name] = {
@@ -154,11 +162,13 @@ export default async <Data>(
               const result = await validate(fieldValue);
 
               if (typeof result !== 'boolean' || !result) {
+                const message = isString(result) ? result : '';
                 const data = {
                   type: key,
-                  message: isString(result) ? result : '',
+                  message,
                   ref: validateRef,
                 };
+                if (nativeValidation && message) ref.setCustomValidity(message);
                 return lastChild ? resolve(data) : data;
               }
             }
@@ -179,5 +189,6 @@ export default async <Data>(
     }
   }
 
+  ref.setCustomValidity('');
   return error;
 };

@@ -178,7 +178,7 @@ export default function useForm<Data extends DataType>(
             return reRenderForm({});
           }
         } else {
-          const error = await validateField<Data>(ref, fields);
+          const error = await validateField<Data>(ref, fields, nativeValidation);
           const shouldUpdate = shouldUpdateWithError({
             errors,
             error,
@@ -398,7 +398,7 @@ export default function useForm<Data extends DataType>(
 
           if (!fields[name]) return Promise.resolve(resolvedPrevious);
 
-          const fieldError = await validateField(field, fields);
+          const fieldError = await validateField(field, fields, nativeValidation);
 
           if (fieldError[name]) {
             resolvedPrevious.errors = {
