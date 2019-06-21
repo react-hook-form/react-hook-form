@@ -3,6 +3,8 @@ import getRadioValue from './getRadioValue';
 
 jest.mock('./getRadioValue');
 
+const setCustomValidity = () => {};
+
 describe('validateField', () => {
   it('should return required true when input not filled with required', async () => {
     // @ts-ignore
@@ -12,14 +14,24 @@ describe('validateField', () => {
     expect(
       await validateField(
         {
-          ref: { type: 'checkbox', checked: false, name: 'test' },
+          ref: {
+            type: 'checkbox',
+            checked: false,
+            name: 'test',
+            setCustomValidity,
+          },
           required: true,
         },
         {},
       ),
     ).toEqual({
       test: {
-        ref: { type: 'checkbox', checked: false, name: 'test' },
+        ref: {
+          type: 'checkbox',
+          checked: false,
+          name: 'test',
+          setCustomValidity,
+        },
         message: '',
         type: 'required',
       },
@@ -28,14 +40,14 @@ describe('validateField', () => {
     expect(
       await validateField(
         {
-          ref: { type: 'text', value: '', name: 'test' },
+          ref: { type: 'text', value: '', name: 'test', setCustomValidity },
           required: true,
         },
         {},
       ),
     ).toEqual({
       test: {
-        ref: { type: 'text', value: '', name: 'test' },
+        ref: { type: 'text', value: '', name: 'test', setCustomValidity },
         message: '',
         type: 'required',
       },
@@ -44,7 +56,7 @@ describe('validateField', () => {
     expect(
       await validateField(
         {
-          ref: { type: 'radio', name: 'test' },
+          ref: { type: 'radio', name: 'test', setCustomValidity },
           required: true,
         },
         {
@@ -69,7 +81,7 @@ describe('validateField', () => {
     expect(
       await validateField(
         {
-          ref: { type: 'text', value: '', name: 'test' },
+          ref: { type: 'text', value: '', name: 'test', setCustomValidity },
           required: 'test',
         },
         {},
@@ -78,14 +90,14 @@ describe('validateField', () => {
       test: {
         message: 'test',
         type: 'required',
-        ref: { type: 'text', name: 'test', value: '' },
+        ref: { type: 'text', name: 'test', value: '', setCustomValidity },
       },
     });
 
     expect(
       await validateField(
         {
-          ref: { type: 'radio', value: '', name: 'test' },
+          ref: { type: 'radio', value: '', name: 'test', setCustomValidity },
           required: 'test',
         },
         {
@@ -179,7 +191,12 @@ describe('validateField', () => {
     expect(
       await validateField(
         {
-          ref: { type: 'text', name: 'test', value: 'This is a long text input' },
+          ref: {
+            type: 'text',
+            name: 'test',
+            value: 'This is a long text input',
+            setCustomValidity,
+          },
           required: true,
           maxLength: 12,
         },
@@ -187,7 +204,12 @@ describe('validateField', () => {
       ),
     ).toEqual({
       test: {
-        ref: { type: 'text', name: 'test', value: 'This is a long text input' },
+        ref: {
+          type: 'text',
+          name: 'test',
+          value: 'This is a long text input',
+          setCustomValidity,
+        },
         message: '',
         type: 'maxLength',
       },
@@ -198,7 +220,12 @@ describe('validateField', () => {
     expect(
       await validateField(
         {
-          ref: { type: 'text', name: 'test', value: 'This is a long text input' },
+          ref: {
+            type: 'text',
+            name: 'test',
+            value: 'This is a long text input',
+            setCustomValidity,
+          },
           required: true,
           minLength: 200,
         },
@@ -206,7 +233,12 @@ describe('validateField', () => {
       ),
     ).toEqual({
       test: {
-        ref: { type: 'text', name: 'test', value: 'This is a long text input' },
+        ref: {
+          type: 'text',
+          name: 'test',
+          value: 'This is a long text input',
+          setCustomValidity,
+        },
         message: '',
         type: 'minLength',
       },
@@ -219,7 +251,12 @@ describe('validateField', () => {
     expect(
       await validateField(
         {
-          ref: { type: 'text', name: 'test', value: 'This is a long text input' },
+          ref: {
+            type: 'text',
+            name: 'test',
+            value: 'This is a long text input',
+            setCustomValidity,
+          },
           required: true,
           pattern: emailRegex,
         },
@@ -227,7 +264,12 @@ describe('validateField', () => {
       ),
     ).toEqual({
       test: {
-        ref: { type: 'text', name: 'test', value: 'This is a long text input' },
+        ref: {
+          type: 'text',
+          name: 'test',
+          value: 'This is a long text input',
+          setCustomValidity,
+        },
         message: '',
         type: 'pattern',
       },
@@ -236,7 +278,12 @@ describe('validateField', () => {
     expect(
       await validateField(
         {
-          ref: { type: 'text', name: 'test', value: 'This is a long text input' },
+          ref: {
+            type: 'text',
+            name: 'test',
+            value: 'This is a long text input',
+            setCustomValidity,
+          },
           required: true,
           pattern: {
             value: emailRegex,
@@ -247,7 +294,12 @@ describe('validateField', () => {
       ),
     ).toEqual({
       test: {
-        ref: { type: 'text', name: 'test', value: 'This is a long text input' },
+        ref: {
+          type: 'text',
+          name: 'test',
+          value: 'This is a long text input',
+          setCustomValidity,
+        },
         message: 'regex failed',
         type: 'pattern',
       },
@@ -256,7 +308,12 @@ describe('validateField', () => {
     expect(
       await validateField(
         {
-          ref: { type: 'text', name: 'test', value: 'test@test.com' },
+          ref: {
+            type: 'text',
+            name: 'test',
+            value: 'test@test.com',
+            setCustomValidity,
+          },
           required: true,
           pattern: emailRegex,
         },
@@ -269,7 +326,12 @@ describe('validateField', () => {
     expect(
       await validateField(
         {
-          ref: { type: 'text', name: 'test', value: 'This is a long text input' },
+          ref: {
+            type: 'text',
+            name: 'test',
+            value: 'This is a long text input',
+            setCustomValidity,
+          },
           required: true,
           validate: value => value.toString().length > 3,
         },
@@ -280,7 +342,12 @@ describe('validateField', () => {
     expect(
       await validateField(
         {
-          ref: { type: 'text', name: 'test', value: 'This is a long text input' },
+          ref: {
+            type: 'text',
+            name: 'test',
+            value: 'This is a long text input',
+            setCustomValidity,
+          },
           required: true,
           validate: value => value.toString().length < 3,
         },
@@ -289,7 +356,12 @@ describe('validateField', () => {
     ).toEqual({
       test: {
         message: '',
-        ref: { type: 'text', name: 'test', value: 'This is a long text input' },
+        ref: {
+          type: 'text',
+          name: 'test',
+          value: 'This is a long text input',
+          setCustomValidity,
+        },
         type: 'validate',
       },
     });
@@ -297,7 +369,12 @@ describe('validateField', () => {
     expect(
       await validateField(
         {
-          ref: { type: 'text', name: 'test', value: 'This is a long text input' },
+          ref: {
+            type: 'text',
+            name: 'test',
+            value: 'This is a long text input',
+            setCustomValidity,
+          },
           required: true,
           validate: {
             test: value => value.toString().length < 3,
@@ -308,7 +385,12 @@ describe('validateField', () => {
       ),
     ).toEqual({
       test: {
-        ref: { type: 'text', name: 'test', value: 'This is a long text input' },
+        ref: {
+          type: 'text',
+          name: 'test',
+          value: 'This is a long text input',
+          setCustomValidity,
+        },
         type: 'test',
         message: '',
       },
@@ -325,7 +407,12 @@ describe('validateField', () => {
     expect(
       await validateField(
         {
-          ref: { type: 'radio', name: 'test', value: 'This is a long text input!' },
+          ref: {
+            type: 'radio',
+            name: 'test',
+            value: 'This is a long text input!',
+            setCustomValidity,
+          },
           validate: {
             test: value => value.toString().length < 3,
             test1: value => value.toString().length > 10,
@@ -343,6 +430,7 @@ describe('validateField', () => {
           name: 'test',
           type: 'radio',
           value: 'This is a long text input!',
+          setCustomValidity,
         },
         type: 'test1',
         message: '',
@@ -352,7 +440,12 @@ describe('validateField', () => {
     expect(
       await validateField(
         {
-          ref: { type: 'radio', name: 'test', value: 'This is a long text input!' },
+          ref: {
+            type: 'radio',
+            name: 'test',
+            value: 'This is a long text input!',
+            setCustomValidity,
+          },
           validate: {
             test: value => value.toString().length < 3,
             test1: value => value.toString().length > 10,
@@ -382,7 +475,12 @@ describe('validateField', () => {
     expect(
       await validateField(
         {
-          ref: { type: 'text', name: 'test', value: 'This is a long text input' },
+          ref: {
+            type: 'text',
+            name: 'test',
+            value: 'This is a long text input',
+            setCustomValidity,
+          },
           validate: {
             test: value => {
               if (value.toString().length > 3) {
@@ -398,7 +496,12 @@ describe('validateField', () => {
       test: {
         type: 'test',
         message: 'max 3',
-        ref: { type: 'text', name: 'test', value: 'This is a long text input' },
+        ref: {
+          type: 'text',
+          name: 'test',
+          value: 'This is a long text input',
+          setCustomValidity,
+        },
       },
     });
   });
@@ -407,7 +510,12 @@ describe('validateField', () => {
     expect(
       await validateField(
         {
-          ref: { type: 'text', name: 'test', value: 'This is a long text input' },
+          ref: {
+            type: 'text',
+            name: 'test',
+            value: 'This is a long text input',
+            setCustomValidity,
+          },
           validate: value => value.toString().length < 3 || 'bill',
         },
         {},
@@ -416,7 +524,12 @@ describe('validateField', () => {
       test: {
         type: 'validate',
         message: 'bill',
-        ref: { type: 'text', name: 'test', value: 'This is a long text input' },
+        ref: {
+          type: 'text',
+          name: 'test',
+          value: 'This is a long text input',
+          setCustomValidity,
+        },
       },
     });
   });
