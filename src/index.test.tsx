@@ -208,13 +208,18 @@ describe('useForm', () => {
 
     it('should return false when field is not found', async () => {
       hookForm.register({ type: 'input', name: 'test' });
-      expect(await hookForm.triggerValidation({ name: 'test', forceValidation:false })).toBeTruthy();
+      expect(
+        await hookForm.triggerValidation({
+          name: 'test',
+          forceValidation: false,
+        }),
+      ).toBeTruthy();
     });
 
     it('should update value when value is supplied', async () => {
       testComponent(() => {
         hookForm = useForm({
-          mode: 'onChange'
+          mode: 'onChange',
         });
         return hookForm;
       });
@@ -370,6 +375,35 @@ describe('useForm', () => {
       hookForm.setError('input', 'test');
       hookForm.setError('input');
       expect(hookForm.errors).toEqual({});
+    });
+  });
+
+  describe('formState', () => {
+    it('should disable isValid for submit mode', () => {
+      expect(hookForm.formState.isValid).toBeUndefined();
+    });
+
+    it('should return false for onChange or onBlur mode by default', () => {
+      testComponent(() => {
+        hookForm = useForm({
+          mode: 'onBlur',
+        });
+        return hookForm;
+      });
+
+      expect(hookForm.formState.isValid).toBeFalsy();
+    });
+
+    it('should return true when no validation is registered', () => {
+      testComponent(() => {
+        hookForm = useForm({
+          mode: 'onBlur',
+        });
+        return hookForm;
+      });
+      hookForm.register({ type: 'text', name: 'test' });
+
+      expect(hookForm.formState.isValid).toBeFalsy();
     });
   });
 
