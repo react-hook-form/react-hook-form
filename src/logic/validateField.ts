@@ -6,6 +6,7 @@ import getValueAndMessage from './getValueAndMessage';
 import isCheckBoxInput from '../utils/isCheckBoxInput';
 import isString from '../utils/isString';
 import isEmptyObject from '../utils/isEmptyObject';
+import displayNativeError from "./displayNativeError";
 
 type ValidatePromiseResult =
   | {}
@@ -35,6 +36,7 @@ export default async <Data>(
   const isRadio = isRadioInput(type);
   const isCheckBox = isCheckBoxInput(type);
   const isSelectOrInput = !isCheckBox && !isRadio;
+  const nativeError = displayNativeError.bind(null, nativeValidation, ref);
 
   if (
     required &&
@@ -48,7 +50,7 @@ export default async <Data>(
       message: isString(required) ? required : '',
       ref: isRadio ? (fields[name].options || [{ ref: '' }])[0].ref : ref,
     };
-    if (nativeValidation && isString(required)) ref.setCustomValidity(required);
+    nativeError(required);
     return error;
   }
 
@@ -78,7 +80,7 @@ export default async <Data>(
         message,
         ref,
       };
-      if (nativeValidation && message) ref.setCustomValidity(message);
+      nativeError(message);
       return error;
     }
   }
@@ -103,7 +105,7 @@ export default async <Data>(
         message,
         ref,
       };
-      if (nativeValidation && message) ref.setCustomValidity(message);
+      nativeError(message);
       return error;
     }
   }
@@ -120,7 +122,7 @@ export default async <Data>(
         message: patternMessage,
         ref,
       };
-      if (nativeValidation && patternMessage) ref.setCustomValidity(patternMessage);
+      nativeError(patternMessage);
       return error;
     }
   }
@@ -138,7 +140,7 @@ export default async <Data>(
           message: result,
           ref: validateRef,
         };
-        if (nativeValidation && result) ref.setCustomValidity(result);
+        nativeError(result);
         return error;
       } else if (typeof result === 'boolean' && !result) {
         error[name] = {
@@ -147,6 +149,7 @@ export default async <Data>(
           message: '',
           ref: validateRef,
         };
+        nativeError('not valid');
         return error;
       }
     } else if (typeof validate === 'object') {
@@ -168,7 +171,7 @@ export default async <Data>(
                   message,
                   ref: validateRef,
                 };
-                if (nativeValidation && message) ref.setCustomValidity(message);
+                nativeError(message);
                 return lastChild ? resolve(data) : data;
               }
             }
