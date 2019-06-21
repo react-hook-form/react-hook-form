@@ -380,7 +380,7 @@ describe('useForm', () => {
 
   describe('formState', () => {
     it('should disable isValid for submit mode', () => {
-      expect(hookForm.formState.isValid).toBeUndefined();
+      expect(hookForm.formState.isValid).toBeTruthy();
     });
 
     it('should return false for onChange or onBlur mode by default', () => {
