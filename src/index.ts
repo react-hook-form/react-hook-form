@@ -491,13 +491,16 @@ export default function useForm<Data extends DataType>(
       submitCount: submitCountRef.current,
       touched: [...touchedFieldsRef.current],
       isSubmitting: isSubmittingRef.current,
-      ...(!isOnSubmit
+      ...(isOnSubmit
         ? {
-            isValid: fieldsWithValidation.current.size
-              ? !isEmptyObject(fieldsRef.current) && validFields.current.size >= fieldsWithValidation.current.size
-              : !isEmptyObject(fieldsRef.current),
+            isValid: isEmptyObject(errorsRef.current),
           }
-        : null),
+        : {
+            isValid: fieldsWithValidation.current.size
+              ? !isEmptyObject(fieldsRef.current) &&
+                validFields.current.size >= fieldsWithValidation.current.size
+              : !isEmptyObject(fieldsRef.current),
+          }),
     },
   };
 }
