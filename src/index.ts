@@ -458,7 +458,7 @@ export default function useForm<Data extends DataType>(
         .ref.closest('form')
         .reset();
     } catch {
-      console.warn(`⚠ Input not found & form reset failed`);
+      console.warn(`⚠ Form element not found`);
     }
     resetRefs();
     reRenderForm({});
