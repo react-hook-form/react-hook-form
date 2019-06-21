@@ -35,10 +35,12 @@ export default function useForm<Data extends DataType>(
     defaultValues,
     validationFields,
     nativeValidation,
+    submitFocusError,
   }: Props<Data> = {
     mode: 'onSubmit',
     defaultValues: {},
     nativeValidation: false,
+    submitFocusError: true,
   },
 ) {
   const unMount = useRef(false);
@@ -144,12 +146,6 @@ export default function useForm<Data extends DataType>(
           isWatchAll || watchFieldsRef.current[name];
         const shouldUpdateValidateMode = isOnChange || (isOnBlur && isBlurType);
         let shouldUpdateState = shouldUpdateWatchMode;
-
-        if (nativeValidation) {
-          // @ts-ignore
-          ref.checkValidity();
-          return;
-        }
 
         if (!isDirtyRef.current) {
           isDirtyRef.current = true;
@@ -371,6 +367,7 @@ export default function useForm<Data extends DataType>(
     }
     let fieldErrors;
     let fieldValues;
+    let firstFocusError = true;
     const fields = fieldsRef.current;
     const currentFieldValues = validationFields
       ? (validationFields.map(name => fieldsRef.current[name]) as [])
@@ -401,6 +398,10 @@ export default function useForm<Data extends DataType>(
           const fieldError = await validateField(field, fields, nativeValidation);
 
           if (fieldError[name]) {
+            if (submitFocusError && firstFocusError && ref.focus) {
+              ref.focus();
+              firstFocusError = false;
+            }
             resolvedPrevious.errors = {
               ...(resolvedPrevious.errors || {}),
               ...fieldError,

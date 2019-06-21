@@ -18,6 +18,7 @@ export interface Props<Data> {
   nativeValidation?: boolean;
   validationFields?: (keyof Data)[];
   validationSchema?: any;
+  submitFocusError?: boolean;
 }
 
 export interface MutationWatcher {
