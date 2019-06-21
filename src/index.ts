@@ -299,12 +299,6 @@ export default function useForm<Data extends DataType>(
 
     if (!fieldData) return;
 
-    attachEventListeners({
-      field: fieldData,
-      isRadio,
-      validateAndStateUpdate: validateAndStateUpdateRef.current,
-    });
-
     if (nativeValidation && data) {
       Object.entries(data).forEach(([key, value]) => {
         if (key === 'required') elementRef[key] = true;
@@ -316,6 +310,12 @@ export default function useForm<Data extends DataType>(
         )
           elementRef[key] = value;
         if (key === 'pattern') elementRef[key] = value.source;
+      });
+    } else {
+      attachEventListeners({
+        field: fieldData,
+        isRadio,
+        validateAndStateUpdate: validateAndStateUpdateRef.current,
       });
     }
   }
@@ -365,7 +365,7 @@ export default function useForm<Data extends DataType>(
   const handleSubmit = (callback: OnSubmit<Data>) => async (
     e: React.SyntheticEvent,
   ): Promise<void> => {
-    if (e) {
+    if (e && !nativeValidation) {
       e.preventDefault();
       e.persist();
     }
