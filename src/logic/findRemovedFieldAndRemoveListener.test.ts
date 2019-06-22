@@ -13,28 +13,40 @@ describe('findMissDomAndClean', () => {
       test: 'test',
     };
     expect(
-      // @ts-ignore
-      findRemovedFieldAndRemoveListener(fields, { current: [] }, () => {}, {
-        ref: { name: 'bill', type: 'radio' },
-      }),
+      findRemovedFieldAndRemoveListener(
+        // @ts-ignore
+        fields,
+        { current: new Set() },
+        { current: new Set() },
+        () => {},
+        {
+          ref: { name: 'bill', type: 'radio' },
+        },
+      ),
     ).toEqual(fields);
   });
 
   it('should remove touched Fields reference', () => {
-    const touchedRefs = { current: ['test', 'test1', 'test3'] };
+    const touchedRefs = { current: new Set(['test', 'test1', 'test3']) };
     // @ts-ignore
-    findRemovedFieldAndRemoveListener({}, touchedRefs, () => {}, {
-      ref: { name: 'test', type: 'radio' },
-      options: [
-        {
-          mutationWatcher: {
-            disconnect: () => {},
+    findRemovedFieldAndRemoveListener(
+      {},
+      touchedRefs,
+      { current: new Set() },
+      () => {},
+      {
+        ref: { name: 'test', type: 'radio' },
+        options: [
+          {
+            mutationWatcher: {
+              disconnect: () => {},
+            },
+            ref: {},
           },
-          ref: {},
-        },
-      ],
-    });
-    expect(touchedRefs.current).toEqual(['test1', 'test3']);
+        ],
+      },
+    );
+    expect(touchedRefs.current).toEqual(new Set(['test1', 'test3']));
   });
 
   it('should remove options completely if option found and no option left', () => {
@@ -62,17 +74,23 @@ describe('findMissDomAndClean', () => {
 
     expect(
       // @ts-ignore
-      findRemovedFieldAndRemoveListener(fields, { current: [] }, () => {}, {
-        ref: { name: 'test', type: 'radio' },
-        options: [
-          {
-            mutationWatcher: {
-              disconnect,
+      findRemovedFieldAndRemoveListener(
+        fields,
+        { current: new Set() },
+        { current: new Set() },
+        () => {},
+        {
+          ref: { name: 'test', type: 'radio' },
+          options: [
+            {
+              mutationWatcher: {
+                disconnect,
+              },
+              ref,
             },
-            ref,
-          },
-        ],
-      }),
+          ],
+        },
+      ),
     ).toMatchSnapshot();
   });
 
@@ -97,12 +115,18 @@ describe('findMissDomAndClean', () => {
     };
 
     expect(
-      findRemovedFieldAndRemoveListener(fields, { current: [] }, () => {}, {
-        ref,
-        mutationWatcher: {
-          disconnect,
+      findRemovedFieldAndRemoveListener(
+        fields,
+        { current: new Set() },
+        { current: new Set() },
+        () => {},
+        {
+          ref,
+          mutationWatcher: {
+            disconnect,
+          },
         },
-      }),
+      ),
     ).toMatchSnapshot();
   });
 
@@ -111,8 +135,14 @@ describe('findMissDomAndClean', () => {
       test: 'test',
     };
     expect(
-      // @ts-ignore
-      findRemovedFieldAndRemoveListener(fields, { current: [] }, () => {}, {}),
+      findRemovedFieldAndRemoveListener(
+        // @ts-ignore
+        fields,
+        { current: new Set() },
+        { current: new Set() },
+        () => {},
+        {},
+      ),
     ).toEqual(undefined);
   });
 
@@ -139,13 +169,19 @@ describe('findMissDomAndClean', () => {
     };
 
     expect(
-      findRemovedFieldAndRemoveListener(fields, { current: [] }, () => {}, {
-        ref: { name: 'test', type: 'radio' },
-        options: [{ ref }],
-        mutationWatcher: {
-          disconnect,
+      findRemovedFieldAndRemoveListener(
+        fields,
+        { current: new Set() },
+        { current: new Set() },
+        () => {},
+        {
+          ref: { name: 'test', type: 'radio' },
+          options: [{ ref }],
+          mutationWatcher: {
+            disconnect,
+          },
         },
-      }),
+      ),
     ).toMatchSnapshot();
   });
 
@@ -170,24 +206,36 @@ describe('findMissDomAndClean', () => {
 
     expect(
       // @ts-ignore
-      findRemovedFieldAndRemoveListener(fields, { current: [] }, () => {}, {
-        ref: { name: 'test', type: 'text' },
-        options: [
-          {
-            mutationWatcher: {
-              disconnect,
+      findRemovedFieldAndRemoveListener(
+        fields,
+        { current: new Set() },
+        { current: new Set() },
+        () => {},
+        {
+          ref: { name: 'test', type: 'text' },
+          options: [
+            {
+              mutationWatcher: {
+                disconnect,
+              },
+              ref: {},
             },
-            ref: {},
-          },
-        ],
-      }),
+          ],
+        },
+      ),
     ).toMatchSnapshot();
 
     expect(
       // @ts-ignore
-      findRemovedFieldAndRemoveListener(fields, { current: [] }, () => {}, {
-        ref: { name: 'test', type: 'text' },
-      }),
+      findRemovedFieldAndRemoveListener(
+        fields,
+        { current: new Set() },
+        { current: new Set() },
+        () => {},
+        {
+          ref: { name: 'test', type: 'text' },
+        },
+      ),
     ).toMatchSnapshot();
   });
 });

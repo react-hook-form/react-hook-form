@@ -6,7 +6,8 @@ export default function findRemovedFieldAndRemoveListener<
   Data extends DataType
 >(
   fields: FieldsObject<Data>,
-  touchedFieldsRef: { current: string[] },
+  touchedFieldsRef: { current: Set<string> },
+  fieldsWithValidation: { current: Set<string> },
   validateWithStateUpdate: Function,
   { ref, mutationWatcher, options }: Field,
   forceDelete: boolean = false,
@@ -14,27 +15,24 @@ export default function findRemovedFieldAndRemoveListener<
   if (!ref || !ref.type) return;
 
   const { name, type } = ref;
-  touchedFieldsRef.current = touchedFieldsRef.current.filter(
-    inputName => inputName !== name,
-  );
+  touchedFieldsRef.current.delete(name);
+  fieldsWithValidation.current.delete(name);
 
   if (isRadioInput(type) && options) {
-    options.forEach(
-      ({ ref }, index): void => {
-        if (
-          ref instanceof HTMLElement &&
-          !document.body.contains(ref) &&
-          options &&
-          options[index]
-        ) {
-          removeAllEventListeners(options[index], validateWithStateUpdate);
-          (
-            options[index].mutationWatcher || { disconnect: (): void => {} }
-          ).disconnect();
-          options.splice(index, 1);
-        }
-      },
-    );
+    options.forEach(({ ref }, index): void => {
+      if (
+        ref instanceof HTMLElement &&
+        !document.body.contains(ref) &&
+        options &&
+        options[index]
+      ) {
+        removeAllEventListeners(options[index], validateWithStateUpdate);
+        (
+          options[index].mutationWatcher || { disconnect: (): void => {} }
+        ).disconnect();
+        options.splice(index, 1);
+      }
+    });
 
     if (Array.isArray(options) && !options.length) {
       delete fields[name];
