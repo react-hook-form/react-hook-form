@@ -3,7 +3,7 @@ import { FormProps } from './types'
 
 export const FormGlobalContext = React.createContext({});
 
-export const useFormContext = () => ({...React.useContext<{}>(FormGlobalContext)});
+export const useFormContext = () => React.useContext<{}>(FormGlobalContext);
 
 export function FormContext(props: FormProps){
   const { children, ...rest } = props;
