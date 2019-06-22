@@ -44,7 +44,7 @@ export default function useForm<Data extends DataType>(
     submitFocusError: true,
   },
 ) {
-  const unMount = useRef(false);
+  const unMount = useRef<boolean>(false);
   const fieldsRef = useRef<FieldsObject<Data>>({});
   const errorsRef = useRef<ErrorMessages<Data>>({});
   const submitCountRef = useRef<number>(0);
