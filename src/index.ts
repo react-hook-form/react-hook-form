@@ -79,14 +79,13 @@ export default function useForm<Data extends DataType>(
   ): void => {
     const field = fieldsRef.current[name];
     if (!field) return;
+    const ref = field.ref;
+    const options = field.options;
 
     if (shouldRender) {
       touchedFieldsRef.current.add(name);
       isDirtyRef.current = true;
     }
-
-    const ref = field.ref;
-    const options = field.options;
 
     if (isRadioInput(ref.type) && options) {
       options.forEach(({ ref: radioRef }): void => {
@@ -234,11 +233,7 @@ export default function useForm<Data extends DataType>(
 
     const { name, type, value } = elementRef;
 
-    if (
-      !isOnSubmit &&
-      data &&
-      !isEmptyObject(data)
-    ) {
+    if (!isOnSubmit && data && !isEmptyObject(data)) {
       fieldsWithValidation.current.add(name);
     }
 
