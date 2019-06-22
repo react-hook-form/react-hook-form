@@ -27,7 +27,6 @@ import isRadioInput from './utils/isRadioInput';
 import onDomRemove from './utils/onDomRemove';
 import modeChecker from './utils/validationModeChecker';
 import warnMissingRef from './utils/warnMissingRef';
-import { FormGlobalContext } from './useFormContext';
 
 export default function useForm<Data extends DataType>(
   { mode, validationSchema, defaultValues, validationFields }: Props<Data> = {
