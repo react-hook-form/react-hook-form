@@ -1,15 +1,11 @@
 import * as React from "react";
+import { FormProps } from './types'
 
 export const FormGlobalContext = React.createContext({});
 
-export function useFormContext() {
-  const methods = React.useContext(FormGlobalContext);
-  return {
-    ...methods
-  };
-}
+export const useFormContext = () => ({...React.useContext<{}>(FormGlobalContext)});
 
-export function FormContext(props) {
+export function FormContext(props: FormProps){
   const { children, ...rest } = props;
   return (
     <FormGlobalContext.Provider
