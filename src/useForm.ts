@@ -7,6 +7,7 @@ import getFieldValue from './logic/getFieldValue';
 import shouldUpdateWithError from './logic/shouldUpdateWithError';
 import validateField from './logic/validateField';
 import validateWithSchema from './logic/validateWithSchema';
+import appendNativeRule from './logic/appendNativeRule';
 import {
   DataType,
   ErrorMessages,
@@ -29,12 +30,21 @@ import modeChecker from './utils/validationModeChecker';
 import warnMissingRef from './utils/warnMissingRef';
 
 export default function useForm<Data extends DataType>(
-  { mode, validationSchema, defaultValues, validationFields }: Props<Data> = {
+  {
+    mode,
+    validationSchema,
+    defaultValues,
+    validationFields,
+    nativeValidation,
+    submitFocusError,
+  }: Props<Data> = {
     mode: 'onSubmit',
     defaultValues: {},
+    nativeValidation: false,
+    submitFocusError: true,
   },
 ) {
-  const unMount = useRef(false);
+  const unMount = useRef<boolean>(false);
   const fieldsRef = useRef<FieldsObject<Data>>({});
   const errorsRef = useRef<ErrorMessages<Data>>({});
   const submitCountRef = useRef<number>(0);
@@ -170,7 +180,11 @@ export default function useForm<Data extends DataType>(
             return reRenderForm({});
           }
         } else {
-          const error = await validateField<Data>(ref, fields);
+          const error = await validateField<Data>(
+            ref,
+            fields,
+            nativeValidation,
+          );
           const shouldUpdate = shouldUpdateWithError({
             errors,
             error,
@@ -297,11 +311,15 @@ export default function useForm<Data extends DataType>(
 
     if (!fieldData) return;
 
-    attachEventListeners({
-      field: fieldData,
-      isRadio,
-      validateAndStateUpdate: validateAndStateUpdateRef.current,
-    });
+    if (nativeValidation && data) {
+      appendNativeRule(elementRef, data);
+    } else {
+      attachEventListeners({
+        field: fieldData,
+        isRadio,
+        validateAndStateUpdate: validateAndStateUpdateRef.current,
+      });
+    }
   }
 
   function watch(
@@ -349,12 +367,13 @@ export default function useForm<Data extends DataType>(
   const handleSubmit = (callback: OnSubmit<Data>) => async (
     e: React.SyntheticEvent,
   ): Promise<void> => {
-    if (e) {
+    if (e && !nativeValidation) {
       e.preventDefault();
       e.persist();
     }
     let fieldErrors;
     let fieldValues;
+    let firstFocusError = true;
     const fields = fieldsRef.current;
     const currentFieldValues = validationFields
       ? (validationFields.map(name => fieldsRef.current[name]) as [])
@@ -382,9 +401,17 @@ export default function useForm<Data extends DataType>(
 
           if (!fields[name]) return Promise.resolve(resolvedPrevious);
 
-          const fieldError = await validateField(field, fields);
+          const fieldError = await validateField(
+            field,
+            fields,
+            nativeValidation,
+          );
 
           if (fieldError[name]) {
+            if (submitFocusError && firstFocusError && ref.focus) {
+              ref.focus();
+              firstFocusError = false;
+            }
             resolvedPrevious.errors = {
               ...(resolvedPrevious.errors || {}),
               ...fieldError,
