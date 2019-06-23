@@ -10,7 +10,10 @@ export interface DataType {
   [key: string]: FieldValue;
 }
 
-export type OnSubmit<Data extends DataType> = (data: Data, e: React.SyntheticEvent) => void;
+export type OnSubmit<Data extends DataType> = (
+  data: Data,
+  e: React.SyntheticEvent,
+) => void;
 
 export interface Props<Data> {
   mode?: 'onSubmit' | 'onBlur' | 'onChange';
@@ -53,7 +56,9 @@ export interface Field extends RegisterInput {
   }[];
 }
 
-export type FieldsObject<Data extends DataType> = { [Key in keyof Data]?: Field };
+export type FieldsObject<Data extends DataType> = {
+  [Key in keyof Data]?: Field;
+};
 
 export interface Error {
   ref: Ref;
@@ -61,7 +66,9 @@ export interface Error {
   type?: string;
 }
 
-export type ErrorMessages<Data extends DataType> = { [Key in keyof Data]?: Error };
+export type ErrorMessages<Data extends DataType> = {
+  [Key in keyof Data]?: Error;
+};
 
 export interface SubmitPromiseResult<Data extends DataType> {
   errors: ErrorMessages<Data>;
@@ -69,3 +76,18 @@ export interface SubmitPromiseResult<Data extends DataType> {
 }
 
 export type VoidFunction = () => void;
+
+export interface FormProps {
+  children: JSX.Element[] | JSX.Element;
+  register?: Function;
+  handleSubmit?: Function;
+  watch?: Function;
+  unSubscribe?: Function;
+  reset?: Function;
+  setError?: Function;
+  setValue?: Function;
+  triggerValidation?: Function;
+  getValues?: Function;
+  errors: any;
+  formState: any;
+}
