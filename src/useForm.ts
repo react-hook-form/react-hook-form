@@ -430,12 +430,12 @@ export default function useForm<Data extends DataType>(
 
       fieldErrors = {
         ...errors,
-        ...filterUndefinedErrors(errorsRef.current),
+        ...(nativeValidation ? {} : filterUndefinedErrors(errorsRef.current))
       };
       fieldValues = values;
     }
 
-    if (isEmptyObject(fieldErrors) || nativeValidation) {
+    if (isEmptyObject(fieldErrors)) {
       await callback(combineFieldValues(fieldValues), e);
     } else {
       errorsRef.current = fieldErrors;
