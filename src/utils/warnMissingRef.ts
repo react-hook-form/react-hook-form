@@ -1,1 +1,1 @@
-export default (payload): void => console.warn(`Oops missing the name for field: ${payload}`);
+export default (payload): void => console.warn(`⚠ Missing field name: ${payload}`);
