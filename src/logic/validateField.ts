@@ -6,6 +6,7 @@ import getValueAndMessage from './getValueAndMessage';
 import isCheckBoxInput from '../utils/isCheckBoxInput';
 import isString from '../utils/isString';
 import isEmptyObject from '../utils/isEmptyObject';
+import displayNativeError from "./displayNativeError";
 
 type ValidatePromiseResult =
   | {}
@@ -29,11 +30,13 @@ export default async <Data>(
     validate,
   }: Field,
   fields: { [Key in keyof Data]?: Field },
+  nativeValidation?: boolean,
 ): Promise<ErrorMessages<any>> => {
   const error = {};
   const isRadio = isRadioInput(type);
   const isCheckBox = isCheckBoxInput(type);
   const isSelectOrInput = !isCheckBox && !isRadio;
+  const nativeError = displayNativeError.bind(null, nativeValidation, ref);
 
   if (
     required &&
@@ -47,6 +50,7 @@ export default async <Data>(
       message: isString(required) ? required : '',
       ref: isRadio ? (fields[name].options || [{ ref: '' }])[0].ref : ref,
     };
+    nativeError(required);
     return error;
   }
 
@@ -57,6 +61,7 @@ export default async <Data>(
 
     const { value: maxValue, message: maxMessage } = getValueAndMessage(max);
     const { value: minValue, message: minMessage } = getValueAndMessage(min);
+    const message = exceedMax ? maxMessage : minMessage;
 
     if (type === 'number') {
       exceedMax = maxValue && valueNumber > maxValue;
@@ -72,9 +77,10 @@ export default async <Data>(
       error[name] = {
         ...error[name],
         type: exceedMax ? 'max' : 'min',
-        message: exceedMax ? maxMessage : minMessage,
+        message,
         ref,
       };
+      nativeError(message);
       return error;
     }
   }
@@ -90,14 +96,16 @@ export default async <Data>(
     } = getValueAndMessage(minLength);
     const exceedMax = maxLength && value.toString().length > maxLengthValue;
     const exceedMin = minLength && value.toString().length < minLengthValue;
+    const message = exceedMax ? maxLengthMessage : minLengthMessage;
 
     if (exceedMax || exceedMin) {
       error[name] = {
         ...error[name],
         type: exceedMax ? 'maxLength' : 'minLength',
-        message: exceedMax ? maxLengthMessage : minLengthMessage,
+        message,
         ref,
       };
+      nativeError(message);
       return error;
     }
   }
@@ -114,6 +122,7 @@ export default async <Data>(
         message: patternMessage,
         ref,
       };
+      nativeError(patternMessage);
       return error;
     }
   }
@@ -131,6 +140,7 @@ export default async <Data>(
           message: result,
           ref: validateRef,
         };
+        nativeError(result);
         return error;
       } else if (typeof result === 'boolean' && !result) {
         error[name] = {
@@ -139,6 +149,7 @@ export default async <Data>(
           message: '',
           ref: validateRef,
         };
+        nativeError('not valid');
         return error;
       }
     } else if (typeof validate === 'object') {
@@ -154,11 +165,13 @@ export default async <Data>(
               const result = await validate(fieldValue);
 
               if (typeof result !== 'boolean' || !result) {
+                const message = isString(result) ? result : '';
                 const data = {
                   type: key,
-                  message: isString(result) ? result : '',
+                  message,
                   ref: validateRef,
                 };
+                nativeError(message);
                 return lastChild ? resolve(data) : data;
               }
             }
@@ -179,5 +192,6 @@ export default async <Data>(
     }
   }
 
+  ref.setCustomValidity('');
   return error;
 };

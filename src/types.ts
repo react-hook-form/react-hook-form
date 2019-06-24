@@ -16,10 +16,12 @@ export type OnSubmit<Data extends DataType> = (
 ) => void;
 
 export interface Props<Data> {
-  mode: 'onSubmit' | 'onBlur' | 'onChange';
+  mode?: 'onSubmit' | 'onBlur' | 'onChange';
   defaultValues?: { [key: string]: any };
+  nativeValidation?: boolean;
   validationFields?: (keyof Data)[];
   validationSchema?: any;
+  submitFocusError?: boolean;
 }
 
 export interface MutationWatcher {
@@ -55,7 +57,7 @@ export interface Field extends RegisterInput {
 }
 
 export type FieldsObject<Data extends DataType> = {
-  [Key in keyof Data]?: Field
+  [Key in keyof Data]?: Field;
 };
 
 export interface Error {
@@ -65,7 +67,7 @@ export interface Error {
 }
 
 export type ErrorMessages<Data extends DataType> = {
-  [Key in keyof Data]?: Error
+  [Key in keyof Data]?: Error;
 };
 
 export interface SubmitPromiseResult<Data extends DataType> {
