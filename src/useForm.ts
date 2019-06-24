@@ -435,7 +435,7 @@ export default function useForm<Data extends DataType>(
       fieldValues = values;
     }
 
-    if (isEmptyObject(fieldErrors)) {
+    if (isEmptyObject(fieldErrors) || nativeValidation) {
       await callback(combineFieldValues(fieldValues), e);
     } else {
       errorsRef.current = fieldErrors;
