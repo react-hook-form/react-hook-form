@@ -7,7 +7,7 @@ import getFieldValue from './logic/getFieldValue';
 import shouldUpdateWithError from './logic/shouldUpdateWithError';
 import validateField from './logic/validateField';
 import validateWithSchema from './logic/validateWithSchema';
-import appendNativeRule from './logic/appendNativeRule';
+import attachNativeValidation from './logic/attachNativeValidation';
 import {
   DataType,
   ErrorMessages,
@@ -312,7 +312,7 @@ export default function useForm<Data extends DataType>(
     if (!fieldData) return;
 
     if (nativeValidation && data) {
-      appendNativeRule(elementRef, data);
+      attachNativeValidation(elementRef, data);
     } else {
       attachEventListeners({
         field: fieldData,

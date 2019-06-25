@@ -1,5 +1,5 @@
-export default function appendNativeRule(ref, data) {
-  Object.entries(data).forEach(([key, value]) => {
+export default function attachNativeValidation(ref, rules) {
+  Object.entries(rules).forEach(([key, value]) => {
     if (key === 'required') {
       ref[key] = true;
     } else if (key === 'pattern' && value instanceof RegExp) {
