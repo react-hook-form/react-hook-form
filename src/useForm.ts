@@ -1,13 +1,13 @@
-import { useEffect, useRef, useState, useCallback } from "react";
-import attachEventListeners from "./logic/attachEventListeners";
-import combineFieldValues from "./logic/combineFieldValues";
-import findRemovedFieldAndRemoveListener from "./logic/findRemovedFieldAndRemoveListener";
-import getFieldsValues from "./logic/getFieldsValues";
-import getFieldValue from "./logic/getFieldValue";
-import shouldUpdateWithError from "./logic/shouldUpdateWithError";
-import validateField from "./logic/validateField";
-import validateWithSchema from "./logic/validateWithSchema";
-import attachNativeValidation from "./logic/attachNativeValidation";
+import { useEffect, useRef, useState, useCallback } from 'react';
+import attachEventListeners from './logic/attachEventListeners';
+import combineFieldValues from './logic/combineFieldValues';
+import findRemovedFieldAndRemoveListener from './logic/findRemovedFieldAndRemoveListener';
+import getFieldsValues from './logic/getFieldsValues';
+import getFieldValue from './logic/getFieldValue';
+import shouldUpdateWithError from './logic/shouldUpdateWithError';
+import validateField from './logic/validateField';
+import validateWithSchema from './logic/validateWithSchema';
+import attachNativeValidation from './logic/attachNativeValidation';
 import {
   DataType,
   ErrorMessages,
@@ -19,15 +19,15 @@ import {
   RegisterInput,
   SubmitPromiseResult,
   VoidFunction,
-  OnSubmit
-} from "./types";
-import filterUndefinedErrors from "./utils/filterUndefinedErrors";
-import isCheckBoxInput from "./utils/isCheckBoxInput";
-import isEmptyObject from "./utils/isEmptyObject";
-import isRadioInput from "./utils/isRadioInput";
-import onDomRemove from "./utils/onDomRemove";
-import modeChecker from "./utils/validationModeChecker";
-import warnMissingRef from "./utils/warnMissingRef";
+  OnSubmit,
+} from './types';
+import filterUndefinedErrors from './utils/filterUndefinedErrors';
+import isCheckBoxInput from './utils/isCheckBoxInput';
+import isEmptyObject from './utils/isEmptyObject';
+import isRadioInput from './utils/isRadioInput';
+import onDomRemove from './utils/onDomRemove';
+import modeChecker from './utils/validationModeChecker';
+import warnMissingRef from './utils/warnMissingRef';
 
 export default function useForm<Data extends DataType>(
   {
@@ -36,13 +36,13 @@ export default function useForm<Data extends DataType>(
     defaultValues,
     validationFields,
     nativeValidation,
-    submitFocusError
+    submitFocusError,
   }: Props<Data> = {
-    mode: "onSubmit",
+    mode: 'onSubmit',
     defaultValues: {},
     nativeValidation: false,
-    submitFocusError: true
-  }
+    submitFocusError: true,
+  },
 ) {
   const unMount = useRef<boolean>(false);
   const fieldsRef = useRef<FieldsObject<Data>>({});
@@ -63,7 +63,7 @@ export default function useForm<Data extends DataType>(
   const renderBaseOnError = (
     name: keyof Data,
     errors: ErrorMessages<Data>,
-    error: ErrorMessages<Data>
+    error: ErrorMessages<Data>,
   ): boolean => {
     if (errors[name] && !error[name]) {
       delete errorsRef.current[name];
@@ -85,7 +85,7 @@ export default function useForm<Data extends DataType>(
   const setValue = <Name extends keyof Data>(
     name: Extract<Name, string>,
     value: Data[Name],
-    shouldRender: boolean = true
+    shouldRender: boolean = true,
   ): void => {
     const field = fieldsRef.current[name];
     if (!field) return;
@@ -104,7 +104,7 @@ export default function useForm<Data extends DataType>(
       return;
     }
 
-    ref[isCheckBoxInput(ref.type) ? "checked" : "value"] = value;
+    ref[isCheckBoxInput(ref.type) ? 'checked' : 'value'] = value;
     if (shouldRender) reRenderForm({});
   };
 
@@ -114,7 +114,7 @@ export default function useForm<Data extends DataType>(
   const triggerValidation = async <Name extends keyof Data>({
     name,
     value,
-    forceValidation
+    forceValidation,
   }: {
     name: Extract<keyof Data, string>;
     value?: Data[Name];
@@ -130,7 +130,7 @@ export default function useForm<Data extends DataType>(
     const error = await validateField(field, fieldsRef.current);
     errorsRef.current = {
       ...filterUndefinedErrors(errorsRef.current),
-      ...error
+      ...error,
     };
     renderBaseOnError(name, errors, error);
     return isEmptyObject(error);
@@ -145,7 +145,7 @@ export default function useForm<Data extends DataType>(
         const errors = errorsRef.current;
         const ref = fields[name];
         if (!ref) return;
-        const isBlurType = type === "blur";
+        const isBlurType = type === 'blur';
         const validateDisabled = isValidateDisabled();
         const isWatchAll = isWatchAllRef.current;
         const shouldUpdateWatchMode =
@@ -183,7 +183,7 @@ export default function useForm<Data extends DataType>(
           const error = await validateField<Data>(
             ref,
             fields,
-            nativeValidation
+            nativeValidation,
           );
           const shouldUpdate = shouldUpdateWithError({
             errors,
@@ -191,7 +191,7 @@ export default function useForm<Data extends DataType>(
             validateDisabled,
             isOnBlur,
             isBlurType,
-            name
+            name,
           });
 
           if (
@@ -212,14 +212,14 @@ export default function useForm<Data extends DataType>(
     fieldsRef.current,
     touchedFieldsRef,
     fieldsWithValidation,
-    validateAndStateUpdateRef.current
+    validateAndStateUpdateRef.current,
   );
 
   const setError = <Name extends keyof Data>(
     name: Extract<Name, string>,
     type?: string,
     message?: string,
-    ref?: Ref
+    ref?: Ref,
   ): void => {
     const errors = errorsRef.current;
     const error = errors[name];
@@ -233,7 +233,7 @@ export default function useForm<Data extends DataType>(
       errors[name] = {
         type,
         message,
-        ref
+        ref,
       };
       reRenderForm({});
     }
@@ -241,7 +241,7 @@ export default function useForm<Data extends DataType>(
 
   function registerIntoFieldsRef(
     elementRef: Ref,
-    data: RegisterInput | undefined
+    data: RegisterInput | undefined,
   ): void {
     if (elementRef && !elementRef.name) return warnMissingRef(elementRef);
 
@@ -254,7 +254,7 @@ export default function useForm<Data extends DataType>(
     const { required = false, validate = undefined } = data || {};
     const inputData = {
       ...data,
-      ref: elementRef
+      ref: elementRef,
     };
     const fields: any = fieldsRef.current;
     const isRadio = isRadioInput(type);
@@ -262,7 +262,7 @@ export default function useForm<Data extends DataType>(
     const existRadioOptionIndex =
       isRadio && field && Array.isArray(field.options)
         ? field.options.findIndex(
-            ({ ref }: { ref: Ref }): boolean => value === ref.value
+            ({ ref }: { ref: Ref }): boolean => value === ref.value,
           )
         : -1;
 
@@ -277,7 +277,7 @@ export default function useForm<Data extends DataType>(
             options: [],
             required,
             validate,
-            ref: { type: "radio", name }
+            ref: { type: 'radio', name },
           };
         if (validate) fields[name]!.validate = validate;
 
@@ -285,16 +285,16 @@ export default function useForm<Data extends DataType>(
           ...inputData,
           mutationWatcher: onDomRemove(
             elementRef,
-            (): Function => removeEventListener(inputData, true)
-          )
+            (): Function => removeEventListener(inputData, true),
+          ),
         });
       } else {
         fields[name] = {
           ...inputData,
           mutationWatcher: onDomRemove(
             elementRef,
-            (): Function => removeEventListener(inputData, true)
-          )
+            (): Function => removeEventListener(inputData, true),
+          ),
         };
       }
     }
@@ -319,18 +319,18 @@ export default function useForm<Data extends DataType>(
       attachEventListeners({
         field: fieldData,
         isRadio,
-        validateAndStateUpdate: validateAndStateUpdateRef.current
+        validateAndStateUpdate: validateAndStateUpdateRef.current,
       });
     }
   }
 
   function watch(
     fieldNames?: string | string[] | undefined,
-    defaultValue?: string | Partial<Data> | undefined
+    defaultValue?: string | Partial<Data> | undefined,
   ): FieldValue | Partial<Data> | void {
     const watchFields: any = watchFieldsRef.current;
 
-    if (typeof fieldNames === "string") {
+    if (typeof fieldNames === 'string') {
       watchFields[fieldNames] = true;
     } else if (Array.isArray(fieldNames)) {
       fieldNames.forEach((name): void => {
@@ -349,7 +349,7 @@ export default function useForm<Data extends DataType>(
 
   const register = useCallback(
     (refOrValidateRule: RegisterInput | Ref, validateRule?: RegisterInput) => {
-      if (!refOrValidateRule || typeof window === "undefined") return;
+      if (!refOrValidateRule || typeof window === 'undefined') return;
 
       if (validateRule && !refOrValidateRule.name) {
         warnMissingRef(refOrValidateRule);
@@ -363,11 +363,11 @@ export default function useForm<Data extends DataType>(
       return (ref: Ref): void =>
         ref && registerIntoFieldsRef(ref, refOrValidateRule);
     },
-    []
+    [],
   );
 
   const handleSubmit = (callback: OnSubmit<Data>) => async (
-    e: React.SyntheticEvent
+    e: React.SyntheticEvent,
   ): Promise<void> => {
     if (e && !nativeValidation) {
       e.preventDefault();
@@ -389,17 +389,17 @@ export default function useForm<Data extends DataType>(
     } else {
       const {
         errors,
-        values
+        values,
       }: SubmitPromiseResult<Data> = await currentFieldValues.reduce(
         async (
           previous: Promise<SubmitPromiseResult<Data>>,
-          field: Field | undefined
+          field: Field | undefined,
         ): Promise<SubmitPromiseResult<Data>> => {
           if (!field) return previous;
           const resolvedPrevious: any = await previous;
           const {
             ref,
-            ref: { name }
+            ref: { name },
           } = field;
 
           if (!fields[name]) return Promise.resolve(resolvedPrevious);
@@ -407,7 +407,7 @@ export default function useForm<Data extends DataType>(
           const fieldError = await validateField(
             field,
             fields,
-            nativeValidation
+            nativeValidation,
           );
 
           if (fieldError[name]) {
@@ -417,7 +417,7 @@ export default function useForm<Data extends DataType>(
             }
             resolvedPrevious.errors = {
               ...(resolvedPrevious.errors || {}),
-              ...fieldError
+              ...fieldError,
             };
             return Promise.resolve(resolvedPrevious);
           }
@@ -427,13 +427,13 @@ export default function useForm<Data extends DataType>(
         },
         Promise.resolve<SubmitPromiseResult<Data>>({
           errors: {},
-          values: {}
-        } as any)
+          values: {},
+        } as any),
       );
 
       fieldErrors = {
         ...errors,
-        ...(nativeValidation ? {} : filterUndefinedErrors(errorsRef.current))
+        ...(nativeValidation ? {} : filterUndefinedErrors(errorsRef.current)),
       };
       fieldValues = values;
     }
@@ -464,15 +464,17 @@ export default function useForm<Data extends DataType>(
 
   const unSubscribe = (): void => {
     fieldsRef.current &&
-      Object.values(fieldsRef.current).forEach((field: Field | undefined): void => {
-        if (!field) return;
-        const { ref, options } = field;
-        isRadioInput(ref.type) && Array.isArray(options)
-          ? options.forEach((fieldRef): void =>
-              removeEventListener(fieldRef, true)
-            )
-          : removeEventListener(field, true);
-      });
+      Object.values(fieldsRef.current).forEach(
+        (field: Field | undefined): void => {
+          if (!field) return;
+          const { ref, options } = field;
+          isRadioInput(ref.type) && Array.isArray(options)
+            ? options.forEach((fieldRef): void =>
+                removeEventListener(fieldRef, true),
+              )
+            : removeEventListener(field, true);
+        },
+      );
     fieldsRef.current = {};
     resetRefs();
   };
@@ -481,7 +483,7 @@ export default function useForm<Data extends DataType>(
     try {
       // @ts-ignore
       Object.values(fieldsRef.current)[0]
-        .ref.closest("form")
+        .ref.closest('form')
         .reset();
     } catch {
       console.warn(`⚠ Form element not found`);
@@ -520,14 +522,14 @@ export default function useForm<Data extends DataType>(
       isSubmitting: isSubmittingRef.current,
       ...(isOnSubmit
         ? {
-            isValid: isEmptyObject(errorsRef.current)
+            isValid: isEmptyObject(errorsRef.current),
           }
         : {
             isValid: fieldsWithValidation.current.size
               ? !isEmptyObject(fieldsRef.current) &&
                 validFields.current.size >= fieldsWithValidation.current.size
-              : !isEmptyObject(fieldsRef.current)
-          })
-    }
+              : !isEmptyObject(fieldsRef.current),
+          }),
+    },
   };
 }

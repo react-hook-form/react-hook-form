@@ -1,4 +1,4 @@
-import {DataType, Ref} from "../types";
+import { DataType, Ref } from '../types';
 
 export default function attachNativeValidation(ref: Ref, rules: DataType) {
   Object.entries(rules).forEach(([key, value]) => {
