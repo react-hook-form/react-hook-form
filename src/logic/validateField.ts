@@ -1,7 +1,7 @@
 import getRadioValue from './getRadioValue';
 import isRadioInput from '../utils/isRadioInput';
 import { DATE_INPUTS, STRING_INPUTS } from '../constants';
-import { Field, ErrorMessages } from '../types';
+import {Field, ErrorMessages, DataType} from '../types';
 import getValueAndMessage from './getValueAndMessage';
 import isCheckBoxInput from '../utils/isCheckBoxInput';
 import isString from '../utils/isString';
@@ -29,10 +29,10 @@ export default async <Data>(
     pattern,
     validate,
   }: Field,
-  fields: { [Key in keyof Data]?: Field },
+  fields: DataType,
   nativeValidation?: boolean,
 ): Promise<ErrorMessages<any>> => {
-  const error = {};
+  const error: DataType = {};
   const isRadio = isRadioInput(type);
   const isCheckBox = isCheckBoxInput(type);
   const isSelectOrInput = !isCheckBox && !isRadio;

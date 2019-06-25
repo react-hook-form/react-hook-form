@@ -1,9 +1,9 @@
 import getFieldValue from './getFieldValue';
 import isString from '../utils/isString';
-import { FieldValue, Ref } from '../types';
+import {DataType, FieldValue, Ref} from '../types';
 
-export default function getFieldsValues(fields, fieldName?: string | string[]): { [key: string]: FieldValue } {
-  return Object.values(fields).reduce((previous: {}, data: Ref): FieldValue => {
+export default function getFieldsValues(fields: DataType, fieldName?: string | string[]): { [key: string]: FieldValue } {
+  return Object.values(fields).reduce((previous: DataType, data: Ref): FieldValue => {
     const {
       ref,
       ref: { name },

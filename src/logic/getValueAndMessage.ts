@@ -1,5 +1,7 @@
+import {DataType} from "../types";
+
 export default (
-  item,
+  item: DataType | number | string | undefined,
 ): {
   value: number | string | RegExp;
   message: string;

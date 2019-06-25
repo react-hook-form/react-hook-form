@@ -1,4 +1,6 @@
-export default function attachNativeValidation(ref, rules) {
+import {DataType, Ref} from "../types";
+
+export default function attachNativeValidation(ref: Ref, rules: DataType) {
   Object.entries(rules).forEach(([key, value]) => {
     if (key === 'required') {
       ref[key] = true;

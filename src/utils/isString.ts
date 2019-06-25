@@ -1,1 +1,1 @@
-export default (value): boolean => value && typeof value === 'string';
+export default (value: any): boolean => value && typeof value === 'string';
