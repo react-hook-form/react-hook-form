@@ -12,7 +12,7 @@
     "lint": "eslint ./src --ext .jsx,.ts --ignore-pattern *.test.ts",
     "coverage": "jest --coverage --coverageReporters=text-lcov | coveralls",
     "postrelease": "yarn publish && git push --follow-tags",
-    "test": "jest",
+    "test": "jest --runInBand",
     "test-coverage": "jest --coverage",
     "testw": "yarn test-coverage -- --watchAll",
     "prepublish": "yarn lint && yarn test && yarn run clean && yarn build"
