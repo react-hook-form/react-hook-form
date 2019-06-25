@@ -1,6 +1,10 @@
-import isString from "../utils/isString";
-import {Ref} from "../types";
+import isString from '../utils/isString';
+import { Ref } from '../types';
 
-export default function displayNativeError(nativeValidation: boolean, ref: Ref, result: string) {
-  if (nativeValidation && isString(result)) ref.setCustomValidity(result);
+export default function displayNativeError(
+  nativeValidation: boolean,
+  ref: Ref,
+  message: string,
+) {
+  if (nativeValidation && isString(message)) ref.setCustomValidity(message);
 }

@@ -2,7 +2,7 @@ import getFieldValue from './getFieldValue';
 
 jest.mock('./getRadioValue', () => ({
   default: () => ({
-    value: 2
+    value: 2,
   }),
 }));
 jest.mock('./getMultipleSelectValue', () => ({
@@ -82,7 +82,6 @@ describe('getFieldValue', () => {
     ).toBeTruthy();
   });
 
-
   it('should return it value for other types', () => {
     expect(
       getFieldValue(
@@ -100,5 +99,35 @@ describe('getFieldValue', () => {
         },
       ),
     ).toBe('value');
+  });
+
+  it('should throw an error when radio input value is not found', () => {
+    expect(() => {
+      getFieldValue(
+        {},
+        {
+          type: 'radio',
+          value: 'value',
+          name: 'test',
+        },
+      );
+    }).toThrow();
+  });
+
+  it('should return false when checkbox is not checked', () => {
+    expect(getFieldValue(
+      {
+        test: {
+          ref: {
+            checked: false,
+          },
+        },
+      },
+      {
+        type: 'checkbox',
+        value: 'value',
+        name: 'test',
+      },
+    )).toBeFalsy();
   });
 });

@@ -430,7 +430,7 @@ export default function useForm<Data extends DataType>(
 
       fieldErrors = {
         ...errors,
-        ...(nativeValidation ? {} : filterUndefinedErrors(errorsRef.current))
+        ...(nativeValidation ? {} : filterUndefinedErrors(errorsRef.current)),
       };
       fieldValues = values;
     }
