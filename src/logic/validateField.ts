@@ -1,12 +1,12 @@
 import getRadioValue from './getRadioValue';
 import isRadioInput from '../utils/isRadioInput';
 import { DATE_INPUTS, STRING_INPUTS } from '../constants';
-import {Field, ErrorMessages, DataType} from '../types';
+import { Field, ErrorMessages, DataType } from '../types';
 import getValueAndMessage from './getValueAndMessage';
 import isCheckBoxInput from '../utils/isCheckBoxInput';
 import isString from '../utils/isString';
 import isEmptyObject from '../utils/isEmptyObject';
-import displayNativeError from "./displayNativeError";
+import displayNativeError from './displayNativeError';
 
 type ValidatePromiseResult =
   | {}
@@ -192,6 +192,6 @@ export default async <Data>(
     }
   }
 
-  ref.setCustomValidity('');
+  if (nativeValidation) ref.setCustomValidity('');
   return error;
 };
