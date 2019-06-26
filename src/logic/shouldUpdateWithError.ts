@@ -1,5 +1,5 @@
-import isEmptyObject from "../utils/isEmptyObject";
-import { DataType } from "../types";
+import isEmptyObject from '../utils/isEmptyObject';
+import { DataType } from '../types';
 
 export default function shouldUpdateWithError({
   errors,
@@ -7,7 +7,7 @@ export default function shouldUpdateWithError({
   error,
   isOnBlur,
   isBlurType,
-  validateDisabled
+  validateDisabled,
 }: {
   errors: DataType;
   name: string;
@@ -19,7 +19,8 @@ export default function shouldUpdateWithError({
   if (
     validateDisabled ||
     (isOnBlur && !isBlurType) ||
-    (isEmptyObject(error) && isEmptyObject(errors))
+    (isEmptyObject(error) && isEmptyObject(errors)) ||
+    (errors[name] && errors[name].isManual)
   ) {
     return false;
   }

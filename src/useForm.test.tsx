@@ -361,12 +361,18 @@ describe('useForm', () => {
       expect(hookForm.errors).toEqual({
         input: {
           type: 'test',
+          isManual: true,
+          message: undefined,
+          ref: undefined,
         },
       });
       hookForm.setError('input', 'test');
       expect(hookForm.errors).toEqual({
         input: {
           type: 'test',
+          isManual: true,
+          message: undefined,
+          ref: undefined,
         },
       });
     });

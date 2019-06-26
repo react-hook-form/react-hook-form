@@ -234,6 +234,7 @@ export default function useForm<Data extends DataType>(
         type,
         message,
         ref,
+        isManual: true,
       };
       reRenderForm({});
     }
