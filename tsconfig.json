@@ -8,8 +8,8 @@
     "strictNullChecks": true,
     "jsx": "react",
     "skipLibCheck": true,
+    "declaration": true,
     "noEmit": true,
-    "isolatedModules": true,
     "strict": true,
     "allowSyntheticDefaultImports": true,
     "lib": ["dom", "dom.iterable", "esnext"]
