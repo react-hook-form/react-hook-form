@@ -6,6 +6,8 @@ export type Validate = (data: FieldValue) => string | boolean;
 
 export type NumberOrString = number | string;
 
+type Omit<T, K extends keyof T> = Pick<T, Exclude<keyof T, K>>;
+
 export interface DataType {
   [key: string]: FieldValue;
 }
@@ -105,3 +107,5 @@ export interface FormProps {
     isValid: boolean;
   };
 }
+
+export type FormContextValues = Required<Omit<FormProps, 'children'>>;
