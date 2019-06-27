@@ -80,15 +80,28 @@ export type VoidFunction = () => void;
 
 export interface FormProps {
   children: JSX.Element[] | JSX.Element;
-  register?: Function;
+  register: (
+    refOrValidateRule: RegisterInput | Ref,
+    validateRule?: RegisterInput,
+  ) => any;
   handleSubmit?: Function;
-  watch?: Function;
-  unSubscribe?: Function;
-  reset?: Function;
-  setError?: Function;
+  watch?: (
+    fieldNames?: string | string[] | undefined,
+    defaultValue?: string | string[] | undefined,
+  ) => FieldValue | void;
+  unSubscribe?: () => void;
+  reset?: () => void;
+  setError: (name: string, type?: string, message?: string, ref?: Ref) => void;
   setValue?: Function;
   triggerValidation?: Function;
-  getValues?: Function;
-  errors: any;
-  formState: any;
+  getValues?: () => FormData;
+  errors: DataType;
+  formState: {
+    dirty: boolean;
+    isSubmitted: boolean;
+    submitCount: number;
+    touched: string[];
+    isSubmitting: boolean;
+    isValid: boolean;
+  };
 }

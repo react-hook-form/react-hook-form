@@ -5,7 +5,7 @@ import { DataType, FieldValue, Ref } from '../types';
 export default function getFieldsValues(
   fields: DataType,
   fieldName?: string | string[],
-): { [key: string]: FieldValue } {
+): FormData {
   return Object.values(fields).reduce(
     (previous: DataType, data: Ref): FieldValue => {
       const {
