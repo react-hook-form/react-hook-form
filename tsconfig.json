@@ -5,7 +5,6 @@
     "target": "es2017",
     "moduleResolution": "node",
     "outDir": "./dist",
-    "declaration": true,
     "strictNullChecks": true,
     "jsx": "react",
     "skipLibCheck": true,
