@@ -9,7 +9,11 @@
     "strictNullChecks": true,
     "jsx": "react",
     "skipLibCheck": true,
+    "noEmit": true,
+    "isolatedModules": true,
+    "strict": true,
     "allowSyntheticDefaultImports": true,
+    "lib": ["dom", "dom.iterable", "esnext"]
   },
   "include": ["src"],
   "exclude": ["node_modules", "test", "examples"]

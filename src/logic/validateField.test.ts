@@ -533,4 +533,23 @@ describe('validateField', () => {
       },
     });
   });
+
+  it('should call setCustomValidity with empty string when native validation is on', async () => {
+    const setCustomValidity = jest.fn();
+    expect(
+      await validateField(
+        {
+          ref: {
+            type: 'text',
+            name: 'test',
+            value: 'This is a long text input',
+            setCustomValidity,
+          },
+        },
+        {},
+        true,
+      ),
+    ).toEqual({});
+    expect(setCustomValidity).toBeCalledWith('');
+  });
 });

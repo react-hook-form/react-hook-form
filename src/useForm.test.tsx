@@ -1,5 +1,6 @@
 import * as React from 'react';
 import useForm from './';
+// @ts-ignore
 import { act } from 'react-dom/test-utils';
 import attachEventListeners from './logic/attachEventListeners';
 import getFieldsValues from './logic/getFieldsValues';
@@ -16,12 +17,12 @@ jest.mock('./logic/attachEventListeners');
 jest.mock('./logic/getFieldsValues');
 jest.mock('./logic/validateWithSchema');
 
-let hookForm;
-let hookFormWithValidationSchema;
-let wrapper;
+let hookForm: any;
+let hookFormWithValidationSchema: any;
+let wrapper: any;
 
-const testComponent = callback => {
-  const TestHook = ({ callback }) => {
+const testComponent = (callback: any) => {
+  const TestHook = ({ callback }: any) => {
     const { errors } = callback();
     return errors ? <div>errors</div> : null;
   };
@@ -90,7 +91,7 @@ describe('useForm', () => {
       validateField.mockImplementation(async () => {
         return {};
       });
-      await hookForm.handleSubmit(data => {
+      await hookForm.handleSubmit((data: any) => {
         expect(data).toEqual({
           test: 'testData',
         });
@@ -107,7 +108,7 @@ describe('useForm', () => {
       validateField.mockImplementation(async () => {
         return {};
       });
-      await hookForm.handleSubmit(data => {
+      await hookForm.handleSubmit((data: any) => {
         expect(data).toEqual({
           test: '',
         });
@@ -162,7 +163,7 @@ describe('useForm', () => {
         return {};
       });
       hookForm.register({ type: 'text', name: 'test' });
-      await hookForm.handleSubmit(data => {
+      await hookForm.handleSubmit((data: any) => {
         expect(data).toEqual({
           test: 'data',
         });
@@ -186,7 +187,7 @@ describe('useForm', () => {
         return {};
       });
       hookForm.register({ type: 'text', name: 'test' });
-      await hookForm.handleSubmit(data => {
+      await hookForm.handleSubmit((data: any) => {
         expect(data).toEqual({
           test: '1',
         });
@@ -230,6 +231,26 @@ describe('useForm', () => {
       });
       expect(await hookForm.triggerValidation({ name: 'test' })).toBeTruthy();
     });
+
+    it('should set value while trigger a validation', async () => {
+      testComponent(() => {
+        hookForm = useForm({
+          mode: 'onChange',
+        });
+        return hookForm;
+      });
+      hookForm.register({ type: 'input', name: 'test' }, { required: true });
+      // @ts-ignore
+      validateField.mockImplementation(async () => {
+        return {};
+      });
+      await hookForm.triggerValidation({ name: 'test', value: 'test' });
+      const callback = jest.fn(data => {
+        expect(data).toEqual({ test: 'test' });
+      });
+      await hookForm.handleSubmit(callback)();
+      expect(callback).toBeCalled();
+    });
   });
 
   describe('unSubscribe', () => {
@@ -261,6 +282,10 @@ describe('useForm', () => {
       expect(findRemovedFieldAndRemoveListener).toBeCalled();
       hookForm.register({ type: 'input', name: 'test' });
       expect(attachEventListeners).toBeCalledTimes(3);
+    });
+
+    it('should skip field that is not found', () => {
+
     });
   });
 
@@ -437,7 +462,7 @@ describe('useForm', () => {
         return {};
       });
       hookForm.register({ type: 'text', name: 'test' });
-      await hookForm.handleSubmit(data => {
+      await hookForm.handleSubmit((data: any) => {
         expect(data).toEqual({
           test: 'data',
         });
