@@ -1,9 +1,12 @@
 import * as React from "react";
 import { FormProps } from './types'
 
-export const FormGlobalContext = React.createContext({});
+type Omit<T, K extends keyof T> = Pick<T, Exclude<keyof T, K>>
+type FormContextValues = Required<Omit<FormProps, "children">>;
 
-export const useFormContext = () => React.useContext<{}>(FormGlobalContext);
+export const FormGlobalContext = React.createContext<FormContextValues>({} as FormContextValues);
+
+export const useFormContext = () => React.useContext<FormContextValues>(FormGlobalContext);
 
 export function FormContext(props: FormProps){
   const { children, ...rest } = props;
@@ -11,7 +14,7 @@ export function FormContext(props: FormProps){
     <FormGlobalContext.Provider
       value={{
         ...rest
-      }}
+      } as FormContextValues}
       children={children}
     />
   );
