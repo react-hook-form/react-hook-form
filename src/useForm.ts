@@ -240,6 +240,12 @@ export default function useForm<Data extends DataType>(
     }
   };
 
+  const clearError = <Name extends keyof Data>(
+    name: Extract<Name, string>,
+  ): void => {
+    setError(name);
+  };
+
   function registerIntoFieldsRef(
     elementRef: Ref,
     data: RegisterInput | undefined,
@@ -508,6 +514,7 @@ export default function useForm<Data extends DataType>(
     watch,
     unSubscribe,
     reset,
+    clearError,
     setError,
     setValue,
     triggerValidation,
