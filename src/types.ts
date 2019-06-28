@@ -103,12 +103,12 @@ export interface FormProps {
     forceValidation?: boolean;
   }) => void;
   getValues?: () => FormData;
-  errors: DataType;
-  formState: {
+  errors?: DataType;
+  formState?: {
     dirty: boolean;
     isSubmitted: boolean;
     submitCount: number;
-    touched: string[];
+    touched: string[] | {}[];
     isSubmitting: boolean;
     isValid: boolean;
   };
