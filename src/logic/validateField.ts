@@ -7,6 +7,7 @@ import isCheckBoxInput from '../utils/isCheckBoxInput';
 import isString from '../utils/isString';
 import isEmptyObject from '../utils/isEmptyObject';
 import displayNativeError from './displayNativeError';
+import isObject from '../utils/isObject';
 
 type ValidatePromiseResult =
   | {}
@@ -152,7 +153,7 @@ export default async <Data>(
         nativeError('not valid');
         return error;
       }
-    } else if (typeof validate === 'object') {
+    } else if (isObject(validate)) {
       const validationResult = await new Promise(
         (resolve): ValidatePromiseResult => {
           const values = Object.entries(validate);

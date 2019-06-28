@@ -82,9 +82,35 @@ export default function useForm<Data extends DataType>(
     return false;
   };
 
+  const isValidateDisabled = <Name extends keyof Data>(): boolean =>
+    !isSubmittedRef.current && isOnSubmit;
+
+  const triggerValidation = async <Name extends keyof Data>({
+    name,
+    forceValidation,
+  }: {
+    name: Extract<keyof Data, string>;
+    forceValidation?: boolean;
+  }): Promise<boolean> => {
+    const field = fieldsRef.current[name]!;
+    const errors = errorsRef.current;
+
+    if (!field) return false;
+    if (isValidateDisabled() && !forceValidation) return isEmptyObject(errors);
+
+    const error = await validateField(field, fieldsRef.current);
+    errorsRef.current = {
+      ...filterUndefinedErrors(errorsRef.current),
+      ...error,
+    };
+    renderBaseOnError(name, errors, error);
+    return isEmptyObject(error);
+  };
+
   const setValue = <Name extends keyof Data>(
     name: Extract<Name, string>,
     value: Data[Name],
+    shouldValidate: boolean = false,
     shouldRender: boolean = true,
   ): void => {
     const field = fieldsRef.current[name];
@@ -106,34 +132,7 @@ export default function useForm<Data extends DataType>(
 
     ref[isCheckBoxInput(ref.type) ? 'checked' : 'value'] = value;
     if (shouldRender) reRenderForm({});
-  };
-
-  const isValidateDisabled = <Name extends keyof Data>(): boolean =>
-    !isSubmittedRef.current && isOnSubmit;
-
-  const triggerValidation = async <Name extends keyof Data>({
-    name,
-    value,
-    forceValidation,
-  }: {
-    name: Extract<keyof Data, string>;
-    value?: Data[Name];
-    forceValidation?: boolean;
-  }): Promise<boolean> => {
-    const field = fieldsRef.current[name]!;
-    const errors = errorsRef.current;
-
-    if (!field) return false;
-    if (isValidateDisabled() && !forceValidation) return isEmptyObject(errors);
-    if (value !== undefined) setValue(name, value);
-
-    const error = await validateField(field, fieldsRef.current);
-    errorsRef.current = {
-      ...filterUndefinedErrors(errorsRef.current),
-      ...error,
-    };
-    renderBaseOnError(name, errors, error);
-    return isEmptyObject(error);
+    if (shouldValidate) triggerValidation({ name });
   };
 
   validateAndStateUpdateRef.current = validateAndStateUpdateRef.current
@@ -301,7 +300,7 @@ export default function useForm<Data extends DataType>(
     }
 
     if (defaultValues && defaultValues[name]) {
-      setValue(name, defaultValues[name], false);
+      setValue(name, defaultValues[name], false, false);
     }
 
     if (!type) {
