@@ -1,19 +1,19 @@
-import { IRegisterInput } from '../type';
+import { Ref, RegisterInput } from '../types';
 
-const defaultReturn = {
+interface RadioReturn {
+  isValid: boolean;
+  value: number | string;
+}
+
+const defaultReturn: RadioReturn = {
   isValid: false,
-  value: null,
+  value: '',
 };
 
-export default function getRadioValue(
-  options?: Array<IRegisterInput>,
-): {
-  isValid: boolean;
-  value: null | number | string;
-} {
+export default function getRadioValue(options?: RegisterInput[]): RadioReturn {
   return Array.isArray(options)
     ? options.reduce(
-        (previous, { ref: { checked, value } }: { ref: any }) =>
+        (previous, { ref: { checked, value } }: Ref): RadioReturn =>
           checked
             ? {
                 isValid: true,

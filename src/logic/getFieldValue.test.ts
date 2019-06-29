@@ -2,7 +2,7 @@ import getFieldValue from './getFieldValue';
 
 jest.mock('./getRadioValue', () => ({
   default: () => ({
-    value: 2
+    value: 2,
   }),
 }));
 jest.mock('./getMultipleSelectValue', () => ({
@@ -45,7 +45,7 @@ describe('getFieldValue', () => {
     ).toBe(3);
   });
 
-  it('should return checked status if type is checked', () => {
+  it('should return checked value if type is checked', () => {
     expect(
       getFieldValue(
         {
@@ -53,6 +53,24 @@ describe('getFieldValue', () => {
             ref: {
               name: 'bill',
               value: 'test',
+            },
+          },
+        },
+        {
+          type: 'checkbox',
+          checked: 'test',
+        },
+      ),
+    ).toBeTruthy();
+  });
+
+  it('should return checked if type is checked without value', () => {
+    expect(
+      getFieldValue(
+        {
+          test: {
+            ref: {
+              name: 'bill',
             },
           },
         },
@@ -81,5 +99,35 @@ describe('getFieldValue', () => {
         },
       ),
     ).toBe('value');
+  });
+
+  it('should throw an error when radio input value is not found', () => {
+    expect(() => {
+      getFieldValue(
+        {},
+        {
+          type: 'radio',
+          value: 'value',
+          name: 'test',
+        },
+      );
+    }).toThrow();
+  });
+
+  it('should return false when checkbox is not checked', () => {
+    expect(getFieldValue(
+      {
+        test: {
+          ref: {
+            checked: false,
+          },
+        },
+      },
+      {
+        type: 'checkbox',
+        value: 'value',
+        name: 'test',
+      },
+    )).toBeFalsy();
   });
 });

@@ -17,3 +17,47 @@ Object {
   "test": "test",
 }
 `;
+
+exports[`combineFieldValues should combine array object correctly 1`] = `
+Object {
+  "name": Array [
+    Object {
+      "firstName": "testFirst",
+      "lastName": "testLast",
+    },
+  ],
+  "test": Array [
+    Object {
+      "task": "testLast",
+      "what": "testLast",
+    },
+    Object {
+      "what": Array [
+        undefined,
+        Object {
+          "test": "testLast",
+        },
+      ],
+    },
+  ],
+}
+`;
+
+exports[`combineFieldValues should combine object correctly 1`] = `
+Object {
+  "name": Object {
+    "firstName": "testFirst",
+    "lastName": Object {
+      "bill": Object {
+        "luo": "testLast",
+      },
+    },
+  },
+}
+`;
+
+exports[`combineFieldValues should return default name value 1`] = `
+Object {
+  "name": "testFirst",
+}
+`;

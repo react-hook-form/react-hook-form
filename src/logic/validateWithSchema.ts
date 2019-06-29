@@ -1,15 +1,30 @@
-export function parseErrorSchema(error) {
-  return error.inner.reduce((previous, current, index) => {
-    if (!previous[current.path]) previous[current.path] = {};
-    previous[current.path][current.type] = error.errors[index];
-    return previous;
-  }, {});
+import { DataType } from "../types";
+
+interface ValidationReturn {
+  [key: string]: string;
 }
 
-export default async function validateWithSchema(ValidationSchema, data) {
+export function parseErrorSchema(error: DataType): ValidationReturn {
+  return error.inner.reduce(
+    (
+      previous: DataType,
+      current: DataType,
+      index: number
+    ): ValidationReturn => {
+      previous[current.path] = error.errors[index];
+      return previous;
+    },
+    {}
+  );
+}
+
+export default async function validateWithSchema(
+  ValidationSchema: any,
+  data: DataType
+): Promise<ValidationReturn | undefined> {
   try {
     await ValidationSchema.validate(data, { abortEarly: false });
-    return undefined;
+    return {};
   } catch (e) {
     return parseErrorSchema(e);
   }

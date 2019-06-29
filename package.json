@@ -1,19 +1,21 @@
 {
   "name": "react-hook-form",
-  "version": "3.0.3-beta.4",
-  "main": "dist/index.js",
-  "module": "dist/index.es.js",
+  "version": "3.14.0",
+  "main": "dist/react-hook-form.js",
+  "module": "dist/react-hook-form.es.js",
   "types": "dist/index.d.ts",
   "scripts": {
     "clean": "rimraf dist/*",
     "build": "rollup -c",
     "watch": "tsc --watch",
     "release": "npm version",
+    "lint": "eslint ./src --ext .jsx,.ts --ignore-pattern *.test.ts",
     "coverage": "jest --coverage --coverageReporters=text-lcov | coveralls",
     "postrelease": "yarn publish && git push --follow-tags",
-    "test": "jest --coverage",
-    "testw": "yarn test -- --watchAll",
-    "prepublish": "yarn test && yarn run clean && yarn build"
+    "test": "jest --runInBand",
+    "test-coverage": "jest --coverage",
+    "testw": "yarn test-coverage -- --watchAll",
+    "prepublish": "yarn lint && yarn test && yarn run clean && yarn build"
   },
   "keywords": [
     "react",
@@ -25,7 +27,7 @@
     "typescript",
     "react-hooks"
   ],
-  "repository": "https://github.com/bluebill1049/react-forme.git",
+  "repository": "https://github.com/bluebill1049/react-hook-form.git",
   "homepage": "https://react-hook-form.now.sh",
   "author": "<bluebill1049@hotmail.com>",
   "license": "MIT",
@@ -35,11 +37,18 @@
     "@types/jest": "^24.0.11",
     "@types/react": "^16.8.13",
     "@types/react-test-renderer": "^16.8.1",
+    "@typescript-eslint/eslint-plugin": "^1.9.0",
+    "@typescript-eslint/parser": "^1.9.0",
     "coveralls": "^3.0.3",
     "enzyme": "^3.9.0",
     "enzyme-adapter-react-16": "^1.12.1",
+    "eslint": "^5.16.0",
+    "eslint-plugin-react": "^7.13.0",
+    "husky": ">=1",
     "jest": "^24.7.1",
+    "lint-staged": ">=8",
     "npm-run-all": "^4.1.5",
+    "prettier": "^1.18.2",
     "react": "^16.8.6",
     "react-dom": "^16.8.6",
     "react-test-renderer": "^16.8.6",
@@ -47,11 +56,23 @@
     "rollup": "^1.9.3",
     "rollup-plugin-typescript2": "^0.20.1",
     "ts-jest": "^24.0.2",
-    "typescript": "^3.4.3",
+    "typescript": "3.4.3",
     "uglify-es": "^3.3.9"
   },
   "peerDependencies": {
     "react": "^16.8.0",
     "react-dom": "^16.8.0"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged"
+    }
+  },
+  "lint-staged": {
+    "*.{jsx,ts}": [
+      "eslint --fix",
+      "prettier --config ./.prettierrc --write",
+      "git add"
+    ]
   }
 }

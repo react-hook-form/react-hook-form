@@ -5,8 +5,14 @@
     "target": "es2017",
     "moduleResolution": "node",
     "outDir": "./dist",
+    "strictNullChecks": true,
+    "jsx": "react",
+    "skipLibCheck": true,
     "declaration": true,
-    "jsx": "react"
+    "noEmit": true,
+    "strict": true,
+    "allowSyntheticDefaultImports": true,
+    "lib": ["dom", "dom.iterable", "esnext"]
   },
   "include": ["src"],
   "exclude": ["node_modules", "test", "examples"]

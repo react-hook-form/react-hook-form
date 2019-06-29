@@ -18,35 +18,41 @@
 
 ## [文档](https://react-hook-form.now.sh/api)
 - [动机](https://medium.com/@bruce1049/form-validation-with-hook-in-3kb-c5414edf7d64)
-- [开始](https://react-hook-form.now.sh/api)
+- [开始](https://react-hook-form.com/get-started)
 - [API](https://react-hook-form.now.sh/api)
 - [示例](https://github.com/bluebill1049/react-hook-form/tree/master/examples)
 - [Demo](https://react-hook-form.now.sh)
 - [Form Builder](https://react-hook-form.now.sh/builder)
+- [常见问题](https://react-hook-form.com/faq)
 
 ## 快速开始
 
 ```jsx
-import React from 'react'
-import useForm from 'react-hook-form'
+import React from "react";
+import useForm from "react-hook-form";
 
 function App() {
-  const { register, handleSubmit, errors } = useForm() // initialise the hook
-  const onSubmit = (data) => { console.log(data) } // callback when validation pass
-    
+  const { register, handleSubmit, errors } = useForm(); // initialise the hook
+  const onSubmit = data => { console.log(data) }; // callback when validation pass
+
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
       <input name="firstname" ref={register} /> {/* register an input */}
       
-      <input name="lastname" ref={register({ required: true })} /> {/* apply required validation */}
-      {errors.lastname && 'Last name is required.'} {/* error message */}
+      <input
+        name="lastname"
+        ref={register({ required: true })}
+      />
+      {errors.lastname && "Last name is required."}
       
-      <input name="age" ref={register({ pattern: /\d+/ })} /> {/* apply a Refex validation */}
-      {errors.age && 'Please enter number for age.'} {/* error message */}
+      <input
+        name="age"
+        ref={register({ pattern: /\d+/ })}
+      />
+      {errors.age && "Please enter number for age."}
       
       <input type="submit" />
     </form>
-  )
+  );
 }
-
 ```

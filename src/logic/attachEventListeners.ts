@@ -1,16 +1,20 @@
-import { IField } from '../type';
-import isCheckbox from '../utils/isCheckBox';
+import { Field } from '../types';
+import isCheckBoxInput from '../utils/isCheckBoxInput';
 
 export default function attachEventListeners({
   field,
   validateAndStateUpdate,
   isRadio,
 }: {
-  field: IField;
+  field: Field;
   isRadio: boolean;
-  validateAndStateUpdate: (any) => void;
-}) {
+  validateAndStateUpdate: Function | undefined;
+}): void {
   const { ref } = field;
-  ref.addEventListener(isCheckbox(ref.type) || isRadio ? 'change' : 'input', validateAndStateUpdate);
+  if (!ref.addEventListener) return;
+  ref.addEventListener(
+    isCheckBoxInput(ref.type) || isRadio ? 'change' : 'input',
+    validateAndStateUpdate,
+  );
   ref.addEventListener('blur', validateAndStateUpdate);
 }

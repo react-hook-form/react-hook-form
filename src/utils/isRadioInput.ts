@@ -1,3 +1,1 @@
-export default function isRadioInput(type: string) {
-  return type === 'radio'
-}
+export default (type: string): boolean => type === 'radio';

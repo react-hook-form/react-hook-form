@@ -4,7 +4,7 @@ describe('getRadioValue', () => {
   it('should return default value if not valid or empty options', () => {
     expect(getRadioValue(undefined)).toEqual({
       isValid: false,
-      value: null,
+      value: '',
     });
   });
 

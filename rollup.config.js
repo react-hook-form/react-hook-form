@@ -2,17 +2,15 @@ import typescript from 'rollup-plugin-typescript2';
 
 export default {
   input: 'src/index.ts',
-  plugins: [
-    typescript(),
-  ],
-  external: ['react'],
+  plugins: [typescript()],
+  external: ['react', 'react-dom'],
   output: [
     {
-      file: 'dist/index.js',
+      file: 'dist/react-hook-form.js',
       format: 'cjs',
     },
     {
-      file: 'dist/index.es.js',
+      file: 'dist/react-hook-form.es.js',
       format: 'es',
     },
   ],

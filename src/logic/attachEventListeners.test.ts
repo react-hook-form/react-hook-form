@@ -157,4 +157,15 @@ describe('attachEventListeners', () => {
     expect(addEventListener).toBeCalledWith('input', validateAndStateUpdate);
     expect(fields.test.eventAttached).toBeTruthy();
   });
+
+  it('should return undefined when addEventListener is not found', () => {
+    expect(
+      attachEventListeners({
+        // @ts-ignore
+        field: { ref: {} },
+        isRadio: false,
+        validateAndStateUpdate: () => {},
+      }),
+    ).toBeUndefined();
+  });
 });

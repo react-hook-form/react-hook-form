@@ -50,4 +50,15 @@ describe('validateWithSchema', () => {
       ),
     ).toMatchSnapshot();
   });
+
+  it('should return empty object when validate pass', async () => {
+    expect(
+      await validateWithSchema(
+        {
+          validate: () => {},
+        },
+        {},
+      ),
+    ).toEqual({});
+  });
 });

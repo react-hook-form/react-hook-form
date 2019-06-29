@@ -1,11 +1,22 @@
 import getRadioValue from './getRadioValue';
 import isRadioInput from '../utils/isRadioInput';
 import { DATE_INPUTS, STRING_INPUTS } from '../constants';
-import { IField } from '../type';
+import { Field, ErrorMessages, DataType } from '../types';
 import getValueAndMessage from './getValueAndMessage';
-import isCheckBox from '../utils/isCheckBox';
+import isCheckBoxInput from '../utils/isCheckBoxInput';
+import isString from '../utils/isString';
+import isEmptyObject from '../utils/isEmptyObject';
+import displayNativeError from './displayNativeError';
 
-export default async (
+type ValidatePromiseResult =
+  | {}
+  | void
+  | {
+      type: string;
+      message: string | number | boolean | Date;
+    };
+
+export default async <Data>(
   {
     ref,
     ref: { type, value, name, checked },
@@ -17,148 +28,170 @@ export default async (
     max,
     pattern,
     validate,
-  }: IField,
-  fields: { [key: string]: IField },
-) => {
-  const copy = {};
+  }: Field,
+  fields: DataType,
+  nativeValidation?: boolean,
+): Promise<ErrorMessages<any>> => {
+  const error: DataType = {};
   const isRadio = isRadioInput(type);
+  const isCheckBox = isCheckBoxInput(type);
+  const isSelectOrInput = !isCheckBox && !isRadio;
+  const nativeError = displayNativeError.bind(null, nativeValidation, ref);
 
   if (
     required &&
-    ((isCheckBox(type) && !checked) ||
-      (!isRadio && type !== 'checkbox' && value === '') ||
-      (isRadio && !getRadioValue(fields[name].options).isValid))
+    ((isCheckBox && !checked) ||
+      (isSelectOrInput && value === '') ||
+      (isRadio && !getRadioValue(fields[name].options).isValid) ||
+      (!type && !value))
   ) {
-    copy[name] = {
+    error[name] = {
       type: 'required',
-      message: required,
-      // @ts-ignore
-      ref: isRadio ? fields[name].options[0].ref : ref,
+      message: isString(required) ? required : '',
+      ref: isRadio ? (fields[name].options || [{ ref: '' }])[0].ref : ref,
     };
-    return copy;
+    nativeError(required);
+    return error;
   }
 
-  if (min || max) {
+  if ((min || max) && !STRING_INPUTS.includes(type)) {
     let exceedMax;
     let exceedMin;
     const valueNumber = parseFloat(value);
 
     const { value: maxValue, message: maxMessage } = getValueAndMessage(max);
     const { value: minValue, message: minMessage } = getValueAndMessage(min);
+    const message = exceedMax ? maxMessage : minMessage;
 
     if (type === 'number') {
       exceedMax = maxValue && valueNumber > maxValue;
       exceedMin = minValue && valueNumber < minValue;
     } else if (DATE_INPUTS.includes(type)) {
-      if (typeof maxValue === 'string') exceedMax = maxValue && new Date(value) > new Date(maxValue);
-      if (typeof minValue === 'string') exceedMin = minValue && new Date(value) < new Date(minValue);
+      if (typeof maxValue === 'string')
+        exceedMax = maxValue && new Date(value) > new Date(maxValue);
+      if (typeof minValue === 'string')
+        exceedMin = minValue && new Date(value) < new Date(minValue);
     }
 
-    if (exceedMax) {
-      copy[name] = {
-        ...copy[name],
-        type: 'max',
-        message: maxMessage,
+    if (exceedMax || exceedMin) {
+      error[name] = {
+        ...error[name],
+        type: exceedMax ? 'max' : 'min',
+        message,
         ref,
       };
-      return copy;
-    }
-
-    if (exceedMin) {
-      copy[name] = {
-        ...copy[name],
-        type: 'min',
-        message: minMessage,
-        ref,
-      };
-      return copy;
+      nativeError(message);
+      return error;
     }
   }
 
   if ((maxLength || minLength) && STRING_INPUTS.includes(type)) {
-    const { value: maxLengthValue, message: maxLengthMessage } = getValueAndMessage(maxLength);
-    const { value: minLengthValue, message: minLengthMessage } = getValueAndMessage(minLength);
-
+    const {
+      value: maxLengthValue,
+      message: maxLengthMessage,
+    } = getValueAndMessage(maxLength);
+    const {
+      value: minLengthValue,
+      message: minLengthMessage,
+    } = getValueAndMessage(minLength);
     const exceedMax = maxLength && value.toString().length > maxLengthValue;
     const exceedMin = minLength && value.toString().length < minLengthValue;
+    const message = exceedMax ? maxLengthMessage : minLengthMessage;
 
-    if (exceedMax) {
-      copy[name] = {
-        ...copy[name],
-        type: 'maxLength',
-        message: maxLengthMessage,
+    if (exceedMax || exceedMin) {
+      error[name] = {
+        ...error[name],
+        type: exceedMax ? 'maxLength' : 'minLength',
+        message,
         ref,
       };
-      return copy;
-    }
-
-    if (exceedMin) {
-      copy[name] = {
-        ...copy[name],
-        type: 'minLength',
-        message: minLengthMessage,
-        ref,
-      };
-      return copy;
+      nativeError(message);
+      return error;
     }
   }
 
   if (pattern) {
-    const { value: patternValue, message: patternMessage } = getValueAndMessage(pattern);
+    const { value: patternValue, message: patternMessage } = getValueAndMessage(
+      pattern,
+    );
+
     if (patternValue instanceof RegExp && !patternValue.test(value)) {
-      copy[name] = {
-        ...copy[name],
+      error[name] = {
+        ...error[name],
         type: 'pattern',
         message: patternMessage,
         ref,
       };
-      return copy;
+      nativeError(patternMessage);
+      return error;
     }
   }
 
   if (validate) {
     const fieldValue = isRadio ? getRadioValue(options).value : value;
+    const validateRef = isRadio && options ? options[0].ref : ref;
 
     if (typeof validate === 'function') {
       const result = await validate(fieldValue);
-      if (typeof result !== 'boolean' || !result) {
-        copy[name] = {
-          ...copy[name],
+      if (typeof result === 'string' && result) {
+        error[name] = {
+          ...error[name],
           type: 'validate',
-          message: result || true,
-          ref: isRadio && options ? options[0].ref : ref,
+          message: result,
+          ref: validateRef,
         };
-        return copy;
+        nativeError(result);
+        return error;
+      } else if (typeof result === 'boolean' && !result) {
+        error[name] = {
+          ...error[name],
+          type: 'validate',
+          message: '',
+          ref: validateRef,
+        };
+        nativeError('not valid');
+        return error;
       }
     } else if (typeof validate === 'object') {
-      const result = await new Promise(resolve => {
-        const values = Object.entries(validate);
-        values.reduce(async (previous, [key, validate], index) => {
-          const result = typeof validate === 'function' && (await validate(fieldValue));
-          const lastChild = values.length - 1 === index;
+      const validationResult = await new Promise(
+        (resolve): ValidatePromiseResult => {
+          const values = Object.entries(validate);
+          values.reduce(async (previous, [key, validate], index): Promise<
+            ValidatePromiseResult
+          > => {
+            const lastChild = values.length - 1 === index;
 
-          if (typeof result !== 'boolean' || !result) {
-            const temp = {
-              type: key,
-              message: result || true,
-            };
-            return lastChild ? resolve(temp) : temp;
-          }
+            if (typeof validate === 'function') {
+              const result = await validate(fieldValue);
 
-          return lastChild ? resolve(previous) : previous;
-        }, {});
-      });
+              if (typeof result !== 'boolean' || !result) {
+                const message = isString(result) ? result : '';
+                const data = {
+                  type: key,
+                  message,
+                  ref: validateRef,
+                };
+                nativeError(message);
+                return lastChild ? resolve(data) : data;
+              }
+            }
 
-      if (result && Object.keys(result).length) {
-        copy[name] = {
-          ...copy[name],
-          ref: isRadio && options ? options[0].ref : ref,
-          ...result,
+            return lastChild ? resolve(previous) : previous;
+          }, {});
+        },
+      );
+
+      if (validationResult && !isEmptyObject(validationResult)) {
+        error[name] = {
+          ...error[name],
+          ref: validateRef,
+          ...validationResult,
         };
-        return copy;
+        return error;
       }
     }
   }
 
-  return copy;
+  if (nativeValidation) ref.setCustomValidity('');
+  return error;
 };

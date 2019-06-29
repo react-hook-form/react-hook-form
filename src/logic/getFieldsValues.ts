@@ -1,30 +1,33 @@
 import getFieldValue from './getFieldValue';
+import isString from '../utils/isString';
+import { DataType, FieldValue, Ref } from '../types';
 
-export default function getFieldsValues(fields, filedNames?: string | Array<string>) {
-  return Object.values(fields).reduce((previous, data: any) => {
-    const {
-      ref,
-      ref: { name },
-    } = data;
-    const value = getFieldValue(fields, ref);
+export default function getFieldsValues(
+  fields: DataType,
+  fieldName?: string | string[],
+): FormData {
+  return Object.values(fields).reduce(
+    (previous: DataType, data: Ref): FieldValue => {
+      const {
+        ref,
+        ref: { name },
+      } = data;
+      const value = getFieldValue(fields, ref);
 
-    if (typeof filedNames === 'string') {
-      if (name === filedNames) {
-        return value;
+      if (isString(fieldName)) {
+        return name === fieldName ? value : previous;
+      }
+
+      if (Array.isArray(fieldName)) {
+        if (fieldName.includes(name)) {
+          previous[name] = value;
+        }
+      } else {
+        previous[name] = value;
       }
 
       return previous;
-    }
-
-    const copy = { ...(previous || {}) };
-    if (Array.isArray(filedNames)) {
-      if (filedNames.includes(name)) {
-        copy[name] = value;
-      }
-    } else {
-      copy[name] = value;
-    }
-
-    return copy;
-  }, undefined);
+    },
+    {},
+  );
 }

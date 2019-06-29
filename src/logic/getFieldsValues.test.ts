@@ -16,7 +16,7 @@ describe('getFieldValue', () => {
         },
         'test',
       ),
-    ).toBeUndefined();
+    ).toEqual({});
   });
 
   it('should return the value of seraching item with name', () => {

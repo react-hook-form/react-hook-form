@@ -32,7 +32,7 @@ export default function Form() {
       </div>
       <div>
         <label>Mobile number</label>
-        <input type="tel" name="Mobile number" ref={register({ required: true, max: 11, min: 8 })} />
+        <input type="tel" name="Mobile number" ref={register({ required: true, maxLength: 11, minLength: 8 })} />
       </div>
       <div>
         <label>Title</label>

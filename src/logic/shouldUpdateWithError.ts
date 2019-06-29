@@ -1,26 +1,44 @@
-export default function shouldUpdateWithError({ errorMessages, name, error, mode, onSubmitModeNotSubmitted, type }) {
-  if (onSubmitModeNotSubmitted || (mode === 'onBlur' && type !== 'blur')) {
+import isEmptyObject from '../utils/isEmptyObject';
+import { DataType } from '../types';
+
+export default function shouldUpdateWithError({
+  errors,
+  name,
+  error,
+  isOnBlur,
+  isBlurType,
+  validateDisabled,
+}: {
+  errors: DataType;
+  name: string;
+  error: any;
+  isOnBlur: boolean;
+  isBlurType: boolean;
+  validateDisabled: boolean;
+}): boolean {
+  if (
+    validateDisabled ||
+    (isOnBlur && !isBlurType) ||
+    (isEmptyObject(error) && isEmptyObject(errors)) ||
+    (errors[name] && errors[name].isManual)
+  ) {
     return false;
   }
 
-  if (!Object.keys(error).length && !Object.keys(errorMessages).length) {
-    return false;
-  }
-
-  if (!Object.keys(errorMessages).length && Object.keys(error).length) {
+  if (
+    (isEmptyObject(errors) && !isEmptyObject(error)) ||
+    (isEmptyObject(error) && errors[name])
+  ) {
     return true;
   }
 
-  if (!Object.keys(error).length && errorMessages[name]) {
+  if (!errors[name]) {
     return true;
-  }
-
-  if (Object.keys(error).length) {
-    if (!errorMessages[name]) {
-      return true;
-    } else if (errorMessages[name].type !== error[name].type || errorMessages[name].message !== error[name].message) {
-      return true;
-    }
+  } else if (
+    errors[name].type !== error[name].type ||
+    errors[name].message !== error[name].message
+  ) {
+    return true;
   }
 
   return false;
