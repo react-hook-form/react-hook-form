@@ -493,7 +493,7 @@ export default function useForm<Data extends DataType>(
     reRenderForm({});
   };
 
-  const getValues = (): FormData => getFieldsValues(fieldsRef.current);
+  const getValues = (): Data => getFieldsValues<Data>(fieldsRef.current);
 
   useEffect((): VoidFunction => {
     return () => {
