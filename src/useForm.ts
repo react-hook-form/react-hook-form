@@ -136,7 +136,7 @@ export default function useForm<Data extends DataType>(
     return isEmptyObject(error);
   };
 
-  async function triggerValidation<Name extends keyof Data>(
+  const triggerValidation = async <Name extends keyof Data>(
     payload:
       | {
           name: Extract<keyof Data, string>;
@@ -148,12 +148,10 @@ export default function useForm<Data extends DataType>(
           value?: Data[Name];
           forceValidation?: boolean;
         }[],
-  ): Promise<boolean> {
-    if (Array.isArray(payload)) {
-      return payload.map(async data => triggerValidation(data)).every(d => !!d);
-    }
-    return executeValidation(payload);
-  }
+  ): Promise<boolean> =>
+    Array.isArray(payload)
+      ? payload.map(async data => triggerValidation(data)).every(d => !!d)
+      : executeValidation(payload);
 
   validateAndStateUpdateRef.current = validateAndStateUpdateRef.current
     ? validateAndStateUpdateRef.current
