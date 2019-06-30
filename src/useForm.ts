@@ -121,13 +121,13 @@ export default function useForm<Data extends DataType>(
           name: Extract<keyof Data, string>;
           value?: Data[Name];
         }[],
-  ): Promise<boolean | boolean[]> => {
+  ): Promise<boolean> => {
     if (Array.isArray(payload)) {
       const result = await Promise.all(
         payload.map(async data => await executeValidation(data, true)),
       );
       reRenderForm({});
-      return result;
+      return result.every(Boolean);
     }
     return executeValidation(payload);
   };
