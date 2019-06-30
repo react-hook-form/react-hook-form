@@ -64,20 +64,21 @@ export default function useForm<Data extends DataType>(
     name: keyof Data,
     errors: ErrorMessages<Data>,
     error: ErrorMessages<Data>,
+    skipRender?: boolean,
   ): boolean => {
     if (errors[name] && !error[name]) {
       delete errorsRef.current[name];
       validFields.current.add(name);
-      reRenderForm({});
+      if (!skipRender) reRenderForm({});
       return true;
     } else if (error[name]) {
       validFields.current.delete(name);
-      reRenderForm({});
+      if (!skipRender) reRenderForm({});
       return true;
     }
     if (!isOnSubmit && !validFields.current.has(name)) {
       validFields.current.add(name);
-      reRenderForm({});
+      if (!skipRender) reRenderForm({});
     }
     return false;
   };
@@ -85,13 +86,16 @@ export default function useForm<Data extends DataType>(
   const isValidateDisabled = <Name extends keyof Data>(): boolean =>
     !isSubmittedRef.current && isOnSubmit;
 
-  const executeValidation = async <Name extends keyof Data>({
-    name,
-    value,
-  }: {
-    name: Extract<keyof Data, string>;
-    value?: Data[Name];
-  }): Promise<boolean> => {
+  const executeValidation = async <Name extends keyof Data>(
+    {
+      name,
+      value,
+    }: {
+      name: Extract<keyof Data, string>;
+      value?: Data[Name];
+    },
+    shouldRender?: boolean,
+  ): Promise<boolean> => {
     const field = fieldsRef.current[name]!;
     const errors = errorsRef.current;
 
@@ -103,7 +107,7 @@ export default function useForm<Data extends DataType>(
       ...filterUndefinedErrors(errorsRef.current),
       ...error,
     };
-    renderBaseOnError(name, errors, error);
+    renderBaseOnError(name, errors, error, shouldRender);
     return isEmptyObject(error);
   };
 
@@ -117,10 +121,16 @@ export default function useForm<Data extends DataType>(
           name: Extract<keyof Data, string>;
           value?: Data[Name];
         }[],
-  ): Promise<boolean> =>
-    Array.isArray(payload)
-      ? payload.map(async data => executeValidation(data)).every(d => !!d)
-      : executeValidation(payload);
+  ): Promise<boolean> => {
+    if (Array.isArray(payload)) {
+      const noError = payload
+        .map(async data => executeValidation(data, true))
+        .every(d => !!d);
+      if (!noError) reRenderForm({});
+      return noError;
+    }
+    return executeValidation(payload);
+  };
 
   const setValue = <Name extends keyof Data>(
     name: Extract<Name, string>,
