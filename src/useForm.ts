@@ -114,19 +114,14 @@ export default function useForm<Data extends DataType>(
   const executeValidation = async <Name extends keyof Data>({
     name,
     value,
-    forceValidation,
   }: {
     name: Extract<keyof Data, string>;
     value?: Data[Name];
-    forceValidation?: boolean;
   }): Promise<boolean> => {
     const field = fieldsRef.current[name]!;
     const errors = errorsRef.current;
 
     if (!field) return false;
-    if (isValidateDisabled() && forceValidation === false) {
-      return isEmptyObject(errors);
-    }
     if (value !== undefined) setValue(name, value);
 
     const error = await validateField(field, fieldsRef.current);
@@ -143,12 +138,10 @@ export default function useForm<Data extends DataType>(
       | {
           name: Extract<keyof Data, string>;
           value?: Data[Name];
-          forceValidation?: boolean;
         }
       | {
           name: Extract<keyof Data, string>;
           value?: Data[Name];
-          forceValidation?: boolean;
         }[],
   ): Promise<boolean> =>
     Array.isArray(payload)
