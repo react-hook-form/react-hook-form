@@ -111,7 +111,7 @@ export default function useForm<Data extends DataType>(
   const isValidateDisabled = <Name extends keyof Data>(): boolean =>
     !isSubmittedRef.current && isOnSubmit;
 
-  const triggerValidation = async <Name extends keyof Data>({
+  const executeValidation = async <Name extends keyof Data>({
     name,
     value,
     forceValidation,
@@ -135,6 +135,23 @@ export default function useForm<Data extends DataType>(
     renderBaseOnError(name, errors, error);
     return isEmptyObject(error);
   };
+
+  const triggerValidation = async <Name extends keyof Data>(
+    payload:
+      | {
+          name: Extract<keyof Data, string>;
+          value?: Data[Name];
+          forceValidation?: boolean;
+        }
+      | {
+          name: Extract<keyof Data, string>;
+          value?: Data[Name];
+          forceValidation?: boolean;
+        }[],
+  ): Promise<boolean> =>
+    Array.isArray(payload)
+      ? payload.map(async data => triggerValidation(data)).every(d => !!d)
+      : executeValidation(payload);
 
   validateAndStateUpdateRef.current = validateAndStateUpdateRef.current
     ? validateAndStateUpdateRef.current
