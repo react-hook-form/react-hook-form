@@ -152,10 +152,10 @@ export default function useForm<Data extends DataType>(
       options.forEach(({ ref: radioRef }): void => {
         if (radioRef.value === value) radioRef.checked = true;
       });
-      return;
+    } else {
+      ref[isCheckBoxInput(ref.type) ? 'checked' : 'value'] = value;
     }
 
-    ref[isCheckBoxInput(ref.type) ? 'checked' : 'value'] = value;
     if (shouldRender) reRenderForm({});
     if (shouldValidate) triggerValidation({ name });
   };
