@@ -94,7 +94,7 @@ export default function useForm<Data extends DataType>(
       name: Extract<keyof Data, string>;
       value?: Data[Name];
     },
-    shouldRender?: boolean,
+    shouldSkipRender?: boolean,
   ): Promise<boolean> => {
     const field = fieldsRef.current[name]!;
     const errors = errorsRef.current;
@@ -107,7 +107,7 @@ export default function useForm<Data extends DataType>(
       ...filterUndefinedErrors(errorsRef.current),
       ...error,
     };
-    renderBaseOnError(name, errors, error, shouldRender);
+    renderBaseOnError(name, errors, error, shouldSkipRender);
     return isEmptyObject(error);
   };
 
@@ -123,10 +123,10 @@ export default function useForm<Data extends DataType>(
         }[],
   ): Promise<boolean> => {
     if (Array.isArray(payload)) {
-      const noError = payload
+      const noError = await payload
         .map(async data => executeValidation(data, true))
         .every(d => !!d);
-      if (!noError) reRenderForm({});
+      reRenderForm({});
       return noError;
     }
     return executeValidation(payload);
