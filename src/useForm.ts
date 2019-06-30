@@ -123,8 +123,8 @@ export default function useForm<Data extends DataType>(
         }[],
   ): Promise<boolean> => {
     if (Array.isArray(payload)) {
-      const noError = await payload
-        .map(async data => executeValidation(data, true))
+      const noError = payload
+        .map(async data => await executeValidation(data, true))
         .every(d => !!d);
       reRenderForm({});
       return noError;
