@@ -119,7 +119,7 @@ export default function useForm<Data extends DataType>(
         }[],
   ): Promise<boolean> =>
     Array.isArray(payload)
-      ? payload.map(async data => triggerValidation(data)).every(d => !!d)
+      ? payload.map(async data => executeValidation(data)).every(d => !!d)
       : executeValidation(payload);
 
   const setValue = <Name extends keyof Data>(
