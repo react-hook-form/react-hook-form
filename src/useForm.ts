@@ -124,7 +124,9 @@ export default function useForm<Data extends DataType>(
     const errors = errorsRef.current;
 
     if (!field) return false;
-    if (isValidateDisabled() && !forceValidation) return isEmptyObject(errors);
+    if (isValidateDisabled() && forceValidation === false) {
+      return isEmptyObject(errors);
+    }
     if (value !== undefined) setValue(name, value);
 
     const error = await validateField(field, fieldsRef.current);
