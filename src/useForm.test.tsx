@@ -207,12 +207,15 @@ describe('useForm', () => {
       expect(await hookForm.triggerValidation({ name: 'test' })).toBeFalsy();
     });
 
-    it('should return false when field is not found', async () => {
+    it('should return true when field is found and validation pass', async () => {
       hookForm.register({ type: 'input', name: 'test' });
+      // @ts-ignore
+      validateField.mockImplementation(async () => {
+        return {};
+      });
       expect(
         await hookForm.triggerValidation({
           name: 'test',
-          forceValidation: false,
         }),
       ).toBeTruthy();
     });

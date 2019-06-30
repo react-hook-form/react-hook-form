@@ -17,7 +17,7 @@ export function FormContext(props: FormProps) {
           ...rest,
         } as FormContextValues
       }
-      children={children}
-    />
+    >{children}</FormGlobalContext.Provider>
+    
   );
 }

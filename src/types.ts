@@ -80,7 +80,7 @@ export interface SubmitPromiseResult<Data extends DataType> {
 
 export type VoidFunction = () => void;
 
-export interface FormProps {
+export interface FormProps<Data extends DataType = DataType> {
   children: JSX.Element[] | JSX.Element;
   register?: (
     refOrValidateRule: RegisterInput | Ref,
@@ -102,13 +102,13 @@ export interface FormProps {
     value?: any;
     forceValidation?: boolean;
   }) => void;
-  getValues?: () => FormData;
-  errors: DataType;
-  formState: {
+  getValues?: () => DataType;
+  errors?: DataType;
+  formState?: {
     dirty: boolean;
     isSubmitted: boolean;
     submitCount: number;
-    touched: string[];
+    touched: string[] | {}[];
     isSubmitting: boolean;
     isValid: boolean;
   };

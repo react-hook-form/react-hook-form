@@ -1,0 +1,25 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`useFormEventListeners should return error type correctly and update form state 1`] = `
+Object {
+  "dirty": true,
+  "isSubmitted": false,
+  "isSubmitting": false,
+  "isValid": true,
+  "submitCount": 0,
+  "touched": Array [
+    "test",
+  ],
+}
+`;
+
+exports[`useFormEventListeners should skip when field is not included in the validationFields 1`] = `
+Object {
+  "dirty": false,
+  "isSubmitted": false,
+  "isSubmitting": false,
+  "isValid": true,
+  "submitCount": 0,
+  "touched": Array [],
+}
+`;

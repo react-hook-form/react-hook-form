@@ -85,20 +85,17 @@ export default function useForm<Data extends DataType>(
   const isValidateDisabled = <Name extends keyof Data>(): boolean =>
     !isSubmittedRef.current && isOnSubmit;
 
-  const triggerValidation = async <Name extends keyof Data>({
+  const executeValidation = async <Name extends keyof Data>({
     name,
     value,
-    forceValidation,
   }: {
     name: Extract<keyof Data, string>;
     value?: Data[Name];
-    forceValidation?: boolean;
   }): Promise<boolean> => {
     const field = fieldsRef.current[name]!;
     const errors = errorsRef.current;
 
     if (!field) return false;
-    if (isValidateDisabled() && !forceValidation) return isEmptyObject(errors);
     if (value !== undefined) setValue(name, value); // eslint-disable-line @typescript-eslint/no-use-before-define
 
     const error = await validateField(field, fieldsRef.current);
@@ -109,6 +106,21 @@ export default function useForm<Data extends DataType>(
     renderBaseOnError(name, errors, error);
     return isEmptyObject(error);
   };
+
+  const triggerValidation = async <Name extends keyof Data>(
+    payload:
+      | {
+          name: Extract<keyof Data, string>;
+          value?: Data[Name];
+        }
+      | {
+          name: Extract<keyof Data, string>;
+          value?: Data[Name];
+        }[],
+  ): Promise<boolean> =>
+    Array.isArray(payload)
+      ? payload.map(async data => triggerValidation(data)).every(d => !!d)
+      : executeValidation(payload);
 
   const setValue = <Name extends keyof Data>(
     name: Extract<Name, string>,
@@ -240,6 +252,12 @@ export default function useForm<Data extends DataType>(
       };
       reRenderForm({});
     }
+  };
+
+  const clearError = <Name extends keyof Data>(
+    name: Extract<Name, string>,
+  ): void => {
+    setError(name);
   };
 
   function registerIntoFieldsRef(
@@ -495,7 +513,7 @@ export default function useForm<Data extends DataType>(
     reRenderForm({});
   };
 
-  const getValues = (): FormData => getFieldsValues(fieldsRef.current);
+  const getValues = (): Data => getFieldsValues<Data>(fieldsRef.current);
 
   useEffect((): VoidFunction => {
     return () => {
@@ -510,6 +528,7 @@ export default function useForm<Data extends DataType>(
     watch,
     unSubscribe,
     reset,
+    clearError,
     setError,
     setValue,
     triggerValidation,
