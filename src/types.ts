@@ -89,19 +89,12 @@ export interface FormProps<Data extends DataType = DataType> {
   handleSubmit?: (
     callback: (data: any, e: React.SyntheticEvent) => void,
   ) => (e: React.SyntheticEvent) => Promise<void>;
-  watch?: (
-    fieldNames?: string | string[] | undefined,
-    defaultValue?: string | string[] | undefined,
-  ) => FieldValue | void;
+  watch?: Function;
   unSubscribe?: () => void;
   reset?: () => void;
-  setError?: (name: string, type?: string, message?: string, ref?: Ref) => void;
-  setValue?: (name: string, value: any) => void;
-  triggerValidation?: (payload: {
-    name: string;
-    value?: any;
-    forceValidation?: boolean;
-  }) => void;
+  setError?: Function;
+  setValue?: Function;
+  triggerValidation?: Function;
   getValues?: () => DataType;
   errors?: DataType;
   formState?: {
