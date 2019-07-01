@@ -182,7 +182,9 @@ export default function useForm<Data extends DataType>(
           const schemaValidateErrors =
             (await validateWithSchema(validationSchema, result)) || {};
           const error = schemaValidateErrors[name];
-          const shouldUpdate = (!error && errors[name]) || error;
+          const shouldUpdate =
+            ((!error && errors[name]) || error) &&
+            (shouldUpdateValidateMode || isSubmittedRef.current);
 
           if (shouldUpdate || shouldUpdateWatchMode) {
             errorsRef.current = { ...errors, ...{ [name]: error } };
