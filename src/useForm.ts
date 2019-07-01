@@ -64,27 +64,78 @@ export default function useForm<Data extends DataType>(
     name: keyof Data,
     errors: ErrorMessages<Data>,
     error: ErrorMessages<Data>,
+    skipRender?: boolean,
   ): boolean => {
     if (errors[name] && !error[name]) {
       delete errorsRef.current[name];
       validFields.current.add(name);
-      reRenderForm({});
+      if (!skipRender) reRenderForm({});
       return true;
     } else if (error[name]) {
       validFields.current.delete(name);
-      reRenderForm({});
+      if (!skipRender) reRenderForm({});
       return true;
     }
     if (!isOnSubmit && !validFields.current.has(name)) {
       validFields.current.add(name);
-      reRenderForm({});
+      if (!skipRender) reRenderForm({});
     }
     return false;
+  };
+
+  const isValidateDisabled = <Name extends keyof Data>(): boolean =>
+    !isSubmittedRef.current && isOnSubmit;
+
+  const executeValidation = async <Name extends keyof Data>(
+    {
+      name,
+      value,
+    }: {
+      name: Extract<keyof Data, string>;
+      value?: Data[Name];
+    },
+    shouldSkipRender?: boolean,
+  ): Promise<boolean> => {
+    const field = fieldsRef.current[name]!;
+    const errors = errorsRef.current;
+
+    if (!field) return false;
+    if (value !== undefined) setValue(name, value); // eslint-disable-line @typescript-eslint/no-use-before-define
+
+    const error = await validateField(field, fieldsRef.current);
+    errorsRef.current = {
+      ...filterUndefinedErrors(errorsRef.current),
+      ...error,
+    };
+    renderBaseOnError(name, errors, error, shouldSkipRender);
+    return isEmptyObject(error);
+  };
+
+  const triggerValidation = async <Name extends keyof Data>(
+    payload:
+      | {
+          name: Extract<keyof Data, string>;
+          value?: Data[Name];
+        }
+      | {
+          name: Extract<keyof Data, string>;
+          value?: Data[Name];
+        }[],
+  ): Promise<boolean> => {
+    if (Array.isArray(payload)) {
+      const result = await Promise.all(
+        payload.map(async data => await executeValidation(data, true)),
+      );
+      reRenderForm({});
+      return result.every(Boolean);
+    }
+    return executeValidation(payload);
   };
 
   const setValue = <Name extends keyof Data>(
     name: Extract<Name, string>,
     value: Data[Name],
+    shouldValidate: boolean = false,
     shouldRender: boolean = true,
   ): void => {
     const field = fieldsRef.current[name];
@@ -101,52 +152,13 @@ export default function useForm<Data extends DataType>(
       options.forEach(({ ref: radioRef }): void => {
         if (radioRef.value === value) radioRef.checked = true;
       });
-      return;
+    } else {
+      ref[isCheckBoxInput(ref.type) ? 'checked' : 'value'] = value;
     }
 
-    ref[isCheckBoxInput(ref.type) ? 'checked' : 'value'] = value;
     if (shouldRender) reRenderForm({});
+    if (shouldValidate) triggerValidation({ name });
   };
-
-  const isValidateDisabled = <Name extends keyof Data>(): boolean =>
-    !isSubmittedRef.current && isOnSubmit;
-
-  const executeValidation = async <Name extends keyof Data>({
-    name,
-    value,
-  }: {
-    name: Extract<keyof Data, string>;
-    value?: Data[Name];
-  }): Promise<boolean> => {
-    const field = fieldsRef.current[name]!;
-    const errors = errorsRef.current;
-
-    if (!field) return false;
-    if (value !== undefined) setValue(name, value);
-
-    const error = await validateField(field, fieldsRef.current);
-    errorsRef.current = {
-      ...filterUndefinedErrors(errorsRef.current),
-      ...error,
-    };
-    renderBaseOnError(name, errors, error);
-    return isEmptyObject(error);
-  };
-
-  const triggerValidation = async <Name extends keyof Data>(
-    payload:
-      | {
-          name: Extract<keyof Data, string>;
-          value?: Data[Name];
-        }
-      | {
-          name: Extract<keyof Data, string>;
-          value?: Data[Name];
-        }[],
-  ): Promise<boolean> =>
-    Array.isArray(payload)
-      ? payload.map(async data => executeValidation(data)).every(d => !!d)
-      : executeValidation(payload);
 
   validateAndStateUpdateRef.current = validateAndStateUpdateRef.current
     ? validateAndStateUpdateRef.current
@@ -320,7 +332,7 @@ export default function useForm<Data extends DataType>(
     }
 
     if (defaultValues && defaultValues[name]) {
-      setValue(name, defaultValues[name], false);
+      setValue(name, defaultValues[name], false, false);
     }
 
     if (!type) {

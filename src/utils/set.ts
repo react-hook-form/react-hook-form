@@ -1,4 +1,5 @@
-import { DataType } from "../types";
+import { DataType } from '../types';
+import isObject from './isObject';
 
 const reIsDeepProp = /\.|\[(?:[^[\]]*|(["'])(?:(?!\1)[^\\]|\\.)*?\1)\]/;
 const reIsPlainProp = /^\w*$/;
@@ -21,8 +22,8 @@ const stringToPath = (string: string) => {
   string.replace(
     rePropName,
     (match: string, number: string, quote: string, string: string): any => {
-      result.push(quote ? string.replace(reEscapeChar, "$1") : number || match);
-    }
+      result.push(quote ? string.replace(reEscapeChar, '$1') : number || match);
+    },
   );
   return result;
 };
@@ -40,8 +41,11 @@ export default function set(object: DataType, path: any, value: string) {
 
     if (index != lastIndex) {
       const objValue = object[key];
-      const isObject = typeof objValue === "object";
-      newValue = isObject ? objValue : isIndex(path[index + 1]) ? [] : {};
+      newValue = isObject(objValue)
+        ? objValue
+        : isIndex(path[index + 1])
+        ? []
+        : {};
     }
     object[key] = newValue;
     object = object[key];
