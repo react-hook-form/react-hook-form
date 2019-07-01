@@ -132,21 +132,14 @@ export default function useForm<Data extends DataType>(
     return executeValidation(payload);
   };
 
-  const setValue = <Name extends keyof Data>(
+  const setFieldValue = <Name extends keyof Data>(
     name: Extract<Name, string>,
     value: Data[Name],
-    shouldValidate: boolean = false,
-    shouldRender: boolean = true,
   ): void => {
     const field = fieldsRef.current[name];
     if (!field) return;
     const ref = field.ref;
     const options = field.options;
-
-    if (shouldRender) {
-      touchedFieldsRef.current.add(name);
-      isDirtyRef.current = true;
-    }
 
     if (isRadioInput(ref.type) && options) {
       options.forEach(({ ref: radioRef }): void => {
@@ -155,8 +148,18 @@ export default function useForm<Data extends DataType>(
     } else {
       ref[isCheckBoxInput(ref.type) ? 'checked' : 'value'] = value;
     }
+  };
 
-    if (shouldRender) reRenderForm({});
+  const setValue = <Name extends keyof Data>(
+    name: Extract<Name, string>,
+    value: Data[Name],
+    shouldValidate: boolean = false,
+  ): void => {
+    setFieldValue(name, value);
+    touchedFieldsRef.current.add(name);
+    isDirtyRef.current = true;
+
+    reRenderForm({});
     if (shouldValidate) triggerValidation({ name });
   };
 
@@ -332,7 +335,7 @@ export default function useForm<Data extends DataType>(
     }
 
     if (defaultValues && defaultValues[name]) {
-      setValue(name, defaultValues[name], false, false);
+      setFieldValue(name, defaultValues[name]);
     }
 
     if (!type) {
