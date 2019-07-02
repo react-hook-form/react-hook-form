@@ -29,7 +29,10 @@ import onDomRemove from './utils/onDomRemove';
 import modeChecker from './utils/validationModeChecker';
 import warnMissingRef from './utils/warnMissingRef';
 
-export default function useForm<Data extends DataType>(
+export default function useForm<
+  Data extends DataType,
+  Name extends keyof Data = keyof Data
+>(
   {
     mode,
     validationSchema,
@@ -83,7 +86,7 @@ export default function useForm<Data extends DataType>(
     return false;
   };
 
-  const executeValidation = async <Name extends keyof Data>(
+  const executeValidation = async (
     {
       name,
       value,
@@ -108,7 +111,7 @@ export default function useForm<Data extends DataType>(
     return isEmptyObject(error);
   };
 
-  const triggerValidation = async <Name extends keyof Data>(
+  const triggerValidation = async (
     payload:
       | {
           name: Name;
@@ -129,10 +132,7 @@ export default function useForm<Data extends DataType>(
     return executeValidation(payload);
   };
 
-  const setFieldValue = <Name extends keyof Data>(
-    name: Name,
-    value: Data[Name],
-  ): void => {
+  const setFieldValue = (name: Name, value: Data[Name]): void => {
     const field = fieldsRef.current[name];
     if (!field) return;
     const ref = field.ref;
@@ -147,7 +147,7 @@ export default function useForm<Data extends DataType>(
     }
   };
 
-  const setValue = <Name extends keyof Data>(
+  const setValue = (
     name: Name,
     value: Data[Name],
     shouldValidate: boolean = false,
@@ -240,7 +240,7 @@ export default function useForm<Data extends DataType>(
     validateAndStateUpdateRef.current,
   );
 
-  const setError = <Name extends keyof Data>(
+  const setError = (
     name: Name,
     type?: string,
     message?: string,
@@ -533,7 +533,7 @@ export default function useForm<Data extends DataType>(
     watch,
     unSubscribe,
     reset,
-    clearError: <Name extends keyof Data>(name: Name): void => {
+    clearError: (name: Name): void => {
       setError(name);
     },
     setError,

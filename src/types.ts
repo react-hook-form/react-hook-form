@@ -80,7 +80,10 @@ export interface SubmitPromiseResult<Data extends DataType> {
 
 export type VoidFunction = () => void;
 
-export interface FormProps<Data extends DataType = DataType> {
+export interface FormProps<
+  Data extends DataType = DataType,
+  Name extends keyof Data = keyof Data
+> {
   children: JSX.Element[] | JSX.Element;
   register: (
     refOrValidateRule: RegisterInput | Ref,
@@ -95,18 +98,9 @@ export interface FormProps<Data extends DataType = DataType> {
   ) => FieldValue | Partial<Data> | void;
   unSubscribe: () => void;
   reset: () => void;
-  setError: <Name extends keyof Data>(
-    name: Name,
-    type?: string,
-    message?: string,
-    ref?: Ref,
-  ) => void;
-  setValue: <Name extends keyof Data>(
-    name: Name,
-    value: Data[Name],
-    shouldValidate?: boolean,
-  ) => void;
-  triggerValidation: <Name extends keyof Data>(
+  setError: (name: Name, type?: string, message?: string, ref?: Ref) => void;
+  setValue: (name: Name, value: Data[Name], shouldValidate?: boolean) => void;
+  triggerValidation: (
     payload:
       | {
           name: Name;
