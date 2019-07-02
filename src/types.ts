@@ -80,24 +80,40 @@ export interface SubmitPromiseResult<Data extends DataType> {
 
 export type VoidFunction = () => void;
 
-export interface FormProps<Data extends DataType = DataType> {
+export interface FormProps<
+  Data extends DataType = DataType,
+  Name extends keyof Data = keyof Data
+> {
   children: JSX.Element[] | JSX.Element;
-  register?: (
+  register: (
     refOrValidateRule: RegisterInput | Ref,
     validateRule?: RegisterInput,
   ) => any;
-  handleSubmit?: (
+  handleSubmit: (
     callback: (data: any, e: React.SyntheticEvent) => void,
   ) => (e: React.SyntheticEvent) => Promise<void>;
-  watch?: Function;
-  unSubscribe?: () => void;
-  reset?: () => void;
-  setError?: Function;
-  setValue?: Function;
-  triggerValidation?: Function;
-  getValues?: () => DataType;
-  errors?: DataType;
-  formState?: {
+  watch: (
+    fieldNames?: string | string[] | undefined,
+    defaultValue?: string | Partial<Data> | undefined,
+  ) => FieldValue | Partial<Data> | void;
+  unSubscribe: () => void;
+  reset: () => void;
+  setError: (name: Name, type?: string, message?: string, ref?: Ref) => void;
+  setValue: (name: Name, value: Data[Name], shouldValidate?: boolean) => void;
+  triggerValidation: (
+    payload:
+      | {
+          name: Name;
+          value?: Data[Name];
+        }
+      | {
+          name: Name;
+          value?: Data[Name];
+        }[],
+  ) => Promise<boolean>;
+  getValues: () => DataType;
+  errors: DataType;
+  formState: {
     dirty: boolean;
     isSubmitted: boolean;
     submitCount: number;
@@ -107,4 +123,4 @@ export interface FormProps<Data extends DataType = DataType> {
   };
 }
 
-export type FormContextValues = Required<Omit<FormProps, 'children'>>;
+export type FormContextValues = Omit<FormProps, 'children'>;

@@ -29,7 +29,10 @@ import onDomRemove from './utils/onDomRemove';
 import modeChecker from './utils/validationModeChecker';
 import warnMissingRef from './utils/warnMissingRef';
 
-export default function useForm<Data extends DataType>(
+export default function useForm<
+  Data extends DataType,
+  Name extends keyof Data = keyof Data
+>(
   {
     mode,
     validationSchema,
@@ -83,15 +86,12 @@ export default function useForm<Data extends DataType>(
     return false;
   };
 
-  const isValidateDisabled = <Name extends keyof Data>(): boolean =>
-    !isSubmittedRef.current && isOnSubmit;
-
-  const executeValidation = async <Name extends keyof Data>(
+  const executeValidation = async (
     {
       name,
       value,
     }: {
-      name: Extract<keyof Data, string>;
+      name: Name;
       value?: Data[Name];
     },
     shouldSkipRender?: boolean,
@@ -111,14 +111,14 @@ export default function useForm<Data extends DataType>(
     return isEmptyObject(error);
   };
 
-  const triggerValidation = async <Name extends keyof Data>(
+  const triggerValidation = async (
     payload:
       | {
-          name: Extract<keyof Data, string>;
+          name: Name;
           value?: Data[Name];
         }
       | {
-          name: Extract<keyof Data, string>;
+          name: Name;
           value?: Data[Name];
         }[],
   ): Promise<boolean> => {
@@ -132,10 +132,7 @@ export default function useForm<Data extends DataType>(
     return executeValidation(payload);
   };
 
-  const setFieldValue = <Name extends keyof Data>(
-    name: Extract<Name, string>,
-    value: Data[Name],
-  ): void => {
+  const setFieldValue = (name: Name, value: Data[Name]): void => {
     const field = fieldsRef.current[name];
     if (!field) return;
     const ref = field.ref;
@@ -150,8 +147,8 @@ export default function useForm<Data extends DataType>(
     }
   };
 
-  const setValue = <Name extends keyof Data>(
-    name: Extract<Name, string>,
+  const setValue = (
+    name: Name,
     value: Data[Name],
     shouldValidate: boolean = false,
   ): void => {
@@ -173,7 +170,7 @@ export default function useForm<Data extends DataType>(
         const ref = fields[name];
         if (!ref) return;
         const isBlurType = type === 'blur';
-        const validateDisabled = isValidateDisabled();
+        const validateDisabled = !isSubmittedRef.current && isOnSubmit;
         const isWatchAll = isWatchAllRef.current;
         const shouldUpdateWatchMode =
           isWatchAll || watchFieldsRef.current[name];
@@ -243,8 +240,8 @@ export default function useForm<Data extends DataType>(
     validateAndStateUpdateRef.current,
   );
 
-  const setError = <Name extends keyof Data>(
-    name: Extract<Name, string>,
+  const setError = (
+    name: Name,
     type?: string,
     message?: string,
     ref?: Ref,
@@ -266,12 +263,6 @@ export default function useForm<Data extends DataType>(
       };
       reRenderForm({});
     }
-  };
-
-  const clearError = <Name extends keyof Data>(
-    name: Extract<Name, string>,
-  ): void => {
-    setError(name);
   };
 
   function registerIntoFieldsRef(
@@ -542,7 +533,9 @@ export default function useForm<Data extends DataType>(
     watch,
     unSubscribe,
     reset,
-    clearError,
+    clearError: (name: Name): void => {
+      setError(name);
+    },
     setError,
     setValue,
     triggerValidation,
