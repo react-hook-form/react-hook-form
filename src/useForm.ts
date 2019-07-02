@@ -83,9 +83,6 @@ export default function useForm<Data extends DataType>(
     return false;
   };
 
-  const isValidateDisabled = <Name extends keyof Data>(): boolean =>
-    !isSubmittedRef.current && isOnSubmit;
-
   const executeValidation = async <Name extends keyof Data>(
     {
       name,
@@ -173,7 +170,7 @@ export default function useForm<Data extends DataType>(
         const ref = fields[name];
         if (!ref) return;
         const isBlurType = type === 'blur';
-        const validateDisabled = isValidateDisabled();
+        const validateDisabled = !isSubmittedRef.current && isOnSubmit;
         const isWatchAll = isWatchAllRef.current;
         const shouldUpdateWatchMode =
           isWatchAll || watchFieldsRef.current[name];
