@@ -82,28 +82,28 @@ export type VoidFunction = () => void;
 
 export interface FormProps<Data extends DataType = DataType> {
   children: JSX.Element[] | JSX.Element;
-  register?: (
+  register: (
     refOrValidateRule: RegisterInput | Ref,
     validateRule?: RegisterInput,
   ) => any;
-  handleSubmit?: (
+  handleSubmit: (
     callback: (data: any, e: React.SyntheticEvent) => void,
   ) => (e: React.SyntheticEvent) => Promise<void>;
-  watch?: Function;
-  unSubscribe?: () => void;
-  reset?: () => void;
-  setError?: <Name extends keyof Data>(
+  watch: Function;
+  unSubscribe: () => void;
+  reset: () => void;
+  setError: <Name extends keyof Data>(
     name: Name,
     type?: string,
     message?: string,
     ref?: Ref,
   ) => void;
-  setValue?: <Name extends keyof Data>(
+  setValue: <Name extends keyof Data>(
     name: Name,
     value: Data[Name],
     shouldValidate: boolean,
   ) => void;
-  triggerValidation?: <Name extends keyof Data>(
+  triggerValidation: <Name extends keyof Data>(
     payload:
       | {
           name: Name;
@@ -114,9 +114,9 @@ export interface FormProps<Data extends DataType = DataType> {
           value?: Data[Name];
         }[],
   ) => Promise<boolean>;
-  getValues?: () => DataType;
-  errors?: DataType;
-  formState?: {
+  getValues: () => DataType;
+  errors: DataType;
+  formState: {
     dirty: boolean;
     isSubmitted: boolean;
     submitCount: number;
@@ -126,4 +126,4 @@ export interface FormProps<Data extends DataType = DataType> {
   };
 }
 
-export type FormContextValues = Required<Omit<FormProps, 'children'>>;
+export type FormContextValues = Omit<FormProps, 'children'>;
