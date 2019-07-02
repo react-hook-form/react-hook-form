@@ -92,9 +92,28 @@ export interface FormProps<Data extends DataType = DataType> {
   watch?: Function;
   unSubscribe?: () => void;
   reset?: () => void;
-  setError?: Function;
-  setValue?: Function;
-  triggerValidation?: Function;
+  setError?: <Name extends keyof Data>(
+    name: Name,
+    type?: string,
+    message?: string,
+    ref?: Ref,
+  ) => void;
+  setValue?: <Name extends keyof Data>(
+    name: Name,
+    value: Data[Name],
+    shouldValidate: boolean,
+  ) => void;
+  triggerValidation?: <Name extends keyof Data>(
+    payload:
+      | {
+          name: Name;
+          value?: Data[Name];
+        }
+      | {
+          name: Name;
+          value?: Data[Name];
+        }[],
+  ) => Promise<boolean>;
   getValues?: () => DataType;
   errors?: DataType;
   formState?: {
