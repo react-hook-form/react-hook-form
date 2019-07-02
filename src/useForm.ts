@@ -91,7 +91,7 @@ export default function useForm<Data extends DataType>(
       name,
       value,
     }: {
-      name: Extract<keyof Data, string>;
+      name: Name;
       value?: Data[Name];
     },
     shouldSkipRender?: boolean,
@@ -114,11 +114,11 @@ export default function useForm<Data extends DataType>(
   const triggerValidation = async <Name extends keyof Data>(
     payload:
       | {
-          name: Extract<keyof Data, string>;
+          name: Name;
           value?: Data[Name];
         }
       | {
-          name: Extract<keyof Data, string>;
+          name: Name;
           value?: Data[Name];
         }[],
   ): Promise<boolean> => {
@@ -133,7 +133,7 @@ export default function useForm<Data extends DataType>(
   };
 
   const setFieldValue = <Name extends keyof Data>(
-    name: Extract<Name, string>,
+    name: Name,
     value: Data[Name],
   ): void => {
     const field = fieldsRef.current[name];
@@ -151,7 +151,7 @@ export default function useForm<Data extends DataType>(
   };
 
   const setValue = <Name extends keyof Data>(
-    name: Extract<Name, string>,
+    name: Name,
     value: Data[Name],
     shouldValidate: boolean = false,
   ): void => {
@@ -244,7 +244,7 @@ export default function useForm<Data extends DataType>(
   );
 
   const setError = <Name extends keyof Data>(
-    name: Extract<Name, string>,
+    name: Name,
     type?: string,
     message?: string,
     ref?: Ref,
@@ -268,9 +268,7 @@ export default function useForm<Data extends DataType>(
     }
   };
 
-  const clearError = <Name extends keyof Data>(
-    name: Extract<Name, string>,
-  ): void => {
+  const clearError = <Name extends keyof Data>(name: Name): void => {
     setError(name);
   };
 
