@@ -89,7 +89,10 @@ export interface FormProps<Data extends DataType = DataType> {
   handleSubmit: (
     callback: (data: any, e: React.SyntheticEvent) => void,
   ) => (e: React.SyntheticEvent) => Promise<void>;
-  watch: Function;
+  watch: (
+    fieldNames?: string | string[] | undefined,
+    defaultValue?: string | Partial<Data> | undefined,
+  ) => FieldValue | Partial<Data> | void;
   unSubscribe: () => void;
   reset: () => void;
   setError: <Name extends keyof Data>(
@@ -101,7 +104,7 @@ export interface FormProps<Data extends DataType = DataType> {
   setValue: <Name extends keyof Data>(
     name: Name,
     value: Data[Name],
-    shouldValidate: boolean,
+    shouldValidate?: boolean,
   ) => void;
   triggerValidation: <Name extends keyof Data>(
     payload:
