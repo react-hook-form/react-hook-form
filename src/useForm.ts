@@ -29,7 +29,10 @@ import onDomRemove from './utils/onDomRemove';
 import modeChecker from './utils/validationModeChecker';
 import warnMissingRef from './utils/warnMissingRef';
 
-export default function useForm<Data extends DataType>(
+export default function useForm<
+  Data extends DataType,
+  Name extends keyof Data = keyof Data
+>(
   {
     mode,
     validationSchema,
@@ -64,76 +67,97 @@ export default function useForm<Data extends DataType>(
     name: keyof Data,
     errors: ErrorMessages<Data>,
     error: ErrorMessages<Data>,
+    skipRender?: boolean,
   ): boolean => {
     if (errors[name] && !error[name]) {
       delete errorsRef.current[name];
       validFields.current.add(name);
-      reRenderForm({});
+      if (!skipRender) reRenderForm({});
       return true;
     } else if (error[name]) {
       validFields.current.delete(name);
-      reRenderForm({});
+      if (!skipRender) reRenderForm({});
       return true;
     }
     if (!isOnSubmit && !validFields.current.has(name)) {
       validFields.current.add(name);
-      reRenderForm({});
+      if (!skipRender) reRenderForm({});
     }
     return false;
   };
 
-  const setValue = <Name extends keyof Data>(
-    name: Extract<Name, string>,
-    value: Data[Name],
-    shouldRender: boolean = true,
-  ): void => {
-    const field = fieldsRef.current[name];
-    if (!field) return;
-    const ref = field.ref;
-    const options = field.options;
-
-    if (shouldRender) {
-      touchedFieldsRef.current.add(name);
-      isDirtyRef.current = true;
-    }
-
-    if (isRadioInput(ref.type) && options) {
-      options.forEach(({ ref: radioRef }): void => {
-        if (radioRef.value === value) radioRef.checked = true;
-      });
-      return;
-    }
-
-    ref[isCheckBoxInput(ref.type) ? 'checked' : 'value'] = value;
-    if (shouldRender) reRenderForm({});
-  };
-
-  const isValidateDisabled = <Name extends keyof Data>(): boolean =>
-    !isSubmittedRef.current && isOnSubmit;
-
-  const triggerValidation = async <Name extends keyof Data>({
-    name,
-    value,
-    forceValidation,
-  }: {
-    name: Extract<keyof Data, string>;
-    value?: Data[Name];
-    forceValidation?: boolean;
-  }): Promise<boolean> => {
+  const executeValidation = async (
+    {
+      name,
+      value,
+    }: {
+      name: Name;
+      value?: Data[Name];
+    },
+    shouldSkipRender?: boolean,
+  ): Promise<boolean> => {
     const field = fieldsRef.current[name]!;
     const errors = errorsRef.current;
 
     if (!field) return false;
-    if (isValidateDisabled() && !forceValidation) return isEmptyObject(errors);
-    if (value !== undefined) setValue(name, value);
+    if (value !== undefined) setValue(name, value); // eslint-disable-line @typescript-eslint/no-use-before-define
 
     const error = await validateField(field, fieldsRef.current);
     errorsRef.current = {
       ...filterUndefinedErrors(errorsRef.current),
       ...error,
     };
-    renderBaseOnError(name, errors, error);
+    renderBaseOnError(name, errors, error, shouldSkipRender);
     return isEmptyObject(error);
+  };
+
+  const triggerValidation = async (
+    payload:
+      | {
+          name: Name;
+          value?: Data[Name];
+        }
+      | {
+          name: Name;
+          value?: Data[Name];
+        }[],
+  ): Promise<boolean> => {
+    if (Array.isArray(payload)) {
+      const result = await Promise.all(
+        payload.map(async data => await executeValidation(data, true)),
+      );
+      reRenderForm({});
+      return result.every(Boolean);
+    }
+    return executeValidation(payload);
+  };
+
+  const setFieldValue = (name: Name, value: Data[Name]): void => {
+    const field = fieldsRef.current[name];
+    if (!field) return;
+    const ref = field.ref;
+    const options = field.options;
+
+    if (isRadioInput(ref.type) && options) {
+      options.forEach(({ ref: radioRef }): void => {
+        if (radioRef.value === value) radioRef.checked = true;
+      });
+    } else {
+      ref[isCheckBoxInput(ref.type) ? 'checked' : 'value'] = value;
+    }
+  };
+
+  const setValue = (
+    name: Name,
+    value: Data[Name],
+    shouldValidate: boolean = false,
+  ): void => {
+    setFieldValue(name, value);
+    touchedFieldsRef.current.add(name);
+    isDirtyRef.current = true;
+
+    reRenderForm({});
+    if (shouldValidate) triggerValidation({ name });
   };
 
   validateAndStateUpdateRef.current = validateAndStateUpdateRef.current
@@ -146,7 +170,7 @@ export default function useForm<Data extends DataType>(
         const ref = fields[name];
         if (!ref) return;
         const isBlurType = type === 'blur';
-        const validateDisabled = isValidateDisabled();
+        const validateDisabled = !isSubmittedRef.current && isOnSubmit;
         const isWatchAll = isWatchAllRef.current;
         const shouldUpdateWatchMode =
           isWatchAll || watchFieldsRef.current[name];
@@ -171,7 +195,8 @@ export default function useForm<Data extends DataType>(
             (await validateWithSchema(validationSchema, result)) || {};
           const error = schemaValidateErrors[name];
           const shouldUpdate =
-            ((!error && errors[name]) || error) && shouldUpdateValidateMode;
+            ((!error && errors[name]) || error) &&
+            (shouldUpdateValidateMode || isSubmittedRef.current);
 
           if (shouldUpdate || shouldUpdateWatchMode) {
             errorsRef.current = { ...errors, ...{ [name]: error } };
@@ -215,8 +240,8 @@ export default function useForm<Data extends DataType>(
     validateAndStateUpdateRef.current,
   );
 
-  const setError = <Name extends keyof Data>(
-    name: Extract<Name, string>,
+  const setError = (
+    name: Name,
     type?: string,
     message?: string,
     ref?: Ref,
@@ -238,12 +263,6 @@ export default function useForm<Data extends DataType>(
       };
       reRenderForm({});
     }
-  };
-
-  const clearError = <Name extends keyof Data>(
-    name: Extract<Name, string>,
-  ): void => {
-    setError(name);
   };
 
   function registerIntoFieldsRef(
@@ -307,7 +326,7 @@ export default function useForm<Data extends DataType>(
     }
 
     if (defaultValues && defaultValues[name]) {
-      setValue(name, defaultValues[name], false);
+      setFieldValue(name, defaultValues[name]);
     }
 
     if (!type) {
@@ -499,7 +518,7 @@ export default function useForm<Data extends DataType>(
     reRenderForm({});
   };
 
-  const getValues = (): FormData => getFieldsValues(fieldsRef.current);
+  const getValues = (): Data => getFieldsValues<Data>(fieldsRef.current);
 
   useEffect((): VoidFunction => {
     return () => {
@@ -514,7 +533,9 @@ export default function useForm<Data extends DataType>(
     watch,
     unSubscribe,
     reset,
-    clearError,
+    clearError: (name: Name): void => {
+      setError(name);
+    },
     setError,
     setValue,
     triggerValidation,

@@ -2,10 +2,10 @@ import getFieldValue from './getFieldValue';
 import isString from '../utils/isString';
 import { DataType, FieldValue, Ref } from '../types';
 
-export default function getFieldsValues(
+export default function getFieldsValue<Data extends DataType>(
   fields: DataType,
   fieldName?: string | string[],
-): FormData {
+): Data {
   return Object.values(fields).reduce(
     (previous: DataType, data: Ref): FieldValue => {
       const {
