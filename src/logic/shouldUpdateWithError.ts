@@ -7,17 +7,17 @@ export default function shouldUpdateWithError({
   error,
   isOnBlur,
   isBlurType,
-  validateDisabled,
+  isValidateDisabled,
 }: {
   errors: DataType;
   name: string;
   error: any;
   isOnBlur: boolean;
   isBlurType: boolean;
-  validateDisabled: boolean;
+  isValidateDisabled: boolean;
 }): boolean {
   if (
-    validateDisabled ||
+    isValidateDisabled ||
     (isOnBlur && !isBlurType) ||
     (isEmptyObject(error) && isEmptyObject(errors)) ||
     (errors[name] && errors[name].isManual)

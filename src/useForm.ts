@@ -170,7 +170,7 @@ export default function useForm<
         const ref = fields[name];
         if (!ref) return;
         const isBlurType = type === 'blur';
-        const validateDisabled = !isSubmittedRef.current && isOnSubmit;
+        const isValidateDisabled = !isSubmittedRef.current && isOnSubmit;
         const shouldUpdateValidateMode = isOnChange || (isOnBlur && isBlurType);
         let shouldUpdateState =
           isWatchAllRef.current || watchFieldsRef.current[name];
@@ -185,7 +185,7 @@ export default function useForm<
           shouldUpdateState = true;
         }
 
-        if (validateDisabled && shouldUpdateState) return reRenderForm({});
+        if (isValidateDisabled && shouldUpdateState) return reRenderForm({});
 
         if (validationSchema) {
           const result = getFieldsValues(fields);
@@ -212,7 +212,7 @@ export default function useForm<
           const shouldUpdate = shouldUpdateWithError({
             errors: errorsFromRef,
             error,
-            validateDisabled,
+            isValidateDisabled,
             isOnBlur,
             isBlurType,
             name,
