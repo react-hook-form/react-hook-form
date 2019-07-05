@@ -1,14 +1,14 @@
 import shouldUpdateWithError from './shouldUpdateWithError';
 
 describe('shouldUpdateWithError', () => {
-  it('should return false when validateDisabled set to true', () => {
+  it('should return false when isValidateDisabled set to true', () => {
     expect(
       shouldUpdateWithError({
         errors: {},
         name: 'test',
         error: { test: 'test' },
         isOnBlur: false,
-        validateDisabled: true,
+        isValidateDisabled: true,
         isBlurType: false,
       }),
     ).toBeFalsy();
@@ -21,7 +21,7 @@ describe('shouldUpdateWithError', () => {
         name: 'test',
         error: { test: 'test' },
         isOnBlur: true,
-        validateDisabled: false,
+        isValidateDisabled: false,
         isBlurType: false,
       }),
     ).toBeFalsy();
@@ -34,7 +34,7 @@ describe('shouldUpdateWithError', () => {
         name: '',
         error: {},
         isOnBlur: false,
-        validateDisabled: false,
+        isValidateDisabled: false,
         isBlurType: false,
       }),
     ).toBeFalsy();
@@ -47,7 +47,7 @@ describe('shouldUpdateWithError', () => {
         name: 'test',
         error: { test: 'test' },
         isOnBlur: false,
-        validateDisabled: false,
+        isValidateDisabled: false,
         isBlurType: false,
       }),
     ).toBeTruthy();
@@ -60,7 +60,7 @@ describe('shouldUpdateWithError', () => {
         name: 'test',
         error: {},
         isOnBlur: false,
-        validateDisabled: false,
+        isValidateDisabled: false,
         isBlurType: false,
       }),
     ).toBeTruthy();
@@ -73,7 +73,7 @@ describe('shouldUpdateWithError', () => {
         name: '',
         error: { data: 'bill' },
         isOnBlur: false,
-        validateDisabled: false,
+        isValidateDisabled: false,
         isBlurType: false,
       }),
     ).toBeTruthy();
@@ -86,20 +86,22 @@ describe('shouldUpdateWithError', () => {
         name: 'test',
         error: { test: { type: 'bill' } },
         isOnBlur: false,
-        validateDisabled: false,
+        isValidateDisabled: false,
         isBlurType: false,
       }),
     ).toBeTruthy();
   });
 
   it('should return false if nothing matches', () => {
-    expect(shouldUpdateWithError({
-      errors: { test: { message: 'test', type: 'input' } },
-      name: 'test',
-      error: { test: {type: 'input', message: 'test'}},
-      isOnBlur: false,
-      validateDisabled: false,
-      isBlurType: false,
-    })).toBeFalsy();
+    expect(
+      shouldUpdateWithError({
+        errors: { test: { message: 'test', type: 'input' } },
+        name: 'test',
+        error: { test: { type: 'input', message: 'test' } },
+        isOnBlur: false,
+        isValidateDisabled: false,
+        isBlurType: false,
+      }),
+    ).toBeFalsy();
   });
 });

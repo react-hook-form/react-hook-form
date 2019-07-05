@@ -1,4 +1,4 @@
-import { DataType } from "../types";
+import { DataType } from '../types';
 
 interface ValidationReturn {
   [key: string]: string;
@@ -9,19 +9,19 @@ export function parseErrorSchema(error: DataType): ValidationReturn {
     (
       previous: DataType,
       current: DataType,
-      index: number
+      index: number,
     ): ValidationReturn => {
       previous[current.path] = error.errors[index];
       return previous;
     },
-    {}
+    {},
   );
 }
 
 export default async function validateWithSchema(
   ValidationSchema: any,
-  data: DataType
-): Promise<ValidationReturn | undefined> {
+  data: DataType,
+): Promise<ValidationReturn> {
   try {
     await ValidationSchema.validate(data, { abortEarly: false });
     return {};
