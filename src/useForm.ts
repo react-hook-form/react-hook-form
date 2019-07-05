@@ -459,6 +459,7 @@ export default function useForm<
 
     if (isEmptyObject(fieldErrors)) {
       await callback(combineFieldValues(fieldValues), e);
+      errorsRef.current = {};
     } else {
       errorsRef.current = fieldErrors as any;
     }
