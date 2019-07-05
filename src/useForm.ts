@@ -323,9 +323,7 @@ export default function useForm<
       setFieldValue(name, defaultValues[name]);
     }
 
-    if (!type) {
-      return;
-    }
+    if (!type) return;
 
     const fieldData = isRadio
       ? (fields[name]!.options || [])[(fields[name]!.options || []).length - 1]
