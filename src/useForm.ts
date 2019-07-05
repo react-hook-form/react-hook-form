@@ -73,9 +73,7 @@ export default function useForm<
       validFieldsRef.current.add(name);
       if (shouldRender) reRenderForm({});
       return true;
-    }
-
-    if (error[name]) {
+    } else if (error[name]) {
       validFieldsRef.current.delete(name);
       if (shouldRender) reRenderForm({});
       return true;
@@ -102,6 +100,7 @@ export default function useForm<
     const field = fieldsRef.current[name]!;
     const errors = errorsRef.current;
 
+    if (!field) return false;
     if (value !== undefined) setValue(name, value); // eslint-disable-line @typescript-eslint/no-use-before-define
 
     const error = await validateField(field, fieldsRef.current);
