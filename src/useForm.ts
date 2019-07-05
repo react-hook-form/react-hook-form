@@ -47,21 +47,21 @@ export default function useForm<
     submitFocusError: true,
   },
 ) {
-  const unMount = useRef<boolean>(false);
   const fieldsRef = useRef<FieldsObject<Data>>({});
   const errorsRef = useRef<ErrorMessages<Data>>({});
   const submitCountRef = useRef<number>(0);
   const touchedFieldsRef = useRef(new Set());
   const watchFieldsRef = useRef<{ [key in keyof Data]?: boolean }>({});
+  const isUnMount = useRef<boolean>(false);
   const isWatchAllRef = useRef<boolean>(false);
   const isSubmittingRef = useRef<boolean>(false);
   const isSubmittedRef = useRef<boolean>(false);
   const isDirtyRef = useRef<boolean>(false);
   const reRenderForm = useState({})[1];
   const validateAndStateUpdateRef = useRef<Function>();
+  const fieldsWithValidationRef = useRef(new Set());
+  const validFieldsRef = useRef(new Set());
   const { isOnChange, isOnBlur, isOnSubmit } = modeChecker(mode);
-  const fieldsWithValidation = useRef(new Set());
-  const validFields = useRef(new Set());
 
   const renderBaseOnError = (
     name: keyof Data,
@@ -71,16 +71,16 @@ export default function useForm<
   ): boolean => {
     if (errors[name] && !error[name]) {
       delete errorsRef.current[name];
-      validFields.current.add(name);
+      validFieldsRef.current.add(name);
       if (!skipRender) reRenderForm({});
       return true;
     } else if (error[name]) {
-      validFields.current.delete(name);
+      validFieldsRef.current.delete(name);
       if (!skipRender) reRenderForm({});
       return true;
     }
-    if (!isOnSubmit && !validFields.current.has(name)) {
-      validFields.current.add(name);
+    if (!isOnSubmit && !validFieldsRef.current.has(name)) {
+      validFieldsRef.current.add(name);
       if (!skipRender) reRenderForm({});
     }
     return false;
@@ -236,7 +236,7 @@ export default function useForm<
     null,
     fieldsRef.current,
     touchedFieldsRef,
-    fieldsWithValidation,
+    fieldsWithValidationRef,
     validateAndStateUpdateRef.current,
   );
 
@@ -274,7 +274,7 @@ export default function useForm<
     const { name, type, value } = elementRef;
 
     if (!isOnSubmit && data && !isEmptyObject(data)) {
-      fieldsWithValidation.current.add(name);
+      fieldsWithValidationRef.current.add(name);
     }
 
     const { required = false, validate = undefined } = data || {};
@@ -469,7 +469,7 @@ export default function useForm<
     } else {
       errorsRef.current = fieldErrors as any;
     }
-    if (unMount.current) return;
+    if (isUnMount.current) return;
     isSubmittedRef.current = true;
     submitCountRef.current += 1;
     isSubmittingRef.current = false;
@@ -483,8 +483,8 @@ export default function useForm<
     isSubmittedRef.current = false;
     isDirtyRef.current = false;
     touchedFieldsRef.current = new Set();
-    fieldsWithValidation.current = new Set();
-    validFields.current = new Set();
+    fieldsWithValidationRef.current = new Set();
+    validFieldsRef.current = new Set();
     submitCountRef.current = 0;
   };
 
@@ -522,10 +522,10 @@ export default function useForm<
 
   useEffect((): VoidFunction => {
     return () => {
-      unMount.current = true;
+      isUnMount.current = true;
       unSubscribe();
     };
-  }, [mode, unMount.current]);
+  }, [mode, isUnMount.current]);
 
   return {
     register,
@@ -553,9 +553,10 @@ export default function useForm<
             isValid: isEmptyObject(errorsRef.current),
           }
         : {
-            isValid: fieldsWithValidation.current.size
+            isValid: fieldsWithValidationRef.current.size
               ? !isEmptyObject(fieldsRef.current) &&
-                validFields.current.size >= fieldsWithValidation.current.size
+                validFieldsRef.current.size >=
+                  fieldsWithValidationRef.current.size
               : !isEmptyObject(fieldsRef.current),
           }),
     },
