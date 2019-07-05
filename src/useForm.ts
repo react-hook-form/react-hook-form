@@ -21,7 +21,6 @@ import {
   VoidFunction,
   OnSubmit,
 } from './types';
-import filterUndefinedErrors from './utils/filterUndefinedErrors';
 import isCheckBoxInput from './utils/isCheckBoxInput';
 import isEmptyObject from './utils/isEmptyObject';
 import isRadioInput from './utils/isRadioInput';
@@ -65,23 +64,27 @@ export default function useForm<
 
   const renderBaseOnError = (
     name: keyof Data,
-    errors: ErrorMessages<Data>,
+    errorsFromRef: ErrorMessages<Data>,
     error: ErrorMessages<Data>,
-    skipRender?: boolean,
+    shouldRender: boolean = true,
   ): boolean => {
-    if (errors[name] && !error[name]) {
+    if (errorsFromRef[name] && !error[name]) {
       delete errorsRef.current[name];
       validFieldsRef.current.add(name);
-      if (!skipRender) reRenderForm({});
-      return true;
-    } else if (error[name]) {
-      validFieldsRef.current.delete(name);
-      if (!skipRender) reRenderForm({});
+      if (shouldRender) reRenderForm({});
       return true;
     }
+
+    if (error[name]) {
+      validFieldsRef.current.delete(name);
+      if (shouldRender) reRenderForm({});
+      return true;
+    }
+
     if (!isOnSubmit && !validFieldsRef.current.has(name)) {
       validFieldsRef.current.add(name);
-      if (!skipRender) reRenderForm({});
+      if (shouldRender) reRenderForm({});
+      return true;
     }
     return false;
   };
@@ -94,7 +97,7 @@ export default function useForm<
       name: Name;
       value?: Data[Name];
     },
-    shouldSkipRender?: boolean,
+    shouldRender: boolean = true,
   ): Promise<boolean> => {
     const field = fieldsRef.current[name]!;
     const errors = errorsRef.current;
@@ -104,10 +107,10 @@ export default function useForm<
 
     const error = await validateField(field, fieldsRef.current);
     errorsRef.current = {
-      ...filterUndefinedErrors(errorsRef.current),
+      ...errorsRef.current,
       ...error,
     };
-    renderBaseOnError(name, errors, error, shouldSkipRender);
+    renderBaseOnError(name, errors, error, shouldRender);
     return isEmptyObject(error);
   };
 
@@ -124,7 +127,7 @@ export default function useForm<
   ): Promise<boolean> => {
     if (Array.isArray(payload)) {
       const result = await Promise.all(
-        payload.map(async data => await executeValidation(data, true)),
+        payload.map(async data => await executeValidation(data, false)),
       );
       reRenderForm({});
       return result.every(Boolean);
@@ -139,12 +142,11 @@ export default function useForm<
     const options = field.options;
 
     if (isRadioInput(ref.type) && options) {
-      options.forEach(({ ref: radioRef }): void => {
+      return options.forEach(({ ref: radioRef }): void => {
         if (radioRef.value === value) radioRef.checked = true;
       });
-    } else {
-      ref[isCheckBoxInput(ref.type) ? 'checked' : 'value'] = value;
     }
+    ref[isCheckBoxInput(ref.type) ? 'checked' : 'value'] = value;
   };
 
   const setValue = (
@@ -224,7 +226,7 @@ export default function useForm<
             shouldUpdateValidateMode ||
             shouldUpdateWatchMode
           ) {
-            errorsRef.current = { ...filterUndefinedErrors(errors), ...error };
+            errorsRef.current = { ...errors, ...error };
             if (renderBaseOnError(name, errorsRef.current, error)) return;
           }
         }
@@ -246,16 +248,16 @@ export default function useForm<
     message?: string,
     ref?: Ref,
   ): void => {
-    const errors = errorsRef.current;
-    const error = errors[name];
+    const errorsFromRef = errorsRef.current;
+    const error = errorsFromRef[name];
     const isSameError =
       error && (error.type === type && error.message === message);
 
     if (!type && error) {
-      delete errors[name];
+      delete errorsFromRef[name];
       reRenderForm({});
     } else if (!isSameError) {
-      errors[name] = {
+      errorsFromRef[name] = {
         type,
         message,
         ref,
@@ -459,7 +461,7 @@ export default function useForm<
 
       fieldErrors = {
         ...errors,
-        ...(nativeValidation ? {} : filterUndefinedErrors(errorsRef.current)),
+        ...(nativeValidation ? {} : errorsRef.current),
       };
       fieldValues = values;
     }
