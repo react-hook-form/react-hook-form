@@ -57,6 +57,9 @@ export default function useForm<
   const isSubmittedRef = useRef<boolean>(false);
   const isDirtyRef = useRef<boolean>(false);
   const reRenderForm = useState({})[1];
+  const schemaValidateErrorsRef = useRef<null | {
+    [key: string]: string;
+  }>(null);
   const validateAndStateUpdateRef = useRef<Function>();
   const fieldsWithValidationRef = useRef(new Set());
   const validFieldsRef = useRef(new Set());
@@ -190,11 +193,11 @@ export default function useForm<
 
         if (validationSchema) {
           const result = getFieldsValues(fields);
-          const schemaValidateErrors = await validateWithSchema(
+          schemaValidateErrorsRef.current = await validateWithSchema(
             validationSchema,
             result,
           );
-          const error = schemaValidateErrors[name];
+          const error = schemaValidateErrorsRef.current[name];
           const shouldUpdate =
             ((!error && errorsFromRef[name]) || error) &&
             (shouldUpdateValidateMode || isSubmittedRef.current);
@@ -521,6 +524,8 @@ export default function useForm<
     };
   }, [mode, isUnMount.current]);
 
+  console.log(schemaValidateErrorsRef.current);
+
   return {
     register,
     handleSubmit,
@@ -547,7 +552,10 @@ export default function useForm<
             isValid: isEmptyObject(errorsRef.current),
           }
         : {
-            isValid: fieldsWithValidationRef.current.size
+            isValid: validationSchema
+              ? schemaValidateErrorsRef.current !== null &&
+                isEmptyObject(schemaValidateErrorsRef.current)
+              : fieldsWithValidationRef.current.size
               ? !isEmptyObject(fieldsRef.current) &&
                 validFieldsRef.current.size >=
                   fieldsWithValidationRef.current.size
