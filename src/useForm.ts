@@ -276,7 +276,7 @@ export default function useForm<
       ...data,
       ref: elementRef,
     };
-    const fields = fieldsRef.current;
+    const fields: any = fieldsRef.current;
     const isRadio = isRadioInput(type);
     const field = fields[name];
     const existRadioOptionIndex =
