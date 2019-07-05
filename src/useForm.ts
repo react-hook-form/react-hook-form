@@ -140,11 +140,12 @@ export default function useForm<
     const options = field.options;
 
     if (isRadioInput(ref.type) && options) {
-      return options.forEach(({ ref: radioRef }): void => {
+      options.forEach(({ ref: radioRef }): void => {
         if (radioRef.value === value) radioRef.checked = true;
       });
+    } else {
+      ref[isCheckBoxInput(ref.type) ? 'checked' : 'value'] = value;
     }
-    ref[isCheckBoxInput(ref.type) ? 'checked' : 'value'] = value;
   };
 
   const setValue = (
