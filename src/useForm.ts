@@ -102,7 +102,6 @@ export default function useForm<
     const field = fieldsRef.current[name]!;
     const errors = errorsRef.current;
 
-    if (!field) return false;
     if (value !== undefined) setValue(name, value); // eslint-disable-line @typescript-eslint/no-use-before-define
 
     const error = await validateField(field, fieldsRef.current);
@@ -168,16 +167,14 @@ export default function useForm<
         if (Array.isArray(validationFields) && !validationFields.includes(name))
           return;
         const fields = fieldsRef.current;
-        const errors = errorsRef.current;
+        const errorsFromRef = errorsRef.current;
         const ref = fields[name];
         if (!ref) return;
         const isBlurType = type === 'blur';
         const validateDisabled = !isSubmittedRef.current && isOnSubmit;
-        const isWatchAll = isWatchAllRef.current;
-        const shouldUpdateWatchMode =
-          isWatchAll || watchFieldsRef.current[name];
         const shouldUpdateValidateMode = isOnChange || (isOnBlur && isBlurType);
-        let shouldUpdateState = shouldUpdateWatchMode;
+        let shouldUpdateState =
+          isWatchAllRef.current || watchFieldsRef.current[name];
 
         if (!isDirtyRef.current) {
           isDirtyRef.current = true;
@@ -189,21 +186,22 @@ export default function useForm<
           shouldUpdateState = true;
         }
 
-        if (validateDisabled && shouldUpdateWatchMode) return reRenderForm({});
+        if (validateDisabled && shouldUpdateState) return reRenderForm({});
 
         if (validationSchema) {
           const result = getFieldsValues(fields);
-          const schemaValidateErrors =
-            (await validateWithSchema(validationSchema, result)) || {};
+          const schemaValidateErrors = await validateWithSchema(
+            validationSchema,
+            result,
+          );
           const error = schemaValidateErrors[name];
           const shouldUpdate =
-            ((!error && errors[name]) || error) &&
+            ((!error && errorsFromRef[name]) || error) &&
             (shouldUpdateValidateMode || isSubmittedRef.current);
 
-          if (shouldUpdate || shouldUpdateWatchMode) {
-            errorsRef.current = { ...errors, ...{ [name]: error } };
+          if (shouldUpdate || shouldUpdateState) {
+            errorsRef.current = { ...errorsFromRef, ...{ [name]: error } };
             if (!error) delete errorsRef.current[name];
-
             return reRenderForm({});
           }
         } else {
@@ -213,7 +211,7 @@ export default function useForm<
             nativeValidation,
           );
           const shouldUpdate = shouldUpdateWithError({
-            errors,
+            errors: errorsFromRef,
             error,
             validateDisabled,
             isOnBlur,
@@ -221,12 +219,8 @@ export default function useForm<
             name,
           });
 
-          if (
-            shouldUpdate ||
-            shouldUpdateValidateMode ||
-            shouldUpdateWatchMode
-          ) {
-            errorsRef.current = { ...errors, ...error };
+          if (shouldUpdate || shouldUpdateValidateMode) {
+            errorsRef.current = { ...errorsFromRef, ...error };
             if (renderBaseOnError(name, errorsRef.current, error)) return;
           }
         }
@@ -272,7 +266,6 @@ export default function useForm<
     data: RegisterInput | undefined,
   ): void {
     if (elementRef && !elementRef.name) return warnMissingRef(elementRef);
-
     const { name, type, value } = elementRef;
 
     if (!isOnSubmit && data && !isEmptyObject(data)) {
@@ -284,7 +277,7 @@ export default function useForm<
       ...data,
       ref: elementRef,
     };
-    const fields: any = fieldsRef.current;
+    const fields = fieldsRef.current;
     const isRadio = isRadioInput(type);
     const field = fields[name];
     const existRadioOptionIndex =
