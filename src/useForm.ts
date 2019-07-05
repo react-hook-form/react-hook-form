@@ -524,8 +524,6 @@ export default function useForm<
     };
   }, [mode, isUnMount.current]);
 
-  console.log(schemaValidateErrorsRef.current);
-
   return {
     register,
     handleSubmit,
