@@ -13,7 +13,7 @@ import isEmptyObject from './utils/isEmptyObject';
 import isRadioInput from './utils/isRadioInput';
 import onDomRemove from './utils/onDomRemove';
 import modeChecker from './utils/validationModeChecker';
-import warnMissingRef from './utils/warnMissingRef';
+import warnMessage from './utils/warnMessage';
 import {
   DataType,
   ErrorMessages,
@@ -56,14 +56,17 @@ export default function useForm<
   const isSubmittingRef = useRef<boolean>(false);
   const isSubmittedRef = useRef<boolean>(false);
   const isDirtyRef = useRef<boolean>(false);
-  const reRenderForm = useState({})[1];
-  const schemaValidateErrorsRef = useRef<null | {
-    [key: string]: string;
-  }>(null);
+  const isSchemaValidateTriggeredRef = useRef<boolean>(false);
   const validateAndStateUpdateRef = useRef<Function>();
   const fieldsWithValidationRef = useRef(new Set());
   const validFieldsRef = useRef(new Set());
+  const reRenderForm = useState({})[1];
   const { isOnChange, isOnBlur, isOnSubmit } = modeChecker(mode);
+
+  const combineErrorsRef = (data: any) => ({
+    ...errorsRef.current,
+    ...data,
+  });
 
   const renderBaseOnError = (
     name: keyof Data,
@@ -107,12 +110,53 @@ export default function useForm<
     if (value !== undefined) setValue(name, value); // eslint-disable-line @typescript-eslint/no-use-before-define
 
     const error = await validateField(field, fieldsRef.current);
-    errorsRef.current = {
-      ...errorsRef.current,
-      ...error,
-    };
+    errorsRef.current = combineErrorsRef(error);
     renderBaseOnError(name, errors, error, shouldRender);
     return isEmptyObject(error);
+  };
+
+  const executeSchemaValidation = async (
+    payload:
+      | {
+          name: Name;
+          value?: Data[Name];
+        }
+      | {
+          name: Name;
+          value?: Data[Name];
+        }[],
+  ): Promise<boolean> => {
+    const fieldValues = getFieldsValues(fieldsRef.current);
+    const fieldErrors = await validateWithSchema(validationSchema, fieldValues);
+    const isArray = Array.isArray(payload);
+    let errors;
+
+    if (isArray) {
+      const names = (payload as []).map(({ name }) => name);
+      errors = combineErrorsRef(
+        Object.entries(fieldErrors).reduce(
+          (previous: { [key: string]: any }, [key, value]) => {
+            // @ts-ignore
+            if (names.includes(key)) {
+              previous[key] = value;
+            }
+            return previous;
+          },
+          {},
+        ),
+      );
+    } else {
+      // @ts-ignore
+      const name = payload.name;
+      errors = combineErrorsRef(
+        fieldErrors[name] ? { name: fieldErrors[name] } : null,
+      );
+    }
+
+    errorsRef.current = errors;
+    isSchemaValidateTriggeredRef.current = true;
+    reRenderForm({});
+    return isArray ? isEmptyObject(fieldErrors) : !fieldErrors[name];
   };
 
   const triggerValidation = async (
@@ -126,6 +170,8 @@ export default function useForm<
           value?: Data[Name];
         }[],
   ): Promise<boolean> => {
+    if (validationSchema) return executeSchemaValidation(payload);
+
     if (Array.isArray(payload)) {
       const result = await Promise.all(
         payload.map(async data => await executeValidation(data, false)),
@@ -193,11 +239,12 @@ export default function useForm<
 
         if (validationSchema) {
           const result = getFieldsValues(fields);
-          schemaValidateErrorsRef.current = await validateWithSchema(
+          const fieldsErrors = await validateWithSchema(
             validationSchema,
             result,
           );
-          const error = schemaValidateErrorsRef.current[name];
+          isSchemaValidateTriggeredRef.current = true;
+          const error = fieldsErrors[name];
           const shouldUpdate =
             ((!error && errorsFromRef[name]) || error) &&
             (shouldUpdateValidateMode || isSubmittedRef.current);
@@ -223,7 +270,7 @@ export default function useForm<
           });
 
           if (shouldUpdate || shouldUpdateValidateMode) {
-            errorsRef.current = { ...errorsFromRef, ...error };
+            errorsRef.current = combineErrorsRef(error);
             if (renderBaseOnError(name, errorsRef.current, error)) return;
           }
         }
@@ -268,7 +315,8 @@ export default function useForm<
     elementRef: Ref,
     data: RegisterInput | undefined,
   ): void {
-    if (elementRef && !elementRef.name) return warnMissingRef(elementRef);
+    if (elementRef && !elementRef.name)
+      return warnMessage(`⚠ Missing field name: ${elementRef}`);
     const { name, type, value } = elementRef;
 
     if (!isOnSubmit && data && !isEmptyObject(data)) {
@@ -374,7 +422,7 @@ export default function useForm<
       if (!refOrValidateRule || typeof window === 'undefined') return;
 
       if (validateRule && !refOrValidateRule.name) {
-        warnMissingRef(refOrValidateRule);
+        warnMessage(refOrValidateRule);
         return;
       }
 
@@ -483,6 +531,7 @@ export default function useForm<
     fieldsWithValidationRef.current = new Set();
     validFieldsRef.current = new Set();
     submitCountRef.current = 0;
+    isSchemaValidateTriggeredRef.current = false;
   };
 
   const unSubscribe = (): void => {
@@ -509,7 +558,7 @@ export default function useForm<
         .ref.closest('form')
         .reset();
     } catch {
-      console.warn(`⚠ Form element not found`);
+      warnMessage(`⚠ Form element not found`);
     }
     resetRefs();
     reRenderForm({});
@@ -523,6 +572,8 @@ export default function useForm<
       unSubscribe();
     };
   }, [mode, isUnMount.current]);
+
+  const isEmptyErrors = isEmptyObject(errorsRef.current);
 
   return {
     register,
@@ -547,12 +598,11 @@ export default function useForm<
       isSubmitting: isSubmittingRef.current,
       ...(isOnSubmit
         ? {
-            isValid: isEmptyObject(errorsRef.current),
+            isValid: isEmptyErrors,
           }
         : {
             isValid: validationSchema
-              ? schemaValidateErrorsRef.current !== null &&
-                isEmptyObject(schemaValidateErrorsRef.current)
+              ? isSchemaValidateTriggeredRef.current && isEmptyErrors
               : fieldsWithValidationRef.current.size
               ? !isEmptyObject(fieldsRef.current) &&
                 validFieldsRef.current.size >=

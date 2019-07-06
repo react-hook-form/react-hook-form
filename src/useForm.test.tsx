@@ -256,6 +256,72 @@ describe('useForm', () => {
     });
   });
 
+  describe('triggerValidation with schema', () => {
+    it('should return the error with single field validation', async () => {
+      testComponent(() => {
+        hookForm = useForm({
+          mode: 'onChange',
+          validationSchema: { test: 'test' },
+        });
+        return hookForm;
+      });
+
+      hookForm.register({ type: 'input', name: 'test' }, { required: true });
+      // @ts-ignore
+      validateWithSchema.mockImplementation(async () => {
+        return {
+          test: 'test',
+        };
+      });
+      await hookForm.triggerValidation({ name: 'test' });
+      expect(hookForm.errors).toEqual({ name: 'test' });
+    });
+
+    it('should not trigger any error when schema validation result not found', async () => {
+      testComponent(() => {
+        hookForm = useForm({
+          mode: 'onChange',
+          validationSchema: { test: 'test' },
+        });
+        return hookForm;
+      });
+
+      hookForm.register({ type: 'input', name: 'test' }, { required: true });
+      // @ts-ignore
+      validateWithSchema.mockImplementation(async () => {
+        return {
+          test1: 'test',
+        };
+      });
+      await hookForm.triggerValidation({ name: 'test' });
+      expect(hookForm.errors).toEqual({});
+    });
+
+    it('should support array of fields for schema validation', async () => {
+      testComponent(() => {
+        hookForm = useForm({
+          mode: 'onChange',
+          validationSchema: {},
+        });
+        return hookForm;
+      });
+
+      hookForm.register({ type: 'input', name: 'test' }, { required: true });
+      // @ts-ignore
+      validateWithSchema.mockImplementation(async () => {
+        return {
+          test1: 'test1',
+          test: 'test',
+        };
+      });
+      await hookForm.triggerValidation([{ name: 'test' }, { name: 'test1' }]);
+      expect(hookForm.errors).toEqual({
+        test: 'test',
+        test1: 'test1',
+      });
+    });
+  });
+
   describe('unSubscribe', () => {
     it('should remove all reference when mode change', () => {
       hookForm.register({ type: 'input', name: 'test' });
@@ -285,10 +351,6 @@ describe('useForm', () => {
       expect(findRemovedFieldAndRemoveListener).toBeCalled();
       hookForm.register({ type: 'input', name: 'test' });
       expect(attachEventListeners).toBeCalledTimes(3);
-    });
-
-    it('should skip field that is not found', () => {
-
     });
   });
 
