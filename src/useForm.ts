@@ -56,11 +56,11 @@ export default function useForm<
   const isSubmittingRef = useRef<boolean>(false);
   const isSubmittedRef = useRef<boolean>(false);
   const isDirtyRef = useRef<boolean>(false);
-  const reRenderForm = useState({})[1];
   const isSchemaValidateTriggeredRef = useRef<boolean>(false);
   const validateAndStateUpdateRef = useRef<Function>();
   const fieldsWithValidationRef = useRef(new Set());
   const validFieldsRef = useRef(new Set());
+  const reRenderForm = useState({})[1];
   const { isOnChange, isOnBlur, isOnSubmit } = modeChecker(mode);
 
   const combineErrorsRef = (data: any) => ({
