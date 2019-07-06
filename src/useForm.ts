@@ -153,12 +153,10 @@ export default function useForm<
       );
     }
 
-    const result = isArray ? isEmptyObject(fieldErrors) : !fieldErrors[name];
-
     errorsRef.current = errors;
     isSchemaValidateTriggeredRef.current = true;
     reRenderForm({});
-    return isEmptyObject(result);
+    return isArray ? isEmptyObject(fieldErrors) : !fieldErrors[name];
   };
 
   const triggerValidation = async (
