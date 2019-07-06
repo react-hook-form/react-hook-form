@@ -1,9 +1,4 @@
-import { Ref, RegisterInput } from '../types';
-
-interface RadioReturn {
-  isValid: boolean;
-  value: number | string;
-}
+import { Ref, RegisterInput, RadioReturn } from '../types';
 
 const defaultReturn: RadioReturn = {
   isValid: false,

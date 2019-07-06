@@ -1,8 +1,4 @@
-import { DataType } from '../types';
-
-interface ValidationReturn {
-  [key: string]: string;
-}
+import { DataType, ValidationReturn } from '../types';
 
 export function parseErrorSchema(error: DataType): ValidationReturn {
   return error.inner.reduce(

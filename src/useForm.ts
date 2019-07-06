@@ -8,6 +8,12 @@ import shouldUpdateWithError from './logic/shouldUpdateWithError';
 import validateField from './logic/validateField';
 import validateWithSchema from './logic/validateWithSchema';
 import attachNativeValidation from './logic/attachNativeValidation';
+import isCheckBoxInput from './utils/isCheckBoxInput';
+import isEmptyObject from './utils/isEmptyObject';
+import isRadioInput from './utils/isRadioInput';
+import onDomRemove from './utils/onDomRemove';
+import modeChecker from './utils/validationModeChecker';
+import warnMissingRef from './utils/warnMissingRef';
 import {
   DataType,
   ErrorMessages,
@@ -21,12 +27,6 @@ import {
   VoidFunction,
   OnSubmit,
 } from './types';
-import isCheckBoxInput from './utils/isCheckBoxInput';
-import isEmptyObject from './utils/isEmptyObject';
-import isRadioInput from './utils/isRadioInput';
-import onDomRemove from './utils/onDomRemove';
-import modeChecker from './utils/validationModeChecker';
-import warnMissingRef from './utils/warnMissingRef';
 
 export default function useForm<
   Data extends DataType,

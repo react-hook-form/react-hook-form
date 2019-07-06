@@ -1,13 +1,13 @@
 import getRadioValue from './getRadioValue';
 import isRadioInput from '../utils/isRadioInput';
-import { DATE_INPUTS, STRING_INPUTS } from '../constants';
-import { Field, ErrorMessages, DataType } from '../types';
 import getValueAndMessage from './getValueAndMessage';
 import isCheckBoxInput from '../utils/isCheckBoxInput';
 import isString from '../utils/isString';
 import isEmptyObject from '../utils/isEmptyObject';
 import displayNativeError from './displayNativeError';
 import isObject from '../utils/isObject';
+import { DATE_INPUTS, STRING_INPUTS } from '../constants';
+import { Field, ErrorMessages, DataType } from '../types';
 
 type ValidatePromiseResult =
   | {}

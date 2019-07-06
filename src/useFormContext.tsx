@@ -17,7 +17,8 @@ export function FormContext<T extends DataType>(props: T) {
           ...rest,
         } as any
       }
-    >{children}</FormGlobalContext.Provider>
-
+    >
+      {children}
+    </FormGlobalContext.Provider>
   );
 }

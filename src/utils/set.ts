@@ -1,5 +1,5 @@
-import { DataType } from '../types';
 import isObject from './isObject';
+import { DataType } from '../types';
 
 const reIsDeepProp = /\.|\[(?:[^[\]]*|(["'])(?:(?!\1)[^\\]|\\.)*?\1)\]/;
 const reIsPlainProp = /^\w*$/;

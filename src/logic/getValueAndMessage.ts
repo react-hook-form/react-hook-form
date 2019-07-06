@@ -1,4 +1,4 @@
-import {DataType} from "../types";
+import { DataType } from '../types';
 
 export default (
   item: DataType | number | string | undefined,

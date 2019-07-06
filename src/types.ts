@@ -80,6 +80,15 @@ export interface SubmitPromiseResult<Data extends DataType> {
 
 export type VoidFunction = () => void;
 
+export interface RadioReturn {
+  isValid: boolean;
+  value: number | string;
+}
+
+export interface ValidationReturn {
+  [key: string]: string;
+}
+
 export interface FormProps<
   Data extends DataType = DataType,
   Name extends keyof Data = keyof Data

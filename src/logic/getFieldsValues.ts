@@ -14,9 +14,7 @@ export default function getFieldsValue<Data extends DataType>(
       } = data;
       const value = getFieldValue(fields, ref);
 
-      if (isString(fieldName)) {
-        return name === fieldName ? value : previous;
-      }
+      if (isString(fieldName)) return name === fieldName ? value : previous;
 
       if (Array.isArray(fieldName)) {
         if (fieldName.includes(name)) {
