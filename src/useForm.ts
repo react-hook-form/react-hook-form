@@ -63,6 +63,11 @@ export default function useForm<
   const validFieldsRef = useRef(new Set());
   const { isOnChange, isOnBlur, isOnSubmit } = modeChecker(mode);
 
+  const combineErrorsRef = (data: any) => ({
+    ...errorsRef.current,
+    ...data,
+  });
+
   const renderBaseOnError = (
     name: keyof Data,
     errorsFromRef: ErrorMessages<Data>,
@@ -105,10 +110,7 @@ export default function useForm<
     if (value !== undefined) setValue(name, value); // eslint-disable-line @typescript-eslint/no-use-before-define
 
     const error = await validateField(field, fieldsRef.current);
-    errorsRef.current = {
-      ...errorsRef.current,
-      ...error,
-    };
+    errorsRef.current = combineErrorsRef(error);
     renderBaseOnError(name, errors, error, shouldRender);
     return isEmptyObject(error);
   };
@@ -131,9 +133,8 @@ export default function useForm<
 
     if (isArray) {
       const names = (payload as []).map(({ name }) => name);
-      errors = {
-        ...errorsRef.current,
-        ...Object.entries(fieldErrors).reduce(
+      errors = combineErrorsRef(
+        Object.entries(fieldErrors).reduce(
           (previous: { [key: string]: any }, [key, value]) => {
             // @ts-ignore
             if (names.includes(key)) {
@@ -143,14 +144,13 @@ export default function useForm<
           },
           {},
         ),
-      };
+      );
     } else {
       // @ts-ignore
       const name = payload.name;
-      errors = {
-        ...errorsRef.current,
-        ...(fieldErrors[name] ? { name: fieldErrors[name] } : null),
-      };
+      errors = combineErrorsRef(
+        fieldErrors[name] ? { name: fieldErrors[name] } : null,
+      );
     }
 
     const result = isArray ? isEmptyObject(fieldErrors) : !fieldErrors[name];
@@ -274,7 +274,7 @@ export default function useForm<
           });
 
           if (shouldUpdate || shouldUpdateValidateMode) {
-            errorsRef.current = { ...errorsFromRef, ...error };
+            errorsRef.current = combineErrorsRef(error);
             if (renderBaseOnError(name, errorsRef.current, error)) return;
           }
         }
