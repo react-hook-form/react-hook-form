@@ -57,7 +57,7 @@ export default function useForm<
   const isSubmittedRef = useRef<boolean>(false);
   const isDirtyRef = useRef<boolean>(false);
   const reRenderForm = useState({})[1];
-  const isSchemaValidateTriggered = useRef<boolean>(false);
+  const isSchemaValidateTriggeredRef = useRef<boolean>(false);
   const validateAndStateUpdateRef = useRef<Function>();
   const fieldsWithValidationRef = useRef(new Set());
   const validFieldsRef = useRef(new Set());
@@ -150,7 +150,7 @@ export default function useForm<
     const result = isArray ? isEmptyObject(fieldErrors) : !fieldErrors[name];
 
     errorsRef.current = errors;
-    isSchemaValidateTriggered.current = true;
+    isSchemaValidateTriggeredRef.current = true;
     reRenderForm({});
     return isEmptyObject(result);
   };
@@ -239,7 +239,7 @@ export default function useForm<
             validationSchema,
             result,
           );
-          isSchemaValidateTriggered.current = true;
+          isSchemaValidateTriggeredRef.current = true;
           const error = fieldsErrors[name];
           const shouldUpdate =
             ((!error && errorsFromRef[name]) || error) &&
@@ -526,6 +526,7 @@ export default function useForm<
     fieldsWithValidationRef.current = new Set();
     validFieldsRef.current = new Set();
     submitCountRef.current = 0;
+    isSchemaValidateTriggeredRef.current = false;
   };
 
   const unSubscribe = (): void => {
@@ -596,7 +597,7 @@ export default function useForm<
           }
         : {
             isValid: validationSchema
-              ? isSchemaValidateTriggered.current && isEmptyErrors
+              ? isSchemaValidateTriggeredRef.current && isEmptyErrors
               : fieldsWithValidationRef.current.size
               ? !isEmptyObject(fieldsRef.current) &&
                 validFieldsRef.current.size >=
