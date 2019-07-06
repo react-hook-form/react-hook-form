@@ -23,7 +23,7 @@ describe('findMissDomAndClean', () => {
           ref: { name: 'bill', type: 'radio' },
         },
       ),
-    ).toEqual(fields);
+    ).toEqual(undefined);
   });
 
   it('should remove touched Fields reference', () => {
@@ -71,27 +71,25 @@ describe('findMissDomAndClean', () => {
         ],
       },
     };
-
-    expect(
-      // @ts-ignore
-      findRemovedFieldAndRemoveListener(
-        fields,
-        { current: new Set() },
-        { current: new Set() },
-        () => {},
-        {
-          ref: { name: 'test', type: 'radio' },
-          options: [
-            {
-              mutationWatcher: {
-                disconnect,
-              },
-              ref,
+    findRemovedFieldAndRemoveListener(
+      fields,
+      { current: new Set() },
+      { current: new Set() },
+      () => {},
+      {
+        ref: { name: 'test', type: 'radio' },
+        options: [
+          {
+            mutationWatcher: {
+              disconnect,
             },
-          ],
-        },
-      ),
-    ).toMatchSnapshot();
+            ref,
+          },
+        ],
+      },
+    );
+
+    expect(fields).toEqual({});
   });
 
   it('should remove none radio field when found', () => {
@@ -114,20 +112,20 @@ describe('findMissDomAndClean', () => {
       },
     };
 
-    expect(
-      findRemovedFieldAndRemoveListener(
-        fields,
-        { current: new Set() },
-        { current: new Set() },
-        () => {},
-        {
-          ref,
-          mutationWatcher: {
-            disconnect,
-          },
+    findRemovedFieldAndRemoveListener(
+      fields,
+      { current: new Set() },
+      { current: new Set() },
+      () => {},
+      {
+        ref,
+        mutationWatcher: {
+          disconnect,
         },
-      ),
-    ).toMatchSnapshot();
+      },
+    );
+
+    expect(fields).toMatchSnapshot();
   });
 
   it('should return undefined when empty ref', () => {
@@ -204,26 +202,25 @@ describe('findMissDomAndClean', () => {
       },
     };
 
-    expect(
-      // @ts-ignore
-      findRemovedFieldAndRemoveListener(
-        fields,
-        { current: new Set() },
-        { current: new Set() },
-        () => {},
-        {
-          ref: { name: 'test', type: 'text' },
-          options: [
-            {
-              mutationWatcher: {
-                disconnect,
-              },
-              ref: {},
+    findRemovedFieldAndRemoveListener(
+      fields,
+      { current: new Set() },
+      { current: new Set() },
+      () => {},
+      {
+        ref: { name: 'test', type: 'text' },
+        options: [
+          {
+            mutationWatcher: {
+              disconnect,
             },
-          ],
-        },
-      ),
-    ).toMatchSnapshot();
+            ref: {},
+          },
+        ],
+      },
+    );
+
+    expect(fields).toMatchSnapshot();
 
     expect(
       // @ts-ignore
