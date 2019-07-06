@@ -57,9 +57,7 @@ export default function useForm<
   const isSubmittedRef = useRef<boolean>(false);
   const isDirtyRef = useRef<boolean>(false);
   const reRenderForm = useState({})[1];
-  const schemaValidateErrorsRef = useRef<null | {
-    [key: string]: string;
-  }>(null);
+  const isSchemaValidateTriggered = useRef<boolean>(false);
   const validateAndStateUpdateRef = useRef<Function>();
   const fieldsWithValidationRef = useRef(new Set());
   const validFieldsRef = useRef(new Set());
@@ -115,6 +113,48 @@ export default function useForm<
     return isEmptyObject(error);
   };
 
+  const executeSchemaValidation = async (
+    payload:
+      | {
+          name: Name;
+          value?: Data[Name];
+        }
+      | {
+          name: Name;
+          value?: Data[Name];
+        }[],
+  ): Promise<boolean> => {
+    const fieldValues = getFieldsValues(fieldsRef.current);
+    const fieldErrors = await validateWithSchema(validationSchema, fieldValues);
+    const isArray = Array.isArray(payload);
+    let errors;
+
+    if (isArray) {
+      const names = (payload as []).map(({ name }) => name).flat();
+      errors = {
+        ...errorsRef.current,
+        ...Object.entries(fieldErrors).reduce((previous: any, [key, value]) => {
+          if (names.includes(key)) {
+            previous[key] = value;
+          }
+          return previous;
+        }, {}),
+      };
+    } else {
+      errors = {
+        ...errorsRef.current,
+        ...{ name: fieldErrors[name] },
+      };
+    }
+
+    const result = isArray ? isEmptyObject(fieldErrors) : !fieldErrors[name];
+
+    errorsRef.current = errors;
+    isSchemaValidateTriggered.current = true;
+    reRenderForm({});
+    return isEmptyObject(result);
+  };
+
   const triggerValidation = async (
     payload:
       | {
@@ -126,6 +166,8 @@ export default function useForm<
           value?: Data[Name];
         }[],
   ): Promise<boolean> => {
+    if (validationSchema) return executeSchemaValidation(payload);
+
     if (Array.isArray(payload)) {
       const result = await Promise.all(
         payload.map(async data => await executeValidation(data, false)),
@@ -193,11 +235,12 @@ export default function useForm<
 
         if (validationSchema) {
           const result = getFieldsValues(fields);
-          schemaValidateErrorsRef.current = await validateWithSchema(
+          const fieldsErrors = await validateWithSchema(
             validationSchema,
             result,
           );
-          const error = schemaValidateErrorsRef.current[name];
+          isSchemaValidateTriggered.current = true;
+          const error = fieldsErrors[name];
           const shouldUpdate =
             ((!error && errorsFromRef[name]) || error) &&
             (shouldUpdateValidateMode || isSubmittedRef.current);
@@ -524,6 +567,8 @@ export default function useForm<
     };
   }, [mode, isUnMount.current]);
 
+  const isEmptyErrors = isEmptyObject(errorsRef.current);
+
   return {
     register,
     handleSubmit,
@@ -547,12 +592,11 @@ export default function useForm<
       isSubmitting: isSubmittingRef.current,
       ...(isOnSubmit
         ? {
-            isValid: isEmptyObject(errorsRef.current),
+            isValid: isEmptyErrors,
           }
         : {
             isValid: validationSchema
-              ? schemaValidateErrorsRef.current !== null &&
-                isEmptyObject(schemaValidateErrorsRef.current)
+              ? isSchemaValidateTriggered.current && isEmptyErrors
               : fieldsWithValidationRef.current.size
               ? !isEmptyObject(fieldsRef.current) &&
                 validFieldsRef.current.size >=
