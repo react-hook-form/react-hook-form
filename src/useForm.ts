@@ -158,8 +158,6 @@ export default function useForm<
     errorsRef.current = errors;
     isSchemaValidateTriggeredRef.current = true;
     reRenderForm({});
-    console.log(errors);
-    console.log('hi');
     return isEmptyObject(result);
   };
 
