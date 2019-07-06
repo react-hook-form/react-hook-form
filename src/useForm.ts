@@ -133,12 +133,15 @@ export default function useForm<
       const names = (payload as []).map(({ name }) => name).flat();
       errors = {
         ...errorsRef.current,
-        ...Object.entries(fieldErrors).reduce((previous: any, [key, value]) => {
-          if (names.includes(key)) {
-            previous[key] = value;
-          }
-          return previous;
-        }, {}),
+        ...Object.entries(fieldErrors).reduce(
+          (previous: { [key: string]: any }, [key, value]) => {
+            if (names.includes(key)) {
+              previous[key] = value;
+            }
+            return previous;
+          },
+          {},
+        ),
       };
     } else {
       errors = {
