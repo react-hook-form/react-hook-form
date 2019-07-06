@@ -13,7 +13,7 @@ import isEmptyObject from './utils/isEmptyObject';
 import isRadioInput from './utils/isRadioInput';
 import onDomRemove from './utils/onDomRemove';
 import modeChecker from './utils/validationModeChecker';
-import warnMissingRef from './utils/warnMissingRef';
+import warnMessage from './utils/warnMessage';
 import {
   DataType,
   ErrorMessages,
@@ -317,7 +317,8 @@ export default function useForm<
     elementRef: Ref,
     data: RegisterInput | undefined,
   ): void {
-    if (elementRef && !elementRef.name) return warnMissingRef(elementRef);
+    if (elementRef && !elementRef.name)
+      return warnMessage(`⚠ Missing field name: ${elementRef}`);
     const { name, type, value } = elementRef;
 
     if (!isOnSubmit && data && !isEmptyObject(data)) {
@@ -423,7 +424,7 @@ export default function useForm<
       if (!refOrValidateRule || typeof window === 'undefined') return;
 
       if (validateRule && !refOrValidateRule.name) {
-        warnMissingRef(refOrValidateRule);
+        warnMessage(refOrValidateRule);
         return;
       }
 
@@ -559,7 +560,7 @@ export default function useForm<
         .ref.closest('form')
         .reset();
     } catch {
-      console.warn(`⚠ Form element not found`);
+      warnMessage(`⚠ Form element not found`);
     }
     resetRefs();
     reRenderForm({});
