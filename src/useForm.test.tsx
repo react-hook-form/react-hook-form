@@ -352,8 +352,6 @@ describe('useForm', () => {
       hookForm.register({ type: 'input', name: 'test' });
       expect(attachEventListeners).toBeCalledTimes(3);
     });
-
-    it('should skip field that is not found', () => {});
   });
 
   describe('handleSubmit', () => {
