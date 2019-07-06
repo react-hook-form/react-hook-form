@@ -156,9 +156,7 @@ export default function useForm<
     const result = isArray ? isEmptyObject(fieldErrors) : !fieldErrors[name];
 
     errorsRef.current = errors;
-    if (!isEmptyObject(errors)) {
-      isSchemaValidateTriggeredRef.current = true;
-    }
+    isSchemaValidateTriggeredRef.current = true;
     reRenderForm({});
     return isEmptyObject(result);
   };
