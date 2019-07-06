@@ -130,11 +130,12 @@ export default function useForm<
     let errors;
 
     if (isArray) {
-      const names = (payload as []).map(({ name }) => name).flat();
+      const names = (payload as []).map(({ name }) => name);
       errors = {
         ...errorsRef.current,
         ...Object.entries(fieldErrors).reduce(
           (previous: { [key: string]: any }, [key, value]) => {
+            // @ts-ignore
             if (names.includes(key)) {
               previous[key] = value;
             }
@@ -144,9 +145,11 @@ export default function useForm<
         ),
       };
     } else {
+      // @ts-ignore
+      const name = payload.name;
       errors = {
         ...errorsRef.current,
-        ...{ name: fieldErrors[name] },
+        ...(fieldErrors[name] ? { name: fieldErrors[name] } : null),
       };
     }
 
@@ -155,6 +158,8 @@ export default function useForm<
     errorsRef.current = errors;
     isSchemaValidateTriggeredRef.current = true;
     reRenderForm({});
+    console.log(errors);
+    console.log('hi');
     return isEmptyObject(result);
   };
 
