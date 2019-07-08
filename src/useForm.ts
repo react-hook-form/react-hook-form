@@ -160,7 +160,7 @@ export default function useForm<
   };
 
   const triggerValidation = async (
-    payload:
+    payload?:
       | {
           name: Name;
           value?: Data[Name];
