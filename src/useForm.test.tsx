@@ -318,6 +318,31 @@ describe('useForm', () => {
         test1: 'test1',
       });
     });
+
+    it('should validate all fields when pass with undefined', async () => {
+      testComponent(() => {
+        hookForm = useForm({
+          mode: 'onChange',
+          validationSchema: { test: 'test' },
+        });
+        return hookForm;
+      });
+
+      hookForm.register({ type: 'input', name: 'test' }, { required: true });
+      hookForm.register({ type: 'input', name: 'test1' }, { required: true });
+      // @ts-ignore
+      validateWithSchema.mockImplementation(async () => {
+        return {
+          test1: 'test1',
+          test: 'test',
+        };
+      });
+      await hookForm.triggerValidation();
+      expect(hookForm.errors).toEqual({
+        test: 'test',
+        test1: 'test1',
+      });
+    });
   });
 
   describe('unSubscribe', () => {
