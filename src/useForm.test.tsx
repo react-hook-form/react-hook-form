@@ -268,10 +268,8 @@ describe('useForm', () => {
 
       hookForm.register({ type: 'input', name: 'test' }, { required: true });
       // @ts-ignore
-      validateWithSchema.mockImplementation(async () => {
-        return {
-          test: 'test',
-        };
+      validateWithSchema.mockImplementation(async payload => {
+        return payload;
       });
       await hookForm.triggerValidation({ name: 'test' });
       expect(hookForm.errors).toEqual({ name: 'test' });

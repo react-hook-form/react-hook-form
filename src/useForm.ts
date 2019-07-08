@@ -170,16 +170,20 @@ export default function useForm<
           value?: Data[Name];
         }[],
   ): Promise<boolean> => {
-    if (validationSchema) return executeSchemaValidation(payload);
+    let fields: any = payload;
 
-    if (Array.isArray(payload)) {
+    if (!payload)
+      fields = Object.keys(fieldsRef.current).map(name => ({ name }));
+    if (validationSchema) return executeSchemaValidation(fields);
+
+    if (Array.isArray(fields)) {
       const result = await Promise.all(
-        payload.map(async data => await executeValidation(data, false)),
+        fields.map(async data => await executeValidation(data, false)),
       );
       reRenderForm({});
       return result.every(Boolean);
     }
-    return executeValidation(payload);
+    return executeValidation(fields);
   };
 
   const setFieldValue = (name: Name, value: Data[Name]): void => {
