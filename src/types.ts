@@ -108,6 +108,7 @@ export interface FormProps<
   ) => FieldValue | Partial<Data> | void;
   unSubscribe: () => void;
   reset: () => void;
+  clearError: (name: Name) => void;
   setError: (name: Name, type?: string, message?: string, ref?: Ref) => void;
   setValue: (name: Name, value: Data[Name], shouldValidate?: boolean) => void;
   triggerValidation: (
