@@ -457,11 +457,7 @@ export default function useForm<
   };
 
   const unregister = (name: string | string[]): void => {
-    Array.isArray(name)
-      ? name.forEach(item => {
-          resetField(item);
-        })
-      : resetField(name);
+    Array.isArray(name) ? name.forEach(resetField) : resetField(name);
   };
 
   const handleSubmit = (callback: OnSubmit<Data>) => async (
