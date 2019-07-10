@@ -440,6 +440,30 @@ export default function useForm<
     [],
   );
 
+  const resetField = (name: string) => {
+    const field = fieldsRef.current[name];
+    if (!field) return;
+    const { ref, options } = field;
+    isRadioInput(ref.type) && Array.isArray(options)
+      ? options.forEach((input): void => removeEventListener(input, true))
+      : removeEventListener(ref, true);
+
+    delete watchFieldsRef.current[name];
+    delete errorsRef.current[name];
+    delete fieldsRef.current[name];
+    touchedFieldsRef.current.delete(name);
+    fieldsWithValidationRef.current.delete(name);
+    validFieldsRef.current.delete(name);
+  };
+
+  const unregister = (name: string | string[]): void => {
+    Array.isArray(name)
+      ? name.forEach(item => {
+          resetField(item);
+        })
+      : resetField(name);
+  };
+
   const handleSubmit = (callback: OnSubmit<Data>) => async (
     e: React.SyntheticEvent,
   ): Promise<void> => {
@@ -556,13 +580,12 @@ export default function useForm<
   };
 
   const reset = (): void => {
-    try {
-      // @ts-ignore
-      Object.values(fieldsRef.current)[0]
-        .ref.closest('form')
-        .reset();
-    } catch {
-      warnMessage(`⚠ Form element not found`);
+    const fields = Object.values(fieldsRef.current);
+    for (let field of fields) {
+      if (field && field.ref.closest) {
+        field.ref.closest('form').reset();
+        break;
+      }
     }
     resetRefs();
     reRenderForm({});
@@ -581,6 +604,7 @@ export default function useForm<
 
   return {
     register,
+    unregister,
     handleSubmit,
     watch,
     unSubscribe,

@@ -98,6 +98,7 @@ export interface FormProps<
     refOrValidateRule: RegisterInput | Ref,
     validateRule?: RegisterInput,
   ) => any;
+  unregister: (name: string | string[]) => void;
   handleSubmit: (
     callback: (data: any, e: React.SyntheticEvent) => void,
   ) => (e: React.SyntheticEvent) => Promise<void>;
