@@ -304,7 +304,7 @@ export default function useForm<
     if (!type && error) {
       delete errorsFromRef[name];
       reRenderForm({});
-    } else if (!isSameError) {
+    } else if (!isSameError && type) {
       errorsFromRef[name] = {
         type,
         message,
