@@ -575,7 +575,7 @@ export default function useForm<
     resetRefs();
   };
 
-  const reset = (): void => {
+  const reset = useCallback((): void => {
     const fields = Object.values(fieldsRef.current);
     for (let field of fields) {
       if (field && field.ref.closest) {
@@ -585,7 +585,7 @@ export default function useForm<
     }
     resetRefs();
     reRenderForm({});
-  };
+  }, []);
 
   const getValues = (): Data => getFieldsValues<Data>(fieldsRef.current);
 
