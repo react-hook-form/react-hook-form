@@ -10,7 +10,7 @@
 [![npm](https://badgen.net/bundlephobia/minzip/react-hook-form)](https://badgen.net/bundlephobia/minzip/react-hook-form)
 
 - 使创建表单和集成更加便捷
-- 以性能和DX为基础构建
+- 以性能和开发体验为基础构建
 - 遵循html标准进行校验
 - 支持浏览器原生校验
 - 迷你的体积而没有其他依赖
