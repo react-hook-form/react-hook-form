@@ -80,6 +80,15 @@ export interface SubmitPromiseResult<Data extends DataType> {
 
 export type VoidFunction = () => void;
 
+export interface RadioReturn {
+  isValid: boolean;
+  value: number | string;
+}
+
+export interface ValidationReturn {
+  [key: string]: string;
+}
+
 export interface FormProps<
   Data extends DataType = DataType,
   Name extends keyof Data = keyof Data
@@ -89,6 +98,7 @@ export interface FormProps<
     refOrValidateRule: RegisterInput | Ref,
     validateRule?: RegisterInput,
   ) => any;
+  unregister: (name: string | string[]) => void;
   handleSubmit: (
     callback: (data: any, e: React.SyntheticEvent) => void,
   ) => (e: React.SyntheticEvent) => Promise<void>;
@@ -98,6 +108,7 @@ export interface FormProps<
   ) => FieldValue | Partial<Data> | void;
   unSubscribe: () => void;
   reset: () => void;
+  clearError: (name: Name) => void;
   setError: (name: Name, type?: string, message?: string, ref?: Ref) => void;
   setValue: (name: Name, value: Data[Name], shouldValidate?: boolean) => void;
   triggerValidation: (

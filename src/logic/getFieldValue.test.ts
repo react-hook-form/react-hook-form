@@ -101,8 +101,8 @@ describe('getFieldValue', () => {
     ).toBe('value');
   });
 
-  it('should throw an error when radio input value is not found', () => {
-    expect(() => {
+  it('should return empty string when radio input value is not found', () => {
+    expect(
       getFieldValue(
         {},
         {
@@ -110,24 +110,26 @@ describe('getFieldValue', () => {
           value: 'value',
           name: 'test',
         },
-      );
-    }).toThrow();
+      ),
+    ).toEqual('');
   });
 
   it('should return false when checkbox is not checked', () => {
-    expect(getFieldValue(
-      {
-        test: {
-          ref: {
-            checked: false,
+    expect(
+      getFieldValue(
+        {
+          test: {
+            ref: {
+              checked: false,
+            },
           },
         },
-      },
-      {
-        type: 'checkbox',
-        value: 'value',
-        name: 'test',
-      },
-    )).toBeFalsy();
+        {
+          type: 'checkbox',
+          value: 'value',
+          name: 'test',
+        },
+      ),
+    ).toBeFalsy();
   });
 });

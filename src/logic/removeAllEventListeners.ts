@@ -1,4 +1,4 @@
-import {Ref} from "../types";
+import { Ref } from '../types';
 
 export default (ref: Ref, validateWithStateUpdate: Function): void => {
   if (!ref.removeEventListener) return;

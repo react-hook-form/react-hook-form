@@ -1,5 +1,5 @@
-import { Field } from '../types';
 import isCheckBoxInput from '../utils/isCheckBoxInput';
+import { Field } from '../types';
 
 export default function attachEventListeners({
   field,

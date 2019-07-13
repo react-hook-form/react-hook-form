@@ -7,16 +7,16 @@ export default function findRemovedFieldAndRemoveListener<
 >(
   fields: FieldsObject<Data>,
   touchedFieldsRef: { current: Set<unknown> },
-  fieldsWithValidation: { current: Set<unknown> },
+  fieldsWithValidationRef: { current: Set<unknown> },
   validateWithStateUpdate: Function,
   { ref, mutationWatcher, options }: Field,
   forceDelete: boolean = false,
-): FieldsObject<Data> | undefined {
+): void {
   if (!ref || !ref.type) return;
 
   const { name, type } = ref;
   touchedFieldsRef.current.delete(name);
-  fieldsWithValidation.current.delete(name);
+  fieldsWithValidationRef.current.delete(name);
 
   if (isRadioInput(type) && options) {
     options.forEach(({ ref }, index): void => {
@@ -34,10 +34,7 @@ export default function findRemovedFieldAndRemoveListener<
       }
     });
 
-    if (Array.isArray(options) && !options.length) {
-      delete fields[name];
-      return fields;
-    }
+    if (!options.length) delete fields[name];
   } else if (
     (ref instanceof HTMLElement && !document.body.contains(ref)) ||
     forceDelete
@@ -45,8 +42,5 @@ export default function findRemovedFieldAndRemoveListener<
     removeAllEventListeners(ref, validateWithStateUpdate);
     if (mutationWatcher) mutationWatcher.disconnect();
     delete fields[name];
-    return fields;
   }
-
-  return fields;
 }

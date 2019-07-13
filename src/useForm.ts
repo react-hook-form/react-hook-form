@@ -8,6 +8,12 @@ import shouldUpdateWithError from './logic/shouldUpdateWithError';
 import validateField from './logic/validateField';
 import validateWithSchema from './logic/validateWithSchema';
 import attachNativeValidation from './logic/attachNativeValidation';
+import isCheckBoxInput from './utils/isCheckBoxInput';
+import isEmptyObject from './utils/isEmptyObject';
+import isRadioInput from './utils/isRadioInput';
+import onDomRemove from './utils/onDomRemove';
+import modeChecker from './utils/validationModeChecker';
+import warnMessage from './utils/warnMessage';
 import {
   DataType,
   ErrorMessages,
@@ -21,13 +27,6 @@ import {
   VoidFunction,
   OnSubmit,
 } from './types';
-import filterUndefinedErrors from './utils/filterUndefinedErrors';
-import isCheckBoxInput from './utils/isCheckBoxInput';
-import isEmptyObject from './utils/isEmptyObject';
-import isRadioInput from './utils/isRadioInput';
-import onDomRemove from './utils/onDomRemove';
-import modeChecker from './utils/validationModeChecker';
-import warnMissingRef from './utils/warnMissingRef';
 
 export default function useForm<
   Data extends DataType,
@@ -47,41 +46,49 @@ export default function useForm<
     submitFocusError: true,
   },
 ) {
-  const unMount = useRef<boolean>(false);
   const fieldsRef = useRef<FieldsObject<Data>>({});
   const errorsRef = useRef<ErrorMessages<Data>>({});
   const submitCountRef = useRef<number>(0);
   const touchedFieldsRef = useRef(new Set());
   const watchFieldsRef = useRef<{ [key in keyof Data]?: boolean }>({});
+  const isUnMount = useRef<boolean>(false);
   const isWatchAllRef = useRef<boolean>(false);
   const isSubmittingRef = useRef<boolean>(false);
   const isSubmittedRef = useRef<boolean>(false);
   const isDirtyRef = useRef<boolean>(false);
-  const reRenderForm = useState({})[1];
+  const isSchemaValidateTriggeredRef = useRef<boolean>(false);
   const validateAndStateUpdateRef = useRef<Function>();
+  const fieldsWithValidationRef = useRef(new Set());
+  const validFieldsRef = useRef(new Set());
+  const reRenderForm = useState({})[1];
   const { isOnChange, isOnBlur, isOnSubmit } = modeChecker(mode);
-  const fieldsWithValidation = useRef(new Set());
-  const validFields = useRef(new Set());
+
+  const combineErrorsRef = (data: any) => ({
+    ...errorsRef.current,
+    ...data,
+  });
 
   const renderBaseOnError = (
     name: keyof Data,
-    errors: ErrorMessages<Data>,
+    errorsFromRef: ErrorMessages<Data>,
     error: ErrorMessages<Data>,
-    skipRender?: boolean,
+    shouldRender: boolean = true,
   ): boolean => {
-    if (errors[name] && !error[name]) {
+    if (errorsFromRef[name] && !error[name]) {
       delete errorsRef.current[name];
-      validFields.current.add(name);
-      if (!skipRender) reRenderForm({});
+      validFieldsRef.current.add(name);
+      if (shouldRender) reRenderForm({});
       return true;
     } else if (error[name]) {
-      validFields.current.delete(name);
-      if (!skipRender) reRenderForm({});
+      validFieldsRef.current.delete(name);
+      if (shouldRender) reRenderForm({});
       return true;
     }
-    if (!isOnSubmit && !validFields.current.has(name)) {
-      validFields.current.add(name);
-      if (!skipRender) reRenderForm({});
+
+    if (!isOnSubmit && !validFieldsRef.current.has(name)) {
+      validFieldsRef.current.add(name);
+      if (shouldRender) reRenderForm({});
+      return true;
     }
     return false;
   };
@@ -94,7 +101,7 @@ export default function useForm<
       name: Name;
       value?: Data[Name];
     },
-    shouldSkipRender?: boolean,
+    shouldRender: boolean = true,
   ): Promise<boolean> => {
     const field = fieldsRef.current[name]!;
     const errors = errorsRef.current;
@@ -103,15 +110,12 @@ export default function useForm<
     if (value !== undefined) setValue(name, value); // eslint-disable-line @typescript-eslint/no-use-before-define
 
     const error = await validateField(field, fieldsRef.current);
-    errorsRef.current = {
-      ...filterUndefinedErrors(errorsRef.current),
-      ...error,
-    };
-    renderBaseOnError(name, errors, error, shouldSkipRender);
+    errorsRef.current = combineErrorsRef(error);
+    renderBaseOnError(name, errors, error, shouldRender);
     return isEmptyObject(error);
   };
 
-  const triggerValidation = async (
+  const executeSchemaValidation = async (
     payload:
       | {
           name: Name;
@@ -122,14 +126,64 @@ export default function useForm<
           value?: Data[Name];
         }[],
   ): Promise<boolean> => {
-    if (Array.isArray(payload)) {
+    const fieldValues = getFieldsValues(fieldsRef.current);
+    const fieldErrors = await validateWithSchema(validationSchema, fieldValues);
+    const isArray = Array.isArray(payload);
+    let errors;
+
+    if (isArray) {
+      const names = (payload as []).map(({ name }) => name);
+      errors = combineErrorsRef(
+        Object.entries(fieldErrors).reduce(
+          (previous: { [key: string]: any }, [key, value]) => {
+            // @ts-ignore
+            if (names.includes(key)) {
+              previous[key] = value;
+            }
+            return previous;
+          },
+          {},
+        ),
+      );
+    } else {
+      // @ts-ignore
+      const name = payload.name;
+      errors = combineErrorsRef(
+        fieldErrors[name] ? { name: fieldErrors[name] } : null,
+      );
+    }
+
+    errorsRef.current = errors;
+    isSchemaValidateTriggeredRef.current = true;
+    reRenderForm({});
+    return isArray ? isEmptyObject(fieldErrors) : !fieldErrors[name];
+  };
+
+  const triggerValidation = async (
+    payload?:
+      | {
+          name: Name;
+          value?: Data[Name];
+        }
+      | {
+          name: Name;
+          value?: Data[Name];
+        }[],
+  ): Promise<boolean> => {
+    let fields: any = payload;
+
+    if (!payload)
+      fields = Object.keys(fieldsRef.current).map(name => ({ name }));
+    if (validationSchema) return executeSchemaValidation(fields);
+
+    if (Array.isArray(fields)) {
       const result = await Promise.all(
-        payload.map(async data => await executeValidation(data, true)),
+        fields.map(async data => await executeValidation(data, false)),
       );
       reRenderForm({});
       return result.every(Boolean);
     }
-    return executeValidation(payload);
+    return executeValidation(fields);
   };
 
   const setFieldValue = (name: Name, value: Data[Name]): void => {
@@ -166,16 +220,14 @@ export default function useForm<
         if (Array.isArray(validationFields) && !validationFields.includes(name))
           return;
         const fields = fieldsRef.current;
-        const errors = errorsRef.current;
+        const errorsFromRef = errorsRef.current;
         const ref = fields[name];
         if (!ref) return;
         const isBlurType = type === 'blur';
-        const validateDisabled = !isSubmittedRef.current && isOnSubmit;
-        const isWatchAll = isWatchAllRef.current;
-        const shouldUpdateWatchMode =
-          isWatchAll || watchFieldsRef.current[name];
+        const isValidateDisabled = !isSubmittedRef.current && isOnSubmit;
         const shouldUpdateValidateMode = isOnChange || (isOnBlur && isBlurType);
-        let shouldUpdateState = shouldUpdateWatchMode;
+        let shouldUpdateState =
+          isWatchAllRef.current || watchFieldsRef.current[name];
 
         if (!isDirtyRef.current) {
           isDirtyRef.current = true;
@@ -187,21 +239,23 @@ export default function useForm<
           shouldUpdateState = true;
         }
 
-        if (validateDisabled && shouldUpdateWatchMode) return reRenderForm({});
+        if (isValidateDisabled && shouldUpdateState) return reRenderForm({});
 
         if (validationSchema) {
           const result = getFieldsValues(fields);
-          const schemaValidateErrors =
-            (await validateWithSchema(validationSchema, result)) || {};
-          const error = schemaValidateErrors[name];
+          const fieldsErrors = await validateWithSchema(
+            validationSchema,
+            result,
+          );
+          isSchemaValidateTriggeredRef.current = true;
+          const error = fieldsErrors[name];
           const shouldUpdate =
-            ((!error && errors[name]) || error) &&
+            ((!error && errorsFromRef[name]) || error) &&
             (shouldUpdateValidateMode || isSubmittedRef.current);
 
-          if (shouldUpdate || shouldUpdateWatchMode) {
-            errorsRef.current = { ...errors, ...{ [name]: error } };
+          if (shouldUpdate || shouldUpdateState) {
+            errorsRef.current = { ...errorsFromRef, ...{ [name]: error } };
             if (!error) delete errorsRef.current[name];
-
             return reRenderForm({});
           }
         } else {
@@ -211,20 +265,16 @@ export default function useForm<
             nativeValidation,
           );
           const shouldUpdate = shouldUpdateWithError({
-            errors,
+            errors: errorsFromRef,
             error,
-            validateDisabled,
+            isValidateDisabled,
             isOnBlur,
             isBlurType,
             name,
           });
 
-          if (
-            shouldUpdate ||
-            shouldUpdateValidateMode ||
-            shouldUpdateWatchMode
-          ) {
-            errorsRef.current = { ...filterUndefinedErrors(errors), ...error };
+          if (shouldUpdate || shouldUpdateValidateMode) {
+            errorsRef.current = combineErrorsRef(error);
             if (renderBaseOnError(name, errorsRef.current, error)) return;
           }
         }
@@ -236,7 +286,7 @@ export default function useForm<
     null,
     fieldsRef.current,
     touchedFieldsRef,
-    fieldsWithValidation,
+    fieldsWithValidationRef,
     validateAndStateUpdateRef.current,
   );
 
@@ -246,16 +296,16 @@ export default function useForm<
     message?: string,
     ref?: Ref,
   ): void => {
-    const errors = errorsRef.current;
-    const error = errors[name];
+    const errorsFromRef = errorsRef.current;
+    const error = errorsFromRef[name];
     const isSameError =
       error && (error.type === type && error.message === message);
 
     if (!type && error) {
-      delete errors[name];
+      delete errorsFromRef[name];
       reRenderForm({});
-    } else if (!isSameError) {
-      errors[name] = {
+    } else if (!isSameError && type) {
+      errorsFromRef[name] = {
         type,
         message,
         ref,
@@ -269,12 +319,12 @@ export default function useForm<
     elementRef: Ref,
     data: RegisterInput | undefined,
   ): void {
-    if (elementRef && !elementRef.name) return warnMissingRef(elementRef);
-
+    if (elementRef && !elementRef.name)
+      return warnMessage(`⚠ Missing field name: ${elementRef}`);
     const { name, type, value } = elementRef;
 
     if (!isOnSubmit && data && !isEmptyObject(data)) {
-      fieldsWithValidation.current.add(name);
+      fieldsWithValidationRef.current.add(name);
     }
 
     const { required = false, validate = undefined } = data || {};
@@ -329,9 +379,7 @@ export default function useForm<
       setFieldValue(name, defaultValues[name]);
     }
 
-    if (!type) {
-      return;
-    }
+    if (!type) return;
 
     const fieldData = isRadio
       ? (fields[name]!.options || [])[(fields[name]!.options || []).length - 1]
@@ -378,7 +426,7 @@ export default function useForm<
       if (!refOrValidateRule || typeof window === 'undefined') return;
 
       if (validateRule && !refOrValidateRule.name) {
-        warnMissingRef(refOrValidateRule);
+        warnMessage(refOrValidateRule);
         return;
       }
 
@@ -391,6 +439,26 @@ export default function useForm<
     },
     [],
   );
+
+  const resetField = (name: string) => {
+    const field = fieldsRef.current[name];
+    if (!field) return;
+    const { ref, options } = field;
+    isRadioInput(ref.type) && Array.isArray(options)
+      ? options.forEach((input): void => removeEventListener(input, true))
+      : removeEventListener(ref, true);
+
+    delete watchFieldsRef.current[name];
+    delete errorsRef.current[name];
+    delete fieldsRef.current[name];
+    touchedFieldsRef.current.delete(name);
+    fieldsWithValidationRef.current.delete(name);
+    validFieldsRef.current.delete(name);
+  };
+
+  const unregister = (name: string | string[]): void => {
+    Array.isArray(name) ? name.forEach(resetField) : resetField(name);
+  };
 
   const handleSubmit = (callback: OnSubmit<Data>) => async (
     e: React.SyntheticEvent,
@@ -459,17 +527,18 @@ export default function useForm<
 
       fieldErrors = {
         ...errors,
-        ...(nativeValidation ? {} : filterUndefinedErrors(errorsRef.current)),
+        ...(nativeValidation ? {} : errorsRef.current),
       };
       fieldValues = values;
     }
 
     if (isEmptyObject(fieldErrors)) {
       await callback(combineFieldValues(fieldValues), e);
+      errorsRef.current = {};
     } else {
       errorsRef.current = fieldErrors as any;
     }
-    if (unMount.current) return;
+    if (isUnMount.current) return;
     isSubmittedRef.current = true;
     submitCountRef.current += 1;
     isSubmittingRef.current = false;
@@ -483,9 +552,10 @@ export default function useForm<
     isSubmittedRef.current = false;
     isDirtyRef.current = false;
     touchedFieldsRef.current = new Set();
-    fieldsWithValidation.current = new Set();
-    validFields.current = new Set();
+    fieldsWithValidationRef.current = new Set();
+    validFieldsRef.current = new Set();
     submitCountRef.current = 0;
+    isSchemaValidateTriggeredRef.current = false;
   };
 
   const unSubscribe = (): void => {
@@ -505,30 +575,32 @@ export default function useForm<
     resetRefs();
   };
 
-  const reset = (): void => {
-    try {
-      // @ts-ignore
-      Object.values(fieldsRef.current)[0]
-        .ref.closest('form')
-        .reset();
-    } catch {
-      console.warn(`⚠ Form element not found`);
+  const reset = useCallback((): void => {
+    const fields = Object.values(fieldsRef.current);
+    for (let field of fields) {
+      if (field && field.ref.closest) {
+        field.ref.closest('form').reset();
+        break;
+      }
     }
     resetRefs();
     reRenderForm({});
-  };
+  }, []);
 
   const getValues = (): Data => getFieldsValues<Data>(fieldsRef.current);
 
   useEffect((): VoidFunction => {
     return () => {
-      unMount.current = true;
+      isUnMount.current = true;
       unSubscribe();
     };
-  }, [mode, unMount.current]);
+  }, [mode, isUnMount.current]);
+
+  const isEmptyErrors = isEmptyObject(errorsRef.current);
 
   return {
     register,
+    unregister,
     handleSubmit,
     watch,
     unSubscribe,
@@ -550,12 +622,15 @@ export default function useForm<
       isSubmitting: isSubmittingRef.current,
       ...(isOnSubmit
         ? {
-            isValid: isEmptyObject(errorsRef.current),
+            isValid: isEmptyErrors,
           }
         : {
-            isValid: fieldsWithValidation.current.size
+            isValid: validationSchema
+              ? isSchemaValidateTriggeredRef.current && isEmptyErrors
+              : fieldsWithValidationRef.current.size
               ? !isEmptyObject(fieldsRef.current) &&
-                validFields.current.size >= fieldsWithValidation.current.size
+                validFieldsRef.current.size >=
+                  fieldsWithValidationRef.current.size
               : !isEmptyObject(fieldsRef.current),
           }),
     },
