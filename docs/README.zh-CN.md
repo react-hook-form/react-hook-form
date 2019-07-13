@@ -2,15 +2,22 @@
 
 > React hook form 让表单校验不再烦恼
 
-[![Tweet](https://img.shields.io/twitter/url/http/shields.io.svg?style=social)](https://twitter.com/intent/tweet?text=React+Hook-Form&url=https://github.com/bluebill1049/react-hook-form)&nbsp;[![CircleCI](https://circleci.com/gh/bluebill1049/react-hook-form.svg?style=svg)](https://circleci.com/gh/bluebill1049/react-hook-form) [![Coverage Status](https://coveralls.io/repos/github/bluebill1049/react-hook-form/badge.svg?branch=master)](https://coveralls.io/github/bluebill1049/react-hook-form?branch=master) [![npm downloads](https://img.shields.io/npm/dm/react-hook-form.svg?style=flat-square)](https://www.npmjs.com/package/react-hook-form)
+[![Tweet](https://img.shields.io/twitter/url/http/shields.io.svg?style=social)](https://twitter.com/intent/tweet?text=React+Hook-Form&url=https://github.com/bluebill1049/react-hook-form)&nbsp;
+[![CircleCI](https://circleci.com/gh/bluebill1049/react-hook-form.svg?style=svg)](https://circleci.com/gh/bluebill1049/react-hook-form) 
+[![Coverage Status](https://coveralls.io/repos/github/bluebill1049/react-hook-form/badge.svg?branch=master)](https://coveralls.io/github/bluebill1049/react-hook-form?branch=master) 
+[![npm downloads](https://img.shields.io/npm/dm/react-hook-form.svg?style=flat-square)](https://www.npmjs.com/package/react-hook-form)
 [![npm](https://img.shields.io/npm/dt/react-hook-form.svg?style=flat-square)](https://www.npmjs.com/package/react-hook-form)
-[![npm](https://img.shields.io/npm/l/react-hook-form.svg?style=flat-square)](https://www.npmjs.com/package/react-lazyload-image)
+[![npm](https://badgen.net/bundlephobia/minzip/react-hook-form)](https://badgen.net/bundlephobia/minzip/react-hook-form)
 
 - 使创建表单和集成更加便捷
-- 基于React hook构建，更注重性能和开发体验
+- 以性能和DX为基础构建
 - 遵循html标准进行校验
-- 迷你的体积而没有其他依赖(经过minified + gzipped优化后包只有2.8kb大小)
+- 支持浏览器原生校验
+- 迷你的体积而没有其他依赖
+- 不可控表单校验
 - 从[这里](https://react-hook-form.now.sh/builder)快速构建你的表单
+
+<div align="center"><p align="center"><a href="https://react-hook-form.com" title="React Hook Form - Simple React forms validation"><img src="https://raw.githubusercontent.com/bluebill1049/react-hook-form/master/website/example.gif" alt="React Hook Form Logo - React hook form validation" width="750px" /></a></p></div>
 
 ## 安装
 
@@ -56,3 +63,22 @@ function App() {
   );
 }
 ```
+
+## 贡献者 
+感谢这些为该开源项目作出贡献的人:
+
+<p float="left">
+    <a href="https://github.com/barry4dev"><img src="https://avatars2.githubusercontent.com/u/5514034?s=400&v=4" width="50" height="50" />
+    <a href="https://github.com/AyumiKai"><img src="https://avatars3.githubusercontent.com/u/14857042?s=60&v=4" width="50" height="50" /></a>
+    <a href="https://github.com/mat-jaworski"><img src="https://avatars0.githubusercontent.com/u/11812094?s=460&v=4" width="50" height="50" /></a>
+    <a href="https://github.com/abihf"><img src="https://avatars1.githubusercontent.com/u/1484485?s=180&v=4" width="50" height="50" />
+    <a href="https://github.com/ell10t"><img src="https://avatars2.githubusercontent.com/u/35668113?s=460&v=4" width="50" height="50" />
+    <a href="https://github.com/lightsound"><img src="https://avatars2.githubusercontent.com/u/8220973?s=460&v=4" width="50" height="50" /></a>
+    <a href="https://github.com/jasondibenedetto"><img src="https://avatars0.githubusercontent.com/u/1239739?s=460&v=4" width="50" height="50" /></a>
+    <a href="https://github.com/kabriel"><img src="https://avatars3.githubusercontent.com/u/153115?s=180&v=4" width="50" height="50" /></a>    
+    <a href="https://github.com/ejuo"><img src="https://avatars2.githubusercontent.com/u/1243837?s=460&v=4" width="50" height="50" /></a>    
+    <a href="https://github.com/stramel"><img src="https://avatars1.githubusercontent.com/u/855184?s=460&v=4" width="50" height="50" /></a>
+    <a href="https://github.com/liketurbo"><img src="https://avatars3.githubusercontent.com/u/29164042?s=460&v=4" width="50" height="50" /></a>
+    <a href="https://github.com/garthmcrae"><img src="https://avatars0.githubusercontent.com/u/1332741?s=64&v=4" width="50" height="50" /></a>
+    <a href="https://github.com/erikras"><img src="https://avatars3.githubusercontent.com/u/4396759?s=60&v=4" width="50" height="50" /></a>
+</p>
