@@ -134,7 +134,7 @@ export default async <Data>(
 
     if (typeof validate === 'function') {
       const result = await validate(fieldValue);
-      if (typeof result === 'string' && result) {
+      if (isString(result) && result) {
         error[name] = {
           ...error[name],
           type: 'validate',

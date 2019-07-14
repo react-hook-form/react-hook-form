@@ -17,12 +17,7 @@ export default function combineFieldValues(data: DataType): FieldValue {
 
   return Object.entries(output).reduce(
     (previous: DataType, [key, value]): FieldValue => {
-      if (Array.isArray(value)) {
-        previous[key] = value.filter(Boolean);
-        return previous;
-      }
-
-      previous[key] = value;
+      previous[key] = Array.isArray(value) ? value.filter(Boolean) : value;
       return previous;
     },
     {},
