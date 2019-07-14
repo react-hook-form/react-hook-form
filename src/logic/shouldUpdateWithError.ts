@@ -27,19 +27,16 @@ export default function shouldUpdateWithError({
 
   if (
     (isEmptyObject(errors) && !isEmptyObject(error)) ||
-    (isEmptyObject(error) && errors[name])
+    (isEmptyObject(error) && errors[name]) ||
+    !errors[name]
   ) {
     return true;
   }
 
-  if (!errors[name]) {
-    return true;
-  } else if (
-    errors[name].type !== error[name].type ||
-    errors[name].message !== error[name].message
-  ) {
-    return true;
-  }
-
-  return false;
+  return (
+    errors[name] &&
+    error[name] &&
+    (errors[name].type !== error[name].type ||
+      errors[name].message !== error[name].message)
+  );
 }
