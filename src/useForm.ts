@@ -525,7 +525,10 @@ export default function useForm<
         } as any),
       );
 
-      fieldErrors = errors;
+      fieldErrors = {
+        ...errors,
+        ...(nativeValidation ? {} : errorsRef.current),
+      };
       fieldValues = values;
     }
 
@@ -584,7 +587,10 @@ export default function useForm<
     reRenderForm({});
   }, []);
 
-  const getValues = (): Data => getFieldsValues<Data>(fieldsRef.current);
+  const getValues = ({ flat = true }: { flat: boolean }): Data => {
+    const data = getFieldsValues<Data>(fieldsRef.current);
+    return flat ? data : combineFieldValues(data);
+  };
 
   useEffect((): VoidFunction => {
     return () => {
