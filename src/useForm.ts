@@ -584,8 +584,7 @@ export default function useForm<
     reRenderForm({});
   }, []);
 
-  const getValues = (): Data =>
-    combineFieldValues(getFieldsValues<Data>(fieldsRef.current));
+  const getValues = (): Data => getFieldsValues<Data>(fieldsRef.current);
 
   useEffect((): VoidFunction => {
     return () => {
