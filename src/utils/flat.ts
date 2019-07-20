@@ -1,4 +1,6 @@
-export default function flatObject(input: any) {
+import { DataType } from '../types';
+
+export default function flatObject(input: any): DataType {
   function flat(res: any, key: any, val: any, pre = ''): any {
     const isNotNumber = Number.isNaN(parseInt(key));
     const prefix = [pre, isNotNumber ? key : `[${key}]`]

@@ -14,6 +14,8 @@ import isRadioInput from './utils/isRadioInput';
 import onDomRemove from './utils/onDomRemove';
 import modeChecker from './utils/validationModeChecker';
 import warnMessage from './utils/warnMessage';
+import get from './utils/get';
+import flatObject from './utils/flat';
 import {
   DataType,
   ErrorMessages,
@@ -27,7 +29,6 @@ import {
   VoidFunction,
   OnSubmit,
 } from './types';
-import get from './utils/get';
 
 export default function useForm<
   Data extends DataType,
@@ -377,7 +378,7 @@ export default function useForm<
     }
 
     if (defaultValues && defaultValues[name]) {
-      setFieldValue(name, defaultValues[name]);
+      setFieldValue(name, defaultValues[name] || get(defaultValues, name));
     }
 
     if (!type) return;
@@ -402,15 +403,10 @@ export default function useForm<
   function watch(
     fieldNames?: string | string[] | undefined,
     defaultValue?: string | Partial<Data> | undefined,
-    flat?: boolean,
   ): FieldValue | Partial<Data> | void {
     if (isEmptyObject(fieldsRef.current)) return defaultValue;
     const fieldValues = getFieldsValues(fieldsRef.current);
     const watchFields: any = watchFieldsRef.current;
-
-    if (fieldNames === undefined) {
-      return flat ? fieldValues : combineFieldValues(fieldValues);
-    }
 
     if (typeof fieldNames === 'string') {
       if (fieldValues[fieldNames]) {
@@ -419,25 +415,21 @@ export default function useForm<
       } else {
         const combinedValues = combineFieldValues(fieldValues);
         const values = get(combinedValues, fieldNames);
+        Object.keys(flatObject(values)).forEach(() => {
+          watchFields[name] = true;
+        });
+        return values;
       }
     }
 
-    //
-    // if (typeof fieldNames === 'string') {
-    //   watchFields[fieldNames] = true;
-    // } else if (Array.isArray(fieldNames)) {
-    //   fieldNames.forEach((name): void => {
-    //     watchFields[name] = true;
-    //   });
-    // } else {
-    //   isWatchAllRef.current = true;
-    //   watchFieldsRef.current = {};
-    // }
-    //
-    // const values = getFieldsValues(fieldsRef.current, fieldNames);
-    // const result =
-    //   values === undefined || isEmptyObject(values) ? undefined : values;
-    // return result === undefined ? defaultValue : result;
+    if (Array.isArray(fieldNames)) {
+      return fieldNames.map((name): void => {
+        watchFields[name] = true;
+        return fieldValues[name];
+      });
+    }
+
+    return fieldValues;
   }
 
   const register = useCallback(
