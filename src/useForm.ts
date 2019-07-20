@@ -27,6 +27,7 @@ import {
   VoidFunction,
   OnSubmit,
 } from './types';
+import get from './utils/get';
 
 export default function useForm<
   Data extends DataType,
@@ -401,24 +402,42 @@ export default function useForm<
   function watch(
     fieldNames?: string | string[] | undefined,
     defaultValue?: string | Partial<Data> | undefined,
+    flat?: boolean,
   ): FieldValue | Partial<Data> | void {
+    if (isEmptyObject(fieldsRef.current)) return defaultValue;
+    const fieldValues = getFieldsValues(fieldsRef.current);
     const watchFields: any = watchFieldsRef.current;
 
-    if (typeof fieldNames === 'string') {
-      watchFields[fieldNames] = true;
-    } else if (Array.isArray(fieldNames)) {
-      fieldNames.forEach((name): void => {
-        watchFields[name] = true;
-      });
-    } else {
-      isWatchAllRef.current = true;
-      watchFieldsRef.current = {};
+    if (fieldNames === undefined) {
+      return flat ? fieldValues : combineFieldValues(fieldValues);
     }
 
-    const values = getFieldsValues(fieldsRef.current, fieldNames);
-    const result =
-      values === undefined || isEmptyObject(values) ? undefined : values;
-    return result === undefined ? defaultValue : result;
+    if (typeof fieldNames === 'string') {
+      if (fieldValues[fieldNames]) {
+        watchFields[fieldNames] = true;
+        return fieldValues[fieldNames];
+      } else {
+        const combinedValues = combineFieldValues(fieldValues);
+        const values = get(combinedValues, fieldNames);
+      }
+    }
+
+    //
+    // if (typeof fieldNames === 'string') {
+    //   watchFields[fieldNames] = true;
+    // } else if (Array.isArray(fieldNames)) {
+    //   fieldNames.forEach((name): void => {
+    //     watchFields[name] = true;
+    //   });
+    // } else {
+    //   isWatchAllRef.current = true;
+    //   watchFieldsRef.current = {};
+    // }
+    //
+    // const values = getFieldsValues(fieldsRef.current, fieldNames);
+    // const result =
+    //   values === undefined || isEmptyObject(values) ? undefined : values;
+    // return result === undefined ? defaultValue : result;
   }
 
   const register = useCallback(
