@@ -1,4 +1,4 @@
-import flatten from './flatten';
+import flatArray from './flatArray';
 import isString from './isString';
 import isObject from './isObject';
 import { DataType } from '../types';
@@ -26,4 +26,4 @@ function getPath(path: string, value: DataType | string[] | string): any {
 }
 
 export default (parentPath: string, value: any) =>
-  flatten(getPath(parentPath, value));
+  flatArray(getPath(parentPath, value));
