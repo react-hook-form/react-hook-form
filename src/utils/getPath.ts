@@ -3,9 +3,9 @@ import isString from './isString';
 import isObject from './isObject';
 import { DataType } from '../types';
 
-function getPath(path: string, value: DataType | string[] | string): any {
-  return Array.isArray(value)
-    ? value.map((item, index) => {
+function getPath(path: string, values: DataType | string[] | string): any {
+  return Array.isArray(values)
+    ? values.map((item, index) => {
         const pathWithIndex = `${path}[${index}]`;
         if (Array.isArray(item)) {
           return getPath(pathWithIndex, item);
@@ -16,9 +16,9 @@ function getPath(path: string, value: DataType | string[] | string): any {
               : getPath(`${pathWithIndex}.${key}`, objectValue),
           );
         }
-        return `${path}[${index}]`;
+        return pathWithIndex;
       })
-    : Object.entries(value).map(([key, objectValue]) =>
+    : Object.entries(values).map(([key, objectValue]) =>
         isString(objectValue) ? `${path}.${key}` : getPath(path, objectValue),
       );
 }

@@ -29,6 +29,7 @@ import {
   VoidFunction,
   OnSubmit,
 } from './types';
+import getPath from './utils/getPath';
 
 export default function useForm<
   Data extends DataType,
@@ -436,8 +437,8 @@ export default function useForm<
       } else {
         const combinedValues = combineFieldValues(fieldValues);
         const values = get(combinedValues, fieldNames);
-        Object.keys(flatObject(values)).forEach(name => {
-          watchFields[name] = true;
+        getPath(fieldNames, values).forEach(name => {
+          watchFields[name as any] = true;
         });
         return values;
       }
@@ -452,8 +453,8 @@ export default function useForm<
         } else {
           const combinedValues = combineFieldValues(fieldValues);
           const values = get(combinedValues, name);
-          Object.keys(flatObject(values)).forEach(name => {
-            watchFields[name] = true;
+          getPath(name, values).forEach(fieldName => {
+            watchFields[fieldName as any] = true;
           });
           return values;
         }
