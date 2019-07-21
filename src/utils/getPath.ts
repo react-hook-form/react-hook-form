@@ -18,11 +18,11 @@ function getPath(path: string, value: DataType | string[] | string): any {
       }
       return `${path}[${index}]`;
     });
-  } else if (isObject(value)) {
-    return Object.entries(value).map(([key, objectValue]) =>
-      isString(objectValue) ? `${path}.${key}` : getPath(path, objectValue),
-    );
   }
+
+  return Object.entries(value).map(([key, objectValue]) =>
+    isString(objectValue) ? `${path}.${key}` : getPath(path, objectValue),
+  );
 }
 
 export default (parentPath: string, value: any) =>
