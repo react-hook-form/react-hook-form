@@ -1,8 +1,9 @@
 import flatten from './flatten';
 import isString from './isString';
 import isObject from './isObject';
+import { DataType } from '../types';
 
-function getPath(path: string, value: any): any {
+function getPath(path: string, value: DataType | string[] | string): any {
   if (Array.isArray(value)) {
     return value.map((item, index) => {
       const pathWithIndex = `${path}[${index}]`;
