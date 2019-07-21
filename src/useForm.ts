@@ -132,6 +132,7 @@ export default function useForm<
     const fieldErrors = await validateWithSchema(validationSchema, fieldValues);
     const isArray = Array.isArray(payload);
     let errors;
+    let payloadName;
 
     if (isArray) {
       const names = (payload as []).map(({ name }) => name);
@@ -149,16 +150,16 @@ export default function useForm<
       );
     } else {
       // @ts-ignore
-      const name = payload.name;
+      payloadName = payload.name;
       errors = combineErrorsRef(
-        fieldErrors[name] ? { name: fieldErrors[name] } : null,
+        fieldErrors[payloadName] ? { name: fieldErrors[payloadName] } : null,
       );
     }
 
     errorsRef.current = errors;
     isSchemaValidateTriggeredRef.current = true;
     reRenderForm({});
-    return isArray ? isEmptyObject(fieldErrors) : !fieldErrors[name];
+    return isArray ? isEmptyObject(fieldErrors) : !fieldErrors[payloadName];
   };
 
   const triggerValidation = async (
@@ -416,7 +417,7 @@ export default function useForm<
       } else {
         const combinedValues = combineFieldValues(fieldValues);
         const values = get(combinedValues, fieldNames);
-        Object.keys(flatObject(values)).forEach(() => {
+        Object.keys(flatObject(values)).forEach(name => {
           watchFields[name] = true;
         });
         return values;
