@@ -1,25 +1,17 @@
 import getPath from './getPath';
 
-const flatten = (list: any) =>
-  list.reduce(
-    (a: any, b: any) => a.concat(Array.isArray(b) ? flatten(b) : b),
-    [],
-  );
-
 describe('getPath', () => {
   it('should render correctly', () => {
     expect(
-      flatten(
-        getPath('test', [
-          1,
-          [1, 2],
-          {
-            data: 'test',
-            kidding: { test: 'data' },
-            what: [{ bill: { haha: 'test' } }, [3, 4]],
-          },
-        ]),
-      ),
+      getPath('test', [
+        1,
+        [1, 2],
+        {
+          data: 'test',
+          kidding: { test: 'data' },
+          what: [{ bill: { haha: 'test' } }, [3, 4]],
+        },
+      ]),
     ).toEqual([
       'test[0]',
       'test[1][0]',

@@ -1,4 +1,6 @@
-export default function getPath(parentPath: string, value: any): any {
+import flatten from './flatten';
+
+function getPath(parentPath: string, value: any): any {
   if (Array.isArray(value)) {
     return value.map((item, index) => {
       if (Array.isArray(item)) {
@@ -23,3 +25,7 @@ export default function getPath(parentPath: string, value: any): any {
     });
   }
 }
+
+export default (parentPath: string, value: any) => {
+  return flatten(getPath(parentPath, value));
+};
