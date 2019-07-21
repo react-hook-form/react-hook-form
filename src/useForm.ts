@@ -599,9 +599,9 @@ export default function useForm<
     reRenderForm({});
   }, []);
 
-  const getValues = ({ flat = true }: { flat: boolean }): Data => {
+  const getValues = ({ nest = true }: { nest: boolean }): Data => {
     const data = getFieldsValues<Data>(fieldsRef.current);
-    return flat ? data : combineFieldValues(data);
+    return nest ? combineFieldValues(data) : data;
   };
 
   useEffect((): VoidFunction => {
