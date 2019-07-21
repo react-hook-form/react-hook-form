@@ -377,8 +377,9 @@ export default function useForm<
       }
     }
 
-    if (defaultValues && defaultValues[name]) {
-      setFieldValue(name, defaultValues[name] || get(defaultValues, name));
+    if (defaultValues) {
+      const defaultValue = defaultValues[name] || get(defaultValues, name);
+      if (defaultValue) setFieldValue(name, defaultValue);
     }
 
     if (!type) return;
