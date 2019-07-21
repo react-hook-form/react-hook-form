@@ -406,7 +406,26 @@ export default function useForm<
     fieldNames?: string | string[] | undefined,
     defaultValue?: string | Partial<Data> | undefined,
   ): FieldValue | Partial<Data> | void {
-    if (isEmptyObject(fieldsRef.current)) return defaultValue;
+    if (isEmptyObject(fieldsRef.current)) {
+      if (typeof fieldNames === 'string') {
+        return (
+          defaultValue ||
+          (defaultValues &&
+            (defaultValues[fieldNames] || get(defaultValues, fieldNames)))
+        );
+      } else if (Array.isArray(fieldNames)) {
+        return defaultValue || Array.isArray(fieldNames)
+          ? fieldNames.map(
+              fieldName =>
+                defaultValues &&
+                (defaultValues[fieldName] || get(defaultValues, fieldNames)),
+            )
+          : defaultValues;
+      }
+
+      return defaultValue || defaultValues;
+    }
+
     const fieldValues = getFieldsValues(fieldsRef.current);
     const watchFields: any = watchFieldsRef.current;
 
@@ -425,9 +444,19 @@ export default function useForm<
     }
 
     if (Array.isArray(fieldNames)) {
-      return fieldNames.map((name): void => {
+      return fieldNames.map(name => {
         watchFields[name] = true;
-        return fieldValues[name];
+        if (fieldValues[name]) {
+          watchFields[name] = true;
+          return fieldValues[name];
+        } else {
+          const combinedValues = combineFieldValues(fieldValues);
+          const values = get(combinedValues, name);
+          Object.keys(flatObject(values)).forEach(name => {
+            watchFields[name] = true;
+          });
+          return values;
+        }
       });
     }
 
