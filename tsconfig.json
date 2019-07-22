@@ -3,6 +3,7 @@
     "sourceMap": true,
     "module": "es2015",
     "target": "es5",
+    "downlevelIteration": true,
     "moduleResolution": "node",
     "outDir": "./dist",
     "strictNullChecks": true,
