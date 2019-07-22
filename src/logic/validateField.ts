@@ -68,10 +68,10 @@ export default async <Data>(
       exceedMax = maxValue && valueNumber > maxValue;
       exceedMin = minValue && valueNumber < minValue;
     } else if (DATE_INPUTS.includes(type)) {
-      if (typeof maxValue === 'string')
-        exceedMax = maxValue && new Date(value) > new Date(maxValue);
-      if (typeof minValue === 'string')
-        exceedMin = minValue && new Date(value) < new Date(minValue);
+      if (isString(maxValue))
+        exceedMax = maxValue && new Date(value) > new Date(maxValue as string);
+      if (isString(minValue))
+        exceedMin = minValue && new Date(value) < new Date(minValue as string);
     }
 
     if (exceedMax || exceedMin) {

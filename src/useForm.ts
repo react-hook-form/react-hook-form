@@ -30,6 +30,7 @@ import {
   OnSubmit,
 } from './types';
 import assignWatchFields from './logic/assignWatchFields';
+import isString from './utils/isString';
 
 export default function useForm<
   Data extends DataType,
@@ -408,8 +409,10 @@ export default function useForm<
     defaultValue?: string | Partial<Data> | undefined,
   ): FieldValue | Partial<Data> | void {
     if (isEmptyObject(fieldsRef.current)) {
-      if (typeof fieldNames === 'string') {
-        return defaultValue || getDefaultValue(defaultValues, fieldNames);
+      if (isString(fieldNames)) {
+        return (
+          defaultValue || getDefaultValue(defaultValues, fieldNames as string)
+        );
       }
       if (Array.isArray(fieldNames)) {
         return (
@@ -423,8 +426,8 @@ export default function useForm<
     const fieldValues = getFieldsValues(fieldsRef.current);
     const watchFields: any = watchFieldsRef.current;
 
-    if (typeof fieldNames === 'string') {
-      return assignWatchFields(fieldValues, fieldNames, watchFields);
+    if (isString(fieldNames)) {
+      return assignWatchFields(fieldValues, fieldNames as string, watchFields);
     }
     if (Array.isArray(fieldNames)) {
       return fieldNames.map(name =>
