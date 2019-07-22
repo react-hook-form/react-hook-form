@@ -15,7 +15,7 @@ import onDomRemove from './utils/onDomRemove';
 import modeChecker from './utils/validationModeChecker';
 import warnMessage from './utils/warnMessage';
 import get from './utils/get';
-import flatObject from './utils/flat';
+import getDefaultValue from './logic/getDefaultValue';
 import {
   DataType,
   ErrorMessages,
@@ -29,7 +29,7 @@ import {
   VoidFunction,
   OnSubmit,
 } from './types';
-import getPath from './utils/getPath';
+import assignWatchFields from './logic/assignWatchFields';
 
 export default function useForm<
   Data extends DataType,
@@ -409,21 +409,14 @@ export default function useForm<
   ): FieldValue | Partial<Data> | void {
     if (isEmptyObject(fieldsRef.current)) {
       if (typeof fieldNames === 'string') {
+        return defaultValue || getDefaultValue(defaultValues, fieldNames);
+      }
+      if (Array.isArray(fieldNames)) {
         return (
           defaultValue ||
-          (defaultValues &&
-            (defaultValues[fieldNames] || get(defaultValues, fieldNames)))
+          fieldNames.map(fieldName => getDefaultValue(defaultValues, fieldName))
         );
-      } else if (Array.isArray(fieldNames)) {
-        return defaultValue || Array.isArray(fieldNames)
-          ? fieldNames.map(
-              fieldName =>
-                defaultValues &&
-                (defaultValues[fieldName] || get(defaultValues, fieldNames)),
-            )
-          : defaultValues;
       }
-
       return defaultValue || defaultValues;
     }
 
@@ -431,36 +424,13 @@ export default function useForm<
     const watchFields: any = watchFieldsRef.current;
 
     if (typeof fieldNames === 'string') {
-      if (fieldValues[fieldNames]) {
-        watchFields[fieldNames] = true;
-        return fieldValues[fieldNames];
-      } else {
-        const combinedValues = combineFieldValues(fieldValues);
-        const values = get(combinedValues, fieldNames);
-        getPath(fieldNames, values).forEach(name => {
-          watchFields[name as any] = true;
-        });
-        return values;
-      }
+      return assignWatchFields(fieldValues, fieldNames, watchFields);
     }
-
     if (Array.isArray(fieldNames)) {
-      return fieldNames.map(name => {
-        watchFields[name] = true;
-        if (fieldValues[name]) {
-          watchFields[name] = true;
-          return fieldValues[name];
-        } else {
-          const combinedValues = combineFieldValues(fieldValues);
-          const values = get(combinedValues, name);
-          getPath(name, values).forEach(fieldName => {
-            watchFields[fieldName as any] = true;
-          });
-          return values;
-        }
-      });
+      return fieldNames.map(name =>
+        assignWatchFields(fieldValues, name, watchFields),
+      );
     }
-
     return fieldValues;
   }
 

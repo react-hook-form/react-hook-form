@@ -12,4 +12,11 @@ describe('get', () => {
     expect(get(test, 'luo[2].betty')).toEqual('test');
     expect(get(test, 'betty.test.test1[0].test2')).toEqual('bill');
   });
+
+  it('should get from the flat data', () => {
+    const test = {
+      bill: 'test',
+    };
+    expect(get(test, 'bill')).toEqual('test');
+  });
 });
