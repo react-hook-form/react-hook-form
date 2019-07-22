@@ -3,8 +3,8 @@ import isString from './isString';
 import isObject from './isObject';
 import { DataType } from '../types';
 
-function getPath(path: string, values: DataType | string[] | string): any {
-  return Array.isArray(values)
+const getPath = (path: string, values: DataType | string[] | string): any =>
+  Array.isArray(values)
     ? values.map((item, index) => {
         const pathWithIndex = `${path}[${index}]`;
         if (Array.isArray(item)) {
@@ -21,7 +21,6 @@ function getPath(path: string, values: DataType | string[] | string): any {
     : Object.entries(values).map(([key, objectValue]) =>
         isString(objectValue) ? `${path}.${key}` : getPath(path, objectValue),
       );
-}
 
 export default (parentPath: string, value: any) =>
   flatArray(getPath(parentPath, value));
