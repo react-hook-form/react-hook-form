@@ -410,9 +410,7 @@ export default function useForm<
   ): FieldValue | Partial<Data> | void {
     if (isEmptyObject(fieldsRef.current)) {
       if (isString(fieldNames)) {
-        return (
-          defaultValue || getDefaultValue(defaultValues, fieldNames as string)
-        );
+        return defaultValue || getDefaultValue(defaultValues, fieldNames);
       }
       if (Array.isArray(fieldNames)) {
         return (
@@ -427,7 +425,7 @@ export default function useForm<
     const watchFields: any = watchFieldsRef.current;
 
     if (isString(fieldNames)) {
-      return assignWatchFields(fieldValues, fieldNames as string, watchFields);
+      return assignWatchFields(fieldValues, fieldNames, watchFields);
     }
     if (Array.isArray(fieldNames)) {
       return fieldNames.map(name =>
