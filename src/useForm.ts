@@ -304,7 +304,7 @@ export default function useForm<
     if (!type && error) {
       delete errorsFromRef[name];
       reRenderForm({});
-    } else if (!isSameError) {
+    } else if (!isSameError && type) {
       errorsFromRef[name] = {
         type,
         message,
@@ -440,6 +440,26 @@ export default function useForm<
     [],
   );
 
+  const resetField = (name: string) => {
+    const field = fieldsRef.current[name];
+    if (!field) return;
+    const { ref, options } = field;
+    isRadioInput(ref.type) && Array.isArray(options)
+      ? options.forEach((input): void => removeEventListener(input, true))
+      : removeEventListener(ref, true);
+
+    delete watchFieldsRef.current[name];
+    delete errorsRef.current[name];
+    delete fieldsRef.current[name];
+    touchedFieldsRef.current.delete(name);
+    fieldsWithValidationRef.current.delete(name);
+    validFieldsRef.current.delete(name);
+  };
+
+  const unregister = (name: string | string[]): void => {
+    Array.isArray(name) ? name.forEach(resetField) : resetField(name);
+  };
+
   const handleSubmit = (callback: OnSubmit<Data>) => async (
     e: React.SyntheticEvent,
   ): Promise<void> => {
@@ -505,10 +525,7 @@ export default function useForm<
         } as any),
       );
 
-      fieldErrors = {
-        ...errors,
-        ...(nativeValidation ? {} : errorsRef.current),
-      };
+      fieldErrors = errors;
       fieldValues = values;
     }
 
@@ -555,18 +572,17 @@ export default function useForm<
     resetRefs();
   };
 
-  const reset = (): void => {
-    try {
-      // @ts-ignore
-      Object.values(fieldsRef.current)[0]
-        .ref.closest('form')
-        .reset();
-    } catch {
-      warnMessage(`⚠ Form element not found`);
+  const reset = useCallback((): void => {
+    const fields = Object.values(fieldsRef.current);
+    for (let field of fields) {
+      if (field && field.ref.closest) {
+        field.ref.closest('form').reset();
+        break;
+      }
     }
     resetRefs();
     reRenderForm({});
-  };
+  }, []);
 
   const getValues = (): Data => getFieldsValues<Data>(fieldsRef.current);
 
@@ -581,6 +597,7 @@ export default function useForm<
 
   return {
     register,
+    unregister,
     handleSubmit,
     watch,
     unSubscribe,

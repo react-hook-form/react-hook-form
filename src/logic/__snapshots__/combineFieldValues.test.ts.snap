@@ -3,14 +3,17 @@
 exports[`combineFieldValues should combine all the array fields 1`] = `
 Object {
   "email": Array [
+    undefined,
     "asdasd@dsad.com",
     "asdasd@.com",
   ],
   "firstName": Array [
+    undefined,
     "asdasd",
     "asdasd",
   ],
   "lastName": Array [
+    undefined,
     "asdasd",
     "asd",
   ],
@@ -27,6 +30,7 @@ Object {
     },
   ],
   "test": Array [
+    undefined,
     Object {
       "task": "testLast",
       "what": "testLast",

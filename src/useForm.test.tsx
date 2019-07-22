@@ -432,6 +432,10 @@ describe('useForm', () => {
   describe('getValues', () => {
     it('should call getFieldsValues and return all values', () => {
       hookForm.register({ value: 'test', type: 'input', name: 'test' });
+      // @ts-ignore
+      getFieldsValues.mockImplementation(async () => {
+        return {};
+      });
       hookForm.getValues();
       expect(getFieldsValues).toBeCalled();
     });
