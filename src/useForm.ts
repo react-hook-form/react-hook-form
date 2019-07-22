@@ -541,10 +541,7 @@ export default function useForm<
         } as any),
       );
 
-      fieldErrors = {
-        ...errors,
-        ...(nativeValidation ? {} : errorsRef.current),
-      };
+      fieldErrors = errors;
       fieldValues = values;
     }
 
