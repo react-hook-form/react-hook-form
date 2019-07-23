@@ -530,7 +530,7 @@ export default function useForm<
       const fieldNames = Object.keys(fieldsRef.current);
       errorsRef.current = Object.entries(errorsRef.current).reduce(
         (previous, [key, value]) =>
-          fieldNames.includes(key) ? { ...previous, [key]: value } : previous,
+          fieldNames.includes(key) ? previous : { ...previous, [key]: value },
         {},
       );
     } else {
