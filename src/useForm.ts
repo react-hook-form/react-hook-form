@@ -135,13 +135,9 @@ export default function useForm<
       const names = (payload as []).map(({ name }) => name);
       errors = combineErrorsRef(
         Object.entries(fieldErrors).reduce(
-          (previous: { [key: string]: any }, [key, value]) => {
+          (previous: { [key: string]: any }, [key, value]) =>
             // @ts-ignore
-            if (names.includes(key)) {
-              previous[key] = value;
-            }
-            return previous;
-          },
+            names.includes(key) ? { ...previous, [key]: value } : previous,
           {},
         ),
       );
