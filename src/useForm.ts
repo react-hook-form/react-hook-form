@@ -531,7 +531,12 @@ export default function useForm<
 
     if (isEmptyObject(fieldErrors)) {
       await callback(combineFieldValues(fieldValues), e);
-      errorsRef.current = {};
+      const fieldNames = Object.keys(fieldsRef.current);
+      errorsRef.current = Object.entries(errorsRef.current).reduce(
+        (previous, [key, value]) =>
+          fieldNames.includes(key) ? { ...previous, [key]: value } : previous,
+        {},
+      );
     } else {
       errorsRef.current = fieldErrors as any;
     }
