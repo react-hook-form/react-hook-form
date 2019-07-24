@@ -11,9 +11,9 @@ export type DataType = Record<string, FieldValue>;
 export type OnSubmit<Data extends DataType> = (
   data: Data,
   e: React.SyntheticEvent,
-  ) => void;
-  
-export type Mode = 'onSubmit' | 'onBlur' | 'onChange'
+) => void;
+
+export type Mode = 'onSubmit' | 'onBlur' | 'onChange';
 
 export interface Props<Data extends DataType> {
   mode?: Mode;
@@ -41,8 +41,8 @@ export interface RegisterInput {
   pattern?: RegExp | { value: RegExp; message: string };
   validate?:
     | Validate
-    | Record<string,Validate>
-    | { value: Validate | Record<string,Validate>; message: string };
+    | Record<string, Validate>
+    | { value: Validate | Record<string, Validate>; message: string };
 }
 
 export interface Field extends RegisterInput {
@@ -72,7 +72,9 @@ export type ObjectErrorMessages<Data extends DataType> = {
 export type StringErrorMessages<Data extends DataType> = {
   [Key in keyof Data]?: string;
 };
-export type ErrorMessages<Data extends DataType> = ObjectErrorMessages<Data> | StringErrorMessages<Data>
+export type ErrorMessages<Data extends DataType> =
+  | ObjectErrorMessages<Data>
+  | StringErrorMessages<Data>;
 
 export interface SubmitPromiseResult<Data extends DataType> {
   errors: ErrorMessages<Data>;
@@ -86,7 +88,7 @@ export interface RadioReturn {
   value: NumberOrString;
 }
 
-export type ValidationReturn = Record<string, string>
+export type ValidationReturn = Record<string, string>;
 
 export interface FormProps<
   Data extends DataType = DataType,
@@ -107,7 +109,7 @@ export interface FormProps<
     defaultValue?: string | Partial<Data> | undefined,
   ) => FieldValue | Partial<Data> | void;
   unSubscribe: VoidFunction;
-  reset: VoidFunction
+  reset: VoidFunction;
   clearError: (name: Name) => void;
   setError: (name: Name, type?: string, message?: string, ref?: Ref) => void;
   setValue: (name: Name, value: Value, shouldValidate?: boolean) => void;

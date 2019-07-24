@@ -26,6 +26,7 @@ import {
   SubmitPromiseResult,
   VoidFunction,
   OnSubmit,
+  ObjectErrorMessages,
 } from './types';
 
 export default function useForm<
@@ -183,7 +184,7 @@ export default function useForm<
     return executeValidation(fields);
   };
 
-  const setFieldValue = (name: Name, value: Data[Name]): void => {
+  const setFieldValue = (name: Name, value: Data[Name] | undefined): void => {
     const field = fieldsRef.current[name];
     if (!field) return;
     const ref = field.ref;
@@ -296,12 +297,15 @@ export default function useForm<
     const errorsFromRef = errorsRef.current;
     const error = errorsFromRef[name];
     const isSameError =
-      error && (error.type === type && error.message === message);
+      error &&
+      typeof error !== 'string' &&
+      (error.type === type && error.message === message);
 
     if (!type && error) {
       delete errorsFromRef[name];
       reRenderForm({});
     } else if (!isSameError && type) {
+      // @ts-ignore
       errorsFromRef[name] = {
         type,
         message,
