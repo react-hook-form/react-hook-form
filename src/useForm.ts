@@ -531,18 +531,15 @@ export default function useForm<
       fieldValues = values;
     }
 
+    if (isUnMount.current) return;
+
     if (isEmptyObject(fieldErrors)) {
+      errorsRef.current = {};
       await callback(combineFieldValues(fieldValues), e);
-      const fieldNames = Object.keys(fieldsRef.current);
-      errorsRef.current = Object.entries(errorsRef.current).reduce(
-        (previous, [key, value]) =>
-          fieldNames.includes(key) ? previous : { ...previous, [key]: value },
-        {},
-      );
     } else {
       errorsRef.current = fieldErrors as any;
     }
-    if (isUnMount.current) return;
+
     isSubmittedRef.current = true;
     submitCountRef.current += 1;
     isSubmittingRef.current = false;
