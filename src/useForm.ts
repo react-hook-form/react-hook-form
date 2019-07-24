@@ -249,7 +249,7 @@ export default function useForm<
             ((!error && errorsFromRef[name]) || error) &&
             (shouldUpdateValidateMode || isSubmittedRef.current);
 
-          if (shouldUpdate || shouldUpdateState) {
+          if (shouldUpdate) {
             errorsRef.current = { ...errorsFromRef, ...{ [name]: error } };
             if (!error) delete errorsRef.current[name];
             return reRenderForm({});
