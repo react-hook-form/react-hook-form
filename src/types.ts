@@ -6,20 +6,18 @@ export type Validate = (data: FieldValue) => string | boolean;
 
 export type NumberOrString = number | string;
 
-type Omit<T, K extends keyof T> = Pick<T, Exclude<keyof T, K>>;
-
-export interface DataType {
-  [key: string]: FieldValue;
-}
+export type DataType = Record<string, FieldValue>;
 
 export type OnSubmit<Data extends DataType> = (
   data: Data,
   e: React.SyntheticEvent,
-) => void;
+  ) => void;
+  
+export type Mode = 'onSubmit' | 'onBlur' | 'onChange'
 
-export interface Props<Data> {
-  mode?: 'onSubmit' | 'onBlur' | 'onChange';
-  defaultValues?: { [key: string]: any };
+export interface Props<Data extends DataType> {
+  mode?: Mode;
+  defaultValues?: Partial<Data>;
   nativeValidation?: boolean;
   validationFields?: (keyof Data)[];
   validationSchema?: any;
@@ -43,9 +41,8 @@ export interface RegisterInput {
   pattern?: RegExp | { value: RegExp; message: string };
   validate?:
     | Validate
-    | { [key: string]: Validate }
-    | { value: Validate | { [key: string]: Validate }; message: string }
-    | undefined;
+    | Record<string,Validate>
+    | { value: Validate | Record<string,Validate>; message: string };
 }
 
 export interface Field extends RegisterInput {
@@ -69,9 +66,13 @@ export interface Error {
   isManual?: boolean;
 }
 
-export type ErrorMessages<Data extends DataType> = {
+export type ObjectErrorMessages<Data extends DataType> = {
   [Key in keyof Data]?: Error;
 };
+export type StringErrorMessages<Data extends DataType> = {
+  [Key in keyof Data]?: string;
+};
+export type ErrorMessages<Data extends DataType> = ObjectErrorMessages<Data> | StringErrorMessages<Data>
 
 export interface SubmitPromiseResult<Data extends DataType> {
   errors: ErrorMessages<Data>;
@@ -82,16 +83,15 @@ export type VoidFunction = () => void;
 
 export interface RadioReturn {
   isValid: boolean;
-  value: number | string;
+  value: NumberOrString;
 }
 
-export interface ValidationReturn {
-  [key: string]: string;
-}
+export type ValidationReturn = Record<string, string>
 
 export interface FormProps<
   Data extends DataType = DataType,
-  Name extends keyof Data = keyof Data
+  Name extends keyof Data = keyof Data,
+  Value = Data[Name]
 > {
   children: JSX.Element[] | JSX.Element;
   register: (
@@ -106,20 +106,20 @@ export interface FormProps<
     fieldNames?: string | string[] | undefined,
     defaultValue?: string | Partial<Data> | undefined,
   ) => FieldValue | Partial<Data> | void;
-  unSubscribe: () => void;
-  reset: () => void;
+  unSubscribe: VoidFunction;
+  reset: VoidFunction
   clearError: (name: Name) => void;
   setError: (name: Name, type?: string, message?: string, ref?: Ref) => void;
-  setValue: (name: Name, value: Data[Name], shouldValidate?: boolean) => void;
+  setValue: (name: Name, value: Value, shouldValidate?: boolean) => void;
   triggerValidation: (
     payload:
       | {
           name: Name;
-          value?: Data[Name];
+          value?: Value;
         }
       | {
           name: Name;
-          value?: Data[Name];
+          value?: Value;
         }[],
   ) => Promise<boolean>;
   getValues: () => DataType;
@@ -128,7 +128,7 @@ export interface FormProps<
     dirty: boolean;
     isSubmitted: boolean;
     submitCount: number;
-    touched: string[] | {}[];
+    touched: string[] | object[];
     isSubmitting: boolean;
     isValid: boolean;
   };
