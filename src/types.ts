@@ -1,6 +1,5 @@
 import * as React from 'react';
 
-
 export type FieldValue = any;
 
 export type Validate = (data: FieldValue) => string | boolean;
