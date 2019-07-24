@@ -27,6 +27,7 @@ import {
   VoidFunction,
   OnSubmit,
 } from './types';
+import isString from './utils/isString';
 
 const { useEffect, useRef, useState, useCallback } = React;
 
@@ -315,6 +316,20 @@ export default function useForm<
       };
       reRenderForm({});
     }
+  };
+
+  const clearError = (name: Name | undefined | Name[]): void => {
+    if (name === undefined) {
+      errorsRef.current = {};
+    } else if (isString(name)) {
+      // @ts-ignore
+      delete errorsRef.current[name];
+    } else if (Array.isArray(name)) {
+      name.forEach(item => {
+        delete errorsRef.current[item];
+      });
+    }
+    reRenderForm({});
   };
 
   function registerIntoFieldsRef(
@@ -606,9 +621,7 @@ export default function useForm<
     watch,
     unSubscribe,
     reset,
-    clearError: (name: Name): void => {
-      setError(name);
-    },
+    clearError,
     setError,
     setValue,
     triggerValidation,
