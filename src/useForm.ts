@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, useCallback } from 'react';
+import * as React from 'react';
 import attachEventListeners from './logic/attachEventListeners';
 import combineFieldValues from './logic/combineFieldValues';
 import findRemovedFieldAndRemoveListener from './logic/findRemovedFieldAndRemoveListener';
@@ -26,8 +26,9 @@ import {
   SubmitPromiseResult,
   VoidFunction,
   OnSubmit,
-  ObjectErrorMessages,
 } from './types';
+
+const { useEffect, useRef, useState, useCallback } = React;
 
 export default function useForm<
   Data extends DataType,
