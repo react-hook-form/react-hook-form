@@ -32,7 +32,7 @@ const errors = {
 
 describe('parseErrorSchema', () => {
   it('should parse the validaiton errors into react hook form errors format', () => {
-    expect(parseErrorSchema(errors)).toMatchSnapshot();
+    expect(parseErrorSchema(true, errors)).toMatchSnapshot();
   });
 });
 
@@ -45,6 +45,9 @@ describe('validateWithSchema', () => {
             // @ts-ignore
             throw errors;
           },
+          constructor: {
+            name: 'ObjectSchema',
+          },
         },
         {},
       ),
@@ -56,6 +59,9 @@ describe('validateWithSchema', () => {
       await validateWithSchema(
         {
           validate: () => {},
+          constructor: {
+            name: 'ObjectSchema',
+          },
         },
         {},
       ),
