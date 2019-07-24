@@ -15,6 +15,7 @@
     "test": "jest --runInBand",
     "test-coverage": "jest --coverage",
     "testw": "yarn test-coverage -- --watchAll",
+    "bundlesize": "bundlesize",
     "prepublish": "yarn lint && yarn test && yarn run clean && yarn build"
   },
   "keywords": [
@@ -39,6 +40,7 @@
     "@types/react-test-renderer": "^16.8.1",
     "@typescript-eslint/eslint-plugin": "^1.9.0",
     "@typescript-eslint/parser": "^1.9.0",
+    "bundlesize": "^0.18.0",
     "coveralls": "^3.0.3",
     "enzyme": "^3.9.0",
     "enzyme-adapter-react-16": "^1.12.1",
@@ -59,6 +61,16 @@
     "typescript": "3.5.2",
     "uglify-es": "^3.3.9"
   },
+  "bundlesize": [
+    {
+      "path": "./dist/react-hook-form.es.js",
+      "maxSize": "10 kB"
+    },
+    {
+      "path": "./dist/react-hook-form.js",
+      "maxSize": "10 kB"
+    }
+  ],
   "peerDependencies": {
     "react": "^16.8.0",
     "react-dom": "^16.8.0"
