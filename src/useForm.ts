@@ -16,6 +16,8 @@ import modeChecker from './utils/validationModeChecker';
 import warnMessage from './utils/warnMessage';
 import get from './utils/get';
 import getDefaultValue from './logic/getDefaultValue';
+import assignWatchFields from './logic/assignWatchFields';
+import isString from './utils/isString';
 import {
   DataType,
   ErrorMessages,
@@ -29,8 +31,6 @@ import {
   VoidFunction,
   OnSubmit,
 } from './types';
-import assignWatchFields from './logic/assignWatchFields';
-import isString from './utils/isString';
 
 const { useEffect, useRef, useState, useCallback } = React;
 
@@ -386,7 +386,7 @@ export default function useForm<
 
     if (defaultValues) {
       const defaultValue = defaultValues[name] || get(defaultValues, name);
-      if (!isNullOrUndefined(defaultValue)) setFieldValue(name, defaultValue);
+      if (defaultValue !== undefined) setFieldValue(name, defaultValue);
     }
 
     if (!type) return;
