@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, useCallback } from 'react';
+import * as React from 'react';
 import attachEventListeners from './logic/attachEventListeners';
 import combineFieldValues from './logic/combineFieldValues';
 import findRemovedFieldAndRemoveListener from './logic/findRemovedFieldAndRemoveListener';
@@ -31,6 +31,8 @@ import {
 } from './types';
 import assignWatchFields from './logic/assignWatchFields';
 import isString from './utils/isString';
+
+const { useEffect, useRef, useState, useCallback } = React;
 
 export default function useForm<
   Data extends DataType,
@@ -140,13 +142,9 @@ export default function useForm<
       const names = (payload as []).map(({ name }) => name);
       errors = combineErrorsRef(
         Object.entries(fieldErrors).reduce(
-          (previous: { [key: string]: any }, [key, value]) => {
+          (previous: { [key: string]: any }, [key, value]) =>
             // @ts-ignore
-            if (names.includes(key)) {
-              previous[key] = value;
-            }
-            return previous;
-          },
+            names.includes(key) ? { ...previous, [key]: value } : previous,
           {},
         ),
       );
@@ -191,7 +189,7 @@ export default function useForm<
     return executeValidation(fields);
   };
 
-  const setFieldValue = (name: Name, value: Data[Name]): void => {
+  const setFieldValue = (name: Name, value: Data[Name] | undefined): void => {
     const field = fieldsRef.current[name];
     if (!field) return;
     const ref = field.ref;
@@ -258,7 +256,7 @@ export default function useForm<
             ((!error && errorsFromRef[name]) || error) &&
             (shouldUpdateValidateMode || isSubmittedRef.current);
 
-          if (shouldUpdate || shouldUpdateState) {
+          if (shouldUpdate) {
             errorsRef.current = { ...errorsFromRef, ...{ [name]: error } };
             if (!error) delete errorsRef.current[name];
             return reRenderForm({});
@@ -304,12 +302,15 @@ export default function useForm<
     const errorsFromRef = errorsRef.current;
     const error = errorsFromRef[name];
     const isSameError =
-      error && (error.type === type && error.message === message);
+      error &&
+      typeof error !== 'string' &&
+      (error.type === type && error.message === message);
 
     if (!type && error) {
       delete errorsFromRef[name];
       reRenderForm({});
     } else if (!isSameError && type) {
+      // @ts-ignore
       errorsFromRef[name] = {
         type,
         message,
@@ -543,13 +544,15 @@ export default function useForm<
       fieldValues = values;
     }
 
+    if (isUnMount.current) return;
+
     if (isEmptyObject(fieldErrors)) {
-      await callback(combineFieldValues(fieldValues), e);
       errorsRef.current = {};
+      await callback(combineFieldValues(fieldValues), e);
     } else {
       errorsRef.current = fieldErrors as any;
     }
-    if (isUnMount.current) return;
+
     isSubmittedRef.current = true;
     submitCountRef.current += 1;
     isSubmittingRef.current = false;
