@@ -1,4 +1,5 @@
 import getRadioValue from './getRadioValue';
+import isNullOrUndefined from '../utils/isNullOrUndefined';
 import isRadioInput from '../utils/isRadioInput';
 import getValueAndMessage from './getValueAndMessage';
 import isCheckBoxInput from '../utils/isCheckBoxInput';
@@ -56,17 +57,16 @@ export default async <Data>(
     return error;
   }
 
-  if ((min || max) && !isStringInput) {
+  if ((!isNullOrUndefined(min) || !isNullOrUndefined(max)) && !isStringInput) {
     let exceedMax;
     let exceedMin;
     const valueNumber = parseFloat(value);
     const { value: maxValue, message: maxMessage } = getValueAndMessage(max);
     const { value: minValue, message: minMessage } = getValueAndMessage(min);
-    const message = exceedMax ? maxMessage : minMessage;
 
     if (type === 'number') {
-      exceedMax = maxValue && valueNumber > maxValue;
-      exceedMin = minValue && valueNumber < minValue;
+      exceedMax = !isNullOrUndefined(maxValue) && valueNumber > maxValue;
+      exceedMin = !isNullOrUndefined(minValue) && valueNumber < minValue;
     } else if (DATE_INPUTS.includes(type)) {
       if (typeof maxValue === 'string')
         exceedMax = maxValue && new Date(value) > new Date(maxValue);
@@ -75,6 +75,7 @@ export default async <Data>(
     }
 
     if (exceedMax || exceedMin) {
+      const message = exceedMax ? maxMessage : minMessage;
       error[name] = {
         type: exceedMax ? 'max' : 'min',
         message,
