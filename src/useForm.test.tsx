@@ -122,35 +122,43 @@ describe('useForm', () => {
   describe('watch', () => {
     it('should watch individual input', () => {
       expect(hookForm.watch('test')).toBeUndefined();
+      hookForm.register({ type: 'radio', name: 'test', value: '' });
       // @ts-ignore
-      getFieldsValues.mockImplementation((_, name) => {
-        if (name === 'test') {
-          return 'data';
-        }
+      getFieldsValues.mockImplementation(() => {
+        return { test: 'data' };
       });
       expect(hookForm.watch('test')).toBe('data');
     });
 
     it('should watch array of inputs', () => {
-      expect(hookForm.watch(['test', 'test1'])).toBeUndefined();
+      expect(hookForm.watch(['test', 'test1'])).toEqual([undefined, undefined]);
+      hookForm.register({ type: 'radio', name: 'test', value: '' });
+      hookForm.register({ type: 'radio', name: 'test1', value: '' });
       // @ts-ignore
-      getFieldsValues.mockImplementation((_, name) => {
-        if (name && name.includes('test1') && name.includes('test')) {
-          return ['data1', 'data2'];
-        }
+      getFieldsValues.mockImplementation(() => {
+        return {
+          test: 'data1',
+          test1: 'data2',
+        };
       });
       expect(hookForm.watch(['test', 'test1'])).toEqual(['data1', 'data2']);
     });
 
     it('should watch every fields', () => {
-      expect(hookForm.watch()).toBeUndefined();
+      expect(hookForm.watch()).toEqual({});
+      hookForm.register({ type: 'radio', name: 'test', value: '' });
+      hookForm.register({ type: 'radio', name: 'test1', value: '' });
       // @ts-ignore
-      getFieldsValues.mockImplementation((_, name) => {
-        if (name === undefined) {
-          return ['data1', 'data2'];
-        }
+      getFieldsValues.mockImplementation(() => {
+        return {
+          test: 'data1',
+          test1: 'data2',
+        };
       });
-      expect(hookForm.watch()).toEqual(['data1', 'data2']);
+      expect(hookForm.watch()).toEqual({
+        test: 'data1',
+        test1: 'data2',
+      });
     });
   });
 

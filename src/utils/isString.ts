@@ -1,1 +1,2 @@
-export default (value: any): boolean => value && typeof value === 'string';
+export default (value: unknown): value is string =>
+  value !== undefined && typeof value === 'string';

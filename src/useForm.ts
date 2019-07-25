@@ -14,6 +14,8 @@ import isRadioInput from './utils/isRadioInput';
 import onDomRemove from './utils/onDomRemove';
 import modeChecker from './utils/validationModeChecker';
 import warnMessage from './utils/warnMessage';
+import get from './utils/get';
+import getDefaultValue from './logic/getDefaultValue';
 import {
   DataType,
   ErrorMessages,
@@ -27,6 +29,8 @@ import {
   VoidFunction,
   OnSubmit,
 } from './types';
+import assignWatchFields from './logic/assignWatchFields';
+import isString from './utils/isString';
 
 const { useEffect, useRef, useState, useCallback } = React;
 
@@ -185,7 +189,10 @@ export default function useForm<
     return executeValidation(fields);
   };
 
-  const setFieldValue = (name: Name, value: Data[Name] | undefined): void => {
+  const setFieldValue = (
+    name: Name,
+    value: Record<string, any> | undefined,
+  ): void => {
     const field = fieldsRef.current[name];
     if (!field) return;
     const ref = field.ref;
@@ -377,8 +384,9 @@ export default function useForm<
       }
     }
 
-    if (defaultValues && defaultValues[name]) {
-      setFieldValue(name, defaultValues[name]);
+    if (defaultValues) {
+      const defaultValue = defaultValues[name] || get(defaultValues, name);
+      if (defaultValue) setFieldValue(name, defaultValue);
     }
 
     if (!type) return;
@@ -404,23 +412,31 @@ export default function useForm<
     fieldNames?: string | string[] | undefined,
     defaultValue?: string | Partial<Data> | undefined,
   ): FieldValue | Partial<Data> | void {
-    const watchFields: any = watchFieldsRef.current;
-
-    if (typeof fieldNames === 'string') {
-      watchFields[fieldNames] = true;
-    } else if (Array.isArray(fieldNames)) {
-      fieldNames.forEach((name): void => {
-        watchFields[name] = true;
-      });
-    } else {
-      isWatchAllRef.current = true;
-      watchFieldsRef.current = {};
+    if (isEmptyObject(fieldsRef.current)) {
+      if (isString(fieldNames)) {
+        return defaultValue || getDefaultValue(defaultValues, fieldNames);
+      }
+      if (Array.isArray(fieldNames)) {
+        return (
+          defaultValue ||
+          fieldNames.map(fieldName => getDefaultValue(defaultValues, fieldName))
+        );
+      }
+      return defaultValue || defaultValues;
     }
 
-    const values = getFieldsValues(fieldsRef.current, fieldNames);
-    const result =
-      values === undefined || isEmptyObject(values) ? undefined : values;
-    return result === undefined ? defaultValue : result;
+    const fieldValues = getFieldsValues(fieldsRef.current);
+    const watchFields: any = watchFieldsRef.current;
+
+    if (isString(fieldNames)) {
+      return assignWatchFields(fieldValues, fieldNames, watchFields);
+    }
+    if (Array.isArray(fieldNames)) {
+      return fieldNames.map(name =>
+        assignWatchFields(fieldValues, name, watchFields),
+      );
+    }
+    return fieldValues;
   }
 
   const register = useCallback(
@@ -588,7 +604,10 @@ export default function useForm<
     reRenderForm({});
   }, []);
 
-  const getValues = (): Data => getFieldsValues<Data>(fieldsRef.current);
+  const getValues = (payload?: { nest: boolean }): Data => {
+    const data = getFieldsValues<Data>(fieldsRef.current);
+    return payload && payload.nest ? combineFieldValues(data) : data;
+  };
 
   useEffect((): VoidFunction => {
     return () => {

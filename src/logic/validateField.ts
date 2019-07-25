@@ -68,9 +68,9 @@ export default async <Data>(
       exceedMax = !isNullOrUndefined(maxValue) && valueNumber > maxValue;
       exceedMin = !isNullOrUndefined(minValue) && valueNumber < minValue;
     } else if (DATE_INPUTS.includes(type)) {
-      if (typeof maxValue === 'string')
+      if (isString(maxValue))
         exceedMax = maxValue && new Date(value) > new Date(maxValue);
-      if (typeof minValue === 'string')
+      if (isString(minValue))
         exceedMin = minValue && new Date(value) < new Date(minValue);
     }
 

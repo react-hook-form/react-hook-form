@@ -1,6 +1,6 @@
 {
   "name": "react-hook-form",
-  "version": "3.18.14",
+  "version": "3.19.0-beta.2",
   "main": "dist/react-hook-form.js",
   "module": "dist/react-hook-form.es.js",
   "types": "dist/index.d.ts",
@@ -66,10 +66,6 @@
   "bundlesize": [
     {
       "path": "./dist/react-hook-form.min.es.js",
-      "maxSize": "5 kB"
-    },
-    {
-      "path": "./dist/react-hook-form.min.js",
       "maxSize": "5 kB"
     }
   ],
