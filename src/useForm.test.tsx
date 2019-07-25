@@ -504,7 +504,7 @@ describe('useForm', () => {
 
     it('should remove error', () => {
       hookForm.setError('input', 'test');
-      hookForm.setError('input');
+      hookForm.clearError('input');
       expect(hookForm.errors).toEqual({});
     });
   });
