@@ -2566,13 +2566,6 @@ is-promise@^2.1.0:
   resolved "https://registry.yarnpkg.com/is-promise/-/is-promise-2.1.0.tgz#79a2a9ece7f096e80f36d2b2f3bc16c1ff4bf3fa"
   integrity sha1-eaKp7OfwlugPNtKy87wWwf9L8/o=
 
-is-reference@^1.1.2:
-  version "1.1.3"
-  resolved "https://registry.yarnpkg.com/is-reference/-/is-reference-1.1.3.tgz#e99059204b66fdbe09305cfca715a29caa5c8a51"
-  integrity sha512-W1iHHv/oyBb2pPxkBxtaewxa1BC58Pn5J0hogyCdefwUIvb6R+TGbAcIa4qPNYLqLhb3EnOgUf2MQkkF76BcKw==
-  dependencies:
-    "@types/estree" "0.0.39"
-
 is-regex@^1.0.4:
   version "1.0.4"
   resolved "https://registry.yarnpkg.com/is-regex/-/is-regex-1.0.4.tgz#5517489b547091b0930e095654ced25ee97e9491"
@@ -3030,7 +3023,7 @@ jest-watcher@^24.8.0:
     jest-util "^24.8.0"
     string-length "^2.0.0"
 
-jest-worker@^24.0.0, jest-worker@^24.6.0:
+jest-worker@^24.6.0:
   version "24.6.0"
   resolved "https://registry.yarnpkg.com/jest-worker/-/jest-worker-24.6.0.tgz#7f81ceae34b7cde0c9827a6980c35b7cdc0161b3"
   integrity sha512-jDwgW5W9qGNvpI1tNnvajh0a5IE/PuGLFmHk6aR/BZFz8tSgGw17GsDPXAJ6p91IvYDjOw8GpFbvvZGAK+DPQQ==
@@ -3385,13 +3378,6 @@ loose-envify@^1.0.0, loose-envify@^1.1.0, loose-envify@^1.4.0:
   integrity sha512-lyuxPGr/Wfhrlem2CL/UcnUc1zcqKAImBDzukY7Y5F/yQiNdko6+fRLevlw1HgMySw7f611UIY408EtxRSoK3Q==
   dependencies:
     js-tokens "^3.0.0 || ^4.0.0"
-
-magic-string@^0.25.2:
-  version "0.25.3"
-  resolved "https://registry.yarnpkg.com/magic-string/-/magic-string-0.25.3.tgz#34b8d2a2c7fec9d9bdf9929a3fd81d271ef35be9"
-  integrity sha512-6QK0OpF/phMz0Q2AxILkX2mFhi7m+WMwTRg0LQKq/WBB0cDP4rYH3Wp4/d3OTXlrPLVJT/RFqj8tFeAR4nk8AA==
-  dependencies:
-    sourcemap-codec "^1.4.4"
 
 make-dir@^2.1.0:
   version "2.1.0"
@@ -4552,7 +4538,7 @@ resolve@1.x:
   dependencies:
     path-parse "^1.0.6"
 
-resolve@^1.10.0, resolve@^1.10.1, resolve@^1.11.0, resolve@^1.3.2:
+resolve@^1.10.0, resolve@^1.10.1, resolve@^1.3.2:
   version "1.11.1"
   resolved "https://registry.yarnpkg.com/resolve/-/resolve-1.11.1.tgz#ea10d8110376982fef578df8fc30b9ac30a07a3e"
   integrity sha512-vIpgF6wfuJOZI7KKKSP+HmiKggadPQAdsp5HiC1mvqnfp0gF1vdwgBWZIdrVft9pgqoMFQN+R7BSWZiBxx+BBw==
@@ -4579,17 +4565,6 @@ rimraf@2.6.3, rimraf@^2.2.8, rimraf@^2.5.4, rimraf@^2.6.1, rimraf@^2.6.3:
   dependencies:
     glob "^7.1.3"
 
-rollup-plugin-commonjs@^10.0.1:
-  version "10.0.1"
-  resolved "https://registry.yarnpkg.com/rollup-plugin-commonjs/-/rollup-plugin-commonjs-10.0.1.tgz#fbfcadf4ce2e826068e056a9f5c19287d9744ddf"
-  integrity sha512-x0PcCVdEc4J8igv1qe2vttz8JKAKcTs3wfIA3L8xEty3VzxgORLrzZrNWaVMc+pBC4U3aDOb9BnWLAQ8J11vkA==
-  dependencies:
-    estree-walker "^0.6.1"
-    is-reference "^1.1.2"
-    magic-string "^0.25.2"
-    resolve "^1.11.0"
-    rollup-pluginutils "^2.8.1"
-
 rollup-plugin-terser@^5.1.1:
   version "5.1.1"
   resolved "https://registry.yarnpkg.com/rollup-plugin-terser/-/rollup-plugin-terser-5.1.1.tgz#e9d2545ec8d467f96ba99b9216d2285aad8d5b66"
@@ -4610,16 +4585,6 @@ rollup-plugin-typescript2@^0.20.1:
     resolve "1.10.0"
     rollup-pluginutils "2.4.1"
     tslib "1.9.3"
-
-rollup-plugin-uglify@^6.0.2:
-  version "6.0.2"
-  resolved "https://registry.yarnpkg.com/rollup-plugin-uglify/-/rollup-plugin-uglify-6.0.2.tgz#681042cfdf7ea4e514971946344e1a95bc2772fe"
-  integrity sha512-qwz2Tryspn5QGtPUowq5oumKSxANKdrnfz7C0jm4lKxvRDsNe/hSGsB9FntUul7UeC4TsZEWKErVgE1qWSO0gw==
-  dependencies:
-    "@babel/code-frame" "^7.0.0"
-    jest-worker "^24.0.0"
-    serialize-javascript "^1.6.1"
-    uglify-js "^3.4.9"
 
 rollup-pluginutils@2.4.1:
   version "2.4.1"
@@ -4759,7 +4724,7 @@ semver@^6.0.0:
   resolved "https://registry.yarnpkg.com/semver/-/semver-6.1.1.tgz#53f53da9b30b2103cd4f15eab3a18ecbcb210c9b"
   integrity sha512-rWYq2e5iYW+fFe/oPPtYJxYgjBm8sC4rmoGdUOgBB7VnwKt6HrL793l2voH1UlsyYZpJ4g0wfjnTEO1s1NP2eQ==
 
-serialize-javascript@^1.6.1, serialize-javascript@^1.7.0:
+serialize-javascript@^1.7.0:
   version "1.7.0"
   resolved "https://registry.yarnpkg.com/serialize-javascript/-/serialize-javascript-1.7.0.tgz#d6e0dfb2a3832a8c94468e6eb1db97e55a192a65"
   integrity sha512-ke8UG8ulpFOxO8f8gRYabHQe/ZntKlcig2Mp+8+URDP1D8vJZ0KUt7LYo07q25Z/+JVSgpr/cui9PIp5H6/+nA==
@@ -4934,11 +4899,6 @@ source-map@^0.6.0, source-map@^0.6.1, source-map@~0.6.1:
   version "0.6.1"
   resolved "https://registry.yarnpkg.com/source-map/-/source-map-0.6.1.tgz#74722af32e9614e9c287a8d0bbde48b5e2f1a263"
   integrity sha512-UjgapumWlbMhkBgzT7Ykc5YXUT46F0iKu8SGXq0bcwP5dz/h0Plj6enJqjz1Zbq2l5WaqYnrVbwWOWMyF3F47g==
-
-sourcemap-codec@^1.4.4:
-  version "1.4.6"
-  resolved "https://registry.yarnpkg.com/sourcemap-codec/-/sourcemap-codec-1.4.6.tgz#e30a74f0402bad09807640d39e971090a08ce1e9"
-  integrity sha512-1ZooVLYFxC448piVLBbtOxFcXwnymH9oUF8nRd3CuYDVvkRBxRl6pB4Mtas5a4drtL+E8LDgFkQNcgIw6tc8Hg==
 
 spdx-correct@^3.0.0:
   version "3.1.0"
@@ -5402,7 +5362,7 @@ uglify-es@^3.3.9:
     commander "~2.13.0"
     source-map "~0.6.1"
 
-uglify-js@^3.1.4, uglify-js@^3.4.9:
+uglify-js@^3.1.4:
   version "3.6.0"
   resolved "https://registry.yarnpkg.com/uglify-js/-/uglify-js-3.6.0.tgz#704681345c53a8b2079fb6cec294b05ead242ff5"
   integrity sha512-W+jrUHJr3DXKhrsS7NUVxn3zqMOFn0hL/Ei6v0anCIMoKC93TjcflTagwIHLW7SfMFfiQuktQyFVCFHGUE0+yg==
