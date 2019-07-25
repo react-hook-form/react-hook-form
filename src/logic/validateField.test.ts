@@ -121,6 +121,23 @@ describe('validateField', () => {
         {
           ref: { type: 'number', name: 'test', value: 10 },
           required: true,
+          max: 0,
+        },
+        {},
+      ),
+    ).toEqual({
+      test: {
+        type: 'max',
+        message: '',
+        ref: { type: 'number', name: 'test', value: 10 },
+      },
+    });
+
+    expect(
+      await validateField(
+        {
+          ref: { type: 'number', name: 'test', value: 10 },
+          required: true,
           max: 8,
         },
         {},
@@ -152,6 +169,23 @@ describe('validateField', () => {
   });
 
   it('should return min error', async () => {
+    expect(
+      await validateField(
+        {
+          ref: { type: 'number', name: 'test', value: -1 },
+          required: true,
+          min: 0,
+        },
+        {},
+      ),
+    ).toEqual({
+      test: {
+        type: 'min',
+        message: '',
+        ref: { type: 'number', name: 'test', value: -1 },
+      },
+    });
+
     expect(
       await validateField(
         {
