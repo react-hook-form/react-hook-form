@@ -189,7 +189,10 @@ export default function useForm<
     return executeValidation(fields);
   };
 
-  const setFieldValue = (name: Name, value: Data[Name] | undefined): void => {
+  const setFieldValue = (
+    name: Name,
+    value: Record<string, any> | undefined,
+  ): void => {
     const field = fieldsRef.current[name];
     if (!field) return;
     const ref = field.ref;
