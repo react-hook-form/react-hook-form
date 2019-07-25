@@ -604,7 +604,7 @@ export default function useForm<
     reRenderForm({});
   }, []);
 
-  const getValues = (payload: { nest: boolean }): Data => {
+  const getValues = (payload?: { nest: boolean }): Data => {
     const data = getFieldsValues<Data>(fieldsRef.current);
     return payload && payload.nest ? combineFieldValues(data) : data;
   };
