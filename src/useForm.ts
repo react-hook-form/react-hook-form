@@ -307,7 +307,6 @@ export default function useForm<
     message?: string,
     ref?: Ref,
   ): void => {
-    // since errors can be strings or objects, and we only wa
     const errorsFromRef = errorsRef.current;
     const error = errorsFromRef[name];
     const isSameError =
@@ -316,7 +315,7 @@ export default function useForm<
       (error.type === type && error.message === message);
 
     if (!isSameError) {
-      // we sorted out that it's not a string erorr, so cast it (can likely use a typeguard here)
+      // TODO: we sorted out that it's not a string error, so cast it (can likely use a typeguard here)
       const objectErrors = errorsFromRef as ObjectErrorMessages<Data>;
       objectErrors[name] = {
         type,
