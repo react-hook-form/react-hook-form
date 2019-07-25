@@ -7,6 +7,7 @@
   "scripts": {
     "clean": "rimraf dist/*",
     "build": "rollup -c",
+    "build:min": "rollup -c rollup.min.config.js",
     "watch": "tsc --watch",
     "release": "npm version",
     "lint": "eslint ./src --ext .jsx,.ts --ignore-pattern *.test.ts",
@@ -15,7 +16,7 @@
     "test": "jest --runInBand",
     "test-coverage": "jest --coverage",
     "testw": "yarn test-coverage -- --watchAll",
-    "bundlesize": "bundlesize",
+    "bundlesize": "npm run build:min && bundlesize",
     "prepublish": "yarn lint && yarn test && yarn run clean && yarn build"
   },
   "keywords": [
@@ -56,19 +57,22 @@
     "react-test-renderer": "^16.8.6",
     "rimraf": "^2.6.3",
     "rollup": "^1.9.3",
+    "rollup-plugin-commonjs": "^10.0.1",
+    "rollup-plugin-terser": "^5.1.1",
     "rollup-plugin-typescript2": "^0.20.1",
+    "rollup-plugin-uglify": "^6.0.2",
     "ts-jest": "^24.0.2",
     "typescript": "3.5.2",
     "uglify-es": "^3.3.9"
   },
   "bundlesize": [
     {
-      "path": "./dist/react-hook-form.es.js",
-      "maxSize": "10 kB"
+      "path": "./dist/react-hook-form.min.es.js",
+      "maxSize": "5 kB"
     },
     {
-      "path": "./dist/react-hook-form.js",
-      "maxSize": "10 kB"
+      "path": "./dist/react-hook-form.min.js",
+      "maxSize": "5 kB"
     }
   ],
   "peerDependencies": {
