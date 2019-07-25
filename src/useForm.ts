@@ -386,7 +386,7 @@ export default function useForm<
 
     if (defaultValues) {
       const defaultValue = defaultValues[name] || get(defaultValues, name);
-      if (defaultValue) setFieldValue(name, defaultValue);
+      if (defaultValue !== undefined) setFieldValue(name, defaultValue);
     }
 
     if (!type) return;
