@@ -304,7 +304,7 @@ export default function useForm<
   const setError = (
     name: Name,
     type: string,
-    message: string,
+    message?: string,
     ref?: Ref,
   ): void => {
     // since errors can be strings or objects, and we only wa
