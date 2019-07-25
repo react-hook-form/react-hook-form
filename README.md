@@ -13,7 +13,7 @@
 - Built with performance and DX in mind
 - Follows HTML standard for validation
 - Support browser native validation
-- Tiny size without any dependency
+- [Tiny size](https://bundlephobia.com/result?p=react-hook-form@latest) without any dependency
 - Uncontrolled form validation
 - Build forms quickly with the [form builder](https://react-hook-form.com/builder)
 
