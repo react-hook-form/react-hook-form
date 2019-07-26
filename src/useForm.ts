@@ -32,7 +32,6 @@ import {
   OnSubmit,
   ObjectErrorMessages,
 } from './types';
-import isString from './utils/isString';
 
 const { useEffect, useRef, useState, useCallback } = React;
 
