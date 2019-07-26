@@ -59,15 +59,15 @@ export type FieldsObject<Data extends DataType> = {
   [Key in keyof Data]?: Field;
 };
 
-export interface Error {
+export interface ReactHookFormError {
   ref: Ref;
+  type: string;
   message?: string;
-  type?: string;
   isManual?: boolean;
 }
 
 export type ObjectErrorMessages<Data extends DataType> = {
-  [Key in keyof Data]?: Error;
+  [Key in keyof Data]?: ReactHookFormError;
 };
 export type StringErrorMessages<Data extends DataType> = {
   [Key in keyof Data]?: string;
