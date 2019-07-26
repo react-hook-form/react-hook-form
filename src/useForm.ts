@@ -573,7 +573,7 @@ export default function useForm<
     reRenderForm({});
   };
 
-  const resetRefs = (values?: DataType) => {
+  const resetRefs = () => {
     watchFieldsRef.current = {};
     errorsRef.current = {};
     isWatchAllRef.current = false;
@@ -584,11 +584,6 @@ export default function useForm<
     validFieldsRef.current = new Set();
     submitCountRef.current = 0;
     isSchemaValidateTriggeredRef.current = false;
-    if (values) {
-      Object.entries(values).forEach(([key, value]) => {
-        setFieldValue(key as Name, value);
-      });
-    }
   };
 
   const unSubscribe = (): void => {
@@ -608,7 +603,7 @@ export default function useForm<
     resetRefs();
   };
 
-  const reset = useCallback((): void => {
+  const reset = useCallback((values?: DataType): void => {
     const fields = Object.values(fieldsRef.current);
     for (let field of fields) {
       if (field && field.ref.closest) {
@@ -617,6 +612,14 @@ export default function useForm<
       }
     }
     resetRefs();
+
+    if (values) {
+      Object.entries(values).forEach(([key, value]) => {
+        setFieldValue(key as Name, value);
+      });
+      reRenderForm({});
+    }
+
     reRenderForm({});
   }, []);
 
