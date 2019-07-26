@@ -617,7 +617,6 @@ export default function useForm<
       Object.entries(values).forEach(([key, value]) => {
         setFieldValue(key as Name, value);
       });
-      reRenderForm({});
     }
 
     reRenderForm({});
