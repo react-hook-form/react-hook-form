@@ -30,6 +30,7 @@ import {
   SubmitPromiseResult,
   VoidFunction,
   OnSubmit,
+  ObjectErrorMessages,
 } from './types';
 
 const { useEffect, useRef, useState, useCallback } = React;
@@ -66,7 +67,7 @@ export default function useForm<
   const validateAndStateUpdateRef = useRef<Function>();
   const fieldsWithValidationRef = useRef(new Set());
   const validFieldsRef = useRef(new Set());
-  const reRenderForm = useState({})[1];
+  const [_unused, reRenderForm] = useState({});
   const { isOnChange, isOnBlur, isOnSubmit } = modeChecker(mode);
 
   const combineErrorsRef = (data: any) => ({
@@ -134,32 +135,31 @@ export default function useForm<
   ): Promise<boolean> => {
     const fieldValues = getFieldsValues(fieldsRef.current);
     const fieldErrors = await validateWithSchema(validationSchema, fieldValues);
-    const isArray = Array.isArray(payload);
-    let errors;
-    let payloadName;
+    let result: boolean;
+    let errors: ErrorMessages<Data>;
 
-    if (isArray) {
-      const names = (payload as []).map(({ name }) => name);
+    if (Array.isArray(payload)) {
+      const names = payload.map(({ name }) => name as string);
       errors = combineErrorsRef(
         Object.entries(fieldErrors).reduce(
           (previous: { [key: string]: any }, [key, value]) =>
-            // @ts-ignore
             names.includes(key) ? { ...previous, [key]: value } : previous,
           {},
         ),
       );
+      result = isEmptyObject(fieldErrors);
     } else {
-      // @ts-ignore
-      payloadName = payload.name;
+      const payloadName = payload.name as string;
       errors = combineErrorsRef(
         fieldErrors[payloadName] ? { name: fieldErrors[payloadName] } : null,
       );
+      result = !fieldErrors[payloadName];
     }
 
     errorsRef.current = errors;
     isSchemaValidateTriggeredRef.current = true;
     reRenderForm({});
-    return isArray ? isEmptyObject(fieldErrors) : !fieldErrors[payloadName];
+    return result;
   };
 
   const triggerValidation = async (
@@ -296,9 +296,14 @@ export default function useForm<
     validateAndStateUpdateRef.current,
   );
 
+  const clearError = (name: Name): void => {
+    delete errorsRef.current[name];
+    reRenderForm({});
+  };
+
   const setError = (
     name: Name,
-    type?: string,
+    type: string,
     message?: string,
     ref?: Ref,
   ): void => {
@@ -309,12 +314,10 @@ export default function useForm<
       typeof error !== 'string' &&
       (error.type === type && error.message === message);
 
-    if (!type && error) {
-      delete errorsFromRef[name];
-      reRenderForm({});
-    } else if (!isSameError && type) {
-      // @ts-ignore
-      errorsFromRef[name] = {
+    if (!isSameError) {
+      // TODO: we sorted out that it's not a string error, so cast it (can likely use a typeguard here)
+      const objectErrors = errorsFromRef as ObjectErrorMessages<Data>;
+      objectErrors[name] = {
         type,
         message,
         ref,
@@ -625,9 +628,7 @@ export default function useForm<
     watch,
     unSubscribe,
     reset,
-    clearError: (name: Name): void => {
-      setError(name);
-    },
+    clearError,
     setError,
     setValue,
     triggerValidation,
@@ -637,7 +638,6 @@ export default function useForm<
       dirty: isDirtyRef.current,
       isSubmitted: isSubmittedRef.current,
       submitCount: submitCountRef.current,
-      // @ts-ignore
       touched: [...touchedFieldsRef.current],
       isSubmitting: isSubmittingRef.current,
       ...(isOnSubmit
