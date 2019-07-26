@@ -211,11 +211,13 @@ export default function useForm<
     name: Name,
     value: Data[Name],
     shouldValidate: boolean = false,
+    shouldDirty: boolean = true,
   ): void => {
     setFieldValue(name, value);
-    touchedFieldsRef.current.add(name);
-    isDirtyRef.current = true;
-
+    if (shouldDirty) {
+      touchedFieldsRef.current.add(name);
+      isDirtyRef.current = true;
+    }
     reRenderForm({});
     if (shouldValidate) triggerValidation({ name });
   };
