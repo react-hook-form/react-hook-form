@@ -297,11 +297,6 @@ export default function useForm<
     validateAndStateUpdateRef.current,
   );
 
-  const clearError = (name: Name): void => {
-    delete errorsRef.current[name];
-    reRenderForm({});
-  };
-
   const setError = (
     name: Name,
     type: string,
@@ -328,11 +323,10 @@ export default function useForm<
     }
   };
 
-  const clearError = (name: Name | undefined | Name[]): void => {
+  const clearError = (name?: Name | Name[]): void => {
     if (name === undefined) {
       errorsRef.current = {};
     } else if (isString(name)) {
-      // @ts-ignore
       delete errorsRef.current[name];
     } else if (Array.isArray(name)) {
       name.forEach(item => {
