@@ -573,7 +573,7 @@ export default function useForm<
     reRenderForm({});
   };
 
-  const resetRefs = () => {
+  const resetRefs = (values?: DataType) => {
     watchFieldsRef.current = {};
     errorsRef.current = {};
     isWatchAllRef.current = false;
@@ -584,6 +584,11 @@ export default function useForm<
     validFieldsRef.current = new Set();
     submitCountRef.current = 0;
     isSchemaValidateTriggeredRef.current = false;
+    if (values) {
+      Object.entries(values).forEach(([key, value]) => {
+        setFieldValue(key as Name, value);
+      });
+    }
   };
 
   const unSubscribe = (): void => {
