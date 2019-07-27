@@ -200,18 +200,17 @@ export default function useForm<
     }
   };
 
-  const setValue = (
-    name: Name,
-    value: Data[Name],
-    shouldValidate: boolean = false,
-  ): void => {
-    setFieldValue(name, value);
-    touchedFieldsRef.current.add(name);
-    isDirtyRef.current = true;
+  const setValue = useCallback(
+    (name: Name, value: Data[Name], shouldValidate: boolean = false): void => {
+      setFieldValue(name, value);
+      touchedFieldsRef.current.add(name);
+      isDirtyRef.current = true;
 
-    reRenderForm({});
-    if (shouldValidate) triggerValidation({ name });
-  };
+      reRenderForm({});
+      if (shouldValidate) triggerValidation({ name });
+    },
+    [],
+  );
 
   validateAndStateUpdateRef.current = validateAndStateUpdateRef.current
     ? validateAndStateUpdateRef.current
