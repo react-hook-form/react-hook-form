@@ -4,12 +4,11 @@ export function parseErrorSchema(error: DataType): ValidationReturn {
   return error.inner.reduce(
     (
       previous: DataType,
-      current: DataType,
-      index: number,
-    ): ValidationReturn => {
-      previous[current.path] = error.errors[index];
-      return previous;
-    },
+      { path, message, type }: DataType,
+    ): ValidationReturn => ({
+      ...previous,
+      [path]: { message, ref: {}, type },
+    }),
     {},
   );
 }
