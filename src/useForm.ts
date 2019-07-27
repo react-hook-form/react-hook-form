@@ -30,7 +30,6 @@ import {
   SubmitPromiseResult,
   VoidFunction,
   OnSubmit,
-  ObjectErrorMessages,
 } from './types';
 
 const { useEffect, useRef, useState, useCallback } = React;
@@ -315,9 +314,7 @@ export default function useForm<
       (error.type === type && error.message === message);
 
     if (!isSameError) {
-      // TODO: we sorted out that it's not a string error, so cast it (can likely use a typeguard here)
-      const objectErrors = errorsFromRef as ObjectErrorMessages<Data>;
-      objectErrors[name] = {
+      errorsFromRef[name] = {
         type,
         message,
         ref,
