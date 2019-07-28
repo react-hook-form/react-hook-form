@@ -615,12 +615,13 @@ export default function useForm<
     return payload && payload.nest ? combineFieldValues(data) : data;
   };
 
-  useEffect((): VoidFunction => {
-    return () => {
+  useEffect(
+    (): VoidFunction => () => {
       isUnMount.current = true;
       unSubscribe();
-    };
-  }, [mode, unSubscribe]);
+    },
+    [unSubscribe],
+  );
 
   const isEmptyErrors = isEmptyObject(errorsRef.current);
 
