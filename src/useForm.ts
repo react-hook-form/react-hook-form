@@ -319,8 +319,16 @@ export default function useForm<
     [],
   );
 
-  const clearError = (name: Name): void => {
-    delete errorsRef.current[name];
+  const clearError = (name?: Name | Name[]): void => {
+    if (name === undefined) {
+      errorsRef.current = {};
+    } else if (isString(name)) {
+      delete errorsRef.current[name];
+    } else if (Array.isArray(name)) {
+      name.forEach(item => {
+        delete errorsRef.current[item];
+      });
+    }
     reRenderForm({});
   };
 
@@ -619,7 +627,7 @@ export default function useForm<
     resetRefs();
   }, [removeEventListener]);
 
-  const reset = useCallback((): void => {
+  const reset = useCallback((values?: DataType): void => {
     const fields = Object.values(fieldsRef.current);
     for (let field of fields) {
       if (field && field.ref.closest) {
@@ -628,6 +636,13 @@ export default function useForm<
       }
     }
     resetRefs();
+
+    if (values) {
+      Object.entries(values).forEach(([key, value]) => {
+        setFieldValue(key as Name, value);
+      });
+    }
+
     reRenderForm({});
   }, []);
 
