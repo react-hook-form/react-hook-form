@@ -436,7 +436,7 @@ export default function useForm<
   );
 
   function watch(
-    fieldNames?: string | string[] | undefined,
+    fieldNames?: Name | string | (Name | string)[] | undefined,
     defaultValue?: string | Partial<Data> | undefined,
   ): FieldValue | Partial<Data> | void {
     if (isEmptyObject(fieldsRef.current)) {
@@ -446,7 +446,9 @@ export default function useForm<
       if (Array.isArray(fieldNames)) {
         return (
           defaultValue ||
-          fieldNames.map(fieldName => getDefaultValue(defaultValues, fieldName))
+          fieldNames.map(fieldName =>
+            getDefaultValue(defaultValues, fieldName as string),
+          )
         );
       }
       return defaultValue || defaultValues;
@@ -460,7 +462,7 @@ export default function useForm<
     }
     if (Array.isArray(fieldNames)) {
       return fieldNames.map(name =>
-        assignWatchFields(fieldValues, name, watchFields),
+        assignWatchFields(fieldValues, name as string, watchFields),
       );
     }
     return fieldValues;
@@ -485,8 +487,8 @@ export default function useForm<
     [registerIntoFieldsRef],
   );
 
-  const resetField = (name: string) => {
-    const field = fieldsRef.current[name];
+  const resetField = (name: Name | string) => {
+    const field = fieldsRef.current[name as string];
     if (!field) return;
     const { ref, options } = field;
     isRadioInput(ref.type) && Array.isArray(options)
@@ -501,7 +503,7 @@ export default function useForm<
     validFieldsRef.current.delete(name);
   };
 
-  const unregister = (name: string | string[]): void => {
+  const unregister = (name: Name | string | (Name | string)[]): void => {
     Array.isArray(name) ? name.forEach(resetField) : resetField(name);
   };
 
