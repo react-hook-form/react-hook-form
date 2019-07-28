@@ -308,12 +308,15 @@ export default function useForm<
         if (shouldUpdateState) reRenderForm({});
       };
 
-  const removeEventListener: Function = findRemovedFieldAndRemoveListener.bind(
-    null,
-    fieldsRef.current,
-    touchedFieldsRef,
-    fieldsWithValidationRef,
-    validateAndStateUpdateRef.current,
+  const removeEventListener: Function = useCallback(
+    findRemovedFieldAndRemoveListener.bind(
+      null,
+      fieldsRef.current,
+      touchedFieldsRef,
+      fieldsWithValidationRef,
+      validateAndStateUpdateRef.current,
+    ),
+    [],
   );
 
   const clearError = (name: Name): void => {
@@ -638,7 +641,7 @@ export default function useForm<
       isUnMount.current = true;
       unSubscribe();
     };
-  }, [mode, unSubscribe]);
+  }, [unSubscribe]);
 
   const isEmptyErrors = isEmptyObject(errorsRef.current);
 
