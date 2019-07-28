@@ -64,6 +64,7 @@ export default function useForm<
   const isDirtyRef = useRef<boolean>(false);
   const isSchemaValidateTriggeredRef = useRef<boolean>(false);
   const validateAndStateUpdateRef = useRef<Function>();
+  const triggerValidationRef = useRef<Function>();
   const fieldsWithValidationRef = useRef(new Set());
   const validFieldsRef = useRef(new Set());
   const [_unused, reRenderForm] = useState({});
@@ -161,32 +162,34 @@ export default function useForm<
     return result;
   };
 
-  const triggerValidation = async (
-    payload?:
-      | {
-          name: Name;
-          value?: Data[Name];
+  triggerValidationRef.current = triggerValidationRef.current
+    ? triggerValidationRef.current
+    : async (
+        payload?:
+          | {
+              name: Name;
+              value?: Data[Name];
+            }
+          | {
+              name: Name;
+              value?: Data[Name];
+            }[],
+      ): Promise<boolean> => {
+        let fields: any = payload;
+
+        if (!payload)
+          fields = Object.keys(fieldsRef.current).map(name => ({ name }));
+        if (validationSchema) return executeSchemaValidation(fields);
+
+        if (Array.isArray(fields)) {
+          const result = await Promise.all(
+            fields.map(async data => await executeValidation(data, false)),
+          );
+          reRenderForm({});
+          return result.every(Boolean);
         }
-      | {
-          name: Name;
-          value?: Data[Name];
-        }[],
-  ): Promise<boolean> => {
-    let fields: any = payload;
-
-    if (!payload)
-      fields = Object.keys(fieldsRef.current).map(name => ({ name }));
-    if (validationSchema) return executeSchemaValidation(fields);
-
-    if (Array.isArray(fields)) {
-      const result = await Promise.all(
-        fields.map(async data => await executeValidation(data, false)),
-      );
-      reRenderForm({});
-      return result.every(Boolean);
-    }
-    return executeValidation(fields);
-  };
+        return executeValidation(fields);
+      };
 
   const setFieldValue = (
     name: Name,
@@ -213,7 +216,8 @@ export default function useForm<
       isDirtyRef.current = true;
 
       reRenderForm({});
-      if (shouldValidate) triggerValidation({ name });
+      if (shouldValidate && triggerValidationRef.current)
+        triggerValidationRef.current({ name });
     },
     [],
   );
@@ -454,7 +458,7 @@ export default function useForm<
       return (ref: Ref): void =>
         ref && registerIntoFieldsRef(ref, refOrValidateRule);
     },
-    [],
+    [registerIntoFieldsRef],
   );
 
   const resetField = (name: string) => {
@@ -574,7 +578,7 @@ export default function useForm<
     isSchemaValidateTriggeredRef.current = false;
   };
 
-  const unSubscribe = (): void => {
+  const unSubscribe = useCallback((): void => {
     fieldsRef.current &&
       Object.values(fieldsRef.current).forEach(
         (field: Field | undefined): void => {
@@ -589,7 +593,7 @@ export default function useForm<
       );
     fieldsRef.current = {};
     resetRefs();
-  };
+  });
 
   const reset = useCallback((): void => {
     const fields = Object.values(fieldsRef.current);
@@ -613,7 +617,7 @@ export default function useForm<
       isUnMount.current = true;
       unSubscribe();
     };
-  }, [mode, isUnMount.current]);
+  }, [mode, unSubscribe]);
 
   const isEmptyErrors = isEmptyObject(errorsRef.current);
 
@@ -627,7 +631,7 @@ export default function useForm<
     clearError,
     setError,
     setValue,
-    triggerValidation,
+    triggerValidation: triggerValidationRef.current,
     getValues,
     errors: errorsRef.current,
     formState: {
