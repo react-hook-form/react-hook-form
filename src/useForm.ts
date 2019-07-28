@@ -327,89 +327,92 @@ export default function useForm<
     }
   };
 
-  function registerIntoFieldsRef(
-    elementRef: Ref,
-    data: RegisterInput | undefined,
-  ): void {
-    if (elementRef && !elementRef.name)
-      return warnMessage(`⚠ Missing field name: ${elementRef}`);
-    const { name, type, value } = elementRef;
+  const registerIntoFieldsRef = useCallback(
+    (elementRef: Ref, data: RegisterInput | undefined): void => {
+      if (elementRef && !elementRef.name)
+        return warnMessage(`⚠ Missing field name: ${elementRef}`);
+      const { name, type, value } = elementRef;
 
-    if (!isOnSubmit && data && !isEmptyObject(data)) {
-      fieldsWithValidationRef.current.add(name);
-    }
-
-    const { required = false, validate = undefined } = data || {};
-    const inputData = {
-      ...data,
-      ref: elementRef,
-    };
-    const fields: any = fieldsRef.current;
-    const isRadio = isRadioInput(type);
-    const field = fields[name];
-    const existRadioOptionIndex =
-      isRadio && field && Array.isArray(field.options)
-        ? field.options.findIndex(
-            ({ ref }: { ref: Ref }): boolean => value === ref.value,
-          )
-        : -1;
-
-    if ((!isRadio && field) || (isRadio && existRadioOptionIndex > -1)) return;
-
-    if (!type) {
-      fields[name] = { ref: { name }, ...data };
-    } else {
-      if (isRadio) {
-        if (!field)
-          fields[name] = {
-            options: [],
-            required,
-            validate,
-            ref: { type: 'radio', name },
-          };
-        if (validate) fields[name]!.validate = validate;
-
-        (fields[name]!.options || []).push({
-          ...inputData,
-          mutationWatcher: onDomRemove(
-            elementRef,
-            (): Function => removeEventListener(inputData, true),
-          ),
-        });
-      } else {
-        fields[name] = {
-          ...inputData,
-          mutationWatcher: onDomRemove(
-            elementRef,
-            (): Function => removeEventListener(inputData, true),
-          ),
-        };
+      if (!isOnSubmit && data && !isEmptyObject(data)) {
+        fieldsWithValidationRef.current.add(name);
       }
-    }
 
-    if (defaultValues) {
-      const defaultValue = defaultValues[name] || get(defaultValues, name);
-      if (defaultValue !== undefined) setFieldValue(name, defaultValue);
-    }
+      const { required = false, validate = undefined } = data || {};
+      const inputData = {
+        ...data,
+        ref: elementRef,
+      };
+      const fields: any = fieldsRef.current;
+      const isRadio = isRadioInput(type);
+      const field = fields[name];
+      const existRadioOptionIndex =
+        isRadio && field && Array.isArray(field.options)
+          ? field.options.findIndex(
+              ({ ref }: { ref: Ref }): boolean => value === ref.value,
+            )
+          : -1;
 
-    if (!type) return;
+      if ((!isRadio && field) || (isRadio && existRadioOptionIndex > -1))
+        return;
 
-    const fieldData = isRadio
-      ? (fields[name]!.options || [])[(fields[name]!.options || []).length - 1]
-      : fields[name];
+      if (!type) {
+        fields[name] = { ref: { name }, ...data };
+      } else {
+        if (isRadio) {
+          if (!field)
+            fields[name] = {
+              options: [],
+              required,
+              validate,
+              ref: { type: 'radio', name },
+            };
+          if (validate) fields[name]!.validate = validate;
 
-    if (!fieldData) return;
+          (fields[name]!.options || []).push({
+            ...inputData,
+            mutationWatcher: onDomRemove(
+              elementRef,
+              (): Function => removeEventListener(inputData, true),
+            ),
+          });
+        } else {
+          fields[name] = {
+            ...inputData,
+            mutationWatcher: onDomRemove(
+              elementRef,
+              (): Function => removeEventListener(inputData, true),
+            ),
+          };
+        }
+      }
 
-    if (nativeValidation && data) {
-      attachNativeValidation(elementRef, data);
-    } else {
-      attachEventListeners({
-        field: fieldData,
-        isRadio,
-        validateAndStateUpdate: validateAndStateUpdateRef.current,
-      });
-    }
-  }
+      if (defaultValues) {
+        const defaultValue = defaultValues[name] || get(defaultValues, name);
+        if (defaultValue !== undefined) setFieldValue(name, defaultValue);
+      }
+
+      if (!type) return;
+
+      const fieldData = isRadio
+        ? (fields[name]!.options || [])[
+            (fields[name]!.options || []).length - 1
+          ]
+        : fields[name];
+
+      if (!fieldData) return;
+
+      if (nativeValidation && data) {
+        attachNativeValidation(elementRef, data);
+      } else {
+        attachEventListeners({
+          field: fieldData,
+          isRadio,
+          validateAndStateUpdate: validateAndStateUpdateRef.current,
+        });
+      }
+    },
+    [defaultValues, isOnSubmit, nativeValidation, removeEventListener],
+  );
 
   function watch(
     fieldNames?: string | string[] | undefined,
@@ -593,7 +596,7 @@ export default function useForm<
       );
     fieldsRef.current = {};
     resetRefs();
-  });
+  }, [removeEventListener]);
 
   const reset = useCallback((): void => {
     const fields = Object.values(fieldsRef.current);
