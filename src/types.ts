@@ -69,12 +69,8 @@ export interface ReactHookFormError {
 export type ObjectErrorMessages<Data extends DataType> = {
   [Key in keyof Data]?: ReactHookFormError;
 };
-export type StringErrorMessages<Data extends DataType> = {
-  [Key in keyof Data]?: string;
-};
-export type ErrorMessages<Data extends DataType> =
-  | ObjectErrorMessages<Data>
-  | StringErrorMessages<Data>;
+
+export type ErrorMessages<Data extends DataType> = ObjectErrorMessages<Data>;
 
 export interface SubmitPromiseResult<Data extends DataType> {
   errors: ErrorMessages<Data>;

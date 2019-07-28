@@ -1,6 +1,6 @@
 {
   "name": "react-hook-form",
-  "version": "3.19.0",
+  "version": "3.19.1",
   "main": "dist/react-hook-form.js",
   "module": "dist/react-hook-form.es.js",
   "types": "dist/index.d.ts",
@@ -47,6 +47,7 @@
     "enzyme-adapter-react-16": "^1.12.1",
     "eslint": "^5.16.0",
     "eslint-plugin-react": "^7.13.0",
+    "eslint-plugin-react-hooks": "^1.6.1",
     "husky": ">=1",
     "jest": "^24.7.1",
     "lint-staged": ">=8",
