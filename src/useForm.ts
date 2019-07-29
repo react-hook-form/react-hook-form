@@ -574,14 +574,14 @@ export default function useForm<
       fieldValues = values;
     }
 
-    if (isUnMount.current) return;
-
     if (isEmptyObject(fieldErrors)) {
       errorsRef.current = {};
       await callback(combineFieldValues(fieldValues), e);
     } else {
       errorsRef.current = fieldErrors as any;
     }
+
+    if (isUnMount.current) return;
 
     isSubmittedRef.current = true;
     submitCountRef.current += 1;
