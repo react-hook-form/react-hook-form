@@ -84,6 +84,7 @@ Thanks goes to these wonderful people:
     <a href="https://github.com/ejuo"><img src="https://avatars2.githubusercontent.com/u/1243837?s=460&v=4" width="50" height="50" /></a>    
     <a href="https://github.com/liketurbo"><img src="https://avatars3.githubusercontent.com/u/29164042?s=460&v=4" width="50" height="50" /></a>
     <a href="https://github.com/michaelbirchler"><img src="https://avatars3.githubusercontent.com/u/24622?s=460&v=4" width="50" height="50" /></a>
+    <a href="https://github.com/petercpwong"><img src="https://avatars1.githubusercontent.com/u/1303285?s=460&v=4" width="50" height="50" /></a>
     <a href="https://github.com/garthmcrae"><img src="https://avatars0.githubusercontent.com/u/1332741?s=64&v=4" width="50" height="50" /></a>
     <a href="https://github.com/erikras"><img src="https://avatars3.githubusercontent.com/u/4396759?s=60&v=4" width="50" height="50" /></a>
 </p>
