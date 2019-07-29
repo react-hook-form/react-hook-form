@@ -4,7 +4,7 @@ export default function get(
   object: DataType,
   keys: string[] | string,
   defaultVal?: any,
-): DataType {
+): DataType | undefined {
   keys = Array.isArray(keys)
     ? keys
     : keys
