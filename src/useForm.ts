@@ -439,31 +439,26 @@ export default function useForm<
     fieldNames?: string | string[] | undefined,
     defaultValue?: string | Partial<Data> | undefined,
   ): FieldValue | Partial<Data> | void {
-    if (isEmptyObject(fieldsRef.current)) {
-      if (isString(fieldNames)) {
-        return defaultValue || getDefaultValue(defaultValues, fieldNames);
-      }
-      if (Array.isArray(fieldNames)) {
-        return (
-          defaultValue ||
-          fieldNames.map(fieldName => getDefaultValue(defaultValues, fieldName))
-        );
-      }
-      return defaultValue || defaultValues;
-    }
-
     const fieldValues = getFieldsValues(fieldsRef.current);
     const watchFields: any = watchFieldsRef.current;
 
     if (isString(fieldNames)) {
-      return assignWatchFields(fieldValues, fieldNames, watchFields);
-    }
-    if (Array.isArray(fieldNames)) {
-      return fieldNames.map(name =>
-        assignWatchFields(fieldValues, name, watchFields),
+      return (
+        assignWatchFields(fieldValues, fieldNames, watchFields) ||
+        defaultValue ||
+        getDefaultValue(defaultValues, fieldNames)
       );
     }
-    return fieldValues;
+    if (Array.isArray(fieldNames)) {
+      return isEmptyObject(fieldsRef.current)
+        ? defaultValue || fieldNames.map(() => undefined)
+        : fieldNames.map(
+            name =>
+              assignWatchFields(fieldValues, name, watchFields) ||
+              getDefaultValue(defaultValues, name),
+          );
+    }
+    return fieldValues || defaultValue || defaultValues;
   }
 
   const register = useCallback(
