@@ -15,10 +15,13 @@ export default (
 
   const combinedValues = combineFieldValues(fieldValues);
   const values = get(combinedValues, fieldName);
-  if (values === undefined) {
-    getPath(fieldName, values).forEach(name => {
-      watchFields[name as any] = true;
-    });
+  if (values !== undefined) {
+    const result = getPath(fieldName, values);
+    if (Array.isArray(result)) {
+      result.forEach(name => {
+        watchFields[name as any] = true;
+      });
+    }
   }
   return values;
 };
