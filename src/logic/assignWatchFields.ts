@@ -2,12 +2,15 @@ import get from '../utils/get';
 import getPath from '../utils/getPath';
 import combineFieldValues from './combineFieldValues';
 import { DataType } from '../types';
+import isEmptyObject from '../utils/isEmptyObject';
+import isUndefined from '../utils/isUndefined';
 
 export default (
   fieldValues: DataType,
   fieldName: string,
   watchFields: { [key: string]: boolean },
 ) => {
+  if (isEmptyObject(fieldValues) || isUndefined(fieldValues)) return undefined;
   if (fieldValues[fieldName]) {
     watchFields[fieldName] = true;
     return fieldValues[fieldName];
