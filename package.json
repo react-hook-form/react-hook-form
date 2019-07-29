@@ -18,7 +18,8 @@
     "testw": "yarn test-coverage -- --watchAll",
     "cypress:open": "cypress open",
     "bundlesize": "npm run build:min && bundlesize",
-    "prepublish": "yarn lint && yarn test && yarn run clean && yarn build"
+    "prepublish": "yarn lint && yarn test && yarn run clean && yarn build",
+    "start:app": "yarn link react-hook-form && yarn --cwd ./app run start"
   },
   "keywords": [
     "react",
