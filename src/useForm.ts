@@ -31,6 +31,7 @@ import {
   VoidFunction,
   OnSubmit,
 } from './types';
+import isUndefined from './utils/isUndefined';
 
 export default function useForm<
   Data extends DataType,
@@ -443,15 +444,17 @@ export default function useForm<
     const watchFields: any = watchFieldsRef.current;
 
     if (isString(fieldNames)) {
-      return (
-        assignWatchFields(fieldValues, fieldNames, watchFields) ||
-        defaultValue ||
-        getDefaultValue(defaultValues, fieldNames)
-      );
+      const value = assignWatchFields(fieldValues, fieldNames, watchFields);
+      if (!isUndefined(value)) {
+        return value;
+      } else if (!isUndefined(defaultValue)) {
+        return defaultValue;
+      }
+      return getDefaultValue(defaultValues, fieldNames);
     }
     if (Array.isArray(fieldNames)) {
       return isEmptyObject(fieldsRef.current)
-        ? defaultValue || fieldNames.map(() => undefined)
+        ? fieldNames.map(() => undefined)
         : fieldNames.map(
             name =>
               assignWatchFields(fieldValues, name, watchFields) ||
