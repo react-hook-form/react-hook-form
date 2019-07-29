@@ -31,6 +31,7 @@ import {
   VoidFunction,
   OnSubmit,
 } from './types';
+import isUndefined from './utils/isUndefined';
 
 export default function useForm<
   Data extends DataType,
@@ -447,31 +448,28 @@ export default function useForm<
     fieldNames?: string | string[] | undefined,
     defaultValue?: string | Partial<Data> | undefined,
   ): FieldValue | Partial<Data> | void {
-    if (isEmptyObject(fieldsRef.current)) {
-      if (isString(fieldNames)) {
-        return defaultValue || getDefaultValue(defaultValues, fieldNames);
-      }
-      if (Array.isArray(fieldNames)) {
-        return (
-          defaultValue ||
-          fieldNames.map(fieldName => getDefaultValue(defaultValues, fieldName))
-        );
-      }
-      return defaultValue || defaultValues;
-    }
-
     const fieldValues = getFieldsValues(fieldsRef.current);
     const watchFields: any = watchFieldsRef.current;
 
     if (isString(fieldNames)) {
-      return assignWatchFields(fieldValues, fieldNames, watchFields);
+      const value = assignWatchFields(fieldValues, fieldNames, watchFields);
+      if (!isUndefined(value)) {
+        return value;
+      } else if (!isUndefined(defaultValue)) {
+        return defaultValue;
+      }
+      return getDefaultValue(defaultValues, fieldNames);
     }
     if (Array.isArray(fieldNames)) {
-      return fieldNames.map(name =>
-        assignWatchFields(fieldValues, name, watchFields),
-      );
+      return isEmptyObject(fieldsRef.current)
+        ? fieldNames.map(() => undefined)
+        : fieldNames.map(
+            name =>
+              assignWatchFields(fieldValues, name, watchFields) ||
+              getDefaultValue(defaultValues, name),
+          );
     }
-    return fieldValues;
+    return fieldValues || defaultValue || defaultValues;
   }
 
   const register = useCallback(
@@ -582,14 +580,14 @@ export default function useForm<
       fieldValues = values;
     }
 
-    if (isUnMount.current) return;
-
     if (isEmptyObject(fieldErrors)) {
       errorsRef.current = {};
       await callback(combineFieldValues(fieldValues), e);
     } else {
       errorsRef.current = fieldErrors as any;
     }
+
+    if (isUnMount.current) return;
 
     isSubmittedRef.current = true;
     submitCountRef.current += 1;
