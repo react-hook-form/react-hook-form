@@ -23,6 +23,8 @@ jobs:
 
       - run: npm run bundlesize
 
+      - run: npm run test:coverage
+
       - run:
           command: npm run start:app
           background: true
