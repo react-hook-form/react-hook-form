@@ -131,7 +131,10 @@ describe('useForm', () => {
     });
 
     it('should watch array of inputs', () => {
-      expect(hookForm.watch(['test', 'test1'])).toEqual([undefined, undefined]);
+      expect(hookForm.watch(['test', 'test1'])).toEqual({
+        test: undefined,
+        test1: undefined,
+      });
       hookForm.register({ type: 'radio', name: 'test', value: '' });
       hookForm.register({ type: 'radio', name: 'test1', value: '' });
       // @ts-ignore
@@ -141,7 +144,10 @@ describe('useForm', () => {
           test1: 'data2',
         };
       });
-      expect(hookForm.watch(['test', 'test1'])).toEqual(['data1', 'data2']);
+      expect(hookForm.watch(['test', 'test1'])).toEqual({
+        test: 'data1',
+        test1: 'data2',
+      });
     });
 
     it('should watch every fields', () => {
