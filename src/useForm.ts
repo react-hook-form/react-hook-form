@@ -464,7 +464,13 @@ export default function useForm<
     if (Array.isArray(fieldNames)) {
       return isEmptyObject(fieldsRef.current)
         ? fieldNames.reduce(
-            (previous, name) => ({ ...previous, [name]: undefined }),
+            (previous, name) => ({
+              ...previous,
+              [name]:
+                !isUndefined(defaultValue) && !isString(defaultValue)
+                  ? defaultValue[name]
+                  : undefined,
+            }),
             {},
           )
         : fieldNames.reduce(
