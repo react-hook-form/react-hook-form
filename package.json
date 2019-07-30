@@ -14,13 +14,13 @@
     "coverage": "jest --coverage --coverageReporters=text-lcov | coveralls",
     "postrelease": "yarn publish && git push --follow-tags",
     "test": "jest --runInBand",
-    "test-coverage": "jest --coverage",
+    "test:coverage": "jest --coverage",
     "testw": "yarn test-coverage -- --watchAll",
+    "cypress": "cypress run",
     "cypress:open": "cypress open",
     "bundlesize": "npm run build:min && bundlesize",
     "prepublish": "yarn lint && yarn test && yarn run clean && yarn build",
-    "start:app": "yarn --cwd ./app && yarn --cwd ./app run start",
-    "cypress": "cypress run"
+    "start:app": "yarn --cwd ./app && yarn --cwd ./app run start"
   },
   "keywords": [
     "react",
