@@ -27,7 +27,7 @@ jobs:
 
       - run: npm run bundlesize
 
-      - run: sleep 20
+      - run: sleep 30
 
       - run: yarn cypress
 
