@@ -1,5 +1,5 @@
-context('basic validation', () => {
-  it('should validate basic form', () => {
+context('watch', () => {
+  it('should watch input change', () => {
     cy.visit('http://localhost:3000');
     cy.get('button').click();
 
