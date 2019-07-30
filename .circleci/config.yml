@@ -2,7 +2,7 @@ version: 2
 jobs:
   build:
     docker:
-      - image: cypress-io/cypress@1.5.1
+      - image: cypress/base:10
 
     working_directory: ~/repo
 
@@ -22,3 +22,7 @@ jobs:
           key: v1-dependencies-{{ checksum "package.json" }}
 
       - run: npm run test && npm run bundlesize
+
+      - run: yarn start:app
+
+      - run: yarn cypress
