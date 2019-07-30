@@ -55,6 +55,7 @@ function App() {
       
       <input name="age" ref={register({ pattern: /\d+/ })} />
       {errors.age && 'Please enter number for age.'}
+      
       <input type="submit" />
     </form>
   );
