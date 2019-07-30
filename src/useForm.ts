@@ -448,21 +448,6 @@ export default function useForm<
     fieldNames?: Name | string | (Name | string)[] | undefined,
     defaultValue?: string | Partial<Data> | undefined,
   ): FieldValue | Partial<Data> | void {
-    if (isEmptyObject(fieldsRef.current)) {
-      if (isString(fieldNames)) {
-        return defaultValue || getDefaultValue(defaultValues, fieldNames);
-      }
-      if (Array.isArray(fieldNames)) {
-        return (
-          defaultValue ||
-          fieldNames.map(fieldName =>
-            getDefaultValue(defaultValues, fieldName as string),
-          )
-        );
-      }
-      return defaultValue || defaultValues;
-    }
-
     const fieldValues = getFieldsValues(fieldsRef.current);
     const watchFields: any = watchFieldsRef.current;
 
