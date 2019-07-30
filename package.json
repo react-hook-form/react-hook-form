@@ -19,7 +19,8 @@
     "cypress:open": "cypress open",
     "bundlesize": "npm run build:min && bundlesize",
     "prepublish": "yarn lint && yarn test && yarn run clean && yarn build",
-    "start:app": "yarn --cwd ./app && yarn --cwd ./app run start"
+    "start:app": "yarn --cwd ./app && yarn --cwd ./app run start",
+    "cypress": "cypress run"
   },
   "keywords": [
     "react",

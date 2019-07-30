@@ -2,7 +2,7 @@ version: 2
 jobs:
   build:
     docker:
-      - image: circleci/node:10.0.0
+      - image: cypress/base:10
 
     working_directory: ~/repo
 
@@ -11,14 +11,22 @@ jobs:
 
       - restore_cache:
           keys:
-            - v1-dependencies-{{ checksum "package.json" }}
-            - v1-dependencies-
+            - cache-{{ checksum "package.json" }}
 
       - run: yarn install
 
       - save_cache:
+          key: cache-{{ checksum "package.json" }}
           paths:
-            - node_modules
-          key: v1-dependencies-{{ checksum "package.json" }}
+            - ~/.npm
+            - ~/.cache
 
-      - run: npm run test && npm run bundlesize
+      - run: npm run bundlesize
+
+      - run:
+          command: npm run start:app
+          background: true
+
+      - run: sleep 10
+
+      - run: yarn cypress
