@@ -460,15 +460,24 @@ export default function useForm<
       }
       return getDefaultValue(defaultValues, fieldNames);
     }
+
     if (Array.isArray(fieldNames)) {
       return isEmptyObject(fieldsRef.current)
-        ? fieldNames.map(() => undefined)
-        : fieldNames.map(
-            name =>
-              assignWatchFields(fieldValues, name as string, watchFields) ||
-              getDefaultValue(defaultValues, name as string),
+        ? fieldNames.reduce(
+            (previous, name) => ({ ...previous, [name]: undefined }),
+            {},
+          )
+        : fieldNames.reduce(
+            (previous, name) => ({
+              ...previous,
+              [name]:
+                assignWatchFields(fieldValues, name as string, watchFields) ||
+                getDefaultValue(defaultValues, name as string),
+            }),
+            {},
           );
     }
+
     return fieldValues || defaultValue || defaultValues;
   }
 
