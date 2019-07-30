@@ -27,6 +27,6 @@ jobs:
           command: npm run start:app
           background: true
 
-      - run: sleep 3
+      - run: sleep 10
 
       - run: yarn cypress
