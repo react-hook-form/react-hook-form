@@ -2,7 +2,7 @@ version: 2
 jobs:
   build:
     docker:
-      - image: circleci/node:10.0.0
+      - image: cypress-io/cypress@1.5.1
 
     working_directory: ~/repo
 
