@@ -41,11 +41,12 @@ export default function set(object: DataType, path: any, value: string) {
 
     if (index !== lastIndex) {
       const objValue = object[key];
-      newValue = isObject(objValue)
-        ? objValue
-        : isIndex(path[index + 1])
-        ? []
-        : {};
+      newValue =
+        isObject(objValue) || isArray(objValue)
+          ? objValue
+          : isIndex(path[index + 1])
+          ? []
+          : {};
     }
     object[key] = newValue;
     object = object[key];

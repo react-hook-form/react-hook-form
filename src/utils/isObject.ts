@@ -1,2 +1,2 @@
 export default (value: unknown): value is object =>
-  value !== null && typeof value === 'object';
+  value !== null && !Array.isArray(value) && typeof value === 'object';

@@ -3,7 +3,6 @@ import isEmptyObject from './isEmptyObject';
 describe('isEmptyObject', () => {
   it('should return true when value is an empty object', () => {
     expect(isEmptyObject({})).toBeTruthy();
-    expect(isEmptyObject([])).toBeTruthy();
   });
 
   it('should return false when value is not an empty object', () => {
@@ -15,6 +14,7 @@ describe('isEmptyObject', () => {
     expect(isEmptyObject('')).toBeFalsy();
     expect(isEmptyObject(() => null)).toBeFalsy();
     expect(isEmptyObject({ foo: 'bar' })).toBeFalsy();
+    expect(isEmptyObject([])).toBeFalsy();
     expect(isEmptyObject(['foo', 'bar'])).toBeFalsy();
   });
 });
