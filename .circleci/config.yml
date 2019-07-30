@@ -15,6 +15,10 @@ jobs:
 
       - run: yarn install
 
+      - run:
+          command: npm run start:app
+          background: true
+
       - save_cache:
           key: cache-{{ checksum "package.json" }}
           paths:
@@ -23,12 +27,8 @@ jobs:
 
       - run: npm run bundlesize
 
-      - run: npm run test:coverage
-
-      - run:
-          command: npm run start:app
-          background: true
-
-      - run: sleep 20
+      - run: sleep 30
 
       - run: yarn cypress
+
+      - run: npm run test:coverage
