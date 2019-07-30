@@ -343,7 +343,7 @@ export default function useForm<
     const error = errorsFromRef[name];
     const isSameError =
       error &&
-      typeof error !== 'string' &&
+      !isString(error) &&
       (error.type === type && error.message === message);
 
     if (!isSameError) {
@@ -474,7 +474,7 @@ export default function useForm<
 
   const register = useCallback(
     (refOrValidateRule: RegisterInput | Ref, validateRule?: RegisterInput) => {
-      if (!refOrValidateRule || typeof window === 'undefined') return;
+      if (!refOrValidateRule || isUndefined(window)) return;
 
       if (validateRule && !refOrValidateRule.name) {
         warnMessage(refOrValidateRule);

@@ -36,10 +36,10 @@ export default function set(object: DataType, path: any, value: string) {
   const lastIndex = length - 1;
 
   while (++index < length) {
-    let key = path[index];
-    let newValue = value;
+    const key = path[index];
+    let newValue: string | object = value;
 
-    if (index != lastIndex) {
+    if (index !== lastIndex) {
       const objValue = object[key];
       newValue = isObject(objValue)
         ? objValue

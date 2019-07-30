@@ -9,6 +9,8 @@ import displayNativeError from './displayNativeError';
 import isObject from '../utils/isObject';
 import { DATE_INPUTS, STRING_INPUTS } from '../constants';
 import { Field, ErrorMessages, DataType } from '../types';
+import isFunction from '../utils/isFunction';
+import isBoolean from '../utils/isBoolean';
 
 type ValidatePromiseResult =
   | {}
@@ -131,12 +133,9 @@ export default async <Data>(
     const fieldValue = isRadio ? getRadioValue(options).value : value;
     const validateRef = isRadio && options ? options[0].ref : ref;
 
-    if (typeof validate === 'function') {
+    if (isFunction(validate)) {
       const result = await validate(fieldValue);
-      if (
-        (isString(result) && result) ||
-        (typeof result === 'boolean' && !result)
-      ) {
+      if ((isString(result) && result) || (isBoolean(result) && !result)) {
         error[name] = {
           type: 'validate',
           message: isString(result) ? result : '',
@@ -154,10 +153,10 @@ export default async <Data>(
           > => {
             const lastChild = values.length - 1 === index;
 
-            if (typeof validate === 'function') {
+            if (isFunction(validate)) {
               const result = await validate(fieldValue);
 
-              if (typeof result !== 'boolean' || !result) {
+              if (!isBoolean(result) || !result) {
                 const message = isString(result) ? result : '';
                 const data = {
                   type: key,
