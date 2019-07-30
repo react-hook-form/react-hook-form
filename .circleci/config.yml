@@ -13,11 +13,11 @@ jobs:
           keys:
             - cache-{{ checksum "package.json" }}
 
+      - run: yarn install
+
       - run:
           command: npm run start:app
           background: true
-
-      - run: yarn install
 
       - save_cache:
           key: cache-{{ checksum "package.json" }}
