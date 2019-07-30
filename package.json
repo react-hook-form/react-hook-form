@@ -20,7 +20,7 @@
     "bundlesize": "npm run build:min && bundlesize",
     "prepublish": "yarn lint && yarn test && yarn run clean && yarn build",
     "start:app": "yarn --cwd ./app && yarn --cwd ./app run start",
-    "cypress": "yarn start:app && http://localhost:3000 && cypress run"
+    "cypress": "cypress run"
   },
   "keywords": [
     "react",

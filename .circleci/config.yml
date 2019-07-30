@@ -23,4 +23,8 @@ jobs:
 
       - run: npm run test && npm run bundlesize
 
+      - run:
+          command: npm run start:app
+          background: true
+
       - run: yarn cypress
