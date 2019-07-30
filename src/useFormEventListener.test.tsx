@@ -1,6 +1,5 @@
 import useForm from './index';
 import * as React from 'react';
-// @ts-ignore
 import * as ReactDOM from 'react-dom';
 import { act } from 'react-test-renderer';
 
