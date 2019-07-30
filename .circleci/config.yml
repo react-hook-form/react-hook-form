@@ -21,8 +21,9 @@ jobs:
             - node_modules
           key: v1-dependencies-{{ checksum "package.json" }}
 
-      - run: npm run test && npm run bundlesize
+      - run: npm run bundlesize
 
       - run: yarn start:app
+        background: true
 
       - run: yarn cypress
