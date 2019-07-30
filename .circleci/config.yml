@@ -13,6 +13,10 @@ jobs:
           keys:
             - cache-{{ checksum "package.json" }}
 
+      - run:
+          command: npm run start:app
+          background: true
+
       - run: yarn install
 
       - save_cache:
@@ -25,10 +29,6 @@ jobs:
 
       - run: npm run test:coverage
 
-      - run:
-          command: npm run start:app
-          background: true
-
-      - run: sleep 20
+      - run: sleep 5
 
       - run: yarn cypress
