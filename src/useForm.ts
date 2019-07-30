@@ -483,7 +483,7 @@ export default function useForm<
 
   const register = useCallback(
     (refOrValidateRule: RegisterInput | Ref, validateRule?: RegisterInput) => {
-      if (!refOrValidateRule || isUndefined(window)) return;
+      if (!refOrValidateRule || typeof window === 'undefined') return;
 
       if (validateRule && !refOrValidateRule.name) {
         warnMessage(refOrValidateRule);
