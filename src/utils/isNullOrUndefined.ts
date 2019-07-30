@@ -1,1 +1,3 @@
-export default (value: any): boolean => value === null || value === undefined;
+import isUndefined from './isUndefined';
+
+export default (value: any): boolean => value === null || isUndefined(value);

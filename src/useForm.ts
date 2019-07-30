@@ -31,6 +31,7 @@ import {
   VoidFunction,
   OnSubmit,
 } from './types';
+import isUndefined from './utils/isUndefined';
 
 export default function useForm<
   Data extends DataType,
@@ -319,8 +320,16 @@ export default function useForm<
     [],
   );
 
-  const clearError = (name: Name): void => {
-    delete errorsRef.current[name];
+  const clearError = (name?: Name | Name[]): void => {
+    if (name === undefined) {
+      errorsRef.current = {};
+    } else if (isString(name)) {
+      delete errorsRef.current[name];
+    } else if (Array.isArray(name)) {
+      name.forEach(item => {
+        delete errorsRef.current[item];
+      });
+    }
     reRenderForm({});
   };
 
@@ -458,14 +467,24 @@ export default function useForm<
     const watchFields: any = watchFieldsRef.current;
 
     if (isString(fieldNames)) {
-      return assignWatchFields(fieldValues, fieldNames, watchFields);
+      const value = assignWatchFields(fieldValues, fieldNames, watchFields);
+      if (!isUndefined(value)) {
+        return value;
+      } else if (!isUndefined(defaultValue)) {
+        return defaultValue;
+      }
+      return getDefaultValue(defaultValues, fieldNames);
     }
     if (Array.isArray(fieldNames)) {
-      return fieldNames.map(name =>
-        assignWatchFields(fieldValues, name as string, watchFields),
-      );
+      return isEmptyObject(fieldsRef.current)
+        ? fieldNames.map(() => undefined)
+        : fieldNames.map(
+            name =>
+              assignWatchFields(fieldValues, name as string, watchFields) ||
+              getDefaultValue(defaultValues, name as string),
+          );
     }
-    return fieldValues;
+    return fieldValues || defaultValue || defaultValues;
   }
 
   const register = useCallback(
@@ -576,14 +595,14 @@ export default function useForm<
       fieldValues = values;
     }
 
-    if (isUnMount.current) return;
-
     if (isEmptyObject(fieldErrors)) {
       errorsRef.current = {};
       await callback(combineFieldValues(fieldValues), e);
     } else {
       errorsRef.current = fieldErrors as any;
     }
+
+    if (isUnMount.current) return;
 
     isSubmittedRef.current = true;
     submitCountRef.current += 1;
@@ -621,7 +640,7 @@ export default function useForm<
     resetRefs();
   }, [removeEventListener]);
 
-  const reset = useCallback((): void => {
+  const reset = useCallback((values?: DataType): void => {
     const fields = Object.values(fieldsRef.current);
     for (let field of fields) {
       if (field && field.ref.closest) {
@@ -630,6 +649,13 @@ export default function useForm<
       }
     }
     resetRefs();
+
+    if (values) {
+      Object.entries(values).forEach(([key, value]) => {
+        setFieldValue(key as Name, value);
+      });
+    }
+
     reRenderForm({});
   }, []);
 
