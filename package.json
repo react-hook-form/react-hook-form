@@ -1,6 +1,6 @@
 {
   "name": "react-hook-form",
-  "version": "3.21.1-beta.1",
+  "version": "3.21.1",
   "main": "dist/react-hook-form.js",
   "module": "dist/react-hook-form.es.js",
   "types": "dist/index.d.ts",
@@ -16,8 +16,11 @@
     "test": "jest --runInBand",
     "test-coverage": "jest --coverage",
     "testw": "yarn test-coverage -- --watchAll",
+    "cypress:open": "cypress open",
     "bundlesize": "npm run build:min && bundlesize",
-    "prepublish": "yarn lint && yarn test && yarn run clean && yarn build"
+    "prepublish": "yarn lint && yarn test && yarn run clean && yarn build",
+    "start:app": "yarn --cwd ./app && yarn --cwd ./app run start",
+    "cypress": "cypress run"
   },
   "keywords": [
     "react",
@@ -44,6 +47,7 @@
     "@typescript-eslint/parser": "^1.9.0",
     "bundlesize": "^0.18.0",
     "coveralls": "^3.0.3",
+    "cypress": "^3.4.0",
     "enzyme": "^3.9.0",
     "enzyme-adapter-react-16": "^1.12.1",
     "eslint": "^5.16.0",
@@ -81,7 +85,7 @@
     }
   },
   "lint-staged": {
-    "*.{jsx,ts}": [
+    "*.{jsx,ts},!app/": [
       "eslint --fix",
       "prettier --config ./.prettierrc --write",
       "git add"
