@@ -31,4 +31,4 @@ jobs:
 
       - run: yarn cypress
 
-      - run: npm run test:coverage
+      - run: npm run coverage
