@@ -47,6 +47,7 @@ export default function useForm<
 }: Props<Data> = {}) {
   const fieldsRef = useRef<FieldsObject<Data>>({});
   const errorsRef = useRef<ErrorMessages<Data>>({});
+  const schemaErrorsRef = useRef<DataType>({});
   const submitCountRef = useRef(0);
   const touchedFieldsRef = useRef(new Set());
   const watchFieldsRef = useRef<Partial<Record<keyof Data, boolean>>>({});
@@ -168,6 +169,7 @@ export default function useForm<
         validationSchema,
         fieldValues,
       );
+      schemaErrorsRef.current = fieldErrors;
       let result: boolean;
       let errors: ErrorMessages<Data>;
 
@@ -184,7 +186,9 @@ export default function useForm<
       } else {
         const payloadName = payload.name as string;
         errors = combineErrorsRef(
-          fieldErrors[payloadName] ? { [payloadName]: fieldErrors[payloadName] } : null,
+          fieldErrors[payloadName]
+            ? { [payloadName]: fieldErrors[payloadName] }
+            : null,
         );
         result = !fieldErrors[payloadName];
       }
@@ -268,6 +272,7 @@ export default function useForm<
             validationSchema,
             result,
           );
+          schemaErrorsRef.current = fieldsErrors;
           isSchemaValidateTriggeredRef.current = true;
           const error = fieldsErrors[name];
           const shouldUpdate =
@@ -280,11 +285,7 @@ export default function useForm<
             return reRenderForm({});
           }
         } else {
-          const error = await validateField(
-            ref,
-            fields,
-            nativeValidation,
-          );
+          const error = await validateField(ref, fields, nativeValidation);
           const shouldUpdate = shouldUpdateWithError({
             errors: errorsFromRef,
             error,
@@ -540,6 +541,7 @@ export default function useForm<
     if (validationSchema) {
       fieldValues = getFieldsValues(fields);
       fieldErrors = await validateWithSchema(validationSchema, fieldValues);
+      schemaErrorsRef.current = fieldErrors;
     } else {
       const {
         errors,
@@ -692,7 +694,8 @@ export default function useForm<
           }
         : {
             isValid: validationSchema
-              ? isSchemaValidateTriggeredRef.current && isEmptyErrors
+              ? isSchemaValidateTriggeredRef.current &&
+                isEmptyObject(schemaErrorsRef.current)
               : fieldsWithValidationRef.current.size
               ? !isEmptyObject(fieldsRef.current) &&
                 validFieldsRef.current.size >=
