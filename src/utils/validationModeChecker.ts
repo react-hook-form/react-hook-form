@@ -9,5 +9,5 @@ export default (
 } => ({
   isOnSubmit: !mode || mode === VALIDATION_MODE.onSubmit,
   isOnBlur: mode === VALIDATION_MODE.onBlur,
-  isOnChange: mode === VALIDATION_MODE.onchange,
+  isOnChange: mode === VALIDATION_MODE.onChange,
 });

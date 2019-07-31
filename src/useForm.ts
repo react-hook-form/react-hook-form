@@ -32,40 +32,34 @@ import {
   OnSubmit,
 } from './types';
 import isUndefined from './utils/isUndefined';
+import { VALIDATION_MODE } from './constants';
 
 export default function useForm<
   Data extends DataType,
   Name extends keyof Data = keyof Data
->(
-  {
-    mode,
-    validationSchema,
-    defaultValues,
-    validationFields,
-    nativeValidation,
-    submitFocusError,
-  }: Props<Data> = {
-    mode: 'onSubmit',
-    defaultValues: {},
-    nativeValidation: false,
-    submitFocusError: true,
-  },
-) {
+>({
+  mode = VALIDATION_MODE.onSubmit,
+  validationSchema,
+  defaultValues = {},
+  validationFields,
+  nativeValidation,
+  submitFocusError = true,
+}: Props<Data> = {}) {
   const fieldsRef = useRef<FieldsObject<Data>>({});
   const errorsRef = useRef<ErrorMessages<Data>>({});
-  const submitCountRef = useRef<number>(0);
+  const submitCountRef = useRef(0);
   const touchedFieldsRef = useRef(new Set());
-  const watchFieldsRef = useRef<{ [key in keyof Data]?: boolean }>({});
-  const isUnMount = useRef<boolean>(false);
-  const isWatchAllRef = useRef<boolean>(false);
-  const isSubmittingRef = useRef<boolean>(false);
-  const isSubmittedRef = useRef<boolean>(false);
-  const isDirtyRef = useRef<boolean>(false);
-  const isSchemaValidateTriggeredRef = useRef<boolean>(false);
+  const watchFieldsRef = useRef<Partial<Record<keyof Data, boolean>>>({});
+  const isUnMount = useRef(false);
+  const isWatchAllRef = useRef(false);
+  const isSubmittingRef = useRef(false);
+  const isSubmittedRef = useRef(false);
+  const isDirtyRef = useRef(false);
+  const isSchemaValidateTriggeredRef = useRef(false);
   const validateAndStateUpdateRef = useRef<Function>();
   const fieldsWithValidationRef = useRef(new Set());
   const validFieldsRef = useRef(new Set());
-  const [_unused, reRenderForm] = useState({});
+  const [, reRenderForm] = useState({});
   const { isOnChange, isOnBlur, isOnSubmit } = useRef(
     modeChecker(mode),
   ).current;
@@ -286,7 +280,7 @@ export default function useForm<
             return reRenderForm({});
           }
         } else {
-          const error = await validateField<Data>(
+          const error = await validateField(
             ref,
             fields,
             nativeValidation,

@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { VALIDATION_MODE } from './constants';
 
 export type FieldValue = any;
 
@@ -13,7 +14,7 @@ export type OnSubmit<Data extends DataType> = (
   e: React.SyntheticEvent,
 ) => void;
 
-export type Mode = 'onSubmit' | 'onBlur' | 'onChange';
+export type Mode = keyof typeof VALIDATION_MODE;
 
 export interface Props<Data extends DataType> {
   mode?: Mode;

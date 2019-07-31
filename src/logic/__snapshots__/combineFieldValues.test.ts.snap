@@ -60,6 +60,14 @@ Object {
 }
 `;
 
+exports[`combineFieldValues should handle quoted values 1`] = `
+Object {
+  "name": Object {
+    "foobar": "testFirst",
+  },
+}
+`;
+
 exports[`combineFieldValues should return default name value 1`] = `
 Object {
   "name": "testFirst",
