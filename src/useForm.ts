@@ -190,7 +190,7 @@ export default function useForm<
       } else {
         const payloadName = payload.name as string;
         errors = combineErrorsRef(
-          fieldErrors[payloadName] ? { name: fieldErrors[payloadName] } : null,
+          fieldErrors[payloadName] ? { [payloadName]: fieldErrors[payloadName] } : null,
         );
         result = !fieldErrors[payloadName];
       }

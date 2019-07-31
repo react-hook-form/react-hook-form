@@ -286,7 +286,7 @@ describe('useForm', () => {
         return payload;
       });
       await hookForm.triggerValidation({ name: 'test' });
-      expect(hookForm.errors).toEqual({ name: 'test' });
+      expect(hookForm.errors).toEqual({ 'test': 'test' });
     });
 
     it('should not trigger any error when schema validation result not found', async () => {
