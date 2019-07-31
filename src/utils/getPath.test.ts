@@ -1,7 +1,7 @@
 import getPath from './getPath';
 
 describe('getPath', () => {
-  it('should render correctly', () => {
+  it('should generate the correct path', () => {
     expect(
       getPath('test', [
         1,
