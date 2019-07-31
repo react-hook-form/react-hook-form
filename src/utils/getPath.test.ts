@@ -9,6 +9,7 @@ describe('getPath', () => {
         {
           data: 'test',
           kidding: { test: 'data' },
+          foo: { bar: {} },
           what: [{ bill: { haha: 'test' } }, [3, 4]],
         },
       ]),
