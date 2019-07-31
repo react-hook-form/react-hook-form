@@ -30,5 +30,3 @@ jobs:
       - run: sleep 30
 
       - run: yarn cypress
-
-      - run: npm run test:coverage
