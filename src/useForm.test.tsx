@@ -1,6 +1,5 @@
 import * as React from 'react';
 import useForm from './';
-// @ts-ignore
 import { act } from 'react-dom/test-utils';
 import attachEventListeners from './logic/attachEventListeners';
 import getFieldsValues from './logic/getFieldsValues';
@@ -9,6 +8,7 @@ import validateWithSchema from './logic/validateWithSchema';
 import validateField from './logic/validateField';
 import onDomRemove from './utils/onDomRemove';
 import { mount } from 'enzyme';
+import { VALIDATION_MODE } from './constants';
 
 jest.mock('./utils/onDomRemove');
 jest.mock('./logic/findRemovedFieldAndRemoveListener');
@@ -237,7 +237,7 @@ describe('useForm', () => {
     it('should update value when value is supplied', async () => {
       testComponent(() => {
         hookForm = useForm({
-          mode: 'onChange',
+          mode: VALIDATION_MODE.onChange,
         });
         return hookForm;
       });
@@ -252,7 +252,7 @@ describe('useForm', () => {
     it('should set value while trigger a validation', async () => {
       testComponent(() => {
         hookForm = useForm({
-          mode: 'onChange',
+          mode: VALIDATION_MODE.onChange,
         });
         return hookForm;
       });
@@ -274,7 +274,7 @@ describe('useForm', () => {
     it('should return the error with single field validation', async () => {
       testComponent(() => {
         hookForm = useForm({
-          mode: 'onChange',
+          mode: VALIDATION_MODE.onChange,
           validationSchema: { test: 'test' },
         });
         return hookForm;
@@ -292,7 +292,7 @@ describe('useForm', () => {
     it('should not trigger any error when schema validation result not found', async () => {
       testComponent(() => {
         hookForm = useForm({
-          mode: 'onChange',
+          mode: VALIDATION_MODE.onChange,
           validationSchema: { test: 'test' },
         });
         return hookForm;
@@ -312,7 +312,7 @@ describe('useForm', () => {
     it('should support array of fields for schema validation', async () => {
       testComponent(() => {
         hookForm = useForm({
-          mode: 'onChange',
+          mode: VALIDATION_MODE.onChange,
           validationSchema: {},
         });
         return hookForm;
@@ -336,7 +336,7 @@ describe('useForm', () => {
     it('should validate all fields when pass with undefined', async () => {
       testComponent(() => {
         hookForm = useForm({
-          mode: 'onChange',
+          mode: VALIDATION_MODE.onChange,
           validationSchema: { test: 'test' },
         });
         return hookForm;
@@ -424,7 +424,7 @@ describe('useForm', () => {
       const callback = jest.fn();
       testComponent(() => {
         hookForm = useForm({
-          mode: 'onSubmit',
+          mode: VALIDATION_MODE.onSubmit,
           validationFields: ['test'],
         });
         return hookForm;
@@ -459,7 +459,7 @@ describe('useForm', () => {
     it('should invoke callback when error not found', async () => {
       testComponent(() => {
         hookFormWithValidationSchema = useForm({
-          mode: 'onSubmit',
+          mode: VALIDATION_MODE.onSubmit,
           validationSchema: {},
         });
         return hookFormWithValidationSchema;
@@ -523,7 +523,7 @@ describe('useForm', () => {
     it('should return false for onChange or onBlur mode by default', () => {
       testComponent(() => {
         hookForm = useForm({
-          mode: 'onBlur',
+          mode: VALIDATION_MODE.onBlur,
         });
         return hookForm;
       });
@@ -534,7 +534,7 @@ describe('useForm', () => {
     it('should return true when no validation is registered', () => {
       testComponent(() => {
         hookForm = useForm({
-          mode: 'onBlur',
+          mode: VALIDATION_MODE.onBlur,
         });
         return hookForm;
       });
@@ -556,7 +556,7 @@ describe('useForm', () => {
     it('should populate the input with them', async () => {
       testComponent(() => {
         hookForm = useForm({
-          mode: 'onSubmit',
+          mode: VALIDATION_MODE.onSubmit,
           defaultValues: {
             test: 'data',
           },
