@@ -280,7 +280,7 @@ export default function useForm<
             return reRenderForm({});
           }
         } else {
-          const error = await validateField<Data>(
+          const error = await validateField(
             ref,
             fields,
             nativeValidation,

@@ -20,7 +20,7 @@ type ValidatePromiseResult =
       message: string | number | boolean | Date;
     };
 
-export default async <Data>(
+export default async (
   {
     ref,
     ref: { type, value, name, checked },
