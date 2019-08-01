@@ -99,7 +99,7 @@ export default async (
     } = getValueAndMessage(minLength);
     const inputLength = value.toString().length;
     const exceedMax = maxLength && inputLength > maxLengthValue;
-    const exceedMin = minLength && inputLength < minLengthValue;
+    const exceedMin = inputLength && minLength && inputLength < minLengthValue;
     const message = exceedMax ? maxLengthMessage : minLengthMessage;
 
     if (exceedMax || exceedMin) {
