@@ -667,8 +667,6 @@ export default function useForm<
     };
   }, [unSubscribe]);
 
-  const isEmptyErrors = isEmptyObject(errorsRef.current);
-
   return {
     register,
     unregister,
@@ -690,7 +688,7 @@ export default function useForm<
       isSubmitting: isSubmittingRef.current,
       ...(isOnSubmit
         ? {
-            isValid: isEmptyErrors,
+            isValid: isEmptyObject(errorsRef.current),
           }
         : {
             isValid: validationSchema
