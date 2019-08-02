@@ -30,6 +30,7 @@ import {
   SubmitPromiseResult,
   VoidFunction,
   OnSubmit,
+  ValidationPayload
 } from './types';
 import isUndefined from './utils/isUndefined';
 import { VALIDATION_MODE } from './constants';
@@ -65,10 +66,15 @@ export default function useForm<
     modeChecker(mode),
   ).current;
 
-  const combineErrorsRef = (data: any) => ({
+  const combineErrorsRef = (data: ErrorMessages<Data>) => ({
     ...errorsRef.current,
     ...data,
   });
+
+  const cleanUpErrors = (errors: ErrorMessages<Data>, fields: string[]) => (
+    Object.entries(errors)
+      .reduce((result, [field, err]) => fields.some(f => f === field) ? result : { ...result, [field]: err }, {})
+  );
 
   const renderBaseOnError = useCallback(
     (
@@ -154,47 +160,28 @@ export default function useForm<
 
   const executeSchemaValidation = useCallback(
     async (
-      payload:
-        | {
-            name: Name;
-            value?: Data[Name];
-          }
-        | {
-            name: Name;
-            value?: Data[Name];
-          }[],
+      payload: ValidationPayload<Name, Data[Name]> | ValidationPayload<Name, Data[Name]>[]
     ): Promise<boolean> => {
       const fieldValues = getFieldsValues(fieldsRef.current);
       const fieldErrors = await validateWithSchema(
         validationSchema,
         fieldValues,
       );
+      const names = Array.isArray(payload)
+        ? payload.map(({ name }) => name as string)
+        : [payload.name as string];
+      const validFields = names.filter(name => !fieldErrors[name]);
+      const result = isEmptyObject(fieldErrors);
+      const skipNamesOmittedInPayload = ([key]: [string, string]) => names.includes(key);
+
       schemaErrorsRef.current = fieldErrors;
-      let result: boolean;
-      let errors: ErrorMessages<Data>;
-
-      if (Array.isArray(payload)) {
-        const names = payload.map(({ name }) => name as string);
-        errors = combineErrorsRef(
-          Object.entries(fieldErrors).reduce(
-            (previous: { [key: string]: any }, [key, value]) =>
-              names.includes(key) ? { ...previous, [key]: value } : previous,
-            {},
-          ),
-        );
-        result = isEmptyObject(fieldErrors);
-      } else {
-        const payloadName = payload.name as string;
-        errors = combineErrorsRef(
-          fieldErrors[payloadName]
-            ? { [payloadName]: fieldErrors[payloadName] }
-            : null,
-        );
-        result = !fieldErrors[payloadName];
-      }
-
-      errorsRef.current = errors;
+      errorsRef.current = cleanUpErrors(combineErrorsRef(
+        Object.entries(fieldErrors)
+          .filter(skipNamesOmittedInPayload)
+          .reduce((previous, [key, value]) => ({ ...previous, [key]: value }), {} as ErrorMessages<Data>)
+      ), validFields);
       isSchemaValidateTriggeredRef.current = true;
+
       reRenderForm({});
       return result;
     },
@@ -203,15 +190,7 @@ export default function useForm<
 
   const triggerValidation = useCallback(
     async (
-      payload?:
-        | {
-            name: Name;
-            value?: Data[Name];
-          }
-        | {
-            name: Name;
-            value?: Data[Name];
-          }[],
+      payload?: ValidationPayload<Name, Data[Name]> | ValidationPayload<Name, Data[Name]>[]
     ): Promise<boolean> => {
       let fields: any = payload;
 

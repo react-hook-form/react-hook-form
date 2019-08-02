@@ -87,6 +87,11 @@ export interface RadioReturn {
 
 export type ValidationReturn = Record<string, string>;
 
+export interface ValidationPayload<Name, Value> {
+  name: Name;
+  value?: Value;
+};
+
 export interface FormProps<
   Data extends DataType = DataType,
   Name extends keyof Data = keyof Data,
@@ -111,15 +116,7 @@ export interface FormProps<
   setError: (name: Name, type?: string, message?: string, ref?: Ref) => void;
   setValue: (name: Name, value: Value, shouldValidate?: boolean) => void;
   triggerValidation: (
-    payload:
-      | {
-          name: Name;
-          value?: Value;
-        }
-      | {
-          name: Name;
-          value?: Value;
-        }[],
+    payload: ValidationPayload<Name, Value> | ValidationPayload<Name, Value>[]
   ) => Promise<boolean>;
   getValues: () => DataType;
   errors: DataType;
