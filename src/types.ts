@@ -41,9 +41,9 @@ export interface RegisterInput {
   minLength?: number | { value: number; message: string };
   pattern?: RegExp | { value: RegExp; message: string };
   validate?:
-    | Validate
-    | Record<string, Validate>
-    | { value: Validate | Record<string, Validate>; message: string };
+  | Validate
+  | Record<string, Validate>
+  | { value: Validate | Record<string, Validate>; message: string };
 }
 
 export interface Field extends RegisterInput {
@@ -87,11 +87,16 @@ export interface RadioReturn {
 
 export type ValidationReturn = Record<string, string>;
 
+export interface ValidationPayload<Name, Value> {
+  name: Name;
+  value?: Value;
+};
+
 export interface FormProps<
   Data extends DataType = DataType,
   Name extends keyof Data = keyof Data,
   Value = Data[Name]
-> {
+  > {
   children: JSX.Element[] | JSX.Element;
   register: (
     refOrValidateRule: RegisterInput | Ref,
@@ -111,15 +116,7 @@ export interface FormProps<
   setError: (name: Name, type?: string, message?: string, ref?: Ref) => void;
   setValue: (name: Name, value: Value, shouldValidate?: boolean) => void;
   triggerValidation: (
-    payload:
-      | {
-          name: Name;
-          value?: Value;
-        }
-      | {
-          name: Name;
-          value?: Value;
-        }[],
+    payload: ValidationPayload<Name, Value> | ValidationPayload<Name, Value>[]
   ) => Promise<boolean>;
   getValues: () => DataType;
   errors: DataType;

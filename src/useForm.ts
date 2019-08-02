@@ -30,6 +30,7 @@ import {
   SubmitPromiseResult,
   VoidFunction,
   OnSubmit,
+  ValidationPayload
 } from './types';
 import isUndefined from './utils/isUndefined';
 import { VALIDATION_MODE } from './constants';
@@ -159,36 +160,28 @@ export default function useForm<
 
   const executeSchemaValidation = useCallback(
     async (
-      payload:
-        | {
-            name: Name;
-            value?: Data[Name];
-          }
-        | {
-            name: Name;
-            value?: Data[Name];
-          }[],
+      payload: ValidationPayload<Name, Data[Name]> | ValidationPayload<Name, Data[Name]>[]
     ): Promise<boolean> => {
       const fieldValues = getFieldsValues(fieldsRef.current);
       const fieldErrors = await validateWithSchema(
         validationSchema,
         fieldValues,
       );
-      schemaErrorsRef.current = fieldErrors;
-
       const names = Array.isArray(payload)
         ? payload.map(({ name }) => name as string)
         : [payload.name as string];
       const validFields = names.filter(name => !fieldErrors[name]);
-      const errors = cleanUpErrors(combineErrorsRef(
+      const result = isEmptyObject(fieldErrors);
+      const skipNamesOmittedInPayload = ([key]: [string, string]) => names.includes(key);
+
+      schemaErrorsRef.current = fieldErrors;
+      errorsRef.current = cleanUpErrors(combineErrorsRef(
         Object.entries(fieldErrors)
-          .filter(([key]) => names.includes(key))
+          .filter(skipNamesOmittedInPayload)
           .reduce((previous, [key, value]) => ({ ...previous, [key]: value }), {} as ErrorMessages<Data>)
       ), validFields);
-      const result = isEmptyObject(fieldErrors);
-
-      errorsRef.current = errors;
       isSchemaValidateTriggeredRef.current = true;
+
       reRenderForm({});
       return result;
     },
@@ -197,15 +190,7 @@ export default function useForm<
 
   const triggerValidation = useCallback(
     async (
-      payload?:
-        | {
-            name: Name;
-            value?: Data[Name];
-          }
-        | {
-            name: Name;
-            value?: Data[Name];
-          }[],
+      payload?: ValidationPayload<Name, Data[Name]> | ValidationPayload<Name, Data[Name]>[]
     ): Promise<boolean> => {
       let fields: any = payload;
 
