@@ -41,9 +41,9 @@ export interface RegisterInput {
   minLength?: number | { value: number; message: string };
   pattern?: RegExp | { value: RegExp; message: string };
   validate?:
-  | Validate
-  | Record<string, Validate>
-  | { value: Validate | Record<string, Validate>; message: string };
+    | Validate
+    | Record<string, Validate>
+    | { value: Validate | Record<string, Validate>; message: string };
 }
 
 export interface Field extends RegisterInput {
@@ -96,7 +96,7 @@ export interface FormProps<
   Data extends DataType = DataType,
   Name extends keyof Data = keyof Data,
   Value = Data[Name]
-  > {
+> {
   children: JSX.Element[] | JSX.Element;
   register: (
     refOrValidateRule: RegisterInput | Ref,
