@@ -8,6 +8,8 @@ import shouldUpdateWithError from './logic/shouldUpdateWithError';
 import validateField from './logic/validateField';
 import validateWithSchema from './logic/validateWithSchema';
 import attachNativeValidation from './logic/attachNativeValidation';
+import getDefaultValue from './logic/getDefaultValue';
+import assignWatchFields from './logic/assignWatchFields';
 import isCheckBoxInput from './utils/isCheckBoxInput';
 import isEmptyObject from './utils/isEmptyObject';
 import isRadioInput from './utils/isRadioInput';
@@ -15,11 +17,9 @@ import onDomRemove from './utils/onDomRemove';
 import modeChecker from './utils/validationModeChecker';
 import warnMessage from './utils/warnMessage';
 import get from './utils/get';
-import getDefaultValue from './logic/getDefaultValue';
-import assignWatchFields from './logic/assignWatchFields';
 import isString from './utils/isString';
 import isUndefined from './utils/isUndefined';
-import cleanUpErrors from './logic/cleanUpErrors';
+import omitValidFields from './logic/omitValidFields';
 import { VALIDATION_MODE } from './constants';
 import {
   DataType,
@@ -160,35 +160,33 @@ export default function useForm<
         | ValidationPayload<Name, Data[Name]>
         | ValidationPayload<Name, Data[Name]>[],
     ): Promise<boolean> => {
-      const fieldValues = getFieldsValues(fieldsRef.current);
       const fieldErrors = await validateWithSchema(
         validationSchema,
-        fieldValues,
+        getFieldsValues(fieldsRef.current),
       );
       const names = Array.isArray(payload)
         ? payload.map(({ name }) => name as string)
         : [payload.name as string];
-      const validFields = names.filter(name => !fieldErrors[name]);
-      const result = isEmptyObject(fieldErrors);
+      const validFieldNames = names.filter(name => !fieldErrors[name]);
       const skipNamesOmittedInPayload = ([key]: [string, string]) =>
         names.includes(key);
 
       schemaErrorsRef.current = fieldErrors;
-      errorsRef.current = cleanUpErrors(
+      errorsRef.current = omitValidFields(
         combineErrorsRef(
           Object.entries(fieldErrors)
             .filter(skipNamesOmittedInPayload)
             .reduce(
-              (previous, [key, value]) => ({ ...previous, [key]: value }),
-              {} as ErrorMessages<Data>,
+              (previous, [name, error]) => ({ ...previous, [name]: error }),
+              {},
             ),
         ),
-        validFields,
+        validFieldNames,
       );
       isSchemaValidateTriggeredRef.current = true;
 
       reRenderForm({});
-      return result;
+      return isEmptyObject(fieldErrors);
     },
     [validationSchema],
   );

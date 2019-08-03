@@ -90,7 +90,7 @@ export type ValidationReturn = Record<string, string>;
 export interface ValidationPayload<Name, Value> {
   name: Name;
   value?: Value;
-};
+}
 
 export interface FormProps<
   Data extends DataType = DataType,
@@ -116,7 +116,7 @@ export interface FormProps<
   setError: (name: Name, type?: string, message?: string, ref?: Ref) => void;
   setValue: (name: Name, value: Value, shouldValidate?: boolean) => void;
   triggerValidation: (
-    payload: ValidationPayload<Name, Value> | ValidationPayload<Name, Value>[]
+    payload: ValidationPayload<Name, Value> | ValidationPayload<Name, Value>[],
   ) => Promise<boolean>;
   getValues: () => DataType;
   errors: DataType;
