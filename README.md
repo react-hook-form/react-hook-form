@@ -68,8 +68,8 @@ function App() {
 Thanks goes to these wonderful people:
 
 <p float="left">
+    <a href="https://github.com/barrymay"><img src="https://avatars2.githubusercontent.com/u/5514034?s=400&v=4" width="50" height="50" /></a>
     <a href="https://github.com/stramel"><img src="https://avatars1.githubusercontent.com/u/855184?s=460&v=4" width="50" height="50" /></a>
-    <a href="https://github.com/barry4dev"><img src="https://avatars2.githubusercontent.com/u/5514034?s=400&v=4" width="50" height="50" /></a>
     <a href="https://github.com/AyumiKai"><img src="https://avatars3.githubusercontent.com/u/14857042?s=60&v=4" width="50" height="50" /></a>
     <a href="https://github.com/mat-jaworski"><img src="https://avatars0.githubusercontent.com/u/11812094?s=460&v=4" width="50" height="50" /></a>
     <a href="https://github.com/cfgj"><img src="https://avatars0.githubusercontent.com/u/802795?s=460&v=4" width="50" height="50" /></a>
