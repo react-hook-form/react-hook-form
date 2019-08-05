@@ -644,6 +644,17 @@ export default function useForm<
     return payload && payload.nest ? combineFieldValues(data) : data;
   };
 
+  const getProps = (): Props<Data> => {
+    return {
+      mode,
+      validationSchema,
+      defaultValues,
+      validationFields,
+      nativeValidation,
+      submitFocusError,
+    };
+  };
+
   useEffect((): VoidFunction => {
     return () => {
       isUnMount.current = true;
@@ -663,6 +674,7 @@ export default function useForm<
     setValue,
     triggerValidation,
     getValues,
+    getProps,
     errors: errorsRef.current,
     formState: {
       dirty: isDirtyRef.current,
