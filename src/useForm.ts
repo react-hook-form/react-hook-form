@@ -508,7 +508,7 @@ export default function useForm<
   const handleSubmit = (callback: OnSubmit<Data>) => async (
     e: React.SyntheticEvent,
   ): Promise<void> => {
-    if (e && !nativeValidation) {
+    if (e) {
       e.preventDefault();
       e.persist();
     }
