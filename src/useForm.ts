@@ -307,7 +307,7 @@ export default function useForm<
     isRadioInput(type) && Array.isArray(options)
       ? options.forEach((fieldRef): void => removeEventListener(fieldRef, true))
       : removeEventListener(field, true);
-  }, []);
+  }, [removeEventListener]);
 
   const clearError = (name?: Name | Name[]): void => {
     if (name === undefined) {
