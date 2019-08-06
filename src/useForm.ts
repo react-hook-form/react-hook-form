@@ -656,7 +656,6 @@ export default function useForm<
     unregister,
     handleSubmit,
     watch,
-    unSubscribe,
     reset,
     clearError,
     setError,

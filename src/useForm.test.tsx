@@ -1,6 +1,5 @@
 import * as React from 'react';
 import useForm from './';
-import { act } from 'react-dom/test-utils';
 import attachEventListeners from './logic/attachEventListeners';
 import getFieldsValues from './logic/getFieldsValues';
 import findRemovedFieldAndRemoveListener from './logic/findRemovedFieldAndRemoveListener';
@@ -356,38 +355,6 @@ describe('useForm', () => {
         test: 'test',
         test1: 'test1',
       });
-    });
-  });
-
-  describe('unSubscribe', () => {
-    it('should remove all reference when mode change', () => {
-      hookForm.register({ type: 'input', name: 'test' });
-      hookForm.register({
-        type: 'radio',
-        name: 'test1',
-        options: [
-          { type: 'radio', name: 'test3' },
-          { type: 'radio', name: 'test4' },
-        ],
-      });
-      expect(attachEventListeners).toBeCalledWith({
-        field: {
-          mutationWatcher: undefined,
-          ref: {
-            name: 'test',
-            type: 'input',
-          },
-        },
-        isRadio: false,
-        validateAndStateUpdate: expect.any(Function),
-      });
-      hookForm.register({ type: 'input', name: 'test' });
-      act(() => {
-        hookForm.unSubscribe();
-      });
-      expect(findRemovedFieldAndRemoveListener).toBeCalled();
-      hookForm.register({ type: 'input', name: 'test' });
-      expect(attachEventListeners).toBeCalledTimes(3);
     });
   });
 
