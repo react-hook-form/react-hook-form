@@ -210,7 +210,7 @@ export default function useForm<
         reRenderForm({});
         return result.every(Boolean);
       }
-      return executeValidation(fields);
+      return await executeValidation(fields);
     },
     [executeSchemaValidation, executeValidation, validationSchema],
   );
