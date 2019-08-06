@@ -299,6 +299,17 @@ export default function useForm<
     [],
   );
 
+  const removeInputEventListener: Function = useCallback(field => {
+    if (!field) return;
+    const {
+      ref: { type },
+      options,
+    } = field;
+    isRadioInput(type) && Array.isArray(options)
+      ? options.forEach((fieldRef): void => removeEventListener(fieldRef, true))
+      : removeEventListener(field, true);
+  }, []);
+
   const clearError = (name?: Name | Name[]): void => {
     if (name === undefined) {
       errorsRef.current = {};
@@ -487,12 +498,7 @@ export default function useForm<
 
   const resetField = (name: Name | string) => {
     const field = fieldsRef.current[name as string];
-    if (!field) return;
-    const { ref, options } = field;
-    isRadioInput(ref.type) && Array.isArray(options)
-      ? options.forEach((input): void => removeEventListener(input, true))
-      : removeEventListener(ref, true);
-
+    removeInputEventListener(field);
     delete watchFieldsRef.current[name];
     delete errorsRef.current[name];
     delete fieldsRef.current[name];
@@ -516,8 +522,8 @@ export default function useForm<
     let fieldValues;
     let firstFocusError = true;
     const fields = fieldsRef.current;
-    const currentFieldValues = validationFields
-      ? (validationFields.map(name => fieldsRef.current[name]) as [])
+    const fieldsToValidate = validationFields
+      ? validationFields.map(name => fieldsRef.current[name])
       : Object.values(fields);
     isSubmittingRef.current = true;
     reRenderForm({});
@@ -530,7 +536,7 @@ export default function useForm<
       const {
         errors,
         values,
-      }: SubmitPromiseResult<Data> = await currentFieldValues.reduce(
+      }: SubmitPromiseResult<Data> = await fieldsToValidate.reduce(
         async (
           previous: Promise<SubmitPromiseResult<Data>>,
           field: Field | undefined,
@@ -556,7 +562,7 @@ export default function useForm<
               firstFocusError = false;
             }
             resolvedPrevious.errors = {
-              ...(resolvedPrevious.errors || {}),
+              ...resolvedPrevious.errors,
               ...fieldError,
             };
             return Promise.resolve(resolvedPrevious);
@@ -566,9 +572,9 @@ export default function useForm<
           return Promise.resolve(resolvedPrevious);
         },
         Promise.resolve<SubmitPromiseResult<Data>>({
-          errors: {},
-          values: {},
-        } as any),
+          errors: {} as ErrorMessages<Data>,
+          values: {} as Data,
+        }),
       );
 
       fieldErrors = errors;
@@ -606,24 +612,16 @@ export default function useForm<
   const unSubscribe = useCallback((): void => {
     fieldsRef.current &&
       Object.values(fieldsRef.current).forEach(
-        (field: Field | undefined): void => {
-          if (!field) return;
-          const { ref, options } = field;
-          isRadioInput(ref.type) && Array.isArray(options)
-            ? options.forEach((fieldRef): void =>
-                removeEventListener(fieldRef, true),
-              )
-            : removeEventListener(field, true);
-        },
+        (field: Field | undefined): void => removeInputEventListener(field),
       );
     fieldsRef.current = {};
     resetRefs();
   }, [removeEventListener]);
 
   const reset = useCallback((values?: DataType): void => {
-    const fields = Object.values(fieldsRef.current);
-    for (let field of fields) {
-      if (field && field.ref.closest) {
+    const fieldValues = Object.values(fieldsRef.current);
+    for (let field of fieldValues) {
+      if (field && field.ref && field.ref.closest) {
         field.ref.closest('form').reset();
         break;
       }
@@ -631,11 +629,10 @@ export default function useForm<
     resetRefs();
 
     if (values) {
-      Object.entries(values).forEach(([key, value]) => {
-        setFieldValue(key as Name, value);
-      });
+      Object.entries(values).forEach(([key, value]) =>
+        setFieldValue(key as Name, value),
+      );
     }
-
     reRenderForm({});
   }, []);
 
@@ -644,12 +641,13 @@ export default function useForm<
     return payload && payload.nest ? combineFieldValues(data) : data;
   };
 
-  useEffect((): VoidFunction => {
-    return () => {
+  useEffect(
+    (): VoidFunction => () => {
       isUnMount.current = true;
       unSubscribe();
-    };
-  }, [unSubscribe]);
+    },
+    [unSubscribe],
+  );
 
   return {
     register,
