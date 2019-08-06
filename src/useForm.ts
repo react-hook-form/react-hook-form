@@ -123,7 +123,6 @@ export default function useForm<
       setFieldValue(name, value);
       touchedFieldsRef.current.add(name);
       isDirtyRef.current = true;
-
       reRenderForm({});
     },
     [],

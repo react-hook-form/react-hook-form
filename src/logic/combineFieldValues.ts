@@ -9,8 +9,7 @@ export default (data: DataType): FieldValue =>
         return previous;
       }
 
-      previous[key] = value;
-      return previous;
+      return { ...previous, [key]: value };
     },
     {},
   );
