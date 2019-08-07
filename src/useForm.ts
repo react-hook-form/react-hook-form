@@ -185,7 +185,7 @@ export default function useForm<
       isSchemaValidateTriggeredRef.current = true;
 
       reRenderForm({});
-      return isEmptyObject(fieldErrors);
+      return isEmptyObject(errorsRef.current);
     },
     [validationSchema],
   );
@@ -298,16 +298,21 @@ export default function useForm<
     [],
   );
 
-  const removeInputEventListener: Function = useCallback(field => {
-    if (!field) return;
-    const {
-      ref: { type },
-      options,
-    } = field;
-    isRadioInput(type) && Array.isArray(options)
-      ? options.forEach((fieldRef): void => removeEventListener(fieldRef, true))
-      : removeEventListener(field, true);
-  }, [removeEventListener]);
+  const removeInputEventListener: Function = useCallback(
+    field => {
+      if (!field) return;
+      const {
+        ref: { type },
+        options,
+      } = field;
+      isRadioInput(type) && Array.isArray(options)
+        ? options.forEach((fieldRef): void =>
+            removeEventListener(fieldRef, true),
+          )
+        : removeEventListener(field, true);
+    },
+    [removeEventListener],
+  );
 
   const clearError = (name?: Name | Name[]): void => {
     if (name === undefined) {
