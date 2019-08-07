@@ -285,7 +285,33 @@ describe('useForm', () => {
         return payload;
       });
       await hookForm.triggerValidation({ name: 'test' });
-      expect(hookForm.errors).toEqual({ 'test': 'test' });
+      expect(hookForm.errors).toEqual({ test: 'test' });
+    });
+
+    it('should return the status of the requested field with single field validation', async () => {
+      testComponent(() => {
+        hookForm = useForm({
+          mode: VALIDATION_MODE.onChange,
+          validationSchema: {
+            test2: 'test2',
+          },
+        });
+        return hookForm;
+      });
+
+      hookForm.register({ type: 'input', name: 'test1' }, { required: false });
+      hookForm.register({ type: 'input', name: 'test2' }, { required: true });
+      // @ts-ignore
+      validateWithSchema.mockImplementation(async payload => {
+        return payload;
+      });
+      const resultTrue = await hookForm.triggerValidation({ name: 'test1' });
+      expect(resultTrue).toEqual(true);
+      const resultFalse = await hookForm.triggerValidation({ name: 'test2' });
+      expect(resultFalse).toEqual(false);
+      expect(hookForm.errors).toEqual({
+        test2: 'test2',
+      });
     });
 
     it('should not trigger any error when schema validation result not found', async () => {
@@ -329,6 +355,39 @@ describe('useForm', () => {
       expect(hookForm.errors).toEqual({
         test: 'test',
         test1: 'test1',
+      });
+    });
+
+    it('should return the status of the requested fields with array of fields for validation', async () => {
+      testComponent(() => {
+        hookForm = useForm({
+          mode: VALIDATION_MODE.onChange,
+          validationSchema: {
+            test3: 'test3',
+          },
+        });
+        return hookForm;
+      });
+
+      hookForm.register({ type: 'input', name: 'test1' }, { required: false });
+      hookForm.register({ type: 'input', name: 'test2' }, { required: false });
+      hookForm.register({ type: 'input', name: 'test3' }, { required: true });
+      // @ts-ignore
+      validateWithSchema.mockImplementation(async payload => {
+        return payload;
+      });
+      const resultTrue = await hookForm.triggerValidation([
+        { name: 'test1' },
+        { name: 'test2' },
+      ]);
+      expect(resultTrue).toEqual(true);
+      const resultFalse = await hookForm.triggerValidation([
+        { name: 'test2' },
+        { name: 'test3' },
+      ]);
+      expect(resultFalse).toEqual(false);
+      expect(hookForm.errors).toEqual({
+        test3: 'test3',
       });
     });
 
