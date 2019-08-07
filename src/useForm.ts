@@ -615,7 +615,7 @@ export default function useForm<
       );
     fieldsRef.current = {};
     resetRefs();
-  }, [removeEventListener]);
+  }, [removeInputEventListener]);
 
   const reset = useCallback((values?: DataType): void => {
     const fieldValues = Object.values(fieldsRef.current);
