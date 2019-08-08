@@ -478,6 +478,7 @@ export default function useForm<
           );
     }
 
+    isWatchAllRef.current = true;
     return fieldValues || defaultValue || defaultValues;
   }
 
