@@ -11,7 +11,7 @@ export default (
   watchFields: { [key: string]: boolean },
 ) => {
   if (isEmptyObject(fieldValues) || isUndefined(fieldValues)) return undefined;
-  if (fieldValues[fieldName]) {
+  if (!isUndefined(fieldValues[fieldName])) {
     watchFields[fieldName] = true;
     return fieldValues[fieldName];
   }
