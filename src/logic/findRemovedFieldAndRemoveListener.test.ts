@@ -16,8 +16,8 @@ describe('findMissDomAndClean', () => {
       findRemovedFieldAndRemoveListener(
         // @ts-ignore
         fields,
-        { current: new Set() },
-        { current: new Set() },
+        new Set(),
+        new Set(),
         () => {},
         {
           ref: { name: 'bill', type: 'radio' },
@@ -27,26 +27,20 @@ describe('findMissDomAndClean', () => {
   });
 
   it('should remove touched Fields reference', () => {
-    const touchedRefs = { current: new Set(['test', 'test1', 'test3']) };
+    const touchedRefs = new Set(['test', 'test1', 'test3']);
     // @ts-ignore
-    findRemovedFieldAndRemoveListener(
-      {},
-      touchedRefs,
-      { current: new Set() },
-      () => {},
-      {
-        ref: { name: 'test', type: 'radio' },
-        options: [
-          {
-            mutationWatcher: {
-              disconnect: () => {},
-            },
-            ref: {},
+    findRemovedFieldAndRemoveListener({}, touchedRefs, new Set(), () => {}, {
+      ref: { name: 'test', type: 'radio' },
+      options: [
+        {
+          mutationWatcher: {
+            disconnect: () => {},
           },
-        ],
-      },
-    );
-    expect(touchedRefs.current).toEqual(new Set(['test1', 'test3']));
+          ref: {},
+        },
+      ],
+    });
+    expect(touchedRefs).toEqual(new Set(['test1', 'test3']));
   });
 
   it('should remove options completely if option found and no option left', () => {
@@ -71,23 +65,17 @@ describe('findMissDomAndClean', () => {
         ],
       },
     };
-    findRemovedFieldAndRemoveListener(
-      fields,
-      { current: new Set() },
-      { current: new Set() },
-      () => {},
-      {
-        ref: { name: 'test', type: 'radio' },
-        options: [
-          {
-            mutationWatcher: {
-              disconnect,
-            },
-            ref,
+    findRemovedFieldAndRemoveListener(fields, new Set(), new Set(), () => {}, {
+      ref: { name: 'test', type: 'radio' },
+      options: [
+        {
+          mutationWatcher: {
+            disconnect,
           },
-        ],
-      },
-    );
+          ref,
+        },
+      ],
+    });
 
     expect(fields).toEqual({});
   });
@@ -112,18 +100,12 @@ describe('findMissDomAndClean', () => {
       },
     };
 
-    findRemovedFieldAndRemoveListener(
-      fields,
-      { current: new Set() },
-      { current: new Set() },
-      () => {},
-      {
-        ref,
-        mutationWatcher: {
-          disconnect,
-        },
+    findRemovedFieldAndRemoveListener(fields, new Set(), new Set(), () => {}, {
+      ref,
+      mutationWatcher: {
+        disconnect,
       },
-    );
+    });
 
     expect(fields).toMatchSnapshot();
   });
@@ -169,8 +151,8 @@ describe('findMissDomAndClean', () => {
     expect(
       findRemovedFieldAndRemoveListener(
         fields,
-        { current: new Set() },
-        { current: new Set() },
+        new Set(),
+        new Set(),
         () => {},
         {
           ref: { name: 'test', type: 'radio' },
@@ -202,23 +184,17 @@ describe('findMissDomAndClean', () => {
       },
     };
 
-    findRemovedFieldAndRemoveListener(
-      fields,
-      { current: new Set() },
-      { current: new Set() },
-      () => {},
-      {
-        ref: { name: 'test', type: 'text' },
-        options: [
-          {
-            mutationWatcher: {
-              disconnect,
-            },
-            ref: {},
+    findRemovedFieldAndRemoveListener(fields, new Set(), new Set(), () => {}, {
+      ref: { name: 'test', type: 'text' },
+      options: [
+        {
+          mutationWatcher: {
+            disconnect,
           },
-        ],
-      },
-    );
+          ref: {},
+        },
+      ],
+    });
 
     expect(fields).toMatchSnapshot();
 
@@ -226,8 +202,8 @@ describe('findMissDomAndClean', () => {
       // @ts-ignore
       findRemovedFieldAndRemoveListener(
         fields,
-        { current: new Set() },
-        { current: new Set() },
+        new Set(),
+        new Set(),
         () => {},
         {
           ref: { name: 'test', type: 'text' },
