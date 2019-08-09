@@ -7,8 +7,8 @@ export default function findRemovedFieldAndRemoveListener<
   Data extends DataType
 >(
   fields: FieldsObject<Data>,
-  touchedFieldsRef: { current: Set<unknown> },
-  fieldsWithValidationRef: { current: Set<unknown> },
+  touchedFieldsRef: Set<unknown>,
+  fieldsWithValidationRef: Set<unknown>,
   validateWithStateUpdate: Function,
   { ref, mutationWatcher, options }: Field,
   forceDelete: boolean = false,
@@ -16,8 +16,9 @@ export default function findRemovedFieldAndRemoveListener<
   if (!ref || !ref.type) return;
 
   const { name, type } = ref;
-  touchedFieldsRef.current.delete(name);
-  fieldsWithValidationRef.current.delete(name);
+  const isRefDeleted = !document.body.contains(ref);
+  touchedFieldsRef.delete(name);
+  fieldsWithValidationRef.delete(name);
 
   if (isRadioInput(type) && options) {
     options.forEach(({ ref }, index): void => {

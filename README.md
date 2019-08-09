@@ -1,4 +1,4 @@
-<div align="right">English | <a href="https://github.com/bluebill1049/react-hook-form/blob/master/docs/README.zh-CN.md">简体中文</a></div>
+<div align="right">🇦🇺English | <a href="https://github.com/bluebill1049/react-hook-form/blob/master/docs/README.zh-CN.md">🇨🇳简体中文</a></div>
 
 <div align="center"><p align="center"><a href="https://react-hook-form.com" title="React Hook Form - Simple React forms validation"><img src="https://raw.githubusercontent.com/bluebill1049/react-hook-form/master/website/logo.png" alt="React Hook Form Logo - React hook form validation" width="330px" /></a></p></div>
 
@@ -74,6 +74,7 @@ Thanks goes to these wonderful people:
     <a href="https://github.com/mat-jaworski"><img src="https://avatars0.githubusercontent.com/u/11812094?s=460&v=4" width="50" height="50" /></a>
     <a href="https://github.com/cfgj"><img src="https://avatars0.githubusercontent.com/u/802795?s=460&v=4" width="50" height="50" /></a>
     <a href="https://github.com/abihf"><img src="https://avatars1.githubusercontent.com/u/1484485?s=180&v=4" width="50" height="50" /></a>
+    <a href="https://github.com/Nickman87"><img src="https://avatars2.githubusercontent.com/u/870416?s=460&v=4" width="50" height="50" /></a>
     <a href="https://github.com/ell10t"><img src="https://avatars2.githubusercontent.com/u/35668113?s=460&v=4" width="50" height="50" />
     <a href="https://github.com/chrisparton1991"><img src="https://avatars0.githubusercontent.com/u/13063119?s=460&v=4" width="50" height="50" />
     <a href="https://github.com/lightsound"><img src="https://avatars2.githubusercontent.com/u/8220973?s=460&v=4" width="50" height="50" /></a>

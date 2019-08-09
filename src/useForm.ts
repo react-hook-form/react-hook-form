@@ -185,7 +185,7 @@ export default function useForm<
       isSchemaValidateTriggeredRef.current = true;
 
       reRenderForm({});
-      return isEmptyObject(fieldErrors);
+      return isEmptyObject(errorsRef.current);
     },
     [validationSchema],
   );
@@ -291,23 +291,28 @@ export default function useForm<
     findRemovedFieldAndRemoveListener.bind(
       null,
       fieldsRef.current,
-      touchedFieldsRef,
-      fieldsWithValidationRef,
+      touchedFieldsRef.current,
+      fieldsWithValidationRef.current,
       validateAndStateUpdateRef.current,
     ),
     [],
   );
 
-  const removeInputEventListener: Function = useCallback(field => {
-    if (!field) return;
-    const {
-      ref: { type },
-      options,
-    } = field;
-    isRadioInput(type) && Array.isArray(options)
-      ? options.forEach((fieldRef): void => removeEventListener(fieldRef, true))
-      : removeEventListener(field, true);
-  }, [removeEventListener]);
+  const removeInputEventListener: Function = useCallback(
+    field => {
+      if (!field) return;
+      const {
+        ref: { type },
+        options,
+      } = field;
+      isRadioInput(type) && Array.isArray(options)
+        ? options.forEach((fieldRef): void =>
+            removeEventListener(fieldRef, true),
+          )
+        : removeEventListener(field, true);
+    },
+    [removeEventListener],
+  );
 
   const clearError = (name?: Name | Name[]): void => {
     if (name === undefined) {
@@ -473,6 +478,7 @@ export default function useForm<
           );
     }
 
+    isWatchAllRef.current = true;
     return fieldValues || defaultValue || defaultValues;
   }
 
