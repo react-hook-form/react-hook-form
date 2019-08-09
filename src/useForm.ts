@@ -291,8 +291,8 @@ export default function useForm<
     findRemovedFieldAndRemoveListener.bind(
       null,
       fieldsRef.current,
-      touchedFieldsRef,
-      fieldsWithValidationRef,
+      touchedFieldsRef.current,
+      fieldsWithValidationRef.current,
       validateAndStateUpdateRef.current,
     ),
     [],
