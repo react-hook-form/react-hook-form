@@ -16,13 +16,12 @@ export default function findRemovedFieldAndRemoveListener<
   if (!ref || !ref.type) return;
 
   const { name, type } = ref;
-  const isRefDetached = isDetached(ref);
   touchedFieldsRef.current.delete(name);
   fieldsWithValidationRef.current.delete(name);
 
   if (isRadioInput(type) && options) {
     options.forEach(({ ref }, index): void => {
-      if (ref instanceof HTMLElement && isRefDetached && options[index]) {
+      if (options[index] && isDetached(ref)) {
         removeAllEventListeners(options[index], validateWithStateUpdate);
         (
           options[index].mutationWatcher || { disconnect: (): void => {} }
@@ -32,7 +31,7 @@ export default function findRemovedFieldAndRemoveListener<
     });
 
     if (!options.length) delete fields[name];
-  } else if ((ref instanceof HTMLElement && isRefDetached) || forceDelete) {
+  } else if (forceDelete || isDetached(ref)) {
     removeAllEventListeners(ref, validateWithStateUpdate);
     if (mutationWatcher) mutationWatcher.disconnect();
     delete fields[name];

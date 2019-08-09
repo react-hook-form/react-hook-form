@@ -16,6 +16,21 @@ describe('isDetached', () => {
     expect(isDetached(node)).toBeTruthy();
   });
 
+  it('should return false when the given element is not an HTMLElement', () => {
+    expect(isDetached({ name: 'myComp' })).toBeFalsy();
+    expect(isDetached('myComp')).toBeFalsy();
+    expect(isDetached(20)).toBeFalsy();
+  });
+
+  it('should return true when the given element undefined or otherwise falsy', () => {
+    expect(isDetached(undefined)).toBeTruthy();
+    expect(isDetached(null)).toBeTruthy();
+    expect(isDetached('')).toBeTruthy();
+    expect(isDetached(0)).toBeTruthy();
+    expect(isDetached(NaN)).toBeTruthy();
+    expect(isDetached(false)).toBeTruthy();
+  });
+
   it('should return true when the node is no longer in the main document', () => {
     document.body.innerHTML = ''; // Make sure the body is empty
     const node = document.createElement('div');
