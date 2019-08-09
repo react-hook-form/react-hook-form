@@ -16,7 +16,6 @@ export default function findRemovedFieldAndRemoveListener<
   if (!ref || !ref.type) return;
 
   const { name, type } = ref;
-  const isRefDeleted = !document.body.contains(ref);
   touchedFieldsRef.delete(name);
   fieldsWithValidationRef.delete(name);
 
