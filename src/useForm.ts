@@ -615,7 +615,9 @@ export default function useForm<
     const fieldValues = Object.values(fieldsRef.current);
     for (let field of fieldValues) {
       if (field && field.ref && field.ref.closest) {
-        field.ref.closest('form').reset();
+        try {
+          field.ref.closest('form').reset();
+        } catch {}
         break;
       }
     }
