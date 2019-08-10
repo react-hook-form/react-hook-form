@@ -287,31 +287,27 @@ export default function useForm<
         if (shouldUpdateState) reRenderForm({});
       };
 
-  const removeEventListener: Function = useCallback(
-    findRemovedFieldAndRemoveListener.bind(
-      null,
-      fieldsRef.current,
-      touchedFieldsRef.current,
-      fieldsWithValidationRef.current,
-      validateAndStateUpdateRef.current,
-    ),
-    [],
-  );
+  const resetFieldRef = (name: Name) => {
+    delete watchFieldsRef.current[name];
+    delete errorsRef.current[name];
+    delete fieldsRef.current[name];
+    touchedFieldsRef.current.delete(name);
+    fieldsWithValidationRef.current.delete(name);
+    validFieldsRef.current.delete(name);
+  };
 
-  const removeInputEventListener: Function = useCallback(
-    field => {
-      if (!field) return;
-      const {
-        ref: { type },
-        options,
-      } = field;
-      isRadioInput(type) && Array.isArray(options)
-        ? options.forEach((fieldRef): void =>
-            removeEventListener(fieldRef, true),
-          )
-        : removeEventListener(field, true);
+  const removeEventListenerAndRef: Function = useCallback(
+    (field: Field, forceDelete?: boolean) => {
+      findRemovedFieldAndRemoveListener(
+        fieldsRef.current,
+        validateAndStateUpdateRef.current,
+        field,
+        forceDelete,
+      );
+
+      if (field.ref) resetFieldRef(field.ref.name);
     },
-    [removeEventListener],
+    [],
   );
 
   const clearError = (name?: Name | Name[]): void => {
@@ -396,7 +392,7 @@ export default function useForm<
             ...inputData,
             mutationWatcher: onDomRemove(
               elementRef,
-              (): Function => removeEventListener(inputData, true),
+              (): Function => removeEventListenerAndRef(inputData),
             ),
           });
         } else {
@@ -404,7 +400,7 @@ export default function useForm<
             ...inputData,
             mutationWatcher: onDomRemove(
               elementRef,
-              (): Function => removeEventListener(inputData, true),
+              (): Function => removeEventListenerAndRef(inputData),
             ),
           };
         }
@@ -435,7 +431,7 @@ export default function useForm<
         });
       }
     },
-    [defaultValues, isOnSubmit, nativeValidation, removeEventListener],
+    [defaultValues, isOnSubmit, nativeValidation, removeEventListenerAndRef],
   );
 
   function watch(
@@ -501,19 +497,10 @@ export default function useForm<
     [registerIntoFieldsRef],
   );
 
-  const resetField = (name: Name | string) => {
-    const field = fieldsRef.current[name as string];
-    removeInputEventListener(field);
-    delete watchFieldsRef.current[name];
-    delete errorsRef.current[name];
-    delete fieldsRef.current[name];
-    touchedFieldsRef.current.delete(name);
-    fieldsWithValidationRef.current.delete(name);
-    validFieldsRef.current.delete(name);
-  };
-
   const unregister = (name: Name | string | (Name | string)[]): void => {
-    Array.isArray(name) ? name.forEach(resetField) : resetField(name);
+    (Array.isArray(name) ? name : [name]).forEach(fieldName =>
+      removeEventListenerAndRef(fieldsRef.current[fieldName], true),
+    );
   };
 
   const handleSubmit = (callback: OnSubmit<Data>) => async (
@@ -617,11 +604,12 @@ export default function useForm<
   const unSubscribe = useCallback((): void => {
     fieldsRef.current &&
       Object.values(fieldsRef.current).forEach(
-        (field: Field | undefined): void => removeInputEventListener(field),
+        (field: Field | undefined): void =>
+          removeEventListenerAndRef(field, true),
       );
     fieldsRef.current = {};
     resetRefs();
-  }, [removeInputEventListener]);
+  }, [removeEventListenerAndRef]);
 
   const reset = useCallback((values?: DataType): void => {
     const fieldValues = Object.values(fieldsRef.current);
