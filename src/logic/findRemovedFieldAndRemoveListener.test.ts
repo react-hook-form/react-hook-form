@@ -16,31 +16,12 @@ describe('findMissDomAndClean', () => {
       findRemovedFieldAndRemoveListener(
         // @ts-ignore
         fields,
-        new Set(),
-        new Set(),
         () => {},
         {
           ref: { name: 'bill', type: 'radio' },
         },
       ),
     ).toEqual(undefined);
-  });
-
-  it('should remove touched Fields reference', () => {
-    const touchedRefs = new Set(['test', 'test1', 'test3']);
-    // @ts-ignore
-    findRemovedFieldAndRemoveListener({}, touchedRefs, new Set(), () => {}, {
-      ref: { name: 'test', type: 'radio' },
-      options: [
-        {
-          mutationWatcher: {
-            disconnect: () => {},
-          },
-          ref: {},
-        },
-      ],
-    });
-    expect(touchedRefs).toEqual(new Set(['test1', 'test3']));
   });
 
   it('should remove options completely if option found and no option left', () => {
@@ -65,7 +46,7 @@ describe('findMissDomAndClean', () => {
         ],
       },
     };
-    findRemovedFieldAndRemoveListener(fields, new Set(), new Set(), () => {}, {
+    findRemovedFieldAndRemoveListener(fields, () => {}, {
       ref: { name: 'test', type: 'radio' },
       options: [
         {
@@ -100,7 +81,7 @@ describe('findMissDomAndClean', () => {
       },
     };
 
-    findRemovedFieldAndRemoveListener(fields, new Set(), new Set(), () => {}, {
+    findRemovedFieldAndRemoveListener(fields, () => {}, {
       ref,
       mutationWatcher: {
         disconnect,
@@ -118,8 +99,6 @@ describe('findMissDomAndClean', () => {
       findRemovedFieldAndRemoveListener(
         // @ts-ignore
         fields,
-        { current: new Set() },
-        { current: new Set() },
         () => {},
         {},
       ),
@@ -151,8 +130,6 @@ describe('findMissDomAndClean', () => {
     expect(
       findRemovedFieldAndRemoveListener(
         fields,
-        new Set(),
-        new Set(),
         () => {},
         {
           ref: { name: 'test', type: 'radio' },
@@ -184,7 +161,7 @@ describe('findMissDomAndClean', () => {
       },
     };
 
-    findRemovedFieldAndRemoveListener(fields, new Set(), new Set(), () => {}, {
+    findRemovedFieldAndRemoveListener(fields, () => {}, {
       ref: { name: 'test', type: 'text' },
       options: [
         {
@@ -202,8 +179,6 @@ describe('findMissDomAndClean', () => {
       // @ts-ignore
       findRemovedFieldAndRemoveListener(
         fields,
-        new Set(),
-        new Set(),
         () => {},
         {
           ref: { name: 'test', type: 'text' },
