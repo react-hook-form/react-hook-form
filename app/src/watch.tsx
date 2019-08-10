@@ -1,7 +1,7 @@
 import React from 'react';
 import useForm from 'react-hook-form';
 
-const Basic: React.FC = () => {
+const Watch: React.FC = () => {
   const { register, handleSubmit, watch } = useForm();
   const onSubmit = () => {};
   const test = watch('test');
@@ -37,4 +37,4 @@ const Basic: React.FC = () => {
   );
 };
 
-export default Basic;
+export default Watch;
