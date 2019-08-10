@@ -1,5 +1,5 @@
 context('form setValue', () => {
-  it('should contain 3 errors when page land', () => {
+  it('should set input value, trigger validation and clear all errors', () => {
     cy.visit('http://localhost:3000/setValue');
 
     cy.get('input[name="firstName"]').should('have.value', 'wrong');
