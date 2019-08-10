@@ -66,4 +66,4 @@ typings/
 .rpt2_cache
 .coveralls.yml
 package-lock.json
-/cypress
+/cypress/videos
