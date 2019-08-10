@@ -1,4 +1,4 @@
-# Server for cypress automation
+# App for cypress automation
 
 ## Install
 

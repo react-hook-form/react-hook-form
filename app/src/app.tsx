@@ -4,6 +4,7 @@ import Basic from './basic';
 import Watch from './watch';
 import BasicSchemaValidation from './basicSchemaValidation';
 import SetError from './setError';
+import SetValue from './setValue';
 
 const App: React.FC = () => {
   return (
@@ -12,6 +13,7 @@ const App: React.FC = () => {
       <Route path="/watch" exact component={Watch} />
       <Route path="/basicSchemaValidation" exact component={BasicSchemaValidation} />
       <Route path="/setError" exact component={SetError} />
+      <Route path="/setValue" exact component={SetValue} />
     </Router>
   );
 };
