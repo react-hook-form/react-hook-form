@@ -146,6 +146,7 @@ export default function useForm<
       if (value !== undefined) setValueInternal(name, value);
 
       const error = await validateField(field, fieldsRef.current);
+      console.log(error)
       errorsRef.current = combineErrorsRef(error);
       renderBaseOnError(name, errors, error, shouldRender);
       return isEmptyObject(error);

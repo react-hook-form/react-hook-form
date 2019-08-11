@@ -41,7 +41,7 @@ export default async (
   const isCheckBox = isCheckBoxInput(type);
   const isSelectOrInput = !isCheckBox && !isRadio;
   const nativeError = displayNativeError.bind(null, nativeValidation, ref);
-  const isStringInput = STRING_INPUTS.includes(type);
+  const isStringInput = STRING_INPUTS.includes(type) || isString(value);
 
   if (
     required &&
@@ -59,17 +59,17 @@ export default async (
     return error;
   }
 
-  if ((!isNullOrUndefined(min) || !isNullOrUndefined(max)) && !isStringInput) {
+  if (!isNullOrUndefined(min) || !isNullOrUndefined(max)) {
     let exceedMax;
     let exceedMin;
     const valueNumber = parseFloat(value);
     const { value: maxValue, message: maxMessage } = getValueAndMessage(max);
     const { value: minValue, message: minMessage } = getValueAndMessage(min);
 
-    if (type === 'number') {
+    if (type === 'number' || !isNaN(value)) {
       exceedMax = !isNullOrUndefined(maxValue) && valueNumber > maxValue;
       exceedMin = !isNullOrUndefined(minValue) && valueNumber < minValue;
-    } else if (DATE_INPUTS.includes(type)) {
+    } else if (DATE_INPUTS.includes(type) || type === undefined) {
       if (isString(maxValue))
         exceedMax = maxValue && new Date(value) > new Date(maxValue);
       if (isString(minValue))

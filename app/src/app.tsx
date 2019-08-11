@@ -12,7 +12,7 @@ const App: React.FC = () => {
   return (
     <Router>
       <Route path="/" exact component={Basic} />
-      <Route path="/manualRegisterForm" exact component={ManualRegisterForm} />
+      <Route path="/manual-register-form" exact component={ManualRegisterForm} />
       <Route path="/watch" exact component={Watch} />
       <Route path="/basicSchemaValidation" exact component={BasicSchemaValidation} />
       <Route path="/setError" exact component={SetError} />
