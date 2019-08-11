@@ -6,11 +6,13 @@ import BasicSchemaValidation from './basicSchemaValidation';
 import SetError from './setError';
 import SetValue from './setValue';
 import FormState from './formState';
+import ManualRegisterForm from './manualRegisterForm';
 
 const App: React.FC = () => {
   return (
     <Router>
       <Route path="/" exact component={Basic} />
+      <Route path="/manualRegisterForm" exact component={ManualRegisterForm} />
       <Route path="/watch" exact component={Watch} />
       <Route path="/basicSchemaValidation" exact component={BasicSchemaValidation} />
       <Route path="/setError" exact component={SetError} />

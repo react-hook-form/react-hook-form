@@ -2,7 +2,7 @@ import React from 'react';
 import useForm from 'react-hook-form';
 import { withRouter } from 'react-router';
 
-const SetError: React.FC = (props: any) => {
+const FormState: React.FC = (props: any) => {
   const { register, handleSubmit, formState } = useForm({
     mode: props.match.params.mode,
   });
@@ -25,4 +25,4 @@ const SetError: React.FC = (props: any) => {
   );
 };
 
-export default withRouter(SetError);
+export default withRouter(FormState);

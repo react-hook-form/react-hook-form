@@ -23,7 +23,7 @@ const validationSchema = yup.object().shape({
   checkbox: yup.string().required(),
 });
 
-const Basic: React.FC = () => {
+const BasicSchemaValidation: React.FC = () => {
   const { register, handleSubmit, errors } = useForm({
     validationSchema,
   });
@@ -77,4 +77,4 @@ const Basic: React.FC = () => {
   );
 };
 
-export default Basic;
+export default BasicSchemaValidation;

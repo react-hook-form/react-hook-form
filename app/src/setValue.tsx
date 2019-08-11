@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import useForm from 'react-hook-form';
 
-const SetError: React.FC = () => {
+const SetValue: React.FC = () => {
   const { register, setValue, handleSubmit, errors } = useForm();
 
   useEffect(() => {
@@ -36,4 +36,4 @@ const SetError: React.FC = () => {
   );
 };
 
-export default SetError;
+export default SetValue;
