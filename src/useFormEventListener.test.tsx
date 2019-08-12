@@ -1,7 +1,7 @@
 import useForm from './index';
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
-import { act } from 'react-test-renderer';
+import { act } from 'react-dom/test-utils';
 
 jest.mock('./utils/onDomRemove');
 
