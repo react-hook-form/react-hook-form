@@ -162,7 +162,7 @@ export default function useForm<
     ): Promise<boolean> => {
       const fieldErrors = await validateWithSchema(
         validationSchema,
-        getFieldsValues(fieldsRef.current),
+        combineFieldValues(getFieldsValues(fieldsRef.current)),
       );
       const names = Array.isArray(payload)
         ? payload.map(({ name }) => name as string)
@@ -251,10 +251,9 @@ export default function useForm<
         if (isValidateDisabled && shouldUpdateState) return reRenderForm({});
 
         if (validationSchema) {
-          const result = getFieldsValues(fields);
           const fieldsErrors = await validateWithSchema(
             validationSchema,
-            result,
+            combineFieldValues(getFieldsValues(fields)),
           );
           schemaErrorsRef.current = fieldsErrors;
           isSchemaValidateTriggeredRef.current = true;
@@ -523,7 +522,7 @@ export default function useForm<
 
     if (validationSchema) {
       fieldValues = getFieldsValues(fields);
-      fieldErrors = await validateWithSchema(validationSchema, fieldValues);
+      fieldErrors = await validateWithSchema(validationSchema, combineFieldValues(fieldValues));
       schemaErrorsRef.current = fieldErrors;
     } else {
       const {

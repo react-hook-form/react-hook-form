@@ -16,6 +16,11 @@ jest.mock('./logic/validateField');
 jest.mock('./logic/attachEventListeners');
 jest.mock('./logic/getFieldsValues');
 jest.mock('./logic/validateWithSchema');
+jest.mock('./logic/combineFieldValues', () => ({
+  // @ts-ignore
+  default: data => data,
+  esmodule: true,
+}));
 
 let hookForm: any;
 let hookFormWithValidationSchema: any;
