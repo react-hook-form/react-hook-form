@@ -496,11 +496,15 @@ export default function useForm<
     [registerIntoFieldsRef],
   );
 
-  const unregister = (name: Name | string | (Name | string)[]): void => {
-    (Array.isArray(name) ? name : [name]).forEach(fieldName =>
-      removeEventListenerAndRef(fieldsRef.current[fieldName], true),
-    );
-  };
+  const unregister = useCallback(
+    (name: Name | string | (Name | string)[]): void => {
+      if (isEmptyObject(fieldsRef.current)) return;
+      (Array.isArray(name) ? name : [name]).forEach(fieldName =>
+        removeEventListenerAndRef(fieldsRef.current[fieldName], true),
+      );
+    },
+    [removeEventListenerAndRef],
+  );
 
   const handleSubmit = (callback: OnSubmit<Data>) => async (
     e: React.SyntheticEvent,
