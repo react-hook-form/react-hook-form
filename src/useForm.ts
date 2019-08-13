@@ -525,9 +525,10 @@ export default function useForm<
 
     if (validationSchema) {
       fieldValues = getFieldsValues(fields);
-      const { fieldErrors, result } = await validateWithSchema(validationSchema, combineFieldValues(fieldValues));
-      schemaErrorsRef.current = fieldErrors;
-      fieldValues = result;
+      const output = await validateWithSchema(validationSchema, combineFieldValues(fieldValues));
+      schemaErrorsRef.current = output.fieldErrors;
+      fieldErrors = output.fieldErrors;
+      fieldValues = output.result;
     } else {
       const {
         errors,
@@ -577,7 +578,10 @@ export default function useForm<
       fieldValues = values;
     }
 
+    console.log('fieldErrors', fieldErrors)
+
     if (isEmptyObject(fieldErrors)) {
+      console.log('ahahah')
       errorsRef.current = {};
       await callback(combineFieldValues(fieldValues), e);
     } else {
