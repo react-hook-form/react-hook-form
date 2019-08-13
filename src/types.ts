@@ -85,7 +85,12 @@ export interface RadioReturn {
   value: NumberOrString;
 }
 
-export type ValidationReturn = Record<string, string>;
+export type FieldErrors = Record<string, string>;
+
+export interface ValidationReturn {
+  fieldErrors: FieldErrors;
+  result: DataType;
+};
 
 export interface ValidationPayload<Name, Value> {
   name: Name;

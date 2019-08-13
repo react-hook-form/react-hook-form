@@ -35,7 +35,7 @@ const testComponent = (callback: any) => {
   wrapper = mount(<TestHook callback={callback} />);
 };
 
-describe('useForm', () => {
+describe.skip('useForm', () => {
   beforeEach(() => {
     testComponent(() => {
       hookForm = useForm();
