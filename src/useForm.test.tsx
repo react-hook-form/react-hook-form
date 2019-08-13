@@ -332,7 +332,10 @@ describe('useForm', () => {
       hookForm.register({ type: 'input', name: 'test' }, { required: true });
       // @ts-ignore
       validateWithSchema.mockImplementation(async payload => {
-        return payload;
+        return {
+          fieldErrors: payload,
+          result: {},
+        };
       });
 
       // @ts-ignore
@@ -357,7 +360,10 @@ describe('useForm', () => {
       hookForm.register({ type: 'input', name: 'test2' }, { required: true });
       // @ts-ignore
       validateWithSchema.mockImplementation(async payload => {
-        return payload;
+        return {
+          fieldErrors: payload,
+          result: {},
+        };
       });
 
       // @ts-ignore
@@ -386,7 +392,10 @@ describe('useForm', () => {
       // @ts-ignore
       validateWithSchema.mockImplementation(async () => {
         return {
-          test1: 'test',
+          fieldErrors: {
+            test1: 'test',
+          },
+          result: {},
         };
       });
 
@@ -410,8 +419,11 @@ describe('useForm', () => {
       // @ts-ignore
       validateWithSchema.mockImplementation(async () => {
         return {
-          test1: 'test1',
-          test: 'test',
+          fieldErrors: {
+            test1: 'test1',
+            test: 'test',
+          },
+          result: {},
         };
       });
 
@@ -441,7 +453,10 @@ describe('useForm', () => {
       hookForm.register({ type: 'input', name: 'test3' }, { required: true });
       // @ts-ignore
       validateWithSchema.mockImplementation(async payload => {
-        return payload;
+        return {
+          fieldErrors: payload,
+          result: {},
+        };
       });
 
       // @ts-ignore
@@ -478,8 +493,11 @@ describe('useForm', () => {
       // @ts-ignore
       validateWithSchema.mockImplementation(async () => {
         return {
-          test1: 'test1',
-          test: 'test',
+          fieldErrors: {
+            test1: 'test1',
+            test: 'test',
+          },
+          result: {},
         };
       });
 
@@ -571,7 +589,7 @@ describe('useForm', () => {
   });
 
   describe('handleSubmit with validationSchema', () => {
-    it('should invoke callback when error not found', async () => {
+    it.only('should invoke callback when error not found', async () => {
       testComponent(() => {
         hookFormWithValidationSchema = useForm({
           mode: VALIDATION_MODE.onSubmit,
@@ -591,7 +609,10 @@ describe('useForm', () => {
       });
       // @ts-ignore
       validateWithSchema.mockImplementation(async () => {
-        return {};
+        return {
+          fieldErrors: {},
+          result: {},
+        };
       });
 
       // @ts-ignore

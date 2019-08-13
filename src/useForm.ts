@@ -159,7 +159,7 @@ export default function useForm<
         | ValidationPayload<Name, Data[Name]>
         | ValidationPayload<Name, Data[Name]>[],
     ): Promise<boolean> => {
-      const fieldErrors = await validateWithSchema(
+      const { fieldErrors } = await validateWithSchema(
         validationSchema,
         combineFieldValues(getFieldsValues(fieldsRef.current)),
       );
@@ -250,13 +250,13 @@ export default function useForm<
         if (isValidateDisabled && shouldUpdateState) return reRenderForm({});
 
         if (validationSchema) {
-          const fieldsErrors = await validateWithSchema(
+          const { fieldErrors } = await validateWithSchema(
             validationSchema,
             combineFieldValues(getFieldsValues(fields)),
           );
-          schemaErrorsRef.current = fieldsErrors;
+          schemaErrorsRef.current = fieldErrors;
           isSchemaValidateTriggeredRef.current = true;
-          const error = fieldsErrors[name];
+          const error = fieldErrors[name];
           const shouldUpdate =
             ((!error && errorsFromRef[name]) || error) &&
             (shouldUpdateValidateMode || isSubmittedRef.current);
@@ -525,8 +525,10 @@ export default function useForm<
 
     if (validationSchema) {
       fieldValues = getFieldsValues(fields);
-      fieldErrors = await validateWithSchema(validationSchema, combineFieldValues(fieldValues));
-      schemaErrorsRef.current = fieldErrors;
+      const output = await validateWithSchema(validationSchema, combineFieldValues(fieldValues));
+      schemaErrorsRef.current = output.fieldErrors;
+      fieldErrors = output.fieldErrors;
+      fieldValues = output.result;
     } else {
       const {
         errors,

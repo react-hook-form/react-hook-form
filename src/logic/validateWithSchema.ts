@@ -1,11 +1,8 @@
-import { DataType, ValidationReturn } from '../types';
+import { DataType, FieldErrors, ValidationReturn } from '../types';
 
-export function parseErrorSchema(error: DataType): ValidationReturn {
+export function parseErrorSchema(error: DataType): FieldErrors {
   return error.inner.reduce(
-    (
-      previous: DataType,
-      { path, message, type }: DataType,
-    ): ValidationReturn => ({
+    (previous: DataType, { path, message, type }: DataType): FieldErrors => ({
       ...previous,
       [path]: { message, ref: {}, type },
     }),
@@ -18,9 +15,14 @@ export default async function validateWithSchema(
   data: DataType,
 ): Promise<ValidationReturn> {
   try {
-    await ValidationSchema.validate(data, { abortEarly: false });
-    return {};
+    return {
+      result: await ValidationSchema.validate(data, { abortEarly: false }),
+      fieldErrors: {},
+    };
   } catch (e) {
-    return parseErrorSchema(e);
+    return {
+      fieldErrors: parseErrorSchema(e),
+      result: {},
+    };
   }
 }
