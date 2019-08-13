@@ -578,10 +578,7 @@ export default function useForm<
       fieldValues = values;
     }
 
-    console.log('fieldErrors', fieldErrors)
-
     if (isEmptyObject(fieldErrors)) {
-      console.log('ahahah')
       errorsRef.current = {};
       await callback(combineFieldValues(fieldValues), e);
     } else {
