@@ -123,7 +123,7 @@ export interface FormProps<
   triggerValidation: (
     payload: ValidationPayload<Name, Value> | ValidationPayload<Name, Value>[],
   ) => Promise<boolean>;
-  getValues: () => DataType;
+  getValues: (payload?: { nest: boolean }) => DataType;
   errors: DataType;
   formState: {
     dirty: boolean;
