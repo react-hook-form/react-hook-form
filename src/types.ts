@@ -131,7 +131,6 @@ export interface FormContextValues<
     fieldNames?: string | string[],
     defaultValue?: string | Partial<Data>,
   ) => FieldValue | Partial<Data> | void;
-  unSubscribe: VoidFunction;
   reset: VoidFunction;
   clearError: (name?: Name | Name[]) => void;
   setError: (name: Name, type?: string, message?: string, ref?: Ref) => void;
