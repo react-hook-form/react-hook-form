@@ -18,7 +18,6 @@ import modeChecker from './utils/validationModeChecker';
 import warnMessage from './utils/warnMessage';
 import get from './utils/get';
 import isString from './utils/isString';
-import isObject from "./utils/isObject";
 import isUndefined from './utils/isUndefined';
 import omitValidFields from './logic/omitValidFields';
 import { VALIDATION_MODE } from './constants';
@@ -581,13 +580,7 @@ export default function useForm<
 
     if (isEmptyObject(fieldErrors)) {
       errorsRef.current = {};
-      const errors = await callback(combineFieldValues(fieldValues), e);
-      if (errors && isObject(errors)) {
-        errorsRef.current = {
-          ...errorsRef.current,
-          ...errors,
-        }
-      }
+      await callback(combineFieldValues(fieldValues), e);
     } else {
       errorsRef.current = fieldErrors as any;
     }
