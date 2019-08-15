@@ -90,7 +90,7 @@ export type FieldErrors = Record<string, string>;
 export interface ValidationReturn {
   fieldErrors: FieldErrors;
   result: DataType;
-};
+}
 
 export interface ValidationPayload<Name, Value> {
   name: Name;
@@ -110,8 +110,15 @@ export interface FormProps<
   Data extends DataType = DataType,
   Name extends keyof Data = keyof Data,
   Value = Data[Name]
-> {
+> extends FormContextValues<Data,Name,Value> {
   children: JSX.Element[] | JSX.Element;
+}
+
+export interface FormContextValues<
+  Data extends DataType = DataType,
+  Name extends keyof Data = keyof Data,
+  Value = Data[Name]
+> {
   register: (
     refOrValidateRule: RegisterInput | Ref,
     validateRule?: RegisterInput,
@@ -136,5 +143,3 @@ export interface FormProps<
   errors: DataType;
   formState: FormState;
 }
-
-export type FormContextValues = Omit<FormProps, 'children'>;
