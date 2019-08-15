@@ -110,7 +110,7 @@ export interface FormProps<
   Data extends DataType = DataType,
   Name extends keyof Data = keyof Data,
   Value = Data[Name]
-> extends FormContextValues<Data,Name,Value> {
+> extends FormContextValues<Data, Name, Value> {
   children: JSX.Element[] | JSX.Element;
 }
 
@@ -125,11 +125,11 @@ export interface FormContextValues<
   ) => any;
   unregister: (name: string | string[]) => void;
   handleSubmit: (
-    callback: (data: any, e: React.SyntheticEvent) => void,
+    callback: OnSubmit<Data>,
   ) => (e: React.SyntheticEvent) => Promise<void>;
   watch: (
-    fieldNames?: string | string[] | undefined,
-    defaultValue?: string | Partial<Data> | undefined,
+    fieldNames?: string | string[],
+    defaultValue?: string | Partial<Data>,
   ) => FieldValue | Partial<Data> | void;
   unSubscribe: VoidFunction;
   reset: VoidFunction;
