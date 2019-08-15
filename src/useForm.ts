@@ -458,7 +458,7 @@ export default function useForm<
               [name]:
                 !isUndefined(defaultValue) && !isString(defaultValue)
                   ? defaultValue[name]
-                  : undefined,
+                  : defaultValues[name],
             }),
             {},
           )
