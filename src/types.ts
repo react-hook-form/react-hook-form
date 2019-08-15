@@ -9,10 +9,12 @@ export type NumberOrString = number | string;
 
 export type DataType = Record<string, FieldValue>;
 
+export type FieldErrors = Record<string, string>;
+
 export type OnSubmit<Data extends DataType> = (
   data: Data,
   e: React.SyntheticEvent,
-) => void;
+) => void | FieldErrors;
 
 export type Mode = keyof typeof VALIDATION_MODE;
 
@@ -84,8 +86,6 @@ export interface RadioReturn {
   isValid: boolean;
   value: NumberOrString;
 }
-
-export type FieldErrors = Record<string, string>;
 
 export interface ValidationReturn {
   fieldErrors: FieldErrors;
