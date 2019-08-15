@@ -458,7 +458,9 @@ export default function useForm<
               [name]:
                 !isUndefined(defaultValue) && !isString(defaultValue)
                   ? defaultValue[name]
-                  : defaultValues[name],
+                  : defaultValues
+                  ? defaultValues[name]
+                  : undefined,
             }),
             {},
           )
@@ -474,7 +476,11 @@ export default function useForm<
     }
 
     isWatchAllRef.current = true;
-    return (isEmptyObject(fieldValues) ? undefined : fieldValues) || defaultValue || defaultValues;
+    return (
+      (isEmptyObject(fieldValues) ? undefined : fieldValues) ||
+      defaultValue ||
+      defaultValues
+    );
   }
 
   const register = useCallback(
@@ -525,7 +531,10 @@ export default function useForm<
 
     if (validationSchema) {
       fieldValues = getFieldsValues(fields);
-      const output = await validateWithSchema(validationSchema, combineFieldValues(fieldValues));
+      const output = await validateWithSchema(
+        validationSchema,
+        combineFieldValues(fieldValues),
+      );
       schemaErrorsRef.current = output.fieldErrors;
       fieldErrors = output.fieldErrors;
       fieldValues = output.result;
