@@ -97,11 +97,14 @@ export interface ValidationPayload<Name, Value> {
   value?: Value;
 }
 
-export interface FormState {
+export interface FormState<
+  Data extends DataType = DataType,
+  Name extends keyof Data = keyof Data
+> {
   dirty: boolean;
   isSubmitted: boolean;
   submitCount: number;
-  touched: string[] | object[];
+  touched: Name[];
   isSubmitting: boolean;
   isValid: boolean;
 }
@@ -140,5 +143,5 @@ export interface FormContextValues<
   ) => Promise<boolean>;
   getValues: (payload?: { nest: boolean }) => DataType;
   errors: DataType;
-  formState: FormState;
+  formState: FormState<Data, Name>;
 }
