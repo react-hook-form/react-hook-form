@@ -5,14 +5,15 @@ const FormGlobalContext = React.createContext<FormContextValues<
   DataType
 > | null>(null);
 
-export function useFormContext() {
-  return React.useContext(FormGlobalContext)!;
+export function useFormContext<T extends DataType>(): FormContextValues<T> {
+  // @ts-ignore
+  return React.useContext(FormGlobalContext);
 }
 
-export function FormContext<T extends DataType>(props: FormProps<T>) {
+export function FormContext(props: FormProps<DataType>) {
   const { children, ...rest } = props;
   return (
-    <FormGlobalContext.Provider value={rest as FormContextValues}>
+    <FormGlobalContext.Provider value={rest}>
       {children}
     </FormGlobalContext.Provider>
   );
