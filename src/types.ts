@@ -62,7 +62,7 @@ export type FieldsObject<Data extends DataType> = {
 
 export interface ReactHookFormError {
   ref: Ref;
-  type?: string;
+  type: string;
   message?: string;
   isManual?: boolean;
 }
@@ -136,7 +136,7 @@ export interface FormContextValues<
   ) => FieldValue | Partial<Data> | void;
   reset: VoidFunction;
   clearError: (name?: Name | Name[]) => void;
-  setError: (name: Name, type?: string, message?: string, ref?: Ref) => void;
+  setError: (name: Name, type: string, message?: string, ref?: Ref) => void;
   setValue: (name: Name, value: Value, shouldValidate?: boolean) => void;
   triggerValidation: (
     payload: ValidationPayload<Name, Value> | ValidationPayload<Name, Value>[],
