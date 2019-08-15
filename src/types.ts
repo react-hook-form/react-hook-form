@@ -117,13 +117,13 @@ export interface FormProps<
   ) => FieldValue | Partial<Data> | void;
   unSubscribe: VoidFunction;
   reset: VoidFunction;
-  clearError: (name: Name) => void;
+  clearError: (name?: Name | Name[]) => void;
   setError: (name: Name, type?: string, message?: string, ref?: Ref) => void;
   setValue: (name: Name, value: Value, shouldValidate?: boolean) => void;
   triggerValidation: (
     payload: ValidationPayload<Name, Value> | ValidationPayload<Name, Value>[],
   ) => Promise<boolean>;
-  getValues: () => DataType;
+  getValues: (payload?: { nest: boolean }) => DataType;
   errors: DataType;
   formState: {
     dirty: boolean;
