@@ -10,10 +10,10 @@ export function useFormContext<T extends DataType>(): FormContextValues<T> {
   return React.useContext(FormGlobalContext);
 }
 
-export function FormContext(props: FormProps<DataType>) {
+export function FormContext<T extends DataType>(props: FormProps<T>) {
   const { children, ...rest } = props;
   return (
-    <FormGlobalContext.Provider value={rest}>
+    <FormGlobalContext.Provider value={rest as FormContextValues}>
       {children}
     </FormGlobalContext.Provider>
   );
