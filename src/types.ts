@@ -62,7 +62,7 @@ export type FieldsObject<Data extends DataType> = {
 
 export interface ReactHookFormError {
   ref: Ref;
-  type: string;
+  type?: string;
   message?: string;
   isManual?: boolean;
 }

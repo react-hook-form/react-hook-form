@@ -324,7 +324,7 @@ export default function useForm<
 
   const setError = (
     name: Name,
-    type: string,
+    type?: string,
     message?: string,
     ref?: Ref,
   ): void => {
@@ -525,7 +525,10 @@ export default function useForm<
 
     if (validationSchema) {
       fieldValues = getFieldsValues(fields);
-      const output = await validateWithSchema(validationSchema, combineFieldValues(fieldValues));
+      const output = await validateWithSchema(
+        validationSchema,
+        combineFieldValues(fieldValues),
+      );
       schemaErrorsRef.current = output.fieldErrors;
       fieldErrors = output.fieldErrors;
       fieldValues = output.result;
