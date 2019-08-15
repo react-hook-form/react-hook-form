@@ -6,7 +6,7 @@ const FormGlobalContext = React.createContext<FormContextValues<
 > | null>(null);
 
 export function useFormContext() {
-  return React.useContext(FormGlobalContext);
+  return React.useContext(FormGlobalContext)!;
 }
 
 export function FormContext<T extends DataType>(props: FormProps<T>) {
