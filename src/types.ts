@@ -12,7 +12,7 @@ export type DataType = Record<string, FieldValue>;
 export type OnSubmit<Data extends DataType> = (
   data: Data,
   e: React.SyntheticEvent,
-) => void;
+) => Promise<void>;
 
 export type Mode = keyof typeof VALIDATION_MODE;
 
