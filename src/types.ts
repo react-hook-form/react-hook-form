@@ -141,7 +141,7 @@ export interface FormContextValues<
   triggerValidation: (
     payload: ValidationPayload<Name, Value> | ValidationPayload<Name, Value>[],
   ) => Promise<boolean>;
-  getValues: (payload?: { nest: boolean }) => DataType;
-  errors: DataType;
+  getValues: (payload?: { nest: boolean }) => Data;
+  errors: ObjectErrorMessages<Data>;
   formState: FormState<Data, Name>;
 }
