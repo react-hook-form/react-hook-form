@@ -90,18 +90,21 @@ export type FieldErrors = Record<string, string>;
 export interface ValidationReturn {
   fieldErrors: FieldErrors;
   result: DataType;
-};
+}
 
 export interface ValidationPayload<Name, Value> {
   name: Name;
   value?: Value;
 }
 
-export interface FormState {
+export interface FormState<
+  Data extends DataType = DataType,
+  Name extends keyof Data = keyof Data
+> {
   dirty: boolean;
   isSubmitted: boolean;
   submitCount: number;
-  touched: string[] | object[];
+  touched: Name[];
   isSubmitting: boolean;
   isValid: boolean;
 }
@@ -110,31 +113,35 @@ export interface FormProps<
   Data extends DataType = DataType,
   Name extends keyof Data = keyof Data,
   Value = Data[Name]
-> {
+> extends FormContextValues<Data, Name, Value> {
   children: JSX.Element[] | JSX.Element;
+}
+
+export interface FormContextValues<
+  Data extends DataType = DataType,
+  Name extends keyof Data = keyof Data,
+  Value = Data[Name]
+> {
   register: (
     refOrValidateRule: RegisterInput | Ref,
     validateRule?: RegisterInput,
   ) => any;
   unregister: (name: string | string[]) => void;
   handleSubmit: (
-    callback: (data: any, e: React.SyntheticEvent) => void,
+    callback: OnSubmit<Data>,
   ) => (e: React.SyntheticEvent) => Promise<void>;
   watch: (
-    fieldNames?: string | string[] | undefined,
-    defaultValue?: string | Partial<Data> | undefined,
+    fieldNames?: string | string[],
+    defaultValue?: string | Partial<Data>,
   ) => FieldValue | Partial<Data> | void;
-  unSubscribe: VoidFunction;
   reset: VoidFunction;
   clearError: (name?: Name | Name[]) => void;
-  setError: (name: Name, type?: string, message?: string, ref?: Ref) => void;
+  setError: (name: Name, type: string, message?: string, ref?: Ref) => void;
   setValue: (name: Name, value: Value, shouldValidate?: boolean) => void;
   triggerValidation: (
     payload: ValidationPayload<Name, Value> | ValidationPayload<Name, Value>[],
   ) => Promise<boolean>;
-  getValues: (payload?: { nest: boolean }) => DataType;
-  errors: DataType;
-  formState: FormState;
+  getValues: (payload?: { nest: boolean }) => Data;
+  errors: ObjectErrorMessages<Data>;
+  formState: FormState<Data, Name>;
 }
-
-export type FormContextValues = Omit<FormProps, 'children'>;

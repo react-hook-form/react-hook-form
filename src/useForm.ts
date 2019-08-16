@@ -51,7 +51,7 @@ export default function useForm<
   const errorsRef = useRef<ErrorMessages<Data>>({});
   const schemaErrorsRef = useRef<DataType>({});
   const submitCountRef = useRef(0);
-  const touchedFieldsRef = useRef(new Set());
+  const touchedFieldsRef = useRef(new Set<Name>());
   const watchFieldsRef = useRef<Partial<Record<keyof Data, boolean>>>({});
   const isUnMount = useRef(false);
   const isWatchAllRef = useRef(false);
@@ -608,7 +608,7 @@ export default function useForm<
     isWatchAllRef.current = false;
     isSubmittedRef.current = false;
     isDirtyRef.current = false;
-    touchedFieldsRef.current = new Set();
+    touchedFieldsRef.current = new Set<Name>();
     fieldsWithValidationRef.current = new Set();
     validFieldsRef.current = new Set();
     submitCountRef.current = 0;
