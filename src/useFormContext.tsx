@@ -1,23 +1,19 @@
 import * as React from 'react';
-import { FormContextValues, DataType } from './types';
+import { FormContextValues, FormProps, DataType } from './types';
 
-export const FormGlobalContext = React.createContext<FormContextValues>(
-  {} as FormContextValues,
-);
+const FormGlobalContext = React.createContext<FormContextValues<
+  DataType
+> | null>(null);
 
-export const useFormContext = () =>
-  React.useContext<FormContextValues>(FormGlobalContext);
+export function useFormContext<T extends DataType>(): FormContextValues<T> {
+  // @ts-ignore
+  return React.useContext(FormGlobalContext);
+}
 
-export function FormContext<T extends DataType>(props: T) {
+export function FormContext<T extends DataType>(props: FormProps<T>) {
   const { children, ...rest } = props;
   return (
-    <FormGlobalContext.Provider
-      value={
-        {
-          ...rest,
-        } as any
-      }
-    >
+    <FormGlobalContext.Provider value={rest as FormContextValues}>
       {children}
     </FormGlobalContext.Provider>
   );
