@@ -1,29 +1,88 @@
 import * as React from 'react';
-import { VALIDATION_MODE } from './constants';
+import { VALIDATION_MODE, ValidationMode } from './constants';
 
-export type FieldValue = any;
+export type TFormValues = Record<string, unknown>;
 
-export type Validate = (data: FieldValue) => string | boolean;
-
-export type NumberOrString = number | string;
-
-export type DataType = Record<string, FieldValue>;
-
-export type OnSubmit<Data extends DataType> = (
+export type OnSubmit<Data extends TFormValues> = (
   data: Data,
   e: React.SyntheticEvent,
 ) => void | Promise<void>;
 
 export type Mode = keyof typeof VALIDATION_MODE;
 
-export interface Props<Data extends DataType> {
-  mode?: Mode;
-  defaultValues?: Partial<Data>;
-  nativeValidation?: boolean;
-  validationFields?: (keyof Data)[];
-  validationSchema?: any;
-  submitFocusError?: boolean;
+// export interface Props<Data extends TFormValues> {
+//   mode?: Mode;
+//   defaultValues?: Partial<Data>;
+//   nativeValidation?: boolean;
+//   validationFields?: (keyof Data)[];
+//   validationSchema?: any;
+//   submitFocusError?: boolean;
+// }
+
+// NOTE: Stolen from @types/yup
+interface ValidateOptions {
+  /**
+   * Only validate the input, and skip and coercion or transformation. Default - false
+   */
+  strict?: boolean;
+  /**
+   * Teturn from validation methods on the first error rather than after all validations run. Default - true
+   */
+  abortEarly?: boolean;
+  /**
+   * Remove unspecified keys from objects. Default - false
+   */
+  stripUnknown?: boolean;
+  /**
+   * When false validations will not descend into nested schema (relevant for objects or arrays). Default - true
+   */
+  recursive?: boolean;
+  /**
+   * Any context needed for validating schema conditions (see: when())
+   */
+  context?: object;
 }
+export interface Schema<T> {
+  validate(value: any, options?: ValidateOptions): Promise<T>;
+}
+export interface ValidationError extends Error {
+  name: string;
+  message: string;
+  value: any;
+  /**
+   * A string, indicating where there error was thrown. path is empty at the root level.
+   */
+  path: string;
+  type: any;
+  /**
+   * array of error messages
+   */
+  errors: string[];
+
+  /**
+   * In the case of aggregate errors, inner is an array of ValidationErrors throw earlier in the validation chain.
+   */
+  inner: ValidationError[];
+  params?: object;
+
+  isError(err: any): err is ValidationError;
+  formatError(
+    message: string | ((params?: any) => string),
+    params?: any,
+  ): string | ((params?: any) => string);
+}
+
+export type Options<
+  FormValues extends TFormValues = TFormValues,
+  FieldName extends keyof FormValues = keyof FormValues
+> = Partial<{
+  mode: ValidationMode[keyof ValidationMode];
+  defaultValues: Partial<FormValues>;
+  validationFields: FieldName[];
+  validationSchema: Schema<FormValues>;
+  nativeValidation: boolean;
+  submitFocusError: boolean;
+}>;
 
 export interface MutationWatcher {
   disconnect: () => void;
@@ -32,21 +91,32 @@ export interface MutationWatcher {
 
 export type Ref = any;
 
-export interface RegisterInput {
-  ref?: Ref;
-  required?: boolean | string;
-  min?: NumberOrString | { value: NumberOrString; message: string };
-  max?: NumberOrString | { value: NumberOrString; message: string };
-  maxLength?: number | { value: number; message: string };
-  minLength?: number | { value: number; message: string };
-  pattern?: RegExp | { value: RegExp; message: string };
-  validate?:
-    | Validate
-    | Record<string, Validate>
-    | { value: Validate | Record<string, Validate>; message: string };
-}
+type ValidationOptionObject<T> =
+  | T
+  | {
+      value: T;
+      message: string;
+    };
 
-export interface Field extends RegisterInput {
+type ValidationFunction<ValueType = unknown> = (
+  value: ValueType,
+) => boolean | string;
+
+export type ValidationOptions<ValueType = unknown> = Partial<{
+  required: boolean | string;
+  maxLength: ValidationOptionObject<number>;
+  minLength: ValidationOptionObject<number>;
+  max: ValidationOptionObject<number | string>;
+  min: ValidationOptionObject<number | string>;
+  pattern: ValidationOptionObject<RegExp>;
+  validate: ValidationOptionObject<
+    | ValidationFunction<ValueType>
+    | Record<string, ValidationFunction<ValueType>>
+  >;
+}>;
+
+export interface Field<ValueType = unknown>
+  extends ValidationOptions<ValueType> {
   ref: Ref;
   watch?: boolean;
   mutationWatcher?: MutationWatcher;
@@ -56,9 +126,11 @@ export interface Field extends RegisterInput {
   }[];
 }
 
-export type FieldsObject<Data extends DataType> = {
-  [Key in keyof Data]?: Field;
-};
+export type FieldsObject<
+  FormValues extends TFormValues = TFormValues,
+  FieldName extends keyof FormValues = keyof FormValues,
+  FieldValue = FormValues[FieldName]
+> = Partial<Record<FieldName, Field<FieldValue>>>;
 
 export interface ReactHookFormError {
   ref: Ref;
@@ -67,29 +139,45 @@ export interface ReactHookFormError {
   isManual?: boolean;
 }
 
-export type ObjectErrorMessages<Data extends DataType> = {
-  [Key in keyof Data]?: ReactHookFormError;
-};
+export type ObjectErrorMessages<
+  FormValues extends TFormValues = TFormValues,
+  FieldName extends keyof FormValues = keyof FormValues
+> = Partial<Record<FieldName, ReactHookFormError>>;
 
-export type ErrorMessages<Data extends DataType> = ObjectErrorMessages<Data>;
+export type ErrorMessages<FormValues extends TFormValues> = ObjectErrorMessages<
+  FormValues
+>;
 
-export interface SubmitPromiseResult<Data extends DataType> {
-  errors: ErrorMessages<Data>;
-  values: Data;
+export interface SubmitPromiseResult<FormValues extends TFormValues> {
+  errors: ErrorMessages<FormValues>;
+  values: FormValues;
 }
-
-export type VoidFunction = () => void;
 
 export interface RadioReturn {
   isValid: boolean;
-  value: NumberOrString;
+  value: number | string;
 }
 
-export type FieldErrors = Record<string, string>;
+export type FieldErrors<
+  FormValues extends TFormValues = TFormValues,
+  FieldName extends keyof FormValues = keyof FormValues
+> = Partial<
+  Record<
+    FieldName,
+    {
+      message: string;
+      path: string;
+      ref: any;
+      type: any;
+    }
+  >
+>;
 
-export interface ValidationReturn {
-  fieldErrors: FieldErrors;
-  result: DataType;
+export interface ValidationReturn<
+  FormValues extends TFormValues = TFormValues
+> {
+  fieldErrors: FieldErrors<FormValues>;
+  result: Partial<FormValues>;
 }
 
 export interface ValidationPayload<Name, Value> {
@@ -98,7 +186,7 @@ export interface ValidationPayload<Name, Value> {
 }
 
 export interface FormState<
-  Data extends DataType = DataType,
+  Data extends TFormValues = TFormValues,
   Name extends keyof Data = keyof Data
 > {
   dirty: boolean;
@@ -110,38 +198,49 @@ export interface FormState<
 }
 
 export interface FormProps<
-  Data extends DataType = DataType,
-  Name extends keyof Data = keyof Data,
-  Value = Data[Name]
-> extends FormContextValues<Data, Name, Value> {
+  FormValues extends TFormValues = TFormValues,
+  FieldName extends keyof FormValues = keyof FormValues,
+  FieldValue = FormValues[FieldName]
+> extends FormContextValues<FormValues, FieldName, FieldValue> {
   children: JSX.Element[] | JSX.Element;
 }
 
 export interface FormContextValues<
-  Data extends DataType = DataType,
-  Name extends keyof Data = keyof Data,
-  Value = Data[Name]
+  FormValues extends TFormValues = TFormValues,
+  FieldName extends keyof FormValues = keyof FormValues,
+  FieldValue = FormValues[FieldName]
 > {
   register: (
-    refOrValidateRule: RegisterInput | Ref,
-    validateRule?: RegisterInput,
+    refOrValidateRule: ValidationOptions<FieldValue> | Ref,
+    validateRule?: ValidationOptions<FieldValue>,
   ) => any;
   unregister: (name: string | string[]) => void;
   handleSubmit: (
-    callback: OnSubmit<Data>,
+    callback: OnSubmit<FormValues>,
   ) => (e: React.SyntheticEvent) => Promise<void>;
   watch: (
     fieldNames?: string | string[],
-    defaultValue?: string | Partial<Data>,
-  ) => FieldValue | Partial<Data> | void;
+    defaultValue?: string | Partial<FormValues>,
+  ) => FieldValue | Partial<FormValues> | void;
   reset: VoidFunction;
-  clearError: (name?: Name | Name[]) => void;
-  setError: (name: Name, type: string, message?: string, ref?: Ref) => void;
-  setValue: (name: Name, value: Value, shouldValidate?: boolean) => void;
+  clearError: (name?: FieldName | FieldName[]) => void;
+  setError: (
+    name: FieldName,
+    type: string,
+    message?: string,
+    ref?: Ref,
+  ) => void;
+  setValue: (
+    name: FieldName,
+    value: FieldValue,
+    shouldValidate?: boolean,
+  ) => void;
   triggerValidation: (
-    payload: ValidationPayload<Name, Value> | ValidationPayload<Name, Value>[],
+    payload:
+      | ValidationPayload<FieldName, FieldValue>
+      | ValidationPayload<FieldName, FieldValue>[],
   ) => Promise<boolean>;
-  getValues: (payload?: { nest: boolean }) => Data;
-  errors: ObjectErrorMessages<Data>;
-  formState: FormState<Data, Name>;
+  getValues: (payload?: { nest: boolean }) => FormValues;
+  errors: ObjectErrorMessages<FormValues>;
+  formState: FormState<FormValues, FieldName>;
 }

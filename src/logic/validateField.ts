@@ -8,7 +8,7 @@ import isEmptyObject from '../utils/isEmptyObject';
 import displayNativeError from './displayNativeError';
 import isObject from '../utils/isObject';
 import { DATE_INPUTS, STRING_INPUTS } from '../constants';
-import { Field, ErrorMessages, DataType } from '../types';
+import { Field, ErrorMessages, TFormValues } from '../types';
 import isFunction from '../utils/isFunction';
 import isBoolean from '../utils/isBoolean';
 
@@ -20,7 +20,11 @@ type ValidatePromiseResult =
       message: string | number | boolean | Date;
     };
 
-export default async (
+export default async function validateField<
+  FormValues extends TFormValues = TFormValues,
+  FieldName extends keyof FormValues = keyof FormValues,
+  FieldValue = FormValues[FieldName]
+>(
   {
     ref,
     ref: { type, value, name, checked },
@@ -32,28 +36,31 @@ export default async (
     max,
     pattern,
     validate,
-  }: Field,
-  fields: DataType,
+  }: Field<FieldValue>,
+  fields: FormValues,
   nativeValidation?: boolean,
-): Promise<ErrorMessages<any>> => {
-  const error: DataType = {};
+): Promise<ErrorMessages<FormValues>> {
+  const error: ErrorMessages<FormValues> = {};
   const isRadio = isRadioInput(type);
   const isCheckBox = isCheckBoxInput(type);
   const isSelectOrInput = !isCheckBox && !isRadio;
   const nativeError = displayNativeError.bind(null, nativeValidation, ref);
   const isStringInput = STRING_INPUTS.includes(type) || isString(value);
+  const fieldName = name as FieldName;
 
   if (
     required &&
     ((isCheckBox && !checked) ||
       (isSelectOrInput && value === '') ||
-      (isRadio && !getRadioValue(fields[name].options).isValid) ||
+      // @ts-ignore
+      (isRadio && !getRadioValue(fields[fieldName].options).isValid) ||
       (!type && !value))
   ) {
-    error[name] = {
+    error[fieldName] = {
       type: 'required',
       message: isString(required) ? required : '',
-      ref: isRadio ? (fields[name].options || [{ ref: '' }])[0].ref : ref,
+      // @ts-ignore
+      ref: isRadio ? (fields[fieldName].options || [{ ref: '' }])[0].ref : ref,
     };
     nativeError(required);
     return error;
@@ -78,7 +85,7 @@ export default async (
 
     if (exceedMax || exceedMin) {
       const message = exceedMax ? maxMessage : minMessage;
-      error[name] = {
+      error[fieldName] = {
         type: exceedMax ? 'max' : 'min',
         message,
         ref,
@@ -103,7 +110,7 @@ export default async (
     const message = exceedMax ? maxLengthMessage : minLengthMessage;
 
     if (exceedMax || exceedMin) {
-      error[name] = {
+      error[fieldName] = {
         type: exceedMax ? 'maxLength' : 'minLength',
         message,
         ref,
@@ -119,7 +126,7 @@ export default async (
     );
 
     if (patternValue instanceof RegExp && !patternValue.test(value)) {
-      error[name] = {
+      error[fieldName] = {
         type: 'pattern',
         message: patternMessage,
         ref,
@@ -136,7 +143,7 @@ export default async (
     if (isFunction(validate)) {
       const result = await validate(fieldValue);
       if ((isString(result) && result) || (isBoolean(result) && !result)) {
-        error[name] = {
+        error[fieldName] = {
           type: 'validate',
           message: isString(result) ? result : '',
           ref: validateRef,
@@ -174,7 +181,8 @@ export default async (
       );
 
       if (validationResult && !isEmptyObject(validationResult)) {
-        error[name] = {
+        // @ts-ignore
+        error[fieldName] = {
           ref: validateRef,
           ...validationResult,
         };
@@ -185,4 +193,4 @@ export default async (
 
   if (nativeValidation) ref.setCustomValidity('');
   return error;
-};
+}

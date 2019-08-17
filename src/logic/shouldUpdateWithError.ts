@@ -1,7 +1,10 @@
 import isEmptyObject from '../utils/isEmptyObject';
-import { DataType } from '../types';
+import { TFormValues, ObjectErrorMessages } from '../types';
 
-export default function shouldUpdateWithError({
+export default function shouldUpdateWithError<
+  FormValues extends TFormValues = TFormValues,
+  FieldName extends keyof FormValues = keyof FormValues
+>({
   errors,
   name,
   error,
@@ -9,9 +12,9 @@ export default function shouldUpdateWithError({
   isBlurType,
   isValidateDisabled,
 }: {
-  errors: DataType;
-  name: string;
-  error: any;
+  errors: ObjectErrorMessages<FormValues>;
+  name: FieldName;
+  error: ObjectErrorMessages<FormValues>;
   isOnBlur: boolean;
   isBlurType: boolean;
   isValidateDisabled: boolean;
@@ -20,7 +23,7 @@ export default function shouldUpdateWithError({
     isValidateDisabled ||
     (isOnBlur && !isBlurType) ||
     (isEmptyObject(error) && isEmptyObject(errors)) ||
-    (errors[name] && errors[name].isManual)
+    (errors[name] && errors[name]!.isManual)
   ) {
     return false;
   }
@@ -36,7 +39,7 @@ export default function shouldUpdateWithError({
   return (
     errors[name] &&
     error[name] &&
-    (errors[name].type !== error[name].type ||
-      errors[name].message !== error[name].message)
+    (errors[name]!.type !== error[name]!.type ||
+      errors[name]!.message !== error[name]!.message)
   );
 }

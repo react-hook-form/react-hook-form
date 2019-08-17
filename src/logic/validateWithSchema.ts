@@ -1,8 +1,16 @@
-import { DataType, FieldErrors, ValidationReturn } from '../types';
+import {
+  Schema,
+  ValidationReturn,
+  TFormValues,
+  ValidationError,
+  FieldErrors,
+} from '../types';
 
-export function parseErrorSchema(error: DataType): FieldErrors {
-  return error.inner.reduce(
-    (previous: DataType, { path, message, type }: DataType): FieldErrors => ({
+export function parseErrorSchema<FormValues extends TFormValues = TFormValues>(
+  error: ValidationError,
+) {
+  return error.inner.reduce<Partial<FieldErrors<FormValues>>>(
+    (previous, { path, message, type }: ValidationError) => ({
       ...previous,
       [path]: { message, ref: {}, type },
     }),
@@ -10,18 +18,21 @@ export function parseErrorSchema(error: DataType): FieldErrors {
   );
 }
 
-export default async function validateWithSchema(
-  ValidationSchema: any,
-  data: DataType,
-): Promise<ValidationReturn> {
+export default async function validateWithSchema<
+  FormValues extends TFormValues = TFormValues
+>(
+  ValidationSchema: Schema<FormValues>,
+  data: FormValues,
+): Promise<ValidationReturn<FormValues>> {
   try {
     return {
       result: await ValidationSchema.validate(data, { abortEarly: false }),
       fieldErrors: {},
     };
-  } catch (e) {
+  } catch (err) {
     return {
-      fieldErrors: parseErrorSchema(e),
+      // @ts-ignore
+      fieldErrors: parseErrorSchema(err),
       result: {},
     };
   }

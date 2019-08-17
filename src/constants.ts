@@ -17,11 +17,13 @@ export const STRING_INPUTS = [
   'textarea',
 ];
 
-export const VALIDATION_MODE: {
+export interface ValidationMode {
   onBlur: 'onBlur';
   onChange: 'onChange';
   onSubmit: 'onSubmit';
-} = {
+}
+
+export const VALIDATION_MODE: ValidationMode = {
   onBlur: 'onBlur',
   onChange: 'onChange',
   onSubmit: 'onSubmit',
