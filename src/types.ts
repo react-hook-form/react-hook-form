@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { VALIDATION_MODE, ValidationMode } from './constants';
+import { ValidationMode } from './constants';
 
 export type TFormValues = Record<string, unknown>;
 
@@ -8,16 +8,7 @@ export type OnSubmit<Data extends TFormValues> = (
   e: React.SyntheticEvent,
 ) => void | Promise<void>;
 
-export type Mode = keyof typeof VALIDATION_MODE;
-
-// export interface Props<Data extends TFormValues> {
-//   mode?: Mode;
-//   defaultValues?: Partial<Data>;
-//   nativeValidation?: boolean;
-//   validationFields?: (keyof Data)[];
-//   validationSchema?: any;
-//   submitFocusError?: boolean;
-// }
+export type Mode = keyof ValidationMode;
 
 // NOTE: Stolen from @types/yup
 interface ValidateOptions {
@@ -114,6 +105,13 @@ export type ValidationOptions<ValueType = unknown> = Partial<{
     | Record<string, ValidationFunction<ValueType>>
   >;
 }>;
+
+export interface ElementLikeObject<
+  FormValues extends TFormValues = TFormValues,
+  FieldName extends keyof FormValues = keyof FormValues
+> extends Partial<Omit<HTMLInputElement, 'name'>> {
+  name: FieldName | string;
+}
 
 export interface Field<ValueType = unknown>
   extends ValidationOptions<ValueType> {
