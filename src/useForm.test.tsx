@@ -589,7 +589,7 @@ describe('useForm', () => {
   });
 
   describe('handleSubmit with validationSchema', () => {
-    it.only('should invoke callback when error not found', async () => {
+    it('should invoke callback when error not found', async () => {
       testComponent(() => {
         hookFormWithValidationSchema = useForm({
           mode: VALIDATION_MODE.onSubmit,

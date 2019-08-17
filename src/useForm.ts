@@ -626,21 +626,23 @@ export default function useForm<
   }, [removeEventListenerAndRef]);
 
   const reset = useCallback((values?: DataType): void => {
-    const fieldValues = Object.values(fieldsRef.current);
-    for (let field of fieldValues) {
-      if (field && field.ref && field.ref.closest) {
+    const fields = fieldsRef.current;
+    const fieldsKeyValue = Object.entries(fields);
+
+    for (let [, value] of fieldsKeyValue) {
+      if (value && value.ref && value.ref.closest) {
         try {
-          field.ref.closest('form').reset();
+          value.ref.closest('form').reset();
+          break;
         } catch {}
-        break;
       }
     }
     resetRefs();
 
     if (values) {
-      Object.entries(values).forEach(([key, value]) =>
-        setFieldValue(key as Name, value),
-      );
+      fieldsKeyValue.forEach(([key]) => {
+        setFieldValue(key as Name, get(values, key));
+      });
     }
     reRenderForm({});
   }, []);

@@ -9,6 +9,7 @@ import FormState from './formState';
 import ManualRegisterForm from './manualRegisterForm';
 import DefaultValues from './defaultValues';
 import WatchDefaultValues from './watchDefaultValues';
+import Reset from './reset';
 
 const App: React.FC = () => {
   return (
@@ -26,6 +27,7 @@ const App: React.FC = () => {
         component={BasicSchemaValidation}
       />
       <Route path="/setError" exact component={SetError} />
+      <Route path="/reset" exact component={Reset} />
       <Route path="/setValue" exact component={SetValue} />
       <Route path="/formState/:mode" exact component={FormState} />
       <Route path="/default-values" exact component={DefaultValues} />
