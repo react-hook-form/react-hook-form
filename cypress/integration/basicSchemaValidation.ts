@@ -1,6 +1,6 @@
 context('basicSchemaValidation form validation', () => {
   it('should validate the form', () => {
-    cy.visit('http://localhost:3000/basicSchemaValidation');
+    cy.visit('http://localhost:3000/basic-schema-validation');
     cy.get('button').click();
 
     cy.get('input[name="firstName"] + p').contains('firstName error');

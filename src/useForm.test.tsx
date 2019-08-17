@@ -130,7 +130,7 @@ describe('useForm', () => {
     });
   });
 
-  describe('watch', () => {
+  describe('watch.ts', () => {
     it('should watch individual input', () => {
       expect(hookForm.watch('test')).toBeUndefined();
       hookForm.register({ type: 'radio', name: 'test', value: '' });
@@ -211,7 +211,7 @@ describe('useForm', () => {
     });
   });
 
-  describe('setValue', () => {
+  describe('setValue.ts', () => {
     it('should set value of radio input correctly', async () => {
       hookForm.register({ name: 'test', type: 'radio', value: '1' });
       hookForm.register({ name: 'test', type: 'radio', value: '2' });
