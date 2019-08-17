@@ -493,7 +493,9 @@ export default function useForm<
   function register<
     Element extends ElementLikeObject = HTMLInputElement,
     ValueType = FieldValue
-  >(validationOptions?: ValidationOptions<ValueType>): (input: Element) => void;
+  >(
+    validationOptions?: ValidationOptions<ValueType>,
+  ): (input: Element | null) => void;
   function register<
     Element extends ElementLikeObject = HTMLInputElement,
     ValueType = FieldValue
@@ -519,8 +521,11 @@ export default function useForm<
       return __registerIntoFields(inputOrValidationOptions, validationOptions);
     }
 
-    return (ref: Element) => {
-      return __registerIntoFields(ref, inputOrValidationOptions);
+    return (input: Element | null) => {
+      if (input === null) {
+        return;
+      }
+      return __registerIntoFields(input, inputOrValidationOptions);
     };
   }
 
