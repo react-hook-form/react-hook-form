@@ -400,138 +400,128 @@ export default function useForm<
     );
   }
 
-  class Register {
-    private registerIntoFields<
-      Element extends ElementLikeObject = HTMLInputElement,
-      ValueType = FieldValue
-    >(
-      input: Element,
-      validationOptions: ValidationOptions<ValueType> = {},
-    ): void {
-      if (!input.name) {
-        if (process.env.NODE_ENV !== 'production') {
-          console.warn(`⚠ Missing field name: ${input}`);
-        }
-        return;
+  function __registerIntoFields<
+    Element extends ElementLikeObject = HTMLInputElement,
+    ValueType = FieldValue
+  >(
+    input: Element,
+    validationOptions: ValidationOptions<ValueType> = {},
+  ): void {
+    if (!input.name) {
+      if (process.env.NODE_ENV !== 'production') {
+        console.warn(`⚠ Missing field name: ${input}`);
       }
-      const { name, type, value } = input;
+      return;
+    }
+    const { name, type, value } = input;
 
-      if (!isOnSubmit && !isEmptyObject(validationOptions)) {
-        fieldsWithValidationRef.current.add(name);
-      }
+    if (!isOnSubmit && !isEmptyObject(validationOptions)) {
+      fieldsWithValidationRef.current.add(name);
+    }
 
-      const { required = false, validate } = validationOptions;
-      const inputData = {
-        ...validationOptions,
-        ref: input,
-      };
-      const fields: any = fieldsRef.current;
-      const isRadio = isRadioInput(type);
-      const field = fields[name];
-      const existRadioOptionIndex =
-        isRadio && field && Array.isArray(field.options)
-          ? field.options.findIndex(
-              ({ ref }: { ref: Ref }): boolean => value === ref.value,
-            )
-          : -1;
+    const { required = false, validate } = validationOptions;
+    const inputData = {
+      ...validationOptions,
+      ref: input,
+    };
+    const fields: any = fieldsRef.current;
+    const isRadio = isRadioInput(type);
+    const field = fields[name];
+    const existRadioOptionIndex =
+      isRadio && field && Array.isArray(field.options)
+        ? field.options.findIndex(
+            ({ ref }: { ref: Ref }): boolean => value === ref.value,
+          )
+        : -1;
 
-      if ((!isRadio && field) || (isRadio && existRadioOptionIndex > -1))
-        return;
+    if ((!isRadio && field) || (isRadio && existRadioOptionIndex > -1)) return;
 
-      if (!type) {
-        fields[name] = { ref: { name }, ...validationOptions };
-      } else {
-        if (isRadio) {
-          if (!field)
-            fields[name] = {
-              options: [],
-              required,
-              validate,
-              ref: { type: 'radio', name },
-            };
-          if (validate) fields[name]!.validate = validate;
-
-          (fields[name]!.options || []).push({
-            ...inputData,
-            mutationWatcher: onDomRemove(input, () =>
-              removeEventListenerAndRef(inputData),
-            ),
-          });
-        } else {
+    if (!type) {
+      fields[name] = { ref: { name }, ...validationOptions };
+    } else {
+      if (isRadio) {
+        if (!field)
           fields[name] = {
-            ...inputData,
-            mutationWatcher: onDomRemove(input, () =>
-              removeEventListenerAndRef(inputData),
-            ),
+            options: [],
+            required,
+            validate,
+            ref: { type: 'radio', name },
           };
-        }
-      }
+        if (validate) fields[name]!.validate = validate;
 
-      if (defaultValues) {
-        const defaultValue = defaultValues[name] || get(defaultValues, name);
-        if (defaultValue !== undefined)
-          setFieldValue(name as FieldName, defaultValue);
-      }
-
-      if (!type) return;
-
-      const fieldData = isRadio
-        ? (fields[name]!.options || [])[
-            (fields[name]!.options || []).length - 1
-          ]
-        : fields[name];
-
-      if (!fieldData) return;
-
-      if (nativeValidation && validationOptions) {
-        attachNativeValidation(input, validationOptions);
-      } else {
-        attachEventListeners({
-          field: fieldData,
-          isRadio,
-          validateAndStateUpdate,
+        (fields[name]!.options || []).push({
+          ...inputData,
+          mutationWatcher: onDomRemove(input, () =>
+            removeEventListenerAndRef(inputData),
+          ),
         });
+      } else {
+        fields[name] = {
+          ...inputData,
+          mutationWatcher: onDomRemove(input, () =>
+            removeEventListenerAndRef(inputData),
+          ),
+        };
       }
     }
 
-    public register<
-      Element extends ElementLikeObject = HTMLInputElement,
-      ValueType = FieldValue
-    >(
-      validationOptions?: ValidationOptions<ValueType>,
-    ): (input: Element) => void;
-    public register<
-      Element extends ElementLikeObject = HTMLInputElement,
-      ValueType = FieldValue
-    >(input: Element, validationOptions?: ValidationOptions<ValueType>): void;
-    public register<
-      Element extends ElementLikeObject = HTMLInputElement,
-      ValueType = FieldValue
-    >(
-      inputOrValidationOptions?: Element | ValidationOptions<ValueType>,
-      validationOptions?: ValidationOptions<ValueType>,
-    ): void | ((input: Element) => void) {
-      if (typeof window === 'undefined') {
-        if (process.env.NODE_ENV !== 'production') {
-          console.warn('⚠ Currently, only browser usage is supported.');
-        }
-        return;
-      }
-
-      if (
-        isObject(inputOrValidationOptions) &&
-        'name' in inputOrValidationOptions
-      ) {
-        return this.registerIntoFields(
-          inputOrValidationOptions,
-          validationOptions,
-        );
-      }
-
-      return (ref: Element) => {
-        return this.registerIntoFields(ref, inputOrValidationOptions);
-      };
+    if (defaultValues) {
+      const defaultValue = defaultValues[name] || get(defaultValues, name);
+      if (defaultValue !== undefined)
+        setFieldValue(name as FieldName, defaultValue);
     }
+
+    if (!type) return;
+
+    const fieldData = isRadio
+      ? (fields[name]!.options || [])[(fields[name]!.options || []).length - 1]
+      : fields[name];
+
+    if (!fieldData) return;
+
+    if (nativeValidation && validationOptions) {
+      attachNativeValidation(input, validationOptions);
+    } else {
+      attachEventListeners({
+        field: fieldData,
+        isRadio,
+        validateAndStateUpdate,
+      });
+    }
+  }
+
+  function register<
+    Element extends ElementLikeObject = HTMLInputElement,
+    ValueType = FieldValue
+  >(validationOptions?: ValidationOptions<ValueType>): (input: Element) => void;
+  function register<
+    Element extends ElementLikeObject = HTMLInputElement,
+    ValueType = FieldValue
+  >(input: Element, validationOptions?: ValidationOptions<ValueType>): void;
+  function register<
+    Element extends ElementLikeObject = HTMLInputElement,
+    ValueType = FieldValue
+  >(
+    inputOrValidationOptions?: Element | ValidationOptions<ValueType>,
+    validationOptions?: ValidationOptions<ValueType>,
+  ): void | ((input: Element) => void) {
+    if (typeof window === 'undefined') {
+      if (process.env.NODE_ENV !== 'production') {
+        console.warn('⚠ Currently, only browser usage is supported.');
+      }
+      return;
+    }
+
+    if (
+      isObject(inputOrValidationOptions) &&
+      'name' in inputOrValidationOptions
+    ) {
+      return __registerIntoFields(inputOrValidationOptions, validationOptions);
+    }
+
+    return (ref: Element) => {
+      return __registerIntoFields(ref, inputOrValidationOptions);
+    };
   }
 
   const unregister = React.useCallback(
@@ -691,7 +681,7 @@ export default function useForm<
   }, [unSubscribe]);
 
   return {
-    register: React.useMemo(() => new Register().register, [Register]),
+    register: React.useCallback(register, [register]),
     unregister,
     handleSubmit,
     watch,
