@@ -61,7 +61,7 @@ context('form state', () => {
     );
   });
 
-  it.only('should return correct form state with onBlur mode', () => {
+  it('should return correct form state with onBlur mode', () => {
     cy.visit('http://localhost:3000/formState/onBlur');
 
     cy.get('#state').contains(
