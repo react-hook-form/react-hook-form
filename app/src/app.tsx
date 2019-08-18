@@ -10,6 +10,7 @@ import ManualRegisterForm from './manualRegisterForm';
 import DefaultValues from './defaultValues';
 import WatchDefaultValues from './watchDefaultValues';
 import Reset from './reset';
+import TriggerValidation from './triggerValidation';
 
 const App: React.FC = () => {
   return (
@@ -31,6 +32,7 @@ const App: React.FC = () => {
       <Route path="/setValue" exact component={SetValue} />
       <Route path="/formState/:mode" exact component={FormState} />
       <Route path="/default-values" exact component={DefaultValues} />
+      <Route path="/trigger-validation" exact component={TriggerValidation} />
       <Route
         path="/watch-default-values"
         exact
