@@ -12,10 +12,10 @@
 
 - Super easy to integrate and create forms
 - Built with performance and DX in mind
+- Uncontrolled form validation
+- [Tiny size](https://bundlephobia.com/result?p=react-hook-form@latest) without any dependency
 - Follows HTML standard for validation
 - Support browser native validation
-- [Tiny size](https://bundlephobia.com/result?p=react-hook-form@latest) without any dependency
-- Uncontrolled form validation
 - Build forms quickly with the [form builder](https://react-hook-form.com/builder)
 
 <br />
