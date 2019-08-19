@@ -34,6 +34,7 @@ import {
   OnSubmit,
   ValidationPayload,
 } from './types';
+import warnMessage from './utils/warnMessage';
 
 export default function useForm<
   Data extends DataType,
@@ -400,9 +401,7 @@ export default function useForm<
     data: RegisterInput = {},
   ): void {
     if (!elementRef.name) {
-      if (process.env.NODE_ENV !== 'production') {
-        console.warn('⚠ Missing field name:', elementRef);
-      }
+      warnMessage('⚠ Missing field name:', elementRef);
       return;
     }
     const { name, type, value } = elementRef;
@@ -487,16 +486,13 @@ export default function useForm<
     refOrValidateRule: RegisterInput | Ref,
     validationOptions?: RegisterInput,
   ): void | ((ref: Ref) => void) {
-    if (typeof window === 'undefined' || !refOrValidateRule) {
-      if (process.env.NODE_ENV !== 'production') {
-        if (typeof window === 'undefined') {
-          console.warn('⚠ Currently, only browser usage is supported.');
-        } else {
-          console.warn(
-            '⚠ Must pass at least one parameter. Check the API docs for reference.',
-          );
-        }
-      }
+    if (typeof window === 'undefined') {
+      warnMessage('⚠ Currently, only browser usage is supported.');
+      return;
+    } else if (!refOrValidateRule) {
+      warnMessage(
+        '⚠ Must pass at least one parameter. Check the API docs for reference.',
+      );
       return;
     }
 
