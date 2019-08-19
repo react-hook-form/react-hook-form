@@ -1,31 +1,22 @@
 import removeAllEventListeners from './removeAllEventListeners';
 import isRadioInput from '../utils/isRadioInput';
+import isDetached from '../utils/isDetached';
 import { Field, FieldsObject, DataType } from '../types';
 
 export default function findRemovedFieldAndRemoveListener<
   Data extends DataType
 >(
   fields: FieldsObject<Data>,
-  touchedFieldsRef: { current: Set<unknown> },
-  fieldsWithValidationRef: { current: Set<unknown> },
-  validateWithStateUpdate: Function,
+  validateWithStateUpdate: Function | undefined = () => {},
   { ref, mutationWatcher, options }: Field,
   forceDelete: boolean = false,
 ): void {
   if (!ref || !ref.type) return;
-
   const { name, type } = ref;
-  touchedFieldsRef.current.delete(name);
-  fieldsWithValidationRef.current.delete(name);
 
   if (isRadioInput(type) && options) {
     options.forEach(({ ref }, index): void => {
-      if (
-        ref instanceof HTMLElement &&
-        !document.body.contains(ref) &&
-        options &&
-        options[index]
-      ) {
+      if (options[index] && isDetached(ref) || forceDelete) {
         removeAllEventListeners(options[index], validateWithStateUpdate);
         (
           options[index].mutationWatcher || { disconnect: (): void => {} }
@@ -35,10 +26,7 @@ export default function findRemovedFieldAndRemoveListener<
     });
 
     if (!options.length) delete fields[name];
-  } else if (
-    (ref instanceof HTMLElement && !document.body.contains(ref)) ||
-    forceDelete
-  ) {
+  } else if (isDetached(ref) || forceDelete) {
     removeAllEventListeners(ref, validateWithStateUpdate);
     if (mutationWatcher) mutationWatcher.disconnect();
     delete fields[name];

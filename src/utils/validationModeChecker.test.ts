@@ -12,7 +12,7 @@ describe('validationModeChecker', () => {
     });
 
     expect(
-      validationModeChecker(VALIDATION_MODE.onchange),
+      validationModeChecker(VALIDATION_MODE.onChange),
     ).toEqual({
       isOnSubmit: false,
       isOnBlur: false,

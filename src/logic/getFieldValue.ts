@@ -6,8 +6,9 @@ import { FieldsObject, FieldValue, Ref, DataType } from '../types';
 
 export default function getFieldValue<Data extends DataType>(
   fields: FieldsObject<Data>,
-  { type, name, options, checked, value }: Ref,
+  ref: Ref,
 ): FieldValue {
+  const { type, name, options, checked, value } = ref;
   if (isRadioInput(type)) {
     const field = fields[name];
     return field ? getRadioValue(field.options).value : '';
@@ -15,7 +16,12 @@ export default function getFieldValue<Data extends DataType>(
 
   if (type === 'select-multiple') return getMultipleSelectValue(options);
 
-  if (isCheckBox(type)) return checked ? value || checked : false;
+  if (isCheckBox(type))
+    return checked
+      ? ref.attributes && ref.attributes.value
+        ? value
+        : true
+      : false;
 
   return value;
 }

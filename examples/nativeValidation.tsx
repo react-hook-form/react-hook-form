@@ -13,7 +13,7 @@ function App() {
   };
 
   return (
-    <form onSubmit={e => e.preventDefault()}>
+    <form onSubmit={handleSubmit(onSubmit)}>
       <label>First name</label>
       <input
         name="firstName"
@@ -24,7 +24,7 @@ function App() {
         name="lastName"
         ref={register({ required: "Please enter your last name." })}
       />
-      <input type="submit" onClick={handleSubmit(onSubmit)} />
+      <input type="submit" />
     </form>
   );
 }

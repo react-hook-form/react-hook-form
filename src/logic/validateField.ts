@@ -1,4 +1,5 @@
 import getRadioValue from './getRadioValue';
+import isNullOrUndefined from '../utils/isNullOrUndefined';
 import isRadioInput from '../utils/isRadioInput';
 import getValueAndMessage from './getValueAndMessage';
 import isCheckBoxInput from '../utils/isCheckBoxInput';
@@ -8,6 +9,8 @@ import displayNativeError from './displayNativeError';
 import isObject from '../utils/isObject';
 import { DATE_INPUTS, STRING_INPUTS } from '../constants';
 import { Field, ErrorMessages, DataType } from '../types';
+import isFunction from '../utils/isFunction';
+import isBoolean from '../utils/isBoolean';
 
 type ValidatePromiseResult =
   | {}
@@ -17,7 +20,7 @@ type ValidatePromiseResult =
       message: string | number | boolean | Date;
     };
 
-export default async <Data>(
+export default async (
   {
     ref,
     ref: { type, value, name, checked },
@@ -38,6 +41,7 @@ export default async <Data>(
   const isCheckBox = isCheckBoxInput(type);
   const isSelectOrInput = !isCheckBox && !isRadio;
   const nativeError = displayNativeError.bind(null, nativeValidation, ref);
+  const isStringInput = STRING_INPUTS.includes(type) || isString(value);
 
   if (
     required &&
@@ -55,28 +59,26 @@ export default async <Data>(
     return error;
   }
 
-  if ((min || max) && !STRING_INPUTS.includes(type)) {
+  if (!isNullOrUndefined(min) || !isNullOrUndefined(max)) {
     let exceedMax;
     let exceedMin;
     const valueNumber = parseFloat(value);
-
     const { value: maxValue, message: maxMessage } = getValueAndMessage(max);
     const { value: minValue, message: minMessage } = getValueAndMessage(min);
-    const message = exceedMax ? maxMessage : minMessage;
 
-    if (type === 'number') {
-      exceedMax = maxValue && valueNumber > maxValue;
-      exceedMin = minValue && valueNumber < minValue;
-    } else if (DATE_INPUTS.includes(type)) {
-      if (typeof maxValue === 'string')
+    if (type === 'number' || !isNaN(value)) {
+      exceedMax = !isNullOrUndefined(maxValue) && valueNumber > maxValue;
+      exceedMin = !isNullOrUndefined(minValue) && valueNumber < minValue;
+    } else if (DATE_INPUTS.includes(type) || type === undefined) {
+      if (isString(maxValue))
         exceedMax = maxValue && new Date(value) > new Date(maxValue);
-      if (typeof minValue === 'string')
+      if (isString(minValue))
         exceedMin = minValue && new Date(value) < new Date(minValue);
     }
 
     if (exceedMax || exceedMin) {
+      const message = exceedMax ? maxMessage : minMessage;
       error[name] = {
-        ...error[name],
         type: exceedMax ? 'max' : 'min',
         message,
         ref,
@@ -86,7 +88,7 @@ export default async <Data>(
     }
   }
 
-  if ((maxLength || minLength) && STRING_INPUTS.includes(type)) {
+  if ((maxLength || minLength) && isStringInput) {
     const {
       value: maxLengthValue,
       message: maxLengthMessage,
@@ -95,13 +97,13 @@ export default async <Data>(
       value: minLengthValue,
       message: minLengthMessage,
     } = getValueAndMessage(minLength);
-    const exceedMax = maxLength && value.toString().length > maxLengthValue;
-    const exceedMin = minLength && value.toString().length < minLengthValue;
+    const inputLength = value.toString().length;
+    const exceedMax = maxLength && inputLength > maxLengthValue;
+    const exceedMin = inputLength && minLength && inputLength < minLengthValue;
     const message = exceedMax ? maxLengthMessage : minLengthMessage;
 
     if (exceedMax || exceedMin) {
       error[name] = {
-        ...error[name],
         type: exceedMax ? 'maxLength' : 'minLength',
         message,
         ref,
@@ -118,7 +120,6 @@ export default async <Data>(
 
     if (patternValue instanceof RegExp && !patternValue.test(value)) {
       error[name] = {
-        ...error[name],
         type: 'pattern',
         message: patternMessage,
         ref,
@@ -132,25 +133,15 @@ export default async <Data>(
     const fieldValue = isRadio ? getRadioValue(options).value : value;
     const validateRef = isRadio && options ? options[0].ref : ref;
 
-    if (typeof validate === 'function') {
+    if (isFunction(validate)) {
       const result = await validate(fieldValue);
-      if (typeof result === 'string' && result) {
+      if ((isString(result) && result) || (isBoolean(result) && !result)) {
         error[name] = {
-          ...error[name],
           type: 'validate',
-          message: result,
+          message: isString(result) ? result : '',
           ref: validateRef,
         };
         nativeError(result);
-        return error;
-      } else if (typeof result === 'boolean' && !result) {
-        error[name] = {
-          ...error[name],
-          type: 'validate',
-          message: '',
-          ref: validateRef,
-        };
-        nativeError('not valid');
         return error;
       }
     } else if (isObject(validate)) {
@@ -162,10 +153,10 @@ export default async <Data>(
           > => {
             const lastChild = values.length - 1 === index;
 
-            if (typeof validate === 'function') {
+            if (isFunction(validate)) {
               const result = await validate(fieldValue);
 
-              if (typeof result !== 'boolean' || !result) {
+              if (!isBoolean(result) || !result) {
                 const message = isString(result) ? result : '';
                 const data = {
                   type: key,
@@ -184,7 +175,6 @@ export default async <Data>(
 
       if (validationResult && !isEmptyObject(validationResult)) {
         error[name] = {
-          ...error[name],
           ref: validateRef,
           ...validationResult,
         };

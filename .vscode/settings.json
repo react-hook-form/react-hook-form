@@ -1,0 +1,13 @@
+{
+  "eslint.validate": [
+    "javascript",
+    "javascriptreact",
+    { "language": "typescript", "autoFix": true },
+    { "language": "typescriptreact", "autoFix": true }
+  ],
+  "prettier.eslintIntegration": true,
+  "eslint.enable": true,
+  "editor.formatOnSave": true,
+  "eslint.autoFixOnSave": true,
+  "typescript.tsdk": "node_modules/typescript/lib"
+}

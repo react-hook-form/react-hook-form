@@ -34,6 +34,7 @@ build/Release
 
 # Dependency directories
 node_modules/
+app/node_modules/
 example/node_modules/
 example/build/
 jspm_packages/
@@ -56,9 +57,6 @@ typings/
 # Yarn Integrity file
 .yarn-integrity
 
-# dotenv environment variables file
-.env
-
 .DS_Store
 
 /lib
@@ -67,4 +65,6 @@ typings/
 /coverage
 .rpt2_cache
 .coveralls.yml
-.vscode
+package-lock.json
+/cypress/videos
+/cypress/screenshots

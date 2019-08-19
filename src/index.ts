@@ -1,5 +1,2 @@
-import useForm from './useForm';
-import { FormContext, useFormContext } from './useFormContext';
-
-export default useForm;
-export { FormContext, useFormContext };
+export { default } from './useForm';
+export { FormContext, useFormContext } from './useFormContext';

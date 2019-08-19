@@ -41,7 +41,14 @@ describe('combineFieldValues', () => {
   it('should return default name value', () => {
     expect(
       combineFieldValues({
-        'name': 'testFirst',
+        name: 'testFirst',
+      }),
+    ).toMatchSnapshot();
+  });
+  it('should handle quoted values', () => {
+    expect(
+      combineFieldValues({
+        'name["foobar"]': 'testFirst',
       }),
     ).toMatchSnapshot();
   });

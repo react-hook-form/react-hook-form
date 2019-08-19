@@ -1,21 +1,26 @@
 {
   "name": "react-hook-form",
-  "version": "3.18.5",
+  "version": "3.21.20",
   "main": "dist/react-hook-form.js",
   "module": "dist/react-hook-form.es.js",
   "types": "dist/index.d.ts",
   "scripts": {
     "clean": "rimraf dist/*",
     "build": "rollup -c",
+    "build:min": "rollup -c rollup.min.config.js",
     "watch": "tsc --watch",
     "release": "npm version",
     "lint": "eslint ./src --ext .jsx,.ts --ignore-pattern *.test.ts",
     "coverage": "jest --coverage --coverageReporters=text-lcov | coveralls",
     "postrelease": "yarn publish && git push --follow-tags",
     "test": "jest --runInBand",
-    "test-coverage": "jest --coverage",
-    "testw": "yarn test-coverage -- --watchAll",
-    "prepublish": "yarn lint && yarn test && yarn run clean && yarn build"
+    "test:coverage": "jest --runInBand --coverage",
+    "testw": "yarn test:coverage -- --watchAll",
+    "cypress": "cypress run",
+    "cypress:open": "cypress open",
+    "bundlesize": "npm run build:min && bundlesize",
+    "prepublish": "yarn lint && yarn test && yarn run clean && yarn build",
+    "start:app": "yarn build && yarn link && yarn --cwd node_modules/react link && yarn --cwd ./app link react react-hook-form && yarn --cwd ./app && yarn --cwd ./app run start"
   },
   "keywords": [
     "react",
@@ -36,14 +41,18 @@
     "@types/enzyme-adapter-react-16": "^1.0.5",
     "@types/jest": "^24.0.11",
     "@types/react": "^16.8.13",
+    "@types/react-dom": "^16.8.5",
     "@types/react-test-renderer": "^16.8.1",
     "@typescript-eslint/eslint-plugin": "^1.9.0",
     "@typescript-eslint/parser": "^1.9.0",
+    "bundlesize": "^0.18.0",
     "coveralls": "^3.0.3",
+    "cypress": "^3.4.0",
     "enzyme": "^3.9.0",
     "enzyme-adapter-react-16": "^1.12.1",
     "eslint": "^5.16.0",
     "eslint-plugin-react": "^7.13.0",
+    "eslint-plugin-react-hooks": "^1.6.1",
     "husky": ">=1",
     "jest": "^24.7.1",
     "lint-staged": ">=8",
@@ -54,11 +63,18 @@
     "react-test-renderer": "^16.8.6",
     "rimraf": "^2.6.3",
     "rollup": "^1.9.3",
+    "rollup-plugin-terser": "^5.1.1",
     "rollup-plugin-typescript2": "^0.20.1",
     "ts-jest": "^24.0.2",
     "typescript": "3.5.2",
     "uglify-es": "^3.3.9"
   },
+  "bundlesize": [
+    {
+      "path": "./dist/react-hook-form.min.es.js",
+      "maxSize": "5 kB"
+    }
+  ],
   "peerDependencies": {
     "react": "^16.8.0",
     "react-dom": "^16.8.0"
@@ -69,7 +85,7 @@
     }
   },
   "lint-staged": {
-    "*.{jsx,ts}": [
+    "*.{jsx,ts},!app/": [
       "eslint --fix",
       "prettier --config ./.prettierrc --write",
       "git add"

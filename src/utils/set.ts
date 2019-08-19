@@ -28,24 +28,25 @@ const stringToPath = (string: string) => {
   return result;
 };
 
-export default function set(object: DataType, path: any, value: string) {
-  path = isKey(path) ? [path] : stringToPath(path);
+export default function set(object: DataType, path: string, value: string) {
+  const tempPath = isKey(path) ? [path] : stringToPath(path);
 
   let index = -1;
-  const length = path.length;
+  const length = tempPath.length;
   const lastIndex = length - 1;
 
   while (++index < length) {
-    let key = path[index];
-    let newValue = value;
+    const key = tempPath[index];
+    let newValue: string | object = value;
 
-    if (index != lastIndex) {
+    if (index !== lastIndex) {
       const objValue = object[key];
-      newValue = isObject(objValue)
-        ? objValue
-        : isIndex(path[index + 1])
-        ? []
-        : {};
+      newValue =
+        isObject(objValue) || isArray(objValue)
+          ? objValue
+          : isIndex(tempPath[index + 1])
+          ? []
+          : {};
     }
     object[key] = newValue;
     object = object[key];

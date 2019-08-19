@@ -7,20 +7,14 @@ export default function getFieldsValue<Data extends DataType>(
   fieldName?: string | string[],
 ): Data {
   return Object.values(fields).reduce(
-    (previous: DataType, data: Ref): FieldValue => {
-      const {
-        ref,
-        ref: { name },
-      } = data;
+    (previous: DataType, { ref, ref: { name } }: Ref): FieldValue => {
       const value = getFieldValue(fields, ref);
 
       if (isString(fieldName)) return name === fieldName ? value : previous;
 
-      if (Array.isArray(fieldName)) {
-        if (fieldName.includes(name)) {
-          previous[name] = value;
-        }
-      } else {
+      if (!fieldName) {
+        previous[name] = value;
+      } else if (Array.isArray(fieldName) && fieldName.includes(name)) {
         previous[name] = value;
       }
 
