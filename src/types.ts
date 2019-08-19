@@ -123,9 +123,9 @@ export interface FormContextValues<
   Value = Data[Name]
 > {
   register: (
-    refOrValidateRule: RegisterInput | Ref,
+    refOrValidateRule: Ref | RegisterInput,
     validateRule?: RegisterInput,
-  ) => any;
+  ) => void | ((ref: Ref) => void);
   unregister: (name: string | string[]) => void;
   handleSubmit: (
     callback: OnSubmit<Data>,
