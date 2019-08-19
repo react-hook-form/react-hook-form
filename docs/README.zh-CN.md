@@ -11,10 +11,10 @@
 
 - 使创建表单和集成更加便捷
 - 以性能和开发体验为基础构建
+- 非受控表单校验
+- [迷你](https://bundlephobia.com/result?p=react-hook-form@latest)的体积而没有其他依赖
 - 遵循html标准进行校验
 - 支持浏览器原生校验
-- 迷你的体积而没有其他依赖
-- 不可控表单校验
 - 从[这里](https://react-hook-form.now.sh/builder)快速构建你的表单
 
 <div align="center"><p align="center"><a href="https://react-hook-form.com" title="React Hook Form - Simple React forms validation"><img src="https://raw.githubusercontent.com/bluebill1049/react-hook-form/master/website/example.gif" alt="React Hook Form Logo - React hook form validation" width="750px" /></a></p></div>
