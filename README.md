@@ -1,4 +1,4 @@
-<div align="right">🇦🇺English | <a href="https://github.com/bluebill1049/react-hook-form/blob/master/docs/README.zh-CN.md">🇨🇳简体中文</a></div>
+<div align="right">🇦🇺English | <a href="https://github.com/bluebill1049/react-hook-form/blob/master/README.zh-CN.md">🇨🇳简体中文</a></div>
 
 <div align="center"><p align="center"><a href="https://react-hook-form.com" title="React Hook Form - Simple React forms validation"><img src="https://raw.githubusercontent.com/bluebill1049/react-hook-form/master/website/logo.png" alt="React Hook Form Logo - React hook form validation" width="330px" /></a></p></div>
 
