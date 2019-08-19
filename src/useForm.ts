@@ -1,4 +1,4 @@
-import React, { useRef, useState, useCallback, useLayoutEffect } from 'react';
+import React, { useRef, useState, useCallback, useEffect } from 'react';
 import attachEventListeners from './logic/attachEventListeners';
 import combineFieldValues from './logic/combineFieldValues';
 import findRemovedFieldAndRemoveListener from './logic/findRemovedFieldAndRemoveListener';
@@ -666,7 +666,7 @@ export default function useForm<
     return isEmptyObject(output) ? defaultValues : output;
   };
 
-  useLayoutEffect(
+  useEffect(
     () => () => {
       isUnMount.current = true;
       unSubscribe();
