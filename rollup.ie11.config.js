@@ -5,7 +5,9 @@ export default {
   input: 'src/index.ts',
   external: ['react', 'react-dom'],
   plugins: [
-    typescript(),
+    typescript({
+      tsconfig: 'tsconfig.ie11.json',
+    }),
     terser({
       warnings: true,
       mangle: {
@@ -18,12 +20,8 @@ export default {
 
   output: [
     {
-      file: 'dist/react-hook-form.js',
+      file: 'dist/react-hook-form.ie11.js',
       format: 'cjs',
-    },
-    {
-      file: 'dist/react-hook-form.esm.js',
-      format: 'esm',
     },
   ],
 };

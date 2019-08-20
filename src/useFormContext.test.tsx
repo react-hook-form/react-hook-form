@@ -1,38 +1,27 @@
 import * as React from 'react';
-import * as renderer from 'react-test-renderer';
+import { renderHook, act } from '@testing-library/react-hooks';
 import { FormContext, useFormContext } from './useFormContext';
-import { mount } from 'enzyme';
 
 describe('FormContext', () => {
-  it('should render correctly', () => {
-    const tree = renderer.create(
-      // @ts-ignore
-      <FormContext>
-        <div>child</div>
-      </FormContext>,
-    );
-    expect(tree).toMatchSnapshot();
+  beforeEach(() => {
+    jest.resetAllMocks();
   });
 
   it('should have access to all methods with useFormContext', () => {
-    const test = jest.fn();
-    const Child = () => {
-      // @ts-ignore
-      const { test } = useFormContext();
-      test();
-      return null;
-    };
-    const TestHook = () => {
-      return (
+    const mockRegister = jest.fn();
+    const { result } = renderHook(() => useFormContext(), {
+      /* eslint-disable-next-line react/display-name */
+      wrapper: (props: { children?: React.ReactNode }) => (
         // @ts-ignore
-        <FormContext test={test}>
-          <Child />
-        </FormContext>
-      );
-    };
+        <FormContext register={mockRegister} {...props} />
+      ),
+    });
+    const { register } = result.current;
 
-    mount(<TestHook />);
+    act(() => {
+      register({});
+    });
 
-    expect(test).toBeCalled();
+    expect(mockRegister).toHaveBeenCalled();
   });
 });
