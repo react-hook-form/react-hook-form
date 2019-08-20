@@ -58,11 +58,11 @@ export default function useForm<
   const isSubmittingRef = useRef(false);
   const isSubmittedRef = useRef(false);
   const isDirtyRef = useRef(false);
-  const dirtyFieldsRef = useRef(new Set<Name>());
   const isSchemaValidateTriggeredRef = useRef(false);
   const validateAndStateUpdateRef = useRef<Function>();
   const fieldsWithValidationRef = useRef(new Set());
   const validFieldsRef = useRef(new Set());
+  const defaultValuesRef = useRef<Record<string, any>>({});
   const [, reRenderForm] = useState({});
   const { isOnChange, isOnBlur, isOnSubmit } = useRef(
     modeChecker(mode),
@@ -120,22 +120,7 @@ export default function useForm<
   };
 
   const setDirty = (name: Name, value: any): boolean => {
-    const dirty =
-      fieldsRef.current[name] &&
-      get(
-        fieldsRef.current[name] as Record<string, any>,
-        'ref.defaultValue',
-      ) !== value;
-    const isDirtyChanged = dirtyFieldsRef.current.has(name) !== dirty;
-
-    if (dirty) {
-      dirtyFieldsRef.current.add(name);
-    } else {
-      dirtyFieldsRef.current.delete(name);
-    }
-
-    isDirtyRef.current = !!dirtyFieldsRef.current.size;
-    return isDirtyChanged;
+    return defaultValuesRef.current[name as string] !== value;
   };
 
   const setValueInternal = useCallback(
@@ -381,6 +366,7 @@ export default function useForm<
         ref: elementRef,
       };
       const fields: any = fieldsRef.current;
+      const fieldDefaultValues = defaultValuesRef.current;
       const isRadio = isRadioInput(type);
       const field = fields[name];
       const existRadioOptionIndex =
@@ -427,6 +413,20 @@ export default function useForm<
       if (defaultValues) {
         const defaultValue = defaultValues[name] || get(defaultValues, name);
         if (defaultValue !== undefined) setFieldValue(name, defaultValue);
+      }
+
+      if (!fieldDefaultValues[name]) {
+        const { selectedIndex, defaultValue } = elementRef;
+        if (isCheckBoxInput(elementRef) || isRadioInput(elementRef)) {
+          fieldDefaultValues[name] = getFieldValue(
+            fieldsRef.current,
+            elementRef,
+          );
+        } else if (type.startsWith('select')) {
+          fieldDefaultValues[name] = selectedIndex;
+        } else {
+          fieldDefaultValues[name] = defaultValue;
+        }
       }
 
       if (!type) return;
@@ -636,7 +636,6 @@ export default function useForm<
     isSubmittedRef.current = false;
     isDirtyRef.current = false;
     touchedFieldsRef.current = new Set();
-    dirtyFieldsRef.current = new Set();
     fieldsWithValidationRef.current = new Set();
     validFieldsRef.current = new Set();
     submitCountRef.current = 0;
