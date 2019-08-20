@@ -118,11 +118,22 @@ export default function useForm<
     }
   };
 
+  const setDirty = (name: Name, value: any) => {
+    if (
+      get(
+        fieldsRef.current[name] as Record<string, any>,
+        'ref.defaultValue',
+      ) !== value
+    ) {
+      isDirtyRef.current = true;
+    }
+  };
+
   const setValueInternal = useCallback(
     (name: Name, value: Data[Name]): void => {
       setFieldValue(name, value);
       touchedFieldsRef.current.add(name);
-      isDirtyRef.current = true;
+      setDirty(name, value);
       reRenderForm({});
     },
     [],
@@ -224,7 +235,7 @@ export default function useForm<
 
   validateAndStateUpdateRef.current = validateAndStateUpdateRef.current
     ? validateAndStateUpdateRef.current
-    : async ({ target: { name }, type }: Ref): Promise<void> => {
+    : async ({ target: { name, value }, type }: Ref): Promise<void> => {
         if (Array.isArray(validationFields) && !validationFields.includes(name))
           return;
         const fields = fieldsRef.current;
@@ -238,7 +249,7 @@ export default function useForm<
           isWatchAllRef.current || watchFieldsRef.current[name];
 
         if (!isDirtyRef.current) {
-          isDirtyRef.current = true;
+          setDirty(name, value);
           shouldUpdateState = true;
         }
 
