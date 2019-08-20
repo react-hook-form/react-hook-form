@@ -37,8 +37,7 @@
   "author": "<bluebill1049@hotmail.com>",
   "license": "MIT",
   "devDependencies": {
-    "@types/enzyme": "^3.9.1",
-    "@types/enzyme-adapter-react-16": "^1.0.5",
+    "@testing-library/react-hooks": "^2.0.1",
     "@types/jest": "^24.0.11",
     "@types/react": "^16.8.13",
     "@types/react-dom": "^16.8.5",
@@ -48,8 +47,6 @@
     "bundlesize": "^0.18.0",
     "coveralls": "^3.0.3",
     "cypress": "^3.4.0",
-    "enzyme": "^3.9.0",
-    "enzyme-adapter-react-16": "^1.12.1",
     "eslint": "^5.16.0",
     "eslint-plugin-react": "^7.13.0",
     "eslint-plugin-react-hooks": "^1.6.1",
@@ -58,9 +55,9 @@
     "lint-staged": ">=8",
     "npm-run-all": "^4.1.5",
     "prettier": "^1.18.2",
-    "react": "^16.8.6",
-    "react-dom": "^16.8.6",
-    "react-test-renderer": "^16.8.6",
+    "react": "^16.9.0",
+    "react-dom": "^16.9.0",
+    "react-test-renderer": "^16.9.0",
     "rimraf": "^2.6.3",
     "rollup": "^1.9.3",
     "rollup-plugin-terser": "^5.1.1",
@@ -90,5 +87,8 @@
       "prettier --config ./.prettierrc --write",
       "git add"
     ]
+  },
+  "dependencies": {
+    "@testing-library/react": "^9.1.3"
   }
 }

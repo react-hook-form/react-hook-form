@@ -1,4 +1,8 @@
-import * as Enzyme from 'enzyme';
-import * as Adapter from 'enzyme-adapter-react-16';
-
-Enzyme.configure({ adapter: new Adapter() });
+/* eslint-disable @typescript-eslint/explicit-member-accessibility */
+// @ts-ignore
+global.MutationObserver = class {
+  constructor() {}
+  disconnect() {}
+  observe() {}
+};
+/* eslint-enable @typescript-eslint/explicit-member-accessibility */
