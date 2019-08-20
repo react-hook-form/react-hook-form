@@ -433,9 +433,18 @@ export default function useForm<
     [defaultValues, isOnSubmit, nativeValidation, removeEventListenerAndRef],
   );
 
+  function watch(): Data;
   function watch(
-    fieldNames?: Name | string | (Name | string)[] | undefined,
-    defaultValue?: string | Partial<Data> | undefined,
+    field: Name | string,
+    defaultValue?: string,
+  ): FieldValue | void;
+  function watch(
+    fields: (Name | string)[],
+    defaultValues?: Partial<Data>,
+  ): Partial<Data>;
+  function watch(
+    fieldNames?: Name | string | (Name | string)[],
+    defaultValue?: string | Partial<Data>,
   ): FieldValue | Partial<Data> | void {
     const fieldValues = getFieldsValues(fieldsRef.current);
     const watchFields: any = watchFieldsRef.current;

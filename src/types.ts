@@ -131,10 +131,12 @@ export interface FormContextValues<
   handleSubmit: (
     callback: OnSubmit<Data>,
   ) => (e: React.SyntheticEvent) => Promise<void>;
-  watch: (
-    fieldNames?: string | string[],
-    defaultValue?: string | Partial<Data>,
-  ) => FieldValue | Partial<Data> | void;
+  watch(): Data;
+  watch(field: Name | string, defaultValue?: string): FieldValue | void;
+  watch(
+    fields: (Name | string)[],
+    defaultValues?: Partial<Data>,
+  ): Partial<Data>;
   reset: VoidFunction;
   clearError: (name?: Name | Name[]) => void;
   setError: (name: Name, type: string, message?: string, ref?: Ref) => void;
