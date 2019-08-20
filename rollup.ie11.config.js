@@ -6,7 +6,7 @@ export default {
   external: ['react', 'react-dom'],
   plugins: [
     typescript({
-      tsconfig: './tsconfig.ie11.json',
+      tsconfig: 'tsconfig.ie11.json',
     }),
     terser({
       warnings: true,

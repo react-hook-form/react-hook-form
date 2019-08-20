@@ -67,8 +67,7 @@
     "rollup-plugin-terser": "^5.1.1",
     "rollup-plugin-typescript2": "^0.20.1",
     "ts-jest": "^24.0.2",
-    "typescript": "3.5.2",
-    "uglify-es": "^3.3.9"
+    "typescript": "^3.5.3"
   },
   "bundlesize": [
     {
