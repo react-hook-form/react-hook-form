@@ -25,6 +25,7 @@ export function getConfig({
     plugins: [
       typescript({
         tsconfig,
+        clean: true,
       }),
       terser({
         warnings: true,
