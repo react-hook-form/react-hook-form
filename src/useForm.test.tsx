@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { renderHook, act } from '@testing-library/react-hooks';
 import useForm from './';
 import attachEventListeners from './logic/attachEventListeners';
 import getFieldsValues from './logic/getFieldsValues';
@@ -6,9 +7,7 @@ import findRemovedFieldAndRemoveListener from './logic/findRemovedFieldAndRemove
 import validateWithSchema from './logic/validateWithSchema';
 import validateField from './logic/validateField';
 import onDomRemove from './utils/onDomRemove';
-import { mount } from 'enzyme';
 import { VALIDATION_MODE } from './constants';
-import { act } from 'react-dom/test-utils';
 
 jest.mock('./utils/onDomRemove');
 jest.mock('./logic/findRemovedFieldAndRemoveListener');
@@ -22,41 +21,36 @@ jest.mock('./logic/combineFieldValues', () => ({
   esmodule: true,
 }));
 
-let hookForm: any;
-let hookFormWithValidationSchema: any;
-let wrapper: any;
-
-const testComponent = (callback: any) => {
-  const TestHook = ({ callback }: any) => {
-    const { errors } = callback();
-    return errors ? <div>errors</div> : null;
-  };
-
-  wrapper = mount(<TestHook callback={callback} />);
-};
-
 describe('useForm', () => {
   beforeEach(() => {
-    testComponent(() => {
-      hookForm = useForm();
-      return hookForm;
-    });
-
     jest.resetAllMocks();
   });
 
   describe('register', () => {
     it('should return undefined when ref is undefined', () => {
-      expect(hookForm.register(undefined)).toBeUndefined();
+      const { result } = renderHook(() => useForm());
+
+      act(() => {
+        expect(result.current.register(undefined)).toBeUndefined();
+      });
     });
 
     it('should return undefined when ref name is missing', () => {
-      expect(hookForm.register({ type: 'input' }, {})).toBeUndefined();
+      const { result } = renderHook(() => useForm());
+
+      act(() => {
+        expect(result.current.register({ type: 'input' }, {})).toBeUndefined();
+      });
     });
 
     it('should register field and call attachEventListeners method', () => {
-      hookForm.register({ type: 'input', name: 'test' });
-      expect(attachEventListeners).toBeCalledWith({
+      const { result } = renderHook(() => useForm());
+
+      act(() => {
+        result.current.register({ type: 'input', name: 'test' });
+      });
+
+      expect(attachEventListeners).toHaveBeenCalledWith({
         field: {
           mutationWatcher: undefined,
           ref: {
@@ -67,11 +61,16 @@ describe('useForm', () => {
         isRadio: false,
         validateAndStateUpdate: expect.any(Function),
       });
-      expect(onDomRemove).toBeCalled();
+      expect(onDomRemove).toHaveBeenCalled();
     });
 
     it('should register field for radio type and call attachEventListeners method', () => {
-      hookForm.register({ type: 'radio', name: 'test' });
+      const { result } = renderHook(() => useForm());
+
+      act(() => {
+        result.current.register({ type: 'radio', name: 'test' });
+      });
+
       expect(attachEventListeners).toBeCalledWith({
         field: {
           mutationWatcher: undefined,
@@ -87,67 +86,93 @@ describe('useForm', () => {
     });
 
     it('should support register passed to ref', async () => {
-      hookForm.register({ required: true })({
-        type: 'text',
-        name: 'test',
-        value: 'testData',
+      const { result } = renderHook(() => useForm<{ test: string }>());
+
+      act(() => {
+        result.current.register({ required: true })!({
+          type: 'text',
+          name: 'test',
+          value: 'testData',
+        });
       });
+
       // @ts-ignore
       validateField.mockImplementation(async () => {
         return {};
       });
-      // @ts-ignore
+
       await act(async () => {
-        await hookForm.handleSubmit((data: any) => {
+        await result.current.handleSubmit(data => {
           expect(data).toEqual({
             test: 'testData',
           });
         })({
           preventDefault: () => {},
           persist: () => {},
-        });
+        } as React.SyntheticEvent);
       });
     });
 
     it('should not register the same radio input', async () => {
-      hookForm.register({ type: 'radio', name: 'test', value: '' });
-      hookForm.register({ type: 'radio', name: 'test', value: '' });
+      const { result } = renderHook(() => useForm<{ test: string }>());
+
+      act(() => {
+        const { register } = result.current;
+        register({ type: 'radio', name: 'test', value: '' });
+        register({ type: 'radio', name: 'test', value: '' });
+      });
+
       // @ts-ignore
       validateField.mockImplementation(async () => {
         return {};
       });
-      // @ts-ignore
+
       await act(async () => {
-        await hookForm.handleSubmit((data: any) => {
+        await result.current.handleSubmit(data => {
           expect(data).toEqual({
             test: '',
           });
         })({
           preventDefault: () => {},
           persist: () => {},
-        });
+        } as React.SyntheticEvent);
       });
     });
   });
 
   describe('watch', () => {
     it('should watch individual input', () => {
-      expect(hookForm.watch('test')).toBeUndefined();
-      hookForm.register({ type: 'radio', name: 'test', value: '' });
+      const { result } = renderHook(() => useForm<{ test: string }>());
+
+      expect(result.current.watch('test')).toBeUndefined();
+
+      act(() => {
+        result.current.register({ type: 'radio', name: 'test', value: '' });
+      });
+
       // @ts-ignore
       getFieldsValues.mockImplementation(() => {
         return { test: 'data' };
       });
-      expect(hookForm.watch('test')).toBe('data');
+
+      expect(result.current.watch('test')).toBe('data');
     });
 
     it('should watch array of inputs', () => {
-      expect(hookForm.watch(['test', 'test1'])).toEqual({
+      const { result } = renderHook(() =>
+        useForm<{ test: string; test1: string }>(),
+      );
+
+      expect(result.current.watch(['test', 'test1'])).toEqual({
         test: undefined,
         test1: undefined,
       });
-      hookForm.register({ type: 'radio', name: 'test', value: '' });
-      hookForm.register({ type: 'radio', name: 'test1', value: '' });
+
+      act(() => {
+        result.current.register({ type: 'radio', name: 'test', value: '' });
+        result.current.register({ type: 'radio', name: 'test1', value: '' });
+      });
+
       // @ts-ignore
       getFieldsValues.mockImplementation(() => {
         return {
@@ -155,16 +180,25 @@ describe('useForm', () => {
           test1: 'data2',
         };
       });
-      expect(hookForm.watch(['test', 'test1'])).toEqual({
+
+      expect(result.current.watch(['test', 'test1'])).toEqual({
         test: 'data1',
         test1: 'data2',
       });
     });
 
     it('should watch every fields', () => {
-      expect(hookForm.watch()).toEqual({});
-      hookForm.register({ type: 'radio', name: 'test', value: '' });
-      hookForm.register({ type: 'radio', name: 'test1', value: '' });
+      const { result } = renderHook(() =>
+        useForm<{ test: string; test1: string }>(),
+      );
+
+      expect(result.current.watch()).toEqual({});
+
+      act(() => {
+        result.current.register({ type: 'radio', name: 'test', value: '' });
+        result.current.register({ type: 'radio', name: 'test1', value: '' });
+      });
+
       // @ts-ignore
       getFieldsValues.mockImplementation(() => {
         return {
@@ -172,7 +206,8 @@ describe('useForm', () => {
           test1: 'data2',
         };
       });
-      expect(hookForm.watch()).toEqual({
+
+      expect(result.current.watch()).toEqual({
         test: 'data1',
         test1: 'data2',
       });
@@ -181,10 +216,11 @@ describe('useForm', () => {
 
   describe('reset', () => {
     it('should reset the form and re-render the form', async () => {
-      hookForm.register({ name: 'test' });
+      const { result } = renderHook(() => useForm<{ test: string }>());
 
       act(() => {
-        hookForm.setValue('test', 'data');
+        result.current.register({ name: 'test' });
+        result.current.setValue('test', 'data');
       });
 
       // @ts-ignore
@@ -192,78 +228,94 @@ describe('useForm', () => {
         return {};
       });
 
-      hookForm.register({ type: 'text', name: 'test' });
+      act(() => {
+        result.current.register({ type: 'text', name: 'test' });
+      });
 
-      // @ts-ignore
       await act(async () => {
-        await hookForm.handleSubmit((data: any) => {
+        await result.current.handleSubmit(data => {
           expect(data).toEqual({
             test: 'data',
           });
         })({
           preventDefault: () => {},
           persist: () => {},
-        });
-        expect(hookForm.formState.isSubmitted).toBeTruthy();
-        hookForm.reset();
-        expect(hookForm.formState.isSubmitted).toBeFalsy();
+        } as React.SyntheticEvent);
       });
+
+      expect(result.current.formState.isSubmitted).toBeTruthy();
+      act(() => {
+        result.current.reset();
+      });
+      expect(result.current.formState.isSubmitted).toBeFalsy();
     });
   });
 
   describe('setValue', () => {
     it('should set value of radio input correctly', async () => {
-      hookForm.register({ name: 'test', type: 'radio', value: '1' });
-      hookForm.register({ name: 'test', type: 'radio', value: '2' });
+      const { result } = renderHook(() => useForm<{ test: string }>());
 
       act(() => {
-        hookForm.setValue('test', '1');
+        result.current.register({ name: 'test', type: 'radio', value: '1' });
+        result.current.register({ name: 'test', type: 'radio', value: '2' });
+        result.current.setValue('test', '1');
       });
+
       // @ts-ignore
       validateField.mockImplementation(async () => {
         return {};
       });
-      hookForm.register({ type: 'text', name: 'test' });
 
-      // @ts-ignore
+      act(() => {
+        result.current.register({ type: 'text', name: 'test' });
+      });
+
       await act(async () => {
-        await hookForm.handleSubmit((data: any) => {
+        await result.current.handleSubmit(data => {
           expect(data).toEqual({
             test: '1',
           });
         })({
           preventDefault: () => {},
           persist: () => {},
-        });
+        } as React.SyntheticEvent);
       });
     });
 
     it('should return undefined when filed not found', () => {
+      const { result } = renderHook(() => useForm<{ test: string }>());
+
       act(() => {
-        expect(hookForm.setValue('test', '1')).toBeUndefined();
+        expect(result.current.setValue('test', '1')).toBeUndefined();
       });
     });
   });
 
   describe('triggerValidation', () => {
     it('should return false when field is not found', async () => {
-      // @ts-ignore
+      const { result } = renderHook(() => useForm<{ test: string }>());
       await act(async () => {
-        expect(await hookForm.triggerValidation({ name: 'test' })).toBeFalsy();
+        expect(
+          await result.current.triggerValidation({ name: 'test' }),
+        ).toBeFalsy();
       });
     });
 
     it('should return true when field is found and validation pass', async () => {
-      hookForm.register({ type: 'input', name: 'test' });
+      const { result } = renderHook(() => useForm<{ test: string }>());
+
+      act(() => {
+        result.current.register({ type: 'input', name: 'test' });
+      });
+
       // @ts-ignore
       validateField.mockImplementation(async () => {
         return {};
       });
 
-      // @ts-ignore
       await act(async () => {
         expect(
-          await hookForm.triggerValidation({
+          await result.current.triggerValidation({
             name: 'test',
           }),
         ).toBeTruthy();
@@ -271,49 +323,63 @@ describe('useForm', () => {
     });
 
     it('should update value when value is supplied', async () => {
-      testComponent(() => {
-        hookForm = useForm({
+      const { result } = renderHook(() =>
+        useForm<{ test: string }>({
           mode: VALIDATION_MODE.onChange,
-        });
-        return hookForm;
+        }),
+      );
+
+      act(() => {
+        result.current.register(
+          { type: 'input', name: 'test' },
+          { required: true },
+        );
       });
-      hookForm.register({ type: 'input', name: 'test' }, { required: true });
+
       // @ts-ignore
       validateField.mockImplementation(async () => {
         return {};
       });
 
-      // @ts-ignore
       await act(async () => {
-        expect(await hookForm.triggerValidation({ name: 'test' })).toBeTruthy();
+        expect(
+          await result.current.triggerValidation({ name: 'test' }),
+        ).toBeTruthy();
       });
     });
 
     it('should set value while trigger a validation', async () => {
-      testComponent(() => {
-        hookForm = useForm({
+      const { result } = renderHook(() =>
+        useForm<{ test: string }>({
           mode: VALIDATION_MODE.onChange,
-        });
-        return hookForm;
+        }),
+      );
+
+      act(() => {
+        result.current.register(
+          { type: 'input', name: 'test' },
+          { required: true },
+        );
       });
-      hookForm.register({ type: 'input', name: 'test' }, { required: true });
+
       // @ts-ignore
       validateField.mockImplementation(async () => {
         return {};
       });
 
-      // @ts-ignore
       await act(async () => {
-        await hookForm.triggerValidation({ name: 'test', value: 'test' });
+        await result.current.triggerValidation({ name: 'test', value: 'test' });
       });
 
       const callback = jest.fn(data => {
         expect(data).toEqual({ test: 'test' });
       });
 
-      // @ts-ignore
       await act(async () => {
-        await hookForm.handleSubmit(callback)();
+        await result.current.handleSubmit(callback)({
+          preventDefault: () => {},
+          persist: () => {},
+        } as React.SyntheticEvent);
       });
       expect(callback).toBeCalled();
     });
@@ -321,15 +387,20 @@ describe('useForm', () => {
 
   describe('triggerValidation with schema', () => {
     it('should return the error with single field validation', async () => {
-      testComponent(() => {
-        hookForm = useForm({
+      const { result } = renderHook(() =>
+        useForm<{ test: string }>({
           mode: VALIDATION_MODE.onChange,
           validationSchema: { test: 'test' },
-        });
-        return hookForm;
+        }),
+      );
+
+      act(() => {
+        result.current.register(
+          { type: 'input', name: 'test' },
+          { required: true },
+        );
       });
 
-      hookForm.register({ type: 'input', name: 'test' }, { required: true });
       // @ts-ignore
       validateWithSchema.mockImplementation(async payload => {
         return {
@@ -338,26 +409,31 @@ describe('useForm', () => {
         };
       });
 
-      // @ts-ignore
       await act(async () => {
-        await hookForm.triggerValidation({ name: 'test' });
+        await result.current.triggerValidation({ name: 'test' });
       });
-      expect(hookForm.errors).toEqual({ test: 'test' });
+      expect(result.current.errors).toEqual({ test: 'test' });
     });
 
     it('should return the status of the requested field with single field validation', async () => {
-      testComponent(() => {
-        hookForm = useForm({
+      const { result } = renderHook(() =>
+        useForm<{ test1: string; test2: string }>({
           mode: VALIDATION_MODE.onChange,
-          validationSchema: {
-            test2: 'test2',
-          },
-        });
-        return hookForm;
+          validationSchema: { test2: 'test2' },
+        }),
+      );
+
+      act(() => {
+        result.current.register(
+          { type: 'input', name: 'test1' },
+          { required: false },
+        );
+        result.current.register(
+          { type: 'input', name: 'test2' },
+          { required: true },
+        );
       });
 
-      hookForm.register({ type: 'input', name: 'test1' }, { required: false });
-      hookForm.register({ type: 'input', name: 'test2' }, { required: true });
       // @ts-ignore
       validateWithSchema.mockImplementation(async payload => {
         return {
@@ -366,29 +442,37 @@ describe('useForm', () => {
         };
       });
 
-      // @ts-ignore
       await act(async () => {
-        const resultTrue = await hookForm.triggerValidation({ name: 'test1' });
+        const resultTrue = await result.current.triggerValidation({
+          name: 'test1',
+        });
         expect(resultTrue).toEqual(true);
-        const resultFalse = await hookForm.triggerValidation({ name: 'test2' });
+        const resultFalse = await result.current.triggerValidation({
+          name: 'test2',
+        });
         expect(resultFalse).toEqual(false);
       });
 
-      expect(hookForm.errors).toEqual({
+      expect(result.current.errors).toEqual({
         test2: 'test2',
       });
     });
 
     it('should not trigger any error when schema validation result not found', async () => {
-      testComponent(() => {
-        hookForm = useForm({
+      const { result } = renderHook(() =>
+        useForm<{ test: string }>({
           mode: VALIDATION_MODE.onChange,
           validationSchema: { test: 'test' },
-        });
-        return hookForm;
+        }),
+      );
+
+      act(() => {
+        result.current.register(
+          { type: 'input', name: 'test' },
+          { required: true },
+        );
       });
 
-      hookForm.register({ type: 'input', name: 'test' }, { required: true });
       // @ts-ignore
       validateWithSchema.mockImplementation(async () => {
         return {
@@ -399,23 +483,28 @@ describe('useForm', () => {
         };
       });
 
-      // @ts-ignore
       await act(async () => {
-        await hookForm.triggerValidation({ name: 'test' });
+        await result.current.triggerValidation({ name: 'test' });
       });
-      expect(hookForm.errors).toEqual({});
+
+      expect(result.current.errors).toEqual({});
     });
 
     it('should support array of fields for schema validation', async () => {
-      testComponent(() => {
-        hookForm = useForm({
+      const { result } = renderHook(() =>
+        useForm<{ test: string; test1: string }>({
           mode: VALIDATION_MODE.onChange,
           validationSchema: {},
-        });
-        return hookForm;
+        }),
+      );
+
+      act(() => {
+        result.current.register(
+          { type: 'input', name: 'test' },
+          { required: true },
+        );
       });
 
-      hookForm.register({ type: 'input', name: 'test' }, { required: true });
       // @ts-ignore
       validateWithSchema.mockImplementation(async () => {
         return {
@@ -427,30 +516,42 @@ describe('useForm', () => {
         };
       });
 
-      // @ts-ignore
       await act(async () => {
-        await hookForm.triggerValidation([{ name: 'test' }, { name: 'test1' }]);
+        await result.current.triggerValidation([
+          { name: 'test' },
+          { name: 'test1' },
+        ]);
       });
-      expect(hookForm.errors).toEqual({
+
+      expect(result.current.errors).toEqual({
         test: 'test',
         test1: 'test1',
       });
     });
 
     it('should return the status of the requested fields with array of fields for validation', async () => {
-      testComponent(() => {
-        hookForm = useForm({
+      const { result } = renderHook(() =>
+        useForm<{ test1: string; test2: string; test3: string }>({
           mode: VALIDATION_MODE.onChange,
-          validationSchema: {
-            test3: 'test3',
-          },
-        });
-        return hookForm;
+          validationSchema: { test3: 'test3' },
+        }),
+      );
+
+      act(() => {
+        result.current.register(
+          { type: 'input', name: 'test1' },
+          { required: false },
+        );
+        result.current.register(
+          { type: 'input', name: 'test2' },
+          { required: false },
+        );
+        result.current.register(
+          { type: 'input', name: 'test3' },
+          { required: true },
+        );
       });
 
-      hookForm.register({ type: 'input', name: 'test1' }, { required: false });
-      hookForm.register({ type: 'input', name: 'test2' }, { required: false });
-      hookForm.register({ type: 'input', name: 'test3' }, { required: true });
       // @ts-ignore
       validateWithSchema.mockImplementation(async payload => {
         return {
@@ -459,37 +560,44 @@ describe('useForm', () => {
         };
       });
 
-      // @ts-ignore
       await act(async () => {
-        const resultTrue = await hookForm.triggerValidation([
+        const resultTrue = await result.current.triggerValidation([
           { name: 'test1' },
           { name: 'test2' },
         ]);
         expect(resultTrue).toEqual(true);
 
-        const resultFalse = await hookForm.triggerValidation([
+        const resultFalse = await result.current.triggerValidation([
           { name: 'test2' },
           { name: 'test3' },
         ]);
         expect(resultFalse).toEqual(false);
       });
 
-      expect(hookForm.errors).toEqual({
+      expect(result.current.errors).toEqual({
         test3: 'test3',
       });
     });
 
     it('should validate all fields when pass with undefined', async () => {
-      testComponent(() => {
-        hookForm = useForm({
+      const { result } = renderHook(() =>
+        useForm<{ test1: string; test: string }>({
           mode: VALIDATION_MODE.onChange,
           validationSchema: { test: 'test' },
-        });
-        return hookForm;
+        }),
+      );
+
+      act(() => {
+        result.current.register(
+          { type: 'input', name: 'test' },
+          { required: true },
+        );
+        result.current.register(
+          { type: 'input', name: 'test1' },
+          { required: true },
+        );
       });
 
-      hookForm.register({ type: 'input', name: 'test' }, { required: true });
-      hookForm.register({ type: 'input', name: 'test1' }, { required: true });
       // @ts-ignore
       validateWithSchema.mockImplementation(async () => {
         return {
@@ -501,11 +609,11 @@ describe('useForm', () => {
         };
       });
 
-      // @ts-ignore
       await act(async () => {
-        await hookForm.triggerValidation();
+        await result.current.triggerValidation();
       });
-      expect(hookForm.errors).toEqual({
+
+      expect(result.current.errors).toEqual({
         test: 'test',
         test1: 'test1',
       });
@@ -514,63 +622,70 @@ describe('useForm', () => {
 
   describe('handleSubmit', () => {
     it('should invoke the callback when validation pass', async () => {
+      const { result } = renderHook(() => useForm());
       const callback = jest.fn();
-      const preventDefault = jest.fn();
-      const persist = jest.fn();
 
-      // @ts-ignore
       await act(async () => {
-        await hookForm.handleSubmit(callback)({
-          preventDefault,
-          persist,
-        });
+        await result.current.handleSubmit(callback)({
+          preventDefault: () => {},
+          persist: () => {},
+        } as React.SyntheticEvent);
       });
       expect(callback).toBeCalled();
     });
 
     it('should not invoke callback when there are errors', async () => {
-      hookForm.register(
-        { value: '', type: 'input', name: 'test' },
-        { required: true },
-      );
+      const { result } = renderHook(() => useForm<{ test: string }>());
+
+      act(() => {
+        result.current.register(
+          { value: '', type: 'input', name: 'test' },
+          { required: true },
+        );
+      });
+
       const callback = jest.fn();
       // @ts-ignore
       validateField.mockImplementation(async () => {
         return { test: { type: 'test' } };
       });
 
-      // @ts-ignore
       await act(async () => {
-        await hookForm.handleSubmit(callback)({
+        await result.current.handleSubmit(callback)({
           preventDefault: () => {},
           persist: () => {},
-        });
+        } as React.SyntheticEvent);
       });
       expect(callback).not.toBeCalled();
     });
 
     it('should only validate fields which have been specified', async () => {
-      const callback = jest.fn();
-      testComponent(() => {
-        hookForm = useForm({
+      const { result } = renderHook(() =>
+        useForm<{ test: string }>({
           mode: VALIDATION_MODE.onSubmit,
           validationFields: ['test'],
-        });
-        return hookForm;
-      });
-      hookForm.register(
-        { value: '', type: 'input', name: 'test1' },
-        { required: true },
+        }),
       );
-      hookForm.register({ value: '', type: 'input', name: 'test' });
+      const callback = jest.fn();
+
+      act(() => {
+        result.current.register(
+          { value: '', type: 'input', name: 'test1' },
+          { required: true },
+        );
+        result.current.register({ value: '', type: 'input', name: 'test' });
+      });
+
       // @ts-ignore
       validateField.mockImplementation(async () => {
         return {};
       });
 
-      // @ts-ignore
       await act(async () => {
-        await hookForm.handleSubmit(callback)();
+        await result.current.handleSubmit(callback)({
+          preventDefault: () => {},
+          persist: () => {},
+        } as React.SyntheticEvent);
       });
       expect(validateField).toHaveBeenCalledTimes(1);
     });
@@ -578,30 +693,36 @@ describe('useForm', () => {
 
   describe('getValues', () => {
     it('should call getFieldsValues and return all values', () => {
-      hookForm.register({ value: 'test', type: 'input', name: 'test' });
+      const { result } = renderHook(() => useForm<{ test: string }>());
+      act(() => {
+        result.current.register({ value: 'test', type: 'input', name: 'test' });
+      });
       // @ts-ignore
       getFieldsValues.mockImplementation(async () => {
         return {};
       });
-      hookForm.getValues();
+      act(() => {
+        result.current.getValues();
+      });
       expect(getFieldsValues).toBeCalled();
     });
   });
 
   describe('handleSubmit with validationSchema', () => {
     it('should invoke callback when error not found', async () => {
-      testComponent(() => {
-        hookFormWithValidationSchema = useForm({
+      const { result } = renderHook(() =>
+        useForm<{ test: string }>({
           mode: VALIDATION_MODE.onSubmit,
           validationSchema: {},
-        });
-        return hookFormWithValidationSchema;
-      });
-
-      hookFormWithValidationSchema.register(
-        { value: '', type: 'input', name: 'test' },
-        { required: true },
+        }),
       );
+
+      act(() => {
+        result.current.register(
+          { value: '', type: 'input', name: 'test' },
+          { required: true },
+        );
+      });
       const callback = jest.fn();
       // @ts-ignore
       getFieldsValues.mockImplementation(async () => {
@@ -615,12 +736,11 @@ describe('useForm', () => {
         };
       });
 
-      // @ts-ignore
       await act(async () => {
-        await hookFormWithValidationSchema.handleSubmit(callback)({
+        await result.current.handleSubmit(callback)({
           preventDefault: () => {},
           persist: () => {},
-        });
+        } as React.SyntheticEvent);
       });
       expect(callback).toBeCalled();
     });
@@ -628,10 +748,11 @@ describe('useForm', () => {
 
   describe('setError', () => {
     it('should only set an error when it is not existed', () => {
+      const { result } = renderHook(() => useForm<{ input: string }>());
       act(() => {
-        hookForm.setError('input', 'test');
+        result.current.setError('input', 'test');
       });
-      expect(hookForm.errors).toEqual({
+      expect(result.current.errors).toEqual({
         input: {
           type: 'test',
           isManual: true,
@@ -641,9 +762,9 @@ describe('useForm', () => {
       });
 
       act(() => {
-        hookForm.setError('input', 'test');
+        result.current.setError('input', 'test');
       });
-      expect(hookForm.errors).toEqual({
+      expect(result.current.errors).toEqual({
         input: {
           type: 'test',
           isManual: true,
@@ -654,78 +775,86 @@ describe('useForm', () => {
     });
 
     it('should remove error', () => {
+      const { result } = renderHook(() => useForm<{ input: string }>());
       act(() => {
-        hookForm.setError('input', 'test');
-        hookForm.clearError('input');
+        result.current.setError('input', 'test');
+        result.current.clearError('input');
       });
-      expect(hookForm.errors).toEqual({});
+      expect(result.current.errors).toEqual({});
     });
   });
 
   describe('formState', () => {
     it('should disable isValid for submit mode', () => {
-      expect(hookForm.formState.isValid).toBeTruthy();
+      const { result } = renderHook(() => useForm<{ input: string }>());
+      expect(result.current.formState.isValid).toBeTruthy();
     });
 
     it('should return false for onChange or onBlur mode by default', () => {
-      testComponent(() => {
-        hookForm = useForm({
+      const { result } = renderHook(() =>
+        useForm<{ input: string }>({
           mode: VALIDATION_MODE.onBlur,
-        });
-        return hookForm;
-      });
+        }),
+      );
 
-      expect(hookForm.formState.isValid).toBeFalsy();
+      expect(result.current.formState.isValid).toBeFalsy();
     });
 
     it('should return true when no validation is registered', () => {
-      testComponent(() => {
-        hookForm = useForm({
+      const { result } = renderHook(() =>
+        useForm<{ input: string }>({
           mode: VALIDATION_MODE.onBlur,
-        });
-        return hookForm;
-      });
-      hookForm.register({ type: 'text', name: 'test' });
+        }),
+      );
 
-      expect(hookForm.formState.isValid).toBeFalsy();
+      act(() => {
+        result.current.register({ type: 'text', name: 'test' });
+      });
+
+      expect(result.current.formState.isValid).toBeFalsy();
     });
   });
 
   describe('when component unMount', () => {
     it('should call unSubscribe', () => {
-      hookForm.register({ type: 'text', name: 'test' });
-      wrapper.unmount();
+      const { result, unmount } = renderHook(() => useForm<{ test: string }>());
+
+      result.current.register({ type: 'text', name: 'test' });
+      unmount();
       expect(findRemovedFieldAndRemoveListener).toBeCalled();
     });
   });
 
   describe('when defaultValues is supplied', () => {
     it('should populate the input with them', async () => {
-      testComponent(() => {
-        hookForm = useForm({
+      const { result } = renderHook(() =>
+        useForm<{ test: string }>({
           mode: VALIDATION_MODE.onSubmit,
           defaultValues: {
             test: 'data',
           },
-        });
-        return hookForm;
-      });
+        }),
+      );
+
       // @ts-ignore
       validateField.mockImplementation(async () => {
         return {};
       });
-      hookForm.register({ type: 'text', name: 'test' });
+
+      act(() => {
+        result.current.register({ type: 'text', name: 'test' });
+      });
 
       // @ts-ignore
       await act(async () => {
-        await hookForm.handleSubmit((data: any) => {
+        await result.current.handleSubmit((data: any) => {
           expect(data).toEqual({
             test: 'data',
           });
         })({
           preventDefault: () => {},
           persist: () => {},
-        });
+        } as React.SyntheticEvent);
       });
     });
   });
