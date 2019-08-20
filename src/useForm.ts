@@ -119,15 +119,15 @@ export default function useForm<
     }
   };
 
-  const setDirty = (name: Name, value: any): boolean => {
-    return defaultValuesRef.current[name as string] !== value;
-  };
+  const setDirty = (name: Name): boolean =>
+    defaultValuesRef.current[name as string] !==
+    getFieldValue(fieldsRef.current, fieldsRef.current[name]);
 
   const setValueInternal = useCallback(
     (name: Name, value: Data[Name]): void => {
       setFieldValue(name, value);
       touchedFieldsRef.current.add(name);
-      setDirty(name, value);
+      setDirty(name);
       reRenderForm({});
     },
     [],
@@ -229,7 +229,7 @@ export default function useForm<
 
   validateAndStateUpdateRef.current = validateAndStateUpdateRef.current
     ? validateAndStateUpdateRef.current
-    : async ({ target: { name, value }, type }: Ref): Promise<void> => {
+    : async ({ target: { name }, type }: Ref): Promise<void> => {
         if (Array.isArray(validationFields) && !validationFields.includes(name))
           return;
         const fields = fieldsRef.current;
@@ -242,7 +242,7 @@ export default function useForm<
         let shouldUpdateState =
           isWatchAllRef.current || watchFieldsRef.current[name];
 
-        if (setDirty(name, value)) {
+        if (setDirty(name)) {
           shouldUpdateState = true;
         }
 
@@ -416,21 +416,7 @@ export default function useForm<
       }
 
       if (!fieldDefaultValues[name]) {
-        const { selectedIndex, defaultValue } = elementRef;
-        if (!type) {
-          fieldDefaultValues[name] = '';
-        } else {
-          if (isCheckBoxInput(elementRef) || isRadioInput(elementRef)) {
-            fieldDefaultValues[name] = getFieldValue(
-              fieldsRef.current,
-              elementRef,
-            );
-          } else if (type.startsWith('select')) {
-            fieldDefaultValues[name] = selectedIndex;
-          } else {
-            fieldDefaultValues[name] = defaultValue;
-          }
-        }
+        fieldDefaultValues[name] = getFieldValue(fields, fields[name]);
       }
 
       if (!type) return;
