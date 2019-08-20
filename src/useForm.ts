@@ -120,6 +120,7 @@ export default function useForm<
 
   const setDirty = (name: Name, value: any) => {
     if (
+      fieldsRef.current[name] &&
       get(
         fieldsRef.current[name] as Record<string, any>,
         'ref.defaultValue',
