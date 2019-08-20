@@ -6,7 +6,7 @@
   "types": "dist/index.d.ts",
   "scripts": {
     "clean": "rimraf dist/*",
-    "build": "npm run clean && npm run build:modern && npm run build:ie11",
+    "build": "yarn clean && yarn build:modern && yarn build:ie11",
     "build:modern": "rollup -c",
     "build:ie11": "rollup -c rollup.ie11.config.js",
     "watch": "tsc --watch",
@@ -19,7 +19,7 @@
     "testw": "yarn test:coverage -- --watchAll",
     "cypress": "cypress run",
     "cypress:open": "cypress open",
-    "bundlesize": "npm run build:modern && bundlesize",
+    "bundlesize": "yarn build:modern && bundlesize",
     "prepublish": "yarn lint && yarn test && yarn run clean && yarn build",
     "start:app": "yarn build && yarn link && yarn --cwd node_modules/react link && yarn --cwd ./app link react react-hook-form && yarn --cwd ./app && yarn --cwd ./app run start"
   },
