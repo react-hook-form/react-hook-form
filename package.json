@@ -2,7 +2,7 @@
   "name": "react-hook-form",
   "version": "3.21.20",
   "main": "dist/react-hook-form.js",
-  "module": "dist/react-hook-form.esm.js",
+  "module": "dist/react-hook-form.es.js",
   "types": "dist/index.d.ts",
   "scripts": {
     "clean": "rimraf dist/*",
@@ -69,7 +69,7 @@
   },
   "bundlesize": [
     {
-      "path": "./dist/react-hook-form.esm.js",
+      "path": "./dist/react-hook-form.es.js",
       "maxSize": "5 kB"
     }
   ],
