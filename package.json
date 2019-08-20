@@ -2,12 +2,13 @@
   "name": "react-hook-form",
   "version": "3.21.20",
   "main": "dist/react-hook-form.js",
-  "module": "dist/react-hook-form.es.js",
+  "module": "dist/react-hook-form.esm.js",
   "types": "dist/index.d.ts",
   "scripts": {
     "clean": "rimraf dist/*",
-    "build": "rollup -c",
-    "build:min": "rollup -c rollup.min.config.js",
+    "build": "npm run build:modern && npm run build:ie11",
+    "build:modern": "rollup -c",
+    "build:ie11": "rollup -c rollup.ie11.config.js",
     "watch": "tsc --watch",
     "release": "npm version",
     "lint": "eslint ./src --ext .jsx,.ts --ignore-pattern *.test.ts",
@@ -18,7 +19,7 @@
     "testw": "yarn test:coverage -- --watchAll",
     "cypress": "cypress run",
     "cypress:open": "cypress open",
-    "bundlesize": "npm run build:min && bundlesize",
+    "bundlesize": "npm run build:modern && bundlesize",
     "prepublish": "yarn lint && yarn test && yarn run clean && yarn build",
     "start:app": "yarn build && yarn link && yarn --cwd node_modules/react link && yarn --cwd ./app link react react-hook-form && yarn --cwd ./app && yarn --cwd ./app run start"
   },
@@ -63,6 +64,7 @@
     "react-test-renderer": "^16.8.6",
     "rimraf": "^2.6.3",
     "rollup": "^1.9.3",
+    "rollup-plugin-filesize": "^6.2.0",
     "rollup-plugin-terser": "^5.1.1",
     "rollup-plugin-typescript2": "^0.20.1",
     "ts-jest": "^24.0.2",
@@ -71,7 +73,7 @@
   },
   "bundlesize": [
     {
-      "path": "./dist/react-hook-form.min.es.js",
+      "path": "./dist/react-hook-form.min.esm.js",
       "maxSize": "5 kB"
     }
   ],
