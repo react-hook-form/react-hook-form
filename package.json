@@ -8,6 +8,7 @@
     "clean": "rm -rf dist/* && rm -rf .rpt2_cache",
     "build": "yarn clean && yarn build:modern && yarn build:ie11",
     "build:modern": "rollup -c",
+    "build:min": "rollup -c rollup.min.config.js",
     "build:ie11": "rollup -c rollup.ie11.config.js",
     "watch": "tsc --watch",
     "release": "npm version",
@@ -19,7 +20,7 @@
     "testw": "yarn test:coverage -- --watchAll",
     "cypress": "cypress run",
     "cypress:open": "cypress open",
-    "bundlesize": "yarn clean && yarn build:modern && bundlesize",
+    "bundlesize": "yarn clean && yarn build:min && bundlesize",
     "prepublish": "yarn lint && yarn test && yarn run clean && yarn build",
     "start:app": "yarn build && yarn link && yarn --cwd node_modules/react link && yarn --cwd ./app link react react-hook-form && yarn --cwd ./app && yarn --cwd ./app run start"
   },
