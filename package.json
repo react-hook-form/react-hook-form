@@ -64,7 +64,6 @@
     "react-test-renderer": "^16.8.6",
     "rimraf": "^2.6.3",
     "rollup": "^1.9.3",
-    "rollup-plugin-filesize": "^6.2.0",
     "rollup-plugin-terser": "^5.1.1",
     "rollup-plugin-typescript2": "^0.20.1",
     "ts-jest": "^24.0.2",
