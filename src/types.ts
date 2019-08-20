@@ -126,7 +126,8 @@ export interface FormContextValues<
     refOrValidateRule: RegisterInput | Ref,
     validateRule?: RegisterInput,
   ) => any;
-  unregister: (name: string | string[]) => void;
+  unregister(name: Name | string): void;
+  unregister(names: (Name | string)[]): void;
   handleSubmit: (
     callback: OnSubmit<Data>,
   ) => (e: React.SyntheticEvent) => Promise<void>;
