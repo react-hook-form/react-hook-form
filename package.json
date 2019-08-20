@@ -71,7 +71,7 @@
   },
   "bundlesize": [
     {
-      "path": "./dist/react-hook-form.min.esm.js",
+      "path": "./dist/react-hook-form.esm.js",
       "maxSize": "5 kB"
     }
   ],
