@@ -121,7 +121,7 @@ export default function useForm<
 
   const setDirty = (name: Name): boolean =>
     defaultValuesRef.current[name as string] !==
-    getFieldValue(fieldsRef.current, fieldsRef.current[name]);
+    getFieldValue(fieldsRef.current, fieldsRef.current[name] || {});
 
   const setValueInternal = useCallback(
     (name: Name, value: Data[Name]): void => {
@@ -630,6 +630,7 @@ export default function useForm<
     validFieldsRef.current = new Set();
     submitCountRef.current = 0;
     isSchemaValidateTriggeredRef.current = false;
+    defaultValuesRef.current = {};
   };
 
   const unSubscribe = useCallback((): void => {
