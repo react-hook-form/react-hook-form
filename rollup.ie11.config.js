@@ -1,10 +1,11 @@
 import { getConfig } from './rollup.config';
+import packageJson from './package.json';
 
 export default getConfig({
   tsconfig: './tsconfig.ie11.json',
-  output: pkg => [
+  output: [
     {
-      file: `dist/${pkg.name}.ie11.js`,
+      file: `dist/${packageJson.name}.ie11.js`,
       exports: 'named',
       format: 'cjs',
     },
