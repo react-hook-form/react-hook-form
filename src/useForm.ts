@@ -58,6 +58,7 @@ export default function useForm<
   const isSubmittingRef = useRef(false);
   const isSubmittedRef = useRef(false);
   const isDirtyRef = useRef(false);
+  const dirtyFieldsRef = useRef(new Set<Name>());
   const isSchemaValidateTriggeredRef = useRef(false);
   const validateAndStateUpdateRef = useRef<Function>();
   const fieldsWithValidationRef = useRef(new Set());
@@ -118,16 +119,23 @@ export default function useForm<
     }
   };
 
-  const setDirty = (name: Name, value: any) => {
-    if (
+  const setDirty = (name: Name, value: any): boolean => {
+    const dirty =
       fieldsRef.current[name] &&
       get(
         fieldsRef.current[name] as Record<string, any>,
         'ref.defaultValue',
-      ) !== value
-    ) {
-      isDirtyRef.current = true;
+      ) !== value;
+    const isDirtyChanged = dirtyFieldsRef.current.has(name) !== dirty;
+
+    if (dirty) {
+      dirtyFieldsRef.current.add(name);
+    } else {
+      dirtyFieldsRef.current.delete(name);
     }
+
+    isDirtyRef.current = !!dirtyFieldsRef.current.size;
+    return isDirtyChanged;
   };
 
   const setValueInternal = useCallback(
@@ -249,8 +257,7 @@ export default function useForm<
         let shouldUpdateState =
           isWatchAllRef.current || watchFieldsRef.current[name];
 
-        if (!isDirtyRef.current) {
-          setDirty(name, value);
+        if (setDirty(name, value)) {
           shouldUpdateState = true;
         }
 
@@ -620,7 +627,8 @@ export default function useForm<
     isWatchAllRef.current = false;
     isSubmittedRef.current = false;
     isDirtyRef.current = false;
-    touchedFieldsRef.current = new Set<Name>();
+    touchedFieldsRef.current = new Set();
+    dirtyFieldsRef.current = new Set();
     fieldsWithValidationRef.current = new Set();
     validFieldsRef.current = new Set();
     submitCountRef.current = 0;
