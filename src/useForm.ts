@@ -121,6 +121,7 @@ export default function useForm<
   };
 
   const setDirty = (name: Name): boolean => {
+    if (!fieldsRef.current[name]) return false;
     const isDirty =
       defaultValuesRef.current[name as string] !==
       getFieldValue(fieldsRef.current, fieldsRef.current[name]!.ref);
