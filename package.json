@@ -37,6 +37,7 @@
   "author": "<bluebill1049@hotmail.com>",
   "license": "MIT",
   "devDependencies": {
+    "@testing-library/react": "^9.1.3",
     "@testing-library/react-hooks": "^2.0.1",
     "@types/jest": "^24.0.11",
     "@types/react": "^16.8.13",
@@ -87,8 +88,5 @@
       "prettier --config ./.prettierrc --write",
       "git add"
     ]
-  },
-  "dependencies": {
-    "@testing-library/react": "^9.1.3"
   }
 }
