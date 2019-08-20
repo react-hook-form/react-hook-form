@@ -6,7 +6,7 @@
   "types": "dist/index.d.ts",
   "scripts": {
     "clean": "rimraf dist/*",
-    "build": "npm run build:modern && npm run build:ie11",
+    "build": "npm run clean && npm run build:modern && npm run build:ie11",
     "build:modern": "rollup -c",
     "build:ie11": "rollup -c rollup.ie11.config.js",
     "watch": "tsc --watch",
