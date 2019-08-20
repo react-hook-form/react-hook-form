@@ -7,10 +7,6 @@ export default {
   external: ['react', 'react-dom'],
   output: [
     {
-      file: 'dist/react-hook-form.min.js',
-      format: 'cjs',
-    },
-    {
       file: 'dist/react-hook-form.min.es.js',
       format: 'es',
     },
