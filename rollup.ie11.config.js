@@ -1,27 +1,12 @@
-import typescript from 'rollup-plugin-typescript2';
-import { terser } from 'rollup-plugin-terser';
+import { getConfig } from './rollup.config';
 
-export default {
-  input: 'src/index.ts',
-  external: ['react', 'react-dom'],
-  plugins: [
-    typescript({
-      tsconfig: 'tsconfig.ie11.json',
-    }),
-    terser({
-      warnings: true,
-      mangle: {
-        properties: {
-          regex: /^__/,
-        },
-      },
-    }),
-  ],
-
-  output: [
+export default getConfig({
+  tsconfig: './tsconfig.ie11.json',
+  output: pkg => [
     {
-      file: 'dist/react-hook-form.ie11.js',
+      file: `dist/${pkg.name}.ie11.js`,
+      exports: 'named',
       format: 'cjs',
     },
   ],
-};
+});
