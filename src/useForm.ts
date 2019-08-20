@@ -417,15 +417,19 @@ export default function useForm<
 
       if (!fieldDefaultValues[name]) {
         const { selectedIndex, defaultValue } = elementRef;
-        if (isCheckBoxInput(elementRef) || isRadioInput(elementRef)) {
-          fieldDefaultValues[name] = getFieldValue(
-            fieldsRef.current,
-            elementRef,
-          );
-        } else if (type.startsWith('select')) {
-          fieldDefaultValues[name] = selectedIndex;
+        if (!type) {
+          fieldDefaultValues[name] = '';
         } else {
-          fieldDefaultValues[name] = defaultValue;
+          if (isCheckBoxInput(elementRef) || isRadioInput(elementRef)) {
+            fieldDefaultValues[name] = getFieldValue(
+              fieldsRef.current,
+              elementRef,
+            );
+          } else if (type.startsWith('select')) {
+            fieldDefaultValues[name] = selectedIndex;
+          } else {
+            fieldDefaultValues[name] = defaultValue;
+          }
         }
       }
 
