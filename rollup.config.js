@@ -22,7 +22,6 @@ export function getConfig({
   return {
     input: 'src/index.ts',
     external: ['react', 'react-dom'],
-    // export: 'named',
     plugins: [
       typescript({
         tsconfig,
@@ -36,7 +35,6 @@ export function getConfig({
         },
       }),
     ],
-
     output: output(packageJson),
   };
 }
