@@ -22,7 +22,7 @@ export default {
       format: 'cjs',
     },
     {
-      file: 'dist/react-hook-form.esm.js',
+      file: 'dist/react-hook-form.es.js',
       format: 'esm',
     },
   ],
