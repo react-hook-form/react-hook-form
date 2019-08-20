@@ -1,9 +1,7 @@
-import useForm from './index';
 import * as React from 'react';
-import * as ReactDOM from 'react-dom';
-import { act } from 'react-dom/test-utils';
-
-jest.mock('./utils/onDomRemove');
+import { render, fireEvent } from '@testing-library/react';
+import { renderHook, act } from '@testing-library/react-hooks';
+import useForm from './index';
 
 describe('useFormEventListeners', () => {
   beforeEach(() => {
@@ -11,50 +9,34 @@ describe('useFormEventListeners', () => {
   });
 
   it('should return error type correctly and update form state', () => {
-    let container = document.createElement('div');
-    // @ts-ignore
-    let hook;
-    document.body.appendChild(container);
-    const TestHook = () => {
-      hook = useForm({});
-      hook.watch();
-      return <input name="test" ref={hook.register({ required: true })} />;
-    };
+    const { result } = renderHook(() => useForm());
 
-    ReactDOM.render(<TestHook />, container);
+    const { container } = render(
+      <input name="test" ref={result.current.register} />,
+    );
 
     act(() => {
-      const input = document.querySelector('input');
-      // @ts-ignore
-      input.dispatchEvent(new Event('input'));
+      fireEvent.input(container.querySelector('input')!);
     });
 
-    // @ts-ignore
-    expect(hook.formState).toMatchSnapshot();
+    expect(result.current.formState).toMatchSnapshot();
   });
 
   it('should skip when field is not included in the validationFields', () => {
-    let container = document.createElement('div');
-    // @ts-ignore
-    let hook;
-    document.body.appendChild(container);
-    const TestHook = () => {
-      hook = useForm({
+    const { result } = renderHook(() =>
+      useForm({
         validationFields: ['nothing'],
-      });
-      hook.watch();
-      return <input name="test" ref={hook.register({ required: true })} />;
-    };
+      }),
+    );
 
-    ReactDOM.render(<TestHook />, container);
+    const { container } = render(
+      <input name="test" ref={result.current.register({ required: true })} />,
+    );
 
     act(() => {
-      const input = document.querySelector('input');
-      // @ts-ignore
-      input.dispatchEvent(new Event('input'));
+      fireEvent.input(container.querySelector('input')!);
     });
 
-    // @ts-ignore
-    expect(hook.formState).toMatchSnapshot();
+    expect(result.current.formState).toMatchSnapshot();
   });
 });
