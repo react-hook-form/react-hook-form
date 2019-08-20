@@ -58,6 +58,7 @@ export default function useForm<
   const isSubmittingRef = useRef(false);
   const isSubmittedRef = useRef(false);
   const isDirtyRef = useRef(false);
+  const dirtyFieldsRef = useRef(new Set<Name>());
   const isSchemaValidateTriggeredRef = useRef(false);
   const validateAndStateUpdateRef = useRef<Function>();
   const fieldsWithValidationRef = useRef(new Set());
@@ -119,9 +120,21 @@ export default function useForm<
     }
   };
 
-  const setDirty = (name: Name): boolean =>
-    defaultValuesRef.current[name as string] !==
-    getFieldValue(fieldsRef.current, fieldsRef.current[name] || {});
+  const setDirty = (name: Name): boolean => {
+    const isDirty =
+      defaultValuesRef.current[name as string] !==
+      getFieldValue(fieldsRef.current, fieldsRef.current[name]!.ref);
+    const isDirtyChanged = dirtyFieldsRef.current.has(name) !== isDirty;
+
+    if (isDirty) {
+      dirtyFieldsRef.current.add(name);
+    } else {
+      dirtyFieldsRef.current.delete(name);
+    }
+
+    isDirtyRef.current = !!dirtyFieldsRef.current.size;
+    return isDirtyChanged;
+  };
 
   const setValueInternal = useCallback(
     (name: Name, value: Data[Name]): void => {
@@ -416,7 +429,7 @@ export default function useForm<
       }
 
       if (!fieldDefaultValues[name]) {
-        fieldDefaultValues[name] = getFieldValue(fields, fields[name]);
+        fieldDefaultValues[name] = getFieldValue(fields, fields[name].ref);
       }
 
       if (!type) return;
@@ -626,6 +639,7 @@ export default function useForm<
     isSubmittedRef.current = false;
     isDirtyRef.current = false;
     touchedFieldsRef.current = new Set();
+    dirtyFieldsRef.current = new Set();
     fieldsWithValidationRef.current = new Set();
     validFieldsRef.current = new Set();
     submitCountRef.current = 0;
