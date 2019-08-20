@@ -3,8 +3,6 @@
     "sourceMap": true,
     "module": "es2015",
     "target": "es2017",
-    //    "target": "es5",
-    //    "downlevelIteration": true,
     "moduleResolution": "node",
     "outDir": "./dist",
     "jsx": "react",
