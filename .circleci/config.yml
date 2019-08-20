@@ -1,32 +1,31 @@
-version: 2
-jobs:
+version: 2.1
+
+orbs:
+  cypress: cypress-io/cypress@1
+  node: circleci/node@1.1.4
+
+workflows:
+  version: 2
   build:
-    docker:
-      - image: cypress/base:10
+    jobs:
+      - bundlesize
+      - cypress/run:
+          yarn: true
+          start: npm run start:app
+          wait-on: http://localhost:3000
 
-    working_directory: ~/repo
-
+jobs:
+  bundlesize:
+    executor:
+      name: node/default
+      tag: lts
     steps:
       - checkout
-
-      - restore_cache:
-          keys:
-            - cache-{{ checksum "package.json" }}
-
-      - run: yarn install
-
-      - run:
-          command: npm run start:app
-          background: true
-
-      - save_cache:
-          key: cache-{{ checksum "package.json" }}
-          paths:
-            - ~/.npm
-            - ~/.cache
-
-      - run: npm run bundlesize
-
-      - run: sleep 30
-
-      - run: yarn cypress
+      - node/install-yarn
+      - node/with-cache:
+          steps:
+            - run: yarn install --frozen-lockfile
+      - run: npm run lint
+      - run: npm run test
+      - run: npm run build
+      - run: npm run bundlesizeOnly

@@ -20,8 +20,9 @@
     "testw": "yarn test:coverage -- --watchAll",
     "cypress": "cypress run",
     "cypress:open": "cypress open",
-    "bundlesize": "yarn clean && yarn build:min && bundlesize",
-    "prepublish": "yarn lint && yarn test && yarn run clean && yarn build",
+    "bundlesize": "yarn clean && yarn build:modern && bundlesize",
+    "bundlesizeOnly": "bundlesize",
+    "prepublishOnly": "yarn lint && yarn test && yarn run clean && yarn build",
     "start:app": "yarn build && yarn link && yarn --cwd node_modules/react link && yarn --cwd ./app link react react-hook-form && yarn --cwd ./app && yarn --cwd ./app run start"
   },
   "keywords": [
@@ -70,7 +71,7 @@
   },
   "bundlesize": [
     {
-      "path": "./dist/react-hook-form.min.es.js",
+      "path": "./dist/react-hook-form.es.js",
       "maxSize": "5 kB"
     }
   ],
