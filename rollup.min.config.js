@@ -1,13 +1,19 @@
 import typescript from 'rollup-plugin-typescript2';
 import { terser } from 'rollup-plugin-terser';
+import packageJson from './package.json';
 
 export default {
   input: 'src/index.ts',
-  plugins: [typescript(), terser()],
+  plugins: [
+    typescript({
+      clean: true,
+    }),
+    terser(),
+  ],
   external: ['react', 'react-dom'],
   output: [
     {
-      file: 'dist/react-hook-form.min.es.js',
+      file: `dist/${packageJson.name}.min.es.js`,
       format: 'es',
     },
   ],
