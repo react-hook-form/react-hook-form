@@ -2,7 +2,7 @@
 
 <div align="center"><p align="center"><a href="https://react-hook-form.com" title="React Hook Form - Simple React forms validation"><img src="https://raw.githubusercontent.com/bluebill1049/react-hook-form/master/website/logo.png" alt="React Hook Form Logo - React hook form validation" width="330px" /></a></p></div>
 
-[![Tweet](https://img.shields.io/twitter/url/http/shields.io.svg?style=social)](https://twitter.com/intent/tweet?text=React+Hook-Form&url=https://github.com/bluebill1049/react-hook-form)&nbsp;
+[![Tweet](https://img.shields.io/twitter/url/http/shields.io.svg?style=social)](https://twitter.com/intent/tweet?text=React+hooks+for+form+validation+without+the+hassle&url=https://github.com/bluebill1049/react-hook-form)&nbsp;
 [![CircleCI](https://circleci.com/gh/react-hook-form/react-hook-form.svg?style=svg)](https://circleci.com/gh/react-hook-form/react-hook-form)
 [![Coverage Status](https://coveralls.io/repos/github/bluebill1049/react-hook-form/badge.svg?branch=master)](https://coveralls.io/github/bluebill1049/react-hook-form?branch=master)
 [![npm downloads](https://img.shields.io/npm/dm/react-hook-form.svg?style=flat-square)](https://www.npmjs.com/package/react-hook-form)
@@ -77,6 +77,7 @@ Thanks goes to these wonderful people:
     <a href="https://github.com/Nickman87"><img src="https://avatars2.githubusercontent.com/u/870416?s=460&v=4" width="50" height="50" /></a>
     <a href="https://github.com/ell10t"><img src="https://avatars2.githubusercontent.com/u/35668113?s=460&v=4" width="50" height="50" />
     <a href="https://github.com/chrisparton1991"><img src="https://avatars0.githubusercontent.com/u/13063119?s=460&v=4" width="50" height="50" />
+    <a href="https://github.com/tizz98"><img src="https://avatars1.githubusercontent.com/u/5739698?s=460&v=4" width="50" height="50" />
     <a href="https://github.com/lightsound"><img src="https://avatars2.githubusercontent.com/u/8220973?s=460&v=4" width="50" height="50" /></a>
     <a href="https://github.com/jasondibenedetto"><img src="https://avatars0.githubusercontent.com/u/1239739?s=460&v=4" width="50" height="50" /></a>
     <a href="https://github.com/kabriel"><img src="https://avatars3.githubusercontent.com/u/153115?s=180&v=4" width="50" height="50" /></a> 

@@ -1,29 +1,26 @@
 import typescript from 'rollup-plugin-typescript2';
-import { terser } from 'rollup-plugin-terser';
+import packageJson from './package.json';
 
-export default {
-  input: 'src/index.ts',
-  external: ['react', 'react-dom'],
-  plugins: [
-    typescript(),
-    terser({
-      warnings: true,
-      mangle: {
-        properties: {
-          regex: /^__/,
-        },
+export function getConfig() {
+  return {
+    input: 'src/index.ts',
+    external: ['react', 'react-dom'],
+    plugins: [
+      typescript({
+        clean: true,
+      }),
+    ],
+    output: [
+      {
+        file: `dist/${packageJson.name}.js`,
+        format: 'cjs',
       },
-    }),
-  ],
+      {
+        file: `dist/${packageJson.name}.es.js`,
+        format: 'es',
+      },
+    ],
+  };
+}
 
-  output: [
-    {
-      file: 'dist/react-hook-form.js',
-      format: 'cjs',
-    },
-    {
-      file: 'dist/react-hook-form.es.js',
-      format: 'esm',
-    },
-  ],
-};
+export default getConfig();
