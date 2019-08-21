@@ -53,17 +53,17 @@ export default function useForm<
   const submitCountRef = useRef(0);
   const touchedFieldsRef = useRef(new Set<Name>());
   const watchFieldsRef = useRef<Partial<Record<keyof Data, boolean>>>({});
+  const dirtyFieldsRef = useRef(new Set<Name>());
+  const fieldsWithValidationRef = useRef(new Set());
+  const validFieldsRef = useRef(new Set());
+  const defaultValuesRef = useRef<Record<Name, FieldValue>>({} as any);
   const isUnMount = useRef(false);
   const isWatchAllRef = useRef(false);
   const isSubmittingRef = useRef(false);
   const isSubmittedRef = useRef(false);
   const isDirtyRef = useRef(false);
-  const dirtyFieldsRef = useRef(new Set<Name>());
   const isSchemaValidateTriggeredRef = useRef(false);
   const validateAndStateUpdateRef = useRef<Function>();
-  const fieldsWithValidationRef = useRef(new Set());
-  const validFieldsRef = useRef(new Set());
-  const defaultValuesRef = useRef<Record<string, any>>({});
   const [, reRenderForm] = useState({});
   const { isOnChange, isOnBlur, isOnSubmit } = useRef(
     modeChecker(mode),
@@ -76,7 +76,7 @@ export default function useForm<
 
   const renderBaseOnError = useCallback(
     (
-      name: keyof Data,
+      name: Name,
       errorsFromRef: ErrorMessages<Data>,
       error: ErrorMessages<Data>,
       shouldRender: boolean = true,
@@ -104,7 +104,7 @@ export default function useForm<
 
   const setFieldValue = (
     name: Name,
-    value: Record<string, any> | undefined,
+    value: Record<string, FieldValue> | undefined,
   ): void => {
     const field = fieldsRef.current[name];
     if (!field) return;
@@ -123,7 +123,7 @@ export default function useForm<
   const setDirty = (name: Name): boolean => {
     if (!fieldsRef.current[name]) return false;
     const isDirty =
-      defaultValuesRef.current[name as string] !==
+      defaultValuesRef.current[name] !==
       getFieldValue(fieldsRef.current, fieldsRef.current[name]!.ref);
     const isDirtyChanged = dirtyFieldsRef.current.has(name) !== isDirty;
 
@@ -234,9 +234,13 @@ export default function useForm<
   );
 
   const setValue = useCallback(
-    (name: Name, value: Data[Name], shouldValidate: boolean = false): void => {
+    (
+      name: Name,
+      value: Data[Name],
+      shouldValidate: boolean = false,
+    ): void | Promise<boolean> => {
       setValueInternal(name, value);
-      if (shouldValidate) triggerValidation({ name });
+      if (shouldValidate) return triggerValidation({ name });
     },
     [setValueInternal, triggerValidation],
   );
@@ -308,9 +312,13 @@ export default function useForm<
     delete watchFieldsRef.current[name];
     delete errorsRef.current[name];
     delete fieldsRef.current[name];
-    touchedFieldsRef.current.delete(name);
-    fieldsWithValidationRef.current.delete(name);
-    validFieldsRef.current.delete(name);
+    delete defaultValuesRef.current[name];
+    [
+      touchedFieldsRef,
+      dirtyFieldsRef,
+      fieldsWithValidationRef,
+      validFieldsRef,
+    ].forEach(data => data.current.delete(name));
   };
 
   const removeEventListenerAndRef: Function = useCallback(
@@ -321,21 +329,18 @@ export default function useForm<
         field,
         forceDelete,
       );
-
-      if (field.ref) resetFieldRef(field.ref.name);
+      resetFieldRef(field.ref.name);
     },
     [],
   );
 
   const clearError = (name?: Name | Name[]): void => {
-    if (name === undefined) {
+    if (isUndefined(name)) {
       errorsRef.current = {};
     } else if (isString(name)) {
       delete errorsRef.current[name];
     } else if (Array.isArray(name)) {
-      name.forEach(item => {
-        delete errorsRef.current[item];
-      });
+      name.forEach(item => delete errorsRef.current[item]);
     }
     reRenderForm({});
   };
@@ -427,10 +432,9 @@ export default function useForm<
     elementRef: Element,
     data: RegisterInput = {},
   ): void {
-    if (!elementRef.name && process.env.NODE_ENV !== 'production') {
-      console.warn('⚠ Missing field name:', elementRef);
-      return;
-    }
+    if (!elementRef.name && process.env.NODE_ENV !== 'production')
+      return console.warn('⚠ Missing field name:', elementRef);
+
     const { name, type, value } = elementRef;
 
     if (!isOnSubmit && data && !isEmptyObject(data)) {
@@ -489,7 +493,11 @@ export default function useForm<
       if (defaultValue !== undefined) setFieldValue(name as Name, defaultValue);
     }
 
-    if (!fieldDefaultValues[name]) fieldDefaultValues[name] = getFieldValue(fields, fields[name].ref);
+    if (!fieldDefaultValues[name as Name])
+      fieldDefaultValues[name as Name] = getFieldValue(
+        fields,
+        fields[name].ref,
+      );
 
     if (!type) return;
 
@@ -510,17 +518,23 @@ export default function useForm<
     }
   }
 
-  function register<Element extends ElementLike = ElementLike>(validateRule: RegisterInput): (ref: Element | null) => void;
-  function register<Element extends ElementLike = ElementLike>(input: Element, validationOptions?: RegisterInput): undefined;
+  function register<Element extends ElementLike = ElementLike>(
+    validateRule: RegisterInput,
+  ): (ref: Element | null) => void;
+  function register<Element extends ElementLike = ElementLike>(
+    input: Element,
+    validationOptions?: RegisterInput,
+  ): undefined;
   function register<Element extends ElementLike = ElementLike>(
     refOrValidateRule: Element | RegisterInput,
     validationOptions?: RegisterInput,
   ): ((ref: Element | null) => void) | undefined {
     if (typeof window === 'undefined' || !refOrValidateRule) {
-      if (process.env.NODE_ENV !== 'production' && !refOrValidateRule) {
-        console.warn(
-          '⚠ Must pass at least one parameter. Check the API docs for reference.',
-        );
+      if (process.env.NODE_ENV !== 'production') {
+        if (!refOrValidateRule)
+          console.warn(
+            '⚠ Must pass at least one parameter. Check the API docs for reference.',
+          );
       }
       return;
     }
@@ -533,7 +547,8 @@ export default function useForm<
       return;
     }
 
-    return (ref: Element | null) => ref && __registerIntoFieldsRef(ref, refOrValidateRule);
+    return (ref: Element | null) =>
+      ref && __registerIntoFieldsRef(ref, refOrValidateRule);
   }
 
   function unregister(name: Name | string): void;
@@ -636,18 +651,19 @@ export default function useForm<
   };
 
   const resetRefs = () => {
-    watchFieldsRef.current = {};
     errorsRef.current = {};
-    isWatchAllRef.current = false;
-    isSubmittedRef.current = false;
-    isDirtyRef.current = false;
+    schemaErrorsRef.current = {};
+    submitCountRef.current = 0;
     touchedFieldsRef.current = new Set();
+    watchFieldsRef.current = {};
     dirtyFieldsRef.current = new Set();
     fieldsWithValidationRef.current = new Set();
     validFieldsRef.current = new Set();
-    submitCountRef.current = 0;
+    defaultValuesRef.current = {} as any;
+    isWatchAllRef.current = false;
+    isSubmittedRef.current = false;
+    isDirtyRef.current = false;
     isSchemaValidateTriggeredRef.current = false;
-    defaultValuesRef.current = {};
   };
 
   const unSubscribe = useCallback((): void => {
