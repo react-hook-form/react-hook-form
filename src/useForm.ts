@@ -33,6 +33,7 @@ import {
   SubmitPromiseResult,
   OnSubmit,
   ValidationPayload,
+  ElementLike,
 } from './types';
 
 export default function useForm<
@@ -404,8 +405,8 @@ export default function useForm<
     );
   }
 
-  function __registerIntoFieldsRef(
-    elementRef: Ref,
+  function __registerIntoFieldsRef<Element extends ElementLike>(
+    elementRef: Element,
     data: RegisterInput = {},
   ): void {
     if (!elementRef.name && process.env.NODE_ENV !== 'production') {
@@ -466,7 +467,7 @@ export default function useForm<
 
     if (defaultValues) {
       const defaultValue = defaultValues[name] || get(defaultValues, name);
-      if (defaultValue !== undefined) setFieldValue(name, defaultValue);
+      if (defaultValue !== undefined) setFieldValue(name as Name, defaultValue);
     }
 
     if (!type) return;
@@ -488,12 +489,12 @@ export default function useForm<
     }
   }
 
-  function register(validateRule: RegisterInput): (ref: Ref | null) => void;
-  function register(input: Ref, validationOptions?: RegisterInput): void;
-  function register(
-    refOrValidateRule: RegisterInput | Ref,
+  function register<Element extends ElementLike = ElementLike>(validateRule: RegisterInput): (ref: Element | null) => void;
+  function register<Element extends ElementLike = ElementLike>(input: Element, validationOptions?: RegisterInput): undefined;
+  function register<Element extends ElementLike = ElementLike>(
+    refOrValidateRule: Element | RegisterInput,
     validationOptions?: RegisterInput,
-  ): void | ((ref: Ref | null) => void) {
+  ): ((ref: Element | null) => void) | undefined {
     if (typeof window === 'undefined' || !refOrValidateRule) {
       if (process.env.NODE_ENV !== 'production' && !refOrValidateRule) {
         console.warn(
@@ -507,10 +508,11 @@ export default function useForm<
       isObject(refOrValidateRule) &&
       (validationOptions || 'name' in refOrValidateRule)
     ) {
-      return __registerIntoFieldsRef(refOrValidateRule, validationOptions);
+      __registerIntoFieldsRef(refOrValidateRule as Element, validationOptions);
+      return;
     }
 
-    return (ref: Ref) => ref && __registerIntoFieldsRef(ref, refOrValidateRule);
+    return (ref: Element | null) => ref && __registerIntoFieldsRef(ref, refOrValidateRule);
   }
 
   function unregister(name: Name | string): void;

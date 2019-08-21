@@ -117,13 +117,22 @@ export interface FormProps<
   children: JSX.Element[] | JSX.Element;
 }
 
+export type ElementLike<Element = HTMLInputElement> = {
+  name: string;
+} & Partial<Element>;
+
 export interface FormContextValues<
   Data extends DataType = DataType,
   Name extends keyof Data = keyof Data,
   Value = Data[Name]
 > {
-  register(validateRule: RegisterInput): (ref: Ref) => void;
-  register(input: Ref, validationOptions?: RegisterInput): void;
+  register<Element extends ElementLike = ElementLike>(
+    validateRule: RegisterInput,
+  ): (instance: Element | null) => void;
+  register<Element extends ElementLike = ElementLike>(
+    instance: Element,
+    validationOptions?: RegisterInput,
+  ): undefined;
   unregister(name: Name | string): void;
   unregister(names: (Name | string)[]): void;
   handleSubmit: (
