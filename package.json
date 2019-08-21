@@ -70,7 +70,7 @@
   },
   "bundlesize": [
     {
-      "path": "./dist/react-hook-form.js",
+      "path": "./dist/react-hook-form.es.js",
       "maxSize": "5 kB"
     }
   ],
