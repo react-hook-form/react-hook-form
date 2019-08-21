@@ -1,25 +1,38 @@
 import typescript from 'rollup-plugin-typescript2';
-import packageJson from './package.json';
+import { terser } from 'rollup-plugin-terser';
+import pkg from './package.json';
 
-export function getConfig() {
+export function getConfig({
+  tsconfig = './tsconfig.json',
+  output = [
+    {
+      file: `dist/${pkg.name}.js`,
+      format: 'cjs',
+    },
+    {
+      file: `dist/${pkg.name}.es.js`,
+      format: 'esm',
+    },
+  ],
+} = {}) {
   return {
     input: 'src/index.ts',
     external: ['react', 'react-dom'],
     plugins: [
       typescript({
+        tsconfig,
         clean: true,
       }),
+      terser({
+        warnings: true,
+        mangle: {
+          properties: {
+            regex: /^__/,
+          },
+        },
+      }),
     ],
-    output: [
-      {
-        file: `dist/${packageJson.name}.js`,
-        format: 'cjs',
-      },
-      {
-        file: `dist/${packageJson.name}.es.js`,
-        format: 'es',
-      },
-    ],
+    output,
   };
 }
 
