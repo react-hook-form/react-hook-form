@@ -1,23 +1,19 @@
 import typescript from 'rollup-plugin-typescript2';
 import { terser } from 'rollup-plugin-terser';
-import packageJson from './package.json';
-
-const outputConfig = pkg => [
-  {
-    file: `dist/${pkg.name}.js`,
-    exports: 'named',
-    format: 'cjs',
-  },
-  {
-    file: `dist/${pkg.name}.es.js`,
-    exports: 'named',
-    format: 'es',
-  },
-];
+import pkg from './package.json';
 
 export function getConfig({
   tsconfig = './tsconfig.json',
-  output = outputConfig,
+  output = [
+    {
+      file: `dist/${pkg.name}.js`,
+      format: 'cjs',
+    },
+    {
+      file: `dist/${pkg.name}.es.js`,
+      format: 'esm',
+    },
+  ],
 } = {}) {
   return {
     input: 'src/index.ts',
@@ -36,7 +32,7 @@ export function getConfig({
         },
       }),
     ],
-    output: output(packageJson),
+    output,
   };
 }
 
