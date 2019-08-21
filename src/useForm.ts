@@ -33,6 +33,7 @@ import {
   SubmitPromiseResult,
   OnSubmit,
   ValidationPayload,
+  ElementLike,
 } from './types';
 
 export default function useForm<
@@ -488,12 +489,12 @@ export default function useForm<
     }
   }
 
-  function register(validateRule: RegisterInput): (ref: Ref | null) => void;
-  function register(input: Ref, validationOptions?: RegisterInput): void;
-  function register(
-    refOrValidateRule: RegisterInput | Ref,
+  function register<Element = ElementLike>(validateRule: RegisterInput): (ref: Element | null) => void;
+  function register<Element = ElementLike>(input: Element, validationOptions?: RegisterInput): undefined;
+  function register<Element = ElementLike>(
+    refOrValidateRule: Element | RegisterInput,
     validationOptions?: RegisterInput,
-  ): void | ((ref: Ref | null) => void) {
+  ): ((ref: Element | null) => void) | undefined {
     if (typeof window === 'undefined' || !refOrValidateRule) {
       if (process.env.NODE_ENV !== 'production' && !refOrValidateRule) {
         console.warn(
@@ -507,10 +508,11 @@ export default function useForm<
       isObject(refOrValidateRule) &&
       (validationOptions || 'name' in refOrValidateRule)
     ) {
-      return __registerIntoFieldsRef(refOrValidateRule, validationOptions);
+      __registerIntoFieldsRef(refOrValidateRule, validationOptions);
+      return;
     }
 
-    return (ref: Ref) => ref && __registerIntoFieldsRef(ref, refOrValidateRule);
+    return (ref: Element | null) => ref && __registerIntoFieldsRef(ref, refOrValidateRule);
   }
 
   function unregister(name: Name | string): void;

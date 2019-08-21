@@ -31,6 +31,7 @@ describe('useForm', () => {
       const { result } = renderHook(() => useForm());
 
       act(() => {
+        // @ts-ignore
         expect(result.current.register(undefined)).toBeUndefined();
       });
     });
