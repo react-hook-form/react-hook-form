@@ -86,12 +86,12 @@ export default function useForm<
         validFieldsRef.current.add(name);
         if (shouldRender) reRenderForm({});
         return true;
-      } else if (error[name]) {
+      }
+      if (error[name]) {
         validFieldsRef.current.delete(name);
         if (shouldRender) reRenderForm({});
         return true;
       }
-
       if (!isOnSubmit && !validFieldsRef.current.has(name)) {
         validFieldsRef.current.add(name);
         if (shouldRender) reRenderForm({});
@@ -321,8 +321,9 @@ export default function useForm<
     ].forEach(data => data.current.delete(name));
   };
 
-  const removeEventListenerAndRef: Function = useCallback(
-    (field: Field, forceDelete?: boolean) => {
+  const removeEventListenerAndRef = useCallback(
+    (field: Field | undefined, forceDelete?: boolean) => {
+      if (!field) return;
       findRemovedFieldAndRemoveListener(
         fieldsRef.current,
         validateAndStateUpdateRef.current,
@@ -389,7 +390,8 @@ export default function useForm<
       const value = assignWatchFields(fieldValues, fieldNames, watchFields);
       if (!isUndefined(value)) {
         return value;
-      } else if (!isUndefined(defaultValue)) {
+      }
+      if (!isUndefined(defaultValue)) {
         return defaultValue;
       }
       return getDefaultValue(defaultValues, fieldNames);
@@ -432,8 +434,11 @@ export default function useForm<
     elementRef: Element,
     data: RegisterInput = {},
   ): void {
-    if (!elementRef.name && process.env.NODE_ENV !== 'production')
-      return console.warn('⚠ Missing field name:', elementRef);
+    if (!elementRef.name) {
+      if (process.env.NODE_ENV !== 'production') {
+        return console.warn('⚠ Missing field name:', elementRef);
+      }
+    }
 
     const { name, type, value } = elementRef;
 
@@ -666,16 +671,6 @@ export default function useForm<
     isSchemaValidateTriggeredRef.current = false;
   };
 
-  const unSubscribe = useCallback((): void => {
-    fieldsRef.current &&
-      Object.values(fieldsRef.current).forEach(
-        (field: Field | undefined): void =>
-          removeEventListenerAndRef(field, true),
-      );
-    fieldsRef.current = {};
-    resetRefs();
-  }, [removeEventListenerAndRef]);
-
   const reset = useCallback((values?: DataType): void => {
     const fields = fieldsRef.current;
     const fieldsKeyValue = Object.entries(fields);
@@ -691,9 +686,9 @@ export default function useForm<
     resetRefs();
 
     if (values) {
-      fieldsKeyValue.forEach(([key]) => {
-        setFieldValue(key as Name, get(values, key, ''));
-      });
+      fieldsKeyValue.forEach(([key]) =>
+        setFieldValue(key as Name, get(values, key, '')),
+      );
     }
     reRenderForm({});
   }, []);
@@ -707,9 +702,13 @@ export default function useForm<
   useEffect(
     () => () => {
       isUnMount.current = true;
-      unSubscribe();
+      fieldsRef.current &&
+        Object.values(fieldsRef.current).forEach(
+          (field: Field | undefined): void =>
+            removeEventListenerAndRef(field, true),
+        );
     },
-    [unSubscribe],
+    [],
   );
 
   return {
