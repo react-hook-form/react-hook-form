@@ -510,7 +510,7 @@ export default function useForm<
       return __registerIntoFieldsRef(refOrValidateRule, validationOptions);
     }
 
-    return (ref: Ref) => __registerIntoFieldsRef(ref, refOrValidateRule);
+    return (ref: Ref) => ref && __registerIntoFieldsRef(ref, refOrValidateRule);
   }
 
   function unregister(name: Name | string): void;
