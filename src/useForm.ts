@@ -405,8 +405,8 @@ export default function useForm<
     );
   }
 
-  function __registerIntoFieldsRef(
-    elementRef: Ref,
+  function __registerIntoFieldsRef<Element extends ElementLike>(
+    elementRef: Element,
     data: RegisterInput = {},
   ): void {
     if (!elementRef.name && process.env.NODE_ENV !== 'production') {
@@ -467,7 +467,7 @@ export default function useForm<
 
     if (defaultValues) {
       const defaultValue = defaultValues[name] || get(defaultValues, name);
-      if (defaultValue !== undefined) setFieldValue(name, defaultValue);
+      if (defaultValue !== undefined) setFieldValue(name as Name, defaultValue);
     }
 
     if (!type) return;
@@ -489,9 +489,9 @@ export default function useForm<
     }
   }
 
-  function register<Element = ElementLike>(validateRule: RegisterInput): (ref: Element | null) => void;
-  function register<Element = ElementLike>(input: Element, validationOptions?: RegisterInput): undefined;
-  function register<Element = ElementLike>(
+  function register<Element extends ElementLike = ElementLike>(validateRule: RegisterInput): (ref: Element | null) => void;
+  function register<Element extends ElementLike = ElementLike>(input: Element, validationOptions?: RegisterInput): undefined;
+  function register<Element extends ElementLike = ElementLike>(
     refOrValidateRule: Element | RegisterInput,
     validationOptions?: RegisterInput,
   ): ((ref: Element | null) => void) | undefined {
@@ -508,7 +508,7 @@ export default function useForm<
       isObject(refOrValidateRule) &&
       (validationOptions || 'name' in refOrValidateRule)
     ) {
-      __registerIntoFieldsRef(refOrValidateRule, validationOptions);
+      __registerIntoFieldsRef(refOrValidateRule as Element, validationOptions);
       return;
     }
 

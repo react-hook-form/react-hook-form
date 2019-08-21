@@ -1,1 +1,1 @@
-export default (type: string): boolean => type === 'radio';
+export default (type?: string): boolean => type === 'radio';

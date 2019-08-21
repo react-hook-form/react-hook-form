@@ -126,10 +126,10 @@ export interface FormContextValues<
   Name extends keyof Data = keyof Data,
   Value = Data[Name]
 > {
-  register<Element = ElementLike>(
+  register<Element extends ElementLike = ElementLike>(
     validateRule: RegisterInput,
   ): (instance: Element | null) => void;
-  register<Element = ElementLike>(
+  register<Element extends ElementLike = ElementLike>(
     instance: Element,
     validationOptions?: RegisterInput,
   ): undefined;
