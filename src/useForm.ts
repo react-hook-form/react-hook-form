@@ -345,7 +345,7 @@ export default function useForm<
     }
   };
 
-  function watch(): Data
+  function watch(): Data;
   function watch(
     field: Name | string,
     defaultValue?: string,
@@ -408,10 +408,8 @@ export default function useForm<
     elementRef: Ref,
     data: RegisterInput = {},
   ): void {
-    if (!elementRef.name) {
-      if (process.env.NODE_ENV !== 'production') {
-        console.warn('⚠ Missing field name:', elementRef);
-      }
+    if (!elementRef.name && process.env.NODE_ENV !== 'production') {
+      console.warn('⚠ Missing field name:', elementRef);
       return;
     }
     const { name, type, value } = elementRef;
@@ -497,12 +495,10 @@ export default function useForm<
     validationOptions?: RegisterInput,
   ): void | ((ref: Ref | null) => void) {
     if (typeof window === 'undefined' || !refOrValidateRule) {
-      if (process.env.NODE_ENV !== 'production') {
-        if (!refOrValidateRule) {
-          console.warn(
-            '⚠ Must pass at least one parameter. Check the API docs for reference.',
-          );
-        }
+      if (process.env.NODE_ENV !== 'production' && !refOrValidateRule) {
+        console.warn(
+          '⚠ Must pass at least one parameter. Check the API docs for reference.',
+        );
       }
       return;
     }
@@ -514,12 +510,7 @@ export default function useForm<
       return __registerIntoFieldsRef(refOrValidateRule, validationOptions);
     }
 
-    return (ref: Ref | null) => {
-      if (ref === null) {
-        return;
-      }
-      return __registerIntoFieldsRef(ref, refOrValidateRule);
-    };
+    return (ref: Ref) => __registerIntoFieldsRef(ref, refOrValidateRule);
   }
 
   function unregister(name: Name | string): void;
