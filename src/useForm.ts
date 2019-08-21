@@ -53,6 +53,10 @@ export default function useForm<
   const submitCountRef = useRef(0);
   const touchedFieldsRef = useRef(new Set<Name>());
   const watchFieldsRef = useRef<Partial<Record<keyof Data, boolean>>>({});
+  const dirtyFieldsRef = useRef(new Set<Name>());
+  const fieldsWithValidationRef = useRef(new Set());
+  const validFieldsRef = useRef(new Set());
+  const defaultValuesRef = useRef<Record<Name, FieldValue>>({} as any);
   const isUnMount = useRef(false);
   const isWatchAllRef = useRef(false);
   const isSubmittingRef = useRef(false);
@@ -60,8 +64,6 @@ export default function useForm<
   const isDirtyRef = useRef(false);
   const isSchemaValidateTriggeredRef = useRef(false);
   const validateAndStateUpdateRef = useRef<Function>();
-  const fieldsWithValidationRef = useRef(new Set());
-  const validFieldsRef = useRef(new Set());
   const [, reRenderForm] = useState({});
   const { isOnChange, isOnBlur, isOnSubmit } = useRef(
     modeChecker(mode),
@@ -74,7 +76,7 @@ export default function useForm<
 
   const renderBaseOnError = useCallback(
     (
-      name: keyof Data,
+      name: Name,
       errorsFromRef: ErrorMessages<Data>,
       error: ErrorMessages<Data>,
       shouldRender: boolean = true,
@@ -84,12 +86,12 @@ export default function useForm<
         validFieldsRef.current.add(name);
         if (shouldRender) reRenderForm({});
         return true;
-      } else if (error[name]) {
+      }
+      if (error[name]) {
         validFieldsRef.current.delete(name);
         if (shouldRender) reRenderForm({});
         return true;
       }
-
       if (!isOnSubmit && !validFieldsRef.current.has(name)) {
         validFieldsRef.current.add(name);
         if (shouldRender) reRenderForm({});
@@ -102,7 +104,7 @@ export default function useForm<
 
   const setFieldValue = (
     name: Name,
-    value: Record<string, any> | undefined,
+    value: Record<string, FieldValue> | undefined,
   ): void => {
     const field = fieldsRef.current[name];
     if (!field) return;
@@ -118,11 +120,28 @@ export default function useForm<
     }
   };
 
+  const setDirty = (name: Name): boolean => {
+    if (!fieldsRef.current[name]) return false;
+    const isDirty =
+      defaultValuesRef.current[name] !==
+      getFieldValue(fieldsRef.current, fieldsRef.current[name]!.ref);
+    const isDirtyChanged = dirtyFieldsRef.current.has(name) !== isDirty;
+
+    if (isDirty) {
+      dirtyFieldsRef.current.add(name);
+    } else {
+      dirtyFieldsRef.current.delete(name);
+    }
+
+    isDirtyRef.current = !!dirtyFieldsRef.current.size;
+    return isDirtyChanged;
+  };
+
   const setValueInternal = useCallback(
     (name: Name, value: Data[Name]): void => {
       setFieldValue(name, value);
       touchedFieldsRef.current.add(name);
-      isDirtyRef.current = true;
+      setDirty(name);
       reRenderForm({});
     },
     [],
@@ -215,9 +234,13 @@ export default function useForm<
   );
 
   const setValue = useCallback(
-    (name: Name, value: Data[Name], shouldValidate: boolean = false): void => {
+    (
+      name: Name,
+      value: Data[Name],
+      shouldValidate: boolean = false,
+    ): void | Promise<boolean> => {
       setValueInternal(name, value);
-      if (shouldValidate) triggerValidation({ name });
+      if (shouldValidate) return triggerValidation({ name });
     },
     [setValueInternal, triggerValidation],
   );
@@ -237,8 +260,7 @@ export default function useForm<
         let shouldUpdateState =
           isWatchAllRef.current || watchFieldsRef.current[name];
 
-        if (!isDirtyRef.current) {
-          isDirtyRef.current = true;
+        if (setDirty(name)) {
           shouldUpdateState = true;
         }
 
@@ -290,34 +312,36 @@ export default function useForm<
     delete watchFieldsRef.current[name];
     delete errorsRef.current[name];
     delete fieldsRef.current[name];
-    touchedFieldsRef.current.delete(name);
-    fieldsWithValidationRef.current.delete(name);
-    validFieldsRef.current.delete(name);
+    delete defaultValuesRef.current[name];
+    [
+      touchedFieldsRef,
+      dirtyFieldsRef,
+      fieldsWithValidationRef,
+      validFieldsRef,
+    ].forEach(data => data.current.delete(name));
   };
 
-  const removeEventListenerAndRef: Function = useCallback(
-    (field: Field, forceDelete?: boolean) => {
+  const removeEventListenerAndRef = useCallback(
+    (field: Field | undefined, forceDelete?: boolean) => {
+      if (!field) return;
       findRemovedFieldAndRemoveListener(
         fieldsRef.current,
         validateAndStateUpdateRef.current,
         field,
         forceDelete,
       );
-
-      if (field.ref) resetFieldRef(field.ref.name);
+      resetFieldRef(field.ref.name);
     },
     [],
   );
 
   const clearError = (name?: Name | Name[]): void => {
-    if (name === undefined) {
+    if (isUndefined(name)) {
       errorsRef.current = {};
     } else if (isString(name)) {
       delete errorsRef.current[name];
     } else if (Array.isArray(name)) {
-      name.forEach(item => {
-        delete errorsRef.current[item];
-      });
+      name.forEach(item => delete errorsRef.current[item]);
     }
     reRenderForm({});
   };
@@ -366,7 +390,8 @@ export default function useForm<
       const value = assignWatchFields(fieldValues, fieldNames, watchFields);
       if (!isUndefined(value)) {
         return value;
-      } else if (!isUndefined(defaultValue)) {
+      }
+      if (!isUndefined(defaultValue)) {
         return defaultValue;
       }
       return getDefaultValue(defaultValues, fieldNames);
@@ -409,10 +434,8 @@ export default function useForm<
     elementRef: Element,
     data: RegisterInput = {},
   ): void {
-    if (!elementRef.name && process.env.NODE_ENV !== 'production') {
-      console.warn('⚠ Missing field name:', elementRef);
-      return;
-    }
+    if (!elementRef.name) return console.warn('Miss name', elementRef);
+
     const { name, type, value } = elementRef;
 
     if (!isOnSubmit && data && !isEmptyObject(data)) {
@@ -425,6 +448,7 @@ export default function useForm<
       ref: elementRef,
     };
     const fields: any = fieldsRef.current;
+    const fieldDefaultValues = defaultValuesRef.current;
     const isRadio = isRadioInput(type);
     const field = fields[name];
     const existRadioOptionIndex =
@@ -470,6 +494,12 @@ export default function useForm<
       if (defaultValue !== undefined) setFieldValue(name as Name, defaultValue);
     }
 
+    if (!fieldDefaultValues[name as Name])
+      fieldDefaultValues[name as Name] = getFieldValue(
+        fields,
+        fields[name].ref,
+      );
+
     if (!type) return;
 
     const fieldData = isRadio
@@ -489,20 +519,18 @@ export default function useForm<
     }
   }
 
-  function register<Element extends ElementLike = ElementLike>(validateRule: RegisterInput): (ref: Element | null) => void;
-  function register<Element extends ElementLike = ElementLike>(input: Element, validationOptions?: RegisterInput): undefined;
+  function register<Element extends ElementLike = ElementLike>(
+    validateRule: RegisterInput,
+  ): (ref: Element | null) => void;
+  function register<Element extends ElementLike = ElementLike>(
+    input: Element,
+    validationOptions?: RegisterInput,
+  ): undefined;
   function register<Element extends ElementLike = ElementLike>(
     refOrValidateRule: Element | RegisterInput,
     validationOptions?: RegisterInput,
   ): ((ref: Element | null) => void) | undefined {
-    if (typeof window === 'undefined' || !refOrValidateRule) {
-      if (process.env.NODE_ENV !== 'production' && !refOrValidateRule) {
-        console.warn(
-          '⚠ Must pass at least one parameter. Check the API docs for reference.',
-        );
-      }
-      return;
-    }
+    if (typeof window === 'undefined' || !refOrValidateRule) return;
 
     if (
       isObject(refOrValidateRule) &&
@@ -512,7 +540,8 @@ export default function useForm<
       return;
     }
 
-    return (ref: Element | null) => ref && __registerIntoFieldsRef(ref, refOrValidateRule);
+    return (ref: Element | null) =>
+      ref && __registerIntoFieldsRef(ref, refOrValidateRule);
   }
 
   function unregister(name: Name | string): void;
@@ -615,27 +644,20 @@ export default function useForm<
   };
 
   const resetRefs = () => {
-    watchFieldsRef.current = {};
     errorsRef.current = {};
+    schemaErrorsRef.current = {};
+    submitCountRef.current = 0;
+    touchedFieldsRef.current = new Set();
+    watchFieldsRef.current = {};
+    dirtyFieldsRef.current = new Set();
+    fieldsWithValidationRef.current = new Set();
+    validFieldsRef.current = new Set();
+    defaultValuesRef.current = {} as any;
     isWatchAllRef.current = false;
     isSubmittedRef.current = false;
     isDirtyRef.current = false;
-    touchedFieldsRef.current = new Set<Name>();
-    fieldsWithValidationRef.current = new Set();
-    validFieldsRef.current = new Set();
-    submitCountRef.current = 0;
     isSchemaValidateTriggeredRef.current = false;
   };
-
-  const unSubscribe = useCallback((): void => {
-    fieldsRef.current &&
-      Object.values(fieldsRef.current).forEach(
-        (field: Field | undefined): void =>
-          removeEventListenerAndRef(field, true),
-      );
-    fieldsRef.current = {};
-    resetRefs();
-  }, [removeEventListenerAndRef]);
 
   const reset = useCallback((values?: DataType): void => {
     const fields = fieldsRef.current;
@@ -652,9 +674,9 @@ export default function useForm<
     resetRefs();
 
     if (values) {
-      fieldsKeyValue.forEach(([key]) => {
-        setFieldValue(key as Name, get(values, key, ''));
-      });
+      fieldsKeyValue.forEach(([key]) =>
+        setFieldValue(key as Name, get(values, key, '')),
+      );
     }
     reRenderForm({});
   }, []);
@@ -668,13 +690,17 @@ export default function useForm<
   useEffect(
     () => () => {
       isUnMount.current = true;
-      unSubscribe();
+      fieldsRef.current &&
+        Object.values(fieldsRef.current).forEach(
+          (field: Field | undefined): void =>
+            removeEventListenerAndRef(field, true),
+        );
     },
-    [unSubscribe],
+    [],
   );
 
   return {
-    register: useCallback(register, [register]),
+    register: useCallback(register, [__registerIntoFieldsRef]),
     unregister: useCallback(unregister, [
       unregister,
       removeEventListenerAndRef,

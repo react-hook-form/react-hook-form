@@ -20,6 +20,22 @@ const FormState: React.FC = (props: any) => {
         placeholder="lastName"
       />
       <div id="state">{JSON.stringify(formState)}</div>
+
+      <select name="select" ref={register} defaultValue="test">
+        <option value="test">test</option>
+        <option value="test1">test1</option>
+        <option value="test2">test3</option>
+      </select>
+
+      <input type="radio" name="radio" ref={register} />
+
+      <input type="checkbox" name="checkbox" ref={register} />
+      <input
+        type="checkbox"
+        name="checkbox-checked"
+        defaultChecked
+        ref={register}
+      />
       <button>Submit</button>
     </form>
   );
