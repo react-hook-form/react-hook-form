@@ -28,4 +28,4 @@ jobs:
       - run: npm run lint
       - run: npm run test
       - run: npm run build
-      - run: npm run bundlesizeOnly
+      - run: npm run bundlesize
