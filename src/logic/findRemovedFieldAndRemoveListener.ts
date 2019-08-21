@@ -8,9 +8,11 @@ export default function findRemovedFieldAndRemoveListener<
 >(
   fields: FieldsObject<Data>,
   validateWithStateUpdate: Function | undefined = () => {},
-  { ref, mutationWatcher, options }: Field,
+  field: Field,
   forceDelete: boolean = false,
 ): void {
+  if (!field) return;
+  const { ref, mutationWatcher, options } = field;
   if (!ref || !ref.type) return;
   const { name, type } = ref;
 
