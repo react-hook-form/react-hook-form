@@ -489,9 +489,7 @@ export default function useForm<
       if (defaultValue !== undefined) setFieldValue(name as Name, defaultValue);
     }
 
-    if (!fieldDefaultValues[name]) {
-      fieldDefaultValues[name] = getFieldValue(fields, fields[name].ref);
-    }
+    if (!fieldDefaultValues[name]) fieldDefaultValues[name] = getFieldValue(fields, fields[name].ref);
 
     if (!type) return;
 
