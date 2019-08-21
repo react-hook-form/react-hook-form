@@ -434,11 +434,7 @@ export default function useForm<
     elementRef: Element,
     data: RegisterInput = {},
   ): void {
-    if (!elementRef.name) {
-      if (process.env.NODE_ENV !== 'production') {
-        return console.warn('⚠ Missing field name:', elementRef);
-      }
-    }
+    if (!elementRef.name) return console.warn('Miss name', elementRef);
 
     const { name, type, value } = elementRef;
 
@@ -534,15 +530,7 @@ export default function useForm<
     refOrValidateRule: Element | RegisterInput,
     validationOptions?: RegisterInput,
   ): ((ref: Element | null) => void) | undefined {
-    if (typeof window === 'undefined' || !refOrValidateRule) {
-      if (process.env.NODE_ENV !== 'production') {
-        if (!refOrValidateRule)
-          console.warn(
-            '⚠ Must pass at least one parameter. Check the API docs for reference.',
-          );
-      }
-      return;
-    }
+    if (typeof window === 'undefined') return;
 
     if (
       isObject(refOrValidateRule) &&
