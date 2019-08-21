@@ -8,14 +8,14 @@ workflows:
   version: 2
   build:
     jobs:
-      - bundlesize
+      - build
       - cypress/run:
           yarn: true
           start: npm run start:app
           wait-on: http://localhost:3000
 
 jobs:
-  bundlesize:
+  build:
     executor:
       name: node/default
       tag: lts
