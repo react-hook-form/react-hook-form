@@ -490,17 +490,15 @@ export default function useForm<
     }
   }
 
-  function register(validateRule: RegisterInput): (ref: Ref) => void;
+  function register(validateRule: RegisterInput): (ref: Ref | null) => void;
   function register(input: Ref, validationOptions?: RegisterInput): void;
   function register(
     refOrValidateRule: RegisterInput | Ref,
     validationOptions?: RegisterInput,
-  ): void | ((ref: Ref) => void) {
+  ): void | ((ref: Ref | null) => void) {
     if (typeof window === 'undefined' || !refOrValidateRule) {
       if (process.env.NODE_ENV !== 'production') {
-        if (typeof window === 'undefined') {
-          console.warn('⚠ Currently, only browser usage is supported.');
-        } else {
+        if (!refOrValidateRule) {
           console.warn(
             '⚠ Must pass at least one parameter. Check the API docs for reference.',
           );
@@ -516,8 +514,8 @@ export default function useForm<
       return __registerIntoFieldsRef(refOrValidateRule, validationOptions);
     }
 
-    return (ref?: Ref | null) => {
-      if (!ref) {
+    return (ref: Ref | null) => {
+      if (ref === null) {
         return;
       }
       return __registerIntoFieldsRef(ref, refOrValidateRule);
