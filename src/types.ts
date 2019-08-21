@@ -122,10 +122,8 @@ export interface FormContextValues<
   Name extends keyof Data = keyof Data,
   Value = Data[Name]
 > {
-  register: (
-    refOrValidateRule: RegisterInput | Ref,
-    validateRule?: RegisterInput,
-  ) => any;
+  register(validateRule: RegisterInput): (ref: Ref) => void;
+  register(input: Ref, validationOptions?: RegisterInput): void;
   unregister(name: Name | string): void;
   unregister(names: (Name | string)[]): void;
   handleSubmit: (
