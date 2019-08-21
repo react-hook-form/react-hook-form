@@ -345,9 +345,18 @@ export default function useForm<
     }
   };
 
+  function watch(): Data
   function watch(
-    fieldNames?: Name | string | (Name | string)[] | undefined,
-    defaultValue?: string | Partial<Data> | undefined,
+    field: Name | string,
+    defaultValue?: string,
+  ): FieldValue | void;
+  function watch(
+    fields: (Name | string)[],
+    defaultValues?: Partial<Data>,
+  ): Partial<Data>;
+  function watch(
+    fieldNames?: Name | string | (Name | string)[],
+    defaultValue?: string | Partial<Data>,
   ): FieldValue | Partial<Data> | void {
     const fieldValues = getFieldsValues(fieldsRef.current);
     const watchFields: any = watchFieldsRef.current;
@@ -515,15 +524,14 @@ export default function useForm<
     };
   }
 
-  const unregister = useCallback(
-    (name: Name | string | (Name | string)[]): void => {
-      if (isEmptyObject(fieldsRef.current)) return;
-      (Array.isArray(name) ? name : [name]).forEach(fieldName =>
-        removeEventListenerAndRef(fieldsRef.current[fieldName], true),
-      );
-    },
-    [removeEventListenerAndRef],
-  );
+  function unregister(name: Name | string): void;
+  function unregister(names: (Name | string)[]): void;
+  function unregister(names: Name | string | (Name | string)[]): void {
+    if (isEmptyObject(fieldsRef.current)) return;
+    (Array.isArray(names) ? names : [names]).forEach(fieldName =>
+      removeEventListenerAndRef(fieldsRef.current[fieldName], true),
+    );
+  }
 
   const handleSubmit = (callback: OnSubmit<Data>) => async (
     e: React.SyntheticEvent,
@@ -676,7 +684,10 @@ export default function useForm<
 
   return {
     register: useCallback(register, [register]),
-    unregister,
+    unregister: useCallback(unregister, [
+      unregister,
+      removeEventListenerAndRef,
+    ]),
     handleSubmit,
     watch,
     reset,
