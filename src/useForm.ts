@@ -530,7 +530,7 @@ export default function useForm<
     refOrValidateRule: Element | RegisterInput,
     validationOptions?: RegisterInput,
   ): ((ref: Element | null) => void) | undefined {
-    if (typeof window === 'undefined') return;
+    if (typeof window === 'undefined' || !refOrValidateRule) return;
 
     if (
       isObject(refOrValidateRule) &&
@@ -700,7 +700,7 @@ export default function useForm<
   );
 
   return {
-    register: useCallback(register, [register]),
+    register: useCallback(register, [__registerIntoFieldsRef]),
     unregister: useCallback(unregister, [
       unregister,
       removeEventListenerAndRef,
