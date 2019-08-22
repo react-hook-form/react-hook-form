@@ -34,7 +34,6 @@ import {
   ValidationPayload,
   ElementLike,
 } from './types';
-import getValueWithDefault from './logic/getValueWithDefaults';
 
 export default function useForm<
   Data extends DataType,
@@ -406,7 +405,7 @@ export default function useForm<
                 !isUndefined(defaultValue) && !isString(defaultValue)
                   ? defaultValue[name]
                   : defaultValues
-                  ? getValueWithDefault(defaultValues, name)
+                  ? getDefaultValue(defaultValues, name)
                   : undefined,
             }),
             {},
@@ -490,7 +489,7 @@ export default function useForm<
     }
 
     if (defaultValues) {
-      const defaultValue = getValueWithDefault(defaultValues, name);
+      const defaultValue = getDefaultValue(defaultValues, name);
       if (defaultValue !== undefined) setFieldValue(name as Name, defaultValue);
     }
 
@@ -675,7 +674,7 @@ export default function useForm<
 
     if (values) {
       fieldsKeyValue.forEach(([key]) =>
-        setFieldValue(key as Name, getValueWithDefault(values, key)),
+        setFieldValue(key as Name, getDefaultValue(values, key)),
       );
     }
     reRenderForm({});
