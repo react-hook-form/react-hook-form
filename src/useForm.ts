@@ -11,7 +11,6 @@ import attachNativeValidation from './logic/attachNativeValidation';
 import getDefaultValue from './logic/getDefaultValue';
 import assignWatchFields from './logic/assignWatchFields';
 import omitValidFields from './logic/omitValidFields';
-import get from './utils/get';
 import isCheckBoxInput from './utils/isCheckBoxInput';
 import isEmptyObject from './utils/isEmptyObject';
 import isRadioInput from './utils/isRadioInput';
@@ -35,6 +34,7 @@ import {
   ValidationPayload,
   ElementLike,
 } from './types';
+import getValueWithDefault from './logic/getValueWithDefaults';
 
 export default function useForm<
   Data extends DataType,
@@ -406,7 +406,7 @@ export default function useForm<
                 !isUndefined(defaultValue) && !isString(defaultValue)
                   ? defaultValue[name]
                   : defaultValues
-                  ? defaultValues[name] || get(defaultValues, name as string)
+                  ? getValueWithDefault(defaultValues, name)
                   : undefined,
             }),
             {},
@@ -490,7 +490,7 @@ export default function useForm<
     }
 
     if (defaultValues) {
-      const defaultValue = defaultValues[name] || get(defaultValues, name);
+      const defaultValue = getValueWithDefault(defaultValues, name);
       if (defaultValue !== undefined) setFieldValue(name as Name, defaultValue);
     }
 
@@ -675,7 +675,7 @@ export default function useForm<
 
     if (values) {
       fieldsKeyValue.forEach(([key]) =>
-        setFieldValue(key as Name, get(values, key, '')),
+        setFieldValue(key as Name, getValueWithDefault(values, key)),
       );
     }
     reRenderForm({});
@@ -696,7 +696,7 @@ export default function useForm<
             removeEventListenerAndRef(field, true),
         );
     },
-    [],
+    [removeEventListenerAndRef],
   );
 
   return {
