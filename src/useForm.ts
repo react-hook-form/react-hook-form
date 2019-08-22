@@ -488,7 +488,7 @@ export default function useForm<
       }
     }
 
-    if (defaultValues) {
+    if (!isEmptyObject(defaultValues)) {
       const defaultValue = getDefaultValue(defaultValues, name);
       if (defaultValue !== undefined) setFieldValue(name as Name, defaultValue);
     }
