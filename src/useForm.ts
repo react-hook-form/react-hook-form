@@ -674,7 +674,7 @@ export default function useForm<
 
     if (values) {
       fieldsKeyValue.forEach(([key]) =>
-        setFieldValue(key as Name, getDefaultValue(values, key)),
+        setFieldValue(key as Name, getDefaultValue(values, key, '')),
       );
     }
     reRenderForm({});
