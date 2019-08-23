@@ -446,7 +446,7 @@ export default function useForm<
           )
         : -1;
 
-    if (isRadio ? existRadioOptionIndex > -1 : field) return;
+    if ((!isRadio && field) || (isRadio && existRadioOptionIndex > -1)) return;
 
     if (!type) {
       fields[name] = { ref: { name }, ...data };
@@ -492,7 +492,7 @@ export default function useForm<
 
     const fieldData = isRadio
       ? (fields[name]!.options || [])[(fields[name]!.options || []).length - 1]
-      : field;
+      : fields[name];
 
     if (!fieldData) return;
 
