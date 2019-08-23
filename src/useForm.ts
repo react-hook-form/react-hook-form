@@ -446,7 +446,7 @@ export default function useForm<
           )
         : -1;
 
-    if ((!isRadio && field) || (isRadio && existRadioOptionIndex > -1)) return;
+    if (isRadio ? existRadioOptionIndex > -1 : field) return;
 
     if (!type) {
       fields[name] = { ref: { name }, ...data };
@@ -461,7 +461,7 @@ export default function useForm<
           };
         if (validate) fields[name]!.validate = validate;
 
-        (fields[name]!.options || []).push({
+        (fields[name].options || []).push({
           ...inputData,
           mutationWatcher: onDomRemove(elementRef, () =>
             removeEventListenerAndRef(inputData),
@@ -479,7 +479,7 @@ export default function useForm<
 
     if (!isEmptyObject(defaultValues)) {
       const defaultValue = getDefaultValue(defaultValues, name);
-      if (defaultValue !== undefined) setFieldValue(name as Name, defaultValue);
+      if (!isUndefined(defaultValue)) setFieldValue(name as Name, defaultValue);
     }
 
     if (!fieldDefaultValues[name as Name])
@@ -492,7 +492,7 @@ export default function useForm<
 
     const fieldData = isRadio
       ? (fields[name]!.options || [])[(fields[name]!.options || []).length - 1]
-      : fields[name];
+      : field;
 
     if (!fieldData) return;
 
@@ -607,7 +607,7 @@ export default function useForm<
           return Promise.resolve(resolvedPrevious);
         },
         Promise.resolve<SubmitPromiseResult<Data>>({
-          errors: {} as ErrorMessages<Data>,
+          errors: {},
           values: {} as Data,
         }),
       );
