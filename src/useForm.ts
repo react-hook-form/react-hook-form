@@ -337,6 +337,7 @@ export default function useForm<
     [],
   );
 
+  function clearError(): void;
   function clearError(name: Name): void;
   function clearError(names: Name[]): void;
   function clearError(name?: Name | Name[]): void {
