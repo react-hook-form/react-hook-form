@@ -9,7 +9,7 @@ describe('shouldUpdateWithError', () => {
         error: { test: 'test' },
         isOnBlur: false,
         isValidateDisabled: true,
-        isBlurType: false,
+        isBlurEvent: false,
       }),
     ).toBeFalsy();
   });
@@ -22,7 +22,7 @@ describe('shouldUpdateWithError', () => {
         error: { test: 'test' },
         isOnBlur: true,
         isValidateDisabled: false,
-        isBlurType: false,
+        isBlurEvent: false,
       }),
     ).toBeFalsy();
   });
@@ -35,7 +35,7 @@ describe('shouldUpdateWithError', () => {
         error: {},
         isOnBlur: false,
         isValidateDisabled: false,
-        isBlurType: false,
+        isBlurEvent: false,
       }),
     ).toBeFalsy();
   });
@@ -48,7 +48,7 @@ describe('shouldUpdateWithError', () => {
         error: { test: 'test' },
         isOnBlur: false,
         isValidateDisabled: false,
-        isBlurType: false,
+        isBlurEvent: false,
       }),
     ).toBeTruthy();
   });
@@ -61,7 +61,7 @@ describe('shouldUpdateWithError', () => {
         error: {},
         isOnBlur: false,
         isValidateDisabled: false,
-        isBlurType: false,
+        isBlurEvent: false,
       }),
     ).toBeTruthy();
   });
@@ -74,7 +74,7 @@ describe('shouldUpdateWithError', () => {
         error: { data: 'bill' },
         isOnBlur: false,
         isValidateDisabled: false,
-        isBlurType: false,
+        isBlurEvent: false,
       }),
     ).toBeTruthy();
   });
@@ -87,7 +87,7 @@ describe('shouldUpdateWithError', () => {
         error: { test: { type: 'bill' } },
         isOnBlur: false,
         isValidateDisabled: false,
-        isBlurType: false,
+        isBlurEvent: false,
       }),
     ).toBeTruthy();
   });
@@ -100,7 +100,7 @@ describe('shouldUpdateWithError', () => {
         error: { test: { type: 'input', message: 'test' } },
         isOnBlur: false,
         isValidateDisabled: false,
-        isBlurType: false,
+        isBlurEvent: false,
       }),
     ).toBeFalsy();
   });
