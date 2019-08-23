@@ -7,18 +7,16 @@ export type Validate = (data: FieldValue) => string | boolean;
 
 export type NumberOrString = number | string;
 
-export type FormValues = Record<string, unknown>;
-
 export type DataType = Record<string, FieldValue>;
 
-export type OnSubmit<Data extends FormValues> = (
+export type OnSubmit<Data extends DataType> = (
   data: Data,
   e: React.SyntheticEvent,
 ) => void | Promise<void>;
 
 export type Mode = keyof typeof VALIDATION_MODE;
 
-export interface Props<Data extends FormValues> {
+export interface Props<Data extends DataType> {
   mode?: Mode;
   defaultValues?: Partial<Data>;
   nativeValidation?: boolean;
@@ -58,7 +56,7 @@ export interface Field extends RegisterInput {
   }[];
 }
 
-export type FieldsObject<Data extends FormValues> = {
+export type FieldsObject<Data extends DataType> = {
   [Key in keyof Data]?: Field;
 };
 
@@ -69,13 +67,13 @@ export interface ReactHookFormError {
   isManual?: boolean;
 }
 
-export type ObjectErrorMessages<Data extends FormValues> = {
+export type ObjectErrorMessages<Data extends DataType> = {
   [Key in keyof Data]?: ReactHookFormError;
 };
 
-export type ErrorMessages<Data extends FormValues> = ObjectErrorMessages<Data>;
+export type ErrorMessages<Data extends DataType> = ObjectErrorMessages<Data>;
 
-export interface SubmitPromiseResult<Data extends FormValues> {
+export interface SubmitPromiseResult<Data extends DataType> {
   errors: ErrorMessages<Data>;
   values: Data;
 }
@@ -91,7 +89,7 @@ export type FieldErrors = Record<string, string>;
 
 export interface ValidationReturn {
   fieldErrors: FieldErrors;
-  result: FormValues;
+  result: DataType;
 }
 
 export interface ValidationPayload<Name, Value> {
@@ -100,7 +98,7 @@ export interface ValidationPayload<Name, Value> {
 }
 
 export interface FormState<
-  Data extends FormValues = FormValues,
+  Data extends DataType = DataType,
   Name extends keyof Data = keyof Data
 > {
   dirty: boolean;
@@ -112,7 +110,7 @@ export interface FormState<
 }
 
 export interface FormProps<
-  Data extends FormValues = FormValues,
+  Data extends DataType = DataType,
   Name extends keyof Data = keyof Data,
   Value = Data[Name]
 > extends FormContextValues<Data, Name, Value> {
@@ -124,7 +122,7 @@ export type ElementLike<Element = HTMLInputElement> = {
 } & Partial<Element>;
 
 export interface FormContextValues<
-  Data extends FormValues = FormValues,
+  Data extends DataType = DataType,
   Name extends keyof Data = keyof Data,
   Value = Data[Name]
 > {
