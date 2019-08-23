@@ -11,7 +11,6 @@ import attachNativeValidation from './logic/attachNativeValidation';
 import getDefaultValue from './logic/getDefaultValue';
 import assignWatchFields from './logic/assignWatchFields';
 import omitValidFields from './logic/omitValidFields';
-import get from './utils/get';
 import isCheckBoxInput from './utils/isCheckBoxInput';
 import isEmptyObject from './utils/isEmptyObject';
 import isRadioInput from './utils/isRadioInput';
@@ -403,11 +402,9 @@ export default function useForm<
           [name]: isEmptyObject(fieldsRef.current)
             ? !isUndefined(defaultValue) && !isString(defaultValue)
               ? defaultValue[name]
-              : defaultValues
-              ? defaultValues[name] || get(defaultValues, name as string)
-              : undefined
+              : getDefaultValue(defaultValues, name)
             : assignWatchFields(fieldValues, name as string, watchFields) ||
-              getDefaultValue(defaultValues, name as string),
+              getDefaultValue(defaultValues, name),
         }),
         {},
       );
@@ -464,7 +461,7 @@ export default function useForm<
           };
         if (validate) fields[name]!.validate = validate;
 
-        (fields[name]!.options || []).push({
+        (fields[name].options || []).push({
           ...inputData,
           mutationWatcher: onDomRemove(elementRef, () =>
             removeEventListenerAndRef(inputData),
@@ -480,9 +477,9 @@ export default function useForm<
       }
     }
 
-    if (defaultValues) {
-      const defaultValue = defaultValues[name] || get(defaultValues, name);
-      if (defaultValue !== undefined) setFieldValue(name as Name, defaultValue);
+    if (!isEmptyObject(defaultValues)) {
+      const defaultValue = getDefaultValue(defaultValues, name);
+      if (!isUndefined(defaultValue)) setFieldValue(name as Name, defaultValue);
     }
 
     if (!fieldDefaultValues[name as Name])
@@ -610,7 +607,7 @@ export default function useForm<
           return Promise.resolve(resolvedPrevious);
         },
         Promise.resolve<SubmitPromiseResult<Data>>({
-          errors: {} as ErrorMessages<Data>,
+          errors: {},
           values: {} as Data,
         }),
       );
@@ -666,7 +663,7 @@ export default function useForm<
 
     if (values) {
       fieldsKeyValue.forEach(([key]) =>
-        setFieldValue(key as Name, get(values, key, '')),
+        setFieldValue(key as Name, getDefaultValue(values, key, '')),
       );
     }
     reRenderForm({});
@@ -687,7 +684,7 @@ export default function useForm<
             removeEventListenerAndRef(field, true),
         );
     },
-    [],
+    [removeEventListenerAndRef],
   );
 
   return {
