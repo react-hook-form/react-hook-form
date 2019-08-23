@@ -15,6 +15,7 @@ import isCheckBoxInput from './utils/isCheckBoxInput';
 import isEmptyObject from './utils/isEmptyObject';
 import isRadioInput from './utils/isRadioInput';
 import isObject from './utils/isObject';
+import isArray from './utils/isArray';
 import isString from './utils/isString';
 import isUndefined from './utils/isUndefined';
 import onDomRemove from './utils/onDomRemove';
@@ -181,7 +182,7 @@ export default function useForm<
         validationSchema,
         combineFieldValues(getFieldsValues(fieldsRef.current)),
       );
-      const names = Array.isArray(payload)
+      const names = isArray(payload)
         ? payload.map(({ name }) => name as string)
         : [payload.name as string];
       const validFieldNames = names.filter(name => !fieldErrors[name]);
@@ -220,7 +221,7 @@ export default function useForm<
         fields = Object.keys(fieldsRef.current).map(name => ({ name }));
       if (validationSchema) return executeSchemaValidation(fields);
 
-      if (Array.isArray(fields)) {
+      if (isArray(fields)) {
         const result = await Promise.all(
           fields.map(async data => await executeValidation(data, false)),
         );
@@ -247,7 +248,7 @@ export default function useForm<
   validateAndStateUpdateRef.current = validateAndStateUpdateRef.current
     ? validateAndStateUpdateRef.current
     : async ({ target: { name }, type }: Ref): Promise<void> => {
-        if (Array.isArray(validationFields) && !validationFields.includes(name))
+        if (isArray(validationFields) && !validationFields.includes(name))
           return;
         const fields = fieldsRef.current;
         const errorsFromRef = errorsRef.current;
@@ -339,7 +340,7 @@ export default function useForm<
       errorsRef.current = {};
     } else if (isString(name)) {
       delete errorsRef.current[name];
-    } else if (Array.isArray(name)) {
+    } else if (isArray(name)) {
       name.forEach(item => delete errorsRef.current[item]);
     }
     reRenderForm({});
@@ -387,38 +388,28 @@ export default function useForm<
 
     if (isString(fieldNames)) {
       const value = assignWatchFields(fieldValues, fieldNames, watchFields);
-      if (!isUndefined(value)) {
-        return value;
-      }
-      if (!isUndefined(defaultValue)) {
-        return defaultValue;
-      }
-      return getDefaultValue(defaultValues, fieldNames);
+
+      if (!isUndefined(value)) return value;
+      return isUndefined(defaultValue)
+        ? getDefaultValue(defaultValues, fieldNames)
+        : defaultValue;
     }
 
-    if (Array.isArray(fieldNames)) {
-      return isEmptyObject(fieldsRef.current)
-        ? fieldNames.reduce(
-            (previous, name) => ({
-              ...previous,
-              [name]:
-                !isUndefined(defaultValue) && !isString(defaultValue)
-                  ? defaultValue[name]
-                  : defaultValues
-                  ? getDefaultValue(defaultValues, name)
-                  : undefined,
-            }),
-            {},
-          )
-        : fieldNames.reduce(
-            (previous, name) => ({
-              ...previous,
-              [name]:
-                assignWatchFields(fieldValues, name as string, watchFields) ||
-                getDefaultValue(defaultValues, name as string),
-            }),
-            {},
-          );
+    if (isArray(fieldNames)) {
+      return fieldNames.reduce(
+        (previous, name) => ({
+          ...previous,
+          [name]: isEmptyObject(fieldsRef.current)
+            ? !isUndefined(defaultValue) && !isString(defaultValue)
+              ? defaultValue[name]
+              : defaultValues
+              ? getDefaultValue(defaultValues, name as string)
+              : undefined
+            : assignWatchFields(fieldValues, name as string, watchFields) ||
+              getDefaultValue(defaultValues, name as string),
+        }),
+        {},
+      );
     }
 
     isWatchAllRef.current = true;
@@ -451,7 +442,7 @@ export default function useForm<
     const isRadio = isRadioInput(type);
     const field = fields[name];
     const existRadioOptionIndex =
-      isRadio && field && Array.isArray(field.options)
+      isRadio && field && isArray(field.options)
         ? field.options.findIndex(
             ({ ref }: { ref: Ref }): boolean => value === ref.value,
           )
@@ -547,7 +538,7 @@ export default function useForm<
   function unregister(names: (Name | string)[]): void;
   function unregister(names: Name | string | (Name | string)[]): void {
     if (isEmptyObject(fieldsRef.current)) return;
-    (Array.isArray(names) ? names : [names]).forEach(fieldName =>
+    (isArray(names) ? names : [names]).forEach(fieldName =>
       removeEventListenerAndRef(fieldsRef.current[fieldName], true),
     );
   }
