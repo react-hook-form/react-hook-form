@@ -402,9 +402,9 @@ export default function useForm<
           [name]: isEmptyObject(fieldsRef.current)
             ? !isUndefined(defaultValue) && !isString(defaultValue)
               ? defaultValue[name]
-              : getDefaultValue(defaultValues, name as string)
+              : getDefaultValue(defaultValues, name)
             : assignWatchFields(fieldValues, name as string, watchFields) ||
-              getDefaultValue(defaultValues, name as string),
+              getDefaultValue(defaultValues, name),
         }),
         {},
       );
