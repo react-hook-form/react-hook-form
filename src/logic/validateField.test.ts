@@ -442,7 +442,7 @@ describe('validateField', () => {
       await validateField(
         {
           ref: {
-            type: 'radio',
+            type: 'text',
             name: 'test',
             value: 'This is a long text input!',
             setCustomValidity,
@@ -462,11 +462,11 @@ describe('validateField', () => {
       test: {
         ref: {
           name: 'test',
-          type: 'radio',
+          type: 'text',
           value: 'This is a long text input!',
           setCustomValidity,
         },
-        type: 'test1',
+        type: 'test',
         message: '',
       },
     });
@@ -499,7 +499,7 @@ describe('validateField', () => {
     ).toEqual({
       test: {
         ref: 'data',
-        type: 'test1',
+        type: 'test',
         message: '',
       },
     });

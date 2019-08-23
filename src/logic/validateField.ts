@@ -11,6 +11,7 @@ import { DATE_INPUTS, STRING_INPUTS } from '../constants';
 import { Field, ErrorMessages, DataType } from '../types';
 import isFunction from '../utils/isFunction';
 import isBoolean from '../utils/isBoolean';
+import getFieldsValue from "./getFieldValue";
 
 type ValidatePromiseResult =
   | {}
@@ -130,7 +131,7 @@ export default async (
   }
 
   if (validate) {
-    const fieldValue = isRadio ? getRadioValue(options).value : value;
+    const fieldValue = getFieldsValue(fields, name) || value;
     const validateRef = isRadio && options ? options[0].ref : ref;
 
     if (isFunction(validate)) {
