@@ -18,7 +18,7 @@ import isRadioInput from './utils/isRadioInput';
 import isObject from './utils/isObject';
 import isArray from './utils/isArray';
 import isString from './utils/isString';
-import isSameError from "./utils/isSameError";
+import isSameError from './utils/isSameError';
 import isUndefined from './utils/isUndefined';
 import onDomRemove from './utils/onDomRemove';
 import modeChecker from './utils/validationModeChecker';
@@ -359,9 +359,8 @@ export default function useForm<
   ): void => {
     const errorsFromRef = errorsRef.current;
     const error = errorsFromRef[name];
-    const sameError = isSameError(error, type, message);
 
-    if (!sameError) {
+    if (!isSameError(error, type, message)) {
       errorsFromRef[name] = {
         type,
         message,
