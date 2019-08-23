@@ -1,6 +1,6 @@
 {
   "name": "react-hook-form",
-  "version": "3.22.1",
+  "version": "3.22.2-beta.4",
   "main": "dist/react-hook-form.js",
   "module": "dist/react-hook-form.es.js",
   "types": "dist/index.d.ts",
@@ -9,6 +9,7 @@
     "prebuild": "yarn clean",
     "build": "yarn build:modern && yarn build:ie11",
     "build:modern": "rollup -c",
+    "build:min": "rollup -c rollup.min.config.js",
     "build:ie11": "rollup -c rollup.ie11.config.js",
     "watch": "tsc --watch",
     "lint": "eslint ./src --ext .jsx,.ts --ignore-pattern *.test.ts --report-unused-disable-directives",
@@ -19,7 +20,7 @@
     "testw": "yarn test:coverage -- --watchAll",
     "cypress": "cypress run",
     "cypress:open": "cypress open",
-    "bundlesize": "bundlesize",
+    "bundlesize": "yarn build:min && bundlesize",
     "prepublishOnly": "yarn lint && yarn test && yarn run clean && yarn build",
     "start:app": "yarn build && yarn link && yarn --cwd node_modules/react link && yarn --cwd ./app link react react-hook-form && yarn --cwd ./app && yarn --cwd ./app run start"
   },
@@ -69,7 +70,7 @@
   },
   "bundlesize": [
     {
-      "path": "./dist/react-hook-form.es.js",
+      "path": "./dist/react-hook-form.min.es.js",
       "maxSize": "5 kB"
     }
   ],
