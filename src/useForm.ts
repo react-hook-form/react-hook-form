@@ -17,6 +17,7 @@ import isRadioInput from './utils/isRadioInput';
 import isObject from './utils/isObject';
 import isArray from './utils/isArray';
 import isString from './utils/isString';
+import isSameError from './utils/isSameError';
 import isUndefined from './utils/isUndefined';
 import onDomRemove from './utils/onDomRemove';
 import modeChecker from './utils/validationModeChecker';
@@ -215,10 +216,9 @@ export default function useForm<
         | ValidationPayload<Name, Data[Name]>
         | ValidationPayload<Name, Data[Name]>[],
     ): Promise<boolean> => {
-      let fields: any = payload;
+      const fields: any =
+        payload || Object.keys(fieldsRef.current).map(name => ({ name }));
 
-      if (!payload)
-        fields = Object.keys(fieldsRef.current).map(name => ({ name }));
       if (validationSchema) return executeSchemaValidation(fields);
 
       if (isArray(fields)) {
@@ -254,9 +254,10 @@ export default function useForm<
         const errorsFromRef = errorsRef.current;
         const ref = fields[name];
         if (!ref) return;
-        const isBlurType = type === 'blur';
+        const isBlurEvent = type === 'blur';
         const isValidateDisabled = !isSubmittedRef.current && isOnSubmit;
-        const shouldUpdateValidateMode = isOnChange || (isOnBlur && isBlurType);
+        const shouldUpdateValidateMode =
+          isOnChange || (isOnBlur && isBlurEvent);
         let shouldUpdateState =
           isWatchAllRef.current || watchFieldsRef.current[name];
 
@@ -295,7 +296,7 @@ export default function useForm<
             error,
             isValidateDisabled,
             isOnBlur,
-            isBlurType,
+            isBlurEvent,
             name,
           });
 
@@ -335,16 +336,19 @@ export default function useForm<
     [],
   );
 
-  const clearError = (name?: Name | Name[]): void => {
-    if (isUndefined(name)) {
-      errorsRef.current = {};
-    } else if (isString(name)) {
+  function clearError(): void;
+  function clearError(name: Name): void;
+  function clearError(names: Name[]): void;
+  function clearError(name?: Name | Name[]): void {
+    if (isString(name)) {
       delete errorsRef.current[name];
     } else if (isArray(name)) {
-      name.forEach(item => delete errorsRef.current[item]);
+      name.forEach(fieldName => delete errorsRef.current[fieldName]);
+    } else {
+      errorsRef.current = {};
     }
     reRenderForm({});
-  };
+  }
 
   const setError = (
     name: Name,
@@ -354,12 +358,8 @@ export default function useForm<
   ): void => {
     const errorsFromRef = errorsRef.current;
     const error = errorsFromRef[name];
-    const isSameError =
-      error &&
-      !isString(error) &&
-      (error.type === type && error.message === message);
 
-    if (!isSameError) {
+    if (!isSameError(error, type, message)) {
       errorsFromRef[name] = {
         type,
         message,
