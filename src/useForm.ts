@@ -397,28 +397,20 @@ export default function useForm<
     }
 
     if (isArray(fieldNames)) {
-      return isEmptyObject(fieldsRef.current)
-        ? fieldNames.reduce(
-            (previous, name) => ({
-              ...previous,
-              [name]:
-                !isUndefined(defaultValue) && !isString(defaultValue)
-                  ? defaultValue[name]
-                  : defaultValues
-                  ? defaultValues[name] || get(defaultValues, name as string)
-                  : undefined,
-            }),
-            {},
-          )
-        : fieldNames.reduce(
-            (previous, name) => ({
-              ...previous,
-              [name]:
-                assignWatchFields(fieldValues, name as string, watchFields) ||
-                getDefaultValue(defaultValues, name as string),
-            }),
-            {},
-          );
+      return fieldNames.reduce(
+        (previous, name) => ({
+          ...previous,
+          [name]: isEmptyObject(fieldsRef.current)
+            ? !isUndefined(defaultValue) && !isString(defaultValue)
+              ? defaultValue[name]
+              : defaultValues
+              ? defaultValues[name] || get(defaultValues, name as string)
+              : undefined
+            : assignWatchFields(fieldValues, name as string, watchFields) ||
+              getDefaultValue(defaultValues, name as string),
+        }),
+        {},
+      );
     }
 
     isWatchAllRef.current = true;
