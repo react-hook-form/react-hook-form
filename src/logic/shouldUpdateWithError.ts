@@ -1,6 +1,5 @@
 import isEmptyObject from '../utils/isEmptyObject';
-import isSameError from "../utils/isSameError";
-import { DataType } from '../types';
+import isSameError from '../utils/isSameError';
 
 export default function shouldUpdateWithError({
   errors,
@@ -10,7 +9,7 @@ export default function shouldUpdateWithError({
   isBlurEvent,
   isValidateDisabled,
 }: {
-  errors: DataType;
+  errors: any;
   name: string;
   error: any;
   isOnBlur: boolean;

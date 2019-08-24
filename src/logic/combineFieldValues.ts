@@ -1,9 +1,9 @@
 import set from '../utils/set';
-import { DataType, FieldValue } from '../types';
+import { FieldValues } from '../types';
 
-export default (data: DataType): FieldValue =>
+export default (data: FieldValues): any =>
   Object.entries(data).reduce(
-    (previous: DataType, [key, value]): FieldValue => {
+    (previous: FieldValues, [key, value]): FieldValues => {
       if (key.match(/\[\d+\]/gi) || key.indexOf('.')) {
         set(previous, key, value);
         return previous;

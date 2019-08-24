@@ -2,9 +2,9 @@ import getRadioValue from './getRadioValue';
 import getMultipleSelectValue from './getMultipleSelectValue';
 import isRadioInput from '../utils/isRadioInput';
 import isCheckBox from '../utils/isCheckBoxInput';
-import { FieldsObject, FieldValue, Ref, DataType } from '../types';
+import { FieldsObject, FieldValue, Ref, FieldValues } from '../types';
 
-export default function getFieldValue<Data extends DataType>(
+export default function getFieldValue<Data extends FieldValues>(
   fields: FieldsObject<Data>,
   ref: Ref,
 ): FieldValue {

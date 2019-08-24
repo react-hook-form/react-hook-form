@@ -3,11 +3,11 @@ import { VALIDATION_MODE } from './constants';
 
 export type FieldValue = any;
 
+export type FieldValues = Record<string, FieldValue>;
+
 export type Validate = (data: FieldValue) => string | boolean;
 
-export type DataType = Record<string, FieldValue>;
-
-export type OnSubmit<Data extends DataType> = (
+export type OnSubmit<Data extends FieldValues> = (
   data: Data,
   e: React.SyntheticEvent,
 ) => void | Promise<void>;
@@ -22,7 +22,7 @@ export type SchemaValidateOptions = Partial<{
   context: object;
 }>;
 
-export type Options<Data extends DataType> = Partial<{
+export type Options<Data extends FieldValues> = Partial<{
   mode: Mode;
   defaultValues: Partial<Data>;
   nativeValidation: boolean;
@@ -41,14 +41,16 @@ export type Ref = any;
 
 type ValidationOptionObject<T> = T | { value: T; message: string };
 
+export type ValidationTypes = number | string | RegExp;
+
 export type ValidationOptions = Partial<{
-  required?: boolean | string;
-  min?: ValidationOptionObject<number | string>;
-  max?: ValidationOptionObject<number | string>;
-  maxLength?: ValidationOptionObject<number | string>;
-  minLength?: ValidationOptionObject<number | string>;
-  pattern?: ValidationOptionObject<RegExp>;
-  validate?:
+  required: boolean | string;
+  min: ValidationOptionObject<number | string>;
+  max: ValidationOptionObject<number | string>;
+  maxLength: ValidationOptionObject<number | string>;
+  minLength: ValidationOptionObject<number | string>;
+  pattern: ValidationOptionObject<RegExp>;
+  validate:
     | Validate
     | Record<string, Validate>
     | { value: Validate | Record<string, Validate>; message: string };
@@ -72,7 +74,7 @@ export interface Field extends ValidationOptions {
   }[];
 }
 
-export type FieldsObject<Data extends DataType> = {
+export type FieldsObject<Data extends FieldValues> = {
   [Key in keyof Data]?: Field;
 };
 
@@ -83,13 +85,13 @@ export interface ReactHookFormError {
   isManual?: boolean;
 }
 
-export type ObjectErrorMessages<Data extends DataType> = {
+export type ObjectErrorMessages<Data extends FieldValues> = {
   [Key in keyof Data]?: ReactHookFormError;
 };
 
-export type ErrorMessages<Data extends DataType> = ObjectErrorMessages<Data>;
+export type ErrorMessages<Data extends FieldValues> = ObjectErrorMessages<Data>;
 
-export interface SubmitPromiseResult<Data extends DataType> {
+export interface SubmitPromiseResult<Data extends FieldValues> {
   errors: ErrorMessages<Data>;
   values: Data;
 }
@@ -105,7 +107,7 @@ export type FieldErrors = Record<string, string>;
 
 export interface ValidationReturn {
   fieldErrors: FieldErrors;
-  result: DataType;
+  result: FieldValues;
 }
 
 export interface ValidationPayload<Name, Value> {
@@ -114,7 +116,7 @@ export interface ValidationPayload<Name, Value> {
 }
 
 export interface FormState<
-  Data extends DataType = DataType,
+  Data extends FieldValues = FieldValues,
   Name extends keyof Data = keyof Data
 > {
   dirty: boolean;

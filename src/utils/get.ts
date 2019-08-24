@@ -1,11 +1,11 @@
-import { DataType } from '../types';
+import { FieldValues } from '../types';
 import isUndefined from './isUndefined';
 
 export default function get(
-  object: DataType,
+  object: FieldValues,
   keys: string[] | string,
   defaultVal?: any,
-): DataType | undefined {
+): FieldValues | undefined {
   keys = Array.isArray(keys)
     ? keys
     : keys
