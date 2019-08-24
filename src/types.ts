@@ -127,6 +127,8 @@ export interface FormState<
   isValid: boolean;
 }
 
-export type ElementLike<Element = HTMLInputElement> = {
+export interface ElementLike {
   name: string;
-} & Partial<Element>;
+  type?: string;
+  value?: string;
+}
