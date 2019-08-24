@@ -46,6 +46,14 @@ export interface RegisterInput {
     | { value: Validate | Record<string, Validate>; message: string };
 }
 
+export type ValidatePromiseResult =
+    | {}
+    | void
+    | {
+  type: string;
+  message: string | number | boolean | Date;
+};
+
 export interface Field extends RegisterInput {
   ref: Ref;
   watch?: boolean;

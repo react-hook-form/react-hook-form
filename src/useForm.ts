@@ -270,7 +270,8 @@ export default function useForm<
           shouldUpdateState = true;
         }
 
-        if (isValidateDisabled && shouldUpdateState) return reRenderForm({});
+        if (isValidateDisabled)
+          return shouldUpdateState ? reRenderForm({}) : undefined;
 
         if (validationSchema) {
           const { fieldErrors } = await validateWithSchema(

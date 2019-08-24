@@ -369,7 +369,11 @@ describe('validateField', () => {
           required: true,
           validate: value => value.toString().length > 3,
         },
-        {},
+        {
+          test: {
+            ref: {},
+          },
+        },
       ),
     ).toEqual({});
 
@@ -385,7 +389,11 @@ describe('validateField', () => {
           required: true,
           validate: value => value.toString().length < 3,
         },
-        {},
+        {
+          test: {
+            ref: {},
+          },
+        },
       ),
     ).toEqual({
       test: {
@@ -415,7 +423,11 @@ describe('validateField', () => {
             test1: value => value.toString().length > 10,
           },
         },
-        {},
+        {
+          test: {
+            ref: {},
+          },
+        },
       ),
     ).toEqual({
       test: {
@@ -499,7 +511,7 @@ describe('validateField', () => {
     ).toEqual({
       test: {
         ref: 'data',
-        type: 'test',
+        type: 'test1',
         message: '',
       },
     });
@@ -524,7 +536,11 @@ describe('validateField', () => {
             },
           },
         },
-        {},
+        {
+          test: {
+            ref: {},
+          },
+        },
       ),
     ).toEqual({
       test: {
@@ -552,7 +568,11 @@ describe('validateField', () => {
           },
           validate: value => value.toString().length < 3 || 'bill',
         },
-        {},
+        {
+          test: {
+            ref: {},
+          },
+        },
       ),
     ).toEqual({
       test: {
