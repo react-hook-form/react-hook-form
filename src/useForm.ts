@@ -400,18 +400,29 @@ export default function useForm<
     }
 
     if (isArray(fieldNames)) {
-      return fieldNames.reduce(
-        (previous, name) => ({
+      return fieldNames.reduce((previous, name) => {
+        let value = getDefaultValue(defaultValues, name);
+
+        if (
+          isEmptyObject(fieldsRef.current) &&
+          !isUndefined(defaultValue) &&
+          !isString(defaultValue)
+        ) {
+          value = defaultValue[name];
+        } else {
+          const tempValue = assignWatchFields(
+            fieldValues,
+            name as string,
+            watchFields,
+          );
+          if (!isUndefined(tempValue)) value = tempValue;
+        }
+
+        return {
           ...previous,
-          [name]: isEmptyObject(fieldsRef.current)
-            ? !isUndefined(defaultValue) && !isString(defaultValue)
-              ? defaultValue[name]
-              : getDefaultValue(defaultValues, name)
-            : assignWatchFields(fieldValues, name as string, watchFields) ||
-              getDefaultValue(defaultValues, name),
-        }),
-        {},
-      );
+          [name]: value,
+        };
+      }, {});
     }
 
     isWatchAllRef.current = true;
