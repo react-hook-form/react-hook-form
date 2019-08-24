@@ -28,6 +28,7 @@ import {
   Field,
   FieldsObject,
   FieldValue,
+  FieldErrors,
   Options,
   Ref,
   ValidationOptions,
@@ -38,8 +39,8 @@ import {
 } from './types';
 
 export default function useForm<
-  Data extends DataType,
-  Name extends keyof Data = keyof Data
+  FormValues extends DataType,
+  FieldName extends keyof FormValues = keyof FormValues
 >({
   mode = VALIDATION_MODE.onSubmit,
   validationSchema,
@@ -48,17 +49,17 @@ export default function useForm<
   nativeValidation,
   submitFocusError = true,
   validationSchemaOption = { abortEarly: false },
-}: Options<Data> = {}) {
-  const fieldsRef = useRef<FieldsObject<Data>>({});
-  const errorsRef = useRef<ErrorMessages<Data>>({});
-  const schemaErrorsRef = useRef<DataType>({});
+}: Options<FormValues> = {}) {
+  const fieldsRef = useRef<FieldsObject<FormValues>>({});
+  const errorsRef = useRef<ErrorMessages<FormValues>>({});
+  const schemaErrorsRef = useRef<FieldErrors>({});
   const submitCountRef = useRef(0);
-  const touchedFieldsRef = useRef(new Set<Name>());
-  const watchFieldsRef = useRef<Partial<Record<keyof Data, boolean>>>({});
-  const dirtyFieldsRef = useRef(new Set<Name>());
+  const touchedFieldsRef = useRef(new Set<FieldName>());
+  const watchFieldsRef = useRef<Partial<Record<keyof FormValues, boolean>>>({});
+  const dirtyFieldsRef = useRef(new Set<FieldName>());
   const fieldsWithValidationRef = useRef(new Set());
   const validFieldsRef = useRef(new Set());
-  const defaultValuesRef = useRef<Record<Name, FieldValue>>({} as any);
+  const defaultValuesRef = useRef<Record<FieldName, FieldValue>>({} as any);
   const isUnMount = useRef(false);
   const isWatchAllRef = useRef(false);
   const isSubmittingRef = useRef(false);
@@ -71,16 +72,16 @@ export default function useForm<
     modeChecker(mode),
   ).current;
 
-  const combineErrorsRef = (data: ErrorMessages<Data>) => ({
+  const combineErrorsRef = (data: ErrorMessages<FormValues>) => ({
     ...errorsRef.current,
     ...data,
   });
 
   const renderBaseOnError = useCallback(
     (
-      name: Name,
-      errorsFromRef: ErrorMessages<Data>,
-      error: ErrorMessages<Data>,
+      name: FieldName,
+      errorsFromRef: ErrorMessages<FormValues>,
+      error: ErrorMessages<FormValues>,
       shouldRender: boolean = true,
     ): boolean => {
       if (errorsFromRef[name] && !error[name]) {
@@ -105,7 +106,7 @@ export default function useForm<
   );
 
   const setFieldValue = (
-    name: Name,
+    name: FieldName,
     value: Record<string, FieldValue> | undefined,
   ): void => {
     const field = fieldsRef.current[name];
@@ -122,7 +123,7 @@ export default function useForm<
     }
   };
 
-  const setDirty = (name: Name): boolean => {
+  const setDirty = (name: FieldName): boolean => {
     if (!fieldsRef.current[name]) return false;
     const isDirty =
       defaultValuesRef.current[name] !==
@@ -140,7 +141,7 @@ export default function useForm<
   };
 
   const setValueInternal = useCallback(
-    (name: Name, value: Data[Name]): void => {
+    (name: FieldName, value: FormValues[FieldName]): void => {
       setFieldValue(name, value);
       touchedFieldsRef.current.add(name);
       setDirty(name);
@@ -155,8 +156,8 @@ export default function useForm<
         name,
         value,
       }: {
-        name: Name;
-        value?: Data[Name];
+        name: FieldName;
+        value?: FormValues[FieldName];
       },
       shouldRender: boolean = true,
     ): Promise<boolean> => {
@@ -177,8 +178,8 @@ export default function useForm<
   const executeSchemaValidation = useCallback(
     async (
       payload:
-        | ValidationPayload<Name, Data[Name]>
-        | ValidationPayload<Name, Data[Name]>[],
+        | ValidationPayload<FieldName, FormValues[FieldName]>
+        | ValidationPayload<FieldName, FormValues[FieldName]>[],
     ): Promise<boolean> => {
       const { fieldErrors } = await validateWithSchema(
         validationSchema,
@@ -189,14 +190,12 @@ export default function useForm<
         ? payload.map(({ name }) => name as string)
         : [payload.name as string];
       const validFieldNames = names.filter(name => !fieldErrors[name]);
-      const skipNamesOmittedInPayload = ([key]: [string, string]) =>
-        names.includes(key);
 
       schemaErrorsRef.current = fieldErrors;
       errorsRef.current = omitValidFields(
         combineErrorsRef(
           Object.entries(fieldErrors)
-            .filter(skipNamesOmittedInPayload)
+            .filter(([key]: [string, string]) => names.includes(key))
             .reduce(
               (previous, [name, error]) => ({ ...previous, [name]: error }),
               {},
@@ -215,8 +214,8 @@ export default function useForm<
   const triggerValidation = useCallback(
     async (
       payload?:
-        | ValidationPayload<Name, Data[Name]>
-        | ValidationPayload<Name, Data[Name]>[],
+        | ValidationPayload<FieldName, FormValues[FieldName]>
+        | ValidationPayload<FieldName, FormValues[FieldName]>[],
     ): Promise<boolean> => {
       const fields: any =
         payload || Object.keys(fieldsRef.current).map(name => ({ name }));
@@ -237,8 +236,8 @@ export default function useForm<
 
   const setValue = useCallback(
     (
-      name: Name,
-      value: Data[Name],
+      name: FieldName,
+      value: FormValues[FieldName],
       shouldValidate: boolean = false,
     ): void | Promise<boolean> => {
       setValueInternal(name, value);
@@ -313,7 +312,7 @@ export default function useForm<
         if (shouldUpdateState) reRenderForm({});
       };
 
-  const resetFieldRef = (name: Name) => {
+  const resetFieldRef = (name: FieldName) => {
     delete watchFieldsRef.current[name];
     delete errorsRef.current[name];
     delete fieldsRef.current[name];
@@ -341,9 +340,9 @@ export default function useForm<
   );
 
   function clearError(): void;
-  function clearError(name: Name): void;
-  function clearError(names: Name[]): void;
-  function clearError(name?: Name | Name[]): void {
+  function clearError(name: FieldName): void;
+  function clearError(names: FieldName[]): void;
+  function clearError(name?: FieldName | FieldName[]): void {
     if (isString(name)) {
       delete errorsRef.current[name];
     } else if (isArray(name)) {
@@ -355,7 +354,7 @@ export default function useForm<
   }
 
   const setError = (
-    name: Name,
+    name: FieldName,
     type: string,
     message?: string,
     ref?: Ref,
@@ -374,19 +373,19 @@ export default function useForm<
     }
   };
 
-  function watch(): Data;
+  function watch(): FormValues;
   function watch(
-    field: Name | string,
+    field: FieldName | string,
     defaultValue?: string,
   ): FieldValue | void;
   function watch(
-    fields: (Name | string)[],
-    defaultValues?: Partial<Data>,
-  ): Partial<Data>;
+    fields: (FieldName | string)[],
+    defaultValues?: Partial<FormValues>,
+  ): Partial<FormValues>;
   function watch(
-    fieldNames?: Name | string | (Name | string)[],
-    defaultValue?: string | Partial<Data>,
-  ): FieldValue | Partial<Data> | void {
+    fieldNames?: FieldName | string | (FieldName | string)[],
+    defaultValue?: string | Partial<FormValues>,
+  ): FieldValue | Partial<FormValues> | void {
     const fieldValues = getFieldsValues(fieldsRef.current);
     const watchFields: any = watchFieldsRef.current;
 
@@ -494,11 +493,12 @@ export default function useForm<
 
     if (!isEmptyObject(defaultValues)) {
       const defaultValue = getDefaultValue(defaultValues, name);
-      if (!isUndefined(defaultValue)) setFieldValue(name as Name, defaultValue);
+      if (!isUndefined(defaultValue))
+        setFieldValue(name as FieldName, defaultValue);
     }
 
-    if (!fieldDefaultValues[name as Name])
-      fieldDefaultValues[name as Name] = getFieldValue(
+    if (!fieldDefaultValues[name as FieldName])
+      fieldDefaultValues[name as FieldName] = getFieldValue(
         fields,
         fields[name].ref,
       );
@@ -547,16 +547,18 @@ export default function useForm<
       ref && __registerIntoFieldsRef(ref, refOrValidateRule);
   }
 
-  function unregister(name: Name | string): void;
-  function unregister(names: (Name | string)[]): void;
-  function unregister(names: Name | string | (Name | string)[]): void {
+  function unregister(name: FieldName | string): void;
+  function unregister(names: (FieldName | string)[]): void;
+  function unregister(
+    names: FieldName | string | (FieldName | string)[],
+  ): void {
     if (isEmptyObject(fieldsRef.current)) return;
     (isArray(names) ? names : [names]).forEach(fieldName =>
       removeEventListenerAndRef(fieldsRef.current[fieldName], true),
     );
   }
 
-  const handleSubmit = (callback: OnSubmit<Data>) => async (
+  const handleSubmit = (callback: OnSubmit<FormValues>) => async (
     e: React.SyntheticEvent,
   ): Promise<void> => {
     if (e) {
@@ -587,11 +589,11 @@ export default function useForm<
       const {
         errors,
         values,
-      }: SubmitPromiseResult<Data> = await fieldsToValidate.reduce(
+      }: SubmitPromiseResult<FormValues> = await fieldsToValidate.reduce(
         async (
-          previous: Promise<SubmitPromiseResult<Data>>,
+          previous: Promise<SubmitPromiseResult<FormValues>>,
           field: Field | undefined,
-        ): Promise<SubmitPromiseResult<Data>> => {
+        ): Promise<SubmitPromiseResult<FormValues>> => {
           if (!field) return previous;
           const resolvedPrevious: any = await previous;
           const {
@@ -622,9 +624,9 @@ export default function useForm<
           resolvedPrevious.values[name] = getFieldValue(fields, ref);
           return Promise.resolve(resolvedPrevious);
         },
-        Promise.resolve<SubmitPromiseResult<Data>>({
+        Promise.resolve<SubmitPromiseResult<FormValues>>({
           errors: {},
-          values: {} as Data,
+          values: {} as FormValues,
         }),
       );
 
@@ -679,14 +681,14 @@ export default function useForm<
 
     if (values) {
       fieldsKeyValue.forEach(([key]) =>
-        setFieldValue(key as Name, getDefaultValue(values, key, '')),
+        setFieldValue(key as FieldName, getDefaultValue(values, key, '')),
       );
     }
     reRenderForm({});
   }, []);
 
-  const getValues = (payload?: { nest: boolean }): Data => {
-    const data = getFieldsValues<Data>(fieldsRef.current);
+  const getValues = (payload?: { nest: boolean }): FormValues => {
+    const data = getFieldsValues<FormValues>(fieldsRef.current);
     const output = payload && payload.nest ? combineFieldValues(data) : data;
     return isEmptyObject(output) ? defaultValues : output;
   };
