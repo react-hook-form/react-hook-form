@@ -131,4 +131,6 @@ export interface ElementLike {
   name: string;
   type?: string;
   value?: string;
+  checked?: boolean;
+  options?: any;
 }
