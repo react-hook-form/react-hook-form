@@ -30,7 +30,7 @@ import {
   FieldValue,
   Props,
   Ref,
-  RegisterInput,
+  ValidationOptions,
   SubmitPromiseResult,
   OnSubmit,
   ValidationPayload,
@@ -47,6 +47,7 @@ export default function useForm<
   validationFields,
   nativeValidation,
   submitFocusError = true,
+  validationSchemaOption = { abortEarly: false },
 }: Props<Data> = {}) {
   const fieldsRef = useRef<FieldsObject<Data>>({});
   const errorsRef = useRef<ErrorMessages<Data>>({});
@@ -181,6 +182,7 @@ export default function useForm<
     ): Promise<boolean> => {
       const { fieldErrors } = await validateWithSchema(
         validationSchema,
+        validationSchemaOption,
         combineFieldValues(getFieldsValues(fieldsRef.current)),
       );
       const names = isArray(payload)
@@ -207,7 +209,7 @@ export default function useForm<
       reRenderForm({});
       return isEmptyObject(errorsRef.current);
     },
-    [validationSchema],
+    [validationSchema, validationSchemaOption],
   );
 
   const triggerValidation = useCallback(
@@ -270,11 +272,13 @@ export default function useForm<
           shouldUpdateState = true;
         }
 
-        if (isValidateDisabled && shouldUpdateState) return reRenderForm({});
+        if (isValidateDisabled)
+          return shouldUpdateState ? reRenderForm({}) : undefined;
 
         if (validationSchema) {
           const { fieldErrors } = await validateWithSchema(
             validationSchema,
+            validationSchemaOption,
             combineFieldValues(getFieldsValues(fields)),
           );
           schemaErrorsRef.current = fieldErrors;
@@ -420,7 +424,7 @@ export default function useForm<
 
   function __registerIntoFieldsRef<Element extends ElementLike>(
     elementRef: Element,
-    data: RegisterInput = {},
+    data: ValidationOptions = {},
   ): void {
     if (!elementRef.name) return console.warn('Miss name', elementRef);
 
@@ -508,15 +512,15 @@ export default function useForm<
   }
 
   function register<Element extends ElementLike = ElementLike>(
-    validateRule: RegisterInput,
+    validateRule: ValidationOptions,
   ): (ref: Element | null) => void;
   function register<Element extends ElementLike = ElementLike>(
     input: Element,
-    validationOptions?: RegisterInput,
+    validationOptions?: ValidationOptions,
   ): undefined;
   function register<Element extends ElementLike = ElementLike>(
-    refOrValidateRule: Element | RegisterInput,
-    validationOptions?: RegisterInput,
+    refOrValidateRule: Element | ValidationOptions,
+    validationOptions?: ValidationOptions,
   ): ((ref: Element | null) => void) | undefined {
     if (typeof window === 'undefined' || !refOrValidateRule) return;
 
@@ -562,6 +566,7 @@ export default function useForm<
       fieldValues = getFieldsValues(fields);
       const output = await validateWithSchema(
         validationSchema,
+        validationSchemaOption,
         combineFieldValues(fieldValues),
       );
       schemaErrorsRef.current = output.fieldErrors;

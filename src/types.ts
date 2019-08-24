@@ -5,8 +5,6 @@ export type FieldValue = any;
 
 export type Validate = (data: FieldValue) => string | boolean;
 
-export type NumberOrString = number | string;
-
 export type DataType = Record<string, FieldValue>;
 
 export type OnSubmit<Data extends DataType> = (
@@ -16,12 +14,21 @@ export type OnSubmit<Data extends DataType> = (
 
 export type Mode = keyof typeof VALIDATION_MODE;
 
+export interface SchemaValidateOptions {
+  strict?: boolean;
+  abortEarly?: boolean;
+  stripUnknown?: boolean;
+  recursive?: boolean;
+  context?: object;
+}
+
 export interface Props<Data extends DataType> {
   mode?: Mode;
   defaultValues?: Partial<Data>;
   nativeValidation?: boolean;
   validationFields?: (keyof Data)[];
   validationSchema?: any;
+  validationSchemaOption?: SchemaValidateOptions;
   submitFocusError?: boolean;
 }
 
@@ -32,21 +39,31 @@ export interface MutationWatcher {
 
 export type Ref = any;
 
-export interface RegisterInput {
+type ValidationOptionObject<T> = T | { value: T; message: string };
+
+export interface ValidationOptions {
   ref?: Ref;
   required?: boolean | string;
-  min?: NumberOrString | { value: NumberOrString; message: string };
-  max?: NumberOrString | { value: NumberOrString; message: string };
-  maxLength?: number | { value: number; message: string };
-  minLength?: number | { value: number; message: string };
-  pattern?: RegExp | { value: RegExp; message: string };
+  min?: ValidationOptionObject<number | string>;
+  max?: ValidationOptionObject<number | string>;
+  maxLength?: ValidationOptionObject<number | string>;
+  minLength?: ValidationOptionObject<number | string>;
+  pattern?: ValidationOptionObject<RegExp>;
   validate?:
     | Validate
     | Record<string, Validate>
     | { value: Validate | Record<string, Validate>; message: string };
 }
 
-export interface Field extends RegisterInput {
+export type ValidatePromiseResult =
+  | {}
+  | void
+  | {
+      type: string;
+      message: string | number | boolean | Date;
+    };
+
+export interface Field extends ValidationOptions {
   ref: Ref;
   watch?: boolean;
   mutationWatcher?: MutationWatcher;
@@ -82,7 +99,7 @@ export type VoidFunction = () => void;
 
 export interface RadioReturn {
   isValid: boolean;
-  value: NumberOrString;
+  value: number | string;
 }
 
 export type FieldErrors = Record<string, string>;
@@ -127,11 +144,11 @@ export interface FormContextValues<
   Value = Data[Name]
 > {
   register<Element extends ElementLike = ElementLike>(
-    validateRule: RegisterInput,
+    validateRule: ValidationOptions,
   ): (instance: Element | null) => void;
   register<Element extends ElementLike = ElementLike>(
     instance: Element,
-    validationOptions?: RegisterInput,
+    validationOptions?: ValidationOptions,
   ): undefined;
   unregister(name: Name | string): void;
   unregister(names: (Name | string)[]): void;
