@@ -1,6 +1,6 @@
 import isEmptyObject from '../utils/isEmptyObject';
-import isSameError from "../utils/isSameError";
-import { FieldValues } from '../types';
+import isSameError from '../utils/isSameError';
+import { ReactHookFormError } from '../types';
 
 export default function shouldUpdateWithError({
   errors,
@@ -10,7 +10,7 @@ export default function shouldUpdateWithError({
   isBlurEvent,
   isValidateDisabled,
 }: {
-  errors: FieldValues;
+  errors: Record<string, ReactHookFormError>;
   name: string;
   error: any;
   isOnBlur: boolean;
