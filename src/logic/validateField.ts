@@ -8,17 +8,11 @@ import isEmptyObject from '../utils/isEmptyObject';
 import displayNativeError from './displayNativeError';
 import isObject from '../utils/isObject';
 import { DATE_INPUTS, STRING_INPUTS } from '../constants';
-import { Field, ErrorMessages, DataType } from '../types';
+import { Field, ErrorMessages, FieldValues, ValidatePromiseResult } from '../types';
 import isFunction from '../utils/isFunction';
 import isBoolean from '../utils/isBoolean';
-
-type ValidatePromiseResult =
-  | {}
-  | void
-  | {
-      type: string;
-      message: string | number | boolean | Date;
-    };
+import getFieldsValue from './getFieldValue';
+import isRegex from "../utils/isRegex";
 
 export default async (
   {
@@ -33,10 +27,10 @@ export default async (
     pattern,
     validate,
   }: Field,
-  fields: DataType,
+  fields: FieldValues,
   nativeValidation?: boolean,
 ): Promise<ErrorMessages<any>> => {
-  const error: DataType = {};
+  const error: FieldValues = {};
   const isRadio = isRadioInput(type);
   const isCheckBox = isCheckBoxInput(type);
   const isSelectOrInput = !isCheckBox && !isRadio;
@@ -118,7 +112,7 @@ export default async (
       pattern,
     );
 
-    if (patternValue instanceof RegExp && !patternValue.test(value)) {
+    if (isRegex(patternValue) && !patternValue.test(value)) {
       error[name] = {
         type: 'pattern',
         message: patternMessage,
@@ -130,7 +124,7 @@ export default async (
   }
 
   if (validate) {
-    const fieldValue = isRadio ? getRadioValue(options).value : value;
+    const fieldValue = getFieldsValue(fields, ref);
     const validateRef = isRadio && options ? options[0].ref : ref;
 
     if (isFunction(validate)) {

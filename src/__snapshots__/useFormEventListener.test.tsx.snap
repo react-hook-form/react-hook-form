@@ -2,7 +2,7 @@
 
 exports[`useFormEventListeners should return error type correctly and update form state 1`] = `
 Object {
-  "dirty": true,
+  "dirty": false,
   "isSubmitted": false,
   "isSubmitting": false,
   "isValid": true,

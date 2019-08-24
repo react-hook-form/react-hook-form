@@ -46,6 +46,7 @@ describe('validateWithSchema', () => {
             throw errors;
           },
         },
+        { abortEarly: false },
         {},
       ),
     ).toMatchSnapshot();
@@ -57,11 +58,12 @@ describe('validateWithSchema', () => {
         {
           validate: () => {},
         },
+        { abortEarly: false },
         {},
       ),
     ).toEqual({
       fieldErrors: {},
-      result: undefined
+      result: undefined,
     });
   });
 });

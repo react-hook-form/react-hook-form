@@ -6,6 +6,7 @@ you can view the source code within the folder or visit code sand box to see how
 | --------------------------- | -------------------------------------------------------------------- |
 | Array Fields                | https://codesandbox.io/s/6j1760jkjk                                  |
 | Async Submit Validation     | https://codesandbox.io/s/xrjv48o0qp                                  |
+| Async Set Form Values       | https://codesandbox.io/s/react-hook-from-async-set-form-values-ztpd6 |
 | Async Field Validation      | https://codesandbox.io/s/m5pj55yj7x                                  |
 | Basic                       | https://codesandbox.io/s/yj07z1639                                   |
 | Basic Validation            | https://codesandbox.io/s/rwpz2jn6ln                                  |

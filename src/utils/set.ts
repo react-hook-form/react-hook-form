@@ -1,5 +1,5 @@
 import isObject from './isObject';
-import { DataType } from '../types';
+import { FieldValues } from '../types';
 
 const reIsDeepProp = /\.|\[(?:[^[\]]*|(["'])(?:(?!\1)[^\\]|\\.)*?\1)\]/;
 const reIsPlainProp = /^\w*$/;
@@ -28,7 +28,7 @@ const stringToPath = (string: string) => {
   return result;
 };
 
-export default function set(object: DataType, path: string, value: string) {
+export default function set(object: FieldValues, path: string, value: string) {
   const tempPath = isKey(path) ? [path] : stringToPath(path);
 
   let index = -1;

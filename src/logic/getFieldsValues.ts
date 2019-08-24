@@ -1,13 +1,13 @@
 import getFieldValue from './getFieldValue';
 import isString from '../utils/isString';
-import { DataType, FieldValue, Ref } from '../types';
+import { FieldValues, FieldValue, Ref } from '../types';
 
-export default function getFieldsValue<Data extends DataType>(
-  fields: DataType,
+export default function getFieldsValue<Data extends FieldValues>(
+  fields: FieldValues,
   fieldName?: string | string[],
 ): Data {
   return Object.values(fields).reduce(
-    (previous: DataType, { ref, ref: { name } }: Ref): FieldValue => {
+    (previous: FieldValues, { ref, ref: { name } }: Ref): FieldValue => {
       const value = getFieldValue(fields, ref);
 
       if (isString(fieldName)) return name === fieldName ? value : previous;

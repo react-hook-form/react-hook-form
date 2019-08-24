@@ -1,16 +1,18 @@
 import removeAllEventListeners from './removeAllEventListeners';
 import isRadioInput from '../utils/isRadioInput';
 import isDetached from '../utils/isDetached';
-import { Field, FieldsObject, DataType } from '../types';
+import { Field, FieldsObject, FieldValues } from '../types';
 
 export default function findRemovedFieldAndRemoveListener<
-  Data extends DataType
+  Data extends FieldValues
 >(
   fields: FieldsObject<Data>,
   validateWithStateUpdate: Function | undefined = () => {},
-  { ref, mutationWatcher, options }: Field,
+  field: Field,
   forceDelete: boolean = false,
 ): void {
+  if (!field) return;
+  const { ref, mutationWatcher, options } = field;
   if (!ref || !ref.type) return;
   const { name, type } = ref;
 

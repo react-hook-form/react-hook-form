@@ -62,7 +62,6 @@ typings/
 /lib
 /dist
 .idea/
-/coverage
 .rpt2_cache
 .coveralls.yml
 package-lock.json
