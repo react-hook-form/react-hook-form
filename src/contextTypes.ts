@@ -13,11 +13,11 @@ import {
 } from './types';
 
 export interface FormProps<
-    Data extends DataType = DataType,
-    Name extends keyof Data = keyof Data,
-    Value = Data[Name]
-    > extends FormContextValues<Data, Name, Value> {
-    children: JSX.Element[] | JSX.Element;
+  Data extends DataType = DataType,
+  Name extends keyof Data = keyof Data,
+  Value = Data[Name]
+> extends FormContextValues<Data, Name, Value> {
+  children: JSX.Element[] | JSX.Element;
 }
 
 export interface FormContextValues<
