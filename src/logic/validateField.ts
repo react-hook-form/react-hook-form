@@ -123,7 +123,7 @@ export default async (
   }
 
   if (validate) {
-    const fieldValue = getFieldsValue(fields, ref) || value;
+    const fieldValue = getFieldsValue(fields, ref);
     const validateRef = isRadio && options ? options[0].ref : ref;
 
     if (isFunction(validate)) {
