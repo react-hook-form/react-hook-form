@@ -30,7 +30,7 @@ import {
   FieldValue,
   Props,
   Ref,
-  RegisterInput,
+  ValidationOptions,
   SubmitPromiseResult,
   OnSubmit,
   ValidationPayload,
@@ -421,7 +421,7 @@ export default function useForm<
 
   function __registerIntoFieldsRef<Element extends ElementLike>(
     elementRef: Element,
-    data: RegisterInput = {},
+    data: ValidationOptions = {},
   ): void {
     if (!elementRef.name) return console.warn('Miss name', elementRef);
 
@@ -509,15 +509,15 @@ export default function useForm<
   }
 
   function register<Element extends ElementLike = ElementLike>(
-    validateRule: RegisterInput,
+    validateRule: ValidationOptions,
   ): (ref: Element | null) => void;
   function register<Element extends ElementLike = ElementLike>(
     input: Element,
-    validationOptions?: RegisterInput,
+    validationOptions?: ValidationOptions,
   ): undefined;
   function register<Element extends ElementLike = ElementLike>(
-    refOrValidateRule: Element | RegisterInput,
-    validationOptions?: RegisterInput,
+    refOrValidateRule: Element | ValidationOptions,
+    validationOptions?: ValidationOptions,
   ): ((ref: Element | null) => void) | undefined {
     if (typeof window === 'undefined' || !refOrValidateRule) return;
 

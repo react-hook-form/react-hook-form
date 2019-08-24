@@ -32,14 +32,16 @@ export interface MutationWatcher {
 
 export type Ref = any;
 
-export interface RegisterInput {
+type ValidationOptionObject<T> = T | { value: T; message: string };
+
+export interface ValidationOptions {
   ref?: Ref;
   required?: boolean | string;
-  min?: NumberOrString | { value: NumberOrString; message: string };
-  max?: NumberOrString | { value: NumberOrString; message: string };
-  maxLength?: number | { value: number; message: string };
-  minLength?: number | { value: number; message: string };
-  pattern?: RegExp | { value: RegExp; message: string };
+  min?: ValidationOptionObject<number | string>;
+  max?: ValidationOptionObject<number | string>;
+  maxLength?: ValidationOptionObject<number | string>;
+  minLength?: ValidationOptionObject<number | string>;
+  pattern?: ValidationOptionObject<RegExp>;
   validate?:
     | Validate
     | Record<string, Validate>
@@ -47,14 +49,14 @@ export interface RegisterInput {
 }
 
 export type ValidatePromiseResult =
-    | {}
-    | void
-    | {
-  type: string;
-  message: string | number | boolean | Date;
-};
+  | {}
+  | void
+  | {
+      type: string;
+      message: string | number | boolean | Date;
+    };
 
-export interface Field extends RegisterInput {
+export interface Field extends ValidationOptions {
   ref: Ref;
   watch?: boolean;
   mutationWatcher?: MutationWatcher;
@@ -135,11 +137,11 @@ export interface FormContextValues<
   Value = Data[Name]
 > {
   register<Element extends ElementLike = ElementLike>(
-    validateRule: RegisterInput,
+    validateRule: ValidationOptions,
   ): (instance: Element | null) => void;
   register<Element extends ElementLike = ElementLike>(
     instance: Element,
-    validationOptions?: RegisterInput,
+    validationOptions?: ValidationOptions,
   ): undefined;
   unregister(name: Name | string): void;
   unregister(names: (Name | string)[]): void;
