@@ -209,7 +209,7 @@ export default function useForm<
       reRenderForm({});
       return isEmptyObject(errorsRef.current);
     },
-    [validationSchema],
+    [validationSchema, validationSchemaOption],
   );
 
   const triggerValidation = useCallback(
