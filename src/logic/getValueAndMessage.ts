@@ -1,7 +1,7 @@
 import isNullOrUndefined from '../utils/isNullOrUndefined';
 import isObject from '../utils/isObject';
 import { ValidationTypes } from '../types';
-import isRegex from "../utils/isRegex";
+import isRegex from '../utils/isRegex';
 
 export default (
   validationData?:
@@ -10,19 +10,17 @@ export default (
 ): {
   value: ValidationTypes;
   message: string;
-} => {
-  return {
-    value:
-      isObject(validationData) &&
-      !isRegex(validationData) &&
-      !isNullOrUndefined(validationData.value)
-        ? validationData.value
-        : validationData as any,
-    message:
-      isObject(validationData) &&
-      !(validationData instanceof RegExp) &&
-      validationData.message
-        ? validationData.message
-        : '',
-  };
-};
+} => ({
+  value:
+    isObject(validationData) &&
+    !isRegex(validationData) &&
+    !isNullOrUndefined(validationData.value)
+      ? validationData.value
+      : (validationData as any),
+  message:
+    isObject(validationData) &&
+    !(validationData instanceof RegExp) &&
+    validationData.message
+      ? validationData.message
+      : '',
+});
