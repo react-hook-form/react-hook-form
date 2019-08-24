@@ -1,5 +1,6 @@
 import * as React from 'react';
-import { FormContextValues, FormProps, DataType } from './types';
+import { DataType } from './types';
+import { FormContextValues, FormProps } from './contextTypes';
 
 const FormGlobalContext = React.createContext<FormContextValues<
   DataType

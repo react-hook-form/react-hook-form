@@ -28,7 +28,7 @@ import {
   Field,
   FieldsObject,
   FieldValue,
-  Props,
+  Options,
   Ref,
   ValidationOptions,
   SubmitPromiseResult,
@@ -48,7 +48,7 @@ export default function useForm<
   nativeValidation,
   submitFocusError = true,
   validationSchemaOption = { abortEarly: false },
-}: Props<Data> = {}) {
+}: Options<Data> = {}) {
   const fieldsRef = useRef<FieldsObject<Data>>({});
   const errorsRef = useRef<ErrorMessages<Data>>({});
   const schemaErrorsRef = useRef<DataType>({});
