@@ -530,7 +530,7 @@ export default function useForm<
     validationOptions?: ValidationOptions,
   ): undefined;
   function register<Element extends ElementLike = ElementLike>(
-    refOrValidateRule: Element | ValidationOptions,
+    refOrValidateRule: ValidationOptions | Element,
     validationOptions?: ValidationOptions,
   ): ((ref: Element | null) => void) | undefined {
     if (typeof window === 'undefined' || !refOrValidateRule) return;
