@@ -67,7 +67,7 @@ export interface Field extends ValidationOptions {
   watch?: boolean;
   mutationWatcher?: MutationWatcher;
   options?: {
-    ref?: Ref;
+    ref: Ref;
     mutationWatcher?: MutationWatcher;
   }[];
 }
