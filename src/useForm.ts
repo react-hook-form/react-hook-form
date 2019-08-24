@@ -47,6 +47,7 @@ export default function useForm<
   validationFields,
   nativeValidation,
   submitFocusError = true,
+  validationSchemaOption = { abortEarly: false },
 }: Props<Data> = {}) {
   const fieldsRef = useRef<FieldsObject<Data>>({});
   const errorsRef = useRef<ErrorMessages<Data>>({});
@@ -181,6 +182,7 @@ export default function useForm<
     ): Promise<boolean> => {
       const { fieldErrors } = await validateWithSchema(
         validationSchema,
+        validationSchemaOption,
         combineFieldValues(getFieldsValues(fieldsRef.current)),
       );
       const names = isArray(payload)
@@ -276,6 +278,7 @@ export default function useForm<
         if (validationSchema) {
           const { fieldErrors } = await validateWithSchema(
             validationSchema,
+            validationSchemaOption,
             combineFieldValues(getFieldsValues(fields)),
           );
           schemaErrorsRef.current = fieldErrors;
@@ -563,6 +566,7 @@ export default function useForm<
       fieldValues = getFieldsValues(fields);
       const output = await validateWithSchema(
         validationSchema,
+        validationSchemaOption,
         combineFieldValues(fieldValues),
       );
       schemaErrorsRef.current = output.fieldErrors;

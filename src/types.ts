@@ -5,8 +5,6 @@ export type FieldValue = any;
 
 export type Validate = (data: FieldValue) => string | boolean;
 
-export type NumberOrString = number | string;
-
 export type DataType = Record<string, FieldValue>;
 
 export type OnSubmit<Data extends DataType> = (
@@ -16,12 +14,21 @@ export type OnSubmit<Data extends DataType> = (
 
 export type Mode = keyof typeof VALIDATION_MODE;
 
+export interface SchemaValidateOptions {
+  strict?: boolean;
+  abortEarly?: boolean;
+  stripUnknown?: boolean;
+  recursive?: boolean;
+  context?: object;
+}
+
 export interface Props<Data extends DataType> {
   mode?: Mode;
   defaultValues?: Partial<Data>;
   nativeValidation?: boolean;
   validationFields?: (keyof Data)[];
   validationSchema?: any;
+  validationSchemaOption?: SchemaValidateOptions;
   submitFocusError?: boolean;
 }
 
@@ -92,7 +99,7 @@ export type VoidFunction = () => void;
 
 export interface RadioReturn {
   isValid: boolean;
-  value: NumberOrString;
+  value: number | string;
 }
 
 export type FieldErrors = Record<string, string>;
