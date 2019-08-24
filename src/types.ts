@@ -14,23 +14,23 @@ export type OnSubmit<Data extends DataType> = (
 
 export type Mode = keyof typeof VALIDATION_MODE;
 
-export interface SchemaValidateOptions {
-  strict?: boolean;
-  abortEarly?: boolean;
-  stripUnknown?: boolean;
-  recursive?: boolean;
-  context?: object;
-}
+export type SchemaValidateOptions = Partial<{
+  strict: boolean;
+  abortEarly: boolean;
+  stripUnknown: boolean;
+  recursive: boolean;
+  context: object;
+}>;
 
-export interface Props<Data extends DataType> {
-  mode?: Mode;
-  defaultValues?: Partial<Data>;
-  nativeValidation?: boolean;
-  validationFields?: (keyof Data)[];
-  validationSchema?: any;
-  validationSchemaOption?: SchemaValidateOptions;
-  submitFocusError?: boolean;
-}
+export type Options<Data extends DataType> = Partial<{
+  mode: Mode;
+  defaultValues: Partial<Data>;
+  nativeValidation: boolean;
+  validationFields: (keyof Data)[];
+  validationSchema: any;
+  validationSchemaOption: SchemaValidateOptions;
+  submitFocusError: boolean;
+}>;
 
 export interface MutationWatcher {
   disconnect: () => void;
@@ -41,8 +41,7 @@ export type Ref = any;
 
 type ValidationOptionObject<T> = T | { value: T; message: string };
 
-export interface ValidationOptions {
-  ref?: Ref;
+export type ValidationOptions = Partial<{
   required?: boolean | string;
   min?: ValidationOptionObject<number | string>;
   max?: ValidationOptionObject<number | string>;
@@ -53,7 +52,7 @@ export interface ValidationOptions {
     | Validate
     | Record<string, Validate>
     | { value: Validate | Record<string, Validate>; message: string };
-}
+}>;
 
 export type ValidatePromiseResult =
   | {}
@@ -126,49 +125,6 @@ export interface FormState<
   isValid: boolean;
 }
 
-export interface FormProps<
-  Data extends DataType = DataType,
-  Name extends keyof Data = keyof Data,
-  Value = Data[Name]
-> extends FormContextValues<Data, Name, Value> {
-  children: JSX.Element[] | JSX.Element;
-}
-
 export type ElementLike<Element = HTMLInputElement> = {
   name: string;
 } & Partial<Element>;
-
-export interface FormContextValues<
-  Data extends DataType = DataType,
-  Name extends keyof Data = keyof Data,
-  Value = Data[Name]
-> {
-  register<Element extends ElementLike = ElementLike>(
-    validateRule: ValidationOptions,
-  ): (instance: Element | null) => void;
-  register<Element extends ElementLike = ElementLike>(
-    instance: Element,
-    validationOptions?: ValidationOptions,
-  ): undefined;
-  unregister(name: Name | string): void;
-  unregister(names: (Name | string)[]): void;
-  handleSubmit: (
-    callback: OnSubmit<Data>,
-  ) => (e: React.SyntheticEvent) => Promise<void>;
-  watch(): Data;
-  watch(field: Name | string, defaultValue?: string): FieldValue | void;
-  watch(
-    fields: (Name | string)[],
-    defaultValues?: Partial<Data>,
-  ): Partial<Data>;
-  reset: VoidFunction;
-  clearError: (name?: Name | Name[]) => void;
-  setError: (name: Name, type: string, message?: string, ref?: Ref) => void;
-  setValue: (name: Name, value: Value, shouldValidate?: boolean) => void;
-  triggerValidation: (
-    payload: ValidationPayload<Name, Value> | ValidationPayload<Name, Value>[],
-  ) => Promise<boolean>;
-  getValues: (payload?: { nest: boolean }) => Data;
-  errors: ObjectErrorMessages<Data>;
-  formState: FormState<Data, Name>;
-}
