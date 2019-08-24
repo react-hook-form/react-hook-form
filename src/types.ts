@@ -41,6 +41,8 @@ export type Ref = any;
 
 type ValidationOptionObject<T> = T | { value: T; message: string };
 
+export type ValidationTypes = number | string | RegExp;
+
 export type ValidationOptions = Partial<{
   required: boolean | string;
   min: ValidationOptionObject<number | string>;

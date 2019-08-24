@@ -12,6 +12,7 @@ import { Field, ErrorMessages, FieldValues, ValidatePromiseResult } from '../typ
 import isFunction from '../utils/isFunction';
 import isBoolean from '../utils/isBoolean';
 import getFieldsValue from './getFieldValue';
+import isRegex from "../utils/isRegex";
 
 export default async (
   {
@@ -111,7 +112,7 @@ export default async (
       pattern,
     );
 
-    if (patternValue instanceof RegExp && !patternValue.test(value)) {
+    if (isRegex(patternValue) && !patternValue.test(value)) {
       error[name] = {
         type: 'pattern',
         message: patternMessage,
