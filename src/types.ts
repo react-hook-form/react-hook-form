@@ -130,7 +130,7 @@ export interface FormContextValues<
     validateRule: RegisterInput,
   ): (instance: Element | null) => void;
   register<Element extends ElementLike = ElementLike>(
-    instance: Element,
+    instance: Element | null,
     validationOptions?: RegisterInput,
   ): undefined;
   unregister(name: Name | string): void;

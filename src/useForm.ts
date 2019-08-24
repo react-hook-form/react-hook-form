@@ -489,10 +489,15 @@ export default function useForm<
     }
   }
 
-  function register<Element extends ElementLike = ElementLike>(validateRule: RegisterInput): (ref: Element | null) => void;
-  function register<Element extends ElementLike = ElementLike>(input: Element, validationOptions?: RegisterInput): undefined;
   function register<Element extends ElementLike = ElementLike>(
-    refOrValidateRule: Element | RegisterInput,
+    validateRule: RegisterInput,
+  ): (ref: Element | null) => void;
+  function register<Element extends ElementLike = ElementLike>(
+    input: Element | null,
+    validationOptions?: RegisterInput,
+  ): undefined;
+  function register<Element extends ElementLike = ElementLike>(
+    refOrValidateRule: Element | null | RegisterInput,
     validationOptions?: RegisterInput,
   ): ((ref: Element | null) => void) | undefined {
     if (typeof window === 'undefined' || !refOrValidateRule) {
@@ -512,7 +517,8 @@ export default function useForm<
       return;
     }
 
-    return (ref: Element | null) => ref && __registerIntoFieldsRef(ref, refOrValidateRule);
+    return (ref: Element | null) =>
+      ref && __registerIntoFieldsRef(ref, refOrValidateRule);
   }
 
   function unregister(name: Name | string): void;
