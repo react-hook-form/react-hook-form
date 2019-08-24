@@ -23,7 +23,7 @@ import onDomRemove from './utils/onDomRemove';
 import modeChecker from './utils/validationModeChecker';
 import { VALIDATION_MODE } from './constants';
 import {
-  DataType,
+  FieldValues,
   ErrorMessages,
   Field,
   FieldsObject,
@@ -39,7 +39,7 @@ import {
 } from './types';
 
 export default function useForm<
-  FormValues extends DataType,
+  FormValues extends FieldValues,
   FieldName extends keyof FormValues = keyof FormValues
 >({
   mode = VALIDATION_MODE.onSubmit,
@@ -665,7 +665,7 @@ export default function useForm<
     isSchemaValidateTriggeredRef.current = false;
   };
 
-  const reset = useCallback((values?: DataType): void => {
+  const reset = useCallback((values?: FieldValues): void => {
     const fields = fieldsRef.current;
     const fieldsKeyValue = Object.entries(fields);
 

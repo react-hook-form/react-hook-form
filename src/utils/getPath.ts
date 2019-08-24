@@ -1,9 +1,9 @@
 import flatArray from './flatArray';
 import isString from './isString';
 import isObject from './isObject';
-import { DataType } from '../types';
+import { FieldValues } from '../types';
 
-const getPath = (path: string, values: DataType | string[] | string): any =>
+const getPath = (path: string, values: FieldValues | string[] | string): any =>
   Array.isArray(values)
     ? values.map((item, index) => {
         const pathWithIndex = `${path}[${index}]`;

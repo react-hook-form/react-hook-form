@@ -1,9 +1,9 @@
 import isNullOrUndefined from '../utils/isNullOrUndefined';
-import { DataType } from '../types';
+import { FieldValues } from '../types';
 import isObject from '../utils/isObject';
 
 export default (
-  item?: DataType | number | string,
+  item?: FieldValues | number | string,
 ): {
   value: number | string | RegExp;
   message: string;

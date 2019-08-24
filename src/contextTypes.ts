@@ -1,6 +1,6 @@
 import * as React from 'react';
 import {
-  DataType,
+  FieldValues,
   ElementLike,
   FieldValue,
   FormState,
@@ -13,7 +13,7 @@ import {
 } from './types';
 
 export interface FormProps<
-  Data extends DataType = DataType,
+  Data extends FieldValues = FieldValues,
   Name extends keyof Data = keyof Data,
   Value = Data[Name]
 > extends FormContextValues<Data, Name, Value> {
@@ -21,7 +21,7 @@ export interface FormProps<
 }
 
 export interface FormContextValues<
-  Data extends DataType = DataType,
+  Data extends FieldValues = FieldValues,
   Name extends keyof Data = keyof Data,
   Value = Data[Name]
 > {

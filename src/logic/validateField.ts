@@ -8,7 +8,7 @@ import isEmptyObject from '../utils/isEmptyObject';
 import displayNativeError from './displayNativeError';
 import isObject from '../utils/isObject';
 import { DATE_INPUTS, STRING_INPUTS } from '../constants';
-import { Field, ErrorMessages, DataType, ValidatePromiseResult } from '../types';
+import { Field, ErrorMessages, FieldValues, ValidatePromiseResult } from '../types';
 import isFunction from '../utils/isFunction';
 import isBoolean from '../utils/isBoolean';
 import getFieldsValue from './getFieldValue';
@@ -26,10 +26,10 @@ export default async (
     pattern,
     validate,
   }: Field,
-  fields: DataType,
+  fields: FieldValues,
   nativeValidation?: boolean,
 ): Promise<ErrorMessages<any>> => {
-  const error: DataType = {};
+  const error: FieldValues = {};
   const isRadio = isRadioInput(type);
   const isCheckBox = isCheckBoxInput(type);
   const isSelectOrInput = !isCheckBox && !isRadio;
