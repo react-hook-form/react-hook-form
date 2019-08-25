@@ -1,9 +1,9 @@
+import combineFieldValues from './combineFieldValues';
 import get from '../utils/get';
 import getPath from '../utils/getPath';
-import combineFieldValues from './combineFieldValues';
-import { FieldValues } from '../types';
 import isEmptyObject from '../utils/isEmptyObject';
 import isUndefined from '../utils/isUndefined';
+import { FieldValues } from '../types';
 
 export default (
   fieldValues: FieldValues,
@@ -11,13 +11,14 @@ export default (
   watchFields: { [key: string]: boolean },
 ) => {
   if (isEmptyObject(fieldValues) || isUndefined(fieldValues)) return undefined;
+
   if (!isUndefined(fieldValues[fieldName])) {
     watchFields[fieldName] = true;
     return fieldValues[fieldName];
   }
 
-  const combinedValues = combineFieldValues(fieldValues);
-  const values = get(combinedValues, fieldName);
+  const values = get(combineFieldValues(fieldValues), fieldName);
+
   if (values !== undefined) {
     const result = getPath(fieldName, values);
     if (Array.isArray(result)) {
@@ -26,5 +27,6 @@ export default (
       });
     }
   }
+
   return values;
 };

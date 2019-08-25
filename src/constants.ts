@@ -1,3 +1,5 @@
+import { ValidationMode } from './types';
+
 export const DATE_INPUTS = [
   'date',
   'time',
@@ -17,7 +19,7 @@ export const STRING_INPUTS = [
   'textarea',
 ];
 
-export const VALIDATION_MODE = {
+export const VALIDATION_MODE: ValidationMode = {
   onBlur: 'onBlur',
   onChange: 'onChange',
   onSubmit: 'onSubmit',

@@ -1,5 +1,4 @@
 import * as React from 'react';
-import { VALIDATION_MODE } from './constants';
 
 export type FieldValue = any;
 
@@ -12,7 +11,13 @@ export type OnSubmit<Data extends FieldValues> = (
   e: React.SyntheticEvent,
 ) => void | Promise<void>;
 
-export type Mode = keyof typeof VALIDATION_MODE;
+export type ValidationMode = {
+  onBlur: 'onBlur';
+  onChange: 'onChange';
+  onSubmit: 'onSubmit';
+}
+
+type Mode = keyof ValidationMode;
 
 export type SchemaValidateOptions = Partial<{
   strict: boolean;

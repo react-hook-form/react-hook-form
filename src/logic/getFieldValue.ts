@@ -2,6 +2,7 @@ import getRadioValue from './getRadioValue';
 import getMultipleSelectValue from './getMultipleSelectValue';
 import isRadioInput from '../utils/isRadioInput';
 import isCheckBox from '../utils/isCheckBoxInput';
+import isUndefined from '../utils/isUndefined';
 import { FieldsObject, FieldValue, Ref, FieldValues } from '../types';
 
 export default function getFieldValue<Data extends FieldValues>(
@@ -16,12 +17,16 @@ export default function getFieldValue<Data extends FieldValues>(
 
   if (type === 'select-multiple') return getMultipleSelectValue(options);
 
-  if (isCheckBox(type))
-    return checked
-      ? ref.attributes && ref.attributes.value
-        ? value
-        : true
-      : false;
+  if (isCheckBox(type)) {
+    if (checked) {
+      return ref.attributes && ref.attributes.value
+        ? isUndefined(value)
+          ? true
+          : value
+        : true;
+    }
+    return false;
+  }
 
   return value;
 }
