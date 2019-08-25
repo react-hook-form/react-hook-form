@@ -74,12 +74,6 @@ export interface Field extends ValidationOptions {
   }[];
 }
 
-export enum ValidationModes {
-  onBlur = 'onBlur',
-  onChange = 'onChange',
-  onSubmit = 'onSubmit',
-}
-
 export type FieldsObject<Data extends FieldValues> = {
   [Key in keyof Data]?: Field;
 };
