@@ -521,7 +521,7 @@ export default function useForm<
   }
 
   function register<Element extends ElementLike = ElementLike>(
-      validateRule: ValidationOptions,
+    validateRule: ValidationOptions,
   ): (ref: Element | null) => void;
   function register<Element extends ElementLike = ElementLike>(
     ref: Element | null,
