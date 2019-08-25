@@ -433,12 +433,12 @@ export default function useForm<
   }
 
   function __registerIntoFieldsRef<Element extends ElementLike>(
-    elementRef: Element,
+    ref: Element,
     validateOptions: ValidationOptions = {},
   ): void {
-    if (!elementRef.name) return console.warn('Miss name', elementRef);
+    if (!ref.name) return console.warn('Miss name', ref);
 
-    const { name, type, value } = elementRef;
+    const { name, type, value } = ref;
 
     if (!isOnSubmit && validateOptions && !isEmptyObject(validateOptions)) {
       fieldsWithValidationRef.current.add(name);
@@ -446,8 +446,8 @@ export default function useForm<
 
     const { required, validate } = validateOptions;
     const fieldAttributes = {
+      ref,
       ...validateOptions,
-      ref: elementRef,
     };
     const fields: FieldValues = fieldsRef.current;
     const fieldDefaultValues = defaultValuesRef.current;
@@ -461,7 +461,7 @@ export default function useForm<
     if ((!isRadio && field) || (isRadio && existRadioOptionIndex > -1)) return;
 
     if (!type) {
-      fields[name] = { ref: elementRef, ...validateOptions };
+      fields[name] = fieldAttributes;
     } else {
       if (isRadio) {
         if (!field)
@@ -475,14 +475,14 @@ export default function useForm<
 
         fields[name].options.push({
           ...fieldAttributes,
-          mutationWatcher: onDomRemove(elementRef, () =>
+          mutationWatcher: onDomRemove(ref, () =>
             removeEventListenerAndRef(fieldAttributes),
           ),
         });
       } else {
         fields[name] = {
           ...fieldAttributes,
-          mutationWatcher: onDomRemove(elementRef, () =>
+          mutationWatcher: onDomRemove(ref, () =>
             removeEventListenerAndRef(fieldAttributes),
           ),
         };
@@ -510,7 +510,7 @@ export default function useForm<
     if (!updatedField) return;
 
     if (nativeValidation && validateOptions) {
-      attachNativeValidation(elementRef, validateOptions);
+      attachNativeValidation(ref, validateOptions);
     } else {
       attachEventListeners({
         field: updatedField,
@@ -596,7 +596,7 @@ export default function useForm<
           const resolvedPrevious: any = await previous;
           const {
             ref,
-            ref: { name },
+            ref: { name, focus },
           } = field;
 
           if (!fields[name]) return Promise.resolve(resolvedPrevious);
@@ -608,7 +608,7 @@ export default function useForm<
           );
 
           if (fieldError[name]) {
-            if (submitFocusError && firstFocusError && ref.focus) {
+            if (submitFocusError && firstFocusError && focus) {
               ref.focus();
               firstFocusError = false;
             }
@@ -664,8 +664,7 @@ export default function useForm<
   };
 
   const reset = useCallback((values?: FieldValues): void => {
-    const fields = fieldsRef.current;
-    const fieldsKeyValue = Object.entries(fields);
+    const fieldsKeyValue = Object.entries(fieldsRef.current);
 
     for (let [, value] of fieldsKeyValue) {
       if (value && value.ref && value.ref.closest) {
