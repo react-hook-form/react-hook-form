@@ -11,7 +11,7 @@ export type OnSubmit<Data extends FieldValues> = (
   e: React.SyntheticEvent,
 ) => void | Promise<void>;
 
-export type ValidationMode = {
+export interface ValidationMode {
   onBlur: 'onBlur';
   onChange: 'onChange';
   onSubmit: 'onSubmit';
