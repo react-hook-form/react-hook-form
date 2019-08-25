@@ -2,7 +2,7 @@ import * as React from 'react';
 import { renderHook, act } from '@testing-library/react-hooks';
 import useForm from './';
 import attachEventListeners from './logic/attachEventListeners';
-import getFieldsValues from './logic/getFieldsValues';
+import getFieldsValues from './logic/getFieldValues';
 import findRemovedFieldAndRemoveListener from './logic/findRemovedFieldAndRemoveListener';
 import validateWithSchema from './logic/validateWithSchema';
 import validateField from './logic/validateField';
@@ -13,7 +13,7 @@ jest.mock('./utils/onDomRemove');
 jest.mock('./logic/findRemovedFieldAndRemoveListener');
 jest.mock('./logic/validateField');
 jest.mock('./logic/attachEventListeners');
-jest.mock('./logic/getFieldsValues');
+jest.mock('./logic/getFieldValues');
 jest.mock('./logic/validateWithSchema');
 jest.mock('./logic/combineFieldValues', () => ({
   // @ts-ignore

@@ -12,12 +12,12 @@ function isIndex(value: any) {
   return reIsUint.test(value) && value > -1;
 }
 
-export function isKey(value: any) {
+export function isKey(value: [] | string) {
   if (isArray(value)) return false;
   return reIsPlainProp.test(value) || !reIsDeepProp.test(value);
 }
 
-const stringToPath = (string: string) => {
+const stringToPath = (string: string): string[] => {
   const result: string[] = [];
   string.replace(
     rePropName,

@@ -1,1 +1,1 @@
-export default (value: any): value is RegExp => value instanceof RegExp;
+export default (value: unknown): value is RegExp => value instanceof RegExp;

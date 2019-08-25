@@ -22,5 +22,5 @@ const getPath = (path: string, values: FieldValues | string[] | string): any =>
         isString(objectValue) ? `${path}.${key}` : getPath(path, objectValue),
       );
 
-export default (parentPath: string, value: any) =>
+export default (parentPath: string, value: FieldValues) =>
   flatArray(getPath(parentPath, value));

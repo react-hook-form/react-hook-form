@@ -2,7 +2,7 @@ import React, { useRef, useState, useCallback, useEffect } from 'react';
 import attachEventListeners from './logic/attachEventListeners';
 import combineFieldValues from './logic/combineFieldValues';
 import findRemovedFieldAndRemoveListener from './logic/findRemovedFieldAndRemoveListener';
-import getFieldsValues from './logic/getFieldsValues';
+import getFieldsValues from './logic/getFieldValues';
 import getFieldValue from './logic/getFieldValue';
 import shouldUpdateWithError from './logic/shouldUpdateWithError';
 import validateField from './logic/validateField';
@@ -685,8 +685,8 @@ export default function useForm<
   }, []);
 
   const getValues = (payload?: { nest: boolean }): FormValues => {
-    const data = getFieldsValues<FormValues>(fieldsRef.current);
-    const output = payload && payload.nest ? combineFieldValues(data) : data;
+    const fieldValues = getFieldsValues<FormValues>(fieldsRef.current);
+    const output = payload && payload.nest ? combineFieldValues(fieldValues) : fieldValues;
     return isEmptyObject(output) ? defaultValues : output;
   };
 
