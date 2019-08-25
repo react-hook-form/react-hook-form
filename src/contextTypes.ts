@@ -26,8 +26,8 @@ export interface FormContextValues<
   Value = Data[Name]
 > {
   register<Element extends ElementLike = ElementLike>(
-    ref: Element | null,
-  ): (validateRule: ValidationOptions) => void;
+    validateRule: ValidationOptions,
+  ): (ref: Element | null) => void;
   register<Element extends ElementLike = ElementLike>(
     ref: Element | null,
     validationOptions?: ValidationOptions,
