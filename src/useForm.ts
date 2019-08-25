@@ -426,7 +426,7 @@ export default function useForm<
 
     isWatchAllRef.current = true;
     return (
-      (isEmptyObject(fieldValues) ? undefined : fieldValues) ||
+      (!isEmptyObject(fieldValues) && fieldValues) ||
       defaultValue ||
       defaultValues
     );
@@ -434,36 +434,34 @@ export default function useForm<
 
   function __registerIntoFieldsRef<Element extends ElementLike>(
     elementRef: Element,
-    data: ValidationOptions = {},
+    validateOptions: ValidationOptions = {},
   ): void {
     if (!elementRef.name) return console.warn('Miss name', elementRef);
 
     const { name, type, value } = elementRef;
 
-    if (!isOnSubmit && data && !isEmptyObject(data)) {
+    if (!isOnSubmit && validateOptions && !isEmptyObject(validateOptions)) {
       fieldsWithValidationRef.current.add(name);
     }
 
-    const { required = false, validate = undefined } = data || {};
-    const inputData = {
-      ...data,
+    const { required, validate } = validateOptions;
+    const fieldAttributes = {
+      ...validateOptions,
       ref: elementRef,
     };
-    const fields: any = fieldsRef.current;
+    const fields: FieldValues = fieldsRef.current;
     const fieldDefaultValues = defaultValuesRef.current;
     const isRadio = isRadioInput(type);
     const field = fields[name];
     const existRadioOptionIndex =
       isRadio && field && isArray(field.options)
-        ? field.options.findIndex(
-            ({ ref }: { ref: Ref }): boolean => value === ref.value,
-          )
+        ? field.options.findIndex(({ ref }: Field) => value === ref.value)
         : -1;
 
     if ((!isRadio && field) || (isRadio && existRadioOptionIndex > -1)) return;
 
     if (!type) {
-      fields[name] = { ref: { name }, ...data };
+      fields[name] = { ref: elementRef, ...validateOptions };
     } else {
       if (isRadio) {
         if (!field)
@@ -473,19 +471,19 @@ export default function useForm<
             validate,
             ref: { type: 'radio', name },
           };
-        if (validate) fields[name]!.validate = validate;
+        if (validate) fields[name].validate = validate;
 
-        (fields[name].options || []).push({
-          ...inputData,
+        fields[name].options.push({
+          ...fieldAttributes,
           mutationWatcher: onDomRemove(elementRef, () =>
-            removeEventListenerAndRef(inputData),
+            removeEventListenerAndRef(fieldAttributes),
           ),
         });
       } else {
         fields[name] = {
-          ...inputData,
+          ...fieldAttributes,
           mutationWatcher: onDomRemove(elementRef, () =>
-            removeEventListenerAndRef(inputData),
+            removeEventListenerAndRef(fieldAttributes),
           ),
         };
       }
@@ -505,17 +503,17 @@ export default function useForm<
 
     if (!type) return;
 
-    const fieldData = isRadio
-      ? (fields[name]!.options || [])[(fields[name]!.options || []).length - 1]
+    const updatedField = isRadio
+      ? fields[name].options[fields[name].options.length - 1]
       : fields[name];
 
-    if (!fieldData) return;
+    if (!updatedField) return;
 
-    if (nativeValidation && data) {
-      attachNativeValidation(elementRef, data);
+    if (nativeValidation && validateOptions) {
+      attachNativeValidation(elementRef, validateOptions);
     } else {
       attachEventListeners({
-        field: fieldData,
+        field: updatedField,
         isRadio,
         validateAndStateUpdate: validateAndStateUpdateRef.current,
       });
