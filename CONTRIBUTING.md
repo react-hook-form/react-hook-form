@@ -18,4 +18,4 @@ Welcome your pull requests for documentation and code. 🙏
 ### Contributors
 
 Thank you to all the people who have already contributed to styled-components!
-<a href="graphs/contributors"><img src="https://opencollective.com/react-hook-form/contributors.svg?width=890" /></a>
+<img src="https://opencollective.com/react-hook-form/contributors.svg?width=890" />
