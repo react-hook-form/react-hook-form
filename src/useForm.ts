@@ -524,13 +524,13 @@ export default function useForm<
     validateRule: ValidationOptions,
   ): (ref: Element | null) => void;
   function register<Element extends ElementLike = ElementLike>(
-    input: Element,
+    ref: Element | null,
     validationOptions?: ValidationOptions,
-  ): undefined;
+  ): void;
   function register<Element extends ElementLike = ElementLike>(
-    refOrValidateRule: ValidationOptions | Element,
+    refOrValidateRule: ValidationOptions | Element | null,
     validationOptions?: ValidationOptions,
-  ): ((ref: Element | null) => void) | undefined {
+  ): ((ref: Element | null) => void) | void {
     if (typeof window === 'undefined' || !refOrValidateRule) return;
 
     if (
@@ -686,7 +686,8 @@ export default function useForm<
 
   const getValues = (payload?: { nest: boolean }): FormValues => {
     const fieldValues = getFieldsValues<FormValues>(fieldsRef.current);
-    const output = payload && payload.nest ? combineFieldValues(fieldValues) : fieldValues;
+    const output =
+      payload && payload.nest ? combineFieldValues(fieldValues) : fieldValues;
     return isEmptyObject(output) ? defaultValues : output;
   };
 

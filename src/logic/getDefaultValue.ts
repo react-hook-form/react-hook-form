@@ -1,5 +1,6 @@
 import get from '../utils/get';
 import { FieldValue } from '../types';
+import isUndefined from '../utils/isUndefined';
 
 export default function getDefaultValue<
   Data extends FieldValue,
@@ -9,7 +10,7 @@ export default function getDefaultValue<
   name: Name,
   defaultValue?: any,
 ): Data[Name] | undefined {
-  return (
-    defaultValues[name] || get(defaultValues, name as string, defaultValue)
-  );
+  return isUndefined(defaultValues[name])
+    ? get(defaultValues, name as string, defaultValue)
+    : defaultValues[name];
 }
