@@ -14,3 +14,9 @@ Welcome your pull requests for documentation and code. 🙏
 8. Ensure bundleSize not exceed the limit.
 
 😅 Looks like there are quite a lot of requirements and quality control, but we are trying to deliver the best to our developers.
+
+### Contributors
+
+Thank you to all the people who have already contributed to React Hook Form!
+
+<img src="https://opencollective.com/react-hook-form/contributors.svg?width=890" />
