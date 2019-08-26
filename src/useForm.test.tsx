@@ -815,6 +815,23 @@ describe('useForm', () => {
 
       expect(result.current.formState.isValid).toBeFalsy();
     });
+
+    it('should return false when a validated field is invalid', () => {
+      const { result } = renderHook(() =>
+        useForm<{ input: string }>({
+          mode: VALIDATION_MODE.onBlur,
+        }),
+      );
+
+      act(() => {
+        result.current.register({ name: 'one', required: true, });
+        result.current.register({ name: 'input' });
+        result.current.setValue('input', "x")
+      });
+
+
+      expect(result.current.formState.isValid).toBeFalsy();
+    });
   });
 
   describe('when component unMount', () => {
