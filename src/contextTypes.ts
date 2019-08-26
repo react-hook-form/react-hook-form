@@ -32,10 +32,6 @@ export interface FormContextValues<
     ref: Element | null,
     validationOptions?: ValidationOptions,
   ): void;
-  register<Element extends ElementLike = ElementLike>(
-    refOrValidateRule: ValidationOptions | Element | null,
-    validationOptions?: ValidationOptions,
-  ): ((ref: Element | null) => void) | void;
   unregister(name: Name | string): void;
   unregister(names: (Name | string)[]): void;
   handleSubmit: (
