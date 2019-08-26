@@ -67,4 +67,4 @@ function App() {
 
 Thanks goes to these wonderful people:
 
-<img src="https://opencollective.com/react-hook-form/contributors.svg" />
+<img src="https://opencollective.com/react-hook-form/contributors.svg?width=900" />
