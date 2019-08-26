@@ -7,7 +7,6 @@ describe('useForm performance', () => {
   it('should not trigger extra render when user typing', () => {
     function Greeting() {
       const { register } = useForm({ mode: 'onChange' });
-      console.log('wtf');
       return (
         <form>
           <input data-testid="test" name="test" ref={register} />
@@ -19,7 +18,7 @@ describe('useForm performance', () => {
 
     const { getByTestId } = render(<GreetingWithProfiler />);
     const input = getByTestId('test');
-    fireEvent.change(input, { target: { value: 'TEST VALUE' } });
+    fireEvent.input(input, { target: { value: 'TEST VALUE' } });
     // @ts-ignore
     expect(input.value).toBe('TEST VALUE');
 
