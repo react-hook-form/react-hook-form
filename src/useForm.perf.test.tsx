@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { render, fireEvent } from '@testing-library/react';
 import useForm from './useForm';
+import { act } from 'react-test-renderer';
 const { withProfiler } = require('jest-react-profiler');
 
 describe('useForm performance', () => {
@@ -18,11 +19,13 @@ describe('useForm performance', () => {
 
     const { getByTestId } = render(<GreetingWithProfiler />);
     const input = getByTestId('test');
-    fireEvent.input(input, { target: { value: 'TEST VALUE' } });
-    // @ts-ignore
-    expect(input.value).toBe('TEST VALUE');
+    act(() => {
+      fireEvent.input(input, { target: { value: 'TEST VALUE' } });
+      // @ts-ignore
+      expect(input.value).toBe('TEST VALUE');
 
-    // @ts-ignore
-    expect(GreetingWithProfiler).toHaveCommittedTimes(1);
+      // @ts-ignore
+      expect(GreetingWithProfiler).toHaveCommittedTimes(1);
+    })
   });
 });
