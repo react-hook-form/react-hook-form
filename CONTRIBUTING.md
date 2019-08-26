@@ -17,5 +17,6 @@ Welcome your pull requests for documentation and code. 🙏
 
 ### Contributors
 
-Thank you to all the people who have already contributed to styled-components!
+Thank you to all the people who have already contributed to React Hook Form!
+
 <img src="https://opencollective.com/react-hook-form/contributors.svg?width=890" />
