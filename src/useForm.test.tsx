@@ -816,7 +816,7 @@ describe('useForm', () => {
       expect(result.current.formState.isValid).toBeFalsy();
     });
 
-    it('should return false when a validated field is invalid', () => {
+    it('should return false when a validated field is invalid', async () => {
       const { result } = renderHook(() =>
         useForm<{ input: string }>({
           mode: VALIDATION_MODE.onBlur,
@@ -831,7 +831,7 @@ describe('useForm', () => {
         };
       });
 
-      act(() => {
+      await act(async () => {
         result.current.register({ name: 'one' }, { required: true });
         result.current.register({ name: 'input' });
         result.current.setValue('input', 'x');

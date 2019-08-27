@@ -71,11 +71,10 @@ export default function useForm<
   const { isOnChange, isOnBlur, isOnSubmit } = useRef(
     modeChecker(mode),
   ).current;
-  const validateWithSchemaCurry = useCallback(validateWithSchema.bind(
-    null,
-    validationSchema,
-    validationSchemaOption,
-  ), []);
+  const validateWithSchemaCurry = useCallback(
+    validateWithSchema.bind(null, validationSchema, validationSchemaOption),
+    [],
+  );
 
   const combineErrorsRef = (data: ErrorMessages<FormValues>) => ({
     ...errorsRef.current,
@@ -505,8 +504,9 @@ export default function useForm<
           if (isEmptyObject(schemaErrorsRef.current)) reRenderForm({});
         });
       } else {
-        validateField(fields[name], fields).then(() => {
-          validFieldsRef.current.add(name);
+        validateField(fields[name], fields).then(error => {
+          if (isEmptyObject(error)) validFieldsRef.current.add(name);
+
           if (
             validFieldsRef.current.size === fieldsWithValidationRef.current.size
           )
