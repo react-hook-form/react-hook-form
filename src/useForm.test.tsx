@@ -839,6 +839,28 @@ describe('useForm', () => {
 
       expect(result.current.formState.isValid).toBeFalsy();
     });
+
+    it('should return true when default value is valid value', async () => {
+      const { result } = renderHook(() => useForm<{ input: string }>());
+
+      // @ts-ignore
+      validateField.mockImplementation(async () => {
+        return {
+          fieldErrors: {},
+          result: {},
+        };
+      });
+
+      await act(async () => {
+        result.current.register(
+          { name: 'one', value: 'test' },
+          { required: true },
+        );
+        result.current.register({ name: 'input' });
+      });
+
+      expect(result.current.formState.isValid).toBeTruthy();
+    });
   });
 
   describe('when component unMount', () => {
