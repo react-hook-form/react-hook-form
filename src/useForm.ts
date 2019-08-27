@@ -86,7 +86,8 @@ export default function useForm<
     ): boolean => {
       if (errorsFromRef[name] && !error[name]) {
         delete errorsRef.current[name];
-        validFieldsRef.current.add(name);
+        if (fieldsWithValidationRef.current.has(name))
+          validFieldsRef.current.add(name);
         if (shouldRender) reRenderForm({});
         return true;
       }
@@ -96,7 +97,8 @@ export default function useForm<
         return true;
       }
       if (!isOnSubmit && !validFieldsRef.current.has(name)) {
-        validFieldsRef.current.add(name);
+        if (fieldsWithValidationRef.current.has(name))
+          validFieldsRef.current.add(name);
         if (shouldRender) reRenderForm({});
         return true;
       }
