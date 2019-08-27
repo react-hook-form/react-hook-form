@@ -19,4 +19,4 @@ Welcome your pull requests for documentation and code. 🙏
 
 Thank you to all the people who have already contributed to React Hook Form!
 
-<img src="https://opencollective.com/react-hook-form/contributors.svg?width=890" />
+<img src="https://opencollective.com/react-hook-form/contributors.svg?width=950" />
