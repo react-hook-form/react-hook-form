@@ -331,16 +331,16 @@ describe('useForm', () => {
         }),
       );
 
+      // @ts-ignore
+      validateField.mockImplementation(async () => {
+        return {};
+      });
+
       act(() => {
         result.current.register(
           { type: 'input', name: 'test' },
           { required: true },
         );
-      });
-
-      // @ts-ignore
-      validateField.mockImplementation(async () => {
-        return {};
       });
 
       await act(async () => {
@@ -357,16 +357,16 @@ describe('useForm', () => {
         }),
       );
 
+      // @ts-ignore
+      validateField.mockImplementation(async () => {
+        return {};
+      });
+
       act(() => {
         result.current.register(
           { type: 'input', name: 'test' },
           { required: true },
         );
-      });
-
-      // @ts-ignore
-      validateField.mockImplementation(async () => {
-        return {};
       });
 
       await act(async () => {
@@ -396,19 +396,19 @@ describe('useForm', () => {
         }),
       );
 
-      act(() => {
-        result.current.register(
-          { type: 'input', name: 'test' },
-          { required: true },
-        );
-      });
-
       // @ts-ignore
       validateWithSchema.mockImplementation(async payload => {
         return {
           fieldErrors: payload,
           result: {},
         };
+      });
+
+      act(() => {
+        result.current.register(
+          { type: 'input', name: 'test' },
+          { required: true },
+        );
       });
 
       await act(async () => {
@@ -425,6 +425,14 @@ describe('useForm', () => {
         }),
       );
 
+      // @ts-ignore
+      validateWithSchema.mockImplementation(async payload => {
+        return {
+          fieldErrors: payload,
+          result: {},
+        };
+      });
+
       act(() => {
         result.current.register(
           { type: 'input', name: 'test1' },
@@ -434,14 +442,6 @@ describe('useForm', () => {
           { type: 'input', name: 'test2' },
           { required: true },
         );
-      });
-
-      // @ts-ignore
-      validateWithSchema.mockImplementation(async payload => {
-        return {
-          fieldErrors: payload,
-          result: {},
-        };
       });
 
       await act(async () => {
@@ -468,13 +468,6 @@ describe('useForm', () => {
         }),
       );
 
-      act(() => {
-        result.current.register(
-          { type: 'input', name: 'test' },
-          { required: true },
-        );
-      });
-
       // @ts-ignore
       validateWithSchema.mockImplementation(async () => {
         return {
@@ -483,6 +476,13 @@ describe('useForm', () => {
           },
           result: {},
         };
+      });
+
+      act(() => {
+        result.current.register(
+          { type: 'input', name: 'test' },
+          { required: true },
+        );
       });
 
       await act(async () => {
@@ -500,13 +500,6 @@ describe('useForm', () => {
         }),
       );
 
-      act(() => {
-        result.current.register(
-          { type: 'input', name: 'test' },
-          { required: true },
-        );
-      });
-
       // @ts-ignore
       validateWithSchema.mockImplementation(async () => {
         return {
@@ -516,6 +509,13 @@ describe('useForm', () => {
           },
           result: {},
         };
+      });
+
+      act(() => {
+        result.current.register(
+          { type: 'input', name: 'test' },
+          { required: true },
+        );
       });
 
       await act(async () => {
@@ -539,6 +539,14 @@ describe('useForm', () => {
         }),
       );
 
+      // @ts-ignore
+      validateWithSchema.mockImplementation(async payload => {
+        return {
+          fieldErrors: payload,
+          result: {},
+        };
+      });
+
       act(() => {
         result.current.register(
           { type: 'input', name: 'test1' },
@@ -552,14 +560,6 @@ describe('useForm', () => {
           { type: 'input', name: 'test3' },
           { required: true },
         );
-      });
-
-      // @ts-ignore
-      validateWithSchema.mockImplementation(async payload => {
-        return {
-          fieldErrors: payload,
-          result: {},
-        };
       });
 
       await act(async () => {
@@ -589,17 +589,6 @@ describe('useForm', () => {
         }),
       );
 
-      act(() => {
-        result.current.register(
-          { type: 'input', name: 'test' },
-          { required: true },
-        );
-        result.current.register(
-          { type: 'input', name: 'test1' },
-          { required: true },
-        );
-      });
-
       // @ts-ignore
       validateWithSchema.mockImplementation(async () => {
         return {
@@ -609,6 +598,17 @@ describe('useForm', () => {
           },
           result: {},
         };
+      });
+
+      act(() => {
+        result.current.register(
+          { type: 'input', name: 'test' },
+          { required: true },
+        );
+        result.current.register(
+          { type: 'input', name: 'test1' },
+          { required: true },
+        );
       });
 
       await act(async () => {
@@ -822,6 +822,14 @@ describe('useForm', () => {
           mode: VALIDATION_MODE.onBlur,
         }),
       );
+
+      // @ts-ignore
+      validateField.mockImplementation(async () => {
+        return {
+          fieldErrors: { test: 'issue' },
+          result: {},
+        };
+      });
 
       act(() => {
         result.current.register({ name: 'one' }, { required: true });

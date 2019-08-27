@@ -71,6 +71,11 @@ export default function useForm<
   const { isOnChange, isOnBlur, isOnSubmit } = useRef(
     modeChecker(mode),
   ).current;
+  const validateWithSchemaCurry = validateWithSchema.bind(
+    null,
+    validationSchema,
+    validationSchemaOption,
+  );
 
   const combineErrorsRef = (data: ErrorMessages<FormValues>) => ({
     ...errorsRef.current,
@@ -183,9 +188,7 @@ export default function useForm<
         | ValidationPayload<FieldName, FormValues[FieldName]>
         | ValidationPayload<FieldName, FormValues[FieldName]>[],
     ): Promise<boolean> => {
-      const { fieldErrors } = await validateWithSchema(
-        validationSchema,
-        validationSchemaOption,
+      const { fieldErrors } = await validateWithSchemaCurry(
         combineFieldValues(getFieldsValues(fieldsRef.current)),
       );
       const names = isArray(payload)
@@ -277,9 +280,7 @@ export default function useForm<
           return shouldUpdateState ? reRenderForm({}) : undefined;
 
         if (validationSchema) {
-          const { fieldErrors } = await validateWithSchema(
-            validationSchema,
-            validationSchemaOption,
+          const { fieldErrors } = await validateWithSchemaCurry(
             combineFieldValues(getFieldsValues(fields)),
           );
           schemaErrorsRef.current = fieldErrors;
@@ -495,13 +496,23 @@ export default function useForm<
     if (!isOnSubmit && validateOptions && !isEmptyObject(validateOptions)) {
       fieldsWithValidationRef.current.add(name);
 
-      validateField(fields[name], fields).then(() => {
-        validFieldsRef.current.add(name);
-        if (
-          validFieldsRef.current.size === fieldsWithValidationRef.current.size
-        )
-          reRenderForm({});
-      });
+      if (validationSchema) {
+        isSchemaValidateTriggeredRef.current = true;
+        validateWithSchemaCurry(
+          combineFieldValues(getFieldsValues(fields)),
+        ).then(({ fieldErrors }) => {
+          schemaErrorsRef.current = fieldErrors;
+          if (isEmptyObject(schemaErrorsRef.current)) reRenderForm({});
+        });
+      } else {
+        validateField(fields[name], fields).then(() => {
+          validFieldsRef.current.add(name);
+          if (
+            validFieldsRef.current.size === fieldsWithValidationRef.current.size
+          )
+            reRenderForm({});
+        });
+      }
     }
 
     if (!fieldDefaultValues[name as FieldName])
