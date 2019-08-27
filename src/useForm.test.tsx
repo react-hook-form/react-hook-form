@@ -824,11 +824,10 @@ describe('useForm', () => {
       );
 
       act(() => {
-        result.current.register({ name: 'one', required: true, });
+        result.current.register({ name: 'one' }, { required: true });
         result.current.register({ name: 'input' });
-        result.current.setValue('input', "x")
+        result.current.setValue('input', 'x');
       });
-
 
       expect(result.current.formState.isValid).toBeFalsy();
     });
