@@ -441,11 +441,6 @@ export default function useForm<
     if (!ref.name) return console.warn('Miss name', ref);
 
     const { name, type, value } = ref;
-
-    if (!isOnSubmit && validateOptions && !isEmptyObject(validateOptions)) {
-      fieldsWithValidationRef.current.add(name);
-    }
-
     const { required, validate } = validateOptions;
     const fieldAttributes = {
       ref,
@@ -495,6 +490,18 @@ export default function useForm<
       const defaultValue = getDefaultValue(defaultValues, name);
       if (!isUndefined(defaultValue))
         setFieldValue(name as FieldName, defaultValue);
+    }
+
+    if (!isOnSubmit && validateOptions && !isEmptyObject(validateOptions)) {
+      fieldsWithValidationRef.current.add(name);
+
+      validateField(fields[name], fields).then(() => {
+        validFieldsRef.current.add(name);
+        if (
+          validFieldsRef.current.size === fieldsWithValidationRef.current.size
+        )
+          reRenderForm({});
+      });
     }
 
     if (!fieldDefaultValues[name as FieldName])
