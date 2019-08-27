@@ -71,11 +71,11 @@ export default function useForm<
   const { isOnChange, isOnBlur, isOnSubmit } = useRef(
     modeChecker(mode),
   ).current;
-  const validateWithSchemaCurry = validateWithSchema.bind(
+  const validateWithSchemaCurry = useCallback(validateWithSchema.bind(
     null,
     validationSchema,
     validationSchemaOption,
-  );
+  ), []);
 
   const combineErrorsRef = (data: ErrorMessages<FormValues>) => ({
     ...errorsRef.current,
@@ -213,7 +213,7 @@ export default function useForm<
       reRenderForm({});
       return isEmptyObject(errorsRef.current);
     },
-    [validationSchema, validationSchemaOption],
+    [validateWithSchemaCurry],
   );
 
   const triggerValidation = useCallback(
