@@ -20,6 +20,7 @@ import isString from './utils/isString';
 import isSameError from './utils/isSameError';
 import isUndefined from './utils/isUndefined';
 import onDomRemove from './utils/onDomRemove';
+import isMultipleSelect from './utils/isMultipleSelect';
 import modeChecker from './utils/validationModeChecker';
 import { VALIDATION_MODE } from './constants';
 import {
@@ -84,11 +85,10 @@ export default function useForm<
   const renderBaseOnError = useCallback(
     (
       name: FieldName,
-      errorsFromRef: ErrorMessages<FormValues>,
       error: ErrorMessages<FormValues>,
       shouldRender: boolean = true,
     ): boolean => {
-      if (errorsFromRef[name] && !error[name]) {
+      if (errorsRef.current[name] && !error[name]) {
         delete errorsRef.current[name];
         if (fieldsWithValidationRef.current.has(name))
           validFieldsRef.current.add(name);
@@ -101,8 +101,7 @@ export default function useForm<
         return true;
       }
       if (!isOnSubmit && !validFieldsRef.current.has(name)) {
-        if (fieldsWithValidationRef.current.has(name))
-          validFieldsRef.current.add(name);
+        validFieldsRef.current.add(name);
         if (shouldRender) reRenderForm({});
         return true;
       }
@@ -113,19 +112,24 @@ export default function useForm<
 
   const setFieldValue = (
     name: FieldName,
-    value: Record<string, FieldValue> | undefined,
+    value: Record<string, FieldValue>,
   ): void => {
     const field = fieldsRef.current[name];
     if (!field) return;
     const ref = field.ref;
     const options = field.options;
+    const { type } = ref;
 
-    if (isRadioInput(ref.type) && options) {
+    if (isRadioInput(type) && options) {
       options.forEach(({ ref: radioRef }): void => {
         if (radioRef.value === value) radioRef.checked = true;
       });
+    } else if (isMultipleSelect(type)) {
+      [...ref.options].forEach(selectRef => {
+        if (value.includes(selectRef.value)) selectRef.selected = true;
+      });
     } else {
-      ref[isCheckBoxInput(ref.type) ? 'checked' : 'value'] = value;
+      ref[isCheckBoxInput(type) ? 'checked' : 'value'] = value;
     }
   };
 
@@ -168,14 +172,13 @@ export default function useForm<
       shouldRender: boolean = true,
     ): Promise<boolean> => {
       const field = fieldsRef.current[name]!;
-      const errors = errorsRef.current;
 
       if (!field) return false;
       if (value !== undefined) setValueInternal(name, value);
 
       const error = await validateField(field, fieldsRef.current);
       errorsRef.current = combineErrorsRef(error);
-      renderBaseOnError(name, errors, error, shouldRender);
+      renderBaseOnError(name, error, shouldRender);
       return isEmptyObject(error);
     },
     [renderBaseOnError, setValueInternal],
@@ -307,7 +310,7 @@ export default function useForm<
 
           if (shouldUpdate || shouldUpdateValidateMode) {
             errorsRef.current = combineErrorsRef(error);
-            if (renderBaseOnError(name, errorsRef.current, error)) return;
+            if (renderBaseOnError(name, error)) return;
           }
         }
 
