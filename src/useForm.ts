@@ -20,6 +20,7 @@ import isString from './utils/isString';
 import isSameError from './utils/isSameError';
 import isUndefined from './utils/isUndefined';
 import onDomRemove from './utils/onDomRemove';
+import isMultipleSelect from './utils/isMultipleSelect';
 import modeChecker from './utils/validationModeChecker';
 import { VALIDATION_MODE } from './constants';
 import {
@@ -71,6 +72,10 @@ export default function useForm<
   const { isOnChange, isOnBlur, isOnSubmit } = useRef(
     modeChecker(mode),
   ).current;
+  const validateWithSchemaCurry = useCallback(
+    validateWithSchema.bind(null, validationSchema, validationSchemaOption),
+    [],
+  );
 
   const combineErrorsRef = (data: ErrorMessages<FormValues>) => ({
     ...errorsRef.current,
@@ -80,13 +85,13 @@ export default function useForm<
   const renderBaseOnError = useCallback(
     (
       name: FieldName,
-      errorsFromRef: ErrorMessages<FormValues>,
       error: ErrorMessages<FormValues>,
       shouldRender: boolean = true,
     ): boolean => {
-      if (errorsFromRef[name] && !error[name]) {
+      if (errorsRef.current[name] && !error[name]) {
         delete errorsRef.current[name];
-        validFieldsRef.current.add(name);
+        if (fieldsWithValidationRef.current.has(name))
+          validFieldsRef.current.add(name);
         if (shouldRender) reRenderForm({});
         return true;
       }
@@ -95,7 +100,11 @@ export default function useForm<
         if (shouldRender) reRenderForm({});
         return true;
       }
-      if (!isOnSubmit && !validFieldsRef.current.has(name)) {
+      if (
+        !isOnSubmit &&
+        fieldsWithValidationRef.current.has(name) &&
+        !validFieldsRef.current.has(name)
+      ) {
         validFieldsRef.current.add(name);
         if (shouldRender) reRenderForm({});
         return true;
@@ -107,19 +116,24 @@ export default function useForm<
 
   const setFieldValue = (
     name: FieldName,
-    value: Record<string, FieldValue> | undefined,
+    value: FormValues[FieldName],
   ): void => {
     const field = fieldsRef.current[name];
     if (!field) return;
     const ref = field.ref;
     const options = field.options;
+    const { type } = ref;
 
-    if (isRadioInput(ref.type) && options) {
+    if (isRadioInput(type) && options) {
       options.forEach(({ ref: radioRef }): void => {
         if (radioRef.value === value) radioRef.checked = true;
       });
+    } else if (isMultipleSelect(type)) {
+      [...ref.options].forEach(selectRef => {
+        if (value.includes(selectRef.value)) selectRef.selected = true;
+      });
     } else {
-      ref[isCheckBoxInput(ref.type) ? 'checked' : 'value'] = value;
+      ref[isCheckBoxInput(type) ? 'checked' : 'value'] = value;
     }
   };
 
@@ -162,14 +176,13 @@ export default function useForm<
       shouldRender: boolean = true,
     ): Promise<boolean> => {
       const field = fieldsRef.current[name]!;
-      const errors = errorsRef.current;
 
       if (!field) return false;
       if (value !== undefined) setValueInternal(name, value);
 
       const error = await validateField(field, fieldsRef.current);
       errorsRef.current = combineErrorsRef(error);
-      renderBaseOnError(name, errors, error, shouldRender);
+      renderBaseOnError(name, error, shouldRender);
       return isEmptyObject(error);
     },
     [renderBaseOnError, setValueInternal],
@@ -181,9 +194,7 @@ export default function useForm<
         | ValidationPayload<FieldName, FormValues[FieldName]>
         | ValidationPayload<FieldName, FormValues[FieldName]>[],
     ): Promise<boolean> => {
-      const { fieldErrors } = await validateWithSchema(
-        validationSchema,
-        validationSchemaOption,
+      const { fieldErrors } = await validateWithSchemaCurry(
         combineFieldValues(getFieldsValues(fieldsRef.current)),
       );
       const names = isArray(payload)
@@ -208,7 +219,7 @@ export default function useForm<
       reRenderForm({});
       return isEmptyObject(errorsRef.current);
     },
-    [validationSchema, validationSchemaOption],
+    [validateWithSchemaCurry],
   );
 
   const triggerValidation = useCallback(
@@ -275,9 +286,7 @@ export default function useForm<
           return shouldUpdateState ? reRenderForm({}) : undefined;
 
         if (validationSchema) {
-          const { fieldErrors } = await validateWithSchema(
-            validationSchema,
-            validationSchemaOption,
+          const { fieldErrors } = await validateWithSchemaCurry(
             combineFieldValues(getFieldsValues(fields)),
           );
           schemaErrorsRef.current = fieldErrors;
@@ -305,7 +314,7 @@ export default function useForm<
 
           if (shouldUpdate || shouldUpdateValidateMode) {
             errorsRef.current = combineErrorsRef(error);
-            if (renderBaseOnError(name, errorsRef.current, error)) return;
+            if (renderBaseOnError(name, error)) return;
           }
         }
 
@@ -439,11 +448,6 @@ export default function useForm<
     if (!ref.name) return console.warn('Miss name', ref);
 
     const { name, type, value } = ref;
-
-    if (!isOnSubmit && validateOptions && !isEmptyObject(validateOptions)) {
-      fieldsWithValidationRef.current.add(name);
-    }
-
     const { required, validate } = validateOptions;
     const fieldAttributes = {
       ref,
@@ -492,7 +496,30 @@ export default function useForm<
     if (!isEmptyObject(defaultValues)) {
       const defaultValue = getDefaultValue(defaultValues, name);
       if (!isUndefined(defaultValue))
-        setFieldValue(name as FieldName, defaultValue);
+        setFieldValue(name as FieldName, defaultValue as FormValues[FieldName]);
+    }
+
+    if (!isOnSubmit && validateOptions && !isEmptyObject(validateOptions)) {
+      fieldsWithValidationRef.current.add(name);
+
+      if (validationSchema) {
+        isSchemaValidateTriggeredRef.current = true;
+        validateWithSchemaCurry(
+          combineFieldValues(getFieldsValues(fields)),
+        ).then(({ fieldErrors }) => {
+          schemaErrorsRef.current = fieldErrors;
+          if (isEmptyObject(schemaErrorsRef.current)) reRenderForm({});
+        });
+      } else {
+        validateField(fields[name], fields).then(error => {
+          if (isEmptyObject(error)) validFieldsRef.current.add(name);
+
+          if (
+            validFieldsRef.current.size === fieldsWithValidationRef.current.size
+          )
+            reRenderForm({});
+        });
+      }
     }
 
     if (!fieldDefaultValues[name as FieldName])

@@ -1,6 +1,6 @@
 {
   "name": "react-hook-form",
-  "version": "3.22.2",
+  "version": "3.22.3",
   "main": "dist/react-hook-form.js",
   "module": "dist/react-hook-form.es.js",
   "types": "dist/index.d.ts",
@@ -71,7 +71,7 @@
   "bundlesize": [
     {
       "path": "./dist/react-hook-form.min.es.js",
-      "maxSize": "5 kB"
+      "maxSize": "5.5 kB"
     }
   ],
   "peerDependencies": {
