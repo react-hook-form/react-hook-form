@@ -116,7 +116,7 @@ export default function useForm<
 
   const setFieldValue = (
     name: FieldName,
-    value: Record<string, FieldValue>,
+    value: FormValues[FieldName],
   ): void => {
     const field = fieldsRef.current[name];
     if (!field) return;
@@ -496,7 +496,7 @@ export default function useForm<
     if (!isEmptyObject(defaultValues)) {
       const defaultValue = getDefaultValue(defaultValues, name);
       if (!isUndefined(defaultValue))
-        setFieldValue(name as FieldName, defaultValue);
+        setFieldValue(name as FieldName, defaultValue as FormValues[FieldName]);
     }
 
     if (!isOnSubmit && validateOptions && !isEmptyObject(validateOptions)) {
