@@ -20,7 +20,7 @@ export default function getFieldValue<Data extends FieldValues>(
   if (isCheckBox(type)) {
     if (checked) {
       return ref.attributes && ref.attributes.value
-        ? isUndefined(value)
+        ? isUndefined(value) || value === ''
           ? true
           : value
         : true;
