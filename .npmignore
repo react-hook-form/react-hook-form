@@ -33,4 +33,5 @@ CODE_OF_CONDUCT.md
 .prettierrc
 README.zh-CN.md
 rollup.ie11.config.js
+rollup.min.config.js
 tsconfig.ie11.json
