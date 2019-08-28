@@ -18,11 +18,14 @@ export default function getFieldValue<Data extends FieldValues>(
   if (type === 'select-multiple') return getMultipleSelectValue(options);
 
   if (isCheckBox(type)) {
-    return checked
-      ? isUndefined(value) || value === ''
-        ? true
-        : value
-      : false;
+    if (checked) {
+      return ref.attributes && ref.attributes.value
+        ? isUndefined(value) || value === ''
+          ? true
+          : value
+        : true;
+    }
+    return false;
   }
 
   return value;
