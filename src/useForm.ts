@@ -100,7 +100,11 @@ export default function useForm<
         if (shouldRender) reRenderForm({});
         return true;
       }
-      if (!isOnSubmit && !validFieldsRef.current.has(name)) {
+      if (
+        !isOnSubmit &&
+        fieldsWithValidationRef.current.has(name) &&
+        !validFieldsRef.current.has(name)
+      ) {
         validFieldsRef.current.add(name);
         if (shouldRender) reRenderForm({});
         return true;
