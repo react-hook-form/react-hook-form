@@ -307,8 +307,6 @@ export default function useForm<
             errors: errors,
             error,
             isValidateDisabled,
-            isOnBlur,
-            isBlurEvent,
             name,
           });
 
