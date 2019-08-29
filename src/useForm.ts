@@ -466,6 +466,10 @@ export default function useForm<
     if (!type) {
       fields[name] = fieldAttributes;
     } else {
+      const mutationWatcher = onDomRemove(ref, () =>
+        removeEventListenerAndRef(fieldAttributes),
+      );
+
       if (isRadio) {
         if (!field)
           fields[name] = {
@@ -474,20 +478,17 @@ export default function useForm<
             validate,
             ref: { type: 'radio', name },
           };
+
         if (validate) fields[name].validate = validate;
 
         fields[name].options.push({
           ...fieldAttributes,
-          mutationWatcher: onDomRemove(ref, () =>
-            removeEventListenerAndRef(fieldAttributes),
-          ),
+          mutationWatcher,
         });
       } else {
         fields[name] = {
           ...fieldAttributes,
-          mutationWatcher: onDomRemove(ref, () =>
-            removeEventListenerAndRef(fieldAttributes),
-          ),
+          mutationWatcher,
         };
       }
     }
