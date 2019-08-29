@@ -453,15 +453,14 @@ export default function useForm<
       ...validateOptions,
     };
     const fields: FieldValues = fieldsRef.current;
-    const fieldDefaultValues = defaultValuesRef.current;
     const isRadio = isRadioInput(type);
-    const field = fields[name];
+    const currentField = fields[name];
     const existRadioOptionIndex =
-      isRadio && field && isArray(field.options)
-        ? field.options.findIndex(({ ref }: Field) => value === ref.value)
+      isRadio && currentField && isArray(currentField.options)
+        ? currentField.options.findIndex(({ ref }: Field) => value === ref.value)
         : -1;
 
-    if (isRadio ? existRadioOptionIndex > -1 : field) return;
+    if (isRadio ? existRadioOptionIndex > -1 : currentField) return;
 
     if (!type) {
       fields[name] = fieldAttributes;
@@ -471,7 +470,7 @@ export default function useForm<
       );
 
       if (isRadio) {
-        if (!field)
+        if (!currentField)
           fields[name] = {
             options: [],
             required,
@@ -522,25 +521,23 @@ export default function useForm<
       }
     }
 
-    if (!fieldDefaultValues[name as FieldName])
-      fieldDefaultValues[name as FieldName] = getFieldValue(
+    if (!defaultValuesRef.current[name as FieldName])
+      defaultValuesRef.current[name as FieldName] = getFieldValue(
         fields,
         fields[name].ref,
       );
 
     if (!type) return;
 
-    const updatedField = isRadio
+    const field = isRadio
       ? fields[name].options[fields[name].options.length - 1]
       : fields[name];
-
-    if (!updatedField) return;
 
     if (nativeValidation && validateOptions) {
       attachNativeValidation(ref, validateOptions);
     } else {
       attachEventListeners({
-        field: updatedField,
+        field,
         isRadio,
         validateAndStateUpdate: validateAndStateUpdateRef.current,
       });
