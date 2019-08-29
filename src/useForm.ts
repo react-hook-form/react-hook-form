@@ -461,7 +461,7 @@ export default function useForm<
         ? field.options.findIndex(({ ref }: Field) => value === ref.value)
         : -1;
 
-    if ((!isRadio && field) || existRadioOptionIndex > -1) return;
+    if (isRadio ? existRadioOptionIndex > -1 : field) return;
 
     if (!type) {
       fields[name] = fieldAttributes;
