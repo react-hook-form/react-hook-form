@@ -10,7 +10,7 @@ const getPath = (path: string, values: FieldValues | string[] | string): any =>
         if (Array.isArray(item)) {
           return getPath(pathWithIndex, item);
         } else if (isObject(item)) {
-          return Object.entries(item).map(([key, objectValue]) =>
+          return Object.entries(item).map(([key, objectValue]: [string, any]) =>
             isString(objectValue)
               ? `${pathWithIndex}.${key}`
               : getPath(`${pathWithIndex}.${key}`, objectValue),

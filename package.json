@@ -62,11 +62,11 @@
     "react-dom": "^16.9.0",
     "react-test-renderer": "^16.9.0",
     "rimraf": "^2.6.3",
-    "rollup": "^1.9.3",
+    "rollup": "^1.20.3",
     "rollup-plugin-terser": "^5.1.1",
-    "rollup-plugin-typescript2": "^0.20.1",
+    "rollup-plugin-typescript2": "^0.24.0",
     "ts-jest": "^24.0.2",
-    "typescript": "^3.5.3"
+    "typescript": "^3.6.2"
   },
   "bundlesize": [
     {
