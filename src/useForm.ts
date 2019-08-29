@@ -263,13 +263,13 @@ export default function useForm<
         if (isArray(validationFields) && !validationFields.includes(name))
           return;
         const fields = fieldsRef.current;
-        const errorsFromRef = errorsRef.current;
+        const errors = errorsRef.current;
         const ref = fields[name];
         if (!ref) return;
         const isBlurEvent = type === 'blur';
         const isValidateDisabled = !isSubmittedRef.current && isOnSubmit;
         const shouldUpdateValidateMode =
-          isOnChange || (isOnBlur && isBlurEvent);
+          isOnChange || (isOnBlur && isBlurEvent) || errors[name];
         let shouldUpdateState =
           isWatchAllRef.current || watchFieldsRef.current[name];
 
@@ -293,18 +293,18 @@ export default function useForm<
           isSchemaValidateTriggeredRef.current = true;
           const error = fieldErrors[name];
           const shouldUpdate =
-            ((!error && errorsFromRef[name]) || error) &&
+            ((!error && errors[name]) || error) &&
             (shouldUpdateValidateMode || isSubmittedRef.current);
 
           if (shouldUpdate) {
-            errorsRef.current = { ...errorsFromRef, ...{ [name]: error } };
+            errorsRef.current = { ...errors, ...{ [name]: error } };
             if (!error) delete errorsRef.current[name];
             return reRenderForm({});
           }
         } else {
           const error = await validateField(ref, fields, nativeValidation);
           const shouldUpdate = shouldUpdateWithError({
-            errors: errorsFromRef,
+            errors: errors,
             error,
             isValidateDisabled,
             isOnBlur,
