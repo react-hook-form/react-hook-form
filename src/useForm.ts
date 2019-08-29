@@ -399,8 +399,9 @@ export default function useForm<
     if (isString(fieldNames)) {
       const value = assignWatchFields(fieldValues, fieldNames, watchFields);
 
-      if (!isUndefined(value)) return value;
-      return isUndefined(defaultValue)
+      return !isUndefined(value)
+        ? value
+        : isUndefined(defaultValue)
         ? getDefaultValue(defaultValues, fieldNames)
         : defaultValue;
     }
@@ -460,7 +461,7 @@ export default function useForm<
         ? field.options.findIndex(({ ref }: Field) => value === ref.value)
         : -1;
 
-    if ((!isRadio && field) || (isRadio && existRadioOptionIndex > -1)) return;
+    if ((!isRadio && field) || existRadioOptionIndex > -1) return;
 
     if (!type) {
       fields[name] = fieldAttributes;
