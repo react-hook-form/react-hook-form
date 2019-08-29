@@ -366,11 +366,11 @@ export default function useForm<
     message?: string,
     ref?: Ref,
   ): void => {
-    const errorsFromRef = errorsRef.current;
-    const error = errorsFromRef[name];
+    const errors = errorsRef.current;
+    const error = errors[name];
 
     if (!isSameError(error, type, message)) {
-      errorsFromRef[name] = {
+      errors[name] = {
         type,
         message,
         ref,
