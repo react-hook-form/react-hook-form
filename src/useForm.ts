@@ -457,7 +457,9 @@ export default function useForm<
     const currentField = fields[name];
     const existRadioOptionIndex =
       isRadio && currentField && isArray(currentField.options)
-        ? currentField.options.findIndex(({ ref }: Field) => value === ref.value)
+        ? currentField.options.findIndex(
+            ({ ref }: Field) => value === ref.value,
+          )
         : -1;
 
     if (isRadio ? existRadioOptionIndex > -1 : currentField) return;
@@ -478,9 +480,9 @@ export default function useForm<
             ref: { type: 'radio', name },
           };
 
-        if (validate) fields[name].validate = validate;
+        if (validate) currentField.validate = validate;
 
-        fields[name].options.push({
+        currentField.options.push({
           ...fieldAttributes,
           mutationWatcher,
         });
@@ -510,7 +512,7 @@ export default function useForm<
           if (isEmptyObject(schemaErrorsRef.current)) reRenderForm({});
         });
       } else {
-        validateField(fields[name], fields).then(error => {
+        validateField(currentField, fields).then(error => {
           if (isEmptyObject(error)) validFieldsRef.current.add(name);
 
           if (
@@ -524,14 +526,14 @@ export default function useForm<
     if (!defaultValuesRef.current[name as FieldName])
       defaultValuesRef.current[name as FieldName] = getFieldValue(
         fields,
-        fields[name].ref,
+        currentField.ref,
       );
 
     if (!type) return;
 
     const field = isRadio
-      ? fields[name].options[fields[name].options.length - 1]
-      : fields[name];
+      ? currentField.options[currentField.options.length - 1]
+      : currentField;
 
     if (nativeValidation && validateOptions) {
       attachNativeValidation(ref, validateOptions);
