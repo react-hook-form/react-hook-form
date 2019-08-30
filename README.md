@@ -6,7 +6,7 @@
 
 <div align="center">
 
-Build powerful and complex forms with performance and DX
+Build powerful and complex forms with performance and DX.
 
 [![CircleCI](https://circleci.com/gh/react-hook-form/react-hook-form.svg?style=svg)](https://circleci.com/gh/react-hook-form/react-hook-form)
 [![Coverage Status](https://coveralls.io/repos/github/bluebill1049/react-hook-form/badge.svg?branch=master)](https://coveralls.io/github/bluebill1049/react-hook-form?branch=master)
@@ -19,6 +19,8 @@ Build powerful and complex forms with performance and DX
 </div>
 
 <div align="center"><p align="center"><a href="https://react-hook-form.com" title="React Hook Form - Simple React forms validation"><img src="https://raw.githubusercontent.com/bluebill1049/react-hook-form/master/website/example.gif" alt="React Hook Form Logo - React hook form validation" width="750px" /></a></p></div>
+
+## Features
 
 - Super easy to integrate and create forms
 - Built with performance and DX in mind
