@@ -63,10 +63,10 @@ export default function useForm<
   const isUnMount = useRef(false);
   const isWatchAllRef = useRef(false);
   const isSubmittedRef = useRef(false);
+  const isDirtyRef = useRef(false);
   const isSchemaValidateTriggeredRef = useRef(false);
   const validationFieldsRef = useRef(validationFields);
   const validateAndStateUpdateRef = useRef<Function>();
-  const [dirty, setIsDirty] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitCount, setSubmitCount] = useState(0);
   const [, reRenderForm] = useState({});
@@ -139,33 +139,31 @@ export default function useForm<
     }
   };
 
-  const setDirty = useCallback(
-    (name: FieldName, skip: boolean = false): boolean => {
-      if (!fieldsRef.current[name]) return false;
-      const isDirty =
-        defaultValuesRef.current[name] !==
-        getFieldValue(fieldsRef.current, fieldsRef.current[name]!.ref);
-      const isDirtyChanged = dirtyFieldsRef.current.has(name) !== isDirty;
+  const setDirty = (name: FieldName): boolean => {
+    if (!fieldsRef.current[name]) return false;
+    const isDirty =
+      defaultValuesRef.current[name] !==
+      getFieldValue(fieldsRef.current, fieldsRef.current[name]!.ref);
+    const isDirtyChanged = dirtyFieldsRef.current.has(name) !== isDirty;
 
-      if (isDirty) {
-        dirtyFieldsRef.current.add(name);
-      } else {
-        dirtyFieldsRef.current.delete(name);
-      }
+    if (isDirty) {
+      dirtyFieldsRef.current.add(name);
+    } else {
+      dirtyFieldsRef.current.delete(name);
+    }
 
-      if (!skip) setIsDirty(!!dirtyFieldsRef.current.size);
-      return isDirtyChanged;
-    },
-    [],
-  );
+    isDirtyRef.current = !!dirtyFieldsRef.current.size;
+    return isDirtyChanged;
+  };
 
   const setValueInternal = useCallback(
     (name: FieldName, value: FormValues[FieldName]): void => {
       setFieldValue(name, value);
       touchedFieldsRef.current.add(name);
       setDirty(name);
+      reRenderForm({});
     },
-    [setDirty],
+    [],
   );
 
   const executeValidation = useCallback(
@@ -280,7 +278,7 @@ export default function useForm<
         let shouldUpdateState =
           isWatchAllRef.current || watchFieldsRef.current[name];
 
-        if (setDirty(name, true)) {
+        if (setDirty(name)) {
           shouldUpdateState = true;
         }
 
@@ -688,6 +686,7 @@ export default function useForm<
     defaultValuesRef.current = {} as any;
     isWatchAllRef.current = false;
     isSubmittedRef.current = false;
+    isDirtyRef.current = false;
     isSchemaValidateTriggeredRef.current = false;
   };
 
@@ -710,7 +709,6 @@ export default function useForm<
       );
     }
     setSubmitCount(0);
-    setIsDirty(false);
   }, []);
 
   const getValues = (payload?: { nest: boolean }): FormValues => {
@@ -758,7 +756,7 @@ export default function useForm<
         ) as ErrorMessages<FormValues>)
       : errorsRef.current,
     formState: {
-      dirty,
+      dirty: isDirtyRef.current,
       isSubmitted: isSubmittedRef.current,
       submitCount,
       touched: [...touchedFieldsRef.current],
