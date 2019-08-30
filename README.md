@@ -6,7 +6,7 @@
 
 <div align="center">
 
-Build powerful and complex form with performance and DX
+Build powerful and complex forms with performance and DX
 
 [![CircleCI](https://circleci.com/gh/react-hook-form/react-hook-form.svg?style=svg)](https://circleci.com/gh/react-hook-form/react-hook-form)
 [![Coverage Status](https://coveralls.io/repos/github/bluebill1049/react-hook-form/badge.svg?branch=master)](https://coveralls.io/github/bluebill1049/react-hook-form?branch=master)
