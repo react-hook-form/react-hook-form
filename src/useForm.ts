@@ -139,12 +139,11 @@ export default function useForm<
     }
   };
 
-  const setDirty = (name: FieldName): boolean => {
-    if (!fieldsRef.current[name]) return false;
+  const setDirty = (name: FieldName): void => {
+    if (!fieldsRef.current[name]) return;
     const isDirty =
       defaultValuesRef.current[name] !==
       getFieldValue(fieldsRef.current, fieldsRef.current[name]!.ref);
-    const isDirtyChanged = dirtyFieldsRef.current.has(name) !== isDirty;
 
     if (isDirty) {
       dirtyFieldsRef.current.add(name);
@@ -152,8 +151,7 @@ export default function useForm<
       dirtyFieldsRef.current.delete(name);
     }
 
-    setIsDirty(!!dirtyFieldsRef.current.size);
-    return isDirtyChanged;
+    if (!isDirty) setIsDirty(!!dirtyFieldsRef.current.size);
   };
 
   const setValueInternal = useCallback(
