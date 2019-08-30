@@ -455,12 +455,13 @@ export default function useForm<
     const fields: FieldValues = fieldsRef.current;
     const isRadio = isRadioInput(type);
     const currentField = fields[name];
-    const existRadioOptionIndex =
-      isRadio && currentField && isArray(currentField.options)
-        ? currentField.options.findIndex(({ ref }: Field) => value === ref.value)
-        : -1;
+    const isRegistered = isRadio
+      ? currentField &&
+        isArray(currentField.options) &&
+        currentField.options.find(({ ref }: Field) => value === ref.value)
+      : currentField;
 
-    if (isRadio ? existRadioOptionIndex > -1 : currentField) return;
+    if (isRegistered) return;
 
     if (!type) {
       fields[name] = fieldAttributes;
