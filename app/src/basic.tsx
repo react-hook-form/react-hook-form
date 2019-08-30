@@ -85,6 +85,13 @@ const Basic: React.FC = () => {
       {errors.radio && <p>radio error</p>}
       <input type="checkbox" name="checkbox" ref={register({ required: true })} />
       {errors.checkbox && <p>checkbox error</p>}
+
+      <select name="multiple" multiple ref={register({ required: true })}>
+        <option value="optionA">optionA</option>
+        <option value="optionB">optionB</option>
+      </select>
+      {errors.multiple && <p>multiple error</p>}
+
       <button id="submit">Submit</button>
 
       <button type="button" id="resetForm" onClick={reset}>Reset</button>
