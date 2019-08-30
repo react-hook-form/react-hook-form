@@ -263,13 +263,13 @@ export default function useForm<
         if (isArray(validationFields) && !validationFields.includes(name))
           return;
         const fields = fieldsRef.current;
-        const errorsFromRef = errorsRef.current;
+        const errors = errorsRef.current;
         const ref = fields[name];
         if (!ref) return;
         const isBlurEvent = type === 'blur';
         const isValidateDisabled = !isSubmittedRef.current && isOnSubmit;
         const shouldUpdateValidateMode =
-          isOnChange || (isOnBlur && isBlurEvent);
+          isOnChange || (isOnBlur && isBlurEvent) || errors[name];
         let shouldUpdateState =
           isWatchAllRef.current || watchFieldsRef.current[name];
 
@@ -293,22 +293,20 @@ export default function useForm<
           isSchemaValidateTriggeredRef.current = true;
           const error = fieldErrors[name];
           const shouldUpdate =
-            ((!error && errorsFromRef[name]) || error) &&
+            ((!error && errors[name]) || error) &&
             (shouldUpdateValidateMode || isSubmittedRef.current);
 
           if (shouldUpdate) {
-            errorsRef.current = { ...errorsFromRef, ...{ [name]: error } };
+            errorsRef.current = { ...errors, ...{ [name]: error } };
             if (!error) delete errorsRef.current[name];
             return reRenderForm({});
           }
         } else {
           const error = await validateField(ref, fields, nativeValidation);
           const shouldUpdate = shouldUpdateWithError({
-            errors: errorsFromRef,
+            errors: errors,
             error,
             isValidateDisabled,
-            isOnBlur,
-            isBlurEvent,
             name,
           });
 
@@ -368,11 +366,11 @@ export default function useForm<
     message?: string,
     ref?: Ref,
   ): void => {
-    const errorsFromRef = errorsRef.current;
-    const error = errorsFromRef[name];
+    const errors = errorsRef.current;
+    const error = errors[name];
 
     if (!isSameError(error, type, message)) {
-      errorsFromRef[name] = {
+      errors[name] = {
         type,
         message,
         ref,
@@ -401,8 +399,9 @@ export default function useForm<
     if (isString(fieldNames)) {
       const value = assignWatchFields(fieldValues, fieldNames, watchFields);
 
-      if (!isUndefined(value)) return value;
-      return isUndefined(defaultValue)
+      return !isUndefined(value)
+        ? value
+        : isUndefined(defaultValue)
         ? getDefaultValue(defaultValues, fieldNames)
         : defaultValue;
     }
@@ -454,41 +453,42 @@ export default function useForm<
       ...validateOptions,
     };
     const fields: FieldValues = fieldsRef.current;
-    const fieldDefaultValues = defaultValuesRef.current;
     const isRadio = isRadioInput(type);
-    const field = fields[name];
-    const existRadioOptionIndex =
-      isRadio && field && isArray(field.options)
-        ? field.options.findIndex(({ ref }: Field) => value === ref.value)
-        : -1;
+    const currentField = fields[name];
+    const isRegistered = isRadio
+      ? currentField &&
+        isArray(currentField.options) &&
+        currentField.options.find(({ ref }: Field) => value === ref.value)
+      : currentField;
 
-    if ((!isRadio && field) || (isRadio && existRadioOptionIndex > -1)) return;
+    if (isRegistered) return;
 
     if (!type) {
       fields[name] = fieldAttributes;
     } else {
+      const mutationWatcher = onDomRemove(ref, () =>
+        removeEventListenerAndRef(fieldAttributes),
+      );
+
       if (isRadio) {
-        if (!field)
+        if (!currentField)
           fields[name] = {
             options: [],
             required,
             validate,
             ref: { type: 'radio', name },
           };
+
         if (validate) fields[name].validate = validate;
 
         fields[name].options.push({
           ...fieldAttributes,
-          mutationWatcher: onDomRemove(ref, () =>
-            removeEventListenerAndRef(fieldAttributes),
-          ),
+          mutationWatcher,
         });
       } else {
         fields[name] = {
           ...fieldAttributes,
-          mutationWatcher: onDomRemove(ref, () =>
-            removeEventListenerAndRef(fieldAttributes),
-          ),
+          mutationWatcher,
         };
       }
     }
@@ -522,25 +522,23 @@ export default function useForm<
       }
     }
 
-    if (!fieldDefaultValues[name as FieldName])
-      fieldDefaultValues[name as FieldName] = getFieldValue(
+    if (!defaultValuesRef.current[name as FieldName])
+      defaultValuesRef.current[name as FieldName] = getFieldValue(
         fields,
         fields[name].ref,
       );
 
     if (!type) return;
 
-    const updatedField = isRadio
+    const field = isRadio
       ? fields[name].options[fields[name].options.length - 1]
       : fields[name];
-
-    if (!updatedField) return;
 
     if (nativeValidation && validateOptions) {
       attachNativeValidation(ref, validateOptions);
     } else {
       attachEventListeners({
-        field: updatedField,
+        field,
         isRadio,
         validateAndStateUpdate: validateAndStateUpdateRef.current,
       });

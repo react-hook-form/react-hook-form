@@ -7,22 +7,7 @@ describe('shouldUpdateWithError', () => {
         errors: {},
         name: 'test',
         error: { test: 'test' },
-        isOnBlur: false,
         isValidateDisabled: true,
-        isBlurEvent: false,
-      }),
-    ).toBeFalsy();
-  });
-
-  it('should return false when type is onBlur and and type is not blur', () => {
-    expect(
-      shouldUpdateWithError({
-        errors: {},
-        name: 'test',
-        error: { test: 'test' },
-        isOnBlur: true,
-        isValidateDisabled: false,
-        isBlurEvent: false,
       }),
     ).toBeFalsy();
   });
@@ -33,9 +18,7 @@ describe('shouldUpdateWithError', () => {
         errors: {},
         name: '',
         error: {},
-        isOnBlur: false,
         isValidateDisabled: false,
-        isBlurEvent: false,
       }),
     ).toBeFalsy();
   });
@@ -46,9 +29,7 @@ describe('shouldUpdateWithError', () => {
         errors: {},
         name: 'test',
         error: { test: 'test' },
-        isOnBlur: false,
         isValidateDisabled: false,
-        isBlurEvent: false,
       }),
     ).toBeTruthy();
   });
@@ -59,9 +40,7 @@ describe('shouldUpdateWithError', () => {
         errors: { test: 'test' },
         name: 'test',
         error: {},
-        isOnBlur: false,
         isValidateDisabled: false,
-        isBlurEvent: false,
       }),
     ).toBeTruthy();
   });
@@ -72,9 +51,7 @@ describe('shouldUpdateWithError', () => {
         errors: { test: 'test' },
         name: '',
         error: { data: 'bill' },
-        isOnBlur: false,
         isValidateDisabled: false,
-        isBlurEvent: false,
       }),
     ).toBeTruthy();
   });
@@ -85,9 +62,7 @@ describe('shouldUpdateWithError', () => {
         errors: { test: { type: 'test' } },
         name: 'test',
         error: { test: { type: 'bill' } },
-        isOnBlur: false,
         isValidateDisabled: false,
-        isBlurEvent: false,
       }),
     ).toBeTruthy();
   });
@@ -98,9 +73,7 @@ describe('shouldUpdateWithError', () => {
         errors: { test: { message: 'test', type: 'input' } },
         name: 'test',
         error: { test: { type: 'input', message: 'test' } },
-        isOnBlur: false,
         isValidateDisabled: false,
-        isBlurEvent: false,
       }),
     ).toBeFalsy();
   });
