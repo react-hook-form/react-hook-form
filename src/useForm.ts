@@ -262,7 +262,6 @@ export default function useForm<
   validateAndStateUpdateRef.current = validateAndStateUpdateRef.current
     ? validateAndStateUpdateRef.current
     : async ({ target: { name }, type }: Ref): Promise<void> => {
-        console.log(validationFieldsRef.current);
         if (
           isArray(validationFieldsRef.current) &&
           !validationFieldsRef.current.includes(name)
@@ -450,7 +449,7 @@ export default function useForm<
     ref: Element,
     validateOptions: ValidationOptions = {},
   ): void {
-    if (!ref.name) return console.warn('Miss name', ref);
+    if (!ref.name) return console.warn('Miss ref', ref);
 
     const { name, type, value } = ref;
     const { required, validate } = validateOptions;
