@@ -156,7 +156,7 @@ export default function useForm<
       if (!skip) setIsDirty(!!dirtyFieldsRef.current.size);
       return isDirtyChanged;
     },
-    [dirty],
+    [],
   );
 
   const setValueInternal = useCallback(
