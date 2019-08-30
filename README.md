@@ -6,6 +6,8 @@
 
 <div align="center">
 
+---
+
 Build powerful and complex forms with performance and DX
 
 [![CircleCI](https://circleci.com/gh/react-hook-form/react-hook-form.svg?style=svg)](https://circleci.com/gh/react-hook-form/react-hook-form)
