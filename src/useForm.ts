@@ -67,6 +67,7 @@ export default function useForm<
   const isSubmittedRef = useRef(false);
   const isDirtyRef = useRef(false);
   const isSchemaValidateTriggeredRef = useRef(false);
+  const validationFieldsRef = useRef(validationFields);
   const validateAndStateUpdateRef = useRef<Function>();
   const [, reRenderForm] = useState({});
   const { isOnChange, isOnBlur, isOnSubmit } = useRef(
@@ -76,6 +77,7 @@ export default function useForm<
     validateWithSchema.bind(null, validationSchema, validationSchemaOption),
     [],
   );
+  validationFieldsRef.current = validationFields;
 
   const combineErrorsRef = (data: ErrorMessages<FormValues>) => ({
     ...errorsRef.current,
@@ -260,7 +262,10 @@ export default function useForm<
   validateAndStateUpdateRef.current = validateAndStateUpdateRef.current
     ? validateAndStateUpdateRef.current
     : async ({ target: { name }, type }: Ref): Promise<void> => {
-        if (isArray(validationFields) && !validationFields.includes(name))
+        if (
+          isArray(validationFieldsRef.current) &&
+          !validationFieldsRef.current.includes(name)
+        )
           return;
         const fields = fieldsRef.current;
         const errors = errorsRef.current;
@@ -444,7 +449,7 @@ export default function useForm<
     ref: Element,
     validateOptions: ValidationOptions = {},
   ): void {
-    if (!ref.name) return console.warn('Miss name', ref);
+    if (!ref.name) return console.warn('Miss ref', ref);
 
     const { name, type, value } = ref;
     const { required, validate } = validateOptions;
@@ -742,7 +747,17 @@ export default function useForm<
     setValue,
     triggerValidation,
     getValues,
-    errors: errorsRef.current,
+    errors: validationFields
+      ? (Object.keys(errorsRef.current).reduce(
+          (previous, key) => ({
+            ...previous,
+            ...(validationFields.includes(key)
+              ? { [key]: errorsRef.current[key] }
+              : null),
+          }),
+          {},
+        ) as ErrorMessages<FormValues>)
+      : errorsRef.current,
     formState: {
       dirty: isDirtyRef.current,
       isSubmitted: isSubmittedRef.current,
