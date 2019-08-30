@@ -151,7 +151,7 @@ export default function useForm<
       dirtyFieldsRef.current.delete(name);
     }
 
-    if (!isDirty) setIsDirty(!!dirtyFieldsRef.current.size);
+    if (!dirty) setIsDirty(!!dirtyFieldsRef.current.size);
   };
 
   const setValueInternal = useCallback(
@@ -753,8 +753,8 @@ export default function useForm<
     formState: {
       dirty,
       isSubmitted: isSubmittedRef.current,
-      touched: [...touchedFieldsRef.current],
       submitCount,
+      touched: [...touchedFieldsRef.current],
       isSubmitting,
       ...(isOnSubmit
         ? {
