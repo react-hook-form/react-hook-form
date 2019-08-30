@@ -66,7 +66,7 @@ export default function useForm<
   const isSchemaValidateTriggeredRef = useRef(false);
   const validationFieldsRef = useRef(validationFields);
   const validateAndStateUpdateRef = useRef<Function>();
-  const [isDirty, setIsDirty] = useState(false);
+  const [dirty, setIsDirty] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitCount, setSubmitCount] = useState(0);
   const [, reRenderForm] = useState({});
@@ -751,7 +751,7 @@ export default function useForm<
         ) as ErrorMessages<FormValues>)
       : errorsRef.current,
     formState: {
-      dirty: isDirty,
+      dirty,
       isSubmitted: isSubmittedRef.current,
       touched: [...touchedFieldsRef.current],
       submitCount,
