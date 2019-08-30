@@ -54,7 +54,6 @@ export default function useForm<
   const fieldsRef = useRef<FieldsObject<FormValues>>({});
   const errorsRef = useRef<ErrorMessages<FormValues>>({});
   const schemaErrorsRef = useRef<FieldErrors>({});
-  const submitCountRef = useRef(0);
   const touchedFieldsRef = useRef(new Set<FieldName>());
   const watchFieldsRef = useRef<Partial<Record<keyof FormValues, boolean>>>({});
   const dirtyFieldsRef = useRef(new Set<FieldName>());
@@ -63,12 +62,13 @@ export default function useForm<
   const defaultValuesRef = useRef<Record<FieldName, FieldValue>>({} as any);
   const isUnMount = useRef(false);
   const isWatchAllRef = useRef(false);
-  const isSubmittingRef = useRef(false);
   const isSubmittedRef = useRef(false);
   const isDirtyRef = useRef(false);
   const isSchemaValidateTriggeredRef = useRef(false);
   const validationFieldsRef = useRef(validationFields);
   const validateAndStateUpdateRef = useRef<Function>();
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitCount, setSubmitCount] = useState(0);
   const [, reRenderForm] = useState({});
   const { isOnChange, isOnBlur, isOnSubmit } = useRef(
     modeChecker(mode),
@@ -600,8 +600,7 @@ export default function useForm<
     const fieldsToValidate = validationFields
       ? validationFields.map(name => fieldsRef.current[name])
       : Object.values(fields);
-    isSubmittingRef.current = true;
-    reRenderForm({});
+    setIsSubmitting(true);
 
     if (validationSchema) {
       fieldValues = getFieldsValues(fields);
@@ -672,15 +671,13 @@ export default function useForm<
     if (isUnMount.current) return;
 
     isSubmittedRef.current = true;
-    submitCountRef.current += 1;
-    isSubmittingRef.current = false;
-    reRenderForm({});
+    setIsSubmitting(false);
+    setSubmitCount(submitCount + 1);
   };
 
   const resetRefs = () => {
     errorsRef.current = {};
     schemaErrorsRef.current = {};
-    submitCountRef.current = 0;
     touchedFieldsRef.current = new Set();
     watchFieldsRef.current = {};
     dirtyFieldsRef.current = new Set();
@@ -711,7 +708,7 @@ export default function useForm<
         setFieldValue(key as FieldName, getDefaultValue(values, key, '')),
       );
     }
-    reRenderForm({});
+    setSubmitCount(0);
   }, []);
 
   const getValues = (payload?: { nest: boolean }): FormValues => {
@@ -761,9 +758,9 @@ export default function useForm<
     formState: {
       dirty: isDirtyRef.current,
       isSubmitted: isSubmittedRef.current,
-      submitCount: submitCountRef.current,
+      submitCount,
       touched: [...touchedFieldsRef.current],
-      isSubmitting: isSubmittingRef.current,
+      isSubmitting,
       ...(isOnSubmit
         ? {
             isValid: isEmptyObject(errorsRef.current),
