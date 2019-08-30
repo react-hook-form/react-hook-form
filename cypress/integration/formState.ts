@@ -1,5 +1,5 @@
 context('form state', () => {
-  it.only('should return correct form state with onSubmit mode', () => {
+  it('should return correct form state with onSubmit mode', () => {
     cy.visit('http://localhost:3000/formState/onSubmit');
 
     cy.get('#state').contains(
