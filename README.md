@@ -35,7 +35,7 @@ Build powerful and complex forms with performance and DX.
 
     $ npm install react-hook-form
 
-## Docs
+## Links
 
 - [Motivation](https://medium.com/@bruce1049/form-validation-with-hook-in-3kb-c5414edf7d64)
 - [Get started](https://react-hook-form.com/get-started)
