@@ -161,7 +161,6 @@ export default function useForm<
       setFieldValue(name, value);
       touchedFieldsRef.current.add(name);
       setDirty(name);
-      reRenderForm({});
     },
     [],
   );
@@ -278,9 +277,7 @@ export default function useForm<
         let shouldUpdateState =
           isWatchAllRef.current || watchFieldsRef.current[name];
 
-        if (setDirty(name)) {
-          shouldUpdateState = true;
-        }
+        setDirty(name);
 
         if (!touchedFieldsRef.current.has(name)) {
           touchedFieldsRef.current.add(name);
