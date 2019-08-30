@@ -140,11 +140,12 @@ export default function useForm<
   };
 
   const setDirty = useCallback(
-    (name: FieldName): void => {
-      if (!fieldsRef.current[name]) return;
+    (name: FieldName, skip: boolean = false): boolean => {
+      if (!fieldsRef.current[name]) return false;
       const isDirty =
         defaultValuesRef.current[name] !==
         getFieldValue(fieldsRef.current, fieldsRef.current[name]!.ref);
+      const isDirtyChanged = dirtyFieldsRef.current.has(name) !== isDirty;
 
       if (isDirty) {
         dirtyFieldsRef.current.add(name);
@@ -152,7 +153,8 @@ export default function useForm<
         dirtyFieldsRef.current.delete(name);
       }
 
-      if (!dirty) setIsDirty(!!dirtyFieldsRef.current.size);
+      if (!skip) setIsDirty(!!dirtyFieldsRef.current.size);
+      return isDirtyChanged;
     },
     [dirty],
   );
@@ -278,7 +280,9 @@ export default function useForm<
         let shouldUpdateState =
           isWatchAllRef.current || watchFieldsRef.current[name];
 
-        setDirty(name);
+        if (setDirty(name, true)) {
+          shouldUpdateState = true;
+        }
 
         if (!touchedFieldsRef.current.has(name)) {
           touchedFieldsRef.current.add(name);
