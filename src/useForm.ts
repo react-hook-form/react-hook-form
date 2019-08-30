@@ -749,7 +749,7 @@ export default function useForm<
     triggerValidation,
     getValues,
     errors: validationFields
-      ? Object.keys(errorsRef.current).reduce(
+      ? (Object.keys(errorsRef.current).reduce(
           (previous, key) => ({
             ...previous,
             ...(validationFields.includes(key)
@@ -757,7 +757,7 @@ export default function useForm<
               : null),
           }),
           {},
-        )
+        ) as ErrorMessages<FormValues>)
       : errorsRef.current,
     formState: {
       dirty: isDirtyRef.current,
