@@ -6,8 +6,8 @@
 Welcome your pull requests for documentation and code. 🙏
 
 1. Fork the repo and create your branch from `master`.
-2. Clone your fork to your local machine git clone git@github.com:<yourname>/react-hook-form.git
-3. Create a branch git checkout -b my-topic-branch
+2. Clone your fork to your local machine git clone `git@github.com:<yourname>/react-hook-form.git`
+3. Create a branch `git checkout -b my-topic-branch`
 4. If you've added code that should be tested.
 5. Ensure the test suite passes.
 
