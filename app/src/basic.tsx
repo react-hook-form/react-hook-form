@@ -75,11 +75,11 @@ const Basic: React.FC = () => {
       <input
         type="radio"
         name="radio"
-        ref={register({ required: true })}
+        ref={register}
         value="1"
       />
       Radio2
-      <input type="radio" name="radio" value="2" ref={register({ required: true })} />
+      <input type="radio" name="radio" value="2" ref={register} />
       Radio3
       <input type="radio" name="radio" value="3" ref={register({ required: true })} />
       {errors.radio && <p>radio error</p>}
