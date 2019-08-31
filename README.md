@@ -1,14 +1,28 @@
-<div align="right">🇦🇺English | <a href="https://github.com/bluebill1049/react-hook-form/blob/master/README.zh-CN.md">🇨🇳简体中文</a></div>
+<div align="center">
+    <a href="https://react-hook-form.com" title="React Hook Form - Simple React forms validation"><img src="https://raw.githubusercontent.com/bluebill1049/react-hook-form/master/website/logo.png" alt="React Hook Form Logo - React hook form validation" width="330px" /></a>    
+</div>
 
-<div align="center"><p align="center"><a href="https://react-hook-form.com" title="React Hook Form - Simple React forms validation"><img src="https://raw.githubusercontent.com/bluebill1049/react-hook-form/master/website/logo.png" alt="React Hook Form Logo - React hook form validation" width="330px" /></a></p></div>
+<div align="center">
 
-[![Tweet](https://img.shields.io/twitter/url/http/shields.io.svg?style=social)](https://twitter.com/intent/tweet?text=React+hooks+for+form+validation+without+the+hassle&url=https://github.com/bluebill1049/react-hook-form)&nbsp;
-[![CircleCI](https://circleci.com/gh/react-hook-form/react-hook-form.svg?style=svg)](https://circleci.com/gh/react-hook-form/react-hook-form)
-[![Coverage Status](https://coveralls.io/repos/github/bluebill1049/react-hook-form/badge.svg?branch=master)](https://coveralls.io/github/bluebill1049/react-hook-form?branch=master)
+Build powerful and complex forms with performance and DX.
+
+[![CircleCI](https://badgen.net/github/status/react-hook-form/react-hook-form/master/ci/circleci)](https://circleci.com/gh/react-hook-form/react-hook-form)
 [![npm downloads](https://img.shields.io/npm/dm/react-hook-form.svg?style=flat-square)](https://www.npmjs.com/package/react-hook-form)
 [![npm](https://img.shields.io/npm/dt/react-hook-form.svg?style=flat-square)](https://www.npmjs.com/package/react-hook-form)
+![dep](https://badgen.net/david/dep/bluebill1049/react-hook-form)
 [![npm](https://badgen.net/bundlephobia/minzip/react-hook-form)](https://badgen.net/bundlephobia/minzip/react-hook-form)
-[![Join the community on Spectrum](https://withspectrum.github.io/badge/badge.svg)](https://spectrum.chat/react-hook-form)
+[![Coverage Status](https://coveralls.io/repos/github/bluebill1049/react-hook-form/badge.svg?branch=master)](https://coveralls.io/github/bluebill1049/react-hook-form?branch=master)
+
+[![Tweet](https://img.shields.io/twitter/url/http/shields.io.svg?style=social)](https://twitter.com/intent/tweet?text=React+hooks+for+form+validation+without+the+hassle&url=https://github.com/bluebill1049/react-hook-form)&nbsp;[![Join the community on Spectrum](https://withspectrum.github.io/badge/badge.svg)](https://spectrum.chat/react-hook-form)
+
+</div>
+
+<div align="center"><p align="center"><a href="https://react-hook-form.com" title="React Hook Form - Simple React forms validation"><img src="https://raw.githubusercontent.com/bluebill1049/react-hook-form/master/website/example.gif" alt="React Hook Form Logo - React hook form validation" width="750px" /></a></p></div>
+
+🇦🇺English | <a href="https://github.com/bluebill1049/react-hook-form/blob/master/README.zh-CN.md">🇨🇳简体中文</a>
+
+
+## Features
 
 - Super easy to integrate and create forms
 - Built with performance and DX in mind
@@ -18,14 +32,11 @@
 - Support browser native validation
 - Build forms quickly with the [form builder](https://react-hook-form.com/builder)
 
-<br />
-<div align="center"><p align="center"><a href="https://react-hook-form.com" title="React Hook Form - Simple React forms validation"><img src="https://raw.githubusercontent.com/bluebill1049/react-hook-form/master/website/example.gif" alt="React Hook Form Logo - React hook form validation" width="750px" /></a></p></div>
-
 ## Install
 
     $ npm install react-hook-form
 
-## [Docs](https://react-hook-form.com/api)
+## Links
 
 - [Motivation](https://medium.com/@bruce1049/form-validation-with-hook-in-3kb-c5414edf7d64)
 - [Get started](https://react-hook-form.com/get-started)
@@ -45,7 +56,7 @@ function App() {
   const { register, handleSubmit, errors } = useForm(); // initialise the hook
   const onSubmit = data => {
     console.log(data);
-  }; // callback when validation pass
+  };
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
@@ -67,4 +78,6 @@ function App() {
 
 Thanks goes to these wonderful people:
 
-<img src="https://opencollective.com/react-hook-form/contributors.svg?width=950" />
+<a href="https://github.com/react-hook-form/react-hook-form/graphs/contributors">
+    <img src="https://opencollective.com/react-hook-form/contributors.svg?width=950" />
+</a>

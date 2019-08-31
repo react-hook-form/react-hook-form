@@ -6,6 +6,7 @@ context('basic form validation', () => {
     cy.get('input[name="firstName"] + p').contains('firstName error');
     cy.get('input[name="lastName"] + p').contains('lastName error');
     cy.get('select[name="selectNumber"] + p').contains('selectNumber error');
+    cy.get('select[name="multiple"] + p').contains('multiple error');
     cy.get('input[name="minRequiredLength"] + p').contains('minRequiredLength error');
     cy.get('input[name="radio"] + p').contains('radio error');
 
@@ -33,6 +34,7 @@ context('basic form validation', () => {
     cy.get('input[name="pattern"]').type('23');
     cy.get('input[name="minLength"]').type('bi');
     cy.get('input[name="minRequiredLength"]').type('bi');
+    cy.get('select[name="multiple"]').select(['optionA']);
     cy.get('input[name="radio"]').check('1');
     cy.get('input[name="min"]').clear().type('11');
     cy.get('input[name="max"]').clear().type('19');

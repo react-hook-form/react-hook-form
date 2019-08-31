@@ -5,20 +5,15 @@ export default function shouldUpdateWithError({
   errors,
   name,
   error,
-  isOnBlur,
-  isBlurEvent,
   isValidateDisabled,
 }: {
   errors: any;
   name: string;
   error: any;
-  isOnBlur: boolean;
-  isBlurEvent: boolean;
   isValidateDisabled: boolean;
 }): boolean {
   if (
     isValidateDisabled ||
-    (isOnBlur && !isBlurEvent) ||
     (isEmptyObject(error) && isEmptyObject(errors)) ||
     (errors[name] && errors[name].isManual)
   ) {

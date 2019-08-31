@@ -24,3 +24,5 @@ export const VALIDATION_MODE: ValidationMode = {
   onChange: 'onChange',
   onSubmit: 'onSubmit',
 };
+
+export const RADIO_INPUT = 'radio';
