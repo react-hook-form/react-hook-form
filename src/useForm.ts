@@ -22,7 +22,7 @@ import isUndefined from './utils/isUndefined';
 import onDomRemove from './utils/onDomRemove';
 import isMultipleSelect from './utils/isMultipleSelect';
 import modeChecker from './utils/validationModeChecker';
-import { VALIDATION_MODE } from './constants';
+import { RADIO_INPUT, VALIDATION_MODE } from './constants';
 import {
   FieldValues,
   ErrorMessages,
@@ -452,7 +452,6 @@ export default function useForm<
     if (!ref.name) return console.warn('Miss ref', ref);
 
     const { name, type, value } = ref;
-    const { required, validate } = validateOptions;
     const fieldAttributes = {
       ref,
       ...validateOptions,
@@ -479,15 +478,16 @@ export default function useForm<
         if (!currentField)
           fields[name] = {
             options: [],
-            required,
-            validate,
-            ref: { type: 'radio', name },
+            ref: { type: RADIO_INPUT, name },
           };
 
-        if (validate) fields[name].validate = validate;
+        fields[name] = {
+          ...fields[name],
+          ...validateOptions,
+        };
 
         fields[name].options.push({
-          ...fieldAttributes,
+          ref,
           mutationWatcher,
         });
       } else {
