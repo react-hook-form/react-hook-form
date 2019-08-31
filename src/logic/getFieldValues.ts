@@ -5,9 +5,9 @@ export default function getFieldsValues<Data extends FieldValues>(
   fields: FieldValues,
 ): Data {
   return Object.values(fields).reduce(
-    (previous: FieldValues, { ref: { name } }: Ref): FieldValue => ({
+    (previous: FieldValues, { ref }: Ref): FieldValue => ({
       ...previous,
-      ...getFieldValue(fields, name),
+      ...getFieldValue(fields, ref),
     }),
     {},
   );
