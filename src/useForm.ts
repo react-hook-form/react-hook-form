@@ -712,7 +712,7 @@ export default function useForm<
   }, []);
 
   const getValues = (payload?: { nest: boolean }): FormValues => {
-    const fieldValues = getFieldsValues<FormValues>(fieldsRef.current);
+    const fieldValues = getFieldsValues(fieldsRef.current);
     const output =
       payload && payload.nest ? combineFieldValues(fieldValues) : fieldValues;
     return isEmptyObject(output) ? defaultValues : output;
