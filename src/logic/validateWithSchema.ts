@@ -17,12 +17,12 @@ export function parseErrorSchema(error: FieldValues): FieldErrors {
 
 export default async function validateWithSchema(
   validationSchema: any,
-  validateWithSchema: SchemaValidateOptions,
+  validationSchemaOption: SchemaValidateOptions,
   data: FieldValues,
 ): Promise<ValidationReturn> {
   try {
     return {
-      result: await validationSchema.validate(data, validateWithSchema),
+      result: await validationSchema.validate(data, validationSchemaOption),
       fieldErrors: {},
     };
   } catch (e) {
