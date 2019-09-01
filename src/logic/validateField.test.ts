@@ -103,6 +103,11 @@ describe('validateField', () => {
         {
           test: {
             ref: 'test',
+            options: [
+              {
+                ref: 'test',
+              },
+            ],
           },
         },
       ),
@@ -110,7 +115,7 @@ describe('validateField', () => {
       test: {
         message: 'test',
         type: 'required',
-        ref: '',
+        ref: 'test',
       },
     });
   });

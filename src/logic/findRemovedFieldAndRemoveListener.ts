@@ -18,10 +18,10 @@ export default function findRemovedFieldAndRemoveListener<
 
   if (isRadioInput(type) && options) {
     options.forEach(({ ref }, index): void => {
-      if (options[index] && isDetached(ref) || forceDelete) {
+      if ((options[index] && isDetached(ref)) || forceDelete) {
         removeAllEventListeners(options[index], validateWithStateUpdate);
         (
-          options[index].mutationWatcher || { disconnect: (): void => {} }
+          options[index].mutationWatcher || { disconnect: () => {} }
         ).disconnect();
         options.splice(index, 1);
       }

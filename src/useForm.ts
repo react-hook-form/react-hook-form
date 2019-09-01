@@ -372,9 +372,8 @@ export default function useForm<
     ref?: Ref,
   ): void => {
     const errors = errorsRef.current;
-    const error = errors[name];
 
-    if (!isSameError(error, type, message)) {
+    if (!isSameError(errors[name], type, message)) {
       errors[name] = {
         type,
         message,
@@ -445,7 +444,7 @@ export default function useForm<
     );
   }
 
-  function __registerIntoFieldsRef<Element extends ElementLike>(
+  function registerIntoFieldsRef<Element extends ElementLike>(
     ref: Element,
     validateOptions: ValidationOptions = {},
   ): void {
@@ -567,12 +566,12 @@ export default function useForm<
       isObject(refOrValidateRule) &&
       (validationOptions || 'name' in refOrValidateRule)
     ) {
-      __registerIntoFieldsRef(refOrValidateRule as Element, validationOptions);
+      registerIntoFieldsRef(refOrValidateRule as Element, validationOptions);
       return;
     }
 
     return (ref: Element | null) =>
-      ref && __registerIntoFieldsRef(ref, refOrValidateRule);
+      ref && registerIntoFieldsRef(ref, refOrValidateRule);
   }
 
   function unregister(name: FieldName | string): void;
@@ -731,7 +730,7 @@ export default function useForm<
   );
 
   return {
-    register: useCallback(register, [__registerIntoFieldsRef]),
+    register: useCallback(register, [registerIntoFieldsRef]),
     unregister: useCallback(unregister, [
       unregister,
       removeEventListenerAndRef,

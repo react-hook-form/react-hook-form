@@ -10,7 +10,7 @@ export default (
   fieldName: string,
   watchFields: { [key: string]: boolean },
 ) => {
-  if (isEmptyObject(fieldValues) || isUndefined(fieldValues)) return undefined;
+  if (isUndefined(fieldValues) || isEmptyObject(fieldValues)) return undefined;
 
   if (!isUndefined(fieldValues[fieldName])) {
     watchFields[fieldName] = true;
@@ -23,7 +23,7 @@ export default (
     const result = getPath(fieldName, values);
     if (Array.isArray(result)) {
       result.forEach(name => {
-        watchFields[name as any] = true;
+        watchFields[name] = true;
       });
     }
   }
