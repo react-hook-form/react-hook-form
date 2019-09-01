@@ -7,7 +7,6 @@ import isString from '../utils/isString';
 import isEmptyObject from '../utils/isEmptyObject';
 import displayNativeError from './displayNativeError';
 import isObject from '../utils/isObject';
-import { DATE_INPUTS, STRING_INPUTS } from '../constants';
 import isFunction from '../utils/isFunction';
 import isBoolean from '../utils/isBoolean';
 import getFieldsValue from './getFieldValue';
@@ -40,7 +39,6 @@ export default async (
   const isCheckBox = isCheckBoxInput(type);
   const isSelectOrInput = !isCheckBox && !isRadio;
   const nativeError = displayNativeError.bind(null, nativeValidation, ref);
-  const isStringInput = STRING_INPUTS.includes(type) || isString(value);
 
   if (
     required &&
@@ -68,7 +66,7 @@ export default async (
       const valueNumber = parseFloat(value);
       if (!isNullOrUndefined(maxValue)) exceedMax = valueNumber > maxValue;
       if (!isNullOrUndefined(minValue)) exceedMin = valueNumber < minValue;
-    } else if (DATE_INPUTS.includes(type)) {
+    } else {
       if (isString(maxValue)) exceedMax = new Date(value) > new Date(maxValue);
       if (isString(minValue)) exceedMin = new Date(value) < new Date(minValue);
     }
@@ -93,7 +91,7 @@ export default async (
     }
   }
 
-  if ((maxLength || minLength) && isStringInput) {
+  if ((maxLength || minLength) && isString(value)) {
     const {
       value: maxLengthValue,
       message: maxLengthMessage,
