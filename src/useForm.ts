@@ -372,9 +372,8 @@ export default function useForm<
     ref?: Ref,
   ): void => {
     const errors = errorsRef.current;
-    const error = errors[name];
 
-    if (!isSameError(error, type, message)) {
+    if (!isSameError(errors[name], type, message)) {
       errors[name] = {
         type,
         message,
