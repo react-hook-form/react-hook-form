@@ -72,21 +72,13 @@ export default async (
     }
 
     if (exceedMax || exceedMin) {
-      if (exceedMax) {
-        error[name] = {
-          type: 'max',
-          message: maxMessage,
-          ref,
-        };
-      }
-      if (exceedMin) {
-        error[name] = {
-          type: 'min',
-          message: minMessage,
-          ref,
-        };
-      }
-      nativeError(exceedMax ? maxMessage : minMessage);
+      const message = exceedMax ? maxMessage : minMessage;
+      error[name] = {
+        type: exceedMax ? 'max' : 'min',
+        message,
+        ref,
+      };
+      nativeError(message);
       return error;
     }
   }
@@ -105,21 +97,13 @@ export default async (
     const exceedMin = minLength && inputLength < minLengthValue;
 
     if (exceedMax || exceedMin) {
-      if (exceedMax) {
-        error[name] = {
-          type: 'maxLength',
-          message: maxLengthMessage,
-          ref,
-        };
-      }
-      if (exceedMin) {
-        error[name] = {
-          type: 'minLength',
-          message: minLengthMessage,
-          ref,
-        };
-      }
-      nativeError(exceedMax ? maxLengthMessage : minLengthMessage);
+      const message = exceedMax ? maxLengthMessage : minLengthMessage;
+      error[name] = {
+        type: exceedMax ? 'maxLength' : 'minLength',
+        message,
+        ref,
+      };
+      nativeError(message);
       return error;
     }
   }
