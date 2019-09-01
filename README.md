@@ -4,7 +4,7 @@
 
 <div align="center">
 
-Build powerful and complex forms with performance and DX.
+Performant, flexible and extensible forms with easy to use for validation.
 
 [![CircleCI](https://badgen.net/github/status/react-hook-form/react-hook-form/master/ci/circleci)](https://circleci.com/gh/react-hook-form/react-hook-form)
 [![npm downloads](https://img.shields.io/npm/dm/react-hook-form.svg?style=flat-square)](https://www.npmjs.com/package/react-hook-form)
