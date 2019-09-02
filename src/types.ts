@@ -4,7 +4,10 @@ export type FieldValue = any;
 
 export type FieldValues = Record<string, FieldValue>;
 
-export type Validate = (data: FieldValue) => string | boolean;
+/** Validation errors are triggered by returning a non-empty string or boolean true
+ *  - An undefined result signals a passed validation.
+ **/
+export type Validate = (data: FieldValue) => string | boolean | undefined;
 
 export type OnSubmit<Data extends FieldValues> = (
   data: Data,
