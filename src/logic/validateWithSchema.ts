@@ -7,7 +7,10 @@ import {
 
 export function parseErrorSchema(error: FieldValues): FieldErrors {
   return error.inner.reduce(
-    (previous: FieldValues, { path, message, type }: FieldValues): FieldErrors => ({
+    (
+      previous: FieldValues,
+      { path, message, type }: FieldValues,
+    ): FieldErrors => ({
       ...previous,
       [path]: { message, ref: {}, type },
     }),

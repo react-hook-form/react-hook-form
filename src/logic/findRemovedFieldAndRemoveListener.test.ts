@@ -128,17 +128,13 @@ describe('findMissDomAndClean', () => {
     };
 
     expect(
-      findRemovedFieldAndRemoveListener(
-        fields,
-        () => {},
-        {
-          ref: { name: 'test', type: 'radio' },
-          options: [{ ref }],
-          mutationWatcher: {
-            disconnect,
-          },
+      findRemovedFieldAndRemoveListener(fields, () => {}, {
+        ref: { name: 'test', type: 'radio' },
+        options: [{ ref }],
+        mutationWatcher: {
+          disconnect,
         },
-      ),
+      }),
     ).toMatchSnapshot();
   });
 
@@ -177,13 +173,9 @@ describe('findMissDomAndClean', () => {
 
     expect(
       // @ts-ignore
-      findRemovedFieldAndRemoveListener(
-        fields,
-        () => {},
-        {
-          ref: { name: 'test', type: 'text' },
-        },
-      ),
+      findRemovedFieldAndRemoveListener(fields, () => {}, {
+        ref: { name: 'test', type: 'text' },
+      }),
     ).toMatchSnapshot();
   });
 });

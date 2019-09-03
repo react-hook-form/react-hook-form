@@ -6,6 +6,8 @@ describe('getValueAndMessage', () => {
     expect(getValueAndMessage(3).value).toEqual(3);
     expect(getValueAndMessage({ value: 0, message: 'what' }).value).toEqual(0);
     expect(getValueAndMessage({ value: 2, message: 'what' }).value).toEqual(2);
-    expect(getValueAndMessage({ value: 1, message: 'test' }).message).toEqual('test');
+    expect(getValueAndMessage({ value: 1, message: 'test' }).message).toEqual(
+      'test',
+    );
   });
 });
