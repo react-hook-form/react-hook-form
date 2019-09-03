@@ -1,10 +1,17 @@
 import findRemovedFieldAndRemoveListener from './findRemovedFieldAndRemoveListener';
+import isDetached from '../utils/isDetached';
 
 jest.mock('./removeAllEventListeners');
+jest.mock('../utils/isDetached');
 
 describe('findMissDomAndClean', () => {
   beforeEach(() => {
     jest.resetAllMocks();
+
+    // @ts-ignore
+    isDetached.mockImplementation(() => {
+      return true;
+    });
   });
 
   it('should return default fields value if nothing matches', () => {
@@ -139,12 +146,17 @@ describe('findMissDomAndClean', () => {
   });
 
   it('should not remove event listener when type is not Element', () => {
+    // @ts-ignore
+    isDetached.mockImplementation(() => {
+      return false;
+    });
     document.body.contains = jest.fn(() => false);
 
     const disconnect = jest.fn();
     const fields = {
       test: {
         name: 'test',
+        type: 'radio',
         ref: {},
         options: [
           {
@@ -177,5 +189,52 @@ describe('findMissDomAndClean', () => {
         ref: { name: 'test', type: 'text' },
       }),
     ).toMatchSnapshot();
+  });
+
+  it('should return undefined when field is not found', () => {
+    expect(
+      // @ts-ignore
+      findRemovedFieldAndRemoveListener({}, undefined, undefined, false),
+    ).toBeUndefined();
+  });
+
+  it('should remove options when force delete is set to true', () => {
+    // @ts-ignore
+    isDetached.mockImplementation(() => {
+      return false;
+    });
+
+    document.body.contains = jest.fn(() => false);
+
+    const ref = document.createElement('input');
+    ref.setAttribute('name', 'test');
+    ref.setAttribute('type', 'radio');
+
+    const disconnect = jest.fn();
+    const fields = {
+      test: {
+        name: 'test',
+        ref: {},
+        options: [],
+      },
+    };
+    findRemovedFieldAndRemoveListener(
+      fields,
+      () => {},
+      {
+        ref: { name: 'test', type: 'radio' },
+        options: [
+          {
+            mutationWatcher: {
+              disconnect,
+            },
+            ref,
+          },
+        ],
+      },
+      true,
+    );
+
+    expect(fields).toEqual({});
   });
 });

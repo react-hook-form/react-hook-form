@@ -60,10 +60,26 @@ Object {
 }
 `;
 
+exports[`combineFieldValues should combine with results 1`] = `
+Object {
+  "name": "testFirst",
+  "name1": "testFirst",
+  "name2": "testFirst",
+}
+`;
+
 exports[`combineFieldValues should handle quoted values 1`] = `
 Object {
   "name": Object {
     "foobar": "testFirst",
+  },
+}
+`;
+
+exports[`combineFieldValues should handle quoted values 2`] = `
+Object {
+  "name": Object {
+    "b2ill": "testFirst",
   },
 }
 `;
