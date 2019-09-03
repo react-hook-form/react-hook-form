@@ -44,7 +44,7 @@ describe('isDetached', () => {
     document.body.innerHTML = ''; // Make sure the body is empty
 
     let lastNode = document.body;
-    for (var i = 0; i < 10; ++i) {
+    for (let i = 0; i < 10; ++i) {
       const newNode = document.createElement('div');
       lastNode.appendChild(newNode);
       lastNode = newNode;
@@ -79,7 +79,7 @@ describe('isDetached', () => {
       iframe.addEventListener(
         'load',
         function() {
-          var node = document.createElement('div');
+          let node = document.createElement('div');
           if (iframe.contentDocument) {
             iframe.contentDocument.body.appendChild(node);
 
@@ -104,7 +104,7 @@ describe('isDetached', () => {
       iframe.addEventListener(
         'load',
         function() {
-          var node = document.createElement('div');
+          let node = document.createElement('div');
           if (iframe.contentDocument) {
             iframe.contentDocument.body.appendChild(node);
 

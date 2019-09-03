@@ -12,8 +12,11 @@ export default function findRemovedFieldAndRemoveListener<
   forceDelete: boolean = false,
 ): void {
   if (!field) return;
+
   const { ref, mutationWatcher, options } = field;
+
   if (!ref || !ref.type) return;
+
   const { name, type } = ref;
 
   if (isRadioInput(type) && options) {

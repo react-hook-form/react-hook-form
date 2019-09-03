@@ -19,19 +19,20 @@ export function isKey(value: [] | string) {
 
 const stringToPath = (string: string): string[] => {
   const result: string[] = [];
+
   string.replace(
     rePropName,
     (match: string, number: string, quote: string, string: string): any => {
       result.push(quote ? string.replace(reEscapeChar, '$1') : number || match);
     },
   );
+
   return result;
 };
 
 export default function set(object: FieldValues, path: string, value: string) {
-  const tempPath = isKey(path) ? [path] : stringToPath(path);
-
   let index = -1;
+  const tempPath = isKey(path) ? [path] : stringToPath(path);
   const length = tempPath.length;
   const lastIndex = length - 1;
 

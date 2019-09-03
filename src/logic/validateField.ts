@@ -131,6 +131,7 @@ export default async (
     if (isFunction(validate)) {
       const result = await validate(fieldValue);
       const isStringValue = isString(result);
+
       if (isStringValue || (isBoolean(result) && !result)) {
         const message = isStringValue ? result : '';
         error[name] = {

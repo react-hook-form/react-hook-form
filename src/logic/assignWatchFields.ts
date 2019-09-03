@@ -21,6 +21,7 @@ export default (
 
   if (values !== undefined) {
     const result = getPath(fieldName, values);
+
     if (Array.isArray(result)) {
       result.forEach(name => {
         watchFields[name] = true;
