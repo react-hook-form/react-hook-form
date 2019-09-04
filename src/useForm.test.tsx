@@ -420,6 +420,51 @@ describe('useForm', () => {
       });
       expect(callback).toBeCalled();
     });
+
+    it('should trigger multiple fields validation', async () => {
+      const { result } = renderHook(() =>
+        useForm<{ test: string }>({
+          mode: VALIDATION_MODE.onChange,
+        }),
+      );
+
+      // @ts-ignore
+      validateField.mockImplementation(async () => {
+        return {};
+      });
+
+      act(() => {
+        result.current.register({
+          name: 'test',
+        });
+        result.current.register({
+          name: 'test1',
+        });
+      });
+
+      await act(async () => {
+        // @ts-ignore
+        await result.current.triggerValidation([
+          { name: 'test', value: 'test' },
+          { name: 'test1', value: 'test' },
+        ]);
+      });
+
+      expect(validateField).toBeCalledWith(
+        { ref: { name: 'test', value: 'test' } },
+        {
+          test: { ref: { name: 'test', value: 'test' } },
+          test1: { ref: { name: 'test1', value: 'test' } },
+        },
+      );
+      expect(validateField).toBeCalledWith(
+        { ref: { name: 'test1', value: 'test' } },
+        {
+          test: { ref: { name: 'test', value: 'test' } },
+          test1: { ref: { name: 'test1', value: 'test' } },
+        },
+      );
+    });
   });
 
   describe('triggerValidation with schema', () => {
