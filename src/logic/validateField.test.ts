@@ -7,8 +7,7 @@ const setCustomValidity = () => {};
 
 describe('validateField', () => {
   it('should return required true when input not filled with required', async () => {
-    // @ts-ignore
-    getRadioValue.mockImplementation(() => ({
+    (getRadioValue as any).mockImplementation(() => ({
       value: '2',
     }));
     expect(
@@ -447,8 +446,7 @@ describe('validateField', () => {
       },
     });
 
-    // @ts-ignore
-    getRadioValue.mockImplementation(() => {
+    (getRadioValue as any).mockImplementation(() => {
       return {
         isValid: false,
         value: 'test',

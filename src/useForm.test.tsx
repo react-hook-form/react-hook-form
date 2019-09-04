@@ -16,8 +16,7 @@ jest.mock('./logic/attachEventListeners');
 jest.mock('./logic/getFieldValues');
 jest.mock('./logic/validateWithSchema');
 jest.mock('./logic/combineFieldValues', () => ({
-  // @ts-ignore
-  default: data => data,
+  default: (data: any) => data,
   esmodule: true,
 }));
 
@@ -31,8 +30,7 @@ describe('useForm', () => {
       const { result } = renderHook(() => useForm());
 
       act(() => {
-        // @ts-ignore
-        expect(result.current.register(undefined)).toBeUndefined();
+        expect(result.current.register(undefined as any)).toBeUndefined();
       });
     });
 
@@ -40,8 +38,9 @@ describe('useForm', () => {
       const { result } = renderHook(() => useForm());
 
       act(() => {
-        // @ts-ignore
-        expect(result.current.register({ type: 'input' }, {})).toBeUndefined();
+        expect(
+          result.current.register({ name: 'test', type: 'input' }, {}),
+        ).toBeUndefined();
       });
     });
 
@@ -62,6 +61,7 @@ describe('useForm', () => {
         },
         isRadio: false,
         validateAndStateUpdate: expect.any(Function),
+        isOnBlur: false,
       });
       expect(onDomRemove).toHaveBeenCalled();
     });
@@ -82,6 +82,7 @@ describe('useForm', () => {
           },
         },
         isRadio: true,
+        isOnBlur: false,
         validateAndStateUpdate: expect.any(Function),
       });
       expect(onDomRemove).toBeCalled();
@@ -98,8 +99,7 @@ describe('useForm', () => {
         });
       });
 
-      // @ts-ignore
-      validateField.mockImplementation(async () => {
+      (validateField as any).mockImplementation(async () => {
         return {};
       });
 
@@ -124,8 +124,7 @@ describe('useForm', () => {
         register({ type: 'radio', name: 'test', value: '' });
       });
 
-      // @ts-ignore
-      validateField.mockImplementation(async () => {
+      (validateField as any).mockImplementation(async () => {
         return {};
       });
 
@@ -142,6 +141,32 @@ describe('useForm', () => {
     });
   });
 
+  describe('unregister', () => {
+    it('should unregister an registered item', async () => {
+      const { result } = renderHook(() => useForm());
+
+      act(() => {
+        result.current.register({ name: 'input' });
+        result.current.unregister('input');
+      });
+
+      const callback = jest.fn();
+
+      (validateField as any).mockImplementation(async () => {
+        return {};
+      });
+
+      await act(async () => {
+        await result.current.handleSubmit(callback)({
+          preventDefault: () => {},
+          persist: () => {},
+        } as React.SyntheticEvent);
+      });
+
+      expect(validateField).not.toBeCalled();
+    });
+  });
+
   describe('watch', () => {
     it('should watch individual input', () => {
       const { result } = renderHook(() => useForm<{ test: string }>());
@@ -152,8 +177,7 @@ describe('useForm', () => {
         result.current.register({ type: 'radio', name: 'test', value: '' });
       });
 
-      // @ts-ignore
-      getFieldsValues.mockImplementation(() => {
+      (getFieldsValues as any).mockImplementation(() => {
         return { test: 'data' };
       });
 
@@ -175,8 +199,7 @@ describe('useForm', () => {
         result.current.register({ type: 'radio', name: 'test1', value: '' });
       });
 
-      // @ts-ignore
-      getFieldsValues.mockImplementation(() => {
+      (getFieldsValues as any).mockImplementation(() => {
         return {
           test: 'data1',
           test1: 'data2',
@@ -201,8 +224,7 @@ describe('useForm', () => {
         result.current.register({ type: 'radio', name: 'test1', value: '' });
       });
 
-      // @ts-ignore
-      getFieldsValues.mockImplementation(() => {
+      (getFieldsValues as any).mockImplementation(() => {
         return {
           test: 'data1',
           test1: 'data2',
@@ -225,8 +247,7 @@ describe('useForm', () => {
         result.current.setValue('test', 'data');
       });
 
-      // @ts-ignore
-      validateField.mockImplementation(async () => {
+      (validateField as any).mockImplementation(async () => {
         return {};
       });
 
@@ -263,8 +284,7 @@ describe('useForm', () => {
         result.current.setValue('test', '1');
       });
 
-      // @ts-ignore
-      validateField.mockImplementation(async () => {
+      (validateField as any).mockImplementation(async () => {
         return {};
       });
 
@@ -276,6 +296,38 @@ describe('useForm', () => {
         await result.current.handleSubmit(data => {
           expect(data).toEqual({
             test: '1',
+          });
+        })({
+          preventDefault: () => {},
+          persist: () => {},
+        } as React.SyntheticEvent);
+      });
+    });
+
+    it('should set value of multiple select correctly', async () => {
+      const { result } = renderHook(() => useForm<{ test: string }>());
+
+      act(() => {
+        result.current.register({
+          name: 'test',
+          type: 'select-multiple',
+          value: '1',
+          options: [{ value: '1', selected: true }],
+        });
+      });
+
+      (validateField as any).mockImplementation(async () => {
+        return {};
+      });
+
+      act(() => {
+        result.current.setValue('test', '1');
+      });
+
+      await act(async () => {
+        await result.current.handleSubmit(data => {
+          expect(data).toEqual({
+            test: ['1'],
           });
         })({
           preventDefault: () => {},
@@ -310,8 +362,7 @@ describe('useForm', () => {
         result.current.register({ type: 'input', name: 'test' });
       });
 
-      // @ts-ignore
-      validateField.mockImplementation(async () => {
+      (validateField as any).mockImplementation(async () => {
         return {};
       });
 
@@ -331,8 +382,7 @@ describe('useForm', () => {
         }),
       );
 
-      // @ts-ignore
-      validateField.mockImplementation(async () => {
+      (validateField as any).mockImplementation(async () => {
         return {};
       });
 
@@ -357,8 +407,7 @@ describe('useForm', () => {
         }),
       );
 
-      // @ts-ignore
-      validateField.mockImplementation(async () => {
+      (validateField as any).mockImplementation(async () => {
         return {};
       });
 
@@ -385,6 +434,50 @@ describe('useForm', () => {
       });
       expect(callback).toBeCalled();
     });
+
+    it('should trigger multiple fields validation', async () => {
+      const { result } = renderHook(() =>
+        useForm<{ test: string }>({
+          mode: VALIDATION_MODE.onChange,
+        }),
+      );
+
+      (validateField as any).mockImplementation(async () => {
+        return {};
+      });
+
+      act(() => {
+        result.current.register({
+          name: 'test',
+        });
+        result.current.register({
+          name: 'test1',
+        });
+      });
+
+      await act(async () => {
+        // @ts-ignore
+        await result.current.triggerValidation([
+          { name: 'test', value: 'test' },
+          { name: 'test1', value: 'test' },
+        ]);
+      });
+
+      expect(validateField).toBeCalledWith(
+        { ref: { name: 'test', value: 'test' } },
+        {
+          test: { ref: { name: 'test', value: 'test' } },
+          test1: { ref: { name: 'test1', value: 'test' } },
+        },
+      );
+      expect(validateField).toBeCalledWith(
+        { ref: { name: 'test1', value: 'test' } },
+        {
+          test: { ref: { name: 'test', value: 'test' } },
+          test1: { ref: { name: 'test1', value: 'test' } },
+        },
+      );
+    });
   });
 
   describe('triggerValidation with schema', () => {
@@ -396,8 +489,7 @@ describe('useForm', () => {
         }),
       );
 
-      // @ts-ignore
-      validateWithSchema.mockImplementation(async payload => {
+      (validateWithSchema as any).mockImplementation(async (payload: any) => {
         return {
           fieldErrors: payload,
           result: {},
@@ -425,8 +517,7 @@ describe('useForm', () => {
         }),
       );
 
-      // @ts-ignore
-      validateWithSchema.mockImplementation(async payload => {
+      (validateWithSchema as any).mockImplementation(async (payload: any) => {
         return {
           fieldErrors: payload,
           result: {},
@@ -468,8 +559,7 @@ describe('useForm', () => {
         }),
       );
 
-      // @ts-ignore
-      validateWithSchema.mockImplementation(async () => {
+      (validateWithSchema as any).mockImplementation(async () => {
         return {
           fieldErrors: {
             test1: 'test',
@@ -500,8 +590,7 @@ describe('useForm', () => {
         }),
       );
 
-      // @ts-ignore
-      validateWithSchema.mockImplementation(async () => {
+      (validateWithSchema as any).mockImplementation(async () => {
         return {
           fieldErrors: {
             test1: 'test1',
@@ -539,8 +628,7 @@ describe('useForm', () => {
         }),
       );
 
-      // @ts-ignore
-      validateWithSchema.mockImplementation(async payload => {
+      (validateWithSchema as any).mockImplementation(async (payload: any) => {
         return {
           fieldErrors: payload,
           result: {},
@@ -589,8 +677,7 @@ describe('useForm', () => {
         }),
       );
 
-      // @ts-ignore
-      validateWithSchema.mockImplementation(async () => {
+      (validateWithSchema as any).mockImplementation(async () => {
         return {
           fieldErrors: {
             test1: 'test1',
@@ -647,8 +734,7 @@ describe('useForm', () => {
       });
 
       const callback = jest.fn();
-      // @ts-ignore
-      validateField.mockImplementation(async () => {
+      (validateField as any).mockImplementation(async () => {
         return { test: { type: 'test' } };
       });
 
@@ -678,8 +764,7 @@ describe('useForm', () => {
         result.current.register({ value: '', type: 'input', name: 'test' });
       });
 
-      // @ts-ignore
-      validateField.mockImplementation(async () => {
+      (validateField as any).mockImplementation(async () => {
         return {};
       });
 
@@ -690,23 +775,6 @@ describe('useForm', () => {
         } as React.SyntheticEvent);
       });
       expect(validateField).toHaveBeenCalledTimes(1);
-    });
-  });
-
-  describe('getValues', () => {
-    it('should call getFieldsValues and return all values', () => {
-      const { result } = renderHook(() => useForm<{ test: string }>());
-      act(() => {
-        result.current.register({ value: 'test', type: 'input', name: 'test' });
-      });
-      // @ts-ignore
-      getFieldsValues.mockImplementation(async () => {
-        return {};
-      });
-      act(() => {
-        result.current.getValues();
-      });
-      expect(getFieldsValues).toBeCalled();
     });
   });
 
@@ -726,12 +794,10 @@ describe('useForm', () => {
         );
       });
       const callback = jest.fn();
-      // @ts-ignore
-      getFieldsValues.mockImplementation(async () => {
+      (getFieldsValues as any).mockImplementation(async () => {
         return { test: 'test' };
       });
-      // @ts-ignore
-      validateWithSchema.mockImplementation(async () => {
+      (validateWithSchema as any).mockImplementation(async () => {
         return {
           fieldErrors: {},
           result: {},
@@ -745,6 +811,22 @@ describe('useForm', () => {
         } as React.SyntheticEvent);
       });
       expect(callback).toBeCalled();
+    });
+  });
+
+  describe('getValues', () => {
+    it('should call getFieldsValues and return all values', () => {
+      const { result } = renderHook(() => useForm<{ test: string }>());
+      act(() => {
+        result.current.register({ value: 'test', type: 'input', name: 'test' });
+      });
+      (getFieldsValues as any).mockImplementation(async () => {
+        return {};
+      });
+      act(() => {
+        result.current.getValues();
+      });
+      expect(getFieldsValues).toBeCalled();
     });
   });
 
@@ -823,8 +905,7 @@ describe('useForm', () => {
         }),
       );
 
-      // @ts-ignore
-      validateField.mockImplementation(async () => {
+      (validateField as any).mockImplementation(async () => {
         return {
           fieldErrors: { test: 'issue' },
           result: {},
@@ -843,8 +924,7 @@ describe('useForm', () => {
     it('should return true when default value is valid value', async () => {
       const { result } = renderHook(() => useForm<{ input: string }>());
 
-      // @ts-ignore
-      validateField.mockImplementation(async () => {
+      (validateField as any).mockImplementation(async () => {
         return {
           fieldErrors: {},
           result: {},
@@ -884,8 +964,7 @@ describe('useForm', () => {
         }),
       );
 
-      // @ts-ignore
-      validateField.mockImplementation(async () => {
+      (validateField as any).mockImplementation(async () => {
         return {};
       });
 
@@ -893,7 +972,6 @@ describe('useForm', () => {
         result.current.register({ type: 'text', name: 'test' });
       });
 
-      // @ts-ignore
       await act(async () => {
         await result.current.handleSubmit((data: any) => {
           expect(data).toEqual({

@@ -42,7 +42,6 @@ describe('validateWithSchema', () => {
       await validateWithSchema(
         {
           validate: () => {
-            // @ts-ignore
             throw errors;
           },
         },

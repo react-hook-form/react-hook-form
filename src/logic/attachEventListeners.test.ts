@@ -17,9 +17,9 @@ describe('attachEventListeners', () => {
     expect(
       attachEventListeners({
         isRadio: true,
-        // @ts-ignore
         field: fields.test,
         validateAndStateUpdate,
+        isOnBlur: false,
       }),
     ).toBeUndefined();
 
@@ -42,15 +42,40 @@ describe('attachEventListeners', () => {
 
     expect(
       attachEventListeners({
-        // @ts-ignore
         field: fields.test,
         isRadio: true,
         validateAndStateUpdate,
+        isOnBlur: false,
       }),
     ).toBeUndefined();
 
     expect(addEventListener).toBeCalledWith('change', validateAndStateUpdate);
     expect(fields.test.eventAttached).toBeTruthy();
+  });
+
+  it('should only attach blur event when it is under blur mode', () => {
+    const validateAndStateUpdate = jest.fn();
+    const addEventListener = jest.fn();
+    const fields = {
+      test: {
+        ref: {
+          addEventListener,
+        },
+        eventAttached: [],
+        watch: true,
+      },
+    };
+
+    expect(
+      attachEventListeners({
+        field: fields.test,
+        isRadio: true,
+        validateAndStateUpdate,
+        isOnBlur: true,
+      }),
+    ).toBeUndefined();
+
+    expect(addEventListener).toBeCalledWith('blur', validateAndStateUpdate);
   });
 
   it('should attach input event on none radio type input', () => {
@@ -68,10 +93,10 @@ describe('attachEventListeners', () => {
 
     expect(
       attachEventListeners({
-        // @ts-ignore
         field: fields.test,
         isRadio: false,
         validateAndStateUpdate,
+        isOnBlur: false,
       }),
     ).toBeUndefined();
 
@@ -95,10 +120,10 @@ describe('attachEventListeners', () => {
 
     expect(
       attachEventListeners({
-        // @ts-ignore
         field: fields.test,
         isRadio: false,
         validateAndStateUpdate,
+        isOnBlur: false,
       }),
     ).toBeUndefined();
 
@@ -120,10 +145,10 @@ describe('attachEventListeners', () => {
 
     expect(
       attachEventListeners({
-        // @ts-ignore
         field: fields.test,
         isRadio: true,
         validateAndStateUpdate,
+        isOnBlur: false,
       }),
     ).toBeUndefined();
 
@@ -146,11 +171,10 @@ describe('attachEventListeners', () => {
 
     expect(
       attachEventListeners({
-        // @ts-ignore
         field: fields.test,
         isRadio: false,
-        // @ts-ignore
         validateAndStateUpdate,
+        isOnBlur: false,
       }),
     ).toBeUndefined();
 
@@ -161,10 +185,10 @@ describe('attachEventListeners', () => {
   it('should return undefined when addEventListener is not found', () => {
     expect(
       attachEventListeners({
-        // @ts-ignore
         field: { ref: {} },
         isRadio: false,
         validateAndStateUpdate: () => {},
+        isOnBlur: false,
       }),
     ).toBeUndefined();
   });
