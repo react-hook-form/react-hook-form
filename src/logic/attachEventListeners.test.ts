@@ -55,6 +55,32 @@ describe('attachEventListeners', () => {
     expect(fields.test.eventAttached).toBeTruthy();
   });
 
+  it('should only attach blur event when it is under blur mode', () => {
+    const validateAndStateUpdate = jest.fn();
+    const addEventListener = jest.fn();
+    const fields = {
+      test: {
+        ref: {
+          addEventListener,
+        },
+        eventAttached: [],
+        watch: true,
+      },
+    };
+
+    expect(
+      attachEventListeners({
+        // @ts-ignore
+        field: fields.test,
+        isRadio: true,
+        validateAndStateUpdate,
+        isOnBlur: true,
+      }),
+    ).toBeUndefined();
+
+    expect(addEventListener).toBeCalledWith('blur', validateAndStateUpdate);
+  });
+
   it('should attach input event on none radio type input', () => {
     const validateAndStateUpdate = jest.fn();
     const addEventListener = jest.fn();

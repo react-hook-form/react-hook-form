@@ -286,6 +286,39 @@ describe('useForm', () => {
       });
     });
 
+    it('should set value of multiple select correctly', async () => {
+      const { result } = renderHook(() => useForm<{ test: string }>());
+
+      act(() => {
+        result.current.register({
+          name: 'test',
+          type: 'select-multiple',
+          value: '1',
+          options: [{ value: '1', selected: true }],
+        });
+      });
+
+      // @ts-ignore
+      validateField.mockImplementation(async () => {
+        return {};
+      });
+
+      act(() => {
+        result.current.setValue('test', '1');
+      });
+
+      await act(async () => {
+        await result.current.handleSubmit(data => {
+          expect(data).toEqual({
+            test: ['1'],
+          });
+        })({
+          preventDefault: () => {},
+          persist: () => {},
+        } as React.SyntheticEvent);
+      });
+    });
+
     it('should return undefined when filed not found', () => {
       const { result } = renderHook(() => useForm<{ test: string }>());
 
