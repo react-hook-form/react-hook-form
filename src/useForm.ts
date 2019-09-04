@@ -285,6 +285,9 @@ export default function useForm<
         if (!ref) return;
 
         const isBlurEvent = type === 'blur';
+
+        if (isBlurEvent && isSubmittedRef.current) return;
+
         const isValidateDisabled = !isSubmittedRef.current && isOnSubmit;
         const shouldUpdateValidateMode =
           isOnChange || (isOnBlur && isBlurEvent) || errors[name];
@@ -562,6 +565,7 @@ export default function useForm<
         field,
         isRadio,
         validateAndStateUpdate: validateAndStateUpdateRef.current,
+        isOnBlur
       });
     }
   }
