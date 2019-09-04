@@ -5,16 +5,15 @@ export default function shouldUpdateWithError({
   errors,
   name,
   error,
-  isValidateDisabled,
+  validFields,
 }: {
   errors: any;
   name: string;
   error: any;
-  isValidateDisabled: boolean;
+  validFields: Set<unknown>;
 }): boolean {
   if (
-    isValidateDisabled ||
-    (isEmptyObject(error) && isEmptyObject(errors)) ||
+    (validFields.has(name) && isEmptyObject(error)) ||
     (errors[name] && errors[name].isManual)
   ) {
     return false;

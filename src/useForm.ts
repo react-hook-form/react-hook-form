@@ -311,7 +311,10 @@ export default function useForm<
           schemaErrorsRef.current = fieldErrors;
           isSchemaValidateTriggeredRef.current = true;
           const error = fieldErrors[name];
-          const shouldUpdate = (!error && errors[name]) || error;
+          const shouldUpdate =
+            (!error && errors[name]) ||
+            error ||
+            (!validFieldsRef.current.has(name) && isEmptyObject(error));
 
           if (shouldUpdate) {
             errorsRef.current = { ...errors, ...{ [name]: error } };
@@ -321,10 +324,10 @@ export default function useForm<
         } else {
           const error = await validateField(ref, fields, nativeValidation);
           const shouldUpdate = shouldUpdateWithError({
-            errors: errors,
+            errors,
             error,
-            isValidateDisabled,
             name,
+            validFields: validFieldsRef.current,
           });
 
           if (shouldUpdate) {
