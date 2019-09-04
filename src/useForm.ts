@@ -288,7 +288,9 @@ export default function useForm<
 
         if (isBlurEvent && isSubmittedRef.current) return;
 
-        const isValidateDisabled = !isSubmittedRef.current && isOnSubmit;
+        const isValidateDisabled =
+          (!isSubmittedRef.current && isOnSubmit) ||
+          (!isBlurEvent && !errors[name] && isOnBlur);
         const shouldUpdateValidateMode =
           isOnChange || (isOnBlur && isBlurEvent) || errors[name];
         let shouldUpdateState =
