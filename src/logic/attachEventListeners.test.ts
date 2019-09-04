@@ -17,7 +17,6 @@ describe('attachEventListeners', () => {
     expect(
       attachEventListeners({
         isRadio: true,
-        // @ts-ignore
         field: fields.test,
         validateAndStateUpdate,
         isOnBlur: false,
@@ -43,7 +42,6 @@ describe('attachEventListeners', () => {
 
     expect(
       attachEventListeners({
-        // @ts-ignore
         field: fields.test,
         isRadio: true,
         validateAndStateUpdate,
@@ -70,7 +68,6 @@ describe('attachEventListeners', () => {
 
     expect(
       attachEventListeners({
-        // @ts-ignore
         field: fields.test,
         isRadio: true,
         validateAndStateUpdate,
@@ -96,7 +93,6 @@ describe('attachEventListeners', () => {
 
     expect(
       attachEventListeners({
-        // @ts-ignore
         field: fields.test,
         isRadio: false,
         validateAndStateUpdate,
@@ -124,7 +120,6 @@ describe('attachEventListeners', () => {
 
     expect(
       attachEventListeners({
-        // @ts-ignore
         field: fields.test,
         isRadio: false,
         validateAndStateUpdate,
@@ -150,7 +145,6 @@ describe('attachEventListeners', () => {
 
     expect(
       attachEventListeners({
-        // @ts-ignore
         field: fields.test,
         isRadio: true,
         validateAndStateUpdate,
@@ -177,10 +171,8 @@ describe('attachEventListeners', () => {
 
     expect(
       attachEventListeners({
-        // @ts-ignore
         field: fields.test,
         isRadio: false,
-        // @ts-ignore
         validateAndStateUpdate,
         isOnBlur: false,
       }),
@@ -193,7 +185,6 @@ describe('attachEventListeners', () => {
   it('should return undefined when addEventListener is not found', () => {
     expect(
       attachEventListeners({
-        // @ts-ignore
         field: { ref: {} },
         isRadio: false,
         validateAndStateUpdate: () => {},

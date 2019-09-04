@@ -8,8 +8,7 @@ describe('findMissDomAndClean', () => {
   beforeEach(() => {
     jest.resetAllMocks();
 
-    // @ts-ignore
-    isDetached.mockImplementation(() => {
+    (isDetached as any).mockImplementation(() => {
       return true;
     });
   });
@@ -21,8 +20,7 @@ describe('findMissDomAndClean', () => {
     };
     expect(
       findRemovedFieldAndRemoveListener(
-        // @ts-ignore
-        fields,
+        fields as any,
         () => {},
         {
           ref: { name: 'bill', type: 'radio' },
@@ -104,10 +102,9 @@ describe('findMissDomAndClean', () => {
     };
     expect(
       findRemovedFieldAndRemoveListener(
-        // @ts-ignore
-        fields,
+        fields as any,
         () => {},
-        {},
+        {} as any,
       ),
     ).toEqual(undefined);
   });
@@ -146,8 +143,7 @@ describe('findMissDomAndClean', () => {
   });
 
   it('should not remove event listener when type is not Element', () => {
-    // @ts-ignore
-    isDetached.mockImplementation(() => {
+    (isDetached as any).mockImplementation(() => {
       return false;
     });
     document.body.contains = jest.fn(() => false);
@@ -184,7 +180,6 @@ describe('findMissDomAndClean', () => {
     expect(fields).toMatchSnapshot();
 
     expect(
-      // @ts-ignore
       findRemovedFieldAndRemoveListener(fields, () => {}, {
         ref: { name: 'test', type: 'text' },
       }),
@@ -193,14 +188,12 @@ describe('findMissDomAndClean', () => {
 
   it('should return undefined when field is not found', () => {
     expect(
-      // @ts-ignore
-      findRemovedFieldAndRemoveListener({}, undefined, undefined, false),
+      findRemovedFieldAndRemoveListener({}, undefined, undefined as any, false),
     ).toBeUndefined();
   });
 
   it('should remove options when force delete is set to true', () => {
-    // @ts-ignore
-    isDetached.mockImplementation(() => {
+    (isDetached as any).mockImplementation(() => {
       return false;
     });
 

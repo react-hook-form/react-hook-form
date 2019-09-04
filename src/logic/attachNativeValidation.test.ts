@@ -7,8 +7,7 @@ describe('attachNativeRule', () => {
       required: true,
     });
 
-    // @ts-ignore
-    expect(ref.required).toBeTruthy();
+    expect((ref as any).required).toBeTruthy();
 
     attachNativeValidation(ref, {
       pattern: /d+/,
