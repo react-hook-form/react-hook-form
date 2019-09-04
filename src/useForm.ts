@@ -289,10 +289,8 @@ export default function useForm<
         if (isBlurEvent && isSubmittedRef.current) return;
 
         const isValidateDisabled =
-          (!isSubmittedRef.current && isOnSubmit) ||
-          (!isBlurEvent && !errors[name] && isOnBlur);
-        const shouldUpdateValidateMode =
-          isOnChange || (isOnBlur && isBlurEvent) || errors[name];
+          (isOnSubmit && !isSubmittedRef.current) ||
+          (isOnBlur && !isBlurEvent && !errors[name]);
         let shouldUpdateState =
           isWatchAllRef.current || watchFieldsRef.current[name];
 
@@ -307,6 +305,9 @@ export default function useForm<
 
         if (isValidateDisabled)
           return shouldUpdateState ? reRenderForm({}) : undefined;
+
+        const shouldUpdateValidateMode =
+          isOnChange || (isOnBlur && isBlurEvent) || errors[name];
 
         if (validationSchema) {
           const { fieldErrors } = await validateWithSchemaCurry(
