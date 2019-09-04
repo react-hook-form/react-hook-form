@@ -70,7 +70,9 @@ export default function useForm<
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitCount, setSubmitCount] = useState(0);
   const [, reRenderForm] = useState({});
-  const { isOnBlur, isOnSubmit } = useRef(modeChecker(mode)).current;
+  const { isOnChange, isOnBlur, isOnSubmit } = useRef(
+    modeChecker(mode),
+  ).current;
   validationFieldsRef.current = validationFields;
 
   const validateWithSchemaCurry = useCallback(
@@ -289,6 +291,8 @@ export default function useForm<
         const isValidateDisabled =
           (!isSubmittedRef.current && isOnSubmit) ||
           (!isBlurEvent && !errors[name] && isOnBlur);
+        const shouldUpdateValidateMode =
+          isOnChange || (isOnBlur && isBlurEvent) || errors[name];
         let shouldUpdateState =
           isWatchAllRef.current || watchFieldsRef.current[name];
 
@@ -311,7 +315,9 @@ export default function useForm<
           schemaErrorsRef.current = fieldErrors;
           isSchemaValidateTriggeredRef.current = true;
           const error = fieldErrors[name];
-          const shouldUpdate = (!error && errors[name]) || error;
+          const shouldUpdate =
+            ((!error && errors[name]) || error) &&
+            (shouldUpdateValidateMode || isSubmittedRef.current);
 
           if (shouldUpdate) {
             errorsRef.current = { ...errors, ...{ [name]: error } };
@@ -327,7 +333,7 @@ export default function useForm<
             name,
           });
 
-          if (shouldUpdate) {
+          if (shouldUpdate || shouldUpdateValidateMode) {
             errorsRef.current = combineErrorsRef(error);
             if (renderBaseOnError(name, error)) return;
           }
