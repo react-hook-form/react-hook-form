@@ -20,6 +20,7 @@ describe('attachEventListeners', () => {
         // @ts-ignore
         field: fields.test,
         validateAndStateUpdate,
+        isOnBlur: false,
       }),
     ).toBeUndefined();
 
@@ -46,6 +47,7 @@ describe('attachEventListeners', () => {
         field: fields.test,
         isRadio: true,
         validateAndStateUpdate,
+        isOnBlur: false,
       }),
     ).toBeUndefined();
 
@@ -72,6 +74,7 @@ describe('attachEventListeners', () => {
         field: fields.test,
         isRadio: false,
         validateAndStateUpdate,
+        isOnBlur: false,
       }),
     ).toBeUndefined();
 
@@ -99,6 +102,7 @@ describe('attachEventListeners', () => {
         field: fields.test,
         isRadio: false,
         validateAndStateUpdate,
+        isOnBlur: false,
       }),
     ).toBeUndefined();
 
@@ -124,6 +128,7 @@ describe('attachEventListeners', () => {
         field: fields.test,
         isRadio: true,
         validateAndStateUpdate,
+        isOnBlur: false,
       }),
     ).toBeUndefined();
 
@@ -151,6 +156,7 @@ describe('attachEventListeners', () => {
         isRadio: false,
         // @ts-ignore
         validateAndStateUpdate,
+        isOnBlur: false,
       }),
     ).toBeUndefined();
 
@@ -165,6 +171,7 @@ describe('attachEventListeners', () => {
         field: { ref: {} },
         isRadio: false,
         validateAndStateUpdate: () => {},
+        isOnBlur: false,
       }),
     ).toBeUndefined();
   });
