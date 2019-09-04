@@ -1,5 +1,6 @@
 {
   "name": "react-hook-form",
+  "description": "Performant, flexible and extensible forms library for React Hooks",
   "version": "3.23.0",
   "main": "dist/react-hook-form.js",
   "module": "dist/react-hook-form.es.js",
@@ -12,6 +13,7 @@
     "build:min": "rollup -c rollup.min.config.js",
     "build:ie11": "rollup -c rollup.ie11.config.js",
     "watch": "tsc --watch",
+    "prettier": "prettier --write './src/**/*.ts' './src/**/*.tsx'",
     "lint": "eslint ./src --ext .jsx,.ts --ignore-pattern *.test.ts --report-unused-disable-directives",
     "coverage": "jest --coverage --coverageReporters=text-lcov | coveralls",
     "postrelease": "yarn publish && git push --follow-tags",
@@ -72,7 +74,7 @@
   "bundlesize": [
     {
       "path": "./dist/react-hook-form.min.es.js",
-      "maxSize": "5.5 kB"
+      "maxSize": "5 kB"
     }
   ],
   "peerDependencies": {

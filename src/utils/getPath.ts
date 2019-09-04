@@ -7,6 +7,7 @@ const getPath = (path: string, values: FieldValues | string[] | string): any =>
   Array.isArray(values)
     ? values.map((item, index) => {
         const pathWithIndex = `${path}[${index}]`;
+
         if (Array.isArray(item)) {
           return getPath(pathWithIndex, item);
         } else if (isObject(item)) {
@@ -16,6 +17,7 @@ const getPath = (path: string, values: FieldValues | string[] | string): any =>
               : getPath(`${pathWithIndex}.${key}`, objectValue),
           );
         }
+
         return pathWithIndex;
       })
     : Object.entries(values).map(([key, objectValue]) =>

@@ -4,7 +4,7 @@ export type FieldValue = any;
 
 export type FieldValues = Record<string, FieldValue>;
 
-export type Validate = (data: FieldValue) => string | boolean;
+export type Validate = (data: FieldValue) => string | boolean | void;
 
 export type OnSubmit<Data extends FieldValues> = (
   data: Data,

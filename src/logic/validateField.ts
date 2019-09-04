@@ -7,12 +7,16 @@ import isString from '../utils/isString';
 import isEmptyObject from '../utils/isEmptyObject';
 import displayNativeError from './displayNativeError';
 import isObject from '../utils/isObject';
-import { DATE_INPUTS, STRING_INPUTS } from '../constants';
-import { Field, ErrorMessages, FieldValues, ValidatePromiseResult } from '../types';
 import isFunction from '../utils/isFunction';
 import isBoolean from '../utils/isBoolean';
 import getFieldsValue from './getFieldValue';
-import isRegex from "../utils/isRegex";
+import isRegex from '../utils/isRegex';
+import {
+  Field,
+  ErrorMessages,
+  FieldValues,
+  ValidatePromiseResult,
+} from '../types';
 
 export default async (
   {
@@ -35,7 +39,6 @@ export default async (
   const isCheckBox = isCheckBoxInput(type);
   const isSelectOrInput = !isCheckBox && !isRadio;
   const nativeError = displayNativeError.bind(null, nativeValidation, ref);
-  const isStringInput = STRING_INPUTS.includes(type) || isString(value);
 
   if (
     required &&
@@ -47,7 +50,7 @@ export default async (
     error[name] = {
       type: 'required',
       message: isString(required) ? required : '',
-      ref: isRadio ? (fields[name].options || [{ ref: '' }])[0].ref : ref,
+      ref: isRadio ? fields[name].options[0].ref : ref,
     };
     nativeError(required);
     return error;
@@ -56,18 +59,16 @@ export default async (
   if (!isNullOrUndefined(min) || !isNullOrUndefined(max)) {
     let exceedMax;
     let exceedMin;
-    const valueNumber = parseFloat(value);
     const { value: maxValue, message: maxMessage } = getValueAndMessage(max);
     const { value: minValue, message: minMessage } = getValueAndMessage(min);
 
-    if (type === 'number' || !isNaN(value)) {
-      exceedMax = !isNullOrUndefined(maxValue) && valueNumber > maxValue;
-      exceedMin = !isNullOrUndefined(minValue) && valueNumber < minValue;
-    } else if (DATE_INPUTS.includes(type) || type === undefined) {
-      if (isString(maxValue))
-        exceedMax = maxValue && new Date(value) > new Date(maxValue);
-      if (isString(minValue))
-        exceedMin = minValue && new Date(value) < new Date(minValue);
+    if (type === 'number') {
+      const valueNumber = parseFloat(value);
+      if (!isNullOrUndefined(maxValue)) exceedMax = valueNumber > maxValue;
+      if (!isNullOrUndefined(minValue)) exceedMin = valueNumber < minValue;
+    } else {
+      if (isString(maxValue)) exceedMax = new Date(value) > new Date(maxValue);
+      if (isString(minValue)) exceedMin = new Date(value) < new Date(minValue);
     }
 
     if (exceedMax || exceedMin) {
@@ -82,7 +83,7 @@ export default async (
     }
   }
 
-  if ((maxLength || minLength) && isStringInput) {
+  if ((maxLength || minLength) && isString(value)) {
     const {
       value: maxLengthValue,
       message: maxLengthMessage,
@@ -93,10 +94,10 @@ export default async (
     } = getValueAndMessage(minLength);
     const inputLength = value.toString().length;
     const exceedMax = maxLength && inputLength > maxLengthValue;
-    const exceedMin = inputLength && minLength && inputLength < minLengthValue;
-    const message = exceedMax ? maxLengthMessage : minLengthMessage;
+    const exceedMin = minLength && inputLength < minLengthValue;
 
     if (exceedMax || exceedMin) {
+      const message = exceedMax ? maxLengthMessage : minLengthMessage;
       error[name] = {
         type: exceedMax ? 'maxLength' : 'minLength',
         message,
@@ -129,13 +130,16 @@ export default async (
 
     if (isFunction(validate)) {
       const result = await validate(fieldValue);
-      if ((isString(result) && result) || (isBoolean(result) && !result)) {
+      const isStringValue = isString(result);
+
+      if (isStringValue || (isBoolean(result) && !result)) {
+        const message = isStringValue ? result : '';
         error[name] = {
           type: 'validate',
-          message: isString(result) ? result : '',
+          message,
           ref: validateRef,
         };
-        nativeError(result);
+        nativeError(message);
         return error;
       }
     } else if (isObject(validate)) {
@@ -149,9 +153,10 @@ export default async (
 
             if (isFunction(validate)) {
               const result = await validate(fieldValue);
+              const isStringValue = isString(result);
 
-              if (!isBoolean(result) || !result) {
-                const message = isString(result) ? result : '';
+              if (isStringValue || (isBoolean(result) && !result)) {
+                const message = isStringValue ? result : '';
                 const data = {
                   type: key,
                   message,
@@ -167,7 +172,7 @@ export default async (
         },
       );
 
-      if (validationResult && !isEmptyObject(validationResult)) {
+      if (!isEmptyObject(validationResult)) {
         error[name] = {
           ref: validateRef,
           ...validationResult,

@@ -13,6 +13,7 @@ export default function get(
         .replace(/\]/g, '')
         .split('.');
   object = object[keys[0]];
+
   return object && keys.length > 1
     ? get(object, keys.slice(1), defaultVal)
     : isUndefined(object)

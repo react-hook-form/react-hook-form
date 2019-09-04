@@ -5,13 +5,13 @@ const defaultReturn: RadioReturn = {
   value: '',
 };
 
-export default function getRadioValue(
+export default (
   options?: {
     ref?: Ref;
     mutationWatcher?: MutationWatcher;
   }[],
-): RadioReturn {
-  return options && Array.isArray(options)
+): RadioReturn =>
+  options && Array.isArray(options)
     ? options.reduce(
         (previous, { ref: { checked, value } }: Ref): RadioReturn =>
           checked
@@ -23,4 +23,3 @@ export default function getRadioValue(
         defaultReturn,
       )
     : defaultReturn;
-}

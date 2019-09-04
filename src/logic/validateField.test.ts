@@ -103,6 +103,11 @@ describe('validateField', () => {
         {
           test: {
             ref: 'test',
+            options: [
+              {
+                ref: 'test',
+              },
+            ],
           },
         },
       ),
@@ -110,7 +115,7 @@ describe('validateField', () => {
       test: {
         message: 'test',
         type: 'required',
-        ref: '',
+        ref: 'test',
       },
     });
   });
@@ -586,6 +591,26 @@ describe('validateField', () => {
         },
       },
     });
+  });
+
+  it('if undefined returned from validate, no error is reported', async () => {
+    expect(
+      await validateField(
+        {
+          ref: {
+            type: 'text',
+            name: 'test',
+            value: 'This is a long text input',
+          },
+          validate: () => undefined,
+        },
+        {
+          test: {
+            ref: {},
+          },
+        },
+      ),
+    ).toEqual({});
   });
 
   it('should call setCustomValidity with empty string when native validation is on', async () => {

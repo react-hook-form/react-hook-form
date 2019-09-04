@@ -73,11 +73,12 @@ export default function useForm<
   const { isOnChange, isOnBlur, isOnSubmit } = useRef(
     modeChecker(mode),
   ).current;
+  validationFieldsRef.current = validationFields;
+
   const validateWithSchemaCurry = useCallback(
     validateWithSchema.bind(null, validationSchema, validationSchemaOption),
     [],
   );
-  validationFieldsRef.current = validationFields;
 
   const combineErrorsRef = (data: ErrorMessages<FormValues>) => ({
     ...errorsRef.current,
@@ -97,11 +98,13 @@ export default function useForm<
         if (shouldRender) reRenderForm({});
         return true;
       }
+
       if (error[name]) {
         validFieldsRef.current.delete(name);
         if (shouldRender) reRenderForm({});
         return true;
       }
+
       if (
         !isOnSubmit &&
         fieldsWithValidationRef.current.has(name) &&
@@ -111,6 +114,7 @@ export default function useForm<
         if (shouldRender) reRenderForm({});
         return true;
       }
+
       return false;
     },
     [isOnSubmit],
@@ -121,7 +125,9 @@ export default function useForm<
     value: FormValues[FieldName],
   ): void => {
     const field = fieldsRef.current[name];
+
     if (!field) return;
+
     const ref = field.ref;
     const options = field.options;
     const { type } = ref;
@@ -141,6 +147,7 @@ export default function useForm<
 
   const setDirty = (name: FieldName): boolean => {
     if (!fieldsRef.current[name]) return false;
+
     const isDirty =
       defaultValuesRef.current[name] !==
       getFieldValue(fieldsRef.current, fieldsRef.current[name]!.ref);
@@ -185,6 +192,7 @@ export default function useForm<
       const error = await validateField(field, fieldsRef.current);
       errorsRef.current = combineErrorsRef(error);
       renderBaseOnError(name, error, shouldRender);
+
       return isEmptyObject(error);
     },
     [renderBaseOnError, setValueInternal],
@@ -203,8 +211,8 @@ export default function useForm<
         ? payload.map(({ name }) => name as string)
         : [payload.name as string];
       const validFieldNames = names.filter(name => !fieldErrors[name]);
-
       schemaErrorsRef.current = fieldErrors;
+
       errorsRef.current = omitValidFields(
         combineErrorsRef(
           Object.entries(fieldErrors)
@@ -216,9 +224,10 @@ export default function useForm<
         ),
         validFieldNames,
       );
-      isSchemaValidateTriggeredRef.current = true;
 
+      isSchemaValidateTriggeredRef.current = true;
       reRenderForm({});
+
       return isEmptyObject(errorsRef.current);
     },
     [validateWithSchemaCurry],
@@ -242,6 +251,7 @@ export default function useForm<
         reRenderForm({});
         return result.every(Boolean);
       }
+
       return await executeValidation(fields);
     },
     [executeSchemaValidation, executeValidation, validationSchema],
@@ -267,10 +277,13 @@ export default function useForm<
           !validationFieldsRef.current.includes(name)
         )
           return;
+
         const fields = fieldsRef.current;
         const errors = errorsRef.current;
         const ref = fields[name];
+
         if (!ref) return;
+
         const isBlurEvent = type === 'blur';
         const isValidateDisabled = !isSubmittedRef.current && isOnSubmit;
         const shouldUpdateValidateMode =
@@ -340,6 +353,7 @@ export default function useForm<
   const removeEventListenerAndRef = useCallback(
     (field: Field | undefined, forceDelete?: boolean) => {
       if (!field) return;
+
       findRemovedFieldAndRemoveListener(
         fieldsRef.current,
         validateAndStateUpdateRef.current,
@@ -362,6 +376,7 @@ export default function useForm<
     } else {
       errorsRef.current = {};
     }
+
     reRenderForm({});
   }
 
@@ -372,9 +387,8 @@ export default function useForm<
     ref?: Ref,
   ): void => {
     const errors = errorsRef.current;
-    const error = errors[name];
 
-    if (!isSameError(error, type, message)) {
+    if (!isSameError(errors[name], type, message)) {
       errors[name] = {
         type,
         message,
@@ -427,6 +441,7 @@ export default function useForm<
             name as string,
             watchFields,
           );
+
           if (!isUndefined(tempValue)) value = tempValue;
         }
 
@@ -445,7 +460,7 @@ export default function useForm<
     );
   }
 
-  function __registerIntoFieldsRef<Element extends ElementLike>(
+  function registerIntoFieldsRef<Element extends ElementLike>(
     ref: Element,
     validateOptions: ValidationOptions = {},
   ): void {
@@ -500,6 +515,7 @@ export default function useForm<
 
     if (!isEmptyObject(defaultValues)) {
       const defaultValue = getDefaultValue(defaultValues, name);
+
       if (!isUndefined(defaultValue))
         setFieldValue(name as FieldName, defaultValue as FormValues[FieldName]);
     }
@@ -567,12 +583,12 @@ export default function useForm<
       isObject(refOrValidateRule) &&
       (validationOptions || 'name' in refOrValidateRule)
     ) {
-      __registerIntoFieldsRef(refOrValidateRule as Element, validationOptions);
+      registerIntoFieldsRef(refOrValidateRule as Element, validationOptions);
       return;
     }
 
     return (ref: Element | null) =>
-      ref && __registerIntoFieldsRef(ref, refOrValidateRule);
+      ref && registerIntoFieldsRef(ref, refOrValidateRule);
   }
 
   function unregister(name: FieldName | string): void;
@@ -597,9 +613,10 @@ export default function useForm<
     let fieldValues;
     let firstFocusError = true;
     const fields = fieldsRef.current;
-    const fieldsToValidate = validationFields
+    const fieldsToValidate: (Field | undefined)[] = validationFields
       ? validationFields.map(name => fieldsRef.current[name])
       : Object.values(fields);
+
     setIsSubmitting(true);
 
     if (validationSchema) {
@@ -622,6 +639,7 @@ export default function useForm<
           field: Field | undefined,
         ): Promise<SubmitPromiseResult<FormValues>> => {
           if (!field) return previous;
+
           const resolvedPrevious: any = await previous;
           const {
             ref,
@@ -641,10 +659,12 @@ export default function useForm<
               ref.focus();
               firstFocusError = false;
             }
+
             resolvedPrevious.errors = {
               ...resolvedPrevious.errors,
               ...fieldError,
             };
+
             return Promise.resolve(resolvedPrevious);
           }
 
@@ -701,6 +721,7 @@ export default function useForm<
         } catch {}
       }
     }
+
     resetRefs();
 
     if (values) {
@@ -708,6 +729,7 @@ export default function useForm<
         setFieldValue(key as FieldName, getDefaultValue(values, key, '')),
       );
     }
+
     setSubmitCount(0);
   }, []);
 
@@ -715,6 +737,7 @@ export default function useForm<
     const fieldValues = getFieldsValues(fieldsRef.current);
     const output =
       payload && payload.nest ? combineFieldValues(fieldValues) : fieldValues;
+
     return isEmptyObject(output) ? defaultValues : output;
   };
 
@@ -731,7 +754,7 @@ export default function useForm<
   );
 
   return {
-    register: useCallback(register, [__registerIntoFieldsRef]),
+    register: useCallback(register, [registerIntoFieldsRef]),
     unregister: useCallback(unregister, [
       unregister,
       removeEventListenerAndRef,

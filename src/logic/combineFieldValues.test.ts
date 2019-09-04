@@ -45,10 +45,27 @@ describe('combineFieldValues', () => {
       }),
     ).toMatchSnapshot();
   });
+
   it('should handle quoted values', () => {
     expect(
       combineFieldValues({
         'name["foobar"]': 'testFirst',
+      }),
+    ).toMatchSnapshot();
+
+    expect(
+      combineFieldValues({
+        'name["b2ill"]': 'testFirst',
+      }),
+    ).toMatchSnapshot();
+  });
+
+  it('should combine with results', () => {
+    expect(
+      combineFieldValues({
+        name: 'testFirst',
+        name1: 'testFirst',
+        name2: 'testFirst',
       }),
     ).toMatchSnapshot();
   });

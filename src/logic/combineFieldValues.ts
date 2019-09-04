@@ -4,7 +4,7 @@ import { FieldValues } from '../types';
 export default (data: FieldValues): any =>
   Object.entries(data).reduce(
     (previous: FieldValues, [key, value]): FieldValues => {
-      if (key.match(/\[\d+\]/gi) || key.indexOf('.')) {
+      if (!!key.match(/\[.+\]/gi) || key.indexOf('.') > 0) {
         set(previous, key, value);
         return previous;
       }
