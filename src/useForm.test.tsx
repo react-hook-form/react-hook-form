@@ -144,6 +144,33 @@ describe('useForm', () => {
     });
   });
 
+  describe('unregister', () => {
+    it('should unregister an registered item', async () => {
+      const { result } = renderHook(() => useForm());
+
+      act(() => {
+        result.current.register({ name: 'input' });
+        result.current.unregister('input');
+      });
+
+      const callback = jest.fn();
+
+      // @ts-ignore
+      validateField.mockImplementation(async () => {
+        return {};
+      });
+
+      await act(async () => {
+        await result.current.handleSubmit(callback)({
+          preventDefault: () => {},
+          persist: () => {},
+        } as React.SyntheticEvent);
+      });
+
+      expect(validateField).not.toBeCalled();
+    });
+  });
+
   describe('watch', () => {
     it('should watch individual input', () => {
       const { result } = renderHook(() => useForm<{ test: string }>());
@@ -773,23 +800,6 @@ describe('useForm', () => {
     });
   });
 
-  describe('getValues', () => {
-    it('should call getFieldsValues and return all values', () => {
-      const { result } = renderHook(() => useForm<{ test: string }>());
-      act(() => {
-        result.current.register({ value: 'test', type: 'input', name: 'test' });
-      });
-      // @ts-ignore
-      getFieldsValues.mockImplementation(async () => {
-        return {};
-      });
-      act(() => {
-        result.current.getValues();
-      });
-      expect(getFieldsValues).toBeCalled();
-    });
-  });
-
   describe('handleSubmit with validationSchema', () => {
     it('should invoke callback when error not found', async () => {
       const { result } = renderHook(() =>
@@ -825,6 +835,23 @@ describe('useForm', () => {
         } as React.SyntheticEvent);
       });
       expect(callback).toBeCalled();
+    });
+  });
+
+  describe('getValues', () => {
+    it('should call getFieldsValues and return all values', () => {
+      const { result } = renderHook(() => useForm<{ test: string }>());
+      act(() => {
+        result.current.register({ value: 'test', type: 'input', name: 'test' });
+      });
+      // @ts-ignore
+      getFieldsValues.mockImplementation(async () => {
+        return {};
+      });
+      act(() => {
+        result.current.getValues();
+      });
+      expect(getFieldsValues).toBeCalled();
     });
   });
 
