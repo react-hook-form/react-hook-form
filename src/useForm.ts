@@ -288,8 +288,7 @@ export default function useForm<
 
         const isValidateDisabled =
           (!isSubmittedRef.current && isOnSubmit) ||
-          (!isBlurEvent && !errors[name] && isOnBlur) ||
-          !errors[name];
+          (!isBlurEvent && !errors[name] && isOnBlur);
         let shouldUpdateState =
           isWatchAllRef.current || watchFieldsRef.current[name];
 
