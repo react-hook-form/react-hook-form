@@ -70,7 +70,7 @@ export default function useForm<
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitCount, setSubmitCount] = useState(0);
   const [, reRenderForm] = useState({});
-  const { isOnChange, isOnBlur, isOnSubmit } = useRef(
+  const { isOnBlur, isOnSubmit } = useRef(
     modeChecker(mode),
   ).current;
   validationFieldsRef.current = validationFields;
