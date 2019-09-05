@@ -73,11 +73,6 @@ export default function useForm<
   const { isOnBlur, isOnSubmit } = useRef(modeChecker(mode)).current;
   validationFieldsRef.current = validationFields;
 
-  const validateWithSchemaCurry = useCallback(
-    validateWithSchema.bind(null, validationSchema, validationSchemaOption),
-    [],
-  );
-
   const combineErrorsRef = (data: ErrorMessages<FormValues>) => ({
     ...errorsRef.current,
     ...data,
@@ -88,31 +83,16 @@ export default function useForm<
       name: FieldName,
       error: ErrorMessages<FormValues>,
       shouldRender: boolean = true,
-    ): boolean => {
-      if (errorsRef.current[name] && isEmptyObject(error)) {
+    ) => {
+      if (isEmptyObject(error)) {
         delete errorsRef.current[name];
         if (fieldsWithValidationRef.current.has(name) || validationSchema)
           validFieldsRef.current.add(name);
-        if (shouldRender) reRenderForm({});
-        return true;
-      }
-
-      if (error[name]) {
+      } else {
         validFieldsRef.current.delete(name);
-        if (shouldRender) reRenderForm({});
-        return true;
       }
 
-      if (
-        fieldsWithValidationRef.current.has(name) &&
-        !validFieldsRef.current.has(name)
-      ) {
-        validFieldsRef.current.add(name);
-        if (shouldRender) reRenderForm({});
-        return true;
-      }
-
-      return false;
+      if (shouldRender) reRenderForm({});
     },
     [validationSchema],
   );
@@ -163,8 +143,8 @@ export default function useForm<
   const setValueInternal = useCallback(
     (name: FieldName, value: FormValues[FieldName]): void => {
       setFieldValue(name, value);
-      touchedFieldsRef.current.add(name);
       setDirty(name);
+      touchedFieldsRef.current.add(name);
       reRenderForm({});
     },
     [],
@@ -195,6 +175,11 @@ export default function useForm<
     [renderBaseOnError, setValueInternal],
   );
 
+  const validateWithSchemaCurry = useCallback(
+    validateWithSchema.bind(null, validationSchema, validationSchemaOption),
+    [],
+  );
+
   const executeSchemaValidation = useCallback(
     async (
       payload:
@@ -209,6 +194,7 @@ export default function useForm<
         : [payload.name as string];
       const validFieldNames = names.filter(name => !fieldErrors[name]);
       schemaErrorsRef.current = fieldErrors;
+      isSchemaValidateTriggeredRef.current = true;
 
       errorsRef.current = omitValidFields(
         combineErrorsRef(
@@ -222,7 +208,6 @@ export default function useForm<
         validFieldNames,
       );
 
-      isSchemaValidateTriggeredRef.current = true;
       reRenderForm({});
 
       return isEmptyObject(errorsRef.current);
@@ -320,7 +305,8 @@ export default function useForm<
 
         if (shouldUpdate) {
           errorsRef.current = combineErrorsRef(error as any);
-          if (renderBaseOnError(name, error as any)) return;
+          renderBaseOnError(name, error as any);
+          return;
         }
 
         if (shouldUpdateState) reRenderForm({});
