@@ -114,7 +114,7 @@ export default function useForm<
 
       return false;
     },
-    [isOnSubmit],
+    [],
   );
 
   const setFieldValue = (
@@ -672,7 +672,8 @@ export default function useForm<
             return Promise.resolve(resolvedPrevious);
           }
 
-          if (fieldsWithValidationRef.current.has(name)) validFieldsRef.current.add(name);
+          if (fieldsWithValidationRef.current.has(name))
+            validFieldsRef.current.add(name);
           resolvedPrevious.values[name] = getFieldValue(fields, ref);
           return Promise.resolve(resolvedPrevious);
         },
