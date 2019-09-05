@@ -66,7 +66,7 @@ export default function useForm<
   const isDirtyRef = useRef(false);
   const isSchemaValidateTriggeredRef = useRef(false);
   const validationFieldsRef = useRef(validationFields);
-  const validateAndStateUpdateRef = useRef<Function>();
+  const validateAndUpdateStateRef = useRef<Function>();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitCount, setSubmitCount] = useState(0);
   const [, reRenderForm] = useState({});
@@ -104,7 +104,6 @@ export default function useForm<
       }
 
       if (
-        !isOnSubmit &&
         fieldsWithValidationRef.current.has(name) &&
         !validFieldsRef.current.has(name)
       ) {
@@ -267,8 +266,8 @@ export default function useForm<
     [setValueInternal, triggerValidation],
   );
 
-  validateAndStateUpdateRef.current = validateAndStateUpdateRef.current
-    ? validateAndStateUpdateRef.current
+  validateAndUpdateStateRef.current = validateAndUpdateStateRef.current
+    ? validateAndUpdateStateRef.current
     : async ({ target: { name }, type }: Ref): Promise<void> => {
         if (
           isArray(validationFieldsRef.current) &&
@@ -358,7 +357,7 @@ export default function useForm<
 
       findRemovedFieldAndRemoveListener(
         fieldsRef.current,
-        validateAndStateUpdateRef.current,
+        validateAndUpdateStateRef.current,
         field,
         forceDelete,
       );
@@ -522,9 +521,9 @@ export default function useForm<
         setFieldValue(name as FieldName, defaultValue as FormValues[FieldName]);
     }
 
-    if (!isOnSubmit && validateOptions && !isEmptyObject(validateOptions)) {
-      fieldsWithValidationRef.current.add(name);
+    fieldsWithValidationRef.current.add(name);
 
+    if (!isOnSubmit && validateOptions && !isEmptyObject(validateOptions)) {
       if (validationSchema) {
         isSchemaValidateTriggeredRef.current = true;
         validateWithSchemaCurry(
@@ -563,7 +562,7 @@ export default function useForm<
       attachEventListeners({
         field,
         isRadio,
-        validateAndStateUpdate: validateAndStateUpdateRef.current,
+        validateAndStateUpdate: validateAndUpdateStateRef.current,
         isOnBlur,
       });
     }
@@ -668,9 +667,12 @@ export default function useForm<
               ...fieldError,
             };
 
+            validFieldsRef.current.delete(name);
+
             return Promise.resolve(resolvedPrevious);
           }
 
+          if (fieldsWithValidationRef.current.has(name)) validFieldsRef.current.add(name);
           resolvedPrevious.values[name] = getFieldValue(fields, ref);
           return Promise.resolve(resolvedPrevious);
         },
