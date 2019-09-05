@@ -60,4 +60,40 @@ describe('shouldUpdateWithError', () => {
       }),
     ).toBeFalsy();
   });
+
+  it('should not clear error when it is set manually', () => {
+    expect(
+      shouldUpdateWithError({
+        errors: { test: { isManual: true, message: 'test', type: 'input' } },
+        name: 'test',
+        error: { test: { type: 'input', message: 'test' } },
+        validFields: new Set(),
+        fieldsWithValidation: new Set(),
+      }),
+    ).toBeFalsy();
+  });
+
+  it('should return true when new validate field is been introduced', () => {
+    expect(
+      shouldUpdateWithError({
+        errors: { test: { message: 'test', type: 'input' } },
+        name: 'test1',
+        error: {},
+        validFields: new Set(['test']),
+        fieldsWithValidation: new Set(['test1']),
+      }),
+    ).toBeTruthy();
+  });
+
+  it('should return false when same valid input been triggered', () => {
+    expect(
+      shouldUpdateWithError({
+        errors: { test: { message: 'test', type: 'input' } },
+        name: 'test',
+        error: {},
+        validFields: new Set(['test']),
+        fieldsWithValidation: new Set(['test']),
+      }),
+    ).toBeFalsy();
+  });
 });
