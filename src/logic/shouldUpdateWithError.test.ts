@@ -1,35 +1,14 @@
 import shouldUpdateWithError from './shouldUpdateWithError';
 
 describe('shouldUpdateWithError', () => {
-  it('should return false when isValidateDisabled set to true', () => {
-    expect(
-      shouldUpdateWithError({
-        errors: {},
-        name: 'test',
-        error: { test: 'test' },
-        isValidateDisabled: true,
-      }),
-    ).toBeFalsy();
-  });
-
-  it('should return false when error message and error both empty', () => {
-    expect(
-      shouldUpdateWithError({
-        errors: {},
-        name: '',
-        error: {},
-        isValidateDisabled: false,
-      }),
-    ).toBeFalsy();
-  });
-
   it('should return true when error message empty and error exists', () => {
     expect(
       shouldUpdateWithError({
         errors: {},
         name: 'test',
         error: { test: 'test' },
-        isValidateDisabled: false,
+        validFields: new Set(),
+        fieldsWithValidation: new Set(),
       }),
     ).toBeTruthy();
   });
@@ -40,7 +19,8 @@ describe('shouldUpdateWithError', () => {
         errors: { test: 'test' },
         name: 'test',
         error: {},
-        isValidateDisabled: false,
+        validFields: new Set(),
+        fieldsWithValidation: new Set(),
       }),
     ).toBeTruthy();
   });
@@ -51,7 +31,8 @@ describe('shouldUpdateWithError', () => {
         errors: { test: 'test' },
         name: '',
         error: { data: 'bill' },
-        isValidateDisabled: false,
+        validFields: new Set(),
+        fieldsWithValidation: new Set(),
       }),
     ).toBeTruthy();
   });
@@ -62,7 +43,8 @@ describe('shouldUpdateWithError', () => {
         errors: { test: { type: 'test' } },
         name: 'test',
         error: { test: { type: 'bill' } },
-        isValidateDisabled: false,
+        validFields: new Set(),
+        fieldsWithValidation: new Set(),
       }),
     ).toBeTruthy();
   });
@@ -73,7 +55,44 @@ describe('shouldUpdateWithError', () => {
         errors: { test: { message: 'test', type: 'input' } },
         name: 'test',
         error: { test: { type: 'input', message: 'test' } },
-        isValidateDisabled: false,
+        validFields: new Set(),
+        fieldsWithValidation: new Set(),
+      }),
+    ).toBeFalsy();
+  });
+
+  it('should not clear error when it is set manually', () => {
+    expect(
+      shouldUpdateWithError({
+        errors: { test: { isManual: true, message: 'test', type: 'input' } },
+        name: 'test',
+        error: { test: { type: 'input', message: 'test' } },
+        validFields: new Set(),
+        fieldsWithValidation: new Set(),
+      }),
+    ).toBeFalsy();
+  });
+
+  it('should return true when new validate field is been introduced', () => {
+    expect(
+      shouldUpdateWithError({
+        errors: { test: { message: 'test', type: 'input' } },
+        name: 'test1',
+        error: {},
+        validFields: new Set(['test']),
+        fieldsWithValidation: new Set(['test1']),
+      }),
+    ).toBeTruthy();
+  });
+
+  it('should return false when same valid input been triggered', () => {
+    expect(
+      shouldUpdateWithError({
+        errors: { test: { message: 'test', type: 'input' } },
+        name: 'test',
+        error: {},
+        validFields: new Set(['test']),
+        fieldsWithValidation: new Set(['test']),
       }),
     ).toBeFalsy();
   });

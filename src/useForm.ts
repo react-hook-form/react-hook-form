@@ -66,13 +66,11 @@ export default function useForm<
   const isDirtyRef = useRef(false);
   const isSchemaValidateTriggeredRef = useRef(false);
   const validationFieldsRef = useRef(validationFields);
-  const validateAndStateUpdateRef = useRef<Function>();
+  const validateAndUpdateStateRef = useRef<Function>();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitCount, setSubmitCount] = useState(0);
   const [, reRenderForm] = useState({});
-  const { isOnChange, isOnBlur, isOnSubmit } = useRef(
-    modeChecker(mode),
-  ).current;
+  const { isOnBlur, isOnSubmit } = useRef(modeChecker(mode)).current;
   validationFieldsRef.current = validationFields;
 
   const validateWithSchemaCurry = useCallback(
@@ -91,9 +89,9 @@ export default function useForm<
       error: ErrorMessages<FormValues>,
       shouldRender: boolean = true,
     ): boolean => {
-      if (errorsRef.current[name] && !error[name]) {
+      if (errorsRef.current[name] && isEmptyObject(error)) {
         delete errorsRef.current[name];
-        if (fieldsWithValidationRef.current.has(name))
+        if (fieldsWithValidationRef.current.has(name) || validationSchema)
           validFieldsRef.current.add(name);
         if (shouldRender) reRenderForm({});
         return true;
@@ -106,7 +104,6 @@ export default function useForm<
       }
 
       if (
-        !isOnSubmit &&
         fieldsWithValidationRef.current.has(name) &&
         !validFieldsRef.current.has(name)
       ) {
@@ -117,7 +114,7 @@ export default function useForm<
 
       return false;
     },
-    [isOnSubmit],
+    [validationSchema],
   );
 
   const setFieldValue = (
@@ -269,8 +266,8 @@ export default function useForm<
     [setValueInternal, triggerValidation],
   );
 
-  validateAndStateUpdateRef.current = validateAndStateUpdateRef.current
-    ? validateAndStateUpdateRef.current
+  validateAndUpdateStateRef.current = validateAndUpdateStateRef.current
+    ? validateAndUpdateStateRef.current
     : async ({ target: { name }, type }: Ref): Promise<void> => {
         if (
           isArray(validationFieldsRef.current) &&
@@ -281,24 +278,18 @@ export default function useForm<
         const fields = fieldsRef.current;
         const errors = errorsRef.current;
         const ref = fields[name];
+        let error;
 
         if (!ref) return;
 
         const isBlurEvent = type === 'blur';
-
-        if (isBlurEvent && isSubmittedRef.current) return;
-
         const isValidateDisabled =
-          (!isSubmittedRef.current && isOnSubmit) ||
-          (!isBlurEvent && !errors[name] && isOnBlur);
-        const shouldUpdateValidateMode =
-          isOnChange || (isOnBlur && isBlurEvent) || errors[name];
+          (isOnSubmit && !isSubmittedRef.current) ||
+          (isOnBlur && !isBlurEvent && !errors[name]);
         let shouldUpdateState =
-          isWatchAllRef.current || watchFieldsRef.current[name];
-
-        if (setDirty(name)) {
-          shouldUpdateState = true;
-        }
+          isWatchAllRef.current ||
+          watchFieldsRef.current[name] ||
+          setDirty(name);
 
         if (!touchedFieldsRef.current.has(name)) {
           touchedFieldsRef.current.add(name);
@@ -314,29 +305,22 @@ export default function useForm<
           );
           schemaErrorsRef.current = fieldErrors;
           isSchemaValidateTriggeredRef.current = true;
-          const error = fieldErrors[name];
-          const shouldUpdate =
-            ((!error && errors[name]) || error) &&
-            (shouldUpdateValidateMode || isSubmittedRef.current);
-
-          if (shouldUpdate) {
-            errorsRef.current = { ...errors, ...{ [name]: error } };
-            if (!error) delete errorsRef.current[name];
-            return reRenderForm({});
-          }
+          error = fieldErrors[name] ? { [name]: fieldErrors[name] } : {};
         } else {
-          const error = await validateField(ref, fields, nativeValidation);
-          const shouldUpdate = shouldUpdateWithError({
-            errors: errors,
-            error,
-            isValidateDisabled,
-            name,
-          });
+          error = await validateField(ref, fields, nativeValidation);
+        }
 
-          if (shouldUpdate || shouldUpdateValidateMode) {
-            errorsRef.current = combineErrorsRef(error);
-            if (renderBaseOnError(name, error)) return;
-          }
+        const shouldUpdate = shouldUpdateWithError({
+          errors,
+          error,
+          name,
+          validFields: validFieldsRef.current,
+          fieldsWithValidation: fieldsWithValidationRef.current,
+        });
+
+        if (shouldUpdate) {
+          errorsRef.current = combineErrorsRef(error as any);
+          if (renderBaseOnError(name, error as any)) return;
         }
 
         if (shouldUpdateState) reRenderForm({});
@@ -361,7 +345,7 @@ export default function useForm<
 
       findRemovedFieldAndRemoveListener(
         fieldsRef.current,
-        validateAndStateUpdateRef.current,
+        validateAndUpdateStateRef.current,
         field,
         forceDelete,
       );
@@ -525,26 +509,29 @@ export default function useForm<
         setFieldValue(name as FieldName, defaultValue as FormValues[FieldName]);
     }
 
-    if (!isOnSubmit && validateOptions && !isEmptyObject(validateOptions)) {
+    if (validateOptions && !isEmptyObject(validateOptions)) {
       fieldsWithValidationRef.current.add(name);
 
-      if (validationSchema) {
-        isSchemaValidateTriggeredRef.current = true;
-        validateWithSchemaCurry(
-          combineFieldValues(getFieldsValues(fields)),
-        ).then(({ fieldErrors }) => {
-          schemaErrorsRef.current = fieldErrors;
-          if (isEmptyObject(schemaErrorsRef.current)) reRenderForm({});
-        });
-      } else {
-        validateField(fields[name], fields).then(error => {
-          if (isEmptyObject(error)) validFieldsRef.current.add(name);
+      if (!isOnSubmit) {
+        if (validationSchema) {
+          isSchemaValidateTriggeredRef.current = true;
+          validateWithSchemaCurry(
+            combineFieldValues(getFieldsValues(fields)),
+          ).then(({ fieldErrors }) => {
+            schemaErrorsRef.current = fieldErrors;
+            if (isEmptyObject(schemaErrorsRef.current)) reRenderForm({});
+          });
+        } else {
+          validateField(fields[name], fields).then(error => {
+            if (isEmptyObject(error)) validFieldsRef.current.add(name);
 
-          if (
-            validFieldsRef.current.size === fieldsWithValidationRef.current.size
-          )
-            reRenderForm({});
-        });
+            if (
+              validFieldsRef.current.size ===
+              fieldsWithValidationRef.current.size
+            )
+              reRenderForm({});
+          });
+        }
       }
     }
 
@@ -566,7 +553,7 @@ export default function useForm<
       attachEventListeners({
         field,
         isRadio,
-        validateAndStateUpdate: validateAndStateUpdateRef.current,
+        validateAndStateUpdate: validateAndUpdateStateRef.current,
         isOnBlur,
       });
     }
@@ -671,9 +658,13 @@ export default function useForm<
               ...fieldError,
             };
 
+            validFieldsRef.current.delete(name);
+
             return Promise.resolve(resolvedPrevious);
           }
 
+          if (fieldsWithValidationRef.current.has(name))
+            validFieldsRef.current.add(name);
           resolvedPrevious.values[name] = getFieldValue(fields, ref);
           return Promise.resolve(resolvedPrevious);
         },
