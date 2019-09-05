@@ -89,9 +89,9 @@ export default function useForm<
       error: ErrorMessages<FormValues>,
       shouldRender: boolean = true,
     ): boolean => {
-      if (errorsRef.current[name] && !error[name]) {
+      if (errorsRef.current[name] && isEmptyObject(error)) {
         delete errorsRef.current[name];
-        if (fieldsWithValidationRef.current.has(name))
+        if (fieldsWithValidationRef.current.has(name) || validationSchema)
           validFieldsRef.current.add(name);
         if (shouldRender) reRenderForm({});
         return true;
