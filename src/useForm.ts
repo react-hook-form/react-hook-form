@@ -114,7 +114,7 @@ export default function useForm<
 
       return false;
     },
-    [],
+    [validationSchema],
   );
 
   const setFieldValue = (
