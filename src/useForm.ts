@@ -278,22 +278,18 @@ export default function useForm<
         const fields = fieldsRef.current;
         const errors = errorsRef.current;
         const ref = fields[name];
+        let error;
 
         if (!ref) return;
 
         const isBlurEvent = type === 'blur';
-
-        if (isBlurEvent && isSubmittedRef.current) return;
-
         const isValidateDisabled =
           (isOnSubmit && !isSubmittedRef.current) ||
           (isOnBlur && !isBlurEvent && !errors[name]);
         let shouldUpdateState =
-          isWatchAllRef.current || watchFieldsRef.current[name];
-
-        if (setDirty(name)) {
-          shouldUpdateState = true;
-        }
+          isWatchAllRef.current ||
+          watchFieldsRef.current[name] ||
+          setDirty(name);
 
         if (!touchedFieldsRef.current.has(name)) {
           touchedFieldsRef.current.add(name);
@@ -309,31 +305,22 @@ export default function useForm<
           );
           schemaErrorsRef.current = fieldErrors;
           isSchemaValidateTriggeredRef.current = true;
-          const error = fieldErrors[name];
-          const shouldUpdate =
-            (!error && errors[name]) ||
-            error ||
-            (!validFieldsRef.current.has(name) && isEmptyObject(error));
-
-          if (shouldUpdate) {
-            errorsRef.current = { ...errors, ...{ [name]: error } };
-            if (!error) delete errorsRef.current[name];
-            return reRenderForm({});
-          }
+          error = fieldErrors[name] ? { [name]: fieldErrors[name] } : {};
         } else {
-          const error = await validateField(ref, fields, nativeValidation);
-          const shouldUpdate = shouldUpdateWithError({
-            errors,
-            error,
-            name,
-            validFields: validFieldsRef.current,
-            fieldsWithValidation: fieldsWithValidationRef.current,
-          });
+          error = await validateField(ref, fields, nativeValidation);
+        }
 
-          if (shouldUpdate) {
-            errorsRef.current = combineErrorsRef(error);
-            if (renderBaseOnError(name, error)) return;
-          }
+        const shouldUpdate = shouldUpdateWithError({
+          errors,
+          error,
+          name,
+          validFields: validFieldsRef.current,
+          fieldsWithValidation: fieldsWithValidationRef.current,
+        });
+
+        if (shouldUpdate) {
+          errorsRef.current = combineErrorsRef(error as any);
+          if (renderBaseOnError(name, error as any)) return;
         }
 
         if (shouldUpdateState) reRenderForm({});
