@@ -8,6 +8,7 @@ describe('shouldUpdateWithError', () => {
         name: 'test',
         error: { test: 'test' },
         validFields: new Set(),
+        fieldsWithValidation: new Set(),
       }),
     ).toBeTruthy();
   });
@@ -19,6 +20,7 @@ describe('shouldUpdateWithError', () => {
         name: 'test',
         error: {},
         validFields: new Set(),
+        fieldsWithValidation: new Set(),
       }),
     ).toBeTruthy();
   });
@@ -30,6 +32,7 @@ describe('shouldUpdateWithError', () => {
         name: '',
         error: { data: 'bill' },
         validFields: new Set(),
+        fieldsWithValidation: new Set(),
       }),
     ).toBeTruthy();
   });
@@ -41,6 +44,7 @@ describe('shouldUpdateWithError', () => {
         name: 'test',
         error: { test: { type: 'bill' } },
         validFields: new Set(),
+        fieldsWithValidation: new Set(),
       }),
     ).toBeTruthy();
   });
@@ -52,6 +56,7 @@ describe('shouldUpdateWithError', () => {
         name: 'test',
         error: { test: { type: 'input', message: 'test' } },
         validFields: new Set(),
+        fieldsWithValidation: new Set(),
       }),
     ).toBeFalsy();
   });
