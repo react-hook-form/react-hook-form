@@ -14,10 +14,6 @@ export default function shouldUpdateWithError({
   validFields: Set<unknown>;
   fieldsWithValidation: Set<unknown>;
 }): boolean {
-  if (fieldsWithValidation.has(name) && !validFields.has(name) && isEmptyObject(error)) {
-    return true;
-  }
-
   if (
     (validFields.has(name) && isEmptyObject(error)) ||
     (errors[name] && errors[name].isManual)
@@ -26,6 +22,9 @@ export default function shouldUpdateWithError({
   }
 
   if (
+    (fieldsWithValidation.has(name) &&
+      !validFields.has(name) &&
+      isEmptyObject(error)) ||
     (isEmptyObject(errors) && !isEmptyObject(error)) ||
     (isEmptyObject(error) && errors[name]) ||
     !errors[name]
