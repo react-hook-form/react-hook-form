@@ -327,6 +327,7 @@ export default function useForm<
             error,
             name,
             validFields: validFieldsRef.current,
+            fieldsWithValidation: fieldsWithValidationRef.current,
           });
 
           if (shouldUpdate) {
@@ -521,26 +522,29 @@ export default function useForm<
         setFieldValue(name as FieldName, defaultValue as FormValues[FieldName]);
     }
 
-    fieldsWithValidationRef.current.add(name);
+    if (validateOptions && !isEmptyObject(validateOptions)) {
+      fieldsWithValidationRef.current.add(name);
 
-    if (!isOnSubmit && validateOptions && !isEmptyObject(validateOptions)) {
-      if (validationSchema) {
-        isSchemaValidateTriggeredRef.current = true;
-        validateWithSchemaCurry(
-          combineFieldValues(getFieldsValues(fields)),
-        ).then(({ fieldErrors }) => {
-          schemaErrorsRef.current = fieldErrors;
-          if (isEmptyObject(schemaErrorsRef.current)) reRenderForm({});
-        });
-      } else {
-        validateField(fields[name], fields).then(error => {
-          if (isEmptyObject(error)) validFieldsRef.current.add(name);
+      if (!isOnSubmit) {
+        if (validationSchema) {
+          isSchemaValidateTriggeredRef.current = true;
+          validateWithSchemaCurry(
+            combineFieldValues(getFieldsValues(fields)),
+          ).then(({ fieldErrors }) => {
+            schemaErrorsRef.current = fieldErrors;
+            if (isEmptyObject(schemaErrorsRef.current)) reRenderForm({});
+          });
+        } else {
+          validateField(fields[name], fields).then(error => {
+            if (isEmptyObject(error)) validFieldsRef.current.add(name);
 
-          if (
-            validFieldsRef.current.size === fieldsWithValidationRef.current.size
-          )
-            reRenderForm({});
-        });
+            if (
+              validFieldsRef.current.size ===
+              fieldsWithValidationRef.current.size
+            )
+              reRenderForm({});
+          });
+        }
       }
     }
 
