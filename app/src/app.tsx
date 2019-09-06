@@ -15,7 +15,7 @@ import TriggerValidation from './triggerValidation';
 const App: React.FC = () => {
   return (
     <Router>
-      <Route path="/" exact component={Basic} />
+      <Route path="/basic/:mode" exact component={Basic} />
       <Route
         path="/manual-register-form"
         exact
@@ -23,7 +23,7 @@ const App: React.FC = () => {
       />
       <Route path="/watch" exact component={Watch} />
       <Route
-        path="/basic-schema-validation"
+        path="/basic-schema-validation/:mode"
         exact
         component={BasicSchemaValidation}
       />

@@ -25,9 +25,10 @@ const validationSchema = yup.object().shape({
   checkbox: yup.string().required(),
 });
 
-const BasicSchemaValidation: React.FC = () => {
+const BasicSchemaValidation: React.FC = (props: any) => {
   const { register, handleSubmit, errors } = useForm({
     validationSchema,
+    mode: props.match.params.mode,
   });
   const onSubmit = () => {};
 
