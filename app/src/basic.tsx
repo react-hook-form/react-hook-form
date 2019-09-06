@@ -1,9 +1,13 @@
 import React from 'react';
 import useForm from 'react-hook-form';
 
+let renderCounter = 0;
+
 const Basic: React.FC = () => {
   const { register, handleSubmit, errors, reset } = useForm();
   const onSubmit = () => {};
+
+  renderCounter++;
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
@@ -95,6 +99,8 @@ const Basic: React.FC = () => {
       <button id="submit">Submit</button>
 
       <button type="button" id="resetForm" onClick={reset}>Reset</button>
+
+      <div id="renderCount">{renderCounter}</div>
     </form>
   );
 };

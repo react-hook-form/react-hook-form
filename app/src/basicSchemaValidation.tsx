@@ -2,6 +2,8 @@ import React from 'react';
 import useForm from 'react-hook-form';
 import * as yup from 'yup';
 
+let renderCounter = 0;
+
 const validationSchema = yup.object().shape({
   firstName: yup.string().required(),
   lastName: yup
@@ -28,6 +30,8 @@ const BasicSchemaValidation: React.FC = () => {
     validationSchema,
   });
   const onSubmit = () => {};
+
+  renderCounter++;
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
@@ -73,6 +77,8 @@ const BasicSchemaValidation: React.FC = () => {
       />
       {errors.checkbox && <p>checkbox error</p>}
       <button>Submit</button>
+
+      <div id="renderCount">{renderCounter}</div>
     </form>
   );
 };
