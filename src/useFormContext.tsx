@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { FieldValues, Options } from './types';
 import { FormContextValues } from './contextTypes';
-import useCreateForm from './useForm';
+import { useCreateForm } from './useForm';
 
 const FormGlobalContext = React.createContext<FormContextValues<
   FieldValues

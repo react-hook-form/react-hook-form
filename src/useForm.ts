@@ -40,7 +40,7 @@ import {
 } from './types';
 import { useFormContext } from './useFormContext';
 
-export default function useCreateForm<
+export function useCreateForm<
   FormValues extends FieldValues,
   FieldName extends keyof FormValues = keyof FormValues
 >({
@@ -786,7 +786,7 @@ export default function useCreateForm<
   };
 }
 
-export function useForm<FormValues extends FieldValues>(
+export default function useForm<FormValues extends FieldValues>(
   options: Options<FormValues>,
 ) {
   const formContext = useFormContext();
