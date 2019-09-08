@@ -1,6 +1,6 @@
 import isObject from './isObject';
-import { FieldValues } from '../types';
 import isArray from './isArray';
+import { FieldValues } from '../types';
 
 const reIsDeepProp = /\.|\[(?:[^[\]]*|(["'])(?:(?!\1)[^\\]|\\.)*?\1)\]/;
 const reIsPlainProp = /^\w*$/;

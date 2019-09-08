@@ -37,15 +37,14 @@ export default async (
   const error: FieldValues = {};
   const isRadio = isRadioInput(type);
   const isCheckBox = isCheckBoxInput(type);
-  const isSelectOrInput = !isCheckBox && !isRadio;
   const nativeError = displayNativeError.bind(null, nativeValidation, ref);
 
   if (
     required &&
     ((isCheckBox && !checked) ||
-      (isSelectOrInput && value === '') ||
+      (!isCheckBox && !isRadio && value === '') ||
       (isRadio && !getRadioValue(fields[name].options).isValid) ||
-      (!type && !value))
+      (!type && isNullOrUndefined(value)))
   ) {
     error[name] = {
       type: 'required',
