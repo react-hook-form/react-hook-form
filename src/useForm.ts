@@ -38,8 +38,9 @@ import {
   ValidationPayload,
   ElementLike,
 } from './types';
+import { useFormContext } from './useFormContext';
 
-export default function useForm<
+export default function useCreateForm<
   FormValues extends FieldValues,
   FieldName extends keyof FormValues = keyof FormValues
 >({
@@ -783,4 +784,13 @@ export default function useForm<
           }),
     },
   };
+}
+
+export function useForm<FormValues extends FieldValues>(
+  options: Options<FormValues>,
+) {
+  const formContext = useFormContext();
+  const form = useCreateForm<FormValues>(options);
+
+  return formContext || form;
 }
