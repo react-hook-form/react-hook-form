@@ -2,13 +2,14 @@ import flatArray from './flatArray';
 import isString from './isString';
 import isObject from './isObject';
 import { FieldValues } from '../types';
+import isArray from './isArray';
 
 const getPath = (path: string, values: FieldValues | string[] | string): any =>
-  Array.isArray(values)
+  isArray(values)
     ? values.map((item, index) => {
         const pathWithIndex = `${path}[${index}]`;
 
-        if (Array.isArray(item)) {
+        if (isArray(item)) {
           return getPath(pathWithIndex, item);
         } else if (isObject(item)) {
           return Object.entries(item).map(([key, objectValue]: [string, any]) =>

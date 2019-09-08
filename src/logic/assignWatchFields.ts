@@ -3,6 +3,7 @@ import get from '../utils/get';
 import getPath from '../utils/getPath';
 import isEmptyObject from '../utils/isEmptyObject';
 import isUndefined from '../utils/isUndefined';
+import isArray from '../utils/isArray';
 import { FieldValues } from '../types';
 
 export default (
@@ -22,7 +23,7 @@ export default (
   if (values !== undefined) {
     const result = getPath(fieldName, values);
 
-    if (Array.isArray(result)) {
+    if (isArray(result)) {
       result.forEach(name => {
         watchFields[name] = true;
       });

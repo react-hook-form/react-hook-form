@@ -164,7 +164,7 @@ export default function useForm<
       const field = fieldsRef.current[name]!;
 
       if (!field) return false;
-      if (value !== undefined) setValueInternal(name, value);
+      if (!isUndefined(value)) setValueInternal(name, value);
 
       const error = await validateField(field, fieldsRef.current);
       errorsRef.current = combineErrorsRef(error);

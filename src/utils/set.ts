@@ -1,12 +1,12 @@
 import isObject from './isObject';
 import { FieldValues } from '../types';
+import isArray from './isArray';
 
 const reIsDeepProp = /\.|\[(?:[^[\]]*|(["'])(?:(?!\1)[^\\]|\\.)*?\1)\]/;
 const reIsPlainProp = /^\w*$/;
 const rePropName = /[^.[\]]+|\[(?:(-?\d+(?:\.\d+)?)|(["'])((?:(?!\2)[^\\]|\\.)*?)\2)\]|(?=(?:\.|\[\])(?:\.|\[\]|$))/g;
 const reEscapeChar = /\\(\\)?/g;
 const reIsUint = /^(?:0|[1-9]\d*)$/;
-const isArray = Array.isArray;
 
 function isIndex(value: any) {
   return reIsUint.test(value) && value > -1;

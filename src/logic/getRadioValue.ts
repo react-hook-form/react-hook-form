@@ -1,3 +1,4 @@
+import isArray from '../utils/isArray';
 import { Ref, RadioReturn, MutationWatcher } from '../types';
 
 const defaultReturn: RadioReturn = {
@@ -11,7 +12,7 @@ export default (
     mutationWatcher?: MutationWatcher;
   }[],
 ): RadioReturn =>
-  options && Array.isArray(options)
+  options && isArray(options)
     ? options.reduce(
         (previous, { ref: { checked, value } }: Ref): RadioReturn =>
           checked
