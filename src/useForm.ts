@@ -787,7 +787,7 @@ export function useCreateForm<
 }
 
 export default function useForm<FormValues extends FieldValues>(
-  options: Options<FormValues>,
+  options?: Options<FormValues>,
 ) {
   const formContext = useFormContext();
   const form = useCreateForm<FormValues>(options);
