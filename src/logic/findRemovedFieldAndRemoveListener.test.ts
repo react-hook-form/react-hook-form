@@ -19,13 +19,9 @@ describe('findMissDomAndClean', () => {
       test: 'test',
     };
     expect(
-      findRemovedFieldAndRemoveListener(
-        fields as any,
-        () => {},
-        {
-          ref: { name: 'bill', type: 'radio' },
-        },
-      ),
+      findRemovedFieldAndRemoveListener(fields as any, () => {}, {
+        ref: { name: 'bill', type: 'radio' },
+      }),
     ).toEqual(undefined);
   });
 
@@ -101,11 +97,7 @@ describe('findMissDomAndClean', () => {
       test: 'test',
     };
     expect(
-      findRemovedFieldAndRemoveListener(
-        fields as any,
-        () => {},
-        {} as any,
-      ),
+      findRemovedFieldAndRemoveListener(fields as any, () => {}, {} as any),
     ).toEqual(undefined);
   });
 

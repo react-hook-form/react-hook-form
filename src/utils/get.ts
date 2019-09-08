@@ -1,6 +1,6 @@
 import { FieldValues } from '../types';
 import isUndefined from './isUndefined';
-import isArray from "./isArray";
+import isArray from './isArray';
 
 export default function get(
   object: FieldValues,
