@@ -718,6 +718,7 @@ export default function useForm<
       fieldsKeyValue.forEach(([key]) =>
         setFieldValue(key as FieldName, getDefaultValue(values, key, '')),
       );
+      defaultValuesRef.current = values as Record<FieldName, FieldValue>;
     }
 
     setSubmitCount(0);
