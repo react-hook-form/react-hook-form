@@ -1,6 +1,8 @@
 import React, { useEffect } from 'react';
 import useForm from 'react-hook-form';
 
+let renderCounter = 0;
+
 const SetValue: React.FC = () => {
   const { register, setValue, handleSubmit, errors } = useForm();
 
@@ -17,6 +19,8 @@ const SetValue: React.FC = () => {
     setValue('multiple', ['a', 'b']);
     // eslint-disable-next-line
   }, []);
+
+  renderCounter++;
 
   return (
     <form onSubmit={handleSubmit(() => {})}>
@@ -52,6 +56,7 @@ const SetValue: React.FC = () => {
       {errors.trigger && <p id="trigger">Trigger error</p>}
 
       <button>Submit</button>
+      <div id="renderCount">{renderCounter}</div>
     </form>
   );
 };

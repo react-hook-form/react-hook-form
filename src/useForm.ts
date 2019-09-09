@@ -101,14 +101,14 @@ export function useCreateForm<
   const setFieldValue = (
     name: FieldName,
     value: FormValues[FieldName],
-  ): void => {
+  ): boolean => {
     const field = fieldsRef.current[name];
 
-    if (!field) return;
+    if (!field) return false;
 
     const ref = field.ref;
-    const options = field.options;
     const { type } = ref;
+    const options = field.options;
 
     if (isRadioInput(type) && options) {
       options.forEach(
@@ -121,6 +121,8 @@ export function useCreateForm<
     } else {
       ref[isCheckBoxInput(type) ? 'checked' : 'value'] = value;
     }
+
+    return type;
   };
 
   const setDirty = (name: FieldName): boolean => {
@@ -143,10 +145,15 @@ export function useCreateForm<
 
   const setValueInternal = useCallback(
     (name: FieldName, value: FormValues[FieldName]): void => {
-      setFieldValue(name, value);
-      setDirty(name);
-      touchedFieldsRef.current.add(name);
-      reRenderForm({});
+      const shouldRender = setFieldValue(name, value);
+      if (
+        setDirty(name) ||
+        shouldRender ||
+        !touchedFieldsRef.current.has(name)
+      ) {
+        touchedFieldsRef.current.add(name);
+        reRenderForm({});
+      }
     },
     [],
   );
@@ -712,6 +719,7 @@ export function useCreateForm<
       fieldsKeyValue.forEach(([key]) =>
         setFieldValue(key as FieldName, getDefaultValue(values, key, '')),
       );
+      defaultValuesRef.current = values as Record<FieldName, FieldValue>;
     }
 
     setSubmitCount(0);
