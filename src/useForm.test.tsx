@@ -243,7 +243,7 @@ describe('useForm', () => {
       const { result } = renderHook(() => useForm<{ test: string }>());
 
       act(() => {
-        result.current.register({ name: 'test', type: 'text' });
+        result.current.register({ name: 'test' });
         result.current.setValue('test', 'data');
       });
 
@@ -449,11 +449,9 @@ describe('useForm', () => {
       act(() => {
         result.current.register({
           name: 'test',
-          type: 'text',
         });
         result.current.register({
           name: 'test1',
-          type: 'text',
         });
       });
 
@@ -466,17 +464,17 @@ describe('useForm', () => {
       });
 
       expect(validateField).toBeCalledWith(
-        { ref: { name: 'test', value: 'test', type: 'text' } },
+        { ref: { name: 'test', value: 'test' } },
         {
-          test: { ref: { name: 'test', value: 'test', type: 'text' } },
-          test1: { ref: { name: 'test1', value: 'test', type: 'text' } },
+          test: { ref: { name: 'test', value: 'test' } },
+          test1: { ref: { name: 'test1', value: 'test' } },
         },
       );
       expect(validateField).toBeCalledWith(
-        { ref: { name: 'test', value: 'test', type: 'text' } },
+        { ref: { name: 'test1', value: 'test' } },
         {
-          test: { ref: { name: 'test', value: 'test', type: 'text' } },
-          test1: { ref: { name: 'test1', value: 'test', type: 'text' } },
+          test: { ref: { name: 'test', value: 'test' } },
+          test1: { ref: { name: 'test1', value: 'test' } },
         },
       );
     });
