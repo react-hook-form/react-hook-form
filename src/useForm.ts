@@ -107,9 +107,6 @@ export default function useForm<
 
     const ref = field.ref;
     const { type } = ref;
-
-    if (!type) return false;
-
     const options = field.options;
 
     if (isRadioInput(type) && options) {
@@ -124,7 +121,7 @@ export default function useForm<
       ref[isCheckBoxInput(type) ? 'checked' : 'value'] = value;
     }
 
-    return true;
+    return type;
   };
 
   const setDirty = (name: FieldName): boolean => {
