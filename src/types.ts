@@ -17,6 +17,8 @@ export interface ValidationMode {
   onSubmit: 'onSubmit';
 }
 
+type Mode = keyof ValidationMode;
+
 export type SchemaValidateOptions = Partial<{
   strict: boolean;
   abortEarly: boolean;
@@ -33,11 +35,11 @@ export type Options<
   FormValues extends FieldValues = DefaultFieldValues,
   FieldName extends keyof FormValues = keyof FormValues
 > = Partial<{
-  mode: ValidationMode[keyof ValidationMode];
+  mode: Mode;
   defaultValues: Partial<FormValues>;
-  validationFields: FieldName[];
-  validationSchema: Schema<FormValues>;
   validationSchemaOption: SchemaValidateOptions;
+  validationFields: FieldName[];
+  validationSchema: any;
   nativeValidation: boolean;
   submitFocusError: boolean;
 }>;
