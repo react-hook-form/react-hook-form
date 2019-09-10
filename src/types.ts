@@ -28,7 +28,7 @@ export type SchemaValidateOptions = Partial<{
 }>;
 
 export interface Schema<T> {
-  validate(value: any, options?: SchemaValidateOptions): Promise<T>;
+  validate(value: FieldValues, options?: SchemaValidateOptions): Promise<T>;
 }
 
 export type Options<
