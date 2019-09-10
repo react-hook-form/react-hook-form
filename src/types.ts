@@ -8,6 +8,8 @@ export type Validate = (data: any) => string | boolean | void;
 
 export type Ref = any;
 
+type Mode = keyof ValidationMode;
+
 export type OnSubmit<Data extends FieldValues> = (
   data: Data,
   e: React.SyntheticEvent,
@@ -18,8 +20,6 @@ export interface ValidationMode {
   onChange: 'onChange';
   onSubmit: 'onSubmit';
 }
-
-type Mode = keyof ValidationMode;
 
 export type SchemaValidateOptions = Partial<{
   strict: boolean;
