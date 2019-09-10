@@ -2,7 +2,9 @@ import * as React from 'react';
 
 export type DefaultFieldValues = Record<string, unknown>;
 
-export type FieldValues = Record<string, any>;
+export type FieldValue = any;
+
+export type FieldValues = Record<string, FieldValue>;
 
 export type Validate = (data: any) => string | boolean | void;
 
@@ -90,24 +92,24 @@ export type FieldsObject<Data extends FieldValues> = {
   [Key in keyof Data]?: Field;
 };
 
-export interface Error {
+export interface FieldError {
   ref: Ref;
   type: string;
   message?: string;
   isManual?: boolean;
 }
 
-export type Errors<Data extends FieldValues> = {
-  [Key in keyof Data]?: Error;
+export type FieldErrors<Data extends FieldValues> = {
+  [Key in keyof Data]?: FieldError;
 };
 
 export interface SubmitPromiseResult<Data extends FieldValues> {
-  errors: Errors<Data>;
+  errors: FieldErrors<Data>;
   values: Data;
 }
 
 export interface SchemaValidationResult<FormValues> {
-  fieldErrors: Errors<FormValues>;
+  fieldErrors: FieldErrors<FormValues>;
   result: FieldValues;
 }
 

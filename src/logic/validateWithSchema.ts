@@ -3,12 +3,12 @@ import {
   SchemaValidationResult,
   SchemaValidateOptions,
   Schema,
-  Errors,
+  FieldErrors,
 } from '../types';
 
 export const parseErrorSchema = <FormValues>(
   error: FieldValues,
-): Errors<FormValues> =>
+): FieldErrors<FormValues> =>
   error.inner.reduce(
     (previous: FieldValues, { path, message, type }: FieldValues) => ({
       ...previous,

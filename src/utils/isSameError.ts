@@ -1,8 +1,8 @@
-import { Error } from '../types';
+import { FieldError } from '../types';
 import isObject from './isObject';
 
 export default (
-  error: Error | undefined,
+  error: FieldError | undefined,
   type: string,
   message: string | undefined,
 ): boolean =>

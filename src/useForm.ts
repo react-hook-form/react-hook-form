@@ -25,7 +25,7 @@ import modeChecker from './utils/validationModeChecker';
 import { RADIO_INPUT, VALIDATION_MODE } from './constants';
 import {
   FieldValues,
-  Errors,
+  FieldErrors,
   Field,
   FieldsObject,
   Options,
@@ -52,8 +52,8 @@ export default function useForm<
   validationSchemaOption = { abortEarly: false },
 }: Options<FormValues> = {}) {
   const fieldsRef = useRef<FieldsObject<FormValues>>({});
-  const errorsRef = useRef<Errors<FormValues>>({});
-  const schemaErrorsRef = useRef<Errors<FormValues>>({});
+  const errorsRef = useRef<FieldErrors<FormValues>>({});
+  const schemaErrorsRef = useRef<FieldErrors<FormValues>>({});
   const touchedFieldsRef = useRef(new Set<FieldName>());
   const watchFieldsRef = useRef<Partial<Record<keyof FormValues, boolean>>>({});
   const dirtyFieldsRef = useRef(new Set<FieldName>());
@@ -76,7 +76,7 @@ export default function useForm<
   const { isOnBlur, isOnSubmit } = useRef(modeChecker(mode)).current;
   validationFieldsRef.current = validationFields;
 
-  const combineErrorsRef = (data: Errors<FormValues>) => ({
+  const combineErrorsRef = (data: FieldErrors<FormValues>) => ({
     ...errorsRef.current,
     ...data,
   });
@@ -84,7 +84,7 @@ export default function useForm<
   const renderBaseOnError = useCallback(
     (
       name: FieldName,
-      error: Errors<FormValues>,
+      error: FieldErrors<FormValues>,
       shouldRender: boolean = true,
     ) => {
       if (isEmptyObject(error)) {
@@ -305,7 +305,7 @@ export default function useForm<
           error = await validateField(ref, fields, nativeValidation);
         }
 
-        const shouldUpdate = shouldUpdateWithError({
+        const shouldUpdate = shouldUpdateWithError<FieldName>({
           errors,
           error,
           name,
@@ -314,8 +314,10 @@ export default function useForm<
         });
 
         if (shouldUpdate) {
-          errorsRef.current = combineErrorsRef(error as Errors<FormValues>);
-          renderBaseOnError(name, error as Errors<FormValues>);
+          errorsRef.current = combineErrorsRef(error as FieldErrors<
+            FormValues
+          >);
+          renderBaseOnError(name, error as FieldErrors<FormValues>);
           return;
         }
 
@@ -776,7 +778,7 @@ export default function useForm<
               : null),
           }),
           {},
-        ) as Errors<FormValues>)
+        ) as FieldErrors<FormValues>)
       : errorsRef.current,
     formState: {
       dirty: isDirtyRef.current,

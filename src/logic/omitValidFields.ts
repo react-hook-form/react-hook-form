@@ -1,7 +1,7 @@
-import { Errors } from '../types';
+import { FieldErrors } from '../types';
 
 export default <Data, FieldName>(
-  errorFields: Errors<Data>,
+  errorFields: FieldErrors<Data>,
   validFieldNames: FieldName[],
 ) =>
   Object.entries(errorFields).reduce(

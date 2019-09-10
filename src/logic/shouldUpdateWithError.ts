@@ -1,7 +1,7 @@
 import isEmptyObject from '../utils/isEmptyObject';
 import isSameError from '../utils/isSameError';
 
-export default function shouldUpdateWithError({
+export default function shouldUpdateWithError<FieldName>({
   errors,
   name,
   error,
@@ -9,10 +9,10 @@ export default function shouldUpdateWithError({
   fieldsWithValidation,
 }: {
   errors: any;
-  name: string;
   error: any;
-  validFields: Set<unknown>;
-  fieldsWithValidation: Set<unknown>;
+  name: FieldName;
+  validFields: Set<FieldName>;
+  fieldsWithValidation: Set<FieldName>;
 }): boolean {
   if (
     (validFields.has(name) && isEmptyObject(error)) ||

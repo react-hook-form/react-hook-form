@@ -3,11 +3,12 @@ import {
   FieldValues,
   ElementLike,
   FormState,
-  Errors,
+  FieldErrors,
   OnSubmit,
   Ref,
   ValidationOptions,
   ValidationPayload,
+  FieldValue,
 } from './types';
 
 export interface FormProps<
@@ -36,7 +37,7 @@ export interface FormContextValues<
     callback: OnSubmit<Data>,
   ) => (e: React.SyntheticEvent) => Promise<void>;
   watch(): Data;
-  watch(field: Name | string, defaultValue?: string): any | void;
+  watch(field: Name | string, defaultValue?: string): FieldValue | void;
   watch(
     fields: (Name | string)[],
     defaultValues?: Partial<Data>,
@@ -49,6 +50,6 @@ export interface FormContextValues<
     payload: ValidationPayload<Name, Value> | ValidationPayload<Name, Value>[],
   ) => Promise<boolean>;
   getValues: (payload?: { nest: boolean }) => Data;
-  errors: Errors<Data>;
+  errors: FieldErrors<Data>;
   formState: FormState<Data, Name>;
 }
