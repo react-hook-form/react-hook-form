@@ -6,8 +6,6 @@ export type FieldValue = any;
 
 export type FieldValues = Record<string, FieldValue>;
 
-export type Validate = (data: any) => string | boolean | void;
-
 export type Ref = any;
 
 type Mode = keyof ValidationMode;
@@ -31,8 +29,8 @@ export type SchemaValidateOptions = Partial<{
   context: object;
 }>;
 
-export interface Schema<T> {
-  validate(value: FieldValues, options?: SchemaValidateOptions): Promise<T>;
+export interface Schema<Data> {
+  validate(value: FieldValues, options?: SchemaValidateOptions): Promise<Data>;
 }
 
 export type Options<
@@ -53,9 +51,11 @@ export interface MutationWatcher {
   observe?: any;
 }
 
-type ValidationOptionObject<T> = T | { value: T; message: string };
+type ValidationOptionObject<Value> = Value | { value: Value; message: string };
 
 export type ValidationTypes = number | string | RegExp;
+
+export type Validate = (data: FieldValues) => string | boolean | void;
 
 export type ValidationOptions = Partial<{
   required: boolean | string;
@@ -88,9 +88,9 @@ export interface Field extends ValidationOptions {
   }[];
 }
 
-export type FieldsObject<Data extends FieldValues> = {
-  [Key in keyof Data]?: Field;
-};
+export type FieldsRefs<Data extends FieldValues> = Partial<
+  Record<keyof Data, Field>
+>;
 
 export interface FieldError {
   ref: Ref;
@@ -99,9 +99,9 @@ export interface FieldError {
   isManual?: boolean;
 }
 
-export type FieldErrors<Data extends FieldValues> = {
-  [Key in keyof Data]?: FieldError;
-};
+export type FieldErrors<Data extends FieldValues> = Partial<
+  Record<keyof Data, FieldError>
+>;
 
 export interface SubmitPromiseResult<Data extends FieldValues> {
   errors: FieldErrors<Data>;

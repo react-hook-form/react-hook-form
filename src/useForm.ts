@@ -27,7 +27,7 @@ import {
   FieldValues,
   FieldErrors,
   Field,
-  FieldsObject,
+  FieldsRefs,
   Options,
   Ref,
   ValidationOptions,
@@ -51,7 +51,7 @@ export default function useForm<
   submitFocusError = true,
   validationSchemaOption = { abortEarly: false },
 }: Options<FormValues> = {}) {
-  const fieldsRef = useRef<FieldsObject<FormValues>>({});
+  const fieldsRef = useRef<FieldsRefs<FormValues>>({});
   const errorsRef = useRef<FieldErrors<FormValues>>({});
   const schemaErrorsRef = useRef<FieldErrors<FormValues>>({});
   const touchedFieldsRef = useRef(new Set<FieldName>());
@@ -200,8 +200,9 @@ export default function useForm<
       const names = isArray(payload)
         ? payload.map(({ name }) => name)
         : [payload.name];
-      // @ts-ignore
-      const validFieldNames = names.filter(name => !fieldErrors[name]);
+      const validFieldNames = names.filter(
+        name => !(fieldErrors as FieldErrors<FormValues>)[name],
+      );
       schemaErrorsRef.current = fieldErrors;
       isSchemaValidateTriggeredRef.current = true;
 
@@ -299,8 +300,9 @@ export default function useForm<
           );
           schemaErrorsRef.current = fieldErrors;
           isSchemaValidateTriggeredRef.current = true;
-          // @ts-ignore
-          error = fieldErrors[name] ? { [name]: fieldErrors[name] } : {};
+          error = (fieldErrors as FieldErrors<FieldValues>)[name]
+            ? { [name]: (fieldErrors as FieldErrors<FieldValues>)[name] }
+            : {};
         } else {
           error = await validateField(ref, fields, nativeValidation);
         }
