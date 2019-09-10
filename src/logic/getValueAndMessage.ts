@@ -1,7 +1,7 @@
 import isNullOrUndefined from '../utils/isNullOrUndefined';
 import isObject from '../utils/isObject';
-import { ValidationTypes } from '../types';
 import isRegex from '../utils/isRegex';
+import { ValidationTypes } from '../types';
 
 export default (
   validationData?:
@@ -16,7 +16,7 @@ export default (
     !isRegex(validationData) &&
     !isNullOrUndefined(validationData.value)
       ? validationData.value
-      : (validationData as any),
+      : (validationData as ValidationTypes),
   message:
     isObject(validationData) &&
     !(validationData instanceof RegExp) &&
