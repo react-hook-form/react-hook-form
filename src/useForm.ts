@@ -443,7 +443,7 @@ export default function useForm<
     }
 
     isWatchAllRef.current = true;
-    // @ts-ignore
+
     return (
       (!isEmptyObject(fieldValues) && fieldValues) ||
       defaultValue ||
