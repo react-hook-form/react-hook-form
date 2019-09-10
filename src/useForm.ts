@@ -36,10 +36,11 @@ import {
   OnSubmit,
   ValidationPayload,
   ElementLike,
+  DefaultFieldValues,
 } from './types';
 
 export default function useForm<
-  FormValues extends FieldValues = Record<string, unknown>,
+  FormValues extends FieldValues = DefaultFieldValues,
   FieldName extends keyof FormValues = keyof FormValues,
   FieldValue = FormValues[FieldName]
 >({

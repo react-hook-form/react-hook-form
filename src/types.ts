@@ -1,5 +1,7 @@
 import * as React from 'react';
 
+export type DefaultFieldValues = Record<string, unknown>;
+
 export type FieldValues = Record<string, any>;
 
 export type Validate = (data: any) => string | boolean | void;
@@ -15,8 +17,6 @@ export interface ValidationMode {
   onSubmit: 'onSubmit';
 }
 
-type Mode = keyof ValidationMode;
-
 export type SchemaValidateOptions = Partial<{
   strict: boolean;
   abortEarly: boolean;
@@ -29,13 +29,16 @@ export interface Schema<T> {
   validate(value: any, options?: SchemaValidateOptions): Promise<T>;
 }
 
-export type Options<Data extends FieldValues> = Partial<{
-  mode: Mode;
-  defaultValues: Partial<Data>;
-  nativeValidation: boolean;
-  validationFields: (keyof Data)[];
-  validationSchema: any;
+export type Options<
+  FormValues extends FieldValues = DefaultFieldValues,
+  FieldName extends keyof FormValues = keyof FormValues
+> = Partial<{
+  mode: ValidationMode[keyof ValidationMode];
+  defaultValues: Partial<FormValues>;
+  validationFields: FieldName[];
+  validationSchema: Schema<FormValues>;
   validationSchemaOption: SchemaValidateOptions;
+  nativeValidation: boolean;
   submitFocusError: boolean;
 }>;
 
