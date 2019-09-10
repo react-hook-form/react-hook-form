@@ -55,7 +55,7 @@ describe('validateWithSchema', () => {
     expect(
       await validateWithSchema(
         {
-          validate: () => new Promise(() => {}),
+          validate: () => new Promise(resolve => resolve()),
         },
         { abortEarly: false },
         {},
