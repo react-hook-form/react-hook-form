@@ -49,7 +49,7 @@ export type Options<
 }>;
 
 export interface MutationWatcher {
-  disconnect: () => void;
+  disconnect: VoidFunction;
   observe?: any;
 }
 

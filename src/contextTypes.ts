@@ -42,7 +42,7 @@ export interface FormContextValues<
     fields: (Name | string)[],
     defaultValues?: Partial<Data>,
   ): Partial<Data>;
-  reset: () => void;
+  reset: VoidFunction;
   clearError: (name?: Name | Name[]) => void;
   setError: (name: Name, type: string, message?: string, ref?: Ref) => void;
   setValue: (name: Name, value: Value, shouldValidate?: boolean) => void;
