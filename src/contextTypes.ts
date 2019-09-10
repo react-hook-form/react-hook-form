@@ -8,7 +8,6 @@ import {
   Ref,
   ValidationOptions,
   ValidationPayload,
-  VoidFunction,
 } from './types';
 
 export interface FormProps<
@@ -42,7 +41,7 @@ export interface FormContextValues<
     fields: (Name | string)[],
     defaultValues?: Partial<Data>,
   ): Partial<Data>;
-  reset: VoidFunction;
+  reset: () => void;
   clearError: (name?: Name | Name[]) => void;
   setError: (name: Name, type: string, message?: string, ref?: Ref) => void;
   setValue: (name: Name, value: Value, shouldValidate?: boolean) => void;

@@ -6,6 +6,8 @@ export type FieldValues = Record<string, any>;
 
 export type Validate = (data: any) => string | boolean | void;
 
+export type Ref = any;
+
 export type OnSubmit<Data extends FieldValues> = (
   data: Data,
   e: React.SyntheticEvent,
@@ -48,8 +50,6 @@ export interface MutationWatcher {
   disconnect: () => void;
   observe?: any;
 }
-
-export type Ref = any;
 
 type ValidationOptionObject<T> = T | { value: T; message: string };
 
@@ -104,13 +104,6 @@ export type Errors<Data extends FieldValues> = {
 export interface SubmitPromiseResult<Data extends FieldValues> {
   errors: Errors<Data>;
   values: Data;
-}
-
-export type VoidFunction = () => void;
-
-export interface RadioReturn {
-  isValid: boolean;
-  value: number | string;
 }
 
 export interface SchemaValidationResult<FormValues> {

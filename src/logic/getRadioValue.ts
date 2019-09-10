@@ -1,7 +1,12 @@
 import isArray from '../utils/isArray';
-import { Ref, RadioReturn, MutationWatcher } from '../types';
+import { Ref, MutationWatcher } from '../types';
 
-const defaultReturn: RadioReturn = {
+interface RadioFieldResult {
+  isValid: boolean;
+  value: number | string;
+}
+
+const defaultReturn: RadioFieldResult = {
   isValid: false,
   value: '',
 };
@@ -11,10 +16,10 @@ export default (
     ref?: Ref;
     mutationWatcher?: MutationWatcher;
   }[],
-): RadioReturn =>
+): RadioFieldResult =>
   options && isArray(options)
     ? options.reduce(
-        (previous, { ref: { checked, value } }: Ref): RadioReturn =>
+        (previous, { ref: { checked, value } }: Ref): RadioFieldResult =>
           checked
             ? {
                 isValid: true,
