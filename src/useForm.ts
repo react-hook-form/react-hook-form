@@ -116,7 +116,8 @@ export default function useForm<
     } else if (isMultipleSelect(type)) {
       [...ref.options].forEach(
         selectRef =>
-          (selectRef.selected = (value as any).includes(selectRef.value)),
+          // @ts-ignore
+          (selectRef.selected = value.includes(selectRef.value)),
       );
     } else {
       ref[isCheckBoxInput(type) ? 'checked' : 'value'] = value;
@@ -706,7 +707,7 @@ export default function useForm<
     dirtyFieldsRef.current = new Set();
     fieldsWithValidationRef.current = new Set();
     validFieldsRef.current = new Set();
-    defaultValuesRef.current = {} as any;
+    defaultValuesRef.current = {} as Record<FieldName, FieldValue>;
     isWatchAllRef.current = false;
     isSubmittedRef.current = false;
     isDirtyRef.current = false;

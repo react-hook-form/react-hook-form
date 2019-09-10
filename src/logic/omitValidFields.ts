@@ -6,7 +6,7 @@ export default <Data, FieldName>(
 ) =>
   Object.entries(errorFields).reduce(
     (previous, [name, error]) =>
-      validFieldNames.some(validFieldName => validFieldName === (name as any))
+      validFieldNames.some((validFieldName: any) => validFieldName === name)
         ? previous
         : { ...previous, [name]: error },
     {},
