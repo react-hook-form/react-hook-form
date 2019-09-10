@@ -39,7 +39,7 @@ import {
 } from './types';
 
 export default function useForm<
-  FormValues extends FieldValues,
+  FormValues extends FieldValues = Record<string, unknown>,
   FieldName extends keyof FormValues = keyof FormValues,
   FieldValue = FormValues[FieldName]
 >({
