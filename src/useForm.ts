@@ -282,7 +282,7 @@ export default function useForm<
           (isOnBlur && !isBlurEvent && !errors[name]);
         let shouldUpdateState =
           isWatchAllRef.current ||
-          watchFieldsRef.current[name] ||
+          watchFieldsRef.current[name as FieldName] ||
           setDirty(name);
 
         if (!touchedFieldsRef.current.has(name)) {
@@ -399,10 +399,14 @@ export default function useForm<
     defaultValue?: string | Partial<FormValues>,
   ): FieldValue | Partial<FormValues> | void {
     const fieldValues = getFieldsValues(fieldsRef.current);
-    const watchFields: any = watchFieldsRef.current;
+    const watchFields = watchFieldsRef.current;
 
     if (isString(fieldNames)) {
-      const value = assignWatchFields(fieldValues, fieldNames, watchFields);
+      const value = assignWatchFields<FieldName, FormValues>(
+        fieldValues,
+        fieldNames,
+        watchFields,
+      );
 
       return !isUndefined(value)
         ? value
@@ -422,9 +426,9 @@ export default function useForm<
         ) {
           value = defaultValue[name];
         } else {
-          const tempValue = assignWatchFields(
+          const tempValue = assignWatchFields<FieldName, FormValues>(
             fieldValues,
-            name as string,
+            name,
             watchFields,
           );
 
