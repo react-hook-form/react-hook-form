@@ -3,10 +3,11 @@ import {
   FieldErrors,
   ValidationReturn,
   SchemaValidateOptions,
+  Schema,
 } from '../types';
 
-export function parseErrorSchema(error: FieldValues): FieldErrors {
-  return error.inner.reduce(
+export const parseErrorSchema = (error: FieldValues): FieldErrors =>
+  error.inner.reduce(
     (
       previous: FieldValues,
       { path, message, type }: FieldValues,
@@ -16,10 +17,9 @@ export function parseErrorSchema(error: FieldValues): FieldErrors {
     }),
     {},
   );
-}
 
-export default async function validateWithSchema(
-  validationSchema: any,
+export default async function validateWithSchema<FormValues>(
+  validationSchema: Schema<FormValues>,
   validationSchemaOption: SchemaValidateOptions,
   data: FieldValues,
 ): Promise<ValidationReturn> {
@@ -30,8 +30,8 @@ export default async function validateWithSchema(
     };
   } catch (e) {
     return {
-      fieldErrors: parseErrorSchema(e),
       result: {},
+      fieldErrors: parseErrorSchema(e),
     };
   }
 }

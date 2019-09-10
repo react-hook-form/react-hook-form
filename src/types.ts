@@ -1,10 +1,8 @@
 import * as React from 'react';
 
-export type FieldValue = any;
+export type FieldValues = Record<string, any>;
 
-export type FieldValues = Record<string, FieldValue>;
-
-export type Validate = (data: FieldValue) => string | boolean | void;
+export type Validate = (data: any) => string | boolean | void;
 
 export type OnSubmit<Data extends FieldValues> = (
   data: Data,
@@ -26,6 +24,10 @@ export type SchemaValidateOptions = Partial<{
   recursive: boolean;
   context: object;
 }>;
+
+export interface Schema<T> {
+  validate(value: any, options?: SchemaValidateOptions): Promise<T>;
+}
 
 export type Options<Data extends FieldValues> = Partial<{
   mode: Mode;
