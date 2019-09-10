@@ -407,7 +407,7 @@ export default function useForm<
 
     if (isString(fieldNames)) {
       const value = assignWatchFields<FieldName, FormValues>(
-        fieldValues,
+        fieldValues as FormValues,
         fieldNames,
         watchFields,
       );
@@ -431,7 +431,7 @@ export default function useForm<
           value = defaultValue[name];
         } else {
           const tempValue = assignWatchFields<FieldName, FormValues>(
-            fieldValues,
+            fieldValues as FormValues,
             name,
             watchFields,
           );
