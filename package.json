@@ -12,7 +12,6 @@
     "build:modern": "rollup -c",
     "build:min": "rollup -c rollup.min.config.js",
     "build:ie11": "rollup -c rollup.ie11.config.js",
-    "watch": "tsc --watch",
     "prettier": "prettier --write './src/**/*.ts' './src/**/*.tsx' --config ./.prettierrc",
     "lint": "eslint ./src --ext .jsx,.ts --ignore-pattern *.test.ts --report-unused-disable-directives",
     "coverage": "jest --coverage --coverageReporters=text-lcov | coveralls",

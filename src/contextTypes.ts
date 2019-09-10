@@ -2,9 +2,8 @@ import * as React from 'react';
 import {
   FieldValues,
   ElementLike,
-  FieldValue,
   FormState,
-  ObjectErrorMessages,
+  Errors,
   OnSubmit,
   Ref,
   ValidationOptions,
@@ -38,7 +37,7 @@ export interface FormContextValues<
     callback: OnSubmit<Data>,
   ) => (e: React.SyntheticEvent) => Promise<void>;
   watch(): Data;
-  watch(field: Name | string, defaultValue?: string): FieldValue | void;
+  watch(field: Name | string, defaultValue?: string): any | void;
   watch(
     fields: (Name | string)[],
     defaultValues?: Partial<Data>,
@@ -51,6 +50,6 @@ export interface FormContextValues<
     payload: ValidationPayload<Name, Value> | ValidationPayload<Name, Value>[],
   ) => Promise<boolean>;
   getValues: (payload?: { nest: boolean }) => Data;
-  errors: ObjectErrorMessages<Data>;
+  errors: Errors<Data>;
   formState: FormState<Data, Name>;
 }

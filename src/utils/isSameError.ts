@@ -1,8 +1,8 @@
-import { ReactHookFormError } from '../types';
+import { Error } from '../types';
 import isObject from './isObject';
 
 export default (
-  error: ReactHookFormError | undefined,
+  error: Error | undefined,
   type: string,
   message: string | undefined,
 ): boolean =>

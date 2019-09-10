@@ -11,12 +11,7 @@ import isFunction from '../utils/isFunction';
 import isBoolean from '../utils/isBoolean';
 import getFieldsValue from './getFieldValue';
 import isRegex from '../utils/isRegex';
-import {
-  Field,
-  ErrorMessages,
-  FieldValues,
-  ValidatePromiseResult,
-} from '../types';
+import { Field, Errors, FieldValues, ValidatePromiseResult } from '../types';
 
 export default async (
   {
@@ -33,7 +28,7 @@ export default async (
   }: Field,
   fields: FieldValues,
   nativeValidation?: boolean,
-): Promise<ErrorMessages<any>> => {
+): Promise<Errors<any>> => {
   const error: FieldValues = {};
   const isRadio = isRadioInput(type);
   const isCheckBox = isCheckBoxInput(type);

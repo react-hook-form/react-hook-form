@@ -25,10 +25,9 @@ import modeChecker from './utils/validationModeChecker';
 import { RADIO_INPUT, VALIDATION_MODE } from './constants';
 import {
   FieldValues,
-  ErrorMessages,
+  Errors,
   Field,
   FieldsObject,
-  FieldErrors,
   Options,
   Ref,
   ValidationOptions,
@@ -53,8 +52,8 @@ export default function useForm<
   validationSchemaOption = { abortEarly: false },
 }: Options<FormValues> = {}) {
   const fieldsRef = useRef<FieldsObject<FormValues>>({});
-  const errorsRef = useRef<ErrorMessages<FormValues>>({});
-  const schemaErrorsRef = useRef<FieldErrors>({});
+  const errorsRef = useRef<Errors<FormValues>>({});
+  const schemaErrorsRef = useRef<Errors<FormValues>>({});
   const touchedFieldsRef = useRef(new Set<FieldName>());
   const watchFieldsRef = useRef<Partial<Record<keyof FormValues, boolean>>>({});
   const dirtyFieldsRef = useRef(new Set<FieldName>());
@@ -77,7 +76,7 @@ export default function useForm<
   const { isOnBlur, isOnSubmit } = useRef(modeChecker(mode)).current;
   validationFieldsRef.current = validationFields;
 
-  const combineErrorsRef = (data: ErrorMessages<FormValues>) => ({
+  const combineErrorsRef = (data: Errors<FormValues>) => ({
     ...errorsRef.current,
     ...data,
   });
@@ -85,7 +84,7 @@ export default function useForm<
   const renderBaseOnError = useCallback(
     (
       name: FieldName,
-      error: ErrorMessages<FormValues>,
+      error: Errors<FormValues>,
       shouldRender: boolean = true,
     ) => {
       if (isEmptyObject(error)) {
@@ -199,16 +198,17 @@ export default function useForm<
         combineFieldValues(getFieldsValues(fieldsRef.current)),
       );
       const names = isArray(payload)
-        ? payload.map(({ name }) => name as string)
-        : [payload.name as string];
+        ? payload.map(({ name }) => name)
+        : [payload.name];
+      // @ts-ignore
       const validFieldNames = names.filter(name => !fieldErrors[name]);
       schemaErrorsRef.current = fieldErrors;
       isSchemaValidateTriggeredRef.current = true;
 
-      errorsRef.current = omitValidFields(
+      errorsRef.current = omitValidFields<FieldValues, FieldName>(
         combineErrorsRef(
           Object.entries(fieldErrors)
-            .filter(([key]: [string, string]) => names.includes(key))
+            .filter(([key]) => names.includes(key as FieldName))
             .reduce(
               (previous, [name, error]) => ({ ...previous, [name]: error }),
               {},
@@ -299,6 +299,7 @@ export default function useForm<
           );
           schemaErrorsRef.current = fieldErrors;
           isSchemaValidateTriggeredRef.current = true;
+          // @ts-ignore
           error = fieldErrors[name] ? { [name]: fieldErrors[name] } : {};
         } else {
           error = await validateField(ref, fields, nativeValidation);
@@ -313,10 +314,8 @@ export default function useForm<
         });
 
         if (shouldUpdate) {
-          errorsRef.current = combineErrorsRef(error as ErrorMessages<
-            FormValues
-          >);
-          renderBaseOnError(name, error as ErrorMessages<FormValues>);
+          errorsRef.current = combineErrorsRef(error as Errors<FormValues>);
+          renderBaseOnError(name, error as Errors<FormValues>);
           return;
         }
 
@@ -617,7 +616,7 @@ export default function useForm<
 
     if (validationSchema) {
       fieldValues = getFieldsValues(fields);
-      const output = await validateWithSchema(
+      const output = await validateWithSchema<FormValues>(
         validationSchema,
         validationSchemaOption,
         combineFieldValues(fieldValues),
@@ -685,7 +684,7 @@ export default function useForm<
       errorsRef.current = {};
       await callback(combineFieldValues(fieldValues), e);
     } else {
-      errorsRef.current = fieldErrors as any;
+      errorsRef.current = fieldErrors;
     }
 
     if (isUnMount.current) return;
@@ -777,7 +776,7 @@ export default function useForm<
               : null),
           }),
           {},
-        ) as ErrorMessages<FormValues>)
+        ) as Errors<FormValues>)
       : errorsRef.current,
     formState: {
       dirty: isDirtyRef.current,

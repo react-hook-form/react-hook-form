@@ -90,21 +90,19 @@ export type FieldsObject<Data extends FieldValues> = {
   [Key in keyof Data]?: Field;
 };
 
-export interface ReactHookFormError {
+export interface Error {
   ref: Ref;
   type: string;
   message?: string;
   isManual?: boolean;
 }
 
-export type ObjectErrorMessages<Data extends FieldValues> = {
-  [Key in keyof Data]?: ReactHookFormError;
+export type Errors<Data extends FieldValues> = {
+  [Key in keyof Data]?: Error;
 };
 
-export type ErrorMessages<Data extends FieldValues> = ObjectErrorMessages<Data>;
-
 export interface SubmitPromiseResult<Data extends FieldValues> {
-  errors: ErrorMessages<Data>;
+  errors: Errors<Data>;
   values: Data;
 }
 
@@ -115,10 +113,8 @@ export interface RadioReturn {
   value: number | string;
 }
 
-export type FieldErrors = Record<string, string>;
-
-export interface ValidationReturn {
-  fieldErrors: FieldErrors;
+export interface SchemaValidationResult<FormValues> {
+  fieldErrors: Errors<FormValues>;
   result: FieldValues;
 }
 

@@ -1,5 +1,5 @@
 import isSameError from './isSameError';
-import { ReactHookFormError } from '../types';
+import { Error } from '../types';
 
 describe('isSameError', () => {
   it('should detect if it contain the same error', () => {
@@ -8,7 +8,7 @@ describe('isSameError', () => {
         {
           type: 'test',
           message: 'what',
-        } as ReactHookFormError,
+        } as Error,
         'test',
         'what',
       ),
@@ -19,7 +19,7 @@ describe('isSameError', () => {
         {
           type: '',
           message: '',
-        } as ReactHookFormError,
+        } as Error,
         '',
         '',
       ),
