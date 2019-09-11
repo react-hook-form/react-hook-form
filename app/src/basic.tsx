@@ -100,6 +100,14 @@ const Basic: React.FC = (props: any) => {
         <option value="optionB">optionB</option>
       </select>
       {errors.multiple && <p>multiple error</p>}
+      <input
+        type="validate"
+        placeholder="validate"
+        ref={register({
+          validate: value => value === 'test',
+        })}
+      />
+      {errors.validate && <p>validate error</p>}
       <button id="submit">Submit</button>
       <button type="button" id="resetForm" onClick={reset}>
         Reset

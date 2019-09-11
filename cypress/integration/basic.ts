@@ -7,8 +7,11 @@ context('basic form validation', () => {
     cy.get('input[name="lastName"] + p').contains('lastName error');
     cy.get('select[name="selectNumber"] + p').contains('selectNumber error');
     cy.get('select[name="multiple"] + p').contains('multiple error');
-    cy.get('input[name="minRequiredLength"] + p').contains('minRequiredLength error');
+    cy.get('input[name="minRequiredLength"] + p').contains(
+      'minRequiredLength error',
+    );
     cy.get('input[name="radio"] + p').contains('radio error');
+    cy.get('input[name="validate"] + p').contains('validate error');
 
     cy.get('input[name="firstName"]').type('bill');
     cy.get('input[name="lastName"]').type('luo123456');
@@ -23,6 +26,7 @@ context('basic form validation', () => {
       .clear()
       .type('luo');
     cy.get('input[name="minLength"]').type('b');
+    cy.get('input[name="validate"]').type('test');
 
     cy.get('input[name="pattern"] + p').contains('pattern error');
     cy.get('input[name="minLength"] + p').contains('minLength error');
@@ -36,8 +40,12 @@ context('basic form validation', () => {
     cy.get('input[name="minRequiredLength"]').type('bi');
     cy.get('select[name="multiple"]').select(['optionA']);
     cy.get('input[name="radio"]').check('1');
-    cy.get('input[name="min"]').clear().type('11');
-    cy.get('input[name="max"]').clear().type('19');
+    cy.get('input[name="min"]')
+      .clear()
+      .type('11');
+    cy.get('input[name="max"]')
+      .clear()
+      .type('19');
     cy.get('input[name="minDate"]').type('2019-08-01');
     cy.get('input[name="maxDate"]').type('2019-08-01');
     cy.get('input[name="checkbox"]').check();
@@ -98,8 +106,12 @@ context('basic form validation', () => {
     cy.get('input[name="minRequiredLength"]').type('bi');
     cy.get('select[name="multiple"]').select(['optionA']);
     cy.get('input[name="radio"]').check('1');
-    cy.get('input[name="min"]').clear().type('11');
-    cy.get('input[name="max"]').clear().type('19');
+    cy.get('input[name="min"]')
+      .clear()
+      .type('11');
+    cy.get('input[name="max"]')
+      .clear()
+      .type('19');
     cy.get('input[name="minDate"]').type('2019-08-01');
     cy.get('input[name="maxDate"]').type('2019-08-01');
     cy.get('input[name="checkbox"]').check();
@@ -151,8 +163,12 @@ context('basic form validation', () => {
     cy.get('input[name="minRequiredLength"]').type('bi');
     cy.get('select[name="multiple"]').select(['optionA']);
     cy.get('input[name="radio"]').check('1');
-    cy.get('input[name="min"]').clear().type('11');
-    cy.get('input[name="max"]').clear().type('19');
+    cy.get('input[name="min"]')
+      .clear()
+      .type('11');
+    cy.get('input[name="max"]')
+      .clear()
+      .type('19');
     cy.get('input[name="minDate"]').type('2019-08-01');
     cy.get('input[name="maxDate"]').type('2019-08-01');
     cy.get('input[name="checkbox"]').check();
@@ -173,5 +189,5 @@ context('basic form validation', () => {
     cy.get('input[name="minDate"]').should('not.have.value');
     cy.get('input[name="maxDate"]').should('not.have.value');
     cy.get('#renderCount').contains('30');
-  })
+  });
 });
