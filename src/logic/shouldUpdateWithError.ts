@@ -1,6 +1,7 @@
 import isEmptyObject from '../utils/isEmptyObject';
 import isSameError from '../utils/isSameError';
 
+// Todo: improve the types in this file
 export default function shouldUpdateWithError<FieldName>({
   errors,
   name,

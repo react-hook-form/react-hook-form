@@ -18,6 +18,7 @@ import {
   ValidatePromiseResult,
 } from '../types';
 
+// Todo: improve the types in this file
 export default async (
   {
     ref,
