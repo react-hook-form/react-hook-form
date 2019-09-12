@@ -390,10 +390,7 @@ export default function useForm<
   };
 
   function watch(): FormValues;
-  function watch(
-    field: FieldName | string,
-    defaultValue?: string,
-  ): FieldValue | void;
+  function watch(field: FieldName | string, defaultValue?: string): FieldValue;
   function watch(
     fields: (FieldName | string)[],
     defaultValues?: Partial<FormValues>,
@@ -401,7 +398,7 @@ export default function useForm<
   function watch(
     fieldNames?: FieldName | string | (FieldName | string)[],
     defaultValue?: string | Partial<FormValues>,
-  ): FieldValue | Partial<FormValues> | void {
+  ): FieldValue | Partial<FormValues> {
     const fieldValues = getFieldsValues(fieldsRef.current);
     const watchFields = watchFieldsRef.current;
 
