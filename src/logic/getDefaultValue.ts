@@ -1,6 +1,6 @@
 import get from '../utils/get';
-import { FieldValue } from '../types';
 import isUndefined from '../utils/isUndefined';
+import { FieldValue } from '../types';
 
 export default <
   Data extends FieldValue,
@@ -8,7 +8,7 @@ export default <
 >(
   defaultValues: Partial<Data>,
   name: FieldName,
-  defaultValue?: any,
+  defaultValue?: FieldValue,
 ): Data[FieldName] | undefined =>
   isUndefined(defaultValues[name])
     ? get(defaultValues, name as string, defaultValue)

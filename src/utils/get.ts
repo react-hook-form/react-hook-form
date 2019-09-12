@@ -1,23 +1,10 @@
-import { FieldValues } from '../types';
-import isUndefined from './isUndefined';
-import isArray from './isArray';
-
-export default function get(
-  object: FieldValues,
-  keys: string[] | string,
-  defaultVal?: any,
-): FieldValues | undefined {
-  keys = isArray(keys)
-    ? keys
-    : keys
-        .replace(/\[/g, '.')
-        .replace(/\]/g, '')
-        .split('.');
-  object = object[keys[0]];
-
-  return object && keys.length > 1
-    ? get(object, keys.slice(1), defaultVal)
-    : isUndefined(object)
-    ? defaultVal
-    : object;
-}
+export default (obj: any, path: string[] | string, defaultValue?: any) => {
+  const result = String.prototype.split
+    .call(path, /[,[\].]+?/)
+    .filter(Boolean)
+    .reduce(
+      (res, key) => (res !== null && res !== undefined ? res[key] : res),
+      obj,
+    );
+  return result === undefined || result === obj ? defaultValue : result;
+};

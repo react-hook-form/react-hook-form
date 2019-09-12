@@ -4,7 +4,10 @@ import isObject from './isObject';
 import { FieldValues } from '../types';
 import isArray from './isArray';
 
-const getPath = (path: string, values: FieldValues | string[] | string): any =>
+const getPath = <FieldName>(
+  path: FieldName | string,
+  values: FieldValues | string[] | string,
+): any =>
   isArray(values)
     ? values.map((item, index) => {
         const pathWithIndex = `${path}[${index}]`;
@@ -25,5 +28,7 @@ const getPath = (path: string, values: FieldValues | string[] | string): any =>
         isString(objectValue) ? `${path}.${key}` : getPath(path, objectValue),
       );
 
-export default (parentPath: string, value: FieldValues) =>
-  flatArray(getPath(parentPath, value));
+export default <FieldName>(
+  parentPath: FieldName | string,
+  value: FieldValues,
+) => flatArray(getPath<FieldName>(parentPath, value));

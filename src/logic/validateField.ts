@@ -13,11 +13,13 @@ import getFieldsValue from './getFieldValue';
 import isRegex from '../utils/isRegex';
 import {
   Field,
-  ErrorMessages,
+  FieldError,
+  FieldErrors,
   FieldValues,
   ValidatePromiseResult,
 } from '../types';
 
+// Todo: improve the types in this file
 export default async (
   {
     ref,
@@ -33,8 +35,8 @@ export default async (
   }: Field,
   fields: FieldValues,
   nativeValidation?: boolean,
-): Promise<ErrorMessages<any>> => {
-  const error: FieldValues = {};
+): Promise<FieldErrors<any>> => {
+  const error: Record<string, FieldError> = {};
   const isRadio = isRadioInput(type);
   const isCheckBox = isCheckBoxInput(type);
   const nativeError = displayNativeError.bind(null, nativeValidation, ref);
@@ -132,7 +134,7 @@ export default async (
       const isStringValue = isString(result);
 
       if (isStringValue || (isBoolean(result) && !result)) {
-        const message = isStringValue ? result : '';
+        const message = isStringValue ? (result as string) : '';
         error[name] = {
           type: 'validate',
           message,
@@ -174,7 +176,7 @@ export default async (
       if (!isEmptyObject(validationResult)) {
         error[name] = {
           ref: validateRef,
-          ...validationResult,
+          ...(validationResult as { type: string; message?: string }),
         };
         return error;
       }

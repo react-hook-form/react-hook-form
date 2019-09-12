@@ -1,9 +1,9 @@
 import getFieldValue from './getFieldValue';
-import { FieldValues, FieldValue, Ref } from '../types';
+import { FieldValues, Ref } from '../types';
 
-export default <Data extends FieldValues>(fields: FieldValues): Data =>
+export default (fields: FieldValues) =>
   Object.values(fields).reduce(
-    (previous: FieldValues, { ref, ref: { name } }: Ref): FieldValue => ({
+    (previous: FieldValues, { ref, ref: { name } }: Ref) => ({
       ...previous,
       ...{ [name]: getFieldValue(fields, ref) },
     }),

@@ -4,12 +4,12 @@ import isRadioInput from '../utils/isRadioInput';
 import isCheckBox from '../utils/isCheckBoxInput';
 import isUndefined from '../utils/isUndefined';
 import isMultipleSelect from '../utils/isMultipleSelect';
-import { FieldsObject, FieldValue, Ref, FieldValues } from '../types';
+import { FieldsRefs, Ref, FieldValues } from '../types';
 
 export default function getFieldValue<Data extends FieldValues>(
-  fields: FieldsObject<Data>,
+  fields: FieldsRefs<Data>,
   ref: Ref,
-): FieldValue {
+) {
   const { type, name, options, checked, value } = ref;
 
   if (isRadioInput(type)) {

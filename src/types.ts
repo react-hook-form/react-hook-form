@@ -1,10 +1,14 @@
 import * as React from 'react';
 
+export type DefaultFieldValues = Record<string, unknown>;
+
 export type FieldValue = any;
 
 export type FieldValues = Record<string, FieldValue>;
 
-export type Validate = (data: FieldValue) => string | boolean | void;
+export type Ref = any;
+
+type Mode = keyof ValidationMode;
 
 export type OnSubmit<Data extends FieldValues> = (
   data: Data,
@@ -17,8 +21,6 @@ export interface ValidationMode {
   onSubmit: 'onSubmit';
 }
 
-type Mode = keyof ValidationMode;
-
 export type SchemaValidateOptions = Partial<{
   strict: boolean;
   abortEarly: boolean;
@@ -27,26 +29,33 @@ export type SchemaValidateOptions = Partial<{
   context: object;
 }>;
 
-export type Options<Data extends FieldValues> = Partial<{
+export interface Schema<Data> {
+  validate(value: FieldValues, options?: SchemaValidateOptions): Promise<Data>;
+}
+
+export type Options<
+  FormValues extends FieldValues = DefaultFieldValues,
+  FieldName extends keyof FormValues = keyof FormValues
+> = Partial<{
   mode: Mode;
-  defaultValues: Partial<Data>;
-  nativeValidation: boolean;
-  validationFields: (keyof Data)[];
-  validationSchema: any;
+  defaultValues: Partial<FormValues>;
   validationSchemaOption: SchemaValidateOptions;
+  validationFields: FieldName[];
+  validationSchema: any;
+  nativeValidation: boolean;
   submitFocusError: boolean;
 }>;
 
 export interface MutationWatcher {
-  disconnect: () => void;
+  disconnect: VoidFunction;
   observe?: any;
 }
 
-export type Ref = any;
-
-type ValidationOptionObject<T> = T | { value: T; message: string };
+type ValidationOptionObject<Value> = Value | { value: Value; message: string };
 
 export type ValidationTypes = number | string | RegExp;
+
+export type Validate = (data: FieldValue) => string | boolean | void;
 
 export type ValidationOptions = Partial<{
   required: boolean | string;
@@ -79,39 +88,28 @@ export interface Field extends ValidationOptions {
   }[];
 }
 
-export type FieldsObject<Data extends FieldValues> = {
-  [Key in keyof Data]?: Field;
-};
+export type FieldsRefs<Data extends FieldValues> = Partial<
+  Record<keyof Data, Field>
+>;
 
-export interface ReactHookFormError {
+export interface FieldError {
   ref: Ref;
   type: string;
   message?: string;
   isManual?: boolean;
 }
 
-export type ObjectErrorMessages<Data extends FieldValues> = {
-  [Key in keyof Data]?: ReactHookFormError;
-};
-
-export type ErrorMessages<Data extends FieldValues> = ObjectErrorMessages<Data>;
+export type FieldErrors<Data extends FieldValues> = Partial<
+  Record<keyof Data, FieldError>
+>;
 
 export interface SubmitPromiseResult<Data extends FieldValues> {
-  errors: ErrorMessages<Data>;
+  errors: FieldErrors<Data>;
   values: Data;
 }
 
-export type VoidFunction = () => void;
-
-export interface RadioReturn {
-  isValid: boolean;
-  value: number | string;
-}
-
-export type FieldErrors = Record<string, string>;
-
-export interface ValidationReturn {
-  fieldErrors: FieldErrors;
+export interface SchemaValidationResult<FormValues> {
+  fieldErrors: FieldErrors<FormValues>;
   result: FieldValues;
 }
 

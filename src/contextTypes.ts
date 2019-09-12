@@ -2,14 +2,13 @@ import * as React from 'react';
 import {
   FieldValues,
   ElementLike,
-  FieldValue,
   FormState,
-  ObjectErrorMessages,
+  FieldErrors,
   OnSubmit,
   Ref,
   ValidationOptions,
   ValidationPayload,
-  VoidFunction,
+  FieldValue,
 } from './types';
 
 export interface FormProps<
@@ -51,6 +50,6 @@ export interface FormContextValues<
     payload: ValidationPayload<Name, Value> | ValidationPayload<Name, Value>[],
   ) => Promise<boolean>;
   getValues: (payload?: { nest: boolean }) => Data;
-  errors: ObjectErrorMessages<Data>;
+  errors: FieldErrors<Data>;
   formState: FormState<Data, Name>;
 }

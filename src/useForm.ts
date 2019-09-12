@@ -25,11 +25,9 @@ import modeChecker from './utils/validationModeChecker';
 import { RADIO_INPUT, VALIDATION_MODE } from './constants';
 import {
   FieldValues,
-  ErrorMessages,
-  Field,
-  FieldsObject,
-  FieldValue,
   FieldErrors,
+  Field,
+  FieldsRefs,
   Options,
   Ref,
   ValidationOptions,
@@ -37,11 +35,13 @@ import {
   OnSubmit,
   ValidationPayload,
   ElementLike,
+  DefaultFieldValues,
 } from './types';
 
 export default function useForm<
-  FormValues extends FieldValues,
-  FieldName extends keyof FormValues = keyof FormValues
+  FormValues extends FieldValues = DefaultFieldValues,
+  FieldName extends keyof FormValues = keyof FormValues,
+  FieldValue = FormValues[FieldName]
 >({
   mode = VALIDATION_MODE.onSubmit,
   validationSchema,
@@ -51,15 +51,18 @@ export default function useForm<
   submitFocusError = true,
   validationSchemaOption = { abortEarly: false },
 }: Options<FormValues> = {}) {
-  const fieldsRef = useRef<FieldsObject<FormValues>>({});
-  const errorsRef = useRef<ErrorMessages<FormValues>>({});
-  const schemaErrorsRef = useRef<FieldErrors>({});
+  const fieldsRef = useRef<FieldsRefs<FormValues>>({});
+  const errorsRef = useRef<FieldErrors<FormValues>>({});
+  const schemaErrorsRef = useRef<FieldErrors<FormValues>>({});
   const touchedFieldsRef = useRef(new Set<FieldName>());
   const watchFieldsRef = useRef<Partial<Record<keyof FormValues, boolean>>>({});
   const dirtyFieldsRef = useRef(new Set<FieldName>());
-  const fieldsWithValidationRef = useRef(new Set());
-  const validFieldsRef = useRef(new Set());
-  const defaultValuesRef = useRef<Record<FieldName, FieldValue>>({} as any);
+  const fieldsWithValidationRef = useRef(new Set<FieldName>());
+  const validFieldsRef = useRef(new Set<FieldName>());
+  const defaultValuesRef = useRef<Record<FieldName, FieldValue>>({} as Record<
+    FieldName,
+    FieldValue
+  >);
   const isUnMount = useRef(false);
   const isWatchAllRef = useRef(false);
   const isSubmittedRef = useRef(false);
@@ -73,7 +76,7 @@ export default function useForm<
   const { isOnBlur, isOnSubmit } = useRef(modeChecker(mode)).current;
   validationFieldsRef.current = validationFields;
 
-  const combineErrorsRef = (data: ErrorMessages<FormValues>) => ({
+  const combineErrorsRef = (data: FieldErrors<FormValues>) => ({
     ...errorsRef.current,
     ...data,
   });
@@ -81,7 +84,7 @@ export default function useForm<
   const renderBaseOnError = useCallback(
     (
       name: FieldName,
-      error: ErrorMessages<FormValues>,
+      error: FieldErrors<FormValues>,
       shouldRender: boolean = true,
     ) => {
       if (isEmptyObject(error)) {
@@ -97,10 +100,7 @@ export default function useForm<
     [validationSchema],
   );
 
-  const setFieldValue = (
-    name: FieldName,
-    value: FormValues[FieldName],
-  ): boolean => {
+  const setFieldValue = (name: FieldName, value: FieldValue): boolean => {
     const field = fieldsRef.current[name];
 
     if (!field) return false;
@@ -115,7 +115,9 @@ export default function useForm<
       );
     } else if (isMultipleSelect(type)) {
       [...ref.options].forEach(
-        selectRef => (selectRef.selected = value.includes(selectRef.value)),
+        selectRef =>
+          // @ts-ignore
+          (selectRef.selected = value.includes(selectRef.value)),
       );
     } else {
       ref[isCheckBoxInput(type) ? 'checked' : 'value'] = value;
@@ -143,7 +145,7 @@ export default function useForm<
   };
 
   const setValueInternal = useCallback(
-    (name: FieldName, value: FormValues[FieldName]): void => {
+    (name: FieldName, value: FieldValue): void => {
       const shouldRender = setFieldValue(name, value);
       if (
         setDirty(name) ||
@@ -190,23 +192,25 @@ export default function useForm<
   const executeSchemaValidation = useCallback(
     async (
       payload:
-        | ValidationPayload<FieldName, FormValues[FieldName]>
-        | ValidationPayload<FieldName, FormValues[FieldName]>[],
+        | ValidationPayload<FieldName, FieldValue>
+        | ValidationPayload<FieldName, FieldValue>[],
     ): Promise<boolean> => {
       const { fieldErrors } = await validateWithSchemaCurry(
         combineFieldValues(getFieldsValues(fieldsRef.current)),
       );
       const names = isArray(payload)
-        ? payload.map(({ name }) => name as string)
-        : [payload.name as string];
-      const validFieldNames = names.filter(name => !fieldErrors[name]);
+        ? payload.map(({ name }) => name)
+        : [payload.name];
+      const validFieldNames = names.filter(
+        name => !(fieldErrors as FieldErrors<FormValues>)[name],
+      );
       schemaErrorsRef.current = fieldErrors;
       isSchemaValidateTriggeredRef.current = true;
 
-      errorsRef.current = omitValidFields(
+      errorsRef.current = omitValidFields<FieldValues, FieldName>(
         combineErrorsRef(
           Object.entries(fieldErrors)
-            .filter(([key]: [string, string]) => names.includes(key))
+            .filter(([key]) => names.includes(key as FieldName))
             .reduce(
               (previous, [name, error]) => ({ ...previous, [name]: error }),
               {},
@@ -225,8 +229,8 @@ export default function useForm<
   const triggerValidation = useCallback(
     async (
       payload?:
-        | ValidationPayload<FieldName, FormValues[FieldName]>
-        | ValidationPayload<FieldName, FormValues[FieldName]>[],
+        | ValidationPayload<FieldName, FieldValue>
+        | ValidationPayload<FieldName, FieldValue>[],
     ): Promise<boolean> => {
       const fields: any =
         payload || Object.keys(fieldsRef.current).map(name => ({ name }));
@@ -249,7 +253,7 @@ export default function useForm<
   const setValue = useCallback(
     (
       name: FieldName,
-      value: FormValues[FieldName],
+      value: FieldValue,
       shouldValidate: boolean = false,
     ): void | Promise<boolean> => {
       setValueInternal(name, value);
@@ -280,7 +284,7 @@ export default function useForm<
           (isOnBlur && !isBlurEvent && !errors[name]);
         let shouldUpdateState =
           isWatchAllRef.current ||
-          watchFieldsRef.current[name] ||
+          watchFieldsRef.current[name as FieldName] ||
           setDirty(name);
 
         if (!touchedFieldsRef.current.has(name)) {
@@ -297,12 +301,14 @@ export default function useForm<
           );
           schemaErrorsRef.current = fieldErrors;
           isSchemaValidateTriggeredRef.current = true;
-          error = fieldErrors[name] ? { [name]: fieldErrors[name] } : {};
+          error = (fieldErrors as FieldErrors<FieldValues>)[name]
+            ? { [name]: (fieldErrors as FieldErrors<FieldValues>)[name] }
+            : {};
         } else {
           error = await validateField(ref, fields, nativeValidation);
         }
 
-        const shouldUpdate = shouldUpdateWithError({
+        const shouldUpdate = shouldUpdateWithError<FieldName>({
           errors,
           error,
           name,
@@ -311,8 +317,10 @@ export default function useForm<
         });
 
         if (shouldUpdate) {
-          errorsRef.current = combineErrorsRef(error as any);
-          renderBaseOnError(name, error as any);
+          errorsRef.current = combineErrorsRef(error as FieldErrors<
+            FormValues
+          >);
+          renderBaseOnError(name, error as FieldErrors<FormValues>);
           return;
         }
 
@@ -382,10 +390,7 @@ export default function useForm<
   };
 
   function watch(): FormValues;
-  function watch(
-    field: FieldName | string,
-    defaultValue?: string,
-  ): FieldValue | void;
+  function watch(field: FieldName | string, defaultValue?: string): FieldValue;
   function watch(
     fields: (FieldName | string)[],
     defaultValues?: Partial<FormValues>,
@@ -393,12 +398,16 @@ export default function useForm<
   function watch(
     fieldNames?: FieldName | string | (FieldName | string)[],
     defaultValue?: string | Partial<FormValues>,
-  ): FieldValue | Partial<FormValues> | void {
+  ): FieldValue | Partial<FormValues> {
     const fieldValues = getFieldsValues(fieldsRef.current);
-    const watchFields: any = watchFieldsRef.current;
+    const watchFields = watchFieldsRef.current;
 
     if (isString(fieldNames)) {
-      const value = assignWatchFields(fieldValues, fieldNames, watchFields);
+      const value = assignWatchFields<FieldName, FormValues>(
+        fieldValues as FormValues,
+        fieldNames,
+        watchFields,
+      );
 
       return !isUndefined(value)
         ? value
@@ -418,9 +427,9 @@ export default function useForm<
         ) {
           value = defaultValue[name];
         } else {
-          const tempValue = assignWatchFields(
-            fieldValues,
-            name as string,
+          const tempValue = assignWatchFields<FieldName, FormValues>(
+            fieldValues as FormValues,
+            name,
             watchFields,
           );
 
@@ -435,6 +444,7 @@ export default function useForm<
     }
 
     isWatchAllRef.current = true;
+
     return (
       (!isEmptyObject(fieldValues) && fieldValues) ||
       defaultValue ||
@@ -499,11 +509,11 @@ export default function useForm<
       const defaultValue = getDefaultValue(defaultValues, name);
 
       if (!isUndefined(defaultValue))
-        setFieldValue(name as FieldName, defaultValue as FormValues[FieldName]);
+        setFieldValue(name as FieldName, defaultValue as FieldValue);
     }
 
     if (validateOptions && !isEmptyObject(validateOptions)) {
-      fieldsWithValidationRef.current.add(name);
+      fieldsWithValidationRef.current.add(name as FieldName);
 
       if (!isOnSubmit) {
         if (validationSchema) {
@@ -516,7 +526,8 @@ export default function useForm<
           });
         } else {
           validateField(fields[name], fields).then(error => {
-            if (isEmptyObject(error)) validFieldsRef.current.add(name);
+            if (isEmptyObject(error))
+              validFieldsRef.current.add(name as FieldName);
 
             if (
               validFieldsRef.current.size ===
@@ -607,7 +618,7 @@ export default function useForm<
 
     if (validationSchema) {
       fieldValues = getFieldsValues(fields);
-      const output = await validateWithSchema(
+      const output = await validateWithSchema<FormValues>(
         validationSchema,
         validationSchemaOption,
         combineFieldValues(fieldValues),
@@ -675,7 +686,7 @@ export default function useForm<
       errorsRef.current = {};
       await callback(combineFieldValues(fieldValues), e);
     } else {
-      errorsRef.current = fieldErrors as any;
+      errorsRef.current = fieldErrors;
     }
 
     if (isUnMount.current) return;
@@ -693,7 +704,7 @@ export default function useForm<
     dirtyFieldsRef.current = new Set();
     fieldsWithValidationRef.current = new Set();
     validFieldsRef.current = new Set();
-    defaultValuesRef.current = {} as any;
+    defaultValuesRef.current = {} as Record<FieldName, FieldValue>;
     isWatchAllRef.current = false;
     isSubmittedRef.current = false;
     isDirtyRef.current = false;
@@ -767,7 +778,7 @@ export default function useForm<
               : null),
           }),
           {},
-        ) as ErrorMessages<FormValues>)
+        ) as FieldErrors<FormValues>)
       : errorsRef.current,
     formState: {
       dirty: isDirtyRef.current,

@@ -1,12 +1,12 @@
-import { ErrorMessages } from '../types';
+import { FieldErrors } from '../types';
 
-export default <Data>(
-  errorFields: ErrorMessages<Data>,
-  validFieldNames: string[],
+export default <Data, FieldName>(
+  errorFields: FieldErrors<Data>,
+  validFieldNames: FieldName[],
 ) =>
   Object.entries(errorFields).reduce(
     (previous, [name, error]) =>
-      validFieldNames.some(validFieldName => validFieldName === name)
+      validFieldNames.some((validFieldName: any) => validFieldName === name)
         ? previous
         : { ...previous, [name]: error },
     {},
