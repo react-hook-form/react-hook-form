@@ -186,7 +186,7 @@ export default function useForm<
 
   const validateWithSchemaCurry = useCallback(
     validateWithSchema.bind(null, validationSchema, validationSchemaOption),
-    [],
+    [validationSchema, validationSchemaOption],
   );
 
   const executeSchemaValidation = useCallback(
