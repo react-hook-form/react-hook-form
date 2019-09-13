@@ -28,11 +28,12 @@ Performant, flexible and extensible forms with easy to use for validation.
 
 - Super easy to integrate and create forms
 - Built with performance and DX in mind
-- Uncontrolled form validation
+- Uncontrolled/Controlled form validation
 - [Tiny size](https://bundlephobia.com/result?p=react-hook-form@latest) without any dependency
 - Follows HTML standard for validation
-- Support browser native validation
 - Compatible with React Native 
+- Support Yup schema-based validation
+- Support browser native validation
 - Build forms quickly with the [form builder](https://react-hook-form.com/builder)
 
 ## Install
