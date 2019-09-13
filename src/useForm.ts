@@ -37,6 +37,7 @@ import {
   ElementLike,
   DefaultFieldValues,
 } from './types';
+import pickErrors from './logic/pickErrors';
 
 export default function useForm<
   FormValues extends FieldValues = DefaultFieldValues,
@@ -770,15 +771,7 @@ export default function useForm<
     triggerValidation,
     getValues,
     errors: validationFields
-      ? (Object.keys(errorsRef.current).reduce(
-          (previous, key) => ({
-            ...previous,
-            ...(validationFields.includes(key)
-              ? { [key]: errorsRef.current[key] }
-              : null),
-          }),
-          {},
-        ) as FieldErrors<FormValues>)
+      ? pickErrors<FormValues>(errorsRef.current, validationFields)
       : errorsRef.current,
     formState: {
       dirty: isDirtyRef.current,
