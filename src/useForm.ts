@@ -411,7 +411,7 @@ export default function useForm<
       );
 
       return isUndefined(value)
-        ? isObject(defaultValue)
+        ? isUndefined(defaultValue)
           ? getDefaultValue(defaultValues, fieldNames)
           : defaultValue
         : value;
