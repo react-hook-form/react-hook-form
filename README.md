@@ -26,7 +26,6 @@ Performant, flexible and extensible forms with easy to use for validation.
 
 ## Features
 
-- Super easy to integrate and create forms
 - Built with performance and DX in mind
 - Uncontrolled/Controlled form validation
 - [Tiny size](https://bundlephobia.com/result?p=react-hook-form@latest) without any dependency
