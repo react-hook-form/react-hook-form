@@ -22,6 +22,7 @@ import isUndefined from './utils/isUndefined';
 import onDomRemove from './utils/onDomRemove';
 import isMultipleSelect from './utils/isMultipleSelect';
 import modeChecker from './utils/validationModeChecker';
+import pickErrors from './logic/pickErrors';
 import { RADIO_INPUT, VALIDATION_MODE } from './constants';
 import {
   FieldValues,
@@ -37,7 +38,6 @@ import {
   ElementLike,
   DefaultFieldValues,
 } from './types';
-import pickErrors from './logic/pickErrors';
 
 export default function useForm<
   FormValues extends FieldValues = DefaultFieldValues,
@@ -360,12 +360,12 @@ export default function useForm<
   function clearError(name: FieldName): void;
   function clearError(names: FieldName[]): void;
   function clearError(name?: FieldName | FieldName[]): void {
-    if (isString(name)) {
-      delete errorsRef.current[name];
-    } else if (isArray(name)) {
-      name.forEach(fieldName => delete errorsRef.current[fieldName]);
-    } else {
+    if (isUndefined(name)) {
       errorsRef.current = {};
+    } else {
+      (isArray(name) ? name : [name]).forEach(
+        fieldName => delete errorsRef.current[fieldName],
+      );
     }
 
     reRenderForm({});
@@ -410,22 +410,18 @@ export default function useForm<
         watchFields,
       );
 
-      return !isUndefined(value)
-        ? value
-        : isUndefined(defaultValue)
-        ? getDefaultValue(defaultValues, fieldNames)
-        : defaultValue;
+      return isUndefined(value)
+        ? isObject(defaultValue)
+          ? getDefaultValue(defaultValues, fieldNames)
+          : defaultValue
+        : value;
     }
 
     if (isArray(fieldNames)) {
       return fieldNames.reduce((previous, name) => {
         let value = getDefaultValue(defaultValues, name);
 
-        if (
-          isEmptyObject(fieldsRef.current) &&
-          !isUndefined(defaultValue) &&
-          !isString(defaultValue)
-        ) {
+        if (isEmptyObject(fieldsRef.current) && isObject(defaultValue)) {
           value = defaultValue[name];
         } else {
           const tempValue = assignWatchFields<FieldName, FormValues>(
