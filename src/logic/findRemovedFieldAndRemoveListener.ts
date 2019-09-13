@@ -1,6 +1,7 @@
 import removeAllEventListeners from './removeAllEventListeners';
 import isRadioInput from '../utils/isRadioInput';
 import isDetached from '../utils/isDetached';
+import get from '../utils/get';
 import { Field, FieldsRefs, FieldValues } from '../types';
 
 export default function findRemovedFieldAndRemoveListener<
@@ -23,9 +24,7 @@ export default function findRemovedFieldAndRemoveListener<
     options.forEach(({ ref }, index): void => {
       if ((options[index] && isDetached(ref)) || forceDelete) {
         removeAllEventListeners(options[index], validateWithStateUpdate);
-        (
-          options[index].mutationWatcher || { disconnect: () => {} }
-        ).disconnect();
+        get(options[index], 'mutationWatcher.disconnect', () => {})();
         options.splice(index, 1);
       }
     });

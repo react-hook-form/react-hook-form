@@ -1,5 +1,5 @@
-import { FieldValues, Ref } from '../types';
 import isRegex from '../utils/isRegex';
+import { FieldValues, Ref } from '../types';
 
 export default function attachNativeValidation(
   ref: Ref,

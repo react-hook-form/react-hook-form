@@ -17,7 +17,7 @@ export default (
     mutationWatcher?: MutationWatcher;
   }[],
 ): RadioFieldResult =>
-  options && isArray(options)
+  isArray(options)
     ? options.reduce(
         (previous, { ref: { checked, value } }: Ref): RadioFieldResult =>
           checked
