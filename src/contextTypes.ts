@@ -8,21 +8,21 @@ import {
   Ref,
   ValidationOptions,
   ValidationPayload,
-  FieldValue,
+  DefaultFieldValues,
 } from './types';
 
 export interface FormProps<
-  Data extends FieldValues = FieldValues,
-  Name extends keyof Data = keyof Data,
-  Value = Data[Name]
-> extends FormContextValues<Data, Name, Value> {
+  FormValues extends FieldValues = DefaultFieldValues,
+  FieldName extends keyof FormValues = keyof FormValues,
+  FieldValue = FormValues[FieldName]
+> extends FormContextValues<FormValues, FieldName, FieldValue> {
   children: JSX.Element[] | JSX.Element;
 }
 
 export interface FormContextValues<
-  Data extends FieldValues = FieldValues,
-  Name extends keyof Data = keyof Data,
-  Value = Data[Name]
+  FormValues extends FieldValues = DefaultFieldValues,
+  FieldName extends keyof FormValues = keyof FormValues,
+  FieldValue = FormValues[FieldName]
 > {
   register<Element extends ElementLike = ElementLike>(
     validateRule: ValidationOptions,
@@ -31,25 +31,38 @@ export interface FormContextValues<
     ref: Element | null,
     validationOptions?: ValidationOptions,
   ): void;
-  unregister(name: Name | string): void;
-  unregister(names: (Name | string)[]): void;
+  unregister(name: FieldName | string): void;
+  unregister(names: (FieldName | string)[]): void;
   handleSubmit: (
-    callback: OnSubmit<Data>,
+    callback: OnSubmit<FormValues>,
   ) => (e: React.SyntheticEvent) => Promise<void>;
-  watch(): Data;
-  watch(field: Name | string, defaultValue?: string): FieldValue | void;
+  watch(): FormValues;
+  watch(field: FieldName | string, defaultValue?: string): FieldValue;
   watch(
-    fields: (Name | string)[],
-    defaultValues?: Partial<Data>,
-  ): Partial<Data>;
-  reset: VoidFunction;
-  clearError: (name?: Name | Name[]) => void;
-  setError: (name: Name, type: string, message?: string, ref?: Ref) => void;
-  setValue: (name: Name, value: Value, shouldValidate?: boolean) => void;
+    fields: (FieldName | string)[],
+    defaultValues?: Partial<FormValues>,
+  ): Partial<FormValues>;
+  reset: (values?: FieldValues) => void;
+  clearError(): void;
+  clearError(name: FieldName): void;
+  clearError(names: FieldName[]): void;
+  setError: (
+    name: FieldName,
+    type: string,
+    message?: string,
+    ref?: Ref,
+  ) => void;
+  setValue: (
+    name: FieldName,
+    value: FieldValue,
+    shouldValidate?: boolean,
+  ) => void;
   triggerValidation: (
-    payload: ValidationPayload<Name, Value> | ValidationPayload<Name, Value>[],
+    payload:
+      | ValidationPayload<FieldName, FieldValue>
+      | ValidationPayload<FieldName, FieldValue>[],
   ) => Promise<boolean>;
-  getValues: (payload?: { nest: boolean }) => Data;
-  errors: FieldErrors<Data>;
-  formState: FormState<Data, Name>;
+  getValues: (payload?: { nest: boolean }) => FormValues;
+  errors: FieldErrors<FormValues>;
+  formState: FormState<FormValues, FieldName>;
 }

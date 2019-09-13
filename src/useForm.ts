@@ -73,7 +73,7 @@ export default function useForm<
   const validateAndUpdateStateRef = useRef<Function>();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitCount, setSubmitCount] = useState(0);
-  const [, reRenderForm] = useState({});
+  const [, render] = useState();
   const { isOnBlur, isOnSubmit } = useRef(modeChecker(mode)).current;
   validationFieldsRef.current = validationFields;
 
@@ -96,7 +96,7 @@ export default function useForm<
         validFieldsRef.current.delete(name);
       }
 
-      if (shouldRender) reRenderForm({});
+      if (shouldRender) render({});
     },
     [validationSchema],
   );
@@ -154,7 +154,7 @@ export default function useForm<
         !touchedFieldsRef.current.has(name)
       ) {
         touchedFieldsRef.current.add(name);
-        reRenderForm({});
+        render({});
       }
     },
     [],
@@ -220,7 +220,7 @@ export default function useForm<
         validFieldNames,
       );
 
-      reRenderForm({});
+      render({});
 
       return isEmptyObject(errorsRef.current);
     },
@@ -242,7 +242,7 @@ export default function useForm<
         const result = await Promise.all(
           fields.map(async data => await executeValidation(data, false)),
         );
-        reRenderForm({});
+        render({});
         return result.every(Boolean);
       }
 
@@ -294,7 +294,7 @@ export default function useForm<
         }
 
         if (isValidateDisabled)
-          return shouldUpdateState ? reRenderForm({}) : undefined;
+          return shouldUpdateState ? render({}) : undefined;
 
         if (validationSchema) {
           const { fieldErrors } = await validateWithSchemaCurry(
@@ -325,7 +325,7 @@ export default function useForm<
           return;
         }
 
-        if (shouldUpdateState) reRenderForm({});
+        if (shouldUpdateState) render({});
       };
 
   const resetFieldRef = (name: FieldName) => {
@@ -368,7 +368,7 @@ export default function useForm<
       );
     }
 
-    reRenderForm({});
+    render({});
   }
 
   const setError = (
@@ -386,7 +386,7 @@ export default function useForm<
         ref,
         isManual: true,
       };
-      reRenderForm({});
+      render({});
     }
   };
 
@@ -519,7 +519,7 @@ export default function useForm<
             combineFieldValues(getFieldsValues(fields)),
           ).then(({ fieldErrors }) => {
             schemaErrorsRef.current = fieldErrors;
-            if (isEmptyObject(schemaErrorsRef.current)) reRenderForm({});
+            if (isEmptyObject(schemaErrorsRef.current)) render({});
           });
         } else {
           validateField(fields[name], fields).then(error => {
@@ -530,7 +530,7 @@ export default function useForm<
               validFieldsRef.current.size ===
               fieldsWithValidationRef.current.size
             )
-              reRenderForm({});
+              render({});
           });
         }
       }

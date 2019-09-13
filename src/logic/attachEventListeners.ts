@@ -9,7 +9,7 @@ export default function attachEventListeners({
 }: {
   field: Field;
   isRadio: boolean;
-  validateAndStateUpdate: Function | undefined;
+  validateAndStateUpdate?: Function;
   isOnBlur: boolean;
 }): void {
   const { ref } = field;

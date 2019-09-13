@@ -119,13 +119,13 @@ export interface ValidationPayload<Name, Value> {
 }
 
 export interface FormState<
-  Data extends FieldValues = FieldValues,
-  Name extends keyof Data = keyof Data
+  FormValues extends FieldValues = FieldValues,
+  FieldName extends keyof FormValues = keyof FormValues
 > {
   dirty: boolean;
   isSubmitted: boolean;
   submitCount: number;
-  touched: Name[];
+  touched: FieldName[];
   isSubmitting: boolean;
   isValid: boolean;
 }
