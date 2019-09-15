@@ -55,7 +55,7 @@ type ValidationOptionObject<Value> = Value | { value: Value; message: string };
 
 export type ValidationTypes = number | string | RegExp;
 
-export type Validate = (data: FieldValue) => string | boolean | void;
+export type Validate = (data: FieldValue) => string | boolean | string[] | void;
 
 export type ValidationOptions = Partial<{
   required: boolean | string;
@@ -96,6 +96,7 @@ export interface FieldError {
   ref: Ref;
   type: string;
   message?: string;
+  messages?: string[];
   isManual?: boolean;
 }
 
