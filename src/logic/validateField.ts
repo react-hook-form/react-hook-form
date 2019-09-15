@@ -16,6 +16,7 @@ import {
   FieldError,
   FieldErrors,
   FieldValues,
+  SchemaValidateOptions,
   ValidatePromiseResult,
 } from '../types';
 
@@ -34,12 +35,25 @@ export default async (
     validate,
   }: Field,
   fields: FieldValues,
-  nativeValidation?: boolean,
+  validateOptions: {
+    nativeValidation?: boolean;
+    validationOption: Pick<SchemaValidateOptions, 'abortEarly'>;
+  } = {
+    nativeValidation: false,
+    validationOption: {
+      abortEarly: true,
+    },
+  },
 ): Promise<FieldErrors<any>> => {
   const error: Record<string, FieldError> = {};
   const isRadio = isRadioInput(type);
   const isCheckBox = isCheckBoxInput(type);
-  const nativeError = displayNativeError.bind(null, nativeValidation, ref);
+  const { nativeValidation, validationOption } = validateOptions;
+  const nativeError = displayNativeError.bind(
+    null,
+    validateOptions.nativeValidation,
+    ref,
+  );
 
   if (
     required &&
@@ -54,7 +68,9 @@ export default async (
       ref: isRadio ? fields[name].options[0].ref : ref,
     };
     nativeError(required);
-    return error;
+    if (validationOption.abortEarly) {
+      return error;
+    }
   }
 
   if (!isNullOrUndefined(min) || !isNullOrUndefined(max)) {
@@ -80,7 +96,9 @@ export default async (
         ref,
       };
       nativeError(message);
-      return error;
+      if (validationOption.abortEarly) {
+        return error;
+      }
     }
   }
 
@@ -105,7 +123,10 @@ export default async (
         ref,
       };
       nativeError(message);
-      return error;
+
+      if (validationOption.abortEarly) {
+        return error;
+      }
     }
   }
 
@@ -121,7 +142,10 @@ export default async (
         ref,
       };
       nativeError(patternMessage);
-      return error;
+
+      if (validationOption.abortEarly) {
+        return error;
+      }
     }
   }
 
@@ -141,7 +165,10 @@ export default async (
           ref: validateRef,
         };
         nativeError(message);
-        return error;
+
+        if (validationOption.abortEarly) {
+          return error;
+        }
       }
     } else if (isObject(validate)) {
       const validationResult = await new Promise(
@@ -178,7 +205,10 @@ export default async (
           ref: validateRef,
           ...(validationResult as { type: string; message?: string }),
         };
-        return error;
+
+        if (validationOption.abortEarly) {
+          return error;
+        }
       }
     }
   }

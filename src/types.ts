@@ -39,7 +39,7 @@ export type Options<
 > = Partial<{
   mode: Mode;
   defaultValues: Partial<FormValues>;
-  validationSchemaOption: SchemaValidateOptions;
+  validationOption: SchemaValidateOptions;
   validationFields: FieldName[];
   validationSchema: any;
   nativeValidation: boolean;

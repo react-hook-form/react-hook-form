@@ -50,7 +50,7 @@ export default function useForm<
   validationFields,
   nativeValidation,
   submitFocusError = true,
-  validationSchemaOption = { abortEarly: false },
+  validationOption = { abortEarly: false },
 }: Options<FormValues> = {}) {
   const fieldsRef = useRef<FieldsRefs<FormValues>>({});
   const errorsRef = useRef<FieldErrors<FormValues>>({});
@@ -176,18 +176,21 @@ export default function useForm<
       if (!field) return false;
       if (!isUndefined(value)) setValueInternal(name, value);
 
-      const error = await validateField(field, fieldsRef.current);
+      const error = await validateField(field, fieldsRef.current, {
+        nativeValidation,
+        validationOption,
+      });
       errorsRef.current = combineErrorsRef(error);
       renderBaseOnError(name, error, shouldRender);
 
       return isEmptyObject(error);
     },
-    [renderBaseOnError, setValueInternal],
+    [renderBaseOnError, setValueInternal, nativeValidation, validationOption],
   );
 
   const validateWithSchemaCurry = useCallback(
-    validateWithSchema.bind(null, validationSchema, validationSchemaOption),
-    [validationSchema, validationSchemaOption],
+    validateWithSchema.bind(null, validationSchema, validationOption),
+    [validationSchema, validationOption],
   );
 
   const executeSchemaValidation = useCallback(
@@ -306,7 +309,10 @@ export default function useForm<
             ? { [name]: (fieldErrors as FieldErrors<FieldValues>)[name] }
             : {};
         } else {
-          error = await validateField(ref, fields, nativeValidation);
+          error = await validateField(ref, fields, {
+            nativeValidation,
+            validationOption,
+          });
         }
 
         const shouldUpdate = shouldUpdateWithError<FieldName>({
@@ -522,7 +528,10 @@ export default function useForm<
             if (isEmptyObject(schemaErrorsRef.current)) render({});
           });
         } else {
-          validateField(fields[name], fields).then(error => {
+          validateField(fields[name], fields, {
+            nativeValidation,
+            validationOption,
+          }).then(error => {
             if (isEmptyObject(error))
               validFieldsRef.current.add(name as FieldName);
 
@@ -617,7 +626,7 @@ export default function useForm<
       fieldValues = getFieldsValues(fields);
       const output = await validateWithSchema<FormValues>(
         validationSchema,
-        validationSchemaOption,
+        validationOption,
         combineFieldValues(fieldValues),
       );
       schemaErrorsRef.current = output.fieldErrors;
@@ -642,11 +651,10 @@ export default function useForm<
 
           if (!fields[name]) return Promise.resolve(resolvedPrevious);
 
-          const fieldError = await validateField(
-            field,
-            fields,
+          const fieldError = await validateField(field, fields, {
             nativeValidation,
-          );
+            validationOption,
+          });
 
           if (fieldError[name]) {
             if (submitFocusError && firstFocusError && focus) {
