@@ -50,7 +50,7 @@ export default function useForm<
   validationFields,
   nativeValidation,
   submitFocusError = true,
-  validationSchemaOption = { abortEarly: true },
+  validationSchemaOption = { abortEarly: false },
 }: Options<FormValues> = {}) {
   const fieldsRef = useRef<FieldsRefs<FormValues>>({});
   const errorsRef = useRef<FieldErrors<FormValues>>({});
