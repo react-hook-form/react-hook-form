@@ -624,7 +624,7 @@ describe('validateField', () => {
           },
         },
         {},
-        true,
+        { nativeValidation: true, validationOption: { abortEarly: true } },
       ),
     ).toEqual({});
     expect(setCustomValidity).toBeCalledWith('');

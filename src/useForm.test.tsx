@@ -469,12 +469,20 @@ describe('useForm', () => {
           test: { ref: { name: 'test', value: 'test' } },
           test1: { ref: { name: 'test1', value: 'test' } },
         },
+        {
+          nativeValidation: undefined,
+          validationOption: { abortEarly: false },
+        },
       );
       expect(validateField).toBeCalledWith(
         { ref: { name: 'test1', value: 'test' } },
         {
           test: { ref: { name: 'test', value: 'test' } },
           test1: { ref: { name: 'test1', value: 'test' } },
+        },
+        {
+          nativeValidation: undefined,
+          validationOption: { abortEarly: false },
         },
       );
     });
