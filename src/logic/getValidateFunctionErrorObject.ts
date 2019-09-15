@@ -1,10 +1,10 @@
 import isString from '../utils/isString';
 import isArray from '../utils/isArray';
 import isBoolean from '../utils/isBoolean';
-import { FieldError, Ref } from '../types';
+import { FieldError, ValidateResult, Ref } from '../types';
 
 export default function getValidateFunctionErrorObject(
-  result: string | boolean | string[] | void,
+  result: ValidateResult,
   ref: Ref,
   nativeError: Function,
   type = 'validate',

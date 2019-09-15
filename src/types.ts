@@ -55,7 +55,9 @@ type ValidationOptionObject<Value> = Value | { value: Value; message: string };
 
 export type ValidationTypes = number | string | RegExp;
 
-export type Validate = (data: FieldValue) => string | boolean | string[] | void;
+export type ValidateResult = string | boolean | string[] | void;
+
+export type Validate = (data: FieldValue) => ValidateResult;
 
 export type ValidationOptions = Partial<{
   required: boolean | string;
@@ -70,13 +72,15 @@ export type ValidationOptions = Partial<{
     | { value: Validate | Record<string, Validate>; message: string };
 }>;
 
-export type ValidatePromiseResult =
-  | {}
-  | void
-  | {
-      type: string;
-      message: string | number | boolean | Date;
-    };
+export interface FieldError {
+  ref: Ref;
+  type: string;
+  message?: string;
+  messages?: string[];
+  isManual?: boolean;
+}
+
+export type ValidatePromiseResult = {} | void | FieldError;
 
 export interface Field extends ValidationOptions {
   ref: Ref;
@@ -91,14 +95,6 @@ export interface Field extends ValidationOptions {
 export type FieldsRefs<Data extends FieldValues> = Partial<
   Record<keyof Data, Field>
 >;
-
-export interface FieldError {
-  ref: Ref;
-  type: string;
-  message?: string;
-  messages?: string[];
-  isManual?: boolean;
-}
 
 export type FieldErrors<Data extends FieldValues> = Partial<
   Record<keyof Data, FieldError>
