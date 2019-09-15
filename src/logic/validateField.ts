@@ -48,7 +48,10 @@ export default async (
   const error: Record<string, FieldError> = {};
   const isRadio = isRadioInput(type);
   const isCheckBox = isCheckBoxInput(type);
-  const { nativeValidation, validationOption } = validateOptions;
+  const {
+    nativeValidation,
+    validationOption: { abortEarly },
+  } = validateOptions;
   const nativeError = displayNativeError.bind(
     null,
     validateOptions.nativeValidation,
@@ -68,7 +71,8 @@ export default async (
       ref: isRadio ? fields[name].options[0].ref : ref,
     };
     nativeError(required);
-    if (validationOption.abortEarly) {
+
+    if (abortEarly) {
       return error;
     }
   }
@@ -96,7 +100,8 @@ export default async (
         ref,
       };
       nativeError(message);
-      if (validationOption.abortEarly) {
+
+      if (abortEarly) {
         return error;
       }
     }
@@ -124,7 +129,7 @@ export default async (
       };
       nativeError(message);
 
-      if (validationOption.abortEarly) {
+      if (abortEarly) {
         return error;
       }
     }
@@ -143,7 +148,7 @@ export default async (
       };
       nativeError(patternMessage);
 
-      if (validationOption.abortEarly) {
+      if (abortEarly) {
         return error;
       }
     }
@@ -166,7 +171,7 @@ export default async (
         };
         nativeError(message);
 
-        if (validationOption.abortEarly) {
+        if (abortEarly) {
           return error;
         }
       }
@@ -206,7 +211,7 @@ export default async (
           ...(validationResult as { type: string; message?: string }),
         };
 
-        if (validationOption.abortEarly) {
+        if (abortEarly) {
           return error;
         }
       }
