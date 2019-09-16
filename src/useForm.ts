@@ -75,6 +75,7 @@ export default function useForm<
   const [submitCount, setSubmitCount] = useState(0);
   const [, render] = useState();
   const { isOnBlur, isOnSubmit } = useRef(modeChecker(mode)).current;
+  const validationSchemaOptionRef = useRef(validationSchemaOption);
   validationFieldsRef.current = validationFields;
 
   const combineErrorsRef = (data: FieldErrors<FormValues>) => ({
@@ -186,8 +187,12 @@ export default function useForm<
   );
 
   const validateWithSchemaCurry = useCallback(
-    validateWithSchema.bind(null, validationSchema, validationSchemaOption),
-    [validationSchema, validationSchemaOption],
+    validateWithSchema.bind(
+      null,
+      validationSchema,
+      validationSchemaOptionRef.current,
+    ),
+    [validationSchema],
   );
 
   const executeSchemaValidation = useCallback(
