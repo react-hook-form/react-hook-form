@@ -4,9 +4,9 @@
     </p>    
 </div>
 
-<div align="center">
+<p align="center">Performant, flexible and extensible forms with easy to use for validation.</p>
 
-Performant, flexible and extensible forms with easy to use for validation.
+<div align="center">
 
 [![CircleCI](https://badgen.net/github/status/react-hook-form/react-hook-form/master/ci/circleci)](https://circleci.com/gh/react-hook-form/react-hook-form)
 [![npm downloads](https://img.shields.io/npm/dm/react-hook-form.svg?style=flat-square)](https://www.npmjs.com/package/react-hook-form)
