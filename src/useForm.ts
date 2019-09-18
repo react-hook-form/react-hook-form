@@ -23,7 +23,7 @@ import onDomRemove from './utils/onDomRemove';
 import isMultipleSelect from './utils/isMultipleSelect';
 import modeChecker from './utils/validationModeChecker';
 import pickErrors from './logic/pickErrors';
-import { RADIO_INPUT, VALIDATION_MODE } from './constants';
+import { INPUT_TYPES, RADIO_INPUT, VALIDATION_MODE } from './constants';
 import {
   FieldValues,
   FieldErrors,
@@ -38,6 +38,7 @@ import {
   ElementLike,
   DefaultFieldValues,
 } from './types';
+import isNullOrUndefined from './utils/isNullOrUndefined';
 
 export default function useForm<
   FormValues extends FieldValues = DefaultFieldValues,
@@ -118,11 +119,13 @@ export default function useForm<
     } else if (isMultipleSelect(type)) {
       [...ref.options].forEach(
         selectRef =>
-          // @ts-ignore
-          (selectRef.selected = value.includes(selectRef.value)),
+          (selectRef.selected = (value as any).includes(selectRef.value)),
       );
+    } else if (isCheckBoxInput(type)) {
+      ref.checked = value;
     } else {
-      ref[isCheckBoxInput(type) ? 'checked' : 'value'] = value;
+      ref.value =
+        INPUT_TYPES.includes(type) && isNullOrUndefined(value) ? '' : value;
     }
 
     return type;
