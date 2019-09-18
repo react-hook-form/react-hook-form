@@ -103,7 +103,7 @@ export default function useForm<
     [validationSchema],
   );
 
-  const setFieldValue = (name: FieldName, value: FieldValue): boolean => {
+  const setFieldValue = (name: FieldName, rawValue: FieldValue): boolean => {
     const field = fieldsRef.current[name];
 
     if (!field) return false;
@@ -111,25 +111,22 @@ export default function useForm<
     const ref = field.ref;
     const { type } = ref;
     const options = field.options;
-    const filteredValue =
-      ref instanceof HTMLElement && isNullOrUndefined(value) ? '' : value;
+    const value =
+      ref instanceof HTMLElement && isNullOrUndefined(rawValue) ? '' : rawValue;
 
     if (isRadioInput(type) && options) {
       options.forEach(
-        ({ ref: radioRef }) =>
-          (radioRef.checked = radioRef.value === filteredValue),
+        ({ ref: radioRef }) => (radioRef.checked = radioRef.value === value),
       );
     } else if (isMultipleSelect(type)) {
       [...ref.options].forEach(
         selectRef =>
-          (selectRef.selected = (filteredValue as any).includes(
-            selectRef.value,
-          )),
+          (selectRef.selected = (value as any).includes(selectRef.value)),
       );
     } else if (isCheckBoxInput(type)) {
-      ref.checked = filteredValue;
+      ref.checked = value;
     } else {
-      ref.value = filteredValue;
+      ref.value = value;
     }
 
     return type;
