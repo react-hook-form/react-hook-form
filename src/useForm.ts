@@ -237,6 +237,7 @@ export default function useForm<
       payload?:
         | ValidationPayload<FieldName, FieldValue>
         | ValidationPayload<FieldName, FieldValue>[],
+      shouldRender?: boolean,
     ): Promise<boolean> => {
       const fields: any =
         payload || Object.keys(fieldsRef.current).map(name => ({ name }));
@@ -251,7 +252,7 @@ export default function useForm<
         return result.every(Boolean);
       }
 
-      return await executeValidation(fields);
+      return await executeValidation(fields, shouldRender);
     },
     [executeSchemaValidation, executeValidation, validationSchema],
   );
@@ -263,10 +264,12 @@ export default function useForm<
       shouldValidate: boolean = false,
     ): void | Promise<boolean> => {
       setValueInternal(name, value);
+      const shouldRender =
+        isWatchAllRef.current || watchFieldsRef.current[name];
       if (shouldValidate) {
-        return triggerValidation({ name });
+        return triggerValidation({ name }, shouldRender);
       }
-      if (isWatchAllRef.current || watchFieldsRef.current[name]) render({});
+      if (shouldRender) render({});
     },
     [setValueInternal, triggerValidation],
   );
