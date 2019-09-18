@@ -111,21 +111,25 @@ export default function useForm<
     const ref = field.ref;
     const { type } = ref;
     const options = field.options;
+    const filteredValue =
+      ref instanceof HTMLElement && isNullOrUndefined(value) ? '' : value;
 
     if (isRadioInput(type) && options) {
       options.forEach(
-        ({ ref: radioRef }) => (radioRef.checked = radioRef.value === value),
+        ({ ref: radioRef }) =>
+          (radioRef.checked = radioRef.value === filteredValue),
       );
     } else if (isMultipleSelect(type)) {
       [...ref.options].forEach(
         selectRef =>
-          (selectRef.selected = (value as any).includes(selectRef.value)),
+          (selectRef.selected = (filteredValue as any).includes(
+            selectRef.value,
+          )),
       );
     } else if (isCheckBoxInput(type)) {
-      ref.checked = value;
+      ref.checked = filteredValue;
     } else {
-      ref.value =
-        ref instanceof HTMLElement && isNullOrUndefined(value) ? '' : value;
+      ref.value = filteredValue;
     }
 
     return type;

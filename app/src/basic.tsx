@@ -101,6 +101,7 @@ const Basic: React.FC = (props: any) => {
       </select>
       {errors.multiple && <p>multiple error</p>}
       <input
+        name="validate"
         type="validate"
         placeholder="validate"
         ref={register({
