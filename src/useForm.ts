@@ -23,7 +23,7 @@ import onDomRemove from './utils/onDomRemove';
 import isMultipleSelect from './utils/isMultipleSelect';
 import modeChecker from './utils/validationModeChecker';
 import pickErrors from './logic/pickErrors';
-import { INPUT_TYPES, RADIO_INPUT, VALIDATION_MODE } from './constants';
+import { RADIO_INPUT, VALIDATION_MODE } from './constants';
 import {
   FieldValues,
   FieldErrors,
@@ -125,7 +125,7 @@ export default function useForm<
       ref.checked = value;
     } else {
       ref.value =
-        INPUT_TYPES.includes(type) && isNullOrUndefined(value) ? '' : value;
+        ref instanceof HTMLElement && isNullOrUndefined(value) ? '' : value;
     }
 
     return type;
