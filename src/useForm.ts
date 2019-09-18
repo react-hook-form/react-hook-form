@@ -123,10 +123,8 @@ export default function useForm<
         selectRef =>
           (selectRef.selected = (value as any).includes(selectRef.value)),
       );
-    } else if (isCheckBoxInput(type)) {
-      ref.checked = value;
     } else {
-      ref.value = value;
+      ref[isCheckBoxInput(type) ? 'checked' : 'value'] = value;
     }
 
     return type;
