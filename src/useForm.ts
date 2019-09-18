@@ -263,7 +263,10 @@ export default function useForm<
       shouldValidate: boolean = false,
     ): void | Promise<boolean> => {
       setValueInternal(name, value);
-      if (shouldValidate) return triggerValidation({ name });
+      if (shouldValidate) {
+        return triggerValidation({ name });
+      }
+      if (isWatchAllRef.current || watchFieldsRef.current[name]) render({});
     },
     [setValueInternal, triggerValidation],
   );
