@@ -24,6 +24,7 @@ import isMultipleSelect from './utils/isMultipleSelect';
 import modeChecker from './utils/validationModeChecker';
 import pickErrors from './logic/pickErrors';
 import { RADIO_INPUT, VALIDATION_MODE } from './constants';
+import isNullOrUndefined from './utils/isNullOrUndefined';
 import {
   FieldValues,
   FieldErrors,
@@ -38,7 +39,6 @@ import {
   ElementLike,
   DefaultFieldValues,
 } from './types';
-import isNullOrUndefined from './utils/isNullOrUndefined';
 
 export default function useForm<
   FormValues extends FieldValues = DefaultFieldValues,
@@ -732,7 +732,7 @@ export default function useForm<
 
     if (values) {
       fieldsKeyValue.forEach(([key]) =>
-        setFieldValue(key as FieldName, getDefaultValue(values, key, '')),
+        setFieldValue(key as FieldName, getDefaultValue(values, key)),
       );
       defaultValuesRef.current = values as Record<FieldName, FieldValue>;
     }
