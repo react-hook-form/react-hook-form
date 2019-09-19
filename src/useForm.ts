@@ -24,6 +24,7 @@ import isMultipleSelect from './utils/isMultipleSelect';
 import modeChecker from './utils/validationModeChecker';
 import pickErrors from './logic/pickErrors';
 import { RADIO_INPUT, VALIDATION_MODE } from './constants';
+import isNullOrUndefined from './utils/isNullOrUndefined';
 import {
   FieldValues,
   FieldErrors,
@@ -102,7 +103,7 @@ export default function useForm<
     [validationSchema],
   );
 
-  const setFieldValue = (name: FieldName, value: FieldValue): boolean => {
+  const setFieldValue = (name: FieldName, rawValue: FieldValue): boolean => {
     const field = fieldsRef.current[name];
 
     if (!field) return false;
@@ -110,6 +111,8 @@ export default function useForm<
     const ref = field.ref;
     const { type } = ref;
     const options = field.options;
+    const value =
+      ref instanceof HTMLElement && isNullOrUndefined(rawValue) ? '' : rawValue;
 
     if (isRadioInput(type) && options) {
       options.forEach(
@@ -118,8 +121,7 @@ export default function useForm<
     } else if (isMultipleSelect(type)) {
       [...ref.options].forEach(
         selectRef =>
-          // @ts-ignore
-          (selectRef.selected = value.includes(selectRef.value)),
+          (selectRef.selected = (value as any).includes(selectRef.value)),
       );
     } else {
       ref[isCheckBoxInput(type) ? 'checked' : 'value'] = value;
@@ -735,7 +737,7 @@ export default function useForm<
 
     if (values) {
       fieldsKeyValue.forEach(([key]) =>
-        setFieldValue(key as FieldName, getDefaultValue(values, key, '')),
+        setFieldValue(key as FieldName, getDefaultValue(values, key)),
       );
       defaultValuesRef.current = values as Record<FieldName, FieldValue>;
     }

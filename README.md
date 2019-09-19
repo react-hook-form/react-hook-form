@@ -1,12 +1,14 @@
 <div align="center">
     <p align="center">
-        <a href="https://react-hook-form.com" title="React Hook Form - Simple React forms validation"><img src="https://raw.githubusercontent.com/bluebill1049/react-hook-form/master/website/logo.png" alt="React Hook Form Logo - React hook form validation" width="330px" /></a>
+        <a href="https://react-hook-form.com" title="React Hook Form - Simple React forms validation">
+            <img src="https://raw.githubusercontent.com/bluebill1049/react-hook-form/master/website/logo.png" alt="React Hook Form Logo - React hook custom hook for form validation" width="330px" />
+        </a>
     </p>    
 </div>
 
-<div align="center">
+<p align="center">Performant, flexible and extensible forms with easy to use for validation.</p>
 
-Performant, flexible and extensible forms with easy to use for validation.
+<div align="center">
 
 [![CircleCI](https://badgen.net/github/status/react-hook-form/react-hook-form/master/ci/circleci)](https://circleci.com/gh/react-hook-form/react-hook-form)
 [![npm downloads](https://img.shields.io/npm/dm/react-hook-form.svg?style=flat-square)](https://www.npmjs.com/package/react-hook-form)
@@ -19,7 +21,13 @@ Performant, flexible and extensible forms with easy to use for validation.
 
 </div>
 
-<div align="center"><p align="center"><a href="https://react-hook-form.com" title="React Hook Form - Simple React forms validation"><img src="https://raw.githubusercontent.com/bluebill1049/react-hook-form/master/website/example.gif" alt="React Hook Form Logo - React hook form validation" width="750px" /></a></p></div>
+<div align="center">
+    <p align="center">
+        <a href="https://react-hook-form.com" title="React Hook Form - Simple React forms validation">
+            <img src="https://raw.githubusercontent.com/bluebill1049/react-hook-form/master/website/example.gif" alt="React Hook Form video - React custom hook for form validation" width="750px" />
+        </a>
+    </p>
+</div>
 
 🇦🇺English | <a href="https://github.com/bluebill1049/react-hook-form/blob/master/README.zh-CN.md">🇨🇳简体中文</a>
 
