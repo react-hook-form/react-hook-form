@@ -69,11 +69,11 @@ export default function useForm<
   const isWatchAllRef = useRef(false);
   const isSubmittedRef = useRef(false);
   const isDirtyRef = useRef(false);
+  const submitCountRef = useRef(0);
   const isSchemaValidateTriggeredRef = useRef(false);
   const validationFieldsRef = useRef(validationFields);
   const validateAndUpdateStateRef = useRef<Function>();
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [submitCount, setSubmitCount] = useState(0);
   const [, render] = useState();
   const { isOnBlur, isOnSubmit } = useRef(modeChecker(mode)).current;
   const validationSchemaOptionRef = useRef(validationSchemaOption);
@@ -703,7 +703,7 @@ export default function useForm<
 
     isSubmittedRef.current = true;
     setIsSubmitting(false);
-    setSubmitCount(submitCount + 1);
+    submitCountRef.current = submitCountRef.current + 1;
   };
 
   const resetRefs = () => {
@@ -742,7 +742,8 @@ export default function useForm<
       defaultValuesRef.current = values as Record<FieldName, FieldValue>;
     }
 
-    setSubmitCount(0);
+    submitCountRef.current = 0;
+    render({});
   }, []);
 
   const getValues = (payload?: { nest: boolean }): FormValues => {
@@ -785,7 +786,7 @@ export default function useForm<
     formState: {
       dirty: isDirtyRef.current,
       isSubmitted: isSubmittedRef.current,
-      submitCount,
+      submitCount: submitCountRef.current,
       touched: [...touchedFieldsRef.current],
       isSubmitting,
       ...(isOnSubmit
