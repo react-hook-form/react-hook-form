@@ -21,6 +21,6 @@ context('form setValue', () => {
 
     cy.get('button').click();
     cy.get('p').should('have.length', 0);
-    cy.get('#renderCount').contains('7');
+    cy.get('#renderCount').contains('9');
   });
 });

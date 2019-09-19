@@ -625,6 +625,7 @@ export default function useForm<
       : Object.values(fields);
 
     isSubmittingRef.current = true;
+    render({});
 
     if (validationSchema) {
       fieldValues = getFieldsValues(fields);
