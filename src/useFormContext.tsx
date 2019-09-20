@@ -13,9 +13,12 @@ export function useFormContext<T extends FieldValues>(): FormContextValues<T> {
 export function FormContext<T extends FieldValues>(props: FormProps<T>) {
   const { children, ...rest } = props;
 
-  return (
-    <FormGlobalContext.Provider value={rest as FormContextValues}>
-      {children}
-    </FormGlobalContext.Provider>
+  return React.useMemo(
+    () => (
+      <FormGlobalContext.Provider value={rest as FormContextValues}>
+        {children}
+      </FormGlobalContext.Provider>
+    ),
+    [],
   );
 }

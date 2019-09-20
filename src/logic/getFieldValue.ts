@@ -10,7 +10,11 @@ export default function getFieldValue<Data extends FieldValues>(
   fields: FieldsRefs<Data>,
   ref: Ref,
 ) {
-  const { type, name, options, checked, value } = ref;
+  const { type, name, options, checked, value, files } = ref;
+
+  if (type === 'file') {
+    return files;
+  }
 
   if (isRadioInput(type)) {
     const field = fields[name];
