@@ -8,9 +8,9 @@ import isEmptyObject from '../utils/isEmptyObject';
 import displayNativeError from './displayNativeError';
 import isObject from '../utils/isObject';
 import isFunction from '../utils/isFunction';
-import isBoolean from '../utils/isBoolean';
 import getFieldsValue from './getFieldValue';
 import isRegex from '../utils/isRegex';
+import getValidateFunctionErrorObject from './getValidateFunctionErrorObject';
 import {
   Field,
   FieldError,
@@ -19,7 +19,6 @@ import {
   ValidatePromiseResult,
 } from '../types';
 
-// Todo: improve the types in this file
 export default async (
   {
     ref,
@@ -131,16 +130,14 @@ export default async (
 
     if (isFunction(validate)) {
       const result = await validate(fieldValue);
-      const isStringValue = isString(result);
+      const errorObject = getValidateFunctionErrorObject(
+        result,
+        validateRef,
+        nativeError,
+      );
 
-      if (isStringValue || (isBoolean(result) && !result)) {
-        const message = isStringValue ? (result as string) : '';
-        error[name] = {
-          type: 'validate',
-          message,
-          ref: validateRef,
-        };
-        nativeError(message);
+      if (errorObject) {
+        error[name] = errorObject;
         return error;
       }
     } else if (isObject(validate)) {
@@ -154,17 +151,15 @@ export default async (
 
             if (isFunction(validate)) {
               const result = await validate(fieldValue);
-              const isStringValue = isString(result);
+              const errorObject = getValidateFunctionErrorObject(
+                result,
+                validateRef,
+                nativeError,
+                key,
+              );
 
-              if (isStringValue || (isBoolean(result) && !result)) {
-                const message = isStringValue ? result : '';
-                const data = {
-                  type: key,
-                  message,
-                  ref: validateRef,
-                };
-                nativeError(message);
-                return lastChild ? resolve(data) : data;
+              if (errorObject) {
+                return lastChild ? resolve(errorObject) : errorObject;
               }
             }
 
