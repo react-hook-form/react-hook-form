@@ -41,7 +41,7 @@
 - Compatible with React Native 
 - Support Yup schema-based validation
 - Support browser native validation
-- Build forms quickly with the [form builder](https://react-hook-form.com/builder)
+- Build forms quickly with the [form builder](https://react-hook-form.com/form-builder)
 
 ## Install
 
@@ -55,7 +55,7 @@
 - [API](https://react-hook-form.com/api)
 - [Examples](https://github.com/bluebill1049/react-hook-form/tree/master/examples)
 - [Demo](https://react-hook-form.com)
-- [Form Builder](https://react-hook-form.com/builder)
+- [Form Builder](https://react-hook-form.com/form-builder)
 - [FAQs](https://react-hook-form.com/faq)
 
 ## Quickstart
