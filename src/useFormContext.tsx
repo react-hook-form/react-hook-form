@@ -12,6 +12,7 @@ export function useFormContext<T extends FieldValues>(): FormContextValues<T> {
 
 export function FormContext<T extends FieldValues>(props: FormProps<T>) {
   const { children, ...rest } = props;
+  const { errors, formState } = rest;
 
   return React.useMemo(
     () => (
@@ -19,6 +20,6 @@ export function FormContext<T extends FieldValues>(props: FormProps<T>) {
         {children}
       </FormGlobalContext.Provider>
     ),
-    [],
+    [errors, formState],
   );
 }
