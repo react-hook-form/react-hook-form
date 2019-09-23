@@ -466,7 +466,8 @@ export default function useForm<
     ref: Element,
     validateOptions: ValidationOptions = {},
   ): void {
-    if (!ref.name) return console.warn('Miss ref', ref);
+    if (!ref.name)
+      return console.warn('Missing name attrribute on ref element', ref);
 
     const { name, type, value } = ref;
     const fieldAttributes = {
