@@ -466,8 +466,7 @@ export default function useForm<
     ref: Element,
     validateOptions: ValidationOptions = {},
   ): void {
-    if (!ref.name)
-      return console.warn('Missing name attrribute on ref element', ref);
+    if (!ref.name) return console.warn('Miss name on ref', ref);
 
     const { name, type, value } = ref;
     const fieldAttributes = {
@@ -630,9 +629,7 @@ export default function useForm<
 
     if (validationSchema) {
       fieldValues = getFieldsValues(fields);
-      const output = await validateWithSchema<FormValues>(
-        validationSchema,
-        validationSchemaOption,
+      const output = await validateWithSchemaCurry(
         combineFieldValues(fieldValues),
       );
       schemaErrorsRef.current = output.fieldErrors;

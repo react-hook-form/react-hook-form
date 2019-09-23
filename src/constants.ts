@@ -7,3 +7,7 @@ export const VALIDATION_MODE: ValidationMode = {
 };
 
 export const RADIO_INPUT = 'radio';
+
+export const REQUIRED_ATTRIBUTE = 'required';
+
+export const PATTERN_ATTRIBUTE = 'pattern';

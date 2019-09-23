@@ -11,6 +11,7 @@ import isFunction from '../utils/isFunction';
 import getFieldsValue from './getFieldValue';
 import isRegex from '../utils/isRegex';
 import getValidateFunctionErrorObject from './getValidateFunctionErrorObject';
+import { PATTERN_ATTRIBUTE, REQUIRED_ATTRIBUTE } from '../constants';
 import {
   Field,
   FieldError,
@@ -48,7 +49,7 @@ export default async (
       (!type && isNullOrUndefined(value)))
   ) {
     error[name] = {
-      type: 'required',
+      type: REQUIRED_ATTRIBUTE,
       message: isString(required) ? required : '',
       ref: isRadio ? fields[name].options[0].ref : ref,
     };
@@ -115,7 +116,7 @@ export default async (
 
     if (isRegex(patternValue) && !patternValue.test(value)) {
       error[name] = {
-        type: 'pattern',
+        type: PATTERN_ATTRIBUTE,
         message: patternMessage,
         ref,
       };
