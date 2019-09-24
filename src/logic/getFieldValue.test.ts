@@ -132,4 +132,22 @@ describe('getFieldValue', () => {
       ),
     ).toBeFalsy();
   });
+
+  it('should return files for input type file', () => {
+    expect(
+      getFieldValue(
+        {
+          test: {
+            ref: {
+              files: 'files',
+            },
+          },
+        },
+        {
+          type: 'files',
+          files: 'files',
+        },
+      ),
+    ).toBeFalsy();
+  });
 });
