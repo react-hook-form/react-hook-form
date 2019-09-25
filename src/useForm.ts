@@ -739,7 +739,7 @@ export default function useForm<
       fieldsKeyValue.forEach(([key]) =>
         setFieldValue(key as FieldName, getDefaultValue(values, key)),
       );
-      defaultValuesRef.current = values as Record<FieldName, FieldValue>;
+      defaultValuesRef.current = { ...values } as Record<FieldName, FieldValue>;
     }
 
     submitCountRef.current = 0;
