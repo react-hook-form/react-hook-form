@@ -4,7 +4,6 @@ you can view the source code within the folder or visit code sand box to see how
 
 | Name                        | Link                                                                 |
 | --------------------------- | -------------------------------------------------------------------- |
-| Array Fields                | https://codesandbox.io/s/6j1760jkjk                                  |
 | Async Submit Validation     | https://codesandbox.io/s/xrjv48o0qp                                  |
 | Async Set Form Values       | https://codesandbox.io/s/react-hook-from-async-set-form-values-ztpd6 |
 | Async Field Validation      | https://codesandbox.io/s/m5pj55yj7x                                  |
@@ -17,6 +16,7 @@ you can view the source code within the folder or visit code sand box to see how
 | DefaultValues               | https://codesandbox.io/s/react-hook-form-defaultvalues-n5gvx         |
 | Default/Initial Form Value  | https://codesandbox.io/s/l3mxpvmm9                                   |
 | Dirty/Touched/Submitted     | https://codesandbox.io/s/7o2wrp86k6                                  |
+| Field Array                 | https://codesandbox.io/s/6j1760jkjk                                  |
 | FormContext                 | https://codesandbox.io/s/sad-sutherland-zvfok                        |
 | Nested Fields               | https://codesandbox.io/s/react-hook-form-nested-fields-mv1bb         |
 | Normalize/Format/Mask Field | https://codesandbox.io/s/387z7njwzp                                  |
