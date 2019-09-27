@@ -99,6 +99,6 @@ Thanks goes to these wonderful people. [[Contribute](CONTRIBUTING.md)].
 Thank goes to all our backers! [[Become a backer](https://opencollective.com/styled-components#backer)]
 
 <a href="https://opencollective.com/react-hook-form#backers">
-    <img src="https://opencollective.com/react-hook-form/backers.svg?width=890" />
+    <img src="https://opencollective.com/react-hook-form/backers.svg?width=950" />
 </a>
 
