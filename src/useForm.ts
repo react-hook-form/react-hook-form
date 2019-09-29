@@ -111,8 +111,7 @@ export default function useForm<
     const ref = field.ref;
     const { type } = ref;
     const options = field.options;
-    const value =
-      ref instanceof HTMLElement && isNullOrUndefined(rawValue) ? '' : rawValue;
+    const value = ref && isNullOrUndefined(rawValue) ? '' : rawValue;
 
     if (isRadioInput(type) && options) {
       options.forEach(
