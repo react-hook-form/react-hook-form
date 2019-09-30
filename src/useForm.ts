@@ -23,7 +23,7 @@ import onDomRemove from './utils/onDomRemove';
 import isMultipleSelect from './utils/isMultipleSelect';
 import modeChecker from './utils/validationModeChecker';
 import pickErrors from './logic/pickErrors';
-import { RADIO_INPUT, VALIDATION_MODE } from './constants';
+import { RADIO_INPUT, UNDEFINED, VALIDATION_MODE } from './constants';
 import isNullOrUndefined from './utils/isNullOrUndefined';
 import {
   FieldValues,
@@ -111,7 +111,13 @@ export default function useForm<
     const ref = field.ref;
     const { type } = ref;
     const options = field.options;
-    const value = ref && isNullOrUndefined(rawValue) ? '' : rawValue;
+    
+    const value =
+      typeof document !== UNDEFINED &&
+      ref &&
+      isNullOrUndefined(rawValue)
+        ? ''
+        : rawValue;
 
     if (isRadioInput(type) && options) {
       options.forEach(
@@ -583,7 +589,7 @@ export default function useForm<
     refOrValidateRule: ValidationOptions | Element | null,
     validationOptions?: ValidationOptions,
   ): ((ref: Element | null) => void) | void {
-    if (typeof window === 'undefined' || !refOrValidateRule) return;
+    if (typeof window === UNDEFINED || !refOrValidateRule) return;
 
     if (
       isObject(refOrValidateRule) &&
