@@ -111,9 +111,10 @@ export default function useForm<
     const ref = field.ref;
     const { type } = ref;
     const options = field.options;
+    
     const value =
       typeof document !== UNDEFINED &&
-      ref instanceof HTMLElement &&
+      ref &&
       isNullOrUndefined(rawValue)
         ? ''
         : rawValue;
