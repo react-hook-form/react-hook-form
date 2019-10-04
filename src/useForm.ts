@@ -624,7 +624,6 @@ export default function useForm<
     }
     let fieldErrors;
     let fieldValues;
-    let firstFocusError = true;
     const fields = fieldsRef.current;
     const fieldsToValidate: (Field | undefined)[] = validationFields
       ? validationFields.map(name => fieldsRef.current[name])
@@ -655,7 +654,7 @@ export default function useForm<
           const resolvedPrevious: any = await previous;
           const {
             ref,
-            ref: { name, focus },
+            ref: { name },
           } = field;
 
           if (!fields[name]) return Promise.resolve(resolvedPrevious);
@@ -667,11 +666,6 @@ export default function useForm<
           );
 
           if (fieldError[name]) {
-            if (submitFocusError && firstFocusError && focus) {
-              ref.focus();
-              firstFocusError = false;
-            }
-
             resolvedPrevious.errors = {
               ...resolvedPrevious.errors,
               ...fieldError,
@@ -701,6 +695,17 @@ export default function useForm<
       errorsRef.current = {};
       await callback(combineFieldValues(fieldValues), e);
     } else {
+      if (submitFocusError) {
+        Object.keys(fieldErrors).reduce((previous, current) => {
+          const field = fields[current];
+          if (field && field.ref && field.ref.focus && previous) {
+            field.ref.focus();
+            return false;
+          }
+          return previous;
+        }, true);
+      }
+
       errorsRef.current = fieldErrors;
     }
 
