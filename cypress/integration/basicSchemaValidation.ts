@@ -3,6 +3,8 @@ context('basicSchemaValidation form validation', () => {
     cy.visit('http://localhost:3000/basic-schema-validation/onSubmit');
     cy.get('button').click();
 
+    cy.focused().should('have.attr', 'name', 'firstName');
+
     cy.get('input[name="firstName"] + p').contains('firstName error');
     cy.get('input[name="lastName"] + p').contains('lastName error');
     cy.get('select[name="selectNumber"] + p').contains('selectNumber error');
