@@ -302,10 +302,11 @@ export default function useForm<
         const isValidateDisabled =
           (isOnSubmit && !isSubmittedRef.current) ||
           (isOnBlur && !isBlurEvent && !errors[name]);
+        const isDirty = setDirty(name);
         let shouldUpdateState =
           isWatchAllRef.current ||
           watchFieldsRef.current[name as FieldName] ||
-          setDirty(name);
+          isDirty;
 
         if (!touchedFieldsRef.current.has(name)) {
           touchedFieldsRef.current.add(name);
