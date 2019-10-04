@@ -698,7 +698,7 @@ export default function useForm<
       if (submitFocusError) {
         Object.keys(fieldErrors).reduce((previous, current) => {
           const field = fields[current];
-          if (field && field.ref && field.ref.focus && previous) {
+          if (field && field.ref.focus && previous) {
             field.ref.focus();
             return false;
           }
