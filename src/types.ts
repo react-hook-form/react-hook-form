@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { GestureResponderEvent } from 'react-native';
 
 export type DefaultFieldValues = Record<string, unknown>;
 
@@ -12,7 +13,7 @@ type Mode = keyof ValidationMode;
 
 export type OnSubmit<Data extends FieldValues> = (
   data: Data,
-  e: React.SyntheticEvent,
+  e: React.SyntheticEvent | GestureResponderEvent,
 ) => void | Promise<void>;
 
 export interface ValidationMode {
