@@ -1198,6 +1198,14 @@
   dependencies:
     "@types/react" "*"
 
+"@types/react-native@^0.60.19":
+  version "0.60.19"
+  resolved "https://registry.yarnpkg.com/@types/react-native/-/react-native-0.60.19.tgz#4d58516f9e981c3f477ad48727331e31a0792aae"
+  integrity sha512-1Qq1EQn/bi7dnsdrZJu0f9MK18KZrEmLGMfw3V9Im5As4uwFUTCIkD4LnFJkfQtRvtJQN1cOQri6MTqT7d9fkg==
+  dependencies:
+    "@types/prop-types" "*"
+    "@types/react" "*"
+
 "@types/react-test-renderer@>=16.9.0", "@types/react-test-renderer@^16.9.0":
   version "16.9.0"
   resolved "https://registry.yarnpkg.com/@types/react-test-renderer/-/react-test-renderer-16.9.0.tgz#d60f530ecf4c906721511603cca711b4fa830d41"

@@ -1,7 +1,7 @@
 {
   "name": "react-hook-form",
   "description": "Performant, flexible and extensible forms library for React Hooks",
-  "version": "3.23.19-beta.1",
+  "version": "3.23.19-beta.2",
   "main": "dist/react-hook-form.js",
   "module": "dist/react-hook-form.es.js",
   "types": "dist/index.d.ts",
@@ -46,6 +46,7 @@
     "@types/jest": "^24.0.11",
     "@types/react": "^16.9.0",
     "@types/react-dom": "^16.9.0",
+    "@types/react-native": "^0.60.19",
     "@types/react-test-renderer": "^16.9.0",
     "@typescript-eslint/eslint-plugin": "^1.9.0",
     "@typescript-eslint/parser": "^1.9.0",
