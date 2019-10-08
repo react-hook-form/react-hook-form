@@ -1,18 +1,27 @@
 import * as React from 'react';
 import * as ReactNative from 'react-native';
 
-export type DefaultFieldValues = Record<string, unknown>;
+export type BaseFieldValue = any;
+export type FieldValues = Record<string, BaseFieldValue>;
 
-export type FieldValue = any;
+export type RawFieldName<FormValues extends FieldValues> = Extract<
+  keyof FormValues,
+  string
+>;
+export type FieldName<FormValues extends FieldValues> =
+  | RawFieldName<FormValues>
+  | string;
 
-export type FieldValues = Record<string, FieldValue>;
+export type FieldValue<FormValues extends FieldValues> = FormValues[FieldName<
+  FormValues
+>];
 
 export type Ref = any;
 
 type Mode = keyof ValidationMode;
 
-export type OnSubmit<Data extends FieldValues> = (
-  data: Data,
+export type OnSubmit<FormValues extends FieldValues> = (
+  data: FormValues,
   e: React.SyntheticEvent | ReactNative.GestureResponderEvent,
 ) => void | Promise<void>;
 
@@ -34,14 +43,11 @@ export interface Schema<Data> {
   validate(value: FieldValues, options?: SchemaValidateOptions): Promise<Data>;
 }
 
-export type Options<
-  FormValues extends FieldValues = DefaultFieldValues,
-  FieldName extends keyof FormValues = keyof FormValues
-> = Partial<{
+export type Options<FormValues extends FieldValues = FieldValues> = Partial<{
   mode: Mode;
   defaultValues: Partial<FormValues>;
   validationSchemaOption: SchemaValidateOptions;
-  validationFields: FieldName[];
+  validationFields: FieldName<FormValues>[];
   validationSchema: any;
   nativeValidation: boolean;
   submitFocusError: boolean;
@@ -58,7 +64,7 @@ export type ValidationTypes = number | string | RegExp;
 
 export type ValidateResult = string | boolean | void;
 
-export type Validate = (data: FieldValue) => ValidateResult;
+export type Validate = (data: BaseFieldValue) => ValidateResult;
 
 export type ValidationOptions = Partial<{
   required: boolean | string;
@@ -93,11 +99,11 @@ export interface Field extends ValidationOptions {
 }
 
 export type FieldsRefs<Data extends FieldValues> = Partial<
-  Record<keyof Data, Field>
+  Record<FieldName<Data>, Field>
 >;
 
 export type FieldErrors<Data extends FieldValues> = Partial<
-  Record<keyof Data, FieldError>
+  Record<FieldName<Data>, FieldError>
 >;
 
 export interface SubmitPromiseResult<Data extends FieldValues> {
@@ -115,14 +121,11 @@ export interface ValidationPayload<Name, Value> {
   value?: Value;
 }
 
-export interface FormState<
-  FormValues extends FieldValues = FieldValues,
-  FieldName extends keyof FormValues = keyof FormValues
-> {
+export interface FormState<FormValues extends FieldValues = FieldValues> {
   dirty: boolean;
   isSubmitted: boolean;
   submitCount: number;
-  touched: FieldName[];
+  touched: FieldName<FormValues>[];
   isSubmitting: boolean;
   isValid: boolean;
 }

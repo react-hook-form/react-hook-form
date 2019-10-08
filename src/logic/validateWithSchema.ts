@@ -6,6 +6,7 @@ import {
   FieldErrors,
 } from '../types';
 
+// TODO: Fix these types
 export const parseErrorSchema = <FormValues>(
   error: FieldValues,
 ): FieldErrors<FormValues> =>

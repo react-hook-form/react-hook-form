@@ -1,8 +1,8 @@
-import { FieldErrors } from '../types';
+import { FieldErrors, FieldName, FieldValues } from '../types';
 
-export default <Data, FieldName>(
-  errorFields: FieldErrors<Data>,
-  validFieldNames: FieldName[],
+export default <FormValues extends FieldValues>(
+  errorFields: FieldErrors<FormValues>,
+  validFieldNames: FieldName<FormValues>[],
 ) =>
   Object.entries(errorFields).reduce(
     (previous, [name, error]) =>

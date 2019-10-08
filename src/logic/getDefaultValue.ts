@@ -1,15 +1,12 @@
 import get from '../utils/get';
 import isUndefined from '../utils/isUndefined';
-import { FieldValue } from '../types';
+import { FieldValues, BaseFieldValue, FieldValue, FieldName } from '../types';
 
-export default <
-  Data extends FieldValue,
-  FieldName extends keyof Data = keyof Data
->(
-  defaultValues: Partial<Data>,
-  name: FieldName,
-  defaultValue?: FieldValue,
-): Data[FieldName] | undefined =>
+export default <FormValues extends FieldValues>(
+  defaultValues: Partial<FormValues>,
+  name: FieldName<FormValues>,
+  defaultValue?: BaseFieldValue,
+): FieldValue<FormValues> | undefined =>
   isUndefined(defaultValues[name])
     ? get(defaultValues, name as string, defaultValue)
     : defaultValues[name];
