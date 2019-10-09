@@ -14,13 +14,13 @@ import getValidateFunctionErrorObject from './getValidateFunctionErrorObject';
 import { PATTERN_ATTRIBUTE, REQUIRED_ATTRIBUTE } from '../constants';
 import {
   Field,
-  FieldError,
   FieldErrors,
   FieldValues,
+  FieldName,
   ValidatePromiseResult,
 } from '../types';
 
-export default async (
+export default async <FormValues extends FieldValues>(
   {
     ref,
     ref: { type, value, name, checked },
@@ -35,23 +35,24 @@ export default async (
   }: Field,
   fields: FieldValues,
   nativeValidation?: boolean,
-): Promise<FieldErrors<any>> => {
-  const error: Record<string, FieldError> = {};
+): Promise<FieldErrors<FormValues>> => {
+  const error: FieldErrors<FormValues> = {};
   const isRadio = isRadioInput(type);
   const isCheckBox = isCheckBoxInput(type);
   const nativeError = displayNativeError.bind(null, nativeValidation, ref);
+  const typedName = name as FieldName<FormValues>;
 
   if (
     required &&
     ((isCheckBox && !checked) ||
       (!isCheckBox && !isRadio && value === '') ||
-      (isRadio && !getRadioValue(fields[name].options).isValid) ||
+      (isRadio && !getRadioValue(fields[typedName].options).isValid) ||
       (!type && isNullOrUndefined(value)))
   ) {
-    error[name] = {
+    error[typedName] = {
       type: REQUIRED_ATTRIBUTE,
       message: isString(required) ? required : '',
-      ref: isRadio ? fields[name].options[0].ref : ref,
+      ref: isRadio ? fields[typedName].options[0].ref : ref,
     };
     nativeError(required);
     return error;
@@ -74,7 +75,7 @@ export default async (
 
     if (exceedMax || exceedMin) {
       const message = exceedMax ? maxMessage : minMessage;
-      error[name] = {
+      error[typedName] = {
         type: exceedMax ? 'max' : 'min',
         message,
         ref,
@@ -99,7 +100,7 @@ export default async (
 
     if (exceedMax || exceedMin) {
       const message = exceedMax ? maxLengthMessage : minLengthMessage;
-      error[name] = {
+      error[typedName] = {
         type: exceedMax ? 'maxLength' : 'minLength',
         message,
         ref,
@@ -115,7 +116,7 @@ export default async (
     );
 
     if (isRegex(patternValue) && !patternValue.test(value)) {
-      error[name] = {
+      error[typedName] = {
         type: PATTERN_ATTRIBUTE,
         message: patternMessage,
         ref,
@@ -138,7 +139,7 @@ export default async (
       );
 
       if (errorObject) {
-        error[name] = errorObject;
+        error[typedName] = errorObject;
         return error;
       }
     } else if (isObject(validate)) {
@@ -170,7 +171,7 @@ export default async (
       );
 
       if (!isEmptyObject(validationResult)) {
-        error[name] = {
+        error[typedName] = {
           ref: validateRef,
           ...(validationResult as { type: string; message?: string }),
         };

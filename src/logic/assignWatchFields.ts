@@ -5,29 +5,29 @@ import isEmptyObject from '../utils/isEmptyObject';
 import isUndefined from '../utils/isUndefined';
 import isArray from '../utils/isArray';
 import isNullOrUndefined from '../utils/isNullOrUndefined';
-import { FieldValue } from '../types';
+import { FieldValue, FieldValues, FieldName } from '../types';
 
-export default <FieldName, FormValues>(
+export default <FormValues extends FieldValues>(
   fieldValues: FormValues,
-  fieldName: FieldName | string | (FieldName | string)[],
-  watchFields: Partial<Record<keyof FormValues, boolean>>,
-): FieldValue | Partial<FormValues> => {
+  fieldName: FieldName<FormValues>,
+  watchFields: Partial<Record<FieldName<FormValues>, boolean>>,
+): FieldValue<FormValues> | Partial<FormValues> | undefined => {
   if (isNullOrUndefined(fieldValues) || isEmptyObject(fieldValues))
     return undefined;
 
-  if (!isUndefined(fieldValues[fieldName as keyof FormValues])) {
-    watchFields[fieldName as keyof FormValues] = true;
-    return fieldValues[fieldName as keyof FormValues];
+  if (!isUndefined(fieldValues[fieldName])) {
+    watchFields[fieldName] = true;
+    return fieldValues[fieldName];
   }
 
-  const values = get(combineFieldValues(fieldValues), fieldName as string);
+  const values = get(combineFieldValues(fieldValues), fieldName);
 
   if (!isUndefined(values)) {
-    const result = getPath<FieldName>(fieldName as string, values);
+    const result = getPath<FormValues>(fieldName, values);
 
     if (isArray(result)) {
       result.forEach(name => {
-        watchFields[name as keyof FormValues] = true;
+        watchFields[name] = true;
       });
     }
   }

@@ -1,8 +1,9 @@
 import isEmptyObject from '../utils/isEmptyObject';
 import isSameError from '../utils/isSameError';
+import { FieldValues, FieldName } from '../types';
 
-// Todo: improve the types in this file
-export default function shouldUpdateWithError<FieldName>({
+// TODO: improve the types in this file
+export default function shouldUpdateWithError<FormValues extends FieldValues>({
   errors,
   name,
   error,
@@ -11,9 +12,9 @@ export default function shouldUpdateWithError<FieldName>({
 }: {
   errors: any;
   error: any;
-  name: FieldName;
-  validFields: Set<FieldName>;
-  fieldsWithValidation: Set<FieldName>;
+  name: FieldName<FormValues>;
+  validFields: Set<FieldName<FormValues>>;
+  fieldsWithValidation: Set<FieldName<FormValues>>;
 }): boolean {
   if (
     (validFields.has(name) && isEmptyObject(error)) ||

@@ -1,6 +1,8 @@
 import * as React from 'react';
 import {
   FieldValues,
+  FieldName,
+  FieldValue,
   ElementLike,
   FormState,
   FieldErrors,
@@ -8,21 +10,15 @@ import {
   Ref,
   ValidationOptions,
   ValidationPayload,
-  DefaultFieldValues,
 } from './types';
 
-export interface FormProps<
-  FormValues extends FieldValues = DefaultFieldValues,
-  FieldName extends keyof FormValues = keyof FormValues,
-  FieldValue = FormValues[FieldName]
-> extends FormContextValues<FormValues, FieldName, FieldValue> {
+export interface FormProps<FormValues extends FieldValues = FieldValues>
+  extends FormContextValues<FormValues> {
   children: JSX.Element[] | JSX.Element;
 }
 
 export interface FormContextValues<
-  FormValues extends FieldValues = DefaultFieldValues,
-  FieldName extends keyof FormValues = keyof FormValues,
-  FieldValue = FormValues[FieldName]
+  FormValues extends FieldValues = FieldValues
 > {
   register<Element extends ElementLike = ElementLike>(
     validateRule: ValidationOptions,
@@ -31,38 +27,41 @@ export interface FormContextValues<
     ref: Element | null,
     validationOptions?: ValidationOptions,
   ): void;
-  unregister(name: FieldName | string): void;
-  unregister(names: (FieldName | string)[]): void;
+  unregister(name: FieldName<FormValues>): void;
+  unregister(names: (FieldName<FormValues>)[]): void;
   handleSubmit: (
     callback: OnSubmit<FormValues>,
   ) => (e: React.SyntheticEvent) => Promise<void>;
   watch(): FormValues;
-  watch(field: FieldName | string, defaultValue?: string): FieldValue;
   watch(
-    fields: (FieldName | string)[],
+    field: FieldName<FormValues>,
+    defaultValue?: string,
+  ): FieldValue<FormValues>;
+  watch(
+    fields: FieldName<FormValues>[],
     defaultValues?: Partial<FormValues>,
   ): Partial<FormValues>;
   reset: (values?: FieldValues) => void;
   clearError(): void;
-  clearError(name: FieldName): void;
-  clearError(names: FieldName[]): void;
+  clearError(name: FieldName<FormValues>): void;
+  clearError(names: FieldName<FormValues>[]): void;
   setError: (
-    name: FieldName,
+    name: FieldName<FormValues>,
     type: string,
     message?: string,
     ref?: Ref,
   ) => void;
   setValue: (
-    name: FieldName,
-    value: FieldValue,
+    name: FieldName<FormValues>,
+    value: FieldValue<FormValues>,
     shouldValidate?: boolean,
   ) => void;
   triggerValidation: (
     payload:
-      | ValidationPayload<FieldName, FieldValue>
-      | ValidationPayload<FieldName, FieldValue>[],
+      | ValidationPayload<FieldName<FormValues>, FieldValue<FormValues>>
+      | ValidationPayload<FieldName<FormValues>, FieldValue<FormValues>>[],
   ) => Promise<boolean>;
   getValues: (payload?: { nest: boolean }) => FormValues;
   errors: FieldErrors<FormValues>;
-  formState: FormState<FormValues, FieldName>;
+  formState: FormState<FormValues>;
 }

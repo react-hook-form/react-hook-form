@@ -1,12 +1,12 @@
 import flatArray from './flatArray';
 import isString from './isString';
 import isObject from './isObject';
-import { FieldValues } from '../types';
+import { FieldValues, FieldName } from '../types';
 import isArray from './isArray';
 
-const getPath = <FieldName>(
-  path: FieldName | string,
-  values: FieldValues | string[] | string,
+const getPath = <FormValues extends FieldValues = FieldValues>(
+  path: FieldName<FormValues>,
+  values: FormValues | string[] | string,
 ): any =>
   isArray(values)
     ? values.map((item, index) => {
@@ -28,7 +28,7 @@ const getPath = <FieldName>(
         isString(objectValue) ? `${path}.${key}` : getPath(path, objectValue),
       );
 
-export default <FieldName>(
-  parentPath: FieldName | string,
-  value: FieldValues,
-) => flatArray(getPath<FieldName>(parentPath, value));
+export default <FormValues extends FieldValues = FieldValues>(
+  parentPath: FieldName<FormValues>,
+  value: FormValues,
+) => flatArray<FieldName<FormValues>>(getPath<FormValues>(parentPath, value));
