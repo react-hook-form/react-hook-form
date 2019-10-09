@@ -98,17 +98,17 @@ export interface Field extends ValidationOptions {
   }[];
 }
 
-export type FieldsRefs<Data extends FieldValues> = Partial<
-  Record<FieldName<Data>, Field>
+export type FieldsRefs<FormValues extends FieldValues> = Partial<
+  Record<FieldName<FormValues>, Field>
 >;
 
-export type FieldErrors<Data extends FieldValues> = Partial<
-  Record<FieldName<Data>, FieldError>
+export type FieldErrors<FormValues extends FieldValues> = Partial<
+  Record<FieldName<FormValues>, FieldError>
 >;
 
-export interface SubmitPromiseResult<Data extends FieldValues> {
-  errors: FieldErrors<Data>;
-  values: Data;
+export interface SubmitPromiseResult<FormValues extends FieldValues> {
+  errors: FieldErrors<FormValues>;
+  values: FormValues;
 }
 
 export interface SchemaValidationResult<FormValues> {

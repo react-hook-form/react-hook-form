@@ -4,9 +4,9 @@ import isDetached from '../utils/isDetached';
 import { Field, FieldsRefs, FieldValues } from '../types';
 
 export default function findRemovedFieldAndRemoveListener<
-  Data extends FieldValues
+  FormValues extends FieldValues
 >(
-  fields: FieldsRefs<Data>,
+  fields: FieldsRefs<FormValues>,
   validateWithStateUpdate: Function | undefined = () => {},
   field: Field,
   forceDelete: boolean = false,

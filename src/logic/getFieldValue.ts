@@ -6,8 +6,8 @@ import isUndefined from '../utils/isUndefined';
 import isMultipleSelect from '../utils/isMultipleSelect';
 import { FieldsRefs, Ref, FieldValues } from '../types';
 
-export default function getFieldValue<Data extends FieldValues>(
-  fields: FieldsRefs<Data>,
+export default function getFieldValue<FormValues extends FieldValues>(
+  fields: FieldsRefs<FormValues>,
   ref: Ref,
 ) {
   const { type, name, options, checked, value, files } = ref;
