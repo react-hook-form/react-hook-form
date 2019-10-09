@@ -10,7 +10,7 @@
 
 <div align="center">
 
-[![CircleCI](https://badgen.net/github/status/react-hook-form/react-hook-form/master/ci/circleci)](https://circleci.com/gh/react-hook-form/react-hook-form)
+[![CircleCI](https://badgen.net/circleci/github/react-hook-form/react-hook-form)](https://circleci.com/gh/react-hook-form/react-hook-form)
 [![npm downloads](https://img.shields.io/npm/dm/react-hook-form.svg?style=flat-square)](https://www.npmjs.com/package/react-hook-form)
 [![npm](https://img.shields.io/npm/dt/react-hook-form.svg?style=flat-square)](https://www.npmjs.com/package/react-hook-form)
 ![dep](https://badgen.net/david/dep/bluebill1049/react-hook-form)
