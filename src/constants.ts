@@ -14,8 +14,8 @@ export const PATTERN_ATTRIBUTE = 'pattern';
 
 export const UNDEFINED = 'undefined';
 
-export const BLUR = 'blur';
-
-export const CHANGE = 'change';
-
-export const INPUT = 'input';
+export const EVENTS = {
+  BLUR: 'blur',
+  CHANGE: 'change',
+  INPUT: 'input',
+};

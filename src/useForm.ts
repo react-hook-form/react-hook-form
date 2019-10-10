@@ -24,7 +24,7 @@ import onDomRemove from './utils/onDomRemove';
 import isMultipleSelect from './utils/isMultipleSelect';
 import modeChecker from './utils/validationModeChecker';
 import pickErrors from './logic/pickErrors';
-import { BLUR, RADIO_INPUT, UNDEFINED, VALIDATION_MODE } from './constants';
+import { EVENTS, RADIO_INPUT, UNDEFINED, VALIDATION_MODE } from './constants';
 import isNullOrUndefined from './utils/isNullOrUndefined';
 import {
   FieldValues,
@@ -303,7 +303,7 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
 
         if (!ref) return;
 
-        const isBlurEvent = type === BLUR;
+        const isBlurEvent = type === EVENTS.BLUR;
         const isValidateDisabled =
           (isOnSubmit && !isSubmittedRef.current) ||
           (isOnBlur && !isBlurEvent && !errors[name]) ||
