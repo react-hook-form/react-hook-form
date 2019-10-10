@@ -11,11 +11,17 @@ import DefaultValues from './defaultValues';
 import WatchDefaultValues from './watchDefaultValues';
 import Reset from './reset';
 import TriggerValidation from './triggerValidation';
+import ReValidateMode from './reValidateMode';
 
 const App: React.FC = () => {
   return (
     <Router>
       <Route path="/basic/:mode" exact component={Basic} />
+      <Route
+        path="/re-validate-mode/:mode/:reValidateMode"
+        exact
+        component={ReValidateMode}
+      />
       <Route
         path="/manual-register-form"
         exact

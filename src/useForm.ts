@@ -609,6 +609,7 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
         isRadio,
         validateAndStateUpdate: validateAndUpdateStateRef.current,
         isOnBlur,
+        isReValidateOnBlur,
       });
     }
   }

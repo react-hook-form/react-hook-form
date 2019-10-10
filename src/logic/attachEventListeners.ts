@@ -7,11 +7,13 @@ export default function attachEventListeners({
   validateAndStateUpdate,
   isRadio,
   isOnBlur,
+  isReValidateOnBlur,
 }: {
   field: Field;
   isRadio: boolean;
   validateAndStateUpdate?: Function;
   isOnBlur: boolean;
+  isReValidateOnBlur: boolean;
 }): void {
   const { ref } = field;
 
@@ -21,5 +23,6 @@ export default function attachEventListeners({
     isCheckBoxInput(ref.type) || isRadio ? CHANGE : INPUT,
     validateAndStateUpdate,
   );
-  if (isOnBlur) ref.addEventListener(BLUR, validateAndStateUpdate);
+  if (isOnBlur || isReValidateOnBlur)
+    ref.addEventListener(BLUR, validateAndStateUpdate);
 }
