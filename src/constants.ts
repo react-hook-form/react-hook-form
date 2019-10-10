@@ -13,3 +13,9 @@ export const REQUIRED_ATTRIBUTE = 'required';
 export const PATTERN_ATTRIBUTE = 'pattern';
 
 export const UNDEFINED = 'undefined';
+
+export const BLUR = 'blur';
+
+export const CHANGE = 'change';
+
+export const INPUT = 'input';

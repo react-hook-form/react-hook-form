@@ -45,6 +45,7 @@ export interface Schema<Data> {
 
 export type Options<FormValues extends FieldValues = FieldValues> = Partial<{
   mode: Mode;
+  reValidateMode: Mode;
   defaultValues: Partial<FormValues>;
   validationSchemaOption: SchemaValidateOptions;
   validationFields: FieldName<FormValues>[];

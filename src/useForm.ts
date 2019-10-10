@@ -24,7 +24,7 @@ import onDomRemove from './utils/onDomRemove';
 import isMultipleSelect from './utils/isMultipleSelect';
 import modeChecker from './utils/validationModeChecker';
 import pickErrors from './logic/pickErrors';
-import { RADIO_INPUT, UNDEFINED, VALIDATION_MODE } from './constants';
+import { BLUR, RADIO_INPUT, UNDEFINED, VALIDATION_MODE } from './constants';
 import isNullOrUndefined from './utils/isNullOrUndefined';
 import {
   FieldValues,
@@ -44,6 +44,7 @@ import {
 
 export default function useForm<FormValues extends FieldValues = FieldValues>({
   mode = VALIDATION_MODE.onSubmit,
+  reValidateMode = VALIDATION_MODE.onChange,
   validationSchema,
   defaultValues = {},
   validationFields,
@@ -73,6 +74,10 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
   const validateAndUpdateStateRef = useRef<Function>();
   const [, render] = useState();
   const { isOnBlur, isOnSubmit } = useRef(modeChecker(mode)).current;
+  const {
+    isOnBlur: isReValidateOnBlur,
+    isOnSubmit: isReValidateOnSubmit,
+  } = useRef(modeChecker(reValidateMode)).current;
   const validationSchemaOptionRef = useRef(validationSchemaOption);
   validationFieldsRef.current = validationFields;
 
@@ -298,10 +303,11 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
 
         if (!ref) return;
 
-        const isBlurEvent = type === 'blur';
+        const isBlurEvent = type === BLUR;
         const isValidateDisabled =
           (isOnSubmit && !isSubmittedRef.current) ||
-          (isOnBlur && !isBlurEvent && !errors[name]);
+          (isOnBlur && !isBlurEvent && !errors[name]) ||
+          (isReValidateOnBlur && !isBlurEvent && errors[name]);
         const shouldUpdateDirty = setDirty(name);
         let shouldUpdateState =
           isWatchAllRef.current ||
@@ -592,6 +598,8 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
         // @ts-ignore
         fields[typedName].options[fields[typedName].options.length - 1]
       : fields[typedName];
+
+    if (isOnSubmit && isReValidateOnSubmit) return;
 
     if (nativeValidation && validateOptions) {
       attachNativeValidation(ref, validateOptions);

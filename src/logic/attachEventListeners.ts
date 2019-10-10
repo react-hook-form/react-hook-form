@@ -1,4 +1,5 @@
 import isCheckBoxInput from '../utils/isCheckBoxInput';
+import { BLUR, CHANGE, INPUT } from '../constants';
 import { Field } from '../types';
 
 export default function attachEventListeners({
@@ -17,8 +18,8 @@ export default function attachEventListeners({
   if (!ref.addEventListener) return;
 
   ref.addEventListener(
-    isCheckBoxInput(ref.type) || isRadio ? 'change' : 'input',
+    isCheckBoxInput(ref.type) || isRadio ? CHANGE : INPUT,
     validateAndStateUpdate,
   );
-  if (isOnBlur) ref.addEventListener('blur', validateAndStateUpdate);
+  if (isOnBlur) ref.addEventListener(BLUR, validateAndStateUpdate);
 }
