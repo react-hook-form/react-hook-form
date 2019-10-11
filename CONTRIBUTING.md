@@ -1,37 +1,46 @@
+# Contributing to `React Hook Form`
 
-# Contributing to React Hook Form
+As the creators and maintainers of this project, we want to ensure that `react-hook-form` lives and continues to grow and evolve. We would like to encourage everyone to help and support this library by contributing. 
 
-## Pull Requests
+## Code contributions
 
-Welcome your pull requests for documentation and code. 🙏
+Here is a quick guide to doing code contributions to the library.
 
-1. Fork the repo and create your branch from `master`.
-2. Clone your fork to your local machine git clone `git@github.com:<yourname>/react-hook-form.git`
-3. Create a branch `git checkout -b my-topic-branch`
-4. If you've added code that should be tested.
-5. Ensure the test suite passes.
+1. Fork and clone the repo to your local machine `git clone https://github.com/YOUR_NAME/react-hook-form.git`
+
+2. Create a new branch from `master` with a meaningful name for a new feature or an issue you want to work on: `git checkout -b your-branch-name`
+
+3. Install packages by running:
+
+	> yarn
+	
+4. If you've added a code that should be tested, ensure the test suite still passes.
 
 	> yarn test
 	
-6. Try to write some unit tests if you can.
-7. Esnure your code lints.
+5. Try to write some unit tests to cover as much of your code as possible.
+
+6. Ensure your code lints without errors.
 
 	> yarn lint
 	
-8. Ensure automation pass.
+7. Ensure the automation suite passes.
 
 	> yarn start:app && yarn cypress
 	
-9. Ensure build pass.
+8. Ensure build passes.
 
 	> yarn build
 	
-10. Ensure bundleSize not exceed the limit.
-11. Visit GitHub and make your pull request.
+9. Push your branch: `git push -u origin your-branch-name`
+
+10. Submit a pull request to the upstream react-hook-form repository.
+
+11. Choose a descriptive title and describe your changes briefly.
 
 ## Coding style
 
-Please follow the coding style of the project. React Hook Form uses eslint, so if possible, enable linting in your editor to get real-time feedback. The linting rules can be run manually with the following command `yarn lint`.
+Please follow the coding style of the project. React Hook Form uses eslint and prettier. If possible, enable their respective plugins in your editor to get real-time feedback. The linting can be run manually with the following command: `yarn lint`
 
 ## License
 
