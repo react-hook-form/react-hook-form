@@ -2,12 +2,14 @@ import * as React from 'react';
 import * as ReactNative from 'react-native';
 
 export type BaseFieldValue = any;
+
 export type FieldValues = Record<string, BaseFieldValue>;
 
 export type RawFieldName<FormValues extends FieldValues> = Extract<
   keyof FormValues,
   string
 >;
+
 export type FieldName<FormValues extends FieldValues> =
   | RawFieldName<FormValues>
   | string;
