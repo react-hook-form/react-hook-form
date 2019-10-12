@@ -307,10 +307,11 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
         if (!ref) return;
 
         const isBlurEvent = type === EVENTS.BLUR;
-        const isValidateDisabled =
+        const shouldSkipValidation =
           (isOnSubmit && !isSubmittedRef.current) ||
           (isOnBlur && !isBlurEvent && !errors[name]) ||
-          (isReValidateOnBlur && !isBlurEvent && errors[name]);
+          (isReValidateOnBlur && !isBlurEvent && errors[name]) ||
+          (isReValidateOnSubmit && errors[name]);
         const shouldUpdateDirty = setDirty(name);
         let shouldUpdateState =
           isWatchAllRef.current ||
@@ -322,7 +323,7 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
           shouldUpdateState = true;
         }
 
-        if (isValidateDisabled)
+        if (shouldSkipValidation)
           return shouldUpdateState ? render({}) : undefined;
 
         if (validationSchema) {
