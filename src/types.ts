@@ -16,7 +16,9 @@ export type FieldValue<FormValues extends FieldValues> = FormValues[FieldName<
   FormValues
 >];
 
-export type Ref = any;
+export type Inputs = HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement;
+
+export type Ref = Inputs | any;
 
 type Mode = keyof ValidationMode;
 

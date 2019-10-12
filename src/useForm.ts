@@ -40,6 +40,7 @@ import {
   OnSubmit,
   ValidationPayload,
   ElementLike,
+  Inputs,
 } from './types';
 
 export default function useForm<FormValues extends FieldValues = FieldValues>({
@@ -289,7 +290,9 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
 
   validateAndUpdateStateRef.current = validateAndUpdateStateRef.current
     ? validateAndUpdateStateRef.current
-    : async ({ target: { name }, type }: Ref): Promise<void> => {
+    : async (event: MouseEvent): Promise<void> => {
+        const { type, target } = event;
+        const name = target ? (target as Inputs).name : '';
         if (
           isArray(validationFieldsRef.current) &&
           !validationFieldsRef.current.includes(name)
