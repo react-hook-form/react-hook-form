@@ -4,7 +4,16 @@ import useForm from 'react-hook-form';
 let renderCounter = 0;
 
 const SetValue: React.FC = () => {
-  const { register, setValue, handleSubmit, errors } = useForm();
+  const { register, setValue, handleSubmit, errors } = useForm<{
+    firstName: string;
+    lastName: string;
+    age: string;
+    trigger: string;
+    checkbox: boolean;
+    radio: string;
+    select: string;
+    multiple: string[];
+  }>();
 
   useEffect(() => {
     register({ name: 'lastName' }, { required: true });

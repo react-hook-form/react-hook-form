@@ -26,7 +26,22 @@ const validationSchema = yup.object().shape({
 });
 
 const BasicSchemaValidation: React.FC = (props: any) => {
-  const { register, handleSubmit, errors } = useForm({
+  const { register, handleSubmit, errors } = useForm<{
+    firstName: string;
+    lastName: string;
+    min: string;
+    max: string;
+    minDate: string;
+    maxDate: string;
+    minLength: string;
+    minRequiredLength: string;
+    selectNumber: string;
+    pattern: string;
+    radio: string;
+    checkbox: string;
+    multiple: string;
+    validate: string;
+  }>({
     validationSchema,
     mode: props.match.params.mode,
   });
@@ -71,14 +86,9 @@ const BasicSchemaValidation: React.FC = (props: any) => {
       Radio3
       <input type="radio" name="radio" ref={register} value="3" />
       {errors.radio && <p>radio error</p>}
-      <input
-        type="checkbox"
-        name="checkbox"
-        ref={register}
-      />
+      <input type="checkbox" name="checkbox" ref={register} />
       {errors.checkbox && <p>checkbox error</p>}
       <button>Submit</button>
-
       <div id="renderCount">{renderCounter}</div>
     </form>
   );

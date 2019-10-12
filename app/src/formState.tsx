@@ -3,7 +3,13 @@ import useForm from 'react-hook-form';
 import { withRouter } from 'react-router';
 
 const FormState: React.FC = (props: any) => {
-  const { register, handleSubmit, formState } = useForm({
+  const { register, handleSubmit, formState } = useForm<{
+    firstName: string;
+    lastName: string;
+    select: string;
+    radio: string;
+    checkbox: string;
+  }>({
     mode: props.match.params.mode,
   });
 
