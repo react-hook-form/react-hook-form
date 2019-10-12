@@ -503,7 +503,7 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
     };
     const fields: FieldsRefs<FormValues> = fieldsRef.current;
     const isRadio = isRadioInput(type);
-    const currentField = fields[name];
+    let currentField = (fields[typedName] || undefined) as Field;
     const isRegistered = isRadio
       ? currentField &&
         isArray(currentField.options) &&
@@ -513,15 +513,14 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
     if (isRegistered) return;
 
     if (!type) {
-      fields[typedName] = fieldAttributes;
+      currentField = fieldAttributes;
     } else {
       const mutationWatcher = onDomRemove(ref, () =>
         removeEventListenerAndRef(fieldAttributes),
       );
 
       if (isRadio) {
-        let currentField: Field | undefined = fields[typedName];
-        fields[typedName] = {
+        currentField = {
           options: [
             ...(currentField && currentField.options
               ? currentField.options
@@ -535,12 +534,14 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
           ...validateOptions,
         };
       } else {
-        fields[typedName] = {
+        currentField = {
           ...fieldAttributes,
           mutationWatcher,
         };
       }
     }
+
+    fields[typedName] = currentField;
 
     if (!isEmptyObject(defaultValues)) {
       const defaultValue = getDefaultValue(defaultValues, name);
@@ -565,9 +566,7 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
             if (isEmptyObject(schemaErrorsRef.current)) render({});
           });
         } else {
-          // TODO: Fix undefined
-          // @ts-ignore
-          validateField(fields[typedName], fields).then(error => {
+          validateField(currentField, fields).then(error => {
             if (isEmptyObject(error))
               validFieldsRef.current.add(name as FieldName<FormValues>);
 
@@ -584,18 +583,15 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
     if (!defaultValuesRef.current[typedName])
       defaultValuesRef.current[typedName] = getFieldValue(
         fields,
-        // TODO: Fix undefined
-        // @ts-ignore
-        fields[typedName].ref,
+        currentField.ref,
       );
 
     if (!type) return;
 
-    const field = isRadio
-      ? // TODO: Fix undefined
-        // @ts-ignore
-        fields[typedName].options[fields[typedName].options.length - 1]
-      : fields[typedName];
+    const field =
+      isRadio && currentField.options
+        ? currentField.options[currentField.options.length - 1]
+        : currentField;
 
     if (isOnSubmit && isReValidateOnSubmit) return;
 
