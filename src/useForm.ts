@@ -554,7 +554,7 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
     }
 
     if (validateOptions && !isEmptyObject(validateOptions)) {
-      fieldsWithValidationRef.current.add(name as FieldName<FormValues>);
+      fieldsWithValidationRef.current.add(name);
 
       if (!isOnSubmit) {
         if (validationSchema) {
@@ -567,8 +567,7 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
           });
         } else {
           validateField(currentField, fields).then(error => {
-            if (isEmptyObject(error))
-              validFieldsRef.current.add(name as FieldName<FormValues>);
+            if (isEmptyObject(error)) validFieldsRef.current.add(name);
 
             if (
               validFieldsRef.current.size ===
@@ -588,7 +587,7 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
 
     if (!type) return;
 
-    const field =
+    const fieldToRegister =
       isRadio && currentField.options
         ? currentField.options[currentField.options.length - 1]
         : currentField;
@@ -599,7 +598,7 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
       attachNativeValidation(ref, validateOptions);
     } else {
       attachEventListeners({
-        field,
+        field: fieldToRegister,
         isRadio,
         validateAndStateUpdate: validateAndUpdateStateRef.current,
         isOnBlur,
