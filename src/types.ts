@@ -94,8 +94,7 @@ export interface FieldError {
 export type ValidatePromiseResult = {} | void | FieldError;
 
 export interface Field extends ValidationOptions {
-  ref: Ref;
-  watch?: boolean;
+  ref?: Ref;
   mutationWatcher?: MutationWatcher;
   options?: {
     ref: Ref;
