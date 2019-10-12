@@ -2,7 +2,11 @@ import React, { useEffect } from 'react';
 import useForm from 'react-hook-form';
 
 const SetError: React.FC = () => {
-  const { register, setError, clearError, errors } = useForm();
+  const { register, setError, clearError, errors } = useForm<{
+    firstName: string;
+    lastName: string;
+    age: string;
+  }>();
 
   useEffect(() => {
     register({ name: 'firstName' });
@@ -18,11 +22,11 @@ const SetError: React.FC = () => {
   return (
     <div>
       <div id="errorContainer">
-      {Object.values(errors).map((error, index) => (
-        <div id={`error${index}`} key={index}>
-          {index} {error && error.type}
-        </div>
-      ))}
+        {Object.values(errors).map((error, index) => (
+          <div id={`error${index}`} key={index}>
+            {index} {error && error.type}
+          </div>
+        ))}
       </div>
 
       <input
