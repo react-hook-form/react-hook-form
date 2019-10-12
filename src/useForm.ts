@@ -520,10 +520,12 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
       );
 
       if (isRadio) {
+        let currentField: Field | undefined = fields[typedName];
         fields[typedName] = {
           options: [
-            // @ts-ignore
-            ...(fields[typedName] ? fields[typedName].options : []),
+            ...(currentField && currentField.options
+              ? currentField.options
+              : []),
             {
               ref,
               mutationWatcher,
