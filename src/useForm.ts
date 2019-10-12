@@ -520,25 +520,18 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
       );
 
       if (isRadio) {
-        if (!currentField)
-          fields[typedName] = {
-            options: [],
-            ref: { type: RADIO_INPUT, name },
-          };
-
-        // TODO: Fix ref
-        // @ts-ignore
         fields[typedName] = {
-          ...fields[name],
+          options: [
+            // @ts-ignore
+            ...(fields[typedName] ? fields[typedName].options : []),
+            {
+              ref,
+              mutationWatcher,
+            },
+          ],
+          ref: { type: RADIO_INPUT, name },
           ...validateOptions,
         };
-
-        // TODO: Fix undefined
-        // @ts-ignore
-        fields[typedName].options.push({
-          ref,
-          mutationWatcher,
-        });
       } else {
         fields[typedName] = {
           ...fieldAttributes,
