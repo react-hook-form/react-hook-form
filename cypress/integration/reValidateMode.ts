@@ -21,6 +21,12 @@ context('re-validate mode', () => {
 
   it('should re-validate the form only onBlur with mode onSubmit and reValidateMode onBlur', () => {
     cy.visit('http://localhost:3000/re-validate-mode/onSubmit/onBlur');
+    cy.get('input[name="firstName"]').focus();
+    cy.get('input[name="firstName"]').blur();
+
+    cy.get('input[name="lastName"]').focus();
+    cy.get('input[name="lastName"]').blur();
+    cy.get('p').should('have.length', 0);
 
     cy.get('button#submit').click();
 
@@ -35,7 +41,7 @@ context('re-validate mode', () => {
     cy.get('input[name="lastName"]').blur();
 
     cy.get('p').should('have.length', 0);
-    cy.get('#renderCount').contains('7');
+    cy.get('#renderCount').contains('9');
   });
 
   it('should re-validate the form only onSubmit with mode onBlur and reValidateMode onSubmit', () => {
