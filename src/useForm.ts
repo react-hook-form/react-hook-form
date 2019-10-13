@@ -108,7 +108,7 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
 
   const setFieldValue = (
     name: FieldName<FormValues>,
-    rawValue: FieldValue<FormValues>,
+    rawValue: FieldValue<FormValues> | Partial<FormValues>,
   ): boolean => {
     const field = fieldsRef.current[name];
 
@@ -434,7 +434,7 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
   function watch(
     fieldNames?: FieldName<FormValues> | FieldName<FormValues>[],
     defaultValue?: string | Partial<FormValues>,
-  ): FieldValue<FormValues> | Partial<FormValues> {
+  ): FieldValue<FormValues> | Partial<FormValues> | string | undefined {
     const fieldValues = getFieldsValues<FormValues>(fieldsRef.current);
     const watchFields = watchFieldsRef.current;
 
@@ -445,8 +445,6 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
         watchFields,
       );
 
-      // TODO: Fix
-      // @ts-ignore
       return isUndefined(value)
         ? isUndefined(defaultValue)
           ? getDefaultValue(defaultValues, fieldNames)
@@ -467,8 +465,6 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
             watchFields,
           );
 
-          // TODO: Fix
-          // @ts-ignore
           if (!isUndefined(tempValue)) value = tempValue;
         }
 
@@ -481,8 +477,6 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
 
     isWatchAllRef.current = true;
 
-    // TODO: Fix
-    // @ts-ignore
     return (
       (!isEmptyObject(fieldValues) && fieldValues) ||
       defaultValue ||
@@ -547,11 +541,7 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
     if (!isEmptyObject(defaultValues)) {
       const defaultValue = getDefaultValue(defaultValues, name);
 
-      if (!isUndefined(defaultValue))
-        setFieldValue(
-          name as FieldName<FormValues>,
-          defaultValue as FieldValue<FormValues>,
-        );
+      if (!isUndefined(defaultValue)) setFieldValue(name, defaultValue);
     }
 
     if (validateOptions && !isEmptyObject(validateOptions)) {
