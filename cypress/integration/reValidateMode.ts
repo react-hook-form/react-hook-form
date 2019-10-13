@@ -93,8 +93,6 @@ context('re-validate mode', () => {
   it('should re-validate the form onBlur only with mode onBlur and reValidateMode onBlur', () => {
     cy.visit('http://localhost:3000/re-validate-mode/onBlur/onBlur');
 
-    cy.get('p').should('have.length', 0);
-
     cy.get('input[name="firstName"]').focus();
     cy.get('input[name="firstName"]').blur();
     cy.get('input[name="firstName"] + p').contains('firstName error');
@@ -115,8 +113,6 @@ context('re-validate mode', () => {
 
   it('should re-validate the form onChange with mode onBlur and reValidateMode onChange', () => {
     cy.visit('http://localhost:3000/re-validate-mode/onBlur/onChange');
-
-    cy.get('p').should('have.length', 0);
 
     cy.get('input[name="firstName"]').focus();
     cy.get('input[name="firstName"]').blur();
