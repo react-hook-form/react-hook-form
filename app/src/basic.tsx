@@ -125,7 +125,7 @@ const Basic: React.FC = (props: any) => {
       />
       {errors.validate && <p>validate error</p>}
       <button id="submit">Submit</button>
-      <button type="button" id="resetForm" onClick={reset}>
+      <button type="button" id="resetForm" onClick={() => reset()}>
         Reset
       </button>
       <div id="renderCount">{renderCounter}</div>

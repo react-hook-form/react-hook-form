@@ -13,3 +13,9 @@ export const REQUIRED_ATTRIBUTE = 'required';
 export const PATTERN_ATTRIBUTE = 'pattern';
 
 export const UNDEFINED = 'undefined';
+
+export const EVENTS = {
+  BLUR: 'blur',
+  CHANGE: 'change',
+  INPUT: 'input',
+};

@@ -24,7 +24,7 @@ import onDomRemove from './utils/onDomRemove';
 import isMultipleSelect from './utils/isMultipleSelect';
 import modeChecker from './utils/validationModeChecker';
 import pickErrors from './logic/pickErrors';
-import { RADIO_INPUT, UNDEFINED, VALIDATION_MODE } from './constants';
+import { EVENTS, RADIO_INPUT, UNDEFINED, VALIDATION_MODE } from './constants';
 import isNullOrUndefined from './utils/isNullOrUndefined';
 import {
   FieldValues,
@@ -40,10 +40,12 @@ import {
   OnSubmit,
   ValidationPayload,
   ElementLike,
+  Inputs,
 } from './types';
 
 export default function useForm<FormValues extends FieldValues = FieldValues>({
   mode = VALIDATION_MODE.onSubmit,
+  reValidateMode = VALIDATION_MODE.onChange,
   validationSchema,
   defaultValues = {},
   validationFields,
@@ -73,6 +75,10 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
   const validateAndUpdateStateRef = useRef<Function>();
   const [, render] = useState();
   const { isOnBlur, isOnSubmit } = useRef(modeChecker(mode)).current;
+  const {
+    isOnBlur: isReValidateOnBlur,
+    isOnSubmit: isReValidateOnSubmit,
+  } = useRef(modeChecker(reValidateMode)).current;
   const validationSchemaOptionRef = useRef(validationSchemaOption);
   validationFieldsRef.current = validationFields;
 
@@ -102,7 +108,7 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
 
   const setFieldValue = (
     name: FieldName<FormValues>,
-    rawValue: FieldValue<FormValues>,
+    rawValue: FieldValue<FormValues> | Partial<FormValues>,
   ): boolean => {
     const field = fieldsRef.current[name];
 
@@ -284,7 +290,9 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
 
   validateAndUpdateStateRef.current = validateAndUpdateStateRef.current
     ? validateAndUpdateStateRef.current
-    : async ({ target: { name }, type }: Ref): Promise<void> => {
+    : async (event: MouseEvent): Promise<void> => {
+        const { type, target } = event;
+        const name = target ? (target as Inputs).name : '';
         if (
           isArray(validationFieldsRef.current) &&
           !validationFieldsRef.current.includes(name)
@@ -298,10 +306,12 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
 
         if (!ref) return;
 
-        const isBlurEvent = type === 'blur';
-        const isValidateDisabled =
+        const isBlurEvent = type === EVENTS.BLUR;
+        const shouldSkipValidation =
           (isOnSubmit && !isSubmittedRef.current) ||
-          (isOnBlur && !isBlurEvent && !errors[name]);
+          (isOnBlur && !isBlurEvent && !errors[name]) ||
+          (isReValidateOnBlur && !isBlurEvent && errors[name]) ||
+          (isReValidateOnSubmit && errors[name]);
         const shouldUpdateDirty = setDirty(name);
         let shouldUpdateState =
           isWatchAllRef.current ||
@@ -313,7 +323,7 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
           shouldUpdateState = true;
         }
 
-        if (isValidateDisabled)
+        if (shouldSkipValidation)
           return shouldUpdateState ? render({}) : undefined;
 
         if (validationSchema) {
@@ -424,7 +434,7 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
   function watch(
     fieldNames?: FieldName<FormValues> | FieldName<FormValues>[],
     defaultValue?: string | Partial<FormValues>,
-  ): FieldValue<FormValues> | Partial<FormValues> {
+  ): FieldValue<FormValues> | Partial<FormValues> | string | undefined {
     const fieldValues = getFieldsValues<FormValues>(fieldsRef.current);
     const watchFields = watchFieldsRef.current;
 
@@ -435,8 +445,6 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
         watchFields,
       );
 
-      // TODO: Fix
-      // @ts-ignore
       return isUndefined(value)
         ? isUndefined(defaultValue)
           ? getDefaultValue(defaultValues, fieldNames)
@@ -457,8 +465,6 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
             watchFields,
           );
 
-          // TODO: Fix
-          // @ts-ignore
           if (!isUndefined(tempValue)) value = tempValue;
         }
 
@@ -471,8 +477,6 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
 
     isWatchAllRef.current = true;
 
-    // TODO: Fix
-    // @ts-ignore
     return (
       (!isEmptyObject(fieldValues) && fieldValues) ||
       defaultValue ||
@@ -494,7 +498,7 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
     };
     const fields: FieldsRefs<FormValues> = fieldsRef.current;
     const isRadio = isRadioInput(type);
-    const currentField = fields[name];
+    let currentField = (fields[typedName] || undefined) as Field;
     const isRegistered = isRadio
       ? currentField &&
         isArray(currentField.options) &&
@@ -504,52 +508,44 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
     if (isRegistered) return;
 
     if (!type) {
-      fields[typedName] = fieldAttributes;
+      currentField = fieldAttributes;
     } else {
       const mutationWatcher = onDomRemove(ref, () =>
         removeEventListenerAndRef(fieldAttributes),
       );
 
       if (isRadio) {
-        if (!currentField)
-          fields[typedName] = {
-            options: [],
-            ref: { type: RADIO_INPUT, name },
-          };
-
-        // TODO: Fix ref
-        // @ts-ignore
-        fields[typedName] = {
-          ...fields[name],
+        currentField = {
+          options: [
+            ...(currentField && currentField.options
+              ? currentField.options
+              : []),
+            {
+              ref,
+              mutationWatcher,
+            },
+          ],
+          ref: { type: RADIO_INPUT, name },
           ...validateOptions,
         };
-
-        // TODO: Fix undefined
-        // @ts-ignore
-        fields[typedName].options.push({
-          ref,
-          mutationWatcher,
-        });
       } else {
-        fields[typedName] = {
+        currentField = {
           ...fieldAttributes,
           mutationWatcher,
         };
       }
     }
 
+    fields[typedName] = currentField;
+
     if (!isEmptyObject(defaultValues)) {
       const defaultValue = getDefaultValue(defaultValues, name);
 
-      if (!isUndefined(defaultValue))
-        setFieldValue(
-          name as FieldName<FormValues>,
-          defaultValue as FieldValue<FormValues>,
-        );
+      if (!isUndefined(defaultValue)) setFieldValue(name, defaultValue);
     }
 
     if (validateOptions && !isEmptyObject(validateOptions)) {
-      fieldsWithValidationRef.current.add(name as FieldName<FormValues>);
+      fieldsWithValidationRef.current.add(name);
 
       if (!isOnSubmit) {
         if (validationSchema) {
@@ -561,11 +557,8 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
             if (isEmptyObject(schemaErrorsRef.current)) render({});
           });
         } else {
-          // TODO: Fix undefined
-          // @ts-ignore
-          validateField(fields[typedName], fields).then(error => {
-            if (isEmptyObject(error))
-              validFieldsRef.current.add(name as FieldName<FormValues>);
+          validateField(currentField, fields).then(error => {
+            if (isEmptyObject(error)) validFieldsRef.current.add(name);
 
             if (
               validFieldsRef.current.size ===
@@ -580,27 +573,27 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
     if (!defaultValuesRef.current[typedName])
       defaultValuesRef.current[typedName] = getFieldValue(
         fields,
-        // TODO: Fix undefined
-        // @ts-ignore
-        fields[typedName].ref,
+        currentField.ref,
       );
 
     if (!type) return;
 
-    const field = isRadio
-      ? // TODO: Fix undefined
-        // @ts-ignore
-        fields[typedName].options[fields[typedName].options.length - 1]
-      : fields[typedName];
+    const fieldToRegister =
+      isRadio && currentField.options
+        ? currentField.options[currentField.options.length - 1]
+        : currentField;
+
+    if (isOnSubmit && isReValidateOnSubmit) return;
 
     if (nativeValidation && validateOptions) {
       attachNativeValidation(ref, validateOptions);
     } else {
       attachEventListeners({
-        field,
+        field: fieldToRegister,
         isRadio,
         validateAndStateUpdate: validateAndUpdateStateRef.current,
         isOnBlur,
+        isReValidateOnBlur,
       });
     }
   }
