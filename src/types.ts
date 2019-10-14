@@ -67,7 +67,12 @@ type ValidationOptionObject<Value> = Value | { value: Value; message: string };
 
 export type ValidationTypes = number | string | RegExp;
 
-export type ValidateResult = string | boolean | void;
+export type ValidateResult =
+  | string
+  | boolean
+  | void
+  | Promise<string>
+  | Promise<boolean>;
 
 export type Validate = (data: BaseFieldValue) => ValidateResult;
 
