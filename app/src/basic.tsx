@@ -4,7 +4,22 @@ import useForm from 'react-hook-form';
 let renderCounter = 0;
 
 const Basic: React.FC = (props: any) => {
-  const { register, handleSubmit, errors, reset } = useForm({
+  const { register, handleSubmit, errors, reset } = useForm<{
+    firstName: string;
+    lastName: string;
+    min: string;
+    max: string;
+    minDate: string;
+    maxDate: string;
+    minLength: string;
+    minRequiredLength: string;
+    selectNumber: string;
+    pattern: string;
+    radio: string;
+    checkbox: string;
+    multiple: string;
+    validate: string;
+  }>({
     mode: props.match.params.mode,
   });
   const onSubmit = () => {};
@@ -110,7 +125,7 @@ const Basic: React.FC = (props: any) => {
       />
       {errors.validate && <p>validate error</p>}
       <button id="submit">Submit</button>
-      <button type="button" id="resetForm" onClick={reset}>
+      <button type="button" id="resetForm" onClick={() => reset()}>
         Reset
       </button>
       <div id="renderCount">{renderCounter}</div>

@@ -20,6 +20,7 @@ describe('attachEventListeners', () => {
         field: fields.test,
         validateAndStateUpdate,
         isOnBlur: false,
+        isReValidateOnBlur: false,
       }),
     ).toBeUndefined();
 
@@ -46,6 +47,7 @@ describe('attachEventListeners', () => {
         isRadio: true,
         validateAndStateUpdate,
         isOnBlur: false,
+        isReValidateOnBlur: false,
       }),
     ).toBeUndefined();
 
@@ -53,7 +55,7 @@ describe('attachEventListeners', () => {
     expect(fields.test.eventAttached).toBeTruthy();
   });
 
-  it('should only attach blur event when it is under blur mode', () => {
+  it('should attach blur event when it is under blur mode', () => {
     const validateAndStateUpdate = jest.fn();
     const addEventListener = jest.fn();
     const fields = {
@@ -72,6 +74,33 @@ describe('attachEventListeners', () => {
         isRadio: true,
         validateAndStateUpdate,
         isOnBlur: true,
+        isReValidateOnBlur: false,
+      }),
+    ).toBeUndefined();
+
+    expect(addEventListener).toBeCalledWith('blur', validateAndStateUpdate);
+  });
+
+  it('should attach blur event when re validate mode is under blur', () => {
+    const validateAndStateUpdate = jest.fn();
+    const addEventListener = jest.fn();
+    const fields = {
+      test: {
+        ref: {
+          addEventListener,
+        },
+        eventAttached: [],
+        watch: true,
+      },
+    };
+
+    expect(
+      attachEventListeners({
+        field: fields.test,
+        isRadio: true,
+        validateAndStateUpdate,
+        isOnBlur: false,
+        isReValidateOnBlur: true,
       }),
     ).toBeUndefined();
 
@@ -97,6 +126,7 @@ describe('attachEventListeners', () => {
         isRadio: false,
         validateAndStateUpdate,
         isOnBlur: false,
+        isReValidateOnBlur: false,
       }),
     ).toBeUndefined();
 
@@ -124,6 +154,7 @@ describe('attachEventListeners', () => {
         isRadio: false,
         validateAndStateUpdate,
         isOnBlur: false,
+        isReValidateOnBlur: false,
       }),
     ).toBeUndefined();
 
@@ -149,6 +180,7 @@ describe('attachEventListeners', () => {
         isRadio: true,
         validateAndStateUpdate,
         isOnBlur: false,
+        isReValidateOnBlur: false,
       }),
     ).toBeUndefined();
 
@@ -175,6 +207,7 @@ describe('attachEventListeners', () => {
         isRadio: false,
         validateAndStateUpdate,
         isOnBlur: false,
+        isReValidateOnBlur: false,
       }),
     ).toBeUndefined();
 
@@ -189,6 +222,7 @@ describe('attachEventListeners', () => {
         isRadio: false,
         validateAndStateUpdate: () => {},
         isOnBlur: false,
+        isReValidateOnBlur: false,
       }),
     ).toBeUndefined();
   });

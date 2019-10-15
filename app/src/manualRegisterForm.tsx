@@ -2,7 +2,20 @@ import React, { useEffect } from 'react';
 import useForm from 'react-hook-form';
 
 const ManualRegisterForm: React.FC = () => {
-  const { register, handleSubmit, errors, setValue } = useForm();
+  const { register, handleSubmit, errors, setValue } = useForm<{
+    firstName: string;
+    lastName: string;
+    min: string;
+    max: string;
+    minDate: string;
+    maxDate: string;
+    minLength: string;
+    minRequiredLength: string;
+    selectNumber: string;
+    pattern: string;
+    radio: string;
+    checkbox: string;
+  }>();
   const onSubmit = () => {};
 
   useEffect(() => {
