@@ -1,7 +1,7 @@
 <div align="center">
     <p align="center">
         <a href="https://react-hook-form.com" title="React Hook Form - Simple React forms validation"><img src="https://raw.githubusercontent.com/bluebill1049/react-hook-form/master/website/logo.png" alt="React Hook Form Logo - React hook form validation" width="330px" /></a>
-    </p>    
+    </p>
 </div>
 
 <div align="center">
@@ -21,7 +21,7 @@
 
 <div align="center"><p align="center"><a href="https://react-hook-form.com" title="React Hook Form - Simple React forms validation"><img src="https://raw.githubusercontent.com/bluebill1049/react-hook-form/master/website/example.gif" alt="React Hook Form Logo - React hook form validation" width="750px" /></a></p></div>
 
-<a href="https://github.com/react-hook-form/react-hook-form">🇦🇺English</a> | 🇨🇳简体中文
+<a href="https://github.com/react-hook-form/react-hook-form">🇦🇺English</a> | 🇨🇳简体中文 | <a href="./README.ja-JP.md">🇯🇵Japanese</a>
 
 ## 特性
 
@@ -62,20 +62,21 @@ function App() {
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
       <input name="firstname" ref={register} /> {/* register an input */}
-      
+
       <input name="lastname" ref={register({ required: true })} />
       {errors.lastname && 'Last name is required.'}
-      
+
       <input name="age" ref={register({ pattern: /\d+/ })} />
       {errors.age && 'Please enter number for age.'}
-      
+
       <input type="submit" />
     </form>
   );
 }
 ```
 
-## 贡献者 
+## 贡献者
+
 感谢这些为该开源项目作出贡献的人:
 
 <a href="https://github.com/react-hook-form/react-hook-form/graphs/contributors">
