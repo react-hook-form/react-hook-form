@@ -47,7 +47,7 @@ export default async <FormValues extends FieldValues>(
     ((isCheckBox && !checked) ||
       (!isCheckBox && !isRadio && value === '') ||
       (isRadio && !getRadioValue(fields[typedName].options).isValid) ||
-      (!type && isNullOrUndefined(value)))
+      isNullOrUndefined(value))
   ) {
     error[typedName] = {
       type: REQUIRED_ATTRIBUTE,
