@@ -605,6 +605,12 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
     ref: Element | null,
     validationOptions?: ValidationOptions,
   ): void;
+  /* This register is inded for React-Native usage, which has no element
+   * on the element, so the name must be specified **/
+  function register<Element>(
+    validateRule: ValidationOptions & { name: string },
+  ): (ref: Element | null) => void;
+
   function register<Element extends ElementLike = ElementLike>(
     refOrValidateRule: ValidationOptions | Element | null,
     validationOptions?: ValidationOptions,
