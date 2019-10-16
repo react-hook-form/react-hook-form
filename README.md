@@ -29,7 +29,7 @@
     </p>
 </div>
 
-🇦🇺English | <a href="./README.zh-CN.md">🇨🇳简体中文</a> | <a href="./README.ja-JP.md">🇯🇵Japanese</a>
+🇦🇺English | <a href="./README.zh-CN.md">🇨🇳简体中文</a> | <a href="./README.ja-JP.md">🇯🇵日本语</a>
 
 ## Features
 
