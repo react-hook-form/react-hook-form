@@ -46,7 +46,7 @@ import {
 export default function useForm<FormValues extends FieldValues = FieldValues>({
   mode = VALIDATION_MODE.onSubmit,
   reValidateMode = VALIDATION_MODE.onChange,
-  touchedMode = VALIDATION_MODE.onBlur,
+  touchedMode = VALIDATION_MODE.onChange,
   validationSchema,
   defaultValues = {},
   validationFields,
