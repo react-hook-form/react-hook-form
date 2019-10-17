@@ -943,6 +943,30 @@ describe('useForm', () => {
 
       expect(result.current.formState.isValid).toBeTruthy();
     });
+
+    it('react native - allow registration as part of the register call', async () => {
+      const { result } = renderHook(() => useForm<{ test: string }>());
+
+      act(() => {
+        result.current.register({}, { name: 'test' });
+        result.current.setValue('test', '1');
+      });
+
+      (validateField as any).mockImplementation(async () => {
+        return {};
+      });
+
+      await act(async () => {
+        await result.current.handleSubmit(data => {
+          expect(data).toEqual({
+            test: '1',
+          });
+        })({
+          preventDefault: () => {},
+          persist: () => {},
+        } as React.SyntheticEvent);
+      });
+    });
   });
 
   describe('when component unMount', () => {
