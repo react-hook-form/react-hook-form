@@ -25,6 +25,7 @@ type Mode = keyof ValidationMode;
 
 export type OnSubmit<FormValues extends FieldValues> = (
   data: FormValues,
+  // todo: #369 reported error in ts build while skipLibCheck isn't set to true
   e: React.SyntheticEvent | any,
 ) => void | Promise<void>;
 
