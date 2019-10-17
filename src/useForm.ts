@@ -1,5 +1,4 @@
 import React, { useRef, useState, useCallback, useEffect } from 'react';
-import * as ReactNative from 'react-native';
 import attachEventListeners from './logic/attachEventListeners';
 import combineFieldValues from './logic/combineFieldValues';
 import findRemovedFieldAndRemoveListener from './logic/findRemovedFieldAndRemoveListener';
@@ -635,7 +634,7 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
   }
 
   const handleSubmit = (callback: OnSubmit<FormValues>) => async (
-    e: React.SyntheticEvent | ReactNative.GestureResponderEvent,
+    e: React.SyntheticEvent | any,
   ): Promise<void> => {
     if (e) {
       e.preventDefault();
