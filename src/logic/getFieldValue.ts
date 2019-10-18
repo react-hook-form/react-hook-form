@@ -21,7 +21,9 @@ export default function getFieldValue<FormValues extends FieldValues>(
     return field ? getRadioValue(field.options).value : '';
   }
 
-  if (isMultipleSelect(type)) return getMultipleSelectValue(options);
+  if (isMultipleSelect(type)) {
+    return getMultipleSelectValue(options);
+  }
 
   if (isCheckBox(type)) {
     if (checked) {

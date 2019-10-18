@@ -13,7 +13,9 @@ function isIndex(value: any) {
 }
 
 export function isKey(value: [] | string) {
-  if (isArray(value)) return false;
+  if (isArray(value)) {
+    return false;
+  }
   return reIsPlainProp.test(value) || !reIsDeepProp.test(value);
 }
 

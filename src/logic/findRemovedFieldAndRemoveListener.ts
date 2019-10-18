@@ -11,11 +11,15 @@ export default function findRemovedFieldAndRemoveListener<
   field: Field,
   forceDelete: boolean = false,
 ): void {
-  if (!field) return;
+  if (!field) {
+    return;
+  }
 
   const { ref, mutationWatcher, options } = field;
 
-  if (!ref || !ref.type) return;
+  if (!ref || !ref.type) {
+    return;
+  }
 
   const { name, type } = ref;
 
@@ -30,10 +34,14 @@ export default function findRemovedFieldAndRemoveListener<
       }
     });
 
-    if (!options.length) delete fields[name];
+    if (!options.length) {
+      delete fields[name];
+    }
   } else if (isDetached(ref) || forceDelete) {
     removeAllEventListeners(ref, validateWithStateUpdate);
-    if (mutationWatcher) mutationWatcher.disconnect();
+    if (mutationWatcher) {
+      mutationWatcher.disconnect();
+    }
     delete fields[name];
   }
 }

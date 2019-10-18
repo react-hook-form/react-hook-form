@@ -12,8 +12,9 @@ export default <FormValues extends FieldValues>(
   fieldName: FieldName<FormValues>,
   watchFields: Partial<Record<FieldName<FormValues>, boolean>>,
 ): FieldValue<FormValues> | Partial<FormValues> | undefined => {
-  if (isNullOrUndefined(fieldValues) || isEmptyObject(fieldValues))
+  if (isNullOrUndefined(fieldValues) || isEmptyObject(fieldValues)) {
     return undefined;
+  }
 
   if (!isUndefined(fieldValues[fieldName])) {
     watchFields[fieldName] = true;
