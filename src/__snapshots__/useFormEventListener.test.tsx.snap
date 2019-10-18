@@ -5,7 +5,20 @@ Object {
   "dirty": false,
   "isSubmitted": false,
   "isSubmitting": false,
-  "isValid": true,
+  "isValid": false,
+  "submitCount": 0,
+  "touched": Array [
+    "test",
+  ],
+}
+`;
+
+exports[`useFormEventListeners should return isValid as false by default with onSubmit mode 1`] = `
+Object {
+  "dirty": false,
+  "isSubmitted": false,
+  "isSubmitting": false,
+  "isValid": false,
   "submitCount": 0,
   "touched": Array [
     "test",
