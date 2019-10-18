@@ -272,12 +272,14 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
     [executeSchemaValidation, executeValidation, validationSchema],
   );
 
-  const setValue = useCallback(
-    (
-      name: FieldName<FormValues>,
-      value: FieldValue<FormValues>,
-      shouldValidate: boolean = false,
-    ): void | Promise<boolean> => {
+  const setValue = useCallback<
+    <Name extends FieldName<FormValues>>(
+      name: Name,
+      value: FormValues[Name],
+      shouldValidate?: boolean,
+    ) => void | Promise<boolean>
+  >(
+    (name, value, shouldValidate = false) => {
       setValueInternal(name, value);
       const shouldRender =
         isWatchAllRef.current || watchFieldsRef.current[name];
@@ -285,6 +287,7 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
         return triggerValidation({ name }, shouldRender);
       }
       if (shouldRender) render({});
+      return;
     },
     [setValueInternal, triggerValidation],
   );
