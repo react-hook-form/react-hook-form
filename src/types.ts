@@ -1,5 +1,4 @@
 import * as React from 'react';
-import * as ReactNative from 'react-native';
 
 export type BaseFieldValue = any;
 
@@ -26,7 +25,7 @@ type Mode = keyof ValidationMode;
 
 export type OnSubmit<FormValues extends FieldValues> = (
   data: FormValues,
-  e: React.SyntheticEvent | ReactNative.GestureResponderEvent,
+  e: React.BaseSyntheticEvent,
 ) => void | Promise<void>;
 
 export interface ValidationMode {
