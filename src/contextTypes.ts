@@ -41,7 +41,7 @@ export interface FormContextValues<
     fields: FieldName<FormValues>[],
     defaultValues?: Partial<FormValues>,
   ): Partial<FormValues>;
-  reset: (values?: FieldValues) => void;
+  reset: (values?: FormValues) => void;
   clearError(): void;
   clearError(name: FieldName<FormValues>): void;
   clearError(names: FieldName<FormValues>[]): void;
