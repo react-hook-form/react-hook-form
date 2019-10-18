@@ -41,7 +41,7 @@ export interface FormContextValues<
     fields: FieldName<FormValues>[],
     defaultValues?: Partial<FormValues>,
   ): Partial<FormValues>;
-  reset: (values?: FieldValues) => void;
+  reset: (values?: FormValues) => void;
   clearError(): void;
   clearError(name: FieldName<FormValues>): void;
   clearError(names: FieldName<FormValues>[]): void;
@@ -51,9 +51,9 @@ export interface FormContextValues<
     message?: string,
     ref?: Ref,
   ) => void;
-  setValue: (
-    name: FieldName<FormValues>,
-    value: FieldValue<FormValues>,
+  setValue: <Name extends FieldName<FormValues>>(
+    name: Name,
+    value: FormValues[Name],
     shouldValidate?: boolean,
   ) => void;
   triggerValidation: (

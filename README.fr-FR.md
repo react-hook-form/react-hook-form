@@ -6,7 +6,8 @@
     </p>
 </div>
 
-<p align="center">Performant, flexible and extensible forms with easy to use for validation.</p>
+<p align="center">Formulaires performants, flexibles et extensibles dotés d'une validation poussée et facile à utiliser.</p>
+
 
 <div align="center">
 
@@ -29,35 +30,35 @@
     </p>
 </div>
 
-🇦🇺English | <a href="./README.zh-CN.md">🇨🇳简体中文</a> | <a href="./README.ja-JP.md">🇯🇵日本语</a> | 🇫🇷 <a href="./README.fr-FR.md">Français</a>
+🇦🇺English | <a href="./README.zh-CN.md">🇨🇳简体中文</a> | <a href="./README.ja-JP.md">🇯🇵日本语</a> | <a href="./README.fr-FR.md">🇫🇷 Français</a>
 
-## Features
+## Fonctionnalités
 
-- Built with performance and DX in mind
-- Uncontrolled form validation
-- [Tiny size](https://bundlephobia.com/result?p=react-hook-form@latest) without any dependency
-- Follows HTML standard for validation
-- Compatible with React Native
-- Support [Yup](https://github.com/jquense/yup) schema-based validation
-- Support browser native validation
-- Build forms quickly with the [form builder](https://react-hook-form.com/form-builder)
+- Développé en privilegiant les performances et l'experience developpeur.
+- Formulaires non-contrôlés.
+- [Taille reduite](https://bundlephobia.com/result?p=react-hook-form@latest) sans aucune dépendance.
+- Respecte les normes de validation HTML.
+- Compatible avec React Native.
+- Supporte [Yup](https://github.com/jquense/yup) pour de la validation via schéma.
+- Supporte la validation native du navigateur.
+- Possibilité de développer des formulaires rapidement grâce au [form builder](https://react-hook-form.com/form-builder).
 
-## Install
+## Installation
 
     $ npm install react-hook-form
 
-## Links
+## Liens
 
 - [Motivation](https://medium.com/@bruce1049/form-validation-with-hook-in-3kb-c5414edf7d64)
-- [Video tutorial](https://www.youtube.com/watch?v=-mFXqOaqgZk&t)
-- [Get started](https://react-hook-form.com/get-started)
+- [Tutoriel vidéo](https://www.youtube.com/watch?v=-mFXqOaqgZk&t)
+- [Bien demarrer](https://react-hook-form.com/get-started)
 - [API](https://react-hook-form.com/api)
-- [Examples](https://github.com/bluebill1049/react-hook-form/tree/master/examples)
-- [Demo](https://react-hook-form.com)
+- [Exemples](https://github.com/bluebill1049/react-hook-form/tree/master/examples)
+- [Démo](https://react-hook-form.com)
 - [Form Builder](https://react-hook-form.com/form-builder)
 - [FAQs](https://react-hook-form.com/faq)
 
-## Quickstart
+## Démarrage rapide
 
 ```jsx
 import React from 'react';
@@ -85,7 +86,7 @@ function App() {
 }
 ```
 
-## Contributors
+## Contributeurs
 
 Thanks goes to these wonderful people. [[Become a contributor](CONTRIBUTING.md)].
 
@@ -93,11 +94,10 @@ Thanks goes to these wonderful people. [[Become a contributor](CONTRIBUTING.md)]
     <img src="https://opencollective.com/react-hook-form/contributors.svg?width=950" />
 </a>
 
-## Backers
+## Sponsors
 
-Thank goes to all our backers! [[Become a backer](https://opencollective.com/react-hook-form#backer)].
+Merci à tous nos sponsors ! [[Become a backer](https://opencollective.com/react-hook-form#backer)].
 
 <a href="https://opencollective.com/react-hook-form#backers">
     <img src="https://opencollective.com/react-hook-form/backers.svg?width=950" />
 </a>
-
