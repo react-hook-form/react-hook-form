@@ -873,7 +873,7 @@ describe('useForm', () => {
   describe('formState', () => {
     it('should disable isValid for submit mode', () => {
       const { result } = renderHook(() => useForm<{ input: string }>());
-      expect(result.current.formState.isValid).toBeTruthy();
+      expect(result.current.formState.isValid).toBeFalsy();
     });
 
     it('should return false for onChange or onBlur mode by default', () => {
@@ -941,7 +941,7 @@ describe('useForm', () => {
         result.current.register({ name: 'input' });
       });
 
-      expect(result.current.formState.isValid).toBeTruthy();
+      expect(result.current.formState.isValid).toBeFalsy();
     });
   });
 
