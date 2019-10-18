@@ -9,7 +9,7 @@ export default function findRemovedFieldAndRemoveListener<
   fields: FieldsRefs<FormValues>,
   validateWithStateUpdate: Function | undefined = () => {},
   field: Field,
-  forceDelete: boolean = false,
+  forceDelete = false,
 ): void {
   if (!field) {
     return;

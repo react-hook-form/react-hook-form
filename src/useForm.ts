@@ -91,7 +91,7 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
     (
       name: FieldName<FormValues>,
       error: FieldErrors<FormValues>,
-      shouldRender: boolean = true,
+      shouldRender = true,
     ) => {
       if (isEmptyObject(error)) {
         delete errorsRef.current[name];
@@ -191,7 +191,7 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
         name: FieldName<FormValues>;
         value?: FormValues[FieldName<FormValues>];
       },
-      shouldRender: boolean = true,
+      shouldRender = true,
     ): Promise<boolean> => {
       const field = fieldsRef.current[name]!;
 
@@ -838,7 +838,7 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
   const reset = useCallback((values?: FormValues): void => {
     const fieldsKeyValue = Object.entries(fieldsRef.current);
 
-    for (let [, value] of fieldsKeyValue) {
+    for (const [, value] of fieldsKeyValue) {
       if (value && value.ref && value.ref.closest) {
         try {
           value.ref.closest('form').reset();
