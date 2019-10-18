@@ -11,7 +11,11 @@ import isFunction from '../utils/isFunction';
 import getFieldsValue from './getFieldValue';
 import isRegex from '../utils/isRegex';
 import getValidateFunctionErrorObject from './getValidateFunctionErrorObject';
-import { PATTERN_ATTRIBUTE, REQUIRED_ATTRIBUTE } from '../constants';
+import {
+  PATTERN_ATTRIBUTE,
+  RADIO_INPUT,
+  REQUIRED_ATTRIBUTE,
+} from '../constants';
 import {
   Field,
   FieldErrors,
@@ -47,7 +51,7 @@ export default async <FormValues extends FieldValues>(
     ((isCheckBox && !checked) ||
       (!isCheckBox && !isRadio && value === '') ||
       (isRadio && !getRadioValue(fields[typedName].options).isValid) ||
-      (!type && isNullOrUndefined(value)))
+      (type !== RADIO_INPUT && isNullOrUndefined(value)))
   ) {
     error[typedName] = {
       type: REQUIRED_ATTRIBUTE,
