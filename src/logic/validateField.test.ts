@@ -157,6 +157,64 @@ describe('validateField', () => {
     expect(
       await validateField(
         {
+          ref: { type: 'custom', name: 'test', value: '' },
+          required: true,
+        },
+        {},
+      ),
+    ).toEqual({
+      test: {
+        type: 'required',
+        message: '',
+        ref: { type: 'custom', name: 'test', value: '' },
+      },
+    });
+
+    expect(
+      await validateField(
+        {
+          ref: { type: 'custom', name: 'test', value: undefined },
+          required: true,
+        },
+        {},
+      ),
+    ).toEqual({
+      test: {
+        type: 'required',
+        message: '',
+        ref: { type: 'custom', name: 'test', value: undefined },
+      },
+    });
+
+    expect(
+      await validateField(
+        {
+          ref: { type: 'custom', name: 'test', value: null },
+          required: true,
+        },
+        {},
+      ),
+    ).toEqual({
+      test: {
+        type: 'required',
+        message: '',
+        ref: { type: 'custom', name: 'test', value: null },
+      },
+    });
+
+    expect(
+      await validateField(
+        {
+          ref: { type: 'custom', name: 'test', value: 'ok' },
+          required: true,
+        },
+        {},
+      ),
+    ).toEqual({});
+
+    expect(
+      await validateField(
+        {
           ref: { type: 'date', name: 'test', value: '2019-2-12' },
           required: true,
           max: '2019-1-12',
