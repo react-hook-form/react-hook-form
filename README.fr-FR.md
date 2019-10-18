@@ -36,7 +36,7 @@
 
 - Développé en privilegiant les performances et l'experience developpeur
 - Formulaires non-contrôlés
-- [Taille reduite](https://bundlephobia.com/result?p=react-hook-form@latest) sans aucune dépendances
+- [Taille reduite](https://bundlephobia.com/result?p=react-hook-form@latest) sans aucune dépendance
 - Respecte les normes de validation HTML 
 - Compatible avec React Native
 - Supporte [Yup](https://github.com/jquense/yup) pour de la validation via schéma
@@ -58,7 +58,7 @@
 - [Form Builder](https://react-hook-form.com/form-builder)
 - [FAQs](https://react-hook-form.com/faq)
 
-## Quickstart
+## Démarrage rapide
 
 ```jsx
 import React from 'react';
