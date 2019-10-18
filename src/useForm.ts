@@ -547,7 +547,8 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
     }
 
     if (validateOptions && !isEmptyObject(validateOptions)) {
-      fieldsWithValidationRef.current.add(name);
+      if (!validationFields || validationFields.includes(name))
+        fieldsWithValidationRef.current.add(name);
 
       if (!isOnSubmit) {
         if (validationSchema) {
@@ -832,7 +833,7 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
       isSubmitting: isSubmittingRef.current,
       ...(isOnSubmit
         ? {
-            isValid: isEmptyObject(errorsRef.current),
+            isValid: isSubmittedRef.current && isEmptyObject(errorsRef.current),
           }
         : {
             isValid: validationSchema
