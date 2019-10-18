@@ -34,14 +34,14 @@
 
 ## Fonctionnalités
 
-- Développé en privilegiant les performances et l'experience developpeur
-- Formulaires non-contrôlés
-- [Taille reduite](https://bundlephobia.com/result?p=react-hook-form@latest) sans aucune dépendance
-- Respecte les normes de validation HTML 
-- Compatible avec React Native
-- Supporte [Yup](https://github.com/jquense/yup) pour de la validation via schéma
-- Supporte la validation native du navigateur
-- Possibilité de développer des formulaires rapidement grâce au [form builder](https://react-hook-form.com/form-builder)
+- Développé en privilegiant les performances et l'experience developpeur.
+- Formulaires non-contrôlés.
+- [Taille reduite](https://bundlephobia.com/result?p=react-hook-form@latest) sans aucune dépendance.
+- Respecte les normes de validation HTML.
+- Compatible avec React Native.
+- Supporte [Yup](https://github.com/jquense/yup) pour de la validation via schéma.
+- Supporte la validation native du navigateur.
+- Possibilité de développer des formulaires rapidement grâce au [form builder](https://react-hook-form.com/form-builder).
 
 ## Installation
 
@@ -54,7 +54,7 @@
 - [Bien demarrer](https://react-hook-form.com/get-started)
 - [API](https://react-hook-form.com/api)
 - [Exemples](https://github.com/bluebill1049/react-hook-form/tree/master/examples)
-- [Demo](https://react-hook-form.com)
+- [Démo](https://react-hook-form.com)
 - [Form Builder](https://react-hook-form.com/form-builder)
 - [FAQs](https://react-hook-form.com/faq)
 
