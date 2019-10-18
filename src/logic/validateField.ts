@@ -70,11 +70,19 @@ export default async <FormValues extends FieldValues>(
 
     if (type === 'number') {
       const valueNumber = parseFloat(value);
-      if (!isNullOrUndefined(maxValue)) exceedMax = valueNumber > maxValue;
-      if (!isNullOrUndefined(minValue)) exceedMin = valueNumber < minValue;
+      if (!isNullOrUndefined(maxValue)) {
+        exceedMax = valueNumber > maxValue;
+      }
+      if (!isNullOrUndefined(minValue)) {
+        exceedMin = valueNumber < minValue;
+      }
     } else {
-      if (isString(maxValue)) exceedMax = new Date(value) > new Date(maxValue);
-      if (isString(minValue)) exceedMin = new Date(value) < new Date(minValue);
+      if (isString(maxValue)) {
+        exceedMax = new Date(value) > new Date(maxValue);
+      }
+      if (isString(minValue)) {
+        exceedMin = new Date(value) < new Date(minValue);
+      }
     }
 
     if (exceedMax || exceedMin) {
@@ -184,6 +192,8 @@ export default async <FormValues extends FieldValues>(
     }
   }
 
-  if (nativeValidation) ref.setCustomValidity('');
+  if (nativeValidation) {
+    ref.setCustomValidity('');
+  }
   return error;
 };
