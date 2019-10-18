@@ -51,9 +51,9 @@ export interface FormContextValues<
     message?: string,
     ref?: Ref,
   ) => void;
-  setValue: (
-    name: FieldName<FormValues>,
-    value: FieldValue<FormValues>,
+  setValue: <Name extends FieldName<FormValues>>(
+    name: Name,
+    value: FormValues[Name],
     shouldValidate?: boolean,
   ) => void;
   triggerValidation: (
