@@ -40,6 +40,7 @@ import {
   ValidationPayload,
   ElementLike,
   Inputs,
+  NameProp,
 } from './types';
 
 export default function useForm<FormValues extends FieldValues = FieldValues>({
@@ -601,18 +602,44 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
     }
   }
 
+  // For JSX registry
+  // React-Native (Element has no name prop, so it must be passed in on teh validateRule)
+  function register<Element>(
+    validateRule: ValidationOptions & NameProp,
+  ): (ref: Element | null) => void;
+
+  // Web model (name is on the element prop)
   function register<Element extends ElementLike = ElementLike>(
     validateRule: ValidationOptions,
   ): (ref: Element | null) => void;
+
+  // For non-JSX registry:
+  // React-Native (Element has no name prop)
+  // - this case also allows a manual web-based register call to override the name prop
+  function register<Element>(
+    ref: Element | null,
+    validateRule: ValidationOptions & NameProp,
+  ): void;
+
+  // Web model (name is on the prop for the ref passed in)
   function register<Element extends ElementLike = ElementLike>(
     ref: Element | null,
     validationOptions?: ValidationOptions,
   ): void;
+
   function register<Element extends ElementLike = ElementLike>(
     refOrValidateRule: ValidationOptions | Element | null,
-    validationOptions?: ValidationOptions,
+    validationOptions?: ValidationOptions & Partial<NameProp>,
   ): ((ref: Element | null) => void) | void {
     if (typeof window === UNDEFINED || !refOrValidateRule) return;
+
+    if (validationOptions && typeof validationOptions.name === 'string') {
+      registerIntoFieldsRef(
+        { name: validationOptions.name },
+        validationOptions,
+      );
+      return;
+    }
 
     if (
       isObject(refOrValidateRule) &&
