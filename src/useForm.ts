@@ -81,8 +81,7 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
     isOnSubmit: isReValidateOnSubmit,
   } = useRef(modeChecker(reValidateMode)).current;
   const {
-    isOnBlur: isTouchedOnBlur,
-    // isOnSubmit: isTouchedOnSubmit,
+    isOnBlur: isTouchedOnBlur
   } = useRef(modeChecker(touchedMode)).current;
   const validationSchemaOptionRef = useRef(validationSchemaOption);
   validationFieldsRef.current = validationFields;
