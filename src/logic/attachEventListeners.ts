@@ -17,12 +17,15 @@ export default function attachEventListeners({
 }): void {
   const { ref } = field;
 
-  if (!ref.addEventListener) return;
+  if (!ref.addEventListener) {
+    return;
+  }
 
   ref.addEventListener(
     isCheckBoxInput(ref.type) || isRadio ? EVENTS.CHANGE : EVENTS.INPUT,
     validateAndStateUpdate,
   );
-  if (isOnBlur || isReValidateOnBlur)
+  if (isOnBlur || isReValidateOnBlur) {
     ref.addEventListener(EVENTS.BLUR, validateAndStateUpdate);
+  }
 }
