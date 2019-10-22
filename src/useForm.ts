@@ -46,6 +46,7 @@ import {
 export default function useForm<FormValues extends FieldValues = FieldValues>({
   mode = VALIDATION_MODE.onSubmit,
   reValidateMode = VALIDATION_MODE.onChange,
+  touchedMode = VALIDATION_MODE.onChange,
   validationSchema,
   defaultValues = {},
   validationFields,
@@ -79,6 +80,9 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
     isOnBlur: isReValidateOnBlur,
     isOnSubmit: isReValidateOnSubmit,
   } = useRef(modeChecker(reValidateMode)).current;
+  const {
+    isOnBlur: isTouchedOnBlur
+  } = useRef(modeChecker(touchedMode)).current;
   const validationSchemaOptionRef = useRef(validationSchemaOption);
   validationFieldsRef.current = validationFields;
 
@@ -333,13 +337,14 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
           (isOnBlur && !isBlurEvent && !errors[name]) ||
           (isReValidateOnBlur && !isBlurEvent && errors[name]) ||
           (isReValidateOnSubmit && errors[name]);
+        const shouldSkipTouched = (isTouchedOnBlur && !isBlurEvent);
         const shouldUpdateDirty = setDirty(name);
         let shouldUpdateState =
           isWatchAllRef.current ||
           watchFieldsRef.current[name as FieldName<FormValues>] ||
           shouldUpdateDirty;
 
-        if (!touchedFieldsRef.current.has(name)) {
+        if (!shouldSkipTouched && !touchedFieldsRef.current.has(name)) {
           touchedFieldsRef.current.add(name);
           shouldUpdateState = true;
         }
