@@ -22,7 +22,6 @@ export type Inputs = HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement;
 export type Ref = Inputs | any;
 
 type Mode = keyof ValidationMode;
-type TouchedMode = keyof Pick<ValidationMode, 'onChange' | 'onBlur'>;
 
 export type OnSubmit<FormValues extends FieldValues> = (
   data: FormValues,
@@ -50,7 +49,6 @@ export interface Schema<Data> {
 export type Options<FormValues extends FieldValues = FieldValues> = Partial<{
   mode: Mode;
   reValidateMode: Mode;
-  touchedMode: TouchedMode;
   defaultValues: Partial<FormValues>;
   validationSchemaOption: SchemaValidateOptions;
   validationFields: FieldName<FormValues>[];
