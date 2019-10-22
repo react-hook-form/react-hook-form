@@ -161,6 +161,9 @@ export default async <FormValues extends FieldValues>(
           values.reduce(async (previous, [key, validate], index): Promise<
             ValidatePromiseResult
           > => {
+            if (!isEmptyObject(await previous)) {
+              return resolve(previous);
+            }
             const lastChild = values.length - 1 === index;
 
             if (isFunction(validate)) {

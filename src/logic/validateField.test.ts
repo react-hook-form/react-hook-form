@@ -572,7 +572,7 @@ describe('validateField', () => {
     ).toEqual({
       test: {
         ref: 'data',
-        type: 'test1',
+        type: 'test',
         message: '',
       },
     });
