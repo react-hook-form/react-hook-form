@@ -8,7 +8,6 @@
 
 <p align="center">Formulaires performants, flexibles et extensibles dotés d'une validation poussée et facile à utiliser.</p>
 
-
 <div align="center">
 
 [![CircleCI](https://badgen.net/circleci/github/react-hook-form/react-hook-form)](https://circleci.com/gh/react-hook-form/react-hook-form)
@@ -30,7 +29,7 @@
     </p>
 </div>
 
-🇦🇺English | <a href="./README.zh-CN.md">🇨🇳简体中文</a> | <a href="./README.ja-JP.md">🇯🇵日本语</a> | <a href="./README.fr-FR.md">🇫🇷 Français</a>
+🇦🇺English | <a href="./README.zh-CN.md">🇨🇳 简体中文</a> | <a href="./README.ja-JP.md">🇯🇵 日本语</a> | <a href="./README.fr-FR.md">🇫🇷Français</a>
 
 ## Fonctionnalités
 
@@ -73,13 +72,10 @@ function App() {
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
       <input name="firstname" ref={register} /> {/* register an input */}
-
       <input name="lastname" ref={register({ required: true })} />
       {errors.lastname && 'Last name is required.'}
-
       <input name="age" ref={register({ pattern: /\d+/ })} />
       {errors.age && 'Please enter number for age.'}
-
       <input type="submit" />
     </form>
   );
