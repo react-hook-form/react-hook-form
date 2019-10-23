@@ -65,7 +65,7 @@ context('re-validate mode', () => {
     cy.get('button#submit').click();
 
     cy.get('p').should('have.length', 0);
-    cy.get('#renderCount').contains('7');
+    cy.get('#renderCount').contains('9');
   });
 
   it('should re-validate the form only onSubmit with mode onChange and reValidateMode onSubmit', () => {
@@ -87,7 +87,7 @@ context('re-validate mode', () => {
     cy.get('button#submit').click();
 
     cy.get('p').should('have.length', 0);
-    cy.get('#renderCount').contains('7');
+    cy.get('#renderCount').contains('9');
   });
 
   it('should re-validate the form onBlur only with mode onBlur and reValidateMode onBlur', () => {
