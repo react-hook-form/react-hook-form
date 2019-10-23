@@ -1,6 +1,6 @@
 <div align="center">
     <p align="center">
-        <a href="https://react-hook-form.com" title="React Hook Form - Simple React forms validation"><img src="https://raw.githubusercontent.com/bluebill1049/react-hook-form/master/website/logo.png" alt="React Hook Form Logo - React hook form validation" width="330px" /></a>
+        <a href="https://react-hook-form.com/zh" title="React Hook Form - Simple React forms validation"><img src="https://raw.githubusercontent.com/bluebill1049/react-hook-form/master/website/logo.png" alt="React Hook Form Logo - React hook form validation" width="330px" /></a>
     </p>
 </div>
 
@@ -19,9 +19,9 @@
 
 </div>
 
-<div align="center"><p align="center"><a href="https://react-hook-form.com" title="React Hook Form - Simple React forms validation"><img src="https://raw.githubusercontent.com/bluebill1049/react-hook-form/master/website/example.gif" alt="React Hook Form Logo - React hook form validation" width="750px" /></a></p></div>
+<div align="center"><p align="center"><a href="https://react-hook-form.com/zh" title="React Hook Form - Simple React forms validation"><img src="https://raw.githubusercontent.com/bluebill1049/react-hook-form/master/website/example.gif" alt="React Hook Form Logo - React hook form validation" width="750px" /></a></p></div>
 
-<a href="https://github.com/react-hook-form/react-hook-form">🇦🇺English</a> | 🇨🇳简体中文 | <a href="./README.ja-JP.md">🇯🇵Japanese</a>
+<a href="https://github.com/react-hook-form/react-hook-form">🇦🇺English</a> | 🇨🇳 简体中文 | <a href="./README.ja-JP.md">🇯🇵Japanese</a>
 
 ## 特性
 
@@ -29,7 +29,7 @@
 - 以性能和开发体验为基础构建
 - 非受控表单校验
 - [迷你](https://bundlephobia.com/result?p=react-hook-form@latest)的体积而没有其他依赖
-- 遵循html标准进行校验
+- 遵循 html 标准进行校验
 - 支持浏览器原生校验
 - 从[这里](https://react-hook-form.now.sh/builder)快速构建你的表单
 
@@ -40,12 +40,12 @@
 ## 链接
 
 - [动机](https://medium.com/@bruce1049/form-validation-with-hook-in-3kb-c5414edf7d64)
-- [开始](https://react-hook-form.com/get-started)
-- [API](https://react-hook-form.com/api)
+- [开始](https://react-hook-form.com/zh/get-started)
+- [API](https://react-hook-form.com/zh/api)
 - [示例](https://github.com/bluebill1049/react-hook-form/tree/master/examples)
-- [Demo](https://react-hook-form.com)
-- [Form Builder](https://react-hook-form.com/builder)
-- [常见问题](https://react-hook-form.com/faq)
+- [Demo](https://react-hook-form.com/zh)
+- [Form Builder](https://react-hook-form.com/zh/builder)
+- [常见问题](https://react-hook-form.com/zh/faq)
 
 ## 快速开始
 
@@ -62,13 +62,10 @@ function App() {
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
       <input name="firstname" ref={register} /> {/* register an input */}
-
       <input name="lastname" ref={register({ required: true })} />
       {errors.lastname && 'Last name is required.'}
-
       <input name="age" ref={register({ pattern: /\d+/ })} />
       {errors.age && 'Please enter number for age.'}
-
       <input type="submit" />
     </form>
   );
