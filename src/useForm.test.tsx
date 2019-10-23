@@ -61,8 +61,6 @@ describe('useForm', () => {
         },
         isRadio: false,
         validateAndStateUpdate: expect.any(Function),
-        isOnBlur: false,
-        isReValidateOnBlur: false,
       });
       expect(onDomRemove).toHaveBeenCalled();
     });
@@ -83,9 +81,7 @@ describe('useForm', () => {
           },
         },
         isRadio: true,
-        isOnBlur: false,
         validateAndStateUpdate: expect.any(Function),
-        isReValidateOnBlur: false,
       });
       expect(onDomRemove).toBeCalled();
     });

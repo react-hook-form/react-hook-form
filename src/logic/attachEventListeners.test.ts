@@ -19,8 +19,6 @@ describe('attachEventListeners', () => {
         isRadio: true,
         field: fields.test,
         validateAndStateUpdate,
-        isOnBlur: false,
-        isReValidateOnBlur: false,
       }),
     ).toBeUndefined();
 
@@ -46,8 +44,6 @@ describe('attachEventListeners', () => {
         field: fields.test,
         isRadio: true,
         validateAndStateUpdate,
-        isOnBlur: false,
-        isReValidateOnBlur: false,
       }),
     ).toBeUndefined();
 
@@ -73,8 +69,6 @@ describe('attachEventListeners', () => {
         field: fields.test,
         isRadio: true,
         validateAndStateUpdate,
-        isOnBlur: true,
-        isReValidateOnBlur: false,
       }),
     ).toBeUndefined();
 
@@ -99,8 +93,6 @@ describe('attachEventListeners', () => {
         field: fields.test,
         isRadio: true,
         validateAndStateUpdate,
-        isOnBlur: false,
-        isReValidateOnBlur: true,
       }),
     ).toBeUndefined();
 
@@ -125,8 +117,6 @@ describe('attachEventListeners', () => {
         field: fields.test,
         isRadio: false,
         validateAndStateUpdate,
-        isOnBlur: false,
-        isReValidateOnBlur: false,
       }),
     ).toBeUndefined();
 
@@ -153,8 +143,6 @@ describe('attachEventListeners', () => {
         field: fields.test,
         isRadio: false,
         validateAndStateUpdate,
-        isOnBlur: false,
-        isReValidateOnBlur: false,
       }),
     ).toBeUndefined();
 
@@ -179,8 +167,6 @@ describe('attachEventListeners', () => {
         field: fields.test,
         isRadio: true,
         validateAndStateUpdate,
-        isOnBlur: false,
-        isReValidateOnBlur: false,
       }),
     ).toBeUndefined();
 
@@ -206,8 +192,6 @@ describe('attachEventListeners', () => {
         field: fields.test,
         isRadio: false,
         validateAndStateUpdate,
-        isOnBlur: false,
-        isReValidateOnBlur: false,
       }),
     ).toBeUndefined();
 
@@ -221,8 +205,6 @@ describe('attachEventListeners', () => {
         field: { ref: {} },
         isRadio: false,
         validateAndStateUpdate: () => {},
-        isOnBlur: false,
-        isReValidateOnBlur: false,
       }),
     ).toBeUndefined();
   });
