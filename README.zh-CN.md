@@ -31,7 +31,7 @@
 - [迷你](https://bundlephobia.com/result?p=react-hook-form@latest)的体积而没有其他依赖
 - 遵循html标准进行校验
 - 支持浏览器原生校验
-- 从[这里](https://react-hook-form.now.sh/builder)快速构建你的表单
+- 从[这里](https://react-hook-form.com/zh/form-builder)快速构建你的表单
 
 ## 安装
 
@@ -44,7 +44,7 @@
 - [API](https://react-hook-form.com/zh/api)
 - [示例](https://github.com/bluebill1049/react-hook-form/tree/master/examples)
 - [Demo](https://react-hook-form.com/zh)
-- [Form Builder](https://react-hook-form.com/zh/builder)
+- [Form Builder](https://react-hook-form.com/zh/form-builder)
 - [常见问题](https://react-hook-form.com/zh/faq)
 
 ## 快速开始
