@@ -29,7 +29,7 @@
 - 以性能和开发体验为基础构建
 - 非受控表单校验
 - [迷你](https://bundlephobia.com/result?p=react-hook-form@latest)的体积而没有其他依赖
-- 遵循 html 标准进行校验
+- 遵循html标准进行校验
 - 支持浏览器原生校验
 - 从[这里](https://react-hook-form.com/zh/form-builder)快速构建你的表单
 
