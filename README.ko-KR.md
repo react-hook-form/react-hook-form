@@ -6,7 +6,7 @@
     </p>
 </div>
 
-<p align="center">Formulaires performants, flexibles et extensibles dotés d'une validation poussée et facile à utiliser.</p>
+<p align="center">유연하고 확장 가능한 사용하기 쉬운 고성능 폼 검증 라이브러리</p> 
 
 <div align="center">
 
@@ -29,35 +29,35 @@
     </p>
 </div>
 
-<a href="https://github.com/react-hook-form/react-hook-form">🇦🇺English</a> | <a href="./README.zh-CN.md">🇨🇳简体中文</a> | <a href="./README.ja-JP.md">🇯🇵日本语</a> | 🇫🇷 Français | <a href="./README.ko-KR.md">🇰🇷한국어</a>
+<a href="https://github.com/react-hook-form/react-hook-form">🇦🇺English</a> | <a href="./README.zh-CN.md">🇨🇳简体中文</a> | <a href="./README.ja-JP.md">🇯🇵日本语</a> | 🇫🇷 <a href="./README.fr-FR.md">Français</a> | 🇰🇷한국어
 
-## Fonctionnalités
+## 특징
 
-- Développé en privilegiant les performances et l'experience developpeur.
-- Formulaires non-contrôlés.
-- [Taille reduite](https://bundlephobia.com/result?p=react-hook-form@latest) sans aucune dépendance.
-- Respecte les normes de validation HTML.
-- Compatible avec React Native.
-- Supporte [Yup](https://github.com/jquense/yup) pour de la validation via schéma.
-- Supporte la validation native du navigateur.
-- Possibilité de développer des formulaires rapidement grâce au [form builder](https://react-hook-form.com/form-builder).
+- 성능과 DX를 기반으로 구축
+- 제어되지 않는 양식 검증
+- 의존성 없는 [작은 용량](https://bundlephobia.com/result?p=react-hook-form@latest) 
+- HTML 표준을 따르는 검증  
+- Reative Native 와 호환
+- [Yup](https://github.com/jquense/yup) 스키마 기반의 검증 지원
+- 브라우저 네이티브 검증 지원
+- [Form Builder](https://react-hook-form.com/form-builder)로 폼 빠르게 생성 
 
-## Installation
+## 설치
 
     $ npm install react-hook-form
 
-## Liens
+## 링크
 
-- [Motivation](https://medium.com/@bruce1049/form-validation-with-hook-in-3kb-c5414edf7d64)
-- [Tutoriel vidéo](https://www.youtube.com/watch?v=-mFXqOaqgZk&t)
-- [Bien demarrer](https://react-hook-form.com/get-started)
+- [만들게된 동기](https://medium.com/@bruce1049/form-validation-with-hook-in-3kb-c5414edf7d64)
+- [비디오 튜토리얼](https://www.youtube.com/watch?v=-mFXqOaqgZk&t)
+- [시작하기](https://react-hook-form.com/get-started)
 - [API](https://react-hook-form.com/api)
-- [Exemples](https://github.com/bluebill1049/react-hook-form/tree/master/examples)
-- [Démo](https://react-hook-form.com)
+- [예제](https://github.com/bluebill1049/react-hook-form/tree/master/examples)
+- [데모](https://react-hook-form.com)
 - [Form Builder](https://react-hook-form.com/form-builder)
 - [FAQs](https://react-hook-form.com/faq)
 
-## Démarrage rapide
+## 시작하기 
 
 ```jsx
 import React from 'react';
@@ -72,27 +72,30 @@ function App() {
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
       <input name="firstname" ref={register} /> {/* register an input */}
+
       <input name="lastname" ref={register({ required: true })} />
       {errors.lastname && 'Last name is required.'}
+
       <input name="age" ref={register({ pattern: /\d+/ })} />
       {errors.age && 'Please enter number for age.'}
+
       <input type="submit" />
     </form>
   );
 }
 ```
 
-## Contributeurs
+## 기여자
 
-Thanks goes to these wonderful people. [[Become a contributor](CONTRIBUTING.md)].
+모든 기여자 분들께 감사합니다. [[기여 하기](CONTRIBUTING.md)] 
 
 <a href="https://github.com/react-hook-form/react-hook-form/graphs/contributors">
     <img src="https://opencollective.com/react-hook-form/contributors.svg?width=950" />
 </a>
 
-## Sponsors
+## 후원자 
 
-Merci à tous nos sponsors ! [[Become a backer](https://opencollective.com/react-hook-form#backer)].
+모둔 후원자 분들께 감사합니다 [[후원 하기](https://opencollective.com/react-hook-form#backer)]
 
 <a href="https://opencollective.com/react-hook-form#backers">
     <img src="https://opencollective.com/react-hook-form/backers.svg?width=950" />
