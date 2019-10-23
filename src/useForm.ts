@@ -638,8 +638,6 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
         field: fieldToRegister,
         isRadio,
         validateAndStateUpdate: validateAndUpdateStateRef.current,
-        isOnBlur,
-        isReValidateOnBlur,
       });
     }
   }
