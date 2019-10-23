@@ -29,7 +29,7 @@
     </p>
 </div>
 
-🇦🇺English | <a href="./README.zh-CN.md">🇨🇳 简体中文</a> | <a href="./README.ja-JP.md">🇯🇵 日本语</a> | <a href="./README.fr-FR.md">🇫🇷Français</a>
+<a href="https://github.com/react-hook-form/react-hook-form">🇦🇺English</a> | <a href="./README.zh-CN.md">🇨🇳简体中文</a> | <a href="./README.ja-JP.md">🇯🇵日本语</a> | 🇫🇷Français
 
 ## Fonctionnalités
 
