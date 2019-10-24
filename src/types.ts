@@ -138,13 +138,7 @@ export interface FormState<FormValues extends FieldValues = FieldValues> {
   isValid: boolean;
 }
 
-export type ReadFormState =
-  | 'dirty'
-  | 'isSubmitted'
-  | 'submitCount'
-  | 'touched'
-  | 'isSubmitting'
-  | 'isValid';
+export type ReadFormState = keyof FormState;
 
 export interface NameProp {
   name: string;
