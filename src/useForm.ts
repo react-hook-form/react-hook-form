@@ -42,6 +42,7 @@ import {
   Inputs,
   NameProp,
   FormState,
+  ReadFormState,
 } from './types';
 
 export default function useForm<FormValues extends FieldValues = FieldValues>({
@@ -945,16 +946,7 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
             }),
       },
       {
-        get: (
-          obj: FormState<FieldValues>,
-          prop:
-            | 'dirty'
-            | 'isSubmitted'
-            | 'submitCount'
-            | 'touched'
-            | 'isSubmitting'
-            | 'isValid',
-        ) => {
+        get: (obj: FormState<FieldValues>, prop: ReadFormState) => {
           if (!(prop in obj)) {
             return {};
           }
