@@ -69,14 +69,6 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
   const isWatchAllRef = useRef(false);
   const isSubmittedRef = useRef(false);
   const isDirtyRef = useRef(false);
-  const readFormState = useRef({
-    dirty: false,
-    isSubmitted: false,
-    submitCount: false,
-    touched: false,
-    isSubmitting: false,
-    isValid: false,
-  });
   const submitCountRef = useRef(0);
   const isSubmittingRef = useRef(false);
   const isSchemaValidateTriggeredRef = useRef(false);
@@ -84,6 +76,14 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
   const validateAndUpdateStateRef = useRef<Function>();
   const [, render] = useState();
   const { isOnBlur, isOnSubmit } = useRef(modeChecker(mode)).current;
+  const readFormState = useRef({
+    dirty: false,
+    isSubmitted: isOnSubmit,
+    submitCount: false,
+    touched: false,
+    isSubmitting: false,
+    isValid: false,
+  });
   const {
     isOnBlur: isReValidateOnBlur,
     isOnSubmit: isReValidateOnSubmit,
@@ -182,7 +182,7 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
       if (
         setDirty(name) ||
         shouldRender ||
-        !touchedFieldsRef.current.has(name)
+        (!touchedFieldsRef.current.has(name) && readFormState.current.touched)
       ) {
         touchedFieldsRef.current.add(name);
         render({});
@@ -596,7 +596,7 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
         fieldsWithValidationRef.current.add(name);
       }
 
-      if (!isOnSubmit) {
+      if (!isOnSubmit && readFormState.current.isValid) {
         if (validationSchema) {
           isSchemaValidateTriggeredRef.current = true;
           validateWithSchemaCurry(
