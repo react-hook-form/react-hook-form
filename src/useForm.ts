@@ -41,6 +41,7 @@ import {
   ElementLike,
   Inputs,
   NameProp,
+  FormState,
 } from './types';
 
 export default function useForm<FormValues extends FieldValues = FieldValues>({
@@ -68,6 +69,14 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
   const isWatchAllRef = useRef(false);
   const isSubmittedRef = useRef(false);
   const isDirtyRef = useRef(false);
+  const readFormState = useRef({
+    dirty: false,
+    isSubmitted: false,
+    submitCount: false,
+    touched: false,
+    isSubmitting: false,
+    isValid: false,
+  });
   const submitCountRef = useRef(0);
   const isSubmittingRef = useRef(false);
   const isSchemaValidateTriggeredRef = useRef(false);
@@ -148,7 +157,7 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
   };
 
   const setDirty = (name: FieldName<FormValues>): boolean => {
-    if (!fieldsRef.current[name]) {
+    if (!fieldsRef.current[name] || !readFormState.current.dirty) {
       return false;
     }
 
@@ -339,7 +348,11 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
           watchFieldsRef.current[name as FieldName<FormValues>] ||
           shouldUpdateDirty;
 
-        if (isBlurEvent && !touchedFieldsRef.current.has(name)) {
+        if (
+          isBlurEvent &&
+          !touchedFieldsRef.current.has(name) &&
+          readFormState.current.touched
+        ) {
           touchedFieldsRef.current.add(name);
           shouldUpdateState = true;
         }
@@ -900,26 +913,47 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
     errors: validationFields
       ? pickErrors<FormValues>(errorsRef.current, validationFields)
       : errorsRef.current,
-    formState: {
-      dirty: isDirtyRef.current,
-      isSubmitted: isSubmittedRef.current,
-      submitCount: submitCountRef.current,
-      touched: [...touchedFieldsRef.current],
-      isSubmitting: isSubmittingRef.current,
-      ...(isOnSubmit
-        ? {
-            isValid: isSubmittedRef.current && isEmptyObject(errorsRef.current),
+    formState: new Proxy(
+      {
+        dirty: isDirtyRef.current,
+        isSubmitted: isSubmittedRef.current,
+        submitCount: submitCountRef.current,
+        touched: [...touchedFieldsRef.current],
+        isSubmitting: isSubmittingRef.current,
+        ...(isOnSubmit
+          ? {
+              isValid:
+                isSubmittedRef.current && isEmptyObject(errorsRef.current),
+            }
+          : {
+              isValid: validationSchema
+                ? isSchemaValidateTriggeredRef.current &&
+                  isEmptyObject(schemaErrorsRef.current)
+                : fieldsWithValidationRef.current.size
+                ? !isEmptyObject(fieldsRef.current) &&
+                  validFieldsRef.current.size >=
+                    fieldsWithValidationRef.current.size
+                : !isEmptyObject(fieldsRef.current),
+            }),
+      },
+      {
+        get: (
+          obj: FormState<FieldValues>,
+          prop:
+            | 'dirty'
+            | 'isSubmitted'
+            | 'submitCount'
+            | 'touched'
+            | 'isSubmitting'
+            | 'isValid',
+        ) => {
+          if (!(prop in obj)) {
+            return {};
           }
-        : {
-            isValid: validationSchema
-              ? isSchemaValidateTriggeredRef.current &&
-                isEmptyObject(schemaErrorsRef.current)
-              : fieldsWithValidationRef.current.size
-              ? !isEmptyObject(fieldsRef.current) &&
-                validFieldsRef.current.size >=
-                  fieldsWithValidationRef.current.size
-              : !isEmptyObject(fieldsRef.current),
-          }),
-    },
+          readFormState.current[prop] = true;
+          return obj[prop];
+        },
+      },
+    ),
   };
 }
