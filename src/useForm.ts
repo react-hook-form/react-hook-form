@@ -735,8 +735,10 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
       ? validationFields.map(name => fieldsRef.current[name])
       : Object.values(fields);
 
-    isSubmittingRef.current = true;
-    render({});
+    if (readFormState.current.isSubmitting) {
+      isSubmittingRef.current = true;
+      render({});
+    }
 
     if (validationSchema) {
       fieldValues = getFieldsValues(fields);
@@ -824,9 +826,15 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
       return;
     }
 
-    isSubmittedRef.current = true;
-    isSubmittingRef.current = false;
-    submitCountRef.current = submitCountRef.current + 1;
+    if (readFormState.current.isSubmitted) {
+      isSubmittedRef.current = true;
+    }
+    if (readFormState.current.isSubmitting) {
+      isSubmittingRef.current = false;
+    }
+    if (readFormState.current.submitCount) {
+      submitCountRef.current = submitCountRef.current + 1;
+    }
     render({});
   };
 
