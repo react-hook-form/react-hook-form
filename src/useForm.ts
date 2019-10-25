@@ -77,11 +77,11 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
   const validateAndUpdateStateRef = useRef<Function>();
   const [, render] = useState();
   const { isOnBlur, isOnSubmit } = useRef(modeChecker(mode)).current;
-  const readFormState = useRef({
+  const readFormState = useRef<FormState<FormValues>>({
     dirty: false,
     isSubmitted: isOnSubmit,
-    submitCount: false,
-    touched: false,
+    submitCount: 0,
+    touched: [],
     isSubmitting: false,
     isValid: false,
   });
@@ -918,7 +918,7 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
     errors: validationFields
       ? pickErrors<FormValues>(errorsRef.current, validationFields)
       : errorsRef.current,
-    formState: new Proxy(
+    formState: new Proxy<FormState<FormValues>>(
       {
         dirty: isDirtyRef.current,
         isSubmitted: isSubmittedRef.current,
