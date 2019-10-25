@@ -12,14 +12,10 @@ export const parseErrorSchema = <FormValues>(
 ): FieldErrors<FormValues> =>
   error.inner.length
     ? error.inner.reduce(
-        (previous: FieldValues, { path, message, type }: FieldValues) =>
-          previous[path]
-            ? previous
-            : {
-                ...previous,
-                [path]: { message, ref: {}, type },
-              },
-        {},
+        (previous: FieldValues, { path, message, type }: FieldValues) => ({
+          ...previous,
+          ...(previous[path] ? {} : { [path]: { message, ref: {}, type } }),
+        }),
       )
     : {
         [error.path]: { message: error.message, ref: {}, type: error.type },
