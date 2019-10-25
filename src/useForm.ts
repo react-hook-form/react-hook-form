@@ -827,15 +827,9 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
       return;
     }
 
-    if (readFormState.current.isSubmitted) {
-      isSubmittedRef.current = true;
-    }
-    if (readFormState.current.isSubmitting) {
-      isSubmittingRef.current = false;
-    }
-    if (readFormState.current.submitCount) {
-      submitCountRef.current = submitCountRef.current + 1;
-    }
+    isSubmittedRef.current = true;
+    isSubmittingRef.current = false;
+    submitCountRef.current = submitCountRef.current + 1;
     render({});
   };
 
@@ -890,8 +884,12 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
 
   const getValues = (payload?: { nest: boolean }): FormValues => {
     const fieldValues = getFieldsValues(fieldsRef.current);
-    const outputValues = isEmptyObject(fieldValues) ? defaultValues : fieldValues;
-    return payload && payload.nest ? combineFieldValues(outputValues) : outputValues;
+    const outputValues = isEmptyObject(fieldValues)
+      ? defaultValues
+      : fieldValues;
+    return payload && payload.nest
+      ? combineFieldValues(outputValues)
+      : outputValues;
   };
 
   useEffect(
