@@ -13,6 +13,18 @@ describe('shouldUpdateWithError', () => {
     ).toBeTruthy();
   });
 
+  it('should return false when form is valid and field is valid', () => {
+    expect(
+      shouldUpdateWithError({
+        errors: {},
+        name: 'test',
+        error: {},
+        validFields: new Set(),
+        fieldsWithValidation: new Set(),
+      }),
+    ).toBeFalsy();
+  });
+
   it('should return true when error disappeared', () => {
     expect(
       shouldUpdateWithError({
