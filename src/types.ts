@@ -138,7 +138,7 @@ export interface FormState<FormValues extends FieldValues = FieldValues> {
   isValid: boolean;
 }
 
-export type ReadFormState = keyof FormState;
+export type ReadFormState = { [P in keyof FormState]: boolean };
 
 export interface NameProp {
   name: string;

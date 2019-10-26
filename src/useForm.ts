@@ -77,11 +77,11 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
   const validateAndUpdateStateRef = useRef<Function>();
   const [, render] = useState();
   const { isOnBlur, isOnSubmit } = useRef(modeChecker(mode)).current;
-  const readFormState = useRef<FormState<FormValues>>({
+  const readFormState = useRef<ReadFormState>({
     dirty: false,
     isSubmitted: isOnSubmit,
-    submitCount: 0,
-    touched: [],
+    submitCount: false,
+    touched: false,
     isSubmitting: false,
     isValid: false,
   });
@@ -942,7 +942,7 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
             }),
       },
       {
-        get: (obj: FormState<FieldValues>, prop: ReadFormState) => {
+        get: (obj, prop: keyof FormState) => {
           if (!(prop in obj)) {
             return {};
           }
