@@ -454,7 +454,6 @@ describe('useForm', () => {
       });
 
       await act(async () => {
-        // @ts-ignore
         await result.current.triggerValidation([
           { name: 'test', value: 'test' },
           { name: 'test1', value: 'test' },
