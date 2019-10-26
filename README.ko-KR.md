@@ -6,7 +6,7 @@
     </p>
 </div>
 
-<p align="center">유연하고 확장 가능한 사용하기 쉬운 고성능 폼 검증 라이브러리</p> 
+<p align="center">유연하고 확장 가능한 사용하기 쉬운 고성능 폼 검증 라이브러리</p>
 
 <div align="center">
 
@@ -29,18 +29,18 @@
     </p>
 </div>
 
-<a href="https://github.com/react-hook-form/react-hook-form">🇦🇺English</a> | <a href="./README.zh-CN.md">🇨🇳简体中文</a> | <a href="./README.ja-JP.md">🇯🇵日本语</a> | 🇫🇷 <a href="./README.fr-FR.md">Français</a> | 🇰🇷한국어
+<a href="https://github.com/react-hook-form/react-hook-form">🇦🇺English</a> | <a href="./README.zh-CN.md">🇨🇳简体中文</a> | <a href="./README.ja-JP.md">🇯🇵日本語</a> | 🇫🇷 <a href="./README.fr-FR.md">Français</a> | 🇰🇷한국어
 
 ## 특징
 
 - 성능과 DX를 기반으로 구축
 - 제어되지 않는 양식 검증
-- 의존성 없는 [작은 용량](https://bundlephobia.com/result?p=react-hook-form@latest) 
-- HTML 표준을 따르는 검증  
+- 의존성 없는 [작은 용량](https://bundlephobia.com/result?p=react-hook-form@latest)
+- HTML 표준을 따르는 검증
 - Reative Native 와 호환
 - [Yup](https://github.com/jquense/yup) 스키마 기반의 검증 지원
 - 브라우저 네이티브 검증 지원
-- [Form Builder](https://react-hook-form.com/form-builder)로 폼 빠르게 생성 
+- [Form Builder](https://react-hook-form.com/form-builder)로 폼 빠르게 생성
 
 ## 설치
 
@@ -57,7 +57,7 @@
 - [Form Builder](https://react-hook-form.com/form-builder)
 - [FAQs](https://react-hook-form.com/faq)
 
-## 시작하기 
+## 시작하기
 
 ```jsx
 import React from 'react';
@@ -87,13 +87,13 @@ function App() {
 
 ## 기여자
 
-모든 기여자 분들께 감사합니다. [[기여 하기](CONTRIBUTING.md)] 
+모든 기여자 분들께 감사합니다. [[기여 하기](CONTRIBUTING.md)]
 
 <a href="https://github.com/react-hook-form/react-hook-form/graphs/contributors">
     <img src="https://opencollective.com/react-hook-form/contributors.svg?width=950" />
 </a>
 
-## 후원자 
+## 후원자
 
 모둔 후원자 분들께 감사합니다 [[후원 하기](https://opencollective.com/react-hook-form#backer)]
 
