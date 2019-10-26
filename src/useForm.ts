@@ -41,6 +41,8 @@ import {
   ElementLike,
   Inputs,
   NameProp,
+  FormState,
+  ReadFormState,
 } from './types';
 
 export default function useForm<FormValues extends FieldValues = FieldValues>({
@@ -75,6 +77,14 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
   const validateAndUpdateStateRef = useRef<Function>();
   const [, render] = useState();
   const { isOnBlur, isOnSubmit } = useRef(modeChecker(mode)).current;
+  const readFormState = useRef<ReadFormState>({
+    dirty: false,
+    isSubmitted: isOnSubmit,
+    submitCount: false,
+    touched: false,
+    isSubmitting: false,
+    isValid: false,
+  });
   const {
     isOnBlur: isReValidateOnBlur,
     isOnSubmit: isReValidateOnSubmit,
@@ -148,7 +158,7 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
   };
 
   const setDirty = (name: FieldName<FormValues>): boolean => {
-    if (!fieldsRef.current[name]) {
+    if (!fieldsRef.current[name] || !readFormState.current.dirty) {
       return false;
     }
 
@@ -173,7 +183,7 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
       if (
         setDirty(name) ||
         shouldRender ||
-        !touchedFieldsRef.current.has(name)
+        (!touchedFieldsRef.current.has(name) && readFormState.current.touched)
       ) {
         touchedFieldsRef.current.add(name);
         render({});
@@ -339,7 +349,11 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
           watchFieldsRef.current[name as FieldName<FormValues>] ||
           shouldUpdateDirty;
 
-        if (isBlurEvent && !touchedFieldsRef.current.has(name)) {
+        if (
+          isBlurEvent &&
+          !touchedFieldsRef.current.has(name) &&
+          readFormState.current.touched
+        ) {
           touchedFieldsRef.current.add(name);
           shouldUpdateState = true;
         }
@@ -583,7 +597,7 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
         fieldsWithValidationRef.current.add(name);
       }
 
-      if (!isOnSubmit) {
+      if (!isOnSubmit && readFormState.current.isValid) {
         if (validationSchema) {
           isSchemaValidateTriggeredRef.current = true;
           validateWithSchemaCurry(
@@ -722,8 +736,10 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
       ? validationFields.map(name => fieldsRef.current[name])
       : Object.values(fields);
 
-    isSubmittingRef.current = true;
-    render({});
+    if (readFormState.current.isSubmitting) {
+      isSubmittingRef.current = true;
+      render({});
+    }
 
     if (validationSchema) {
       fieldValues = getFieldsValues(fields);
@@ -868,8 +884,12 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
 
   const getValues = (payload?: { nest: boolean }): FormValues => {
     const fieldValues = getFieldsValues(fieldsRef.current);
-    const outputValues = isEmptyObject(fieldValues) ? defaultValues : fieldValues;
-    return payload && payload.nest ? combineFieldValues(outputValues) : outputValues;
+    const outputValues = isEmptyObject(fieldValues)
+      ? defaultValues
+      : fieldValues;
+    return payload && payload.nest
+      ? combineFieldValues(outputValues)
+      : outputValues;
   };
 
   useEffect(
@@ -898,26 +918,38 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
     errors: validationFields
       ? pickErrors<FormValues>(errorsRef.current, validationFields)
       : errorsRef.current,
-    formState: {
-      dirty: isDirtyRef.current,
-      isSubmitted: isSubmittedRef.current,
-      submitCount: submitCountRef.current,
-      touched: [...touchedFieldsRef.current],
-      isSubmitting: isSubmittingRef.current,
-      ...(isOnSubmit
-        ? {
-            isValid: isSubmittedRef.current && isEmptyObject(errorsRef.current),
+    formState: new Proxy<FormState<FormValues>>(
+      {
+        dirty: isDirtyRef.current,
+        isSubmitted: isSubmittedRef.current,
+        submitCount: submitCountRef.current,
+        touched: [...touchedFieldsRef.current],
+        isSubmitting: isSubmittingRef.current,
+        ...(isOnSubmit
+          ? {
+              isValid:
+                isSubmittedRef.current && isEmptyObject(errorsRef.current),
+            }
+          : {
+              isValid: validationSchema
+                ? isSchemaValidateTriggeredRef.current &&
+                  isEmptyObject(schemaErrorsRef.current)
+                : fieldsWithValidationRef.current.size
+                ? !isEmptyObject(fieldsRef.current) &&
+                  validFieldsRef.current.size >=
+                    fieldsWithValidationRef.current.size
+                : !isEmptyObject(fieldsRef.current),
+            }),
+      },
+      {
+        get: (obj, prop: keyof FormState) => {
+          if (!(prop in obj)) {
+            return {};
           }
-        : {
-            isValid: validationSchema
-              ? isSchemaValidateTriggeredRef.current &&
-                isEmptyObject(schemaErrorsRef.current)
-              : fieldsWithValidationRef.current.size
-              ? !isEmptyObject(fieldsRef.current) &&
-                validFieldsRef.current.size >=
-                  fieldsWithValidationRef.current.size
-              : !isEmptyObject(fieldsRef.current),
-          }),
-    },
+          readFormState.current[prop] = true;
+          return obj[prop];
+        },
+      },
+    ),
   };
 }
