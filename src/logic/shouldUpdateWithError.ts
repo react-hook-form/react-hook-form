@@ -16,9 +16,13 @@ export default function shouldUpdateWithError<FormValues extends FieldValues>({
   validFields: Set<FieldName<FormValues>>;
   fieldsWithValidation: Set<FieldName<FormValues>>;
 }): boolean {
+  const isFieldValid = isEmptyObject(error);
+  const isFormValid = isEmptyObject(errors);
+
   if (
-    (validFields.has(name) && isEmptyObject(error)) ||
-    (errors[name] && errors[name].isManual)
+    (validFields.has(name) && isFieldValid) ||
+    (errors[name] && errors[name].isManual) ||
+    (isFormValid && isFieldValid)
   ) {
     return false;
   }
@@ -26,9 +30,9 @@ export default function shouldUpdateWithError<FormValues extends FieldValues>({
   if (
     (fieldsWithValidation.has(name) &&
       !validFields.has(name) &&
-      isEmptyObject(error)) ||
-    (isEmptyObject(errors) && !isEmptyObject(error)) ||
-    (isEmptyObject(error) && errors[name]) ||
+      isFieldValid) ||
+    (isFormValid && !isFieldValid) ||
+    (isFieldValid && errors[name]) ||
     !errors[name]
   ) {
     return true;
