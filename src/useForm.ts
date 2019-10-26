@@ -904,6 +904,28 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
     [removeEventListenerAndRef],
   );
 
+  const formState = {
+    dirty: isDirtyRef.current,
+    isSubmitted: isSubmittedRef.current,
+    submitCount: submitCountRef.current,
+    touched: [...touchedFieldsRef.current],
+    isSubmitting: isSubmittingRef.current,
+    ...(isOnSubmit
+      ? {
+          isValid: isSubmittedRef.current && isEmptyObject(errorsRef.current),
+        }
+      : {
+          isValid: validationSchema
+            ? isSchemaValidateTriggeredRef.current &&
+              isEmptyObject(schemaErrorsRef.current)
+            : fieldsWithValidationRef.current.size
+            ? !isEmptyObject(fieldsRef.current) &&
+              validFieldsRef.current.size >=
+                fieldsWithValidationRef.current.size
+            : !isEmptyObject(fieldsRef.current),
+        }),
+  };
+
   return {
     register: useCallback(register, []),
     unregister: useCallback(unregister, [removeEventListenerAndRef]),
@@ -918,38 +940,17 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
     errors: validationFields
       ? pickErrors<FormValues>(errorsRef.current, validationFields)
       : errorsRef.current,
-    formState: new Proxy<FormState<FormValues>>(
-      {
-        dirty: isDirtyRef.current,
-        isSubmitted: isSubmittedRef.current,
-        submitCount: submitCountRef.current,
-        touched: [...touchedFieldsRef.current],
-        isSubmitting: isSubmittingRef.current,
-        ...(isOnSubmit
-          ? {
-              isValid:
-                isSubmittedRef.current && isEmptyObject(errorsRef.current),
-            }
-          : {
-              isValid: validationSchema
-                ? isSchemaValidateTriggeredRef.current &&
-                  isEmptyObject(schemaErrorsRef.current)
-                : fieldsWithValidationRef.current.size
-                ? !isEmptyObject(fieldsRef.current) &&
-                  validFieldsRef.current.size >=
-                    fieldsWithValidationRef.current.size
-                : !isEmptyObject(fieldsRef.current),
-            }),
-      },
-      {
-        get: (obj, prop: keyof FormState) => {
-          if (!(prop in obj)) {
-            return {};
-          }
-          readFormState.current[prop] = true;
-          return obj[prop];
-        },
-      },
-    ),
+    formState:
+      typeof window !== UNDEFINED && !('Proxy' in window)
+        ? formState
+        : new Proxy<FormState<FormValues>>(formState, {
+            get: (obj, prop: keyof FormState) => {
+              if (!(prop in obj)) {
+                return {};
+              }
+              readFormState.current[prop] = true;
+              return obj[prop];
+            },
+          }),
   };
 }
