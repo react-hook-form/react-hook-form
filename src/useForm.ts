@@ -77,13 +77,14 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
   const validateAndUpdateStateRef = useRef<Function>();
   const [, render] = useState();
   const { isOnBlur, isOnSubmit } = useRef(modeChecker(mode)).current;
+  const isProxyEnabled = typeof window !== UNDEFINED && 'Proxy' in window;
   const readFormState = useRef<ReadFormState>({
-    dirty: false,
+    dirty: !isProxyEnabled,
     isSubmitted: isOnSubmit,
-    submitCount: false,
-    touched: false,
-    isSubmitting: false,
-    isValid: false,
+    submitCount: !isProxyEnabled,
+    touched: !isProxyEnabled,
+    isSubmitting: !isProxyEnabled,
+    isValid: !isProxyEnabled,
   });
   const {
     isOnBlur: isReValidateOnBlur,
@@ -940,17 +941,16 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
     errors: validationFields
       ? pickErrors<FormValues>(errorsRef.current, validationFields)
       : errorsRef.current,
-    formState:
-      typeof window !== UNDEFINED && !('Proxy' in window)
-        ? formState
-        : new Proxy<FormState<FormValues>>(formState, {
-            get: (obj, prop: keyof FormState) => {
-              if (!(prop in obj)) {
-                return {};
-              }
-              readFormState.current[prop] = true;
-              return obj[prop];
-            },
-          }),
+    formState: !isProxyEnabled
+      ? formState
+      : new Proxy<FormState<FormValues>>(formState, {
+          get: (obj, prop: keyof FormState) => {
+            if (!(prop in obj)) {
+              return {};
+            }
+            readFormState.current[prop] = true;
+            return obj[prop];
+          },
+        }),
   };
 }
