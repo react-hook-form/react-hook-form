@@ -8,7 +8,6 @@ export default function shouldUpdateWithError<FormValues extends FieldValues>({
   name,
   error,
   validFields,
-  fieldsWithValidation,
   schemaErrors,
 }: {
   errors: FieldErrors<FormValues>;
@@ -16,7 +15,6 @@ export default function shouldUpdateWithError<FormValues extends FieldValues>({
   schemaErrors: FieldErrors<FormValues> | undefined;
   name: FieldName<FormValues>;
   validFields: Set<FieldName<FormValues>>;
-  fieldsWithValidation: Set<FieldName<FormValues>>;
 }): boolean {
   const isFieldValid = isEmptyObject(error);
   const isFormValid = isEmptyObject(errors);
@@ -31,11 +29,7 @@ export default function shouldUpdateWithError<FormValues extends FieldValues>({
   }
 
   if (
-    (fieldsWithValidation.has(name) &&
-      !validFields.has(name) &&
-      isFieldValid) ||
-    (isFormValid && !isFieldValid) ||
-    (isFieldValid && !isFormValid) ||
+    isFormValid !== isFieldValid ||
     (!isFormValid && !existFieldError) ||
     (!isUndefined(schemaErrors) && isEmptyObject(schemaErrors) !== isFormValid)
   ) {

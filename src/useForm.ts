@@ -380,7 +380,6 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
           error,
           name,
           validFields: validFieldsRef.current,
-          fieldsWithValidation: fieldsWithValidationRef.current,
           schemaErrors: isSchemaValidateTriggeredRef.current
             ? schemaErrorsRef.current
             : undefined,
