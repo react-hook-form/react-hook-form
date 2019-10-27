@@ -7,7 +7,7 @@ import isArray from './isArray';
 const getPath = <FormValues extends FieldValues = FieldValues>(
   path: FieldName<FormValues>,
   values: FormValues | string[] | string,
-): any =>
+): any[] =>
   isArray(values)
     ? values.map((item, index) => {
         const pathWithIndex = `${path}[${index}]`;
