@@ -1,9 +1,8 @@
 import isEmptyObject from '../utils/isEmptyObject';
 import isSameError from '../utils/isSameError';
 import isUndefined from '../utils/isUndefined';
-import { FieldValues, FieldName } from '../types';
+import { FieldValues, FieldName, FieldErrors } from '../types';
 
-// TODO: improve the types in this file
 export default function shouldUpdateWithError<FormValues extends FieldValues>({
   errors,
   name,
@@ -12,9 +11,9 @@ export default function shouldUpdateWithError<FormValues extends FieldValues>({
   fieldsWithValidation,
   schemaErrors,
 }: {
-  errors: any;
-  error: any;
-  schemaErrors: any;
+  errors: FieldErrors<FormValues>;
+  error: FieldErrors<FormValues>;
+  schemaErrors: FieldErrors<FormValues> | undefined;
   name: FieldName<FormValues>;
   validFields: Set<FieldName<FormValues>>;
   fieldsWithValidation: Set<FieldName<FormValues>>;
