@@ -274,7 +274,7 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
         | ValidationPayload<FieldName<FormValues>, FieldValue<FormValues>>[],
       shouldRender?: boolean,
     ): Promise<boolean> => {
-      const fields: any =
+      const fields =
         payload || Object.keys(fieldsRef.current).map(name => ({ name }));
 
       if (validationSchema) {
