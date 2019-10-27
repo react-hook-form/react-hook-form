@@ -664,7 +664,7 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
     validateRule: ValidationOptions & NameProp,
   ): (ref: Element | null) => void;
 
-  // Web model: (name is on the element prop)
+  // Web model: name is on the element prop
   function register<Element extends ElementLike = ElementLike>(
     validateRule: ValidationOptions,
   ): (ref: Element | null) => void;
@@ -676,7 +676,7 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
     validateRule: ValidationOptions & NameProp,
   ): void;
 
-  // Web modelL (name is on the prop for the ref passed in)
+  // Web model: name is on the prop for the ref passed in
   function register<Element extends ElementLike = ElementLike>(
     ref: Element | null,
     validationOptions?: ValidationOptions,
