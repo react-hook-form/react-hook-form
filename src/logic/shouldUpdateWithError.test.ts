@@ -6,7 +6,7 @@ describe('shouldUpdateWithError', () => {
       shouldUpdateWithError({
         errors: {},
         name: 'test',
-        error: { test: 'test' },
+        error: { test: 'test' } as any,
         validFields: new Set(),
         schemaErrors: undefined,
         fieldsWithValidation: new Set(),
@@ -30,7 +30,7 @@ describe('shouldUpdateWithError', () => {
   it('should return true when error disappeared', () => {
     expect(
       shouldUpdateWithError({
-        errors: { test: 'test' },
+        errors: { test: 'test' } as any,
         name: 'test',
         error: {},
         validFields: new Set(),
@@ -43,9 +43,9 @@ describe('shouldUpdateWithError', () => {
   it('should return true when error return and not found in error message', () => {
     expect(
       shouldUpdateWithError({
-        errors: { test: 'test' },
+        errors: { test: 'test' } as any,
         name: '',
-        error: { data: 'bill' },
+        error: { data: 'bill' } as any,
         validFields: new Set(),
         schemaErrors: undefined,
         fieldsWithValidation: new Set(),
@@ -56,9 +56,9 @@ describe('shouldUpdateWithError', () => {
   it('should return true when error type or message not match in error message', () => {
     expect(
       shouldUpdateWithError({
-        errors: { test: { type: 'test' } },
+        errors: { test: { type: 'test' } } as any,
         name: 'test',
-        error: { test: { type: 'bill' } },
+        error: { test: { type: 'bill' } } as any,
         validFields: new Set(),
         schemaErrors: undefined,
         fieldsWithValidation: new Set(),
@@ -69,9 +69,9 @@ describe('shouldUpdateWithError', () => {
   it('should return false if nothing matches', () => {
     expect(
       shouldUpdateWithError({
-        errors: { test: { message: 'test', type: 'input' } },
+        errors: { test: { message: 'test', type: 'input' } } as any,
         name: 'test',
-        error: { test: { type: 'input', message: 'test' } },
+        error: { test: { type: 'input', message: 'test' } } as any,
         validFields: new Set(),
         schemaErrors: undefined,
         fieldsWithValidation: new Set(),
@@ -82,9 +82,11 @@ describe('shouldUpdateWithError', () => {
   it('should not clear error when it is set manually', () => {
     expect(
       shouldUpdateWithError({
-        errors: { test: { isManual: true, message: 'test', type: 'input' } },
+        errors: {
+          test: { isManual: true, message: 'test', type: 'input' },
+        } as any,
         name: 'test',
-        error: { test: { type: 'input', message: 'test' } },
+        error: { test: { type: 'input', message: 'test' } } as any,
         validFields: new Set(),
         schemaErrors: undefined,
         fieldsWithValidation: new Set(),
@@ -95,7 +97,7 @@ describe('shouldUpdateWithError', () => {
   it('should return true when new validate field is been introduced', () => {
     expect(
       shouldUpdateWithError({
-        errors: { test: { message: 'test', type: 'input' } },
+        errors: { test: { message: 'test', type: 'input' } } as any,
         name: 'test1',
         error: {},
         schemaErrors: undefined,
@@ -108,7 +110,7 @@ describe('shouldUpdateWithError', () => {
   it('should return false when same valid input been triggered', () => {
     expect(
       shouldUpdateWithError({
-        errors: { test: { message: 'test', type: 'input' } },
+        errors: { test: { message: 'test', type: 'input' } } as any,
         name: 'test',
         error: {},
         schemaErrors: undefined,
@@ -121,7 +123,7 @@ describe('shouldUpdateWithError', () => {
   it('should return true when schema errors is different', () => {
     expect(
       shouldUpdateWithError({
-        errors: { test: { message: 'test', type: 'input' } },
+        errors: { test: { message: 'test', type: 'input' } } as any,
         name: 'test',
         error: {},
         schemaErrors: {},
