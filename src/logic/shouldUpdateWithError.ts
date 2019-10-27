@@ -24,26 +24,24 @@ export default function shouldUpdateWithError<FormValues extends FieldValues>({
   const existFieldError = errors[name];
 
   if (
-    (validFields.has(name) && isFieldValid) ||
+    (isFieldValid && validFields.has(name)) ||
     (existFieldError && existFieldError.isManual)
   ) {
     return false;
   }
 
   if (
-    (fieldsWithValidation.has(name) &&
-      !validFields.has(name) &&
-      isFieldValid) ||
-    (isFormValid && !isFieldValid) ||
-    (isFieldValid && !isFormValid) ||
+    isFormValid !== isFieldValid ||
     (!isFormValid && !existFieldError) ||
+    (isFieldValid &&
+      fieldsWithValidation.has(name) &&
+      !validFields.has(name)) ||
     (!isUndefined(schemaErrors) && isEmptyObject(schemaErrors) !== isFormValid)
   ) {
     return true;
   }
 
   return (
-    existFieldError &&
     currentFieldError &&
     !isSameError(
       existFieldError,
