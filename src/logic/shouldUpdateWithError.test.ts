@@ -8,6 +8,7 @@ describe('shouldUpdateWithError', () => {
         name: 'test',
         error: { test: 'test' },
         validFields: new Set(),
+        schemaErrors: undefined,
         fieldsWithValidation: new Set(),
       }),
     ).toBeTruthy();
@@ -20,6 +21,7 @@ describe('shouldUpdateWithError', () => {
         name: 'test',
         error: {},
         validFields: new Set(),
+        schemaErrors: undefined,
         fieldsWithValidation: new Set(),
       }),
     ).toBeFalsy();
@@ -32,6 +34,7 @@ describe('shouldUpdateWithError', () => {
         name: 'test',
         error: {},
         validFields: new Set(),
+        schemaErrors: undefined,
         fieldsWithValidation: new Set(),
       }),
     ).toBeTruthy();
@@ -44,6 +47,7 @@ describe('shouldUpdateWithError', () => {
         name: '',
         error: { data: 'bill' },
         validFields: new Set(),
+        schemaErrors: undefined,
         fieldsWithValidation: new Set(),
       }),
     ).toBeTruthy();
@@ -56,6 +60,7 @@ describe('shouldUpdateWithError', () => {
         name: 'test',
         error: { test: { type: 'bill' } },
         validFields: new Set(),
+        schemaErrors: undefined,
         fieldsWithValidation: new Set(),
       }),
     ).toBeTruthy();
@@ -68,6 +73,7 @@ describe('shouldUpdateWithError', () => {
         name: 'test',
         error: { test: { type: 'input', message: 'test' } },
         validFields: new Set(),
+        schemaErrors: undefined,
         fieldsWithValidation: new Set(),
       }),
     ).toBeFalsy();
@@ -80,6 +86,7 @@ describe('shouldUpdateWithError', () => {
         name: 'test',
         error: { test: { type: 'input', message: 'test' } },
         validFields: new Set(),
+        schemaErrors: undefined,
         fieldsWithValidation: new Set(),
       }),
     ).toBeFalsy();
@@ -91,6 +98,7 @@ describe('shouldUpdateWithError', () => {
         errors: { test: { message: 'test', type: 'input' } },
         name: 'test1',
         error: {},
+        schemaErrors: undefined,
         validFields: new Set(['test']),
         fieldsWithValidation: new Set(['test1']),
       }),
@@ -103,9 +111,23 @@ describe('shouldUpdateWithError', () => {
         errors: { test: { message: 'test', type: 'input' } },
         name: 'test',
         error: {},
+        schemaErrors: undefined,
         validFields: new Set(['test']),
         fieldsWithValidation: new Set(['test']),
       }),
     ).toBeFalsy();
+  });
+
+  it('should return true when schema errors is different', () => {
+    expect(
+      shouldUpdateWithError({
+        errors: { test: { message: 'test', type: 'input' } },
+        name: 'test',
+        error: {},
+        schemaErrors: {},
+        validFields: new Set(),
+        fieldsWithValidation: new Set(),
+      }),
+    ).toBeTruthy();
   });
 });
