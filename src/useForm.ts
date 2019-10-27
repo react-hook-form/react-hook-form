@@ -159,7 +159,7 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
   };
 
   const setDirty = (name: FieldName<FormValues>): boolean => {
-    if (!fieldsRef.current[name] || !readFormState.current.dirty) {
+    if (!fieldsRef.current[name]) {
       return false;
     }
 
@@ -175,7 +175,7 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
     }
 
     isDirtyRef.current = !!dirtyFieldsRef.current.size;
-    return isDirtyChanged;
+    return isDirtyChanged && readFormState.current.dirty;
   };
 
   const setValueInternal = useCallback(
@@ -382,6 +382,9 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
           name,
           validFields: validFieldsRef.current,
           fieldsWithValidation: fieldsWithValidationRef.current,
+          schemaErrors: isSchemaValidateTriggeredRef.current
+            ? schemaErrorsRef.current
+            : undefined,
         });
 
         if (shouldUpdate) {
