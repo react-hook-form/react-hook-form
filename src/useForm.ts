@@ -1,4 +1,4 @@
-import React, { useRef, useState, useCallback, useEffect } from 'react';
+import * as React from 'react';
 import attachEventListeners from './logic/attachEventListeners';
 import combineFieldValues from './logic/combineFieldValues';
 import findRemovedFieldAndRemoveListener from './logic/findRemovedFieldAndRemoveListener';
@@ -44,6 +44,8 @@ import {
   FormState,
   ReadFormState,
 } from './types';
+
+const { useRef, useState, useCallback, useEffect } = React;
 
 export default function useForm<FormValues extends FieldValues = FieldValues>({
   mode = VALIDATION_MODE.onSubmit,
