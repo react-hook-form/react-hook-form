@@ -788,7 +788,9 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
             return Promise.resolve(resolvedPrevious);
           }
 
-          validFieldsRef.current.add(name);
+          if (fieldsWithValidationRef.current.has(name)) {
+            validFieldsRef.current.add(name);
+          }
           resolvedPrevious.values[name] = getFieldValue(fields, ref);
           return Promise.resolve(resolvedPrevious);
         },
