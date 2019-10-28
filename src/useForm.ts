@@ -544,7 +544,7 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
     };
     const fields: FieldsRefs<FormValues> = fieldsRef.current;
     const isRadio = isRadioInput(type);
-    let currentField = (fields[typedName] || undefined) as Field;
+    let currentField = fields[typedName] as Field;
     const isRegistered = isRadio
       ? currentField &&
         isArray(currentField.options) &&
@@ -555,9 +555,7 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
       return;
     }
 
-    if (!type) {
-      currentField = fieldAttributes;
-    } else {
+    if (type) {
       const mutationWatcher = onDomRemove(ref, () =>
         removeEventListenerAndRef(fieldAttributes),
       );
@@ -582,6 +580,8 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
           mutationWatcher,
         };
       }
+    } else {
+      currentField = fieldAttributes;
     }
 
     fields[typedName] = currentField;
@@ -638,7 +638,7 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
       return;
     }
 
-    const fieldToRegister =
+    const fieldToAttachListener =
       isRadio && currentField.options
         ? currentField.options[currentField.options.length - 1]
         : currentField;
@@ -651,7 +651,7 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
       attachNativeValidation(ref, validateOptions);
     } else {
       attachEventListeners({
-        field: fieldToRegister,
+        field: fieldToAttachListener,
         isRadio,
         validateAndStateUpdate: validateAndUpdateStateRef.current,
       });
@@ -714,12 +714,11 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
   function unregister(
     names: FieldName<FormValues> | FieldName<FormValues>[],
   ): void {
-    if (isEmptyObject(fieldsRef.current)) {
-      return;
+    if (!isEmptyObject(fieldsRef.current)) {
+      (isArray(names) ? names : [names]).forEach(fieldName =>
+        removeEventListenerAndRef(fieldsRef.current[fieldName], true),
+      );
     }
-    (isArray(names) ? names : [names]).forEach(fieldName =>
-      removeEventListenerAndRef(fieldsRef.current[fieldName], true),
-    );
   }
 
   const handleSubmit = (callback: OnSubmit<FormValues>) => async (
@@ -789,9 +788,7 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
             return Promise.resolve(resolvedPrevious);
           }
 
-          if (fieldsWithValidationRef.current.has(name)) {
-            validFieldsRef.current.add(name);
-          }
+          validFieldsRef.current.add(name);
           resolvedPrevious.values[name] = getFieldValue(fields, ref);
           return Promise.resolve(resolvedPrevious);
         },
@@ -849,6 +846,7 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
     isSubmittedRef.current = false;
     isDirtyRef.current = false;
     isSchemaValidateTriggeredRef.current = false;
+    submitCountRef.current = 0;
   };
 
   const reset = useCallback((values?: FormValues): void => {
@@ -878,7 +876,6 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
       >;
     }
 
-    submitCountRef.current = 0;
     render({});
   }, []);
 
