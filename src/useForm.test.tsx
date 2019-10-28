@@ -167,6 +167,9 @@ describe('useForm', () => {
 
   describe('watch', () => {
     it('should watch individual input', () => {
+      (getFieldsValues as any).mockImplementation(() => {
+        return {};
+      });
       const { result } = renderHook(() => useForm<{ test: string }>());
 
       expect(result.current.watch('test')).toBeUndefined();
@@ -183,6 +186,9 @@ describe('useForm', () => {
     });
 
     it('should watch array of inputs', () => {
+      (getFieldsValues as any).mockImplementation(() => {
+        return {};
+      });
       const { result } = renderHook(() =>
         useForm<{ test: string; test1: string }>(),
       );

@@ -59,7 +59,7 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
   const errorsRef = useRef<FieldErrors<FormValues>>({});
   const schemaErrorsRef = useRef<FieldErrors<FormValues>>({});
   const touchedFieldsRef = useRef(new Set<FieldName<FormValues>>());
-  const watchFieldsRef = useRef<Partial<Record<keyof FormValues, boolean>>>({});
+  const watchFieldsRef = useRef(new Set<FieldName<FormValues>>());
   const dirtyFieldsRef = useRef(new Set<FieldName<FormValues>>());
   const fieldsWithValidationRef = useRef(new Set<FieldName<FormValues>>());
   const validFieldsRef = useRef(new Set<FieldName<FormValues>>());
@@ -272,9 +272,8 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
       payload?:
         | ValidationPayload<FieldName<FormValues>, FieldValue<FormValues>>
         | ValidationPayload<FieldName<FormValues>, FieldValue<FormValues>>[],
-      shouldRender?: boolean,
     ): Promise<boolean> => {
-      const fields: any =
+      const fields =
         payload || Object.keys(fieldsRef.current).map(name => ({ name }));
 
       if (validationSchema) {
@@ -289,7 +288,7 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
         return result.every(Boolean);
       }
 
-      return await executeValidation(fields, shouldRender);
+      return await executeValidation(fields);
     },
     [executeSchemaValidation, executeValidation, validationSchema],
   );
@@ -304,9 +303,9 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
     (name, value, shouldValidate = false) => {
       setValueInternal(name, value);
       const shouldRender =
-        isWatchAllRef.current || watchFieldsRef.current[name];
+        isWatchAllRef.current || watchFieldsRef.current.has(name);
       if (shouldValidate) {
-        return triggerValidation({ name }, shouldRender);
+        return triggerValidation({ name });
       }
       if (shouldRender) {
         render({});
@@ -346,7 +345,7 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
         const shouldUpdateDirty = setDirty(name);
         let shouldUpdateState =
           isWatchAllRef.current ||
-          watchFieldsRef.current[name as FieldName<FormValues>] ||
+          watchFieldsRef.current.has(name) ||
           shouldUpdateDirty;
 
         if (
@@ -400,7 +399,6 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
       };
 
   const resetFieldRef = (name: FieldName<FormValues>) => {
-    delete watchFieldsRef.current[name];
     delete errorsRef.current[name];
     delete fieldsRef.current[name];
     delete defaultValuesRef.current[name];
@@ -409,6 +407,7 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
       dirtyFieldsRef,
       fieldsWithValidationRef,
       validFieldsRef,
+      watchFieldsRef,
     ].forEach(data => data.current.delete(name));
   };
 
@@ -836,16 +835,16 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
 
   const resetRefs = () => {
     errorsRef.current = {};
-    schemaErrorsRef.current = {};
-    touchedFieldsRef.current = new Set();
-    watchFieldsRef.current = {};
-    dirtyFieldsRef.current = new Set();
-    fieldsWithValidationRef.current = new Set();
-    validFieldsRef.current = new Set();
     defaultValuesRef.current = {} as Record<
       FieldName<FormValues>,
       FieldValue<FormValues>
     >;
+    schemaErrorsRef.current = {};
+    touchedFieldsRef.current = new Set();
+    watchFieldsRef.current = new Set();
+    dirtyFieldsRef.current = new Set();
+    fieldsWithValidationRef.current = new Set();
+    validFieldsRef.current = new Set();
     isWatchAllRef.current = false;
     isSubmittedRef.current = false;
     isDirtyRef.current = false;
