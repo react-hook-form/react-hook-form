@@ -14,36 +14,32 @@ export const parseErrorSchema = <FormValues>(
 ): FieldErrors<FormValues> =>
   error.inner.length
     ? error.inner.reduce(
-        (previous: FieldValues, { path, message, type }: FieldValues) => {
-          const result = { message, ref: {}, type };
-          if (returnSingleError) {
-            return {
-              ...previous,
-              [path]: result,
-            };
-          } else {
-            return {
-              ...previous,
-              ...(previous[path]
-                ? {
-                    [path]: appendErrors(
-                      path,
-                      returnSingleError,
-                      previous,
-                      type,
-                      message,
-                    ),
-                  }
-                : {
-                    [path]: {
-                      ...result,
-                      types: { [type]: true },
-                      messages: { [type]: message },
-                    },
-                  }),
-            };
-          }
-        },
+        (previous: FieldValues, { path, message, type }: FieldValues) => ({
+          ...previous,
+          ...(previous[path] && !returnSingleError
+            ? {
+                [path]: appendErrors(
+                  path,
+                  returnSingleError,
+                  previous,
+                  type,
+                  message,
+                ),
+              }
+            : {
+                [path]: {
+                  message,
+                  ref: {},
+                  type,
+                  ...(!returnSingleError
+                    ? {
+                        types: { [type]: true },
+                        messages: { [type]: message },
+                      }
+                    : {}),
+                },
+              }),
+        }),
         {},
       )
     : {
