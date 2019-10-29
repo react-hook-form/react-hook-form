@@ -12,11 +12,7 @@ import getFieldsValue from './getFieldValue';
 import isRegex from '../utils/isRegex';
 import getValidateFunctionErrorObject from './getValidateFunctionErrorObject';
 import appendErrors from './appendErrors';
-import {
-  PATTERN_ATTRIBUTE,
-  RADIO_INPUT,
-  REQUIRED_ATTRIBUTE,
-} from '../constants';
+import { INPUT_VALIDATION_RULES, RADIO_INPUT } from '../constants';
 import {
   Field,
   FieldErrors,
@@ -47,6 +43,12 @@ export default async <FormValues extends FieldValues>(
   const isCheckBox = isCheckBoxInput(type);
   const nativeError = displayNativeError.bind(null, nativeValidation, ref);
   const typedName = name as FieldName<FormValues>;
+  const appendErrorsCurry = appendErrors.bind(
+    null,
+    typedName,
+    returnSingleError,
+    error,
+  );
 
   if (
     required &&
@@ -58,10 +60,10 @@ export default async <FormValues extends FieldValues>(
     const message = isString(required) ? required : '';
 
     error[typedName] = {
-      type: REQUIRED_ATTRIBUTE,
+      type: INPUT_VALIDATION_RULES.required,
       message,
       ref: isRadio ? fields[typedName].options[0].ref : ref,
-      ...appendErrors(typedName, returnSingleError, error, 'required', message),
+      ...appendErrorsCurry(INPUT_VALIDATION_RULES.required, message),
     };
     nativeError(required);
     if (returnSingleError) {
@@ -95,14 +97,16 @@ export default async <FormValues extends FieldValues>(
     if (exceedMax || exceedMin) {
       const message = exceedMax ? maxMessage : minMessage;
       error[typedName] = {
-        type: exceedMax ? 'max' : 'min',
+        type: exceedMax
+          ? INPUT_VALIDATION_RULES.max
+          : INPUT_VALIDATION_RULES.min,
         message,
         ref,
         ...(exceedMax
-          ? appendErrors(typedName, returnSingleError, error, 'max', message)
+          ? appendErrorsCurry(INPUT_VALIDATION_RULES.max, message)
           : {}),
         ...(!exceedMax
-          ? appendErrors(typedName, returnSingleError, error, 'min', message)
+          ? appendErrorsCurry(INPUT_VALIDATION_RULES.min, message)
           : {}),
       };
       nativeError(message);
@@ -128,26 +132,16 @@ export default async <FormValues extends FieldValues>(
     if (exceedMax || exceedMin) {
       const message = exceedMax ? maxLengthMessage : minLengthMessage;
       error[typedName] = {
-        type: exceedMax ? 'maxLength' : 'minLength',
+        type: exceedMax
+          ? INPUT_VALIDATION_RULES.maxLength
+          : INPUT_VALIDATION_RULES.minLength,
         message,
         ref,
         ...(exceedMax
-          ? appendErrors(
-              typedName,
-              returnSingleError,
-              error,
-              'maxLength',
-              message,
-            )
+          ? appendErrorsCurry(INPUT_VALIDATION_RULES.maxLength, message)
           : {}),
         ...(!exceedMax
-          ? appendErrors(
-              typedName,
-              returnSingleError,
-              error,
-              'minLength',
-              message,
-            )
+          ? appendErrorsCurry(INPUT_VALIDATION_RULES.minLength, message)
           : {}),
       };
       nativeError(message);
@@ -164,16 +158,10 @@ export default async <FormValues extends FieldValues>(
 
     if (isRegex(patternValue) && !patternValue.test(value)) {
       error[typedName] = {
-        type: PATTERN_ATTRIBUTE,
+        type: INPUT_VALIDATION_RULES.pattern,
         message: patternMessage,
         ref,
-        ...appendErrors(
-          typedName,
-          returnSingleError,
-          error,
-          'pattern',
-          patternMessage,
-        ),
+        ...appendErrorsCurry(INPUT_VALIDATION_RULES.pattern, patternMessage),
       };
       nativeError(patternMessage);
       if (returnSingleError) {
@@ -197,13 +185,7 @@ export default async <FormValues extends FieldValues>(
       if (errorObject) {
         error[typedName] = {
           ...errorObject,
-          ...appendErrors(
-            typedName,
-            returnSingleError,
-            error,
-            'validate',
-            errorObject.message,
-          ),
+          ...appendErrorsCurry('validate', errorObject.message),
         };
         if (returnSingleError) {
           return error;
@@ -233,13 +215,7 @@ export default async <FormValues extends FieldValues>(
               if (errorObject) {
                 const output = {
                   ...errorObject,
-                  ...appendErrors(
-                    typedName,
-                    returnSingleError,
-                    error,
-                    key,
-                    errorObject.message,
-                  ),
+                  ...appendErrorsCurry(key, errorObject.message),
                 };
 
                 if (!returnSingleError) {
