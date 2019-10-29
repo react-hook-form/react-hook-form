@@ -11,6 +11,7 @@ import isFunction from '../utils/isFunction';
 import getFieldsValue from './getFieldValue';
 import isRegex from '../utils/isRegex';
 import getValidateFunctionErrorObject from './getValidateFunctionErrorObject';
+import appendErrors from './appendErrors';
 import {
   PATTERN_ATTRIBUTE,
   RADIO_INPUT,
@@ -39,6 +40,7 @@ export default async <FormValues extends FieldValues>(
   }: Field,
   fields: FieldValues,
   nativeValidation?: boolean,
+  returnSingleError = true,
 ): Promise<FieldErrors<FormValues>> => {
   const error: FieldErrors<FormValues> = {};
   const isRadio = isRadioInput(type);
@@ -53,13 +55,18 @@ export default async <FormValues extends FieldValues>(
       (isRadio && !getRadioValue(fields[typedName].options).isValid) ||
       (type !== RADIO_INPUT && isNullOrUndefined(value)))
   ) {
+    const message = isString(required) ? required : '';
+
     error[typedName] = {
       type: REQUIRED_ATTRIBUTE,
-      message: isString(required) ? required : '',
+      message,
       ref: isRadio ? fields[typedName].options[0].ref : ref,
+      ...appendErrors(typedName, returnSingleError, error, 'required', message),
     };
     nativeError(required);
-    return error;
+    if (returnSingleError) {
+      return error;
+    }
   }
 
   if (!isNullOrUndefined(min) || !isNullOrUndefined(max)) {
@@ -91,9 +98,17 @@ export default async <FormValues extends FieldValues>(
         type: exceedMax ? 'max' : 'min',
         message,
         ref,
+        ...(exceedMax
+          ? appendErrors(typedName, returnSingleError, error, 'max', message)
+          : {}),
+        ...(!exceedMax
+          ? appendErrors(typedName, returnSingleError, error, 'min', message)
+          : {}),
       };
       nativeError(message);
-      return error;
+      if (returnSingleError) {
+        return error;
+      }
     }
   }
 
@@ -116,9 +131,29 @@ export default async <FormValues extends FieldValues>(
         type: exceedMax ? 'maxLength' : 'minLength',
         message,
         ref,
+        ...(exceedMax
+          ? appendErrors(
+              typedName,
+              returnSingleError,
+              error,
+              'maxLength',
+              message,
+            )
+          : {}),
+        ...(!exceedMax
+          ? appendErrors(
+              typedName,
+              returnSingleError,
+              error,
+              'minLength',
+              message,
+            )
+          : {}),
       };
       nativeError(message);
-      return error;
+      if (returnSingleError) {
+        return error;
+      }
     }
   }
 
@@ -132,9 +167,18 @@ export default async <FormValues extends FieldValues>(
         type: PATTERN_ATTRIBUTE,
         message: patternMessage,
         ref,
+        ...appendErrors(
+          typedName,
+          returnSingleError,
+          error,
+          'pattern',
+          patternMessage,
+        ),
       };
       nativeError(patternMessage);
-      return error;
+      if (returnSingleError) {
+        return error;
+      }
     }
   }
 
@@ -151,8 +195,19 @@ export default async <FormValues extends FieldValues>(
       );
 
       if (errorObject) {
-        error[typedName] = errorObject;
-        return error;
+        error[typedName] = {
+          ...errorObject,
+          ...appendErrors(
+            typedName,
+            returnSingleError,
+            error,
+            'validate',
+            errorObject.message,
+          ),
+        };
+        if (returnSingleError) {
+          return error;
+        }
       }
     } else if (isObject(validate)) {
       const validationResult = await new Promise(
@@ -161,7 +216,7 @@ export default async <FormValues extends FieldValues>(
           values.reduce(async (previous, [key, validate], index): Promise<
             ValidatePromiseResult
           > => {
-            if (!isEmptyObject(await previous)) {
+            if (!isEmptyObject(await previous) && returnSingleError) {
               return resolve(previous);
             }
             const lastChild = values.length - 1 === index;
@@ -176,7 +231,22 @@ export default async <FormValues extends FieldValues>(
               );
 
               if (errorObject) {
-                return lastChild ? resolve(errorObject) : errorObject;
+                const output = {
+                  ...errorObject,
+                  ...appendErrors(
+                    typedName,
+                    returnSingleError,
+                    error,
+                    key,
+                    errorObject.message,
+                  ),
+                };
+
+                if (!returnSingleError) {
+                  error[typedName] = output;
+                }
+
+                return lastChild ? resolve(output) : output;
               }
             }
 
@@ -190,7 +260,9 @@ export default async <FormValues extends FieldValues>(
           ref: validateRef,
           ...(validationResult as { type: string; message?: string }),
         };
-        return error;
+        if (returnSingleError) {
+          return error;
+        }
       }
     }
   }
@@ -198,5 +270,6 @@ export default async <FormValues extends FieldValues>(
   if (nativeValidation) {
     ref.setCustomValidity('');
   }
+
   return error;
 };

@@ -687,4 +687,54 @@ describe('validateField', () => {
     ).toEqual({});
     expect(setCustomValidity).toBeCalledWith('');
   });
+
+  it('should return all validation errors', async () => {
+    (getRadioValue as any).mockImplementation(() => ({
+      value: '',
+    }));
+    expect(
+      await validateField(
+        {
+          ref: { type: 'text', value: '', name: 'test', setCustomValidity },
+          required: true,
+          minLength: 10,
+          pattern: /d/i,
+          validate: value => value === 'test',
+        },
+        {},
+        false,
+        false,
+      ),
+    ).toMatchSnapshot();
+  });
+
+  it('should return all validation error messages', async () => {
+    (getRadioValue as any).mockImplementation(() => ({
+      value: '',
+    }));
+    expect(
+      await validateField(
+        {
+          ref: { type: 'text', value: '', name: 'test', setCustomValidity },
+          required: 'test',
+          minLength: {
+            value: 10,
+            message: 'minLength',
+          },
+          pattern: {
+            value: /d/i,
+            message: 'pattern',
+          },
+          validate: {
+            test: value => value === 'test',
+            test1: value => value == 'test' || 'Luo',
+            test2: value => value == 'test' || 'Bill',
+          },
+        },
+        {},
+        false,
+        false,
+      ),
+    ).toMatchSnapshot();
+  });
 });
