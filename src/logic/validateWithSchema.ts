@@ -5,6 +5,7 @@ import {
   Schema,
   FieldErrors,
 } from '../types';
+import appendErrors from './appendErrors';
 
 // TODO: Fix these types
 export const parseErrorSchema = <FormValues>(
@@ -14,27 +15,28 @@ export const parseErrorSchema = <FormValues>(
   error.inner.length
     ? error.inner.reduce(
         (previous: FieldValues, { path, message, type }: FieldValues) => {
+          const result = { message, ref: {}, type };
           if (returnSingleError) {
             return {
               ...previous,
-              [path]: { message, ref: {}, type },
+              [path]: result,
             };
           } else {
             return {
               ...previous,
               ...(previous[path]
                 ? {
-                    [path]: {
-                      ...previous[path],
-                      types: { ...previous[path].types, [type]: true },
-                      messages: { ...previous[path].messages, [type]: message },
-                    },
+                    [path]: appendErrors(
+                      path,
+                      returnSingleError,
+                      previous,
+                      type,
+                      message,
+                    ),
                   }
                 : {
                     [path]: {
-                      message,
-                      ref: {},
-                      type,
+                      ...result,
                       types: { [type]: true },
                       messages: { [type]: message },
                     },
