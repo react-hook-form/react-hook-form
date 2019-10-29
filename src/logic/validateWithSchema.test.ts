@@ -60,7 +60,7 @@ describe('validateWithSchema', () => {
           },
         },
         { abortEarly: false },
-        false,
+        true,
         {},
       ),
     ).toMatchSnapshot();
@@ -73,7 +73,7 @@ describe('validateWithSchema', () => {
           validate: () => new Promise(resolve => resolve()),
         },
         { abortEarly: false },
-        false,
+        true,
         {},
       ),
     ).toEqual({
