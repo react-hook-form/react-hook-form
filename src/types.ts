@@ -91,8 +91,8 @@ export type ValidationOptions = Partial<{
 export interface FieldError {
   ref: Ref;
   type: string;
-  types?: any;
-  message?: string;
+  types?: Record<string, boolean>;
+  message?: Record<string, string>;
   messages?: any;
   isManual?: boolean;
 }
