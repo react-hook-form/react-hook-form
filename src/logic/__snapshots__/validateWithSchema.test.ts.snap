@@ -1,5 +1,34 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`parseErrorSchema should parse the validation errors and append all errors 1`] = `
+Object {
+  "age": Object {
+    "message": "age is a required field",
+    "messages": Object {
+      "required": "age is a required field",
+    },
+    "ref": Object {},
+    "type": "required",
+    "types": Object {
+      "required": true,
+    },
+  },
+  "name": Object {
+    "message": "name is a required field",
+    "messages": Object {
+      "min": "name is a min field",
+      "required": "name is a required field",
+    },
+    "ref": Object {},
+    "type": "required",
+    "types": Object {
+      "min": true,
+      "required": true,
+    },
+  },
+}
+`;
+
 exports[`parseErrorSchema should parse the validation errors into react hook form errors format 1`] = `
 Object {
   "age": Object {
@@ -8,9 +37,9 @@ Object {
     "type": "required",
   },
   "name": Object {
-    "message": "name is a required field",
+    "message": "name is a min field",
     "ref": Object {},
-    "type": "required",
+    "type": "min",
   },
 }
 `;
@@ -24,9 +53,9 @@ Object {
       "type": "required",
     },
     "name": Object {
-      "message": "name is a required field",
+      "message": "name is a min field",
       "ref": Object {},
-      "type": "required",
+      "type": "min",
     },
   },
   "result": Object {},
