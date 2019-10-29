@@ -49,8 +49,8 @@ export const parseErrorSchema = <FormValues>(
 export default async function validateWithSchema<FormValues>(
   validationSchema: Schema<FormValues>,
   validationSchemaOption: SchemaValidateOptions,
-  data: FieldValues,
   returnSingleError = true,
+  data: FieldValues,
 ): Promise<SchemaValidationResult<FormValues>> {
   try {
     return {

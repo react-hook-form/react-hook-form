@@ -56,6 +56,7 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
   nativeValidation,
   submitFocusError = true,
   validationSchemaOption = { abortEarly: false },
+  displayAllErrors = false,
 }: Options<FormValues> = {}) {
   const fieldsRef = useRef<FieldsRefs<FormValues>>({});
   const errorsRef = useRef<FieldErrors<FormValues>>({});
@@ -214,13 +215,18 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
         setValueInternal(name, value);
       }
 
-      const error = await validateField(field, fieldsRef.current);
+      const error = await validateField(
+        field,
+        fieldsRef.current,
+        nativeValidation,
+        displayAllErrors,
+      );
       errorsRef.current = combineErrorsRef(error);
       renderBaseOnError(name, error, shouldRender);
 
       return isEmptyObject(error);
     },
-    [renderBaseOnError, setValueInternal],
+    [displayAllErrors, nativeValidation, renderBaseOnError, setValueInternal],
   );
 
   const validateWithSchemaCurry = useCallback(
@@ -228,6 +234,7 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
       null,
       validationSchema,
       validationSchemaOptionRef.current,
+      displayAllErrors,
     ),
     [validationSchema],
   );
@@ -373,7 +380,12 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
             ? { [name]: (fieldErrors as FieldErrors<FormValues>)[name] }
             : {};
         } else {
-          error = await validateField(ref, fields, nativeValidation);
+          error = await validateField(
+            ref,
+            fields,
+            nativeValidation,
+            displayAllErrors,
+          );
         }
 
         const shouldUpdate = shouldUpdateWithError<FormValues>({
@@ -613,7 +625,12 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
             }
           });
         } else {
-          validateField(currentField, fields).then(error => {
+          validateField(
+            currentField,
+            fields,
+            nativeValidation,
+            displayAllErrors,
+          ).then(error => {
             if (isEmptyObject(error)) {
               validFieldsRef.current.add(name);
             }
@@ -777,6 +794,7 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
             field,
             fields,
             nativeValidation,
+            displayAllErrors,
           );
 
           if (fieldError[name]) {
