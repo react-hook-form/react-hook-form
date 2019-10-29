@@ -56,7 +56,7 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
   nativeValidation,
   submitFocusError = true,
   validationSchemaOption = { abortEarly: false },
-  displayAllErrors = false,
+  validateAllFieldCriteria = false,
 }: Options<FormValues> = {}) {
   const fieldsRef = useRef<FieldsRefs<FormValues>>({});
   const errorsRef = useRef<FieldErrors<FormValues>>({});
@@ -219,14 +219,19 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
         field,
         fieldsRef.current,
         nativeValidation,
-        displayAllErrors,
+        validateAllFieldCriteria,
       );
       errorsRef.current = combineErrorsRef(error);
       renderBaseOnError(name, error, shouldRender);
 
       return isEmptyObject(error);
     },
-    [displayAllErrors, nativeValidation, renderBaseOnError, setValueInternal],
+    [
+      validateAllFieldCriteria,
+      nativeValidation,
+      renderBaseOnError,
+      setValueInternal,
+    ],
   );
 
   const validateWithSchemaCurry = useCallback(
@@ -234,7 +239,7 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
       null,
       validationSchema,
       validationSchemaOptionRef.current,
-      displayAllErrors,
+      validateAllFieldCriteria,
     ),
     [validationSchema],
   );
@@ -384,7 +389,7 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
             ref,
             fields,
             nativeValidation,
-            displayAllErrors,
+            validateAllFieldCriteria,
           );
         }
 
@@ -629,7 +634,7 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
             currentField,
             fields,
             nativeValidation,
-            displayAllErrors,
+            validateAllFieldCriteria,
           ).then(error => {
             if (isEmptyObject(error)) {
               validFieldsRef.current.add(name);
@@ -794,7 +799,7 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
             field,
             fields,
             nativeValidation,
-            displayAllErrors,
+            validateAllFieldCriteria,
           );
 
           if (fieldError[name]) {
