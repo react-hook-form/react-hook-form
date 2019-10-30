@@ -80,7 +80,7 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
   const [, render] = useState();
   const { isOnBlur, isOnSubmit } = useRef(modeChecker(mode)).current;
   const readFormState = useRef<ReadFormState>({
-    dirty: false,
+    dirty: true,
     isSubmitted: isOnSubmit,
     submitCount: false,
     touched: false,
@@ -644,10 +644,6 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
       isRadio && currentField.options
         ? currentField.options[currentField.options.length - 1]
         : currentField;
-
-    if (isOnSubmit && isReValidateOnSubmit) {
-      return;
-    }
 
     if (nativeValidation && validateOptions) {
       attachNativeValidation(ref, validateOptions);
