@@ -528,6 +528,10 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
 
     isWatchAllRef.current = true;
 
+    if (isProxyEnabled) {
+      readFormState.current.dirty = true;
+    }
+
     return (
       (!isEmptyObject(fieldValues) && fieldValues) ||
       defaultValue ||
