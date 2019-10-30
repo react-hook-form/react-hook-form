@@ -487,6 +487,10 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
     const fieldValues = getFieldsValues<FormValues>(fieldsRef.current);
     const watchFields = watchFieldsRef.current;
 
+    if (isProxyEnabled) {
+      readFormState.current.dirty = true;
+    }
+
     if (isString(fieldNames)) {
       const value = assignWatchFields<FormValues>(
         fieldValues,
@@ -527,10 +531,6 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
     }
 
     isWatchAllRef.current = true;
-
-    if (isProxyEnabled) {
-      readFormState.current.dirty = true;
-    }
 
     return (
       (!isEmptyObject(fieldValues) && fieldValues) ||
