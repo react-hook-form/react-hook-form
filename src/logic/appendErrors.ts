@@ -3,23 +3,23 @@ import { FieldErrors } from '../types';
 export default <FormValues>(
   name: string,
   returnSingleError: boolean,
-  error: FieldErrors<FormValues>,
+  errors: FieldErrors<FormValues>,
   type: string,
   message: string | undefined,
 ) => {
   if (returnSingleError) {
     return {};
   }
-  const singleError = error[name] || { types: {}, messages: {} };
+  const error = errors[name] || { types: {}, messages: {} };
 
   return {
-    ...singleError,
+    ...error,
     types: {
-      ...singleError.types,
+      ...error.types,
       [type]: true,
     },
     messages: {
-      ...singleError.messages,
+      ...error.messages,
       [type]: message,
     },
   };
