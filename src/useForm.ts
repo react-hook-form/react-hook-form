@@ -79,7 +79,8 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
   const validateAndUpdateStateRef = useRef<Function>();
   const [, render] = useState();
   const { isOnBlur, isOnSubmit } = useRef(modeChecker(mode)).current;
-  const isProxyEnabled = typeof window !== UNDEFINED && 'Proxy' in window;
+  const isWindowDefined = typeof window === UNDEFINED;
+  const isProxyEnabled = !isWindowDefined && 'Proxy' in window;
   const readFormState = useRef<ReadFormState>({
     dirty: !isProxyEnabled,
     isSubmitted: isOnSubmit,
@@ -122,43 +123,46 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
     [validationSchema],
   );
 
-  const setFieldValue = (
-    name: FieldName<FormValues>,
-    rawValue: FieldValue<FormValues> | Partial<FormValues>,
-  ): boolean => {
-    const field = fieldsRef.current[name];
+  const setFieldValue = useCallback(
+    (
+      name: FieldName<FormValues>,
+      rawValue: FieldValue<FormValues> | Partial<FormValues>,
+    ): boolean => {
+      const field = fieldsRef.current[name];
 
-    if (!field) {
-      return false;
-    }
+      if (!field) {
+        return false;
+      }
 
-    const ref = field.ref;
-    const { type } = ref;
-    const options = field.options;
-    const value =
-      typeof document !== UNDEFINED &&
-      typeof window !== UNDEFINED &&
-      !isUndefined(window.HTMLElement) &&
-      ref instanceof window.HTMLElement &&
-      isNullOrUndefined(rawValue)
-        ? ''
-        : rawValue;
+      const ref = field.ref;
+      const { type } = ref;
+      const options = field.options;
+      const value =
+        typeof document !== UNDEFINED &&
+        !isWindowDefined &&
+        !isUndefined(window.HTMLElement) &&
+        ref instanceof window.HTMLElement &&
+        isNullOrUndefined(rawValue)
+          ? ''
+          : rawValue;
 
-    if (isRadioInput(type) && options) {
-      options.forEach(
-        ({ ref: radioRef }) => (radioRef.checked = radioRef.value === value),
-      );
-    } else if (isMultipleSelect(type)) {
-      [...ref.options].forEach(
-        selectRef =>
-          (selectRef.selected = (value as any).includes(selectRef.value)),
-      );
-    } else {
-      ref[isCheckBoxInput(type) ? 'checked' : 'value'] = value;
-    }
+      if (isRadioInput(type) && options) {
+        options.forEach(
+          ({ ref: radioRef }) => (radioRef.checked = radioRef.value === value),
+        );
+      } else if (isMultipleSelect(type)) {
+        [...ref.options].forEach(
+          selectRef =>
+            (selectRef.selected = (value as any).includes(selectRef.value)),
+        );
+      } else {
+        ref[isCheckBoxInput(type) ? 'checked' : 'value'] = value;
+      }
 
-    return type;
-  };
+      return type;
+    },
+    [isWindowDefined],
+  );
 
   const setDirty = (name: FieldName<FormValues>): boolean => {
     if (!fieldsRef.current[name]) {
@@ -192,7 +196,7 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
         render({});
       }
     },
-    [],
+    [setFieldValue],
   );
 
   const executeValidation = useCallback(
@@ -854,35 +858,38 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
     submitCountRef.current = 0;
   };
 
-  const reset = useCallback((values?: FormValues): void => {
-    const fieldsKeyValue = Object.entries(fieldsRef.current);
+  const reset = useCallback(
+    (values?: FormValues): void => {
+      const fieldsKeyValue = Object.entries(fieldsRef.current);
 
-    for (const [, value] of fieldsKeyValue) {
-      if (value && value.ref && value.ref.closest) {
-        try {
-          value.ref.closest('form').reset();
-          break;
-        } catch {}
+      for (const [, value] of fieldsKeyValue) {
+        if (value && value.ref && value.ref.closest) {
+          try {
+            value.ref.closest('form').reset();
+            break;
+          } catch {}
+        }
       }
-    }
 
-    resetRefs();
+      resetRefs();
 
-    if (values) {
-      fieldsKeyValue.forEach(([key]) =>
-        setFieldValue(
-          key as FieldName<FormValues>,
-          getDefaultValue(values, key),
-        ),
-      );
-      defaultValuesRef.current = { ...values } as Record<
-        FieldName<FormValues>,
-        FieldValue<FormValues>
-      >;
-    }
+      if (values) {
+        fieldsKeyValue.forEach(([key]) =>
+          setFieldValue(
+            key as FieldName<FormValues>,
+            getDefaultValue(values, key),
+          ),
+        );
+        defaultValuesRef.current = { ...values } as Record<
+          FieldName<FormValues>,
+          FieldValue<FormValues>
+        >;
+      }
 
-    render({});
-  }, []);
+      render({});
+    },
+    [setFieldValue],
+  );
 
   const getValues = (payload?: { nest: boolean }): FormValues => {
     const fieldValues = getFieldsValues(fieldsRef.current);
@@ -942,9 +949,8 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
     errors: validationFields
       ? pickErrors<FormValues>(errorsRef.current, validationFields)
       : errorsRef.current,
-    formState: !isProxyEnabled
-      ? formState
-      : new Proxy<FormState<FormValues>>(formState, {
+    formState: isProxyEnabled
+      ? new Proxy<FormState<FormValues>>(formState, {
           get: (obj, prop: keyof FormState) => {
             if (!(prop in obj)) {
               return {};
@@ -952,6 +958,7 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
             readFormState.current[prop] = true;
             return obj[prop];
           },
-        }),
+        })
+      : formState,
   };
 }
