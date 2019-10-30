@@ -487,6 +487,10 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
     const fieldValues = getFieldsValues<FormValues>(fieldsRef.current);
     const watchFields = watchFieldsRef.current;
 
+    if (isProxyEnabled) {
+      readFormState.current.dirty = true;
+    }
+
     if (isString(fieldNames)) {
       const value = assignWatchFields<FormValues>(
         fieldValues,
@@ -649,10 +653,6 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
       isRadio && currentField.options
         ? currentField.options[currentField.options.length - 1]
         : currentField;
-
-    if (isOnSubmit && isReValidateOnSubmit) {
-      return;
-    }
 
     if (nativeValidation && validateOptions) {
       attachNativeValidation(ref, validateOptions);
