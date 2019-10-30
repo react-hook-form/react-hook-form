@@ -80,7 +80,7 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
   const [, render] = useState();
   const { isOnBlur, isOnSubmit } = useRef(modeChecker(mode)).current;
   const readFormState = useRef<ReadFormState>({
-    dirty: true,
+    dirty: false,
     isSubmitted: isOnSubmit,
     submitCount: false,
     touched: false,
