@@ -42,11 +42,11 @@ const errors = {
 
 describe('parseErrorSchema', () => {
   it('should parse the validation errors into react hook form errors format', () => {
-    expect(parseErrorSchema(errors, true)).toMatchSnapshot();
+    expect(parseErrorSchema(errors, false)).toMatchSnapshot();
   });
 
   it('should parse the validation errors and append all errors', () => {
-    expect(parseErrorSchema(errors, false)).toMatchSnapshot();
+    expect(parseErrorSchema(errors, true)).toMatchSnapshot();
   });
 });
 
@@ -60,7 +60,7 @@ describe('validateWithSchema', () => {
           },
         },
         { abortEarly: false },
-        true,
+        false,
         {},
       ),
     ).toMatchSnapshot();
@@ -73,7 +73,7 @@ describe('validateWithSchema', () => {
           validate: () => new Promise(resolve => resolve()),
         },
         { abortEarly: false },
-        true,
+        false,
         {},
       ),
     ).toEqual({

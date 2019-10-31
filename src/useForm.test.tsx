@@ -446,9 +446,7 @@ describe('useForm', () => {
         }),
       );
 
-      (validateField as any).mockImplementation(async () => {
-        return {};
-      });
+      (validateField as any).mockImplementation(async () => ({}));
 
       act(() => {
         result.current.register({
@@ -472,7 +470,7 @@ describe('useForm', () => {
           test: { ref: { name: 'test', value: 'test' } },
           test1: { ref: { name: 'test1', value: 'test' } },
         },
-        undefined,
+        false,
         false,
       );
       expect(validateField).toBeCalledWith(
@@ -481,7 +479,7 @@ describe('useForm', () => {
           test: { ref: { name: 'test', value: 'test' } },
           test1: { ref: { name: 'test1', value: 'test' } },
         },
-        undefined,
+        false,
         false,
       );
     });

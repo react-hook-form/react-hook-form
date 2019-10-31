@@ -10,17 +10,17 @@ import appendErrors from './appendErrors';
 // TODO: Fix these types
 export const parseErrorSchema = <FormValues>(
   error: FieldValues,
-  returnSingleError: boolean,
+  validateAllFieldCriteria: boolean,
 ): FieldErrors<FormValues> =>
   error.inner.length
     ? error.inner.reduce(
         (previous: FieldValues, { path, message, type }: FieldValues) => ({
           ...previous,
-          ...(previous[path] && !returnSingleError
+          ...(previous[path] && validateAllFieldCriteria
             ? {
                 [path]: appendErrors(
                   path,
-                  returnSingleError,
+                  validateAllFieldCriteria,
                   previous,
                   type,
                   message,
@@ -31,7 +31,7 @@ export const parseErrorSchema = <FormValues>(
                   message,
                   ref: {},
                   type,
-                  ...(!returnSingleError
+                  ...(validateAllFieldCriteria
                     ? {
                         types: { [type]: true },
                         messages: { [type]: message },
@@ -49,7 +49,7 @@ export const parseErrorSchema = <FormValues>(
 export default async function validateWithSchema<FormValues>(
   validationSchema: Schema<FormValues>,
   validationSchemaOption: SchemaValidateOptions,
-  returnSingleError = true,
+  validateAllFieldCriteria: boolean,
   data: FieldValues,
 ): Promise<SchemaValidationResult<FormValues>> {
   try {
@@ -60,7 +60,7 @@ export default async function validateWithSchema<FormValues>(
   } catch (e) {
     return {
       result: {},
-      fieldErrors: parseErrorSchema<FormValues>(e, returnSingleError),
+      fieldErrors: parseErrorSchema<FormValues>(e, validateAllFieldCriteria),
     };
   }
 }

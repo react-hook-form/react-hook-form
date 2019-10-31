@@ -53,7 +53,7 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
   validationSchema,
   defaultValues = {},
   validationFields,
-  nativeValidation,
+  nativeValidation = false,
   submitFocusError = true,
   validationSchemaOption = { abortEarly: false },
   validateAllFieldCriteria = false,

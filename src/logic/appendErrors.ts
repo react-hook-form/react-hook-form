@@ -2,12 +2,12 @@ import { FieldErrors } from '../types';
 
 export default <FormValues>(
   name: string,
-  returnSingleError: boolean,
+  validateAllFieldCriteria: boolean,
   errors: FieldErrors<FormValues>,
   type: string,
   message: string | undefined,
 ) => {
-  if (returnSingleError) {
+  if (!validateAllFieldCriteria) {
     return {};
   }
   const error = errors[name] || { types: {}, messages: {} };

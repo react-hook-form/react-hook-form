@@ -35,8 +35,8 @@ export default async <FormValues extends FieldValues>(
     validate,
   }: Field,
   fields: FieldValues,
-  nativeValidation?: boolean,
-  returnSingleError = true,
+  nativeValidation: boolean,
+  validateAllFieldCriteria: boolean,
 ): Promise<FieldErrors<FormValues>> => {
   const error: FieldErrors<FormValues> = {};
   const isRadio = isRadioInput(type);
@@ -46,7 +46,7 @@ export default async <FormValues extends FieldValues>(
   const appendErrorsCurry = appendErrors.bind(
     null,
     typedName,
-    returnSingleError,
+    validateAllFieldCriteria,
     error,
   );
 
@@ -65,8 +65,8 @@ export default async <FormValues extends FieldValues>(
       ref: isRadio ? fields[typedName].options[0].ref : ref,
       ...appendErrorsCurry(INPUT_VALIDATION_RULES.required, message),
     };
-    nativeError(required);
-    if (returnSingleError) {
+    nativeError(message);
+    if (!validateAllFieldCriteria) {
       return error;
     }
   }
@@ -110,7 +110,7 @@ export default async <FormValues extends FieldValues>(
           : {}),
       };
       nativeError(message);
-      if (returnSingleError) {
+      if (!validateAllFieldCriteria) {
         return error;
       }
     }
@@ -145,7 +145,7 @@ export default async <FormValues extends FieldValues>(
           : {}),
       };
       nativeError(message);
-      if (returnSingleError) {
+      if (!validateAllFieldCriteria) {
         return error;
       }
     }
@@ -164,7 +164,7 @@ export default async <FormValues extends FieldValues>(
         ...appendErrorsCurry(INPUT_VALIDATION_RULES.pattern, patternMessage),
       };
       nativeError(patternMessage);
-      if (returnSingleError) {
+      if (!validateAllFieldCriteria) {
         return error;
       }
     }
@@ -187,7 +187,7 @@ export default async <FormValues extends FieldValues>(
           ...errorObject,
           ...appendErrorsCurry('validate', errorObject.message),
         };
-        if (returnSingleError) {
+        if (!validateAllFieldCriteria) {
           return error;
         }
       }
@@ -198,7 +198,7 @@ export default async <FormValues extends FieldValues>(
           values.reduce(async (previous, [key, validate], index): Promise<
             ValidatePromiseResult
           > => {
-            if (!isEmptyObject(await previous) && returnSingleError) {
+            if (!isEmptyObject(await previous) && !validateAllFieldCriteria) {
               return resolve(previous);
             }
             const lastChild = values.length - 1 === index;
@@ -218,7 +218,7 @@ export default async <FormValues extends FieldValues>(
                   ...appendErrorsCurry(key, errorObject.message),
                 };
 
-                if (!returnSingleError) {
+                if (validateAllFieldCriteria) {
                   error[typedName] = output;
                 }
 
@@ -236,7 +236,7 @@ export default async <FormValues extends FieldValues>(
           ref: validateRef,
           ...(validationResult as { type: string; message?: string }),
         };
-        if (returnSingleError) {
+        if (!validateAllFieldCriteria) {
           return error;
         }
       }
