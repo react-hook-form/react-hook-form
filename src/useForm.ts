@@ -200,6 +200,13 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
     [setFieldValue],
   );
 
+  const validateFieldCurry = validateField.bind(
+    null,
+    fieldsRef.current,
+    nativeValidation,
+    validateAllFieldCriteria,
+  );
+
   const executeValidation = useCallback(
     async (
       {
@@ -220,23 +227,13 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
         setValueInternal(name, value);
       }
 
-      const error = await validateField(
-        fieldsRef.current,
-        nativeValidation,
-        validateAllFieldCriteria,
-        field,
-      );
+      const error = await validateFieldCurry(field);
       errorsRef.current = combineErrorsRef(error);
       renderBaseOnError(name, error, shouldRender);
 
       return isEmptyObject(error);
     },
-    [
-      validateAllFieldCriteria,
-      nativeValidation,
-      renderBaseOnError,
-      setValueInternal,
-    ],
+    [validateFieldCurry, renderBaseOnError, setValueInternal],
   );
 
   const validateWithSchemaCurry = useCallback(
@@ -390,12 +387,7 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
             ? { [name]: (fieldErrors as FieldErrors<FormValues>)[name] }
             : {};
         } else {
-          error = await validateField(
-            fields,
-            nativeValidation,
-            validateAllFieldCriteria,
-            ref,
-          );
+          error = await validateFieldCurry(ref);
         }
 
         const shouldUpdate = shouldUpdateWithError<FormValues>({
@@ -639,12 +631,7 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
             }
           });
         } else {
-          validateField(
-            fields,
-            nativeValidation,
-            validateAllFieldCriteria,
-            currentField,
-          ).then(error => {
+          validateFieldCurry(currentField).then(error => {
             if (isEmptyObject(error)) {
               validFieldsRef.current.add(name);
             }
@@ -800,12 +787,7 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
             return Promise.resolve(resolvedPrevious);
           }
 
-          const fieldError = await validateField(
-            fields,
-            nativeValidation,
-            validateAllFieldCriteria,
-            field,
-          );
+          const fieldError = await validateFieldCurry(field);
 
           if (fieldError[name]) {
             resolvedPrevious.errors = {
