@@ -102,6 +102,26 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
     ...data,
   });
 
+  const validateFieldCurry = useCallback(
+    validateField.bind(
+      null,
+      fieldsRef.current,
+      nativeValidation,
+      validateAllFieldCriteria,
+    ),
+    [],
+  );
+
+  const validateWithSchemaCurry = useCallback(
+    validateWithSchema.bind(
+      null,
+      validationSchema,
+      validationSchemaOptionRef.current,
+      validateAllFieldCriteria,
+    ),
+    [validationSchema],
+  );
+
   const renderBaseOnError = useCallback(
     (
       name: FieldName<FormValues>,
@@ -200,13 +220,6 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
     [setFieldValue],
   );
 
-  const validateFieldCurry = validateField.bind(
-    null,
-    fieldsRef.current,
-    nativeValidation,
-    validateAllFieldCriteria,
-  );
-
   const executeValidation = useCallback(
     async (
       {
@@ -234,16 +247,6 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
       return isEmptyObject(error);
     },
     [validateFieldCurry, renderBaseOnError, setValueInternal],
-  );
-
-  const validateWithSchemaCurry = useCallback(
-    validateWithSchema.bind(
-      null,
-      validationSchema,
-      validationSchemaOptionRef.current,
-      validateAllFieldCriteria,
-    ),
-    [validationSchema],
   );
 
   const executeSchemaValidation = useCallback(
