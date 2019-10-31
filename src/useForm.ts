@@ -221,10 +221,10 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
       }
 
       const error = await validateField(
-        field,
         fieldsRef.current,
         nativeValidation,
         validateAllFieldCriteria,
+        field,
       );
       errorsRef.current = combineErrorsRef(error);
       renderBaseOnError(name, error, shouldRender);
@@ -391,10 +391,10 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
             : {};
         } else {
           error = await validateField(
-            ref,
             fields,
             nativeValidation,
             validateAllFieldCriteria,
+            ref,
           );
         }
 
@@ -640,10 +640,10 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
           });
         } else {
           validateField(
-            currentField,
             fields,
             nativeValidation,
             validateAllFieldCriteria,
+            currentField,
           ).then(error => {
             if (isEmptyObject(error)) {
               validFieldsRef.current.add(name);
@@ -801,10 +801,10 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
           }
 
           const fieldError = await validateField(
-            field,
             fields,
             nativeValidation,
             validateAllFieldCriteria,
+            field,
           );
 
           if (fieldError[name]) {

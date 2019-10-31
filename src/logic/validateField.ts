@@ -22,6 +22,9 @@ import {
 } from '../types';
 
 export default async <FormValues extends FieldValues>(
+  fields: FieldValues,
+  nativeValidation: boolean,
+  validateAllFieldCriteria: boolean,
   {
     ref,
     ref: { type, value, name, checked },
@@ -34,9 +37,6 @@ export default async <FormValues extends FieldValues>(
     pattern,
     validate,
   }: Field,
-  fields: FieldValues,
-  nativeValidation: boolean,
-  validateAllFieldCriteria: boolean,
 ): Promise<FieldErrors<FormValues>> => {
   const error: FieldErrors<FormValues> = {};
   const isRadio = isRadioInput(type);

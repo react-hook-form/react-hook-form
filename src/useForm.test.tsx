@@ -465,22 +465,22 @@ describe('useForm', () => {
       });
 
       expect(validateField).toBeCalledWith(
-        { ref: { name: 'test', value: 'test' } },
         {
           test: { ref: { name: 'test', value: 'test' } },
           test1: { ref: { name: 'test1', value: 'test' } },
         },
         false,
         false,
+        { ref: { name: 'test', value: 'test' } },
       );
       expect(validateField).toBeCalledWith(
-        { ref: { name: 'test1', value: 'test' } },
         {
           test: { ref: { name: 'test', value: 'test' } },
           test1: { ref: { name: 'test1', value: 'test' } },
         },
         false,
         false,
+        { ref: { name: 'test1', value: 'test' } },
       );
     });
   });
