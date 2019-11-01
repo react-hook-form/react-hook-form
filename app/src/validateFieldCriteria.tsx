@@ -26,51 +26,57 @@ const ValidateFieldCriteria: React.FC = (props: any) => {
 
   renderCounter++;
 
+  console.log(errors);
+
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
       <input
         name="firstName"
-        ref={register({ required: true })}
+        ref={register({ required: true, minLength: 4 })}
         placeholder="firstName"
       />
-      {errors.firstName && <p>firstName error</p>}
-      <input
-        name="lastName"
-        ref={register({ required: true, maxLength: 5 })}
-        placeholder="lastName"
-      />
-      {errors.lastName && <p>lastName error</p>}
+      {errors.firstName &&
+        errors.firstName.types &&
+        errors.firstName.types.required && <p>firstName required</p>}
+      {errors.firstName &&
+        errors.firstName.types &&
+        errors.firstName.types.minLength && <p>firstName minLength</p>}
       <input
         type="number"
         name="min"
-        ref={register({ min: 10 })}
+        ref={register({ required: true, min: 10 })}
         placeholder="min"
       />
-      {errors.min && <p>min error</p>}
+      {errors.min && errors.min.types && errors.min.types.required && (
+        <p>min required</p>
+      )}
+      {errors.min && errors.min.types && errors.min.types.min && (
+        <p>min not meet</p>
+      )}
       <input
         type="number"
         name="max"
-        ref={register({ max: 20 })}
+        ref={register({ required: true, max: 20 })}
         placeholder="max"
       />
       {errors.max && <p>max error</p>}
       <input
         type="date"
         name="minDate"
-        ref={register({ min: '2019-08-01' })}
+        ref={register({ required: true, min: '2019-08-01' })}
         placeholder="minDate"
       />
       {errors.minDate && <p>minDate error</p>}
       <input
         type="date"
         name="maxDate"
-        ref={register({ max: '2019-08-01' })}
+        ref={register({ required: true, max: '2019-08-01' })}
         placeholder="maxDate"
       />
       {errors.maxDate && <p>maxDate error</p>}
       <input
         name="minLength"
-        ref={register({ minLength: 2 })}
+        ref={register({ required: true, minLength: 2 })}
         placeholder="minLength"
       />
       {errors.minLength && <p>minLength error</p>}
@@ -80,7 +86,7 @@ const ValidateFieldCriteria: React.FC = (props: any) => {
         placeholder="minRequiredLength"
       />
       {errors.minRequiredLength && <p>minRequiredLength error</p>}
-      <select name="selectNumber" ref={register({ required: true })}>
+      <select name="selectNumber" ref={register({ required: true, min: 0 })}>
         <option value="">Select</option>
         <option value={1}>1</option>
         <option value={2}>1</option>
@@ -88,7 +94,7 @@ const ValidateFieldCriteria: React.FC = (props: any) => {
       {errors.selectNumber && <p>selectNumber error</p>}
       <input
         name="pattern"
-        ref={register({ pattern: /\d+/ })}
+        ref={register({ pattern: /\d+/, required: true, minLength: 3 })}
         placeholder="pattern"
       />
       {errors.pattern && <p>pattern error</p>}
@@ -101,16 +107,17 @@ const ValidateFieldCriteria: React.FC = (props: any) => {
         type="radio"
         name="radio"
         value="3"
-        ref={register({ required: true })}
+        ref={register({ required: true, min: 1 })}
       />
       {errors.radio && <p>radio error</p>}
-      <input
-        type="checkbox"
-        name="checkbox"
-        ref={register({ required: true })}
-      />
-      {errors.checkbox && <p>checkbox error</p>}
-      <select name="multiple" multiple ref={register({ required: true })}>
+      <select
+        name="multiple"
+        multiple
+        ref={register({
+          required: true,
+          validate: value => value === 'optionB',
+        })}
+      >
         <option value="optionA">optionA</option>
         <option value="optionB">optionB</option>
       </select>
@@ -120,7 +127,11 @@ const ValidateFieldCriteria: React.FC = (props: any) => {
         type="validate"
         placeholder="validate"
         ref={register({
-          validate: value => value === 'test',
+          validate: {
+            test: value => value === 'test',
+            test1: value => value === 'test',
+            test3: value => value === 'test',
+          },
         })}
       />
       {errors.validate && <p>validate error</p>}
