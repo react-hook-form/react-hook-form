@@ -44,7 +44,7 @@ const ValidateFieldCriteria: React.FC = (props: any) => {
       <input
         type="number"
         name="min"
-        ref={register({ required: true, min: 10 })}
+        ref={register({ required: true, min: 10, max: 30 })}
         placeholder="min"
       />
       {errors.min && errors.min.types && errors.min.types.required && (
@@ -53,63 +53,72 @@ const ValidateFieldCriteria: React.FC = (props: any) => {
       {errors.min && errors.min.types && errors.min.types.min && (
         <p>min not meet</p>
       )}
-      <input
-        type="number"
-        name="max"
-        ref={register({ required: true, max: 20 })}
-        placeholder="max"
-      />
-      {errors.max && <p>max error</p>}
+      {errors.min && errors.min.types && errors.min.types.max && (
+        <p>max not meet</p>
+      )}
       <input
         type="date"
         name="minDate"
         ref={register({ required: true, min: '2019-08-01' })}
         placeholder="minDate"
       />
-      {errors.minDate && <p>minDate error</p>}
+      {errors.minDate &&
+        errors.minDate.types &&
+        errors.minDate.types.required && <p>minDate required</p>}
+      {errors.minDate && errors.minDate.types && errors.minDate.types.min && (
+        <p>minDate min</p>
+      )}
       <input
         type="date"
         name="maxDate"
         ref={register({ required: true, max: '2019-08-01' })}
         placeholder="maxDate"
       />
-      {errors.maxDate && <p>maxDate error</p>}
+      {errors.maxDate &&
+        errors.maxDate.types &&
+        errors.maxDate.types.required && <p>maxDate required</p>}
+      {errors.maxDate && errors.maxDate.types && errors.maxDate.types.max && (
+        <p>maxDate max</p>
+      )}
       <input
         name="minLength"
         ref={register({ required: true, minLength: 2 })}
         placeholder="minLength"
       />
-      {errors.minLength && <p>minLength error</p>}
-      <input
-        name="minRequiredLength"
-        ref={register({ minLength: 2, required: true })}
-        placeholder="minRequiredLength"
-      />
-      {errors.minRequiredLength && <p>minRequiredLength error</p>}
-      <select name="selectNumber" ref={register({ required: true, min: 0 })}>
+      {errors.minLength &&
+        errors.minLength.types &&
+        errors.minLength.types.required && <p>minLength required</p>}
+      {errors.minLength &&
+        errors.minLength.types &&
+        errors.minLength.types.minLength && <p>minLength minLength</p>}
+      <select
+        name="selectNumber"
+        ref={register({ required: true, minLength: 2 })}
+      >
         <option value="">Select</option>
-        <option value={1}>1</option>
-        <option value={2}>1</option>
+        <option value="1">1</option>
+        <option value="2">2</option>
       </select>
-      {errors.selectNumber && <p>selectNumber error</p>}
+      {errors.selectNumber &&
+        errors.selectNumber.types &&
+        errors.selectNumber.types.required && <p>selectNumber required</p>}
+      {errors.selectNumber &&
+        errors.selectNumber.types &&
+        errors.selectNumber.types.minLength && <p>selectNumber minLength</p>}
       <input
         name="pattern"
         ref={register({ pattern: /\d+/, required: true, minLength: 3 })}
         placeholder="pattern"
       />
-      {errors.pattern && <p>pattern error</p>}
-      Radio1
-      <input type="radio" name="radio" ref={register} value="1" />
-      Radio2
-      <input type="radio" name="radio" value="2" ref={register} />
-      Radio3
-      <input
-        type="radio"
-        name="radio"
-        value="3"
-        ref={register({ required: true, min: 1 })}
-      />
-      {errors.radio && <p>radio error</p>}
+      {errors.pattern &&
+        errors.pattern.types &&
+        errors.pattern.types.required && <p>pattern required</p>}
+      {errors.pattern &&
+        errors.pattern.types &&
+        errors.pattern.types.minLength && <p>pattern minLength</p>}
+      {errors.pattern &&
+        errors.pattern.types &&
+        errors.pattern.types.pattern && <p>pattern pattern</p>}
       <select
         name="multiple"
         multiple
@@ -121,7 +130,12 @@ const ValidateFieldCriteria: React.FC = (props: any) => {
         <option value="optionA">optionA</option>
         <option value="optionB">optionB</option>
       </select>
-      {errors.multiple && <p>multiple error</p>}
+      {errors.multiple &&
+        errors.multiple.types &&
+        errors.multiple.types.required && <p>multiple required</p>}
+      {errors.multiple &&
+        errors.multiple.types &&
+        errors.multiple.types.required && <p>multiple validate</p>}
       <input
         name="validate"
         type="validate"
@@ -130,11 +144,19 @@ const ValidateFieldCriteria: React.FC = (props: any) => {
           validate: {
             test: value => value === 'test',
             test1: value => value === 'test',
-            test3: value => value === 'test',
+            test2: value => value === 'test',
           },
         })}
       />
-      {errors.validate && <p>validate error</p>}
+      {errors.validate &&
+        errors.validate.types &&
+        errors.validate.types.test && <p>validate test</p>}
+      {errors.validate &&
+        errors.validate.types &&
+        errors.validate.types.test1 && <p>validate test1</p>}
+      {errors.validate &&
+        errors.validate.types &&
+        errors.validate.types.test2 && <p>validate test2</p>}
       <button id="submit">Submit</button>
       <button type="button" id="resetForm" onClick={() => reset()}>
         Reset
