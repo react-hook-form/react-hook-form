@@ -496,6 +496,7 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
     fieldNames?: FieldName<FormValues> | FieldName<FormValues>[],
     defaultValue?: string | Partial<FormValues>,
   ): FieldValue<FormValues> | Partial<FormValues> | string | undefined {
+    const combinedDefaultValues = defaultValue || defaultValues || {};
     const fieldValues = getFieldsValues<FormValues>(fieldsRef.current);
     const watchFields = watchFieldsRef.current;
 
@@ -511,18 +512,19 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
       );
 
       return isUndefined(value)
-        ? isUndefined(defaultValue)
-          ? getDefaultValue(defaultValues, fieldNames)
-          : defaultValue
+        ? getDefaultValue(combinedDefaultValues, fieldNames)
         : value;
     }
 
     if (isArray(fieldNames)) {
       return fieldNames.reduce((previous, name) => {
-        let value = getDefaultValue(defaultValues, name);
+        let value = getDefaultValue(combinedDefaultValues, name);
 
-        if (isEmptyObject(fieldsRef.current) && isObject(defaultValue)) {
-          value = defaultValue[name];
+        if (
+          isEmptyObject(fieldsRef.current) &&
+          isObject(combinedDefaultValues)
+        ) {
+          value = getDefaultValue(combinedDefaultValues, name);
         } else {
           const tempValue = assignWatchFields<FormValues>(
             fieldValues,
