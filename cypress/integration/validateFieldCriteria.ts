@@ -1,5 +1,5 @@
 context('validate field criteria', () => {
-  it('should validate the form and reset the form', () => {
+  it('should validate the form, show all errors and clear all', () => {
     cy.visit('http://localhost:3000/validate-field-criteria');
     cy.get('button#submit').click();
     cy.get('input[name="firstName"] + p').contains('firstName required');
