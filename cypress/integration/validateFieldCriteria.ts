@@ -32,10 +32,6 @@ context('validate field criteria', () => {
     cy.get('input[name="minLength"]').type('12');
 
     cy.get('select[name="selectNumber"] + p').contains('selectNumber required');
-    cy.get('select[name="selectNumber"]').select('1');
-    cy.get('select[name="selectNumber"] + p').contains(
-      'selectNumber minLength',
-    );
     cy.get('select[name="selectNumber"]').select('12');
 
     cy.get('input[name="pattern"] + p').contains('pattern pattern');
@@ -50,7 +46,6 @@ context('validate field criteria', () => {
     cy.get('select[name="multiple"] + p').contains('multiple required');
     cy.get('select[name="multiple"] + p + p').contains('multiple validate');
     cy.get('select[name="multiple"]').select('optionA');
-    cy.get('select[name="multiple"] + p').contains('multiple validate');
     cy.get('select[name="multiple"]').select('optionB');
 
     cy.get('input[name="validate"] + p').contains('validate test');
@@ -59,6 +54,6 @@ context('validate field criteria', () => {
     cy.get('input[name="validate"]').type('test');
 
     cy.get('p').should('have.length', 0);
-    cy.get('#renderCount').contains('26');
+    cy.get('#renderCount').contains('25');
   });
 });
