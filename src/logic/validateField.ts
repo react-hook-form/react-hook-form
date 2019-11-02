@@ -104,10 +104,7 @@ export default async <FormValues extends FieldValues>(
         ref,
         ...(exceedMax
           ? appendErrorsCurry(INPUT_VALIDATION_RULES.max, message)
-          : {}),
-        ...(!exceedMax
-          ? appendErrorsCurry(INPUT_VALIDATION_RULES.min, message)
-          : {}),
+          : appendErrorsCurry(INPUT_VALIDATION_RULES.min, message)),
       };
       nativeError(message);
       if (!validateAllFieldCriteria) {
@@ -139,10 +136,7 @@ export default async <FormValues extends FieldValues>(
         ref,
         ...(exceedMax
           ? appendErrorsCurry(INPUT_VALIDATION_RULES.maxLength, message)
-          : {}),
-        ...(!exceedMax
-          ? appendErrorsCurry(INPUT_VALIDATION_RULES.minLength, message)
-          : {}),
+          : appendErrorsCurry(INPUT_VALIDATION_RULES.minLength, message)),
       };
       nativeError(message);
       if (!validateAllFieldCriteria) {
