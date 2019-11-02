@@ -567,7 +567,7 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
     if (isRegistered) {
       fields[typedName] = {
         ...currentField,
-        ...(isRadio ? validateOptions : fieldAttributes),
+        ...validateOptions,
       };
       return;
     }
