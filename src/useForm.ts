@@ -577,6 +577,10 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
       : currentField;
 
     if (isRegistered) {
+      fields[typedName] = {
+        ...currentField,
+        ...validateOptions,
+      };
       return;
     }
 
