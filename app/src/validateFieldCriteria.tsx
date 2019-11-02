@@ -4,7 +4,7 @@ import useForm from 'react-hook-form';
 let renderCounter = 0;
 
 const ValidateFieldCriteria: React.FC = () => {
-  const { register, handleSubmit, errors, reset } = useForm<{
+  const { register, handleSubmit, errors } = useForm<{
     firstName: string;
     lastName: string;
     min: string;
@@ -25,8 +25,6 @@ const ValidateFieldCriteria: React.FC = () => {
   const onSubmit = () => {};
 
   renderCounter++;
-
-  console.log(errors);
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
@@ -50,12 +48,8 @@ const ValidateFieldCriteria: React.FC = () => {
       {errors.min && errors.min.types && errors.min.types.required && (
         <p>min required</p>
       )}
-      {errors.min && errors.min.types && errors.min.types.min && (
-        <p>min not meet</p>
-      )}
-      {errors.min && errors.min.types && errors.min.types.max && (
-        <p>max not meet</p>
-      )}
+      {errors.min && errors.min.types && errors.min.types.min && <p>min min</p>}
+      {errors.min && errors.min.types && errors.min.types.max && <p>min max</p>}
       <input
         type="date"
         name="minDate"
@@ -97,7 +91,7 @@ const ValidateFieldCriteria: React.FC = () => {
       >
         <option value="">Select</option>
         <option value="1">1</option>
-        <option value="2">2</option>
+        <option value="12">2</option>
       </select>
       {errors.selectNumber &&
         errors.selectNumber.types &&
@@ -112,19 +106,19 @@ const ValidateFieldCriteria: React.FC = () => {
       />
       {errors.pattern &&
         errors.pattern.types &&
+        errors.pattern.types.pattern && <p>pattern pattern</p>}
+      {errors.pattern &&
+        errors.pattern.types &&
         errors.pattern.types.required && <p>pattern required</p>}
       {errors.pattern &&
         errors.pattern.types &&
         errors.pattern.types.minLength && <p>pattern minLength</p>}
-      {errors.pattern &&
-        errors.pattern.types &&
-        errors.pattern.types.pattern && <p>pattern pattern</p>}
       <select
         name="multiple"
         multiple
         ref={register({
           required: true,
-          validate: value => value === 'optionB',
+          validate: value => value.includes('optionB'),
         })}
       >
         <option value="optionA">optionA</option>
@@ -135,15 +129,15 @@ const ValidateFieldCriteria: React.FC = () => {
         errors.multiple.types.required && <p>multiple required</p>}
       {errors.multiple &&
         errors.multiple.types &&
-        errors.multiple.types.required && <p>multiple validate</p>}
+        errors.multiple.types.validate && <p>multiple validate</p>}
       <input
         name="validate"
         type="validate"
         placeholder="validate"
         ref={register({
           validate: {
-            test: value => value === 'test',
-            test1: value => value === 'test',
+            test: value => value !== '',
+            test1: value => value.length > 3,
             test2: value => value === 'test',
           },
         })}
@@ -158,9 +152,6 @@ const ValidateFieldCriteria: React.FC = () => {
         errors.validate.types &&
         errors.validate.types.test2 && <p>validate test2</p>}
       <button id="submit">Submit</button>
-      <button type="button" id="resetForm" onClick={() => reset()}>
-        Reset
-      </button>
       <div id="renderCount">{renderCounter}</div>
     </form>
   );
