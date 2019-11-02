@@ -10,7 +10,7 @@ export default function attachNativeValidation(
     if (key === INPUT_VALIDATION_RULES.pattern && isRegex(value)) {
       ref[key] = value.source;
     } else {
-      ref[key] = key === INPUT_VALIDATION_RULES.pattern ? true : value;
+      ref[key] = key === INPUT_VALIDATION_RULES.pattern || value;
     }
   });
 }
