@@ -185,7 +185,10 @@ export default async <FormValues extends FieldValues>(
       if (errorObject) {
         error[typedName] = {
           ...errorObject,
-          ...appendErrorsCurry('validate', errorObject.message),
+          ...appendErrorsCurry(
+            INPUT_VALIDATION_RULES.validate,
+            errorObject.message,
+          ),
         };
         if (!validateAllFieldCriteria) {
           return error;
