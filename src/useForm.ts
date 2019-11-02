@@ -56,9 +56,10 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
   nativeValidation = false,
   submitFocusError = true,
   validationSchemaOption = { abortEarly: false },
-  validateAllFieldCriteria = false,
+  validateCriteriaMode,
 }: Options<FormValues> = {}) {
   const fieldsRef = useRef<FieldsRefs<FormValues>>({});
+  const validateAllFieldCriteria = validateCriteriaMode === 'all';
   const errorsRef = useRef<FieldErrors<FormValues>>({});
   const schemaErrorsRef = useRef<FieldErrors<FormValues>>({});
   const touchedFieldsRef = useRef(new Set<FieldName<FormValues>>());
