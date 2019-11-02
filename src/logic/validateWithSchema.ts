@@ -1,3 +1,4 @@
+import appendErrors from './appendErrors';
 import {
   FieldValues,
   SchemaValidationResult,
@@ -5,7 +6,6 @@ import {
   Schema,
   FieldErrors,
 } from '../types';
-import appendErrors from './appendErrors';
 
 // TODO: Fix these types
 export const parseErrorSchema = <FormValues>(
