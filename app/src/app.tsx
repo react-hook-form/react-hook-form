@@ -19,7 +19,7 @@ const App: React.FC = () => {
     <Router>
       <Route path="/basic/:mode" exact component={Basic} />
       <Route
-        path="/validate-field-criteria/:mode"
+        path="/validate-field-criteria"
         exact
         component={ValidateFieldCriteria}
       />

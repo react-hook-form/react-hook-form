@@ -3,7 +3,7 @@ import useForm from 'react-hook-form';
 
 let renderCounter = 0;
 
-const ValidateFieldCriteria: React.FC = (props: any) => {
+const ValidateFieldCriteria: React.FC = () => {
   const { register, handleSubmit, errors, reset } = useForm<{
     firstName: string;
     lastName: string;
@@ -20,7 +20,7 @@ const ValidateFieldCriteria: React.FC = (props: any) => {
     multiple: string;
     validate: string;
   }>({
-    validateAllFieldCriteria: props.match.params.mode,
+    validateCriteriaMode: 'all',
   });
   const onSubmit = () => {};
 
