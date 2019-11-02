@@ -393,9 +393,9 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
         });
 
         if (shouldUpdate) {
-          errorsRef.current = combineErrorsRef(error as FieldErrors<
-            FormValues
-          >);
+          errorsRef.current = validationSchema
+            ? schemaErrorsRef.current
+            : combineErrorsRef(error as FieldErrors<FormValues>);
           renderBaseOnError(name, error as FieldErrors<FormValues>);
           return;
         }
