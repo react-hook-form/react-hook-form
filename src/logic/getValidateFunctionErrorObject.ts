@@ -3,24 +3,20 @@ import isBoolean from '../utils/isBoolean';
 import { INPUT_VALIDATION_RULES } from '../constants';
 import { FieldError, ValidateResult, Ref } from '../types';
 
-export default function getValidateFunctionErrorObject(
+export default (
   result: ValidateResult,
   ref: Ref,
   nativeError: Function,
   type = INPUT_VALIDATION_RULES.validate,
-): FieldError | undefined {
-  const isStringValue = isString(result);
+): FieldError | void => {
+  if (isString(result) || (isBoolean(result) && !result)) {
+    const message = isString(result) ? result : '';
+    nativeError(message);
 
-  if (isStringValue || (isBoolean(result) && !result)) {
-    const message = isStringValue ? result : '';
-    const error = {
+    return {
       type,
       message,
       ref,
     };
-    nativeError(message);
-    return error as FieldError;
   }
-
-  return;
-}
+};
