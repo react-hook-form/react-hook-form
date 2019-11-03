@@ -42,11 +42,11 @@ const errors = {
 
 describe('parseErrorSchema', () => {
   it('should parse the validation errors into react hook form errors format', () => {
-    expect(parseErrorSchema(errors, false)).toMatchSnapshot();
+    expect(parseErrorSchema(errors as any, false)).toMatchSnapshot();
   });
 
   it('should parse the validation errors and append all errors', () => {
-    expect(parseErrorSchema(errors, true)).toMatchSnapshot();
+    expect(parseErrorSchema(errors as any, true)).toMatchSnapshot();
   });
 });
 

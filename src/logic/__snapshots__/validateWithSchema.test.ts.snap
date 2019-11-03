@@ -7,7 +7,6 @@ Object {
     "messages": Object {
       "required": "age is a required field",
     },
-    "ref": Object {},
     "type": "required",
     "types": Object {
       "required": true,
@@ -19,7 +18,6 @@ Object {
       "min": "name is a min field",
       "required": "name is a required field",
     },
-    "ref": Object {},
     "type": "required",
     "types": Object {
       "min": true,
@@ -33,12 +31,10 @@ exports[`parseErrorSchema should parse the validation errors into react hook for
 Object {
   "age": Object {
     "message": "age is a required field",
-    "ref": Object {},
     "type": "required",
   },
   "name": Object {
     "message": "name is a min field",
-    "ref": Object {},
     "type": "min",
   },
 }
@@ -49,12 +45,10 @@ Object {
   "fieldErrors": Object {
     "age": Object {
       "message": "age is a required field",
-      "ref": Object {},
       "type": "required",
     },
     "name": Object {
       "message": "name is a min field",
-      "ref": Object {},
       "type": "min",
     },
   },
