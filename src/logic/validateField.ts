@@ -10,7 +10,7 @@ import isObject from '../utils/isObject';
 import isFunction from '../utils/isFunction';
 import getFieldsValue from './getFieldValue';
 import isRegex from '../utils/isRegex';
-import getValidateFunctionErrorObject from './getValidateFunctionErrorObject';
+import getValidateErrorObject from './getValidateErrorObject';
 import appendErrors from './appendErrors';
 import { INPUT_VALIDATION_RULES, RADIO_INPUT } from '../constants';
 import {
@@ -170,18 +170,18 @@ export default async <FormValues extends FieldValues>(
 
     if (isFunction(validate)) {
       const result = await validate(fieldValue);
-      const errorObject = getValidateFunctionErrorObject(
+      const validateError = getValidateErrorObject(
         result,
         validateRef,
         nativeError,
       );
 
-      if (errorObject) {
+      if (validateError) {
         error[typedName] = {
-          ...errorObject,
+          ...validateError,
           ...appendErrorsCurry(
             INPUT_VALIDATION_RULES.validate,
-            errorObject.message,
+            validateError.message,
           ),
         };
         if (!validateAllFieldCriteria) {
@@ -189,41 +189,41 @@ export default async <FormValues extends FieldValues>(
         }
       }
     } else if (isObject(validate)) {
+      const values = Object.entries(validate);
       const validationResult = await new Promise(
         (resolve): ValidatePromiseResult => {
-          const values = Object.entries(validate);
           values.reduce(async (previous, [key, validate], index): Promise<
             ValidatePromiseResult
           > => {
-            if (!isEmptyObject(await previous) && !validateAllFieldCriteria) {
+            if (
+              (!isEmptyObject(await previous) && !validateAllFieldCriteria) ||
+              !isFunction(validate)
+            ) {
               return resolve(previous);
             }
-            const lastChild = values.length - 1 === index;
 
-            if (isFunction(validate)) {
-              const result = await validate(fieldValue);
-              const errorObject = getValidateFunctionErrorObject(
-                result,
-                validateRef,
-                nativeError,
-                key,
-              );
+            const result = await validate(fieldValue);
+            const validateError = getValidateErrorObject(
+              result,
+              validateRef,
+              nativeError,
+              key,
+            );
 
-              if (errorObject) {
-                const output = {
-                  ...errorObject,
-                  ...appendErrorsCurry(key, errorObject.message),
-                };
+            if (validateError) {
+              const combinedError = {
+                ...validateError,
+                ...appendErrorsCurry(key, validateError.message),
+              };
 
-                if (validateAllFieldCriteria) {
-                  error[typedName] = output;
-                }
-
-                return lastChild ? resolve(output) : output;
+              if (validateAllFieldCriteria) {
+                error[typedName] = combinedError;
               }
-            }
 
-            return lastChild ? resolve(previous) : previous;
+              return values.length - 1 === index
+                ? resolve(combinedError)
+                : combinedError;
+            }
           }, {});
         },
       );
