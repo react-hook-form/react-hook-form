@@ -416,6 +416,10 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
       validFieldsRef,
       watchFieldsRef,
     ].forEach(data => data.current.delete(name));
+
+    if (readFormState.current.isValid || readFormState.current.touched) {
+      render({});
+    }
   };
 
   const removeEventListenerAndRef = useCallback(
