@@ -189,42 +189,50 @@ export default async <FormValues extends FieldValues>(
         }
       }
     } else if (isObject(validate)) {
-      const values = Object.entries(validate);
+      const validateFunctions = Object.entries(validate);
       const validationResult = await new Promise(
         (resolve): ValidatePromiseResult => {
-          values.reduce(async (previous, [key, validate], index): Promise<
-            ValidatePromiseResult
-          > => {
-            if (
-              (!isEmptyObject(await previous) && !validateAllFieldCriteria) ||
-              !isFunction(validate)
-            ) {
-              return resolve(previous);
-            }
-
-            const result = await validate(fieldValue);
-            const validateError = getValidateErrorObject(
-              result,
-              validateRef,
-              nativeError,
-              key,
-            );
-
-            if (validateError) {
-              const combinedError = {
-                ...validateError,
-                ...appendErrorsCurry(key, validateError.message),
-              };
-
-              if (validateAllFieldCriteria) {
-                error[typedName] = combinedError;
+          validateFunctions.reduce(
+            async (
+              previous,
+              [key, validate],
+              index,
+            ): Promise<ValidatePromiseResult> => {
+              if (
+                (!isEmptyObject(await previous) && !validateAllFieldCriteria) ||
+                !isFunction(validate)
+              ) {
+                return resolve(previous);
               }
 
-              return values.length - 1 === index
-                ? resolve(combinedError)
-                : combinedError;
-            }
-          }, {});
+              let result;
+              const validateResult = await validate(fieldValue);
+              const validateError = getValidateErrorObject(
+                validateResult,
+                validateRef,
+                nativeError,
+                key,
+              );
+
+              if (validateError) {
+                result = {
+                  ...validateError,
+                  ...appendErrorsCurry(key, validateError.message),
+                };
+
+                if (validateAllFieldCriteria) {
+                  error[typedName] = result;
+                }
+              } else {
+                result = previous;
+              }
+
+              return validateFunctions.length - 1 === index
+                ? resolve(result)
+                : result;
+            },
+            {},
+          );
         },
       );
 
