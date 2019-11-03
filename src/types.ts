@@ -90,8 +90,8 @@ export type ValidationOptions = Partial<{
 }>;
 
 export interface FieldError {
-  ref: Ref;
   type: string;
+  ref?: Ref;
   types?: Record<string, boolean>;
   message?: string;
   messages?: Record<string, string>;
@@ -116,6 +116,13 @@ export type FieldsRefs<FormValues extends FieldValues> = Partial<
 export type FieldErrors<FormValues extends FieldValues> = Partial<
   Record<FieldName<FormValues>, FieldError>
 >;
+
+export type YupValidationError = {
+  inner: { path: string; message: string; type: string }[];
+  path: string;
+  message: string;
+  type: string;
+};
 
 export interface SubmitPromiseResult<FormValues extends FieldValues> {
   errors: FieldErrors<FormValues>;
