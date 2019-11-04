@@ -110,16 +110,21 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
       let reRender = shouldRender;
 
       if (isEmptyObject(error)) {
-        delete errorsRef.current[name];
         if (fieldsWithValidationRef.current.has(name) || validationSchema) {
           validFieldsRef.current.add(name);
+
+          if (errorsRef.current[name]) {
+            reRender = true;
+          }
+        }
+
+        delete errorsRef.current[name];
+      } else {
+        validFieldsRef.current.delete(name);
+
+        if (!errorsRef.current[name]) {
           reRender = true;
         }
-      } else {
-        if (!errorsRef.current[name]) {
-          validFieldsRef.current.delete(name);
-        }
-        reRender = true;
       }
 
       errorsRef.current = validationSchema
