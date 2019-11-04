@@ -232,7 +232,7 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
         name: FieldName<FormValues>;
         value?: FormValues[FieldName<FormValues>];
       },
-      shouldRender = true,
+      shouldRender,
     ): Promise<boolean> => {
       const field = fieldsRef.current[name]!;
 
@@ -294,6 +294,7 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
       payload?:
         | ValidationPayload<FieldName<FormValues>, FieldValue<FormValues>>
         | ValidationPayload<FieldName<FormValues>, FieldValue<FormValues>>[],
+      shouldRender = false,
     ): Promise<boolean> => {
       const fields =
         payload || Object.keys(fieldsRef.current).map(name => ({ name }));
@@ -310,7 +311,7 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
         return result.every(Boolean);
       }
 
-      return await executeValidation(fields);
+      return await executeValidation(fields, shouldRender);
     },
     [executeSchemaValidation, executeValidation, validationSchema],
   );
@@ -329,7 +330,7 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
         watchFieldsRef.current.has(name);
 
       if (shouldValidate) {
-        return triggerValidation({ name });
+        return triggerValidation({ name }, shouldRender);
       }
 
       if (shouldRender) {
