@@ -116,9 +116,15 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
           reRender = true;
         }
       } else {
-        validFieldsRef.current.delete(name);
+        if (!errorsRef.current[name]) {
+          validFieldsRef.current.delete(name);
+        }
         reRender = true;
       }
+
+      errorsRef.current = validationSchema
+        ? schemaErrorsRef.current
+        : combineErrorsRef(error);
 
       if (reRender) {
         render({});
@@ -228,7 +234,6 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
       }
 
       const error = await validateField(field, fieldsRef.current);
-      errorsRef.current = combineErrorsRef(error);
       renderBaseOnError(name, error, shouldRender);
 
       return isEmptyObject(error);
@@ -405,9 +410,6 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
         });
 
         if (shouldUpdate) {
-          errorsRef.current = validationSchema
-            ? schemaErrorsRef.current
-            : combineErrorsRef(error as FieldErrors<FormValues>);
           renderBaseOnError(name, error as FieldErrors<FormValues>);
           return;
         }
