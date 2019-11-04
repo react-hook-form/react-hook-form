@@ -1,6 +1,6 @@
 <div align="center">
     <p align="center">
-        <a href="https://react-hook-form.com" title="React Hook Form - Simple React forms validation">
+        <a href="https://react-hook-form.com/jp" title="React Hook Form - Simple React forms validation">
             <img src="https://raw.githubusercontent.com/bluebill1049/react-hook-form/master/website/logo.png" alt="React Hook Form Logo - React hook custom hook for form validation" width="300px" />
         </a>
     </p>
@@ -23,7 +23,7 @@
 
 <div align="center">
     <p align="center">
-        <a href="https://react-hook-form.com" title="React Hook Form - Simple React forms validation">
+        <a href="https://react-hook-form.com/jp" title="React Hook Form - Simple React forms validation">
             <img src="https://raw.githubusercontent.com/bluebill1049/react-hook-form/master/website/example.gif" alt="React Hook Form video - React custom hook for form validation" width="750px" />
         </a>
     </p>
@@ -39,7 +39,7 @@
 - React Native との互換性
 - [Yup](https://github.com/jquense/yup) スキーマベースのバリデーションをサポート
 - ブラウザのネイティブバリデーションをサポート
-- [Form Builder](https://react-hook-form.com/form-builder) でフォームを素早く作成
+- [Form Builder](https://react-hook-form.com/jp/form-builder) でフォームを素早く作成
 
 ## インストール
 
@@ -49,12 +49,12 @@
 
 - [動機](https://medium.com/@bruce1049/form-validation-with-hook-in-3kb-c5414edf7d64)
 - [ビデオチュートリアル](https://www.youtube.com/watch?v=-mFXqOaqgZk&t)
-- [始める](https://react-hook-form.com/get-started)
-- [API](https://react-hook-form.com/api)
+- [始める](https://react-hook-form.com/jp/get-started)
+- [API](https://react-hook-form.com/jp/api)
 - [例](https://github.com/bluebill1049/react-hook-form/tree/master/examples)
-- [デモ](https://react-hook-form.com)
-- [Form Builder](https://react-hook-form.com/form-builder)
-- [FAQ](https://react-hook-form.com/faq)
+- [デモ](https://react-hook-form.com/jp)
+- [Form Builder](https://react-hook-form.com/jp/form-builder)
+- [FAQs](https://react-hook-form.com/jp/faqs)
 
 ## クイックスタート
 
@@ -89,9 +89,9 @@ function App() {
     <img src="https://opencollective.com/react-hook-form/contributors.svg?width=950" />
 </a>
 
-## 支援者
+## スポンサー
 
-全ての支援者に感謝します! [[支援者になる](https://opencollective.com/react-hook-form#backer)]
+全てのスポンサーに感謝します! [[スポンサーになる](https://opencollective.com/react-hook-form#backer)]
 
 <a href="https://opencollective.com/react-hook-form#backers">
     <img src="https://opencollective.com/react-hook-form/backers.svg?width=950" />

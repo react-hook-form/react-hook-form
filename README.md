@@ -29,7 +29,7 @@
     </p>
 </div>
 
-🇦🇺English | <a href="./README.zh-CN.md">🇨🇳简体中文</a> | <a href="./README.ja-JP.md">日本語</a> | <a href="./README.fr-FR.md">🇫🇷Français</a> | <a href="./README.ko-KR.md">🇰🇷한국어</a>
+🇦🇺English | <a href="./README.zh-CN.md">🇨🇳简体中文</a> | <a href="./README.ja-JP.md">🇯🇵日本語</a> | <a href="./README.fr-FR.md">🇫🇷Français</a> | <a href="./README.ko-KR.md">🇰🇷한국어</a>
 
 ## Features
 
@@ -55,7 +55,7 @@
 - [Examples](https://github.com/bluebill1049/react-hook-form/tree/master/examples)
 - [Demo](https://react-hook-form.com)
 - [Form Builder](https://react-hook-form.com/form-builder)
-- [FAQs](https://react-hook-form.com/faq)
+- [FAQs](https://react-hook-form.com/faqs)
 
 ## Quickstart
 
