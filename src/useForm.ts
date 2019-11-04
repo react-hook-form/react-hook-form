@@ -174,7 +174,7 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
         ref[isCheckBoxInput(type) ? 'checked' : 'value'] = value;
       }
 
-      return type;
+      return true;
     },
     [isWindowDefined],
   );
