@@ -55,7 +55,7 @@
 - [예제](https://github.com/bluebill1049/react-hook-form/tree/master/examples)
 - [데모](https://react-hook-form.com)
 - [Form Builder](https://react-hook-form.com/form-builder)
-- [FAQs](https://react-hook-form.com/faq)
+- [FAQs](https://react-hook-form.com/faqs)
 
 ## 시작하기
 
