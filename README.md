@@ -55,7 +55,7 @@
 - [Examples](https://github.com/bluebill1049/react-hook-form/tree/master/examples)
 - [Demo](https://react-hook-form.com)
 - [Form Builder](https://react-hook-form.com/form-builder)
-- [FAQs](https://react-hook-form.com/faq)
+- [FAQs](https://react-hook-form.com/faqs)
 
 ## Quickstart
 
