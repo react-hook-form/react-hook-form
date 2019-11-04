@@ -54,7 +54,7 @@
 - [例](https://github.com/bluebill1049/react-hook-form/tree/master/examples)
 - [デモ](https://react-hook-form.com)
 - [Form Builder](https://react-hook-form.com/form-builder)
-- [FAQ](https://react-hook-form.com/faq)
+- [FAQs](https://react-hook-form.com/faq)
 
 ## クイックスタート
 
@@ -89,9 +89,9 @@ function App() {
     <img src="https://opencollective.com/react-hook-form/contributors.svg?width=950" />
 </a>
 
-## 支援者
+## スポンサー
 
-全ての支援者に感謝します! [[支援者になる](https://opencollective.com/react-hook-form#backer)]
+全てのスポンサーに感謝します! [[スポンサーになる](https://opencollective.com/react-hook-form#backer)]
 
 <a href="https://opencollective.com/react-hook-form#backers">
     <img src="https://opencollective.com/react-hook-form/backers.svg?width=950" />
