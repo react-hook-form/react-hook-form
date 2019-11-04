@@ -415,7 +415,11 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
         });
 
         if (shouldUpdate) {
-          renderBaseOnError(name, error as FieldErrors<FormValues>);
+          renderBaseOnError(
+            name,
+            error as FieldErrors<FormValues>,
+            shouldUpdate,
+          );
           return;
         }
 
