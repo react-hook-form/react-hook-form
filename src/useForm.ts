@@ -222,6 +222,7 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
       if (!field) {
         return false;
       }
+
       if (!isUndefined(value)) {
         setInternalValue(name, value);
       }
