@@ -174,7 +174,7 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
         ref[isCheckBoxInput(type) ? 'checked' : 'value'] = value;
       }
 
-      return true;
+      return type;
     },
     [isWindowDefined],
   );
@@ -333,7 +333,7 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
         watchFieldsRef.current.has(name);
 
       if (shouldValidate) {
-        return triggerValidation({ name }, shouldRender);
+        return triggerValidation({ name }, true);
       }
 
       if (shouldRender) {
