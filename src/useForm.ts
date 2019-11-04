@@ -333,7 +333,7 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
         watchFieldsRef.current.has(name);
 
       if (shouldValidate) {
-        return triggerValidation({ name }, true);
+        return triggerValidation({ name }, shouldRender);
       }
 
       if (shouldRender) {
