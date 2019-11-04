@@ -2,6 +2,8 @@ import React from 'react';
 import useForm from 'react-hook-form';
 import { withRouter } from 'react-router';
 
+let renderCounter = 0;
+
 const FormState: React.FC = (props: any) => {
   const { register, handleSubmit, formState } = useForm<{
     firstName: string;
@@ -12,6 +14,8 @@ const FormState: React.FC = (props: any) => {
   }>({
     mode: props.match.params.mode,
   });
+
+  renderCounter++;
 
   return (
     <form onSubmit={handleSubmit(() => {})}>
@@ -43,6 +47,7 @@ const FormState: React.FC = (props: any) => {
         ref={register}
       />
       <button>Submit</button>
+      <div id="renderCount">{renderCounter}</div>
     </form>
   );
 };
