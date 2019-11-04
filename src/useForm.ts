@@ -127,18 +127,33 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
     (
       name: FieldName<FormValues>,
       error: FieldErrors<FormValues>,
-      shouldRender = true,
+      shouldRender = false,
     ) => {
+      let reRender = shouldRender;
+
       if (isEmptyObject(error)) {
-        delete errorsRef.current[name];
         if (fieldsWithValidationRef.current.has(name) || validationSchema) {
           validFieldsRef.current.add(name);
+
+          if (errorsRef.current[name]) {
+            reRender = true;
+          }
         }
+
+        delete errorsRef.current[name];
       } else {
         validFieldsRef.current.delete(name);
+
+        if (!errorsRef.current[name]) {
+          reRender = true;
+        }
       }
 
-      if (shouldRender) {
+      errorsRef.current = validationSchema
+        ? schemaErrorsRef.current
+        : combineErrorsRef(error);
+
+      if (reRender) {
         render({});
       }
     },
@@ -232,24 +247,24 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
         name: FieldName<FormValues>;
         value?: FormValues[FieldName<FormValues>];
       },
-      shouldRender = true,
+      shouldRender,
     ): Promise<boolean> => {
       const field = fieldsRef.current[name]!;
 
       if (!field) {
         return false;
       }
+
       if (!isUndefined(value)) {
         setInternalValue(name, value);
       }
 
       const error = await validateFieldCurry(field);
-      errorsRef.current = combineErrorsRef(error);
       renderBaseOnError(name, error, shouldRender);
 
       return isEmptyObject(error);
     },
-    [validateFieldCurry, renderBaseOnError, setInternalValue],
+    [renderBaseOnError, setInternalValue, validateFieldCurry],
   );
 
   const executeSchemaValidation = useCallback(
@@ -294,6 +309,7 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
       payload?:
         | ValidationPayload<FieldName<FormValues>, FieldValue<FormValues>>
         | ValidationPayload<FieldName<FormValues>, FieldValue<FormValues>>[],
+      shouldRender = false,
     ): Promise<boolean> => {
       const fields =
         payload || Object.keys(fieldsRef.current).map(name => ({ name }));
@@ -310,7 +326,7 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
         return result.every(Boolean);
       }
 
-      return await executeValidation(fields);
+      return await executeValidation(fields, shouldRender);
     },
     [executeSchemaValidation, executeValidation, validationSchema],
   );
@@ -329,7 +345,7 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
         watchFieldsRef.current.has(name);
 
       if (shouldValidate) {
-        return triggerValidation({ name });
+        return triggerValidation({ name }, shouldRender);
       }
 
       if (shouldRender) {
@@ -411,10 +427,11 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
         });
 
         if (shouldUpdate) {
-          errorsRef.current = validationSchema
-            ? schemaErrorsRef.current
-            : combineErrorsRef(error as FieldErrors<FormValues>);
-          renderBaseOnError(name, error as FieldErrors<FormValues>);
+          renderBaseOnError(
+            name,
+            error as FieldErrors<FormValues>,
+            shouldUpdate,
+          );
           return;
         }
 
@@ -434,6 +451,10 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
       validFieldsRef,
       watchFieldsRef,
     ].forEach(data => data.current.delete(name));
+
+    if (readFormState.current.isValid || readFormState.current.touched) {
+      render({});
+    }
   };
 
   const removeEventListenerAndRef = useCallback(
@@ -652,7 +673,7 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
             }
 
             if (
-              validFieldsRef.current.size ===
+              validFieldsRef.current.size <=
               fieldsWithValidationRef.current.size
             ) {
               render({});
