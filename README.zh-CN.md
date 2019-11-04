@@ -45,7 +45,7 @@
 - [示例](https://github.com/bluebill1049/react-hook-form/tree/master/examples)
 - [Demo](https://react-hook-form.com/zh)
 - [Form Builder](https://react-hook-form.com/zh/form-builder)
-- [常见问题](https://react-hook-form.com/zh/faq)
+- [常见问题](https://react-hook-form.com/zh/faqs)
 
 ## 快速开始
 
