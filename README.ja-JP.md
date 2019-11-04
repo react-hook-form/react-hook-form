@@ -54,7 +54,7 @@
 - [例](https://github.com/bluebill1049/react-hook-form/tree/master/examples)
 - [デモ](https://react-hook-form.com)
 - [Form Builder](https://react-hook-form.com/form-builder)
-- [FAQ](https://react-hook-form.com/faq)
+- [FAQ](https://react-hook-form.com/faqs)
 
 ## クイックスタート
 
