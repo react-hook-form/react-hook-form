@@ -206,16 +206,18 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
     return isDirtyChanged && readFormState.current.dirty;
   };
 
-  const setValueInternal = useCallback(
-    (name: FieldName<FormValues>, value: FieldValue<FormValues>): void => {
+  const setInternalValue = useCallback(
+    (
+      name: FieldName<FormValues>,
+      value: FieldValue<FormValues>,
+    ): boolean | void => {
       const shouldRender = setFieldValue(name, value);
       if (
         setDirty(name) ||
         shouldRender ||
         (!touchedFieldsRef.current.has(name) && readFormState.current.touched)
       ) {
-        touchedFieldsRef.current.add(name);
-        render({});
+        return !!touchedFieldsRef.current.add(name);
       }
     },
     [setFieldValue],
@@ -238,7 +240,7 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
         return false;
       }
       if (!isUndefined(value)) {
-        setValueInternal(name, value);
+        setInternalValue(name, value);
       }
 
       const error = await validateFieldCurry(field);
@@ -247,7 +249,7 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
 
       return isEmptyObject(error);
     },
-    [validateFieldCurry, renderBaseOnError, setValueInternal],
+    [validateFieldCurry, renderBaseOnError, setInternalValue],
   );
 
   const executeSchemaValidation = useCallback(
@@ -321,18 +323,21 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
     ) => void | Promise<boolean>
   >(
     (name, value, shouldValidate = false) => {
-      setValueInternal(name, value);
       const shouldRender =
-        isWatchAllRef.current || watchFieldsRef.current.has(name);
+        setInternalValue(name, value) ||
+        isWatchAllRef.current ||
+        watchFieldsRef.current.has(name);
+
       if (shouldValidate) {
         return triggerValidation({ name });
       }
+
       if (shouldRender) {
         render({});
       }
       return;
     },
-    [setValueInternal, triggerValidation],
+    [setInternalValue, triggerValidation],
   );
 
   validateAndUpdateStateRef.current = validateAndUpdateStateRef.current
