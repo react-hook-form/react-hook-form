@@ -3,7 +3,7 @@ import useForm from 'react-hook-form';
 
 let renderCounter = 0;
 
-const Basic: React.FC = (props: any) => {
+const ConditionalField: React.FC = (props: any) => {
   const { register, handleSubmit, errors, reset } = useForm<{
     firstName: string;
     lastName: string;
@@ -133,4 +133,4 @@ const Basic: React.FC = (props: any) => {
   );
 };
 
-export default Basic;
+export default ConditionalField;
