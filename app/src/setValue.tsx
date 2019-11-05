@@ -17,8 +17,6 @@ const SetValue: React.FC = () => {
 
   useEffect(() => {
     register({ name: 'lastName' }, { required: true });
-    register({ name: 'age' });
-
     setValue('firstName', 'wrong');
     setValue('age', '2');
     setValue('trigger', '', true);
@@ -26,8 +24,7 @@ const SetValue: React.FC = () => {
     setValue('radio', 'radio');
     setValue('select', 'a');
     setValue('multiple', ['a', 'b']);
-    // eslint-disable-next-line
-  }, []);
+  }, [register, setValue]);
 
   renderCounter++;
 
