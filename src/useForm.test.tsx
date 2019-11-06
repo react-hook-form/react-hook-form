@@ -844,7 +844,7 @@ describe('useForm', () => {
           type: 'test',
           isManual: true,
           message: undefined,
-          ref: undefined,
+          ref: {},
         },
       });
 
@@ -856,7 +856,7 @@ describe('useForm', () => {
           type: 'test',
           isManual: true,
           message: undefined,
-          ref: undefined,
+          ref: {},
         },
       });
     });
