@@ -871,6 +871,43 @@ describe('useForm', () => {
     });
   });
 
+  describe('setErrors', () => {
+    it('should set multiple errors for the form', () => {
+      const { result } = renderHook(() =>
+        useForm<{ input: string; input1: string }>(),
+      );
+      act(() => {
+        result.current.setErrors([
+          {
+            type: 'test',
+            name: 'input',
+            message: 'wow',
+          },
+          {
+            type: 'test1',
+            name: 'input1',
+            message: 'wow1',
+          },
+        ]);
+      });
+
+      expect(result.current.errors).toEqual({
+        input: {
+          type: 'test',
+          isManual: true,
+          message: 'wow',
+          ref: {},
+        },
+        input1: {
+          type: 'test1',
+          isManual: true,
+          message: 'wow1',
+          ref: {},
+        },
+      });
+    });
+  });
+
   describe('formState', () => {
     it('should disable isValid for submit mode', () => {
       const { result } = renderHook(() => useForm<{ input: string }>());
