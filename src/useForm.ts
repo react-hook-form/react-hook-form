@@ -33,7 +33,6 @@ import {
   Field,
   FieldsRefs,
   Options,
-  Ref,
   ValidationOptions,
   SubmitPromiseResult,
   OnSubmit,
