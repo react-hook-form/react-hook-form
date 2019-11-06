@@ -10,17 +10,13 @@ export default <FormValues>(
   if (!validateAllFieldCriteria) {
     return {};
   }
-  const error = errors[name] || { types: {}, messages: {} };
+  const error = errors[name] || { types: {} };
 
   return {
     ...error,
     types: {
       ...error.types,
-      [type]: true,
-    },
-    messages: {
-      ...error.messages,
-      [type]: message,
+      [type]: message || true,
     },
   };
 };

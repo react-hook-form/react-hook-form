@@ -4,24 +4,17 @@ exports[`parseErrorSchema should parse the validation errors and append all erro
 Object {
   "age": Object {
     "message": "age is a required field",
-    "messages": Object {
-      "required": "age is a required field",
-    },
     "type": "required",
     "types": Object {
-      "required": true,
+      "required": "age is a required field",
     },
   },
   "name": Object {
     "message": "name is a required field",
-    "messages": Object {
-      "min": "name is a min field",
-      "required": "name is a required field",
-    },
     "type": "required",
     "types": Object {
-      "min": true,
-      "required": true,
+      "min": "name is a min field",
+      "required": "name is a required field",
     },
   },
 }

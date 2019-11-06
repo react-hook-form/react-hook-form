@@ -33,8 +33,7 @@ export const parseErrorSchema = <FormValues>(
                   type,
                   ...(validateAllFieldCriteria
                     ? {
-                        types: { [type]: true },
-                        messages: { [type]: message },
+                        types: { [type]: message || true },
                       }
                     : {}),
                 },

@@ -94,7 +94,6 @@ export interface FieldError {
   ref?: Ref;
   types?: Record<string, boolean>;
   message?: string;
-  messages?: Record<string, string>;
   isManual?: boolean;
 }
 
