@@ -512,6 +512,11 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
 
   function setError(name: ManualFieldError<FormValues>[]): void;
   function setError(
+    name: FieldName<FormValues>,
+    type: string,
+    message?: string,
+  ): void;
+  function setError(
     name: FieldName<FormValues> | ManualFieldError<FormValues>[],
     type = '',
     message?: string,

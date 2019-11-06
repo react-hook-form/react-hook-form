@@ -877,7 +877,7 @@ describe('useForm', () => {
         useForm<{ input: string; input1: string }>(),
       );
       act(() => {
-        result.current.setErrors([
+        result.current.setError([
           {
             type: 'test',
             name: 'input',
