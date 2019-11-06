@@ -406,6 +406,9 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
           const { fieldErrors } = await validateWithSchemaCurry(
             combineFieldValues(getFieldsValues(fields)),
           );
+          Object.keys(fieldErrors).map(name => {
+            validFieldsRef.current.delete(name);
+          });
           schemaErrorsRef.current = fieldErrors;
           isSchemaValidateTriggeredRef.current = true;
           error = (fieldErrors as FieldErrors<FormValues>)[name]

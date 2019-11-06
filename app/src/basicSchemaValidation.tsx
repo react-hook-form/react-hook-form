@@ -4,26 +4,39 @@ import * as yup from 'yup';
 
 let renderCounter = 0;
 
-const validationSchema = yup.object().shape({
-  firstName: yup.string().required(),
-  lastName: yup
-    .string()
-    .max(5)
-    .required(),
-  min: yup.number().min(10),
-  max: yup.number().max(20),
-  minDate: yup.date().min('2019-08-01'),
-  maxDate: yup.date().max('2019-08-01'),
-  minLength: yup.string().min(2),
-  minRequiredLength: yup
-    .string()
-    .min(2)
-    .required(),
-  selectNumber: yup.string().required(),
-  pattern: yup.string().matches(/\d+/),
-  radio: yup.string().required(),
-  checkbox: yup.string().required(),
-});
+const validationSchema = yup.object().shape(
+  {
+    firstName: yup.string().required(),
+    lastName: yup
+      .string()
+      .max(5)
+      .required(),
+    min: yup.number().min(10),
+    max: yup.number().max(20),
+    minDate: yup.date().min('2019-08-01'),
+    maxDate: yup.date().max('2019-08-01'),
+    minLength: yup.string().min(2),
+    minRequiredLength: yup
+      .string()
+      .min(2)
+      .required(),
+    selectNumber: yup.string().required(),
+    pattern: yup.string().matches(/\d+/),
+    radio: yup.string().required(),
+    checkbox: yup.string().required(),
+    exclusivelyRequiredOne: yup.string().when('exclusivelyRequiredTwo', {
+      is: '',
+      then: yup.string().required(),
+      otherwise: yup.string().length(0),
+    }),
+    exclusivelyRequiredTwo: yup.string().when('exclusivelyRequiredOne', {
+      is: '',
+      then: yup.string().required(),
+      otherwise: yup.string().length(0),
+    }),
+  },
+  [['exclusivelyRequiredOne', 'exclusivelyRequiredTwo']],
+);
 
 const BasicSchemaValidation: React.FC = (props: any) => {
   const { register, handleSubmit, errors } = useForm<{
@@ -88,6 +101,10 @@ const BasicSchemaValidation: React.FC = (props: any) => {
       {errors.radio && <p>radio error</p>}
       <input type="checkbox" name="checkbox" ref={register} />
       {errors.checkbox && <p>checkbox error</p>}
+      <input type="text" name="exclusivelyRequiredOne" ref={register} />
+      {errors.exclusivelyRequiredOne && <p>exclusivelyRequiredOne error</p>}
+      <input type="text" name="exclusivelyRequiredTwo" ref={register} />
+      {errors.exclusivelyRequiredTwo && <p>exclusivelyRequiredTwo error</p>}
       <button>Submit</button>
       <div id="renderCount">{renderCounter}</div>
     </form>
