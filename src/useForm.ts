@@ -535,20 +535,18 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
     message?: string,
   ): void {
     if (isString(name)) {
-      if (isObject(type)) {
-        setInternalError({
-          name,
-          types: type,
-          type: '',
-          message,
-        });
-      } else {
-        setInternalError({
-          name,
-          type,
-          message,
-        });
-      }
+      setInternalError({
+        name,
+        ...(isObject(type)
+          ? {
+              types: type,
+              type: '',
+            }
+          : {
+              type,
+              message,
+            }),
+      });
     } else if (isArray(name)) {
       name.forEach(error => setInternalError({ ...error, reRender: false }));
       render({});
