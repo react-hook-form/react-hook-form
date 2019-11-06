@@ -46,6 +46,7 @@ import {
 } from './types';
 
 const { useRef, useState, useCallback, useEffect } = React;
+const isDevelopment = process.env.NODE_ENV === 'development';
 
 export default function useForm<FormValues extends FieldValues = FieldValues>({
   mode = VALIDATION_MODE.onSubmit,
@@ -146,6 +147,9 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
       const field = fieldsRef.current[name];
 
       if (!field) {
+        if (isDevelopment) {
+          console.log(`field ${name} not found`);
+        }
         return false;
       }
 
@@ -167,7 +171,10 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
         );
       } else if (isMultipleSelect(type)) {
         [...ref.options].forEach(
-          selectRef => (selectRef.selected = value === selectRef.value),
+          selectRef =>
+            (selectRef.selected = (value as string[]).includes(
+              selectRef.value,
+            )),
         );
       } else {
         ref[isCheckBoxInput(type) ? 'checked' : 'value'] = value;
@@ -571,7 +578,7 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
     ref: Element,
     validateOptions: ValidationOptions = {},
   ): void {
-    if (!ref.name) {
+    if (!ref.name && isDevelopment) {
       return console.warn('Missing name on ref', ref);
     }
 
