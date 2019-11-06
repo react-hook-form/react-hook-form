@@ -148,7 +148,7 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
 
       if (!field) {
         if (isDevelopment) {
-          console.log(`field ${name} not found`);
+          console.warn(`field ${name} not found`);
         }
         return false;
       }
