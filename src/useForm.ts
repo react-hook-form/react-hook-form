@@ -549,7 +549,7 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
           message,
         });
       }
-    } else if (isObject(name)) {
+    } else if (isArray(name)) {
       name.forEach(error => setInternalError({ ...error, reRender: false }));
       render({});
     }
