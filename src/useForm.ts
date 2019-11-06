@@ -482,23 +482,45 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
     render({});
   }
 
-  const setError = (
-    name: FieldName<FormValues>,
-    type: string,
-    message?: string,
-    ref?: Ref,
-  ): void => {
+  const setInternalError = ({
+    name,
+    type,
+    message,
+    reRender = true,
+  }: {
+    name: FieldName<FormValues>;
+    type: string;
+    message?: string;
+    reRender?: boolean;
+  }) => {
     const errors = errorsRef.current;
 
     if (!isSameError(errors[name], type, message)) {
       errors[name] = {
         type,
         message,
-        ref,
+        ref: {},
         isManual: true,
       };
-      render({});
+      if (reRender) {
+        render({});
+      }
     }
+  };
+
+  const setError = (
+    name: FieldName<FormValues>,
+    type: string,
+    message?: string,
+  ): void => {
+    setInternalError({ name, type, message });
+  };
+
+  const setErrors = (
+    errors: { name: string; type: string; message?: string }[],
+  ) => {
+    errors.forEach(error => setInternalError({ ...error, reRender: false }));
+    render({});
   };
 
   function watch(): FormValues;
@@ -979,6 +1001,7 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
     reset,
     clearError,
     setError,
+    setErrors,
     setValue,
     triggerValidation,
     getValues,
