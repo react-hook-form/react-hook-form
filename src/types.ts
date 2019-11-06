@@ -95,6 +95,12 @@ export interface FieldError {
   isManual?: boolean;
 }
 
+export interface ManualFieldError<FormValues> {
+  name: FieldName<FormValues>;
+  type: string;
+  message?: string;
+}
+
 export type ValidatePromiseResult = {} | void | FieldError;
 
 export interface Field extends ValidationOptions {
