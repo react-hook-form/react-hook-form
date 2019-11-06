@@ -599,7 +599,7 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
     validateOptions: ValidationOptions = {},
   ): void {
     if (!ref.name) {
-      return console.warn('Missing name on ref', ref);
+      return console.warn('Missing name at', ref);
     }
 
     const { name, type, value } = ref;
