@@ -43,6 +43,7 @@ import {
   FormState,
   ReadFormState,
   ManualFieldError,
+  MultipleErrors,
 } from './types';
 
 const { useRef, useState, useCallback, useEffect } = React;
@@ -499,11 +500,13 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
   const setInternalError = ({
     name,
     type,
+    types,
     message,
     reRender = true,
   }: {
     name: FieldName<FormValues>;
     type: string;
+    types?: MultipleErrors;
     message?: string;
     reRender?: boolean;
   }) => {
@@ -512,6 +515,7 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
     if (!isSameError(errors[name], type, message)) {
       errors[name] = {
         type,
+        types,
         message,
         ref: {},
         isManual: true,
@@ -523,19 +527,29 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
   };
 
   function setError(name: ManualFieldError<FormValues>[]): void;
-  function setError(
-    name: FieldName<FormValues>,
-    type: string,
-    message?: string,
-  ): void;
+  function setError(name: FieldName<FormValues>, type: MultipleErrors): void;
+  function setError(name: FieldName<FormValues>, type: string): void;
   function setError(
     name: FieldName<FormValues> | ManualFieldError<FormValues>[],
-    type = '',
+    type: string | MultipleErrors = '',
     message?: string,
   ): void {
     if (isString(name)) {
-      setInternalError({ name, type, message });
-    } else {
+      if (isObject(type)) {
+        setInternalError({
+          name,
+          types: type,
+          type: '',
+          message,
+        });
+      } else {
+        setInternalError({
+          name,
+          type,
+          message,
+        });
+      }
+    } else if (isObject(name)) {
       name.forEach(error => setInternalError({ ...error, reRender: false }));
       render({});
     }

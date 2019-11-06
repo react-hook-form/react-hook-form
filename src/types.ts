@@ -89,10 +89,12 @@ export type ValidationOptions = Partial<{
     | { value: Validate | Record<string, Validate>; message: string };
 }>;
 
+export type MultipleErrors = Record<string, string | boolean>;
+
 export interface FieldError {
   type: string;
   ref?: Ref;
-  types?: Record<string, boolean>;
+  types?: MultipleErrors;
   message?: string;
   isManual?: boolean;
 }
@@ -100,6 +102,7 @@ export interface FieldError {
 export interface ManualFieldError<FormValues> {
   name: FieldName<FormValues>;
   type: string;
+  types?: MultipleErrors;
   message?: string;
 }
 
