@@ -33,7 +33,6 @@ import {
   Field,
   FieldsRefs,
   Options,
-  Ref,
   ValidationOptions,
   SubmitPromiseResult,
   OnSubmit,
@@ -43,6 +42,7 @@ import {
   NameProp,
   FormState,
   ReadFormState,
+  ManualFieldError,
 } from './types';
 
 const { useRef, useState, useCallback, useEffect } = React;
@@ -190,7 +190,9 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
       } else if (isMultipleSelect(type)) {
         [...ref.options].forEach(
           selectRef =>
-            (selectRef.selected = (value as any).includes(selectRef.value)),
+            (selectRef.selected = (value as string[]).includes(
+              selectRef.value,
+            )),
         );
       } else {
         ref[isCheckBoxInput(type) ? 'checked' : 'value'] = value;
@@ -494,24 +496,50 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
     render({});
   }
 
-  const setError = (
-    name: FieldName<FormValues>,
-    type: string,
-    message?: string,
-    ref?: Ref,
-  ): void => {
+  const setInternalError = ({
+    name,
+    type,
+    message,
+    reRender = true,
+  }: {
+    name: FieldName<FormValues>;
+    type: string;
+    message?: string;
+    reRender?: boolean;
+  }) => {
     const errors = errorsRef.current;
 
     if (!isSameError(errors[name], type, message)) {
       errors[name] = {
         type,
         message,
-        ref,
+        ref: {},
         isManual: true,
       };
-      render({});
+      if (reRender) {
+        render({});
+      }
     }
   };
+
+  function setError(name: ManualFieldError<FormValues>[]): void;
+  function setError(
+    name: FieldName<FormValues>,
+    type: string,
+    message?: string,
+  ): void;
+  function setError(
+    name: FieldName<FormValues> | ManualFieldError<FormValues>[],
+    type = '',
+    message?: string,
+  ): void {
+    if (isString(name)) {
+      setInternalError({ name, type, message });
+    } else {
+      name.forEach(error => setInternalError({ ...error, reRender: false }));
+      render({});
+    }
+  }
 
   function watch(): FormValues;
   function watch(
@@ -588,7 +616,7 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
     validateOptions: ValidationOptions = {},
   ): void {
     if (!ref.name) {
-      return console.warn('Missing name on ref', ref);
+      return console.warn('Missing name at', ref);
     }
 
     const { name, type, value } = ref;
