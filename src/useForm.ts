@@ -42,6 +42,7 @@ import {
   NameProp,
   FormState,
   ReadFormState,
+  ManualFieldError,
 } from './types';
 
 const { useRef, useState, useCallback, useEffect } = React;
@@ -509,20 +510,19 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
     }
   };
 
-  const setError = (
-    name: FieldName<FormValues>,
-    type: string,
+  function setError(name: ManualFieldError<FormValues>[]): void;
+  function setError(
+    name: FieldName<FormValues> | ManualFieldError<FormValues>[],
+    type = '',
     message?: string,
-  ): void => {
-    setInternalError({ name, type, message });
-  };
-
-  const setErrors = (
-    errors: { name: string; type: string; message?: string }[],
-  ) => {
-    errors.forEach(error => setInternalError({ ...error, reRender: false }));
-    render({});
-  };
+  ): void {
+    if (isObject(name)) {
+      name.forEach(error => setInternalError({ ...error, reRender: false }));
+      render({});
+    } else {
+      setInternalError({ name, type, message });
+    }
+  }
 
   function watch(): FormValues;
   function watch(
@@ -1002,7 +1002,6 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
     reset,
     clearError,
     setError,
-    setErrors,
     setValue,
     triggerValidation,
     getValues,
