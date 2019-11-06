@@ -167,8 +167,7 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
         );
       } else if (isMultipleSelect(type)) {
         [...ref.options].forEach(
-          selectRef =>
-            (selectRef.selected = (value as any).includes(selectRef.value)),
+          selectRef => (selectRef.selected = value === selectRef.value),
         );
       } else {
         ref[isCheckBoxInput(type) ? 'checked' : 'value'] = value;
