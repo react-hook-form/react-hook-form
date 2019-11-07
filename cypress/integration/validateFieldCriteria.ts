@@ -3,7 +3,6 @@ context('validate field criteria', () => {
     cy.visit('http://localhost:3000/validate-field-criteria');
     cy.get('button#submit').click();
     cy.get('input[name="firstName"] + p').contains('firstName required');
-    cy.get('input[name="firstName"] + p + p').contains('firstName minLength');
     cy.get('input[name="firstName"]').type('te');
     cy.get('input[name="firstName"] + p').contains('firstName minLength');
     cy.get('input[name="firstName"]').type('testtesttest');
@@ -34,9 +33,7 @@ context('validate field criteria', () => {
     cy.get('select[name="selectNumber"] + p').contains('selectNumber required');
     cy.get('select[name="selectNumber"]').select('12');
 
-    cy.get('input[name="pattern"] + p').contains('pattern pattern');
-    cy.get('input[name="pattern"] + p + p').contains('pattern required');
-    cy.get('input[name="pattern"] + p + p + p').contains('pattern minLength');
+    cy.get('input[name="pattern"] + p').contains('pattern required');
     cy.get('input[name="pattern"]').type('t');
     cy.get('input[name="pattern"] + p').contains('pattern pattern');
     cy.get('input[name="pattern"] + p + p').contains('pattern minLength');
