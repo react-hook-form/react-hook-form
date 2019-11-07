@@ -1,6 +1,8 @@
 import React, { useEffect } from 'react';
 import useForm from 'react-hook-form';
 
+let renderCounter = 0;
+
 const ManualRegisterForm: React.FC = () => {
   const { register, handleSubmit, errors, setValue } = useForm<{
     firstName: string;
@@ -17,6 +19,7 @@ const ManualRegisterForm: React.FC = () => {
     checkbox: string;
   }>();
   const onSubmit = () => {};
+  renderCounter++;
 
   useEffect(() => {
     register({ name: 'firstName' }, { required: true });
@@ -131,6 +134,7 @@ const ManualRegisterForm: React.FC = () => {
       />
       {errors.checkbox && <p>checkbox error</p>}
       <button id="submit">Submit</button>
+      <div id="renderCount">{renderCounter}</div>
     </form>
   );
 };

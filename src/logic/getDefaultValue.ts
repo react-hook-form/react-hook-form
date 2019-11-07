@@ -8,5 +8,5 @@ export default <FormValues extends FieldValues>(
   defaultValue?: BaseFieldValue,
 ): FieldValue<FormValues> | Partial<FormValues> | undefined =>
   isUndefined(defaultValues[name])
-    ? get(defaultValues, name as string, defaultValue)
+    ? get(defaultValues, name, defaultValue)
     : defaultValues[name];

@@ -7,7 +7,9 @@ context('manual register form validation', () => {
     cy.get('input[name="firstName"] + p').contains('firstName error');
     cy.get('input[name="lastName"] + p').contains('lastName error');
     cy.get('select[name="selectNumber"] + p').contains('selectNumber error');
-    cy.get('input[name="minRequiredLength"] + p').contains('minRequiredLength error');
+    cy.get('input[name="minRequiredLength"] + p').contains(
+      'minRequiredLength error',
+    );
     cy.get('input[name="radio"] + p').contains('radio error');
 
     cy.get('input[name="firstName"]').type('bill');
@@ -35,12 +37,17 @@ context('manual register form validation', () => {
     cy.get('input[name="minLength"]').type('bi');
     cy.get('input[name="minRequiredLength"]').type('bi');
     cy.get('input[name="radio"]').check('1');
-    cy.get('input[name="min"]').clear().type('11');
-    cy.get('input[name="max"]').clear().type('19');
+    cy.get('input[name="min"]')
+      .clear()
+      .type('11');
+    cy.get('input[name="max"]')
+      .clear()
+      .type('19');
     cy.get('input[name="minDate"]').type('2019-08-01');
     cy.get('input[name="maxDate"]').type('2019-08-01');
     cy.get('input[name="checkbox"]').check();
 
     cy.get('p').should('have.length', 0);
+    cy.get('#renderCount').contains('26');
   });
 });
