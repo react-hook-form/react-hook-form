@@ -98,7 +98,7 @@ export default async <FormValues extends FieldValues>(
     }
   }
 
-  if ((maxLength || minLength) && isString(value)) {
+  if ((maxLength || minLength) && !isEmptyString(value)) {
     const {
       value: maxLengthValue,
       message: maxLengthMessage,
