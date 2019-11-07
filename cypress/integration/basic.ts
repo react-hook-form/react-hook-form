@@ -67,7 +67,7 @@ context('basic form validation', () => {
     cy.get('input[name="pattern"]').should('not.have.value');
     cy.get('input[name="minDate"]').should('not.have.value');
     cy.get('input[name="maxDate"]').should('not.have.value');
-    cy.get('#renderCount').contains('2');
+    cy.get('#renderCount').contains('30');
   });
 
   it('should validate the form with onBlur mode and reset the form', () => {
@@ -107,6 +107,13 @@ context('basic form validation', () => {
     cy.get('input[name="minLength"]').type('bi');
     cy.get('input[name="minRequiredLength"]').type('bi');
     cy.get('select[name="multiple"]').select(['optionA']);
+    cy.get('input[name="radio"]')
+      .first()
+      .focus();
+    cy.get('input[name="radio"]')
+      .first()
+      .blur();
+    cy.get('input[name="radio"] + p').contains('radio error');
     cy.get('input[name="radio"]').check('1');
     cy.get('input[name="min"]')
       .clear()
@@ -116,6 +123,9 @@ context('basic form validation', () => {
       .type('19');
     cy.get('input[name="minDate"]').type('2019-08-01');
     cy.get('input[name="maxDate"]').type('2019-08-01');
+    cy.get('input[name="checkbox"]').focus();
+    cy.get('input[name="checkbox"]').blur();
+    cy.get('input[name="checkbox"] + p').contains('checkbox error');
     cy.get('input[name="checkbox"]').check();
 
     cy.get('p').should('have.length', 0);
@@ -133,7 +143,7 @@ context('basic form validation', () => {
     cy.get('input[name="pattern"]').should('not.have.value');
     cy.get('input[name="minDate"]').should('not.have.value');
     cy.get('input[name="maxDate"]').should('not.have.value');
-    cy.get('#renderCount').contains('24');
+    cy.get('#renderCount').contains('27');
   });
 
   it('should validate the form with onChange mode and reset the form', () => {
@@ -190,6 +200,6 @@ context('basic form validation', () => {
     cy.get('input[name="pattern"]').should('not.have.value');
     cy.get('input[name="minDate"]').should('not.have.value');
     cy.get('input[name="maxDate"]').should('not.have.value');
-    cy.get('#renderCount').contains('30');
+    cy.get('#renderCount').contains('35');
   });
 });

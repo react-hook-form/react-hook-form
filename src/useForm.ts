@@ -116,13 +116,13 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
       if (isEmptyObject(error)) {
         if (fieldsWithValidationRef.current.has(name) || validationSchema) {
           validFieldsRef.current.add(name);
-          reRender = errorsRef.current[name];
+          reRender = reRender || errorsRef.current[name];
         }
 
         delete errorsRef.current[name];
       } else {
         validFieldsRef.current.delete(name);
-        reRender = !errorsRef.current[name];
+        reRender = reRender || !errorsRef.current[name];
       }
 
       errorsRef.current = validationSchema

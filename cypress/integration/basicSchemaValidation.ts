@@ -49,7 +49,7 @@ context('basicSchemaValidation form validation', () => {
     cy.get('input[name="exclusivelyRequiredOne"]').type('required one');
 
     cy.get('p').should('have.length', 0);
-    cy.get('#renderCount').contains('27');
+    cy.get('#renderCount').contains('30');
   });
 
   it('should validate the form with onBlur mode', () => {
@@ -110,7 +110,7 @@ context('basicSchemaValidation form validation', () => {
     cy.get('input[name="exclusivelyRequiredOne"]').type('required one');
 
     cy.get('p').should('have.length', 0);
-    cy.get('#renderCount').contains('27');
+    cy.get('#renderCount').contains('29');
   });
 
   it('should validate the form with onChange mode', () => {
@@ -162,7 +162,7 @@ context('basicSchemaValidation form validation', () => {
     cy.get('input[name="exclusivelyRequiredOne"]').type('required one');
 
     cy.get('p').should('have.length', 0);
-    cy.get('#renderCount').contains('29');
+    cy.get('#renderCount').contains('32');
   });
 
   it('should re-render if sibling fields caused invalidation that has been reversed', () => {
