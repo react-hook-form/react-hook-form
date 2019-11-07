@@ -44,13 +44,14 @@ export default async <FormValues extends FieldValues>(
   const error: FieldErrors<FormValues> = {};
   const isRadio = isRadioInput(type);
   const isCheckBox = isCheckBoxInput(type);
+  const isEmpty = isEmptyString(value);
   const nativeError = displayNativeError.bind(null, nativeValidation, ref);
   const typedName = name as FieldName<FormValues>;
 
   if (
     required &&
     ((isCheckBox && !checked) ||
-      (!isCheckBox && !isRadio && isEmptyString(value)) ||
+      (!isCheckBox && !isRadio && isEmpty) ||
       (isRadio && !getRadioValue(fields[typedName].options).isValid) ||
       (type !== RADIO_INPUT && isNullOrUndefined(value)))
   ) {
@@ -98,7 +99,7 @@ export default async <FormValues extends FieldValues>(
     }
   }
 
-  if (isString(value) && !isEmptyString(value) && (maxLength || minLength)) {
+  if (isString(value) && !isEmpty && (maxLength || minLength)) {
     const {
       value: maxLengthValue,
       message: maxLengthMessage,
@@ -123,7 +124,7 @@ export default async <FormValues extends FieldValues>(
     }
   }
 
-  if (pattern && !isEmptyString(value)) {
+  if (pattern && !isEmpty) {
     const { value: patternValue, message: patternMessage } = getValueAndMessage(
       pattern,
     );
