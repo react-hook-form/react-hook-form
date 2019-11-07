@@ -807,6 +807,7 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
       isSubmittingRef.current = true;
       render({});
     }
+
     try {
       if (validationSchema) {
         fieldValues = getFieldsValues(fields);
@@ -889,12 +890,11 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
 
         errorsRef.current = fieldErrors;
       }
-
+    } finally {
       if (isUnMount.current) {
         return;
       }
 
-    } finally {
       isSubmittedRef.current = true;
       isSubmittingRef.current = false;
       submitCountRef.current = submitCountRef.current + 1;
