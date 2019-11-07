@@ -54,6 +54,6 @@ context('validate field criteria', () => {
     cy.get('input[name="validate"]').type('test');
 
     cy.get('p').should('have.length', 0);
-    cy.get('#renderCount').contains('25');
+    cy.get('#renderCount').contains('28');
   });
 });
