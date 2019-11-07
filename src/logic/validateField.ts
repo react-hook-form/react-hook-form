@@ -11,6 +11,7 @@ import isFunction from '../utils/isFunction';
 import getFieldsValue from './getFieldValue';
 import isRegex from '../utils/isRegex';
 import getValidateFunctionErrorObject from './getValidateFunctionErrorObject';
+import isEmptyString from '../utils/isEmptyString';
 import {
   PATTERN_ATTRIBUTE,
   RADIO_INPUT,
@@ -49,7 +50,7 @@ export default async <FormValues extends FieldValues>(
   if (
     required &&
     ((isCheckBox && !checked) ||
-      (!isCheckBox && !isRadio && value === '') ||
+      (!isCheckBox && !isRadio && isEmptyString(value)) ||
       (isRadio && !getRadioValue(fields[typedName].options).isValid) ||
       (type !== RADIO_INPUT && isNullOrUndefined(value)))
   ) {
@@ -122,7 +123,7 @@ export default async <FormValues extends FieldValues>(
     }
   }
 
-  if (pattern) {
+  if (pattern && !isEmptyString(value)) {
     const { value: patternValue, message: patternMessage } = getValueAndMessage(
       pattern,
     );

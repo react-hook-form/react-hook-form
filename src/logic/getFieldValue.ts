@@ -4,6 +4,7 @@ import isRadioInput from '../utils/isRadioInput';
 import isCheckBox from '../utils/isCheckBoxInput';
 import isUndefined from '../utils/isUndefined';
 import isMultipleSelect from '../utils/isMultipleSelect';
+import isEmptyString from '../utils/isEmptyString';
 import { FieldsRefs, Ref, FieldValues } from '../types';
 
 export default function getFieldValue<FormValues extends FieldValues>(
@@ -28,7 +29,7 @@ export default function getFieldValue<FormValues extends FieldValues>(
   if (isCheckBox(type)) {
     if (checked) {
       return ref.attributes && ref.attributes.value
-        ? isUndefined(value) || value === ''
+        ? isUndefined(value) || isEmptyString(value)
           ? true
           : value
         : true;
