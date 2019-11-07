@@ -10,9 +10,10 @@ import isObject from '../utils/isObject';
 import isFunction from '../utils/isFunction';
 import getFieldsValue from './getFieldValue';
 import isRegex from '../utils/isRegex';
+import isEmptyString from '../utils/isEmptyString';
 import getValidateErrorObject from './getValidateErrorObject';
 import appendErrors from './appendErrors';
-import { INPUT_VALIDATION_RULES, RADIO_INPUT } from '../constants';
+import { RADIO_INPUT, INPUT_VALIDATION_RULES } from '../constants';
 import {
   Field,
   FieldErrors,
@@ -41,6 +42,7 @@ export default async <FormValues extends FieldValues>(
   const error: FieldErrors<FormValues> = {};
   const isRadio = isRadioInput(type);
   const isCheckBox = isCheckBoxInput(type);
+  const isEmpty = isEmptyString(value);
   const nativeError = displayNativeError.bind(null, nativeValidation, ref);
   const typedName = name as FieldName<FormValues>;
   const appendErrorsCurry = appendErrors.bind(
@@ -53,7 +55,7 @@ export default async <FormValues extends FieldValues>(
   if (
     required &&
     ((isCheckBox && !checked) ||
-      (!isCheckBox && !isRadio && value === '') ||
+      (!isCheckBox && !isRadio && isEmpty) ||
       (isRadio && !getRadioValue(fields[typedName].options).isValid) ||
       (type !== RADIO_INPUT && isNullOrUndefined(value)))
   ) {
@@ -113,7 +115,7 @@ export default async <FormValues extends FieldValues>(
     }
   }
 
-  if ((maxLength || minLength) && isString(value)) {
+  if (isString(value) && !isEmpty && (maxLength || minLength)) {
     const {
       value: maxLengthValue,
       message: maxLengthMessage,
@@ -145,7 +147,7 @@ export default async <FormValues extends FieldValues>(
     }
   }
 
-  if (pattern) {
+  if (pattern && !isEmpty) {
     const { value: patternValue, message: patternMessage } = getValueAndMessage(
       pattern,
     );
