@@ -663,6 +663,16 @@ describe('validateField', () => {
         validate: value => value === 'test',
       }),
     ).toMatchSnapshot();
+
+    expect(
+      await validateField({}, false, true, {
+        ref: { type: 'text', value: '123', name: 'test', setCustomValidity },
+        required: true,
+        minLength: 10,
+        pattern: /d/i,
+        validate: value => value === 'test',
+      }),
+    ).toMatchSnapshot();
   });
 
   it('should return all validation error messages', async () => {
@@ -672,6 +682,26 @@ describe('validateField', () => {
     expect(
       await validateField({}, false, true, {
         ref: { type: 'text', value: '', name: 'test', setCustomValidity },
+        required: 'test',
+        minLength: {
+          value: 10,
+          message: 'minLength',
+        },
+        pattern: {
+          value: /d/i,
+          message: 'pattern',
+        },
+        validate: {
+          test: value => value === 'test',
+          test1: value => value == 'test' || 'Luo',
+          test2: value => value == 'test' || 'Bill',
+        },
+      }),
+    ).toMatchSnapshot();
+
+    expect(
+      await validateField({}, false, true, {
+        ref: { type: 'text', value: 'bil', name: 'test', setCustomValidity },
         required: 'test',
         minLength: {
           value: 10,
