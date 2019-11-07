@@ -82,8 +82,12 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
   const validateAndUpdateStateRef = useRef<Function>();
   const [, render] = useState();
   const { isOnBlur, isOnSubmit } = useRef(modeChecker(mode)).current;
-  const isWindowDefined = typeof window === UNDEFINED;
-  const isProxyEnabled = !isWindowDefined && 'Proxy' in window;
+  const isWindowUndefined = typeof window === UNDEFINED;
+  const isWeb =
+    typeof document !== UNDEFINED &&
+    !isWindowUndefined &&
+    !isUndefined(window.HTMLElement);
+  const isProxyEnabled = !isWindowUndefined && 'Proxy' in window;
   const readFormState = useRef<ReadFormState>({
     dirty: !isProxyEnabled,
     isSubmitted: isOnSubmit,
@@ -135,19 +139,13 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
       if (isEmptyObject(error)) {
         if (fieldsWithValidationRef.current.has(name) || validationSchema) {
           validFieldsRef.current.add(name);
-
-          if (errorsRef.current[name]) {
-            reRender = true;
-          }
+          reRender = reRender || errorsRef.current[name];
         }
 
         delete errorsRef.current[name];
       } else {
         validFieldsRef.current.delete(name);
-
-        if (!errorsRef.current[name]) {
-          reRender = true;
-        }
+        reRender = reRender || !errorsRef.current[name];
       }
 
       errorsRef.current = validationSchema
@@ -176,9 +174,7 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
       const { type } = ref;
       const options = field.options;
       const value =
-        typeof document !== UNDEFINED &&
-        !isWindowDefined &&
-        !isUndefined(window.HTMLElement) &&
+        isWeb &&
         ref instanceof window.HTMLElement &&
         isNullOrUndefined(rawValue)
           ? ''
@@ -201,7 +197,7 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
 
       return type;
     },
-    [isWindowDefined],
+    [isWeb],
   );
 
   const setDirty = (name: FieldName<FormValues>): boolean => {
@@ -374,6 +370,7 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
         const fields = fieldsRef.current;
         const errors = errorsRef.current;
         const ref = fields[name];
+        const currentError = errors[name];
         let error;
 
         if (!ref) {
@@ -383,9 +380,9 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
         const isBlurEvent = type === EVENTS.BLUR;
         const shouldSkipValidation =
           (isOnSubmit && !isSubmittedRef.current) ||
-          (isOnBlur && !isBlurEvent && !errors[name]) ||
-          (isReValidateOnBlur && !isBlurEvent && errors[name]) ||
-          (isReValidateOnSubmit && errors[name]);
+          (isOnBlur && !isBlurEvent && !currentError) ||
+          (isReValidateOnBlur && !isBlurEvent && currentError) ||
+          (isReValidateOnSubmit && currentError);
         const shouldUpdateDirty = setDirty(name);
         let shouldUpdateState =
           isWatchAllRef.current ||
@@ -409,9 +406,9 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
           const { fieldErrors } = await validateWithSchemaCurry(
             combineFieldValues(getFieldsValues(fields)),
           );
-          Object.keys(fieldErrors).map(name => {
-            validFieldsRef.current.delete(name);
-          });
+          Object.keys(fieldErrors).forEach(name =>
+            validFieldsRef.current.delete(name),
+          );
           schemaErrorsRef.current = fieldErrors;
           isSchemaValidateTriggeredRef.current = true;
           error = (fieldErrors as FieldErrors<FormValues>)[name]
@@ -588,7 +585,7 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
 
     if (isArray(fieldNames)) {
       return fieldNames.reduce((previous, name) => {
-        let value = getDefaultValue(combinedDefaultValues, name);
+        let value = null;
 
         if (
           isEmptyObject(fieldsRef.current) &&
@@ -780,7 +777,7 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
     refOrValidateRule: ValidationOptions | Element | null,
     validationOptions?: ValidationOptions & Partial<NameProp>,
   ): ((ref: Element | null) => void) | void {
-    if (typeof window === UNDEFINED || !refOrValidateRule) {
+    if (isWindowUndefined || !refOrValidateRule) {
       return;
     }
 
