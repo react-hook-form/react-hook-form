@@ -10,7 +10,7 @@ import isObject from '../utils/isObject';
 import isFunction from '../utils/isFunction';
 import getFieldsValue from './getFieldValue';
 import isRegex from '../utils/isRegex';
-import getValidateFunctionErrorObject from './getValidateFunctionErrorObject';
+import getValidateError from './getValidateError';
 import isEmptyString from '../utils/isEmptyString';
 import {
   PATTERN_ATTRIBUTE,
@@ -146,11 +146,7 @@ export default async <FormValues extends FieldValues>(
 
     if (isFunction(validate)) {
       const result = await validate(fieldValue);
-      const errorObject = getValidateFunctionErrorObject(
-        result,
-        validateRef,
-        nativeError,
-      );
+      const errorObject = getValidateError(result, validateRef, nativeError);
 
       if (errorObject) {
         error[typedName] = errorObject;
@@ -170,7 +166,7 @@ export default async <FormValues extends FieldValues>(
 
             if (isFunction(validate)) {
               const result = await validate(fieldValue);
-              const errorObject = getValidateFunctionErrorObject(
+              const errorObject = getValidateError(
                 result,
                 validateRef,
                 nativeError,
