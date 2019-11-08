@@ -891,14 +891,12 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
         errorsRef.current = fieldErrors;
       }
     } finally {
-      if (isUnMount.current) {
-        return;
+      if (!isUnMount.current) {
+        isSubmittedRef.current = true;
+        isSubmittingRef.current = false;
+        submitCountRef.current = submitCountRef.current + 1;
+        render({});
       }
-
-      isSubmittedRef.current = true;
-      isSubmittingRef.current = false;
-      submitCountRef.current = submitCountRef.current + 1;
-      render({});
     }
   };
 
@@ -938,15 +936,9 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
 
       if (values) {
         fieldsKeyValue.forEach(([key]) =>
-          setFieldValue(
-            key as FieldName<FormValues>,
-            getDefaultValue(values, key),
-          ),
+          setFieldValue(key, getDefaultValue(values, key)),
         );
-        defaultValuesRef.current = { ...values } as Record<
-          FieldName<FormValues>,
-          FieldValue<FormValues>
-        >;
+        defaultValuesRef.current = values;
       }
 
       render({});
@@ -1015,11 +1007,12 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
     formState: isProxyEnabled
       ? new Proxy<FormState<FormValues>>(formState, {
           get: (obj, prop: keyof FormState) => {
-            if (!(prop in obj)) {
-              return {};
+            if (prop in obj) {
+              readFormState.current[prop] = true;
+              return obj[prop];
             }
-            readFormState.current[prop] = true;
-            return obj[prop];
+
+            return {};
           },
         })
       : formState,
