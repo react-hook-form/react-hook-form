@@ -344,8 +344,7 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
 
   validateAndUpdateStateRef.current = validateAndUpdateStateRef.current
     ? validateAndUpdateStateRef.current
-    : async (event: MouseEvent): Promise<void> => {
-        const { type, target } = event;
+    : async ({ type, target }: MouseEvent): Promise<void> => {
         const name = target ? (target as Inputs).name : '';
         if (
           isArray(validationFieldsRef.current) &&
@@ -356,11 +355,11 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
 
         const fields = fieldsRef.current;
         const errors = errorsRef.current;
-        const ref = fields[name];
+        const field = fields[name];
         const currentError = errors[name];
         let error;
 
-        if (!ref) {
+        if (!field) {
           return;
         }
 
@@ -398,11 +397,9 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
           );
           schemaErrorsRef.current = fieldErrors;
           isSchemaValidateTriggeredRef.current = true;
-          error = (fieldErrors as FieldErrors<FormValues>)[name]
-            ? { [name]: (fieldErrors as FieldErrors<FormValues>)[name] }
-            : {};
+          error = fieldErrors[name] ? { [name]: fieldErrors[name] } : {};
         } else {
-          error = await validateField(ref, fields, nativeValidation);
+          error = await validateField(field, fields, nativeValidation);
         }
 
         const shouldUpdate = shouldUpdateWithError<FormValues>({
@@ -411,9 +408,8 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
           name,
           validFields: validFieldsRef.current,
           fieldsWithValidation: fieldsWithValidationRef.current,
-          schemaErrors: isSchemaValidateTriggeredRef.current
-            ? schemaErrorsRef.current
-            : undefined,
+          schemaErrors:
+            isSchemaValidateTriggeredRef.current && schemaErrorsRef.current,
         });
 
         if (shouldUpdate) {
@@ -613,13 +609,14 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
     const fields: FieldsRefs<FormValues> = fieldsRef.current;
     const isRadio = isRadioInput(type);
     let currentField = fields[typedName] as Field;
-    const isRegistered = isRadio
-      ? currentField &&
-        isArray(currentField.options) &&
-        currentField.options.find(({ ref }: Field) => value === ref.value)
-      : currentField;
 
-    if (isRegistered) {
+    if (
+      isRadio
+        ? currentField &&
+          isArray(currentField.options) &&
+          currentField.options.find(({ ref }: Field) => value === ref.value)
+        : currentField
+    ) {
       fields[typedName] = {
         ...currentField,
         ...validateOptions,
@@ -635,9 +632,7 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
       if (isRadio) {
         currentField = {
           options: [
-            ...(currentField && currentField.options
-              ? currentField.options
-              : []),
+            ...((currentField && currentField.options) || []),
             {
               ref,
               mutationWatcher,
@@ -666,7 +661,7 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
       }
     }
 
-    if (validateOptions && !isEmptyObject(validateOptions)) {
+    if (!isEmptyObject(validateOptions)) {
       if (!validationFields || validationFields.includes(name)) {
         fieldsWithValidationRef.current.add(name);
       }
@@ -891,14 +886,12 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
         errorsRef.current = fieldErrors;
       }
     } finally {
-      if (isUnMount.current) {
-        return;
+      if (!isUnMount.current) {
+        isSubmittedRef.current = true;
+        isSubmittingRef.current = false;
+        submitCountRef.current = submitCountRef.current + 1;
+        render({});
       }
-
-      isSubmittedRef.current = true;
-      isSubmittingRef.current = false;
-      submitCountRef.current = submitCountRef.current + 1;
-      render({});
     }
   };
 
@@ -938,15 +931,9 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
 
       if (values) {
         fieldsKeyValue.forEach(([key]) =>
-          setFieldValue(
-            key as FieldName<FormValues>,
-            getDefaultValue(values, key),
-          ),
+          setFieldValue(key, getDefaultValue(values, key)),
         );
-        defaultValuesRef.current = { ...values } as Record<
-          FieldName<FormValues>,
-          FieldValue<FormValues>
-        >;
+        defaultValuesRef.current = { ...values };
       }
 
       render({});
@@ -1015,11 +1002,12 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
     formState: isProxyEnabled
       ? new Proxy<FormState<FormValues>>(formState, {
           get: (obj, prop: keyof FormState) => {
-            if (!(prop in obj)) {
-              return {};
+            if (prop in obj) {
+              readFormState.current[prop] = true;
+              return obj[prop];
             }
-            readFormState.current[prop] = true;
-            return obj[prop];
+
+            return {};
           },
         })
       : formState,
