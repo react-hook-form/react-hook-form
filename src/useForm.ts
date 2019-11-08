@@ -832,92 +832,94 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
       render({});
     }
 
-    if (validationSchema) {
-      fieldValues = getFieldsValues(fields);
-      const output = await validateWithSchemaCurry(
-        combineFieldValues(fieldValues),
-      );
-      schemaErrorsRef.current = output.fieldErrors;
-      fieldErrors = output.fieldErrors;
-      fieldValues = output.result;
-    } else {
-      const {
-        errors,
-        values,
-      }: SubmitPromiseResult<FormValues> = await fieldsToValidate.reduce(
-        async (
-          previous: Promise<SubmitPromiseResult<FormValues>>,
-          field: Field | undefined,
-        ): Promise<SubmitPromiseResult<FormValues>> => {
-          if (!field) {
-            return previous;
-          }
+    try {
+      if (validationSchema) {
+        fieldValues = getFieldsValues(fields);
+        const output = await validateWithSchemaCurry(
+          combineFieldValues(fieldValues),
+        );
+        schemaErrorsRef.current = output.fieldErrors;
+        fieldErrors = output.fieldErrors;
+        fieldValues = output.result;
+      } else {
+        const {
+          errors,
+          values,
+        }: SubmitPromiseResult<FormValues> = await fieldsToValidate.reduce(
+          async (
+            previous: Promise<SubmitPromiseResult<FormValues>>,
+            field: Field | undefined,
+          ): Promise<SubmitPromiseResult<FormValues>> => {
+            if (!field) {
+              return previous;
+            }
 
-          const resolvedPrevious: any = await previous;
-          const {
-            ref,
-            ref: { name },
-          } = field;
+            const resolvedPrevious: any = await previous;
+            const {
+              ref,
+              ref: { name },
+            } = field;
 
-          if (!fields[name]) {
+            if (!fields[name]) {
+              return Promise.resolve(resolvedPrevious);
+            }
+
+            const fieldError = await validateFieldCurry(field);
+
+            if (fieldError[name]) {
+              resolvedPrevious.errors = {
+                ...resolvedPrevious.errors,
+                ...fieldError,
+              };
+
+              validFieldsRef.current.delete(name);
+
+              return Promise.resolve(resolvedPrevious);
+            }
+
+            if (fieldsWithValidationRef.current.has(name)) {
+              validFieldsRef.current.add(name);
+            }
+            resolvedPrevious.values[name] = getFieldValue(fields, ref);
             return Promise.resolve(resolvedPrevious);
-          }
+          },
+          Promise.resolve<SubmitPromiseResult<FormValues>>({
+            errors: {},
+            values: {} as FormValues,
+          }),
+        );
 
-          const fieldError = await validateFieldCurry(field);
-
-          if (fieldError[name]) {
-            resolvedPrevious.errors = {
-              ...resolvedPrevious.errors,
-              ...fieldError,
-            };
-
-            validFieldsRef.current.delete(name);
-
-            return Promise.resolve(resolvedPrevious);
-          }
-
-          if (fieldsWithValidationRef.current.has(name)) {
-            validFieldsRef.current.add(name);
-          }
-          resolvedPrevious.values[name] = getFieldValue(fields, ref);
-          return Promise.resolve(resolvedPrevious);
-        },
-        Promise.resolve<SubmitPromiseResult<FormValues>>({
-          errors: {},
-          values: {} as FormValues,
-        }),
-      );
-
-      fieldErrors = errors;
-      fieldValues = values;
-    }
-
-    if (isEmptyObject(fieldErrors)) {
-      errorsRef.current = {};
-      await callback(combineFieldValues(fieldValues), e);
-    } else {
-      if (submitFocusError) {
-        Object.keys(fieldErrors).reduce((previous, current) => {
-          const field = fields[current];
-          if (field && field.ref.focus && previous) {
-            field.ref.focus();
-            return false;
-          }
-          return previous;
-        }, true);
+        fieldErrors = errors;
+        fieldValues = values;
       }
 
-      errorsRef.current = fieldErrors;
-    }
+      if (isEmptyObject(fieldErrors)) {
+        errorsRef.current = {};
+        await callback(combineFieldValues(fieldValues), e);
+      } else {
+        if (submitFocusError) {
+          Object.keys(fieldErrors).reduce((previous, current) => {
+            const field = fields[current];
+            if (field && field.ref.focus && previous) {
+              field.ref.focus();
+              return false;
+            }
+            return previous;
+          }, true);
+        }
 
-    if (isUnMount.current) {
-      return;
-    }
+        errorsRef.current = fieldErrors;
+      }
+    } finally {
+      if (isUnMount.current) {
+        return;
+      }
 
-    isSubmittedRef.current = true;
-    isSubmittingRef.current = false;
-    submitCountRef.current = submitCountRef.current + 1;
-    render({});
+      isSubmittedRef.current = true;
+      isSubmittingRef.current = false;
+      submitCountRef.current = submitCountRef.current + 1;
+      render({});
+    }
   };
 
   const resetRefs = () => {
