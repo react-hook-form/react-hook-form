@@ -22,7 +22,6 @@ import isUndefined from './utils/isUndefined';
 import onDomRemove from './utils/onDomRemove';
 import isMultipleSelect from './utils/isMultipleSelect';
 import modeChecker from './utils/validationModeChecker';
-import pickErrors from './logic/pickErrors';
 import { EVENTS, RADIO_INPUT, UNDEFINED, VALIDATION_MODE } from './constants';
 import isNullOrUndefined from './utils/isNullOrUndefined';
 import {
@@ -52,7 +51,6 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
   reValidateMode = VALIDATION_MODE.onChange,
   validationSchema,
   defaultValues = {},
-  validationFields,
   nativeValidation,
   submitFocusError = true,
   validationSchemaOption = { abortEarly: false },
@@ -75,7 +73,7 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
   const submitCountRef = useRef(0);
   const isSubmittingRef = useRef(false);
   const isSchemaValidateTriggeredRef = useRef(false);
-  const validationFieldsRef = useRef(validationFields);
+  const validationFieldsRef = useRef<string[]>([]);
   const validateAndUpdateStateRef = useRef<Function>();
   const [, render] = useState();
   const { isOnBlur, isOnSubmit } = useRef(modeChecker(mode)).current;
@@ -98,7 +96,6 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
     isOnSubmit: isReValidateOnSubmit,
   } = useRef(modeChecker(reValidateMode)).current;
   const validationSchemaOptionRef = useRef(validationSchemaOption);
-  validationFieldsRef.current = validationFields;
 
   const combineErrorsRef = (data: FieldErrors<FormValues>) => ({
     ...errorsRef.current,
@@ -667,9 +664,7 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
     }
 
     if (validateOptions && !isEmptyObject(validateOptions)) {
-      if (!validationFields || validationFields.includes(name)) {
-        fieldsWithValidationRef.current.add(name);
-      }
+      fieldsWithValidationRef.current.add(name);
 
       if (!isOnSubmit && readFormState.current.isValid) {
         if (validationSchema) {
@@ -799,9 +794,7 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
     let fieldErrors;
     let fieldValues;
     const fields = fieldsRef.current;
-    const fieldsToValidate: (Field | undefined)[] = validationFields
-      ? validationFields.map(name => fieldsRef.current[name])
-      : Object.values(fields);
+    const fieldsToValidate: (Field | undefined)[] = Object.values(fields);
 
     if (readFormState.current.isSubmitting) {
       isSubmittingRef.current = true;
@@ -1009,9 +1002,7 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
     setValue,
     triggerValidation,
     getValues,
-    errors: validationFields
-      ? pickErrors<FormValues>(errorsRef.current, validationFields)
-      : errorsRef.current,
+    errors: errorsRef.current,
     formState: isProxyEnabled
       ? new Proxy<FormState<FormValues>>(formState, {
           get: (obj, prop: keyof FormState) => {
