@@ -749,36 +749,6 @@ describe('useForm', () => {
       });
       expect(callback).not.toBeCalled();
     });
-
-    it('should only validate fields which have been specified', async () => {
-      const { result } = renderHook(() =>
-        useForm<{ test: string }>({
-          mode: VALIDATION_MODE.onSubmit,
-          validationFields: ['test'],
-        }),
-      );
-      const callback = jest.fn();
-
-      act(() => {
-        result.current.register(
-          { value: '', type: 'input', name: 'test1' },
-          { required: true },
-        );
-        result.current.register({ value: '', type: 'input', name: 'test' });
-      });
-
-      (validateField as any).mockImplementation(async () => {
-        return {};
-      });
-
-      await act(async () => {
-        await result.current.handleSubmit(callback)({
-          preventDefault: () => {},
-          persist: () => {},
-        } as React.SyntheticEvent);
-      });
-      expect(validateField).toHaveBeenCalledTimes(1);
-    });
   });
 
   describe('handleSubmit with validationSchema', () => {
