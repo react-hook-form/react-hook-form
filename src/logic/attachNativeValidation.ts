@@ -1,6 +1,6 @@
 import isRegex from '../utils/isRegex';
-import { FieldValues, Ref } from '../types';
 import { INPUT_VALIDATION_RULES } from '../constants';
+import { FieldValues, Ref } from '../types';
 
 export default function attachNativeValidation(
   ref: Ref,
