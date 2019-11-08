@@ -613,13 +613,14 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
     const fields: FieldsRefs<FormValues> = fieldsRef.current;
     const isRadio = isRadioInput(type);
     let currentField = fields[typedName] as Field;
-    const isRegistered = isRadio
-      ? currentField &&
-        isArray(currentField.options) &&
-        currentField.options.find(({ ref }: Field) => value === ref.value)
-      : currentField;
 
-    if (isRegistered) {
+    if (
+      isRadio
+        ? currentField &&
+          isArray(currentField.options) &&
+          currentField.options.find(({ ref }: Field) => value === ref.value)
+        : currentField
+    ) {
       fields[typedName] = {
         ...currentField,
         ...validateOptions,
@@ -635,9 +636,7 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
       if (isRadio) {
         currentField = {
           options: [
-            ...(currentField && currentField.options
-              ? currentField.options
-              : []),
+            ...((currentField && currentField.options) || []),
             {
               ref,
               mutationWatcher,
@@ -666,7 +665,7 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
       }
     }
 
-    if (validateOptions && !isEmptyObject(validateOptions)) {
+    if (!isEmptyObject(validateOptions)) {
       if (!validationFields || validationFields.includes(name)) {
         fieldsWithValidationRef.current.add(name);
       }
