@@ -344,8 +344,7 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
 
   validateAndUpdateStateRef.current = validateAndUpdateStateRef.current
     ? validateAndUpdateStateRef.current
-    : async (event: MouseEvent): Promise<void> => {
-        const { type, target } = event;
+    : async ({ type, target }: MouseEvent): Promise<void> => {
         const name = target ? (target as Inputs).name : '';
         if (
           isArray(validationFieldsRef.current) &&
@@ -356,11 +355,11 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
 
         const fields = fieldsRef.current;
         const errors = errorsRef.current;
-        const ref = fields[name];
+        const field = fields[name];
         const currentError = errors[name];
         let error;
 
-        if (!ref) {
+        if (!field) {
           return;
         }
 
@@ -398,11 +397,9 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
           );
           schemaErrorsRef.current = fieldErrors;
           isSchemaValidateTriggeredRef.current = true;
-          error = (fieldErrors as FieldErrors<FormValues>)[name]
-            ? { [name]: (fieldErrors as FieldErrors<FormValues>)[name] }
-            : {};
+          error = fieldErrors[name] ? { [name]: fieldErrors[name] } : {};
         } else {
-          error = await validateField(ref, fields, nativeValidation);
+          error = await validateField(field, fields, nativeValidation);
         }
 
         const shouldUpdate = shouldUpdateWithError<FormValues>({
@@ -411,9 +408,8 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
           name,
           validFields: validFieldsRef.current,
           fieldsWithValidation: fieldsWithValidationRef.current,
-          schemaErrors: isSchemaValidateTriggeredRef.current
-            ? schemaErrorsRef.current
-            : undefined,
+          schemaErrors:
+            isSchemaValidateTriggeredRef.current && schemaErrorsRef.current,
         });
 
         if (shouldUpdate) {
