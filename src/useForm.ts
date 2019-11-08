@@ -937,7 +937,7 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
         fieldsKeyValue.forEach(([key]) =>
           setFieldValue(key, getDefaultValue(values, key)),
         );
-        defaultValuesRef.current = values;
+        defaultValuesRef.current = { ...values };
       }
 
       render({});
