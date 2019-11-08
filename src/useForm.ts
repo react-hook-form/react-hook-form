@@ -915,7 +915,7 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
   };
 
   const reset = useCallback(
-    (values?: FormValues): void => {
+    (values?: Partial<FormValues>): void => {
       const fieldsKeyValue = Object.entries(fieldsRef.current);
 
       for (const [, value] of fieldsKeyValue) {
