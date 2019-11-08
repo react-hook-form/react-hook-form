@@ -316,7 +316,7 @@ describe('useForm', () => {
           name: 'test',
           type: 'select-multiple',
           value: '1',
-          options: [{ value: '1', selected: true }],
+          options: [{ ref: { value: '1', selected: true } }] as any,
         });
       });
 
