@@ -2,12 +2,12 @@ import isString from '../utils/isString';
 import isBoolean from '../utils/isBoolean';
 import { FieldError, ValidateResult, Ref } from '../types';
 
-export default function getValidateFunctionErrorObject(
+export default function getValidateError(
   result: ValidateResult,
   ref: Ref,
   nativeError: Function,
   type = 'validate',
-): FieldError | undefined {
+): FieldError | void {
   const isStringValue = isString(result);
 
   if (isStringValue || (isBoolean(result) && !result)) {
@@ -18,8 +18,6 @@ export default function getValidateFunctionErrorObject(
       ref,
     };
     nativeError(message);
-    return error as FieldError;
+    return error;
   }
-
-  return;
 }
