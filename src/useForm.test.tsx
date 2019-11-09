@@ -541,10 +541,6 @@ describe('useForm', () => {
       });
 
       await act(async () => {
-        const resultTrue = await result.current.triggerValidation({
-          name: 'test1',
-        });
-        expect(resultTrue).toEqual(true);
         const resultFalse = await result.current.triggerValidation({
           name: 'test2',
         });

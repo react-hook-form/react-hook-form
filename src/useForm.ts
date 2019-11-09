@@ -299,7 +299,9 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
         );
         render({});
       } else {
+        console.log('hi');
         renderBaseOnError(firstFieldName, schemaErrorsRef.current);
+        console.log(errorsRef.current);
       }
 
       return isEmptyObject(errorsRef.current);
