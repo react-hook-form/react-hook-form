@@ -129,7 +129,7 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
       name: FieldName<FormValues>,
       error: FieldErrors<FormValues>,
       shouldRender = false,
-    ): boolean | void => {
+    ) => {
       let reRender = shouldRender;
 
       if (isEmptyObject(error)) {
@@ -150,7 +150,6 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
 
       if (reRender) {
         render({});
-        return true;
       }
     },
     [validationSchema],
