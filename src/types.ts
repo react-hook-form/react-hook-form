@@ -21,7 +21,7 @@ export type Inputs = HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement;
 
 export type Ref = Inputs | any;
 
-type Mode = keyof ValidationMode;
+export type Mode = keyof ValidationMode;
 
 export type OnSubmit<FormValues extends FieldValues> = (
   data: FormValues,
@@ -95,7 +95,7 @@ export interface FieldError {
   type: string;
   ref?: Ref;
   types?: MultipleErrors;
-  message?: string;
+  message?: ValidateResult;
   isManual?: boolean;
 }
 
@@ -162,9 +162,18 @@ export interface NameProp {
   name: string;
 }
 
+export interface RadioOption {
+  ref?: Ref;
+  mutationWatcher?: MutationWatcher;
+}
 export interface ElementLike extends NameProp {
   type?: string;
   value?: string;
   checked?: boolean;
   options?: any;
+}
+
+export interface RadioFieldResult {
+  isValid: boolean;
+  value: number | string;
 }

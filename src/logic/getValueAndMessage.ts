@@ -2,20 +2,22 @@ import isObject from '../utils/isObject';
 import isRegex from '../utils/isRegex';
 import { ValidationTypes } from '../types';
 
+type ValidationValueMessage = { value: ValidationTypes; message: string };
+
 export default (
-  validationData?:
-    | ValidationTypes
-    | { value: ValidationTypes; message: string },
+  validationData?: ValidationTypes | ValidationValueMessage,
 ): {
   value: ValidationTypes;
   message: string;
-} => ({
-  value:
-    isObject(validationData) && !isRegex(validationData)
-      ? validationData.value
+} => {
+  const isPureObject = isObject(validationData) && !isRegex(validationData);
+
+  return {
+    value: isPureObject
+      ? (validationData as ValidationValueMessage).value
       : (validationData as ValidationTypes),
-  message:
-    isObject(validationData) && !isRegex(validationData)
-      ? validationData.message
+    message: isPureObject
+      ? (validationData as ValidationValueMessage).message
       : '',
-});
+  };
+};
