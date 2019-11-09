@@ -16,6 +16,7 @@ import ValidateFieldCriteria from './validateFieldCriteria';
 import SetValueCustomRegister from './setValueCustomRegister';
 import ConditionalField from './conditionalField';
 import FormStateWithSchema from './formStateWithSchema';
+import SetValueWithSchema from './setValueWithSchema';
 
 const App: React.FC = () => {
   return (
@@ -46,6 +47,7 @@ const App: React.FC = () => {
       <Route path="/conditionalField" exact component={ConditionalField} />
       <Route path="/reset" exact component={Reset} />
       <Route path="/setValue" exact component={SetValue} />
+      <Route path="/setValueWithSchema" exact component={SetValueWithSchema} />
       <Route
         path="/SetValueCustomRegister"
         exact

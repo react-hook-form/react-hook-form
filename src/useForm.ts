@@ -275,28 +275,31 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
       const names = isArray(payload)
         ? payload.map(({ name }) => name)
         : [payload.name];
+      const isMultipleFields = isArray(payload);
       const validFieldNames = names.filter(
         name => !(fieldErrors as FieldErrors<FormValues>)[name],
       );
-      schemaErrorsRef.current = fieldErrors;
+      const firstFieldName = names[0];
+      schemaErrorsRef.current = isMultipleFields
+        ? fieldErrors
+        : { [firstFieldName]: fieldErrors[firstFieldName] };
       isSchemaValidateTriggeredRef.current = true;
 
-      errorsRef.current = omitValidFields<FormValues>(
-        combineErrorsRef(
-          Object.entries(fieldErrors)
-            .filter(([key]) => names.includes(key))
-            .reduce(
-              (previous, [name, error]) => ({ ...previous, [name]: error }),
-              {},
-            ),
-        ),
-        validFieldNames,
-      );
-
-      if (isString(name)) {
-        renderBaseOnError(name, fieldErrors[name] as FieldErrors<FormValues>);
-      } else {
+      if (isMultipleFields) {
+        errorsRef.current = omitValidFields<FormValues>(
+          combineErrorsRef(
+            Object.entries(fieldErrors)
+              .filter(([key]) => names.includes(key))
+              .reduce(
+                (previous, [name, error]) => ({ ...previous, [name]: error }),
+                {},
+              ),
+          ),
+          validFieldNames,
+        );
         render({});
+      } else {
+        renderBaseOnError(firstFieldName, schemaErrorsRef.current);
       }
 
       return isEmptyObject(errorsRef.current);
