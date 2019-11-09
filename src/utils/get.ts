@@ -6,7 +6,7 @@ export default (obj: any, path: string, defaultValue?: any) => {
     .split(/[,[\].]+?/)
     .filter(Boolean)
     .reduce(
-      (result, key) => (!isNullOrUndefined(result) ? result[key] : result),
+      (result, key) => (isNullOrUndefined(result) ? result : result[key]),
       obj,
     );
   return isUndefined(result) || result === obj ? defaultValue : result;

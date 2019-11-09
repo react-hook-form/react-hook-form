@@ -22,8 +22,8 @@ import isUndefined from './utils/isUndefined';
 import onDomRemove from './utils/onDomRemove';
 import isMultipleSelect from './utils/isMultipleSelect';
 import modeChecker from './utils/validationModeChecker';
-import { EVENTS, RADIO_INPUT, UNDEFINED, VALIDATION_MODE } from './constants';
 import isNullOrUndefined from './utils/isNullOrUndefined';
+import { EVENTS, RADIO_INPUT, UNDEFINED, VALIDATION_MODE } from './constants';
 import {
   FieldValues,
   FieldName,
@@ -959,9 +959,10 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
     () => () => {
       isUnMount.current = true;
       fieldsRef.current &&
-        Object.values(fieldsRef.current).forEach(
-          (field: Field | undefined): void =>
-            removeEventListenerAndRef(field, true),
+        Object.values(
+          fieldsRef.current,
+        ).forEach((field: Field | undefined): void =>
+          removeEventListenerAndRef(field, true),
         );
     },
     [removeEventListenerAndRef],
