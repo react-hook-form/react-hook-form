@@ -283,7 +283,7 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
       errorsRef.current = omitValidFields<FormValues>(
         combineErrorsRef(
           Object.entries(fieldErrors)
-            .filter(([key]) => names.includes(key as FieldName<FormValues>))
+            .filter(([key]) => names.includes(key))
             .reduce(
               (previous, [name, error]) => ({ ...previous, [name]: error }),
               {},
@@ -415,11 +415,7 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
         });
 
         if (shouldUpdate) {
-          renderBaseOnError(
-            name,
-            error as FieldErrors<FormValues>,
-            shouldUpdate,
-          );
+          renderBaseOnError(name, error, shouldUpdate);
           return;
         }
 
@@ -956,10 +952,9 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
     () => () => {
       isUnMount.current = true;
       fieldsRef.current &&
-        Object.values(
-          fieldsRef.current,
-        ).forEach((field: Field | undefined): void =>
-          removeEventListenerAndRef(field, true),
+        Object.values(fieldsRef.current).forEach(
+          (field: Field | undefined): void =>
+            removeEventListenerAndRef(field, true),
         );
     },
     [removeEventListenerAndRef],

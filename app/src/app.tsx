@@ -13,8 +13,9 @@ import Reset from './reset';
 import TriggerValidation from './triggerValidation';
 import ReValidateMode from './reValidateMode';
 import ValidateFieldCriteria from './validateFieldCriteria';
-import SetValueCustomRegister from "./setValueCustomRegister";
+import SetValueCustomRegister from './setValueCustomRegister';
 import ConditionalField from './conditionalField';
+import FormStateWithSchema from './formStateWithSchema';
 
 const App: React.FC = () => {
   return (
@@ -51,6 +52,11 @@ const App: React.FC = () => {
         component={SetValueCustomRegister}
       />
       <Route path="/formState/:mode" exact component={FormState} />
+      <Route
+        path="/formStateWithSchema/:mode"
+        exact
+        component={FormStateWithSchema}
+      />
       <Route path="/default-values" exact component={DefaultValues} />
       <Route path="/trigger-validation" exact component={TriggerValidation} />
       <Route
