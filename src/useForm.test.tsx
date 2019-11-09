@@ -316,7 +316,7 @@ describe('useForm', () => {
           name: 'test',
           type: 'select-multiple',
           value: '1',
-          options: [{ value: '1', selected: true }],
+          options: [{ value: '1', selected: true }] as any,
         });
       });
 
@@ -446,9 +446,7 @@ describe('useForm', () => {
         }),
       );
 
-      (validateField as any).mockImplementation(async () => {
-        return {};
-      });
+      (validateField as any).mockImplementation(async () => ({}));
 
       act(() => {
         result.current.register({
@@ -467,18 +465,22 @@ describe('useForm', () => {
       });
 
       expect(validateField).toBeCalledWith(
-        { ref: { name: 'test', value: 'test' } },
         {
           test: { ref: { name: 'test', value: 'test' } },
           test1: { ref: { name: 'test1', value: 'test' } },
         },
+        false,
+        false,
+        { ref: { name: 'test', value: 'test' } },
       );
       expect(validateField).toBeCalledWith(
-        { ref: { name: 'test1', value: 'test' } },
         {
           test: { ref: { name: 'test', value: 'test' } },
           test1: { ref: { name: 'test1', value: 'test' } },
         },
+        false,
+        false,
+        { ref: { name: 'test1', value: 'test' } },
       );
     });
   });
@@ -748,36 +750,6 @@ describe('useForm', () => {
         } as React.SyntheticEvent);
       });
       expect(callback).not.toBeCalled();
-    });
-
-    it('should only validate fields which have been specified', async () => {
-      const { result } = renderHook(() =>
-        useForm<{ test: string }>({
-          mode: VALIDATION_MODE.onSubmit,
-          validationFields: ['test'],
-        }),
-      );
-      const callback = jest.fn();
-
-      act(() => {
-        result.current.register(
-          { value: '', type: 'input', name: 'test1' },
-          { required: true },
-        );
-        result.current.register({ value: '', type: 'input', name: 'test' });
-      });
-
-      (validateField as any).mockImplementation(async () => {
-        return {};
-      });
-
-      await act(async () => {
-        await result.current.handleSubmit(callback)({
-          preventDefault: () => {},
-          persist: () => {},
-        } as React.SyntheticEvent);
-      });
-      expect(validateField).toHaveBeenCalledTimes(1);
     });
   });
 

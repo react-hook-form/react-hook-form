@@ -1,9 +1,9 @@
-import { FieldError } from '../types';
 import isObject from './isObject';
+import { FieldError, ValidateResult } from '../types';
 
 export default (
   error: FieldError | undefined,
   type: string,
-  message: string | undefined,
+  message: ValidateResult,
 ): boolean =>
-  isObject(error) && (error.type === type && error.message === message);
+  isObject(error) && error.type === type && error.message === message;

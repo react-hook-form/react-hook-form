@@ -23,7 +23,6 @@ you can view the source code within the folder or visit code sand box to see how
 | Native Validation           | https://codesandbox.io/s/react-hook-form-native-validation-ez5ww     |
 | Reset Form                  | https://codesandbox.io/s/jjm3wyqmjy                                  |
 | Register Error Messages     | https://codesandbox.io/s/o766kp4z05                                  |
-| Restrict validation fields  | https://codesandbox.io/s/react-hook-form-validationfields-1xb91      |
 | Set input/select value      | https://codesandbox.io/s/react-hook-form-set-inputselect-value-c46ly |
 | Set input/select Error      | https://codesandbox.io/s/o7rxyym3q5                                  |
 | Trigger field validation    | https://codesandbox.io/s/react-hook-form-trigger-validation-w1g0m    |

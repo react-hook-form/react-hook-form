@@ -1,30 +1,54 @@
+import appendErrors from './appendErrors';
+import isArray from '../utils/isArray';
 import {
   FieldValues,
   SchemaValidationResult,
   SchemaValidateOptions,
   Schema,
   FieldErrors,
+  YupValidationError,
 } from '../types';
 
-// TODO: Fix these types
 export const parseErrorSchema = <FormValues>(
-  error: FieldValues,
+  error: YupValidationError,
+  validateAllFieldCriteria: boolean,
 ): FieldErrors<FormValues> =>
-  error.inner.length
+  isArray(error.inner)
     ? error.inner.reduce(
         (previous: FieldValues, { path, message, type }: FieldValues) => ({
           ...previous,
-          [path]: { message, ref: {}, type },
+          ...(previous[path] && validateAllFieldCriteria
+            ? {
+                [path]: appendErrors(
+                  path,
+                  validateAllFieldCriteria,
+                  previous,
+                  type,
+                  message,
+                ),
+              }
+            : {
+                [path]: {
+                  message,
+                  type,
+                  ...(validateAllFieldCriteria
+                    ? {
+                        types: { [type]: message || true },
+                      }
+                    : {}),
+                },
+              }),
         }),
         {},
       )
     : {
-        [error.path]: { message: error.message, ref: {}, type: error.type },
+        [error.path]: { message: error.message, type: error.type },
       };
 
 export default async function validateWithSchema<FormValues>(
   validationSchema: Schema<FormValues>,
   validationSchemaOption: SchemaValidateOptions,
+  validateAllFieldCriteria: boolean,
   data: FieldValues,
 ): Promise<SchemaValidationResult<FormValues>> {
   try {
@@ -35,7 +59,7 @@ export default async function validateWithSchema<FormValues>(
   } catch (e) {
     return {
       result: {},
-      fieldErrors: parseErrorSchema<FormValues>(e),
+      fieldErrors: parseErrorSchema<FormValues>(e, validateAllFieldCriteria),
     };
   }
 }

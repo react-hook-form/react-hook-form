@@ -21,7 +21,7 @@ export type Inputs = HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement;
 
 export type Ref = Inputs | any;
 
-type Mode = keyof ValidationMode;
+export type Mode = keyof ValidationMode;
 
 export type OnSubmit<FormValues extends FieldValues> = (
   data: FormValues,
@@ -51,10 +51,10 @@ export type Options<FormValues extends FieldValues = FieldValues> = Partial<{
   reValidateMode: Mode;
   defaultValues: Partial<FormValues>;
   validationSchemaOption: SchemaValidateOptions;
-  validationFields: FieldName<FormValues>[];
   validationSchema: any;
   nativeValidation: boolean;
   submitFocusError: boolean;
+  validateCriteriaMode: 'firstError' | 'all';
 }>;
 
 export interface MutationWatcher {
@@ -88,16 +88,20 @@ export type ValidationOptions = Partial<{
     | { value: Validate | Record<string, Validate>; message: string };
 }>;
 
+export type MultipleErrors = Record<string, ValidateResult>;
+
 export interface FieldError {
-  ref: Ref;
   type: string;
-  message?: string;
+  ref?: Ref;
+  types?: MultipleErrors;
+  message?: ValidateResult;
   isManual?: boolean;
 }
 
 export interface ManualFieldError<FormValues> {
   name: FieldName<FormValues>;
   type: string;
+  types?: MultipleErrors;
   message?: string;
 }
 
@@ -119,6 +123,13 @@ export type FieldsRefs<FormValues extends FieldValues> = Partial<
 export type FieldErrors<FormValues extends FieldValues> = Partial<
   Record<FieldName<FormValues>, FieldError>
 >;
+
+export type YupValidationError = {
+  inner: { path: string; message: string; type: string }[];
+  path: string;
+  message: string;
+  type: string;
+};
 
 export interface SubmitPromiseResult<FormValues extends FieldValues> {
   errors: FieldErrors<FormValues>;
@@ -150,9 +161,18 @@ export interface NameProp {
   name: string;
 }
 
+export interface RadioOption {
+  ref?: Ref;
+  mutationWatcher?: MutationWatcher;
+}
 export interface ElementLike extends NameProp {
   type?: string;
   value?: string;
   checked?: boolean;
   options?: any;
+}
+
+export interface RadioFieldResult {
+  isValid: boolean;
+  value: number | string;
 }

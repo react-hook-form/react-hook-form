@@ -17,7 +17,7 @@ export default function findRemovedFieldAndRemoveListener<
 
   const { ref, mutationWatcher, options } = field;
 
-  if (!ref || !ref.type) {
+  if (!ref.type) {
     return;
   }
 
