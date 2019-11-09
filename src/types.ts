@@ -158,7 +158,7 @@ export interface ElementLike extends NameProp {
   type?: string;
   value?: string;
   checked?: boolean;
-  options?: RadioOption;
+  options?: any;
 }
 
 export interface RadioFieldResult {
