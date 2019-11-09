@@ -6,7 +6,7 @@
   "module": "dist/react-hook-form.es.js",
   "types": "dist/index.d.ts",
   "scripts": {
-    "clean": "rimraf dist",
+    "clean": "rm -rf dist",
     "prebuild": "yarn clean",
     "build": "yarn build:modern && yarn build:ie11",
     "build:modern": "rollup -c",
@@ -65,7 +65,6 @@
     "react": "^16.9.0",
     "react-dom": "^16.9.0",
     "react-test-renderer": "^16.9.0",
-    "rimraf": "^3.0.0",
     "rollup": "^1.20.3",
     "rollup-plugin-terser": "^5.1.1",
     "rollup-plugin-typescript2": "^0.24.0",
