@@ -67,7 +67,7 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
   const fieldsWithValidationRef = useRef(new Set<FieldName<FormValues>>());
   const validFieldsRef = useRef(new Set<FieldName<FormValues>>());
   const defaultValuesRef = useRef<
-    Record<FieldName<FormValues>, FieldValue<FormValues>>
+    Partial<Record<FieldName<FormValues>, FieldValue<FormValues>>>
   >({} as Record<FieldName<FormValues>, FieldValue<FormValues>>);
   const isUnMount = useRef(false);
   const isWatchAllRef = useRef(false);
@@ -158,7 +158,7 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
   const setFieldValue = useCallback(
     (
       name: FieldName<FormValues>,
-      rawValue: FieldValue<FormValues> | Partial<FormValues>,
+      rawValue: FieldValue<FormValues> | Partial<FormValues> | undefined,
     ): boolean => {
       const field = fieldsRef.current[name];
 
@@ -901,10 +901,7 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
 
   const resetRefs = () => {
     errorsRef.current = {};
-    defaultValuesRef.current = {} as Record<
-      FieldName<FormValues>,
-      FieldValue<FormValues>
-    >;
+    defaultValuesRef.current = {};
     schemaErrorsRef.current = {};
     touchedFieldsRef.current = new Set();
     watchFieldsRef.current = new Set();
