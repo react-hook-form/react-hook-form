@@ -1,5 +1,4 @@
 import get from '../utils/get';
-import isUndefined from '../utils/isUndefined';
 import { FieldValues, BaseFieldValue, FieldValue, FieldName } from '../types';
 
 export default <FormValues extends FieldValues>(
@@ -7,6 +6,4 @@ export default <FormValues extends FieldValues>(
   name: FieldName<FormValues>,
   defaultValue?: BaseFieldValue,
 ): FieldValue<FormValues> | Partial<FormValues> | undefined =>
-  isUndefined(defaultValues[name])
-    ? get(defaultValues, name, defaultValue)
-    : defaultValues[name];
+  defaultValues[name] ?? get(defaultValues, name, defaultValue);

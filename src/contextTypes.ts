@@ -28,7 +28,7 @@ export interface FormContextValues<
     validationOptions?: ValidationOptions,
   ): void;
   unregister(name: FieldName<FormValues>): void;
-  unregister(names: (FieldName<FormValues>)[]): void;
+  unregister(names: FieldName<FormValues>[]): void;
   handleSubmit: (
     callback: OnSubmit<FormValues>,
   ) => (e: React.SyntheticEvent) => Promise<void>;

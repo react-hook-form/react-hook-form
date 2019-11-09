@@ -23,7 +23,6 @@ import onDomRemove from './utils/onDomRemove';
 import isMultipleSelect from './utils/isMultipleSelect';
 import modeChecker from './utils/validationModeChecker';
 import { EVENTS, RADIO_INPUT, UNDEFINED, VALIDATION_MODE } from './constants';
-import isNullOrUndefined from './utils/isNullOrUndefined';
 import {
   FieldValues,
   FieldName,
@@ -170,11 +169,7 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
       const { type } = ref;
       const options = field.options;
       const value =
-        isWeb &&
-        ref instanceof window.HTMLElement &&
-        isNullOrUndefined(rawValue)
-          ? ''
-          : rawValue;
+        (isWeb && ref instanceof window.HTMLElement && rawValue) ?? '';
 
       if (isRadioInput(type) && options) {
         options.forEach(
@@ -203,7 +198,7 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
 
     const isDirty =
       defaultValuesRef.current[name] !==
-      getFieldValue(fieldsRef.current, fieldsRef.current[name]!.ref);
+      getFieldValue(fieldsRef.current, fieldsRef.current[name]?.ref);
     const isDirtyChanged = dirtyFieldsRef.current.has(name) !== isDirty;
 
     if (isDirty) {
@@ -563,9 +558,7 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
         watchFields,
       );
 
-      return isUndefined(value)
-        ? getDefaultValue(combinedDefaultValues, fieldNames)
-        : value;
+      return value ?? getDefaultValue(combinedDefaultValues, fieldNames);
     }
 
     if (isArray(fieldNames)) {
@@ -923,7 +916,7 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
       const fieldsKeyValue = Object.entries(fieldsRef.current);
 
       for (const [, value] of fieldsKeyValue) {
-        if (value && value.ref && value.ref.closest) {
+        if (value?.ref?.closest) {
           try {
             value.ref.closest('form').reset();
             break;
@@ -959,9 +952,10 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
     () => () => {
       isUnMount.current = true;
       fieldsRef.current &&
-        Object.values(fieldsRef.current).forEach(
-          (field: Field | undefined): void =>
-            removeEventListenerAndRef(field, true),
+        Object.values(
+          fieldsRef.current,
+        ).forEach((field: Field | undefined): void =>
+          removeEventListenerAndRef(field, true),
         );
     },
     [removeEventListenerAndRef],

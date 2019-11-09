@@ -28,7 +28,7 @@ export default function getFieldValue<FormValues extends FieldValues>(
 
   if (isCheckBox(type)) {
     if (checked) {
-      return ref.attributes && ref.attributes.value
+      return ref.attributes?.value
         ? isUndefined(value) || isEmptyString(value)
           ? true
           : value

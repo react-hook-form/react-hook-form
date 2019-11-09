@@ -6,4 +6,4 @@ export default (
   type: string,
   message: ValidateResult,
 ): boolean =>
-  isObject(error) && (error.type === type && error.message === message);
+  isObject(error) && error.type === type && error.message === message;
