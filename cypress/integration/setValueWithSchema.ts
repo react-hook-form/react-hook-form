@@ -1,23 +1,18 @@
 context('form setValue with schema', () => {
   it('should set input value, trigger validation and clear all errors', () => {
-    cy.visit('http://localhost:3000/setValue');
+    cy.visit('http://localhost:3000/setValueWithSchema');
 
-    cy.get('input[name="firstName"]').should('have.value', 'wrong');
-    cy.get('input[name="age"]').should('have.value', '2');
-    cy.get('input[name="radio"]').should('have.checked', true);
-    cy.get('select[name="select"]').should('have.value', 'a');
-    cy.get('select[name="multiple"]')
-      .invoke('val')
-      .should('deep.equal', ['a', 'b']);
-    cy.get('#trigger').contains('Trigger error');
-    cy.get('#lastName').should('not.exist');
+    cy.get('input[name="firstName"]').type('a');
+    cy.get('input[name="firstName"] + p').contains('firstName error');
+    cy.get('p').should('have.length', 1);
+    cy.get('input[name="firstName"]').type('asdasdasdasd');
 
-    cy.get('button').click();
+    cy.get('input[name="lastName"]').type('a');
+    cy.get('input[name="lastName"] + p').contains('lastName error');
+    cy.get('p').should('have.length', 1);
+    cy.get('input[name="lastName"]').type('asdasdasdasd');
 
-    cy.get('#lastName').contains('Last name error');
-
-    cy.get('input[name="lastName"]').type('test');
-    cy.get('input[name="trigger"]').type('trigger');
+    cy.get('input[name="age"]').type('a2323');
 
     cy.get('button').click();
     cy.get('p').should('have.length', 0);

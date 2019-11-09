@@ -5,8 +5,14 @@ import * as yup from 'yup';
 let renderCounter = 0;
 
 const validationSchema = yup.object().shape({
-  lastName: yup.string().required(),
-  firstName: yup.string().required(),
+  lastName: yup
+    .string()
+    .min(10)
+    .required(),
+  firstName: yup
+    .string()
+    .min(10)
+    .required(),
 });
 
 const SetValueWithSchema: React.FC = () => {
@@ -34,24 +40,28 @@ const SetValueWithSchema: React.FC = () => {
       <input
         name="firstName"
         placeholder="firstName"
-        autoComplete="off"
-        onChange={() => {
-          setValue('firstName', 'test', true);
+        onChange={e => {
+          setValue('firstName', e.target.value, true);
         }}
       />
-      {errors.firstName && <p id="trigger">firstName error</p>}
+      {errors.firstName && <p>firstName error</p>}
 
       <input
         name="lastName"
-        autoComplete="off"
         placeholder="lastName"
-        onChange={() => {
-          setValue('lastName', 'test', true);
+        onChange={e => {
+          setValue('lastName', e.target.value, true);
         }}
       />
-      {errors.lastName && <p id="lastName">Last name error</p>}
+      {errors.lastName && <p>lastName error</p>}
 
-      <input name="age" ref={register} />
+      <input
+        name="age"
+        ref={register}
+        onChange={e => {
+          setValue('age', e.target.value, true);
+        }}
+      />
 
       <button>Submit</button>
       <div id="renderCount">{renderCounter}</div>
