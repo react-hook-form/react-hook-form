@@ -1,11 +1,11 @@
-import { FieldErrors } from '../types';
+import { FieldErrors, ValidateResult } from '../types';
 
 export default <FormValues>(
   name: string,
   validateAllFieldCriteria: boolean,
   errors: FieldErrors<FormValues>,
   type: string,
-  message: string | undefined,
+  message: ValidateResult,
 ) => {
   if (!validateAllFieldCriteria) {
     return {};

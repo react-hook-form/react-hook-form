@@ -11,7 +11,7 @@ import isFunction from '../utils/isFunction';
 import getFieldsValue from './getFieldValue';
 import isRegex from '../utils/isRegex';
 import isEmptyString from '../utils/isEmptyString';
-import getValidateErrorObject from './getValidateErrorObject';
+import getValidateError from './getValidateError';
 import appendErrors from './appendErrors';
 import { RADIO_INPUT, INPUT_VALIDATION_RULES } from '../constants';
 import {
@@ -172,11 +172,7 @@ export default async <FormValues extends FieldValues>(
 
     if (isFunction(validate)) {
       const result = await validate(fieldValue);
-      const validateError = getValidateErrorObject(
-        result,
-        validateRef,
-        nativeError,
-      );
+      const validateError = getValidateError(result, validateRef, nativeError);
 
       if (validateError) {
         error[typedName] = {
@@ -209,7 +205,7 @@ export default async <FormValues extends FieldValues>(
 
               let result;
               const validateResult = await validate(fieldValue);
-              const validateError = getValidateErrorObject(
+              const validateError = getValidateError(
                 validateResult,
                 validateRef,
                 nativeError,
