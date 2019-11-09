@@ -20,6 +20,16 @@ const errors = {
     {
       name: 'ValidationError',
       value: undefined,
+      path: 'name',
+      type: 'min',
+      errors: [],
+      inner: [],
+      message: 'name is a min field',
+      params: [],
+    },
+    {
+      name: 'ValidationError',
+      value: undefined,
       path: 'age',
       type: 'required',
       errors: [],
@@ -32,7 +42,11 @@ const errors = {
 
 describe('parseErrorSchema', () => {
   it('should parse the validation errors into react hook form errors format', () => {
-    expect(parseErrorSchema(errors)).toMatchSnapshot();
+    expect(parseErrorSchema(errors as any, false)).toMatchSnapshot();
+  });
+
+  it('should parse the validation errors and append all errors', () => {
+    expect(parseErrorSchema(errors as any, true)).toMatchSnapshot();
   });
 });
 
@@ -46,6 +60,7 @@ describe('validateWithSchema', () => {
           },
         },
         { abortEarly: false },
+        false,
         {},
       ),
     ).toMatchSnapshot();
@@ -58,6 +73,7 @@ describe('validateWithSchema', () => {
           validate: () => new Promise(resolve => resolve()),
         },
         { abortEarly: false },
+        false,
         {},
       ),
     ).toEqual({

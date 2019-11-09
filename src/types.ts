@@ -55,6 +55,7 @@ export type Options<FormValues extends FieldValues = FieldValues> = Partial<{
   validationSchema: any;
   nativeValidation: boolean;
   submitFocusError: boolean;
+  validateCriteriaMode: 'firstError' | 'all';
 }>;
 
 export interface MutationWatcher {
@@ -88,9 +89,12 @@ export type ValidationOptions = Partial<{
     | { value: Validate | Record<string, Validate>; message: string };
 }>;
 
+export type MultipleErrors = Record<string, ValidateResult>;
+
 export interface FieldError {
-  ref: Ref;
   type: string;
+  ref?: Ref;
+  types?: MultipleErrors;
   message?: ValidateResult;
   isManual?: boolean;
 }
@@ -98,6 +102,7 @@ export interface FieldError {
 export interface ManualFieldError<FormValues> {
   name: FieldName<FormValues>;
   type: string;
+  types?: MultipleErrors;
   message?: string;
 }
 
@@ -119,6 +124,13 @@ export type FieldsRefs<FormValues extends FieldValues> = Partial<
 export type FieldErrors<FormValues extends FieldValues> = Partial<
   Record<FieldName<FormValues>, FieldError>
 >;
+
+export type YupValidationError = {
+  inner: { path: string; message: string; type: string }[];
+  path: string;
+  message: string;
+  type: string;
+};
 
 export interface SubmitPromiseResult<FormValues extends FieldValues> {
   errors: FieldErrors<FormValues>;

@@ -92,15 +92,6 @@ describe('findMissDomAndClean', () => {
     expect(fields).toMatchSnapshot();
   });
 
-  it('should return undefined when empty ref', () => {
-    const fields = {
-      test: 'test',
-    };
-    expect(
-      findRemovedFieldAndRemoveListener(fields as any, () => {}, {} as any),
-    ).toEqual(undefined);
-  });
-
   it('should work for radio type input', () => {
     const ref = document.createElement('input');
     ref.setAttribute('name', 'test');

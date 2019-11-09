@@ -12,13 +12,19 @@ import WatchDefaultValues from './watchDefaultValues';
 import Reset from './reset';
 import TriggerValidation from './triggerValidation';
 import ReValidateMode from './reValidateMode';
-import SetValueCustomRegister from './setValueCustomRegister';
+import ValidateFieldCriteria from './validateFieldCriteria';
+import SetValueCustomRegister from "./setValueCustomRegister";
 import ConditionalField from './conditionalField';
 
 const App: React.FC = () => {
   return (
     <Router>
       <Route path="/basic/:mode" exact component={Basic} />
+      <Route
+        path="/validate-field-criteria"
+        exact
+        component={ValidateFieldCriteria}
+      />
       <Route
         path="/re-validate-mode/:mode/:reValidateMode"
         exact

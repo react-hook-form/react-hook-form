@@ -1,0 +1,83 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`validateField should return all validation error messages 1`] = `
+Object {
+  "test": Object {
+    "message": "test",
+    "ref": Object {
+      "name": "test",
+      "setCustomValidity": [Function],
+      "type": "text",
+      "value": "",
+    },
+    "type": "required",
+    "types": Object {
+      "required": "test",
+      "test": true,
+      "test1": "Luo",
+      "test2": "Bill",
+    },
+  },
+}
+`;
+
+exports[`validateField should return all validation error messages 2`] = `
+Object {
+  "test": Object {
+    "message": "minLength",
+    "ref": Object {
+      "name": "test",
+      "setCustomValidity": [Function],
+      "type": "text",
+      "value": "bil",
+    },
+    "type": "minLength",
+    "types": Object {
+      "minLength": "minLength",
+      "pattern": "pattern",
+      "test": true,
+      "test1": "Luo",
+      "test2": "Bill",
+    },
+  },
+}
+`;
+
+exports[`validateField should return all validation errors 1`] = `
+Object {
+  "test": Object {
+    "message": "",
+    "ref": Object {
+      "name": "test",
+      "setCustomValidity": [Function],
+      "type": "text",
+      "value": "",
+    },
+    "type": "required",
+    "types": Object {
+      "required": true,
+      "validate": true,
+    },
+  },
+}
+`;
+
+exports[`validateField should return all validation errors 2`] = `
+Object {
+  "test": Object {
+    "message": "",
+    "ref": Object {
+      "name": "test",
+      "setCustomValidity": [Function],
+      "type": "text",
+      "value": "123",
+    },
+    "type": "minLength",
+    "types": Object {
+      "minLength": true,
+      "pattern": true,
+      "validate": true,
+    },
+  },
+}
+`;

@@ -42,6 +42,7 @@ import {
   FormState,
   ReadFormState,
   ManualFieldError,
+  MultipleErrors,
 } from './types';
 
 const { useRef, useState, useCallback, useEffect } = React;
@@ -51,11 +52,13 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
   reValidateMode = VALIDATION_MODE.onChange,
   validationSchema,
   defaultValues = {},
-  nativeValidation,
+  nativeValidation = false,
   submitFocusError = true,
   validationSchemaOption = { abortEarly: false },
+  validateCriteriaMode,
 }: Options<FormValues> = {}) {
   const fieldsRef = useRef<FieldsRefs<FormValues>>({});
+  const validateAllFieldCriteria = validateCriteriaMode === 'all';
   const errorsRef = useRef<FieldErrors<FormValues>>({});
   const schemaErrorsRef = useRef<FieldErrors<FormValues>>({});
   const touchedFieldsRef = useRef(new Set<FieldName<FormValues>>());
@@ -100,6 +103,26 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
     ...errorsRef.current,
     ...data,
   });
+
+  const validateFieldCurry = useCallback(
+    validateField.bind(
+      null,
+      fieldsRef.current,
+      nativeValidation,
+      validateAllFieldCriteria,
+    ),
+    [],
+  );
+
+  const validateWithSchemaCurry = useCallback(
+    validateWithSchema.bind(
+      null,
+      validationSchema,
+      validationSchemaOptionRef.current,
+      validateAllFieldCriteria,
+    ),
+    [validationSchema],
+  );
 
   const renderBaseOnError = useCallback(
     (
@@ -197,15 +220,14 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
     (
       name: FieldName<FormValues>,
       value: FieldValue<FormValues>,
-    ): void | boolean => {
+    ): boolean | void => {
       const shouldRender = setFieldValue(name, value);
       if (
         setDirty(name) ||
         shouldRender ||
         (!touchedFieldsRef.current.has(name) && readFormState.current.touched)
       ) {
-        touchedFieldsRef.current.add(name);
-        return true;
+        return !!touchedFieldsRef.current.add(name);
       }
     },
     [setFieldValue],
@@ -232,21 +254,12 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
         setInternalValue(name, value);
       }
 
-      const error = await validateField(field, fieldsRef.current);
+      const error = await validateFieldCurry(field);
       renderBaseOnError(name, error, shouldRender);
 
       return isEmptyObject(error);
     },
-    [renderBaseOnError, setInternalValue],
-  );
-
-  const validateWithSchemaCurry = useCallback(
-    validateWithSchema.bind(
-      null,
-      validationSchema,
-      validationSchemaOptionRef.current,
-    ),
-    [validationSchema],
+    [renderBaseOnError, setInternalValue, validateFieldCurry],
   );
 
   const executeSchemaValidation = useCallback(
@@ -388,7 +401,7 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
           isSchemaValidateTriggeredRef.current = true;
           error = fieldErrors[name] ? { [name]: fieldErrors[name] } : {};
         } else {
-          error = await validateField(field, fields, nativeValidation);
+          error = await validateFieldCurry(field);
         }
 
         const shouldUpdate = shouldUpdateWithError<FormValues>({
@@ -469,11 +482,13 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
   const setInternalError = ({
     name,
     type,
+    types,
     message,
     reRender = true,
   }: {
     name: FieldName<FormValues>;
     type: string;
+    types?: MultipleErrors;
     message?: string;
     reRender?: boolean;
   }) => {
@@ -482,6 +497,7 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
     if (!isSameError(errors[name], type, message)) {
       errors[name] = {
         type,
+        types,
         message,
         ref: {},
         isManual: true,
@@ -493,19 +509,27 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
   };
 
   function setError(name: ManualFieldError<FormValues>[]): void;
-  function setError(
-    name: FieldName<FormValues>,
-    type: string,
-    message?: string,
-  ): void;
+  function setError(name: FieldName<FormValues>, type: MultipleErrors): void;
+  function setError(name: FieldName<FormValues>, type: string): void;
   function setError(
     name: FieldName<FormValues> | ManualFieldError<FormValues>[],
-    type = '',
+    type: string | MultipleErrors = '',
     message?: string,
   ): void {
     if (isString(name)) {
-      setInternalError({ name, type, message });
-    } else {
+      setInternalError({
+        name,
+        ...(isObject(type)
+          ? {
+              types: type,
+              type: '',
+            }
+          : {
+              type,
+              message,
+            }),
+      });
+    } else if (isArray(name)) {
       name.forEach(error => setInternalError({ ...error, reRender: false }));
       render({});
     }
@@ -665,7 +689,7 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
             }
           });
         } else {
-          validateField(currentField, fields).then(error => {
+          validateFieldCurry(currentField).then(error => {
             if (isEmptyObject(error)) {
               validFieldsRef.current.add(name);
             }
@@ -819,11 +843,7 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
               return Promise.resolve(resolvedPrevious);
             }
 
-            const fieldError = await validateField(
-              field,
-              fields,
-              nativeValidation,
-            );
+            const fieldError = await validateFieldCurry(field);
 
             if (fieldError[name]) {
               resolvedPrevious.errors = {

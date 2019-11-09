@@ -10,13 +10,10 @@ import isObject from '../utils/isObject';
 import isFunction from '../utils/isFunction';
 import getFieldsValue from './getFieldValue';
 import isRegex from '../utils/isRegex';
-import getValidateError from './getValidateError';
 import isEmptyString from '../utils/isEmptyString';
-import {
-  PATTERN_ATTRIBUTE,
-  RADIO_INPUT,
-  REQUIRED_ATTRIBUTE,
-} from '../constants';
+import getValidateError from './getValidateError';
+import appendErrors from './appendErrors';
+import { RADIO_INPUT, INPUT_VALIDATION_RULES } from '../constants';
 import {
   Field,
   FieldErrors,
@@ -26,6 +23,9 @@ import {
 } from '../types';
 
 export default async <FormValues extends FieldValues>(
+  fields: FieldValues,
+  nativeValidation: boolean,
+  validateAllFieldCriteria: boolean,
   {
     ref,
     ref: { type, value, name, checked },
@@ -38,8 +38,6 @@ export default async <FormValues extends FieldValues>(
     pattern,
     validate,
   }: Field,
-  fields: FieldValues,
-  nativeValidation?: boolean,
 ): Promise<FieldErrors<FormValues>> => {
   const error: FieldErrors<FormValues> = {};
   const isRadio = isRadioInput(type);
@@ -47,6 +45,12 @@ export default async <FormValues extends FieldValues>(
   const isEmpty = isEmptyString(value);
   const nativeError = displayNativeError.bind(null, nativeValidation, ref);
   const typedName = name as FieldName<FormValues>;
+  const appendErrorsCurry = appendErrors.bind(
+    null,
+    typedName,
+    validateAllFieldCriteria,
+    error,
+  );
 
   if (
     required &&
@@ -55,13 +59,18 @@ export default async <FormValues extends FieldValues>(
       (isRadio && !getRadioValue(fields[typedName].options).isValid) ||
       (type !== RADIO_INPUT && isNullOrUndefined(value)))
   ) {
+    const message = isString(required) ? required : '';
+
     error[typedName] = {
-      type: REQUIRED_ATTRIBUTE,
-      message: isString(required) ? required : '',
+      type: INPUT_VALIDATION_RULES.required,
+      message,
       ref: isRadio ? fields[typedName].options[0].ref : ref,
+      ...appendErrorsCurry(INPUT_VALIDATION_RULES.required, message),
     };
-    nativeError(required);
-    return error;
+    nativeError(message);
+    if (!validateAllFieldCriteria) {
+      return error;
+    }
   }
 
   if (!isNullOrUndefined(min) || !isNullOrUndefined(max)) {
@@ -90,12 +99,19 @@ export default async <FormValues extends FieldValues>(
     if (exceedMax || exceedMin) {
       const message = exceedMax ? maxMessage : minMessage;
       error[typedName] = {
-        type: exceedMax ? 'max' : 'min',
+        type: exceedMax
+          ? INPUT_VALIDATION_RULES.max
+          : INPUT_VALIDATION_RULES.min,
         message,
         ref,
+        ...(exceedMax
+          ? appendErrorsCurry(INPUT_VALIDATION_RULES.max, message)
+          : appendErrorsCurry(INPUT_VALIDATION_RULES.min, message)),
       };
       nativeError(message);
-      return error;
+      if (!validateAllFieldCriteria) {
+        return error;
+      }
     }
   }
 
@@ -115,12 +131,19 @@ export default async <FormValues extends FieldValues>(
     if (exceedMax || exceedMin) {
       const message = exceedMax ? maxLengthMessage : minLengthMessage;
       error[typedName] = {
-        type: exceedMax ? 'maxLength' : 'minLength',
+        type: exceedMax
+          ? INPUT_VALIDATION_RULES.maxLength
+          : INPUT_VALIDATION_RULES.minLength,
         message,
         ref,
+        ...(exceedMax
+          ? appendErrorsCurry(INPUT_VALIDATION_RULES.maxLength, message)
+          : appendErrorsCurry(INPUT_VALIDATION_RULES.minLength, message)),
       };
       nativeError(message);
-      return error;
+      if (!validateAllFieldCriteria) {
+        return error;
+      }
     }
   }
 
@@ -131,12 +154,15 @@ export default async <FormValues extends FieldValues>(
 
     if (isRegex(patternValue) && !patternValue.test(value)) {
       error[typedName] = {
-        type: PATTERN_ATTRIBUTE,
+        type: INPUT_VALIDATION_RULES.pattern,
         message: patternMessage,
         ref,
+        ...appendErrorsCurry(INPUT_VALIDATION_RULES.pattern, patternMessage),
       };
       nativeError(patternMessage);
-      return error;
+      if (!validateAllFieldCriteria) {
+        return error;
+      }
     }
   }
 
@@ -146,40 +172,65 @@ export default async <FormValues extends FieldValues>(
 
     if (isFunction(validate)) {
       const result = await validate(fieldValue);
-      const errorObject = getValidateError(result, validateRef, nativeError);
+      const validateError = getValidateError(result, validateRef, nativeError);
 
-      if (errorObject) {
-        error[typedName] = errorObject;
-        return error;
+      if (validateError) {
+        error[typedName] = {
+          ...validateError,
+          ...appendErrorsCurry(
+            INPUT_VALIDATION_RULES.validate,
+            validateError.message,
+          ),
+        };
+        if (!validateAllFieldCriteria) {
+          return error;
+        }
       }
     } else if (isObject(validate)) {
+      const validateFunctions = Object.entries(validate);
       const validationResult = await new Promise(
         (resolve): ValidatePromiseResult => {
-          const values = Object.entries(validate);
-          values.reduce(async (previous, [key, validate], index): Promise<
-            ValidatePromiseResult
-          > => {
-            if (!isEmptyObject(await previous)) {
-              return resolve(previous);
-            }
-            const lastChild = values.length - 1 === index;
+          validateFunctions.reduce(
+            async (
+              previous,
+              [key, validate],
+              index,
+            ): Promise<ValidatePromiseResult> => {
+              if (
+                (!isEmptyObject(await previous) && !validateAllFieldCriteria) ||
+                !isFunction(validate)
+              ) {
+                return resolve(previous);
+              }
 
-            if (isFunction(validate)) {
-              const result = await validate(fieldValue);
-              const errorObject = getValidateError(
-                result,
+              let result;
+              const validateResult = await validate(fieldValue);
+              const validateError = getValidateError(
+                validateResult,
                 validateRef,
                 nativeError,
                 key,
               );
 
-              if (errorObject) {
-                return lastChild ? resolve(errorObject) : errorObject;
-              }
-            }
+              if (validateError) {
+                result = {
+                  ...validateError,
+                  ...appendErrorsCurry(key, validateError.message),
+                };
 
-            return lastChild ? resolve(previous) : previous;
-          }, {});
+                if (validateAllFieldCriteria) {
+                  error[typedName] = result;
+                }
+              } else {
+                result = previous;
+              }
+
+              return validateFunctions.length - 1 === index
+                ? resolve(result)
+                : result;
+            },
+            {},
+          );
         },
       );
 
@@ -188,7 +239,9 @@ export default async <FormValues extends FieldValues>(
           ref: validateRef,
           ...(validationResult as { type: string; message?: string }),
         };
-        return error;
+        if (!validateAllFieldCriteria) {
+          return error;
+        }
       }
     }
   }
@@ -196,5 +249,6 @@ export default async <FormValues extends FieldValues>(
   if (nativeValidation) {
     ref.setCustomValidity('');
   }
+
   return error;
 };
