@@ -51,7 +51,6 @@ export type Options<FormValues extends FieldValues = FieldValues> = Partial<{
   reValidateMode: Mode;
   defaultValues: Partial<FormValues>;
   validationSchemaOption: SchemaValidateOptions;
-  validationFields: FieldName<FormValues>[];
   validationSchema: any;
   nativeValidation: boolean;
   submitFocusError: boolean;
