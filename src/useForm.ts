@@ -129,7 +129,7 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
       name: FieldName<FormValues>,
       error: FieldErrors<FormValues>,
       shouldRender = false,
-    ) => {
+    ): boolean | void => {
       let reRender = shouldRender;
 
       if (isEmptyObject(error)) {
@@ -150,6 +150,7 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
 
       if (reRender) {
         render({});
+        return true;
       }
     },
     [validationSchema],
@@ -292,11 +293,15 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
         validFieldNames,
       );
 
-      render({});
+      if (isString(name)) {
+        renderBaseOnError(name, fieldErrors[name] as FieldErrors<FormValues>);
+      } else {
+        render({});
+      }
 
       return isEmptyObject(errorsRef.current);
     },
-    [validateWithSchemaCurry],
+    [renderBaseOnError, validateWithSchemaCurry],
   );
 
   const triggerValidation = useCallback(
@@ -952,9 +957,10 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
     () => () => {
       isUnMount.current = true;
       fieldsRef.current &&
-        Object.values(fieldsRef.current).forEach(
-          (field: Field | undefined): void =>
-            removeEventListenerAndRef(field, true),
+        Object.values(
+          fieldsRef.current,
+        ).forEach((field: Field | undefined): void =>
+          removeEventListenerAndRef(field, true),
         );
     },
     [removeEventListenerAndRef],
