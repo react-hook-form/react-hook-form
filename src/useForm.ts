@@ -23,6 +23,7 @@ import onDomRemove from './utils/onDomRemove';
 import isMultipleSelect from './utils/isMultipleSelect';
 import modeChecker from './utils/validationModeChecker';
 import { EVENTS, RADIO_INPUT, UNDEFINED, VALIDATION_MODE } from './constants';
+import isNullOrUndefined from './utils/isNullOrUndefined';
 import {
   FieldValues,
   FieldName,
@@ -169,7 +170,11 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
       const { type } = ref;
       const options = field.options;
       const value =
-        (isWeb && ref instanceof window.HTMLElement && rawValue) ?? '';
+        isWeb &&
+        ref instanceof window.HTMLElement &&
+        isNullOrUndefined(rawValue)
+          ? ''
+          : rawValue;
 
       if (isRadioInput(type) && options) {
         options.forEach(
@@ -558,7 +563,9 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
         watchFields,
       );
 
-      return value ?? getDefaultValue(combinedDefaultValues, fieldNames);
+      return isUndefined(value)
+        ? getDefaultValue(combinedDefaultValues, fieldNames)
+        : value;
     }
 
     if (isArray(fieldNames)) {
