@@ -9,7 +9,7 @@ export default function findRemovedFieldAndRemoveListener<
   fields: FieldsRefs<FormValues>,
   validateWithStateUpdate: Function | undefined = () => {},
   field: Field,
-  forceDelete = false,
+  forceDelete: boolean,
 ): void {
   if (!field) {
     return;
@@ -25,11 +25,15 @@ export default function findRemovedFieldAndRemoveListener<
 
   if (isRadioInput(type) && options) {
     options.forEach(({ ref }, index): void => {
-      if ((options[index] && isDetached(ref)) || forceDelete) {
-        removeAllEventListeners(options[index], validateWithStateUpdate);
-        (
-          options[index].mutationWatcher || { disconnect: () => {} }
-        ).disconnect();
+      const option = options[index];
+      if ((option && isDetached(ref)) || forceDelete) {
+        const mutationWatcher = option.mutationWatcher;
+
+        removeAllEventListeners(option, validateWithStateUpdate);
+
+        if (mutationWatcher) {
+          mutationWatcher.disconnect();
+        }
         options.splice(index, 1);
       }
     });
@@ -39,6 +43,7 @@ export default function findRemovedFieldAndRemoveListener<
     }
   } else if (isDetached(ref) || forceDelete) {
     removeAllEventListeners(ref, validateWithStateUpdate);
+
     if (mutationWatcher) {
       mutationWatcher.disconnect();
     }
