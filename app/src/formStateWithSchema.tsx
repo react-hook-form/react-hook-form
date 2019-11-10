@@ -16,7 +16,7 @@ const validationSchema = yup.object().shape({
 });
 
 const FormStateWithSchema: React.FC = (props: any) => {
-  const { register, handleSubmit, formState, errors } = useForm<{
+  const { register, handleSubmit, formState } = useForm<{
     firstName: string;
     lastName: string;
     select: string;
