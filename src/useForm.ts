@@ -271,32 +271,41 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
       const { fieldErrors } = await validateWithSchemaCurry(
         combineFieldValues(getFieldsValues(fieldsRef.current)),
       );
+      const isMultipleFields = isArray(payload);
       const names = isArray(payload)
         ? payload.map(({ name }) => name)
         : [payload.name];
       const validFieldNames = names.filter(
         name => !(fieldErrors as FieldErrors<FormValues>)[name],
       );
-      schemaErrorsRef.current = fieldErrors;
+      const firstFieldName = names[0];
+      schemaErrorsRef.current = isMultipleFields
+        ? fieldErrors
+        : fieldErrors[firstFieldName]
+        ? { [firstFieldName]: fieldErrors[firstFieldName] }
+        : {};
       isSchemaValidateTriggeredRef.current = true;
 
-      errorsRef.current = omitValidFields<FormValues>(
-        combineErrorsRef(
-          Object.entries(fieldErrors)
-            .filter(([key]) => names.includes(key))
-            .reduce(
-              (previous, [name, error]) => ({ ...previous, [name]: error }),
-              {},
-            ),
-        ),
-        validFieldNames,
-      );
-
-      render({});
+      if (isMultipleFields) {
+        errorsRef.current = omitValidFields<FormValues>(
+          combineErrorsRef(
+            Object.entries(fieldErrors)
+              .filter(([key]) => names.includes(key))
+              .reduce(
+                (previous, [name, error]) => ({ ...previous, [name]: error }),
+                {},
+              ),
+          ),
+          validFieldNames,
+        );
+        render({});
+      } else {
+        renderBaseOnError(firstFieldName, schemaErrorsRef.current);
+      }
 
       return isEmptyObject(errorsRef.current);
     },
-    [validateWithSchemaCurry],
+    [renderBaseOnError, validateWithSchemaCurry],
   );
 
   const triggerValidation = useCallback(
@@ -304,7 +313,7 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
       payload?:
         | ValidationPayload<FieldName<FormValues>, FieldValue<FormValues>>
         | ValidationPayload<FieldName<FormValues>, FieldValue<FormValues>>[],
-      shouldRender = false,
+      shouldRender?: boolean,
     ): Promise<boolean> => {
       const fields =
         payload || Object.keys(fieldsRef.current).map(name => ({ name }));
@@ -333,7 +342,7 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
       shouldValidate?: boolean,
     ) => void | Promise<boolean>
   >(
-    (name, value, shouldValidate = false) => {
+    (name, value, shouldValidate) => {
       const shouldRender =
         setInternalValue(name, value) ||
         isWatchAllRef.current ||
@@ -353,7 +362,7 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
 
   validateAndUpdateStateRef.current = validateAndUpdateStateRef.current
     ? validateAndUpdateStateRef.current
-    : async ({ type, target }: MouseEvent): Promise<void> => {
+    : async ({ type, target }: MouseEvent): Promise<void | boolean> => {
         const name = target ? (target as Inputs).name : '';
         const fields = fieldsRef.current;
         const errors = errorsRef.current;
@@ -387,7 +396,7 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
         }
 
         if (shouldSkipValidation) {
-          return shouldUpdateState ? render({}) : undefined;
+          return shouldUpdateState && render({});
         }
 
         if (validationSchema) {
@@ -480,13 +489,13 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
     type,
     types,
     message,
-    reRender = true,
+    preventRender,
   }: {
     name: FieldName<FormValues>;
     type: string;
     types?: MultipleErrors;
     message?: string;
-    reRender?: boolean;
+    preventRender?: boolean;
   }) => {
     const errors = errorsRef.current;
 
@@ -498,7 +507,7 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
         ref: {},
         isManual: true,
       };
-      if (reRender) {
+      if (!preventRender) {
         render({});
       }
     }
@@ -526,7 +535,9 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
             }),
       });
     } else if (isArray(name)) {
-      name.forEach(error => setInternalError({ ...error, reRender: false }));
+      name.forEach(error =>
+        setInternalError({ ...error, preventRender: true }),
+      );
       render({});
     }
   }
@@ -610,14 +621,13 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
     }
 
     const { name, type, value } = ref;
-    const typedName = name as FieldName<FormValues>;
     const fieldAttributes = {
       ref,
       ...validateOptions,
     };
-    const fields: FieldsRefs<FormValues> = fieldsRef.current;
+    const fields = fieldsRef.current;
     const isRadio = isRadioInput(type);
-    let currentField = fields[typedName] as Field;
+    let currentField = fields[name] as Field;
 
     if (
       isRadio
@@ -626,7 +636,7 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
           currentField.options.find(({ ref }: Field) => value === ref.value)
         : currentField
     ) {
-      fields[typedName] = {
+      fields[name as FieldName<FormValues>] = {
         ...currentField,
         ...validateOptions,
       };
@@ -660,7 +670,7 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
       currentField = fieldAttributes;
     }
 
-    fields[typedName] = currentField;
+    fields[name as FieldName<FormValues>] = currentField;
 
     if (!isEmptyObject(defaultValues)) {
       const defaultValue = getDefaultValue(defaultValues, name);
@@ -701,8 +711,8 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
       }
     }
 
-    if (!defaultValuesRef.current[typedName]) {
-      defaultValuesRef.current[typedName] = getFieldValue(
+    if (!defaultValuesRef.current[name]) {
+      defaultValuesRef.current[name as FieldName<FormValues>] = getFieldValue(
         fields,
         currentField.ref,
       );
@@ -732,25 +742,21 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
   function register<Element>(
     validateRule: ValidationOptions & NameProp,
   ): (ref: Element | null) => void;
-
   // Web model: name is on the element prop
   function register<Element extends ElementLike = ElementLike>(
     validateRule: ValidationOptions,
   ): (ref: Element | null) => void;
-
   // React-Native: Element has no name prop,
   // this case also allows a manual web-based register call to override the name prop
   function register<Element>(
     ref: Element | null,
     validateRule: ValidationOptions & NameProp,
   ): void;
-
   // Web model: name is on the prop for the ref passed in
   function register<Element extends ElementLike = ElementLike>(
     ref: Element | null,
     validationOptions?: ValidationOptions,
   ): void;
-
   function register<Element extends ElementLike = ElementLike>(
     refOrValidateRule: ValidationOptions | Element | null,
     validationOptions?: ValidationOptions & Partial<NameProp>,
@@ -767,11 +773,8 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
       return;
     }
 
-    if (
-      isObject(refOrValidateRule) &&
-      (validationOptions || 'name' in refOrValidateRule)
-    ) {
-      registerIntoFieldsRef(refOrValidateRule as Element, validationOptions);
+    if (isObject(refOrValidateRule) && 'name' in refOrValidateRule) {
+      registerIntoFieldsRef(refOrValidateRule, validationOptions);
       return;
     }
 
@@ -829,7 +832,7 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
               return previous;
             }
 
-            const resolvedPrevious: any = await previous;
+            const resolvedPrevious = await previous;
             const {
               ref,
               ref: { name },
@@ -855,7 +858,9 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
             if (fieldsWithValidationRef.current.has(name)) {
               validFieldsRef.current.add(name);
             }
-            resolvedPrevious.values[name] = getFieldValue(fields, ref);
+            resolvedPrevious.values[
+              name as FieldName<FormValues>
+            ] = getFieldValue(fields, ref);
             return Promise.resolve(resolvedPrevious);
           },
           Promise.resolve<SubmitPromiseResult<FormValues>>({
@@ -952,9 +957,10 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
     () => () => {
       isUnMount.current = true;
       fieldsRef.current &&
-        Object.values(fieldsRef.current).forEach(
-          (field: Field | undefined): void =>
-            removeEventListenerAndRef(field, true),
+        Object.values(
+          fieldsRef.current,
+        ).forEach((field: Field | undefined): void =>
+          removeEventListenerAndRef(field, true),
         );
     },
     [removeEventListenerAndRef],

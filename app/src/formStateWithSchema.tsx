@@ -16,7 +16,7 @@ const validationSchema = yup.object().shape({
 });
 
 const FormStateWithSchema: React.FC = (props: any) => {
-  const { register, handleSubmit, formState, errors } = useForm<{
+  const { register, handleSubmit, formState } = useForm<{
     firstName: string;
     lastName: string;
     select: string;
@@ -29,8 +29,6 @@ const FormStateWithSchema: React.FC = (props: any) => {
   const onSubmit = () => {};
 
   renderCounter++;
-
-  console.log(errors);
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
