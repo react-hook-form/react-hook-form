@@ -30,8 +30,6 @@ const FormStateWithSchema: React.FC = (props: any) => {
 
   renderCounter++;
 
-  console.log(errors);
-
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
       <input name="firstName" ref={register} placeholder="firstName" />
