@@ -1,12 +1,12 @@
 <div align="center">
     <p align="center">
-        <a href="https://react-hook-form.com" title="React Hook Form - Simple React forms validation">
+        <a href="https://react-hook-form.com/jp" title="React Hook Form - Simple React forms validation">
             <img src="https://raw.githubusercontent.com/bluebill1049/react-hook-form/master/website/logo.png" alt="React Hook Form Logo - React hook custom hook for form validation" width="300px" />
         </a>
     </p>
 </div>
 
-<p align="center">Formulaires performants, flexibles et extensibles dotés d'une validation poussée et facile à utiliser.</p>
+<p align="center">高性能で柔軟かつ拡張可能な使いやすいフォームバリデーションライブラリ。</p>
 
 <div align="center">
 
@@ -23,41 +23,40 @@
 
 <div align="center">
     <p align="center">
-        <a href="https://react-hook-form.com" title="React Hook Form - Simple React forms validation">
+        <a href="https://react-hook-form.com/jp" title="React Hook Form - Simple React forms validation">
             <img src="https://raw.githubusercontent.com/bluebill1049/react-hook-form/master/website/example.gif" alt="React Hook Form video - React custom hook for form validation" width="750px" />
         </a>
     </p>
 </div>
 
-<a href="https://github.com/react-hook-form/react-hook-form">🇦🇺English</a> | <a href="./README.zh-CN.md">🇨🇳简体中文</a> | <a href="./README.ja-JP.md">🇯🇵日本語</a> | <a href="./README.ko-KR.md">🇰🇷한국어</a> | 🇫🇷 Français
+<a href="https://github.com/react-hook-form/react-hook-form">🇦🇺English</a> | <a href="./docs/README.zh-CN.md">🇨🇳简体中文</a> | 🇯🇵日本語 | <a href="./docs/README.ko-KR.md">🇰🇷한국어</a> | <a href="./docs/README.fr-FR.md">🇫🇷Français</a>
 
-## Fonctionnalités
+## 特徴
 
-- Développé en privilegiant les performances et l'experience developpeur.
-- Formulaires non-contrôlés.
-- [Taille reduite](https://bundlephobia.com/result?p=react-hook-form@latest) sans aucune dépendance.
-- Respecte les normes de validation HTML.
-- Compatible avec React Native.
-- Supporte [Yup](https://github.com/jquense/yup) pour de la validation via schéma.
-- Supporte la validation native du navigateur.
-- Possibilité de développer des formulaires rapidement grâce au [form builder](https://react-hook-form.com/form-builder).
+- パフォーマンスと DX を念頭に構築
+- 非制御フォームバリデーション
+- 依存関係のない[小さなサイズ](https://bundlephobia.com/result?p=react-hook-form@latest)
+- React Native との互換性
+- [Yup](https://github.com/jquense/yup) スキーマベースのバリデーションをサポート
+- ブラウザのネイティブバリデーションをサポート
+- [Form Builder](https://react-hook-form.com/jp/form-builder) でフォームを素早く作成
 
-## Installation
+## インストール
 
     $ npm install react-hook-form
 
-## Liens
+## リンク集
 
-- [Motivation](https://medium.com/@bruce1049/form-validation-with-hook-in-3kb-c5414edf7d64)
-- [Tutoriel vidéo](https://www.youtube.com/watch?v=-mFXqOaqgZk&t)
-- [Bien demarrer](https://react-hook-form.com/get-started)
-- [API](https://react-hook-form.com/api)
-- [Exemples](https://github.com/bluebill1049/react-hook-form/tree/master/examples)
-- [Démo](https://react-hook-form.com)
-- [Form Builder](https://react-hook-form.com/form-builder)
-- [FAQs](https://react-hook-form.com/faqs)
+- [動機](https://medium.com/@bruce1049/form-validation-with-hook-in-3kb-c5414edf7d64)
+- [ビデオチュートリアル](https://www.youtube.com/watch?v=-mFXqOaqgZk&t)
+- [始める](https://react-hook-form.com/jp/get-started)
+- [API](https://react-hook-form.com/jp/api)
+- [例](https://github.com/bluebill1049/react-hook-form/tree/master/examples)
+- [デモ](https://react-hook-form.com/jp)
+- [Form Builder](https://react-hook-form.com/jp/form-builder)
+- [FAQs](https://react-hook-form.com/jp/faqs)
 
-## Démarrage rapide
+## クイックスタート
 
 ```jsx
 import React from 'react';
@@ -82,17 +81,17 @@ function App() {
 }
 ```
 
-## Contributeurs
+## コントリビューター
 
-Thanks goes to these wonderful people. [[Become a contributor](CONTRIBUTING.md)].
+これらの素晴らしい人々に感謝します。[[コントリビューターになる](CONTRIBUTING.md)]
 
 <a href="https://github.com/react-hook-form/react-hook-form/graphs/contributors">
     <img src="https://opencollective.com/react-hook-form/contributors.svg?width=950" />
 </a>
 
-## Sponsors
+## スポンサー
 
-Merci à tous nos sponsors ! [[Become a backer](https://opencollective.com/react-hook-form#backer)].
+全てのスポンサーに感謝します! [[スポンサーになる](https://opencollective.com/react-hook-form#backer)]
 
 <a href="https://opencollective.com/react-hook-form#backers">
     <img src="https://opencollective.com/react-hook-form/backers.svg?width=950" />
