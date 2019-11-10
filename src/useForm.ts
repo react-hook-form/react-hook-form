@@ -271,10 +271,10 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
       const { fieldErrors } = await validateWithSchemaCurry(
         combineFieldValues(getFieldsValues(fieldsRef.current)),
       );
+      const isMultipleFields = isArray(payload);
       const names = isArray(payload)
         ? payload.map(({ name }) => name)
         : [payload.name];
-      const isMultipleFields = isArray(payload);
       const validFieldNames = names.filter(
         name => !(fieldErrors as FieldErrors<FormValues>)[name],
       );
@@ -313,7 +313,7 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
       payload?:
         | ValidationPayload<FieldName<FormValues>, FieldValue<FormValues>>
         | ValidationPayload<FieldName<FormValues>, FieldValue<FormValues>>[],
-      shouldRender = false,
+      shouldRender?: boolean,
     ): Promise<boolean> => {
       const fields =
         payload || Object.keys(fieldsRef.current).map(name => ({ name }));
@@ -342,7 +342,7 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
       shouldValidate?: boolean,
     ) => void | Promise<boolean>
   >(
-    (name, value, shouldValidate = false) => {
+    (name, value, shouldValidate) => {
       const shouldRender =
         setInternalValue(name, value) ||
         isWatchAllRef.current ||
@@ -362,7 +362,7 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
 
   validateAndUpdateStateRef.current = validateAndUpdateStateRef.current
     ? validateAndUpdateStateRef.current
-    : async ({ type, target }: MouseEvent): Promise<void> => {
+    : async ({ type, target }: MouseEvent): Promise<void | boolean> => {
         const name = target ? (target as Inputs).name : '';
         const fields = fieldsRef.current;
         const errors = errorsRef.current;
@@ -396,7 +396,7 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
         }
 
         if (shouldSkipValidation) {
-          return shouldUpdateState ? render({}) : undefined;
+          return shouldUpdateState && render({});
         }
 
         if (validationSchema) {
@@ -489,13 +489,13 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
     type,
     types,
     message,
-    reRender = true,
+    preventRender,
   }: {
     name: FieldName<FormValues>;
     type: string;
     types?: MultipleErrors;
     message?: string;
-    reRender?: boolean;
+    preventRender?: boolean;
   }) => {
     const errors = errorsRef.current;
 
@@ -507,7 +507,7 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
         ref: {},
         isManual: true,
       };
-      if (reRender) {
+      if (!preventRender) {
         render({});
       }
     }
@@ -535,7 +535,9 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
             }),
       });
     } else if (isArray(name)) {
-      name.forEach(error => setInternalError({ ...error, reRender: false }));
+      name.forEach(error =>
+        setInternalError({ ...error, preventRender: true }),
+      );
       render({});
     }
   }
