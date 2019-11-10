@@ -11,7 +11,7 @@ export default <FormValues extends FieldValues>(
   watchFields: Set<FieldName<FormValues>>,
 ): FieldValue<FormValues> | Partial<FormValues> | undefined => {
   if (isEmptyObject(fieldValues)) {
-    return undefined;
+    return;
   }
 
   if (!isUndefined(fieldValues[fieldName])) {
