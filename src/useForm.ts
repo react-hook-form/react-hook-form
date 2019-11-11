@@ -499,10 +499,10 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
   }) => {
     const errors = errorsRef.current;
 
-    if (!isSameError(errors[name], type, message)) {
+    if (!isSameError(errors[name], type, message) || types) {
       errors[name] = {
         type,
-        types,
+        ...(errors[name] ? { ...errors[name]!.types, ...types } : { types }),
         message,
         ref: {},
         isManual: true,
