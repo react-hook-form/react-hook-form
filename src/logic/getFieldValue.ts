@@ -5,10 +5,10 @@ import isCheckBox from '../utils/isCheckBoxInput';
 import isUndefined from '../utils/isUndefined';
 import isMultipleSelect from '../utils/isMultipleSelect';
 import isEmptyString from '../utils/isEmptyString';
-import { FieldsRefs, Ref, FieldValues } from '../types';
+import { FieldRefs, Ref, FieldValues } from '../types';
 
 export default function getFieldValue<FormValues extends FieldValues>(
-  fields: FieldsRefs<FormValues>,
+  fields: FieldRefs<FormValues>,
   ref: Ref,
 ) {
   const { type, name, options, checked, value, files } = ref;

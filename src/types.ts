@@ -1,38 +1,38 @@
 import * as React from 'react';
 
-export type BaseFieldValue = any;
+export type FieldValues = Record<string, any>;
 
-export type FieldValues = Record<string, BaseFieldValue>;
-
-export type RawFieldName<FormValues extends FieldValues> = Extract<
+type BaseFieldName<FormValues extends FieldValues> = Extract<
   keyof FormValues,
   string
 >;
 
 export type FieldName<FormValues extends FieldValues> =
-  | RawFieldName<FormValues>
+  | BaseFieldName<FormValues>
   | string;
 
 export type FieldValue<FormValues extends FieldValues> = FormValues[FieldName<
   FormValues
 >];
 
-export type Inputs = HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement;
-
-export type Ref = Inputs | any;
-
-export type Mode = keyof ValidationMode;
-
-export type OnSubmit<FormValues extends FieldValues> = (
-  data: FormValues,
-  e: React.BaseSyntheticEvent,
-) => void | Promise<void>;
+export type Ref =
+  | HTMLInputElement
+  | HTMLSelectElement
+  | HTMLTextAreaElement
+  | any;
 
 export interface ValidationMode {
   onBlur: 'onBlur';
   onChange: 'onChange';
   onSubmit: 'onSubmit';
 }
+
+export type Mode = keyof ValidationMode;
+
+export type OnSubmit<FormValues extends FieldValues> = (
+  data: FormValues,
+  event: React.BaseSyntheticEvent,
+) => void | Promise<void>;
 
 export type SchemaValidateOptions = Partial<{
   strict: boolean;
@@ -42,11 +42,9 @@ export type SchemaValidateOptions = Partial<{
   context: object;
 }>;
 
-export interface Schema<Data> {
-  validate(value: FieldValues, options?: SchemaValidateOptions): Promise<Data>;
-}
-
-export type Options<FormValues extends FieldValues = FieldValues> = Partial<{
+export type UseFormOptions<
+  FormValues extends FieldValues = FieldValues
+> = Partial<{
   mode: Mode;
   reValidateMode: Mode;
   defaultValues: Partial<FormValues>;
@@ -64,7 +62,7 @@ export interface MutationWatcher {
 
 type ValidationOptionObject<Value> = Value | { value: Value; message: string };
 
-export type ValidationTypes = number | string | RegExp;
+export type ValidationValue = number | string | RegExp;
 
 export type ValidateResult =
   | string
@@ -73,7 +71,7 @@ export type ValidateResult =
   | Promise<string>
   | Promise<boolean>;
 
-export type Validate = (data: BaseFieldValue) => ValidateResult;
+export type Validate = (data: any) => ValidateResult;
 
 export type ValidationOptions = Partial<{
   required: boolean | string;
@@ -88,12 +86,12 @@ export type ValidationOptions = Partial<{
     | { value: Validate | Record<string, Validate>; message: string };
 }>;
 
-export type MultipleErrors = Record<string, ValidateResult>;
+export type MultipleFieldErrors = Record<string, ValidateResult>;
 
 export interface FieldError {
   type: string;
   ref?: Ref;
-  types?: MultipleErrors;
+  types?: MultipleFieldErrors;
   message?: ValidateResult;
   isManual?: boolean;
 }
@@ -101,11 +99,9 @@ export interface FieldError {
 export interface ManualFieldError<FormValues> {
   name: FieldName<FormValues>;
   type: string;
-  types?: MultipleErrors;
+  types?: MultipleFieldErrors;
   message?: string;
 }
-
-export type ValidatePromiseResult = {} | void | FieldError;
 
 export interface Field extends ValidationOptions {
   ref: Ref;
@@ -116,7 +112,7 @@ export interface Field extends ValidationOptions {
   }[];
 }
 
-export type FieldsRefs<FormValues extends FieldValues> = Partial<
+export type FieldRefs<FormValues extends FieldValues> = Partial<
   Record<FieldName<FormValues>, Field>
 >;
 
@@ -124,21 +120,9 @@ export type FieldErrors<FormValues extends FieldValues> = Partial<
   Record<FieldName<FormValues>, FieldError>
 >;
 
-export type YupValidationError = {
-  inner: { path: string; message: string; type: string }[];
-  path: string;
-  message: string;
-  type: string;
-};
-
 export interface SubmitPromiseResult<FormValues extends FieldValues> {
   errors: FieldErrors<FormValues>;
   values: FormValues;
-}
-
-export interface SchemaValidationResult<FormValues> {
-  fieldErrors: FieldErrors<FormValues>;
-  result: FieldValues;
 }
 
 export interface ValidationPayload<Name, Value> {
@@ -146,7 +130,7 @@ export interface ValidationPayload<Name, Value> {
   value?: Value;
 }
 
-export interface FormState<FormValues extends FieldValues = FieldValues> {
+export interface FormStateProxy<FormValues extends FieldValues = FieldValues> {
   dirty: boolean;
   isSubmitted: boolean;
   submitCount: number;
@@ -155,7 +139,7 @@ export interface FormState<FormValues extends FieldValues = FieldValues> {
   isValid: boolean;
 }
 
-export type ReadFormState = { [P in keyof FormState]: boolean };
+export type ReadFormState = { [P in keyof FormStateProxy]: boolean };
 
 export interface NameProp {
   name: string;
@@ -165,14 +149,10 @@ export interface RadioOption {
   ref?: Ref;
   mutationWatcher?: MutationWatcher;
 }
+
 export interface ElementLike extends NameProp {
   type?: string;
   value?: string;
   checked?: boolean;
   options?: any;
-}
-
-export interface RadioFieldResult {
-  isValid: boolean;
-  value: number | string;
 }

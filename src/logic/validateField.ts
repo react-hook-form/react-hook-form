@@ -19,8 +19,10 @@ import {
   FieldErrors,
   FieldValues,
   FieldName,
-  ValidatePromiseResult,
+  FieldError,
 } from '../types';
+
+type ValidatePromiseResult = {} | void | FieldError;
 
 export default async <FormValues extends FieldValues>(
   fields: FieldValues,
