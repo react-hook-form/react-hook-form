@@ -502,7 +502,7 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
     if (!isSameError(errors[name], type, message) || types) {
       errors[name] = {
         type,
-        ...(errors[name] ? { ...errors[name]!.types, ...types } : { types }),
+        types,
         message,
         ref: {},
         isManual: true,
