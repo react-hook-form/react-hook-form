@@ -1,8 +1,6 @@
 import * as React from 'react';
 
-type BaseFieldValue = any;
-
-export type FieldValues = Record<string, BaseFieldValue>;
+export type FieldValues = Record<string, any>;
 
 type BaseFieldName<FormValues extends FieldValues> = Extract<
   keyof FormValues,
@@ -43,10 +41,6 @@ export type SchemaValidateOptions = Partial<{
   recursive: boolean;
   context: object;
 }>;
-
-export interface Schema<Data> {
-  validate(value: FieldValues, options?: SchemaValidateOptions): Promise<Data>;
-}
 
 export type UseFormOptions<
   FormValues extends FieldValues = FieldValues
