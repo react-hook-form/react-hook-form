@@ -155,8 +155,3 @@ export interface ElementLike extends NameProp {
   checked?: boolean;
   options?: any;
 }
-
-export interface RadioFieldResult {
-  isValid: boolean;
-  value: number | string;
-}
