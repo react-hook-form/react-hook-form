@@ -1,38 +1,40 @@
 import * as React from 'react';
 
-export type BaseFieldValue = any;
+type BaseFieldValue = any;
 
 export type FieldValues = Record<string, BaseFieldValue>;
 
-export type RawFieldName<FormValues extends FieldValues> = Extract<
+type BaseFieldName<FormValues extends FieldValues> = Extract<
   keyof FormValues,
   string
 >;
 
 export type FieldName<FormValues extends FieldValues> =
-  | RawFieldName<FormValues>
+  | BaseFieldName<FormValues>
   | string;
 
 export type FieldValue<FormValues extends FieldValues> = FormValues[FieldName<
   FormValues
 >];
 
-export type Inputs = HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement;
-
-export type Ref = Inputs | any;
-
-export type Mode = keyof ValidationMode;
-
-export type OnSubmit<FormValues extends FieldValues> = (
-  data: FormValues,
-  e: React.BaseSyntheticEvent,
-) => void | Promise<void>;
+export type Ref =
+  | HTMLInputElement
+  | HTMLSelectElement
+  | HTMLTextAreaElement
+  | any;
 
 export interface ValidationMode {
   onBlur: 'onBlur';
   onChange: 'onChange';
   onSubmit: 'onSubmit';
 }
+
+export type Mode = keyof ValidationMode;
+
+export type OnSubmit<FormValues extends FieldValues> = (
+  data: FormValues,
+  event: React.BaseSyntheticEvent,
+) => void | Promise<void>;
 
 export type SchemaValidateOptions = Partial<{
   strict: boolean;
@@ -46,7 +48,9 @@ export interface Schema<Data> {
   validate(value: FieldValues, options?: SchemaValidateOptions): Promise<Data>;
 }
 
-export type Options<FormValues extends FieldValues = FieldValues> = Partial<{
+export type UseFormOptions<
+  FormValues extends FieldValues = FieldValues
+> = Partial<{
   mode: Mode;
   reValidateMode: Mode;
   defaultValues: Partial<FormValues>;
@@ -64,7 +68,7 @@ export interface MutationWatcher {
 
 type ValidationOptionObject<Value> = Value | { value: Value; message: string };
 
-export type ValidationTypes = number | string | RegExp;
+export type ValidationValue = number | string | RegExp;
 
 export type ValidateResult =
   | string
@@ -73,7 +77,7 @@ export type ValidateResult =
   | Promise<string>
   | Promise<boolean>;
 
-export type Validate = (data: BaseFieldValue) => ValidateResult;
+export type Validate = (data: FieldValues) => ValidateResult;
 
 export type ValidationOptions = Partial<{
   required: boolean | string;
@@ -104,8 +108,6 @@ export interface ManualFieldError<FormValues> {
   types?: MultipleErrors;
   message?: string;
 }
-
-export type ValidatePromiseResult = {} | void | FieldError;
 
 export interface Field extends ValidationOptions {
   ref: Ref;

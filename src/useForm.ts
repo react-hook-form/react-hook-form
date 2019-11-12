@@ -31,18 +31,18 @@ import {
   FieldErrors,
   Field,
   FieldsRefs,
-  Options,
+  UseFormOptions,
   ValidationOptions,
   SubmitPromiseResult,
   OnSubmit,
   ValidationPayload,
   ElementLike,
-  Inputs,
   NameProp,
   FormState,
   ReadFormState,
   ManualFieldError,
   MultipleErrors,
+  Ref,
 } from './types';
 
 const { useRef, useState, useCallback, useEffect } = React;
@@ -56,7 +56,7 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
   submitFocusError = true,
   validationSchemaOption = { abortEarly: false },
   validateCriteriaMode,
-}: Options<FormValues> = {}) {
+}: UseFormOptions<FormValues> = {}) {
   const fieldsRef = useRef<FieldsRefs<FormValues>>({});
   const validateAllFieldCriteria = validateCriteriaMode === 'all';
   const errorsRef = useRef<FieldErrors<FormValues>>({});
@@ -363,7 +363,7 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
   validateAndUpdateStateRef.current = validateAndUpdateStateRef.current
     ? validateAndUpdateStateRef.current
     : async ({ type, target }: MouseEvent): Promise<void | boolean> => {
-        const name = target ? (target as Inputs).name : '';
+        const name = target ? (target as Ref).name : '';
         const fields = fieldsRef.current;
         const errors = errorsRef.current;
         const field = fields[name];
