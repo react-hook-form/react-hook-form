@@ -126,21 +126,9 @@ export type FieldErrors<FormValues extends FieldValues> = Partial<
   Record<FieldName<FormValues>, FieldError>
 >;
 
-export type YupValidationError = {
-  inner: { path: string; message: string; type: string }[];
-  path: string;
-  message: string;
-  type: string;
-};
-
 export interface SubmitPromiseResult<FormValues extends FieldValues> {
   errors: FieldErrors<FormValues>;
   values: FormValues;
-}
-
-export interface SchemaValidationResult<FormValues> {
-  fieldErrors: FieldErrors<FormValues>;
-  result: FieldValues;
 }
 
 export interface ValidationPayload<Name, Value> {
@@ -148,7 +136,7 @@ export interface ValidationPayload<Name, Value> {
   value?: Value;
 }
 
-export interface FormState<FormValues extends FieldValues = FieldValues> {
+export interface FormStateProxy<FormValues extends FieldValues = FieldValues> {
   dirty: boolean;
   isSubmitted: boolean;
   submitCount: number;
@@ -157,7 +145,7 @@ export interface FormState<FormValues extends FieldValues = FieldValues> {
   isValid: boolean;
 }
 
-export type ReadFormState = { [P in keyof FormState]: boolean };
+export type ReadFormState = { [P in keyof FormStateProxy]: boolean };
 
 export interface NameProp {
   name: string;

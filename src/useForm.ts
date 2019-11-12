@@ -38,7 +38,7 @@ import {
   ValidationPayload,
   ElementLike,
   NameProp,
-  FormState,
+  FormStateProxy,
   ReadFormState,
   ManualFieldError,
   MultipleErrors,
@@ -1001,8 +1001,8 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
     getValues,
     errors: errorsRef.current,
     formState: isProxyEnabled
-      ? new Proxy<FormState<FormValues>>(formState, {
-          get: (obj, prop: keyof FormState) => {
+      ? new Proxy<FormStateProxy<FormValues>>(formState, {
+          get: (obj, prop: keyof FormStateProxy) => {
             if (prop in obj) {
               readFormState.current[prop] = true;
               return obj[prop];
