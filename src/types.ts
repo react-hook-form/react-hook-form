@@ -77,7 +77,7 @@ export type ValidateResult =
   | Promise<string>
   | Promise<boolean>;
 
-export type Validate = (data: FieldValues) => ValidateResult;
+export type Validate = (data: any) => ValidateResult;
 
 export type ValidationOptions = Partial<{
   required: boolean | string;
