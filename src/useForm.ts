@@ -30,7 +30,7 @@ import {
   FieldValue,
   FieldErrors,
   Field,
-  FieldsRefs,
+  FieldRefs,
   UseFormOptions,
   ValidationOptions,
   SubmitPromiseResult,
@@ -41,7 +41,7 @@ import {
   FormStateProxy,
   ReadFormState,
   ManualFieldError,
-  MultipleErrors,
+  MultipleFieldErrors,
   Ref,
 } from './types';
 
@@ -57,7 +57,7 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
   validationSchemaOption = { abortEarly: false },
   validateCriteriaMode,
 }: UseFormOptions<FormValues> = {}) {
-  const fieldsRef = useRef<FieldsRefs<FormValues>>({});
+  const fieldsRef = useRef<FieldRefs<FormValues>>({});
   const validateAllFieldCriteria = validateCriteriaMode === 'all';
   const errorsRef = useRef<FieldErrors<FormValues>>({});
   const schemaErrorsRef = useRef<FieldErrors<FormValues>>({});
@@ -493,7 +493,7 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
   }: {
     name: FieldName<FormValues>;
     type: string;
-    types?: MultipleErrors;
+    types?: MultipleFieldErrors;
     message?: string;
     preventRender?: boolean;
   }) => {
@@ -514,11 +514,14 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
   };
 
   function setError(name: ManualFieldError<FormValues>[]): void;
-  function setError(name: FieldName<FormValues>, type: MultipleErrors): void;
+  function setError(
+    name: FieldName<FormValues>,
+    type: MultipleFieldErrors,
+  ): void;
   function setError(name: FieldName<FormValues>, type: string): void;
   function setError(
     name: FieldName<FormValues> | ManualFieldError<FormValues>[],
-    type: string | MultipleErrors = '',
+    type: string | MultipleFieldErrors = '',
     message?: string,
   ): void {
     if (isString(name)) {

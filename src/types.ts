@@ -86,12 +86,12 @@ export type ValidationOptions = Partial<{
     | { value: Validate | Record<string, Validate>; message: string };
 }>;
 
-export type MultipleErrors = Record<string, ValidateResult>;
+export type MultipleFieldErrors = Record<string, ValidateResult>;
 
 export interface FieldError {
   type: string;
   ref?: Ref;
-  types?: MultipleErrors;
+  types?: MultipleFieldErrors;
   message?: ValidateResult;
   isManual?: boolean;
 }
@@ -99,7 +99,7 @@ export interface FieldError {
 export interface ManualFieldError<FormValues> {
   name: FieldName<FormValues>;
   type: string;
-  types?: MultipleErrors;
+  types?: MultipleFieldErrors;
   message?: string;
 }
 
@@ -112,7 +112,7 @@ export interface Field extends ValidationOptions {
   }[];
 }
 
-export type FieldsRefs<FormValues extends FieldValues> = Partial<
+export type FieldRefs<FormValues extends FieldValues> = Partial<
   Record<FieldName<FormValues>, Field>
 >;
 
@@ -149,6 +149,7 @@ export interface RadioOption {
   ref?: Ref;
   mutationWatcher?: MutationWatcher;
 }
+
 export interface ElementLike extends NameProp {
   type?: string;
   value?: string;
