@@ -1,7 +1,9 @@
 import validateField from './validateField';
 import getRadioValue from './getRadioValue';
+import getCheckboxValue from './getCheckboxValue';
 
 jest.mock('./getRadioValue');
+jest.mock('./getCheckboxValue');
 
 const setCustomValidity = () => {};
 
@@ -10,28 +12,10 @@ describe('validateField', () => {
     (getRadioValue as any).mockImplementation(() => ({
       value: '2',
     }));
-    expect(
-      await validateField({}, false, false, {
-        ref: {
-          type: 'checkbox',
-          checked: false,
-          name: 'test',
-          setCustomValidity,
-        },
-        required: true,
-      }),
-    ).toEqual({
-      test: {
-        ref: {
-          type: 'checkbox',
-          checked: false,
-          name: 'test',
-          setCustomValidity,
-        },
-        message: '',
-        type: 'required',
-      },
-    });
+    (getCheckboxValue as any).mockImplementation(() => ({
+      value: false,
+      isValid: false,
+    }));
 
     expect(
       await validateField({}, false, false, {
@@ -112,6 +96,58 @@ describe('validateField', () => {
         ref: 'test',
       },
     });
+
+    expect(
+      await validateField(
+        {
+          test: {
+            ref: 'test',
+            options: [
+              {
+                ref: 'test',
+              },
+            ],
+          },
+        },
+        false,
+        false,
+        {
+          ref: { type: 'checkbox', name: 'test', setCustomValidity },
+          required: 'test',
+        },
+      ),
+    ).toEqual({
+      test: {
+        message: 'test',
+        type: 'required',
+        ref: 'test',
+      },
+    });
+
+    (getCheckboxValue as any).mockImplementation(() => ({
+      value: 'test',
+      isValid: true,
+    }));
+    expect(
+      await validateField(
+        {
+          test: {
+            ref: 'test',
+            options: [
+              {
+                ref: 'test',
+              },
+            ],
+          },
+        },
+        false,
+        false,
+        {
+          ref: { type: 'checkbox', name: 'test', setCustomValidity },
+          required: 'test',
+        },
+      ),
+    ).toEqual({});
   });
 
   it('should return max error', async () => {

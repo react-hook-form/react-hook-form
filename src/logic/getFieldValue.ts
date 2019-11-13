@@ -2,16 +2,15 @@ import getRadioValue from './getRadioValue';
 import getMultipleSelectValue from './getMultipleSelectValue';
 import isRadioInput from '../utils/isRadioInput';
 import isCheckBox from '../utils/isCheckBoxInput';
-import isUndefined from '../utils/isUndefined';
 import isMultipleSelect from '../utils/isMultipleSelect';
-import isEmptyString from '../utils/isEmptyString';
 import { FieldsRefs, Ref, FieldValues } from '../types';
+import getCheckboxValue from './getCheckboxValue';
 
 export default function getFieldValue<FormValues extends FieldValues>(
   fields: FieldsRefs<FormValues>,
   ref: Ref,
 ) {
-  const { type, name, options, checked, value, files } = ref;
+  const { type, name, options, value, files } = ref;
 
   if (type === 'file') {
     return files;
@@ -27,14 +26,8 @@ export default function getFieldValue<FormValues extends FieldValues>(
   }
 
   if (isCheckBox(type)) {
-    if (checked) {
-      return ref.attributes && ref.attributes.value
-        ? isUndefined(value) || isEmptyString(value)
-          ? true
-          : value
-        : true;
-    }
-    return false;
+    const field = fields[name];
+    return field ? getCheckboxValue(field.options).value : false;
   }
 
   return value;

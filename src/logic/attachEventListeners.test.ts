@@ -16,7 +16,7 @@ describe('attachEventListeners', () => {
 
     expect(
       attachEventListeners({
-        isRadio: true,
+        isRadioOrCheckbox: true,
         field: fields.test,
         validateAndStateUpdate,
       }),
@@ -42,7 +42,7 @@ describe('attachEventListeners', () => {
     expect(
       attachEventListeners({
         field: fields.test,
-        isRadio: true,
+        isRadioOrCheckbox: true,
         validateAndStateUpdate,
       }),
     ).toBeUndefined();
@@ -67,7 +67,7 @@ describe('attachEventListeners', () => {
     expect(
       attachEventListeners({
         field: fields.test,
-        isRadio: true,
+        isRadioOrCheckbox: true,
         validateAndStateUpdate,
       }),
     ).toBeUndefined();
@@ -91,7 +91,7 @@ describe('attachEventListeners', () => {
     expect(
       attachEventListeners({
         field: fields.test,
-        isRadio: true,
+        isRadioOrCheckbox: true,
         validateAndStateUpdate,
       }),
     ).toBeUndefined();
@@ -115,7 +115,7 @@ describe('attachEventListeners', () => {
     expect(
       attachEventListeners({
         field: fields.test,
-        isRadio: false,
+        isRadioOrCheckbox: false,
         validateAndStateUpdate,
       }),
     ).toBeUndefined();
@@ -141,7 +141,7 @@ describe('attachEventListeners', () => {
     expect(
       attachEventListeners({
         field: fields.test,
-        isRadio: false,
+        isRadioOrCheckbox: false,
         validateAndStateUpdate,
       }),
     ).toBeUndefined();
@@ -165,7 +165,7 @@ describe('attachEventListeners', () => {
     expect(
       attachEventListeners({
         field: fields.test,
-        isRadio: true,
+        isRadioOrCheckbox: true,
         validateAndStateUpdate,
       }),
     ).toBeUndefined();
@@ -190,7 +190,7 @@ describe('attachEventListeners', () => {
     expect(
       attachEventListeners({
         field: fields.test,
-        isRadio: false,
+        isRadioOrCheckbox: false,
         validateAndStateUpdate,
       }),
     ).toBeUndefined();
@@ -203,7 +203,7 @@ describe('attachEventListeners', () => {
     expect(
       attachEventListeners({
         field: { ref: {} },
-        isRadio: false,
+        isRadioOrCheckbox: false,
         validateAndStateUpdate: () => {},
       }),
     ).toBeUndefined();

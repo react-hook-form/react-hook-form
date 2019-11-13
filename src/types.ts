@@ -124,12 +124,12 @@ export type FieldErrors<FormValues extends FieldValues> = Partial<
   Record<FieldName<FormValues>, FieldError>
 >;
 
-export type YupValidationError = {
+export interface YupValidationError {
   inner: { path: string; message: string; type: string }[];
   path: string;
   message: string;
   type: string;
-};
+}
 
 export interface SubmitPromiseResult<FormValues extends FieldValues> {
   errors: FieldErrors<FormValues>;
@@ -161,7 +161,7 @@ export interface NameProp {
   name: string;
 }
 
-export interface RadioOption {
+export interface RadioOrCheckboxOption {
   ref?: Ref;
   mutationWatcher?: MutationWatcher;
 }
@@ -175,4 +175,9 @@ export interface ElementLike extends NameProp {
 export interface RadioFieldResult {
   isValid: boolean;
   value: number | string;
+}
+
+export interface CheckboxFieldResult {
+  isValid: boolean;
+  value: string | string[] | boolean;
 }

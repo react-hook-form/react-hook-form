@@ -2,6 +2,7 @@ import removeAllEventListeners from './removeAllEventListeners';
 import isRadioInput from '../utils/isRadioInput';
 import isDetached from '../utils/isDetached';
 import { Field, FieldsRefs, FieldValues } from '../types';
+import isCheckBoxInput from '../utils/isCheckBoxInput';
 
 export default function findRemovedFieldAndRemoveListener<
   FormValues extends FieldValues
@@ -23,7 +24,7 @@ export default function findRemovedFieldAndRemoveListener<
 
   const { name, type } = ref;
 
-  if (isRadioInput(type) && options) {
+  if ((isRadioInput(type) || isCheckBoxInput(type)) && options) {
     options.forEach(({ ref }, index): void => {
       const option = options[index];
       if ((option && isDetached(ref)) || forceDelete) {
