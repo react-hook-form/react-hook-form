@@ -1,13 +1,13 @@
 import removeAllEventListeners from './removeAllEventListeners';
 import isRadioInput from '../utils/isRadioInput';
-import isDetached from '../utils/isDetached';
-import { Field, FieldsRefs, FieldValues } from '../types';
 import isCheckBoxInput from '../utils/isCheckBoxInput';
+import isDetached from '../utils/isDetached';
+import { Field, FieldRefs, FieldValues } from '../types';
 
 export default function findRemovedFieldAndRemoveListener<
   FormValues extends FieldValues
 >(
-  fields: FieldsRefs<FormValues>,
+  fields: FieldRefs<FormValues>,
   validateWithStateUpdate: Function | undefined = () => {},
   field: Field,
   forceDelete?: boolean | undefined,

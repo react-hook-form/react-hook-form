@@ -4,7 +4,7 @@ import useForm from 'react-hook-form';
 let renderCounter = 0;
 
 const ValidateFieldCriteria: React.FC = () => {
-  const { register, handleSubmit, errors } = useForm<{
+  const { register, handleSubmit, errors, setError, clearError } = useForm<{
     firstName: string;
     lastName: string;
     min: string;
@@ -39,6 +39,15 @@ const ValidateFieldCriteria: React.FC = () => {
       {errors.firstName &&
         errors.firstName.types &&
         errors.firstName.types.minLength && <p>firstName minLength</p>}
+
+      {errors.firstName && errors.firstName.types && (
+        <b>{errors.firstName.types.required || ''}</b>
+      )}
+
+      {errors.firstName && errors.firstName.types && (
+        <b>{errors.firstName.types.minLength || ''}</b>
+      )}
+
       <input
         type="number"
         name="min"
@@ -152,6 +161,29 @@ const ValidateFieldCriteria: React.FC = () => {
         errors.validate.types &&
         errors.validate.types.test2 && <p>validate test2</p>}
       <button id="submit">Submit</button>
+
+      <button
+        type="button"
+        id="trigger"
+        onClick={() => {
+          setError('firstName', {
+            minLength: 'test1',
+            required: 'test2',
+          });
+        }}
+      >
+        Trigger Error
+      </button>
+
+      <button
+        type="button"
+        id="clear"
+        onClick={() => {
+          clearError('firstName');
+        }}
+      >
+        Clear Error
+      </button>
       <div id="renderCount">{renderCounter}</div>
     </form>
   );

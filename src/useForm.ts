@@ -30,19 +30,19 @@ import {
   FieldValue,
   FieldErrors,
   Field,
-  FieldsRefs,
-  Options,
+  FieldRefs,
+  UseFormOptions,
   ValidationOptions,
   SubmitPromiseResult,
   OnSubmit,
   ValidationPayload,
   ElementLike,
-  Inputs,
   NameProp,
-  FormState,
+  FormStateProxy,
   ReadFormState,
   ManualFieldError,
-  MultipleErrors,
+  MultipleFieldErrors,
+  Ref,
 } from './types';
 
 const { useRef, useState, useCallback, useEffect } = React;
@@ -56,8 +56,8 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
   submitFocusError = true,
   validationSchemaOption = { abortEarly: false },
   validateCriteriaMode,
-}: Options<FormValues> = {}) {
-  const fieldsRef = useRef<FieldsRefs<FormValues>>({});
+}: UseFormOptions<FormValues> = {}) {
+  const fieldsRef = useRef<FieldRefs<FormValues>>({});
   const validateAllFieldCriteria = validateCriteriaMode === 'all';
   const errorsRef = useRef<FieldErrors<FormValues>>({});
   const schemaErrorsRef = useRef<FieldErrors<FormValues>>({});
@@ -372,7 +372,7 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
   validateAndUpdateStateRef.current = validateAndUpdateStateRef.current
     ? validateAndUpdateStateRef.current
     : async ({ type, target }: MouseEvent): Promise<void | boolean> => {
-        const name = target ? (target as Inputs).name : '';
+        const name = target ? (target as Ref).name : '';
         const fields = fieldsRef.current;
         const errors = errorsRef.current;
         const field = fields[name];
@@ -502,7 +502,7 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
   }: {
     name: FieldName<FormValues>;
     type: string;
-    types?: MultipleErrors;
+    types?: MultipleFieldErrors;
     message?: string;
     preventRender?: boolean;
   }) => {
@@ -523,11 +523,14 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
   };
 
   function setError(name: ManualFieldError<FormValues>[]): void;
-  function setError(name: FieldName<FormValues>, type: MultipleErrors): void;
+  function setError(
+    name: FieldName<FormValues>,
+    type: MultipleFieldErrors,
+  ): void;
   function setError(name: FieldName<FormValues>, type: string): void;
   function setError(
     name: FieldName<FormValues> | ManualFieldError<FormValues>[],
-    type: string | MultipleErrors = '',
+    type: string | MultipleFieldErrors = '',
     message?: string,
   ): void {
     if (isString(name)) {
@@ -1010,8 +1013,8 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
     getValues,
     errors: errorsRef.current,
     formState: isProxyEnabled
-      ? new Proxy<FormState<FormValues>>(formState, {
-          get: (obj, prop: keyof FormState) => {
+      ? new Proxy<FormStateProxy<FormValues>>(formState, {
+          get: (obj, prop: keyof FormStateProxy) => {
             if (prop in obj) {
               readFormState.current[prop] = true;
               return obj[prop];

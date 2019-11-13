@@ -1,13 +1,22 @@
 import appendErrors from './appendErrors';
 import isArray from '../utils/isArray';
-import {
-  FieldValues,
-  SchemaValidationResult,
-  SchemaValidateOptions,
-  Schema,
-  FieldErrors,
-  YupValidationError,
-} from '../types';
+import { FieldValues, SchemaValidateOptions, FieldErrors } from '../types';
+
+interface SchemaValidationResult<FormValues> {
+  fieldErrors: FieldErrors<FormValues>;
+  result: FieldValues;
+}
+
+interface YupValidationError {
+  inner: { path: string; message: string; type: string }[];
+  path: string;
+  message: string;
+  type: string;
+}
+
+interface Schema<Data> {
+  validate(value: FieldValues, options?: SchemaValidateOptions): Promise<Data>;
+}
 
 export const parseErrorSchema = <FormValues>(
   error: YupValidationError,

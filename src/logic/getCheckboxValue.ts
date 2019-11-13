@@ -1,7 +1,12 @@
 import isArray from '../utils/isArray';
-import { RadioOrCheckboxOption, CheckboxFieldResult } from '../types';
+import { RadioOrCheckboxOption } from '../types';
 import { isUndefined } from 'util';
 import isEmptyString from '../utils/isEmptyString';
+
+interface CheckboxFieldResult {
+  isValid: boolean;
+  value: string | string[] | boolean;
+}
 
 const defaultResult: CheckboxFieldResult = {
   value: false,

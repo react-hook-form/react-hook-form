@@ -5,13 +5,14 @@ import useForm from "react-hook-form";
 const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
 
 function App() {
-  const { register, handleSubmit, errors } = useForm();
+  const { register, handleSubmit, errors, setError } = useForm();
   const onSubmit = async data => {
     await sleep(2000);
     if (data.username === "bill") {
       alert(JSON.stringify(data));
     } else {
       alert("There is error");
+      setError('username', 'validate');
     }
   };
 

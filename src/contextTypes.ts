@@ -4,7 +4,7 @@ import {
   FieldName,
   FieldValue,
   ElementLike,
-  FormState,
+  FormStateProxy,
   FieldErrors,
   OnSubmit,
   Ref,
@@ -63,5 +63,5 @@ export interface FormContextValues<
   ) => Promise<boolean>;
   getValues: (payload?: { nest: boolean }) => FormValues;
   errors: FieldErrors<FormValues>;
-  formState: FormState<FormValues>;
+  formState: FormStateProxy<FormValues>;
 }
