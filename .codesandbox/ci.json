@@ -1,6 +1,6 @@
 {
   "sandboxes": ["/app"],
   "publishDirectory": {
-    "react-hook-form": "dist/node_modules/react-hook-form"
+    "react-hook-form": "/dist"
   }
 }
