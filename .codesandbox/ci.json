@@ -1,6 +1,3 @@
 {
-  "sandboxes": ["new", "/app"],
-  "publishDirectory": {
-    "react-hook-form": "build/node_modules/react-hook-form"
-  }
+  "sandboxes": ["new", "/app"]
 }
