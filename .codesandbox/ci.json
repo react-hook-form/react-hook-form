@@ -1,6 +1,5 @@
 {
   "sandboxes": ["new", "/app"],
-  "buildCommand": "build:modern",
   "publishDirectory": {
     "react-hook-form": "build/node_modules/react-hook-form"
   }
