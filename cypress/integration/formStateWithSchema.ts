@@ -202,7 +202,7 @@ context('form state with schema validation', () => {
     cy.get('#renderCount').contains('11');
   });
 
-  it('should reset dirty value when inputs reset back to default with onChange mode', () => {
+  it.only('should reset dirty value when inputs reset back to default with onChange mode', () => {
     cy.visit('http://localhost:3000/formState/onChange');
     cy.get('input[name="firstName"]').type('test');
     cy.get('input[name="firstName"]').blur();
@@ -213,12 +213,23 @@ context('form state with schema validation', () => {
       '{"dirty":true,"isSubmitted":false,"submitCount":0,"touched":["firstName","lastName"],"isSubmitting":false,"isValid":true}',
     );
 
+    cy.get('#resetForm').click();
+
+    cy.get('#state').contains(
+      '{"dirty":false,"isSubmitted":false,"submitCount":0,"touched":[],"isSubmitting":false,"isValid":false}',
+    );
+
+    cy.get('input[name="firstName"]').type('test');
+    cy.get('input[name="firstName"]').blur();
+    cy.get('input[name="lastName"]').type('test');
+    cy.get('input[name="lastName"]').blur();
+
     cy.get('input[name="firstName"]').clear();
     cy.get('input[name="lastName"]').clear();
 
     cy.get('#state').contains(
-      '{"dirty":false,"isSubmitted":false,"submitCount":0,"touched":["firstName","lastName"],"isSubmitting":false,"isValid":false}',
+      '{"dirty":true,"isSubmitted":false,"submitCount":0,"touched":["firstName","lastName"],"isSubmitting":false,"isValid":false}',
     );
-    cy.get('#renderCount').contains('9');
+    cy.get('#renderCount').contains('14');
   });
 });
