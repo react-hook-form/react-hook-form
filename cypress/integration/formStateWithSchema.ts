@@ -202,7 +202,7 @@ context('form state with schema validation', () => {
     cy.get('#renderCount').contains('11');
   });
 
-  it.only('should reset dirty value when inputs reset back to default with onChange mode', () => {
+  it('should reset dirty value when inputs reset back to default with onChange mode', () => {
     cy.visit('http://localhost:3000/formState/onChange');
     cy.get('input[name="firstName"]').type('test');
     cy.get('input[name="firstName"]').blur();
