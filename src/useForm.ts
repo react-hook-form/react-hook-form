@@ -638,12 +638,11 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
       ...validateOptions,
     };
     const fields = fieldsRef.current;
-    const isRadio = isRadioInput(type);
-    const isCheckBox = isCheckBoxInput(type);
+    const isRadioOrCheckbox = isRadioInput(type) || isCheckBoxInput(type);
     let currentField = fields[name] as Field;
 
     if (
-      isRadio || isCheckBox
+      isRadioOrCheckbox
         ? currentField &&
           isArray(currentField.options) &&
           currentField.options.find(({ ref }: Field) => value === ref.value)
@@ -661,7 +660,7 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
         removeEventListenerAndRef(fieldAttributes),
       );
 
-      if (isRadio || isCheckBox) {
+      if (isRadioOrCheckbox) {
         currentField = {
           options: [
             ...((currentField && currentField.options) || []),
@@ -736,7 +735,7 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
     }
 
     const fieldToAttachListener =
-      (isRadio || isCheckBox) && currentField.options
+      isRadioOrCheckbox && currentField.options
         ? currentField.options[currentField.options.length - 1]
         : currentField;
 
@@ -745,7 +744,7 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
     } else {
       attachEventListeners({
         field: fieldToAttachListener,
-        isRadioOrCheckbox: isRadio || isCheckBox,
+        isRadioOrCheckbox,
         validateAndStateUpdate: validateAndUpdateStateRef.current,
       });
     }
@@ -970,9 +969,10 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
     () => () => {
       isUnMount.current = true;
       fieldsRef.current &&
-        Object.values(fieldsRef.current).forEach(
-          (field: Field | undefined): void =>
-            removeEventListenerAndRef(field, true),
+        Object.values(
+          fieldsRef.current,
+        ).forEach((field: Field | undefined): void =>
+          removeEventListenerAndRef(field, true),
         );
     },
     [removeEventListenerAndRef],
