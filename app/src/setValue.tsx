@@ -10,6 +10,7 @@ const SetValue: React.FC = () => {
     age: string;
     trigger: string;
     checkbox: boolean;
+    checkboxArray: string[];
     radio: string;
     select: string;
     multiple: string[];
@@ -21,6 +22,7 @@ const SetValue: React.FC = () => {
     setValue('age', '2');
     setValue('trigger', '', true);
     setValue('checkbox', true);
+    setValue('checkboxArray', ['2', '3']);
     setValue('radio', 'radio');
     setValue('select', 'a');
     setValue('multiple', ['a', 'b']);
@@ -34,6 +36,9 @@ const SetValue: React.FC = () => {
       <input name="age" type="number" ref={register} placeholder="age" />
       <input name="radio" value="radio" type="radio" ref={register} />
       <input name="checkbox" type="checkbox" ref={register} />
+      <input name="checkboxArray" type="checkbox" value="1" ref={register} />
+      <input name="checkboxArray" type="checkbox" value="2" ref={register} />
+      <input name="checkboxArray" type="checkbox" value="3" ref={register} />
       <select name="select" ref={register}>
         <option>Select</option>
         <option value="a">a</option>

@@ -13,6 +13,8 @@ context('basic form validation', () => {
       'minRequiredLength error',
     );
     cy.get('input[name="radio"] + p').contains('radio error');
+    cy.get('input[name="checkbox"] + p').contains('checkbox error');
+    cy.get('input[name="checkboxArray"] + p').contains('checkboxArray error');
     cy.get('input[name="validate"] + p').contains('validate error');
 
     cy.get('input[name="firstName"]').type('bill');
@@ -51,6 +53,7 @@ context('basic form validation', () => {
     cy.get('input[name="minDate"]').type('2019-08-01');
     cy.get('input[name="maxDate"]').type('2019-08-01');
     cy.get('input[name="checkbox"]').check();
+    cy.get('input[name="checkboxArray"]').check('3');
 
     cy.get('p').should('have.length', 0);
 
@@ -67,7 +70,7 @@ context('basic form validation', () => {
     cy.get('input[name="pattern"]').should('not.have.value');
     cy.get('input[name="minDate"]').should('not.have.value');
     cy.get('input[name="maxDate"]').should('not.have.value');
-    cy.get('#renderCount').contains('32');
+    cy.get('#renderCount').contains('33');
   });
 
   it('should validate the form with onBlur mode and reset the form', () => {
