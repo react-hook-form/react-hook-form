@@ -22,10 +22,12 @@ export default (options?: RadioOrCheckboxOption[]): CheckboxFieldResult => {
       return { value: values, isValid: !!values.length };
     } else {
       if (options[0].ref.checked) {
-        return isUndefined(options[0].ref.value) ||
-          isEmptyString(options[0].ref.value)
-          ? { value: true, isValid: true }
-          : { value: options[0].ref.value, isValid: true };
+        return options[0].ref.attributes.value
+          ? isUndefined(options[0].ref.value) ||
+            isEmptyString(options[0].ref.value)
+            ? { value: true, isValid: true }
+            : { value: options[0].ref.value, isValid: true }
+          : { value: true, isValid: true };
       }
       return { value: false, isValid: false };
     }

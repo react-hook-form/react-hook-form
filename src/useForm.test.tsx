@@ -386,7 +386,12 @@ describe('useForm', () => {
       const { result } = renderHook(() => useForm<{ test: string }>());
 
       act(() => {
-        result.current.register({ name: 'test', type: 'checkbox', value: '1' });
+        result.current.register({
+          name: 'test',
+          type: 'checkbox',
+          value: '1',
+          attributes: { value: '1' },
+        });
         result.current.setValue('test', '1');
       });
 
