@@ -353,6 +353,7 @@ describe('useForm', () => {
         } as React.SyntheticEvent);
       });
     });
+
     it('should set value of multiple checkbox input correctly', async () => {
       const { result } = renderHook(() => useForm<{ test: string }>());
 

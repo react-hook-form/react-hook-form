@@ -124,6 +124,7 @@ describe('findMissDomAndClean', () => {
       }),
     ).toMatchSnapshot();
   });
+
   it('should work for checkbox type input', () => {
     const ref = document.createElement('input');
     ref.setAttribute('name', 'test');

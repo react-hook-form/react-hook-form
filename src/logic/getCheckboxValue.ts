@@ -1,7 +1,7 @@
 import isArray from '../utils/isArray';
-import { RadioOrCheckboxOption } from '../types';
-import { isUndefined } from 'util';
+import isUndefined from '../utils/isUndefined';
 import isEmptyString from '../utils/isEmptyString';
+import { RadioOrCheckboxOption } from '../types';
 
 interface CheckboxFieldResult {
   isValid: boolean;
@@ -15,7 +15,7 @@ const defaultResult: CheckboxFieldResult = {
 
 export default (options?: RadioOrCheckboxOption[]): CheckboxFieldResult => {
   if (isArray(options)) {
-    if (options.length > 1) {
+    if (options.length) {
       const values = options
         .filter(({ ref: { checked } }) => checked)
         .map(({ ref: { value } }) => value);

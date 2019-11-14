@@ -51,6 +51,7 @@ describe('getFieldValue', () => {
       ),
     ).toBe(3);
   });
+
   it('should return the correct value when type is checkbox', () => {
     expect(
       getFieldValue(
@@ -96,6 +97,7 @@ describe('getFieldValue', () => {
       ),
     ).toEqual('');
   });
+
   it('should return false when checkbox input value is not found', () => {
     expect(
       getFieldValue(
@@ -106,7 +108,7 @@ describe('getFieldValue', () => {
           name: 'test',
         },
       ),
-    ).toEqual(false);
+    ).toBeFalsy();
   });
 
   it('should return files for input type file', () => {

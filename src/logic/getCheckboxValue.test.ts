@@ -93,6 +93,7 @@ describe('getCheckboxValue', () => {
       ]),
     ).toEqual({ value: ['2', '3'], isValid: true });
   });
+
   it('should return values for checked boxes only', () => {
     expect(
       getCheckboxValue([
@@ -123,6 +124,7 @@ describe('getCheckboxValue', () => {
       ]),
     ).toEqual({ value: ['3'], isValid: true });
   });
+
   it('should return empty array for multi checkbox with no checked box', () => {
     expect(
       getCheckboxValue([
