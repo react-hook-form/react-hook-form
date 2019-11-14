@@ -1,6 +1,3 @@
 {
-  "sandboxes": ["/app"],
-  "publishDirectory": {
-    "react-hook-form": "/dist"
-  }
+  "sandboxes": ["/vanilla"]
 }
