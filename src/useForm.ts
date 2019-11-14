@@ -212,7 +212,7 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
 
     const isDirty =
       defaultValuesRef.current[name] !==
-      getFieldValue(fieldsRef.current, fieldsRef.current[name]!.ref);
+      getFieldValue(fieldsRef.current[name]!.ref);
     const isDirtyChanged = dirtyFieldsRef.current.has(name) !== isDirty;
 
     if (isDirty) {
@@ -725,7 +725,6 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
 
     if (!defaultValuesRef.current[name]) {
       defaultValuesRef.current[name as FieldName<FormValues>] = getFieldValue(
-        fields,
         currentField.ref,
       );
     }
@@ -872,7 +871,7 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
             }
             resolvedPrevious.values[
               name as FieldName<FormValues>
-            ] = getFieldValue(fields, ref);
+            ] = getFieldValue(ref);
             return Promise.resolve(resolvedPrevious);
           },
           Promise.resolve<SubmitPromiseResult<FormValues>>({

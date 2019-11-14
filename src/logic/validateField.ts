@@ -170,7 +170,7 @@ export default async <FormValues extends FieldValues>(
   }
 
   if (validate) {
-    const fieldValue = getFieldsValue(fields, ref);
+    const fieldValue = getFieldsValue(ref);
     const validateRef = isRadioOrCheckbox && options ? options[0].ref : ref;
 
     if (isFunction(validate)) {

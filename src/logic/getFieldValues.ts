@@ -5,7 +5,7 @@ export default <FormValues extends FieldValues>(fields: FieldValues) =>
   Object.values(fields).reduce<FormValues>(
     (previous, { ref, ref: { name } }: Ref) => ({
       ...previous,
-      ...{ [name]: getFieldValue(fields, ref) },
+      ...{ [name]: getFieldValue(ref) },
     }),
     {} as FormValues,
   );
