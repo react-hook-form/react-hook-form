@@ -1,3 +1,4 @@
 {
-  "sandboxes": ["new", "/app"]
+  "sandboxes": ["new", "/app"],
+  "packages": ["packages/react-hook-form"]
 }
