@@ -1,5 +1,4 @@
 {
-  "packages": ["packages/react-hook-form"],
   "publishDirectory": {
     "react-hook-form": "dist"
   },
