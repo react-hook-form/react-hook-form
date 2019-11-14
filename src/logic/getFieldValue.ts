@@ -11,13 +11,13 @@ export default function getFieldValue<FormValues extends FieldValues>(
   ref: Ref,
 ) {
   const { type, name, options, value, files } = ref;
+  const field = fields[name];
 
   if (type === 'file') {
     return files;
   }
 
   if (isRadioInput(type)) {
-    const field = fields[name];
     return field ? getRadioValue(field.options).value : '';
   }
 
@@ -26,7 +26,6 @@ export default function getFieldValue<FormValues extends FieldValues>(
   }
 
   if (isCheckBox(type)) {
-    const field = fields[name];
     return field ? getCheckboxValue(field.options).value : false;
   }
 
