@@ -1,14 +1,13 @@
-import isCheckBoxInput from '../utils/isCheckBoxInput';
 import { EVENTS } from '../constants';
 import { Field } from '../types';
 
 export default function attachEventListeners({
   field,
   validateAndStateUpdate,
-  isRadio,
+  isRadioOrCheckbox,
 }: {
   field: Field;
-  isRadio: boolean;
+  isRadioOrCheckbox: boolean;
   validateAndStateUpdate?: Function;
 }): void {
   const { ref } = field;
@@ -18,7 +17,7 @@ export default function attachEventListeners({
   }
 
   ref.addEventListener(
-    isCheckBoxInput(ref.type) || isRadio ? EVENTS.CHANGE : EVENTS.INPUT,
+    isRadioOrCheckbox ? EVENTS.CHANGE : EVENTS.INPUT,
     validateAndStateUpdate,
   );
   ref.addEventListener(EVENTS.BLUR, validateAndStateUpdate);

@@ -59,7 +59,7 @@ describe('useForm', () => {
             type: 'input',
           },
         },
-        isRadio: false,
+        isRadioOrCheckbox: false,
         validateAndStateUpdate: expect.any(Function),
       });
       expect(onDomRemove).toHaveBeenCalled();
@@ -80,7 +80,33 @@ describe('useForm', () => {
             type: 'radio',
           },
         },
-        isRadio: true,
+        isRadioOrCheckbox: true,
+        validateAndStateUpdate: expect.any(Function),
+      });
+      expect(onDomRemove).toBeCalled();
+    });
+
+    it('should register field for checkbox type and call attachEventListeners method', () => {
+      const { result } = renderHook(() => useForm());
+
+      act(() => {
+        result.current.register({
+          type: 'checkbox',
+          name: 'test',
+          attributes: {},
+        });
+      });
+
+      expect(attachEventListeners).toBeCalledWith({
+        field: {
+          mutationWatcher: undefined,
+          ref: {
+            name: 'test',
+            type: 'checkbox',
+            attributes: {},
+          },
+        },
+        isRadioOrCheckbox: true,
         validateAndStateUpdate: expect.any(Function),
       });
       expect(onDomRemove).toBeCalled();
@@ -130,6 +156,31 @@ describe('useForm', () => {
         await result.current.handleSubmit(data => {
           expect(data).toEqual({
             test: '',
+          });
+        })({
+          preventDefault: () => {},
+          persist: () => {},
+        } as React.SyntheticEvent);
+      });
+    });
+
+    it('should not register the same checkbox input', async () => {
+      const { result } = renderHook(() => useForm<{ test: string }>());
+
+      act(() => {
+        const { register } = result.current;
+        register({ type: 'checkbox', name: 'test', attributes: {} });
+        register({ type: 'checkbox', name: 'test', attributes: {} });
+      });
+
+      (validateField as any).mockImplementation(async () => {
+        return {};
+      });
+
+      await act(async () => {
+        await result.current.handleSubmit(data => {
+          expect(data).toEqual({
+            test: false,
           });
         })({
           preventDefault: () => {},
@@ -285,6 +336,78 @@ describe('useForm', () => {
       act(() => {
         result.current.register({ name: 'test', type: 'radio', value: '1' });
         result.current.register({ name: 'test', type: 'radio', value: '2' });
+        result.current.setValue('test', '1');
+      });
+
+      (validateField as any).mockImplementation(async () => {
+        return {};
+      });
+
+      act(() => {
+        result.current.register({ type: 'text', name: 'test' });
+      });
+
+      await act(async () => {
+        await result.current.handleSubmit(data => {
+          expect(data).toEqual({
+            test: '1',
+          });
+        })({
+          preventDefault: () => {},
+          persist: () => {},
+        } as React.SyntheticEvent);
+      });
+    });
+
+    it('should set value of multiple checkbox input correctly', async () => {
+      const { result } = renderHook(() => useForm<{ test: string }>());
+
+      act(() => {
+        result.current.register({
+          name: 'test',
+          type: 'checkbox',
+          value: '1',
+          attributes: { value: '1' },
+        });
+        result.current.register({
+          name: 'test',
+          type: 'checkbox',
+          value: '2',
+          attributes: { value: '2' },
+        });
+        result.current.setValue('test', '1');
+      });
+
+      (validateField as any).mockImplementation(async () => {
+        return {};
+      });
+
+      act(() => {
+        result.current.register({ type: 'text', name: 'test' });
+      });
+
+      await act(async () => {
+        await result.current.handleSubmit(data => {
+          expect(data).toEqual({
+            test: ['1'],
+          });
+        })({
+          preventDefault: () => {},
+          persist: () => {},
+        } as React.SyntheticEvent);
+      });
+    });
+
+    it('should set value of single checkbox input correctly', async () => {
+      const { result } = renderHook(() => useForm<{ test: string }>());
+
+      act(() => {
+        result.current.register({
+          name: 'test',
+          type: 'checkbox',
+          value: '1',
+          attributes: { value: '1' },
+        });
         result.current.setValue('test', '1');
       });
 

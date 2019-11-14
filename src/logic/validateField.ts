@@ -1,4 +1,5 @@
 import getRadioValue from './getRadioValue';
+import getCheckboxValue from './getCheckboxValue';
 import isNullOrUndefined from '../utils/isNullOrUndefined';
 import isRadioInput from '../utils/isRadioInput';
 import getValueAndMessage from './getValueAndMessage';
@@ -13,7 +14,7 @@ import isRegex from '../utils/isRegex';
 import isEmptyString from '../utils/isEmptyString';
 import getValidateError from './getValidateError';
 import appendErrors from './appendErrors';
-import { RADIO_INPUT, INPUT_VALIDATION_RULES } from '../constants';
+import { INPUT_VALIDATION_RULES } from '../constants';
 import {
   Field,
   FieldErrors,
@@ -30,7 +31,7 @@ export default async <FormValues extends FieldValues>(
   validateAllFieldCriteria: boolean,
   {
     ref,
-    ref: { type, value, name, checked },
+    ref: { type, value, name },
     options,
     required,
     maxLength,
@@ -44,6 +45,7 @@ export default async <FormValues extends FieldValues>(
   const error: FieldErrors<FormValues> = {};
   const isRadio = isRadioInput(type);
   const isCheckBox = isCheckBoxInput(type);
+  const isRadioOrCheckbox = isRadio || isCheckBox;
   const isEmpty = isEmptyString(value);
   const nativeError = displayNativeError.bind(null, nativeValidation, ref);
   const typedName = name as FieldName<FormValues>;
@@ -56,17 +58,17 @@ export default async <FormValues extends FieldValues>(
 
   if (
     required &&
-    ((isCheckBox && !checked) ||
-      (!isCheckBox && !isRadio && isEmpty) ||
-      (isRadio && !getRadioValue(fields[typedName].options).isValid) ||
-      (type !== RADIO_INPUT && isNullOrUndefined(value)))
+    ((!isCheckBox && !isRadio && isEmpty) ||
+      (!isRadio && !isCheckBox && isNullOrUndefined(value)) ||
+      (isCheckBox && !getCheckboxValue(options).isValid) ||
+      (isRadio && !getRadioValue(options).isValid))
   ) {
     const message = isString(required) ? required : '';
 
     error[typedName] = {
       type: INPUT_VALIDATION_RULES.required,
       message,
-      ref: isRadio ? fields[typedName].options[0].ref : ref,
+      ref: isRadioOrCheckbox ? fields[typedName].options[0].ref : ref,
       ...appendErrorsCurry(INPUT_VALIDATION_RULES.required, message),
     };
     nativeError(message);
@@ -170,7 +172,7 @@ export default async <FormValues extends FieldValues>(
 
   if (validate) {
     const fieldValue = getFieldsValue(fields, ref);
-    const validateRef = isRadio && options ? options[0].ref : ref;
+    const validateRef = isRadioOrCheckbox && options ? options[0].ref : ref;
 
     if (isFunction(validate)) {
       const result = await validate(fieldValue);

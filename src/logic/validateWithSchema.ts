@@ -7,12 +7,12 @@ interface SchemaValidationResult<FormValues> {
   result: FieldValues;
 }
 
-type YupValidationError = {
+interface YupValidationError {
   inner: { path: string; message: string; type: string }[];
   path: string;
   message: string;
   type: string;
-};
+}
 
 interface Schema<Data> {
   validate(value: FieldValues, options?: SchemaValidateOptions): Promise<Data>;

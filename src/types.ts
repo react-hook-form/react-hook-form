@@ -145,7 +145,7 @@ export interface NameProp {
   name: string;
 }
 
-export interface RadioOption {
+export interface RadioOrCheckboxOption {
   ref?: Ref;
   mutationWatcher?: MutationWatcher;
 }

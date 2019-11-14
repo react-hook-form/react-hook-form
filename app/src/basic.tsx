@@ -17,6 +17,7 @@ const ConditionalField: React.FC = (props: any) => {
     pattern: string;
     radio: string;
     checkbox: string;
+    checkboxArray: string[];
     multiple: string;
     validate: string;
   }>({
@@ -110,6 +111,25 @@ const ConditionalField: React.FC = (props: any) => {
         ref={register({ required: true })}
       />
       {errors.checkbox && <p>checkbox error</p>}
+      <input
+        type="checkbox"
+        name="checkboxArray"
+        value="1"
+        ref={register({ required: true })}
+      />
+      <input
+        type="checkbox"
+        name="checkboxArray"
+        value="2"
+        ref={register({ required: true })}
+      />
+      <input
+        type="checkbox"
+        name="checkboxArray"
+        value="3"
+        ref={register({ required: true })}
+      />
+      {errors.checkboxArray && <p>checkboxArray error</p>}
       <select name="multiple" multiple ref={register({ required: true })}>
         <option value="optionA">optionA</option>
         <option value="optionB">optionB</option>

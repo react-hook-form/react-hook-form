@@ -1,5 +1,5 @@
 import isArray from '../utils/isArray';
-import { Ref, RadioOption } from '../types';
+import { Ref, RadioOrCheckboxOption } from '../types';
 
 interface RadioFieldResult {
   isValid: boolean;
@@ -11,7 +11,7 @@ const defaultReturn: RadioFieldResult = {
   value: '',
 };
 
-export default (options?: RadioOption[]): RadioFieldResult =>
+export default (options?: RadioOrCheckboxOption[]): RadioFieldResult =>
   isArray(options)
     ? options.reduce(
         (previous, { ref: { checked, value } }: Ref): RadioFieldResult =>

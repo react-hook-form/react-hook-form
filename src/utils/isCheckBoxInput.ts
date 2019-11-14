@@ -1,1 +1,1 @@
-export default (type: string): boolean => type === 'checkbox';
+export default (type?: string): boolean => type === 'checkbox';

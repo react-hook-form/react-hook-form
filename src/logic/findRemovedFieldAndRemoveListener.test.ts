@@ -125,6 +125,39 @@ describe('findMissDomAndClean', () => {
     ).toMatchSnapshot();
   });
 
+  it('should work for checkbox type input', () => {
+    const ref = document.createElement('input');
+    ref.setAttribute('name', 'test');
+    ref.setAttribute('type', 'checkbox');
+    document.body.contains = jest.fn(() => false);
+    const disconnect = jest.fn();
+    const fields = {
+      test: {
+        name: 'test',
+        ref: {},
+        mutationWatcher: {
+          disconnect,
+        },
+      },
+      test1: {
+        name: 'test',
+        ref: {
+          type: 'checkbox',
+        },
+      },
+    };
+
+    expect(
+      findRemovedFieldAndRemoveListener(fields, () => {}, {
+        ref: { name: 'test', type: 'checkbox' },
+        options: [{ ref }],
+        mutationWatcher: {
+          disconnect,
+        },
+      }),
+    ).toMatchSnapshot();
+  });
+
   it('should not remove event listener when type is not Element', () => {
     (isDetached as any).mockImplementation(() => {
       return false;

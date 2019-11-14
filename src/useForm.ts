@@ -23,7 +23,7 @@ import onDomRemove from './utils/onDomRemove';
 import isMultipleSelect from './utils/isMultipleSelect';
 import modeChecker from './utils/validationModeChecker';
 import isNullOrUndefined from './utils/isNullOrUndefined';
-import { EVENTS, RADIO_INPUT, UNDEFINED, VALIDATION_MODE } from './constants';
+import { EVENTS, UNDEFINED, VALIDATION_MODE } from './constants';
 import {
   FieldValues,
   FieldName,
@@ -187,8 +187,17 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
               selectRef.value,
             )),
         );
+      } else if (isCheckBoxInput(type) && options) {
+        options.length > 1
+          ? options.forEach(
+              ({ ref: checkboxRef }) =>
+                (checkboxRef.checked = (value as string[]).includes(
+                  checkboxRef.value,
+                )),
+            )
+          : (options[0].ref.checked = !!value);
       } else {
-        ref[isCheckBoxInput(type) ? 'checked' : 'value'] = value;
+        ref.value = value;
       }
 
       return type;
@@ -629,11 +638,11 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
       ...validateOptions,
     };
     const fields = fieldsRef.current;
-    const isRadio = isRadioInput(type);
+    const isRadioOrCheckbox = isRadioInput(type) || isCheckBoxInput(type);
     let currentField = fields[name] as Field;
 
     if (
-      isRadio
+      isRadioOrCheckbox
         ? currentField &&
           isArray(currentField.options) &&
           currentField.options.find(({ ref }: Field) => value === ref.value)
@@ -651,7 +660,7 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
         removeEventListenerAndRef(fieldAttributes),
       );
 
-      if (isRadio) {
+      if (isRadioOrCheckbox) {
         currentField = {
           options: [
             ...((currentField && currentField.options) || []),
@@ -660,7 +669,7 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
               mutationWatcher,
             },
           ],
-          ref: { type: RADIO_INPUT, name },
+          ref: { type, name },
           ...validateOptions,
         };
       } else {
@@ -726,7 +735,7 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
     }
 
     const fieldToAttachListener =
-      isRadio && currentField.options
+      isRadioOrCheckbox && currentField.options
         ? currentField.options[currentField.options.length - 1]
         : currentField;
 
@@ -735,7 +744,7 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
     } else {
       attachEventListeners({
         field: fieldToAttachListener,
-        isRadio,
+        isRadioOrCheckbox,
         validateAndStateUpdate: validateAndUpdateStateRef.current,
       });
     }

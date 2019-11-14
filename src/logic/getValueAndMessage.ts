@@ -2,7 +2,10 @@ import isObject from '../utils/isObject';
 import isRegex from '../utils/isRegex';
 import { ValidationValue } from '../types';
 
-type ValidationValueMessage = { value: ValidationValue; message: string };
+interface ValidationValueMessage {
+  value: ValidationValue;
+  message: string;
+}
 
 export default (
   validationData?: ValidationValue | ValidationValueMessage,

@@ -5,6 +5,14 @@ context('form setValue', () => {
     cy.get('input[name="firstName"]').should('have.value', 'wrong');
     cy.get('input[name="age"]').should('have.value', '2');
     cy.get('input[name="radio"]').should('have.checked', true);
+    cy.get('input[name="checkboxArray"][value="2"]').should(
+      'have.checked',
+      true,
+    );
+    cy.get('input[name="checkboxArray"][value="3"]').should(
+      'have.checked',
+      true,
+    );
     cy.get('select[name="select"]').should('have.value', 'a');
     cy.get('select[name="multiple"]')
       .invoke('val')
