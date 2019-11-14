@@ -58,8 +58,7 @@ export default async <FormValues extends FieldValues>(
 
   if (
     required &&
-    ((!isCheckBox && !isRadio && isEmpty) ||
-      (!isRadio && !isCheckBox && isNullOrUndefined(value)) ||
+    ((!isRadio && !isCheckBox && (isEmpty || isNullOrUndefined(value))) ||
       (isCheckBox && !getCheckboxValue(options).isValid) ||
       (isRadio && !getRadioValue(options).isValid))
   ) {
