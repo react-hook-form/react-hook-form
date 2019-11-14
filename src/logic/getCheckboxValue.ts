@@ -13,6 +13,8 @@ const defaultResult: CheckboxFieldResult = {
   isValid: false,
 };
 
+const validResult = { value: true, isValid: true };
+
 export default (options?: RadioOrCheckboxOption[]): CheckboxFieldResult => {
   if (isArray(options)) {
     if (options.length > 1) {
@@ -20,22 +22,22 @@ export default (options?: RadioOrCheckboxOption[]): CheckboxFieldResult => {
         .filter(({ ref: { checked } }) => checked)
         .map(({ ref: { value } }) => value);
       return { value: values, isValid: !!values.length };
-    } else {
-      const {
-        checked,
-        value,
-        attributes: { value: valueAttribute },
-      } = options[0].ref;
-      if (checked) {
-        return valueAttribute
-          ? isUndefined(value) || isEmptyString(value)
-            ? { value: true, isValid: true }
-            : { value: value, isValid: true }
-          : { value: true, isValid: true };
-      }
-      return defaultResult;
     }
-  } else {
-    return defaultResult;
+
+    const {
+      checked,
+      value,
+      attributes: { value: valueAttribute },
+    } = options[0].ref;
+
+    return checked
+      ? valueAttribute
+        ? isUndefined(value) || isEmptyString(value)
+          ? validResult
+          : { value: value, isValid: true }
+        : validResult
+      : defaultResult;
   }
+
+  return defaultResult;
 };
