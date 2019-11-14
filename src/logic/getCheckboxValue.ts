@@ -15,21 +15,25 @@ const defaultResult: CheckboxFieldResult = {
 
 export default (options?: RadioOrCheckboxOption[]): CheckboxFieldResult => {
   if (isArray(options)) {
-    if (options.length) {
+    if (options.length > 1) {
       const values = options
         .filter(({ ref: { checked } }) => checked)
         .map(({ ref: { value } }) => value);
       return { value: values, isValid: !!values.length };
     } else {
-      if (options[0].ref.checked) {
-        return options[0].ref.attributes.value
-          ? isUndefined(options[0].ref.value) ||
-            isEmptyString(options[0].ref.value)
+      const {
+        checked,
+        value,
+        attributes: { value: valueAttribute },
+      } = options[0].ref;
+      if (checked) {
+        return valueAttribute
+          ? isUndefined(value) || isEmptyString(value)
             ? { value: true, isValid: true }
-            : { value: options[0].ref.value, isValid: true }
+            : { value: value, isValid: true }
           : { value: true, isValid: true };
       }
-      return { value: false, isValid: false };
+      return defaultResult;
     }
   } else {
     return defaultResult;
