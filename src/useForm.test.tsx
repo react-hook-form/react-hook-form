@@ -90,7 +90,11 @@ describe('useForm', () => {
       const { result } = renderHook(() => useForm());
 
       act(() => {
-        result.current.register({ type: 'checkbox', name: 'test' });
+        result.current.register({
+          type: 'checkbox',
+          name: 'test',
+          attributes: {},
+        });
       });
 
       expect(attachEventListeners).toBeCalledWith({
@@ -99,6 +103,7 @@ describe('useForm', () => {
           ref: {
             name: 'test',
             type: 'checkbox',
+            attributes: {},
           },
         },
         isRadioOrCheckbox: true,
@@ -164,8 +169,8 @@ describe('useForm', () => {
 
       act(() => {
         const { register } = result.current;
-        register({ type: 'checkbox', name: 'test', value: '' });
-        register({ type: 'checkbox', name: 'test', value: '' });
+        register({ type: 'checkbox', name: 'test', attributes: {} });
+        register({ type: 'checkbox', name: 'test', attributes: {} });
       });
 
       (validateField as any).mockImplementation(async () => {
@@ -358,8 +363,18 @@ describe('useForm', () => {
       const { result } = renderHook(() => useForm<{ test: string }>());
 
       act(() => {
-        result.current.register({ name: 'test', type: 'checkbox', value: '1' });
-        result.current.register({ name: 'test', type: 'checkbox', value: '2' });
+        result.current.register({
+          name: 'test',
+          type: 'checkbox',
+          value: '1',
+          attributes: { value: '1' },
+        });
+        result.current.register({
+          name: 'test',
+          type: 'checkbox',
+          value: '2',
+          attributes: { value: '2' },
+        });
         result.current.setValue('test', '1');
       });
 
