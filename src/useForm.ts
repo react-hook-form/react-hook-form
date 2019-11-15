@@ -572,15 +572,12 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
     }
 
     if (isString(fieldNames)) {
-      const value = assignWatchFields<FormValues>(
+      return assignWatchFields<FormValues>(
         fieldValues,
         fieldNames,
         watchFields,
+        combinedDefaultValues,
       );
-
-      return isUndefined(value)
-        ? getDefaultValue(combinedDefaultValues, fieldNames)
-        : value;
     }
 
     if (isArray(fieldNames)) {
@@ -593,15 +590,12 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
         ) {
           value = getDefaultValue(combinedDefaultValues, name);
         } else {
-          const tempValue = assignWatchFields<FormValues>(
+          value = assignWatchFields<FormValues>(
             fieldValues,
             name,
             watchFields,
+            combinedDefaultValues,
           );
-
-          if (!isUndefined(tempValue)) {
-            value = tempValue;
-          }
         }
 
         return {

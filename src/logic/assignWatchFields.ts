@@ -4,28 +4,32 @@ import getPath from '../utils/getPath';
 import isEmptyObject from '../utils/isEmptyObject';
 import isUndefined from '../utils/isUndefined';
 import { FieldValue, FieldValues, FieldName } from '../types';
+import getDefaultValue from './getDefaultValue';
 
 export default <FormValues extends FieldValues>(
   fieldValues: FormValues,
   fieldName: FieldName<FormValues>,
   watchFields: Set<FieldName<FormValues>>,
+  combinedDefaultValues: Partial<FormValues>,
 ): FieldValue<FormValues> | Partial<FormValues> | undefined => {
+  let value;
+
   if (isEmptyObject(fieldValues)) {
-    return;
-  }
-
-  if (!isUndefined(fieldValues[fieldName])) {
+    value = undefined;
+  } else if (!isUndefined(fieldValues[fieldName])) {
     watchFields.add(fieldName);
-    return fieldValues[fieldName];
+    value = fieldValues[fieldName];
+  } else {
+    value = get(combineFieldValues(fieldValues), fieldName);
+
+    if (!isUndefined(value)) {
+      getPath<FormValues>(fieldName, value).forEach(name =>
+        watchFields.add(name),
+      );
+    }
   }
 
-  const values = get(combineFieldValues(fieldValues), fieldName);
-
-  if (!isUndefined(values)) {
-    getPath<FormValues>(fieldName, values).forEach(name =>
-      watchFields.add(name),
-    );
-  }
-
-  return values;
+  return isUndefined(value)
+    ? getDefaultValue(combinedDefaultValues, fieldName)
+    : value;
 };
