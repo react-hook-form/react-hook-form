@@ -128,9 +128,19 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
     (
       name: FieldName<FormValues>,
       error: FieldErrors<FormValues>,
-      shouldRender = false,
-    ) => {
-      let reRender = shouldRender;
+      shouldRender?,
+    ): boolean | void => {
+      let reRender =
+        shouldRender ||
+        shouldUpdateWithError<FormValues>({
+          errors: errorsRef.current,
+          error,
+          name,
+          validFields: validFieldsRef.current,
+          fieldsWithValidation: fieldsWithValidationRef.current,
+          schemaErrors:
+            isSchemaValidateTriggeredRef.current && schemaErrorsRef.current,
+        });
 
       if (isEmptyObject(error)) {
         if (fieldsWithValidationRef.current.has(name) || validationSchema) {
@@ -150,6 +160,7 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
 
       if (reRender) {
         render({});
+        return true;
       }
     },
     [validationSchema],
@@ -432,12 +443,9 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
             isSchemaValidateTriggeredRef.current && schemaErrorsRef.current,
         });
 
-        if (shouldUpdate) {
-          renderBaseOnError(name, error, shouldUpdate);
-          return;
-        }
+        const rendered = renderBaseOnError(name, error, shouldUpdate);
 
-        if (shouldUpdateState) {
+        if (shouldUpdateState && !rendered) {
           render({});
         }
       };

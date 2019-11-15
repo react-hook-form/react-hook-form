@@ -27,6 +27,8 @@ const Basic: React.FC = (props: any) => {
 
   renderCounter++;
 
+  console.log(errors)
+
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
       <input
