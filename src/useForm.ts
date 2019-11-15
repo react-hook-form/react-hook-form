@@ -443,9 +443,10 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
             isSchemaValidateTriggeredRef.current && schemaErrorsRef.current,
         });
 
-        const rendered = renderBaseOnError(name, error, shouldUpdate);
-
-        if (shouldUpdateState && !rendered) {
+        if (
+          !renderBaseOnError(name, error, shouldUpdate) &&
+          shouldUpdateState
+        ) {
           render({});
         }
       };
