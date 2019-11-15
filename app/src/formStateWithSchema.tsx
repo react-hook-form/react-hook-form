@@ -46,7 +46,7 @@ const FormStateWithSchema: React.FC = (props: any) => {
       Radio3
       <input type="radio" name="radio" ref={register} value="3" />
       <input type="checkbox" name="checkbox" ref={register} />
-      <button>Submit</button>
+      <button id="submit">Submit</button>
       <button type="button" onClick={() => reset()} id="resetForm">
         Reset
       </button>

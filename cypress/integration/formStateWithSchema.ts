@@ -26,13 +26,13 @@ context('form state with schema validation', () => {
 
     cy.get('input[name="lastName"]').clear();
 
-    cy.get('button').click();
+    cy.get('#submit').click();
     cy.get('#state').contains(
       '{"dirty":true,"isSubmitted":true,"submitCount":1,"touched":["firstName","lastName"],"isSubmitting":false,"isValid":false}',
     );
 
     cy.get('input[name="lastName"]').type('test');
-    cy.get('button').click();
+    cy.get('#submit').click();
     cy.get('#state').contains(
       '{"dirty":true,"isSubmitted":true,"submitCount":2,"touched":["firstName","lastName"],"isSubmitting":false,"isValid":false}',
     );
@@ -67,13 +67,13 @@ context('form state with schema validation', () => {
 
     cy.get('input[name="lastName"]').clear();
 
-    cy.get('button').click();
+    cy.get('#submit').click();
     cy.get('#state').contains(
       '{"dirty":true,"isSubmitted":true,"submitCount":1,"touched":["firstName","lastName"],"isSubmitting":false,"isValid":false}',
     );
 
     cy.get('input[name="lastName"]').type('test');
-    cy.get('button').click();
+    cy.get('#submit').click();
     cy.get('#state').contains(
       '{"dirty":true,"isSubmitted":true,"submitCount":2,"touched":["firstName","lastName"],"isSubmitting":false,"isValid":true}',
     );
@@ -107,13 +107,13 @@ context('form state with schema validation', () => {
 
     cy.get('input[name="lastName"]').clear();
 
-    cy.get('button').click();
+    cy.get('#submit').click();
     cy.get('#state').contains(
       '{"dirty":true,"isSubmitted":true,"submitCount":1,"touched":["firstName","lastName"],"isSubmitting":false,"isValid":false}',
     );
 
     cy.get('input[name="lastName"]').type('test');
-    cy.get('button').click();
+    cy.get('#submit').click();
     cy.get('#state').contains(
       '{"dirty":true,"isSubmitted":true,"submitCount":2,"touched":["firstName","lastName"],"isSubmitting":false,"isValid":true}',
     );

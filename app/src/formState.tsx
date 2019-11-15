@@ -46,7 +46,7 @@ const FormState: React.FC = (props: any) => {
         defaultChecked
         ref={register}
       />
-      <button>Submit</button>
+      <button id="submit">Submit</button>
       <button type="button" onClick={() => reset()} id="resetForm">
         Reset
       </button>
