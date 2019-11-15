@@ -433,20 +433,7 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
           error = await validateFieldCurry(field);
         }
 
-        const shouldUpdate = shouldUpdateWithError<FormValues>({
-          errors,
-          error,
-          name,
-          validFields: validFieldsRef.current,
-          fieldsWithValidation: fieldsWithValidationRef.current,
-          schemaErrors:
-            isSchemaValidateTriggeredRef.current && schemaErrorsRef.current,
-        });
-
-        if (
-          !renderBaseOnError(name, error, shouldUpdate) &&
-          shouldUpdateState
-        ) {
+        if (!renderBaseOnError(name, error) && shouldUpdateState) {
           render({});
         }
       };
