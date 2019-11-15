@@ -4,11 +4,13 @@ import getPath from '../utils/getPath';
 import isEmptyObject from '../utils/isEmptyObject';
 import isUndefined from '../utils/isUndefined';
 import { FieldValue, FieldValues, FieldName } from '../types';
+import getDefaultValue from './getDefaultValue';
 
 export default <FormValues extends FieldValues>(
   fieldValues: FormValues,
   fieldName: FieldName<FormValues>,
   watchFields: Set<FieldName<FormValues>>,
+  combinedDefaultValues: Partial<FormValues>,
 ): FieldValue<FormValues> | Partial<FormValues> | undefined => {
   if (isEmptyObject(fieldValues)) {
     return;
@@ -27,5 +29,7 @@ export default <FormValues extends FieldValues>(
     );
   }
 
-  return values;
+  return isUndefined(values)
+    ? getDefaultValue(combinedDefaultValues, fieldName)
+    : values;
 };
