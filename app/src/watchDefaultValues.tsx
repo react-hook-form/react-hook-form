@@ -26,10 +26,15 @@ function WatchDefaultValues() {
   return (
     <>
       <div id="watchAll">{JSON.stringify(all)}</div>
+      <br />
       <div id="array">{JSON.stringify(array)}</div>
+      <br />
       <div id="getArray">{JSON.stringify(getDeepArray)}</div>
+      <br />
       <div id="object">{JSON.stringify(arrayStringOrObject)}</div>
+      <br />
       <div id="single">{JSON.stringify(singleObject)}</div>
+      <br />
       <div id="singleDeepArray">{JSON.stringify(singleDeepArray)}</div>
     </>
   );

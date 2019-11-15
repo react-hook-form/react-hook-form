@@ -12,24 +12,24 @@ export default <FormValues extends FieldValues>(
   watchFields: Set<FieldName<FormValues>>,
   combinedDefaultValues: Partial<FormValues>,
 ): FieldValue<FormValues> | Partial<FormValues> | undefined => {
+  let value;
+
   if (isEmptyObject(fieldValues)) {
-    return;
-  }
-
-  if (!isUndefined(fieldValues[fieldName])) {
+    value = undefined;
+  } else if (!isUndefined(fieldValues[fieldName])) {
     watchFields.add(fieldName);
-    return fieldValues[fieldName];
+    value = fieldValues[fieldName];
+  } else {
+    value = get(combineFieldValues(fieldValues), fieldName);
+
+    if (!isUndefined(value)) {
+      getPath<FormValues>(fieldName, value).forEach(name =>
+        watchFields.add(name),
+      );
+    }
   }
 
-  const values = get(combineFieldValues(fieldValues), fieldName);
-
-  if (!isUndefined(values)) {
-    getPath<FormValues>(fieldName, values).forEach(name =>
-      watchFields.add(name),
-    );
-  }
-
-  return isUndefined(values)
+  return isUndefined(value)
     ? getDefaultValue(combinedDefaultValues, fieldName)
-    : values;
+    : value;
 };
