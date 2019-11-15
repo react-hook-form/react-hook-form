@@ -17,6 +17,7 @@ import SetValueCustomRegister from './setValueCustomRegister';
 import ConditionalField from './conditionalField';
 import FormStateWithSchema from './formStateWithSchema';
 import SetValueWithSchema from './setValueWithSchema';
+import SetValueWithTrigger from './setValueWithTrigger';
 
 const App: React.FC = () => {
   return (
@@ -44,6 +45,11 @@ const App: React.FC = () => {
         component={BasicSchemaValidation}
       />
       <Route path="/setError" exact component={SetError} />
+      <Route
+        path="/setValueWithTrigger"
+        exact
+        component={SetValueWithTrigger}
+      />
       <Route path="/conditionalField" exact component={ConditionalField} />
       <Route path="/reset" exact component={Reset} />
       <Route path="/setValue" exact component={SetValue} />
