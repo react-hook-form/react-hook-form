@@ -67,9 +67,9 @@ export type ValidationValue = number | string | RegExp;
 export type ValidateResult =
   | string
   | boolean
-  | void
   | Promise<string>
-  | Promise<boolean>;
+  | Promise<boolean>
+  | undefined;
 
 export type Validate = (data: any) => ValidateResult;
 

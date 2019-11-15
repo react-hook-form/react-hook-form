@@ -47,14 +47,14 @@ const SetValueWithTrigger: React.FC = () => {
         placeholder="firstName"
         onChange={e => setValue('firstName', e.target.value, true)}
       />
-      {errors.firstName && <p>{errors.firstName.message || ''}</p>}
+      {errors.firstName && <p>{errors.firstName.message}</p>}
 
       <input
         name="lastName"
         placeholder="lastName"
         onChange={e => setValue('lastName', e.target.value, true)}
       />
-      {errors.lastName && <p>{errors.lastName.message || ''}</p>}
+      {errors.lastName && <p>{errors.lastName.message}</p>}
 
       <button>Submit</button>
       <div id="renderCount">{renderCounter}</div>
