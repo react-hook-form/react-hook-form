@@ -1000,7 +1000,7 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
     watch,
     reset,
     clearError,
-    setError,
+    setError: useCallback(setError, []),
     setValue,
     triggerValidation,
     getValues,
