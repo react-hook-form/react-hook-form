@@ -919,7 +919,6 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
     touchedFieldsRef.current = new Set();
     watchFieldsRef.current = new Set();
     dirtyFieldsRef.current = new Set();
-    fieldsWithValidationRef.current = new Set();
     validFieldsRef.current = new Set();
     isWatchAllRef.current = false;
     isSubmittedRef.current = false;

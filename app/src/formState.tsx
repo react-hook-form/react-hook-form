@@ -5,7 +5,7 @@ import { withRouter } from 'react-router';
 let renderCounter = 0;
 
 const FormState: React.FC = (props: any) => {
-  const { register, handleSubmit, formState } = useForm<{
+  const { register, handleSubmit, formState, reset } = useForm<{
     firstName: string;
     lastName: string;
     select: string;
@@ -46,7 +46,10 @@ const FormState: React.FC = (props: any) => {
         defaultChecked
         ref={register}
       />
-      <button>Submit</button>
+      <button id="submit">Submit</button>
+      <button type="button" onClick={() => reset()} id="resetForm">
+        Reset
+      </button>
       <div id="renderCount">{renderCounter}</div>
     </form>
   );

@@ -16,7 +16,7 @@ const validationSchema = yup.object().shape({
 });
 
 const FormStateWithSchema: React.FC = (props: any) => {
-  const { register, handleSubmit, formState } = useForm<{
+  const { register, handleSubmit, formState, reset } = useForm<{
     firstName: string;
     lastName: string;
     select: string;
@@ -46,7 +46,10 @@ const FormStateWithSchema: React.FC = (props: any) => {
       Radio3
       <input type="radio" name="radio" ref={register} value="3" />
       <input type="checkbox" name="checkbox" ref={register} />
-      <button>Submit</button>
+      <button id="submit">Submit</button>
+      <button type="button" onClick={() => reset()} id="resetForm">
+        Reset
+      </button>
       <div id="state">{JSON.stringify(formState)}</div>
       <div id="renderCount">{renderCounter}</div>
     </form>
