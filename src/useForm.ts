@@ -43,6 +43,7 @@ import {
   ManualFieldError,
   MultipleFieldErrors,
   Ref,
+  Schema,
 } from './types';
 
 const { useRef, useState, useCallback, useEffect } = React;
@@ -117,7 +118,7 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
   const validateWithSchemaCurry = useCallback(
     validateWithSchema.bind(
       null,
-      validationSchema,
+      validationSchema as Schema<FormValues>,
       validationSchemaOptionRef.current,
       validateAllFieldCriteria,
     ),
