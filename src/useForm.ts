@@ -390,7 +390,7 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
         const currentError = errors[name];
         let error;
 
-        if (!field) {
+        if (!field || isUnMount.current) {
           return;
         }
 
@@ -433,7 +433,11 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
           error = await validateFieldCurry(field);
         }
 
-        if (!renderBaseOnError(name, error) && shouldUpdateState) {
+        if (
+          !renderBaseOnError(name, error) &&
+          shouldUpdateState &&
+          !isUnMount.current
+        ) {
           render({});
         }
       };
