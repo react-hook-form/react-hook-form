@@ -6,6 +6,7 @@ const SetError: React.FC = () => {
     firstName: string;
     lastName: string;
     age: string;
+    test: string;
   }>();
 
   useEffect(() => {
@@ -16,13 +17,41 @@ const SetError: React.FC = () => {
     setError('firstName', 'wrong');
     setError('lastName', 'wrong');
     setError('age', 'wrong');
-    // eslint-disable-next-line
-  }, []);
+    setError('test', 'test', 'testMessage');
+    setError([
+      {
+        type: 'required',
+        name: 'test1',
+        message: 'This is required.',
+      },
+      {
+        type: 'minLength',
+        name: 'test2',
+        message: 'Minlength is 10',
+      },
+    ]);
+    setError('username', {
+      required: 'This is required',
+      minLength: 'This is minLength',
+    });
+  }, [register, setError]);
 
   return (
     <div>
+      <p id="error">
+        {errors.test && errors.test.message}
+        {errors.test1 && errors.test1.message}
+        {errors.test2 && errors.test2.message}
+        {errors.username &&
+          errors.username.types &&
+          errors.username.types.required}
+        {errors.username &&
+          errors.username.types &&
+          errors.username.types.minLength}
+      </p>
+
       <div id="errorContainer">
-        {Object.values(errors).map((error, index) => (
+        {Object.values(errors).map((error: any, index) => (
           <div id={`error${index}`} key={index}>
             {index} {error && error.type}
           </div>
