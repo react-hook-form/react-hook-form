@@ -390,7 +390,7 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
         const currentError = errors[name];
         let error;
 
-        if (!field) {
+        if (!field || !isUnMount.current) {
           return;
         }
 
