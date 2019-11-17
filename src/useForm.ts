@@ -77,7 +77,7 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
   const isSubmittingRef = useRef(false);
   const isSchemaValidateTriggeredRef = useRef(false);
   const validateAndUpdateStateRef = useRef<Function>();
-  const [, render] = useState();
+  const [, _render] = useState();
   const { isOnBlur, isOnSubmit } = useRef(modeChecker(mode)).current;
   const isWindowUndefined = typeof window === UNDEFINED;
   const isWeb =
@@ -103,6 +103,12 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
     ...errorsRef.current,
     ...data,
   });
+  
+  const render = useCallback((obj:any) => {
+    if (!isUnmount.current) {
+      _render(obj);
+    }
+  }, []);
 
   const validateFieldCurry = useCallback(
     validateField.bind(
