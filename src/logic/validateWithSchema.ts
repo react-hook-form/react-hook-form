@@ -75,7 +75,6 @@ export default async function validateWithSchema<FormValues>(
         errors: {},
       };
     } catch (e) {
-      console.log(e);
       return {
         values: {},
         errors: parseErrorSchema<FormValues>(e, validateAllFieldCriteria),
