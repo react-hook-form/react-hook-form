@@ -65,22 +65,23 @@ export default async function validateWithSchema<FormValues>(
   validateAllFieldCriteria: boolean,
   data: FieldValues,
 ): Promise<SchemaValidationResult<FormValues>> {
-  const { validate } = validationSchema as Schema<FormValues>;
-  const { resolver } = validationSchema as SchemaResolver<FormValues>;
-
-  if (validate) {
+  if ((validationSchema as Schema<FormValues>).validate) {
     try {
       return {
-        values: await validate(data, validationSchemaOption),
+        values: await (validationSchema as Schema<FormValues>).validate(
+          data,
+          validationSchemaOption,
+        ),
         errors: {},
       };
     } catch (e) {
+      console.log(e);
       return {
         values: {},
         errors: parseErrorSchema<FormValues>(e, validateAllFieldCriteria),
       };
     }
   } else {
-    return resolver(data);
+    return (validationSchema as SchemaResolver<FormValues>).resolver(data);
   }
 }
