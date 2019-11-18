@@ -294,7 +294,7 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
         | ValidationPayload<FieldName<FormValues>, FieldValue<FormValues>>
         | ValidationPayload<FieldName<FormValues>, FieldValue<FormValues>>[],
     ): Promise<boolean> => {
-      const { fieldErrors } = await validateWithSchemaCurry(
+      const { errors } = await validateWithSchemaCurry(
         combineFieldValues(getFieldsValues(fieldsRef.current)),
       );
       const isMultipleFields = isArray(payload);
@@ -302,20 +302,20 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
         ? payload.map(({ name }) => name)
         : [payload.name];
       const validFieldNames = names.filter(
-        name => !(fieldErrors as FieldErrors<FormValues>)[name],
+        name => !(errors as FieldErrors<FormValues>)[name],
       );
       const firstFieldName = names[0];
       schemaErrorsRef.current = isMultipleFields
-        ? fieldErrors
-        : fieldErrors[firstFieldName]
-        ? { [firstFieldName]: fieldErrors[firstFieldName] }
+        ? errors
+        : errors[firstFieldName]
+        ? { [firstFieldName]: errors[firstFieldName] }
         : {};
       isSchemaValidateTriggeredRef.current = true;
 
       if (isMultipleFields) {
         errorsRef.current = omitValidFields<FormValues>(
           combineErrorsRef(
-            Object.entries(fieldErrors)
+            Object.entries(errors)
               .filter(([key]) => names.includes(key))
               .reduce(
                 (previous, [name, error]) => ({ ...previous, [name]: error }),
@@ -426,15 +426,15 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
         }
 
         if (validationSchema) {
-          const { fieldErrors } = await validateWithSchemaCurry(
+          const { errors } = await validateWithSchemaCurry(
             combineFieldValues(getFieldsValues(fields)),
           );
-          Object.keys(fieldErrors).forEach(name =>
+          Object.keys(errors).forEach(name =>
             validFieldsRef.current.delete(name),
           );
-          schemaErrorsRef.current = fieldErrors;
+          schemaErrorsRef.current = errors;
           isSchemaValidateTriggeredRef.current = true;
-          error = fieldErrors[name] ? { [name]: fieldErrors[name] } : {};
+          error = errors[name] ? { [name]: errors[name] } : {};
         } else {
           error = await validateFieldCurry(field);
         }
@@ -703,8 +703,8 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
           isSchemaValidateTriggeredRef.current = true;
           validateWithSchemaCurry(
             combineFieldValues(getFieldsValues(fields)),
-          ).then(({ fieldErrors }) => {
-            schemaErrorsRef.current = fieldErrors;
+          ).then(({ errors }) => {
+            schemaErrorsRef.current = errors;
             if (isEmptyObject(schemaErrorsRef.current)) {
               render();
             }
@@ -828,12 +828,12 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
     try {
       if (validationSchema) {
         fieldValues = getFieldsValues(fields);
-        const output = await validateWithSchemaCurry(
+        const { errors, values } = await validateWithSchemaCurry(
           combineFieldValues(fieldValues),
         );
-        schemaErrorsRef.current = output.fieldErrors;
-        fieldErrors = output.fieldErrors;
-        fieldValues = output.result;
+        schemaErrorsRef.current = errors;
+        fieldErrors = errors;
+        fieldValues = values;
       } else {
         const {
           errors,

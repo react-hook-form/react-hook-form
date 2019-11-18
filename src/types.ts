@@ -42,6 +42,12 @@ export type SchemaValidateOptions = Partial<{
   context: object;
 }>;
 
+export type SchemaResolver<FormValues> = {
+  resolver: (
+    values: FieldValues,
+  ) => { values: FieldValues; errors: FieldErrors<FormValues> };
+};
+
 export type UseFormOptions<
   FormValues extends FieldValues = FieldValues
 > = Partial<{
@@ -49,7 +55,7 @@ export type UseFormOptions<
   reValidateMode: Mode;
   defaultValues: Partial<FormValues>;
   validationSchemaOption: SchemaValidateOptions;
-  validationSchema: any;
+  validationSchema: SchemaResolver<FormValues> | any;
   nativeValidation: boolean;
   submitFocusError: boolean;
   validateCriteriaMode: 'firstError' | 'all';

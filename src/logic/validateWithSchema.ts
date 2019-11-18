@@ -1,10 +1,15 @@
 import appendErrors from './appendErrors';
 import isArray from '../utils/isArray';
-import { FieldValues, SchemaValidateOptions, FieldErrors } from '../types';
+import {
+  FieldValues,
+  SchemaValidateOptions,
+  FieldErrors,
+  SchemaResolver,
+} from '../types';
 
 interface SchemaValidationResult<FormValues> {
-  fieldErrors: FieldErrors<FormValues>;
-  result: FieldValues;
+  errors: FieldErrors<FormValues>;
+  values: FieldValues;
 }
 
 interface YupValidationError {
@@ -55,20 +60,27 @@ export const parseErrorSchema = <FormValues>(
       };
 
 export default async function validateWithSchema<FormValues>(
-  validationSchema: Schema<FormValues>,
+  validationSchema: Schema<FormValues> | SchemaResolver<FormValues>,
   validationSchemaOption: SchemaValidateOptions,
   validateAllFieldCriteria: boolean,
   data: FieldValues,
 ): Promise<SchemaValidationResult<FormValues>> {
-  try {
-    return {
-      result: await validationSchema.validate(data, validationSchemaOption),
-      fieldErrors: {},
-    };
-  } catch (e) {
-    return {
-      result: {},
-      fieldErrors: parseErrorSchema<FormValues>(e, validateAllFieldCriteria),
-    };
+  const { validate } = validationSchema as Schema<FormValues>;
+  const { resolver } = validationSchema as SchemaResolver<FormValues>;
+
+  if (validate) {
+    try {
+      return {
+        values: await validate(data, validationSchemaOption),
+        errors: {},
+      };
+    } catch (e) {
+      return {
+        values: {},
+        errors: parseErrorSchema<FormValues>(e, validateAllFieldCriteria),
+      };
+    }
+  } else {
+    return resolver(data);
   }
 }
