@@ -35,7 +35,7 @@ Object {
 
 exports[`validateWithSchema should return undefined when no error reported 1`] = `
 Object {
-  "fieldErrors": Object {
+  "errors": Object {
     "age": Object {
       "message": "age is a required field",
       "type": "required",
@@ -45,6 +45,6 @@ Object {
       "type": "min",
     },
   },
-  "result": Object {},
+  "values": Object {},
 }
 `;

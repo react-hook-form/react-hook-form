@@ -619,8 +619,8 @@ describe('useForm', () => {
 
       (validateWithSchema as any).mockImplementation(async (payload: any) => {
         return {
-          fieldErrors: payload,
-          result: {},
+          errors: payload,
+          values: {},
         };
       });
 
@@ -647,8 +647,8 @@ describe('useForm', () => {
 
       (validateWithSchema as any).mockImplementation(async (payload: any) => {
         return {
-          fieldErrors: payload,
-          result: {},
+          errors: payload,
+          values: {},
         };
       });
 
@@ -685,10 +685,10 @@ describe('useForm', () => {
 
       (validateWithSchema as any).mockImplementation(async () => {
         return {
-          fieldErrors: {
+          errors: {
             test1: 'test',
           },
-          result: {},
+          values: {},
         };
       });
 
@@ -716,11 +716,11 @@ describe('useForm', () => {
 
       (validateWithSchema as any).mockImplementation(async () => {
         return {
-          fieldErrors: {
+          errors: {
             test1: 'test1',
             test: 'test',
           },
-          result: {},
+          values: {},
         };
       });
 
@@ -754,8 +754,8 @@ describe('useForm', () => {
 
       (validateWithSchema as any).mockImplementation(async (payload: any) => {
         return {
-          fieldErrors: payload,
-          result: {},
+          errors: payload,
+          values: {},
         };
       });
 
@@ -803,11 +803,11 @@ describe('useForm', () => {
 
       (validateWithSchema as any).mockImplementation(async () => {
         return {
-          fieldErrors: {
+          errors: {
             test1: 'test1',
             test: 'test',
           },
-          result: {},
+          values: {},
         };
       });
 
@@ -893,8 +893,8 @@ describe('useForm', () => {
       });
       (validateWithSchema as any).mockImplementation(async () => {
         return {
-          fieldErrors: {},
-          result: {},
+          errors: {},
+          values: {},
         };
       });
 
@@ -1038,8 +1038,8 @@ describe('useForm', () => {
 
       (validateField as any).mockImplementation(async () => {
         return {
-          fieldErrors: { test: 'issue' },
-          result: {},
+          errors: { test: 'issue' },
+          values: {},
         };
       });
 
@@ -1057,8 +1057,8 @@ describe('useForm', () => {
 
       (validateField as any).mockImplementation(async () => {
         return {
-          fieldErrors: {},
-          result: {},
+          errors: {},
+          values: {},
         };
       });
 
