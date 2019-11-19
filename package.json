@@ -19,7 +19,7 @@
     "postrelease": "yarn publish && git push --follow-tags",
     "test": "jest --runInBand",
     "test:coverage": "jest --runInBand --coverage",
-    "testw": "yarn test:coverage -- --watchAll",
+    "test:watch": "yarn test:coverage -- --watchAll",
     "cypress": "cypress run",
     "cypress:open": "cypress open",
     "bundlesize": "yarn build:min && bundlesize",
