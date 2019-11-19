@@ -90,5 +90,9 @@
       "npm run prettier",
       "git add"
     ]
+  },
+  "dependencies": {
+    "@hapi/joi": "^16.1.7",
+    "@types/hapi__joi": "^16.0.3"
   }
 }
