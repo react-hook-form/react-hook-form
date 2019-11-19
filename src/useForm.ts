@@ -247,10 +247,10 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
       name: FieldName<FormValues>,
       value: FieldValue<FormValues>,
     ): boolean | void => {
-      const shouldRender = setFieldValue(name, value);
+      setFieldValue(name, value);
+
       if (
         setDirty(name) ||
-        shouldRender ||
         (!touchedFieldsRef.current.has(name) && readFormState.current.touched)
       ) {
         return !!touchedFieldsRef.current.add(name);
