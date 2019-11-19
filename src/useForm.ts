@@ -247,10 +247,10 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
       name: FieldName<FormValues>,
       value: FieldValue<FormValues>,
     ): boolean | void => {
-      const shouldRender = setFieldValue(name, value);
+      setFieldValue(name, value);
+
       if (
         setDirty(name) ||
-        shouldRender ||
         (!touchedFieldsRef.current.has(name) && readFormState.current.touched)
       ) {
         return !!touchedFieldsRef.current.add(name);
@@ -280,12 +280,16 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
         setInternalValue(name, value);
       }
 
+      if (shouldRender) {
+        render();
+      }
+
       const error = await validateFieldCurry(field);
-      renderBaseOnError(name, error, shouldRender);
+      renderBaseOnError(name, error);
 
       return isEmptyObject(error);
     },
-    [renderBaseOnError, setInternalValue, validateFieldCurry],
+    [render, renderBaseOnError, setInternalValue, validateFieldCurry],
   );
 
   const executeSchemaValidation = useCallback(
@@ -576,7 +580,11 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
     fieldNames?: FieldName<FormValues> | FieldName<FormValues>[],
     defaultValue?: string | Partial<FormValues>,
   ): FieldValue<FormValues> | Partial<FormValues> | string | undefined {
-    const combinedDefaultValues = defaultValue || defaultValues || {};
+    const combinedDefaultValues = isUndefined(defaultValue)
+      ? isUndefined(defaultValues)
+        ? {}
+        : defaultValues
+      : defaultValue;
     const fieldValues = getFieldsValues<FormValues>(fieldsRef.current);
     const watchFields = watchFieldsRef.current;
 
