@@ -82,3 +82,18 @@ describe('validateWithSchema', () => {
     });
   });
 });
+
+test('should invoke resolver function for custom schema validation', async () => {
+  const resolver = jest.fn();
+
+  await validateWithSchema(
+    {
+      resolver,
+    },
+    { abortEarly: false },
+    false,
+    {},
+  );
+
+  expect(resolver).toBeCalledWith({});
+});
