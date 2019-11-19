@@ -1,7 +1,7 @@
 {
   "name": "react-hook-form",
   "description": "Performant, flexible and extensible forms library for React Hooks",
-  "version": "3.28.1",
+  "version": "3.28.2-beta.1",
   "main": "dist/react-hook-form.js",
   "module": "dist/react-hook-form.es.js",
   "types": "dist/index.d.ts",
@@ -19,7 +19,7 @@
     "postrelease": "yarn publish && git push --follow-tags",
     "test": "jest --runInBand",
     "test:coverage": "jest --runInBand --coverage",
-    "testw": "yarn test:coverage -- --watchAll",
+    "test:watch": "yarn test:coverage -- --watchAll",
     "cypress": "cypress run",
     "cypress:open": "cypress open",
     "bundlesize": "yarn build:min && bundlesize",
