@@ -14,7 +14,7 @@ import {
 
 export interface FormProps<FormValues extends FieldValues = FieldValues>
   extends FormContextValues<FormValues> {
-  children: JSX.Element[] | JSX.Element;
+  children: React.ReactNode;
 }
 
 export interface FormContextValues<
