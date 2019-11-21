@@ -3,7 +3,7 @@ import isBoolean from '../utils/isBoolean';
 import { FieldError, Ref } from '../types';
 
 export default function getValidateError(
-  result: string,
+  result: string | undefined,
   ref: Ref,
   nativeError: Function,
   type = 'validate',
