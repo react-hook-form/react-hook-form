@@ -11,7 +11,7 @@ export default function getValidateError(
   const isStringValue = isString(result);
 
   if (isStringValue || (isBoolean(result) && !result)) {
-    const message = isStringValue ? result : '';
+    const message = isStringValue ? (result as string) : '';
     const error = {
       type,
       message,

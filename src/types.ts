@@ -93,7 +93,7 @@ export interface FieldError {
   type: string;
   ref?: Ref;
   types?: MultipleFieldErrors;
-  message?: ValidateResult;
+  message?: string;
   isManual?: boolean;
 }
 
