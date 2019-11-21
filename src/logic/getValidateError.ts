@@ -1,9 +1,9 @@
 import isString from '../utils/isString';
 import isBoolean from '../utils/isBoolean';
-import { FieldError, ValidateResult, Ref } from '../types';
+import { FieldError, Ref } from '../types';
 
 export default function getValidateError(
-  result: ValidateResult,
+  result: string,
   ref: Ref,
   nativeError: Function,
   type = 'validate',

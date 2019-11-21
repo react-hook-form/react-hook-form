@@ -64,9 +64,7 @@ type ValidationOptionObject<Value> = Value | { value: Value; message: string };
 
 export type ValidationValue = number | string | RegExp;
 
-export type ValidateResult = string | boolean | undefined;
-
-export type Validate = (data: any) => ValidateResult;
+export type Validate = (data: any) => string;
 
 export type ValidationOptions = Partial<{
   required: boolean | string;
@@ -81,13 +79,13 @@ export type ValidationOptions = Partial<{
     | { value: Validate | Record<string, Validate>; message: string };
 }>;
 
-export type MultipleFieldErrors = Record<string, ValidateResult>;
+export type MultipleFieldErrors = Record<string, string>;
 
 export interface FieldError {
   type: string;
   ref?: Ref;
   types?: MultipleFieldErrors;
-  message?: ValidateResult;
+  message?: string;
   isManual?: boolean;
 }
 
