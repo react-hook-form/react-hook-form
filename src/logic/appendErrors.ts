@@ -5,7 +5,7 @@ export default <FormValues>(
   validateAllFieldCriteria: boolean,
   errors: FieldErrors<FormValues>,
   type: string,
-  message: string,
+  message?: string,
 ) => {
   if (!validateAllFieldCriteria) {
     return {};
