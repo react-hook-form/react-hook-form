@@ -956,11 +956,14 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
           setFieldValue(key, getDefaultValue(values, key)),
         );
         defaultValuesRef.current = { ...values };
+        if (readFormState.current.isValid) {
+          triggerValidation();
+        }
       }
 
       render();
     },
-    [render, setFieldValue],
+    [render, setFieldValue, triggerValidation],
   );
 
   const getValues = (payload?: { nest: boolean }): FormValues => {

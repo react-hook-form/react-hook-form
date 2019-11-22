@@ -6,7 +6,7 @@
     </p>
 </div>
 
-<p align="center">Performant, flexible and extensible forms with easy to use for validation.</p>
+<p align="center">Performant, flexible and extensible forms with easy to use validation.</p>
 
 <div align="center">
 
@@ -38,8 +38,8 @@
 - [Tiny size](https://bundlephobia.com/result?p=react-hook-form@latest) without any dependency
 - Follows HTML standard for validation
 - Compatible with React Native
-- Support [Yup](https://github.com/jquense/yup), [Joi](https://github.com/hapijs/joi) or custom schema-based validation
-- Support browser native validation
+- Supports [Yup](https://github.com/jquense/yup), [Joi](https://github.com/hapijs/joi) or custom schema-based validation
+- Supports browser native validation
 - Build forms quickly with the [form builder](https://react-hook-form.com/form-builder)
 
 ## Install
@@ -95,7 +95,7 @@ Thanks goes to these wonderful people. [[Become a contributor](CONTRIBUTING.md)]
 
 ## Backers
 
-Thank goes to all our backers! [[Become a backer](https://opencollective.com/react-hook-form#backer)].
+Thanks goes to all our backers! [[Become a backer](https://opencollective.com/react-hook-form#backer)].
 
 <a href="https://opencollective.com/react-hook-form#backers">
     <img src="https://opencollective.com/react-hook-form/backers.svg?width=950" />
