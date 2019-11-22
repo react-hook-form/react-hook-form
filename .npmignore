@@ -9,6 +9,7 @@ yarn-error.log
 yarn.lock
 CONTRIBUTING.md
 .eslintrc
+.DS_Store
 jestConfig.json
 .idea/
 .rpt2_cache/
