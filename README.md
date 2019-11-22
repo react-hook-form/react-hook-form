@@ -95,7 +95,7 @@ Thanks goes to these wonderful people. [[Become a contributor](CONTRIBUTING.md)]
 
 ## Backers
 
-Thank goes to all our backers! [[Become a backer](https://opencollective.com/react-hook-form#backer)].
+Thanks goes to all our backers! [[Become a backer](https://opencollective.com/react-hook-form#backer)].
 
 <a href="https://opencollective.com/react-hook-form#backers">
     <img src="https://opencollective.com/react-hook-form/backers.svg?width=950" />
