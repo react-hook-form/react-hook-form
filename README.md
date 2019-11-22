@@ -6,7 +6,7 @@
     </p>
 </div>
 
-<p align="center">Performant, flexible and extensible forms with easy to use for validation.</p>
+<p align="center">Performant, flexible and extensible forms with easy to use validation.</p>
 
 <div align="center">
 
@@ -38,8 +38,8 @@
 - [Tiny size](https://bundlephobia.com/result?p=react-hook-form@latest) without any dependency
 - Follows HTML standard for validation
 - Compatible with React Native
-- Support [Yup](https://github.com/jquense/yup) schema-based validation
-- Support browser native validation
+- Supports [Yup](https://github.com/jquense/yup) schema-based validation
+- Supports native browser validation
 - Build forms quickly with the [form builder](https://react-hook-form.com/form-builder)
 
 ## Install
