@@ -14,8 +14,14 @@ context('form setValue with schema', () => {
 
     cy.get('input[name="age"]').type('a2323');
 
-    cy.get('button').click();
+    cy.get('#submit').click();
+    cy.get('p').should('have.length', 1);
+    cy.get('input[name="requiredField"] + p').contains('RequiredField error');
+
+    cy.get('#setValue').click();
+    cy.get('input[name="requiredField"]').should('have.value', 'test123456789');
     cy.get('p').should('have.length', 0);
-    cy.get('#renderCount').contains('6');
+
+    cy.get('#renderCount').contains('7');
   });
 });
