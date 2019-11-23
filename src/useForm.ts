@@ -309,11 +309,14 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
         name => !(fieldErrors as FieldErrors<FormValues>)[name],
       );
       const firstFieldName = names[0];
-      schemaErrorsRef.current = isMultipleFields
+      errorsRef.current = isMultipleFields
         ? fieldErrors
         : fieldErrors[firstFieldName]
-        ? { [firstFieldName]: fieldErrors[firstFieldName] }
-        : {};
+        ? {
+            ...errorsRef.current,
+            [firstFieldName]: fieldErrors[firstFieldName],
+          }
+        : omitValidFields(errorsRef.current, names);
       isSchemaValidateTriggeredRef.current = true;
 
       if (isMultipleFields) {
@@ -330,7 +333,7 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
         );
         render();
       } else {
-        renderBaseOnError(firstFieldName, schemaErrorsRef.current);
+        renderBaseOnError(firstFieldName, errorsRef.current);
       }
 
       return isEmptyObject(errorsRef.current);
