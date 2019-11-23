@@ -13,6 +13,7 @@ const validationSchema = yup.object().shape({
     .string()
     .min(10)
     .required(),
+  requiredField: yup.string().required(),
 });
 
 const SetValueWithSchema: React.FC = () => {
@@ -63,7 +64,20 @@ const SetValueWithSchema: React.FC = () => {
         }}
       />
 
-      <button>Submit</button>
+      <input name="requiredField" placeholder="requiredField" ref={register} />
+      {errors.requiredField && <p>RequiredField error</p>}
+
+      <button
+        type="button"
+        id="setValue"
+        onClick={() => {
+          setValue('requiredField', 'test123456789', true);
+        }}
+      >
+        firstName reset
+      </button>
+
+      <button id="submit">Submit</button>
       <div id="renderCount">{renderCounter}</div>
     </form>
   );
