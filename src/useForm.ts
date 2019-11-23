@@ -768,6 +768,18 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
     }
   }
 
+  function unregister(name: FieldName<FormValues>): void;
+  function unregister(names: FieldName<FormValues>[]): void;
+  function unregister(
+    names: FieldName<FormValues> | FieldName<FormValues>[],
+  ): void {
+    if (!isEmptyObject(fieldsRef.current)) {
+      (isArray(names) ? names : [names]).forEach(fieldName =>
+        removeEventListenerAndRef(fieldsRef.current[fieldName], true),
+      );
+    }
+  }
+
   // React-Native: Element has no name prop, so it must be passed in on the validateRule
   function register<Element>(
     validateRule: ValidationOptions & NameProp,
@@ -800,28 +812,16 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
         { name: validationOptions.name },
         validationOptions,
       );
-      return;
+      return unregister(name);
     }
 
     if (isObject(refOrValidateRule) && 'name' in refOrValidateRule) {
       registerIntoFieldsRef(refOrValidateRule, validationOptions);
-      return;
+      return unregister(name);
     }
 
     return (ref: Element | null) =>
       ref && registerIntoFieldsRef(ref, refOrValidateRule);
-  }
-
-  function unregister(name: FieldName<FormValues>): void;
-  function unregister(names: FieldName<FormValues>[]): void;
-  function unregister(
-    names: FieldName<FormValues> | FieldName<FormValues>[],
-  ): void {
-    if (!isEmptyObject(fieldsRef.current)) {
-      (isArray(names) ? names : [names]).forEach(fieldName =>
-        removeEventListenerAndRef(fieldsRef.current[fieldName], true),
-      );
-    }
   }
 
   const handleSubmit = (callback: OnSubmit<FormValues>) => async (
