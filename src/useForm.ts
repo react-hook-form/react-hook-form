@@ -309,9 +309,10 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
         name => !(fieldErrors as FieldErrors<FormValues>)[name],
       );
       const firstFieldName = names[0];
+      const hasError = fieldErrors[firstFieldName];
       schemaErrorsRef.current = isMultipleFields
         ? fieldErrors
-        : fieldErrors[firstFieldName]
+        : hasError
         ? {
             ...schemaErrorsRef.current,
             [firstFieldName]: fieldErrors[firstFieldName],
@@ -333,7 +334,10 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
         );
         render();
       } else {
-        renderBaseOnError(firstFieldName, schemaErrorsRef.current);
+        renderBaseOnError(
+          firstFieldName,
+          hasError ? schemaErrorsRef.current : {},
+        );
       }
 
       return isEmptyObject(errorsRef.current);
