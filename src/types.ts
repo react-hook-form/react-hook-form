@@ -1,5 +1,7 @@
 import * as React from 'react';
 
+export type Primitive = string | boolean | number | symbol | null | undefined;
+
 export type FieldValues = Record<string, any>;
 
 type BaseFieldName<FormValues extends FieldValues> = Extract<
