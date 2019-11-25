@@ -1,32 +1,23 @@
 import flatArray from './flatArray';
-import isString from './isString';
-import isObject from './isObject';
+import isPrimitive from './isPrimitive';
 import { FieldValues, FieldName } from '../types';
 import isArray from './isArray';
 
 const getPath = <FormValues extends FieldValues = FieldValues>(
   path: FieldName<FormValues>,
-  values: FormValues | string[] | string,
+  values: FormValues | any[],
 ): any[] =>
   isArray(values)
     ? values.map((item, index) => {
         const pathWithIndex = `${path}[${index}]`;
-
-        if (isArray(item)) {
-          return getPath(pathWithIndex, item);
-        } else if (isObject(item)) {
-          return Object.entries(item).map(([key, objectValue]: [string, any]) =>
-            isString(objectValue)
-              ? `${pathWithIndex}.${key}`
-              : getPath(`${pathWithIndex}.${key}`, objectValue),
-          );
-        }
-
-        return pathWithIndex;
+        return isPrimitive(item) ? pathWithIndex : getPath(pathWithIndex, item);
       })
-    : Object.entries(values).map(([key, objectValue]) =>
-        isString(objectValue) ? `${path}.${key}` : getPath(path, objectValue),
-      );
+    : Object.entries(values).map(([key, objectValue]: [string, any]) => {
+        const pathWithKey = `${path}.${key}`;
+        return isPrimitive(objectValue)
+          ? pathWithKey
+          : getPath(pathWithKey, objectValue);
+      });
 
 export default <FormValues extends FieldValues = FieldValues>(
   parentPath: FieldName<FormValues>,
