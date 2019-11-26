@@ -1,0 +1,3 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`useForm register should return undefined when ref name is missing 1`] = `[Function]`;
