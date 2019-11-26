@@ -642,15 +642,28 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
     );
   }
 
+  function unregister(name: FieldName<FormValues>): void;
+  function unregister(names: FieldName<FormValues>[]): void;
+  function unregister(
+    names: FieldName<FormValues> | FieldName<FormValues>[],
+  ): void {
+    if (!isEmptyObject(fieldsRef.current)) {
+      (isArray(names) ? names : [names]).forEach(fieldName =>
+        removeEventListenerAndRef(fieldsRef.current[fieldName], true),
+      );
+    }
+  }
+
   function registerIntoFieldsRef<Element extends ElementLike>(
     ref: Element,
     validateOptions: ValidationOptions = {},
-  ): void {
+  ): ((name: FieldName<FormValues>) => void) | void {
     if (!ref.name) {
       return console.warn('Missing name at', ref);
     }
 
     const { name, type, value } = ref;
+    const unregisterMethod = () => unregister(name);
     const fieldAttributes = {
       ref,
       ...validateOptions,
@@ -670,7 +683,7 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
         ...currentField,
         ...validateOptions,
       };
-      return;
+      return unregisterMethod;
     }
 
     if (type) {
@@ -749,7 +762,7 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
     }
 
     if (!type) {
-      return;
+      return unregisterMethod;
     }
 
     const fieldToAttachListener =
@@ -765,18 +778,6 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
         isRadioOrCheckbox,
         validateAndStateUpdate: validateAndUpdateStateRef.current,
       });
-    }
-  }
-
-  function unregister(name: FieldName<FormValues>): void;
-  function unregister(names: FieldName<FormValues>[]): void;
-  function unregister(
-    names: FieldName<FormValues> | FieldName<FormValues>[],
-  ): void {
-    if (!isEmptyObject(fieldsRef.current)) {
-      (isArray(names) ? names : [names]).forEach(fieldName =>
-        removeEventListenerAndRef(fieldsRef.current[fieldName], true),
-      );
     }
   }
 
@@ -812,12 +813,12 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
         { name: validationOptions.name },
         validationOptions,
       );
-      return unregister(name);
+      return () => unregister(name);
     }
 
     if (isObject(refOrValidateRule) && 'name' in refOrValidateRule) {
       registerIntoFieldsRef(refOrValidateRule, validationOptions);
-      return unregister(name);
+      return () => unregister(name);
     }
 
     return (ref: Element | null) =>
