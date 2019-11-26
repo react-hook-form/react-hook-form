@@ -642,10 +642,22 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
     );
   }
 
+  function unregister(name: FieldName<FormValues>): void;
+  function unregister(names: FieldName<FormValues>[]): void;
+  function unregister(
+    names: FieldName<FormValues> | FieldName<FormValues>[],
+  ): void {
+    if (!isEmptyObject(fieldsRef.current)) {
+      (isArray(names) ? names : [names]).forEach(fieldName =>
+        removeEventListenerAndRef(fieldsRef.current[fieldName], true),
+      );
+    }
+  }
+
   function registerIntoFieldsRef<Element extends ElementLike>(
     ref: Element,
     validateOptions: ValidationOptions = {},
-  ): void {
+  ): ((name: FieldName<FormValues>) => void) | void {
     if (!ref.name) {
       return console.warn('Missing name at', ref);
     }
@@ -766,18 +778,7 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
         validateAndStateUpdate: validateAndUpdateStateRef.current,
       });
     }
-  }
-
-  function unregister(name: FieldName<FormValues>): void;
-  function unregister(names: FieldName<FormValues>[]): void;
-  function unregister(
-    names: FieldName<FormValues> | FieldName<FormValues>[],
-  ): void {
-    if (!isEmptyObject(fieldsRef.current)) {
-      (isArray(names) ? names : [names]).forEach(fieldName =>
-        removeEventListenerAndRef(fieldsRef.current[fieldName], true),
-      );
-    }
+    return () => unregister(name);
   }
 
   // React-Native: Element has no name prop, so it must be passed in on the validateRule
@@ -812,12 +813,12 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
         { name: validationOptions.name },
         validationOptions,
       );
-      return unregister(name);
+      return () => unregister(name);
     }
 
     if (isObject(refOrValidateRule) && 'name' in refOrValidateRule) {
       registerIntoFieldsRef(refOrValidateRule, validationOptions);
-      return unregister(name);
+      return () => unregister(name);
     }
 
     return (ref: Element | null) =>
