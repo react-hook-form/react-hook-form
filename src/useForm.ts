@@ -663,6 +663,7 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
     }
 
     const { name, type, value } = ref;
+    const unregisterMethod = () => unregister(name);
     const fieldAttributes = {
       ref,
       ...validateOptions,
@@ -682,7 +683,7 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
         ...currentField,
         ...validateOptions,
       };
-      return;
+      return unregisterMethod;
     }
 
     if (type) {
@@ -761,7 +762,7 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
     }
 
     if (!type) {
-      return;
+      return unregisterMethod;
     }
 
     const fieldToAttachListener =
@@ -778,7 +779,6 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
         validateAndStateUpdate: validateAndUpdateStateRef.current,
       });
     }
-    return () => unregister(name);
   }
 
   // React-Native: Element has no name prop, so it must be passed in on the validateRule
