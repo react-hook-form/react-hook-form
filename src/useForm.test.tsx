@@ -40,7 +40,7 @@ describe('useForm', () => {
       act(() => {
         expect(
           result.current.register({ name: 'test', type: 'input' }, {}),
-        ).toMatchSnapshot();
+        ).toBeUndefined();
       });
     });
 
