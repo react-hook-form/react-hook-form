@@ -762,7 +762,7 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
       );
     }
 
-    if (!type || type === 'custom') {
+    if (!type || type === 'rn') {
       return;
     }
 
