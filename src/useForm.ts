@@ -663,7 +663,6 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
     }
 
     const { name, type, value } = ref;
-    const unregisterMethod = () => unregister(name);
     const fieldAttributes = {
       ref,
       ...validateOptions,
@@ -683,7 +682,7 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
         ...currentField,
         ...validateOptions,
       };
-      return unregisterMethod;
+      return;
     }
 
     if (type) {
@@ -762,7 +761,7 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
     }
 
     if (!type) {
-      return unregisterMethod;
+      return;
     }
 
     const fieldToAttachListener =
@@ -813,12 +812,12 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
         { name: validationOptions.name },
         validationOptions,
       );
-      return () => unregister(name);
+      return;
     }
 
     if (isObject(refOrValidateRule) && 'name' in refOrValidateRule) {
       registerIntoFieldsRef(refOrValidateRule, validationOptions);
-      return () => unregister(name);
+      return;
     }
 
     return (ref: Element | null) =>
