@@ -297,6 +297,7 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
       payload:
         | ValidationPayload<FieldName<FormValues>, FieldValue<FormValues>>
         | ValidationPayload<FieldName<FormValues>, FieldValue<FormValues>>[],
+      shouldRender?: boolean,
     ): Promise<boolean> => {
       const { fieldErrors } = await validateWithSchemaCurry(
         combineFieldValues(getFieldsValues(fieldsRef.current)),
@@ -337,6 +338,7 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
         renderBaseOnError(
           firstFieldName,
           hasError ? schemaErrorsRef.current : {},
+          shouldRender,
         );
       }
 
@@ -356,7 +358,7 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
         payload || Object.keys(fieldsRef.current).map(name => ({ name }));
 
       if (validationSchema) {
-        return executeSchemaValidation(fields);
+        return executeSchemaValidation(fields, shouldRender);
       }
 
       if (isArray(fields)) {
