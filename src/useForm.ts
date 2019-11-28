@@ -160,9 +160,7 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
         reRender = reRender || !errorsRef.current[name];
       }
 
-      errorsRef.current = validationSchema
-        ? schemaErrorsRef.current
-        : combineErrorsRef(error);
+      errorsRef.current = combineErrorsRef(error);
 
       if (reRender) {
         render();
