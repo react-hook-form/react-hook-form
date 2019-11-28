@@ -62,8 +62,9 @@ export default async <FormValues extends FieldValues>(
       (isCheckBox && !getCheckboxValue(options).isValid) ||
       (isRadio && !getRadioValue(options).isValid))
   ) {
-    const { message: requiredMessage } = getValueAndMessage(required);
-    const message = isString(required) ? required : requiredMessage;
+    const message = isString(required)
+      ? required
+      : getValueAndMessage(required).message;
 
     error[typedName] = {
       type: INPUT_VALIDATION_RULES.required,
