@@ -31,6 +31,22 @@ describe('validateField', () => {
     });
 
     expect(
+      await validateField({}, false, false, {
+        ref: { type: 'text', value: '', name: 'test', setCustomValidity },
+        required: {
+          value: true,
+          message: 'required',
+        },
+      }),
+    ).toEqual({
+      test: {
+        ref: { type: 'text', value: '', name: 'test', setCustomValidity },
+        message: 'required',
+        type: 'required',
+      },
+    });
+
+    expect(
       await validateField(
         {
           test: {
