@@ -1,5 +1,5 @@
 context('basicSchemaValidation form validation', () => {
-  it('should validate the form with onSubmit mode', () => {
+  it.only('should validate the form with onSubmit mode', () => {
     cy.visit('http://localhost:3000/basic-schema-validation/onSubmit');
     cy.get('button').click();
 
@@ -15,7 +15,6 @@ context('basicSchemaValidation form validation', () => {
 
     cy.get('input[name="firstName"]').type('bill');
     cy.get('input[name="lastName"]').type('luo123456');
-    cy.get('input[name="lastName"] + p').contains('lastName error');
     cy.get('select[name="selectNumber"]').select('1');
     cy.get('input[name="pattern"]').type('luo');
     cy.get('input[name="min"]').type('1');
@@ -45,11 +44,8 @@ context('basicSchemaValidation form validation', () => {
       .type('19');
     cy.get('input[name="minDate"]').type('2019-08-01');
     cy.get('input[name="maxDate"]').type('2019-08-01');
+    cy.get('input[name="maxDate"]').blur();
     cy.get('input[name="checkbox"]').check();
-    cy.get('input[name="exclusivelyRequiredOne"]').type('required one');
-    cy.get('input[name="exclusivelyRequiredTwo"]')
-      .focus()
-      .blur();
 
     cy.get('p').should('have.length', 0);
     cy.get('#renderCount').contains('28');
@@ -165,29 +161,8 @@ context('basicSchemaValidation form validation', () => {
     cy.get('input[name="minDate"]').type('2019-08-01');
     cy.get('input[name="maxDate"]').type('2019-08-01');
     cy.get('input[name="checkbox"]').check();
-    cy.get('input[name="exclusivelyRequiredOne"]').type('required one');
-    cy.get('input[name="exclusivelyRequiredTwo"]')
-      .focus()
-      .blur();
 
     cy.get('p').should('have.length', 0);
-    cy.get('#renderCount').contains('34');
-  });
-
-  it('should re-render if sibling fields caused invalidation that has been reversed', () => {
-    cy.visit('http://localhost:3000/basic-schema-validation/onChange');
-
-    cy.get('input[name="exclusivelyRequiredOne"]').type('required one');
-    cy.get('input[name="exclusivelyRequiredTwo"]').type('required two');
-    cy.get('input[name="exclusivelyRequiredTwo"] + p').contains(
-      'exclusivelyRequiredTwo error',
-    );
-    cy.get('input[name="exclusivelyRequiredTwo"] + p').contains(
-      'exclusivelyRequiredTwo error',
-    );
-    cy.get('input[name="exclusivelyRequiredOne"]').clear();
-    cy.get('input[name="exclusivelyRequiredTwo"]').type('required two');
-    cy.get('input[name="exclusivelyRequiredOne"] + p').should('have.length', 0);
-    cy.get('input[name="exclusivelyRequiredTwo"] + p').should('have.length', 0);
+    cy.get('#renderCount').contains('31');
   });
 });
