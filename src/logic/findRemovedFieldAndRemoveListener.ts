@@ -27,7 +27,7 @@ export default function findRemovedFieldAndRemoveListener<
   const options = fields[name];
 
   if (isRadioInput(type) || isCheckBoxInput(type)) {
-    if (isArray(options)) {
+    if (isArray(options) && options.length) {
       options.forEach(({ ref }, index): void => {
         const option = options[index];
         if ((option && isDetached(ref)) || forceDelete) {
