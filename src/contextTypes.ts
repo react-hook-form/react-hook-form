@@ -38,10 +38,10 @@ export interface FormContextValues<
   unregister(names: FieldName<FormValues>[]): void;
   unregister(names: FieldName<FormValues> | FieldName<FormValues>[]): void;
   watch(): FormValues;
-  watch(
-    field: FieldName<FormValues>,
+  watch<T extends FieldName<FormValues>>(
+    field: T,
     defaultValue?: string,
-  ): FieldValue<FormValues>;
+  ): FormValues[T];
   watch(
     fields: FieldName<FormValues>[],
     defaultValues?: Partial<FormValues>,
