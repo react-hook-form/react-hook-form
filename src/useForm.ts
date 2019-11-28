@@ -912,9 +912,14 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
         if (submitFocusError) {
           Object.keys(fieldErrors).reduce((previous, current) => {
             const field = fields[current];
-            if (field && field.ref.focus && previous) {
-              field.ref.focus();
-              return false;
+            if (field && previous) {
+              if (field.ref.focus) {
+                field.ref.focus();
+                return false;
+              } else if (field.options) {
+                field.options[0].ref.focus();
+                return false;
+              }
             }
             return previous;
           }, true);
