@@ -60,7 +60,6 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
   const fieldsRef = useRef<FieldRefs<FormValues>>({});
   const validateAllFieldCriteria = validateCriteriaMode === 'all';
   const errorsRef = useRef<FieldErrors<FormValues>>({});
-  const schemaErrorsRef = useRef<FieldErrors<FormValues>>({});
   const touchedFieldsRef = useRef(new Set<FieldName<FormValues>>());
   const watchFieldsRef = useRef(new Set<FieldName<FormValues>>());
   const dirtyFieldsRef = useRef(new Set<FieldName<FormValues>>());
@@ -75,7 +74,6 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
   const isDirtyRef = useRef(false);
   const submitCountRef = useRef(0);
   const isSubmittingRef = useRef(false);
-  const isSchemaValidateTriggeredRef = useRef(false);
   const validateAndUpdateStateRef = useRef<Function>();
   const [, _render] = useState();
   const { isOnBlur, isOnSubmit } = useRef(modeChecker(mode)).current;
@@ -144,8 +142,6 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
           name,
           validFields: validFieldsRef.current,
           fieldsWithValidation: fieldsWithValidationRef.current,
-          schemaErrors:
-            isSchemaValidateTriggeredRef.current && schemaErrorsRef.current,
         });
 
       if (isEmptyObject(error)) {
@@ -309,15 +305,14 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
       );
       const firstFieldName = names[0];
       const hasError = fieldErrors[firstFieldName];
-      schemaErrorsRef.current = isMultipleFields
+      errorsRef.current = isMultipleFields
         ? fieldErrors
         : hasError
         ? {
-            ...schemaErrorsRef.current,
+            ...errorsRef.current,
             [firstFieldName]: fieldErrors[firstFieldName],
           }
-        : omitValidFields(schemaErrorsRef.current, names);
-      isSchemaValidateTriggeredRef.current = true;
+        : omitValidFields(errorsRef.current, names);
 
       if (isMultipleFields) {
         errorsRef.current = omitValidFields<FormValues>(
@@ -335,7 +330,7 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
       } else {
         renderBaseOnError(
           firstFieldName,
-          hasError ? schemaErrorsRef.current : {},
+          hasError ? errorsRef.current : {},
           shouldRender,
         );
       }
@@ -443,8 +438,7 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
           Object.keys(fieldErrors).forEach(name =>
             validFieldsRef.current.delete(name),
           );
-          schemaErrorsRef.current = fieldErrors;
-          isSchemaValidateTriggeredRef.current = true;
+          errorsRef.current = fieldErrors;
           error = fieldErrors[name] ? { [name]: fieldErrors[name] } : {};
         } else {
           error = await validateFieldCurry(field);
@@ -727,7 +721,6 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
 
       if (!isOnSubmit && readFormState.current.isValid) {
         if (validationSchema) {
-          isSchemaValidateTriggeredRef.current = true;
           validateWithSchemaCurry(
             combineFieldValues(getFieldsValues(fields)),
           ).then(({ fieldErrors }) => {
@@ -844,7 +837,7 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
         const output = await validateWithSchemaCurry(
           combineFieldValues(fieldValues),
         );
-        schemaErrorsRef.current = output.fieldErrors;
+        errorsRef.current = output.fieldErrors;
         fieldErrors = output.fieldErrors;
         fieldValues = output.result;
       } else {
@@ -934,7 +927,6 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
   const resetRefs = () => {
     errorsRef.current = {};
     defaultValuesRef.current = {};
-    schemaErrorsRef.current = {};
     touchedFieldsRef.current = new Set();
     watchFieldsRef.current = new Set();
     dirtyFieldsRef.current = new Set();
@@ -942,7 +934,6 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
     isWatchAllRef.current = false;
     isSubmittedRef.current = false;
     isDirtyRef.current = false;
-    isSchemaValidateTriggeredRef.current = false;
     submitCountRef.current = 0;
   };
 
