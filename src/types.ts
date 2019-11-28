@@ -64,14 +64,14 @@ export interface MutationWatcher {
 
 type ValidationOptionObject<Value> = Value | { value: Value; message: string };
 
-export type ValidationValue = number | string | RegExp;
+export type ValidationValue = boolean | number | string | RegExp;
 
 export type ValidateResult = string | boolean | undefined;
 
 export type Validate = (data: any) => ValidateResult;
 
 export type ValidationOptions = Partial<{
-  required: boolean | string;
+  required: boolean | string | ValidationOptionObject<boolean>;
   min: ValidationOptionObject<number | string>;
   max: ValidationOptionObject<number | string>;
   maxLength: ValidationOptionObject<number | string>;
