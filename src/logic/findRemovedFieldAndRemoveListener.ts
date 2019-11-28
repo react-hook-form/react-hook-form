@@ -2,6 +2,7 @@ import removeAllEventListeners from './removeAllEventListeners';
 import isRadioInput from '../utils/isRadioInput';
 import isCheckBoxInput from '../utils/isCheckBoxInput';
 import isDetached from '../utils/isDetached';
+import isArray from '../utils/isArray';
 import { Field, FieldRefs, FieldValues } from '../types';
 
 export default function findRemovedFieldAndRemoveListener<
@@ -16,30 +17,31 @@ export default function findRemovedFieldAndRemoveListener<
     return;
   }
 
-  const { ref, mutationWatcher, options } = field;
+  const { ref, mutationWatcher } = field;
 
-  if (!ref.type) {
+  if (!ref.type || !fields[ref.name]) {
     return;
   }
 
   const { name, type } = ref;
+  const options = fields[name];
 
-  if ((isRadioInput(type) || isCheckBoxInput(type)) && options) {
-    options.forEach(({ ref }, index): void => {
-      const option = options[index];
-      if ((option && isDetached(ref)) || forceDelete) {
-        const mutationWatcher = option.mutationWatcher;
+  if (isRadioInput(type) || isCheckBoxInput(type)) {
+    if (isArray(options)) {
+      options.forEach(({ ref }, index): void => {
+        const option = options[index];
+        if ((option && isDetached(ref)) || forceDelete) {
+          const mutationWatcher = option.mutationWatcher;
 
-        removeAllEventListeners(option, validateWithStateUpdate);
+          removeAllEventListeners(option, validateWithStateUpdate);
 
-        if (mutationWatcher) {
-          mutationWatcher.disconnect();
+          if (mutationWatcher) {
+            mutationWatcher.disconnect();
+          }
+          options.splice(index, 1);
         }
-        options.splice(index, 1);
-      }
-    });
-
-    if (!options.length) {
+      });
+    } else {
       delete fields[name];
     }
   } else if (isDetached(ref) || forceDelete) {
