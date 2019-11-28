@@ -575,10 +575,10 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
   }
 
   function watch(): FormValues;
-  function watch(
-    field: FieldName<FormValues>,
+  function watch<T extends FieldName<FormValues>>(
+    field: T,
     defaultValue?: string,
-  ): FieldValue<FormValues>;
+  ): FormValues[T];
   function watch(
     fields: FieldName<FormValues>[],
     defaultValues?: Partial<FormValues>,
