@@ -1019,7 +1019,7 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
             ? !isEmptyObject(fieldsRef.current) &&
               validFieldsRef.current.size >=
                 fieldsWithValidationRef.current.size
-            : true,
+            : false,
         }),
   };
 
