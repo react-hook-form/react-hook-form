@@ -76,7 +76,7 @@ context('form state', () => {
     cy.get('#state').contains(
       '{"dirty":true,"isSubmitted":true,"submitCount":2,"touched":["firstName","lastName"],"isSubmitting":false,"isValid":true}',
     );
-    cy.get('#renderCount').contains('15');
+    cy.get('#renderCount').contains('14');
   });
 
   it('should return correct form state with onBlur mode', () => {
@@ -116,7 +116,7 @@ context('form state', () => {
     cy.get('#state').contains(
       '{"dirty":true,"isSubmitted":true,"submitCount":2,"touched":["firstName","lastName"],"isSubmitting":false,"isValid":true}',
     );
-    cy.get('#renderCount').contains('16');
+    cy.get('#renderCount').contains('15');
   });
 
   it('should reset dirty value when inputs reset back to default with onSubmit mode', () => {
@@ -198,7 +198,7 @@ context('form state', () => {
     cy.get('#state').contains(
       '{"dirty":false,"isSubmitted":false,"submitCount":0,"touched":["firstName","lastName"],"isSubmitting":false,"isValid":false}',
     );
-    cy.get('#renderCount').contains('11');
+    cy.get('#renderCount').contains('10');
   });
 
   it('should reset dirty value when inputs reset back to default with onChange mode', () => {
@@ -230,6 +230,6 @@ context('form state', () => {
       '{"dirty":true,"isSubmitted":false,"submitCount":0,"touched":["firstName","lastName"],"isSubmitting":false,"isValid":false}',
     );
 
-    cy.get('#renderCount').contains('14');
+    cy.get('#renderCount').contains('13');
   });
 });
