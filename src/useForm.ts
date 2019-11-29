@@ -69,9 +69,9 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
   const defaultInputValuesRef = useRef<
     Partial<Record<FieldName<FormValues>, FieldValue<FormValues>>>
   >({} as Record<FieldName<FormValues>, FieldValue<FormValues>>);
-  const defaultValuesRef = useRef<FieldValue<FormValues> | Partial<FormValues>>(
-    defaultValues,
-  );
+  const defaultValuesRef = useRef<
+    FieldValue<FormValues> | Partial<FormValues>
+  >();
   const isUnMount = useRef(false);
   const isWatchAllRef = useRef(false);
   const isSubmittedRef = useRef(false);
@@ -101,6 +101,7 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
     isOnSubmit: isReValidateOnSubmit,
   } = useRef(modeChecker(reValidateMode)).current;
   const validationSchemaOptionRef = useRef(validationSchemaOption);
+  defaultValuesRef.current = defaultValues;
 
   const combineErrorsRef = (data: FieldErrors<FormValues>) => ({
     ...errorsRef.current,
