@@ -20,7 +20,7 @@ import isString from './utils/isString';
 import isSameError from './utils/isSameError';
 import isUndefined from './utils/isUndefined';
 import onDomRemove from './utils/onDomRemove';
-import omitObject from './utils/omit';
+import omitObject from './utils/omitObject';
 import isMultipleSelect from './utils/isMultipleSelect';
 import modeChecker from './utils/validationModeChecker';
 import isNullOrUndefined from './utils/isNullOrUndefined';
