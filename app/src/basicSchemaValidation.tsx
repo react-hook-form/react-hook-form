@@ -101,10 +101,6 @@ const BasicSchemaValidation: React.FC = (props: any) => {
       {errors.radio && <p>radio error</p>}
       <input type="checkbox" name="checkbox" ref={register} />
       {errors.checkbox && <p>checkbox error</p>}
-      <input type="text" name="exclusivelyRequiredOne" ref={register} />
-      {errors.exclusivelyRequiredOne && <p>exclusivelyRequiredOne error</p>}
-      <input type="text" name="exclusivelyRequiredTwo" ref={register} />
-      {errors.exclusivelyRequiredTwo && <p>exclusivelyRequiredTwo error</p>}
       <button>Submit</button>
       <div id="renderCount">{renderCounter}</div>
     </form>

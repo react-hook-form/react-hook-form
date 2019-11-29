@@ -11,6 +11,11 @@ describe('getPath', () => {
           kidding: { test: 'data' },
           foo: { bar: {} },
           what: [{ bill: { haha: 'test' } }, [3, 4]],
+          one: 1,
+          empty: null,
+          absent: undefined,
+          isAwesome: true,
+          answer: Symbol(42),
         },
       ]),
     ).toEqual([
@@ -22,6 +27,11 @@ describe('getPath', () => {
       'test[2].what[0].bill.haha',
       'test[2].what[1][0]',
       'test[2].what[1][1]',
+      'test[2].one',
+      'test[2].empty',
+      'test[2].absent',
+      'test[2].isAwesome',
+      'test[2].answer',
     ]);
   });
 });

@@ -1,5 +1,7 @@
 import * as React from 'react';
 
+export type Primitive = string | boolean | number | symbol | null | undefined;
+
 export type FieldValues = Record<string, any>;
 
 type BaseFieldName<FormValues extends FieldValues> = Extract<
@@ -68,23 +70,20 @@ export interface MutationWatcher {
 
 type ValidationOptionObject<Value> = Value | { value: Value; message: string };
 
-export type ValidationValue = number | string | RegExp;
+export type ValidationValue = boolean | number | string | RegExp;
 
 export type ValidateResult = string | boolean | undefined;
 
 export type Validate = (data: any) => ValidateResult;
 
 export type ValidationOptions = Partial<{
-  required: boolean | string;
+  required: boolean | string | ValidationOptionObject<boolean>;
   min: ValidationOptionObject<number | string>;
   max: ValidationOptionObject<number | string>;
   maxLength: ValidationOptionObject<number | string>;
   minLength: ValidationOptionObject<number | string>;
   pattern: ValidationOptionObject<RegExp>;
-  validate:
-    | Validate
-    | Record<string, Validate>
-    | { value: Validate | Record<string, Validate>; message: string };
+  validate: Validate | Record<string, Validate>;
 }>;
 
 export type MultipleFieldErrors = Record<string, ValidateResult>;
