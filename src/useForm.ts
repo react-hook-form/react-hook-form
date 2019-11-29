@@ -438,7 +438,6 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
           Object.keys(fieldErrors).forEach(name =>
             validFieldsRef.current.delete(name),
           );
-          errorsRef.current = fieldErrors;
           error = fieldErrors[name] ? { [name]: fieldErrors[name] } : {};
         } else {
           error = await validateFieldCurry(field);

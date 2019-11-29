@@ -1,5 +1,5 @@
 context('basicSchemaValidation form validation', () => {
-  it.only('should validate the form with onSubmit mode', () => {
+  it('should validate the form with onSubmit mode', () => {
     cy.visit('http://localhost:3000/basic-schema-validation/onSubmit');
     cy.get('button').click();
 
@@ -48,7 +48,7 @@ context('basicSchemaValidation form validation', () => {
     cy.get('input[name="checkbox"]').check();
 
     cy.get('p').should('have.length', 0);
-    cy.get('#renderCount').contains('28');
+    cy.get('#renderCount').contains('25');
   });
 
   it('should validate the form with onBlur mode', () => {
@@ -106,13 +106,9 @@ context('basicSchemaValidation form validation', () => {
     cy.get('input[name="minDate"]').type('2019-08-01');
     cy.get('input[name="maxDate"]').type('2019-08-01');
     cy.get('input[name="checkbox"]').check();
-    cy.get('input[name="exclusivelyRequiredOne"]').type('required one');
-    cy.get('input[name="exclusivelyRequiredTwo"]')
-      .focus()
-      .blur();
 
     cy.get('p').should('have.length', 0);
-    cy.get('#renderCount').contains('29');
+    cy.get('#renderCount').contains('28');
   });
 
   it('should validate the form with onChange mode', () => {
@@ -163,6 +159,6 @@ context('basicSchemaValidation form validation', () => {
     cy.get('input[name="checkbox"]').check();
 
     cy.get('p').should('have.length', 0);
-    cy.get('#renderCount').contains('31');
+    cy.get('#renderCount').contains('30');
   });
 });
