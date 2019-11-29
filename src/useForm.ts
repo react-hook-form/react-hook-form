@@ -69,9 +69,9 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
   const defaultInputValuesRef = useRef<
     Partial<Record<FieldName<FormValues>, FieldValue<FormValues>>>
   >({} as Record<FieldName<FormValues>, FieldValue<FormValues>>);
-  const defaultValuesRef = useRef<
-    FieldValue<FormValues> | Partial<FormValues>
-  >();
+  const defaultValuesRef = useRef<FieldValue<FormValues> | Partial<FormValues>>(
+    defaultValues,
+  );
   const isUnMount = useRef(false);
   const isWatchAllRef = useRef(false);
   const isSubmittedRef = useRef(false);
@@ -827,114 +827,125 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
       ref && registerIntoFieldsRef(ref, refOrValidateRule);
   }
 
-  const handleSubmit = (callback: OnSubmit<FormValues>) => async (
-    e: React.BaseSyntheticEvent,
-  ): Promise<void> => {
-    if (e) {
-      e.preventDefault();
-      e.persist();
-    }
-    let fieldErrors;
-    let fieldValues;
-    const fields = fieldsRef.current;
+  const handleSubmit = useCallback(
+    (callback: OnSubmit<FormValues>) => async (
+      e: React.BaseSyntheticEvent,
+    ): Promise<void> => {
+      if (e) {
+        e.preventDefault();
+        e.persist();
+      }
+      let fieldErrors;
+      let fieldValues;
+      const fields = fieldsRef.current;
 
-    if (readFormState.current.isSubmitting) {
-      isSubmittingRef.current = true;
-      render();
-    }
-
-    try {
-      if (validationSchema) {
-        fieldValues = getFieldsValues(fields);
-        const output = await validateWithSchemaCurry(
-          combineFieldValues(fieldValues),
-        );
-        schemaErrorsRef.current = output.fieldErrors;
-        fieldErrors = output.fieldErrors;
-        fieldValues = output.result;
-      } else {
-        const {
-          errors,
-          values,
-        }: SubmitPromiseResult<FormValues> = await Object.values(fields).reduce(
-          async (
-            previous: Promise<SubmitPromiseResult<FormValues>>,
-            field: Field | undefined,
-          ): Promise<SubmitPromiseResult<FormValues>> => {
-            if (!field) {
-              return previous;
-            }
-
-            const resolvedPrevious = await previous;
-            const {
-              ref,
-              ref: { name },
-            } = field;
-
-            if (!fields[name]) {
-              return Promise.resolve(resolvedPrevious);
-            }
-
-            const fieldError = await validateFieldCurry(field);
-
-            if (fieldError[name]) {
-              resolvedPrevious.errors = {
-                ...resolvedPrevious.errors,
-                ...fieldError,
-              };
-
-              validFieldsRef.current.delete(name);
-
-              return Promise.resolve(resolvedPrevious);
-            }
-
-            if (fieldsWithValidationRef.current.has(name)) {
-              validFieldsRef.current.add(name);
-            }
-            resolvedPrevious.values[
-              name as FieldName<FormValues>
-            ] = getFieldValue(fields, ref);
-            return Promise.resolve(resolvedPrevious);
-          },
-          Promise.resolve<SubmitPromiseResult<FormValues>>({
-            errors: {},
-            values: {} as FormValues,
-          }),
-        );
-
-        fieldErrors = errors;
-        fieldValues = values;
+      if (readFormState.current.isSubmitting) {
+        isSubmittingRef.current = true;
+        render();
       }
 
-      if (isEmptyObject(fieldErrors)) {
-        errorsRef.current = {};
-        await callback(combineFieldValues(fieldValues), e);
-      } else {
-        if (submitFocusError) {
-          Object.keys(fieldErrors).reduce((previous, current) => {
-            const field = fields[current];
-            if (field && previous) {
-              if (field.ref.focus) {
-                field.ref.focus();
-                return false;
-              } else if (field.options) {
-                field.options[0].ref.focus();
-                return false;
+      try {
+        if (validationSchema) {
+          fieldValues = getFieldsValues(fields);
+          const output = await validateWithSchemaCurry(
+            combineFieldValues(fieldValues),
+          );
+          schemaErrorsRef.current = output.fieldErrors;
+          fieldErrors = output.fieldErrors;
+          fieldValues = output.result;
+        } else {
+          const {
+            errors,
+            values,
+          }: SubmitPromiseResult<FormValues> = await Object.values(
+            fields,
+          ).reduce(
+            async (
+              previous: Promise<SubmitPromiseResult<FormValues>>,
+              field: Field | undefined,
+            ): Promise<SubmitPromiseResult<FormValues>> => {
+              if (!field) {
+                return previous;
               }
-            }
-            return previous;
-          }, true);
+
+              const resolvedPrevious = await previous;
+              const {
+                ref,
+                ref: { name },
+              } = field;
+
+              if (!fields[name]) {
+                return Promise.resolve(resolvedPrevious);
+              }
+
+              const fieldError = await validateFieldCurry(field);
+
+              if (fieldError[name]) {
+                resolvedPrevious.errors = {
+                  ...resolvedPrevious.errors,
+                  ...fieldError,
+                };
+
+                validFieldsRef.current.delete(name);
+
+                return Promise.resolve(resolvedPrevious);
+              }
+
+              if (fieldsWithValidationRef.current.has(name)) {
+                validFieldsRef.current.add(name);
+              }
+              resolvedPrevious.values[
+                name as FieldName<FormValues>
+              ] = getFieldValue(fields, ref);
+              return Promise.resolve(resolvedPrevious);
+            },
+            Promise.resolve<SubmitPromiseResult<FormValues>>({
+              errors: {},
+              values: {} as FormValues,
+            }),
+          );
+
+          fieldErrors = errors;
+          fieldValues = values;
         }
 
-        errorsRef.current = fieldErrors;
+        if (isEmptyObject(fieldErrors)) {
+          errorsRef.current = {};
+          await callback(combineFieldValues(fieldValues), e);
+        } else {
+          if (submitFocusError) {
+            Object.keys(fieldErrors).reduce((previous, current) => {
+              const field = fields[current];
+              if (field && previous) {
+                if (field.ref.focus) {
+                  field.ref.focus();
+                  return false;
+                } else if (field.options) {
+                  field.options[0].ref.focus();
+                  return false;
+                }
+              }
+              return previous;
+            }, true);
+          }
+
+          errorsRef.current = fieldErrors;
+        }
+      } finally {
+        isSubmittedRef.current = true;
+        isSubmittingRef.current = false;
+        submitCountRef.current = submitCountRef.current + 1;
+        render();
       }
-    } finally {
-      isSubmittedRef.current = true;
-      isSubmittingRef.current = false;
-      submitCountRef.current = submitCountRef.current + 1;
-      render();
-    }
-  };
+    },
+    [
+      render,
+      submitFocusError,
+      validateFieldCurry,
+      validateWithSchemaCurry,
+      validationSchema,
+    ],
+  );
 
   const resetRefs = () => {
     errorsRef.current = {};
@@ -981,15 +992,18 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
     [render, setFieldValue, triggerValidation],
   );
 
-  const getValues = (payload?: { nest: boolean }): FormValues => {
-    const fieldValues = getFieldsValues(fieldsRef.current);
-    const outputValues = isEmptyObject(fieldValues)
-      ? defaultValues
-      : fieldValues;
-    return payload && payload.nest
-      ? combineFieldValues(outputValues)
-      : outputValues;
-  };
+  const getValues = useCallback(
+    (payload?: { nest: boolean }): FormValues => {
+      const fieldValues = getFieldsValues(fieldsRef.current);
+      const outputValues = isEmptyObject(fieldValues)
+        ? defaultValues
+        : fieldValues;
+      return payload && payload.nest
+        ? combineFieldValues(outputValues)
+        : outputValues;
+    },
+    [defaultValues],
+  );
 
   useEffect(
     () => () => {
@@ -1032,7 +1046,7 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
     handleSubmit,
     watch,
     reset,
-    clearError,
+    clearError: useCallback(clearError, []),
     setError: useCallback(setError, []),
     setValue,
     triggerValidation,
