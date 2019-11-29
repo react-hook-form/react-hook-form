@@ -66,9 +66,12 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
   const dirtyFieldsRef = useRef(new Set<FieldName<FormValues>>());
   const fieldsWithValidationRef = useRef(new Set<FieldName<FormValues>>());
   const validFieldsRef = useRef(new Set<FieldName<FormValues>>());
-  const defaultValuesRef = useRef<
+  const defaultInputValuesRef = useRef<
     Partial<Record<FieldName<FormValues>, FieldValue<FormValues>>>
   >({} as Record<FieldName<FormValues>, FieldValue<FormValues>>);
+  const defaultValuesRef = useRef<FieldValue<FormValues> | Partial<FormValues>>(
+    defaultValues,
+  );
   const isUnMount = useRef(false);
   const isWatchAllRef = useRef(false);
   const isSubmittedRef = useRef(false);
@@ -226,7 +229,7 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
     }
 
     const isDirty =
-      defaultValuesRef.current[name] !==
+      defaultInputValuesRef.current[name] !==
       getFieldValue(fieldsRef.current, fieldsRef.current[name]!.ref);
     const isDirtyChanged = dirtyFieldsRef.current.has(name) !== isDirty;
 
@@ -459,7 +462,7 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
     (name: FieldName<FormValues>) => {
       delete errorsRef.current[name];
       delete fieldsRef.current[name];
-      delete defaultValuesRef.current[name];
+      delete defaultInputValuesRef.current[name];
       [
         touchedFieldsRef,
         dirtyFieldsRef,
@@ -714,8 +717,8 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
 
     fields[name as FieldName<FormValues>] = currentField;
 
-    if (!isEmptyObject(defaultValues)) {
-      const defaultValue = getDefaultValue(defaultValues, name);
+    if (!isEmptyObject(defaultValuesRef.current)) {
+      const defaultValue = getDefaultValue(defaultValuesRef.current, name);
 
       if (!isUndefined(defaultValue)) {
         setFieldValue(name, defaultValue);
@@ -753,11 +756,10 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
       }
     }
 
-    if (!defaultValuesRef.current[name]) {
-      defaultValuesRef.current[name as FieldName<FormValues>] = getFieldValue(
-        fields,
-        currentField.ref,
-      );
+    if (!defaultInputValuesRef.current[name]) {
+      defaultInputValuesRef.current[
+        name as FieldName<FormValues>
+      ] = getFieldValue(fields, currentField.ref);
     }
 
     if (!type) {
@@ -935,7 +937,7 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
 
   const resetRefs = () => {
     errorsRef.current = {};
-    defaultValuesRef.current = {};
+    defaultInputValuesRef.current = {};
     schemaErrorsRef.current = {};
     touchedFieldsRef.current = new Set();
     watchFieldsRef.current = new Set();
@@ -967,7 +969,7 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
         fieldsKeyValue.forEach(([key]) =>
           setFieldValue(key, getDefaultValue(values, key)),
         );
-        defaultValuesRef.current = { ...values };
+        defaultInputValuesRef.current = { ...values };
         if (readFormState.current.isValid) {
           triggerValidation();
         }
@@ -1024,7 +1026,7 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
   };
 
   return {
-    register: useCallback(register, [defaultValues]),
+    register: useCallback(register, []),
     unregister: useCallback(unregister, [removeEventListenerAndRef]),
     handleSubmit,
     watch,
