@@ -303,16 +303,6 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
       const validFieldNames = names.filter(
         name => !(fieldErrors as FieldErrors<FormValues>)[name],
       );
-      const firstFieldName = names[0];
-      const hasError = fieldErrors[firstFieldName];
-      errorsRef.current = isMultipleFields
-        ? fieldErrors
-        : hasError
-        ? {
-            ...errorsRef.current,
-            [firstFieldName]: fieldErrors[firstFieldName],
-          }
-        : omitValidFields(errorsRef.current, names);
 
       if (isMultipleFields) {
         errorsRef.current = omitValidFields<FormValues>(
@@ -328,9 +318,17 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
         );
         render();
       } else {
+        const firstFieldName = names[0];
+        const noError = isEmptyObject(fieldErrors);
+        errorsRef.current = noError
+          ? omitValidFields(errorsRef.current, names)
+          : combineErrorsRef({
+              [firstFieldName]: fieldErrors[firstFieldName],
+            } as FieldErrors<FormValues>);
+
         renderBaseOnError(
           firstFieldName,
-          hasError ? errorsRef.current : {},
+          noError ? {} : errorsRef.current,
           shouldRender,
         );
       }
