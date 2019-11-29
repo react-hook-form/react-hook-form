@@ -322,17 +322,14 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
         );
         render();
       } else {
-        const firstFieldName = names[0];
-        const noError = isEmptyObject(fieldErrors);
-        errorsRef.current = noError
-          ? omitValidFields(errorsRef.current, names)
-          : combineErrorsRef({
-              [firstFieldName]: fieldErrors[firstFieldName],
-            } as FieldErrors<FormValues>);
-
+        const fieldName = names[0];
         renderBaseOnError(
-          firstFieldName,
-          noError ? {} : errorsRef.current,
+          fieldName,
+          fieldErrors[fieldName]
+            ? ({ [fieldName]: fieldErrors[fieldName] } as FieldErrors<
+                FormValues
+              >)
+            : {},
           shouldRender,
         );
       }
