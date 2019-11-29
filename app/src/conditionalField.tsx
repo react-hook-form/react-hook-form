@@ -5,6 +5,7 @@ let renderCounter = 0;
 
 const ConditionalField: React.FC = () => {
   const { register, handleSubmit, watch, formState } = useForm<{
+    selectNumber: string;
     firstName: string;
     lastName: string;
     min: string;
@@ -27,9 +28,9 @@ const ConditionalField: React.FC = () => {
     >
       <select name="selectNumber" ref={register({ required: true })}>
         <option value="">Select</option>
-        <option value={1}>1</option>
-        <option value={2}>2</option>
-        <option value={3}>3</option>
+        <option value="1">1</option>
+        <option value="2">2</option>
+        <option value="3">3</option>
       </select>
 
       {selectNumber === '1' && (
@@ -73,6 +74,7 @@ const ConditionalField: React.FC = () => {
       <button id="submit">Submit</button>
       <div id="state">{JSON.stringify(formState)}</div>
       <div id="result">{JSON.stringify(result)}</div>
+      <div id="result">{typeof selectNumber}</div>
       <div id="renderCount">{renderCounter}</div>
     </form>
   );

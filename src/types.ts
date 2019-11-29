@@ -77,10 +77,7 @@ export type ValidationOptions = Partial<{
   maxLength: ValidationOptionObject<number | string>;
   minLength: ValidationOptionObject<number | string>;
   pattern: ValidationOptionObject<RegExp>;
-  validate:
-    | Validate
-    | Record<string, Validate>
-    | { value: Validate | Record<string, Validate>; message: string };
+  validate: Validate | Record<string, Validate>;
 }>;
 
 export type MultipleFieldErrors = Record<string, ValidateResult>;
