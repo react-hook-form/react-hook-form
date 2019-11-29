@@ -20,6 +20,7 @@ import isString from './utils/isString';
 import isSameError from './utils/isSameError';
 import isUndefined from './utils/isUndefined';
 import onDomRemove from './utils/onDomRemove';
+import omitObject from './utils/omit';
 import isMultipleSelect from './utils/isMultipleSelect';
 import modeChecker from './utils/validationModeChecker';
 import isNullOrUndefined from './utils/isNullOrUndefined';
@@ -154,7 +155,7 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
           reRender = reRender || errorsRef.current[name];
         }
 
-        delete errorsRef.current[name];
+        errorsRef.current = omitObject(errorsRef.current, name);
       } else {
         validFieldsRef.current.delete(name);
         reRender = reRender || !errorsRef.current[name];
@@ -449,9 +450,12 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
 
   const resetFieldRef = useCallback(
     (name: FieldName<FormValues>) => {
-      delete errorsRef.current[name];
-      delete fieldsRef.current[name];
-      delete defaultInputValuesRef.current[name];
+      errorsRef.current = omitObject(errorsRef.current, name);
+      fieldsRef.current = omitObject(fieldsRef.current, name);
+      defaultInputValuesRef.current = omitObject(
+        defaultInputValuesRef.current,
+        name,
+      );
       [
         touchedFieldsRef,
         dirtyFieldsRef,
@@ -494,7 +498,8 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
       errorsRef.current = {};
     } else {
       (isArray(name) ? name : [name]).forEach(
-        fieldName => delete errorsRef.current[fieldName],
+        fieldName =>
+          (errorsRef.current = omitObject(errorsRef.current, fieldName)),
       );
     }
 
