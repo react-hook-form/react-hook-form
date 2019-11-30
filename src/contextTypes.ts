@@ -10,6 +10,7 @@ import {
   ValidationOptions,
   ValidationPayload,
   NameProp,
+  OnSubmit,
 } from './types';
 
 export interface FormProps<FormValues extends FieldValues = FieldValues>
@@ -74,4 +75,7 @@ export interface FormContextValues<
   getValues: (payload?: { nest: boolean }) => FormValues;
   errors: FieldErrors<FormValues>;
   formState: FormStateProxy<FormValues>;
+  handleSubmit: (
+    callback: OnSubmit<FormValues>,
+  ) => (e: React.BaseSyntheticEvent) => Promise<void>;
 }
