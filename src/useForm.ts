@@ -720,6 +720,14 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
     if (!isEmptyObject(validateOptions)) {
       fieldsWithValidationRef.current.add(name);
 
+      const shouldRender = () => {
+        if (
+          validFieldsRef.current.size === fieldsWithValidationRef.current.size
+        ) {
+          render();
+        }
+      };
+
       if (!isOnSubmit && readFormState.current.isValid) {
         if (validationSchema) {
           validateWithSchemaCurry(
@@ -728,19 +736,15 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
             if (errors[name]) {
               validFieldsRef.current.add(name);
             }
+            shouldRender();
           });
         } else {
           validateFieldCurry(currentField).then(error => {
             if (isEmptyObject(error)) {
               validFieldsRef.current.add(name);
             }
+            shouldRender();
           });
-        }
-
-        if (
-          validFieldsRef.current.size <= fieldsWithValidationRef.current.size
-        ) {
-          render();
         }
       }
     }
@@ -1020,7 +1024,7 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
               validFieldsRef.current.size >=
                 fieldsWithValidationRef.current.size &&
               isEmptyObject(errorsRef.current)
-            : false,
+            : !isEmptyObject(fieldsRef.current),
         }),
   };
 

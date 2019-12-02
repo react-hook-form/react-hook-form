@@ -74,7 +74,7 @@ export type ValidationValue = boolean | number | string | RegExp;
 
 export type ValidateResult = string | boolean | undefined;
 
-export type Validate = (data: any) => ValidateResult;
+export type Validate = (data: any) => ValidateResult | Promise<ValidateResult>;
 
 export type ValidationOptions = Partial<{
   required: boolean | string | ValidationOptionObject<boolean>;
