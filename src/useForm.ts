@@ -730,8 +730,8 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
           if (!isEmptyObject(result) && shouldInfoSchemaValid) {
             Object.keys(result).forEach(name => {
               validFieldsRef.current.add(name);
-              shouldInfoSchemaValid = false;
             });
+            shouldInfoSchemaValid = false;
             render();
           }
         },
