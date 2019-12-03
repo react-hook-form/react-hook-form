@@ -617,6 +617,10 @@ describe('useForm', () => {
         }),
       );
 
+      (getFieldsValues as any).mockImplementation(() => {
+        return {};
+      });
+
       (validateWithSchema as any).mockImplementation(async (payload: any) => {
         return {
           fieldErrors: payload,
@@ -644,6 +648,10 @@ describe('useForm', () => {
           validationSchema: { test2: 'test2' },
         }),
       );
+
+      (getFieldsValues as any).mockImplementation(() => {
+        return {};
+      });
 
       (validateWithSchema as any).mockImplementation(async (payload: any) => {
         return {
@@ -683,6 +691,10 @@ describe('useForm', () => {
         }),
       );
 
+      (getFieldsValues as any).mockImplementation(() => {
+        return {};
+      });
+
       (validateWithSchema as any).mockImplementation(async () => {
         return {
           fieldErrors: {
@@ -713,6 +725,10 @@ describe('useForm', () => {
           validationSchema: {},
         }),
       );
+
+      (getFieldsValues as any).mockImplementation(() => {
+        return {};
+      });
 
       (validateWithSchema as any).mockImplementation(async () => {
         return {
@@ -751,6 +767,10 @@ describe('useForm', () => {
           validationSchema: { test3: 'test3' },
         }),
       );
+
+      (getFieldsValues as any).mockImplementation(() => {
+        return {};
+      });
 
       (validateWithSchema as any).mockImplementation(async (payload: any) => {
         return {
@@ -800,6 +820,10 @@ describe('useForm', () => {
           validationSchema: { test: 'test' },
         }),
       );
+
+      (getFieldsValues as any).mockImplementation(() => {
+        return {};
+      });
 
       (validateWithSchema as any).mockImplementation(async () => {
         return {
@@ -881,21 +905,27 @@ describe('useForm', () => {
         }),
       );
 
+      (getFieldsValues as any).mockImplementation(() => {
+        return {};
+      });
+
+      (validateWithSchema as any).mockImplementation(async () => {
+        return {
+          fieldErrors: {},
+          result: {},
+        };
+      });
+
       act(() => {
         result.current.register(
           { value: '', type: 'input', name: 'test' },
           { required: true },
         );
       });
+
       const callback = jest.fn();
       (getFieldsValues as any).mockImplementation(async () => {
         return { test: 'test' };
-      });
-      (validateWithSchema as any).mockImplementation(async () => {
-        return {
-          fieldErrors: {},
-          result: {},
-        };
       });
 
       await act(async () => {

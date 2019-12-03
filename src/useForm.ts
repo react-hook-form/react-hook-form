@@ -100,6 +100,7 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
     isOnSubmit: isReValidateOnSubmit,
   } = useRef(modeChecker(reValidateMode)).current;
   const validationSchemaOptionRef = useRef(validationSchemaOption);
+  let shouldInfoSchemaValid = true;
   defaultValuesRef.current = defaultValues;
 
   const combineErrorsRef = (data: FieldErrors<FormValues>) => ({
@@ -710,8 +711,9 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
     }
 
     fields[name as FieldName<FormValues>] = currentField;
+    const isEmptyDefaultValues = isEmptyObject(defaultValuesRef.current);
 
-    if (!isEmptyObject(defaultValuesRef.current)) {
+    if (!isEmptyDefaultValues) {
       const defaultValue = getDefaultValue(defaultValuesRef.current, name);
 
       if (!isUndefined(defaultValue)) {
@@ -719,35 +721,53 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
       }
     }
 
-    if (!isEmptyObject(validateOptions)) {
+    const shouldRender = () => {
+      if (
+        validFieldsRef.current.size === fieldsWithValidationRef.current.size
+      ) {
+        render();
+      }
+    };
+
+    if (validationSchema) {
+      const fieldValues = isEmptyDefaultValues
+        ? getFieldsValues(fields)
+        : defaultValuesRef.current;
+
+      Object.keys(fieldValues).forEach(() =>
+        fieldsWithValidationRef.current.add(name),
+      );
+
+      validateWithSchemaCurry(combineFieldValues(fieldValues)).then(
+        ({ result }) => {
+          if (
+            !isEmptyObject(result) &&
+            ((!isEmptyDefaultValues && shouldInfoSchemaValid) ||
+              isEmptyDefaultValues)
+          ) {
+            if (!isEmptyDefaultValues) {
+              fieldsWithValidationRef.current.forEach(FieldName => {
+                validFieldsRef.current.add(FieldName);
+              });
+              shouldInfoSchemaValid = false;
+              render();
+            } else {
+              validFieldsRef.current.add(name);
+              shouldRender();
+            }
+          }
+        },
+      );
+    } else if (!isEmptyObject(validateOptions)) {
       fieldsWithValidationRef.current.add(name);
 
-      const shouldRender = () => {
-        if (
-          validFieldsRef.current.size === fieldsWithValidationRef.current.size
-        ) {
-          render();
-        }
-      };
-
       if (!isOnSubmit && readFormState.current.isValid) {
-        if (validationSchema) {
-          validateWithSchemaCurry(
-            combineFieldValues(getFieldsValues(fields)),
-          ).then(({ fieldErrors }) => {
-            if (fieldErrors[name]) {
-              validFieldsRef.current.add(name);
-            }
-            shouldRender();
-          });
-        } else {
-          validateFieldCurry(currentField).then(error => {
-            if (isEmptyObject(error)) {
-              validFieldsRef.current.add(name);
-            }
-            shouldRender();
-          });
-        }
+        validateFieldCurry(currentField).then(error => {
+          if (isEmptyObject(error)) {
+            validFieldsRef.current.add(name);
+          }
+          shouldRender();
+        });
       }
     }
 
