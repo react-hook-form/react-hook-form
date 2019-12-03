@@ -100,6 +100,7 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
     isOnSubmit: isReValidateOnSubmit,
   } = useRef(modeChecker(reValidateMode)).current;
   const validationSchemaOptionRef = useRef(validationSchemaOption);
+  let shouldInfoSchemaValid = true;
   defaultValuesRef.current = defaultValues;
 
   const combineErrorsRef = (data: FieldErrors<FormValues>) => ({
@@ -719,35 +720,36 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
       }
     }
 
-    if (!isEmptyObject(validateOptions)) {
+    if (validationSchema) {
+      const fieldValues = getFieldsValues(fields);
+      Object.keys(fieldValues).forEach(() =>
+        fieldsWithValidationRef.current.add(name),
+      );
+      validateWithSchemaCurry(combineFieldValues(fieldValues)).then(
+        ({ result }) => {
+          if (!isEmptyObject(result) && shouldInfoSchemaValid) {
+            Object.keys(result).forEach(name => {
+              validFieldsRef.current.add(name);
+              shouldInfoSchemaValid = false;
+            });
+            render();
+          }
+        },
+      );
+    } else if (!isEmptyObject(validateOptions)) {
       fieldsWithValidationRef.current.add(name);
 
-      const shouldRender = () => {
-        if (
-          validFieldsRef.current.size === fieldsWithValidationRef.current.size
-        ) {
-          render();
-        }
-      };
-
       if (!isOnSubmit && readFormState.current.isValid) {
-        if (validationSchema) {
-          validateWithSchemaCurry(
-            combineFieldValues(getFieldsValues(fields)),
-          ).then(({ fieldErrors }) => {
-            if (fieldErrors[name]) {
-              validFieldsRef.current.add(name);
-            }
-            shouldRender();
-          });
-        } else {
-          validateFieldCurry(currentField).then(error => {
-            if (isEmptyObject(error)) {
-              validFieldsRef.current.add(name);
-            }
-            shouldRender();
-          });
-        }
+        validateFieldCurry(currentField).then(error => {
+          if (isEmptyObject(error)) {
+            validFieldsRef.current.add(name);
+          }
+          if (
+            validFieldsRef.current.size === fieldsWithValidationRef.current.size
+          ) {
+            render();
+          }
+        });
       }
     }
 
