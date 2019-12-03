@@ -1042,7 +1042,7 @@ describe('useForm', () => {
         }),
       );
 
-      expect(result.current.formState.isValid).toBeFalsy();
+      expect(result.current.formState.isValid).toBeTruthy();
     });
 
     it('should return true when no validation is registered', () => {
@@ -1056,7 +1056,7 @@ describe('useForm', () => {
         result.current.register({ type: 'text', name: 'test' });
       });
 
-      expect(result.current.formState.isValid).toBeFalsy();
+      expect(result.current.formState.isValid).toBeTruthy();
     });
 
     it('should return false when a validated field is invalid', async () => {
@@ -1072,6 +1072,8 @@ describe('useForm', () => {
           result: {},
         };
       });
+
+      console.log(result.current.formState.isValid);
 
       await act(async () => {
         result.current.register({ name: 'one' }, { required: true });

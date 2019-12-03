@@ -721,40 +721,29 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
       }
     }
 
-    const shouldRender = () => {
-      if (
-        validFieldsRef.current.size === fieldsWithValidationRef.current.size
-      ) {
-        render();
-      }
-    };
-
     if (validationSchema) {
       const fieldValues = isEmptyDefaultValues
         ? getFieldsValues(fields)
         : defaultValuesRef.current;
 
-      Object.keys(fieldValues).forEach(() =>
-        fieldsWithValidationRef.current.add(name),
-      );
+      if (isEmptyDefaultValues) {
+        fieldsWithValidationRef.current.add(name);
+      } else {
+        Object.keys(fieldValues).forEach(fieldName => {
+          fieldsWithValidationRef.current.add(fieldName);
+          validFieldsRef.current.add(fieldName);
+        });
+      }
 
       validateWithSchemaCurry(combineFieldValues(fieldValues)).then(
-        ({ result }) => {
-          if (
-            !isEmptyObject(result) &&
-            ((!isEmptyDefaultValues && shouldInfoSchemaValid) ||
-              isEmptyDefaultValues)
-          ) {
-            if (!isEmptyDefaultValues) {
-              fieldsWithValidationRef.current.forEach(FieldName => {
-                validFieldsRef.current.add(FieldName);
-              });
-              shouldInfoSchemaValid = false;
-              render();
-            } else {
-              validFieldsRef.current.add(name);
-              shouldRender();
-            }
+        ({ fieldErrors }) => {
+          if (!isEmptyObject(fieldErrors)) {
+            Object.keys(fieldErrors).forEach(fieldName => {
+              validFieldsRef.current.delete(fieldName);
+            });
+
+            shouldInfoSchemaValid = false;
+            render();
           }
         },
       );
@@ -766,7 +755,10 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
           if (isEmptyObject(error)) {
             validFieldsRef.current.add(name);
           }
-          shouldRender();
+          if (shouldInfoSchemaValid) {
+            render();
+          }
+          shouldInfoSchemaValid = false;
         });
       }
     }
@@ -1041,12 +1033,11 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
           isValid: isSubmittedRef.current && isEmptyObject(errorsRef.current),
         }
       : {
-          isValid: fieldsWithValidationRef.current.size
-            ? !isEmptyObject(fieldsRef.current) &&
-              validFieldsRef.current.size >=
-                fieldsWithValidationRef.current.size &&
-              isEmptyObject(errorsRef.current)
-            : !fieldsWithValidationRef.current.size,
+          isValid:
+            isEmptyObject(fieldsRef.current) ||
+            (validFieldsRef.current.size >=
+              fieldsWithValidationRef.current.size &&
+              isEmptyObject(errorsRef.current)),
         }),
   };
 
