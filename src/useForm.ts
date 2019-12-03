@@ -742,8 +742,10 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
               validFieldsRef.current.delete(fieldName);
             });
 
+            if (shouldInfoSchemaValid) {
+              render();
+            }
             shouldInfoSchemaValid = false;
-            render();
           }
         },
       );
