@@ -721,6 +721,14 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
       }
     }
 
+    const shouldRender = () => {
+      if (
+        validFieldsRef.current.size === fieldsWithValidationRef.current.size
+      ) {
+        render();
+      }
+    };
+
     if (validationSchema) {
       const fieldValues = isEmptyDefaultValues
         ? getFieldsValues(fields)
@@ -742,11 +750,11 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
                 validFieldsRef.current.add(FieldName);
               });
               shouldInfoSchemaValid = false;
+              render();
             } else {
               validFieldsRef.current.add(name);
+              shouldRender();
             }
-
-            render();
           }
         },
       );
@@ -758,11 +766,7 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
           if (isEmptyObject(error)) {
             validFieldsRef.current.add(name);
           }
-          if (
-            validFieldsRef.current.size === fieldsWithValidationRef.current.size
-          ) {
-            render();
-          }
+          shouldRender();
         });
       }
     }
