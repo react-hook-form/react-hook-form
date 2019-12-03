@@ -732,13 +732,18 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
 
       validateWithSchemaCurry(combineFieldValues(fieldValues)).then(
         ({ result }) => {
-          if (!isEmptyObject(result) && shouldInfoSchemaValid) {
-            fieldsWithValidationRef.current.forEach(name => {
-              validFieldsRef.current.add(name);
-            });
-
+          if (
+            !isEmptyObject(result) &&
+            ((!isEmptyDefaultValues && shouldInfoSchemaValid) ||
+              isEmptyDefaultValues)
+          ) {
             if (!isEmptyDefaultValues) {
+              fieldsWithValidationRef.current.forEach(FieldName => {
+                validFieldsRef.current.add(FieldName);
+              });
               shouldInfoSchemaValid = false;
+            } else {
+              validFieldsRef.current.add(name);
             }
 
             render();
