@@ -711,8 +711,9 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
     }
 
     fields[name as FieldName<FormValues>] = currentField;
+    const isEmptyDefaultValues = isEmptyObject(defaultValuesRef.current);
 
-    if (!isEmptyObject(defaultValuesRef.current)) {
+    if (!isEmptyDefaultValues) {
       const defaultValue = getDefaultValue(defaultValuesRef.current, name);
 
       if (!isUndefined(defaultValue)) {
@@ -721,7 +722,10 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
     }
 
     if (validationSchema) {
-      const fieldValues = getFieldsValues(fields);
+      const fieldValues = isEmptyDefaultValues
+        ? getFieldsValues(fields)
+        : defaultValuesRef.current;
+
       Object.keys(fieldValues).forEach(() =>
         fieldsWithValidationRef.current.add(name),
       );
@@ -729,10 +733,14 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
       validateWithSchemaCurry(combineFieldValues(fieldValues)).then(
         ({ result }) => {
           if (!isEmptyObject(result) && shouldInfoSchemaValid) {
-            Object.keys(result).forEach(name => {
+            fieldsWithValidationRef.current.forEach(name => {
               validFieldsRef.current.add(name);
             });
-            shouldInfoSchemaValid = false;
+
+            if (!isEmptyDefaultValues) {
+              shouldInfoSchemaValid = false;
+            }
+
             render();
           }
         },
