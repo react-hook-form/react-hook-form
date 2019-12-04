@@ -1069,6 +1069,17 @@ describe('useForm', () => {
       expect(result.current.formState.isValid).toBeTruthy();
     });
 
+    it('should return true for onBlur when validation schema by default', () => {
+      const { result } = renderHook(() =>
+        useForm<{ input: string }>({
+          mode: VALIDATION_MODE.onBlur,
+          validationSchema: {},
+        }),
+      );
+
+      expect(result.current.formState.isValid).toBeTruthy();
+    });
+
     it('should return true for onChange mode by default', () => {
       const { result } = renderHook(() =>
         useForm<{ input: string }>({
@@ -1093,7 +1104,7 @@ describe('useForm', () => {
       expect(result.current.formState.isValid).toBeTruthy();
     });
 
-    it('should return true when default value is valid value', async () => {
+    it('should return false when default value is not valid value', async () => {
       const { result } = renderHook(() =>
         useForm<{ input: string }>({
           mode: VALIDATION_MODE.onChange,
@@ -1117,6 +1128,32 @@ describe('useForm', () => {
       });
 
       expect(result.current.formState.isValid).toBeFalsy();
+    });
+
+    it('should return true when default value meet the validation criteria', async () => {
+      const { result } = renderHook(() =>
+        useForm<{ input: string }>({
+          mode: VALIDATION_MODE.onChange,
+        }),
+      );
+
+      (validateField as any).mockImplementation(async () => {
+        return {};
+      });
+
+      await act(async () => {
+        result.current.formState.isValid;
+      });
+
+      await act(async () => {
+        result.current.register(
+          { name: 'issue', value: 'test' },
+          { required: true },
+        );
+        result.current.register({ name: 'input' }, { required: true });
+
+        expect(result.current.formState.isValid).toBeTruthy();
+      });
     });
   });
 

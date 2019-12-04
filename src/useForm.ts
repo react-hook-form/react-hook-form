@@ -989,6 +989,7 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
         );
         defaultInputValuesRef.current = { ...values };
         if (readFormState.current.isValid) {
+          console.log('hi');
           triggerValidation();
         }
       }
