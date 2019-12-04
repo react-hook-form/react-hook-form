@@ -29,7 +29,7 @@
     </p>
 </div>
 
-<a href="https://github.com/react-hook-form/react-hook-form">🇦🇺English</a> | <a href="./README.zh-CN.md">🇨🇳简体中文</a> | <a href="./README.ja-JP.md">🇯🇵日本語</a> | 🇰🇷한국어 | 🇫🇷 <a href="./README.fr-FR.md">Français</a>  | <a href="./README.it-IT.md">🇮🇹Italiano</a>
+<a href="https://github.com/react-hook-form/react-hook-form">🇦🇺English</a> | <a href="./README.zh-CN.md">🇨🇳 简体中文</a> | <a href="./README.ja-JP.md">🇯🇵 日本語</a> | 🇰🇷한국어 | 🇫🇷 <a href="./README.fr-FR.md">Français</a> | <a href="./README.it-IT.md">🇮🇹Italiano</a> | <a href="./README.pt-BR.md">🇧🇷Português</a>
 
 ## 특징
 
@@ -72,13 +72,10 @@ function App() {
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
       <input name="firstname" ref={register} /> {/* register an input */}
-
       <input name="lastname" ref={register({ required: true })} />
       {errors.lastname && 'Last name is required.'}
-
       <input name="age" ref={register({ pattern: /\d+/ })} />
       {errors.age && 'Please enter number for age.'}
-
       <input type="submit" />
     </form>
   );

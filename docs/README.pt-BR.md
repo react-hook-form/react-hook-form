@@ -6,7 +6,7 @@
     </p>
 </div>
 
-<p align="center">Form veloci, flessibili e personalizzabili con una validazione facile da usare.</p>
+<p align="center">Performático, Flexível e formulário extensível, com fácil validação.</p>
 
 <div align="center">
 
@@ -29,35 +29,35 @@
     </p>
 </div>
 
-<a href="https://github.com/react-hook-form/react-hook-form">🇦🇺English</a> | <a href="./README.zh-CN.md">🇨🇳 简体中文</a> | <a href="./README.ja-JP.md">🇯🇵 日本語</a> | <a href="./README.ko-KR.md">🇰🇷한국어</a> | <a href="./README.fr-FR.md">🇫🇷Français</a> | 🇮🇹Italiano | <a href="./README.pt-BR.md">🇧🇷Português</a>
+<a href="https://github.com/react-hook-form/react-hook-form">🇦🇺 English | <a href="./README.zh-CN.md">🇨🇳 简体中文</a> | <a href="./README.ja-JP.md">🇯🇵 日本語</a> | <a href="./README.ko-KR.md">🇰🇷한국어</a> | <a href="./README.fr-FR.md">🇫🇷Français</a> | <a href="./README.it-IT.md">🇮🇹Italiano</a> | 🇧🇷Português</a>
 
-## Caratteritiche
+## Funcionalidades
 
-- Sviluppata puntando l'attenzione su peformance ed esperienza di sviluppo
-- Validazione form di tipo 'uncontrolled'
-- [Leggera](https://bundlephobia.com/result?p=react-hook-form@latest), senza nessuna dipendenza
-- Segue gli standard HTML per la validazione
-- Compatibile con React Native
-- Supporta lo schema di validazione [Yup](https://github.com/jquense/yup)
-- Supporta la validazione nativa del browser
-- Sviluppa form velocemente grazie al [form builder](https://react-hook-form.com/form-builder)
+- Contruído com performance e experiência do desenvolvedor em mente
+- Validação de formulários incontrolados
+- [Baixo Custo](https://bundlephobia.com/result?p=react-hook-form@latest) sem nenhuma dependência
+- Segue as normas padrões de validação HTML
+- Compatível com React Native
+- Suporta [Yup](https://github.com/jquense/yup), que é um modelo de validação
+- Suporte nativo a validação do navegador
+- Possibilita construção rápida com [form builder](https://react-hook-form.com/form-builder)
 
-## Installazione
+## Instalação
 
     $ npm install react-hook-form
 
-## Links
+## Endereços
 
-- [Perché react-hook-form](https://medium.com/@bruce1049/form-validation-with-hook-in-3kb-c5414edf7d64)
+- [Motivação](https://medium.com/@bruce1049/form-validation-with-hook-in-3kb-c5414edf7d64)
 - [Video tutorial](https://www.youtube.com/watch?v=-mFXqOaqgZk&t)
-- [Primi passi](https://react-hook-form.com/get-started)
+- [Como iniciar](https://react-hook-form.com/get-started)
 - [API](https://react-hook-form.com/api)
-- [Esempi](https://github.com/bluebill1049/react-hook-form/tree/master/examples)
-- [Demo](https://react-hook-form.com)
+- [Exemplos](https://github.com/bluebill1049/react-hook-form/tree/master/examples)
+- [Demonstração](https://react-hook-form.com)
 - [Form Builder](https://react-hook-form.com/form-builder)
-- [FAQ](https://react-hook-form.com/faqs)
+- [FAQs](https://react-hook-form.com/faqs)
 
-## Come iniziare
+## Começo rápido
 
 ```jsx
 import React from 'react';
@@ -82,17 +82,17 @@ function App() {
 }
 ```
 
-## Contributor
+## Contribuidores
 
-Grazie a queste splendide persone. [[Diventa un contributor](CONTRIBUTING.md)].
+Um obrigado especial para estas pessoas incríveis. [[Seja um contribuidor](CONTRIBUTING.md)].
 
 <a href="https://github.com/react-hook-form/react-hook-form/graphs/contributors">
     <img src="https://opencollective.com/react-hook-form/contributors.svg?width=950" />
 </a>
 
-## Sostenitori
+## Patrocinadores
 
-Grazie anche a tutti i nostri sostenitori! [[Diventa un sostenitore](https://opencollective.com/react-hook-form#backer)].
+Obrigado a todos os patrocionadores! [[Seja um patrocinador](https://opencollective.com/react-hook-form#backer)].
 
 <a href="https://opencollective.com/react-hook-form#backers">
     <img src="https://opencollective.com/react-hook-form/backers.svg?width=950" />
