@@ -188,6 +188,30 @@ describe('useForm', () => {
         } as React.SyntheticEvent);
       });
     });
+
+    it('react native - allow registration as part of the register call', async () => {
+      const { result } = renderHook(() => useForm<{ test: string }>());
+
+      act(() => {
+        result.current.register({}, { name: 'test' });
+        result.current.setValue('test', '1');
+      });
+
+      (validateField as any).mockImplementation(async () => {
+        return {};
+      });
+
+      await act(async () => {
+        await result.current.handleSubmit(data => {
+          expect(data).toEqual({
+            test: '1',
+          });
+        })({
+          preventDefault: () => {},
+          persist: () => {},
+        } as React.SyntheticEvent);
+      });
+    });
   });
 
   describe('unregister', () => {
@@ -1035,10 +1059,31 @@ describe('useForm', () => {
       expect(result.current.formState.isValid).toBeFalsy();
     });
 
-    it('should return false for onChange or onBlur mode by default', () => {
+    it('should return true for onBlur mode by default', () => {
       const { result } = renderHook(() =>
         useForm<{ input: string }>({
           mode: VALIDATION_MODE.onBlur,
+        }),
+      );
+
+      expect(result.current.formState.isValid).toBeTruthy();
+    });
+
+    it('should return true for onBlur when validation schema by default', () => {
+      const { result } = renderHook(() =>
+        useForm<{ input: string }>({
+          mode: VALIDATION_MODE.onBlur,
+          validationSchema: {},
+        }),
+      );
+
+      expect(result.current.formState.isValid).toBeTruthy();
+    });
+
+    it('should return true for onChange mode by default', () => {
+      const { result } = renderHook(() =>
+        useForm<{ input: string }>({
+          mode: VALIDATION_MODE.onChange,
         }),
       );
 
@@ -1059,44 +1104,24 @@ describe('useForm', () => {
       expect(result.current.formState.isValid).toBeTruthy();
     });
 
-    it('should return false when a validated field is invalid', async () => {
+    it('should return false when default value is not valid value', async () => {
       const { result } = renderHook(() =>
         useForm<{ input: string }>({
-          mode: VALIDATION_MODE.onBlur,
+          mode: VALIDATION_MODE.onChange,
         }),
       );
 
       (validateField as any).mockImplementation(async () => {
-        return {
-          fieldErrors: { test: 'issue' },
-          result: {},
-        };
+        return { issue: 'issue' };
       });
-
-      console.log(result.current.formState.isValid);
 
       await act(async () => {
-        result.current.register({ name: 'one' }, { required: true });
-        result.current.register({ name: 'input' });
-        result.current.setValue('input', 'x');
-      });
-
-      expect(result.current.formState.isValid).toBeFalsy();
-    });
-
-    it('should return true when default value is valid value', async () => {
-      const { result } = renderHook(() => useForm<{ input: string }>());
-
-      (validateField as any).mockImplementation(async () => {
-        return {
-          fieldErrors: {},
-          result: {},
-        };
+        result.current.formState.isValid;
       });
 
       await act(async () => {
         result.current.register(
-          { name: 'one', value: 'test' },
+          { name: 'issue', value: 'test' },
           { required: true },
         );
         result.current.register({ name: 'input' });
@@ -1105,27 +1130,29 @@ describe('useForm', () => {
       expect(result.current.formState.isValid).toBeFalsy();
     });
 
-    it('react native - allow registration as part of the register call', async () => {
-      const { result } = renderHook(() => useForm<{ test: string }>());
-
-      act(() => {
-        result.current.register({}, { name: 'test' });
-        result.current.setValue('test', '1');
-      });
+    it('should return true when default value meet the validation criteria', async () => {
+      const { result } = renderHook(() =>
+        useForm<{ input: string }>({
+          mode: VALIDATION_MODE.onChange,
+        }),
+      );
 
       (validateField as any).mockImplementation(async () => {
         return {};
       });
 
       await act(async () => {
-        await result.current.handleSubmit(data => {
-          expect(data).toEqual({
-            test: '1',
-          });
-        })({
-          preventDefault: () => {},
-          persist: () => {},
-        } as React.SyntheticEvent);
+        result.current.formState.isValid;
+      });
+
+      await act(async () => {
+        result.current.register(
+          { name: 'issue', value: 'test' },
+          { required: true },
+        );
+        result.current.register({ name: 'input' }, { required: true });
+
+        expect(result.current.formState.isValid).toBeTruthy();
       });
     });
   });

@@ -728,27 +728,32 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
 
       if (isEmptyDefaultValues) {
         fieldsWithValidationRef.current.add(name);
-      } else {
+      } else if (shouldInfoSchemaValid) {
         Object.keys(fieldValues).forEach(fieldName => {
           fieldsWithValidationRef.current.add(fieldName);
           validFieldsRef.current.add(fieldName);
         });
       }
 
-      validateWithSchemaCurry(combineFieldValues(fieldValues)).then(
-        ({ fieldErrors }) => {
-          if (!isEmptyObject(fieldErrors)) {
-            Object.keys(fieldErrors).forEach(fieldName => {
-              validFieldsRef.current.delete(fieldName);
-            });
+      if (
+        (!isEmptyDefaultValues && shouldInfoSchemaValid) ||
+        isEmptyDefaultValues
+      ) {
+        validateWithSchemaCurry(combineFieldValues(fieldValues)).then(
+          ({ fieldErrors }) => {
+            if (!isEmptyObject(fieldErrors)) {
+              Object.keys(fieldErrors).forEach(fieldName => {
+                validFieldsRef.current.delete(fieldName);
+              });
 
-            if (shouldInfoSchemaValid) {
-              render();
+              if (shouldInfoSchemaValid) {
+                render();
+              }
+              shouldInfoSchemaValid = false;
             }
-            shouldInfoSchemaValid = false;
-          }
-        },
-      );
+          },
+        );
+      }
     } else if (!isEmptyObject(validateOptions)) {
       fieldsWithValidationRef.current.add(name);
 
