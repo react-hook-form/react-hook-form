@@ -759,7 +759,7 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
 
       if (!isOnSubmit && readFormState.current.isValid) {
         validateFieldCurry(currentField).then(error => {
-          if (isEmptyObject(error)) {
+          if (!isEmptyObject(error)) {
             validFieldsRef.current.add(name);
           }
           if (shouldInfoSchemaValid) {
