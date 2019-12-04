@@ -761,11 +761,12 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
         validateFieldCurry(currentField).then(error => {
           if (isEmptyObject(error)) {
             validFieldsRef.current.add(name);
+          } else {
+            if (shouldInfoSchemaValid) {
+              render();
+            }
+            shouldInfoSchemaValid = false;
           }
-          if (shouldInfoSchemaValid) {
-            render();
-          }
-          shouldInfoSchemaValid = false;
         });
       }
     }
