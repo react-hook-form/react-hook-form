@@ -29,7 +29,7 @@
     </p>
 </div>
 
-🇦🇺English | <a href="./docs/README.zh-CN.md">🇨🇳简体中文</a> | <a href="./docs/README.ja-JP.md">🇯🇵日本語</a> | <a href="./docs/README.ko-KR.md">🇰🇷한국어</a> | <a href="./docs/README.fr-FR.md">🇫🇷Français</a> | <a href="./docs/README.it-IT.md">🇮🇹Italiano</a>
+🇦🇺English | <a href="./docs/README.zh-CN.md">🇨🇳 简体中文</a> | <a href="./docs/README.ja-JP.md">🇯🇵 日本語</a> | <a href="./docs/README.ko-KR.md">🇰🇷한국어</a> | <a href="./docs/README.fr-FR.md">🇫🇷Français</a> | <a href="./docs/README.it-IT.md">🇮🇹Italiano</a> | <a href="./docs/README.pt-BR.md">🇧🇷Português</a>
 
 ## Features
 
@@ -72,13 +72,10 @@ function App() {
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
       <input name="firstname" ref={register} /> {/* register an input */}
-
       <input name="lastname" ref={register({ required: true })} />
       {errors.lastname && 'Last name is required.'}
-
       <input name="age" ref={register({ pattern: /\d+/ })} />
       {errors.age && 'Please enter number for age.'}
-
       <input type="submit" />
     </form>
   );
@@ -100,4 +97,3 @@ Thanks goes to all our backers! [[Become a backer](https://opencollective.com/re
 <a href="https://opencollective.com/react-hook-form#backers">
     <img src="https://opencollective.com/react-hook-form/backers.svg?width=950" />
 </a>
-
