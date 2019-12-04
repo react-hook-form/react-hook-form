@@ -1101,10 +1101,11 @@ describe('useForm', () => {
       );
 
       (validateField as any).mockImplementation(async () => {
-        return {
-          fieldErrors: { test: 'issue' },
-          result: {},
-        };
+        return { issue: 'issue' };
+      });
+
+      await act(async () => {
+        result.current.formState.isValid;
       });
 
       await act(async () => {
@@ -1113,9 +1114,9 @@ describe('useForm', () => {
           { required: true },
         );
         result.current.register({ name: 'input' });
-
-        expect(result.current.formState.isValid).toBeTruthy();
       });
+
+      expect(result.current.formState.isValid).toBeFalsy();
     });
   });
 
