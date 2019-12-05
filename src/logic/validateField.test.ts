@@ -49,13 +49,15 @@ describe('validateField', () => {
     expect(
       await validateField(
         {
-          test: {
-            ref: {},
-            options: [
-              {
-                ref: 'test',
-              },
-            ],
+          current: {
+            test: {
+              ref: {},
+              options: [
+                {
+                  ref: 'test',
+                },
+              ],
+            },
           },
         },
         false,
@@ -89,13 +91,15 @@ describe('validateField', () => {
     expect(
       await validateField(
         {
-          test: {
-            ref: 'test',
-            options: [
-              {
-                ref: 'test',
-              },
-            ],
+          current: {
+            test: {
+              ref: 'test',
+              options: [
+                {
+                  ref: 'test',
+                },
+              ],
+            },
           },
         },
         false,
@@ -116,13 +120,15 @@ describe('validateField', () => {
     expect(
       await validateField(
         {
-          test: {
-            ref: 'test',
-            options: [
-              {
-                ref: 'test',
-              },
-            ],
+          current: {
+            test: {
+              ref: 'test',
+              options: [
+                {
+                  ref: 'test',
+                },
+              ],
+            },
           },
         },
         false,
@@ -147,13 +153,15 @@ describe('validateField', () => {
     expect(
       await validateField(
         {
-          test: {
-            ref: 'test',
-            options: [
-              {
-                ref: 'test',
-              },
-            ],
+          current: {
+            test: {
+              ref: 'test',
+              options: [
+                {
+                  ref: 'test',
+                },
+              ],
+            },
           },
         },
         false,
@@ -424,8 +432,10 @@ describe('validateField', () => {
     expect(
       await validateField(
         {
-          test: {
-            ref: {},
+          current: {
+            test: {
+              ref: {},
+            },
           },
         },
         false,
@@ -446,8 +456,10 @@ describe('validateField', () => {
     expect(
       await validateField(
         {
-          test: {
-            ref: {},
+          current: {
+            test: {
+              ref: {},
+            },
           },
         },
         false,
@@ -479,8 +491,10 @@ describe('validateField', () => {
     expect(
       await validateField(
         {
-          test: {
-            ref: {},
+          current: {
+            test: {
+              ref: {},
+            },
           },
         },
         false,
@@ -522,8 +536,10 @@ describe('validateField', () => {
     expect(
       await validateField(
         {
-          test: {
-            ref: '',
+          current: {
+            test: {
+              ref: '',
+            },
           },
         },
         false,
@@ -557,8 +573,10 @@ describe('validateField', () => {
     expect(
       await validateField(
         {
-          test: {
-            ref: '',
+          current: {
+            test: {
+              ref: '',
+            },
           },
         },
         false,
@@ -594,8 +612,10 @@ describe('validateField', () => {
     expect(
       await validateField(
         {
-          test: {
-            ref: {},
+          current: {
+            test: {
+              ref: {},
+            },
           },
         },
         false,
@@ -635,8 +655,10 @@ describe('validateField', () => {
     expect(
       await validateField(
         {
-          test: {
-            ref: {},
+          current: {
+            test: {
+              ref: {},
+            },
           },
         },
         false,
@@ -669,8 +691,10 @@ describe('validateField', () => {
     expect(
       await validateField(
         {
-          test: {
-            ref: {},
+          current: {
+            test: {
+              ref: {},
+            },
           },
         },
         false,
@@ -707,7 +731,7 @@ describe('validateField', () => {
       value: '',
     }));
     expect(
-      await validateField({}, false, true, {
+      await validateField({ current: {} }, false, true, {
         ref: { type: 'text', value: '', name: 'test', setCustomValidity },
         required: true,
         minLength: 10,
@@ -717,7 +741,7 @@ describe('validateField', () => {
     ).toMatchSnapshot();
 
     expect(
-      await validateField({}, false, true, {
+      await validateField({ current: {} }, false, true, {
         ref: { type: 'text', value: '123', name: 'test', setCustomValidity },
         required: true,
         minLength: 10,
@@ -732,7 +756,7 @@ describe('validateField', () => {
       value: '',
     }));
     expect(
-      await validateField({}, false, true, {
+      await validateField({ current: {} }, false, true, {
         ref: { type: 'text', value: '', name: 'test', setCustomValidity },
         required: 'test',
         minLength: {
@@ -752,7 +776,7 @@ describe('validateField', () => {
     ).toMatchSnapshot();
 
     expect(
-      await validateField({}, false, true, {
+      await validateField({ current: {} }, false, true, {
         ref: { type: 'text', value: 'bil', name: 'test', setCustomValidity },
         required: 'test',
         minLength: {
