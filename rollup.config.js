@@ -7,6 +7,7 @@ export function getConfig({
     {
       file: `dist/${pkg.name}.js`,
       format: 'cjs',
+      exports: 'named',
     },
     {
       file: `dist/${pkg.name}.es.js`,
