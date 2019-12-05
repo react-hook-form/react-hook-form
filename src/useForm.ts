@@ -66,6 +66,7 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
   const dirtyFieldsRef = useRef(new Set<FieldName<FormValues>>());
   const fieldsWithValidationRef = useRef(new Set<FieldName<FormValues>>());
   const validFieldsRef = useRef(new Set<FieldName<FormValues>>());
+  const isValidSchemaResult = useRef(true);
   const defaultInputValuesRef = useRef<
     Partial<Record<FieldName<FormValues>, FieldValue<FormValues>>>
   >({} as Record<FieldName<FormValues>, FieldValue<FormValues>>);
@@ -100,7 +101,7 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
     isOnSubmit: isReValidateOnSubmit,
   } = useRef(modeChecker(reValidateMode)).current;
   const validationSchemaOptionRef = useRef(validationSchemaOption);
-  let shouldInfoSchemaValid = true;
+  let shouldInfoValid = true;
   defaultValuesRef.current = defaultValues;
 
   const combineErrorsRef = (data: FieldErrors<FormValues>) => ({
@@ -436,10 +437,8 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
           const { fieldErrors } = await validateWithSchemaCurry(
             combineFieldValues(getFieldsValues(fields)),
           );
-          Object.keys(fieldErrors).forEach(name =>
-            validFieldsRef.current.delete(name),
-          );
           error = fieldErrors[name] ? { [name]: fieldErrors[name] } : {};
+          isValidSchemaResult.current = isEmptyObject(fieldErrors);
         } else {
           error = await validateFieldCurry(field);
         }
@@ -728,28 +727,18 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
 
       if (isEmptyDefaultValues) {
         fieldsWithValidationRef.current.add(name);
-      } else if (shouldInfoSchemaValid) {
-        Object.keys(fieldValues).forEach(fieldName => {
-          fieldsWithValidationRef.current.add(fieldName);
-          validFieldsRef.current.add(fieldName);
-        });
       }
 
-      if (
-        (!isEmptyDefaultValues && shouldInfoSchemaValid) ||
-        isEmptyDefaultValues
-      ) {
+      if ((!isEmptyDefaultValues && shouldInfoValid) || isEmptyDefaultValues) {
         validateWithSchemaCurry(combineFieldValues(fieldValues)).then(
           ({ fieldErrors }) => {
             if (!isEmptyObject(fieldErrors)) {
-              Object.keys(fieldErrors).forEach(fieldName => {
-                validFieldsRef.current.delete(fieldName);
-              });
+              isValidSchemaResult.current = false;
 
-              if (shouldInfoSchemaValid) {
+              if (shouldInfoValid) {
                 render();
               }
-              shouldInfoSchemaValid = false;
+              shouldInfoValid = false;
             }
           },
         );
@@ -762,10 +751,10 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
           if (isEmptyObject(error)) {
             validFieldsRef.current.add(name);
           } else {
-            if (shouldInfoSchemaValid) {
+            if (shouldInfoValid) {
               render();
             }
-            shouldInfoSchemaValid = false;
+            shouldInfoValid = false;
           }
         });
       }
@@ -1043,9 +1032,11 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
       : {
           isValid:
             isEmptyObject(fieldsRef.current) ||
-            (validFieldsRef.current.size >=
-              fieldsWithValidationRef.current.size &&
-              isEmptyObject(errorsRef.current)),
+            (validationSchema
+              ? isValidSchemaResult.current
+              : validFieldsRef.current.size >=
+                  fieldsWithValidationRef.current.size &&
+                isEmptyObject(errorsRef.current)),
         }),
   };
 
