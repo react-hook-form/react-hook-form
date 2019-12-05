@@ -311,6 +311,8 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
         name => !(fieldErrors as FieldErrors<FormValues>)[name],
       );
 
+      isValidSchemaResult.current = isEmptyObject(fieldErrors);
+
       if (isMultipleFields) {
         errorsRef.current = omitValidFields<FormValues>(
           combineErrorsRef(
