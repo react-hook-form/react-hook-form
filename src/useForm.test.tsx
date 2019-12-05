@@ -613,8 +613,10 @@ describe('useForm', () => {
 
       expect(validateField).toBeCalledWith(
         {
-          test: { ref: { name: 'test', value: 'test' } },
-          test1: { ref: { name: 'test1', value: 'test' } },
+          current: {
+            test: { ref: { name: 'test', value: 'test' } },
+            test1: { ref: { name: 'test1', value: 'test' } },
+          },
         },
         false,
         false,
@@ -622,8 +624,10 @@ describe('useForm', () => {
       );
       expect(validateField).toBeCalledWith(
         {
-          test: { ref: { name: 'test', value: 'test' } },
-          test1: { ref: { name: 'test1', value: 'test' } },
+          current: {
+            test: { ref: { name: 'test', value: 'test' } },
+            test1: { ref: { name: 'test1', value: 'test' } },
+          },
         },
         false,
         false,

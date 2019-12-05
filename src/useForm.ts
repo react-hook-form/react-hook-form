@@ -118,7 +118,7 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
   const validateFieldCurry = useCallback(
     validateField.bind(
       null,
-      fieldsRef.current,
+      fieldsRef,
       nativeValidation,
       validateAllFieldCriteria,
     ),

@@ -26,7 +26,7 @@ import {
 type ValidatePromiseResult = {} | void | FieldError;
 
 export default async <FormValues extends FieldValues>(
-  fields: FieldValues,
+  fieldsRef: FormValues,
   nativeValidation: boolean,
   validateAllFieldCriteria: boolean,
   {
@@ -42,6 +42,7 @@ export default async <FormValues extends FieldValues>(
     validate,
   }: Field,
 ): Promise<FieldErrors<FormValues>> => {
+  const fields = fieldsRef.current;
   const error: FieldErrors<FormValues> = {};
   const isRadio = isRadioInput(type);
   const isCheckBox = isCheckBoxInput(type);

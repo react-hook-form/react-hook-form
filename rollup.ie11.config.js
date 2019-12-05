@@ -7,6 +7,7 @@ export default getConfig({
     {
       file: `dist/${pkg.name}.ie11.js`,
       format: 'cjs',
+      exports: 'named',
     },
   ],
 });
