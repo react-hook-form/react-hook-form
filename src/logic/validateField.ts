@@ -15,18 +15,20 @@ import isEmptyString from '../utils/isEmptyString';
 import getValidateError from './getValidateError';
 import appendErrors from './appendErrors';
 import { INPUT_VALIDATION_RULES } from '../constants';
+import { MutableRefObject } from 'react';
 import {
   Field,
   FieldErrors,
   FieldValues,
   FieldName,
   FieldError,
+  FieldRefs,
 } from '../types';
 
 type ValidatePromiseResult = {} | void | FieldError;
 
 export default async <FormValues extends FieldValues>(
-  fieldsRef: FormValues,
+  fieldsRef: MutableRefObject<FieldRefs<FormValues>>,
   nativeValidation: boolean,
   validateAllFieldCriteria: boolean,
   {
@@ -50,6 +52,7 @@ export default async <FormValues extends FieldValues>(
   const isEmpty = isEmptyString(value);
   const nativeError = displayNativeError.bind(null, nativeValidation, ref);
   const typedName = name as FieldName<FormValues>;
+  // @ts-ignore
   const appendErrorsCurry = appendErrors.bind(
     null,
     typedName,
@@ -70,7 +73,7 @@ export default async <FormValues extends FieldValues>(
     error[typedName] = {
       type: INPUT_VALIDATION_RULES.required,
       message,
-      ref: isRadioOrCheckbox ? fields[typedName].options[0].ref : ref,
+      ref: isRadioOrCheckbox ? (fields[typedName] as any).options[0].ref : ref,
       ...appendErrorsCurry(INPUT_VALIDATION_RULES.required, message),
     };
     nativeError(message);

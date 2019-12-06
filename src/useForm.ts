@@ -286,12 +286,23 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
         reRender();
       }
 
-      const error = await validateFieldCurry(field);
+      const error = await validateField<FormValues>(
+        fieldsRef,
+        nativeValidation,
+        validateAllFieldCriteria,
+        field,
+      );
       renderBaseOnError(name, error);
 
       return isEmptyObject(error);
     },
-    [reRender, renderBaseOnError, setInternalValue, validateFieldCurry],
+    [
+      nativeValidation,
+      reRender,
+      renderBaseOnError,
+      setInternalValue,
+      validateAllFieldCriteria,
+    ],
   );
 
   const executeSchemaValidation = useCallback(
@@ -301,7 +312,10 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
         | ValidationPayload<FieldName<FormValues>, FieldValue<FormValues>>[],
       shouldRender?: boolean,
     ): Promise<boolean> => {
-      const { errors } = await validateFieldsSchemaCurry(
+      const { errors } = await validateWithSchema<FormValues>(
+        validationSchema,
+        validationSchemaOptionRef.current,
+        validateAllFieldCriteria,
         combineFieldValues(getFieldsValues(fieldsRef.current)),
       );
       const isMultipleFields = isArray(payload);
@@ -340,7 +354,7 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
 
       return isEmptyObject(errorsRef.current);
     },
-    [reRender, renderBaseOnError, validateFieldsSchemaCurry],
+    [reRender, renderBaseOnError, validateAllFieldCriteria, validationSchema],
   );
 
   const triggerValidation = useCallback(
@@ -359,6 +373,7 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
 
       if (isArray(fields)) {
         const result = await Promise.all(
+          // @ts-ignore
           fields.map(async data => await executeValidation(data, false)),
         );
         reRender();
@@ -435,11 +450,16 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
         }
 
         if (validationSchema) {
-          const { errors } = await validateFieldsSchemaCurry(
+          const { errors } = await validateWithSchema<FormValues>(
+            validationSchema,
+            validationSchemaOptionRef.current,
+            validateAllFieldCriteria,
             combineFieldValues(getFieldsValues(fields)),
           );
           const validForm = isEmptyObject(errors);
-          error = errors[name] ? { [name]: errors[name] } : {};
+          error = (errors[name] ? { [name]: errors[name] } : {}) as FieldErrors<
+            FormValues
+          >;
 
           if (isFormValid.current !== validForm) {
             shouldUpdateState = true;
@@ -447,7 +467,12 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
 
           isFormValid.current = validForm;
         } else {
-          error = await validateFieldCurry(field);
+          error = await validateField<FormValues>(
+            fieldsRef,
+            nativeValidation,
+            validateAllFieldCriteria,
+            field,
+          );
         }
 
         if (!renderBaseOnError(name, error) && shouldUpdateState) {
