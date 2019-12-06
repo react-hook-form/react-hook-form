@@ -521,13 +521,14 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
     preventRender?: boolean;
   }) => {
     const errors = errorsRef.current;
+    const field = fieldsRef.current[name];
 
     if (!isSameError(errors[name], type, message)) {
       errors[name] = {
         type,
         types,
         message,
-        ref: {},
+        ref: field ? field.ref : {},
         isManual: true,
       };
       if (!preventRender) {
