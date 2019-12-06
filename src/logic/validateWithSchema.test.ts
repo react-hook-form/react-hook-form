@@ -77,8 +77,8 @@ describe('validateWithSchema', () => {
         {},
       ),
     ).toEqual({
-      fieldErrors: {},
-      result: undefined,
+      errors: {},
+      values: undefined,
     });
   });
 });

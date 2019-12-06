@@ -142,7 +142,7 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
       error: FieldErrors<FormValues>,
       shouldRender?,
     ): boolean | void => {
-      let reRender =
+      let shouldReRender =
         shouldRender ||
         shouldUpdateWithError<FormValues>({
           errors: errorsRef.current,
@@ -155,23 +155,23 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
       if (isEmptyObject(error)) {
         if (fieldsWithValidationRef.current.has(name) || validationSchema) {
           validFieldsRef.current.add(name);
-          reRender = reRender || errorsRef.current[name];
+          shouldReRender = shouldReRender || errorsRef.current[name];
         }
 
         errorsRef.current = omitObject(errorsRef.current, name);
       } else {
         validFieldsRef.current.delete(name);
-        reRender = reRender || !errorsRef.current[name];
+        shouldReRender = shouldReRender || !errorsRef.current[name];
       }
 
       errorsRef.current = combineErrorsRef(error);
 
-      if (reRender) {
+      if (shouldReRender) {
         reRender();
         return true;
       }
     },
-    [validationSchema],
+    [reRender, validationSchema],
   );
 
   const setFieldValue = useCallback(
