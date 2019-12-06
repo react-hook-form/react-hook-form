@@ -608,7 +608,7 @@ describe('useForm', () => {
         await result.current.triggerValidation([
           { name: 'test', value: 'test' },
           { name: 'test1', value: 'test' },
-        ]);
+        ] as any);
       });
 
       expect(validateField).toBeCalledWith(
