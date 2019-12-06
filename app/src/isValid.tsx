@@ -15,7 +15,7 @@ const validationSchema = yup.object().shape({
 
 const IsValid: React.FC = (props: any) => {
   const isBuildInValidation = props.match.params.mode === 'build-in';
-  const { register, handleSubmit, formState, errors } = useForm<{
+  const { register, handleSubmit, formState } = useForm<{
     firstName: string;
     lastName: string;
     select: string;
@@ -35,8 +35,6 @@ const IsValid: React.FC = (props: any) => {
   });
 
   renderCounter++;
-
-  console.log(errors);
 
   return (
     <form onSubmit={handleSubmit(() => {})}>
