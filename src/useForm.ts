@@ -373,8 +373,9 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
 
       if (isArray(fields)) {
         const result = await Promise.all(
-          // @ts-ignore
-          fields.map(async data => await executeValidation(data, false)),
+          (fields as []).map(
+            async data => await executeValidation(data, false),
+          ),
         );
         reRender();
         return result.every(Boolean);

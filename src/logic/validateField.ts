@@ -52,8 +52,7 @@ export default async <FormValues extends FieldValues>(
   const isEmpty = isEmptyString(value);
   const nativeError = displayNativeError.bind(null, nativeValidation, ref);
   const typedName = name as FieldName<FormValues>;
-  // @ts-ignore
-  const appendErrorsCurry = appendErrors.bind(
+  const appendErrorsCurry = (appendErrors as any).bind(
     null,
     typedName,
     validateAllFieldCriteria,
