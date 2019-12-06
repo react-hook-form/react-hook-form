@@ -44,6 +44,7 @@ import {
   ManualFieldError,
   MultipleFieldErrors,
   Ref,
+  HandleChange,
 } from './types';
 
 const { useRef, useState, useCallback, useEffect } = React;
@@ -66,8 +67,8 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
   const dirtyFieldsRef = useRef(new Set<FieldName<FormValues>>());
   const fieldsWithValidationRef = useRef(new Set<FieldName<FormValues>>());
   const validFieldsRef = useRef(new Set<FieldName<FormValues>>());
-  const isValidSchemaResult = useRef(true);
-  const defaultInputValuesRef = useRef<
+  const isFormValid = useRef(true);
+  const defaultRenderValuesRef = useRef<
     Partial<Record<FieldName<FormValues>, FieldValue<FormValues>>>
   >({} as Record<FieldName<FormValues>, FieldValue<FormValues>>);
   const defaultValuesRef = useRef<FieldValue<FormValues> | Partial<FormValues>>(
@@ -79,8 +80,8 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
   const isDirtyRef = useRef(false);
   const submitCountRef = useRef(0);
   const isSubmittingRef = useRef(false);
-  const validateAndUpdateStateRef = useRef<Function>();
-  const [, _render] = useState();
+  const handleChange = useRef<HandleChange>();
+  const [, render] = useState();
   const { isOnBlur, isOnSubmit } = useRef(modeChecker(mode)).current;
   const isWindowUndefined = typeof window === UNDEFINED;
   const isWeb =
@@ -101,7 +102,7 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
     isOnSubmit: isReValidateOnSubmit,
   } = useRef(modeChecker(reValidateMode)).current;
   const validationSchemaOptionRef = useRef(validationSchemaOption);
-  let shouldInfoValid = true;
+  let shouldReRenderIsValid = true;
   defaultValuesRef.current = defaultValues;
 
   const combineErrorsRef = (data: FieldErrors<FormValues>) => ({
@@ -109,9 +110,9 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
     ...data,
   });
 
-  const render = useCallback(() => {
+  const reRender = useCallback(() => {
     if (!isUnMount.current) {
-      _render({});
+      render({});
     }
   }, []);
 
@@ -166,11 +167,11 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
       errorsRef.current = combineErrorsRef(error);
 
       if (reRender) {
-        render();
+        reRender();
         return true;
       }
     },
-    [render, validationSchema],
+    [validationSchema],
   );
 
   const setFieldValue = useCallback(
@@ -229,7 +230,7 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
     }
 
     const isDirty =
-      defaultInputValuesRef.current[name] !==
+      defaultRenderValuesRef.current[name] !==
       getFieldValue(fieldsRef.current, fieldsRef.current[name]!.ref);
     const isDirtyChanged = dirtyFieldsRef.current.has(name) !== isDirty;
 
@@ -282,7 +283,7 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
       }
 
       if (shouldRender) {
-        render();
+        reRender();
       }
 
       const error = await validateFieldCurry(field);
@@ -290,7 +291,7 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
 
       return isEmptyObject(error);
     },
-    [render, renderBaseOnError, setInternalValue, validateFieldCurry],
+    [reRender, renderBaseOnError, setInternalValue, validateFieldCurry],
   );
 
   const executeSchemaValidation = useCallback(
@@ -300,7 +301,7 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
         | ValidationPayload<FieldName<FormValues>, FieldValue<FormValues>>[],
       shouldRender?: boolean,
     ): Promise<boolean> => {
-      const { fieldErrors } = await validateWithSchemaCurry(
+      const { errors } = await validateWithSchemaCurry(
         combineFieldValues(getFieldsValues(fieldsRef.current)),
       );
       const isMultipleFields = isArray(payload);
@@ -308,15 +309,15 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
         ? payload.map(({ name }) => name)
         : [payload.name];
       const validFieldNames = names.filter(
-        name => !(fieldErrors as FieldErrors<FormValues>)[name],
+        name => !(errors as FieldErrors<FormValues>)[name],
       );
 
-      isValidSchemaResult.current = isEmptyObject(fieldErrors);
+      isFormValid.current = isEmptyObject(errors);
 
       if (isMultipleFields) {
         errorsRef.current = omitValidFields<FormValues>(
           combineErrorsRef(
-            Object.entries(fieldErrors)
+            Object.entries(errors)
               .filter(([key]) => names.includes(key))
               .reduce(
                 (previous, [name, error]) => ({ ...previous, [name]: error }),
@@ -325,15 +326,13 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
           ),
           validFieldNames,
         );
-        render();
+        reRender();
       } else {
         const fieldName = names[0];
         renderBaseOnError(
           fieldName,
-          fieldErrors[fieldName]
-            ? ({ [fieldName]: fieldErrors[fieldName] } as FieldErrors<
-                FormValues
-              >)
+          errors[fieldName]
+            ? ({ [fieldName]: errors[fieldName] } as FieldErrors<FormValues>)
             : {},
           shouldRender,
         );
@@ -341,7 +340,7 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
 
       return isEmptyObject(errorsRef.current);
     },
-    [render, renderBaseOnError, validateWithSchemaCurry],
+    [reRender, renderBaseOnError, validateWithSchemaCurry],
   );
 
   const triggerValidation = useCallback(
@@ -362,13 +361,13 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
         const result = await Promise.all(
           fields.map(async data => await executeValidation(data, false)),
         );
-        render();
+        reRender();
         return result.every(Boolean);
       }
 
       return await executeValidation(fields, shouldRender);
     },
-    [executeSchemaValidation, executeValidation, render, validationSchema],
+    [executeSchemaValidation, executeValidation, reRender, validationSchema],
   );
 
   const setValue = useCallback<
@@ -389,15 +388,15 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
       }
 
       if (shouldRender) {
-        render();
+        reRender();
       }
       return;
     },
-    [render, setInternalValue, triggerValidation],
+    [reRender, setInternalValue, triggerValidation],
   );
 
-  validateAndUpdateStateRef.current = validateAndUpdateStateRef.current
-    ? validateAndUpdateStateRef.current
+  handleChange.current = handleChange.current
+    ? handleChange.current
     : async ({ type, target }: MouseEvent): Promise<void | boolean> => {
         const name = target ? (target as Ref).name : '';
         const fields = fieldsRef.current;
@@ -432,21 +431,21 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
         }
 
         if (shouldSkipValidation) {
-          return shouldUpdateState && render();
+          return shouldUpdateState && reRender();
         }
 
         if (validationSchema) {
-          const { fieldErrors } = await validateWithSchemaCurry(
+          const { errors } = await validateWithSchemaCurry(
             combineFieldValues(getFieldsValues(fields)),
           );
-          error = fieldErrors[name] ? { [name]: fieldErrors[name] } : {};
-          isValidSchemaResult.current = isEmptyObject(fieldErrors);
+          error = errors[name] ? { [name]: errors[name] } : {};
+          isFormValid.current = isEmptyObject(errors);
         } else {
           error = await validateFieldCurry(field);
         }
 
         if (!renderBaseOnError(name, error) && shouldUpdateState) {
-          render();
+          reRender();
         }
       };
 
@@ -454,8 +453,8 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
     (name: FieldName<FormValues>) => {
       errorsRef.current = omitObject(errorsRef.current, name);
       fieldsRef.current = omitObject(fieldsRef.current, name);
-      defaultInputValuesRef.current = omitObject(
-        defaultInputValuesRef.current,
+      defaultRenderValuesRef.current = omitObject(
+        defaultRenderValuesRef.current,
         name,
       );
       [
@@ -467,10 +466,10 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
       ].forEach(data => data.current.delete(name));
 
       if (readFormState.current.isValid || readFormState.current.touched) {
-        render();
+        reRender();
       }
     },
-    [render],
+    [reRender],
   );
 
   const removeEventListenerAndRef = useCallback(
@@ -481,7 +480,7 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
 
       findRemovedFieldAndRemoveListener(
         fieldsRef.current,
-        validateAndUpdateStateRef.current,
+        handleChange.current,
         field,
         forceDelete,
       );
@@ -505,7 +504,7 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
       );
     }
 
-    render();
+    reRender();
   }
 
   const setInternalError = ({
@@ -532,7 +531,7 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
         isManual: true,
       };
       if (!preventRender) {
-        render();
+        reRender();
       }
     }
   };
@@ -569,7 +568,7 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
       name.forEach(error =>
         setInternalError({ ...error, preventRender: true }),
       );
-      render();
+      reRender();
     }
   }
 
@@ -731,16 +730,19 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
         fieldsWithValidationRef.current.add(name);
       }
 
-      if ((!isEmptyDefaultValues && shouldInfoValid) || isEmptyDefaultValues) {
+      if (
+        (!isEmptyDefaultValues && shouldReRenderIsValid) ||
+        isEmptyDefaultValues
+      ) {
         validateWithSchemaCurry(combineFieldValues(fieldValues)).then(
-          ({ fieldErrors }) => {
-            if (!isEmptyObject(fieldErrors)) {
-              isValidSchemaResult.current = false;
+          ({ errors }) => {
+            if (!isEmptyObject(errors)) {
+              isFormValid.current = false;
 
-              if (shouldInfoValid) {
-                render();
+              if (shouldReRenderIsValid) {
+                reRender();
               }
-              shouldInfoValid = false;
+              shouldReRenderIsValid = false;
             }
           },
         );
@@ -753,17 +755,17 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
           if (isEmptyObject(error)) {
             validFieldsRef.current.add(name);
           } else {
-            if (shouldInfoValid) {
-              render();
+            if (shouldReRenderIsValid) {
+              reRender();
             }
-            shouldInfoValid = false;
+            shouldReRenderIsValid = false;
           }
         });
       }
     }
 
-    if (!defaultInputValuesRef.current[name]) {
-      defaultInputValuesRef.current[
+    if (!defaultRenderValuesRef.current[name]) {
+      defaultRenderValuesRef.current[
         name as FieldName<FormValues>
       ] = getFieldValue(fields, currentField.ref);
     }
@@ -783,7 +785,7 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
       attachEventListeners({
         field: fieldToAttachListener,
         isRadioOrCheckbox,
-        validateAndStateUpdate: validateAndUpdateStateRef.current,
+        validateAndStateUpdate: handleChange.current,
       });
     }
   }
@@ -846,7 +848,7 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
 
       if (readFormState.current.isSubmitting) {
         isSubmittingRef.current = true;
-        render();
+        reRender();
       }
 
       try {
@@ -855,9 +857,9 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
           const output = await validateWithSchemaCurry(
             combineFieldValues(fieldValues),
           );
-          errorsRef.current = output.fieldErrors;
-          fieldErrors = output.fieldErrors;
-          fieldValues = output.result;
+          errorsRef.current = output.errors;
+          fieldErrors = output.errors;
+          fieldValues = output.values;
         } else {
           const {
             errors,
@@ -940,11 +942,11 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
         isSubmittedRef.current = true;
         isSubmittingRef.current = false;
         submitCountRef.current = submitCountRef.current + 1;
-        render();
+        reRender();
       }
     },
     [
-      render,
+      reRender,
       submitFocusError,
       validateFieldCurry,
       validateWithSchemaCurry,
@@ -954,7 +956,7 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
 
   const resetRefs = () => {
     errorsRef.current = {};
-    defaultInputValuesRef.current = {};
+    defaultRenderValuesRef.current = {};
     touchedFieldsRef.current = new Set();
     watchFieldsRef.current = new Set();
     dirtyFieldsRef.current = new Set();
@@ -984,15 +986,15 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
         fieldsKeyValue.forEach(([key]) =>
           setFieldValue(key, getDefaultValue(values, key)),
         );
-        defaultInputValuesRef.current = { ...values };
+        defaultRenderValuesRef.current = { ...values };
         if (readFormState.current.isValid) {
           triggerValidation();
         }
       }
 
-      render();
+      reRender();
     },
-    [render, setFieldValue, triggerValidation],
+    [reRender, setFieldValue, triggerValidation],
   );
 
   const getValues = useCallback(
@@ -1035,7 +1037,7 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
           isValid:
             isEmptyObject(fieldsRef.current) ||
             (validationSchema
-              ? isValidSchemaResult.current
+              ? isFormValid.current
               : validFieldsRef.current.size >=
                   fieldsWithValidationRef.current.size &&
                 isEmptyObject(errorsRef.current)),
