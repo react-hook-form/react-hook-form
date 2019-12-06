@@ -3,12 +3,12 @@ import { Field } from '../types';
 
 export default function attachEventListeners({
   field,
-  validateAndStateUpdate,
+  handleChange,
   isRadioOrCheckbox,
 }: {
   field: Field;
   isRadioOrCheckbox: boolean;
-  validateAndStateUpdate?: Function;
+  handleChange?: Function;
 }): void {
   const { ref } = field;
 
@@ -18,7 +18,7 @@ export default function attachEventListeners({
 
   ref.addEventListener(
     isRadioOrCheckbox ? EVENTS.CHANGE : EVENTS.INPUT,
-    validateAndStateUpdate,
+    handleChange,
   );
-  ref.addEventListener(EVENTS.BLUR, validateAndStateUpdate);
+  ref.addEventListener(EVENTS.BLUR, handleChange);
 }

@@ -150,3 +150,8 @@ export interface ElementLike extends NameProp {
   checked?: boolean;
   options?: any;
 }
+
+export type HandleChange = ({
+  type,
+  target,
+}: MouseEvent) => Promise<void | boolean>;

@@ -2,7 +2,7 @@ import attachEventListeners from './attachEventListeners';
 
 describe('attachEventListeners', () => {
   it('should attach change event for radio and return undefined', () => {
-    const validateAndStateUpdate = jest.fn();
+    const handleChange = jest.fn();
     const addEventListener = jest.fn();
     const fields = {
       test: {
@@ -18,16 +18,16 @@ describe('attachEventListeners', () => {
       attachEventListeners({
         isRadioOrCheckbox: true,
         field: fields.test,
-        validateAndStateUpdate,
+        handleChange,
       }),
     ).toBeUndefined();
 
-    expect(addEventListener).toBeCalledWith('change', validateAndStateUpdate);
+    expect(addEventListener).toBeCalledWith('change', handleChange);
     expect(fields.test.eventAttached).toBeTruthy();
   });
 
   it('should attach on change event on radio type input when it is watched', () => {
-    const validateAndStateUpdate = jest.fn();
+    const handleChange = jest.fn();
     const addEventListener = jest.fn();
     const fields = {
       test: {
@@ -43,16 +43,16 @@ describe('attachEventListeners', () => {
       attachEventListeners({
         field: fields.test,
         isRadioOrCheckbox: true,
-        validateAndStateUpdate,
+        handleChange,
       }),
     ).toBeUndefined();
 
-    expect(addEventListener).toBeCalledWith('change', validateAndStateUpdate);
+    expect(addEventListener).toBeCalledWith('change', handleChange);
     expect(fields.test.eventAttached).toBeTruthy();
   });
 
   it('should attach blur event when it is under blur mode', () => {
-    const validateAndStateUpdate = jest.fn();
+    const handleChange = jest.fn();
     const addEventListener = jest.fn();
     const fields = {
       test: {
@@ -68,15 +68,15 @@ describe('attachEventListeners', () => {
       attachEventListeners({
         field: fields.test,
         isRadioOrCheckbox: true,
-        validateAndStateUpdate,
+        handleChange,
       }),
     ).toBeUndefined();
 
-    expect(addEventListener).toBeCalledWith('blur', validateAndStateUpdate);
+    expect(addEventListener).toBeCalledWith('blur', handleChange);
   });
 
   it('should attach blur event when re validate mode is under blur', () => {
-    const validateAndStateUpdate = jest.fn();
+    const handleChange = jest.fn();
     const addEventListener = jest.fn();
     const fields = {
       test: {
@@ -92,15 +92,15 @@ describe('attachEventListeners', () => {
       attachEventListeners({
         field: fields.test,
         isRadioOrCheckbox: true,
-        validateAndStateUpdate,
+        handleChange,
       }),
     ).toBeUndefined();
 
-    expect(addEventListener).toBeCalledWith('blur', validateAndStateUpdate);
+    expect(addEventListener).toBeCalledWith('blur', handleChange);
   });
 
   it('should attach input event on none radio type input', () => {
-    const validateAndStateUpdate = jest.fn();
+    const handleChange = jest.fn();
     const addEventListener = jest.fn();
     const fields = {
       test: {
@@ -116,16 +116,16 @@ describe('attachEventListeners', () => {
       attachEventListeners({
         field: fields.test,
         isRadioOrCheckbox: false,
-        validateAndStateUpdate,
+        handleChange,
       }),
     ).toBeUndefined();
 
-    expect(addEventListener).toBeCalledWith('input', validateAndStateUpdate);
+    expect(addEventListener).toBeCalledWith('input', handleChange);
     expect(fields.test.eventAttached).toBeTruthy();
   });
 
   it('should attach input event on none radio type input when it is watched', () => {
-    const validateAndStateUpdate = jest.fn();
+    const handleChange = jest.fn();
     const addEventListener = jest.fn();
     const fields = {
       test: {
@@ -142,16 +142,16 @@ describe('attachEventListeners', () => {
       attachEventListeners({
         field: fields.test,
         isRadioOrCheckbox: false,
-        validateAndStateUpdate,
+        handleChange,
       }),
     ).toBeUndefined();
 
-    expect(addEventListener).toBeCalledWith('input', validateAndStateUpdate);
+    expect(addEventListener).toBeCalledWith('input', handleChange);
     expect(fields.test.eventAttached).toBeTruthy();
   });
 
   it('should attach on blur event on radio type input', () => {
-    const validateAndStateUpdate = jest.fn();
+    const handleChange = jest.fn();
     const addEventListener = jest.fn();
     const fields = {
       test: {
@@ -166,16 +166,16 @@ describe('attachEventListeners', () => {
       attachEventListeners({
         field: fields.test,
         isRadioOrCheckbox: true,
-        validateAndStateUpdate,
+        handleChange,
       }),
     ).toBeUndefined();
 
-    expect(addEventListener).toBeCalledWith('change', validateAndStateUpdate);
+    expect(addEventListener).toBeCalledWith('change', handleChange);
     expect(fields.test.eventAttached).toBeTruthy();
   });
 
   it('should attach input event on none radio type input', () => {
-    const validateAndStateUpdate = jest.fn();
+    const handleChange = jest.fn();
     const addEventListener = jest.fn();
     const fields = {
       test: {
@@ -191,11 +191,11 @@ describe('attachEventListeners', () => {
       attachEventListeners({
         field: fields.test,
         isRadioOrCheckbox: false,
-        validateAndStateUpdate,
+        handleChange,
       }),
     ).toBeUndefined();
 
-    expect(addEventListener).toBeCalledWith('input', validateAndStateUpdate);
+    expect(addEventListener).toBeCalledWith('input', handleChange);
     expect(fields.test.eventAttached).toBeTruthy();
   });
 
@@ -204,7 +204,7 @@ describe('attachEventListeners', () => {
       attachEventListeners({
         field: { ref: {} },
         isRadioOrCheckbox: false,
-        validateAndStateUpdate: () => {},
+        handleChange: () => {},
       }),
     ).toBeUndefined();
   });

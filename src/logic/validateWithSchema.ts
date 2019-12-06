@@ -3,8 +3,8 @@ import isArray from '../utils/isArray';
 import { FieldValues, SchemaValidateOptions, FieldErrors } from '../types';
 
 interface SchemaValidationResult<FormValues> {
-  fieldErrors: FieldErrors<FormValues>;
-  result: FieldValues;
+  errors: FieldErrors<FormValues>;
+  values: FieldValues;
 }
 
 interface YupValidationError {
@@ -62,13 +62,13 @@ export default async function validateWithSchema<FormValues>(
 ): Promise<SchemaValidationResult<FormValues>> {
   try {
     return {
-      result: await validationSchema.validate(data, validationSchemaOption),
-      fieldErrors: {},
+      values: await validationSchema.validate(data, validationSchemaOption),
+      errors: {},
     };
   } catch (e) {
     return {
-      result: {},
-      fieldErrors: parseErrorSchema<FormValues>(e, validateAllFieldCriteria),
+      values: {},
+      errors: parseErrorSchema<FormValues>(e, validateAllFieldCriteria),
     };
   }
 }
