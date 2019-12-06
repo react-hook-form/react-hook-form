@@ -60,7 +60,7 @@ describe('useForm', () => {
           },
         },
         isRadioOrCheckbox: false,
-        validateAndStateUpdate: expect.any(Function),
+        handleChange: expect.any(Function),
       });
       expect(onDomRemove).toHaveBeenCalled();
     });
@@ -81,7 +81,7 @@ describe('useForm', () => {
           },
         },
         isRadioOrCheckbox: true,
-        validateAndStateUpdate: expect.any(Function),
+        handleChange: expect.any(Function),
       });
       expect(onDomRemove).toBeCalled();
     });
@@ -107,7 +107,7 @@ describe('useForm', () => {
           },
         },
         isRadioOrCheckbox: true,
-        validateAndStateUpdate: expect.any(Function),
+        handleChange: expect.any(Function),
       });
       expect(onDomRemove).toBeCalled();
     });

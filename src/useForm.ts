@@ -438,8 +438,14 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
           const { errors } = await validateFieldsSchemaCurry(
             combineFieldValues(getFieldsValues(fields)),
           );
+          const validForm = isEmptyObject(errors);
           error = errors[name] ? { [name]: errors[name] } : {};
-          isFormValid.current = isEmptyObject(errors);
+
+          if (isFormValid.current !== validForm) {
+            shouldUpdateState = true;
+          }
+
+          isFormValid.current = validForm;
         } else {
           error = await validateFieldCurry(field);
         }
@@ -772,7 +778,7 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
       attachEventListeners({
         field: fieldToAttachListener,
         isRadioOrCheckbox,
-        validateAndStateUpdate: handleChange.current,
+        handleChange: handleChange.current,
       });
     }
   }
