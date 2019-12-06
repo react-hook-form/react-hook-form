@@ -126,7 +126,7 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
     [],
   );
 
-  const validateWithSchemaCurry = useCallback(
+  const validateFieldsSchemaCurry = useCallback(
     validateWithSchema.bind(
       null,
       validationSchema,
@@ -301,7 +301,7 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
         | ValidationPayload<FieldName<FormValues>, FieldValue<FormValues>>[],
       shouldRender?: boolean,
     ): Promise<boolean> => {
-      const { errors } = await validateWithSchemaCurry(
+      const { errors } = await validateFieldsSchemaCurry(
         combineFieldValues(getFieldsValues(fieldsRef.current)),
       );
       const isMultipleFields = isArray(payload);
@@ -340,7 +340,7 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
 
       return isEmptyObject(errorsRef.current);
     },
-    [reRender, renderBaseOnError, validateWithSchemaCurry],
+    [reRender, renderBaseOnError, validateFieldsSchemaCurry],
   );
 
   const triggerValidation = useCallback(
@@ -435,7 +435,7 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
         }
 
         if (validationSchema) {
-          const { errors } = await validateWithSchemaCurry(
+          const { errors } = await validateFieldsSchemaCurry(
             combineFieldValues(getFieldsValues(fields)),
           );
           error = errors[name] ? { [name]: errors[name] } : {};
@@ -653,12 +653,12 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
     }
   }
 
-  function registerIntoFieldsRef<Element extends ElementLike>(
+  function registerFieldsRef<Element extends ElementLike>(
     ref: Element,
     validateOptions: ValidationOptions = {},
   ): ((name: FieldName<FormValues>) => void) | void {
     if (!ref.name) {
-      return console.warn('Missing name at', ref);
+      return console.warn('Missing name @', ref);
     }
 
     const { name, type, value } = ref;
@@ -727,27 +727,15 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
         ? getFieldsValues(fields)
         : defaultValuesRef.current;
 
-      if (isEmptyDefaultValues) {
-        fieldsWithValidationRef.current.add(name);
-      }
-
-      if (
-        (!isEmptyDefaultValues && shouldReRenderIsValid) ||
-        isEmptyDefaultValues
-      ) {
-        validateWithSchemaCurry(combineFieldValues(fieldValues)).then(
-          ({ errors }) => {
-            if (!isEmptyObject(errors)) {
-              isFormValid.current = false;
-
-              if (shouldReRenderIsValid) {
-                reRender();
-              }
-              shouldReRenderIsValid = false;
-            }
-          },
-        );
-      }
+      validateFieldsSchemaCurry(combineFieldValues(fieldValues)).then(
+        ({ errors }) => {
+          if (!isEmptyObject(errors) && shouldReRenderIsValid) {
+            isFormValid.current = false;
+            shouldReRenderIsValid = false;
+            reRender();
+          }
+        },
+      );
     } else if (!isEmptyObject(validateOptions)) {
       fieldsWithValidationRef.current.add(name);
 
@@ -755,11 +743,9 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
         validateFieldCurry(currentField).then(error => {
           if (isEmptyObject(error)) {
             validFieldsRef.current.add(name);
-          } else {
-            if (shouldReRenderIsValid) {
-              reRender();
-            }
+          } else if (shouldReRenderIsValid) {
             shouldReRenderIsValid = false;
+            reRender();
           }
         });
       }
@@ -814,20 +800,17 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
     }
 
     if (validationOptions && isString(validationOptions.name)) {
-      registerIntoFieldsRef(
-        { name: validationOptions.name },
-        validationOptions,
-      );
+      registerFieldsRef({ name: validationOptions.name }, validationOptions);
       return;
     }
 
     if (isObject(refOrValidateRule) && 'name' in refOrValidateRule) {
-      registerIntoFieldsRef(refOrValidateRule, validationOptions);
+      registerFieldsRef(refOrValidateRule, validationOptions);
       return;
     }
 
     return (ref: Element | null) =>
-      ref && registerIntoFieldsRef(ref, refOrValidateRule);
+      ref && registerFieldsRef(ref, refOrValidateRule);
   }
 
   const handleSubmit = useCallback(
@@ -850,7 +833,7 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
       try {
         if (validationSchema) {
           fieldValues = getFieldsValues(fields);
-          const output = await validateWithSchemaCurry(
+          const output = await validateFieldsSchemaCurry(
             combineFieldValues(fieldValues),
           );
           errorsRef.current = output.errors;
@@ -945,7 +928,7 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
       reRender,
       submitFocusError,
       validateFieldCurry,
-      validateWithSchemaCurry,
+      validateFieldsSchemaCurry,
       validationSchema,
     ],
   );
