@@ -647,7 +647,7 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
           isEmptyObject(fieldsRef.current) &&
           isObject(combinedDefaultValues)
         ) {
-          value = getDefaultValue(combinedDefaultValues, name);
+          value = getDefaultValue<FormValues>(combinedDefaultValues, name);
         } else {
           value = assignWatchFields<FormValues>(
             fieldValues,
@@ -747,7 +747,10 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
     const isEmptyDefaultValues = isEmptyObject(defaultValuesRef.current);
 
     if (!isEmptyDefaultValues) {
-      const defaultValue = getDefaultValue(defaultValuesRef.current, name);
+      const defaultValue = getDefaultValue<FormValues>(
+        defaultValuesRef.current,
+        name,
+      );
 
       if (!isUndefined(defaultValue)) {
         setFieldValue(name, defaultValue);
@@ -995,7 +998,7 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
 
       if (values) {
         fieldsKeyValue.forEach(([key]) =>
-          setFieldValue(key, getDefaultValue(values, key)),
+          setFieldValue(key, getDefaultValue<FormValues>(values, key)),
         );
         defaultRenderValuesRef.current = { ...values };
         if (readFormState.current.isValid) {

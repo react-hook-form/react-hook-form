@@ -10,7 +10,8 @@ export default <FormValues>(
   if (!validateAllFieldCriteria) {
     return {};
   }
-  const error = errors[name as keyof FormValues];
+  // @ts-ignore
+  const error = errors[name];
 
   return {
     ...error,

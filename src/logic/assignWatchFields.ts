@@ -21,7 +21,7 @@ export default <FormValues extends FieldValues>(
     watchFields.add(fieldName);
     value = fieldValues[fieldName];
   } else {
-    value = get(combineFieldValues(fieldValues), fieldName as string);
+    value = get(combineFieldValues(fieldValues), fieldName);
 
     if (!isUndefined(value)) {
       getPath<FormValues>(fieldName, value).forEach(name =>
