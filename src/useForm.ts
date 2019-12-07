@@ -427,6 +427,7 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
 
         const isBlurEvent = type === EVENTS.BLUR;
         const shouldSkipValidation =
+          (isOnSubmit && isReValidateOnSubmit) ||
           (isOnSubmit && !isSubmittedRef.current) ||
           (isOnBlur && !isBlurEvent && !currentError) ||
           (isReValidateOnBlur && !isBlurEvent && currentError) ||
