@@ -1,16 +1,15 @@
-import { FieldErrors, ValidateResult } from '../types';
+import { ValidateResult } from '../types';
 
-export default <FormValues>(
+export default (
   name: string,
   validateAllFieldCriteria: boolean,
-  errors: FieldErrors<FormValues>,
+  errors: Record<string, any>,
   type: string,
   message: ValidateResult,
 ) => {
   if (!validateAllFieldCriteria) {
     return {};
   }
-  // @ts-ignore
   const error = errors[name];
 
   return {
