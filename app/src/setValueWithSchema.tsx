@@ -25,6 +25,7 @@ const SetValueWithSchema: React.FC = () => {
     radio: string;
     select: string;
     multiple: string[];
+    requiredField: string,
   }>({
     validationSchema,
   });

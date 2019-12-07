@@ -9,7 +9,7 @@ export default function findRemovedFieldAndRemoveListener<
   FormValues extends FieldValues
 >(
   fields: FieldRefs<FormValues>,
-  validateWithStateUpdate: Function | undefined = () => {},
+  handleChange: ({ type, target }: MouseEvent) => Promise<void | boolean>,
   field: Field,
   forceDelete?: boolean | undefined,
 ): void {
@@ -33,7 +33,7 @@ export default function findRemovedFieldAndRemoveListener<
         if ((option && isDetached(ref)) || forceDelete) {
           const mutationWatcher = option.mutationWatcher;
 
-          removeAllEventListeners(option, validateWithStateUpdate);
+          removeAllEventListeners(option, handleChange);
 
           if (mutationWatcher) {
             mutationWatcher.disconnect();
@@ -45,7 +45,7 @@ export default function findRemovedFieldAndRemoveListener<
       delete fields[name];
     }
   } else if (isDetached(ref) || forceDelete) {
-    removeAllEventListeners(ref, validateWithStateUpdate);
+    removeAllEventListeners(ref, handleChange);
 
     if (mutationWatcher) {
       mutationWatcher.disconnect();

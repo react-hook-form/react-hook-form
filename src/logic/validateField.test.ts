@@ -18,7 +18,7 @@ describe('validateField', () => {
     }));
 
     expect(
-      await validateField({}, false, false, {
+      await validateField({} as any, false, false, {
         ref: { type: 'text', value: '', name: 'test', setCustomValidity },
         required: true,
       }),
@@ -31,7 +31,7 @@ describe('validateField', () => {
     });
 
     expect(
-      await validateField({}, false, false, {
+      await validateField({} as any, false, false, {
         ref: { type: 'text', value: '', name: 'test', setCustomValidity },
         required: {
           value: true,
@@ -76,7 +76,7 @@ describe('validateField', () => {
     });
 
     expect(
-      await validateField({}, false, false, {
+      await validateField({} as any, false, false, {
         ref: { type: 'text', value: '', name: 'test', setCustomValidity },
         required: 'test',
       }),
@@ -176,7 +176,7 @@ describe('validateField', () => {
 
   it('should return max error', async () => {
     expect(
-      await validateField({}, false, false, {
+      await validateField({} as any, false, false, {
         ref: { type: 'number', name: 'test', value: 10 },
         required: true,
         max: 0,
@@ -190,7 +190,7 @@ describe('validateField', () => {
     });
 
     expect(
-      await validateField({}, false, false, {
+      await validateField({} as any, false, false, {
         ref: { type: 'number', name: 'test', value: 10 },
         required: true,
         max: 8,
@@ -204,7 +204,7 @@ describe('validateField', () => {
     });
 
     expect(
-      await validateField({}, false, false, {
+      await validateField({} as any, false, false, {
         ref: { type: 'custom', name: 'test', value: '' },
         required: true,
       }),
@@ -217,7 +217,7 @@ describe('validateField', () => {
     });
 
     expect(
-      await validateField({}, false, false, {
+      await validateField({} as any, false, false, {
         ref: { type: 'custom', name: 'test', value: undefined },
         required: true,
       }),
@@ -230,7 +230,7 @@ describe('validateField', () => {
     });
 
     expect(
-      await validateField({}, false, false, {
+      await validateField({} as any, false, false, {
         ref: { type: 'custom', name: 'test', value: null },
         required: true,
       }),
@@ -243,14 +243,14 @@ describe('validateField', () => {
     });
 
     expect(
-      await validateField({}, false, false, {
+      await validateField({} as any, false, false, {
         ref: { type: 'custom', name: 'test', value: 'ok' },
         required: true,
       }),
     ).toEqual({});
 
     expect(
-      await validateField({}, false, false, {
+      await validateField({} as any, false, false, {
         ref: { type: 'date', name: 'test', value: '2019-2-12' },
         required: true,
         max: '2019-1-12',
@@ -266,7 +266,7 @@ describe('validateField', () => {
 
   it('should return min error', async () => {
     expect(
-      await validateField({}, false, false, {
+      await validateField({} as any, false, false, {
         ref: { type: 'number', name: 'test', value: -1 },
         required: true,
         min: 0,
@@ -280,7 +280,7 @@ describe('validateField', () => {
     });
 
     expect(
-      await validateField({}, false, false, {
+      await validateField({} as any, false, false, {
         ref: { type: 'number', name: 'test', value: 10 },
         required: true,
         min: 12,
@@ -294,7 +294,7 @@ describe('validateField', () => {
     });
 
     expect(
-      await validateField({}, false, false, {
+      await validateField({} as any, false, false, {
         ref: { type: 'date', name: 'test', value: '2019-2-12' },
         required: true,
         min: '2019-3-12',
@@ -310,7 +310,7 @@ describe('validateField', () => {
 
   it('should return max length error ', async () => {
     expect(
-      await validateField({}, false, false, {
+      await validateField({} as any, false, false, {
         ref: {
           type: 'text',
           name: 'test',
@@ -336,7 +336,7 @@ describe('validateField', () => {
 
   it('should return min length error ', async () => {
     expect(
-      await validateField({}, false, false, {
+      await validateField({} as any, false, false, {
         ref: {
           type: 'text',
           name: 'test',
@@ -364,7 +364,7 @@ describe('validateField', () => {
     const emailRegex = /(?:[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*|"(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21\x23-\x5b\x5d-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])*")@(?:(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?|\[(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?|[a-z0-9-]*[a-z0-9]:(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21-\x5a\x53-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])+)\])/;
 
     expect(
-      await validateField({}, false, false, {
+      await validateField({} as any, false, false, {
         ref: {
           type: 'text',
           name: 'test',
@@ -388,7 +388,7 @@ describe('validateField', () => {
     });
 
     expect(
-      await validateField({}, false, false, {
+      await validateField({} as any, false, false, {
         ref: {
           type: 'text',
           name: 'test',
@@ -415,7 +415,7 @@ describe('validateField', () => {
     });
 
     expect(
-      await validateField({}, false, false, {
+      await validateField({} as any, false, false, {
         ref: {
           type: 'text',
           name: 'test',
@@ -714,7 +714,7 @@ describe('validateField', () => {
   it('should call setCustomValidity with empty string when native validation is on', async () => {
     const setCustomValidity = jest.fn();
     expect(
-      await validateField({}, true, false, {
+      await validateField({} as any, true, false, {
         ref: {
           type: 'text',
           name: 'test',

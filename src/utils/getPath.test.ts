@@ -3,7 +3,7 @@ import getPath from './getPath';
 describe('getPath', () => {
   it('should generate the correct path', () => {
     expect(
-      getPath('test', [
+      getPath('test' as any, [
         1,
         [1, 2],
         {

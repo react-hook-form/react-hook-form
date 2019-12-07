@@ -286,12 +286,23 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
         reRender();
       }
 
-      const error = await validateFieldCurry(field);
+      const error = await validateField<FormValues>(
+        fieldsRef,
+        nativeValidation,
+        validateAllFieldCriteria,
+        field,
+      );
       renderBaseOnError(name, error);
 
       return isEmptyObject(error);
     },
-    [reRender, renderBaseOnError, setInternalValue, validateFieldCurry],
+    [
+      nativeValidation,
+      reRender,
+      renderBaseOnError,
+      setInternalValue,
+      validateAllFieldCriteria,
+    ],
   );
 
   const executeSchemaValidation = useCallback(
@@ -301,7 +312,10 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
         | ValidationPayload<FieldName<FormValues>, FieldValue<FormValues>>[],
       shouldRender?: boolean,
     ): Promise<boolean> => {
-      const { errors } = await validateFieldsSchemaCurry(
+      const { errors } = await validateWithSchema<FormValues>(
+        validationSchema,
+        validationSchemaOptionRef.current,
+        validateAllFieldCriteria,
         combineFieldValues(getFieldsValues(fieldsRef.current)),
       );
       const isMultipleFields = isArray(payload);
@@ -340,7 +354,7 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
 
       return isEmptyObject(errorsRef.current);
     },
-    [reRender, renderBaseOnError, validateFieldsSchemaCurry],
+    [reRender, renderBaseOnError, validateAllFieldCriteria, validationSchema],
   );
 
   const triggerValidation = useCallback(
@@ -359,7 +373,9 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
 
       if (isArray(fields)) {
         const result = await Promise.all(
-          fields.map(async data => await executeValidation(data, false)),
+          (fields as []).map(
+            async data => await executeValidation(data, false),
+          ),
         );
         reRender();
         return result.every(Boolean);
@@ -435,11 +451,16 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
         }
 
         if (validationSchema) {
-          const { errors } = await validateFieldsSchemaCurry(
+          const { errors } = await validateWithSchema<FormValues>(
+            validationSchema,
+            validationSchemaOptionRef.current,
+            validateAllFieldCriteria,
             combineFieldValues(getFieldsValues(fields)),
           );
           const validForm = isEmptyObject(errors);
-          error = errors[name] ? { [name]: errors[name] } : {};
+          error = (errors[name] ? { [name]: errors[name] } : {}) as FieldErrors<
+            FormValues
+          >;
 
           if (isFormValid.current !== validForm) {
             shouldUpdateState = true;
@@ -447,7 +468,12 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
 
           isFormValid.current = validForm;
         } else {
-          error = await validateFieldCurry(field);
+          error = await validateField<FormValues>(
+            fieldsRef,
+            nativeValidation,
+            validateAllFieldCriteria,
+            field,
+          );
         }
 
         if (!renderBaseOnError(name, error) && shouldUpdateState) {
@@ -484,12 +510,14 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
         return;
       }
 
-      findRemovedFieldAndRemoveListener(
-        fieldsRef.current,
-        handleChange.current,
-        field,
-        forceDelete,
-      );
+      if (!isUndefined(handleChange.current)) {
+        findRemovedFieldAndRemoveListener(
+          fieldsRef.current,
+          handleChange.current,
+          field,
+          forceDelete,
+        );
+      }
       resetFieldRef(field.ref.name);
     },
     [resetFieldRef],
@@ -581,11 +609,11 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
 
   function watch(): FormValues;
   function watch<T extends FieldName<FormValues>>(
-    field: T,
+    field: T & string,
     defaultValue?: string,
   ): FormValues[T];
   function watch(
-    fields: FieldName<FormValues>[],
+    fields: FieldName<FormValues>[] | string[],
     defaultValues?: Partial<FormValues>,
   ): Partial<FormValues>;
   function watch(
@@ -621,7 +649,7 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
           isEmptyObject(fieldsRef.current) &&
           isObject(combinedDefaultValues)
         ) {
-          value = getDefaultValue(combinedDefaultValues, name);
+          value = getDefaultValue<FormValues>(combinedDefaultValues, name);
         } else {
           value = assignWatchFields<FormValues>(
             fieldValues,
@@ -721,7 +749,10 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
     const isEmptyDefaultValues = isEmptyObject(defaultValuesRef.current);
 
     if (!isEmptyDefaultValues) {
-      const defaultValue = getDefaultValue(defaultValuesRef.current, name);
+      const defaultValue = getDefaultValue<FormValues>(
+        defaultValuesRef.current,
+        name,
+      );
 
       if (!isUndefined(defaultValue)) {
         setFieldValue(name, defaultValue);
@@ -969,7 +1000,7 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
 
       if (values) {
         fieldsKeyValue.forEach(([key]) =>
-          setFieldValue(key, getDefaultValue(values, key)),
+          setFieldValue(key, getDefaultValue<FormValues>(values, key)),
         );
         defaultRenderValuesRef.current = { ...values };
         if (readFormState.current.isValid) {
@@ -1032,11 +1063,11 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
   return {
     register: useCallback(register, []),
     unregister: useCallback(unregister, [removeEventListenerAndRef]),
+    clearError: useCallback(clearError, []),
+    setError: useCallback(setError, []),
     handleSubmit,
     watch,
     reset,
-    clearError: useCallback(clearError, []),
-    setError: useCallback(setError, []),
     setValue,
     triggerValidation,
     getValues,

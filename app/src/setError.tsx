@@ -7,6 +7,9 @@ const SetError: React.FC = () => {
     lastName: string;
     age: string;
     test: string;
+    test1: string,
+    test2: string,
+    username: string,
   }>();
 
   useEffect(() => {
