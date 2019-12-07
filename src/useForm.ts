@@ -510,12 +510,14 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
         return;
       }
 
-      findRemovedFieldAndRemoveListener(
-        fieldsRef.current,
-        handleChange.current,
-        field,
-        forceDelete,
-      );
+      if (!isUndefined(handleChange.current)) {
+        findRemovedFieldAndRemoveListener(
+          fieldsRef.current,
+          handleChange.current,
+          field,
+          forceDelete,
+        );
+      }
       resetFieldRef(field.ref.name);
     },
     [resetFieldRef],

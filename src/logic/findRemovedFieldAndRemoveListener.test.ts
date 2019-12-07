@@ -19,7 +19,7 @@ describe('findMissDomAndClean', () => {
       test: 'test',
     };
     expect(
-      findRemovedFieldAndRemoveListener(fields as any, () => {}, {
+      findRemovedFieldAndRemoveListener(fields as any, () => ({} as any), {
         ref: { name: 'bill', type: 'radio' },
       }),
     ).toEqual(undefined);
@@ -47,7 +47,7 @@ describe('findMissDomAndClean', () => {
         ],
       },
     };
-    findRemovedFieldAndRemoveListener(fields, () => {}, {
+    findRemovedFieldAndRemoveListener(fields, () => ({} as any), {
       ref: { name: 'test', type: 'radio' },
       options: [
         {
@@ -82,7 +82,7 @@ describe('findMissDomAndClean', () => {
       },
     };
 
-    findRemovedFieldAndRemoveListener(fields, () => {}, {
+    findRemovedFieldAndRemoveListener(fields, () => ({} as any), {
       ref,
       mutationWatcher: {
         disconnect,
@@ -115,7 +115,7 @@ describe('findMissDomAndClean', () => {
     };
 
     expect(
-      findRemovedFieldAndRemoveListener(fields, () => {}, {
+      findRemovedFieldAndRemoveListener(fields, () => ({} as any), {
         ref: { name: 'test', type: 'radio' },
         options: [{ ref }],
         mutationWatcher: {
@@ -148,7 +148,7 @@ describe('findMissDomAndClean', () => {
     };
 
     expect(
-      findRemovedFieldAndRemoveListener(fields, () => {}, {
+      findRemovedFieldAndRemoveListener(fields, () => ({} as any), {
         ref: { name: 'test', type: 'checkbox' },
         options: [{ ref }],
         mutationWatcher: {
@@ -181,7 +181,7 @@ describe('findMissDomAndClean', () => {
       },
     };
 
-    findRemovedFieldAndRemoveListener(fields, () => {}, {
+    findRemovedFieldAndRemoveListener(fields, () => ({} as any), {
       ref: { name: 'test', type: 'text' },
       options: [
         {
@@ -196,7 +196,7 @@ describe('findMissDomAndClean', () => {
     expect(fields).toMatchSnapshot();
 
     expect(
-      findRemovedFieldAndRemoveListener(fields, () => {}, {
+      findRemovedFieldAndRemoveListener(fields, () => ({} as any), {
         ref: { name: 'test', type: 'text' },
       }),
     ).toMatchSnapshot();
@@ -204,7 +204,12 @@ describe('findMissDomAndClean', () => {
 
   it('should return undefined when field is not found', () => {
     expect(
-      findRemovedFieldAndRemoveListener({}, undefined, undefined as any, false),
+      findRemovedFieldAndRemoveListener(
+        {},
+        () => ({} as any),
+        undefined as any,
+        false,
+      ),
     ).toBeUndefined();
   });
 
@@ -229,7 +234,7 @@ describe('findMissDomAndClean', () => {
     };
     findRemovedFieldAndRemoveListener(
       fields,
-      () => {},
+      () => ({} as any),
       {
         ref: { name: 'test', type: 'radio' },
         options: [
