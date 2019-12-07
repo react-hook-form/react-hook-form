@@ -24,14 +24,10 @@ export default (options?: RadioOrCheckboxOption[]): CheckboxFieldResult => {
       return { value: values, isValid: !!values.length };
     }
 
-    const {
-      checked,
-      value,
-      attributes: { value: valueAttribute },
-    } = options[0].ref;
+    const { checked, value, attributes } = options[0].ref;
 
     return checked
-      ? valueAttribute
+      ? attributes && !isUndefined(attributes.value)
         ? isUndefined(value) || isEmptyString(value)
           ? validResult
           : { value: value, isValid: true }
