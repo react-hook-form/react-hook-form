@@ -9,7 +9,7 @@ const Watch: React.FC = () => {
       firstName: string;
       lastName: string;
     };
-    toggle: boolean;
+    toggle: string;
   }>();
   const onSubmit = () => {};
   const test = watch('test');

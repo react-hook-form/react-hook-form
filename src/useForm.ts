@@ -607,11 +607,11 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
 
   function watch(): FormValues;
   function watch<T extends FieldName<FormValues>>(
-    field: T,
+    field: T & string,
     defaultValue?: string,
   ): FormValues[T];
   function watch(
-    fields: FieldName<FormValues>[],
+    fields: FieldName<FormValues>[] | string[],
     defaultValues?: Partial<FormValues>,
   ): Partial<FormValues>;
   function watch(
