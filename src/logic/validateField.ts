@@ -1,3 +1,4 @@
+import * as React from 'react';
 import getRadioValue from './getRadioValue';
 import getCheckboxValue from './getCheckboxValue';
 import isNullOrUndefined from '../utils/isNullOrUndefined';
@@ -15,7 +16,6 @@ import isEmptyString from '../utils/isEmptyString';
 import getValidateError from './getValidateError';
 import appendErrors from './appendErrors';
 import { INPUT_VALIDATION_RULES } from '../constants';
-import { MutableRefObject } from 'react';
 import {
   Field,
   FieldErrors,
@@ -28,7 +28,7 @@ import {
 type ValidatePromiseResult = {} | void | FieldError;
 
 export default async <FormValues extends FieldValues>(
-  fieldsRef: MutableRefObject<FieldRefs<FormValues>>,
+  fieldsRef: React.MutableRefObject<FieldRefs<FormValues>>,
   nativeValidation: boolean,
   validateAllFieldCriteria: boolean,
   {
