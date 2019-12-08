@@ -8,6 +8,7 @@ import validateWithSchema from './logic/validateWithSchema';
 import validateField from './logic/validateField';
 import onDomRemove from './utils/onDomRemove';
 import { VALIDATION_MODE } from './constants';
+import setNativeValue from './logic/setNativeValue';
 
 jest.mock('./utils/onDomRemove');
 jest.mock('./logic/findRemovedFieldAndRemoveListener');
@@ -19,6 +20,7 @@ jest.mock('./logic/combineFieldValues', () => ({
   default: (data: any) => data,
   esmodule: true,
 }));
+jest.mock('./logic/setNativeValue');
 
 describe('useForm', () => {
   beforeEach(() => {
@@ -372,9 +374,19 @@ describe('useForm', () => {
       });
 
       await act(async () => {
+        expect(setNativeValue).toBeCalledWith(
+          { name: 'test', type: 'radio', value: '1' },
+          '1',
+          'checked',
+        );
+        expect(setNativeValue).toBeCalledWith(
+          { name: 'test', type: 'radio', value: '2' },
+          '2',
+          'checked',
+        );
         await result.current.handleSubmit(data => {
           expect(data).toEqual({
-            test: '1',
+            test: '',
           });
         })({
           preventDefault: () => {},
@@ -411,9 +423,30 @@ describe('useForm', () => {
       });
 
       await act(async () => {
+        expect(setNativeValue).toBeCalledWith(
+          {
+            attributes: { value: '1' },
+            name: 'test',
+            type: 'checkbox',
+            value: '1',
+          },
+          true,
+          'checked',
+        );
+        expect(setNativeValue).toBeCalledWith(
+          {
+            attributes: { value: '2' },
+            name: 'test',
+            type: 'checkbox',
+            value: '2',
+          },
+          false,
+          'checked',
+        );
+
         await result.current.handleSubmit(data => {
           expect(data).toEqual({
-            test: ['1'],
+            test: [],
           });
         })({
           preventDefault: () => {},
@@ -444,9 +477,19 @@ describe('useForm', () => {
       });
 
       await act(async () => {
+        expect(setNativeValue).toBeCalledWith(
+          {
+            attributes: { value: '1' },
+            name: 'test',
+            type: 'checkbox',
+            value: '1',
+          },
+          true,
+          'checked',
+        );
         await result.current.handleSubmit(data => {
           expect(data).toEqual({
-            test: '1',
+            test: false,
           });
         })({
           preventDefault: () => {},
