@@ -256,7 +256,15 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
         const inputRef = fieldsRef.current[name]!.ref;
 
         if (inputRef && inputRef.dispatchEvent) {
-          setNativeValue(inputRef, value);
+          if (isMultipleSelect(inputRef.type)) {
+            [...inputRef.options].forEach(selectRef => {
+              if ((value as string[]).includes(selectRef.value)) {
+                setNativeValue(selectRef, selectRef.value);
+              }
+            });
+          } else {
+            setNativeValue(inputRef, value);
+          }
           inputRef.dispatchEvent(new Event(EVENTS.INPUT, { bubbles: true }));
         }
       }
