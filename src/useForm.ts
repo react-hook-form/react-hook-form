@@ -102,7 +102,7 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
     isOnSubmit: isReValidateOnSubmit,
   } = useRef(modeChecker(reValidateMode)).current;
   const validationSchemaOptionRef = useRef(validationSchemaOption);
-  let shouldReRenderIsValid = true;
+  const shouldReRenderIsValidRef = useRef(true);
   defaultValuesRef.current = defaultValues;
 
   const combineErrorsRef = (data: FieldErrors<FormValues>) => ({
@@ -520,6 +520,7 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
         );
       }
       resetFieldRef(field.ref.name);
+      shouldReRenderIsValidRef.current = true;
     },
     [resetFieldRef],
   );
@@ -767,9 +768,9 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
 
       validateFieldsSchemaCurry(combineFieldValues(fieldValues)).then(
         ({ errors }) => {
-          if (!isEmptyObject(errors) && shouldReRenderIsValid) {
+          if (!isEmptyObject(errors) && shouldReRenderIsValidRef) {
             isFormValid.current = false;
-            shouldReRenderIsValid = false;
+            shouldReRenderIsValidRef.current = false;
             reRender();
           }
         },
@@ -781,8 +782,8 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
         validateFieldCurry(currentField).then(error => {
           if (isEmptyObject(error)) {
             validFieldsRef.current.add(name);
-          } else if (shouldReRenderIsValid) {
-            shouldReRenderIsValid = false;
+          } else if (shouldReRenderIsValidRef) {
+            shouldReRenderIsValidRef.current = false;
             reRender();
           }
         });
