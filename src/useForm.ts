@@ -255,7 +255,7 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
       if (fieldsRef.current[name]) {
         const inputRef = fieldsRef.current[name]!.ref;
 
-        if (inputRef && inputRef.dispatchEvent) {
+        if (!isEmptyObject(inputRef) && inputRef.dispatchEvent) {
           if (isMultipleSelect(inputRef.type)) {
             [...inputRef.options].forEach(selectRef => {
               if ((value as string[]).includes(selectRef.value)) {
