@@ -223,7 +223,7 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
         setNativeValue(ref, value);
       }
 
-      if (isWeb) {
+      if (isWeb && ref.dispatchEvent) {
         ref.dispatchEvent(new Event(EVENTS.INPUT, { bubbles: true }));
       }
 
