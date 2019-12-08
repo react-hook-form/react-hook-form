@@ -1004,14 +1004,11 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
           setFieldValue(key, getDefaultValue<FormValues>(values, key)),
         );
         defaultRenderValuesRef.current = { ...values };
-        if (readFormState.current.isValid) {
-          triggerValidation();
-        }
       }
 
       reRender();
     },
-    [reRender, setFieldValue, triggerValidation],
+    [reRender, setFieldValue],
   );
 
   const getValues = useCallback(
