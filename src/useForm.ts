@@ -11,6 +11,7 @@ import attachNativeValidation from './logic/attachNativeValidation';
 import getDefaultValue from './logic/getDefaultValue';
 import assignWatchFields from './logic/assignWatchFields';
 import omitValidFields from './logic/omitValidFields';
+import setNativeValue from './logic/setNativeValue';
 import isCheckBoxInput from './utils/isCheckBoxInput';
 import isEmptyObject from './utils/isEmptyObject';
 import isRadioInput from './utils/isRadioInput';
@@ -249,7 +250,12 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
       name: FieldName<FormValues>,
       value: FieldValue<FormValues>,
     ): boolean | void => {
-      setFieldValue(name, value);
+      const inputRef = fieldsRef.current[name]!.ref;
+
+      if (inputRef) {
+        setNativeValue(inputRef, value);
+        inputRef.dispatchEvent(new Event(EVENTS.INPUT, { bubbles: true }));
+      }
 
       if (
         setDirty(name) ||
@@ -258,7 +264,7 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
         return !!touchedFieldsRef.current.add(name);
       }
     },
-    [setFieldValue],
+    [],
   );
 
   const executeValidation = useCallback(
