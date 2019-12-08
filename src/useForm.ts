@@ -250,11 +250,15 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
       name: FieldName<FormValues>,
       value: FieldValue<FormValues>,
     ): boolean | void => {
-      const inputRef = fieldsRef.current[name]!.ref;
+      setFieldValue(name, value);
 
-      if (inputRef) {
-        setNativeValue(inputRef, value);
-        inputRef.dispatchEvent(new Event(EVENTS.INPUT, { bubbles: true }));
+      if (fieldsRef.current[name]) {
+        const inputRef = fieldsRef.current[name]!.ref;
+
+        if (inputRef && inputRef.dispatchEvent) {
+          setNativeValue(inputRef, value);
+          inputRef.dispatchEvent(new Event(EVENTS.INPUT, { bubbles: true }));
+        }
       }
 
       if (
@@ -264,7 +268,7 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
         return !!touchedFieldsRef.current.add(name);
       }
     },
-    [],
+    [setFieldValue],
   );
 
   const executeValidation = useCallback(
