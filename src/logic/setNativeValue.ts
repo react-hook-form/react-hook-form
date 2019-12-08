@@ -1,3 +1,4 @@
+// reference https://github.com/facebook/react/issues/10135#issuecomment-401496776
 export default function setNativeValue(element: HTMLInputElement, value: any) {
   const valueAttribute = 'value';
   const { set: valueSetter } =
