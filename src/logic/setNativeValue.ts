@@ -1,12 +1,12 @@
 export default function setNativeValue(element: HTMLInputElement, value: any) {
-  const getOwnProperty = (element: HTMLInputElement) => {
-    const valueAttribute = 'value';
-    return Object.getOwnPropertyDescriptor(element, valueAttribute) || {};
-  };
-  const { set: valueSetter } = getOwnProperty(element);
-  const { set: prototypeValueSetter } = getOwnProperty(
-    Object.getPrototypeOf(element),
-  );
+  const valueAttribute = 'value';
+  const { set: valueSetter } =
+    Object.getOwnPropertyDescriptor(element, valueAttribute) || {};
+  const { set: prototypeValueSetter } =
+    Object.getOwnPropertyDescriptor(
+      Object.getPrototypeOf(element),
+      valueAttribute,
+    ) || {};
 
   if (prototypeValueSetter && valueSetter !== prototypeValueSetter) {
     prototypeValueSetter.call(element, value);
