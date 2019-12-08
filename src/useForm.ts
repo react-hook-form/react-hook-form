@@ -252,7 +252,7 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
     ): boolean | void => {
       setFieldValue(name, value);
 
-      if (fieldsRef.current[name] && isWeb) {
+      if (isWeb && fieldsRef.current[name]) {
         const inputRef = fieldsRef.current[name]!.ref;
 
         if (!isEmptyObject(inputRef) && inputRef.dispatchEvent) {
