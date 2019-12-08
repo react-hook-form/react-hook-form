@@ -252,7 +252,7 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
     ): boolean | void => {
       setFieldValue(name, value);
 
-      if (fieldsRef.current[name]) {
+      if (fieldsRef.current[name] && isWeb) {
         const inputRef = fieldsRef.current[name]!.ref;
 
         if (!isEmptyObject(inputRef) && inputRef.dispatchEvent) {
@@ -276,7 +276,7 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
         return !!touchedFieldsRef.current.add(name);
       }
     },
-    [setFieldValue],
+    [isWeb, setFieldValue],
   );
 
   const executeValidation = useCallback(
