@@ -25,3 +25,9 @@ export const INPUT_VALIDATION_RULES = {
   required: 'required',
   validate: 'validate',
 };
+
+export const VALUE_ATTRIBUTE = {
+  value: 'value',
+  checked: 'checked',
+  selected: 'selected',
+};

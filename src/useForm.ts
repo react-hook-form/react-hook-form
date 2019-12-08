@@ -15,6 +15,7 @@ import setNativeValue from './logic/setNativeValue';
 import isCheckBoxInput from './utils/isCheckBoxInput';
 import isEmptyObject from './utils/isEmptyObject';
 import isRadioInput from './utils/isRadioInput';
+import isHtmlElement from './utils/isHtmlElement';
 import isObject from './utils/isObject';
 import isArray from './utils/isArray';
 import isString from './utils/isString';
@@ -25,7 +26,12 @@ import omitObject from './utils/omitObject';
 import isMultipleSelect from './utils/isMultipleSelect';
 import modeChecker from './utils/validationModeChecker';
 import isNullOrUndefined from './utils/isNullOrUndefined';
-import { EVENTS, UNDEFINED, VALIDATION_MODE } from './constants';
+import {
+  EVENTS,
+  UNDEFINED,
+  VALIDATION_MODE,
+  VALUE_ATTRIBUTE,
+} from './constants';
 import {
   FieldValues,
   FieldName,
@@ -189,41 +195,42 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
       const ref = field.ref;
       const { type } = ref;
       const options = field.options;
-      const value =
-        isWeb &&
-        ref instanceof window.HTMLElement &&
-        isNullOrUndefined(rawValue)
-          ? ''
-          : rawValue;
+      const isWebElement = isWeb && isHtmlElement(ref);
+      const value = isWebElement && isNullOrUndefined(rawValue) ? '' : rawValue;
 
       if (isRadioInput(type) && options) {
         options.forEach(({ ref: radioRef }) => {
-          radioRef.checked = radioRef.value === value;
-          setNativeValue(radioRef, radioRef.value);
+          setNativeValue(radioRef, radioRef.value, VALUE_ATTRIBUTE.checked);
         });
       } else if (isMultipleSelect(type)) {
         [...ref.options].forEach(selectRef => {
-          selectRef.selected = (value as string[]).includes(selectRef.value);
-          setNativeValue(selectRef, selectRef.value);
+          setNativeValue(
+            selectRef,
+            (value as string[]).includes(selectRef.value),
+            VALUE_ATTRIBUTE.selected,
+          );
         });
       } else if (isCheckBoxInput(type) && options) {
         if (options.length > 1) {
           options.forEach(({ ref: checkboxRef }) => {
-            checkboxRef.checked = (value as string[]).includes(
-              checkboxRef.value,
+            setNativeValue(
+              checkboxRef,
+              (value as string[]).includes(checkboxRef.value),
+              'checked',
             );
-            setNativeValue(checkboxRef, checkboxRef.value);
           });
         } else {
-          options[0].ref.checked = !!value;
-          setNativeValue(options[0].ref, !!value);
+          setNativeValue(options[0].ref, !!value, VALUE_ATTRIBUTE.checked);
         }
       } else {
-        ref.value = value;
-        setNativeValue(ref, value);
+        if (isWebElement) {
+          setNativeValue(ref, value);
+        } else {
+          ref.value = value;
+        }
       }
 
-      if (isWeb && ref.dispatchEvent) {
+      if (isWeb && !isHtmlElement(ref) && ref.dispatchEvent) {
         ref.dispatchEvent(new Event(EVENTS.INPUT, { bubbles: true }));
       }
 

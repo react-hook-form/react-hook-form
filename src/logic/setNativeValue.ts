@@ -1,10 +1,17 @@
-// reference https://github.com/facebook/react/issues/10135#issuecomment-401496776
-export default function setNativeValue(element: HTMLInputElement, value: any) {
+import { VALUE_ATTRIBUTE } from '../constants';
+
+export default function setNativeValue(
+  element: HTMLInputElement,
+  value: any,
+  valueAttribute: string = VALUE_ATTRIBUTE.value,
+) {
   const { set: valueSetter } =
-    Object.getOwnPropertyDescriptor(element, 'value') || {};
-  const prototype = Object.getPrototypeOf(element);
+    Object.getOwnPropertyDescriptor(element, valueAttribute) || {};
   const { set: prototypeValueSetter } =
-    Object.getOwnPropertyDescriptor(prototype, 'value') || {};
+    Object.getOwnPropertyDescriptor(
+      Object.getPrototypeOf(element),
+      valueAttribute,
+    ) || {};
 
   if (prototypeValueSetter && valueSetter !== prototypeValueSetter) {
     prototypeValueSetter.call(element, value);
