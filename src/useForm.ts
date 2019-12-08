@@ -197,27 +197,34 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
           : rawValue;
 
       if (isRadioInput(type) && options) {
-        options.forEach(
-          ({ ref: radioRef }) => (radioRef.checked = radioRef.value === value),
-        );
+        options.forEach(({ ref: radioRef }) => {
+          radioRef.checked = radioRef.value === value;
+          setNativeValue(radioRef, radioRef.value);
+        });
       } else if (isMultipleSelect(type)) {
-        [...ref.options].forEach(
-          selectRef =>
-            (selectRef.selected = (value as string[]).includes(
-              selectRef.value,
-            )),
-        );
+        [...ref.options].forEach(selectRef => {
+          selectRef.selected = (value as string[]).includes(selectRef.value);
+          setNativeValue(selectRef, selectRef.value);
+        });
       } else if (isCheckBoxInput(type) && options) {
-        options.length > 1
-          ? options.forEach(
-              ({ ref: checkboxRef }) =>
-                (checkboxRef.checked = (value as string[]).includes(
-                  checkboxRef.value,
-                )),
-            )
-          : (options[0].ref.checked = !!value);
+        if (options.length > 1) {
+          options.forEach(({ ref: checkboxRef }) => {
+            checkboxRef.checked = (value as string[]).includes(
+              checkboxRef.value,
+            );
+            setNativeValue(checkboxRef, checkboxRef.value);
+          });
+        } else {
+          options[0].ref.checked = !!value;
+          setNativeValue(options[0].ref, !!value);
+        }
       } else {
         ref.value = value;
+        setNativeValue(ref, value);
+      }
+
+      if (isWeb) {
+        ref.dispatchEvent(new Event(EVENTS.INPUT, { bubbles: true }));
       }
 
       return type;
@@ -252,23 +259,6 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
     ): boolean | void => {
       setFieldValue(name, value);
 
-      if (isWeb && fieldsRef.current[name]) {
-        const inputRef = fieldsRef.current[name]!.ref;
-
-        if (!isEmptyObject(inputRef) && inputRef.dispatchEvent) {
-          if (isMultipleSelect(inputRef.type)) {
-            [...inputRef.options].forEach(selectRef => {
-              if ((value as string[]).includes(selectRef.value)) {
-                setNativeValue(selectRef, selectRef.value);
-              }
-            });
-          } else {
-            setNativeValue(inputRef, value);
-          }
-          inputRef.dispatchEvent(new Event(EVENTS.INPUT, { bubbles: true }));
-        }
-      }
-
       if (
         setDirty(name) ||
         (!touchedFieldsRef.current.has(name) && readFormState.current.touched)
@@ -276,7 +266,7 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
         return !!touchedFieldsRef.current.add(name);
       }
     },
-    [isWeb, setFieldValue],
+    [setFieldValue],
   );
 
   const executeValidation = useCallback(
