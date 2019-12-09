@@ -67,7 +67,7 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
   const dirtyFieldsRef = useRef(new Set<FieldName<FormValues>>());
   const fieldsWithValidationRef = useRef(new Set<FieldName<FormValues>>());
   const validFieldsRef = useRef(new Set<FieldName<FormValues>>());
-  const isValid = useRef(true);
+  const isValidRef = useRef(true);
   const defaultRenderValuesRef = useRef<
     Partial<Record<FieldName<FormValues>, FieldValue<FormValues>>>
   >({} as Record<FieldName<FormValues>, FieldValue<FormValues>>);
@@ -324,8 +324,8 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
       const validFieldNames = names.filter(
         name => !(errors as FieldErrors<FormValues>)[name],
       );
-      const previousFormIsValid = isValid.current;
-      isValid.current = isEmptyObject(errors);
+      const previousFormIsValid = isValidRef.current;
+      isValidRef.current = isEmptyObject(errors);
 
       if (isMultipleFields) {
         errorsRef.current = omitValidFields<FormValues>(
@@ -347,7 +347,7 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
           errors[fieldName]
             ? ({ [fieldName]: errors[fieldName] } as FieldErrors<FormValues>)
             : {},
-          shouldRender || previousFormIsValid !== isValid.current,
+          shouldRender || previousFormIsValid !== isValidRef.current,
         );
       }
 
@@ -462,11 +462,11 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
             FormValues
           >;
 
-          if (isValid.current !== validForm) {
+          if (isValidRef.current !== validForm) {
             shouldUpdateState = true;
           }
 
-          isValid.current = validForm;
+          isValidRef.current = validForm;
         } else {
           error = await validateField<FormValues>(
             fieldsRef,
@@ -511,10 +511,10 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
 
     validateFieldsSchemaCurry(combineFieldValues(fieldValues)).then(
       ({ errors }) => {
-        const previousFormIsValid = isValid.current;
-        isValid.current = isEmptyObject(errors);
+        const previousFormIsValid = isValidRef.current;
+        isValidRef.current = isEmptyObject(errors);
 
-        if (previousFormIsValid !== isValid.current) {
+        if (previousFormIsValid && previousFormIsValid !== isValidRef.current) {
           reRender();
         }
       },
@@ -783,14 +783,14 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
 
       if (!isOnSubmit && readFormState.current.isValid) {
         validateFieldCurry(currentField).then(error => {
-          const previousFormIsValid = isValid.current;
+          const previousFormIsValid = isValidRef.current;
           if (isEmptyObject(error)) {
             validFieldsRef.current.add(name);
           } else {
-            isValid.current = false;
+            isValidRef.current = false;
           }
 
-          if (previousFormIsValid !== isValid.current) {
+          if (previousFormIsValid !== isValidRef.current) {
             reRender();
           }
         });
@@ -990,7 +990,7 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
     isSubmittedRef.current = false;
     isDirtyRef.current = false;
     submitCountRef.current = 0;
-    isValid.current = true;
+    isValidRef.current = true;
   };
 
   const reset = useCallback(
@@ -1047,7 +1047,7 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
   );
 
   if (!validationSchema) {
-    isValid.current =
+    isValidRef.current =
       validFieldsRef.current.size >= fieldsWithValidationRef.current.size &&
       isEmptyObject(errorsRef.current);
   }
@@ -1060,7 +1060,7 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
     isSubmitting: isSubmittingRef.current,
     isValid: isOnSubmit
       ? isSubmittedRef.current && isEmptyObject(errorsRef.current)
-      : isEmptyObject(fieldsRef.current) || isValid.current,
+      : isEmptyObject(fieldsRef.current) || isValidRef.current,
   };
 
   return {
