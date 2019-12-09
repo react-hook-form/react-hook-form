@@ -15,6 +15,7 @@ const validationSchema = yup.object().shape({
 
 const IsValid: React.FC = (props: any) => {
   const isBuildInValidation = props.match.params.mode === 'build-in';
+  const [show, setShow] = React.useState(true);
   const { register, handleSubmit, formState } = useForm<{
     firstName: string;
     lastName: string;
@@ -51,11 +52,20 @@ const IsValid: React.FC = (props: any) => {
             ref={register({ required: true })}
             placeholder="lastName"
           />
+          {!show && (
+            <input
+              name="hidden"
+              ref={register({ required: true })}
+              placeholder="hidden"
+            />
+          )}
           <input name="age" ref={register} placeholder="age" />
         </>
       ) : (
         <>
-          <input name="location" ref={register} placeholder="location" />
+          {show && (
+            <input name="location" ref={register} placeholder="location" />
+          )}
           <input name="firstName" ref={register} placeholder="firstName" />
           <input name="lastName" ref={register} placeholder="lastName" />
           <input name="age" ref={register} placeholder="age" />
@@ -63,6 +73,16 @@ const IsValid: React.FC = (props: any) => {
       )}
       <div id="isValid">{JSON.stringify(formState.isValid)}</div>
       <div id="renderCount">{renderCounter}</div>
+
+      <button
+        type="button"
+        id="toggle"
+        onClick={() => {
+          setShow(false);
+        }}
+      >
+        Show
+      </button>
     </form>
   );
 };
