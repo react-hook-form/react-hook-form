@@ -481,6 +481,23 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
         }
       };
 
+  const validateSchemaIsValid = useCallback(() => {
+    const fieldValues = isEmptyObject(defaultValuesRef.current)
+      ? getFieldsValues(fieldsRef.current)
+      : defaultValuesRef.current;
+
+    validateFieldsSchemaCurry(combineFieldValues(fieldValues)).then(
+      ({ errors }) => {
+        const previousFormIsValid = isValidRef.current;
+        isValidRef.current = isEmptyObject(errors);
+
+        if (previousFormIsValid && previousFormIsValid !== isValidRef.current) {
+          reRender();
+        }
+      },
+    );
+  }, [reRender, validateFieldsSchemaCurry]);
+
   const resetFieldRef = useCallback(
     (name: FieldName<FormValues>) => {
       errorsRef.current = omitObject(errorsRef.current, name);
@@ -500,26 +517,13 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
       if (readFormState.current.isValid || readFormState.current.touched) {
         reRender();
       }
+
+      if (validationSchema) {
+        validateSchemaIsValid();
+      }
     },
-    [reRender],
+    [reRender], // eslint-disable-line
   );
-
-  const validateSchemaIsValid = useCallback(() => {
-    const fieldValues = isEmptyObject(defaultValuesRef.current)
-      ? getFieldsValues(fieldsRef.current)
-      : defaultValuesRef.current;
-
-    validateFieldsSchemaCurry(combineFieldValues(fieldValues)).then(
-      ({ errors }) => {
-        const previousFormIsValid = isValidRef.current;
-        isValidRef.current = isEmptyObject(errors);
-
-        if (previousFormIsValid && previousFormIsValid !== isValidRef.current) {
-          reRender();
-        }
-      },
-    );
-  }, [reRender, validateFieldsSchemaCurry]);
 
   const removeEventListenerAndRef = useCallback(
     (field: Field | undefined, forceDelete?: boolean) => {
