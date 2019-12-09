@@ -63,10 +63,10 @@ const IsValid: React.FC = (props: any) => {
         </>
       ) : (
         <>
+          <input name="location" ref={register} placeholder="location" />
           {show && (
-            <input name="location" ref={register} placeholder="location" />
+            <input name="firstName" ref={register} placeholder="firstName" />
           )}
-          <input name="firstName" ref={register} placeholder="firstName" />
           <input name="lastName" ref={register} placeholder="lastName" />
           <input name="age" ref={register} placeholder="age" />
         </>
@@ -78,10 +78,10 @@ const IsValid: React.FC = (props: any) => {
         type="button"
         id="toggle"
         onClick={() => {
-          setShow(false);
+          setShow(!show);
         }}
       >
-        Show
+        Add
       </button>
     </form>
   );

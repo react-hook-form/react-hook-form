@@ -504,6 +504,23 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
     [reRender],
   );
 
+  const validateSchemaIsValid = useCallback(() => {
+    const fieldValues = isEmptyObject(defaultValuesRef.current)
+      ? getFieldsValues(fieldsRef.current)
+      : defaultValuesRef.current;
+
+    validateFieldsSchemaCurry(combineFieldValues(fieldValues)).then(
+      ({ errors }) => {
+        const previousFormIsValid = isValid.current;
+        isValid.current = isEmptyObject(errors);
+
+        if (previousFormIsValid !== isValid.current) {
+          reRender();
+        }
+      },
+    );
+  }, [reRender, validateFieldsSchemaCurry]);
+
   const removeEventListenerAndRef = useCallback(
     (field: Field | undefined, forceDelete?: boolean) => {
       if (!field) {
@@ -518,9 +535,14 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
           forceDelete,
         );
       }
+
+      if (validationSchema) {
+        validateSchemaIsValid();
+      }
+
       resetFieldRef(field.ref.name);
     },
-    [resetFieldRef],
+    [resetFieldRef, validateSchemaIsValid, validationSchema],
   );
 
   function clearError(): void;
@@ -643,7 +665,7 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
 
     if (isArray(fieldNames)) {
       return fieldNames.reduce((previous, name) => {
-        let value = null;
+        let value;
 
         if (
           isEmptyObject(fieldsRef.current) &&
@@ -746,9 +768,8 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
     }
 
     fields[name as FieldName<FormValues>] = currentField;
-    const isEmptyDefaultValues = isEmptyObject(defaultValuesRef.current);
 
-    if (!isEmptyDefaultValues) {
+    if (!isEmptyObject(defaultValuesRef.current)) {
       const defaultValue = getDefaultValue<FormValues>(
         defaultValuesRef.current,
         name,
@@ -760,20 +781,7 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
     }
 
     if (validationSchema) {
-      const fieldValues = isEmptyDefaultValues
-        ? getFieldsValues(fields)
-        : defaultValuesRef.current;
-
-      validateFieldsSchemaCurry(combineFieldValues(fieldValues)).then(
-        ({ errors }) => {
-          const previousFormIsValid = isValid.current;
-          isValid.current = isEmptyObject(errors);
-
-          if (previousFormIsValid !== isValid.current) {
-            reRender();
-          }
-        },
-      );
+      validateSchemaIsValid();
     } else if (!isEmptyObject(validateOptions)) {
       fieldsWithValidationRef.current.add(name);
 
