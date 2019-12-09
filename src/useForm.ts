@@ -768,7 +768,7 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
 
       validateFieldsSchemaCurry(combineFieldValues(fieldValues)).then(
         ({ errors }) => {
-          if (!isEmptyObject(errors) && shouldReRenderIsValidRef) {
+          if (!isEmptyObject(errors) && shouldReRenderIsValidRef.current) {
             isFormValid.current = false;
             shouldReRenderIsValidRef.current = false;
             reRender();
@@ -782,7 +782,7 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
         validateFieldCurry(currentField).then(error => {
           if (isEmptyObject(error)) {
             validFieldsRef.current.add(name);
-          } else if (shouldReRenderIsValidRef) {
+          } else if (shouldReRenderIsValidRef.current) {
             shouldReRenderIsValidRef.current = false;
             reRender();
           }
