@@ -325,7 +325,7 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
       const validFieldNames = names.filter(
         name => !(errors as FieldErrors<FormValues>)[name],
       );
-
+      const previousFormIsValid = isFormValid.current;
       isFormValid.current = isEmptyObject(errors);
 
       if (isMultipleFields) {
@@ -348,7 +348,7 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
           errors[fieldName]
             ? ({ [fieldName]: errors[fieldName] } as FieldErrors<FormValues>)
             : {},
-          shouldRender,
+          shouldRender || previousFormIsValid !== isFormValid.current,
         );
       }
 
