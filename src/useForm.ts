@@ -536,13 +536,9 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
         );
       }
 
-      if (validationSchema) {
-        validateSchemaIsValid();
-      }
-
       resetFieldRef(field.ref.name);
     },
-    [resetFieldRef, validateSchemaIsValid, validationSchema],
+    [resetFieldRef],
   );
 
   function clearError(): void;
