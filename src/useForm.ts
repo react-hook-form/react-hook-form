@@ -486,6 +486,7 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
     (name: FieldName<FormValues>) => {
       errorsRef.current = omitObject(errorsRef.current, name);
       fieldsRef.current = omitObject(fieldsRef.current, name);
+      shouldReRenderIsValidRef.current = true;
       defaultRenderValuesRef.current = omitObject(
         defaultRenderValuesRef.current,
         name,
@@ -520,7 +521,6 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
         );
       }
       resetFieldRef(field.ref.name);
-      shouldReRenderIsValidRef.current = true;
     },
     [resetFieldRef],
   );
