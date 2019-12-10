@@ -74,7 +74,7 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
   const dirtyFieldsRef = useRef(new Set<FieldName<FormValues>>());
   const fieldsWithValidationRef = useRef(new Set<FieldName<FormValues>>());
   const validFieldsRef = useRef(new Set<FieldName<FormValues>>());
-  const isFormValid = useRef(true);
+  const isValidRef = useRef(true);
   const defaultRenderValuesRef = useRef<
     Partial<Record<FieldName<FormValues>, FieldValue<FormValues>>>
   >({} as Record<FieldName<FormValues>, FieldValue<FormValues>>);
@@ -109,7 +109,6 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
     isOnSubmit: isReValidateOnSubmit,
   } = useRef(modeChecker(reValidateMode)).current;
   const validationSchemaOptionRef = useRef(validationSchemaOption);
-  const shouldReRenderIsValidRef = useRef(true);
   defaultValuesRef.current = defaultValues;
 
   const combineErrorsRef = (data: FieldErrors<FormValues>) => ({
@@ -340,8 +339,8 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
       const validFieldNames = names.filter(
         name => !(errors as FieldErrors<FormValues>)[name],
       );
-      const previousFormIsValid = isFormValid.current;
-      isFormValid.current = isEmptyObject(errors);
+      const previousFormIsValid = isValidRef.current;
+      isValidRef.current = isEmptyObject(errors);
 
       if (isMultipleFields) {
         errorsRef.current = omitValidFields<FormValues>(
@@ -363,7 +362,7 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
           errors[fieldName]
             ? ({ [fieldName]: errors[fieldName] } as FieldErrors<FormValues>)
             : {},
-          shouldRender || previousFormIsValid !== isFormValid.current,
+          shouldRender || previousFormIsValid !== isValidRef.current,
         );
       }
 
@@ -478,11 +477,11 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
             FormValues
           >;
 
-          if (isFormValid.current !== validForm) {
+          if (isValidRef.current !== validForm) {
             shouldUpdateState = true;
           }
 
-          isFormValid.current = validForm;
+          isValidRef.current = validForm;
         } else {
           error = await validateField<FormValues>(
             fieldsRef,
@@ -497,11 +496,27 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
         }
       };
 
+  const validateSchemaIsValid = useCallback(() => {
+    const fieldValues = isEmptyObject(defaultValuesRef.current)
+      ? getFieldsValues(fieldsRef.current)
+      : defaultValuesRef.current;
+
+    validateFieldsSchemaCurry(combineFieldValues(fieldValues)).then(
+      ({ errors }) => {
+        const previousFormIsValid = isValidRef.current;
+        isValidRef.current = isEmptyObject(errors);
+
+        if (previousFormIsValid && previousFormIsValid !== isValidRef.current) {
+          reRender();
+        }
+      },
+    );
+  }, [reRender, validateFieldsSchemaCurry]);
+
   const resetFieldRef = useCallback(
     (name: FieldName<FormValues>) => {
       errorsRef.current = omitObject(errorsRef.current, name);
       fieldsRef.current = omitObject(fieldsRef.current, name);
-      shouldReRenderIsValidRef.current = true;
       defaultRenderValuesRef.current = omitObject(
         defaultRenderValuesRef.current,
         name,
@@ -517,8 +532,12 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
       if (readFormState.current.isValid || readFormState.current.touched) {
         reRender();
       }
+
+      if (validationSchema) {
+        validateSchemaIsValid();
+      }
     },
-    [reRender],
+    [reRender], // eslint-disable-line
   );
 
   const removeEventListenerAndRef = useCallback(
@@ -535,6 +554,7 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
           forceDelete,
         );
       }
+
       resetFieldRef(field.ref.name);
     },
     [resetFieldRef],
@@ -660,7 +680,7 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
 
     if (isArray(fieldNames)) {
       return fieldNames.reduce((previous, name) => {
-        let value = null;
+        let value;
 
         if (
           isEmptyObject(fieldsRef.current) &&
@@ -763,9 +783,8 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
     }
 
     fields[name as FieldName<FormValues>] = currentField;
-    const isEmptyDefaultValues = isEmptyObject(defaultValuesRef.current);
 
-    if (!isEmptyDefaultValues) {
+    if (!isEmptyObject(defaultValuesRef.current)) {
       const defaultValue = getDefaultValue<FormValues>(
         defaultValuesRef.current,
         name,
@@ -777,28 +796,20 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
     }
 
     if (validationSchema) {
-      const fieldValues = isEmptyDefaultValues
-        ? getFieldsValues(fields)
-        : defaultValuesRef.current;
-
-      validateFieldsSchemaCurry(combineFieldValues(fieldValues)).then(
-        ({ errors }) => {
-          if (!isEmptyObject(errors) && shouldReRenderIsValidRef.current) {
-            isFormValid.current = false;
-            shouldReRenderIsValidRef.current = false;
-            reRender();
-          }
-        },
-      );
+      validateSchemaIsValid();
     } else if (!isEmptyObject(validateOptions)) {
       fieldsWithValidationRef.current.add(name);
 
       if (!isOnSubmit && readFormState.current.isValid) {
         validateFieldCurry(currentField).then(error => {
+          const previousFormIsValid = isValidRef.current;
           if (isEmptyObject(error)) {
             validFieldsRef.current.add(name);
-          } else if (shouldReRenderIsValidRef.current) {
-            shouldReRenderIsValidRef.current = false;
+          } else {
+            isValidRef.current = false;
+          }
+
+          if (previousFormIsValid !== isValidRef.current) {
             reRender();
           }
         });
@@ -998,6 +1009,7 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
     isSubmittedRef.current = false;
     isDirtyRef.current = false;
     submitCountRef.current = 0;
+    isValidRef.current = true;
   };
 
   const reset = useCallback(
@@ -1053,25 +1065,21 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
     [removeEventListenerAndRef],
   );
 
+  if (!validationSchema) {
+    isValidRef.current =
+      validFieldsRef.current.size >= fieldsWithValidationRef.current.size &&
+      isEmptyObject(errorsRef.current);
+  }
+
   const formState = {
     dirty: isDirtyRef.current,
     isSubmitted: isSubmittedRef.current,
     submitCount: submitCountRef.current,
     touched: [...touchedFieldsRef.current],
     isSubmitting: isSubmittingRef.current,
-    ...(isOnSubmit
-      ? {
-          isValid: isSubmittedRef.current && isEmptyObject(errorsRef.current),
-        }
-      : {
-          isValid:
-            isEmptyObject(fieldsRef.current) ||
-            (validationSchema
-              ? isFormValid.current
-              : validFieldsRef.current.size >=
-                  fieldsWithValidationRef.current.size &&
-                isEmptyObject(errorsRef.current)),
-        }),
+    isValid: isOnSubmit
+      ? isSubmittedRef.current && isEmptyObject(errorsRef.current)
+      : isEmptyObject(fieldsRef.current) || isValidRef.current,
   };
 
   return {
