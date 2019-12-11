@@ -33,7 +33,7 @@ export default async <FormValues extends FieldValues>(
   validateAllFieldCriteria: boolean,
   {
     ref,
-    ref: { type, value, name },
+    ref: { type, value, name, valueAsNumber, valueAsDate },
     options,
     required,
     maxLength,
@@ -87,7 +87,7 @@ export default async <FormValues extends FieldValues>(
     const { value: minValue, message: minMessage } = getValueAndMessage(min);
 
     if (type === 'number') {
-      const valueNumber = parseFloat(value);
+      const valueNumber = valueAsNumber || parseFloat(value);
       if (!isNullOrUndefined(maxValue)) {
         exceedMax = valueNumber > maxValue;
       }
@@ -95,11 +95,12 @@ export default async <FormValues extends FieldValues>(
         exceedMin = valueNumber < minValue;
       }
     } else {
+      const valueDate = valueAsDate || new Date(value);
       if (isString(maxValue)) {
-        exceedMax = new Date(value) > new Date(maxValue);
+        exceedMax = valueDate > new Date(maxValue);
       }
       if (isString(minValue)) {
-        exceedMin = new Date(value) < new Date(minValue);
+        exceedMin = valueDate < new Date(minValue);
       }
     }
 
