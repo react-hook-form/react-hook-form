@@ -177,7 +177,7 @@ describe('validateField', () => {
   it('should return max error', async () => {
     expect(
       await validateField({} as any, false, false, {
-        ref: { type: 'number', name: 'test', value: 10 },
+        ref: { type: 'number', name: 'test', value: 10, valueAsNumber: 10 },
         required: true,
         max: 0,
       }),
@@ -185,13 +185,13 @@ describe('validateField', () => {
       test: {
         type: 'max',
         message: '',
-        ref: { type: 'number', name: 'test', value: 10 },
+        ref: { type: 'number', name: 'test', value: 10, valueAsNumber: 10 },
       },
     });
 
     expect(
       await validateField({} as any, false, false, {
-        ref: { type: 'number', name: 'test', value: 10 },
+        ref: { type: 'number', name: 'test', value: 10, valueAsNumber: 10 },
         required: true,
         max: 8,
       }),
@@ -199,46 +199,56 @@ describe('validateField', () => {
       test: {
         type: 'max',
         message: '',
-        ref: { type: 'number', name: 'test', value: 10 },
+        ref: { type: 'number', name: 'test', value: 10, valueAsNumber: 10 },
       },
     });
 
     expect(
       await validateField({} as any, false, false, {
-        ref: { type: 'custom', name: 'test', value: '' },
+        ref: { type: 'custom', name: 'test', value: '', valueAsNumber: NaN },
         required: true,
       }),
     ).toEqual({
       test: {
         type: 'required',
         message: '',
-        ref: { type: 'custom', name: 'test', value: '' },
+        ref: { type: 'custom', name: 'test', value: '', valueAsNumber: NaN },
       },
     });
 
     expect(
       await validateField({} as any, false, false, {
-        ref: { type: 'custom', name: 'test', value: undefined },
+        ref: {
+          type: 'custom',
+          name: 'test',
+          value: undefined,
+          valueAsNumber: NaN,
+        },
         required: true,
       }),
     ).toEqual({
       test: {
         type: 'required',
         message: '',
-        ref: { type: 'custom', name: 'test', value: undefined },
+        ref: {
+          type: 'custom',
+          name: 'test',
+          value: undefined,
+          valueAsNumber: NaN,
+        },
       },
     });
 
     expect(
       await validateField({} as any, false, false, {
-        ref: { type: 'custom', name: 'test', value: null },
+        ref: { type: 'custom', name: 'test', value: null, valueAsNumber: NaN },
         required: true,
       }),
     ).toEqual({
       test: {
         type: 'required',
         message: '',
-        ref: { type: 'custom', name: 'test', value: null },
+        ref: { type: 'custom', name: 'test', value: null, valueAsNumber: NaN },
       },
     });
 
@@ -251,7 +261,12 @@ describe('validateField', () => {
 
     expect(
       await validateField({} as any, false, false, {
-        ref: { type: 'date', name: 'test', value: '2019-2-12' },
+        ref: {
+          type: 'date',
+          name: 'test',
+          value: '2019-2-12',
+          valueAsDate: new Date('2019-2-12'),
+        },
         required: true,
         max: '2019-1-12',
       }),
@@ -259,7 +274,12 @@ describe('validateField', () => {
       test: {
         type: 'max',
         message: '',
-        ref: { type: 'date', name: 'test', value: '2019-2-12' },
+        ref: {
+          type: 'date',
+          name: 'test',
+          value: '2019-2-12',
+          valueAsDate: new Date('2019-2-12'),
+        },
       },
     });
   });
@@ -267,7 +287,7 @@ describe('validateField', () => {
   it('should return min error', async () => {
     expect(
       await validateField({} as any, false, false, {
-        ref: { type: 'number', name: 'test', value: -1 },
+        ref: { type: 'number', name: 'test', value: -1, valueAsNumber: -1 },
         required: true,
         min: 0,
       }),
@@ -275,13 +295,13 @@ describe('validateField', () => {
       test: {
         type: 'min',
         message: '',
-        ref: { type: 'number', name: 'test', value: -1 },
+        ref: { type: 'number', name: 'test', value: -1, valueAsNumber: -1 },
       },
     });
 
     expect(
       await validateField({} as any, false, false, {
-        ref: { type: 'number', name: 'test', value: 10 },
+        ref: { type: 'number', name: 'test', value: 10, valueAsNumber: 10 },
         required: true,
         min: 12,
       }),
@@ -289,13 +309,18 @@ describe('validateField', () => {
       test: {
         type: 'min',
         message: '',
-        ref: { type: 'number', name: 'test', value: 10 },
+        ref: { type: 'number', name: 'test', value: 10, valueAsNumber: 10 },
       },
     });
 
     expect(
       await validateField({} as any, false, false, {
-        ref: { type: 'date', name: 'test', value: '2019-2-12' },
+        ref: {
+          type: 'date',
+          name: 'test',
+          value: '2019-2-12',
+          valueAsDate: new Date('2019-2-12'),
+        },
         required: true,
         min: '2019-3-12',
       }),
@@ -303,7 +328,12 @@ describe('validateField', () => {
       test: {
         type: 'min',
         message: '',
-        ref: { type: 'date', name: 'test', value: '2019-2-12' },
+        ref: {
+          type: 'date',
+          name: 'test',
+          value: '2019-2-12',
+          valueAsDate: new Date('2019-2-12'),
+        },
       },
     });
   });
