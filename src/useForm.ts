@@ -291,7 +291,10 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
         validateAllFieldCriteria,
         field,
       );
-      renderBaseOnError(name, error);
+
+      if (shouldRender) {
+        renderBaseOnError(name, error);
+      }
 
       return isEmptyObject(error);
     },
