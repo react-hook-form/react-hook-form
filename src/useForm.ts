@@ -1023,6 +1023,9 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
 
       // need to rerun validation in here;
       // validFieldsRef.current = new Set();
+      // fieldsWithValidationRef = new Set();
+
+      // need to return validate schema here as well
 
       reRender();
     },
