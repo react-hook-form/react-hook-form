@@ -989,11 +989,9 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
   const resetRefs = () => {
     errorsRef.current = {};
     defaultRenderValuesRef.current = {};
-    fieldsWithValidationRef.current = new Set();
     touchedFieldsRef.current = new Set();
     watchFieldsRef.current = new Set();
     dirtyFieldsRef.current = new Set();
-    validFieldsRef.current = new Set();
     isWatchAllRef.current = false;
     isSubmittedRef.current = false;
     isDirtyRef.current = false;
@@ -1022,6 +1020,9 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
         );
         defaultRenderValuesRef.current = { ...values };
       }
+
+      // need to rerun validation in here;
+      // validFieldsRef.current = new Set();
 
       reRender();
     },
