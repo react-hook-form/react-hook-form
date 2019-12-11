@@ -501,6 +501,31 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
     );
   }, [reRender, validateFieldsSchemaCurry]);
 
+  const validateIsValid = useCallback(() => {
+    fieldsWithValidationRef.current.add(name);
+
+    if (!isOnSubmit && readFormState.current.isValid) {
+      Object.values(fieldsRef.current).forEach(
+        (currentField: Field | undefined) => {
+          if (currentField) {
+            validateFieldCurry(currentField).then(error => {
+              const previousFormIsValid = isValidRef.current;
+              if (isEmptyObject(error)) {
+                validFieldsRef.current.add(name);
+              } else {
+                isValidRef.current = false;
+              }
+
+              if (previousFormIsValid !== isValidRef.current) {
+                reRender();
+              }
+            });
+          }
+        },
+      );
+    }
+  }, [isOnSubmit, reRender, validateFieldCurry]);
+
   const resetFieldRef = useCallback(
     (name: FieldName<FormValues>) => {
       errorsRef.current = omitObject(errorsRef.current, name);
@@ -523,6 +548,8 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
 
       if (validationSchema) {
         validateSchemaIsValid();
+      } else {
+        validateIsValid();
       }
     },
     [reRender], // eslint-disable-line
@@ -886,12 +913,12 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
       try {
         if (validationSchema) {
           fieldValues = getFieldsValues(fields);
-          const output = await validateFieldsSchemaCurry(
+          const { errors, values } = await validateFieldsSchemaCurry(
             combineFieldValues(fieldValues),
           );
-          errorsRef.current = output.errors;
-          fieldErrors = output.errors;
-          fieldValues = output.values;
+          errorsRef.current = errors;
+          fieldErrors = errors;
+          fieldValues = values;
         } else {
           const {
             errors,
@@ -1021,15 +1048,23 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
         defaultRenderValuesRef.current = { ...values };
       }
 
-      // need to rerun validation in here;
-      // validFieldsRef.current = new Set();
-      // fieldsWithValidationRef = new Set();
-
-      // need to return validate schema here as well
+      if (readFormState.current.isValid) {
+        if (validationSchema) {
+          validateSchemaIsValid();
+        } else {
+          validateIsValid();
+        }
+      }
 
       reRender();
     },
-    [reRender, setFieldValue],
+    [
+      reRender,
+      setFieldValue,
+      validateIsValid,
+      validateSchemaIsValid,
+      validationSchema,
+    ],
   );
 
   const getValues = useCallback(
