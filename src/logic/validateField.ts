@@ -87,18 +87,20 @@ export default async <FormValues extends FieldValues>(
     const { value: minValue, message: minMessage } = getValueAndMessage(min);
 
     if (type === 'number') {
-      if (!Number.isNaN(valueAsNumber)) {
-        exceedMax = valueAsNumber > maxValue;
+      const valueNumber = valueAsNumber || parseFloat(value);
+      if (!isNullOrUndefined(maxValue)) {
+        exceedMax = valueNumber > maxValue;
       }
-      if (!Number.isNaN(valueAsNumber)) {
-        exceedMin = valueAsNumber < minValue;
+      if (!isNullOrUndefined(minValue)) {
+        exceedMin = valueNumber < minValue;
       }
     } else {
+      const valueDate = valueAsDate || new Date(value);
       if (isString(maxValue)) {
-        exceedMax = valueAsDate > new Date(maxValue);
+        exceedMax = valueDate > new Date(maxValue);
       }
       if (isString(minValue)) {
-        exceedMin = valueAsDate < new Date(minValue);
+        exceedMin = valueDate < new Date(minValue);
       }
     }
 
