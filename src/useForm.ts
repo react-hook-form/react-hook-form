@@ -140,6 +140,7 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
       name: FieldName<FormValues>,
       error: FieldErrors<FormValues>,
       shouldRender?,
+      skipReRender?,
     ): boolean | void => {
       let shouldReRender =
         shouldRender ||
@@ -165,7 +166,7 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
 
       errorsRef.current = combineErrorsRef(error);
 
-      if (shouldReRender) {
+      if (shouldReRender && !skipReRender) {
         reRender();
         return true;
       }
@@ -270,6 +271,7 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
         value?: FormValues[FieldName<FormValues>];
       },
       shouldRender,
+      skipReRender?,
     ): Promise<boolean> => {
       const field = fieldsRef.current[name]!;
 
@@ -291,7 +293,8 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
         validateAllFieldCriteria,
         field,
       );
-      renderBaseOnError(name, error);
+
+      renderBaseOnError(name, error, false, skipReRender);
 
       return isEmptyObject(error);
     },
@@ -373,7 +376,7 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
       if (isArray(fields)) {
         const result = await Promise.all(
           (fields as []).map(
-            async data => await executeValidation(data, false),
+            async data => await executeValidation(data, false, true),
           ),
         );
         reRender();
