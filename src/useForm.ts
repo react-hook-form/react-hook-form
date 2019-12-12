@@ -102,7 +102,9 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
     isOnSubmit: isReValidateOnSubmit,
   } = useRef(modeChecker(reValidateMode)).current;
   const validationSchemaOptionRef = useRef(validationSchemaOption);
-  defaultValuesRef.current = defaultValues;
+  defaultValuesRef.current = defaultValuesRef.current
+    ? defaultValuesRef.current
+    : defaultValues;
 
   const combineErrorsRef = (data: FieldErrors<FormValues>) => ({
     ...errorsRef.current,
@@ -502,8 +504,6 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
   }, [reRender, validateFieldsSchemaCurry]);
 
   const validateIsValid = useCallback(() => {
-    fieldsWithValidationRef.current.add(name);
-
     if (!isOnSubmit && readFormState.current.isValid) {
       Object.values(fieldsRef.current).forEach(
         (currentField: Field | undefined) => {
@@ -1015,6 +1015,7 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
 
   const resetRefs = () => {
     errorsRef.current = {};
+    fieldsRef.current = {};
     defaultRenderValuesRef.current = {};
     touchedFieldsRef.current = new Set();
     watchFieldsRef.current = new Set();
@@ -1042,29 +1043,24 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
       resetRefs();
 
       if (values) {
-        fieldsKeyValue.forEach(([key]) =>
-          setFieldValue(key, getDefaultValue<FormValues>(values, key)),
-        );
-        defaultRenderValuesRef.current = { ...values };
+        defaultValuesRef.current = values;
+        // fieldsKeyValue.forEach(([key]) =>
+        //   setFieldValue(key, getDefaultValue<FormValues>(values, key)),
+        // );
+        // defaultRenderValuesRef.current = { ...values };
       }
 
-      if (readFormState.current.isValid) {
-        if (validationSchema) {
-          validateSchemaIsValid();
-        } else {
-          validateIsValid();
-        }
-      }
+      // if (readFormState.current.isValid) {
+      //   if (validationSchema) {
+      //     validateSchemaIsValid();
+      //   } else {
+      //     validateIsValid();
+      //   }
+      // }
 
       reRender();
     },
-    [
-      reRender,
-      setFieldValue,
-      validateIsValid,
-      validateSchemaIsValid,
-      validationSchema,
-    ],
+    [reRender],
   );
 
   const getValues = useCallback(
