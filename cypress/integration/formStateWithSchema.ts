@@ -216,7 +216,7 @@ context('form state with schema validation', () => {
     cy.get('#resetForm').click();
 
     cy.get('#state').contains(
-      '{"dirty":false,"isSubmitted":false,"submitCount":0,"touched":[],"isSubmitting":false,"isValid":false}',
+      '{"dirty":false,"isSubmitted":false,"submitCount":0,"touched":[],"isSubmitting":false,"isValid":true}',
     );
 
     cy.get('input[name="firstName"]').type('test');
@@ -228,8 +228,8 @@ context('form state with schema validation', () => {
     cy.get('input[name="lastName"]').clear();
 
     cy.get('#state').contains(
-      '{"dirty":true,"isSubmitted":false,"submitCount":0,"touched":["firstName","lastName"],"isSubmitting":false,"isValid":false}',
+      '{"dirty":false,"isSubmitted":false,"submitCount":0,"touched":["firstName","lastName"],"isSubmitting":false,"isValid":false}',
     );
-    cy.get('#renderCount').contains('13');
+    cy.get('#renderCount').contains('15');
   });
 });

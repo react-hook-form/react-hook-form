@@ -1107,7 +1107,7 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
   };
 
   return {
-    register: useCallback(register, []),
+    register: useCallback(register, [defaultValuesRef.current]),
     unregister: useCallback(unregister, [removeEventListenerAndRef]),
     clearError: useCallback(clearError, []),
     setError: useCallback(setError, []),
