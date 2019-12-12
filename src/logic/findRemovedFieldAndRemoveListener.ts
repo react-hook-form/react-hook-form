@@ -24,9 +24,11 @@ export default function findRemovedFieldAndRemoveListener<
   }
 
   const { name, type } = ref;
-  const options = fields[name];
+  const fieldValue: Field | undefined = fields[name];
 
-  if (isRadioInput(type) || isCheckBoxInput(type)) {
+  if ((isRadioInput(type) || isCheckBoxInput(type)) && fieldValue) {
+    const { options } = fieldValue;
+
     if (isArray(options) && options.length) {
       options.forEach(({ ref }, index): void => {
         const option = options[index];
@@ -41,6 +43,10 @@ export default function findRemovedFieldAndRemoveListener<
           options.splice(index, 1);
         }
       });
+
+      if (options && !options.length) {
+        delete fields[name];
+      }
     } else {
       delete fields[name];
     }
