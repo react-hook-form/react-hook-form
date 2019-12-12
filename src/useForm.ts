@@ -102,7 +102,9 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
     isOnSubmit: isReValidateOnSubmit,
   } = useRef(modeChecker(reValidateMode)).current;
   const validationSchemaOptionRef = useRef(validationSchemaOption);
-  defaultValuesRef.current = defaultValues;
+  defaultValuesRef.current = defaultValuesRef.current
+    ? defaultValuesRef.current
+    : defaultValues;
 
   const combineErrorsRef = (data: FieldErrors<FormValues>) => ({
     ...errorsRef.current,
@@ -501,31 +503,6 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
     );
   }, [reRender, validateFieldsSchemaCurry]);
 
-  const validateIsValid = useCallback(() => {
-    fieldsWithValidationRef.current.add(name);
-
-    if (!isOnSubmit && readFormState.current.isValid) {
-      Object.values(fieldsRef.current).forEach(
-        (currentField: Field | undefined) => {
-          if (currentField) {
-            validateFieldCurry(currentField).then(error => {
-              const previousFormIsValid = isValidRef.current;
-              if (isEmptyObject(error)) {
-                validFieldsRef.current.add(name);
-              } else {
-                isValidRef.current = false;
-              }
-
-              if (previousFormIsValid !== isValidRef.current) {
-                reRender();
-              }
-            });
-          }
-        },
-      );
-    }
-  }, [isOnSubmit, reRender, validateFieldCurry]);
-
   const resetFieldRef = useCallback(
     (name: FieldName<FormValues>) => {
       errorsRef.current = omitObject(errorsRef.current, name);
@@ -548,8 +525,6 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
 
       if (validationSchema) {
         validateSchemaIsValid();
-      } else {
-        validateIsValid();
       }
     },
     [reRender], // eslint-disable-line
@@ -1015,6 +990,7 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
 
   const resetRefs = () => {
     errorsRef.current = {};
+    fieldsRef.current = {};
     defaultRenderValuesRef.current = {};
     touchedFieldsRef.current = new Set();
     watchFieldsRef.current = new Set();
@@ -1042,29 +1018,12 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
       resetRefs();
 
       if (values) {
-        fieldsKeyValue.forEach(([key]) =>
-          setFieldValue(key, getDefaultValue<FormValues>(values, key)),
-        );
-        defaultRenderValuesRef.current = { ...values };
-      }
-
-      if (readFormState.current.isValid) {
-        if (validationSchema) {
-          validateSchemaIsValid();
-        } else {
-          validateIsValid();
-        }
+        defaultValuesRef.current = values;
       }
 
       reRender();
     },
-    [
-      reRender,
-      setFieldValue,
-      validateIsValid,
-      validateSchemaIsValid,
-      validationSchema,
-    ],
+    [reRender],
   );
 
   const getValues = useCallback(
@@ -1111,7 +1070,7 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
   };
 
   return {
-    register: useCallback(register, []),
+    register: useCallback(register, [defaultValuesRef.current]),
     unregister: useCallback(unregister, [removeEventListenerAndRef]),
     clearError: useCallback(clearError, []),
     setError: useCallback(setError, []),
