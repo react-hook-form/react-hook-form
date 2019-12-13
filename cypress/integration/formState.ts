@@ -215,7 +215,7 @@ context('form state', () => {
     cy.get('#resetForm').click();
 
     cy.get('#state').contains(
-      '{"dirty":false,"isSubmitted":false,"submitCount":0,"touched":[],"isSubmitting":false,"isValid":true}',
+      '{"dirty":false,"isSubmitted":false,"submitCount":0,"touched":[],"isSubmitting":false,"isValid":false}',
     );
 
     cy.get('input[name="firstName"]').type('test');
@@ -230,6 +230,6 @@ context('form state', () => {
       '{"dirty":false,"isSubmitted":false,"submitCount":0,"touched":["firstName","lastName"],"isSubmitting":false,"isValid":false}',
     );
 
-    cy.get('#renderCount').contains('15');
+    cy.get('#renderCount').contains('14');
   });
 });
