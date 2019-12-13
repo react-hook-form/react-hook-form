@@ -991,6 +991,8 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
   const resetRefs = () => {
     errorsRef.current = {};
     fieldsRef.current = {};
+    validFieldsRef.current = new Set();
+    fieldsWithValidationRef.current = new Set();
     defaultRenderValuesRef.current = {};
     touchedFieldsRef.current = new Set();
     watchFieldsRef.current = new Set();
