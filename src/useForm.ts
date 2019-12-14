@@ -303,15 +303,14 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
         validateAllFieldCriteria,
         combineFieldValues(getFieldsValues(fieldsRef.current)),
       );
-      const isMultipleFields = isArray(payload);
-      const names = isArray(payload) ? payload.map(name => name) : [name];
+      const names = isArray(payload) ? payload : [payload];
       const validFieldNames = names.filter(
         name => !(errors as FieldErrors<FormValues>)[name],
       );
       const previousFormIsValid = isValidRef.current;
       isValidRef.current = isEmptyObject(errors);
 
-      if (isMultipleFields) {
+      if (isArray(payload)) {
         errorsRef.current = omitValidFields<FormValues>(
           combineErrorsRef(
             Object.entries(errors)
