@@ -15,7 +15,7 @@ jest.mock('./logic/validateField');
 jest.mock('./logic/attachEventListeners');
 jest.mock('./logic/getFieldValues');
 jest.mock('./logic/validateWithSchema');
-jest.mock('./logic/combineFieldValues', () => ({
+jest.mock('./logic/transformToNestObject', () => ({
   default: (data: any) => data,
   esmodule: true,
 }));
@@ -543,7 +543,7 @@ describe('useForm', () => {
       });
     });
 
-    it.only('should trigger multiple fields validation', async () => {
+    it('should trigger multiple fields validation', async () => {
       const { result } = renderHook(() =>
         useForm<{ test: string }>({
           mode: VALIDATION_MODE.onChange,

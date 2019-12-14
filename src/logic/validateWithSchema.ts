@@ -1,6 +1,7 @@
 import appendErrors from './appendErrors';
 import isArray from '../utils/isArray';
 import { FieldValues, SchemaValidateOptions, FieldErrors } from '../types';
+import transformToNestObject from './transformToNestObject';
 
 interface SchemaValidationResult<FormValues> {
   errors: FieldErrors<FormValues>;
@@ -68,7 +69,9 @@ export default async function validateWithSchema<FormValues>(
   } catch (e) {
     return {
       values: {},
-      errors: parseErrorSchema<FormValues>(e, validateAllFieldCriteria),
+      errors: transformToNestObject(
+        parseErrorSchema<FormValues>(e, validateAllFieldCriteria),
+      ),
     };
   }
 }

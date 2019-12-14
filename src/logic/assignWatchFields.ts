@@ -1,4 +1,4 @@
-import combineFieldValues from './combineFieldValues';
+import transformToNestObject from './transformToNestObject';
 import get from '../utils/get';
 import getPath from '../utils/getPath';
 import isEmptyObject from '../utils/isEmptyObject';
@@ -21,7 +21,7 @@ export default <FormValues extends FieldValues>(
     watchFields.add(fieldName);
     value = fieldValues[fieldName];
   } else {
-    value = get(combineFieldValues(fieldValues), fieldName);
+    value = get(transformToNestObject(fieldValues), fieldName);
 
     if (!isUndefined(value)) {
       getPath<FormValues>(fieldName, value).forEach(name =>

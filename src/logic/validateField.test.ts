@@ -825,4 +825,39 @@ describe('validateField', () => {
       }),
     ).toMatchSnapshot();
   });
+
+  it('should convert error into nested object', async () => {
+    (getRadioValue as any).mockImplementation(() => ({
+      value: '2',
+    }));
+    (getCheckboxValue as any).mockImplementation(() => ({
+      value: false,
+      isValid: false,
+    }));
+
+    expect(
+      await validateField({} as any, false, false, {
+        ref: {
+          type: 'text',
+          value: '',
+          name: 'yourDetail.test',
+          setCustomValidity,
+        },
+        required: true,
+      }),
+    ).toEqual({
+      yourDetail: {
+        test: {
+          ref: {
+            type: 'text',
+            value: '',
+            name: 'yourDetail.test',
+            setCustomValidity,
+          },
+          message: '',
+          type: 'required',
+        },
+      },
+    });
+  });
 });

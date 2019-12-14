@@ -1,9 +1,9 @@
-import combineFieldValues from './combineFieldValues';
+import transformToNestObject from './transformToNestObject';
 
-describe('combineFieldValues', () => {
+describe('transformToNestObject', () => {
   it('should combine all the array fields', () => {
     expect(
-      combineFieldValues({
+      transformToNestObject({
         'email[1]': 'asdasd@dsad.com',
         'email[2]': 'asdasd@.com',
         'firstName[1]': 'asdasd',
@@ -17,7 +17,7 @@ describe('combineFieldValues', () => {
 
   it('should combine array object correctly', () => {
     expect(
-      combineFieldValues({
+      transformToNestObject({
         'name[0].firstName': 'testFirst',
         'name[0].lastName': 'testLast',
         'test[1].what': 'testLast',
@@ -30,7 +30,7 @@ describe('combineFieldValues', () => {
 
   it('should combine object correctly', () => {
     expect(
-      combineFieldValues({
+      transformToNestObject({
         'name.firstName': 'testFirst',
         'name.lastName': 'testLast',
         'name.lastName.bill.luo': 'testLast',
@@ -40,7 +40,7 @@ describe('combineFieldValues', () => {
 
   it('should return default name value', () => {
     expect(
-      combineFieldValues({
+      transformToNestObject({
         name: 'testFirst',
       }),
     ).toMatchSnapshot();
@@ -48,13 +48,13 @@ describe('combineFieldValues', () => {
 
   it('should handle quoted values', () => {
     expect(
-      combineFieldValues({
+      transformToNestObject({
         'name["foobar"]': 'testFirst',
       }),
     ).toMatchSnapshot();
 
     expect(
-      combineFieldValues({
+      transformToNestObject({
         'name["b2ill"]': 'testFirst',
       }),
     ).toMatchSnapshot();
@@ -62,7 +62,7 @@ describe('combineFieldValues', () => {
 
   it('should combine with results', () => {
     expect(
-      combineFieldValues({
+      transformToNestObject({
         name: 'testFirst',
         name1: 'testFirst',
         name2: 'testFirst',

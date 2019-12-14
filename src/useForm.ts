@@ -1,6 +1,6 @@
 import * as React from 'react';
 import attachEventListeners from './logic/attachEventListeners';
-import combineFieldValues from './logic/combineFieldValues';
+import transformToNestObject from './logic/transformToNestObject';
 import findRemovedFieldAndRemoveListener from './logic/findRemovedFieldAndRemoveListener';
 import getFieldsValues from './logic/getFieldValues';
 import getFieldValue from './logic/getFieldValue';
@@ -45,6 +45,7 @@ import {
   Ref,
   HandleChange,
 } from './types';
+import get from './utils/get';
 
 const { useRef, useState, useCallback, useEffect } = React;
 
@@ -301,7 +302,7 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
         validationSchema,
         validationSchemaOptionRef.current,
         validateAllFieldCriteria,
-        combineFieldValues(getFieldsValues(fieldsRef.current)),
+        transformToNestObject(getFieldsValues(fieldsRef.current)),
       );
       const names = isArray(payload) ? payload : [payload];
       const validFieldNames = names.filter(
@@ -436,7 +437,7 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
             validationSchema,
             validationSchemaOptionRef.current,
             validateAllFieldCriteria,
-            combineFieldValues(getFieldsValues(fields)),
+            transformToNestObject(getFieldsValues(fields)),
           );
           const validForm = isEmptyObject(errors);
           error = (errors[name] ? { [name]: errors[name] } : {}) as FieldErrors<
@@ -467,7 +468,7 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
       ? getFieldsValues(fieldsRef.current)
       : defaultValuesRef.current;
 
-    validateFieldsSchemaCurry(combineFieldValues(fieldValues)).then(
+    validateFieldsSchemaCurry(transformToNestObject(fieldValues)).then(
       ({ errors }) => {
         const previousFormIsValid = isValidRef.current;
         isValidRef.current = isEmptyObject(errors);
@@ -557,17 +558,20 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
     message?: string;
     preventRender?: boolean;
   }) => {
-    const errors = errorsRef.current;
     const field = fieldsRef.current[name];
 
-    if (!isSameError(errors[name], type, message)) {
-      errors[name] = {
-        type,
-        types,
-        message,
-        ref: field ? field.ref : {},
-        isManual: true,
+    if (!isSameError(get(errorsRef.current, name), type, message)) {
+      const error = {
+        [name]: {
+          type,
+          types,
+          message,
+          ref: field ? field.ref : {},
+          isManual: true,
+        },
       };
+      errorsRef.current = combineErrorsRef(transformToNestObject(error));
+
       if (!preventRender) {
         reRender();
       }
@@ -611,6 +615,7 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
   }
 
   function watch(): FormValues;
+  function watch(option: { nest: boolean }): FormValues;
   function watch<T extends FieldName<FormValues>>(
     field: T & string,
     defaultValue?: string,
@@ -620,7 +625,10 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
     defaultValues?: Partial<FormValues>,
   ): Partial<FormValues>;
   function watch(
-    fieldNames?: FieldName<FormValues> | FieldName<FormValues>[],
+    fieldNames?:
+      | FieldName<FormValues>
+      | FieldName<FormValues>[]
+      | { nest: boolean },
     defaultValue?: string | Partial<FormValues>,
   ): FieldValue<FormValues> | Partial<FormValues> | string | undefined {
     const combinedDefaultValues = isUndefined(defaultValue)
@@ -671,11 +679,14 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
 
     isWatchAllRef.current = true;
 
-    return (
+    const result =
       (!isEmptyObject(fieldValues) && fieldValues) ||
       defaultValue ||
-      defaultValues
-    );
+      defaultValues;
+
+    return fieldNames && fieldNames.nest
+      ? transformToNestObject(result as FieldValues)
+      : result;
   }
 
   function unregister(name: FieldName<FormValues>): void;
@@ -865,7 +876,7 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
         if (validationSchema) {
           fieldValues = getFieldsValues(fields);
           const { errors, values } = await validateFieldsSchemaCurry(
-            combineFieldValues(fieldValues),
+            transformToNestObject(fieldValues),
           );
           errorsRef.current = errors;
           fieldErrors = errors;
@@ -928,7 +939,7 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
 
         if (isEmptyObject(fieldErrors)) {
           errorsRef.current = {};
-          await callback(combineFieldValues(fieldValues), e);
+          await callback(transformToNestObject(fieldValues), e);
         } else {
           if (submitFocusError) {
             Object.keys(fieldErrors).reduce((previous, current) => {
@@ -1011,7 +1022,7 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
         ? defaultValues
         : fieldValues;
       return payload && payload.nest
-        ? combineFieldValues(outputValues)
+        ? transformToNestObject(outputValues)
         : outputValues;
     },
     [defaultValues],
