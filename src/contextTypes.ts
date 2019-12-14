@@ -20,6 +20,7 @@ export interface FormProps<FormValues extends FieldValues = FieldValues>
 export interface FormContextValues<
   FormValues extends FieldValues = FieldValues
 > {
+  // todo: update here for register as well
   register<Element>(
     validateRule: ValidationOptions & NameProp,
   ): (ref: Element | null) => void;
