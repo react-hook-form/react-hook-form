@@ -839,17 +839,21 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
     }
 
     if (isString(refOrValidationOptions)) {
-      registerFieldsRef(
-        { name: validationOptions } as Element,
-        validationOptions,
-      );
+      registerFieldsRef({ name: refOrValidationOptions }, validationOptions);
       return;
     }
 
     if (isObject(refOrValidationOptions)) {
-      Object.entries(refOrValidationOptions).forEach(([key, value]) => {
-        registerFieldsRef({ name: key } as Element, value);
-      });
+      if ('name' in refOrValidationOptions) {
+        registerFieldsRef(refOrValidationOptions, validationOptions);
+      } else {
+        Object.entries(refOrValidationOptions).forEach(([key, value]) => {
+          registerFieldsRef(
+            { name: key } as Element,
+            value as ValidationOptions,
+          );
+        });
+      }
       return;
     }
 
