@@ -1,5 +1,5 @@
 import React from 'react';
-import useForm from 'react-hook-form';
+import { useForm } from 'react-hook-form';
 import { withRouter } from 'react-router';
 
 let renderCounter = 0;
