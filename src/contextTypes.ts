@@ -8,7 +8,6 @@ import {
   FieldErrors,
   Ref,
   ValidationOptions,
-  ValidationPayload,
   NameProp,
   OnSubmit,
 } from './types';
@@ -68,9 +67,7 @@ export interface FormContextValues<
     shouldValidate?: boolean,
   ) => void | Promise<boolean>;
   triggerValidation: (
-    payload?:
-      | ValidationPayload<FieldName<FormValues>, FieldValue<FormValues>>
-      | ValidationPayload<FieldName<FormValues>, FieldValue<FormValues>>[],
+    payload?: FieldName<FormValues> | FieldName<FormValues>[],
   ) => Promise<boolean>;
   getValues: (payload?: { nest: boolean }) => FormValues;
   errors: FieldErrors<FormValues>;

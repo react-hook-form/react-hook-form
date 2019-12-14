@@ -113,11 +113,6 @@ export interface SubmitPromiseResult<FormValues extends FieldValues> {
   values: FormValues;
 }
 
-export interface ValidationPayload<Name, Value> {
-  name: Name;
-  value?: Value;
-}
-
 export interface FormStateProxy<FormValues extends FieldValues = FieldValues> {
   dirty: boolean;
   isSubmitted: boolean;

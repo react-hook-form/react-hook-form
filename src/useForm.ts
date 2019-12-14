@@ -36,7 +36,6 @@ import {
   ValidationOptions,
   SubmitPromiseResult,
   OnSubmit,
-  ValidationPayload,
   ElementLike,
   NameProp,
   FormStateProxy,
@@ -265,13 +264,7 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
 
   const executeValidation = useCallback(
     async (
-      {
-        name,
-        value,
-      }: {
-        name: FieldName<FormValues>;
-        value?: FormValues[FieldName<FormValues>];
-      },
+      name: FieldName<FormValues>,
       shouldRender,
       skipReRender?,
     ): Promise<boolean> => {
@@ -279,10 +272,6 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
 
       if (!field) {
         return false;
-      }
-
-      if (!isUndefined(value)) {
-        setInternalValue(name, value);
       }
 
       if (shouldRender) {
@@ -300,20 +289,12 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
 
       return isEmptyObject(error);
     },
-    [
-      nativeValidation,
-      reRender,
-      renderBaseOnError,
-      setInternalValue,
-      validateAllFieldCriteria,
-    ],
+    [nativeValidation, reRender, renderBaseOnError, validateAllFieldCriteria],
   );
 
   const executeSchemaValidation = useCallback(
     async (
-      payload:
-        | ValidationPayload<FieldName<FormValues>, FieldValue<FormValues>>
-        | ValidationPayload<FieldName<FormValues>, FieldValue<FormValues>>[],
+      payload: FieldName<FormValues> | FieldName<FormValues>[],
       shouldRender?: boolean,
     ): Promise<boolean> => {
       const { errors } = await validateWithSchema<FormValues>(
@@ -323,9 +304,7 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
         combineFieldValues(getFieldsValues(fieldsRef.current)),
       );
       const isMultipleFields = isArray(payload);
-      const names = isArray(payload)
-        ? payload.map(({ name }) => name)
-        : [payload.name];
+      const names = isArray(payload) ? payload.map(name => name) : [name];
       const validFieldNames = names.filter(
         name => !(errors as FieldErrors<FormValues>)[name],
       );
@@ -363,13 +342,11 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
 
   const triggerValidation = useCallback(
     async (
-      payload?:
-        | ValidationPayload<FieldName<FormValues>, FieldValue<FormValues>>
-        | ValidationPayload<FieldName<FormValues>, FieldValue<FormValues>>[],
+      payload?: FieldName<FormValues> | FieldName<FormValues>[],
       shouldRender?: boolean,
     ): Promise<boolean> => {
       const fields =
-        payload || Object.keys(fieldsRef.current).map(name => ({ name }));
+        payload || Object.keys(fieldsRef.current).map(name => name);
 
       if (validationSchema) {
         return executeSchemaValidation(fields, shouldRender);
@@ -404,7 +381,7 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
         watchFieldsRef.current.has(name);
 
       if (shouldValidate) {
-        return triggerValidation({ name }, shouldRender);
+        return triggerValidation(name, shouldRender);
       }
 
       if (shouldRender) {
