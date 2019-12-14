@@ -1064,7 +1064,7 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
     dirty: isDirtyRef.current,
     isSubmitted: isSubmittedRef.current,
     submitCount: submitCountRef.current,
-    touched: [...touchedFieldsRef.current],
+    touched: touchedFieldsRef.current,
     isSubmitting: isSubmittingRef.current,
     isValid: isOnSubmit
       ? isSubmittedRef.current && isEmptyObject(errorsRef.current)
