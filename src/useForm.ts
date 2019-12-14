@@ -46,6 +46,7 @@ import {
   HandleChange,
 } from './types';
 import get from './utils/get';
+import set from './utils/set';
 
 const { useRef, useState, useCallback, useEffect } = React;
 
@@ -157,13 +158,13 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
       if (isEmptyObject(error)) {
         if (fieldsWithValidationRef.current.has(name) || validationSchema) {
           validFieldsRef.current.add(name);
-          shouldReRender = shouldReRender || errorsRef.current[name];
+          shouldReRender = shouldReRender || get(errorsRef.current, name);
         }
 
         errorsRef.current = omitObject(errorsRef.current, name);
       } else {
         validFieldsRef.current.delete(name);
-        shouldReRender = shouldReRender || !errorsRef.current[name];
+        shouldReRender = shouldReRender || !get(errorsRef.current, name);
       }
 
       errorsRef.current = combineErrorsRef(error);
@@ -305,9 +306,7 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
         transformToNestObject(getFieldsValues(fieldsRef.current)),
       );
       const names = isArray(payload) ? payload : [payload];
-      const validFieldNames = names.filter(
-        name => !(errors as FieldErrors<FormValues>)[name],
-      );
+      const validFieldNames = names.filter(name => !get(errors, name));
       const previousFormIsValid = isValidRef.current;
       isValidRef.current = isEmptyObject(errors);
 
@@ -909,10 +908,7 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
               const fieldError = await validateFieldCurry(field);
 
               if (fieldError[name]) {
-                resolvedPrevious.errors = {
-                  ...resolvedPrevious.errors,
-                  ...fieldError,
-                };
+                set(resolvedPrevious.errors, name, fieldError);
 
                 validFieldsRef.current.delete(name);
 
