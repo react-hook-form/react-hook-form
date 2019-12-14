@@ -37,7 +37,6 @@ import {
   SubmitPromiseResult,
   OnSubmit,
   ElementLike,
-  NameProp,
   FormStateProxy,
   ReadFormState,
   ManualFieldError,
@@ -818,40 +817,44 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
     }
   }
 
-  function register<Element>(
-    validateRule: ValidationOptions & NameProp,
-  ): (ref: Element | null) => void;
   function register<Element extends ElementLike = ElementLike>(
-    validateRule: ValidationOptions,
-  ): (ref: Element | null) => void;
-  function register<Element>(
-    ref: Element | null,
-    validateRule: ValidationOptions & NameProp,
-  ): void;
-  function register<Element extends ElementLike = ElementLike>(
-    ref: Element | null,
+    name: FieldName<FormValues>,
     validationOptions?: ValidationOptions,
   ): void;
   function register<Element extends ElementLike = ElementLike>(
-    refOrValidateRule: ValidationOptions | Element | null,
-    validationOptions?: ValidationOptions & Partial<NameProp>,
+    namesWithValidationOptions: Record<
+      FieldName<FormValues>,
+      ValidationOptions
+    >,
+  ): void;
+  function register<Element extends ElementLike = ElementLike>(
+    validationOptions: ValidationOptions,
+  ): (ref: Element | null) => void;
+  function register<Element extends ElementLike = ElementLike>(
+    refOrValidationOptions: ValidationOptions | Element | null,
+    validationOptions?: ValidationOptions,
   ): ((ref: Element | null) => void) | void {
-    if (isWindowUndefined || !refOrValidateRule) {
+    if (isWindowUndefined || !refOrValidationOptions) {
       return;
     }
 
-    if (validationOptions && isString(validationOptions.name)) {
-      registerFieldsRef({ name: validationOptions.name }, validationOptions);
+    if (isString(refOrValidationOptions)) {
+      registerFieldsRef(
+        { name: validationOptions } as Element,
+        validationOptions,
+      );
       return;
     }
 
-    if (isObject(refOrValidateRule) && 'name' in refOrValidateRule) {
-      registerFieldsRef(refOrValidateRule, validationOptions);
+    if (isObject(refOrValidationOptions)) {
+      Object.entries(refOrValidationOptions).forEach(([key, value]) => {
+        registerFieldsRef({ name: key } as Element, value);
+      });
       return;
     }
 
     return (ref: Element | null) =>
-      ref && registerFieldsRef(ref, refOrValidateRule);
+      ref && registerFieldsRef(ref, refOrValidationOptions);
   }
 
   const handleSubmit = useCallback(
