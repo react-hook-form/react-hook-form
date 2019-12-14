@@ -1,2 +1,3 @@
-export { default } from './useForm';
-export { FormContext, useFormContext } from './useFormContext';
+export * from './useForm';
+export * from './useFormContext';
+export * from './types';

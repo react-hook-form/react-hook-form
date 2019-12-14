@@ -49,7 +49,7 @@ import {
 
 const { useRef, useState, useCallback, useEffect } = React;
 
-export default function useForm<FormValues extends FieldValues = FieldValues>({
+export function useForm<FormValues extends FieldValues = FieldValues>({
   mode = VALIDATION_MODE.onSubmit,
   reValidateMode = VALIDATION_MODE.onChange,
   validationSchema,
