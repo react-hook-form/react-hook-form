@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { renderHook, act } from '@testing-library/react-hooks';
-import useForm from './';
+import { useForm } from './';
 import attachEventListeners from './logic/attachEventListeners';
 import getFieldsValues from './logic/getFieldValues';
 import findRemovedFieldAndRemoveListener from './logic/findRemovedFieldAndRemoveListener';
