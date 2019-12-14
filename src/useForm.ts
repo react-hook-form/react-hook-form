@@ -818,6 +818,9 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
   }
 
   function register<Element extends ElementLike = ElementLike>(
+    validationOptions: ValidationOptions,
+  ): (ref: Element | null) => void;
+  function register<Element extends ElementLike = ElementLike>(
     name: FieldName<FormValues>,
     validationOptions?: ValidationOptions,
   ): void;
@@ -828,8 +831,9 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
     >,
   ): void;
   function register<Element extends ElementLike = ElementLike>(
-    validationOptions: ValidationOptions,
-  ): (ref: Element | null) => void;
+    ref: Element,
+    validationOptions?: ValidationOptions,
+  ): void;
   function register<Element extends ElementLike = ElementLike>(
     refOrValidationOptions: ValidationOptions | Element | null,
     validationOptions?: ValidationOptions,

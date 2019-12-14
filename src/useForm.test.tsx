@@ -193,7 +193,7 @@ describe('useForm', () => {
       const { result } = renderHook(() => useForm<{ test: string }>());
 
       act(() => {
-        result.current.register({}, { name: 'test' });
+        result.current.register({ name: 'test' });
         result.current.setValue('test', '1');
       });
 
