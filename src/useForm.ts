@@ -11,6 +11,7 @@ import attachNativeValidation from './logic/attachNativeValidation';
 import getDefaultValue from './logic/getDefaultValue';
 import assignWatchFields from './logic/assignWatchFields';
 import omitValidFields from './logic/omitValidFields';
+import merge from './logic/mergeErrors';
 import isCheckBoxInput from './utils/isCheckBoxInput';
 import isEmptyObject from './utils/isEmptyObject';
 import isRadioInput from './utils/isRadioInput';
@@ -21,6 +22,8 @@ import isSameError from './utils/isSameError';
 import isUndefined from './utils/isUndefined';
 import onDomRemove from './utils/onDomRemove';
 import omitObject from './utils/omitObject';
+import get from './utils/get';
+import set from './utils/set';
 import isMultipleSelect from './utils/isMultipleSelect';
 import modeChecker from './utils/validationModeChecker';
 import isNullOrUndefined from './utils/isNullOrUndefined';
@@ -44,8 +47,6 @@ import {
   Ref,
   HandleChange,
 } from './types';
-import get from './utils/get';
-import set from './utils/set';
 
 const { useRef, useState, useCallback, useEffect } = React;
 
@@ -70,7 +71,7 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
   const isValidRef = useRef(true);
   const defaultRenderValuesRef = useRef<
     Partial<Record<FieldName<FormValues>, FieldValue<FormValues>>>
-  >({} as Record<FieldName<FormValues>, FieldValue<FormValues>>);
+  >({});
   const defaultValuesRef = useRef<FieldValue<FormValues> | Partial<FormValues>>(
     defaultValues,
   );
@@ -105,11 +106,6 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
   defaultValuesRef.current = defaultValuesRef.current
     ? defaultValuesRef.current
     : defaultValues;
-
-  const combineErrorsRef = (data: FieldErrors<FormValues>) => ({
-    ...errorsRef.current,
-    ...data,
-  });
 
   const reRender = useCallback(() => {
     if (!isUnMount.current) {
@@ -166,7 +162,7 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
         shouldReRender = shouldReRender || !get(errorsRef.current, name);
       }
 
-      errorsRef.current = combineErrorsRef(error);
+      errorsRef.current = merge(errorsRef.current, error);
 
       if (shouldReRender && !skipReRender) {
         reRender();
@@ -311,24 +307,21 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
 
       if (isArray(payload)) {
         errorsRef.current = omitValidFields<FormValues>(
-          combineErrorsRef(
-            Object.entries(errors)
-              .filter(([key]) => names.includes(key))
-              .reduce(
-                (previous, [name, error]) => ({ ...previous, [name]: error }),
-                {},
-              ),
-          ),
+          Object.entries(errors)
+            .filter(([key]) => names.includes(key))
+            .reduce(
+              (previous, [name, error]) => ({ ...previous, [name]: error }),
+              {},
+            ),
           validFieldNames,
         );
         reRender();
       } else {
         const fieldName = names[0];
+        const error = get(errors, fieldName);
         renderBaseOnError(
           fieldName,
-          errors[fieldName]
-            ? ({ [fieldName]: errors[fieldName] } as FieldErrors<FormValues>)
-            : {},
+          error ? ({ [fieldName]: error } as FieldErrors<FormValues>) : {},
           shouldRender || previousFormIsValid !== isValidRef.current,
         );
       }
@@ -556,10 +549,11 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
     message?: string;
     preventRender?: boolean;
   }) => {
+    const errors = errorsRef.current;
     const field = fieldsRef.current[name];
 
-    if (!isSameError(get(errorsRef.current, name), type, message)) {
-      const error = {
+    if (!isSameError(errors[name], type, message)) {
+      errorsRef.current = merge(errors, {
         [name]: {
           type,
           types,
@@ -567,8 +561,7 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
           ref: field ? field.ref : {},
           isManual: true,
         },
-      };
-      errorsRef.current = combineErrorsRef(transformToNestObject(error));
+      });
 
       if (!preventRender) {
         reRender();
