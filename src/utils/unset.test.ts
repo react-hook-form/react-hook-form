@@ -5,6 +5,7 @@ test('should unset the object', () => {
     data: {
       firstName: 'test',
       clear: undefined,
+      test: [{ data1: '' }, { data2: '' }],
       data: {
         test: undefined,
         test1: {
@@ -16,8 +17,9 @@ test('should unset the object', () => {
     },
   };
 
-  expect(unset(test, ['data.firstName'])).toEqual({
+  expect(unset(test, ['data.firstName', 'data.test[0]'])).toEqual({
     data: {
+      test: [undefined, { data2: '' }],
       data: {
         test1: {
           ref: {
