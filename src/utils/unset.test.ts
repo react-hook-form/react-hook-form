@@ -16,7 +16,7 @@ test('should unset the object', () => {
     },
   };
 
-  expect(unset(test, 'data.firstName')).toEqual({
+  expect(unset(test, ['data.firstName'])).toEqual({
     data: {
       data: {
         test1: {
@@ -24,6 +24,32 @@ test('should unset the object', () => {
             test: '',
           },
         },
+      },
+    },
+  });
+});
+
+it('should unset multiple path', () => {
+  const test = {
+    data: {
+      firstName: 'test',
+      clear: undefined,
+      quick: {
+        test: undefined,
+        what: 'test',
+        test1: {
+          ref: {
+            test: '',
+          },
+        },
+      },
+    },
+  };
+
+  expect(unset(test, ['data.firstName', 'data.quick.test1'])).toEqual({
+    data: {
+      quick: {
+        what: 'test',
       },
     },
   });

@@ -16,8 +16,10 @@ const unsetObject = (target: any) => {
   return target;
 };
 
-const unset = (target: any, path: string) => {
-  set(target, path, undefined);
+const unset = (target: any, paths: string[]) => {
+  paths.forEach(path => {
+    set(target, path, undefined);
+  });
   return unsetObject(target);
 };
 
