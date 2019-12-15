@@ -1,5 +1,6 @@
 import isEmptyObject from '../utils/isEmptyObject';
 import isSameError from '../utils/isSameError';
+import get from '../utils/get';
 import { FieldValues, FieldName, FieldErrors } from '../types';
 
 export default function shouldUpdateWithError<FormValues extends FieldValues>({
@@ -17,8 +18,8 @@ export default function shouldUpdateWithError<FormValues extends FieldValues>({
 }): boolean {
   const isFieldValid = isEmptyObject(error);
   const isFormValid = isEmptyObject(errors);
-  const currentFieldError = error[name];
-  const existFieldError = errors[name];
+  const currentFieldError = get(error, name);
+  const existFieldError = get(error, name);
 
   if (
     (isFieldValid && validFields.has(name)) ||
