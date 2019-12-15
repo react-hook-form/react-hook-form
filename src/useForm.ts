@@ -10,7 +10,6 @@ import validateWithSchema from './logic/validateWithSchema';
 import attachNativeValidation from './logic/attachNativeValidation';
 import getDefaultValue from './logic/getDefaultValue';
 import assignWatchFields from './logic/assignWatchFields';
-import omitValidFields from './logic/omitValidFields';
 import merge from './logic/mergeErrors';
 import isCheckBoxInput from './utils/isCheckBoxInput';
 import isEmptyObject from './utils/isEmptyObject';
@@ -155,7 +154,7 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
         shouldReRender = shouldReRender || !get(errorsRef.current, name);
       }
 
-      errorsRef.current = merge(errorsRef.current, error);
+      set(errorsRef.current, name, error[name]);
 
       if (shouldReRender && !skipReRender) {
         reRender();
@@ -293,20 +292,17 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
         transformToNestObject(getFieldsValues(fieldsRef.current)),
       );
       const names = isArray(payload) ? payload : [payload];
-      const validFieldNames = names.filter(name => !get(errors, name));
+      const inValidFieldNames = names.filter(name => get(errors, name));
       const previousFormIsValid = isValidRef.current;
+      const uniqueFields = new Set([...inValidFieldNames, ...names]);
       isValidRef.current = isEmptyObject(errors);
 
       if (isArray(payload)) {
-        errorsRef.current = omitValidFields<FormValues>(
-          Object.entries(errors)
-            .filter(([key]) => names.includes(key))
-            .reduce(
-              (previous, [name, error]) => ({ ...previous, [name]: error }),
-              {},
-            ),
-          validFieldNames,
-        );
+        Object.entries(errors)
+          .filter(([key]) => uniqueFields.has(key))
+          .forEach((error, index) => {
+            set(errorsRef.current, names[index], error);
+          });
         reRender();
       } else {
         const fieldName = names[0];
@@ -325,7 +321,7 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
 
   const triggerValidation = useCallback(
     async (
-      payload?: FieldName<FormValues> | FieldName<FormValues>[],
+      payload?: FieldName<FormValues> | FieldName<FormValues>[] | string,
       shouldRender?: boolean,
     ): Promise<boolean> => {
       const fields =
@@ -894,7 +890,7 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
               const fieldError = await validateFieldCurry(field);
 
               if (fieldError[name]) {
-                set(resolvedPrevious.errors, name, fieldError);
+                set(resolvedPrevious.errors, name, fieldError[name]);
 
                 validFieldsRef.current.delete(name);
 

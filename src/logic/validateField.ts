@@ -14,7 +14,6 @@ import getFieldsValue from './getFieldValue';
 import isRegex from '../utils/isRegex';
 import isEmptyString from '../utils/isEmptyString';
 import getValidateError from './getValidateError';
-import transformToNestObject from './transformToNestObject';
 import appendErrors from './appendErrors';
 import { INPUT_VALIDATION_RULES } from '../constants';
 import {
@@ -77,7 +76,7 @@ export default async <FormValues extends FieldValues>(
     };
     nativeError(message);
     if (!validateAllFieldCriteria) {
-      return transformToNestObject(error);
+      return error;
     }
   }
 
@@ -119,7 +118,7 @@ export default async <FormValues extends FieldValues>(
       };
       nativeError(message);
       if (!validateAllFieldCriteria) {
-        return transformToNestObject(error);
+        return error;
       }
     }
   }
@@ -151,7 +150,7 @@ export default async <FormValues extends FieldValues>(
       };
       nativeError(message);
       if (!validateAllFieldCriteria) {
-        return transformToNestObject(error);
+        return error;
       }
     }
   }
@@ -170,7 +169,7 @@ export default async <FormValues extends FieldValues>(
       };
       nativeError(patternMessage);
       if (!validateAllFieldCriteria) {
-        return transformToNestObject(error);
+        return error;
       }
     }
   }
@@ -192,7 +191,7 @@ export default async <FormValues extends FieldValues>(
           ),
         };
         if (!validateAllFieldCriteria) {
-          return transformToNestObject(error);
+          return error;
         }
       }
     } else if (isObject(validate)) {
@@ -249,7 +248,7 @@ export default async <FormValues extends FieldValues>(
           ...(validationResult as { type: string; message?: string }),
         };
         if (!validateAllFieldCriteria) {
-          return transformToNestObject(error);
+          return error;
         }
       }
     }
@@ -259,5 +258,5 @@ export default async <FormValues extends FieldValues>(
     ref.setCustomValidity('');
   }
 
-  return transformToNestObject(error);
+  return error;
 };

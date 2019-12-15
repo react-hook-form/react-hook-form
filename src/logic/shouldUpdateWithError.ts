@@ -19,7 +19,7 @@ export default function shouldUpdateWithError<FormValues extends FieldValues>({
   const isFieldValid = isEmptyObject(error);
   const isFormValid = isEmptyObject(errors);
   const currentFieldError = get(error, name);
-  const existFieldError = get(error, name);
+  const existFieldError = get(errors, name);
 
   if (
     (isFieldValid && validFields.has(name)) ||
