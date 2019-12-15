@@ -1041,7 +1041,10 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
   };
 
   return {
-    register: useCallback(register, [defaultValuesRef.current]),
+    register: useCallback(register, [
+      defaultRenderValuesRef.current,
+      defaultValuesRef.current,
+    ]),
     unregister: useCallback(unregister, [removeEventListenerAndRef]),
     clearError: useCallback(clearError, []),
     setError: useCallback(setError, []),
