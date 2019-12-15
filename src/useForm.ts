@@ -57,7 +57,6 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
   defaultValues = {},
   nativeValidation = false,
   submitFocusError = true,
-  validationSchemaOption = { abortEarly: false },
   validateCriteriaMode,
 }: UseFormOptions<FormValues> = {}) {
   const fieldsRef = useRef<FieldRefs<FormValues>>({});
@@ -102,7 +101,6 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
     isOnBlur: isReValidateOnBlur,
     isOnSubmit: isReValidateOnSubmit,
   } = useRef(modeChecker(reValidateMode)).current;
-  const validationSchemaOptionRef = useRef(validationSchemaOption);
   defaultValuesRef.current = defaultValuesRef.current
     ? defaultValuesRef.current
     : defaultValues;
@@ -124,12 +122,7 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
   );
 
   const validateFieldsSchemaCurry = useCallback(
-    validateWithSchema.bind(
-      null,
-      validationSchema,
-      validationSchemaOptionRef.current,
-      validateAllFieldCriteria,
-    ),
+    validateWithSchema.bind(null, validationSchema, validateAllFieldCriteria),
     [validationSchema],
   );
 
@@ -296,7 +289,6 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
     ): Promise<boolean> => {
       const { errors } = await validateWithSchema<FormValues>(
         validationSchema,
-        validationSchemaOptionRef.current,
         validateAllFieldCriteria,
         transformToNestObject(getFieldsValues(fieldsRef.current)),
       );
@@ -426,7 +418,6 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
         if (validationSchema) {
           const { errors } = await validateWithSchema<FormValues>(
             validationSchema,
-            validationSchemaOptionRef.current,
             validateAllFieldCriteria,
             transformToNestObject(getFieldsValues(fields)),
           );

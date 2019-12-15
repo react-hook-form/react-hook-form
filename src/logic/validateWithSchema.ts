@@ -57,13 +57,12 @@ export const parseErrorSchema = <FormValues>(
 
 export default async function validateWithSchema<FormValues>(
   validationSchema: Schema<FormValues>,
-  validationSchemaOption: SchemaValidateOptions,
   validateAllFieldCriteria: boolean,
   data: FieldValues,
 ): Promise<SchemaValidationResult<FormValues>> {
   try {
     return {
-      values: await validationSchema.validate(data, validationSchemaOption),
+      values: await validationSchema.validate(data, { abortEarly: false }),
       errors: {},
     };
   } catch (e) {
