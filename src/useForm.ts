@@ -23,6 +23,7 @@ import onDomRemove from './utils/onDomRemove';
 import omitObject from './utils/omitObject';
 import get from './utils/get';
 import set from './utils/set';
+import unset from './utils/unset';
 import isMultipleSelect from './utils/isMultipleSelect';
 import modeChecker from './utils/validationModeChecker';
 import isNullOrUndefined from './utils/isNullOrUndefined';
@@ -148,7 +149,7 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
           shouldReRender = shouldReRender || get(errorsRef.current, name);
         }
 
-        errorsRef.current = omitObject(errorsRef.current, name);
+        errorsRef.current = unset(errorsRef.current, [name]);
       } else {
         validFieldsRef.current.delete(name);
         shouldReRender = shouldReRender || !get(errorsRef.current, name);
