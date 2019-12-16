@@ -292,21 +292,20 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
         validateAllFieldCriteria,
         transformToNestObject(getFieldsValues(fieldsRef.current)),
       );
-      const names = isArray(payload) ? payload : [payload];
-      const inValidFieldNames = names.filter(name => get(errors, name));
       const previousFormIsValid = isValidRef.current;
-      const uniqueFields = new Set([...inValidFieldNames, ...names]);
       isValidRef.current = isEmptyObject(errors);
 
       if (isArray(payload)) {
-        Object.entries(errors)
-          .filter(([key]) => uniqueFields.has(key))
-          .forEach((error, index) => {
-            set(errorsRef.current, names[index], error);
-          });
+        payload.forEach(name => {
+          if (errors[name]) {
+            set(errorsRef.current, name, errors[name]);
+          } else {
+            unset(errorsRef.current, [name]);
+          }
+        });
         reRender();
       } else {
-        const fieldName = names[0];
+        const fieldName = payload;
         const error = get(errors, fieldName);
         renderBaseOnError(
           fieldName,
@@ -1007,6 +1006,20 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
     [defaultValues],
   );
 
+  const control = (
+    name: FieldName<FormValues>,
+    validationOptions: ValidationOptions,
+  ) => {
+    register(name, validationOptions);
+    const value = watch(name, defaultValuesRef.current[name]);
+
+    return {
+      onChange: handleChange,
+      onBlur: handleChange,
+      value,
+    };
+  };
+
   useEffect(
     () => () => {
       isUnMount.current = true;
@@ -1045,6 +1058,7 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
     unregister: useCallback(unregister, [removeEventListenerAndRef]),
     clearError: useCallback(clearError, []),
     setError: useCallback(setError, []),
+    control: useCallback(control, []),
     handleSubmit,
     watch,
     reset,
