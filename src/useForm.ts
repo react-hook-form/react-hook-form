@@ -65,6 +65,7 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
   const touchedFieldsRef = useRef(new Set<FieldName<FormValues>>());
   const watchFieldsRef = useRef(new Set<FieldName<FormValues>>());
   const dirtyFieldsRef = useRef(new Set<FieldName<FormValues>>());
+  const editedFieldsRef = useRef(new Set<FieldName<FormValues>>());
   const fieldsWithValidationRef = useRef(new Set<FieldName<FormValues>>());
   const validFieldsRef = useRef(new Set<FieldName<FormValues>>());
   const isValidRef = useRef(true);
@@ -226,6 +227,20 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
     [isWeb],
   );
 
+  const setEdited = (name: FieldName<FormValues>): void => {
+    if (!fieldsRef.current[name]) {
+      return;
+    }
+
+    const isEdited =
+      defaultRenderValuesRef.current[name] !==
+      getFieldValue(fieldsRef.current, fieldsRef.current[name]!.ref);
+
+    if (isEdited) {
+      editedFieldsRef.current.add(name);
+    }
+  };
+
   const setDirty = (name: FieldName<FormValues>): boolean => {
     if (!fieldsRef.current[name]) {
       return false;
@@ -252,6 +267,8 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
       value: FieldValue<FormValues>,
     ): boolean | void => {
       setFieldValue(name, value);
+
+      setEdited(name);
 
       if (
         setDirty(name) ||
@@ -436,11 +453,13 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
           (isOnBlur && !isBlurEvent && !currentError) ||
           (isReValidateOnBlur && !isBlurEvent && currentError) ||
           (isReValidateOnSubmit && currentError);
+        const shouldUpdateEdited = setEdited(name);
         const shouldUpdateDirty = setDirty(name);
         let shouldUpdateState =
           isWatchAllRef.current ||
           watchFieldsRef.current.has(name) ||
-          shouldUpdateDirty;
+          shouldUpdateEdited;
+        shouldUpdateDirty;
 
         if (
           isBlurEvent &&
@@ -514,6 +533,7 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
       [
         touchedFieldsRef,
         dirtyFieldsRef,
+        editedFieldsRef,
         fieldsWithValidationRef,
         validFieldsRef,
         watchFieldsRef,
@@ -996,6 +1016,7 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
     defaultRenderValuesRef.current = {};
     touchedFieldsRef.current = new Set();
     watchFieldsRef.current = new Set();
+    editedFieldsRef.current = new Set();
     dirtyFieldsRef.current = new Set();
     isWatchAllRef.current = false;
     isSubmittedRef.current = false;
@@ -1064,6 +1085,7 @@ export default function useForm<FormValues extends FieldValues = FieldValues>({
     dirty: isDirtyRef.current,
     isSubmitted: isSubmittedRef.current,
     submitCount: submitCountRef.current,
+    editedFields: [...editedFieldsRef.current],
     touched: [...touchedFieldsRef.current],
     isSubmitting: isSubmittingRef.current,
     isValid: isOnSubmit
