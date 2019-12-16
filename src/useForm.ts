@@ -80,7 +80,7 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
   const isDirtyRef = useRef(false);
   const submitCountRef = useRef(0);
   const isSubmittingRef = useRef(false);
-  const handleChange = useRef<HandleChange>();
+  const handleChangeRef = useRef<HandleChange>();
   const [, render] = useState();
   const { isOnBlur, isOnSubmit } = useRef(modeChecker(mode)).current;
   const isWindowUndefined = typeof window === UNDEFINED;
@@ -371,8 +371,15 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
     [reRender, setInternalValue, triggerValidation],
   );
 
-  handleChange.current = handleChange.current
-    ? handleChange.current
+  const shouldSkipValidation = (isBlurEvent: boolean, currentError: boolean) =>
+    (isOnSubmit && isReValidateOnSubmit) ||
+    (isOnSubmit && !isSubmittedRef.current) ||
+    (isOnBlur && !isBlurEvent && !currentError) ||
+    (isReValidateOnBlur && !isBlurEvent && currentError) ||
+    (isReValidateOnSubmit && currentError);
+
+  handleChangeRef.current = handleChangeRef.current
+    ? handleChangeRef.current
     : async ({ type, target }: MouseEvent): Promise<void | boolean> => {
         const name = target ? (target as Ref).name : '';
         const fields = fieldsRef.current;
@@ -386,12 +393,10 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
         }
 
         const isBlurEvent = type === EVENTS.BLUR;
-        const shouldSkipValidation =
-          (isOnSubmit && isReValidateOnSubmit) ||
-          (isOnSubmit && !isSubmittedRef.current) ||
-          (isOnBlur && !isBlurEvent && !currentError) ||
-          (isReValidateOnBlur && !isBlurEvent && currentError) ||
-          (isReValidateOnSubmit && currentError);
+        const skipValidation = shouldSkipValidation(
+          !!currentError,
+          isBlurEvent,
+        );
         const shouldUpdateDirty = setDirty(name);
         let shouldUpdateState =
           isWatchAllRef.current ||
@@ -407,7 +412,7 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
           shouldUpdateState = true;
         }
 
-        if (shouldSkipValidation) {
+        if (skipValidation) {
           return shouldUpdateState && reRender();
         }
 
@@ -491,10 +496,10 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
         return;
       }
 
-      if (!isUndefined(handleChange.current)) {
+      if (!isUndefined(handleChangeRef.current)) {
         findRemovedFieldAndRemoveListener(
           fieldsRef.current,
-          handleChange.current,
+          handleChangeRef.current,
           field,
           forceDelete,
         );
@@ -792,7 +797,7 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
       attachEventListeners({
         field: fieldToAttachListener,
         isRadioOrCheckbox,
-        handleChange: handleChange.current,
+        handleChange: handleChangeRef.current,
       });
     }
   }
@@ -1006,17 +1011,62 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
     [defaultValues],
   );
 
-  const control = (
-    name: FieldName<FormValues>,
-    validationOptions: ValidationOptions,
-  ) => {
-    register(name, validationOptions);
-    const value = watch(name, defaultValuesRef.current[name]);
+  const control = ({
+    name,
+    rules,
+    onChange,
+    onBlur,
+  }: {
+    name: FieldName<FormValues>;
+    rules?: ValidationOptions;
+    onChange?: (payload: any) => any;
+    onBlur?: (payload: any) => any;
+  }) => {
+    register(name, rules);
+
+    const handleNativeEvent = (
+      event: React.ChangeEvent<any>,
+      shouldValidate: boolean,
+    ) => {
+      if (handleChangeRef.current) {
+        const {
+          type,
+          target,
+          target: { checked, value },
+        } = event;
+        handleChangeRef.current({
+          ...event,
+          target: {
+            ...target,
+            name,
+          },
+        } as any);
+        debugger;
+        setValue(name, isCheckBoxInput(type) ? checked : value, shouldValidate);
+      }
+    };
+
+    const handleEvent = (
+      payload?: any,
+      method?: (payload: any) => any,
+      isBlur?: boolean,
+    ) => {
+      const shouldValidate = !shouldSkipValidation(
+        !!isBlur || payload.type === EVENTS.BLUR,
+        get(errorsRef.current, name),
+      );
+
+      if (method) {
+        setValue(name, method(payload), shouldValidate);
+      } else {
+        handleNativeEvent(payload, shouldValidate);
+      }
+    };
 
     return {
-      onChange: handleChange,
-      onBlur: handleChange,
-      value,
+      onChange: (payload: any) => handleEvent(payload, onChange),
+      onBlur: (payload: any) => handleEvent(payload, onBlur, true),
+      value: watch(name, defaultValuesRef.current[name]),
     };
   };
 
@@ -1058,7 +1108,7 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
     unregister: useCallback(unregister, [removeEventListenerAndRef]),
     clearError: useCallback(clearError, []),
     setError: useCallback(setError, []),
-    control: useCallback(control, []),
+    control,
     handleSubmit,
     watch,
     reset,
