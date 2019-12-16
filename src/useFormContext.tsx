@@ -12,11 +12,10 @@ export function useFormContext<T extends FieldValues>(): FormContextValues<T> {
 
 export function FormContext<T extends FieldValues>(props: FormProps<T>) {
   const { children, formState, errors, ...restMethods } = props;
-  const restRef = React.useRef(restMethods);
 
   return (
     <FormGlobalContext.Provider
-      value={{ ...restRef.current, formState, errors } as FormContextValues}
+      value={{ ...restMethods, formState, errors } as FormContextValues}
     >
       {children}
     </FormGlobalContext.Provider>
