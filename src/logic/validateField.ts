@@ -24,6 +24,7 @@ import {
   FieldError,
   FieldRefs,
 } from '../types';
+import isBoolean from '../utils/isBoolean';
 
 type ValidatePromiseResult = {} | void | FieldError;
 
@@ -61,6 +62,7 @@ export default async <FormValues extends FieldValues>(
   if (
     required &&
     ((!isRadio && !isCheckBox && (isEmpty || isNullOrUndefined(value))) ||
+      (isBoolean(value) && !value) ||
       (isCheckBox && !getCheckboxValue(options).isValid) ||
       (isRadio && !getRadioValue(options).isValid))
   ) {
