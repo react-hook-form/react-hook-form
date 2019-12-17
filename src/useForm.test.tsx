@@ -573,7 +573,6 @@ describe('useForm', () => {
           },
         },
         false,
-        false,
         { ref: { name: 'test' } },
       );
       expect(validateField).toBeCalledWith(
@@ -583,7 +582,6 @@ describe('useForm', () => {
             test1: { ref: { name: 'test1' } },
           },
         },
-        false,
         false,
         { ref: { name: 'test1' } },
       );

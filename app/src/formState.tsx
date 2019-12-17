@@ -30,7 +30,7 @@ const FormState: React.FC = (props: any) => {
         placeholder="lastName"
       />
       <div id="state">{JSON.stringify(formState)}</div>
-
+      <div id="touched">{[...formState.touched].map((touch) => `${touch} `)}</div>
       <select name="select" ref={register} defaultValue="test">
         <option value="test">test</option>
         <option value="test1">test1</option>

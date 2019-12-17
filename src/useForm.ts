@@ -7,7 +7,6 @@ import getFieldValue from './logic/getFieldValue';
 import shouldUpdateWithError from './logic/shouldUpdateWithError';
 import validateField from './logic/validateField';
 import validateWithSchema from './logic/validateWithSchema';
-import attachNativeValidation from './logic/attachNativeValidation';
 import getDefaultValue from './logic/getDefaultValue';
 import assignWatchFields from './logic/assignWatchFields';
 import isCheckBoxInput from './utils/isCheckBoxInput';
@@ -54,7 +53,6 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
   reValidateMode = VALIDATION_MODE.onChange,
   validationSchema,
   defaultValues = {},
-  nativeValidation = false,
   submitFocusError = true,
   validateCriteriaMode,
 }: UseFormOptions<FormValues> = {}) {
@@ -111,12 +109,7 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
   }, []);
 
   const validateFieldCurry = useCallback(
-    validateField.bind(
-      null,
-      fieldsRef,
-      nativeValidation,
-      validateAllFieldCriteria,
-    ),
+    validateField.bind(null, fieldsRef, validateAllFieldCriteria),
     [],
   );
 
@@ -269,7 +262,6 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
 
       const error = await validateField<FormValues>(
         fieldsRef,
-        nativeValidation,
         validateAllFieldCriteria,
         field,
       );
@@ -278,7 +270,7 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
 
       return isEmptyObject(error);
     },
-    [nativeValidation, reRender, renderBaseOnError, validateAllFieldCriteria],
+    [reRender, renderBaseOnError, validateAllFieldCriteria],
   );
 
   const executeSchemaValidation = useCallback(
@@ -433,7 +425,6 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
         } else {
           error = await validateField<FormValues>(
             fieldsRef,
-            nativeValidation,
             validateAllFieldCriteria,
             field,
           );
@@ -786,15 +777,11 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
         ? currentField.options[currentField.options.length - 1]
         : currentField;
 
-    if (nativeValidation && validateOptions) {
-      attachNativeValidation(ref, validateOptions);
-    } else {
-      attachEventListeners({
-        field: fieldToAttachListener,
-        isRadioOrCheckbox,
-        handleChange: handleChangeRef.current,
-      });
-    }
+    attachEventListeners({
+      field: fieldToAttachListener,
+      isRadioOrCheckbox,
+      handleChange: handleChangeRef.current,
+    });
   }
 
   function register<Element extends ElementLike = ElementLike>(

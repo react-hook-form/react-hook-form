@@ -5,7 +5,6 @@ import { FieldError, ValidateResult, Ref } from '../types';
 export default function getValidateError(
   result: ValidateResult,
   ref: Ref,
-  nativeError: Function,
   type = 'validate',
 ): FieldError | void {
   const isStringValue = isString(result);
@@ -17,7 +16,6 @@ export default function getValidateError(
       message,
       ref,
     };
-    nativeError(message);
     return error;
   }
 }

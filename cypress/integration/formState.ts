@@ -1,5 +1,5 @@
 context('form state', () => {
-  it('should return correct form state with onSubmit mode', () => {
+  it.only('should return correct form state with onSubmit mode', () => {
     cy.visit('http://localhost:3000/formState/onSubmit');
 
     cy.get('#state').contains(
@@ -11,6 +11,7 @@ context('form state', () => {
     cy.get('#state').contains(
       '{"dirty":true,"isSubmitted":false,"submitCount":0,"touched":{},"isSubmitting":false,"isValid":false}',
     );
+    cy.get('#touched').contains('firstName ');
 
     cy.get('input[name="firstName"]').clear();
     cy.get('#state').contains(
@@ -23,6 +24,7 @@ context('form state', () => {
     cy.get('#state').contains(
       '{"dirty":true,"isSubmitted":false,"submitCount":0,"touched":{},"isSubmitting":false,"isValid":false}',
     );
+    cy.get('#touched').contains('firstName lastName ');
 
     cy.get('input[name="lastName"]').clear();
 
@@ -30,6 +32,7 @@ context('form state', () => {
     cy.get('#state').contains(
       '{"dirty":true,"isSubmitted":true,"submitCount":1,"touched":{},"isSubmitting":false,"isValid":false}',
     );
+    cy.get('#touched').contains('firstName lastName ');
 
     cy.get('input[name="lastName"]').type('test');
     cy.get('#submit').click();

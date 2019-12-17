@@ -46,7 +46,6 @@ export type UseFormOptions<
   defaultValues: Partial<FormValues>;
   validationSchemaOption: SchemaValidateOptions;
   validationSchema: any;
-  nativeValidation: boolean;
   submitFocusError: boolean;
   validateCriteriaMode: 'firstError' | 'all';
 }>;

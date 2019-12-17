@@ -7,7 +7,6 @@ import getValueAndMessage from './getValueAndMessage';
 import isCheckBoxInput from '../utils/isCheckBoxInput';
 import isString from '../utils/isString';
 import isEmptyObject from '../utils/isEmptyObject';
-import displayNativeError from './displayNativeError';
 import isObject from '../utils/isObject';
 import isFunction from '../utils/isFunction';
 import getFieldsValue from './getFieldValue';
@@ -29,7 +28,6 @@ type ValidatePromiseResult = {} | void | FieldError;
 
 export default async <FormValues extends FieldValues>(
   fieldsRef: React.MutableRefObject<FieldRefs<FormValues>>,
-  nativeValidation: boolean,
   validateAllFieldCriteria: boolean,
   {
     ref,
@@ -50,7 +48,6 @@ export default async <FormValues extends FieldValues>(
   const isCheckBox = isCheckBoxInput(type);
   const isRadioOrCheckbox = isRadio || isCheckBox;
   const isEmpty = isEmptyString(value);
-  const nativeError = displayNativeError.bind(null, nativeValidation, ref);
   const appendErrorsCurry = appendErrors.bind(
     null,
     name,
@@ -74,7 +71,6 @@ export default async <FormValues extends FieldValues>(
       ref: isRadioOrCheckbox ? (fields[name] as any).options[0].ref : ref,
       ...appendErrorsCurry(INPUT_VALIDATION_RULES.required, message),
     };
-    nativeError(message);
     if (!validateAllFieldCriteria) {
       return error;
     }
@@ -116,7 +112,6 @@ export default async <FormValues extends FieldValues>(
           ? appendErrorsCurry(INPUT_VALIDATION_RULES.max, message)
           : appendErrorsCurry(INPUT_VALIDATION_RULES.min, message)),
       };
-      nativeError(message);
       if (!validateAllFieldCriteria) {
         return error;
       }
@@ -148,7 +143,6 @@ export default async <FormValues extends FieldValues>(
           ? appendErrorsCurry(INPUT_VALIDATION_RULES.maxLength, message)
           : appendErrorsCurry(INPUT_VALIDATION_RULES.minLength, message)),
       };
-      nativeError(message);
       if (!validateAllFieldCriteria) {
         return error;
       }
@@ -167,7 +161,6 @@ export default async <FormValues extends FieldValues>(
         ref,
         ...appendErrorsCurry(INPUT_VALIDATION_RULES.pattern, patternMessage),
       };
-      nativeError(patternMessage);
       if (!validateAllFieldCriteria) {
         return error;
       }
@@ -180,7 +173,7 @@ export default async <FormValues extends FieldValues>(
 
     if (isFunction(validate)) {
       const result = await validate(fieldValue);
-      const validateError = getValidateError(result, validateRef, nativeError);
+      const validateError = getValidateError(result, validateRef);
 
       if (validateError) {
         error[name as FieldName<FormValues>] = {
@@ -216,7 +209,6 @@ export default async <FormValues extends FieldValues>(
               const validateError = getValidateError(
                 validateResult,
                 validateRef,
-                nativeError,
                 key,
               );
 
@@ -252,10 +244,6 @@ export default async <FormValues extends FieldValues>(
         }
       }
     }
-  }
-
-  if (nativeValidation) {
-    ref.setCustomValidity('');
   }
 
   return error;
