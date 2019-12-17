@@ -464,7 +464,7 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
 
   const resetFieldRef = useCallback(
     (name: FieldName<FormValues>) => {
-      errorsRef.current = omitObject(errorsRef.current, name);
+      errorsRef.current = unset(errorsRef.current, [name]);
       fieldsRef.current = omitObject(fieldsRef.current, name);
       defaultRenderValuesRef.current = omitObject(
         defaultRenderValuesRef.current,
@@ -1103,7 +1103,7 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
     unregister: useCallback(unregister, [removeEventListenerAndRef]),
     clearError: useCallback(clearError, []),
     setError: useCallback(setError, []),
-    control,
+    control: useCallback(control, []),
     handleSubmit,
     watch,
     reset,
