@@ -323,8 +323,7 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
       payload?: FieldName<FormValues> | FieldName<FormValues>[] | string,
       shouldRender?: boolean,
     ): Promise<boolean> => {
-      const fields =
-        payload || Object.keys(fieldsRef.current).map(name => name);
+      const fields = payload || Object.keys(fieldsRef.current);
 
       if (validationSchema) {
         return executeSchemaValidation(fields, shouldRender);
