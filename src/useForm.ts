@@ -10,7 +10,6 @@ import validateWithSchema from './logic/validateWithSchema';
 import attachNativeValidation from './logic/attachNativeValidation';
 import getDefaultValue from './logic/getDefaultValue';
 import assignWatchFields from './logic/assignWatchFields';
-import merge from './logic/mergeErrors';
 import isCheckBoxInput from './utils/isCheckBoxInput';
 import isEmptyObject from './utils/isEmptyObject';
 import isRadioInput from './utils/isRadioInput';
@@ -541,18 +540,15 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
     message?: string;
     preventRender?: boolean;
   }) => {
-    const errors = errorsRef.current;
     const field = fieldsRef.current[name];
 
-    if (!isSameError(errors[name], type, message)) {
-      errorsRef.current = merge(errors, {
-        [name]: {
-          type,
-          types,
-          message,
-          ref: field ? field.ref : {},
-          isManual: true,
-        },
+    if (!isSameError(errorsRef.current[name], type, message)) {
+      set(errorsRef.current, name, {
+        type,
+        types,
+        message,
+        ref: field ? field.ref : {},
+        isManual: true,
       });
 
       if (!preventRender) {
@@ -1041,7 +1037,6 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
             name,
           },
         } as any);
-        debugger;
         setValue(name, isCheckBoxInput(type) ? checked : value, shouldValidate);
       }
     };
