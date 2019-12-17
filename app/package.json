@@ -13,7 +13,7 @@
     "react-dom": "^16.11.0",
     "react-hook-form": "^3.27.0",
     "react-router-dom": "^5.1.2",
-    "react-scripts": "3.2.0",
+    "react-scripts": "3.3.0",
     "typescript": "3.7.2",
     "yup": "^0.27.0"
   },

@@ -103,9 +103,15 @@ export type FieldRefs<FormValues extends FieldValues> = Partial<
   Record<FieldName<FormValues>, Field>
 >;
 
-export type FieldErrors<FormValues extends FieldValues> = Partial<
-  Record<FieldName<FormValues>, FieldError>
->;
+export type FieldErrors<FormValues> = {
+  [Key in keyof FormValues]?: FormValues[Key] extends any[]
+    ? FormValues[Key][number] extends object
+      ? FieldErrors<FormValues[Key][number]>[]
+      : FieldError
+    : FormValues[Key] extends object
+    ? FieldErrors<FormValues[Key]>
+    : FieldError;
+};
 
 export interface SubmitPromiseResult<FormValues extends FieldValues> {
   errors: FieldErrors<FormValues>;

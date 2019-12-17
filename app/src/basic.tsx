@@ -4,7 +4,7 @@ import { useForm } from 'react-hook-form';
 let renderCounter = 0;
 
 const Basic: React.FC = (props: any) => {
-  const { register, handleSubmit, errors, reset } = useForm<{
+  const { register, handleSubmit, errors, reset, control } = useForm<{
     firstName: string;
     lastName: string;
     min: string;
@@ -20,6 +20,11 @@ const Basic: React.FC = (props: any) => {
     checkboxArray: string[];
     multiple: string;
     validate: string;
+    control: string;
+    nestItem: {
+      nest1: string;
+    };
+    arrayItem: { test1: string; test2: string }[];
   }>({
     mode: props.match.params.mode,
   });
@@ -27,8 +32,27 @@ const Basic: React.FC = (props: any) => {
 
   renderCounter++;
 
+  console.log(errors);
+
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
+      <input
+        placeholder="control"
+        {...control({ name: 'control', rules: { required: true } })}
+      />
+      {errors.control && <p>control error</p>}
+      <input
+        name="nestItem.nest1"
+        placeholder="nest.nest1"
+        ref={register({ required: true })}
+      />
+      {errors.nestItem?.nest1 && <p>nest 1 error</p>}
+      <input
+        name="arrayItem[0].test1"
+        placeholder="arrayItem[0].test1"
+        ref={register({ required: true })}
+      />
+      {errors.arrayItem?.[0].test1 && <p>array item 1 error</p>}
       <input
         name="firstName"
         ref={register({ required: true })}

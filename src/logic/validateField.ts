@@ -19,7 +19,6 @@ import {
   Field,
   FieldErrors,
   FieldValues,
-  FieldName,
   FieldError,
   FieldRefs,
 } from '../types';
@@ -43,7 +42,7 @@ export default async <FormValues extends FieldValues>(
   }: Field,
 ): Promise<FieldErrors<FormValues>> => {
   const fields = fieldsRef.current;
-  const error: FieldErrors<FormValues> = {};
+  const error: any = {};
   const isRadio = isRadioInput(type);
   const isCheckBox = isCheckBoxInput(type);
   const isRadioOrCheckbox = isRadio || isCheckBox;
@@ -65,7 +64,7 @@ export default async <FormValues extends FieldValues>(
       ? required
       : getValueAndMessage(required).message;
 
-    error[name as FieldName<FormValues>] = {
+    error[name] = {
       type: INPUT_VALIDATION_RULES.required,
       message,
       ref: isRadioOrCheckbox ? (fields[name] as any).options[0].ref : ref,
@@ -102,7 +101,7 @@ export default async <FormValues extends FieldValues>(
 
     if (exceedMax || exceedMin) {
       const message = exceedMax ? maxMessage : minMessage;
-      error[name as FieldName<FormValues>] = {
+      error[name] = {
         type: exceedMax
           ? INPUT_VALIDATION_RULES.max
           : INPUT_VALIDATION_RULES.min,
@@ -133,7 +132,7 @@ export default async <FormValues extends FieldValues>(
 
     if (exceedMax || exceedMin) {
       const message = exceedMax ? maxLengthMessage : minLengthMessage;
-      error[name as FieldName<FormValues>] = {
+      error[name] = {
         type: exceedMax
           ? INPUT_VALIDATION_RULES.maxLength
           : INPUT_VALIDATION_RULES.minLength,
@@ -155,7 +154,7 @@ export default async <FormValues extends FieldValues>(
     );
 
     if (isRegex(patternValue) && !patternValue.test(value)) {
-      error[name as FieldName<FormValues>] = {
+      error[name] = {
         type: INPUT_VALIDATION_RULES.pattern,
         message: patternMessage,
         ref,
@@ -176,7 +175,7 @@ export default async <FormValues extends FieldValues>(
       const validateError = getValidateError(result, validateRef);
 
       if (validateError) {
-        error[name as FieldName<FormValues>] = {
+        error[name] = {
           ...validateError,
           ...appendErrorsCurry(
             INPUT_VALIDATION_RULES.validate,
@@ -219,7 +218,7 @@ export default async <FormValues extends FieldValues>(
                 };
 
                 if (validateAllFieldCriteria) {
-                  error[name as FieldName<FormValues>] = result;
+                  error[name] = result;
                 }
               } else {
                 result = previous;
@@ -235,7 +234,7 @@ export default async <FormValues extends FieldValues>(
       );
 
       if (!isEmptyObject(validationResult)) {
-        error[name as FieldName<FormValues>] = {
+        error[name] = {
           ref: validateRef,
           ...(validationResult as { type: string; message?: string }),
         };

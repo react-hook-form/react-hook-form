@@ -532,7 +532,7 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
   }) => {
     const field = fieldsRef.current[name];
 
-    if (!isSameError(errorsRef.current[name], type, message)) {
+    if (!isSameError(errorsRef.current[name] as any, type, message)) {
       set(errorsRef.current, name, {
         type,
         types,
@@ -993,7 +993,7 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
     [defaultValues],
   );
 
-  const control = ({
+  const control = <FormValues>({
     name,
     rules,
     onChange,
@@ -1047,7 +1047,7 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
     return {
       onChange: (payload: any) => handleEvent(payload, onChange),
       onBlur: (payload: any) => handleEvent(payload, onBlur, true),
-      value: watch(name, defaultValuesRef.current[name]),
+      value: watch(name, defaultValuesRef.current[name]) as any,
     };
   };
 
