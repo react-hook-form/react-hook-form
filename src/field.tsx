@@ -62,21 +62,29 @@ const RHFInput = ({
   onChangeEvent,
   onBlurName,
   onBlurEvent,
-  control,
+  control: {
+    defaultValues,
+    setValue,
+    register,
+    unregister,
+    errors,
+    mode,
+    reValidateMode,
+  },
   ...rest
 }: Props) => {
   const isCheckboxInput = isCheckbox(type);
-  // const formState = control.formState;
-  const defaultValue = control.defaultValues[name];
+  // const formState = formState;
+  const defaultValue = defaultValues[name];
   const [inputState, setInputState] = React.useState(defaultValue || value);
   const valueRef = React.useRef(defaultValue || value);
   const methods = useFormContext() || {};
-  const setValue = control.setValue || methods.setValue;
-  const register = control.register || methods.register;
-  const unregister = control.unregister || methods.unregister;
+  const setValueMethod = setValue || methods.setValue;
+  const registerMethod = register || methods.register;
+  const unregisterMethod = unregister || methods.unregister;
 
   const shouldValidate = () => {
-    return !!get(control.errors, name);
+    return !!get(errors, name);
   };
 
   const commonTask = (target: any) => {
@@ -89,18 +97,18 @@ const RHFInput = ({
   const eventWrapper = (event: EventFunction, eventName: string) => {
     return async (...arg: any) => {
       const data = commonTask(await event(arg));
-      setValue(
+      setValueMethod(
         name,
         data,
-        (control.mode.isOnChange && eventName === 'onChange') ||
-          (control.mode.isOnBlur && eventName === 'onBlur'),
+        (mode.isOnChange && eventName === 'onChange') ||
+          (mode.isOnBlur && eventName === 'onBlur'),
       );
     };
   };
 
   const handleChange = (e: any) => {
     const data = commonTask(e && e.target ? e.target : e);
-    setValue(name, data, shouldValidate());
+    setValueMethod(name, data, shouldValidate());
     if (onChange) {
       onChange(e);
     }
@@ -108,14 +116,14 @@ const RHFInput = ({
 
   const handleBlur = (e: any) => {
     const data = commonTask(e && e.target ? e.target : e);
-    setValue(name, data, shouldValidate());
+    setValueMethod(name, data, shouldValidate());
     if (onBlur) {
       onBlur(e);
     }
   };
 
   React.useEffect(() => {
-    register(
+    registerMethod(
       Object.defineProperty(
         {
           name,
@@ -135,11 +143,11 @@ const RHFInput = ({
     );
 
     return (): void => {
-      if (unregister) {
-        unregister(name);
+      if (unregisterMethod) {
+        unregisterMethod(name);
       }
     };
-  }, [register, unregister, name]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [registerMethod, unregisterMethod, name]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const props = {
     ...(onChangeEvent
@@ -147,7 +155,7 @@ const RHFInput = ({
           [onChangeName || 'onChange']: eventWrapper(onChangeEvent, 'onChange'),
         }
       : { onChange: handleChange }),
-    ...(control.mode.isOnBlur || control.reValidateMode.isReValidateOnBlur
+    ...(mode.isOnBlur || reValidateMode.isReValidateOnBlur
       ? onBlurEvent
         ? {
             [onBlurName || 'onBlur']: eventWrapper(onBlurEvent, 'onBlur'),
