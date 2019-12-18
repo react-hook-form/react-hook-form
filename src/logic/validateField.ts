@@ -13,6 +13,7 @@ import isFunction from '../utils/isFunction';
 import getFieldsValue from './getFieldValue';
 import isRegex from '../utils/isRegex';
 import isEmptyString from '../utils/isEmptyString';
+import isBoolean from '../utils/isBoolean';
 import getValidateError from './getValidateError';
 import appendErrors from './appendErrors';
 import { INPUT_VALIDATION_RULES } from '../constants';
@@ -61,6 +62,7 @@ export default async <FormValues extends FieldValues>(
   if (
     required &&
     ((!isRadio && !isCheckBox && (isEmpty || isNullOrUndefined(value))) ||
+      (isBoolean(value) && !value) ||
       (isCheckBox && !getCheckboxValue(options).isValid) ||
       (isRadio && !getRadioValue(options).isValid))
   ) {
