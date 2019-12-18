@@ -1022,12 +1022,27 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
     register,
     unregister,
     setValue,
-    mode,
-    reValidateMode,
     formState,
+    mode: {
+      isOnBlur,
+      isOnSubmit,
+    },
+    reValidateMode: {
+      isReValidateOnBlur,
+      isReValidateOnSubmit,
+    },
+    errors: errorsRef.current,
+    defaultValues: defaultValuesRef.current,
   };
 
   return {
+    watch,
+    control,
+    handleSubmit,
+    reset,
+    setValue,
+    triggerValidation,
+    getValues,
     register: useCallback(register, [
       defaultRenderValuesRef.current,
       defaultValuesRef.current,
@@ -1035,13 +1050,6 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
     unregister: useCallback(unregister, [removeEventListenerAndRef]),
     clearError: useCallback(clearError, []),
     setError: useCallback(setError, []),
-    control,
-    handleSubmit,
-    watch,
-    reset,
-    setValue,
-    triggerValidation,
-    getValues,
     errors: errorsRef.current,
     formState: isProxyEnabled
       ? new Proxy<FormStateProxy<FormValues>>(formState, {
