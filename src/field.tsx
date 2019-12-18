@@ -1,6 +1,7 @@
 import * as React from 'react';
-import { get, isCheckbox, isUndefined } from './utils';
-import { useFormContext } from './useFormContext';
+import { get, isUndefined } from './utils';
+import isBoolean from './utils/isBoolean';
+import { EVENTS, VALIDATION_MODE } from './constants';
 import { ValidationOptions } from './types';
 
 export type EventFunction = (
@@ -18,7 +19,6 @@ export type Props = {
   unregister?: (name: string) => void;
   name: string;
   as: React.ElementType<any> | React.FunctionComponent<any> | string | any;
-  type?: string;
   rules?: ValidationOptions;
   value?: string | boolean;
   onChange?: (value: any) => void;
@@ -34,11 +34,6 @@ export type Props = {
 };
 
 function getValue(target: any, { isCheckbox }: { isCheckbox: boolean }) {
-  // the following logic is specific for react-select
-  if (target && (Array.isArray(target) || (target.label && target.value))) {
-    return target;
-  }
-
   return target
     ? isCheckbox
       ? isUndefined(target.checked)
@@ -56,8 +51,6 @@ const RHFInput = ({
   as: InnerComponent,
   onChange,
   onBlur,
-  type,
-  value,
   onChangeName,
   onChangeEvent,
   onBlurName,
@@ -70,18 +63,15 @@ const RHFInput = ({
     errors,
     mode,
     reValidateMode,
+    // formState,
   },
   ...rest
 }: Props) => {
-  const isCheckboxInput = isCheckbox(type);
-  // const formState = formState;
   const defaultValue = defaultValues[name];
-  const [inputState, setInputState] = React.useState(defaultValue || value);
-  const valueRef = React.useRef(defaultValue || value);
-  const methods = useFormContext() || {};
-  const setValueMethod = setValue || methods.setValue;
-  const registerMethod = register || methods.register;
-  const unregisterMethod = unregister || methods.unregister;
+  const [inputState, setInputState] = React.useState(defaultValue);
+  const valueRef = React.useRef(defaultValue);
+  const value = inputState || defaultValue || '';
+  const isCheckboxInput = isBoolean(value);
 
   const shouldValidate = () => {
     return !!get(errors, name);
@@ -97,18 +87,18 @@ const RHFInput = ({
   const eventWrapper = (event: EventFunction, eventName: string) => {
     return async (...arg: any) => {
       const data = commonTask(await event(arg));
-      setValueMethod(
+      const isBlurEvent = eventName === EVENTS.BLUR;
+      setValue(
         name,
         data,
-        (mode.isOnChange && eventName === 'onChange') ||
-          (mode.isOnBlur && eventName === 'onBlur'),
+        (mode.isOnChange && !isBlurEvent) || (mode.isOnBlur && isBlurEvent),
       );
     };
   };
 
   const handleChange = (e: any) => {
     const data = commonTask(e && e.target ? e.target : e);
-    setValueMethod(name, data, shouldValidate());
+    setValue(name, data, shouldValidate());
     if (onChange) {
       onChange(e);
     }
@@ -116,14 +106,14 @@ const RHFInput = ({
 
   const handleBlur = (e: any) => {
     const data = commonTask(e && e.target ? e.target : e);
-    setValueMethod(name, data, shouldValidate());
+    setValue(name, data, shouldValidate());
     if (onBlur) {
       onBlur(e);
     }
   };
 
   React.useEffect(() => {
-    registerMethod(
+    register(
       Object.defineProperty(
         {
           name,
@@ -143,27 +133,31 @@ const RHFInput = ({
     );
 
     return (): void => {
-      if (unregisterMethod) {
-        unregisterMethod(name);
-      }
+      unregister(name);
     };
-  }, [registerMethod, unregisterMethod, name]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [register, unregister, name]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const props = {
     ...(onChangeEvent
       ? {
-          [onChangeName || 'onChange']: eventWrapper(onChangeEvent, 'onChange'),
+          [onChangeName || VALIDATION_MODE.onChange]: eventWrapper(
+            onChangeEvent,
+            VALIDATION_MODE.onChange,
+          ),
         }
       : { onChange: handleChange }),
     ...(mode.isOnBlur || reValidateMode.isReValidateOnBlur
       ? onBlurEvent
         ? {
-            [onBlurName || 'onBlur']: eventWrapper(onBlurEvent, 'onBlur'),
+            [onBlurName || VALIDATION_MODE.onBlur]: eventWrapper(
+              onBlurEvent,
+              VALIDATION_MODE.onBlur,
+            ),
           }
         : { onBlur: handleBlur }
       : {}),
-    value: inputState || value || '',
     ...(isCheckboxInput ? { checked: inputState } : {}),
+    value,
     ...rest,
   };
 
