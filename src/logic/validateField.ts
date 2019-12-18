@@ -13,6 +13,7 @@ import isFunction from '../utils/isFunction';
 import getFieldsValue from './getFieldValue';
 import isRegex from '../utils/isRegex';
 import isEmptyString from '../utils/isEmptyString';
+import isBoolean from '../utils/isBoolean';
 import getValidateError from './getValidateError';
 import appendErrors from './appendErrors';
 import { INPUT_VALIDATION_RULES } from '../constants';
@@ -24,7 +25,6 @@ import {
   FieldError,
   FieldRefs,
 } from '../types';
-import isBoolean from '../utils/isBoolean';
 
 type ValidatePromiseResult = {} | void | FieldError;
 
