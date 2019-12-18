@@ -122,7 +122,7 @@ export interface FormStateProxy<FormValues extends FieldValues = FieldValues> {
   dirty: boolean;
   isSubmitted: boolean;
   submitCount: number;
-  touched: Set<FieldName<FormValues>>;
+  touched: FieldName<FormValues>[];
   isSubmitting: boolean;
   isValid: boolean;
 }

@@ -4,7 +4,7 @@ import { useForm } from 'react-hook-form';
 let renderCounter = 0;
 
 const Basic: React.FC = (props: any) => {
-  const { register, handleSubmit, errors, reset, control } = useForm<{
+  const { register, handleSubmit, errors, reset } = useForm<{
     firstName: string;
     lastName: string;
     min: string;
@@ -36,10 +36,6 @@ const Basic: React.FC = (props: any) => {
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
-      <input
-        placeholder="control"
-        {...control({ name: 'control', rules: { required: true } })}
-      />
       {errors.control && <p>control error</p>}
       <input
         name="nestItem.nest1"

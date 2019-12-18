@@ -145,9 +145,9 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
       } else {
         validFieldsRef.current.delete(name);
         shouldReRender = shouldReRender || !get(errorsRef.current, name);
-      }
 
-      set(errorsRef.current, name, error[name]);
+        set(errorsRef.current, name, error[name]);
+      }
 
       if (shouldReRender && !skipReRender) {
         reRender();
@@ -361,13 +361,6 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
     [reRender, setInternalValue, triggerValidation],
   );
 
-  const shouldSkipValidation = (isBlurEvent: boolean, currentError: boolean) =>
-    (isOnSubmit && isReValidateOnSubmit) ||
-    (isOnSubmit && !isSubmittedRef.current) ||
-    (isOnBlur && !isBlurEvent && !currentError) ||
-    (isReValidateOnBlur && !isBlurEvent && currentError) ||
-    (isReValidateOnSubmit && currentError);
-
   handleChangeRef.current = handleChangeRef.current
     ? handleChangeRef.current
     : async ({ type, target }: MouseEvent): Promise<void | boolean> => {
@@ -383,10 +376,12 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
         }
 
         const isBlurEvent = type === EVENTS.BLUR;
-        const skipValidation = shouldSkipValidation(
-          !!currentError,
-          isBlurEvent,
-        );
+        const shouldSkipValidation =
+          (isOnSubmit && isReValidateOnSubmit) ||
+          (isOnSubmit && !isSubmittedRef.current) ||
+          (isOnBlur && !isBlurEvent && !currentError) ||
+          (isReValidateOnBlur && !isBlurEvent && currentError) ||
+          (isReValidateOnSubmit && currentError);
         const shouldUpdateDirty = setDirty(name);
         let shouldUpdateState =
           isWatchAllRef.current ||
@@ -402,7 +397,7 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
           shouldUpdateState = true;
         }
 
-        if (skipValidation) {
+        if (shouldSkipValidation) {
           return shouldUpdateState && reRender();
         }
 
@@ -993,64 +988,6 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
     [defaultValues],
   );
 
-  const control = <FormValues>({
-    name,
-    rules,
-    onChange,
-    onBlur,
-  }: {
-    name: FieldName<FormValues>;
-    rules?: ValidationOptions;
-    onChange?: (payload: any) => any;
-    onBlur?: (payload: any) => any;
-  }) => {
-    register(name, rules);
-
-    const handleNativeEvent = (
-      event: React.ChangeEvent<any>,
-      shouldValidate: boolean,
-    ) => {
-      if (handleChangeRef.current) {
-        const {
-          type,
-          target,
-          target: { checked, value },
-        } = event;
-        handleChangeRef.current({
-          ...event,
-          target: {
-            ...target,
-            name,
-          },
-        } as any);
-        setValue(name, isCheckBoxInput(type) ? checked : value, shouldValidate);
-      }
-    };
-
-    const handleEvent = (
-      payload?: any,
-      method?: (payload: any) => any,
-      isBlur?: boolean,
-    ) => {
-      const shouldValidate = !shouldSkipValidation(
-        !!isBlur || payload.type === EVENTS.BLUR,
-        get(errorsRef.current, name),
-      );
-
-      if (method) {
-        setValue(name, method(payload), shouldValidate);
-      } else {
-        handleNativeEvent(payload, shouldValidate);
-      }
-    };
-
-    return {
-      onChange: (payload: any) => handleEvent(payload, onChange),
-      onBlur: (payload: any) => handleEvent(payload, onBlur, true),
-      value: watch(name, defaultValuesRef.current[name]) as any,
-    };
-  };
-
   useEffect(
     () => () => {
       isUnMount.current = true;
@@ -1074,11 +1011,20 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
     dirty: isDirtyRef.current,
     isSubmitted: isSubmittedRef.current,
     submitCount: submitCountRef.current,
-    touched: touchedFieldsRef.current,
+    touched: [...touchedFieldsRef.current],
     isSubmitting: isSubmittingRef.current,
     isValid: isOnSubmit
       ? isSubmittedRef.current && isEmptyObject(errorsRef.current)
       : isEmptyObject(fieldsRef.current) || isValidRef.current,
+  };
+
+  const control = {
+    register,
+    unregister,
+    setValue,
+    mode,
+    reValidateMode,
+    formState,
   };
 
   return {
@@ -1089,7 +1035,7 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
     unregister: useCallback(unregister, [removeEventListenerAndRef]),
     clearError: useCallback(clearError, []),
     setError: useCallback(setError, []),
-    control: useCallback(control, []),
+    control,
     handleSubmit,
     watch,
     reset,
