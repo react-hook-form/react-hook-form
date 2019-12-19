@@ -9,6 +9,7 @@ import validateField from './logic/validateField';
 import validateWithSchema from './logic/validateWithSchema';
 import getDefaultValue from './logic/getDefaultValue';
 import assignWatchFields from './logic/assignWatchFields';
+import skipValidation from './logic/skipValidation';
 import isCheckBoxInput from './utils/isCheckBoxInput';
 import isEmptyObject from './utils/isEmptyObject';
 import isRadioInput from './utils/isRadioInput';
@@ -376,12 +377,15 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
         }
 
         const isBlurEvent = type === EVENTS.BLUR;
-        const shouldSkipValidation =
-          (isOnSubmit && isReValidateOnSubmit) ||
-          (isOnSubmit && !isSubmittedRef.current) ||
-          (isOnBlur && !isBlurEvent && !currentError) ||
-          (isReValidateOnBlur && !isBlurEvent && currentError) ||
-          (isReValidateOnSubmit && currentError);
+        const shouldSkipValidation = skipValidation({
+          hasError: !!currentError,
+          isBlurEvent,
+          isOnSubmit,
+          isReValidateOnSubmit,
+          isOnBlur,
+          isReValidateOnBlur,
+          isSubmitted: isSubmittedRef.current,
+        });
         const shouldUpdateDirty = setDirty(name);
         let shouldUpdateState =
           isWatchAllRef.current ||
