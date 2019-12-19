@@ -19,6 +19,7 @@ import FormStateWithSchema from './formStateWithSchema';
 import SetValueWithSchema from './setValueWithSchema';
 import SetValueWithTrigger from './setValueWithTrigger';
 import IsValid from './isValid';
+import Field from './rhfInput';
 
 const App: React.FC = () => {
   return (
@@ -29,6 +30,7 @@ const App: React.FC = () => {
         exact
         component={ValidateFieldCriteria}
       />
+      <Route path="/rhf-input" exact component={Field} />
       <Route
         path="/re-validate-mode/:mode/:reValidateMode"
         exact

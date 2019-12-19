@@ -5,24 +5,17 @@ import skipValidation from './logic/skipValidation';
 import { EVENTS, VALIDATION_MODE } from './constants';
 import { Mode, ValidationOptions } from './types';
 
-export type EventFunction = (
-  args: any,
-) => {
-  value?: any;
-  checked?: boolean;
-};
+export type EventFunction = (args: any) => any;
 
 export type Props = {
   name: string;
   as: React.ElementType<any> | React.FunctionComponent<any> | string | any;
   rules?: ValidationOptions;
-  onChange?: (value: any) => void;
-  onBlur?: (value: any) => void;
+  onChange?: EventFunction;
+  onBlur?: EventFunction;
   mode?: Mode;
   onChangeName?: string;
-  onChangeEvent?: EventFunction;
   onBlurName?: string;
-  onBlurEvent?: EventFunction;
   control: any;
 };
 
@@ -43,9 +36,7 @@ const RHFInput = ({
   onChange,
   onBlur,
   onChangeName,
-  onChangeEvent,
   onBlurName,
-  onBlurEvent,
   control: {
     defaultValues,
     setValue,
@@ -93,17 +84,11 @@ const RHFInput = ({
   const handleChange = (e: any) => {
     const data = commonTask(e && e.target ? e.target : e);
     setValue(name, data, shouldValidate());
-    if (onChange) {
-      onChange(e);
-    }
   };
 
   const handleBlur = (e: any) => {
     const data = commonTask(e && e.target ? e.target : e);
     setValue(name, data, shouldValidate(true));
-    if (onBlur) {
-      onBlur(e);
-    }
   };
 
   React.useEffect(() => {
@@ -130,19 +115,19 @@ const RHFInput = ({
   }, [register, unregister, name]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const props = {
-    ...(onChangeEvent
+    ...(onChange
       ? {
           [onChangeName || VALIDATION_MODE.onChange]: eventWrapper(
-            onChangeEvent,
+            onChange,
             VALIDATION_MODE.onChange,
           ),
         }
       : { onChange: handleChange }),
     ...(isOnBlur || isReValidateOnBlur
-      ? onBlurEvent
+      ? onBlur
         ? {
             [onBlurName || VALIDATION_MODE.onBlur]: eventWrapper(
-              onBlurEvent,
+              onBlur,
               VALIDATION_MODE.onBlur,
             ),
           }
