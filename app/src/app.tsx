@@ -19,7 +19,7 @@ import FormStateWithSchema from './formStateWithSchema';
 import SetValueWithSchema from './setValueWithSchema';
 import SetValueWithTrigger from './setValueWithTrigger';
 import IsValid from './isValid';
-import Field from './rhfInput';
+import Field from './controller';
 
 const App: React.FC = () => {
   return (

@@ -1,4 +1,4 @@
 export * from './useForm';
-export * from './field';
+export * from './controller';
 export * from './useFormContext';
 export * from './types';

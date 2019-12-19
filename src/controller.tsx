@@ -29,7 +29,7 @@ function getValue(target: any, isCheckbox: boolean) {
     : target.value;
 }
 
-const RHFInput = ({
+const Controller = ({
   name,
   rules,
   as: InnerComponent,
@@ -145,4 +145,4 @@ const RHFInput = ({
   );
 };
 
-export { RHFInput };
+export { Controller };

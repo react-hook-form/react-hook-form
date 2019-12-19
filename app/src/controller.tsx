@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useForm, RHFInput } from 'react-hook-form';
+import { useForm, Controller } from 'react-hook-form';
 import ReactSelect from 'react-select';
 import {
   TextField,
@@ -51,12 +51,12 @@ export default function Field() {
 
         <section>
           <label>MUI Checkbox</label>
-          <RHFInput as={<Checkbox />} name="Checkbox" control={control} />
+          <Controller as={<Checkbox />} name="Checkbox" control={control} />
         </section>
 
         <section>
           <label>Radio Group</label>
-          <RHFInput
+          <Controller
             as={
               <RadioGroup aria-label="gender" name="gender1">
                 <FormControlLabel
@@ -78,12 +78,12 @@ export default function Field() {
 
         <section>
           <label>MUI TextField</label>
-          <RHFInput as={<TextField />} name="TextField" control={control} />
+          <Controller as={<TextField />} name="TextField" control={control} />
         </section>
 
         <section>
           <label>MUI Select</label>
-          <RHFInput
+          <Controller
             as={
               <Select>
                 <MenuItem value={10}>Ten</MenuItem>
@@ -98,7 +98,7 @@ export default function Field() {
 
         <section>
           <label>MUI Switch</label>
-          <RHFInput
+          <Controller
             as={<Switch value="checkedA" />}
             name="switch"
             control={control}
@@ -107,7 +107,7 @@ export default function Field() {
 
         <section>
           <label>React Select</label>
-          <RHFInput
+          <Controller
             as={<ReactSelect isClearable options={options} />}
             name="ReactSelect"
             control={control}
