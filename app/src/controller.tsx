@@ -21,38 +21,43 @@ const options = [
 ] as any;
 
 const defaultValues = {
-  defaultValues: {
-    Native: '',
-    TextField: '',
-    Select: '',
-    ReactSelect: '',
-    Checkbox: false,
-    switch: false,
-    RadioGroup: '',
-  },
+  Native: '',
+  TextField: '',
+  Select: '',
+  ReactSelect: '',
+  Checkbox: false,
+  switch: false,
+  RadioGroup: '',
+};
+
+const errorStyle = {
+  color: 'red',
 };
 
 export default function Field() {
   const methods = useForm({ defaultValues });
   const [data, setData] = useState<any>(null);
-  const { handleSubmit, register, reset, control } = methods;
+  const { handleSubmit, errors, register, reset, control } = methods;
   renderCount++;
 
   return (
     <form onSubmit={handleSubmit(data => setData(data))}>
-      <h1>React Hook Form Input</h1>
-      <p>React Hook Form work with controlled component.</p>
-      <span className="counter">Render Count: {renderCount}</span>
       <div className="container">
         <section>
-          <label>Native Input:</label>
-          <input name="Native" ref={register} />
+          <label>MUI Checkbox</label>
+          <Controller
+            as={<Checkbox />}
+            name="Checkbox"
+            control={control}
+            rules={{ required: true }}
+          />
         </section>
 
-        <section>
-          <label>MUI Checkbox</label>
-          <Controller as={<Checkbox />} name="Checkbox" control={control} />
-        </section>
+        {errors.Checkbox && (
+          <p id={'checkbox'} style={errorStyle}>
+            TextField Error
+          </p>
+        )}
 
         <section>
           <label>Radio Group</label>
@@ -71,15 +76,33 @@ export default function Field() {
                 />
               </RadioGroup>
             }
+            rules={{ required: true }}
             name="RadioGroup"
             control={control}
           />
         </section>
 
+        {errors.RadioGroup && (
+          <p id={'RadioGroup'} style={errorStyle}>
+            RadioGroup Error
+          </p>
+        )}
+
         <section>
           <label>MUI TextField</label>
-          <Controller as={<TextField />} name="TextField" control={control} />
+          <Controller
+            as={<TextField />}
+            name="TextField"
+            control={control}
+            rules={{ required: true }}
+          />
         </section>
+
+        {errors.TextField && (
+          <p id="TextField" style={errorStyle}>
+            Checkbox Error
+          </p>
+        )}
 
         <section>
           <label>MUI Select</label>
@@ -91,19 +114,33 @@ export default function Field() {
                 <MenuItem value={30}>Thirty</MenuItem>
               </Select>
             }
+            rules={{ required: true }}
             name="Select"
             control={control}
           />
         </section>
+
+        {errors.Select && (
+          <p id="Select" style={errorStyle}>
+            Select Error
+          </p>
+        )}
 
         <section>
           <label>MUI Switch</label>
           <Controller
             as={<Switch value="checkedA" />}
             name="switch"
+            rules={{ required: true }}
             control={control}
           />
         </section>
+
+        {errors.switch && (
+          <p id="switch" style={errorStyle}>
+            switch Error
+          </p>
+        )}
 
         <section>
           <label>React Select</label>
@@ -111,9 +148,16 @@ export default function Field() {
             as={<ReactSelect isClearable options={options} />}
             name="ReactSelect"
             control={control}
+            rules={{ required: true }}
             onChange={(data: any) => data}
           />
         </section>
+
+        {errors.ReactSelect && (
+          <p id="ReactSelect" style={errorStyle}>
+            ReactSelect Error
+          </p>
+        )}
       </div>
 
       {data && (
@@ -121,6 +165,8 @@ export default function Field() {
           <pre>{JSON.stringify(data, null, 2)}</pre>
         </p>
       )}
+
+      <span className="counter">{renderCount}</span>
 
       <button
         type="button"

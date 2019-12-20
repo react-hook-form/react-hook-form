@@ -49,7 +49,7 @@ const Controller = ({
   },
   ...rest
 }: Props) => {
-  const [value, setInputState] = React.useState(
+  const [value, setInputStateValue] = React.useState(
     isUndefined(defaultValues[name]) ? '' : defaultValues[name],
   );
   const valueRef = React.useRef(value);
@@ -68,7 +68,7 @@ const Controller = ({
 
   const commonTask = (target: any) => {
     const data = getValue(target, isCheckboxInput);
-    setInputState(data);
+    setInputStateValue(data);
     valueRef.current = data;
     return data;
   };
@@ -100,7 +100,7 @@ const Controller = ({
         'value',
         {
           set(data) {
-            setInputState(data);
+            setInputStateValue(data);
             valueRef.current = data;
           },
           get() {
@@ -112,7 +112,7 @@ const Controller = ({
     );
 
     return (): void => unregister(name);
-  }, [register, unregister, name]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, []);
 
   const props = {
     ...(onChange
@@ -133,8 +133,7 @@ const Controller = ({
           }
         : { onBlur: handleBlur }
       : {}),
-    ...(isCheckboxInput ? { checked: value } : {}),
-    value,
+    ...(isCheckboxInput ? { checked: value } : { value }),
     ...rest,
   };
 
