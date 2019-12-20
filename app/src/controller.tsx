@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import ReactSelect from 'react-select';
 import {
@@ -34,16 +34,16 @@ const errorStyle = {
   color: 'red',
 };
 
-export default function Field() {
-  const methods = useForm({ defaultValues });
-  const [data, setData] = useState<any>(null);
-  const { handleSubmit, errors, register, reset, control } = methods;
+export default function Field(props: any) {
+  const methods = useForm({ defaultValues, mode: props.match.params.mode });
+  const { handleSubmit, errors, reset, control } = methods;
+
   renderCount++;
 
   return (
-    <form onSubmit={handleSubmit(data => setData(data))}>
+    <form onSubmit={handleSubmit(() => {})}>
       <div className="container">
-        <section>
+        <section id="input-checkbox">
           <label>MUI Checkbox</label>
           <Controller
             as={<Checkbox />}
@@ -54,12 +54,12 @@ export default function Field() {
         </section>
 
         {errors.Checkbox && (
-          <p id={'checkbox'} style={errorStyle}>
-            TextField Error
+          <p id={'Checkbox'} style={errorStyle}>
+            Checkbox Error
           </p>
         )}
 
-        <section>
+        <section id="input-radio-group">
           <label>Radio Group</label>
           <Controller
             as={
@@ -88,7 +88,7 @@ export default function Field() {
           </p>
         )}
 
-        <section>
+        <section id="input-textField">
           <label>MUI TextField</label>
           <Controller
             as={<TextField />}
@@ -100,11 +100,11 @@ export default function Field() {
 
         {errors.TextField && (
           <p id="TextField" style={errorStyle}>
-            Checkbox Error
+            TextField Error
           </p>
         )}
 
-        <section>
+        <section id="input-select">
           <label>MUI Select</label>
           <Controller
             as={
@@ -126,7 +126,7 @@ export default function Field() {
           </p>
         )}
 
-        <section>
+        <section id="input-switch">
           <label>MUI Switch</label>
           <Controller
             as={<Switch value="checkedA" />}
@@ -142,7 +142,7 @@ export default function Field() {
           </p>
         )}
 
-        <section>
+        <section id="input-ReactSelect">
           <label>React Select</label>
           <Controller
             as={<ReactSelect isClearable options={options} />}
@@ -160,13 +160,7 @@ export default function Field() {
         )}
       </div>
 
-      {data && (
-        <p style={{ textAlign: 'left' }}>
-          <pre>{JSON.stringify(data, null, 2)}</pre>
-        </p>
-      )}
-
-      <span className="counter">{renderCount}</span>
+      <span id="renderCount">{renderCount}</span>
 
       <button
         type="button"
@@ -184,7 +178,7 @@ export default function Field() {
       >
         Reset Form
       </button>
-      <button>submit</button>
+      <button id="submit">submit</button>
     </form>
   );
 }

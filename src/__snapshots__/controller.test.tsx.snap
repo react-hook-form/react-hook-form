@@ -1,0 +1,9 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`React Hook Form Input should render correctly 1`] = `
+<DocumentFragment>
+  <input
+    value=""
+  />
+</DocumentFragment>
+`;

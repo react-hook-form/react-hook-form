@@ -30,7 +30,7 @@ const App: React.FC = () => {
         exact
         component={ValidateFieldCriteria}
       />
-      <Route path="/controller" exact component={Controller} />
+      <Route path="/controller/:mode" exact component={Controller} />
       <Route
         path="/re-validate-mode/:mode/:reValidateMode"
         exact
