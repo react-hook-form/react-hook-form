@@ -1,6 +1,14 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`React Hook Form Input should render correctly 1`] = `
+exports[`React Hook Form Input should render correctly with as with component 1`] = `
+<DocumentFragment>
+  <input
+    value=""
+  />
+</DocumentFragment>
+`;
+
+exports[`React Hook Form Input should render correctly with as with string 1`] = `
 <DocumentFragment>
   <input
     value=""

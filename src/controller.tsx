@@ -1,6 +1,7 @@
 import * as React from 'react';
 import isBoolean from './utils/isBoolean';
 import isUndefined from './utils/isUndefined';
+import getInputValue from './logic/getInputValue';
 import skipValidation from './logic/skipValidation';
 import { EVENTS, VALIDATION_MODE } from './constants';
 import { Mode, ValidationOptions } from './types';
@@ -18,16 +19,6 @@ export type Props = {
   onBlurName?: string;
   control: any;
 };
-
-function getValue(target: any, isCheckbox: boolean) {
-  return isCheckbox
-    ? isUndefined(target.checked)
-      ? target
-      : target.checked
-    : isUndefined(target.value)
-    ? target
-    : target.value;
-}
 
 const Controller = ({
   name,
@@ -67,16 +58,16 @@ const Controller = ({
     });
 
   const commonTask = (target: any) => {
-    const data = getValue(target, isCheckboxInput);
+    const data = getInputValue(target, isCheckboxInput);
     setInputStateValue(data);
     valueRef.current = data;
     return data;
   };
 
-  const eventWrapper = (event: EventFunction, eventName: string) => async (
+  const eventWrapper = (event: EventFunction, eventName: string) => (
     ...arg: any
   ) => {
-    const data = commonTask(await event(arg));
+    const data = commonTask(event(arg));
     const isBlurEvent = eventName === EVENTS.BLUR;
     setValue(name, data, shouldValidate(isBlurEvent));
   };

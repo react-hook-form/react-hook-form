@@ -42,14 +42,14 @@
   "author": "<bluebill1049@hotmail.com>",
   "license": "MIT",
   "devDependencies": {
-    "@testing-library/react": "^9.3.2",
+    "@testing-library/react": "^9.4.0",
     "@testing-library/react-hooks": "^3.2.1",
-    "@types/jest": "^24.0.23",
-    "@types/react": "^16.9.15",
+    "@types/jest": "^24.0.24",
+    "@types/react": "^16.9.17",
     "@types/react-dom": "^16.9.4",
     "@types/react-test-renderer": "^16.9.0",
-    "@typescript-eslint/eslint-plugin": "^2.10.0",
-    "@typescript-eslint/parser": "^2.10.0",
+    "@typescript-eslint/eslint-plugin": "^2.12.0",
+    "@typescript-eslint/parser": "^2.12.0",
     "bundlesize": "^0.18.0",
     "coveralls": "^3.0.3",
     "cypress": "^3.7.0",
@@ -68,7 +68,7 @@
     "rollup-plugin-terser": "^5.1.1",
     "rollup-plugin-typescript2": "^0.24.0",
     "ts-jest": "^24.2.0",
-    "typescript": "^3.7.3"
+    "typescript": "^3.7.4"
   },
   "bundlesize": [
     {
