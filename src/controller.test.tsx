@@ -10,6 +10,7 @@ describe('React Hook Form Input', () => {
         as="input"
         control={{
           defaultValues: {},
+          fields: {},
           setValue: jest.fn(),
           register: jest.fn(),
           unregister: jest.fn(),
@@ -34,6 +35,7 @@ describe('React Hook Form Input', () => {
         as={<input />}
         control={{
           defaultValues: {},
+          fields: {},
           setValue: jest.fn(),
           register: jest.fn(),
           unregister: jest.fn(),
@@ -60,6 +62,7 @@ describe('React Hook Form Input', () => {
         as={<input placeholder="test" />}
         control={{
           defaultValues: {},
+          fields: {},
           setValue,
           register: jest.fn(),
           unregister: jest.fn(),
@@ -92,6 +95,7 @@ describe('React Hook Form Input', () => {
         as={<input placeholder="test" />}
         control={{
           defaultValues: {},
+          fields: {},
           setValue,
           register: jest.fn(),
           unregister: jest.fn(),
@@ -126,6 +130,7 @@ describe('React Hook Form Input', () => {
         control={{
           defaultValues: {},
           setValue,
+          fields: {},
           register: jest.fn(),
           unregister: jest.fn(),
           errors: {},
@@ -161,6 +166,7 @@ describe('React Hook Form Input', () => {
         onChange={onChange}
         control={{
           defaultValues: {},
+          fields: {},
           setValue,
           register: jest.fn(),
           unregister: jest.fn(),
@@ -194,6 +200,7 @@ describe('React Hook Form Input', () => {
           defaultValues: {
             test: 'data',
           },
+          fields: {},
           setValue: jest.fn(),
           register: jest.fn(),
           unregister: jest.fn(),
