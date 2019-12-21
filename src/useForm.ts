@@ -311,28 +311,31 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
     [reRender, renderBaseOnError, validateAllFieldCriteria, validationSchema],
   );
 
-  const triggerValidation = async (
-    payload?: FieldName<FormValues> | FieldName<FormValues>[] | string,
-    shouldRender?: boolean,
-  ): Promise<boolean> => {
-    const fields = payload || Object.keys(fieldsRef.current);
+  const triggerValidation = useCallback(
+    async (
+      payload?: FieldName<FormValues> | FieldName<FormValues>[] | string,
+      shouldRender?: boolean,
+    ): Promise<boolean> => {
+      const fields = payload || Object.keys(fieldsRef.current);
 
-    if (validationSchema) {
-      return executeSchemaValidation(fields, shouldRender);
-    }
+      if (validationSchema) {
+        return executeSchemaValidation(fields, shouldRender);
+      }
 
-    if (isArray(fields)) {
-      const result = await Promise.all(
-        (fields as []).map(
-          async data => await executeValidation(data, false, true),
-        ),
-      );
-      reRender();
-      return result.every(Boolean);
-    }
+      if (isArray(fields)) {
+        const result = await Promise.all(
+          (fields as []).map(
+            async data => await executeValidation(data, false, true),
+          ),
+        );
+        reRender();
+        return result.every(Boolean);
+      }
 
-    return await executeValidation(fields, shouldRender);
-  };
+      return await executeValidation(fields, shouldRender);
+    },
+    [executeSchemaValidation, executeValidation, reRender, validationSchema],
+  );
 
   const setValue = useCallback<
     <Name extends FieldName<FormValues>>(
@@ -1036,12 +1039,7 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
     control,
     handleSubmit,
     setValue,
-    triggerValidation: useCallback(triggerValidation, [
-      executeSchemaValidation,
-      executeValidation,
-      reRender,
-      validationSchema,
-    ]),
+    triggerValidation,
     getValues: useCallback(getValues, [defaultValues]),
     reset: useCallback(reset, [reRender]),
     register: useCallback(register, [
