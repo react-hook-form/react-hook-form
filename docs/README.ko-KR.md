@@ -37,7 +37,7 @@
 - 제어되지 않는 양식 검증
 - 의존성 없는 [작은 용량](https://bundlephobia.com/result?p=react-hook-form@latest)
 - HTML 표준을 따르는 검증
-- Reative Native 와 호환
+- React Native 와 호환
 - [Yup](https://github.com/jquense/yup) 스키마 기반의 검증 지원
 - 브라우저 네이티브 검증 지원
 - [Form Builder](https://react-hook-form.com/form-builder)로 폼 빠르게 생성
