@@ -311,56 +311,48 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
     [reRender, renderBaseOnError, validateAllFieldCriteria, validationSchema],
   );
 
-  const triggerValidation = useCallback(
-    async (
-      payload?: FieldName<FormValues> | FieldName<FormValues>[] | string,
-      shouldRender?: boolean,
-    ): Promise<boolean> => {
-      const fields = payload || Object.keys(fieldsRef.current);
+  const triggerValidation = async (
+    payload?: FieldName<FormValues> | FieldName<FormValues>[] | string,
+    shouldRender?: boolean,
+  ): Promise<boolean> => {
+    const fields = payload || Object.keys(fieldsRef.current);
 
-      if (validationSchema) {
-        return executeSchemaValidation(fields, shouldRender);
-      }
+    if (validationSchema) {
+      return executeSchemaValidation(fields, shouldRender);
+    }
 
-      if (isArray(fields)) {
-        const result = await Promise.all(
-          (fields as []).map(
-            async data => await executeValidation(data, false, true),
-          ),
-        );
-        reRender();
-        return result.every(Boolean);
-      }
+    if (isArray(fields)) {
+      const result = await Promise.all(
+        (fields as []).map(
+          async data => await executeValidation(data, false, true),
+        ),
+      );
+      reRender();
+      return result.every(Boolean);
+    }
 
-      return await executeValidation(fields, shouldRender);
-    },
-    [executeSchemaValidation, executeValidation, reRender, validationSchema],
-  );
+    return await executeValidation(fields, shouldRender);
+  };
 
-  const setValue = useCallback<
-    <Name extends FieldName<FormValues>>(
-      name: Name,
-      value: FormValues[Name],
-      shouldValidate?: boolean,
-    ) => void | Promise<boolean>
-  >(
-    (name, value, shouldValidate) => {
-      const shouldRender =
-        setInternalValue(name, value) ||
-        isWatchAllRef.current ||
-        watchFieldsRef.current.has(name);
+  const setValue = <Name extends FieldName<FormValues>>(
+    name: Name,
+    value: FormValues[Name],
+    shouldValidate?: boolean,
+  ): void | Promise<boolean> => {
+    const shouldRender =
+      setInternalValue(name, value) ||
+      isWatchAllRef.current ||
+      watchFieldsRef.current.has(name);
 
-      if (shouldValidate) {
-        return triggerValidation(name, shouldRender);
-      }
+    if (shouldValidate) {
+      return triggerValidation(name, shouldRender);
+    }
 
-      if (shouldRender) {
-        reRender();
-      }
-      return;
-    },
-    [reRender, setInternalValue, triggerValidation],
-  );
+    if (shouldRender) {
+      reRender();
+    }
+    return;
+  };
 
   handleChangeRef.current = handleChangeRef.current
     ? handleChangeRef.current
@@ -955,42 +947,36 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
     submitCountRef.current = 0;
   };
 
-  const reset = useCallback(
-    (values?: Partial<FormValues>): void => {
-      const fieldsKeyValue = Object.entries(fieldsRef.current);
+  const reset = (values?: Partial<FormValues>): void => {
+    const fieldsKeyValue = Object.entries(fieldsRef.current);
 
-      for (const [, value] of fieldsKeyValue) {
-        if (value && value.ref && value.ref.closest) {
-          try {
-            value.ref.closest('form').reset();
-            break;
-          } catch {}
-        }
+    for (const [, value] of fieldsKeyValue) {
+      if (value && value.ref && value.ref.closest) {
+        try {
+          value.ref.closest('form').reset();
+          break;
+        } catch {}
       }
+    }
 
-      resetRefs();
+    resetRefs();
 
-      if (values) {
-        defaultValuesRef.current = values;
-      }
+    if (values) {
+      defaultValuesRef.current = values;
+    }
 
-      reRender();
-    },
-    [reRender],
-  );
+    reRender();
+  };
 
-  const getValues = useCallback(
-    (payload?: { nest: boolean }): FormValues => {
-      const fieldValues = getFieldsValues(fieldsRef.current);
-      const outputValues = isEmptyObject(fieldValues)
-        ? defaultValues
-        : fieldValues;
-      return payload && payload.nest
-        ? transformToNestObject(outputValues)
-        : outputValues;
-    },
-    [defaultValues],
-  );
+  const getValues = (payload?: { nest: boolean }): FormValues => {
+    const fieldValues = getFieldsValues(fieldsRef.current);
+    const outputValues = isEmptyObject(fieldValues)
+      ? defaultValues
+      : fieldValues;
+    return payload && payload.nest
+      ? transformToNestObject(outputValues)
+      : outputValues;
+  };
 
   useEffect(
     () => () => {
@@ -1043,10 +1029,19 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
     watch,
     control,
     handleSubmit,
-    reset,
-    setValue,
-    triggerValidation,
-    getValues,
+    setValue: useCallback(setValue, [
+      reRender,
+      setInternalValue,
+      triggerValidation,
+    ]),
+    triggerValidation: useCallback(triggerValidation, [
+      executeSchemaValidation,
+      executeValidation,
+      reRender,
+      validationSchema,
+    ]),
+    getValues: useCallback(getValues, [defaultValues]),
+    reset: useCallback(reset, [reRender]),
     register: useCallback(register, [
       defaultRenderValuesRef.current,
       defaultValuesRef.current,
