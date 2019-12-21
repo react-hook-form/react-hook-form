@@ -30,6 +30,7 @@ const Controller = ({
   onBlurName,
   control: {
     defaultValues,
+    fields,
     setValue,
     register,
     unregister,
@@ -82,7 +83,7 @@ const Controller = ({
     setValue(name, data, shouldValidate(true));
   };
 
-  React.useEffect(() => {
+  const registerField = () =>
     register(
       Object.defineProperty(
         {
@@ -102,8 +103,11 @@ const Controller = ({
       { ...rules },
     );
 
-    return (): void => unregister(name);
-  }, []);
+  if (!fields[name]) {
+    registerField();
+  }
+
+  React.useEffect(() => () => unregister(name), []);
 
   const props = {
     ...(onChange

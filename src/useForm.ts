@@ -1023,6 +1023,7 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
     },
     errors: errorsRef.current,
     defaultValues: defaultValuesRef.current,
+    fields: fieldsRef.current,
   };
 
   return {
