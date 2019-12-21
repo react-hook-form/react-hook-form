@@ -184,4 +184,30 @@ describe('React Hook Form Input', () => {
     expect(setValue).toBeCalled();
     expect(onChange).toBeCalled();
   });
+
+  it('should support default value from hook form', () => {
+    const { asFragment } = render(
+      <Controller
+        name="test"
+        as="input"
+        control={{
+          defaultValues: {
+            test: 'data',
+          },
+          setValue: jest.fn(),
+          register: jest.fn(),
+          unregister: jest.fn(),
+          errors: {},
+          mode: { isOnSubmit: false, isOnBlur: false },
+          reValidateMode: {
+            isReValidateOnBlur: false,
+            isReValidateOnSubmit: false,
+          },
+          formState: { isSubmitted: false },
+        }}
+      />,
+    );
+
+    expect(asFragment()).toMatchSnapshot();
+  });
 });

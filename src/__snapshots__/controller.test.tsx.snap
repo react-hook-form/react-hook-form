@@ -15,3 +15,11 @@ exports[`React Hook Form Input should render correctly with as with string 1`] =
   />
 </DocumentFragment>
 `;
+
+exports[`React Hook Form Input should support default value from hook form 1`] = `
+<DocumentFragment>
+  <input
+    value="data"
+  />
+</DocumentFragment>
+`;
