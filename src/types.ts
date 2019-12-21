@@ -129,16 +129,13 @@ export interface FormStateProxy<FormValues extends FieldValues = FieldValues> {
 
 export type ReadFormState = { [P in keyof FormStateProxy]: boolean };
 
-export interface NameProp {
-  name: string;
-}
-
 export interface RadioOrCheckboxOption {
   ref?: Ref;
   mutationWatcher?: MutationWatcher;
 }
 
-export interface ElementLike extends NameProp {
+export interface ElementLike {
+  name: string;
   type?: string;
   value?: string;
   checked?: boolean;
