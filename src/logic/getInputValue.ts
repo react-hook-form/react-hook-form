@@ -1,6 +1,6 @@
 import isUndefined from '../utils/isUndefined';
 
-export default function getValue(target: any, isCheckbox: boolean) {
+export default (target: any, isCheckbox: boolean) => {
   return isCheckbox
     ? isUndefined(target.checked)
       ? target
@@ -8,4 +8,4 @@ export default function getValue(target: any, isCheckbox: boolean) {
     : isUndefined(target.value)
     ? target
     : target.value;
-}
+};
