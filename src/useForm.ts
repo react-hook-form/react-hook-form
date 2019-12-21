@@ -334,25 +334,30 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
     return await executeValidation(fields, shouldRender);
   };
 
-  const setValue = <Name extends FieldName<FormValues>>(
-    name: Name,
-    value: FormValues[Name],
-    shouldValidate?: boolean,
-  ): void | Promise<boolean> => {
-    const shouldRender =
-      setInternalValue(name, value) ||
-      isWatchAllRef.current ||
-      watchFieldsRef.current.has(name);
+  const setValue = useCallback<
+    <Name extends FieldName<FormValues>>(
+      name: Name,
+      value: FormValues[Name],
+      shouldValidate?: boolean,
+    ) => void | Promise<boolean>
+  >(
+    (name, value, shouldValidate) => {
+      const shouldRender =
+        setInternalValue(name, value) ||
+        isWatchAllRef.current ||
+        watchFieldsRef.current.has(name);
 
-    if (shouldValidate) {
-      return triggerValidation(name, shouldRender);
-    }
+      if (shouldValidate) {
+        return triggerValidation(name, shouldRender);
+      }
 
-    if (shouldRender) {
-      reRender();
-    }
-    return;
-  };
+      if (shouldRender) {
+        reRender();
+      }
+      return;
+    },
+    [reRender, setInternalValue, triggerValidation],
+  );
 
   handleChangeRef.current = handleChangeRef.current
     ? handleChangeRef.current
@@ -1030,11 +1035,7 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
     watch,
     control,
     handleSubmit,
-    setValue: useCallback(setValue, [
-      reRender,
-      setInternalValue,
-      triggerValidation,
-    ]),
+    setValue,
     triggerValidation: useCallback(triggerValidation, [
       executeSchemaValidation,
       executeValidation,
