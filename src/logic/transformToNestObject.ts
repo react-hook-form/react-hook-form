@@ -1,12 +1,13 @@
 import set from '../utils/set';
 import isObjectString from '../utils/isObjectString';
 import isArray from '../utils/isArray';
+import isNullOrUndefined from '../utils/isNullOrUndefined';
 import { FieldValues } from '../types';
 
 const filterArray = (target: any) => {
   for (const key in target) {
     if (isArray(target[key])) {
-      target[key] = target[key].filter(Boolean);
+      target[key] = target[key].filter((data: any) => !isNullOrUndefined(data));
       filterArray(target[key]);
     }
   }
