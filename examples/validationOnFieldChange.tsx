@@ -1,6 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import useForm from 'react-hook-form';
+import { useForm } From 'react-hook-form';
 
 function App() {
   const { register, errors, handleSubmit } = useForm({

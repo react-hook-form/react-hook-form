@@ -1,6 +1,6 @@
 import React from "react";
 import ReactDOM from "react-dom";
-import useForm, { FormContext, useFormContext } from "react-hook-form";
+import { useForm, FormContext, useFormContext } from "react-hook-form";
 
 import "./styles.css";
 

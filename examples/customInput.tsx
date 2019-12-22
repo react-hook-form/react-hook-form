@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import ReactDOM from "react-dom";
-import useForm from "react-hook-form";
+import { useForm } From 'react-hook-form';
 import Input from "@material-ui/core/Input";
 import Select from "react-select";
 import { Input as StrapInput } from "reactstrap";
