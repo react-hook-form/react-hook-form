@@ -69,4 +69,15 @@ describe('transformToNestObject', () => {
       }),
     ).toMatchSnapshot();
   });
+
+  it('should omit any undefined value in array', () => {
+    expect(
+      transformToNestObject({
+        'email[1]': 'asdasd@dsad.com',
+        'email[2]': 'asdasd@.com',
+      }),
+    ).toEqual({
+      email: ['asdasd@dsad.com', 'asdasd@.com'],
+    });
+  });
 });
