@@ -27,6 +27,7 @@ import isMultipleSelect from './utils/isMultipleSelect';
 import modeChecker from './utils/validationModeChecker';
 import isNullOrUndefined from './utils/isNullOrUndefined';
 import { EVENTS, UNDEFINED, VALIDATION_MODE } from './constants';
+import { FormContextValues } from './contextTypes';
 import {
   FieldValues,
   FieldName,
@@ -56,7 +57,7 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
   defaultValues = {},
   submitFocusError = true,
   validateCriteriaMode,
-}: UseFormOptions<FormValues> = {}) {
+}: UseFormOptions<FormValues> = {}): FormContextValues<FormValues> {
   const fieldsRef = useRef<FieldRefs<FormValues>>({});
   const validateAllFieldCriteria = validateCriteriaMode === 'all';
   const errorsRef = useRef<FieldErrors<FormValues>>({});
