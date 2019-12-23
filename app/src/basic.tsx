@@ -20,7 +20,6 @@ const Basic: React.FC = (props: any) => {
     checkboxArray: string[];
     multiple: string;
     validate: string;
-    control: string;
     nestItem: {
       nest1: string;
     };
@@ -34,7 +33,6 @@ const Basic: React.FC = (props: any) => {
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
-      {errors.control && <p>control error</p>}
       <input
         name="nestItem.nest1"
         placeholder="nest.nest1"

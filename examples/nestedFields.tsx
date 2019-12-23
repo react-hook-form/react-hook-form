@@ -1,6 +1,6 @@
 import React from "react";
 import ReactDOM from "react-dom";
-import { useForm } From 'react-hook-form';
+import { useForm } from 'react-hook-form';
 import FormSection1 from "./formSection1";
 import FormSection2 from "./formSection2";
 

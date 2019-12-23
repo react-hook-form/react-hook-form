@@ -30,12 +30,21 @@ const defaultValues = {
   RadioGroup: '',
 };
 
-const errorStyle = {
-  color: 'red',
+type Form = {
+  Native: string;
+  TextField: string;
+  Select: string;
+  ReactSelect: string;
+  Checkbox: boolean;
+  switch: boolean;
+  RadioGroup: string;
 };
 
 export default function Field(props: any) {
-  const methods = useForm({ defaultValues, mode: props.match.params.mode });
+  const methods = useForm<Form>({
+    defaultValues,
+    mode: props.match.params.mode,
+  });
   const { handleSubmit, errors, reset, control } = methods;
 
   renderCount++;
@@ -53,11 +62,7 @@ export default function Field(props: any) {
           />
         </section>
 
-        {errors.Checkbox && (
-          <p id={'Checkbox'} style={errorStyle}>
-            Checkbox Error
-          </p>
-        )}
+        {errors.Checkbox && <p id={'Checkbox'}>Checkbox Error</p>}
 
         <section id="input-radio-group">
           <label>Radio Group</label>
@@ -82,11 +87,7 @@ export default function Field(props: any) {
           />
         </section>
 
-        {errors.RadioGroup && (
-          <p id={'RadioGroup'} style={errorStyle}>
-            RadioGroup Error
-          </p>
-        )}
+        {errors.RadioGroup && <p id={'RadioGroup'}>RadioGroup Error</p>}
 
         <section id="input-textField">
           <label>MUI TextField</label>
@@ -98,11 +99,7 @@ export default function Field(props: any) {
           />
         </section>
 
-        {errors.TextField && (
-          <p id="TextField" style={errorStyle}>
-            TextField Error
-          </p>
-        )}
+        {errors.TextField && <p id="TextField">TextField Error</p>}
 
         <section id="input-select">
           <label>MUI Select</label>
@@ -120,11 +117,7 @@ export default function Field(props: any) {
           />
         </section>
 
-        {errors.Select && (
-          <p id="Select" style={errorStyle}>
-            Select Error
-          </p>
-        )}
+        {errors.Select && <p id="Select">Select Error</p>}
 
         <section id="input-switch">
           <label>MUI Switch</label>
@@ -136,11 +129,7 @@ export default function Field(props: any) {
           />
         </section>
 
-        {errors.switch && (
-          <p id="switch" style={errorStyle}>
-            switch Error
-          </p>
-        )}
+        {errors.switch && <p id="switch">switch Error</p>}
 
         <section id="input-ReactSelect">
           <label>React Select</label>
@@ -153,11 +142,7 @@ export default function Field(props: any) {
           />
         </section>
 
-        {errors.ReactSelect && (
-          <p id="ReactSelect" style={errorStyle}>
-            ReactSelect Error
-          </p>
-        )}
+        {errors.ReactSelect && <p id="ReactSelect">ReactSelect Error</p>}
       </div>
 
       <span id="renderCount">{renderCount}</span>

@@ -54,7 +54,7 @@ const SetValueCustomRegister: React.FC = () => {
       </button>
 
       <div id="dirty">{formState.dirty.toString()}</div>
-      <div id="touched">{[...formState.touched].map(touch => touch)}</div>
+      <div id="touched">{formState.touched.map(touch => touch)}</div>
       <div id="renderCount">{renderCounter}</div>
     </form>
   );
