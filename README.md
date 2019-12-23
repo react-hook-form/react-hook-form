@@ -34,7 +34,8 @@
 ## Features
 
 - Built with performance and DX in mind
-- Uncontrolled form validation
+- Embrace uncontrolled form validation
+- Improve controlled form's performance
 - [Tiny size](https://bundlephobia.com/result?p=react-hook-form@latest) without any dependency
 - Follows HTML standard for validation
 - Compatible with React Native
@@ -72,10 +73,13 @@ function App() {
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
       <input name="firstname" ref={register} /> {/* register an input */}
+
       <input name="lastname" ref={register({ required: true })} />
       {errors.lastname && 'Last name is required.'}
+
       <input name="age" ref={register({ pattern: /\d+/ })} />
       {errors.age && 'Please enter number for age.'}
+
       <input type="submit" />
     </form>
   );

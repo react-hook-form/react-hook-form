@@ -1,6 +1,7 @@
 import appendErrors from './appendErrors';
 import isArray from '../utils/isArray';
 import { FieldValues, SchemaValidateOptions, FieldErrors } from '../types';
+import transformToNestObject from './transformToNestObject';
 
 interface SchemaValidationResult<FormValues> {
   errors: FieldErrors<FormValues>;
@@ -37,7 +38,7 @@ export const parseErrorSchema = <FormValues>(
                 ),
               }
             : {
-                [path]: {
+                [path]: previous[path] || {
                   message,
                   type,
                   ...(validateAllFieldCriteria
@@ -56,19 +57,20 @@ export const parseErrorSchema = <FormValues>(
 
 export default async function validateWithSchema<FormValues>(
   validationSchema: Schema<FormValues>,
-  validationSchemaOption: SchemaValidateOptions,
   validateAllFieldCriteria: boolean,
   data: FieldValues,
 ): Promise<SchemaValidationResult<FormValues>> {
   try {
     return {
-      values: await validationSchema.validate(data, validationSchemaOption),
+      values: await validationSchema.validate(data, { abortEarly: false }),
       errors: {},
     };
   } catch (e) {
     return {
       values: {},
-      errors: parseErrorSchema<FormValues>(e, validateAllFieldCriteria),
+      errors: transformToNestObject(
+        parseErrorSchema<FormValues>(e, validateAllFieldCriteria),
+      ),
     };
   }
 }

@@ -1,10 +1,8 @@
-import React from "react";
-import ReactDOM from "react-dom";
-import useForm from "react-hook-form";
-import FormSection1 from "./formSection1";
-import FormSection2 from "./formSection2";
-
-import "./styles.css";
+import React from 'react';
+import ReactDOM from 'react-dom';
+import { useForm } from 'react-hook-form';
+import FormSection1 from './formSection1';
+import FormSection2 from './formSection2';
 
 export default function Section1({ register }) {
   return (
@@ -39,7 +37,7 @@ export default function formSection2({ register }) {
           name="Email"
           ref={register({
             required: true,
-            pattern: /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
+            pattern: /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/,
           })}
         />
       </div>
@@ -80,7 +78,7 @@ export default function formSection2({ register }) {
   );
 }
 
-export default function Form() {
+export default function App() {
   const { register, errors, handleSubmit } = useForm();
   const onSubmit = data => {
     alert(JSON.stringify(data));
@@ -95,6 +93,3 @@ export default function Form() {
     </form>
   );
 }
-
-const rootElement = document.getElementById("root");
-ReactDOM.render(<Form />, rootElement);

@@ -1,8 +1,8 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import useForm from 'react-hook-form';
+import { useForm } from 'react-hook-form';
 
-function App() {
+export default function App() {
   const { register, watch, handleSubmit } = useForm();
   const onSubmit = data => {
     alert(JSON.stringify(data));
@@ -25,7 +25,12 @@ function App() {
 
         <div>
           <label htmlFor="email">Email</label>
-          <input name="email" placeholder="bluebill1049@hotmail.com" type="email" ref={register} />
+          <input
+            name="email"
+            placeholder="bluebill1049@hotmail.com"
+            type="email"
+            ref={register}
+          />
         </div>
 
         <div>
@@ -44,6 +49,3 @@ function App() {
     </div>
   );
 }
-
-const rootElement = document.getElementById('root');
-ReactDOM.render(<App />, rootElement);

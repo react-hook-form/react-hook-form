@@ -1,19 +1,16 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`combineFieldValues should combine all the array fields 1`] = `
+exports[`transformToNestObject should combine all the array fields 1`] = `
 Object {
   "email": Array [
-    undefined,
     "asdasd@dsad.com",
     "asdasd@.com",
   ],
   "firstName": Array [
-    undefined,
     "asdasd",
     "asdasd",
   ],
   "lastName": Array [
-    undefined,
     "asdasd",
     "asd",
   ],
@@ -21,7 +18,7 @@ Object {
 }
 `;
 
-exports[`combineFieldValues should combine array object correctly 1`] = `
+exports[`transformToNestObject should combine array object correctly 1`] = `
 Object {
   "name": Array [
     Object {
@@ -30,7 +27,6 @@ Object {
     },
   ],
   "test": Array [
-    undefined,
     Object {
       "task": "testLast",
       "what": "testLast",
@@ -47,7 +43,7 @@ Object {
 }
 `;
 
-exports[`combineFieldValues should combine object correctly 1`] = `
+exports[`transformToNestObject should combine object correctly 1`] = `
 Object {
   "name": Object {
     "firstName": "testFirst",
@@ -60,7 +56,7 @@ Object {
 }
 `;
 
-exports[`combineFieldValues should combine with results 1`] = `
+exports[`transformToNestObject should combine with results 1`] = `
 Object {
   "name": "testFirst",
   "name1": "testFirst",
@@ -68,7 +64,7 @@ Object {
 }
 `;
 
-exports[`combineFieldValues should handle quoted values 1`] = `
+exports[`transformToNestObject should handle quoted values 1`] = `
 Object {
   "name": Object {
     "foobar": "testFirst",
@@ -76,7 +72,7 @@ Object {
 }
 `;
 
-exports[`combineFieldValues should handle quoted values 2`] = `
+exports[`transformToNestObject should handle quoted values 2`] = `
 Object {
   "name": Object {
     "b2ill": "testFirst",
@@ -84,7 +80,7 @@ Object {
 }
 `;
 
-exports[`combineFieldValues should return default name value 1`] = `
+exports[`transformToNestObject should return default name value 1`] = `
 Object {
   "name": "testFirst",
 }

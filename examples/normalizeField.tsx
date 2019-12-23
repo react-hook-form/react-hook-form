@@ -1,8 +1,8 @@
-import React from "react";
-import ReactDOM from "react-dom";
-import useForm from "react-hook-form";
+import React from 'react';
+import ReactDOM from 'react-dom';
+import { useForm } from 'react-hook-form';
 
-function App() {
+export default function App() {
   const { register, handleSubmit } = useForm();
   const onSubmit = data => {
     alert(JSON.stringify(data));
@@ -46,9 +46,9 @@ function App() {
             onChange={e => {
               const value = e.target.value;
               if (value.match(/^\d{2}$/) !== null) {
-                e.target.value = value + "/";
+                e.target.value = value + '/';
               } else if (value.match(/^\d{2}\/\d{2}$/) !== null) {
-                e.target.value = value + "/";
+                e.target.value = value + '/';
               }
             }}
             placeholder="12/12/1999"
@@ -70,6 +70,3 @@ function App() {
     </div>
   );
 }
-
-const rootElement = document.getElementById("root");
-ReactDOM.render(<App />, rootElement);

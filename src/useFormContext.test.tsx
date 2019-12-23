@@ -19,7 +19,7 @@ describe('FormContext', () => {
     const { register } = result.current;
 
     act(() => {
-      register({});
+      register('test');
     });
 
     expect(mockRegister).toHaveBeenCalled();

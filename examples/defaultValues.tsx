@@ -1,17 +1,15 @@
-import React from "react";
-import ReactDOM from "react-dom";
-import useForm from "react-hook-form";
+import React from 'react';
+import ReactDOM from 'react-dom';
+import { useForm } from 'react-hook-form';
 
-import "./styles.css";
-
-function App() {
+export default function App() {
   const { register, handleSubmit } = useForm({
     defaultValues: {
-      firstName: "bill",
-      lastName: "luo",
-      email: "test@test.com",
-      isDeveloper: true
-    }
+      firstName: 'bill',
+      lastName: 'luo',
+      email: 'test@test.com',
+      isDeveloper: true,
+    },
   });
   const onSubmit = data => {
     alert(JSON.stringify(data));
@@ -49,6 +47,3 @@ function App() {
     </div>
   );
 }
-
-const rootElement = document.getElementById("root");
-ReactDOM.render(<App />, rootElement);

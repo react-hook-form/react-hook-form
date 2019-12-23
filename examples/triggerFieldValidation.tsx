@@ -1,13 +1,11 @@
-import React from "react";
-import ReactDOM from "react-dom";
-import useForm from "react-hook-form";
+import React from 'react';
+import ReactDOM from 'react-dom';
+import { useForm } from 'react-hook-form';
 
-import "./styles.css";
-
-function App() {
+export default function App() {
   const { register, errors, triggerValidation } = useForm();
 
-  console.log("errors", errors);
+  console.log('errors', errors);
 
   return (
     <div className="App">
@@ -22,12 +20,12 @@ function App() {
         type="button"
         onClick={async () => {
           console.log(
-            "firstName",
-            await triggerValidation({ name: "firstName" })
+            'firstName',
+            await triggerValidation({ name: 'firstName' }),
           );
           console.log(
-            "lastName",
-            await triggerValidation({ name: "lastName", value: "test" })
+            'lastName',
+            await triggerValidation({ name: 'lastName', value: 'test' }),
           );
         }}
       >
@@ -36,6 +34,3 @@ function App() {
     </div>
   );
 }
-
-const rootElement = document.getElementById("root");
-ReactDOM.render(<App />, rootElement);

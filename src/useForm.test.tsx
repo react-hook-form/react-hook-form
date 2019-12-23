@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { renderHook, act } from '@testing-library/react-hooks';
-import useForm from './';
+import { useForm } from './';
 import attachEventListeners from './logic/attachEventListeners';
 import getFieldsValues from './logic/getFieldValues';
 import findRemovedFieldAndRemoveListener from './logic/findRemovedFieldAndRemoveListener';
@@ -15,7 +15,7 @@ jest.mock('./logic/validateField');
 jest.mock('./logic/attachEventListeners');
 jest.mock('./logic/getFieldValues');
 jest.mock('./logic/validateWithSchema');
-jest.mock('./logic/combineFieldValues', () => ({
+jest.mock('./logic/transformToNestObject', () => ({
   default: (data: any) => data,
   esmodule: true,
 }));
@@ -193,7 +193,7 @@ describe('useForm', () => {
       const { result } = renderHook(() => useForm<{ test: string }>());
 
       act(() => {
-        result.current.register({}, { name: 'test' });
+        result.current.register({ name: 'test' });
         result.current.setValue('test', '1');
       });
 
@@ -500,9 +500,7 @@ describe('useForm', () => {
     it('should return false when field is not found', async () => {
       const { result } = renderHook(() => useForm<{ test: string }>());
       await act(async () => {
-        expect(
-          await result.current.triggerValidation({ name: 'test' }),
-        ).toBeFalsy();
+        expect(await result.current.triggerValidation('test')).toBeFalsy();
       });
     });
 
@@ -518,11 +516,7 @@ describe('useForm', () => {
       });
 
       await act(async () => {
-        expect(
-          await result.current.triggerValidation({
-            name: 'test',
-          }),
-        ).toBeTruthy();
+        expect(await result.current.triggerValidation('test')).toBeTruthy();
       });
     });
 
@@ -545,45 +539,8 @@ describe('useForm', () => {
       });
 
       await act(async () => {
-        expect(
-          await result.current.triggerValidation({ name: 'test' }),
-        ).toBeTruthy();
+        expect(await result.current.triggerValidation('test')).toBeTruthy();
       });
-    });
-
-    it('should set value while trigger a validation', async () => {
-      const { result } = renderHook(() =>
-        useForm<{ test: string }>({
-          mode: VALIDATION_MODE.onChange,
-        }),
-      );
-
-      (validateField as any).mockImplementation(async () => {
-        return {};
-      });
-
-      act(() => {
-        result.current.register(
-          { type: 'input', name: 'test' },
-          { required: true },
-        );
-      });
-
-      await act(async () => {
-        await result.current.triggerValidation({ name: 'test', value: 'test' });
-      });
-
-      const callback = jest.fn(data => {
-        expect(data).toEqual({ test: 'test' });
-      });
-
-      await act(async () => {
-        await result.current.handleSubmit(callback)({
-          preventDefault: () => {},
-          persist: () => {},
-        } as React.SyntheticEvent);
-      });
-      expect(callback).toBeCalled();
     });
 
     it('should trigger multiple fields validation', async () => {
@@ -605,33 +562,28 @@ describe('useForm', () => {
       });
 
       await act(async () => {
-        await result.current.triggerValidation([
-          { name: 'test', value: 'test' },
-          { name: 'test1', value: 'test' },
-        ] as any);
+        await result.current.triggerValidation(['test', 'test1'] as any);
       });
 
       expect(validateField).toBeCalledWith(
         {
           current: {
-            test: { ref: { name: 'test', value: 'test' } },
-            test1: { ref: { name: 'test1', value: 'test' } },
+            test: { ref: { name: 'test' } },
+            test1: { ref: { name: 'test1' } },
           },
         },
         false,
-        false,
-        { ref: { name: 'test', value: 'test' } },
+        { ref: { name: 'test' } },
       );
       expect(validateField).toBeCalledWith(
         {
           current: {
-            test: { ref: { name: 'test', value: 'test' } },
-            test1: { ref: { name: 'test1', value: 'test' } },
+            test: { ref: { name: 'test' } },
+            test1: { ref: { name: 'test1' } },
           },
         },
         false,
-        false,
-        { ref: { name: 'test1', value: 'test' } },
+        { ref: { name: 'test1' } },
       );
     });
   });
@@ -664,7 +616,7 @@ describe('useForm', () => {
       });
 
       await act(async () => {
-        await result.current.triggerValidation({ name: 'test' });
+        await result.current.triggerValidation('test');
       });
       expect(result.current.errors).toEqual({ test: 'test' });
     });
@@ -700,9 +652,7 @@ describe('useForm', () => {
       });
 
       await act(async () => {
-        const resultFalse = await result.current.triggerValidation({
-          name: 'test2',
-        });
+        const resultFalse = await result.current.triggerValidation('test2');
         expect(resultFalse).toEqual(false);
       });
 
@@ -740,7 +690,7 @@ describe('useForm', () => {
       });
 
       await act(async () => {
-        await result.current.triggerValidation({ name: 'test' });
+        await result.current.triggerValidation('test');
       });
 
       expect(result.current.errors).toEqual({});
@@ -776,10 +726,7 @@ describe('useForm', () => {
       });
 
       await act(async () => {
-        await result.current.triggerValidation([
-          { name: 'test' },
-          { name: 'test1' },
-        ]);
+        await result.current.triggerValidation(['test', 'test1']);
       });
 
       expect(result.current.errors).toEqual({
@@ -824,14 +771,14 @@ describe('useForm', () => {
 
       await act(async () => {
         const resultTrue = await result.current.triggerValidation([
-          { name: 'test1' },
-          { name: 'test2' },
+          'test1',
+          'test2',
         ]);
         expect(resultTrue).toEqual(true);
 
         const resultFalse = await result.current.triggerValidation([
-          { name: 'test2' },
-          { name: 'test3' },
+          'test2',
+          'test3',
         ]);
         expect(resultFalse).toEqual(false);
       });

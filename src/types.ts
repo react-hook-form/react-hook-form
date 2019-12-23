@@ -46,7 +46,6 @@ export type UseFormOptions<
   defaultValues: Partial<FormValues>;
   validationSchemaOption: SchemaValidateOptions;
   validationSchema: any;
-  nativeValidation: boolean;
   submitFocusError: boolean;
   validateCriteriaMode: 'firstError' | 'all';
 }>;
@@ -104,18 +103,19 @@ export type FieldRefs<FormValues extends FieldValues> = Partial<
   Record<FieldName<FormValues>, Field>
 >;
 
-export type FieldErrors<FormValues extends FieldValues> = Partial<
-  Record<FieldName<FormValues>, FieldError>
->;
+export type FieldErrors<FormValues> = {
+  [Key in keyof FormValues]?: FormValues[Key] extends any[]
+    ? FormValues[Key][number] extends object
+      ? FieldErrors<FormValues[Key][number]>[]
+      : FieldError
+    : FormValues[Key] extends object
+    ? FieldErrors<FormValues[Key]>
+    : FieldError;
+};
 
 export interface SubmitPromiseResult<FormValues extends FieldValues> {
   errors: FieldErrors<FormValues>;
   values: FormValues;
-}
-
-export interface ValidationPayload<Name, Value> {
-  name: Name;
-  value?: Value;
 }
 
 export interface FormStateProxy<FormValues extends FieldValues = FieldValues> {
@@ -129,16 +129,13 @@ export interface FormStateProxy<FormValues extends FieldValues = FieldValues> {
 
 export type ReadFormState = { [P in keyof FormStateProxy]: boolean };
 
-export interface NameProp {
-  name: string;
-}
-
 export interface RadioOrCheckboxOption {
   ref?: Ref;
   mutationWatcher?: MutationWatcher;
 }
 
-export interface ElementLike extends NameProp {
+export interface ElementLike {
+  name: string;
   type?: string;
   value?: string;
   checked?: boolean;

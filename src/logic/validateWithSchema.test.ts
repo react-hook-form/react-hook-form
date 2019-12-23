@@ -59,7 +59,6 @@ describe('validateWithSchema', () => {
             throw errors;
           },
         },
-        { abortEarly: false },
         false,
         {},
       ),
@@ -72,7 +71,6 @@ describe('validateWithSchema', () => {
         {
           validate: () => new Promise(resolve => resolve()),
         },
-        { abortEarly: false },
         false,
         {},
       ),

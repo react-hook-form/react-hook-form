@@ -27,8 +27,8 @@ Object {
     "type": "required",
   },
   "name": Object {
-    "message": "name is a min field",
-    "type": "min",
+    "message": "name is a required field",
+    "type": "required",
   },
 }
 `;
@@ -41,8 +41,8 @@ Object {
       "type": "required",
     },
     "name": Object {
-      "message": "name is a min field",
-      "type": "min",
+      "message": "name is a required field",
+      "type": "required",
     },
   },
   "values": Object {},

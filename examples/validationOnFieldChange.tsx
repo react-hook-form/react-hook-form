@@ -1,8 +1,8 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import useForm from 'react-hook-form';
+import { useForm } from 'react-hook-form';
 
-function App() {
+export default function App() {
   const { register, errors, handleSubmit } = useForm({
     mode: 'onChange',
   });
@@ -15,13 +15,21 @@ function App() {
       <form onSubmit={handleSubmit(onSubmit)}>
         <div>
           <label htmlFor="firstName">First Name</label>
-          <input name="firstName" placeholder="bill" ref={register({ required: true })} />
+          <input
+            name="firstName"
+            placeholder="bill"
+            ref={register({ required: true })}
+          />
           {errors.firstName && 'This is required'}
         </div>
 
         <div>
           <label htmlFor="lastName">Last Name</label>
-          <input name="lastName" placeholder="luo" ref={register({ required: true })} />
+          <input
+            name="lastName"
+            placeholder="luo"
+            ref={register({ required: true })}
+          />
           {errors.lastName && 'This is required'}
         </div>
 
@@ -37,6 +45,3 @@ function App() {
     </div>
   );
 }
-
-const rootElement = document.getElementById('root');
-ReactDOM.render(<App />, rootElement);

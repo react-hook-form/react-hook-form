@@ -32,7 +32,7 @@ const stringToPath = (string: string): string[] => {
   return result;
 };
 
-export default function set(object: FieldValues, path: string, value: string) {
+export default function set(object: FieldValues, path: string, value: any) {
   let index = -1;
   const tempPath = isKey(path) ? [path] : stringToPath(path);
   const length = tempPath.length;
