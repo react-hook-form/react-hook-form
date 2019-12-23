@@ -1,6 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import { useForm } from "react-hook-form";
+import { useForm } from 'react-hook-form';
 
 export default function Form() {
   const { register, errors, handleSubmit } = useForm();
@@ -13,11 +13,19 @@ export default function Form() {
     <form onSubmit={handleSubmit(onSubmit)}>
       <div>
         <label>First name</label>
-        <input type="text" name="First name" ref={register({ required: true, maxLength: 80 })} />
+        <input
+          type="text"
+          name="First name"
+          ref={register({ required: true, maxLength: 80 })}
+        />
       </div>
       <div>
         <label>Last name</label>
-        <input type="text" name="Last name" ref={register({ required: true, maxLength: 100 })} />
+        <input
+          type="text"
+          name="Last name"
+          ref={register({ required: true, maxLength: 100 })}
+        />
       </div>
       <div>
         <label>Email</label>
@@ -32,7 +40,11 @@ export default function Form() {
       </div>
       <div>
         <label>Mobile number</label>
-        <input type="tel" name="Mobile number" ref={register({ required: true, maxLength: 11, minLength: 8 })} />
+        <input
+          type="tel"
+          name="Mobile number"
+          ref={register({ required: true, maxLength: 11, minLength: 8 })}
+        />
       </div>
       <div>
         <label>Title</label>

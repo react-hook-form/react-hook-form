@@ -1,6 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import { useForm } from "react-hook-form";
+import { useForm } from 'react-hook-form';
 import * as yup from 'yup'; // you will have to install yup
 
 const SignupSchema = yup.object().shape({
@@ -48,7 +48,11 @@ function App() {
       </div>
 
       <div style={{ color: 'red' }}>
-        <pre>{Object.keys(errors).length > 0 && <label>Errors: {JSON.stringify(errors, null, 2)}</label>}</pre>
+        <pre>
+          {Object.keys(errors).length > 0 && (
+            <label>Errors: {JSON.stringify(errors, null, 2)}</label>
+          )}
+        </pre>
       </div>
       <input type="submit" />
     </form>

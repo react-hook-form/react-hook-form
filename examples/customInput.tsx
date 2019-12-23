@@ -1,16 +1,16 @@
-import React, { useState, useEffect } from "react";
-import ReactDOM from "react-dom";
-import { useForm } from "react-hook-form";
-import Input from "@material-ui/core/Input";
-import Select from "react-select";
-import { Input as StrapInput } from "reactstrap";
+import React, { useState, useEffect } from 'react';
+import ReactDOM from 'react-dom';
+import { useForm } from 'react-hook-form';
+import Input from '@material-ui/core/Input';
+import Select from 'react-select';
+import { Input as StrapInput } from 'reactstrap';
 
-import "./index.css";
+import './index.css';
 
 const options = [
-  { value: "chocolate", label: "Chocolate" },
-  { value: "strawberry", label: "Strawberry" },
-  { value: "vanilla", label: "Vanilla" }
+  { value: 'chocolate', label: 'Chocolate' },
+  { value: 'strawberry', label: 'Strawberry' },
+  { value: 'vanilla', label: 'Vanilla' },
 ];
 
 const MyInput = ({ name, label, register }) => {
@@ -28,16 +28,16 @@ function App() {
     alert(JSON.stringify(data, null));
   };
   const [values, setReactSelect] = useState({
-    selectedOption: []
+    selectedOption: [],
   });
 
   const handleMultiChange = selectedOption => {
-    setValue("reactSelect", selectedOption);
+    setValue('reactSelect', selectedOption);
     setReactSelect({ selectedOption });
   };
 
   useEffect(() => {
-    register({ name: "reactSelect" });
+    register({ name: 'reactSelect' });
   }, []);
 
   return (
@@ -46,13 +46,13 @@ function App() {
         <div>
           <Input
             style={{
-              marginBottom: "20px"
+              marginBottom: '20px',
             }}
             name="HelloWorld"
             inputRef={register}
             placeholder="Material UI - Input"
             inputProps={{
-              "aria-label": "Description"
+              'aria-label': 'Description',
             }}
           />
         </div>
@@ -102,5 +102,5 @@ function App() {
   );
 }
 
-const rootElement = document.getElementById("root");
+const rootElement = document.getElementById('root');
 ReactDOM.render(<App />, rootElement);

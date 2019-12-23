@@ -1,12 +1,12 @@
-import React, { useEffect } from "react";
-import ReactDOM from "react-dom";
-import { useForm } from "react-hook-form";
+import React, { useEffect } from 'react';
+import ReactDOM from 'react-dom';
+import { useForm } from 'react-hook-form';
 
-import "./styles.css";
+import './styles.css';
 
 export default function Form() {
   const { register, handleSubmit, reset } = useForm({
-    mode: "onChange"
+    mode: 'onChange',
   });
   const onSubmit = (data, e) => {
     e.target.reset(); // reset after form submit
@@ -53,12 +53,12 @@ export default function Form() {
 
       <input type="submit" />
       <input
-        style={{ display: "block", marginTop: 20 }}
+        style={{ display: 'block', marginTop: 20 }}
         type="reset"
         value="Standard Reset Field Values"
       />
       <input
-        style={{ display: "block", marginTop: 20 }}
+        style={{ display: 'block', marginTop: 20 }}
         type="reset"
         onClick={reset}
         value="Custom Reset Field Values & Errors"
@@ -67,5 +67,5 @@ export default function Form() {
   );
 }
 
-const rootElement = document.getElementById("root");
+const rootElement = document.getElementById('root');
 ReactDOM.render(<Form />, rootElement);

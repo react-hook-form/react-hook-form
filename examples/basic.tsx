@@ -1,6 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import { useForm } from "react-hook-form";
+import { useForm } from 'react-hook-form';
 
 function App() {
   const { register, handleSubmit } = useForm();
@@ -23,7 +23,12 @@ function App() {
 
         <div>
           <label htmlFor="email">Email</label>
-          <input name="email" placeholder="bluebill1049@hotmail.com" type="email" ref={register} />
+          <input
+            name="email"
+            placeholder="bluebill1049@hotmail.com"
+            type="email"
+            ref={register}
+          />
         </div>
         <button type="submit">Submit</button>
       </form>

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import ReactDOM from 'react-dom';
-import { useForm } from "react-hook-form";
+import { useForm } from 'react-hook-form';
 
 function App() {
   const intialValues = {
@@ -19,12 +19,22 @@ function App() {
       <form onSubmit={handleSubmit(onSubmit)}>
         <div>
           <label htmlFor="firstName">First Name</label>
-          <input onChange={e => update(e.target.value)} name="firstName" placeholder="bill" ref={register} />
+          <input
+            onChange={e => update(e.target.value)}
+            name="firstName"
+            placeholder="bill"
+            ref={register}
+          />
         </div>
 
         <div>
           <label htmlFor="lastName">Last Name</label>
-          <input value={state} name="lastName" placeholder="luo" ref={register} />
+          <input
+            value={state}
+            name="lastName"
+            placeholder="luo"
+            ref={register}
+          />
         </div>
 
         <div>

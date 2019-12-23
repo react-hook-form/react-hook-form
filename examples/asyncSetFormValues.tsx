@@ -1,8 +1,8 @@
-import React, { useEffect } from "react";
-import ReactDOM from "react-dom";
-import { useForm } from "react-hook-form";
+import React, { useEffect } from 'react';
+import ReactDOM from 'react-dom';
+import { useForm } from 'react-hook-form';
 
-import "./styles.css";
+import './styles.css';
 
 function App() {
   const { register, handleSubmit, reset } = useForm();
@@ -14,8 +14,8 @@ function App() {
     // you can do async server request and fill up form
     setTimeout(() => {
       reset({
-        firstName: "bill",
-        lastName: "luo"
+        firstName: 'bill',
+        lastName: 'luo',
       });
     }, 2000);
   }, [reset]);
@@ -33,5 +33,5 @@ function App() {
   );
 }
 
-const rootElement = document.getElementById("root");
+const rootElement = document.getElementById('root');
 ReactDOM.render(<App />, rootElement);
