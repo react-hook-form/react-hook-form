@@ -1,6 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import { useForm } from 'react-hook-form';
+import { useForm } from "react-hook-form";
 import * as yup from 'yup'; // you will have to install yup
 
 const SignupSchema = yup.object().shape({
