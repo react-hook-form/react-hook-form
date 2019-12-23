@@ -1,5 +1,4 @@
 import set from '../utils/set';
-import isObjectString from '../utils/isObjectString';
 import isArray from '../utils/isArray';
 import isNullOrUndefined from '../utils/isNullOrUndefined';
 import { FieldValues } from '../types';
@@ -19,7 +18,7 @@ export default (data: FieldValues): any =>
   filterArray(
     Object.entries(data).reduce(
       (previous: FieldValues, [key, value]): FieldValues => {
-        if (isObjectString(key)) {
+        if (!!key.match(/\[.+\]/gi) || key.indexOf('.') > 0) {
           set(previous, key, value);
           return previous;
         }
