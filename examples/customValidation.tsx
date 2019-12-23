@@ -2,7 +2,7 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import { useForm } from 'react-hook-form';
 
-function App() {
+export default function App() {
   const { register, handleSubmit, errors } = useForm();
   const onSubmit = data => {
     alert(JSON.stringify(data));
@@ -81,6 +81,3 @@ function App() {
     </div>
   );
 }
-
-const rootElement = document.getElementById('root');
-ReactDOM.render(<App />, rootElement);

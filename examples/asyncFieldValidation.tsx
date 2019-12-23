@@ -4,7 +4,7 @@ import { useForm } from 'react-hook-form';
 
 const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
 
-function App() {
+export default function App() {
   const { register, handleSubmit, errors } = useForm();
   const onSubmit = data => {
     alert(JSON.stringify(data));
@@ -53,6 +53,3 @@ function App() {
     </div>
   );
 }
-
-const rootElement = document.getElementById('root');
-ReactDOM.render(<App />, rootElement);

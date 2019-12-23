@@ -5,8 +5,6 @@ import Input from '@material-ui/core/Input';
 import Select from 'react-select';
 import { Input as StrapInput } from 'reactstrap';
 
-import './index.css';
-
 const options = [
   { value: 'chocolate', label: 'Chocolate' },
   { value: 'strawberry', label: 'Strawberry' },
@@ -22,7 +20,7 @@ const MyInput = ({ name, label, register }) => {
   );
 };
 
-function App() {
+export default function App() {
   const { register, handleSubmit, setValue } = useForm();
   const onSubmit = data => {
     alert(JSON.stringify(data, null));
@@ -101,6 +99,3 @@ function App() {
     </div>
   );
 }
-
-const rootElement = document.getElementById('root');
-ReactDOM.render(<App />, rootElement);

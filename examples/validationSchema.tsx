@@ -13,7 +13,7 @@ const SignupSchema = yup.object().shape({
   website: yup.string().url(),
 });
 
-function App() {
+export default function App() {
   const { register, handleSubmit, errors } = useForm({
     validationSchema: SignupSchema,
   });
@@ -58,6 +58,3 @@ function App() {
     </form>
   );
 }
-
-const rootElement = document.getElementById('root');
-ReactDOM.render(<App />, rootElement);

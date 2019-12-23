@@ -2,7 +2,7 @@ import React, { useEffect } from 'react';
 import ReactDOM from 'react-dom';
 import { useForm } from 'react-hook-form';
 
-function App() {
+export default function App() {
   const { register, handleSubmit, reset } = useForm();
   const onSumbit = data => {
     alert(JSON.stringify(data));
@@ -30,6 +30,3 @@ function App() {
     </form>
   );
 }
-
-const rootElement = document.getElementById('root');
-ReactDOM.render(<App />, rootElement);

@@ -2,7 +2,7 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import { useForm } from 'react-hook-form';
 
-export default function Form() {
+export default function App() {
   const { register, errors, handleSubmit } = useForm();
   const onSubmit = data => {
     alert(JSON.stringify(data));
@@ -71,5 +71,4 @@ export default function Form() {
   );
 }
 
-const rootElement = document.getElementById('root');
 ReactDOM.render(<Form />, rootElement);

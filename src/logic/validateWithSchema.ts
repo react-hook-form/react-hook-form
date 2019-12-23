@@ -38,19 +38,15 @@ export const parseErrorSchema = <FormValues>(
                 ),
               }
             : {
-                [path]:
-                  !previous[path] ||
-                  (!validateAllFieldCriteria && !previous[path])
+                [path]: previous[path] || {
+                  message,
+                  type,
+                  ...(validateAllFieldCriteria
                     ? {
-                        message,
-                        type,
-                        ...(validateAllFieldCriteria
-                          ? {
-                              types: { [type]: message || true },
-                            }
-                          : {}),
+                        types: { [type]: message || true },
                       }
-                    : previous[path],
+                    : {}),
+                },
               }),
         }),
         {},

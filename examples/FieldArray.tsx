@@ -6,7 +6,7 @@ function createArrayWithNumbers(length) {
   return Array.from({ length }, (_, k) => k + 1);
 }
 
-function App() {
+export default function App() {
   const { register, handleSubmit, errors } = useForm();
   const [size, setSize] = useState(1);
   const onSubmit = data => {
@@ -66,6 +66,3 @@ function App() {
     </div>
   );
 }
-
-const rootElement = document.getElementById('root');
-ReactDOM.render(<App />, rootElement);

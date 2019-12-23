@@ -2,7 +2,7 @@ import React, { useEffect } from 'react';
 import ReactDOM from 'react-dom';
 import { useForm } from 'react-hook-form';
 
-export default function Form() {
+export default function App() {
   const { register, handleSubmit, reset } = useForm({
     mode: 'onChange',
   });
@@ -65,5 +65,4 @@ export default function Form() {
   );
 }
 
-const rootElement = document.getElementById('root');
 ReactDOM.render(<Form />, rootElement);

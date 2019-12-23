@@ -78,7 +78,7 @@ export default function formSection2({ register }) {
   );
 }
 
-export default function Form() {
+export default function App() {
   const { register, errors, handleSubmit } = useForm();
   const onSubmit = data => {
     alert(JSON.stringify(data));
@@ -93,6 +93,3 @@ export default function Form() {
     </form>
   );
 }
-
-const rootElement = document.getElementById('root');
-ReactDOM.render(<Form />, rootElement);
