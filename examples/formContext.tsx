@@ -2,8 +2,6 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import { useForm, FormContext, useFormContext } from 'react-hook-form';
 
-import './styles.css';
-
 function App() {
   const methods = useForm();
   const { register, handleSubmit } = methods;

@@ -2,8 +2,6 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import { useForm } from 'react-hook-form';
 
-import './styles.css';
-
 function App() {
   const { register, handleSubmit, setValue } = useForm();
   const onSubmit = data => {

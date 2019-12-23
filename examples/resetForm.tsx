@@ -2,8 +2,6 @@ import React, { useEffect } from 'react';
 import ReactDOM from 'react-dom';
 import { useForm } from 'react-hook-form';
 
-import './styles.css';
-
 export default function Form() {
   const { register, handleSubmit, reset } = useForm({
     mode: 'onChange',
