@@ -89,4 +89,5 @@ export interface FormContextValues<
   handleSubmit: (
     callback: OnSubmit<FormValues>,
   ) => (e: React.BaseSyntheticEvent) => Promise<void>;
+  control: any;
 }
