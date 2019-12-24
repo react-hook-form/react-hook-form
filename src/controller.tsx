@@ -17,6 +17,7 @@ export type Props = {
   mode?: Mode;
   onChangeName?: string;
   onBlurName?: string;
+  defaultValue?: any;
   control: any;
 };
 
@@ -28,6 +29,7 @@ const Controller = ({
   onBlur,
   onChangeName,
   onBlurName,
+  defaultValue,
   control: {
     defaultValues,
     fields,
@@ -42,7 +44,11 @@ const Controller = ({
   ...rest
 }: Props) => {
   const [value, setInputStateValue] = React.useState(
-    isUndefined(defaultValues[name]) ? '' : defaultValues[name],
+    isUndefined(defaultValue)
+      ? isUndefined(defaultValues[name])
+        ? ''
+        : defaultValues[name]
+      : defaultValue,
   );
   const valueRef = React.useRef(value);
   const isCheckboxInput = isBoolean(value);
