@@ -49,9 +49,9 @@ describe('should skip validation', () => {
         hasError: true,
         isBlurEvent: false,
         isOnSubmit: false,
-        isReValidateOnSubmit: true,
+        isReValidateOnSubmit: false,
         isOnBlur: false,
-        isReValidateOnBlur: false,
+        isReValidateOnBlur: true,
         isSubmitted: true,
       }),
     ).toBeTruthy();
