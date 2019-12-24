@@ -44,8 +44,11 @@ const Controller = ({
   ...rest
 }: Props) => {
   const [value, setInputStateValue] = React.useState(
-    defaultValue ||
-      (isUndefined(defaultValues[name]) ? '' : defaultValues[name]),
+    isUndefined(defaultValue)
+      ? isUndefined(defaultValues[name])
+        ? ''
+        : defaultValues[name]
+      : defaultValue,
   );
   const valueRef = React.useRef(value);
   const isCheckboxInput = isBoolean(value);
