@@ -18,7 +18,6 @@ export type Props = {
   onChangeName?: string;
   onBlurName?: string;
   defaultValue?: any;
-  defaultChecked?: any;
   control: any;
 };
 
@@ -31,7 +30,6 @@ const Controller = ({
   onChangeName,
   onBlurName,
   defaultValue,
-  defaultChecked,
   control: {
     defaultValues,
     fields,
@@ -47,7 +45,6 @@ const Controller = ({
 }: Props) => {
   const [value, setInputStateValue] = React.useState(
     defaultValue ||
-      defaultChecked ||
       (isUndefined(defaultValues[name]) ? '' : defaultValues[name]),
   );
   const valueRef = React.useRef(value);
