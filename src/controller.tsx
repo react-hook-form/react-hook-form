@@ -116,6 +116,7 @@ const Controller = ({
   React.useEffect(() => () => unregister(name), []);
 
   const props = {
+    ...rest,
     ...(onChange
       ? {
           [onChangeName || VALIDATION_MODE.onChange]: eventWrapper(
@@ -135,7 +136,6 @@ const Controller = ({
         : { onBlur: handleBlur }
       : {}),
     ...(isCheckboxInput ? { checked: value } : { value }),
-    ...rest,
   };
 
   return React.isValidElement(InnerComponent) ? (
