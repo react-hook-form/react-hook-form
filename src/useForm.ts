@@ -741,7 +741,7 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
       }
     }
 
-    if (validationSchema) {
+    if (validationSchema && readFormState.current.isValid) {
       validateSchemaIsValid();
     } else if (!isEmptyObject(validateOptions)) {
       fieldsWithValidationRef.current.add(name);
