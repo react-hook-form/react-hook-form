@@ -157,3 +157,11 @@ export type HandleChange = ({
   type,
   target,
 }: MouseEvent) => Promise<void | boolean>;
+
+export type FormValuesFromErrors<Errors> = Errors extends FieldErrors<
+  infer FormValues
+>
+  ? FormValues
+  : never;
+
+export type ErrorMessages = Record<string, string>;
