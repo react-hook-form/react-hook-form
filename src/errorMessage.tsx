@@ -30,11 +30,7 @@ const ErrorMessage = <
     return null;
   }
 
-  return as ? (
-    React.cloneElement(as, { children: message })
-  ) : (
-    <span>{message}</span>
-  );
+  return as ? React.cloneElement(as, { children: message }) : <>{message}</>;
 };
 
 export { ErrorMessage };
