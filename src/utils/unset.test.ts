@@ -57,7 +57,7 @@ it('should unset multiple path', () => {
   });
 });
 
-it('should return undefined when object is empty', () => {
+it('should return empty object when inner object is empty object', () => {
   const test = {
     data: {
       firstName: {},
