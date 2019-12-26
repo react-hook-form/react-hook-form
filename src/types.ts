@@ -4,8 +4,9 @@ export type Primitive = string | boolean | number | symbol | null | undefined;
 
 export type FieldValues = Record<string, any>;
 
-export type FieldName<FormValues extends FieldValues> = keyof FormValues &
-  string;
+export type FieldName<FormValues extends FieldValues> =
+  | keyof FormValues
+  | string;
 
 export type FieldValue<FormValues extends FieldValues> = FormValues[FieldName<
   FormValues
