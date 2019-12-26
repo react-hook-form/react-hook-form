@@ -113,6 +113,16 @@ export type FieldErrors<FormValues> = {
     : FieldError;
 };
 
+export type Touched<FormValues> = {
+  [Key in keyof FormValues]?: FormValues[Key] extends any[]
+    ? FormValues[Key][number] extends object
+      ? FieldErrors<FormValues[Key][number]>[]
+      : FieldError
+    : FormValues[Key] extends object
+    ? FieldErrors<FormValues[Key]>
+    : FieldError;
+};
+
 export interface SubmitPromiseResult<FormValues extends FieldValues> {
   errors: FieldErrors<FormValues>;
   values: FormValues;
@@ -122,7 +132,7 @@ export interface FormStateProxy<FormValues extends FieldValues = FieldValues> {
   dirty: boolean;
   isSubmitted: boolean;
   submitCount: number;
-  touched: FieldName<FormValues>[];
+  touched: Touched<FormValues>;
   isSubmitting: boolean;
   isValid: boolean;
 }

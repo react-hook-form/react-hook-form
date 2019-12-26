@@ -46,6 +46,7 @@ import {
   MultipleFieldErrors,
   Ref,
   HandleChange,
+  Touched,
 } from './types';
 
 const { useRef, useState, useCallback, useEffect } = React;
@@ -61,7 +62,7 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
   const fieldsRef = useRef<FieldRefs<FormValues>>({});
   const validateAllFieldCriteria = validateCriteriaMode === 'all';
   const errorsRef = useRef<FieldErrors<FormValues>>({});
-  const touchedFieldsRef = useRef(new Set<FieldName<FormValues>>());
+  const touchedFieldsRef = useRef<Touched<FormValues>>({});
   const watchFieldsRef = useRef(new Set<FieldName<FormValues>>());
   const dirtyFieldsRef = useRef(new Set<FieldName<FormValues>>());
   const fieldsWithValidationRef = useRef(new Set<FieldName<FormValues>>());
@@ -238,9 +239,9 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
 
       if (
         setDirty(name) ||
-        (!touchedFieldsRef.current.has(name) && readFormState.current.touched)
+        (!get(touchedFieldsRef.current, name) && readFormState.current.touched)
       ) {
-        return !!touchedFieldsRef.current.add(name);
+        return !!set(touchedFieldsRef.current, name, true);
       }
     },
     [setFieldValue],
@@ -395,10 +396,10 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
 
         if (
           isBlurEvent &&
-          !touchedFieldsRef.current.has(name) &&
+          !get(touchedFieldsRef.current, name) &&
           readFormState.current.touched
         ) {
-          touchedFieldsRef.current.add(name);
+          set(touchedFieldsRef.current, name, true);
           shouldUpdateState = true;
         }
 
@@ -455,13 +456,13 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
   const resetFieldRef = useCallback(
     (name: FieldName<FormValues>) => {
       errorsRef.current = unset(errorsRef.current, [name]);
+      touchedFieldsRef.current = unset(touchedFieldsRef.current, [name]);
       fieldsRef.current = omitObject(fieldsRef.current, name);
       defaultRenderValuesRef.current = omitObject(
         defaultRenderValuesRef.current,
         name,
       );
       [
-        touchedFieldsRef,
         dirtyFieldsRef,
         fieldsWithValidationRef,
         validFieldsRef,
@@ -943,10 +944,10 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
   const resetRefs = () => {
     errorsRef.current = {};
     fieldsRef.current = {};
+    touchedFieldsRef.current = {};
     validFieldsRef.current = new Set();
     fieldsWithValidationRef.current = new Set();
     defaultRenderValuesRef.current = {};
-    touchedFieldsRef.current = new Set();
     watchFieldsRef.current = new Set();
     dirtyFieldsRef.current = new Set();
     isWatchAllRef.current = false;
@@ -1010,7 +1011,7 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
     dirty: isDirtyRef.current,
     isSubmitted: isSubmittedRef.current,
     submitCount: submitCountRef.current,
-    touched: [...touchedFieldsRef.current],
+    touched: touchedFieldsRef.current,
     isSubmitting: isSubmittingRef.current,
     isValid: isOnSubmit
       ? isSubmittedRef.current && isEmptyObject(errorsRef.current)
