@@ -56,3 +56,13 @@ it('should unset multiple path', () => {
     },
   });
 });
+
+it('should return undefined when object is empty', () => {
+  const test = {
+    data: {
+      firstName: {},
+    },
+  };
+
+  expect(unset(test, ['data.firstName'])).toEqual({});
+});
