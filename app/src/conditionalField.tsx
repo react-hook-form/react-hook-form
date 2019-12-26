@@ -72,7 +72,12 @@ const ConditionalField: React.FC = () => {
       )}
 
       <button id="submit">Submit</button>
-      <div id="state">{JSON.stringify(formState)}</div>
+      <div id="state">
+        {JSON.stringify({
+          ...formState,
+          touched: Object.keys(formState.touched),
+        })}
+      </div>
       <div id="result">{JSON.stringify(result)}</div>
       <div id="result">{typeof selectNumber}</div>
       <div id="renderCount">{renderCounter}</div>

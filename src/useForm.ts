@@ -241,8 +241,7 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
         setDirty(name) ||
         (!get(touchedFieldsRef.current, name) && readFormState.current.touched)
       ) {
-        set(touchedFieldsRef.current, name, true);
-        return;
+        return !!set(touchedFieldsRef.current, name, true);
       }
     },
     [setFieldValue],

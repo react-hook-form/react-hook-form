@@ -50,7 +50,12 @@ const FormStateWithSchema: React.FC = (props: any) => {
       <button type="button" onClick={() => reset()} id="resetForm">
         Reset
       </button>
-      <div id="state">{JSON.stringify(formState)}</div>
+      <div id="state">
+        {JSON.stringify({
+          ...formState,
+          touched: Object.keys(formState.touched),
+        })}
+      </div>
       <div id="renderCount">{renderCounter}</div>
     </form>
   );

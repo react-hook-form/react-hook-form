@@ -29,7 +29,12 @@ const FormState: React.FC = (props: any) => {
         ref={register({ required: true })}
         placeholder="lastName"
       />
-      <div id="state">{JSON.stringify(formState)}</div>
+      <div id="state">
+        {JSON.stringify({
+          ...formState,
+          touched: Object.keys(formState.touched),
+        })}
+      </div>
       <select name="select" ref={register} defaultValue="test">
         <option value="test">test</option>
         <option value="test1">test1</option>
