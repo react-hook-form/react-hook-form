@@ -163,5 +163,3 @@ export type FormValuesFromErrors<Errors> = Errors extends FieldErrors<
 >
   ? FormValues
   : never;
-
-export type ErrorMessages = Record<string, string>;
