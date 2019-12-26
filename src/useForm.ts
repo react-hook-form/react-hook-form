@@ -457,7 +457,7 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
   const resetFieldRef = useCallback(
     (name: FieldName<FormValues>) => {
       errorsRef.current = unset(errorsRef.current, [name]);
-      touchedFieldsRef.current = unset(touchedFieldsRef, [name]);
+      touchedFieldsRef.current = unset(touchedFieldsRef.current, [name]);
       fieldsRef.current = omitObject(fieldsRef.current, name);
       defaultRenderValuesRef.current = omitObject(
         defaultRenderValuesRef.current,
