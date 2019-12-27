@@ -3,6 +3,7 @@ interface OmitObject {
 }
 
 const omitObject: OmitObject = (obj, key) => {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const { [key]: omitted, ...rest } = obj;
   return rest;
 };
