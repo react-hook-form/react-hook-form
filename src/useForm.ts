@@ -138,7 +138,7 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
           fieldsWithValidation: fieldsWithValidationRef.current,
         });
 
-      if (isEmptyObject(error)) {
+      if (isEmptyObject(error) || !error) {
         if (fieldsWithValidationRef.current.has(name) || validationSchema) {
           validFieldsRef.current.add(name);
           shouldReRender = shouldReRender || get(errorsRef.current, name);
@@ -149,7 +149,7 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
         validFieldsRef.current.delete(name);
         shouldReRender = shouldReRender || !get(errorsRef.current, name);
 
-        set(errorsRef.current, name, error[name]);
+        set(errorsRef.current, name, error);
       }
 
       if (shouldReRender && !skipReRender) {
@@ -414,9 +414,7 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
             transformToNestObject(getFieldsValues(fields)),
           );
           const validForm = isEmptyObject(errors);
-          error = (errors[name] ? { [name]: errors[name] } : {}) as FieldErrors<
-            FormValues
-          >;
+          error = get(errors, name);
 
           if (isValidRef.current !== validForm) {
             shouldUpdateState = true;
@@ -424,11 +422,13 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
 
           isValidRef.current = validForm;
         } else {
-          error = await validateField<FormValues>(
-            fieldsRef,
-            validateAllFieldCriteria,
-            field,
-          );
+          error = (
+            await validateField<FormValues>(
+              fieldsRef,
+              validateAllFieldCriteria,
+              field,
+            )
+          )[name];
         }
 
         if (!renderBaseOnError(name, error) && shouldUpdateState) {
