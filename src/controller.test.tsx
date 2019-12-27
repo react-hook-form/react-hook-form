@@ -2,52 +2,41 @@ import * as React from 'react';
 import { render, fireEvent } from '@testing-library/react';
 import { Controller } from './index';
 
+function reconfigureControl(changedControl = {}) {
+  const defaultControl = {
+    defaultValues: {},
+    fields: {},
+    setValue: jest.fn(),
+    register: jest.fn(),
+    unregister: jest.fn(),
+    errors: {},
+    mode: { isOnSubmit: false, isOnBlur: false },
+    reValidateMode: {
+      isReValidateOnBlur: false,
+      isReValidateOnSubmit: false,
+    },
+    formState: { isSubmitted: false },
+  };
+
+  return Object.assign({}, defaultControl, changedControl);
+}
+
 describe('React Hook Form Input', () => {
   it('should render correctly with as with string', () => {
+    const control = reconfigureControl();
+
     const { asFragment } = render(
-      <Controller
-        name="test"
-        as="input"
-        control={{
-          defaultValues: {},
-          fields: {},
-          setValue: jest.fn(),
-          register: jest.fn(),
-          unregister: jest.fn(),
-          errors: {},
-          mode: { isOnSubmit: false, isOnBlur: false },
-          reValidateMode: {
-            isReValidateOnBlur: false,
-            isReValidateOnSubmit: false,
-          },
-          formState: { isSubmitted: false },
-        }}
-      />,
+      <Controller name="test" as="input" control={control} />,
     );
 
     expect(asFragment()).toMatchSnapshot();
   });
 
   it('should render correctly with as with component', () => {
+    const control = reconfigureControl();
+
     const { asFragment } = render(
-      <Controller
-        name="test"
-        as={<input />}
-        control={{
-          defaultValues: {},
-          fields: {},
-          setValue: jest.fn(),
-          register: jest.fn(),
-          unregister: jest.fn(),
-          errors: {},
-          mode: { isOnSubmit: false, isOnBlur: false },
-          reValidateMode: {
-            isReValidateOnBlur: false,
-            isReValidateOnSubmit: false,
-          },
-          formState: { isSubmitted: false },
-        }}
-      />,
+      <Controller name="test" as={<input />} control={control} />,
     );
 
     expect(asFragment()).toMatchSnapshot();
@@ -55,25 +44,16 @@ describe('React Hook Form Input', () => {
 
   it("should trigger component's onChange method and invoke setValue method", () => {
     const setValue = jest.fn();
+    const control = reconfigureControl({
+      setValue,
+      mode: { isOnSubmit: true, isOnBlur: false },
+    });
 
     const { getByPlaceholderText } = render(
       <Controller
         name="test"
         as={<input placeholder="test" />}
-        control={{
-          defaultValues: {},
-          fields: {},
-          setValue,
-          register: jest.fn(),
-          unregister: jest.fn(),
-          errors: {},
-          mode: { isOnSubmit: true, isOnBlur: false },
-          reValidateMode: {
-            isReValidateOnBlur: false,
-            isReValidateOnSubmit: false,
-          },
-          formState: { isSubmitted: false },
-        }}
+        control={control}
       />,
     );
 
@@ -88,25 +68,16 @@ describe('React Hook Form Input', () => {
 
   it("should trigger component's onBlur method and invoke setValue method", () => {
     const setValue = jest.fn();
+    const control = reconfigureControl({
+      setValue,
+      mode: { isOnSubmit: true, isOnBlur: true },
+    });
 
     const { getByPlaceholderText } = render(
       <Controller
         name="test"
         as={<input placeholder="test" />}
-        control={{
-          defaultValues: {},
-          fields: {},
-          setValue,
-          register: jest.fn(),
-          unregister: jest.fn(),
-          errors: {},
-          mode: { isOnSubmit: true, isOnBlur: true },
-          reValidateMode: {
-            isReValidateOnBlur: false,
-            isReValidateOnSubmit: false,
-          },
-          formState: { isSubmitted: false },
-        }}
+        control={control}
       />,
     );
 
@@ -121,26 +92,17 @@ describe('React Hook Form Input', () => {
 
   it('should invoke custom event named method', () => {
     const setValue = jest.fn();
+    const control = reconfigureControl({
+      setValue,
+      mode: { isOnSubmit: true, isOnBlur: true },
+    });
 
     const { getByPlaceholderText } = render(
       <Controller
         name="test"
         as={<input placeholder="test" />}
         onChangeName="onChange"
-        control={{
-          defaultValues: {},
-          setValue,
-          fields: {},
-          register: jest.fn(),
-          unregister: jest.fn(),
-          errors: {},
-          mode: { isOnSubmit: true, isOnBlur: true },
-          reValidateMode: {
-            isReValidateOnBlur: false,
-            isReValidateOnSubmit: false,
-          },
-          formState: { isSubmitted: false },
-        }}
+        control={control}
       />,
     );
 
@@ -156,6 +118,10 @@ describe('React Hook Form Input', () => {
   it('should invoke custom onChange method', () => {
     const onChange = jest.fn();
     const setValue = jest.fn();
+    const control = reconfigureControl({
+      setValue,
+      mode: { isOnSubmit: false, isOnBlur: true },
+    });
 
     onChange.mockImplementation(() => 'test');
 
@@ -164,20 +130,7 @@ describe('React Hook Form Input', () => {
         name="test"
         as={<input placeholder="test" />}
         onChange={onChange}
-        control={{
-          defaultValues: {},
-          fields: {},
-          setValue,
-          register: jest.fn(),
-          unregister: jest.fn(),
-          errors: {},
-          mode: { isOnSubmit: false, isOnBlur: true },
-          reValidateMode: {
-            isReValidateOnBlur: false,
-            isReValidateOnSubmit: false,
-          },
-          formState: { isSubmitted: false },
-        }}
+        control={control}
       />,
     );
 
@@ -192,27 +145,24 @@ describe('React Hook Form Input', () => {
   });
 
   it('should support default value from hook form', () => {
+    const control = reconfigureControl({
+      defaultValues: {
+        test: 'data',
+      },
+    });
+
     const { asFragment } = render(
-      <Controller
-        name="test"
-        as="input"
-        control={{
-          defaultValues: {
-            test: 'data',
-          },
-          fields: {},
-          setValue: jest.fn(),
-          register: jest.fn(),
-          unregister: jest.fn(),
-          errors: {},
-          mode: { isOnSubmit: false, isOnBlur: false },
-          reValidateMode: {
-            isReValidateOnBlur: false,
-            isReValidateOnSubmit: false,
-          },
-          formState: { isSubmitted: false },
-        }}
-      />,
+      <Controller name="test" as="input" control={control} />,
+    );
+
+    expect(asFragment()).toMatchSnapshot();
+  });
+
+  it('should support custom value name', () => {
+    const control = reconfigureControl();
+
+    const { asFragment } = render(
+      <Controller name="test" as="input" valueName="value" control={control} />,
     );
 
     expect(asFragment()).toMatchSnapshot();
