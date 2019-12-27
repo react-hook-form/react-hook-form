@@ -138,7 +138,7 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
           fieldsWithValidation: fieldsWithValidationRef.current,
         });
 
-      if (isEmptyObject(error) || !error) {
+      if (isEmptyObject(error)) {
         if (fieldsWithValidationRef.current.has(name) || validationSchema) {
           validFieldsRef.current.add(name);
           shouldReRender = shouldReRender || get(errorsRef.current, name);
@@ -149,7 +149,7 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
         validFieldsRef.current.delete(name);
         shouldReRender = shouldReRender || !get(errorsRef.current, name);
 
-        set(errorsRef.current, name, error);
+        set(errorsRef.current, name, error[name]);
       }
 
       if (shouldReRender && !skipReRender) {
@@ -300,10 +300,13 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
         reRender();
       } else {
         const fieldName = payload;
-        const error = get(errors, fieldName);
+        const error = (get(errors, fieldName)
+          ? { [fieldName]: get(errors, fieldName) }
+          : {}) as FieldErrors<FormValues>;
+
         renderBaseOnError(
           fieldName,
-          error ? ({ [fieldName]: error } as FieldErrors<FormValues>) : {},
+          error,
           shouldRender || previousFormIsValid !== isValidRef.current,
         );
       }
@@ -414,7 +417,9 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
             transformToNestObject(getFieldsValues(fields)),
           );
           const validForm = isEmptyObject(errors);
-          error = get(errors, name);
+          error = (get(errors, name)
+            ? { [name]: get(errors, name) }
+            : {}) as FieldErrors<FormValues>;
 
           if (isValidRef.current !== validForm) {
             shouldUpdateState = true;
@@ -422,13 +427,11 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
 
           isValidRef.current = validForm;
         } else {
-          error = (
-            await validateField<FormValues>(
-              fieldsRef,
-              validateAllFieldCriteria,
-              field,
-            )
-          )[name];
+          error = await validateField<FormValues>(
+            fieldsRef,
+            validateAllFieldCriteria,
+            field,
+          );
         }
 
         if (!renderBaseOnError(name, error) && shouldUpdateState) {
