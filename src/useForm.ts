@@ -300,10 +300,13 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
         reRender();
       } else {
         const fieldName = payload;
-        const error = get(errors, fieldName);
+        const error = (get(errors, fieldName)
+          ? { [fieldName]: get(errors, fieldName) }
+          : {}) as FieldErrors<FormValues>;
+
         renderBaseOnError(
           fieldName,
-          error ? ({ [fieldName]: error } as FieldErrors<FormValues>) : {},
+          error,
           shouldRender || previousFormIsValid !== isValidRef.current,
         );
       }
@@ -414,9 +417,9 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
             transformToNestObject(getFieldsValues(fields)),
           );
           const validForm = isEmptyObject(errors);
-          error = (errors[name] ? { [name]: errors[name] } : {}) as FieldErrors<
-            FormValues
-          >;
+          error = (get(errors, name)
+            ? { [name]: get(errors, name) }
+            : {}) as FieldErrors<FormValues>;
 
           if (isValidRef.current !== validForm) {
             shouldUpdateState = true;
