@@ -95,4 +95,16 @@ test('should clear empty array', () => {
       },
     },
   });
+
+  const test2 = {
+    arrayItem: [
+      {
+        test1: undefined,
+        test2: undefined,
+      },
+    ],
+    data: 'test',
+  };
+
+  expect(unset(test2, ['arrayItem[0].test1'])).toEqual({ data: 'test' });
 });
