@@ -27,8 +27,8 @@ const Controller = ({
   as: InnerComponent,
   onChange,
   onBlur,
-  onChangeName,
-  onBlurName,
+  onChangeName = VALIDATION_MODE.onChange,
+  onBlurName = VALIDATION_MODE.onBlur,
   defaultValue,
   control: {
     defaultValues,
@@ -118,22 +118,12 @@ const Controller = ({
   const props = {
     ...rest,
     ...(onChange
-      ? {
-          [onChangeName || VALIDATION_MODE.onChange]: eventWrapper(
-            onChange,
-            VALIDATION_MODE.onChange,
-          ),
-        }
-      : { onChange: handleChange }),
+      ? { [onChangeName]: eventWrapper(onChange, EVENTS.CHANGE) }
+      : { [onChangeName]: handleChange }),
     ...(isOnBlur || isReValidateOnBlur
       ? onBlur
-        ? {
-            [onBlurName || VALIDATION_MODE.onBlur]: eventWrapper(
-              onBlur,
-              VALIDATION_MODE.onBlur,
-            ),
-          }
-        : { onBlur: handleBlur }
+        ? { [onBlurName]: eventWrapper(onBlur, EVENTS.BLUR) }
+        : { [onBlurName]: handleBlur }
       : {}),
     ...(isCheckboxInput ? { checked: value } : { value }),
   };
