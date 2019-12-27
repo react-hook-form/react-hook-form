@@ -31,7 +31,7 @@ test('should unset the object', () => {
   });
 });
 
-it('should unset multiple path', () => {
+test('should unset multiple path', () => {
   const test = {
     data: {
       firstName: 'test',
@@ -57,7 +57,7 @@ it('should unset multiple path', () => {
   });
 });
 
-it('should return empty object when inner object is empty object', () => {
+test('should return empty object when inner object is empty object', () => {
   const test = {
     data: {
       firstName: {},
@@ -65,4 +65,34 @@ it('should return empty object when inner object is empty object', () => {
   };
 
   expect(unset(test, ['data.firstName'])).toEqual({});
+});
+
+test('should clear empty array', () => {
+  const test = {
+    data: {
+      firstName: {
+        test: [
+          { name: undefined, email: undefined },
+          { name: 'test', email: 'last' },
+        ],
+        deep: {
+          last: [
+            { name: undefined, email: undefined },
+            { name: 'test', email: 'last' },
+          ],
+        },
+      },
+    },
+  };
+
+  expect(unset(test, ['data.firstName[0]'])).toEqual({
+    data: {
+      firstName: {
+        test: [{ name: 'test', email: 'last' }],
+        deep: {
+          last: [{ name: 'test', email: 'last' }],
+        },
+      },
+    },
+  });
 });
