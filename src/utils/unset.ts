@@ -1,6 +1,7 @@
 import set from './set';
 import isObject from './isObject';
 import isUndefined from './isUndefined';
+import isEmptyObject from './isEmptyObject';
 
 const unsetObject = (target: any) => {
   for (const key in target) {
@@ -8,7 +9,7 @@ const unsetObject = (target: any) => {
       unsetObject(target[key]);
     }
 
-    if (isUndefined(target[key])) {
+    if (isUndefined(target[key]) || isEmptyObject(target[key])) {
       delete target[key];
     }
   }
