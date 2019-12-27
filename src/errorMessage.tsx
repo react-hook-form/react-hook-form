@@ -18,19 +18,29 @@ const ErrorMessage = <
   Errors extends FieldErrors<any>,
   Name extends FieldName<FormValuesFromErrors<Errors>>
 >({
-  as,
+  as: InnerComponent,
   errors: errorsFromProps,
   name,
 }: Props<Errors, Name>) => {
   const methods = useFormContext();
-  const errors = errorsFromProps || (methods.errors as Errors);
+  const errors = errorsFromProps || (methods?.errors as Errors);
   const error = get(errors, name) as FieldError | undefined;
   const message = error?.message;
   if (!message) {
     return null;
   }
 
-  return as ? React.cloneElement(as, { children: message }) : <>{message}</>;
+  const props = { children: message };
+
+  return InnerComponent ? (
+    React.isValidElement(InnerComponent) ? (
+      React.cloneElement(InnerComponent, props)
+    ) : (
+      <InnerComponent {...props} />
+    )
+  ) : (
+    <>{message}</>
+  );
 };
 
 export { ErrorMessage };
