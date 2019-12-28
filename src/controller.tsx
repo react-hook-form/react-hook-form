@@ -128,7 +128,13 @@ const Controller = ({
         ? { [onBlurName]: eventWrapper(onBlur, EVENTS.BLUR) }
         : { [onBlurName]: handleBlur }
       : {}),
-    ...{ [valueName || (isCheckboxInput ? 'checked' : 'value')]: value },
+    ...(valueName
+      ? {
+          [valueName]: value,
+        }
+      : isCheckboxInput
+      ? { checked: value }
+      : { value }),
   };
 
   return React.isValidElement(InnerComponent) ? (
