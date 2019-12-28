@@ -17,6 +17,7 @@ export type Props = {
   mode?: Mode;
   onChangeName?: string;
   onBlurName?: string;
+  valueName?: string;
   defaultValue?: any;
   control: any;
 };
@@ -29,6 +30,7 @@ const Controller = ({
   onBlur,
   onChangeName = VALIDATION_MODE.onChange,
   onBlurName = VALIDATION_MODE.onBlur,
+  valueName,
   defaultValue,
   control: {
     defaultValues,
@@ -113,6 +115,7 @@ const Controller = ({
     registerField();
   }
 
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   React.useEffect(() => () => unregister(name), []);
 
   const props = {
@@ -125,7 +128,7 @@ const Controller = ({
         ? { [onBlurName]: eventWrapper(onBlur, EVENTS.BLUR) }
         : { [onBlurName]: handleBlur }
       : {}),
-    ...(isCheckboxInput ? { checked: value } : { value }),
+    ...{ [valueName || (isCheckboxInput ? 'checked' : 'value')]: value },
   };
 
   return React.isValidElement(InnerComponent) ? (
