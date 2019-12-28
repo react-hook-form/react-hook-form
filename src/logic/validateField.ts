@@ -83,7 +83,7 @@ export default async <FormValues extends FieldValues>(
     const { value: maxValue, message: maxMessage } = getValueAndMessage(max);
     const { value: minValue, message: minMessage } = getValueAndMessage(min);
 
-    if (type === 'number') {
+    if (type === 'number' || (!type && !isNaN(value))) {
       const valueNumber = valueAsNumber || parseFloat(value);
       if (!isNullOrUndefined(maxValue)) {
         exceedMax = valueNumber > maxValue;
