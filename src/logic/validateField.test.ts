@@ -334,6 +334,60 @@ describe('validateField', () => {
     });
   });
 
+  it('should return min and max error for custom input', async () => {
+    expect(
+      await validateField({} as any, false, {
+        ref: { type: '', name: 'test', value: '1' },
+        required: true,
+        min: '4',
+      }),
+    ).toEqual({
+      test: {
+        type: 'min',
+        message: '',
+        ref: { type: '', name: 'test', value: '1' },
+      },
+    });
+
+    expect(
+      await validateField({} as any, false, {
+        ref: { type: '', name: 'test', value: '4' },
+        required: true,
+        max: '2',
+      }),
+    ).toEqual({
+      test: {
+        type: 'max',
+        message: '',
+        ref: { type: '', name: 'test', value: '4' },
+      },
+    });
+
+    expect(
+      await validateField({} as any, false, {
+        ref: {
+          type: '',
+          name: 'test',
+          value: '2019-2-12',
+          valueAsDate: new Date('2019-2-12'),
+        },
+        required: true,
+        max: '2019-1-12',
+      }),
+    ).toEqual({
+      test: {
+        type: 'max',
+        message: '',
+        ref: {
+          type: '',
+          name: 'test',
+          value: '2019-2-12',
+          valueAsDate: new Date('2019-2-12'),
+        },
+      },
+    });
+  });
+
   it('should return max length error ', async () => {
     expect(
       await validateField({} as any, false, {
