@@ -115,7 +115,8 @@ const Controller = ({
     registerField();
   }
 
-  React.useEffect(() => () => unregister(name), [unregister, name]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  React.useEffect(() => () => unregister(name), []);
 
   const props = {
     ...rest,

@@ -162,7 +162,7 @@ describe('React Hook Form Input', () => {
     const control = reconfigureControl();
 
     const { asFragment } = render(
-      <Controller name="test" as="input" valueName="value" control={control} />,
+      <Controller name="test" as="input" valueName="selectedkey" control={control} />,
     );
 
     expect(asFragment()).toMatchSnapshot();
