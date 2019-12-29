@@ -18,11 +18,7 @@ const ErrorMessage = <
   name,
 }: Props<Errors, Name>) => {
   const methods = useFormContext() || {};
-  const { message } = get(
-    errorsFromProps || (methods.errors as Errors),
-    name,
-    {},
-  );
+  const { message } = get(errorsFromProps || methods.errors, name, {});
 
   if (!message) {
     return null;
