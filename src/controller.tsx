@@ -3,6 +3,7 @@ import isBoolean from './utils/isBoolean';
 import isUndefined from './utils/isUndefined';
 import getInputValue from './logic/getInputValue';
 import skipValidation from './logic/skipValidation';
+import { useFormContext } from './useFormContext';
 import { EVENTS, VALIDATION_MODE } from './constants';
 import { Mode, ValidationOptions } from './types';
 
@@ -19,7 +20,7 @@ export type Props = {
   onBlurName?: string;
   valueName?: string;
   defaultValue?: any;
-  control: any;
+  control?: any;
 };
 
 const Controller = ({
@@ -32,7 +33,11 @@ const Controller = ({
   onBlurName = VALIDATION_MODE.onBlur,
   valueName,
   defaultValue,
-  control: {
+  control,
+  ...rest
+}: Props) => {
+  const methods = useFormContext() || {};
+  const {
     defaultValues,
     fields,
     setValue,
@@ -42,9 +47,7 @@ const Controller = ({
     mode: { isOnSubmit, isOnBlur },
     reValidateMode: { isReValidateOnBlur, isReValidateOnSubmit },
     formState: { isSubmitted },
-  },
-  ...rest
-}: Props) => {
+  } = control || methods.control;
   const [value, setInputStateValue] = React.useState(
     isUndefined(defaultValue)
       ? isUndefined(defaultValues[name])
