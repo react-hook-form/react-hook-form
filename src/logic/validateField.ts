@@ -54,6 +54,26 @@ export default async <FormValues extends FieldValues>(
     validateAllFieldCriteria,
     error,
   );
+  const getMinMaxMessage = (
+    exceedMax: boolean,
+    maxLengthMessage: string,
+    minLengthMessage: string,
+    maxType = INPUT_VALIDATION_RULES.maxLength,
+    minType = INPUT_VALIDATION_RULES.minLength,
+  ) => {
+    const message = exceedMax ? maxLengthMessage : minLengthMessage;
+    error[name] = {
+      type: exceedMax ? maxType : minType,
+      message,
+      ref,
+      ...(exceedMax
+        ? appendErrorsCurry(maxType, message)
+        : appendErrorsCurry(minType, message)),
+    };
+    if (!validateAllFieldCriteria) {
+      return error;
+    }
+  };
 
   if (
     required &&
@@ -102,17 +122,13 @@ export default async <FormValues extends FieldValues>(
     }
 
     if (exceedMax || exceedMin) {
-      const message = exceedMax ? maxMessage : minMessage;
-      error[name] = {
-        type: exceedMax
-          ? INPUT_VALIDATION_RULES.max
-          : INPUT_VALIDATION_RULES.min,
-        message,
-        ref,
-        ...(exceedMax
-          ? appendErrorsCurry(INPUT_VALIDATION_RULES.max, message)
-          : appendErrorsCurry(INPUT_VALIDATION_RULES.min, message)),
-      };
+      getMinMaxMessage(
+        !!exceedMax,
+        maxMessage,
+        minMessage,
+        INPUT_VALIDATION_RULES.max,
+        INPUT_VALIDATION_RULES.min,
+      );
       if (!validateAllFieldCriteria) {
         return error;
       }
@@ -133,17 +149,7 @@ export default async <FormValues extends FieldValues>(
     const exceedMin = minLength && inputLength < minLengthValue;
 
     if (exceedMax || exceedMin) {
-      const message = exceedMax ? maxLengthMessage : minLengthMessage;
-      error[name] = {
-        type: exceedMax
-          ? INPUT_VALIDATION_RULES.maxLength
-          : INPUT_VALIDATION_RULES.minLength,
-        message,
-        ref,
-        ...(exceedMax
-          ? appendErrorsCurry(INPUT_VALIDATION_RULES.maxLength, message)
-          : appendErrorsCurry(INPUT_VALIDATION_RULES.minLength, message)),
-      };
+      getMinMaxMessage(!!exceedMax, maxLengthMessage, minLengthMessage);
       if (!validateAllFieldCriteria) {
         return error;
       }
