@@ -11,11 +11,10 @@ export default function getValidateError(
 
   if (isStringValue || (isBoolean(result) && !result)) {
     const message = isStringValue ? (result as string) : '';
-    const error = {
+    return {
       type,
       message,
       ref,
     };
-    return error;
   }
 }

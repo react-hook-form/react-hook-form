@@ -6,19 +6,20 @@ import isEmptyObject from './isEmptyObject';
 
 const unsetObject = (target: any) => {
   for (const key in target) {
-    const isArrayObject = isArray(target[key]);
+    const data = target[key];
+    const isArrayObject = isArray(data);
 
-    if ((isObject(target[key]) || isArrayObject) && !target[key].ref) {
-      unsetObject(target[key]);
+    if ((isObject(data) || isArrayObject) && !data.ref) {
+      unsetObject(data);
     }
 
     if (isArrayObject) {
-      target[key] = target[key].filter(Boolean);
+      target[key] = data.filter(Boolean);
     }
 
     if (
-      isUndefined(target[key]) ||
-      isEmptyObject(target[key]) ||
+      isUndefined(data) ||
+      isEmptyObject(data) ||
       (isArrayObject && !target[key].length)
     ) {
       delete target[key];
