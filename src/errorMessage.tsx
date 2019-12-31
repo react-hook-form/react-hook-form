@@ -40,7 +40,7 @@ const ErrorMessage = <
 
   const props = {
     children: children
-      ? children({ message: message, messages: types })
+      ? children({ message, messages: types })
       : message,
   };
 
