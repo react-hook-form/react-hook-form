@@ -177,7 +177,7 @@ export type ControllerProps = {
 };
 
 export type ErrorMessageProps<Errors, Name> = {
-  as?: React.ElementType<any> | React.FunctionComponent<any> | string | any;
+  as?: React.ReactElement | React.ElementType | string;
   errors?: Errors;
   name: Name;
   children?: (data: {
