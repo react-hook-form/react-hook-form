@@ -9,7 +9,7 @@ import { Mode, ValidationOptions } from './types';
 
 export type EventFunction = (args: any) => any;
 
-export type Props = {
+export type ControllerProps = {
   name: string;
   as: React.ElementType<any> | React.FunctionComponent<any> | string | any;
   rules?: ValidationOptions;
@@ -35,7 +35,7 @@ const Controller = ({
   defaultValue,
   control,
   ...rest
-}: Props) => {
+}: ControllerProps) => {
   const methods = useFormContext() || {};
   const {
     defaultValues,

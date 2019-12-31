@@ -17,29 +17,31 @@ export default function findRemovedFieldAndRemoveListener<
     return;
   }
 
-  const { ref, mutationWatcher } = field;
+  const {
+    ref,
+    ref: { name, type },
+    mutationWatcher,
+  } = field;
 
-  if (!ref.type || !fields[ref.name]) {
+  if (!type) {
     return;
   }
 
-  const { name, type } = ref;
-  const fieldValue: Field | undefined = fields[name];
+  const fieldValue = fields[name];
 
   if ((isRadioInput(type) || isCheckBoxInput(type)) && fieldValue) {
     const { options } = fieldValue;
 
     if (isArray(options) && options.length) {
       options.forEach(({ ref }, index): void => {
-        const option = options[index];
-        if ((option && isDetached(ref)) || forceDelete) {
-          const mutationWatcher = option.mutationWatcher;
-
-          removeAllEventListeners(option, handleChange);
+        if ((ref && isDetached(ref)) || forceDelete) {
+          const mutationWatcher = ref.mutationWatcher;
+          removeAllEventListeners(ref, handleChange);
 
           if (mutationWatcher) {
             mutationWatcher.disconnect();
           }
+
           options.splice(index, 1);
         }
       });

@@ -12,13 +12,11 @@ export default function attachEventListeners({
 }): void {
   const { ref } = field;
 
-  if (!ref.addEventListener) {
-    return;
+  if (ref.addEventListener) {
+    ref.addEventListener(
+      isRadioOrCheckbox ? EVENTS.CHANGE : EVENTS.INPUT,
+      handleChange,
+    );
+    ref.addEventListener(EVENTS.BLUR, handleChange);
   }
-
-  ref.addEventListener(
-    isRadioOrCheckbox ? EVENTS.CHANGE : EVENTS.INPUT,
-    handleChange,
-  );
-  ref.addEventListener(EVENTS.BLUR, handleChange);
 }

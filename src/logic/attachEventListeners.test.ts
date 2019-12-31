@@ -202,7 +202,11 @@ describe('attachEventListeners', () => {
   it('should return undefined when addEventListener is not found', () => {
     expect(
       attachEventListeners({
-        field: { ref: {} },
+        field: {
+          ref: {
+            addEventListener: () => {},
+          },
+        },
         isRadioOrCheckbox: false,
         handleChange: () => {},
       }),

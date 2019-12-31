@@ -1,31 +1,26 @@
 import isObject from './isObject';
 import isArray from './isArray';
+import {
+  REGEX_ESCAPE_CHAR,
+  REGEX_IS_DEEP_PROP,
+  REGEX_IS_PLAIN_PROP,
+  REGEX_PROP_NAME,
+} from '../constants';
 import { FieldValues } from '../types';
 
-const reIsDeepProp = /\.|\[(?:[^[\]]*|(["'])(?:(?!\1)[^\\]|\\.)*?\1)\]/;
-const reIsPlainProp = /^\w*$/;
-const rePropName = /[^.[\]]+|\[(?:(-?\d+(?:\.\d+)?)|(["'])((?:(?!\2)[^\\]|\\.)*?)\2)\]|(?=(?:\.|\[\])(?:\.|\[\]|$))/g;
-const reEscapeChar = /\\(\\)?/g;
-const reIsUint = /^(?:0|[1-9]\d*)$/;
-
-function isIndex(value: any) {
-  return reIsUint.test(value) && value > -1;
-}
-
-export function isKey(value: [] | string) {
-  if (isArray(value)) {
-    return false;
-  }
-  return reIsPlainProp.test(value) || !reIsDeepProp.test(value);
-}
+export const isKey = (value: [] | string) =>
+  !isArray(value) &&
+  (REGEX_IS_PLAIN_PROP.test(value) || !REGEX_IS_DEEP_PROP.test(value));
 
 const stringToPath = (string: string): string[] => {
   const result: string[] = [];
 
   string.replace(
-    rePropName,
+    REGEX_PROP_NAME,
     (match: string, number: string, quote: string, string: string): any => {
-      result.push(quote ? string.replace(reEscapeChar, '$1') : number || match);
+      result.push(
+        quote ? string.replace(REGEX_ESCAPE_CHAR, '$1') : number || match,
+      );
     },
   );
 
@@ -47,7 +42,7 @@ export default function set(object: FieldValues, path: string, value: any) {
       newValue =
         isObject(objValue) || isArray(objValue)
           ? objValue
-          : isIndex(tempPath[index + 1])
+          : !isNaN(tempPath[index + 1] as any)
           ? []
           : {};
     }
