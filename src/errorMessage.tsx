@@ -1,12 +1,21 @@
 import * as React from 'react';
 import { useFormContext } from './useFormContext';
 import get from './utils/get';
-import { FieldErrors, FieldName, FormValuesFromErrors } from './types';
+import {
+  FieldErrors,
+  FieldName,
+  MultipleFieldErrors,
+  FormValuesFromErrors,
+} from './types';
 
 type Props<Errors, Name> = {
   as?: React.ElementType<any> | React.FunctionComponent<any> | string | any;
   errors?: Errors;
   name: Name;
+  children?: (data: {
+    message: string;
+    messages: MultipleFieldErrors;
+  }) => React.ReactNode;
 };
 
 const ErrorMessage = <
@@ -14,17 +23,26 @@ const ErrorMessage = <
   Name extends FieldName<FormValuesFromErrors<Errors>>
 >({
   as: InnerComponent,
-  errors: errorsFromProps,
+  errors,
   name,
+  children,
 }: Props<Errors, Name>) => {
   const methods = useFormContext() || {};
-  const { message } = get(errorsFromProps || methods.errors, name, {});
+  const { message, types } = get(
+    errors || (methods.errors as Errors),
+    name,
+    {},
+  );
 
   if (!message) {
     return null;
   }
 
-  const props = { children: message };
+  const props = {
+    children: children
+      ? children({ message: message, messages: types })
+      : message,
+  };
 
   return InnerComponent ? (
     React.isValidElement(InnerComponent) ? (
@@ -33,7 +51,7 @@ const ErrorMessage = <
       <InnerComponent {...props} />
     )
   ) : (
-    <>{message}</>
+    <React.Fragment {...props} />
   );
 };
 

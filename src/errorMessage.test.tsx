@@ -24,13 +24,78 @@ describe('React Hook Form Error Message', () => {
     const { asFragment } = render(
       <ErrorMessage
         as="span"
+        errors={{ flat: { type: 'flat', message: 'flat' } }}
+        name="flat"
+      />,
+    );
+
+    expect(asFragment()).toMatchSnapshot();
+  });
+
+  it('should render correctly with flat errors and as with component and children', () => {
+    const { asFragment } = render(
+      <ErrorMessage
+        as={<span />}
+        errors={{ flat: { type: 'flat', message: 'flat' } }}
+        name="flat"
+      >
+        {({ message }) => message}
+      </ErrorMessage>,
+    );
+
+    expect(asFragment()).toMatchSnapshot();
+  });
+
+  it('should render correctly with flat multiple errors and children', () => {
+    const { asFragment } = render(
+      <ErrorMessage
         errors={{
-          nested: {
-            object: { type: 'object', message: 'object' },
+          flat: {
+            type: 'flat',
+            message: 'flat',
+            types: {
+              flat1: 'flat1',
+              flat2: 'flat2',
+              flat3: 'flat3',
+            },
           },
         }}
-        name="nested.object"
-      />,
+        name="flat"
+      >
+        {({ messages }) =>
+          Object.entries(messages).map(([type, message]) => (
+            <span key={type}>{message}</span>
+          ))
+        }
+      </ErrorMessage>,
+    );
+
+    expect(asFragment()).toMatchSnapshot();
+  });
+
+  it('should render correctly with flat multiple errors and as with component and children', () => {
+    const { asFragment } = render(
+      <ErrorMessage
+        as={<div />}
+        errors={{
+          flat: {
+            type: 'flat',
+            message: 'flat',
+            types: {
+              flat1: 'flat1',
+              flat2: 'flat2',
+              flat3: 'flat3',
+            },
+          },
+        }}
+        name="flat"
+      >
+        {({ messages }) =>
+          Object.entries(messages).map(([type, message]) => (
+            <span key={type}>{message}</span>
+          ))
+        }
+      </ErrorMessage>,
     );
 
     expect(asFragment()).toMatchSnapshot();
@@ -51,7 +116,23 @@ describe('React Hook Form Error Message', () => {
     expect(asFragment()).toMatchSnapshot();
   });
 
-  it('should render correctly with nested errors object and as with component', () => {
+  it('should render correctly with nested errors object and as with string', () => {
+    const { asFragment } = render(
+      <ErrorMessage
+        as="span"
+        errors={{
+          nested: {
+            object: { type: 'object', message: 'object' },
+          },
+        }}
+        name="nested.object"
+      />,
+    );
+
+    expect(asFragment()).toMatchSnapshot();
+  });
+
+  it('should render correctly with nested errors and as with componet and children', () => {
     const { asFragment } = render(
       <ErrorMessage
         as={<span />}
@@ -61,7 +142,68 @@ describe('React Hook Form Error Message', () => {
           },
         }}
         name="nested.object"
-      />,
+      >
+        {({ message }) => message}
+      </ErrorMessage>,
+    );
+
+    expect(asFragment()).toMatchSnapshot();
+  });
+
+  it('should render correctly with nested multiple errors and children', () => {
+    const { asFragment } = render(
+      <ErrorMessage
+        errors={{
+          nested: {
+            object: {
+              type: 'object',
+              message: 'object',
+              types: {
+                object1: 'object1',
+                object2: 'object2',
+                object3: 'object3',
+              },
+            },
+          },
+        }}
+        name="nested.object"
+      >
+        {({ messages }) =>
+          Object.entries(messages).map(([type, message]) => (
+            <span key={type}>{message}</span>
+          ))
+        }
+      </ErrorMessage>,
+    );
+
+    expect(asFragment()).toMatchSnapshot();
+  });
+
+  it('should render correctly with nested multiple errors and as with component and children', () => {
+    const { asFragment } = render(
+      <ErrorMessage
+        as={<div />}
+        errors={{
+          nested: {
+            object: {
+              type: 'object',
+              message: 'object',
+              types: {
+                object1: 'object1',
+                object2: 'object2',
+                object3: 'object3',
+              },
+            },
+          },
+        }}
+        name="nested.object"
+      >
+        {({ messages }) =>
+          Object.entries(messages).map(([type, message]) => (
+            <span key={type}>{message}</span>
+          ))
+        }
+      </ErrorMessage>,
     );
 
     expect(asFragment()).toMatchSnapshot();
@@ -84,7 +226,25 @@ describe('React Hook Form Error Message', () => {
     expect(asFragment()).toMatchSnapshot();
   });
 
-  it('should render correctly with nested errors array and as with component', () => {
+  it('should render correctly with nested errors array and as with string', () => {
+    const { asFragment } = render(
+      <ErrorMessage
+        as="span"
+        errors={{
+          nested: [
+            {
+              array: { type: 'array', message: 'array' },
+            },
+          ],
+        }}
+        name="nested[0].array"
+      />,
+    );
+
+    expect(asFragment()).toMatchSnapshot();
+  });
+
+  it('should render correctly with nested errors array and as with component and children', () => {
     const { asFragment } = render(
       <ErrorMessage
         as={<span />}
@@ -96,7 +256,72 @@ describe('React Hook Form Error Message', () => {
           ],
         }}
         name="nested[0].array"
-      />,
+      >
+        {({ message }) => message}
+      </ErrorMessage>,
+    );
+
+    expect(asFragment()).toMatchSnapshot();
+  });
+
+  it('should render correctly with nested multiple errors array and children', () => {
+    const { asFragment } = render(
+      <ErrorMessage
+        errors={{
+          nested: [
+            {
+              array: {
+                type: 'array',
+                message: 'array',
+                types: {
+                  array1: 'array1',
+                  array2: 'array2',
+                  array3: 'array3',
+                },
+              },
+            },
+          ],
+        }}
+        name="nested[0].array"
+      >
+        {({ messages }) =>
+          Object.entries(messages).map(([type, message]) => (
+            <span key={type}>{message}</span>
+          ))
+        }
+      </ErrorMessage>,
+    );
+
+    expect(asFragment()).toMatchSnapshot();
+  });
+
+  it('should render correctly with nested multiple errors array and as with component and children', () => {
+    const { asFragment } = render(
+      <ErrorMessage
+        as={<div />}
+        errors={{
+          nested: [
+            {
+              array: {
+                type: 'array',
+                message: 'array',
+                types: {
+                  array1: 'array1',
+                  array2: 'array2',
+                  array3: 'array3',
+                },
+              },
+            },
+          ],
+        }}
+        name="nested[0].array"
+      >
+        {({ messages }) =>
+          Object.entries(messages).map(([type, message]) => (
+            <span key={type}>{message}</span>
+          ))
+        }
+      </ErrorMessage>,
     );
 
     expect(asFragment()).toMatchSnapshot();
