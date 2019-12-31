@@ -27,3 +27,8 @@ export const INPUT_VALIDATION_RULES = {
   required: 'required',
   validate: 'validate',
 };
+
+export const regexIsDeepProp = /\.|\[(?:[^[\]]*|(["'])(?:(?!\1)[^\\]|\\.)*?\1)\]/;
+export const regexIsPlainProp = /^\w*$/;
+export const regexPropName = /[^.[\]]+|\[(?:(-?\d+(?:\.\d+)?)|(["'])((?:(?!\2)[^\\]|\\.)*?)\2)\]|(?=(?:\.|\[\])(?:\.|\[\]|$))/g;
+export const regexEscapeChar = /\\(\\)?/g;
