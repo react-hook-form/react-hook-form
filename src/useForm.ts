@@ -911,19 +911,20 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
           await callback(transformToNestObject(fieldValues), e);
         } else {
           if (submitFocusError) {
-            Object.keys(fieldErrors).reduce((previous, current) => {
-              const field = fields[current];
-              if (field && previous) {
-                if (field.ref.focus) {
-                  field.ref.focus();
-                  return false;
-                } else if (field.options) {
-                  field.options[0].ref.focus();
-                  return false;
+            for (const key in fieldsRef.current) {
+              if (get(fieldErrors, key)) {
+                const field = fieldsRef.current[key];
+                if (field) {
+                  if (field.ref.focus) {
+                    field.ref.focus();
+                    break;
+                  } else if (field.options) {
+                    field.options[0].ref.focus();
+                    break;
+                  }
                 }
               }
-              return previous;
-            }, true);
+            }
           }
 
           errorsRef.current = fieldErrors;

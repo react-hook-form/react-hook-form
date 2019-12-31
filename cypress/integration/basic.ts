@@ -3,7 +3,7 @@ context('basic form validation', () => {
     cy.visit('http://localhost:3000/basic/onSubmit');
     cy.get('button#submit').click();
 
-    cy.focused().should('have.attr', 'name', 'firstName');
+    cy.focused().should('have.attr', 'name', 'nestItem.nest1');
 
     cy.get('input[name="firstName"] + p').contains('firstName error');
     cy.get('input[name="nestItem.nest1"] + p').contains('nest 1 error');
@@ -222,6 +222,6 @@ context('basic form validation', () => {
     cy.get('input[name="pattern"]').should('not.have.value');
     cy.get('input[name="minDate"]').should('not.have.value');
     cy.get('input[name="maxDate"]').should('not.have.value');
-    cy.get('#renderCount').contains('33');
+    cy.get('#renderCount').contains('31');
   });
 });

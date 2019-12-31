@@ -4,7 +4,7 @@ import isUndefined from './utils/isUndefined';
 import getInputValue from './logic/getInputValue';
 import skipValidation from './logic/skipValidation';
 import { useFormContext } from './useFormContext';
-import { EVENTS, VALIDATION_MODE, VALUE } from "./constants";
+import { EVENTS, VALIDATION_MODE, VALUE } from './constants';
 import { Mode, ValidationOptions } from './types';
 
 export type EventFunction = (args: any) => any;
