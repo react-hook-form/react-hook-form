@@ -4,19 +4,9 @@ import get from './utils/get';
 import {
   FieldErrors,
   FieldName,
-  MultipleFieldErrors,
   FormValuesFromErrors,
+  ErrorMessageProps,
 } from './types';
-
-export type ErrorMessageProps<Errors, Name> = {
-  as?: React.ElementType<any> | React.FunctionComponent<any> | string | any;
-  errors?: Errors;
-  name: Name;
-  children?: (data: {
-    message: string;
-    messages: MultipleFieldErrors;
-  }) => React.ReactNode;
-};
 
 const ErrorMessage = <
   Errors extends FieldErrors<any>,
