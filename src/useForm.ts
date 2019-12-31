@@ -605,9 +605,9 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
     defaultValue?: string | Partial<FormValues>,
   ): FieldValue<FormValues> | Partial<FormValues> | string | undefined {
     const combinedDefaultValues = isUndefined(defaultValue)
-      ? isUndefined(defaultValues)
+      ? isUndefined(defaultValuesRef.current)
         ? {}
-        : defaultValues
+        : defaultValuesRef.current
       : defaultValue;
     const fieldValues = getFieldsValues<FormValues>(fieldsRef.current);
     const watchFields = watchFieldsRef.current;
@@ -655,7 +655,7 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
     const result =
       (!isEmptyObject(fieldValues) && fieldValues) ||
       defaultValue ||
-      defaultValues;
+      defaultValuesRef.current;
 
     return fieldNames && fieldNames.nest
       ? transformToNestObject(result as FieldValues)
@@ -985,7 +985,7 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
   const getValues = (payload?: { nest: boolean }): FormValues => {
     const fieldValues = getFieldsValues(fieldsRef.current);
     const outputValues = isEmptyObject(fieldValues)
-      ? defaultValues
+      ? defaultValuesRef.current
       : fieldValues;
     return payload && payload.nest
       ? transformToNestObject(outputValues)
@@ -1046,7 +1046,7 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
     handleSubmit,
     setValue,
     triggerValidation,
-    getValues: useCallback(getValues, [defaultValues]),
+    getValues: useCallback(getValues, []),
     reset: useCallback(reset, [reRender]),
     register: useCallback(register, [
       defaultRenderValuesRef.current,
