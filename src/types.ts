@@ -159,3 +159,29 @@ export type FormValuesFromErrors<Errors> = Errors extends FieldErrors<
 >
   ? FormValues
   : never;
+
+export type EventFunction = (args: any) => any;
+
+export type ControllerProps = {
+  name: string;
+  as: React.ElementType<any> | React.FunctionComponent<any> | string | any;
+  rules?: ValidationOptions;
+  onChange?: EventFunction;
+  onBlur?: EventFunction;
+  mode?: Mode;
+  onChangeName?: string;
+  onBlurName?: string;
+  valueName?: string;
+  defaultValue?: any;
+  control?: any;
+};
+
+export type ErrorMessageProps<Errors, Name> = {
+  as?: React.ElementType<any> | React.FunctionComponent<any> | string;
+  errors?: Errors;
+  name: Name;
+  children?: (data: {
+    message: string;
+    messages: MultipleFieldErrors;
+  }) => React.ReactNode;
+};

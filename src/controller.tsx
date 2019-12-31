@@ -5,23 +5,7 @@ import getInputValue from './logic/getInputValue';
 import skipValidation from './logic/skipValidation';
 import { useFormContext } from './useFormContext';
 import { EVENTS, VALIDATION_MODE, VALUE } from './constants';
-import { Mode, ValidationOptions } from './types';
-
-export type EventFunction = (args: any) => any;
-
-export type ControllerProps = {
-  name: string;
-  as: React.ElementType<any> | React.FunctionComponent<any> | string | any;
-  rules?: ValidationOptions;
-  onChange?: EventFunction;
-  onBlur?: EventFunction;
-  mode?: Mode;
-  onChangeName?: string;
-  onBlurName?: string;
-  valueName?: string;
-  defaultValue?: any;
-  control?: any;
-};
+import { ControllerProps, EventFunction } from './types';
 
 const Controller = ({
   name,
