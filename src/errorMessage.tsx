@@ -3,7 +3,7 @@ import { useFormContext } from './useFormContext';
 import get from './utils/get';
 import { FieldErrors, FieldName, FormValuesFromErrors } from './types';
 
-type Props<Errors, Name> = {
+type ErrorMessageProps<Errors, Name> = {
   as?: React.ElementType<any> | React.FunctionComponent<any> | string | any;
   errors?: Errors;
   name: Name;
@@ -16,7 +16,7 @@ const ErrorMessage = <
   as: InnerComponent,
   errors: errorsFromProps,
   name,
-}: Props<Errors, Name>) => {
+}: ErrorMessageProps<Errors, Name>) => {
   const methods = useFormContext() || {};
   const { message } = get(errorsFromProps || methods.errors, name, {});
 

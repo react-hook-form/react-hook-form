@@ -1,7 +1,7 @@
 import set from '../utils/set';
 import isArray from '../utils/isArray';
 import isNullOrUndefined from '../utils/isNullOrUndefined';
-import { regexIsDeepProp } from '../constants';
+import { REGEX_IS_DEEP_PROP } from '../constants';
 import { FieldValues } from '../types';
 
 const filterArray = (target: any) => {
@@ -19,7 +19,7 @@ export default (data: FieldValues): any =>
   filterArray(
     Object.entries(data).reduce(
       (previous: FieldValues, [key, value]): FieldValues => {
-        if (regexIsDeepProp.test(key)) {
+        if (REGEX_IS_DEEP_PROP.test(key)) {
           set(previous, key, value);
           return previous;
         }

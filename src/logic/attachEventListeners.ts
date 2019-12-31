@@ -12,10 +12,6 @@ export default function attachEventListeners({
 }): void {
   const { ref } = field;
 
-  if (!ref.addEventListener) {
-    return;
-  }
-
   ref.addEventListener(
     isRadioOrCheckbox ? EVENTS.CHANGE : EVENTS.INPUT,
     handleChange,

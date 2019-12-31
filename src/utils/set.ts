@@ -1,25 +1,25 @@
 import isObject from './isObject';
 import isArray from './isArray';
 import {
-  regexEscapeChar,
-  regexIsDeepProp,
-  regexIsPlainProp,
-  regexPropName,
+  REGEX_ESCAPE_CHAR,
+  REGEX_IS_DEEP_PROP,
+  REGEX_IS_PLAIN_PROP,
+  REGEX_PROP_NAME,
 } from '../constants';
 import { FieldValues } from '../types';
 
 export const isKey = (value: [] | string) =>
   !isArray(value) &&
-  (regexIsPlainProp.test(value) || !regexIsDeepProp.test(value));
+  (REGEX_IS_PLAIN_PROP.test(value) || !REGEX_IS_DEEP_PROP.test(value));
 
 const stringToPath = (string: string): string[] => {
   const result: string[] = [];
 
   string.replace(
-    regexPropName,
+    REGEX_PROP_NAME,
     (match: string, number: string, quote: string, string: string): any => {
       result.push(
-        quote ? string.replace(regexEscapeChar, '$1') : number || match,
+        quote ? string.replace(REGEX_ESCAPE_CHAR, '$1') : number || match,
       );
     },
   );
