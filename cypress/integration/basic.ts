@@ -222,6 +222,6 @@ context('basic form validation', () => {
     cy.get('input[name="pattern"]').should('not.have.value');
     cy.get('input[name="minDate"]').should('not.have.value');
     cy.get('input[name="maxDate"]').should('not.have.value');
-    cy.get('#renderCount').contains('33');
+    cy.get('#renderCount').contains('31');
   });
 });
