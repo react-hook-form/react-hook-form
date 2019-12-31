@@ -164,7 +164,7 @@ export type EventFunction = (args: any) => any;
 
 export type ControllerProps = {
   name: string;
-  as: React.ElementType<any> | React.FunctionComponent<any> | string;
+  as: React.ElementType<any> | React.FunctionComponent<any> | string | any;
   rules?: ValidationOptions;
   onChange?: EventFunction;
   onBlur?: EventFunction;
@@ -177,7 +177,7 @@ export type ControllerProps = {
 };
 
 export type ErrorMessageProps<Errors, Name> = {
-  as?: React.ElementType<any> | React.FunctionComponent<any> | string;
+  as?: React.ElementType<any> | React.FunctionComponent<any> | string | any;
   errors?: Errors;
   name: Name;
   children?: (data: {
