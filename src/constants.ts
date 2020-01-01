@@ -1,5 +1,7 @@
 import { ValidationMode } from './types';
 
+export const IS_DEV_ENV = process.env.NODE_ENV !== 'production';
+
 export const VALIDATION_MODE: ValidationMode = {
   onBlur: 'onBlur',
   onChange: 'onChange',

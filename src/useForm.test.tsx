@@ -19,6 +19,9 @@ jest.mock('./logic/transformToNestObject', () => ({
   default: (data: any) => data,
   esmodule: true,
 }));
+jest.mock('./logic/reportFieldNotFound', () => ({
+  default: () => {},
+}));
 
 describe('useForm', () => {
   beforeEach(() => {
