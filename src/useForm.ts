@@ -27,7 +27,7 @@ import unset from './utils/unset';
 import isMultipleSelect from './utils/isMultipleSelect';
 import modeChecker from './utils/validationModeChecker';
 import isNullOrUndefined from './utils/isNullOrUndefined';
-import { EVENTS, IS_DEV_ENV, UNDEFINED, VALIDATION_MODE } from './constants';
+import { EVENTS, UNDEFINED, VALIDATION_MODE } from './constants';
 import { FormContextValues } from './contextTypes';
 import {
   FieldValues,
@@ -680,7 +680,7 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
     ref: Element,
     validateOptions: ValidationOptions = {},
   ): ((name: FieldName<FormValues>) => void) | void {
-    if (!ref.name && IS_DEV_ENV) {
+    if (!ref.name && process.env.NODE_ENV !== 'production') {
       return console.warn('Missing name @', ref);
     }
 
