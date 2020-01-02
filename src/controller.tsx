@@ -106,6 +106,7 @@ const Controller = ({
   React.useEffect(() => () => unregister(name), []);
 
   const props = {
+    name,
     ...rest,
     ...(onChange
       ? { [onChangeName]: eventWrapper(onChange, EVENTS.CHANGE) }
