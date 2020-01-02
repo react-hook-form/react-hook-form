@@ -6,6 +6,7 @@ import getFieldsValues from './logic/getFieldValues';
 import getFieldValue from './logic/getFieldValue';
 import shouldUpdateWithError from './logic/shouldUpdateWithError';
 import validateField from './logic/validateField';
+import reportFieldNotFound from './logic/reportFieldNotFound';
 import validateWithSchema from './logic/validateWithSchema';
 import getDefaultValue from './logic/getDefaultValue';
 import assignWatchFields from './logic/assignWatchFields';
@@ -168,6 +169,7 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
       const field = fieldsRef.current[name];
 
       if (!field) {
+        reportFieldNotFound(name);
         return false;
       }
 
@@ -512,10 +514,10 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
     if (isUndefined(name)) {
       errorsRef.current = {};
     } else {
-      (isArray(name) ? name : [name]).forEach(
-        fieldName =>
-          (errorsRef.current = omitObject(errorsRef.current, fieldName)),
-      );
+      (isArray(name) ? name : [name]).forEach(fieldName => {
+        reportFieldNotFound(fieldName, fieldsRef.current);
+        errorsRef.current = omitObject(errorsRef.current, fieldName);
+      });
     }
 
     reRender();
@@ -678,7 +680,7 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
     ref: Element,
     validateOptions: ValidationOptions = {},
   ): ((name: FieldName<FormValues>) => void) | void {
-    if (!ref.name) {
+    if (!ref.name && process.env.NODE_ENV !== 'production') {
       return console.warn('Missing name @', ref);
     }
 
