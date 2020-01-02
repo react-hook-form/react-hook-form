@@ -1,9 +1,5 @@
 import assignWatchFields from './assignWatchFields';
 
-jest.mock('./reportFieldNotFound', () => ({
-  default: () => {},
-}));
-
 describe('assignWatchFields', () => {
   test('should return undefined when field values is empty object or undefined', () => {
     expect(assignWatchFields<any>({}, '', new Set(''), {})).toEqual(undefined);

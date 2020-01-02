@@ -1,6 +1,5 @@
 import transformToNestObject from './transformToNestObject';
 import getDefaultValue from './getDefaultValue';
-import reportFieldNotFound from './reportFieldNotFound';
 import get from '../utils/get';
 import getPath from '../utils/getPath';
 import isEmptyObject from '../utils/isEmptyObject';
@@ -24,9 +23,7 @@ export default <FormValues extends FieldValues>(
   } else {
     value = get(transformToNestObject(fieldValues), fieldName);
 
-    if (isUndefined(value)) {
-      reportFieldNotFound(fieldName);
-    } else {
+    if (!isUndefined(value)) {
       getPath<FormValues>(fieldName, value).forEach(name =>
         watchFields.add(name),
       );
