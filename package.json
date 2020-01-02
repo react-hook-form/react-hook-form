@@ -1,7 +1,7 @@
 {
   "name": "react-hook-form",
   "description": "Performant, flexible and extensible forms library for React Hooks",
-  "version": "4.4.0",
+  "version": "4.4.1-beta.1",
   "main": "dist/react-hook-form.js",
   "module": "dist/react-hook-form.es.js",
   "types": "dist/index.d.ts",
