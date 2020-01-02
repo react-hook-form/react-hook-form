@@ -5,14 +5,14 @@ import getPath from '../utils/getPath';
 import isEmptyObject from '../utils/isEmptyObject';
 import isUndefined from '../utils/isUndefined';
 import isObject from '../utils/isObject';
-import { FieldValue, FieldValues, FieldName } from '../types';
+import { DeepPartial, FieldValue, FieldValues, FieldName } from '../types';
 
 export default <FormValues extends FieldValues>(
   fieldValues: FormValues,
   fieldName: FieldName<FormValues>,
   watchFields: Set<FieldName<FormValues>>,
-  combinedDefaultValues: Partial<FormValues>,
-): FieldValue<FormValues> | Partial<FormValues> | undefined => {
+  combinedDefaultValues: DeepPartial<FormValues>,
+): FieldValue<FormValues> | DeepPartial<FormValues> | undefined => {
   let value;
 
   if (isEmptyObject(fieldValues)) {

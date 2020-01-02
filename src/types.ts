@@ -18,6 +18,14 @@ export type Ref =
   | HTMLTextAreaElement
   | any;
 
+export type DeepPartial<T> = {
+  [P in keyof T]?: T[P] extends Array<infer U>
+    ? Array<DeepPartial<U>>
+    : T[P] extends ReadonlyArray<infer U>
+    ? ReadonlyArray<DeepPartial<U>>
+    : DeepPartial<T[P]>;
+};
+
 export interface ValidationMode {
   onBlur: 'onBlur';
   onChange: 'onChange';
@@ -44,7 +52,7 @@ export type UseFormOptions<
 > = Partial<{
   mode: Mode;
   reValidateMode: Mode;
-  defaultValues: Partial<FormValues>;
+  defaultValues: DeepPartial<FormValues>;
   validationSchemaOption: SchemaValidateOptions;
   validationSchema: any;
   submitFocusError: boolean;

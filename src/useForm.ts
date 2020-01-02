@@ -29,6 +29,7 @@ import isNullOrUndefined from './utils/isNullOrUndefined';
 import { EVENTS, UNDEFINED, VALIDATION_MODE } from './constants';
 import { FormContextValues } from './contextTypes';
 import {
+  DeepPartial,
   FieldValues,
   FieldName,
   FieldValue,
@@ -71,9 +72,9 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
   const defaultRenderValuesRef = useRef<
     Partial<Record<FieldName<FormValues>, FieldValue<FormValues>>>
   >({});
-  const defaultValuesRef = useRef<FieldValue<FormValues> | Partial<FormValues>>(
-    defaultValues,
-  );
+  const defaultValuesRef = useRef<
+    FieldValue<FormValues> | DeepPartial<FormValues>
+  >(defaultValues);
   const isUnMount = useRef(false);
   const isWatchAllRef = useRef(false);
   const isSubmittedRef = useRef(false);
@@ -163,7 +164,7 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
   const setFieldValue = useCallback(
     (
       name: FieldName<FormValues>,
-      rawValue: FieldValue<FormValues> | Partial<FormValues> | undefined,
+      rawValue: FieldValue<FormValues> | DeepPartial<FormValues> | undefined,
     ): boolean => {
       const field = fieldsRef.current[name];
 
@@ -602,8 +603,8 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
       | FieldName<FormValues>
       | FieldName<FormValues>[]
       | { nest: boolean },
-    defaultValue?: string | Partial<FormValues>,
-  ): FieldValue<FormValues> | Partial<FormValues> | string | undefined {
+    defaultValue?: string | DeepPartial<FormValues>,
+  ): FieldValue<FormValues> | DeepPartial<FormValues> | string | undefined {
     const combinedDefaultValues = isUndefined(defaultValue)
       ? isUndefined(defaultValuesRef.current)
         ? {}
@@ -961,7 +962,7 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
     submitCountRef.current = 0;
   };
 
-  const reset = (values?: Partial<FormValues>): void => {
+  const reset = (values?: DeepPartial<FormValues>): void => {
     const fieldsKeyValue = Object.entries(fieldsRef.current);
 
     for (const [, value] of fieldsKeyValue) {
