@@ -5,24 +5,15 @@ jest.mock('../constants', () => ({
 }));
 
 describe('reportFieldNotFound', () => {
-  const original = console.error;
-  const errorLog = jest.fn();
-
-  beforeEach(() => {
-    console.error = errorLog;
-  });
-
-  afterEach(() => {
-    console.error = original;
-  });
-
   it('should report when field is not found', () => {
-    reportFieldNotFound('test');
-    expect(errorLog).toBeCalledWith('test field not found.');
+    expect(() => reportFieldNotFound('test')).toThrowError(
+      'test field not found.',
+    );
   });
 
   it('should ', () => {
-    reportFieldNotFound('test', { last: 'test' });
-    expect(errorLog).toBeCalledWith('test field not found.');
+    expect(() => reportFieldNotFound('test', { last: 'test' })).toThrowError(
+      'test field not found.',
+    );
   });
 });
