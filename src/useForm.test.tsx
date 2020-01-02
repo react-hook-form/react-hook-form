@@ -20,7 +20,7 @@ jest.mock('./logic/transformToNestObject', () => ({
   esmodule: true,
 }));
 jest.mock('./logic/reportFieldNotFound', () => ({
-  default: () => {},
+  default: () => { },
 }));
 
 describe('useForm', () => {
@@ -136,8 +136,8 @@ describe('useForm', () => {
             test: 'testData',
           });
         })({
-          preventDefault: () => {},
-          persist: () => {},
+          preventDefault: () => { },
+          persist: () => { },
         } as React.SyntheticEvent);
       });
     });
@@ -161,8 +161,8 @@ describe('useForm', () => {
             test: '',
           });
         })({
-          preventDefault: () => {},
-          persist: () => {},
+          preventDefault: () => { },
+          persist: () => { },
         } as React.SyntheticEvent);
       });
     });
@@ -186,8 +186,8 @@ describe('useForm', () => {
             test: false,
           });
         })({
-          preventDefault: () => {},
-          persist: () => {},
+          preventDefault: () => { },
+          persist: () => { },
         } as React.SyntheticEvent);
       });
     });
@@ -210,8 +210,8 @@ describe('useForm', () => {
             test: '1',
           });
         })({
-          preventDefault: () => {},
-          persist: () => {},
+          preventDefault: () => { },
+          persist: () => { },
         } as React.SyntheticEvent);
       });
     });
@@ -234,8 +234,8 @@ describe('useForm', () => {
 
       await act(async () => {
         await result.current.handleSubmit(callback)({
-          preventDefault: () => {},
-          persist: () => {},
+          preventDefault: () => { },
+          persist: () => { },
         } as React.SyntheticEvent);
       });
 
@@ -343,8 +343,8 @@ describe('useForm', () => {
             test: 'data',
           });
         })({
-          preventDefault: () => {},
-          persist: () => {},
+          preventDefault: () => { },
+          persist: () => { },
         } as React.SyntheticEvent);
       });
 
@@ -380,8 +380,8 @@ describe('useForm', () => {
             test: '1',
           });
         })({
-          preventDefault: () => {},
-          persist: () => {},
+          preventDefault: () => { },
+          persist: () => { },
         } as React.SyntheticEvent);
       });
     });
@@ -419,8 +419,8 @@ describe('useForm', () => {
             test: ['1'],
           });
         })({
-          preventDefault: () => {},
-          persist: () => {},
+          preventDefault: () => { },
+          persist: () => { },
         } as React.SyntheticEvent);
       });
     });
@@ -452,8 +452,8 @@ describe('useForm', () => {
             test: '1',
           });
         })({
-          preventDefault: () => {},
-          persist: () => {},
+          preventDefault: () => { },
+          persist: () => { },
         } as React.SyntheticEvent);
       });
     });
@@ -484,8 +484,8 @@ describe('useForm', () => {
             test: ['1'],
           });
         })({
-          preventDefault: () => {},
-          persist: () => {},
+          preventDefault: () => { },
+          persist: () => { },
         } as React.SyntheticEvent);
       });
     });
@@ -842,8 +842,8 @@ describe('useForm', () => {
 
       await act(async () => {
         await result.current.handleSubmit(callback)({
-          preventDefault: () => {},
-          persist: () => {},
+          preventDefault: () => { },
+          persist: () => { },
         } as React.SyntheticEvent);
       });
       expect(callback).toBeCalled();
@@ -866,8 +866,8 @@ describe('useForm', () => {
 
       await act(async () => {
         await result.current.handleSubmit(callback)({
-          preventDefault: () => {},
-          persist: () => {},
+          preventDefault: () => { },
+          persist: () => { },
         } as React.SyntheticEvent);
       });
       expect(callback).not.toBeCalled();
@@ -908,8 +908,8 @@ describe('useForm', () => {
 
       await act(async () => {
         await result.current.handleSubmit(callback)({
-          preventDefault: () => {},
-          persist: () => {},
+          preventDefault: () => { },
+          persist: () => { },
         } as React.SyntheticEvent);
       });
       expect(callback).toBeCalled();
@@ -1124,10 +1124,13 @@ describe('useForm', () => {
   describe('when defaultValues is supplied', () => {
     it('should populate the input with them', async () => {
       const { result } = renderHook(() =>
-        useForm<{ test: string }>({
+        useForm<{ test: string, deep: { nested: string, values: string } }>({
           mode: VALIDATION_MODE.onSubmit,
           defaultValues: {
             test: 'data',
+            deep: {
+              values: '5',
+            },
           },
         }),
       );
@@ -1138,16 +1141,21 @@ describe('useForm', () => {
 
       act(() => {
         result.current.register({ type: 'text', name: 'test' });
+        result.current.register({ type: 'text', name: 'deep.nested' });
+        result.current.register({ type: 'text', name: 'deep.values' });
       });
 
       await act(async () => {
         await result.current.handleSubmit((data: any) => {
           expect(data).toEqual({
             test: 'data',
+            deep: {
+              values: '5',
+            },
           });
         })({
-          preventDefault: () => {},
-          persist: () => {},
+          preventDefault: () => { },
+          persist: () => { },
         } as React.SyntheticEvent);
       });
     });
