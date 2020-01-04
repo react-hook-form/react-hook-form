@@ -162,6 +162,91 @@ describe('useFieldArray', () => {
       { id: '1', test: '2' },
     ]);
   });
+
+  it('should swap data order', () => {
+    const { result } = renderHook(() =>
+      useFieldArray({
+        control: {
+          getValues: () => ({ test: [{ test: '1' }, { test: '2' }] }),
+          defaultValuesRef: {
+            current: {},
+          },
+        },
+        name: 'test',
+      }),
+    );
+
+    act(() => {
+      result.current.swap(0, 1);
+    });
+
+    expect(result.current.fields).toEqual([
+      { id: '1', test: '2' },
+      { id: '1', test: '1' },
+    ]);
+  });
+
+  it('should move into pointed position', () => {
+    const { result } = renderHook(() =>
+      useFieldArray({
+        control: {
+          getValues: () => ({
+            test: [{ test: '1' }, { test: '2' }, { test: '3' }],
+          }),
+          defaultValuesRef: {
+            current: {},
+          },
+        },
+        name: 'test',
+      }),
+    );
+
+    act(() => {
+      result.current.move(2, 0);
+    });
+
+    expect(result.current.fields).toEqual([
+      { id: '1', test: '3' },
+      { id: '1', test: '1' },
+      { id: '1', test: '2' },
+    ]);
+
+    act(() => {
+      result.current.move(1, 0);
+    });
+
+    expect(result.current.fields).toEqual([
+      { id: '1', test: '1' },
+      { id: '1', test: '3' },
+      { id: '1', test: '2' },
+    ]);
+  });
+
+  it('should reset particular default value during useEffect', () => {
+    const defaultValuesRef = {
+      current: {
+        test: 'bill',
+      },
+    };
+
+    renderHook(() =>
+      useFieldArray({
+        control: {
+          getValues: () => ({ test: [{ test: '1' }, { test: '2' }] }),
+          defaultValuesRef,
+        },
+        name: 'test',
+      }),
+    );
+
+    act(() => {
+      expect(defaultValuesRef).toEqual({
+        current: {
+          test: {},
+        },
+      });
+    });
+  });
 });
 
 test('should append id to the value', () => {

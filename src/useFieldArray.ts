@@ -47,7 +47,7 @@ export function useFieldArray({
   };
 
   const move = (from: number, to: number) => {
-    fields.splice(to + 1, 0, fields.splice(from, 1)[0]);
+    fields.splice(to, 0, fields.splice(from, 1)[0]);
     setField(fields);
   };
 
