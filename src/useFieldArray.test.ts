@@ -11,6 +11,9 @@ describe('useFieldArray', () => {
       useFieldArray({
         control: {
           getValues: () => ({}),
+          defaultValuesRef: {
+            current: {},
+          },
         },
         name: 'test',
       }),
@@ -24,6 +27,9 @@ describe('useFieldArray', () => {
       useFieldArray({
         control: {
           getValues: () => ({}),
+          defaultValuesRef: {
+            current: {},
+          },
         },
         name: 'test',
       }),
@@ -50,6 +56,9 @@ describe('useFieldArray', () => {
       useFieldArray({
         control: {
           getValues: () => ({}),
+          defaultValuesRef: {
+            current: {},
+          },
         },
         name: 'test',
       }),
@@ -76,6 +85,9 @@ describe('useFieldArray', () => {
       useFieldArray({
         control: {
           getValues: () => ({ test: [{ test: '1' }, { test: '2' }] }),
+          defaultValuesRef: {
+            current: {},
+          },
         },
         name: 'test',
       }),
@@ -92,6 +104,9 @@ describe('useFieldArray', () => {
       useFieldArray({
         control: {
           getValues: () => ({ test: [{ test: '1' }, { test: '2' }] }),
+          defaultValuesRef: {
+            current: {},
+          },
         },
         name: 'test',
       }),
@@ -109,6 +124,9 @@ describe('useFieldArray', () => {
       useFieldArray({
         control: {
           getValues: () => ({ test: [{ test: '1' }, { test: '2' }] }),
+          defaultValuesRef: {
+            current: {},
+          },
         },
         name: 'test',
       }),
@@ -126,6 +144,9 @@ describe('useFieldArray', () => {
       useFieldArray({
         control: {
           getValues: () => ({ test: [{ test: '1' }, { test: '2' }] }),
+          defaultValuesRef: {
+            current: {},
+          },
         },
         name: 'test',
       }),

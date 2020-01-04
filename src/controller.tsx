@@ -22,7 +22,7 @@ const Controller = ({
 }: ControllerProps) => {
   const methods = useFormContext() || {};
   const {
-    defaultValues,
+    defaultValuesRef: { current: defaultValues },
     fields,
     setValue,
     register,

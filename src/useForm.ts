@@ -1026,6 +1026,7 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
   const control = {
     register,
     unregister,
+    getValues,
     setValue,
     formState,
     mode: {
@@ -1037,7 +1038,7 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
       isReValidateOnSubmit,
     },
     errors: errorsRef.current,
-    defaultValues: defaultValuesRef.current,
+    defaultValuesRef,
     fields: fieldsRef.current,
   };
 

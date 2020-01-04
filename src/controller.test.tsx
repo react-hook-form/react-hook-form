@@ -4,7 +4,9 @@ import { Controller } from './index';
 
 function reconfigureControl(changedControl = {}) {
   const defaultControl = {
-    defaultValues: {},
+    defaultValuesRef: {
+      current: {},
+    },
     fields: {},
     setValue: jest.fn(),
     register: jest.fn(),
@@ -21,7 +23,7 @@ function reconfigureControl(changedControl = {}) {
   return Object.assign({}, defaultControl, changedControl);
 }
 
-describe('React Hook Form Input', () => {
+describe('Controller', () => {
   it('should render correctly with as with string', () => {
     const control = reconfigureControl();
 

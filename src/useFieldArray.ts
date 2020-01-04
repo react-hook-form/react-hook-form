@@ -16,7 +16,7 @@ export function useFieldArray({
   name: string;
 }) {
   const methods = useFormContext() || {};
-  const { getValues } = control || methods.control;
+  const { getValues, defaultValuesRef } = control || methods.control;
   const getData = () => getValues({ nest: true })[name];
   const [fields, setField] = React.useState<any[]>(
     (getData() || []).map((value: any) => appendId(value)),
@@ -40,6 +40,10 @@ export function useFieldArray({
       ...fields.slice(index),
     ]);
   };
+
+  React.useEffect(() => {
+    defaultValuesRef.current[name] = {};
+  }, [defaultValuesRef, name]);
 
   return {
     prepend,

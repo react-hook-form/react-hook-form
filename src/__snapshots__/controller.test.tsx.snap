@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`React Hook Form Input should render correctly with as with component 1`] = `
+exports[`Controller should render correctly with as with component 1`] = `
 <DocumentFragment>
   <input
     name="test"
@@ -9,7 +9,7 @@ exports[`React Hook Form Input should render correctly with as with component 1`
 </DocumentFragment>
 `;
 
-exports[`React Hook Form Input should render correctly with as with string 1`] = `
+exports[`Controller should render correctly with as with string 1`] = `
 <DocumentFragment>
   <input
     name="test"
@@ -18,7 +18,7 @@ exports[`React Hook Form Input should render correctly with as with string 1`] =
 </DocumentFragment>
 `;
 
-exports[`React Hook Form Input should support custom value name 1`] = `
+exports[`Controller should support custom value name 1`] = `
 <DocumentFragment>
   <input
     name="test"
@@ -27,11 +27,11 @@ exports[`React Hook Form Input should support custom value name 1`] = `
 </DocumentFragment>
 `;
 
-exports[`React Hook Form Input should support default value from hook form 1`] = `
+exports[`Controller should support default value from hook form 1`] = `
 <DocumentFragment>
   <input
     name="test"
-    value="data"
+    value=""
   />
 </DocumentFragment>
 `;
