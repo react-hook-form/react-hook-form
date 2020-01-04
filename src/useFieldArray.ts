@@ -9,14 +9,15 @@ export const appendId = (value: any) => ({
 });
 
 export function useFieldArray({
-  getValues,
+  control,
   name,
 }: {
-  getValues?: (payload: { nest: boolean }) => any;
+  control?: any;
   name: string;
 }) {
   const methods = useFormContext() || {};
-  const getData = () => (getValues || methods.getValues)({ nest: true })[name];
+  const { getValues } = control || methods.control;
+  const getData = () => getValues({ nest: true })[name];
   const [fields, setField] = React.useState<any[]>(
     (getData() || []).map((value: any) => appendId(value)),
   );

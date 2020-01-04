@@ -9,7 +9,9 @@ describe('useFieldArray', () => {
   it('should return default fields value', () => {
     const { result } = renderHook(() =>
       useFieldArray({
-        getValues: () => ({}),
+        control: {
+          getValues: () => ({}),
+        },
         name: 'test',
       }),
     );
@@ -20,7 +22,9 @@ describe('useFieldArray', () => {
   it('should append data into the fields', () => {
     const { result } = renderHook(() =>
       useFieldArray({
-        getValues: () => ({}),
+        control: {
+          getValues: () => ({}),
+        },
         name: 'test',
       }),
     );
@@ -44,7 +48,9 @@ describe('useFieldArray', () => {
   it('should pre-append data into the fields', () => {
     const { result } = renderHook(() =>
       useFieldArray({
-        getValues: () => ({}),
+        control: {
+          getValues: () => ({}),
+        },
         name: 'test',
       }),
     );
@@ -68,7 +74,9 @@ describe('useFieldArray', () => {
   it('should populate default values into fields', () => {
     const { result } = renderHook(() =>
       useFieldArray({
-        getValues: () => ({ test: [{ test: '1' }, { test: '2' }] }),
+        control: {
+          getValues: () => ({ test: [{ test: '1' }, { test: '2' }] }),
+        },
         name: 'test',
       }),
     );
@@ -82,7 +90,9 @@ describe('useFieldArray', () => {
   it('should remove field according index', () => {
     const { result } = renderHook(() =>
       useFieldArray({
-        getValues: () => ({ test: [{ test: '1' }, { test: '2' }] }),
+        control: {
+          getValues: () => ({ test: [{ test: '1' }, { test: '2' }] }),
+        },
         name: 'test',
       }),
     );
@@ -97,7 +107,9 @@ describe('useFieldArray', () => {
   it('should remove all fields when index not supplied', () => {
     const { result } = renderHook(() =>
       useFieldArray({
-        getValues: () => ({ test: [{ test: '1' }, { test: '2' }] }),
+        control: {
+          getValues: () => ({ test: [{ test: '1' }, { test: '2' }] }),
+        },
         name: 'test',
       }),
     );
@@ -112,7 +124,9 @@ describe('useFieldArray', () => {
   it('should insert data at index', () => {
     const { result } = renderHook(() =>
       useFieldArray({
-        getValues: () => ({ test: [{ test: '1' }, { test: '2' }] }),
+        control: {
+          getValues: () => ({ test: [{ test: '1' }, { test: '2' }] }),
+        },
         name: 'test',
       }),
     );
