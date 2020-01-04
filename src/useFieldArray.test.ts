@@ -127,24 +127,6 @@ describe('useFieldArray', () => {
       { id: '1', test: '2' },
     ]);
   });
-
-  it('should update data at index', () => {
-    const { result } = renderHook(() =>
-      useFieldArray({
-        getValues: () => ({ test: [{ test: '1' }, { test: '2' }] }),
-        name: 'test',
-      }),
-    );
-
-    act(() => {
-      result.current.update(1, { test: '3' });
-    });
-
-    expect(result.current.fields).toEqual([
-      { id: '1', test: '1' },
-      { id: '1', test: '3' },
-    ]);
-  });
 });
 
 test('should append id to the value', () => {

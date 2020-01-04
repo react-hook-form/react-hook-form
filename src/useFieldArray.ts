@@ -32,11 +32,6 @@ export function useFieldArray({
         : [...fields.slice(0, index), ...fields.slice(index + 1)],
     );
 
-  const update = (index: number, value: any) => {
-    fields[index] = appendId(value);
-    setField(fields);
-  };
-
   const insert = (index: number, value: any) => {
     setField([
       ...fields.slice(0, index),
@@ -49,7 +44,6 @@ export function useFieldArray({
     prepend,
     append,
     remove,
-    update,
     insert,
     fields,
   };
