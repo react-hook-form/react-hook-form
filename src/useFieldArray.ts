@@ -1,15 +1,10 @@
 import * as React from 'react';
+import generateId from './logic/generateId';
 import isUndefined from './utils/isUndefined';
-
-const id = () =>
-  'x'.repeat(40).replace(/x/g, c => {
-    const r = (Math.random() * 16) | 0;
-    return (c === 'x' ? r : (r & 0x3) | 0x8).toString(16);
-  });
 
 const appendId = (value: any) => ({
   ...value,
-  ...(value.id ? {} : { id: id() }),
+  ...(value.id ? {} : { id: generateId() }),
 });
 
 export function useFieldArray({
