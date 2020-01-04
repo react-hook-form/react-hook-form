@@ -41,11 +41,17 @@ export function useFieldArray({
     ]);
   };
 
+  const swap = (indexA: number, indexB: number) => {
+    [fields[indexA], fields[indexB]] = [fields[indexB], fields[indexA]];
+    return fields;
+  };
+
   React.useEffect(() => {
     defaultValuesRef.current[name] = {};
   }, [defaultValuesRef, name]);
 
   return {
+    swap,
     prepend,
     append,
     remove,
