@@ -182,6 +182,7 @@ export type ControllerProps = {
   valueName?: string;
   defaultValue?: any;
   control?: any;
+  [key: string]: any;
 };
 
 export type ErrorMessageProps<Errors, Name> = {
