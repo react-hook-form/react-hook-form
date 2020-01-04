@@ -3,7 +3,7 @@ import { useFormContext } from './useFormContext';
 import generateId from './logic/generateId';
 import isUndefined from './utils/isUndefined';
 
-export const appendId = (value: object) => ({
+export const appendId = (value: any) => ({
   ...value,
   ...(value.id ? {} : { id: generateId() }),
 });
@@ -18,7 +18,7 @@ export function useFieldArray({
   const methods = useFormContext() || {};
   const { getValues, defaultValuesRef } = control || methods.control;
   const getData = () => getValues({ nest: true })[name];
-  const [fields, setField] = React.useState<any[]>(
+  const [fields, setField] = React.useState<object & { id: string }[]>(
     (getData() || []).map((value: any) => appendId(value)),
   );
 
