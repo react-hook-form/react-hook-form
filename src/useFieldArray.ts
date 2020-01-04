@@ -3,7 +3,7 @@ import { useFormContext } from './useFormContext';
 import generateId from './logic/generateId';
 import isUndefined from './utils/isUndefined';
 
-export const appendId = (value: any) => ({
+export const appendId = (value: object) => ({
   ...value,
   ...(value.id ? {} : { id: generateId() }),
 });
