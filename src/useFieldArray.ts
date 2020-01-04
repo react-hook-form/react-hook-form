@@ -43,7 +43,12 @@ export function useFieldArray({
 
   const swap = (indexA: number, indexB: number) => {
     [fields[indexA], fields[indexB]] = [fields[indexB], fields[indexA]];
-    return fields;
+    setField(fields);
+  };
+
+  const move = (from: number, to: number) => {
+    fields.splice(to + 1, 0, fields.splice(from, 1)[0]);
+    setField(fields);
   };
 
   React.useEffect(() => {
@@ -52,6 +57,7 @@ export function useFieldArray({
 
   return {
     swap,
+    move,
     prepend,
     append,
     remove,
