@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { useFormContext } from './useFormContext';
 import generateId from './logic/generateId';
 import isUndefined from './utils/isUndefined';
 
@@ -11,10 +12,11 @@ export function useFieldArray({
   getValues,
   name,
 }: {
-  getValues: (payload: { nest: boolean }) => any;
+  getValues?: (payload: { nest: boolean }) => any;
   name: string;
 }) {
-  const getData = () => getValues({ nest: true })[name];
+  const methods = useFormContext() || {};
+  const getData = () => (getValues || methods.getValues)({ nest: true })[name];
   const [fields, setField] = React.useState<any[]>(
     (getData() || []).map((value: any) => appendId(value)),
   );
