@@ -3,7 +3,7 @@ import { useFormContext } from './useFormContext';
 import generateId from './logic/generateId';
 import isUndefined from './utils/isUndefined';
 
-const appendId = (value: any) => ({
+export const appendId = (value: any) => ({
   ...value,
   ...(value.id ? {} : { id: generateId() }),
 });
@@ -33,13 +33,16 @@ export function useFieldArray({
     );
 
   const update = (index: number, value: any) => {
-    const data = getData();
-    data[index] = appendId(value);
-    setField([...data]);
+    fields[index] = appendId(value);
+    setField(fields);
   };
 
   const insert = (index: number, value: any) => {
-    setField([...fields.slice(0, index), value, ...fields.slice(index)]);
+    setField([
+      ...fields.slice(0, index),
+      appendId(value),
+      ...fields.slice(index),
+    ]);
   };
 
   return {
