@@ -1,11 +1,11 @@
 import React from 'react';
 import { useForm, useFieldArray, Controller } from 'react-hook-form';
 
-let renderCounter = 0;
+let renderCount = 0;
 
 const UseFieldArray: React.FC = (props: any) => {
   const { control, handleSubmit } = useForm<{
-    data: object[];
+    data: { name: string; id: string }[];
   }>({
     ...(props.match.params.mode === 'default'
       ? {
@@ -23,52 +23,53 @@ const UseFieldArray: React.FC = (props: any) => {
   );
   const onSubmit = () => {};
 
-  renderCounter++;
+  renderCount++;
 
   console.log(fields);
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
-      {fields.map((data, index) => (
-        <div key={data.id}>
-          {index % 2 ? (
-            <input
-              className={`input${index}`}
-              key={data.id}
-              name={`data[${index}].name`}
-              defaultValue={data.id}
-              data-id={renderCounter}
-            />
-          ) : (
-            <Controller
-              as={<input />}
-              control={control}
-              name={`data[${index}].name`}
-              defaultValue={data.id}
-              data-id={renderCounter}
-            />
-          )}
-          <button className={`delete${index}`}>delete</button>
-        </div>
-      ))}
+      <ul>
+        {fields.map((data, index) => (
+          <li key={data.id}>
+            {index % 2 ? (
+              <input
+                key={data.id}
+                name={`data[${index}].name`}
+                defaultValue={data.name}
+                data-order={index}
+              />
+            ) : (
+              <Controller
+                as={<input />}
+                control={control}
+                name={`data[${index}].name`}
+                defaultValue={data.name}
+                data-order={index}
+              />
+            )}
+            <button className={`delete${index}`}>delete</button>
+          </li>
+        ))}
+      </ul>
 
-      <button id="append" onClick={() => append({ test: 1 })}>
+      <button id="append" onClick={() => append({ name: renderCount })}>
         append
       </button>
 
-      <button id="prepend" onClick={() => prepend({ test: 1 })}>
+      <button id="prepend" onClick={() => prepend({ name: renderCount })}>
         prepend
       </button>
 
-      <button id="swap" onClick={() => swap(1, 3)}>
+      <button id="swap" onClick={() => swap(1, 2)}>
         swap
       </button>
 
-      <button id="move" onClick={() => move(1, 3)}>
+      <button id="move" onClick={() => move(2, 0)}>
         move
       </button>
 
-      <button id="insert" onClick={() => insert(2, { test: 1 })}>
+      <button id="insert" onClick={() => insert(1, { name: renderCount })}>
         insert
       </button>
 
@@ -76,11 +77,11 @@ const UseFieldArray: React.FC = (props: any) => {
         remove
       </button>
 
-      <button id="remove" onClick={() => remove()}>
+      <button id="removeAll" onClick={() => remove()}>
         remove all
       </button>
 
-      <div id="renderCounter">{renderCounter}</div>
+      <div id="renderCount">{renderCount}</div>
     </form>
   );
 };

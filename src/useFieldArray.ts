@@ -14,9 +14,9 @@ export function useFieldArray({ control, name }: UseFieldArrayProps) {
   const methods = useFormContext() || {};
   const { getValues, defaultValuesRef } = control || methods.control;
   const data = getValues({ nest: true })[name];
-  const [fields, setField] = React.useState<object & { id: string }[]>(
-    (isArray(data) ? data : []).map((value: any) => appendId(value)),
-  );
+  const [fields, setField] = React.useState<
+    (object & { id: string } & { [key: string]: any })[]
+  >((isArray(data) ? data : []).map((value: any) => appendId(value)));
 
   const prepend = (value: object) => setField([appendId(value), ...fields]);
 
