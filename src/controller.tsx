@@ -33,11 +33,7 @@ const Controller = ({
     formState: { isSubmitted },
   } = control || methods.control;
   const [value, setInputStateValue] = React.useState(
-    isUndefined(defaultValue)
-      ? isUndefined(defaultValues[name])
-        ? ''
-        : defaultValues[name]
-      : defaultValue,
+    isUndefined(defaultValue) ? defaultValues[name] : defaultValue,
   );
   const valueRef = React.useRef(value);
   const isCheckboxInput = isBoolean(value);
