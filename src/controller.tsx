@@ -99,7 +99,7 @@ const Controller = ({
   }
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  React.useEffect(() => () => unregister(name), []);
+  React.useEffect(() => () => unregister(name), [name]);
 
   const props = {
     name,
