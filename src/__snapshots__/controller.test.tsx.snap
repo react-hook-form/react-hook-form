@@ -22,7 +22,6 @@ exports[`React Hook Form Input should support custom value name 1`] = `
 <DocumentFragment>
   <input
     name="test"
-    selectedkey=""
   />
 </DocumentFragment>
 `;
