@@ -55,7 +55,7 @@ const App: React.FC = () => {
         component={SetValueWithTrigger}
       />
       <Route path="/conditionalField" exact component={ConditionalField} />
-      <Route path="/UseFieldArray" exact component={UseFieldArray} />
+      <Route path="/UseFieldArray/:mode" exact component={UseFieldArray} />
       <Route path="/reset" exact component={Reset} />
       <Route path="/setValue" exact component={SetValue} />
       <Route path="/setValueWithSchema" exact component={SetValueWithSchema} />

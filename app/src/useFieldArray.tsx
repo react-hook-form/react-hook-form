@@ -1,16 +1,26 @@
 import React from 'react';
-import { useForm, useFieldArray } from 'react-hook-form';
+import { useForm, useFieldArray, Controller } from 'react-hook-form';
 
 let renderCounter = 0;
 
 const UseFieldArray: React.FC = (props: any) => {
   const { control, handleSubmit } = useForm<{
-    data: string[];
-  }>();
-  const { fields, append, prepend } = useFieldArray({
-    control,
-    name: 'data',
+    data: object[];
+  }>({
+    ...(props.match.params.mode === 'default'
+      ? {
+          defaultValues: {
+            data: [{ name: 'test' }, { name: 'test1' }, { name: 'test2' }],
+          },
+        }
+      : {}),
   });
+  const { fields, append, prepend, swap, move, insert, remove } = useFieldArray(
+    {
+      control,
+      name: 'data',
+    },
+  );
   const onSubmit = () => {};
 
   renderCounter++;
@@ -21,7 +31,23 @@ const UseFieldArray: React.FC = (props: any) => {
     <form onSubmit={handleSubmit(onSubmit)}>
       {fields.map((data, index) => (
         <div key={data.id}>
-          <input className={`input${index}`} key={data.id} defaultValue={data.id} />
+          {index % 2 ? (
+            <input
+              className={`input${index}`}
+              key={data.id}
+              name={`data[${index}].name`}
+              defaultValue={data.id}
+              data-id={renderCounter}
+            />
+          ) : (
+            <Controller
+              as={<input />}
+              control={control}
+              name={`data[${index}].name`}
+              defaultValue={data.id}
+              data-id={renderCounter}
+            />
+          )}
           <button className={`delete${index}`}>delete</button>
         </div>
       ))}
@@ -30,8 +56,28 @@ const UseFieldArray: React.FC = (props: any) => {
         append
       </button>
 
-      <button id="append" onClick={() => prepend({ test: 1 })}>
+      <button id="prepend" onClick={() => prepend({ test: 1 })}>
         prepend
+      </button>
+
+      <button id="swap" onClick={() => swap(1, 3)}>
+        swap
+      </button>
+
+      <button id="move" onClick={() => move(1, 3)}>
+        move
+      </button>
+
+      <button id="insert" onClick={() => insert(2, { test: 1 })}>
+        insert
+      </button>
+
+      <button id="remove" onClick={() => remove(1)}>
+        remove
+      </button>
+
+      <button id="remove" onClick={() => remove()}>
+        remove all
       </button>
 
       <div id="renderCounter">{renderCounter}</div>
