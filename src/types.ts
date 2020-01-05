@@ -193,3 +193,8 @@ export type ErrorMessageProps<Errors, Name> = {
     messages: MultipleFieldErrors;
   }) => React.ReactNode;
 };
+
+export type UseFieldArrayProps = {
+  control?: any;
+  name: string;
+};

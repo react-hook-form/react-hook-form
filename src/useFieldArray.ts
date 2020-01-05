@@ -2,24 +2,20 @@ import * as React from 'react';
 import { useFormContext } from './useFormContext';
 import generateId from './logic/generateId';
 import isUndefined from './utils/isUndefined';
+import { UseFieldArrayProps } from './types';
+import isArray from './utils/isArray';
 
 export const appendId = (value: any) => ({
   ...value,
   ...(value.id ? {} : { id: generateId() }),
 });
 
-export function useFieldArray({
-  control,
-  name,
-}: {
-  control?: any;
-  name: string;
-}) {
+export function useFieldArray({ control, name }: UseFieldArrayProps) {
   const methods = useFormContext() || {};
   const { getValues, defaultValuesRef } = control || methods.control;
-  const getData = () => getValues({ nest: true })[name];
+  const data = getValues({ nest: true })[name];
   const [fields, setField] = React.useState<object & { id: string }[]>(
-    (getData() || []).map((value: any) => appendId(value)),
+    (isArray(data) ? data : []).map((value: any) => appendId(value)),
   );
 
   const prepend = (value: object) => setField([appendId(value), ...fields]);
