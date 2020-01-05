@@ -49,6 +49,7 @@ import {
   HandleChange,
   Touched,
 } from './types';
+import { TypedController } from './typedController';
 
 const { useRef, useState, useCallback, useEffect } = React;
 
@@ -1044,6 +1045,7 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
   return {
     watch,
     control,
+    Controller: TypedController,
     handleSubmit,
     setValue,
     triggerValidation,

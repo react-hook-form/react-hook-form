@@ -12,6 +12,7 @@ import {
   ManualFieldError,
   MultipleFieldErrors,
 } from './types';
+import { TypedController } from './typedController';
 
 export interface FormProps<FormValues extends FieldValues = FieldValues>
   extends FormContextValues<FormValues> {
@@ -21,6 +22,7 @@ export interface FormProps<FormValues extends FieldValues = FieldValues>
 export interface FormContextValues<
   FormValues extends FieldValues = FieldValues
 > {
+  Controller: typeof TypedController;
   register<Element extends ElementLike = ElementLike>(
     validationOptions: ValidationOptions,
   ): (ref: Element | null) => void;
