@@ -2,7 +2,7 @@ import * as React from 'react';
 import { useFormContext } from './useFormContext';
 import generateId from './logic/generateId';
 import isUndefined from './utils/isUndefined';
-import { FieldValues, UseFieldArrayProps, WithOptionalId } from './types';
+import { FieldValues, UseFieldArrayProps, WithFieldId } from './types';
 import isArray from './utils/isArray';
 
 export const appendId = <
@@ -15,7 +15,7 @@ export const appendId = <
   ({
     ...value,
     ...(value.id ? {} : { id: generateId() }),
-  } as Required<WithOptionalId<FormArrayValues>>);
+  } as Required<WithFieldId<FormArrayValues>>);
 
 export function useFieldArray<
   FormArrayValues extends FieldValues = FieldValues
@@ -24,13 +24,13 @@ export function useFieldArray<
   const { getValues, defaultValuesRef } = control || methods.control;
   const data: FormArrayValues[] = getValues({ nest: true })[name];
   const [fields, setField] = React.useState<
-    Required<WithOptionalId<FormArrayValues>>[]
+    Required<WithFieldId<FormArrayValues>>[]
   >((isArray(data) ? data : []).map(value => appendId(value)));
 
-  const prepend = (value: WithOptionalId<FormArrayValues>) =>
+  const prepend = (value: WithFieldId<FormArrayValues>) =>
     setField([appendId(value), ...fields]);
 
-  const append = (value: WithOptionalId<FormArrayValues>) =>
+  const append = (value: WithFieldId<FormArrayValues>) =>
     setField([...fields, appendId(value)]);
 
   const remove = (index?: number) =>
@@ -40,7 +40,7 @@ export function useFieldArray<
         : [...fields.slice(0, index), ...fields.slice(index + 1)],
     );
 
-  const insert = (index: number, value: WithOptionalId<FormArrayValues>) => {
+  const insert = (index: number, value: WithFieldId<FormArrayValues>) => {
     setField([
       ...fields.slice(0, index),
       appendId(value),

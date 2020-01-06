@@ -200,6 +200,6 @@ export type UseFieldArrayProps = {
   name: string;
 };
 
-export type WithOptionalId<Value> = {
+export type WithFieldId<Value> = {
   id?: string;
 } & Value;
