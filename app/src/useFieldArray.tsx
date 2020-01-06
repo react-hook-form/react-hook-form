@@ -5,7 +5,7 @@ let renderCount = 0;
 
 const UseFieldArray: React.FC = (props: any) => {
   const { control, handleSubmit } = useForm<{
-    data: { name: string; id: string }[];
+    data: { name: string }[];
   }>({
     ...(props.match.params.mode === 'default'
       ? {
@@ -15,12 +15,18 @@ const UseFieldArray: React.FC = (props: any) => {
         }
       : {}),
   });
-  const { fields, append, prepend, swap, move, insert, remove } = useFieldArray(
-    {
-      control,
-      name: 'data',
-    },
-  );
+  const {
+    fields,
+    append,
+    prepend,
+    swap,
+    move,
+    insert,
+    remove,
+  } = useFieldArray<{ name: string }>({
+    control,
+    name: 'data',
+  });
   const onSubmit = () => {};
 
   renderCount++;
@@ -53,11 +59,17 @@ const UseFieldArray: React.FC = (props: any) => {
         ))}
       </ul>
 
-      <button id="append" onClick={() => append({ name: renderCount })}>
+      <button
+        id="append"
+        onClick={() => append({ name: renderCount.toString() })}
+      >
         append
       </button>
 
-      <button id="prepend" onClick={() => prepend({ name: renderCount })}>
+      <button
+        id="prepend"
+        onClick={() => prepend({ name: renderCount.toString() })}
+      >
         prepend
       </button>
 
@@ -69,7 +81,10 @@ const UseFieldArray: React.FC = (props: any) => {
         move
       </button>
 
-      <button id="insert" onClick={() => insert(1, { name: renderCount })}>
+      <button
+        id="insert"
+        onClick={() => insert(1, { name: renderCount.toString() })}
+      >
         insert
       </button>
 
