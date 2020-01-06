@@ -2,25 +2,36 @@ import * as React from 'react';
 import { useFormContext } from './useFormContext';
 import generateId from './logic/generateId';
 import isUndefined from './utils/isUndefined';
-import { UseFieldArrayProps } from './types';
+import { FieldValues, UseFieldArrayProps, WithOptionalId } from './types';
 import isArray from './utils/isArray';
 
-export const appendId = (value: any) => ({
-  ...value,
-  ...(value.id ? {} : { id: generateId() }),
-});
+export const appendId = <
+  FormArrayValues extends {
+    id?: string;
+  } & FieldValues = FieldValues
+>(
+  value: FormArrayValues,
+) =>
+  ({
+    ...value,
+    ...(value.id ? {} : { id: generateId() }),
+  } as Required<WithOptionalId<FormArrayValues>>);
 
-export function useFieldArray({ control, name }: UseFieldArrayProps) {
+export function useFieldArray<
+  FormArrayValues extends FieldValues = FieldValues
+>({ control, name }: UseFieldArrayProps) {
   const methods = useFormContext() || {};
   const { getValues, defaultValuesRef } = control || methods.control;
-  const data = getValues({ nest: true })[name];
+  const data: FormArrayValues[] = getValues({ nest: true })[name];
   const [fields, setField] = React.useState<
-    (object & { id: string } & { [key: string]: any })[]
-  >((isArray(data) ? data : []).map((value: any) => appendId(value)));
+    Required<WithOptionalId<FormArrayValues>>[]
+  >((isArray(data) ? data : []).map(value => appendId(value)));
 
-  const prepend = (value: object) => setField([appendId(value), ...fields]);
+  const prepend = (value: WithOptionalId<FormArrayValues>) =>
+    setField([appendId(value), ...fields]);
 
-  const append = (value: object) => setField([...fields, appendId(value)]);
+  const append = (value: WithOptionalId<FormArrayValues>) =>
+    setField([...fields, appendId(value)]);
 
   const remove = (index?: number) =>
     setField(
@@ -29,7 +40,7 @@ export function useFieldArray({ control, name }: UseFieldArrayProps) {
         : [...fields.slice(0, index), ...fields.slice(index + 1)],
     );
 
-  const insert = (index: number, value: object) => {
+  const insert = (index: number, value: WithOptionalId<FormArrayValues>) => {
     setField([
       ...fields.slice(0, index),
       appendId(value),

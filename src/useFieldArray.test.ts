@@ -257,8 +257,8 @@ test('should append id to the value', () => {
 });
 
 test('should skip append id when there is id present', () => {
-  expect(appendId({ test: 'test', id: 2 })).toEqual({
+  expect(appendId({ test: 'test', id: '2' })).toEqual({
     test: 'test',
-    id: 2,
+    id: '2',
   });
 });

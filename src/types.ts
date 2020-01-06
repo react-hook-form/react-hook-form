@@ -199,3 +199,7 @@ export type UseFieldArrayProps = {
   control?: any;
   name: string;
 };
+
+export type WithOptionalId<Value> = {
+  id?: string;
+} & Value;
