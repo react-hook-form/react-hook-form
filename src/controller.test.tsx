@@ -28,7 +28,7 @@ describe('Controller', () => {
     const control = reconfigureControl();
 
     const { asFragment } = render(
-      <Controller name="test" as="input" control={control} />,
+      <Controller defaultValue="" name="test" as="input" control={control} />,
     );
 
     expect(asFragment()).toMatchSnapshot();
@@ -38,7 +38,12 @@ describe('Controller', () => {
     const control = reconfigureControl();
 
     const { asFragment } = render(
-      <Controller name="test" as={<input />} control={control} />,
+      <Controller
+        defaultValue=""
+        name="test"
+        as={<input />}
+        control={control}
+      />,
     );
 
     expect(asFragment()).toMatchSnapshot();
@@ -53,6 +58,7 @@ describe('Controller', () => {
 
     const { getByPlaceholderText } = render(
       <Controller
+        defaultValue=""
         name="test"
         as={<input placeholder="test" />}
         control={control}
@@ -77,6 +83,7 @@ describe('Controller', () => {
 
     const { getByPlaceholderText } = render(
       <Controller
+        defaultValue=""
         name="test"
         as={<input placeholder="test" />}
         control={control}
@@ -101,6 +108,7 @@ describe('Controller', () => {
 
     const { getByPlaceholderText } = render(
       <Controller
+        defaultValue=""
         name="test"
         as={<input placeholder="test" />}
         onChangeName="onChange"
@@ -129,6 +137,7 @@ describe('Controller', () => {
 
     const { getByPlaceholderText } = render(
       <Controller
+        defaultValue=""
         name="test"
         as={<input placeholder="test" />}
         onChange={onChange}
@@ -154,7 +163,7 @@ describe('Controller', () => {
     });
 
     const { asFragment } = render(
-      <Controller name="test" as="input" control={control} />,
+      <Controller defaultValue="" name="test" as="input" control={control} />,
     );
 
     expect(asFragment()).toMatchSnapshot();
@@ -165,6 +174,7 @@ describe('Controller', () => {
 
     const { asFragment } = render(
       <Controller
+        defaultValue=""
         name="test"
         as="input"
         valueName="selectedkey"
