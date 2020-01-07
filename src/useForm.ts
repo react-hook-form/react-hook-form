@@ -15,6 +15,7 @@ import isEmptyObject from './utils/isEmptyObject';
 import isRadioInput from './utils/isRadioInput';
 import isFileInput from './utils/isFileInput';
 import isObject from './utils/isObject';
+import isFunction from './utils/isFunction';
 import isArray from './utils/isArray';
 import isString from './utils/isString';
 import isSameError from './utils/isSameError';
@@ -50,7 +51,6 @@ import {
   HandleChange,
   Touched,
 } from './types';
-import isFunction from './utils/isFunction';
 
 const { useRef, useState, useCallback, useEffect } = React;
 
@@ -985,12 +985,11 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
 
     if (values) {
       defaultValuesRef.current = values;
-
-      Object.values(resetFieldArrayFunctionRef.current).forEach(
-        resetFieldArray =>
-          isFunction(resetFieldArray) && resetFieldArray(values),
-      );
     }
+
+    Object.values(resetFieldArrayFunctionRef.current).forEach(
+      resetFieldArray => isFunction(resetFieldArray) && resetFieldArray(values),
+    );
 
     reRender();
   };
