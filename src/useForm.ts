@@ -1051,7 +1051,7 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
     errors: errorsRef.current,
     fields: fieldsRef.current,
     defaultValuesRef,
-    resetFieldArrayRef: resetFieldArrayFunctionRef,
+    resetFieldArrayFunctionRef,
   };
 
   return {
