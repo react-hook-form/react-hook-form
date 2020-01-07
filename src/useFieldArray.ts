@@ -60,11 +60,7 @@ export function useFieldArray<
     setField(fields);
   };
 
-  const reset = (value: any) => {
-    if (value[name] && isArray(value[name])) {
-      setField(mapIds(value[name]));
-    }
-  };
+  const reset = (value: any) => setField(mapIds(value[name]));
 
   React.useEffect(() => {
     const resetFunctions = resetFieldArrayFunctionRef.current;
