@@ -23,7 +23,6 @@ const Controller = ({
   const methods = useFormContext() || {};
   const {
     defaultValuesRef: { current: defaultValues },
-    fields,
     setValue,
     register,
     unregister,
@@ -94,12 +93,13 @@ const Controller = ({
       { ...rules },
     );
 
-  if (!fields[name]) {
-    registerField();
-  }
-
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  React.useEffect(() => () => unregister(name), [name]);
+  React.useEffect(
+    () => {
+      registerField();
+      return () => unregister(name);
+    }, // eslint-disable-next-line react-hooks/exhaustive-deps
+    [name],
+  );
 
   const props = {
     name,
