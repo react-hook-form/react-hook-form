@@ -72,7 +72,7 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
   const validFieldsRef = useRef(new Set<FieldName<FormValues>>());
   const isValidRef = useRef(true);
   const defaultRenderValuesRef = useRef<
-    Partial<Record<FieldName<FormValues>, FieldValue<FormValues>>>
+    DeepPartial<Record<FieldName<FormValues>, FieldValue<FormValues>>>
   >({});
   const defaultValuesRef = useRef<
     FieldValue<FormValues> | DeepPartial<FormValues>
@@ -603,8 +603,8 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
   ): FormValues[T];
   function watch(
     fields: FieldName<FormValues>[] | string[],
-    defaultValues?: Partial<FormValues>,
-  ): Partial<FormValues>;
+    defaultValues?: DeepPartial<FormValues>,
+  ): DeepPartial<FormValues>;
   function watch(
     fieldNames?:
       | FieldName<FormValues>

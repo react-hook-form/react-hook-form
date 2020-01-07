@@ -9,5 +9,7 @@ export default (obj: any, path: string, defaultValue?: any) => {
       (result, key) => (isNullOrUndefined(result) ? result : result[key]),
       obj,
     );
-  return isUndefined(result) || result === obj ? defaultValue : result;
+  return isUndefined(result) || result === obj
+    ? obj[path] || defaultValue
+    : result;
 };
