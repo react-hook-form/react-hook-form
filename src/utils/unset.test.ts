@@ -19,7 +19,7 @@ test('should unset the object', () => {
 
   expect(unset(test, ['data.firstName', 'data.test[0]'])).toEqual({
     data: {
-      test: [{ data2: '' }],
+      test: [undefined, { data2: '' }],
       data: {
         test1: {
           ref: {
@@ -88,9 +88,9 @@ test('should clear empty array', () => {
   expect(unset(test, ['data.firstName[0]'])).toEqual({
     data: {
       firstName: {
-        test: [{ name: 'test', email: 'last' }],
+        test: [undefined, { name: 'test', email: 'last' }],
         deep: {
-          last: [{ name: 'test', email: 'last' }],
+          last: [undefined, { name: 'test', email: 'last' }],
         },
       },
     },
