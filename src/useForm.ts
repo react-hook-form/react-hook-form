@@ -13,6 +13,7 @@ import skipValidation from './logic/skipValidation';
 import isCheckBoxInput from './utils/isCheckBoxInput';
 import isEmptyObject from './utils/isEmptyObject';
 import isRadioInput from './utils/isRadioInput';
+import isFileInput from './utils/isFileInput';
 import isObject from './utils/isObject';
 import isArray from './utils/isArray';
 import isString from './utils/isString';
@@ -186,6 +187,8 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
         options.forEach(
           ({ ref: radioRef }) => (radioRef.checked = radioRef.value === value),
         );
+      } else if (isFileInput(type)) {
+        ref.files = value;
       } else if (isMultipleSelect(type)) {
         [...ref.options].forEach(
           selectRef =>

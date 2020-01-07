@@ -1,6 +1,7 @@
 import getRadioValue from './getRadioValue';
 import getMultipleSelectValue from './getMultipleSelectValue';
 import isRadioInput from '../utils/isRadioInput';
+import isFileInput from '../utils/isFileInput';
 import isCheckBox from '../utils/isCheckBoxInput';
 import isMultipleSelect from '../utils/isMultipleSelect';
 import getCheckboxValue from './getCheckboxValue';
@@ -13,7 +14,7 @@ export default function getFieldValue<FormValues extends FieldValues>(
   const { type, name, options, value, files } = ref;
   const field = fields[name];
 
-  if (type === 'file') {
+  if (isFileInput(type)) {
     return files;
   }
 
