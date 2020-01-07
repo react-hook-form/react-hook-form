@@ -85,7 +85,7 @@ export interface FormContextValues<
   ) => Promise<boolean>;
   errors: FieldErrors<FormValues>;
   formState: FormStateProxy<FormValues>;
-  reset: (values?: Partial<FormValues>) => void;
+  reset: (values?: DeepPartial<FormValues>) => void;
   getValues: (payload?: { nest: boolean }) => FormValues;
   handleSubmit: (
     callback: OnSubmit<FormValues>,
