@@ -4,7 +4,7 @@ import { ErrorMessage } from './index';
 
 describe('React Hook Form Error Message', () => {
   it('should render correctly', () => {
-    const { asFragment } = render(<ErrorMessage name="test" />);
+    const { asFragment } = render(<ErrorMessage name="test" errors={{}} />);
 
     expect(asFragment()).toMatchSnapshot();
   });
