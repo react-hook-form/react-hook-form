@@ -50,6 +50,7 @@ import {
   HandleChange,
   Touched,
 } from './types';
+import isFunction from './utils/isFunction';
 
 const { useRef, useState, useCallback, useEffect } = React;
 
@@ -83,6 +84,7 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
   const submitCountRef = useRef(0);
   const isSubmittingRef = useRef(false);
   const handleChangeRef = useRef<HandleChange>();
+  const resetFieldArrayFunctionRef = useRef({});
   const [, render] = useState();
   const { isOnBlur, isOnSubmit } = useRef(modeChecker(mode)).current;
   const isWindowUndefined = typeof window === UNDEFINED;
@@ -983,6 +985,11 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
 
     if (values) {
       defaultValuesRef.current = values;
+
+      Object.values(resetFieldArrayFunctionRef.current).forEach(
+        resetFieldArray =>
+          isFunction(resetFieldArray) && resetFieldArray(values),
+      );
     }
 
     reRender();
@@ -1043,8 +1050,9 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
       isReValidateOnSubmit,
     },
     errors: errorsRef.current,
-    defaultValuesRef,
     fields: fieldsRef.current,
+    defaultValuesRef,
+    resetFieldArrayRef: resetFieldArrayFunctionRef,
   };
 
   return {

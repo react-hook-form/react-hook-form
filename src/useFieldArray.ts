@@ -11,21 +11,23 @@ export const appendId = <
   } & FieldValues = FieldValues
 >(
   value: FormArrayValues,
-) =>
-  ({
-    ...value,
-    ...(value.id ? {} : { id: generateId() }),
-  } as Required<WithFieldId<FormArrayValues>>);
+) => ({
+  ...value,
+  ...(value.id ? {} : { id: generateId() }),
+});
+
+const mapIds = (data: any) =>
+  (isArray(data) ? data : []).map(value => appendId(value));
 
 export function useFieldArray<
   FormArrayValues extends FieldValues = FieldValues
 >({ control, name }: UseFieldArrayProps) {
   const methods = useFormContext() || {};
-  const { getValues, defaultValuesRef } = control || methods.control;
-  const data: FormArrayValues[] = getValues({ nest: true })[name];
-  const [fields, setField] = React.useState<
-    Required<WithFieldId<FormArrayValues>>[]
-  >((isArray(data) ? data : []).map(value => appendId(value)));
+  const { getValues, defaultValuesRef, resetFieldArrayFunctionRef } =
+    control || methods.control;
+  const [fields, setField] = React.useState<WithFieldId<FormArrayValues>[]>(
+    mapIds(getValues({ nest: true })[name]),
+  );
 
   const prepend = (value: WithFieldId<FormArrayValues>) =>
     setField([appendId(value), ...fields]);
@@ -58,9 +60,22 @@ export function useFieldArray<
     setField(fields);
   };
 
+  const reset = (value: any) => {
+    if (value[name] && isArray(value[name])) {
+      setField(mapIds(value[name]));
+    }
+  };
+
   React.useEffect(() => {
+    const resetFunctions = resetFieldArrayFunctionRef.current;
     defaultValuesRef.current[name] = {};
-  }, [defaultValuesRef, name]);
+    resetFunctions[name] = reset;
+
+    return () => {
+      delete resetFunctions[name];
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [name]);
 
   return {
     swap,

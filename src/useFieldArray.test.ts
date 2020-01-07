@@ -14,6 +14,9 @@ describe('useFieldArray', () => {
           defaultValuesRef: {
             current: {},
           },
+          resetFieldArrayFunctionRef: {
+            current: {},
+          },
         },
         name: 'test',
       }),
@@ -28,6 +31,9 @@ describe('useFieldArray', () => {
         control: {
           getValues: () => ({}),
           defaultValuesRef: {
+            current: {},
+          },
+          resetFieldArrayFunctionRef: {
             current: {},
           },
         },
@@ -59,6 +65,9 @@ describe('useFieldArray', () => {
           defaultValuesRef: {
             current: {},
           },
+          resetFieldArrayFunctionRef: {
+            current: {},
+          },
         },
         name: 'test',
       }),
@@ -88,6 +97,9 @@ describe('useFieldArray', () => {
           defaultValuesRef: {
             current: {},
           },
+          resetFieldArrayFunctionRef: {
+            current: {},
+          },
         },
         name: 'test',
       }),
@@ -105,6 +117,9 @@ describe('useFieldArray', () => {
         control: {
           getValues: () => ({ test: [{ test: '1' }, { test: '2' }] }),
           defaultValuesRef: {
+            current: {},
+          },
+          resetFieldArrayFunctionRef: {
             current: {},
           },
         },
@@ -127,6 +142,9 @@ describe('useFieldArray', () => {
           defaultValuesRef: {
             current: {},
           },
+          resetFieldArrayFunctionRef: {
+            current: {},
+          },
         },
         name: 'test',
       }),
@@ -145,6 +163,9 @@ describe('useFieldArray', () => {
         control: {
           getValues: () => ({ test: [{ test: '1' }, { test: '2' }] }),
           defaultValuesRef: {
+            current: {},
+          },
+          resetFieldArrayFunctionRef: {
             current: {},
           },
         },
@@ -171,6 +192,9 @@ describe('useFieldArray', () => {
           defaultValuesRef: {
             current: {},
           },
+          resetFieldArrayFunctionRef: {
+            current: {},
+          },
         },
         name: 'test',
       }),
@@ -194,6 +218,9 @@ describe('useFieldArray', () => {
             test: [{ test: '1' }, { test: '2' }, { test: '3' }],
           }),
           defaultValuesRef: {
+            current: {},
+          },
+          resetFieldArrayFunctionRef: {
             current: {},
           },
         },
@@ -234,6 +261,9 @@ describe('useFieldArray', () => {
         control: {
           getValues: () => ({ test: [{ test: '1' }, { test: '2' }] }),
           defaultValuesRef,
+          resetFieldArrayFunctionRef: {
+            current: {},
+          },
         },
         name: 'test',
       }),
