@@ -13,14 +13,10 @@ const unsetObject = (target: any) => {
       unsetObject(data);
     }
 
-    if (isArrayObject) {
-      target[key] = data.filter(Boolean);
-    }
-
     if (
       isUndefined(data) ||
       isEmptyObject(data) ||
-      (isArrayObject && !target[key].length)
+      (isArrayObject && !target[key].filter(Boolean).length)
     ) {
       delete target[key];
     }
