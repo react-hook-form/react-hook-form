@@ -8,6 +8,8 @@ export const VALIDATION_MODE: ValidationMode = {
 
 export const RADIO_INPUT = 'radio';
 
+export const FILE_INPUT = 'file';
+
 export const VALUE = 'value';
 
 export const UNDEFINED = 'undefined';
