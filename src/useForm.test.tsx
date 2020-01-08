@@ -1127,6 +1127,7 @@ describe('useForm', () => {
             test: 'data',
             deep: {
               values: '5',
+              nested: 'test',
             },
           },
         }),
