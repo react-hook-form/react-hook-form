@@ -5,7 +5,7 @@ import getPath from '../utils/getPath';
 import isEmptyObject from '../utils/isEmptyObject';
 import isUndefined from '../utils/isUndefined';
 import isObject from '../utils/isObject';
-import { Partial, FieldValue, FieldValues, FieldName } from '../types';
+import { FieldValue, FieldValues, FieldName } from '../types';
 
 export default <FormValues extends FieldValues>(
   fieldValues: FormValues,
