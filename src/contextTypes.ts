@@ -1,6 +1,6 @@
 import * as React from 'react';
 import {
-  DeepPartial,
+  Partial,
   FieldValues,
   FormStateProxy,
   FieldErrors,
@@ -53,15 +53,15 @@ export interface FormContextValues<
   ): FormValues[T];
   watch(
     fields: FieldName<FormValues>[] | string[],
-    defaultValues?: DeepPartial<FormValues>,
-  ): DeepPartial<FormValues>;
+    defaultValues?: Partial<FormValues>,
+  ): Partial<FormValues>;
   watch(
     fieldNames?:
       | FieldName<FormValues>
       | FieldName<FormValues>[]
       | { nest: boolean },
-    defaultValue?: string | DeepPartial<FormValues>,
-  ): FieldValue<FormValues> | DeepPartial<FormValues> | string | undefined;
+    defaultValue?: string | Partial<FormValues>,
+  ): FieldValue<FormValues> | Partial<FormValues> | string | undefined;
   setError(name: ManualFieldError<FormValues>[]): void;
   setError(name: FieldName<FormValues>, type: MultipleFieldErrors): void;
   setError(name: FieldName<FormValues>, type: string, message?: string): void;
@@ -85,7 +85,7 @@ export interface FormContextValues<
   ) => Promise<boolean>;
   errors: FieldErrors<FormValues>;
   formState: FormStateProxy<FormValues>;
-  reset: (values?: DeepPartial<FormValues>) => void;
+  reset: (values?: Partial<FormValues>) => void;
   getValues: (payload?: { nest: boolean }) => FormValues;
   handleSubmit: (
     callback: OnSubmit<FormValues>,

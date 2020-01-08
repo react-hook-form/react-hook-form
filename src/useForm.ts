@@ -30,7 +30,6 @@ import isNullOrUndefined from './utils/isNullOrUndefined';
 import { EVENTS, UNDEFINED, VALIDATION_MODE } from './constants';
 import { FormContextValues } from './contextTypes';
 import {
-  DeepPartial,
   FieldValues,
   FieldName,
   FieldValue,
@@ -71,11 +70,11 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
   const validFieldsRef = useRef(new Set<FieldName<FormValues>>());
   const isValidRef = useRef(true);
   const defaultRenderValuesRef = useRef<
-    DeepPartial<Record<FieldName<FormValues>, FieldValue<FormValues>>>
+    Partial<Record<FieldName<FormValues>, FieldValue<FormValues>>>
   >({});
-  const defaultValuesRef = useRef<
-    FieldValue<FormValues> | DeepPartial<FormValues>
-  >(defaultValues);
+  const defaultValuesRef = useRef<FieldValue<FormValues> | Partial<FormValues>>(
+    defaultValues,
+  );
   const isUnMount = useRef(false);
   const isWatchAllRef = useRef(false);
   const isSubmittedRef = useRef(false);
@@ -165,7 +164,7 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
   const setFieldValue = useCallback(
     (
       name: FieldName<FormValues>,
-      rawValue: FieldValue<FormValues> | DeepPartial<FormValues> | undefined,
+      rawValue: FieldValue<FormValues> | Partial<FormValues> | undefined,
     ): boolean => {
       const field = fieldsRef.current[name];
 
@@ -601,15 +600,15 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
   ): FormValues[T];
   function watch(
     fields: FieldName<FormValues>[] | string[],
-    defaultValues?: DeepPartial<FormValues>,
-  ): DeepPartial<FormValues>;
+    defaultValues?: Partial<FormValues>,
+  ): Partial<FormValues>;
   function watch(
     fieldNames?:
       | FieldName<FormValues>
       | FieldName<FormValues>[]
       | { nest: boolean },
-    defaultValue?: string | DeepPartial<FormValues>,
-  ): FieldValue<FormValues> | DeepPartial<FormValues> | string | undefined {
+    defaultValue?: string | Partial<FormValues>,
+  ): FieldValue<FormValues> | Partial<FormValues> | string | undefined {
     const combinedDefaultValues = isUndefined(defaultValue)
       ? isUndefined(defaultValuesRef.current)
         ? {}
@@ -967,7 +966,7 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
     submitCountRef.current = 0;
   };
 
-  const reset = (values?: DeepPartial<FormValues>): void => {
+  const reset = (values?: Partial<FormValues>): void => {
     const fieldsKeyValue = Object.entries(fieldsRef.current);
 
     for (const [, value] of fieldsKeyValue) {
