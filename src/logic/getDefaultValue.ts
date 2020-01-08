@@ -1,6 +1,6 @@
 import get from '../utils/get';
 import isUndefined from '../utils/isUndefined';
-import { Partial, FieldValues, FieldValue, FieldName } from '../types';
+import { FieldValues, FieldValue, FieldName } from '../types';
 
 export default <FormValues extends FieldValues>(
   defaultValues: Partial<FormValues>,
