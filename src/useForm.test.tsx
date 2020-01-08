@@ -1147,7 +1147,7 @@ describe('useForm', () => {
         await result.current.handleSubmit((data: any) => {
           expect(data).toEqual({
             test: 'data',
-            'deep.nested': undefined,
+            'deep.nested': 'test',
             'deep.values': '5',
           });
         })({
