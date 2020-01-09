@@ -116,6 +116,8 @@ export type NestDataObject<FormValues> = {
   [Key in keyof FormValues]?: FormValues[Key] extends any[]
     ? FormValues[Key][number] extends object
       ? FieldErrors<FormValues[Key][number]>[]
+      : FormValues[Key][number] extends string | number
+      ? FieldError[]
       : FieldError
     : FormValues[Key] extends Date
     ? FieldError
