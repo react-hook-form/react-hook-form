@@ -18,6 +18,7 @@ const Controller = ({
   valueName,
   defaultValue,
   control,
+  fields,
   ...rest
 }: ControllerProps) => {
   const methods = useFormContext() || {};
@@ -92,6 +93,10 @@ const Controller = ({
       ),
       { ...rules },
     );
+
+  if (!fields[name]) {
+    registerField();
+  }
 
   React.useEffect(
     () => {
