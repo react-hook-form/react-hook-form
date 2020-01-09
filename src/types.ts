@@ -126,7 +126,7 @@ export type NestDataObject<FormValues> = {
     : FieldError;
 };
 
-export declare type FieldErrors<FormValues> = NestDataObject<FormValues>;
+export type FieldErrors<FormValues> = NestDataObject<FormValues>;
 
 export type Touched<FormValues> = NestDataObject<FormValues>;
 
