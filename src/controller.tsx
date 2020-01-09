@@ -18,7 +18,6 @@ const Controller = ({
   valueName,
   defaultValue,
   control,
-  fields,
   ...rest
 }: ControllerProps) => {
   const methods = useFormContext() || {};
@@ -31,6 +30,7 @@ const Controller = ({
     mode: { isOnSubmit, isOnBlur },
     reValidateMode: { isReValidateOnBlur, isReValidateOnSubmit },
     formState: { isSubmitted },
+    fields,
   } = control || methods.control;
   const [value, setInputStateValue] = React.useState(
     isUndefined(defaultValue) ? defaultValues[name] : defaultValue,
