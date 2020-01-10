@@ -30,6 +30,7 @@ const Controller = ({
     mode: { isOnSubmit, isOnBlur },
     reValidateMode: { isReValidateOnBlur, isReValidateOnSubmit },
     formState: { isSubmitted },
+    fields,
   } = control || methods.control;
   const [value, setInputStateValue] = React.useState(
     isUndefined(defaultValue) ? defaultValues[name] : defaultValue,
@@ -92,6 +93,10 @@ const Controller = ({
       ),
       { ...rules },
     );
+
+  if (!fields[name]) {
+    registerField();
+  }
 
   React.useEffect(
     () => {
