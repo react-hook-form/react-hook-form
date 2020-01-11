@@ -1040,6 +1040,7 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
     getValues,
     setValue,
     formState,
+    reRender,
     mode: {
       isOnBlur,
       isOnSubmit,

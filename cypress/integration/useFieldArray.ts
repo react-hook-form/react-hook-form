@@ -15,7 +15,7 @@ context('useFieldArray', () => {
     cy.get('ul > li')
       .eq(0)
       .get('input')
-      .should('have.value', '3');
+      .should('have.value', '2');
 
     cy.get('#append').click();
     cy.get('ul > li')
@@ -25,13 +25,13 @@ context('useFieldArray', () => {
     cy.get('ul > li')
       .eq(2)
       .find('input')
-      .should('have.value', '5');
+      .should('have.value', '3');
 
     cy.get('#swap').click();
     cy.get('ul > li')
       .eq(1)
       .find('input')
-      .should('have.value', '5');
+      .should('have.value', '3');
     cy.get('ul > li')
       .eq(2)
       .find('input')
@@ -45,13 +45,13 @@ context('useFieldArray', () => {
     cy.get('ul > li')
       .eq(1)
       .find('input')
-      .should('have.value', '3');
+      .should('have.value', '2');
 
     cy.get('#insert').click();
     cy.get('ul > li')
       .eq(1)
       .find('input')
-      .should('have.value', '11');
+      .should('have.value', '6');
 
     cy.get('#remove').click();
     cy.get('ul > li')
@@ -61,12 +61,12 @@ context('useFieldArray', () => {
     cy.get('ul > li')
       .eq(1)
       .find('input')
-      .should('have.value', '3');
+      .should('have.value', '2');
 
     cy.get('#removeAll').click();
     cy.get('ul > li').should('have.length', 0);
 
-    cy.get('#renderCount').contains('17');
+    cy.get('#renderCount').contains('9');
   });
 
   it.only('should behaviour correctly with defaultValue', () => {
@@ -106,7 +106,7 @@ context('useFieldArray', () => {
     cy.get('ul > li')
       .eq(0)
       .get('input')
-      .should('have.value', '3');
+      .should('have.value', '2');
 
     cy.get('#swap').click();
     cy.get('ul > li')
@@ -126,13 +126,13 @@ context('useFieldArray', () => {
     cy.get('ul > li')
       .eq(1)
       .find('input')
-      .should('have.value', '3');
+      .should('have.value', '2');
 
     cy.get('#insert').click();
     cy.get('ul > li')
       .eq(1)
       .find('input')
-      .should('have.value', '9');
+      .should('have.value', '5');
 
     cy.get('#remove').click();
     cy.get('ul > li')
@@ -142,11 +142,11 @@ context('useFieldArray', () => {
     cy.get('ul > li')
       .eq(1)
       .find('input')
-      .should('have.value', '3');
+      .should('have.value', '2');
 
     cy.get('#removeAll').click();
     cy.get('ul > li').should('have.length', 0);
 
-    cy.get('#renderCount').contains('15');
+    cy.get('#renderCount').contains('8');
   });
 });
