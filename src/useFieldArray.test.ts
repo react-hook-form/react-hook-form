@@ -17,6 +17,7 @@ describe('useFieldArray', () => {
           resetFieldArrayFunctionRef: {
             current: {},
           },
+          reRender: () => {},
         },
         name: 'test',
       }),
@@ -36,6 +37,7 @@ describe('useFieldArray', () => {
           resetFieldArrayFunctionRef: {
             current: {},
           },
+          reRender: () => {},
         },
         name: 'test',
       }),
@@ -68,6 +70,7 @@ describe('useFieldArray', () => {
           resetFieldArrayFunctionRef: {
             current: {},
           },
+          reRender: () => {},
         },
         name: 'test',
       }),
@@ -93,6 +96,7 @@ describe('useFieldArray', () => {
     const { result } = renderHook(() =>
       useFieldArray({
         control: {
+          reRender: () => {},
           getValues: () => ({ test: [{ test: '1' }, { test: '2' }] }),
           defaultValuesRef: {
             current: {},
@@ -115,6 +119,7 @@ describe('useFieldArray', () => {
     const { result } = renderHook(() =>
       useFieldArray({
         control: {
+          reRender: () => {},
           getValues: () => ({ test: [{ test: '1' }, { test: '2' }] }),
           defaultValuesRef: {
             current: {},
@@ -138,6 +143,7 @@ describe('useFieldArray', () => {
     const { result } = renderHook(() =>
       useFieldArray({
         control: {
+          reRender: () => {},
           getValues: () => ({ test: [{ test: '1' }, { test: '2' }] }),
           defaultValuesRef: {
             current: {},
@@ -161,6 +167,7 @@ describe('useFieldArray', () => {
     const { result } = renderHook(() =>
       useFieldArray({
         control: {
+          reRender: () => {},
           getValues: () => ({ test: [{ test: '1' }, { test: '2' }] }),
           defaultValuesRef: {
             current: {},
@@ -185,9 +192,11 @@ describe('useFieldArray', () => {
   });
 
   it('should swap data order', () => {
+    const reRender = jest.fn();
     const { result } = renderHook(() =>
       useFieldArray({
         control: {
+          reRender,
           getValues: () => ({ test: [{ test: '1' }, { test: '2' }] }),
           defaultValuesRef: {
             current: {},
@@ -208,12 +217,15 @@ describe('useFieldArray', () => {
       { id: '1', test: '2' },
       { id: '1', test: '1' },
     ]);
+    expect(reRender).toBeCalled();
   });
 
   it('should move into pointed position', () => {
+    const reRender = jest.fn();
     const { result } = renderHook(() =>
       useFieldArray({
         control: {
+          reRender,
           getValues: () => ({
             test: [{ test: '1' }, { test: '2' }, { test: '3' }],
           }),
@@ -247,6 +259,7 @@ describe('useFieldArray', () => {
       { id: '1', test: '3' },
       { id: '1', test: '2' },
     ]);
+    expect(reRender).toBeCalled();
   });
 
   it('should reset particular default value during useEffect', () => {
@@ -259,6 +272,7 @@ describe('useFieldArray', () => {
     renderHook(() =>
       useFieldArray({
         control: {
+          reRender: () => {},
           getValues: () => ({ test: [{ test: '1' }, { test: '2' }] }),
           defaultValuesRef,
           resetFieldArrayFunctionRef: {
