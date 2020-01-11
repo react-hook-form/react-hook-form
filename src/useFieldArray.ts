@@ -26,28 +26,34 @@ export function useFieldArray<
   const {
     getValues,
     defaultValuesRef,
+    reRender,
     resetFieldArrayFunctionRef,
     fields: globalFields,
     unregister,
   } = control || methods.control;
+
   const [fields, setField] = React.useState<WithFieldId<FormArrayValues>[]>(
     mapIds(getValues({ nest: true })[name]),
   );
 
-  const prepend = (value: WithFieldId<FormArrayValues>) =>
+  const resetArrayFields = () => {
+    for (const key in globalFields) {
+      if (key.startsWith(`${name}[`)) {
+        unregister(key);
+      }
+    }
+  };
+
+  const prepend = (value: WithFieldId<FormArrayValues>) => {
+    resetArrayFields();
     setField([appendId(value), ...fields]);
+  };
 
   const append = (value: WithFieldId<FormArrayValues>) =>
     setField([...fields, appendId(value)]);
 
   const remove = (index?: number) => {
-    if (!isUndefined(index)) {
-      for (const key in globalFields) {
-        if (key.startsWith(`${name}[`)) {
-          unregister(key);
-        }
-      }
-    }
+    resetArrayFields();
     setField(
       isUndefined(index)
         ? []
@@ -56,6 +62,7 @@ export function useFieldArray<
   };
 
   const insert = (index: number, value: WithFieldId<FormArrayValues>) => {
+    resetArrayFields();
     setField([
       ...fields.slice(0, index),
       appendId(value),
@@ -66,11 +73,13 @@ export function useFieldArray<
   const swap = (indexA: number, indexB: number) => {
     [fields[indexA], fields[indexB]] = [fields[indexB], fields[indexA]];
     setField(fields);
+    reRender();
   };
 
   const move = (from: number, to: number) => {
     fields.splice(to, 0, fields.splice(from, 1)[0]);
     setField(fields);
+    reRender();
   };
 
   const reset = (value: any) => setField(mapIds(value[name]));

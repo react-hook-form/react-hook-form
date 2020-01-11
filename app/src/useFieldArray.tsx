@@ -4,7 +4,7 @@ import { useForm, useFieldArray, Controller } from 'react-hook-form';
 let renderCount = 0;
 
 const UseFieldArray: React.FC = (props: any) => {
-  const { control, handleSubmit } = useForm<{
+  const { control, handleSubmit, register } = useForm<{
     data: { name: string }[];
   }>({
     ...(props.match.params.mode === 'default'
@@ -27,11 +27,11 @@ const UseFieldArray: React.FC = (props: any) => {
     control,
     name: 'data',
   });
-  const onSubmit = () => {};
+  const onSubmit = (data: any) => {
+    console.log(data);
+  };
 
   renderCount++;
-
-  console.log(fields);
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
@@ -44,6 +44,7 @@ const UseFieldArray: React.FC = (props: any) => {
                 name={`data[${index}].name`}
                 defaultValue={data.name}
                 data-order={index}
+                ref={register}
               />
             ) : (
               <Controller
@@ -61,6 +62,7 @@ const UseFieldArray: React.FC = (props: any) => {
 
       <button
         id="append"
+        type="button"
         onClick={() => append({ name: renderCount.toString() })}
       >
         append
@@ -68,31 +70,33 @@ const UseFieldArray: React.FC = (props: any) => {
 
       <button
         id="prepend"
+        type="button"
         onClick={() => prepend({ name: renderCount.toString() })}
       >
         prepend
       </button>
 
-      <button id="swap" onClick={() => swap(1, 2)}>
+      <button id="swap" onClick={() => swap(1, 2)} type="button">
         swap
       </button>
 
-      <button id="move" onClick={() => move(2, 0)}>
+      <button id="move" onClick={() => move(2, 0)} type="button">
         move
       </button>
 
       <button
         id="insert"
+        type="button"
         onClick={() => insert(1, { name: renderCount.toString() })}
       >
         insert
       </button>
 
-      <button id="remove" onClick={() => remove(1)}>
+      <button id="remove" type="button" onClick={() => remove(1)}>
         remove
       </button>
 
-      <button id="removeAll" onClick={() => remove()}>
+      <button id="removeAll" type="button" onClick={() => remove()}>
         remove all
       </button>
 
