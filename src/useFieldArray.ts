@@ -26,7 +26,6 @@ export function useFieldArray<
   const {
     getValues,
     defaultValuesRef,
-    reRender,
     resetFieldArrayFunctionRef,
     fields: globalFields,
     unregister,
@@ -71,15 +70,15 @@ export function useFieldArray<
   };
 
   const swap = (indexA: number, indexB: number) => {
+    resetFields();
     [fields[indexA], fields[indexB]] = [fields[indexB], fields[indexA]];
-    setField(fields);
-    reRender();
+    setField([...fields]);
   };
 
   const move = (from: number, to: number) => {
+    resetFields();
     fields.splice(to, 0, fields.splice(from, 1)[0]);
-    setField(fields);
-    reRender();
+    setField([...fields]);
   };
 
   const reset = (value: any) => setField(mapIds(value[name]));

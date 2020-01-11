@@ -27,8 +27,9 @@ const UseFieldArray: React.FC = (props: any) => {
     control,
     name: 'data',
   });
+  const [data, setData] = React.useState([]);
   const onSubmit = (data: any) => {
-    console.log(data);
+    setData(data);
   };
 
   renderCount++;
@@ -100,7 +101,10 @@ const UseFieldArray: React.FC = (props: any) => {
         remove all
       </button>
 
+      <button id="submit">Submit</button>
+
       <div id="renderCount">{renderCount}</div>
+      <div id="result">{JSON.stringify(data)}</div>
     </form>
   );
 };
