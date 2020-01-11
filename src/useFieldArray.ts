@@ -23,8 +23,13 @@ export function useFieldArray<
   FormArrayValues extends FieldValues = FieldValues
 >({ control, name }: UseFieldArrayProps) {
   const methods = useFormContext() || {};
-  const { getValues, defaultValuesRef, resetFieldArrayFunctionRef } =
-    control || methods.control;
+  const {
+    getValues,
+    defaultValuesRef,
+    resetFieldArrayFunctionRef,
+    fields: globalFields,
+    unregister,
+  } = control || methods.control;
   const [fields, setField] = React.useState<WithFieldId<FormArrayValues>[]>(
     mapIds(getValues({ nest: true })[name]),
   );
@@ -35,12 +40,20 @@ export function useFieldArray<
   const append = (value: WithFieldId<FormArrayValues>) =>
     setField([...fields, appendId(value)]);
 
-  const remove = (index?: number) =>
+  const remove = (index?: number) => {
+    if (!isUndefined(index)) {
+      for (const key in globalFields) {
+        if (key.startsWith(`${name}[`)) {
+          unregister(key);
+        }
+      }
+    }
     setField(
       isUndefined(index)
         ? []
         : [...fields.slice(0, index), ...fields.slice(index + 1)],
     );
+  };
 
   const insert = (index: number, value: WithFieldId<FormArrayValues>) => {
     setField([
