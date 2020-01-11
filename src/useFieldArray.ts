@@ -2,8 +2,8 @@ import * as React from 'react';
 import { useFormContext } from './useFormContext';
 import generateId from './logic/generateId';
 import isUndefined from './utils/isUndefined';
-import { FieldValues, UseFieldArrayProps, WithFieldId } from './types';
 import isArray from './utils/isArray';
+import { FieldValues, UseFieldArrayProps, WithFieldId } from './types';
 
 export const appendId = <
   FormArrayValues extends {
@@ -36,7 +36,7 @@ export function useFieldArray<
     mapIds(getValues({ nest: true })[name]),
   );
 
-  const resetArrayFields = () => {
+  const resetFields = () => {
     for (const key in globalFields) {
       if (key.startsWith(`${name}[`)) {
         unregister(key);
@@ -45,7 +45,7 @@ export function useFieldArray<
   };
 
   const prepend = (value: WithFieldId<FormArrayValues>) => {
-    resetArrayFields();
+    resetFields();
     setField([appendId(value), ...fields]);
   };
 
@@ -53,7 +53,7 @@ export function useFieldArray<
     setField([...fields, appendId(value)]);
 
   const remove = (index?: number) => {
-    resetArrayFields();
+    resetFields();
     setField(
       isUndefined(index)
         ? []
@@ -62,7 +62,7 @@ export function useFieldArray<
   };
 
   const insert = (index: number, value: WithFieldId<FormArrayValues>) => {
-    resetArrayFields();
+    resetFields();
     setField([
       ...fields.slice(0, index),
       appendId(value),
