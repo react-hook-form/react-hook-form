@@ -23,7 +23,7 @@ const mapIds = (data: any) =>
 export function useFieldArray<
   FormArrayValues extends FieldValues = FieldValues
 >({ control, name }: UseFieldArrayProps) {
-  const methods = useFormContext() || {};
+  const methods = useFormContext();
   const {
     resetFieldArrayFunctionRef,
     fieldArrayNamesRef,

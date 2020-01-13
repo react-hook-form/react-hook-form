@@ -20,7 +20,7 @@ const Controller = ({
   control,
   ...rest
 }: ControllerProps) => {
-  const methods = useFormContext() || {};
+  const methods = useFormContext();
   const {
     defaultValues,
     setValue,
