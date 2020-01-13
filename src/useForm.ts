@@ -10,6 +10,7 @@ import validateWithSchema from './logic/validateWithSchema';
 import getDefaultValue from './logic/getDefaultValue';
 import assignWatchFields from './logic/assignWatchFields';
 import skipValidation from './logic/skipValidation';
+import isMatchFieldArrayName from './logic/isMatchFieldArrayName';
 import isCheckBoxInput from './utils/isCheckBoxInput';
 import isEmptyObject from './utils/isEmptyObject';
 import isRadioInput from './utils/isRadioInput';
@@ -85,7 +86,7 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
   const isSubmittingRef = useRef(false);
   const handleChangeRef = useRef<HandleChange>();
   const resetFieldArrayFunctionRef = useRef({});
-  const fieldArrayNamesRef = useRef(new Set());
+  const fieldArrayNamesRef = useRef<Set<string>>(new Set());
   const [, render] = useState();
   const { isOnBlur, isOnSubmit } = useRef(modeChecker(mode)).current;
   const isWindowUndefined = typeof window === UNDEFINED;
@@ -750,7 +751,8 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
       );
 
       const shouldSet = [...fieldArrayNamesRef.current].reduce(
-        (prev, current) => (name.startsWith(`${current}[`) ? false : prev),
+        (prev, current) =>
+          isMatchFieldArrayName(name, current) ? false : prev,
         true,
       );
 

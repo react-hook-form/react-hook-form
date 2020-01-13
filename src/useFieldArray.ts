@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { useFormContext } from './useFormContext';
 import generateId from './logic/generateId';
+import isMatchFieldArrayName from './logic/isMatchFieldArrayName';
 import isUndefined from './utils/isUndefined';
 import isArray from './utils/isArray';
 import { FieldValues, UseFieldArrayProps, WithFieldId } from './types';
@@ -37,7 +38,7 @@ export function useFieldArray<
 
   const resetFields = () => {
     for (const key in globalFields) {
-      if (key.startsWith(`${name}[`)) {
+      if (isMatchFieldArrayName(key, name)) {
         unregister(key);
       }
     }
