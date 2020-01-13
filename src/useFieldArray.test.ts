@@ -10,10 +10,8 @@ describe('useFieldArray', () => {
     const { result } = renderHook(() =>
       useFieldArray({
         control: {
-          getValues: () => ({}),
-          defaultValuesRef: {
-            current: {},
-          },
+          fieldArrayNamesRef: { current: new Set() },
+          defaultValues: {},
           resetFieldArrayFunctionRef: {
             current: {},
           },
@@ -29,10 +27,9 @@ describe('useFieldArray', () => {
     const { result } = renderHook(() =>
       useFieldArray({
         control: {
+          fieldArrayNamesRef: { current: new Set() },
           getValues: () => ({}),
-          defaultValuesRef: {
-            current: {},
-          },
+          defaultValues: {},
           resetFieldArrayFunctionRef: {
             current: {},
           },
@@ -61,10 +58,9 @@ describe('useFieldArray', () => {
     const { result } = renderHook(() =>
       useFieldArray({
         control: {
+          fieldArrayNamesRef: { current: new Set() },
           getValues: () => ({}),
-          defaultValuesRef: {
-            current: {},
-          },
+          defaultValues: {},
           resetFieldArrayFunctionRef: {
             current: {},
           },
@@ -93,10 +89,8 @@ describe('useFieldArray', () => {
     const { result } = renderHook(() =>
       useFieldArray({
         control: {
-          getValues: () => ({ test: [{ test: '1' }, { test: '2' }] }),
-          defaultValuesRef: {
-            current: {},
-          },
+          fieldArrayNamesRef: { current: new Set() },
+          defaultValues: { test: [{ test: '1' }, { test: '2' }] },
           resetFieldArrayFunctionRef: {
             current: {},
           },
@@ -115,10 +109,8 @@ describe('useFieldArray', () => {
     const { result } = renderHook(() =>
       useFieldArray({
         control: {
-          getValues: () => ({ test: [{ test: '1' }, { test: '2' }] }),
-          defaultValuesRef: {
-            current: {},
-          },
+          fieldArrayNamesRef: { current: new Set() },
+          defaultValues: { test: [{ test: '1' }, { test: '2' }] },
           resetFieldArrayFunctionRef: {
             current: {},
           },
@@ -138,10 +130,9 @@ describe('useFieldArray', () => {
     const { result } = renderHook(() =>
       useFieldArray({
         control: {
+          fieldArrayNamesRef: { current: new Set() },
           getValues: () => ({ test: [{ test: '1' }, { test: '2' }] }),
-          defaultValuesRef: {
-            current: {},
-          },
+          defaultValues: {},
           resetFieldArrayFunctionRef: {
             current: {},
           },
@@ -161,10 +152,8 @@ describe('useFieldArray', () => {
     const { result } = renderHook(() =>
       useFieldArray({
         control: {
-          getValues: () => ({ test: [{ test: '1' }, { test: '2' }] }),
-          defaultValuesRef: {
-            current: {},
-          },
+          fieldArrayNamesRef: { current: new Set() },
+          defaultValues: { test: [{ test: '1' }, { test: '2' }] },
           resetFieldArrayFunctionRef: {
             current: {},
           },
@@ -188,10 +177,8 @@ describe('useFieldArray', () => {
     const { result } = renderHook(() =>
       useFieldArray({
         control: {
-          getValues: () => ({ test: [{ test: '1' }, { test: '2' }] }),
-          defaultValuesRef: {
-            current: {},
-          },
+          fieldArrayNamesRef: { current: new Set() },
+          defaultValues: { test: [{ test: '1' }, { test: '2' }] },
           resetFieldArrayFunctionRef: {
             current: {},
           },
@@ -214,11 +201,9 @@ describe('useFieldArray', () => {
     const { result } = renderHook(() =>
       useFieldArray({
         control: {
-          getValues: () => ({
+          fieldArrayNamesRef: { current: new Set() },
+          defaultValues: {
             test: [{ test: '1' }, { test: '2' }, { test: '3' }],
-          }),
-          defaultValuesRef: {
-            current: {},
           },
           resetFieldArrayFunctionRef: {
             current: {},
@@ -247,35 +232,6 @@ describe('useFieldArray', () => {
       { id: '1', test: '3' },
       { id: '1', test: '2' },
     ]);
-  });
-
-  it('should reset particular default value during useEffect', () => {
-    const defaultValuesRef = {
-      current: {
-        test: 'bill',
-      },
-    };
-
-    renderHook(() =>
-      useFieldArray({
-        control: {
-          getValues: () => ({ test: [{ test: '1' }, { test: '2' }] }),
-          defaultValuesRef,
-          resetFieldArrayFunctionRef: {
-            current: {},
-          },
-        },
-        name: 'test',
-      }),
-    );
-
-    act(() => {
-      expect(defaultValuesRef).toEqual({
-        current: {
-          test: {},
-        },
-      });
-    });
   });
 });
 

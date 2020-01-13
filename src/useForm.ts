@@ -85,6 +85,7 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
   const isSubmittingRef = useRef(false);
   const handleChangeRef = useRef<HandleChange>();
   const resetFieldArrayFunctionRef = useRef({});
+  const fieldArrayNamesRef = useRef(new Set());
   const [, render] = useState();
   const { isOnBlur, isOnSubmit } = useRef(modeChecker(mode)).current;
   const isWindowUndefined = typeof window === UNDEFINED;
@@ -748,7 +749,12 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
         name,
       );
 
-      if (!isUndefined(defaultValue)) {
+      const shouldSet = [...fieldArrayNamesRef.current].reduce(
+        (prev, current) => (name.startsWith(`${current}[`) ? false : prev),
+        true,
+      );
+
+      if (!isUndefined(defaultValue) && shouldSet) {
         setFieldValue(name, defaultValue);
       }
     }
@@ -959,6 +965,7 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
     touchedFieldsRef.current = {};
     validFieldsRef.current = new Set();
     fieldsWithValidationRef.current = new Set();
+    fieldArrayNamesRef.current = new Set();
     defaultRenderValuesRef.current = {};
     watchFieldsRef.current = new Set();
     dirtyFieldsRef.current = new Set();
@@ -988,7 +995,9 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
     }
 
     Object.values(resetFieldArrayFunctionRef.current).forEach(
-      resetFieldArray => isFunction(resetFieldArray) && resetFieldArray(values),
+      resetFieldArray =>
+        isFunction(resetFieldArray) &&
+        resetFieldArray(defaultValuesRef.current),
     );
 
     reRender();
@@ -1037,9 +1046,9 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
   const control = {
     register,
     unregister,
-    getValues,
     setValue,
     formState,
+    defaultValues,
     mode: {
       isOnBlur,
       isOnSubmit,
@@ -1050,8 +1059,8 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
     },
     errors: errorsRef.current,
     fields: fieldsRef.current,
-    defaultValuesRef,
     resetFieldArrayFunctionRef,
+    fieldArrayNamesRef,
   };
 
   return {

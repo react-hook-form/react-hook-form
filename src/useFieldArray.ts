@@ -24,15 +24,15 @@ export function useFieldArray<
 >({ control, name }: UseFieldArrayProps) {
   const methods = useFormContext() || {};
   const {
-    getValues,
-    defaultValuesRef,
     resetFieldArrayFunctionRef,
+    fieldArrayNamesRef,
     fields: globalFields,
+    defaultValues,
     unregister,
   } = control || methods.control;
 
   const [fields, setField] = React.useState<WithFieldId<FormArrayValues>[]>(
-    mapIds(getValues({ nest: true })[name]),
+    mapIds(defaultValues[name]),
   );
 
   const resetFields = () => {
@@ -81,15 +81,17 @@ export function useFieldArray<
     setField([...fields]);
   };
 
-  const reset = (value: any) => setField(mapIds(value[name]));
+  const reset = (values: any) => setField(mapIds(values[name]));
 
   React.useEffect(() => {
     const resetFunctions = resetFieldArrayFunctionRef.current;
-    defaultValuesRef.current[name] = {};
+    const fieldArrayNames = fieldArrayNamesRef.current;
+    fieldArrayNamesRef.current.add(name);
     resetFunctions[name] = reset;
 
     return () => {
       delete resetFunctions[name];
+      fieldArrayNames.delete(name);
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [name]);
