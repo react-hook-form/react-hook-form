@@ -979,9 +979,7 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
   };
 
   const reset = (values?: DeepPartial<FormValues>): void => {
-    const fieldsKeyValue = Object.entries(fieldsRef.current);
-
-    for (const [, value] of fieldsKeyValue) {
+    for (const value of Object.values(fieldsRef.current)) {
       if (value && value.ref && value.ref.closest) {
         try {
           value.ref.closest('form').reset();
