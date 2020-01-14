@@ -29,7 +29,7 @@ import unset from './utils/unset';
 import isMultipleSelect from './utils/isMultipleSelect';
 import modeChecker from './utils/validationModeChecker';
 import isNullOrUndefined from './utils/isNullOrUndefined';
-import { EVENTS, VALIDATION_MODE } from './constants';
+import { EVENTS, VALIDATION_MODE, UNDEFINED } from './constants';
 import { FormContextValues } from './contextTypes';
 import {
   DeepPartial,
@@ -89,9 +89,9 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
   const fieldArrayNamesRef = useRef<Set<string>>(new Set());
   const [, render] = useState();
   const { isOnBlur, isOnSubmit } = useRef(modeChecker(mode)).current;
-  const isWindowUndefined = typeof window === undefined;
+  const isWindowUndefined = typeof window === UNDEFINED;
   const isWeb =
-    typeof document !== undefined &&
+    typeof document !== UNDEFINED &&
     !isWindowUndefined &&
     !isUndefined(window.HTMLElement);
   const isProxyEnabled = isWeb && 'Proxy' in window;
