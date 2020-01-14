@@ -67,7 +67,10 @@ export function useFieldArray<
     setField([...fields]);
   };
 
-  const reset = (values: any) => setField(mapIds(values[name]));
+  const reset = (values: any) => {
+    resetFields();
+    setField(mapIds(values[name]));
+  };
 
   React.useEffect(() => {
     const resetFunctions = resetFieldArrayFunctionRef.current;
@@ -76,9 +79,9 @@ export function useFieldArray<
     resetFunctions[name] = reset;
 
     return () => {
+      resetFields();
       delete resetFunctions[name];
       fieldArrayNames.delete(name);
-      resetFields();
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [name]);
