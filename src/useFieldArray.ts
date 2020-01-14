@@ -29,13 +29,13 @@ export function useFieldArray<
     }
   };
 
-  const prepend = (value?: WithFieldId<FormArrayValues> | null) => {
+  const prepend = (value: WithFieldId<Partial<FormArrayValues>>) => {
     resetFields();
-    setField([appendId(value ? value : {}), ...fields]);
+    setField([appendId(value), ...fields]);
   };
 
-  const append = (value?: WithFieldId<FormArrayValues> | null) =>
-    setField([...fields, appendId(value ? value : {})]);
+  const append = (value: WithFieldId<Partial<FormArrayValues>>) =>
+    setField([...fields, appendId(value)]);
 
   const remove = (index?: number) => {
     resetFields();
@@ -48,12 +48,12 @@ export function useFieldArray<
 
   const insert = (
     index: number,
-    value?: WithFieldId<FormArrayValues> | null,
+    value: WithFieldId<Partial<FormArrayValues>>,
   ) => {
     resetFields();
     setField([
       ...fields.slice(0, index),
-      appendId(value ? value : {}),
+      appendId(value),
       ...fields.slice(index),
     ]);
   };
