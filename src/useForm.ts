@@ -192,7 +192,7 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
           ({ ref: radioRef }) => (radioRef.checked = radioRef.value === value),
         );
       } else if (isFileInput(type)) {
-        if (value instanceof FileList) {
+        if (value instanceof FileList || value === '') {
           ref.files = value;
         }
       } else if (isMultipleSelect(type)) {
