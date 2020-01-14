@@ -11,6 +11,9 @@ function reconfigureControl(changedControl = {}) {
     setValue: jest.fn(),
     register: jest.fn(),
     unregister: jest.fn(),
+    fieldArrayNamesRef: {
+      current: new Set(),
+    },
     errors: {},
     mode: { isOnSubmit: false, isOnBlur: false },
     reValidateMode: {
