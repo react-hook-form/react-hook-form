@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { useFormContext } from './useFormContext';
-import isMatchFieldArrayName from './logic/isMatchFieldArrayName';
+import { isMatchFieldArrayName } from './logic/isMatchFieldArrayName';
 import { appendId, mapIds } from './logic/mapIds';
 import isUndefined from './utils/isUndefined';
 import { FieldValues, UseFieldArrayProps, WithFieldId } from './types';
@@ -78,6 +78,7 @@ export function useFieldArray<
     return () => {
       delete resetFunctions[name];
       fieldArrayNames.delete(name);
+      resetFields();
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [name]);

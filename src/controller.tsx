@@ -1,6 +1,7 @@
 import * as React from 'react';
 import isBoolean from './utils/isBoolean';
 import isUndefined from './utils/isUndefined';
+import { isFieldArray } from './logic/isMatchFieldArrayName';
 import getInputValue from './logic/getInputValue';
 import skipValidation from './logic/skipValidation';
 import { useFormContext } from './useFormContext';
@@ -24,6 +25,7 @@ const Controller = ({
   const {
     defaultValues,
     setValue,
+    fieldArrayNamesRef,
     register,
     unregister,
     errors,
@@ -101,7 +103,11 @@ const Controller = ({
   React.useEffect(
     () => {
       registerField();
-      return () => unregister(name);
+      return () => {
+        if (!isFieldArray(fieldArrayNamesRef.current, name)) {
+          unregister(name);
+        }
+      };
     }, // eslint-disable-next-line react-hooks/exhaustive-deps
     [name],
   );
