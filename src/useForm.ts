@@ -915,6 +915,8 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
         if (isEmptyObject(fieldErrors)) {
           errorsRef.current = {};
           await callback(transformToNestObject(fieldValues), e);
+          isSubmittedRef.current = true;
+          submitCountRef.current = submitCountRef.current + 1;
         } else {
           if (submitFocusError) {
             for (const key in fieldsRef.current) {
@@ -936,9 +938,7 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
           errorsRef.current = fieldErrors;
         }
       } finally {
-        isSubmittedRef.current = true;
         isSubmittingRef.current = false;
-        submitCountRef.current = submitCountRef.current + 1;
         reRender();
       }
     },
