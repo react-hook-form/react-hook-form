@@ -100,7 +100,7 @@ context('useFieldArray', () => {
     cy.get('#renderCount').contains('23');
   });
 
-  it.only('should behaviour correctly with defaultValue', () => {
+  it('should behaviour correctly with defaultValue', () => {
     cy.visit('http://localhost:3000/useFieldArray/default');
 
     cy.get('ul > li')
