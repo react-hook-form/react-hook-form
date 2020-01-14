@@ -1,9 +1,9 @@
 import * as React from 'react';
+import { useFormContext } from './useFormContext';
 import isMatchFieldArrayName from './logic/isMatchFieldArrayName';
 import { appendId, mapIds } from './logic/mapIds';
-import { FieldValues, UseFieldArrayProps, WithFieldId } from './types';
-import { useFormContext } from './useFormContext';
 import isUndefined from './utils/isUndefined';
+import { FieldValues, UseFieldArrayProps, WithFieldId } from './types';
 
 export function useFieldArray<
   FormArrayValues extends FieldValues = FieldValues
