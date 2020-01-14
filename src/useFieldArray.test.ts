@@ -53,6 +53,16 @@ describe('useFieldArray', () => {
       { id: '1', test: 'test' },
       { id: '1', test: 'test1' },
     ]);
+
+    act(() => {
+      result.current.append({});
+    });
+
+    expect(result.current.fields).toEqual([
+      { id: '1', test: 'test' },
+      { id: '1', test: 'test1' },
+      { id: '1' },
+    ]);
   });
 
   it('should pre-append data into the fields', () => {
@@ -81,6 +91,16 @@ describe('useFieldArray', () => {
     });
 
     expect(result.current.fields).toEqual([
+      { id: '1', test: 'test1' },
+      { id: '1', test: 'test' },
+    ]);
+
+    act(() => {
+      result.current.prepend({});
+    });
+
+    expect(result.current.fields).toEqual([
+      { id: '1' },
       { id: '1', test: 'test1' },
       { id: '1', test: 'test' },
     ]);
@@ -169,6 +189,17 @@ describe('useFieldArray', () => {
 
     expect(result.current.fields).toEqual([
       { id: '1', test: '1' },
+      { id: '1', test: '3' },
+      { id: '1', test: '2' },
+    ]);
+
+    act(() => {
+      result.current.insert(1, {});
+    });
+
+    expect(result.current.fields).toEqual([
+      { id: '1', test: '1' },
+      { id: '1' },
       { id: '1', test: '3' },
       { id: '1', test: '2' },
     ]);
