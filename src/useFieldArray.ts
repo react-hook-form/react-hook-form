@@ -1,9 +1,9 @@
 import * as React from 'react';
-import { useFormContext } from './useFormContext';
 import isMatchFieldArrayName from './logic/isMatchFieldArrayName';
 import { appendId, mapIds } from './logic/mapIds';
-import isUndefined from './utils/isUndefined';
 import { FieldValues, UseFieldArrayProps, WithFieldId } from './types';
+import { useFormContext } from './useFormContext';
+import isUndefined from './utils/isUndefined';
 
 export function useFieldArray<
   FormArrayValues extends FieldValues = FieldValues
@@ -29,12 +29,12 @@ export function useFieldArray<
     }
   };
 
-  const prepend = (value?: WithFieldId<FormArrayValues>) => {
+  const prepend = (value?: WithFieldId<FormArrayValues> | null) => {
     resetFields();
     setField([appendId(value ? value : {}), ...fields]);
   };
 
-  const append = (value?: WithFieldId<FormArrayValues>) =>
+  const append = (value?: WithFieldId<FormArrayValues> | null) =>
     setField([...fields, appendId(value ? value : {})]);
 
   const remove = (index?: number) => {
@@ -46,7 +46,10 @@ export function useFieldArray<
     );
   };
 
-  const insert = (index: number, value?: WithFieldId<FormArrayValues>) => {
+  const insert = (
+    index: number,
+    value?: WithFieldId<FormArrayValues> | null,
+  ) => {
     resetFields();
     setField([
       ...fields.slice(0, index),
