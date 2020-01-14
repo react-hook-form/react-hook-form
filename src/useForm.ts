@@ -10,7 +10,7 @@ import validateWithSchema from './logic/validateWithSchema';
 import getDefaultValue from './logic/getDefaultValue';
 import assignWatchFields from './logic/assignWatchFields';
 import skipValidation from './logic/skipValidation';
-import isMatchFieldArrayName from './logic/isMatchFieldArrayName';
+import isNameInFieldArray from './logic/isNameInFieldArray';
 import isCheckBoxInput from './utils/isCheckBoxInput';
 import isEmptyObject from './utils/isEmptyObject';
 import isRadioInput from './utils/isRadioInput';
@@ -750,13 +750,10 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
         name,
       );
 
-      const shouldSet = [...fieldArrayNamesRef.current].reduce(
-        (prev, current) =>
-          isMatchFieldArrayName(name, current) ? false : prev,
-        true,
-      );
-
-      if (!isUndefined(defaultValue) && shouldSet) {
+      if (
+        !isUndefined(defaultValue) &&
+        !isNameInFieldArray(fieldArrayNamesRef.current, name)
+      ) {
         setFieldValue(name, defaultValue);
       }
     }
