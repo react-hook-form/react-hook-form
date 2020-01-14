@@ -103,7 +103,7 @@ const Controller = ({
       registerField();
       return () => unregister(name);
     }, // eslint-disable-next-line react-hooks/exhaustive-deps
-    [],
+    [name],
   );
 
   const props = {
