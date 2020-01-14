@@ -3,10 +3,10 @@ import isBoolean from './utils/isBoolean';
 import isUndefined from './utils/isUndefined';
 import getInputValue from './logic/getInputValue';
 import skipValidation from './logic/skipValidation';
+import isNameInFieldArray from './logic/isNameInFieldArray';
 import { useFormContext } from './useFormContext';
 import { EVENTS, VALIDATION_MODE, VALUE } from './constants';
 import { ControllerProps, EventFunction } from './types';
-import isNameInFieldArray from './logic/isNameInFieldArray';
 
 const Controller = ({
   name,
