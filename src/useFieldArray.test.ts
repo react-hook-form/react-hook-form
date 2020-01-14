@@ -1,5 +1,6 @@
 import { act, renderHook } from '@testing-library/react-hooks';
-import { useFieldArray, appendId } from './useFieldArray';
+import { useFieldArray } from './useFieldArray';
+import { appendId } from './logic/mapIds';
 
 jest.mock('./logic/generateId', () => ({
   default: () => '1',

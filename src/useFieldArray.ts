@@ -1,24 +1,9 @@
 import * as React from 'react';
 import { useFormContext } from './useFormContext';
-import generateId from './logic/generateId';
 import isMatchFieldArrayName from './logic/isMatchFieldArrayName';
+import { appendId, mapIds } from './logic/mapIds';
 import isUndefined from './utils/isUndefined';
-import isArray from './utils/isArray';
 import { FieldValues, UseFieldArrayProps, WithFieldId } from './types';
-
-export const appendId = <
-  FormArrayValues extends {
-    id?: string;
-  } & FieldValues = FieldValues
->(
-  value: FormArrayValues,
-) => ({
-  ...value,
-  ...(value.id ? {} : { id: generateId() }),
-});
-
-const mapIds = (data: any) =>
-  (isArray(data) ? data : []).map(value => appendId(value));
 
 export function useFieldArray<
   FormArrayValues extends FieldValues = FieldValues
