@@ -17,9 +17,9 @@ export function useFieldArray<
     unregister,
   } = control || methods.control;
 
-  const [fields, setField] = React.useState<WithFieldId<FormArrayValues>[]>(
-    mapIds(defaultValues[name]),
-  );
+  const [fields, setField] = React.useState<
+    WithFieldId<Partial<FormArrayValues>>[]
+  >(mapIds(defaultValues[name]));
 
   const resetFields = () => {
     for (const key in globalFields) {
@@ -29,13 +29,13 @@ export function useFieldArray<
     }
   };
 
-  const prepend = (value: WithFieldId<FormArrayValues>) => {
+  const prepend = (value?: WithFieldId<FormArrayValues>) => {
     resetFields();
-    setField([appendId(value), ...fields]);
+    setField([appendId(value ? value : {}), ...fields]);
   };
 
-  const append = (value: WithFieldId<FormArrayValues>) =>
-    setField([...fields, appendId(value)]);
+  const append = (value?: WithFieldId<FormArrayValues>) =>
+    setField([...fields, appendId(value ? value : {})]);
 
   const remove = (index?: number) => {
     resetFields();
@@ -46,11 +46,11 @@ export function useFieldArray<
     );
   };
 
-  const insert = (index: number, value: WithFieldId<FormArrayValues>) => {
+  const insert = (index: number, value?: WithFieldId<FormArrayValues>) => {
     resetFields();
     setField([
       ...fields.slice(0, index),
-      appendId(value),
+      appendId(value ? value : {}),
       ...fields.slice(index),
     ]);
   };
