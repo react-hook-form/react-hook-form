@@ -89,9 +89,9 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
   const fieldArrayNamesRef = useRef<Set<string>>(new Set());
   const [, render] = useState();
   const { isOnBlur, isOnSubmit } = useRef(modeChecker(mode)).current;
-  const isWindowUndefined = isUndefined(window);
+  const isWindowUndefined = typeof window === undefined;
   const isWeb =
-    !isUndefined(document) &&
+    typeof document !== undefined &&
     !isWindowUndefined &&
     !isUndefined(window.HTMLElement);
   const isProxyEnabled = isWeb && 'Proxy' in window;
