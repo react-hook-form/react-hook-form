@@ -964,7 +964,6 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
     touchedFieldsRef.current = {};
     validFieldsRef.current = new Set();
     fieldsWithValidationRef.current = new Set();
-    fieldArrayNamesRef.current = new Set();
     defaultRenderValuesRef.current = {};
     watchFieldsRef.current = new Set();
     dirtyFieldsRef.current = new Set();
