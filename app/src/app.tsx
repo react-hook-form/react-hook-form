@@ -20,6 +20,7 @@ import SetValueWithSchema from './setValueWithSchema';
 import SetValueWithTrigger from './setValueWithTrigger';
 import IsValid from './isValid';
 import Controller from './controller';
+import UseFieldArray from './useFieldArray';
 
 const App: React.FC = () => {
   return (
@@ -54,6 +55,7 @@ const App: React.FC = () => {
         component={SetValueWithTrigger}
       />
       <Route path="/conditionalField" exact component={ConditionalField} />
+      <Route path="/UseFieldArray/:mode" exact component={UseFieldArray} />
       <Route path="/reset" exact component={Reset} />
       <Route path="/setValue" exact component={SetValue} />
       <Route path="/setValueWithSchema" exact component={SetValueWithSchema} />

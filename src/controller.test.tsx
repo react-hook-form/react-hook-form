@@ -4,7 +4,9 @@ import { Controller } from './index';
 
 function reconfigureControl(changedControl = {}) {
   const defaultControl = {
-    defaultValues: {},
+    defaultValuesRef: {
+      current: {},
+    },
     fields: {},
     setValue: jest.fn(),
     register: jest.fn(),
@@ -21,12 +23,12 @@ function reconfigureControl(changedControl = {}) {
   return Object.assign({}, defaultControl, changedControl);
 }
 
-describe('React Hook Form Input', () => {
+describe('Controller', () => {
   it('should render correctly with as with string', () => {
     const control = reconfigureControl();
 
     const { asFragment } = render(
-      <Controller name="test" as="input" control={control} />,
+      <Controller defaultValue="" name="test" as="input" control={control} />,
     );
 
     expect(asFragment()).toMatchSnapshot();
@@ -36,7 +38,12 @@ describe('React Hook Form Input', () => {
     const control = reconfigureControl();
 
     const { asFragment } = render(
-      <Controller name="test" as={<input />} control={control} />,
+      <Controller
+        defaultValue=""
+        name="test"
+        as={<input />}
+        control={control}
+      />,
     );
 
     expect(asFragment()).toMatchSnapshot();
@@ -51,6 +58,7 @@ describe('React Hook Form Input', () => {
 
     const { getByPlaceholderText } = render(
       <Controller
+        defaultValue=""
         name="test"
         as={<input placeholder="test" />}
         control={control}
@@ -75,6 +83,7 @@ describe('React Hook Form Input', () => {
 
     const { getByPlaceholderText } = render(
       <Controller
+        defaultValue=""
         name="test"
         as={<input placeholder="test" />}
         control={control}
@@ -99,6 +108,7 @@ describe('React Hook Form Input', () => {
 
     const { getByPlaceholderText } = render(
       <Controller
+        defaultValue=""
         name="test"
         as={<input placeholder="test" />}
         onChangeName="onChange"
@@ -127,6 +137,7 @@ describe('React Hook Form Input', () => {
 
     const { getByPlaceholderText } = render(
       <Controller
+        defaultValue=""
         name="test"
         as={<input placeholder="test" />}
         onChange={onChange}
@@ -152,7 +163,7 @@ describe('React Hook Form Input', () => {
     });
 
     const { asFragment } = render(
-      <Controller name="test" as="input" control={control} />,
+      <Controller defaultValue="" name="test" as="input" control={control} />,
     );
 
     expect(asFragment()).toMatchSnapshot();
@@ -163,6 +174,7 @@ describe('React Hook Form Input', () => {
 
     const { asFragment } = render(
       <Controller
+        defaultValue=""
         name="test"
         as="input"
         valueName="selectedkey"

@@ -10,11 +10,13 @@ import validateWithSchema from './logic/validateWithSchema';
 import getDefaultValue from './logic/getDefaultValue';
 import assignWatchFields from './logic/assignWatchFields';
 import skipValidation from './logic/skipValidation';
+import isMatchFieldArrayName from './logic/isMatchFieldArrayName';
 import isCheckBoxInput from './utils/isCheckBoxInput';
 import isEmptyObject from './utils/isEmptyObject';
 import isRadioInput from './utils/isRadioInput';
 import isFileInput from './utils/isFileInput';
 import isObject from './utils/isObject';
+import isFunction from './utils/isFunction';
 import isArray from './utils/isArray';
 import isString from './utils/isString';
 import isSameError from './utils/isSameError';
@@ -27,7 +29,7 @@ import unset from './utils/unset';
 import isMultipleSelect from './utils/isMultipleSelect';
 import modeChecker from './utils/validationModeChecker';
 import isNullOrUndefined from './utils/isNullOrUndefined';
-import { EVENTS, UNDEFINED, VALIDATION_MODE } from './constants';
+import { EVENTS, VALIDATION_MODE } from './constants';
 import { FormContextValues } from './contextTypes';
 import {
   DeepPartial,
@@ -83,14 +85,16 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
   const submitCountRef = useRef(0);
   const isSubmittingRef = useRef(false);
   const handleChangeRef = useRef<HandleChange>();
+  const resetFieldArrayFunctionRef = useRef({});
+  const fieldArrayNamesRef = useRef<Set<string>>(new Set());
   const [, render] = useState();
   const { isOnBlur, isOnSubmit } = useRef(modeChecker(mode)).current;
-  const isWindowUndefined = typeof window === UNDEFINED;
+  const isWindowUndefined = isUndefined(window);
   const isWeb =
-    typeof document !== UNDEFINED &&
+    !isUndefined(document) &&
     !isWindowUndefined &&
     !isUndefined(window.HTMLElement);
-  const isProxyEnabled = !isWindowUndefined && 'Proxy' in window;
+  const isProxyEnabled = isWeb && 'Proxy' in window;
   const readFormState = useRef<ReadFormState>({
     dirty: !isProxyEnabled,
     isSubmitted: isOnSubmit,
@@ -746,7 +750,13 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
         name,
       );
 
-      if (!isUndefined(defaultValue)) {
+      const shouldSet = [...fieldArrayNamesRef.current].reduce(
+        (prev, current) =>
+          isMatchFieldArrayName(name, current) ? false : prev,
+        true,
+      );
+
+      if (!isUndefined(defaultValue) && shouldSet) {
         setFieldValue(name, defaultValue);
       }
     }
@@ -957,6 +967,7 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
     touchedFieldsRef.current = {};
     validFieldsRef.current = new Set();
     fieldsWithValidationRef.current = new Set();
+    fieldArrayNamesRef.current = new Set();
     defaultRenderValuesRef.current = {};
     watchFieldsRef.current = new Set();
     dirtyFieldsRef.current = new Set();
@@ -968,9 +979,7 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
   };
 
   const reset = (values?: DeepPartial<FormValues>): void => {
-    const fieldsKeyValue = Object.entries(fieldsRef.current);
-
-    for (const [, value] of fieldsKeyValue) {
+    for (const value of Object.values(fieldsRef.current)) {
       if (value && value.ref && value.ref.closest) {
         try {
           value.ref.closest('form').reset();
@@ -984,6 +993,12 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
     if (values) {
       defaultValuesRef.current = values;
     }
+
+    Object.values(resetFieldArrayFunctionRef.current).forEach(
+      resetFieldArray =>
+        isFunction(resetFieldArray) &&
+        resetFieldArray(defaultValuesRef.current),
+    );
 
     reRender();
   };
@@ -1033,6 +1048,7 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
     unregister,
     setValue,
     formState,
+    defaultValues,
     mode: {
       isOnBlur,
       isOnSubmit,
@@ -1042,8 +1058,9 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
       isReValidateOnSubmit,
     },
     errors: errorsRef.current,
-    defaultValues: defaultValuesRef.current,
     fields: fieldsRef.current,
+    resetFieldArrayFunctionRef,
+    fieldArrayNamesRef,
   };
 
   return {
