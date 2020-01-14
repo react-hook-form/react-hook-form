@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { useFormContext } from './useFormContext';
-import isMatchFieldArrayName from './logic/isMatchFieldArrayName';
+import { isMatchFieldArrayName } from './logic/isNameInFieldArray';
 import { appendId, mapIds } from './logic/mapIds';
 import isUndefined from './utils/isUndefined';
 import { FieldValues, UseFieldArrayProps, WithFieldId } from './types';
@@ -67,7 +67,10 @@ export function useFieldArray<
     setField([...fields]);
   };
 
-  const reset = (values: any) => setField(mapIds(values[name]));
+  const reset = (values: any) => {
+    resetFields();
+    setField(mapIds(values[name]));
+  };
 
   React.useEffect(() => {
     const resetFunctions = resetFieldArrayFunctionRef.current;
@@ -76,6 +79,7 @@ export function useFieldArray<
     resetFunctions[name] = reset;
 
     return () => {
+      resetFields();
       delete resetFunctions[name];
       fieldArrayNames.delete(name);
     };

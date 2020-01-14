@@ -3,6 +3,7 @@ import isBoolean from './utils/isBoolean';
 import isUndefined from './utils/isUndefined';
 import getInputValue from './logic/getInputValue';
 import skipValidation from './logic/skipValidation';
+import isNameInFieldArray from './logic/isNameInFieldArray';
 import { useFormContext } from './useFormContext';
 import { EVENTS, VALIDATION_MODE, VALUE } from './constants';
 import { ControllerProps, EventFunction } from './types';
@@ -31,6 +32,7 @@ const Controller = ({
     reValidateMode: { isReValidateOnBlur, isReValidateOnSubmit },
     formState: { isSubmitted },
     fields,
+    fieldArrayNamesRef,
   } = control || methods.control;
   const [value, setInputStateValue] = React.useState(
     isUndefined(defaultValue) ? defaultValues[name] : defaultValue,
@@ -101,7 +103,11 @@ const Controller = ({
   React.useEffect(
     () => {
       registerField();
-      return () => unregister(name);
+      return () => {
+        if (!isNameInFieldArray(fieldArrayNamesRef.current, name)) {
+          unregister(name);
+        }
+      };
     }, // eslint-disable-next-line react-hooks/exhaustive-deps
     [name],
   );
