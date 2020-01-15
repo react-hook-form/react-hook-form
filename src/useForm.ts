@@ -497,10 +497,8 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
     (field: Field | undefined, forceDelete?: boolean) => {
       if (
         !field ||
-        (isNameInFieldArray(
-          fieldArrayNamesRef.current,
-          get(field, 'ref.name'),
-        ) &&
+        (field &&
+          isNameInFieldArray(fieldArrayNamesRef.current, field.ref.name) &&
           !forceDelete)
       ) {
         return;
