@@ -15,13 +15,17 @@ export function useFieldArray<
     fields: globalFields,
     defaultValues,
     unregister,
+    isDirtyRef,
   } = control || methods.control;
 
   const [fields, setField] = React.useState<
     WithFieldId<Partial<FormArrayValues>>[]
   >(mapIds(defaultValues[name]));
 
-  const resetFields = () => {
+  const resetFields = (shouldSetDirty = true) => {
+    if (shouldSetDirty) {
+      isDirtyRef.current = true;
+    }
     for (const key in globalFields) {
       if (isMatchFieldArrayName(key, name)) {
         unregister(key);
@@ -34,8 +38,10 @@ export function useFieldArray<
     setField([appendId(value), ...fields]);
   };
 
-  const append = (value: WithFieldId<Partial<FormArrayValues>>) =>
+  const append = (value: WithFieldId<Partial<FormArrayValues>>) => {
+    isDirtyRef.current = true;
     setField([...fields, appendId(value)]);
+  };
 
   const remove = (index?: number) => {
     resetFields();
@@ -71,7 +77,7 @@ export function useFieldArray<
   };
 
   const reset = (values: any) => {
-    resetFields();
+    resetFields(false);
     setField(mapIds(values[name]));
   };
 
@@ -82,7 +88,7 @@ export function useFieldArray<
     resetFunctions[name] = reset;
 
     return () => {
-      resetFields();
+      resetFields(false);
       delete resetFunctions[name];
       fieldArrayNames.delete(name);
     };

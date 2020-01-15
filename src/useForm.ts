@@ -1057,6 +1057,7 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
     fields: fieldsRef.current,
     resetFieldArrayFunctionRef,
     fieldArrayNamesRef,
+    isDirtyRef,
   };
 
   return {
