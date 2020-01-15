@@ -495,7 +495,12 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
 
   const removeEventListenerAndRef = useCallback(
     (field: Field | undefined, forceDelete?: boolean) => {
-      if (!field) {
+      if (
+        !field ||
+        (field &&
+          isNameInFieldArray(fieldArrayNamesRef.current, field.ref.name) &&
+          !forceDelete)
+      ) {
         return;
       }
 
@@ -688,7 +693,7 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
     ref: Element,
     validateOptions: ValidationOptions = {},
   ): ((name: FieldName<FormValues>) => void) | void {
-    if (!ref.name && process.env.NODE_ENV !== 'production') {
+    if (!ref.name) {
       return console.warn('Missing name @', ref);
     }
 
