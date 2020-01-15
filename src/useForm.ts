@@ -695,7 +695,7 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
     ref: Element,
     validateOptions: ValidationOptions = {},
   ): ((name: FieldName<FormValues>) => void) | void {
-    if (!ref.name && process.env.NODE_ENV !== 'production') {
+    if (!ref.name) {
       return console.warn('Missing name @', ref);
     }
 
@@ -715,15 +715,12 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
           currentField.options.find(({ ref }: Field) => value === ref.value)
         : currentField
     ) {
-      console.log('failed');
       fields[name as FieldName<FormValues>] = {
         ...currentField,
         ...validateOptions,
       };
       return;
     }
-
-    console.log('register', name);
 
     if (type) {
       const mutationWatcher = onDomRemove(ref, () =>
