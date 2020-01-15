@@ -40,8 +40,18 @@ export default async <FormValues extends FieldValues>(
     max,
     pattern,
     validate,
+    transform,
+    trim,
   }: Field,
 ): Promise<FieldErrors<FormValues>> => {
+  if (isString(value)) {
+    if (transform) {
+      value = transform(value);
+    }
+    if (trim) {
+      value = value.trim();
+    }
+  }
   const fields = fieldsRef.current;
   const error: any = {};
   const isRadio = isRadioInput(type);

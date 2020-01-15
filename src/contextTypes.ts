@@ -6,7 +6,7 @@ import {
   FieldErrors,
   OnSubmit,
   ElementLike,
-  ValidationOptions,
+  FieldOptions,
   FieldName,
   FieldValue,
   ManualFieldError,
@@ -22,25 +22,22 @@ export interface FormContextValues<
   FormValues extends FieldValues = FieldValues
 > {
   register<Element extends ElementLike = ElementLike>(
-    validationOptions: ValidationOptions,
+    fieldOptions: FieldOptions,
   ): (ref: Element | null) => void;
   register<Element extends ElementLike = ElementLike>(
     name: FieldName<FormValues>,
-    validationOptions?: ValidationOptions,
+    fieldOptions?: FieldOptions,
   ): void;
   register<Element extends ElementLike = ElementLike>(
-    namesWithValidationOptions: Record<
-      FieldName<FormValues>,
-      ValidationOptions
-    >,
+    namesWithFieldOptions: Record<FieldName<FormValues>, FieldOptions>,
   ): void;
   register<Element extends ElementLike = ElementLike>(
     ref: Element,
-    validationOptions?: ValidationOptions,
+    fieldOptions?: FieldOptions,
   ): void;
   register<Element extends ElementLike = ElementLike>(
-    refOrValidationOptions: ValidationOptions | Element | null,
-    validationOptions?: ValidationOptions,
+    refOrOptions: FieldOptions | Element | null,
+    fieldOptions?: FieldOptions,
   ): ((ref: Element | null) => void) | void;
   unregister(name: FieldName<FormValues>): void;
   unregister(names: FieldName<FormValues>[]): void;

@@ -82,6 +82,15 @@ export type ValidationOptions = Partial<{
   validate: Validate | Record<string, Validate>;
 }>;
 
+export type Transform = (value: string) => string;
+
+export type TransformationOptions = Partial<{
+  transform: Transform;
+  trim: boolean;
+}>;
+
+export type FieldOptions = ValidationOptions & TransformationOptions;
+
 export type MultipleFieldErrors = Record<string, ValidateResult>;
 
 export interface FieldError {
@@ -99,7 +108,7 @@ export interface ManualFieldError<FormValues> {
   message?: string;
 }
 
-export interface Field extends ValidationOptions {
+export interface Field extends FieldOptions {
   ref: Ref;
   mutationWatcher?: MutationWatcher;
   options?: {

@@ -40,7 +40,6 @@ import {
   Field,
   FieldRefs,
   UseFormOptions,
-  ValidationOptions,
   SubmitPromiseResult,
   OnSubmit,
   ElementLike,
@@ -51,6 +50,7 @@ import {
   Ref,
   HandleChange,
   Touched,
+  FieldOptions,
 } from './types';
 
 const { useRef, useState, useCallback, useEffect } = React;
@@ -691,16 +691,18 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
 
   function registerFieldsRef<Element extends ElementLike>(
     ref: Element,
-    validateOptions: ValidationOptions = {},
+    fieldOptions: FieldOptions = {},
   ): ((name: FieldName<FormValues>) => void) | void {
     if (!ref.name) {
       return console.warn('Missing name @', ref);
     }
 
     const { name, type, value } = ref;
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { transform, trim, ...validationOptions } = fieldOptions;
     const fieldAttributes = {
       ref,
-      ...validateOptions,
+      ...fieldOptions,
     };
     const fields = fieldsRef.current;
     const isRadioOrCheckbox = isRadioInput(type) || isCheckBoxInput(type);
@@ -715,7 +717,7 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
     ) {
       fields[name as FieldName<FormValues>] = {
         ...currentField,
-        ...validateOptions,
+        ...fieldOptions,
       };
       return;
     }
@@ -735,7 +737,7 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
             },
           ],
           ref: { type, name },
-          ...validateOptions,
+          ...fieldOptions,
         };
       } else {
         currentField = {
@@ -765,7 +767,7 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
 
     if (validationSchema && readFormState.current.isValid) {
       validateSchemaIsValid();
-    } else if (!isEmptyObject(validateOptions)) {
+    } else if (!isEmptyObject(validationOptions)) {
       fieldsWithValidationRef.current.add(name);
 
       if (!isOnSubmit && readFormState.current.isValid) {
@@ -807,42 +809,39 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
   }
 
   function register<Element extends ElementLike = ElementLike>(
-    validationOptions: ValidationOptions,
+    fieldOptions: FieldOptions,
   ): (ref: Element | null) => void;
   function register<Element extends ElementLike = ElementLike>(
     name: FieldName<FormValues>,
-    validationOptions?: ValidationOptions,
+    fieldOptions?: FieldOptions,
   ): void;
   function register<Element extends ElementLike = ElementLike>(
-    namesWithValidationOptions: Record<
-      FieldName<FormValues>,
-      ValidationOptions
-    >,
+    namesWithFieldOptions: Record<FieldName<FormValues>, FieldOptions>,
   ): void;
   function register<Element extends ElementLike = ElementLike>(
     ref: Element,
-    validationOptions?: ValidationOptions,
+    fieldOptions?: FieldOptions,
   ): void;
   function register<Element extends ElementLike = ElementLike>(
-    refOrValidationOptions: ValidationOptions | Element | null,
-    validationOptions?: ValidationOptions,
+    refOrFieldOptions: FieldOptions | Element | null,
+    fieldOptions?: FieldOptions,
   ): ((ref: Element | null) => void) | void {
-    if (isWindowUndefined || !refOrValidationOptions) {
+    if (isWindowUndefined || !refOrFieldOptions) {
       return;
     }
 
-    if (isString(refOrValidationOptions)) {
-      registerFieldsRef({ name: refOrValidationOptions }, validationOptions);
+    if (isString(refOrFieldOptions)) {
+      registerFieldsRef({ name: refOrFieldOptions }, fieldOptions);
       return;
     }
 
-    if (isObject(refOrValidationOptions) && 'name' in refOrValidationOptions) {
-      registerFieldsRef(refOrValidationOptions, validationOptions);
+    if (isObject(refOrFieldOptions) && 'name' in refOrFieldOptions) {
+      registerFieldsRef(refOrFieldOptions, fieldOptions);
       return;
     }
 
     return (ref: Element | null) =>
-      ref && registerFieldsRef(ref, refOrValidationOptions);
+      ref && registerFieldsRef(ref, refOrFieldOptions);
   }
 
   const handleSubmit = useCallback(

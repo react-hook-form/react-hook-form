@@ -21,6 +21,7 @@ import SetValueWithTrigger from './setValueWithTrigger';
 import IsValid from './isValid';
 import Controller from './controller';
 import UseFieldArray from './useFieldArray';
+import Transform from './transform';
 
 const App: React.FC = () => {
   return (
@@ -78,6 +79,7 @@ const App: React.FC = () => {
         exact
         component={WatchDefaultValues}
       />
+      <Route path="/transform" exact component={Transform} />
     </Router>
   );
 };
