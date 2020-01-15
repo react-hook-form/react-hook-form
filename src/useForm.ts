@@ -495,7 +495,10 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
 
   const removeEventListenerAndRef = useCallback(
     (field: Field | undefined, forceDelete?: boolean) => {
-      if (!field) {
+      if (
+        !field ||
+        isNameInFieldArray(fieldArrayNamesRef.current, get(field, 'ref.name'))
+      ) {
         return;
       }
 
