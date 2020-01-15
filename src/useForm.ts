@@ -497,7 +497,11 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
     (field: Field | undefined, forceDelete?: boolean) => {
       if (
         !field ||
-        isNameInFieldArray(fieldArrayNamesRef.current, get(field, 'ref.name'))
+        (isNameInFieldArray(
+          fieldArrayNamesRef.current,
+          get(field, 'ref.name'),
+        ) &&
+          !forceDelete)
       ) {
         return;
       }
@@ -711,12 +715,15 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
           currentField.options.find(({ ref }: Field) => value === ref.value)
         : currentField
     ) {
+      console.log('failed');
       fields[name as FieldName<FormValues>] = {
         ...currentField,
         ...validateOptions,
       };
       return;
     }
+
+    console.log('register', name);
 
     if (type) {
       const mutationWatcher = onDomRemove(ref, () =>
