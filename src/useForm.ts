@@ -384,7 +384,7 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
         const fields = fieldsRef.current;
         const errors = errorsRef.current;
         const field = fields[name];
-        const currentError = errors[name];
+        const currentError = get(errors, name);
         let error;
 
         if (!field) {
