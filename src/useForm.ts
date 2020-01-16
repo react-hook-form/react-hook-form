@@ -1042,7 +1042,6 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
     unregister,
     setValue,
     formState,
-    defaultValues,
     mode: {
       isOnBlur,
       isOnSubmit,
@@ -1055,6 +1054,8 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
     fieldsRef,
     resetFieldArrayFunctionRef,
     fieldArrayNamesRef,
+    isDirtyRef,
+    defaultValuesRef,
   };
 
   return {

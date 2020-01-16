@@ -2,6 +2,7 @@ import * as React from 'react';
 import { useFormContext } from './useFormContext';
 import { isMatchFieldArrayName } from './logic/isNameInFieldArray';
 import { appendId, mapIds } from './logic/mapIds';
+import getIsFieldsDifferent from './logic/getIsFieldsDifferent';
 import get from './utils/get';
 import isUndefined from './utils/isUndefined';
 import { FieldValues, UseFieldArrayProps, WithFieldId } from './types';
@@ -14,15 +15,26 @@ export function useFieldArray<
     resetFieldArrayFunctionRef,
     fieldArrayNamesRef,
     fieldsRef,
-    defaultValues,
+    defaultValuesRef,
     unregister,
+    isDirtyRef,
   } = control || methods.control;
-
+  const memoizedDefaultValues = React.useMemo(
+    () => get(defaultValuesRef.current, name, []),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [name],
+  );
   const [fields, setField] = React.useState<
     WithFieldId<Partial<FormArrayValues>>[]
-  >(mapIds(get(defaultValues, name)));
+  >(mapIds(memoizedDefaultValues));
 
-  const resetFields = () => {
+  const resetFields = (
+    flagOrFields?: WithFieldId<Partial<FormArrayValues>>[],
+  ) => {
+    isDirtyRef.current = isUndefined(flagOrFields)
+      ? true
+      : getIsFieldsDifferent(memoizedDefaultValues, flagOrFields);
+
     for (const key in fieldsRef.current) {
       if (isMatchFieldArrayName(key, name)) {
         unregister(key, true);
@@ -35,16 +47,17 @@ export function useFieldArray<
     setField([appendId(value), ...fields]);
   };
 
-  const append = (value: WithFieldId<Partial<FormArrayValues>>) =>
+  const append = (value: WithFieldId<Partial<FormArrayValues>>) => {
+    isDirtyRef.current = true;
     setField([...fields, appendId(value)]);
+  };
 
   const remove = (index?: number) => {
-    resetFields();
-    setField(
-      isUndefined(index)
-        ? []
-        : [...fields.slice(0, index), ...fields.slice(index + 1)],
-    );
+    const data = isUndefined(index)
+      ? []
+      : [...fields.slice(0, index), ...fields.slice(index + 1)];
+    resetFields(data);
+    setField(data);
   };
 
   const insert = (
@@ -60,14 +73,14 @@ export function useFieldArray<
   };
 
   const swap = (indexA: number, indexB: number) => {
-    resetFields();
     [fields[indexA], fields[indexB]] = [fields[indexB], fields[indexA]];
+    resetFields(fields);
     setField([...fields]);
   };
 
   const move = (from: number, to: number) => {
-    resetFields();
     fields.splice(to, 0, fields.splice(from, 1)[0]);
+    resetFields(fields);
     setField([...fields]);
   };
 
