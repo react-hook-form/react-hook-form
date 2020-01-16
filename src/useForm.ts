@@ -984,17 +984,15 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
       }
     }
 
-    if (values) {
-      defaultValuesRef.current = values;
-    }
-
     Object.values(resetFieldArrayFunctionRef.current).forEach(
-      resetFieldArray =>
-        isFunction(resetFieldArray) &&
-        resetFieldArray(defaultValuesRef.current),
+      resetFieldArray => isFunction(resetFieldArray) && resetFieldArray(values),
     );
 
     resetRefs();
+
+    if (values) {
+      defaultValuesRef.current = values;
+    }
 
     reRender();
   };
