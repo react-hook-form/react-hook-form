@@ -18,6 +18,9 @@ function reconfigureControl(changedControl = {}) {
       isReValidateOnSubmit: false,
     },
     formState: { isSubmitted: false },
+    fieldsRef: {
+      current: {},
+    },
     fieldArrayNamesRef: {
       current: new Set(),
     },

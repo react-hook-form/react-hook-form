@@ -1052,7 +1052,7 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
       isReValidateOnSubmit,
     },
     errors: errorsRef.current,
-    fields: fieldsRef.current,
+    fieldsRef,
     resetFieldArrayFunctionRef,
     fieldArrayNamesRef,
   };
