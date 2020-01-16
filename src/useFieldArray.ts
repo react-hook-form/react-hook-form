@@ -25,7 +25,7 @@ export function useFieldArray<
   );
   const [fields, setField] = React.useState<
     WithFieldId<Partial<FormArrayValues>>[]
-  >(mapIds(get(memoizedDefaultValues, name)));
+  >(mapIds(memoizedDefaultValues));
 
   const resetFields = (
     flagOrFields?: WithFieldId<Partial<FormArrayValues>>[],

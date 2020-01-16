@@ -109,7 +109,7 @@ describe('useFieldArray', () => {
     ]);
   });
 
-  it.skip('should populate default values into fields', () => {
+  it('should populate default values into fields', () => {
     const { result } = renderHook(() =>
       useFieldArray({
         control: {
