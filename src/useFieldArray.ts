@@ -14,7 +14,7 @@ export function useFieldArray<
   const {
     resetFieldArrayFunctionRef,
     fieldArrayNamesRef,
-    fields: globalFields,
+    fieldsRef,
     defaultValues,
     unregister,
     isDirtyRef,
@@ -34,7 +34,7 @@ export function useFieldArray<
       ? true
       : getIsFieldsDifferent(memoizedDefaultValues, flagOrFields);
 
-    for (const key in globalFields) {
+    for (const key in fieldsRef.current) {
       if (isMatchFieldArrayName(key, name)) {
         unregister(key, true);
       }

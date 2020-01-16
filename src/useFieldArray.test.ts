@@ -11,6 +11,7 @@ describe('useFieldArray', () => {
     const { result } = renderHook(() =>
       useFieldArray({
         control: {
+          fieldsRef: { crrent: {} },
           isDirtyRef: { current: false },
           fieldArrayNamesRef: { current: new Set() },
           defaultValues: {},
@@ -30,6 +31,7 @@ describe('useFieldArray', () => {
       useFieldArray({
         control: {
           isDirtyRef: { current: false },
+          fieldsRef: { crrent: {} },
           fieldArrayNamesRef: { current: new Set() },
           getValues: () => ({}),
           defaultValues: {},
@@ -72,6 +74,7 @@ describe('useFieldArray', () => {
       useFieldArray({
         control: {
           isDirtyRef: { current: false },
+          fieldsRef: { crrent: {} },
           fieldArrayNamesRef: { current: new Set() },
           getValues: () => ({}),
           defaultValues: {},
@@ -114,6 +117,7 @@ describe('useFieldArray', () => {
       useFieldArray({
         control: {
           isDirtyRef: { current: false },
+          fieldsRef: { crrent: {} },
           fieldArrayNamesRef: { current: new Set() },
           defaultValues: { test: [{ test: '1' }, { test: '2' }] },
           resetFieldArrayFunctionRef: {
@@ -135,6 +139,7 @@ describe('useFieldArray', () => {
       useFieldArray({
         control: {
           isDirtyRef: { current: false },
+          fieldsRef: { crrent: {} },
           fieldArrayNamesRef: { current: new Set() },
           defaultValues: { test: [{ test: '1' }, { test: '2' }] },
           resetFieldArrayFunctionRef: {
@@ -157,6 +162,7 @@ describe('useFieldArray', () => {
       useFieldArray({
         control: {
           isDirtyRef: { current: false },
+          fieldsRef: { crrent: {} },
           fieldArrayNamesRef: { current: new Set() },
           getValues: () => ({ test: [{ test: '1' }, { test: '2' }] }),
           defaultValues: {},
@@ -180,6 +186,7 @@ describe('useFieldArray', () => {
       useFieldArray({
         control: {
           isDirtyRef: { current: false },
+          fieldsRef: { crrent: {} },
           fieldArrayNamesRef: { current: new Set() },
           defaultValues: { test: [{ test: '1' }, { test: '2' }] },
           resetFieldArrayFunctionRef: {
@@ -217,6 +224,7 @@ describe('useFieldArray', () => {
       useFieldArray({
         control: {
           isDirtyRef: { current: false },
+          fieldsRef: { crrent: {} },
           fieldArrayNamesRef: { current: new Set() },
           defaultValues: { test: [{ test: '1' }, { test: '2' }] },
           resetFieldArrayFunctionRef: {
@@ -242,6 +250,7 @@ describe('useFieldArray', () => {
       useFieldArray({
         control: {
           isDirtyRef: { current: false },
+          fieldsRef: { crrent: {} },
           fieldArrayNamesRef: { current: new Set() },
           defaultValues: {
             test: [{ test: '1' }, { test: '2' }, { test: '3' }],
