@@ -94,14 +94,13 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
     typeof document !== UNDEFINED &&
     !isWindowUndefined &&
     !isUndefined(window.HTMLElement);
-  const isProxyEnabled = isWeb && 'Proxy' in window;
   const readFormState = useRef<ReadFormState>({
-    dirty: !isProxyEnabled,
+    dirty: false,
     isSubmitted: isOnSubmit,
-    submitCount: !isProxyEnabled,
-    touched: !isProxyEnabled,
-    isSubmitting: !isProxyEnabled,
-    isValid: !isProxyEnabled,
+    submitCount: false,
+    touched: false,
+    isSubmitting: false,
+    isValid: false,
   });
   const {
     isOnBlur: isReValidateOnBlur,
@@ -622,9 +621,7 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
     const fieldValues = getFieldsValues<FormValues>(fieldsRef.current);
     const watchFields = watchFieldsRef.current;
 
-    if (isProxyEnabled) {
-      readFormState.current.dirty = true;
-    }
+    readFormState.current.dirty = true;
 
     if (isString(fieldNames)) {
       return assignWatchFields<FormValues>(
@@ -1026,15 +1023,39 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
       isEmptyObject(errorsRef.current);
   }
 
-  const formState = {
-    dirty: isDirtyRef.current,
-    isSubmitted: isSubmittedRef.current,
-    submitCount: submitCountRef.current,
-    touched: touchedFieldsRef.current,
-    isSubmitting: isSubmittingRef.current,
-    isValid: isOnSubmit
-      ? isSubmittedRef.current && isEmptyObject(errorsRef.current)
-      : isEmptyObject(fieldsRef.current) || isValidRef.current,
+  const formState: FormStateProxy<FormValues> = {
+    get dirty() {
+      readFormState.current.dirty = true;
+
+      return isDirtyRef.current;
+    },
+    get isSubmitted() {
+      readFormState.current.isSubmitted = true;
+
+      return isSubmittedRef.current;
+    },
+    get submitCount() {
+      readFormState.current.submitCount = true;
+
+      return submitCountRef.current;
+    },
+    get touched() {
+      readFormState.current.touched = true;
+
+      return touchedFieldsRef.current;
+    },
+    get isSubmitting() {
+      readFormState.current.isSubmitting = true;
+
+      return isSubmittingRef.current;
+    },
+    get isValid() {
+      readFormState.current.isValid = true;
+
+      return isOnSubmit
+        ? isSubmittedRef.current && isEmptyObject(errorsRef.current)
+        : isEmptyObject(fieldsRef.current) || isValidRef.current;
+    },
   };
 
   const control = {
@@ -1074,17 +1095,6 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
     clearError: useCallback(clearError, []),
     setError: useCallback(setError, []),
     errors: errorsRef.current,
-    formState: isProxyEnabled
-      ? new Proxy<FormStateProxy<FormValues>>(formState, {
-          get: (obj, prop: keyof FormStateProxy) => {
-            if (prop in obj) {
-              readFormState.current[prop] = true;
-              return obj[prop];
-            }
-
-            return {};
-          },
-        })
-      : formState,
+    formState,
   };
 }
