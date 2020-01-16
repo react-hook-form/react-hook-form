@@ -2,6 +2,7 @@ import * as React from 'react';
 import { useFormContext } from './useFormContext';
 import { isMatchFieldArrayName } from './logic/isNameInFieldArray';
 import { appendId, mapIds } from './logic/mapIds';
+import get from './utils/get';
 import isUndefined from './utils/isUndefined';
 import { FieldValues, UseFieldArrayProps, WithFieldId } from './types';
 
@@ -20,7 +21,7 @@ export function useFieldArray<
 
   const [fields, setField] = React.useState<
     WithFieldId<Partial<FormArrayValues>>[]
-  >(mapIds(defaultValues[name]));
+  >(mapIds(get(defaultValues, name)));
 
   const resetFields = (shouldSetDirty = true) => {
     if (shouldSetDirty) {
@@ -28,7 +29,7 @@ export function useFieldArray<
     }
     for (const key in globalFields) {
       if (isMatchFieldArrayName(key, name)) {
-        unregister(key);
+        unregister(key, true);
       }
     }
   };
@@ -78,7 +79,7 @@ export function useFieldArray<
 
   const reset = (values: any) => {
     resetFields(false);
-    setField(mapIds(values[name]));
+    setField(mapIds(get(values, name)));
   };
 
   React.useEffect(() => {
