@@ -9,7 +9,7 @@ export default function getIsFieldsDifferent(
   }
 
   for (let i = 0; i < referenceArray.length; i++) {
-    if (!isMatch) {
+    if (isMatch) {
       break;
     }
     const { id, ...data } = referenceArray[i];
