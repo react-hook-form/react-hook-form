@@ -1049,7 +1049,7 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
     unregister,
     setValue,
     formState,
-    defaultValues,
+    defaultValues: defaultValuesRef.current,
     mode: {
       isOnBlur,
       isOnSubmit,

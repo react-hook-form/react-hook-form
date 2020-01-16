@@ -2,6 +2,7 @@ import * as React from 'react';
 import { useFormContext } from './useFormContext';
 import { isMatchFieldArrayName } from './logic/isNameInFieldArray';
 import { appendId, mapIds } from './logic/mapIds';
+import getIsFieldsDifferent from './logic/getIsFieldsDifferent';
 import get from './utils/get';
 import isUndefined from './utils/isUndefined';
 import { FieldValues, UseFieldArrayProps, WithFieldId } from './types';
@@ -18,15 +19,21 @@ export function useFieldArray<
     unregister,
     isDirtyRef,
   } = control || methods.control;
-
+  const memoizedDefaultValues = React.useMemo(
+    () => get(defaultValues, name, []),
+    [defaultValues, name],
+  );
   const [fields, setField] = React.useState<
     WithFieldId<Partial<FormArrayValues>>[]
-  >(mapIds(get(defaultValues, name)));
+  >(mapIds(get(memoizedDefaultValues, name)));
 
-  const resetFields = (shouldSetDirty = true) => {
-    if (shouldSetDirty) {
-      isDirtyRef.current = true;
-    }
+  const resetFields = (
+    flagOrFields?: WithFieldId<Partial<FormArrayValues>>[],
+  ) => {
+    isDirtyRef.current = isUndefined(flagOrFields)
+      ? true
+      : getIsFieldsDifferent(memoizedDefaultValues, flagOrFields);
+
     for (const key in globalFields) {
       if (isMatchFieldArrayName(key, name)) {
         unregister(key, true);
@@ -45,12 +52,11 @@ export function useFieldArray<
   };
 
   const remove = (index?: number) => {
-    resetFields();
-    setField(
-      isUndefined(index)
-        ? []
-        : [...fields.slice(0, index), ...fields.slice(index + 1)],
-    );
+    const data = isUndefined(index)
+      ? []
+      : [...fields.slice(0, index), ...fields.slice(index + 1)];
+    resetFields(data);
+    setField(data);
   };
 
   const insert = (
@@ -66,19 +72,20 @@ export function useFieldArray<
   };
 
   const swap = (indexA: number, indexB: number) => {
-    resetFields();
+    const data = [...fields];
+    resetFields(data);
     [fields[indexA], fields[indexB]] = [fields[indexB], fields[indexA]];
     setField([...fields]);
   };
 
   const move = (from: number, to: number) => {
-    resetFields();
     fields.splice(to, 0, fields.splice(from, 1)[0]);
+    resetFields(fields);
     setField([...fields]);
   };
 
   const reset = (values: any) => {
-    resetFields(false);
+    resetFields();
     setField(mapIds(get(values, name)));
   };
 
@@ -89,7 +96,7 @@ export function useFieldArray<
     resetFunctions[name] = reset;
 
     return () => {
-      resetFields(false);
+      resetFields();
       delete resetFunctions[name];
       fieldArrayNames.delete(name);
     };
