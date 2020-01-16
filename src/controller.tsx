@@ -1,6 +1,7 @@
 import * as React from 'react';
 import isBoolean from './utils/isBoolean';
 import isUndefined from './utils/isUndefined';
+import get from './utils/get';
 import getInputValue from './logic/getInputValue';
 import skipValidation from './logic/skipValidation';
 import isNameInFieldArray from './logic/isNameInFieldArray';
@@ -23,7 +24,7 @@ const Controller = ({
 }: ControllerProps) => {
   const methods = useFormContext();
   const {
-    defaultValues,
+    defaultValuesRef,
     setValue,
     register,
     unregister,
@@ -35,7 +36,9 @@ const Controller = ({
     fieldArrayNamesRef,
   } = control || methods.control;
   const [value, setInputStateValue] = React.useState(
-    isUndefined(defaultValue) ? defaultValues[name] : defaultValue,
+    isUndefined(defaultValue)
+      ? get(defaultValuesRef.current, name)
+      : defaultValue,
   );
   const valueRef = React.useRef(value);
   const isCheckboxInput = isBoolean(value);

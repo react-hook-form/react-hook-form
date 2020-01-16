@@ -15,13 +15,14 @@ export function useFieldArray<
     resetFieldArrayFunctionRef,
     fieldArrayNamesRef,
     fieldsRef,
-    defaultValues,
+    defaultValuesRef,
     unregister,
     isDirtyRef,
   } = control || methods.control;
   const memoizedDefaultValues = React.useMemo(
-    () => get(defaultValues, name, []),
-    [defaultValues, name],
+    () => get(defaultValuesRef.current, name, []),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [name],
   );
   const [fields, setField] = React.useState<
     WithFieldId<Partial<FormArrayValues>>[]
