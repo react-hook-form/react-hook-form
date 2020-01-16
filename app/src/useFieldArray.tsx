@@ -4,7 +4,7 @@ import { useForm, useFieldArray, Controller } from 'react-hook-form';
 let renderCount = 0;
 
 const UseFieldArray: React.FC = (props: any) => {
-  const { control, handleSubmit, register, formState } = useForm<{
+  const { control, handleSubmit, register } = useForm<{
     data: { name: string }[];
   }>({
     ...(props.match.params.mode === 'default'
@@ -15,7 +15,6 @@ const UseFieldArray: React.FC = (props: any) => {
         }
       : {}),
   });
-  console.log(formState.dirty);
   const {
     fields,
     append,
