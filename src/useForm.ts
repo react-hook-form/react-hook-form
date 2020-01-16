@@ -194,6 +194,8 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
       } else if (isFileInput(type)) {
         if (value instanceof FileList) {
           ref.files = value;
+        } else {
+          ref.files = new DataTransfer().files;
         }
       } else if (isMultipleSelect(type)) {
         [...ref.options].forEach(
