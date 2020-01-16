@@ -25,7 +25,7 @@ export function useFieldArray<
   const resetFields = () => {
     for (const key in globalFields) {
       if (isMatchFieldArrayName(key, name)) {
-        unregister(key, true);
+        unregister(key);
       }
     }
   };
