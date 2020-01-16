@@ -41,7 +41,6 @@ const UseFieldArray: React.FC = (props: any) => {
           <li key={data.id}>
             {index % 2 ? (
               <input
-                key={data.id}
                 name={`data[${index}].name`}
                 defaultValue={data.name}
                 data-order={index}
@@ -56,7 +55,6 @@ const UseFieldArray: React.FC = (props: any) => {
                 data-order={index}
               />
             )}
-            <button className={`delete${index}`}>delete</button>
           </li>
         ))}
       </ul>
