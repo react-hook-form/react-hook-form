@@ -33,7 +33,7 @@ export function useFieldArray<
   ) => {
     isDirtyRef.current = isUndefined(flagOrFields)
       ? true
-      : getIsFieldsDifferent(memoizedDefaultValues, flagOrFields);
+      : getIsFieldsDifferent(flagOrFields, memoizedDefaultValues);
 
     for (const key in fieldsRef.current) {
       if (isMatchFieldArrayName(key, name)) {

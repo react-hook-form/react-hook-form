@@ -29,6 +29,12 @@ describe('getIsFieldsDifferent', () => {
   it('should return true when two sets matches', () => {
     expect(
       getIsFieldsDifferent(
+        [{ name: 'useFieldArray', id: '92dff77b-ae9f-4847-817a-8d72b5623a1e' }],
+        [{ name: 'useFieldArray' }],
+      ),
+    ).toBeFalsy();
+    expect(
+      getIsFieldsDifferent(
         [
           { id: 1, test: '123' },
           { id: 2, test: '455' },
