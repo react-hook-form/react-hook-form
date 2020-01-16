@@ -495,12 +495,7 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
 
   const removeEventListenerAndRef = useCallback(
     (field: Field | undefined, forceDelete?: boolean) => {
-      if (
-        !field ||
-        (field &&
-          isNameInFieldArray(fieldArrayNamesRef.current, field.ref.name) &&
-          !forceDelete)
-      ) {
+      if (!field) {
         return;
       }
 
@@ -989,17 +984,15 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
       }
     }
 
+    Object.values(resetFieldArrayFunctionRef.current).forEach(
+      resetFieldArray => isFunction(resetFieldArray) && resetFieldArray(values),
+    );
+
     resetRefs();
 
     if (values) {
       defaultValuesRef.current = values;
     }
-
-    Object.values(resetFieldArrayFunctionRef.current).forEach(
-      resetFieldArray =>
-        isFunction(resetFieldArray) &&
-        resetFieldArray(defaultValuesRef.current),
-    );
 
     reRender();
   };
@@ -1059,7 +1052,7 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
       isReValidateOnSubmit,
     },
     errors: errorsRef.current,
-    fields: fieldsRef.current,
+    fieldsRef,
     resetFieldArrayFunctionRef,
     fieldArrayNamesRef,
   };

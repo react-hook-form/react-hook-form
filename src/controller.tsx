@@ -31,7 +31,7 @@ const Controller = ({
     mode: { isOnSubmit, isOnBlur },
     reValidateMode: { isReValidateOnBlur, isReValidateOnSubmit },
     formState: { isSubmitted },
-    fields,
+    fieldsRef,
     fieldArrayNamesRef,
   } = control || methods.control;
   const [value, setInputStateValue] = React.useState(
@@ -96,7 +96,7 @@ const Controller = ({
       { ...rules },
     );
 
-  if (!fields[name]) {
+  if (!fieldsRef.current[name]) {
     registerField();
   }
 

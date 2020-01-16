@@ -13,7 +13,7 @@ export function useFieldArray<
   const {
     resetFieldArrayFunctionRef,
     fieldArrayNamesRef,
-    fields: globalFields,
+    fieldsRef,
     defaultValues,
     unregister,
   } = control || methods.control;
@@ -23,7 +23,7 @@ export function useFieldArray<
   >(mapIds(get(defaultValues, name)));
 
   const resetFields = () => {
-    for (const key in globalFields) {
+    for (const key in fieldsRef.current) {
       if (isMatchFieldArrayName(key, name)) {
         unregister(key, true);
       }
