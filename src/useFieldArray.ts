@@ -5,11 +5,12 @@ import { appendId, mapIds } from './logic/mapIds';
 import getIsFieldsDifferent from './logic/getIsFieldsDifferent';
 import get from './utils/get';
 import isUndefined from './utils/isUndefined';
-import { FieldValues, UseFieldArrayProps, WithFieldId } from './types';
+import { FieldValues, Control, UseFieldArrayProps, WithFieldId } from './types';
 
 export function useFieldArray<
-  FormArrayValues extends FieldValues = FieldValues
->({ control, name }: UseFieldArrayProps) {
+  FormArrayValues extends FieldValues = FieldValues,
+  ControlProp extends Control = Control
+>({ control, name }: UseFieldArrayProps<ControlProp>) {
   const methods = useFormContext();
   const {
     resetFieldArrayFunctionRef,
@@ -37,7 +38,7 @@ export function useFieldArray<
 
     for (const key in fieldsRef.current) {
       if (isMatchFieldArrayName(key, name)) {
-        unregister(key, true);
+        unregister(key);
       }
     }
   };

@@ -7,9 +7,9 @@ import skipValidation from './logic/skipValidation';
 import isNameInFieldArray from './logic/isNameInFieldArray';
 import { useFormContext } from './useFormContext';
 import { EVENTS, VALIDATION_MODE, VALUE } from './constants';
-import { ControllerProps, EventFunction } from './types';
+import { Control, ControllerProps, EventFunction } from './types';
 
-const Controller = ({
+const Controller = <ControlProp extends Control = Control>({
   name,
   rules,
   as: InnerComponent,
@@ -21,7 +21,7 @@ const Controller = ({
   defaultValue,
   control,
   ...rest
-}: ControllerProps) => {
+}: ControllerProps<ControlProp>) => {
   const methods = useFormContext();
   const {
     defaultValuesRef,
@@ -107,6 +107,7 @@ const Controller = ({
     () => {
       registerField();
       return () => {
+        // eslint-disable-next-line react-hooks/exhaustive-deps
         if (!isNameInFieldArray(fieldArrayNamesRef.current, name)) {
           unregister(name);
         }

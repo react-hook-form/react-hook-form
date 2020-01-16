@@ -172,7 +172,58 @@ export type FormValuesFromErrors<Errors> = Errors extends FieldErrors<
 
 export type EventFunction = (args: any) => any;
 
-export type ControllerProps = {
+export type Control<FormValues extends FieldValues = FieldValues> = {
+  register<Element extends ElementLike = ElementLike>(
+    validationOptions: ValidationOptions,
+  ): (ref: Element | null) => void;
+  register<Element extends ElementLike = ElementLike>(
+    name: FieldName<FormValues>,
+    validationOptions?: ValidationOptions,
+  ): void;
+  register<Element extends ElementLike = ElementLike>(
+    namesWithValidationOptions: Record<
+      FieldName<FormValues>,
+      ValidationOptions
+    >,
+  ): void;
+  register<Element extends ElementLike = ElementLike>(
+    ref: Element,
+    validationOptions?: ValidationOptions,
+  ): void;
+  register<Element extends ElementLike = ElementLike>(
+    refOrValidationOptions: ValidationOptions | Element | null,
+    validationOptions?: ValidationOptions,
+  ): ((ref: Element | null) => void) | void;
+  unregister(name: FieldName<FormValues>): void;
+  unregister(names: FieldName<FormValues>[]): void;
+  unregister(names: FieldName<FormValues> | FieldName<FormValues>[]): void;
+  setValue: <Name extends FieldName<FormValues>>(
+    name: Name,
+    value: FormValues[Name],
+    shouldValidate?: boolean,
+  ) => void | Promise<boolean>;
+  formState: FormStateProxy<FormValues>;
+  mode: {
+    isOnBlur: boolean;
+    isOnSubmit: boolean;
+  };
+  reValidateMode: {
+    isReValidateOnBlur: boolean;
+    isReValidateOnSubmit: boolean;
+  };
+  errors: FieldErrors<FormValues>;
+  fieldsRef: React.MutableRefObject<FieldRefs<FormValues>>;
+  resetFieldArrayFunctionRef: React.MutableRefObject<
+    Record<string, (values: any) => void>
+  >;
+  fieldArrayNamesRef: React.MutableRefObject<Set<string>>;
+  isDirtyRef: React.MutableRefObject<boolean>;
+  defaultValuesRef: React.MutableRefObject<
+    DeepPartial<FormValues> | FormValues[FieldName<FormValues>]
+  >;
+};
+
+export type ControllerProps<ControlProp extends Control = Control> = {
   name: string;
   as: React.ReactElement | React.ElementType | string;
   rules?: ValidationOptions;
@@ -183,11 +234,14 @@ export type ControllerProps = {
   onBlurName?: string;
   valueName?: string;
   defaultValue?: any;
-  control?: any;
+  control?: ControlProp;
   [key: string]: any;
 };
 
-export type ErrorMessageProps<Errors, Name> = {
+export type ErrorMessageProps<
+  Errors extends FieldErrors<any>,
+  Name extends FieldName<FormValuesFromErrors<Errors>>
+> = {
   as?: React.ReactElement | React.ElementType | string;
   errors?: Errors;
   name: Name;
@@ -197,8 +251,8 @@ export type ErrorMessageProps<Errors, Name> = {
   }) => React.ReactNode;
 };
 
-export type UseFieldArrayProps = {
-  control?: any;
+export type UseFieldArrayProps<ControlProp extends Control = Control> = {
+  control?: ControlProp;
   name: string;
 };
 
