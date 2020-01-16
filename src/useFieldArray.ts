@@ -73,9 +73,8 @@ export function useFieldArray<
   };
 
   const swap = (indexA: number, indexB: number) => {
-    const data = [...fields];
-    resetFields(data);
     [fields[indexA], fields[indexB]] = [fields[indexB], fields[indexA]];
+    resetFields(fields);
     setField([...fields]);
   };
 
