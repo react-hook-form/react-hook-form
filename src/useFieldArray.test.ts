@@ -1,6 +1,47 @@
 import { act, renderHook } from '@testing-library/react-hooks';
 import { useFieldArray } from './useFieldArray';
 import { appendId } from './logic/mapIds';
+import { Control } from './types';
+
+function reconfigureControl(changedControl: Partial<Control> = {}) {
+  const defaultControl = {
+    defaultValuesRef: {
+      current: {},
+    },
+    fields: {},
+    setValue: jest.fn(),
+    register: jest.fn(),
+    unregister: jest.fn(),
+    errors: {},
+    mode: { isOnSubmit: false, isOnBlur: false },
+    reValidateMode: {
+      isReValidateOnBlur: false,
+      isReValidateOnSubmit: false,
+    },
+    formState: {
+      dirty: false,
+      isSubmitted: false,
+      submitCount: 0,
+      touched: {},
+      isSubmitting: false,
+      isValid: false,
+    },
+    fieldsRef: {
+      current: {},
+    },
+    resetFieldArrayFunctionRef: {
+      current: {},
+    },
+    fieldArrayNamesRef: {
+      current: new Set<string>(),
+    },
+    isDirtyRef: {
+      current: false,
+    },
+  };
+
+  return Object.assign({}, defaultControl, changedControl);
+}
 
 jest.mock('./logic/generateId', () => ({
   default: () => '1',
@@ -10,15 +51,7 @@ describe('useFieldArray', () => {
   it('should return default fields value', () => {
     const { result } = renderHook(() =>
       useFieldArray({
-        control: {
-          fieldsRef: { crrent: {} },
-          isDirtyRef: { current: false },
-          fieldArrayNamesRef: { current: new Set() },
-          defaultValuesRef: { current: {} },
-          resetFieldArrayFunctionRef: {
-            current: {},
-          },
-        },
+        control: reconfigureControl(),
         name: 'test',
       }),
     );
@@ -29,16 +62,7 @@ describe('useFieldArray', () => {
   it('should append data into the fields', () => {
     const { result } = renderHook(() =>
       useFieldArray({
-        control: {
-          isDirtyRef: { current: false },
-          fieldsRef: { crrent: {} },
-          fieldArrayNamesRef: { current: new Set() },
-          getValues: () => ({}),
-          defaultValuesRef: { current: {} },
-          resetFieldArrayFunctionRef: {
-            current: {},
-          },
-        },
+        control: reconfigureControl(),
         name: 'test',
       }),
     );
@@ -72,16 +96,7 @@ describe('useFieldArray', () => {
   it('should pre-append data into the fields', () => {
     const { result } = renderHook(() =>
       useFieldArray({
-        control: {
-          isDirtyRef: { current: false },
-          fieldsRef: { crrent: {} },
-          fieldArrayNamesRef: { current: new Set() },
-          getValues: () => ({}),
-          defaultValuesRef: { current: {} },
-          resetFieldArrayFunctionRef: {
-            current: {},
-          },
-        },
+        control: reconfigureControl(),
         name: 'test',
       }),
     );
@@ -115,17 +130,11 @@ describe('useFieldArray', () => {
   it('should populate default values into fields', () => {
     const { result } = renderHook(() =>
       useFieldArray({
-        control: {
-          isDirtyRef: { current: false },
-          fieldsRef: { crrent: {} },
-          fieldArrayNamesRef: { current: new Set() },
+        control: reconfigureControl({
           defaultValuesRef: {
             current: { test: [{ test: '1' }, { test: '2' }] },
           },
-          resetFieldArrayFunctionRef: {
-            current: {},
-          },
-        },
+        }),
         name: 'test',
       }),
     );
@@ -139,17 +148,11 @@ describe('useFieldArray', () => {
   it('should remove field according index', () => {
     const { result } = renderHook(() =>
       useFieldArray({
-        control: {
-          isDirtyRef: { current: false },
-          fieldsRef: { crrent: {} },
-          fieldArrayNamesRef: { current: new Set() },
+        control: reconfigureControl({
           defaultValuesRef: {
             current: { test: [{ test: '1' }, { test: '2' }] },
           },
-          resetFieldArrayFunctionRef: {
-            current: {},
-          },
-        },
+        }),
         name: 'test',
       }),
     );
@@ -164,16 +167,7 @@ describe('useFieldArray', () => {
   it('should remove all fields when index not supplied', () => {
     const { result } = renderHook(() =>
       useFieldArray({
-        control: {
-          isDirtyRef: { current: false },
-          fieldsRef: { crrent: {} },
-          fieldArrayNamesRef: { current: new Set() },
-          getValues: () => ({ test: [{ test: '1' }, { test: '2' }] }),
-          defaultValuesRef: { current: {} },
-          resetFieldArrayFunctionRef: {
-            current: {},
-          },
-        },
+        control: reconfigureControl(),
         name: 'test',
       }),
     );
@@ -188,17 +182,11 @@ describe('useFieldArray', () => {
   it('should insert data at index', () => {
     const { result } = renderHook(() =>
       useFieldArray({
-        control: {
-          isDirtyRef: { current: false },
-          fieldsRef: { crrent: {} },
-          fieldArrayNamesRef: { current: new Set() },
+        control: reconfigureControl({
           defaultValuesRef: {
             current: { test: [{ test: '1' }, { test: '2' }] },
           },
-          resetFieldArrayFunctionRef: {
-            current: {},
-          },
-        },
+        }),
         name: 'test',
       }),
     );
@@ -228,17 +216,11 @@ describe('useFieldArray', () => {
   it('should swap data order', () => {
     const { result } = renderHook(() =>
       useFieldArray({
-        control: {
-          isDirtyRef: { current: false },
-          fieldsRef: { crrent: {} },
-          fieldArrayNamesRef: { current: new Set() },
+        control: reconfigureControl({
           defaultValuesRef: {
             current: { test: [{ test: '1' }, { test: '2' }] },
           },
-          resetFieldArrayFunctionRef: {
-            current: {},
-          },
-        },
+        }),
         name: 'test',
       }),
     );
@@ -256,19 +238,11 @@ describe('useFieldArray', () => {
   it('should move into pointed position', () => {
     const { result } = renderHook(() =>
       useFieldArray({
-        control: {
-          isDirtyRef: { current: false },
-          fieldsRef: { crrent: {} },
-          fieldArrayNamesRef: { current: new Set() },
+        control: reconfigureControl({
           defaultValuesRef: {
-            current: {
-              test: [{ test: '1' }, { test: '2' }, { test: '3' }],
-            },
+            current: { test: [{ test: '1' }, { test: '2' }, { test: '3' }] },
           },
-          resetFieldArrayFunctionRef: {
-            current: {},
-          },
-        },
+        }),
         name: 'test',
       }),
     );
