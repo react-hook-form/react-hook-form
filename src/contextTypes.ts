@@ -11,6 +11,7 @@ import {
   FieldValue,
   ManualFieldError,
   MultipleFieldErrors,
+  Control,
 } from './types';
 
 export interface FormProps<FormValues extends FieldValues = FieldValues>
@@ -90,5 +91,5 @@ export interface FormContextValues<
   handleSubmit: (
     callback: OnSubmit<FormValues>,
   ) => (e: React.BaseSyntheticEvent) => Promise<void>;
-  control: any;
+  control: Control<FormValues>;
 }
