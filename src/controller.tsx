@@ -105,10 +105,10 @@ const Controller = <ControlProp extends Control = Control>({
 
   React.useEffect(
     () => {
+      const fieldArrayNames = fieldArrayNamesRef.current;
       registerField();
       return () => {
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-        if (!isNameInFieldArray(fieldArrayNamesRef.current, name)) {
+        if (!isNameInFieldArray(fieldArrayNames, name)) {
           unregister(name);
         }
       };
