@@ -221,7 +221,7 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
   );
 
   const setDirty = (name: FieldName<FormValues>): boolean => {
-    if (!fieldsRef.current[name]) {
+    if (!fieldsRef.current[name] || !readFormState.current.dirty) {
       return false;
     }
 
@@ -237,7 +237,7 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
     }
 
     isDirtyRef.current = !!dirtyFieldsRef.current.size;
-    return isDirtyChanged && readFormState.current.dirty;
+    return isDirtyChanged;
   };
 
   const setInternalValue = useCallback(
@@ -700,7 +700,6 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
     const fields = fieldsRef.current;
     const isRadioOrCheckbox = isRadioInput(type) || isCheckBoxInput(type);
     let currentField = fields[name] as Field;
-    let isFieldArrayEmptyDefault = false;
 
     if (
       isRadioOrCheckbox
@@ -750,15 +749,12 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
         defaultValuesRef.current,
         name,
       );
-      const isFieldArray = isNameInFieldArray(fieldArrayNamesRef.current, name);
-      const isEmptyDefaultValue = isUndefined(defaultValue);
-      isFieldArrayEmptyDefault = isEmptyDefaultValue && isFieldArray;
 
-      if (!isEmptyDefaultValue && !isFieldArray) {
+      if (
+        !isUndefined(defaultValue) &&
+        !isNameInFieldArray(fieldArrayNamesRef.current, name)
+      ) {
         setFieldValue(name, defaultValue);
-      } else if (isFieldArrayEmptyDefault) {
-        isDirtyRef.current = true;
-        dirtyFieldsRef.current.add(name);
       }
     }
 
@@ -783,7 +779,7 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
       }
     }
 
-    if (!defaultRenderValuesRef.current[name] && !isFieldArrayEmptyDefault) {
+    if (!defaultRenderValuesRef.current[name]) {
       defaultRenderValuesRef.current[
         name as FieldName<FormValues>
       ] = getFieldValue(fields, currentField.ref);
@@ -1058,7 +1054,7 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
     fieldsRef,
     resetFieldArrayFunctionRef,
     fieldArrayNamesRef,
-    isDirtyRef,
+    ...(readFormState.current.dirty ? { isDirtyRef } : {}),
     defaultValuesRef,
   };
 

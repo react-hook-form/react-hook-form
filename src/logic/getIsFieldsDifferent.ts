@@ -12,7 +12,7 @@ export default function getIsFieldsDifferent(
     if (isMatch) {
       break;
     }
-    const { id, ...data } = referenceArray[i];
+    const data = referenceArray[i];
 
     if (
       !differenceArray[i] ||

@@ -217,7 +217,7 @@ export type Control<FormValues extends FieldValues = FieldValues> = {
     Record<string, (values: any) => void>
   >;
   fieldArrayNamesRef: React.MutableRefObject<Set<string>>;
-  isDirtyRef: React.MutableRefObject<boolean>;
+  isDirtyRef?: React.MutableRefObject<boolean>;
   defaultValuesRef: React.MutableRefObject<
     DeepPartial<FormValues> | FormValues[FieldName<FormValues>]
   >;
