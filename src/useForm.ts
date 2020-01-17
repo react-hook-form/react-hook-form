@@ -756,11 +756,9 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
 
       if (!isEmptyDefaultValue && !isFieldArray) {
         setFieldValue(name, defaultValue);
-      } else if (isFieldArray) {
+      } else if (isFieldArray && isEmptyDefaultValue) {
         isDirtyRef.current = true;
-        if (isEmptyDefaultValue) {
-          dirtyFieldsRef.current.add(name);
-        }
+        dirtyFieldsRef.current.add(name);
       }
     }
 
