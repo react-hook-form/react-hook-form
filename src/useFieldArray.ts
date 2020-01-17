@@ -8,9 +8,10 @@ import transformToNestObject from './logic/transformToNestObject';
 import get from './utils/get';
 import isUndefined from './utils/isUndefined';
 import { FieldValues, Control, UseFieldArrayProps, WithFieldId } from './types';
+import isArray from './utils/isArray';
 
 const getValues = <T, K extends keyof T>(fields: T, name: K, skip: any) =>
-  !!skip ? {} : transformToNestObject(getFieldValues(fields))[name];
+  !!skip ? undefined : transformToNestObject(getFieldValues(fields))[name];
 
 export function useFieldArray<
   FormArrayValues extends FieldValues = FieldValues,
@@ -68,7 +69,7 @@ export function useFieldArray<
       ? []
       : [...fields.slice(0, index), ...fields.slice(index + 1)];
     resetFields(
-      index
+      index && isArray(fieldValues)
         ? [...fieldValues.slice(0, index), ...fieldValues.slice(index + 1)]
         : [],
     );
@@ -90,10 +91,12 @@ export function useFieldArray<
   const swap = (indexA: number, indexB: number) => {
     const fieldValues = getValues(fieldsRef.current, name, isDirtyRef);
     [fields[indexA], fields[indexB]] = [fields[indexB], fields[indexA]];
-    [fieldValues[indexA], fieldValues[indexB]] = [
-      fieldValues[indexB],
-      fieldValues[indexA],
-    ];
+    if (isArray(fieldValues)) {
+      [fieldValues[indexA], fieldValues[indexB]] = [
+        fieldValues[indexB],
+        fieldValues[indexA],
+      ];
+    }
     resetFields(fieldValues);
     setField([...fields]);
   };
@@ -101,7 +104,9 @@ export function useFieldArray<
   const move = (from: number, to: number) => {
     const fieldValues = getValues(fieldsRef.current, name, isDirtyRef);
     fields.splice(to, 0, fields.splice(from, 1)[0]);
-    fieldValues.splice(to, 0, fieldValues.splice(from, 1)[0]);
+    if (fieldValues) {
+      fieldValues.splice(to, 0, fieldValues.splice(from, 1)[0]);
+    }
     resetFields(fieldValues);
     setField([...fields]);
   };
