@@ -700,6 +700,8 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
     const fields = fieldsRef.current;
     const isRadioOrCheckbox = isRadioInput(type) || isCheckBoxInput(type);
     let currentField = fields[name] as Field;
+    let isFieldArray = false;
+    let isEmptyDefaultValue = false;
 
     if (
       isRadioOrCheckbox
@@ -749,13 +751,16 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
         defaultValuesRef.current,
         name,
       );
-      const isFieldArray = isNameInFieldArray(fieldArrayNamesRef.current, name);
+      isFieldArray = isNameInFieldArray(fieldArrayNamesRef.current, name);
+      isEmptyDefaultValue = isUndefined(defaultValue);
 
-      if (!isUndefined(defaultValue) && !isFieldArray) {
+      if (!isEmptyDefaultValue && !isFieldArray) {
         setFieldValue(name, defaultValue);
       } else if (isFieldArray) {
         isDirtyRef.current = true;
-        dirtyFieldsRef.current.add(name);
+        if (isEmptyDefaultValue) {
+          dirtyFieldsRef.current.add(name);
+        }
       }
     }
 
@@ -780,7 +785,10 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
       }
     }
 
-    if (!defaultRenderValuesRef.current[name]) {
+    if (
+      !defaultRenderValuesRef.current[name] &&
+      !(isFieldArray && isEmptyDefaultValue)
+    ) {
       defaultRenderValuesRef.current[
         name as FieldName<FormValues>
       ] = getFieldValue(fields, currentField.ref);
@@ -1057,7 +1065,6 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
     fieldArrayNamesRef,
     isDirtyRef,
     defaultValuesRef,
-    dirtyFieldsRef,
   };
 
   return {
