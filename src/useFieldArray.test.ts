@@ -41,6 +41,11 @@ function reconfigureControl(changedControl: Partial<Control> = {}) {
     readFormStateRef: {
       current: {
         dirty: true,
+        isSubmitted: false,
+        submitCount: false,
+        touched: false,
+        isSubmitting: false,
+        isValid: false,
       },
     },
   };
