@@ -3,11 +3,11 @@ import { useFormContext } from './useFormContext';
 import { isMatchFieldArrayName } from './logic/isNameInFieldArray';
 import { appendId, mapIds } from './logic/mapIds';
 import getIsFieldsDifferent from './logic/getIsFieldsDifferent';
+import getFieldValues from './logic/getFieldValues';
 import transformToNestObject from './logic/transformToNestObject';
 import get from './utils/get';
 import isUndefined from './utils/isUndefined';
 import { FieldValues, Control, UseFieldArrayProps, WithFieldId } from './types';
-import getFieldValues from './logic/getFieldValues';
 
 export function useFieldArray<
   FormArrayValues extends FieldValues = FieldValues,
@@ -70,15 +70,6 @@ export function useFieldArray<
     const data = isUndefined(index)
       ? []
       : [...fields.slice(0, index), ...fields.slice(index + 1)];
-    console.log(
-      'frend',
-      index
-        ? [
-            ...fieldArrayResultRef.current.slice(0, index),
-            ...fieldArrayResultRef.current.slice(index + 1),
-          ]
-        : [],
-    );
     resetFields(
       index
         ? [
