@@ -9,8 +9,8 @@ import get from './utils/get';
 import isUndefined from './utils/isUndefined';
 import { FieldValues, Control, UseFieldArrayProps, WithFieldId } from './types';
 
-const getValues = <T, K extends keyof T>(fields: T, name: K) =>
-  transformToNestObject(getFieldValues(fields))[name];
+const getValues = <T, K extends keyof T>(fields: T, name: K, skip: any) =>
+  !!skip ? {} : transformToNestObject(getFieldValues(fields))[name];
 
 export function useFieldArray<
   FormArrayValues extends FieldValues = FieldValues,
@@ -63,7 +63,7 @@ export function useFieldArray<
   };
 
   const remove = (index?: number) => {
-    const fieldValues = getValues(fieldsRef.current, name);
+    const fieldValues = getValues(fieldsRef.current, name, isDirtyRef);
     const data = isUndefined(index)
       ? []
       : [...fields.slice(0, index), ...fields.slice(index + 1)];
@@ -88,7 +88,7 @@ export function useFieldArray<
   };
 
   const swap = (indexA: number, indexB: number) => {
-    const fieldValues = getValues(fieldsRef.current, name);
+    const fieldValues = getValues(fieldsRef.current, name, isDirtyRef);
     [fields[indexA], fields[indexB]] = [fields[indexB], fields[indexA]];
     [fieldValues[indexA], fieldValues[indexB]] = [
       fieldValues[indexB],
@@ -99,7 +99,7 @@ export function useFieldArray<
   };
 
   const move = (from: number, to: number) => {
-    const fieldValues = getValues(fieldsRef.current, name);
+    const fieldValues = getValues(fieldsRef.current, name, isDirtyRef);
     fields.splice(to, 0, fields.splice(from, 1)[0]);
     fieldValues.splice(to, 0, fieldValues.splice(from, 1)[0]);
     resetFields(fieldValues);
