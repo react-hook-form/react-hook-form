@@ -94,13 +94,14 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
     typeof document !== UNDEFINED &&
     !isWindowUndefined &&
     !isUndefined(window.HTMLElement);
+  const isProxyEnabled = isWeb && 'Proxy' in window;
   const readFormState = useRef<ReadFormState>({
-    dirty: false,
+    dirty: !isProxyEnabled,
     isSubmitted: isOnSubmit,
-    submitCount: false,
-    touched: false,
-    isSubmitting: false,
-    isValid: false,
+    submitCount: !isProxyEnabled,
+    touched: !isProxyEnabled,
+    isSubmitting: !isProxyEnabled,
+    isValid: !isProxyEnabled,
   });
   const {
     isOnBlur: isReValidateOnBlur,
@@ -621,7 +622,9 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
     const fieldValues = getFieldsValues<FormValues>(fieldsRef.current);
     const watchFields = watchFieldsRef.current;
 
-    readFormState.current.dirty = true;
+    if (isProxyEnabled) {
+      readFormState.current.dirty = true;
+    }
 
     if (isString(fieldNames)) {
       return assignWatchFields<FormValues>(
