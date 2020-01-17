@@ -749,12 +749,12 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
         defaultValuesRef.current,
         name,
       );
+      const isFieldArray = isNameInFieldArray(fieldArrayNamesRef.current, name);
 
-      if (
-        !isUndefined(defaultValue) &&
-        !isNameInFieldArray(fieldArrayNamesRef.current, name)
-      ) {
+      if (!isUndefined(defaultValue) && !isFieldArray) {
         setFieldValue(name, defaultValue);
+      } else if (isFieldArray) {
+        dirtyFieldsRef.current.add(name);
       }
     }
 
@@ -1056,6 +1056,7 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
     fieldArrayNamesRef,
     isDirtyRef,
     defaultValuesRef,
+    dirtyFieldsRef,
   };
 
   return {
