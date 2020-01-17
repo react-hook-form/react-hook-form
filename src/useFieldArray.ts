@@ -9,6 +9,9 @@ import get from './utils/get';
 import isUndefined from './utils/isUndefined';
 import { FieldValues, Control, UseFieldArrayProps, WithFieldId } from './types';
 
+const getValues = <T, K extends keyof T>(fields: T, name: K) =>
+  transformToNestObject(getFieldValues(fields))[name];
+
 export function useFieldArray<
   FormArrayValues extends FieldValues = FieldValues,
   ControlProp extends Control = Control
@@ -30,13 +33,6 @@ export function useFieldArray<
   const [fields, setField] = React.useState<
     WithFieldId<Partial<FormArrayValues>>[]
   >(mapIds(memoizedDefaultValues));
-  const fieldArrayResultRef = React.useRef([]);
-
-  if (isDirtyRef) {
-    fieldArrayResultRef.current = transformToNestObject(
-      getFieldValues(fieldsRef.current),
-    )[name];
-  }
 
   const resetFields = (
     flagOrFields?: WithFieldId<Partial<FormArrayValues>>[],
@@ -67,15 +63,13 @@ export function useFieldArray<
   };
 
   const remove = (index?: number) => {
+    const fieldValues = getValues(fieldsRef.current, name);
     const data = isUndefined(index)
       ? []
       : [...fields.slice(0, index), ...fields.slice(index + 1)];
     resetFields(
       index
-        ? [
-            ...fieldArrayResultRef.current.slice(0, index),
-            ...fieldArrayResultRef.current.slice(index + 1),
-          ]
+        ? [...fieldValues.slice(0, index), ...fieldValues.slice(index + 1)]
         : [],
     );
     setField(data);
@@ -94,26 +88,21 @@ export function useFieldArray<
   };
 
   const swap = (indexA: number, indexB: number) => {
+    const fieldValues = getValues(fieldsRef.current, name);
     [fields[indexA], fields[indexB]] = [fields[indexB], fields[indexA]];
-    [
-      fieldArrayResultRef.current[indexA],
-      fieldArrayResultRef.current[indexB],
-    ] = [
-      fieldArrayResultRef.current[indexB],
-      fieldArrayResultRef.current[indexA],
+    [fieldValues[indexA], fieldValues[indexB]] = [
+      fieldValues[indexB],
+      fieldValues[indexA],
     ];
-    resetFields(fieldArrayResultRef.current);
+    resetFields(fieldValues);
     setField([...fields]);
   };
 
   const move = (from: number, to: number) => {
+    const fieldValues = getValues(fieldsRef.current, name);
     fields.splice(to, 0, fields.splice(from, 1)[0]);
-    fieldArrayResultRef.current.splice(
-      to,
-      0,
-      fieldArrayResultRef.current.splice(from, 1)[0],
-    );
-    resetFields(fieldArrayResultRef.current);
+    fieldValues.splice(to, 0, fieldValues.splice(from, 1)[0]);
+    resetFields(fieldValues);
     setField([...fields]);
   };
 
