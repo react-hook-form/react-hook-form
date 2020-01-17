@@ -7,11 +7,13 @@ import getFieldValues from './logic/getFieldValues';
 import transformToNestObject from './logic/transformToNestObject';
 import get from './utils/get';
 import isUndefined from './utils/isUndefined';
+import removeArrayAt from './utils/remove';
+import moveArrayAt from './utils/move';
+import swapArrayAt from './utils/swap';
 import { FieldValues, Control, UseFieldArrayProps, WithFieldId } from './types';
-import isArray from './utils/isArray';
 
-const getValues = <T, K extends keyof T>(fields: T, name: K, skip: any) =>
-  !!skip ? undefined : transformToNestObject(getFieldValues(fields))[name];
+const getValuesByName = <T, K extends keyof T>(fields: T, name: K, skip: any) =>
+  !!skip && transformToNestObject(getFieldValues(fields))[name];
 
 export function useFieldArray<
   FormArrayValues extends FieldValues = FieldValues,
@@ -64,16 +66,14 @@ export function useFieldArray<
   };
 
   const remove = (index?: number) => {
-    const fieldValues = getValues(fieldsRef.current, name, isDirtyRef);
-    const data = isUndefined(index)
-      ? []
-      : [...fields.slice(0, index), ...fields.slice(index + 1)];
+    const updateFields = removeArrayAt(fields, index);
     resetFields(
-      index && isArray(fieldValues)
-        ? [...fieldValues.slice(0, index), ...fieldValues.slice(index + 1)]
-        : [],
+      removeArrayAt(
+        getValuesByName(fieldsRef.current, name, isDirtyRef),
+        index,
+      ),
     );
-    setField(data);
+    setField(updateFields);
   };
 
   const insert = (
@@ -89,24 +89,17 @@ export function useFieldArray<
   };
 
   const swap = (indexA: number, indexB: number) => {
-    const fieldValues = getValues(fieldsRef.current, name, isDirtyRef);
-    [fields[indexA], fields[indexB]] = [fields[indexB], fields[indexA]];
-    if (isArray(fieldValues)) {
-      [fieldValues[indexA], fieldValues[indexB]] = [
-        fieldValues[indexB],
-        fieldValues[indexA],
-      ];
-    }
+    const fieldValues = getValuesByName(fieldsRef.current, name, isDirtyRef);
+    swapArrayAt(fields, indexA, indexB);
+    swapArrayAt(fieldValues, indexA, indexB);
     resetFields(fieldValues);
     setField([...fields]);
   };
 
   const move = (from: number, to: number) => {
-    const fieldValues = getValues(fieldsRef.current, name, isDirtyRef);
-    fields.splice(to, 0, fields.splice(from, 1)[0]);
-    if (fieldValues) {
-      fieldValues.splice(to, 0, fieldValues.splice(from, 1)[0]);
-    }
+    const fieldValues = getValuesByName(fieldsRef.current, name, isDirtyRef);
+    moveArrayAt(fields, from, to);
+    moveArrayAt(fieldValues, from, to);
     resetFields(fieldValues);
     setField([...fields]);
   };
