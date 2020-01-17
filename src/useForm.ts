@@ -95,7 +95,7 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
     !isWindowUndefined &&
     !isUndefined(window.HTMLElement);
   const isProxyEnabled = isWeb && 'Proxy' in window;
-  const readFormState = useRef<ReadFormState>({
+  const readFormStateRef = useRef<ReadFormState>({
     dirty: !isProxyEnabled,
     isSubmitted: isOnSubmit,
     submitCount: !isProxyEnabled,
@@ -223,7 +223,7 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
   );
 
   const setDirty = (name: FieldName<FormValues>): boolean => {
-    if (!fieldsRef.current[name] || !readFormState.current.dirty) {
+    if (!fieldsRef.current[name] || !readFormStateRef.current.dirty) {
       return false;
     }
 
@@ -251,7 +251,8 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
 
       if (
         setDirty(name) ||
-        (!get(touchedFieldsRef.current, name) && readFormState.current.touched)
+        (!get(touchedFieldsRef.current, name) &&
+          readFormStateRef.current.touched)
       ) {
         return !!set(touchedFieldsRef.current, name, true);
       }
@@ -412,7 +413,7 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
         if (
           isBlurEvent &&
           !get(touchedFieldsRef.current, name) &&
-          readFormState.current.touched
+          readFormStateRef.current.touched
         ) {
           set(touchedFieldsRef.current, name, true);
           shouldUpdateState = true;
@@ -484,7 +485,10 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
         watchFieldsRef,
       ].forEach(data => data.current.delete(name));
 
-      if (readFormState.current.isValid || readFormState.current.touched) {
+      if (
+        readFormStateRef.current.isValid ||
+        readFormStateRef.current.touched
+      ) {
         reRender();
       }
 
@@ -625,7 +629,7 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
     const watchFields = watchFieldsRef.current;
 
     if (isProxyEnabled) {
-      readFormState.current.dirty = true;
+      readFormStateRef.current.dirty = true;
     }
 
     if (isString(fieldNames)) {
@@ -760,12 +764,12 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
       }
     }
 
-    if (validationSchema && readFormState.current.isValid) {
+    if (validationSchema && readFormStateRef.current.isValid) {
       validateSchemaIsValid();
     } else if (!isEmptyObject(validateOptions)) {
       fieldsWithValidationRef.current.add(name);
 
-      if (!isOnSubmit && readFormState.current.isValid) {
+      if (!isOnSubmit && readFormStateRef.current.isValid) {
         validateFieldCurry(currentField).then(error => {
           const previousFormIsValid = isValidRef.current;
           if (isEmptyObject(error)) {
@@ -854,7 +858,7 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
       let fieldValues;
       const fields = fieldsRef.current;
 
-      if (readFormState.current.isSubmitting) {
+      if (readFormStateRef.current.isSubmitting) {
         isSubmittingRef.current = true;
         reRender();
       }
@@ -1056,7 +1060,8 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
     fieldsRef,
     resetFieldArrayFunctionRef,
     fieldArrayNamesRef,
-    ...(readFormState.current.dirty ? { isDirtyRef } : {}),
+    isDirtyRef,
+    readFormStateRef,
     defaultValuesRef,
   };
 
@@ -1080,7 +1085,7 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
       ? new Proxy<FormStateProxy<FormValues>>(formState, {
           get: (obj, prop: keyof FormStateProxy) => {
             if (prop in obj) {
-              readFormState.current[prop] = true;
+              readFormStateRef.current[prop] = true;
               return obj[prop];
             }
 

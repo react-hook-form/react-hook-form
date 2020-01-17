@@ -12,8 +12,11 @@ import moveArrayAt from './utils/move';
 import swapArrayAt from './utils/swap';
 import { FieldValues, Control, UseFieldArrayProps, WithFieldId } from './types';
 
-const getValuesByName = <T, K extends keyof T>(fields: T, name: K, skip: any) =>
-  !!skip && transformToNestObject(getFieldValues(fields))[name];
+const getValuesByName = <T, K extends keyof T>(
+  fields: T,
+  name: K,
+  shouldCheckDirty: boolean,
+) => shouldCheckDirty && transformToNestObject(getFieldValues(fields))[name];
 
 export function useFieldArray<
   FormArrayValues extends FieldValues = FieldValues,
@@ -27,6 +30,7 @@ export function useFieldArray<
     defaultValuesRef,
     unregister,
     isDirtyRef,
+    readFormStateRef,
   } = control || methods.control;
   const memoizedDefaultValues = React.useMemo(
     () => get(defaultValuesRef.current, name, []),
@@ -36,11 +40,12 @@ export function useFieldArray<
   const [fields, setField] = React.useState<
     WithFieldId<Partial<FormArrayValues>>[]
   >(mapIds(memoizedDefaultValues));
+  const shouldCheckDirty = readFormStateRef.current.dirty;
 
   const resetFields = (
     flagOrFields?: WithFieldId<Partial<FormArrayValues>>[],
   ) => {
-    if (isDirtyRef) {
+    if (shouldCheckDirty) {
       isDirtyRef.current = isUndefined(flagOrFields)
         ? true
         : getIsFieldsDifferent(flagOrFields, memoizedDefaultValues);
@@ -59,7 +64,7 @@ export function useFieldArray<
   };
 
   const append = (value: WithFieldId<Partial<FormArrayValues>>) => {
-    if (isDirtyRef) {
+    if (shouldCheckDirty) {
       isDirtyRef.current = true;
     }
     setField([...fields, appendId(value)]);
@@ -68,7 +73,7 @@ export function useFieldArray<
   const remove = (index?: number) => {
     resetFields(
       removeArrayAt(
-        getValuesByName(fieldsRef.current, name, isDirtyRef),
+        getValuesByName(fieldsRef.current, name, shouldCheckDirty),
         index,
       ),
     );
@@ -88,7 +93,11 @@ export function useFieldArray<
   };
 
   const swap = (indexA: number, indexB: number) => {
-    const fieldValues = getValuesByName(fieldsRef.current, name, isDirtyRef);
+    const fieldValues = getValuesByName(
+      fieldsRef.current,
+      name,
+      shouldCheckDirty,
+    );
     swapArrayAt(fields, indexA, indexB);
     swapArrayAt(fieldValues, indexA, indexB);
     resetFields(fieldValues);
@@ -96,7 +105,11 @@ export function useFieldArray<
   };
 
   const move = (from: number, to: number) => {
-    const fieldValues = getValuesByName(fieldsRef.current, name, isDirtyRef);
+    const fieldValues = getValuesByName(
+      fieldsRef.current,
+      name,
+      shouldCheckDirty,
+    );
     moveArrayAt(fields, from, to);
     moveArrayAt(fieldValues, from, to);
     resetFields(fieldValues);
