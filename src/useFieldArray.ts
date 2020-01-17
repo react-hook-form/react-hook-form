@@ -3,20 +3,13 @@ import { useFormContext } from './useFormContext';
 import { isMatchFieldArrayName } from './logic/isNameInFieldArray';
 import { appendId, mapIds } from './logic/mapIds';
 import getIsFieldsDifferent from './logic/getIsFieldsDifferent';
-import getFieldValues from './logic/getFieldValues';
-import transformToNestObject from './logic/transformToNestObject';
+import getFieldValuesByName from './logic/getFieldValuesByName';
 import get from './utils/get';
 import isUndefined from './utils/isUndefined';
 import removeArrayAt from './utils/remove';
 import moveArrayAt from './utils/move';
 import swapArrayAt from './utils/swap';
 import { FieldValues, Control, UseFieldArrayProps, WithFieldId } from './types';
-
-const getValuesByName = <T, K extends keyof T>(
-  fields: T,
-  name: K,
-  shouldCheckDirty: boolean,
-) => shouldCheckDirty && transformToNestObject(getFieldValues(fields))[name];
 
 export function useFieldArray<
   FormArrayValues extends FieldValues = FieldValues,
@@ -73,7 +66,7 @@ export function useFieldArray<
   const remove = (index?: number) => {
     resetFields(
       removeArrayAt(
-        getValuesByName(fieldsRef.current, name, shouldCheckDirty),
+        getFieldValuesByName(fieldsRef.current, name, shouldCheckDirty),
         index,
       ),
     );
@@ -93,7 +86,7 @@ export function useFieldArray<
   };
 
   const swap = (indexA: number, indexB: number) => {
-    const fieldValues = getValuesByName(
+    const fieldValues = getFieldValuesByName(
       fieldsRef.current,
       name,
       shouldCheckDirty,
@@ -105,7 +98,7 @@ export function useFieldArray<
   };
 
   const move = (from: number, to: number) => {
-    const fieldValues = getValuesByName(
+    const fieldValues = getFieldValuesByName(
       fieldsRef.current,
       name,
       shouldCheckDirty,
