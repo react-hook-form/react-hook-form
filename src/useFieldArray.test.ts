@@ -38,6 +38,11 @@ function reconfigureControl(changedControl: Partial<Control> = {}) {
     isDirtyRef: {
       current: false,
     },
+    readFormStateRef: {
+      current: {
+        dirty: true,
+      },
+    },
   };
 
   return Object.assign({}, defaultControl, changedControl);
