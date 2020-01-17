@@ -12,18 +12,16 @@ export default function getIsFieldsDifferent(
     if (isMatch) {
       break;
     }
-    const data = referenceArray[i];
+    const dataA = referenceArray[i];
+    const dataB = differenceArray[i];
 
-    if (
-      !differenceArray[i] ||
-      Object.keys(data).length !== Object.keys(differenceArray[i]).length
-    ) {
+    if (!dataB || Object.keys(dataA).length !== Object.keys(dataB).length) {
       isMatch = true;
       break;
     }
 
-    for (const key in data) {
-      if (!differenceArray[i][key] || data[key] !== differenceArray[i][key]) {
+    for (const key in dataA) {
+      if (!dataB[key] || dataA[key] !== dataB[key]) {
         isMatch = true;
         break;
       }

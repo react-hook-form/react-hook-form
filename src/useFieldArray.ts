@@ -66,14 +66,13 @@ export function useFieldArray<
   };
 
   const remove = (index?: number) => {
-    const updateFields = removeArrayAt(fields, index);
     resetFields(
       removeArrayAt(
         getValuesByName(fieldsRef.current, name, isDirtyRef),
         index,
       ),
     );
-    setField(updateFields);
+    setField(removeArrayAt(fields, index));
   };
 
   const insert = (
