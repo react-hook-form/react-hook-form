@@ -17,9 +17,25 @@ function reconfigureControl(changedControl = {}) {
       isReValidateOnBlur: false,
       isReValidateOnSubmit: false,
     },
-    formState: { isSubmitted: false },
+    formState: {
+      dirty: false,
+      isSubmitted: false,
+      submitCount: 0,
+      touched: {},
+      isSubmitting: false,
+      isValid: false,
+    },
+    fieldsRef: {
+      current: {},
+    },
+    resetFieldArrayFunctionRef: {
+      current: {},
+    },
     fieldArrayNamesRef: {
-      current: new Set(),
+      current: new Set<string>(),
+    },
+    isDirtyRef: {
+      current: false,
     },
   };
 

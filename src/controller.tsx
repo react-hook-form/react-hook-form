@@ -1,14 +1,15 @@
 import * as React from 'react';
 import isBoolean from './utils/isBoolean';
 import isUndefined from './utils/isUndefined';
+import get from './utils/get';
 import getInputValue from './logic/getInputValue';
 import skipValidation from './logic/skipValidation';
 import isNameInFieldArray from './logic/isNameInFieldArray';
 import { useFormContext } from './useFormContext';
 import { EVENTS, VALIDATION_MODE, VALUE } from './constants';
-import { ControllerProps, EventFunction } from './types';
+import { Control, ControllerProps, EventFunction } from './types';
 
-const Controller = ({
+const Controller = <ControlProp extends Control = Control>({
   name,
   rules,
   as: InnerComponent,
@@ -20,10 +21,10 @@ const Controller = ({
   defaultValue,
   control,
   ...rest
-}: ControllerProps) => {
+}: ControllerProps<ControlProp>) => {
   const methods = useFormContext();
   const {
-    defaultValues,
+    defaultValuesRef,
     setValue,
     register,
     unregister,
@@ -31,11 +32,13 @@ const Controller = ({
     mode: { isOnSubmit, isOnBlur },
     reValidateMode: { isReValidateOnBlur, isReValidateOnSubmit },
     formState: { isSubmitted },
-    fields,
+    fieldsRef,
     fieldArrayNamesRef,
   } = control || methods.control;
   const [value, setInputStateValue] = React.useState(
-    isUndefined(defaultValue) ? defaultValues[name] : defaultValue,
+    isUndefined(defaultValue)
+      ? get(defaultValuesRef.current, name)
+      : defaultValue,
   );
   const valueRef = React.useRef(value);
   const isCheckboxInput = isBoolean(value);
@@ -96,15 +99,16 @@ const Controller = ({
       { ...rules },
     );
 
-  if (!fields[name]) {
+  if (!fieldsRef.current[name]) {
     registerField();
   }
 
   React.useEffect(
     () => {
+      const fieldArrayNames = fieldArrayNamesRef.current;
       registerField();
       return () => {
-        if (!isNameInFieldArray(fieldArrayNamesRef.current, name)) {
+        if (!isNameInFieldArray(fieldArrayNames, name)) {
           unregister(name);
         }
       };

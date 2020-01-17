@@ -192,7 +192,7 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
           ({ ref: radioRef }) => (radioRef.checked = radioRef.value === value),
         );
       } else if (isFileInput(type)) {
-        if (value instanceof FileList) {
+        if (value instanceof FileList || value === '') {
           ref.files = value;
         } else {
           ref.value = value;
@@ -386,7 +386,7 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
         const fields = fieldsRef.current;
         const errors = errorsRef.current;
         const field = fields[name];
-        const currentError = errors[name];
+        const currentError = get(errors, name);
         let error;
 
         if (!field) {
@@ -690,7 +690,7 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
     ref: Element,
     validateOptions: ValidationOptions = {},
   ): ((name: FieldName<FormValues>) => void) | void {
-    if (!ref.name && process.env.NODE_ENV !== 'production') {
+    if (!ref.name) {
       return console.warn('Missing name @', ref);
     }
 
@@ -986,17 +986,15 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
       }
     }
 
+    Object.values(resetFieldArrayFunctionRef.current).forEach(
+      resetFieldArray => isFunction(resetFieldArray) && resetFieldArray(values),
+    );
+
     resetRefs();
 
     if (values) {
       defaultValuesRef.current = values;
     }
-
-    Object.values(resetFieldArrayFunctionRef.current).forEach(
-      resetFieldArray =>
-        isFunction(resetFieldArray) &&
-        resetFieldArray(defaultValuesRef.current),
-    );
 
     reRender();
   };
@@ -1046,7 +1044,6 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
     unregister,
     setValue,
     formState,
-    defaultValues,
     mode: {
       isOnBlur,
       isOnSubmit,
@@ -1056,9 +1053,11 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
       isReValidateOnSubmit,
     },
     errors: errorsRef.current,
-    fields: fieldsRef.current,
+    fieldsRef,
     resetFieldArrayFunctionRef,
     fieldArrayNamesRef,
+    isDirtyRef,
+    defaultValuesRef,
   };
 
   return {
