@@ -1056,7 +1056,6 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
     fieldArrayNamesRef,
     isDirtyRef,
     defaultValuesRef,
-    dirtyFieldsRef,
   };
 
   return {
