@@ -497,9 +497,16 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
 
   const removeEventListenerAndRef = useCallback(
     (field: Field | undefined, forceDelete?: boolean) => {
-      if (!field) {
+      if (
+        !field ||
+        (field &&
+          isNameInFieldArray(fieldArrayNamesRef.current, field.ref.name) &&
+          !forceDelete)
+      ) {
         return;
       }
+
+      console.log('kicked in');
 
       if (!isUndefined(handleChangeRef.current)) {
         findRemovedFieldAndRemoveListener(

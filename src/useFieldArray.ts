@@ -5,6 +5,7 @@ import { appendId, mapIds } from './logic/mapIds';
 import getIsFieldsDifferent from './logic/getIsFieldsDifferent';
 import get from './utils/get';
 import isUndefined from './utils/isUndefined';
+import { REGEX_ID } from './constants';
 import { FieldValues, Control, UseFieldArrayProps, WithFieldId } from './types';
 
 export function useFieldArray<
@@ -29,22 +30,77 @@ export function useFieldArray<
     WithFieldId<Partial<FormArrayValues>>[]
   >(mapIds(memoizedDefaultValues));
 
-  const resetFields = (
-    flagOrFields?: WithFieldId<Partial<FormArrayValues>>[],
-  ) => {
-    isDirtyRef.current = isUndefined(flagOrFields)
+  const resetFields = ({
+    forceDirty,
+    removeIndex,
+    fieldsToCompare,
+    isPrepend,
+    insertIndex,
+    swapIndexA,
+    swapIndexB,
+    moveFromIndex,
+    moveToIndex,
+  }: {
+    forceDirty?: boolean;
+    removeIndex?: number;
+    prependIndex?: number;
+    fieldsToCompare?: any;
+    isPrepend?: boolean;
+    insertIndex?: number;
+    swapIndexA?: number;
+    swapIndexB?: number;
+    moveFromIndex?: number;
+    moveToIndex?: number;
+  } = {}) => {
+    isDirtyRef.current = isUndefined(forceDirty)
       ? true
-      : getIsFieldsDifferent(flagOrFields, memoizedDefaultValues);
+      : getIsFieldsDifferent(fieldsToCompare, memoizedDefaultValues);
 
     for (const key in fieldsRef.current) {
+      const currentIndexString = key.match(REGEX_ID)![0].slice(1, -1);
+      const currentIndex = parseInt(currentIndexString);
+
       if (isMatchFieldArrayName(key, name)) {
-        unregister(key);
+        if (swapIndexA && swapIndexB) {
+        } else if (moveFromIndex && moveToIndex) {
+        } else if (insertIndex) {
+          if (insertIndex >= currentIndex) {
+            fieldsRef.current[
+              key.replace(REGEX_ID, `[${(currentIndex + 1).toString()}]`)
+            ] = fieldsRef.current[key];
+          }
+
+          if (insertIndex === currentIndex) {
+            unregister(key, true);
+          }
+        } else if (isPrepend) {
+          fieldsRef.current[
+            key.replace(REGEX_ID, `[${(currentIndex + 1).toString()}]`)
+          ] = fieldsRef.current[key];
+
+          if (currentIndex === 0) {
+            unregister(key, true);
+          }
+        } else if (isUndefined(removeIndex) || fields.length < 2) {
+          unregister(key, true);
+        } else if (currentIndex > removeIndex) {
+          fieldsRef.current[
+            key.replace(REGEX_ID, `[${(currentIndex - 1).toString()}]`)
+          ] = fieldsRef.current[key];
+
+          if (currentIndex === fields.length - 1) {
+            unregister(key, true);
+          }
+        }
       }
     }
   };
 
   const prepend = (value: WithFieldId<Partial<FormArrayValues>>) => {
-    resetFields();
+    resetFields({
+      forceDirty: true,
+      isPrepend: true,
+    });
     setField([appendId(value), ...fields]);
   };
 
@@ -57,7 +113,9 @@ export function useFieldArray<
     const data = isUndefined(index)
       ? []
       : [...fields.slice(0, index), ...fields.slice(index + 1)];
-    resetFields(data);
+    resetFields({
+      removeIndex: index,
+    });
     setField(data);
   };
 
@@ -65,7 +123,9 @@ export function useFieldArray<
     index: number,
     value: WithFieldId<Partial<FormArrayValues>>,
   ) => {
-    resetFields();
+    resetFields({
+      insertIndex: index,
+    });
     setField([
       ...fields.slice(0, index),
       appendId(value),
@@ -75,13 +135,19 @@ export function useFieldArray<
 
   const swap = (indexA: number, indexB: number) => {
     [fields[indexA], fields[indexB]] = [fields[indexB], fields[indexA]];
-    resetFields(fields);
+    resetFields({
+      swapIndexA: indexA,
+      swapIndexB: indexB,
+    });
     setField([...fields]);
   };
 
   const move = (from: number, to: number) => {
     fields.splice(to, 0, fields.splice(from, 1)[0]);
-    resetFields(fields);
+    resetFields({
+      moveFromIndex: from,
+      moveToIndex: to,
+    });
     setField([...fields]);
   };
 
