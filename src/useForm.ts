@@ -706,7 +706,7 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
     const fields = fieldsRef.current;
     const isRadioOrCheckbox = isRadioInput(type) || isCheckBoxInput(type);
     let currentField = fields[name] as Field;
-    let isEmptyDefaultValue = false;
+    let isEmptyDefaultValue = true;
     let defaultValue;
 
     if (
