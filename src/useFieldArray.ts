@@ -3,7 +3,8 @@ import { useFormContext } from './useFormContext';
 import { isMatchFieldArrayName } from './logic/isNameInFieldArray';
 import { appendId, mapIds } from './logic/mapIds';
 import getIsFieldsDifferent from './logic/getIsFieldsDifferent';
-import getFieldValuesByName from './logic/getFieldValuesByName';
+import transformToNestObject from './logic/transformToNestObject';
+import getFieldValues from './logic/getFieldValues';
 import get from './utils/get';
 import isUndefined from './utils/isUndefined';
 import removeArrayAt from './utils/remove';
@@ -33,6 +34,9 @@ export function useFieldArray<
   const [fields, setField] = React.useState<
     WithFieldId<Partial<FormArrayValues>>[]
   >(mapIds(memoizedDefaultValues));
+  const getFieldValuesByName = <T, K extends keyof T>(fields: T, name: K) =>
+    readFormStateRef.current.dirty &&
+    transformToNestObject(getFieldValues(fields))[name];
 
   const resetFields = (
     flagOrFields?: WithFieldId<Partial<FormArrayValues>>[],
@@ -64,14 +68,7 @@ export function useFieldArray<
 
   const remove = (index?: number) => {
     resetFields(
-      removeArrayAt(
-        getFieldValuesByName(
-          fieldsRef.current,
-          name,
-          readFormStateRef.current.dirty,
-        ),
-        index,
-      ),
+      removeArrayAt(getFieldValuesByName(fieldsRef.current, name), index),
     );
     setField(removeArrayAt(fields, index));
   };
@@ -89,11 +86,7 @@ export function useFieldArray<
   };
 
   const swap = (indexA: number, indexB: number) => {
-    const fieldValues = getFieldValuesByName(
-      fieldsRef.current,
-      name,
-      readFormStateRef.current.dirty,
-    );
+    const fieldValues = getFieldValuesByName(fieldsRef.current, name);
     swapArrayAt(fields, indexA, indexB);
     swapArrayAt(fieldValues, indexA, indexB);
     resetFields(fieldValues);
@@ -101,11 +94,7 @@ export function useFieldArray<
   };
 
   const move = (from: number, to: number) => {
-    const fieldValues = getFieldValuesByName(
-      fieldsRef.current,
-      name,
-      readFormStateRef.current.dirty,
-    );
+    const fieldValues = getFieldValuesByName(fieldsRef.current, name);
     moveArrayAt(fields, from, to);
     moveArrayAt(fieldValues, from, to);
     resetFields(fieldValues);
