@@ -227,9 +227,17 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
       return false;
     }
 
-    const isDirty =
+    let isDirty =
       defaultRenderValuesRef.current[name] !==
       getFieldValue(fieldsRef.current, fieldsRef.current[name]!.ref);
+
+    if (!isDirty && isNameInFieldArray(fieldArrayNamesRef.current, name)) {
+      const fieldArrayName = name.substring(0, name.indexOf('['));
+      isDirty =
+        get(defaultValuesRef.current, fieldArrayName).length !==
+        transformToNestObject(fieldsRef.current)[fieldArrayName].length;
+    }
+
     const isDirtyChanged = dirtyFieldsRef.current.has(name) !== isDirty;
 
     if (isDirty) {
