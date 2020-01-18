@@ -33,12 +33,11 @@ export function useFieldArray<
   const [fields, setField] = React.useState<
     WithFieldId<Partial<FormArrayValues>>[]
   >(mapIds(memoizedDefaultValues));
-  const shouldCheckDirty = readFormStateRef.current.dirty;
 
   const resetFields = (
     flagOrFields?: WithFieldId<Partial<FormArrayValues>>[],
   ) => {
-    if (shouldCheckDirty) {
+    if (readFormStateRef.current.dirty) {
       isDirtyRef.current = isUndefined(flagOrFields)
         ? true
         : getIsFieldsDifferent(flagOrFields, memoizedDefaultValues);
@@ -57,7 +56,7 @@ export function useFieldArray<
   };
 
   const append = (value: WithFieldId<Partial<FormArrayValues>>) => {
-    if (shouldCheckDirty) {
+    if (readFormStateRef.current.dirty) {
       isDirtyRef.current = true;
     }
     setField([...fields, appendId(value)]);
@@ -66,7 +65,11 @@ export function useFieldArray<
   const remove = (index?: number) => {
     resetFields(
       removeArrayAt(
-        getFieldValuesByName(fieldsRef.current, name, shouldCheckDirty),
+        getFieldValuesByName(
+          fieldsRef.current,
+          name,
+          readFormStateRef.current.dirty,
+        ),
         index,
       ),
     );
@@ -89,7 +92,7 @@ export function useFieldArray<
     const fieldValues = getFieldValuesByName(
       fieldsRef.current,
       name,
-      shouldCheckDirty,
+      readFormStateRef.current.dirty,
     );
     swapArrayAt(fields, indexA, indexB);
     swapArrayAt(fieldValues, indexA, indexB);
@@ -101,7 +104,7 @@ export function useFieldArray<
     const fieldValues = getFieldValuesByName(
       fieldsRef.current,
       name,
-      shouldCheckDirty,
+      readFormStateRef.current.dirty,
     );
     moveArrayAt(fields, from, to);
     moveArrayAt(fieldValues, from, to);
