@@ -30,7 +30,7 @@ export function useFieldArray<
     WithFieldId<Partial<FormArrayValues>>[]
   >(mapIds(memoizedDefaultValues));
 
-  const resetFields = ({
+  const setFieldsRef = ({
     forceDirty,
     removeIndex,
     fieldsToCompare,
@@ -97,7 +97,7 @@ export function useFieldArray<
   };
 
   const prepend = (value: WithFieldId<Partial<FormArrayValues>>) => {
-    resetFields({
+    setFieldsRef({
       forceDirty: true,
       isPrepend: true,
     });
@@ -113,7 +113,7 @@ export function useFieldArray<
     const data = isUndefined(index)
       ? []
       : [...fields.slice(0, index), ...fields.slice(index + 1)];
-    resetFields({
+    setFieldsRef({
       removeIndex: index,
     });
     setField(data);
@@ -123,7 +123,7 @@ export function useFieldArray<
     index: number,
     value: WithFieldId<Partial<FormArrayValues>>,
   ) => {
-    resetFields({
+    setFieldsRef({
       insertIndex: index,
     });
     setField([
@@ -135,7 +135,7 @@ export function useFieldArray<
 
   const swap = (indexA: number, indexB: number) => {
     [fields[indexA], fields[indexB]] = [fields[indexB], fields[indexA]];
-    resetFields({
+    setFieldsRef({
       swapIndexA: indexA,
       swapIndexB: indexB,
     });
@@ -144,7 +144,7 @@ export function useFieldArray<
 
   const move = (from: number, to: number) => {
     fields.splice(to, 0, fields.splice(from, 1)[0]);
-    resetFields({
+    setFieldsRef({
       moveFromIndex: from,
       moveToIndex: to,
     });
@@ -152,7 +152,7 @@ export function useFieldArray<
   };
 
   const reset = (values: any) => {
-    resetFields();
+    setFieldsRef();
     setField(mapIds(get(values, name)));
   };
 
@@ -163,7 +163,7 @@ export function useFieldArray<
     resetFunctions[name] = reset;
 
     return () => {
-      resetFields();
+      setFieldsRef();
       delete resetFunctions[name];
       fieldArrayNames.delete(name);
     };
