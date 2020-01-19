@@ -10,7 +10,7 @@ export const appendId = <
   value: FormArrayValues,
 ) => ({
   ...value,
-  ...(value.id ? {} : { id: generateId() }),
+  id: generateId(),
 });
 
 export const mapIds = (data: any) =>
