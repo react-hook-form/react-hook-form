@@ -12,6 +12,7 @@ function reconfigureControl(changedControl: Partial<Control> = {}) {
     setValue: jest.fn(),
     register: jest.fn(),
     unregister: jest.fn(),
+    triggerValidation: jest.fn(),
     errors: {},
     mode: { isOnSubmit: false, isOnBlur: false },
     reValidateMode: {
