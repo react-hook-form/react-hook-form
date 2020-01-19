@@ -194,6 +194,10 @@ export type Control<FormValues extends FieldValues = FieldValues> = {
     refOrValidationOptions: ValidationOptions | Element | null,
     validationOptions?: ValidationOptions,
   ): ((ref: Element | null) => void) | void;
+  triggerValidation: (
+    payload?: FieldName<FormValues> | FieldName<FormValues>[] | string,
+    shouldRender?: boolean,
+  ) => Promise<boolean>;
   unregister(name: FieldName<FormValues>): void;
   unregister(names: FieldName<FormValues>[]): void;
   unregister(names: FieldName<FormValues> | FieldName<FormValues>[]): void;

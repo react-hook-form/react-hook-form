@@ -6,7 +6,7 @@ import getInputValue from './logic/getInputValue';
 import skipValidation from './logic/skipValidation';
 import isNameInFieldArray from './logic/isNameInFieldArray';
 import { useFormContext } from './useFormContext';
-import { EVENTS, VALIDATION_MODE, VALUE } from './constants';
+import { VALIDATION_MODE, VALUE } from './constants';
 import { Control, ControllerProps, EventFunction } from './types';
 
 const Controller = <ControlProp extends Control = Control>({
@@ -14,12 +14,12 @@ const Controller = <ControlProp extends Control = Control>({
   rules,
   as: InnerComponent,
   onChange,
-  onBlur,
   onChangeName = VALIDATION_MODE.onChange,
   onBlurName = VALIDATION_MODE.onBlur,
   valueName,
   defaultValue,
   control,
+  triggerValidation,
   ...rest
 }: ControllerProps<ControlProp>) => {
   const methods = useFormContext();
@@ -43,10 +43,9 @@ const Controller = <ControlProp extends Control = Control>({
   const valueRef = React.useRef(value);
   const isCheckboxInput = isBoolean(value);
 
-  const shouldValidate = (isBlurEvent?: boolean) =>
+  const shouldValidate = () =>
     !skipValidation({
       hasError: !!errors[name],
-      isBlurEvent,
       isOnBlur,
       isOnSubmit,
       isReValidateOnBlur,
@@ -61,22 +60,12 @@ const Controller = <ControlProp extends Control = Control>({
     return data;
   };
 
-  const eventWrapper = (event: EventFunction, eventName: string) => (
-    ...arg: any
-  ) => {
-    const data = commonTask(event(arg));
-    const isBlurEvent = eventName === EVENTS.BLUR;
-    setValue(name, data, shouldValidate(isBlurEvent));
-  };
+  const eventWrapper = (event: EventFunction) => (...arg: any) =>
+    setValue(name, commonTask(event(arg)), shouldValidate());
 
   const handleChange = (e: any) => {
     const data = commonTask(e && e.target ? e.target : e);
     setValue(name, data, shouldValidate());
-  };
-
-  const handleBlur = (e: any) => {
-    const data = commonTask(e && e.target ? e.target : e);
-    setValue(name, data, shouldValidate(true));
   };
 
   const registerField = () =>
@@ -120,12 +109,10 @@ const Controller = <ControlProp extends Control = Control>({
     name,
     ...rest,
     ...(onChange
-      ? { [onChangeName]: eventWrapper(onChange, EVENTS.CHANGE) }
+      ? { [onChangeName]: eventWrapper(onChange) }
       : { [onChangeName]: handleChange }),
     ...(isOnBlur || isReValidateOnBlur
-      ? onBlur
-        ? { [onBlurName]: eventWrapper(onBlur, EVENTS.BLUR) }
-        : { [onBlurName]: handleBlur }
+      ? { [onBlurName]: () => triggerValidation(name) }
       : {}),
     ...{ [valueName || (isCheckboxInput ? 'checked' : VALUE)]: value },
   };
