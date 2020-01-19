@@ -43,14 +43,14 @@ export function useFieldArray<
     }
   };
 
-  const prepend = (value: WithFieldId<Partial<FormArrayValues>>) => {
-    resetFields();
-    setField(mapIds([appendId(value), ...fields]));
-  };
-
   const append = (value: WithFieldId<Partial<FormArrayValues>>) => {
     isDirtyRef.current = true;
     setField([...fields, appendId(value)]);
+  };
+
+  const prepend = (value: WithFieldId<Partial<FormArrayValues>>) => {
+    resetFields();
+    setField(mapIds([appendId(value), ...fields]));
   };
 
   const remove = (index?: number) => {
