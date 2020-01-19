@@ -19,7 +19,6 @@ const Controller = <ControlProp extends Control = Control>({
   valueName,
   defaultValue,
   control,
-  triggerValidation,
   ...rest
 }: ControllerProps<ControlProp>) => {
   const methods = useFormContext();
@@ -29,6 +28,7 @@ const Controller = <ControlProp extends Control = Control>({
     register,
     unregister,
     errors,
+    triggerValidation,
     mode: { isOnSubmit, isOnBlur },
     reValidateMode: { isReValidateOnBlur, isReValidateOnSubmit },
     formState: { isSubmitted },
