@@ -42,10 +42,11 @@ const Controller = <ControlProp extends Control = Control>({
   );
   const valueRef = React.useRef(value);
   const isCheckboxInput = isBoolean(value);
+  const currentError = get(errors, name);
 
   const shouldValidate = (isBlurEvent?: boolean) =>
     !skipValidation({
-      hasError: !!errors[name],
+      hasError: !!currentError,
       isBlurEvent,
       isOnBlur,
       isOnSubmit,
