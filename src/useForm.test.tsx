@@ -13,7 +13,7 @@ jest.mock('./utils/onDomRemove');
 jest.mock('./logic/findRemovedFieldAndRemoveListener');
 jest.mock('./logic/validateField');
 jest.mock('./logic/attachEventListeners');
-jest.mock('./logic/getFieldValues');
+jest.mock('./logic/getFieldsValues');
 jest.mock('./logic/validateWithSchema');
 jest.mock('./logic/transformToNestObject', () => ({
   default: (data: any) => data,
