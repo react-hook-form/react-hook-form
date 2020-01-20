@@ -12,6 +12,7 @@ function reconfigureControl(changedControl = {}) {
     register: jest.fn(),
     unregister: jest.fn(),
     errors: {},
+    triggerValidation: jest.fn(),
     mode: { isOnSubmit: false, isOnBlur: false },
     reValidateMode: {
       isReValidateOnBlur: false,
@@ -104,9 +105,9 @@ describe('Controller', () => {
   });
 
   it("should trigger component's onBlur method and invoke setValue method", () => {
-    const setValue = jest.fn();
+    const triggerValidation = jest.fn();
     const control = reconfigureControl({
-      setValue,
+      triggerValidation,
       mode: { isOnSubmit: true, isOnBlur: true },
     });
 
@@ -125,14 +126,14 @@ describe('Controller', () => {
       },
     });
 
-    expect(setValue).toBeCalledWith('test', 'test', false);
+    expect(triggerValidation).toBeCalledWith('test');
   });
 
   it('should invoke custom event named method', () => {
     const setValue = jest.fn();
     const control = reconfigureControl({
       setValue,
-      mode: { isOnSubmit: true, isOnBlur: true },
+      mode: { isOnSubmit: true, isOnChange: true },
     });
 
     const { getByPlaceholderText } = render(
@@ -145,7 +146,7 @@ describe('Controller', () => {
       />,
     );
 
-    fireEvent.blur(getByPlaceholderText('test'), {
+    fireEvent.change(getByPlaceholderText('test'), {
       target: {
         value: 'test',
       },

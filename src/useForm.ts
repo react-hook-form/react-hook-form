@@ -1069,6 +1069,7 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
     register,
     unregister,
     setValue,
+    triggerValidation,
     formState,
     mode: {
       isOnBlur,
