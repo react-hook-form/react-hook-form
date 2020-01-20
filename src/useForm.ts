@@ -23,13 +23,14 @@ import isSameError from './utils/isSameError';
 import isUndefined from './utils/isUndefined';
 import onDomRemove from './utils/onDomRemove';
 import omitObject from './utils/omitObject';
+import isTypeUndefined from './utils/isTypeUndefined';
 import get from './utils/get';
 import set from './utils/set';
 import unset from './utils/unset';
 import isMultipleSelect from './utils/isMultipleSelect';
 import modeChecker from './utils/validationModeChecker';
 import isNullOrUndefined from './utils/isNullOrUndefined';
-import { EVENTS, UNDEFINED, VALIDATION_MODE } from './constants';
+import { EVENTS, VALIDATION_MODE } from './constants';
 import { FormContextValues } from './contextTypes';
 import {
   DeepPartial,
@@ -89,9 +90,9 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
   const fieldArrayNamesRef = useRef<Set<string>>(new Set());
   const [, render] = useState();
   const { isOnBlur, isOnSubmit } = useRef(modeChecker(mode)).current;
-  const isWindowUndefined = typeof window === UNDEFINED;
+  const isWindowUndefined = isTypeUndefined(window);
   const isWeb =
-    typeof document !== UNDEFINED &&
+    !isTypeUndefined(document) &&
     !isWindowUndefined &&
     !isUndefined(window.HTMLElement);
   const isProxyEnabled = isWeb && 'Proxy' in window;
