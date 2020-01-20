@@ -54,11 +54,6 @@ export function useFieldArray<
     }
   };
 
-  const prepend = (value: WithFieldId<Partial<FormArrayValues>>) => {
-    resetFields();
-    setField([appendId(value), ...fields]);
-  };
-
   const append = (value: WithFieldId<Partial<FormArrayValues>>) => {
     if (readFormStateRef.current.dirty) {
       isDirtyRef.current = true;
@@ -66,11 +61,16 @@ export function useFieldArray<
     setField([...fields, appendId(value)]);
   };
 
+  const prepend = (value: WithFieldId<Partial<FormArrayValues>>) => {
+    resetFields();
+    setField(mapIds([appendId(value), ...fields]));
+  };
+
   const remove = (index?: number) => {
     resetFields(
       removeArrayAt(getFieldValuesByName(fieldsRef.current, name), index),
     );
-    setField(removeArrayAt(fields, index));
+    setField(mapIds(removeArrayAt(fields, index)));
   };
 
   const insert = (
@@ -78,11 +78,13 @@ export function useFieldArray<
     value: WithFieldId<Partial<FormArrayValues>>,
   ) => {
     resetFields();
-    setField([
-      ...fields.slice(0, index),
-      appendId(value),
-      ...fields.slice(index),
-    ]);
+    setField(
+      mapIds([
+        ...fields.slice(0, index),
+        appendId(value),
+        ...fields.slice(index),
+      ]),
+    );
   };
 
   const swap = (indexA: number, indexB: number) => {
@@ -90,7 +92,7 @@ export function useFieldArray<
     swapArrayAt(fields, indexA, indexB);
     swapArrayAt(fieldValues, indexA, indexB);
     resetFields(fieldValues);
-    setField([...fields]);
+    setField(mapIds([...fields]));
   };
 
   const move = (from: number, to: number) => {
@@ -98,7 +100,7 @@ export function useFieldArray<
     moveArrayAt(fields, from, to);
     moveArrayAt(fieldValues, from, to);
     resetFields(fieldValues);
-    setField([...fields]);
+    setField(mapIds([...fields]));
   };
 
   const reset = (values: any) => {

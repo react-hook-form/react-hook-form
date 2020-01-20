@@ -45,7 +45,7 @@ const Controller = <ControlProp extends Control = Control>({
 
   const shouldValidate = (isBlurEvent?: boolean) =>
     !skipValidation({
-      hasError: !!errors[name],
+      hasError: !!get(errors, name),
       isBlurEvent,
       isOnBlur,
       isOnSubmit,
