@@ -2,7 +2,7 @@ import * as React from 'react';
 import attachEventListeners from './logic/attachEventListeners';
 import transformToNestObject from './logic/transformToNestObject';
 import findRemovedFieldAndRemoveListener from './logic/findRemovedFieldAndRemoveListener';
-import getFieldsValues from './logic/getFieldValues';
+import getFieldsValues from './logic/getFieldsValues';
 import getFieldValue from './logic/getFieldValue';
 import shouldUpdateWithError from './logic/shouldUpdateWithError';
 import validateField from './logic/validateField';
@@ -10,6 +10,7 @@ import validateWithSchema from './logic/validateWithSchema';
 import getDefaultValue from './logic/getDefaultValue';
 import assignWatchFields from './logic/assignWatchFields';
 import skipValidation from './logic/skipValidation';
+import getIsFieldsDifferent from './logic/getIsFieldsDifferent';
 import isNameInFieldArray from './logic/isNameInFieldArray';
 import isCheckBoxInput from './utils/isCheckBoxInput';
 import isEmptyObject from './utils/isEmptyObject';
@@ -95,7 +96,7 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
     !isWindowUndefined &&
     !isUndefined(window.HTMLElement);
   const isProxyEnabled = isWeb && 'Proxy' in window;
-  const readFormState = useRef<ReadFormState>({
+  const readFormStateRef = useRef<ReadFormState>({
     dirty: !isProxyEnabled,
     isSubmitted: isOnSubmit,
     submitCount: !isProxyEnabled,
@@ -223,14 +224,28 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
   );
 
   const setDirty = (name: FieldName<FormValues>): boolean => {
-    if (!fieldsRef.current[name]) {
+    if (!fieldsRef.current[name] || !readFormStateRef.current.dirty) {
       return false;
     }
 
-    const isDirty =
+    const isFieldArray = isNameInFieldArray(fieldArrayNamesRef.current, name);
+    let isDirty =
       defaultRenderValuesRef.current[name] !==
       getFieldValue(fieldsRef.current, fieldsRef.current[name]!.ref);
-    const isDirtyChanged = dirtyFieldsRef.current.has(name) !== isDirty;
+
+    if (isFieldArray) {
+      const fieldArrayName = name.substring(0, name.indexOf('['));
+      isDirty = getIsFieldsDifferent(
+        transformToNestObject(getFieldsValues(fieldsRef.current))[
+          fieldArrayName
+        ],
+        get(defaultValuesRef.current, fieldArrayName),
+      );
+    }
+
+    const isDirtyChanged = isFieldArray
+      ? isDirtyRef.current
+      : dirtyFieldsRef.current.has(name) !== isDirty;
 
     if (isDirty) {
       dirtyFieldsRef.current.add(name);
@@ -238,8 +253,8 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
       dirtyFieldsRef.current.delete(name);
     }
 
-    isDirtyRef.current = !!dirtyFieldsRef.current.size;
-    return isDirtyChanged && readFormState.current.dirty;
+    isDirtyRef.current = isFieldArray ? isDirty : !!dirtyFieldsRef.current.size;
+    return isDirtyChanged;
   };
 
   const setInternalValue = useCallback(
@@ -251,7 +266,8 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
 
       if (
         setDirty(name) ||
-        (!get(touchedFieldsRef.current, name) && readFormState.current.touched)
+        (!get(touchedFieldsRef.current, name) &&
+          readFormStateRef.current.touched)
       ) {
         return !!set(touchedFieldsRef.current, name, true);
       }
@@ -412,7 +428,7 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
         if (
           isBlurEvent &&
           !get(touchedFieldsRef.current, name) &&
-          readFormState.current.touched
+          readFormStateRef.current.touched
         ) {
           set(touchedFieldsRef.current, name, true);
           shouldUpdateState = true;
@@ -484,7 +500,10 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
         watchFieldsRef,
       ].forEach(data => data.current.delete(name));
 
-      if (readFormState.current.isValid || readFormState.current.touched) {
+      if (
+        readFormStateRef.current.isValid ||
+        readFormStateRef.current.touched
+      ) {
         reRender();
       }
 
@@ -625,7 +644,7 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
     const watchFields = watchFieldsRef.current;
 
     if (isProxyEnabled) {
-      readFormState.current.dirty = true;
+      readFormStateRef.current.dirty = true;
     }
 
     if (isString(fieldNames)) {
@@ -702,6 +721,9 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
     const fields = fieldsRef.current;
     const isRadioOrCheckbox = isRadioInput(type) || isCheckBoxInput(type);
     let currentField = fields[name] as Field;
+    let isEmptyDefaultValue = true;
+    let isFieldArray = false;
+    let defaultValue;
 
     if (
       isRadioOrCheckbox
@@ -747,25 +769,24 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
     fields[name as FieldName<FormValues>] = currentField;
 
     if (!isEmptyObject(defaultValuesRef.current)) {
-      const defaultValue = getDefaultValue<FormValues>(
+      defaultValue = getDefaultValue<FormValues>(
         defaultValuesRef.current,
         name,
       );
+      isEmptyDefaultValue = isUndefined(defaultValue);
+      isFieldArray = isNameInFieldArray(fieldArrayNamesRef.current, name);
 
-      if (
-        !isUndefined(defaultValue) &&
-        !isNameInFieldArray(fieldArrayNamesRef.current, name)
-      ) {
+      if (!isEmptyDefaultValue && !isFieldArray) {
         setFieldValue(name, defaultValue);
       }
     }
 
-    if (validationSchema && readFormState.current.isValid) {
+    if (validationSchema && readFormStateRef.current.isValid) {
       validateSchemaIsValid();
     } else if (!isEmptyObject(validateOptions)) {
       fieldsWithValidationRef.current.add(name);
 
-      if (!isOnSubmit && readFormState.current.isValid) {
+      if (!isOnSubmit && readFormStateRef.current.isValid) {
         validateFieldCurry(currentField).then(error => {
           const previousFormIsValid = isValidRef.current;
           if (isEmptyObject(error)) {
@@ -781,10 +802,15 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
       }
     }
 
-    if (!defaultRenderValuesRef.current[name]) {
+    if (
+      !defaultRenderValuesRef.current[name] &&
+      !(isFieldArray && isEmptyDefaultValue)
+    ) {
       defaultRenderValuesRef.current[
         name as FieldName<FormValues>
-      ] = getFieldValue(fields, currentField.ref);
+      ] = isEmptyDefaultValue
+        ? getFieldValue(fields, currentField.ref)
+        : defaultValue;
     }
 
     if (!type) {
@@ -854,7 +880,7 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
       let fieldValues;
       const fields = fieldsRef.current;
 
-      if (readFormState.current.isSubmitting) {
+      if (readFormStateRef.current.isSubmitting) {
         isSubmittingRef.current = true;
         reRender();
       }
@@ -1058,6 +1084,7 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
     resetFieldArrayFunctionRef,
     fieldArrayNamesRef,
     isDirtyRef,
+    readFormStateRef,
     defaultValuesRef,
   };
 
@@ -1069,10 +1096,7 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
     triggerValidation,
     getValues: useCallback(getValues, []),
     reset: useCallback(reset, [reRender]),
-    register: useCallback(register, [
-      defaultRenderValuesRef.current,
-      defaultValuesRef.current,
-    ]),
+    register: useCallback(register, [defaultValuesRef.current]),
     unregister: useCallback(unregister, [removeEventListenerAndRef]),
     clearError: useCallback(clearError, []),
     setError: useCallback(setError, []),
@@ -1081,7 +1105,7 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
       ? new Proxy<FormStateProxy<FormValues>>(formState, {
           get: (obj, prop: keyof FormStateProxy) => {
             if (prop in obj) {
-              readFormState.current[prop] = true;
+              readFormStateRef.current[prop] = true;
               return obj[prop];
             }
 
