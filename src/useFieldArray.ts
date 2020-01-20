@@ -4,7 +4,7 @@ import { isMatchFieldArrayName } from './logic/isNameInFieldArray';
 import { appendId, mapIds } from './logic/mapIds';
 import getIsFieldsDifferent from './logic/getIsFieldsDifferent';
 import transformToNestObject from './logic/transformToNestObject';
-import getFieldValues from './logic/getFieldsValues';
+import getFieldsValues from './logic/getFieldsValues';
 import get from './utils/get';
 import isUndefined from './utils/isUndefined';
 import removeArrayAt from './utils/remove';
@@ -36,7 +36,7 @@ export function useFieldArray<
   >(mapIds(memoizedDefaultValues));
   const getFieldValuesByName = <T, K extends keyof T>(fields: T, name: K) =>
     readFormStateRef.current.dirty &&
-    transformToNestObject(getFieldValues(fields))[name];
+    transformToNestObject(getFieldsValues(fields))[name];
 
   const resetFields = (
     flagOrFields?: WithFieldId<Partial<FormArrayValues>>[],

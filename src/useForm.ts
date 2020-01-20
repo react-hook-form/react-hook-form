@@ -2,7 +2,7 @@ import * as React from 'react';
 import attachEventListeners from './logic/attachEventListeners';
 import transformToNestObject from './logic/transformToNestObject';
 import findRemovedFieldAndRemoveListener from './logic/findRemovedFieldAndRemoveListener';
-import getFieldValues from './logic/getFieldsValues';
+import getFieldsValues from './logic/getFieldsValues';
 import getFieldValue from './logic/getFieldValue';
 import shouldUpdateWithError from './logic/shouldUpdateWithError';
 import validateField from './logic/validateField';
@@ -234,7 +234,7 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
 
     if (!isDirty && isNameInFieldArray(fieldArrayNamesRef.current, name)) {
       isDirty = getIsFieldsDifferent(
-        transformToNestObject(getFieldValues(fieldsRef.current))[name],
+        transformToNestObject(getFieldsValues(fieldsRef.current))[name],
         get(defaultRenderValuesRef.current, name),
       );
     }
@@ -306,7 +306,7 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
       const { errors } = await validateWithSchema<FormValues>(
         validationSchema,
         validateAllFieldCriteria,
-        transformToNestObject(getFieldValues(fieldsRef.current)),
+        transformToNestObject(getFieldsValues(fieldsRef.current)),
       );
       const previousFormIsValid = isValidRef.current;
       isValidRef.current = isEmptyObject(errors);
@@ -436,7 +436,7 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
           const { errors } = await validateWithSchema<FormValues>(
             validationSchema,
             validateAllFieldCriteria,
-            transformToNestObject(getFieldValues(fields)),
+            transformToNestObject(getFieldsValues(fields)),
           );
           const validForm = isEmptyObject(errors);
           error = (get(errors, name)
@@ -463,7 +463,7 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
 
   const validateSchemaIsValid = useCallback(() => {
     const fieldValues = isEmptyObject(defaultValuesRef.current)
-      ? getFieldValues(fieldsRef.current)
+      ? getFieldsValues(fieldsRef.current)
       : defaultValuesRef.current;
 
     validateFieldsSchemaCurry(transformToNestObject(fieldValues)).then(
@@ -634,7 +634,7 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
         ? {}
         : defaultValuesRef.current
       : defaultValue;
-    const fieldValues = getFieldValues<FormValues>(fieldsRef.current);
+    const fieldValues = getFieldsValues<FormValues>(fieldsRef.current);
     const watchFields = watchFieldsRef.current;
 
     if (isProxyEnabled) {
@@ -881,7 +881,7 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
 
       try {
         if (validationSchema) {
-          fieldValues = getFieldValues(fields);
+          fieldValues = getFieldsValues(fields);
           const { errors, values } = await validateFieldsSchemaCurry(
             transformToNestObject(fieldValues),
           );
@@ -1020,7 +1020,7 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
   };
 
   const getValues = (payload?: { nest: boolean }): FormValues => {
-    const fieldValues = getFieldValues(fieldsRef.current);
+    const fieldValues = getFieldsValues(fieldsRef.current);
     const outputValues = isEmptyObject(fieldValues)
       ? defaultValuesRef.current
       : fieldValues;
