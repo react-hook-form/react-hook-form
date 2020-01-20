@@ -243,7 +243,9 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
       );
     }
 
-    const isDirtyChanged = isDirtyRef.current !== isDirty;
+    const isDirtyChanged = isFieldArray
+      ? isDirtyRef.current
+      : dirtyFieldsRef.current.has(name) !== isDirty;
 
     if (isDirty) {
       dirtyFieldsRef.current.add(name);
