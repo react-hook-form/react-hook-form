@@ -228,18 +228,22 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
       return false;
     }
 
+    const isFieldArray = isNameInFieldArray(fieldArrayNamesRef.current, name);
     let isDirty =
       defaultRenderValuesRef.current[name] !==
       getFieldValue(fieldsRef.current, fieldsRef.current[name]!.ref);
 
-    if (!isDirty && isNameInFieldArray(fieldArrayNamesRef.current, name)) {
+    if (isFieldArray) {
+      const fieldArrayName = name.substring(0, name.indexOf('['));
       isDirty = getIsFieldsDifferent(
-        transformToNestObject(getFieldsValues(fieldsRef.current))[name],
-        get(defaultRenderValuesRef.current, name),
+        transformToNestObject(getFieldsValues(fieldsRef.current))[
+          fieldArrayName
+        ],
+        get(defaultValuesRef.current, fieldArrayName),
       );
     }
 
-    const isDirtyChanged = dirtyFieldsRef.current.has(name) !== isDirty;
+    const isDirtyChanged = isDirtyRef.current !== isDirty;
 
     if (isDirty) {
       dirtyFieldsRef.current.add(name);
@@ -247,7 +251,7 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
       dirtyFieldsRef.current.delete(name);
     }
 
-    isDirtyRef.current = !!dirtyFieldsRef.current.size;
+    isDirtyRef.current = isFieldArray ? isDirty : !!dirtyFieldsRef.current.size;
     return isDirtyChanged;
   };
 
