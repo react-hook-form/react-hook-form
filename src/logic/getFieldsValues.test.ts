@@ -1,4 +1,4 @@
-import getFieldsValues from './getFieldValues';
+import getFieldsValues from './getFieldsValues';
 
 jest.mock('./getFieldValue', () => ({
   default: () => 'test',

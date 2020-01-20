@@ -2,7 +2,7 @@ import * as React from 'react';
 import { renderHook, act } from '@testing-library/react-hooks';
 import { useForm } from './';
 import attachEventListeners from './logic/attachEventListeners';
-import getFieldsValues from './logic/getFieldValues';
+import getFieldsValues from './logic/getFieldsValues';
 import findRemovedFieldAndRemoveListener from './logic/findRemovedFieldAndRemoveListener';
 import validateWithSchema from './logic/validateWithSchema';
 import validateField from './logic/validateField';

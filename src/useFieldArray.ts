@@ -4,7 +4,7 @@ import { isMatchFieldArrayName } from './logic/isNameInFieldArray';
 import { appendId, mapIds } from './logic/mapIds';
 import getIsFieldsDifferent from './logic/getIsFieldsDifferent';
 import transformToNestObject from './logic/transformToNestObject';
-import getFieldValues from './logic/getFieldValues';
+import getFieldValues from './logic/getFieldsValues';
 import get from './utils/get';
 import isUndefined from './utils/isUndefined';
 import removeArrayAt from './utils/remove';
