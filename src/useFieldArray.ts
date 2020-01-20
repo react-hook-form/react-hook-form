@@ -3,8 +3,13 @@ import { useFormContext } from './useFormContext';
 import { isMatchFieldArrayName } from './logic/isNameInFieldArray';
 import { appendId, mapIds } from './logic/mapIds';
 import getIsFieldsDifferent from './logic/getIsFieldsDifferent';
+import transformToNestObject from './logic/transformToNestObject';
+import getFieldsValues from './logic/getFieldsValues';
 import get from './utils/get';
 import isUndefined from './utils/isUndefined';
+import removeArrayAt from './utils/remove';
+import moveArrayAt from './utils/move';
+import swapArrayAt from './utils/swap';
 import { FieldValues, Control, UseFieldArrayProps, WithFieldId } from './types';
 
 export function useFieldArray<
@@ -19,6 +24,7 @@ export function useFieldArray<
     defaultValuesRef,
     unregister,
     isDirtyRef,
+    readFormStateRef,
   } = control || methods.control;
   const memoizedDefaultValues = React.useMemo(
     () => get(defaultValuesRef.current, name, []),
@@ -28,13 +34,18 @@ export function useFieldArray<
   const [fields, setField] = React.useState<
     WithFieldId<Partial<FormArrayValues>>[]
   >(mapIds(memoizedDefaultValues));
+  const getFieldValuesByName = <T, K extends keyof T>(fields: T, name: K) =>
+    readFormStateRef.current.dirty &&
+    transformToNestObject(getFieldsValues(fields))[name];
 
   const resetFields = (
     flagOrFields?: WithFieldId<Partial<FormArrayValues>>[],
   ) => {
-    isDirtyRef.current = isUndefined(flagOrFields)
-      ? true
-      : getIsFieldsDifferent(flagOrFields, memoizedDefaultValues);
+    if (readFormStateRef.current.dirty) {
+      isDirtyRef.current = isUndefined(flagOrFields)
+        ? true
+        : getIsFieldsDifferent(flagOrFields, memoizedDefaultValues);
+    }
 
     for (const key in fieldsRef.current) {
       if (isMatchFieldArrayName(key, name)) {
@@ -44,7 +55,9 @@ export function useFieldArray<
   };
 
   const append = (value: WithFieldId<Partial<FormArrayValues>>) => {
-    isDirtyRef.current = true;
+    if (readFormStateRef.current.dirty) {
+      isDirtyRef.current = true;
+    }
     setField([...fields, appendId(value)]);
   };
 
@@ -54,11 +67,10 @@ export function useFieldArray<
   };
 
   const remove = (index?: number) => {
-    const data = isUndefined(index)
-      ? []
-      : [...fields.slice(0, index), ...fields.slice(index + 1)];
-    resetFields(data);
-    setField(mapIds(data));
+    resetFields(
+      removeArrayAt(getFieldValuesByName(fieldsRef.current, name), index),
+    );
+    setField(mapIds(removeArrayAt(fields, index)));
   };
 
   const insert = (
@@ -76,14 +88,18 @@ export function useFieldArray<
   };
 
   const swap = (indexA: number, indexB: number) => {
-    [fields[indexA], fields[indexB]] = [fields[indexB], fields[indexA]];
-    resetFields(fields);
+    const fieldValues = getFieldValuesByName(fieldsRef.current, name);
+    swapArrayAt(fields, indexA, indexB);
+    swapArrayAt(fieldValues, indexA, indexB);
+    resetFields(fieldValues);
     setField(mapIds([...fields]));
   };
 
   const move = (from: number, to: number) => {
-    fields.splice(to, 0, fields.splice(from, 1)[0]);
-    resetFields(fields);
+    const fieldValues = getFieldValuesByName(fieldsRef.current, name);
+    moveArrayAt(fields, from, to);
+    moveArrayAt(fieldValues, from, to);
+    resetFields(fieldValues);
     setField(mapIds([...fields]));
   };
 

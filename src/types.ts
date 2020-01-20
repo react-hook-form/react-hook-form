@@ -218,6 +218,14 @@ export type Control<FormValues extends FieldValues = FieldValues> = {
   >;
   fieldArrayNamesRef: React.MutableRefObject<Set<string>>;
   isDirtyRef: React.MutableRefObject<boolean>;
+  readFormStateRef: React.MutableRefObject<{
+    dirty: boolean;
+    isSubmitted: boolean;
+    submitCount: boolean;
+    touched: boolean;
+    isSubmitting: boolean;
+    isValid: boolean;
+  }>;
   defaultValuesRef: React.MutableRefObject<
     DeepPartial<FormValues> | FormValues[FieldName<FormValues>]
   >;
