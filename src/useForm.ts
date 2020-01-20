@@ -2,7 +2,7 @@ import * as React from 'react';
 import attachEventListeners from './logic/attachEventListeners';
 import transformToNestObject from './logic/transformToNestObject';
 import findRemovedFieldAndRemoveListener from './logic/findRemovedFieldAndRemoveListener';
-import getFieldsValues from './logic/getFieldValues';
+import getFieldValues from './logic/getFieldValues';
 import getFieldValue from './logic/getFieldValue';
 import shouldUpdateWithError from './logic/shouldUpdateWithError';
 import validateField from './logic/validateField';
@@ -10,6 +10,7 @@ import validateWithSchema from './logic/validateWithSchema';
 import getDefaultValue from './logic/getDefaultValue';
 import assignWatchFields from './logic/assignWatchFields';
 import skipValidation from './logic/skipValidation';
+import getIsFieldsDifferent from './logic/getIsFieldsDifferent';
 import isNameInFieldArray from './logic/isNameInFieldArray';
 import isCheckBoxInput from './utils/isCheckBoxInput';
 import isEmptyObject from './utils/isEmptyObject';
@@ -232,10 +233,10 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
       getFieldValue(fieldsRef.current, fieldsRef.current[name]!.ref);
 
     if (!isDirty && isNameInFieldArray(fieldArrayNamesRef.current, name)) {
-      const fieldArrayName = name.substring(0, name.indexOf('['));
-      isDirty =
-        get(defaultValuesRef.current, fieldArrayName).length !==
-        transformToNestObject(fieldsRef.current)[fieldArrayName].length;
+      isDirty = getIsFieldsDifferent(
+        transformToNestObject(getFieldValues(fieldsRef.current))[name],
+        get(defaultRenderValuesRef.current, name),
+      );
     }
 
     const isDirtyChanged = dirtyFieldsRef.current.has(name) !== isDirty;
@@ -305,7 +306,7 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
       const { errors } = await validateWithSchema<FormValues>(
         validationSchema,
         validateAllFieldCriteria,
-        transformToNestObject(getFieldsValues(fieldsRef.current)),
+        transformToNestObject(getFieldValues(fieldsRef.current)),
       );
       const previousFormIsValid = isValidRef.current;
       isValidRef.current = isEmptyObject(errors);
@@ -435,7 +436,7 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
           const { errors } = await validateWithSchema<FormValues>(
             validationSchema,
             validateAllFieldCriteria,
-            transformToNestObject(getFieldsValues(fields)),
+            transformToNestObject(getFieldValues(fields)),
           );
           const validForm = isEmptyObject(errors);
           error = (get(errors, name)
@@ -462,7 +463,7 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
 
   const validateSchemaIsValid = useCallback(() => {
     const fieldValues = isEmptyObject(defaultValuesRef.current)
-      ? getFieldsValues(fieldsRef.current)
+      ? getFieldValues(fieldsRef.current)
       : defaultValuesRef.current;
 
     validateFieldsSchemaCurry(transformToNestObject(fieldValues)).then(
@@ -633,7 +634,7 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
         ? {}
         : defaultValuesRef.current
       : defaultValue;
-    const fieldValues = getFieldsValues<FormValues>(fieldsRef.current);
+    const fieldValues = getFieldValues<FormValues>(fieldsRef.current);
     const watchFields = watchFieldsRef.current;
 
     if (isProxyEnabled) {
@@ -880,7 +881,7 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
 
       try {
         if (validationSchema) {
-          fieldValues = getFieldsValues(fields);
+          fieldValues = getFieldValues(fields);
           const { errors, values } = await validateFieldsSchemaCurry(
             transformToNestObject(fieldValues),
           );
@@ -1019,7 +1020,7 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
   };
 
   const getValues = (payload?: { nest: boolean }): FormValues => {
-    const fieldValues = getFieldsValues(fieldsRef.current);
+    const fieldValues = getFieldValues(fieldsRef.current);
     const outputValues = isEmptyObject(fieldValues)
       ? defaultValuesRef.current
       : fieldValues;
