@@ -1,58 +1,7 @@
 import { act, renderHook } from '@testing-library/react-hooks';
 import { useFieldArray } from './useFieldArray';
 import { appendId } from './logic/mapIds';
-import { Control } from './types';
-
-function reconfigureControl(changedControl: Partial<Control> = {}) {
-  const defaultControl = {
-    defaultValuesRef: {
-      current: {},
-    },
-    fields: {},
-    setValue: jest.fn(),
-    register: jest.fn(),
-    unregister: jest.fn(),
-    triggerValidation: jest.fn(),
-    errors: {},
-    mode: { isOnSubmit: false, isOnBlur: false },
-    reValidateMode: {
-      isReValidateOnBlur: false,
-      isReValidateOnSubmit: false,
-    },
-    formState: {
-      dirty: false,
-      isSubmitted: false,
-      submitCount: 0,
-      touched: {},
-      isSubmitting: false,
-      isValid: false,
-    },
-    fieldsRef: {
-      current: {},
-    },
-    resetFieldArrayFunctionRef: {
-      current: {},
-    },
-    fieldArrayNamesRef: {
-      current: new Set<string>(),
-    },
-    isDirtyRef: {
-      current: false,
-    },
-    readFormStateRef: {
-      current: {
-        dirty: true,
-        isSubmitted: false,
-        submitCount: false,
-        touched: false,
-        isSubmitting: false,
-        isValid: false,
-      },
-    },
-  };
-
-  return Object.assign({}, defaultControl, changedControl);
-}
+import reconfigureControl from './utils/test/reconfigureControl';
 
 jest.mock('./logic/generateId', () => ({
   default: () => '1',

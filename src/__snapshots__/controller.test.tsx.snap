@@ -31,7 +31,7 @@ exports[`Controller should support default value from hook form 1`] = `
 <DocumentFragment>
   <input
     name="test"
-    value=""
+    value="data"
   />
 </DocumentFragment>
 `;
