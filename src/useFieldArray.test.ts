@@ -163,6 +163,12 @@ describe('useFieldArray', () => {
           defaultValuesRef: {
             current: { test: [{ test: '1' }, { test: '2' }] },
           },
+          fieldsRef: {
+            current: {
+              'test[0]': { ref: { name: 'test[0]', value: { test: '1' } } },
+              'test[1]': { ref: { name: 'test[1]', value: { test: '2' } } },
+            },
+          },
         }),
         name: 'test',
       }),
@@ -231,6 +237,12 @@ describe('useFieldArray', () => {
           defaultValuesRef: {
             current: { test: [{ test: '1' }, { test: '2' }] },
           },
+          fieldsRef: {
+            current: {
+              'test[0]': { ref: { name: 'test[0]', value: { test: '1' } } },
+              'test[1]': { ref: { name: 'test[1]', value: { test: '2' } } },
+            },
+          },
         }),
         name: 'test',
       }),
@@ -253,6 +265,13 @@ describe('useFieldArray', () => {
           defaultValuesRef: {
             current: { test: [{ test: '1' }, { test: '2' }, { test: '3' }] },
           },
+          fieldsRef: {
+            current: {
+              'test[0]': { ref: { name: 'test[0]', value: { test: '1' } } },
+              'test[1]': { ref: { name: 'test[1]', value: { test: '2' } } },
+              'test[2]': { ref: { name: 'test[2]', value: { test: '3' } } },
+            },
+          },
         }),
         name: 'test',
       }),
@@ -265,16 +284,6 @@ describe('useFieldArray', () => {
     expect(result.current.fields).toEqual([
       { id: '1', test: '3' },
       { id: '1', test: '1' },
-      { id: '1', test: '2' },
-    ]);
-
-    act(() => {
-      result.current.move(1, 0);
-    });
-
-    expect(result.current.fields).toEqual([
-      { id: '1', test: '1' },
-      { id: '1', test: '3' },
       { id: '1', test: '2' },
     ]);
   });
