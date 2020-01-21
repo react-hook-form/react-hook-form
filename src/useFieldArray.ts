@@ -78,12 +78,13 @@ export function useFieldArray<
     index: number,
     value: WithFieldId<Partial<FormArrayValues>>,
   ) => {
+    const fieldValues = getFieldValuesByName(fieldsRef.current, name);
     resetFields();
     setField(
       mapIds([
-        ...fields.slice(0, index),
+        ...fieldValues.slice(0, index),
         appendId(value),
-        ...fields.slice(index),
+        ...fieldValues.slice(index),
       ]),
     );
   };
