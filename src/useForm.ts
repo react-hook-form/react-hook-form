@@ -543,10 +543,7 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
     if (isUndefined(name)) {
       errorsRef.current = {};
     } else {
-      (isArray(name) ? name : [name]).forEach(
-        fieldName =>
-          (errorsRef.current = omitObject(errorsRef.current, fieldName)),
-      );
+      unset(errorsRef.current, isArray(name) ? name : [name]);
     }
 
     reRender();
