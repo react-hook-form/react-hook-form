@@ -35,7 +35,6 @@ export function useFieldArray<
     WithFieldId<Partial<FormArrayValues>>[]
   >(mapIds(memoizedDefaultValues));
   const getFieldValuesByName = <T, K extends keyof T>(fields: T, name: K) =>
-    readFormStateRef.current.dirty &&
     transformToNestObject(getFieldsValues(fields))[name];
 
   const resetFields = (
@@ -67,10 +66,12 @@ export function useFieldArray<
   };
 
   const remove = (index?: number) => {
-    resetFields(
-      removeArrayAt(getFieldValuesByName(fieldsRef.current, name), index),
+    const updatedFields = removeArrayAt(
+      getFieldValuesByName(fieldsRef.current, name),
+      index,
     );
-    setField(mapIds(removeArrayAt(fields, index)));
+    resetFields(updatedFields);
+    setField(mapIds(updatedFields));
   };
 
   const insert = (
@@ -89,18 +90,16 @@ export function useFieldArray<
 
   const swap = (indexA: number, indexB: number) => {
     const fieldValues = getFieldValuesByName(fieldsRef.current, name);
-    swapArrayAt(fields, indexA, indexB);
     swapArrayAt(fieldValues, indexA, indexB);
     resetFields(fieldValues);
-    setField(mapIds([...fields]));
+    setField(mapIds(fieldValues));
   };
 
   const move = (from: number, to: number) => {
     const fieldValues = getFieldValuesByName(fieldsRef.current, name);
-    moveArrayAt(fields, from, to);
     moveArrayAt(fieldValues, from, to);
     resetFields(fieldValues);
-    setField(mapIds([...fields]));
+    setField(mapIds(fieldValues));
   };
 
   const reset = (values: any) => {
