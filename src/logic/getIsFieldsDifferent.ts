@@ -1,10 +1,16 @@
+import isArray from '../utils/isArray';
+
 export default function getIsFieldsDifferent(
   referenceArray: any[],
   differenceArray: any[],
 ) {
   let isMatch = false;
 
-  if (referenceArray.length !== differenceArray.length) {
+  if (
+    !isArray(referenceArray) ||
+    !isArray(differenceArray) ||
+    referenceArray.length !== differenceArray.length
+  ) {
     return true;
   }
 
