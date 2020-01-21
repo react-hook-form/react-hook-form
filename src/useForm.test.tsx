@@ -960,10 +960,24 @@ describe('useForm', () => {
     it('should remove error', () => {
       const { result } = renderHook(() => useForm<{ input: string }>());
       act(() => {
-        result.current.setError('input', 'test');
+        result.current.setError('input', 'test', 'message');
         result.current.clearError('input');
       });
       expect(result.current.errors).toEqual({});
+    });
+
+    it('should remove nested error', () => {
+      const { result } = renderHook(() =>
+        useForm<{ input: { nested: string } }>(),
+      );
+      act(() => {
+        result.current.setError('input.nested', 'test');
+      });
+      expect(result.current.errors.input?.nested).toBeDefined();
+      act(() => {
+        result.current.clearError('input.nested');
+      });
+      expect(result.current.errors.input?.nested).not.toBeDefined();
     });
   });
 
