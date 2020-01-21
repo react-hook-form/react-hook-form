@@ -967,15 +967,17 @@ describe('useForm', () => {
     });
 
     it('should remove nested error', () => {
-      const { result } = renderHook(() => useForm<{ input: string }>());
+      const { result } = renderHook(() =>
+        useForm<{ input: { nested: string } }>(),
+      );
       act(() => {
         result.current.setError('input.nested', 'test');
       });
-      expect(result.current.errors).not.toEqual({});
+      expect(result.current.errors.input?.nested).toBeDefined();
       act(() => {
         result.current.clearError('input.nested');
       });
-      expect(result.current.errors).toEqual({});
+      expect(result.current.errors.input?.nested).not.toBeDefined();
     });
   });
 
