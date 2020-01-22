@@ -1,7 +1,7 @@
 import { act, renderHook } from '@testing-library/react-hooks';
 import { useFieldArray } from './useFieldArray';
 import { appendId } from './logic/mapIds';
-import reconfigureControl from './utils/test/reconfigureControl';
+import { reconfigureControl } from './useForm.test';
 
 jest.mock('./logic/generateId', () => ({
   default: () => '1',

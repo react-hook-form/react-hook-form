@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { render, fireEvent } from '@testing-library/react';
-import { Controller } from './index';
-import reconfigureControl from './utils/test/reconfigureControl';
+import { Controller } from './controller';
+import { reconfigureControl } from './useForm.test';
 
 describe('Controller', () => {
   it('should render correctly with as with string', () => {
