@@ -234,6 +234,7 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
       getFieldValue(fieldsRef.current, fieldsRef.current[name]!.ref);
 
     if (isFieldArray) {
+      console.log(defaultValuesRef.current);
       const fieldArrayName = name.substring(0, name.indexOf('['));
       isDirty = getIsFieldsDifferent(
         transformToNestObject(getFieldsValues(fieldsRef.current))[
@@ -319,9 +320,8 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
 
       if (isArray(payload)) {
         payload.forEach(name => {
-          const error = get(errors, name);
-          if (error) {
-            set(errorsRef.current, name, error);
+          if (errors[name]) {
+            set(errorsRef.current, name, errors[name]);
           } else {
             unset(errorsRef.current, [name]);
           }
@@ -868,7 +868,7 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
 
   const handleSubmit = useCallback(
     (callback: OnSubmit<FormValues>) => async (
-      e?: React.BaseSyntheticEvent,
+      e: React.BaseSyntheticEvent,
     ): Promise<void> => {
       if (e) {
         e.preventDefault();
@@ -1010,15 +1010,15 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
       }
     }
 
+    if (values) {
+      defaultValuesRef.current = values;
+    }
+
     Object.values(resetFieldArrayFunctionRef.current).forEach(
       resetFieldArray => isFunction(resetFieldArray) && resetFieldArray(values),
     );
 
     resetRefs();
-
-    if (values) {
-      defaultValuesRef.current = values;
-    }
 
     reRender();
   };
