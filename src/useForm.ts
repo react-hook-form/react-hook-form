@@ -867,7 +867,7 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
 
   const handleSubmit = useCallback(
     (callback: OnSubmit<FormValues>) => async (
-      e: React.BaseSyntheticEvent,
+      e?: React.BaseSyntheticEvent,
     ): Promise<void> => {
       if (e) {
         e.preventDefault();

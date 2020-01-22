@@ -36,7 +36,7 @@ export type Mode = keyof ValidationMode;
 
 export type OnSubmit<FormValues extends FieldValues> = (
   data: FormValues,
-  event: React.BaseSyntheticEvent,
+  event?: React.BaseSyntheticEvent,
 ) => void | Promise<void>;
 
 export type SchemaValidateOptions = Partial<{
