@@ -26,14 +26,12 @@ export function useFieldArray<
     isDirtyRef,
     readFormStateRef,
   } = control || methods.control;
-  const memoizedDefaultValues = React.useMemo(
-    () => get(defaultValuesRef.current, name, []),
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [name],
+  const memoizedDefaultValues = React.useRef(
+    get(defaultValuesRef.current, name, []),
   );
   const [fields, setField] = React.useState<
     WithFieldId<Partial<FormArrayValues>>[]
-  >(mapIds(memoizedDefaultValues));
+  >(mapIds(memoizedDefaultValues.current));
   const getFieldValuesByName = <T, K extends keyof T>(fields: T, name: K) =>
     transformToNestObject(getFieldsValues(fields))[name];
 
@@ -43,7 +41,7 @@ export function useFieldArray<
     if (readFormStateRef.current.dirty) {
       isDirtyRef.current = isUndefined(flagOrFields)
         ? true
-        : getIsFieldsDifferent(flagOrFields, memoizedDefaultValues);
+        : getIsFieldsDifferent(flagOrFields, memoizedDefaultValues.current);
     }
 
     for (const key in fieldsRef.current) {
@@ -106,6 +104,7 @@ export function useFieldArray<
   const reset = (values: any) => {
     resetFields();
     setField(mapIds(get(values, name)));
+    memoizedDefaultValues.current = get(defaultValuesRef.current, name, []);
   };
 
   React.useEffect(() => {
