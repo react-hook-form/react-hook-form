@@ -8,6 +8,56 @@ import validateWithSchema from './logic/validateWithSchema';
 import validateField from './logic/validateField';
 import onDomRemove from './utils/onDomRemove';
 import { VALIDATION_MODE } from './constants';
+import { Control } from './types';
+
+export const reconfigureControl = (
+  controlOverrides: Partial<Control> = {},
+): Control => ({
+  defaultValuesRef: {
+    current: {},
+  },
+  setValue: jest.fn(),
+  register: jest.fn(),
+  unregister: jest.fn(),
+  triggerValidation: jest.fn(),
+  errors: {},
+  mode: { isOnSubmit: false, isOnBlur: false },
+  reValidateMode: {
+    isReValidateOnBlur: false,
+    isReValidateOnSubmit: false,
+  },
+  formState: {
+    dirty: false,
+    isSubmitted: false,
+    submitCount: 0,
+    touched: {},
+    isSubmitting: false,
+    isValid: false,
+  },
+  fieldsRef: {
+    current: {},
+  },
+  resetFieldArrayFunctionRef: {
+    current: {},
+  },
+  fieldArrayNamesRef: {
+    current: new Set<string>(),
+  },
+  isDirtyRef: {
+    current: false,
+  },
+  readFormStateRef: {
+    current: {
+      dirty: true,
+      isSubmitted: false,
+      submitCount: false,
+      touched: false,
+      isSubmitting: false,
+      isValid: false,
+    },
+  },
+  ...controlOverrides,
+});
 
 jest.mock('./utils/onDomRemove');
 jest.mock('./logic/findRemovedFieldAndRemoveListener');

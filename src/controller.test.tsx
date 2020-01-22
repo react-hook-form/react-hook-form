@@ -1,57 +1,7 @@
 import * as React from 'react';
 import { render, fireEvent } from '@testing-library/react';
-import { Controller } from './index';
-
-function reconfigureControl(changedControl = {}) {
-  const defaultControl = {
-    defaultValuesRef: {
-      current: {},
-    },
-    fields: {},
-    setValue: jest.fn(),
-    register: jest.fn(),
-    unregister: jest.fn(),
-    errors: {},
-    triggerValidation: jest.fn(),
-    mode: { isOnSubmit: false, isOnBlur: false },
-    reValidateMode: {
-      isReValidateOnBlur: false,
-      isReValidateOnSubmit: false,
-    },
-    formState: {
-      dirty: false,
-      isSubmitted: false,
-      submitCount: 0,
-      touched: {},
-      isSubmitting: false,
-      isValid: false,
-    },
-    fieldsRef: {
-      current: {},
-    },
-    resetFieldArrayFunctionRef: {
-      current: {},
-    },
-    fieldArrayNamesRef: {
-      current: new Set<string>(),
-    },
-    isDirtyRef: {
-      current: false,
-    },
-    readFormStateRef: {
-      current: {
-        dirty: true,
-        isSubmitted: false,
-        submitCount: false,
-        touched: false,
-        isSubmitting: false,
-        isValid: false,
-      },
-    },
-  };
-
-  return Object.assign({}, defaultControl, changedControl);
-}
+import { Controller } from './controller';
+import { reconfigureControl } from './useForm.test';
 
 describe('Controller', () => {
   it('should render correctly with as with string', () => {
@@ -133,7 +83,7 @@ describe('Controller', () => {
     const setValue = jest.fn();
     const control = reconfigureControl({
       setValue,
-      mode: { isOnSubmit: true, isOnChange: true },
+      mode: { isOnSubmit: true, isOnBlur: true },
     });
 
     const { getByPlaceholderText } = render(
@@ -187,13 +137,15 @@ describe('Controller', () => {
 
   it('should support default value from hook form', () => {
     const control = reconfigureControl({
-      defaultValues: {
-        test: 'data',
+      defaultValuesRef: {
+        current: {
+          test: 'data',
+        },
       },
     });
 
     const { asFragment } = render(
-      <Controller defaultValue="" name="test" as="input" control={control} />,
+      <Controller name="test" as="input" control={control} />,
     );
 
     expect(asFragment()).toMatchSnapshot();
