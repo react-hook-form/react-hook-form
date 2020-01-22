@@ -319,8 +319,9 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
 
       if (isArray(payload)) {
         payload.forEach(name => {
-          if (errors[name]) {
-            set(errorsRef.current, name, errors[name]);
+          const error = get(errors, name);
+          if (error) {
+            set(errorsRef.current, name, error);
           } else {
             unset(errorsRef.current, [name]);
           }
