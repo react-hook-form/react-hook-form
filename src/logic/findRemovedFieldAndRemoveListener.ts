@@ -24,6 +24,7 @@ export default function findRemovedFieldAndRemoveListener<
   } = field;
 
   if (!type) {
+    delete fields[name];
     return;
   }
 

@@ -56,8 +56,7 @@ export function useFieldArray<
 
     for (const key in fieldsRef.current) {
       if (isMatchFieldArrayName(key, name) && fieldsRef.current[key]) {
-        removeEventListener(fieldsRef.current[key] as Field);
-        delete fieldsRef.current[key];
+        removeEventListener(fieldsRef.current[key] as Field, true);
       }
     }
   };
