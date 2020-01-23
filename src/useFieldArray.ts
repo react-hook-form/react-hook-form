@@ -109,7 +109,7 @@ export function useFieldArray<
     index: number,
     value: WithFieldId<Partial<FormArrayValues>>,
   ) => {
-    resetFields();
+    resetFields(insertAt(getFieldValueByName(fieldsRef.current, name), index));
     setField(insertAt(fields, index, appendId(value)));
 
     if (errorsRef.current[name]) {
@@ -142,13 +142,13 @@ export function useFieldArray<
 
   const move = (from: number, to: number) => {
     const fieldValues = getFieldValueByName(fieldsRef.current, name);
-    moveArrayAt(getFieldValueByName(fieldsRef.current, name), from, to);
+    moveArrayAt(fieldValues, from, to);
     resetFields(fieldValues);
     moveArrayAt(fields, from, to);
     setField([...fields]);
 
     if (errorsRef.current[name]) {
-      moveArrayAt(errorsRef.current[name] as [], from, to);
+      moveArrayAt(errorsRef.current[name], from, to);
     }
 
     if (isReadStateTouched && touchedFieldsRef.current[name]) {
