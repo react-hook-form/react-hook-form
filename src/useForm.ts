@@ -515,20 +515,29 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
     [reRender], // eslint-disable-line
   );
 
+  const removeRef = (field: any, forceDelete?: boolean) => {
+    if (!isUndefined(handleChangeRef.current)) {
+      findRemovedFieldAndRemoveListener(
+        fieldsRef.current,
+        handleChangeRef.current,
+        field,
+        forceDelete,
+      );
+    }
+  };
+
   const removeEventListenerAndRef = useCallback(
     (field: Field | undefined, forceDelete?: boolean) => {
-      if (!field) {
+      if (
+        !field ||
+        (field &&
+          isNameInFieldArray(fieldArrayNamesRef.current, field.ref.name) &&
+          !forceDelete)
+      ) {
         return;
       }
 
-      if (!isUndefined(handleChangeRef.current)) {
-        findRemovedFieldAndRemoveListener(
-          fieldsRef.current,
-          handleChangeRef.current,
-          field,
-          forceDelete,
-        );
-      }
+      removeRef(field, forceDelete);
 
       resetFieldRef(field.ref.name);
     },
@@ -1066,6 +1075,7 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
   const control = {
     register,
     unregister,
+    removeRef,
     setValue,
     triggerValidation,
     formState,
@@ -1077,7 +1087,8 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
       isReValidateOnBlur,
       isReValidateOnSubmit,
     },
-    errors: errorsRef.current,
+    errorsRef,
+    touchedFieldsRef,
     fieldsRef,
     resetFieldArrayFunctionRef,
     fieldArrayNamesRef,

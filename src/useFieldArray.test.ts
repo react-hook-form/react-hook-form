@@ -196,10 +196,7 @@ describe('useFieldArray', () => {
       result.current.swap(0, 1);
     });
 
-    expect(result.current.fields).toEqual([
-      { id: '1', test: '2' },
-      { id: '1', test: '1' },
-    ]);
+    expect(result.current.fields).toEqual([{ test: '2' }, { test: '1' }]);
   });
 
   it('should move into pointed position', () => {
@@ -226,9 +223,9 @@ describe('useFieldArray', () => {
     });
 
     expect(result.current.fields).toEqual([
-      { id: '1', test: '3' },
-      { id: '1', test: '1' },
-      { id: '1', test: '2' },
+      { test: '3' },
+      { test: '1' },
+      { test: '2' },
     ]);
   });
 });

@@ -10,6 +10,8 @@ import isUndefined from './utils/isUndefined';
 import removeArrayAt from './utils/remove';
 import moveArrayAt from './utils/move';
 import swapArrayAt from './utils/swap';
+import prependAt from './utils/prepend';
+import insertAt from './utils/insert';
 import { FieldValues, Control, UseFieldArrayProps, WithFieldId } from './types';
 
 export function useFieldArray<
@@ -22,8 +24,10 @@ export function useFieldArray<
     fieldArrayNamesRef,
     fieldsRef,
     defaultValuesRef,
-    unregister,
+    removeRef,
+    errorsRef,
     isDirtyRef,
+    touchedFieldsRef,
     readFormStateRef,
   } = control || methods.control;
   const memoizedDefaultValues = React.useRef(
@@ -46,7 +50,7 @@ export function useFieldArray<
 
     for (const key in fieldsRef.current) {
       if (isMatchFieldArrayName(key, name)) {
-        unregister(key);
+        removeRef(fieldsRef.current[key], true);
       }
     }
   };
@@ -60,29 +64,48 @@ export function useFieldArray<
 
   const prepend = (value: WithFieldId<Partial<FormArrayValues>>) => {
     resetFields();
-    setField([appendId(value), ...fields]);
+    setField(prependAt(fields, appendId(value)));
+    if (errorsRef.current[name]) {
+      errorsRef.current[name] = prependAt(errorsRef.current[name]);
+    }
+    if (readFormStateRef.current.touched && touchedFieldsRef.current[name]) {
+      touchedFieldsRef.current[name] = prependAt(
+        touchedFieldsRef.current[name],
+      );
+    }
   };
 
   const remove = (index?: number) => {
-    const updatedFields = removeArrayAt(
-      getFieldValuesByName(fieldsRef.current, name),
-      index,
+    resetFields(
+      removeArrayAt(getFieldValuesByName(fieldsRef.current, name), index),
     );
-    resetFields(updatedFields);
-    setField(mapIds(updatedFields));
+    setField(removeArrayAt(fields, index));
+    if (errorsRef.current[name]) {
+      errorsRef.current[name] = removeArrayAt(errorsRef.current[name], index);
+    }
+    if (readFormStateRef.current.touched && touchedFieldsRef.current[name]) {
+      touchedFieldsRef.current[name] = removeArrayAt(
+        touchedFieldsRef.current[name],
+        index,
+      );
+    }
   };
 
   const insert = (
     index: number,
     value: WithFieldId<Partial<FormArrayValues>>,
   ) => {
-    const fieldValues = getFieldValuesByName(fieldsRef.current, name);
     resetFields();
-    setField([
-      ...fieldValues.slice(0, index),
-      appendId(value),
-      ...fieldValues.slice(index),
-    ]);
+    setField(insertAt(fields, index, appendId(value)));
+    if (errorsRef.current[name]) {
+      errorsRef.current[name] = insertAt(errorsRef.current[name], index);
+    }
+    if (readFormStateRef.current.touched && touchedFieldsRef.current[name]) {
+      touchedFieldsRef.current[name] = insertAt(
+        touchedFieldsRef.current[name],
+        index,
+      );
+    }
   };
 
   const swap = (indexA: number, indexB: number) => {
@@ -90,6 +113,12 @@ export function useFieldArray<
     swapArrayAt(fieldValues, indexA, indexB);
     resetFields(fieldValues);
     setField(fieldValues);
+    if (errorsRef.current[name]) {
+      swapArrayAt(errorsRef.current[name], indexA, indexB);
+    }
+    if (readFormStateRef.current.touched && touchedFieldsRef.current[name]) {
+      swapArrayAt(touchedFieldsRef.current[name], indexA, indexB);
+    }
   };
 
   const move = (from: number, to: number) => {
@@ -97,6 +126,12 @@ export function useFieldArray<
     moveArrayAt(fieldValues, from, to);
     resetFields(fieldValues);
     setField(fieldValues);
+    if (errorsRef.current[name]) {
+      moveArrayAt(errorsRef.current[name] as [], from, to);
+    }
+    if (readFormStateRef.current.touched && touchedFieldsRef.current[name]) {
+      moveArrayAt(touchedFieldsRef.current[name], from, to);
+    }
   };
 
   const reset = () => {

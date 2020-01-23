@@ -27,7 +27,7 @@ const Controller = <ControlProp extends Control = Control>({
     setValue,
     register,
     unregister,
-    errors,
+    errorsRef,
     triggerValidation,
     mode: { isOnSubmit, isOnBlur },
     reValidateMode: { isReValidateOnBlur, isReValidateOnSubmit },
@@ -45,7 +45,7 @@ const Controller = <ControlProp extends Control = Control>({
 
   const shouldValidate = () =>
     !skipValidation({
-      hasError: !!get(errors, name),
+      hasError: !!get(errorsRef.current, name),
       isOnBlur,
       isOnSubmit,
       isReValidateOnBlur,

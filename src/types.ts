@@ -198,6 +198,7 @@ export type Control<FormValues extends FieldValues = FieldValues> = {
     payload?: FieldName<FormValues> | FieldName<FormValues>[] | string,
     shouldRender?: boolean,
   ) => Promise<boolean>;
+  removeRef: any;
   unregister(name: FieldName<FormValues>): void;
   unregister(names: FieldName<FormValues>[]): void;
   unregister(names: FieldName<FormValues> | FieldName<FormValues>[]): void;
@@ -215,7 +216,8 @@ export type Control<FormValues extends FieldValues = FieldValues> = {
     isReValidateOnBlur: boolean;
     isReValidateOnSubmit: boolean;
   };
-  errors: FieldErrors<FormValues>;
+  touchedFieldsRef: React.MutableRefObject<Touched<FormValues>>;
+  errorsRef: React.MutableRefObject<FieldErrors<FormValues>>;
   fieldsRef: React.MutableRefObject<FieldRefs<FormValues>>;
   resetFieldArrayFunctionRef: React.MutableRefObject<
     Record<string, (values: any) => void>
