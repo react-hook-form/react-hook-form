@@ -1015,7 +1015,7 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
     }
 
     Object.values(resetFieldArrayFunctionRef.current).forEach(
-      resetFieldArray => isFunction(resetFieldArray) && resetFieldArray(values),
+      resetFieldArray => isFunction(resetFieldArray) && resetFieldArray(),
     );
 
     resetRefs();

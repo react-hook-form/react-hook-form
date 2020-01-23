@@ -60,7 +60,7 @@ export function useFieldArray<
 
   const prepend = (value: WithFieldId<Partial<FormArrayValues>>) => {
     resetFields();
-    setField(mapIds([appendId(value), ...fields]));
+    setField([appendId(value), ...fields]);
   };
 
   const remove = (index?: number) => {
@@ -78,33 +78,31 @@ export function useFieldArray<
   ) => {
     const fieldValues = getFieldValuesByName(fieldsRef.current, name);
     resetFields();
-    setField(
-      mapIds([
-        ...fieldValues.slice(0, index),
-        appendId(value),
-        ...fieldValues.slice(index),
-      ]),
-    );
+    setField([
+      ...fieldValues.slice(0, index),
+      appendId(value),
+      ...fieldValues.slice(index),
+    ]);
   };
 
   const swap = (indexA: number, indexB: number) => {
     const fieldValues = getFieldValuesByName(fieldsRef.current, name);
     swapArrayAt(fieldValues, indexA, indexB);
     resetFields(fieldValues);
-    setField(mapIds(fieldValues));
+    setField(fieldValues);
   };
 
   const move = (from: number, to: number) => {
     const fieldValues = getFieldValuesByName(fieldsRef.current, name);
     moveArrayAt(fieldValues, from, to);
     resetFields(fieldValues);
-    setField(mapIds(fieldValues));
+    setField(fieldValues);
   };
 
-  const reset = (values: any) => {
+  const reset = () => {
     resetFields();
-    setField(mapIds(get(values, name)));
     memoizedDefaultValues.current = get(defaultValuesRef.current, name, []);
+    setField(mapIds(memoizedDefaultValues.current));
   };
 
   React.useEffect(() => {
