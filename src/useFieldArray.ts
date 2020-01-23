@@ -50,13 +50,8 @@ export function useFieldArray<
 
     for (const key in fieldsRef.current) {
       if (isMatchFieldArrayName(key, name)) {
-        if (
-          fieldsRef.current[key] &&
-          (fieldsRef.current[key] as any).ref instanceof HTMLElement
-        ) {
-          removeRef(fieldsRef.current[key], true);
-          delete fieldsRef.current[name];
-        }
+        removeRef(fieldsRef.current[key], true);
+        delete fieldsRef.current[key];
       }
     }
   };

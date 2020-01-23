@@ -44,7 +44,7 @@ const UseFieldArray: React.FC = (props: any) => {
                 name={`data[${index}].name`}
                 defaultValue={data.name}
                 data-order={index}
-                ref={register}
+                ref={register({})}
               />
             ) : (
               <Controller

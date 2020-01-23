@@ -4,6 +4,7 @@ import isUndefined from './utils/isUndefined';
 import get from './utils/get';
 import getInputValue from './logic/getInputValue';
 import skipValidation from './logic/skipValidation';
+import isNameInFieldArray from './logic/isNameInFieldArray';
 import { useFormContext } from './useFormContext';
 import { VALIDATION_MODE, VALUE } from './constants';
 import { Control, ControllerProps, EventFunction } from './types';
@@ -27,11 +28,13 @@ const Controller = <ControlProp extends Control = Control>({
     register,
     unregister,
     errorsRef,
+    removeRef,
     triggerValidation,
     mode: { isOnSubmit, isOnBlur },
     reValidateMode: { isReValidateOnBlur, isReValidateOnSubmit },
     formState: { isSubmitted },
     fieldsRef,
+    fieldArrayNamesRef,
   } = control || methods.control;
   const [value, setInputStateValue] = React.useState(
     isUndefined(defaultValue)
@@ -66,7 +69,12 @@ const Controller = <ControlProp extends Control = Control>({
     setValue(name, data, shouldValidate());
   };
 
-  const registerField = () =>
+  const registerField = () => {
+    if (isNameInFieldArray(fieldArrayNamesRef.current, name)) {
+      removeRef(fieldsRef.current[name]);
+      delete fieldsRef.current[name];
+    }
+
     register(
       Object.defineProperty(
         {
@@ -85,18 +93,20 @@ const Controller = <ControlProp extends Control = Control>({
       ),
       { ...rules },
     );
+  };
 
   if (!fieldsRef.current[name]) {
     registerField();
   }
 
-  React.useEffect(
-    () => {
-      registerField();
-      return () => unregister(name);
-    }, // eslint-disable-next-line react-hooks/exhaustive-deps
-    [name],
-  );
+  React.useEffect(() => {
+    registerField();
+    return () => {
+      if (!isNameInFieldArray(fieldArrayNamesRef.current, name)) {
+        unregister(name);
+      }
+    };
+  }, [name]);
 
   const props = {
     name,
