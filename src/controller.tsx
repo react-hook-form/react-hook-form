@@ -28,7 +28,7 @@ const Controller = <ControlProp extends Control = Control>({
     register,
     unregister,
     errorsRef,
-    removeRef,
+    removeEventListener,
     triggerValidation,
     mode: { isOnSubmit, isOnBlur },
     reValidateMode: { isReValidateOnBlur, isReValidateOnSubmit },
