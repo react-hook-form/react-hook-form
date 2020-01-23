@@ -12,7 +12,13 @@ import moveArrayAt from './utils/move';
 import swapArrayAt from './utils/swap';
 import prependAt from './utils/prepend';
 import insertAt from './utils/insert';
-import { FieldValues, Control, UseFieldArrayProps, WithFieldId } from './types';
+import {
+  FieldValues,
+  Control,
+  UseFieldArrayProps,
+  WithFieldId,
+  Field,
+} from './types';
 
 export function useFieldArray<
   FormArrayValues extends FieldValues = FieldValues,
@@ -49,8 +55,8 @@ export function useFieldArray<
     }
 
     for (const key in fieldsRef.current) {
-      if (isMatchFieldArrayName(key, name)) {
-        removeEventListener(fieldsRef.current[key], true);
+      if (isMatchFieldArrayName(key, name) && fieldsRef.current[key]) {
+        removeEventListener(fieldsRef.current[key] as Field, true);
         delete fieldsRef.current[key];
       }
     }

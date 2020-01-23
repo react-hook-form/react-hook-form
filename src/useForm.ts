@@ -515,7 +515,7 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
   );
 
   const removeEventListener = (field: Field, forceDelete?: boolean) => {
-    if (!isUndefined(handleChangeRef.current)) {
+    if (!isUndefined(handleChangeRef.current) && field) {
       findRemovedFieldAndRemoveListener(
         fieldsRef.current,
         handleChangeRef.current,
