@@ -1,10 +1,9 @@
 import * as React from 'react';
 import { useFormContext } from './useFormContext';
 import { isMatchFieldArrayName } from './logic/isNameInFieldArray';
+import getFieldValueByName from './logic/getFieldValueByName';
 import { appendId, mapIds } from './logic/mapIds';
 import getIsFieldsDifferent from './logic/getIsFieldsDifferent';
-import transformToNestObject from './logic/transformToNestObject';
-import getFieldsValues from './logic/getFieldsValues';
 import get from './utils/get';
 import isUndefined from './utils/isUndefined';
 import removeArrayAt from './utils/remove';
@@ -19,6 +18,8 @@ import {
   WithFieldId,
   Field,
 } from './types';
+
+const { useMemo, useEffect, useRef, useState } = React;
 
 export function useFieldArray<
   FormArrayValues extends FieldValues = FieldValues,
@@ -36,19 +37,22 @@ export function useFieldArray<
     touchedFieldsRef,
     readFormStateRef,
   } = control || methods.control;
-  const memoizedDefaultValues = React.useRef(
-    get(defaultValuesRef.current, name, []),
+  const memoizedDefaultValues = useRef(get(defaultValuesRef.current, name, []));
+  const [fields, setField] = useState<WithFieldId<Partial<FormArrayValues>>[]>(
+    mapIds(memoizedDefaultValues.current),
   );
-  const [fields, setField] = React.useState<
-    WithFieldId<Partial<FormArrayValues>>[]
-  >(mapIds(memoizedDefaultValues.current));
-  const getFieldValuesByName = <T, K extends keyof T>(fields: T, name: K) =>
-    transformToNestObject(getFieldsValues(fields))[name];
+  const { isReadStateDirty, isReadStateTouched } = useMemo(
+    () => ({
+      isReadStateDirty: readFormStateRef.current.dirty,
+      isReadStateTouched: readFormStateRef.current.touched,
+    }),
+    [readFormStateRef],
+  );
 
   const resetFields = (
     flagOrFields?: WithFieldId<Partial<FormArrayValues>>[],
   ) => {
-    if (readFormStateRef.current.dirty) {
+    if (isReadStateDirty) {
       isDirtyRef.current = isUndefined(flagOrFields)
         ? true
         : getIsFieldsDifferent(flagOrFields, memoizedDefaultValues.current);
@@ -62,7 +66,7 @@ export function useFieldArray<
   };
 
   const append = (value: WithFieldId<Partial<FormArrayValues>>) => {
-    if (readFormStateRef.current.dirty) {
+    if (isReadStateDirty) {
       isDirtyRef.current = true;
     }
     setField([...fields, appendId(value)]);
@@ -71,10 +75,12 @@ export function useFieldArray<
   const prepend = (value: WithFieldId<Partial<FormArrayValues>>) => {
     resetFields();
     setField(prependAt(fields, appendId(value)));
+
     if (errorsRef.current[name]) {
       errorsRef.current[name] = prependAt(errorsRef.current[name]);
     }
-    if (readFormStateRef.current.touched && touchedFieldsRef.current[name]) {
+
+    if (isReadStateTouched && touchedFieldsRef.current[name]) {
       touchedFieldsRef.current[name] = prependAt(
         touchedFieldsRef.current[name],
       );
@@ -83,13 +89,15 @@ export function useFieldArray<
 
   const remove = (index?: number) => {
     resetFields(
-      removeArrayAt(getFieldValuesByName(fieldsRef.current, name), index),
+      removeArrayAt(getFieldValueByName(fieldsRef.current, name), index),
     );
     setField(removeArrayAt(fields, index));
+
     if (errorsRef.current[name]) {
       errorsRef.current[name] = removeArrayAt(errorsRef.current[name], index);
     }
-    if (readFormStateRef.current.touched && touchedFieldsRef.current[name]) {
+
+    if (isReadStateTouched && touchedFieldsRef.current[name]) {
       touchedFieldsRef.current[name] = removeArrayAt(
         touchedFieldsRef.current[name],
         index,
@@ -103,10 +111,12 @@ export function useFieldArray<
   ) => {
     resetFields();
     setField(insertAt(fields, index, appendId(value)));
+
     if (errorsRef.current[name]) {
       errorsRef.current[name] = insertAt(errorsRef.current[name], index);
     }
-    if (readFormStateRef.current.touched && touchedFieldsRef.current[name]) {
+
+    if (isReadStateTouched && touchedFieldsRef.current[name]) {
       touchedFieldsRef.current[name] = insertAt(
         touchedFieldsRef.current[name],
         index,
@@ -115,29 +125,33 @@ export function useFieldArray<
   };
 
   const swap = (indexA: number, indexB: number) => {
-    const fieldValues = getFieldValuesByName(fieldsRef.current, name);
+    const fieldValues = getFieldValueByName(fieldsRef.current, name);
     swapArrayAt(fieldValues, indexA, indexB);
     resetFields(fieldValues);
     swapArrayAt(fields, indexA, indexB);
     setField([...fields]);
+
     if (errorsRef.current[name]) {
       swapArrayAt(errorsRef.current[name], indexA, indexB);
     }
-    if (readFormStateRef.current.touched && touchedFieldsRef.current[name]) {
+
+    if (isReadStateTouched && touchedFieldsRef.current[name]) {
       swapArrayAt(touchedFieldsRef.current[name], indexA, indexB);
     }
   };
 
   const move = (from: number, to: number) => {
-    const fieldValues = getFieldValuesByName(fieldsRef.current, name);
-    moveArrayAt(getFieldValuesByName(fieldsRef.current, name), from, to);
+    const fieldValues = getFieldValueByName(fieldsRef.current, name);
+    moveArrayAt(getFieldValueByName(fieldsRef.current, name), from, to);
     resetFields(fieldValues);
     moveArrayAt(fields, from, to);
     setField([...fields]);
+
     if (errorsRef.current[name]) {
       moveArrayAt(errorsRef.current[name] as [], from, to);
     }
-    if (readFormStateRef.current.touched && touchedFieldsRef.current[name]) {
+
+    if (isReadStateTouched && touchedFieldsRef.current[name]) {
       moveArrayAt(touchedFieldsRef.current[name], from, to);
     }
   };
@@ -148,7 +162,7 @@ export function useFieldArray<
     setField(mapIds(memoizedDefaultValues.current));
   };
 
-  React.useEffect(() => {
+  useEffect(() => {
     const resetFunctions = resetFieldArrayFunctionRef.current;
     const fieldArrayNames = fieldArrayNamesRef.current;
     fieldArrayNames.add(name);

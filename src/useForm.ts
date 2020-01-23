@@ -53,6 +53,7 @@ import {
   HandleChange,
   Touched,
 } from './types';
+import getFieldValueByName from './logic/getFieldValueByName';
 
 const { useRef, useState, useCallback, useEffect } = React;
 
@@ -236,9 +237,7 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
     if (isFieldArray) {
       const fieldArrayName = name.substring(0, name.indexOf('['));
       isDirty = getIsFieldsDifferent(
-        transformToNestObject(getFieldsValues(fieldsRef.current))[
-          fieldArrayName
-        ],
+        getFieldValueByName(fieldsRef.current, fieldArrayName),
         get(defaultValuesRef.current, fieldArrayName),
       );
     }
@@ -312,7 +311,7 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
       const { errors } = await validateWithSchema<FormValues>(
         validationSchema,
         validateAllFieldCriteria,
-        transformToNestObject(getFieldsValues(fieldsRef.current)),
+        getFieldValueByName(fieldsRef.current),
       );
       const previousFormIsValid = isValidRef.current;
       isValidRef.current = isEmptyObject(errors);
@@ -442,7 +441,7 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
           const { errors } = await validateWithSchema<FormValues>(
             validationSchema,
             validateAllFieldCriteria,
-            transformToNestObject(getFieldsValues(fields)),
+            getFieldValueByName(fields),
           );
           const validForm = isEmptyObject(errors);
           error = (get(errors, name)
