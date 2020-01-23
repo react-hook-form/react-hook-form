@@ -7,7 +7,7 @@ import skipValidation from './logic/skipValidation';
 import isNameInFieldArray from './logic/isNameInFieldArray';
 import { useFormContext } from './useFormContext';
 import { VALIDATION_MODE, VALUE } from './constants';
-import { Control, ControllerProps, EventFunction } from './types';
+import { Control, ControllerProps, EventFunction, Field } from './types';
 
 const Controller = <ControlProp extends Control = Control>({
   name,
@@ -70,8 +70,11 @@ const Controller = <ControlProp extends Control = Control>({
   };
 
   const registerField = () => {
-    if (isNameInFieldArray(fieldArrayNamesRef.current, name)) {
-      removeRef(fieldsRef.current[name]);
+    if (
+      isNameInFieldArray(fieldArrayNamesRef.current, name) &&
+      fieldsRef.current[name]
+    ) {
+      removeEventListener(fieldsRef.current[name] as Field);
       delete fieldsRef.current[name];
     }
 
