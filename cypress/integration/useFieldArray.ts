@@ -91,13 +91,42 @@ context('useFieldArray', () => {
       '{"data":[{"name":"1"},{"name":"4"},{"name":"5"}]}',
     );
 
+    cy.get('#delete1').click();
+
+    cy.get('ul > li')
+      .its('length')
+      .should('equal', 2);
+
+    cy.get('ul > li')
+      .eq(0)
+      .find('input')
+      .should('have.value', '1');
+    cy.get('ul > li')
+      .eq(1)
+      .find('input')
+      .should('have.value', '5');
+
+    cy.get('#delete1').click();
+
+    cy.get('ul > li')
+      .its('length')
+      .should('equal', 1);
+
+    cy.get('ul > li')
+      .eq(0)
+      .find('input')
+      .should('have.value', '1');
+
+    cy.get('#submit').click();
+    cy.get('#result').contains('{"data":[{"name":"1"}]}');
+
     cy.get('#removeAll').click();
     cy.get('ul > li').should('have.length', 0);
 
     cy.get('#submit').click();
     cy.get('#result').contains('{}');
 
-    cy.get('#renderCount').contains('23');
+    cy.get('#renderCount').contains('27');
   });
 
   it('should behaviour correctly with defaultValue', () => {
@@ -205,12 +234,96 @@ context('useFieldArray', () => {
       '{"data":[{"name":"test"},{"name":"4"},{"name":"test1"},{"name":"test2"},{"name":"1"}]}',
     );
 
+    cy.get('#delete2').click();
+
+    cy.get('ul > li')
+      .its('length')
+      .should('equal', 4);
+
+    cy.get('ul > li')
+      .eq(0)
+      .find('input')
+      .should('have.value', 'test');
+    cy.get('ul > li')
+      .eq(1)
+      .find('input')
+      .should('have.value', '4');
+    cy.get('ul > li')
+      .eq(2)
+      .find('input')
+      .should('have.value', 'test2');
+    cy.get('ul > li')
+      .eq(3)
+      .find('input')
+      .should('have.value', '1');
+
+    cy.get('#delete3').click();
+
+    cy.get('ul > li')
+      .its('length')
+      .should('equal', 3);
+
+    cy.get('#submit').click();
+    cy.get('#result').contains(
+      '{"data":[{"name":"test"},{"name":"4"},{"name":"test2"}]}',
+    );
+
     cy.get('#removeAll').click();
     cy.get('ul > li').should('have.length', 0);
 
     cy.get('#submit').click();
     cy.get('#result').contains('{}');
 
-    cy.get('#renderCount').contains('22');
+    cy.get('#renderCount').contains('26');
+  });
+
+  it('should display the correct dirty value without default value', () => {
+    cy.visit('http://localhost:3000/useFieldArray/normal');
+    cy.get('#dirty').contains('no');
+    cy.get('#append').click();
+    cy.get('#dirty').contains('yes');
+    cy.get('#field0').focus();
+    cy.get('#field0').blur();
+    cy.get('#dirty').contains('yes');
+    cy.get('#field0').type('test');
+    cy.get('#field0').blur();
+    cy.get('#dirty').contains('yes');
+    cy.get('#delete0').click();
+    cy.get('#dirty').contains('no');
+  });
+
+  it('should display the correct dirty value with default value', () => {
+    cy.visit('http://localhost:3000/useFieldArray/default');
+    cy.get('#dirty').contains('no');
+    cy.get('#field0').focus();
+    cy.get('#field0').blur();
+    cy.get('#dirty').contains('no');
+    cy.get('#field0').type('test');
+    cy.get('#dirty').contains('yes');
+    cy.get('#field0').blur();
+    cy.get('#dirty').contains('yes');
+    cy.get('#field0').focus();
+    cy.get('#field0').blur();
+    cy.get('#dirty').contains('yes');
+    cy.get('#field0').clear();
+    cy.get('#field0').type('test');
+    cy.get('#dirty').contains('no');
+    cy.get('#delete1').click();
+    cy.get('#dirty').contains('yes');
+    cy.get('#append').click();
+    cy.get('#field0')
+      .clear()
+      .type('test');
+    cy.get('#field1')
+      .clear()
+      .type('test1');
+    cy.get('#field2')
+      .clear()
+      .type('test2');
+    cy.get('#dirty').contains('no');
+  });
+
+  it.only('should display the correct dirty value with async default value', () => {
+    cy.visit('http://localhost:3000/useFieldArray/asyncReset');
   });
 });

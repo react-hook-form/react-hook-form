@@ -4,7 +4,13 @@ import { useForm, useFieldArray, Controller } from 'react-hook-form';
 let renderCount = 0;
 
 const UseFieldArray: React.FC = (props: any) => {
-  const { control, handleSubmit, register } = useForm<{
+  const {
+    control,
+    handleSubmit,
+    register,
+    formState: { dirty },
+    reset,
+  } = useForm<{
     data: { name: string }[];
   }>({
     ...(props.match.params.mode === 'default'
@@ -32,6 +38,16 @@ const UseFieldArray: React.FC = (props: any) => {
     setData(data);
   };
 
+  React.useEffect(() => {
+    setTimeout(() => {
+      if (props.match.params.mode === 'asyncReset') {
+        reset({
+          data: [{ name: 'test' }, { name: 'test1' }, { name: 'test2' }],
+        });
+      }
+    }, 100);
+  }, []);
+
   renderCount++;
 
   return (
@@ -41,20 +57,24 @@ const UseFieldArray: React.FC = (props: any) => {
           <li key={data.id}>
             {index % 2 ? (
               <input
+                id={`field${index}`}
                 name={`data[${index}].name`}
                 defaultValue={data.name}
                 data-order={index}
-                ref={register({})}
+                ref={register({ required: true })}
               />
             ) : (
               <Controller
-                as={<input />}
+                as={<input id={`field${index}`} />}
                 control={control}
                 name={`data[${index}].name`}
                 defaultValue={data.name}
                 data-order={index}
               />
             )}
+            <button id={`delete${index}`} onClick={() => remove(index)}>
+              Delete
+            </button>
           </li>
         ))}
       </ul>
@@ -103,6 +123,7 @@ const UseFieldArray: React.FC = (props: any) => {
 
       <div id="renderCount">{renderCount}</div>
       <div id="result">{JSON.stringify(data)}</div>
+      <div id="dirty">{dirty ? 'yes' : 'no'}</div>
     </form>
   );
 };
