@@ -234,7 +234,6 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
       getFieldValue(fieldsRef.current, fieldsRef.current[name]!.ref);
 
     if (isFieldArray) {
-      console.log(defaultValuesRef.current);
       const fieldArrayName = name.substring(0, name.indexOf('['));
       isDirty = getIsFieldsDifferent(
         transformToNestObject(getFieldsValues(fieldsRef.current))[

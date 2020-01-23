@@ -50,7 +50,13 @@ export function useFieldArray<
 
     for (const key in fieldsRef.current) {
       if (isMatchFieldArrayName(key, name)) {
-        removeRef(fieldsRef.current[key], true);
+        if (
+          fieldsRef.current[key] &&
+          (fieldsRef.current[key] as any).ref instanceof HTMLElement
+        ) {
+          removeRef(fieldsRef.current[key], true);
+          delete fieldsRef.current[name];
+        }
       }
     }
   };
@@ -112,7 +118,8 @@ export function useFieldArray<
     const fieldValues = getFieldValuesByName(fieldsRef.current, name);
     swapArrayAt(fieldValues, indexA, indexB);
     resetFields(fieldValues);
-    setField(fieldValues);
+    swapArrayAt(fields, indexA, indexB);
+    setField([...fields]);
     if (errorsRef.current[name]) {
       swapArrayAt(errorsRef.current[name], indexA, indexB);
     }
@@ -123,9 +130,10 @@ export function useFieldArray<
 
   const move = (from: number, to: number) => {
     const fieldValues = getFieldValuesByName(fieldsRef.current, name);
-    moveArrayAt(fieldValues, from, to);
+    moveArrayAt(getFieldValuesByName(fieldsRef.current, name), from, to);
     resetFields(fieldValues);
-    setField(fieldValues);
+    moveArrayAt(fields, from, to);
+    setField([...fields]);
     if (errorsRef.current[name]) {
       moveArrayAt(errorsRef.current[name] as [], from, to);
     }
