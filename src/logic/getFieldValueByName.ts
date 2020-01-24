@@ -1,7 +1,12 @@
 import transformToNestObject from './transformToNestObject';
 import getFieldsValues from './getFieldsValues';
+import get from '../utils/get';
+import { FieldValues, FieldRefs, FieldName } from '../types';
 
-export default <T, K extends keyof T>(fields: T, name?: K) => {
+export default <FormValues extends FieldValues = FieldValues>(
+  fields: FieldRefs<FormValues>,
+  name?: FieldName<FieldValues>,
+) => {
   const results = transformToNestObject(getFieldsValues(fields));
-  return name ? results[name] : results;
+  return name ? get(results, name) || results : results;
 };
