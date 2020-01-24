@@ -286,7 +286,7 @@ describe('useForm', () => {
         } as React.SyntheticEvent);
       });
 
-      expect(validateField).not.toBeCalled();
+      expect(findRemovedFieldAndRemoveListener).toBeCalled();
     });
   });
 
