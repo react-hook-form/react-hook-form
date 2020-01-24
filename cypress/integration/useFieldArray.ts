@@ -353,4 +353,27 @@ context('useFieldArray', () => {
       .type('test2');
     cy.get('#dirty').contains('no');
   });
+
+  it('should display correct error with the inputs', () => {
+    cy.visit('http://localhost:3000/useFieldArray/default');
+    cy.get('#prepend').click();
+    cy.get('#field1').clear();
+    cy.get('#field2').clear();
+    cy.get('#field3').clear();
+    cy.get('#append').click();
+    cy.get('#submit').click();
+    cy.get('#error1').contains('This is required');
+    cy.get('#error2').contains('This is required');
+    cy.get('#error3').contains('This is required');
+    cy.get('#field1').type('test');
+    cy.get('#error1').should('not.exist');
+    cy.get('#error2').contains('This is required');
+    cy.get('#error3').contains('This is required');
+    cy.get('#move').click();
+    cy.get('#error0').contains('This is required');
+    cy.get('#error2').should('not.exist');
+    cy.get('#prepend').click();
+    cy.get('#error0').should('not.exist');
+    cy.get('#error1').contains('This is required');
+  });
 });

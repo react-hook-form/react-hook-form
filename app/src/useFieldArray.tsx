@@ -13,7 +13,7 @@ const UseFieldArray: React.FC = (props: any) => {
     control,
     handleSubmit,
     register,
-    formState: { dirty },
+    formState: { dirty, touched },
     reset,
     errors,
   } = useForm<{
@@ -52,7 +52,7 @@ const UseFieldArray: React.FC = (props: any) => {
         });
       }
     }, 10);
-  }, []);
+  }, [reset, props.match.params.mode]);
 
   renderCount++;
 
