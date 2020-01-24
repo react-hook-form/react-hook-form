@@ -23,7 +23,6 @@ import isString from './utils/isString';
 import isSameError from './utils/isSameError';
 import isUndefined from './utils/isUndefined';
 import onDomRemove from './utils/onDomRemove';
-import omitObject from './utils/omitObject';
 import get from './utils/get';
 import set from './utils/set';
 import unset from './utils/unset';
@@ -489,11 +488,9 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
     (name: FieldName<FormValues>) => {
       errorsRef.current = unset(errorsRef.current, [name]);
       touchedFieldsRef.current = unset(touchedFieldsRef.current, [name]);
-      fieldsRef.current = omitObject(fieldsRef.current, name);
-      defaultRenderValuesRef.current = omitObject(
-        defaultRenderValuesRef.current,
+      defaultRenderValuesRef.current = unset(defaultRenderValuesRef.current, [
         name,
-      );
+      ]);
       [
         dirtyFieldsRef,
         fieldsWithValidationRef,
