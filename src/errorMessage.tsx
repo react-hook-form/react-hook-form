@@ -15,6 +15,7 @@ const ErrorMessage = <
   as: InnerComponent,
   errors,
   name,
+  message,
   children,
 }: ErrorMessageProps<Errors, Name>) => {
   const methods = useFormContext();
@@ -24,9 +25,11 @@ const ErrorMessage = <
     return null;
   }
 
-  const { message, types } = error;
+  const { message: messageFromRegister, types } = error;
   const props = {
-    children: children ? children({ message, messages: types }) : message,
+    children: children
+      ? children({ message: messageFromRegister || message, messages: types })
+      : messageFromRegister || message,
   };
 
   return InnerComponent ? (

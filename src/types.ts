@@ -259,6 +259,7 @@ export type ErrorMessageProps<
   as?: React.ReactElement | React.ElementType | string;
   errors?: Errors;
   name: Name;
+  message: string;
   children?: (data: {
     message: string;
     messages: MultipleFieldErrors;
