@@ -1,5 +1,6 @@
 import * as React from 'react';
 import { useFormContext } from './useFormContext';
+import isUndefined from './utils/isUndefined';
 import get from './utils/get';
 import {
   FieldErrors,
@@ -18,9 +19,10 @@ const ErrorMessage = <
   children,
 }: ErrorMessageProps<Errors, Name>) => {
   const methods = useFormContext();
-  const { message, types } = get(errors || methods.errors, name, {});
+  const error = get(errors || methods.errors, name);
+  const { message, types } = error;
 
-  if (!message) {
+  if (isUndefined(error)) {
     return null;
   }
 

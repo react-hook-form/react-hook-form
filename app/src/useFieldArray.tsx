@@ -1,5 +1,10 @@
 import React from 'react';
-import { useForm, useFieldArray, Controller } from 'react-hook-form';
+import {
+  useForm,
+  useFieldArray,
+  Controller,
+  ErrorMessage,
+} from 'react-hook-form';
 
 let renderCount = 0;
 
@@ -10,6 +15,7 @@ const UseFieldArray: React.FC = (props: any) => {
     register,
     formState: { dirty },
     reset,
+    errors,
   } = useForm<{
     data: { name: string }[];
   }>({
@@ -45,10 +51,12 @@ const UseFieldArray: React.FC = (props: any) => {
           data: [{ name: 'test' }, { name: 'test1' }, { name: 'test2' }],
         });
       }
-    }, 100);
+    }, 10);
   }, []);
 
   renderCount++;
+
+  console.log(errors);
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
@@ -61,17 +69,23 @@ const UseFieldArray: React.FC = (props: any) => {
                 name={`data[${index}].name`}
                 defaultValue={data.name}
                 data-order={index}
-                ref={register({ required: true })}
+                ref={register({ required: 'This is required' })}
               />
             ) : (
               <Controller
                 as={<input id={`field${index}`} />}
                 control={control}
+                rules={{
+                  required: 'This is required',
+                }}
                 name={`data[${index}].name`}
                 defaultValue={data.name}
                 data-order={index}
               />
             )}
+            <ErrorMessage errors={errors} name={`data[${index}].name`}>
+              {({ message }) => <p id={`error${index}`}>{message}</p>}
+            </ErrorMessage>
             <button id={`delete${index}`} onClick={() => remove(index)}>
               Delete
             </button>

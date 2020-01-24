@@ -323,7 +323,34 @@ context('useFieldArray', () => {
     cy.get('#dirty').contains('no');
   });
 
-  it.only('should display the correct dirty value with async default value', () => {
+  it('should display the correct dirty value with async default value', () => {
     cy.visit('http://localhost:3000/useFieldArray/asyncReset');
+    cy.get('#dirty').contains('no');
+    cy.get('#field0').focus();
+    cy.get('#field0').blur();
+    cy.get('#dirty').contains('no');
+    cy.get('#field0').type('test');
+    cy.get('#dirty').contains('yes');
+    cy.get('#field0').blur();
+    cy.get('#dirty').contains('yes');
+    cy.get('#field0').focus();
+    cy.get('#field0').blur();
+    cy.get('#dirty').contains('yes');
+    cy.get('#field0').clear();
+    cy.get('#field0').type('test');
+    cy.get('#dirty').contains('no');
+    cy.get('#delete1').click();
+    cy.get('#dirty').contains('yes');
+    cy.get('#append').click();
+    cy.get('#field0')
+      .clear()
+      .type('test');
+    cy.get('#field1')
+      .clear()
+      .type('test1');
+    cy.get('#field2')
+      .clear()
+      .type('test2');
+    cy.get('#dirty').contains('no');
   });
 });
