@@ -8,5 +8,5 @@ export default <FormValues extends FieldValues = FieldValues>(
   name?: FieldName<FieldValues>,
 ) => {
   const results = transformToNestObject(getFieldsValues(fields));
-  return name ? get(results, name) || results : results;
+  return name ? get(results, name, results) : results;
 };
