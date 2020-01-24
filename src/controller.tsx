@@ -13,6 +13,7 @@ const Controller = <ControlProp extends Control = Control>({
   name,
   rules,
   as: InnerComponent,
+  onBlur,
   onChange,
   onChangeName = VALIDATION_MODE.onChange,
   onBlurName = VALIDATION_MODE.onBlur,
@@ -105,15 +106,28 @@ const Controller = <ControlProp extends Control = Control>({
     [name],
   );
 
+  const shouldReValidateOnBlur = isOnBlur || isReValidateOnBlur;
+
   const props = {
     name,
     ...rest,
     ...(onChange
       ? { [onChangeName]: eventWrapper(onChange) }
       : { [onChangeName]: handleChange }),
-    ...(isOnBlur || isReValidateOnBlur
-      ? { [onBlurName]: () => triggerValidation(name) }
+    ...(onBlur || shouldReValidateOnBlur
+      ? {
+          [onBlurName]: (...args: any[]) => {
+            if (onBlur) {
+              onBlur(args);
+            }
+
+            if (shouldReValidateOnBlur) {
+              triggerValidation(name);
+            }
+          },
+        }
       : {}),
+
     ...{ [valueName || (isCheckboxInput ? 'checked' : VALUE)]: value },
   };
 

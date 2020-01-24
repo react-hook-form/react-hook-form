@@ -135,6 +135,34 @@ describe('Controller', () => {
     expect(onChange).toBeCalled();
   });
 
+  it('should invoke custom onBlur method', () => {
+    const onBlur = jest.fn();
+    const setValue = jest.fn();
+    const control = reconfigureControl({
+      setValue,
+      mode: { isOnSubmit: false, isOnBlur: true },
+    });
+
+    const { getByPlaceholderText } = render(
+      <Controller
+        defaultValue=""
+        name="test"
+        as={<input placeholder="test" />}
+        onBlur={onBlur}
+        control={control}
+      />,
+    );
+
+    fireEvent.blur(getByPlaceholderText('test'), {
+      target: {
+        value: 'test',
+      },
+    });
+
+    expect(setValue).not.toBeCalled();
+    expect(onBlur).toBeCalled();
+  });
+
   it('should support default value from hook form', () => {
     const control = reconfigureControl({
       defaultValuesRef: {
