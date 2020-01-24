@@ -90,6 +90,6 @@ export interface FormContextValues<
   getValues: (payload?: { nest: boolean }) => FormValues;
   handleSubmit: (
     callback: OnSubmit<FormValues>,
-  ) => (e: React.BaseSyntheticEvent) => Promise<void>;
+  ) => (e?: React.BaseSyntheticEvent) => Promise<void>;
   control: Control<FormValues>;
 }
