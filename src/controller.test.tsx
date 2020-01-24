@@ -137,9 +137,7 @@ describe('Controller', () => {
 
   it('should invoke custom onBlur method', () => {
     const onBlur = jest.fn();
-    const setValue = jest.fn();
     const control = reconfigureControl({
-      setValue,
       mode: { isOnSubmit: false, isOnBlur: true },
     });
 
@@ -159,7 +157,6 @@ describe('Controller', () => {
       },
     });
 
-    expect(setValue).not.toBeCalled();
     expect(onBlur).toBeCalled();
   });
 

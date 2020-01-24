@@ -127,7 +127,6 @@ const Controller = <ControlProp extends Control = Control>({
           },
         }
       : {}),
-
     ...{ [valueName || (isCheckboxInput ? 'checked' : VALUE)]: value },
   };
 
