@@ -376,4 +376,35 @@ context('useFieldArray', () => {
     cy.get('#error0').should('not.exist');
     cy.get('#error1').contains('This is required');
   });
+
+  it('should return correct touched values', () => {
+    cy.visit('http://localhost:3000/useFieldArray/default');
+    cy.get('#field0').type('1');
+    cy.get('#field1').type('1');
+    cy.get('#field2').type('1');
+    cy.get('#touched').contains('[{"name":true},{"name":true},{"name":true}]');
+    cy.get('#append').click();
+    cy.get('#prepend').click();
+    cy.get('#touched').contains(
+      '[null,{"name":true},{"name":true},{"name":true}]',
+    );
+    cy.get('#insert').click();
+    cy.get('#touched').contains(
+      '[null,null,{"name":true},{"name":true},{"name":true}]',
+    );
+    cy.get('#swap').click();
+    cy.get('#touched').contains(
+      '[null,{"name":true},null,{"name":true},{"name":true}]',
+    );
+    cy.get('#move').click();
+    cy.get('#touched').contains(
+      '[null,null,{"name":true},{"name":true},{"name":true}]',
+    );
+    cy.get('#insert').click();
+    cy.get('#touched').contains(
+      '[null,null,null,{"name":true},{"name":true},{"name":true}]',
+    );
+    cy.get('#delete4').click();
+    cy.get('#touched').contains('[null,null,null,{"name":true},{"name":true}]');
+  });
 });
