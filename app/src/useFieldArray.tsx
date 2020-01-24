@@ -56,8 +56,6 @@ const UseFieldArray: React.FC = (props: any) => {
 
   renderCount++;
 
-  console.log(errors);
-
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
       <ul>
