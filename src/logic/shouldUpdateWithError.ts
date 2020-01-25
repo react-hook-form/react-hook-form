@@ -36,12 +36,5 @@ export default function shouldUpdateWithError<FormValues extends FieldValues>({
     return true;
   }
 
-  return (
-    currentFieldError &&
-    !isSameError(
-      existFieldError,
-      currentFieldError.type,
-      currentFieldError.message,
-    )
-  );
+  return currentFieldError && !isSameError(existFieldError, currentFieldError);
 }

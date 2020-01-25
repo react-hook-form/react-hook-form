@@ -563,7 +563,13 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
   }) => {
     const field = fieldsRef.current[name];
 
-    if (!isSameError(errorsRef.current[name] as any, type, message)) {
+    if (
+      !isSameError(errorsRef.current[name] as any, {
+        type,
+        message,
+        types,
+      })
+    ) {
       set(errorsRef.current, name, {
         type,
         types,
