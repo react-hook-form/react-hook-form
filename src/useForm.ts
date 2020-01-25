@@ -10,6 +10,7 @@ import validateWithSchema from './logic/validateWithSchema';
 import getDefaultValue from './logic/getDefaultValue';
 import assignWatchFields from './logic/assignWatchFields';
 import skipValidation from './logic/skipValidation';
+import getFieldValueByName from './logic/getFieldValueByName';
 import getIsFieldsDifferent from './logic/getIsFieldsDifferent';
 import isNameInFieldArray from './logic/isNameInFieldArray';
 import isCheckBoxInput from './utils/isCheckBoxInput';
@@ -52,7 +53,6 @@ import {
   HandleChange,
   Touched,
 } from './types';
-import getFieldValueByName from './logic/getFieldValueByName';
 
 const { useRef, useState, useCallback, useEffect } = React;
 
