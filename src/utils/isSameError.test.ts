@@ -9,8 +9,10 @@ describe('isSameError', () => {
           type: 'test',
           message: 'what',
         } as FieldError,
-        'test',
-        'what',
+        {
+          type: 'test',
+          message: 'what',
+        },
       ),
     ).toBeTruthy();
 
@@ -20,15 +22,51 @@ describe('isSameError', () => {
           type: '',
           message: '',
         } as FieldError,
-        '',
-        '',
+        {
+          type: '',
+          message: '',
+        },
+      ),
+    ).toBeTruthy();
+
+    expect(
+      isSameError(
+        {
+          type: '',
+          types: {
+            minLength: 'min',
+          },
+          message: '',
+        } as FieldError,
+        {
+          type: '',
+          types: {
+            minLength: 'min',
+          },
+          message: '',
+        },
       ),
     ).toBeTruthy();
   });
 
   it('should return false when error is not even defined', () => {
-    expect(isSameError(undefined, '', '')).toBeFalsy();
-    expect(isSameError('test' as any, '', '')).toBeFalsy();
-    expect(isSameError(5 as any, '', '')).toBeFalsy();
+    expect(
+      isSameError(undefined, {
+        type: '',
+        message: '',
+      }),
+    ).toBeFalsy();
+    expect(
+      isSameError('test' as any, {
+        type: '',
+        message: '',
+      }),
+    ).toBeFalsy();
+    expect(
+      isSameError(5 as any, {
+        type: '',
+        message: '',
+      }),
+    ).toBeFalsy();
   });
 });
