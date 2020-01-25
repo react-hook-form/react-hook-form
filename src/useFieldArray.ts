@@ -75,8 +75,6 @@ export function useFieldArray<
         ...currentFieldsValue[i],
       };
     }
-
-    return fields;
   };
 
   const append = (value: WithFieldId<Partial<FormArrayValues>>) => {
