@@ -1,10 +1,22 @@
 import React from 'react';
-import { useForm, useFieldArray, Controller } from 'react-hook-form';
+import {
+  useForm,
+  useFieldArray,
+  Controller,
+  ErrorMessage,
+} from 'react-hook-form';
 
 let renderCount = 0;
 
 const UseFieldArray: React.FC = (props: any) => {
-  const { control, handleSubmit, register } = useForm<{
+  const {
+    control,
+    handleSubmit,
+    register,
+    formState: { dirty, touched },
+    reset,
+    errors,
+  } = useForm<{
     data: { name: string }[];
   }>({
     ...(props.match.params.mode === 'default'
@@ -32,6 +44,16 @@ const UseFieldArray: React.FC = (props: any) => {
     setData(data);
   };
 
+  React.useEffect(() => {
+    setTimeout(() => {
+      if (props.match.params.mode === 'asyncReset') {
+        reset({
+          data: [{ name: 'test' }, { name: 'test1' }, { name: 'test2' }],
+        });
+      }
+    }, 10);
+  }, [reset, props.match.params.mode]);
+
   renderCount++;
 
   return (
@@ -41,20 +63,30 @@ const UseFieldArray: React.FC = (props: any) => {
           <li key={data.id}>
             {index % 2 ? (
               <input
+                id={`field${index}`}
                 name={`data[${index}].name`}
                 defaultValue={data.name}
                 data-order={index}
-                ref={register}
+                ref={register({ required: 'This is required' })}
               />
             ) : (
               <Controller
-                as={<input />}
+                as={<input id={`field${index}`} />}
                 control={control}
+                rules={{
+                  required: 'This is required',
+                }}
                 name={`data[${index}].name`}
                 defaultValue={data.name}
                 data-order={index}
               />
             )}
+            <ErrorMessage errors={errors} name={`data[${index}].name`}>
+              {({ message }) => <p id={`error${index}`}>{message}</p>}
+            </ErrorMessage>
+            <button id={`delete${index}`} onClick={() => remove(index)}>
+              Delete
+            </button>
           </li>
         ))}
       </ul>
@@ -103,6 +135,8 @@ const UseFieldArray: React.FC = (props: any) => {
 
       <div id="renderCount">{renderCount}</div>
       <div id="result">{JSON.stringify(data)}</div>
+      <div id="dirty">{dirty ? 'yes' : 'no'}</div>
+      <div id="touched">{JSON.stringify(touched.data)}</div>
     </form>
   );
 };

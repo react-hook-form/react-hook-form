@@ -7,7 +7,7 @@ import skipValidation from './logic/skipValidation';
 import isNameInFieldArray from './logic/isNameInFieldArray';
 import { useFormContext } from './useFormContext';
 import { VALIDATION_MODE, VALUE } from './constants';
-import { Control, ControllerProps, EventFunction } from './types';
+import { Control, ControllerProps, EventFunction, Field } from './types';
 
 const Controller = <ControlProp extends Control = Control>({
   name,
@@ -28,7 +28,8 @@ const Controller = <ControlProp extends Control = Control>({
     setValue,
     register,
     unregister,
-    errors,
+    errorsRef,
+    removeEventListener,
     triggerValidation,
     mode: { isOnSubmit, isOnBlur },
     reValidateMode: { isReValidateOnBlur, isReValidateOnSubmit },
@@ -46,7 +47,7 @@ const Controller = <ControlProp extends Control = Control>({
 
   const shouldValidate = () =>
     !skipValidation({
-      hasError: !!get(errors, name),
+      hasError: !!get(errorsRef.current, name),
       isOnBlur,
       isOnSubmit,
       isReValidateOnBlur,
@@ -69,7 +70,14 @@ const Controller = <ControlProp extends Control = Control>({
     setValue(name, data, shouldValidate());
   };
 
-  const registerField = () =>
+  const registerField = () => {
+    if (
+      isNameInFieldArray(fieldArrayNamesRef.current, name) &&
+      fieldsRef.current[name]
+    ) {
+      removeEventListener(fieldsRef.current[name] as Field, true);
+    }
+
     register(
       Object.defineProperty(
         {
@@ -88,23 +96,20 @@ const Controller = <ControlProp extends Control = Control>({
       ),
       { ...rules },
     );
+  };
 
   if (!fieldsRef.current[name]) {
     registerField();
   }
 
-  React.useEffect(
-    () => {
-      const fieldArrayNames = fieldArrayNamesRef.current;
-      registerField();
-      return () => {
-        if (!isNameInFieldArray(fieldArrayNames, name)) {
-          unregister(name);
-        }
-      };
-    }, // eslint-disable-next-line react-hooks/exhaustive-deps
-    [name],
-  );
+  React.useEffect(() => {
+    registerField();
+    return () => {
+      if (!isNameInFieldArray(fieldArrayNamesRef.current, name)) {
+        unregister(name);
+      }
+    };
+  }, [name]);
 
   const shouldReValidateOnBlur = isOnBlur || isReValidateOnBlur;
 

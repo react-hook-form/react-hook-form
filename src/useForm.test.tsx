@@ -16,11 +16,14 @@ export const reconfigureControl = (
   defaultValuesRef: {
     current: {},
   },
+  getValues: jest.fn(),
   setValue: jest.fn(),
   register: jest.fn(),
   unregister: jest.fn(),
   triggerValidation: jest.fn(),
-  errors: {},
+  removeEventListener: jest.fn(),
+  errorsRef: { current: {} },
+  touchedFieldsRef: { current: {} },
   mode: { isOnSubmit: false, isOnBlur: false },
   reValidateMode: {
     isReValidateOnBlur: false,

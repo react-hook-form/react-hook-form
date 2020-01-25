@@ -15,17 +15,21 @@ const ErrorMessage = <
   as: InnerComponent,
   errors,
   name,
+  message,
   children,
 }: ErrorMessageProps<Errors, Name>) => {
   const methods = useFormContext();
-  const { message, types } = get(errors || methods.errors, name, {});
+  const error = get(errors || methods.errors, name);
 
-  if (!message) {
+  if (!error) {
     return null;
   }
 
+  const { message: messageFromRegister, types } = error;
   const props = {
-    children: children ? children({ message, messages: types }) : message,
+    children: children
+      ? children({ message: messageFromRegister || message, messages: types })
+      : messageFromRegister || message,
   };
 
   return InnerComponent ? (

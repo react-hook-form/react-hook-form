@@ -10,6 +10,7 @@ import validateWithSchema from './logic/validateWithSchema';
 import getDefaultValue from './logic/getDefaultValue';
 import assignWatchFields from './logic/assignWatchFields';
 import skipValidation from './logic/skipValidation';
+import getFieldValueByName from './logic/getFieldValueByName';
 import getIsFieldsDifferent from './logic/getIsFieldsDifferent';
 import isNameInFieldArray from './logic/isNameInFieldArray';
 import isCheckBoxInput from './utils/isCheckBoxInput';
@@ -235,9 +236,7 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
     if (isFieldArray) {
       const fieldArrayName = name.substring(0, name.indexOf('['));
       isDirty = getIsFieldsDifferent(
-        transformToNestObject(getFieldsValues(fieldsRef.current))[
-          fieldArrayName
-        ],
+        getFieldValueByName(fieldsRef.current, fieldArrayName),
         get(defaultValuesRef.current, fieldArrayName),
       );
     }
@@ -311,7 +310,7 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
       const { errors } = await validateWithSchema<FormValues>(
         validationSchema,
         validateAllFieldCriteria,
-        transformToNestObject(getFieldsValues(fieldsRef.current)),
+        getFieldValueByName(fieldsRef.current),
       );
       const previousFormIsValid = isValidRef.current;
       isValidRef.current = isEmptyObject(errors);
@@ -443,7 +442,7 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
           const { errors } = await validateWithSchema<FormValues>(
             validationSchema,
             validateAllFieldCriteria,
-            transformToNestObject(getFieldsValues(fields)),
+            getFieldValueByName(fields),
           );
           const validForm = isEmptyObject(errors);
           error = (get(errors, name)
@@ -513,20 +512,29 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
     [reRender], // eslint-disable-line
   );
 
+  const removeEventListener = (field: Field, forceDelete?: boolean) => {
+    if (!isUndefined(handleChangeRef.current) && field) {
+      findRemovedFieldAndRemoveListener(
+        fieldsRef.current,
+        handleChangeRef.current,
+        field,
+        forceDelete,
+      );
+    }
+  };
+
   const removeEventListenerAndRef = useCallback(
     (field: Field | undefined, forceDelete?: boolean) => {
-      if (!field) {
+      if (
+        !field ||
+        (field &&
+          isNameInFieldArray(fieldArrayNamesRef.current, field.ref.name) &&
+          !forceDelete)
+      ) {
         return;
       }
 
-      if (!isUndefined(handleChangeRef.current)) {
-        findRemovedFieldAndRemoveListener(
-          fieldsRef.current,
-          handleChangeRef.current,
-          field,
-          forceDelete,
-        );
-      }
+      removeEventListener(field, forceDelete);
 
       resetFieldRef(field.ref.name);
     },
@@ -1019,7 +1027,7 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
     }
 
     Object.values(resetFieldArrayFunctionRef.current).forEach(
-      resetFieldArray => isFunction(resetFieldArray) && resetFieldArray(values),
+      resetFieldArray => isFunction(resetFieldArray) && resetFieldArray(),
     );
 
     resetRefs();
@@ -1070,6 +1078,8 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
   const control = {
     register,
     unregister,
+    removeEventListener,
+    getValues,
     setValue,
     triggerValidation,
     formState,
@@ -1081,7 +1091,8 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
       isReValidateOnBlur,
       isReValidateOnSubmit,
     },
-    errors: errorsRef.current,
+    errorsRef,
+    touchedFieldsRef,
     fieldsRef,
     resetFieldArrayFunctionRef,
     fieldArrayNamesRef,

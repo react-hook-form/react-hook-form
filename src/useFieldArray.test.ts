@@ -56,7 +56,12 @@ describe('useFieldArray', () => {
   it('should pre-append data into the fields', () => {
     const { result } = renderHook(() =>
       useFieldArray({
-        control: reconfigureControl(),
+        control: {
+          ...reconfigureControl(),
+          getValues: () => ({
+            test: [],
+          }),
+        },
         name: 'test',
       }),
     );
@@ -112,6 +117,9 @@ describe('useFieldArray', () => {
           defaultValuesRef: {
             current: { test: [{ test: '1' }, { test: '2' }] },
           },
+          getValues: () => ({
+            test: [],
+          }),
           fieldsRef: {
             current: {
               'test[0]': { ref: { name: 'test[0]', value: { test: '1' } } },
@@ -152,6 +160,9 @@ describe('useFieldArray', () => {
           defaultValuesRef: {
             current: { test: [{ test: '1' }, { test: '2' }] },
           },
+          getValues: () => ({
+            test: [],
+          }),
           fieldsRef: {
             current: {
               'test[0]': { ref: { name: 'test[0]', value: { test: '1' } } },
@@ -181,6 +192,9 @@ describe('useFieldArray', () => {
           defaultValuesRef: {
             current: { test: [{ test: '1' }, { test: '2' }] },
           },
+          getValues: () => ({
+            test: [],
+          }),
           fieldsRef: {
             current: {
               'test[0]': { ref: { name: 'test[0]', value: { test: '1' } } },
@@ -209,6 +223,9 @@ describe('useFieldArray', () => {
           defaultValuesRef: {
             current: { test: [{ test: '1' }, { test: '2' }, { test: '3' }] },
           },
+          getValues: () => ({
+            test: [],
+          }),
           fieldsRef: {
             current: {
               'test[0]': { ref: { name: 'test[0]', value: { test: '1' } } },
