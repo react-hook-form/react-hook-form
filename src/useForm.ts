@@ -1073,6 +1073,7 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
     register,
     unregister,
     removeEventListener,
+    getValues,
     setValue,
     triggerValidation,
     formState,

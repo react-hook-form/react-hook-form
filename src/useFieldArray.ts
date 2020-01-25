@@ -30,6 +30,7 @@ export function useFieldArray<
     resetFieldArrayFunctionRef,
     fieldArrayNamesRef,
     fieldsRef,
+    getValues,
     defaultValuesRef,
     removeEventListener,
     errorsRef,
@@ -65,6 +66,19 @@ export function useFieldArray<
     }
   };
 
+  const mapCurrentFieldsValueWithState = () => {
+    const currentFieldsValue = getValues({ nest: true })[name];
+
+    for (let i = 0; i < currentFieldsValue.length; i++) {
+      fields[i] = {
+        ...fields[i],
+        ...currentFieldsValue[i],
+      };
+    }
+
+    return fields;
+  };
+
   const append = (value: WithFieldId<Partial<FormArrayValues>>) => {
     if (isReadStateDirty) {
       isDirtyRef.current = true;
@@ -73,6 +87,7 @@ export function useFieldArray<
   };
 
   const prepend = (value: WithFieldId<Partial<FormArrayValues>>) => {
+    mapCurrentFieldsValueWithState();
     resetFields();
     setField(prependAt(fields, appendId(value)));
 
@@ -88,6 +103,10 @@ export function useFieldArray<
   };
 
   const remove = (index?: number) => {
+    if (!isUndefined(index)) {
+      mapCurrentFieldsValueWithState();
+    }
+
     resetFields(
       removeArrayAt(getFieldValueByName(fieldsRef.current, name), index),
     );
@@ -109,6 +128,7 @@ export function useFieldArray<
     index: number,
     value: WithFieldId<Partial<FormArrayValues>>,
   ) => {
+    mapCurrentFieldsValueWithState();
     resetFields(insertAt(getFieldValueByName(fieldsRef.current, name), index));
     setField(insertAt(fields, index, appendId(value)));
 
@@ -125,6 +145,7 @@ export function useFieldArray<
   };
 
   const swap = (indexA: number, indexB: number) => {
+    mapCurrentFieldsValueWithState();
     const fieldValues = getFieldValueByName(fieldsRef.current, name);
     swapArrayAt(fieldValues, indexA, indexB);
     resetFields(fieldValues);
@@ -141,6 +162,7 @@ export function useFieldArray<
   };
 
   const move = (from: number, to: number) => {
+    mapCurrentFieldsValueWithState();
     const fieldValues = getFieldValueByName(fieldsRef.current, name);
     moveArrayAt(fieldValues, from, to);
     resetFields(fieldValues);

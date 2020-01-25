@@ -202,6 +202,7 @@ export type Control<FormValues extends FieldValues = FieldValues> = {
   unregister(name: FieldName<FormValues>): void;
   unregister(names: FieldName<FormValues>[]): void;
   unregister(names: FieldName<FormValues> | FieldName<FormValues>[]): void;
+  getValues: (payload?: { nest: boolean }) => any;
   setValue: <Name extends FieldName<FormValues>>(
     name: Name,
     value: FormValues[Name],

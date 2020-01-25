@@ -16,6 +16,7 @@ export const reconfigureControl = (
   defaultValuesRef: {
     current: {},
   },
+  getValues: jest.fn(),
   setValue: jest.fn(),
   register: jest.fn(),
   unregister: jest.fn(),
