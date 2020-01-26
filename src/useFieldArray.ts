@@ -10,6 +10,7 @@ import removeArrayAt from './utils/remove';
 import moveArrayAt from './utils/move';
 import swapArrayAt from './utils/swap';
 import prependAt from './utils/prepend';
+import isArray from './utils/isArray';
 import insertAt from './utils/insert';
 import {
   FieldValues,
@@ -18,7 +19,6 @@ import {
   WithFieldId,
   Field,
 } from './types';
-import isArray from './utils/isArray';
 
 const { useMemo, useEffect, useRef, useState } = React;
 
