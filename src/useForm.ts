@@ -512,7 +512,7 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
     [reRender], // eslint-disable-line
   );
 
-  const removeEventListener = (field: Field, forceDelete?: boolean) => {
+  const removeFieldEventListener = (field: Field, forceDelete?: boolean) => {
     if (!isUndefined(handleChangeRef.current) && field) {
       findRemovedFieldAndRemoveListener(
         fieldsRef.current,
@@ -523,7 +523,7 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
     }
   };
 
-  const removeEventListenerAndRef = useCallback(
+  const removeFieldEventListenerAndRef = useCallback(
     (field: Field | undefined, forceDelete?: boolean) => {
       if (
         !field ||
@@ -534,7 +534,7 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
         return;
       }
 
-      removeEventListener(field, forceDelete);
+      removeFieldEventListener(field, forceDelete);
 
       resetFieldRef(field.ref.name);
     },
@@ -710,7 +710,7 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
   ): void {
     if (!isEmptyObject(fieldsRef.current)) {
       (isArray(names) ? names : [names]).forEach(fieldName =>
-        removeEventListenerAndRef(fieldsRef.current[fieldName], true),
+        removeFieldEventListenerAndRef(fieldsRef.current[fieldName], true),
       );
     }
   }
@@ -751,7 +751,7 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
 
     if (type) {
       const mutationWatcher = onDomRemove(ref, () =>
-        removeEventListenerAndRef(fieldAttributes),
+        removeFieldEventListenerAndRef(fieldAttributes),
       );
 
       if (isRadioOrCheckbox) {
@@ -1052,10 +1052,10 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
         Object.values(
           fieldsRef.current,
         ).forEach((field: Field | undefined): void =>
-          removeEventListenerAndRef(field, true),
+          removeFieldEventListenerAndRef(field, true),
         );
     },
-    [removeEventListenerAndRef],
+    [removeFieldEventListenerAndRef],
   );
 
   if (!validationSchema) {
@@ -1078,7 +1078,7 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
   const control = {
     register,
     unregister,
-    removeEventListener,
+    removeEventListener: removeFieldEventListener,
     getValues,
     setValue,
     triggerValidation,
@@ -1110,7 +1110,7 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
     getValues: useCallback(getValues, []),
     reset: useCallback(reset, [reRender]),
     register: useCallback(register, [defaultValuesRef.current]),
-    unregister: useCallback(unregister, [removeEventListenerAndRef]),
+    unregister: useCallback(unregister, [removeFieldEventListenerAndRef]),
     clearError: useCallback(clearError, []),
     setError: useCallback(setError, []),
     errors: errorsRef.current,

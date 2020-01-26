@@ -21,7 +21,7 @@ export const reconfigureControl = (
   register: jest.fn(),
   unregister: jest.fn(),
   triggerValidation: jest.fn(),
-  removeEventListener: jest.fn(),
+  removeFieldEventListener: jest.fn(),
   errorsRef: { current: {} },
   touchedFieldsRef: { current: {} },
   mode: { isOnSubmit: false, isOnBlur: false },

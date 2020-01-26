@@ -2,6 +2,7 @@ import * as React from 'react';
 import { render, fireEvent } from '@testing-library/react';
 import { Controller } from './controller';
 import { reconfigureControl } from './useForm.test';
+import { Field } from './types';
 
 describe('Controller', () => {
   it('should render correctly with as with string', () => {
@@ -190,5 +191,33 @@ describe('Controller', () => {
     );
 
     expect(asFragment()).toMatchSnapshot();
+  });
+
+  it('should invoke removeFieldEventListener to remove field with Field Array item', () => {
+    const control = reconfigureControl();
+    const removeFieldEventListener = jest.fn();
+
+    render(
+      <Controller
+        defaultValue=""
+        name="test[0]"
+        as="input"
+        valueName="selectedkey"
+        control={{
+          ...control,
+          removeFieldEventListener,
+          fieldsRef: {
+            current: {
+              'test[0]': {} as Field,
+            },
+          },
+          fieldArrayNamesRef: {
+            current: new Set(['test']),
+          },
+        }}
+      />,
+    );
+
+    expect(removeFieldEventListener).toBeCalled();
   });
 });

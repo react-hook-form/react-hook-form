@@ -198,7 +198,7 @@ export type Control<FormValues extends FieldValues = FieldValues> = {
     payload?: FieldName<FormValues> | FieldName<FormValues>[] | string,
     shouldRender?: boolean,
   ) => Promise<boolean>;
-  removeEventListener: (field: Field, forceDelete?: boolean) => void;
+  removeFieldEventListener: (field: Field, forceDelete?: boolean) => void;
   unregister(name: FieldName<FormValues>): void;
   unregister(names: FieldName<FormValues>[]): void;
   unregister(names: FieldName<FormValues> | FieldName<FormValues>[]): void;

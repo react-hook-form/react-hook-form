@@ -29,7 +29,7 @@ const Controller = <ControlProp extends Control = Control>({
     register,
     unregister,
     errorsRef,
-    removeEventListener,
+    removeFieldEventListener,
     triggerValidation,
     mode: { isOnSubmit, isOnBlur },
     reValidateMode: { isReValidateOnBlur, isReValidateOnSubmit },
@@ -75,7 +75,7 @@ const Controller = <ControlProp extends Control = Control>({
       isNameInFieldArray(fieldArrayNamesRef.current, name) &&
       fieldsRef.current[name]
     ) {
-      removeEventListener(fieldsRef.current[name] as Field, true);
+      removeFieldEventListener(fieldsRef.current[name] as Field, true);
     }
 
     register(

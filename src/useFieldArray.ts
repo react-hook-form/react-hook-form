@@ -32,7 +32,7 @@ export function useFieldArray<
     fieldsRef,
     getValues,
     defaultValuesRef,
-    removeEventListener,
+    removeFieldEventListener,
     errorsRef,
     isDirtyRef,
     touchedFieldsRef,
@@ -61,7 +61,7 @@ export function useFieldArray<
 
     for (const key in fieldsRef.current) {
       if (isMatchFieldArrayName(key, name) && fieldsRef.current[key]) {
-        removeEventListener(fieldsRef.current[key] as Field, true);
+        removeFieldEventListener(fieldsRef.current[key] as Field, true);
       }
     }
   };
