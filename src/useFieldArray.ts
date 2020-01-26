@@ -18,6 +18,7 @@ import {
   WithFieldId,
   Field,
 } from './types';
+import isArray from './utils/isArray';
 
 const { useMemo, useEffect, useRef, useState } = React;
 
@@ -69,11 +70,13 @@ export function useFieldArray<
   const mapCurrentFieldsValueWithState = () => {
     const currentFieldsValue = getValues({ nest: true })[name];
 
-    for (let i = 0; i < currentFieldsValue.length; i++) {
-      fields[i] = {
-        ...fields[i],
-        ...currentFieldsValue[i],
-      };
+    if (isArray(currentFieldsValue)) {
+      for (let i = 0; i < currentFieldsValue.length; i++) {
+        fields[i] = {
+          ...fields[i],
+          ...currentFieldsValue[i],
+        };
+      }
     }
   };
 
