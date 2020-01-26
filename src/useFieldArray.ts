@@ -174,7 +174,7 @@ export function useFieldArray<
   };
 
   const reset = () => {
-    resetFields();
+    resetFields(undefined, true);
     memoizedDefaultValues.current = get(defaultValuesRef.current, name, []);
     setField(mapIds(memoizedDefaultValues.current));
   };
@@ -186,7 +186,7 @@ export function useFieldArray<
     resetFunctions[name] = reset;
 
     return () => {
-      resetFields();
+      resetFields(undefined, true);
       delete resetFunctions[name];
       fieldArrayNames.delete(name);
     };
