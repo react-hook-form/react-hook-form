@@ -1078,7 +1078,7 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
   const control = {
     register,
     unregister,
-    removeEventListener: removeFieldEventListener,
+    removeFieldEventListener,
     getValues,
     setValue,
     triggerValidation,
