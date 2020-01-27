@@ -700,7 +700,7 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
 
   function registerFieldsRef<Element extends ElementLike>(
     ref: Element,
-    validateOptions: ValidationOptions = {},
+    validateOptions: ValidationOptions | null = {},
   ): ((name: FieldName<FormValues>) => void) | void {
     if (!ref.name) {
       return console.warn('Missing name @', ref);
@@ -822,6 +822,9 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
     });
   }
 
+  function register<Element extends ElementLike = ElementLike>(): (
+    ref: Element | null,
+  ) => void;
   function register<Element extends ElementLike = ElementLike>(
     validationOptions: ValidationOptions,
   ): (ref: Element | null) => void;
@@ -840,10 +843,10 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
     validationOptions?: ValidationOptions,
   ): void;
   function register<Element extends ElementLike = ElementLike>(
-    refOrValidationOptions: ValidationOptions | Element | null,
+    refOrValidationOptions?: ValidationOptions | Element | null,
     validationOptions?: ValidationOptions,
   ): ((ref: Element | null) => void) | void {
-    if (isWindowUndefined || !refOrValidationOptions) {
+    if (isWindowUndefined) {
       return;
     }
 

@@ -79,11 +79,11 @@ describe('useForm', () => {
   });
 
   describe('register', () => {
-    it('should return undefined when ref is undefined', () => {
+    it('should return undefined when ref is defined', () => {
       const { result } = renderHook(() => useForm());
 
       act(() => {
-        expect(result.current.register(undefined as any)).toBeUndefined();
+        expect(result.current.register(undefined as any)).toBeDefined();
       });
     });
 
