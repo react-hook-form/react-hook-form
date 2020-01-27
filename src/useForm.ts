@@ -362,12 +362,12 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
         isWatchAllRef.current ||
         watchFieldsRef.current.has(name);
 
-      if (shouldValidate) {
-        return triggerValidation(name);
-      }
-
       if (shouldRender) {
         reRender();
+      }
+
+      if (shouldValidate) {
+        triggerValidation(name);
       }
       return;
     },
@@ -423,16 +423,16 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
             validateAllFieldCriteria,
             getFieldValueByName(fields),
           );
-          const validForm = isEmptyObject(errors);
+          const previousFormIsValid = isValidRef.current;
+          isValidRef.current = isEmptyObject(errors);
+
           error = (get(errors, name)
             ? { [name]: get(errors, name) }
             : {}) as FieldErrors<FormValues>;
 
-          if (isValidRef.current !== validForm) {
+          if (previousFormIsValid !== isValidRef.current) {
             shouldUpdateState = true;
           }
-
-          isValidRef.current = validForm;
         } else {
           error = await validateField<FormValues>(
             fieldsRef,
@@ -459,7 +459,7 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
       const previousFormIsValid = isValidRef.current;
       isValidRef.current = isEmptyObject(errors);
 
-      if (previousFormIsValid && previousFormIsValid !== isValidRef.current) {
+      if (previousFormIsValid !== isValidRef.current) {
         reRender();
       }
     });
