@@ -1,6 +1,7 @@
 import * as React from 'react';
 import attachEventListeners from './logic/attachEventListeners';
 import transformToNestObject from './logic/transformToNestObject';
+import focusErrorField from './logic/focusErrorField';
 import findRemovedFieldAndRemoveListener from './logic/findRemovedFieldAndRemoveListener';
 import getFieldsValues from './logic/getFieldsValues';
 import getFieldValue from './logic/getFieldValue';
@@ -53,6 +54,7 @@ import {
   Ref,
   HandleChange,
   Touched,
+  FieldError,
 } from './types';
 
 const { useRef, useState, useCallback, useEffect } = React;
@@ -553,7 +555,7 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
     const field = fieldsRef.current[name];
 
     if (
-      !isSameError(errorsRef.current[name] as any, {
+      !isSameError(errorsRef.current[name] as FieldError, {
         type,
         message,
         types,
@@ -735,24 +737,22 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
         removeFieldEventListenerAndRef(fieldAttributes),
       );
 
-      if (isRadioOrCheckbox) {
-        currentField = {
-          options: [
-            ...((currentField && currentField.options) || []),
-            {
-              ref,
-              mutationWatcher,
-            },
-          ],
-          ref: { type, name },
-          ...validateOptions,
-        };
-      } else {
-        currentField = {
-          ...fieldAttributes,
-          mutationWatcher,
-        };
-      }
+      currentField = isRadioOrCheckbox
+        ? {
+            options: [
+              ...((currentField && currentField.options) || []),
+              {
+                ref,
+                mutationWatcher,
+              },
+            ],
+            ref: { type, name },
+            ...validateOptions,
+          }
+        : {
+            ...fieldAttributes,
+            mutationWatcher,
+          };
     } else {
       currentField = fieldAttributes;
     }
@@ -849,16 +849,15 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
 
     if (isString(refOrValidationOptions)) {
       registerFieldsRef({ name: refOrValidationOptions }, validationOptions);
-      return;
-    }
-
-    if (isObject(refOrValidationOptions) && 'name' in refOrValidationOptions) {
+    } else if (
+      isObject(refOrValidationOptions) &&
+      'name' in refOrValidationOptions
+    ) {
       registerFieldsRef(refOrValidationOptions, validationOptions);
-      return;
+    } else {
+      return (ref: Element | null) =>
+        ref && registerFieldsRef(ref, refOrValidationOptions);
     }
-
-    return (ref: Element | null) =>
-      ref && registerFieldsRef(ref, refOrValidationOptions);
   }
 
   const handleSubmit = useCallback(
@@ -922,7 +921,6 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
 
               if (fieldError[name]) {
                 set(resolvedPrevious.errors, name, fieldError[name]);
-
                 validFieldsRef.current.delete(name);
 
                 return Promise.resolve(resolvedPrevious);
@@ -931,6 +929,7 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
               if (fieldsWithValidationRef.current.has(name)) {
                 validFieldsRef.current.add(name);
               }
+
               resolvedPrevious.values[
                 name as FieldName<FormValues>
               ] = getFieldValue(fields, ref);
@@ -951,20 +950,7 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
           await callback(transformToNestObject(fieldValues), e);
         } else {
           if (submitFocusError) {
-            for (const key in fieldsRef.current) {
-              if (get(fieldErrors, key)) {
-                const field = fieldsRef.current[key];
-                if (field) {
-                  if (field.ref.focus) {
-                    field.ref.focus();
-                    break;
-                  } else if (field.options) {
-                    field.options[0].ref.focus();
-                    break;
-                  }
-                }
-              }
-            }
+            focusErrorField(fields, fieldErrors);
           }
 
           errorsRef.current = fieldErrors;
@@ -1023,6 +1009,7 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
     const outputValues = isEmptyObject(fieldValues)
       ? defaultValuesRef.current
       : fieldValues;
+
     return payload && payload.nest
       ? transformToNestObject(outputValues)
       : outputValues;
