@@ -557,20 +557,14 @@ describe('useForm', () => {
       });
     });
 
-    it('should return true when field is found and validation failed', async () => {
+    it('should return true when field is found and validation pass', async () => {
       const { result } = renderHook(() => useForm<{ test: string }>());
 
       act(() => {
         result.current.register({ type: 'input', name: 'test' });
       });
 
-      (validateField as any).mockImplementation(async () => {
-        return {
-          test: {
-            type: 'test',
-          } as any,
-        };
-      });
+      (validateField as any).mockImplementation(async () => ({}));
 
       await act(async () => {
         expect(await result.current.triggerValidation('test')).toBeTruthy();

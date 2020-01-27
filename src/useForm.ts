@@ -281,7 +281,9 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
         field,
       );
 
-      return !!shouldRenderBaseOnError(name, error, false, skipReRender);
+      shouldRenderBaseOnError(name, error, false, skipReRender);
+
+      return isEmptyObject(error);
     },
     [reRender, shouldRenderBaseOnError, validateAllFieldCriteria],
   );
@@ -311,14 +313,11 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
         });
         reRender();
       } else {
-        const fieldName = payload;
-        const error = (get(errors, fieldName)
-          ? { [fieldName]: get(errors, fieldName) }
-          : {}) as FieldErrors<FormValues>;
-
         shouldRenderBaseOnError(
-          fieldName,
-          error,
+          payload,
+          (get(errors, payload)
+            ? { [payload]: get(errors, payload) }
+            : {}) as FieldErrors<FormValues>,
           shouldRender || previousFormIsValid !== isValidRef.current,
         );
       }
