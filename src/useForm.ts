@@ -108,9 +108,6 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
     isOnBlur: isReValidateOnBlur,
     isOnSubmit: isReValidateOnSubmit,
   } = useRef(modeChecker(reValidateMode)).current;
-  defaultValuesRef.current = defaultValuesRef.current
-    ? defaultValuesRef.current
-    : defaultValues;
 
   const reRender = useCallback(() => {
     if (!isUnMount.current) {
@@ -1108,9 +1105,9 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
     setValue,
     triggerValidation,
     getValues: useCallback(getValues, []),
-    reset: useCallback(reset, [reRender]),
-    register: useCallback(register, [defaultValuesRef.current]),
-    unregister: useCallback(unregister, [removeFieldEventListenerAndRef]),
+    reset: useCallback(reset, []),
+    register: useCallback(register, []),
+    unregister: useCallback(unregister, []),
     clearError: useCallback(clearError, []),
     setError: useCallback(setError, []),
     errors: errorsRef.current,
