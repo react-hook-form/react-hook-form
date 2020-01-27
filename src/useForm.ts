@@ -262,17 +262,12 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
   const executeValidation = useCallback(
     async (
       name: FieldName<FormValues>,
-      shouldRender,
-      skipReRender?,
+      skipReRender?: boolean,
     ): Promise<boolean> => {
       const field = fieldsRef.current[name]!;
 
       if (!field) {
         return false;
-      }
-
-      if (shouldRender) {
-        reRender();
       }
 
       const error = await validateField<FormValues>(
@@ -285,13 +280,12 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
 
       return isEmptyObject(error);
     },
-    [reRender, shouldRenderBaseOnError, validateAllFieldCriteria],
+    [shouldRenderBaseOnError, validateAllFieldCriteria],
   );
 
   const executeSchemaValidation = useCallback(
     async (
       payload: FieldName<FormValues> | FieldName<FormValues>[],
-      shouldRender?: boolean,
     ): Promise<boolean> => {
       const { errors } = await validateWithSchema<FormValues>(
         validationSchema,
@@ -318,7 +312,7 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
           (get(errors, payload)
             ? { [payload]: get(errors, payload) }
             : {}) as FieldErrors<FormValues>,
-          shouldRender || previousFormIsValid !== isValidRef.current,
+          previousFormIsValid !== isValidRef.current,
         );
       }
 
@@ -335,25 +329,22 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
   const triggerValidation = useCallback(
     async (
       payload?: FieldName<FormValues> | FieldName<FormValues>[] | string,
-      shouldRender?: boolean,
     ): Promise<boolean> => {
       const fields = payload || Object.keys(fieldsRef.current);
 
       if (validationSchema) {
-        return executeSchemaValidation(fields, shouldRender);
+        return executeSchemaValidation(fields);
       }
 
       if (isArray(fields)) {
         const result = await Promise.all(
-          (fields as []).map(
-            async data => await executeValidation(data, false, true),
-          ),
+          fields.map(async data => await executeValidation(data, true)),
         );
         reRender();
         return result.every(Boolean);
       }
 
-      return await executeValidation(fields, shouldRender);
+      return await executeValidation(fields);
     },
     [executeSchemaValidation, executeValidation, reRender, validationSchema],
   );
@@ -372,7 +363,7 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
         watchFieldsRef.current.has(name);
 
       if (shouldValidate) {
-        return triggerValidation(name, shouldRender);
+        return triggerValidation(name);
       }
 
       if (shouldRender) {
