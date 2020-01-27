@@ -356,20 +356,19 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
       shouldValidate?: boolean,
     ) => void | Promise<boolean>
   >(
-    (name, value, shouldValidate) => {
+    (name, value, shouldValidate): void => {
       const shouldRender =
         setInternalValue(name, value) ||
         isWatchAllRef.current ||
         watchFieldsRef.current.has(name);
 
-      if (shouldValidate) {
-        return triggerValidation(name);
-      }
-
       if (shouldRender) {
         reRender();
       }
-      return;
+
+      if (shouldValidate) {
+        triggerValidation(name);
+      }
     },
     [reRender, setInternalValue, triggerValidation],
   );
@@ -379,14 +378,15 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
     : async ({ type, target }: MouseEvent): Promise<void | boolean> => {
         const name = target ? (target as Ref).name : '';
         const fields = fieldsRef.current;
-        const errors = errorsRef.current;
         const field = fields[name];
-        const currentError = get(errors, name);
-        let error;
 
         if (!field) {
           return;
         }
+
+        const errors = errorsRef.current;
+        const currentError = get(errors, name);
+        let error;
 
         const isBlurEvent = type === EVENTS.BLUR;
         const shouldSkipValidation = skipValidation({
@@ -406,15 +406,14 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
 
         if (
           isBlurEvent &&
-          !get(touchedFieldsRef.current, name) &&
-          readFormStateRef.current.touched
+          readFormStateRef.current.touched &&
+          !get(touchedFieldsRef.current, name)
         ) {
-          set(touchedFieldsRef.current, name, true);
-          shouldUpdateState = true;
+          shouldUpdateState = !!set(touchedFieldsRef.current, name, true);
         }
 
-        if (shouldSkipValidation) {
-          return shouldUpdateState && reRender();
+        if (shouldSkipValidation && shouldUpdateState) {
+          return reRender();
         }
 
         if (validationSchema) {
@@ -423,16 +422,16 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
             validateAllFieldCriteria,
             getFieldValueByName(fields),
           );
-          const validForm = isEmptyObject(errors);
+          const previousFormIsValid = isValidRef.current;
+          isValidRef.current = isEmptyObject(errors);
+
           error = (get(errors, name)
             ? { [name]: get(errors, name) }
             : {}) as FieldErrors<FormValues>;
 
-          if (isValidRef.current !== validForm) {
+          if (isValidRef.current !== previousFormIsValid) {
             shouldUpdateState = true;
           }
-
-          isValidRef.current = validForm;
         } else {
           error = await validateField<FormValues>(
             fieldsRef,
@@ -441,7 +440,7 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
           );
         }
 
-        if (!shouldRenderBaseOnError(name, error) && shouldUpdateState) {
+        if (shouldUpdateState && !shouldRenderBaseOnError(name, error)) {
           reRender();
         }
       };
@@ -459,7 +458,7 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
       const previousFormIsValid = isValidRef.current;
       isValidRef.current = isEmptyObject(errors);
 
-      if (previousFormIsValid && previousFormIsValid !== isValidRef.current) {
+      if (previousFormIsValid !== isValidRef.current) {
         reRender();
       }
     });
