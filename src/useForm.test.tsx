@@ -564,9 +564,7 @@ describe('useForm', () => {
         result.current.register({ type: 'input', name: 'test' });
       });
 
-      (validateField as any).mockImplementation(async () => {
-        return {};
-      });
+      (validateField as any).mockImplementation(async () => ({}));
 
       await act(async () => {
         expect(await result.current.triggerValidation('test')).toBeTruthy();
