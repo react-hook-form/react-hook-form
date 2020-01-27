@@ -557,7 +557,7 @@ describe('useForm', () => {
       });
     });
 
-    it('should return true when field is found and validation pass', async () => {
+    it('should return true when field is found and validation failed', async () => {
       const { result } = renderHook(() => useForm<{ test: string }>());
 
       act(() => {
@@ -565,7 +565,11 @@ describe('useForm', () => {
       });
 
       (validateField as any).mockImplementation(async () => {
-        return {};
+        return {
+          test: {
+            type: 'test',
+          } as any,
+        };
       });
 
       await act(async () => {
