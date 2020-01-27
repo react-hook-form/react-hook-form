@@ -1106,7 +1106,7 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
     triggerValidation,
     getValues: useCallback(getValues, []),
     reset: useCallback(reset, []),
-    register: useCallback(register, []),
+    register: useCallback(register, [defaultValuesRef.current]),
     unregister: useCallback(unregister, []),
     clearError: useCallback(clearError, []),
     setError: useCallback(setError, []),
