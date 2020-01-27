@@ -23,6 +23,7 @@ import isArray from './utils/isArray';
 import isString from './utils/isString';
 import isSameError from './utils/isSameError';
 import isUndefined from './utils/isUndefined';
+import isEmptyString from './utils/isEmptyString';
 import onDomRemove from './utils/onDomRemove';
 import get from './utils/get';
 import set from './utils/set';
@@ -115,7 +116,7 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
     }
   }, []);
 
-  const renderBaseOnError = useCallback(
+  const shouldRenderBaseOnError = useCallback(
     (
       name: FieldName<FormValues>,
       error: FieldErrors<FormValues>,
@@ -166,8 +167,8 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
       }
 
       const ref = field.ref;
-      const { type } = ref;
       const options = field.options;
+      const { type } = ref;
       const value =
         isWeb &&
         ref instanceof window.HTMLElement &&
@@ -180,7 +181,7 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
           ({ ref: radioRef }) => (radioRef.checked = radioRef.value === value),
         );
       } else if (isFileInput(type)) {
-        if (value instanceof FileList || value === '') {
+        if (value instanceof FileList || isEmptyString(value as string)) {
           ref.files = value;
         } else {
           ref.value = value;
@@ -188,15 +189,13 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
       } else if (isMultipleSelect(type)) {
         [...ref.options].forEach(
           selectRef =>
-            (selectRef.selected = (value as string[]).includes(
-              selectRef.value,
-            )),
+            (selectRef.selected = (value as string).includes(selectRef.value)),
         );
       } else if (isCheckBoxInput(type) && options) {
         options.length > 1
           ? options.forEach(
               ({ ref: checkboxRef }) =>
-                (checkboxRef.checked = (value as string[]).includes(
+                (checkboxRef.checked = (value as string).includes(
                   checkboxRef.value,
                 )),
             )
@@ -229,7 +228,7 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
     }
 
     const isDirtyChanged = isFieldArray
-      ? isDirtyRef.current !== isDirty
+      ? isDirtyRef.current
       : dirtyFieldsRef.current.has(name) !== isDirty;
 
     if (isDirty) {
@@ -282,11 +281,9 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
         field,
       );
 
-      renderBaseOnError(name, error, false, skipReRender);
-
-      return isEmptyObject(error);
+      return !!shouldRenderBaseOnError(name, error, false, skipReRender);
     },
-    [reRender, renderBaseOnError, validateAllFieldCriteria],
+    [reRender, shouldRenderBaseOnError, validateAllFieldCriteria],
   );
 
   const executeSchemaValidation = useCallback(
@@ -319,7 +316,7 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
           ? { [fieldName]: get(errors, fieldName) }
           : {}) as FieldErrors<FormValues>;
 
-        renderBaseOnError(
+        shouldRenderBaseOnError(
           fieldName,
           error,
           shouldRender || previousFormIsValid !== isValidRef.current,
@@ -328,7 +325,12 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
 
       return isEmptyObject(errorsRef.current);
     },
-    [reRender, renderBaseOnError, validateAllFieldCriteria, validationSchema],
+    [
+      reRender,
+      shouldRenderBaseOnError,
+      validateAllFieldCriteria,
+      validationSchema,
+    ],
   );
 
   const triggerValidation = useCallback(
@@ -449,7 +451,7 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
           );
         }
 
-        if (!renderBaseOnError(name, error) && shouldUpdateState) {
+        if (!shouldRenderBaseOnError(name, error) && shouldUpdateState) {
           reRender();
         }
       };
