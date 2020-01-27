@@ -849,15 +849,16 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
 
     if (isString(refOrValidationOptions)) {
       registerFieldsRef({ name: refOrValidationOptions }, validationOptions);
-    } else if (
-      isObject(refOrValidationOptions) &&
-      'name' in refOrValidationOptions
-    ) {
-      registerFieldsRef(refOrValidationOptions, validationOptions);
-    } else {
-      return (ref: Element | null) =>
-        ref && registerFieldsRef(ref, refOrValidationOptions);
+      return;
     }
+
+    if (isObject(refOrValidationOptions) && 'name' in refOrValidationOptions) {
+      registerFieldsRef(refOrValidationOptions, validationOptions);
+      return;
+    }
+
+    return (ref: Element | null) =>
+      ref && registerFieldsRef(ref, refOrValidationOptions);
   }
 
   const handleSubmit = useCallback(
