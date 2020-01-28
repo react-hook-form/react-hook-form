@@ -1,24 +1,24 @@
 import * as React from 'react';
-import getFieldValueByName from './logic/getFieldValueByName';
-import getIsFieldsDifferent from './logic/getIsFieldsDifferent';
+import { useFormContext } from './useFormContext';
 import { isMatchFieldArrayName } from './logic/isNameInFieldArray';
+import getFieldValueByName from './logic/getFieldValueByName';
 import { appendId, mapIds } from './logic/mapIds';
+import getIsFieldsDifferent from './logic/getIsFieldsDifferent';
+import get from './utils/get';
+import isUndefined from './utils/isUndefined';
+import removeArrayAt from './utils/remove';
+import moveArrayAt from './utils/move';
+import swapArrayAt from './utils/swap';
+import prependAt from './utils/prepend';
+import isArray from './utils/isArray';
+import insertAt from './utils/insert';
 import {
-  Control,
-  Field,
   FieldValues,
+  Control,
   UseFieldArrayProps,
   WithFieldId,
+  Field,
 } from './types';
-import { useFormContext } from './useFormContext';
-import get from './utils/get';
-import insertAt from './utils/insert';
-import isArray from './utils/isArray';
-import isUndefined from './utils/isUndefined';
-import moveArrayAt from './utils/move';
-import prependAt from './utils/prepend';
-import removeArrayAt from './utils/remove';
-import swapArrayAt from './utils/swap';
 
 const { useMemo, useEffect, useRef, useState } = React;
 
