@@ -1,6 +1,6 @@
 import { act, renderHook } from '@testing-library/react-hooks';
-import { useFieldArray } from './useFieldArray';
 import { appendId } from './logic/mapIds';
+import { useFieldArray } from './useFieldArray';
 import { reconfigureControl } from './useForm.test';
 
 jest.mock('./logic/generateId', () => ({
@@ -51,6 +51,18 @@ describe('useFieldArray', () => {
       { id: '1', test: 'test1' },
       { id: '1' },
     ]);
+
+    act(() => {
+      result.current.append([{ test: 'test2' }, { test: 'test3' }]);
+    });
+
+    expect(result.current.fields).toEqual([
+      { id: '1', test: 'test' },
+      { id: '1', test: 'test1' },
+      { id: '1' },
+      { id: '1', test: 'test2' },
+      { id: '1', test: 'test3' },
+    ]);
   });
 
   it('should pre-append data into the fields', () => {
@@ -86,6 +98,18 @@ describe('useFieldArray', () => {
     });
 
     expect(result.current.fields).toEqual([
+      { id: '1' },
+      { id: '1', test: 'test1' },
+      { id: '1', test: 'test' },
+    ]);
+
+    act(() => {
+      result.current.prepend([{ test: 'test2' }, { test: 'test3' }]);
+    });
+
+    expect(result.current.fields).toEqual([
+      { id: '1', test: 'test2' },
+      { id: '1', test: 'test3' },
       { id: '1' },
       { id: '1', test: 'test1' },
       { id: '1', test: 'test' },
@@ -180,6 +204,18 @@ describe('useFieldArray', () => {
 
     expect(result.current.fields).toEqual([
       { id: '1', test: '1' },
+      { id: '1', test: '3' },
+      { id: '1', test: '2' },
+    ]);
+
+    act(() => {
+      result.current.insert(1, [{ test: '4' }, { test: '5' }]);
+    });
+
+    expect(result.current.fields).toEqual([
+      { id: '1', test: '1' },
+      { id: '1', test: '4' },
+      { id: '1', test: '5' },
       { id: '1', test: '3' },
       { id: '1', test: '2' },
     ]);
