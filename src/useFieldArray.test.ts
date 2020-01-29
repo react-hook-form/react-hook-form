@@ -22,7 +22,12 @@ describe('useFieldArray', () => {
   it('should append data into the fields', () => {
     const { result } = renderHook(() =>
       useFieldArray({
-        control: reconfigureControl(),
+        control: {
+          ...reconfigureControl(),
+          getValues: () => ({
+            test: [],
+          }),
+        },
         name: 'test',
       }),
     );

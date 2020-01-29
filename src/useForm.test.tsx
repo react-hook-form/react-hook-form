@@ -16,6 +16,9 @@ export const reconfigureControl = (
   defaultValuesRef: {
     current: {},
   },
+  watchFieldArrayRef: {
+    current: {},
+  },
   getValues: jest.fn(),
   setValue: jest.fn(),
   register: jest.fn(),
