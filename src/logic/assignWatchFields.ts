@@ -18,7 +18,7 @@ export default <FormValues extends FieldValues>(
   let value;
 
   if (isEmptyObject(fieldValues)) {
-    value = undefined;
+    value = watchFieldArray ? watchFieldArray : undefined;
   } else if (!isUndefined(fieldValues[fieldName])) {
     watchFields.add(fieldName);
     value = fieldValues[fieldName];
