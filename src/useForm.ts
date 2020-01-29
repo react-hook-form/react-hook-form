@@ -649,7 +649,7 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
         fieldNames,
         watchFields,
         combinedDefaultValues,
-        isNameInFieldArray(fieldArrayNamesRef.current, name)
+        fieldArrayNamesRef.current.has(fieldNames)
           ? watchFieldArrayRef.current[fieldNames]
           : undefined,
       );

@@ -79,6 +79,7 @@ export function useFieldArray<
       | WithFieldId<Partial<FormArrayValues>>
       | WithFieldId<Partial<FormArrayValues>>[],
   ) => {
+    mapCurrentFieldsValueWithState();
     if (readFormStateRef.current.dirty) {
       isDirtyRef.current = true;
     }
@@ -211,6 +212,7 @@ export function useFieldArray<
     const fieldArrayNames = fieldArrayNamesRef.current;
     fieldArrayNames.add(name);
     resetFunctions[name] = reset;
+    watchFieldArrayRef.current[name] = {};
 
     return () => {
       resetFields();
