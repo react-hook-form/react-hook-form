@@ -13,7 +13,7 @@ export default <FormValues extends FieldValues>(
   fieldName: FieldName<FormValues>,
   watchFields: Set<FieldName<FormValues>>,
   combinedDefaultValues: DeepPartial<FormValues>,
-  watchFieldArray?: any[],
+  watchFieldArray?: Record<FieldName<FormValues>, Record<string, any>>,
 ): FieldValue<FormValues> | DeepPartial<FormValues> | undefined => {
   let value;
 
