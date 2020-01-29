@@ -38,6 +38,7 @@ export function useFieldArray<
     isDirtyRef,
     touchedFieldsRef,
     readFormStateRef,
+    watchFieldArrayRef,
   } = control || methods.control;
   const memoizedDefaultValues = useRef(get(defaultValuesRef.current, name, []));
   const [fields, setField] = useState<WithFieldId<Partial<FormArrayValues>>[]>(
@@ -81,10 +82,11 @@ export function useFieldArray<
     if (readFormStateRef.current.dirty) {
       isDirtyRef.current = true;
     }
-    setField([
+    watchFieldArrayRef.current[name] = [
       ...fields,
       ...(isArray(value) ? value.map(appendId) : [appendId(value)]),
-    ]);
+    ];
+    setField(watchFieldArrayRef.current[name]);
   };
 
   const prepend = (
@@ -94,12 +96,11 @@ export function useFieldArray<
   ) => {
     mapCurrentFieldsValueWithState();
     resetFields();
-    setField(
-      prependAt(
-        fields,
-        isArray(value) ? value.map(appendId) : [appendId(value)],
-      ),
+    watchFieldArrayRef.current[name] = prependAt(
+      fields,
+      isArray(value) ? value.map(appendId) : [appendId(value)],
     );
+    setField(watchFieldArrayRef.current[name]);
 
     if (errorsRef.current[name]) {
       errorsRef.current[name] = prependAt(errorsRef.current[name]);
@@ -120,7 +121,9 @@ export function useFieldArray<
     resetFields(
       removeArrayAt(getFieldValueByName(fieldsRef.current, name), index),
     );
-    setField(removeArrayAt(fields, index));
+
+    watchFieldArrayRef.current[name] = removeArrayAt(fields, index);
+    setField(watchFieldArrayRef.current[name]);
 
     if (errorsRef.current[name]) {
       errorsRef.current[name] = removeArrayAt(errorsRef.current[name], index);
@@ -142,13 +145,12 @@ export function useFieldArray<
   ) => {
     mapCurrentFieldsValueWithState();
     resetFields(insertAt(getFieldValueByName(fieldsRef.current, name), index));
-    setField(
-      insertAt(
-        fields,
-        index,
-        isArray(value) ? value.map(appendId) : [appendId(value)],
-      ),
+    watchFieldArrayRef.current[name] = insertAt(
+      fields,
+      index,
+      isArray(value) ? value.map(appendId) : [appendId(value)],
     );
+    setField(watchFieldArrayRef.current[name]);
 
     if (errorsRef.current[name]) {
       errorsRef.current[name] = insertAt(errorsRef.current[name], index);
@@ -169,6 +171,7 @@ export function useFieldArray<
     resetFields(fieldValues);
     swapArrayAt(fields, indexA, indexB);
     setField([...fields]);
+    watchFieldArrayRef.current[name] = fields;
 
     if (errorsRef.current[name]) {
       swapArrayAt(errorsRef.current[name], indexA, indexB);
@@ -186,6 +189,7 @@ export function useFieldArray<
     resetFields(fieldValues);
     moveArrayAt(fields, from, to);
     setField([...fields]);
+    watchFieldArrayRef.current[name] = fields;
 
     if (errorsRef.current[name]) {
       moveArrayAt(errorsRef.current[name], from, to);
