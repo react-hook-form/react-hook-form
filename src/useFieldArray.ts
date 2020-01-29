@@ -20,7 +20,7 @@ import {
   Field,
 } from './types';
 
-const { useMemo, useEffect, useRef, useState } = React;
+const { useEffect, useRef, useState } = React;
 
 export function useFieldArray<
   FormArrayValues extends FieldValues = FieldValues,
@@ -43,18 +43,11 @@ export function useFieldArray<
   const [fields, setField] = useState<WithFieldId<Partial<FormArrayValues>>[]>(
     mapIds(memoizedDefaultValues.current),
   );
-  const { isReadStateDirty, isReadStateTouched } = useMemo(
-    () => ({
-      isReadStateDirty: readFormStateRef.current.dirty,
-      isReadStateTouched: readFormStateRef.current.touched,
-    }),
-    [readFormStateRef],
-  );
 
   const resetFields = (
     flagOrFields?: WithFieldId<Partial<FormArrayValues>>[],
   ) => {
-    if (isReadStateDirty) {
+    if (readFormStateRef.current.dirty) {
       isDirtyRef.current = isUndefined(flagOrFields)
         ? true
         : getIsFieldsDifferent(flagOrFields, memoizedDefaultValues.current);
@@ -85,7 +78,7 @@ export function useFieldArray<
       | WithFieldId<Partial<FormArrayValues>>
       | WithFieldId<Partial<FormArrayValues>>[],
   ) => {
-    if (isReadStateDirty) {
+    if (readFormStateRef.current.dirty) {
       isDirtyRef.current = true;
     }
     setField([
@@ -112,7 +105,7 @@ export function useFieldArray<
       errorsRef.current[name] = prependAt(errorsRef.current[name]);
     }
 
-    if (isReadStateTouched && touchedFieldsRef.current[name]) {
+    if (readFormStateRef.current.touched && touchedFieldsRef.current[name]) {
       touchedFieldsRef.current[name] = prependAt(
         touchedFieldsRef.current[name],
       );
@@ -133,7 +126,7 @@ export function useFieldArray<
       errorsRef.current[name] = removeArrayAt(errorsRef.current[name], index);
     }
 
-    if (isReadStateTouched && touchedFieldsRef.current[name]) {
+    if (readFormStateRef.current.touched && touchedFieldsRef.current[name]) {
       touchedFieldsRef.current[name] = removeArrayAt(
         touchedFieldsRef.current[name],
         index,
@@ -161,7 +154,7 @@ export function useFieldArray<
       errorsRef.current[name] = insertAt(errorsRef.current[name], index);
     }
 
-    if (isReadStateTouched && touchedFieldsRef.current[name]) {
+    if (readFormStateRef.current.touched && touchedFieldsRef.current[name]) {
       touchedFieldsRef.current[name] = insertAt(
         touchedFieldsRef.current[name],
         index,
@@ -181,7 +174,7 @@ export function useFieldArray<
       swapArrayAt(errorsRef.current[name], indexA, indexB);
     }
 
-    if (isReadStateTouched && touchedFieldsRef.current[name]) {
+    if (readFormStateRef.current.touched && touchedFieldsRef.current[name]) {
       swapArrayAt(touchedFieldsRef.current[name], indexA, indexB);
     }
   };
@@ -198,7 +191,7 @@ export function useFieldArray<
       moveArrayAt(errorsRef.current[name], from, to);
     }
 
-    if (isReadStateTouched && touchedFieldsRef.current[name]) {
+    if (readFormStateRef.current.touched && touchedFieldsRef.current[name]) {
       moveArrayAt(touchedFieldsRef.current[name], from, to);
     }
   };
