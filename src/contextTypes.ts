@@ -22,6 +22,9 @@ export interface FormProps<FormValues extends FieldValues = FieldValues>
 export interface FormContextValues<
   FormValues extends FieldValues = FieldValues
 > {
+  register<Element extends ElementLike = ElementLike>(): (
+    ref: Element | null,
+  ) => void;
   register<Element extends ElementLike = ElementLike>(
     validationOptions: ValidationOptions,
   ): (ref: Element | null) => void;

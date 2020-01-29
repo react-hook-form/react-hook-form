@@ -173,6 +173,9 @@ export type FormValuesFromErrors<Errors> = Errors extends FieldErrors<
 export type EventFunction = (args: any) => any;
 
 export type Control<FormValues extends FieldValues = FieldValues> = {
+  register<Element extends ElementLike = ElementLike>(): (
+    ref: Element | null,
+  ) => void;
   register<Element extends ElementLike = ElementLike>(
     validationOptions: ValidationOptions,
   ): (ref: Element | null) => void;
