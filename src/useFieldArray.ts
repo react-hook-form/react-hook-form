@@ -80,17 +80,33 @@ export function useFieldArray<
     }
   };
 
-  const append = (value: WithFieldId<Partial<FormArrayValues>>) => {
+  const append = (
+    value:
+      | WithFieldId<Partial<FormArrayValues>>
+      | WithFieldId<Partial<FormArrayValues>>[],
+  ) => {
     if (isReadStateDirty) {
       isDirtyRef.current = true;
     }
-    setField([...fields, appendId(value)]);
+    setField([
+      ...fields,
+      ...(isArray(value) ? value.map(appendId) : [appendId(value)]),
+    ]);
   };
 
-  const prepend = (value: WithFieldId<Partial<FormArrayValues>>) => {
+  const prepend = (
+    value:
+      | WithFieldId<Partial<FormArrayValues>>
+      | WithFieldId<Partial<FormArrayValues>>[],
+  ) => {
     mapCurrentFieldsValueWithState();
     resetFields();
-    setField(prependAt(fields, appendId(value)));
+    setField(
+      prependAt(
+        fields,
+        isArray(value) ? value.map(appendId) : [appendId(value)],
+      ),
+    );
 
     if (errorsRef.current[name]) {
       errorsRef.current[name] = prependAt(errorsRef.current[name]);
@@ -127,11 +143,19 @@ export function useFieldArray<
 
   const insert = (
     index: number,
-    value: WithFieldId<Partial<FormArrayValues>>,
+    value:
+      | WithFieldId<Partial<FormArrayValues>>
+      | WithFieldId<Partial<FormArrayValues>>[],
   ) => {
     mapCurrentFieldsValueWithState();
     resetFields(insertAt(getFieldValueByName(fieldsRef.current, name), index));
-    setField(insertAt(fields, index, appendId(value)));
+    setField(
+      insertAt(
+        fields,
+        index,
+        isArray(value) ? value.map(appendId) : [appendId(value)],
+      ),
+    );
 
     if (errorsRef.current[name]) {
       errorsRef.current[name] = insertAt(errorsRef.current[name], index);
