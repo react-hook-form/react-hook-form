@@ -12,6 +12,7 @@ import swapArrayAt from './utils/swap';
 import prependAt from './utils/prepend';
 import isArray from './utils/isArray';
 import insertAt from './utils/insert';
+import fillEmptyArray from './utils/fillEmptyArray';
 import {
   FieldValues,
   Control,
@@ -106,14 +107,14 @@ export function useFieldArray<
     if (errorsRef.current[name]) {
       errorsRef.current[name] = prependAt(
         errorsRef.current[name],
-        isArray(value) ? value.map(() => null) : undefined,
+        fillEmptyArray(value),
       );
     }
 
     if (readFormStateRef.current.touched && touchedFieldsRef.current[name]) {
       touchedFieldsRef.current[name] = prependAt(
         touchedFieldsRef.current[name],
-        isArray(value) ? value.map(() => null) : undefined,
+        fillEmptyArray(value),
       );
     }
   };
