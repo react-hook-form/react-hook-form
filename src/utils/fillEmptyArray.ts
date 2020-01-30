@@ -1,4 +1,4 @@
 import isArray from './isArray';
 
 export default (value: any) =>
-  isArray(value) ? value.map(() => null) : undefined;
+  isArray(value) ? Array(value.length).fill(null) : undefined;
