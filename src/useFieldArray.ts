@@ -104,12 +104,16 @@ export function useFieldArray<
     setField(watchFieldArrayRef.current[name]);
 
     if (errorsRef.current[name]) {
-      errorsRef.current[name] = prependAt(errorsRef.current[name]);
+      errorsRef.current[name] = prependAt(
+        errorsRef.current[name],
+        isArray(value) ? value.map(() => null) : undefined,
+      );
     }
 
     if (readFormStateRef.current.touched && touchedFieldsRef.current[name]) {
       touchedFieldsRef.current[name] = prependAt(
         touchedFieldsRef.current[name],
+        isArray(value) ? value.map(() => null) : undefined,
       );
     }
   };

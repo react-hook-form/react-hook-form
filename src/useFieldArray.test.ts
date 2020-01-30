@@ -121,6 +121,91 @@ describe('useFieldArray', () => {
     ]);
   });
 
+  it('should prepend error', () => {
+    const errorsRef = {
+      current: {
+        test: [{ test: '1' }, { test: '2' }, { test: '3' }],
+      },
+    };
+    const { result } = renderHook(() =>
+      useFieldArray({
+        control: {
+          ...reconfigureControl(),
+          getValues: () => ({
+            test: [],
+          }),
+          errorsRef: errorsRef as any,
+        },
+        name: 'test',
+      }),
+    );
+
+    act(() => {
+      result.current.prepend({ test: 'test2' });
+    });
+
+    expect(errorsRef).toEqual({
+      current: {
+        test: [null, { test: '1' }, { test: '2' }, { test: '3' }],
+      },
+    });
+
+    act(() => {
+      result.current.prepend([{ test: 'test1' }, { test: 'test3' }]);
+    });
+
+    expect(errorsRef).toEqual({
+      current: {
+        test: [null, null, null, { test: '1' }, { test: '2' }, { test: '3' }],
+      },
+    });
+  });
+
+  it('should prepend touched fields', () => {
+    const touchedFieldsRef = {
+      current: {
+        test: [{ test: '1' }, { test: '2' }, { test: '3' }],
+      },
+    };
+    const { result } = renderHook(() =>
+      useFieldArray({
+        control: {
+          ...reconfigureControl(),
+          getValues: () => ({
+            test: [],
+          }),
+          touchedFieldsRef: touchedFieldsRef as any,
+          readFormStateRef: {
+            current: {
+              touched: true,
+            },
+          } as any,
+        },
+        name: 'test',
+      }),
+    );
+
+    act(() => {
+      result.current.prepend({ test: 'test2' });
+    });
+
+    expect(touchedFieldsRef).toEqual({
+      current: {
+        test: [null, { test: '1' }, { test: '2' }, { test: '3' }],
+      },
+    });
+
+    act(() => {
+      result.current.prepend([{ test: 'test1' }, { test: 'test3' }]);
+    });
+
+    expect(touchedFieldsRef).toEqual({
+      current: {
+        test: [null, null, null, { test: '1' }, { test: '2' }, { test: '3' }],
+      },
+    });
+  });
+
   it('should populate default values into fields', () => {
     const { result } = renderHook(() =>
       useFieldArray({
@@ -165,6 +250,84 @@ describe('useFieldArray', () => {
     });
 
     expect(result.current.fields).toEqual([{ test: '1', id: '1' }]);
+  });
+
+  it('should remove error', () => {
+    const errorsRef = {
+      current: {
+        test: [{ test: '1' }, { test: '2' }, { test: '3' }],
+      },
+    };
+    const { result } = renderHook(() =>
+      useFieldArray({
+        control: reconfigureControl({
+          defaultValuesRef: {
+            current: { test: [{ test: '1' }, { test: '2' }] },
+          },
+          getValues: () => ({
+            test: [],
+          }),
+          errorsRef: errorsRef as any,
+          fieldsRef: {
+            current: {
+              'test[0]': { ref: { name: 'test[0]', value: { test: '1' } } },
+              'test[1]': { ref: { name: 'test[1]', value: { test: '2' } } },
+            },
+          },
+        }),
+        name: 'test',
+      }),
+    );
+
+    act(() => {
+      result.current.remove(1);
+    });
+
+    expect(errorsRef).toEqual({
+      current: {
+        test: [{ test: '1' }, { test: '3' }],
+      },
+    });
+  });
+
+  it('should remove touched fields', () => {
+    const touchedFieldsRef = {
+      current: {
+        test: [{ test: '1' }, { test: '2' }, { test: '3' }],
+      },
+    };
+    const { result } = renderHook(() =>
+      useFieldArray({
+        control: reconfigureControl({
+          getValues: () => ({
+            test: [],
+          }),
+          readFormStateRef: {
+            current: {
+              touched: true,
+            },
+          } as any,
+          touchedFieldsRef: touchedFieldsRef as any,
+          fieldsRef: {
+            current: {
+              'test[0]': { ref: { name: 'test[0]', value: { test: '1' } } },
+              'test[1]': { ref: { name: 'test[1]', value: { test: '2' } } },
+            },
+          },
+        }),
+        name: 'test',
+      }),
+    );
+
+    act(() => {
+      result.current.remove(1);
+    });
+
+    expect(touchedFieldsRef).toEqual({
+      current: {
+        test: [{ test: '1' }, { test: '3' }],
+      },
+    });
   });
 
   it('should remove all fields when index not supplied', () => {
