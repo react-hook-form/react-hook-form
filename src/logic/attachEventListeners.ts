@@ -8,11 +8,11 @@ export default function attachEventListeners({
 }: {
   field: Field;
   isRadioOrCheckbox: boolean;
-  handleChange?: any;
+  handleChange?: EventListenerOrEventListenerObject;
 }): void {
   const { ref } = field;
 
-  if (ref.addEventListener) {
+  if (ref.addEventListener && handleChange) {
     ref.addEventListener(
       isRadioOrCheckbox ? EVENTS.CHANGE : EVENTS.INPUT,
       handleChange,

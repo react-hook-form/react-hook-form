@@ -9,7 +9,7 @@ export default function findRemovedFieldAndRemoveListener<
   FormValues extends FieldValues
 >(
   fields: FieldRefs<FormValues>,
-  handleChange: ({ type, target }: MouseEvent) => Promise<void | boolean>,
+  handleChange: EventListenerOrEventListenerObject,
   field: Field,
   forceDelete?: boolean,
 ): void {

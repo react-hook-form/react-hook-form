@@ -164,11 +164,6 @@ export type ElementLike =
   | HTMLSelectElementLike
   | HTMLTextAreaElementLike;
 
-export type HandleChange = ({
-  type,
-  target,
-}: MouseEvent) => Promise<void | boolean>;
-
 export type FormValuesFromErrors<Errors> = Errors extends FieldErrors<
   infer FormValues
 >

@@ -51,7 +51,6 @@ import {
   ManualFieldError,
   MultipleFieldErrors,
   Ref,
-  HandleChange,
   Touched,
   FieldError,
 } from './types';
@@ -87,7 +86,7 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
   const isDirtyRef = useRef(false);
   const submitCountRef = useRef(0);
   const isSubmittingRef = useRef(false);
-  const handleChangeRef = useRef<HandleChange>();
+  const handleChangeRef = useRef<EventListenerOrEventListenerObject>();
   const resetFieldArrayFunctionRef = useRef({});
   const fieldArrayNamesRef = useRef<Set<string>>(new Set());
   const [, render] = useState();
@@ -377,7 +376,7 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
 
   handleChangeRef.current = handleChangeRef.current
     ? handleChangeRef.current
-    : async ({ type, target }: MouseEvent): Promise<void | boolean> => {
+    : async ({ type, target }): Promise<void | boolean> => {
         const name = target ? (target as Ref).name : '';
         const fields = fieldsRef.current;
         const errors = errorsRef.current;
