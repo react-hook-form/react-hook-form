@@ -221,6 +221,7 @@ export type Control<FormValues extends FieldValues = FieldValues> = {
     isReValidateOnSubmit: boolean;
   };
   touchedFieldsRef: React.MutableRefObject<Touched<FormValues>>;
+  watchFieldArrayRef: React.MutableRefObject<any>;
   errorsRef: React.MutableRefObject<FieldErrors<FormValues>>;
   fieldsRef: React.MutableRefObject<FieldRefs<FormValues>>;
   resetFieldArrayFunctionRef: React.MutableRefObject<
