@@ -389,6 +389,135 @@ describe('useFieldArray', () => {
     ]);
   });
 
+  it('should insert touched fields', () => {
+    const touchedFieldsRef = {
+      current: {
+        test: [{ test: '1' }, { test: '2' }, { test: '3' }],
+      },
+    };
+    const { result } = renderHook(() =>
+      useFieldArray({
+        control: {
+          ...reconfigureControl(),
+          readFormStateRef: {
+            current: {
+              touched: true,
+            },
+          } as any,
+          getValues: () => ({
+            test: [],
+          }),
+          touchedFieldsRef: touchedFieldsRef as any,
+          fieldsRef: {
+            current: {
+              'test[0]': {
+                ref: {
+                  value: 1,
+                  name: 'test[0]',
+                },
+              },
+              'test[1]': {
+                ref: {
+                  value: 2,
+                  name: 'test[1]',
+                },
+              },
+              'test[2]': {
+                ref: {
+                  value: 3,
+                  name: 'test[2]',
+                },
+              },
+            },
+          } as any,
+        },
+        name: 'test',
+      }),
+    );
+
+    act(() => {
+      result.current.insert(1, { test: 'test2' });
+    });
+
+    expect(touchedFieldsRef).toEqual({
+      current: {
+        test: [{ test: '1' }, null, { test: '2' }, { test: '3' }],
+      },
+    });
+
+    act(() => {
+      result.current.insert(1, [{ test: 'test2' }, { test: 'test3' }]);
+    });
+
+    expect(touchedFieldsRef).toEqual({
+      current: {
+        test: [{ test: '1' }, null, null, null, { test: '2' }, { test: '3' }],
+      },
+    });
+  });
+
+  it('should insert error', () => {
+    const errorsRef = {
+      current: {
+        test: [{ test: '1' }, { test: '2' }, { test: '3' }],
+      },
+    };
+    const { result } = renderHook(() =>
+      useFieldArray({
+        control: {
+          ...reconfigureControl(),
+          getValues: () => ({
+            test: [],
+          }),
+          errorsRef: errorsRef as any,
+          fieldsRef: {
+            current: {
+              'test[0]': {
+                ref: {
+                  value: 1,
+                  name: 'test[0]',
+                },
+              },
+              'test[1]': {
+                ref: {
+                  value: 2,
+                  name: 'test[1]',
+                },
+              },
+              'test[2]': {
+                ref: {
+                  value: 3,
+                  name: 'test[2]',
+                },
+              },
+            },
+          } as any,
+        },
+        name: 'test',
+      }),
+    );
+
+    act(() => {
+      result.current.insert(1, { test: 'test2' });
+    });
+
+    expect(errorsRef).toEqual({
+      current: {
+        test: [{ test: '1' }, null, { test: '2' }, { test: '3' }],
+      },
+    });
+
+    act(() => {
+      result.current.insert(1, [{ test: 'test2' }, { test: 'test3' }]);
+    });
+
+    expect(errorsRef).toEqual({
+      current: {
+        test: [{ test: '1' }, null, null, null, { test: '2' }, { test: '3' }],
+      },
+    });
+  });
+
   it('should swap data order', () => {
     const { result } = renderHook(() =>
       useFieldArray({
@@ -418,6 +547,85 @@ describe('useFieldArray', () => {
       { id: '1', test: '2' },
       { id: '1', test: '1' },
     ]);
+  });
+
+  it('should swap errors', () => {
+    const errorsRef = {
+      current: {
+        test: [{ test: '1' }, { test: '2' }, { test: '3' }],
+      },
+    };
+
+    const { result } = renderHook(() =>
+      useFieldArray({
+        control: reconfigureControl({
+          defaultValuesRef: {
+            current: { test: [{ test: '1' }, { test: '2' }] },
+          },
+          getValues: () => ({
+            test: [],
+          }),
+          errorsRef: errorsRef as any,
+          fieldsRef: {
+            current: {
+              'test[0]': { ref: { name: 'test[0]', value: { test: '1' } } },
+              'test[1]': { ref: { name: 'test[1]', value: { test: '2' } } },
+            },
+          },
+        }),
+        name: 'test',
+      }),
+    );
+
+    act(() => {
+      result.current.swap(0, 1);
+    });
+
+    expect(errorsRef.current).toEqual({
+      test: [{ test: '2' }, { test: '1' }, { test: '3' }],
+    });
+  });
+
+  it('should swap touched fields', () => {
+    const touchedFieldsRef = {
+      current: {
+        test: [{ test: '1' }, { test: '2' }, { test: '3' }],
+      },
+    };
+
+    const { result } = renderHook(() =>
+      useFieldArray({
+        control: reconfigureControl({
+          defaultValuesRef: {
+            current: { test: [{ test: '1' }, { test: '2' }] },
+          },
+          getValues: () => ({
+            test: [],
+          }),
+          readFormStateRef: {
+            current: {
+              touched: true,
+            },
+          } as any,
+          touchedFieldsRef: touchedFieldsRef as any,
+          fieldsRef: {
+            current: {
+              'test[0]': { ref: { name: 'test[0]', value: { test: '1' } } },
+              'test[1]': { ref: { name: 'test[1]', value: { test: '2' } } },
+            },
+          },
+        }),
+        name: 'test',
+      }),
+    );
+
+    act(() => {
+      result.current.swap(0, 1);
+    });
+
+    expect(touchedFieldsRef.current).toEqual({
+      test: [{ test: '2' }, { test: '1' }, { test: '3' }],
+    });
   });
 
   it('should move into pointed position', () => {
@@ -450,6 +658,116 @@ describe('useFieldArray', () => {
       { id: '1', test: '3' },
       { id: '1', test: '1' },
       { id: '1', test: '2' },
+    ]);
+  });
+
+  it('should move errors', () => {
+    const errorsRef = {
+      current: {
+        test: [{ test: '1' }, { test: '2' }, { test: '3' }],
+      },
+    };
+
+    const { result } = renderHook(() =>
+      useFieldArray({
+        control: reconfigureControl({
+          defaultValuesRef: {
+            current: { test: [{ test: '1' }, { test: '2' }, { test: '3' }] },
+          },
+          getValues: () => ({
+            test: [],
+          }),
+          errorsRef: errorsRef as any,
+        }),
+        name: 'test',
+      }),
+    );
+
+    act(() => {
+      result.current.move(2, 0);
+    });
+
+    expect(errorsRef.current).toEqual({
+      test: [{ test: '3' }, { test: '1' }, { test: '2' }],
+    });
+  });
+
+  it('should move touched fields', () => {
+    const touchedFieldsRef = {
+      current: {
+        test: [{ test: '1' }, { test: '2' }, { test: '3' }],
+      },
+    };
+
+    const { result } = renderHook(() =>
+      useFieldArray({
+        control: reconfigureControl({
+          defaultValuesRef: {
+            current: { test: [{ test: '1' }, { test: '2' }, { test: '3' }] },
+          },
+          getValues: () => ({
+            test: [],
+          }),
+          readFormStateRef: {
+            current: {
+              touched: true,
+            },
+          } as any,
+          touchedFieldsRef: touchedFieldsRef as any,
+        }),
+        name: 'test',
+      }),
+    );
+
+    act(() => {
+      result.current.move(2, 0);
+    });
+
+    expect(touchedFieldsRef.current).toEqual({
+      test: [{ test: '3' }, { test: '1' }, { test: '2' }],
+    });
+  });
+
+  it('should call be able to reset the Field Array', () => {
+    const resetFieldArrayFunctionRef = {
+      current: {},
+    };
+
+    const { result } = renderHook(() =>
+      useFieldArray({
+        control: reconfigureControl({
+          resetFieldArrayFunctionRef,
+          getValues: () => ({
+            test: [],
+          }),
+          defaultValuesRef: {
+            current: { test: [{ test: '1' }, { test: '2' }, { test: '3' }] },
+          },
+        }),
+        name: 'test',
+      }),
+    );
+
+    act(() => {
+      result.current.append({ test: 'test' });
+    });
+
+    expect(result.current.fields).toEqual([
+      { id: '1', test: '1' },
+      { id: '1', test: '2' },
+      { id: '1', test: '3' },
+      { id: '1', test: 'test' },
+    ]);
+
+    act(() => {
+      // @ts-ignore
+      resetFieldArrayFunctionRef.current['test']();
+    });
+
+    expect(result.current.fields).toEqual([
+      { test: '1', id: '1' },
+      { test: '2', id: '1' },
+      { test: '3', id: '1' },
     ]);
   });
 });

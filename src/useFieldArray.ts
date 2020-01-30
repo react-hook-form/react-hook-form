@@ -159,13 +159,18 @@ export function useFieldArray<
     setField(watchFieldArrayRef.current[name]);
 
     if (errorsRef.current[name]) {
-      errorsRef.current[name] = insertAt(errorsRef.current[name], index);
+      errorsRef.current[name] = insertAt(
+        errorsRef.current[name],
+        index,
+        fillEmptyArray(value),
+      );
     }
 
     if (readFormStateRef.current.touched && touchedFieldsRef.current[name]) {
       touchedFieldsRef.current[name] = insertAt(
         touchedFieldsRef.current[name],
         index,
+        fillEmptyArray(value),
       );
     }
   };
