@@ -22,6 +22,7 @@ import {
   FieldValues,
   FieldError,
   FieldRefs,
+  HTMLInputElementLike,
 } from '../types';
 
 type ValidatePromiseResult = {} | void | FieldError;
@@ -31,7 +32,7 @@ export default async <FormValues extends FieldValues>(
   validateAllFieldCriteria: boolean,
   {
     ref,
-    ref: { type, value, name, valueAsNumber, valueAsDate },
+    ref: { type, value, name },
     options,
     required,
     maxLength,
@@ -44,10 +45,10 @@ export default async <FormValues extends FieldValues>(
 ): Promise<FieldErrors<FormValues>> => {
   const fields = fieldsRef.current;
   const error: any = {};
-  const isRadio = isRadioInput(type);
-  const isCheckBox = isCheckBoxInput(type);
+  const isRadio = isRadioInput(ref);
+  const isCheckBox = isCheckBoxInput(ref);
   const isRadioOrCheckbox = isRadio || isCheckBox;
-  const isEmpty = isEmptyString(value);
+  const isEmpty = isEmptyString(value || '');
   const appendErrorsCurry = appendErrors.bind(
     null,
     name,
@@ -103,8 +104,9 @@ export default async <FormValues extends FieldValues>(
     const { value: maxValue, message: maxMessage } = getValueAndMessage(max);
     const { value: minValue, message: minMessage } = getValueAndMessage(min);
 
-    if (type === 'number' || (!type && !isNaN(value))) {
-      const valueNumber = valueAsNumber || parseFloat(value);
+    if (type === 'number' || (!type && !isNaN(value as any))) {
+      const valueNumber =
+        (ref as HTMLInputElementLike).valueAsNumber || parseFloat(value || '');
       if (!isNullOrUndefined(maxValue)) {
         exceedMax = valueNumber > maxValue;
       }
@@ -112,7 +114,8 @@ export default async <FormValues extends FieldValues>(
         exceedMin = valueNumber < minValue;
       }
     } else {
-      const valueDate = valueAsDate || new Date(value);
+      const valueDate =
+        (ref as HTMLInputElementLike).valueAsDate || new Date(value || '');
       if (isString(maxValue)) {
         exceedMax = valueDate > new Date(maxValue);
       }
@@ -161,7 +164,7 @@ export default async <FormValues extends FieldValues>(
       pattern,
     );
 
-    if (isRegex(patternValue) && !patternValue.test(value)) {
+    if (isRegex(patternValue) && !patternValue.test(value || '')) {
       error[name] = {
         type: INPUT_VALIDATION_RULES.pattern,
         message: patternMessage,

@@ -12,11 +12,7 @@ export type FieldValue<FormValues extends FieldValues> = FormValues[FieldName<
   FormValues
 >];
 
-export type Ref =
-  | HTMLInputElement
-  | HTMLSelectElement
-  | HTMLTextAreaElement
-  | any;
+export type Ref = ElementLike;
 
 export type DeepPartial<T> = {
   [P in keyof T]?: T[P] extends Array<infer U>
@@ -26,11 +22,11 @@ export type DeepPartial<T> = {
     : DeepPartial<T[P]>;
 };
 
-export interface ValidationMode {
+export type ValidationMode = {
   onBlur: 'onBlur';
   onChange: 'onChange';
   onSubmit: 'onSubmit';
-}
+};
 
 export type Mode = keyof ValidationMode;
 
@@ -59,10 +55,10 @@ export type UseFormOptions<
   validateCriteriaMode: 'firstError' | 'all';
 }>;
 
-export interface MutationWatcher {
+export type MutationWatcher = {
   disconnect: VoidFunction;
   observe?: any;
-}
+};
 
 type ValidationOptionObject<Value> = Value | { value: Value; message: string };
 
@@ -84,29 +80,26 @@ export type ValidationOptions = Partial<{
 
 export type MultipleFieldErrors = Record<string, ValidateResult>;
 
-export interface FieldError {
+export type FieldError = {
   type: string;
   ref?: Ref;
   types?: MultipleFieldErrors;
   message?: string;
   isManual?: boolean;
-}
+};
 
-export interface ManualFieldError<FormValues> {
+export type ManualFieldError<FormValues> = {
   name: FieldName<FormValues>;
   type: string;
   types?: MultipleFieldErrors;
   message?: string;
-}
+};
 
-export interface Field extends ValidationOptions {
+export type Field = {
   ref: Ref;
   mutationWatcher?: MutationWatcher;
-  options?: {
-    ref: Ref;
-    mutationWatcher?: MutationWatcher;
-  }[];
-}
+  options?: RadioOrCheckboxOption[];
+} & ValidationOptions;
 
 export type FieldRefs<FormValues extends FieldValues> = Partial<
   Record<FieldName<FormValues>, Field>
@@ -130,34 +123,46 @@ export type FieldErrors<FormValues> = NestDataObject<FormValues>;
 
 export type Touched<FormValues> = NestDataObject<FormValues>;
 
-export interface SubmitPromiseResult<FormValues extends FieldValues> {
+export type SubmitPromiseResult<FormValues extends FieldValues> = {
   errors: FieldErrors<FormValues>;
   values: FormValues;
-}
+};
 
-export interface FormStateProxy<FormValues extends FieldValues = FieldValues> {
+export type FormStateProxy<FormValues extends FieldValues = FieldValues> = {
   dirty: boolean;
   isSubmitted: boolean;
   submitCount: number;
   touched: Touched<FormValues>;
   isSubmitting: boolean;
   isValid: boolean;
-}
+};
 
 export type ReadFormState = { [P in keyof FormStateProxy]: boolean };
 
-export interface RadioOrCheckboxOption {
-  ref?: Ref;
+export type RadioOrCheckboxOption = {
+  ref: AugmentedRequired<Partial<HTMLInputElement>, 'name'>;
   mutationWatcher?: MutationWatcher;
-}
+};
 
-export interface ElementLike {
-  name: string;
-  type?: string;
-  value?: string;
-  checked?: boolean;
-  options?: any;
-}
+export type HTMLInputElementLike = AugmentedRequired<
+  Partial<HTMLInputElement>,
+  'name'
+>;
+
+export type HTMLSelectElementLike = AugmentedRequired<
+  Partial<HTMLSelectElement>,
+  'name'
+>;
+
+export type HTMLTextAreaElementLike = AugmentedRequired<
+  Partial<HTMLTextAreaElement>,
+  'name'
+>;
+
+export type ElementLike =
+  | HTMLInputElementLike
+  | HTMLSelectElementLike
+  | HTMLTextAreaElementLike;
 
 export type HandleChange = ({
   type,
@@ -278,3 +283,8 @@ export type UseFieldArrayProps<ControlProp extends Control = Control> = {
 export type WithFieldId<Value> = {
   id?: string;
 } & Value;
+
+export type AugmentedRequired<
+  T extends object,
+  K extends keyof T = keyof T
+> = Omit<T, K> & Required<Pick<T, K>>;

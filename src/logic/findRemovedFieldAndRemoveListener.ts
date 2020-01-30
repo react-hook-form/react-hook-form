@@ -30,13 +30,12 @@ export default function findRemovedFieldAndRemoveListener<
 
   const fieldValue = fields[name];
 
-  if ((isRadioInput(type) || isCheckBoxInput(type)) && fieldValue) {
+  if ((isRadioInput(ref) || isCheckBoxInput(ref)) && fieldValue) {
     const { options } = fieldValue;
 
     if (isArray(options) && options.length) {
-      options.forEach(({ ref }, index): void => {
+      options.forEach(({ ref, mutationWatcher }, index): void => {
         if ((ref && isDetached(ref)) || forceDelete) {
-          const mutationWatcher = ref.mutationWatcher;
           removeAllEventListeners(ref, handleChange);
 
           if (mutationWatcher) {

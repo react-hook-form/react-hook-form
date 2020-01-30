@@ -8,7 +8,11 @@ export const VALIDATION_MODE: ValidationMode = {
 
 export const RADIO_INPUT = 'radio';
 
+export const CHECKBOX_INPUT = 'checkbox';
+
 export const FILE_INPUT = 'file';
+
+export const SELECT_MULTIPLE = 'select-multiple';
 
 export const VALUE = 'value';
 

@@ -12,7 +12,12 @@ export default <FormValues>(
         if (field.ref.focus) {
           field.ref.focus();
           break;
-        } else if (field.options) {
+        } else if (
+          field.options &&
+          field.options[0] &&
+          field.options[0].ref &&
+          field.options[0].ref.focus
+        ) {
           field.options[0].ref.focus();
           break;
         }

@@ -24,7 +24,6 @@ import isArray from './utils/isArray';
 import isString from './utils/isString';
 import isSameError from './utils/isSameError';
 import isUndefined from './utils/isUndefined';
-import isEmptyString from './utils/isEmptyString';
 import onDomRemove from './utils/onDomRemove';
 import get from './utils/get';
 import set from './utils/set';
@@ -178,35 +177,35 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
           ? ''
           : rawValue;
 
-      if (isRadioInput(type) && options) {
+      if (isRadioInput(ref) && options) {
         options.forEach(
           ({ ref: radioRef }) => (radioRef.checked = radioRef.value === value),
         );
-      } else if (isFileInput(type)) {
-        if (value instanceof FileList || isEmptyString(value as string)) {
+      } else if (isFileInput(ref)) {
+        if (value instanceof FileList) {
           ref.files = value;
         } else {
-          ref.value = value;
+          ref.value = value as string;
         }
-      } else if (isMultipleSelect(type)) {
-        [...ref.options].forEach(
+      } else if (isMultipleSelect(ref)) {
+        [...(ref.options || [])].forEach(
           selectRef =>
             (selectRef.selected = (value as string).includes(selectRef.value)),
         );
-      } else if (isCheckBoxInput(type) && options) {
+      } else if (isCheckBoxInput(ref) && options) {
         options.length > 1
           ? options.forEach(
               ({ ref: checkboxRef }) =>
                 (checkboxRef.checked = (value as string).includes(
-                  checkboxRef.value,
+                  checkboxRef.value || '',
                 )),
             )
           : (options[0].ref.checked = !!value);
       } else {
-        ref.value = value;
+        ref.value = value as string;
       }
 
-      return type;
+      return !!type;
     },
     [isWeb],
   );
@@ -712,7 +711,7 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
       ...validateOptions,
     };
     const fields = fieldsRef.current;
-    const isRadioOrCheckbox = isRadioInput(type) || isCheckBoxInput(type);
+    const isRadioOrCheckbox = isRadioInput(ref) || isCheckBoxInput(ref);
     let currentField = fields[name] as Field;
     let isEmptyDefaultValue = true;
     let isFieldArray = false;
@@ -861,7 +860,8 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
     }
 
     return (ref: Element | null) =>
-      ref && registerFieldsRef(ref, refOrValidationOptions);
+      ref &&
+      registerFieldsRef(ref, refOrValidationOptions as ValidationOptions);
   }
 
   const handleSubmit = useCallback(
@@ -989,7 +989,7 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
     for (const value of Object.values(fieldsRef.current)) {
       if (value && value.ref && value.ref.closest) {
         try {
-          value.ref.closest('form').reset();
+          value.ref.closest('form')!.reset();
           break;
         } catch {}
       }
