@@ -1,4 +1,5 @@
 import isArray from '../utils/isArray';
+import isObject from '../utils/isObject';
 import generateId from './generateId';
 import { FieldValues } from '../types';
 
@@ -9,7 +10,7 @@ export const appendId = <
 >(
   value: FormArrayValues,
 ) => ({
-  ...value,
+  ...(isObject(value) ? value : { value }),
   id: generateId(),
 });
 
