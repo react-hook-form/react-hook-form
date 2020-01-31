@@ -16,9 +16,29 @@ exports[`React Hook Form Error Message should render correctly with flat errors 
 </DocumentFragment>
 `;
 
+exports[`React Hook Form Error Message should render correctly with flat errors and as with component and className and children 1`] = `
+<DocumentFragment>
+  <span
+    class="test"
+  >
+    flat
+  </span>
+</DocumentFragment>
+`;
+
 exports[`React Hook Form Error Message should render correctly with flat errors and as with string 1`] = `
 <DocumentFragment>
   <span>
+    flat
+  </span>
+</DocumentFragment>
+`;
+
+exports[`React Hook Form Error Message should render correctly with flat errors and as with string and className 1`] = `
+<DocumentFragment>
+  <span
+    class="test"
+  >
     flat
   </span>
 </DocumentFragment>
