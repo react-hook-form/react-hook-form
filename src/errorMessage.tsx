@@ -8,16 +8,21 @@ import {
   ErrorMessageProps,
 } from './types';
 
-const ErrorMessage = <
+function ErrorMessage<
   Errors extends FieldErrors<any>,
-  Name extends FieldName<FormValuesFromErrors<Errors>>
+  Name extends FieldName<FormValuesFromErrors<Errors>>,
+  As extends
+    | undefined
+    | React.ReactElement
+    | keyof JSX.IntrinsicElements = undefined
 >({
   as: InnerComponent,
   errors,
   name,
   message,
   children,
-}: ErrorMessageProps<Errors, Name>) => {
+  ...rest
+}: ErrorMessageProps<Errors, Name, As>) {
   const methods = useFormContext();
   const error = get(errors || methods.errors, name);
 
@@ -27,6 +32,7 @@ const ErrorMessage = <
 
   const { message: messageFromRegister, types } = error;
   const props = {
+    ...(InnerComponent ? rest : {}),
     children: children
       ? children({ message: messageFromRegister || message, messages: types })
       : messageFromRegister || message,
@@ -36,11 +42,11 @@ const ErrorMessage = <
     React.isValidElement(InnerComponent) ? (
       React.cloneElement(InnerComponent, props)
     ) : (
-      <InnerComponent {...props} />
+      React.createElement(InnerComponent as string, props)
     )
   ) : (
     <React.Fragment {...props} />
   );
-};
+}
 
 export { ErrorMessage };

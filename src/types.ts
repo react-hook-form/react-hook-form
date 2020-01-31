@@ -242,6 +242,19 @@ export type Control<FormValues extends FieldValues = FieldValues> = {
   >;
 };
 
+export type AsProps<
+  As extends
+    | undefined
+    | React.ReactElement
+    | keyof JSX.IntrinsicElements = undefined
+> = As extends keyof JSX.IntrinsicElements
+  ? JSX.IntrinsicElements[As]
+  : As extends React.ReactElement
+  ? { [key: string]: any }
+  : As extends undefined
+  ? {}
+  : never;
+
 export type ControllerProps<ControlProp extends Control = Control> = {
   name: string;
   as: React.ReactElement | React.ElementType | string;
@@ -259,9 +272,13 @@ export type ControllerProps<ControlProp extends Control = Control> = {
 
 export type ErrorMessageProps<
   Errors extends FieldErrors<any>,
-  Name extends FieldName<FormValuesFromErrors<Errors>>
+  Name extends FieldName<FormValuesFromErrors<Errors>>,
+  As extends
+    | undefined
+    | React.ReactElement
+    | keyof JSX.IntrinsicElements = undefined
 > = {
-  as?: React.ReactElement | React.ElementType | string;
+  as?: As;
   errors?: Errors;
   name: Name;
   message?: string;
@@ -269,7 +286,7 @@ export type ErrorMessageProps<
     message: string;
     messages: MultipleFieldErrors;
   }) => React.ReactNode;
-};
+} & AsProps<As>;
 
 export type UseFieldArrayProps<ControlProp extends Control = Control> = {
   control?: ControlProp;

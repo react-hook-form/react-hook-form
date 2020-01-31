@@ -32,12 +32,40 @@ describe('React Hook Form Error Message', () => {
     expect(asFragment()).toMatchSnapshot();
   });
 
+  it('should render correctly with flat errors and as with string and className', () => {
+    const { asFragment } = render(
+      <ErrorMessage
+        as="span"
+        errors={{ flat: { type: 'flat', message: 'flat' } }}
+        name="flat"
+        className="test"
+      />,
+    );
+
+    expect(asFragment()).toMatchSnapshot();
+  });
+
   it('should render correctly with flat errors and as with component and children', () => {
     const { asFragment } = render(
       <ErrorMessage
         as={<span />}
         errors={{ flat: { type: 'flat', message: 'flat' } }}
         name="flat"
+      >
+        {({ message }) => message}
+      </ErrorMessage>,
+    );
+
+    expect(asFragment()).toMatchSnapshot();
+  });
+
+  it('should render correctly with flat errors and as with component and className and children', () => {
+    const { asFragment } = render(
+      <ErrorMessage
+        as={<span />}
+        errors={{ flat: { type: 'flat', message: 'flat' } }}
+        name="flat"
+        className="test"
       >
         {({ message }) => message}
       </ErrorMessage>,
