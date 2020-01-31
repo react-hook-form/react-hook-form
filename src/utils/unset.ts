@@ -18,7 +18,7 @@ const unsetObject = (target: any) => {
       (isUndefined(data) ||
         isEmptyObject(data) ||
         (isArrayObject && !target[key].filter(Boolean).length)) &&
-      !isFileListObject(data)
+      !isFileListObject(target)
     ) {
       delete target[key];
     }
