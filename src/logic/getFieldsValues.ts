@@ -7,9 +7,10 @@ export default <FormValues extends FieldValues>(
   search?: any,
 ) => {
   const output: Record<string, FormValues> = {};
+  const isSearchString = isString(search);
 
   for (const name in fields) {
-    if (!search || (isString(search) && name.startsWith(search))) {
+    if (!isSearchString || (isSearchString && name.startsWith(search))) {
       output[name] = getFieldValue(fields, (fields[name] || {}).ref);
     }
   }
