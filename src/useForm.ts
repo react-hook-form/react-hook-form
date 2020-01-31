@@ -24,6 +24,7 @@ import isArray from './utils/isArray';
 import isString from './utils/isString';
 import isSameError from './utils/isSameError';
 import isUndefined from './utils/isUndefined';
+import isFileListObject from './utils/isFileListObject';
 import isEmptyString from './utils/isEmptyString';
 import onDomRemove from './utils/onDomRemove';
 import get from './utils/get';
@@ -56,7 +57,6 @@ import {
   Touched,
   FieldError,
 } from './types';
-import isFileListObject from './utils/isFileListObject';
 
 const { useRef, useState, useCallback, useEffect } = React;
 
