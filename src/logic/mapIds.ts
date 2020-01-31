@@ -10,7 +10,7 @@ export const appendId = <
 >(
   value: FormArrayValues,
 ) => ({
-  ...(isObject(value) ? { ...value } : { value }),
+  ...(isObject(value) ? value : { value }),
   id: generateId(),
 });
 
