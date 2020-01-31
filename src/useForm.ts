@@ -56,6 +56,7 @@ import {
   Touched,
   FieldError,
 } from './types';
+import isFileListObject from './utils/isFileListObject';
 
 const { useRef, useState, useCallback, useEffect } = React;
 
@@ -186,7 +187,10 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
           ({ ref: radioRef }) => (radioRef.checked = radioRef.value === value),
         );
       } else if (isFileInput(type)) {
-        if (value instanceof FileList || isEmptyString(value as string)) {
+        if (
+          isEmptyString(value as string) ||
+          isFileListObject(value as object)
+        ) {
           ref.files = value;
         } else {
           ref.value = value;
