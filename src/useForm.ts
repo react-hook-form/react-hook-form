@@ -24,6 +24,7 @@ import isArray from './utils/isArray';
 import isString from './utils/isString';
 import isSameError from './utils/isSameError';
 import isUndefined from './utils/isUndefined';
+import isFileListObject from './utils/isFileListObject';
 import isEmptyString from './utils/isEmptyString';
 import onDomRemove from './utils/onDomRemove';
 import get from './utils/get';
@@ -186,7 +187,10 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
           ({ ref: radioRef }) => (radioRef.checked = radioRef.value === value),
         );
       } else if (isFileInput(type)) {
-        if (value instanceof FileList || isEmptyString(value as string)) {
+        if (
+          isEmptyString(value as string) ||
+          isFileListObject(value as object)
+        ) {
           ref.files = value;
         } else {
           ref.value = value;

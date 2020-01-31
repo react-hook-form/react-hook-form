@@ -3,6 +3,7 @@ import isObject from './isObject';
 import isArray from './isArray';
 import isUndefined from './isUndefined';
 import isEmptyObject from './isEmptyObject';
+import isFileListObject from './isFileListObject';
 
 const unsetObject = (target: any) => {
   for (const key in target) {
@@ -14,9 +15,10 @@ const unsetObject = (target: any) => {
     }
 
     if (
-      isUndefined(data) ||
-      isEmptyObject(data) ||
-      (isArrayObject && !target[key].filter(Boolean).length)
+      (isUndefined(data) ||
+        isEmptyObject(data) ||
+        (isArrayObject && !target[key].filter(Boolean).length)) &&
+      !isFileListObject(target)
     ) {
       delete target[key];
     }
