@@ -636,7 +636,10 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
         ? {}
         : defaultValuesRef.current
       : defaultValue;
-    const fieldValues = getFieldsValues<FormValues>(fieldsRef.current);
+    const fieldValues = getFieldsValues<FormValues>(
+      fieldsRef.current,
+      fieldNames,
+    );
     const watchFields = watchFieldsRef.current;
 
     if (isProxyEnabled) {
