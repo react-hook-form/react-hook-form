@@ -137,6 +137,7 @@ export interface SubmitPromiseResult<FormValues extends FieldValues> {
 
 export interface FormStateProxy<FormValues extends FieldValues = FieldValues> {
   dirty: boolean;
+  dirtyFields: Set<FieldName<FormValues>>;
   isSubmitted: boolean;
   submitCount: number;
   touched: Touched<FormValues>;

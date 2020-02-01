@@ -35,6 +35,7 @@ export const reconfigureControl = (
   formState: {
     dirty: false,
     isSubmitted: false,
+    dirtyFields: new Set(),
     submitCount: 0,
     touched: {},
     isSubmitting: false,
