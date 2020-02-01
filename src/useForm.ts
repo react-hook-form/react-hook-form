@@ -105,6 +105,7 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
   const isProxyEnabled = isWeb && 'Proxy' in window;
   const readFormStateRef = useRef<ReadFormState>({
     dirty: !isProxyEnabled,
+    dirtyFields: !isProxyEnabled,
     isSubmitted: isOnSubmit,
     submitCount: !isProxyEnabled,
     touched: !isProxyEnabled,
@@ -219,11 +220,15 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
   );
 
   const setDirty = (name: FieldName<FormValues>): boolean => {
-    if (!fieldsRef.current[name] || !readFormStateRef.current.dirty) {
+    if (
+      !fieldsRef.current[name] ||
+      (!readFormStateRef.current.dirty && !readFormStateRef.current.dirtyFields)
+    ) {
       return false;
     }
 
     const isFieldArray = isNameInFieldArray(fieldArrayNamesRef.current, name);
+    const previousDirtyFieldsLength = dirtyFieldsRef.current.size;
     let isDirty =
       defaultRenderValuesRef.current[name] !==
       getFieldValue(fieldsRef.current, fieldsRef.current[name]!.ref);
@@ -247,7 +252,9 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
     }
 
     isDirtyRef.current = isFieldArray ? isDirty : !!dirtyFieldsRef.current.size;
-    return isDirtyChanged;
+    return readFormStateRef.current.dirty
+      ? isDirtyChanged
+      : previousDirtyFieldsLength !== dirtyFieldsRef.current.size;
   };
 
   const setInternalValue = useCallback(
@@ -1053,6 +1060,7 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
 
   const formState = {
     dirty: isDirtyRef.current,
+    dirtyFields: dirtyFieldsRef.current,
     isSubmitted: isSubmittedRef.current,
     submitCount: submitCountRef.current,
     touched: touchedFieldsRef.current,
