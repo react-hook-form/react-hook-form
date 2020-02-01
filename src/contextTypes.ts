@@ -14,14 +14,11 @@ import {
   Control,
 } from './types';
 
-export interface FormProps<FormValues extends FieldValues = FieldValues>
-  extends FormContextValues<FormValues> {
+export type FormProps<FormValues extends FieldValues = FieldValues> = {
   children: React.ReactNode;
-}
+} & FormContextValues<FormValues>;
 
-export interface FormContextValues<
-  FormValues extends FieldValues = FieldValues
-> {
+export type FormContextValues<FormValues extends FieldValues = FieldValues> = {
   register<Element extends ElementLike = ElementLike>(): (
     ref: Element | null,
   ) => void;
@@ -95,4 +92,4 @@ export interface FormContextValues<
     callback: OnSubmit<FormValues>,
   ) => (e?: React.BaseSyntheticEvent) => Promise<void>;
   control: Control<FormValues>;
-}
+};
