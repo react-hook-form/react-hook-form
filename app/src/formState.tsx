@@ -33,6 +33,7 @@ const FormState: React.FC = (props: any) => {
         {JSON.stringify({
           ...formState,
           touched: Object.keys(formState.touched),
+          dirtyFields: [...formState.dirtyFields],
         })}
       </div>
       <select name="select" ref={register} defaultValue="test">

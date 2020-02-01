@@ -54,6 +54,7 @@ const FormStateWithSchema: React.FC = (props: any) => {
         {JSON.stringify({
           ...formState,
           touched: Object.keys(formState.touched),
+          dirtyFields: [...formState.dirtyFields],
         })}
       </div>
       <div id="renderCount">{renderCounter}</div>
