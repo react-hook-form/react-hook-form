@@ -3,10 +3,10 @@ import isUndefined from '../utils/isUndefined';
 import isEmptyString from '../utils/isEmptyString';
 import { RadioOrCheckboxOption } from '../types';
 
-interface CheckboxFieldResult {
+type CheckboxFieldResult = {
   isValid: boolean;
   value: string | string[] | boolean;
-}
+};
 
 const defaultResult: CheckboxFieldResult = {
   value: false,

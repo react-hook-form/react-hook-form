@@ -26,11 +26,11 @@ export type DeepPartial<T> = {
     : DeepPartial<T[P]>;
 };
 
-export interface ValidationMode {
+export type ValidationMode = {
   onBlur: 'onBlur';
   onChange: 'onChange';
   onSubmit: 'onSubmit';
-}
+};
 
 export type Mode = keyof ValidationMode;
 
@@ -59,10 +59,10 @@ export type UseFormOptions<
   validateCriteriaMode: 'firstError' | 'all';
 }>;
 
-export interface MutationWatcher {
+export type MutationWatcher = {
   disconnect: VoidFunction;
   observe?: any;
-}
+};
 
 type ValidationOptionObject<Value> = Value | { value: Value; message: string };
 
@@ -84,29 +84,29 @@ export type ValidationOptions = Partial<{
 
 export type MultipleFieldErrors = Record<string, ValidateResult>;
 
-export interface FieldError {
+export type FieldError = {
   type: string;
   ref?: Ref;
   types?: MultipleFieldErrors;
   message?: string;
   isManual?: boolean;
-}
+};
 
-export interface ManualFieldError<FormValues> {
+export type ManualFieldError<FormValues> = {
   name: FieldName<FormValues>;
   type: string;
   types?: MultipleFieldErrors;
   message?: string;
-}
+};
 
-export interface Field extends ValidationOptions {
+export type Field = {
   ref: Ref;
   mutationWatcher?: MutationWatcher;
   options?: {
     ref: Ref;
     mutationWatcher?: MutationWatcher;
   }[];
-}
+} & ValidationOptions;
 
 export type FieldRefs<FormValues extends FieldValues> = Partial<
   Record<FieldName<FormValues>, Field>
@@ -130,12 +130,12 @@ export type FieldErrors<FormValues> = NestDataObject<FormValues>;
 
 export type Touched<FormValues> = NestDataObject<FormValues>;
 
-export interface SubmitPromiseResult<FormValues extends FieldValues> {
+export type SubmitPromiseResult<FormValues extends FieldValues> = {
   errors: FieldErrors<FormValues>;
   values: FormValues;
-}
+};
 
-export interface FormStateProxy<FormValues extends FieldValues = FieldValues> {
+export type FormStateProxy<FormValues extends FieldValues = FieldValues> = {
   dirty: boolean;
   dirtyFields: Set<FieldName<FormValues>>;
   isSubmitted: boolean;
@@ -143,22 +143,22 @@ export interface FormStateProxy<FormValues extends FieldValues = FieldValues> {
   touched: Touched<FormValues>;
   isSubmitting: boolean;
   isValid: boolean;
-}
+};
 
 export type ReadFormState = { [P in keyof FormStateProxy]: boolean };
 
-export interface RadioOrCheckboxOption {
+export type RadioOrCheckboxOption = {
   ref?: Ref;
   mutationWatcher?: MutationWatcher;
-}
+};
 
-export interface ElementLike {
+export type ElementLike = {
   name: string;
   type?: string;
   value?: string;
   checked?: boolean;
   options?: any;
-}
+};
 
 export type HandleChange = ({
   type,

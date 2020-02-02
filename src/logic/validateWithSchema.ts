@@ -3,21 +3,21 @@ import isArray from '../utils/isArray';
 import { FieldValues, SchemaValidateOptions, FieldErrors } from '../types';
 import transformToNestObject from './transformToNestObject';
 
-interface SchemaValidationResult<FormValues> {
+type SchemaValidationResult<FormValues> = {
   errors: FieldErrors<FormValues>;
   values: FieldValues;
-}
+};
 
-interface YupValidationError {
+type YupValidationError = {
   inner: { path: string; message: string; type: string }[];
   path: string;
   message: string;
   type: string;
-}
+};
 
-interface Schema<Data> {
+type Schema<Data> = {
   validate(value: FieldValues, options?: SchemaValidateOptions): Promise<Data>;
-}
+};
 
 export const parseErrorSchema = <FormValues>(
   error: YupValidationError,
