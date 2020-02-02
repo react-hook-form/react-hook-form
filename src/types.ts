@@ -53,7 +53,6 @@ export type UseFormOptions<
   mode: Mode;
   reValidateMode: Mode;
   defaultValues: DeepPartial<FormValues>;
-  validationSchemaOption: SchemaValidateOptions;
   validationSchema: any;
   submitFocusError: boolean;
   validateCriteriaMode: 'firstError' | 'all';
