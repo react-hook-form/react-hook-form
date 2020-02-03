@@ -10,6 +10,7 @@ context('basic form validation', () => {
     cy.get('#Select').contains('Select Error');
     cy.get('#switch').contains('switch Error');
 
+    cy.get('#reset').click();
     cy.get('#input-checkbox input').click();
     cy.get('#input-radio-group input').click({ multiple: true });
     cy.get('#input-textField input').type('test');
@@ -22,7 +23,7 @@ context('basic form validation', () => {
       .click();
 
     cy.get('p').should('have.length', 2);
-    cy.get('#renderCount').contains('8');
+    cy.get('#renderCount').contains('3');
   });
 
   it('should validate the form with onBlur mode and reset the form', () => {

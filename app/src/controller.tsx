@@ -148,6 +148,7 @@ export default function Field(props: any) {
       <span id="renderCount">{renderCount}</span>
 
       <button
+        id="reset"
         type="button"
         onClick={() => {
           reset({
