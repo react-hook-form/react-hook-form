@@ -242,17 +242,12 @@ export type Control<FormValues extends FieldValues = FieldValues> = {
   >;
 };
 
-export type AsProps<
-  As extends
-    | undefined
-    | React.ReactElement
-    | keyof JSX.IntrinsicElements = undefined
-> = As extends keyof JSX.IntrinsicElements
-  ? JSX.IntrinsicElements[As]
+export type AsProps<As> = As extends undefined
+  ? {}
   : As extends React.ReactElement
   ? { [key: string]: any }
-  : As extends undefined
-  ? {}
+  : As extends keyof JSX.IntrinsicElements
+  ? JSX.IntrinsicElements[As]
   : never;
 
 export type ControllerProps<ControlProp extends Control = Control> = {

@@ -8,7 +8,7 @@ import {
   ErrorMessageProps,
 } from './types';
 
-function ErrorMessage<
+const ErrorMessage = <
   Errors extends FieldErrors<any>,
   Name extends FieldName<FormValuesFromErrors<Errors>>,
   As extends
@@ -22,7 +22,7 @@ function ErrorMessage<
   message,
   children,
   ...rest
-}: ErrorMessageProps<Errors, Name, As>) {
+}: ErrorMessageProps<Errors, Name, As>) => {
   const methods = useFormContext();
   const error = get(errors || methods.errors, name);
 
@@ -47,6 +47,6 @@ function ErrorMessage<
   ) : (
     <React.Fragment {...props} />
   );
-}
+};
 
 export { ErrorMessage };
