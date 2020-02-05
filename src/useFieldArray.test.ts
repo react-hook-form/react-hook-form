@@ -1,6 +1,6 @@
 import { act, renderHook } from '@testing-library/react-hooks';
-import { useFieldArray } from './useFieldArray';
 import { appendId } from './logic/mapIds';
+import { useFieldArray } from './useFieldArray';
 import { reconfigureControl } from './useForm.test';
 
 jest.mock('./logic/generateId', () => ({
@@ -343,6 +343,35 @@ describe('useFieldArray', () => {
     });
 
     expect(result.current.fields).toEqual([]);
+  });
+
+  it('should remove specific fields when index is array', () => {
+    const { result } = renderHook(() =>
+      useFieldArray({
+        control: reconfigureControl({
+          defaultValuesRef: {
+            current: { test: [{ test: '1' }, { test: '2' }, { test: '3' }] },
+          },
+          getValues: () => ({
+            test: [],
+          }),
+          fieldsRef: {
+            current: {
+              'test[0]': { ref: { name: 'test[0]', value: { test: '1' } } },
+              'test[1]': { ref: { name: 'test[1]', value: { test: '2' } } },
+              'test[2]': { ref: { name: 'test[2]', value: { test: '3' } } },
+            },
+          },
+        }),
+        name: 'test',
+      }),
+    );
+
+    act(() => {
+      result.current.remove([0, 2]);
+    });
+
+    expect(result.current.fields).toEqual([{ test: '2', id: '1' }]);
   });
 
   it('should insert data at index', () => {
