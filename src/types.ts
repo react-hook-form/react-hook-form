@@ -260,6 +260,7 @@ export type ControllerProps<ControlProp extends Control = Control> = {
   onChangeName?: string;
   onBlurName?: string;
   valueName?: string;
+  valueTransformer?: (value: any) => any;
   defaultValue?: any;
   control?: ControlProp;
   [key: string]: any;

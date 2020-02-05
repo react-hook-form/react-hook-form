@@ -17,6 +17,7 @@ const Controller = <ControlProp extends Control = Control>({
   onChange,
   onChangeName = VALIDATION_MODE.onChange,
   onBlurName = VALIDATION_MODE.onBlur,
+  valueTransformer,
   valueName,
   defaultValue,
   control,
@@ -132,7 +133,11 @@ const Controller = <ControlProp extends Control = Control>({
           },
         }
       : {}),
-    ...{ [valueName || (isCheckboxInput ? 'checked' : VALUE)]: value },
+    ...{
+      [valueName || (isCheckboxInput ? 'checked' : VALUE)]: valueTransformer
+        ? valueTransformer(value)
+        : value,
+    },
   };
 
   return React.isValidElement(InnerComponent) ? (
