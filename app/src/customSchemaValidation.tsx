@@ -1,5 +1,5 @@
 import React from 'react';
-import useForm from 'react-hook-form';
+import { useForm } from 'react-hook-form';
 import Joi from '@hapi/joi';
 
 let renderCounter = 0;
@@ -25,7 +25,7 @@ const validationSchema = Joi.object({
   checkbox: Joi.required(),
 });
 
-const resolver = (data: any) => {
+const validationResolver = (data: any) => {
   const { error, value: values } = validationSchema.validate(data, {
     abortEarly: false,
   });

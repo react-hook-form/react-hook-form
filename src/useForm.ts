@@ -100,6 +100,7 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
   const [, render] = useState();
   const { isOnBlur, isOnSubmit } = useRef(modeChecker(mode)).current;
   const isWindowUndefined = typeof window === UNDEFINED;
+  const shouldValidateCallback = !!(validationSchema || validationResolver);
   const isWeb =
     typeof document !== UNDEFINED &&
     !isWindowUndefined &&
@@ -143,7 +144,10 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
         });
 
       if (isEmptyObject(error)) {
-        if (fieldsWithValidationRef.current.has(name) || validationSchema) {
+        if (
+          fieldsWithValidationRef.current.has(name) ||
+          shouldValidateCallback
+        ) {
           validFieldsRef.current.add(name);
           shouldReRender = shouldReRender || get(errorsRef.current, name);
         }
@@ -161,7 +165,7 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
         return true;
       }
     },
-    [reRender, validationSchema],
+    [reRender, shouldValidateCallback],
   );
 
   const setFieldValue = useCallback(
@@ -354,7 +358,7 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
     ): Promise<boolean> => {
       const fields = payload || Object.keys(fieldsRef.current);
 
-      if (validationSchema) {
+      if (shouldValidateCallback) {
         return executeSchemaValidation(fields);
       }
 
@@ -368,7 +372,12 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
 
       return await executeValidation(fields);
     },
-    [executeSchemaValidation, executeValidation, reRender, validationSchema],
+    [
+      executeSchemaValidation,
+      executeValidation,
+      reRender,
+      shouldValidateCallback,
+    ],
   );
 
   const setValue = useCallback<
@@ -439,7 +448,7 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
           return shouldUpdateState && reRender();
         }
 
-        if (validationSchema || validationResolver) {
+        if (shouldValidateCallback) {
           const { errors } = await validateWithSchema<FormValues>(
             validationSchema,
             validateAllFieldCriteria,
@@ -518,7 +527,7 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
         reRender();
       }
 
-      if (validationSchema) {
+      if (shouldValidateCallback) {
         validateSchemaIsValid();
       }
     },
@@ -808,7 +817,7 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
       }
     }
 
-    if (validationSchema && readFormStateRef.current.isValid) {
+    if (shouldValidateCallback && readFormStateRef.current.isValid) {
       validateSchemaIsValid();
     } else if (!isEmptyObject(validateOptions)) {
       fieldsWithValidationRef.current.add(name);
@@ -918,7 +927,7 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
       }
 
       try {
-        if (validationSchema || validationResolver) {
+        if (shouldValidateCallback) {
           fieldValues = getFieldsValues(fields);
           const { errors, values } = await validateWithSchema(
             validationSchema,
@@ -1006,6 +1015,7 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
     },
     [
       reRender,
+      shouldValidateCallback,
       submitFocusError,
       validateAllFieldCriteria,
       validationContext,
@@ -1074,7 +1084,7 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
     [removeFieldEventListenerAndRef],
   );
 
-  if (!validationSchema) {
+  if (!shouldValidateCallback) {
     isValidRef.current =
       validFieldsRef.current.size >= fieldsWithValidationRef.current.size &&
       isEmptyObject(errorsRef.current);

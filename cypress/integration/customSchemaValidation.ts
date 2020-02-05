@@ -1,4 +1,4 @@
-context('basicSchemaValidation form validation', () => {
+context('customSchemaValidation form validation', () => {
   it('should validate the form with onSubmit mode', () => {
     cy.visit('http://localhost:3000/customSchemaValidation/onSubmit');
     cy.get('button').click();
@@ -47,7 +47,7 @@ context('basicSchemaValidation form validation', () => {
     cy.get('input[name="checkbox"]').check();
 
     cy.get('p').should('have.length', 0);
-    cy.get('#renderCount').contains('24');
+    cy.get('#renderCount').contains('25');
   });
 
   it('should validate the form with onBlur mode', () => {

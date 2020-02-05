@@ -49,7 +49,7 @@ export type SchemaValidateOptions = Partial<{
 
 export type ValidationResolver = <FormValues>(
   values: FieldValues,
-  context: any,
+  validationContext: object,
 ) => { values: FieldValues; errors: FieldErrors<FormValues> };
 
 export type UseFormOptions<
