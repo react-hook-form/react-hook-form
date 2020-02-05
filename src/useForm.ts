@@ -307,10 +307,10 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
     ): Promise<boolean> => {
       const { errors } = await validateWithSchema<FormValues>(
         validationSchema,
-        validationResolver,
-        validationContext,
         validateAllFieldCriteria,
         getFieldValueByName(fieldsRef.current),
+        validationResolver,
+        validationContext,
       );
       const previousFormIsValid = isValidRef.current;
       isValidRef.current = isEmptyObject(errors);
@@ -439,13 +439,13 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
           return shouldUpdateState && reRender();
         }
 
-        if (validationSchema) {
+        if (validationSchema || validationResolver) {
           const { errors } = await validateWithSchema<FormValues>(
             validationSchema,
-            validationResolver,
-            validationContext,
             validateAllFieldCriteria,
             getFieldValueByName(fields),
+            validationResolver,
+            validationContext,
           );
           const previousFormIsValid = isValidRef.current;
           isValidRef.current = isEmptyObject(errors);
@@ -477,10 +477,10 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
 
     validateWithSchema(
       validationSchema,
-      validationResolver,
-      validationContext,
       validateAllFieldCriteria,
       transformToNestObject(fieldValues),
+      validationResolver,
+      validationContext,
     ).then(({ errors }) => {
       const previousFormIsValid = isValidRef.current;
       isValidRef.current = isEmptyObject(errors);
@@ -918,14 +918,14 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
       }
 
       try {
-        if (validationSchema) {
+        if (validationSchema || validationResolver) {
           fieldValues = getFieldsValues(fields);
           const { errors, values } = await validateWithSchema(
             validationSchema,
-            validationResolver,
-            validationContext,
             validateAllFieldCriteria,
             transformToNestObject(fieldValues),
+            validationResolver,
+            validationContext,
           );
           errorsRef.current = errors;
           fieldErrors = errors;

@@ -62,27 +62,29 @@ export const parseErrorSchema = <FormValues>(
 
 export default async function validateWithSchema<FormValues>(
   validationSchema: Schema<FormValues>,
-  validationResolver: ValidationResolver,
-  context: any,
   validateAllFieldCriteria: boolean,
   data: FieldValues,
+  validationResolver?: ValidationResolver,
+  context?: any,
 ): Promise<SchemaValidationResult<FormValues>> {
-  if (validationSchema) {
-    try {
-      return {
-        values: await (validationSchema as Schema<FormValues>).validate(data, {
-          abortEarly: false,
-          context,
-        }),
-        errors: {},
-      };
-    } catch (e) {
-      return {
-        values: {},
-        errors: parseErrorSchema<FormValues>(e, validateAllFieldCriteria),
-      };
-    }
+  if (validationResolver) {
+    return validationResolver(data, context);
   }
 
-  return validationResolver(data, context);
+  try {
+    return {
+      values: await (validationSchema as Schema<FormValues>).validate(data, {
+        abortEarly: false,
+        context,
+      }),
+      errors: {},
+    };
+  } catch (e) {
+    return {
+      values: {},
+      errors: transformToNestObject(
+        parseErrorSchema<FormValues>(e, validateAllFieldCriteria),
+      ),
+    };
+  }
 }
