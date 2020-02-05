@@ -39,7 +39,7 @@
 - [Tiny size](https://bundlephobia.com/result?p=react-hook-form@latest) without any dependency
 - Follows HTML standard for validation
 - Compatible with React Native
-- Supports [Yup](https://github.com/jquense/yup) schema-based validation
+- Supports [Yup](https://github.com/jquense/yup), [Joi](https://github.com/hapijs/joi) or custom schema-based validation
 - Supports native browser validation
 - Build forms quickly with the [form builder](https://react-hook-form.com/form-builder)
 
@@ -73,13 +73,10 @@ function App() {
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
       <input name="firstname" ref={register} /> {/* register an input */}
-
       <input name="lastname" ref={register({ required: true })} />
       {errors.lastname && 'Last name is required.'}
-
       <input name="age" ref={register({ pattern: /\d+/ })} />
       {errors.age && 'Please enter number for age.'}
-
       <input type="submit" />
     </form>
   );

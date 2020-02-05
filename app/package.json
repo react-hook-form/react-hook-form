@@ -3,7 +3,9 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@hapi/joi": "^17.1.0",
     "@material-ui/core": "^4.8.0",
+    "@types/hapi__joi": "^16.0.9",
     "@types/jest": "24.0.24",
     "@types/node": "12.12.21",
     "@types/react": "16.9.17",

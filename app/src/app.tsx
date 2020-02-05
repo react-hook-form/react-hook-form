@@ -21,6 +21,7 @@ import SetValueWithTrigger from './setValueWithTrigger';
 import IsValid from './isValid';
 import Controller from './controller';
 import UseFieldArray from './useFieldArray';
+import CustomSchemaValidation from './customSchemaValidation';
 
 const App: React.FC = () => {
   return (
@@ -77,6 +78,11 @@ const App: React.FC = () => {
         path="/watch-default-values"
         exact
         component={WatchDefaultValues}
+      />
+      <Route
+        path="/customSchemaValidation/:mode"
+        exact
+        component={CustomSchemaValidation}
       />
     </Router>
   );

@@ -54,6 +54,11 @@ export type UseFormOptions<
   reValidateMode: Mode;
   defaultValues: DeepPartial<FormValues>;
   validationSchema: any;
+  validationResolver: (
+    values: FieldValues,
+    context: any,
+  ) => { values: FieldValues; errors: FieldErrors<FormValues> };
+  validationContext: object;
   submitFocusError: boolean;
   validateCriteriaMode: 'firstError' | 'all';
 }>;

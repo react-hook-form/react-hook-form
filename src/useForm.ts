@@ -64,6 +64,8 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
   mode = VALIDATION_MODE.onSubmit,
   reValidateMode = VALIDATION_MODE.onChange,
   validationSchema,
+  validationResolver,
+  validationContext,
   defaultValues = {},
   submitFocusError = true,
   validateCriteriaMode,
@@ -305,6 +307,8 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
     ): Promise<boolean> => {
       const { errors } = await validateWithSchema<FormValues>(
         validationSchema,
+        validationResolver,
+        validationContext,
         validateAllFieldCriteria,
         getFieldValueByName(fieldsRef.current),
       );
@@ -338,6 +342,8 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
       reRender,
       shouldRenderBaseOnError,
       validateAllFieldCriteria,
+      validationContext,
+      validationResolver,
       validationSchema,
     ],
   );
@@ -436,6 +442,8 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
         if (validationSchema) {
           const { errors } = await validateWithSchema<FormValues>(
             validationSchema,
+            validationResolver,
+            validationContext,
             validateAllFieldCriteria,
             getFieldValueByName(fields),
           );
@@ -469,6 +477,8 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
 
     validateWithSchema(
       validationSchema,
+      validationResolver,
+      validationContext,
       validateAllFieldCriteria,
       transformToNestObject(fieldValues),
     ).then(({ errors }) => {
@@ -479,7 +489,13 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
         reRender();
       }
     });
-  }, [reRender, validateAllFieldCriteria, validationSchema]);
+  }, [
+    reRender,
+    validateAllFieldCriteria,
+    validationContext,
+    validationResolver,
+    validationSchema,
+  ]);
 
   const resetFieldRef = useCallback(
     (name: FieldName<FormValues>) => {
@@ -906,6 +922,8 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
           fieldValues = getFieldsValues(fields);
           const { errors, values } = await validateWithSchema(
             validationSchema,
+            validationResolver,
+            validationContext,
             validateAllFieldCriteria,
             transformToNestObject(fieldValues),
           );
@@ -986,7 +1004,14 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
         reRender();
       }
     },
-    [reRender, submitFocusError, validateAllFieldCriteria, validationSchema],
+    [
+      reRender,
+      submitFocusError,
+      validateAllFieldCriteria,
+      validationContext,
+      validationResolver,
+      validationSchema,
+    ],
   );
 
   const resetRefs = () => {
