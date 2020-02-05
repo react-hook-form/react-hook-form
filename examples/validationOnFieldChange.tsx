@@ -12,7 +12,7 @@ export default function App() {
 
   return (
     <div className="App">
-      <form onSubmit={handleSubmit(onSubmit)}>
+      <form onChange={handleSubmit(onSubmit)}>
         <div>
           <label htmlFor="firstName">First Name</label>
           <input
