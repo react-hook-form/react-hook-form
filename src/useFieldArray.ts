@@ -13,14 +13,25 @@ import prependAt from './utils/prepend';
 import isArray from './utils/isArray';
 import insertAt from './utils/insert';
 import fillEmptyArray from './utils/fillEmptyArray';
-import { FieldValues, Control, UseFieldArrayProps, Field } from './types';
+import {
+  Field,
+  FieldValues,
+  UseFieldArrayProps,
+  Control,
+  ArrayField,
+} from './types';
 
 const { useEffect, useRef, useState } = React;
 
-export function useFieldArray<
+export const useFieldArray = <
   FormArrayValues extends FieldValues = FieldValues,
+  KeyName extends string = 'id',
   ControlProp extends Control = Control
->({ control, name, keyName = 'id' }: UseFieldArrayProps<ControlProp>) {
+>({
+  control,
+  name,
+  keyName = 'id' as KeyName,
+}: UseFieldArrayProps<KeyName, ControlProp>) => {
   const methods = useFormContext();
   const {
     resetFieldArrayFunctionRef,
@@ -36,9 +47,9 @@ export function useFieldArray<
     watchFieldArrayRef,
   } = control || methods.control;
   const memoizedDefaultValues = useRef(get(defaultValuesRef.current, name, []));
-  const [fields, setField] = useState<Partial<FormArrayValues>[]>(
-    mapIds(memoizedDefaultValues.current, keyName),
-  );
+  const [fields, setField] = useState<
+    Partial<ArrayField<FormArrayValues, KeyName>>[]
+  >(mapIds(memoizedDefaultValues.current, keyName));
   const appendValueWithKey = (value: Partial<FormArrayValues>[]) =>
     value.map((v: Partial<FormArrayValues>) => appendId(v, keyName));
 
@@ -231,4 +242,4 @@ export function useFieldArray<
     insert,
     fields,
   };
-}
+};
