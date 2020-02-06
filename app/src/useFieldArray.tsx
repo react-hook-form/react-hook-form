@@ -35,7 +35,7 @@ const UseFieldArray: React.FC = (props: any) => {
     move,
     insert,
     remove,
-  } = useFieldArray<{ name: string, id: string }>({
+  } = useFieldArray<{ name: string }>({
     control,
     name: 'data',
   });
