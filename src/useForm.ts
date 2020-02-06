@@ -60,7 +60,10 @@ import {
 
 const { useRef, useState, useCallback, useEffect } = React;
 
-export function useForm<FormValues extends FieldValues = FieldValues>({
+export function useForm<
+  FormValues extends FieldValues = FieldValues,
+  ValidationContext = undefined
+>({
   mode = VALIDATION_MODE.onSubmit,
   reValidateMode = VALIDATION_MODE.onChange,
   validationSchema,
@@ -309,7 +312,10 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
     async (
       payload: FieldName<FormValues> | FieldName<FormValues>[],
     ): Promise<boolean> => {
-      const { errors } = await validateWithSchema<FormValues>(
+      const { errors } = await validateWithSchema<
+        FormValues,
+        ValidationContext
+      >(
         validationSchema,
         validateAllFieldCriteria,
         getFieldValueByName(fieldsRef.current),
@@ -449,7 +455,10 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
         }
 
         if (shouldValidateCallback) {
-          const { errors } = await validateWithSchema<FormValues>(
+          const { errors } = await validateWithSchema<
+            FormValues,
+            ValidationContext
+          >(
             validationSchema,
             validateAllFieldCriteria,
             getFieldValueByName(fields),
@@ -484,7 +493,7 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
       ? getFieldsValues(fieldsRef.current)
       : defaultValuesRef.current;
 
-    validateWithSchema(
+    validateWithSchema<FormValues, ValidationContext>(
       validationSchema,
       validateAllFieldCriteria,
       transformToNestObject(fieldValues),
@@ -929,7 +938,10 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
       try {
         if (shouldValidateCallback) {
           fieldValues = getFieldsValues(fields);
-          const { errors, values } = await validateWithSchema(
+          const { errors, values } = await validateWithSchema<
+            FormValues,
+            ValidationContext
+          >(
             validationSchema,
             validateAllFieldCriteria,
             transformToNestObject(fieldValues),
