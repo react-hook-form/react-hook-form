@@ -283,8 +283,16 @@ export type ErrorMessageProps<
   }) => React.ReactNode;
 } & AsProps<As>;
 
-export type UseFieldArrayProps<ControlProp extends Control = Control> = {
-  control?: ControlProp;
-  keyName?: string;
+export type UseFieldArrayProps<
+  KeyName extends string = 'id',
+  ControlProp extends Control = Control
+> = {
   name: string;
+  keyName?: KeyName;
+  control?: ControlProp;
 };
+
+export type ArrayField<
+  FormArrayValues extends FieldValues = FieldValues,
+  KeyName extends string = 'id'
+> = FormArrayValues & Record<KeyName, string>;
