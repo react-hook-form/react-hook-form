@@ -13,20 +13,14 @@ import prependAt from './utils/prepend';
 import isArray from './utils/isArray';
 import insertAt from './utils/insert';
 import fillEmptyArray from './utils/fillEmptyArray';
-import {
-  FieldValues,
-  Control,
-  UseFieldArrayProps,
-  WithFieldId,
-  Field,
-} from './types';
+import { FieldValues, Control, UseFieldArrayProps, Field } from './types';
 
 const { useEffect, useRef, useState } = React;
 
 export function useFieldArray<
   FormArrayValues extends FieldValues = FieldValues,
   ControlProp extends Control = Control
->({ control, name }: UseFieldArrayProps<ControlProp>) {
+>({ control, name, keyName = 'id' }: UseFieldArrayProps<ControlProp>) {
   const methods = useFormContext();
   const {
     resetFieldArrayFunctionRef,
@@ -42,13 +36,13 @@ export function useFieldArray<
     watchFieldArrayRef,
   } = control || methods.control;
   const memoizedDefaultValues = useRef(get(defaultValuesRef.current, name, []));
-  const [fields, setField] = useState<WithFieldId<Partial<FormArrayValues>>[]>(
-    mapIds(memoizedDefaultValues.current),
+  const [fields, setField] = useState<Partial<FormArrayValues>[]>(
+    mapIds(memoizedDefaultValues.current, keyName),
   );
+  const appendValueWithKey = (value: Partial<FormArrayValues>[]) =>
+    value.map((v: Partial<FormArrayValues>) => appendId(v, keyName));
 
-  const resetFields = (
-    flagOrFields?: WithFieldId<Partial<FormArrayValues>>[],
-  ) => {
+  const resetFields = (flagOrFields?: Partial<FormArrayValues>[]) => {
     if (readFormStateRef.current.dirty) {
       isDirtyRef.current = isUndefined(flagOrFields)
         ? true
@@ -76,9 +70,7 @@ export function useFieldArray<
   };
 
   const append = (
-    value:
-      | WithFieldId<Partial<FormArrayValues>>
-      | WithFieldId<Partial<FormArrayValues>>[],
+    value: Partial<FormArrayValues> | Partial<FormArrayValues>[],
   ) => {
     mapCurrentFieldsValueWithState();
     if (readFormStateRef.current.dirty) {
@@ -86,21 +78,21 @@ export function useFieldArray<
     }
     watchFieldArrayRef.current[name] = [
       ...fields,
-      ...(isArray(value) ? value.map(appendId) : [appendId(value)]),
+      ...(isArray(value)
+        ? appendValueWithKey(value)
+        : [appendId(value, keyName)]),
     ];
     setField(watchFieldArrayRef.current[name]);
   };
 
   const prepend = (
-    value:
-      | WithFieldId<Partial<FormArrayValues>>
-      | WithFieldId<Partial<FormArrayValues>>[],
+    value: Partial<FormArrayValues> | Partial<FormArrayValues>[],
   ) => {
     mapCurrentFieldsValueWithState();
     resetFields();
     watchFieldArrayRef.current[name] = prependAt(
       fields,
-      isArray(value) ? value.map(appendId) : [appendId(value)],
+      isArray(value) ? appendValueWithKey(value) : [appendId(value, keyName)],
     );
     setField(watchFieldArrayRef.current[name]);
 
@@ -145,16 +137,14 @@ export function useFieldArray<
 
   const insert = (
     index: number,
-    value:
-      | WithFieldId<Partial<FormArrayValues>>
-      | WithFieldId<Partial<FormArrayValues>>[],
+    value: Partial<FormArrayValues> | Partial<FormArrayValues>[],
   ) => {
     mapCurrentFieldsValueWithState();
     resetFields(insertAt(getFieldValueByName(fieldsRef.current, name), index));
     watchFieldArrayRef.current[name] = insertAt(
       fields,
       index,
-      isArray(value) ? value.map(appendId) : [appendId(value)],
+      isArray(value) ? appendValueWithKey(value) : [appendId(value, keyName)],
     );
     setField(watchFieldArrayRef.current[name]);
 
@@ -214,7 +204,7 @@ export function useFieldArray<
   const reset = () => {
     resetFields();
     memoizedDefaultValues.current = get(defaultValuesRef.current, name, []);
-    setField(mapIds(memoizedDefaultValues.current));
+    setField(mapIds(memoizedDefaultValues.current, keyName));
   };
 
   useEffect(() => {

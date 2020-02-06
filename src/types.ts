@@ -285,9 +285,6 @@ export type ErrorMessageProps<
 
 export type UseFieldArrayProps<ControlProp extends Control = Control> = {
   control?: ControlProp;
+  keyName?: string;
   name: string;
 };
-
-export type WithFieldId<Value> = {
-  id?: string;
-} & Value;

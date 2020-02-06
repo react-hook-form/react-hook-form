@@ -773,7 +773,7 @@ describe('useFieldArray', () => {
 });
 
 test('should append id to the value', () => {
-  expect(appendId({ test: 'test' })).toEqual({
+  expect(appendId({ test: 'test' }, 'id')).toEqual({
     test: 'test',
     id: '1',
   });
