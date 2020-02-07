@@ -488,32 +488,40 @@ export function useForm<
         }
       };
 
-  const validateSchemaIsValid = useCallback(() => {
-    const fieldValues = isEmptyObject(defaultValuesRef.current)
-      ? getFieldsValues(fieldsRef.current)
-      : defaultValuesRef.current;
+  const validateSchemaIsValid = useCallback(
+    (values: any = {}) => {
+      const fieldValues = isEmptyObject(defaultValuesRef.current)
+        ? getFieldsValues(fieldsRef.current)
+        : defaultValuesRef.current;
 
-    validateWithSchema<FormValues, ValidationContext>(
-      validationSchema,
+      console.log('fieldsValue', values);
+
+      validateWithSchema<FormValues, ValidationContext>(
+        validationSchema,
+        validateAllFieldCriteria,
+        transformToNestObject({
+          ...fieldValues,
+          ...values,
+        }),
+        validationResolver,
+        validationContext,
+      ).then(({ errors }) => {
+        const previousFormIsValid = isValidRef.current;
+        isValidRef.current = isEmptyObject(errors);
+
+        if (previousFormIsValid !== isValidRef.current) {
+          reRender();
+        }
+      });
+    },
+    [
+      reRender,
       validateAllFieldCriteria,
-      transformToNestObject(fieldValues),
-      validationResolver,
       validationContext,
-    ).then(({ errors }) => {
-      const previousFormIsValid = isValidRef.current;
-      isValidRef.current = isEmptyObject(errors);
-
-      if (previousFormIsValid !== isValidRef.current) {
-        reRender();
-      }
-    });
-  }, [
-    reRender,
-    validateAllFieldCriteria,
-    validationContext,
-    validationResolver,
-    validationSchema,
-  ]);
+      validationResolver,
+      validationSchema,
+    ],
+  );
 
   const resetFieldRef = useCallback(
     (name: FieldName<FormValues>) => {
@@ -534,10 +542,10 @@ export function useForm<
         readFormStateRef.current.touched
       ) {
         reRender();
-      }
 
-      if (shouldValidateCallback) {
-        validateSchemaIsValid();
+        if (shouldValidateCallback) {
+          validateSchemaIsValid();
+        }
       }
     },
     [reRender], // eslint-disable-line
@@ -826,7 +834,11 @@ export function useForm<
       }
     }
 
-    if (shouldValidateCallback && readFormStateRef.current.isValid) {
+    if (
+      shouldValidateCallback &&
+      !isFieldArray &&
+      readFormStateRef.current.isValid
+    ) {
       validateSchemaIsValid();
     } else if (!isEmptyObject(validateOptions)) {
       fieldsWithValidationRef.current.add(name);
@@ -1111,7 +1123,7 @@ export function useForm<
     isSubmitting: isSubmittingRef.current,
     isValid: isOnSubmit
       ? isSubmittedRef.current && isEmptyObject(errorsRef.current)
-      : isEmptyObject(fieldsRef.current) || isValidRef.current,
+      : isValidRef.current,
   };
 
   const control = {
@@ -1121,6 +1133,7 @@ export function useForm<
     getValues,
     setValue,
     triggerValidation,
+    ...(shouldValidateCallback ? { validateSchemaIsValid } : {}),
     formState,
     mode: {
       isOnBlur,

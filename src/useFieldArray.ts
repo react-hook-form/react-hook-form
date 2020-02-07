@@ -45,6 +45,7 @@ export const useFieldArray = <
     touchedFieldsRef,
     readFormStateRef,
     watchFieldArrayRef,
+    validateSchemaIsValid,
   } = control || methods.control;
   const memoizedDefaultValues = useRef(get(defaultValuesRef.current, name, []));
   const [fields, setField] = useState<
@@ -52,6 +53,17 @@ export const useFieldArray = <
   >(mapIds(memoizedDefaultValues.current, keyName));
   const appendValueWithKey = (value: Partial<FormArrayValues>[]) =>
     value.map((v: Partial<FormArrayValues>) => appendId(v, keyName));
+
+  const commonTasks = (fieldsValues: any) => {
+    watchFieldArrayRef.current[name] = fieldsValues;
+    setField(fieldsValues);
+
+    if (readFormStateRef.current.isValid && validateSchemaIsValid) {
+      validateSchemaIsValid({
+        [name]: fieldsValues,
+      });
+    }
+  };
 
   const resetFields = (flagOrFields?: Partial<FormArrayValues>[]) => {
     if (readFormStateRef.current.dirty) {
@@ -87,13 +99,12 @@ export const useFieldArray = <
     if (readFormStateRef.current.dirty) {
       isDirtyRef.current = true;
     }
-    watchFieldArrayRef.current[name] = [
+    commonTasks([
       ...fields,
       ...(isArray(value)
         ? appendValueWithKey(value)
         : [appendId(value, keyName)]),
-    ];
-    setField(watchFieldArrayRef.current[name]);
+    ]);
   };
 
   const prepend = (
@@ -101,11 +112,12 @@ export const useFieldArray = <
   ) => {
     mapCurrentFieldsValueWithState();
     resetFields();
-    watchFieldArrayRef.current[name] = prependAt(
-      fields,
-      isArray(value) ? appendValueWithKey(value) : [appendId(value, keyName)],
+    commonTasks(
+      prependAt(
+        fields,
+        isArray(value) ? appendValueWithKey(value) : [appendId(value, keyName)],
+      ),
     );
-    setField(watchFieldArrayRef.current[name]);
 
     if (errorsRef.current[name]) {
       errorsRef.current[name] = prependAt(
@@ -130,9 +142,7 @@ export const useFieldArray = <
     resetFields(
       removeArrayAt(getFieldValueByName(fieldsRef.current, name), index),
     );
-
-    watchFieldArrayRef.current[name] = removeArrayAt(fields, index);
-    setField(watchFieldArrayRef.current[name]);
+    commonTasks(removeArrayAt(fields, index));
 
     if (errorsRef.current[name]) {
       errorsRef.current[name] = removeArrayAt(errorsRef.current[name], index);
@@ -152,12 +162,13 @@ export const useFieldArray = <
   ) => {
     mapCurrentFieldsValueWithState();
     resetFields(insertAt(getFieldValueByName(fieldsRef.current, name), index));
-    watchFieldArrayRef.current[name] = insertAt(
-      fields,
-      index,
-      isArray(value) ? appendValueWithKey(value) : [appendId(value, keyName)],
+    commonTasks(
+      insertAt(
+        fields,
+        index,
+        isArray(value) ? appendValueWithKey(value) : [appendId(value, keyName)],
+      ),
     );
-    setField(watchFieldArrayRef.current[name]);
 
     if (errorsRef.current[name]) {
       errorsRef.current[name] = insertAt(
@@ -182,8 +193,7 @@ export const useFieldArray = <
     swapArrayAt(fieldValues, indexA, indexB);
     resetFields(fieldValues);
     swapArrayAt(fields, indexA, indexB);
-    setField([...fields]);
-    watchFieldArrayRef.current[name] = fields;
+    commonTasks([...fields]);
 
     if (errorsRef.current[name]) {
       swapArrayAt(errorsRef.current[name], indexA, indexB);
@@ -200,8 +210,7 @@ export const useFieldArray = <
     moveArrayAt(fieldValues, from, to);
     resetFields(fieldValues);
     moveArrayAt(fields, from, to);
-    setField([...fields]);
-    watchFieldArrayRef.current[name] = fields;
+    commonTasks([...fields]);
 
     if (errorsRef.current[name]) {
       moveArrayAt(errorsRef.current[name], from, to);
