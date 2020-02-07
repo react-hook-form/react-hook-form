@@ -1,3 +1,4 @@
+// @ts-nocheck
 import getFieldValue from './getFieldValue';
 
 jest.mock('./getRadioValue', () => ({

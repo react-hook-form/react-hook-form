@@ -9,7 +9,7 @@ export default function findRemovedFieldAndRemoveListener<
   FormValues extends FieldValues
 >(
   fields: FieldRefs<FormValues>,
-  handleChange: ({ type, target }: MouseEvent) => Promise<void | boolean>,
+  handleChange: ({ type, target }: Event) => Promise<void | boolean>,
   field: Field,
   forceDelete?: boolean,
 ): void {
@@ -30,7 +30,7 @@ export default function findRemovedFieldAndRemoveListener<
 
   const fieldValue = fields[name];
 
-  if ((isRadioInput(type) || isCheckBoxInput(type)) && fieldValue) {
+  if ((isRadioInput(ref) || isCheckBoxInput(ref)) && fieldValue) {
     const { options } = fieldValue;
 
     if (isArray(options) && options.length) {

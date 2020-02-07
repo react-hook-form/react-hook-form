@@ -27,7 +27,7 @@ export default (options?: RadioOrCheckboxOption[]): CheckboxFieldResult => {
     const { checked, value, attributes } = options[0].ref;
 
     return checked
-      ? attributes && !isUndefined(attributes.value)
+      ? attributes && !isUndefined((attributes as any).value)
         ? isUndefined(value) || isEmptyString(value)
           ? validResult
           : { value: value, isValid: true }
