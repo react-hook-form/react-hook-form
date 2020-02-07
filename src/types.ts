@@ -12,11 +12,7 @@ export type FieldValue<FormValues extends FieldValues> = FormValues[FieldName<
   FormValues
 >];
 
-export type Ref =
-  | HTMLInputElement
-  | HTMLSelectElement
-  | HTMLTextAreaElement
-  | any;
+export type Ref = FieldElement;
 
 export type DeepPartial<T> = {
   [P in keyof T]?: T[P] extends Array<infer U>
@@ -44,16 +40,24 @@ export type SchemaValidateOptions = Partial<{
   abortEarly: boolean;
   stripUnknown: boolean;
   recursive: boolean;
-  context: object;
+  context: any;
 }>;
 
+export type ValidationResolver = <FormValues, ValidationContext>(
+  values: FieldValues,
+  validationContext: ValidationContext,
+) => { values: FieldValues | {}; errors: FieldErrors<FormValues> | {} };
+
 export type UseFormOptions<
-  FormValues extends FieldValues = FieldValues
+  FormValues extends FieldValues = FieldValues,
+  ValidationContext = undefined
 > = Partial<{
   mode: Mode;
   reValidateMode: Mode;
   defaultValues: DeepPartial<FormValues>;
   validationSchema: any;
+  validationResolver: ValidationResolver;
+  validationContext: ValidationContext;
   submitFocusError: boolean;
   validateCriteriaMode: 'firstError' | 'all';
 }>;
@@ -101,10 +105,7 @@ export type ManualFieldError<FormValues> = {
 export type Field = {
   ref: Ref;
   mutationWatcher?: MutationWatcher;
-  options?: {
-    ref: Ref;
-    mutationWatcher?: MutationWatcher;
-  }[];
+  options?: RadioOrCheckboxOption[];
 } & ValidationOptions;
 
 export type FieldRefs<FormValues extends FieldValues> = Partial<
@@ -147,22 +148,26 @@ export type FormStateProxy<FormValues extends FieldValues = FieldValues> = {
 export type ReadFormState = { [P in keyof FormStateProxy]: boolean };
 
 export type RadioOrCheckboxOption = {
-  ref?: Ref;
+  ref: HTMLInputElement;
   mutationWatcher?: MutationWatcher;
 };
 
-export type ElementLike = {
+export type FieldElement =
+  | HTMLInputElement
+  | HTMLSelectElement
+  | HTMLTextAreaElement
+  | CustomElement;
+
+export type CustomElement = {
   name: string;
   type?: string;
-  value?: string;
+  value?: any;
   checked?: boolean;
-  options?: any;
+  options?: HTMLOptionsCollection;
+  files?: FileList | null;
 };
 
-export type HandleChange = ({
-  type,
-  target,
-}: MouseEvent) => Promise<void | boolean>;
+export type HandleChange = (evt: Event) => Promise<void | boolean>;
 
 export type FormValuesFromErrors<Errors> = Errors extends FieldErrors<
   infer FormValues
@@ -173,27 +178,27 @@ export type FormValuesFromErrors<Errors> = Errors extends FieldErrors<
 export type EventFunction = (args: any) => any;
 
 export type Control<FormValues extends FieldValues = FieldValues> = {
-  register<Element extends ElementLike = ElementLike>(): (
+  register<Element extends FieldElement = FieldElement>(): (
     ref: Element | null,
   ) => void;
-  register<Element extends ElementLike = ElementLike>(
+  register<Element extends FieldElement = FieldElement>(
     validationOptions: ValidationOptions,
   ): (ref: Element | null) => void;
-  register<Element extends ElementLike = ElementLike>(
+  register<Element extends FieldElement = FieldElement>(
     name: FieldName<FormValues>,
     validationOptions?: ValidationOptions,
   ): void;
-  register<Element extends ElementLike = ElementLike>(
+  register<Element extends FieldElement = FieldElement>(
     namesWithValidationOptions: Record<
       FieldName<FormValues>,
       ValidationOptions
     >,
   ): void;
-  register<Element extends ElementLike = ElementLike>(
+  register<Element extends FieldElement = FieldElement>(
     ref: Element,
     validationOptions?: ValidationOptions,
   ): void;
-  register<Element extends ElementLike = ElementLike>(
+  register<Element extends FieldElement = FieldElement>(
     refOrValidationOptions: ValidationOptions | Element | null,
     validationOptions?: ValidationOptions,
   ): ((ref: Element | null) => void) | void;
@@ -220,6 +225,7 @@ export type Control<FormValues extends FieldValues = FieldValues> = {
     isReValidateOnBlur: boolean;
     isReValidateOnSubmit: boolean;
   };
+  validateSchemaIsValid?: (fieldsValues: any) => void;
   touchedFieldsRef: React.MutableRefObject<Touched<FormValues>>;
   watchFieldArrayRef: React.MutableRefObject<any>;
   errorsRef: React.MutableRefObject<FieldErrors<FormValues>>;
@@ -283,11 +289,16 @@ export type ErrorMessageProps<
   }) => React.ReactNode;
 } & AsProps<As>;
 
-export type UseFieldArrayProps<ControlProp extends Control = Control> = {
-  control?: ControlProp;
+export type UseFieldArrayProps<
+  KeyName extends string = 'id',
+  ControlProp extends Control = Control
+> = {
   name: string;
+  keyName?: KeyName;
+  control?: ControlProp;
 };
 
-export type WithFieldId<Value> = {
-  id?: string;
-} & Value;
+export type ArrayField<
+  FormArrayValues extends FieldValues = FieldValues,
+  KeyName extends string = 'id'
+> = FormArrayValues & Record<KeyName, string>;

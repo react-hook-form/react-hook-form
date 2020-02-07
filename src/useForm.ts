@@ -33,6 +33,7 @@ import unset from './utils/unset';
 import isMultipleSelect from './utils/isMultipleSelect';
 import modeChecker from './utils/validationModeChecker';
 import isNullOrUndefined from './utils/isNullOrUndefined';
+import isHTMLElement from './utils/isHTMLElement';
 import { EVENTS, UNDEFINED, VALIDATION_MODE } from './constants';
 import { FormContextValues } from './contextTypes';
 import {
@@ -47,7 +48,7 @@ import {
   ValidationOptions,
   SubmitPromiseResult,
   OnSubmit,
-  ElementLike,
+  FieldElement,
   FormStateProxy,
   ReadFormState,
   ManualFieldError,
@@ -56,14 +57,20 @@ import {
   HandleChange,
   Touched,
   FieldError,
+  RadioOrCheckboxOption,
 } from './types';
 
 const { useRef, useState, useCallback, useEffect } = React;
 
-export function useForm<FormValues extends FieldValues = FieldValues>({
+export function useForm<
+  FormValues extends FieldValues = FieldValues,
+  ValidationContext = undefined
+>({
   mode = VALIDATION_MODE.onSubmit,
   reValidateMode = VALIDATION_MODE.onChange,
   validationSchema,
+  validationResolver,
+  validationContext,
   defaultValues = {},
   submitFocusError = true,
   validateCriteriaMode,
@@ -98,6 +105,7 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
   const [, render] = useState();
   const { isOnBlur, isOnSubmit } = useRef(modeChecker(mode)).current;
   const isWindowUndefined = typeof window === UNDEFINED;
+  const shouldValidateCallback = !!(validationSchema || validationResolver);
   const isWeb =
     typeof document !== UNDEFINED &&
     !isWindowUndefined &&
@@ -141,7 +149,10 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
         });
 
       if (isEmptyObject(error)) {
-        if (fieldsWithValidationRef.current.has(name) || validationSchema) {
+        if (
+          fieldsWithValidationRef.current.has(name) ||
+          shouldValidateCallback
+        ) {
           validFieldsRef.current.add(name);
           shouldReRender = shouldReRender || get(errorsRef.current, name);
         }
@@ -159,7 +170,7 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
         return true;
       }
     },
-    [reRender, validationSchema],
+    [reRender, shouldValidateCallback],
   );
 
   const setFieldValue = useCallback(
@@ -177,31 +188,29 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
       const options = field.options;
       const { type } = ref;
       const value =
-        isWeb &&
-        ref instanceof window.HTMLElement &&
-        isNullOrUndefined(rawValue)
+        isWeb && isHTMLElement(ref) && isNullOrUndefined(rawValue)
           ? ''
           : rawValue;
 
-      if (isRadioInput(type) && options) {
+      if (isRadioInput(ref) && options) {
         options.forEach(
           ({ ref: radioRef }) => (radioRef.checked = radioRef.value === value),
         );
-      } else if (isFileInput(type)) {
+      } else if (isFileInput(ref)) {
         if (
           isEmptyString(value as string) ||
           isFileListObject(value as object)
         ) {
-          ref.files = value;
+          ref.files = value as FileList;
         } else {
-          ref.value = value;
+          ref.value = value as string;
         }
-      } else if (isMultipleSelect(type)) {
+      } else if (isMultipleSelect(ref)) {
         [...ref.options].forEach(
           selectRef =>
             (selectRef.selected = (value as string).includes(selectRef.value)),
         );
-      } else if (isCheckBoxInput(type) && options) {
+      } else if (isCheckBoxInput(ref) && options) {
         options.length > 1
           ? options.forEach(
               ({ ref: checkboxRef }) =>
@@ -214,7 +223,7 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
         ref.value = value;
       }
 
-      return type;
+      return !!type;
     },
     [isWeb],
   );
@@ -303,10 +312,15 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
     async (
       payload: FieldName<FormValues> | FieldName<FormValues>[],
     ): Promise<boolean> => {
-      const { errors } = await validateWithSchema<FormValues>(
+      const { errors } = await validateWithSchema<
+        FormValues,
+        ValidationContext
+      >(
         validationSchema,
         validateAllFieldCriteria,
         getFieldValueByName(fieldsRef.current),
+        validationResolver,
+        validationContext,
       );
       const previousFormIsValid = isValidRef.current;
       isValidRef.current = isEmptyObject(errors);
@@ -338,6 +352,8 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
       reRender,
       shouldRenderBaseOnError,
       validateAllFieldCriteria,
+      validationContext,
+      validationResolver,
       validationSchema,
     ],
   );
@@ -348,7 +364,7 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
     ): Promise<boolean> => {
       const fields = payload || Object.keys(fieldsRef.current);
 
-      if (validationSchema) {
+      if (shouldValidateCallback) {
         return executeSchemaValidation(fields);
       }
 
@@ -362,7 +378,12 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
 
       return await executeValidation(fields);
     },
-    [executeSchemaValidation, executeValidation, reRender, validationSchema],
+    [
+      executeSchemaValidation,
+      executeValidation,
+      reRender,
+      shouldValidateCallback,
+    ],
   );
 
   const setValue = useCallback<
@@ -392,7 +413,7 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
 
   handleChangeRef.current = handleChangeRef.current
     ? handleChangeRef.current
-    : async ({ type, target }: MouseEvent): Promise<void | boolean> => {
+    : async ({ type, target }: Event): Promise<void | boolean> => {
         const name = target ? (target as Ref).name : '';
         const fields = fieldsRef.current;
         const errors = errorsRef.current;
@@ -433,11 +454,16 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
           return shouldUpdateState && reRender();
         }
 
-        if (validationSchema) {
-          const { errors } = await validateWithSchema<FormValues>(
+        if (shouldValidateCallback) {
+          const { errors } = await validateWithSchema<
+            FormValues,
+            ValidationContext
+          >(
             validationSchema,
             validateAllFieldCriteria,
             getFieldValueByName(fields),
+            validationResolver,
+            validationContext,
           );
           const previousFormIsValid = isValidRef.current;
           isValidRef.current = isEmptyObject(errors);
@@ -462,24 +488,40 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
         }
       };
 
-  const validateSchemaIsValid = useCallback(() => {
-    const fieldValues = isEmptyObject(defaultValuesRef.current)
-      ? getFieldsValues(fieldsRef.current)
-      : defaultValuesRef.current;
+  const validateSchemaIsValid = useCallback(
+    (values: any = {}) => {
+      const fieldValues = isEmptyObject(defaultValuesRef.current)
+        ? getFieldsValues(fieldsRef.current)
+        : defaultValuesRef.current;
 
-    validateWithSchema(
-      validationSchema,
+      console.log('fieldsValue', values);
+
+      validateWithSchema<FormValues, ValidationContext>(
+        validationSchema,
+        validateAllFieldCriteria,
+        transformToNestObject({
+          ...fieldValues,
+          ...values,
+        }),
+        validationResolver,
+        validationContext,
+      ).then(({ errors }) => {
+        const previousFormIsValid = isValidRef.current;
+        isValidRef.current = isEmptyObject(errors);
+
+        if (previousFormIsValid !== isValidRef.current) {
+          reRender();
+        }
+      });
+    },
+    [
+      reRender,
       validateAllFieldCriteria,
-      transformToNestObject(fieldValues),
-    ).then(({ errors }) => {
-      const previousFormIsValid = isValidRef.current;
-      isValidRef.current = isEmptyObject(errors);
-
-      if (previousFormIsValid !== isValidRef.current) {
-        reRender();
-      }
-    });
-  }, [reRender, validateAllFieldCriteria, validationSchema]);
+      validationContext,
+      validationResolver,
+      validationSchema,
+    ],
+  );
 
   const resetFieldRef = useCallback(
     (name: FieldName<FormValues>) => {
@@ -500,10 +542,10 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
         readFormStateRef.current.touched
       ) {
         reRender();
-      }
 
-      if (validationSchema) {
-        validateSchemaIsValid();
+        if (shouldValidateCallback) {
+          validateSchemaIsValid();
+        }
       }
     },
     [reRender], // eslint-disable-line
@@ -718,7 +760,7 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
     }
   }
 
-  function registerFieldsRef<Element extends ElementLike>(
+  function registerFieldsRef<Element extends FieldElement>(
     ref: Element,
     validateOptions: ValidationOptions | null = {},
   ): ((name: FieldName<FormValues>) => void) | void {
@@ -732,7 +774,7 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
       ...validateOptions,
     };
     const fields = fieldsRef.current;
-    const isRadioOrCheckbox = isRadioInput(type) || isCheckBoxInput(type);
+    const isRadioOrCheckbox = isRadioInput(ref) || isCheckBoxInput(ref);
     let currentField = fields[name] as Field;
     let isEmptyDefaultValue = true;
     let isFieldArray = false;
@@ -764,7 +806,7 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
               {
                 ref,
                 mutationWatcher,
-              },
+              } as RadioOrCheckboxOption,
             ],
             ref: { type, name },
             ...validateOptions,
@@ -792,7 +834,11 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
       }
     }
 
-    if (validationSchema && readFormStateRef.current.isValid) {
+    if (
+      shouldValidateCallback &&
+      !isFieldArray &&
+      readFormStateRef.current.isValid
+    ) {
       validateSchemaIsValid();
     } else if (!isEmptyObject(validateOptions)) {
       fieldsWithValidationRef.current.add(name);
@@ -842,27 +888,27 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
     });
   }
 
-  function register<Element extends ElementLike = ElementLike>(): (
+  function register<Element extends FieldElement = FieldElement>(): (
     ref: Element | null,
   ) => void;
-  function register<Element extends ElementLike = ElementLike>(
+  function register<Element extends FieldElement = FieldElement>(
     validationOptions: ValidationOptions,
   ): (ref: Element | null) => void;
-  function register<Element extends ElementLike = ElementLike>(
+  function register<Element extends FieldElement = FieldElement>(
     name: FieldName<FormValues>,
     validationOptions?: ValidationOptions,
   ): void;
-  function register<Element extends ElementLike = ElementLike>(
+  function register<Element extends FieldElement = FieldElement>(
     namesWithValidationOptions: Record<
       FieldName<FormValues>,
       ValidationOptions
     >,
   ): void;
-  function register<Element extends ElementLike = ElementLike>(
+  function register<Element extends FieldElement = FieldElement>(
     ref: Element,
     validationOptions?: ValidationOptions,
   ): void;
-  function register<Element extends ElementLike = ElementLike>(
+  function register<Element extends FieldElement = FieldElement>(
     refOrValidationOptions?: ValidationOptions | Element | null,
     validationOptions?: ValidationOptions,
   ): ((ref: Element | null) => void) | void {
@@ -902,12 +948,17 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
       }
 
       try {
-        if (validationSchema) {
+        if (shouldValidateCallback) {
           fieldValues = getFieldsValues(fields);
-          const { errors, values } = await validateWithSchema(
+          const { errors, values } = await validateWithSchema<
+            FormValues,
+            ValidationContext
+          >(
             validationSchema,
             validateAllFieldCriteria,
             transformToNestObject(fieldValues),
+            validationResolver,
+            validationContext,
           );
           errorsRef.current = errors;
           fieldErrors = errors;
@@ -986,7 +1037,15 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
         reRender();
       }
     },
-    [reRender, submitFocusError, validateAllFieldCriteria, validationSchema],
+    [
+      reRender,
+      shouldValidateCallback,
+      submitFocusError,
+      validateAllFieldCriteria,
+      validationContext,
+      validationResolver,
+      validationSchema,
+    ],
   );
 
   const resetRefs = () => {
@@ -1007,9 +1066,9 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
 
   const reset = (values?: DeepPartial<FormValues>): void => {
     for (const value of Object.values(fieldsRef.current)) {
-      if (value && value.ref && value.ref.closest) {
+      if (value && isHTMLElement(value.ref) && value.ref.closest) {
         try {
-          value.ref.closest('form').reset();
+          value.ref.closest('form')!.reset();
           break;
         } catch {}
       }
@@ -1049,7 +1108,7 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
     [removeFieldEventListenerAndRef],
   );
 
-  if (!validationSchema) {
+  if (!shouldValidateCallback) {
     isValidRef.current =
       validFieldsRef.current.size >= fieldsWithValidationRef.current.size &&
       isEmptyObject(errorsRef.current);
@@ -1064,7 +1123,7 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
     isSubmitting: isSubmittingRef.current,
     isValid: isOnSubmit
       ? isSubmittedRef.current && isEmptyObject(errorsRef.current)
-      : isEmptyObject(fieldsRef.current) || isValidRef.current,
+      : isValidRef.current,
   };
 
   const control = {
@@ -1074,6 +1133,7 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
     getValues,
     setValue,
     triggerValidation,
+    ...(shouldValidateCallback ? { validateSchemaIsValid } : {}),
     formState,
     mode: {
       isOnBlur,

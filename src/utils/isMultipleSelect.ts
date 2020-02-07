@@ -1,1 +1,4 @@
-export default (type: string): boolean => type === 'select-multiple';
+import { FieldElement } from '../types';
+
+export default (element?: FieldElement): element is HTMLSelectElement =>
+  !!element && element.type === 'select-multiple';

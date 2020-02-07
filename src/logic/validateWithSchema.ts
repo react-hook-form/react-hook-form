@@ -1,7 +1,12 @@
 import appendErrors from './appendErrors';
 import isArray from '../utils/isArray';
-import { FieldValues, SchemaValidateOptions, FieldErrors } from '../types';
 import transformToNestObject from './transformToNestObject';
+import {
+  FieldValues,
+  SchemaValidateOptions,
+  FieldErrors,
+  ValidationResolver,
+} from '../types';
 
 type SchemaValidationResult<FormValues> = {
   errors: FieldErrors<FormValues>;
@@ -55,14 +60,23 @@ export const parseErrorSchema = <FormValues>(
         [error.path]: { message: error.message, type: error.type },
       };
 
-export default async function validateWithSchema<FormValues>(
+export default async function validateWithSchema<FormValues, ValidationContext>(
   validationSchema: Schema<FormValues>,
   validateAllFieldCriteria: boolean,
   data: FieldValues,
+  validationResolver?: ValidationResolver,
+  context?: ValidationContext,
 ): Promise<SchemaValidationResult<FormValues>> {
+  if (validationResolver) {
+    return validationResolver(data, context);
+  }
+
   try {
     return {
-      values: await validationSchema.validate(data, { abortEarly: false }),
+      values: await validationSchema.validate(data, {
+        abortEarly: false,
+        context,
+      }),
       errors: {},
     };
   } catch (e) {

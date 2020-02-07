@@ -3,16 +3,13 @@ import isObject from '../utils/isObject';
 import generateId from './generateId';
 import { FieldValues } from '../types';
 
-export const appendId = <
-  FormArrayValues extends {
-    id?: string;
-  } & FieldValues = FieldValues
->(
+export const appendId = <FormArrayValues extends FieldValues = FieldValues>(
   value: FormArrayValues,
+  keyName: string,
 ) => ({
   ...(isObject(value) ? value : { value }),
-  id: generateId(),
+  [keyName]: generateId(),
 });
 
-export const mapIds = (data: any) =>
-  (isArray(data) ? data : []).map(value => appendId(value));
+export const mapIds = (data: any, keyName: string) =>
+  (isArray(data) ? data : []).map(value => appendId(value, keyName));

@@ -1,3 +1,4 @@
+// @ts-nocheck
 import isDetached from './isDetached';
 
 describe('isDetached', () => {
@@ -79,7 +80,7 @@ describe('isDetached', () => {
       iframe.addEventListener(
         'load',
         function() {
-          let node = document.createElement('div');
+          const node = document.createElement('div');
           if (iframe.contentDocument) {
             iframe.contentDocument.body.appendChild(node);
 
@@ -104,7 +105,7 @@ describe('isDetached', () => {
       iframe.addEventListener(
         'load',
         function() {
-          let node = document.createElement('div');
+          const node = document.createElement('div');
           if (iframe.contentDocument) {
             iframe.contentDocument.body.appendChild(node);
 

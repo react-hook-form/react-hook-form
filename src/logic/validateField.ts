@@ -31,7 +31,7 @@ export default async <FormValues extends FieldValues>(
   validateAllFieldCriteria: boolean,
   {
     ref,
-    ref: { type, value, name, valueAsNumber, valueAsDate },
+    ref: { type, value, name },
     options,
     required,
     maxLength,
@@ -44,8 +44,8 @@ export default async <FormValues extends FieldValues>(
 ): Promise<FieldErrors<FormValues>> => {
   const fields = fieldsRef.current;
   const error: any = {};
-  const isRadio = isRadioInput(type);
-  const isCheckBox = isCheckBoxInput(type);
+  const isRadio = isRadioInput(ref);
+  const isCheckBox = isCheckBoxInput(ref);
   const isRadioOrCheckbox = isRadio || isCheckBox;
   const isEmpty = isEmptyString(value);
   const appendErrorsCurry = appendErrors.bind(
@@ -104,7 +104,8 @@ export default async <FormValues extends FieldValues>(
     const { value: minValue, message: minMessage } = getValueAndMessage(min);
 
     if (type === 'number' || (!type && !isNaN(value))) {
-      const valueNumber = valueAsNumber || parseFloat(value);
+      const valueNumber =
+        (ref as HTMLInputElement).valueAsNumber || parseFloat(value);
       if (!isNullOrUndefined(maxValue)) {
         exceedMax = valueNumber > maxValue;
       }
@@ -112,7 +113,8 @@ export default async <FormValues extends FieldValues>(
         exceedMin = valueNumber < minValue;
       }
     } else {
-      const valueDate = valueAsDate || new Date(value);
+      const valueDate =
+        (ref as HTMLInputElement).valueAsDate || new Date(value);
       if (isString(maxValue)) {
         exceedMax = valueDate > new Date(maxValue);
       }

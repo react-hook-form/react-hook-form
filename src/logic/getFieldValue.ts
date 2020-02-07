@@ -11,22 +11,22 @@ export default function getFieldValue<FormValues extends FieldValues>(
   fields: FieldRefs<FormValues>,
   ref: Ref,
 ) {
-  const { type, name, options, value, files } = ref;
+  const { name, value } = ref;
   const field = fields[name];
 
-  if (isFileInput(type)) {
-    return files;
+  if (isFileInput(ref)) {
+    return ref.files;
   }
 
-  if (isRadioInput(type)) {
+  if (isRadioInput(ref)) {
     return field ? getRadioValue(field.options).value : '';
   }
 
-  if (isMultipleSelect(type)) {
-    return getMultipleSelectValue(options);
+  if (isMultipleSelect(ref)) {
+    return getMultipleSelectValue(ref.options);
   }
 
-  if (isCheckBox(type)) {
+  if (isCheckBox(ref)) {
     return field ? getCheckboxValue(field.options).value : false;
   }
 
