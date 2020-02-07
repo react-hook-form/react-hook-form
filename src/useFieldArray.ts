@@ -45,6 +45,7 @@ export const useFieldArray = <
     touchedFieldsRef,
     readFormStateRef,
     watchFieldArrayRef,
+    validateSchemaIsValid,
   } = control || methods.control;
   const memoizedDefaultValues = useRef(get(defaultValuesRef.current, name, []));
   const [fields, setField] = useState<
@@ -69,6 +70,10 @@ export const useFieldArray = <
 
   const mapCurrentFieldsValueWithState = () => {
     const currentFieldsValue = getValues({ nest: true })[name];
+
+    if (readFormStateRef.current.isValid) {
+      validateSchemaIsValid();
+    }
 
     if (isArray(currentFieldsValue)) {
       for (let i = 0; i < currentFieldsValue.length; i++) {

@@ -534,10 +534,10 @@ export function useForm<
         readFormStateRef.current.touched
       ) {
         reRender();
-      }
 
-      if (shouldValidateCallback) {
-        validateSchemaIsValid();
+        if (shouldValidateCallback) {
+          validateSchemaIsValid();
+        }
       }
     },
     [reRender], // eslint-disable-line
@@ -1111,7 +1111,7 @@ export function useForm<
     isSubmitting: isSubmittingRef.current,
     isValid: isOnSubmit
       ? isSubmittedRef.current && isEmptyObject(errorsRef.current)
-      : isEmptyObject(fieldsRef.current) || isValidRef.current,
+      : isValidRef.current,
   };
 
   const control = {
@@ -1119,6 +1119,7 @@ export function useForm<
     unregister,
     removeFieldEventListener,
     getValues,
+    validateSchemaIsValid,
     setValue,
     triggerValidation,
     formState,

@@ -19,6 +19,7 @@ export const reconfigureControl = (
   watchFieldArrayRef: {
     current: {},
   },
+  validateSchemaIsValid: jest.fn(),
   getValues: jest.fn(),
   setValue: jest.fn(),
   register: jest.fn(),
