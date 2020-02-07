@@ -30,7 +30,7 @@ export default function findRemovedFieldAndRemoveListener<
 
   const fieldValue = fields[name];
 
-  if ((isRadioInput(type) || isCheckBoxInput(type)) && fieldValue) {
+  if ((isRadioInput(ref) || isCheckBoxInput(ref)) && fieldValue) {
     const { options } = fieldValue;
 
     if (isArray(options) && options.length) {

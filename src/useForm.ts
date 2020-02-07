@@ -47,7 +47,7 @@ import {
   ValidationOptions,
   SubmitPromiseResult,
   OnSubmit,
-  ElementLike,
+  FieldElement,
   FormStateProxy,
   ReadFormState,
   ManualFieldError,
@@ -56,6 +56,7 @@ import {
   HandleChange,
   Touched,
   FieldError,
+  RadioOrCheckboxOption,
 } from './types';
 
 const { useRef, useState, useCallback, useEffect } = React;
@@ -183,25 +184,25 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
           ? ''
           : rawValue;
 
-      if (isRadioInput(type) && options) {
+      if (isRadioInput(ref) && options) {
         options.forEach(
           ({ ref: radioRef }) => (radioRef.checked = radioRef.value === value),
         );
-      } else if (isFileInput(type)) {
+      } else if (isFileInput(ref)) {
         if (
           isEmptyString(value as string) ||
           isFileListObject(value as object)
         ) {
-          ref.files = value;
+          ref.files = value as FileList;
         } else {
-          ref.value = value;
+          ref.value = value as string;
         }
-      } else if (isMultipleSelect(type)) {
+      } else if (isMultipleSelect(ref)) {
         [...ref.options].forEach(
           selectRef =>
             (selectRef.selected = (value as string).includes(selectRef.value)),
         );
-      } else if (isCheckBoxInput(type) && options) {
+      } else if (isCheckBoxInput(ref) && options) {
         options.length > 1
           ? options.forEach(
               ({ ref: checkboxRef }) =>
@@ -214,7 +215,7 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
         ref.value = value;
       }
 
-      return type;
+      return !!type;
     },
     [isWeb],
   );
@@ -718,7 +719,7 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
     }
   }
 
-  function registerFieldsRef<Element extends ElementLike>(
+  function registerFieldsRef<Element extends FieldElement>(
     ref: Element,
     validateOptions: ValidationOptions | null = {},
   ): ((name: FieldName<FormValues>) => void) | void {
@@ -732,7 +733,7 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
       ...validateOptions,
     };
     const fields = fieldsRef.current;
-    const isRadioOrCheckbox = isRadioInput(type) || isCheckBoxInput(type);
+    const isRadioOrCheckbox = isRadioInput(ref) || isCheckBoxInput(ref);
     let currentField = fields[name] as Field;
     let isEmptyDefaultValue = true;
     let isFieldArray = false;
@@ -764,7 +765,7 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
               {
                 ref,
                 mutationWatcher,
-              },
+              } as RadioOrCheckboxOption,
             ],
             ref: { type, name },
             ...validateOptions,
@@ -842,27 +843,27 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
     });
   }
 
-  function register<Element extends ElementLike = ElementLike>(): (
+  function register<Element extends FieldElement = FieldElement>(): (
     ref: Element | null,
   ) => void;
-  function register<Element extends ElementLike = ElementLike>(
+  function register<Element extends FieldElement = FieldElement>(
     validationOptions: ValidationOptions,
   ): (ref: Element | null) => void;
-  function register<Element extends ElementLike = ElementLike>(
+  function register<Element extends FieldElement = FieldElement>(
     name: FieldName<FormValues>,
     validationOptions?: ValidationOptions,
   ): void;
-  function register<Element extends ElementLike = ElementLike>(
+  function register<Element extends FieldElement = FieldElement>(
     namesWithValidationOptions: Record<
       FieldName<FormValues>,
       ValidationOptions
     >,
   ): void;
-  function register<Element extends ElementLike = ElementLike>(
+  function register<Element extends FieldElement = FieldElement>(
     ref: Element,
     validationOptions?: ValidationOptions,
   ): void;
-  function register<Element extends ElementLike = ElementLike>(
+  function register<Element extends FieldElement = FieldElement>(
     refOrValidationOptions?: ValidationOptions | Element | null,
     validationOptions?: ValidationOptions,
   ): ((ref: Element | null) => void) | void {
@@ -1007,9 +1008,15 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
 
   const reset = (values?: DeepPartial<FormValues>): void => {
     for (const value of Object.values(fieldsRef.current)) {
-      if (value && value.ref && value.ref.closest) {
+      if (
+        value &&
+        value.ref &&
+        isWeb &&
+        value.ref instanceof window.HTMLElement &&
+        value.ref.closest
+      ) {
         try {
-          value.ref.closest('form').reset();
+          value.ref.closest('form')!.reset();
           break;
         } catch {}
       }
