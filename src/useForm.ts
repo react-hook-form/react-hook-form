@@ -1119,9 +1119,9 @@ export function useForm<
     unregister,
     removeFieldEventListener,
     getValues,
-    validateSchemaIsValid,
     setValue,
     triggerValidation,
+    ...(shouldValidateCallback ? { validateSchemaIsValid } : {}),
     formState,
     mode: {
       isOnBlur,

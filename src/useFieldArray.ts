@@ -71,7 +71,7 @@ export const useFieldArray = <
   const mapCurrentFieldsValueWithState = () => {
     const currentFieldsValue = getValues({ nest: true })[name];
 
-    if (readFormStateRef.current.isValid) {
+    if (readFormStateRef.current.isValid && validateSchemaIsValid) {
       validateSchemaIsValid();
     }
 
