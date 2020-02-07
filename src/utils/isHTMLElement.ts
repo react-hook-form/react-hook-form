@@ -1,2 +1,4 @@
+import isObject from './isObject';
+
 export default (value: any): value is HTMLElement =>
-  !!(value && value.nodeType === 1);
+  isObject(value) && (value as any).nodeType === Node.ELEMENT_NODE;

@@ -1007,7 +1007,7 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
 
   const reset = (values?: DeepPartial<FormValues>): void => {
     for (const value of Object.values(fieldsRef.current)) {
-      if (value && value.ref && isHTMLElement(value.ref) && value.ref.closest) {
+      if (value && isHTMLElement(value.ref) && value.ref.closest) {
         try {
           value.ref.closest('form')!.reset();
           break;

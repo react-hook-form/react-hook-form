@@ -1,4 +1,3 @@
-// @ts-nocheck
 import attachEventListeners from './attachEventListeners';
 
 jest.mock('../utils/isHTMLElement', () => ({
@@ -12,6 +11,7 @@ describe('attachEventListeners', () => {
     const fields = {
       test: {
         ref: {
+          name: 'test',
           addEventListener,
         },
         eventAttached: [],
@@ -37,6 +37,7 @@ describe('attachEventListeners', () => {
     const fields = {
       test: {
         ref: {
+          name: 'test',
           addEventListener,
         },
         eventAttached: [],
@@ -62,6 +63,7 @@ describe('attachEventListeners', () => {
     const fields = {
       test: {
         ref: {
+          name: 'test',
           addEventListener,
         },
         eventAttached: [],
@@ -86,6 +88,7 @@ describe('attachEventListeners', () => {
     const fields = {
       test: {
         ref: {
+          name: 'test',
           addEventListener,
         },
         eventAttached: [],
@@ -110,8 +113,8 @@ describe('attachEventListeners', () => {
     const fields = {
       test: {
         ref: {
-          addEventListener,
           name: 'test',
+          addEventListener,
         },
         eventAttached: [],
       },
@@ -161,6 +164,7 @@ describe('attachEventListeners', () => {
     const fields = {
       test: {
         ref: {
+          name: 'test',
           addEventListener,
         },
         eventAttached: [],
@@ -209,7 +213,8 @@ describe('attachEventListeners', () => {
       attachEventListeners({
         field: {
           ref: {
-            addEventListener: () => {},
+            name: 'test',
+            addEventListener,
           },
         },
         isRadioOrCheckbox: false,
