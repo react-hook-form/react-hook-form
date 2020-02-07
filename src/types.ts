@@ -40,16 +40,24 @@ export type SchemaValidateOptions = Partial<{
   abortEarly: boolean;
   stripUnknown: boolean;
   recursive: boolean;
-  context: object;
+  context: any;
 }>;
 
+export type ValidationResolver = <FormValues, ValidationContext>(
+  values: FieldValues,
+  validationContext: ValidationContext,
+) => { values: FieldValues | {}; errors: FieldErrors<FormValues> | {} };
+
 export type UseFormOptions<
-  FormValues extends FieldValues = FieldValues
+  FormValues extends FieldValues = FieldValues,
+  ValidationContext = undefined
 > = Partial<{
   mode: Mode;
   reValidateMode: Mode;
   defaultValues: DeepPartial<FormValues>;
   validationSchema: any;
+  validationResolver: ValidationResolver;
+  validationContext: ValidationContext;
   submitFocusError: boolean;
   validateCriteriaMode: 'firstError' | 'all';
 }>;

@@ -1,7 +1,7 @@
 {
   "name": "react-hook-form",
   "description": "Performant, flexible and extensible forms library for React Hooks",
-  "version": "4.8.2",
+  "version": "4.8.3-next.0",
   "main": "dist/react-hook-form.js",
   "module": "dist/react-hook-form.es.js",
   "types": "dist/index.d.ts",
@@ -73,7 +73,7 @@
   "bundlesize": [
     {
       "path": "./dist/react-hook-form.min.es.js",
-      "maxSize": "7.5 kB"
+      "maxSize": "7.8 kB"
     }
   ],
   "peerDependencies": {
