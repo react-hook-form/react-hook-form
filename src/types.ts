@@ -159,10 +159,7 @@ export type CustomElement = {
   files?: FileList | null;
 };
 
-export type HandleChange = ({
-  type,
-  target,
-}: MouseEvent) => Promise<void | boolean>;
+export type HandleChange = (evt: Event) => Promise<void | boolean>;
 
 export type FormValuesFromErrors<Errors> = Errors extends FieldErrors<
   infer FormValues

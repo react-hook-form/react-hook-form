@@ -1,3 +1,4 @@
+// @ts-nocheck
 import findRemovedFieldAndRemoveListener from './findRemovedFieldAndRemoveListener';
 import isDetached from '../utils/isDetached';
 
@@ -196,6 +197,7 @@ describe('findMissDomAndClean', () => {
     expect(fields).toMatchSnapshot();
 
     expect(
+      // @ts-ignore
       findRemovedFieldAndRemoveListener(fields, () => ({} as any), {
         ref: { name: 'test', type: 'text' },
       }),

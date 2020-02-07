@@ -1,3 +1,4 @@
+// @ts-nocheck
 import validateField from './validateField';
 import getRadioValue from './getRadioValue';
 import getCheckboxValue from './getCheckboxValue';

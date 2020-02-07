@@ -1,4 +1,9 @@
+// @ts-nocheck
 import focusErrorField from './focusErrorField';
+
+jest.mock('../utils/isHTMLElement', () => ({
+  default: () => true,
+}));
 
 test('should focus on the first error it encounter', () => {
   const focus = jest.fn();
@@ -11,7 +16,6 @@ test('should focus on the first error it encounter', () => {
       },
     },
     {
-      // @ts-ignore
       test: 'test',
     },
   );
@@ -35,7 +39,6 @@ test('should focus on first option when options input error encounters', () => {
       },
     },
     {
-      // @ts-ignore
       test: 'test',
     },
   );

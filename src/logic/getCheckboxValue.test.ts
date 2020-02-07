@@ -1,3 +1,4 @@
+// @ts-nocheck
 import getCheckboxValue from './getCheckboxValue';
 
 describe('getCheckboxValue', () => {

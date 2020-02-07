@@ -33,6 +33,7 @@ import unset from './utils/unset';
 import isMultipleSelect from './utils/isMultipleSelect';
 import modeChecker from './utils/validationModeChecker';
 import isNullOrUndefined from './utils/isNullOrUndefined';
+import isHTMLElement from './utils/isHTMLElement';
 import { EVENTS, UNDEFINED, VALIDATION_MODE } from './constants';
 import { FormContextValues } from './contextTypes';
 import {
@@ -178,9 +179,7 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
       const options = field.options;
       const { type } = ref;
       const value =
-        isWeb &&
-        ref instanceof window.HTMLElement &&
-        isNullOrUndefined(rawValue)
+        isWeb && isHTMLElement(ref) && isNullOrUndefined(rawValue)
           ? ''
           : rawValue;
 
@@ -393,7 +392,7 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
 
   handleChangeRef.current = handleChangeRef.current
     ? handleChangeRef.current
-    : async ({ type, target }: MouseEvent): Promise<void | boolean> => {
+    : async ({ type, target }: Event): Promise<void | boolean> => {
         const name = target ? (target as Ref).name : '';
         const fields = fieldsRef.current;
         const errors = errorsRef.current;
@@ -1008,13 +1007,7 @@ export function useForm<FormValues extends FieldValues = FieldValues>({
 
   const reset = (values?: DeepPartial<FormValues>): void => {
     for (const value of Object.values(fieldsRef.current)) {
-      if (
-        value &&
-        value.ref &&
-        isWeb &&
-        value.ref instanceof window.HTMLElement &&
-        value.ref.closest
-      ) {
+      if (value && value.ref && isHTMLElement(value.ref) && value.ref.closest) {
         try {
           value.ref.closest('form')!.reset();
           break;

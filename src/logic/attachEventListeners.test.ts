@@ -1,4 +1,9 @@
+// @ts-nocheck
 import attachEventListeners from './attachEventListeners';
+
+jest.mock('../utils/isHTMLElement', () => ({
+  default: () => true,
+}));
 
 describe('attachEventListeners', () => {
   it('should attach change event for radio and return undefined', () => {

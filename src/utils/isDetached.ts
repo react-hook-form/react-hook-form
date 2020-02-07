@@ -12,5 +12,5 @@ export default function isDetached(element: Ref): boolean {
     return false;
   }
 
-  return isDetached(element.parentNode);
+  return isDetached(element.parentNode as any);
 }
