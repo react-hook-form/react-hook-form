@@ -1,3 +1,4 @@
+import isHTMLElement from '../utils/isHTMLElement';
 import { EVENTS } from '../constants';
 import { Field } from '../types';
 
@@ -8,11 +9,11 @@ export default function attachEventListeners({
 }: {
   field: Field;
   isRadioOrCheckbox: boolean;
-  handleChange?: Function;
+  handleChange?: EventListenerOrEventListenerObject;
 }): void {
   const { ref } = field;
 
-  if (ref.addEventListener) {
+  if (isHTMLElement(ref) && ref.addEventListener && handleChange) {
     ref.addEventListener(
       isRadioOrCheckbox ? EVENTS.CHANGE : EVENTS.INPUT,
       handleChange,

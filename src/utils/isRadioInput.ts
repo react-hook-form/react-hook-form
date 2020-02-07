@@ -1,3 +1,4 @@
-import { RADIO_INPUT } from '../constants';
+import { FieldElement } from '../types';
 
-export default (type?: string): boolean => type === RADIO_INPUT;
+export default (element?: FieldElement): element is HTMLInputElement =>
+  !!element && element.type === 'radio';

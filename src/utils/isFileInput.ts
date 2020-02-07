@@ -1,3 +1,4 @@
-import { FILE_INPUT } from '../constants';
+import { FieldElement } from '../types';
 
-export default (type?: string): boolean => type === FILE_INPUT;
+export default (element?: FieldElement): element is HTMLInputElement =>
+  !!element && element.type === 'file';

@@ -5,7 +5,7 @@ import {
   FormStateProxy,
   FieldErrors,
   OnSubmit,
-  ElementLike,
+  FieldElement,
   ValidationOptions,
   FieldName,
   FieldValue,
@@ -19,27 +19,27 @@ export type FormProps<FormValues extends FieldValues = FieldValues> = {
 } & FormContextValues<FormValues>;
 
 export type FormContextValues<FormValues extends FieldValues = FieldValues> = {
-  register<Element extends ElementLike = ElementLike>(): (
+  register<Element extends FieldElement = FieldElement>(): (
     ref: Element | null,
   ) => void;
-  register<Element extends ElementLike = ElementLike>(
+  register<Element extends FieldElement = FieldElement>(
     validationOptions: ValidationOptions,
   ): (ref: Element | null) => void;
-  register<Element extends ElementLike = ElementLike>(
+  register<Element extends FieldElement = FieldElement>(
     name: FieldName<FormValues>,
     validationOptions?: ValidationOptions,
   ): void;
-  register<Element extends ElementLike = ElementLike>(
+  register<Element extends FieldElement = FieldElement>(
     namesWithValidationOptions: Record<
       FieldName<FormValues>,
       ValidationOptions
     >,
   ): void;
-  register<Element extends ElementLike = ElementLike>(
+  register<Element extends FieldElement = FieldElement>(
     ref: Element,
     validationOptions?: ValidationOptions,
   ): void;
-  register<Element extends ElementLike = ElementLike>(
+  register<Element extends FieldElement = FieldElement>(
     refOrValidationOptions: ValidationOptions | Element | null,
     validationOptions?: ValidationOptions,
   ): ((ref: Element | null) => void) | void;

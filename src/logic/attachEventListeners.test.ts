@@ -1,5 +1,9 @@
 import attachEventListeners from './attachEventListeners';
 
+jest.mock('../utils/isHTMLElement', () => ({
+  default: () => true,
+}));
+
 describe('attachEventListeners', () => {
   it('should attach change event for radio and return undefined', () => {
     const handleChange = jest.fn();
@@ -7,6 +11,7 @@ describe('attachEventListeners', () => {
     const fields = {
       test: {
         ref: {
+          name: 'test',
           addEventListener,
         },
         eventAttached: [],
@@ -32,6 +37,7 @@ describe('attachEventListeners', () => {
     const fields = {
       test: {
         ref: {
+          name: 'test',
           addEventListener,
         },
         eventAttached: [],
@@ -57,6 +63,7 @@ describe('attachEventListeners', () => {
     const fields = {
       test: {
         ref: {
+          name: 'test',
           addEventListener,
         },
         eventAttached: [],
@@ -81,6 +88,7 @@ describe('attachEventListeners', () => {
     const fields = {
       test: {
         ref: {
+          name: 'test',
           addEventListener,
         },
         eventAttached: [],
@@ -105,8 +113,8 @@ describe('attachEventListeners', () => {
     const fields = {
       test: {
         ref: {
-          addEventListener,
           name: 'test',
+          addEventListener,
         },
         eventAttached: [],
       },
@@ -156,6 +164,7 @@ describe('attachEventListeners', () => {
     const fields = {
       test: {
         ref: {
+          name: 'test',
           addEventListener,
         },
         eventAttached: [],
@@ -204,7 +213,8 @@ describe('attachEventListeners', () => {
       attachEventListeners({
         field: {
           ref: {
-            addEventListener: () => {},
+            name: 'test',
+            addEventListener,
           },
         },
         isRadioOrCheckbox: false,
