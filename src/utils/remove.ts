@@ -1,7 +1,9 @@
 import isArray from './isArray';
 import isUndefined from './isUndefined';
 
-export default (data: any, index?: number) =>
+export default (data: any, index?: number | number[]) =>
   !isUndefined(index) && isArray(data)
-    ? [...data.slice(0, index), ...data.slice(index + 1)]
+    ? isArray(index)
+      ? data.filter((_e, i) => index.indexOf(i) === -1)
+      : [...data.slice(0, index), ...data.slice(index + 1)]
     : [];

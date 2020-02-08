@@ -135,7 +135,7 @@ export const useFieldArray = <
     }
   };
 
-  const remove = (index?: number) => {
+  const remove = (index?: number | number[]) => {
     if (!isUndefined(index)) {
       mapCurrentFieldsValueWithState();
     }
