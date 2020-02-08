@@ -73,6 +73,7 @@ export const useFieldArray = <
     }
 
     for (const key in fieldsRef.current) {
+      console.log('remove ', key);
       if (isMatchFieldArrayName(key, name) && fieldsRef.current[key]) {
         removeFieldEventListener(fieldsRef.current[key] as Field, true);
       }
@@ -240,7 +241,7 @@ export const useFieldArray = <
       fieldArrayNames.delete(name);
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [name]);
+  }, []);
 
   return {
     swap,
