@@ -494,8 +494,6 @@ export function useForm<
         ? getFieldsValues(fieldsRef.current)
         : defaultValuesRef.current;
 
-      console.log('fieldsValue', values);
-
       validateWithSchema<FormValues, ValidationContext>(
         validationSchema,
         validateAllFieldCriteria,
@@ -765,6 +763,7 @@ export function useForm<
     validateOptions: ValidationOptions | null = {},
   ): ((name: FieldName<FormValues>) => void) | void {
     if (!ref.name) {
+      // eslint-disable-next-line no-console
       return console.warn('Missing name @', ref);
     }
 
