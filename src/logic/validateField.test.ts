@@ -790,6 +790,68 @@ describe('validateField', () => {
     ).toEqual({});
   });
 
+  it('should return an error if a non-empoty object is returned', async () => {
+    // Empty object => no error
+    expect(
+      await validateField(
+        {
+          current: {
+            test: {
+              ref: {},
+            },
+          },
+        },
+        false,
+        {
+          ref: {
+            type: 'text',
+            name: 'test',
+            value: 'This is a long text input',
+            setCustomValidity,
+          },
+          validate: () => ({}),
+        },
+      ),
+    ).toEqual({});
+
+    // Non-empty-object => error
+    expect(
+      await validateField(
+        {
+          current: {
+            test: {
+              ref: {},
+            },
+          },
+        },
+        false,
+        {
+          ref: {
+            type: 'text',
+            name: 'test',
+            value: 'This is a long text input',
+            setCustomValidity,
+          },
+          validate: () => ({ customData: 'foobar' }),
+        },
+      ),
+    ).toEqual({
+      test: {
+        message: '',
+        ref: {
+          name: 'test',
+          setCustomValidity: setCustomValidity,
+          type: 'text',
+          value: 'This is a long text input',
+        },
+        result: {
+          customData: 'foobar',
+        },
+        type: 'validate',
+      },
+    });
+  });
+
   it('should return all validation errors', async () => {
     (getRadioValue as any).mockImplementation(() => ({
       value: '',

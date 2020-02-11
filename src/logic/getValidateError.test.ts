@@ -22,4 +22,14 @@ describe('getValidateError', () => {
       result: false,
     });
   });
+
+  test('should return a proper error when called with an object', () => {
+    const errorObj = { field: false, deepField: { subField: false } };
+    expect(getValidateError(errorObj)).toEqual({
+      message: '',
+      ref: undefined,
+      type: 'validate',
+      result: errorObj,
+    });
+  });
 });

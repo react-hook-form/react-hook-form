@@ -71,7 +71,7 @@ type ValidationOptionObject<Value> = Value | { value: Value; message: string };
 
 export type ValidationValue = boolean | number | string | RegExp;
 
-export type ValidateResult = string | boolean | undefined;
+export type ValidateResult = string | boolean | object | undefined;
 
 export type Validate = (data: any) => ValidateResult | Promise<ValidateResult>;
 
