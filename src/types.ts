@@ -242,7 +242,7 @@ export type Control<FormValues extends FieldValues = FieldValues> = {
     touched: boolean;
     isSubmitting: boolean;
     isValid: boolean;
-    dirtyFields: Set<FieldName<FormValues>>;
+    dirtyFields: boolean;
   }>;
   defaultValuesRef: React.MutableRefObject<
     DeepPartial<FormValues> | FormValues[FieldName<FormValues>]

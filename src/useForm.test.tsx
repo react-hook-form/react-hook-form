@@ -62,6 +62,7 @@ export const reconfigureControl = (
       touched: false,
       isSubmitting: false,
       isValid: false,
+      dirtyFields: false,
     },
   },
   ...controlOverrides,
