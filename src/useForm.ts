@@ -176,7 +176,11 @@ export function useForm<
   const setFieldValue = useCallback(
     (
       name: FieldName<FormValues>,
-      rawValue: FieldValue<FormValues> | DeepPartial<FormValues> | undefined,
+      rawValue:
+        | FieldValue<FormValues>
+        | DeepPartial<FormValues>
+        | undefined
+        | null,
     ): boolean => {
       const field = fieldsRef.current[name];
 
@@ -269,7 +273,7 @@ export function useForm<
   const setInternalValue = useCallback(
     (
       name: FieldName<FormValues>,
-      value: FieldValue<FormValues>,
+      value: FieldValue<FormValues> | null | undefined,
     ): boolean | void => {
       setFieldValue(name, value);
 
@@ -389,7 +393,7 @@ export function useForm<
   const setValue = useCallback<
     <Name extends FieldName<FormValues>>(
       name: Name,
-      value: FormValues[Name],
+      value: FormValues[Name] | null | undefined,
       shouldValidate?: boolean,
     ) => void | Promise<boolean>
   >(
