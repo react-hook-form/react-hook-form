@@ -93,6 +93,7 @@ export type FieldError = {
   types?: MultipleFieldErrors;
   message?: string;
   isManual?: boolean;
+  result?: ValidateResult;
 };
 
 export type ManualFieldError<FormValues> = {

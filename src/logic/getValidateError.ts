@@ -15,6 +15,7 @@ export default function getValidateError(
       type,
       message,
       ref,
+      result,
     };
   }
 }

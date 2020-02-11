@@ -564,6 +564,7 @@ describe('validateField', () => {
           setCustomValidity,
         },
         type: 'validate',
+        result: false,
       },
     });
 
@@ -601,6 +602,7 @@ describe('validateField', () => {
         },
         type: 'test',
         message: '',
+        result: false,
       },
     });
 
@@ -644,6 +646,7 @@ describe('validateField', () => {
         },
         type: 'test',
         message: '',
+        result: false,
       },
     });
 
@@ -680,6 +683,7 @@ describe('validateField', () => {
         ref: 'data',
         type: 'test',
         message: '',
+        result: false,
       },
     });
   });
@@ -716,6 +720,7 @@ describe('validateField', () => {
       test: {
         type: 'test',
         message: 'max 3',
+        result: 'max 3',
         ref: {
           type: 'text',
           name: 'test',
@@ -751,6 +756,7 @@ describe('validateField', () => {
       test: {
         type: 'validate',
         message: 'bill',
+        result: 'bill',
         ref: {
           type: 'text',
           name: 'test',

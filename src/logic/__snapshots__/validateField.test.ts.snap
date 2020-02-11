@@ -10,6 +10,7 @@ Object {
       "type": "text",
       "value": "",
     },
+    "result": false,
     "type": "required",
     "types": Object {
       "required": "test",
@@ -31,6 +32,7 @@ Object {
       "type": "text",
       "value": "bil",
     },
+    "result": false,
     "type": "minLength",
     "types": Object {
       "minLength": "minLength",
@@ -53,6 +55,7 @@ Object {
       "type": "text",
       "value": "",
     },
+    "result": false,
     "type": "required",
     "types": Object {
       "required": true,
@@ -72,6 +75,7 @@ Object {
       "type": "text",
       "value": "123",
     },
+    "result": false,
     "type": "minLength",
     "types": Object {
       "minLength": true,
