@@ -1027,7 +1027,7 @@ export function useForm<
           errorsRef.current = {};
           await callback(transformToNestObject(fieldValues), e);
         } else {
-          if (submitFocusError) {
+          if (submitFocusError && isWeb) {
             focusErrorField(fields, fieldErrors);
           }
 
@@ -1041,6 +1041,7 @@ export function useForm<
       }
     },
     [
+      isWeb,
       reRender,
       shouldValidateCallback,
       submitFocusError,
