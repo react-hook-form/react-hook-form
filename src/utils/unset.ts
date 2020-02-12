@@ -4,6 +4,7 @@ import isArray from './isArray';
 import isUndefined from './isUndefined';
 import isEmptyObject from './isEmptyObject';
 import isFileListObject from './isFileListObject';
+import get from './get';
 
 const unsetObject = (target: any) => {
   for (const key in target) {
@@ -31,7 +32,7 @@ const unset = (target: any, paths: string[]) => {
   paths.forEach(path => {
     set(target, path, undefined);
   });
-  return unsetObject(target);
+  return unsetObject(get(target, name, {}));
 };
 
 export default unset;
