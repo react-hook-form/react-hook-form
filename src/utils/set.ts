@@ -12,7 +12,7 @@ export const isKey = (value: [] | string) =>
   !isArray(value) &&
   (REGEX_IS_PLAIN_PROP.test(value) || !REGEX_IS_DEEP_PROP.test(value));
 
-const stringToPath = (string: string): string[] => {
+export const stringToPath = (string: string): string[] => {
   const result: string[] = [];
 
   string.replace(
