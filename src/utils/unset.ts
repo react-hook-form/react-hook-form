@@ -1,37 +1,57 @@
-import set from './set';
-import isObject from './isObject';
 import isArray from './isArray';
-import isUndefined from './isUndefined';
-import isEmptyObject from './isEmptyObject';
-import isFileListObject from './isFileListObject';
+import { isKey, stringToPath } from './set';
 
-const unsetObject = (target: any) => {
-  for (const key in target) {
-    const data = target[key];
-    const isArrayObject = isArray(data);
+function castPath(value: string) {
+  return isArray(value) ? value : stringToPath(value);
+}
 
-    if ((isObject(data) || isArrayObject) && !data.ref) {
-      unsetObject(data);
-    }
+function baseGet(object: any, path: any) {
+  const updatePath = isKey(path) ? [path] : castPath(path);
 
-    if (
-      (isUndefined(data) ||
-        isEmptyObject(data) ||
-        (isArrayObject && !target[key].filter(Boolean).length)) &&
-      !isFileListObject(target)
-    ) {
-      delete target[key];
-    }
+  const length = path.length;
+  let index = 0;
+
+  while (index < length) {
+    object = object[updatePath[index++]];
   }
+  return index == length ? object : undefined;
+}
 
-  return target;
-};
+function baseSlice(array: string | string[], start: number, end: number) {
+  let index = -1;
+  let length = array.length;
 
-const unset = (target: any, paths: string[]) => {
+  if (start < 0) {
+    start = -start > length ? 0 : length + start;
+  }
+  end = end > length ? length : end;
+  if (end < 0) {
+    end += length;
+  }
+  length = start > end ? 0 : (end - start) >>> 0;
+
+  const result = Array(length);
+  while (++index < length) {
+    result[index] = array[index + start];
+  }
+  return result;
+}
+
+function parent(object: any, path: string | string[]) {
+  return path.length == 1 ? object : baseGet(object, baseSlice(path, 0, -1));
+}
+
+function baseUnset(object: any, path: string) {
+  const updatePath = isKey(path) ? [path] : castPath(path);
+  object = parent(object, updatePath);
+
+  const key = updatePath[updatePath.length - 1];
+  return !(object != null) || delete object[key];
+}
+
+export default function unset(object: any, paths: string[]) {
   paths.forEach(path => {
-    set(target, path, undefined);
+    baseUnset(object, path);
   });
-  return unsetObject(target);
-};
-
-export default unset;
+  return object;
+}

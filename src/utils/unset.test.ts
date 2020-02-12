@@ -20,7 +20,9 @@ test('should unset the object', () => {
   expect(unset(test, ['data.firstName', 'data.test[0]'])).toEqual({
     data: {
       test: [undefined, { data2: '' }],
+      clear: undefined,
       data: {
+        test: undefined,
         test1: {
           ref: {
             test: '',
@@ -64,7 +66,7 @@ test('should return empty object when inner object is empty object', () => {
     },
   };
 
-  expect(unset(test, ['data.firstName'])).toEqual({});
+  expect(unset(test, ['data.firstName'])).toEqual({ data: {} });
 });
 
 test('should clear empty array', () => {
@@ -85,12 +87,15 @@ test('should clear empty array', () => {
     },
   };
 
-  expect(unset(test, ['data.firstName[0]'])).toEqual({
+  expect(unset(test, ['data.firstName.test[0]'])).toEqual({
     data: {
       firstName: {
         test: [undefined, { name: 'test', email: 'last' }],
         deep: {
-          last: [undefined, { name: 'test', email: 'last' }],
+          last: [
+            { name: undefined, email: undefined },
+            { name: 'test', email: 'last' },
+          ],
         },
       },
     },
@@ -106,5 +111,49 @@ test('should clear empty array', () => {
     data: 'test',
   };
 
-  expect(unset(test2, ['arrayItem[0].test1'])).toEqual({ data: 'test' });
+  expect(unset(test2, ['arrayItem[0].test1'])).toEqual({
+    arrayItem: [
+      {
+        test2: undefined,
+      },
+    ],
+    data: 'test',
+  });
+});
+
+test('should only remove relevant data', () => {
+  const data = {
+    test: {},
+    testing: {
+      key1: 1,
+      key2: [
+        {
+          key4: 4,
+          key5: [],
+          key6: null,
+          key7: '',
+          key8: undefined,
+          key9: {},
+        },
+      ],
+      key3: [],
+    },
+  };
+
+  expect(unset(data, ['test'])).toEqual({
+    testing: {
+      key1: 1,
+      key2: [
+        {
+          key4: 4,
+          key5: [],
+          key6: null,
+          key7: '',
+          key8: undefined,
+          key9: {},
+        },
+      ],
+      key3: [],
+    },
+  });
 });
