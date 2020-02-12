@@ -28,7 +28,7 @@ function baseSlice(array: string | string[], start: number, end: number) {
   if (end < 0) {
     end += length;
   }
-  length = start > end ? 0 : (end - start) >>> 0;
+  length = start > end ? 0 : end - start;
 
   const result = Array(length);
   while (++index < length) {
