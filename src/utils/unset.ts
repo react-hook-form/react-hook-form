@@ -1,5 +1,6 @@
 import isArray from './isArray';
 import { isKey, stringToPath } from './set';
+import isUndefined from './isUndefined';
 
 function castPath(value: string) {
   return isArray(value) ? value : stringToPath(value);
@@ -12,7 +13,7 @@ function baseGet(object: any, path: any) {
   let index = 0;
 
   while (index < length) {
-    object = object[updatePath[index++]];
+    object = isUndefined(object) ? index++ : object[updatePath[index++]];
   }
   return index == length ? object : undefined;
 }
