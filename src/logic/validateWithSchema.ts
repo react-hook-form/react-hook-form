@@ -1,31 +1,16 @@
+import * as Yup from 'yup';
 import appendErrors from './appendErrors';
 import isArray from '../utils/isArray';
 import transformToNestObject from './transformToNestObject';
-import {
-  FieldValues,
-  SchemaValidateOptions,
-  FieldErrors,
-  ValidationResolver,
-} from '../types';
+import { FieldValues, FieldErrors, ValidationResolver } from '../types';
 
 type SchemaValidationResult<FormValues> = {
   errors: FieldErrors<FormValues>;
   values: FieldValues;
 };
 
-type YupValidationError = {
-  inner: { path: string; message: string; type: string }[];
-  path: string;
-  message: string;
-  type: string;
-};
-
-type Schema<Data> = {
-  validate(value: FieldValues, options?: SchemaValidateOptions): Promise<Data>;
-};
-
 export const parseErrorSchema = <FormValues>(
-  error: YupValidationError,
+  error: Yup.ValidationError,
   validateAllFieldCriteria: boolean,
 ): FieldErrors<FormValues> =>
   isArray(error.inner)
@@ -60,8 +45,11 @@ export const parseErrorSchema = <FormValues>(
         [error.path]: { message: error.message, type: error.type },
       };
 
-export default async function validateWithSchema<FormValues, ValidationContext>(
-  validationSchema: Schema<FormValues>,
+export default async function validateWithSchema<
+  FormValues extends FieldValues = FieldValues,
+  ValidationContext extends object = object
+>(
+  validationSchema: Yup.Schema<FormValues>,
   validateAllFieldCriteria: boolean,
   data: FormValues,
   validationResolver?: ValidationResolver<FormValues, ValidationContext>,

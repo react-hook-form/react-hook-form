@@ -1,4 +1,5 @@
 import * as React from 'react';
+import * as Yup from 'yup';
 
 export type Primitive = string | boolean | number | symbol | null | undefined;
 
@@ -35,27 +36,22 @@ export type OnSubmit<FormValues extends FieldValues> = (
   event?: React.BaseSyntheticEvent,
 ) => void | Promise<void>;
 
-export type SchemaValidateOptions = Partial<{
-  strict: boolean;
-  abortEarly: boolean;
-  stripUnknown: boolean;
-  recursive: boolean;
-  context: any;
-}>;
-
-export type ValidationResolver<FormValues, ValidationContext> = (
+export type ValidationResolver<
+  FormValues extends FieldValues = FieldValues,
+  ValidationContext extends object = object
+> = (
   values: FormValues,
   validationContext?: ValidationContext,
 ) => { values: FormValues | {}; errors: FieldErrors<FormValues> | {} };
 
 export type UseFormOptions<
   FormValues extends FieldValues = FieldValues,
-  ValidationContext = any
+  ValidationContext extends object = object
 > = Partial<{
   mode: Mode;
   reValidateMode: Mode;
   defaultValues: DeepPartial<FormValues>;
-  validationSchema: any;
+  validationSchema: Yup.Schema<FormValues>;
   validationResolver: ValidationResolver<FormValues, ValidationContext>;
   validationContext: ValidationContext;
   submitFocusError: boolean;

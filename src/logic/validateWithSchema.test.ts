@@ -58,7 +58,7 @@ describe('validateWithSchema', () => {
           validate: () => {
             throw errors;
           },
-        },
+        } as any,
         false,
         {},
         undefined as any,
@@ -72,7 +72,7 @@ describe('validateWithSchema', () => {
       await validateWithSchema(
         {
           validate: () => new Promise(resolve => resolve()),
-        },
+        } as any,
         false,
         {},
         undefined as any,

@@ -650,7 +650,7 @@ describe('useForm', () => {
       const { result } = renderHook(() =>
         useForm<{ test: string }>({
           mode: VALIDATION_MODE.onChange,
-          validationSchema: { test: 'test' },
+          validationSchema: { test: 'test' } as any,
         }),
       );
 
@@ -682,7 +682,7 @@ describe('useForm', () => {
       const { result } = renderHook(() =>
         useForm<{ test1: string; test2: string }>({
           mode: VALIDATION_MODE.onChange,
-          validationSchema: { test2: 'test2' },
+          validationSchema: { test2: 'test2' } as any,
         }),
       );
 
@@ -722,7 +722,7 @@ describe('useForm', () => {
       const { result } = renderHook(() =>
         useForm<{ test: string }>({
           mode: VALIDATION_MODE.onChange,
-          validationSchema: { test: 'test' },
+          validationSchema: { test: 'test' } as any,
         }),
       );
 
@@ -757,7 +757,7 @@ describe('useForm', () => {
       const { result } = renderHook(() =>
         useForm<{ test: string; test1: string }>({
           mode: VALIDATION_MODE.onChange,
-          validationSchema: {},
+          validationSchema: {} as any,
         }),
       );
 
@@ -796,7 +796,7 @@ describe('useForm', () => {
       const { result } = renderHook(() =>
         useForm<{ test1: string; test2: string; test3: string }>({
           mode: VALIDATION_MODE.onChange,
-          validationSchema: { test3: 'test3' },
+          validationSchema: { test3: 'test3' } as any,
         }),
       );
 
@@ -849,7 +849,7 @@ describe('useForm', () => {
       const { result } = renderHook(() =>
         useForm<{ test1: string; test: string }>({
           mode: VALIDATION_MODE.onChange,
-          validationSchema: { test: 'test' },
+          validationSchema: { test: 'test' } as any,
         }),
       );
 
@@ -933,7 +933,7 @@ describe('useForm', () => {
       const { result } = renderHook(() =>
         useForm<{ test: string }>({
           mode: VALIDATION_MODE.onSubmit,
-          validationSchema: {},
+          validationSchema: {} as any,
         }),
       );
 
@@ -1095,7 +1095,7 @@ describe('useForm', () => {
       const { result } = renderHook(() =>
         useForm<{ input: string }>({
           mode: VALIDATION_MODE.onBlur,
-          validationSchema: {},
+          validationSchema: {} as any,
         }),
       );
 
