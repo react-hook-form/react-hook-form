@@ -12,7 +12,8 @@ function baseGet(object: any, path: any) {
   let index = 0;
 
   while (index < length) {
-    object = object[updatePath[index++]];
+    index++;
+    object = isArray(object) ? object[updatePath[index]] : object;
   }
   return index == length ? object : undefined;
 }

@@ -17,10 +17,11 @@ export default <FormValues extends FieldValues>(
 ): FieldValue<FormValues> | DeepPartial<FormValues> | undefined => {
   let value;
 
+  watchFields.add(fieldName);
+
   if (isEmptyObject(fieldValues)) {
     value = watchFieldArray ? watchFieldArray : undefined;
   } else if (!isUndefined(fieldValues[fieldName])) {
-    watchFields.add(fieldName);
     value = fieldValues[fieldName];
   } else {
     value = get(transformToNestObject(fieldValues), fieldName);
