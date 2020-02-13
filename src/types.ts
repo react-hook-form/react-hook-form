@@ -43,20 +43,20 @@ export type SchemaValidateOptions = Partial<{
   context: any;
 }>;
 
-export type ValidationResolver = <FormValues, ValidationContext>(
-  values: FieldValues,
-  validationContext: ValidationContext,
-) => { values: FieldValues | {}; errors: FieldErrors<FormValues> | {} };
+export type ValidationResolver<FormValues, ValidationContext> = (
+  values: FormValues,
+  validationContext?: ValidationContext,
+) => { values: FormValues | {}; errors: FieldErrors<FormValues> | {} };
 
 export type UseFormOptions<
   FormValues extends FieldValues = FieldValues,
-  ValidationContext = undefined
+  ValidationContext = any
 > = Partial<{
   mode: Mode;
   reValidateMode: Mode;
   defaultValues: DeepPartial<FormValues>;
   validationSchema: any;
-  validationResolver: ValidationResolver;
+  validationResolver: ValidationResolver<FormValues, ValidationContext>;
   validationContext: ValidationContext;
   submitFocusError: boolean;
   validateCriteriaMode: 'firstError' | 'all';

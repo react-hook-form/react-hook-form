@@ -64,7 +64,7 @@ const { useRef, useState, useCallback, useEffect } = React;
 
 export function useForm<
   FormValues extends FieldValues = FieldValues,
-  ValidationContext = undefined
+  ValidationContext = any
 >({
   mode = VALIDATION_MODE.onSubmit,
   reValidateMode = VALIDATION_MODE.onChange,
@@ -74,7 +74,9 @@ export function useForm<
   defaultValues = {},
   submitFocusError = true,
   validateCriteriaMode,
-}: UseFormOptions<FormValues> = {}): FormContextValues<FormValues> {
+}: UseFormOptions<FormValues, ValidationContext> = {}): FormContextValues<
+  FormValues
+> {
   const fieldsRef = useRef<FieldRefs<FormValues>>({});
   const validateAllFieldCriteria = validateCriteriaMode === 'all';
   const errorsRef = useRef<FieldErrors<FormValues>>({});
@@ -953,10 +955,7 @@ export function useForm<
       try {
         if (shouldValidateCallback) {
           fieldValues = getFieldsValues(fields);
-          const { errors, values } = await validateWithSchema<
-            FormValues,
-            ValidationContext
-          >(
+          const { errors, values } = await validateWithSchema(
             validationSchema,
             validateAllFieldCriteria,
             transformToNestObject(fieldValues),
@@ -1069,12 +1068,14 @@ export function useForm<
   };
 
   const reset = (values?: DeepPartial<FormValues>): void => {
-    for (const value of Object.values(fieldsRef.current)) {
-      if (value && isHTMLElement(value.ref) && value.ref.closest) {
-        try {
-          value.ref.closest('form')!.reset();
-          break;
-        } catch {}
+    if (isWeb) {
+      for (const value of Object.values(fieldsRef.current)) {
+        if (value && isHTMLElement(value.ref) && value.ref.closest) {
+          try {
+            value.ref.closest('form')!.reset();
+            break;
+          } catch {}
+        }
       }
     }
 
