@@ -18,8 +18,8 @@ export function getConfig({
   external = ['react', 'react-dom']
 } = {}) {
   return {
-    input: input,
-    external: external,
+    input,
+    external,
     plugins: [
       typescript({
         tsconfig,
