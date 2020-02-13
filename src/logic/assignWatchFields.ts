@@ -23,6 +23,7 @@ export default <FormValues extends FieldValues>(
     value = watchFieldArray ? watchFieldArray : undefined;
   } else if (!isUndefined(fieldValues[fieldName])) {
     value = fieldValues[fieldName];
+    watchFields.add(fieldName);
   } else {
     value = get(transformToNestObject(fieldValues), fieldName);
 
