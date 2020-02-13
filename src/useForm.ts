@@ -1068,12 +1068,14 @@ export function useForm<
   };
 
   const reset = (values?: DeepPartial<FormValues>): void => {
-    for (const value of Object.values(fieldsRef.current)) {
-      if (value && isHTMLElement(value.ref) && value.ref.closest) {
-        try {
-          value.ref.closest('form')!.reset();
-          break;
-        } catch {}
+    if (isWeb) {
+      for (const value of Object.values(fieldsRef.current)) {
+        if (value && isHTMLElement(value.ref) && value.ref.closest) {
+          try {
+            value.ref.closest('form')!.reset();
+            break;
+          } catch {}
+        }
       }
     }
 
