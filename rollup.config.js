@@ -3,6 +3,7 @@ import pkg from './package.json';
 
 export function getConfig({
   tsconfig = './tsconfig.json',
+  input = 'src/index.ts',
   output = [
     {
       file: `dist/${pkg.name}.js`,
@@ -14,10 +15,11 @@ export function getConfig({
       format: 'esm',
     },
   ],
+  external = ['react', 'react-dom']
 } = {}) {
   return {
-    input: 'src/index.ts',
-    external: ['react', 'react-dom', 'ts-polyfill'],
+    input: input,
+    external: external,
     plugins: [
       typescript({
         tsconfig,

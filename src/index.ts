@@ -1,4 +1,3 @@
-import 'ts-polyfill';
 export * from './useForm';
 export * from './useFieldArray';
 export * from './controller';
