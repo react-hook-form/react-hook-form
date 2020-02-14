@@ -527,34 +527,6 @@ export function useForm<
     ],
   );
 
-  const resetFieldRef = useCallback(
-    (name: FieldName<FormValues>) => {
-      errorsRef.current = unset(errorsRef.current, [name]);
-      touchedFieldsRef.current = unset(touchedFieldsRef.current, [name]);
-      defaultRenderValuesRef.current = unset(defaultRenderValuesRef.current, [
-        name,
-      ]);
-      [
-        dirtyFieldsRef,
-        fieldsWithValidationRef,
-        validFieldsRef,
-        watchFieldsRef,
-      ].forEach(data => data.current.delete(name));
-
-      if (
-        readFormStateRef.current.isValid ||
-        readFormStateRef.current.touched
-      ) {
-        reRender();
-
-        if (shouldValidateCallback) {
-          validateSchemaIsValid();
-        }
-      }
-    },
-    [reRender], // eslint-disable-line
-  );
-
   const removeFieldEventListener = (field: Field, forceDelete?: boolean) => {
     if (!isUndefined(handleChangeRef.current) && field) {
       findRemovedFieldAndRemoveListener(
@@ -579,9 +551,32 @@ export function useForm<
 
       removeFieldEventListener(field, forceDelete);
 
-      resetFieldRef(field.ref.name);
+      const { name } = field.ref;
+
+      errorsRef.current = unset(errorsRef.current, [name]);
+      touchedFieldsRef.current = unset(touchedFieldsRef.current, [name]);
+      defaultRenderValuesRef.current = unset(defaultRenderValuesRef.current, [
+        name,
+      ]);
+      [
+        dirtyFieldsRef,
+        fieldsWithValidationRef,
+        validFieldsRef,
+        watchFieldsRef,
+      ].forEach(data => data.current.delete(name));
+
+      if (
+        readFormStateRef.current.isValid ||
+        readFormStateRef.current.touched
+      ) {
+        reRender();
+
+        if (shouldValidateCallback) {
+          validateSchemaIsValid();
+        }
+      }
     },
-    [resetFieldRef],
+    [reRender, shouldValidateCallback, validateSchemaIsValid],
   );
 
   function clearError(): void;
@@ -1152,6 +1147,8 @@ export function useForm<
     touchedFieldsRef,
     fieldsRef,
     resetFieldArrayFunctionRef,
+    validFieldsRef,
+    fieldsWithValidationRef,
     watchFieldArrayRef,
     fieldArrayNamesRef,
     isDirtyRef,

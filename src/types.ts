@@ -228,6 +228,8 @@ export type Control<FormValues extends FieldValues = FieldValues> = {
   validateSchemaIsValid?: (fieldsValues: any) => void;
   touchedFieldsRef: React.MutableRefObject<Touched<FormValues>>;
   watchFieldArrayRef: React.MutableRefObject<any>;
+  validFieldsRef: React.MutableRefObject<Set<FieldName<FormValues>>>;
+  fieldsWithValidationRef: React.MutableRefObject<Set<FieldName<FormValues>>>;
   errorsRef: React.MutableRefObject<FieldErrors<FormValues>>;
   fieldsRef: React.MutableRefObject<FieldRefs<FormValues>>;
   resetFieldArrayFunctionRef: React.MutableRefObject<

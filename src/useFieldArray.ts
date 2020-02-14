@@ -45,6 +45,8 @@ export const useFieldArray = <
     touchedFieldsRef,
     readFormStateRef,
     watchFieldArrayRef,
+    validFieldsRef,
+    fieldsWithValidationRef,
     validateSchemaIsValid,
   } = control || methods.control;
   const memoizedDefaultValues = useRef(get(defaultValuesRef.current, name, []));
@@ -153,6 +155,22 @@ export const useFieldArray = <
         touchedFieldsRef.current[name],
         index,
       );
+    }
+
+    if (readFormStateRef.current.isValid && !validateSchemaIsValid) {
+      fields.forEach((field, fieldIndex) => {
+        if (
+          isUndefined(index) ||
+          fieldIndex === index ||
+          (isArray(index) && index.indexOf(fieldIndex) >= 0)
+        ) {
+          for (const key in field) {
+            const removeFieldName = `${name}[${index}].${key}`;
+            validFieldsRef.current.delete(removeFieldName);
+            fieldsWithValidationRef.current.delete(removeFieldName);
+          }
+        }
+      });
     }
   };
 

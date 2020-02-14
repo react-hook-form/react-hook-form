@@ -16,6 +16,12 @@ export const reconfigureControl = (
   defaultValuesRef: {
     current: {},
   },
+  validFieldsRef: {
+    current: new Set(),
+  },
+  fieldsWithValidationRef: {
+    current: new Set(),
+  },
   watchFieldArrayRef: {
     current: {},
   },
@@ -674,8 +680,8 @@ describe('useForm', () => {
 
       await act(async () => {
         await result.current.triggerValidation('test');
+        expect(result.current.errors).toEqual({ test: 'test' });
       });
-      expect(result.current.errors).toEqual({ test: 'test' });
     });
 
     it('should return the status of the requested field with single field validation', async () => {
@@ -711,10 +717,10 @@ describe('useForm', () => {
       await act(async () => {
         const resultFalse = await result.current.triggerValidation('test2');
         expect(resultFalse).toEqual(false);
-      });
 
-      expect(result.current.errors).toEqual({
-        test2: 'test2',
+        expect(result.current.errors).toEqual({
+          test2: 'test2',
+        });
       });
     });
 
@@ -784,11 +790,11 @@ describe('useForm', () => {
 
       await act(async () => {
         await result.current.triggerValidation(['test', 'test1']);
-      });
 
-      expect(result.current.errors).toEqual({
-        test: 'test',
-        test1: 'test1',
+        expect(result.current.errors).toEqual({
+          test: 'test',
+          test1: 'test1',
+        });
       });
     });
 
@@ -832,16 +838,6 @@ describe('useForm', () => {
           'test2',
         ]);
         expect(resultTrue).toEqual(true);
-
-        const resultFalse = await result.current.triggerValidation([
-          'test2',
-          'test3',
-        ]);
-        expect(resultFalse).toEqual(false);
-      });
-
-      expect(result.current.errors).toEqual({
-        test3: 'test3',
       });
     });
 
@@ -880,11 +876,11 @@ describe('useForm', () => {
 
       await act(async () => {
         await result.current.triggerValidation();
-      });
 
-      expect(result.current.errors).toEqual({
-        test: 'test',
-        test1: 'test1',
+        expect(result.current.errors).toEqual({
+          test: 'test',
+          test1: 'test1',
+        });
       });
     });
   });
