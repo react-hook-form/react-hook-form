@@ -253,6 +253,8 @@ export type AsProps<As> = As extends undefined
   ? {}
   : As extends React.ReactElement
   ? { [key: string]: any }
+  : As extends React.ComponentType<infer P>
+  ? Omit<P, 'children'>
   : As extends keyof JSX.IntrinsicElements
   ? JSX.IntrinsicElements[As]
   : never;
@@ -278,6 +280,7 @@ export type ErrorMessageProps<
   As extends
     | undefined
     | React.ReactElement
+    | React.ComponentType<any>
     | keyof JSX.IntrinsicElements = undefined
 > = {
   as?: As;

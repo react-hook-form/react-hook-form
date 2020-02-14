@@ -23,7 +23,7 @@ describe('React Hook Form Error Message', () => {
   it('should render correctly with flat errors and as with string', () => {
     const { asFragment } = render(
       <ErrorMessage
-        as="span"
+        as={'span' as 'span'}
         errors={{ flat: { type: 'flat', message: 'flat' } }}
         name="flat"
       />,
@@ -35,7 +35,7 @@ describe('React Hook Form Error Message', () => {
   it('should render correctly with flat errors and as with string and className', () => {
     const { asFragment } = render(
       <ErrorMessage
-        as="span"
+        as={'span' as 'span'}
         errors={{ flat: { type: 'flat', message: 'flat' } }}
         name="flat"
         className="test"
@@ -147,7 +147,7 @@ describe('React Hook Form Error Message', () => {
   it('should render correctly with nested errors object and as with string', () => {
     const { asFragment } = render(
       <ErrorMessage
-        as="span"
+        as={'span' as 'span'}
         errors={{
           nested: {
             object: { type: 'object', message: 'object' },
@@ -257,7 +257,7 @@ describe('React Hook Form Error Message', () => {
   it('should render correctly with nested errors array and as with string', () => {
     const { asFragment } = render(
       <ErrorMessage
-        as="span"
+        as={'span' as 'span'}
         errors={{
           nested: [
             {
