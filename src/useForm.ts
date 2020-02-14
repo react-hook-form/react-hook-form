@@ -555,16 +555,21 @@ export function useForm<
     [reRender], // eslint-disable-line
   );
 
-  const removeFieldEventListener = (field: Field, forceDelete?: boolean) => {
-    if (!isUndefined(handleChangeRef.current) && field) {
-      findRemovedFieldAndRemoveListener(
-        fieldsRef.current,
-        handleChangeRef.current,
-        field,
-        forceDelete,
-      );
-    }
-  };
+  const removeFieldEventListener = useCallback(
+    (field: Field, forceDelete?: boolean) => {
+      if (!isUndefined(handleChangeRef.current) && field) {
+        findRemovedFieldAndRemoveListener(
+          fieldsRef.current,
+          handleChangeRef.current,
+          field,
+          forceDelete,
+        );
+      }
+
+      resetFieldRef(field.ref.name);
+    },
+    [resetFieldRef],
+  );
 
   const removeFieldEventListenerAndRef = useCallback(
     (field: Field | undefined, forceDelete?: boolean) => {
@@ -578,10 +583,8 @@ export function useForm<
       }
 
       removeFieldEventListener(field, forceDelete);
-
-      resetFieldRef(field.ref.name);
     },
-    [resetFieldRef],
+    [removeFieldEventListener],
   );
 
   function clearError(): void;
