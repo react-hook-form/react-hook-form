@@ -14,6 +14,7 @@ const ErrorMessage = <
   As extends
     | undefined
     | React.ReactElement
+    | React.ComponentType<any>
     | keyof JSX.IntrinsicElements = undefined
 >({
   as: InnerComponent,
