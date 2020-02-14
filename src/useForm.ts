@@ -527,49 +527,29 @@ export function useForm<
     ],
   );
 
-  const resetFieldRef = useCallback(
-    (name: FieldName<FormValues>) => {
-      errorsRef.current = unset(errorsRef.current, [name]);
-      touchedFieldsRef.current = unset(touchedFieldsRef.current, [name]);
-      defaultRenderValuesRef.current = unset(defaultRenderValuesRef.current, [
-        name,
-      ]);
-      [
-        dirtyFieldsRef,
-        fieldsWithValidationRef,
-        validFieldsRef,
-        watchFieldsRef,
-      ].forEach(data => data.current.delete(name));
+  const removeFieldEventListener = (field: Field, forceDelete?: boolean) => {
+    if (!isUndefined(handleChangeRef.current) && field) {
+      findRemovedFieldAndRemoveListener(
+        fieldsRef.current,
+        handleChangeRef.current,
+        field,
+        forceDelete,
+      );
+    }
 
-      if (
-        readFormStateRef.current.isValid ||
-        readFormStateRef.current.touched
-      ) {
-        reRender();
-
-        if (shouldValidateCallback) {
-          validateSchemaIsValid();
-        }
-      }
-    },
-    [reRender], // eslint-disable-line
-  );
-
-  const removeFieldEventListener = useCallback(
-    (field: Field, forceDelete?: boolean) => {
-      if (!isUndefined(handleChangeRef.current) && field) {
-        findRemovedFieldAndRemoveListener(
-          fieldsRef.current,
-          handleChangeRef.current,
-          field,
-          forceDelete,
-        );
-      }
-
-      resetFieldRef(field.ref.name);
-    },
-    [resetFieldRef],
-  );
+    const { name } = field.ref;
+    errorsRef.current = unset(errorsRef.current, [name]);
+    touchedFieldsRef.current = unset(touchedFieldsRef.current, [name]);
+    defaultRenderValuesRef.current = unset(defaultRenderValuesRef.current, [
+      name,
+    ]);
+    [
+      dirtyFieldsRef,
+      fieldsWithValidationRef,
+      validFieldsRef,
+      watchFieldsRef,
+    ].forEach(data => data.current.delete(name));
+  };
 
   const removeFieldEventListenerAndRef = useCallback(
     (field: Field | undefined, forceDelete?: boolean) => {
@@ -583,8 +563,19 @@ export function useForm<
       }
 
       removeFieldEventListener(field, forceDelete);
+
+      if (
+        readFormStateRef.current.isValid ||
+        readFormStateRef.current.touched
+      ) {
+        reRender();
+
+        if (shouldValidateCallback) {
+          validateSchemaIsValid();
+        }
+      }
     },
-    [removeFieldEventListener],
+    [reRender, shouldValidateCallback, validateSchemaIsValid],
   );
 
   function clearError(): void;
