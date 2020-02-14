@@ -16,6 +16,12 @@ export const reconfigureControl = (
   defaultValuesRef: {
     current: {},
   },
+  validFieldsRef: {
+    current: new Set(),
+  },
+  fieldsWithValidationRef: {
+    current: new Set(),
+  },
   watchFieldArrayRef: {
     current: {},
   },
