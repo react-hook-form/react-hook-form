@@ -537,18 +537,12 @@ export function useForm<
       );
     }
 
-    const { name } = field.ref;
-    errorsRef.current = unset(errorsRef.current, [name]);
-    touchedFieldsRef.current = unset(touchedFieldsRef.current, [name]);
-    defaultRenderValuesRef.current = unset(defaultRenderValuesRef.current, [
-      name,
-    ]);
     [
       dirtyFieldsRef,
       fieldsWithValidationRef,
       validFieldsRef,
       watchFieldsRef,
-    ].forEach(data => data.current.delete(name));
+    ].forEach(data => data.current.delete(field.ref.name));
   };
 
   const removeFieldEventListenerAndRef = useCallback(
@@ -561,8 +555,15 @@ export function useForm<
       ) {
         return;
       }
+      const { name } = field.ref;
 
       removeFieldEventListener(field, forceDelete);
+
+      errorsRef.current = unset(errorsRef.current, [name]);
+      touchedFieldsRef.current = unset(touchedFieldsRef.current, [name]);
+      defaultRenderValuesRef.current = unset(defaultRenderValuesRef.current, [
+        name,
+      ]);
 
       if (
         readFormStateRef.current.isValid ||
