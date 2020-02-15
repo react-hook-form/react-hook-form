@@ -1,16 +1,8 @@
 import isObject from './isObject';
 import isArray from './isArray';
-import {
-  REGEX_ESCAPE_CHAR,
-  REGEX_IS_DEEP_PROP,
-  REGEX_IS_PLAIN_PROP,
-  REGEX_PROP_NAME,
-} from '../constants';
+import { REGEX_ESCAPE_CHAR, REGEX_PROP_NAME } from '../constants';
+import isKey from './isKey';
 import { FieldValues } from '../types';
-
-export const isKey = (value: [] | string) =>
-  !isArray(value) &&
-  (REGEX_IS_PLAIN_PROP.test(value) || !REGEX_IS_DEEP_PROP.test(value));
 
 export const stringToPath = (string: string): string[] => {
   const result: string[] = [];

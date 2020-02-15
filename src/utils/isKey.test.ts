@@ -1,4 +1,4 @@
-import { isKey } from './set';
+import isKey from './isKey';
 
 describe('isKey', () => {
   it('should return false if it is array', () => {
