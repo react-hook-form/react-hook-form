@@ -22,6 +22,7 @@ import isObject from './utils/isObject';
 import isFunction from './utils/isFunction';
 import isArray from './utils/isArray';
 import isString from './utils/isString';
+import isKey from './utils/isKey';
 import isSameError from './utils/isSameError';
 import isUndefined from './utils/isUndefined';
 import isFileListObject from './utils/isFileListObject';
@@ -392,6 +393,12 @@ export function useForm<
     ],
   );
 
+  const isFieldWatched = (name: string) =>
+    isWatchAllRef.current ||
+    watchFieldsRef.current.has(name) ||
+    (!isKey(name) &&
+      fieldArrayNamesRef.current.has((name.match(/\w+/) || [])[0]));
+
   const setValue = useCallback<
     <Name extends FieldName<FormValues>>(
       name: Name,
@@ -401,9 +408,7 @@ export function useForm<
   >(
     (name, value, shouldValidate) => {
       const shouldRender =
-        setInternalValue(name, value) ||
-        isWatchAllRef.current ||
-        watchFieldsRef.current.has(name);
+        setInternalValue(name, value) || isFieldWatched(name);
 
       if (shouldRender) {
         reRender();
@@ -442,10 +447,7 @@ export function useForm<
           isSubmitted: isSubmittedRef.current,
         });
         const shouldUpdateDirty = setDirty(name);
-        let shouldUpdateState =
-          isWatchAllRef.current ||
-          watchFieldsRef.current.has(name) ||
-          shouldUpdateDirty;
+        let shouldUpdateState = isFieldWatched(name) || shouldUpdateDirty;
 
         if (
           isBlurEvent &&
