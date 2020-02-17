@@ -1551,11 +1551,6 @@ copy-descriptor@^0.1.0:
   resolved "https://registry.yarnpkg.com/copy-descriptor/-/copy-descriptor-0.1.1.tgz#676f6eb3c39997c2ee1ac3a924fd6124748f578d"
   integrity sha1-Z29us8OZl8LuGsOpJP1hJHSPV40=
 
-core-js@^3.6.4:
-  version "3.6.4"
-  resolved "https://registry.yarnpkg.com/core-js/-/core-js-3.6.4.tgz#440a83536b458114b9cb2ac1580ba377dc470647"
-  integrity sha512-4paDGScNgZP2IXXilaffL9X7968RuvwlkK3xWtZRVqgd8SYNiVKRJvkFd1aqqEuPfN7E68ZHEp9hDj6lHj4Hyw==
-
 core-util-is@1.0.2, core-util-is@~1.0.0:
   version "1.0.2"
   resolved "https://registry.yarnpkg.com/core-util-is/-/core-util-is-1.0.2.tgz#b5fd54220aa2bc5ab57aab7140c940754503c1a7"
@@ -5644,13 +5639,6 @@ ts-jest@^25.1.0:
     resolve "1.x"
     semver "^5.5"
     yargs-parser "10.x"
-
-ts-polyfill@^3.7.5:
-  version "3.7.5"
-  resolved "https://registry.yarnpkg.com/ts-polyfill/-/ts-polyfill-3.7.5.tgz#c8d0fb9e771857cd0c910f049f06adb5c94c0686"
-  integrity sha512-KJQ+5JQQoiy7LN1K7SQZj8+J5k4zDzZp20KjaR4s4M93eIbHT760IhoVcQBgwrgEJPip0InaxBTP0JWZ6cNopQ==
-  dependencies:
-    core-js "^3.6.4"
 
 tslib@1.10.0, tslib@^1.8.1, tslib@^1.9.0:
   version "1.10.0"
