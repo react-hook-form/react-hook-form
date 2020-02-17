@@ -520,13 +520,8 @@ export function useForm<
         }
       });
     },
-    [
-      reRender,
-      validateAllFieldCriteria,
-      validationContext,
-      validationResolver,
-      validationSchema,
-    ],
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [reRender, validateAllFieldCriteria, validationContext, validationResolver],
   );
 
   const removeFieldEventListener = (field: Field, forceDelete?: boolean) => {
