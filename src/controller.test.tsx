@@ -9,7 +9,12 @@ describe('Controller', () => {
     const control = reconfigureControl();
 
     const { asFragment } = render(
-      <Controller defaultValue="" name="test" as="input" control={control} />,
+      <Controller
+        defaultValue=""
+        name="test"
+        as={<input />}
+        control={control}
+      />,
     );
 
     expect(asFragment()).toMatchSnapshot();
@@ -171,7 +176,7 @@ describe('Controller', () => {
     });
 
     const { asFragment } = render(
-      <Controller name="test" as="input" control={control} />,
+      <Controller name="test" as={<input />} control={control} />,
     );
 
     expect(asFragment()).toMatchSnapshot();
@@ -184,7 +189,7 @@ describe('Controller', () => {
       <Controller
         defaultValue=""
         name="test"
-        as="input"
+        as={<input />}
         valueName="selectedkey"
         control={control}
       />,
@@ -201,7 +206,7 @@ describe('Controller', () => {
       <Controller
         defaultValue=""
         name="test[0]"
-        as="input"
+        as={<input />}
         valueName="selectedkey"
         control={{
           ...control,

@@ -1,4 +1,11 @@
-import * as React from 'react';
+import React, {
+  useState,
+  useRef,
+  useEffect,
+  isValidElement,
+  cloneElement,
+  useCallback,
+} from 'react';
 import isBoolean from './utils/isBoolean';
 import isUndefined from './utils/isUndefined';
 import get from './utils/get';
@@ -37,12 +44,12 @@ const Controller = <ControlProp extends Control = Control>({
     fieldsRef,
     fieldArrayNamesRef,
   } = control || methods.control;
-  const [value, setInputStateValue] = React.useState(
+  const [value, setInputStateValue] = useState(
     isUndefined(defaultValue)
       ? get(defaultValuesRef.current, name)
       : defaultValue,
   );
-  const valueRef = React.useRef(value);
+  const valueRef = useRef(value);
   const isCheckboxInput = isBoolean(value);
 
   const shouldValidate = () =>
@@ -70,7 +77,7 @@ const Controller = <ControlProp extends Control = Control>({
     setValue(name, data, shouldValidate());
   };
 
-  const registerField = () => {
+  const registerField = useCallback(() => {
     if (
       isNameInFieldArray(fieldArrayNamesRef.current, name) &&
       fieldsRef.current[name]
@@ -96,20 +103,27 @@ const Controller = <ControlProp extends Control = Control>({
       ),
       { ...rules },
     );
-  };
+  }, [
+    fieldArrayNamesRef,
+    fieldsRef,
+    name,
+    register,
+    removeFieldEventListener,
+    rules,
+  ]);
 
   if (!fieldsRef.current[name]) {
     registerField();
   }
 
-  React.useEffect(() => {
+  useEffect(() => {
     registerField();
     return () => {
       if (!isNameInFieldArray(fieldArrayNamesRef.current, name)) {
         unregister(name);
       }
     };
-  }, [name]);
+  }, [fieldArrayNamesRef, name, registerField, unregister]);
 
   const shouldReValidateOnBlur = isOnBlur || isReValidateOnBlur;
 
@@ -135,8 +149,8 @@ const Controller = <ControlProp extends Control = Control>({
     ...{ [valueName || (isCheckboxInput ? 'checked' : VALUE)]: value },
   };
 
-  return React.isValidElement(InnerComponent) ? (
-    React.cloneElement(InnerComponent, props)
+  return isValidElement(InnerComponent) ? (
+    cloneElement(InnerComponent, props)
   ) : (
     <InnerComponent {...props} />
   );
