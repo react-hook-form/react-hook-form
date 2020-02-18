@@ -38,9 +38,7 @@ const Controller = <ControlProp extends Control = Control>({
     fieldArrayNamesRef,
   } = control || methods.control;
   const [value, setInputStateValue] = React.useState(
-    isUndefined(defaultValue)
-      ? get(defaultValuesRef.current, name)
-      : defaultValue,
+    isUndefined(defaultValue) ? get(defaultValuesRef, name) : defaultValue,
   );
   const valueRef = React.useRef(value);
   const isCheckboxInput = isBoolean(value);

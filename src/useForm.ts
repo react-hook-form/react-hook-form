@@ -61,7 +61,7 @@ import {
   RadioOrCheckboxOption,
 } from './types';
 
-const { useRef, useState, useCallback, useEffect } = React;
+const { useRef, useState, useCallback, useEffect, useMemo } = React;
 
 export function useForm<
   FormValues extends FieldValues = FieldValues,
@@ -78,6 +78,7 @@ export function useForm<
 }: UseFormOptions<FormValues, ValidationContext> = {}): FormContextValues<
   FormValues
 > {
+  let defaultValuesRef = useMemo(() => defaultValues, [defaultValues]);
   const fieldsRef = useRef<FieldRefs<FormValues>>({});
   const validateAllFieldCriteria = validateCriteriaMode === 'all';
   const errorsRef = useRef<FieldErrors<FormValues>>({});
@@ -93,9 +94,6 @@ export function useForm<
   const defaultRenderValuesRef = useRef<
     DeepPartial<Record<FieldName<FormValues>, FieldValue<FormValues>>>
   >({});
-  const defaultValuesRef = useRef<
-    FieldValue<FormValues> | DeepPartial<FormValues>
-  >(defaultValues);
   const isUnMount = useRef(false);
   const isWatchAllRef = useRef(false);
   const isSubmittedRef = useRef(false);
@@ -235,43 +233,50 @@ export function useForm<
     [isWeb],
   );
 
-  const setDirty = (name: FieldName<FormValues>): boolean => {
-    if (
-      !fieldsRef.current[name] ||
-      (!readFormStateRef.current.dirty && !readFormStateRef.current.dirtyFields)
-    ) {
-      return false;
-    }
+  const setDirty = useCallback(
+    (name: FieldName<FormValues>): boolean => {
+      if (
+        !fieldsRef.current[name] ||
+        (!readFormStateRef.current.dirty &&
+          !readFormStateRef.current.dirtyFields)
+      ) {
+        return false;
+      }
 
-    const isFieldArray = isNameInFieldArray(fieldArrayNamesRef.current, name);
-    const previousDirtyFieldsLength = dirtyFieldsRef.current.size;
-    let isDirty =
-      defaultRenderValuesRef.current[name] !==
-      getFieldValue(fieldsRef.current, fieldsRef.current[name]!.ref);
+      const isFieldArray = isNameInFieldArray(fieldArrayNamesRef.current, name);
+      const previousDirtyFieldsLength = dirtyFieldsRef.current.size;
+      let isDirty =
+        defaultRenderValuesRef.current[name] !==
+        getFieldValue(fieldsRef.current, fieldsRef.current[name]!.ref);
 
-    if (isFieldArray) {
-      const fieldArrayName = name.substring(0, name.indexOf('['));
-      isDirty = getIsFieldsDifferent(
-        getFieldValueByName(fieldsRef.current, fieldArrayName),
-        get(defaultValuesRef.current, fieldArrayName),
-      );
-    }
+      if (isFieldArray) {
+        const fieldArrayName = name.substring(0, name.indexOf('['));
+        isDirty = getIsFieldsDifferent(
+          getFieldValueByName(fieldsRef.current, fieldArrayName),
+          get(defaultValuesRef, fieldArrayName),
+        );
+      }
 
-    const isDirtyChanged =
-      (isFieldArray ? isDirtyRef.current : dirtyFieldsRef.current.has(name)) !==
-      isDirty;
+      const isDirtyChanged =
+        (isFieldArray
+          ? isDirtyRef.current
+          : dirtyFieldsRef.current.has(name)) !== isDirty;
 
-    if (isDirty) {
-      dirtyFieldsRef.current.add(name);
-    } else {
-      dirtyFieldsRef.current.delete(name);
-    }
+      if (isDirty) {
+        dirtyFieldsRef.current.add(name);
+      } else {
+        dirtyFieldsRef.current.delete(name);
+      }
 
-    isDirtyRef.current = isFieldArray ? isDirty : !!dirtyFieldsRef.current.size;
-    return readFormStateRef.current.dirty
-      ? isDirtyChanged
-      : previousDirtyFieldsLength !== dirtyFieldsRef.current.size;
-  };
+      isDirtyRef.current = isFieldArray
+        ? isDirty
+        : !!dirtyFieldsRef.current.size;
+      return readFormStateRef.current.dirty
+        ? isDirtyChanged
+        : previousDirtyFieldsLength !== dirtyFieldsRef.current.size;
+    },
+    [defaultValuesRef],
+  );
 
   const setInternalValue = useCallback(
     (
@@ -288,7 +293,7 @@ export function useForm<
         return !!set(touchedFieldsRef.current, name, true);
       }
     },
-    [setFieldValue],
+    [setDirty, setFieldValue],
   );
 
   const executeValidation = useCallback(
@@ -498,9 +503,9 @@ export function useForm<
 
   const validateSchemaIsValid = useCallback(
     (values: any = {}) => {
-      const fieldValues = isEmptyObject(defaultValuesRef.current)
+      const fieldValues = isEmptyObject(defaultValuesRef)
         ? getFieldsValues(fieldsRef.current)
-        : defaultValuesRef.current;
+        : defaultValuesRef;
 
       validateWithSchema<FormValues, ValidationContext>(
         validationSchema,
@@ -681,9 +686,9 @@ export function useForm<
     defaultValue?: string | DeepPartial<FormValues>,
   ): FieldValue<FormValues> | DeepPartial<FormValues> | string | undefined {
     const combinedDefaultValues = isUndefined(defaultValue)
-      ? isUndefined(defaultValuesRef.current)
+      ? isUndefined(defaultValuesRef)
         ? {}
-        : defaultValuesRef.current
+        : defaultValuesRef
       : defaultValue;
     const fieldValues = getFieldsValues<FormValues>(
       fieldsRef.current,
@@ -737,7 +742,7 @@ export function useForm<
     const result =
       (!isEmptyObject(fieldValues) && fieldValues) ||
       defaultValue ||
-      defaultValuesRef.current;
+      defaultValuesRef;
 
     return fieldNames && fieldNames.nest
       ? transformToNestObject(result as FieldValues)
@@ -818,11 +823,8 @@ export function useForm<
 
     fields[name as FieldName<FormValues>] = currentField;
 
-    if (!isEmptyObject(defaultValuesRef.current)) {
-      defaultValue = getDefaultValue<FormValues>(
-        defaultValuesRef.current,
-        name,
-      );
+    if (!isEmptyObject(defaultValuesRef)) {
+      defaultValue = getDefaultValue<FormValues>(defaultValuesRef, name);
       isEmptyDefaultValue = isUndefined(defaultValue);
       isFieldArray = isNameInFieldArray(fieldArrayNamesRef.current, name);
 
@@ -1072,7 +1074,7 @@ export function useForm<
     }
 
     if (values) {
-      defaultValuesRef.current = values;
+      defaultValuesRef = values;
     }
 
     Object.values(resetFieldArrayFunctionRef.current).forEach(
@@ -1162,7 +1164,7 @@ export function useForm<
     getValues: useCallback(getValues, []),
     reset: useCallback(reset, []),
     register: useCallback(register, [
-      defaultValuesRef.current,
+      defaultValuesRef,
       defaultRenderValuesRef.current,
     ]),
     unregister: useCallback(unregister, []),

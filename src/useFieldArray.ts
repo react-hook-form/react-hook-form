@@ -49,7 +49,7 @@ export const useFieldArray = <
     fieldsWithValidationRef,
     validateSchemaIsValid,
   } = control || methods.control;
-  const memoizedDefaultValues = useRef(get(defaultValuesRef.current, name, []));
+  const memoizedDefaultValues = useRef(get(defaultValuesRef, name, []));
   const [fields, setField] = useState<
     Partial<ArrayField<FormArrayValues, KeyName>>[]
   >(mapIds(memoizedDefaultValues.current, keyName));
@@ -241,7 +241,7 @@ export const useFieldArray = <
 
   const reset = () => {
     resetFields();
-    memoizedDefaultValues.current = get(defaultValuesRef.current, name, []);
+    memoizedDefaultValues.current = get(defaultValuesRef, name, []);
     setField(mapIds(memoizedDefaultValues.current, keyName));
   };
 

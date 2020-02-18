@@ -246,9 +246,7 @@ export type Control<FormValues extends FieldValues = FieldValues> = {
     isValid: boolean;
     dirtyFields: boolean;
   }>;
-  defaultValuesRef: React.MutableRefObject<
-    DeepPartial<FormValues> | FormValues[FieldName<FormValues>]
-  >;
+  defaultValuesRef: DeepPartial<FormValues> | FormValues[FieldName<FormValues>];
 };
 
 export type AsProps<As> = As extends undefined
