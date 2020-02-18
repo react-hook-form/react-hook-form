@@ -127,7 +127,6 @@ export function useForm<
     isOnBlur: isReValidateOnBlur,
     isOnSubmit: isReValidateOnSubmit,
   } = useRef(modeChecker(reValidateMode)).current;
-  defaultValuesRef.current = defaultValues;
 
   const reRender = useCallback(() => {
     if (!isUnMount.current) {
