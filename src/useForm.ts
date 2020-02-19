@@ -183,7 +183,8 @@ export function useForm<
         | FieldValue<FormValues>
         | DeepPartial<FormValues>
         | undefined
-        | null,
+        | null
+        | boolean,
     ): boolean => {
       const field = fieldsRef.current[name];
 
@@ -276,7 +277,7 @@ export function useForm<
   const setInternalValue = useCallback(
     (
       name: FieldName<FormValues>,
-      value: FieldValue<FormValues> | null | undefined,
+      value: FieldValue<FormValues> | null | undefined | boolean,
     ): boolean | void => {
       setFieldValue(name, value);
 
@@ -399,28 +400,45 @@ export function useForm<
     (!isKey(name) &&
       fieldArrayNamesRef.current.has((name.match(/\w+/) || [])[0]));
 
-  const setValue = useCallback<
-    <Name extends FieldName<FormValues>>(
-      name: Name,
-      value: FormValues[Name] | null | undefined,
-      shouldValidate?: boolean,
-    ) => void | Promise<boolean>
-  >(
-    (name, value, shouldValidate) => {
-      const shouldRender =
-        setInternalValue(name, value) || isFieldWatched(name);
+  function setValue<Name extends FieldName<FormValues>>(
+    name: Name,
+    value: FormValues[Name] | null | undefined,
+    shouldValidate?: boolean,
+  ): void;
+  function setValue<Name extends FieldName<FormValues>>(
+    namesWithValue: Record<Name, any>[],
+    shouldValidate?: boolean,
+  ): void;
+  function setValue<Name extends FieldName<FormValues>>(
+    names: Name | Record<Name, any>[],
+    valueOrShouldValidate: FormValues[Name] | null | undefined | boolean,
+    shouldValidate?: boolean,
+  ): void {
+    let index = -1;
+    let shouldRender;
+    const isMultiple = isArray(names);
+    const updatedNames = isArray(names) ? names : [names];
 
-      if (shouldRender) {
-        reRender();
-      }
+    while (++index < updatedNames.length) {
+      const fieldName = updatedNames[index];
+      const isStringFieldName = isString(fieldName);
+      shouldRender = setInternalValue(
+        isStringFieldName
+          ? (fieldName as Name)
+          : (Object.keys(fieldName)[0] as Name),
+        isStringFieldName ? valueOrShouldValidate : Object.values(fieldName)[0],
+      );
+      shouldRender = !isMultiple || isFieldWatched(fieldName as Name);
+    }
 
-      if (shouldValidate) {
-        triggerValidation(name);
-      }
-      return;
-    },
-    [reRender, setInternalValue, triggerValidation],
-  );
+    if (shouldRender || isMultiple) {
+      reRender();
+    }
+
+    if (shouldValidate || (isMultiple && valueOrShouldValidate)) {
+      triggerValidation(shouldValidate ? name : undefined);
+    }
+  }
 
   handleChangeRef.current = handleChangeRef.current
     ? handleChangeRef.current
@@ -1157,7 +1175,11 @@ export function useForm<
     watch,
     control,
     handleSubmit,
-    setValue,
+    setValue: useCallback(setValue, [
+      reRender,
+      setInternalValue,
+      triggerValidation,
+    ]),
     triggerValidation,
     getValues: useCallback(getValues, []),
     reset: useCallback(reset, []),
