@@ -414,22 +414,27 @@ export function useForm<
     valueOrShouldValidate: FormValues[Name] | null | undefined | boolean,
     shouldValidate?: boolean,
   ): void {
-    let index = -1;
     let shouldRender;
     const isMultiple = isArray(names);
     const updatedNames = isArray(names) ? names : [names];
 
-    while (++index < updatedNames.length) {
-      const fieldName = updatedNames[index];
-      const isStringFieldName = isString(fieldName);
+    updatedNames.forEach((name: Name | Record<Name, any>) => {
+      const isStringFieldName = isString(name);
       shouldRender = setInternalValue(
-        isStringFieldName
-          ? (fieldName as Name)
-          : (Object.keys(fieldName)[0] as Name),
-        isStringFieldName ? valueOrShouldValidate : Object.values(fieldName)[0],
+        isStringFieldName ? (name as Name) : (Object.keys(name)[0] as Name),
+        valueOrShouldValidate,
       );
-      shouldRender = !isMultiple || isFieldWatched(fieldName as Name);
-    }
+
+      if (!isMultiple) {
+        shouldRender =
+          shouldRender ||
+          isFieldWatched(
+            isStringFieldName
+              ? (name as Name)
+              : (Object.values(name)[0] as Name),
+          );
+      }
+    });
 
     if (shouldRender || isMultiple) {
       reRender();
