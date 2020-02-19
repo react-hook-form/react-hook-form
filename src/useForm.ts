@@ -402,7 +402,7 @@ export function useForm<
 
   function setValue<Name extends FieldName<FormValues>>(
     name: Name,
-    value: FormValues[Name] | null | undefined,
+    value: FormValues[Name] | null | undefined | boolean,
     shouldValidate?: boolean,
   ): void;
   function setValue<Name extends FieldName<FormValues>>(
