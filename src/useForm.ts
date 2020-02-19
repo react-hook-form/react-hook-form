@@ -127,6 +127,7 @@ export function useForm<
     isOnBlur: isReValidateOnBlur,
     isOnSubmit: isReValidateOnSubmit,
   } = useRef(modeChecker(reValidateMode)).current;
+  defaultValuesRef.current = defaultValues;
 
   const reRender = useCallback(() => {
     if (!isUnMount.current) {
@@ -1161,10 +1162,7 @@ export function useForm<
     triggerValidation,
     getValues: useCallback(getValues, []),
     reset: useCallback(reset, []),
-    register: useCallback(register, [
-      defaultValuesRef.current,
-      defaultRenderValuesRef.current,
-    ]),
+    register: useCallback(register, [defaultRenderValuesRef.current]),
     unregister: useCallback(unregister, []),
     clearError: useCallback(clearError, []),
     setError: useCallback(setError, []),
