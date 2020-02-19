@@ -11,7 +11,7 @@ export function useFormContext<T extends FieldValues>(): FormContextValues<T> {
   if (context === undefined) {
     throw new Error('useFormContext must be used within a FormContext');
   }
-  return context;
+  return context || throw new Error('Missing FormContext');
 }
 
 export function FormContext<T extends FieldValues>({
