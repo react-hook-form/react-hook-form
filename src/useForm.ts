@@ -178,7 +178,7 @@ export function useForm<
 
   const setFieldValue = useCallback(
     (
-      name: FieldName<FormValues>,
+      field: Field,
       rawValue:
         | FieldValue<FormValues>
         | DeepPartial<FormValues>
@@ -186,12 +186,6 @@ export function useForm<
         | null
         | boolean,
     ): boolean => {
-      const field = fieldsRef.current[name];
-
-      if (!field) {
-        return false;
-      }
-
       const ref = field.ref;
       const options = field.options;
       const { type } = ref;
@@ -202,7 +196,8 @@ export function useForm<
 
       if (isRadioInput(ref) && options) {
         options.forEach(
-          ({ ref: radioRef }) => (radioRef.checked = radioRef.value === value),
+          ({ ref: radioRef }: { ref: HTMLInputElement }) =>
+            (radioRef.checked = radioRef.value === value),
         );
       } else if (isFileInput(ref)) {
         if (
@@ -279,14 +274,17 @@ export function useForm<
       name: FieldName<FormValues>,
       value: FieldValue<FormValues> | null | undefined | boolean,
     ): boolean | void => {
-      setFieldValue(name, value);
+      const field = fieldsRef.current[name];
+      if (field) {
+        setFieldValue(field as Field, value);
 
-      if (
-        setDirty(name) ||
-        (!get(touchedFieldsRef.current, name) &&
-          readFormStateRef.current.touched)
-      ) {
-        return !!set(touchedFieldsRef.current, name, true);
+        if (
+          setDirty(name) ||
+          (!get(touchedFieldsRef.current, name) &&
+            readFormStateRef.current.touched)
+        ) {
+          return !!set(touchedFieldsRef.current, name, true);
+        }
       }
     },
     [setFieldValue],
@@ -844,7 +842,7 @@ export function useForm<
       isFieldArray = isNameInFieldArray(fieldArrayNamesRef.current, name);
 
       if (!isEmptyDefaultValue && !isFieldArray) {
-        setFieldValue(name, defaultValue);
+        setFieldValue(currentField, defaultValue);
       }
     }
 
