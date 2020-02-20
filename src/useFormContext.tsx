@@ -8,10 +8,8 @@ const FormGlobalContext = React.createContext<FormContextValues<
 
 export function useFormContext<T extends FieldValues>(): FormContextValues<T> {
   const context = React.useContext(FormGlobalContext) as FormContextValues<T>;
-  if (context === undefined) {
-    throw new Error('useFormContext must be used within a FormContext');
-  }
-  return context || throw new Error('Missing FormContext');
+  if (context) return context;
+  throw new Error('Missing FormContext');
 }
 
 export function FormContext<T extends FieldValues>({
