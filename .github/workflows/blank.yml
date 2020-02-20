@@ -11,3 +11,5 @@ jobs:
       - uses: actions/checkout@v2
       - name: Bundle Size
         uses: preactjs/compressed-size-action@v1
+        with:
+          repo-token: "${{ secrets.GITHUB_TOKEN }}"
