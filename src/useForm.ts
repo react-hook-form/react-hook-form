@@ -60,6 +60,7 @@ import {
   FieldError,
   RadioOrCheckboxOption,
 } from './types';
+import isBoolean from './utils/isBoolean';
 
 const { useRef, useState, useCallback, useEffect } = React;
 
@@ -269,6 +270,19 @@ export function useForm<
       : previousDirtyFieldsLength !== dirtyFieldsRef.current.size;
   };
 
+  const setDirtyAndTouchedFields = useCallback(
+    (fieldName: FieldName<FormValues>): void | boolean => {
+      if (
+        setDirty(fieldName) ||
+        (!get(touchedFieldsRef.current, fieldName) &&
+          readFormStateRef.current.touched)
+      ) {
+        return !!set(touchedFieldsRef.current, fieldName, true);
+      }
+    },
+    [],
+  );
+
   const setInternalValue = useCallback(
     (
       name: FieldName<FormValues>,
@@ -278,55 +292,25 @@ export function useForm<
       if (field) {
         setFieldValue(field as Field, value);
 
-        if (
-          setDirty(name) ||
-          (!get(touchedFieldsRef.current, name) &&
-            readFormStateRef.current.touched)
-        ) {
-          return !!set(touchedFieldsRef.current, name, true);
+        const output = setDirtyAndTouchedFields(name);
+        if (isBoolean(output)) {
+          return output;
         }
       } else if (!isKey(name)) {
         const isValueArray = isArray(value);
-        const isValueObject = isObject(value);
 
-        if (isValueArray) {
-          let index = 0;
-          for (const item of value as []) {
-            const fieldName = `${name}[${index}]`;
-            const field = fieldsRef.current[fieldName];
-            if (field) {
-              setFieldValue(field as Field, item);
+        for (const key in value as object) {
+          const fieldName = `${name}${isValueArray ? `[${key}]` : `.${key}`}`;
+          const field = fieldsRef.current[fieldName];
 
-              if (
-                setDirty(fieldName) ||
-                (!get(touchedFieldsRef.current, fieldName) &&
-                  readFormStateRef.current.touched)
-              ) {
-                set(touchedFieldsRef.current, fieldName, true);
-              }
-            }
-            index++;
-          }
-        } else if (isValueObject) {
-          for (const key in value as object) {
-            const fieldName = `${name}.${key}`;
-            const field = fieldsRef.current[fieldName];
-            if (field && value) {
-              setFieldValue(field as Field, (value as any)[key]);
-
-              if (
-                setDirty(fieldName) ||
-                (!get(touchedFieldsRef.current, fieldName) &&
-                  readFormStateRef.current.touched)
-              ) {
-                set(touchedFieldsRef.current, fieldName, true);
-              }
-            }
+          if (field) {
+            setFieldValue(field as Field, get(value, key));
+            setDirtyAndTouchedFields(fieldName);
           }
         }
       }
     },
-    [setFieldValue],
+    [setDirtyAndTouchedFields, setFieldValue],
   );
 
   const executeValidation = useCallback(
