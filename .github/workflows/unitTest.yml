@@ -9,4 +9,4 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: Run test
-        run: npm run test
+        run: npm install && npm run test
