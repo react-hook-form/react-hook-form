@@ -291,7 +291,7 @@ export type ErrorMessageProps<
   message?: string;
   children?: (data: {
     message: string;
-    messages: MultipleFieldErrors;
+    messages?: MultipleFieldErrors;
   }) => React.ReactNode;
 } & AsProps<As>;
 
