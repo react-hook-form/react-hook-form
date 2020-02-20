@@ -296,7 +296,7 @@ export function useForm<
         if (isBoolean(output)) {
           return output;
         }
-      } else if (!isKey(name)) {
+      } else {
         const isValueArray = isArray(value);
 
         for (const key in value as object) {

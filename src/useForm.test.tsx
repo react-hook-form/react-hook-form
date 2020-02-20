@@ -560,22 +560,53 @@ describe('useForm', () => {
       });
     });
 
-    it.only('should work with nested object', () => {
+    it('should work with array', () => {
       const { result } = renderHook(() => useForm());
 
       act(() => {
         result.current.register('test1[0].test');
-        result.current.register('test[0].test');
-        result.current.register('test[0].test1');
-        result.current.register('test[0].test2');
+        result.current.register('test[0]');
+        result.current.register('test[1]');
+        result.current.register('test[2]');
       });
 
       act(() => {
-        expect(
-          result.current.setValue('test', [
-            { test: '1', test1: '1', test2: '2' },
-          ]),
-        ).toBeUndefined();
+        result.current.setValue('test', ['1', '2', '3']);
+
+        expect(result.current.control.fieldsRef.current['test[0]']).toEqual({
+          ref: { name: 'test[0]', value: '1' },
+        });
+        expect(result.current.control.fieldsRef.current['test[1]']).toEqual({
+          ref: { name: 'test[1]', value: '2' },
+        });
+        expect(result.current.control.fieldsRef.current['test[2]']).toEqual({
+          ref: { name: 'test[2]', value: '3' },
+        });
+      });
+    });
+
+    it('should work with object', () => {
+      const { result } = renderHook(() => useForm());
+
+      act(() => {
+        result.current.register('test1[0].test');
+        result.current.register('test.bill');
+        result.current.register('test.luo');
+        result.current.register('test.test');
+      });
+
+      act(() => {
+        result.current.setValue('test', { bill: '1', luo: '2', test: '3' });
+
+        expect(result.current.control.fieldsRef.current['test.bill']).toEqual({
+          ref: { name: 'test.bill', value: '1' },
+        });
+        expect(result.current.control.fieldsRef.current['test.luo']).toEqual({
+          ref: { name: 'test.luo', value: '2' },
+        });
+        expect(result.current.control.fieldsRef.current['test.test']).toEqual({
+          ref: { name: 'test.test', value: '3' },
+        });
       });
     });
   });
