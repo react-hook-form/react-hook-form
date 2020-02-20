@@ -559,6 +559,25 @@ describe('useForm', () => {
         expect(result.current.setValue('test', '1')).toBeUndefined();
       });
     });
+
+    it.only('should work with nested object', () => {
+      const { result } = renderHook(() => useForm());
+
+      act(() => {
+        result.current.register('test1[0].test');
+        result.current.register('test[0].test');
+        result.current.register('test[0].test1');
+        result.current.register('test[0].test2');
+      });
+
+      act(() => {
+        expect(
+          result.current.setValue('test', [
+            { test: '1', test1: '1', test2: '2' },
+          ]),
+        ).toBeUndefined();
+      });
+    });
   });
 
   describe('triggerValidation', () => {

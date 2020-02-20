@@ -1,7 +1,7 @@
 import isArray from './isArray';
-import { stringToPath } from './set';
 import isUndefined from './isUndefined';
 import isKey from './isKey';
+import stringToPath from './stringToPath';
 
 function castPath(value: string) {
   return isArray(value) ? value : stringToPath(value);

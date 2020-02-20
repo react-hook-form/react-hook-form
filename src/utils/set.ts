@@ -1,23 +1,8 @@
 import isObject from './isObject';
 import isArray from './isArray';
-import { REGEX_ESCAPE_CHAR, REGEX_PROP_NAME } from '../constants';
 import isKey from './isKey';
+import stringToPath from './stringToPath';
 import { FieldValues } from '../types';
-
-export const stringToPath = (string: string): string[] => {
-  const result: string[] = [];
-
-  string.replace(
-    REGEX_PROP_NAME,
-    (match: string, number: string, quote: string, string: string): any => {
-      result.push(
-        quote ? string.replace(REGEX_ESCAPE_CHAR, '$1') : number || match,
-      );
-    },
-  );
-
-  return result;
-};
 
 export default function set(object: FieldValues, path: string, value: any) {
   let index = -1;
