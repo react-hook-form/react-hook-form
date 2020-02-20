@@ -1,6 +1,6 @@
-name: CI
+name: Compressed Size
 
-on: [push]
+on: [pull_request]
 
 jobs:
   build:
@@ -9,7 +9,6 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2
-      - name: Bundle Size
-        uses: preactjs/compressed-size-action@v1
+      - uses: preactjs/compressed-size-action@v1
         with:
           repo-token: "${{ secrets.GITHUB_TOKEN }}"
