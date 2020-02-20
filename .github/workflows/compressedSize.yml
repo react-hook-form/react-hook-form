@@ -4,13 +4,10 @@ on: [pull_request]
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
 
     steps:
       - uses: actions/checkout@v2
       - uses: preactjs/compressed-size-action@v1
         with:
-          repo-token: "${{ secrets.GITHUB_TOKEN }}"
-      - name: Run test
-        run: npm run test
+          repo-token: '${{ secrets.GITHUB_TOKEN }}'
