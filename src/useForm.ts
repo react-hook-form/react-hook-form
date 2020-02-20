@@ -19,6 +19,8 @@ import isEmptyObject from './utils/isEmptyObject';
 import isRadioInput from './utils/isRadioInput';
 import isFileInput from './utils/isFileInput';
 import isObject from './utils/isObject';
+import isBoolean from './utils/isBoolean';
+import isPrimitive from './utils/isPrimitive';
 import isFunction from './utils/isFunction';
 import isArray from './utils/isArray';
 import isString from './utils/isString';
@@ -60,7 +62,6 @@ import {
   FieldError,
   RadioOrCheckboxOption,
 } from './types';
-import isBoolean from './utils/isBoolean';
 
 const { useRef, useState, useCallback, useEffect } = React;
 
@@ -296,7 +297,7 @@ export function useForm<
         if (isBoolean(output)) {
           return output;
         }
-      } else {
+      } else if (!isPrimitive(value)) {
         const isValueArray = isArray(value);
 
         for (const key in value as object) {
