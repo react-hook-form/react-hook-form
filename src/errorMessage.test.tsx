@@ -91,6 +91,7 @@ describe('React Hook Form Error Message', () => {
         name="flat"
       >
         {({ messages }) =>
+          messages &&
           Object.entries(messages).map(([type, message]) => (
             <span key={type}>{message}</span>
           ))
@@ -119,6 +120,7 @@ describe('React Hook Form Error Message', () => {
         name="flat"
       >
         {({ messages }) =>
+          messages &&
           Object.entries(messages).map(([type, message]) => (
             <span key={type}>{message}</span>
           ))
@@ -197,6 +199,7 @@ describe('React Hook Form Error Message', () => {
         name="nested.object"
       >
         {({ messages }) =>
+          messages &&
           Object.entries(messages).map(([type, message]) => (
             <span key={type}>{message}</span>
           ))
@@ -227,6 +230,7 @@ describe('React Hook Form Error Message', () => {
         name="nested.object"
       >
         {({ messages }) =>
+          messages &&
           Object.entries(messages).map(([type, message]) => (
             <span key={type}>{message}</span>
           ))
@@ -313,6 +317,7 @@ describe('React Hook Form Error Message', () => {
         name="nested[0].array"
       >
         {({ messages }) =>
+          messages &&
           Object.entries(messages).map(([type, message]) => (
             <span key={type}>{message}</span>
           ))
@@ -345,6 +350,7 @@ describe('React Hook Form Error Message', () => {
         name="nested[0].array"
       >
         {({ messages }) =>
+          messages &&
           Object.entries(messages).map(([type, message]) => (
             <span key={type}>{message}</span>
           ))
