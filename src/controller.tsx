@@ -100,6 +100,11 @@ const Controller = <ControlProp extends Control = Control>({
 
   if (!fieldsRef.current[name]) {
     registerField();
+    setInputStateValue(
+      isUndefined(defaultValue)
+        ? get(defaultValuesRef.current, name)
+        : defaultValue,
+    );
   }
 
   React.useEffect(() => {
