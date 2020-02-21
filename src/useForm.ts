@@ -416,11 +416,16 @@ export function useForm<
     ],
   );
 
-  const isFieldWatched = (name: string) =>
-    isWatchAllRef.current ||
-    watchFieldsRef.current.has(name) ||
-    (!isKey(name) &&
-      fieldArrayNamesRef.current.has((name.match(/\w+/) || [])[0]));
+  const isFieldWatched = (name: string) => {
+    const preFixName = (name.match(/\w+/) || [])[0];
+    return (
+      isWatchAllRef.current ||
+      watchFieldsRef.current.has(name) ||
+      (watchFieldsRef.current.has(preFixName) &&
+        !isKey(name) &&
+        fieldArrayNamesRef.current.has(preFixName))
+    );
+  };
 
   function setValue<Name extends FieldName<FormValues>>(
     name: Name,

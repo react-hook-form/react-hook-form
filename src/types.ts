@@ -76,7 +76,7 @@ export type ValidateResult = string | boolean | undefined;
 export type Validate = (data: any) => ValidateResult | Promise<ValidateResult>;
 
 export type ValidationOptions = Partial<{
-  required: boolean | string | ValidationOptionObject<boolean>;
+  required: string | ValidationOptionObject<boolean>;
   min: ValidationOptionObject<number | string>;
   max: ValidationOptionObject<number | string>;
   maxLength: ValidationOptionObject<number | string>;
@@ -291,7 +291,7 @@ export type ErrorMessageProps<
   message?: string;
   children?: (data: {
     message: string;
-    messages: MultipleFieldErrors;
+    messages?: MultipleFieldErrors;
   }) => React.ReactNode;
 } & AsProps<As>;
 

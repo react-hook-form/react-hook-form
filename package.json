@@ -1,7 +1,7 @@
 {
   "name": "react-hook-form",
   "description": "Performant, flexible and extensible forms library for React Hooks",
-  "version": "4.9.6",
+  "version": "4.9.7",
   "main": "dist/react-hook-form.js",
   "module": "dist/react-hook-form.es.js",
   "types": "dist/index.d.ts",
@@ -9,7 +9,7 @@
   "scripts": {
     "clean": "rm -rf dist",
     "prebuild": "yarn clean",
-    "build": "yarn build:modern && yarn build:ie11",
+    "build": "yarn build:modern && yarn build:ie11 && yarn build:min",
     "build:modern": "rollup -c",
     "build:min": "rollup -c rollup.min.config.js",
     "build:ie11": "rollup -c rollup.ie11.config.js",
@@ -23,7 +23,6 @@
     "test:watch": "yarn test:coverage -- --watchAll",
     "cypress": "cypress run",
     "cypress:open": "cypress open",
-    "bundlesize": "yarn build:min && bundlesize",
     "prepublishOnly": "yarn lint && yarn test && yarn run clean && yarn build",
     "start:app": "yarn build && yarn link && yarn --cwd node_modules/react link && yarn --cwd ./app link react react-hook-form && yarn --cwd ./app && yarn --cwd ./app run start"
   },
@@ -50,7 +49,6 @@
     "@types/react-test-renderer": "^16.9.2",
     "@typescript-eslint/eslint-plugin": "^2.18.0",
     "@typescript-eslint/parser": "^2.18.0",
-    "bundlesize": "^0.18.0",
     "coveralls": "^3.0.9",
     "cypress": "^3.8.1",
     "eslint": "^6.8.0",
@@ -70,12 +68,6 @@
     "ts-jest": "^25.1.0",
     "typescript": "^3.7.4"
   },
-  "bundlesize": [
-    {
-      "path": "./dist/react-hook-form.min.es.js",
-      "maxSize": "8.5 kB"
-    }
-  ],
   "peerDependencies": {
     "react": "^16.8.0"
   },

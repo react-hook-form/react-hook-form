@@ -82,18 +82,22 @@ export default async <FormValues extends FieldValues>(
       (isCheckBox && !getCheckboxValue(options).isValid) ||
       (isRadio && !getRadioValue(options).isValid))
   ) {
-    const message = isString(required)
-      ? required
-      : getValueAndMessage(required).message;
+    const { value: requiredValue, message: requiredMessage } = isString(
+      required,
+    )
+      ? { value: !!required, message: required }
+      : getValueAndMessage(required);
 
-    error[name] = {
-      type: INPUT_VALIDATION_RULES.required,
-      message,
-      ref: isRadioOrCheckbox ? (fields[name] as any).options[0].ref : ref,
-      ...appendErrorsCurry(INPUT_VALIDATION_RULES.required, message),
-    };
-    if (!validateAllFieldCriteria) {
-      return error;
+    if (requiredValue) {
+      error[name] = {
+        type: INPUT_VALIDATION_RULES.required,
+        message: requiredMessage,
+        ref: isRadioOrCheckbox ? (fields[name] as any).options[0].ref : ref,
+        ...appendErrorsCurry(INPUT_VALIDATION_RULES.required, requiredMessage),
+      };
+      if (!validateAllFieldCriteria) {
+        return error;
+      }
     }
   }
 
