@@ -1,4 +1,5 @@
 import typescript from 'rollup-plugin-typescript2';
+import compiler from '@ampproject/rollup-plugin-closure-compiler';
 import pkg from './package.json';
 
 export function getConfig({
@@ -24,6 +25,7 @@ export function getConfig({
         tsconfig,
         clean: true,
       }),
+      compiler(),
       ...plugins
     ],
     output,
