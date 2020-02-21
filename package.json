@@ -81,5 +81,8 @@
       "npm run lint",
       "npm run prettier"
     ]
+  },
+  "dependencies": {
+    "@ampproject/rollup-plugin-closure-compiler": "^0.22.2"
   }
 }
