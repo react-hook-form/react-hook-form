@@ -79,21 +79,15 @@ const Controller = <ControlProp extends Control = Control>({
     }
 
     register(
-      Object.defineProperty(
-        {
-          name,
+      Object.defineProperty({ name }, VALUE, {
+        set(data) {
+          setInputStateValue(data);
+          valueRef.current = data;
         },
-        VALUE,
-        {
-          set(data) {
-            setInputStateValue(data);
-            valueRef.current = data;
-          },
-          get() {
-            return valueRef.current;
-          },
+        get() {
+          return valueRef.current;
         },
-      ),
+      }),
       { ...rules },
     );
   };

@@ -7,9 +7,26 @@ import { Field } from './types';
 describe('Controller', () => {
   it('should render correctly with as with string', () => {
     const control = reconfigureControl();
+    const fieldsRef = {
+      current: {},
+    };
 
     const { asFragment } = render(
-      <Controller defaultValue="" name="test" as="input" control={control} />,
+      <Controller
+        defaultValue=""
+        name="test"
+        as="input"
+        control={
+          {
+            ...control,
+            register: (payload: any) => {
+              // @ts-ignore
+              fieldsRef.current[payload.name] = 'test';
+            },
+            fieldsRef,
+          } as any
+        }
+      />,
     );
 
     expect(asFragment()).toMatchSnapshot();
@@ -17,13 +34,25 @@ describe('Controller', () => {
 
   it('should render correctly with as with component', () => {
     const control = reconfigureControl();
+    const fieldsRef = {
+      current: {},
+    };
 
     const { asFragment } = render(
       <Controller
         defaultValue=""
         name="test"
         as={<input />}
-        control={control}
+        control={
+          {
+            ...control,
+            register: (payload: any) => {
+              // @ts-ignore
+              fieldsRef.current[payload.name] = 'test';
+            },
+            fieldsRef,
+          } as any
+        }
       />,
     );
 
@@ -36,13 +65,25 @@ describe('Controller', () => {
       setValue,
       mode: { isOnSubmit: true, isOnBlur: false },
     });
+    const fieldsRef = {
+      current: {},
+    };
 
     const { getByPlaceholderText } = render(
       <Controller
         defaultValue=""
         name="test"
         as={<input placeholder="test" />}
-        control={control}
+        control={
+          {
+            ...control,
+            register: (payload: any) => {
+              // @ts-ignore
+              fieldsRef.current[payload.name] = 'test';
+            },
+            fieldsRef,
+          } as any
+        }
       />,
     );
 
@@ -61,13 +102,25 @@ describe('Controller', () => {
       triggerValidation,
       mode: { isOnSubmit: true, isOnBlur: true },
     });
+    const fieldsRef = {
+      current: {},
+    };
 
     const { getByPlaceholderText } = render(
       <Controller
         defaultValue=""
         name="test"
         as={<input placeholder="test" />}
-        control={control}
+        control={
+          {
+            ...control,
+            register: (payload: any) => {
+              // @ts-ignore
+              fieldsRef.current[payload.name] = 'test';
+            },
+            fieldsRef,
+          } as any
+        }
       />,
     );
 
@@ -86,6 +139,9 @@ describe('Controller', () => {
       setValue,
       mode: { isOnSubmit: true, isOnBlur: true },
     });
+    const fieldsRef = {
+      current: {},
+    };
 
     const { getByPlaceholderText } = render(
       <Controller
@@ -93,7 +149,16 @@ describe('Controller', () => {
         name="test"
         as={<input placeholder="test" />}
         onChangeName="onChange"
-        control={control}
+        control={
+          {
+            ...control,
+            register: (payload: any) => {
+              // @ts-ignore
+              fieldsRef.current[payload.name] = 'test';
+            },
+            fieldsRef,
+          } as any
+        }
       />,
     );
 
@@ -113,6 +178,9 @@ describe('Controller', () => {
       setValue,
       mode: { isOnSubmit: false, isOnBlur: true },
     });
+    const fieldsRef = {
+      current: {},
+    };
 
     onChange.mockImplementation(() => 'test');
 
@@ -122,7 +190,16 @@ describe('Controller', () => {
         name="test"
         as={<input placeholder="test" />}
         onChange={onChange}
-        control={control}
+        control={
+          {
+            ...control,
+            register: (payload: any) => {
+              // @ts-ignore
+              fieldsRef.current[payload.name] = 'test';
+            },
+            fieldsRef,
+          } as any
+        }
       />,
     );
 
@@ -141,6 +218,9 @@ describe('Controller', () => {
     const control = reconfigureControl({
       mode: { isOnSubmit: false, isOnBlur: true },
     });
+    const fieldsRef = {
+      current: {},
+    };
 
     const { getByPlaceholderText } = render(
       <Controller
@@ -148,7 +228,16 @@ describe('Controller', () => {
         name="test"
         as={<input placeholder="test" />}
         onBlur={onBlur}
-        control={control}
+        control={
+          {
+            ...control,
+            register: (payload: any) => {
+              // @ts-ignore
+              fieldsRef.current[payload.name] = 'test';
+            },
+            fieldsRef,
+          } as any
+        }
       />,
     );
 
@@ -169,9 +258,25 @@ describe('Controller', () => {
         },
       },
     });
+    const fieldsRef = {
+      current: {},
+    };
 
     const { asFragment } = render(
-      <Controller name="test" as="input" control={control} />,
+      <Controller
+        name="test"
+        as="input"
+        control={
+          {
+            ...control,
+            register: (payload: any) => {
+              // @ts-ignore
+              fieldsRef.current[payload.name] = 'test';
+            },
+            fieldsRef,
+          } as any
+        }
+      />,
     );
 
     expect(asFragment()).toMatchSnapshot();
@@ -179,6 +284,9 @@ describe('Controller', () => {
 
   it('should support custom value name', () => {
     const control = reconfigureControl();
+    const fieldsRef = {
+      current: {},
+    };
 
     const { asFragment } = render(
       <Controller
@@ -186,7 +294,16 @@ describe('Controller', () => {
         name="test"
         as="input"
         valueName="selectedkey"
-        control={control}
+        control={
+          {
+            ...control,
+            register: (payload: any) => {
+              // @ts-ignore
+              fieldsRef.current[payload.name] = 'test';
+            },
+            fieldsRef,
+          } as any
+        }
       />,
     );
 
