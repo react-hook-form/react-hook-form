@@ -15,6 +15,7 @@ export function getConfig({
       format: 'esm',
     },
   ],
+  plugins = [],
 } = {}) {
   return {
     input: 'src/index.ts',
@@ -25,6 +26,7 @@ export function getConfig({
         clean: true,
       }),
       compiler(),
+      ...plugins
     ],
     output,
   };
