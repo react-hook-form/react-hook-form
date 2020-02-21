@@ -73,8 +73,15 @@
     "rollup-plugin-terser": "^5.1.1",
     "rollup-plugin-typescript2": "^0.25.3",
     "ts-jest": "^25.1.0",
-    "typescript": "^3.7.4"
+    "typescript": "^3.7.4",
+    "@ampproject/rollup-plugin-closure-compiler": "^0.22.2"
   },
+  "bundlesize": [
+    {
+      "path": "./dist/react-hook-form.min.es.js",
+      "maxSize": "8 kB"
+    }
+  ],
   "peerDependencies": {
     "react": "^16.8.0"
   },
@@ -88,8 +95,5 @@
       "npm run lint",
       "npm run prettier"
     ]
-  },
-  "dependencies": {
-    "@ampproject/rollup-plugin-closure-compiler": "^0.22.2"
   }
 }
