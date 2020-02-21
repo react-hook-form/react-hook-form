@@ -9,7 +9,7 @@
   "scripts": {
     "clean": "rm -rf dist",
     "prebuild": "yarn clean",
-    "build": "yarn build:modern && yarn build:ie11",
+    "build": "yarn build:modern && yarn build:ie11 && yarn build:min",
     "build:modern": "rollup -c",
     "build:min": "rollup -c rollup.min.config.js",
     "build:ie11": "rollup -c rollup.ie11.config.js",
