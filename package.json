@@ -73,8 +73,7 @@
     "rollup-plugin-terser": "^5.1.1",
     "rollup-plugin-typescript2": "^0.25.3",
     "ts-jest": "^25.1.0",
-    "typescript": "^3.7.4",
-    "@ampproject/rollup-plugin-closure-compiler": "^0.22.2"
+    "typescript": "^3.7.4"
   },
   "bundlesize": [
     {
