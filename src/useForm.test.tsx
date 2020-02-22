@@ -610,7 +610,7 @@ describe('useForm', () => {
       });
     });
 
-    it.only('should work array of fields', () => {
+    it('should work array of fields', () => {
       const { result } = renderHook(() => useForm());
 
       act(() => {
@@ -620,7 +620,6 @@ describe('useForm', () => {
       });
 
       act(() => {
-        // @ts-ignore
         result.current.setValue([
           { 'test.bill': '1' },
           { 'test.luo': '2' },

@@ -75,11 +75,20 @@ export type FormContextValues<FormValues extends FieldValues = FieldValues> = {
   clearError(name: FieldName<FormValues>): void;
   clearError(names: FieldName<FormValues>[]): void;
   clearError(name?: FieldName<FormValues> | FieldName<FormValues>[]): void;
-  setValue: <Name extends FieldName<FormValues>>(
+  setValue<Name extends FieldName<FormValues>>(
     name: Name,
-    value: FormValues[Name],
+    value?: FormValues[Name] | null | undefined | boolean,
     shouldValidate?: boolean,
-  ) => void | Promise<boolean>;
+  ): void;
+  setValue<Name extends FieldName<FormValues>>(
+    namesWithValue: Record<Name, any>[],
+    shouldValidate?: boolean,
+  ): void;
+  setValue<Name extends FieldName<FormValues>>(
+    names: Name | Record<Name, any>[],
+    valueOrShouldValidate?: FormValues[Name] | null | undefined | boolean,
+    shouldValidate?: boolean,
+  ): void;
   triggerValidation: (
     payload?: FieldName<FormValues> | FieldName<FormValues>[] | string,
     shouldRender?: boolean,

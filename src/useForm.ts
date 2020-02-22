@@ -449,8 +449,10 @@ export function useForm<
         const isStringFieldName = isString(name);
         shouldRender =
           setInternalValue(
-            isStringFieldName ? name : Object.keys(names)[0],
-            isStringFieldName ? valueOrShouldValidate : Object.values(names)[0],
+            isStringFieldName ? name : Object.keys(name)[0],
+            isStringFieldName
+              ? valueOrShouldValidate
+              : (Object.values(name)[0] as any),
           ) || isMultiple
             ? true
             : isFieldWatched(name);

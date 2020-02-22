@@ -24,6 +24,7 @@
     "cypress": "cypress run",
     "cypress:open": "cypress open",
     "prepublishOnly": "yarn lint && yarn test && yarn run clean && yarn build",
+    "bundlesize": "yarn build:min && bundlesize",
     "start:app": "yarn build && yarn link && yarn --cwd node_modules/react link && yarn --cwd ./app link react react-hook-form && yarn --cwd ./app && yarn --cwd ./app run start"
   },
   "keywords": [
@@ -74,7 +75,7 @@
     "rollup-plugin-typescript2": "^0.25.3",
     "ts-jest": "^25.1.0",
     "typescript": "^3.7.4",
-    "@ampproject/rollup-plugin-closure-compiler": "^0.22.2"
+    "bundlesize": "^0.18.0"
   },
   "bundlesize": [
     {
