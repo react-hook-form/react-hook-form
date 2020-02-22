@@ -26,6 +26,12 @@ const SetValue: React.FC = () => {
     setValue('radio', 'radio');
     setValue('select', 'a');
     setValue('multiple', ['a', 'b']);
+    setValue('array', ['array[0]', 'array[1]', 'array[2]']);
+    setValue('object', {
+      firstName: 'firstName',
+      lastName: 'lastName',
+      middleName: 'middleName',
+    });
   }, [register, setValue]);
 
   renderCounter++;
@@ -33,6 +39,24 @@ const SetValue: React.FC = () => {
   return (
     <form onSubmit={handleSubmit(() => {})}>
       <input name="firstName" ref={register} placeholder="firstName" />
+      <input name="array[0]" ref={register} placeholder="array[0]" />
+      <input name="array[1]" ref={register} placeholder="array[1]" />
+      <input name="array[2]" ref={register} placeholder="array[2]" />
+      <input
+        name="object.firstName"
+        ref={register}
+        placeholder="object.firstName"
+      />
+      <input
+        name="object.lastName"
+        ref={register}
+        placeholder="object.lastName"
+      />
+      <input
+        name="object.middleName"
+        ref={register}
+        placeholder="object.middleName"
+      />
       <input name="age" type="number" ref={register} placeholder="age" />
       <input name="radio" value="radio" type="radio" ref={register} />
       <input name="checkbox" type="checkbox" ref={register} />
@@ -65,6 +89,25 @@ const SetValue: React.FC = () => {
         placeholder="trigger"
       />
       {errors.trigger && <p id="trigger">Trigger error</p>}
+
+      <button
+        type="button"
+        id="setMultipleValues"
+        onClick={() => {
+          setValue([
+            {
+              object: {
+                firstName: 'firstName1',
+                lastName: 'lastName1',
+                middleName: 'middleName1',
+              },
+            },
+            { array: ['array[0]1', 'array[1]1', 'array[2]1'] },
+          ]);
+        }}
+      >
+        Set Multiple Values
+      </button>
 
       <button>Submit</button>
       <div id="renderCount">{renderCounter}</div>
