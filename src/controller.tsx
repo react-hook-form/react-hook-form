@@ -37,10 +37,9 @@ const Controller = <ControlProp extends Control = Control>({
     fieldsRef,
     fieldArrayNamesRef,
   } = control || methods.control;
+  const defaultValueFromProps = get(defaultValuesRef.current, name);
   const [value, setInputStateValue] = React.useState(
-    isUndefined(defaultValue)
-      ? get(defaultValuesRef.current, name)
-      : defaultValue,
+    isUndefined(defaultValueFromProps) ? defaultValue : defaultValueFromProps,
   );
   const valueRef = React.useRef(value);
   const isCheckboxInput = isBoolean(value);
@@ -94,10 +93,9 @@ const Controller = <ControlProp extends Control = Control>({
 
   if (!fieldsRef.current[name]) {
     registerField();
+    const defaultValueFromProps = get(defaultValuesRef.current, name);
     setInputStateValue(
-      isUndefined(defaultValue)
-        ? get(defaultValuesRef.current, name)
-        : defaultValue,
+      isUndefined(defaultValueFromProps) ? defaultValue : defaultValueFromProps,
     );
   }
 
