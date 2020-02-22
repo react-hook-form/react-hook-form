@@ -429,7 +429,7 @@ export function useForm<
 
   function setValue<Name extends FieldName<FormValues>>(
     name: Name,
-    value?: FormValues[Name] | null | undefined | boolean,
+    value?: FormValues[Name],
     shouldValidate?: boolean,
   ): void;
   function setValue<Name extends FieldName<FormValues>>(
@@ -438,26 +438,27 @@ export function useForm<
   ): void;
   function setValue<Name extends FieldName<FormValues>>(
     names: Name | Record<Name, any>[],
-    valueOrShouldValidate?: FormValues[Name] | null | undefined | boolean,
+    valueOrShouldValidate?: FormValues[Name] | boolean,
     shouldValidate?: boolean,
   ): void {
     let shouldRender = false;
     const isMultiple = isArray(names);
 
-    (isMultiple ? (names as Record<Name, any>[]) : [names]).forEach(
-      (name: any) => {
-        const isStringFieldName = isString(name);
-        shouldRender =
-          setInternalValue(
-            isStringFieldName ? name : Object.keys(name)[0],
-            isStringFieldName
-              ? valueOrShouldValidate
-              : (Object.values(name)[0] as any),
-          ) || isMultiple
-            ? true
-            : isFieldWatched(name);
-      },
-    );
+    (isMultiple
+      ? (names as Record<Name, FormValues[Name]>[])
+      : [names]
+    ).forEach((name: any) => {
+      const isStringFieldName = isString(name);
+      shouldRender =
+        setInternalValue(
+          isStringFieldName ? name : Object.keys(name)[0],
+          isStringFieldName
+            ? valueOrShouldValidate
+            : (Object.values(name)[0] as FormValues[Name]),
+        ) || isMultiple
+          ? true
+          : isFieldWatched(name);
+    });
 
     if (shouldRender || isMultiple) {
       reRender();
