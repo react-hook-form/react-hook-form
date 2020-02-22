@@ -109,7 +109,7 @@ const SetValue: React.FC = () => {
         Set Multiple Values
       </button>
 
-      <button>Submit</button>
+      <button id="submit">Submit</button>
       <div id="renderCount">{renderCounter}</div>
     </form>
   );
