@@ -20,6 +20,7 @@ you can view the source code within the folder or visit code sand box to see how
 | FormContext                 | https://codesandbox.io/s/react-hook-form-form-context-dkvjz          |
 | Nested Fields               | https://codesandbox.io/s/react-hook-form-nested-fields-mv1bb         |
 | Normalize/Format/Mask Field | https://codesandbox.io/s/387z7njwzp                                  |
+| Format/Mask Field (Third Party Library) | https://codesandbox.io/s/react-hook-form-normalize-field-1jumn |
 | Native Validation           | https://codesandbox.io/s/react-hook-form-native-validation-ez5ww     |
 | Reset Form                  | https://codesandbox.io/s/jjm3wyqmjy                                  |
 | Register Error Messages     | https://codesandbox.io/s/o766kp4z05                                  |
