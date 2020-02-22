@@ -696,10 +696,6 @@ export function useForm<
     );
     const watchFields = watchFieldsRef.current;
 
-    if (isProxyEnabled) {
-      readFormStateRef.current.dirty = true;
-    }
-
     if (isString(fieldNames)) {
       return assignWatchFields<FormValues>(
         fieldValues,
