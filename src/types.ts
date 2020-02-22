@@ -124,9 +124,7 @@ type TopLevelProperty =
   | void;
 
 export type NestedData<FormValues> = FormValues extends object
-  ? keyof FormValues extends never
-    ? object
-    : Partial<NestedDataObject<FormValues>>
+  ? Partial<NestedDataObject<FormValues>>
   : FormValues;
 
 export type NestedDataObject<FormValues> = {
