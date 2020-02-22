@@ -55,6 +55,7 @@
     "@types/react-test-renderer": "^16.9.2",
     "@typescript-eslint/eslint-plugin": "^2.18.0",
     "@typescript-eslint/parser": "^2.18.0",
+    "bundlesize": "^0.18.0",
     "core-js": "^3.6.4",
     "coveralls": "^3.0.9",
     "cypress": "^3.8.1",
