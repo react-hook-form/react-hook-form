@@ -628,8 +628,8 @@ describe('useForm', () => {
       act(() => {
         result.current.setValue([
           { 'test.bill': '1' },
-          { 'array': ['1', '2', '3'] },
-          { 'object': { bill: '1', luo: '2', test: '3' } },
+          { array: ['1', '2', '3'] },
+          { object: { bill: '1', luo: '2', test: '3' } },
         ]);
 
         expect(result.current.control.fieldsRef.current['test.bill']).toEqual({
@@ -646,15 +646,19 @@ describe('useForm', () => {
           ref: { name: 'array[2]', value: '3' },
         });
 
-        expect(result.current.control.fieldsRef.current['object.bill']).toEqual({
-          ref: { name: 'object.bill', value: '1' },
-        });
+        expect(result.current.control.fieldsRef.current['object.bill']).toEqual(
+          {
+            ref: { name: 'object.bill', value: '1' },
+          },
+        );
         expect(result.current.control.fieldsRef.current['object.luo']).toEqual({
           ref: { name: 'object.luo', value: '2' },
         });
-        expect(result.current.control.fieldsRef.current['object.test']).toEqual({
-          ref: { name: 'object.test', value: '3' },
-        });
+        expect(result.current.control.fieldsRef.current['object.test']).toEqual(
+          {
+            ref: { name: 'object.test', value: '3' },
+          },
+        );
       });
     });
   });
