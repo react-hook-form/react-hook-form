@@ -429,7 +429,7 @@ export function useForm<
 
   function setValue<Name extends FieldName<FormValues>>(
     name: Name,
-    value: FormValues[Name] | null | undefined | boolean,
+    value?: FormValues[Name] | null | undefined | boolean,
     shouldValidate?: boolean,
   ): void;
   function setValue<Name extends FieldName<FormValues>>(
@@ -438,7 +438,7 @@ export function useForm<
   ): void;
   function setValue<Name extends FieldName<FormValues>>(
     names: Name | Record<Name, any>[],
-    valueOrShouldValidate: FormValues[Name] | null | undefined | boolean,
+    valueOrShouldValidate?: FormValues[Name] | null | undefined | boolean,
     shouldValidate?: boolean,
   ): void {
     let shouldRender = false;

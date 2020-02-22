@@ -560,7 +560,7 @@ describe('useForm', () => {
       });
     });
 
-    it('should work with array', () => {
+    it('should work with array fields', () => {
       const { result } = renderHook(() => useForm());
 
       act(() => {
@@ -585,7 +585,7 @@ describe('useForm', () => {
       });
     });
 
-    it('should work with object', () => {
+    it('should work with object fields', () => {
       const { result } = renderHook(() => useForm());
 
       act(() => {
@@ -597,6 +597,35 @@ describe('useForm', () => {
 
       act(() => {
         result.current.setValue('test', { bill: '1', luo: '2', test: '3' });
+
+        expect(result.current.control.fieldsRef.current['test.bill']).toEqual({
+          ref: { name: 'test.bill', value: '1' },
+        });
+        expect(result.current.control.fieldsRef.current['test.luo']).toEqual({
+          ref: { name: 'test.luo', value: '2' },
+        });
+        expect(result.current.control.fieldsRef.current['test.test']).toEqual({
+          ref: { name: 'test.test', value: '3' },
+        });
+      });
+    });
+
+    it.only('should work array of fields', () => {
+      const { result } = renderHook(() => useForm());
+
+      act(() => {
+        result.current.register('test.bill');
+        result.current.register('test.luo');
+        result.current.register('test.test');
+      });
+
+      act(() => {
+        // @ts-ignore
+        result.current.setValue([
+          { 'test.bill': '1' },
+          { 'test.luo': '2' },
+          { 'test.test': '3' },
+        ]);
 
         expect(result.current.control.fieldsRef.current['test.bill']).toEqual({
           ref: { name: 'test.bill', value: '1' },

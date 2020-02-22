@@ -211,11 +211,20 @@ export type Control<FormValues extends FieldValues = FieldValues> = {
   unregister(names: FieldName<FormValues>[]): void;
   unregister(names: FieldName<FormValues> | FieldName<FormValues>[]): void;
   getValues: (payload?: { nest: boolean }) => any;
-  setValue: <Name extends FieldName<FormValues>>(
+  setValue<Name extends FieldName<FormValues>>(
     name: Name,
-    value: FormValues[Name],
+    value?: FormValues[Name] | null | undefined | boolean,
     shouldValidate?: boolean,
-  ) => void | Promise<boolean>;
+  ): void;
+  setValue<Name extends FieldName<FormValues>>(
+    namesWithValue: Record<Name, any>[],
+    shouldValidate?: boolean,
+  ): void;
+  setValue<Name extends FieldName<FormValues>>(
+    names: Name | Record<Name, any>[],
+    valueOrShouldValidate?: FormValues[Name] | null | undefined | boolean,
+    shouldValidate?: boolean,
+  ): void;
   formState: FormStateProxy<FormValues>;
   mode: {
     isOnBlur: boolean;
