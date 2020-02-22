@@ -112,23 +112,38 @@ export type FieldRefs<FormValues extends FieldValues> = Partial<
   Record<FieldName<FormValues>, Field>
 >;
 
-export type NestDataObject<FormValues> = {
-  [Key in keyof FormValues]?: FormValues[Key] extends any[]
-    ? FormValues[Key][number] extends object
-      ? FieldErrors<FormValues[Key][number]>[]
-      : FormValues[Key][number] extends string | number
-      ? FieldError[]
-      : FieldError
-    : FormValues[Key] extends Date
+// --------------------------------------------------------------------------
+
+type TopLevelProperty =
+  | number
+  | string
+  | boolean
+  | Date
+  | null
+  | undefined
+  | void;
+
+export type NestedData<FormValues> =
+  | (FormValues extends object
+      ? Partial<NestedDataObject<FormValues>>
+      : FormValues)
+  | FieldValues;
+
+export type NestedDataObject<FormValues> = {
+  [Key in keyof FormValues]: unknown extends FormValues[Key]
+    ? any
+    : FormValues[Key] extends TopLevelProperty
     ? FieldError
-    : FormValues[Key] extends object
-    ? FieldErrors<FormValues[Key]>
-    : FieldError;
+    : FormValues[Key] extends Array<infer U>
+    ? Array<NestedData<U>>
+    : NestedData<FormValues[Key]>;
 };
 
-export type FieldErrors<FormValues> = NestDataObject<FormValues>;
+export type FieldErrors<FormValues> = NestedData<FormValues>;
 
-export type Touched<FormValues> = NestDataObject<FormValues>;
+// --------------------------------------------------------------------------
+
+export type Touched<FormValues> = NestedData<FormValues>;
 
 export type SubmitPromiseResult<FormValues extends FieldValues> = {
   errors: FieldErrors<FormValues>;
