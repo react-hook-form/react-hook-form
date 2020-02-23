@@ -60,9 +60,8 @@ import {
   FieldError,
   RadioOrCheckboxOption,
 } from './types';
-import { useMemo } from 'react';
 
-const { useRef, useState, useCallback, useEffect } = React;
+const { useRef, useMemo, useState, useCallback, useEffect } = React;
 
 export function useForm<
   FormValues extends FieldValues = FieldValues,
