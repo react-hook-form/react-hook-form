@@ -60,6 +60,7 @@ import {
   FieldError,
   RadioOrCheckboxOption,
 } from './types';
+import { useMemo } from 'react';
 
 const { useRef, useState, useCallback, useEffect } = React;
 
@@ -745,9 +746,9 @@ export function useForm<
       : result;
   }
 
-  function unregister(name: FieldName<FormValues>): void;
-  function unregister(names: FieldName<FormValues>[]): void;
-  function unregister(
+  function unregisterRaw(name: FieldName<FormValues>): void;
+  function unregisterRaw(names: FieldName<FormValues>[]): void;
+  function unregisterRaw(
     names: FieldName<FormValues> | FieldName<FormValues>[],
   ): void {
     if (!isEmptyObject(fieldsRef.current)) {
@@ -756,6 +757,8 @@ export function useForm<
       );
     }
   }
+
+  const unregister = useCallback(unregisterRaw, []);
 
   function registerFieldsRef<Element extends FieldElement>(
     ref: Element,
@@ -886,27 +889,27 @@ export function useForm<
     });
   }
 
-  function register<Element extends FieldElement = FieldElement>(): (
+  function registerRaw<Element extends FieldElement = FieldElement>(): (
     ref: Element | null,
   ) => void;
-  function register<Element extends FieldElement = FieldElement>(
+  function registerRaw<Element extends FieldElement = FieldElement>(
     validationOptions: ValidationOptions,
   ): (ref: Element | null) => void;
-  function register<Element extends FieldElement = FieldElement>(
+  function registerRaw<Element extends FieldElement = FieldElement>(
     name: FieldName<FormValues>,
     validationOptions?: ValidationOptions,
   ): void;
-  function register<Element extends FieldElement = FieldElement>(
+  function registerRaw<Element extends FieldElement = FieldElement>(
     namesWithValidationOptions: Record<
       FieldName<FormValues>,
       ValidationOptions
     >,
   ): void;
-  function register<Element extends FieldElement = FieldElement>(
+  function registerRaw<Element extends FieldElement = FieldElement>(
     ref: Element,
     validationOptions?: ValidationOptions,
   ): void;
-  function register<Element extends FieldElement = FieldElement>(
+  function registerRaw<Element extends FieldElement = FieldElement>(
     refOrValidationOptions?: ValidationOptions | Element | null,
     validationOptions?: ValidationOptions,
   ): ((ref: Element | null) => void) | void {
@@ -1044,6 +1047,11 @@ export function useForm<
     ],
   );
 
+  const register = useCallback(registerRaw, [
+    defaultValuesRef.current,
+    defaultRenderValuesRef.current,
+  ]);
+
   const resetRefs = () => {
     errorsRef.current = {};
     fieldsRef.current = {};
@@ -1124,35 +1132,50 @@ export function useForm<
       : isValidRef.current,
   };
 
-  const control = {
-    register,
-    unregister,
-    removeFieldEventListener,
-    getValues,
-    setValue,
-    triggerValidation,
-    ...(shouldValidateCallback ? { validateSchemaIsValid } : {}),
-    formState,
-    mode: {
+  const control = useMemo(
+    () => ({
+      register,
+      unregister,
+      removeFieldEventListener,
+      getValues,
+      setValue,
+      triggerValidation,
+      ...(shouldValidateCallback ? { validateSchemaIsValid } : {}),
+      formState,
+      mode: {
+        isOnBlur,
+        isOnSubmit,
+      },
+      reValidateMode: {
+        isReValidateOnBlur,
+        isReValidateOnSubmit,
+      },
+      errorsRef,
+      touchedFieldsRef,
+      fieldsRef,
+      resetFieldArrayFunctionRef,
+      validFieldsRef,
+      fieldsWithValidationRef,
+      watchFieldArrayRef,
+      fieldArrayNamesRef,
+      isDirtyRef,
+      readFormStateRef,
+      defaultValuesRef,
+    }),
+    [
+      formState,
       isOnBlur,
       isOnSubmit,
-    },
-    reValidateMode: {
       isReValidateOnBlur,
       isReValidateOnSubmit,
-    },
-    errorsRef,
-    touchedFieldsRef,
-    fieldsRef,
-    resetFieldArrayFunctionRef,
-    validFieldsRef,
-    fieldsWithValidationRef,
-    watchFieldArrayRef,
-    fieldArrayNamesRef,
-    isDirtyRef,
-    readFormStateRef,
-    defaultValuesRef,
-  };
+      register,
+      setValue,
+      shouldValidateCallback,
+      triggerValidation,
+      unregister,
+      validateSchemaIsValid,
+    ],
+  );
 
   return {
     watch,
@@ -1162,11 +1185,8 @@ export function useForm<
     triggerValidation,
     getValues: useCallback(getValues, []),
     reset: useCallback(reset, []),
-    register: useCallback(register, [
-      defaultValuesRef.current,
-      defaultRenderValuesRef.current,
-    ]),
-    unregister: useCallback(unregister, []),
+    register,
+    unregister,
     clearError: useCallback(clearError, []),
     setError: useCallback(setError, []),
     errors: errorsRef.current,
