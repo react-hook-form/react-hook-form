@@ -11,6 +11,7 @@ test('getInputValue should return correct value', () => {
     getInputValue({ target: { value: 'test', type: 'test' } }, false),
   ).toEqual('test');
   expect(getInputValue({ data: 'test' }, false)).toEqual({ data: 'test' });
+  expect(getInputValue('test', false)).toEqual('test');
   expect(getInputValue(undefined, false)).toEqual(undefined);
   expect(getInputValue(null, false)).toEqual(null);
 });
