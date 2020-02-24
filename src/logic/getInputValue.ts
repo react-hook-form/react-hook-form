@@ -1,10 +1,12 @@
-import isNullOrUndefined from '../utils/isNullOrUndefined';
-import isUndefined from '../utils/isUndefined';
 import isObject from '../utils/isObject';
+import isPrimitive from '../utils/isPrimitive';
 
 export default (event: any, isCheckboxInput: boolean) =>
-  isNullOrUndefined(event) || !isObject(event.target)
-    ? event
-    : isCheckboxInput || isUndefined(event.target.value)
-    ? event.target.checked
-    : event.target.value;
+  !isPrimitive(event) &&
+  isObject(event.target) &&
+  (event.target.value || event.target.checked) &&
+  event.target.type
+    ? isCheckboxInput
+      ? event.target.checked
+      : event.target.value
+    : event;
