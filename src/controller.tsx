@@ -56,7 +56,7 @@ const Controller = <ControlProp extends Control = Control>({
     });
 
   const commonTask = (event: any) => {
-    const data = getInputValue(event);
+    const data = getInputValue(event, isCheckboxInput);
     setInputStateValue(data);
     valueRef.current = data;
     return data;
