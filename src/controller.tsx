@@ -5,6 +5,7 @@ import get from './utils/get';
 import getInputValue from './logic/getInputValue';
 import skipValidation from './logic/skipValidation';
 import isNameInFieldArray from './logic/isNameInFieldArray';
+import isReactChangeEvent from './logic/isReactChangeEvent';
 import { useFormContext } from './useFormContext';
 import { VALIDATION_MODE, VALUE } from './constants';
 import { Control, ControllerProps, EventFunction, Field } from './types';
@@ -55,8 +56,11 @@ const Controller = <ControlProp extends Control = Control>({
       isSubmitted,
     });
 
-  const commonTask = (target: any) => {
-    const data = getInputValue(target, isCheckboxInput);
+  const commonTask = (eventOrValue: any) => {
+    const isEvent = isReactChangeEvent(eventOrValue) && eventOrValue.target;
+    const data = isEvent
+      ? getInputValue(eventOrValue.target, isCheckboxInput)
+      : eventOrValue;
     setInputStateValue(data);
     valueRef.current = data;
     return data;
@@ -66,7 +70,7 @@ const Controller = <ControlProp extends Control = Control>({
     setValue(name, commonTask(event(arg)), shouldValidate());
 
   const handleChange = (e: any) => {
-    const data = commonTask(e && e.target ? e.target : e);
+    const data = commonTask(e);
     setValue(name, data, shouldValidate());
   };
 
@@ -108,7 +112,7 @@ const Controller = <ControlProp extends Control = Control>({
         unregister(name);
       }
     };
-  }, [name]);
+  }, [fieldArrayNamesRef, name, registerField, unregister]);
 
   const shouldReValidateOnBlur = isOnBlur || isReValidateOnBlur;
 
