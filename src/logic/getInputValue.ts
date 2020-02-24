@@ -1,16 +1,10 @@
-import isUndefined from '../utils/isUndefined';
 import isNullOrUndefined from '../utils/isNullOrUndefined';
+import isUndefined from '../utils/isUndefined';
+import isObject from '../utils/isObject';
 
-export default (target: any, isCheckbox: boolean) => {
-  if (isNullOrUndefined(target)) {
-    return target;
-  }
-
-  return isCheckbox
-    ? isUndefined(target.checked)
-      ? target
-      : target.checked
-    : isUndefined(target.value)
-    ? target
-    : target.value;
-};
+export default (event: any) =>
+  isNullOrUndefined(event) || !isObject(event.target)
+    ? event
+    : isUndefined(event.target.value)
+    ? event.target.checked
+    : event.target.value;
