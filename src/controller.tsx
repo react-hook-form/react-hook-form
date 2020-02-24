@@ -112,7 +112,7 @@ const Controller = <ControlProp extends Control = Control>({
         unregister(name);
       }
     };
-  }, [fieldArrayNamesRef, name, registerField, unregister]);
+  }, [name]);
 
   const shouldReValidateOnBlur = isOnBlur || isReValidateOnBlur;
 
