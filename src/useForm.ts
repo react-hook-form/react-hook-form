@@ -19,6 +19,8 @@ import isEmptyObject from './utils/isEmptyObject';
 import isRadioInput from './utils/isRadioInput';
 import isFileInput from './utils/isFileInput';
 import isObject from './utils/isObject';
+import isBoolean from './utils/isBoolean';
+import isPrimitive from './utils/isPrimitive';
 import isFunction from './utils/isFunction';
 import isArray from './utils/isArray';
 import isString from './utils/isString';
@@ -178,19 +180,14 @@ export function useForm<
 
   const setFieldValue = useCallback(
     (
-      name: FieldName<FormValues>,
+      field: Field,
       rawValue:
         | FieldValue<FormValues>
         | DeepPartial<FormValues>
         | undefined
-        | null,
+        | null
+        | boolean,
     ): boolean => {
-      const field = fieldsRef.current[name];
-
-      if (!field) {
-        return false;
-      }
-
       const ref = field.ref;
       const options = field.options;
       const { type } = ref;
@@ -201,7 +198,8 @@ export function useForm<
 
       if (isRadioInput(ref) && options) {
         options.forEach(
-          ({ ref: radioRef }) => (radioRef.checked = radioRef.value === value),
+          ({ ref: radioRef }: { ref: HTMLInputElement }) =>
+            (radioRef.checked = radioRef.value === value),
         );
       } else if (isFileInput(ref)) {
         if (
@@ -273,22 +271,47 @@ export function useForm<
       : previousDirtyFieldsLength !== dirtyFieldsRef.current.size;
   };
 
+  const setDirtyAndTouchedFields = useCallback(
+    (fieldName: FieldName<FormValues>): void | boolean => {
+      if (
+        setDirty(fieldName) ||
+        (!get(touchedFieldsRef.current, fieldName) &&
+          readFormStateRef.current.touched)
+      ) {
+        return !!set(touchedFieldsRef.current, fieldName, true);
+      }
+    },
+    [],
+  );
+
   const setInternalValue = useCallback(
     (
       name: FieldName<FormValues>,
-      value: FieldValue<FormValues> | null | undefined,
+      value: FieldValue<FormValues> | null | undefined | boolean,
     ): boolean | void => {
-      setFieldValue(name, value);
+      const field = fieldsRef.current[name];
+      if (field) {
+        setFieldValue(field as Field, value);
 
-      if (
-        setDirty(name) ||
-        (!get(touchedFieldsRef.current, name) &&
-          readFormStateRef.current.touched)
-      ) {
-        return !!set(touchedFieldsRef.current, name, true);
+        const output = setDirtyAndTouchedFields(name);
+        if (isBoolean(output)) {
+          return output;
+        }
+      } else if (!isPrimitive(value)) {
+        const isValueArray = isArray(value);
+
+        for (const key in value as object) {
+          const fieldName = `${name}${isValueArray ? `[${key}]` : `.${key}`}`;
+          const field = fieldsRef.current[fieldName];
+
+          if (field) {
+            setFieldValue(field as Field, get(value, key));
+            setDirtyAndTouchedFields(fieldName);
+          }
+        }
       }
     },
-    [setFieldValue],
+    [setDirtyAndTouchedFields, setFieldValue],
   );
 
   const executeValidation = useCallback(
@@ -404,28 +427,47 @@ export function useForm<
     );
   };
 
-  const setValue = useCallback<
-    <Name extends FieldName<FormValues>>(
-      name: Name,
-      value: FormValues[Name] | null | undefined,
-      shouldValidate?: boolean,
-    ) => void | Promise<boolean>
-  >(
-    (name, value, shouldValidate) => {
-      const shouldRender =
-        setInternalValue(name, value) || isFieldWatched(name);
+  function setValue<Name extends FieldName<FormValues>>(
+    name: Name,
+    value?: FormValues[Name],
+    shouldValidate?: boolean,
+  ): void;
+  function setValue<Name extends FieldName<FormValues>>(
+    namesWithValue: Record<Name, any>[],
+    shouldValidate?: boolean,
+  ): void;
+  function setValue<Name extends FieldName<FormValues>>(
+    names: Name | Record<Name, any>[],
+    valueOrShouldValidate?: FormValues[Name] | boolean,
+    shouldValidate?: boolean,
+  ): void {
+    let shouldRender = false;
+    const isMultiple = isArray(names);
 
-      if (shouldRender) {
-        reRender();
-      }
+    (isMultiple
+      ? (names as Record<Name, FormValues[Name]>[])
+      : [names]
+    ).forEach((name: any) => {
+      const isStringFieldName = isString(name);
+      shouldRender =
+        setInternalValue(
+          isStringFieldName ? name : Object.keys(name)[0],
+          isStringFieldName
+            ? valueOrShouldValidate
+            : (Object.values(name)[0] as FormValues[Name]),
+        ) || isMultiple
+          ? true
+          : isFieldWatched(name);
+    });
 
-      if (shouldValidate) {
-        triggerValidation(name);
-      }
-      return;
-    },
-    [reRender, setInternalValue, triggerValidation],
-  );
+    if (shouldRender || isMultiple) {
+      reRender();
+    }
+
+    if (shouldValidate || (isMultiple && valueOrShouldValidate)) {
+      triggerValidation(isMultiple ? undefined : (names as Name));
+    }
+  }
 
   handleChangeRef.current = handleChangeRef.current
     ? handleChangeRef.current
@@ -828,7 +870,7 @@ export function useForm<
       isFieldArray = isNameInFieldArray(fieldArrayNamesRef.current, name);
 
       if (!isEmptyDefaultValue && !isFieldArray) {
-        setFieldValue(name, defaultValue);
+        setFieldValue(currentField, defaultValue);
       }
     }
 
@@ -1158,7 +1200,11 @@ export function useForm<
     watch,
     control,
     handleSubmit,
-    setValue,
+    setValue: useCallback(setValue, [
+      reRender,
+      setInternalValue,
+      triggerValidation,
+    ]),
     triggerValidation,
     getValues: useCallback(getValues, []),
     reset: useCallback(reset, []),

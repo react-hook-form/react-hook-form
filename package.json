@@ -24,6 +24,7 @@
     "cypress": "cypress run",
     "cypress:open": "cypress open",
     "prepublishOnly": "yarn lint && yarn test && yarn run clean && yarn build",
+    "bundlesize": "yarn build:min && bundlesize",
     "start:app": "yarn build && yarn link && yarn --cwd node_modules/react link && yarn --cwd ./app link react react-hook-form && yarn --cwd ./app && yarn --cwd ./app run start"
   },
   "keywords": [
@@ -48,19 +49,20 @@
     "@rollup/plugin-node-resolve": "^7.1.1",
     "@testing-library/react": "^9.4.0",
     "@testing-library/react-hooks": "^3.2.1",
-    "@types/jest": "^25.1.1",
-    "@types/react": "^16.9.19",
+    "@types/jest": "^25.1.3",
+    "@types/react": "^16.9.22",
     "@types/react-dom": "^16.9.5",
     "@types/react-test-renderer": "^16.9.2",
-    "@typescript-eslint/eslint-plugin": "^2.18.0",
-    "@typescript-eslint/parser": "^2.18.0",
+    "@typescript-eslint/eslint-plugin": "^2.20.0",
+    "@typescript-eslint/parser": "^2.20.0",
+    "bundlesize": "^0.18.0",
     "core-js": "^3.6.4",
     "coveralls": "^3.0.9",
-    "cypress": "^3.8.1",
+    "cypress": "^4.0.2",
     "eslint": "^6.8.0",
-    "eslint-plugin-react": "^7.17.0",
-    "eslint-plugin-react-hooks": "^2.3.0",
-    "husky": "^4.2.1",
+    "eslint-plugin-react": "^7.18.3",
+    "eslint-plugin-react-hooks": "^2.4.0",
+    "husky": "^4.2.3",
     "jest": "^25.1.0",
     "lint-staged": "^10.0.7",
     "mutationobserver-shim": "^0.3.3",
@@ -68,17 +70,17 @@
     "react": "^16.12.0",
     "react-dom": "^16.12.0",
     "react-test-renderer": "^16.12.0",
-    "rollup": "^1.31.0",
+    "rollup": "^1.31.1",
     "rollup-plugin-babel": "^4.3.3",
     "rollup-plugin-terser": "^5.1.1",
-    "rollup-plugin-typescript2": "^0.25.3",
-    "ts-jest": "^25.1.0",
-    "typescript": "^3.7.4"
+    "rollup-plugin-typescript2": "^0.26.0",
+    "ts-jest": "^25.2.1",
+    "typescript": "^3.8.2"
   },
   "bundlesize": [
     {
       "path": "./dist/react-hook-form.min.es.js",
-      "maxSize": "8 kB"
+      "maxSize": "8.5 kB"
     }
   ],
   "peerDependencies": {
