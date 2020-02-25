@@ -55,8 +55,8 @@ const Controller = <ControlProp extends Control = Control>({
       isSubmitted,
     });
 
-  const commonTask = (target: any) => {
-    const data = getInputValue(target, isCheckboxInput);
+  const commonTask = (event: any) => {
+    const data = getInputValue(event, isCheckboxInput);
     setInputStateValue(data);
     valueRef.current = data;
     return data;
@@ -65,8 +65,8 @@ const Controller = <ControlProp extends Control = Control>({
   const eventWrapper = (event: EventFunction) => (...arg: any) =>
     setValue(name, commonTask(event(arg)), shouldValidate());
 
-  const handleChange = (e: any) => {
-    const data = commonTask(e && e.target ? e.target : e);
+  const handleChange = (event: any) => {
+    const data = commonTask(event);
     setValue(name, data, shouldValidate());
   };
 
