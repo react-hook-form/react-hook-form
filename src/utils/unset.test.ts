@@ -31,6 +31,20 @@ test('should unset the object', () => {
       },
     },
   });
+
+  const test1 = {
+    test: [],
+  };
+
+  expect(unset(test1, ['test[0].min'])).toEqual({});
+
+  const test2 = {
+    test: {
+      min: 'test',
+    },
+  };
+
+  expect(unset(test2, ['test.min'])).toEqual({});
 });
 
 test('should unset multiple path', () => {
@@ -66,7 +80,7 @@ test('should return empty object when inner object is empty object', () => {
     },
   };
 
-  expect(unset(test, ['data.firstName'])).toEqual({ data: {} });
+  expect(unset(test, ['data.firstName'])).toEqual({});
 });
 
 test('should clear empty array', () => {

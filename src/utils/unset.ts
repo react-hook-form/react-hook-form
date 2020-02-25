@@ -2,6 +2,8 @@ import isArray from './isArray';
 import isUndefined from './isUndefined';
 import isKey from './isKey';
 import stringToPath from './stringToPath';
+import isObject from './isObject';
+import isEmptyObject from './isEmptyObject';
 
 function castPath(value: string) {
   return isArray(value) ? value : stringToPath(value);
@@ -45,10 +47,19 @@ function parent(object: any, path: string | string[]) {
 
 function baseUnset(object: any, path: string) {
   const updatePath = isKey(path) ? [path] : castPath(path);
-  object = parent(object, updatePath);
-
+  const childObject = parent(object, updatePath);
   const key = updatePath[updatePath.length - 1];
-  return !(object != null) || delete object[key];
+  const result = !(childObject != null) || delete childObject[key];
+  const parentValue = baseGet(childObject, baseSlice(path, 0, 0));
+
+  if (
+    isUndefined(parentValue) ||
+    (isObject(parentValue) && isEmptyObject(parentValue))
+  ) {
+    delete object[updatePath[updatePath.length - (!parentValue ? 3 : 2)]];
+  }
+
+  return result;
 }
 
 export default function unset(object: any, paths: string[]) {
