@@ -4,6 +4,7 @@ import isKey from './isKey';
 import stringToPath from './stringToPath';
 import isObject from './isObject';
 import isEmptyObject from './isEmptyObject';
+import isNullOrUndefined from './isNullOrUndefined';
 
 function castPath(value: string) {
   return isArray(value) ? value : stringToPath(value);
@@ -50,22 +51,29 @@ function baseUnset(object: any, path: string) {
   const childObject = parent(object, updatePath);
   const key = updatePath[updatePath.length - 1];
   const result = !(childObject != null) || delete childObject[key];
-  const parentValue = baseGet(childObject, baseSlice(path, 0, 0));
+  let tempObject = object;
 
-  if (
-    isUndefined(parentValue) ||
-    (isObject(parentValue) && isEmptyObject(parentValue))
-  ) {
-    let pathName = '';
+  for (const item of updatePath.slice(0, -1)) {
+    if (isUndefined(tempObject)) {
+      continue;
+    }
 
-    for (const item of [...updatePath.slice(0, -1)].reverse()) {
-      if (isNaN(item as any)) {
-        pathName = item;
-        break;
+    if (
+      isUndefined(tempObject[item]) ||
+      (isObject(tempObject[item]) && isEmptyObject(tempObject[item]))
+    ) {
+      delete tempObject[item];
+    } else if (isArray(tempObject[item])) {
+      const arrayContainDataLength = tempObject[item].filter(
+        (data: any) =>
+          !(isObject(data) && isEmptyObject(data)) && !isNullOrUndefined(data),
+      ).length;
+      if (!arrayContainDataLength) {
+        delete tempObject[item];
       }
     }
 
-    delete object[pathName];
+    tempObject = tempObject[item];
   }
 
   return result;
