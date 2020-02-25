@@ -33,7 +33,7 @@ test('should unset the object', () => {
   });
 
   const test1 = {
-    test: [],
+    test: [{ min: 'required' }],
   };
 
   expect(unset(test1, ['test[0].min'])).toEqual({});

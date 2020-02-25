@@ -56,7 +56,16 @@ function baseUnset(object: any, path: string) {
     isUndefined(parentValue) ||
     (isObject(parentValue) && isEmptyObject(parentValue))
   ) {
-    delete object[updatePath[updatePath.length - (!parentValue ? 3 : 2)]];
+    let pathName = '';
+
+    for (const item of [...updatePath.slice(0, -1)].reverse()) {
+      if (isNaN(item as any)) {
+        pathName = item;
+        break;
+      }
+    }
+
+    delete object[pathName];
   }
 
   return result;
