@@ -46,15 +46,15 @@ test('should unset the object', () => {
 
   expect(unset(test2, ['test.min'])).toEqual({});
 
-  // const test3 = {
-  //   test: {
-  //     bill: {
-  //       min: 'test',
-  //     }
-  //   },
-  // };
-  //
-  // expect(unset(test3, ['test.bill.min'])).toEqual({});
+  const test3 = {
+    test: {
+      bill: {
+        min: 'test',
+      },
+    },
+  };
+
+  expect(unset(test3, ['test.bill.min'])).toEqual({});
 });
 
 test('should unset multiple path', () => {

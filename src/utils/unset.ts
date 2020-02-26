@@ -2,9 +2,9 @@ import isArray from './isArray';
 import isUndefined from './isUndefined';
 import isKey from './isKey';
 import stringToPath from './stringToPath';
-import isObject from './isObject';
 import isEmptyObject from './isEmptyObject';
-import isNullOrUndefined from './isNullOrUndefined';
+import isObject from './isObject';
+// import isNullOrUndefined from './isNullOrUndefined';
 
 function castPath(value: string) {
   return isArray(value) ? value : stringToPath(value);
@@ -51,29 +51,42 @@ function baseUnset(object: any, path: string) {
   const childObject = parent(object, updatePath);
   const key = updatePath[updatePath.length - 1];
   const result = !(childObject != null) || delete childObject[key];
-  let tempObject = object;
 
-  for (const item of updatePath.slice(0, -1)) {
-    if (isUndefined(tempObject)) {
-      continue;
+  let previousObjRef = undefined;
+  const paths = updatePath.slice(0, -1);
+  const pathsLength = paths.length;
+
+  for (let k = 0; k < pathsLength; k++) {
+    let index = 0;
+    let objRef = undefined;
+    const currentPaths = updatePath.slice(0, -(k + 1));
+    const currentPathsLength = currentPaths.length - 1;
+
+    if (k > 0) {
+      previousObjRef = object;
     }
 
-    if (
-      isUndefined(tempObject[item]) ||
-      (isObject(tempObject[item]) && isEmptyObject(tempObject[item]))
-    ) {
-      delete tempObject[item];
-    } else if (isArray(tempObject[item])) {
-      const arrayContainDataLength = tempObject[item].filter(
-        (data: any) =>
-          !(isObject(data) && isEmptyObject(data)) && !isNullOrUndefined(data),
-      ).length;
-      if (!arrayContainDataLength) {
-        delete tempObject[item];
+    for (const item of currentPaths) {
+      objRef = objRef ? objRef[item] : object[item];
+
+      if (currentPathsLength === index) {
+        if (isObject(objRef) && isEmptyObject(objRef)) {
+          if (previousObjRef) {
+            delete previousObjRef[item];
+          } else {
+            delete object[item];
+          }
+        } else if (
+          isArray(objRef) &&
+          !objRef.filter(data => isObject(data) && !isEmptyObject(data)).length
+        ) {
+          delete previousObjRef[item];
+        }
       }
-    }
 
-    tempObject = tempObject[item];
+      previousObjRef = objRef;
+      index++;
+    }
   }
 
   return result;
