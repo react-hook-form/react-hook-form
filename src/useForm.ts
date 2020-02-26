@@ -1211,6 +1211,7 @@ export function useForm<
     register: useCallback(register, [
       defaultValuesRef.current,
       defaultRenderValuesRef.current,
+      watchFieldArrayRef.current,
     ]),
     unregister: useCallback(unregister, []),
     clearError: useCallback(clearError, []),

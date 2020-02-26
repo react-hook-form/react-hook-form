@@ -57,7 +57,10 @@ export const useFieldArray = <
     value.map((v: Partial<FormArrayValues>) => appendId(v, keyName));
 
   const commonTasks = (fieldsValues: any) => {
-    watchFieldArrayRef.current[name] = fieldsValues;
+    watchFieldArrayRef.current = {
+      ...watchFieldArrayRef.current,
+      [name]: fieldsValues,
+    };
     setField(fieldsValues);
 
     if (readFormStateRef.current.isValid && validateSchemaIsValid) {
@@ -250,7 +253,10 @@ export const useFieldArray = <
     const fieldArrayNames = fieldArrayNamesRef.current;
     fieldArrayNames.add(name);
     resetFunctions[name] = reset;
-    watchFieldArrayRef.current[name] = {};
+    watchFieldArrayRef.current = {
+      ...watchFieldArrayRef.current,
+      [name]: fields,
+    };
 
     return () => {
       resetFields();
