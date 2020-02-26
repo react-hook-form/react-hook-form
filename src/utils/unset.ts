@@ -4,7 +4,6 @@ import isKey from './isKey';
 import stringToPath from './stringToPath';
 import isEmptyObject from './isEmptyObject';
 import isObject from './isObject';
-// import isNullOrUndefined from './isNullOrUndefined';
 
 function castPath(value: string) {
   return isArray(value) ? value : stringToPath(value);
