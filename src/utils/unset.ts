@@ -51,14 +51,11 @@ function baseUnset(object: any, path: string) {
   const childObject = parent(object, updatePath);
   const key = updatePath[updatePath.length - 1];
   const result = !(childObject != null) || delete childObject[key];
-
   let previousObjRef = undefined;
-  const paths = updatePath.slice(0, -1);
-  const pathsLength = paths.length;
 
-  for (let k = 0; k < pathsLength; k++) {
-    let index = 0;
-    let objRef = undefined;
+  for (let k = 0; k < updatePath.slice(0, -1).length; k++) {
+    let index = -1;
+    let objectRef = undefined;
     const currentPaths = updatePath.slice(0, -(k + 1));
     const currentPathsLength = currentPaths.length - 1;
 
@@ -66,26 +63,23 @@ function baseUnset(object: any, path: string) {
       previousObjRef = object;
     }
 
-    for (const item of currentPaths) {
-      objRef = objRef ? objRef[item] : object[item];
+    while (++index < currentPaths.length) {
+      const item = currentPaths[index];
+      objectRef = objectRef ? objectRef[item] : object[item];
 
       if (currentPathsLength === index) {
-        if (isObject(objRef) && isEmptyObject(objRef)) {
-          if (previousObjRef) {
-            delete previousObjRef[item];
-          } else {
-            delete object[item];
-          }
+        if (isObject(objectRef) && isEmptyObject(objectRef)) {
+          previousObjRef ? delete previousObjRef[item] : delete object[item];
         } else if (
-          isArray(objRef) &&
-          !objRef.filter(data => isObject(data) && !isEmptyObject(data)).length
+          isArray(objectRef) &&
+          !objectRef.filter(data => isObject(data) && !isEmptyObject(data))
+            .length
         ) {
           delete previousObjRef[item];
         }
       }
 
-      previousObjRef = objRef;
-      index++;
+      previousObjRef = objectRef;
     }
   }
 
