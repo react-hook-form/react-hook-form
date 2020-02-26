@@ -11,7 +11,10 @@ export default (data: any, index?: number | number[]) =>
     ? []
     : isArray(index)
     ? index.reduce(
-        ({ result, previousIndex }: any, i) => ({
+        (
+          { result, previousIndex }: { result: any[]; previousIndex: number },
+          i,
+        ) => ({
           result:
             previousIndex > -1
               ? removeAt(result, previousIndex < i ? i - 1 : i)
