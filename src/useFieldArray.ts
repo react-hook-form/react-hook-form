@@ -20,6 +20,7 @@ import {
   Control,
   ArrayField,
 } from './types';
+import unset from './utils/unset';
 
 const { useEffect, useRef, useState } = React;
 
@@ -137,6 +138,7 @@ export const useFieldArray = <
   };
 
   const remove = (index?: number | number[]) => {
+    const fieldName = `${name}[${index}]`;
     if (!isUndefined(index)) {
       mapCurrentFieldsValueWithState();
     }
@@ -147,14 +149,13 @@ export const useFieldArray = <
     commonTasks(removeArrayAt(fields, index));
 
     if (errorsRef.current[name]) {
-      errorsRef.current[name] = removeArrayAt(errorsRef.current[name], index);
+      unset(errorsRef.current, [fieldName]);
     }
 
     if (readFormStateRef.current.touched && touchedFieldsRef.current[name]) {
-      touchedFieldsRef.current[name] = removeArrayAt(
-        touchedFieldsRef.current[name],
-        index,
-      );
+      touchedFieldsRef.current[name] = unset(touchedFieldsRef.current, [
+        fieldName,
+      ]);
     }
 
     if (readFormStateRef.current.isValid && !validateSchemaIsValid) {
