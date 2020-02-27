@@ -26,3 +26,4 @@ jobs:
           steps:
             - run: yarn install --frozen-lockfile
       - run: npm run build
+      - run: npm run bundlesize
