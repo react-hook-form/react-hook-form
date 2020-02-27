@@ -15,7 +15,7 @@ describe('Controller', () => {
       <Controller
         defaultValue=""
         name="test"
-        as="input"
+        as={'input' as 'input'}
         control={
           {
             ...control,
@@ -265,7 +265,7 @@ describe('Controller', () => {
     const { asFragment } = render(
       <Controller
         name="test"
-        as="input"
+        as={'input' as 'input'}
         control={
           {
             ...control,
@@ -292,7 +292,7 @@ describe('Controller', () => {
       <Controller
         defaultValue=""
         name="test"
-        as="input"
+        as={'input' as 'input'}
         valueName="selectedkey"
         control={
           {
@@ -318,7 +318,7 @@ describe('Controller', () => {
       <Controller
         defaultValue=""
         name="test[0]"
-        as="input"
+        as={'input' as 'input'}
         valueName="selectedkey"
         control={{
           ...control,
