@@ -260,30 +260,40 @@ export type Control<FormValues extends FieldValues = FieldValues> = {
   >;
 };
 
+export type Assign<T extends object, U extends object> = T & Omit<U, keyof T>;
+
 export type AsProps<As> = As extends undefined
   ? {}
   : As extends React.ReactElement
   ? { [key: string]: any }
   : As extends React.ComponentType<infer P>
-  ? Omit<P, 'children'>
+  ? P
   : As extends keyof JSX.IntrinsicElements
   ? JSX.IntrinsicElements[As]
   : never;
 
-export type ControllerProps<ControlProp extends Control = Control> = {
-  name: string;
-  as: React.ReactElement | React.ElementType | string;
-  rules?: ValidationOptions;
-  onChange?: EventFunction;
-  onBlur?: EventFunction;
-  mode?: Mode;
-  onChangeName?: string;
-  onBlurName?: string;
-  valueName?: string;
-  defaultValue?: any;
-  control?: ControlProp;
-  [key: string]: any;
-};
+export type ControllerProps<
+  As extends
+    | React.ReactElement
+    | React.ComponentType<any>
+    | keyof JSX.IntrinsicElements,
+  ControlProp extends Control = Control
+> = Assign<
+  {
+    name: string;
+    as: As;
+    rules?: ValidationOptions;
+    onChange?: EventFunction;
+    onBlur?: EventFunction;
+    mode?: Mode;
+    onChangeName?: string;
+    onBlurName?: string;
+    valueName?: string;
+    defaultValue?: any;
+    control?: ControlProp;
+  },
+  AsProps<As>
+>;
 
 export type ErrorMessageProps<
   Errors extends FieldErrors<any>,
@@ -293,16 +303,19 @@ export type ErrorMessageProps<
     | React.ReactElement
     | React.ComponentType<any>
     | keyof JSX.IntrinsicElements = undefined
-> = {
-  as?: As;
-  errors?: Errors;
-  name: Name;
-  message?: string;
-  children?: (data: {
-    message: string;
-    messages?: MultipleFieldErrors;
-  }) => React.ReactNode;
-} & AsProps<As>;
+> = Assign<
+  {
+    as?: As;
+    errors?: Errors;
+    name: Name;
+    message?: string;
+    children?: (data: {
+      message: string;
+      messages?: MultipleFieldErrors;
+    }) => React.ReactNode;
+  },
+  AsProps<As>
+>;
 
 export type UseFieldArrayProps<
   KeyName extends string = 'id',

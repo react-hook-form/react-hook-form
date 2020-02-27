@@ -8,8 +8,13 @@ import isNameInFieldArray from './logic/isNameInFieldArray';
 import { useFormContext } from './useFormContext';
 import { VALIDATION_MODE, VALUE } from './constants';
 import { Control, ControllerProps, EventFunction, Field } from './types';
-
-const Controller = <ControlProp extends Control = Control>({
+const Controller = <
+  As extends
+    | React.ReactElement
+    | React.ComponentType<any>
+    | keyof JSX.IntrinsicElements,
+  ControlProp extends Control = Control
+>({
   name,
   rules,
   as: InnerComponent,
@@ -21,7 +26,7 @@ const Controller = <ControlProp extends Control = Control>({
   defaultValue,
   control,
   ...rest
-}: ControllerProps<ControlProp>) => {
+}: ControllerProps<As, ControlProp>) => {
   const methods = useFormContext();
   const {
     defaultValuesRef,
@@ -139,7 +144,7 @@ const Controller = <ControlProp extends Control = Control>({
   return React.isValidElement(InnerComponent) ? (
     React.cloneElement(InnerComponent, props)
   ) : (
-    <InnerComponent {...props} />
+    React.createElement(InnerComponent as string, props)
   );
 };
 
