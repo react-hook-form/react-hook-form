@@ -46,7 +46,6 @@ export type FormContextValues<FormValues extends FieldValues = FieldValues> = {
   unregister(name: FieldName<FormValues>): void;
   unregister(names: FieldName<FormValues>[]): void;
   unregister(names: FieldName<FormValues> | FieldName<FormValues>[]): void;
-  reRender: () => void;
   watch(): FormValues;
   watch(option: { nest: boolean }): FormValues;
   watch<T extends FieldName<FormValues>>(
