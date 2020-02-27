@@ -166,36 +166,38 @@ export const useFieldArray = <
 
     if (readFormStateRef.current.isValid && !validateSchemaIsValid) {
       let fieldIndex = -1;
+      let isFound = false;
       const fieldsLength = fields.length;
       const isIndexUndefined = isUndefined(index);
-      let found = false;
 
       while (fieldIndex++ < fieldsLength) {
+        const isLast = fieldIndex === fieldsLength - 1;
+
         if (
           isIndexUndefined ||
           fieldIndex === index ||
-          (fieldIndex === fieldsLength - 1 && found) ||
+          (isLast && isFound) ||
           (isArray(index) && index.indexOf(fieldIndex) >= 0)
         ) {
           if (!isIndexUndefined) {
-            found = true;
+            isFound = true;
           }
+
           for (const key in fields[fieldIndex]) {
             const currentFieldName = `${name}[${fieldIndex}].${key}`;
 
-            validFieldsRef.current.delete(currentFieldName);
-            fieldsWithValidationRef.current.delete(currentFieldName);
-          }
-        } else if (found) {
-          for (const key in fields[fieldIndex]) {
-            const currentFieldName = `${name}[${fieldIndex}].${key}`;
-            const previousFieldName = `${name}[${fieldIndex - 1}].${key}`;
+            if (!isLast && isFound) {
+              const previousFieldName = `${name}[${fieldIndex - 1}].${key}`;
 
-            if (validFieldsRef.current.has(currentFieldName)) {
-              validFieldsRef.current.add(previousFieldName);
-            }
-            if (fieldsWithValidationRef.current.has(currentFieldName)) {
-              fieldsWithValidationRef.current.add(previousFieldName);
+              if (validFieldsRef.current.has(currentFieldName)) {
+                validFieldsRef.current.add(previousFieldName);
+              }
+              if (fieldsWithValidationRef.current.has(currentFieldName)) {
+                fieldsWithValidationRef.current.add(previousFieldName);
+              }
+            } else {
+              validFieldsRef.current.delete(currentFieldName);
+              fieldsWithValidationRef.current.delete(currentFieldName);
             }
           }
         }
