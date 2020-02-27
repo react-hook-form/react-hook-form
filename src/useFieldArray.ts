@@ -175,9 +175,8 @@ export const useFieldArray = <
 
         if (
           isIndexUndefined ||
-          fieldIndex === index ||
           (isLast && isFound) ||
-          (isArray(index) && index.indexOf(fieldIndex) >= 0)
+          (isArray(index) ? index : [index]).indexOf(fieldIndex) >= 0
         ) {
           if (!isIndexUndefined) {
             isFound = true;
