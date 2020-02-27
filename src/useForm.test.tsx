@@ -27,6 +27,7 @@ export const reconfigureControl = (
   },
   validateSchemaIsValid: jest.fn(),
   getValues: jest.fn(),
+  reRender: jest.fn(),
   setValue: jest.fn(),
   register: jest.fn(),
   unregister: jest.fn(),

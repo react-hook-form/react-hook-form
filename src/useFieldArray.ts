@@ -36,6 +36,7 @@ export const useFieldArray = <
   const {
     resetFieldArrayFunctionRef,
     fieldArrayNamesRef,
+    reRender,
     fieldsRef,
     getValues,
     defaultValuesRef,
@@ -151,6 +152,9 @@ export const useFieldArray = <
 
     if (errorsRef.current[name]) {
       errorsRef.current[name] = removeArrayAt(errorsRef.current[name], index);
+      if (!(errorsRef.current[name] as []).filter(Boolean).length) {
+        delete errorsRef.current[name];
+      }
     }
 
     if (readFormStateRef.current.touched && touchedFieldsRef.current[name]) {
@@ -174,6 +178,7 @@ export const useFieldArray = <
           }
         }
       });
+      reRender();
     }
   };
 
