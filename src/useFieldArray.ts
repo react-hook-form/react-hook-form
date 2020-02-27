@@ -167,11 +167,10 @@ export const useFieldArray = <
     if (readFormStateRef.current.isValid && !validateSchemaIsValid) {
       let fieldIndex = -1;
       let isFound = false;
-      const fieldsLength = fields.length;
       const isIndexUndefined = isUndefined(index);
 
-      while (fieldIndex++ < fieldsLength) {
-        const isLast = fieldIndex === fieldsLength - 1;
+      while (fieldIndex++ < fields.length) {
+        const isLast = fieldIndex === fields.length - 1;
 
         if (
           isIndexUndefined ||
