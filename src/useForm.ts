@@ -188,19 +188,22 @@ export function useForm<
         | null
         | boolean,
     ): boolean => {
-      const ref = field.ref;
-      const options = field.options;
-      const { type } = ref;
+      const {
+        ref,
+        ref: { type },
+        options,
+      } = field;
       const value =
         isWeb && isHTMLElement(ref) && isNullOrUndefined(rawValue)
           ? ''
           : rawValue;
 
       if (isRadioInput(ref) && options) {
-        options.forEach(
-          ({ ref: radioRef }: { ref: HTMLInputElement }) =>
-            (radioRef.checked = radioRef.value === value),
-        );
+        let index = -1;
+        while (index++ < options.length) {
+          const { ref: radioRef } = options[index];
+          radioRef.checked = radioRef.value === value;
+        }
       } else if (isFileInput(ref)) {
         if (
           isEmptyString(value as string) ||

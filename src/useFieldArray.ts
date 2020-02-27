@@ -161,19 +161,20 @@ export const useFieldArray = <
     }
 
     if (readFormStateRef.current.isValid && !validateSchemaIsValid) {
-      fields.forEach((field, fieldIndex) => {
+      let fieldIndex = -1;
+      while (++fieldIndex < fields.length) {
         if (
           isUndefined(index) ||
           fieldIndex === index ||
           (isArray(index) && index.indexOf(fieldIndex) >= 0)
         ) {
-          for (const key in field) {
+          for (const key in fields[fieldIndex]) {
             const removeFieldName = `${name}[${index}].${key}`;
             validFieldsRef.current.delete(removeFieldName);
             fieldsWithValidationRef.current.delete(removeFieldName);
           }
         }
-      });
+      }
     }
   };
 

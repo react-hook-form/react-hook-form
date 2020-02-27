@@ -34,7 +34,10 @@ export default function findRemovedFieldAndRemoveListener<
     const { options } = fieldValue;
 
     if (isArray(options) && options.length) {
-      options.forEach(({ ref, mutationWatcher }, index): void => {
+      let index = -1;
+      while (++index < options.length) {
+        const { ref, mutationWatcher } = options[index];
+
         if ((ref && isDetached(ref)) || forceDelete) {
           removeAllEventListeners(ref, handleChange);
 
@@ -44,7 +47,7 @@ export default function findRemovedFieldAndRemoveListener<
 
           options.splice(index, 1);
         }
-      });
+      }
 
       if (options && !options.length) {
         delete fields[name];
