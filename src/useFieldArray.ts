@@ -165,19 +165,35 @@ export const useFieldArray = <
     }
 
     if (readFormStateRef.current.isValid && !validateSchemaIsValid) {
-      fields.forEach((field, fieldIndex) => {
+      let fieldIndex = -1;
+      const fieldsLength = fields.length;
+      const isIndexUndefined = isUndefined(index);
+
+      while (fieldIndex++ < fieldsLength) {
         if (
-          isUndefined(index) ||
+          isIndexUndefined ||
           fieldIndex === index ||
           (isArray(index) && index.indexOf(fieldIndex) >= 0)
         ) {
-          for (const key in field) {
-            const removeFieldName = `${name}[${index}].${key}`;
-            validFieldsRef.current.delete(removeFieldName);
-            fieldsWithValidationRef.current.delete(removeFieldName);
+          const isLastChild = fieldIndex === fieldsLength - 1;
+
+          for (const key in fields[fieldIndex]) {
+            const currentRemoveFieldName = `${name}[${fieldIndex}].${key}`;
+            const nextRemoveFieldName = `${name}[${fieldIndex + 1}].${key}`;
+            const nextHasValidation = fieldsWithValidationRef.current.has(
+              nextRemoveFieldName,
+            );
+            const deleteName =
+              isIndexUndefined || isLastChild || !nextHasValidation
+                ? currentRemoveFieldName
+                : nextRemoveFieldName;
+
+            validFieldsRef.current.delete(deleteName);
+            fieldsWithValidationRef.current.delete(deleteName);
           }
         }
-      });
+      }
+
       reRender();
     }
   };
