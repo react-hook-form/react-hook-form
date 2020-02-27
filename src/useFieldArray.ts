@@ -175,21 +175,10 @@ export const useFieldArray = <
           fieldIndex === index ||
           (isArray(index) && index.indexOf(fieldIndex) >= 0)
         ) {
-          const isLastChild = fieldIndex === fieldsLength - 1;
-
           for (const key in fields[fieldIndex]) {
             const currentRemoveFieldName = `${name}[${fieldIndex}].${key}`;
-            const nextRemoveFieldName = `${name}[${fieldIndex + 1}].${key}`;
-            const nextHasValidation = fieldsWithValidationRef.current.has(
-              nextRemoveFieldName,
-            );
-            const deleteName =
-              isIndexUndefined || isLastChild || !nextHasValidation
-                ? currentRemoveFieldName
-                : nextRemoveFieldName;
-
-            validFieldsRef.current.delete(deleteName);
-            fieldsWithValidationRef.current.delete(deleteName);
+            validFieldsRef.current.delete(currentRemoveFieldName);
+            fieldsWithValidationRef.current.delete(currentRemoveFieldName);
           }
         }
       }
