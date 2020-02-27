@@ -168,17 +168,35 @@ export const useFieldArray = <
       let fieldIndex = -1;
       const fieldsLength = fields.length;
       const isIndexUndefined = isUndefined(index);
+      let found = false;
 
       while (fieldIndex++ < fieldsLength) {
         if (
           isIndexUndefined ||
           fieldIndex === index ||
+          (fieldIndex === fieldsLength - 1 && found) ||
           (isArray(index) && index.indexOf(fieldIndex) >= 0)
         ) {
+          if (!isIndexUndefined) {
+            found = true;
+          }
           for (const key in fields[fieldIndex]) {
-            const currentRemoveFieldName = `${name}[${fieldIndex}].${key}`;
-            validFieldsRef.current.delete(currentRemoveFieldName);
-            fieldsWithValidationRef.current.delete(currentRemoveFieldName);
+            const currentFieldName = `${name}[${fieldIndex}].${key}`;
+
+            validFieldsRef.current.delete(currentFieldName);
+            fieldsWithValidationRef.current.delete(currentFieldName);
+          }
+        } else if (found) {
+          for (const key in fields[fieldIndex]) {
+            const currentFieldName = `${name}[${fieldIndex}].${key}`;
+            const previousFieldName = `${name}[${fieldIndex - 1}].${key}`;
+
+            if (validFieldsRef.current.has(currentFieldName)) {
+              validFieldsRef.current.add(previousFieldName);
+            }
+            if (fieldsWithValidationRef.current.has(currentFieldName)) {
+              fieldsWithValidationRef.current.add(previousFieldName);
+            }
           }
         }
       }
