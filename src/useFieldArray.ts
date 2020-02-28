@@ -171,31 +171,31 @@ export const useFieldArray = <
 
       while (fieldIndex++ < fields.length) {
         const isLast = fieldIndex === fields.length - 1;
+        const isCurrentIndex =
+          (isArray(index) ? index : [index]).indexOf(fieldIndex) >= 0;
 
-        if (
-          isIndexUndefined ||
-          (isLast && isFound) ||
-          (isArray(index) ? index : [index]).indexOf(fieldIndex) >= 0
-        ) {
-          if (!isIndexUndefined) {
-            isFound = true;
-          }
+        if (isCurrentIndex || isIndexUndefined) {
+          isFound = true;
+        }
 
-          for (const key in fields[fieldIndex]) {
-            const currentFieldName = `${name}[${fieldIndex}].${key}`;
+        if (!isFound) {
+          continue;
+        }
 
-            if (!isLast && isFound) {
-              const previousFieldName = `${name}[${fieldIndex - 1}].${key}`;
+        for (const key in fields[fieldIndex]) {
+          const currentFieldName = `${name}[${fieldIndex}].${key}`;
 
-              if (validFieldsRef.current.has(currentFieldName)) {
-                validFieldsRef.current.add(previousFieldName);
-              }
-              if (fieldsWithValidationRef.current.has(currentFieldName)) {
-                fieldsWithValidationRef.current.add(previousFieldName);
-              }
-            } else {
-              validFieldsRef.current.delete(currentFieldName);
-              fieldsWithValidationRef.current.delete(currentFieldName);
+          if (isCurrentIndex || isLast || isIndexUndefined) {
+            validFieldsRef.current.delete(currentFieldName);
+            fieldsWithValidationRef.current.delete(currentFieldName);
+          } else {
+            const previousFieldName = `${name}[${fieldIndex - 1}].${key}`;
+
+            if (validFieldsRef.current.has(currentFieldName)) {
+              validFieldsRef.current.add(previousFieldName);
+            }
+            if (fieldsWithValidationRef.current.has(currentFieldName)) {
+              fieldsWithValidationRef.current.add(previousFieldName);
             }
           }
         }

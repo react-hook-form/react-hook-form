@@ -407,4 +407,27 @@ context('useFieldArray', () => {
     cy.get('#delete4').click();
     cy.get('#touched').contains('[null,null,null,{"name":true},{"name":true}]');
   });
+
+  it.only('should return correct isValid formState', () => {
+    cy.visit('http://localhost:3000/useFieldArray/formState');
+    cy.get('#isValid')
+      .get('#isValid')
+      .contains('yes');
+    cy.get('#append').click();
+    cy.get('#append').click();
+    cy.get('#append').click();
+
+    cy.get('#isValid')
+      .get('#isValid')
+      .contains('yes');
+
+    cy.get('#field0').clear();
+    cy.get('#field1').clear();
+
+    cy.get('#isValid')
+      .get('#isValid')
+      .contains('no');
+
+    // cy.get('#delete0').click();
+  });
 });
