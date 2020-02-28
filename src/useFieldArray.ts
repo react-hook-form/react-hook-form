@@ -36,6 +36,7 @@ export const useFieldArray = <
   const {
     resetFieldArrayFunctionRef,
     fieldArrayNamesRef,
+    reRender,
     fieldsRef,
     getValues,
     defaultValuesRef,
@@ -151,6 +152,9 @@ export const useFieldArray = <
 
     if (errorsRef.current[name]) {
       errorsRef.current[name] = removeArrayAt(errorsRef.current[name], index);
+      if (!(errorsRef.current[name] as []).filter(Boolean).length) {
+        delete errorsRef.current[name];
+      }
     }
 
     if (readFormStateRef.current.touched && touchedFieldsRef.current[name]) {
@@ -161,19 +165,43 @@ export const useFieldArray = <
     }
 
     if (readFormStateRef.current.isValid && !validateSchemaIsValid) {
-      fields.forEach((field, fieldIndex) => {
-        if (
-          isUndefined(index) ||
-          fieldIndex === index ||
-          (isArray(index) && index.indexOf(fieldIndex) >= 0)
-        ) {
-          for (const key in field) {
-            const removeFieldName = `${name}[${index}].${key}`;
-            validFieldsRef.current.delete(removeFieldName);
-            fieldsWithValidationRef.current.delete(removeFieldName);
+      let fieldIndex = -1;
+      let isFound = false;
+      const isIndexUndefined = isUndefined(index);
+
+      while (fieldIndex++ < fields.length) {
+        const isLast = fieldIndex === fields.length - 1;
+        const isCurrentIndex =
+          (isArray(index) ? index : [index]).indexOf(fieldIndex) >= 0;
+
+        if (isCurrentIndex || isIndexUndefined) {
+          isFound = true;
+        }
+
+        if (!isFound) {
+          continue;
+        }
+
+        for (const key in fields[fieldIndex]) {
+          const currentFieldName = `${name}[${fieldIndex}].${key}`;
+
+          if (isCurrentIndex || isLast || isIndexUndefined) {
+            validFieldsRef.current.delete(currentFieldName);
+            fieldsWithValidationRef.current.delete(currentFieldName);
+          } else {
+            const previousFieldName = `${name}[${fieldIndex - 1}].${key}`;
+
+            if (validFieldsRef.current.has(currentFieldName)) {
+              validFieldsRef.current.add(previousFieldName);
+            }
+            if (fieldsWithValidationRef.current.has(currentFieldName)) {
+              fieldsWithValidationRef.current.add(previousFieldName);
+            }
           }
         }
-      });
+      }
+
+      reRender();
     }
   };
 

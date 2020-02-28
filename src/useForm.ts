@@ -1172,6 +1172,7 @@ export function useForm<
     removeFieldEventListener,
     getValues,
     setValue,
+    reRender,
     triggerValidation,
     ...(shouldValidateCallback ? { validateSchemaIsValid } : {}),
     formState,
