@@ -3,6 +3,7 @@ import isRadioInput from '../utils/isRadioInput';
 import isCheckBoxInput from '../utils/isCheckBoxInput';
 import isDetached from '../utils/isDetached';
 import isArray from '../utils/isArray';
+import unset from '../utils/unset';
 import { Field, FieldRefs, FieldValues } from '../types';
 
 export default function findRemovedFieldAndRemoveListener<
@@ -42,11 +43,11 @@ export default function findRemovedFieldAndRemoveListener<
             mutationWatcher.disconnect();
           }
 
-          options.splice(index, 1);
+          unset(options, [`[${index}]`]);
         }
       });
 
-      if (options && !options.length) {
+      if (options && !options.filter(Boolean).length) {
         delete fields[name];
       }
     } else {
