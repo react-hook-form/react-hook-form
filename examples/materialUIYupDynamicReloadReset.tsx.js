@@ -1,12 +1,12 @@
 /*
 This example uses contolled componets, with yup valiation
 and can handle changes to the incoming prop. In this case
-the prop that is updated is called "accountvalues".  This 
+the prop that is updated is called "accountvalues".  This
 form can be used for add/edit via the "actionstate" prop.
 This works with Material-UI components and hooks.
 */
 
-import React from "react";
+import React, { useState, useEffect } from "react";
 import ReactDOM from "react-dom";
 import clsx from "clsx";
 import PropTypes from "prop-types";
@@ -37,18 +37,31 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-const App = props => {
+const Form = props => {
   const { className, staticContext, ...rest } = props;
   let { accountvalues, cardtitle, actionstate } = props;
   const classes = useStyles();
 
-  /* jsut resetting the prop here to get cosdesandbox to work
-  	 REMOVE THIS!! */
-  accountvalues = {
-    account_id: 1234,
-    first_name: "Test Name",
-    balance: 4567.0
+  const [saveDisabled, setSaveDisabled] = useState(true);
+
+  /*
+  I had to write a custom reset for the form because the
+  react-hook-form reset wouldn't work as it's getting confused
+  with the dynamic key setting below.
+  */
+  const resetForm = () => {
+    Object.keys(accountvalues).forEach(key => {
+      setValue(key, accountvalues[key]);
+    });
+    setSaveDisabled(true);
   };
+
+  useEffect(() => {
+    setSaveDisabled(true);
+    resetForm();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [accountvalues]);
+
   // yup validation
   const formSchema = yup.object().shape({
     first_name: yup.string().required("First Name is required"),
@@ -73,15 +86,8 @@ const App = props => {
     }
   };
 
-  /*
-  I had to write a custom reset for the form because the 
-  react-hook-form reset wouldn't work as it's getting confused
-  with the dynamic key setting below.
-  */
-  const resetForm = () => {
-    Object.keys(accountvalues).forEach(key => {
-      setValue(key, accountvalues[key]);
-    });
+  const handleOnKeyUp = event => {
+    setSaveDisabled(false);
   };
 
   /*
@@ -127,6 +133,7 @@ const App = props => {
                       control={control}
                       name="first_name"
                       defaultValue={accountvalues.portfolio_name}
+                      onKeyUp={handleOnKeyUp}
                       key={"first_name-" + formId}
                     />
                   </Grid>
@@ -151,13 +158,19 @@ const App = props => {
                       control={control}
                       name="balance"
                       defaultValue={accountvalues.balance}
+                      onKeyUp={handleOnKeyUp}
                       key={"balance-" + formId}
                     />
                   </Grid>
                 </Grid>
               </CardContent>
               <CardActions>
-                <Button type="submit" color="primary" variant="contained">
+                <Button
+                  type="submit"
+                  color="primary"
+                  variant="contained"
+                  disabled={saveDisabled}
+                >
                   Save
                 </Button>
                 <Button color="primary" variant="contained" onClick={resetForm}>
@@ -172,25 +185,26 @@ const App = props => {
   );
 };
 
-App.propTypes = {
+Form.propTypes = {
   className: PropTypes.string,
   accountvalues: PropTypes.object,
   cardtitle: PropTypes.string,
   actionstate: PropTypes.string
 };
 
-export default App;
+const App = props => {
+  return (
+    <Form
+      accountvalues={{
+        account_id: 1234,
+        first_name: "Test Name",
+        balance: 4567.0
+      }}
+      cardtitle="Account"
+      actionstate="edit"
+    />
+  );
+};
 
 const rootElement = document.getElementById("root");
-ReactDOM.render(
-  <App
-    accountvalues={{
-      account_id: 1234,
-      first_name: "Test Name",
-      balance: 4567.0
-    }}
-    cardtitle="Account"
-    actionstate="edit"
-  />,
-  rootElement
-);
+ReactDOM.render(<App />, rootElement);
