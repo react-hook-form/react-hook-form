@@ -18,6 +18,7 @@ you can view the source code within the folder or visit code sand box to see how
 | Dirty/Touched/Submitted     | https://codesandbox.io/s/7o2wrp86k6                                  |
 | Field Array                 | https://codesandbox.io/s/6j1760jkjk                                  |
 | FormContext                 | https://codesandbox.io/s/react-hook-form-form-context-dkvjz          |
+| Material UI/Yup/Dynamic Reload, Reset                 | https://codesandbox.io/s/eager-mcnulty-doudi        |
 | Nested Fields               | https://codesandbox.io/s/react-hook-form-nested-fields-mv1bb         |
 | Normalize/Format/Mask Field | https://codesandbox.io/s/387z7njwzp                                  |
 | Format/Mask Field (Third Party Library) | https://codesandbox.io/s/react-hook-form-normalize-field-1jumn |
