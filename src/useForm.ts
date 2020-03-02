@@ -568,7 +568,7 @@ export function useForm<
       });
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [reRender, validateAllFieldCriteria, validationContext, validationResolver],
+    [reRender, validateAllFieldCriteria, validationResolver],
   );
 
   const removeFieldEventListener = (field: Field, forceDelete?: boolean) => {
