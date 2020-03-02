@@ -106,6 +106,7 @@ export function useForm<
   const isSubmittingRef = useRef(false);
   const handleChangeRef = useRef<HandleChange>();
   const resetFieldArrayFunctionRef = useRef({});
+  const validationContextRef = useRef(validationContext);
   const fieldArrayNamesRef = useRef<Set<string>>(new Set());
   const [, render] = useState();
   const { isOnBlur, isOnSubmit } = useRef(modeChecker(mode)).current;
@@ -350,7 +351,7 @@ export function useForm<
         validateAllFieldCriteria,
         getFieldValueByName(fieldsRef.current),
         validationResolver,
-        validationContext,
+        validationContextRef.current,
       );
       const previousFormIsValid = isValidRef.current;
       isValidRef.current = isEmptyObject(errors);
@@ -382,7 +383,6 @@ export function useForm<
       reRender,
       shouldRenderBaseOnError,
       validateAllFieldCriteria,
-      validationContext,
       validationResolver,
       validationSchema,
     ],
@@ -518,7 +518,7 @@ export function useForm<
             validateAllFieldCriteria,
             getFieldValueByName(fields),
             validationResolver,
-            validationContext,
+            validationContextRef.current,
           );
           const previousFormIsValid = isValidRef.current;
           isValidRef.current = isEmptyObject(errors);
@@ -557,7 +557,7 @@ export function useForm<
           ...values,
         }),
         validationResolver,
-        validationContext,
+        validationContextRef.current,
       ).then(({ errors }) => {
         const previousFormIsValid = isValidRef.current;
         isValidRef.current = isEmptyObject(errors);
@@ -568,7 +568,7 @@ export function useForm<
       });
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [reRender, validateAllFieldCriteria, validationContext, validationResolver],
+    [reRender, validateAllFieldCriteria, validationResolver],
   );
 
   const removeFieldEventListener = (field: Field, forceDelete?: boolean) => {
@@ -995,7 +995,7 @@ export function useForm<
             validateAllFieldCriteria,
             transformToNestObject(fieldValues),
             validationResolver,
-            validationContext,
+            validationContextRef.current,
           );
           errorsRef.current = errors;
           fieldErrors = errors;
@@ -1080,7 +1080,6 @@ export function useForm<
       shouldValidateCallback,
       submitFocusError,
       validateAllFieldCriteria,
-      validationContext,
       validationResolver,
       validationSchema,
     ],
