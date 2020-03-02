@@ -42,6 +42,7 @@
   "author": "<bluebill1049@hotmail.com>",
   "license": "MIT",
   "devDependencies": {
+    "@ampproject/rollup-plugin-closure-compiler": "^0.23.0",
     "@babel/core": "^7.8.6",
     "@babel/plugin-transform-runtime": "^7.8.3",
     "@babel/runtime-corejs3": "^7.8.4",
