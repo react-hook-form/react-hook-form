@@ -21,7 +21,7 @@ import {
   ArrayField,
 } from './types';
 
-const { useEffect, useRef, useState } = React;
+const { useEffect, useCallback, useRef, useState } = React;
 
 export const useFieldArray = <
   FormArrayValues extends FieldValues = FieldValues,
@@ -54,8 +54,10 @@ export const useFieldArray = <
   const [fields, setField] = useState<
     Partial<ArrayField<FormArrayValues, KeyName>>[]
   >(mapIds(memoizedDefaultValues.current, keyName));
+  const allFields = useRef(fields);
   const appendValueWithKey = (value: Partial<FormArrayValues>[]) =>
     value.map((v: Partial<FormArrayValues>) => appendId(v, keyName));
+  allFields.current = fields;
 
   const commonTasks = (fieldsValues: any) => {
     watchFieldArrayRef.current = {
@@ -106,7 +108,7 @@ export const useFieldArray = <
       isDirtyRef.current = true;
     }
     commonTasks([
-      ...fields,
+      ...allFields.current,
       ...(isArray(value)
         ? appendValueWithKey(value)
         : [appendId(value, keyName)]),
@@ -120,7 +122,7 @@ export const useFieldArray = <
     resetFields();
     commonTasks(
       prependAt(
-        fields,
+        allFields.current,
         isArray(value) ? appendValueWithKey(value) : [appendId(value, keyName)],
       ),
     );
@@ -148,7 +150,7 @@ export const useFieldArray = <
     resetFields(
       removeArrayAt(getFieldValueByName(fieldsRef.current, name), index),
     );
-    commonTasks(removeArrayAt(fields, index));
+    commonTasks(removeArrayAt(allFields.current, index));
 
     if (errorsRef.current[name]) {
       errorsRef.current[name] = removeArrayAt(errorsRef.current[name], index);
@@ -213,7 +215,7 @@ export const useFieldArray = <
     resetFields(insertAt(getFieldValueByName(fieldsRef.current, name), index));
     commonTasks(
       insertAt(
-        fields,
+        allFields.current,
         index,
         isArray(value) ? appendValueWithKey(value) : [appendId(value, keyName)],
       ),
@@ -241,8 +243,8 @@ export const useFieldArray = <
     const fieldValues = getFieldValueByName(fieldsRef.current, name);
     swapArrayAt(fieldValues, indexA, indexB);
     resetFields(fieldValues);
-    swapArrayAt(fields, indexA, indexB);
-    commonTasks([...fields]);
+    swapArrayAt(allFields.current, indexA, indexB);
+    commonTasks([...allFields.current]);
 
     if (errorsRef.current[name]) {
       swapArrayAt(errorsRef.current[name], indexA, indexB);
@@ -258,8 +260,8 @@ export const useFieldArray = <
     const fieldValues = getFieldValueByName(fieldsRef.current, name);
     moveArrayAt(fieldValues, from, to);
     resetFields(fieldValues);
-    moveArrayAt(fields, from, to);
-    commonTasks([...fields]);
+    moveArrayAt(allFields.current, from, to);
+    commonTasks([...allFields.current]);
 
     if (errorsRef.current[name]) {
       moveArrayAt(errorsRef.current[name], from, to);
@@ -295,12 +297,12 @@ export const useFieldArray = <
   }, []);
 
   return {
-    swap,
-    move,
-    prepend,
-    append,
-    remove,
-    insert,
+    swap: useCallback(swap, []),
+    move: useCallback(move, []),
+    prepend: useCallback(prepend, []),
+    append: useCallback(append, []),
+    remove: useCallback(remove, []),
+    insert: useCallback(insert, []),
     fields,
   };
 };

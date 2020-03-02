@@ -141,11 +141,9 @@ const Controller = <
     ...{ [valueName || (isCheckboxInput ? 'checked' : VALUE)]: value },
   };
 
-  return React.isValidElement(InnerComponent) ? (
-    React.cloneElement(InnerComponent, props)
-  ) : (
-    React.createElement(InnerComponent as string, props)
-  );
+  return React.isValidElement(InnerComponent)
+    ? React.cloneElement(InnerComponent, props)
+    : React.createElement(InnerComponent as string, props);
 };
 
 export { Controller };
