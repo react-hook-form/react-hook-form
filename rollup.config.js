@@ -25,8 +25,8 @@ export function getConfig({
         tsconfig,
         clean: true,
       }),
-      compiler(),
       ...plugins,
+      compiler(),
     ],
     output,
   };
