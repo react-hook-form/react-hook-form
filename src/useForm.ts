@@ -61,7 +61,7 @@ import {
   Touched,
   FieldError,
   RadioOrCheckboxOption,
-  OmitFormState,
+  OmitResetState,
 } from './types';
 
 const { useRef, useState, useCallback, useEffect } = React;
@@ -1093,7 +1093,7 @@ export function useForm<
     touched,
     isValid,
     submitCount,
-  }: OmitFormState) => {
+  }: OmitResetState) => {
     fieldsRef.current = {};
     if (!errors) {
       errorsRef.current = {};
@@ -1129,7 +1129,7 @@ export function useForm<
 
   const reset = (
     values?: DeepPartial<FormValues>,
-    omitFormState: OmitFormState = {},
+    omitResetState: OmitResetState = {},
   ): void => {
     if (isWeb) {
       for (const value of Object.values(fieldsRef.current)) {
@@ -1150,7 +1150,7 @@ export function useForm<
       resetFieldArray => isFunction(resetFieldArray) && resetFieldArray(),
     );
 
-    resetRefs(omitFormState);
+    resetRefs(omitResetState);
 
     reRender();
   };

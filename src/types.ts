@@ -332,7 +332,7 @@ export type ArrayField<
   KeyName extends string = 'id'
 > = FormArrayValues & Record<KeyName, string>;
 
-export type OmitFormState = {
+export type OmitResetState = {
   errors?: boolean;
   dirty?: boolean;
   dirtyFields?: boolean;
