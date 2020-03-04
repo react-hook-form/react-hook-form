@@ -1128,10 +1128,13 @@ export function useForm<
 
   const getValues = (payload?: { nest: boolean }): FormValues => {
     const fieldValues = getFieldsValues(fieldsRef.current);
+    const outputValues = isEmptyObject(fieldValues)
+      ? defaultValuesRef.current
+      : fieldValues;
 
     return payload && payload.nest
-      ? transformToNestObject(fieldValues)
-      : fieldValues;
+      ? transformToNestObject(outputValues)
+      : outputValues;
   };
 
   useEffect(
