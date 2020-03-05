@@ -14,7 +14,7 @@ export function getConfig({
       format: 'esm',
     },
     {
-      name: "react-hook-form",
+      name: "ReactHookForm",
       file: `dist/${pkg.name}.umd.js`,
       format: 'umd',
     }
