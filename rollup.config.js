@@ -13,6 +13,11 @@ export function getConfig({
       file: `dist/${pkg.name}.es.js`,
       format: 'esm',
     },
+    {
+      name: "ReactHookForm",
+      file: `dist/${pkg.name}.umd.js`,
+      format: 'umd',
+    }
   ],
   plugins = [],
 } = {}) {
