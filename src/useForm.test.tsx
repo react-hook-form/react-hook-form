@@ -586,6 +586,40 @@ describe('useForm', () => {
       });
     });
 
+    it('should worked with nested array fields with object', () => {
+      const { result } = renderHook(() => useForm());
+
+      act(() => {
+        result.current.register('test[0].test');
+        result.current.register('test[1].test');
+        result.current.register('test[2].test');
+      });
+
+      act(() => {
+        result.current.setValue('test', [
+          { test: '1' },
+          { test: '2' },
+          { test: '3' },
+        ]);
+
+        expect(
+          result.current.control.fieldsRef.current['test[0].test'],
+        ).toEqual({
+          ref: { name: 'test[0].test', value: '1' },
+        });
+        expect(
+          result.current.control.fieldsRef.current['test[1].test'],
+        ).toEqual({
+          ref: { name: 'test[1].test', value: '2' },
+        });
+        expect(
+          result.current.control.fieldsRef.current['test[2].test'],
+        ).toEqual({
+          ref: { name: 'test[2].test', value: '3' },
+        });
+      });
+    });
+
     it('should work with object fields', () => {
       const { result } = renderHook(() => useForm());
 
