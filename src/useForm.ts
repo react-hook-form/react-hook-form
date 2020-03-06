@@ -289,12 +289,12 @@ export function useForm<
     (
       name: FieldName<FormValues>,
       value: FieldValue<FormValues>,
-      parentName?: string,
+      parentFieldName?: string,
     ) => {
       const isValueArray = isArray(value);
 
       for (const key in value) {
-        const fieldName = `${parentName || name}${
+        const fieldName = `${parentFieldName || name}${
           isValueArray ? `[${key}]` : `.${key}`
         }`;
 
