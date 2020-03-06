@@ -303,6 +303,7 @@ export function useForm<
         }
 
         const field = fieldsRef.current[fieldName];
+
         if (field) {
           setFieldValue(field, value[key]);
           setDirtyAndTouchedFields(fieldName);
