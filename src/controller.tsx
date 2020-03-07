@@ -67,7 +67,7 @@ const Controller = <
     return data;
   };
 
-  const eventWrapper = (event: EventFunction) => (...arg: any) =>
+  const eventWrapper = (event: EventFunction) => (...arg: any[]) =>
     setValue(name, commonTask(event(arg)), shouldValidate());
 
   const handleChange = (event: any) => {
