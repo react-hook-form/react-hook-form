@@ -769,28 +769,18 @@ export function useForm<
     }
 
     if (isArray(fieldNames)) {
-      return fieldNames.reduce((previous, name) => {
-        let value;
-
-        if (
-          isEmptyObject(fieldsRef.current) &&
-          isObject(combinedDefaultValues)
-        ) {
-          value = getDefaultValue<FormValues>(combinedDefaultValues, name);
-        } else {
-          value = assignWatchFields<FormValues>(
+      return fieldNames.reduce(
+        (previous, name) => ({
+          ...previous,
+          [name]: assignWatchFields<FormValues>(
             fieldValues,
             name,
             watchFields,
             combinedDefaultValues,
-          );
-        }
-
-        return {
-          ...previous,
-          [name]: value,
-        };
-      }, {});
+          ),
+        }),
+        {},
+      );
     }
 
     isWatchAllRef.current = true;
