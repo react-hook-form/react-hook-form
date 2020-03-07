@@ -286,6 +286,34 @@ export function useForm<
     [],
   );
 
+  const setInternalValueBatch = useCallback(
+    (
+      name: FieldName<FormValues>,
+      value: FieldValue<FormValues>,
+      parentFieldName?: string,
+    ) => {
+      const isValueArray = isArray(value);
+
+      for (const key in value) {
+        const fieldName = `${parentFieldName || name}${
+          isValueArray ? `[${key}]` : `.${key}`
+        }`;
+
+        if (isObject(value[key])) {
+          setInternalValueBatch(name, value[key], fieldName);
+        }
+
+        const field = fieldsRef.current[fieldName];
+
+        if (field) {
+          setFieldValue(field, value[key]);
+          setDirtyAndTouchedFields(fieldName);
+        }
+      }
+    },
+    [setFieldValue, setDirtyAndTouchedFields],
+  );
+
   const setInternalValue = useCallback(
     (
       name: FieldName<FormValues>,
@@ -300,20 +328,10 @@ export function useForm<
           return output;
         }
       } else if (!isPrimitive(value)) {
-        const isValueArray = isArray(value);
-
-        for (const key in value as object) {
-          const fieldName = `${name}${isValueArray ? `[${key}]` : `.${key}`}`;
-          const field = fieldsRef.current[fieldName];
-
-          if (field) {
-            setFieldValue(field as Field, get(value, key));
-            setDirtyAndTouchedFields(fieldName);
-          }
-        }
+        setInternalValueBatch(name, value);
       }
     },
-    [setDirtyAndTouchedFields, setFieldValue],
+    [setDirtyAndTouchedFields, setFieldValue, setInternalValueBatch],
   );
 
   const executeValidation = useCallback(
@@ -752,28 +770,18 @@ export function useForm<
     }
 
     if (isArray(fieldNames)) {
-      return fieldNames.reduce((previous, name) => {
-        let value;
-
-        if (
-          isEmptyObject(fieldsRef.current) &&
-          isObject(combinedDefaultValues)
-        ) {
-          value = getDefaultValue<FormValues>(combinedDefaultValues, name);
-        } else {
-          value = assignWatchFields<FormValues>(
+      return fieldNames.reduce(
+        (previous, name) => ({
+          ...previous,
+          [name]: assignWatchFields<FormValues>(
             fieldValues,
             name,
             watchFields,
             combinedDefaultValues,
-          );
-        }
-
-        return {
-          ...previous,
-          [name]: value,
-        };
-      }, {});
+          ),
+        }),
+        {},
+      );
     }
 
     isWatchAllRef.current = true;
@@ -1157,10 +1165,13 @@ export function useForm<
 
   const getValues = (payload?: { nest: boolean }): FormValues => {
     const fieldValues = getFieldsValues(fieldsRef.current);
+    const outputValues = isEmptyObject(fieldValues)
+      ? defaultValuesRef.current
+      : fieldValues;
 
     return payload && payload.nest
-      ? transformToNestObject(fieldValues)
-      : fieldValues;
+      ? transformToNestObject(outputValues)
+      : outputValues;
   };
 
   useEffect(

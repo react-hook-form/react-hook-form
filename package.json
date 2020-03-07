@@ -1,7 +1,7 @@
 {
   "name": "react-hook-form",
   "description": "Performant, flexible and extensible forms library for React Hooks",
-  "version": "4.10.2-beta.1",
+  "version": "5.0.1",
   "main": "dist/react-hook-form.js",
   "module": "dist/react-hook-form.es.js",
   "types": "dist/index.d.ts",
@@ -41,6 +41,7 @@
   "homepage": "https://www.react-hook-form.com",
   "author": "<bluebill1049@hotmail.com>",
   "license": "MIT",
+  "unpkg": "dist/react-hook-form.umd.js",
   "devDependencies": {
     "@babel/core": "^7.8.6",
     "@babel/plugin-transform-runtime": "^7.8.3",

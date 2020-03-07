@@ -5,7 +5,7 @@ import isPrimitive from '../utils/isPrimitive';
 export default (event: any, isCheckboxInput: boolean) =>
   isPrimitive(event) ||
   !isObject(event.target) ||
-  (isObject(event.target) && !event.target.type)
+  (isObject(event.target) && !event.type)
     ? event
     : isCheckboxInput || isUndefined(event.target.value)
     ? event.target.checked

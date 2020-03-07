@@ -13,6 +13,14 @@ export function getConfig({
       file: `dist/${pkg.name}.es.js`,
       format: 'esm',
     },
+    {
+      name: 'ReactHookForm',
+      file: `dist/${pkg.name}.umd.js`,
+      format: 'umd',
+      globals: {
+        react: 'React',
+      },
+    },
   ],
   plugins = [],
 } = {}) {
@@ -24,7 +32,7 @@ export function getConfig({
         tsconfig,
         clean: true,
       }),
-      ...plugins
+      ...plugins,
     ],
     output,
   };
