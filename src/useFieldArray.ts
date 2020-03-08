@@ -301,7 +301,7 @@ export const useFieldArray = <
     move: useCallback(move, []),
     prepend: useCallback(prepend, []),
     append: useCallback(append, []),
-    remove: useCallback(remove, []),
+    remove: useCallback(remove, [fields]),
     insert: useCallback(insert, []),
     fields,
   };
