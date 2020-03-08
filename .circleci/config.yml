@@ -21,9 +21,10 @@ jobs:
       tag: lts
     steps:
       - checkout
-      - node/install-yarn
-      - node/with-cache:
-          steps:
-            - run: yarn install --frozen-lockfile
+#      - node/install-yarn
+#      - node/with-cache:
+#          steps:
+#            - run: yarn install --frozen-lockfile
+      - run: npm i
       - run: npm run build
       - run: npm run bundlesize
