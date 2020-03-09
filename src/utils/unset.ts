@@ -74,7 +74,9 @@ function baseUnset(object: any, path: string) {
           !objectRef.filter(data => isObject(data) && !isEmptyObject(data))
             .length
         ) {
-          delete previousObjRef[item];
+          if (previousObjRef) {
+            delete previousObjRef[item];
+          }
         }
       }
 
