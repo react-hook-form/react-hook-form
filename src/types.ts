@@ -113,16 +113,24 @@ export type FieldRefs<FormValues extends FieldValues> = Partial<
 >;
 
 export type NestDataObject<FormValues> = {
-  [Key in keyof FormValues]?: FormValues[Key] extends any[]
-    ? FormValues[Key][number] extends object
-      ? FieldErrors<FormValues[Key][number]>[]
-      : FormValues[Key][number] extends string | number
+  [Key in keyof FormValues]?: FormValues[Key] extends Array<infer U>
+    ? 0 extends 1 & U
+      ? any
+      : U extends object
+      ? keyof U extends never
+        ? any
+        : FieldErrors<U>[]
+      : U extends string | number
       ? FieldError[]
       : FieldError
+    : 0 extends 1 & FormValues[Key]
+    ? any
     : FormValues[Key] extends Date
     ? FieldError
     : FormValues[Key] extends object
-    ? FieldErrors<FormValues[Key]>
+    ? keyof FormValues[Key] extends never
+      ? any
+      : FieldErrors<FormValues[Key]>
     : FieldError;
 };
 
