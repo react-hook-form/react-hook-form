@@ -41,6 +41,7 @@ const Controller = <
     formState: { isSubmitted },
     fieldsRef,
     fieldArrayNamesRef,
+    touchedFieldsRef,
   } = control || methods.control;
   const [value, setInputStateValue] = React.useState(
     isUndefined(defaultValue)
@@ -116,6 +117,13 @@ const Controller = <
       }
     };
   }, [name]);
+
+  React.useEffect(() => {
+    registerField();
+    if (touchedFieldsRef.current[name] && shouldValidate()) {
+      triggerValidation(name);
+    }
+  }, [rules]);
 
   const shouldReValidateOnBlur = isOnBlur || isReValidateOnBlur;
 
