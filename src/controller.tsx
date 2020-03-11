@@ -117,6 +117,10 @@ const Controller = <
     };
   }, [name]);
 
+  React.useEffect(() => {
+    registerField();
+  }, [rules]);
+
   const shouldReValidateOnBlur = isOnBlur || isReValidateOnBlur;
 
   const props = {

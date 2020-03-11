@@ -338,3 +338,49 @@ describe('Controller', () => {
     expect(removeFieldEventListener).toBeCalled();
   });
 });
+
+it('should re-register on new validation rules`', () => {
+  const control = reconfigureControl();
+  const fieldsRef = {
+    current: {},
+  };
+  const register = jest.fn().mockImplementation((payload: any) => {
+    // @ts-ignore
+    fieldsRef.current[payload.name] = 'test';
+  });
+
+  const { rerender } = render(
+    <Controller
+      defaultValue=""
+      name="test"
+      as={'input' as 'input'}
+      rules={{ required: false }}
+      control={{
+        ...control,
+        fieldsRef,
+        register: register,
+      }}
+    />,
+  );
+
+  expect(register).toHaveBeenCalledWith({ name: 'test' }, { required: false });
+
+  rerender(
+    <Controller
+      defaultValue=""
+      name="test"
+      as={'input' as 'input'}
+      rules={{ required: true }}
+      control={{
+        ...control,
+        fieldsRef,
+        register: register,
+      }}
+    />,
+  );
+
+  expect(register).toHaveBeenLastCalledWith(
+    { name: 'test' },
+    { required: true },
+  );
+});
