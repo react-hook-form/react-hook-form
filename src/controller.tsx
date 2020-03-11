@@ -120,9 +120,6 @@ const Controller = <
 
   React.useEffect(() => {
     registerField();
-    if (touchedFieldsRef.current[name] && shouldValidate()) {
-      triggerValidation(name);
-    }
   }, [rules]);
 
   const shouldReValidateOnBlur = isOnBlur || isReValidateOnBlur;
