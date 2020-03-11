@@ -41,7 +41,6 @@ const Controller = <
     formState: { isSubmitted },
     fieldsRef,
     fieldArrayNamesRef,
-    touchedFieldsRef,
   } = control || methods.control;
   const [value, setInputStateValue] = React.useState(
     isUndefined(defaultValue)
