@@ -247,6 +247,7 @@ export type Control<FormValues extends FieldValues = FieldValues> = {
     isReValidateOnBlur: boolean;
     isReValidateOnSubmit: boolean;
   };
+  dirtyFieldsRef: React.MutableRefObject<Set<FieldName<FormValues>>>;
   validateSchemaIsValid?: (fieldsValues: any) => void;
   touchedFieldsRef: React.MutableRefObject<Touched<FormValues>>;
   watchFieldArrayRef: React.MutableRefObject<any>;

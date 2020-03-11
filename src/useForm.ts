@@ -1199,6 +1199,7 @@ export function useForm<
     fieldsRef,
     resetFieldArrayFunctionRef,
     validFieldsRef,
+    dirtyFieldsRef,
     fieldsWithValidationRef,
     watchFieldArrayRef,
     fieldArrayNamesRef,

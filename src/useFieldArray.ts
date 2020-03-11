@@ -42,6 +42,7 @@ export const useFieldArray = <
     defaultValuesRef,
     removeFieldEventListener,
     errorsRef,
+    dirtyFieldsRef,
     isDirtyRef,
     touchedFieldsRef,
     readFormStateRef,
@@ -164,6 +165,14 @@ export const useFieldArray = <
         touchedFieldsRef.current[name],
         index,
       );
+    }
+
+    if (readFormStateRef.current.dirty) {
+      dirtyFieldsRef.current.forEach(dirtyField => {
+        if (isUndefined(name) || dirtyField.startsWith(`${name}[${index}]`)) {
+          dirtyFieldsRef.current.delete(dirtyField);
+        }
+      });
     }
 
     if (readFormStateRef.current.isValid && !validateSchemaIsValid) {
