@@ -75,6 +75,9 @@ export const reconfigureControl = (
       dirtyFields: false,
     },
   },
+  defaultRenderValuesRef: {
+    current: {},
+  },
   ...controlOverrides,
 });
 

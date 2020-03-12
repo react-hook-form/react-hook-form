@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { FieldValues } from './types';
 import { FormContextValues, FormProps } from './contextTypes';
-import isUndefined from './utils/isUndefined';
+import isNullOrUndefined from './utils/isNullOrUndefined';
 
 const FormGlobalContext = React.createContext<FormContextValues<
   FieldValues
@@ -9,7 +9,27 @@ const FormGlobalContext = React.createContext<FormContextValues<
 
 export function useFormContext<T extends FieldValues>(): FormContextValues<T> {
   const context = React.useContext(FormGlobalContext) as FormContextValues<T>;
-  if (!isUndefined(context)) return context;
+  if (!isNullOrUndefined(context)) {
+    const {
+      register,
+      defaultValuesRef,
+      defaultRenderValuesRef,
+      watchFieldArrayRef,
+    } = context.control;
+    return {
+      ...context,
+      register: React.useCallback(
+        (refOrValidationOptions?: any, validationOptions?: any): any =>
+          register(refOrValidationOptions, validationOptions),
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+        [
+          defaultValuesRef.current,
+          defaultRenderValuesRef.current,
+          watchFieldArrayRef.current,
+        ],
+      ),
+    };
+  }
   throw new Error('Missing FormContext');
 }
 

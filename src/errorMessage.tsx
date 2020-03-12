@@ -24,8 +24,13 @@ const ErrorMessage = <
   children,
   ...rest
 }: ErrorMessageProps<Errors, Name, As>) => {
-  const methods = useFormContext();
-  const error = get(errors || methods.errors, name);
+  let error;
+  try {
+    const methods = useFormContext();
+    error = get(methods.errors, name);
+  } catch {
+    error = get(errors, name);
+  }
 
   if (!error) {
     return null;

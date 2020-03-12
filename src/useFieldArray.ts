@@ -28,11 +28,17 @@ export const useFieldArray = <
   KeyName extends string = 'id',
   ControlProp extends Control = Control
 >({
-  control,
+  control: controlFromProps,
   name,
   keyName = 'id' as KeyName,
 }: UseFieldArrayProps<KeyName, ControlProp>) => {
-  const methods = useFormContext();
+  let control;
+  try {
+    const methods = useFormContext();
+    control = methods.control;
+  } catch {
+    control = controlFromProps;
+  }
   const {
     resetFieldArrayFunctionRef,
     fieldArrayNamesRef,
@@ -50,7 +56,7 @@ export const useFieldArray = <
     validFieldsRef,
     fieldsWithValidationRef,
     validateSchemaIsValid,
-  } = control || methods.control;
+  } = control as ControlProp;
   const memoizedDefaultValues = useRef(get(defaultValuesRef.current, name, []));
   const [fields, setField] = useState<
     Partial<ArrayField<FormArrayValues, KeyName>>[]

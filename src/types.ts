@@ -272,6 +272,9 @@ export type Control<FormValues extends FieldValues = FieldValues> = {
   defaultValuesRef: React.MutableRefObject<
     DeepPartial<FormValues> | FormValues[FieldName<FormValues>]
   >;
+  defaultRenderValuesRef: React.MutableRefObject<
+    DeepPartial<Record<FieldName<FormValues>, FieldValue<FormValues>>>
+  >;
 };
 
 export type Assign<T extends object, U extends object> = T & Omit<U, keyof T>;

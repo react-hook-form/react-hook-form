@@ -8,12 +8,23 @@ describe('FormContext', () => {
   });
 
   it('should have access to all methods with useFormContext', () => {
-    const mockRegister = jest.fn();
+    const control = {
+      register: jest.fn(),
+      defaultValuesRef: {
+        current: {},
+      },
+      watchFieldArrayRef: {
+        current: {},
+      },
+      defaultRenderValuesRef: {
+        current: {},
+      },
+    };
     const { result } = renderHook(() => useFormContext(), {
       /* eslint-disable-next-line react/display-name */
       wrapper: (props: { children?: React.ReactNode }) => (
         // @ts-ignore
-        <FormContext register={mockRegister} {...props} />
+        <FormContext control={control} {...props} />
       ),
     });
     const { register } = result.current;
@@ -22,6 +33,6 @@ describe('FormContext', () => {
       register('test');
     });
 
-    expect(mockRegister).toHaveBeenCalled();
+    expect(control.register).toHaveBeenCalled();
   });
 });

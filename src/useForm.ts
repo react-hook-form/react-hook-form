@@ -1235,6 +1235,7 @@ export function useForm<
     isDirtyRef,
     readFormStateRef,
     defaultValuesRef,
+    defaultRenderValuesRef,
   };
 
   return {

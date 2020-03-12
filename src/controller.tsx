@@ -24,10 +24,16 @@ const Controller = <
   onBlurName = VALIDATION_MODE.onBlur,
   valueName,
   defaultValue,
-  control,
+  control: controlFromProps,
   ...rest
 }: ControllerProps<As, ControlProp>) => {
-  const methods = useFormContext();
+  let control;
+  try {
+    const methods = useFormContext();
+    control = methods.control;
+  } catch {
+    control = controlFromProps;
+  }
   const {
     defaultValuesRef,
     setValue,
@@ -41,7 +47,7 @@ const Controller = <
     formState: { isSubmitted },
     fieldsRef,
     fieldArrayNamesRef,
-  } = control || methods.control;
+  } = control as ControlProp;
   const [value, setInputStateValue] = React.useState(
     isUndefined(defaultValue)
       ? get(defaultValuesRef.current, name)
