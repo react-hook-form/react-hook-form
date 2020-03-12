@@ -61,6 +61,7 @@ import {
   Touched,
   FieldError,
   RadioOrCheckboxOption,
+  OmitResetState,
 } from './types';
 
 const { useRef, useState, useCallback, useEffect } = React;
@@ -1093,23 +1094,51 @@ export function useForm<
     ],
   );
 
-  const resetRefs = () => {
-    errorsRef.current = {};
+  const resetRefs = ({
+    errors,
+    dirty,
+    isSubmitted,
+    touched,
+    isValid,
+    submitCount,
+  }: OmitResetState) => {
     fieldsRef.current = {};
-    touchedFieldsRef.current = {};
-    validFieldsRef.current = new Set();
-    fieldsWithValidationRef.current = new Set();
+    if (!errors) {
+      errorsRef.current = {};
+    }
+
+    if (!touched) {
+      touchedFieldsRef.current = {};
+    }
+
+    if (!isValid) {
+      validFieldsRef.current = new Set();
+      fieldsWithValidationRef.current = new Set();
+      isValidRef.current = true;
+    }
+
+    if (!dirty) {
+      dirtyFieldsRef.current = new Set();
+      isDirtyRef.current = false;
+    }
+
+    if (!isSubmitted) {
+      isSubmittedRef.current = false;
+    }
+
+    if (!submitCount) {
+      submitCountRef.current = 0;
+    }
+
     defaultRenderValuesRef.current = {};
     watchFieldsRef.current = new Set();
-    dirtyFieldsRef.current = new Set();
     isWatchAllRef.current = false;
-    isSubmittedRef.current = false;
-    isDirtyRef.current = false;
-    isValidRef.current = true;
-    submitCountRef.current = 0;
   };
 
-  const reset = (values?: DeepPartial<FormValues>): void => {
+  const reset = (
+    values?: DeepPartial<FormValues>,
+    omitResetState: OmitResetState = {},
+  ): void => {
     if (isWeb) {
       for (const value of Object.values(fieldsRef.current)) {
         if (value && isHTMLElement(value.ref) && value.ref.closest) {
@@ -1129,7 +1158,7 @@ export function useForm<
       resetFieldArray => isFunction(resetFieldArray) && resetFieldArray(),
     );
 
-    resetRefs();
+    resetRefs(omitResetState);
 
     reRender();
   };
