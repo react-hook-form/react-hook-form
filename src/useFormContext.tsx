@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { FieldValues } from './types';
 import { FormContextValues, FormProps } from './contextTypes';
-import isUndefined from './utils/isUndefined';
+import isNullOrUndefined from './utils/isNullOrUndefined';
 
 const FormGlobalContext = React.createContext<FormContextValues<
   FieldValues
@@ -9,8 +9,11 @@ const FormGlobalContext = React.createContext<FormContextValues<
 
 export function useFormContext<T extends FieldValues>(): FormContextValues<T> {
   const context = React.useContext(FormGlobalContext) as FormContextValues<T>;
-  if (!isUndefined(context)) return context;
-  throw new Error('Missing FormContext');
+  if (isNullOrUndefined(context)) {
+    // eslint-disable-next-line no-console
+    console.warn('Missing FormContext');
+  }
+  return context;
 }
 
 export function FormContext<T extends FieldValues>({
