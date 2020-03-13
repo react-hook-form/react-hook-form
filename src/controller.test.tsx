@@ -4,6 +4,8 @@ import { Controller } from './controller';
 import { reconfigureControl } from './useForm.test';
 import { Field } from './types';
 
+jest.spyOn(console, 'warn').mockImplementation(() => {});
+
 describe('Controller', () => {
   it('should render correctly with as with string', () => {
     const control = reconfigureControl();

@@ -3,6 +3,7 @@ import { useFieldArray } from './useFieldArray';
 import { appendId } from './logic/mapIds';
 import { reconfigureControl } from './useForm.test';
 
+jest.spyOn(console, 'warn').mockImplementation(() => {});
 jest.mock('./logic/generateId', () => ({
   default: () => '1',
 }));
