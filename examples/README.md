@@ -12,6 +12,7 @@ you can view the source code within the folder or visit code sand box to see how
 | Custom Validation           | https://codesandbox.io/s/8n937m64o9                                  |
 | Conditional Fields          | https://codesandbox.io/s/13ykqx4wx7                                  |
 | Custom Input                | https://codesandbox.io/s/72j69vnk1x                                  |
+| Custom Masked Input         | https://codesandbox.io/s/trusting-agnesi-rdi5m                       |
 | Controlled Input            | https://codesandbox.io/s/j36w7xkk7w                                  |
 | DefaultValues               | https://codesandbox.io/s/react-hook-form-defaultvalues-n5gvx         |
 | Default/Initial Form Value  | https://codesandbox.io/s/l3mxpvmm9                                   |
