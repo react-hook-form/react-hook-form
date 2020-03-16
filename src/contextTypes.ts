@@ -96,7 +96,10 @@ export type FormContextValues<FormValues extends FieldValues = FieldValues> = {
   ) => Promise<boolean>;
   errors: FieldErrors<FormValues>;
   formState: FormStateProxy<FormValues>;
-  reset: (values?: DeepPartial<FormValues>, omitaFormState:OmitResetState) => void;
+  reset: (
+    values?: DeepPartial<FormValues>,
+    omitResetState?: OmitResetState,
+  ) => void;
   getValues: (payload?: { nest: boolean }) => FormValues;
   handleSubmit: (
     callback: OnSubmit<FormValues>,
