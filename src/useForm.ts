@@ -110,7 +110,9 @@ export function useForm<
   const validationContextRef = useRef(validationContext);
   const fieldArrayNamesRef = useRef<Set<string>>(new Set());
   const [, render] = useState();
-  const { isOnBlur, isOnSubmit } = useRef(modeChecker(mode)).current;
+  const { isOnBlur, isOnSubmit, isOnChange } = useRef(
+    modeChecker(mode),
+  ).current;
   const isWindowUndefined = typeof window === UNDEFINED;
   const shouldValidateCallback = !!(validationSchema || validationResolver);
   const isWeb =
@@ -505,6 +507,7 @@ export function useForm<
         const isBlurEvent = type === EVENTS.BLUR;
         const shouldSkipValidation = skipValidation({
           hasError: !!currentError,
+          isOnChange,
           isBlurEvent,
           isOnSubmit,
           isReValidateOnSubmit,
@@ -1218,6 +1221,7 @@ export function useForm<
     mode: {
       isOnBlur,
       isOnSubmit,
+      isOnChange,
     },
     reValidateMode: {
       isReValidateOnBlur,
