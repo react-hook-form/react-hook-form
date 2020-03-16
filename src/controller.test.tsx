@@ -63,7 +63,7 @@ describe('Controller', () => {
     const setValue = jest.fn();
     const control = reconfigureControl({
       setValue,
-      mode: { isOnSubmit: true, isOnBlur: false },
+      mode: { isOnChange: false, isOnSubmit: true, isOnBlur: false },
     });
     const fieldsRef = {
       current: {},
@@ -100,7 +100,7 @@ describe('Controller', () => {
     const triggerValidation = jest.fn();
     const control = reconfigureControl({
       triggerValidation,
-      mode: { isOnSubmit: true, isOnBlur: true },
+      mode: { isOnChange: false, isOnSubmit: true, isOnBlur: true },
     });
     const fieldsRef = {
       current: {},
@@ -137,7 +137,7 @@ describe('Controller', () => {
     const setValue = jest.fn();
     const control = reconfigureControl({
       setValue,
-      mode: { isOnSubmit: true, isOnBlur: true },
+      mode: { isOnChange: false, isOnSubmit: true, isOnBlur: true },
     });
     const fieldsRef = {
       current: {},
@@ -176,7 +176,7 @@ describe('Controller', () => {
     const setValue = jest.fn();
     const control = reconfigureControl({
       setValue,
-      mode: { isOnSubmit: false, isOnBlur: true },
+      mode: { isOnChange: false, isOnSubmit: false, isOnBlur: true },
     });
     const fieldsRef = {
       current: {},
@@ -216,7 +216,7 @@ describe('Controller', () => {
   it('should invoke custom onBlur method', () => {
     const onBlur = jest.fn();
     const control = reconfigureControl({
-      mode: { isOnSubmit: false, isOnBlur: true },
+      mode: { isOnChange: false, isOnSubmit: false, isOnBlur: true },
     });
     const fieldsRef = {
       current: {},

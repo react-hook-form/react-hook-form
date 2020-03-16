@@ -242,6 +242,7 @@ export type Control<FormValues extends FieldValues = FieldValues> = {
   mode: {
     isOnBlur: boolean;
     isOnSubmit: boolean;
+    isOnChange: boolean;
   };
   reValidateMode: {
     isReValidateOnBlur: boolean;

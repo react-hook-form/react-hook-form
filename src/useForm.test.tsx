@@ -38,7 +38,7 @@ export const reconfigureControl = (
   removeFieldEventListener: jest.fn(),
   errorsRef: { current: {} },
   touchedFieldsRef: { current: {} },
-  mode: { isOnSubmit: false, isOnBlur: false },
+  mode: { isOnSubmit: false, isOnBlur: false, isOnChange: false },
   reValidateMode: {
     isReValidateOnBlur: false,
     isReValidateOnSubmit: false,

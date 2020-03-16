@@ -1221,6 +1221,7 @@ export function useForm<
     mode: {
       isOnBlur,
       isOnSubmit,
+      isOnChange,
     },
     reValidateMode: {
       isReValidateOnBlur,
