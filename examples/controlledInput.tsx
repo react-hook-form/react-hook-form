@@ -20,7 +20,6 @@ export default function App() {
         <div>
           <label htmlFor="firstName">First Name</label>
           <input
-            onChange={e => update(e.target.value)}
             name="firstName"
             placeholder="bill"
             ref={register}
@@ -31,6 +30,7 @@ export default function App() {
           <label htmlFor="lastName">Last Name</label>
           <input
             value={state}
+            onChange={e => update(e.target.value)}
             name="lastName"
             placeholder="luo"
             ref={register}
