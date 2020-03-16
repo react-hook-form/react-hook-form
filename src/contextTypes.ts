@@ -12,6 +12,7 @@ import {
   ManualFieldError,
   MultipleFieldErrors,
   Control,
+  OmitResetState,
 } from './types';
 
 export type FormProps<FormValues extends FieldValues = FieldValues> = {
@@ -95,7 +96,7 @@ export type FormContextValues<FormValues extends FieldValues = FieldValues> = {
   ) => Promise<boolean>;
   errors: FieldErrors<FormValues>;
   formState: FormStateProxy<FormValues>;
-  reset: (values?: DeepPartial<FormValues>) => void;
+  reset: (values?: DeepPartial<FormValues>, omitaFormState:OmitResetState) => void;
   getValues: (payload?: { nest: boolean }) => FormValues;
   handleSubmit: (
     callback: OnSubmit<FormValues>,
