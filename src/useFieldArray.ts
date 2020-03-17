@@ -107,6 +107,7 @@ export const useFieldArray = <
     mapCurrentFieldsValueWithState();
     if (readFormStateRef.current.dirty) {
       isDirtyRef.current = true;
+      reRender();
     }
     commonTasks([
       ...allFields.current,
@@ -140,10 +141,12 @@ export const useFieldArray = <
         touchedFieldsRef.current[name],
         fillEmptyArray(value),
       );
+      reRender();
     }
   };
 
   const remove = (index?: number | number[]) => {
+    let shouldRender = false;
     if (!isUndefined(index)) {
       mapCurrentFieldsValueWithState();
     }
@@ -165,6 +168,7 @@ export const useFieldArray = <
         touchedFieldsRef.current[name],
         index,
       );
+      shouldRender = true;
     }
 
     if (readFormStateRef.current.dirty) {
@@ -173,6 +177,7 @@ export const useFieldArray = <
           dirtyFieldsRef.current.delete(dirtyField);
         }
       });
+      shouldRender = true;
     }
 
     if (readFormStateRef.current.isValid && !validateSchemaIsValid) {
@@ -212,6 +217,10 @@ export const useFieldArray = <
         }
       }
 
+      shouldRender = true;
+    }
+
+    if (shouldRender) {
       reRender();
     }
   };
@@ -244,6 +253,7 @@ export const useFieldArray = <
         index,
         fillEmptyArray(value),
       );
+      reRender();
     }
   };
 
@@ -261,6 +271,7 @@ export const useFieldArray = <
 
     if (readFormStateRef.current.touched && touchedFieldsRef.current[name]) {
       swapArrayAt(touchedFieldsRef.current[name], indexA, indexB);
+      reRender();
     }
   };
 
@@ -278,6 +289,7 @@ export const useFieldArray = <
 
     if (readFormStateRef.current.touched && touchedFieldsRef.current[name]) {
       moveArrayAt(touchedFieldsRef.current[name], from, to);
+      reRender();
     }
   };
 
