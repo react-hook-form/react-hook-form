@@ -89,9 +89,17 @@ jest.mock('./logic/transformToNestObject', () => ({
   esmodule: true,
 }));
 
+let nodeEnv: any;
+
 describe('useForm', () => {
   beforeEach(() => {
+    nodeEnv = process.env.NODE_ENV;
+    process.env.NODE_ENV = 'production';
     jest.resetAllMocks();
+  });
+
+  afterEach(() => {
+    process.env.NODE_ENV = nodeEnv;
   });
 
   describe('register', () => {
