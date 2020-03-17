@@ -1181,6 +1181,7 @@ export function useForm<
     () => () => {
       isUnMount.current = true;
       fieldsRef.current &&
+        process.env.NODE_ENV === 'production' &&
         Object.values(
           fieldsRef.current,
         ).forEach((field: Field | undefined): void =>
