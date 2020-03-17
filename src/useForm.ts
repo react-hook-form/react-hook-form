@@ -24,7 +24,6 @@ import isPrimitive from './utils/isPrimitive';
 import isFunction from './utils/isFunction';
 import isArray from './utils/isArray';
 import isString from './utils/isString';
-import isKey from './utils/isKey';
 import isSameError from './utils/isSameError';
 import isUndefined from './utils/isUndefined';
 import isFileListObject from './utils/isFileListObject';
