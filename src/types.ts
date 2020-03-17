@@ -119,35 +119,35 @@ export type FieldRefs<FormValues extends FieldValues> = Partial<
   Record<FieldName<FormValues>, Field>
 >;
 
-export type NestDataObject<FormValues> = {
+export type NestDataObject<FormValues, Value> = {
   [Key in keyof FormValues]?: FormValues[Key] extends Array<infer U>
     ? 0 extends 1 & U
       ? any
       : unknown extends U
-      ? FieldError[]
+      ? Value[]
       : object extends U
-      ? FieldError[]
+      ? Value[]
       : U extends Date
-      ? FieldError[]
+      ? Value[]
       : U extends object
-      ? FieldErrors<U>[]
-      : FieldError[]
+      ? NestDataObject<U, Value>[]
+      : Value[]
     : 0 extends 1 & FormValues[Key]
     ? any
     : unknown extends FormValues[Key]
-    ? FieldError
+    ? Value
     : object extends FormValues[Key]
-    ? FieldError
+    ? Value
     : FormValues[Key] extends Date
-    ? FieldError
+    ? Value
     : FormValues[Key] extends object
-    ? FieldErrors<FormValues[Key]>
-    : FieldError;
+    ? NestDataObject<FormValues[Key], Value>
+    : Value;
 };
 
-export type FieldErrors<FormValues> = NestDataObject<FormValues>;
+export type FieldErrors<FormValues> = NestDataObject<FormValues, FieldError>;
 
-export type Touched<FormValues> = NestDataObject<FormValues>;
+export type Touched<FormValues> = NestDataObject<FormValues, true>;
 
 export type SubmitPromiseResult<FormValues extends FieldValues> = {
   errors: FieldErrors<FormValues>;
