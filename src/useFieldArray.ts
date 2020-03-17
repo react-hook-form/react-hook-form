@@ -93,8 +93,8 @@ export const useFieldArray = <
 
     if (isArray(currentFieldsValue)) {
       for (let i = 0; i < currentFieldsValue.length; i++) {
-        fields[i] = {
-          ...fields[i],
+        allFields.current[i] = {
+          ...allFields.current[i],
           ...currentFieldsValue[i],
         };
       }
