@@ -24,7 +24,6 @@ import isPrimitive from './utils/isPrimitive';
 import isFunction from './utils/isFunction';
 import isArray from './utils/isArray';
 import isString from './utils/isString';
-import isKey from './utils/isKey';
 import isSameError from './utils/isSameError';
 import isUndefined from './utils/isUndefined';
 import isFileListObject from './utils/isFileListObject';
@@ -437,16 +436,10 @@ export function useForm<
     ],
   );
 
-  const isFieldWatched = (name: string) => {
-    const preFixName = (name.match(/\w+/) || [])[0];
-    return (
-      isWatchAllRef.current ||
-      watchFieldsRef.current.has(name) ||
-      (watchFieldsRef.current.has(preFixName) &&
-        !isKey(name) &&
-        fieldArrayNamesRef.current.has(preFixName))
-    );
-  };
+  const isFieldWatched = (name: string) =>
+    isWatchAllRef.current ||
+    watchFieldsRef.current.has(name) ||
+    watchFieldsRef.current.has((name.match(/\w+/) || [])[0]);
 
   function setValue<Name extends FieldName<FormValues>>(
     name: Name,
