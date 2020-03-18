@@ -67,7 +67,7 @@ const { useRef, useState, useCallback, useEffect } = React;
 
 export function useForm<
   FormValues extends FieldValues = FieldValues,
-  ValidationContext = any
+  ValidationContext extends object = object
 >({
   mode = VALIDATION_MODE.onSubmit,
   reValidateMode = VALIDATION_MODE.onChange,

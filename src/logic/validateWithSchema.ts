@@ -6,12 +6,8 @@ import {
   SchemaValidateOptions,
   FieldErrors,
   ValidationResolver,
+  SchemaValidationResult,
 } from '../types';
-
-type SchemaValidationResult<FormValues> = {
-  errors: FieldErrors<FormValues>;
-  values: FieldValues;
-};
 
 type YupValidationError = {
   inner: { path: string; message: string; type: string }[];
@@ -60,7 +56,10 @@ export const parseErrorSchema = <FormValues>(
         [error.path]: { message: error.message, type: error.type },
       };
 
-export default async function validateWithSchema<FormValues, ValidationContext>(
+export default async function validateWithSchema<
+  FormValues extends FieldValues,
+  ValidationContext extends object
+>(
   validationSchema: Schema<FormValues>,
   validateAllFieldCriteria: boolean,
   data: FormValues,
