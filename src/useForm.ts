@@ -995,7 +995,10 @@ export function useForm<
       try {
         if (shouldValidateCallback) {
           fieldValues = getFieldsValues(fields);
-          const { errors, values } = await validateWithSchema(
+          const { errors, values } = await validateWithSchema<
+            FormValues,
+            ValidationContext
+          >(
             validationSchema,
             validateAllFieldCriteria,
             transformToNestObject(fieldValues),
