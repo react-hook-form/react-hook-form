@@ -43,7 +43,7 @@ export type SchemaValidateOptions = Partial<{
   context: any;
 }>;
 
-export type EmptyObject = { [key: string]: never };
+export type EmptyObject = { [key in string | number]: never };
 
 export type SchemaValidationSuccess<
   FormValues extends FieldValues = FieldValues
