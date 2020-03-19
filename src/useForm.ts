@@ -67,7 +67,7 @@ const { useRef, useState, useCallback, useEffect } = React;
 
 export function useForm<
   FormValues extends FieldValues = FieldValues,
-  ValidationContext = any
+  ValidationContext extends object = object
 >({
   mode = VALIDATION_MODE.onSubmit,
   reValidateMode = VALIDATION_MODE.onChange,
@@ -995,7 +995,10 @@ export function useForm<
       try {
         if (shouldValidateCallback) {
           fieldValues = getFieldsValues(fields);
-          const { errors, values } = await validateWithSchema(
+          const { errors, values } = await validateWithSchema<
+            FormValues,
+            ValidationContext
+          >(
             validationSchema,
             validateAllFieldCriteria,
             transformToNestObject(fieldValues),

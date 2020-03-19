@@ -43,21 +43,39 @@ export type SchemaValidateOptions = Partial<{
   context: any;
 }>;
 
-export type ValidationResolverResponse<FormValues> = {
-  values: FormValues | {};
-  errors: FieldErrors<FormValues> | {};
+export type EmptyObject = { [key in string | number]: never };
+
+export type SchemaValidationSuccess<
+  FormValues extends FieldValues = FieldValues
+> = {
+  values: FormValues;
+  errors: EmptyObject;
 };
 
-export type ValidationResolver<FormValues, ValidationContext> = (
+export type SchemaValidationError<
+  FormValues extends FieldValues = FieldValues
+> = {
+  values: EmptyObject;
+  errors: FieldErrors<FormValues>;
+};
+
+export type SchemaValidationResult<
+  FormValues extends FieldValues = FieldValues
+> = SchemaValidationSuccess<FormValues> | SchemaValidationError<FormValues>;
+
+export type ValidationResolver<
+  FormValues extends FieldValues = FieldValues,
+  ValidationContext extends object = object
+> = (
   values: FormValues,
   validationContext?: ValidationContext,
 ) =>
-  | ValidationResolverResponse<FormValues>
-  | Promise<ValidationResolverResponse<FormValues>>;
+  | SchemaValidationResult<FormValues>
+  | Promise<SchemaValidationResult<FormValues>>;
 
 export type UseFormOptions<
   FormValues extends FieldValues = FieldValues,
-  ValidationContext = any
+  ValidationContext extends object = object
 > = Partial<{
   mode: Mode;
   reValidateMode: Mode;
