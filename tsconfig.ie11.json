@@ -2,6 +2,8 @@
   "extends": "./tsconfig.json",
   "compilerOptions": {
     "target": "es5",
-    "downlevelIteration": true
+    "downlevelIteration": true,
+    "declaration": false,
+    "declarationMap": false
   }
 }

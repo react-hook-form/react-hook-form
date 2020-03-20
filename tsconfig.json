@@ -8,6 +8,8 @@
     "jsx": "react",
     "skipLibCheck": true,
     "declaration": true,
+    "declarationMap": true,
+    "declarationDir": "./dist",
     "noEmit": true,
     "allowSyntheticDefaultImports": true,
     "lib": ["dom", "dom.iterable", "esnext"],

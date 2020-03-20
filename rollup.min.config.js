@@ -3,7 +3,7 @@ import { terser } from 'rollup-plugin-terser';
 
 export default {
   input: 'src/index.ts',
-  plugins: [typescript(), terser()],
+  plugins: [typescript({ useTsconfigDeclarationDir: true }), terser()],
   external: ['react', 'react-dom'],
   output: [
     {

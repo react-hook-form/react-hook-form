@@ -31,6 +31,7 @@ export function getConfig({
       typescript({
         tsconfig,
         clean: true,
+        useTsconfigDeclarationDir: true,
       }),
       ...plugins,
     ],
