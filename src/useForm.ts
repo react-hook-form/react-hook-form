@@ -1030,7 +1030,7 @@ export function useForm<
               } = field;
 
               if (!fields[name]) {
-                return Promise.resolve(resolvedPrevious);
+                return resolvedPrevious;
               }
 
               const fieldError = await validateField(
@@ -1043,7 +1043,7 @@ export function useForm<
                 set(resolvedPrevious.errors, name, fieldError[name]);
                 validFieldsRef.current.delete(name);
 
-                return Promise.resolve(resolvedPrevious);
+                return resolvedPrevious;
               }
 
               if (fieldsWithValidationRef.current.has(name)) {
@@ -1053,7 +1053,7 @@ export function useForm<
               resolvedPrevious.values[
                 name as FieldName<FormValues>
               ] = getFieldValue(fields, ref);
-              return Promise.resolve(resolvedPrevious);
+              return resolvedPrevious;
             },
             Promise.resolve<SubmitPromiseResult<FormValues>>({
               errors: {},
