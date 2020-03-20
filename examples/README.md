@@ -25,7 +25,7 @@ you can view the source code within the folder or visit code sand box to see how
 | Format/Mask Field (Third Party Library) | https://codesandbox.io/s/react-hook-form-normalize-field-1jumn |
 | Native Validation           | https://codesandbox.io/s/react-hook-form-native-validation-ez5ww     |
 | Reset Form                  | https://codesandbox.io/s/jjm3wyqmjy                                  |
-| Remlte Form Submit          | https://codesandbox.io/s/remote-handlesubmit-w0win                   |
+| Remote/Trigger Form Submit  | https://codesandbox.io/s/remote-handlesubmit-w0win                   |
 | Register Error Messages     | https://codesandbox.io/s/o766kp4z05                                  |
 | Set input/select value      | https://codesandbox.io/s/react-hook-form-set-inputselect-value-c46ly |
 | Set input/select Error      | https://codesandbox.io/s/o7rxyym3q5                                  |
