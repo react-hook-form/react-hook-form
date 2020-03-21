@@ -104,7 +104,6 @@ export const useFieldArray = <
   const append = (
     value: Partial<FormArrayValues> | Partial<FormArrayValues>[],
   ) => {
-    mapCurrentFieldsValueWithState();
     if (readFormStateRef.current.dirty) {
       isDirtyRef.current = true;
       reRender();
