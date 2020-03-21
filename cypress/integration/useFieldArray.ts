@@ -1,5 +1,5 @@
 context('useFieldArray', () => {
-  it('should behaviour correctly without defaultValues', () => {
+  it.only('should behaviour correctly without defaultValues', () => {
     cy.visit('http://localhost:3000/useFieldArray/normal');
 
     cy.get('#append').click();
@@ -129,7 +129,7 @@ context('useFieldArray', () => {
     cy.get('#renderCount').contains('27');
   });
 
-  it('should behaviour correctly with defaultValue', () => {
+  it.only('should behaviour correctly with defaultValue', () => {
     cy.visit('http://localhost:3000/useFieldArray/default');
 
     cy.get('ul > li')
@@ -274,7 +274,14 @@ context('useFieldArray', () => {
     cy.get('#submit').click();
     cy.get('#result').contains('{}');
 
-    cy.get('#renderCount').contains('26');
+    cy.get('#append').click();
+
+    cy.get('ul > li')
+      .eq(0)
+      .find('input')
+      .should('have.value', '26');
+
+    cy.get('#renderCount').contains('27');
   });
 
   it('should display the correct dirty value without default value', () => {
