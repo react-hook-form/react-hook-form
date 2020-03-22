@@ -12,4 +12,4 @@ export const appendId = <FormArrayValues extends FieldValues = FieldValues>(
 });
 
 export const mapIds = (data: any, keyName: string) =>
-  (isArray(data) ? data : []).map(value => appendId(value, keyName));
+  (isArray(data) ? data : []).map((value) => appendId(value, keyName));

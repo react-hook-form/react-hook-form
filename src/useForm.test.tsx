@@ -205,7 +205,7 @@ describe('useForm', () => {
       });
 
       await act(async () => {
-        await result.current.handleSubmit(data => {
+        await result.current.handleSubmit((data) => {
           expect(data).toEqual({
             test: 'testData',
           });
@@ -230,7 +230,7 @@ describe('useForm', () => {
       });
 
       await act(async () => {
-        await result.current.handleSubmit(data => {
+        await result.current.handleSubmit((data) => {
           expect(data).toEqual({
             test: '',
           });
@@ -255,7 +255,7 @@ describe('useForm', () => {
       });
 
       await act(async () => {
-        await result.current.handleSubmit(data => {
+        await result.current.handleSubmit((data) => {
           expect(data).toEqual({
             test: false,
           });
@@ -279,7 +279,7 @@ describe('useForm', () => {
       });
 
       await act(async () => {
-        await result.current.handleSubmit(data => {
+        await result.current.handleSubmit((data) => {
           expect(data).toEqual({
             test: '1',
           });
@@ -412,7 +412,7 @@ describe('useForm', () => {
       });
 
       await act(async () => {
-        await result.current.handleSubmit(data => {
+        await result.current.handleSubmit((data) => {
           expect(data).toEqual({
             test: 'data',
           });
@@ -449,7 +449,7 @@ describe('useForm', () => {
       });
 
       await act(async () => {
-        await result.current.handleSubmit(data => {
+        await result.current.handleSubmit((data) => {
           expect(data).toEqual({
             test: '1',
           });
@@ -488,7 +488,7 @@ describe('useForm', () => {
       });
 
       await act(async () => {
-        await result.current.handleSubmit(data => {
+        await result.current.handleSubmit((data) => {
           expect(data).toEqual({
             test: ['1'],
           });
@@ -521,7 +521,7 @@ describe('useForm', () => {
       });
 
       await act(async () => {
-        await result.current.handleSubmit(data => {
+        await result.current.handleSubmit((data) => {
           expect(data).toEqual({
             test: '1',
           });
@@ -553,7 +553,7 @@ describe('useForm', () => {
       });
 
       await act(async () => {
-        await result.current.handleSubmit(data => {
+        await result.current.handleSubmit((data) => {
           expect(data).toEqual({
             test: ['1'],
           });

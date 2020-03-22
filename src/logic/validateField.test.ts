@@ -538,7 +538,7 @@ describe('validateField', () => {
             setCustomValidity,
           },
           required: true,
-          validate: value => value.toString().length > 3,
+          validate: (value) => value.toString().length > 3,
         },
       ),
     ).toEqual({});
@@ -561,7 +561,7 @@ describe('validateField', () => {
             setCustomValidity,
           },
           required: true,
-          validate: value => value.toString().length < 3,
+          validate: (value) => value.toString().length < 3,
         },
       ),
     ).toEqual({
@@ -596,8 +596,8 @@ describe('validateField', () => {
           },
           required: true,
           validate: {
-            test: value => value.toString().length < 3,
-            test1: value => value.toString().length > 10,
+            test: (value) => value.toString().length < 3,
+            test1: (value) => value.toString().length > 10,
           },
         },
       ),
@@ -639,8 +639,8 @@ describe('validateField', () => {
             setCustomValidity,
           },
           validate: {
-            test: value => value.toString().length < 3,
-            test1: value => value.toString().length > 10,
+            test: (value) => value.toString().length < 3,
+            test1: (value) => value.toString().length > 10,
           },
         },
       ),
@@ -675,8 +675,8 @@ describe('validateField', () => {
             setCustomValidity,
           },
           validate: {
-            test: value => value.toString().length < 3,
-            test1: value => value.toString().length > 10,
+            test: (value) => value.toString().length < 3,
+            test1: (value) => value.toString().length > 10,
           },
           options: [
             {
@@ -713,7 +713,7 @@ describe('validateField', () => {
             setCustomValidity,
           },
           validate: {
-            test: value => {
+            test: (value) => {
               if (value.toString().length > 3) {
                 return 'max 3';
               }
@@ -754,7 +754,7 @@ describe('validateField', () => {
             value: 'This is a long text input',
             setCustomValidity,
           },
-          validate: value => value.toString().length < 3 || 'bill',
+          validate: (value) => value.toString().length < 3 || 'bill',
         },
       ),
     ).toEqual({
@@ -804,7 +804,7 @@ describe('validateField', () => {
         required: true,
         minLength: 10,
         pattern: /d/i,
-        validate: value => value === 'test',
+        validate: (value) => value === 'test',
       }),
     ).toMatchSnapshot();
 
@@ -814,7 +814,7 @@ describe('validateField', () => {
         required: true,
         minLength: 10,
         pattern: /d/i,
-        validate: value => value === 'test',
+        validate: (value) => value === 'test',
       }),
     ).toMatchSnapshot();
   });
@@ -836,9 +836,9 @@ describe('validateField', () => {
           message: 'pattern',
         },
         validate: {
-          test: value => value === 'test',
-          test1: value => value == 'test' || 'Luo',
-          test2: value => value == 'test' || 'Bill',
+          test: (value) => value === 'test',
+          test1: (value) => value == 'test' || 'Luo',
+          test2: (value) => value == 'test' || 'Bill',
         },
       }),
     ).toMatchSnapshot();
@@ -856,9 +856,9 @@ describe('validateField', () => {
           message: 'pattern',
         },
         validate: {
-          test: value => value === 'test',
-          test1: value => value == 'test' || 'Luo',
-          test2: value => value == 'test' || 'Bill',
+          test: (value) => value === 'test',
+          test1: (value) => value == 'test' || 'Luo',
+          test2: (value) => value == 'test' || 'Bill',
         },
       }),
     ).toMatchSnapshot();

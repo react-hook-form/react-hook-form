@@ -36,7 +36,7 @@ export default <FormValues extends FieldValues>(
     }
 
     if (!isUndefined(value)) {
-      getPath<FormValues>(fieldName, value).forEach(name =>
+      getPath<FormValues>(fieldName, value).forEach((name) =>
         watchFields.add(name),
       );
     }
