@@ -119,7 +119,6 @@ export const useFieldArray = <
   const prepend = (
     value: Partial<FormArrayValues> | Partial<FormArrayValues>[],
   ) => {
-    mapCurrentFieldsValueWithState();
     resetFields();
     commonTasks(
       prependAt(
@@ -171,7 +170,7 @@ export const useFieldArray = <
     }
 
     if (readFormStateRef.current.dirty) {
-      dirtyFieldsRef.current.forEach(dirtyField => {
+      dirtyFieldsRef.current.forEach((dirtyField) => {
         if (isUndefined(name) || dirtyField.startsWith(`${name}[${index}]`)) {
           dirtyFieldsRef.current.delete(dirtyField);
         }
