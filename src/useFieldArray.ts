@@ -119,7 +119,6 @@ export const useFieldArray = <
   const prepend = (
     value: Partial<FormArrayValues> | Partial<FormArrayValues>[],
   ) => {
-    mapCurrentFieldsValueWithState();
     resetFields();
     commonTasks(
       prependAt(
