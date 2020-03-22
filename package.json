@@ -43,35 +43,36 @@
   "license": "MIT",
   "unpkg": "dist/react-hook-form.umd.js",
   "devDependencies": {
-    "@babel/core": "^7.8.7",
-    "@babel/plugin-transform-runtime": "^7.8.3",
-    "@babel/runtime-corejs3": "^7.8.7",
+    "@babel/core": "^7.9.0",
+    "@babel/plugin-transform-runtime": "^7.9.0",
+    "@babel/preset-env": "^7.9.0",
+    "@babel/runtime-corejs3": "^7.9.2",
     "@rollup/plugin-commonjs": "^11.0.2",
     "@rollup/plugin-node-resolve": "^7.1.1",
     "@testing-library/react": "^10.0.1",
     "@testing-library/react-hooks": "^3.2.1",
     "@types/jest": "^25.1.4",
-    "@types/react": "^16.9.23",
+    "@types/react": "^16.9.25",
     "@types/react-dom": "^16.9.5",
     "@types/react-test-renderer": "^16.9.2",
-    "@typescript-eslint/eslint-plugin": "^2.23.0",
-    "@typescript-eslint/parser": "^2.23.0",
+    "@typescript-eslint/eslint-plugin": "^2.24.0",
+    "@typescript-eslint/parser": "^2.24.0",
     "bundlesize": "^0.18.0",
     "core-js": "^3.6.4",
-    "coveralls": "^3.0.9",
-    "cypress": "^4.1.0",
+    "coveralls": "^3.0.11",
+    "cypress": "^4.2.0",
     "eslint": "^6.8.0",
     "eslint-plugin-react": "^7.19.0",
-    "eslint-plugin-react-hooks": "^2.5.0",
+    "eslint-plugin-react-hooks": "^2.5.1",
     "husky": "^4.2.3",
     "jest": "^25.1.0",
     "lint-staged": "^10.0.8",
     "mutationobserver-shim": "^0.3.3",
-    "prettier": "^1.19.1",
-    "react": "^16.13.0",
-    "react-dom": "^16.13.0",
-    "react-test-renderer": "^16.13.0",
-    "rollup": "^2.0.6",
+    "prettier": "^2.0.1",
+    "react": "^16.13.1",
+    "react-dom": "^16.13.1",
+    "react-test-renderer": "^16.13.1",
+    "rollup": "^2.1.0",
     "rollup-plugin-babel": "^4.4.0",
     "rollup-plugin-terser": "^5.1.1",
     "rollup-plugin-typescript2": "^0.26.0",
@@ -84,6 +85,19 @@
       "maxSize": "8.5 kB"
     }
   ],
+  "babel": {
+    "presets": [
+      [
+        "@babel/preset-env",
+        {
+          "targets": {
+            "esmodules": true
+          },
+          "bugfixes": true
+        }
+      ]
+    ]
+  },
   "peerDependencies": {
     "react": "^16.8.0"
   },
