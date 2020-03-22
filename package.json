@@ -85,19 +85,6 @@
       "maxSize": "8.5 kB"
     }
   ],
-  "babel": {
-    "presets": [
-      [
-        "@babel/preset-env",
-        {
-          "targets": {
-            "esmodules": true
-          },
-          "bugfixes": true
-        }
-      ]
-    ]
-  },
   "peerDependencies": {
     "react": "^16.8.0"
   },
