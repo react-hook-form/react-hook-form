@@ -1,34 +1,22 @@
 context('useFieldArray', () => {
-  it.only('should behaviour correctly without defaultValues', () => {
+  it('should behaviour correctly without defaultValues', () => {
     cy.visit('http://localhost:3000/useFieldArray/normal');
 
     cy.get('#append').click();
-    cy.get('ul > li')
-      .its('length')
-      .should('equal', 1);
+    cy.get('ul > li').its('length').should('equal', 1);
 
     cy.get('#submit').click();
     cy.get('#result').contains('{"data":[{"name":"1"}]}');
 
     cy.get('#prepend').click();
-    cy.get('ul > li')
-      .its('length')
-      .should('equal', 2);
+    cy.get('ul > li').its('length').should('equal', 2);
 
-    cy.get('ul > li')
-      .eq(0)
-      .get('input')
-      .should('have.value', '4');
+    cy.get('ul > li').eq(0).get('input').should('have.value', '4');
 
     cy.get('#append').click();
-    cy.get('ul > li')
-      .its('length')
-      .should('equal', 3);
+    cy.get('ul > li').its('length').should('equal', 3);
 
-    cy.get('ul > li')
-      .eq(2)
-      .find('input')
-      .should('have.value', '5');
+    cy.get('ul > li').eq(2).find('input').should('have.value', '5');
 
     cy.get('#submit').click();
     cy.get('#result').contains(
@@ -36,14 +24,8 @@ context('useFieldArray', () => {
     );
 
     cy.get('#swap').click();
-    cy.get('ul > li')
-      .eq(1)
-      .find('input')
-      .should('have.value', '5');
-    cy.get('ul > li')
-      .eq(2)
-      .find('input')
-      .should('have.value', '1');
+    cy.get('ul > li').eq(1).find('input').should('have.value', '5');
+    cy.get('ul > li').eq(2).find('input').should('have.value', '1');
 
     cy.get('#submit').click();
     cy.get('#result').contains(
@@ -51,14 +33,8 @@ context('useFieldArray', () => {
     );
 
     cy.get('#move').click();
-    cy.get('ul > li')
-      .eq(0)
-      .find('input')
-      .should('have.value', '1');
-    cy.get('ul > li')
-      .eq(1)
-      .find('input')
-      .should('have.value', '4');
+    cy.get('ul > li').eq(0).find('input').should('have.value', '1');
+    cy.get('ul > li').eq(1).find('input').should('have.value', '4');
 
     cy.get('#submit').click();
     cy.get('#result').contains(
@@ -66,10 +42,7 @@ context('useFieldArray', () => {
     );
 
     cy.get('#insert').click();
-    cy.get('ul > li')
-      .eq(1)
-      .find('input')
-      .should('have.value', '14');
+    cy.get('ul > li').eq(1).find('input').should('have.value', '14');
 
     cy.get('#submit').click();
     cy.get('#result').contains(
@@ -77,14 +50,8 @@ context('useFieldArray', () => {
     );
 
     cy.get('#remove').click();
-    cy.get('ul > li')
-      .eq(0)
-      .find('input')
-      .should('have.value', '1');
-    cy.get('ul > li')
-      .eq(1)
-      .find('input')
-      .should('have.value', '4');
+    cy.get('ul > li').eq(0).find('input').should('have.value', '1');
+    cy.get('ul > li').eq(1).find('input').should('have.value', '4');
 
     cy.get('#submit').click();
     cy.get('#result').contains(
@@ -93,29 +60,16 @@ context('useFieldArray', () => {
 
     cy.get('#delete1').click();
 
-    cy.get('ul > li')
-      .its('length')
-      .should('equal', 2);
+    cy.get('ul > li').its('length').should('equal', 2);
 
-    cy.get('ul > li')
-      .eq(0)
-      .find('input')
-      .should('have.value', '1');
-    cy.get('ul > li')
-      .eq(1)
-      .find('input')
-      .should('have.value', '5');
+    cy.get('ul > li').eq(0).find('input').should('have.value', '1');
+    cy.get('ul > li').eq(1).find('input').should('have.value', '5');
 
     cy.get('#delete1').click();
 
-    cy.get('ul > li')
-      .its('length')
-      .should('equal', 1);
+    cy.get('ul > li').its('length').should('equal', 1);
 
-    cy.get('ul > li')
-      .eq(0)
-      .find('input')
-      .should('have.value', '1');
+    cy.get('ul > li').eq(0).find('input').should('have.value', '1');
 
     cy.get('#submit').click();
     cy.get('#result').contains('{"data":[{"name":"1"}]}');
@@ -129,34 +83,20 @@ context('useFieldArray', () => {
     cy.get('#renderCount').contains('27');
   });
 
-  it.only('should behaviour correctly with defaultValue', () => {
+  it('should behaviour correctly with defaultValue', () => {
     cy.visit('http://localhost:3000/useFieldArray/default');
 
-    cy.get('ul > li')
-      .its('length')
-      .should('equal', 3);
+    cy.get('ul > li').its('length').should('equal', 3);
 
-    cy.get('ul > li')
-      .eq(0)
-      .find('input')
-      .should('have.value', 'test');
+    cy.get('ul > li').eq(0).find('input').should('have.value', 'test');
 
-    cy.get('ul > li')
-      .eq(1)
-      .find('input')
-      .should('have.value', 'test1');
+    cy.get('ul > li').eq(1).find('input').should('have.value', 'test1');
 
-    cy.get('ul > li')
-      .eq(2)
-      .find('input')
-      .should('have.value', 'test2');
+    cy.get('ul > li').eq(2).find('input').should('have.value', 'test2');
 
     cy.get('#append').click();
 
-    cy.get('ul > li')
-      .eq(3)
-      .find('input')
-      .should('have.value', '1');
+    cy.get('ul > li').eq(3).find('input').should('have.value', '1');
 
     cy.get('#submit').click();
     cy.get('#result').contains(
@@ -164,14 +104,9 @@ context('useFieldArray', () => {
     );
 
     cy.get('#prepend').click();
-    cy.get('ul > li')
-      .its('length')
-      .should('equal', 5);
+    cy.get('ul > li').its('length').should('equal', 5);
 
-    cy.get('ul > li')
-      .eq(0)
-      .get('input')
-      .should('have.value', '4');
+    cy.get('ul > li').eq(0).get('input').should('have.value', '4');
 
     cy.get('#submit').click();
     cy.get('#result').contains(
@@ -179,14 +114,8 @@ context('useFieldArray', () => {
     );
 
     cy.get('#swap').click();
-    cy.get('ul > li')
-      .eq(1)
-      .find('input')
-      .should('have.value', 'test1');
-    cy.get('ul > li')
-      .eq(2)
-      .find('input')
-      .should('have.value', 'test');
+    cy.get('ul > li').eq(1).find('input').should('have.value', 'test1');
+    cy.get('ul > li').eq(2).find('input').should('have.value', 'test');
 
     cy.get('#submit').click();
     cy.get('#result').contains(
@@ -194,14 +123,8 @@ context('useFieldArray', () => {
     );
 
     cy.get('#move').click();
-    cy.get('ul > li')
-      .eq(0)
-      .find('input')
-      .should('have.value', 'test');
-    cy.get('ul > li')
-      .eq(1)
-      .find('input')
-      .should('have.value', '4');
+    cy.get('ul > li').eq(0).find('input').should('have.value', 'test');
+    cy.get('ul > li').eq(1).find('input').should('have.value', '4');
 
     cy.get('#submit').click();
     cy.get('#result').contains(
@@ -209,10 +132,7 @@ context('useFieldArray', () => {
     );
 
     cy.get('#insert').click();
-    cy.get('ul > li')
-      .eq(1)
-      .find('input')
-      .should('have.value', '13');
+    cy.get('ul > li').eq(1).find('input').should('have.value', '13');
 
     cy.get('#submit').click();
     cy.get('#result').contains(
@@ -220,14 +140,8 @@ context('useFieldArray', () => {
     );
 
     cy.get('#remove').click();
-    cy.get('ul > li')
-      .eq(0)
-      .find('input')
-      .should('have.value', 'test');
-    cy.get('ul > li')
-      .eq(1)
-      .find('input')
-      .should('have.value', '4');
+    cy.get('ul > li').eq(0).find('input').should('have.value', 'test');
+    cy.get('ul > li').eq(1).find('input').should('have.value', '4');
 
     cy.get('#submit').click();
     cy.get('#result').contains(
@@ -236,32 +150,16 @@ context('useFieldArray', () => {
 
     cy.get('#delete2').click();
 
-    cy.get('ul > li')
-      .its('length')
-      .should('equal', 4);
+    cy.get('ul > li').its('length').should('equal', 4);
 
-    cy.get('ul > li')
-      .eq(0)
-      .find('input')
-      .should('have.value', 'test');
-    cy.get('ul > li')
-      .eq(1)
-      .find('input')
-      .should('have.value', '4');
-    cy.get('ul > li')
-      .eq(2)
-      .find('input')
-      .should('have.value', 'test2');
-    cy.get('ul > li')
-      .eq(3)
-      .find('input')
-      .should('have.value', '1');
+    cy.get('ul > li').eq(0).find('input').should('have.value', 'test');
+    cy.get('ul > li').eq(1).find('input').should('have.value', '4');
+    cy.get('ul > li').eq(2).find('input').should('have.value', 'test2');
+    cy.get('ul > li').eq(3).find('input').should('have.value', '1');
 
     cy.get('#delete3').click();
 
-    cy.get('ul > li')
-      .its('length')
-      .should('equal', 3);
+    cy.get('ul > li').its('length').should('equal', 3);
 
     cy.get('#submit').click();
     cy.get('#result').contains(
@@ -276,12 +174,13 @@ context('useFieldArray', () => {
 
     cy.get('#append').click();
 
-    cy.get('ul > li')
-      .eq(0)
-      .find('input')
-      .should('have.value', '26');
+    cy.get('ul > li').eq(0).find('input').should('have.value', '26');
 
-    cy.get('#renderCount').contains('27');
+    cy.get('#prepend').click();
+
+    cy.get('ul > li').eq(0).find('input').should('have.value', '27');
+
+    cy.get('#renderCount').contains('28');
   });
 
   it('should display the correct dirty value without default value', () => {
@@ -318,15 +217,9 @@ context('useFieldArray', () => {
     cy.get('#delete1').click();
     cy.get('#dirty').contains('yes');
     cy.get('#append').click();
-    cy.get('#field0')
-      .clear()
-      .type('test');
-    cy.get('#field1')
-      .clear()
-      .type('test1');
-    cy.get('#field2')
-      .clear()
-      .type('test2');
+    cy.get('#field0').clear().type('test');
+    cy.get('#field1').clear().type('test1');
+    cy.get('#field2').clear().type('test2');
     cy.get('#dirty').contains('no');
   });
 
@@ -349,15 +242,9 @@ context('useFieldArray', () => {
     cy.get('#delete1').click();
     cy.get('#dirty').contains('yes');
     cy.get('#append').click();
-    cy.get('#field0')
-      .clear()
-      .type('test');
-    cy.get('#field1')
-      .clear()
-      .type('test1');
-    cy.get('#field2')
-      .clear()
-      .type('test2');
+    cy.get('#field0').clear().type('test');
+    cy.get('#field1').clear().type('test1');
+    cy.get('#field2').clear().type('test2');
     cy.get('#dirty').contains('no');
   });
 
@@ -417,54 +304,38 @@ context('useFieldArray', () => {
 
   it('should return correct isValid formState', () => {
     cy.visit('http://localhost:3000/useFieldArray/formState');
-    cy.get('#isValid')
-      .get('#isValid')
-      .contains('yes');
+    cy.get('#isValid').get('#isValid').contains('yes');
     cy.get('#append').click();
     cy.get('#append').click();
     cy.get('#append').click();
 
-    cy.get('#isValid')
-      .get('#isValid')
-      .contains('yes');
+    cy.get('#isValid').get('#isValid').contains('yes');
 
     cy.get('#field0').clear();
 
-    cy.get('#isValid')
-      .get('#isValid')
-      .contains('no');
+    cy.get('#isValid').get('#isValid').contains('no');
 
     cy.get('#delete0').click();
     cy.get('#field1').type('1');
 
-    cy.get('#isValid')
-      .get('#isValid')
-      .contains('yes');
+    cy.get('#isValid').get('#isValid').contains('yes');
 
     cy.get('#field0').clear();
 
-    cy.get('#isValid')
-      .get('#isValid')
-      .contains('no');
+    cy.get('#isValid').get('#isValid').contains('no');
 
     cy.get('#delete0').click();
 
-    cy.get('#isValid')
-      .get('#isValid')
-      .contains('yes');
+    cy.get('#isValid').get('#isValid').contains('yes');
 
     cy.get('#append').click();
     cy.get('#field0').clear();
 
-    cy.get('#isValid')
-      .get('#isValid')
-      .contains('no');
+    cy.get('#isValid').get('#isValid').contains('no');
 
     cy.get('#delete0').click();
 
-    cy.get('#isValid')
-      .get('#isValid')
-      .contains('yes');
+    cy.get('#isValid').get('#isValid').contains('yes');
 
     cy.get('#append').click();
     cy.get('#append').click();
@@ -472,15 +343,11 @@ context('useFieldArray', () => {
     cy.get('#field1').clear();
     cy.get('#field2').clear();
 
-    cy.get('#isValid')
-      .get('#isValid')
-      .contains('no');
+    cy.get('#isValid').get('#isValid').contains('no');
 
     cy.get('#delete1').click();
     cy.get('#delete1').click();
 
-    cy.get('#isValid')
-      .get('#isValid')
-      .contains('yes');
+    cy.get('#isValid').get('#isValid').contains('yes');
   });
 });
