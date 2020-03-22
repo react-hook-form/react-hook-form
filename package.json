@@ -81,7 +81,7 @@
   "bundlesize": [
     {
       "path": "./dist/react-hook-form.min.es.js",
-      "maxSize": "8.5 kB"
+      "maxSize": "9 kB"
     }
   ],
   "peerDependencies": {
