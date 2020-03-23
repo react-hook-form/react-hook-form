@@ -13,7 +13,7 @@ const defaultReturn: RadioFieldResult = {
 
 export default (options?: RadioOrCheckboxOption[]): RadioFieldResult =>
   isArray(options)
-    ? options.reduce(
+    ? options.filter(Boolean).reduce(
         (previous, { ref: { checked, value } }): RadioFieldResult =>
           checked
             ? {
