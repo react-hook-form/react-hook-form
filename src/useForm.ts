@@ -48,7 +48,6 @@ import {
   FieldRefs,
   UseFormOptions,
   ValidationOptions,
-  SubmitPromiseResult,
   OnSubmit,
   FieldElement,
   FormStateProxy,
@@ -985,8 +984,8 @@ export function useForm<
         e.preventDefault();
         e.persist();
       }
-      let fieldErrors;
-      let fieldValues;
+      let fieldErrors: FieldErrors<FormValues> = {};
+      let fieldValues: FieldValues = {};
       const fields = fieldsRef.current;
 
       if (readFormStateRef.current.isSubmitting) {
@@ -1011,29 +1010,12 @@ export function useForm<
           fieldErrors = errors;
           fieldValues = values;
         } else {
-          const {
-            errors,
-            values,
-          }: SubmitPromiseResult<FormValues> = await Object.values(
-            fields,
-          ).reduce(
-            async (
-              previous: Promise<SubmitPromiseResult<FormValues>>,
-              field: Field | undefined,
-            ): Promise<SubmitPromiseResult<FormValues>> => {
-              if (!field) {
-                return previous;
-              }
-
-              const resolvedPrevious = await previous;
+          for (const field of Object.values(fields)) {
+            if (field) {
               const {
                 ref,
                 ref: { name },
               } = field;
-
-              if (!fields[name]) {
-                return resolvedPrevious;
-              }
 
               const fieldError = await validateField(
                 fieldsRef,
@@ -1042,29 +1024,17 @@ export function useForm<
               );
 
               if (fieldError[name]) {
-                set(resolvedPrevious.errors, name, fieldError[name]);
+                set(fieldErrors, name, fieldError[name]);
                 validFieldsRef.current.delete(name);
+              } else {
+                if (fieldsWithValidationRef.current.has(name)) {
+                  validFieldsRef.current.add(name);
+                }
 
-                return resolvedPrevious;
+                fieldValues[name] = getFieldValue(fields, ref);
               }
-
-              if (fieldsWithValidationRef.current.has(name)) {
-                validFieldsRef.current.add(name);
-              }
-
-              resolvedPrevious.values[
-                name as FieldName<FormValues>
-              ] = getFieldValue(fields, ref);
-              return resolvedPrevious;
-            },
-            Promise.resolve<SubmitPromiseResult<FormValues>>({
-              errors: {},
-              values: {} as FormValues,
-            }),
-          );
-
-          fieldErrors = errors;
-          fieldValues = values;
+            }
+          }
         }
 
         if (isEmptyObject(fieldErrors)) {

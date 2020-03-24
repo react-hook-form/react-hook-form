@@ -167,11 +167,6 @@ export type FieldErrors<FormValues> = NestDataObject<FormValues, FieldError>;
 
 export type Touched<FormValues> = NestDataObject<FormValues, true>;
 
-export type SubmitPromiseResult<FormValues extends FieldValues> = {
-  errors: FieldErrors<FormValues>;
-  values: FormValues;
-};
-
 export type FormStateProxy<FormValues extends FieldValues = FieldValues> = {
   dirty: boolean;
   dirtyFields: Set<FieldName<FormValues>>;
