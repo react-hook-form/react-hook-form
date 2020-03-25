@@ -16,15 +16,7 @@ import isBoolean from '../utils/isBoolean';
 import getValidateError from './getValidateError';
 import appendErrors from './appendErrors';
 import { INPUT_VALIDATION_RULES } from '../constants';
-import {
-  Field,
-  FieldErrors,
-  FieldValues,
-  FieldError,
-  FieldRefs,
-} from '../types';
-
-type ValidatePromiseResult = {} | void | FieldError;
+import { Field, FieldErrors, FieldValues, FieldRefs } from '../types';
 
 export default async <FormValues extends FieldValues>(
   fieldsRef: React.MutableRefObject<FieldRefs<FormValues>>,
@@ -201,51 +193,30 @@ export default async <FormValues extends FieldValues>(
         }
       }
     } else if (isObject(validate)) {
-      const validateFunctions = Object.entries(validate);
-      const validationResult = await new Promise(
-        (resolve): ValidatePromiseResult => {
-          validateFunctions.reduce(
-            async (
-              previous,
-              [key, validate],
-              index,
-            ): Promise<ValidatePromiseResult> => {
-              if (
-                (!isEmptyObject(await previous) && !validateAllFieldCriteria) ||
-                !isFunction(validate)
-              ) {
-                return resolve(previous);
-              }
+      let validationResult = {};
+      for (const [key, validateFunction] of Object.entries(validate)) {
+        if (!isEmptyObject(validationResult) && !validateAllFieldCriteria) {
+          break;
+        }
 
-              let result;
-              const validateResult = await validate(fieldValue);
-              const validateError = getValidateError(
-                validateResult,
-                validateRef,
-                key,
-              );
+        const validateResult = await validateFunction(fieldValue);
+        const validateError = getValidateError(
+          validateResult,
+          validateRef,
+          key,
+        );
 
-              if (validateError) {
-                result = {
-                  ...validateError,
-                  ...appendErrorsCurry(key, validateError.message),
-                };
+        if (validateError) {
+          validationResult = {
+            ...validateError,
+            ...appendErrorsCurry(key, validateError.message),
+          };
 
-                if (validateAllFieldCriteria) {
-                  error[name] = result;
-                }
-              } else {
-                result = previous;
-              }
-
-              return validateFunctions.length - 1 === index
-                ? resolve(result)
-                : result;
-            },
-            {},
-          );
-        },
-      );
+          if (validateAllFieldCriteria) {
+            error[name] = validationResult;
+          }
+        }
+      }
 
       if (!isEmptyObject(validationResult)) {
         error[name] = {
