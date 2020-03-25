@@ -16,7 +16,7 @@ import isBoolean from '../utils/isBoolean';
 import getValidateError from './getValidateError';
 import appendErrors from './appendErrors';
 import { INPUT_VALIDATION_RULES } from '../constants';
-import { Field, FieldErrors, FieldValues, FieldRefs } from '../types';
+import { Field, FieldErrors, FieldValues, FieldRefs, Message } from '../types';
 
 export default async <FormValues extends FieldValues>(
   fieldsRef: React.MutableRefObject<FieldRefs<FormValues>>,
@@ -48,8 +48,8 @@ export default async <FormValues extends FieldValues>(
   );
   const getMinMaxMessage = (
     exceedMax: boolean,
-    maxLengthMessage: string,
-    minLengthMessage: string,
+    maxLengthMessage: Message,
+    minLengthMessage: Message,
     maxType = INPUT_VALIDATION_RULES.maxLength,
     minType = INPUT_VALIDATION_RULES.minLength,
   ) => {
@@ -74,11 +74,10 @@ export default async <FormValues extends FieldValues>(
       (isCheckBox && !getCheckboxValue(options).isValid) ||
       (isRadio && !getRadioValue(options).isValid))
   ) {
-    const { value: requiredValue, message: requiredMessage } = isString(
-      required,
-    )
-      ? { value: !!required, message: required }
-      : getValueAndMessage(required);
+    const { value: requiredValue, message: requiredMessage } =
+      isString(required) || React.isValidElement(required)
+        ? { value: !!required, message: required }
+        : getValueAndMessage(required);
 
     if (requiredValue) {
       error[name] = {
@@ -221,7 +220,7 @@ export default async <FormValues extends FieldValues>(
       if (!isEmptyObject(validationResult)) {
         error[name] = {
           ref: validateRef,
-          ...(validationResult as { type: string; message?: string }),
+          ...(validationResult as { type: string; message?: Message }),
         };
         if (!validateAllFieldCriteria) {
           return error;

@@ -92,16 +92,23 @@ export type MutationWatcher = {
   observe?: any;
 };
 
-type ValidationOptionObject<Value> = Value | { value: Value; message: string };
+export type Message = string | React.ReactElement;
 
-export type ValidationValue = boolean | number | string | RegExp;
+type ValidationOptionObject<Value> = Value | { value: Value; message: Message };
 
-export type ValidateResult = string | boolean | undefined;
+export type ValidationValue =
+  | boolean
+  | number
+  | string
+  | RegExp
+  | React.ReactElement;
+
+export type ValidateResult = Message | boolean | undefined;
 
 export type Validate = (data: any) => ValidateResult | Promise<ValidateResult>;
 
 export type ValidationOptions = Partial<{
-  required: string | ValidationOptionObject<boolean>;
+  required: Message | ValidationOptionObject<boolean>;
   min: ValidationOptionObject<number | string>;
   max: ValidationOptionObject<number | string>;
   maxLength: ValidationOptionObject<number | string>;
@@ -116,7 +123,7 @@ export type FieldError = {
   type: string;
   ref?: Ref;
   types?: MultipleFieldErrors;
-  message?: string;
+  message?: Message;
   isManual?: boolean;
 };
 
@@ -124,7 +131,7 @@ export type ManualFieldError<FormValues> = {
   name: FieldName<FormValues>;
   type: string;
   types?: MultipleFieldErrors;
-  message?: string;
+  message?: Message;
 };
 
 export type Field = {
@@ -343,9 +350,9 @@ export type ErrorMessageProps<
     as?: As;
     errors?: Errors;
     name: Name;
-    message?: string;
+    message?: Message;
     children?: (data: {
-      message: string;
+      message: Message;
       messages?: MultipleFieldErrors;
     }) => React.ReactNode;
   },

@@ -60,6 +60,7 @@ import {
   FieldError,
   RadioOrCheckboxOption,
   OmitResetState,
+  Message,
 } from './types';
 
 const { useRef, useState, useCallback, useEffect } = React;
@@ -662,7 +663,7 @@ export function useForm<
     name: FieldName<FormValues>;
     type: string;
     types?: MultipleFieldErrors;
-    message?: string;
+    message?: Message;
     preventRender?: boolean;
   }) => {
     const field = fieldsRef.current[name];
@@ -696,12 +697,12 @@ export function useForm<
   function setError(
     name: FieldName<FormValues>,
     type: string,
-    message?: string,
+    message?: Message,
   ): void;
   function setError(
     name: FieldName<FormValues> | ManualFieldError<FormValues>[],
     type: string | MultipleFieldErrors = '',
-    message?: string,
+    message?: Message,
   ): void {
     if (isString(name)) {
       setInternalError({

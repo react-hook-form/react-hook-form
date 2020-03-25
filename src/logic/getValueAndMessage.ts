@@ -1,19 +1,23 @@
+import * as React from 'react';
 import isObject from '../utils/isObject';
 import isRegex from '../utils/isRegex';
-import { ValidationValue } from '../types';
+import { ValidationValue, Message } from '../types';
 
 type ValidationValueMessage = {
   value: ValidationValue;
-  message: string;
+  message: Message;
 };
 
 export default (
   validationData?: ValidationValue | ValidationValueMessage,
 ): {
   value: ValidationValue;
-  message: string;
+  message: Message;
 } => {
-  const isPureObject = isObject(validationData) && !isRegex(validationData);
+  const isPureObject =
+    isObject(validationData) &&
+    !isRegex(validationData) &&
+    !React.isValidElement(validationData);
 
   return {
     value: isPureObject
