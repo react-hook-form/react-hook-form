@@ -4,12 +4,31 @@ import { Controller } from './controller';
 import { reconfigureControl } from './useForm.test';
 import { Field } from './types';
 
+jest.spyOn(console, 'warn').mockImplementation(() => {});
+
 describe('Controller', () => {
   it('should render correctly with as with string', () => {
     const control = reconfigureControl();
+    const fieldsRef = {
+      current: {},
+    };
 
     const { asFragment } = render(
-      <Controller defaultValue="" name="test" as="input" control={control} />,
+      <Controller
+        defaultValue=""
+        name="test"
+        as={'input' as 'input'}
+        control={
+          {
+            ...control,
+            register: (payload: any) => {
+              // @ts-ignore
+              fieldsRef.current[payload.name] = 'test';
+            },
+            fieldsRef,
+          } as any
+        }
+      />,
     );
 
     expect(asFragment()).toMatchSnapshot();
@@ -17,13 +36,25 @@ describe('Controller', () => {
 
   it('should render correctly with as with component', () => {
     const control = reconfigureControl();
+    const fieldsRef = {
+      current: {},
+    };
 
     const { asFragment } = render(
       <Controller
         defaultValue=""
         name="test"
         as={<input />}
-        control={control}
+        control={
+          {
+            ...control,
+            register: (payload: any) => {
+              // @ts-ignore
+              fieldsRef.current[payload.name] = 'test';
+            },
+            fieldsRef,
+          } as any
+        }
       />,
     );
 
@@ -34,15 +65,27 @@ describe('Controller', () => {
     const setValue = jest.fn();
     const control = reconfigureControl({
       setValue,
-      mode: { isOnSubmit: true, isOnBlur: false },
+      mode: { isOnChange: false, isOnSubmit: true, isOnBlur: false },
     });
+    const fieldsRef = {
+      current: {},
+    };
 
     const { getByPlaceholderText } = render(
       <Controller
         defaultValue=""
         name="test"
         as={<input placeholder="test" />}
-        control={control}
+        control={
+          {
+            ...control,
+            register: (payload: any) => {
+              // @ts-ignore
+              fieldsRef.current[payload.name] = 'test';
+            },
+            fieldsRef,
+          } as any
+        }
       />,
     );
 
@@ -59,15 +102,27 @@ describe('Controller', () => {
     const triggerValidation = jest.fn();
     const control = reconfigureControl({
       triggerValidation,
-      mode: { isOnSubmit: true, isOnBlur: true },
+      mode: { isOnChange: false, isOnSubmit: true, isOnBlur: true },
     });
+    const fieldsRef = {
+      current: {},
+    };
 
     const { getByPlaceholderText } = render(
       <Controller
         defaultValue=""
         name="test"
         as={<input placeholder="test" />}
-        control={control}
+        control={
+          {
+            ...control,
+            register: (payload: any) => {
+              // @ts-ignore
+              fieldsRef.current[payload.name] = 'test';
+            },
+            fieldsRef,
+          } as any
+        }
       />,
     );
 
@@ -84,8 +139,11 @@ describe('Controller', () => {
     const setValue = jest.fn();
     const control = reconfigureControl({
       setValue,
-      mode: { isOnSubmit: true, isOnBlur: true },
+      mode: { isOnChange: false, isOnSubmit: true, isOnBlur: true },
     });
+    const fieldsRef = {
+      current: {},
+    };
 
     const { getByPlaceholderText } = render(
       <Controller
@@ -93,7 +151,16 @@ describe('Controller', () => {
         name="test"
         as={<input placeholder="test" />}
         onChangeName="onChange"
-        control={control}
+        control={
+          {
+            ...control,
+            register: (payload: any) => {
+              // @ts-ignore
+              fieldsRef.current[payload.name] = 'test';
+            },
+            fieldsRef,
+          } as any
+        }
       />,
     );
 
@@ -111,8 +178,11 @@ describe('Controller', () => {
     const setValue = jest.fn();
     const control = reconfigureControl({
       setValue,
-      mode: { isOnSubmit: false, isOnBlur: true },
+      mode: { isOnChange: false, isOnSubmit: false, isOnBlur: true },
     });
+    const fieldsRef = {
+      current: {},
+    };
 
     onChange.mockImplementation(() => 'test');
 
@@ -122,7 +192,16 @@ describe('Controller', () => {
         name="test"
         as={<input placeholder="test" />}
         onChange={onChange}
-        control={control}
+        control={
+          {
+            ...control,
+            register: (payload: any) => {
+              // @ts-ignore
+              fieldsRef.current[payload.name] = 'test';
+            },
+            fieldsRef,
+          } as any
+        }
       />,
     );
 
@@ -139,8 +218,11 @@ describe('Controller', () => {
   it('should invoke custom onBlur method', () => {
     const onBlur = jest.fn();
     const control = reconfigureControl({
-      mode: { isOnSubmit: false, isOnBlur: true },
+      mode: { isOnChange: false, isOnSubmit: false, isOnBlur: true },
     });
+    const fieldsRef = {
+      current: {},
+    };
 
     const { getByPlaceholderText } = render(
       <Controller
@@ -148,7 +230,16 @@ describe('Controller', () => {
         name="test"
         as={<input placeholder="test" />}
         onBlur={onBlur}
-        control={control}
+        control={
+          {
+            ...control,
+            register: (payload: any) => {
+              // @ts-ignore
+              fieldsRef.current[payload.name] = 'test';
+            },
+            fieldsRef,
+          } as any
+        }
       />,
     );
 
@@ -169,9 +260,25 @@ describe('Controller', () => {
         },
       },
     });
+    const fieldsRef = {
+      current: {},
+    };
 
     const { asFragment } = render(
-      <Controller name="test" as="input" control={control} />,
+      <Controller
+        name="test"
+        as={'input' as 'input'}
+        control={
+          {
+            ...control,
+            register: (payload: any) => {
+              // @ts-ignore
+              fieldsRef.current[payload.name] = 'test';
+            },
+            fieldsRef,
+          } as any
+        }
+      />,
     );
 
     expect(asFragment()).toMatchSnapshot();
@@ -179,14 +286,26 @@ describe('Controller', () => {
 
   it('should support custom value name', () => {
     const control = reconfigureControl();
+    const fieldsRef = {
+      current: {},
+    };
 
     const { asFragment } = render(
       <Controller
         defaultValue=""
         name="test"
-        as="input"
+        as={'input' as 'input'}
         valueName="selectedkey"
-        control={control}
+        control={
+          {
+            ...control,
+            register: (payload: any) => {
+              // @ts-ignore
+              fieldsRef.current[payload.name] = 'test';
+            },
+            fieldsRef,
+          } as any
+        }
       />,
     );
 
@@ -201,7 +320,7 @@ describe('Controller', () => {
       <Controller
         defaultValue=""
         name="test[0]"
-        as="input"
+        as={'input' as 'input'}
         valueName="selectedkey"
         control={{
           ...control,
@@ -220,4 +339,50 @@ describe('Controller', () => {
 
     expect(removeFieldEventListener).toBeCalled();
   });
+});
+
+it('should re-register on new validation rules`', () => {
+  const control = reconfigureControl();
+  const fieldsRef = {
+    current: {},
+  };
+  const register = jest.fn().mockImplementation((payload: any) => {
+    // @ts-ignore
+    fieldsRef.current[payload.name] = 'test';
+  });
+
+  const { rerender } = render(
+    <Controller
+      defaultValue=""
+      name="test"
+      as={'input' as 'input'}
+      rules={{ required: false }}
+      control={{
+        ...control,
+        fieldsRef,
+        register: register,
+      }}
+    />,
+  );
+
+  expect(register).toHaveBeenCalledWith({ name: 'test' }, { required: false });
+
+  rerender(
+    <Controller
+      defaultValue=""
+      name="test"
+      as={'input' as 'input'}
+      rules={{ required: true }}
+      control={{
+        ...control,
+        fieldsRef,
+        register: register,
+      }}
+    />,
+  );
+
+  expect(register).toHaveBeenLastCalledWith(
+    { name: 'test' },
+    { required: true },
+  );
 });

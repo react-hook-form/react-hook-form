@@ -23,7 +23,7 @@ describe('assignWatchFields', () => {
         {},
       ),
     ).toEqual(['', '']);
-    expect(watchFields).toEqual(new Set(['test[0]', 'test[1]']));
+    expect(watchFields).toEqual(new Set(['test', 'test[0]', 'test[1]']));
   });
 
   test('should return default value correctly', () => {

@@ -21,7 +21,7 @@ import {
   ArrayField,
 } from './types';
 
-const { useEffect, useRef, useState } = React;
+const { useEffect, useCallback, useRef, useState } = React;
 
 export const useFieldArray = <
   FormArrayValues extends FieldValues = FieldValues,
@@ -36,26 +36,35 @@ export const useFieldArray = <
   const {
     resetFieldArrayFunctionRef,
     fieldArrayNamesRef,
+    reRender,
     fieldsRef,
     getValues,
     defaultValuesRef,
     removeFieldEventListener,
     errorsRef,
+    dirtyFieldsRef,
     isDirtyRef,
     touchedFieldsRef,
     readFormStateRef,
     watchFieldArrayRef,
+    validFieldsRef,
+    fieldsWithValidationRef,
     validateSchemaIsValid,
   } = control || methods.control;
   const memoizedDefaultValues = useRef(get(defaultValuesRef.current, name, []));
   const [fields, setField] = useState<
     Partial<ArrayField<FormArrayValues, KeyName>>[]
   >(mapIds(memoizedDefaultValues.current, keyName));
+  const allFields = useRef(fields);
   const appendValueWithKey = (value: Partial<FormArrayValues>[]) =>
     value.map((v: Partial<FormArrayValues>) => appendId(v, keyName));
+  allFields.current = fields;
 
   const commonTasks = (fieldsValues: any) => {
-    watchFieldArrayRef.current[name] = fieldsValues;
+    watchFieldArrayRef.current = {
+      ...watchFieldArrayRef.current,
+      [name]: fieldsValues,
+    };
     setField(fieldsValues);
 
     if (readFormStateRef.current.isValid && validateSchemaIsValid) {
@@ -84,8 +93,8 @@ export const useFieldArray = <
 
     if (isArray(currentFieldsValue)) {
       for (let i = 0; i < currentFieldsValue.length; i++) {
-        fields[i] = {
-          ...fields[i],
+        allFields.current[i] = {
+          ...allFields.current[i],
           ...currentFieldsValue[i],
         };
       }
@@ -95,12 +104,12 @@ export const useFieldArray = <
   const append = (
     value: Partial<FormArrayValues> | Partial<FormArrayValues>[],
   ) => {
-    mapCurrentFieldsValueWithState();
     if (readFormStateRef.current.dirty) {
       isDirtyRef.current = true;
+      reRender();
     }
     commonTasks([
-      ...fields,
+      ...allFields.current,
       ...(isArray(value)
         ? appendValueWithKey(value)
         : [appendId(value, keyName)]),
@@ -110,11 +119,10 @@ export const useFieldArray = <
   const prepend = (
     value: Partial<FormArrayValues> | Partial<FormArrayValues>[],
   ) => {
-    mapCurrentFieldsValueWithState();
     resetFields();
     commonTasks(
       prependAt(
-        fields,
+        allFields.current,
         isArray(value) ? appendValueWithKey(value) : [appendId(value, keyName)],
       ),
     );
@@ -131,10 +139,12 @@ export const useFieldArray = <
         touchedFieldsRef.current[name],
         fillEmptyArray(value),
       );
+      reRender();
     }
   };
 
   const remove = (index?: number | number[]) => {
+    let shouldRender = false;
     if (!isUndefined(index)) {
       mapCurrentFieldsValueWithState();
     }
@@ -142,10 +152,13 @@ export const useFieldArray = <
     resetFields(
       removeArrayAt(getFieldValueByName(fieldsRef.current, name), index),
     );
-    commonTasks(removeArrayAt(fields, index));
+    commonTasks(removeArrayAt(allFields.current, index));
 
     if (errorsRef.current[name]) {
       errorsRef.current[name] = removeArrayAt(errorsRef.current[name], index);
+      if (!(errorsRef.current[name] as []).filter(Boolean).length) {
+        delete errorsRef.current[name];
+      }
     }
 
     if (readFormStateRef.current.touched && touchedFieldsRef.current[name]) {
@@ -153,6 +166,60 @@ export const useFieldArray = <
         touchedFieldsRef.current[name],
         index,
       );
+      shouldRender = true;
+    }
+
+    if (readFormStateRef.current.dirty) {
+      dirtyFieldsRef.current.forEach(dirtyField => {
+        if (isUndefined(name) || dirtyField.startsWith(`${name}[${index}]`)) {
+          dirtyFieldsRef.current.delete(dirtyField);
+        }
+      });
+      shouldRender = true;
+    }
+
+    if (readFormStateRef.current.isValid && !validateSchemaIsValid) {
+      let fieldIndex = -1;
+      let isFound = false;
+      const isIndexUndefined = isUndefined(index);
+
+      while (fieldIndex++ < fields.length) {
+        const isLast = fieldIndex === fields.length - 1;
+        const isCurrentIndex =
+          (isArray(index) ? index : [index]).indexOf(fieldIndex) >= 0;
+
+        if (isCurrentIndex || isIndexUndefined) {
+          isFound = true;
+        }
+
+        if (!isFound) {
+          continue;
+        }
+
+        for (const key in fields[fieldIndex]) {
+          const currentFieldName = `${name}[${fieldIndex}].${key}`;
+
+          if (isCurrentIndex || isLast || isIndexUndefined) {
+            validFieldsRef.current.delete(currentFieldName);
+            fieldsWithValidationRef.current.delete(currentFieldName);
+          } else {
+            const previousFieldName = `${name}[${fieldIndex - 1}].${key}`;
+
+            if (validFieldsRef.current.has(currentFieldName)) {
+              validFieldsRef.current.add(previousFieldName);
+            }
+            if (fieldsWithValidationRef.current.has(currentFieldName)) {
+              fieldsWithValidationRef.current.add(previousFieldName);
+            }
+          }
+        }
+      }
+
+      shouldRender = true;
+    }
+
+    if (shouldRender) {
+      reRender();
     }
   };
 
@@ -164,7 +231,7 @@ export const useFieldArray = <
     resetFields(insertAt(getFieldValueByName(fieldsRef.current, name), index));
     commonTasks(
       insertAt(
-        fields,
+        allFields.current,
         index,
         isArray(value) ? appendValueWithKey(value) : [appendId(value, keyName)],
       ),
@@ -184,6 +251,7 @@ export const useFieldArray = <
         index,
         fillEmptyArray(value),
       );
+      reRender();
     }
   };
 
@@ -192,8 +260,8 @@ export const useFieldArray = <
     const fieldValues = getFieldValueByName(fieldsRef.current, name);
     swapArrayAt(fieldValues, indexA, indexB);
     resetFields(fieldValues);
-    swapArrayAt(fields, indexA, indexB);
-    commonTasks([...fields]);
+    swapArrayAt(allFields.current, indexA, indexB);
+    commonTasks([...allFields.current]);
 
     if (errorsRef.current[name]) {
       swapArrayAt(errorsRef.current[name], indexA, indexB);
@@ -201,6 +269,7 @@ export const useFieldArray = <
 
     if (readFormStateRef.current.touched && touchedFieldsRef.current[name]) {
       swapArrayAt(touchedFieldsRef.current[name], indexA, indexB);
+      reRender();
     }
   };
 
@@ -209,8 +278,8 @@ export const useFieldArray = <
     const fieldValues = getFieldValueByName(fieldsRef.current, name);
     moveArrayAt(fieldValues, from, to);
     resetFields(fieldValues);
-    moveArrayAt(fields, from, to);
-    commonTasks([...fields]);
+    moveArrayAt(allFields.current, from, to);
+    commonTasks([...allFields.current]);
 
     if (errorsRef.current[name]) {
       moveArrayAt(errorsRef.current[name], from, to);
@@ -218,6 +287,7 @@ export const useFieldArray = <
 
     if (readFormStateRef.current.touched && touchedFieldsRef.current[name]) {
       moveArrayAt(touchedFieldsRef.current[name], from, to);
+      reRender();
     }
   };
 
@@ -232,7 +302,10 @@ export const useFieldArray = <
     const fieldArrayNames = fieldArrayNamesRef.current;
     fieldArrayNames.add(name);
     resetFunctions[name] = reset;
-    watchFieldArrayRef.current[name] = {};
+    watchFieldArrayRef.current = {
+      ...watchFieldArrayRef.current,
+      [name]: fields,
+    };
 
     return () => {
       resetFields();
@@ -243,12 +316,12 @@ export const useFieldArray = <
   }, []);
 
   return {
-    swap,
-    move,
-    prepend,
-    append,
-    remove,
-    insert,
+    swap: useCallback(swap, []),
+    move: useCallback(move, []),
+    prepend: useCallback(prepend, []),
+    append: useCallback(append, []),
+    remove: useCallback(remove, [fields]),
+    insert: useCallback(insert, []),
     fields,
   };
 };

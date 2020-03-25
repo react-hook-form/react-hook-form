@@ -3,6 +3,7 @@ import { useFieldArray } from './useFieldArray';
 import { appendId } from './logic/mapIds';
 import { reconfigureControl } from './useForm.test';
 
+jest.spyOn(console, 'warn').mockImplementation(() => {});
 jest.mock('./logic/generateId', () => ({
   default: () => '1',
 }));
@@ -225,22 +226,29 @@ describe('useFieldArray', () => {
   });
 
   it('should remove field according index', () => {
+    const dirtyFieldsRef = {
+      current: new Set(['test[0]', 'test[1]']),
+    };
+
     const { result } = renderHook(() =>
       useFieldArray({
-        control: reconfigureControl({
-          defaultValuesRef: {
-            current: { test: [{ test: '1' }, { test: '2' }] },
-          },
-          getValues: () => ({
-            test: [],
-          }),
-          fieldsRef: {
-            current: {
-              'test[0]': { ref: { name: 'test[0]', value: { test: '1' } } },
-              'test[1]': { ref: { name: 'test[1]', value: { test: '2' } } },
+        control: {
+          ...reconfigureControl({
+            defaultValuesRef: {
+              current: { test: [{ test: '1' }, { test: '2' }] },
             },
-          },
-        }),
+            getValues: () => ({
+              test: [],
+            }),
+            fieldsRef: {
+              current: {
+                'test[0]': { ref: { name: 'test[0]', value: { test: '1' } } },
+                'test[1]': { ref: { name: 'test[1]', value: { test: '2' } } },
+              },
+            },
+          }),
+          dirtyFieldsRef,
+        },
         name: 'test',
       }),
     );
@@ -249,7 +257,7 @@ describe('useFieldArray', () => {
       result.current.remove(1);
     });
 
-    expect(result.current.fields).toEqual([{ test: '1', id: '1' }]);
+    expect(dirtyFieldsRef.current).toEqual(new Set(['test[0]']));
   });
 
   it('should remove error', () => {

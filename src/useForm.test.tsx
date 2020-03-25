@@ -16,11 +16,21 @@ export const reconfigureControl = (
   defaultValuesRef: {
     current: {},
   },
+  validFieldsRef: {
+    current: new Set(),
+  },
+  fieldsWithValidationRef: {
+    current: new Set(),
+  },
   watchFieldArrayRef: {
     current: {},
   },
+  dirtyFieldsRef: {
+    current: new Set(),
+  },
   validateSchemaIsValid: jest.fn(),
   getValues: jest.fn(),
+  reRender: jest.fn(),
   setValue: jest.fn(),
   register: jest.fn(),
   unregister: jest.fn(),
@@ -28,7 +38,7 @@ export const reconfigureControl = (
   removeFieldEventListener: jest.fn(),
   errorsRef: { current: {} },
   touchedFieldsRef: { current: {} },
-  mode: { isOnSubmit: false, isOnBlur: false },
+  mode: { isOnSubmit: false, isOnBlur: false, isOnChange: false },
   reValidateMode: {
     isReValidateOnBlur: false,
     isReValidateOnSubmit: false,
@@ -79,9 +89,17 @@ jest.mock('./logic/transformToNestObject', () => ({
   esmodule: true,
 }));
 
+let nodeEnv: any;
+
 describe('useForm', () => {
   beforeEach(() => {
+    nodeEnv = process.env.NODE_ENV;
+    process.env.NODE_ENV = 'production';
     jest.resetAllMocks();
+  });
+
+  afterEach(() => {
+    process.env.NODE_ENV = nodeEnv;
   });
 
   describe('register', () => {
@@ -553,6 +571,142 @@ describe('useForm', () => {
         expect(result.current.setValue('test', '1')).toBeUndefined();
       });
     });
+
+    it('should work with array fields', () => {
+      const { result } = renderHook(() => useForm());
+
+      act(() => {
+        result.current.register('test1[0].test');
+        result.current.register('test[0]');
+        result.current.register('test[1]');
+        result.current.register('test[2]');
+      });
+
+      act(() => {
+        result.current.setValue('test', ['1', '2', '3']);
+
+        expect(result.current.control.fieldsRef.current['test[0]']).toEqual({
+          ref: { name: 'test[0]', value: '1' },
+        });
+        expect(result.current.control.fieldsRef.current['test[1]']).toEqual({
+          ref: { name: 'test[1]', value: '2' },
+        });
+        expect(result.current.control.fieldsRef.current['test[2]']).toEqual({
+          ref: { name: 'test[2]', value: '3' },
+        });
+      });
+    });
+
+    it('should worked with nested array fields with object', () => {
+      const { result } = renderHook(() => useForm());
+
+      act(() => {
+        result.current.register('test[0].test');
+        result.current.register('test[1].test');
+        result.current.register('test[2].test');
+      });
+
+      act(() => {
+        result.current.setValue('test', [
+          { test: '1' },
+          { test: '2' },
+          { test: '3' },
+        ]);
+
+        expect(
+          result.current.control.fieldsRef.current['test[0].test'],
+        ).toEqual({
+          ref: { name: 'test[0].test', value: '1' },
+        });
+        expect(
+          result.current.control.fieldsRef.current['test[1].test'],
+        ).toEqual({
+          ref: { name: 'test[1].test', value: '2' },
+        });
+        expect(
+          result.current.control.fieldsRef.current['test[2].test'],
+        ).toEqual({
+          ref: { name: 'test[2].test', value: '3' },
+        });
+      });
+    });
+
+    it('should work with object fields', () => {
+      const { result } = renderHook(() => useForm());
+
+      act(() => {
+        result.current.register('test1[0].test');
+        result.current.register('test.bill');
+        result.current.register('test.luo');
+        result.current.register('test.test');
+      });
+
+      act(() => {
+        result.current.setValue('test', { bill: '1', luo: '2', test: '3' });
+
+        expect(result.current.control.fieldsRef.current['test.bill']).toEqual({
+          ref: { name: 'test.bill', value: '1' },
+        });
+        expect(result.current.control.fieldsRef.current['test.luo']).toEqual({
+          ref: { name: 'test.luo', value: '2' },
+        });
+        expect(result.current.control.fieldsRef.current['test.test']).toEqual({
+          ref: { name: 'test.test', value: '3' },
+        });
+      });
+    });
+
+    it('should work array of fields', () => {
+      const { result } = renderHook(() => useForm());
+
+      act(() => {
+        result.current.register('test.bill');
+        result.current.register('test.luo');
+        result.current.register('test.test');
+        result.current.register('array[0]');
+        result.current.register('array[1]');
+        result.current.register('array[2]');
+        result.current.register('object.bill');
+        result.current.register('object.luo');
+        result.current.register('object.test');
+      });
+
+      act(() => {
+        result.current.setValue([
+          { 'test.bill': '1' },
+          { array: ['1', '2', '3'] },
+          { object: { bill: '1', luo: '2', test: '3' } },
+        ]);
+
+        expect(result.current.control.fieldsRef.current['test.bill']).toEqual({
+          ref: { name: 'test.bill', value: '1' },
+        });
+
+        expect(result.current.control.fieldsRef.current['array[0]']).toEqual({
+          ref: { name: 'array[0]', value: '1' },
+        });
+        expect(result.current.control.fieldsRef.current['array[1]']).toEqual({
+          ref: { name: 'array[1]', value: '2' },
+        });
+        expect(result.current.control.fieldsRef.current['array[2]']).toEqual({
+          ref: { name: 'array[2]', value: '3' },
+        });
+
+        expect(result.current.control.fieldsRef.current['object.bill']).toEqual(
+          {
+            ref: { name: 'object.bill', value: '1' },
+          },
+        );
+        expect(result.current.control.fieldsRef.current['object.luo']).toEqual({
+          ref: { name: 'object.luo', value: '2' },
+        });
+        expect(result.current.control.fieldsRef.current['object.test']).toEqual(
+          {
+            ref: { name: 'object.test', value: '3' },
+          },
+        );
+      });
+    });
   });
 
   describe('triggerValidation', () => {
@@ -674,8 +828,8 @@ describe('useForm', () => {
 
       await act(async () => {
         await result.current.triggerValidation('test');
+        expect(result.current.errors).toEqual({ test: 'test' });
       });
-      expect(result.current.errors).toEqual({ test: 'test' });
     });
 
     it('should return the status of the requested field with single field validation', async () => {
@@ -711,10 +865,10 @@ describe('useForm', () => {
       await act(async () => {
         const resultFalse = await result.current.triggerValidation('test2');
         expect(resultFalse).toEqual(false);
-      });
 
-      expect(result.current.errors).toEqual({
-        test2: 'test2',
+        expect(result.current.errors).toEqual({
+          test2: 'test2',
+        });
       });
     });
 
@@ -784,11 +938,11 @@ describe('useForm', () => {
 
       await act(async () => {
         await result.current.triggerValidation(['test', 'test1']);
-      });
 
-      expect(result.current.errors).toEqual({
-        test: 'test',
-        test1: 'test1',
+        expect(result.current.errors).toEqual({
+          test: 'test',
+          test1: 'test1',
+        });
       });
     });
 
@@ -832,16 +986,6 @@ describe('useForm', () => {
           'test2',
         ]);
         expect(resultTrue).toEqual(true);
-
-        const resultFalse = await result.current.triggerValidation([
-          'test2',
-          'test3',
-        ]);
-        expect(resultFalse).toEqual(false);
-      });
-
-      expect(result.current.errors).toEqual({
-        test3: 'test3',
       });
     });
 
@@ -880,11 +1024,11 @@ describe('useForm', () => {
 
       await act(async () => {
         await result.current.triggerValidation();
-      });
 
-      expect(result.current.errors).toEqual({
-        test: 'test',
-        test1: 'test1',
+        expect(result.current.errors).toEqual({
+          test: 'test',
+          test1: 'test1',
+        });
       });
     });
   });

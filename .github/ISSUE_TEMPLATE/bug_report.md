@@ -17,7 +17,7 @@ Steps to reproduce the behavior:
 3. Scroll down to '....'
 4. See error
 
-**Codesandbox link**
+**Codesandbox link (Required)**
 Include a codesandox will help us to investigate the issue quicker.
 
 **Expected behavior**

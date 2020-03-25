@@ -43,20 +43,45 @@ export type SchemaValidateOptions = Partial<{
   context: any;
 }>;
 
-export type ValidationResolver = <FormValues, ValidationContext>(
-  values: FieldValues,
-  validationContext: ValidationContext,
-) => { values: FieldValues | {}; errors: FieldErrors<FormValues> | {} };
+export type EmptyObject = { [key in string | number]: never };
+
+export type SchemaValidationSuccess<
+  FormValues extends FieldValues = FieldValues
+> = {
+  values: FormValues;
+  errors: EmptyObject;
+};
+
+export type SchemaValidationError<
+  FormValues extends FieldValues = FieldValues
+> = {
+  values: EmptyObject;
+  errors: FieldErrors<FormValues>;
+};
+
+export type SchemaValidationResult<
+  FormValues extends FieldValues = FieldValues
+> = SchemaValidationSuccess<FormValues> | SchemaValidationError<FormValues>;
+
+export type ValidationResolver<
+  FormValues extends FieldValues = FieldValues,
+  ValidationContext extends object = object
+> = (
+  values: FormValues,
+  validationContext?: ValidationContext,
+) =>
+  | SchemaValidationResult<FormValues>
+  | Promise<SchemaValidationResult<FormValues>>;
 
 export type UseFormOptions<
   FormValues extends FieldValues = FieldValues,
-  ValidationContext = undefined
+  ValidationContext extends object = object
 > = Partial<{
   mode: Mode;
   reValidateMode: Mode;
   defaultValues: DeepPartial<FormValues>;
   validationSchema: any;
-  validationResolver: ValidationResolver;
+  validationResolver: ValidationResolver<FormValues, ValidationContext>;
   validationContext: ValidationContext;
   submitFocusError: boolean;
   validateCriteriaMode: 'firstError' | 'all';
@@ -76,7 +101,7 @@ export type ValidateResult = string | boolean | undefined;
 export type Validate = (data: any) => ValidateResult | Promise<ValidateResult>;
 
 export type ValidationOptions = Partial<{
-  required: boolean | string | ValidationOptionObject<boolean>;
+  required: string | ValidationOptionObject<boolean>;
   min: ValidationOptionObject<number | string>;
   max: ValidationOptionObject<number | string>;
   maxLength: ValidationOptionObject<number | string>;
@@ -112,28 +137,35 @@ export type FieldRefs<FormValues extends FieldValues> = Partial<
   Record<FieldName<FormValues>, Field>
 >;
 
-export type NestDataObject<FormValues> = {
-  [Key in keyof FormValues]?: FormValues[Key] extends any[]
-    ? FormValues[Key][number] extends object
-      ? FieldErrors<FormValues[Key][number]>[]
-      : FormValues[Key][number] extends string | number
-      ? FieldError[]
-      : FieldError
+export type NestDataObject<FormValues, Value> = {
+  [Key in keyof FormValues]?: FormValues[Key] extends Array<infer U>
+    ? 0 extends 1 & U
+      ? any
+      : unknown extends U
+      ? Value[]
+      : object extends U
+      ? Value[]
+      : U extends Date
+      ? Value[]
+      : U extends object
+      ? NestDataObject<U, Value>[]
+      : Value[]
+    : 0 extends 1 & FormValues[Key]
+    ? any
+    : unknown extends FormValues[Key]
+    ? Value
+    : object extends FormValues[Key]
+    ? Value
     : FormValues[Key] extends Date
-    ? FieldError
+    ? Value
     : FormValues[Key] extends object
-    ? FieldErrors<FormValues[Key]>
-    : FieldError;
+    ? NestDataObject<FormValues[Key], Value>
+    : Value;
 };
 
-export type FieldErrors<FormValues> = NestDataObject<FormValues>;
+export type FieldErrors<FormValues> = NestDataObject<FormValues, FieldError>;
 
-export type Touched<FormValues> = NestDataObject<FormValues>;
-
-export type SubmitPromiseResult<FormValues extends FieldValues> = {
-  errors: FieldErrors<FormValues>;
-  values: FormValues;
-};
+export type Touched<FormValues> = NestDataObject<FormValues, true>;
 
 export type FormStateProxy<FormValues extends FieldValues = FieldValues> = {
   dirty: boolean;
@@ -175,7 +207,7 @@ export type FormValuesFromErrors<Errors> = Errors extends FieldErrors<
   ? FormValues
   : never;
 
-export type EventFunction = (args: any) => any;
+export type EventFunction = (args: any[]) => any;
 
 export type Control<FormValues extends FieldValues = FieldValues> = {
   register<Element extends FieldElement = FieldElement>(): (
@@ -206,28 +238,42 @@ export type Control<FormValues extends FieldValues = FieldValues> = {
     payload?: FieldName<FormValues> | FieldName<FormValues>[] | string,
     shouldRender?: boolean,
   ) => Promise<boolean>;
+  reRender: () => void;
   removeFieldEventListener: (field: Field, forceDelete?: boolean) => void;
   unregister(name: FieldName<FormValues>): void;
   unregister(names: FieldName<FormValues>[]): void;
   unregister(names: FieldName<FormValues> | FieldName<FormValues>[]): void;
   getValues: (payload?: { nest: boolean }) => any;
-  setValue: <Name extends FieldName<FormValues>>(
+  setValue<Name extends FieldName<FormValues>>(
     name: Name,
-    value: FormValues[Name],
+    value?: FormValues[Name],
     shouldValidate?: boolean,
-  ) => void | Promise<boolean>;
+  ): void;
+  setValue<Name extends FieldName<FormValues>>(
+    namesWithValue: Record<Name, any>[],
+    shouldValidate?: boolean,
+  ): void;
+  setValue<Name extends FieldName<FormValues>>(
+    names: Name | Record<Name, any>[],
+    valueOrShouldValidate?: FormValues[Name] | boolean,
+    shouldValidate?: boolean,
+  ): void;
   formState: FormStateProxy<FormValues>;
   mode: {
     isOnBlur: boolean;
     isOnSubmit: boolean;
+    isOnChange: boolean;
   };
   reValidateMode: {
     isReValidateOnBlur: boolean;
     isReValidateOnSubmit: boolean;
   };
+  dirtyFieldsRef: React.MutableRefObject<Set<FieldName<FormValues>>>;
   validateSchemaIsValid?: (fieldsValues: any) => void;
   touchedFieldsRef: React.MutableRefObject<Touched<FormValues>>;
   watchFieldArrayRef: React.MutableRefObject<any>;
+  validFieldsRef: React.MutableRefObject<Set<FieldName<FormValues>>>;
+  fieldsWithValidationRef: React.MutableRefObject<Set<FieldName<FormValues>>>;
   errorsRef: React.MutableRefObject<FieldErrors<FormValues>>;
   fieldsRef: React.MutableRefObject<FieldRefs<FormValues>>;
   resetFieldArrayFunctionRef: React.MutableRefObject<
@@ -249,28 +295,40 @@ export type Control<FormValues extends FieldValues = FieldValues> = {
   >;
 };
 
+export type Assign<T extends object, U extends object> = T & Omit<U, keyof T>;
+
 export type AsProps<As> = As extends undefined
   ? {}
   : As extends React.ReactElement
   ? { [key: string]: any }
+  : As extends React.ComponentType<infer P>
+  ? P
   : As extends keyof JSX.IntrinsicElements
   ? JSX.IntrinsicElements[As]
   : never;
 
-export type ControllerProps<ControlProp extends Control = Control> = {
-  name: string;
-  as: React.ReactElement | React.ElementType | string;
-  rules?: ValidationOptions;
-  onChange?: EventFunction;
-  onBlur?: EventFunction;
-  mode?: Mode;
-  onChangeName?: string;
-  onBlurName?: string;
-  valueName?: string;
-  defaultValue?: any;
-  control?: ControlProp;
-  [key: string]: any;
-};
+export type ControllerProps<
+  As extends
+    | React.ReactElement
+    | React.ComponentType<any>
+    | keyof JSX.IntrinsicElements,
+  ControlProp extends Control = Control
+> = Assign<
+  {
+    name: string;
+    as: As;
+    rules?: ValidationOptions;
+    onChange?: EventFunction;
+    onBlur?: EventFunction;
+    mode?: Mode;
+    onChangeName?: string;
+    onBlurName?: string;
+    valueName?: string;
+    defaultValue?: any;
+    control?: ControlProp;
+  },
+  AsProps<As>
+>;
 
 export type ErrorMessageProps<
   Errors extends FieldErrors<any>,
@@ -278,17 +336,21 @@ export type ErrorMessageProps<
   As extends
     | undefined
     | React.ReactElement
+    | React.ComponentType<any>
     | keyof JSX.IntrinsicElements = undefined
-> = {
-  as?: As;
-  errors?: Errors;
-  name: Name;
-  message?: string;
-  children?: (data: {
-    message: string;
-    messages: MultipleFieldErrors;
-  }) => React.ReactNode;
-} & AsProps<As>;
+> = Assign<
+  {
+    as?: As;
+    errors?: Errors;
+    name: Name;
+    message?: string;
+    children?: (data: {
+      message: string;
+      messages?: MultipleFieldErrors;
+    }) => React.ReactNode;
+  },
+  AsProps<As>
+>;
 
 export type UseFieldArrayProps<
   KeyName extends string = 'id',
@@ -303,3 +365,13 @@ export type ArrayField<
   FormArrayValues extends FieldValues = FieldValues,
   KeyName extends string = 'id'
 > = FormArrayValues & Record<KeyName, string>;
+
+export type OmitResetState = Partial<{
+  errors: boolean;
+  dirty: boolean;
+  dirtyFields: boolean;
+  isSubmitted: boolean;
+  touched: boolean;
+  isValid: boolean;
+  submitCount: boolean;
+}>;

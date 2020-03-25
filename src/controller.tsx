@@ -8,8 +8,13 @@ import isNameInFieldArray from './logic/isNameInFieldArray';
 import { useFormContext } from './useFormContext';
 import { VALIDATION_MODE, VALUE } from './constants';
 import { Control, ControllerProps, EventFunction, Field } from './types';
-
-const Controller = <ControlProp extends Control = Control>({
+const Controller = <
+  As extends
+    | React.ReactElement
+    | React.ComponentType<any>
+    | keyof JSX.IntrinsicElements,
+  ControlProp extends Control = Control
+>({
   name,
   rules,
   as: InnerComponent,
@@ -21,7 +26,7 @@ const Controller = <ControlProp extends Control = Control>({
   defaultValue,
   control,
   ...rest
-}: ControllerProps<ControlProp>) => {
+}: ControllerProps<As, ControlProp>) => {
   const methods = useFormContext();
   const {
     defaultValuesRef,
@@ -31,7 +36,7 @@ const Controller = <ControlProp extends Control = Control>({
     errorsRef,
     removeFieldEventListener,
     triggerValidation,
-    mode: { isOnSubmit, isOnBlur },
+    mode: { isOnSubmit, isOnBlur, isOnChange },
     reValidateMode: { isReValidateOnBlur, isReValidateOnSubmit },
     formState: { isSubmitted },
     fieldsRef,
@@ -50,23 +55,24 @@ const Controller = <ControlProp extends Control = Control>({
       hasError: !!get(errorsRef.current, name),
       isOnBlur,
       isOnSubmit,
+      isOnChange,
       isReValidateOnBlur,
       isReValidateOnSubmit,
       isSubmitted,
     });
 
-  const commonTask = (target: any) => {
-    const data = getInputValue(target, isCheckboxInput);
+  const commonTask = (event: any) => {
+    const data = getInputValue(event, isCheckboxInput);
     setInputStateValue(data);
     valueRef.current = data;
     return data;
   };
 
-  const eventWrapper = (event: EventFunction) => (...arg: any) =>
+  const eventWrapper = (event: EventFunction) => (...arg: any[]) =>
     setValue(name, commonTask(event(arg)), shouldValidate());
 
-  const handleChange = (e: any) => {
-    const data = commonTask(e && e.target ? e.target : e);
+  const handleChange = (event: any) => {
+    const data = commonTask(event);
     setValue(name, data, shouldValidate());
   };
 
@@ -79,28 +85,29 @@ const Controller = <ControlProp extends Control = Control>({
     }
 
     register(
-      Object.defineProperty(
-        {
-          name,
+      Object.defineProperty({ name }, VALUE, {
+        set(data) {
+          setInputStateValue(data);
+          valueRef.current = data;
         },
-        VALUE,
-        {
-          set(data) {
-            setInputStateValue(data);
-            valueRef.current = data;
-          },
-          get() {
-            return valueRef.current;
-          },
+        get() {
+          return valueRef.current;
         },
-      ),
+      }),
       { ...rules },
     );
   };
 
-  if (!fieldsRef.current[name]) {
-    registerField();
-  }
+  React.useEffect(() => {
+    if (!fieldsRef.current[name]) {
+      registerField();
+      setInputStateValue(
+        isUndefined(defaultValue)
+          ? get(defaultValuesRef.current, name)
+          : defaultValue,
+      );
+    }
+  });
 
   React.useEffect(() => {
     registerField();
@@ -110,6 +117,10 @@ const Controller = <ControlProp extends Control = Control>({
       }
     };
   }, [name]);
+
+  React.useEffect(() => {
+    registerField();
+  }, [rules]);
 
   const shouldReValidateOnBlur = isOnBlur || isReValidateOnBlur;
 
@@ -135,11 +146,9 @@ const Controller = <ControlProp extends Control = Control>({
     ...{ [valueName || (isCheckboxInput ? 'checked' : VALUE)]: value },
   };
 
-  return React.isValidElement(InnerComponent) ? (
-    React.cloneElement(InnerComponent, props)
-  ) : (
-    <InnerComponent {...props} />
-  );
+  return React.isValidElement(InnerComponent)
+    ? React.cloneElement(InnerComponent, props)
+    : React.createElement(InnerComponent as string, props);
 };
 
 export { Controller };

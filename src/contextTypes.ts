@@ -12,6 +12,7 @@ import {
   ManualFieldError,
   MultipleFieldErrors,
   Control,
+  OmitResetState,
 } from './types';
 
 export type FormProps<FormValues extends FieldValues = FieldValues> = {
@@ -75,18 +76,30 @@ export type FormContextValues<FormValues extends FieldValues = FieldValues> = {
   clearError(name: FieldName<FormValues>): void;
   clearError(names: FieldName<FormValues>[]): void;
   clearError(name?: FieldName<FormValues> | FieldName<FormValues>[]): void;
-  setValue: <Name extends FieldName<FormValues>>(
+  setValue<Name extends FieldName<FormValues>>(
     name: Name,
-    value: FormValues[Name],
+    value?: FormValues[Name],
     shouldValidate?: boolean,
-  ) => void | Promise<boolean>;
+  ): void;
+  setValue<Name extends FieldName<FormValues>>(
+    namesWithValue: Record<Name, any>[],
+    shouldValidate?: boolean,
+  ): void;
+  setValue<Name extends FieldName<FormValues>>(
+    names: Name | Record<Name, any>[],
+    valueOrShouldValidate?: FormValues[Name] | boolean,
+    shouldValidate?: boolean,
+  ): void;
   triggerValidation: (
     payload?: FieldName<FormValues> | FieldName<FormValues>[] | string,
     shouldRender?: boolean,
   ) => Promise<boolean>;
   errors: FieldErrors<FormValues>;
   formState: FormStateProxy<FormValues>;
-  reset: (values?: DeepPartial<FormValues>) => void;
+  reset: (
+    values?: DeepPartial<FormValues>,
+    omitResetState?: OmitResetState,
+  ) => void;
   getValues: (payload?: { nest: boolean }) => FormValues;
   handleSubmit: (
     callback: OnSubmit<FormValues>,

@@ -13,7 +13,7 @@ const UseFieldArray: React.FC = (props: any) => {
     control,
     handleSubmit,
     register,
-    formState: { dirty, touched },
+    formState: { dirty, touched, isValid },
     reset,
     errors,
   } = useForm<{
@@ -26,6 +26,7 @@ const UseFieldArray: React.FC = (props: any) => {
           },
         }
       : {}),
+    mode: props.match.params.mode === 'formState' ? 'onChange' : 'onSubmit',
   });
   const {
     fields,
@@ -136,6 +137,7 @@ const UseFieldArray: React.FC = (props: any) => {
       <div id="renderCount">{renderCount}</div>
       <div id="result">{JSON.stringify(data)}</div>
       <div id="dirty">{dirty ? 'yes' : 'no'}</div>
+      <div id="isValid">{isValid ? 'yes' : 'no'}</div>
       <div id="touched">{JSON.stringify(touched.data)}</div>
     </form>
   );

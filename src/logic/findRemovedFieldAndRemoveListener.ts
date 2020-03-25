@@ -3,6 +3,7 @@ import isRadioInput from '../utils/isRadioInput';
 import isCheckBoxInput from '../utils/isCheckBoxInput';
 import isDetached from '../utils/isDetached';
 import isArray from '../utils/isArray';
+import unset from '../utils/unset';
 import { Field, FieldRefs, FieldValues } from '../types';
 
 export default function findRemovedFieldAndRemoveListener<
@@ -34,19 +35,21 @@ export default function findRemovedFieldAndRemoveListener<
     const { options } = fieldValue;
 
     if (isArray(options) && options.length) {
-      options.forEach(({ ref, mutationWatcher }, index): void => {
-        if ((ref && isDetached(ref)) || forceDelete) {
-          removeAllEventListeners(ref, handleChange);
+      options
+        .filter(Boolean)
+        .forEach(({ ref, mutationWatcher }, index): void => {
+          if ((ref && isDetached(ref)) || forceDelete) {
+            removeAllEventListeners(ref, handleChange);
 
-          if (mutationWatcher) {
-            mutationWatcher.disconnect();
+            if (mutationWatcher) {
+              mutationWatcher.disconnect();
+            }
+
+            unset(options, [`[${index}]`]);
           }
+        });
 
-          options.splice(index, 1);
-        }
-      });
-
-      if (options && !options.length) {
+      if (options && !options.filter(Boolean).length) {
         delete fields[name];
       }
     } else {
