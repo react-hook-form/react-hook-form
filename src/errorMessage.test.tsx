@@ -362,4 +362,51 @@ describe('React Hook Form Error Message', () => {
 
     expect(asFragment()).toMatchSnapshot();
   });
+
+  it('should render errors message If errors message and message are not empty', () => {
+    const { asFragment } = render(
+      <ErrorMessage
+        errors={{ test: { type: 'test', message: 'test1' } }}
+        name="test"
+        message="test2"
+      />,
+    );
+
+    expect(asFragment()).toMatchSnapshot();
+  });
+
+  it('should render correctly with message that is string', () => {
+    const { asFragment } = render(
+      <ErrorMessage
+        errors={{ test: { type: 'test' } }}
+        name="test"
+        message="test"
+      />,
+    );
+
+    expect(asFragment()).toMatchSnapshot();
+  });
+
+  it('should render correctly with message that is ReactElement', () => {
+    const { asFragment } = render(
+      <ErrorMessage
+        errors={{ test: { type: 'test' } }}
+        name="test"
+        message={<p>test</p>}
+      />,
+    );
+
+    expect(asFragment()).toMatchSnapshot();
+  });
+
+  it('should render correctly with errors message that is ReactElement', () => {
+    const { asFragment } = render(
+      <ErrorMessage
+        errors={{ test: { type: 'test', message: <p>test</p> } }}
+        name="test"
+      />,
+    );
+
+    expect(asFragment()).toMatchSnapshot();
+  });
 });

@@ -2,6 +2,14 @@
 
 exports[`React Hook Form Error Message should render correctly 1`] = `<DocumentFragment />`;
 
+exports[`React Hook Form Error Message should render correctly with errors message that is ReactElement 1`] = `
+<DocumentFragment>
+  <p>
+    test
+  </p>
+</DocumentFragment>
+`;
+
 exports[`React Hook Form Error Message should render correctly with flat errors 1`] = `
 <DocumentFragment>
   flat
@@ -71,6 +79,20 @@ exports[`React Hook Form Error Message should render correctly with flat multipl
   <span>
     flat3
   </span>
+</DocumentFragment>
+`;
+
+exports[`React Hook Form Error Message should render correctly with message that is ReactElement 1`] = `
+<DocumentFragment>
+  <p>
+    test
+  </p>
+</DocumentFragment>
+`;
+
+exports[`React Hook Form Error Message should render correctly with message that is string 1`] = `
+<DocumentFragment>
+  test
 </DocumentFragment>
 `;
 
@@ -175,5 +197,11 @@ exports[`React Hook Form Error Message should render correctly with nested multi
   <span>
     array3
   </span>
+</DocumentFragment>
+`;
+
+exports[`React Hook Form Error Message should render errors message If errors message and message are not empty 1`] = `
+<DocumentFragment>
+  test1
 </DocumentFragment>
 `;
