@@ -7,10 +7,10 @@ export default (validationData?: ValidationOption) => {
     value?: ValidationOption,
   ): value is ValidationValueMessage => isObject(value) && !isRegex(value);
 
-  return {
-    value: isValueMessage(validationData)
-      ? validationData.value
-      : validationData,
-    message: isValueMessage(validationData) ? validationData.message : '',
-  };
+  return isValueMessage(validationData)
+    ? validationData
+    : {
+        value: validationData,
+        message: '',
+      };
 };
