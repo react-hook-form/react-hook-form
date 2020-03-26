@@ -1,5 +1,5 @@
-import isString from '../utils/isString';
 import isBoolean from '../utils/isBoolean';
+import isMessage from '../utils/isMessage';
 import { FieldError, ValidateResult, Ref } from '../types';
 
 export default function getValidateError(
@@ -7,10 +7,8 @@ export default function getValidateError(
   ref: Ref,
   type = 'validate',
 ): FieldError | void {
-  const isStringValue = isString(result);
-
-  if (isStringValue || (isBoolean(result) && !result)) {
-    const message = isStringValue ? (result as string) : '';
+  if (isMessage(result) || (isBoolean(result) && !result)) {
+    const message = isMessage(result) ? result : '';
     return {
       type,
       message,

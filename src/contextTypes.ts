@@ -13,6 +13,7 @@ import {
   MultipleFieldErrors,
   Control,
   OmitResetState,
+  Message,
 } from './types';
 
 export type FormProps<FormValues extends FieldValues = FieldValues> = {
@@ -66,11 +67,11 @@ export type FormContextValues<FormValues extends FieldValues = FieldValues> = {
   ): FieldValue<FormValues> | DeepPartial<FormValues> | string | undefined;
   setError(name: ManualFieldError<FormValues>[]): void;
   setError(name: FieldName<FormValues>, type: MultipleFieldErrors): void;
-  setError(name: FieldName<FormValues>, type: string, message?: string): void;
+  setError(name: FieldName<FormValues>, type: string, message?: Message): void;
   setError(
     name: FieldName<FormValues> | ManualFieldError<FormValues>[],
     type: string | MultipleFieldErrors,
-    message?: string,
+    message?: Message,
   ): void;
   clearError(): void;
   clearError(name: FieldName<FormValues>): void;

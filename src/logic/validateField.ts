@@ -13,10 +13,11 @@ import getFieldsValue from './getFieldValue';
 import isRegex from '../utils/isRegex';
 import isEmptyString from '../utils/isEmptyString';
 import isBoolean from '../utils/isBoolean';
+import isMessage from '../utils/isMessage';
 import getValidateError from './getValidateError';
 import appendErrors from './appendErrors';
 import { INPUT_VALIDATION_RULES } from '../constants';
-import { Field, FieldErrors, FieldValues, FieldRefs } from '../types';
+import { Field, FieldErrors, FieldValues, FieldRefs, Message } from '../types';
 
 export default async <FormValues extends FieldValues>(
   fieldsRef: React.MutableRefObject<FieldRefs<FormValues>>,
@@ -48,8 +49,8 @@ export default async <FormValues extends FieldValues>(
   );
   const getMinMaxMessage = (
     exceedMax: boolean,
-    maxLengthMessage: string,
-    minLengthMessage: string,
+    maxLengthMessage: Message,
+    minLengthMessage: Message,
     maxType = INPUT_VALIDATION_RULES.maxLength,
     minType = INPUT_VALIDATION_RULES.minLength,
   ) => {
@@ -74,7 +75,7 @@ export default async <FormValues extends FieldValues>(
       (isCheckBox && !getCheckboxValue(options).isValid) ||
       (isRadio && !getRadioValue(options).isValid))
   ) {
-    const { value: requiredValue, message: requiredMessage } = isString(
+    const { value: requiredValue, message: requiredMessage } = isMessage(
       required,
     )
       ? { value: !!required, message: required }
@@ -143,8 +144,10 @@ export default async <FormValues extends FieldValues>(
       message: minLengthMessage,
     } = getValueAndMessage(minLength);
     const inputLength = value.toString().length;
-    const exceedMax = maxLength && inputLength > maxLengthValue;
-    const exceedMin = minLength && inputLength < minLengthValue;
+    const exceedMax =
+      !isNullOrUndefined(maxLengthValue) && inputLength > maxLengthValue;
+    const exceedMin =
+      !isNullOrUndefined(minLengthValue) && inputLength < minLengthValue;
 
     if (exceedMax || exceedMin) {
       getMinMaxMessage(!!exceedMax, maxLengthMessage, minLengthMessage);
@@ -221,7 +224,7 @@ export default async <FormValues extends FieldValues>(
       if (!isEmptyObject(validationResult)) {
         error[name] = {
           ref: validateRef,
-          ...(validationResult as { type: string; message?: string }),
+          ...(validationResult as { type: string; message?: Message }),
         };
         if (!validateAllFieldCriteria) {
           return error;
