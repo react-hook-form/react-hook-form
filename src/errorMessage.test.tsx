@@ -363,7 +363,7 @@ describe('React Hook Form Error Message', () => {
     expect(asFragment()).toMatchSnapshot();
   });
 
-  it('should render errors message If errors message is supplied', () => {
+  it('should render errors message when errors message is supplied', () => {
     const { asFragment } = render(
       <ErrorMessage
         errors={{ test: { type: 'test', message: 'test1' } }}

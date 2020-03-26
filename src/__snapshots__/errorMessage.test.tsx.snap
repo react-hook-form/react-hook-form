@@ -200,7 +200,7 @@ exports[`React Hook Form Error Message should render correctly with nested multi
 </DocumentFragment>
 `;
 
-exports[`React Hook Form Error Message should render errors message If errors message is supplied 1`] = `
+exports[`React Hook Form Error Message should render errors message when errors message is supplied 1`] = `
 <DocumentFragment>
   test1
 </DocumentFragment>
