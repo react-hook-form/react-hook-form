@@ -6,7 +6,7 @@ const removeAt = (data: any, index: number) => [
   ...data.slice(index + 1),
 ];
 
-function removeAtAll<T extends []>(data: T, index: number[]) {
+function removeAtIndexes<T extends []>(data: T, index: number[]) {
   let k = -1;
 
   while (++k < data.length) {
@@ -22,5 +22,5 @@ export default (data: any, index?: number | number[]) =>
   isUndefined(index)
     ? []
     : isArray(index)
-    ? removeAtAll(data, index)
+    ? removeAtIndexes(data, index)
     : removeAt(data, index);
