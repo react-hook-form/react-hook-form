@@ -6,24 +6,21 @@ const removeAt = (data: any, index: number) => [
   ...data.slice(index + 1),
 ];
 
+function removeAtAll<T extends []>(data: T, index: number[]) {
+  let k = -1;
+
+  while (++k < data.length) {
+    if (index.indexOf(k) >= 0) {
+      delete data[k];
+    }
+  }
+
+  return data.filter(Boolean);
+}
+
 export default (data: any, index?: number | number[]) =>
   isUndefined(index)
     ? []
     : isArray(index)
-    ? index.reduce(
-        (
-          { result, previousIndex }: { result: any[]; previousIndex: number },
-          i,
-        ) => ({
-          result:
-            previousIndex > -1
-              ? removeAt(result, previousIndex < i ? i - 1 : i)
-              : removeAt(result, i),
-          previousIndex: i,
-        }),
-        {
-          result: data,
-          previousIndex: -1,
-        },
-      ).result
+    ? removeAtAll(data, index)
     : removeAt(data, index);
