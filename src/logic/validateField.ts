@@ -13,6 +13,7 @@ import getFieldsValue from './getFieldValue';
 import isRegex from '../utils/isRegex';
 import isEmptyString from '../utils/isEmptyString';
 import isBoolean from '../utils/isBoolean';
+import isMessage from '../utils/isMessage';
 import getValidateError from './getValidateError';
 import appendErrors from './appendErrors';
 import { INPUT_VALIDATION_RULES } from '../constants';
@@ -74,10 +75,11 @@ export default async <FormValues extends FieldValues>(
       (isCheckBox && !getCheckboxValue(options).isValid) ||
       (isRadio && !getRadioValue(options).isValid))
   ) {
-    const { value: requiredValue, message: requiredMessage } =
-      isString(required) || React.isValidElement(required)
-        ? { value: !!required, message: required }
-        : getValueAndMessage(required);
+    const { value: requiredValue, message: requiredMessage } = isMessage(
+      required,
+    )
+      ? { value: !!required, message: required }
+      : getValueAndMessage(required);
 
     if (requiredValue) {
       error[name] = {

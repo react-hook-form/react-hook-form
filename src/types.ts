@@ -94,11 +94,11 @@ export type MutationWatcher = {
 
 export type Message = string | React.ReactElement;
 
+export type ValidationValue = boolean | number | string | RegExp;
+
 export type ValidationOption<Value extends ValidationValue = ValidationValue> =
   | Value
   | ValidationValueMessage<Value>;
-
-export type ValidationValue = boolean | number | string | RegExp;
 
 export type ValidationValueMessage<
   Value extends ValidationValue = ValidationValue
