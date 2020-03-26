@@ -7,8 +7,8 @@ export const appendId = <FormArrayValues extends FieldValues = FieldValues>(
   value: FormArrayValues,
   keyName: string,
 ) => ({
-  ...(isObject(value) ? value : { value }),
   [keyName]: generateId(),
+  ...(isObject(value) ? value : { value }),
 });
 
 export const mapIds = (data: any, keyName: string) =>
