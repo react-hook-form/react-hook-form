@@ -8,11 +8,11 @@ export default function getValidateError(
   ref: Ref,
   type = 'validate',
 ): FieldError | void {
-  const isStringOrElement = (value: any): value is Message =>
+  const isMessage = (value: any): value is Message =>
     isString(value) || React.isValidElement(value);
 
-  if (isStringOrElement(result) || (isBoolean(result) && !result)) {
-    const message = isStringOrElement(result) ? result : '';
+  if (isMessage(result) || (isBoolean(result) && !result)) {
+    const message = isMessage(result) ? result : '';
     return {
       type,
       message,

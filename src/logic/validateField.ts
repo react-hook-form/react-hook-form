@@ -142,8 +142,10 @@ export default async <FormValues extends FieldValues>(
       message: minLengthMessage,
     } = getValueAndMessage(minLength);
     const inputLength = value.toString().length;
-    const exceedMax = maxLength && inputLength > maxLengthValue;
-    const exceedMin = minLength && inputLength < minLengthValue;
+    const exceedMax =
+      !isNullOrUndefined(maxLengthValue) && inputLength > maxLengthValue;
+    const exceedMin =
+      !isNullOrUndefined(minLengthValue) && inputLength < minLengthValue;
 
     if (exceedMax || exceedMin) {
       getMinMaxMessage(!!exceedMax, maxLengthMessage, minLengthMessage);

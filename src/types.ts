@@ -94,26 +94,30 @@ export type MutationWatcher = {
 
 export type Message = string | React.ReactElement;
 
-type ValidationOptionObject<Value> = Value | { value: Value; message: Message };
+export type ValidationOption<Value extends ValidationValue = ValidationValue> =
+  | Value
+  | ValidationValueMessage<Value>;
 
-export type ValidationValue =
-  | boolean
-  | number
-  | string
-  | RegExp
-  | React.ReactElement;
+export type ValidationValue = boolean | number | string | RegExp;
+
+export type ValidationValueMessage<
+  Value extends ValidationValue = ValidationValue
+> = {
+  value: Value;
+  message: Message;
+};
 
 export type ValidateResult = Message | boolean | undefined;
 
 export type Validate = (data: any) => ValidateResult | Promise<ValidateResult>;
 
 export type ValidationOptions = Partial<{
-  required: Message | ValidationOptionObject<boolean>;
-  min: ValidationOptionObject<number | string>;
-  max: ValidationOptionObject<number | string>;
-  maxLength: ValidationOptionObject<number | string>;
-  minLength: ValidationOptionObject<number | string>;
-  pattern: ValidationOptionObject<RegExp>;
+  required: Message | ValidationOption<boolean>;
+  min: ValidationOption<number | string>;
+  max: ValidationOption<number | string>;
+  maxLength: ValidationOption<number | string>;
+  minLength: ValidationOption<number | string>;
+  pattern: ValidationOption<RegExp>;
   validate: Validate | Record<string, Validate>;
 }>;
 
