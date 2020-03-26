@@ -1146,13 +1146,60 @@ describe('useForm', () => {
       });
 
       act(() => {
-        result.current.setError('input', 'test');
+        result.current.setError('input', 'test', 'test');
       });
       expect(result.current.errors).toEqual({
         input: {
           type: 'test',
           isManual: true,
+          message: 'test',
+          ref: {},
+        },
+      });
+
+      act(() => {
+        result.current.setError('input', 'test', <p>test</p>);
+      });
+      expect(result.current.errors).toEqual({
+        input: {
+          type: 'test',
+          isManual: true,
+          message: <p>test</p>,
+          ref: {},
+        },
+      });
+
+      act(() => {
+        result.current.setError('input', { test1: 'test1', test2: 'test2' });
+      });
+      expect(result.current.errors).toEqual({
+        input: {
+          type: '',
+          isManual: true,
           message: undefined,
+          types: {
+            test1: 'test1',
+            test2: 'test2',
+          },
+          ref: {},
+        },
+      });
+
+      act(() => {
+        result.current.setError('input', {
+          test1: 'test1',
+          test2: <p>test2</p>,
+        });
+      });
+      expect(result.current.errors).toEqual({
+        input: {
+          type: '',
+          isManual: true,
+          message: undefined,
+          types: {
+            test1: 'test1',
+            test2: <p>test2</p>,
+          },
           ref: {},
         },
       });
@@ -1185,7 +1232,7 @@ describe('useForm', () => {
   describe('setErrors', () => {
     it('should set multiple errors for the form', () => {
       const { result } = renderHook(() =>
-        useForm<{ input: string; input1: string }>(),
+        useForm<{ input: string; input1: string; input2: string }>(),
       );
       act(() => {
         result.current.setError([
@@ -1198,6 +1245,11 @@ describe('useForm', () => {
             type: 'test1',
             name: 'input1',
             message: 'wow1',
+          },
+          {
+            type: 'test2',
+            name: 'input2',
+            message: <p>wow2</p>,
           },
         ]);
       });
@@ -1213,6 +1265,12 @@ describe('useForm', () => {
           type: 'test1',
           isManual: true,
           message: 'wow1',
+          ref: {},
+        },
+        input2: {
+          type: 'test2',
+          isManual: true,
+          message: <p>wow2</p>,
           ref: {},
         },
       });
