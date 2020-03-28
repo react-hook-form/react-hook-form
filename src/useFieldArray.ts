@@ -46,7 +46,7 @@ export const useFieldArray = <
     isDirtyRef,
     touchedFieldsRef,
     readFormStateRef,
-    watchFieldArrayRef,
+    watchFieldsRef,
     validFieldsRef,
     fieldsWithValidationRef,
     validateSchemaIsValid,
@@ -56,15 +56,13 @@ export const useFieldArray = <
     Partial<ArrayField<FormArrayValues, KeyName>>[]
   >(mapIds(memoizedDefaultValues.current, keyName));
   const allFields = useRef(fields);
-  const appendValueWithKey = (value: Partial<FormArrayValues>[]) =>
-    value.map((v: Partial<FormArrayValues>) => appendId(v, keyName));
+
   allFields.current = fields;
 
+  const appendValueWithKey = (value: Partial<FormArrayValues>[]) =>
+    value.map((v: Partial<FormArrayValues>) => appendId(v, keyName));
+
   const commonTasks = (fieldsValues: any) => {
-    watchFieldArrayRef.current = {
-      ...watchFieldArrayRef.current,
-      [name]: fieldsValues,
-    };
     setField(fieldsValues);
 
     if (readFormStateRef.current.isValid && validateSchemaIsValid) {
@@ -298,14 +296,19 @@ export const useFieldArray = <
   };
 
   useEffect(() => {
+    for (const watchField of watchFieldsRef.current) {
+      if (watchField.startsWith(name)) {
+        reRender();
+        break;
+      }
+    }
+  }, [fields, name, reRender, watchFieldsRef]);
+
+  useEffect(() => {
     const resetFunctions = resetFieldArrayFunctionRef.current;
     const fieldArrayNames = fieldArrayNamesRef.current;
     fieldArrayNames.add(name);
     resetFunctions[name] = reset;
-    watchFieldArrayRef.current = {
-      ...watchFieldArrayRef.current,
-      [name]: fields,
-    };
 
     return () => {
       resetFields();

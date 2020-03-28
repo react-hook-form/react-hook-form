@@ -83,9 +83,6 @@ export function useForm<
   const validateAllFieldCriteria = validateCriteriaMode === 'all';
   const errorsRef = useRef<FieldErrors<FormValues>>({});
   const touchedFieldsRef = useRef<Touched<FormValues>>({});
-  const watchFieldArrayRef = useRef<
-    Record<FieldName<FormValues>, Record<string, any>>
-  >({} as Record<FieldName<FormValues>, Record<string, any>>);
   const watchFieldsRef = useRef(new Set<FieldName<FormValues>>());
   const dirtyFieldsRef = useRef(new Set<FieldName<FormValues>>());
   const fieldsWithValidationRef = useRef(new Set<FieldName<FormValues>>());
@@ -758,9 +755,6 @@ export function useForm<
         fieldNames,
         watchFields,
         combinedDefaultValues,
-        fieldArrayNamesRef.current.has(fieldNames)
-          ? watchFieldArrayRef.current[fieldNames]
-          : undefined,
       );
     }
 
@@ -1203,7 +1197,7 @@ export function useForm<
     validFieldsRef,
     dirtyFieldsRef,
     fieldsWithValidationRef,
-    watchFieldArrayRef,
+    watchFieldsRef,
     fieldArrayNamesRef,
     isDirtyRef,
     readFormStateRef,
@@ -1225,7 +1219,6 @@ export function useForm<
     register: useCallback(register, [
       defaultValuesRef.current,
       defaultRenderValuesRef.current,
-      watchFieldArrayRef.current,
     ]),
     unregister: useCallback(unregister, []),
     clearError: useCallback(clearError, []),
