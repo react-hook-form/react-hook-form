@@ -22,8 +22,8 @@ export const reconfigureControl = (
   fieldsWithValidationRef: {
     current: new Set(),
   },
-  watchFieldArrayRef: {
-    current: {},
+  watchFieldsRef: {
+    current: new Set(),
   },
   dirtyFieldsRef: {
     current: new Set(),
