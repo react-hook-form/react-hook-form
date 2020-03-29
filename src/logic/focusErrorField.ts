@@ -1,5 +1,5 @@
 import get from '../utils/get';
-import { FieldElement, FieldErrors, FieldRefs } from '../types';
+import { FieldErrors, FieldRefs } from '../types';
 
 export default <FormValues>(
   fields: FieldRefs<FormValues>,
