@@ -814,4 +814,25 @@ describe('useFieldArray', () => {
       id: '1',
     });
   });
+
+  it('should trigger reRender when user is watching the field array', () => {
+    const reRender = jest.fn();
+    const { result } = renderHook(() =>
+      useFieldArray({
+        control: reconfigureControl({
+          reRender,
+          watchFieldsRef: {
+            current: new Set(['test']),
+          },
+        }),
+        name: 'test',
+      }),
+    );
+
+    act(() => {
+      result.current.append({ test: 'test' });
+    });
+
+    expect(reRender).toBeCalled();
+  });
 });
