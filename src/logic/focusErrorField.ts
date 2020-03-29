@@ -10,7 +10,7 @@ export default <FormValues>(
       const field = fields[key];
       if (field) {
         if ((field.ref as FieldElement).focus) {
-          (field.ref as FieldElement).focus();
+          (field.ref as any).focus();
           break;
         } else if (field.options) {
           field.options[0].ref.focus();

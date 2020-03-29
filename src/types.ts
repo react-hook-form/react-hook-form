@@ -202,7 +202,7 @@ export type CustomElement = {
   checked?: boolean;
   options?: HTMLOptionsCollection;
   files?: FileList | null;
-  focus: () => void;
+  focus?: () => void;
 };
 
 export type FieldElement =
