@@ -807,11 +807,32 @@ describe('useFieldArray', () => {
       { test: '3', id: '1' },
     ]);
   });
-});
 
-test('should append id to the value', () => {
-  expect(appendId({ test: 'test' }, 'id')).toEqual({
-    test: 'test',
-    id: '1',
+  it('should append id to the value', () => {
+    expect(appendId({ test: 'test' }, 'id')).toEqual({
+      test: 'test',
+      id: '1',
+    });
+  });
+
+  it('should trigger reRender when user is watching the field array', () => {
+    const reRender = jest.fn();
+    const { result } = renderHook(() =>
+      useFieldArray({
+        control: reconfigureControl({
+          reRender,
+          watchFieldsRef: {
+            current: new Set(['test']),
+          },
+        }),
+        name: 'test',
+      }),
+    );
+
+    act(() => {
+      result.current.append({ test: 'test' });
+    });
+
+    expect(reRender).toBeCalled();
   });
 });
