@@ -22,6 +22,7 @@ import IsValid from './isValid';
 import Controller from './controller';
 import UseFieldArray from './useFieldArray';
 import CustomSchemaValidation from './customSchemaValidation';
+import WatchFieldArray from './watchUseFieldArray';
 
 const App: React.FC = () => {
   return (
@@ -79,6 +80,7 @@ const App: React.FC = () => {
         exact
         component={WatchDefaultValues}
       />
+      <Route path="/watch-field-array" component={WatchFieldArray} />
       <Route
         path="/customSchemaValidation/:mode"
         exact
