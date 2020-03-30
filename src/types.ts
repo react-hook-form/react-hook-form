@@ -195,12 +195,6 @@ export type RadioOrCheckboxOption = {
   mutationWatcher?: MutationWatcher;
 };
 
-export type FieldElement =
-  | HTMLInputElement
-  | HTMLSelectElement
-  | HTMLTextAreaElement
-  | CustomElement;
-
 export type CustomElement = {
   name: string;
   type?: string;
@@ -208,7 +202,14 @@ export type CustomElement = {
   checked?: boolean;
   options?: HTMLOptionsCollection;
   files?: FileList | null;
+  focus?: () => void;
 };
+
+export type FieldElement =
+  | HTMLInputElement
+  | HTMLSelectElement
+  | HTMLTextAreaElement
+  | CustomElement;
 
 export type HandleChange = (evt: Event) => Promise<void | boolean>;
 
@@ -330,6 +331,7 @@ export type ControllerProps<
     as: As;
     rules?: ValidationOptions;
     onChange?: EventFunction;
+    onFocus?: () => void;
     onBlur?: EventFunction;
     mode?: Mode;
     onChangeName?: string;
