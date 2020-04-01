@@ -53,7 +53,9 @@ export const useFieldArray = <
     validateSchemaIsValid,
   } = control || methods.control;
   const memoizedDefaultValues = useRef(
-    fieldArrayDefaultValues.current[name] || defaultValuesRef.current[name],
+    fieldArrayDefaultValues.current[name] ||
+      defaultValuesRef.current[name] ||
+      [],
   );
   const isNameKey = isKey(name);
   const [fields, setField] = useState<
@@ -301,7 +303,7 @@ export const useFieldArray = <
 
   const reset = () => {
     resetFields();
-    memoizedDefaultValues.current = defaultValuesRef.current[name];
+    memoizedDefaultValues.current = defaultValuesRef.current[name] || [];
     setField(mapIds(memoizedDefaultValues.current, keyName));
   };
 
