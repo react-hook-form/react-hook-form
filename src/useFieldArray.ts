@@ -58,9 +58,6 @@ export const useFieldArray = <
       get(defaultValuesRef.current, name, []),
   );
   const isNameKey = isKey(name);
-  if (isNameKey) {
-    fieldArrayDefaultValues.current[name] = memoizedDefaultValues.current;
-  }
   const [fields, setField] = useState<
     Partial<ArrayField<FormArrayValues, KeyName>>[]
   >(mapIds(memoizedDefaultValues.current, keyName));
@@ -68,6 +65,10 @@ export const useFieldArray = <
   const allFields = useRef(fields);
 
   allFields.current = fields;
+
+  if (isNameKey) {
+    fieldArrayDefaultValues.current[name] = memoizedDefaultValues.current;
+  }
 
   const appendValueWithKey = (value: Partial<FormArrayValues>[]) =>
     value.map((v: Partial<FormArrayValues>) => appendId(v, keyName));
