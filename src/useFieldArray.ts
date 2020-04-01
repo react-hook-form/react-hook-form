@@ -4,6 +4,7 @@ import { isMatchFieldArrayName } from './logic/isNameInFieldArray';
 import getFieldValueByName from './logic/getFieldValueByName';
 import { appendId, mapIds } from './logic/mapIds';
 import getIsFieldsDifferent from './logic/getIsFieldsDifferent';
+import get from './utils/get';
 import isUndefined from './utils/isUndefined';
 import removeArrayAt from './utils/remove';
 import moveArrayAt from './utils/move';
@@ -54,8 +55,7 @@ export const useFieldArray = <
   } = control || methods.control;
   const memoizedDefaultValues = useRef(
     fieldArrayDefaultValues.current[name] ||
-      defaultValuesRef.current[name] ||
-      [],
+      get(defaultValuesRef.current, name, []),
   );
   const isNameKey = isKey(name);
   const [fields, setField] = useState<
@@ -303,7 +303,7 @@ export const useFieldArray = <
 
   const reset = () => {
     resetFields();
-    memoizedDefaultValues.current = defaultValuesRef.current[name] || [];
+    memoizedDefaultValues.current = get(defaultValuesRef.current, name, []);
     setField(mapIds(memoizedDefaultValues.current, keyName));
   };
 
