@@ -12,6 +12,7 @@ import swapArrayAt from './utils/swap';
 import prependAt from './utils/prepend';
 import isArray from './utils/isArray';
 import insertAt from './utils/insert';
+import isKey from './utils/isKey';
 import fillEmptyArray from './utils/fillEmptyArray';
 import {
   Field,
@@ -49,12 +50,21 @@ export const useFieldArray = <
     watchFieldsRef,
     validFieldsRef,
     fieldsWithValidationRef,
+    fieldArrayDefaultValues,
     validateSchemaIsValid,
   } = control || methods.control;
-  const memoizedDefaultValues = useRef(get(defaultValuesRef.current, name, []));
+  const memoizedDefaultValues = useRef(
+    fieldArrayDefaultValues.current[name] ||
+      get(defaultValuesRef.current, name, []),
+  );
+  const isNameKey = isKey(name);
+  if (isNameKey) {
+    fieldArrayDefaultValues.current[name] = memoizedDefaultValues.current;
+  }
   const [fields, setField] = useState<
     Partial<ArrayField<FormArrayValues, KeyName>>[]
   >(mapIds(memoizedDefaultValues.current, keyName));
+  const [isDeleted, setIsDeleted] = useState(false);
   const allFields = useRef(fields);
 
   allFields.current = fields;
@@ -151,6 +161,7 @@ export const useFieldArray = <
       removeArrayAt(getFieldValueByName(fieldsRef.current, name), index),
     );
     commonTasks(removeArrayAt(allFields.current, index));
+    setIsDeleted(true);
 
     if (errorsRef.current[name]) {
       errorsRef.current[name] = removeArrayAt(errorsRef.current[name], index);
@@ -294,6 +305,16 @@ export const useFieldArray = <
     memoizedDefaultValues.current = get(defaultValuesRef.current, name, []);
     setField(mapIds(memoizedDefaultValues.current, keyName));
   };
+
+  useEffect(() => {
+    if (
+      isNameKey &&
+      isDeleted &&
+      fields.length < fieldArrayDefaultValues.current[name].length
+    ) {
+      fieldArrayDefaultValues.current[name].pop();
+    }
+  }, [fields, name, fieldArrayDefaultValues, isDeleted, isNameKey]);
 
   useEffect(() => {
     for (const watchField of watchFieldsRef.current) {
