@@ -1,4 +1,3 @@
-import isHTMLElement from '../utils/isHTMLElement';
 import get from '../utils/get';
 import { FieldErrors, FieldRefs } from '../types';
 
@@ -10,7 +9,7 @@ export default <FormValues>(
     if (get(fieldErrors, key)) {
       const field = fields[key];
       if (field) {
-        if (isHTMLElement(field.ref) && field.ref.focus) {
+        if (field.ref.focus) {
           field.ref.focus();
           break;
         } else if (field.options) {

@@ -25,6 +25,7 @@ const Controller = <
   valueName,
   defaultValue,
   control,
+  onFocus,
   ...rest
 }: ControllerProps<As, ControlProp>) => {
   const methods = useFormContext();
@@ -85,7 +86,7 @@ const Controller = <
     }
 
     register(
-      Object.defineProperty({ name }, VALUE, {
+      Object.defineProperty({ name, focus: onFocus }, VALUE, {
         set(data) {
           setInputStateValue(data);
           valueRef.current = data;
