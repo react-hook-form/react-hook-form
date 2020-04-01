@@ -22,6 +22,9 @@ export const reconfigureControl = (
   fieldsWithValidationRef: {
     current: new Set(),
   },
+  fieldArrayDefaultValues: {
+    current: {},
+  },
   watchFieldsRef: {
     current: new Set(),
   },
