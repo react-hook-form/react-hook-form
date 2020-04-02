@@ -84,7 +84,7 @@ export function useForm<
   const validateAllFieldCriteria = validateCriteriaMode === 'all';
   const errorsRef = useRef<FieldErrors<FormValues>>({});
   const touchedFieldsRef = useRef<Touched<FormValues>>({});
-  const fieldArrayDefaultValues = useRef<Record<string, any[]>>({});
+  const fieldArrayDefaultValues = useRef<Record<string, unknown[]>>({});
   const watchFieldsRef = useRef(new Set<FieldName<FormValues>>());
   const dirtyFieldsRef = useRef(new Set<FieldName<FormValues>>());
   const fieldsWithValidationRef = useRef(new Set<FieldName<FormValues>>());

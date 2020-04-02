@@ -2,8 +2,8 @@ import isUndefined from '../utils/isUndefined';
 import isArray from '../utils/isArray';
 
 export default function getIsFieldsDifferent(
-  referenceArray: any[],
-  differenceArray: any[],
+  referenceArray: unknown[],
+  differenceArray: unknown[],
 ) {
   let isMatch = false;
 

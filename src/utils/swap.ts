@@ -1,6 +1,11 @@
 import isArray from './isArray';
+import { ArrayField } from '../types';
 
-export default (fields: any, indexA: number, indexB: number) => {
+export default <FormArrayValues, KeyName extends string>(
+  fields: Partial<ArrayField<FormArrayValues, KeyName>>[],
+  indexA: number,
+  indexB: number,
+) => {
   if (isArray(fields)) {
     const temp = [fields[indexB], fields[indexA]];
     fields[indexA] = temp[0];

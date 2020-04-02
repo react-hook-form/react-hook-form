@@ -63,7 +63,9 @@ export const useFieldArray = <
     Partial<ArrayField<FormArrayValues, KeyName>>[]
   >(mapIds(memoizedDefaultValues.current, keyName));
   const [isDeleted, setIsDeleted] = useState(false);
-  const allFields = useRef(fields);
+  const allFields = useRef<Partial<ArrayField<FormArrayValues, KeyName>>[]>(
+    fields,
+  );
 
   allFields.current = fields;
 
