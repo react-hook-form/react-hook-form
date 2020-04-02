@@ -1,9 +1,9 @@
-import { ValidateResult } from '../types';
+import { FieldError, FieldName, ValidateResult } from '../types';
 
-export default (
-  name: string,
+export default <FormValues>(
+  name: FieldName<FormValues>,
   validateAllFieldCriteria: boolean,
-  errors: Record<string, any>,
+  errors: Record<FieldName<FormValues>, FieldError>,
   type: string,
   message: ValidateResult,
 ) => {

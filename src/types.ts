@@ -338,7 +338,7 @@ export type ControllerProps<
     onChangeName?: string;
     onBlurName?: string;
     valueName?: string;
-    defaultValue?: any;
+    defaultValue?: unknown;
     control?: ControlProp;
   },
   AsProps<As>
