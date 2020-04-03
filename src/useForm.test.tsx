@@ -1431,5 +1431,23 @@ describe('useForm', () => {
         } as React.SyntheticEvent);
       });
     });
+
+    it('should infer from defaultValues without a type parameter', async () => {
+      const { result } = renderHook(() =>
+        useForm({
+          mode: VALIDATION_MODE.onSubmit,
+          defaultValues: {
+            test: 'data',
+            deep: {
+              values: '5',
+            },
+          },
+        }),
+      );
+      const test: string = result.current.getValues().test;
+      expect(test).toEqual('data');
+      const deep: { values: string } = result.current.getValues().deep;
+      expect(deep).toEqual({ values: '5' });
+    });
   });
 });
