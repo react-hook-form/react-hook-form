@@ -2,9 +2,9 @@ import React from "react";
 import { Controller, useForm } from "react-hook-form";
 
 const ParseFormatTextarea = ({ value = [], onChange }) => {
-  const [text, setText] = React.useState < string > value.join("\n");
+  const [text, setText] = React.useState(value);
 
-  const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+  const handleChange = (e) => {
     const value = e.target.value.split("\n");
 
     setText(value);
