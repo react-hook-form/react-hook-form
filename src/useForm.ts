@@ -1130,7 +1130,13 @@ export function useForm<
     reRender();
   };
 
-  const getValues = (payload?: { nest: boolean }): FormValues => {
+  const getValues = (payload?: { nest: boolean } | string): FormValues => {
+    if (isString(payload)) {
+      return fieldsRef.current[payload]
+        ? getFieldValue(fieldsRef.current, fieldsRef.current[payload]!.ref)
+        : undefined;
+    }
+
     const fieldValues = getFieldsValues(fieldsRef.current);
     const outputValues = isEmptyObject(fieldValues)
       ? defaultValuesRef.current

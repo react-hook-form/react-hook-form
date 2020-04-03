@@ -129,4 +129,19 @@ describe('getFieldValue', () => {
       ),
     ).toEqual('files');
   });
+
+  it('should return undefined when input is not found', () => {
+    expect(
+      getFieldValue(
+        {
+          test: {
+            ref: {
+              files: 'files',
+            },
+          },
+        },
+        {},
+      ),
+    ).toEqual(undefined);
+  });
 });
