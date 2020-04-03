@@ -1130,7 +1130,9 @@ export function useForm<
     reRender();
   };
 
-  const getValues = (payload?: { nest: boolean } | string): FormValues => {
+  function getValues(payload?: { nest: boolean }): FormValues;
+  function getValues(payload?: string): unknown;
+  function getValues(payload?: { nest: boolean } | string): unknown {
     if (isString(payload)) {
       return fieldsRef.current[payload]
         ? getFieldValue(fieldsRef.current, fieldsRef.current[payload]!.ref)
@@ -1145,7 +1147,7 @@ export function useForm<
     return payload && payload.nest
       ? transformToNestObject(outputValues)
       : outputValues;
-  };
+  }
 
   useEffect(
     () => () => {
