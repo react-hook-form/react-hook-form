@@ -1444,10 +1444,19 @@ describe('useForm', () => {
           },
         }),
       );
-      const test: string = result.current.getValues().test;
-      expect(test).toEqual('data');
-      const deep: { values: string } = result.current.getValues().deep;
-      expect(deep).toEqual({ values: '5' });
+
+      (getFieldsValues as any).mockImplementation(async () => {
+        return {};
+      });
+
+      act(() => {
+        const test: string = result.current.getValues({ nest: true }).test;
+        expect(test).toEqual('data');
+        const deep: { values: string } = result.current.getValues({
+          nest: true,
+        }).deep;
+        expect(deep).toEqual({ values: '5' });
+      });
     });
   });
 });
