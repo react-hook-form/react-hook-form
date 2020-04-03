@@ -36,7 +36,7 @@
 - Embrace uncontrolled form validation
 - Simple integration with [UI libraries](https://codesandbox.io/s/react-hook-form-controller-079xx) 
 - [Tiny size](https://bundlephobia.com/result?p=react-hook-form@latest) without any dependency
-- Follows HTML standard for validation
+- Follows HTML standard for [validation](https://react-hook-form.com/get-started#Applyvalidation)
 - Compatible with React Native
 - Supports [Yup](https://github.com/jquense/yup), [Joi](https://github.com/hapijs/joi), [Superstruct](https://github.com/ianstormtaylor/superstruct) or custom
 - Build forms quickly with the [form builder](https://react-hook-form.com/form-builder)
