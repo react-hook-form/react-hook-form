@@ -183,7 +183,7 @@ export const useFieldArray = <
     }
 
     if (readFormStateRef.current.dirty) {
-      dirtyFieldsRef.current.forEach(dirtyField => {
+      dirtyFieldsRef.current.forEach((dirtyField) => {
         if (isUndefined(name) || dirtyField.startsWith(`${name}[${index}]`)) {
           dirtyFieldsRef.current.delete(dirtyField);
         }
@@ -321,12 +321,16 @@ export const useFieldArray = <
   }, [fields, name, fieldArrayDefaultValues, isDeleted, isNameKey]);
 
   useEffect(() => {
-    for (const watchField of watchFieldsRef.current) {
-      if (watchField.startsWith(name)) {
-        reRender();
-        break;
+    if (watchFieldsRef) {
+      for (const watchField of watchFieldsRef.current) {
+        if (watchField.startsWith(name)) {
+          reRender();
+          break;
+        }
       }
     }
+
+    reRender();
   }, [fields, name, reRender, watchFieldsRef]);
 
   useEffect(() => {
