@@ -20,6 +20,15 @@ module.exports = {
     'react-hooks/exhaustive-deps': 'error',
     'no-console': 'error',
   },
+  overrides: [
+    {
+      files: ['*.test.ts', '*.test.tsx'],
+      rules: {
+        // Allow testing runtime errors when not using TS
+        '@typescript-eslint/ban-ts-ignore': 'off',
+      },
+    },
+  ],
   settings: {
     react: {
       pragma: 'React',
