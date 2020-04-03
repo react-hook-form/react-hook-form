@@ -34,17 +34,16 @@
 
 - Built with performance and DX in mind
 - Embrace uncontrolled form validation
-- Improve controlled form's performance
+- Simple integration with [UI libraries](https://codesandbox.io/s/react-hook-form-controller-079xx) 
 - [Tiny size](https://bundlephobia.com/result?p=react-hook-form@latest) without any dependency
 - Follows HTML standard for validation
 - Compatible with React Native
 - Supports [Yup](https://github.com/jquense/yup), [Joi](https://github.com/hapijs/joi), [Superstruct](https://github.com/ianstormtaylor/superstruct) or custom
-- Supports native browser validation
 - Build forms quickly with the [form builder](https://react-hook-form.com/form-builder)
 
 ## Install
 
-    $ npm install react-hook-form
+    npm install react-hook-form
 
 ## Links
 
