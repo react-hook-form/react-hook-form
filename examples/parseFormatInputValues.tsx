@@ -23,9 +23,9 @@ export default function App() {
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
       <Controller name="emails" as={ParseFormatTextarea} control={control} />
-      
+
       <Controller
-        name="emails"
+        name="number"
         as={<input type="number" />}
         onChange={(e) => parseInt(e.target.value, 10)}
         control={control}
