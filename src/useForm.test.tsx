@@ -1431,5 +1431,32 @@ describe('useForm', () => {
         } as React.SyntheticEvent);
       });
     });
+
+    it('should infer from defaultValues without a type parameter', () => {
+      const { result } = renderHook(() =>
+        useForm({
+          mode: VALIDATION_MODE.onSubmit,
+          defaultValues: {
+            test: 'data',
+            deep: {
+              values: '5',
+            },
+          },
+        }),
+      );
+
+      (getFieldsValues as any).mockImplementation(async () => {
+        return {};
+      });
+
+      act(() => {
+        const test: string = result.current.getValues({ nest: true }).test;
+        expect(test).toEqual('data');
+        const deep: { values: string } = result.current.getValues({
+          nest: true,
+        }).deep;
+        expect(deep).toEqual({ values: '5' });
+      });
+    });
   });
 });

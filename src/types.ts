@@ -19,7 +19,9 @@ export type DeepPartial<T> = {
     ? Array<DeepPartial<U>>
     : T[P] extends ReadonlyArray<infer U>
     ? ReadonlyArray<DeepPartial<U>>
-    : DeepPartial<T[P]>;
+    : T[P] extends { [key: string]: unknown }
+    ? DeepPartial<T[P]>
+    : T[P];
 };
 
 export type ValidationMode = {
