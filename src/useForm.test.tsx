@@ -1432,7 +1432,7 @@ describe('useForm', () => {
       });
     });
 
-    it('should infer from defaultValues without a type parameter', async () => {
+    it('should infer from defaultValues without a type parameter', () => {
       const { result } = renderHook(() =>
         useForm({
           mode: VALIDATION_MODE.onSubmit,
