@@ -90,7 +90,7 @@ export const useFieldArray = <
     if (readFormStateRef.current.dirty) {
       isDirtyRef.current = isUndefined(flagOrFields)
         ? true
-        : getIsFieldsDifferent(flagOrFields, memoizedDefaultValues.current);
+        : getIsFieldsDifferent(flagOrFields, defaultValuesRef.current[name]);
     }
 
     for (const key in fieldsRef.current) {
@@ -183,7 +183,7 @@ export const useFieldArray = <
     }
 
     if (readFormStateRef.current.dirty) {
-      dirtyFieldsRef.current.forEach((dirtyField) => {
+      dirtyFieldsRef.current.forEach(dirtyField => {
         if (isUndefined(name) || dirtyField.startsWith(`${name}[${index}]`)) {
           dirtyFieldsRef.current.delete(dirtyField);
         }
