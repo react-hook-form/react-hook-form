@@ -753,7 +753,9 @@ export function useForm<
     );
     const watchFields = watchFieldsRef.current;
 
-    readFormStateRef.current.dirty = true;
+    if (!isEmptyObject(combinedDefaultValues)) {
+      readFormStateRef.current.dirty = true;
+    }
 
     if (isString(fieldNames)) {
       return assignWatchFields<FormValues>(
