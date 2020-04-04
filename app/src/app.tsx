@@ -80,7 +80,7 @@ const App: React.FC = () => {
         exact
         component={WatchDefaultValues}
       />
-      <Route path="/watch-field-array" component={WatchFieldArray} />
+      <Route path="/watch-field-array/:mode" component={WatchFieldArray} />
       <Route
         path="/customSchemaValidation/:mode"
         exact
