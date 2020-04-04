@@ -90,7 +90,7 @@ export const useFieldArray = <
     if (readFormStateRef.current.dirty) {
       isDirtyRef.current = isUndefined(flagOrFields)
         ? true
-        : getIsFieldsDifferent(flagOrFields, memoizedDefaultValues.current);
+        : getIsFieldsDifferent(flagOrFields, defaultValuesRef.current[name]);
     }
 
     for (const key in fieldsRef.current) {
@@ -321,12 +321,16 @@ export const useFieldArray = <
   }, [fields, name, fieldArrayDefaultValues, isDeleted, isNameKey]);
 
   useEffect(() => {
-    for (const watchField of watchFieldsRef.current) {
-      if (watchField.startsWith(name)) {
-        reRender();
-        break;
+    if (watchFieldsRef) {
+      for (const watchField of watchFieldsRef.current) {
+        if (watchField.startsWith(name)) {
+          reRender();
+          break;
+        }
       }
     }
+
+    reRender();
   }, [fields, name, reRender, watchFieldsRef]);
 
   useEffect(() => {

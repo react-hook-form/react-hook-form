@@ -35,6 +35,7 @@ import unset from './utils/unset';
 import isMultipleSelect from './utils/isMultipleSelect';
 import modeChecker from './utils/validationModeChecker';
 import isNullOrUndefined from './utils/isNullOrUndefined';
+import isRadioOrCheckboxFunction from './utils/isRadioOrCheckbox';
 import isHTMLElement from './utils/isHTMLElement';
 import { EVENTS, UNDEFINED, VALIDATION_MODE } from './constants';
 import { FormContextValues } from './contextTypes';
@@ -740,7 +741,9 @@ export function useForm<
       | { nest: boolean },
     defaultValue?: string | DeepPartial<FormValues>,
   ): FieldValue<FormValues> | DeepPartial<FormValues> | string | undefined {
-    const combinedDefaultValues = isUndefined(defaultValue)
+    const combinedDefaultValues = isDirtyRef.current
+      ? {}
+      : isUndefined(defaultValue)
       ? isUndefined(defaultValuesRef.current)
         ? {}
         : defaultValuesRef.current
@@ -750,6 +753,10 @@ export function useForm<
       fieldNames,
     );
     const watchFields = watchFieldsRef.current;
+
+    if (!isEmptyObject(combinedDefaultValues)) {
+      readFormStateRef.current.dirty = true;
+    }
 
     if (isString(fieldNames)) {
       return assignWatchFields<FormValues>(
@@ -778,9 +785,7 @@ export function useForm<
     isWatchAllRef.current = true;
 
     const result =
-      (!isEmptyObject(fieldValues) && fieldValues) ||
-      defaultValue ||
-      defaultValuesRef.current;
+      (!isEmptyObject(fieldValues) && fieldValues) || combinedDefaultValues;
 
     return fieldNames && fieldNames.nest
       ? transformToNestObject(result as FieldValues)
@@ -814,7 +819,7 @@ export function useForm<
       ...validateOptions,
     };
     const fields = fieldsRef.current;
-    const isRadioOrCheckbox = isRadioInput(ref) || isCheckBoxInput(ref);
+    const isRadioOrCheckbox = isRadioOrCheckboxFunction(ref);
     let currentField = fields[name] as Field;
     let isEmptyDefaultValue = true;
     let isFieldArray = false;
@@ -1108,11 +1113,19 @@ export function useForm<
   ): void => {
     if (isWeb) {
       for (const value of Object.values(fieldsRef.current)) {
-        if (value && isHTMLElement(value.ref) && value.ref.closest) {
-          try {
-            value.ref.closest('form')!.reset();
-            break;
-          } catch {}
+        if (value) {
+          const { ref, options } = value;
+          const inputRef =
+            isRadioOrCheckboxFunction(ref) && isArray(options)
+              ? options[0].ref
+              : ref;
+
+          if (isHTMLElement(inputRef)) {
+            try {
+              inputRef.closest('form')!.reset();
+              break;
+            } catch {}
+          }
         }
       }
     }
@@ -1182,6 +1195,7 @@ export function useForm<
     reRender,
     triggerValidation,
     ...(shouldValidateCallback ? { validateSchemaIsValid } : {}),
+    ...(isWatchAllRef.current ? {} : { watchFieldsRef }),
     formState,
     mode: {
       isOnBlur,
@@ -1200,7 +1214,6 @@ export function useForm<
     validFieldsRef,
     dirtyFieldsRef,
     fieldsWithValidationRef,
-    watchFieldsRef,
     fieldArrayNamesRef,
     isDirtyRef,
     readFormStateRef,
