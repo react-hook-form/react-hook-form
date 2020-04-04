@@ -24,7 +24,7 @@ module.exports = {
     {
       files: ['*.test.ts', '*.test.tsx'],
       rules: {
-        // Allow testing runtime errors when not using TS
+        // Allow testing runtime errors to suppress TS errors
         '@typescript-eslint/ban-ts-ignore': 'off',
       },
     },
