@@ -740,7 +740,9 @@ export function useForm<
       | { nest: boolean },
     defaultValue?: string | DeepPartial<FormValues>,
   ): FieldValue<FormValues> | DeepPartial<FormValues> | string | undefined {
-    const combinedDefaultValues = isUndefined(defaultValue)
+    const combinedDefaultValues = isDirtyRef.current
+      ? {}
+      : isUndefined(defaultValue)
       ? isUndefined(defaultValuesRef.current)
         ? {}
         : defaultValuesRef.current
@@ -750,6 +752,8 @@ export function useForm<
       fieldNames,
     );
     const watchFields = watchFieldsRef.current;
+
+    readFormStateRef.current.dirty = true;
 
     if (isString(fieldNames)) {
       return assignWatchFields<FormValues>(
@@ -775,11 +779,10 @@ export function useForm<
       );
     }
 
-    isWatchAllRef.current = readFormStateRef.current.dirty = true;
+    isWatchAllRef.current = true;
 
     const result =
-      (!isEmptyObject(fieldValues) && fieldValues) ||
-      (isDirtyRef.current ? {} : defaultValue || defaultValuesRef.current);
+      (!isEmptyObject(fieldValues) && fieldValues) || combinedDefaultValues;
 
     return fieldNames && fieldNames.nest
       ? transformToNestObject(result as FieldValues)
