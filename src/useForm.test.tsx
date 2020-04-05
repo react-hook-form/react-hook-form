@@ -406,9 +406,7 @@ describe('useForm', () => {
         result.current.setValue('test', 'data');
       });
 
-      (validateField as any).mockImplementation(async () => {
-        return {};
-      });
+      (validateField as any).mockImplementation(async () => ({}));
 
       act(() => {
         result.current.register({ type: 'text', name: 'test' });

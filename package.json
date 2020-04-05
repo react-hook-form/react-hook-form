@@ -1,7 +1,7 @@
 {
   "name": "react-hook-form",
   "description": "Performant, flexible and extensible forms library for React Hooks",
-  "version": "5.2.0",
+  "version": "5.3.1",
   "main": "dist/react-hook-form.js",
   "module": "dist/react-hook-form.es.js",
   "types": "dist/index.d.ts",
@@ -15,7 +15,7 @@
     "build:ie11": "rollup -c rollup.ie11.config.js",
     "prettier": "prettier --write './src/**/*.ts' './src/**/*.tsx' --config ./.prettierrc",
     "lint": "yarn lint:check --fix && yarn prettier",
-    "lint:check": "eslint ./src --ext .jsx,.ts --ignore-pattern *.test.ts --report-unused-disable-directives",
+    "lint:check": "eslint ./src --ext .tsx,.ts --report-unused-disable-directives",
     "coverage": "jest --coverage --coverageReporters=text-lcov | coveralls",
     "postrelease": "yarn publish && git push --follow-tags",
     "test": "jest --runInBand",

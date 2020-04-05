@@ -35,6 +35,7 @@ import unset from './utils/unset';
 import isMultipleSelect from './utils/isMultipleSelect';
 import modeChecker from './utils/validationModeChecker';
 import isNullOrUndefined from './utils/isNullOrUndefined';
+import isRadioOrCheckboxFunction from './utils/isRadioOrCheckbox';
 import isHTMLElement from './utils/isHTMLElement';
 import { EVENTS, UNDEFINED, VALIDATION_MODE } from './constants';
 import { FormContextValues } from './contextTypes';
@@ -584,16 +585,19 @@ export function useForm<
     [reRender, validateAllFieldCriteria, validationResolver],
   );
 
-  const removeFieldEventListener = (field: Field, forceDelete?: boolean) => {
-    if (!isUndefined(handleChangeRef.current) && field) {
-      findRemovedFieldAndRemoveListener(
-        fieldsRef.current,
-        handleChangeRef.current,
-        field,
-        forceDelete,
-      );
-    }
-  };
+  const removeFieldEventListener = useCallback(
+    (field: Field, forceDelete?: boolean) => {
+      if (!isUndefined(handleChangeRef.current) && field) {
+        findRemovedFieldAndRemoveListener(
+          fieldsRef.current,
+          handleChangeRef.current,
+          field,
+          forceDelete,
+        );
+      }
+    },
+    [],
+  );
 
   const removeFieldEventListenerAndRef = useCallback(
     (field: Field | undefined, forceDelete?: boolean) => {
@@ -633,7 +637,12 @@ export function useForm<
         }
       }
     },
-    [reRender, shouldValidateCallback, validateSchemaIsValid],
+    [
+      reRender,
+      shouldValidateCallback,
+      validateSchemaIsValid,
+      removeFieldEventListener,
+    ],
   );
 
   function clearError(): void;
@@ -740,7 +749,9 @@ export function useForm<
       | { nest: boolean },
     defaultValue?: string | DeepPartial<FormValues>,
   ): FieldValue<FormValues> | DeepPartial<FormValues> | string | undefined {
-    const combinedDefaultValues = isUndefined(defaultValue)
+    const combinedDefaultValues = isDirtyRef.current
+      ? {}
+      : isUndefined(defaultValue)
       ? isUndefined(defaultValuesRef.current)
         ? {}
         : defaultValuesRef.current
@@ -750,6 +761,10 @@ export function useForm<
       fieldNames,
     );
     const watchFields = watchFieldsRef.current;
+
+    if (!isEmptyObject(combinedDefaultValues)) {
+      readFormStateRef.current.dirty = true;
+    }
 
     if (isString(fieldNames)) {
       return assignWatchFields<FormValues>(
@@ -778,9 +793,7 @@ export function useForm<
     isWatchAllRef.current = true;
 
     const result =
-      (!isEmptyObject(fieldValues) && fieldValues) ||
-      defaultValue ||
-      defaultValuesRef.current;
+      (!isEmptyObject(fieldValues) && fieldValues) || combinedDefaultValues;
 
     return fieldNames && fieldNames.nest
       ? transformToNestObject(result as FieldValues)
@@ -814,7 +827,7 @@ export function useForm<
       ...validateOptions,
     };
     const fields = fieldsRef.current;
-    const isRadioOrCheckbox = isRadioInput(ref) || isCheckBoxInput(ref);
+    const isRadioOrCheckbox = isRadioOrCheckboxFunction(ref);
     let currentField = fields[name] as Field;
     let isEmptyDefaultValue = true;
     let isFieldArray = false;
@@ -1108,11 +1121,19 @@ export function useForm<
   ): void => {
     if (isWeb) {
       for (const value of Object.values(fieldsRef.current)) {
-        if (value && isHTMLElement(value.ref) && value.ref.closest) {
-          try {
-            value.ref.closest('form')!.reset();
-            break;
-          } catch {}
+        if (value) {
+          const { ref, options } = value;
+          const inputRef =
+            isRadioOrCheckboxFunction(ref) && isArray(options)
+              ? options[0].ref
+              : ref;
+
+          if (isHTMLElement(inputRef)) {
+            try {
+              inputRef.closest('form')!.reset();
+              break;
+            } catch {}
+          }
         }
       }
     }
@@ -1181,16 +1202,38 @@ export function useForm<
       : isValidRef.current,
   };
 
-  const control = {
-    register,
-    unregister,
-    removeFieldEventListener,
-    getValues,
-    setValue,
-    reRender,
+  const commonProps = {
     triggerValidation,
+    setValue: useCallback(setValue, [
+      reRender,
+      setInternalValue,
+      triggerValidation,
+    ]),
+    register: useCallback(register, [
+      defaultValuesRef.current,
+      defaultRenderValuesRef.current,
+    ]),
+    unregister: useCallback(unregister, []),
+    getValues: useCallback(getValues, []),
+    formState: isProxyEnabled
+      ? new Proxy<FormStateProxy<FormValues>>(formState, {
+          get: (obj, prop: keyof FormStateProxy) => {
+            if (prop in obj) {
+              readFormStateRef.current[prop] = true;
+              return obj[prop];
+            }
+
+            return {};
+          },
+        })
+      : formState,
+  };
+
+  const control = {
+    removeFieldEventListener,
+    reRender,
     ...(shouldValidateCallback ? { validateSchemaIsValid } : {}),
-    formState,
+    ...(isWatchAllRef.current ? {} : { watchFieldsRef }),
     mode: {
       isOnBlur,
       isOnSubmit,
@@ -1208,44 +1251,21 @@ export function useForm<
     validFieldsRef,
     dirtyFieldsRef,
     fieldsWithValidationRef,
-    watchFieldsRef,
     fieldArrayNamesRef,
     isDirtyRef,
     readFormStateRef,
     defaultValuesRef,
+    ...commonProps,
   };
 
   return {
     watch,
     control,
     handleSubmit,
-    setValue: useCallback(setValue, [
-      reRender,
-      setInternalValue,
-      triggerValidation,
-    ]),
-    triggerValidation,
-    getValues: useCallback(getValues, []),
     reset: useCallback(reset, []),
-    register: useCallback(register, [
-      defaultValuesRef.current,
-      defaultRenderValuesRef.current,
-    ]),
-    unregister: useCallback(unregister, []),
     clearError: useCallback(clearError, []),
     setError: useCallback(setError, []),
     errors: errorsRef.current,
-    formState: isProxyEnabled
-      ? new Proxy<FormStateProxy<FormValues>>(formState, {
-          get: (obj, prop: keyof FormStateProxy) => {
-            if (prop in obj) {
-              readFormStateRef.current[prop] = true;
-              return obj[prop];
-            }
-
-            return {};
-          },
-        })
-      : formState,
+    ...commonProps,
   };
 }
