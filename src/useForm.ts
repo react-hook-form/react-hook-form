@@ -585,16 +585,19 @@ export function useForm<
     [reRender, validateAllFieldCriteria, validationResolver],
   );
 
-  const removeFieldEventListener = (field: Field, forceDelete?: boolean) => {
-    if (!isUndefined(handleChangeRef.current) && field) {
-      findRemovedFieldAndRemoveListener(
-        fieldsRef.current,
-        handleChangeRef.current,
-        field,
-        forceDelete,
-      );
-    }
-  };
+  const removeFieldEventListener = useCallback(
+    (field: Field, forceDelete?: boolean) => {
+      if (!isUndefined(handleChangeRef.current) && field) {
+        findRemovedFieldAndRemoveListener(
+          fieldsRef.current,
+          handleChangeRef.current,
+          field,
+          forceDelete,
+        );
+      }
+    },
+    [],
+  );
 
   const removeFieldEventListenerAndRef = useCallback(
     (field: Field | undefined, forceDelete?: boolean) => {
@@ -634,7 +637,12 @@ export function useForm<
         }
       }
     },
-    [reRender, shouldValidateCallback, validateSchemaIsValid],
+    [
+      reRender,
+      shouldValidateCallback,
+      validateSchemaIsValid,
+      removeFieldEventListener,
+    ],
   );
 
   function clearError(): void;
@@ -1186,17 +1194,38 @@ export function useForm<
       : isValidRef.current,
   };
 
-  const control = {
-    register,
-    unregister,
-    removeFieldEventListener,
-    getValues,
-    setValue,
-    reRender,
+  const commonProps = {
     triggerValidation,
+    setValue: useCallback(setValue, [
+      reRender,
+      setInternalValue,
+      triggerValidation,
+    ]),
+    register: useCallback(register, [
+      defaultValuesRef.current,
+      defaultRenderValuesRef.current,
+    ]),
+    unregister: useCallback(unregister, []),
+    getValues: useCallback(getValues, []),
+    formState: isProxyEnabled
+      ? new Proxy<FormStateProxy<FormValues>>(formState, {
+          get: (obj, prop: keyof FormStateProxy) => {
+            if (prop in obj) {
+              readFormStateRef.current[prop] = true;
+              return obj[prop];
+            }
+
+            return {};
+          },
+        })
+      : formState,
+  };
+
+  const control = {
+    removeFieldEventListener,
+    reRender,
     ...(shouldValidateCallback ? { validateSchemaIsValid } : {}),
     ...(isWatchAllRef.current ? {} : { watchFieldsRef }),
-    formState,
     mode: {
       isOnBlur,
       isOnSubmit,
@@ -1218,39 +1247,17 @@ export function useForm<
     isDirtyRef,
     readFormStateRef,
     defaultValuesRef,
+    ...commonProps,
   };
 
   return {
     watch,
     control,
     handleSubmit,
-    setValue: useCallback(setValue, [
-      reRender,
-      setInternalValue,
-      triggerValidation,
-    ]),
-    triggerValidation,
-    getValues: useCallback(getValues, []),
     reset: useCallback(reset, []),
-    register: useCallback(register, [
-      defaultValuesRef.current,
-      defaultRenderValuesRef.current,
-    ]),
-    unregister: useCallback(unregister, []),
     clearError: useCallback(clearError, []),
     setError: useCallback(setError, []),
     errors: errorsRef.current,
-    formState: isProxyEnabled
-      ? new Proxy<FormStateProxy<FormValues>>(formState, {
-          get: (obj, prop: keyof FormStateProxy) => {
-            if (prop in obj) {
-              readFormStateRef.current[prop] = true;
-              return obj[prop];
-            }
-
-            return {};
-          },
-        })
-      : formState,
+    ...commonProps,
   };
 }

@@ -1,4 +1,3 @@
-// @ts-nocheck
 import * as React from 'react';
 import validateField from './validateField';
 import getRadioValue from './getRadioValue';
@@ -105,11 +104,11 @@ describe('validateField', () => {
         {
           current: {
             test: {
-              ref: {},
+              ref: {} as any,
               options: [
                 {
                   ref: 'test',
-                },
+                } as any,
               ],
             },
           },
@@ -146,11 +145,11 @@ describe('validateField', () => {
         {
           current: {
             test: {
-              ref: 'test',
+              ref: 'test' as any,
               options: [
                 {
                   ref: 'test',
-                },
+                } as any,
               ],
             },
           },
@@ -174,12 +173,12 @@ describe('validateField', () => {
         {
           current: {
             test: {
-              ref: 'test',
+              ref: 'test' as any,
               options: [
                 {
                   ref: 'test',
                 },
-              ],
+              ] as any,
             },
           },
         },
@@ -206,12 +205,12 @@ describe('validateField', () => {
         {
           current: {
             test: {
-              ref: 'test',
+              ref: 'test' as any,
               options: [
                 {
                   ref: 'test',
                 },
-              ],
+              ] as any,
             },
           },
         },
@@ -825,7 +824,7 @@ describe('validateField', () => {
         {
           current: {
             test: {
-              ref: {},
+              ref: {} as any,
             },
           },
         },
@@ -848,7 +847,7 @@ describe('validateField', () => {
         {
           current: {
             test: {
-              ref: {},
+              ref: {} as any,
             },
           },
         },
@@ -882,7 +881,7 @@ describe('validateField', () => {
         {
           current: {
             test: {
-              ref: {},
+              ref: {} as any,
             },
           },
         },
@@ -926,7 +925,7 @@ describe('validateField', () => {
         {
           current: {
             test: {
-              ref: '',
+              ref: '' as any,
             },
           },
         },
@@ -962,7 +961,7 @@ describe('validateField', () => {
         {
           current: {
             test: {
-              ref: '',
+              ref: '' as any,
             },
           },
         },
@@ -980,7 +979,7 @@ describe('validateField', () => {
           },
           options: [
             {
-              ref: 'data',
+              ref: 'data' as any,
             },
           ],
         },
@@ -1000,7 +999,7 @@ describe('validateField', () => {
         {
           current: {
             test: {
-              ref: {},
+              ref: {} as any,
             },
           },
         },
@@ -1040,7 +1039,7 @@ describe('validateField', () => {
         {
           current: {
             test: {
-              ref: {},
+              ref: {} as any,
             },
           },
         },
@@ -1082,7 +1081,7 @@ describe('validateField', () => {
         {
           current: {
             test: {
-              ref: {},
+              ref: {} as any,
             },
           },
         },
@@ -1115,7 +1114,7 @@ describe('validateField', () => {
         {
           current: {
             test: {
-              ref: {},
+              ref: {} as any,
             },
           },
         },
@@ -1150,7 +1149,7 @@ describe('validateField', () => {
         {
           current: {
             test: {
-              ref: {},
+              ref: {} as any,
             },
           },
         },

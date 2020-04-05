@@ -8,6 +8,7 @@ import isNameInFieldArray from './logic/isNameInFieldArray';
 import { useFormContext } from './useFormContext';
 import { VALIDATION_MODE, VALUE } from './constants';
 import { Control, ControllerProps, EventFunction, Field } from './types';
+
 const Controller = <
   As extends
     | React.ReactElement
@@ -50,6 +51,7 @@ const Controller = <
   );
   const valueRef = React.useRef(value);
   const isCheckboxInput = isBoolean(value);
+  const shouldReValidateOnBlur = isOnBlur || isReValidateOnBlur;
 
   const shouldValidate = () =>
     !skipValidation({
@@ -77,7 +79,7 @@ const Controller = <
     setValue(name, data, shouldValidate());
   };
 
-  const registerField = () => {
+  const registerField = React.useCallback(() => {
     if (
       isNameInFieldArray(fieldArrayNamesRef.current, name) &&
       fieldsRef.current[name]
@@ -95,35 +97,40 @@ const Controller = <
           return valueRef.current;
         },
       }),
-      { ...rules },
+      rules,
     );
-  };
+  }, [
+    fieldArrayNamesRef,
+    fieldsRef,
+    name,
+    onFocus,
+    register,
+    removeFieldEventListener,
+  ]);
 
   React.useEffect(() => {
-    if (!fieldsRef.current[name]) {
-      registerField();
-      setInputStateValue(
-        isUndefined(defaultValue)
-          ? get(defaultValuesRef.current, name)
-          : defaultValue,
-      );
-    }
-  });
-
-  React.useEffect(() => {
+    const fieldArrayNames = fieldArrayNamesRef.current;
     registerField();
+
     return () => {
-      if (!isNameInFieldArray(fieldArrayNamesRef.current, name)) {
+      if (!isNameInFieldArray(fieldArrayNames, name)) {
         unregister(name);
       }
     };
-  }, [name]);
+  }, [name, unregister, fieldArrayNamesRef, registerField]);
 
   React.useEffect(() => {
     registerField();
-  }, [rules]);
+  }, [registerField]);
 
-  const shouldReValidateOnBlur = isOnBlur || isReValidateOnBlur;
+  if (!fieldsRef.current[name]) {
+    registerField();
+    setInputStateValue(
+      isUndefined(defaultValue)
+        ? get(defaultValuesRef.current, name)
+        : defaultValue,
+    );
+  }
 
   const props = {
     name,
