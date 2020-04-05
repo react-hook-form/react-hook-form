@@ -35,10 +35,11 @@
 
 - Contruído com performance e experiência do desenvolvedor em mente
 - Validação de formulários incontrolados
+- Melhore o desempenho do formulário controlado
 - [Baixo Custo](https://bundlephobia.com/result?p=react-hook-form@latest) sem nenhuma dependência
 - Segue as normas padrões de validação HTML
 - Compatível com React Native
-- Suporta [Yup](https://github.com/jquense/yup), que é um modelo de validação
+- Suporta [Yup](https://github.com/jquense/yup), [Joi](https://github.com/hapijs/joi), [Superstruct](https://github.com/ianstormtaylor/superstruct) ou personalizado
 - Suporte nativo a validação do navegador
 - Possibilita construção rápida com [form builder](https://react-hook-form.com/form-builder)
 

@@ -39,7 +39,7 @@
 - [Крошечный размер](https://bundlephobia.com/result?p=react-hook-form@latest) без какой-либо зависимости
 - Соответствует стандартам HTML для валидации
 - Совместим с React Native
-- Поддержка [Yup](https://github.com/jquense/yup) валидации на основе схемы
+- Поддерживает [Yup](https://github.com/jquense/yup), [Joi](https://github.com/hapijs/joi), [Superstruct](https://github.com/ianstormtaylor/superstruct) или обычай
 - Поддержка нативной браузерной валидации
 - Быстро создавать формы с [конструктором форм](https://react-hook-form.com/form-builder)
 

@@ -35,10 +35,11 @@
 
 - Sviluppata puntando l'attenzione su peformance ed esperienza di sviluppo
 - Validazione form di tipo 'uncontrolled'
+- Migliora le prestazioni della forma controllata
 - [Leggera](https://bundlephobia.com/result?p=react-hook-form@latest), senza nessuna dipendenza
 - Segue gli standard HTML per la validazione
 - Compatibile con React Native
-- Supporta lo schema di validazione [Yup](https://github.com/jquense/yup)
+- Supporta [Yup](https://github.com/jquense/yup), [Joi](https://github.com/hapijs/joi), [Superstruct](https://github.com/ianstormtaylor/superstruct) o personalizzati
 - Supporta la validazione nativa del browser
 - Sviluppa form velocemente grazie al [form builder](https://react-hook-form.com/form-builder)
 

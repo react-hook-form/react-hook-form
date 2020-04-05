@@ -28,10 +28,12 @@
 ## 特性
 
 - 使创建表单和集成更加便捷
-- 以性能和开发体验为基础构建
 - 非受控表单校验
+- 以性能和开发体验为基础构建
 - [迷你](https://bundlephobia.com/result?p=react-hook-form@latest)的体积而没有其他依赖
 - 遵循 html 标准进行校验
+- 与React Native兼容
+- 支持[Yup](https://github.com/jquense/yup), [Joi](https://github.com/hapijs/joi), [Superstruct](https://github.com/ianstormtaylor/superstruct)或自定义
 - 支持浏览器原生校验
 - 从[这里](https://react-hook-form.com/zh/form-builder)快速构建你的表单
 

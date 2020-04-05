@@ -35,10 +35,11 @@
 
 - 성능과 DX를 기반으로 구축
 - 제어되지 않는 양식 검증
+- 제어 된 양식의 성능을 향상시킵니다
 - 의존성 없는 [작은 용량](https://bundlephobia.com/result?p=react-hook-form@latest)
 - HTML 표준을 따르는 검증
 - React Native 와 호환
-- [Yup](https://github.com/jquense/yup) 스키마 기반의 검증 지원
+- [Yup](https://github.com/jquense/yup), [Joi](https://github.com/hapijs/joi), [Superstruct](https://github.com/ianstormtaylor/superstruct) 또는 custom 지원
 - 브라우저 네이티브 검증 지원
 - [Form Builder](https://react-hook-form.com/form-builder)로 폼 빠르게 생성
 
