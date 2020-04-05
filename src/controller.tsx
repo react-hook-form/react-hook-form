@@ -51,6 +51,7 @@ const Controller = <
   );
   const valueRef = React.useRef(value);
   const isCheckboxInput = isBoolean(value);
+  const shouldReValidateOnBlur = isOnBlur || isReValidateOnBlur;
 
   const shouldValidate = () =>
     !skipValidation({
@@ -98,7 +99,6 @@ const Controller = <
       }),
       rules,
     );
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     fieldArrayNamesRef,
     fieldsRef,
@@ -107,18 +107,6 @@ const Controller = <
     register,
     removeFieldEventListener,
   ]);
-
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  React.useEffect(() => {
-    if (!fieldsRef.current[name]) {
-      registerField();
-      setInputStateValue(
-        isUndefined(defaultValue)
-          ? get(defaultValuesRef.current, name)
-          : defaultValue,
-      );
-    }
-  });
 
   React.useEffect(() => {
     const fieldArrayNames = fieldArrayNamesRef.current;
@@ -133,9 +121,16 @@ const Controller = <
 
   React.useEffect(() => {
     registerField();
-  }, [rules, registerField]);
+  }, [registerField]);
 
-  const shouldReValidateOnBlur = isOnBlur || isReValidateOnBlur;
+  if (!fieldsRef.current[name]) {
+    registerField();
+    setInputStateValue(
+      isUndefined(defaultValue)
+        ? get(defaultValuesRef.current, name)
+        : defaultValue,
+    );
+  }
 
   const props = {
     name,
