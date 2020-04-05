@@ -8,6 +8,7 @@ import isNameInFieldArray from './logic/isNameInFieldArray';
 import { useFormContext } from './useFormContext';
 import { VALIDATION_MODE, VALUE } from './constants';
 import { Control, ControllerProps, EventFunction, Field } from './types';
+import { useCallback } from 'react';
 const Controller = <
   As extends
     | React.ReactElement
@@ -77,7 +78,7 @@ const Controller = <
     setValue(name, data, shouldValidate());
   };
 
-  const registerField = () => {
+  const registerField = useCallback(() => {
     if (
       isNameInFieldArray(fieldArrayNamesRef.current, name) &&
       fieldsRef.current[name]
@@ -97,8 +98,17 @@ const Controller = <
       }),
       { ...rules },
     );
-  };
+  }, [
+    fieldArrayNamesRef,
+    fieldsRef,
+    name,
+    onFocus,
+    register,
+    removeFieldEventListener,
+    rules,
+  ]);
 
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   React.useEffect(() => {
     if (!fieldsRef.current[name]) {
       registerField();
@@ -111,17 +121,19 @@ const Controller = <
   });
 
   React.useEffect(() => {
+    const fieldArrayNames = fieldArrayNamesRef.current;
     registerField();
+
     return () => {
-      if (!isNameInFieldArray(fieldArrayNamesRef.current, name)) {
+      if (!isNameInFieldArray(fieldArrayNames, name)) {
         unregister(name);
       }
     };
-  }, [name]);
+  }, [name, unregister, fieldArrayNamesRef, registerField]);
 
   React.useEffect(() => {
     registerField();
-  }, [rules]);
+  }, [rules, registerField]);
 
   const shouldReValidateOnBlur = isOnBlur || isReValidateOnBlur;
 

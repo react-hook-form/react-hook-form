@@ -2,7 +2,7 @@ import * as React from 'react';
 import { render } from '@testing-library/react';
 import { ErrorMessage } from './index';
 
-jest.spyOn(console, 'warn').mockImplementation(() => {});
+jest.spyOn(console, 'warn').mockImplementation(() => ({}));
 
 describe('React Hook Form Error Message', () => {
   it('should render correctly', () => {
