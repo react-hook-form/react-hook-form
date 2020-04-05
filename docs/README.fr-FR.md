@@ -35,10 +35,11 @@
 
 - Développé en privilegiant les performances et l'experience developpeur.
 - Formulaires non-contrôlés.
+- Améliorez les performances du formulaire contrôlé.
 - [Taille reduite](https://bundlephobia.com/result?p=react-hook-form@latest) sans aucune dépendance.
 - Respecte les normes de validation HTML.
 - Compatible avec React Native.
-- Supporte [Yup](https://github.com/jquense/yup) pour de la validation via schéma.
+- Prend en charge [Yup](https://github.com/jquense/yup), [Joi](https://github.com/hapijs/joi), [Superstruct](https://github.com/ianstormtaylor/superstruct) ou personnalisé
 - Supporte la validation native du navigateur.
 - Possibilité de développer des formulaires rapidement grâce au [form builder](https://react-hook-form.com/form-builder).
 
@@ -84,15 +85,23 @@ function App() {
 
 ## Contributeurs
 
-Thanks goes to these wonderful people. [[Become a contributor](CONTRIBUTING.md)].
+Merci à ces gens merveilleux! [[Become a contributor](CONTRIBUTING.md)].
 
 <a href="https://github.com/react-hook-form/react-hook-form/graphs/contributors">
     <img src="https://opencollective.com/react-hook-form/contributors.svg?width=950" />
 </a>
 
+## Organisation
+
+Merci à ces merveilleuses organisations! [[Contribuer](https://opencollective.com/react-hook-form/contribute)]
+
+<a href="https://github.com/react-hook-form/react-hook-form/graphs/contributors">
+    <img src="https://opencollective.com/react-hook-form/organizations.svg?width=950" />
+</a>
+
 ## Sponsors
 
-Merci à tous nos sponsors ! [[Become a backer](https://opencollective.com/react-hook-form#backer)].
+Merci à tous nos sponsors! [[Become a backer](https://opencollective.com/react-hook-form#backer)].
 
 <a href="https://opencollective.com/react-hook-form#backers">
     <img src="https://opencollective.com/react-hook-form/backers.svg?width=950" />
