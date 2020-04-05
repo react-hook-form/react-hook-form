@@ -90,7 +90,10 @@ export const useFieldArray = <
     if (readFormStateRef.current.dirty) {
       isDirtyRef.current = isUndefined(flagOrFields)
         ? true
-        : getIsFieldsDifferent(flagOrFields, defaultValuesRef.current[name]);
+        : getIsFieldsDifferent(
+            flagOrFields,
+            defaultValuesRef.current[name] || [],
+          );
     }
 
     for (const key in fieldsRef.current) {
@@ -306,7 +309,9 @@ export const useFieldArray = <
 
   const reset = () => {
     resetFields();
-    memoizedDefaultValues.current = get(defaultValuesRef.current, name, []);
+    memoizedDefaultValues.current = [
+      ...get(defaultValuesRef.current, name, []),
+    ];
     setField(mapIds(memoizedDefaultValues.current, keyName));
   };
 
@@ -329,8 +334,6 @@ export const useFieldArray = <
         }
       }
     }
-
-    reRender();
   }, [fields, name, reRender, watchFieldsRef]);
 
   useEffect(() => {
