@@ -50,7 +50,10 @@ const Controller = <
       : defaultValue,
   );
   const valueRef = React.useRef(value);
+  const rulesRef = React.useRef(rules);
   const isCheckboxInput = isBoolean(value);
+
+  rulesRef.current = rules;
 
   const shouldValidate = () =>
     !skipValidation({
@@ -96,16 +99,16 @@ const Controller = <
           return valueRef.current;
         },
       }),
-      { ...rules },
+      rulesRef.current,
     );
   }, [
     fieldArrayNamesRef,
     fieldsRef,
     name,
     onFocus,
+    rulesRef,
     register,
     removeFieldEventListener,
-    rules,
   ]);
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -133,7 +136,7 @@ const Controller = <
 
   React.useEffect(() => {
     registerField();
-  }, [rules, registerField]);
+  }, [rulesRef, registerField]);
 
   const shouldReValidateOnBlur = isOnBlur || isReValidateOnBlur;
 
