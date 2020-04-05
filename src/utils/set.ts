@@ -19,7 +19,7 @@ export default function set(object: FieldValues, path: string, value: any) {
       newValue =
         isObject(objValue) || isArray(objValue)
           ? objValue
-          : !isNaN(tempPath[index + 1] as any)
+          : !isNaN(+tempPath[index + 1])
           ? []
           : {};
     }
