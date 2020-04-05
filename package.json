@@ -15,7 +15,7 @@
     "build:ie11": "rollup -c rollup.ie11.config.js",
     "prettier": "prettier --write './src/**/*.ts' './src/**/*.tsx' --config ./.prettierrc",
     "lint": "yarn lint:check --fix && yarn prettier",
-    "lint:check": "eslint ./src --ext .jsx,.ts,.tsx --ignore-pattern *.test.ts --report-unused-disable-directives",
+    "lint:check": "eslint ./src --ext .tsx,.ts --report-unused-disable-directives",
     "coverage": "jest --coverage --coverageReporters=text-lcov | coveralls",
     "postrelease": "yarn publish && git push --follow-tags",
     "test": "jest --runInBand",

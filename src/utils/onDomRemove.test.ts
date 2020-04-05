@@ -4,7 +4,6 @@ describe('onDomRemove', () => {
   it('should call the observer', () => {
     // @ts-ignore
     window.MutationObserver = class {
-      // eslint-disable-next-line @typescript-eslint/explicit-member-accessibility
       observe = jest.fn();
     };
     // @ts-ignore
