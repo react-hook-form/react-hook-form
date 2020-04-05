@@ -82,12 +82,20 @@ function App() {
 }
 ```
 
-## Contributor
+## Contributors
 
-Grazie a queste splendide persone. [[Diventa un contributor](CONTRIBUTING.md)].
+Grazie a queste splendide persone! [[Diventa un contributor](CONTRIBUTING.md)].
 
 <a href="https://github.com/react-hook-form/react-hook-form/graphs/contributors">
     <img src="https://opencollective.com/react-hook-form/contributors.svg?width=950" />
+</a>
+
+## Organizzazioni
+
+Grazie a queste meravigliose organizzazioni! [[Contribuire](https://opencollective.com/react-hook-form/contribute)]
+
+<a href="https://github.com/react-hook-form/react-hook-form/graphs/contributors">
+    <img src="https://opencollective.com/react-hook-form/organizations.svg?width=950" />
 </a>
 
 ## Sostenitori

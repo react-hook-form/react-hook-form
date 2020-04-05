@@ -83,10 +83,18 @@ function App() {
 
 ## コントリビューター
 
-これらの素晴らしい人々に感謝します。[[コントリビューターになる](CONTRIBUTING.md)]
+これらの素晴らしい人々に感謝します![[コントリビューターになる](CONTRIBUTING.md)]
 
 <a href="https://github.com/react-hook-form/react-hook-form/graphs/contributors">
     <img src="https://opencollective.com/react-hook-form/contributors.svg?width=950" />
+</a>
+
+## 組織
+
+これらの素晴らしい組織に感謝します! [[する](https://opencollective.com/react-hook-form/contribute)]
+
+<a href="https://github.com/react-hook-form/react-hook-form/graphs/contributors">
+    <img src="https://opencollective.com/react-hook-form/organizations.svg?width=950" />
 </a>
 
 ## スポンサー

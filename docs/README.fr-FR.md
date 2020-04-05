@@ -84,15 +84,23 @@ function App() {
 
 ## Contributeurs
 
-Thanks goes to these wonderful people. [[Become a contributor](CONTRIBUTING.md)].
+Merci à ces gens merveilleux! [[Become a contributor](CONTRIBUTING.md)].
 
 <a href="https://github.com/react-hook-form/react-hook-form/graphs/contributors">
     <img src="https://opencollective.com/react-hook-form/contributors.svg?width=950" />
 </a>
 
+## Organisation
+
+Merci à ces merveilleuses organisations! [[Contribuer](https://opencollective.com/react-hook-form/contribute)]
+
+<a href="https://github.com/react-hook-form/react-hook-form/graphs/contributors">
+    <img src="https://opencollective.com/react-hook-form/organizations.svg?width=950" />
+</a>
+
 ## Sponsors
 
-Merci à tous nos sponsors ! [[Become a backer](https://opencollective.com/react-hook-form#backer)].
+Merci à tous nos sponsors! [[Become a backer](https://opencollective.com/react-hook-form#backer)].
 
 <a href="https://opencollective.com/react-hook-form#backers">
     <img src="https://opencollective.com/react-hook-form/backers.svg?width=950" />

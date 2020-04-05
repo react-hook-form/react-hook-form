@@ -94,9 +94,17 @@ function App() {
     <img src="https://opencollective.com/react-hook-form/backers.svg?width=950" />
 </a>
 
+## организации
+
+Спасибо этим замечательным организациям! [[Способствовать](https://opencollective.com/react-hook-form/contribute)]
+
+<a href="https://github.com/react-hook-form/react-hook-form/graphs/contributors">
+    <img src="https://opencollective.com/react-hook-form/organizations.svg?width=950" />
+</a>
+
 ## Участники
 
-Спасибо этим замечательным людям. [[Стать участником](CONTRIBUTING.md)].
+Спасибо этим замечательным людям! [[Стать участником](CONTRIBUTING.md)].
 
 <a href="https://github.com/react-hook-form/react-hook-form/graphs/contributors">
     <img src="https://opencollective.com/react-hook-form/contributors.svg?width=950" />

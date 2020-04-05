@@ -1,6 +1,8 @@
 <div align="center">
     <p align="center">
-        <a href="https://react-hook-form.com/zh" title="React Hook Form - Simple React forms validation"><img src="https://raw.githubusercontent.com/bluebill1049/react-hook-form/master/website/logo.png" alt="React Hook Form Logo - React hook form validation" width="330px" /></a>
+      <a href="https://react-hook-form.com/zh" title="React Hook Form - Simple React forms validation">
+        <img src="https://raw.githubusercontent.com/bluebill1049/react-hook-form/master/website/logo.png" alt="React Hook Form Logo - hook custom hook for form validation" width="330px" />
+      </a>
     </p>
 </div>
 
@@ -72,9 +74,25 @@ function App() {
 }
 ```
 
+## 支持者
+
+感谢所有支持者! [[成为支持者](https://opencollective.com/react-hook-form#backer)].
+
+<a href="https://opencollective.com/react-hook-form#backers">
+    <img src="https://opencollective.com/react-hook-form/backers.svg?width=950" />
+</a>
+
+## 组织机构
+
+感谢这些精彩的组织！ [[捐助](https://opencollective.com/react-hook-form/contribute)]
+
+<a href="https://github.com/react-hook-form/react-hook-form/graphs/contributors">
+    <img src="https://opencollective.com/react-hook-form/organizations.svg?width=950" />
+</a>
+
 ## 贡献者
 
-感谢这些为该开源项目作出贡献的人:
+感谢这些出色的人！ [[成为贡献者](CONTRIBUTING.md)].
 
 <a href="https://github.com/react-hook-form/react-hook-form/graphs/contributors">
     <img src="https://opencollective.com/react-hook-form/contributors.svg?width=950" />

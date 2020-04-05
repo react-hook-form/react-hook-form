@@ -10,6 +10,7 @@
 
 <div align="center">
 
+[![CircleCI](https://badgen.net/github/status/react-hook-form/react-hook-form/master/ci/circleci)](https://circleci.com/gh/react-hook-form/react-hook-form)
 [![npm downloads](https://img.shields.io/npm/dm/react-hook-form.svg?style=flat-square)](https://www.npmjs.com/package/react-hook-form)
 [![npm](https://img.shields.io/npm/dt/react-hook-form.svg?style=flat-square)](https://www.npmjs.com/package/react-hook-form)
 ![dep](https://badgen.net/david/dep/bluebill1049/react-hook-form)
@@ -95,7 +96,7 @@ Thanks goes to all our backers! [[Become a backer](https://opencollective.com/re
 
 ## Organizations
 
-Thanks goes to these wonderful organizations. [[Contribute](https://opencollective.com/react-hook-form/contribute)]
+Thanks goes to these wonderful organizations! [[Contribute](https://opencollective.com/react-hook-form/contribute)]
 
 <a href="https://github.com/react-hook-form/react-hook-form/graphs/contributors">
     <img src="https://opencollective.com/react-hook-form/organizations.svg?width=950" />
@@ -103,7 +104,7 @@ Thanks goes to these wonderful organizations. [[Contribute](https://opencollecti
 
 ## Contributors
 
-Thanks goes to these wonderful people. [[Become a contributor](CONTRIBUTING.md)].
+Thanks goes to these wonderful people! [[Become a contributor](CONTRIBUTING.md)].
 
 <a href="https://github.com/react-hook-form/react-hook-form/graphs/contributors">
     <img src="https://opencollective.com/react-hook-form/contributors.svg?width=950" />

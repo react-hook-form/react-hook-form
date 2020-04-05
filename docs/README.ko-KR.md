@@ -84,15 +84,23 @@ function App() {
 
 ## 기여자
 
-모든 기여자 분들께 감사합니다. [[기여 하기](CONTRIBUTING.md)]
+모든 기여자 분들께 감사합니다! [[기여 하기](CONTRIBUTING.md)]
 
 <a href="https://github.com/react-hook-form/react-hook-form/graphs/contributors">
     <img src="https://opencollective.com/react-hook-form/contributors.svg?width=950" />
 </a>
 
+## 조직
+
+이 훌륭한 조직에 감사드립니다! [[기증하다](https://opencollective.com/react-hook-form/contribute)]
+
+<a href="https://github.com/react-hook-form/react-hook-form/graphs/contributors">
+    <img src="https://opencollective.com/react-hook-form/organizations.svg?width=950" />
+</a>
+
 ## 후원자
 
-모둔 후원자 분들께 감사합니다 [[후원 하기](https://opencollective.com/react-hook-form#backer)]
+모둔 후원자 분들께 감사합니다! [[후원 하기](https://opencollective.com/react-hook-form#backer)]
 
 <a href="https://opencollective.com/react-hook-form#backers">
     <img src="https://opencollective.com/react-hook-form/backers.svg?width=950" />
