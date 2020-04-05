@@ -8,7 +8,7 @@ import isNameInFieldArray from './logic/isNameInFieldArray';
 import { useFormContext } from './useFormContext';
 import { VALIDATION_MODE, VALUE } from './constants';
 import { Control, ControllerProps, EventFunction, Field } from './types';
-import { useCallback } from 'react';
+
 const Controller = <
   As extends
     | React.ReactElement
@@ -78,7 +78,7 @@ const Controller = <
     setValue(name, data, shouldValidate());
   };
 
-  const registerField = useCallback(() => {
+  const registerField = React.useCallback(() => {
     if (
       isNameInFieldArray(fieldArrayNamesRef.current, name) &&
       fieldsRef.current[name]
