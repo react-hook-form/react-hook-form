@@ -102,6 +102,7 @@ const Controller = <
   }, [
     fieldArrayNamesRef,
     fieldsRef,
+    rules,
     name,
     onFocus,
     register,
