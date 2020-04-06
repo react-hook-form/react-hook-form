@@ -86,7 +86,7 @@ function App() {
 }
 ```
 
-## Backers
+## Patrocinadores
 
 ¡Gracias a todos nuestros patrocinadores! [[Hazte patrocinador](https://opencollective.com/react-hook-form#backer)].
 
@@ -94,9 +94,17 @@ function App() {
     <img src="https://opencollective.com/react-hook-form/backers.svg?width=950" />
 </a>
 
-## Contributors
+## Organizaciones
 
-Gracias a estas personas maravillosas. [[Hazte colaborador](CONTRIBUTING.md)].
+Gracias a estas maravillosas organizaciones! [[Contribuir](https://opencollective.com/react-hook-form/contribute)]
+
+<a href="https://github.com/react-hook-form/react-hook-form/graphs/contributors">
+    <img src="https://opencollective.com/react-hook-form/organizations.svg?width=950" />
+</a>
+
+## Colaboradores
+
+Gracias a estas personas maravillosas! [[Hazte colaborador](CONTRIBUTING.md)].
 
 <a href="https://github.com/react-hook-form/react-hook-form/graphs/contributors">
     <img src="https://opencollective.com/react-hook-form/contributors.svg?width=950" />

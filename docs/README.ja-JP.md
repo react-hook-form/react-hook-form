@@ -35,9 +35,10 @@
 
 - パフォーマンスと DX を念頭に構築
 - 非制御フォームバリデーション
+- コントロールされたフォームのパフォーマンスを向上させます
 - 依存関係のない[小さなサイズ](https://bundlephobia.com/result?p=react-hook-form@latest)
 - React Native との互換性
-- [Yup](https://github.com/jquense/yup) スキーマベースのバリデーションをサポート
+- [Yup](https://github.com/jquense/yup), [Joi](https://github.com/hapijs/joi), [Superstruct](https://github.com/ianstormtaylor/superstruct) またはカスタムをサポート
 - ブラウザのネイティブバリデーションをサポート
 - [Form Builder](https://react-hook-form.com/jp/form-builder) でフォームを素早く作成
 
@@ -83,10 +84,18 @@ function App() {
 
 ## コントリビューター
 
-これらの素晴らしい人々に感謝します。[[コントリビューターになる](CONTRIBUTING.md)]
+これらの素晴らしい人々に感謝します![[コントリビューターになる](CONTRIBUTING.md)]
 
 <a href="https://github.com/react-hook-form/react-hook-form/graphs/contributors">
     <img src="https://opencollective.com/react-hook-form/contributors.svg?width=950" />
+</a>
+
+## 組織
+
+これらの素晴らしい組織に感謝します! [[する](https://opencollective.com/react-hook-form/contribute)]
+
+<a href="https://github.com/react-hook-form/react-hook-form/graphs/contributors">
+    <img src="https://opencollective.com/react-hook-form/organizations.svg?width=950" />
 </a>
 
 ## スポンサー

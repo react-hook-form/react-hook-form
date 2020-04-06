@@ -131,6 +131,7 @@ export function useForm<
     isOnBlur: isReValidateOnBlur,
     isOnSubmit: isReValidateOnSubmit,
   } = useRef(modeChecker(reValidateMode)).current;
+  validationContextRef.current = validationContext;
 
   const reRender = useCallback(() => {
     if (!isUnMount.current) {

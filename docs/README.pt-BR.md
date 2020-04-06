@@ -35,10 +35,11 @@
 
 - Contruído com performance e experiência do desenvolvedor em mente
 - Validação de formulários incontrolados
+- Melhore o desempenho do formulário controlado
 - [Baixo Custo](https://bundlephobia.com/result?p=react-hook-form@latest) sem nenhuma dependência
 - Segue as normas padrões de validação HTML
 - Compatível com React Native
-- Suporta [Yup](https://github.com/jquense/yup), que é um modelo de validação
+- Suporta [Yup](https://github.com/jquense/yup), [Joi](https://github.com/hapijs/joi), [Superstruct](https://github.com/ianstormtaylor/superstruct) ou personalizado
 - Suporte nativo a validação do navegador
 - Possibilita construção rápida com [form builder](https://react-hook-form.com/form-builder)
 
@@ -84,10 +85,18 @@ function App() {
 
 ## Contribuidores
 
-Um obrigado especial para estas pessoas incríveis. [[Seja um contribuidor](CONTRIBUTING.md)].
+Um obrigado especial para estas pessoas incríveis! [[Seja um contribuidor](CONTRIBUTING.md)].
 
 <a href="https://github.com/react-hook-form/react-hook-form/graphs/contributors">
     <img src="https://opencollective.com/react-hook-form/contributors.svg?width=950" />
+</a>
+
+## Organizações
+
+Obrigado por esta organização maravilhosa! [[Contribuir](https://opencollective.com/react-hook-form/contribute)]
+
+<a href="https://github.com/react-hook-form/react-hook-form/graphs/contributors">
+    <img src="https://opencollective.com/react-hook-form/organizations.svg?width=950" />
 </a>
 
 ## Patrocinadores
