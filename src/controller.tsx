@@ -53,6 +53,7 @@ const Controller = <
   const isCheckboxInput = isBoolean(value);
   const shouldReValidateOnBlur = isOnBlur || isReValidateOnBlur;
   const rulesRef = React.useRef(rules);
+  rulesRef.current = rules;
 
   const shouldValidate = () =>
     !skipValidation({
