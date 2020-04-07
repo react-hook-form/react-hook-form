@@ -196,3 +196,16 @@ test('should only remove relevant data', () => {
     },
   });
 });
+
+it('should remove empty array item', () => {
+  const data = {
+    name: [
+      {
+        message: 'Company name is too short - should at be 3 chars minimum',
+        type: 'min',
+      },
+    ],
+  };
+
+  expect(unset(data, ['name[0]'])).toEqual({});
+});
