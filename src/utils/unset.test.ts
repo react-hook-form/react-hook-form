@@ -201,8 +201,7 @@ it('should remove empty array item', () => {
   const data = {
     name: [
       {
-        message: 'Company name is too short - should at be 3 chars minimum',
-        type: 'min',
+        message: 'test',
       },
     ],
   };
