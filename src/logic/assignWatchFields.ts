@@ -26,7 +26,7 @@ export default <FormValues extends FieldValues>(
     value = get(transformToNestObject(fieldValues), fieldName);
 
     if (!isUndefined(value)) {
-      getPath<FormValues>(fieldName, value).forEach(name =>
+      getPath<FormValues>(fieldName, value).forEach((name) =>
         watchFields.add(name),
       );
     }

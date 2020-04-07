@@ -186,7 +186,7 @@ export const useFieldArray = <
     }
 
     if (readFormStateRef.current.dirty) {
-      dirtyFieldsRef.current.forEach(dirtyField => {
+      dirtyFieldsRef.current.forEach((dirtyField) => {
         if (isUndefined(name) || dirtyField.startsWith(`${name}[${index}]`)) {
           dirtyFieldsRef.current.delete(dirtyField);
         }
