@@ -64,7 +64,7 @@ export default function App() {
         </div>
 
         <div>
-          <lable className="reactSelectLabel">React select</lable>
+          <label className="reactSelectLabel">React select</label>
           <Select
             className="reactSelect"
             name="filters"

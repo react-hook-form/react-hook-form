@@ -333,6 +333,8 @@ export const useFieldArray = <
           break;
         }
       }
+    } else {
+      reRender();
     }
   }, [fields, name, reRender, watchFieldsRef]);
 
