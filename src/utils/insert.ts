@@ -1,7 +1,7 @@
 import isArray from './isArray';
 
-export default (data: any, index: number, value?: any) => [
+export default <T>(data: T[], index: number, value?: T | T[]): T[] => [
   ...data.slice(0, index),
-  ...(isArray(value) ? value : [value || null]),
+  ...(isArray(value) ? value : value ? [value] : []),
   ...data.slice(index),
 ];
