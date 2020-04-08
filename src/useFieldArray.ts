@@ -35,6 +35,7 @@ export const useFieldArray = <
 }: UseFieldArrayProps<KeyName, ControlProp>) => {
   const methods = useFormContext();
   const {
+    isWatchAllRef,
     resetFieldArrayFunctionRef,
     fieldArrayNamesRef,
     reRender,
@@ -186,7 +187,7 @@ export const useFieldArray = <
     }
 
     if (readFormStateRef.current.dirty) {
-      dirtyFieldsRef.current.forEach(dirtyField => {
+      dirtyFieldsRef.current.forEach((dirtyField) => {
         if (isUndefined(name) || dirtyField.startsWith(`${name}[${index}]`)) {
           dirtyFieldsRef.current.delete(dirtyField);
         }
@@ -234,7 +235,7 @@ export const useFieldArray = <
       shouldRender = true;
     }
 
-    if (shouldRender) {
+    if (shouldRender && !isWatchAllRef.current) {
       reRender();
     }
   };
@@ -326,7 +327,9 @@ export const useFieldArray = <
   }, [fields, name, fieldArrayDefaultValues, isDeleted, isNameKey]);
 
   useEffect(() => {
-    if (watchFieldsRef) {
+    if (isWatchAllRef && isWatchAllRef.current) {
+      reRender();
+    } else if (watchFieldsRef) {
       for (const watchField of watchFieldsRef.current) {
         if (watchField.startsWith(name)) {
           reRender();
@@ -334,7 +337,7 @@ export const useFieldArray = <
         }
       }
     }
-  }, [fields, name, reRender, watchFieldsRef]);
+  }, [fields, name, reRender, watchFieldsRef, isWatchAllRef]);
 
   useEffect(() => {
     const resetFunctions = resetFieldArrayFunctionRef.current;

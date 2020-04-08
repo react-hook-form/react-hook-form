@@ -67,16 +67,13 @@ function baseUnset(object: any, path: string) {
       objectRef = objectRef ? objectRef[item] : object[item];
 
       if (currentPathsLength === index) {
-        if (isObject(objectRef) && isEmptyObject(objectRef)) {
-          previousObjRef ? delete previousObjRef[item] : delete object[item];
-        } else if (
-          isArray(objectRef) &&
-          !objectRef.filter(data => isObject(data) && !isEmptyObject(data))
-            .length
+        if (
+          (isObject(objectRef) && isEmptyObject(objectRef)) ||
+          (isArray(objectRef) &&
+            !objectRef.filter((data) => isObject(data) && !isEmptyObject(data))
+              .length)
         ) {
-          if (previousObjRef) {
-            delete previousObjRef[item];
-          }
+          previousObjRef ? delete previousObjRef[item] : delete object[item];
         }
       }
 
@@ -88,7 +85,7 @@ function baseUnset(object: any, path: string) {
 }
 
 export default function unset(object: any, paths: string[]) {
-  paths.forEach(path => {
+  paths.forEach((path) => {
     baseUnset(object, path);
   });
   return object;
