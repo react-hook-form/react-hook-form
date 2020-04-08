@@ -26,6 +26,7 @@ you can view the source code within the folder or visit code sand box to see how
 | Normalize/Format/Mask Field             | https://codesandbox.io/s/387z7njwzp                                           |
 | Format/Mask Field (Third Party Library) | https://codesandbox.io/s/react-hook-form-normalize-field-1jumn                |
 | Native Validation                       | https://codesandbox.io/s/react-hook-form-native-validation-ez5ww              |
+| Disable Native Validation               | https://codesandbox.io/s/keen-mccarthy-4pqn6                                  |
 | Reset Form                              | https://codesandbox.io/s/jjm3wyqmjy                                           |
 | Remote/Trigger Form Submit              | https://codesandbox.io/s/remote-handlesubmit-w0win                            |
 | Register Error Messages                 | https://codesandbox.io/s/o766kp4z05                                           |
@@ -35,4 +36,4 @@ you can view the source code within the folder or visit code sand box to see how
 | ValidationSchema                        | https://codesandbox.io/s/928po918qr                                           |
 | Validation On Blur                      | https://codesandbox.io/s/w7p3km6nyw                                           |
 | Validation On Change                    | https://codesandbox.io/s/74zw1oqozx                                           |
-| Parse and format input value            | https://codesandbox.io/s/react-hook-form-parse-and-format-textarea-52dvm
+| Parse and format input value            | https://codesandbox.io/s/react-hook-form-parse-and-format-textarea-52dvm      |
