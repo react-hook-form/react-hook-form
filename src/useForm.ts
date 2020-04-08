@@ -1222,7 +1222,6 @@ export function useForm<
     removeFieldEventListener,
     reRender,
     ...(shouldValidateCallback ? { validateSchemaIsValid } : {}),
-    ...(isWatchAllRef.current ? {} : { watchFieldsRef }),
     mode: {
       isOnBlur,
       isOnSubmit,
@@ -1235,6 +1234,8 @@ export function useForm<
     errorsRef,
     touchedFieldsRef,
     fieldsRef,
+    isWatchAllRef,
+    watchFieldsRef,
     resetFieldArrayFunctionRef,
     fieldArrayDefaultValues,
     validFieldsRef,

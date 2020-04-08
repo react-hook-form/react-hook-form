@@ -16,6 +16,9 @@ export const reconfigureControl = (
   defaultValuesRef: {
     current: {},
   },
+  isWatchAllRef: {
+    current: false,
+  },
   validFieldsRef: {
     current: new Set(),
   },

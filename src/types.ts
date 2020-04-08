@@ -286,7 +286,8 @@ export type Control<FormValues extends FieldValues = FieldValues> = {
   dirtyFieldsRef: React.MutableRefObject<Set<FieldName<FormValues>>>;
   validateSchemaIsValid?: (fieldsValues: any) => void;
   touchedFieldsRef: React.MutableRefObject<Touched<FormValues>>;
-  watchFieldsRef?: React.MutableRefObject<Set<FieldName<FormValues>>>;
+  watchFieldsRef: React.MutableRefObject<Set<FieldName<FormValues>>>;
+  isWatchAllRef: React.MutableRefObject<boolean>;
   validFieldsRef: React.MutableRefObject<Set<FieldName<FormValues>>>;
   fieldsWithValidationRef: React.MutableRefObject<Set<FieldName<FormValues>>>;
   errorsRef: React.MutableRefObject<FieldErrors<FormValues>>;
