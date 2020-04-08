@@ -1,6 +1,6 @@
 import isArray from './isArray';
 
-export default (data: any, value?: any) => [
-  ...(isArray(value) ? value : [value || null]),
+export default <T>(data: T[], value?: T | T[]): T[] => [
+  ...(isArray(value) ? value : value ? [value] : []),
   ...data,
 ];
