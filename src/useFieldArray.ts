@@ -61,12 +61,12 @@ export const useFieldArray = <
   );
   const isNameKey = isKey(name);
   const [fields, setField] = useState<
-    Partial<ArrayField<FormArrayValues, KeyName>>[]
+    (Partial<ArrayField<FormArrayValues, KeyName>> | null)[]
   >(mapIds(memoizedDefaultValues.current, keyName));
   const [isDeleted, setIsDeleted] = useState(false);
-  const allFields = useRef<Partial<ArrayField<FormArrayValues, KeyName>>[]>(
-    fields,
-  );
+  const allFields = useRef<
+    (Partial<ArrayField<FormArrayValues, KeyName>> | null)[]
+  >(fields);
 
   allFields.current = fields;
 
@@ -78,7 +78,7 @@ export const useFieldArray = <
     value.map((v: Partial<FormArrayValues>) => appendId(v, keyName));
 
   const commonTasks = (
-    fieldsValues: Partial<ArrayField<FormArrayValues, KeyName>>[],
+    fieldsValues: (Partial<ArrayField<FormArrayValues, KeyName>> | null)[],
   ) => {
     setField(fieldsValues);
 
@@ -89,7 +89,7 @@ export const useFieldArray = <
     }
   };
 
-  const resetFields = (flagOrFields?: Partial<FormArrayValues>[]) => {
+  const resetFields = (flagOrFields?: (Partial<FormArrayValues> | null)[]) => {
     if (readFormStateRef.current.dirty) {
       isDirtyRef.current = isUndefined(flagOrFields)
         ? true
