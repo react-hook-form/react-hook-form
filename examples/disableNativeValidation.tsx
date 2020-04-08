@@ -2,10 +2,7 @@ import React from 'react';
 import { useForm } from 'react-hook-form';
 
 export default function App() {
-  const { errors, handleSubmit, register } = useForm({
-    mode: 'onSubmit',
-    reValidateMode: 'onChange',
-  });
+  const { errors, handleSubmit, register } = useForm();
 
   const onSubmit = data => {
     console.log({ data });
