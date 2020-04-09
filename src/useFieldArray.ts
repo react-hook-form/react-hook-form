@@ -92,11 +92,13 @@ export const useFieldArray = <
     shouldDelete,
     isPrePend,
     index,
+    value,
   }: {
     isPrePend?: boolean;
     shouldRender?: boolean;
     shouldDelete?: boolean;
     index?: number | number[];
+    value?: Partial<FormArrayValues> | Partial<FormArrayValues>[];
   } = {}) => {
     let render = shouldRender;
 
@@ -117,8 +119,9 @@ export const useFieldArray = <
             }
           }
         }
-      } else {
+      } else if (value) {
         const dirtyFieldIndexes: number[] = [];
+        const keys = Object.keys(value);
 
         if (isPrePend) {
           for (const dirtyField of dirtyFieldsRef.current) {
@@ -132,16 +135,22 @@ export const useFieldArray = <
             }
           }
           for (const dirtyFieldIndex of [-1, ...dirtyFieldIndexes]) {
-            dirtyFieldsRef.current.add(`${name}[${dirtyFieldIndex + 1}]`);
+            keys.forEach((key) =>
+              dirtyFieldsRef.current.add(
+                `${name}[${dirtyFieldIndex + 1}].${key}`,
+              ),
+            );
           }
         } else {
-          dirtyFieldsRef.current.add(
-            `${name}[${allFields.current.length + 1}]`,
+          keys.forEach((key) =>
+            dirtyFieldsRef.current.add(
+              `${name}[${allFields.current.length}].${key}`,
+            ),
           );
         }
+        isDirtyRef.current = true;
       }
 
-      isDirtyRef.current = true;
       render = true;
     }
 
@@ -189,7 +198,7 @@ export const useFieldArray = <
         ? appendValueWithKey(value)
         : [appendId(value, keyName)]),
     ]);
-    modifyDirtyFields();
+    modifyDirtyFields({ value });
   };
 
   const prepend = (
@@ -224,6 +233,7 @@ export const useFieldArray = <
     modifyDirtyFields({
       shouldRender,
       isPrePend: true,
+      value,
     });
   };
 
