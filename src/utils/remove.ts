@@ -1,12 +1,12 @@
 import isUndefined from './isUndefined';
 import isArray from './isArray';
 
-const removeAt = (data: any, index: number) => [
+const removeAt = <T>(data: T[], index: number): T[] => [
   ...data.slice(0, index),
   ...data.slice(index + 1),
 ];
 
-function removeAtIndexes<T extends []>(data: T, index: number[]) {
+function removeAtIndexes<T>(data: T[], index: number[]): T[] {
   let k = -1;
 
   while (++k < data.length) {
@@ -18,7 +18,7 @@ function removeAtIndexes<T extends []>(data: T, index: number[]) {
   return data.filter(Boolean);
 }
 
-export default (data: any, index?: number | number[]) =>
+export default <T>(data: T[], index?: number | number[]): T[] =>
   isUndefined(index)
     ? []
     : isArray(index)
