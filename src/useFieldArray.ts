@@ -108,10 +108,8 @@ export const useFieldArray = <
           if (isUndefined(index) && isMatchFieldArrayName(dirtyField, name)) {
             dirtyFieldsRef.current.delete(dirtyField);
           } else {
-            let k = -1;
-
-            while (++k < indexes.length) {
-              if (isMatchFieldArrayName(dirtyField, name, indexes[k])) {
+            for (const index of indexes) {
+              if (isMatchFieldArrayName(dirtyField, name, index)) {
                 dirtyFieldsRef.current.delete(dirtyField);
               }
             }
