@@ -1,5 +1,6 @@
 import isUndefined from '../utils/isUndefined';
 
+// todo: remove index in the final commit
 export const isMatchFieldArrayName = (
   name: string,
   searchName: string,

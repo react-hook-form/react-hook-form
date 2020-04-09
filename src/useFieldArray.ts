@@ -14,7 +14,7 @@ import isArray from './utils/isArray';
 import insertAt from './utils/insert';
 import isKey from './utils/isKey';
 import fillEmptyArray from './utils/fillEmptyArray';
-import getSortRemovedItems from './utils/getSortRemovedItems';
+import getSortRemovedItems from './utils/getSortedArrayFieldIndexes';
 import {
   Field,
   FieldValues,
@@ -95,7 +95,7 @@ export const useFieldArray = <
     shouldDelete,
     isPrePend,
     index,
-    value,
+    value = {},
   }: {
     isPrePend?: boolean;
     shouldRender?: boolean;
@@ -132,6 +132,7 @@ export const useFieldArray = <
         const indexes = isArray(index) ? index : [index];
         const updatedIndexes = getSortRemovedItems(
           Object.keys(dirtyFieldIndexes).map((i) => +i),
+          0,
           indexes,
         );
 
@@ -145,7 +146,7 @@ export const useFieldArray = <
         updatedDirtyFieldIndexes.forEach((updatedDirtyFieldIndex) => {
           dirtyFieldsRef.current.add(updatedDirtyFieldIndex);
         });
-      } else if (value) {
+      } else {
         // todo: fix value as array
         const keys = Object.keys(value);
 
