@@ -104,7 +104,7 @@ export const useFieldArray = <
     let render = shouldRender;
 
     if (readFormStateRef.current.dirty) {
-      const dirtyFieldIndexes: Record<number, any> = {};
+      const dirtyFieldIndexes: Record<number, string[]> = {};
 
       if (isPrePend || shouldDelete) {
         for (const dirtyField of dirtyFieldsRef.current) {

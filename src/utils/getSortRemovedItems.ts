@@ -1,5 +1,9 @@
-export default (indexes: number[], removeIndexes: number[], count = 0) => {
-  const updatedIndexes = [];
+export default (
+  indexes: number[],
+  removeIndexes: number[],
+  updatedIndexes: number[] = [],
+  count = 0,
+) => {
   const sortedIndex = indexes.sort();
 
   for (const index of sortedIndex) {
