@@ -17,11 +17,8 @@ export default <FormValues extends FieldValues>(
     if (
       isUndefined(search) ||
       isNest ||
-      (isSearchString && name.startsWith(search as string)) ||
-      (isSearchArray &&
-        (search as string[]).find((data: string) =>
-          name.startsWith(data as string),
-        ))
+      (isSearchString && name.startsWith(search)) ||
+      (isSearchArray && search.find((data: string) => name.startsWith(data)))
     ) {
       output[name as FieldName<FormValues>] = getFieldValue(
         fields,
