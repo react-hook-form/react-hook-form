@@ -14,6 +14,7 @@ import isArray from './utils/isArray';
 import insertAt from './utils/insert';
 import isKey from './utils/isKey';
 import fillEmptyArray from './utils/fillEmptyArray';
+import getSortRemovedItems from './utils/getSortRemovedItems';
 import {
   Field,
   FieldValues,
@@ -103,50 +104,54 @@ export const useFieldArray = <
     let render = shouldRender;
 
     if (readFormStateRef.current.dirty) {
-      if (shouldDelete) {
-        const indexes = isArray(index) ? index : [index];
+      const dirtyFieldIndexes: Record<number, any> = {};
 
+      if (isPrePend || shouldDelete) {
         for (const dirtyField of dirtyFieldsRef.current) {
           if (isMatchFieldArrayName(dirtyField, name)) {
-            if (isUndefined(index)) {
-              dirtyFieldsRef.current.delete(dirtyField);
-            } else {
-              for (const index of indexes) {
-                if (isMatchFieldArrayName(dirtyField, name, index)) {
-                  dirtyFieldsRef.current.delete(dirtyField);
-                }
+            const matchedIndexes = dirtyField.match(/[\d+]/g);
+
+            dirtyFieldsRef.current.delete(dirtyField);
+
+            if (matchedIndexes) {
+              const matchIndex = +matchedIndexes[matchedIndexes.length - 1];
+              if (dirtyFieldIndexes[matchIndex]) {
+                dirtyFieldIndexes[matchIndex].push(dirtyField);
+              } else {
+                dirtyFieldIndexes[matchIndex] = [dirtyField];
               }
             }
           }
         }
+      }
+
+      if (shouldDelete && !isUndefined(index)) {
+        let updatedDirtyFieldIndexes: string[] = [];
+        const indexes = isArray(index) ? index : [index];
+        const updatedIndexes = getSortRemovedItems(
+          Object.keys(dirtyFieldIndexes).map((i) => +i),
+          indexes,
+        );
+
+        for (const updatedIndex in updatedIndexes) {
+          updatedDirtyFieldIndexes = [
+            ...updatedDirtyFieldIndexes,
+            ...(dirtyFieldIndexes[updatedIndex] || []),
+          ];
+        }
+
+        updatedDirtyFieldIndexes.forEach((updatedDirtyFieldIndex) => {
+          dirtyFieldsRef.current.add(updatedDirtyFieldIndex);
+        });
       } else if (value) {
-        const dirtyFieldIndexes: number[] = [];
         const keys = Object.keys(value);
 
-        if (isPrePend) {
-          for (const dirtyField of dirtyFieldsRef.current) {
-            if (isMatchFieldArrayName(dirtyField, name)) {
-              const matchedIndexes = dirtyField.match(/[\d+]/g);
-
-              if (matchedIndexes) {
-                const matchIndex = +matchedIndexes[matchedIndexes.length - 1];
-                keys.forEach((key) =>
-                  dirtyFieldsRef.current.delete(
-                    `${name}[${matchIndex}].${key}`,
-                  ),
-                );
-                dirtyFieldIndexes.push(matchIndex);
-              }
-            }
-          }
-        }
-
         for (const dirtyFieldIndex of isPrePend
-          ? [-1, ...dirtyFieldIndexes]
+          ? [-1, ...Object.keys(dirtyFieldIndexes)]
           : [allFields.current.length]) {
           keys.forEach((key) =>
             dirtyFieldsRef.current.add(
-              `${name}[${dirtyFieldIndex + (isPrePend ? 1 : 0)}].${key}`,
+              `${name}[${+dirtyFieldIndex + (isPrePend ? 1 : 0)}].${key}`,
             ),
           );
         }

@@ -83,7 +83,7 @@ context('useFieldArray', () => {
     cy.get('#renderCount').contains('27');
   });
 
-  it('should behaviour correctly with defaultValue', () => {
+  it.only('should behaviour correctly with defaultValue', () => {
     cy.visit('http://localhost:3000/useFieldArray/default');
 
     cy.get('ul > li').its('length').should('equal', 3);
@@ -183,18 +183,29 @@ context('useFieldArray', () => {
     cy.get('#renderCount').contains('28');
   });
 
-  it.only('should display the correct dirty value without default value', () => {
+  it('should display the correct dirty value without default value', () => {
     cy.visit('http://localhost:3000/useFieldArray/normal');
     cy.get('#dirty').contains('no');
     cy.get('#append').click();
     cy.get('#dirty').contains('yes');
     cy.get('#field0').focus();
     cy.get('#field0').blur();
+    cy.get('#dirtyFields').contains('["data[0].name"]');
     cy.get('#dirty').contains('yes');
     cy.get('#field0').type('test');
     cy.get('#field0').blur();
     cy.get('#dirty').contains('yes');
+    cy.get('#prepend').click();
+    cy.get('#prepend').click();
+    cy.get('#dirtyFields').contains(
+      '["data[0].name","data[1].name","data[2].name"]',
+    );
     cy.get('#delete0').click();
+    cy.get('#dirtyFields').contains('["data[0].name","data[1].name"]');
+    cy.get('#delete1').click();
+    cy.get('#dirtyFields').contains('["data[0].name"]');
+    cy.get('#delete0').click();
+    cy.get('#dirtyFields').contains('[]');
     cy.get('#dirty').contains('no');
   });
 
