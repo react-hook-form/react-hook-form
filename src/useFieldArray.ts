@@ -105,7 +105,7 @@ export const useFieldArray = <
   };
 
   const mapCurrentFieldsValueWithState = () => {
-    const currentFieldsValue = getValues({ nest: true })[name];
+    const currentFieldsValue = get(getValues({ nest: true }), name);
 
     if (isArray(currentFieldsValue)) {
       for (let i = 0; i < currentFieldsValue.length; i++) {
