@@ -87,7 +87,7 @@ export const useFieldArray = <
     }
   };
 
-  const appendDirtyFields = ({
+  const modifyDirtyFields = ({
     shouldRender,
     shouldDelete,
     isPrePend,
@@ -189,7 +189,7 @@ export const useFieldArray = <
         ? appendValueWithKey(value)
         : [appendId(value, keyName)]),
     ]);
-    appendDirtyFields();
+    modifyDirtyFields();
   };
 
   const prepend = (
@@ -221,7 +221,7 @@ export const useFieldArray = <
       shouldRender = true;
     }
 
-    appendDirtyFields({
+    modifyDirtyFields({
       shouldRender,
       isPrePend: true,
     });
@@ -294,7 +294,7 @@ export const useFieldArray = <
       shouldRender = true;
     }
 
-    appendDirtyFields({
+    modifyDirtyFields({
       shouldRender: shouldRender && !isWatchAllRef.current,
       shouldDelete: true,
       index,
