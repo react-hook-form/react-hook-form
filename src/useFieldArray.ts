@@ -107,9 +107,10 @@ export const useFieldArray = <
   };
 
   const mapCurrentFieldsValueWithState = () => {
-    const currentFieldsValue: Partial<FormArrayValues>[] = getValues({
-      nest: true,
-    })[name];
+    const currentFieldsValue: Partial<FormArrayValues>[] = get(
+      getValues({ nest: true }),
+      name,
+    );
 
     if (isArray(currentFieldsValue)) {
       for (let i = 0; i < currentFieldsValue.length; i++) {
@@ -191,7 +192,7 @@ export const useFieldArray = <
     }
 
     if (readFormStateRef.current.dirty) {
-      dirtyFieldsRef.current.forEach(dirtyField => {
+      dirtyFieldsRef.current.forEach((dirtyField) => {
         if (isUndefined(name) || dirtyField.startsWith(`${name}[${index}]`)) {
           dirtyFieldsRef.current.delete(dirtyField);
         }
