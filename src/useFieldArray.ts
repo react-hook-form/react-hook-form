@@ -90,8 +90,10 @@ export const useFieldArray = <
   const appendDirtyFields = ({
     shouldRender,
     shouldDelete,
+    isPrePend,
     index,
   }: {
+    isPrePend?: boolean;
     shouldRender?: boolean;
     shouldDelete?: boolean;
     index?: number | number[];
@@ -116,10 +118,32 @@ export const useFieldArray = <
           }
         });
       } else {
-        isDirtyRef.current = true;
-        dirtyFieldsRef.current.add(`${name}[${fields.length + 1}]`);
+        const dirtyFieldIndexes: number[] = [];
+
+        if (isPrePend) {
+          for (const dirtyField of dirtyFieldsRef.current) {
+            if (isMatchFieldArrayName(dirtyField, name)) {
+              const matchedIndexes = dirtyField.match(/[\d+]/g);
+              if (matchedIndexes) {
+                const matchIndex = parseInt(
+                  matchedIndexes[matchedIndexes.length - 1],
+                );
+                dirtyFieldsRef.current.delete(`${name}[${matchIndex}]`);
+                dirtyFieldIndexes.push(matchIndex);
+              }
+            }
+          }
+          for (const dirtyFieldIndex of [-1, ...dirtyFieldIndexes]) {
+            dirtyFieldsRef.current.add(`${name}[${dirtyFieldIndex + 1}]`);
+          }
+        } else {
+          dirtyFieldsRef.current.add(
+            `${name}[${allFields.current.length + 1}]`,
+          );
+        }
       }
 
+      isDirtyRef.current = true;
       render = true;
     }
 
@@ -201,6 +225,7 @@ export const useFieldArray = <
 
     appendDirtyFields({
       shouldRender,
+      isPrePend: true,
     });
   };
 

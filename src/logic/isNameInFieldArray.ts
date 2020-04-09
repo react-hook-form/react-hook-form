@@ -6,8 +6,9 @@ export const isMatchFieldArrayName = (
   index?: number,
 ) =>
   RegExp(
-    `^${searchName}\\[${isUndefined(index) ? `\\d+\\` : index}]`,
-    'g',
+    `^${searchName}[${isUndefined(index) ? `\\d+` : index}]`
+      .replace(/\[/g, '\\[')
+      .replace(/\]/g, '\\]'),
   ).test(name);
 
 export default (names: Set<string>, name: string) =>
