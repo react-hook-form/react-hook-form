@@ -144,6 +144,7 @@ export const useFieldArray = <
           dirtyFieldsRef.current.add(updatedDirtyFieldIndex);
         });
       } else if (value) {
+        // todo: fix value as array
         const keys = Object.keys(value);
 
         for (const dirtyFieldIndex of isPrePend
