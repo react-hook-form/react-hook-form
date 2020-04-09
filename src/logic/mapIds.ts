@@ -6,12 +6,10 @@ import { ArrayField } from '../types';
 export const appendId = <Value extends object, KeyName extends string>(
   value: Value,
   keyName: KeyName,
-): Partial<ArrayField<Value, KeyName>> => {
-  return {
-    [keyName]: generateId(),
-    ...(isObject(value) ? value : { value }),
-  };
-};
+): Partial<ArrayField<Value, KeyName>> => ({
+  [keyName]: generateId(),
+  ...(isObject(value) ? value : { value }),
+});
 
 export const mapIds = <Data extends object, KeyName extends string>(
   data: Data | Data[],
