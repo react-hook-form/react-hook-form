@@ -8,8 +8,8 @@ export default function getIsFieldsDifferent(
   let isMatch = false;
 
   if (
-    !isArray(referenceArray) ||
-    !isArray(differenceArray) ||
+    !isArray<any>(referenceArray) ||
+    !isArray<any>(differenceArray) ||
     referenceArray.length !== differenceArray.length
   ) {
     return true;
