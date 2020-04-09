@@ -104,17 +104,19 @@ export const useFieldArray = <
       if (shouldDelete) {
         const indexes = isArray(index) ? index : [index];
 
-        dirtyFieldsRef.current.forEach((dirtyField) => {
-          if (isUndefined(index) && isMatchFieldArrayName(dirtyField, name)) {
-            dirtyFieldsRef.current.delete(dirtyField);
-          } else {
-            for (const index of indexes) {
-              if (isMatchFieldArrayName(dirtyField, name, index)) {
-                dirtyFieldsRef.current.delete(dirtyField);
+        for (const dirtyField of dirtyFieldsRef.current) {
+          if (isMatchFieldArrayName(dirtyField, name)) {
+            if (isUndefined(index)) {
+              dirtyFieldsRef.current.delete(dirtyField);
+            } else {
+              for (const index of indexes) {
+                if (isMatchFieldArrayName(dirtyField, name, index)) {
+                  dirtyFieldsRef.current.delete(dirtyField);
+                }
               }
             }
           }
-        });
+        }
       } else {
         const dirtyFieldIndexes: number[] = [];
 
