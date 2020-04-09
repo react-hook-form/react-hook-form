@@ -129,7 +129,11 @@ export const useFieldArray = <
               const matchedIndexes = dirtyField.match(/[\d+]/g);
               if (matchedIndexes) {
                 const matchIndex = +matchedIndexes[matchedIndexes.length - 1];
-                dirtyFieldsRef.current.delete(`${name}[${matchIndex}]`);
+                keys.forEach((key) =>
+                  dirtyFieldsRef.current.delete(
+                    `${name}[${matchIndex}].${key}`,
+                  ),
+                );
                 dirtyFieldIndexes.push(matchIndex);
               }
             }
