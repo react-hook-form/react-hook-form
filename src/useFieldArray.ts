@@ -138,17 +138,14 @@ export const useFieldArray = <
               }
             }
           }
-          for (const dirtyFieldIndex of [-1, ...dirtyFieldIndexes]) {
-            keys.forEach((key) =>
-              dirtyFieldsRef.current.add(
-                `${name}[${dirtyFieldIndex + 1}].${key}`,
-              ),
-            );
-          }
-        } else {
+        }
+
+        for (const dirtyFieldIndex of isPrePend
+          ? [-1, ...dirtyFieldIndexes]
+          : [allFields.current.length]) {
           keys.forEach((key) =>
             dirtyFieldsRef.current.add(
-              `${name}[${allFields.current.length}].${key}`,
+              `${name}[${dirtyFieldIndex + (isPrePend ? 1 : 0)}].${key}`,
             ),
           );
         }
