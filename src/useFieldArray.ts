@@ -55,7 +55,7 @@ export const useFieldArray = <
     fieldArrayDefaultValues,
     validateSchemaIsValid,
   } = control || methods.control;
-  const memoizedDefaultValues = useRef(
+  const memoizedDefaultValues = useRef<Partial<FormArrayValues>[]>(
     fieldArrayDefaultValues.current[name] || [
       ...get(defaultValuesRef.current, name, []),
     ],
@@ -78,7 +78,9 @@ export const useFieldArray = <
   const appendValueWithKey = (value: Partial<FormArrayValues>[]) =>
     value.map((v: Partial<FormArrayValues>) => appendId(v, keyName));
 
-  const commonTasks = (fieldsValues: any) => {
+  const commonTasks = (
+    fieldsValues: Partial<ArrayField<FormArrayValues, KeyName>>[],
+  ) => {
     setField(fieldsValues);
 
     if (readFormStateRef.current.isValid && validateSchemaIsValid) {
@@ -168,7 +170,7 @@ export const useFieldArray = <
     }
   };
 
-  const resetFields = (flagOrFields?: Partial<FormArrayValues>[]) => {
+  const resetFields = (flagOrFields?: (Partial<FormArrayValues> | null)[]) => {
     if (readFormStateRef.current.dirty) {
       isDirtyRef.current = isUndefined(flagOrFields)
         ? true
@@ -186,7 +188,10 @@ export const useFieldArray = <
   };
 
   const mapCurrentFieldsValueWithState = () => {
-    const currentFieldsValue = getValues({ nest: true })[name];
+    const currentFieldsValue: Partial<FormArrayValues>[] = get(
+      getValues({ nest: true }),
+      name,
+    );
 
     if (isArray(currentFieldsValue)) {
       for (let i = 0; i < currentFieldsValue.length; i++) {
