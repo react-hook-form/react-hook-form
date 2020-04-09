@@ -127,6 +127,7 @@ export const useFieldArray = <
           for (const dirtyField of dirtyFieldsRef.current) {
             if (isMatchFieldArrayName(dirtyField, name)) {
               const matchedIndexes = dirtyField.match(/[\d+]/g);
+
               if (matchedIndexes) {
                 const matchIndex = +matchedIndexes[matchedIndexes.length - 1];
                 keys.forEach((key) =>
@@ -149,6 +150,7 @@ export const useFieldArray = <
             ),
           );
         }
+
         isDirtyRef.current = true;
       }
 
