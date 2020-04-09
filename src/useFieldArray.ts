@@ -123,9 +123,7 @@ export const useFieldArray = <
             if (isMatchFieldArrayName(dirtyField, name)) {
               const matchedIndexes = dirtyField.match(/[\d+]/g);
               if (matchedIndexes) {
-                const matchIndex = parseInt(
-                  matchedIndexes[matchedIndexes.length - 1],
-                );
+                const matchIndex = +matchedIndexes[matchedIndexes.length - 1];
                 dirtyFieldsRef.current.delete(`${name}[${matchIndex}]`);
                 dirtyFieldIndexes.push(matchIndex);
               }
