@@ -8,7 +8,6 @@ import getFieldValue from './logic/getFieldValue';
 import shouldUpdateWithError from './logic/shouldUpdateWithError';
 import validateField from './logic/validateField';
 import validateWithSchema from './logic/validateWithSchema';
-import getDefaultValue from './logic/getDefaultValue';
 import assignWatchFields from './logic/assignWatchFields';
 import skipValidation from './logic/skipValidation';
 import getFieldArrayParentName from './logic/getFieldArrayParentName';
@@ -873,10 +872,7 @@ export function useForm<
     fields[name as FieldName<FormValues>] = currentField;
 
     if (!isEmptyObject(defaultValuesRef.current)) {
-      defaultValue = getDefaultValue<FormValues>(
-        defaultValuesRef.current,
-        name,
-      );
+      defaultValue = get(defaultValuesRef.current, name);
       isEmptyDefaultValue = isUndefined(defaultValue);
       isFieldArray = isNameInFieldArray(fieldArrayNamesRef.current, name);
 
