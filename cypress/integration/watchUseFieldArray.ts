@@ -49,6 +49,8 @@ context('watchUseFieldArray', () => {
     cy.get('#delete0').click();
     cy.get('#delete0').click();
 
-    cy.get('#result').should('be.empty');
+    cy.get('#result').contains(
+      '[{"name":"test"},{"name":"test1"},{"name":"test2"}]',
+    );
   });
 });
