@@ -3,9 +3,8 @@ export default (
   removeIndexes: number[],
   updatedIndexes: number[] = [],
   count = 0,
-) => {
-  const notFoundIndexes = [];
-
+  notFoundIndexes: number[] = [],
+): number[] => {
   for (const removeIndex of removeIndexes) {
     if (indexes.indexOf(removeIndex) < 0) {
       notFoundIndexes.push(removeIndex);
@@ -22,7 +21,7 @@ export default (
           count -
           (notFoundIndexes.length
             ? notFoundIndexes
-                .map((notFoundIndex) => notFoundIndex < index)
+                .map(notFoundIndex => notFoundIndex < index)
                 .filter(Boolean).length
             : 0),
       );

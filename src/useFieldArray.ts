@@ -66,7 +66,6 @@ export const useFieldArray = <
       [],
     ),
   ]);
-  const isNameKey = isKey(name);
   const [fields, setField] = useState<
     Partial<ArrayField<FormArrayValues, KeyName>>[]
   >(mapIds(memoizedDefaultValues.current, keyName));
@@ -74,6 +73,7 @@ export const useFieldArray = <
   const allFields = useRef<Partial<ArrayField<FormArrayValues, KeyName>>[]>(
     fields,
   );
+  const isNameKey = isKey(name);
 
   allFields.current = fields;
 
@@ -81,10 +81,10 @@ export const useFieldArray = <
     fieldArrayDefaultValues.current[name] = memoizedDefaultValues.current;
   }
 
-  const appendValueWithKey = (value: Partial<FormArrayValues>[]) =>
-    value.map((v: Partial<FormArrayValues>) => appendId(v, keyName));
+  const appendValueWithKey = (values: Partial<FormArrayValues>[]) =>
+    values.map((value: Partial<FormArrayValues>) => appendId(value, keyName));
 
-  const commonTasks = (
+  const setFieldAndValidState = (
     fieldsValues: Partial<ArrayField<FormArrayValues, KeyName>>[],
   ) => {
     setField(fieldsValues);
@@ -228,7 +228,7 @@ export const useFieldArray = <
   const append = (
     value: Partial<FormArrayValues> | Partial<FormArrayValues>[],
   ) => {
-    commonTasks([
+    setFieldAndValidState([
       ...allFields.current,
       ...(isArray(value)
         ? appendValueWithKey(value)
@@ -243,7 +243,7 @@ export const useFieldArray = <
     let shouldRender = false;
 
     resetFields();
-    commonTasks(
+    setFieldAndValidState(
       prependAt(
         allFields.current,
         isArray(value) ? appendValueWithKey(value) : [appendId(value, keyName)],
@@ -282,7 +282,7 @@ export const useFieldArray = <
     resetFields(
       removeArrayAt(getFieldValueByName(fieldsRef.current, name), index),
     );
-    commonTasks(removeArrayAt(allFields.current, index));
+    setFieldAndValidState(removeArrayAt(allFields.current, index));
     setIsDeleted(true);
 
     if (errorsRef.current[name]) {
@@ -353,7 +353,7 @@ export const useFieldArray = <
   ) => {
     mapCurrentFieldsValueWithState();
     resetFields(insertAt(getFieldValueByName(fieldsRef.current, name), index));
-    commonTasks(
+    setFieldAndValidState(
       insertAt(
         allFields.current,
         index,
@@ -385,7 +385,7 @@ export const useFieldArray = <
     swapArrayAt(fieldValues, indexA, indexB);
     resetFields(fieldValues);
     swapArrayAt(allFields.current, indexA, indexB);
-    commonTasks([...allFields.current]);
+    setFieldAndValidState([...allFields.current]);
 
     if (errorsRef.current[name]) {
       swapArrayAt(errorsRef.current[name], indexA, indexB);
@@ -403,7 +403,7 @@ export const useFieldArray = <
     moveArrayAt(fieldValues, from, to);
     resetFields(fieldValues);
     moveArrayAt(allFields.current, from, to);
-    commonTasks([...allFields.current]);
+    setFieldAndValidState([...allFields.current]);
 
     if (errorsRef.current[name]) {
       moveArrayAt(errorsRef.current[name], from, to);
