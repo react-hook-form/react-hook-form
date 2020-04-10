@@ -5,6 +5,7 @@ import getFieldValueByName from './logic/getFieldValueByName';
 import { appendId, mapIds } from './logic/mapIds';
 import getIsFieldsDifferent from './logic/getIsFieldsDifferent';
 import getFieldArrayParentName from './logic/getFieldArrayParentName';
+import getSortRemovedItems from './logic/getSortedArrayFieldIndexes';
 import get from './utils/get';
 import isUndefined from './utils/isUndefined';
 import removeArrayAt from './utils/remove';
@@ -15,7 +16,6 @@ import isArray from './utils/isArray';
 import insertAt from './utils/insert';
 import isKey from './utils/isKey';
 import fillEmptyArray from './utils/fillEmptyArray';
-import getSortRemovedItems from './utils/getSortedArrayFieldIndexes';
 import { REGEX_ARRAY_FIELD_INDEX } from './constants';
 import {
   Field,
