@@ -11,6 +11,7 @@ import validateWithSchema from './logic/validateWithSchema';
 import getDefaultValue from './logic/getDefaultValue';
 import assignWatchFields from './logic/assignWatchFields';
 import skipValidation from './logic/skipValidation';
+import getFieldArrayParentName from './logic/getFieldArrayParentName';
 import getFieldValueByName from './logic/getFieldValueByName';
 import getIsFieldsDifferent from './logic/getIsFieldsDifferent';
 import isNameInFieldArray from './logic/isNameInFieldArray';
@@ -62,7 +63,6 @@ import {
   OmitResetState,
   Message,
 } from './types';
-import getFieldArrayParentName from './logic/getFieldArrayParentName';
 
 const { useRef, useState, useCallback, useEffect } = React;
 

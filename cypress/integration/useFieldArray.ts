@@ -306,7 +306,7 @@ context('useFieldArray', () => {
     cy.get('#dirty').contains('no');
   });
 
-  it.only('should display the correct dirty value with default value', () => {
+  it('should display the correct dirty value with default value', () => {
     cy.visit('http://localhost:3000/useFieldArray/default');
     cy.get('#dirty').contains('no');
     cy.get('#field0').focus();
