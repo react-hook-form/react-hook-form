@@ -71,7 +71,7 @@ describe('validateWithSchema', () => {
     expect(
       await validateWithSchema(
         {
-          validate: () => new Promise((resolve) => resolve()) as any,
+          validate: () => new Promise(resolve => resolve()) as any,
         },
         false,
         {},
