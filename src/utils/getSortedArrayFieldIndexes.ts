@@ -1,27 +1,16 @@
-import isUndefined from './isUndefined';
-
 export default (
   indexes: number[],
-  prependAmount = 0,
-  removeIndexes: number[] = [],
+  removeIndexes: number[],
+  updatedIndexes: number[] = [],
+  count = 0,
 ) => {
-  const fieldArrayIndexes = indexes.sort();
-  const sortedIndex = [
-    ...(prependAmount ? Array(prependAmount) : []),
-    ...fieldArrayIndexes,
-  ];
-  const updatedIndexes = [];
-  let count = 0;
+  const sortedIndex = indexes.sort();
 
   for (const index of sortedIndex) {
-    const indexUndefined = isUndefined(index);
-    if (removeIndexes.indexOf(index) > -1 || indexUndefined) {
-      if (indexUndefined) {
-        updatedIndexes.push(count);
-      }
+    if (removeIndexes.indexOf(index) > -1) {
       count++;
     } else {
-      updatedIndexes.push(index - (prependAmount ? -count : count));
+      updatedIndexes.push(index - count);
     }
   }
 

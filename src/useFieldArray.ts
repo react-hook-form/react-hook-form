@@ -15,6 +15,7 @@ import insertAt from './utils/insert';
 import isKey from './utils/isKey';
 import fillEmptyArray from './utils/fillEmptyArray';
 import getSortRemovedItems from './utils/getSortedArrayFieldIndexes';
+import { REGEX_ARRAY_FIELD_INDEX } from './constants';
 import {
   Field,
   FieldValues,
@@ -106,59 +107,77 @@ export const useFieldArray = <
     let render = shouldRender;
 
     if (readFormStateRef.current.dirty) {
-      const dirtyFieldIndexes: Record<number, string[]> = {};
+      const dirtyFieldIndexesAndValues: Record<number, string[]> = {};
 
       if (isPrePend || shouldDelete) {
         for (const dirtyField of dirtyFieldsRef.current) {
           if (isMatchFieldArrayName(dirtyField, name)) {
-            const matchedIndexes = dirtyField.match(/[\d+]/g);
+            const matchedIndexes = dirtyField.match(REGEX_ARRAY_FIELD_INDEX);
 
             dirtyFieldsRef.current.delete(dirtyField);
 
             if (matchedIndexes) {
               const matchIndex = +matchedIndexes[matchedIndexes.length - 1];
-              if (dirtyFieldIndexes[matchIndex]) {
-                dirtyFieldIndexes[matchIndex].push(dirtyField);
+
+              if (dirtyFieldIndexesAndValues[matchIndex]) {
+                dirtyFieldIndexesAndValues[matchIndex].push(dirtyField);
               } else {
-                dirtyFieldIndexes[matchIndex] = [dirtyField];
+                dirtyFieldIndexesAndValues[matchIndex] = [dirtyField];
               }
             }
           }
         }
       }
 
-      if (shouldDelete && !isUndefined(index)) {
-        let updatedDirtyFieldIndexes: string[] = [];
-        const indexes = isArray(index) ? index : [index];
-        const updatedIndexes = getSortRemovedItems(
-          Object.keys(dirtyFieldIndexes).map((i) => +i),
-          0,
-          indexes,
+      if (!isUndefined(index)) {
+        let updatedDirtyFieldIndexesAndValues: string[] = [];
+        const updatedDirtyFieldIndexes = getSortRemovedItems(
+          Object.keys(dirtyFieldIndexesAndValues).map((i) => +i),
+          isArray(index) ? index : [index],
         );
 
-        for (const updatedIndex in updatedIndexes) {
-          updatedDirtyFieldIndexes = [
-            ...updatedDirtyFieldIndexes,
-            ...(dirtyFieldIndexes[updatedIndex] || []),
+        for (const updatedIndex in updatedDirtyFieldIndexes) {
+          updatedDirtyFieldIndexesAndValues = [
+            ...updatedDirtyFieldIndexesAndValues,
+            ...(dirtyFieldIndexesAndValues[updatedIndex] || []),
           ];
         }
 
-        updatedDirtyFieldIndexes.forEach((updatedDirtyFieldIndex) => {
-          dirtyFieldsRef.current.add(updatedDirtyFieldIndex);
-        });
+        updatedDirtyFieldIndexesAndValues.forEach((updatedDirtyFieldIndex) =>
+          dirtyFieldsRef.current.add(updatedDirtyFieldIndex),
+        );
       } else {
-        // todo: fix value as array
-        const keys = Object.keys(value);
+        const appendPrependValues = isArray(value) ? value : [value];
+        const appendPrependValuesLength = appendPrependValues.length;
 
-        for (const dirtyFieldIndex of isPrePend
-          ? [-1, ...Object.keys(dirtyFieldIndexes)]
-          : [allFields.current.length]) {
-          keys.forEach((key) =>
-            dirtyFieldsRef.current.add(
-              `${name}[${+dirtyFieldIndex + (isPrePend ? 1 : 0)}].${key}`,
-            ),
-          );
+        if (isPrePend) {
+          Object.values(dirtyFieldIndexesAndValues).forEach((values) => {
+            for (const value of values) {
+              const matchedIndexes = value.match(REGEX_ARRAY_FIELD_INDEX);
+              if (matchedIndexes) {
+                dirtyFieldsRef.current.add(
+                  value.replace(
+                    /[\d+]([^[\d+]+)$/,
+                    `${
+                      +matchedIndexes[matchedIndexes.length - 1] +
+                      appendPrependValuesLength
+                    }$1`,
+                  ),
+                );
+              }
+            }
+          });
         }
+
+        appendPrependValues.forEach((fieldValue, index) =>
+          Object.keys(fieldValue).forEach((key) =>
+            dirtyFieldsRef.current.add(
+              `${name}[${
+                isPrePend ? index : allFields.current.length + index
+              }].${key}`,
+            ),
+          ),
+        );
 
         isDirtyRef.current = true;
       }

@@ -83,7 +83,7 @@ context('useFieldArray', () => {
     cy.get('#renderCount').contains('27');
   });
 
-  it.only('should behaviour correctly with defaultValue', () => {
+  it('should behaviour correctly with defaultValue', () => {
     cy.visit('http://localhost:3000/useFieldArray/default');
 
     cy.get('ul > li').its('length').should('equal', 3);
@@ -198,7 +198,7 @@ context('useFieldArray', () => {
     cy.get('#prepend').click();
     cy.get('#prepend').click();
     cy.get('#dirtyFields').contains(
-      '["data[0].name","data[1].name","data[2].name"]',
+      '["data[1].name","data[2].name","data[0].name"]',
     );
     cy.get('#delete0').click();
     cy.get('#dirtyFields').contains('["data[0].name","data[1].name"]');
