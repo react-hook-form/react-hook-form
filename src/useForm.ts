@@ -746,9 +746,7 @@ export function useForm<
       | { nest: boolean },
     defaultValue?: string | DeepPartial<FormValues>,
   ): FieldValue<FormValues> | DeepPartial<FormValues> | string | undefined {
-    const combinedDefaultValues = isDirtyRef.current
-      ? {}
-      : isUndefined(defaultValue)
+    const combinedDefaultValues = isUndefined(defaultValue)
       ? isUndefined(defaultValuesRef.current)
         ? {}
         : defaultValuesRef.current
