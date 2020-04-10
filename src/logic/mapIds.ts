@@ -14,4 +14,4 @@ export const appendId = <Value extends object, KeyName extends string>(
 export const mapIds = <Data extends object, KeyName extends string>(
   data: Data | Data[],
   keyName: KeyName,
-) => (isArray(data) ? data : []).map((value) => appendId(value, keyName));
+) => (isArray(data) ? data : []).map(value => appendId(value, keyName));
