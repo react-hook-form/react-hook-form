@@ -253,7 +253,6 @@ export const useFieldArray = <
         errorsRef.current[name],
         fillEmptyArray(value),
       );
-      shouldRender = true;
     }
 
     if (readFormStateRef.current.touched && touchedFieldsRef.current[name]) {
@@ -273,7 +272,9 @@ export const useFieldArray = <
 
   const remove = (index?: number | number[]) => {
     let shouldRender = false;
-    if (!isUndefined(index)) {
+    const isIndexUndefined = isUndefined(index);
+
+    if (!isIndexUndefined) {
       mapCurrentFieldsValueWithState();
     }
 
@@ -285,7 +286,7 @@ export const useFieldArray = <
 
     if (errorsRef.current[name]) {
       errorsRef.current[name] = removeArrayAt(errorsRef.current[name], index);
-      if (!(errorsRef.current[name] as []).filter(Boolean).length) {
+      if (!errorsRef.current[name].filter(Boolean).length) {
         delete errorsRef.current[name];
       }
     }
@@ -300,19 +301,13 @@ export const useFieldArray = <
 
     if (readFormStateRef.current.isValid && !validateSchemaIsValid) {
       let fieldIndex = -1;
-      let isFound = false;
-      const isIndexUndefined = isUndefined(index);
 
       while (fieldIndex++ < fields.length) {
         const isLast = fieldIndex === fields.length - 1;
         const isCurrentIndex =
           (isArray(index) ? index : [index]).indexOf(fieldIndex) >= 0;
 
-        if (isCurrentIndex || isIndexUndefined) {
-          isFound = true;
-        }
-
-        if (!isFound) {
+        if (!(isCurrentIndex || isIndexUndefined)) {
           continue;
         }
 
@@ -328,6 +323,7 @@ export const useFieldArray = <
             if (validFieldsRef.current.has(currentFieldName)) {
               validFieldsRef.current.add(previousFieldName);
             }
+
             if (fieldsWithValidationRef.current.has(currentFieldName)) {
               fieldsWithValidationRef.current.add(previousFieldName);
             }
@@ -415,9 +411,6 @@ export const useFieldArray = <
 
   const reset = () => {
     resetFields();
-    memoizedDefaultValues.current = [
-      ...get(defaultValuesRef.current, name, []),
-    ];
     setField(mapIds(memoizedDefaultValues.current, keyName));
   };
 
