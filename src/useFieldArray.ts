@@ -55,15 +55,15 @@ export const useFieldArray = <
     fieldArrayDefaultValues,
     validateSchemaIsValid,
   } = control || methods.control;
-  const memoizedDefaultValues = useRef<Partial<FormArrayValues>[]>(
-    get(
+  const memoizedDefaultValues = useRef<Partial<FormArrayValues>[]>([
+    ...get(
       fieldArrayDefaultValues.current[getFieldArrayParentName(name)]
         ? fieldArrayDefaultValues.current
         : defaultValuesRef.current,
       name,
       [],
     ),
-  );
+  ]);
   const isNameKey = isKey(name);
   const [fields, setField] = useState<
     Partial<ArrayField<FormArrayValues, KeyName>>[]
