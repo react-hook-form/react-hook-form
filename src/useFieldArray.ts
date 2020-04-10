@@ -105,6 +105,7 @@ export const useFieldArray = <
     value?: Partial<FormArrayValues> | Partial<FormArrayValues>[];
   } = {}) => {
     let render = shouldRender;
+    const values = isArray(value) ? value : [value];
 
     if (readFormStateRef.current.dirty) {
       const dirtyFieldIndexesAndValues: Record<number, string[]> = {};
@@ -113,8 +114,6 @@ export const useFieldArray = <
         for (const dirtyField of dirtyFieldsRef.current) {
           if (isMatchFieldArrayName(dirtyField, name)) {
             const matchedIndexes = dirtyField.match(REGEX_ARRAY_FIELD_INDEX);
-
-            dirtyFieldsRef.current.delete(dirtyField);
 
             if (matchedIndexes) {
               const matchIndex = +matchedIndexes[matchedIndexes.length - 1];
@@ -125,6 +124,8 @@ export const useFieldArray = <
                 dirtyFieldIndexesAndValues[matchIndex] = [dirtyField];
               }
             }
+
+            dirtyFieldsRef.current.delete(dirtyField);
           }
         }
       }
@@ -136,8 +137,6 @@ export const useFieldArray = <
               Object.keys(dirtyFieldIndexesAndValues).map((i) => +i),
               isArray(index) ? index : [index],
             );
-        const appendPrependValues = isArray(value) ? value : [value];
-        const appendPrependValuesLength = appendPrependValues.length;
 
         Object.entries(dirtyFieldIndexesAndValues).forEach(
           ([, values], index) => {
@@ -154,7 +153,7 @@ export const useFieldArray = <
                       `${
                         isPrePend
                           ? +matchedIndexes[matchedIndexes.length - 1] +
-                            appendPrependValuesLength
+                            values.length
                           : updateIndex
                       }$1`,
                     ),
@@ -167,8 +166,7 @@ export const useFieldArray = <
       }
 
       if (!isRemove) {
-        const appendPrependValues = isArray(value) ? value : [value];
-        appendPrependValues.forEach((fieldValue, index) =>
+        values.forEach((fieldValue, index) =>
           Object.keys(fieldValue).forEach((key) =>
             dirtyFieldsRef.current.add(
               `${name}[${
