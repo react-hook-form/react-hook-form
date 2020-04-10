@@ -1,15 +1,6 @@
-import isUndefined from '../utils/isUndefined';
-
-// todo: remove index in the final commit
-export const isMatchFieldArrayName = (
-  name: string,
-  searchName: string,
-  index?: number,
-) =>
+export const isMatchFieldArrayName = (name: string, searchName: string) =>
   RegExp(
-    `^${searchName}[${isUndefined(index) ? `\\d+` : index}]`
-      .replace(/\[/g, '\\[')
-      .replace(/\]/g, '\\]'),
+    `^${searchName}[\\d+]`.replace(/\[/g, '\\[').replace(/\]/g, '\\]'),
   ).test(name);
 
 export default (names: Set<string>, name: string) =>
