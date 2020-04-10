@@ -93,14 +93,14 @@ export const useFieldArray = <
 
   const modifyDirtyFields = ({
     shouldRender,
-    shouldDelete,
+    isRemove,
     isPrePend,
     index,
     value = {},
   }: {
     isPrePend?: boolean;
     shouldRender?: boolean;
-    shouldDelete?: boolean;
+    isRemove?: boolean;
     index?: number | number[];
     value?: Partial<FormArrayValues> | Partial<FormArrayValues>[];
   } = {}) => {
@@ -109,7 +109,7 @@ export const useFieldArray = <
     if (readFormStateRef.current.dirty) {
       const dirtyFieldIndexesAndValues: Record<number, string[]> = {};
 
-      if (isPrePend || shouldDelete) {
+      if (isPrePend || isRemove) {
         for (const dirtyField of dirtyFieldsRef.current) {
           if (isMatchFieldArrayName(dirtyField, name)) {
             const matchedIndexes = dirtyField.match(REGEX_ARRAY_FIELD_INDEX);
@@ -166,7 +166,7 @@ export const useFieldArray = <
         );
       }
 
-      if (!shouldDelete) {
+      if (!isRemove) {
         const appendPrependValues = isArray(value) ? value : [value];
         appendPrependValues.forEach((fieldValue, index) =>
           Object.keys(fieldValue).forEach((key) =>
@@ -339,7 +339,7 @@ export const useFieldArray = <
 
     modifyDirtyFields({
       shouldRender: shouldRender && !isWatchAllRef.current,
-      shouldDelete: true,
+      isRemove: true,
       index,
     });
   };
