@@ -183,7 +183,7 @@ context('useFieldArray', () => {
     cy.get('#renderCount').contains('28');
   });
 
-  it.only('should display the correct dirty value with defualt value', () => {
+  it('should display the correct dirty value with defualt value', () => {
     cy.visit('http://localhost:3000/useFieldArray/default');
     cy.get('#dirty').contains('no');
     cy.get('#append').click();
@@ -202,7 +202,7 @@ context('useFieldArray', () => {
     cy.get('#dirty').contains('yes');
   });
 
-  it('should display the correct dirty value without default value', () => {
+  it.only('should display the correct dirty value without default value', () => {
     cy.visit('http://localhost:3000/useFieldArray/normal');
     cy.get('#dirty').contains('no');
     cy.get('#append').click();

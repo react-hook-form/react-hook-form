@@ -129,50 +129,45 @@ export const useFieldArray = <
         }
       }
 
-      if (!isUndefined(index)) {
-        const updatedDirtyFieldIndexes = getSortRemovedItems(
-          Object.keys(dirtyFieldIndexesAndValues).map((i) => +i),
-          isArray(index) ? index : [index],
-        );
+      if (!isUndefined(index) || isPrePend) {
+        const updatedDirtyFieldIndexes = isUndefined(index)
+          ? []
+          : getSortRemovedItems(
+              Object.keys(dirtyFieldIndexesAndValues).map((i) => +i),
+              isArray(index) ? index : [index],
+            );
+        const appendPrependValues = isArray(value) ? value : [value];
+        const appendPrependValuesLength = appendPrependValues.length;
 
         Object.entries(dirtyFieldIndexesAndValues).forEach(
           ([, values], index) => {
-            const updateIndex = updatedDirtyFieldIndexes[index];
+            const updateIndex = isPrePend ? 0 : updatedDirtyFieldIndexes[index];
+
             if (updateIndex > -1) {
               for (const value of values) {
                 const matchedIndexes = value.match(REGEX_ARRAY_FIELD_INDEX);
+
                 if (matchedIndexes) {
                   dirtyFieldsRef.current.add(
-                    value.replace(/[\d+]([^[\d+]+)$/, `${updateIndex}$1`),
+                    value.replace(
+                      /[\d+]([^[\d+]+)$/,
+                      `${
+                        isPrePend
+                          ? +matchedIndexes[matchedIndexes.length - 1] +
+                            appendPrependValuesLength
+                          : updateIndex
+                      }$1`,
+                    ),
                   );
                 }
               }
             }
           },
         );
-      } else {
+      }
+
+      if (!shouldDelete) {
         const appendPrependValues = isArray(value) ? value : [value];
-        const appendPrependValuesLength = appendPrependValues.length;
-
-        if (isPrePend) {
-          Object.values(dirtyFieldIndexesAndValues).forEach((values) => {
-            for (const value of values) {
-              const matchedIndexes = value.match(REGEX_ARRAY_FIELD_INDEX);
-              if (matchedIndexes) {
-                dirtyFieldsRef.current.add(
-                  value.replace(
-                    /[\d+]([^[\d+]+)$/,
-                    `${
-                      +matchedIndexes[matchedIndexes.length - 1] +
-                      appendPrependValuesLength
-                    }$1`,
-                  ),
-                );
-              }
-            }
-          });
-        }
-
         appendPrependValues.forEach((fieldValue, index) =>
           Object.keys(fieldValue).forEach((key) =>
             dirtyFieldsRef.current.add(

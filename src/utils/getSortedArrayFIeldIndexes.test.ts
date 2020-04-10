@@ -13,5 +13,6 @@ describe('getSortItems', () => {
     expect(getSortItems([0, 3], [2])).toEqual([0, 2]);
     expect(getSortItems([1, 3, 5], [2])).toEqual([1, 2, 4]);
     expect(getSortItems([1, 3, 5], [2, 4])).toEqual([1, 2, 3]);
+    expect(getSortItems([0, 1, 2, 3], [0])).toEqual([-1, 0, 1, 2]);
   });
 });
