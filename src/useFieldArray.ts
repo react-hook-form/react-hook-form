@@ -130,21 +130,25 @@ export const useFieldArray = <
       }
 
       if (!isUndefined(index)) {
-        let updatedDirtyFieldIndexesAndValues: string[] = [];
         const updatedDirtyFieldIndexes = getSortRemovedItems(
           Object.keys(dirtyFieldIndexesAndValues).map((i) => +i),
           isArray(index) ? index : [index],
         );
 
-        for (const updatedIndex in updatedDirtyFieldIndexes) {
-          updatedDirtyFieldIndexesAndValues = [
-            ...updatedDirtyFieldIndexesAndValues,
-            ...(dirtyFieldIndexesAndValues[updatedIndex] || []),
-          ];
-        }
-
-        updatedDirtyFieldIndexesAndValues.forEach((updatedDirtyFieldIndex) =>
-          dirtyFieldsRef.current.add(updatedDirtyFieldIndex),
+        Object.entries(dirtyFieldIndexesAndValues).forEach(
+          ([, values], index) => {
+            const updateIndex = updatedDirtyFieldIndexes[index];
+            if (updateIndex > -1) {
+              for (const value of values) {
+                const matchedIndexes = value.match(REGEX_ARRAY_FIELD_INDEX);
+                if (matchedIndexes) {
+                  dirtyFieldsRef.current.add(
+                    value.replace(/[\d+]([^[\d+]+)$/, `${updateIndex}$1`),
+                  );
+                }
+              }
+            }
+          },
         );
       } else {
         const appendPrependValues = isArray(value) ? value : [value];

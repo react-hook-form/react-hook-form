@@ -183,6 +183,25 @@ context('useFieldArray', () => {
     cy.get('#renderCount').contains('28');
   });
 
+  it.only('should display the correct dirty value with defualt value', () => {
+    cy.visit('http://localhost:3000/useFieldArray/default');
+    cy.get('#dirty').contains('no');
+    cy.get('#append').click();
+    cy.get('#field1').type('test');
+    cy.get('#prepend').click();
+    cy.get('#delete2').click();
+    cy.get('#dirtyFields').contains('["data[0].name","data[3].name"]');
+    cy.get('#delete2').click();
+    cy.get('#dirtyFields').contains('["data[0].name","data[2].name"]');
+    cy.get('#delete2').click();
+    cy.get('#dirtyFields').contains('["data[0].name"]');
+    cy.get('#delete1').click();
+    cy.get('#dirtyFields').contains('["data[0].name"]');
+    cy.get('#delete0').click();
+    cy.get('#dirtyFields').contains('[]');
+    cy.get('#dirty').contains('yes');
+  });
+
   it('should display the correct dirty value without default value', () => {
     cy.visit('http://localhost:3000/useFieldArray/normal');
     cy.get('#dirty').contains('no');
