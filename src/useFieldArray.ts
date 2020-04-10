@@ -55,9 +55,7 @@ export const useFieldArray = <
     validateSchemaIsValid,
   } = control || methods.control;
   const memoizedDefaultValues = useRef<Partial<FormArrayValues>[]>(
-    fieldArrayDefaultValues.current[name] || [
-      ...get(defaultValuesRef.current, name, []),
-    ],
+    get(defaultValuesRef.current, name, []),
   );
   const isNameKey = isKey(name);
   const [fields, setField] = useState<
