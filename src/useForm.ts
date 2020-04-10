@@ -62,6 +62,7 @@ import {
   OmitResetState,
   Message,
 } from './types';
+import getFieldArrayParentName from './logic/getFieldArrayParentName';
 
 const { useRef, useState, useCallback, useEffect } = React;
 
@@ -247,7 +248,7 @@ export function useForm<
       getFieldValue(fieldsRef.current, fieldsRef.current[name]!.ref);
 
     if (isFieldArray) {
-      const fieldArrayName = name.substring(0, name.indexOf('['));
+      const fieldArrayName = getFieldArrayParentName(name);
       isDirty = getIsFieldsDifferent(
         getFieldValueByName(fieldsRef.current, fieldArrayName),
         get(defaultValuesRef.current, fieldArrayName),
@@ -1106,6 +1107,7 @@ export function useForm<
     }
 
     defaultRenderValuesRef.current = {};
+    fieldArrayDefaultValues.current = {};
     watchFieldsRef.current = new Set();
     isWatchAllRef.current = false;
   };

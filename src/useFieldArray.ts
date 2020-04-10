@@ -4,6 +4,7 @@ import { isMatchFieldArrayName } from './logic/isNameInFieldArray';
 import getFieldValueByName from './logic/getFieldValueByName';
 import { appendId, mapIds } from './logic/mapIds';
 import getIsFieldsDifferent from './logic/getIsFieldsDifferent';
+import getFieldArrayParentName from './logic/getFieldArrayParentName';
 import get from './utils/get';
 import isUndefined from './utils/isUndefined';
 import removeArrayAt from './utils/remove';
@@ -55,7 +56,13 @@ export const useFieldArray = <
     validateSchemaIsValid,
   } = control || methods.control;
   const memoizedDefaultValues = useRef<Partial<FormArrayValues>[]>(
-    get(defaultValuesRef.current, name, []),
+    get(
+      fieldArrayDefaultValues.current[getFieldArrayParentName(name)]
+        ? fieldArrayDefaultValues.current
+        : defaultValuesRef.current,
+      name,
+      [],
+    ),
   );
   const isNameKey = isKey(name);
   const [fields, setField] = useState<
