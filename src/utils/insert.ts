@@ -1,8 +1,12 @@
 import isArray from './isArray';
 
-export default function<T>(data: T[], index: number): (T | null)[];
-export default function<T>(data: T[], index: number, value: T | T[]): T[];
-export default function<T>(
+export default function insert<T>(data: T[], index: number): (T | null)[];
+export default function insert<T>(
+  data: T[],
+  index: number,
+  value: T | T[],
+): T[];
+export default function insert<T>(
   data: T[],
   index: number,
   value?: T | T[],

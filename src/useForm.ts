@@ -11,6 +11,7 @@ import validateWithSchema from './logic/validateWithSchema';
 import getDefaultValue from './logic/getDefaultValue';
 import assignWatchFields from './logic/assignWatchFields';
 import skipValidation from './logic/skipValidation';
+import getFieldArrayParentName from './logic/getFieldArrayParentName';
 import getFieldValueByName from './logic/getFieldValueByName';
 import getIsFieldsDifferent from './logic/getIsFieldsDifferent';
 import isNameInFieldArray from './logic/isNameInFieldArray';
@@ -247,7 +248,7 @@ export function useForm<
       getFieldValue(fieldsRef.current, fieldsRef.current[name]!.ref);
 
     if (isFieldArray) {
-      const fieldArrayName = name.substring(0, name.indexOf('['));
+      const fieldArrayName = getFieldArrayParentName(name);
       isDirty = getIsFieldsDifferent(
         getFieldValueByName(fieldsRef.current, fieldArrayName),
         get(defaultValuesRef.current, fieldArrayName),
@@ -1106,6 +1107,7 @@ export function useForm<
     }
 
     defaultRenderValuesRef.current = {};
+    fieldArrayDefaultValues.current = {};
     watchFieldsRef.current = new Set();
     isWatchAllRef.current = false;
   };
