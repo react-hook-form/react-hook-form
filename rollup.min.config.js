@@ -1,11 +1,13 @@
 import typescript from 'rollup-plugin-typescript2';
 import compiler from "@ampproject/rollup-plugin-closure-compiler";
+import { terser } from 'rollup-plugin-terser';
 
 export default {
   input: 'src/index.ts',
   plugins: [
     typescript(),
     compiler(),
+    terser(),
   ],
   external: ['react'],
   output: [
