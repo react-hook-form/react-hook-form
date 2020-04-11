@@ -17,7 +17,7 @@ const getPath = <FormValues extends FieldValues = FieldValues>(
 
   return isArray(values)
     ? values.map((value, key) => getInnerPath(value, key))
-    : Object.entries(values).map(([key, value]: [string, any]) =>
+    : Object.entries(values).map(([key, value]) =>
         getInnerPath(value, key, true),
       );
 };

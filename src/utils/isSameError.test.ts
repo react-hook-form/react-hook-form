@@ -56,12 +56,27 @@ describe('isSameError', () => {
         message: '',
       }),
     ).toBeFalsy();
+
+    expect(
+      isSameError(
+        {
+          type: '',
+          message: 'test',
+        },
+        {
+          type: '',
+          message: '',
+        },
+      ),
+    ).toBeFalsy();
+
     expect(
       isSameError('test' as any, {
         type: '',
         message: '',
       }),
     ).toBeFalsy();
+
     expect(
       isSameError(5 as any, {
         type: '',
