@@ -25,8 +25,6 @@ import {
   ArrayField,
 } from './types';
 
-const { useEffect, useCallback, useRef, useState } = React;
-
 export const useFieldArray = <
   FormArrayValues extends FieldValues = FieldValues,
   KeyName extends string = 'id',
@@ -57,7 +55,7 @@ export const useFieldArray = <
     fieldArrayDefaultValues,
     validateSchemaIsValid,
   } = control || methods.control;
-  const memoizedDefaultValues = useRef<Partial<FormArrayValues>[]>([
+  const memoizedDefaultValues = React.useRef<Partial<FormArrayValues>[]>([
     ...get(
       fieldArrayDefaultValues.current[getFieldArrayParentName(name)]
         ? fieldArrayDefaultValues.current
@@ -66,13 +64,13 @@ export const useFieldArray = <
       [],
     ),
   ]);
-  const [fields, setField] = useState<
+  const [fields, setField] = React.useState<
     Partial<ArrayField<FormArrayValues, KeyName>>[]
   >(mapIds(memoizedDefaultValues.current, keyName));
-  const [isDeleted, setIsDeleted] = useState(false);
-  const allFields = useRef<Partial<ArrayField<FormArrayValues, KeyName>>[]>(
-    fields,
-  );
+  const [isDeleted, setIsDeleted] = React.useState(false);
+  const allFields = React.useRef<
+    Partial<ArrayField<FormArrayValues, KeyName>>[]
+  >(fields);
   const isNameKey = isKey(name);
 
   allFields.current = fields;
@@ -414,7 +412,7 @@ export const useFieldArray = <
     setField(mapIds(memoizedDefaultValues.current, keyName));
   };
 
-  useEffect(() => {
+  React.useEffect(() => {
     if (
       isNameKey &&
       isDeleted &&
@@ -424,7 +422,7 @@ export const useFieldArray = <
     }
   }, [fields, name, fieldArrayDefaultValues, isDeleted, isNameKey]);
 
-  useEffect(() => {
+  React.useEffect(() => {
     if (isWatchAllRef && isWatchAllRef.current) {
       reRender();
     } else if (watchFieldsRef) {
@@ -437,7 +435,7 @@ export const useFieldArray = <
     }
   }, [fields, name, reRender, watchFieldsRef, isWatchAllRef]);
 
-  useEffect(() => {
+  React.useEffect(() => {
     const resetFunctions = resetFieldArrayFunctionRef.current;
     const fieldArrayNames = fieldArrayNamesRef.current;
     fieldArrayNames.add(name);
@@ -452,12 +450,12 @@ export const useFieldArray = <
   }, []);
 
   return {
-    swap: useCallback(swap, []),
-    move: useCallback(move, []),
-    prepend: useCallback(prepend, []),
-    append: useCallback(append, []),
-    remove: useCallback(remove, [fields]),
-    insert: useCallback(insert, []),
+    swap: React.useCallback(swap, []),
+    move: React.useCallback(move, []),
+    prepend: React.useCallback(prepend, []),
+    append: React.useCallback(append, []),
+    remove: React.useCallback(remove, [fields]),
+    insert: React.useCallback(insert, []),
     fields,
   };
 };
