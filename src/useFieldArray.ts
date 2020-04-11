@@ -113,7 +113,7 @@ export const useFieldArray = <
     const values = isArray(value) ? value : [value];
 
     if (readFormStateRef.current.dirty) {
-      const dirtyFieldIndexesAndValues = new Map();
+      const dirtyFieldIndexesAndValues: Record<number, string[]> = {};
 
       if (isPrePend || isRemove) {
         for (const dirtyField of dirtyFieldsRef.current) {
@@ -123,10 +123,11 @@ export const useFieldArray = <
             if (matchedIndexes) {
               const matchIndex = +matchedIndexes[matchedIndexes.length - 1];
 
-              dirtyFieldIndexesAndValues.set(matchIndex, [
-                ...(dirtyFieldIndexesAndValues.get(matchIndex) || []),
-                dirtyField,
-              ]);
+              if (dirtyFieldIndexesAndValues[matchIndex]) {
+                dirtyFieldIndexesAndValues[matchIndex].push(dirtyField);
+              } else {
+                dirtyFieldIndexesAndValues[matchIndex] = [dirtyField];
+              }
             }
 
             dirtyFieldsRef.current.delete(dirtyField);
@@ -135,16 +136,15 @@ export const useFieldArray = <
       }
 
       if (!isUndefined(index) || isPrePend) {
-        let k = 0;
         const updatedDirtyFieldIndexes = isUndefined(index)
           ? []
           : getSortRemovedItems(
-              [...dirtyFieldIndexesAndValues.keys()],
+              Object.keys(dirtyFieldIndexesAndValues).map(i => +i),
               isArray(index) ? index : [index],
             );
 
-        for (const [, values] of dirtyFieldIndexesAndValues) {
-          const updateIndex = isPrePend ? 0 : updatedDirtyFieldIndexes[k];
+        Object.values(dirtyFieldIndexesAndValues).forEach((values, index) => {
+          const updateIndex = isPrePend ? 0 : updatedDirtyFieldIndexes[index];
 
           if (updateIndex > -1) {
             for (const value of values) {
@@ -165,8 +165,7 @@ export const useFieldArray = <
               }
             }
           }
-          k++;
-        }
+        });
       }
 
       if (!isRemove) {
