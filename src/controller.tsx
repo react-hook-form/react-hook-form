@@ -1,4 +1,4 @@
-import React from 'react';
+import * as React from 'react';
 import isBoolean from './utils/isBoolean';
 import isUndefined from './utils/isUndefined';
 import get from './utils/get';

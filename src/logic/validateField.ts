@@ -1,4 +1,4 @@
-import React from 'react';
+import * as React from 'react';
 import getRadioValue from './getRadioValue';
 import getCheckboxValue from './getCheckboxValue';
 import isNullOrUndefined from '../utils/isNullOrUndefined';

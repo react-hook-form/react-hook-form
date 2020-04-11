@@ -1,4 +1,4 @@
-import React from 'react';
+import * as React from 'react';
 import { useFormContext } from './useFormContext';
 import { isMatchFieldArrayName } from './logic/isNameInFieldArray';
 import getFieldValueByName from './logic/getFieldValueByName';
