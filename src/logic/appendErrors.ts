@@ -7,16 +7,17 @@ export default <FormValues>(
   type: string,
   message: ValidateResult,
 ) => {
-  if (!validateAllFieldCriteria) {
-    return {};
-  }
-  const error = errors[name];
+  if (validateAllFieldCriteria) {
+    const error = errors[name];
 
-  return {
-    ...error,
-    types: {
-      ...(error && error.types ? error.types : {}),
-      [type]: message || true,
-    },
-  };
+    return {
+      ...error,
+      types: {
+        ...(error && error.types ? error.types : {}),
+        [type]: message || true,
+      },
+    };
+  }
+
+  return {};
 };

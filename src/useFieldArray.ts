@@ -5,6 +5,7 @@ import getFieldValueByName from './logic/getFieldValueByName';
 import { appendId, mapIds } from './logic/mapIds';
 import getIsFieldsDifferent from './logic/getIsFieldsDifferent';
 import getFieldArrayParentName from './logic/getFieldArrayParentName';
+import getSortRemovedItems from './logic/getSortedArrayFieldIndexes';
 import get from './utils/get';
 import isUndefined from './utils/isUndefined';
 import removeArrayAt from './utils/remove';
@@ -15,6 +16,7 @@ import isArray from './utils/isArray';
 import insertAt from './utils/insert';
 import isKey from './utils/isKey';
 import fillEmptyArray from './utils/fillEmptyArray';
+import { REGEX_ARRAY_FIELD_INDEX } from './constants';
 import {
   Field,
   FieldValues,
@@ -64,7 +66,6 @@ export const useFieldArray = <
       [],
     ),
   ]);
-  const isNameKey = isKey(name);
   const [fields, setField] = useState<
     Partial<ArrayField<FormArrayValues, KeyName>>[]
   >(mapIds(memoizedDefaultValues.current, keyName));
@@ -72,6 +73,7 @@ export const useFieldArray = <
   const allFields = useRef<Partial<ArrayField<FormArrayValues, KeyName>>[]>(
     fields,
   );
+  const isNameKey = isKey(name);
 
   allFields.current = fields;
 
@@ -79,10 +81,10 @@ export const useFieldArray = <
     fieldArrayDefaultValues.current[name] = memoizedDefaultValues.current;
   }
 
-  const appendValueWithKey = (value: Partial<FormArrayValues>[]) =>
-    value.map((v: Partial<FormArrayValues>) => appendId(v, keyName));
+  const appendValueWithKey = (values: Partial<FormArrayValues>[]) =>
+    values.map((value: Partial<FormArrayValues>) => appendId(value, keyName));
 
-  const commonTasks = (
+  const setFieldAndValidState = (
     fieldsValues: Partial<ArrayField<FormArrayValues, KeyName>>[],
   ) => {
     setField(fieldsValues);
@@ -91,6 +93,100 @@ export const useFieldArray = <
       validateSchemaIsValid({
         [name]: fieldsValues,
       });
+    }
+  };
+
+  const modifyDirtyFields = ({
+    shouldRender,
+    isRemove,
+    isPrePend,
+    index,
+    value = {},
+  }: {
+    isPrePend?: boolean;
+    shouldRender?: boolean;
+    isRemove?: boolean;
+    index?: number | number[];
+    value?: Partial<FormArrayValues> | Partial<FormArrayValues>[];
+  } = {}) => {
+    let render = shouldRender;
+    const values = isArray(value) ? value : [value];
+
+    if (readFormStateRef.current.dirty) {
+      const dirtyFieldIndexesAndValues: Record<number, string[]> = {};
+
+      if (isPrePend || isRemove) {
+        for (const dirtyField of [...dirtyFieldsRef.current].sort()) {
+          if (isMatchFieldArrayName(dirtyField, name)) {
+            const matchedIndexes = dirtyField.match(REGEX_ARRAY_FIELD_INDEX);
+
+            if (matchedIndexes) {
+              const matchIndex = +matchedIndexes[matchedIndexes.length - 1];
+
+              if (dirtyFieldIndexesAndValues[matchIndex]) {
+                dirtyFieldIndexesAndValues[matchIndex].push(dirtyField);
+              } else {
+                dirtyFieldIndexesAndValues[matchIndex] = [dirtyField];
+              }
+            }
+
+            dirtyFieldsRef.current.delete(dirtyField);
+          }
+        }
+      }
+
+      if (!isUndefined(index) || isPrePend) {
+        const updatedDirtyFieldIndexes = isUndefined(index)
+          ? []
+          : getSortRemovedItems(
+              Object.keys(dirtyFieldIndexesAndValues).map(i => +i),
+              isArray(index) ? index : [index],
+            );
+
+        Object.values(dirtyFieldIndexesAndValues).forEach((values, index) => {
+          const updateIndex = isPrePend ? 0 : updatedDirtyFieldIndexes[index];
+
+          if (updateIndex > -1) {
+            for (const value of values) {
+              const matchedIndexes = value.match(REGEX_ARRAY_FIELD_INDEX);
+
+              if (matchedIndexes) {
+                dirtyFieldsRef.current.add(
+                  value.replace(
+                    /[\d+]([^[\d+]+)$/,
+                    `${
+                      isPrePend
+                        ? +matchedIndexes[matchedIndexes.length - 1] +
+                          values.length
+                        : updateIndex
+                    }$1`,
+                  ),
+                );
+              }
+            }
+          }
+        });
+      }
+
+      if (!isRemove) {
+        values.forEach((fieldValue, index) =>
+          Object.keys(fieldValue).forEach(key =>
+            dirtyFieldsRef.current.add(
+              `${name}[${
+                isPrePend ? index : allFields.current.length + index
+              }].${key}`,
+            ),
+          ),
+        );
+
+        isDirtyRef.current = true;
+      }
+
+      render = true;
+    }
+
+    if (render) {
+      reRender();
     }
   };
 
@@ -130,23 +226,22 @@ export const useFieldArray = <
   const append = (
     value: Partial<FormArrayValues> | Partial<FormArrayValues>[],
   ) => {
-    if (readFormStateRef.current.dirty) {
-      isDirtyRef.current = true;
-      reRender();
-    }
-    commonTasks([
+    setFieldAndValidState([
       ...allFields.current,
       ...(isArray(value)
         ? appendValueWithKey(value)
         : [appendId(value, keyName)]),
     ]);
+    modifyDirtyFields({ value });
   };
 
   const prepend = (
     value: Partial<FormArrayValues> | Partial<FormArrayValues>[],
   ) => {
+    let shouldRender = false;
+
     resetFields();
-    commonTasks(
+    setFieldAndValidState(
       prependAt(
         allFields.current,
         isArray(value) ? appendValueWithKey(value) : [appendId(value, keyName)],
@@ -165,25 +260,33 @@ export const useFieldArray = <
         touchedFieldsRef.current[name],
         fillEmptyArray(value),
       );
-      reRender();
+      shouldRender = true;
     }
+
+    modifyDirtyFields({
+      shouldRender,
+      isPrePend: true,
+      value,
+    });
   };
 
   const remove = (index?: number | number[]) => {
     let shouldRender = false;
-    if (!isUndefined(index)) {
+    const isIndexUndefined = isUndefined(index);
+
+    if (!isIndexUndefined) {
       mapCurrentFieldsValueWithState();
     }
 
     resetFields(
       removeArrayAt(getFieldValueByName(fieldsRef.current, name), index),
     );
-    commonTasks(removeArrayAt(allFields.current, index));
+    setFieldAndValidState(removeArrayAt(allFields.current, index));
     setIsDeleted(true);
 
     if (errorsRef.current[name]) {
       errorsRef.current[name] = removeArrayAt(errorsRef.current[name], index);
-      if (!(errorsRef.current[name] as []).filter(Boolean).length) {
+      if (!errorsRef.current[name].filter(Boolean).length) {
         delete errorsRef.current[name];
       }
     }
@@ -196,30 +299,15 @@ export const useFieldArray = <
       shouldRender = true;
     }
 
-    if (readFormStateRef.current.dirty) {
-      dirtyFieldsRef.current.forEach(dirtyField => {
-        if (isUndefined(name) || dirtyField.startsWith(`${name}[${index}]`)) {
-          dirtyFieldsRef.current.delete(dirtyField);
-        }
-      });
-      shouldRender = true;
-    }
-
     if (readFormStateRef.current.isValid && !validateSchemaIsValid) {
       let fieldIndex = -1;
-      let isFound = false;
-      const isIndexUndefined = isUndefined(index);
 
       while (fieldIndex++ < fields.length) {
         const isLast = fieldIndex === fields.length - 1;
         const isCurrentIndex =
           (isArray(index) ? index : [index]).indexOf(fieldIndex) >= 0;
 
-        if (isCurrentIndex || isIndexUndefined) {
-          isFound = true;
-        }
-
-        if (!isFound) {
+        if (!(isCurrentIndex || isIndexUndefined)) {
           continue;
         }
 
@@ -235,6 +323,7 @@ export const useFieldArray = <
             if (validFieldsRef.current.has(currentFieldName)) {
               validFieldsRef.current.add(previousFieldName);
             }
+
             if (fieldsWithValidationRef.current.has(currentFieldName)) {
               fieldsWithValidationRef.current.add(previousFieldName);
             }
@@ -245,9 +334,11 @@ export const useFieldArray = <
       shouldRender = true;
     }
 
-    if (shouldRender && !isWatchAllRef.current) {
-      reRender();
-    }
+    modifyDirtyFields({
+      shouldRender: shouldRender && !isWatchAllRef.current,
+      isRemove: true,
+      index,
+    });
   };
 
   const insert = (
@@ -256,7 +347,7 @@ export const useFieldArray = <
   ) => {
     mapCurrentFieldsValueWithState();
     resetFields(insertAt(getFieldValueByName(fieldsRef.current, name), index));
-    commonTasks(
+    setFieldAndValidState(
       insertAt(
         allFields.current,
         index,
@@ -288,7 +379,7 @@ export const useFieldArray = <
     swapArrayAt(fieldValues, indexA, indexB);
     resetFields(fieldValues);
     swapArrayAt(allFields.current, indexA, indexB);
-    commonTasks([...allFields.current]);
+    setFieldAndValidState([...allFields.current]);
 
     if (errorsRef.current[name]) {
       swapArrayAt(errorsRef.current[name], indexA, indexB);
@@ -306,7 +397,7 @@ export const useFieldArray = <
     moveArrayAt(fieldValues, from, to);
     resetFields(fieldValues);
     moveArrayAt(allFields.current, from, to);
-    commonTasks([...allFields.current]);
+    setFieldAndValidState([...allFields.current]);
 
     if (errorsRef.current[name]) {
       moveArrayAt(errorsRef.current[name], from, to);
@@ -320,9 +411,6 @@ export const useFieldArray = <
 
   const reset = () => {
     resetFields();
-    memoizedDefaultValues.current = [
-      ...get(defaultValuesRef.current, name, []),
-    ];
     setField(mapIds(memoizedDefaultValues.current, keyName));
   };
 

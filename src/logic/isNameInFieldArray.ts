@@ -1,5 +1,7 @@
 export const isMatchFieldArrayName = (name: string, searchName: string) =>
-  name.startsWith(`${searchName}[`);
+  RegExp(
+    `^${searchName}[\\d+]`.replace(/\[/g, '\\[').replace(/\]/g, '\\]'),
+  ).test(name);
 
 export default (names: Set<string>, name: string) =>
   [...names].reduce(
