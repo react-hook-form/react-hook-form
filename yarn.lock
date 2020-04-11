@@ -2987,6 +2987,11 @@ globals@^12.1.0:
   dependencies:
     type-fest "^0.8.1"
 
+google-closure-compiler-js@>20170000:
+  version "20200406.0.0"
+  resolved "https://registry.yarnpkg.com/google-closure-compiler-js/-/google-closure-compiler-js-20200406.0.0.tgz#e73f498b1ab56a0580c0f945463252f7562f6f98"
+  integrity sha512-4qsr9VwjpSfoGt84bRAwDAcUlyYodZ9iywVMQwWzCu+SziCNXLFhUWkfLqTXbOYRSwO94UadwERSBdoPZY/GrA==
+
 graceful-fs@^4.1.6, graceful-fs@^4.2.0, graceful-fs@^4.2.3:
   version "4.2.3"
   resolved "https://registry.yarnpkg.com/graceful-fs/-/graceful-fs-4.2.3.tgz#4a12ff1b60376ef09862c2093edd908328be8423"
@@ -5302,6 +5307,13 @@ rollup-plugin-babel@^4.4.0:
   dependencies:
     "@babel/helper-module-imports" "^7.0.0"
     rollup-pluginutils "^2.8.1"
+
+rollup-plugin-closure-compiler-js@^1.0.6:
+  version "1.0.6"
+  resolved "https://registry.yarnpkg.com/rollup-plugin-closure-compiler-js/-/rollup-plugin-closure-compiler-js-1.0.6.tgz#58e3e31297ad1a532d9114108bc06f2756d72c3d"
+  integrity sha1-WOPjEpetGlMtkRQQi8BvJ1bXLD0=
+  dependencies:
+    google-closure-compiler-js ">20170000"
 
 rollup-plugin-terser@^5.1.1:
   version "5.1.1"
