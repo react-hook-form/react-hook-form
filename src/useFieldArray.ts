@@ -116,7 +116,7 @@ export const useFieldArray = <
       const dirtyFieldIndexesAndValues = new Map();
 
       if (isPrePend || isRemove) {
-        for (const dirtyField of [...dirtyFieldsRef.current].sort()) {
+        for (const dirtyField of dirtyFieldsRef.current) {
           if (isMatchFieldArrayName(dirtyField, name)) {
             const matchedIndexes = dirtyField.match(REGEX_ARRAY_FIELD_INDEX);
 
