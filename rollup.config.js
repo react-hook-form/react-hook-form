@@ -9,6 +9,7 @@ export function getConfig({
       file: `dist/${pkg.name}.js`,
       format: 'cjs',
       exports: 'named',
+      sourcemap: true,
     },
     {
       file: `dist/${pkg.name}.es.js`,
