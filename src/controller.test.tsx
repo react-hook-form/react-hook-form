@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React from 'react';
 import { render, fireEvent } from '@testing-library/react';
 import { Controller } from './controller';
 import { reconfigureControl } from './useForm.test';

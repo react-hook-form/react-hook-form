@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React from 'react';
 import attachEventListeners from './logic/attachEventListeners';
 import transformToNestObject from './logic/transformToNestObject';
 import focusErrorField from './logic/focusErrorField';

@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React from 'react';
 
 export type Primitive = string | boolean | number | symbol | null | undefined;
 

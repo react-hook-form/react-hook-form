@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React from 'react';
 import validateField from './validateField';
 import getRadioValue from './getRadioValue';
 import getCheckboxValue from './getCheckboxValue';

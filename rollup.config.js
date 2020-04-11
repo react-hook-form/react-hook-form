@@ -13,6 +13,7 @@ export function getConfig({
     {
       file: `dist/${pkg.name}.es.js`,
       format: 'esm',
+      sourcemap: true,
     },
     {
       name: 'ReactHookForm',
@@ -21,20 +22,18 @@ export function getConfig({
       globals: {
         react: 'React',
       },
+      sourcemap: true,
     },
   ],
-  plugins = [],
 } = {}) {
   return {
     input: 'src/index.ts',
-    external: ['react', 'react-dom'],
+    external: ['react'],
     plugins: [
       typescript({
         tsconfig,
-        clean: true,
       }),
       compiler(),
-      ...plugins,
     ],
     output,
   };

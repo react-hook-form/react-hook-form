@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React from 'react';
 import { FieldValues } from './types';
 import { FormContextValues, FormProps } from './contextTypes';
 
