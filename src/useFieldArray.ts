@@ -139,7 +139,7 @@ export const useFieldArray = <
         const updatedDirtyFieldIndexes = isUndefined(index)
           ? []
           : getSortRemovedItems(
-              Object.keys(dirtyFieldIndexesAndValues).map(i => +i),
+              Object.keys(dirtyFieldIndexesAndValues).map((i) => +i),
               isArray(index) ? index : [index],
             );
 
@@ -170,7 +170,7 @@ export const useFieldArray = <
 
       if (!isRemove) {
         values.forEach((fieldValue, index) =>
-          Object.keys(fieldValue).forEach(key =>
+          Object.keys(fieldValue).forEach((key) =>
             dirtyFieldsRef.current.add(
               `${name}[${
                 isPrePend ? index : allFields.current.length + index

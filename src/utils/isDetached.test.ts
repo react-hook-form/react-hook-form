@@ -79,7 +79,7 @@ describe('isDetached', () => {
       iframe.src = 'about:blank';
       iframe.addEventListener(
         'load',
-        function() {
+        function () {
           const node = document.createElement('div');
           if (iframe.contentDocument) {
             iframe.contentDocument.body.appendChild(node);
@@ -93,7 +93,7 @@ describe('isDetached', () => {
       );
 
       document.body.appendChild(iframe);
-    }).then(detached => expect(detached).toBeFalsy());
+    }).then((detached) => expect(detached).toBeFalsy());
   });
 
   it('should return true when the node is nested inside an iframe and the iframe is detached', () => {
@@ -104,7 +104,7 @@ describe('isDetached', () => {
       iframe.src = 'about:blank';
       iframe.addEventListener(
         'load',
-        function() {
+        function () {
           const node = document.createElement('div');
           if (iframe.contentDocument) {
             iframe.contentDocument.body.appendChild(node);
@@ -123,6 +123,6 @@ describe('isDetached', () => {
       );
 
       document.body.appendChild(iframe);
-    }).then(detached => expect(detached).toBeTruthy());
+    }).then((detached) => expect(detached).toBeTruthy());
   });
 });

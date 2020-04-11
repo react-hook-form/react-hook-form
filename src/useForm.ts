@@ -211,7 +211,7 @@ export function useForm<
         }
       } else if (isMultipleSelect(ref)) {
         [...ref.options].forEach(
-          selectRef =>
+          (selectRef) =>
             (selectRef.selected = (value as string).includes(selectRef.value)),
         );
       } else if (isCheckBoxInput(ref) && options) {
@@ -373,7 +373,7 @@ export function useForm<
       isValidRef.current = isEmptyObject(errors);
 
       if (isArray(payload)) {
-        payload.forEach(name => {
+        payload.forEach((name) => {
           const error = get(errors, name);
 
           if (error) {
@@ -416,7 +416,7 @@ export function useForm<
 
       if (isArray(fields)) {
         const result = await Promise.all(
-          fields.map(async data => await executeValidation(data, true)),
+          fields.map(async (data) => await executeValidation(data, true)),
         );
         reRender();
         return result.every(Boolean);
@@ -621,7 +621,7 @@ export function useForm<
         fieldsWithValidationRef,
         validFieldsRef,
         watchFieldsRef,
-      ].forEach(data => data.current.delete(name));
+      ].forEach((data) => data.current.delete(name));
 
       if (
         readFormStateRef.current.isValid ||
@@ -722,7 +722,7 @@ export function useForm<
             }),
       });
     } else if (isArray(name)) {
-      name.forEach(error =>
+      name.forEach((error) =>
         setInternalError({ ...error, preventRender: true }),
       );
       reRender();
@@ -801,7 +801,7 @@ export function useForm<
     names: FieldName<FormValues> | FieldName<FormValues>[],
   ): void {
     if (!isEmptyObject(fieldsRef.current)) {
-      (isArray(names) ? names : [names]).forEach(fieldName =>
+      (isArray(names) ? names : [names]).forEach((fieldName) =>
         removeFieldEventListenerAndRef(fieldsRef.current[fieldName], true),
       );
     }
@@ -892,7 +892,7 @@ export function useForm<
 
       if (!isOnSubmit && readFormStateRef.current.isValid) {
         validateField(fieldsRef, validateAllFieldCriteria, currentField).then(
-          error => {
+          (error) => {
             const previousFormIsValid = isValidRef.current;
             if (isEmptyObject(error)) {
               validFieldsRef.current.add(name);
@@ -1136,7 +1136,7 @@ export function useForm<
     }
 
     Object.values(resetFieldArrayFunctionRef.current).forEach(
-      resetFieldArray => isFunction(resetFieldArray) && resetFieldArray(),
+      (resetFieldArray) => isFunction(resetFieldArray) && resetFieldArray(),
     );
 
     resetRefs(omitResetState);
