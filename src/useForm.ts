@@ -63,8 +63,6 @@ import {
   Message,
 } from './types';
 
-const { useRef, useState, useCallback, useEffect } = React;
-
 export function useForm<
   FormValues extends FieldValues = FieldValues,
   ValidationContext extends object = object
@@ -80,34 +78,36 @@ export function useForm<
 }: UseFormOptions<FormValues, ValidationContext> = {}): FormContextValues<
   FormValues
 > {
-  const fieldsRef = useRef<FieldRefs<FormValues>>({});
+  const fieldsRef = React.useRef<FieldRefs<FormValues>>({});
   const validateAllFieldCriteria = validateCriteriaMode === 'all';
-  const errorsRef = useRef<FieldErrors<FormValues>>({});
-  const touchedFieldsRef = useRef<Touched<FormValues>>({});
-  const fieldArrayDefaultValues = useRef<Record<string, unknown[]>>({});
-  const watchFieldsRef = useRef(new Set<FieldName<FormValues>>());
-  const dirtyFieldsRef = useRef(new Set<FieldName<FormValues>>());
-  const fieldsWithValidationRef = useRef(new Set<FieldName<FormValues>>());
-  const validFieldsRef = useRef(new Set<FieldName<FormValues>>());
-  const isValidRef = useRef(true);
-  const defaultRenderValuesRef = useRef<
+  const errorsRef = React.useRef<FieldErrors<FormValues>>({});
+  const touchedFieldsRef = React.useRef<Touched<FormValues>>({});
+  const fieldArrayDefaultValues = React.useRef<Record<string, unknown[]>>({});
+  const watchFieldsRef = React.useRef(new Set<FieldName<FormValues>>());
+  const dirtyFieldsRef = React.useRef(new Set<FieldName<FormValues>>());
+  const fieldsWithValidationRef = React.useRef(
+    new Set<FieldName<FormValues>>(),
+  );
+  const validFieldsRef = React.useRef(new Set<FieldName<FormValues>>());
+  const isValidRef = React.useRef(true);
+  const defaultRenderValuesRef = React.useRef<
     DeepPartial<Record<FieldName<FormValues>, FieldValue<FormValues>>>
   >({});
-  const defaultValuesRef = useRef<
+  const defaultValuesRef = React.useRef<
     FieldValue<FormValues> | DeepPartial<FormValues>
   >(defaultValues);
-  const isUnMount = useRef(false);
-  const isWatchAllRef = useRef(false);
-  const isSubmittedRef = useRef(false);
-  const isDirtyRef = useRef(false);
-  const submitCountRef = useRef(0);
-  const isSubmittingRef = useRef(false);
-  const handleChangeRef = useRef<HandleChange>();
-  const resetFieldArrayFunctionRef = useRef({});
-  const validationContextRef = useRef(validationContext);
-  const fieldArrayNamesRef = useRef<Set<string>>(new Set());
-  const [, render] = useState();
-  const { isOnBlur, isOnSubmit, isOnChange } = useRef(
+  const isUnMount = React.useRef(false);
+  const isWatchAllRef = React.useRef(false);
+  const isSubmittedRef = React.useRef(false);
+  const isDirtyRef = React.useRef(false);
+  const submitCountRef = React.useRef(0);
+  const isSubmittingRef = React.useRef(false);
+  const handleChangeRef = React.useRef<HandleChange>();
+  const resetFieldArrayFunctionRef = React.useRef({});
+  const validationContextRef = React.useRef(validationContext);
+  const fieldArrayNamesRef = React.useRef<Set<string>>(new Set());
+  const [, render] = React.useState();
+  const { isOnBlur, isOnSubmit, isOnChange } = React.useRef(
     modeChecker(mode),
   ).current;
   const isWindowUndefined = typeof window === UNDEFINED;
@@ -117,7 +117,7 @@ export function useForm<
     !isWindowUndefined &&
     !isUndefined(window.HTMLElement);
   const isProxyEnabled = isWeb && 'Proxy' in window;
-  const readFormStateRef = useRef<ReadFormState>({
+  const readFormStateRef = React.useRef<ReadFormState>({
     dirty: !isProxyEnabled,
     dirtyFields: !isProxyEnabled,
     isSubmitted: isOnSubmit,
@@ -129,16 +129,16 @@ export function useForm<
   const {
     isOnBlur: isReValidateOnBlur,
     isOnSubmit: isReValidateOnSubmit,
-  } = useRef(modeChecker(reValidateMode)).current;
+  } = React.useRef(modeChecker(reValidateMode)).current;
   validationContextRef.current = validationContext;
 
-  const reRender = useCallback(() => {
+  const reRender = React.useCallback(() => {
     if (!isUnMount.current) {
       render({});
     }
   }, []);
 
-  const shouldRenderBaseOnError = useCallback(
+  const shouldRenderBaseOnError = React.useCallback(
     (
       name: FieldName<FormValues>,
       error: FieldErrors<FormValues>,
@@ -180,7 +180,7 @@ export function useForm<
     [reRender, shouldValidateCallback],
   );
 
-  const setFieldValue = useCallback(
+  const setFieldValue = React.useCallback(
     (
       field: Field,
       rawValue:
@@ -270,7 +270,7 @@ export function useForm<
       : previousDirtyFieldsLength !== dirtyFieldsRef.current.size;
   };
 
-  const setDirtyAndTouchedFields = useCallback(
+  const setDirtyAndTouchedFields = React.useCallback(
     (fieldName: FieldName<FormValues>): void | boolean => {
       if (
         setDirty(fieldName) ||
@@ -283,7 +283,7 @@ export function useForm<
     [],
   );
 
-  const setInternalValueBatch = useCallback(
+  const setInternalValueBatch = React.useCallback(
     (
       name: FieldName<FormValues>,
       value: FieldValue<FormValues>,
@@ -311,7 +311,7 @@ export function useForm<
     [setFieldValue, setDirtyAndTouchedFields],
   );
 
-  const setInternalValue = useCallback(
+  const setInternalValue = React.useCallback(
     (
       name: FieldName<FormValues>,
       value: FieldValue<FormValues> | null | undefined | boolean,
@@ -331,7 +331,7 @@ export function useForm<
     [setDirtyAndTouchedFields, setFieldValue, setInternalValueBatch],
   );
 
-  const executeValidation = useCallback(
+  const executeValidation = React.useCallback(
     async (
       name: FieldName<FormValues>,
       skipReRender?: boolean,
@@ -355,7 +355,7 @@ export function useForm<
     [shouldRenderBaseOnError, validateAllFieldCriteria],
   );
 
-  const executeSchemaValidation = useCallback(
+  const executeSchemaValidation = React.useCallback(
     async (
       payload: FieldName<FormValues> | FieldName<FormValues>[],
     ): Promise<boolean> => {
@@ -404,7 +404,7 @@ export function useForm<
     ],
   );
 
-  const triggerValidation = useCallback(
+  const triggerValidation = React.useCallback(
     async (
       payload?: FieldName<FormValues> | FieldName<FormValues>[] | string,
     ): Promise<boolean> => {
@@ -554,7 +554,7 @@ export function useForm<
         }
       };
 
-  const validateSchemaIsValid = useCallback(
+  const validateSchemaIsValid = React.useCallback(
     (values: any = {}) => {
       const fieldValues = isEmptyObject(defaultValuesRef.current)
         ? getFieldsValues(fieldsRef.current)
@@ -582,7 +582,7 @@ export function useForm<
     [reRender, validateAllFieldCriteria, validationResolver],
   );
 
-  const removeFieldEventListener = useCallback(
+  const removeFieldEventListener = React.useCallback(
     (field: Field, forceDelete?: boolean) => {
       if (!isUndefined(handleChangeRef.current) && field) {
         findRemovedFieldAndRemoveListener(
@@ -596,7 +596,7 @@ export function useForm<
     [],
   );
 
-  const removeFieldEventListenerAndRef = useCallback(
+  const removeFieldEventListenerAndRef = React.useCallback(
     (field: Field | undefined, forceDelete?: boolean) => {
       if (
         !field ||
@@ -977,7 +977,7 @@ export function useForm<
       ref && registerFieldsRef(ref, refOrValidationOptions);
   }
 
-  const handleSubmit = useCallback(
+  const handleSubmit = React.useCallback(
     (callback: OnSubmit<FormValues>) => async (
       e?: React.BaseSyntheticEvent,
     ): Promise<void> => {
@@ -1155,7 +1155,7 @@ export function useForm<
       : outputValues;
   };
 
-  useEffect(
+  React.useEffect(
     () => () => {
       isUnMount.current = true;
       fieldsRef.current &&
@@ -1189,17 +1189,17 @@ export function useForm<
 
   const commonProps = {
     triggerValidation,
-    setValue: useCallback(setValue, [
+    setValue: React.useCallback(setValue, [
       reRender,
       setInternalValue,
       triggerValidation,
     ]),
-    register: useCallback(register, [
+    register: React.useCallback(register, [
       defaultValuesRef.current,
       defaultRenderValuesRef.current,
     ]),
-    unregister: useCallback(unregister, []),
-    getValues: useCallback(getValues, []),
+    unregister: React.useCallback(unregister, []),
+    getValues: React.useCallback(getValues, []),
     formState: isProxyEnabled
       ? new Proxy<FormStateProxy<FormValues>>(formState, {
           get: (obj, prop: keyof FormStateProxy) => {
@@ -1248,9 +1248,9 @@ export function useForm<
     watch,
     control,
     handleSubmit,
-    reset: useCallback(reset, []),
-    clearError: useCallback(clearError, []),
-    setError: useCallback(setError, []),
+    reset: React.useCallback(reset, []),
+    clearError: React.useCallback(clearError, []),
+    setError: React.useCallback(setError, []),
     errors: errorsRef.current,
     ...commonProps,
   };
