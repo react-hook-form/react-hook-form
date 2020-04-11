@@ -21,7 +21,7 @@ export default (
           count -
           (notFoundIndexes.length
             ? notFoundIndexes
-                .map(notFoundIndex => notFoundIndex < index)
+                .map((notFoundIndex) => notFoundIndex < index)
                 .filter(Boolean).length
             : 0),
       );
