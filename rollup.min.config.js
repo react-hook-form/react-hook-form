@@ -1,5 +1,6 @@
 import typescript from 'rollup-plugin-typescript2';
 import compiler from "@ampproject/rollup-plugin-closure-compiler";
+import cleanup from 'rollup-plugin-cleanup';
 import { terser } from 'rollup-plugin-terser';
 
 export default {
@@ -8,6 +9,7 @@ export default {
     typescript(),
     compiler(),
     terser(),
+    cleanup(),
   ],
   external: ['react'],
   output: [
