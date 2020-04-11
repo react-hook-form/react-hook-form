@@ -116,7 +116,7 @@ export const useFieldArray = <
       const dirtyFieldIndexesAndValues: Record<number, string[]> = {};
 
       if (isPrePend || isRemove) {
-        for (const dirtyField of dirtyFieldsRef.current) {
+        for (const dirtyField of [...dirtyFieldsRef.current].sort()) {
           if (isMatchFieldArrayName(dirtyField, name)) {
             const matchedIndexes = dirtyField.match(REGEX_ARRAY_FIELD_INDEX);
 
