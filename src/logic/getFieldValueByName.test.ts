@@ -1,4 +1,4 @@
-import getFieldValueByName from './getFieldValueByName';
+import getFieldValueByName from './getFieldArrayValueByName';
 
 const testFields = {
   'email[0]': {
