@@ -740,20 +740,13 @@ export function useForm<
       | { nest: boolean },
     defaultValue?: string | DeepPartial<FormValues>,
   ): FieldValue<FormValues> | DeepPartial<FormValues> | string | undefined {
-    const combinedDefaultValues = isUndefined(defaultValue)
-      ? isUndefined(defaultValuesRef.current)
-        ? {}
-        : defaultValuesRef.current
-      : defaultValue;
+    const watchFields = watchFieldsRef.current;
+    const combinedDefaultValues =
+      defaultValue || defaultValuesRef.current || {};
     const fieldValues = getFieldsValues<FormValues>(
       fieldsRef.current,
       fieldNames,
     );
-    const watchFields = watchFieldsRef.current;
-
-    if (!isEmptyObject(combinedDefaultValues)) {
-      readFormStateRef.current.dirty = true;
-    }
 
     if (isString(fieldNames)) {
       return assignWatchFields<FormValues>(
