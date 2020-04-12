@@ -232,15 +232,15 @@ export function useForm<
       return false;
     }
 
-    const isFieldArray = isNameInFieldArray(fieldArrayNamesRef.current, name);
-    const previousDirtyFieldsLength = dirtyFieldsRef.current.size;
-    let isDirty =
+    let isFieldDirty =
       defaultValuesAtRenderRef.current[name] !==
       getFieldValue(fieldsRef.current, fieldsRef.current[name]!.ref);
+    const isFieldArray = isNameInFieldArray(fieldArrayNamesRef.current, name);
+    const previousDirtyFieldsLength = dirtyFieldsRef.current.size;
 
     if (isFieldArray) {
       const fieldArrayName = getFieldArrayParentName(name);
-      isDirty = getIsFieldsDifferent(
+      isFieldDirty = getIsFieldsDifferent(
         getFieldValueByName(fieldsRef.current, fieldArrayName),
         get(defaultValuesRef.current, fieldArrayName),
       );
@@ -248,15 +248,17 @@ export function useForm<
 
     const isDirtyChanged =
       (isFieldArray ? isDirtyRef.current : dirtyFieldsRef.current.has(name)) !==
-      isDirty;
+      isFieldDirty;
 
-    if (isDirty) {
+    if (isFieldDirty) {
       dirtyFieldsRef.current.add(name);
     } else {
       dirtyFieldsRef.current.delete(name);
     }
 
-    isDirtyRef.current = isFieldArray ? isDirty : !!dirtyFieldsRef.current.size;
+    isDirtyRef.current = isFieldArray
+      ? isFieldDirty
+      : !!dirtyFieldsRef.current.size;
     return readFormStateRef.current.dirty
       ? isDirtyChanged
       : previousDirtyFieldsLength !== dirtyFieldsRef.current.size;
@@ -275,7 +277,7 @@ export function useForm<
     [],
   );
 
-  const setInternalValueBatch = React.useCallback(
+  const setInternalValues = React.useCallback(
     (
       name: FieldName<FormValues>,
       value: FieldValue<FormValues>,
@@ -287,12 +289,11 @@ export function useForm<
         const fieldName = `${parentFieldName || name}${
           isValueArray ? `[${key}]` : `.${key}`
         }`;
+        const field = fieldsRef.current[fieldName];
 
         if (isObject(value[key])) {
-          setInternalValueBatch(name, value[key], fieldName);
+          setInternalValues(name, value[key], fieldName);
         }
-
-        const field = fieldsRef.current[fieldName];
 
         if (field) {
           setFieldValue(field, value[key]);
@@ -317,10 +318,10 @@ export function useForm<
           return output;
         }
       } else if (!isPrimitive(value)) {
-        setInternalValueBatch(name, value);
+        setInternalValues(name, value);
       }
     },
-    [setDirtyAndTouchedFields, setFieldValue, setInternalValueBatch],
+    [setDirtyAndTouchedFields, setFieldValue, setInternalValues],
   );
 
   const executeValidation = React.useCallback(
@@ -328,26 +329,26 @@ export function useForm<
       name: FieldName<FormValues>,
       skipReRender?: boolean,
     ): Promise<boolean> => {
-      const field = fieldsRef.current[name]!;
+      const field = fieldsRef.current[name] as Field;
 
-      if (!field) {
-        return false;
+      if (field) {
+        const error = await validateField<FormValues>(
+          fieldsRef,
+          validateAllFieldCriteria,
+          field,
+        );
+
+        shouldRenderBaseOnError(name, error, skipReRender ? null : false);
+
+        return isEmptyObject(error);
       }
 
-      const error = await validateField<FormValues>(
-        fieldsRef,
-        validateAllFieldCriteria,
-        field,
-      );
-
-      shouldRenderBaseOnError(name, error, skipReRender ? null : false);
-
-      return isEmptyObject(error);
+      return false;
     },
     [shouldRenderBaseOnError, validateAllFieldCriteria],
   );
 
-  const executeSchemaValidation = React.useCallback(
+  const executeSchemaOrResolverValidation = React.useCallback(
     async (
       payload: FieldName<FormValues> | FieldName<FormValues>[],
     ): Promise<boolean> => {
@@ -376,11 +377,10 @@ export function useForm<
         });
         reRender();
       } else {
+        const error = get(errors, payload);
         shouldRenderBaseOnError(
           payload,
-          (get(errors, payload)
-            ? { [payload]: get(errors, payload) }
-            : {}) as FieldErrors<FormValues>,
+          (error ? { [payload]: error } : {}) as FieldErrors<FormValues>,
           previousFormIsValid !== isValidRef.current,
         );
       }
@@ -403,7 +403,7 @@ export function useForm<
       const fields = payload || Object.keys(fieldsRef.current);
 
       if (shouldValidateCallback) {
-        return executeSchemaValidation(fields);
+        return executeSchemaOrResolverValidation(fields);
       }
 
       if (isArray(fields)) {
@@ -417,7 +417,7 @@ export function useForm<
       return await executeValidation(fields);
     },
     [
-      executeSchemaValidation,
+      executeSchemaOrResolverValidation,
       executeValidation,
       reRender,
       shouldValidateCallback,
