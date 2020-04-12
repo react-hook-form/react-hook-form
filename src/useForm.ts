@@ -39,6 +39,7 @@ import isHTMLElement from './utils/isHTMLElement';
 import { EVENTS, UNDEFINED, VALIDATION_MODE } from './constants';
 import { FormContextValues } from './contextTypes';
 import {
+  LiteralToPrimitive,
   DeepPartial,
   FieldValues,
   FieldName,
@@ -731,21 +732,26 @@ export function useForm<
 
   function watch(): FormValues;
   function watch(option: { nest: boolean }): FormValues;
-  function watch<T extends FieldName<FormValues>>(
-    field: T & string,
-    defaultValue?: string,
+  function watch<T extends keyof FormValues>(
+    field: T,
+    defaultValue?: FormValues[T],
   ): FormValues[T];
+  function watch<T extends unknown>(
+    field: string,
+    defaultValue?: T,
+  ): LiteralToPrimitive<T>;
+  function watch<T extends keyof FormValues>(
+    fields: T[],
+    defaultValues?: FormValues[T],
+  ): Record<T, FormValues[T]>;
+  function watch<T extends DeepPartial<FormValues>>(
+    fields: string[],
+    defaultValues?: T,
+  ): T;
   function watch(
-    fields: FieldName<FormValues>[] | string[],
-    defaultValues?: DeepPartial<FormValues>,
-  ): DeepPartial<FormValues>;
-  function watch(
-    fieldNames?:
-      | FieldName<FormValues>
-      | FieldName<FormValues>[]
-      | { nest: boolean },
-    defaultValue?: string | DeepPartial<FormValues>,
-  ): FieldValue<FormValues> | DeepPartial<FormValues> | string | undefined {
+    fieldNames?: string | string[] | { nest: boolean },
+    defaultValue?: unknown,
+  ): unknown {
     const combinedDefaultValues = isUndefined(defaultValue)
       ? isUndefined(defaultValuesRef.current)
         ? {}
@@ -766,7 +772,7 @@ export function useForm<
         fieldValues,
         fieldNames,
         watchFields,
-        combinedDefaultValues,
+        combinedDefaultValues as DeepPartial<FormValues>,
       );
     }
 
@@ -778,7 +784,7 @@ export function useForm<
             fieldValues,
             name,
             watchFields,
-            combinedDefaultValues,
+            combinedDefaultValues as DeepPartial<FormValues>,
           ),
         }),
         {},

@@ -8,12 +8,12 @@ import {
   FieldElement,
   ValidationOptions,
   FieldName,
-  FieldValue,
   ManualFieldError,
   MultipleFieldErrors,
   Control,
   OmitResetState,
   Message,
+  LiteralToPrimitive,
 } from './types';
 
 export type FormProps<FormValues extends FieldValues = FieldValues> = {
@@ -50,21 +50,26 @@ export type FormContextValues<FormValues extends FieldValues = FieldValues> = {
   unregister(names: FieldName<FormValues> | FieldName<FormValues>[]): void;
   watch(): FormValues;
   watch(option: { nest: boolean }): FormValues;
-  watch<T extends FieldName<FormValues>>(
-    field: T & string,
-    defaultValue?: string,
+  watch<T extends keyof FormValues>(
+    field: T,
+    defaultValue?: FormValues[T],
   ): FormValues[T];
+  watch<T extends unknown>(
+    field: string,
+    defaultValue?: T,
+  ): LiteralToPrimitive<T>;
+  watch<T extends keyof FormValues>(
+    fields: T[],
+    defaultValues?: FormValues[T],
+  ): Record<T, FormValues[T]>;
+  watch<T extends DeepPartial<FormValues>>(
+    fields: string[],
+    defaultValues?: T,
+  ): T;
   watch(
-    fields: FieldName<FormValues>[] | string[],
-    defaultValues?: DeepPartial<FormValues>,
-  ): DeepPartial<FormValues>;
-  watch(
-    fieldNames?:
-      | FieldName<FormValues>
-      | FieldName<FormValues>[]
-      | { nest: boolean },
-    defaultValue?: string | DeepPartial<FormValues>,
-  ): FieldValue<FormValues> | DeepPartial<FormValues> | string | undefined;
+    fieldNames?: string | string[] | { nest: boolean },
+    defaultValue?: unknown,
+  ): unknown;
   setError(name: ManualFieldError<FormValues>[]): void;
   setError(name: FieldName<FormValues>, type: MultipleFieldErrors): void;
   setError(name: FieldName<FormValues>, type: string, message?: Message): void;
