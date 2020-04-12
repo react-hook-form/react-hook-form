@@ -188,10 +188,9 @@ export function useForm<
         | undefined
         | null
         | boolean,
-    ): boolean => {
+    ) => {
       const ref = field.ref;
       const options = field.options;
-      const { type } = ref;
       const value =
         isHTMLElement(ref) && isNullOrUndefined(rawValue) ? '' : rawValue;
 
