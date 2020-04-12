@@ -1139,6 +1139,12 @@ export function useForm<
     [removeFieldEventListenerAndRef],
   );
 
+  if (!shouldValidateSchemaOrResolver) {
+    isValidRef.current =
+      validFieldsRef.current.size >= fieldsWithValidationRef.current.size &&
+      isEmptyObject(errorsRef.current);
+  }
+
   const formState = {
     dirty: isDirtyRef.current,
     dirtyFields: dirtyFieldsRef.current,
@@ -1148,10 +1154,7 @@ export function useForm<
     isSubmitting: isSubmittingRef.current,
     isValid: isOnSubmit
       ? isSubmittedRef.current && isEmptyObject(errorsRef.current)
-      : shouldValidateSchemaOrResolver
-      ? isValidRef.current
-      : validFieldsRef.current.size >= fieldsWithValidationRef.current.size &&
-        isEmptyObject(errorsRef.current),
+      : isValidRef.current,
   };
 
   const commonProps = {
