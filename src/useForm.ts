@@ -499,7 +499,7 @@ export function useForm<
           isSubmitted: isSubmittedRef.current,
         });
         const shouldUpdateDirty = setDirty(name);
-        let shouldUpdateState = isFieldWatched(name) || shouldUpdateDirty;
+        let shouldRender = isFieldWatched(name) || shouldUpdateDirty;
 
         if (
           isBlurEvent &&
@@ -507,11 +507,11 @@ export function useForm<
           readFormStateRef.current.touched
         ) {
           set(touchedFieldsRef.current, name, true);
-          shouldUpdateState = true;
+          shouldRender = true;
         }
 
         if (shouldSkipValidation) {
-          return shouldUpdateState && reRender();
+          return shouldRender && reRender();
         }
 
         if (shouldValidateSchemaOrResolver) {
@@ -533,7 +533,7 @@ export function useForm<
             : {}) as FieldErrors<FormValues>;
 
           if (previousFormIsValid !== isValidRef.current) {
-            shouldUpdateState = true;
+            shouldRender = true;
           }
         } else {
           error = await validateField<FormValues>(
@@ -543,12 +543,12 @@ export function useForm<
           );
         }
 
-        if (!shouldRenderBaseOnError(name, error) && shouldUpdateState) {
+        if (!shouldRenderBaseOnError(name, error) && shouldRender) {
           reRender();
         }
       };
 
-  const validateSchemaIsValid = React.useCallback(
+  const validateSchemaOrResolver = React.useCallback(
     (values: any = {}) => {
       const fieldValues = isEmptyObject(defaultValuesRef.current)
         ? getFieldsValues(fieldsRef.current)
@@ -578,7 +578,7 @@ export function useForm<
 
   const removeFieldEventListener = React.useCallback(
     (field: Field, forceDelete?: boolean) => {
-      if (!isUndefined(handleChangeRef.current) && field) {
+      if (handleChangeRef.current && field) {
         findRemovedFieldAndRemoveListener(
           fieldsRef.current,
           handleChangeRef.current,
@@ -625,14 +625,14 @@ export function useForm<
         reRender();
 
         if (shouldValidateSchemaOrResolver) {
-          validateSchemaIsValid();
+          validateSchemaOrResolver();
         }
       }
     },
     [
       reRender,
       shouldValidateSchemaOrResolver,
-      validateSchemaIsValid,
+      validateSchemaOrResolver,
       removeFieldEventListener,
     ],
   );
@@ -643,10 +643,10 @@ export function useForm<
   function clearError(
     name?: FieldName<FormValues> | FieldName<FormValues>[],
   ): void {
-    if (isUndefined(name)) {
-      errorsRef.current = {};
-    } else {
+    if (name) {
       unset(errorsRef.current, isArray(name) ? name : [name]);
+    } else {
+      errorsRef.current = {};
     }
 
     reRender();
@@ -657,13 +657,13 @@ export function useForm<
     type,
     types,
     message,
-    preventRender,
+    shouldRender,
   }: {
     name: FieldName<FormValues>;
     type: string;
     types?: MultipleFieldErrors;
     message?: Message;
-    preventRender?: boolean;
+    shouldRender?: boolean;
   }) => {
     const field = fieldsRef.current[name];
 
@@ -682,7 +682,7 @@ export function useForm<
         isManual: true,
       });
 
-      if (!preventRender) {
+      if (shouldRender) {
         reRender();
       }
     }
@@ -715,11 +715,10 @@ export function useForm<
               type,
               message,
             }),
+        shouldRender: true,
       });
     } else if (isArray(name)) {
-      name.forEach((error) =>
-        setInternalError({ ...error, preventRender: true }),
-      );
+      name.forEach((error) => setInternalError({ ...error }));
       reRender();
     }
   }
@@ -881,7 +880,7 @@ export function useForm<
       !isFieldArray &&
       readFormStateRef.current.isValid
     ) {
-      validateSchemaIsValid();
+      validateSchemaOrResolver();
     } else if (!isEmptyObject(validateOptions)) {
       fieldsWithValidationRef.current.add(name);
 
@@ -1212,7 +1211,9 @@ export function useForm<
   const control = {
     removeFieldEventListener,
     reRender,
-    ...(shouldValidateSchemaOrResolver ? { validateSchemaIsValid } : {}),
+    ...(shouldValidateSchemaOrResolver
+      ? { validateSchemaIsValid: validateSchemaOrResolver }
+      : {}),
     mode: {
       isOnBlur,
       isOnSubmit,
