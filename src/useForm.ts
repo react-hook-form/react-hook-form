@@ -110,7 +110,9 @@ export function useForm<
   ).current;
   const validateAllFieldCriteria = validateCriteriaMode === 'all';
   const isWindowUndefined = typeof window === UNDEFINED;
-  const shouldValidateCallback = !!(validationSchema || validationResolver);
+  const shouldValidateSchemaOrResolver = !!(
+    validationSchema || validationResolver
+  );
   const isWeb =
     typeof document !== UNDEFINED &&
     !isWindowUndefined &&
@@ -156,7 +158,7 @@ export function useForm<
       if (isEmptyObject(error)) {
         if (
           fieldsWithValidationRef.current.has(name) ||
-          shouldValidateCallback
+          shouldValidateSchemaOrResolver
         ) {
           validFieldsRef.current.add(name);
           shouldReRender = shouldReRender || get(errorsRef.current, name);
@@ -175,7 +177,7 @@ export function useForm<
         return true;
       }
     },
-    [reRender, shouldValidateCallback],
+    [reRender, shouldValidateSchemaOrResolver],
   );
 
   const setFieldValue = React.useCallback(
@@ -402,7 +404,7 @@ export function useForm<
     ): Promise<boolean> => {
       const fields = payload || Object.keys(fieldsRef.current);
 
-      if (shouldValidateCallback) {
+      if (shouldValidateSchemaOrResolver) {
         return executeSchemaOrResolverValidation(fields);
       }
 
@@ -420,7 +422,7 @@ export function useForm<
       executeSchemaOrResolverValidation,
       executeValidation,
       reRender,
-      shouldValidateCallback,
+      shouldValidateSchemaOrResolver,
     ],
   );
 
@@ -444,9 +446,9 @@ export function useForm<
     shouldValidate?: boolean,
   ): void {
     let shouldRender = false;
-    const isMultiple = isArray(names);
+    const isArrayValue = isArray(names);
 
-    (isMultiple
+    (isArrayValue
       ? (names as Record<Name, FormValues[Name]>[])
       : [names]
     ).forEach((name: any) => {
@@ -457,17 +459,17 @@ export function useForm<
           isStringFieldName
             ? valueOrShouldValidate
             : (Object.values(name)[0] as FormValues[Name]),
-        ) || isMultiple
+        ) || isArrayValue
           ? true
           : isFieldWatched(name);
     });
 
-    if (shouldRender || isMultiple) {
+    if (shouldRender || isArrayValue) {
       reRender();
     }
 
-    if (shouldValidate || (isMultiple && valueOrShouldValidate)) {
-      triggerValidation(isMultiple ? undefined : (names as Name));
+    if (shouldValidate || (isArrayValue && valueOrShouldValidate)) {
+      triggerValidation(isArrayValue ? undefined : (names as Name));
     }
   }
 
@@ -512,7 +514,7 @@ export function useForm<
           return shouldUpdateState && reRender();
         }
 
-        if (shouldValidateCallback) {
+        if (shouldValidateSchemaOrResolver) {
           const { errors } = await validateWithSchema<
             FormValues,
             ValidationContext
@@ -622,14 +624,14 @@ export function useForm<
       ) {
         reRender();
 
-        if (shouldValidateCallback) {
+        if (shouldValidateSchemaOrResolver) {
           validateSchemaIsValid();
         }
       }
     },
     [
       reRender,
-      shouldValidateCallback,
+      shouldValidateSchemaOrResolver,
       validateSchemaIsValid,
       removeFieldEventListener,
     ],
@@ -875,7 +877,7 @@ export function useForm<
     }
 
     if (
-      shouldValidateCallback &&
+      shouldValidateSchemaOrResolver &&
       !isFieldArray &&
       readFormStateRef.current.isValid
     ) {
@@ -988,7 +990,7 @@ export function useForm<
       }
 
       try {
-        if (shouldValidateCallback) {
+        if (shouldValidateSchemaOrResolver) {
           fieldValues = getFieldsValues(fields);
           const { errors, values } = await validateWithSchema<
             FormValues,
@@ -1051,7 +1053,7 @@ export function useForm<
     [
       isWeb,
       reRender,
-      shouldValidateCallback,
+      shouldValidateSchemaOrResolver,
       submitFocusError,
       validateAllFieldCriteria,
       validationResolver,
@@ -1162,7 +1164,7 @@ export function useForm<
     [removeFieldEventListenerAndRef],
   );
 
-  if (!shouldValidateCallback) {
+  if (!shouldValidateSchemaOrResolver) {
     isValidRef.current =
       validFieldsRef.current.size >= fieldsWithValidationRef.current.size &&
       isEmptyObject(errorsRef.current);
@@ -1210,7 +1212,7 @@ export function useForm<
   const control = {
     removeFieldEventListener,
     reRender,
-    ...(shouldValidateCallback ? { validateSchemaIsValid } : {}),
+    ...(shouldValidateSchemaOrResolver ? { validateSchemaIsValid } : {}),
     mode: {
       isOnBlur,
       isOnSubmit,
