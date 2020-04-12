@@ -787,7 +787,7 @@ export function useForm<
   function unregister(
     names: FieldName<FormValues> | FieldName<FormValues>[],
   ): void {
-    if (!isEmptyObject(fieldsRef.current)) {
+    if (fieldsRef.current) {
       (isArray(names) ? names : [names]).forEach((fieldName) =>
         removeFieldEventListenerAndRef(fieldsRef.current[fieldName], true),
       );
@@ -804,28 +804,26 @@ export function useForm<
     }
 
     const { name, type, value } = ref;
-    const fieldAttributes = {
+    const fieldRefAndValidationOptions = {
       ref,
       ...validateOptions,
     };
     const fields = fieldsRef.current;
     const isRadioOrCheckbox = isRadioOrCheckboxFunction(ref);
-    let currentField = fields[name] as Field;
+    let field = fields[name] as Field;
     let isEmptyDefaultValue = true;
-    let isFieldArray = false;
+    let isFieldArray;
     let defaultValue;
 
     if (
       isRadioOrCheckbox
-        ? currentField &&
-          isArray(currentField.options) &&
-          currentField.options
-            .filter(Boolean)
-            .find(({ ref }: Field) => value === ref.value)
-        : currentField
+        ? field &&
+          isArray(field.options) &&
+          field.options.filter(Boolean).find(({ ref }) => value === ref.value)
+        : field
     ) {
       fields[name as FieldName<FormValues>] = {
-        ...currentField,
+        ...field,
         ...validateOptions,
       };
       return;
@@ -833,13 +831,13 @@ export function useForm<
 
     if (type) {
       const mutationWatcher = onDomRemove(ref, () =>
-        removeFieldEventListenerAndRef(fieldAttributes),
+        removeFieldEventListenerAndRef(field),
       );
 
-      currentField = isRadioOrCheckbox
+      field = isRadioOrCheckbox
         ? {
             options: [
-              ...((currentField && currentField.options) || []),
+              ...((field && field.options) || []),
               {
                 ref,
                 mutationWatcher,
@@ -849,14 +847,14 @@ export function useForm<
             ...validateOptions,
           }
         : {
-            ...fieldAttributes,
+            ...fieldRefAndValidationOptions,
             mutationWatcher,
           };
     } else {
-      currentField = fieldAttributes;
+      field = fieldRefAndValidationOptions;
     }
 
-    fields[name as FieldName<FormValues>] = currentField;
+    fields[name as FieldName<FormValues>] = field;
 
     if (!isEmptyObject(defaultValuesRef.current)) {
       defaultValue = get(defaultValuesRef.current, name);
@@ -864,7 +862,7 @@ export function useForm<
       isFieldArray = isNameInFieldArray(fieldArrayNamesRef.current, name);
 
       if (!isEmptyDefaultValue && !isFieldArray) {
-        setFieldValue(currentField, defaultValue);
+        setFieldValue(field, defaultValue);
       }
     }
 
@@ -874,18 +872,17 @@ export function useForm<
       readFormStateRef.current.isValid
     ) {
       validateSchemaOrResolver();
-    } else if (!isEmptyObject(validateOptions)) {
+    } else if (isEmptyObject(validateOptions)) {
       fieldsWithValidationRef.current.add(name);
 
       if (!isOnSubmit && readFormStateRef.current.isValid) {
-        validateField(fieldsRef, validateAllFieldCriteria, currentField).then(
+        validateField(fieldsRef, validateAllFieldCriteria, field).then(
           (error) => {
             const previousFormIsValid = isValidRef.current;
-            if (isEmptyObject(error)) {
-              validFieldsRef.current.add(name);
-            } else {
-              isValidRef.current = false;
-            }
+
+            isEmptyObject(error)
+              ? validFieldsRef.current.add(name)
+              : (isValidRef.current = false);
 
             if (previousFormIsValid !== isValidRef.current) {
               reRender();
@@ -901,25 +898,19 @@ export function useForm<
     ) {
       defaultValuesAtRenderRef.current[
         name as FieldName<FormValues>
-      ] = isEmptyDefaultValue
-        ? getFieldValue(fields, currentField.ref)
-        : defaultValue;
+      ] = isEmptyDefaultValue ? getFieldValue(fields, field.ref) : defaultValue;
     }
 
-    if (!type) {
-      return;
+    if (type) {
+      attachEventListeners({
+        field:
+          isRadioOrCheckbox && field.options
+            ? field.options[field.options.length - 1]
+            : field,
+        isRadioOrCheckbox,
+        handleChange: handleChangeRef.current,
+      });
     }
-
-    const fieldToAttachListener =
-      isRadioOrCheckbox && currentField.options
-        ? currentField.options[currentField.options.length - 1]
-        : currentField;
-
-    attachEventListeners({
-      field: fieldToAttachListener,
-      isRadioOrCheckbox,
-      handleChange: handleChangeRef.current,
-    });
   }
 
   function register<Element extends FieldElement = FieldElement>(): (
