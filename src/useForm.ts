@@ -872,7 +872,7 @@ export function useForm<
       readFormStateRef.current.isValid
     ) {
       validateSchemaOrResolver();
-    } else if (isEmptyObject(validateOptions)) {
+    } else if (!isEmptyObject(validateOptions)) {
       fieldsWithValidationRef.current.add(name);
 
       if (!isOnSubmit && readFormStateRef.current.isValid) {
