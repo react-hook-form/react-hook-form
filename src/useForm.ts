@@ -95,6 +95,7 @@ export function useForm<
     DeepPartial<Record<FieldName<FormValues>, FieldValue<FormValues>>>
   >({});
   const isUnMount = React.useRef(false);
+  const formStateProxy = React.useRef({});
   const isWatchAllRef = React.useRef(false);
   const isSubmittedRef = React.useRef(false);
   const isDirtyRef = React.useRef(false);
@@ -1157,6 +1158,17 @@ export function useForm<
       : isValidRef.current,
   };
 
+  formStateProxy.current = new Proxy<FormStateProxy<FormValues>>(formState, {
+    get: (obj, prop: keyof FormStateProxy) => {
+      if (prop in obj) {
+        readFormStateRef.current[prop] = true;
+        return obj[prop];
+      }
+
+      return {};
+    },
+  });
+
   const commonProps = {
     triggerValidation,
     setValue: React.useCallback(setValue, [
@@ -1170,18 +1182,7 @@ export function useForm<
     ]),
     unregister: React.useCallback(unregister, []),
     getValues: React.useCallback(getValues, []),
-    formState: isProxyEnabled
-      ? new Proxy<FormStateProxy<FormValues>>(formState, {
-          get: (obj, prop: keyof FormStateProxy) => {
-            if (prop in obj) {
-              readFormStateRef.current[prop] = true;
-              return obj[prop];
-            }
-
-            return {};
-          },
-        })
-      : formState,
+    formState: isProxyEnabled ? formStateProxy.current : formState,
   };
 
   const control = {
