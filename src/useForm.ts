@@ -964,8 +964,8 @@ export function useForm<
         e.persist();
       }
       let fieldErrors: FieldErrors<FormValues> = {};
-      let fieldValues: FieldValues = {};
       const fields = fieldsRef.current;
+      const fieldValues: FieldValues = getFieldsValues(fields);
 
       if (readFormStateRef.current.isSubmitting) {
         isSubmittingRef.current = true;
@@ -974,8 +974,7 @@ export function useForm<
 
       try {
         if (shouldValidateSchemaOrResolver) {
-          fieldValues = getFieldsValues(fields);
-          const { errors, values } = await validateWithSchema<
+          const { errors } = await validateWithSchema<
             FormValues,
             ValidationContext
           >(
@@ -987,12 +986,10 @@ export function useForm<
           );
           errorsRef.current = errors;
           fieldErrors = errors;
-          fieldValues = values;
         } else {
           for (const field of Object.values(fields)) {
             if (field) {
               const {
-                ref,
                 ref: { name },
               } = field;
 
@@ -1009,8 +1006,6 @@ export function useForm<
                 if (fieldsWithValidationRef.current.has(name)) {
                   validFieldsRef.current.add(name);
                 }
-
-                fieldValues[name] = getFieldValue(fields, ref);
               }
             }
           }
@@ -1020,11 +1015,10 @@ export function useForm<
           errorsRef.current = {};
           await callback(transformToNestObject(fieldValues), e);
         } else {
+          errorsRef.current = fieldErrors;
           if (submitFocusError && isWeb) {
             focusOnErrorField(fields, fieldErrors);
           }
-
-          errorsRef.current = fieldErrors;
         }
       } finally {
         isSubmittedRef.current = true;
