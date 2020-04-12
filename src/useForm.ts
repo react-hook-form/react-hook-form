@@ -193,9 +193,7 @@ export function useForm<
       const options = field.options;
       const { type } = ref;
       const value =
-        isWeb && isHTMLElement(ref) && isNullOrUndefined(rawValue)
-          ? ''
-          : rawValue;
+        isHTMLElement(ref) && isNullOrUndefined(rawValue) ? '' : rawValue;
 
       if (isRadioInput(ref) && options) {
         options.forEach(
@@ -224,10 +222,8 @@ export function useForm<
       } else {
         ref.value = value;
       }
-
-      return !!type;
     },
-    [isWeb],
+    [],
   );
 
   const setDirty = (name: FieldName<FormValues>): boolean => {
