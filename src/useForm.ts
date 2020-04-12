@@ -1,11 +1,11 @@
 import * as React from 'react';
 import attachEventListeners from './logic/attachEventListeners';
 import transformToNestObject from './logic/transformToNestObject';
-import focusErrorField from './logic/focusErrorField';
+import focusOnErrorField from './logic/focusOnErrorField';
 import findRemovedFieldAndRemoveListener from './logic/findRemovedFieldAndRemoveListener';
 import getFieldsValues from './logic/getFieldsValues';
 import getFieldValue from './logic/getFieldValue';
-import shouldUpdateWithError from './logic/shouldUpdateWithError';
+import shouldRenderBasedOnError from './logic/shouldRenderBasedOnError';
 import validateField from './logic/validateField';
 import validateWithSchema from './logic/validateWithSchema';
 import assignWatchFields from './logic/assignWatchFields';
@@ -30,8 +30,8 @@ import onDomRemove from './utils/onDomRemove';
 import get from './utils/get';
 import set from './utils/set';
 import unset from './utils/unset';
-import isMultipleSelect from './utils/isMultipleSelect';
 import modeChecker from './utils/validationModeChecker';
+import isMultipleSelect from './utils/isMultipleSelect';
 import isNullOrUndefined from './utils/isNullOrUndefined';
 import isRadioOrCheckboxFunction from './utils/isRadioOrCheckbox';
 import isHTMLElement from './utils/isHTMLElement';
@@ -146,7 +146,7 @@ export function useForm<
     ): boolean | void => {
       let shouldReRender =
         shouldRender ||
-        shouldUpdateWithError<FormValues>({
+        shouldRenderBasedOnError<FormValues>({
           errors: errorsRef.current,
           error,
           name,
@@ -1036,7 +1036,7 @@ export function useForm<
           await callback(transformToNestObject(fieldValues), e);
         } else {
           if (submitFocusError && isWeb) {
-            focusErrorField(fields, fieldErrors);
+            focusOnErrorField(fields, fieldErrors);
           }
 
           errorsRef.current = fieldErrors;
