@@ -742,12 +742,12 @@ export function useForm<
   ): LiteralToPrimitive<T>;
   function watch<T extends keyof FormValues>(
     fields: T[],
-    defaultValues?: FormValues[T],
-  ): Record<T, FormValues[T]>;
-  function watch<T extends DeepPartial<FormValues>>(
+    defaultValues?: DeepPartial<Pick<FormValues, T>>,
+  ): Pick<FormValues, T>;
+  function watch(
     fields: string[],
-    defaultValues?: T,
-  ): T;
+    defaultValues?: DeepPartial<FormValues>,
+  ): DeepPartial<FormValues>;
   function watch(
     fieldNames?: string | string[] | { nest: boolean },
     defaultValue?: unknown,

@@ -60,12 +60,12 @@ export type FormContextValues<FormValues extends FieldValues = FieldValues> = {
   ): LiteralToPrimitive<T>;
   watch<T extends keyof FormValues>(
     fields: T[],
-    defaultValues?: FormValues[T],
-  ): Record<T, FormValues[T]>;
-  watch<T extends DeepPartial<FormValues>>(
+    defaultValues?: DeepPartial<Pick<FormValues, T>>,
+  ): Pick<FormValues, T>;
+  watch(
     fields: string[],
-    defaultValues?: T,
-  ): T;
+    defaultValues?: DeepPartial<FormValues>,
+  ): DeepPartial<FormValues>;
   watch(
     fieldNames?: string | string[] | { nest: boolean },
     defaultValue?: unknown,
