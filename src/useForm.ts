@@ -11,7 +11,7 @@ import validateWithSchema from './logic/validateWithSchema';
 import assignWatchFields from './logic/assignWatchFields';
 import skipValidation from './logic/skipValidation';
 import getFieldArrayParentName from './logic/getFieldArrayParentName';
-import getFieldValueByName from './logic/getFieldValueByName';
+import getFieldArrayValueByName from './logic/getFieldArrayValueByName';
 import getIsFieldsDifferent from './logic/getIsFieldsDifferent';
 import isNameInFieldArray from './logic/isNameInFieldArray';
 import isCheckBoxInput from './utils/isCheckBoxInput';
@@ -241,7 +241,7 @@ export function useForm<
     if (isFieldArray) {
       const fieldArrayName = getFieldArrayParentName(name);
       isFieldDirty = getIsFieldsDifferent(
-        getFieldValueByName(fieldsRef.current, fieldArrayName),
+        getFieldArrayValueByName(fieldsRef.current, fieldArrayName),
         get(defaultValuesRef.current, fieldArrayName),
       );
     }
@@ -358,7 +358,7 @@ export function useForm<
       >(
         validationSchema,
         validateAllFieldCriteria,
-        getFieldValueByName(fieldsRef.current),
+        getFieldArrayValueByName(fieldsRef.current),
         validationResolver,
         validationContextRef.current,
       );
@@ -519,7 +519,7 @@ export function useForm<
           >(
             validationSchema,
             validateAllFieldCriteria,
-            getFieldValueByName(fields),
+            getFieldArrayValueByName(fields),
             validationResolver,
             validationContextRef.current,
           );

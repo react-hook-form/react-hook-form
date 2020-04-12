@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { useFormContext } from './useFormContext';
 import { isMatchFieldArrayName } from './logic/isNameInFieldArray';
-import getFieldValueByName from './logic/getFieldValueByName';
+import getFieldValueByName from './logic/getFieldArrayValueByName';
 import { appendId, mapIds } from './logic/mapIds';
 import getIsFieldsDifferent from './logic/getIsFieldsDifferent';
 import getFieldArrayParentName from './logic/getFieldArrayParentName';
@@ -450,12 +450,12 @@ export const useFieldArray = <
   }, []);
 
   return {
-    swap: React.useCallback(swap, []),
-    move: React.useCallback(move, []),
-    prepend: React.useCallback(prepend, []),
-    append: React.useCallback(append, []),
-    remove: React.useCallback(remove, [fields]),
-    insert: React.useCallback(insert, []),
+    swap: React.useCallback(swap, [name]),
+    move: React.useCallback(move, [name]),
+    prepend: React.useCallback(prepend, [name]),
+    append: React.useCallback(append, [name]),
+    remove: React.useCallback(remove, [fields, name]),
+    insert: React.useCallback(insert, [name]),
     fields,
   };
 };
