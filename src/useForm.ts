@@ -1085,9 +1085,9 @@ export function useForm<
     omitResetState: OmitResetState = {},
   ): void => {
     if (isWeb) {
-      for (const value of Object.values(fieldsRef.current)) {
-        if (value) {
-          const { ref, options } = value;
+      for (const field of Object.values(fieldsRef.current)) {
+        if (field) {
+          const { ref, options } = field;
           const inputRef =
             isRadioOrCheckboxFunction(ref) && isArray(options)
               ? options[0].ref
@@ -1132,20 +1132,12 @@ export function useForm<
       isUnMount.current = true;
       fieldsRef.current &&
         process.env.NODE_ENV === 'production' &&
-        Object.values(
-          fieldsRef.current,
-        ).forEach((field: Field | undefined): void =>
+        Object.values(fieldsRef.current).forEach((field) =>
           removeFieldEventListenerAndRef(field, true),
         );
     },
     [removeFieldEventListenerAndRef],
   );
-
-  if (!shouldValidateSchemaOrResolver) {
-    isValidRef.current =
-      validFieldsRef.current.size >= fieldsWithValidationRef.current.size &&
-      isEmptyObject(errorsRef.current);
-  }
 
   const formState = {
     dirty: isDirtyRef.current,
@@ -1156,7 +1148,10 @@ export function useForm<
     isSubmitting: isSubmittingRef.current,
     isValid: isOnSubmit
       ? isSubmittedRef.current && isEmptyObject(errorsRef.current)
-      : isValidRef.current,
+      : shouldValidateSchemaOrResolver
+      ? isValidRef.current
+      : validFieldsRef.current.size >= fieldsWithValidationRef.current.size &&
+        isEmptyObject(errorsRef.current),
   };
 
   const commonProps = {
