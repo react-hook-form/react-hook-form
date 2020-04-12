@@ -3,9 +3,7 @@ import isSameError from '../utils/isSameError';
 import get from '../utils/get';
 import { FieldValues, FieldName, FieldErrors } from '../types';
 
-export default function shouldRenderBaseOnError<
-  FormValues extends FieldValues
->({
+export default function shouldUpdateWithError<FormValues extends FieldValues>({
   errors,
   name,
   error,
