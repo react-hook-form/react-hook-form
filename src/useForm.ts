@@ -200,21 +200,22 @@ export function useForm<
         );
       } else if (isFileInput(ref)) {
         if (isString(value)) {
-          ref.value = value as string;
+          ref.value = value;
         } else {
+          ref.files = value as FileList;
         }
       } else if (isMultipleSelect(ref)) {
         [...ref.options].forEach(
           (selectRef) =>
-            (selectRef.selected = (value as string).includes(selectRef.value)),
+            (selectRef.selected =
+              isString(value) && value.includes(selectRef.value)),
         );
       } else if (isCheckBoxInput(ref) && options) {
         options.length > 1
           ? options.forEach(
               ({ ref: checkboxRef }) =>
-                (checkboxRef.checked = (value as string).includes(
-                  checkboxRef.value,
-                )),
+                (checkboxRef.checked =
+                  isString(value) && value.includes(checkboxRef.value)),
             )
           : (options[0].ref.checked = !!value);
       } else {
