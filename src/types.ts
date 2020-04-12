@@ -2,10 +2,6 @@ import * as React from 'react';
 
 export type Primitive = string | boolean | number | symbol | null | undefined;
 
-export type LiteralUnion<T extends Primitive, U extends Primitive> =
-  | T
-  | (U & { _?: never });
-
 export type LiteralToPrimitive<T extends any> = T extends string
   ? string
   : T extends number

@@ -13,7 +13,6 @@ import {
   Control,
   OmitResetState,
   Message,
-  LiteralUnion,
   LiteralToPrimitive,
 } from './types';
 
@@ -51,7 +50,7 @@ export type FormContextValues<FormValues extends FieldValues = FieldValues> = {
   unregister(names: FieldName<FormValues> | FieldName<FormValues>[]): void;
   watch(): FormValues;
   watch(option: { nest: boolean }): FormValues;
-  watch<T extends LiteralUnion<keyof FormValues, string>, U extends unknown>(
+  watch<T extends string, U extends unknown>(
     field: T,
     defaultValue?: T extends keyof FormValues
       ? FormValues[T]
@@ -65,10 +64,6 @@ export type FormContextValues<FormValues extends FieldValues = FieldValues> = {
     fields: string[],
     defaultValues?: DeepPartial<FormValues>,
   ): DeepPartial<FormValues>;
-  watch(
-    fieldNames?: string | string[] | { nest: boolean },
-    defaultValue?: unknown,
-  ): unknown;
   setError(name: ManualFieldError<FormValues>[]): void;
   setError(name: FieldName<FormValues>, type: MultipleFieldErrors): void;
   setError(name: FieldName<FormValues>, type: string, message?: Message): void;
