@@ -39,6 +39,7 @@ import isHTMLElement from './utils/isHTMLElement';
 import { EVENTS, UNDEFINED, VALIDATION_MODE } from './constants';
 import { FormContextValues } from './contextTypes';
 import {
+  LiteralUnion,
   LiteralToPrimitive,
   DeepPartial,
   FieldValues,
@@ -732,14 +733,15 @@ export function useForm<
 
   function watch(): FormValues;
   function watch(option: { nest: boolean }): FormValues;
-  function watch<T extends keyof FormValues>(
+  function watch<
+    T extends LiteralUnion<keyof FormValues, string>,
+    U extends unknown
+  >(
     field: T,
-    defaultValue?: FormValues[T],
-  ): FormValues[T];
-  function watch<T extends unknown>(
-    field: string,
-    defaultValue?: T,
-  ): LiteralToPrimitive<T>;
+    defaultValue?: T extends keyof FormValues
+      ? FormValues[T]
+      : LiteralToPrimitive<U>,
+  ): T extends keyof FormValues ? FormValues[T] : LiteralToPrimitive<U>;
   function watch<T extends keyof FormValues>(
     fields: T[],
     defaultValues?: DeepPartial<Pick<FormValues, T>>,

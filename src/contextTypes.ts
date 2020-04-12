@@ -13,6 +13,7 @@ import {
   Control,
   OmitResetState,
   Message,
+  LiteralUnion,
   LiteralToPrimitive,
 } from './types';
 
@@ -50,14 +51,12 @@ export type FormContextValues<FormValues extends FieldValues = FieldValues> = {
   unregister(names: FieldName<FormValues> | FieldName<FormValues>[]): void;
   watch(): FormValues;
   watch(option: { nest: boolean }): FormValues;
-  watch<T extends keyof FormValues>(
+  watch<T extends LiteralUnion<keyof FormValues, string>, U extends unknown>(
     field: T,
-    defaultValue?: FormValues[T],
-  ): FormValues[T];
-  watch<T extends unknown>(
-    field: string,
-    defaultValue?: T,
-  ): LiteralToPrimitive<T>;
+    defaultValue?: T extends keyof FormValues
+      ? FormValues[T]
+      : LiteralToPrimitive<U>,
+  ): T extends keyof FormValues ? FormValues[T] : LiteralToPrimitive<U>;
   watch<T extends keyof FormValues>(
     fields: T[],
     defaultValues?: DeepPartial<Pick<FormValues, T>>,
