@@ -78,7 +78,6 @@ export function useForm<
   FormValues
 > {
   const fieldsRef = React.useRef<FieldRefs<FormValues>>({});
-  const validateAllFieldCriteria = validateCriteriaMode === 'all';
   const errorsRef = React.useRef<FieldErrors<FormValues>>({});
   const touchedFieldsRef = React.useRef<Touched<FormValues>>({});
   const fieldArrayDefaultValues = React.useRef<Record<string, unknown[]>>({});
@@ -89,12 +88,12 @@ export function useForm<
   );
   const validFieldsRef = React.useRef(new Set<FieldName<FormValues>>());
   const isValidRef = React.useRef(true);
-  const defaultRenderValuesRef = React.useRef<
-    DeepPartial<Record<FieldName<FormValues>, FieldValue<FormValues>>>
-  >({});
   const defaultValuesRef = React.useRef<
     FieldValue<FormValues> | DeepPartial<FormValues>
   >(defaultValues);
+  const defaultValuesAtRenderRef = React.useRef<
+    DeepPartial<Record<FieldName<FormValues>, FieldValue<FormValues>>>
+  >({});
   const isUnMount = React.useRef(false);
   const isWatchAllRef = React.useRef(false);
   const isSubmittedRef = React.useRef(false);
@@ -109,6 +108,7 @@ export function useForm<
   const { isOnBlur, isOnSubmit, isOnChange } = React.useRef(
     modeChecker(mode),
   ).current;
+  const validateAllFieldCriteria = validateCriteriaMode === 'all';
   const isWindowUndefined = typeof window === UNDEFINED;
   const shouldValidateCallback = !!(validationSchema || validationResolver);
   const isWeb =
@@ -141,8 +141,7 @@ export function useForm<
     (
       name: FieldName<FormValues>,
       error: FieldErrors<FormValues>,
-      shouldRender?,
-      skipReRender?,
+      shouldRender: boolean | null = false,
     ): boolean | void => {
       let shouldReRender =
         shouldRender ||
@@ -171,7 +170,7 @@ export function useForm<
         set(errorsRef.current, name, error[name]);
       }
 
-      if (shouldReRender && !skipReRender) {
+      if (shouldReRender && !isNullOrUndefined(shouldRender)) {
         reRender();
         return true;
       }
@@ -236,7 +235,7 @@ export function useForm<
     const isFieldArray = isNameInFieldArray(fieldArrayNamesRef.current, name);
     const previousDirtyFieldsLength = dirtyFieldsRef.current.size;
     let isDirty =
-      defaultRenderValuesRef.current[name] !==
+      defaultValuesAtRenderRef.current[name] !==
       getFieldValue(fieldsRef.current, fieldsRef.current[name]!.ref);
 
     if (isFieldArray) {
@@ -341,7 +340,7 @@ export function useForm<
         field,
       );
 
-      shouldRenderBaseOnError(name, error, false, skipReRender);
+      shouldRenderBaseOnError(name, error, skipReRender ? null : false);
 
       return isEmptyObject(error);
     },
@@ -606,9 +605,10 @@ export function useForm<
 
       errorsRef.current = unset(errorsRef.current, [name]);
       touchedFieldsRef.current = unset(touchedFieldsRef.current, [name]);
-      defaultRenderValuesRef.current = unset(defaultRenderValuesRef.current, [
-        name,
-      ]);
+      defaultValuesAtRenderRef.current = unset(
+        defaultValuesAtRenderRef.current,
+        [name],
+      );
       [
         dirtyFieldsRef,
         fieldsWithValidationRef,
@@ -902,10 +902,10 @@ export function useForm<
     }
 
     if (
-      !defaultRenderValuesRef.current[name] &&
+      !defaultValuesAtRenderRef.current[name] &&
       !(isFieldArray && isEmptyDefaultValue)
     ) {
-      defaultRenderValuesRef.current[
+      defaultValuesAtRenderRef.current[
         name as FieldName<FormValues>
       ] = isEmptyDefaultValue
         ? getFieldValue(fields, currentField.ref)
@@ -1095,7 +1095,7 @@ export function useForm<
       submitCountRef.current = 0;
     }
 
-    defaultRenderValuesRef.current = {};
+    defaultValuesAtRenderRef.current = {};
     fieldArrayDefaultValues.current = {};
     watchFieldsRef.current = new Set();
     isWatchAllRef.current = false;
@@ -1189,7 +1189,7 @@ export function useForm<
     ]),
     register: React.useCallback(register, [
       defaultValuesRef.current,
-      defaultRenderValuesRef.current,
+      defaultValuesAtRenderRef.current,
     ]),
     unregister: React.useCallback(unregister, []),
     getValues: React.useCallback(getValues, []),
