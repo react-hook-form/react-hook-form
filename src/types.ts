@@ -2,6 +2,14 @@ import * as React from 'react';
 
 export type Primitive = string | boolean | number | symbol | null | undefined;
 
+export type LiteralToPrimitive<T extends any> = T extends string
+  ? string
+  : T extends number
+  ? number
+  : T extends boolean
+  ? boolean
+  : T;
+
 export type FieldValues = Record<string, any>;
 
 export type FieldName<FormValues extends FieldValues> =
