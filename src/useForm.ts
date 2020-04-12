@@ -95,7 +95,7 @@ export function useForm<
     DeepPartial<Record<FieldName<FormValues>, FieldValue<FormValues>>>
   >({});
   const isUnMount = React.useRef(false);
-  const formStateProxy = React.useRef({});
+  const formStateProxy = React.useRef<FormStateProxy<FormValues>>();
   const isWatchAllRef = React.useRef(false);
   const isSubmittedRef = React.useRef(false);
   const isDirtyRef = React.useRef(false);
