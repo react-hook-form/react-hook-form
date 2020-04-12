@@ -26,7 +26,6 @@ import isArray from './utils/isArray';
 import isString from './utils/isString';
 import isSameError from './utils/isSameError';
 import isUndefined from './utils/isUndefined';
-import isFileListObject from './utils/isFileListObject';
 import onDomRemove from './utils/onDomRemove';
 import get from './utils/get';
 import set from './utils/set';
@@ -204,10 +203,9 @@ export function useForm<
             (radioRef.checked = radioRef.value === value),
         );
       } else if (isFileInput(ref)) {
-        if (isFileListObject(value as object)) {
-          ref.files = value as FileList;
-        } else {
+        if (isString(value)) {
           ref.value = value as string;
+        } else {
         }
       } else if (isMultipleSelect(ref)) {
         [...ref.options].forEach(
