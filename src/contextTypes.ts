@@ -100,7 +100,9 @@ export type FormContextValues<FormValues extends FieldValues = FieldValues> = {
     values?: DeepPartial<FormValues>,
     omitResetState?: OmitResetState,
   ) => void;
-  getValues: (payload?: { nest: boolean }) => FormValues;
+  getValues(payload?: { nest: boolean }): FormValues;
+  getValues<T extends keyof FormValues>(payload: T): FormValues[T];
+  getValues<T extends unknown>(payload: string): T;
   handleSubmit: (
     callback: OnSubmit<FormValues>,
   ) => (e?: React.BaseSyntheticEvent) => Promise<void>;

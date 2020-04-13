@@ -1149,7 +1149,8 @@ export function useForm<
   };
 
   function getValues(payload?: { nest: boolean }): FormValues;
-  function getValues(payload?: string): unknown;
+  function getValues<T extends keyof FormValues>(payload: T): FormValues[T];
+  function getValues<T extends unknown>(payload: string): T;
   function getValues(payload?: { nest: boolean } | string): unknown {
     if (isString(payload)) {
       return fieldsRef.current[payload]
