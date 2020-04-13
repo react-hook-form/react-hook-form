@@ -1,4 +1,3 @@
-import flatArray from './flatArray';
 import isPrimitive from './isPrimitive';
 import { FieldValues, FieldName } from '../types';
 import isArray from './isArray';
@@ -18,7 +17,7 @@ const getPath = <FormValues extends FieldValues = FieldValues>(
 
   return isArray(values)
     ? values.map((value, key) => getInnerPath(value, key))
-    : Object.entries(values).map(([key, value]: [string, any]) =>
+    : Object.entries(values).map(([key, value]) =>
         getInnerPath(value, key, true),
       );
 };
@@ -26,4 +25,4 @@ const getPath = <FormValues extends FieldValues = FieldValues>(
 export default <FormValues extends FieldValues = FieldValues>(
   parentPath: FieldName<FormValues>,
   value: FormValues,
-) => flatArray(getPath(parentPath, value));
+) => getPath(parentPath, value).flat(Infinity);

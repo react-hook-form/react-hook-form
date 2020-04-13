@@ -13,11 +13,8 @@ export default (
     types?: MultipleFieldErrors;
     message: ValidateResult;
   },
-): boolean => {
-  return (
-    isObject(error) &&
-    error.type === type &&
-    error.message === message &&
-    compareObject(error.types, types)
-  );
-};
+): boolean =>
+  isObject(error) &&
+  error.type === type &&
+  error.message === message &&
+  compareObject(error.types, types);

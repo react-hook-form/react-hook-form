@@ -6,22 +6,18 @@ import { FieldName, FieldValues, FieldRefs } from '../types';
 
 export default <FormValues extends FieldValues>(
   fields: FieldRefs<FormValues>,
-  search?: any,
+  search?: FieldName<FormValues> | FieldName<FormValues>[] | { nest: boolean },
 ) => {
   const output = {} as FormValues;
-  const isSearchString = isString(search);
-  const isSearchArray = isArray(search);
-  const isNest = search && search.nest;
 
   for (const name in fields) {
     if (
       isUndefined(search) ||
-      isNest ||
-      (isSearchString && name.startsWith(search as string)) ||
-      (isSearchArray &&
-        (search as string[]).find((data: string) =>
-          name.startsWith(data as string),
-        ))
+      (isString(search)
+        ? name.startsWith(search)
+        : isArray(search)
+        ? search.find((data) => name.startsWith(data))
+        : search && search.nest)
     ) {
       output[name as FieldName<FormValues>] = getFieldValue(
         fields,

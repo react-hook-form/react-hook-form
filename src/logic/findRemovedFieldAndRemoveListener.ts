@@ -14,10 +14,6 @@ export default function findRemovedFieldAndRemoveListener<
   field: Field,
   forceDelete?: boolean,
 ): void {
-  if (!field) {
-    return;
-  }
-
   const {
     ref,
     ref: { name, type },
@@ -61,6 +57,7 @@ export default function findRemovedFieldAndRemoveListener<
     if (mutationWatcher) {
       mutationWatcher.disconnect();
     }
+
     delete fields[name];
   }
 }

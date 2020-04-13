@@ -8,10 +8,9 @@ export default function getValidateError(
   type = 'validate',
 ): FieldError | void {
   if (isMessage(result) || (isBoolean(result) && !result)) {
-    const message = isMessage(result) ? result : '';
     return {
       type,
-      message,
+      message: isMessage(result) ? result : '',
       ref,
     };
   }

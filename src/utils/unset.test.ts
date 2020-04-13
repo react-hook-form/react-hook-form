@@ -196,3 +196,15 @@ test('should only remove relevant data', () => {
     },
   });
 });
+
+it('should remove empty array item', () => {
+  const data = {
+    name: [
+      {
+        message: 'test',
+      },
+    ],
+  };
+
+  expect(unset(data, ['name[0]'])).toEqual({});
+});

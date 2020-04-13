@@ -203,17 +203,6 @@ describe('findMissDomAndClean', () => {
     ).toMatchSnapshot();
   });
 
-  it('should return undefined when field is not found', () => {
-    expect(
-      findRemovedFieldAndRemoveListener(
-        {},
-        () => ({} as any),
-        undefined as any,
-        false,
-      ),
-    ).toBeUndefined();
-  });
-
   it('should remove options when force delete is set to true', () => {
     (isDetached as any).mockImplementation(() => {
       return false;
