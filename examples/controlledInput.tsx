@@ -3,13 +3,13 @@ import ReactDOM from 'react-dom';
 import { useForm } from 'react-hook-form';
 
 export default function App() {
-  const intialValues = {
+  const initialValues = {
     firstName: 'bill',
     lastName: 'luo',
     email: 'bluebill1049@hotmail.com',
   };
   const { register, handleSubmit } = useForm();
-  const [state, update] = useState(intialValues.lastName);
+  const [state, update] = useState(initialValues.lastName);
   const onSubmit = data => {
     alert(JSON.stringify(data));
   };
@@ -40,7 +40,7 @@ export default function App() {
         <div>
           <label htmlFor="email">Email</label>
           <input
-            defaultValue={intialValues.email}
+            defaultValue={initialValues.email}
             name="email"
             placeholder="bluebill1049@hotmail.com"
             type="email"

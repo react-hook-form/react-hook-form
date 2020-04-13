@@ -38,6 +38,7 @@ import isHTMLElement from './utils/isHTMLElement';
 import { EVENTS, UNDEFINED, VALIDATION_MODE } from './constants';
 import { FormContextValues } from './contextTypes';
 import {
+  LiteralToPrimitive,
   DeepPartial,
   FieldValues,
   FieldName,
@@ -728,24 +729,30 @@ export function useForm<
 
   function watch(): FormValues;
   function watch(option: { nest: boolean }): FormValues;
-  function watch<T extends FieldName<FormValues>>(
-    field: T & string,
-    defaultValue?: string,
-  ): FormValues[T];
+  function watch<T extends string, U extends unknown>(
+    field: T,
+    defaultValue?: T extends keyof FormValues
+      ? FormValues[T]
+      : LiteralToPrimitive<U>,
+  ): T extends keyof FormValues ? FormValues[T] : LiteralToPrimitive<U>;
+  function watch<T extends keyof FormValues>(
+    fields: T[],
+    defaultValues?: DeepPartial<Pick<FormValues, T>>,
+  ): Pick<FormValues, T>;
   function watch(
-    fields: FieldName<FormValues>[] | string[],
+    fields: string[],
     defaultValues?: DeepPartial<FormValues>,
   ): DeepPartial<FormValues>;
   function watch(
-    fieldNames?:
-      | FieldName<FormValues>
-      | FieldName<FormValues>[]
-      | { nest: boolean },
-    defaultValue?: string | DeepPartial<FormValues>,
-  ): FieldValue<FormValues> | DeepPartial<FormValues> | string | undefined {
+    fieldNames?: string | string[] | { nest: boolean },
+    defaultValue?: unknown,
+  ): unknown {
     const watchFields = watchFieldsRef.current;
-    const combinedDefaultValues =
-      defaultValue || defaultValuesRef.current || {};
+    const combinedDefaultValues = isUndefined(defaultValue)
+      ? isUndefined(defaultValuesRef.current)
+        ? {}
+        : defaultValuesRef.current
+      : defaultValue;
     const fieldValues = getFieldsValues<FormValues>(
       fieldsRef.current,
       fieldNames,
@@ -756,7 +763,7 @@ export function useForm<
         fieldValues,
         fieldNames,
         watchFields,
-        combinedDefaultValues,
+        combinedDefaultValues as DeepPartial<FormValues>,
       );
     }
 
@@ -768,7 +775,7 @@ export function useForm<
             fieldValues,
             name,
             watchFields,
-            combinedDefaultValues,
+            combinedDefaultValues as DeepPartial<FormValues>,
           ),
         }),
         {},
