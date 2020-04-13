@@ -126,14 +126,17 @@ const Controller = <
     registerField();
   }, [registerField]);
 
-  if (!fieldsRef.current[name]) {
-    registerField();
-    setInputStateValue(
-      isUndefined(defaultValue)
-        ? get(defaultValuesRef.current, name)
-        : defaultValue,
-    );
-  }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  React.useEffect(() => {
+    if (!fieldsRef.current[name]) {
+      registerField();
+      setInputStateValue(
+        isUndefined(defaultValue)
+          ? get(defaultValuesRef.current, name)
+          : defaultValue,
+      );
+    }
+  });
 
   const props = {
     name,
