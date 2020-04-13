@@ -55,7 +55,7 @@ export const useFieldArray = <
     fieldArrayDefaultValues,
     validateSchemaIsValid,
   } = control || methods.control;
-  const memoizedDefaultValues = React.useRef<Partial<FormArrayValues>[]>([
+  const getDefaultValues = () => [
     ...get(
       fieldArrayDefaultValues.current[getFieldArrayParentName(name)]
         ? fieldArrayDefaultValues.current
@@ -63,7 +63,10 @@ export const useFieldArray = <
       name,
       [],
     ),
-  ]);
+  ];
+  const memoizedDefaultValues = React.useRef<Partial<FormArrayValues>[]>(
+    getDefaultValues(),
+  );
   const [fields, setField] = React.useState<
     Partial<ArrayField<FormArrayValues, KeyName>>[]
   >(mapIds(memoizedDefaultValues.current, keyName));
@@ -409,6 +412,7 @@ export const useFieldArray = <
 
   const reset = () => {
     resetFields();
+    memoizedDefaultValues.current = getDefaultValues();
     setField(mapIds(memoizedDefaultValues.current, keyName));
   };
 
