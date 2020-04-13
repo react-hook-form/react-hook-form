@@ -93,7 +93,7 @@
     }
   },
   "lint-staged": {
-    "*.{jsx,ts}": [
+    "*.{tsx,ts}": [
       "npm run lint",
       "npm run prettier"
     ]
