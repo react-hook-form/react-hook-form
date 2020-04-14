@@ -55,7 +55,7 @@ export const useFieldArray = <
     fieldArrayDefaultValues,
     validateSchemaIsValid,
   } = control || methods.control;
-  const memoizedDefaultValues = React.useRef<Partial<FormArrayValues>[]>([
+  const getDefaultValues = () => [
     ...get(
       fieldArrayDefaultValues.current[getFieldArrayParentName(name)]
         ? fieldArrayDefaultValues.current
@@ -63,7 +63,10 @@ export const useFieldArray = <
       name,
       [],
     ),
-  ]);
+  ];
+  const memoizedDefaultValues = React.useRef<Partial<FormArrayValues>[]>(
+    getDefaultValues(),
+  );
   const [fields, setField] = React.useState<
     Partial<ArrayField<FormArrayValues, KeyName>>[]
   >(mapIds(memoizedDefaultValues.current, keyName));
@@ -183,7 +186,7 @@ export const useFieldArray = <
       render = true;
     }
 
-    if (render) {
+    if (render && !isWatchAllRef.current) {
       reRender();
     }
   };
@@ -299,13 +302,19 @@ export const useFieldArray = <
 
     if (readFormStateRef.current.isValid && !validateSchemaIsValid) {
       let fieldIndex = -1;
+      let isFound = false;
+      const isIndexUndefined = isUndefined(index);
 
       while (fieldIndex++ < fields.length) {
         const isLast = fieldIndex === fields.length - 1;
         const isCurrentIndex =
           (isArray(index) ? index : [index]).indexOf(fieldIndex) >= 0;
 
-        if (!(isCurrentIndex || isIndexUndefined)) {
+        if (isCurrentIndex || isIndexUndefined) {
+          isFound = true;
+        }
+
+        if (!isFound) {
           continue;
         }
 
@@ -321,19 +330,16 @@ export const useFieldArray = <
             if (validFieldsRef.current.has(currentFieldName)) {
               validFieldsRef.current.add(previousFieldName);
             }
-
             if (fieldsWithValidationRef.current.has(currentFieldName)) {
               fieldsWithValidationRef.current.add(previousFieldName);
             }
           }
         }
       }
-
-      shouldRender = true;
     }
 
     modifyDirtyFields({
-      shouldRender: shouldRender && !isWatchAllRef.current,
+      shouldRender,
       isRemove: true,
       index,
     });
@@ -409,6 +415,7 @@ export const useFieldArray = <
 
   const reset = () => {
     resetFields();
+    memoizedDefaultValues.current = getDefaultValues();
     setField(mapIds(memoizedDefaultValues.current, keyName));
   };
 
@@ -416,6 +423,7 @@ export const useFieldArray = <
     if (
       isNameKey &&
       isDeleted &&
+      fieldArrayDefaultValues.current[name] &&
       fields.length < fieldArrayDefaultValues.current[name].length
     ) {
       fieldArrayDefaultValues.current[name].pop();

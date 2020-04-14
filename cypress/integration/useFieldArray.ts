@@ -202,7 +202,7 @@ context('useFieldArray', () => {
     cy.get('#dirty').contains('yes');
   });
 
-  it.only('should display the correct dirty value without default value', () => {
+  it('should display the correct dirty value without default value', () => {
     cy.visit('http://localhost:3000/useFieldArray/normal');
     cy.get('#dirty').contains('no');
     cy.get('#append').click();

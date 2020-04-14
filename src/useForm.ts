@@ -117,7 +117,7 @@ export function useForm<
     typeof document !== UNDEFINED &&
     !isWindowUndefined &&
     !isUndefined(window.HTMLElement);
-  const isProxyEnabled = isWeb && 'Proxy' in window;
+  const isProxyEnabled = isWeb ? 'Proxy' in window : typeof Proxy !== UNDEFINED;
   const readFormStateRef = React.useRef<ReadFormState>({
     dirty: !isProxyEnabled,
     dirtyFields: !isProxyEnabled,
@@ -760,10 +760,6 @@ export function useForm<
       fieldNames,
     );
     const watchFields = watchFieldsRef.current;
-
-    if (!isEmptyObject(combinedDefaultValues)) {
-      readFormStateRef.current.dirty = true;
-    }
 
     if (isString(fieldNames)) {
       return assignWatchFields<FormValues>(
