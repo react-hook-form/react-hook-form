@@ -53,6 +53,10 @@ const Controller = <
   const isCheckboxInput = isBoolean(value);
   const shouldReValidateOnBlur = isOnBlur || isReValidateOnBlur;
   const rulesRef = React.useRef(rules);
+  const isNotFieldArray = React.useMemo<boolean>(
+    () => !isNameInFieldArray(fieldArrayNamesRef.current, name),
+    [fieldArrayNamesRef, name],
+  );
   rulesRef.current = rules;
 
   const shouldValidate = () =>
@@ -112,15 +116,14 @@ const Controller = <
   ]);
 
   React.useEffect(() => {
-    const fieldArrayNames = fieldArrayNamesRef.current;
     registerField();
 
     return () => {
-      if (!isNameInFieldArray(fieldArrayNames, name)) {
+      if (isNotFieldArray) {
         unregister(name);
       }
     };
-  }, [name, unregister, fieldArrayNamesRef, registerField]);
+  }, [name, unregister, fieldArrayNamesRef, registerField, isNotFieldArray]);
 
   React.useEffect(() => {
     registerField();
@@ -130,11 +133,13 @@ const Controller = <
   React.useEffect(() => {
     if (!fieldsRef.current[name]) {
       registerField();
-      setInputStateValue(
-        isUndefined(defaultValue)
-          ? get(defaultValuesRef.current, name)
-          : defaultValue,
-      );
+      if (isNotFieldArray) {
+        setInputStateValue(
+          isUndefined(defaultValue)
+            ? get(defaultValuesRef.current, name)
+            : defaultValue,
+        );
+      }
     }
   });
 
