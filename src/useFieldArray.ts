@@ -423,7 +423,8 @@ export const useFieldArray = <
     if (
       isNameKey &&
       isDeleted &&
-      fields.length < (fieldArrayDefaultValues.current[name] || []).length
+      fieldArrayDefaultValues.current[name] &&
+      fields.length < fieldArrayDefaultValues.current[name].length
     ) {
       fieldArrayDefaultValues.current[name].pop();
     }

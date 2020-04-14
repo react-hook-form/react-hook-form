@@ -750,7 +750,6 @@ export function useForm<
     fieldNames?: string | string[] | { nest: boolean },
     defaultValue?: unknown,
   ): unknown {
-    debugger;
     const combinedDefaultValues = isUndefined(defaultValue)
       ? isUndefined(defaultValuesRef.current)
         ? {}
