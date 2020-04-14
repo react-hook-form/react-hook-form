@@ -55,7 +55,7 @@ const Controller = <
   const rulesRef = React.useRef(rules);
   const isFieldArray = React.useMemo<boolean>(
     () => isNameInFieldArray(fieldArrayNamesRef.current, name),
-    [fieldArrayNamesRef.current, name],
+    [fieldArrayNamesRef, name],
   );
   rulesRef.current = rules;
 
@@ -123,7 +123,7 @@ const Controller = <
         unregister(name);
       }
     };
-  }, [name, unregister, fieldArrayNamesRef, registerField]);
+  }, [name, unregister, fieldArrayNamesRef, registerField, isFieldArray]);
 
   React.useEffect(() => {
     registerField();
