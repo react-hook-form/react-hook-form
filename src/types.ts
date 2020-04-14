@@ -266,18 +266,15 @@ export type Control<FormValues extends FieldValues = FieldValues> = {
   unregister(names: FieldName<FormValues>[]): void;
   unregister(names: FieldName<FormValues> | FieldName<FormValues>[]): void;
   getValues: (payload?: { nest: boolean }) => any;
-  setValue<Name extends FieldName<FormValues>>(
-    name: Name,
-    value?: FormValues[Name],
+  setValue<T extends string, U extends unknown>(
+    name: T,
+    value: T extends keyof FormValues
+      ? DeepPartial<FormValues[T]>
+      : LiteralToPrimitive<U>,
     shouldValidate?: boolean,
   ): void;
-  setValue<Name extends FieldName<FormValues>>(
-    namesWithValue: Record<Name, any>[],
-    shouldValidate?: boolean,
-  ): void;
-  setValue<Name extends FieldName<FormValues>>(
-    names: Name | Record<Name, any>[],
-    valueOrShouldValidate?: FormValues[Name] | boolean,
+  setValue<T extends keyof FormValues>(
+    namesWithValue: DeepPartial<Pick<FormValues, T>>[],
     shouldValidate?: boolean,
   ): void;
   formState: FormStateProxy<FormValues>;
