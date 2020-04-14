@@ -750,6 +750,7 @@ export function useForm<
     fieldNames?: string | string[] | { nest: boolean },
     defaultValue?: unknown,
   ): unknown {
+    debugger;
     const combinedDefaultValues = isUndefined(defaultValue)
       ? isUndefined(defaultValuesRef.current)
         ? {}
@@ -760,10 +761,6 @@ export function useForm<
       fieldNames,
     );
     const watchFields = watchFieldsRef.current;
-
-    if (!isEmptyObject(combinedDefaultValues)) {
-      readFormStateRef.current.dirty = true;
-    }
 
     if (isString(fieldNames)) {
       return assignWatchFields<FormValues>(
