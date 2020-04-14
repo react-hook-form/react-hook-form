@@ -119,7 +119,7 @@ export function useForm<
     !isUndefined(window.HTMLElement);
   const isProxyEnabled =
     (isWeb && 'Proxy' in window) ||
-    (typeof navigator !== UNDEFINED && typeof Proxy !== UNDEFINED);
+    isWeb ? 'Proxy' in window : typeof Proxy !== UNDEFINED;
   const readFormStateRef = React.useRef<ReadFormState>({
     dirty: !isProxyEnabled,
     dirtyFields: !isProxyEnabled,
