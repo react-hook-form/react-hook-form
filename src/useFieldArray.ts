@@ -186,7 +186,7 @@ export const useFieldArray = <
       render = true;
     }
 
-    if (render) {
+    if (render && !isWatchAllRef.current) {
       reRender();
     }
   };
@@ -336,7 +336,7 @@ export const useFieldArray = <
     }
 
     modifyDirtyFields({
-      shouldRender: shouldRender && !isWatchAllRef.current,
+      shouldRender,
       isRemove: true,
       index,
     });
