@@ -53,6 +53,10 @@ const Controller = <
   const isCheckboxInput = isBoolean(value);
   const shouldReValidateOnBlur = isOnBlur || isReValidateOnBlur;
   const rulesRef = React.useRef(rules);
+  const isFieldArray = React.useMemo<boolean>(
+    () => isNameInFieldArray(fieldArrayNamesRef.current, name),
+    [fieldArrayNamesRef.current, name],
+  );
   rulesRef.current = rules;
 
   const shouldValidate = () =>
@@ -112,11 +116,10 @@ const Controller = <
   ]);
 
   React.useEffect(() => {
-    const fieldArrayNames = fieldArrayNamesRef.current;
     registerField();
 
     return () => {
-      if (!isNameInFieldArray(fieldArrayNames, name)) {
+      if (!isFieldArray) {
         unregister(name);
       }
     };
@@ -128,7 +131,7 @@ const Controller = <
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
   React.useEffect(() => {
-    if (!fieldsRef.current[name]) {
+    if (!fieldsRef.current[name] && !isFieldArray) {
       registerField();
       setInputStateValue(
         isUndefined(defaultValue)
