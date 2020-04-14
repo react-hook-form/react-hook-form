@@ -1,11 +1,11 @@
-import React from "react";
-import { Controller, useForm } from "react-hook-form";
+import React from 'react';
+import { Controller, useForm } from 'react-hook-form';
 
 const ParseFormatTextarea = ({ value = [], onChange }) => {
   const [text, setText] = React.useState(value);
 
   const handleChange = (e) => {
-    const value = e.target.value.split("\n");
+    const value = e.target.value.split('\n');
 
     setText(value);
     onChange(value);
@@ -23,11 +23,11 @@ export default function App() {
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
       <Controller name="emails" as={ParseFormatTextarea} control={control} />
-      
+
       <Controller
-        name="emails"
+        name="number"
         as={<input type="number" />}
-        onChange={(e) => parseInt(e.target.value, 10)}
+        onChange={([e]) => parseInt(e.target.value, 10)}
         control={control}
       />
 
