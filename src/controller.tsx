@@ -131,13 +131,15 @@ const Controller = <
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
   React.useEffect(() => {
-    if (!fieldsRef.current[name] && !isFieldArray) {
+    if (!fieldsRef.current[name]) {
       registerField();
-      setInputStateValue(
-        isUndefined(defaultValue)
-          ? get(defaultValuesRef.current, name)
-          : defaultValue,
-      );
+      if (!isFieldArray) {
+        setInputStateValue(
+          isUndefined(defaultValue)
+            ? get(defaultValuesRef.current, name)
+            : defaultValue,
+        );
+      }
     }
   });
 
