@@ -332,7 +332,7 @@ context('useFieldArray', () => {
     cy.get('#touched').contains('[null,null,null,{"name":true},{"name":true}]');
   });
 
-  it.only('should return correct isValid formState', () => {
+  it('should return correct isValid formState', () => {
     cy.visit('http://localhost:3000/useFieldArray/formState');
     cy.get('#isValid').get('#isValid').contains('yes');
     cy.get('#append').click();

@@ -302,13 +302,19 @@ export const useFieldArray = <
 
     if (readFormStateRef.current.isValid && !validateSchemaIsValid) {
       let fieldIndex = -1;
+      let isFound = false;
+      const isIndexUndefined = isUndefined(index);
 
       while (fieldIndex++ < fields.length) {
         const isLast = fieldIndex === fields.length - 1;
         const isCurrentIndex =
           (isArray(index) ? index : [index]).indexOf(fieldIndex) >= 0;
 
-        if (!(isCurrentIndex || isIndexUndefined)) {
+        if (isCurrentIndex || isIndexUndefined) {
+          isFound = true;
+        }
+
+        if (!isFound) {
           continue;
         }
 
@@ -324,15 +330,12 @@ export const useFieldArray = <
             if (validFieldsRef.current.has(currentFieldName)) {
               validFieldsRef.current.add(previousFieldName);
             }
-
             if (fieldsWithValidationRef.current.has(currentFieldName)) {
               fieldsWithValidationRef.current.add(previousFieldName);
             }
           }
         }
       }
-
-      shouldRender = true;
     }
 
     modifyDirtyFields({
