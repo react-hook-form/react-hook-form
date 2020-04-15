@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom';
 import { useForm } from 'react-hook-form';
 
 function createArrayWithNumbers(length) {
-  return Array.from({ length }, (_, k) => k);
+  return Array.from({ length }, (_, k) => +k + 1);
 }
 
 export default function App() {
