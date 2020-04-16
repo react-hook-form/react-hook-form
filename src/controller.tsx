@@ -15,20 +15,23 @@ const Controller = <
     | React.ComponentType<any>
     | keyof JSX.IntrinsicElements,
   ControlProp extends Control = Control
->({
-  name,
-  rules,
-  as: InnerComponent,
-  onBlur,
-  onChange,
-  onChangeName = VALIDATION_MODE.onChange,
-  onBlurName = VALIDATION_MODE.onBlur,
-  valueName,
-  defaultValue,
-  control,
-  onFocus,
-  ...rest
-}: ControllerProps<As, ControlProp>) => {
+>(
+  {
+    name,
+    rules,
+    as: InnerComponent,
+    onBlur,
+    onChange,
+    onChangeName = VALIDATION_MODE.onChange,
+    onBlurName = VALIDATION_MODE.onBlur,
+    valueName,
+    defaultValue,
+    control,
+    onFocus,
+    ...rest
+  }: ControllerProps<As, ControlProp>,
+  ref: React.Ref<As>,
+) => {
   const methods = useFormContext();
   const {
     defaultValuesRef,
@@ -144,6 +147,7 @@ const Controller = <
   });
 
   const props = {
+    ref,
     name,
     ...rest,
     ...(onChange
@@ -170,4 +174,6 @@ const Controller = <
     : React.createElement(InnerComponent as string, props);
 };
 
-export { Controller };
+const ControllerWithRef = React.forwardRef(Controller);
+
+export { ControllerWithRef as Controller };
