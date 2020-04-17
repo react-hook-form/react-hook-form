@@ -265,9 +265,6 @@ export type Control<FormValues extends FieldValues = FieldValues> = {
   unregister(name: FieldName<FormValues>): void;
   unregister(names: FieldName<FormValues>[]): void;
   unregister(names: FieldName<FormValues> | FieldName<FormValues>[]): void;
-  getValues(payload?: { nest: boolean }): FormValues;
-  getValues<T extends keyof FormValues>(payload: T): FormValues[T];
-  getValues<T extends unknown>(payload: string): T;
   setValue<T extends keyof FormValues>(
     namesWithValue: DeepPartial<Pick<FormValues, T>>[],
     shouldValidate?: boolean,
@@ -279,6 +276,9 @@ export type Control<FormValues extends FieldValues = FieldValues> = {
       : LiteralToPrimitive<U>,
     shouldValidate?: boolean,
   ): void;
+  getValues(payload?: { nest: boolean }): FormValues;
+  getValues<T extends keyof FormValues>(payload: T): FormValues[T];
+  getValues<T extends unknown>(payload: string): T;
   formState: FormStateProxy<FormValues>;
   mode: {
     isOnBlur: boolean;
