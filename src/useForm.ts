@@ -1144,7 +1144,16 @@ export function useForm<
     reRender();
   };
 
-  const getValues = (payload?: { nest: boolean }): FormValues => {
+  function getValues(payload?: { nest: boolean }): FormValues;
+  function getValues<T extends keyof FormValues>(payload: T): FormValues[T];
+  function getValues<T extends unknown>(payload: string): T;
+  function getValues(payload?: { nest: boolean } | string): unknown {
+    if (isString(payload)) {
+      return fieldsRef.current[payload]
+        ? getFieldValue(fieldsRef.current, fieldsRef.current[payload]!.ref)
+        : undefined;
+    }
+
     const fieldValues = getFieldsValues(fieldsRef.current);
     const outputValues = isEmptyObject(fieldValues)
       ? defaultValuesRef.current
@@ -1153,7 +1162,7 @@ export function useForm<
     return payload && payload.nest
       ? transformToNestObject(outputValues)
       : outputValues;
-  };
+  }
 
   React.useEffect(
     () => () => {
