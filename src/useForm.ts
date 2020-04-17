@@ -1094,7 +1094,7 @@ export function useForm<
       isDirtyRef.current = false;
     }
 
-    if (dirtyFields) {
+    if (!dirtyFields) {
       dirtyFieldsRef.current = new Set();
     }
 
