@@ -438,25 +438,27 @@ export function useForm<
     watchFieldsRef.current.has(name) ||
     watchFieldsRef.current.has((name.match(/\w+/) || [])[0]);
 
-  function setValue<Name extends FieldName<FormValues>>(
-    name: Name,
-    value?: FormValues[Name],
+  function setValue<T extends string, U extends unknown>(
+    name: T,
+    value: T extends keyof FormValues
+      ? DeepPartial<FormValues[T]>
+      : LiteralToPrimitive<U>,
     shouldValidate?: boolean,
   ): void;
-  function setValue<Name extends FieldName<FormValues>>(
-    namesWithValue: Record<Name, any>[],
+  function setValue<T extends keyof FormValues>(
+    namesWithValue: DeepPartial<Pick<FormValues, T>>[],
     shouldValidate?: boolean,
   ): void;
-  function setValue<Name extends FieldName<FormValues>>(
-    names: Name | Record<Name, any>[],
-    valueOrShouldValidate?: FormValues[Name] | boolean,
+  function setValue<T extends keyof FormValues>(
+    names: string | DeepPartial<Pick<FormValues, T>>[],
+    valueOrShouldValidate?: unknown,
     shouldValidate?: boolean,
   ): void {
     let shouldRender = false;
     const isMultiple = isArray(names);
 
     (isMultiple
-      ? (names as Record<Name, FormValues[Name]>[])
+      ? (names as DeepPartial<Pick<FormValues, T>>[])
       : [names]
     ).forEach((name: any) => {
       const isStringFieldName = isString(name);
@@ -465,7 +467,7 @@ export function useForm<
           isStringFieldName ? name : Object.keys(name)[0],
           isStringFieldName
             ? valueOrShouldValidate
-            : (Object.values(name)[0] as FormValues[Name]),
+            : (Object.values(name)[0] as any),
         ) || isMultiple
           ? true
           : isFieldWatched(name);
@@ -476,7 +478,7 @@ export function useForm<
     }
 
     if (shouldValidate || (isMultiple && valueOrShouldValidate)) {
-      triggerValidation(isMultiple ? undefined : (names as Name));
+      triggerValidation(isMultiple ? undefined : (names as any));
     }
   }
 
