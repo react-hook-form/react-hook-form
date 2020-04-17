@@ -98,8 +98,9 @@ export type FormContextValues<FormValues extends FieldValues = FieldValues> = {
     omitResetState?: OmitResetState,
   ) => void;
   getValues(payload?: { nest: boolean }): FormValues;
-  getValues<T extends keyof FormValues>(payload: T): FormValues[T];
-  getValues<T extends unknown>(payload: string): T;
+  getValues<T extends string, U extends unknown>(
+    payload: T,
+  ): T extends keyof FormValues ? FormValues[T] : U;
   handleSubmit: (
     callback: OnSubmit<FormValues>,
   ) => (e?: React.BaseSyntheticEvent) => Promise<void>;

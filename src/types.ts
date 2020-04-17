@@ -277,8 +277,9 @@ export type Control<FormValues extends FieldValues = FieldValues> = {
     shouldValidate?: boolean,
   ): void;
   getValues(payload?: { nest: boolean }): FormValues;
-  getValues<T extends keyof FormValues>(payload: T): FormValues[T];
-  getValues<T extends unknown>(payload: string): T;
+  getValues<T extends string, U extends unknown>(
+    payload: T,
+  ): T extends keyof FormValues ? FormValues[T] : U;
   formState: FormStateProxy<FormValues>;
   mode: {
     isOnBlur: boolean;
