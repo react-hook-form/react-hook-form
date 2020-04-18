@@ -1075,6 +1075,7 @@ export function useForm<
     touched,
     isValid,
     submitCount,
+    dirtyFields,
   }: OmitResetState) => {
     fieldsRef.current = {};
     if (!errors) {
@@ -1092,8 +1093,11 @@ export function useForm<
     }
 
     if (!dirty) {
-      dirtyFieldsRef.current = new Set();
       isDirtyRef.current = false;
+    }
+
+    if (!dirtyFields) {
+      dirtyFieldsRef.current = new Set();
     }
 
     if (!isSubmitted) {
