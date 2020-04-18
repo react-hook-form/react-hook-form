@@ -1,5 +1,12 @@
 import * as React from 'react';
 
+export type IsFlatObject<T extends Record<string, any>> = Extract<
+  T[keyof T],
+  any[] | Record<string, any>
+> extends never
+  ? true
+  : false;
+
 export type Primitive = string | boolean | number | symbol | null | undefined;
 
 export type LiteralToPrimitive<T extends any> = T extends string
@@ -276,6 +283,16 @@ export type Control<FormValues extends FieldValues = FieldValues> = {
       : LiteralToPrimitive<U>,
     shouldValidate?: boolean,
   ): void;
+  getValues(): IsFlatObject<FormValues> extends true
+    ? FormValues
+    : Record<string, unknown>;
+  getValues<T extends boolean>(payload: {
+    nest: T;
+  }): T extends true
+    ? FormValues
+    : IsFlatObject<FormValues> extends true
+    ? FormValues
+    : Record<string, unknown>;
   getValues(payload?: { nest: boolean }): FormValues;
   getValues<T extends string, U extends unknown>(
     payload: T,

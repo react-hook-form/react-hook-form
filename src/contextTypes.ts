@@ -14,6 +14,7 @@ import {
   OmitResetState,
   Message,
   LiteralToPrimitive,
+  IsFlatObject,
 } from './types';
 
 export type FormProps<FormValues extends FieldValues = FieldValues> = {
@@ -97,7 +98,16 @@ export type FormContextValues<FormValues extends FieldValues = FieldValues> = {
     values?: DeepPartial<FormValues>,
     omitResetState?: OmitResetState,
   ) => void;
-  getValues(payload?: { nest: boolean }): FormValues;
+  getValues(): IsFlatObject<FormValues> extends true
+    ? FormValues
+    : Record<string, unknown>;
+  getValues<T extends boolean>(payload: {
+    nest: T;
+  }): T extends true
+    ? FormValues
+    : IsFlatObject<FormValues> extends true
+    ? FormValues
+    : Record<string, unknown>;
   getValues<T extends string, U extends unknown>(
     payload: T,
   ): T extends keyof FormValues ? FormValues[T] : U;
