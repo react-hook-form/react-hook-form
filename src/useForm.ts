@@ -62,6 +62,7 @@ import {
   RadioOrCheckboxOption,
   OmitResetState,
   Message,
+  IsFlatObject,
 } from './types';
 
 export function useForm<
@@ -1150,9 +1151,19 @@ export function useForm<
     reRender();
   };
 
-  function getValues(payload?: { nest: boolean }): FormValues;
-  function getValues<T extends keyof FormValues>(payload: T): FormValues[T];
-  function getValues<T extends unknown>(payload: string): T;
+  function getValues(): IsFlatObject<FormValues> extends true
+    ? FormValues
+    : Record<string, unknown>;
+  function getValues<T extends boolean>(payload: {
+    nest: T;
+  }): T extends true
+    ? FormValues
+    : IsFlatObject<FormValues> extends true
+    ? FormValues
+    : Record<string, unknown>;
+  function getValues<T extends string, U extends unknown>(
+    payload: T,
+  ): T extends keyof FormValues ? FormValues[T] : U;
   function getValues(payload?: { nest: boolean } | string): unknown {
     if (isString(payload)) {
       return fieldsRef.current[payload]
