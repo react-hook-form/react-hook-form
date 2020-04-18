@@ -1,5 +1,5 @@
 import typescript from 'rollup-plugin-typescript2';
-import pkg from './package.json';
+import pkg from '../package.json';
 
 export function getConfig({
   tsconfig = './tsconfig.json',
@@ -12,14 +12,6 @@ export function getConfig({
     {
       file: `dist/${pkg.name}.es.js`,
       format: 'esm',
-    },
-    {
-      name: 'ReactHookForm',
-      file: `dist/${pkg.name}.umd.js`,
-      format: 'umd',
-      globals: {
-        react: 'React',
-      },
     },
   ],
   plugins = [],
