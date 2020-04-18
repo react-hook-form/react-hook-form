@@ -1,8 +1,8 @@
 import * as React from 'react';
 
-export type IsFlatObject<T extends Record<string, any>> = Extract<
+export type IsFlatObject<T extends Record<string, unknown>> = Extract<
   T[keyof T],
-  any[] | Record<string, any>
+  unknown[] | Record<string, unknown>
 > extends never
   ? true
   : false;
