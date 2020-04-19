@@ -14,6 +14,7 @@ import {
   OmitResetState,
   Message,
   LiteralToPrimitive,
+  IsFlatObject,
 } from './types';
 
 export type FormProps<FormValues extends FieldValues = FieldValues> = {
@@ -76,18 +77,15 @@ export type FormContextValues<FormValues extends FieldValues = FieldValues> = {
   clearError(name: FieldName<FormValues>): void;
   clearError(names: FieldName<FormValues>[]): void;
   clearError(name?: FieldName<FormValues> | FieldName<FormValues>[]): void;
-  setValue<Name extends FieldName<FormValues>>(
-    name: Name,
-    value?: FormValues[Name],
+  setValue<T extends string, U extends unknown>(
+    name: T,
+    value: T extends keyof FormValues
+      ? DeepPartial<FormValues[T]>
+      : LiteralToPrimitive<U>,
     shouldValidate?: boolean,
   ): void;
-  setValue<Name extends FieldName<FormValues>>(
-    namesWithValue: Record<Name, any>[],
-    shouldValidate?: boolean,
-  ): void;
-  setValue<Name extends FieldName<FormValues>>(
-    names: Name | Record<Name, any>[],
-    valueOrShouldValidate?: FormValues[Name] | boolean,
+  setValue<T extends keyof FormValues>(
+    namesWithValue: DeepPartial<Pick<FormValues, T>>[],
     shouldValidate?: boolean,
   ): void;
   triggerValidation: (
@@ -100,7 +98,19 @@ export type FormContextValues<FormValues extends FieldValues = FieldValues> = {
     values?: DeepPartial<FormValues>,
     omitResetState?: OmitResetState,
   ) => void;
-  getValues: (payload?: { nest: boolean }) => FormValues;
+  getValues(): IsFlatObject<FormValues> extends true
+    ? FormValues
+    : Record<string, unknown>;
+  getValues<T extends boolean>(payload: {
+    nest: T;
+  }): T extends true
+    ? FormValues
+    : IsFlatObject<FormValues> extends true
+    ? FormValues
+    : Record<string, unknown>;
+  getValues<T extends string, U extends unknown>(
+    payload: T,
+  ): T extends keyof FormValues ? FormValues[T] : U;
   handleSubmit: (
     callback: OnSubmit<FormValues>,
   ) => (e?: React.BaseSyntheticEvent) => Promise<void>;

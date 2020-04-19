@@ -14,6 +14,12 @@ const SetValue: React.FC = () => {
     radio: string;
     select: string;
     multiple: string[];
+    array: string[];
+    object: {
+      firstName: string;
+      lastName: string;
+      middleName: string;
+    };
   }>();
 
   useEffect(() => {

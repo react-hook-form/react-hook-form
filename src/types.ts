@@ -1,5 +1,12 @@
 import * as React from 'react';
 
+export type IsFlatObject<T extends Record<string, unknown>> = Extract<
+  T[keyof T],
+  unknown[] | Record<string, unknown>
+> extends never
+  ? true
+  : false;
+
 export type Primitive = string | boolean | number | symbol | null | undefined;
 
 export type LiteralToPrimitive<T extends any> = T extends string
@@ -265,21 +272,31 @@ export type Control<FormValues extends FieldValues = FieldValues> = {
   unregister(name: FieldName<FormValues>): void;
   unregister(names: FieldName<FormValues>[]): void;
   unregister(names: FieldName<FormValues> | FieldName<FormValues>[]): void;
-  getValues: (payload?: { nest: boolean }) => any;
-  setValue<Name extends FieldName<FormValues>>(
-    name: Name,
-    value?: FormValues[Name],
+  setValue<T extends keyof FormValues>(
+    namesWithValue: DeepPartial<Pick<FormValues, T>>[],
     shouldValidate?: boolean,
   ): void;
-  setValue<Name extends FieldName<FormValues>>(
-    namesWithValue: Record<Name, any>[],
+  setValue<T extends string, U extends unknown>(
+    name: T,
+    value: T extends keyof FormValues
+      ? DeepPartial<FormValues[T]>
+      : LiteralToPrimitive<U>,
     shouldValidate?: boolean,
   ): void;
-  setValue<Name extends FieldName<FormValues>>(
-    names: Name | Record<Name, any>[],
-    valueOrShouldValidate?: FormValues[Name] | boolean,
-    shouldValidate?: boolean,
-  ): void;
+  getValues(): IsFlatObject<FormValues> extends true
+    ? FormValues
+    : Record<string, unknown>;
+  getValues<T extends boolean>(payload: {
+    nest: T;
+  }): T extends true
+    ? FormValues
+    : IsFlatObject<FormValues> extends true
+    ? FormValues
+    : Record<string, unknown>;
+  getValues(payload?: { nest: boolean }): FormValues;
+  getValues<T extends string, U extends unknown>(
+    payload: T,
+  ): T extends keyof FormValues ? FormValues[T] : U;
   formState: FormStateProxy<FormValues>;
   mode: {
     isOnBlur: boolean;

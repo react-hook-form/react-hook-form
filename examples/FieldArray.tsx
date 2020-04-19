@@ -3,13 +3,13 @@ import ReactDOM from 'react-dom';
 import { useForm } from 'react-hook-form';
 
 function createArrayWithNumbers(length) {
-  return Array.from({ length }, (_, k) => k + 1);
+  return Array.from({ length }, (_, k) => k);
 }
 
 export default function App() {
   const { register, handleSubmit, errors } = useForm();
   const [size, setSize] = useState(1);
-  const onSubmit = data => {
+  const onSubmit = (data) => {
     alert(JSON.stringify(data));
   };
 
@@ -18,7 +18,7 @@ export default function App() {
   return (
     <div className="App">
       <form onSubmit={handleSubmit(onSubmit)}>
-        {createArrayWithNumbers(size).map(number => {
+        {createArrayWithNumbers(size).map((number) => {
           return (
             <div key={number}>
               <div>

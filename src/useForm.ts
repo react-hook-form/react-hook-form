@@ -61,6 +61,7 @@ import {
   RadioOrCheckboxOption,
   OmitResetState,
   Message,
+  IsFlatObject,
 } from './types';
 
 export function useForm<
@@ -118,7 +119,7 @@ export function useForm<
     typeof document !== UNDEFINED &&
     !isWindowUndefined &&
     !isUndefined(window.HTMLElement);
-  const isProxyEnabled = isWeb && 'Proxy' in window;
+  const isProxyEnabled = isWeb ? 'Proxy' in window : typeof Proxy !== UNDEFINED;
   const formStateProxyRef = React.useRef<FormStateProxy<FormValues>>();
   const readFormStateRef = React.useRef<ReadFormState>({
     dirty: !isProxyEnabled,
@@ -435,25 +436,27 @@ export function useForm<
     watchFieldsRef.current.has(name) ||
     watchFieldsRef.current.has((name.match(/\w+/) || [])[0]);
 
-  function setValue<Name extends FieldName<FormValues>>(
-    name: Name,
-    value?: FormValues[Name],
+  function setValue<T extends string, U extends unknown>(
+    name: T,
+    value: T extends keyof FormValues
+      ? DeepPartial<FormValues[T]>
+      : LiteralToPrimitive<U>,
     shouldValidate?: boolean,
   ): void;
-  function setValue<Name extends FieldName<FormValues>>(
-    namesWithValue: Record<Name, any>[],
+  function setValue<T extends keyof FormValues>(
+    namesWithValue: DeepPartial<Pick<FormValues, T>>[],
     shouldValidate?: boolean,
   ): void;
-  function setValue<Name extends FieldName<FormValues>>(
-    names: Name | Record<Name, any>[],
-    valueOrShouldValidate?: FormValues[Name] | boolean,
+  function setValue<T extends keyof FormValues>(
+    names: string | DeepPartial<Pick<FormValues, T>>[],
+    valueOrShouldValidate?: unknown,
     shouldValidate?: boolean,
   ): void {
     let shouldRender = false;
     const isArrayValue = isArray(names);
 
     (isArrayValue
-      ? (names as Record<Name, FormValues[Name]>[])
+      ? (names as DeepPartial<Pick<FormValues, T>>[])
       : [names]
     ).forEach((name: any) => {
       const isStringFieldName = isString(name);
@@ -462,7 +465,7 @@ export function useForm<
           isStringFieldName ? name : Object.keys(name)[0],
           isStringFieldName
             ? valueOrShouldValidate
-            : (Object.values(name)[0] as FormValues[Name]),
+            : (Object.values(name)[0] as any),
         ) || isArrayValue
           ? true
           : isFieldWatched(name);
@@ -473,7 +476,7 @@ export function useForm<
     }
 
     if (shouldValidate || (isArrayValue && valueOrShouldValidate)) {
-      triggerValidation(isArrayValue ? undefined : (names as Name));
+      triggerValidation(isArrayValue ? undefined : (names as any));
     }
   }
 
@@ -1055,6 +1058,7 @@ export function useForm<
     touched,
     isValid,
     submitCount,
+    dirtyFields,
   }: OmitResetState) => {
     fieldsRef.current = {};
     if (!errors) {
@@ -1072,8 +1076,11 @@ export function useForm<
     }
 
     if (!dirty) {
-      dirtyFieldsRef.current = new Set();
       isDirtyRef.current = false;
+    }
+
+    if (!dirtyFields) {
+      dirtyFieldsRef.current = new Set();
     }
 
     if (!isSubmitted) {
@@ -1126,7 +1133,26 @@ export function useForm<
     reRender();
   };
 
-  const getValues = (payload?: { nest: boolean }): FormValues => {
+  function getValues(): IsFlatObject<FormValues> extends true
+    ? FormValues
+    : Record<string, unknown>;
+  function getValues<T extends boolean>(payload: {
+    nest: T;
+  }): T extends true
+    ? FormValues
+    : IsFlatObject<FormValues> extends true
+    ? FormValues
+    : Record<string, unknown>;
+  function getValues<T extends string, U extends unknown>(
+    payload: T,
+  ): T extends keyof FormValues ? FormValues[T] : U;
+  function getValues(payload?: { nest: boolean } | string): unknown {
+    if (isString(payload)) {
+      return fieldsRef.current[payload]
+        ? getFieldValue(fieldsRef.current, fieldsRef.current[payload]!.ref)
+        : undefined;
+    }
+
     const fieldValues = getFieldsValues(fieldsRef.current);
     const outputValues = isEmptyObject(fieldValues)
       ? defaultValuesRef.current
@@ -1135,7 +1161,7 @@ export function useForm<
     return payload && payload.nest
       ? transformToNestObject(outputValues)
       : outputValues;
-  };
+  }
 
   React.useEffect(
     () => () => {

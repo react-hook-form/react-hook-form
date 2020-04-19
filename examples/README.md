@@ -16,17 +16,18 @@ you can view the source code within the folder or visit code sand box to see how
 | Custom Masked Input                     | https://codesandbox.io/s/trusting-agnesi-rdi5m                                |
 | Custom Masked Input with Controller     | https://codesandbox.io/s/morning-sunset-8n3sx                                 |
 | Controlled Input                        | https://codesandbox.io/s/j36w7xkk7w                                           |
+| Compare Field Values                    | https://codesandbox.io/s/react-hook-form-getvalues-compare-field-values-qrtvx |
 | DefaultValues                           | https://codesandbox.io/s/react-hook-form-defaultvalues-n5gvx                  |
 | Default/Initial Form Value              | https://codesandbox.io/s/l3mxpvmm9                                            |
 | Dirty/Touched/Submitted                 | https://codesandbox.io/s/7o2wrp86k6                                           |
+| Disable Native Validation               | https://codesandbox.io/s/keen-mccarthy-4pqn6                                  |
 | Field Array                             | https://codesandbox.io/s/6j1760jkjk                                           |
 | FormContext                             | https://codesandbox.io/s/react-hook-form-form-context-dkvjz                   |
-| Compare Field Values                    | https://codesandbox.io/s/react-hook-form-getvalues-compare-field-values-qrtvx |
+| Parse and format input value            | https://codesandbox.io/s/react-hook-form-parse-and-format-textarea-furtc      |
 | Nested Fields                           | https://codesandbox.io/s/react-hook-form-nested-fields-mv1bb                  |
 | Normalize/Format/Mask Field             | https://codesandbox.io/s/387z7njwzp                                           |
 | Format/Mask Field (Third Party Library) | https://codesandbox.io/s/react-hook-form-normalize-field-1jumn                |
 | Native Validation                       | https://codesandbox.io/s/react-hook-form-native-validation-ez5ww              |
-| Disable Native Validation               | https://codesandbox.io/s/keen-mccarthy-4pqn6                                  |
 | Reset Form                              | https://codesandbox.io/s/jjm3wyqmjy                                           |
 | Remote/Trigger Form Submit              | https://codesandbox.io/s/remote-handlesubmit-w0win                            |
 | Register Error Messages                 | https://codesandbox.io/s/o766kp4z05                                           |
@@ -36,4 +37,3 @@ you can view the source code within the folder or visit code sand box to see how
 | ValidationSchema                        | https://codesandbox.io/s/928po918qr                                           |
 | Validation On Blur                      | https://codesandbox.io/s/w7p3km6nyw                                           |
 | Validation On Change                    | https://codesandbox.io/s/74zw1oqozx                                           |
-| Parse and format input value            | https://codesandbox.io/s/react-hook-form-parse-and-format-textarea-52dvm      |
