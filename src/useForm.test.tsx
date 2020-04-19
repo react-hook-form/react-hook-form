@@ -2,7 +2,6 @@ import * as React from 'react';
 import { renderHook, act } from '@testing-library/react-hooks';
 import { useForm } from './';
 import attachEventListeners from './logic/attachEventListeners';
-import getFieldsValues from './logic/getFieldsValues';
 import findRemovedFieldAndRemoveListener from './logic/findRemovedFieldAndRemoveListener';
 import validateWithSchema from './logic/validateWithSchema';
 import validateField from './logic/validateField';
@@ -88,7 +87,6 @@ jest.mock('./utils/onDomRemove');
 jest.mock('./logic/findRemovedFieldAndRemoveListener');
 jest.mock('./logic/validateField');
 jest.mock('./logic/attachEventListeners');
-jest.mock('./logic/getFieldsValues');
 jest.mock('./logic/validateWithSchema');
 jest.mock('./logic/transformToNestObject', () => ({
   default: (data: any) => data,
@@ -325,28 +323,20 @@ describe('useForm', () => {
 
   describe('watch', () => {
     it('should watch individual input', () => {
-      (getFieldsValues as any).mockImplementation(() => {
-        return {};
-      });
       const { result } = renderHook(() => useForm<{ test: string }>());
 
       expect(result.current.watch('test')).toBeUndefined();
 
       act(() => {
-        result.current.register({ type: 'radio', name: 'test', value: '' });
+        result.current.register({ type: 'radio', name: 'test', value: 'data' });
       });
 
-      (getFieldsValues as any).mockImplementation(() => {
-        return { test: 'data' };
+      expect(result.current.control.watchFieldsRef).toEqual({
+        current: new Set(['test']),
       });
-
-      expect(result.current.watch('test')).toBe('data');
     });
 
     it('should watch array of inputs', () => {
-      (getFieldsValues as any).mockImplementation(() => {
-        return {};
-      });
       const { result } = renderHook(() =>
         useForm<{ test: string; test1: string }>(),
       );
@@ -357,20 +347,20 @@ describe('useForm', () => {
       });
 
       act(() => {
-        result.current.register({ type: 'radio', name: 'test', value: '' });
-        result.current.register({ type: 'radio', name: 'test1', value: '' });
+        result.current.register({
+          type: 'radio',
+          name: 'test',
+          value: 'data1',
+        });
+        result.current.register({
+          type: 'radio',
+          name: 'test1',
+          value: 'data2',
+        });
       });
 
-      (getFieldsValues as any).mockImplementation(() => {
-        return {
-          test: 'data1',
-          test1: 'data2',
-        };
-      });
-
-      expect(result.current.watch(['test', 'test1'])).toEqual({
-        test: 'data1',
-        test1: 'data2',
+      expect(result.current.control.watchFieldsRef).toEqual({
+        current: new Set(['test', 'test1']),
       });
     });
 
@@ -386,17 +376,7 @@ describe('useForm', () => {
         result.current.register({ type: 'radio', name: 'test1', value: '' });
       });
 
-      (getFieldsValues as any).mockImplementation(() => {
-        return {
-          test: 'data1',
-          test1: 'data2',
-        };
-      });
-
-      expect(result.current.watch()).toEqual({
-        test: 'data1',
-        test1: 'data2',
-      });
+      expect(result.current.control.isWatchAllRef).toBeTruthy();
     });
   });
 
@@ -812,10 +792,6 @@ describe('useForm', () => {
         }),
       );
 
-      (getFieldsValues as any).mockImplementation(() => {
-        return {};
-      });
-
       (validateWithSchema as any).mockImplementation(async (payload: any) => {
         return {
           errors: payload,
@@ -843,10 +819,6 @@ describe('useForm', () => {
           validationSchema: { test2: 'test2' },
         }),
       );
-
-      (getFieldsValues as any).mockImplementation(() => {
-        return {};
-      });
 
       (validateWithSchema as any).mockImplementation(async (payload: any) => {
         return {
@@ -884,10 +856,6 @@ describe('useForm', () => {
         }),
       );
 
-      (getFieldsValues as any).mockImplementation(() => {
-        return {};
-      });
-
       (validateWithSchema as any).mockImplementation(async () => {
         return {
           errors: {
@@ -918,10 +886,6 @@ describe('useForm', () => {
           validationSchema: {},
         }),
       );
-
-      (getFieldsValues as any).mockImplementation(() => {
-        return {};
-      });
 
       (validateWithSchema as any).mockImplementation(async () => {
         return {
@@ -957,10 +921,6 @@ describe('useForm', () => {
           validationSchema: { test3: 'test3' },
         }),
       );
-
-      (getFieldsValues as any).mockImplementation(() => {
-        return {};
-      });
 
       (validateWithSchema as any).mockImplementation(async (payload: any) => {
         return {
@@ -1000,10 +960,6 @@ describe('useForm', () => {
           validationSchema: { test: 'test' },
         }),
       );
-
-      (getFieldsValues as any).mockImplementation(() => {
-        return {};
-      });
 
       (validateWithSchema as any).mockImplementation(async () => {
         return {
@@ -1085,10 +1041,6 @@ describe('useForm', () => {
         }),
       );
 
-      (getFieldsValues as any).mockImplementation(() => {
-        return {};
-      });
-
       (validateWithSchema as any).mockImplementation(async () => {
         return {
           errors: {},
@@ -1104,9 +1056,6 @@ describe('useForm', () => {
       });
 
       const callback = jest.fn();
-      (getFieldsValues as any).mockImplementation(async () => {
-        return { test: 'test' };
-      });
 
       await act(async () => {
         await result.current.handleSubmit(callback)({
@@ -1124,13 +1073,7 @@ describe('useForm', () => {
       act(() => {
         result.current.register({ value: 'test', type: 'input', name: 'test' });
       });
-      (getFieldsValues as any).mockImplementation(async () => {
-        return {};
-      });
-      act(() => {
-        result.current.getValues();
-      });
-      expect(getFieldsValues).toBeCalled();
+      expect(result.current.getValues()).toEqual({ test: 'test' });
     });
   });
 
@@ -1445,10 +1388,6 @@ describe('useForm', () => {
           },
         }),
       );
-
-      (getFieldsValues as any).mockImplementation(async () => {
-        return {};
-      });
 
       act(() => {
         const test: string = result.current.getValues({ nest: true }).test;

@@ -9,7 +9,7 @@ function createArrayWithNumbers(length) {
 export default function App() {
   const { register, handleSubmit, errors } = useForm();
   const [size, setSize] = useState(1);
-  const onSubmit = data => {
+  const onSubmit = (data) => {
     alert(JSON.stringify(data));
   };
 
@@ -18,7 +18,7 @@ export default function App() {
   return (
     <div className="App">
       <form onSubmit={handleSubmit(onSubmit)}>
-        {createArrayWithNumbers(size).map(number => {
+        {createArrayWithNumbers(size).map((number) => {
           return (
             <div key={number}>
               <div>

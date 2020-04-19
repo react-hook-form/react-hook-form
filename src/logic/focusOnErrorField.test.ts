@@ -1,5 +1,5 @@
 // @ts-nocheck
-import focusErrorField from './focusErrorField';
+import focusErrorField from './focusOnErrorField';
 
 jest.mock('../utils/isHTMLElement', () => ({
   default: () => true,
