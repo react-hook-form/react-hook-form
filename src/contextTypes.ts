@@ -98,9 +98,9 @@ export type FormContextValues<FormValues extends FieldValues = FieldValues> = {
     values?: DeepPartial<FormValues>,
     omitResetState?: OmitResetState,
   ) => void;
-  getValues(): IsFlatObject<FormValues> extends true
-    ? FormValues
-    : Record<string, unknown>;
+  getValues(): IsFlatObject<FormValues> extends false
+    ? Record<string, unknown>
+    : FormValues;
   getValues<T extends boolean>(payload: {
     nest: T;
   }): T extends true
