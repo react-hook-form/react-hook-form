@@ -730,6 +730,36 @@ export function useForm<
     }
   }
 
+  function getValues(): IsFlatObject<FormValues> extends true
+    ? FormValues
+    : Record<string, unknown>;
+  function getValues<T extends boolean>(payload: {
+    nest: T;
+  }): T extends true
+    ? FormValues
+    : IsFlatObject<FormValues> extends true
+    ? FormValues
+    : Record<string, unknown>;
+  function getValues<T extends string, U extends unknown>(
+    payload: T,
+  ): T extends keyof FormValues ? FormValues[T] : U;
+  function getValues(payload?: { nest: boolean } | string): unknown {
+    if (isString(payload)) {
+      return fieldsRef.current[payload]
+        ? getFieldValue(fieldsRef.current, fieldsRef.current[payload]!.ref)
+        : undefined;
+    }
+
+    const fieldValues = getFieldsValues(fieldsRef.current);
+    const outputValues = isEmptyObject(fieldValues)
+      ? defaultValuesRef.current
+      : fieldValues;
+
+    return payload && payload.nest
+      ? transformToNestObject(outputValues)
+      : outputValues;
+  }
+
   function watch(): FormValues;
   function watch(option: { nest: boolean }): FormValues;
   function watch<T extends string, U extends unknown>(
@@ -756,19 +786,17 @@ export function useForm<
         ? {}
         : defaultValuesRef.current
       : defaultValue;
-    const fieldValues = getFieldsValues<FormValues>(
-      fieldsRef.current,
-      fieldNames,
-    );
 
     if (isString(fieldNames)) {
       return assignWatchFields<FormValues>(
-        fieldValues,
+        getValues(fieldNames),
         fieldNames,
         watchFields,
         combinedDefaultValues as DeepPartial<FormValues>,
       );
     }
+
+    const fieldValues = getValues();
 
     if (isArray(fieldNames)) {
       return fieldNames.reduce(
@@ -1132,36 +1160,6 @@ export function useForm<
 
     reRender();
   };
-
-  function getValues(): IsFlatObject<FormValues> extends true
-    ? FormValues
-    : Record<string, unknown>;
-  function getValues<T extends boolean>(payload: {
-    nest: T;
-  }): T extends true
-    ? FormValues
-    : IsFlatObject<FormValues> extends true
-    ? FormValues
-    : Record<string, unknown>;
-  function getValues<T extends string, U extends unknown>(
-    payload: T,
-  ): T extends keyof FormValues ? FormValues[T] : U;
-  function getValues(payload?: { nest: boolean } | string): unknown {
-    if (isString(payload)) {
-      return fieldsRef.current[payload]
-        ? getFieldValue(fieldsRef.current, fieldsRef.current[payload]!.ref)
-        : undefined;
-    }
-
-    const fieldValues = getFieldsValues(fieldsRef.current);
-    const outputValues = isEmptyObject(fieldValues)
-      ? defaultValuesRef.current
-      : fieldValues;
-
-    return payload && payload.nest
-      ? transformToNestObject(outputValues)
-      : outputValues;
-  }
 
   React.useEffect(
     () => () => {

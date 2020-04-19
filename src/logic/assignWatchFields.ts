@@ -7,7 +7,7 @@ import isObject from '../utils/isObject';
 import { DeepPartial, FieldValue, FieldValues, FieldName } from '../types';
 
 export default <FormValues extends FieldValues>(
-  fieldValues: FormValues,
+  fieldValues: FormValues | Record<string, unknown>,
   fieldName: FieldName<FormValues>,
   watchFields: Set<FieldName<FormValues>>,
   combinedDefaultValues: DeepPartial<FormValues>,
