@@ -283,9 +283,9 @@ export type Control<FormValues extends FieldValues = FieldValues> = {
       : LiteralToPrimitive<U>,
     shouldValidate?: boolean,
   ): void;
-  getValues(): IsFlatObject<FormValues> extends true
-    ? FormValues
-    : Record<string, unknown>;
+  getValues(): IsFlatObject<FormValues> extends false
+    ? Record<string, unknown>
+    : FormValues;
   getValues<T extends boolean>(payload: {
     nest: T;
   }): T extends true

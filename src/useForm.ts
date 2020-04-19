@@ -1133,9 +1133,9 @@ export function useForm<
     reRender();
   };
 
-  function getValues(): IsFlatObject<FormValues> extends true
-    ? FormValues
-    : Record<string, unknown>;
+  function getValues(): IsFlatObject<FormValues> extends false
+    ? Record<string, unknown>
+    : FormValues;
   function getValues<T extends boolean>(payload: {
     nest: T;
   }): T extends true
