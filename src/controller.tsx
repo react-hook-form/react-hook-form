@@ -53,10 +53,7 @@ const Controller = <
   const isCheckboxInput = isBoolean(value);
   const shouldReValidateOnBlur = isOnBlur || isReValidateOnBlur;
   const rulesRef = React.useRef(rules);
-  const isNotFieldArray = !React.useMemo<boolean>(
-    () => isNameInFieldArray(fieldArrayNamesRef.current, name),
-    [fieldArrayNamesRef, name],
-  );
+  const isNotFieldArray = !isNameInFieldArray(fieldArrayNamesRef.current, name);
   rulesRef.current = rules;
 
   const shouldValidate = () =>
