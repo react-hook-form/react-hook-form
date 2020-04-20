@@ -112,7 +112,7 @@ const Controller = <
     removeFieldEventListener,
   ]);
 
-  React.useEffect(() => unregister(name), [unregister, name]);
+  React.useEffect(() => () => unregister(name), [unregister, name]);
 
   React.useEffect(() => {
     registerField();
