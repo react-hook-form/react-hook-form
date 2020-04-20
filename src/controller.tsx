@@ -53,10 +53,12 @@ const Controller = <
   const isCheckboxInput = isBoolean(value);
   const shouldReValidateOnBlur = isOnBlur || isReValidateOnBlur;
   const rulesRef = React.useRef(rules);
-  const isNotFieldArray = React.useMemo<boolean>(
-    () => !isNameInFieldArray(fieldArrayNamesRef.current, name),
-    [fieldArrayNamesRef, name],
+  const isFieldArray = React.useMemo<boolean>(
+    () => isNameInFieldArray(fieldArrayNamesRef.current, name),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [fieldArrayNamesRef, fieldArrayNamesRef.current.size, name],
   );
+  const isNotFieldArray = !isFieldArray;
   rulesRef.current = rules;
 
   const shouldValidate = () =>
@@ -86,10 +88,7 @@ const Controller = <
   };
 
   const registerField = React.useCallback(() => {
-    if (
-      isNameInFieldArray(fieldArrayNamesRef.current, name) &&
-      fieldsRef.current[name]
-    ) {
+    if (isFieldArray && fieldsRef.current[name]) {
       removeFieldEventListener(fieldsRef.current[name] as Field, true);
     }
 
@@ -106,7 +105,7 @@ const Controller = <
       rulesRef.current,
     );
   }, [
-    fieldArrayNamesRef,
+    isFieldArray,
     fieldsRef,
     rulesRef,
     name,
@@ -119,9 +118,7 @@ const Controller = <
     registerField();
 
     return () => {
-      if (isNotFieldArray) {
-        unregister(name);
-      }
+      unregister(name);
     };
   }, [name, unregister, fieldArrayNamesRef, registerField, isNotFieldArray]);
 
