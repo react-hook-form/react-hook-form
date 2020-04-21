@@ -836,8 +836,10 @@ export function useForm<
       isRadioOrCheckbox
         ? field &&
           isArray(field.options) &&
-          field.options.filter(Boolean).find(({ ref }) => value === ref.value)
-        : field
+          field.options.filter(Boolean).find((option) => {
+            return value === option.ref.value && option.ref === ref;
+          })
+        : field && ref === field.ref
     ) {
       fields[name as FieldName<FormValues>] = {
         ...field,
@@ -982,7 +984,7 @@ export function useForm<
       }
       let fieldErrors: FieldErrors<FormValues> = {};
       const fields = fieldsRef.current;
-      const fieldValues: FieldValues = getFieldsValues(fields);
+      let fieldValues: FieldValues = getFieldsValues(fields);
 
       if (readFormStateRef.current.isSubmitting) {
         isSubmittingRef.current = true;
@@ -991,7 +993,7 @@ export function useForm<
 
       try {
         if (shouldValidateSchemaOrResolver) {
-          const { errors } = await validateWithSchema<
+          const { errors, values } = await validateWithSchema<
             FormValues,
             ValidationContext
           >(
@@ -1003,6 +1005,7 @@ export function useForm<
           );
           errorsRef.current = errors;
           fieldErrors = errors;
+          fieldValues = values;
         } else {
           for (const field of Object.values(fields)) {
             if (field) {

@@ -247,11 +247,14 @@ describe('useForm', () => {
 
     it('should not register the same checkbox input', async () => {
       const { result } = renderHook(() => useForm<{ test: string }>());
+      const ref = document.createElement('INPUT');
+      ref.setAttribute('name', 'test');
+      ref.setAttribute('type', 'checkbox');
 
       act(() => {
         const { register } = result.current;
-        register({ type: 'checkbox', name: 'test', attributes: {} });
-        register({ type: 'checkbox', name: 'test', attributes: {} });
+        register(ref as any);
+        register(ref as any);
       });
 
       (validateField as any).mockImplementation(async () => {
@@ -391,10 +394,6 @@ describe('useForm', () => {
 
       (validateField as any).mockImplementation(async () => ({}));
 
-      act(() => {
-        result.current.register({ type: 'text', name: 'test' });
-      });
-
       await act(async () => {
         await result.current.handleSubmit((data) => {
           expect(data).toEqual({
@@ -421,7 +420,6 @@ describe('useForm', () => {
       act(() => {
         result.current.register({ name: 'test', type: 'radio', value: '1' });
         result.current.register({ name: 'test', type: 'radio', value: '2' });
-        result.current.setValue('test', '1');
       });
 
       (validateField as any).mockImplementation(async () => {
@@ -429,7 +427,7 @@ describe('useForm', () => {
       });
 
       act(() => {
-        result.current.register({ type: 'text', name: 'test' });
+        result.current.setValue('test', '1');
       });
 
       await act(async () => {
@@ -460,7 +458,6 @@ describe('useForm', () => {
           value: '2',
           attributes: { value: '2' },
         });
-        result.current.setValue('test', '1');
       });
 
       (validateField as any).mockImplementation(async () => {
@@ -468,7 +465,7 @@ describe('useForm', () => {
       });
 
       act(() => {
-        result.current.register({ type: 'text', name: 'test' });
+        result.current.setValue('test', '1');
       });
 
       await act(async () => {
@@ -493,7 +490,6 @@ describe('useForm', () => {
           value: '1',
           attributes: { value: '1' },
         });
-        result.current.setValue('test', '1');
       });
 
       (validateField as any).mockImplementation(async () => {
@@ -501,7 +497,7 @@ describe('useForm', () => {
       });
 
       act(() => {
-        result.current.register({ type: 'text', name: 'test' });
+        result.current.setValue('test', '1');
       });
 
       await act(async () => {
@@ -1064,6 +1060,39 @@ describe('useForm', () => {
         } as React.SyntheticEvent);
       });
       expect(callback).toBeCalled();
+    });
+
+    it('should invoke callback with transformed values', async () => {
+      const { result } = renderHook(() =>
+        useForm<{ test: string }>({
+          mode: VALIDATION_MODE.onSubmit,
+          validationSchema: {},
+        }),
+      );
+
+      (validateWithSchema as any).mockImplementation(async () => {
+        return {
+          errors: {},
+          values: { test: 'test' },
+        };
+      });
+
+      act(() => {
+        result.current.register(
+          { value: '', type: 'input', name: 'test' },
+          { required: true },
+        );
+      });
+
+      const callback = jest.fn();
+
+      await act(async () => {
+        await result.current.handleSubmit(callback)({
+          preventDefault: () => {},
+          persist: () => {},
+        } as React.SyntheticEvent);
+      });
+      expect(callback.mock.calls[0][0]).toEqual({ test: 'test' });
     });
   });
 

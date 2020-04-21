@@ -37,10 +37,10 @@ describe('findMissDomAndClean', () => {
     const fields = {
       test: {
         name: 'test',
-        ref: {},
+        ref,
         options: [
           {
-            ref: 'test',
+            ref,
             mutationWatcher: {
               disconnect,
             },
@@ -48,16 +48,9 @@ describe('findMissDomAndClean', () => {
         ],
       },
     };
+
     findRemovedFieldAndRemoveListener(fields, () => ({} as any), {
-      ref: { name: 'test', type: 'radio' },
-      options: [
-        {
-          mutationWatcher: {
-            disconnect,
-          },
-          ref,
-        },
-      ],
+      ref,
     });
 
     expect(fields).toEqual({});

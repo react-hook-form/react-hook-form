@@ -17,9 +17,7 @@ context('controller basic form validation', () => {
     cy.get('.MuiPopover-root ul > li:first-child').click();
     cy.get('#input-switch input').click();
     cy.get('#input-ReactSelect > div').click();
-    cy.get('#input-ReactSelect > div > div')
-      .eq(1)
-      .click();
+    cy.get('#input-ReactSelect > div > div').eq(1).click();
 
     cy.get('p').should('have.length', 2);
     cy.get('#renderCount').contains('8');
@@ -63,7 +61,7 @@ context('controller basic form validation', () => {
     cy.get('#Checkbox').contains('Checkbox Error');
 
     cy.get('#input-textField input').type('test');
-    cy.get('#input-textField input').clear('');
+    cy.get('#input-textField input').clear();
     cy.get('#TextField').contains('TextField Error');
 
     cy.get('#input-switch input').click();
