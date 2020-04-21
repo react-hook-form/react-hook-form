@@ -832,8 +832,10 @@ export function useForm<
       isRadioOrCheckbox
         ? field &&
           isArray(field.options) &&
-          field.options.filter(Boolean).find(({ ref }) => value === ref.value)
-        : field
+          field.options.filter(Boolean).find((option) => {
+            return value === option.ref.value && option.ref === ref;
+          })
+        : field && ref === field.ref
     ) {
       fields[name as FieldName<FormValues>] = {
         ...field,
