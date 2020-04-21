@@ -1,12 +1,8 @@
 export default (objectA: any = {}, objectB: any = {}) => {
-  const objectAData = Object.entries(objectA);
-  const objectBData = Object.keys(objectB);
+  const objectAKeys = Object.keys(objectA);
+  const objectBKeys = Object.keys(objectB);
   return (
-    objectAData.length === objectBData.length &&
-    objectAData.reduce(
-      (previous, [key, value]) =>
-        previous ? objectB[key] && objectB[key] === value : false,
-      true,
-    )
+    objectAKeys.length === objectBKeys.length &&
+    objectAKeys.every((key) => objectB[key] && objectB[key] === objectA[key])
   );
 };
