@@ -263,10 +263,15 @@ export type Control<FormValues extends FieldValues = FieldValues> = {
     refOrValidationOptions: ValidationOptions | Element | null,
     validationOptions?: ValidationOptions,
   ): ((ref: Element | null) => void) | void;
-  triggerValidation: (
-    payload?: FieldName<FormValues> | FieldName<FormValues>[] | string,
-    shouldRender?: boolean,
-  ) => Promise<boolean>;
+  triggerValidation(
+    payload?:
+      | (IsFlatObject<FormValues> extends true
+          ? Extract<keyof FormValues, string>
+          : string)
+      | (IsFlatObject<FormValues> extends true
+          ? Extract<keyof FormValues, string>
+          : string)[],
+  ): Promise<boolean>;
   reRender: () => void;
   removeFieldEventListener: (field: Field, forceDelete?: boolean) => void;
   unregister(name: FieldName<FormValues>): void;

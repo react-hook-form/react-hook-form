@@ -356,9 +356,7 @@ export function useForm<
   );
 
   const executeSchemaOrResolverValidation = React.useCallback(
-    async (
-      payload: FieldName<FormValues> | FieldName<FormValues>[],
-    ): Promise<boolean> => {
+    async (payload: string | string[]): Promise<boolean> => {
       const { errors } = await validateWithSchema<
         FormValues,
         ValidationContext
@@ -405,7 +403,13 @@ export function useForm<
 
   const triggerValidation = React.useCallback(
     async (
-      payload?: FieldName<FormValues> | FieldName<FormValues>[] | string,
+      payload?:
+        | (IsFlatObject<FormValues> extends true
+            ? Extract<keyof FormValues, string>
+            : string)
+        | (IsFlatObject<FormValues> extends true
+            ? Extract<keyof FormValues, string>
+            : string)[],
     ): Promise<boolean> => {
       const fields = payload || Object.keys(fieldsRef.current);
 
