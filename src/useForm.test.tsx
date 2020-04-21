@@ -1061,6 +1061,39 @@ describe('useForm', () => {
       });
       expect(callback).toBeCalled();
     });
+
+    it('should invoke callback with transformed values', async () => {
+      const { result } = renderHook(() =>
+        useForm<{ test: string }>({
+          mode: VALIDATION_MODE.onSubmit,
+          validationSchema: {},
+        }),
+      );
+
+      (validateWithSchema as any).mockImplementation(async () => {
+        return {
+          errors: {},
+          values: { test: 'test' },
+        };
+      });
+
+      act(() => {
+        result.current.register(
+          { value: '', type: 'input', name: 'test' },
+          { required: true },
+        );
+      });
+
+      const callback = jest.fn();
+
+      await act(async () => {
+        await result.current.handleSubmit(callback)({
+          preventDefault: () => {},
+          persist: () => {},
+        } as React.SyntheticEvent);
+      });
+      expect(callback.mock.calls[0][0]).toEqual({ test: 'test' });
+    });
   });
 
   describe('getValues', () => {
