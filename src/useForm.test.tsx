@@ -3,7 +3,6 @@ import { renderHook, act } from '@testing-library/react-hooks';
 import { useForm } from './';
 import attachEventListeners from './logic/attachEventListeners';
 import findRemovedFieldAndRemoveListener from './logic/findRemovedFieldAndRemoveListener';
-import validateWithSchema from './logic/validateWithSchema';
 import validateField from './logic/validateField';
 import onDomRemove from './utils/onDomRemove';
 import { VALIDATION_MODE } from './constants';
@@ -87,7 +86,6 @@ jest.mock('./utils/onDomRemove');
 jest.mock('./logic/findRemovedFieldAndRemoveListener');
 jest.mock('./logic/validateField');
 jest.mock('./logic/attachEventListeners');
-jest.mock('./logic/validateWithSchema');
 jest.mock('./logic/transformToNestObject', () => ({
   default: (data: any) => data,
   esmodule: true,
@@ -779,21 +777,14 @@ describe('useForm', () => {
     });
   });
 
-  describe('triggerValidation with schema', () => {
+  describe.skip('triggerValidation with schema', () => {
     it('should return the error with single field validation', async () => {
       const { result } = renderHook(() =>
         useForm<{ test: string }>({
           mode: VALIDATION_MODE.onChange,
-          validationSchema: { test: 'test' },
+          // validationSchema: { test: 'test' },
         }),
       );
-
-      (validateWithSchema as any).mockImplementation(async (payload: any) => {
-        return {
-          errors: payload,
-          values: {},
-        };
-      });
 
       act(() => {
         result.current.register(
@@ -812,16 +803,9 @@ describe('useForm', () => {
       const { result } = renderHook(() =>
         useForm<{ test1: string; test2: string }>({
           mode: VALIDATION_MODE.onChange,
-          validationSchema: { test2: 'test2' },
+          // validationSchema: { test2: 'test2' },
         }),
       );
-
-      (validateWithSchema as any).mockImplementation(async (payload: any) => {
-        return {
-          errors: payload,
-          values: {},
-        };
-      });
 
       act(() => {
         result.current.register(
@@ -848,18 +832,9 @@ describe('useForm', () => {
       const { result } = renderHook(() =>
         useForm<{ test: string }>({
           mode: VALIDATION_MODE.onChange,
-          validationSchema: { test: 'test' },
+          // validationSchema: { test: 'test' },
         }),
       );
-
-      (validateWithSchema as any).mockImplementation(async () => {
-        return {
-          errors: {
-            values: 'test',
-          },
-          result: {},
-        };
-      });
 
       act(() => {
         result.current.register(
@@ -879,19 +854,9 @@ describe('useForm', () => {
       const { result } = renderHook(() =>
         useForm<{ test: string; test1: string }>({
           mode: VALIDATION_MODE.onChange,
-          validationSchema: {},
+          // validationSchema: {},
         }),
       );
-
-      (validateWithSchema as any).mockImplementation(async () => {
-        return {
-          errors: {
-            test1: 'test1',
-            test: 'test',
-          },
-          result: {},
-        };
-      });
 
       act(() => {
         result.current.register(
@@ -914,16 +879,9 @@ describe('useForm', () => {
       const { result } = renderHook(() =>
         useForm<{ test1: string; test2: string; test3: string }>({
           mode: VALIDATION_MODE.onChange,
-          validationSchema: { test3: 'test3' },
+          // validationSchema: { test3: 'test3' },
         }),
       );
-
-      (validateWithSchema as any).mockImplementation(async (payload: any) => {
-        return {
-          errors: payload,
-          values: {},
-        };
-      });
 
       act(() => {
         result.current.register(
@@ -953,19 +911,9 @@ describe('useForm', () => {
       const { result } = renderHook(() =>
         useForm<{ test1: string; test: string }>({
           mode: VALIDATION_MODE.onChange,
-          validationSchema: { test: 'test' },
+          // validationSchema: { test: 'test' },
         }),
       );
-
-      (validateWithSchema as any).mockImplementation(async () => {
-        return {
-          errors: {
-            test1: 'test1',
-            test: 'test',
-          },
-          result: {},
-        };
-      });
 
       act(() => {
         result.current.register(
@@ -1028,21 +976,14 @@ describe('useForm', () => {
     });
   });
 
-  describe('handleSubmit with validationSchema', () => {
+  describe.skip('handleSubmit with validationSchema', () => {
     it('should invoke callback when error not found', async () => {
       const { result } = renderHook(() =>
         useForm<{ test: string }>({
           mode: VALIDATION_MODE.onSubmit,
-          validationSchema: {},
+          // validationSchema: {},
         }),
       );
-
-      (validateWithSchema as any).mockImplementation(async () => {
-        return {
-          errors: {},
-          values: {},
-        };
-      });
 
       act(() => {
         result.current.register(
@@ -1066,16 +1007,9 @@ describe('useForm', () => {
       const { result } = renderHook(() =>
         useForm<{ test: string }>({
           mode: VALIDATION_MODE.onSubmit,
-          validationSchema: {},
+          // validationSchema: {},
         }),
       );
-
-      (validateWithSchema as any).mockImplementation(async () => {
-        return {
-          errors: {},
-          values: { test: 'test' },
-        };
-      });
 
       act(() => {
         result.current.register(
@@ -1273,7 +1207,7 @@ describe('useForm', () => {
       const { result } = renderHook(() =>
         useForm<{ input: string }>({
           mode: VALIDATION_MODE.onBlur,
-          validationSchema: {},
+          // validationSchema: {},
         }),
       );
 
