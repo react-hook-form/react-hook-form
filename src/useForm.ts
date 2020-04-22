@@ -1203,16 +1203,19 @@ export function useForm<
       : isValidRef.current,
   };
 
-  formStateProxyRef.current = new Proxy<FormStateProxy<FormValues>>(formState, {
-    get: (obj, prop: keyof FormStateProxy) => {
-      if (prop in obj) {
-        readFormStateRef.current[prop] = true;
-        return obj[prop];
-      }
+  formStateProxyRef.current = isProxyEnabled
+    ? formStateProxyRef.current ||
+      new Proxy<FormStateProxy<FormValues>>(formState, {
+        get: (obj, prop: keyof FormStateProxy) => {
+          if (prop in obj) {
+            readFormStateRef.current[prop] = true;
+            return obj[prop];
+          }
 
-      return {};
-    },
-  });
+          return {};
+        },
+      })
+    : formState;
 
   const commonProps = {
     triggerValidation,
@@ -1227,7 +1230,7 @@ export function useForm<
     ]),
     unregister: React.useCallback(unregister, []),
     getValues: React.useCallback(getValues, []),
-    formState: isProxyEnabled ? formStateProxyRef.current : formState,
+    formState: formStateProxyRef.current,
   };
 
   const control = {
