@@ -4,7 +4,6 @@ import isKey from './isKey';
 import stringToPath from './stringToPath';
 import isEmptyObject from './isEmptyObject';
 import isObject from './isObject';
-import isEqual from './isEqual';
 
 function castPath(value: string) {
   return isArray(value) ? value : stringToPath(value);
@@ -67,7 +66,7 @@ function baseUnset(object: any, path: string) {
       const item = currentPaths[index];
       objectRef = objectRef ? objectRef[item] : object[item];
 
-      if (isEqual(currentPathsLength, index)) {
+      if (currentPathsLength === index) {
         if (
           (isObject(objectRef) && isEmptyObject(objectRef)) ||
           (isArray(objectRef) &&
