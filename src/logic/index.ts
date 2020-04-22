@@ -1,2 +1,4 @@
-export * from './appendErrors';
-export * from './transformToNestObject';
+import appendErrors from './appendErrors';
+import transformToNestObject from './transformToNestObject';
+
+export { transformToNestObject, appendErrors };
