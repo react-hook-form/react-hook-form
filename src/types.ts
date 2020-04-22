@@ -376,28 +376,6 @@ export type ControllerProps<
   AsProps<As>
 >;
 
-export type ErrorMessageProps<
-  Errors extends FieldErrors<any>,
-  Name extends FieldName<FormValuesFromErrors<Errors>>,
-  As extends
-    | undefined
-    | React.ReactElement
-    | React.ComponentType<any>
-    | keyof JSX.IntrinsicElements = undefined
-> = Assign<
-  {
-    as?: As;
-    errors?: Errors;
-    name: Name;
-    message?: Message;
-    children?: (data: {
-      message: Message;
-      messages?: MultipleFieldErrors;
-    }) => React.ReactNode;
-  },
-  AsProps<As>
->;
-
 export type UseFieldArrayProps<
   KeyName extends string = 'id',
   ControlProp extends Control = Control
