@@ -1,9 +1,9 @@
 import { getConfig } from './rollup.config';
-import pkg from './package.json';
 import babel from 'rollup-plugin-babel';
 import resolve from '@rollup/plugin-node-resolve';
 import commonjs from '@rollup/plugin-commonjs';
 import { DEFAULT_EXTENSIONS } from '@babel/core';
+import pkg from '../package.json';
 
 export default getConfig({
   tsconfig: './tsconfig.ie11.json',
