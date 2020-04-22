@@ -121,7 +121,6 @@ export function useForm<
     !isWindowUndefined &&
     !isUndefined(window.HTMLElement);
   const isProxyEnabled = isWeb ? 'Proxy' in window : typeof Proxy !== UNDEFINED;
-  const formStateProxyRef = React.useRef<FormStateProxy<FormValues>>();
   const readFormStateRef = React.useRef<ReadFormState>({
     dirty: !isProxyEnabled,
     dirtyFields: !isProxyEnabled,
@@ -1203,17 +1202,6 @@ export function useForm<
       : isValidRef.current,
   };
 
-  formStateProxyRef.current = new Proxy<FormStateProxy<FormValues>>(formState, {
-    get: (obj, prop: keyof FormStateProxy) => {
-      if (prop in obj) {
-        readFormStateRef.current[prop] = true;
-        return obj[prop];
-      }
-
-      return {};
-    },
-  });
-
   const commonProps = {
     triggerValidation,
     setValue: React.useCallback(setValue, [
@@ -1227,7 +1215,18 @@ export function useForm<
     ]),
     unregister: React.useCallback(unregister, []),
     getValues: React.useCallback(getValues, []),
-    formState: isProxyEnabled ? formStateProxyRef.current : formState,
+    formState: isProxyEnabled
+      ? new Proxy<FormStateProxy<FormValues>>(formState, {
+          get: (obj, prop: keyof FormStateProxy) => {
+            if (prop in obj) {
+              readFormStateRef.current[prop] = true;
+              return obj[prop];
+            }
+
+            return {};
+          },
+        })
+      : formState,
   };
 
   const control = {
