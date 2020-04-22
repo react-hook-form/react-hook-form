@@ -1,4 +1,4 @@
-import transformToNestObject from './transformToNestObject';
+import { transformToNestObject } from './transformToNestObject';
 import getFieldsValues from './getFieldsValues';
 import get from '../utils/get';
 import { FieldValues, FieldRefs, FieldName } from '../types';

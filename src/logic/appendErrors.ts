@@ -1,6 +1,6 @@
 import { FieldError, FieldName, ValidateResult } from '../types';
 
-export default <FormValues>(
+export const appendErrors = <FormValues>(
   name: FieldName<FormValues>,
   validateAllFieldCriteria: boolean,
   errors: Record<FieldName<FormValues>, FieldError>,

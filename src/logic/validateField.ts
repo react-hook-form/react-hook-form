@@ -15,7 +15,7 @@ import isEmptyString from '../utils/isEmptyString';
 import isBoolean from '../utils/isBoolean';
 import isMessage from '../utils/isMessage';
 import getValidateError from './getValidateError';
-import appendErrors from './appendErrors';
+import { appendErrors } from './appendErrors';
 import { INPUT_VALIDATION_RULES } from '../constants';
 import { Field, FieldErrors, FieldValues, FieldRefs, Message } from '../types';
 

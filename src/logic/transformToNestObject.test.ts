@@ -1,4 +1,4 @@
-import transformToNestObject from './transformToNestObject';
+import { transformToNestObject } from './transformToNestObject';
 
 describe('transformToNestObject', () => {
   it('should combine all the array fields', () => {

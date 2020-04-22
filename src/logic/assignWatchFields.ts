@@ -1,4 +1,4 @@
-import transformToNestObject from './transformToNestObject';
+import { transformToNestObject } from './transformToNestObject';
 import get from '../utils/get';
 import getPath from '../utils/getPath';
 import isEmptyObject from '../utils/isEmptyObject';

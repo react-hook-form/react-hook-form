@@ -1,6 +1,6 @@
-import appendErrors from './appendErrors';
+import { appendErrors } from './appendErrors';
 import isArray from '../utils/isArray';
-import transformToNestObject from './transformToNestObject';
+import { transformToNestObject } from './transformToNestObject';
 import {
   FieldValues,
   SchemaValidateOptions,
