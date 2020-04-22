@@ -1,4 +1,5 @@
+import isEqual from './isEqual';
 import { FieldElement } from '../types';
 
 export default (element: FieldElement): element is HTMLSelectElement =>
-  element.type === 'select-multiple';
+  isEqual(element.type, 'select-multiple');

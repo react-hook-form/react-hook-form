@@ -3,11 +3,12 @@ import isRadioInput from '../utils/isRadioInput';
 import isCheckBoxInput from '../utils/isCheckBoxInput';
 import isDetached from '../utils/isDetached';
 import isArray from '../utils/isArray';
+import isEqual from '../utils/isEqual';
 import unset from '../utils/unset';
 import { Field, FieldRefs, FieldValues, Ref } from '../types';
 
 const isSameRef = (fieldValue: Field, ref: Ref) =>
-  fieldValue && fieldValue.ref === ref;
+  fieldValue && isEqual(fieldValue.ref, ref);
 
 export default function findRemovedFieldAndRemoveListener<
   FormValues extends FieldValues

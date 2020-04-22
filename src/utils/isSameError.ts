@@ -1,6 +1,7 @@
 import isObject from './isObject';
-import { FieldError, MultipleFieldErrors, ValidateResult } from '../types';
+import isEqual from './isEqual';
 import compareObject from './compareObject';
+import { FieldError, MultipleFieldErrors, ValidateResult } from '../types';
 
 export default (
   error: FieldError | undefined,
@@ -15,6 +16,6 @@ export default (
   },
 ): boolean =>
   isObject(error) &&
-  error.type === type &&
-  error.message === message &&
+  isEqual(error.type, type) &&
+  isEqual(error.message, message) &&
   compareObject(error.types, types);
