@@ -1,6 +1,6 @@
 import * as React from 'react';
 import attachEventListeners from './logic/attachEventListeners';
-import transformToNestObject from './logic/transformToNestObject';
+import { transformToNestObject } from './logic/transformToNestObject';
 import focusOnErrorField from './logic/focusOnErrorField';
 import findRemovedFieldAndRemoveListener from './logic/findRemovedFieldAndRemoveListener';
 import getFieldsValues from './logic/getFieldsValues';
