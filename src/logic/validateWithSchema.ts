@@ -28,27 +28,29 @@ export const parseErrorSchema = <FormValues>(
     ? error.inner.reduce(
         (previous: FieldValues, { path, message, type }: FieldValues) => ({
           ...previous,
-          ...(previous[path] && validateAllFieldCriteria
-            ? {
-                [path]: appendErrors(
-                  path,
-                  validateAllFieldCriteria,
-                  previous,
-                  type,
-                  message,
-                ),
-              }
-            : {
-                [path]: previous[path] || {
-                  message,
-                  type,
-                  ...(validateAllFieldCriteria
-                    ? {
-                        types: { [type]: message || true },
-                      }
-                    : {}),
-                },
-              }),
+          ...(path
+            ? previous[path] && validateAllFieldCriteria
+              ? {
+                  [path]: appendErrors(
+                    path,
+                    validateAllFieldCriteria,
+                    previous,
+                    type,
+                    message,
+                  ),
+                }
+              : {
+                  [path]: previous[path] || {
+                    message,
+                    type,
+                    ...(validateAllFieldCriteria
+                      ? {
+                          types: { [type]: message || true },
+                        }
+                      : {}),
+                  },
+                }
+            : {}),
         }),
         {},
       )
