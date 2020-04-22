@@ -91,10 +91,15 @@ export type FormContextValues<FormValues extends FieldValues = FieldValues> = {
     namesWithValue: DeepPartial<Pick<FormValues, T>>[],
     shouldValidate?: boolean,
   ): void;
-  triggerValidation: (
-    payload?: FieldName<FormValues> | FieldName<FormValues>[] | string,
-    shouldRender?: boolean,
-  ) => Promise<boolean>;
+  triggerValidation(
+    payload?:
+      | (IsFlatObject<FormValues> extends true
+          ? Extract<keyof FormValues, string>
+          : string)
+      | (IsFlatObject<FormValues> extends true
+          ? Extract<keyof FormValues, string>
+          : string)[],
+  ): Promise<boolean>;
   errors: FieldErrors<FormValues>;
   formState: FormStateProxy<FormValues>;
   reset: (
