@@ -62,6 +62,7 @@ import {
   OmitResetState,
   Message,
   IsFlatObject,
+  IsAny,
 } from './types';
 
 export function useForm<
@@ -439,7 +440,9 @@ export function useForm<
   function setValue<T extends string, U extends unknown>(
     name: T,
     value: T extends keyof FormValues
-      ? DeepPartial<FormValues[T]>
+      ? IsAny<FormValues[T]> extends true
+        ? any
+        : DeepPartial<FormValues[T]>
       : LiteralToPrimitive<U>,
     shouldValidate?: boolean,
   ): void;
