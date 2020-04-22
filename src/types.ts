@@ -1,5 +1,9 @@
 import * as React from 'react';
 
+export type IsAny<T> = boolean extends (T extends never ? true : false)
+  ? true
+  : false;
+
 export type IsFlatObject<T extends Record<string, unknown>> = Extract<
   T[keyof T],
   unknown[] | Record<string, unknown>
@@ -167,7 +171,7 @@ export type FieldRefs<FormValues extends FieldValues> = Partial<
 
 export type NestDataObject<FormValues, Value> = {
   [Key in keyof FormValues]?: FormValues[Key] extends Array<infer U>
-    ? 0 extends 1 & U
+    ? IsAny<U> extends true
       ? any
       : unknown extends U
       ? Value[]
@@ -178,7 +182,7 @@ export type NestDataObject<FormValues, Value> = {
       : U extends object
       ? NestDataObject<U, Value>[]
       : Value[]
-    : 0 extends 1 & FormValues[Key]
+    : IsAny<FormValues[Key]> extends true
     ? any
     : unknown extends FormValues[Key]
     ? Value
@@ -279,7 +283,9 @@ export type Control<FormValues extends FieldValues = FieldValues> = {
   setValue<T extends string, U extends unknown>(
     name: T,
     value: T extends keyof FormValues
-      ? DeepPartial<FormValues[T]>
+      ? IsAny<FormValues[T]> extends true
+        ? any
+        : DeepPartial<FormValues[T]>
       : LiteralToPrimitive<U>,
     shouldValidate?: boolean,
   ): void;

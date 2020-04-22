@@ -15,6 +15,7 @@ import {
   Message,
   LiteralToPrimitive,
   IsFlatObject,
+  IsAny,
 } from './types';
 
 export type FormProps<FormValues extends FieldValues = FieldValues> = {
@@ -80,7 +81,9 @@ export type FormContextValues<FormValues extends FieldValues = FieldValues> = {
   setValue<T extends string, U extends unknown>(
     name: T,
     value: T extends keyof FormValues
-      ? DeepPartial<FormValues[T]>
+      ? IsAny<FormValues[T]> extends true
+        ? any
+        : DeepPartial<FormValues[T]>
       : LiteralToPrimitive<U>,
     shouldValidate?: boolean,
   ): void;
