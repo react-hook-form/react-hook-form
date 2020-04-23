@@ -66,14 +66,20 @@ export type FormContextValues<FormValues extends FieldValues = FieldValues> = {
     fields: string[],
     defaultValues?: DeepPartial<FormValues>,
   ): DeepPartial<FormValues>;
-  setError(name: ManualFieldError<FormValues>[]): void;
-  setError(name: FieldName<FormValues>, type: MultipleFieldErrors): void;
-  setError(name: FieldName<FormValues>, type: string, message?: Message): void;
   setError(
-    name: FieldName<FormValues> | ManualFieldError<FormValues>[],
-    type: string | MultipleFieldErrors,
+    name: IsFlatObject<FormValues> extends true
+      ? Extract<keyof FormValues, string>
+      : string,
+    type: MultipleFieldErrors,
+  ): void;
+  setError(
+    name: IsFlatObject<FormValues> extends true
+      ? Extract<keyof FormValues, string>
+      : string,
+    type: string,
     message?: Message,
   ): void;
+  setError(name: ManualFieldError<FormValues>[]): void;
   clearError(): void;
   clearError(name: FieldName<FormValues>): void;
   clearError(names: FieldName<FormValues>[]): void;
