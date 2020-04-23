@@ -152,8 +152,10 @@ export type FieldError = {
   isManual?: boolean;
 };
 
-export type ManualFieldError<FormValues> = {
-  name: FieldName<FormValues>;
+export type ManualFieldError<FormValues extends FieldValues> = {
+  name: IsFlatObject<FormValues> extends true
+    ? Extract<keyof FormValues, string>
+    : string;
   type: string;
   types?: MultipleFieldErrors;
   message?: Message;

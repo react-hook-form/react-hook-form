@@ -704,18 +704,26 @@ export function useForm<
     }
   };
 
-  function setError(name: ManualFieldError<FormValues>[]): void;
   function setError(
-    name: FieldName<FormValues>,
+    name: IsFlatObject<FormValues> extends true
+      ? Extract<keyof FormValues, string>
+      : string,
     type: MultipleFieldErrors,
   ): void;
   function setError(
-    name: FieldName<FormValues>,
+    name: IsFlatObject<FormValues> extends true
+      ? Extract<keyof FormValues, string>
+      : string,
     type: string,
     message?: Message,
   ): void;
+  function setError(name: ManualFieldError<FormValues>[]): void;
   function setError(
-    name: FieldName<FormValues> | ManualFieldError<FormValues>[],
+    name:
+      | (IsFlatObject<FormValues> extends true
+          ? Extract<keyof FormValues, string>
+          : string)
+      | ManualFieldError<FormValues>[],
     type: string | MultipleFieldErrors = '',
     message?: Message,
   ): void {
