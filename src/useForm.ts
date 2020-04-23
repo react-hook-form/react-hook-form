@@ -757,10 +757,9 @@ export function useForm<
     defaultValue?: unknown,
   ): unknown {
     const watchFields = watchFieldsRef.current;
-    const combinedDefaultValues = isUndefined(defaultValue)
-      ? isUndefined(defaultValuesRef.current)
-        ? {}
-        : defaultValuesRef.current
+    const isDefaultValueUndefined = isUndefined(defaultValue);
+    const combinedDefaultValues = isDefaultValueUndefined
+      ? defaultValuesRef.current
       : defaultValue;
     const fieldValues = getFieldsValues<FormValues>(
       fieldsRef.current,
@@ -772,7 +771,11 @@ export function useForm<
         fieldValues,
         fieldNames,
         watchFields,
-        combinedDefaultValues as DeepPartial<FormValues>,
+        {
+          [fieldNames]: isDefaultValueUndefined
+            ? get(combinedDefaultValues, fieldNames)
+            : defaultValue,
+        } as DeepPartial<FormValues>,
       );
     }
 
