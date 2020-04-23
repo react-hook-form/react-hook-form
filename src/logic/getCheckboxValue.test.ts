@@ -148,4 +148,28 @@ describe('getCheckboxValue', () => {
       ]),
     ).toEqual({ value: [], isValid: false });
   });
+
+  it('should not return error when check box ref is undefined', () => {
+    expect(
+      getCheckboxValue([
+        undefined,
+        {
+          ref: {
+            name: 'bill',
+            checked: false,
+            value: '2',
+            attributes: { value: '2' },
+          },
+        },
+        {
+          ref: {
+            name: 'bill',
+            checked: false,
+            value: '3',
+            attributes: { value: '3' },
+          },
+        },
+      ]),
+    ).toEqual({ value: [], isValid: false });
+  });
 });
