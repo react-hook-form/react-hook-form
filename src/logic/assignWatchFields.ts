@@ -3,7 +3,6 @@ import get from '../utils/get';
 import getPath from '../utils/getPath';
 import isEmptyObject from '../utils/isEmptyObject';
 import isUndefined from '../utils/isUndefined';
-import isObject from '../utils/isObject';
 import { DeepPartial, FieldValue, FieldValues, FieldName } from '../types';
 
 export default <FormValues extends FieldValues>(
@@ -31,9 +30,5 @@ export default <FormValues extends FieldValues>(
     }
   }
 
-  return isUndefined(value)
-    ? isObject(combinedDefaultValues)
-      ? get(combinedDefaultValues, fieldName)
-      : combinedDefaultValues
-    : value;
+  return isUndefined(value) ? get(combinedDefaultValues, fieldName) : value;
 };
