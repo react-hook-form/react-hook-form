@@ -161,14 +161,6 @@ describe('getCheckboxValue', () => {
             attributes: { value: '2' },
           },
         },
-        {
-          ref: {
-            name: 'bill',
-            checked: false,
-            value: '3',
-            attributes: { value: '3' },
-          },
-        },
       ]),
     ).toEqual({ value: [], isValid: false });
   });
