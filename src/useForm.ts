@@ -772,7 +772,7 @@ export function useForm<
         fieldValues,
         fieldNames,
         watchFields,
-        combinedDefaultValues as DeepPartial<FormValues>,
+        { [fieldNames]: combinedDefaultValues } as DeepPartial<FormValues>,
       );
     }
 
