@@ -74,10 +74,15 @@ export type FormContextValues<FormValues extends FieldValues = FieldValues> = {
     type: string | MultipleFieldErrors,
     message?: Message,
   ): void;
-  clearError(): void;
-  clearError(name: FieldName<FormValues>): void;
-  clearError(names: FieldName<FormValues>[]): void;
-  clearError(name?: FieldName<FormValues> | FieldName<FormValues>[]): void;
+  clearError(
+    name?:
+      | (IsFlatObject<FormValues> extends true
+          ? Extract<keyof FormValues, string>
+          : string)
+      | (IsFlatObject<FormValues> extends true
+          ? Extract<keyof FormValues, string>
+          : string)[],
+  ): void;
   setValue<T extends string, U extends unknown>(
     name: T,
     value: T extends keyof FormValues

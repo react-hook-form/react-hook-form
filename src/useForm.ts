@@ -650,11 +650,14 @@ export function useForm<
     ],
   );
 
-  function clearError(): void;
-  function clearError(name: FieldName<FormValues>): void;
-  function clearError(names: FieldName<FormValues>[]): void;
   function clearError(
-    name?: FieldName<FormValues> | FieldName<FormValues>[],
+    name?:
+      | (IsFlatObject<FormValues> extends true
+          ? Extract<keyof FormValues, string>
+          : string)
+      | (IsFlatObject<FormValues> extends true
+          ? Extract<keyof FormValues, string>
+          : string)[],
   ): void {
     if (name) {
       unset(errorsRef.current, isArray(name) ? name : [name]);
