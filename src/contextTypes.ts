@@ -29,24 +29,16 @@ export type FormContextValues<FormValues extends FieldValues = FieldValues> = {
   register<Element extends FieldElement = FieldElement>(
     validationOptions: ValidationOptions,
   ): (ref: Element | null) => void;
-  register<Element extends FieldElement = FieldElement>(
-    name: FieldName<FormValues>,
+  register(
+    name: IsFlatObject<FormValues> extends true
+      ? Extract<keyof FormValues, string>
+      : string,
     validationOptions?: ValidationOptions,
-  ): void;
-  register<Element extends FieldElement = FieldElement>(
-    namesWithValidationOptions: Record<
-      FieldName<FormValues>,
-      ValidationOptions
-    >,
   ): void;
   register<Element extends FieldElement = FieldElement>(
     ref: Element,
     validationOptions?: ValidationOptions,
   ): void;
-  register<Element extends FieldElement = FieldElement>(
-    refOrValidationOptions: ValidationOptions | Element | null,
-    validationOptions?: ValidationOptions,
-  ): ((ref: Element | null) => void) | void;
   unregister(
     name:
       | (IsFlatObject<FormValues> extends true

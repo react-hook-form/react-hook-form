@@ -958,22 +958,24 @@ export function useForm<
   function register<Element extends FieldElement = FieldElement>(
     validationOptions: ValidationOptions,
   ): (ref: Element | null) => void;
-  function register<Element extends FieldElement = FieldElement>(
-    name: FieldName<FormValues>,
+  function register(
+    name: IsFlatObject<FormValues> extends true
+      ? Extract<keyof FormValues, string>
+      : string,
     validationOptions?: ValidationOptions,
-  ): void;
-  function register<Element extends FieldElement = FieldElement>(
-    namesWithValidationOptions: Record<
-      FieldName<FormValues>,
-      ValidationOptions
-    >,
   ): void;
   function register<Element extends FieldElement = FieldElement>(
     ref: Element,
     validationOptions?: ValidationOptions,
   ): void;
   function register<Element extends FieldElement = FieldElement>(
-    refOrValidationOptions?: ValidationOptions | Element | null,
+    refOrValidationOptions?:
+      | (IsFlatObject<FormValues> extends true
+          ? Extract<keyof FormValues, string>
+          : string)
+      | ValidationOptions
+      | Element
+      | null,
     validationOptions?: ValidationOptions,
   ): ((ref: Element | null) => void) | void {
     if (isWindowUndefined) {
