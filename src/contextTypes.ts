@@ -7,7 +7,6 @@ import {
   OnSubmit,
   FieldElement,
   ValidationOptions,
-  FieldName,
   ManualFieldError,
   MultipleFieldErrors,
   Control,
@@ -23,30 +22,22 @@ export type FormProps<FormValues extends FieldValues = FieldValues> = {
 } & FormContextValues<FormValues>;
 
 export type FormContextValues<FormValues extends FieldValues = FieldValues> = {
-  register<Element extends FieldElement = FieldElement>(): (
-    ref: Element | null,
-  ) => void;
-  register<Element extends FieldElement = FieldElement>(
+  register<
+    Element extends FieldElement<FormValues> = FieldElement<FormValues>
+  >(): (ref: Element | null) => void;
+  register<Element extends FieldElement<FormValues> = FieldElement<FormValues>>(
     validationOptions: ValidationOptions,
   ): (ref: Element | null) => void;
-  register<Element extends FieldElement = FieldElement>(
-    name: FieldName<FormValues>,
+  register(
+    name: IsFlatObject<FormValues> extends true
+      ? Extract<keyof FormValues, string>
+      : string,
     validationOptions?: ValidationOptions,
   ): void;
-  register<Element extends FieldElement = FieldElement>(
-    namesWithValidationOptions: Record<
-      FieldName<FormValues>,
-      ValidationOptions
-    >,
-  ): void;
-  register<Element extends FieldElement = FieldElement>(
+  register<Element extends FieldElement<FormValues> = FieldElement<FormValues>>(
     ref: Element,
     validationOptions?: ValidationOptions,
   ): void;
-  register<Element extends FieldElement = FieldElement>(
-    refOrValidationOptions: ValidationOptions | Element | null,
-    validationOptions?: ValidationOptions,
-  ): ((ref: Element | null) => void) | void;
   unregister(
     name:
       | (IsFlatObject<FormValues> extends true

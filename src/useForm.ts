@@ -831,7 +831,7 @@ export function useForm<
     }
   }
 
-  function registerFieldsRef<Element extends FieldElement>(
+  function registerFieldsRef<Element extends FieldElement<FormValues>>(
     ref: Element,
     validateOptions: ValidationOptions | null = {},
   ): ((name: FieldName<FormValues>) => void) | void {
@@ -952,28 +952,31 @@ export function useForm<
     }
   }
 
-  function register<Element extends FieldElement = FieldElement>(): (
-    ref: Element | null,
-  ) => void;
-  function register<Element extends FieldElement = FieldElement>(
-    validationOptions: ValidationOptions,
-  ): (ref: Element | null) => void;
-  function register<Element extends FieldElement = FieldElement>(
-    name: FieldName<FormValues>,
+  function register<
+    Element extends FieldElement<FormValues> = FieldElement<FormValues>
+  >(): (ref: Element | null) => void;
+  function register<
+    Element extends FieldElement<FormValues> = FieldElement<FormValues>
+  >(validationOptions: ValidationOptions): (ref: Element | null) => void;
+  function register(
+    name: IsFlatObject<FormValues> extends true
+      ? Extract<keyof FormValues, string>
+      : string,
     validationOptions?: ValidationOptions,
   ): void;
-  function register<Element extends FieldElement = FieldElement>(
-    namesWithValidationOptions: Record<
-      FieldName<FormValues>,
-      ValidationOptions
-    >,
-  ): void;
-  function register<Element extends FieldElement = FieldElement>(
-    ref: Element,
-    validationOptions?: ValidationOptions,
-  ): void;
-  function register<Element extends FieldElement = FieldElement>(
-    refOrValidationOptions?: ValidationOptions | Element | null,
+  function register<
+    Element extends FieldElement<FormValues> = FieldElement<FormValues>
+  >(ref: Element, validationOptions?: ValidationOptions): void;
+  function register<
+    Element extends FieldElement<FormValues> = FieldElement<FormValues>
+  >(
+    refOrValidationOptions?:
+      | (IsFlatObject<FormValues> extends true
+          ? Extract<keyof FormValues, string>
+          : string)
+      | ValidationOptions
+      | Element
+      | null,
     validationOptions?: ValidationOptions,
   ): ((ref: Element | null) => void) | void {
     if (isWindowUndefined) {
