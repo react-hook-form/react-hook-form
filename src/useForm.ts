@@ -815,13 +815,17 @@ export function useForm<
       : result;
   }
 
-  function unregister(name: FieldName<FormValues>): void;
-  function unregister(names: FieldName<FormValues>[]): void;
   function unregister(
-    names: FieldName<FormValues> | FieldName<FormValues>[],
+    name:
+      | (IsFlatObject<FormValues> extends true
+          ? Extract<keyof FormValues, string>
+          : string)
+      | (IsFlatObject<FormValues> extends true
+          ? Extract<keyof FormValues, string>
+          : string)[],
   ): void {
     if (fieldsRef.current) {
-      (isArray(names) ? names : [names]).forEach((fieldName) =>
+      (isArray(name) ? name : [name]).forEach((fieldName) =>
         removeFieldEventListenerAndRef(fieldsRef.current[fieldName], true),
       );
     }
