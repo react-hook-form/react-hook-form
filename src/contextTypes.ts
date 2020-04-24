@@ -47,9 +47,15 @@ export type FormContextValues<FormValues extends FieldValues = FieldValues> = {
     refOrValidationOptions: ValidationOptions | Element | null,
     validationOptions?: ValidationOptions,
   ): ((ref: Element | null) => void) | void;
-  unregister(name: FieldName<FormValues>): void;
-  unregister(names: FieldName<FormValues>[]): void;
-  unregister(names: FieldName<FormValues> | FieldName<FormValues>[]): void;
+  unregister(
+    name:
+      | (IsFlatObject<FormValues> extends true
+          ? Extract<keyof FormValues, string>
+          : string)
+      | (IsFlatObject<FormValues> extends true
+          ? Extract<keyof FormValues, string>
+          : string)[],
+  ): void;
   watch(): FormValues;
   watch(option: { nest: boolean }): FormValues;
   watch<T extends string, U extends unknown>(
