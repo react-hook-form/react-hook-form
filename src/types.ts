@@ -218,8 +218,10 @@ export type RadioOrCheckboxOption = {
   mutationWatcher?: MutationWatcher;
 };
 
-export type CustomElement = {
-  name: string;
+export type CustomElement<FormValues extends FieldValues> = {
+  name: IsFlatObject<FormValues> extends true
+    ? Extract<keyof FormValues, string>
+    : string;
   type?: string;
   value?: any;
   checked?: boolean;
@@ -228,11 +230,11 @@ export type CustomElement = {
   focus?: () => void;
 };
 
-export type FieldElement =
+export type FieldElement<FormValues extends FieldValues = FieldValues> =
   | HTMLInputElement
   | HTMLSelectElement
   | HTMLTextAreaElement
-  | CustomElement;
+  | CustomElement<FormValues>;
 
 export type HandleChange = (evt: Event) => Promise<void | boolean>;
 
@@ -283,10 +285,10 @@ export type Control<FormValues extends FieldValues = FieldValues> = {
           ? Extract<keyof FormValues, string>
           : string)[],
   ): Promise<boolean>;
-  register<Element extends FieldElement = FieldElement>(): (
-    ref: Element | null,
-  ) => void;
-  register<Element extends FieldElement = FieldElement>(
+  register<
+    Element extends FieldElement<FormValues> = FieldElement<FormValues>
+  >(): (ref: Element | null) => void;
+  register<Element extends FieldElement<FormValues> = FieldElement<FormValues>>(
     validationOptions: ValidationOptions,
   ): (ref: Element | null) => void;
   register(
@@ -295,7 +297,7 @@ export type Control<FormValues extends FieldValues = FieldValues> = {
       : string,
     validationOptions?: ValidationOptions,
   ): void;
-  register<Element extends FieldElement = FieldElement>(
+  register<Element extends FieldElement<FormValues> = FieldElement<FormValues>>(
     ref: Element,
     validationOptions?: ValidationOptions,
   ): void;
