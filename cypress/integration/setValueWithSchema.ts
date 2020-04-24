@@ -1,4 +1,4 @@
-context('form setValue with schema', () => {
+context.skip('form setValue with schema', () => {
   it('should set input value, trigger validation and clear all errors', () => {
     cy.visit('http://localhost:3000/setValueWithSchema');
 
