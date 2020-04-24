@@ -271,15 +271,6 @@ export type Control<FormValues extends FieldValues = FieldValues> = {
   ): ((ref: Element | null) => void) | void;
   reRender: () => void;
   removeFieldEventListener: (field: Field, forceDelete?: boolean) => void;
-  unregister(
-    name:
-      | (IsFlatObject<FormValues> extends true
-          ? Extract<keyof FormValues, string>
-          : string)
-      | (IsFlatObject<FormValues> extends true
-          ? Extract<keyof FormValues, string>
-          : string)[],
-  ): void;
   setValue<T extends keyof FormValues>(
     namesWithValue: DeepPartial<Pick<FormValues, T>>[],
     shouldValidate?: boolean,
@@ -316,6 +307,15 @@ export type Control<FormValues extends FieldValues = FieldValues> = {
           ? Extract<keyof FormValues, string>
           : string)[],
   ): Promise<boolean>;
+  unregister(
+    name:
+      | (IsFlatObject<FormValues> extends true
+          ? Extract<keyof FormValues, string>
+          : string)
+      | (IsFlatObject<FormValues> extends true
+          ? Extract<keyof FormValues, string>
+          : string)[],
+  ): void;
   formState: FormStateProxy<FormValues>;
   mode: {
     isOnBlur: boolean;
