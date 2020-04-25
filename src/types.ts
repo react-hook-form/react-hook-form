@@ -242,7 +242,7 @@ export type FormValuesFromErrors<Errors> = Errors extends FieldErrors<
   ? FormValues
   : never;
 
-export type EventFunction = (args: any[]) => any;
+export type EventFunction = (...args: any[]) => any;
 
 export type Control<FormValues extends FieldValues = FieldValues> = {
   reRender: () => void;

@@ -75,7 +75,7 @@ const Controller = <
   };
 
   const eventWrapper = (event: EventFunction) => (...arg: any[]) =>
-    setValue(name, commonTask(event(arg)), shouldValidate());
+    setValue(name, commonTask(event(...arg)), shouldValidate());
 
   const handleChange = (event: any) => {
     const data = commonTask(event);
@@ -139,7 +139,7 @@ const Controller = <
       ? {
           [onBlurName]: (...args: any[]) => {
             if (onBlur) {
-              onBlur(args);
+              onBlur(...args);
             }
 
             if (shouldReValidateOnBlur) {
