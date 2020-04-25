@@ -1,5 +1,6 @@
 import React from 'react';
 import { useForm } from 'react-hook-form';
+import { yupResolver } from 'react-hook-form-resolvers';
 import * as yup from 'yup';
 
 let renderCounter = 0;
@@ -49,7 +50,7 @@ const BasicSchemaValidation: React.FC = (props: any) => {
     multiple: string;
     validate: string;
   }>({
-    // validationSchema,
+    validationResolver: yupResolver(validationSchema),
     mode: props.match.params.mode,
   });
   const onSubmit = () => {};
