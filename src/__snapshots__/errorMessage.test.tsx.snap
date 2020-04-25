@@ -1,0 +1,207 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`React Hook Form Error Message should render correctly 1`] = `<DocumentFragment />`;
+
+exports[`React Hook Form Error Message should render correctly with errors message that is ReactElement 1`] = `
+<DocumentFragment>
+  <p>
+    test
+  </p>
+</DocumentFragment>
+`;
+
+exports[`React Hook Form Error Message should render correctly with flat errors 1`] = `
+<DocumentFragment>
+  flat
+</DocumentFragment>
+`;
+
+exports[`React Hook Form Error Message should render correctly with flat errors and as with component and children 1`] = `
+<DocumentFragment>
+  <span>
+    flat
+  </span>
+</DocumentFragment>
+`;
+
+exports[`React Hook Form Error Message should render correctly with flat errors and as with component and className and children 1`] = `
+<DocumentFragment>
+  <span
+    class="test"
+  >
+    flat
+  </span>
+</DocumentFragment>
+`;
+
+exports[`React Hook Form Error Message should render correctly with flat errors and as with string 1`] = `
+<DocumentFragment>
+  <span>
+    flat
+  </span>
+</DocumentFragment>
+`;
+
+exports[`React Hook Form Error Message should render correctly with flat errors and as with string and className 1`] = `
+<DocumentFragment>
+  <span
+    class="test"
+  >
+    flat
+  </span>
+</DocumentFragment>
+`;
+
+exports[`React Hook Form Error Message should render correctly with flat multiple errors and as with component and children 1`] = `
+<DocumentFragment>
+  <div>
+    <span>
+      flat1
+    </span>
+    <span>
+      flat2
+    </span>
+    <span>
+      flat3
+    </span>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`React Hook Form Error Message should render correctly with flat multiple errors and children 1`] = `
+<DocumentFragment>
+  <span>
+    flat1
+  </span>
+  <span>
+    flat2
+  </span>
+  <span>
+    flat3
+  </span>
+</DocumentFragment>
+`;
+
+exports[`React Hook Form Error Message should render correctly with message that is ReactElement 1`] = `
+<DocumentFragment>
+  <p>
+    test
+  </p>
+</DocumentFragment>
+`;
+
+exports[`React Hook Form Error Message should render correctly with message that is string 1`] = `
+<DocumentFragment>
+  test
+</DocumentFragment>
+`;
+
+exports[`React Hook Form Error Message should render correctly with nested errors and as with componet and children 1`] = `
+<DocumentFragment>
+  <span>
+    object
+  </span>
+</DocumentFragment>
+`;
+
+exports[`React Hook Form Error Message should render correctly with nested errors array 1`] = `
+<DocumentFragment>
+  array
+</DocumentFragment>
+`;
+
+exports[`React Hook Form Error Message should render correctly with nested errors array and as with component and children 1`] = `
+<DocumentFragment>
+  <span>
+    array
+  </span>
+</DocumentFragment>
+`;
+
+exports[`React Hook Form Error Message should render correctly with nested errors array and as with string 1`] = `
+<DocumentFragment>
+  <span>
+    array
+  </span>
+</DocumentFragment>
+`;
+
+exports[`React Hook Form Error Message should render correctly with nested errors object 1`] = `
+<DocumentFragment>
+  object
+</DocumentFragment>
+`;
+
+exports[`React Hook Form Error Message should render correctly with nested errors object and as with string 1`] = `
+<DocumentFragment>
+  <span>
+    object
+  </span>
+</DocumentFragment>
+`;
+
+exports[`React Hook Form Error Message should render correctly with nested multiple errors and as with component and children 1`] = `
+<DocumentFragment>
+  <div>
+    <span>
+      object1
+    </span>
+    <span>
+      object2
+    </span>
+    <span>
+      object3
+    </span>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`React Hook Form Error Message should render correctly with nested multiple errors and children 1`] = `
+<DocumentFragment>
+  <span>
+    object1
+  </span>
+  <span>
+    object2
+  </span>
+  <span>
+    object3
+  </span>
+</DocumentFragment>
+`;
+
+exports[`React Hook Form Error Message should render correctly with nested multiple errors array and as with component and children 1`] = `
+<DocumentFragment>
+  <div>
+    <span>
+      array1
+    </span>
+    <span>
+      array2
+    </span>
+    <span>
+      array3
+    </span>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`React Hook Form Error Message should render correctly with nested multiple errors array and children 1`] = `
+<DocumentFragment>
+  <span>
+    array1
+  </span>
+  <span>
+    array2
+  </span>
+  <span>
+    array3
+  </span>
+</DocumentFragment>
+`;
+
+exports[`React Hook Form Error Message should render errors message when errors message is supplied 1`] = `
+<DocumentFragment>
+  test1
+</DocumentFragment>
+`;
