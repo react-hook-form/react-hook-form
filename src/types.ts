@@ -104,6 +104,8 @@ export type UseFormOptions<
   validationContext: ValidationContext;
   submitFocusError: boolean;
   validateCriteriaMode: 'firstError' | 'all';
+  nestedError: boolean;
+  nestedValue: boolean;
 }>;
 
 export type MutationWatcher = {

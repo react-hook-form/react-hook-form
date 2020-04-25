@@ -75,6 +75,8 @@ export function useForm<
   defaultValues = {},
   submitFocusError = true,
   validateCriteriaMode,
+  nestedError = true,
+  nestedValue = true,
 }: UseFormOptions<FormValues, ValidationContext> = {}): FormContextValues<
   FormValues
 > {
@@ -789,7 +791,9 @@ export function useForm<
     const result =
       (!isEmptyObject(fieldValues) && fieldValues) || combinedDefaultValues;
 
-    return fieldNames && fieldNames.nest
+    return fieldNames
+      ? fieldNames.nest
+      : nestedValue
       ? transformToNestObject(result as FieldValues)
       : result;
   }
@@ -1160,7 +1164,9 @@ export function useForm<
       ? defaultValuesRef.current
       : fieldValues;
 
-    return payload && payload.nest
+    return payload
+      ? payload.nest
+      : nestedValue
       ? transformToNestObject(outputValues)
       : outputValues;
   }
