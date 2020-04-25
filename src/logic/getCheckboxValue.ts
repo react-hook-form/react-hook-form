@@ -19,7 +19,7 @@ export default (options?: RadioOrCheckboxOption[]): CheckboxFieldResult => {
   if (isArray(options)) {
     if (options.length > 1) {
       const values = options
-        .filter(({ ref: { checked } }) => checked)
+        .filter((option) => option && option.ref.checked)
         .map(({ ref: { value } }) => value);
       return { value: values, isValid: !!values.length };
     }

@@ -150,8 +150,10 @@ export type FieldError = {
   isManual?: boolean;
 };
 
-export type ManualFieldError<FormValues> = {
-  name: FieldName<FormValues>;
+export type ManualFieldError<FormValues extends FieldValues> = {
+  name: IsFlatObject<FormValues> extends true
+    ? Extract<keyof FormValues, string>
+    : string;
   type: string;
   types?: MultipleFieldErrors;
   message?: Message;
@@ -214,8 +216,10 @@ export type RadioOrCheckboxOption = {
   mutationWatcher?: MutationWatcher;
 };
 
-export type CustomElement = {
-  name: string;
+export type CustomElement<FormValues extends FieldValues> = {
+  name: IsFlatObject<FormValues> extends true
+    ? Extract<keyof FormValues, string>
+    : string;
   type?: string;
   value?: any;
   checked?: boolean;
@@ -224,11 +228,11 @@ export type CustomElement = {
   focus?: () => void;
 };
 
-export type FieldElement =
+export type FieldElement<FormValues extends FieldValues = FieldValues> =
   | HTMLInputElement
   | HTMLSelectElement
   | HTMLTextAreaElement
-  | CustomElement;
+  | CustomElement<FormValues>;
 
 export type HandleChange = (evt: Event) => Promise<void | boolean>;
 
@@ -241,39 +245,8 @@ export type FormValuesFromErrors<Errors> = Errors extends FieldErrors<
 export type EventFunction = (args: any[]) => any;
 
 export type Control<FormValues extends FieldValues = FieldValues> = {
-  register<Element extends FieldElement = FieldElement>(): (
-    ref: Element | null,
-  ) => void;
-  register<Element extends FieldElement = FieldElement>(
-    validationOptions: ValidationOptions,
-  ): (ref: Element | null) => void;
-  register<Element extends FieldElement = FieldElement>(
-    name: FieldName<FormValues>,
-    validationOptions?: ValidationOptions,
-  ): void;
-  register<Element extends FieldElement = FieldElement>(
-    namesWithValidationOptions: Record<
-      FieldName<FormValues>,
-      ValidationOptions
-    >,
-  ): void;
-  register<Element extends FieldElement = FieldElement>(
-    ref: Element,
-    validationOptions?: ValidationOptions,
-  ): void;
-  register<Element extends FieldElement = FieldElement>(
-    refOrValidationOptions: ValidationOptions | Element | null,
-    validationOptions?: ValidationOptions,
-  ): ((ref: Element | null) => void) | void;
-  triggerValidation: (
-    payload?: FieldName<FormValues> | FieldName<FormValues>[] | string,
-    shouldRender?: boolean,
-  ) => Promise<boolean>;
   reRender: () => void;
   removeFieldEventListener: (field: Field, forceDelete?: boolean) => void;
-  unregister(name: FieldName<FormValues>): void;
-  unregister(names: FieldName<FormValues>[]): void;
-  unregister(names: FieldName<FormValues> | FieldName<FormValues>[]): void;
   setValue<T extends keyof FormValues>(
     namesWithValue: DeepPartial<Pick<FormValues, T>>[],
     shouldValidate?: boolean,
@@ -301,6 +274,40 @@ export type Control<FormValues extends FieldValues = FieldValues> = {
   getValues<T extends string, U extends unknown>(
     payload: T,
   ): T extends keyof FormValues ? FormValues[T] : U;
+  triggerValidation(
+    payload?:
+      | (IsFlatObject<FormValues> extends true
+          ? Extract<keyof FormValues, string>
+          : string)
+      | (IsFlatObject<FormValues> extends true
+          ? Extract<keyof FormValues, string>
+          : string)[],
+  ): Promise<boolean>;
+  register<
+    Element extends FieldElement<FormValues> = FieldElement<FormValues>
+  >(): (ref: Element | null) => void;
+  register<Element extends FieldElement<FormValues> = FieldElement<FormValues>>(
+    validationOptions: ValidationOptions,
+  ): (ref: Element | null) => void;
+  register(
+    name: IsFlatObject<FormValues> extends true
+      ? Extract<keyof FormValues, string>
+      : string,
+    validationOptions?: ValidationOptions,
+  ): void;
+  register<Element extends FieldElement<FormValues> = FieldElement<FormValues>>(
+    ref: Element,
+    validationOptions?: ValidationOptions,
+  ): void;
+  unregister(
+    name:
+      | (IsFlatObject<FormValues> extends true
+          ? Extract<keyof FormValues, string>
+          : string)
+      | (IsFlatObject<FormValues> extends true
+          ? Extract<keyof FormValues, string>
+          : string)[],
+  ): void;
   formState: FormStateProxy<FormValues>;
   mode: {
     isOnBlur: boolean;

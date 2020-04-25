@@ -734,7 +734,7 @@ describe('useForm', () => {
 
     it('should trigger multiple fields validation', async () => {
       const { result } = renderHook(() =>
-        useForm<{ test: string }>({
+        useForm<{ test: string; test1: string }>({
           mode: VALIDATION_MODE.onChange,
         }),
       );
@@ -1320,7 +1320,7 @@ describe('useForm', () => {
 
     it('should return true when no validation is registered', () => {
       const { result } = renderHook(() =>
-        useForm<{ input: string }>({
+        useForm<{ test: string }>({
           mode: VALIDATION_MODE.onBlur,
         }),
       );
@@ -1334,7 +1334,7 @@ describe('useForm', () => {
 
     it('should return false when default value is not valid value', async () => {
       const { result } = renderHook(() =>
-        useForm<{ input: string }>({
+        useForm<{ input: string; issue: string }>({
           mode: VALIDATION_MODE.onChange,
         }),
       );
@@ -1360,7 +1360,7 @@ describe('useForm', () => {
 
     it('should return true when default value meet the validation criteria', async () => {
       const { result } = renderHook(() =>
-        useForm<{ input: string }>({
+        useForm<{ input: string; issue: string }>({
           mode: VALIDATION_MODE.onChange,
         }),
       );

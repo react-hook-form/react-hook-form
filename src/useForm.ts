@@ -116,7 +116,6 @@ export function useForm<
     !isWindowUndefined &&
     !isUndefined(window.HTMLElement);
   const isProxyEnabled = isWeb ? 'Proxy' in window : typeof Proxy !== UNDEFINED;
-  const formStateProxyRef = React.useRef<FormStateProxy<FormValues>>();
   const readFormStateRef = React.useRef<ReadFormState>({
     dirty: !isProxyEnabled,
     dirtyFields: !isProxyEnabled,
@@ -394,7 +393,13 @@ export function useForm<
 
   const triggerValidation = React.useCallback(
     async (
-      payload?: FieldName<FormValues> | FieldName<FormValues>[] | string,
+      payload?:
+        | (IsFlatObject<FormValues> extends true
+            ? Extract<keyof FormValues, string>
+            : string)
+        | (IsFlatObject<FormValues> extends true
+            ? Extract<keyof FormValues, string>
+            : string)[],
     ): Promise<boolean> => {
       const fields = payload || Object.keys(fieldsRef.current);
 
@@ -624,11 +629,14 @@ export function useForm<
     [reRender, validationResolver, validateResolver, removeFieldEventListener],
   );
 
-  function clearError(): void;
-  function clearError(name: FieldName<FormValues>): void;
-  function clearError(names: FieldName<FormValues>[]): void;
   function clearError(
-    name?: FieldName<FormValues> | FieldName<FormValues>[],
+    name?:
+      | (IsFlatObject<FormValues> extends true
+          ? Extract<keyof FormValues, string>
+          : string)
+      | (IsFlatObject<FormValues> extends true
+          ? Extract<keyof FormValues, string>
+          : string)[],
   ): void {
     if (name) {
       unset(errorsRef.current, isArray(name) ? name : [name]);
@@ -675,18 +683,26 @@ export function useForm<
     }
   };
 
-  function setError(name: ManualFieldError<FormValues>[]): void;
   function setError(
-    name: FieldName<FormValues>,
+    name: IsFlatObject<FormValues> extends true
+      ? Extract<keyof FormValues, string>
+      : string,
     type: MultipleFieldErrors,
   ): void;
   function setError(
-    name: FieldName<FormValues>,
+    name: IsFlatObject<FormValues> extends true
+      ? Extract<keyof FormValues, string>
+      : string,
     type: string,
     message?: Message,
   ): void;
+  function setError(name: ManualFieldError<FormValues>[]): void;
   function setError(
-    name: FieldName<FormValues> | ManualFieldError<FormValues>[],
+    name:
+      | (IsFlatObject<FormValues> extends true
+          ? Extract<keyof FormValues, string>
+          : string)
+      | ManualFieldError<FormValues>[],
     type: string | MultipleFieldErrors = '',
     message?: Message,
   ): void {
@@ -731,10 +747,9 @@ export function useForm<
     defaultValue?: unknown,
   ): unknown {
     const watchFields = watchFieldsRef.current;
-    const combinedDefaultValues = isUndefined(defaultValue)
-      ? isUndefined(defaultValuesRef.current)
-        ? {}
-        : defaultValuesRef.current
+    const isDefaultValueUndefined = isUndefined(defaultValue);
+    const combinedDefaultValues = isDefaultValueUndefined
+      ? defaultValuesRef.current
       : defaultValue;
     const fieldValues = getFieldsValues<FormValues>(
       fieldsRef.current,
@@ -746,7 +761,11 @@ export function useForm<
         fieldValues,
         fieldNames,
         watchFields,
-        combinedDefaultValues as DeepPartial<FormValues>,
+        {
+          [fieldNames]: isDefaultValueUndefined
+            ? get(combinedDefaultValues, fieldNames)
+            : defaultValue,
+        } as DeepPartial<FormValues>,
       );
     }
 
@@ -775,19 +794,23 @@ export function useForm<
       : result;
   }
 
-  function unregister(name: FieldName<FormValues>): void;
-  function unregister(names: FieldName<FormValues>[]): void;
   function unregister(
-    names: FieldName<FormValues> | FieldName<FormValues>[],
+    name:
+      | (IsFlatObject<FormValues> extends true
+          ? Extract<keyof FormValues, string>
+          : string)
+      | (IsFlatObject<FormValues> extends true
+          ? Extract<keyof FormValues, string>
+          : string)[],
   ): void {
     if (fieldsRef.current) {
-      (isArray(names) ? names : [names]).forEach((fieldName) =>
+      (isArray(name) ? name : [name]).forEach((fieldName) =>
         removeFieldEventListenerAndRef(fieldsRef.current[fieldName], true),
       );
     }
   }
 
-  function registerFieldsRef<Element extends FieldElement>(
+  function registerFieldsRef<Element extends FieldElement<FormValues>>(
     ref: Element,
     validateOptions: ValidationOptions | null = {},
   ): ((name: FieldName<FormValues>) => void) | void {
@@ -908,28 +931,31 @@ export function useForm<
     }
   }
 
-  function register<Element extends FieldElement = FieldElement>(): (
-    ref: Element | null,
-  ) => void;
-  function register<Element extends FieldElement = FieldElement>(
-    validationOptions: ValidationOptions,
-  ): (ref: Element | null) => void;
-  function register<Element extends FieldElement = FieldElement>(
-    name: FieldName<FormValues>,
+  function register<
+    Element extends FieldElement<FormValues> = FieldElement<FormValues>
+  >(): (ref: Element | null) => void;
+  function register<
+    Element extends FieldElement<FormValues> = FieldElement<FormValues>
+  >(validationOptions: ValidationOptions): (ref: Element | null) => void;
+  function register(
+    name: IsFlatObject<FormValues> extends true
+      ? Extract<keyof FormValues, string>
+      : string,
     validationOptions?: ValidationOptions,
   ): void;
-  function register<Element extends FieldElement = FieldElement>(
-    namesWithValidationOptions: Record<
-      FieldName<FormValues>,
-      ValidationOptions
-    >,
-  ): void;
-  function register<Element extends FieldElement = FieldElement>(
-    ref: Element,
-    validationOptions?: ValidationOptions,
-  ): void;
-  function register<Element extends FieldElement = FieldElement>(
-    refOrValidationOptions?: ValidationOptions | Element | null,
+  function register<
+    Element extends FieldElement<FormValues> = FieldElement<FormValues>
+  >(ref: Element, validationOptions?: ValidationOptions): void;
+  function register<
+    Element extends FieldElement<FormValues> = FieldElement<FormValues>
+  >(
+    refOrValidationOptions?:
+      | (IsFlatObject<FormValues> extends true
+          ? Extract<keyof FormValues, string>
+          : string)
+      | ValidationOptions
+      | Element
+      | null,
     validationOptions?: ValidationOptions,
   ): ((ref: Element | null) => void) | void {
     if (isWindowUndefined) {
@@ -1169,17 +1195,6 @@ export function useForm<
       : isValidRef.current,
   };
 
-  formStateProxyRef.current = new Proxy<FormStateProxy<FormValues>>(formState, {
-    get: (obj, prop: keyof FormStateProxy) => {
-      if (prop in obj) {
-        readFormStateRef.current[prop] = true;
-        return obj[prop];
-      }
-
-      return {};
-    },
-  });
-
   const commonProps = {
     triggerValidation,
     setValue: React.useCallback(setValue, [
@@ -1193,7 +1208,18 @@ export function useForm<
     ]),
     unregister: React.useCallback(unregister, []),
     getValues: React.useCallback(getValues, []),
-    formState: isProxyEnabled ? formStateProxyRef.current : formState,
+    formState: isProxyEnabled
+      ? new Proxy<FormStateProxy<FormValues>>(formState, {
+          get: (obj, prop: keyof FormStateProxy) => {
+            if (prop in obj) {
+              readFormStateRef.current[prop] = true;
+              return obj[prop];
+            }
+
+            return {};
+          },
+        })
+      : formState,
   };
 
   const control = {

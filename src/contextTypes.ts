@@ -7,7 +7,6 @@ import {
   OnSubmit,
   FieldElement,
   ValidationOptions,
-  FieldName,
   ManualFieldError,
   MultipleFieldErrors,
   Control,
@@ -23,33 +22,31 @@ export type FormProps<FormValues extends FieldValues = FieldValues> = {
 } & FormContextValues<FormValues>;
 
 export type FormContextValues<FormValues extends FieldValues = FieldValues> = {
-  register<Element extends FieldElement = FieldElement>(): (
-    ref: Element | null,
-  ) => void;
-  register<Element extends FieldElement = FieldElement>(
+  register<
+    Element extends FieldElement<FormValues> = FieldElement<FormValues>
+  >(): (ref: Element | null) => void;
+  register<Element extends FieldElement<FormValues> = FieldElement<FormValues>>(
     validationOptions: ValidationOptions,
   ): (ref: Element | null) => void;
-  register<Element extends FieldElement = FieldElement>(
-    name: FieldName<FormValues>,
+  register(
+    name: IsFlatObject<FormValues> extends true
+      ? Extract<keyof FormValues, string>
+      : string,
     validationOptions?: ValidationOptions,
   ): void;
-  register<Element extends FieldElement = FieldElement>(
-    namesWithValidationOptions: Record<
-      FieldName<FormValues>,
-      ValidationOptions
-    >,
-  ): void;
-  register<Element extends FieldElement = FieldElement>(
+  register<Element extends FieldElement<FormValues> = FieldElement<FormValues>>(
     ref: Element,
     validationOptions?: ValidationOptions,
   ): void;
-  register<Element extends FieldElement = FieldElement>(
-    refOrValidationOptions: ValidationOptions | Element | null,
-    validationOptions?: ValidationOptions,
-  ): ((ref: Element | null) => void) | void;
-  unregister(name: FieldName<FormValues>): void;
-  unregister(names: FieldName<FormValues>[]): void;
-  unregister(names: FieldName<FormValues> | FieldName<FormValues>[]): void;
+  unregister(
+    name:
+      | (IsFlatObject<FormValues> extends true
+          ? Extract<keyof FormValues, string>
+          : string)
+      | (IsFlatObject<FormValues> extends true
+          ? Extract<keyof FormValues, string>
+          : string)[],
+  ): void;
   watch(): FormValues;
   watch(option: { nest: boolean }): FormValues;
   watch<T extends string, U extends unknown>(
@@ -66,18 +63,29 @@ export type FormContextValues<FormValues extends FieldValues = FieldValues> = {
     fields: string[],
     defaultValues?: DeepPartial<FormValues>,
   ): DeepPartial<FormValues>;
-  setError(name: ManualFieldError<FormValues>[]): void;
-  setError(name: FieldName<FormValues>, type: MultipleFieldErrors): void;
-  setError(name: FieldName<FormValues>, type: string, message?: Message): void;
   setError(
-    name: FieldName<FormValues> | ManualFieldError<FormValues>[],
-    type: string | MultipleFieldErrors,
+    name: IsFlatObject<FormValues> extends true
+      ? Extract<keyof FormValues, string>
+      : string,
+    type: MultipleFieldErrors,
+  ): void;
+  setError(
+    name: IsFlatObject<FormValues> extends true
+      ? Extract<keyof FormValues, string>
+      : string,
+    type: string,
     message?: Message,
   ): void;
-  clearError(): void;
-  clearError(name: FieldName<FormValues>): void;
-  clearError(names: FieldName<FormValues>[]): void;
-  clearError(name?: FieldName<FormValues> | FieldName<FormValues>[]): void;
+  setError(name: ManualFieldError<FormValues>[]): void;
+  clearError(
+    name?:
+      | (IsFlatObject<FormValues> extends true
+          ? Extract<keyof FormValues, string>
+          : string)
+      | (IsFlatObject<FormValues> extends true
+          ? Extract<keyof FormValues, string>
+          : string)[],
+  ): void;
   setValue<T extends string, U extends unknown>(
     name: T,
     value: T extends keyof FormValues
@@ -91,10 +99,15 @@ export type FormContextValues<FormValues extends FieldValues = FieldValues> = {
     namesWithValue: DeepPartial<Pick<FormValues, T>>[],
     shouldValidate?: boolean,
   ): void;
-  triggerValidation: (
-    payload?: FieldName<FormValues> | FieldName<FormValues>[] | string,
-    shouldRender?: boolean,
-  ) => Promise<boolean>;
+  triggerValidation(
+    payload?:
+      | (IsFlatObject<FormValues> extends true
+          ? Extract<keyof FormValues, string>
+          : string)
+      | (IsFlatObject<FormValues> extends true
+          ? Extract<keyof FormValues, string>
+          : string)[],
+  ): Promise<boolean>;
   errors: FieldErrors<FormValues>;
   formState: FormStateProxy<FormValues>;
   reset: (
