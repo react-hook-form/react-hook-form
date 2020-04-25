@@ -90,9 +90,8 @@ export type ValidationResolver<
 > = (
   values: FormValues,
   validationContext?: ValidationContext,
-) =>
-  | SchemaValidationResult<FormValues>
-  | Promise<SchemaValidationResult<FormValues>>;
+  validateAllFieldCriteria?: boolean,
+) => Promise<SchemaValidationResult<FormValues>>;
 
 export type UseFormOptions<
   FormValues extends FieldValues = FieldValues,
@@ -101,7 +100,6 @@ export type UseFormOptions<
   mode: Mode;
   reValidateMode: Mode;
   defaultValues: DeepPartial<FormValues>;
-  validationSchema: any;
   validationResolver: ValidationResolver<FormValues, ValidationContext>;
   validationContext: ValidationContext;
   submitFocusError: boolean;

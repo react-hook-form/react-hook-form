@@ -25,7 +25,7 @@ context('isValid', () => {
     cy.get('#isValid').contains('false');
   });
 
-  it('should showing valid correctly with schema validation', () => {
+  it.skip('should showing valid correctly with schema validation', () => {
     cy.visit('http://localhost:3000/isValid/schema/defaultValue');
     cy.get('#isValid').contains('false');
 
@@ -42,7 +42,7 @@ context('isValid', () => {
     cy.get('#renderCount').contains('8');
   });
 
-  it('should showing valid correctly with schema validation and default value supplied', () => {
+  it.skip('should showing valid correctly with schema validation and default value supplied', () => {
     cy.visit('http://localhost:3000/isValid/schema/defaultValues');
     cy.get('#isValid').contains('true');
 
