@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import * as yup from 'yup';
+import { yupResolver } from 'react-hook-form-resolvers';
 
 let renderCounter = 0;
 
@@ -21,7 +22,7 @@ const SetValueWithSchema: React.FC = () => {
     multiple: string[];
     requiredField: string;
   }>({
-    // validationSchema,
+    validationResolver: yupResolver(validationSchema),
   });
 
   renderCounter++;
