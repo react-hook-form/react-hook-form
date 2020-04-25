@@ -26,7 +26,7 @@
     "cypress:open": "cypress open",
     "prepublishOnly": "yarn lint && yarn test && yarn run clean && yarn build",
     "bundlesize": "yarn build:min && bundlesize",
-    "start:app": "yarn build && yarn link && yarn --cwd node_modules/react link && yarn --cwd ./app link react react-hook-form && yarn --cwd ./app && yarn --cwd ./app run start"
+    "start:app": "yarn build:modern && yarn link && yarn --cwd node_modules/react link && yarn --cwd ./app link react react-hook-form && yarn --cwd ./app && yarn --cwd ./app run start"
   },
   "keywords": [
     "react",

@@ -1,6 +1,7 @@
 import React from 'react';
 import { useForm } from 'react-hook-form';
 import * as yup from 'yup';
+import { yupResolver } from 'react-hook-form-resolvers';
 
 let renderCounter = 0;
 
@@ -20,7 +21,7 @@ const FormStateWithSchema: React.FC = (props: any) => {
     radio: string;
     checkbox: string;
   }>({
-    // validationSchema,
+    validationResolver: yupResolver(validationSchema),
     mode: props.match.params.mode,
   });
   const onSubmit = () => {};
