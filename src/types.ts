@@ -41,6 +41,14 @@ export type NestedValue<
   [$NestedValue]: never;
 } & TValue;
 
+export type UnpackedFieldValues<TFieldValues extends FieldValues> = {
+  [Key in keyof TFieldValues]: TFieldValues[Key] extends NestedValue<infer U>
+    ? U
+    : TFieldValues[Key] extends object
+    ? UnpackedFieldValues<TFieldValues[Key]>
+    : TFieldValues[Key];
+};
+
 export type Ref = FieldElement;
 
 export type DeepPartial<T> = {
@@ -62,7 +70,7 @@ export type ValidationMode = {
 export type Mode = keyof ValidationMode;
 
 export type OnSubmit<FormValues extends FieldValues> = (
-  data: FormValues,
+  data: UnpackedFieldValues<FormValues>,
   event?: React.BaseSyntheticEvent,
 ) => void | Promise<void>;
 
@@ -79,7 +87,7 @@ export type EmptyObject = { [key in string | number]: never };
 export type SchemaValidationSuccess<
   FormValues extends FieldValues = FieldValues
 > = {
-  values: FormValues;
+  values: UnpackedFieldValues<FormValues>;
   errors: EmptyObject;
 };
 
@@ -110,7 +118,7 @@ export type UseFormOptions<
 > = Partial<{
   mode: Mode;
   reValidateMode: Mode;
-  defaultValues: DeepPartial<FormValues>;
+  defaultValues: DeepPartial<UnpackedFieldValues<FormValues>>;
   validationSchema: any;
   validationResolver: ValidationResolver<FormValues, ValidationContext>;
   validationContext: ValidationContext;
@@ -252,7 +260,7 @@ export type Control<FormValues extends FieldValues = FieldValues> = {
   reRender: () => void;
   removeFieldEventListener: (field: Field, forceDelete?: boolean) => void;
   setValue<T extends keyof FormValues>(
-    namesWithValue: DeepPartial<Pick<FormValues, T>>[],
+    namesWithValue: DeepPartial<Pick<UnpackedFieldValues<FormValues>, T>>[],
     shouldValidate?: boolean,
   ): void;
   setValue<T extends string, U extends unknown>(
@@ -260,24 +268,23 @@ export type Control<FormValues extends FieldValues = FieldValues> = {
     value: T extends keyof FormValues
       ? IsAny<FormValues[T]> extends true
         ? any
-        : DeepPartial<FormValues[T]>
+        : DeepPartial<UnpackedFieldValues<FormValues>[T]>
       : LiteralToPrimitive<U>,
     shouldValidate?: boolean,
   ): void;
   getValues(): IsFlatObject<FormValues> extends false
     ? Record<string, unknown>
-    : FormValues;
+    : UnpackedFieldValues<FormValues>;
   getValues<T extends boolean>(payload: {
     nest: T;
   }): T extends true
-    ? FormValues
+    ? UnpackedFieldValues<FormValues>
     : IsFlatObject<FormValues> extends true
-    ? FormValues
+    ? UnpackedFieldValues<FormValues>
     : Record<string, unknown>;
-  getValues(payload?: { nest: boolean }): FormValues;
   getValues<T extends string, U extends unknown>(
     payload: T,
-  ): T extends keyof FormValues ? FormValues[T] : U;
+  ): T extends keyof FormValues ? UnpackedFieldValues<FormValues>[T] : U;
   triggerValidation(
     payload?:
       | (IsFlatObject<FormValues> extends true
@@ -347,7 +354,8 @@ export type Control<FormValues extends FieldValues = FieldValues> = {
     dirtyFields: boolean;
   }>;
   defaultValuesRef: React.MutableRefObject<
-    DeepPartial<FormValues> | FormValues[FieldName<FormValues>]
+    | DeepPartial<UnpackedFieldValues<FormValues>>
+    | UnpackedFieldValues<FormValues>[FieldName<FormValues>]
   >;
 };
 
