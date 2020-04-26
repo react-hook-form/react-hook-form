@@ -83,6 +83,8 @@ export function useForm<
   const touchedFieldsRef = React.useRef<Touched<FormValues>>({});
   const fieldArrayDefaultValues = React.useRef<Record<string, unknown[]>>({});
   const watchFieldsRef = React.useRef(new Set<FieldName<FormValues>>());
+  const watchFieldsHookRef = React.useRef(new Set<FieldName<FormValues>>());
+  const watchFieldsHookRenderRef = React.useRef<Record<string, Function>>({});
   const dirtyFieldsRef = React.useRef(new Set<FieldName<FormValues>>());
   const fieldsWithValidationRef = React.useRef(
     new Set<FieldName<FormValues>>(),
@@ -738,27 +740,14 @@ export function useForm<
     }
   }
 
-  function watch(): FormValues;
-  function watch(option: { nest: boolean }): FormValues;
-  function watch<T extends string, U extends unknown>(
-    field: T,
-    defaultValue?: T extends keyof FormValues
-      ? FormValues[T]
-      : LiteralToPrimitive<U>,
-  ): T extends keyof FormValues ? FormValues[T] : LiteralToPrimitive<U>;
-  function watch<T extends keyof FormValues>(
-    fields: T[],
-    defaultValues?: DeepPartial<Pick<FormValues, T>>,
-  ): Pick<FormValues, T>;
-  function watch(
-    fields: string[],
-    defaultValues?: DeepPartial<FormValues>,
-  ): DeepPartial<FormValues>;
-  function watch(
+  function watchInternal(
+    defaultValue: unknown,
     fieldNames?: string | string[] | { nest: boolean },
-    defaultValue?: unknown,
+    isUseWatch?: boolean,
   ): unknown {
-    const watchFields = watchFieldsRef.current;
+    const watchFields = isUseWatch
+      ? watchFieldsHookRef.current
+      : watchFieldsRef.current;
     const isDefaultValueUndefined = isUndefined(defaultValue);
     const combinedDefaultValues = isDefaultValueUndefined
       ? defaultValuesRef.current
@@ -804,6 +793,29 @@ export function useForm<
     return fieldNames && fieldNames.nest
       ? transformToNestObject(result as FieldValues)
       : result;
+  }
+
+  function watch(): FormValues;
+  function watch(option: { nest: boolean }): FormValues;
+  function watch<T extends string, U extends unknown>(
+    field: T,
+    defaultValue?: T extends keyof FormValues
+      ? FormValues[T]
+      : LiteralToPrimitive<U>,
+  ): T extends keyof FormValues ? FormValues[T] : LiteralToPrimitive<U>;
+  function watch<T extends keyof FormValues>(
+    fields: T[],
+    defaultValues?: DeepPartial<Pick<FormValues, T>>,
+  ): Pick<FormValues, T>;
+  function watch(
+    fields: string[],
+    defaultValues?: DeepPartial<FormValues>,
+  ): DeepPartial<FormValues>;
+  function watch(
+    fieldNames?: string | string[] | { nest: boolean },
+    defaultValue?: unknown,
+  ): unknown {
+    return watchInternal(defaultValue, fieldNames);
   }
 
   function unregister(
@@ -1236,6 +1248,7 @@ export function useForm<
 
   const control = {
     removeFieldEventListener,
+    watchInternal,
     reRender,
     ...(validationResolver ? { validateSchemaIsValid: validateResolver } : {}),
     mode: {
@@ -1253,6 +1266,8 @@ export function useForm<
     isWatchAllRef,
     watchFieldsRef,
     resetFieldArrayFunctionRef,
+    watchFieldsHookRef,
+    watchFieldsHookRenderRef,
     fieldArrayDefaultValues,
     validFieldsRef,
     dirtyFieldsRef,

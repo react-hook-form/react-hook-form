@@ -349,6 +349,13 @@ export type Control<FormValues extends FieldValues = FieldValues> = {
   defaultValuesRef: React.MutableRefObject<
     DeepPartial<FormValues> | FormValues[FieldName<FormValues>]
   >;
+  watchFieldsHookRef: React.MutableRefObject<Set<FieldName<FormValues>>>;
+  watchFieldsHookRenderRef: React.MutableRefObject<Record<string, Function>>;
+  watchInternal: (
+    defaultValue: unknown,
+    fieldNames?: string | string[] | { nest: boolean },
+    isUseWatch?: boolean,
+  ) => unknown;
 };
 
 export type Assign<T extends object, U extends object> = T & Omit<U, keyof T>;
@@ -432,3 +439,9 @@ export type OmitResetState = Partial<{
   isValid: boolean;
   submitCount: boolean;
 }>;
+
+export type UseWatchProps<ControlProp extends Control = Control> = {
+  name: string;
+  defaultValue?: unknown;
+  control?: ControlProp;
+};
