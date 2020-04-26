@@ -1447,12 +1447,9 @@ describe('useForm', () => {
       );
 
       act(() => {
-        // TODO: fix getValues and watch type
-        const test: string = result.current.getValues().test as string;
+        const test: string = result.current.getValues().test;
         expect(test).toEqual('data');
-        const deep: { values: string } = result.current.getValues().deep as {
-          values: string;
-        };
+        const deep: { values: string } = result.current.getValues().deep;
         expect(deep).toEqual({ values: '5' });
       });
     });

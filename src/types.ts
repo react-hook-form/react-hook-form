@@ -270,9 +270,7 @@ export type Control<FormValues extends FieldValues = FieldValues> = {
       : LiteralToPrimitive<U>,
     shouldValidate?: boolean,
   ): void;
-  getValues(): IsFlatObject<FormValues> extends false
-    ? Record<string, unknown>
-    : UnpackedFieldValues<FormValues>;
+  getValues(): UnpackedFieldValues<FormValues>;
   getValues<T extends keyof FormValues>(
     payload: T[],
   ): Pick<UnpackedFieldValues<FormValues>, T>;

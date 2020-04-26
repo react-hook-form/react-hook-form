@@ -1152,9 +1152,7 @@ export function useForm<
     reRender();
   };
 
-  function getValues(): IsFlatObject<FormValues> extends false
-    ? Record<string, unknown>
-    : UnpackedFieldValues<FormValues>;
+  function getValues(): UnpackedFieldValues<FormValues>;
   function getValues<T extends keyof FormValues>(
     payload: T[],
   ): Pick<UnpackedFieldValues<FormValues>, T>;

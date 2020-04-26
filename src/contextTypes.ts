@@ -116,9 +116,7 @@ export type FormContextValues<FormValues extends FieldValues = FieldValues> = {
     values?: DeepPartial<FormValues>,
     omitResetState?: OmitResetState,
   ) => void;
-  getValues(): IsFlatObject<FormValues> extends false
-    ? Record<string, unknown>
-    : UnpackedFieldValues<FormValues>;
+  getValues(): UnpackedFieldValues<FormValues>;
   getValues<T extends keyof FormValues>(
     payload: T[],
   ): Pick<UnpackedFieldValues<FormValues>, T>;
