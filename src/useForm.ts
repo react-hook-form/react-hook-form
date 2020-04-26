@@ -1154,24 +1154,22 @@ export function useForm<
     payload: T,
   ): T extends keyof FormValues ? FormValues[T] : U;
   function getValues(payload?: string[] | string): unknown {
+    const fields = fieldsRef.current;
     if (isString(payload)) {
-      return getFieldValue(fieldsRef.current, fieldsRef.current[payload]!.ref);
+      return getFieldValue(fields, fields[payload]!.ref);
     }
 
     if (isArray(payload)) {
       return payload.reduce(
         (previous, name) => ({
           ...previous,
-          [name]: getFieldValue(
-            fieldsRef.current,
-            fieldsRef.current[name]!.ref,
-          ),
+          [name]: getFieldValue(fields, fields[name]!.ref),
         }),
         {},
       );
     }
 
-    const fieldValues = getFieldsValues(fieldsRef.current);
+    const fieldValues = getFieldsValues(fields);
 
     return transformToNestObject(
       isEmptyObject(fieldValues) ? defaultValuesRef.current : fieldValues,
