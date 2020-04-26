@@ -739,7 +739,6 @@ export function useForm<
   }
 
   function watch(): FormValues;
-  function watch(option: { nest: boolean }): FormValues;
   function watch<T extends string, U extends unknown>(
     field: T,
     defaultValue?: T extends keyof FormValues
@@ -798,12 +797,10 @@ export function useForm<
 
     isWatchAllRef.current = true;
 
-    const result =
-      (!isEmptyObject(fieldValues) && fieldValues) || combinedDefaultValues;
-
-    return fieldNames && fieldNames.nest
-      ? transformToNestObject(result as FieldValues)
-      : result;
+    return transformToNestObject(
+      (!isEmptyObject(fieldValues) && fieldValues) ||
+        (combinedDefaultValues as FieldValues),
+    );
   }
 
   function unregister(
@@ -1150,13 +1147,6 @@ export function useForm<
   function getValues(): IsFlatObject<FormValues> extends false
     ? Record<string, unknown>
     : FormValues;
-  function getValues<T extends boolean>(payload: {
-    nest: T;
-  }): T extends true
-    ? FormValues
-    : IsFlatObject<FormValues> extends true
-    ? FormValues
-    : Record<string, unknown>;
   function getValues<T extends string, U extends unknown>(
     payload: T,
   ): T extends keyof FormValues ? FormValues[T] : U;
@@ -1168,13 +1158,10 @@ export function useForm<
     }
 
     const fieldValues = getFieldsValues(fieldsRef.current);
-    const outputValues = isEmptyObject(fieldValues)
-      ? defaultValuesRef.current
-      : fieldValues;
 
-    return payload && payload.nest
-      ? transformToNestObject(outputValues)
-      : outputValues;
+    return transformToNestObject(
+      isEmptyObject(fieldValues) ? defaultValuesRef.current : fieldValues,
+    );
   }
 
   React.useEffect(
