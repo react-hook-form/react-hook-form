@@ -182,30 +182,18 @@ export type FieldRefs<FormValues extends FieldValues> = Partial<
 >;
 
 export type NestDataObject<FormValues, Value> = {
-  [Key in keyof FormValues]?: FormValues[Key] extends Array<infer U>
-    ? IsAny<U> extends true
-      ? any
-      : unknown extends U
-      ? Value[]
-      : object extends U
-      ? Value[]
-      : U extends Date
-      ? Value[]
-      : FormValues[Key] extends FileList
-      ? Value[]
-      : U extends object
-      ? NestDataObject<U, Value>[]
-      : Value[]
-    : IsAny<FormValues[Key]> extends true
+  [Key in keyof FormValues]?: IsAny<FormValues[Key]> extends true
     ? any
-    : unknown extends FormValues[Key]
-    ? Value
-    : object extends FormValues[Key]
+    : FormValues[Key] extends NestedValue
     ? Value
     : FormValues[Key] extends Date
     ? Value
     : FormValues[Key] extends FileList
     ? Value
+    : FormValues[Key] extends Array<infer U>
+    ? U extends object
+      ? NestDataObject<U, Value>[]
+      : Value[]
     : FormValues[Key] extends object
     ? NestDataObject<FormValues[Key], Value>
     : Value;
