@@ -754,7 +754,7 @@ export function useForm<
     defaultValues?: DeepPartial<FormValues>,
   ): DeepPartial<FormValues>;
   function watch(
-    fieldNames?: string | string[] | { nest: boolean },
+    fieldNames?: string | string[],
     defaultValue?: unknown,
   ): unknown {
     const watchFields = watchFieldsRef.current;
@@ -1147,17 +1147,29 @@ export function useForm<
   function getValues(): IsFlatObject<FormValues> extends false
     ? Record<string, unknown>
     : FormValues;
+  function getValues<T extends keyof FormValues>(
+    payload: T[],
+  ): Pick<FormValues, T>;
   function getValues<T extends string, U extends unknown>(
     payload: T,
   ): T extends keyof FormValues ? FormValues[T] : U;
-  function getValues(payload?: { nest: boolean } | string): unknown {
+  function getValues(payload?: string[] | string): unknown {
+    const fields = fieldsRef.current;
     if (isString(payload)) {
-      return fieldsRef.current[payload]
-        ? getFieldValue(fieldsRef.current, fieldsRef.current[payload]!.ref)
-        : undefined;
+      return getFieldValue(fields, fields[payload]!.ref);
     }
 
-    const fieldValues = getFieldsValues(fieldsRef.current);
+    if (isArray(payload)) {
+      return payload.reduce(
+        (previous, name) => ({
+          ...previous,
+          [name]: getFieldValue(fields, fields[name]!.ref),
+        }),
+        {},
+      );
+    }
+
+    const fieldValues = getFieldsValues(fields);
 
     return transformToNestObject(
       isEmptyObject(fieldValues) ? defaultValuesRef.current : fieldValues,
