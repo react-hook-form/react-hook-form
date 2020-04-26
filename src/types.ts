@@ -31,6 +31,12 @@ export type FieldValue<FormValues extends FieldValues> = FormValues[FieldName<
   FormValues
 >];
 
+declare const $NestedValue: unique symbol;
+
+export type NestedValue<TValue extends unknown[] | Record<string, unknown>> = {
+  [$NestedValue]: never;
+} & TValue;
+
 export type Ref = FieldElement;
 
 export type DeepPartial<T> = {
