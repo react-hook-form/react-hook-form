@@ -4,11 +4,17 @@ context('watchDefaultValues', () => {
 
     cy.get('#watchAll').should(
       'have.text',
-      '{"test":"test","test1":{"firstName":"firstName","lastName":["lastName0","lastName1"],"deep":{"nest":"nest"}},"flatName[1].whatever":"flat"}',
+      '{"test":"test","test1":{"firstName":"firstName","lastName":["lastName0","lastName1"],"deep":{"nest":"nest"}},"flatName":[null,{"whatever":"flat"}]}',
     );
-    cy.get('#array').should('have.text', '{"test":"test","flatName[1].whatever":"flat"}');
+    cy.get('#array').should(
+      'have.text',
+      '{"test":"test","flatName[1].whatever":"flat"}',
+    );
     cy.get('#getArray').should('have.text', '["lastName0","lastName1"]');
-    cy.get('#object').should('have.text', '{"test":"test","test1.firstName":"firstName"}');
+    cy.get('#object').should(
+      'have.text',
+      '{"test":"test","test1.firstName":"firstName"}',
+    );
     cy.get('#single').should('have.text', '"firstName"');
     cy.get('#singleDeepArray').should('have.text', '"lastName0"');
   });

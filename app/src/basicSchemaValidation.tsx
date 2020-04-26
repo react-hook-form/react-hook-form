@@ -1,5 +1,6 @@
 import React from 'react';
 import { useForm } from 'react-hook-form';
+import { yupResolver } from 'react-hook-form-resolvers';
 import * as yup from 'yup';
 
 let renderCounter = 0;
@@ -7,19 +8,13 @@ let renderCounter = 0;
 const validationSchema = yup.object().shape(
   {
     firstName: yup.string().required(),
-    lastName: yup
-      .string()
-      .max(5)
-      .required(),
+    lastName: yup.string().max(5).required(),
     min: yup.number().min(10),
     max: yup.number().max(20),
     minDate: yup.date().min('2019-08-01'),
     maxDate: yup.date().max('2019-08-01'),
     minLength: yup.string().min(2),
-    minRequiredLength: yup
-      .string()
-      .min(2)
-      .required(),
+    minRequiredLength: yup.string().min(2).required(),
     selectNumber: yup.string().required(),
     pattern: yup.string().matches(/\d+/),
     radio: yup.string().required(),
@@ -55,7 +50,7 @@ const BasicSchemaValidation: React.FC = (props: any) => {
     multiple: string;
     validate: string;
   }>({
-    validationSchema,
+    validationResolver: yupResolver(validationSchema),
     mode: props.match.params.mode,
   });
   const onSubmit = () => {};

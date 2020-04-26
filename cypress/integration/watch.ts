@@ -7,7 +7,7 @@ context('watch form validation', () => {
     cy.get('input[name="testSingle"]').type('testSingle');
     cy.get('#HideTestSingle').contains('Hide Content TestSingle');
     cy.get('#watchAll').contains(
-      '{"testSingle":"testSingle","test[0]":"","test[1]":"","testObject.firstName":"","testObject.lastName":"","toggle":false}',
+      '{"testSingle":"testSingle","test":["",""],"testObject":{"firstName":"","lastName":""},"toggle":false}',
     );
 
     cy.get('input[name="test[0]"]').type('bill');
@@ -15,7 +15,7 @@ context('watch form validation', () => {
     cy.get('#testData').contains('["bill","luo"]');
     cy.get('#testArray').contains('{"test[0]":"bill","test[1]":"luo"}');
     cy.get('#watchAll').contains(
-      '{"testSingle":"testSingle","test[0]":"bill","test[1]":"luo","testObject.firstName":"","testObject.lastName":"","toggle":false}',
+      '{"testSingle":"testSingle","test":["bill","luo"],"testObject":{"firstName":"","lastName":""},"toggle":false}',
     );
 
     cy.get('input[name="testObject.firstName"').type('bill');
@@ -23,7 +23,7 @@ context('watch form validation', () => {
     cy.get('#testObject').contains('{"firstName":"bill","lastName":"luo"}');
     cy.get('#testArray').contains('{"test[0]":"bill","test[1]":"luo"}');
     cy.get('#watchAll').contains(
-      '{"testSingle":"testSingle","test[0]":"bill","test[1]":"luo","testObject.firstName":"bill","testObject.lastName":"luo","toggle":false}',
+      '{"testSingle":"testSingle","test":["bill","luo"],"testObject":{"firstName":"bill","lastName":"luo"},"toggle":false}',
     );
 
     cy.get('#hideContent').should('not.exist');
@@ -31,7 +31,7 @@ context('watch form validation', () => {
     cy.get('#hideContent').contains('Hide Content');
 
     cy.get('#watchAll').contains(
-      '{"testSingle":"testSingle","test[0]":"bill","test[1]":"luo","testObject.firstName":"bill","testObject.lastName":"luo","toggle":true}',
+      '{"testSingle":"testSingle","test":["bill","luo"],"testObject":{"firstName":"bill","lastName":"luo"},"toggle":true}',
     );
   });
 });

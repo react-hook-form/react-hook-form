@@ -49,7 +49,6 @@ export type FormContextValues<FormValues extends FieldValues = FieldValues> = {
           : string)[],
   ): void;
   watch(): UnpackedFieldValues<FormValues>;
-  watch(option: { nest: boolean }): UnpackedFieldValues<FormValues>;
   watch<T extends string, U extends unknown>(
     field: T,
     defaultValue?: T extends keyof FormValues
@@ -60,12 +59,12 @@ export type FormContextValues<FormValues extends FieldValues = FieldValues> = {
     : LiteralToPrimitive<U>;
   watch<T extends keyof FormValues>(
     fields: T[],
-    defaultValues?: DeepPartial<Pick<FormValues, T>>,
-  ): Pick<FormValues, T>;
+    defaultValues?: DeepPartial<Pick<UnpackedFieldValues<FormValues>, T>>,
+  ): Pick<UnpackedFieldValues<FormValues>, T>;
   watch(
     fields: string[],
-    defaultValues?: DeepPartial<FormValues>,
-  ): DeepPartial<FormValues>;
+    defaultValues?: DeepPartial<UnpackedFieldValues<FormValues>>,
+  ): DeepPartial<UnpackedFieldValues<FormValues>>;
   setError(
     name: IsFlatObject<FormValues> extends true
       ? Extract<keyof FormValues, string>
@@ -120,13 +119,9 @@ export type FormContextValues<FormValues extends FieldValues = FieldValues> = {
   getValues(): IsFlatObject<FormValues> extends false
     ? Record<string, unknown>
     : UnpackedFieldValues<FormValues>;
-  getValues<T extends boolean>(payload: {
-    nest: T;
-  }): T extends true
-    ? UnpackedFieldValues<FormValues>
-    : IsFlatObject<FormValues> extends true
-    ? UnpackedFieldValues<FormValues>
-    : Record<string, unknown>;
+  getValues<T extends keyof FormValues>(
+    payload: T[],
+  ): Pick<UnpackedFieldValues<FormValues>, T>;
   getValues<T extends string, U extends unknown>(
     payload: T,
   ): T extends keyof FormValues ? UnpackedFieldValues<FormValues>[T] : U;

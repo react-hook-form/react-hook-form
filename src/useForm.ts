@@ -7,7 +7,6 @@ import getFieldsValues from './logic/getFieldsValues';
 import getFieldValue from './logic/getFieldValue';
 import shouldRenderBasedOnError from './logic/shouldRenderBasedOnError';
 import validateField from './logic/validateField';
-import validateWithSchema from './logic/validateWithSchema';
 import assignWatchFields from './logic/assignWatchFields';
 import skipValidation from './logic/skipValidation';
 import getFieldArrayParentName from './logic/getFieldArrayParentName';
@@ -72,7 +71,6 @@ export function useForm<
 >({
   mode = VALIDATION_MODE.onSubmit,
   reValidateMode = VALIDATION_MODE.onChange,
-  validationSchema,
   validationResolver,
   validationContext,
   defaultValues = {},
@@ -110,6 +108,7 @@ export function useForm<
   const handleChangeRef = React.useRef<HandleChange>();
   const resetFieldArrayFunctionRef = React.useRef({});
   const validationContextRef = React.useRef(validationContext);
+  const validationResolverRef = React.useRef(validationResolver);
   const fieldArrayNamesRef = React.useRef<Set<string>>(new Set());
   const [, render] = React.useState();
   const { isOnBlur, isOnSubmit, isOnChange } = React.useRef(
@@ -117,9 +116,6 @@ export function useForm<
   ).current;
   const validateAllFieldCriteria = validateCriteriaMode === 'all';
   const isWindowUndefined = typeof window === UNDEFINED;
-  const shouldValidateSchemaOrResolver = !!(
-    validationSchema || validationResolver
-  );
   const isWeb =
     typeof document !== UNDEFINED &&
     !isWindowUndefined &&
@@ -139,6 +135,7 @@ export function useForm<
     isOnSubmit: isReValidateOnSubmit,
   } = React.useRef(modeChecker(reValidateMode)).current;
   validationContextRef.current = validationContext;
+  validationResolverRef.current = validationResolver;
 
   const reRender = React.useCallback(() => {
     if (!isUnMount.current) {
@@ -165,7 +162,7 @@ export function useForm<
       if (isEmptyObject(error)) {
         if (
           fieldsWithValidationRef.current.has(name) ||
-          shouldValidateSchemaOrResolver
+          validationResolverRef.current
         ) {
           validFieldsRef.current.add(name);
           shouldReRender = shouldReRender || get(errorsRef.current, name);
@@ -184,7 +181,7 @@ export function useForm<
         return true;
       }
     },
-    [reRender, shouldValidateSchemaOrResolver],
+    [reRender, validationResolverRef],
   );
 
   const setFieldValue = React.useCallback(
@@ -360,48 +357,46 @@ export function useForm<
   );
 
   const executeSchemaOrResolverValidation = React.useCallback(
-    async (payload: string | string[]): Promise<boolean> => {
-      const { errors } = await validateWithSchema<
-        FormValues,
-        ValidationContext
-      >(
-        validationSchema,
-        validateAllFieldCriteria,
-        getFieldArrayValueByName(fieldsRef.current),
-        validationResolver,
-        validationContextRef.current,
-      );
-      const previousFormIsValid = isValidRef.current;
-      isValidRef.current = isEmptyObject(errors);
-
-      if (isArray(payload)) {
-        payload.forEach((name) => {
-          const error = get(errors, name);
-
-          if (error) {
-            set(errorsRef.current, name, error);
-          } else {
-            unset(errorsRef.current, [name]);
-          }
-        });
-        reRender();
-      } else {
-        const error = get(errors, payload);
-        shouldRenderBaseOnError(
-          payload,
-          (error ? { [payload]: error } : {}) as FieldErrors<FormValues>,
-          previousFormIsValid !== isValidRef.current,
+    async (payload: FieldName<FormValues> | FieldName<FormValues>[]) => {
+      if (validationResolverRef.current) {
+        const { errors } = await validationResolverRef.current(
+          getFieldArrayValueByName(fieldsRef.current),
+          validationContextRef.current,
+          validateAllFieldCriteria,
         );
+        const previousFormIsValid = isValidRef.current;
+        isValidRef.current = isEmptyObject(errors);
+
+        if (isArray(payload)) {
+          payload.forEach((name) => {
+            const error = get(errors, name);
+
+            if (error) {
+              set(errorsRef.current, name, error);
+            } else {
+              unset(errorsRef.current, [name]);
+            }
+          });
+          reRender();
+        } else {
+          const error = get(errors, payload);
+          shouldRenderBaseOnError(
+            payload,
+            (error ? { [payload]: error } : {}) as FieldErrors<FormValues>,
+            previousFormIsValid !== isValidRef.current,
+          );
+        }
+
+        return isEmptyObject(errorsRef.current);
       }
 
-      return isEmptyObject(errorsRef.current);
+      return false;
     },
     [
       reRender,
       shouldRenderBaseOnError,
       validateAllFieldCriteria,
-      validationResolver,
-      validationSchema,
+      validationResolverRef,
     ],
   );
 
@@ -417,7 +412,7 @@ export function useForm<
     ): Promise<boolean> => {
       const fields = payload || Object.keys(fieldsRef.current);
 
-      if (shouldValidateSchemaOrResolver) {
+      if (validationResolverRef.current) {
         return executeSchemaOrResolverValidation(fields);
       }
 
@@ -435,7 +430,7 @@ export function useForm<
       executeSchemaOrResolverValidation,
       executeValidation,
       reRender,
-      shouldValidateSchemaOrResolver,
+      validationResolverRef,
     ],
   );
 
@@ -531,16 +526,11 @@ export function useForm<
           return shouldRender && reRender();
         }
 
-        if (shouldValidateSchemaOrResolver) {
-          const { errors } = await validateWithSchema<
-            FormValues,
-            ValidationContext
-          >(
-            validationSchema,
-            validateAllFieldCriteria,
+        if (validationResolver) {
+          const { errors } = await validationResolver(
             getFieldArrayValueByName(fields),
-            validationResolver,
             validationContextRef.current,
+            validateAllFieldCriteria,
           );
           const previousFormIsValid = isValidRef.current;
           isValidRef.current = isEmptyObject(errors);
@@ -565,32 +555,33 @@ export function useForm<
         }
       };
 
-  const validateSchemaOrResolver = React.useCallback(
+  const validateResolver = React.useCallback(
     (values: any = {}) => {
       const fieldValues = isEmptyObject(defaultValuesRef.current)
         ? getFieldsValues(fieldsRef.current)
         : defaultValuesRef.current;
 
-      validateWithSchema<FormValues, ValidationContext>(
-        validationSchema,
-        validateAllFieldCriteria,
-        transformToNestObject({
-          ...fieldValues,
-          ...values,
-        }),
-        validationResolver,
-        validationContextRef.current,
-      ).then(({ errors }) => {
-        const previousFormIsValid = isValidRef.current;
-        isValidRef.current = isEmptyObject(errors);
+      if (validationResolverRef.current) {
+        validationResolverRef
+          .current(
+            transformToNestObject({
+              ...fieldValues,
+              ...values,
+            }),
+            validationContextRef.current,
+            validateAllFieldCriteria,
+          )
+          .then(({ errors }) => {
+            const previousFormIsValid = isValidRef.current;
+            isValidRef.current = isEmptyObject(errors);
 
-        if (previousFormIsValid !== isValidRef.current) {
-          reRender();
-        }
-      });
+            if (previousFormIsValid !== isValidRef.current) {
+              reRender();
+            }
+          });
+      }
     },
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [reRender, validateAllFieldCriteria, validationResolver],
+    [reRender, validateAllFieldCriteria, validationResolverRef],
   );
 
   const removeFieldEventListener = React.useCallback(
@@ -641,16 +632,16 @@ export function useForm<
       ) {
         reRender();
 
-        if (shouldValidateSchemaOrResolver) {
-          validateSchemaOrResolver();
+        if (validationResolverRef.current) {
+          validateResolver();
         }
       }
     },
     [
       reRender,
-      shouldValidateSchemaOrResolver,
-      validateSchemaOrResolver,
+      validateResolver,
       removeFieldEventListener,
+      validationResolverRef,
     ],
   );
 
@@ -751,14 +742,15 @@ export function useForm<
     }
   }
 
-  function watch(): FormValues;
-  function watch(option: { nest: boolean }): UnpackedFieldValues<FormValues>;
+  function watch(): UnpackedFieldValues<FormValues>;
   function watch<T extends string, U extends unknown>(
     field: T,
     defaultValue?: T extends keyof FormValues
       ? UnpackedFieldValues<FormValues>[T]
       : LiteralToPrimitive<U>,
-  ): T extends keyof FormValues ? FormValues[T] : LiteralToPrimitive<U>;
+  ): T extends keyof FormValues
+    ? UnpackedFieldValues<FormValues>[T]
+    : LiteralToPrimitive<U>;
   function watch<T extends keyof FormValues>(
     fields: T[],
     defaultValues?: DeepPartial<Pick<UnpackedFieldValues<FormValues>, T>>,
@@ -768,7 +760,7 @@ export function useForm<
     defaultValues?: DeepPartial<UnpackedFieldValues<FormValues>>,
   ): DeepPartial<UnpackedFieldValues<FormValues>>;
   function watch(
-    fieldNames?: string | string[] | { nest: boolean },
+    fieldNames?: string | string[],
     defaultValue?: unknown,
   ): unknown {
     const watchFields = watchFieldsRef.current;
@@ -813,12 +805,10 @@ export function useForm<
 
     isWatchAllRef.current = true;
 
-    const result =
-      (!isEmptyObject(fieldValues) && fieldValues) || combinedDefaultValues;
-
-    return fieldNames && fieldNames.nest
-      ? transformToNestObject(result as FieldValues)
-      : result;
+    return transformToNestObject(
+      (!isEmptyObject(fieldValues) && fieldValues) ||
+        (combinedDefaultValues as FieldValues),
+    );
   }
 
   function unregister(
@@ -912,11 +902,11 @@ export function useForm<
     }
 
     if (
-      shouldValidateSchemaOrResolver &&
+      validationResolver &&
       !isFieldArray &&
       readFormStateRef.current.isValid
     ) {
-      validateSchemaOrResolver();
+      validateResolver();
     } else if (!isEmptyObject(validateOptions)) {
       fieldsWithValidationRef.current.add(name);
 
@@ -1021,16 +1011,11 @@ export function useForm<
       }
 
       try {
-        if (shouldValidateSchemaOrResolver) {
-          const { errors, values } = await validateWithSchema<
-            FormValues,
-            ValidationContext
-          >(
-            validationSchema,
-            validateAllFieldCriteria,
+        if (validationResolverRef.current) {
+          const { errors, values } = await validationResolverRef.current(
             transformToNestObject(fieldValues),
-            validationResolver,
             validationContextRef.current,
+            validateAllFieldCriteria,
           );
           errorsRef.current = errors;
           fieldErrors = errors;
@@ -1079,11 +1064,9 @@ export function useForm<
     [
       isWeb,
       reRender,
-      shouldValidateSchemaOrResolver,
+      validationResolverRef,
       submitFocusError,
       validateAllFieldCriteria,
-      validationResolver,
-      validationSchema,
     ],
   );
 
@@ -1172,31 +1155,33 @@ export function useForm<
   function getValues(): IsFlatObject<FormValues> extends false
     ? Record<string, unknown>
     : UnpackedFieldValues<FormValues>;
-  function getValues<T extends boolean>(payload: {
-    nest: T;
-  }): T extends true
-    ? UnpackedFieldValues<FormValues>
-    : IsFlatObject<FormValues> extends true
-    ? UnpackedFieldValues<FormValues>
-    : Record<string, unknown>;
+  function getValues<T extends keyof FormValues>(
+    payload: T[],
+  ): Pick<UnpackedFieldValues<FormValues>, T>;
   function getValues<T extends string, U extends unknown>(
     payload: T,
   ): T extends keyof FormValues ? UnpackedFieldValues<FormValues>[T] : U;
-  function getValues(payload?: { nest: boolean } | string): unknown {
+  function getValues(payload?: string[] | string): unknown {
+    const fields = fieldsRef.current;
     if (isString(payload)) {
-      return fieldsRef.current[payload]
-        ? getFieldValue(fieldsRef.current, fieldsRef.current[payload]!.ref)
-        : undefined;
+      return getFieldValue(fields, fields[payload]!.ref);
     }
 
-    const fieldValues = getFieldsValues(fieldsRef.current);
-    const outputValues = isEmptyObject(fieldValues)
-      ? defaultValuesRef.current
-      : fieldValues;
+    if (isArray(payload)) {
+      return payload.reduce(
+        (previous, name) => ({
+          ...previous,
+          [name]: getFieldValue(fields, fields[name]!.ref),
+        }),
+        {},
+      );
+    }
 
-    return payload && payload.nest
-      ? transformToNestObject(outputValues)
-      : outputValues;
+    const fieldValues = getFieldsValues(fields);
+
+    return transformToNestObject(
+      isEmptyObject(fieldValues) ? defaultValuesRef.current : fieldValues,
+    );
   }
 
   React.useEffect(
@@ -1211,7 +1196,7 @@ export function useForm<
     [removeFieldEventListenerAndRef],
   );
 
-  if (!shouldValidateSchemaOrResolver) {
+  if (!validationResolver) {
     isValidRef.current =
       validFieldsRef.current.size >= fieldsWithValidationRef.current.size &&
       isEmptyObject(errorsRef.current);
@@ -1259,9 +1244,7 @@ export function useForm<
   const control = {
     removeFieldEventListener,
     reRender,
-    ...(shouldValidateSchemaOrResolver
-      ? { validateSchemaIsValid: validateSchemaOrResolver }
-      : {}),
+    ...(validationResolver ? { validateSchemaIsValid: validateResolver } : {}),
     mode: {
       isOnBlur,
       isOnSubmit,

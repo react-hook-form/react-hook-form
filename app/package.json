@@ -16,6 +16,7 @@
     "react": "^16.12.0",
     "react-dom": "^16.12.0",
     "react-hook-form": "^3.27.0",
+    "react-hook-form-resolvers": "0.0.1-beta.1",
     "react-router-dom": "^5.1.2",
     "react-scripts": "3.3.0",
     "react-select": "^3.0.8",

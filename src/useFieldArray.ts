@@ -210,7 +210,7 @@ export const useFieldArray = <
 
   const mapCurrentFieldsValueWithState = () => {
     const currentFieldsValue: Partial<FormArrayValues>[] = get(
-      getValues({ nest: true }),
+      getValues(),
       name,
     );
 

@@ -6,15 +6,9 @@ let renderCounter = 0;
 
 const validationSchema = Joi.object({
   firstName: Joi.string().required(),
-  lastName: Joi.string()
-    .max(5)
-    .required(),
-  min: Joi.number()
-    .min(10)
-    .required(),
-  max: Joi.number()
-    .max(20)
-    .required(),
+  lastName: Joi.string().max(5).required(),
+  min: Joi.number().min(10).required(),
+  max: Joi.number().max(20).required(),
   minDate: Joi.date().min('2019-08-01'),
   maxDate: Joi.date().max('2019-08-01'),
   minLength: Joi.string().min(2),
@@ -25,7 +19,7 @@ const validationSchema = Joi.object({
   checkbox: Joi.required(),
 });
 
-const validationResolver = (data: any) => {
+const validationResolver = async (data: any) => {
   const { error, value: values } = validationSchema.validate(data, {
     abortEarly: false,
   });
@@ -34,11 +28,11 @@ const validationResolver = (data: any) => {
     values: error ? {} : values,
     errors: error
       ? error.details.reduce((previous, currentError) => {
-        return {
-          ...previous,
-          [currentError.path[0]]: currentError,
-        };
-      }, {})
+          return {
+            ...previous,
+            [currentError.path[0]]: currentError,
+          };
+        }, {})
       : {},
   };
 };

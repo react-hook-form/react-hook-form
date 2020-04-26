@@ -3,7 +3,6 @@ import { renderHook, act } from '@testing-library/react-hooks';
 import { useForm } from './';
 import attachEventListeners from './logic/attachEventListeners';
 import findRemovedFieldAndRemoveListener from './logic/findRemovedFieldAndRemoveListener';
-import validateWithSchema from './logic/validateWithSchema';
 import validateField from './logic/validateField';
 import onDomRemove from './utils/onDomRemove';
 import { VALIDATION_MODE } from './constants';
@@ -87,7 +86,6 @@ jest.mock('./utils/onDomRemove');
 jest.mock('./logic/findRemovedFieldAndRemoveListener');
 jest.mock('./logic/validateField');
 jest.mock('./logic/attachEventListeners');
-jest.mock('./logic/validateWithSchema');
 jest.mock('./logic/transformToNestObject', () => ({
   default: (data: any) => data,
   esmodule: true,
@@ -781,19 +779,23 @@ describe('useForm', () => {
 
   describe('triggerValidation with schema', () => {
     it('should return the error with single field validation', async () => {
+      const validationResolver = async (data: any) => {
+        return {
+          values: data,
+          errors: {
+            test: {
+              type: 'test',
+            },
+          },
+        };
+      };
+
       const { result } = renderHook(() =>
         useForm<{ test: string }>({
           mode: VALIDATION_MODE.onChange,
-          validationSchema: { test: 'test' },
+          validationResolver,
         }),
       );
-
-      (validateWithSchema as any).mockImplementation(async (payload: any) => {
-        return {
-          errors: payload,
-          values: {},
-        };
-      });
 
       act(() => {
         result.current.register(
@@ -804,24 +806,28 @@ describe('useForm', () => {
 
       await act(async () => {
         await result.current.triggerValidation('test');
-        expect(result.current.errors).toEqual({ test: 'test' });
+        expect(result.current.errors).toEqual({ test: { type: 'test' } });
       });
     });
 
     it('should return the status of the requested field with single field validation', async () => {
+      const validationResolver = async (data: any) => {
+        return {
+          values: data,
+          errors: {
+            test2: {
+              type: 'test',
+            },
+          },
+        };
+      };
+
       const { result } = renderHook(() =>
         useForm<{ test1: string; test2: string }>({
           mode: VALIDATION_MODE.onChange,
-          validationSchema: { test2: 'test2' },
+          validationResolver,
         }),
       );
-
-      (validateWithSchema as any).mockImplementation(async (payload: any) => {
-        return {
-          errors: payload,
-          values: {},
-        };
-      });
 
       act(() => {
         result.current.register(
@@ -839,27 +845,32 @@ describe('useForm', () => {
         expect(resultFalse).toEqual(false);
 
         expect(result.current.errors).toEqual({
-          test2: 'test2',
+          test2: {
+            type: 'test',
+          },
         });
       });
     });
 
     it('should not trigger any error when schema validation result not found', async () => {
+      const validationResolver = async (data: any) => {
+        return {
+          values: data,
+          errors: {
+            value: {
+              type: 'test',
+            },
+          },
+        };
+      };
+
       const { result } = renderHook(() =>
         useForm<{ test: string }>({
           mode: VALIDATION_MODE.onChange,
-          validationSchema: { test: 'test' },
+          // @ts-ignore
+          validationResolver,
         }),
       );
-
-      (validateWithSchema as any).mockImplementation(async () => {
-        return {
-          errors: {
-            values: 'test',
-          },
-          result: {},
-        };
-      });
 
       act(() => {
         result.current.register(
@@ -876,22 +887,26 @@ describe('useForm', () => {
     });
 
     it('should support array of fields for schema validation', async () => {
+      const validationResolver = async (data: any) => {
+        return {
+          values: data,
+          errors: {
+            test1: {
+              type: 'test1',
+            },
+            test: {
+              type: 'test',
+            },
+          },
+        };
+      };
+
       const { result } = renderHook(() =>
         useForm<{ test: string; test1: string }>({
           mode: VALIDATION_MODE.onChange,
-          validationSchema: {},
+          validationResolver,
         }),
       );
-
-      (validateWithSchema as any).mockImplementation(async () => {
-        return {
-          errors: {
-            test1: 'test1',
-            test: 'test',
-          },
-          result: {},
-        };
-      });
 
       act(() => {
         result.current.register(
@@ -904,26 +919,31 @@ describe('useForm', () => {
         await result.current.triggerValidation(['test', 'test1']);
 
         expect(result.current.errors).toEqual({
-          test: 'test',
-          test1: 'test1',
+          test1: {
+            type: 'test1',
+          },
+          test: {
+            type: 'test',
+          },
         });
       });
     });
 
     it('should return the status of the requested fields with array of fields for validation', async () => {
+      const validationResolver = async (data: any) => {
+        return {
+          values: data,
+          errors: { test3: 'test3' },
+        };
+      };
+
       const { result } = renderHook(() =>
         useForm<{ test1: string; test2: string; test3: string }>({
           mode: VALIDATION_MODE.onChange,
-          validationSchema: { test3: 'test3' },
+          // @ts-ignore
+          validationResolver,
         }),
       );
-
-      (validateWithSchema as any).mockImplementation(async (payload: any) => {
-        return {
-          errors: payload,
-          values: {},
-        };
-      });
 
       act(() => {
         result.current.register(
@@ -950,22 +970,26 @@ describe('useForm', () => {
     });
 
     it('should validate all fields when pass with undefined', async () => {
+      const validationResolver = async (data: any) => {
+        return {
+          values: data,
+          errors: {
+            test1: {
+              type: 'test1',
+            },
+            test: {
+              type: 'test',
+            },
+          },
+        };
+      };
+
       const { result } = renderHook(() =>
         useForm<{ test1: string; test: string }>({
           mode: VALIDATION_MODE.onChange,
-          validationSchema: { test: 'test' },
+          validationResolver,
         }),
       );
-
-      (validateWithSchema as any).mockImplementation(async () => {
-        return {
-          errors: {
-            test1: 'test1',
-            test: 'test',
-          },
-          result: {},
-        };
-      });
 
       act(() => {
         result.current.register(
@@ -982,8 +1006,12 @@ describe('useForm', () => {
         await result.current.triggerValidation();
 
         expect(result.current.errors).toEqual({
-          test: 'test',
-          test1: 'test1',
+          test1: {
+            type: 'test1',
+          },
+          test: {
+            type: 'test',
+          },
         });
       });
     });
@@ -1030,19 +1058,19 @@ describe('useForm', () => {
 
   describe('handleSubmit with validationSchema', () => {
     it('should invoke callback when error not found', async () => {
+      const validationResolver = async (data: any) => {
+        return {
+          values: data,
+          errors: {},
+        };
+      };
+
       const { result } = renderHook(() =>
         useForm<{ test: string }>({
           mode: VALIDATION_MODE.onSubmit,
-          validationSchema: {},
+          validationResolver,
         }),
       );
-
-      (validateWithSchema as any).mockImplementation(async () => {
-        return {
-          errors: {},
-          values: {},
-        };
-      });
 
       act(() => {
         result.current.register(
@@ -1063,19 +1091,19 @@ describe('useForm', () => {
     });
 
     it('should invoke callback with transformed values', async () => {
+      const validationResolver = async () => {
+        return {
+          values: { test: 'test' },
+          errors: {},
+        };
+      };
+
       const { result } = renderHook(() =>
         useForm<{ test: string }>({
           mode: VALIDATION_MODE.onSubmit,
-          validationSchema: {},
+          validationResolver,
         }),
       );
-
-      (validateWithSchema as any).mockImplementation(async () => {
-        return {
-          errors: {},
-          values: { test: 'test' },
-        };
-      });
 
       act(() => {
         result.current.register(
@@ -1273,7 +1301,7 @@ describe('useForm', () => {
       const { result } = renderHook(() =>
         useForm<{ input: string }>({
           mode: VALIDATION_MODE.onBlur,
-          validationSchema: {},
+          // validationSchema: {},
         }),
       );
 

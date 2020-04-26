@@ -108,9 +108,8 @@ export type ValidationResolver<
 > = (
   values: FormValues,
   validationContext?: ValidationContext,
-) =>
-  | SchemaValidationResult<FormValues>
-  | Promise<SchemaValidationResult<FormValues>>;
+  validateAllFieldCriteria?: boolean,
+) => Promise<SchemaValidationResult<FormValues>>;
 
 export type UseFormOptions<
   FormValues extends FieldValues = FieldValues,
@@ -119,7 +118,6 @@ export type UseFormOptions<
   mode: Mode;
   reValidateMode: Mode;
   defaultValues: DeepPartial<UnpackedFieldValues<FormValues>>;
-  validationSchema: any;
   validationResolver: ValidationResolver<FormValues, ValidationContext>;
   validationContext: ValidationContext;
   submitFocusError: boolean;
@@ -254,7 +252,7 @@ export type FormValuesFromErrors<Errors> = Errors extends FieldErrors<
   ? FormValues
   : never;
 
-export type EventFunction = (args: any[]) => any;
+export type EventFunction = (...args: any[]) => any;
 
 export type Control<FormValues extends FieldValues = FieldValues> = {
   reRender: () => void;
@@ -275,13 +273,9 @@ export type Control<FormValues extends FieldValues = FieldValues> = {
   getValues(): IsFlatObject<FormValues> extends false
     ? Record<string, unknown>
     : UnpackedFieldValues<FormValues>;
-  getValues<T extends boolean>(payload: {
-    nest: T;
-  }): T extends true
-    ? UnpackedFieldValues<FormValues>
-    : IsFlatObject<FormValues> extends true
-    ? UnpackedFieldValues<FormValues>
-    : Record<string, unknown>;
+  getValues<T extends keyof FormValues>(
+    payload: T[],
+  ): Pick<UnpackedFieldValues<FormValues>, T>;
   getValues<T extends string, U extends unknown>(
     payload: T,
   ): T extends keyof FormValues ? UnpackedFieldValues<FormValues>[T] : U;
