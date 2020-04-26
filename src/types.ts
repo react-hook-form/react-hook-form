@@ -179,6 +179,8 @@ export type NestDataObject<FormValues, Value> = {
       ? Value[]
       : U extends Date
       ? Value[]
+      : FormValues[Key] extends FileList
+      ? Value[]
       : U extends object
       ? NestDataObject<U, Value>[]
       : Value[]
@@ -189,6 +191,8 @@ export type NestDataObject<FormValues, Value> = {
     : object extends FormValues[Key]
     ? Value
     : FormValues[Key] extends Date
+    ? Value
+    : FormValues[Key] extends FileList
     ? Value
     : FormValues[Key] extends object
     ? NestDataObject<FormValues[Key], Value>
