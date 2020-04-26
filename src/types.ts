@@ -191,9 +191,9 @@ export type NestDataObject<FormValues, Value> = {
     : FormValues[Key] extends FileList
     ? Value
     : FormValues[Key] extends Array<infer U>
-    ? U extends object
-      ? NestDataObject<U, Value>[]
-      : Value[]
+    ? Array<NestDataObject<U, Value>>
+    : FormValues[Key] extends ReadonlyArray<infer U>
+    ? ReadonlyArray<NestDataObject<U, Value>>
     : FormValues[Key] extends object
     ? NestDataObject<FormValues[Key], Value>
     : Value;
