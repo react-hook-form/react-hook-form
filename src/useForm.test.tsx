@@ -32,6 +32,13 @@ export const reconfigureControl = (
   dirtyFieldsRef: {
     current: new Set(),
   },
+  watchFieldsHookRef: {
+    current: new Set(),
+  },
+  watchFieldsHookRenderRef: {
+    current: {},
+  },
+  watchInternal: jest.fn(),
   validateSchemaIsValid: jest.fn(),
   getValues: jest.fn(),
   reRender: jest.fn(),

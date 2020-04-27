@@ -12,20 +12,21 @@ export const useWatch = <ControlProp extends Control = Control>({
   const methods = useFormContext();
   const { watchFieldsHookRef, watchFieldsHookRenderRef, watchInternal } =
     control || methods.control;
-  const [value, setValue] = React.useState(
-    watchInternal(defaultValue, name, true),
-  );
+  const [value, setValue] = React.useState<unknown>();
 
   React.useEffect(() => {
     const id = generateId();
     const watchFieldsHookRender = watchFieldsHookRenderRef.current;
     const watchFieldsHook = watchFieldsHookRef.current;
+    watchFieldsHook[id] = new Set();
     watchFieldsHookRender[id] = setValue;
+    setValue(watchInternal(defaultValue, name, id));
 
     return () => {
-      watchFieldsHook.delete(name);
+      delete watchFieldsHook[id];
       delete watchFieldsHookRender[id];
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [name, watchFieldsHookRenderRef, watchFieldsHookRef]);
 
   return { state: isUndefined(value) ? defaultValue : value };

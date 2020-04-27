@@ -349,12 +349,14 @@ export type Control<FormValues extends FieldValues = FieldValues> = {
   defaultValuesRef: React.MutableRefObject<
     DeepPartial<FormValues> | FormValues[FieldName<FormValues>]
   >;
-  watchFieldsHookRef: React.MutableRefObject<Set<FieldName<FormValues>>>;
+  watchFieldsHookRef: React.MutableRefObject<
+    Record<string, Set<FieldName<FormValues>>>
+  >;
   watchFieldsHookRenderRef: React.MutableRefObject<Record<string, Function>>;
   watchInternal: (
     defaultValue: unknown,
     fieldNames?: string | string[] | { nest: boolean },
-    isUseWatch?: boolean,
+    isUseWatch?: string,
   ) => unknown;
 };
 

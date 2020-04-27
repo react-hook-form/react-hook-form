@@ -83,7 +83,9 @@ export function useForm<
   const touchedFieldsRef = React.useRef<Touched<FormValues>>({});
   const fieldArrayDefaultValues = React.useRef<Record<string, unknown[]>>({});
   const watchFieldsRef = React.useRef(new Set<FieldName<FormValues>>());
-  const watchFieldsHookRef = React.useRef(new Set<FieldName<FormValues>>());
+  const watchFieldsHookRef = React.useRef<
+    Record<string, Set<FieldName<FormValues>>>
+  >({});
   const watchFieldsHookRenderRef = React.useRef<Record<string, Function>>({});
   const dirtyFieldsRef = React.useRef(new Set<FieldName<FormValues>>());
   const fieldsWithValidationRef = React.useRef(
@@ -743,10 +745,10 @@ export function useForm<
   function watchInternal(
     defaultValue: unknown,
     fieldNames?: string | string[] | { nest: boolean },
-    isUseWatch?: boolean,
+    watchId?: string,
   ): unknown {
-    const watchFields = isUseWatch
-      ? watchFieldsHookRef.current
+    const watchFields = watchId
+      ? watchFieldsHookRef.current[watchId]
       : watchFieldsRef.current;
     const isDefaultValueUndefined = isUndefined(defaultValue);
     const combinedDefaultValues = isDefaultValueUndefined
