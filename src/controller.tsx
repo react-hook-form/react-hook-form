@@ -111,9 +111,9 @@ const Controller = <
 
   React.useEffect(
     () => () => {
-      isNotFieldArray && unregister(name);
+      !isNameInFieldArray(fieldArrayNamesRef.current, name) && unregister(name);
     },
-    [unregister, name, isNotFieldArray],
+    [unregister, name, fieldArrayNamesRef],
   );
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
