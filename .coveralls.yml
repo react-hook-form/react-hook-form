@@ -1,1 +1,1 @@
-repo_token: ${{COVERAGE}}
+repo_token: ${{secrets.COVERAGE}}
