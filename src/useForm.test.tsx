@@ -573,7 +573,7 @@ describe('useForm', () => {
           { key1: '3', key2: 4 },
         ]);
 
-        expect(result.current.control.fieldsRef.current['tes1']).toEqual({
+        expect(result.current.control.fieldsRef.current['test1']).toEqual({
           ref: { name: 'test1', value: ['1', '2', '3'] },
         });
         expect(result.current.control.fieldsRef.current['test2']).toEqual({
