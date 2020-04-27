@@ -491,6 +491,7 @@ export function useForm<
         const name = target ? (target as Ref).name : '';
         const fields = fieldsRef.current;
         const errors = errorsRef.current;
+        const watchFieldsHook = watchFieldsHookRef.current;
         const field = fields[name];
         const currentError = get(errors, name);
         let error;
@@ -552,6 +553,15 @@ export function useForm<
 
         if (!shouldRenderBaseOnError(name, error) && shouldRender) {
           reRender();
+        } else if (!isEmptyObject(watchFieldsHook)) {
+          for (const key in watchFieldsHook) {
+            if (watchFieldsHook[key].has(name)) {
+              if (watchFieldsHookRenderRef.current[key]) {
+                watchFieldsHookRenderRef.current[key]();
+              }
+              break;
+            }
+          }
         }
       };
 

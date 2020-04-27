@@ -13,13 +13,20 @@ export const useWatch = <ControlProp extends Control = Control>({
   const { watchFieldsHookRef, watchFieldsHookRenderRef, watchInternal } =
     control || methods.control;
   const [value, setValue] = React.useState<unknown>();
+  const idRef = React.useRef<string>();
+
+  const updateWatchValue = React.useCallback(
+    () => setValue(watchInternal(defaultValue, name, idRef.current)),
+    [setValue, watchInternal, defaultValue, name, idRef],
+  );
 
   React.useEffect(() => {
-    const id = generateId();
+    idRef.current = generateId();
     const watchFieldsHookRender = watchFieldsHookRenderRef.current;
     const watchFieldsHook = watchFieldsHookRef.current;
+    const id = idRef.current;
     watchFieldsHook[id] = new Set();
-    watchFieldsHookRender[id] = setValue;
+    watchFieldsHookRender[id] = updateWatchValue;
     setValue(watchInternal(defaultValue, name, id));
 
     return () => {
