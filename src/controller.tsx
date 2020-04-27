@@ -113,8 +113,7 @@ const Controller = <
     () => () => {
       isNotFieldArray && unregister(name);
     },
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [unregister, name],
+    [unregister, name, isNotFieldArray],
   );
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
