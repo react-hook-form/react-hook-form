@@ -312,7 +312,7 @@ describe('Controller', () => {
     expect(asFragment()).toMatchSnapshot();
   });
 
-  it.skip('should invoke removeFieldEventListener to remove field with Field Array item', () => {
+  it('should invoke removeFieldEventListener to remove field with Field Array item', () => {
     const control = reconfigureControl();
     const removeFieldEventListener = jest.fn();
 
@@ -327,7 +327,7 @@ describe('Controller', () => {
           removeFieldEventListener,
           fieldsRef: {
             current: {
-              'test[0]': {} as Field,
+              'test[1]': {} as Field,
             },
           },
           fieldArrayNamesRef: {

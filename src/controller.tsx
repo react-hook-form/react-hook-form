@@ -83,7 +83,7 @@ const Controller = <
   };
 
   const registerField = React.useCallback(() => {
-    if (!isNotFieldArray && fieldsRef.current[name]) {
+    if (!isNotFieldArray) {
       removeFieldEventListener(fieldsRef.current[name] as Field, true);
     }
 
@@ -113,7 +113,8 @@ const Controller = <
     () => () => {
       isNotFieldArray && unregister(name);
     },
-    [unregister, name, isNotFieldArray],
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [unregister, name],
   );
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
