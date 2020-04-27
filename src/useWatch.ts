@@ -21,13 +21,12 @@ export const useWatch = <ControlProp extends Control = Control>({
   );
 
   React.useEffect(() => {
-    idRef.current = generateId();
+    const id = (idRef.current = generateId());
     const watchFieldsHookRender = watchFieldsHookRenderRef.current;
     const watchFieldsHook = watchFieldsHookRef.current;
-    const id = idRef.current;
     watchFieldsHook[id] = new Set();
     watchFieldsHookRender[id] = updateWatchValue;
-    setValue(watchInternal(defaultValue, name, id));
+    watchInternal(defaultValue, name, id);
 
     return () => {
       delete watchFieldsHook[id];
