@@ -1164,7 +1164,7 @@ export function useForm<
   };
 
   function getValues(): IsFlatObject<FormValues> extends false
-    ? Record<string, unknown>
+    ? Record<string, any>
     : FormValues;
   function getValues<T extends boolean>(payload: {
     nest: T;
@@ -1172,7 +1172,7 @@ export function useForm<
     ? FormValues
     : IsFlatObject<FormValues> extends true
     ? FormValues
-    : Record<string, unknown>;
+    : Record<string, any>;
   function getValues<T extends string, U extends unknown>(
     payload: T,
   ): T extends keyof FormValues ? FormValues[T] : U;
