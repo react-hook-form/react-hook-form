@@ -787,16 +787,13 @@ export function useForm<
 
     isWatchAllRef.current = true;
 
-    const result =
-      (!isEmptyObject(fieldValues) && fieldValues) || combinedDefaultValues;
-
-    return fieldNames && fieldNames.nest
-      ? transformToNestObject(result as FieldValues)
-      : result;
+    return transformToNestObject(
+      (!isEmptyObject(fieldValues) && fieldValues) ||
+        (combinedDefaultValues as FieldValues),
+    );
   }
 
   function watch(): FormValues;
-  function watch(option: { nest: boolean }): FormValues;
   function watch<T extends string, U extends unknown>(
     field: T,
     defaultValue?: T extends keyof FormValues
@@ -812,7 +809,7 @@ export function useForm<
     defaultValues?: DeepPartial<FormValues>,
   ): DeepPartial<FormValues>;
   function watch(
-    fieldNames?: string | string[] | { nest: boolean },
+    fieldNames?: string | string[],
     defaultValue?: unknown,
   ): unknown {
     return watchInternal(defaultValue, fieldNames);
@@ -1162,31 +1159,33 @@ export function useForm<
   function getValues(): IsFlatObject<FormValues> extends false
     ? Record<string, unknown>
     : FormValues;
-  function getValues<T extends boolean>(payload: {
-    nest: T;
-  }): T extends true
-    ? FormValues
-    : IsFlatObject<FormValues> extends true
-    ? FormValues
-    : Record<string, unknown>;
+  function getValues<T extends keyof FormValues>(
+    payload: T[],
+  ): Pick<FormValues, T>;
   function getValues<T extends string, U extends unknown>(
     payload: T,
   ): T extends keyof FormValues ? FormValues[T] : U;
-  function getValues(payload?: { nest: boolean } | string): unknown {
+  function getValues(payload?: string[] | string): unknown {
+    const fields = fieldsRef.current;
     if (isString(payload)) {
-      return fieldsRef.current[payload]
-        ? getFieldValue(fieldsRef.current, fieldsRef.current[payload]!.ref)
-        : undefined;
+      return getFieldValue(fields, fields[payload]!.ref);
     }
 
-    const fieldValues = getFieldsValues(fieldsRef.current);
-    const outputValues = isEmptyObject(fieldValues)
-      ? defaultValuesRef.current
-      : fieldValues;
+    if (isArray(payload)) {
+      return payload.reduce(
+        (previous, name) => ({
+          ...previous,
+          [name]: getFieldValue(fields, fields[name]!.ref),
+        }),
+        {},
+      );
+    }
 
-    return payload && payload.nest
-      ? transformToNestObject(outputValues)
-      : outputValues;
+    const fieldValues = getFieldsValues(fields);
+
+    return transformToNestObject(
+      isEmptyObject(fieldValues) ? defaultValuesRef.current : fieldValues,
+    );
   }
 
   React.useEffect(
