@@ -115,7 +115,7 @@ export type FormContextValues<FormValues extends FieldValues = FieldValues> = {
     omitResetState?: OmitResetState,
   ) => void;
   getValues(): IsFlatObject<FormValues> extends false
-    ? Record<string, unknown>
+    ? Record<string, any>
     : FormValues;
   getValues<T extends boolean>(payload: {
     nest: T;
@@ -123,7 +123,7 @@ export type FormContextValues<FormValues extends FieldValues = FieldValues> = {
     ? FormValues
     : IsFlatObject<FormValues> extends true
     ? FormValues
-    : Record<string, unknown>;
+    : Record<string, any>;
   getValues<T extends string, U extends unknown>(
     payload: T,
   ): T extends keyof FormValues ? FormValues[T] : U;
