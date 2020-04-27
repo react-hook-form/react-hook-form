@@ -109,11 +109,12 @@ const Controller = <
     removeFieldEventListener,
   ]);
 
-  React.useEffect(() => () => unregister(name), [unregister, name]);
-
-  React.useEffect(() => {
-    registerField();
-  }, [registerField]);
+  React.useEffect(
+    () => () => {
+      isNotFieldArray && unregister(name);
+    },
+    [unregister, name, isNotFieldArray],
+  );
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
   React.useEffect(() => {
