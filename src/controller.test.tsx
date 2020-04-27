@@ -312,7 +312,7 @@ describe('Controller', () => {
     expect(asFragment()).toMatchSnapshot();
   });
 
-  it('should invoke removeFieldEventListener to remove field with Field Array item', () => {
+  it.skip('should invoke removeFieldEventListener to remove field with Field Array item', () => {
     const control = reconfigureControl();
     const removeFieldEventListener = jest.fn();
 
