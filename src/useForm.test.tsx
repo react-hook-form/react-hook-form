@@ -33,7 +33,7 @@ export const reconfigureControl = (
     current: new Set(),
   },
   watchFieldsHookRef: {
-    current: new Set(),
+    current: {},
   },
   watchFieldsHookRenderRef: {
     current: {},
