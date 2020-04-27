@@ -93,12 +93,12 @@ export type FormContextValues<FormValues extends FieldValues = FieldValues> = {
     value: T extends keyof FormValues
       ? IsAny<FormValues[T]> extends true
         ? any
-        : DeepPartial<FormValues[T]>
+        : DeepPartial<UnpackedFieldValues<FormValues>[T]>
       : LiteralToPrimitive<U>,
     shouldValidate?: boolean,
   ): void;
   setValue<T extends keyof FormValues>(
-    namesWithValue: DeepPartial<Pick<FormValues, T>>[],
+    namesWithValue: DeepPartial<Pick<UnpackedFieldValues<FormValues>, T>>[],
     shouldValidate?: boolean,
   ): void;
   triggerValidation(
