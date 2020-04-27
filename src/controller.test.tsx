@@ -335,7 +335,7 @@ describe('Controller', () => {
           removeFieldEventListener,
           fieldsRef: {
             current: {
-              'test[0]': {} as Field,
+              'test[1]': {} as Field,
             },
           },
           fieldArrayNamesRef: {

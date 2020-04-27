@@ -83,7 +83,7 @@ const Controller = <
   };
 
   const registerField = React.useCallback(() => {
-    if (!isNotFieldArray && fieldsRef.current[name]) {
+    if (!isNotFieldArray) {
       removeFieldEventListener(fieldsRef.current[name] as Field, true);
     }
 
@@ -109,11 +109,12 @@ const Controller = <
     removeFieldEventListener,
   ]);
 
-  React.useEffect(() => () => unregister(name), [unregister, name]);
-
-  React.useEffect(() => {
-    registerField();
-  }, [registerField]);
+  React.useEffect(
+    () => () => {
+      !isNameInFieldArray(fieldArrayNamesRef.current, name) && unregister(name);
+    },
+    [unregister, name, fieldArrayNamesRef],
+  );
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
   React.useEffect(() => {
