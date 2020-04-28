@@ -1,5 +1,5 @@
 import React from 'react';
-import { useForm } from 'react-hook-form';
+import { useForm, NestedValue } from 'react-hook-form';
 
 function DefaultValues() {
   const { register } = useForm<{
@@ -10,6 +10,7 @@ function DefaultValues() {
       deep: {
         nest: string;
       };
+      nestedValue: NestedValue<string[]>;
     };
     ['flatName[1].whatever']: string;
   }>({
@@ -21,6 +22,7 @@ function DefaultValues() {
         deep: {
           nest: 'nest',
         },
+        nestedValue: ['test1', 'test2'],
       },
       'flatName[1].whatever': 'flat',
     },
@@ -34,6 +36,7 @@ function DefaultValues() {
       <input name="test1.deep.nest.notFound" ref={register} />
       <input name="test1.lastName[0]" ref={register} />
       <input name="test1.lastName[1]" ref={register} />
+      <input name="test1.nestedValue" ref={register} />
       <input name="flatName[1].whatever" ref={register} />
     </form>
   );
