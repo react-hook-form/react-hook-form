@@ -16,7 +16,7 @@ describe('useWatch', () => {
       }),
     );
 
-    expect(result.current).toEqual({ state: 'test' });
+    expect(result.current).toEqual('test');
   });
 
   it('should invoked generateId and set up watchFieldsHook and watchFieldsHookRender after mount ', () => {
@@ -79,7 +79,7 @@ describe('useWatch', () => {
     });
 
     act(() => {
-      expect(result.current).toEqual({ state: 'watchInternal' });
+      expect(result.current).toEqual('watchInternal');
     });
   });
 });
