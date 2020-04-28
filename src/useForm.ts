@@ -446,11 +446,11 @@ export function useForm<
     shouldValidate?: boolean,
   ): void;
   function setValue<T extends keyof FormValues>(
-    namesWithValue: Pick<UnpackedDeepPartial<FormValues>, T>[],
+    namesWithValue: UnpackedDeepPartial<Pick<FormValues, T>>[],
     shouldValidate?: boolean,
   ): void;
   function setValue<T extends keyof FormValues>(
-    names: string | Pick<UnpackedDeepPartial<FormValues>, T>[],
+    names: string | UnpackedDeepPartial<Pick<FormValues, T>>[],
     valueOrShouldValidate?: unknown,
     shouldValidate?: boolean,
   ): void {
@@ -458,7 +458,7 @@ export function useForm<
     const isArrayValue = isArray(names);
 
     (isArrayValue
-      ? (names as Pick<UnpackedDeepPartial<FormValues>, T>[])
+      ? (names as UnpackedDeepPartial<Pick<FormValues, T>>[])
       : [names]
     ).forEach((name: any) => {
       const isStringFieldName = isString(name);
@@ -750,8 +750,8 @@ export function useForm<
     : LiteralToPrimitive<U>;
   function watch<T extends keyof FormValues>(
     fields: T[],
-    defaultValues?: Pick<UnpackedDeepPartial<FormValues>, T>,
-  ): Pick<Unpacked<FormValues>, T>;
+    defaultValues?: UnpackedDeepPartial<Pick<FormValues, T>>,
+  ): Unpacked<Pick<FormValues, T>>;
   function watch(
     fields: string[],
     defaultValues?: UnpackedDeepPartial<FormValues>,
@@ -1150,7 +1150,7 @@ export function useForm<
   function getValues(): Unpacked<FormValues>;
   function getValues<T extends keyof FormValues>(
     payload: T[],
-  ): Pick<Unpacked<FormValues>, T>;
+  ): Unpacked<Pick<FormValues, T>>;
   function getValues<T extends string, U extends unknown>(
     payload: T,
   ): T extends keyof FormValues ? Unpacked<FormValues>[T] : U;

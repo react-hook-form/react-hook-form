@@ -4,9 +4,9 @@ export type IsAny<T> = boolean extends (T extends never ? true : false)
   ? true
   : false;
 
-export type IsFlatObject<T extends Record<string, unknown>> = Extract<
+export type IsFlatObject<T extends object> = Extract<
   Exclude<T[keyof T], NestedValue>,
-  unknown[] | Record<string, unknown>
+  any[] | object
 > extends never
   ? true
   : false;
@@ -34,12 +34,10 @@ export type FieldValue<FormValues extends FieldValues> = FormValues[FieldName<
 declare const $NestedValue: unique symbol;
 
 export type NestedValue<
-  TValue extends unknown[] | Record<string, unknown> =
-    | unknown[]
-    | Record<string, unknown>
+  TNestedValue extends any[] | object = any[] | object
 > = {
   [$NestedValue]: never;
-} & TValue;
+} & TNestedValue;
 
 export type Unpacked<T> = {
   [K in keyof T]: T[K] extends NestedValue<infer U>
@@ -264,7 +262,7 @@ export type Control<FormValues extends FieldValues = FieldValues> = {
   reRender: () => void;
   removeFieldEventListener: (field: Field, forceDelete?: boolean) => void;
   setValue<T extends keyof FormValues>(
-    namesWithValue: Pick<UnpackedDeepPartial<FormValues>, T>[],
+    namesWithValue: UnpackedDeepPartial<Pick<FormValues, T>>[],
     shouldValidate?: boolean,
   ): void;
   setValue<T extends string, U extends unknown>(
@@ -281,7 +279,7 @@ export type Control<FormValues extends FieldValues = FieldValues> = {
   getValues(): Unpacked<FormValues>;
   getValues<T extends keyof FormValues>(
     payload: T[],
-  ): Pick<Unpacked<FormValues>, T>;
+  ): Unpacked<Pick<FormValues, T>>;
   getValues<T extends string, U extends unknown>(
     payload: T,
   ): T extends keyof FormValues ? Unpacked<FormValues>[T] : U;

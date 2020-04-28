@@ -60,8 +60,8 @@ export type FormContextValues<FormValues extends FieldValues = FieldValues> = {
     : LiteralToPrimitive<U>;
   watch<T extends keyof FormValues>(
     fields: T[],
-    defaultValues?: Pick<UnpackedDeepPartial<FormValues>, T>,
-  ): Pick<Unpacked<FormValues>, T>;
+    defaultValues?: UnpackedDeepPartial<Pick<FormValues, T>>,
+  ): Unpacked<Pick<FormValues, T>>;
   watch(
     fields: string[],
     defaultValues?: UnpackedDeepPartial<FormValues>,
@@ -101,7 +101,7 @@ export type FormContextValues<FormValues extends FieldValues = FieldValues> = {
     shouldValidate?: boolean,
   ): void;
   setValue<T extends keyof FormValues>(
-    namesWithValue: Pick<UnpackedDeepPartial<FormValues>, T>[],
+    namesWithValue: UnpackedDeepPartial<Pick<FormValues, T>>[],
     shouldValidate?: boolean,
   ): void;
   triggerValidation(
@@ -122,7 +122,7 @@ export type FormContextValues<FormValues extends FieldValues = FieldValues> = {
   getValues(): Unpacked<FormValues>;
   getValues<T extends keyof FormValues>(
     payload: T[],
-  ): Pick<Unpacked<FormValues>, T>;
+  ): Unpacked<Pick<FormValues, T>>;
   getValues<T extends string, U extends unknown>(
     payload: T,
   ): T extends keyof FormValues ? Unpacked<FormValues>[T] : U;
