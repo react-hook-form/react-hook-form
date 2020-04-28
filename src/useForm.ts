@@ -38,9 +38,9 @@ import { EVENTS, UNDEFINED, VALIDATION_MODE } from './constants';
 import { FormContextValues } from './contextTypes';
 import {
   LiteralToPrimitive,
-  DeepPartial,
+  UnpackedDeepPartial,
   FieldValues,
-  UnpackedFieldValues,
+  Unpacked,
   FieldName,
   FieldValue,
   FieldErrors,
@@ -91,13 +91,10 @@ export function useForm<
   const validFieldsRef = React.useRef(new Set<FieldName<FormValues>>());
   const isValidRef = React.useRef(true);
   const defaultValuesRef = React.useRef<
-    | FieldValue<UnpackedFieldValues<FormValues>>
-    | DeepPartial<UnpackedFieldValues<FormValues>>
+    FieldValue<Unpacked<FormValues>> | UnpackedDeepPartial<FormValues>
   >(defaultValues);
   const defaultValuesAtRenderRef = React.useRef<
-    DeepPartial<
-      Record<FieldName<FormValues>, FieldValue<UnpackedFieldValues<FormValues>>>
-    >
+    UnpackedDeepPartial<Record<FieldName<FormValues>, FieldValue<FormValues>>>
   >({});
   const isUnMount = React.useRef(false);
   const isWatchAllRef = React.useRef(false);
@@ -189,7 +186,7 @@ export function useForm<
       field: Field,
       rawValue:
         | FieldValue<FormValues>
-        | DeepPartial<FormValues>
+        | UnpackedDeepPartial<FormValues>
         | undefined
         | null
         | boolean,
@@ -444,16 +441,16 @@ export function useForm<
     value: T extends keyof FormValues
       ? IsAny<FormValues[T]> extends true
         ? any
-        : DeepPartial<UnpackedFieldValues<FormValues>[T]>
+        : UnpackedDeepPartial<FormValues[T]>
       : LiteralToPrimitive<U>,
     shouldValidate?: boolean,
   ): void;
   function setValue<T extends keyof FormValues>(
-    namesWithValue: DeepPartial<Pick<UnpackedFieldValues<FormValues>, T>>[],
+    namesWithValue: Pick<UnpackedDeepPartial<FormValues>, T>[],
     shouldValidate?: boolean,
   ): void;
   function setValue<T extends keyof FormValues>(
-    names: string | DeepPartial<Pick<UnpackedFieldValues<FormValues>, T>>[],
+    names: string | Pick<UnpackedDeepPartial<FormValues>, T>[],
     valueOrShouldValidate?: unknown,
     shouldValidate?: boolean,
   ): void {
@@ -461,7 +458,7 @@ export function useForm<
     const isArrayValue = isArray(names);
 
     (isArrayValue
-      ? (names as DeepPartial<Pick<UnpackedFieldValues<FormValues>, T>>[])
+      ? (names as Pick<UnpackedDeepPartial<FormValues>, T>[])
       : [names]
     ).forEach((name: any) => {
       const isStringFieldName = isString(name);
@@ -742,23 +739,23 @@ export function useForm<
     }
   }
 
-  function watch(): UnpackedFieldValues<FormValues>;
+  function watch(): Unpacked<FormValues>;
   function watch<T extends string, U extends unknown>(
     field: T,
     defaultValue?: T extends keyof FormValues
-      ? UnpackedFieldValues<FormValues>[T]
+      ? Unpacked<FormValues>[T]
       : LiteralToPrimitive<U>,
   ): T extends keyof FormValues
-    ? UnpackedFieldValues<FormValues>[T]
+    ? Unpacked<FormValues>[T]
     : LiteralToPrimitive<U>;
   function watch<T extends keyof FormValues>(
     fields: T[],
-    defaultValues?: DeepPartial<Pick<UnpackedFieldValues<FormValues>, T>>,
-  ): Pick<UnpackedFieldValues<FormValues>, T>;
+    defaultValues?: Pick<UnpackedDeepPartial<FormValues>, T>,
+  ): Pick<Unpacked<FormValues>, T>;
   function watch(
     fields: string[],
-    defaultValues?: DeepPartial<UnpackedFieldValues<FormValues>>,
-  ): DeepPartial<UnpackedFieldValues<FormValues>>;
+    defaultValues?: UnpackedDeepPartial<FormValues>,
+  ): UnpackedDeepPartial<FormValues>;
   function watch(
     fieldNames?: string | string[],
     defaultValue?: unknown,
@@ -774,7 +771,7 @@ export function useForm<
     );
 
     if (isString(fieldNames)) {
-      return assignWatchFields<UnpackedFieldValues<FormValues>>(
+      return assignWatchFields<Unpacked<FormValues>>(
         fieldValues,
         fieldNames,
         watchFields,
@@ -782,7 +779,7 @@ export function useForm<
           [fieldNames]: isDefaultValueUndefined
             ? get(combinedDefaultValues, fieldNames)
             : defaultValue,
-        } as DeepPartial<UnpackedFieldValues<FormValues>>,
+        } as UnpackedDeepPartial<FormValues>,
       );
     }
 
@@ -790,13 +787,11 @@ export function useForm<
       return fieldNames.reduce(
         (previous, name) => ({
           ...previous,
-          [name]: assignWatchFields<UnpackedFieldValues<FormValues>>(
+          [name]: assignWatchFields<Unpacked<FormValues>>(
             fieldValues,
             name,
             watchFields,
-            combinedDefaultValues as DeepPartial<
-              UnpackedFieldValues<FormValues>
-            >,
+            combinedDefaultValues as UnpackedDeepPartial<FormValues>,
           ),
         }),
         {},
@@ -1117,7 +1112,7 @@ export function useForm<
   };
 
   const reset = (
-    values?: DeepPartial<FormValues>,
+    values?: UnpackedDeepPartial<FormValues>,
     omitResetState: OmitResetState = {},
   ): void => {
     if (isWeb) {
@@ -1152,13 +1147,13 @@ export function useForm<
     reRender();
   };
 
-  function getValues(): UnpackedFieldValues<FormValues>;
+  function getValues(): Unpacked<FormValues>;
   function getValues<T extends keyof FormValues>(
     payload: T[],
-  ): Pick<UnpackedFieldValues<FormValues>, T>;
+  ): Pick<Unpacked<FormValues>, T>;
   function getValues<T extends string, U extends unknown>(
     payload: T,
-  ): T extends keyof FormValues ? UnpackedFieldValues<FormValues>[T] : U;
+  ): T extends keyof FormValues ? Unpacked<FormValues>[T] : U;
   function getValues(payload?: string[] | string): unknown {
     const fields = fieldsRef.current;
     if (isString(payload)) {

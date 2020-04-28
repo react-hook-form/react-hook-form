@@ -41,24 +41,30 @@ export type NestedValue<
   [$NestedValue]: never;
 } & TValue;
 
-export type UnpackedFieldValues<TFieldValues extends FieldValues> = {
-  [Key in keyof TFieldValues]: TFieldValues[Key] extends NestedValue<infer U>
+export type Unpacked<T> = {
+  [K in keyof T]: T[K] extends NestedValue<infer U>
     ? U
-    : TFieldValues[Key] extends object
-    ? UnpackedFieldValues<TFieldValues[Key]>
-    : TFieldValues[Key];
+    : T[K] extends Array<infer U>
+    ? Array<Unpacked<U>>
+    : T[K] extends ReadonlyArray<infer U>
+    ? ReadonlyArray<Unpacked<U>>
+    : T[K] extends object
+    ? Unpacked<T[K]>
+    : T[K];
 };
 
 export type Ref = FieldElement;
 
-export type DeepPartial<T> = {
-  [P in keyof T]?: T[P] extends Array<infer U>
-    ? Array<DeepPartial<U>>
-    : T[P] extends ReadonlyArray<infer U>
-    ? ReadonlyArray<DeepPartial<U>>
-    : T[P] extends { [key: string]: unknown }
-    ? DeepPartial<T[P]>
-    : T[P];
+export type UnpackedDeepPartial<T> = {
+  [K in keyof T]?: T[K] extends NestedValue<infer U>
+    ? U
+    : T[K] extends Array<infer U>
+    ? Array<UnpackedDeepPartial<U>>
+    : T[K] extends ReadonlyArray<infer U>
+    ? ReadonlyArray<UnpackedDeepPartial<U>>
+    : T[K] extends { [key: string]: unknown }
+    ? UnpackedDeepPartial<T[K]>
+    : T[K];
 };
 
 export type ValidationMode = {
@@ -70,7 +76,7 @@ export type ValidationMode = {
 export type Mode = keyof ValidationMode;
 
 export type OnSubmit<FormValues extends FieldValues> = (
-  data: UnpackedFieldValues<FormValues>,
+  data: Unpacked<FormValues>,
   event?: React.BaseSyntheticEvent,
 ) => void | Promise<void>;
 
@@ -87,7 +93,7 @@ export type EmptyObject = { [key in string | number]: never };
 export type SchemaValidationSuccess<
   FormValues extends FieldValues = FieldValues
 > = {
-  values: UnpackedFieldValues<FormValues>;
+  values: Unpacked<FormValues>;
   errors: EmptyObject;
 };
 
@@ -117,7 +123,7 @@ export type UseFormOptions<
 > = Partial<{
   mode: Mode;
   reValidateMode: Mode;
-  defaultValues: DeepPartial<UnpackedFieldValues<FormValues>>;
+  defaultValues: UnpackedDeepPartial<FormValues>;
   validationResolver: ValidationResolver<FormValues, ValidationContext>;
   validationContext: ValidationContext;
   submitFocusError: boolean;
@@ -258,7 +264,7 @@ export type Control<FormValues extends FieldValues = FieldValues> = {
   reRender: () => void;
   removeFieldEventListener: (field: Field, forceDelete?: boolean) => void;
   setValue<T extends keyof FormValues>(
-    namesWithValue: DeepPartial<Pick<UnpackedFieldValues<FormValues>, T>>[],
+    namesWithValue: Pick<UnpackedDeepPartial<FormValues>, T>[],
     shouldValidate?: boolean,
   ): void;
   setValue<T extends string, U extends unknown>(
@@ -266,17 +272,19 @@ export type Control<FormValues extends FieldValues = FieldValues> = {
     value: T extends keyof FormValues
       ? IsAny<FormValues[T]> extends true
         ? any
-        : DeepPartial<UnpackedFieldValues<FormValues>[T]>
+        : FormValues[T] extends NestedValue<infer U>
+        ? U
+        : UnpackedDeepPartial<FormValues[T]>
       : LiteralToPrimitive<U>,
     shouldValidate?: boolean,
   ): void;
-  getValues(): UnpackedFieldValues<FormValues>;
+  getValues(): Unpacked<FormValues>;
   getValues<T extends keyof FormValues>(
     payload: T[],
-  ): Pick<UnpackedFieldValues<FormValues>, T>;
+  ): Pick<Unpacked<FormValues>, T>;
   getValues<T extends string, U extends unknown>(
     payload: T,
-  ): T extends keyof FormValues ? UnpackedFieldValues<FormValues>[T] : U;
+  ): T extends keyof FormValues ? Unpacked<FormValues>[T] : U;
   triggerValidation(
     payload?:
       | (IsFlatObject<FormValues> extends true
@@ -346,8 +354,8 @@ export type Control<FormValues extends FieldValues = FieldValues> = {
     dirtyFields: boolean;
   }>;
   defaultValuesRef: React.MutableRefObject<
-    | DeepPartial<UnpackedFieldValues<FormValues>>
-    | UnpackedFieldValues<FormValues>[FieldName<FormValues>]
+    | UnpackedDeepPartial<FormValues>
+    | Unpacked<FormValues>[FieldName<FormValues>]
   >;
 };
 
