@@ -1,6 +1,6 @@
 import * as React from 'react';
 import {
-  UnpackedDeepPartial,
+  DeepPartial,
   FieldValues,
   Unpacked,
   NestedValue,
@@ -60,12 +60,12 @@ export type FormContextValues<FormValues extends FieldValues = FieldValues> = {
     : LiteralToPrimitive<U>;
   watch<T extends keyof FormValues>(
     fields: T[],
-    defaultValues?: UnpackedDeepPartial<Pick<FormValues, T>>,
+    defaultValues?: Unpacked<DeepPartial<Pick<FormValues, T>>>,
   ): Unpacked<Pick<FormValues, T>>;
   watch(
     fields: string[],
-    defaultValues?: UnpackedDeepPartial<FormValues>,
-  ): UnpackedDeepPartial<FormValues>;
+    defaultValues?: Unpacked<DeepPartial<FormValues>>,
+  ): Unpacked<DeepPartial<FormValues>>;
   setError(
     name: IsFlatObject<FormValues> extends true
       ? Extract<keyof FormValues, string>
@@ -96,12 +96,12 @@ export type FormContextValues<FormValues extends FieldValues = FieldValues> = {
         ? any
         : FormValues[T] extends NestedValue<infer U>
         ? U
-        : UnpackedDeepPartial<FormValues[T]>
+        : Unpacked<DeepPartial<FormValues[T]>>
       : LiteralToPrimitive<U>,
     shouldValidate?: boolean,
   ): void;
   setValue<T extends keyof FormValues>(
-    namesWithValue: UnpackedDeepPartial<Pick<FormValues, T>>[],
+    namesWithValue: Unpacked<DeepPartial<Pick<FormValues, T>>>[],
     shouldValidate?: boolean,
   ): void;
   triggerValidation(
@@ -116,7 +116,7 @@ export type FormContextValues<FormValues extends FieldValues = FieldValues> = {
   errors: FieldErrors<FormValues>;
   formState: FormStateProxy<FormValues>;
   reset: (
-    values?: UnpackedDeepPartial<FormValues>,
+    values?: Unpacked<DeepPartial<FormValues>>,
     omitResetState?: OmitResetState,
   ) => void;
   getValues(): Unpacked<FormValues>;

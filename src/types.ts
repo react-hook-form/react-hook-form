@@ -39,29 +39,29 @@ export type NestedValue<
   [$NestedValue]: never;
 } & TNestedValue;
 
+export type NonUndefined<T> = T extends undefined ? never : T;
+
 export type Unpacked<T> = {
-  [K in keyof T]: T[K] extends NestedValue<infer U>
+  [K in keyof T]: NonUndefined<T[K]> extends NestedValue<infer U>
     ? U
-    : T[K] extends Array<infer U>
+    : NonUndefined<T[K]> extends Array<infer U>
     ? Array<Unpacked<U>>
-    : T[K] extends ReadonlyArray<infer U>
+    : NonUndefined<T[K]> extends ReadonlyArray<infer U>
     ? ReadonlyArray<Unpacked<U>>
-    : T[K] extends object
+    : NonUndefined<T[K]> extends object
     ? Unpacked<T[K]>
     : T[K];
 };
 
 export type Ref = FieldElement;
 
-export type UnpackedDeepPartial<T> = {
-  [K in keyof T]?: T[K] extends NestedValue<infer U>
-    ? U
-    : T[K] extends Array<infer U>
-    ? Array<UnpackedDeepPartial<U>>
+export type DeepPartial<T> = {
+  [K in keyof T]?: T[K] extends Array<infer U>
+    ? Array<DeepPartial<U>>
     : T[K] extends ReadonlyArray<infer U>
-    ? ReadonlyArray<UnpackedDeepPartial<U>>
+    ? ReadonlyArray<DeepPartial<U>>
     : T[K] extends { [key: string]: unknown }
-    ? UnpackedDeepPartial<T[K]>
+    ? DeepPartial<T[K]>
     : T[K];
 };
 
@@ -121,7 +121,7 @@ export type UseFormOptions<
 > = Partial<{
   mode: Mode;
   reValidateMode: Mode;
-  defaultValues: UnpackedDeepPartial<FormValues>;
+  defaultValues: Unpacked<DeepPartial<FormValues>>;
   validationResolver: ValidationResolver<FormValues, ValidationContext>;
   validationContext: ValidationContext;
   submitFocusError: boolean;
@@ -262,7 +262,7 @@ export type Control<FormValues extends FieldValues = FieldValues> = {
   reRender: () => void;
   removeFieldEventListener: (field: Field, forceDelete?: boolean) => void;
   setValue<T extends keyof FormValues>(
-    namesWithValue: UnpackedDeepPartial<Pick<FormValues, T>>[],
+    namesWithValue: Unpacked<DeepPartial<Pick<FormValues, T>>>[],
     shouldValidate?: boolean,
   ): void;
   setValue<T extends string, U extends unknown>(
@@ -272,7 +272,7 @@ export type Control<FormValues extends FieldValues = FieldValues> = {
         ? any
         : FormValues[T] extends NestedValue<infer U>
         ? U
-        : UnpackedDeepPartial<FormValues[T]>
+        : Unpacked<DeepPartial<FormValues[T]>>
       : LiteralToPrimitive<U>,
     shouldValidate?: boolean,
   ): void;
@@ -352,7 +352,7 @@ export type Control<FormValues extends FieldValues = FieldValues> = {
     dirtyFields: boolean;
   }>;
   defaultValuesRef: React.MutableRefObject<
-    | UnpackedDeepPartial<FormValues>
+    | Unpacked<DeepPartial<FormValues>>
     | Unpacked<FormValues>[FieldName<FormValues>]
   >;
 };

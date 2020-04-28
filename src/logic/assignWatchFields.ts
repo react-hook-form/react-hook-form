@@ -4,18 +4,19 @@ import getPath from '../utils/getPath';
 import isEmptyObject from '../utils/isEmptyObject';
 import isUndefined from '../utils/isUndefined';
 import {
-  UnpackedDeepPartial,
+  DeepPartial,
   FieldValue,
   FieldValues,
   FieldName,
+  Unpacked,
 } from '../types';
 
 export default <FormValues extends FieldValues>(
   fieldValues: FormValues,
   fieldName: FieldName<FormValues>,
   watchFields: Set<FieldName<FormValues>>,
-  combinedDefaultValues: UnpackedDeepPartial<FormValues>,
-): FieldValue<FormValues> | UnpackedDeepPartial<FormValues> | undefined => {
+  combinedDefaultValues: Unpacked<DeepPartial<FormValues>>,
+): FieldValue<FormValues> | Unpacked<DeepPartial<FormValues>> | undefined => {
   let value;
 
   watchFields.add(fieldName);
