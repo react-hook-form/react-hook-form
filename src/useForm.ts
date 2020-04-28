@@ -486,7 +486,7 @@ export function useForm<
     }
   }
 
-  const renderWatchedInputs = (name: string, found = false): boolean => {
+  const renderWatchedInputs = (name: string, found = true): boolean => {
     const watchFieldsHook = watchFieldsHookRef.current;
 
     if (!isEmptyObject(watchFieldsHook)) {
@@ -494,7 +494,7 @@ export function useForm<
         if (watchFieldsHook[key].has(name)) {
           if (watchFieldsHookRenderRef.current[key]) {
             watchFieldsHookRenderRef.current[key]();
-            found = true;
+            found = false;
           }
         }
       }
