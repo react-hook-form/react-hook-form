@@ -14,10 +14,15 @@ export const useWatch = <ControlProp extends Control = Control>({
     control || methods.control;
   const [value, setValue] = React.useState<unknown>();
   const idRef = React.useRef<string>();
+  const defaultValueRef = React.useRef(defaultValue);
+  const nameRef = React.useRef(name);
 
   const updateWatchValue = React.useCallback(
-    () => setValue(watchInternal(defaultValue, name, idRef.current)),
-    [setValue, watchInternal, defaultValue, name, idRef],
+    () =>
+      setValue(
+        watchInternal(defaultValueRef.current, nameRef.current, idRef.current),
+      ),
+    [setValue, watchInternal, defaultValueRef, nameRef, idRef],
   );
 
   React.useEffect(() => {
@@ -26,14 +31,20 @@ export const useWatch = <ControlProp extends Control = Control>({
     const watchFieldsHook = watchFieldsHookRef.current;
     watchFieldsHook[id] = new Set();
     watchFieldsHookRender[id] = updateWatchValue;
-    watchInternal(defaultValue, name, id);
+    watchInternal(defaultValueRef.current, nameRef.current, id);
 
     return () => {
       delete watchFieldsHook[id];
       delete watchFieldsHookRender[id];
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [name, watchFieldsHookRenderRef, watchFieldsHookRef]);
+  }, [
+    nameRef,
+    updateWatchValue,
+    watchFieldsHookRenderRef,
+    watchFieldsHookRef,
+    watchInternal,
+    defaultValueRef,
+  ]);
 
-  return { state: isUndefined(value) ? defaultValue : value };
+  return isUndefined(value) ? defaultValue : value;
 };
