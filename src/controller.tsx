@@ -53,6 +53,7 @@ const Controller = <
   const isCheckboxInput = isBoolean(value);
   const shouldReValidateOnBlur = isOnBlur || isReValidateOnBlur;
   const rulesRef = React.useRef(rules);
+  const onFocusRef = React.useRef(onFocus);
   const isNotFieldArray = !isNameInFieldArray(fieldArrayNamesRef.current, name);
   rulesRef.current = rules;
 
@@ -88,7 +89,7 @@ const Controller = <
     }
 
     register(
-      Object.defineProperty({ name, focus: onFocus }, VALUE, {
+      Object.defineProperty({ name, focus: onFocusRef.current }, VALUE, {
         set(data) {
           setInputStateValue(data);
           valueRef.current = data;
@@ -104,7 +105,7 @@ const Controller = <
     fieldsRef,
     rulesRef,
     name,
-    onFocus,
+    onFocusRef,
     register,
     removeFieldEventListener,
   ]);

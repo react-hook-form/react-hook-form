@@ -15,7 +15,8 @@ export default <FormValues extends FieldValues>(
   fieldValues: FormValues,
   fieldName: FieldName<FormValues>,
   watchFields: Set<FieldName<FormValues>>,
-  combinedDefaultValues: Unpacked<DeepPartial<FormValues>>,
+  inputValue: Unpacked<DeepPartial<FormValues>>,
+  isSingleField?: boolean,
 ): FieldValue<FormValues> | Unpacked<DeepPartial<FormValues>> | undefined => {
   let value;
 
@@ -36,5 +37,9 @@ export default <FormValues extends FieldValues>(
     }
   }
 
-  return isUndefined(value) ? get(combinedDefaultValues, fieldName) : value;
+  return isUndefined(value)
+    ? isSingleField
+      ? inputValue
+      : get(inputValue, fieldName)
+    : value;
 };

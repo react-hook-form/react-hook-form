@@ -779,11 +779,10 @@ export function useForm<
         fieldValues,
         fieldNames,
         watchFields,
-        {
-          [fieldNames]: isDefaultValueUndefined
-            ? get(combinedDefaultValues, fieldNames)
-            : defaultValue,
-        } as Unpacked<DeepPartial<FormValues>>,
+        isDefaultValueUndefined
+          ? get(combinedDefaultValues, fieldNames)
+          : (defaultValue as Unpacked<DeepPartial<FormValues>>),
+        true,
       );
     }
 
@@ -1046,6 +1045,7 @@ export function useForm<
 
         if (isEmptyObject(fieldErrors)) {
           errorsRef.current = {};
+          reRender();
           await callback(transformToNestObject(fieldValues), e);
         } else {
           errorsRef.current = fieldErrors;
@@ -1153,6 +1153,13 @@ export function useForm<
     reRender();
   };
 
+  const getValue = <T extends string, U extends unknown>(
+    payload: T,
+  ): T extends keyof FormValues ? Unpacked<FormValues>[T] : U =>
+    fieldsRef.current[payload]
+      ? getFieldValue(fieldsRef.current, fieldsRef.current[payload]!.ref)
+      : get(defaultValuesRef.current, payload);
+
   function getValues(): Unpacked<FormValues>;
   function getValues<T extends keyof FormValues>(
     payload: T[],
@@ -1163,14 +1170,14 @@ export function useForm<
   function getValues(payload?: string[] | string): unknown {
     const fields = fieldsRef.current;
     if (isString(payload)) {
-      return getFieldValue(fields, fields[payload]!.ref);
+      return getValue(payload);
     }
 
     if (isArray(payload)) {
       return payload.reduce(
         (previous, name) => ({
           ...previous,
-          [name]: getFieldValue(fields, fields[name]!.ref),
+          [name]: getValue(name),
         }),
         {},
       );
