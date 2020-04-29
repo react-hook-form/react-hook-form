@@ -11,13 +11,16 @@ import {
   Unpacked,
 } from '../types';
 
-export default <FormValues extends FieldValues>(
-  fieldValues: FormValues,
-  fieldName: FieldName<FormValues>,
-  watchFields: Set<FieldName<FormValues>>,
-  inputValue: Unpacked<DeepPartial<FormValues>>,
+export default <TFieldValues extends FieldValues>(
+  fieldValues: TFieldValues,
+  fieldName: FieldName<TFieldValues>,
+  watchFields: Set<FieldName<TFieldValues>>,
+  inputValue: Unpacked<DeepPartial<TFieldValues>>,
   isSingleField?: boolean,
-): FieldValue<FormValues> | Unpacked<DeepPartial<FormValues>> | undefined => {
+):
+  | FieldValue<TFieldValues>
+  | Unpacked<DeepPartial<TFieldValues>>
+  | undefined => {
   let value;
 
   watchFields.add(fieldName);
@@ -31,7 +34,7 @@ export default <FormValues extends FieldValues>(
     value = get(transformToNestObject(fieldValues), fieldName);
 
     if (!isUndefined(value)) {
-      getPath<FormValues>(fieldName, value).forEach((name: string) =>
+      getPath<TFieldValues>(fieldName, value).forEach((name: string) =>
         watchFields.add(name),
       );
     }

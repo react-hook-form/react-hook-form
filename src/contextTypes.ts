@@ -19,115 +19,121 @@ import {
   IsAny,
 } from './types';
 
-export type FormProps<FormValues extends FieldValues = FieldValues> = {
+export type FormProps<TFieldValues extends FieldValues = FieldValues> = {
   children: React.ReactNode;
-} & FormContextValues<FormValues>;
+} & FormContextValues<TFieldValues>;
 
-export type FormContextValues<FormValues extends FieldValues = FieldValues> = {
+export type FormContextValues<
+  TFieldValues extends FieldValues = FieldValues
+> = {
   register<
-    Element extends FieldElement<FormValues> = FieldElement<FormValues>
+    Element extends FieldElement<TFieldValues> = FieldElement<TFieldValues>
   >(): (ref: Element | null) => void;
-  register<Element extends FieldElement<FormValues> = FieldElement<FormValues>>(
+  register<
+    Element extends FieldElement<TFieldValues> = FieldElement<TFieldValues>
+  >(
     validationOptions: ValidationOptions,
   ): (ref: Element | null) => void;
   register(
-    name: IsFlatObject<FormValues> extends true
-      ? Extract<keyof FormValues, string>
+    name: IsFlatObject<TFieldValues> extends true
+      ? Extract<keyof TFieldValues, string>
       : string,
     validationOptions?: ValidationOptions,
   ): void;
-  register<Element extends FieldElement<FormValues> = FieldElement<FormValues>>(
+  register<
+    Element extends FieldElement<TFieldValues> = FieldElement<TFieldValues>
+  >(
     ref: Element,
     validationOptions?: ValidationOptions,
   ): void;
   unregister(
     name:
-      | (IsFlatObject<FormValues> extends true
-          ? Extract<keyof FormValues, string>
+      | (IsFlatObject<TFieldValues> extends true
+          ? Extract<keyof TFieldValues, string>
           : string)
-      | (IsFlatObject<FormValues> extends true
-          ? Extract<keyof FormValues, string>
+      | (IsFlatObject<TFieldValues> extends true
+          ? Extract<keyof TFieldValues, string>
           : string)[],
   ): void;
-  watch(): Unpacked<FormValues>;
+  watch(): Unpacked<TFieldValues>;
   watch<T extends string, U extends unknown>(
     field: T,
-    defaultValue?: T extends keyof FormValues
-      ? Unpacked<FormValues>[T]
+    defaultValue?: T extends keyof TFieldValues
+      ? Unpacked<TFieldValues>[T]
       : LiteralToPrimitive<U>,
-  ): T extends keyof FormValues
-    ? Unpacked<FormValues>[T]
+  ): T extends keyof TFieldValues
+    ? Unpacked<TFieldValues>[T]
     : LiteralToPrimitive<U>;
-  watch<T extends keyof FormValues>(
+  watch<T extends keyof TFieldValues>(
     fields: T[],
-    defaultValues?: Unpacked<DeepPartial<Pick<FormValues, T>>>,
-  ): Unpacked<Pick<FormValues, T>>;
+    defaultValues?: Unpacked<DeepPartial<Pick<TFieldValues, T>>>,
+  ): Unpacked<Pick<TFieldValues, T>>;
   watch(
     fields: string[],
-    defaultValues?: Unpacked<DeepPartial<FormValues>>,
-  ): Unpacked<DeepPartial<FormValues>>;
+    defaultValues?: Unpacked<DeepPartial<TFieldValues>>,
+  ): Unpacked<DeepPartial<TFieldValues>>;
   setError(
-    name: IsFlatObject<FormValues> extends true
-      ? Extract<keyof FormValues, string>
+    name: IsFlatObject<TFieldValues> extends true
+      ? Extract<keyof TFieldValues, string>
       : string,
     type: MultipleFieldErrors,
   ): void;
   setError(
-    name: IsFlatObject<FormValues> extends true
-      ? Extract<keyof FormValues, string>
+    name: IsFlatObject<TFieldValues> extends true
+      ? Extract<keyof TFieldValues, string>
       : string,
     type: string,
     message?: Message,
   ): void;
-  setError(name: ManualFieldError<FormValues>[]): void;
+  setError(name: ManualFieldError<TFieldValues>[]): void;
   clearError(
     name?:
-      | (IsFlatObject<FormValues> extends true
-          ? Extract<keyof FormValues, string>
+      | (IsFlatObject<TFieldValues> extends true
+          ? Extract<keyof TFieldValues, string>
           : string)
-      | (IsFlatObject<FormValues> extends true
-          ? Extract<keyof FormValues, string>
+      | (IsFlatObject<TFieldValues> extends true
+          ? Extract<keyof TFieldValues, string>
           : string)[],
   ): void;
   setValue<T extends string, U extends unknown>(
     name: T,
-    value: T extends keyof FormValues
-      ? IsAny<FormValues[T]> extends true
+    value: T extends keyof TFieldValues
+      ? IsAny<TFieldValues[T]> extends true
         ? any
-        : FormValues[T] extends NestedValue<infer U>
+        : TFieldValues[T] extends NestedValue<infer U>
         ? U
-        : Unpacked<DeepPartial<FormValues[T]>>
+        : Unpacked<DeepPartial<TFieldValues[T]>>
       : LiteralToPrimitive<U>,
     shouldValidate?: boolean,
   ): void;
-  setValue<T extends keyof FormValues>(
-    namesWithValue: Unpacked<DeepPartial<Pick<FormValues, T>>>[],
+  setValue<T extends keyof TFieldValues>(
+    namesWithValue: Unpacked<DeepPartial<Pick<TFieldValues, T>>>[],
     shouldValidate?: boolean,
   ): void;
   triggerValidation(
     payload?:
-      | (IsFlatObject<FormValues> extends true
-          ? Extract<keyof FormValues, string>
+      | (IsFlatObject<TFieldValues> extends true
+          ? Extract<keyof TFieldValues, string>
           : string)
-      | (IsFlatObject<FormValues> extends true
-          ? Extract<keyof FormValues, string>
+      | (IsFlatObject<TFieldValues> extends true
+          ? Extract<keyof TFieldValues, string>
           : string)[],
   ): Promise<boolean>;
-  errors: FieldErrors<FormValues>;
-  formState: FormStateProxy<FormValues>;
+  errors: FieldErrors<TFieldValues>;
+  formState: FormStateProxy<TFieldValues>;
   reset: (
-    values?: Unpacked<DeepPartial<FormValues>>,
+    values?: Unpacked<DeepPartial<TFieldValues>>,
     omitResetState?: OmitResetState,
   ) => void;
-  getValues(): Unpacked<FormValues>;
-  getValues<T extends keyof FormValues>(
+  getValues(): Unpacked<TFieldValues>;
+  getValues<T extends keyof TFieldValues>(
     payload: T[],
-  ): Unpacked<Pick<FormValues, T>>;
+  ): Unpacked<Pick<TFieldValues, T>>;
   getValues<T extends string, U extends unknown>(
     payload: T,
-  ): T extends keyof FormValues ? Unpacked<FormValues>[T] : U;
+  ): T extends keyof TFieldValues ? Unpacked<TFieldValues>[T] : U;
   handleSubmit: (
-    callback: OnSubmit<Unpacked<FormValues>>,
+    callback: OnSubmit<Unpacked<TFieldValues>>,
   ) => (e?: React.BaseSyntheticEvent) => Promise<void>;
-  control: Control<FormValues>;
+  control: Control<TFieldValues>;
 };

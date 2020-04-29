@@ -10,9 +10,9 @@ const isSameRef = (fieldValue: Field, ref: Ref) =>
   fieldValue && fieldValue.ref === ref;
 
 export default function findRemovedFieldAndRemoveListener<
-  FormValues extends FieldValues
+  TFieldValues extends FieldValues
 >(
-  fields: FieldRefs<FormValues>,
+  fields: FieldRefs<TFieldValues>,
   handleChange: ({ type, target }: Event) => Promise<void | boolean>,
   field: Field,
   forceDelete?: boolean,
