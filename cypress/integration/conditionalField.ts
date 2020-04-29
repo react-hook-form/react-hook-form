@@ -48,6 +48,6 @@ context('ConditionalField', () => {
     cy.get('button#submit').click();
     cy.get('#result').contains('{"selectNumber":"3","notRequired":"test"}');
 
-    cy.get('#renderCount').contains('33');
+    cy.get('#renderCount').contains('36');
   });
 });
