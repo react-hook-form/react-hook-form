@@ -1,36 +1,64 @@
 import removeAllEventListeners from './removeAllEventListeners';
 import isRadioInput from '../utils/isRadioInput';
+import isCheckBoxInput from '../utils/isCheckBoxInput';
 import isDetached from '../utils/isDetached';
-import { Field, FieldsObject, DataType } from '../types';
+import isArray from '../utils/isArray';
+import unset from '../utils/unset';
+import { Field, FieldRefs, FieldValues, Ref } from '../types';
+
+const isSameRef = (fieldValue: Field, ref: Ref) =>
+  fieldValue && fieldValue.ref === ref;
 
 export default function findRemovedFieldAndRemoveListener<
-  Data extends DataType
+  FormValues extends FieldValues
 >(
-  fields: FieldsObject<Data>,
-  validateWithStateUpdate: Function | undefined = () => {},
+  fields: FieldRefs<FormValues>,
+  handleChange: ({ type, target }: Event) => Promise<void | boolean>,
   field: Field,
-  forceDelete: boolean = false,
+  forceDelete?: boolean,
 ): void {
-  if (!field) return;
-  const { ref, mutationWatcher, options } = field;
-  if (!ref || !ref.type) return;
-  const { name, type } = ref;
+  const {
+    ref,
+    ref: { name, type },
+    mutationWatcher,
+  } = field;
+  const fieldValue = fields[name] as Field;
 
-  if (isRadioInput(type) && options) {
-    options.forEach(({ ref }, index): void => {
-      if (options[index] && isDetached(ref) || forceDelete) {
-        removeAllEventListeners(options[index], validateWithStateUpdate);
-        (
-          options[index].mutationWatcher || { disconnect: (): void => {} }
-        ).disconnect();
-        options.splice(index, 1);
+  if (!type) {
+    delete fields[name];
+    return;
+  }
+
+  if ((isRadioInput(ref) || isCheckBoxInput(ref)) && fieldValue) {
+    const { options } = fieldValue;
+
+    if (isArray(options) && options.length) {
+      options.filter(Boolean).forEach((option, index): void => {
+        const { ref, mutationWatcher } = option;
+        if ((ref && isDetached(ref) && isSameRef(option, ref)) || forceDelete) {
+          removeAllEventListeners(ref, handleChange);
+
+          if (mutationWatcher) {
+            mutationWatcher.disconnect();
+          }
+
+          unset(options, [`[${index}]`]);
+        }
+      });
+
+      if (options && !options.filter(Boolean).length) {
+        delete fields[name];
       }
-    });
+    } else {
+      delete fields[name];
+    }
+  } else if ((isDetached(ref) && isSameRef(fieldValue, ref)) || forceDelete) {
+    removeAllEventListeners(ref, handleChange);
 
-    if (!options.length) delete fields[name];
-  } else if (isDetached(ref) || forceDelete) {
-    removeAllEventListeners(ref, validateWithStateUpdate);
-    if (mutationWatcher) mutationWatcher.disconnect();
+    if (mutationWatcher) {
+      mutationWatcher.disconnect();
+    }
+
     delete fields[name];
   }
 }

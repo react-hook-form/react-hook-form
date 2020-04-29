@@ -3,94 +3,68 @@ import getFieldValue from './getFieldValue';
 
 jest.mock('./getFieldValue');
 
-describe('getFieldValue', () => {
-  it('should return undefined when nothing found', () => {
+describe('getFieldsValues', () => {
+  it('should return all fields value', () => {
+    // @ts-ignore
+    getFieldValue.mockImplementation(() => 'test');
+    expect(
+      getFieldsValues({
+        test: {
+          ref: { name: 'test' },
+        },
+        test1: {
+          ref: { name: 'test1' },
+        },
+      }),
+    ).toEqual({
+      test: 'test',
+      test1: 'test',
+    });
+  });
+
+  it('should return searched string with fields value', () => {
     expect(
       getFieldsValues(
         {
           test: {
-            ref: {
-              name: 'test1',
-            },
+            ref: { name: 'test' },
+          },
+          tex: {
+            ref: { name: 'test1' },
+          },
+          tex123: {
+            ref: { name: 'test1' },
           },
         },
         'test',
       ),
-    ).toEqual({});
+    ).toEqual({
+      test: 'test',
+    });
   });
 
-  it('should return the value of seraching item with name', () => {
-    // @ts-ignore
-    getFieldValue.mockImplementation(() => 3);
+  it('should return searched array string with fields value', () => {
     expect(
       getFieldsValues(
         {
           test: {
-            ref: {
-              name: 'test1',
-            },
+            ref: { name: 'test' },
+          },
+          tex: {
+            ref: { name: 'test1' },
+          },
+          123: {
+            ref: { name: 'test1' },
+          },
+          1456: {
+            ref: { name: 'test1' },
           },
         },
-        'test1',
+        ['test', 'tex'],
       ),
-    ).toBe(3);
-  });
-
-  it('should return array of result when search term is array', () => {
-    // @ts-ignore
-    getFieldValue.mockImplementation(() => 3);
-    expect(
-      getFieldsValues(
-        {
-          test: {
-            ref: {
-              name: 'test1',
-            },
-          },
-          test3: {
-            ref: {
-              name: 'test2',
-            },
-          },
-          test2: {
-            ref: {
-              name: 'test3',
-            },
-          },
-        },
-        ['test1', 'test2', 'test3'],
-      ),
-    ).toEqual({ test1: 3, test2: 3, test3: 3 });
-  });
-
-  it('should return all result when nothing is specified', () => {
-    // @ts-ignore
-    getFieldValue.mockImplementation(() => 3);
-    expect(
-      getFieldsValues(
-        {
-          test: {
-            ref: {
-              name: 'test1',
-            },
-          },
-          test1: {
-            ref: {
-              name: 'test2',
-            },
-          },
-          test2: {
-            ref: {
-              name: 'test3',
-            },
-          },
-          test3: {
-            ref: {
-              name: 'test4',
-            },
-          },
-        },
-      ),
-    ).toEqual({ test3: 3, test1: 3, test2: 3, test4: 3 });
+    ).toEqual({
+      test: 'test',
+      tex: 'test',
+    });
   });
 });

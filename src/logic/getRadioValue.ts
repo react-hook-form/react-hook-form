@@ -1,14 +1,20 @@
-import { Ref, RegisterInput, RadioReturn } from '../types';
+import isArray from '../utils/isArray';
+import { RadioOrCheckboxOption } from '../types';
 
-const defaultReturn: RadioReturn = {
+type RadioFieldResult = {
+  isValid: boolean;
+  value: number | string;
+};
+
+const defaultReturn: RadioFieldResult = {
   isValid: false,
   value: '',
 };
 
-export default function getRadioValue(options?: RegisterInput[]): RadioReturn {
-  return Array.isArray(options)
+export default (options?: RadioOrCheckboxOption[]): RadioFieldResult =>
+  isArray(options)
     ? options.reduce(
-        (previous, { ref: { checked, value } }: Ref): RadioReturn =>
+        (previous, { ref: { checked, value } }): RadioFieldResult =>
           checked
             ? {
                 isValid: true,
@@ -18,4 +24,3 @@ export default function getRadioValue(options?: RegisterInput[]): RadioReturn {
         defaultReturn,
       )
     : defaultReturn;
-}

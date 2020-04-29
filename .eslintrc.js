@@ -8,24 +8,35 @@ module.exports = {
     ecmaVersion: 2018,
     sourceType: 'module',
   },
-  plugins: [
-    'react-hooks'
-  ],
+  plugins: ['react-hooks'],
   rules: {
+    curly: 'error',
     '@typescript-eslint/indent': 'off',
     '@typescript-eslint/no-non-null-assertion': 'off',
+    '@typescript-eslint/no-empty-function': 'off',
+    '@typescript-eslint/ban-ts-ignore': 'warn',
     '@typescript-eslint/no-explicit-any': 'off',
-    '@typescript-eslint/no-unused-vars': ["error", { "varsIgnorePattern": /^_/ }],
     '@typescript-eslint/explicit-function-return-type': 'off',
+    '@typescript-eslint/no-empty-function': 'off',
     '@typescript-eslint/no-object-literal-type-assertion': 'off',
-    'react/prop-types': 'off',
     'react-hooks/rules-of-hooks': 'error',
-    'react-hooks/exhaustive-deps': 'warn'
+    'react-hooks/exhaustive-deps': 'error',
+    'react/display-name': 'warn',
+    'no-console': 'error',
   },
+  overrides: [
+    {
+      files: ['*.test.ts', '*.test.tsx'],
+      rules: {
+        // Allow testing runtime errors to suppress TS errors
+        '@typescript-eslint/ban-ts-ignore': 'off',
+      },
+    },
+  ],
   settings: {
     react: {
       pragma: 'React',
-      version: '16.8',
+      version: 'detect',
     },
   },
 };

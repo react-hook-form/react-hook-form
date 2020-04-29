@@ -20,6 +20,16 @@ const errors = {
     {
       name: 'ValidationError',
       value: undefined,
+      path: 'name',
+      type: 'min',
+      errors: [],
+      inner: [],
+      message: 'name is a min field',
+      params: [],
+    },
+    {
+      name: 'ValidationError',
+      value: undefined,
       path: 'age',
       type: 'required',
       errors: [],
@@ -32,7 +42,11 @@ const errors = {
 
 describe('parseErrorSchema', () => {
   it('should parse the validation errors into react hook form errors format', () => {
-    expect(parseErrorSchema(errors)).toMatchSnapshot();
+    expect(parseErrorSchema(errors as any, false)).toMatchSnapshot();
+  });
+
+  it('should parse the validation errors and append all errors', () => {
+    expect(parseErrorSchema(errors as any, true)).toMatchSnapshot();
   });
 });
 
@@ -42,10 +56,12 @@ describe('validateWithSchema', () => {
       await validateWithSchema(
         {
           validate: () => {
-            // @ts-ignore
             throw errors;
           },
         },
+        false,
+        {},
+        undefined as any,
         {},
       ),
     ).toMatchSnapshot();
@@ -55,13 +71,24 @@ describe('validateWithSchema', () => {
     expect(
       await validateWithSchema(
         {
-          validate: () => {},
+          validate: () => new Promise((resolve) => resolve()) as any,
         },
+        false,
+        {},
+        undefined as any,
         {},
       ),
     ).toEqual({
-      fieldErrors: {},
-      result: undefined
+      errors: {},
+      values: undefined,
     });
   });
+});
+
+test('should invoke resolver function for custom schema validation', async () => {
+  const resolver = jest.fn();
+
+  await validateWithSchema({} as any, false, {}, resolver, {});
+
+  expect(resolver).toBeCalledWith({}, {});
 });

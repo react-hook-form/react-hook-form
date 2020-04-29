@@ -1,17 +1,18 @@
-import React from "react";
-import ReactDOM from "react-dom";
-import useForm from "react-hook-form";
+import React from 'react';
+import ReactDOM from 'react-dom';
+import { useForm } from 'react-hook-form';
 
 const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
 
-function App() {
-  const { register, handleSubmit, errors } = useForm();
+export default function App() {
+  const { register, handleSubmit, errors, setError } = useForm();
   const onSubmit = async data => {
     await sleep(2000);
-    if (data.username === "bill") {
+    if (data.username === 'bill') {
       alert(JSON.stringify(data));
     } else {
-      alert("There is error");
+      alert('There is error');
+      setError('username', 'validate');
     }
   };
 
@@ -40,15 +41,12 @@ function App() {
           />
         </div>
 
-        <div style={{ color: "red" }}>
+        <div style={{ color: 'red' }}>
           {Object.keys(errors).length > 0 &&
-          "There are errors, check your console."}
+            'There are errors, check your console.'}
         </div>
         <button type="submit">Submit</button>
       </form>
     </div>
   );
 }
-
-const rootElement = document.getElementById("root");
-ReactDOM.render(<App />, rootElement);

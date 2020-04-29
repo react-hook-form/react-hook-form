@@ -1,30 +1,39 @@
+import transformToNestObject from './transformToNestObject';
 import get from '../utils/get';
 import getPath from '../utils/getPath';
-import combineFieldValues from './combineFieldValues';
-import { DataType } from '../types';
 import isEmptyObject from '../utils/isEmptyObject';
 import isUndefined from '../utils/isUndefined';
+import { DeepPartial, FieldValue, FieldValues, FieldName } from '../types';
 
-export default (
-  fieldValues: DataType,
-  fieldName: string,
-  watchFields: { [key: string]: boolean },
-) => {
-  if (isEmptyObject(fieldValues) || isUndefined(fieldValues)) return undefined;
-  if (!isUndefined(fieldValues[fieldName])) {
-    watchFields[fieldName] = true;
-    return fieldValues[fieldName];
-  }
+export default <FormValues extends FieldValues>(
+  fieldValues: FormValues,
+  fieldName: FieldName<FormValues>,
+  watchFields: Set<FieldName<FormValues>>,
+  inputValue: DeepPartial<FormValues>,
+  isSingleField?: boolean,
+): FieldValue<FormValues> | DeepPartial<FormValues> | undefined => {
+  let value;
 
-  const combinedValues = combineFieldValues(fieldValues);
-  const values = get(combinedValues, fieldName);
-  if (values !== undefined) {
-    const result = getPath(fieldName, values);
-    if (Array.isArray(result)) {
-      result.forEach(name => {
-        watchFields[name as any] = true;
-      });
+  watchFields.add(fieldName);
+
+  if (isEmptyObject(fieldValues)) {
+    value = undefined;
+  } else if (!isUndefined(fieldValues[fieldName])) {
+    value = fieldValues[fieldName];
+    watchFields.add(fieldName);
+  } else {
+    value = get(transformToNestObject(fieldValues), fieldName);
+
+    if (!isUndefined(value)) {
+      getPath<FormValues>(fieldName, value).forEach((name: string) =>
+        watchFields.add(name),
+      );
     }
   }
-  return values;
+
+  return isUndefined(value)
+    ? isSingleField
+      ? inputValue
+      : get(inputValue, fieldName)
+    : value;
 };

@@ -1,3 +1,4 @@
+// @ts-nocheck
 import getFieldValue from './getFieldValue';
 
 jest.mock('./getRadioValue', () => ({
@@ -5,8 +6,15 @@ jest.mock('./getRadioValue', () => ({
     value: 2,
   }),
 }));
+
 jest.mock('./getMultipleSelectValue', () => ({
   default: () => 3,
+}));
+
+jest.mock('./getCheckboxValue', () => ({
+  default: () => ({
+    value: 'testValue',
+  }),
 }));
 
 describe('getFieldValue', () => {
@@ -45,41 +53,18 @@ describe('getFieldValue', () => {
     ).toBe(3);
   });
 
-  it('should return checked value if type is checked', () => {
+  it('should return the correct value when type is checkbox', () => {
     expect(
       getFieldValue(
         {
-          test: {
-            ref: {
-              name: 'bill',
-              value: 'test',
-            },
-          },
+          test: { ref: 'test' },
         },
         {
           type: 'checkbox',
-          checked: 'test',
+          name: 'test',
         },
       ),
-    ).toBeTruthy();
-  });
-
-  it('should return checked if type is checked without value', () => {
-    expect(
-      getFieldValue(
-        {
-          test: {
-            ref: {
-              name: 'bill',
-            },
-          },
-        },
-        {
-          type: 'checkbox',
-          checked: true,
-        },
-      ),
-    ).toBeTruthy();
+    ).toBe('testValue');
   });
 
   it('should return it value for other types', () => {
@@ -114,16 +99,10 @@ describe('getFieldValue', () => {
     ).toEqual('');
   });
 
-  it('should return false when checkbox is not checked', () => {
+  it('should return false when checkbox input value is not found', () => {
     expect(
       getFieldValue(
-        {
-          test: {
-            ref: {
-              checked: false,
-            },
-          },
-        },
+        {},
         {
           type: 'checkbox',
           value: 'value',
@@ -131,5 +110,38 @@ describe('getFieldValue', () => {
         },
       ),
     ).toBeFalsy();
+  });
+
+  it('should return files for input type file', () => {
+    expect(
+      getFieldValue(
+        {
+          test: {
+            ref: {
+              files: 'files',
+            },
+          },
+        },
+        {
+          type: 'file',
+          files: 'files',
+        },
+      ),
+    ).toEqual('files');
+  });
+
+  it('should return undefined when input is not found', () => {
+    expect(
+      getFieldValue(
+        {
+          test: {
+            ref: {
+              files: 'files',
+            },
+          },
+        },
+        {},
+      ),
+    ).toEqual(undefined);
   });
 });

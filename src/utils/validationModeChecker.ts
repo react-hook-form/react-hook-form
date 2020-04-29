@@ -1,7 +1,8 @@
 import { VALIDATION_MODE } from '../constants';
+import { Mode } from '../types';
 
 export default (
-  mode?: string,
+  mode?: Mode,
 ): {
   isOnSubmit: boolean;
   isOnBlur: boolean;

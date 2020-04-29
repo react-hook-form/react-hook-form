@@ -9,6 +9,7 @@ yarn-error.log
 yarn.lock
 CONTRIBUTING.md
 .eslintrc
+.DS_Store
 jestConfig.json
 .idea/
 .rpt2_cache/
@@ -33,4 +34,6 @@ CODE_OF_CONDUCT.md
 .prettierrc
 README.zh-CN.md
 rollup.ie11.config.js
+rollup.min.config.js
 tsconfig.ie11.json
+.codesandbox/

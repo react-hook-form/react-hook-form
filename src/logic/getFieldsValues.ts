@@ -1,25 +1,30 @@
 import getFieldValue from './getFieldValue';
 import isString from '../utils/isString';
-import { DataType, FieldValue, Ref } from '../types';
+import isArray from '../utils/isArray';
+import isUndefined from '../utils/isUndefined';
+import { FieldName, FieldValues, FieldRefs } from '../types';
 
-export default function getFieldsValue<Data extends DataType>(
-  fields: DataType,
-  fieldName?: string | string[],
-): Data {
-  return Object.values(fields).reduce(
-    (previous: DataType, { ref, ref: { name } }: Ref): FieldValue => {
-      const value = getFieldValue(fields, ref);
+export default <FormValues extends FieldValues>(
+  fields: FieldRefs<FormValues>,
+  search?: FieldName<FormValues> | FieldName<FormValues>[] | { nest: boolean },
+) => {
+  const output = {} as FormValues;
 
-      if (isString(fieldName)) return name === fieldName ? value : previous;
+  for (const name in fields) {
+    if (
+      isUndefined(search) ||
+      (isString(search)
+        ? name.startsWith(search)
+        : isArray(search)
+        ? search.find((data) => name.startsWith(data))
+        : search && search.nest)
+    ) {
+      output[name as FieldName<FormValues>] = getFieldValue(
+        fields,
+        fields[name]!.ref,
+      );
+    }
+  }
 
-      if (!fieldName) {
-        previous[name] = value;
-      } else if (Array.isArray(fieldName) && fieldName.includes(name)) {
-        previous[name] = value;
-      }
-
-      return previous;
-    },
-    {},
-  );
-}
+  return output;
+};

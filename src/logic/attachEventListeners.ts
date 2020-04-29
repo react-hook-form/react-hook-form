@@ -1,20 +1,21 @@
-import isCheckBoxInput from '../utils/isCheckBoxInput';
+import isHTMLElement from '../utils/isHTMLElement';
+import { EVENTS } from '../constants';
 import { Field } from '../types';
 
 export default function attachEventListeners({
-  field,
-  validateAndStateUpdate,
-  isRadio,
+  field: { ref },
+  handleChange,
+  isRadioOrCheckbox,
 }: {
   field: Field;
-  isRadio: boolean;
-  validateAndStateUpdate: Function | undefined;
+  isRadioOrCheckbox: boolean;
+  handleChange?: EventListenerOrEventListenerObject;
 }): void {
-  const { ref } = field;
-  if (!ref.addEventListener) return;
-  ref.addEventListener(
-    isCheckBoxInput(ref.type) || isRadio ? 'change' : 'input',
-    validateAndStateUpdate,
-  );
-  ref.addEventListener('blur', validateAndStateUpdate);
+  if (isHTMLElement(ref) && handleChange) {
+    ref.addEventListener(
+      isRadioOrCheckbox ? EVENTS.CHANGE : EVENTS.INPUT,
+      handleChange,
+    );
+    ref.addEventListener(EVENTS.BLUR, handleChange);
+  }
 }

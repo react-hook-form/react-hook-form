@@ -11,11 +11,9 @@ describe('getRadioValue', () => {
   it('should return valid to true when value found', () => {
     expect(
       getRadioValue([
-        // @ts-ignore
         { ref: { name: 'bill', checked: false, value: '1' } },
-        // @ts-ignore
         { ref: { name: 'bill', checked: true, value: '2' } },
-      ]),
+      ] as any),
     ).toEqual({
       isValid: true,
       value: '2',

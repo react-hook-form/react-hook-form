@@ -1,12 +1,10 @@
-import React from "react";
-import ReactDOM from "react-dom";
-import useForm from "react-hook-form";
+import React from 'react';
+import ReactDOM from 'react-dom';
+import { useForm } from 'react-hook-form';
 
-import "./styles.css";
-
-export default function Form() {
+export default function App() {
   const { register, handleSubmit, formState } = useForm({
-    mode: "onChange"
+    mode: 'onChange',
   });
   const onSubmit = data => {
     alert(JSON.stringify(data));
@@ -55,5 +53,4 @@ export default function Form() {
   );
 }
 
-const rootElement = document.getElementById("root");
 ReactDOM.render(<Form />, rootElement);

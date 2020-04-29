@@ -1,27 +1,34 @@
 import getRadioValue from './getRadioValue';
 import getMultipleSelectValue from './getMultipleSelectValue';
 import isRadioInput from '../utils/isRadioInput';
+import isFileInput from '../utils/isFileInput';
 import isCheckBox from '../utils/isCheckBoxInput';
-import { FieldsObject, FieldValue, Ref, DataType } from '../types';
+import isMultipleSelect from '../utils/isMultipleSelect';
+import getCheckboxValue from './getCheckboxValue';
+import { FieldRefs, Ref, FieldValues } from '../types';
 
-export default function getFieldValue<Data extends DataType>(
-  fields: FieldsObject<Data>,
+export default function getFieldValue<FormValues extends FieldValues>(
+  fields: FieldRefs<FormValues>,
   ref: Ref,
-): FieldValue {
-  const { type, name, options, checked, value } = ref;
-  if (isRadioInput(type)) {
-    const field = fields[name];
+) {
+  const { name, value } = ref;
+  const field = fields[name];
+
+  if (isFileInput(ref)) {
+    return ref.files;
+  }
+
+  if (isRadioInput(ref)) {
     return field ? getRadioValue(field.options).value : '';
   }
 
-  if (type === 'select-multiple') return getMultipleSelectValue(options);
+  if (isMultipleSelect(ref)) {
+    return getMultipleSelectValue(ref.options);
+  }
 
-  if (isCheckBox(type))
-    return checked
-      ? ref.attributes && ref.attributes.value
-        ? value
-        : true
-      : false;
+  if (isCheckBox(ref)) {
+    return field ? getCheckboxValue(field.options).value : false;
+  }
 
   return value;
 }

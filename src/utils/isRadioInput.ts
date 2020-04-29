@@ -1,1 +1,4 @@
-export default (type?: string): boolean => type === 'radio';
+import { FieldElement } from '../types';
+
+export default (element: FieldElement): element is HTMLInputElement =>
+  element.type === 'radio';
