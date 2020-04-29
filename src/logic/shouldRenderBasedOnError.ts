@@ -4,7 +4,7 @@ import get from '../utils/get';
 import { FieldValues, FieldName, FieldErrors } from '../types';
 
 export default function shouldRenderBasedOnError<
-  FormValues extends FieldValues
+  TFieldValues extends FieldValues
 >({
   errors,
   name,
@@ -12,11 +12,11 @@ export default function shouldRenderBasedOnError<
   validFields,
   fieldsWithValidation,
 }: {
-  errors: FieldErrors<FormValues>;
-  error: FieldErrors<FormValues>;
-  name: FieldName<FormValues>;
-  validFields: Set<FieldName<FormValues>>;
-  fieldsWithValidation: Set<FieldName<FormValues>>;
+  errors: FieldErrors<TFieldValues>;
+  error: FieldErrors<TFieldValues>;
+  name: FieldName<TFieldValues>;
+  validFields: Set<FieldName<TFieldValues>>;
+  fieldsWithValidation: Set<FieldName<TFieldValues>>;
 }): boolean {
   const isFieldValid = isEmptyObject(error);
   const isFormValid = isEmptyObject(errors);

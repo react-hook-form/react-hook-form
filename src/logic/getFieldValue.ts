@@ -7,8 +7,8 @@ import isMultipleSelect from '../utils/isMultipleSelect';
 import getCheckboxValue from './getCheckboxValue';
 import { FieldRefs, Ref, FieldValues } from '../types';
 
-export default function getFieldValue<FormValues extends FieldValues>(
-  fields: FieldRefs<FormValues>,
+export default function getFieldValue<TFieldValues extends FieldValues>(
+  fields: FieldRefs<TFieldValues>,
   ref: Ref,
 ) {
   const { name, value } = ref;

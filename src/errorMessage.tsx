@@ -4,13 +4,13 @@ import get from './utils/get';
 import {
   FieldErrors,
   FieldName,
-  FormValuesFromErrors,
+  FieldValuesFromErrors,
   ErrorMessageProps,
 } from './types';
 
 const ErrorMessage = <
   Errors extends FieldErrors<any>,
-  Name extends FieldName<FormValuesFromErrors<Errors>>,
+  Name extends FieldName<FieldValuesFromErrors<Errors>>,
   As extends
     | undefined
     | React.ReactElement
