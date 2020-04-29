@@ -1,9 +1,4 @@
-// @ts-nocheck
 import removeAllEventListeners from './removeAllEventListeners';
-
-jest.mock('../utils/isHTMLElement', () => ({
-  default: () => true,
-}));
 
 describe('removeAllEventListeners', () => {
   it('should return undefined when removeEventListener is not defined', () => {

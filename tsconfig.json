@@ -18,5 +18,5 @@
     "noFallthroughCasesInSwitch": true
   },
   "include": ["src"],
-  "exclude": ["node_modules", "app", "examples", "cypress"]
+  "exclude": ["node_modules", "test", "examples"]
 }

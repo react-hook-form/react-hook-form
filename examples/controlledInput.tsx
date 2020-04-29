@@ -1,15 +1,15 @@
 import React, { useState } from 'react';
 import ReactDOM from 'react-dom';
-import { useForm } from 'react-hook-form';
+import useForm from 'react-hook-form';
 
-export default function App() {
-  const initialValues = {
+function App() {
+  const intialValues = {
     firstName: 'bill',
     lastName: 'luo',
     email: 'bluebill1049@hotmail.com',
   };
   const { register, handleSubmit } = useForm();
-  const [state, update] = useState(initialValues.lastName);
+  const [state, update] = useState(intialValues.lastName);
   const onSubmit = data => {
     alert(JSON.stringify(data));
   };
@@ -19,28 +19,18 @@ export default function App() {
       <form onSubmit={handleSubmit(onSubmit)}>
         <div>
           <label htmlFor="firstName">First Name</label>
-          <input
-            name="firstName"
-            placeholder="bill"
-            ref={register}
-          />
+          <input onChange={e => update(e.target.value)} name="firstName" placeholder="bill" ref={register} />
         </div>
 
         <div>
           <label htmlFor="lastName">Last Name</label>
-          <input
-            value={state}
-            onChange={e => update(e.target.value)}
-            name="lastName"
-            placeholder="luo"
-            ref={register}
-          />
+          <input value={state} name="lastName" placeholder="luo" ref={register} />
         </div>
 
         <div>
           <label htmlFor="email">Email</label>
           <input
-            defaultValue={initialValues.email}
+            defaultValue={intialValues.email}
             name="email"
             placeholder="bluebill1049@hotmail.com"
             type="email"
@@ -52,3 +42,6 @@ export default function App() {
     </div>
   );
 }
+
+const rootElement = document.getElementById('root');
+ReactDOM.render(<App />, rootElement);

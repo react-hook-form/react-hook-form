@@ -1,33 +1,15 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`parseErrorSchema should parse the validation errors and append all errors 1`] = `
-Object {
-  "age": Object {
-    "message": "age is a required field",
-    "type": "required",
-    "types": Object {
-      "required": "age is a required field",
-    },
-  },
-  "name": Object {
-    "message": "name is a required field",
-    "type": "required",
-    "types": Object {
-      "min": "name is a min field",
-      "required": "name is a required field",
-    },
-  },
-}
-`;
-
 exports[`parseErrorSchema should parse the validation errors into react hook form errors format 1`] = `
 Object {
   "age": Object {
     "message": "age is a required field",
+    "ref": Object {},
     "type": "required",
   },
   "name": Object {
     "message": "name is a required field",
+    "ref": Object {},
     "type": "required",
   },
 }
@@ -35,16 +17,18 @@ Object {
 
 exports[`validateWithSchema should return undefined when no error reported 1`] = `
 Object {
-  "errors": Object {
+  "fieldErrors": Object {
     "age": Object {
       "message": "age is a required field",
+      "ref": Object {},
       "type": "required",
     },
     "name": Object {
       "message": "name is a required field",
+      "ref": Object {},
       "type": "required",
     },
   },
-  "values": Object {},
+  "result": Object {},
 }
 `;

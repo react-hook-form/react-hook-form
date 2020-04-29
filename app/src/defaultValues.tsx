@@ -1,18 +1,8 @@
 import React from 'react';
-import { useForm } from 'react-hook-form';
+import useForm from 'react-hook-form';
 
 function DefaultValues() {
-  const { register } = useForm<{
-    test: string;
-    test1: {
-      firstName: string;
-      lastName: string[];
-      deep: {
-        nest: string;
-      };
-    };
-    ['flatName[1].whatever']: string;
-  }>({
+  const { register } = useForm({
     defaultValues: {
       test: 'test',
       test1: {
@@ -22,7 +12,7 @@ function DefaultValues() {
           nest: 'nest',
         },
       },
-      'flatName[1].whatever': 'flat',
+      'flatName[1].whatever': 'flat'
     },
   });
 

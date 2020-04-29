@@ -1,33 +1,17 @@
 import React, { useEffect } from 'react';
-import { useForm } from 'react-hook-form';
-
-let renderCounter = 0;
+import useForm from 'react-hook-form';
 
 const ManualRegisterForm: React.FC = () => {
-  const { register, handleSubmit, errors, setValue } = useForm<{
-    firstName: string;
-    lastName: string;
-    min: string;
-    max: string;
-    minDate: string;
-    maxDate: string;
-    minLength: string;
-    minRequiredLength: string;
-    selectNumber: string;
-    pattern: string;
-    radio: string;
-    checkbox: string;
-  }>();
+  const { register, handleSubmit, errors, setValue } = useForm();
   const onSubmit = () => {};
-  renderCounter++;
 
   useEffect(() => {
     register({ name: 'firstName' }, { required: true });
     register({ name: 'lastName' }, { required: true, maxLength: 5 });
-    register({ name: 'min', type: 'number' }, { min: 10 });
-    register({ name: 'max', type: 'number' }, { max: 20 });
-    register({ name: 'minDate', type: 'date' }, { min: '2019-08-01' });
-    register({ name: 'maxDate', type: 'date' }, { max: '2019-08-01' });
+    register({ name: 'min' }, { min: 10 });
+    register({ name: 'max' }, { max: 20 });
+    register({ name: 'minDate' }, { min: '2019-08-01' });
+    register({ name: 'maxDate' }, { max: '2019-08-01' });
     register({ name: 'minLength' }, { minLength: 2 });
     register({ name: 'minRequiredLength' }, { minLength: 2, required: true });
     register({ name: 'selectNumber' }, { required: true });
@@ -134,7 +118,6 @@ const ManualRegisterForm: React.FC = () => {
       />
       {errors.checkbox && <p>checkbox error</p>}
       <button id="submit">Submit</button>
-      <div id="renderCount">{renderCounter}</div>
     </form>
   );
 };

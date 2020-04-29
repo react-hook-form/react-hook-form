@@ -1,17 +1,19 @@
-import React from 'react';
-import ReactDOM from 'react-dom';
-import { useForm } from 'react-hook-form';
+import React from "react";
+import ReactDOM from "react-dom";
+import useForm from "react-hook-form";
 
-export default function App() {
+import "./styles.css";
+
+function App() {
   const { register, handleSubmit, errors } = useForm();
   const onSubmit = data => {
     alert(JSON.stringify(data));
   };
   const intialValues = {
-    firstName: 'bill',
-    lastName: 'luo',
-    email: 'bluebill1049@hotmail.com',
-    age: -1,
+    firstName: "bill",
+    lastName: "luo",
+    email: "bluebill1049@hotmail.com",
+    age: -1
   };
 
   return (
@@ -24,7 +26,7 @@ export default function App() {
             name="firstName"
             placeholder="bill"
             ref={register({
-              validate: value => value !== 'bill',
+              validate: value => value !== "bill"
             })}
           />
         </div>
@@ -37,7 +39,7 @@ export default function App() {
             name="lastName"
             placeholder="luo"
             ref={register({
-              validate: value => value.length > 3,
+              validate: value => value.length > 3
             })}
           />
         </div>
@@ -64,15 +66,15 @@ export default function App() {
             ref={register({
               validate: {
                 positiveNumber: value => parseFloat(value) > 0,
-                lessThanHundred: value => parseFloat(value) < 200,
-              },
+                lessThanHundred: value => parseFloat(value) < 200
+              }
             })}
           />
         </div>
-        {errors.age && errors.age.type === 'positiveNumber' && (
+        {errors.age && errors.age.type === "positiveNumber" && (
           <p>Your age is invalid</p>
         )}
-        {errors.age && errors.age.type === 'lessThanHundred' && (
+        {errors.age && errors.age.type === "lessThanHundred" && (
           <p>Your age should be greater than 200</p>
         )}
 
@@ -81,3 +83,6 @@ export default function App() {
     </div>
   );
 }
+
+const rootElement = document.getElementById("root");
+ReactDOM.render(<App />, rootElement);

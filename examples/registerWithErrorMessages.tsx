@@ -1,8 +1,8 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import { useForm } from 'react-hook-form';
+import useForm from 'react-hook-form';
 
-export default function App() {
+function App() {
   const { register, errors, handleSubmit } = useForm();
   const onSubmit = data => {
     alert(JSON.stringify(data));
@@ -64,3 +64,6 @@ export default function App() {
     </div>
   );
 }
+
+const rootElement = document.getElementById('root');
+ReactDOM.render(<App />, rootElement);

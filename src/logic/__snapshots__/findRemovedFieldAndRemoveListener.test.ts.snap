@@ -13,7 +13,6 @@ Object {
       },
     ],
     "ref": Object {},
-    "type": "radio",
   },
 }
 `;
@@ -28,7 +27,5 @@ Object {
   },
 }
 `;
-
-exports[`findMissDomAndClean should work for checkbox type input 1`] = `undefined`;
 
 exports[`findMissDomAndClean should work for radio type input 1`] = `undefined`;

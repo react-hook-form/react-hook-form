@@ -1,5 +1,4 @@
 import isObject from './isObject';
-import { EmptyObject } from '../types';
 
-export default (value: unknown): value is EmptyObject =>
-  isObject(value) && !Object.keys(value).length;
+export default (value: unknown): boolean =>
+  isObject(value) && Object.keys(value).length === 0;

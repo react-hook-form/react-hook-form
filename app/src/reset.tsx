@@ -1,22 +1,8 @@
 import React from 'react';
-import { useForm } from 'react-hook-form';
+import useForm from 'react-hook-form';
 
 function Reset() {
-  const { register, reset } = useForm<{
-    firstName: string;
-    lastName: string;
-    objectData: {
-      test: string;
-    };
-    array: string[];
-    deepNest: {
-      level1: {
-        level2: {
-          data: string;
-        };
-      };
-    };
-  }>();
+  const { register, reset } = useForm();
   return (
     <>
       <input name="firstName" ref={register} />

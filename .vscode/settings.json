@@ -2,14 +2,12 @@
   "eslint.validate": [
     "javascript",
     "javascriptreact",
-    "typescript",
-    "typescriptreact"
+    { "language": "typescript", "autoFix": true },
+    { "language": "typescriptreact", "autoFix": true }
   ],
-  "prettier.configPath": "./.prettierrc",
+  "prettier.eslintIntegration": true,
   "eslint.enable": true,
   "editor.formatOnSave": true,
-  "editor.codeActionsOnSave": {
-    "source.fixAll.eslint": true
-  },
+  "eslint.autoFixOnSave": true,
   "typescript.tsdk": "node_modules/typescript/lib"
 }

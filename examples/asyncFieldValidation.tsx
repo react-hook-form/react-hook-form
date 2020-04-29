@@ -1,10 +1,10 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import { useForm } from 'react-hook-form';
+import useForm from 'react-hook-form';
 
 const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
 
-export default function App() {
+function App() {
   const { register, handleSubmit, errors } = useForm();
   const onSubmit = data => {
     alert(JSON.stringify(data));
@@ -36,20 +36,15 @@ export default function App() {
 
         <div>
           <label htmlFor="email">Email</label>
-          <input
-            name="email"
-            placeholder="bluebill1049@hotmail.com"
-            type="text"
-            ref={register}
-          />
+          <input name="email" placeholder="bluebill1049@hotmail.com" type="text" ref={register} />
         </div>
 
-        <div style={{ color: 'red' }}>
-          {Object.keys(errors).length > 0 &&
-            'There are errors, check your console.'}
-        </div>
+        <div style={{ color: 'red' }}>{Object.keys(errors).length > 0 && 'There are errors, check your console.'}</div>
         <button type="submit">Submit</button>
       </form>
     </div>
   );
 }
+
+const rootElement = document.getElementById('root');
+ReactDOM.render(<App />, rootElement);

@@ -1,50 +1,12 @@
 import React from 'react';
-import { useForm } from 'react-hook-form';
+import useForm from 'react-hook-form';
 
-let renderCounter = 0;
-
-const Basic: React.FC = (props: any) => {
-  const { register, handleSubmit, errors, reset } = useForm<{
-    firstName: string;
-    lastName: string;
-    min: string;
-    max: string;
-    minDate: string;
-    maxDate: string;
-    minLength: string;
-    minRequiredLength: string;
-    selectNumber: string;
-    pattern: string;
-    radio: string;
-    checkbox: string;
-    checkboxArray: string[];
-    multiple: string;
-    validate: string;
-    nestItem: {
-      nest1: string;
-    };
-    arrayItem: { test1: string; test2: string }[];
-  }>({
-    mode: props.match.params.mode,
-  });
+const Basic: React.FC = () => {
+  const { register, handleSubmit, errors, reset } = useForm();
   const onSubmit = () => {};
-
-  renderCounter++;
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
-      <input
-        name="nestItem.nest1"
-        placeholder="nest.nest1"
-        ref={register({ required: true })}
-      />
-      {errors.nestItem?.nest1 && <p>nest 1 error</p>}
-      <input
-        name="arrayItem[0].test1"
-        placeholder="arrayItem[0].test1"
-        ref={register({ required: true })}
-      />
-      {errors.arrayItem?.[0].test1 && <p>array item 1 error</p>}
       <input
         name="firstName"
         ref={register({ required: true })}
@@ -110,61 +72,22 @@ const Basic: React.FC = (props: any) => {
       />
       {errors.pattern && <p>pattern error</p>}
       Radio1
-      <input type="radio" name="radio" ref={register} value="1" />
-      Radio2
-      <input type="radio" name="radio" value="2" ref={register} />
-      Radio3
       <input
         type="radio"
         name="radio"
-        value="3"
         ref={register({ required: true })}
-      />
-      {errors.radio && <p>radio error</p>}
-      <input
-        type="checkbox"
-        name="checkbox"
-        ref={register({ required: true })}
-      />
-      {errors.checkbox && <p>checkbox error</p>}
-      <input
-        type="checkbox"
-        name="checkboxArray"
         value="1"
-        ref={register({ required: true })}
       />
-      <input
-        type="checkbox"
-        name="checkboxArray"
-        value="2"
-        ref={register({ required: true })}
-      />
-      <input
-        type="checkbox"
-        name="checkboxArray"
-        value="3"
-        ref={register({ required: true })}
-      />
-      {errors.checkboxArray && <p>checkboxArray error</p>}
-      <select name="multiple" multiple ref={register({ required: true })}>
-        <option value="optionA">optionA</option>
-        <option value="optionB">optionB</option>
-      </select>
-      {errors.multiple && <p>multiple error</p>}
-      <input
-        name="validate"
-        type="validate"
-        placeholder="validate"
-        ref={register({
-          validate: value => value === 'test',
-        })}
-      />
-      {errors.validate && <p>validate error</p>}
+      Radio2
+      <input type="radio" name="radio" value="2" ref={register({ required: true })} />
+      Radio3
+      <input type="radio" name="radio" value="3" ref={register({ required: true })} />
+      {errors.radio && <p>radio error</p>}
+      <input type="checkbox" name="checkbox" ref={register({ required: true })} />
+      {errors.checkbox && <p>checkbox error</p>}
       <button id="submit">Submit</button>
-      <button type="button" id="resetForm" onClick={() => reset()}>
-        Reset
-      </button>
-      <div id="renderCount">{renderCounter}</div>
+
+      <button type="button" id="resetForm" onClick={reset}>Reset</button>
     </form>
   );
 };

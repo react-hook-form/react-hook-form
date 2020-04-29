@@ -1,15 +1,19 @@
 import validationModeChecker from './validationModeChecker';
-import { VALIDATION_MODE } from '../constants';
+import {VALIDATION_MODE} from "../constants";
 
 describe('validationModeChecker', () => {
   it('should return correct mode', () => {
-    expect(validationModeChecker(VALIDATION_MODE.onBlur)).toEqual({
+    expect(
+      validationModeChecker(VALIDATION_MODE.onBlur),
+    ).toEqual({
       isOnSubmit: false,
       isOnBlur: true,
       isOnChange: false,
     });
 
-    expect(validationModeChecker(VALIDATION_MODE.onChange)).toEqual({
+    expect(
+      validationModeChecker(VALIDATION_MODE.onChange),
+    ).toEqual({
       isOnSubmit: false,
       isOnBlur: false,
       isOnChange: true,

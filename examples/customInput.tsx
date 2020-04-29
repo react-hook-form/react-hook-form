@@ -1,14 +1,16 @@
-import React, { useState, useEffect } from 'react';
-import ReactDOM from 'react-dom';
-import { useForm } from 'react-hook-form';
-import Input from '@material-ui/core/Input';
-import Select from 'react-select';
-import { Input as StrapInput } from 'reactstrap';
+import React, { useState, useEffect } from "react";
+import ReactDOM from "react-dom";
+import useForm from "react-hook-form";
+import Input from "@material-ui/core/Input";
+import Select from "react-select";
+import { Input as StrapInput } from "reactstrap";
+
+import "./index.css";
 
 const options = [
-  { value: 'chocolate', label: 'Chocolate' },
-  { value: 'strawberry', label: 'Strawberry' },
-  { value: 'vanilla', label: 'Vanilla' },
+  { value: "chocolate", label: "Chocolate" },
+  { value: "strawberry", label: "Strawberry" },
+  { value: "vanilla", label: "Vanilla" }
 ];
 
 const MyInput = ({ name, label, register }) => {
@@ -20,22 +22,22 @@ const MyInput = ({ name, label, register }) => {
   );
 };
 
-export default function App() {
+function App() {
   const { register, handleSubmit, setValue } = useForm();
   const onSubmit = data => {
     alert(JSON.stringify(data, null));
   };
   const [values, setReactSelect] = useState({
-    selectedOption: [],
+    selectedOption: []
   });
 
   const handleMultiChange = selectedOption => {
-    setValue('reactSelect', selectedOption);
+    setValue("reactSelect", selectedOption);
     setReactSelect({ selectedOption });
   };
 
   useEffect(() => {
-    register({ name: 'reactSelect' });
+    register({ name: "reactSelect" });
   }, []);
 
   return (
@@ -44,13 +46,13 @@ export default function App() {
         <div>
           <Input
             style={{
-              marginBottom: '20px',
+              marginBottom: "20px"
             }}
             name="HelloWorld"
             inputRef={register}
             placeholder="Material UI - Input"
             inputProps={{
-              'aria-label': 'Description',
+              "aria-label": "Description"
             }}
           />
         </div>
@@ -64,7 +66,7 @@ export default function App() {
         </div>
 
         <div>
-          <label className="reactSelectLabel">React select</label>
+          <lable className="reactSelectLabel">React select</lable>
           <Select
             className="reactSelect"
             name="filters"
@@ -99,3 +101,6 @@ export default function App() {
     </div>
   );
 }
+
+const rootElement = document.getElementById("root");
+ReactDOM.render(<App />, rootElement);

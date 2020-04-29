@@ -13,16 +13,14 @@ context('watch form validation', () => {
     cy.get('input[name="test[0]"]').type('bill');
     cy.get('input[name="test[1]"]').type('luo');
     cy.get('#testData').contains('["bill","luo"]');
-    cy.get('#testArray').contains('{"test[0]":"bill","test[1]":"luo"}');
-    cy.get('#watchAll').contains(
+    cy.get('#testArray').contains('{"test[0]":"bill","test[1]":"luo"}');cy.get('#watchAll').contains(
       '{"testSingle":"testSingle","test[0]":"bill","test[1]":"luo","testObject.firstName":"","testObject.lastName":"","toggle":false}',
     );
 
     cy.get('input[name="testObject.firstName"').type('bill');
     cy.get('input[name="testObject.lastName"').type('luo');
     cy.get('#testObject').contains('{"firstName":"bill","lastName":"luo"}');
-    cy.get('#testArray').contains('{"test[0]":"bill","test[1]":"luo"}');
-    cy.get('#watchAll').contains(
+    cy.get('#testArray').contains('{"test[0]":"bill","test[1]":"luo"}');cy.get('#watchAll').contains(
       '{"testSingle":"testSingle","test[0]":"bill","test[1]":"luo","testObject.firstName":"bill","testObject.lastName":"luo","toggle":false}',
     );
 

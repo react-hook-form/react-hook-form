@@ -1,8 +1,10 @@
-import React from 'react';
-import ReactDOM from 'react-dom';
-import { useForm, FormContext, useFormContext } from 'react-hook-form';
+import React from "react";
+import ReactDOM from "react-dom";
+import useForm, { FormContext, useFormContext } from "react-hook-form";
 
-export default function App() {
+import "./styles.css";
+
+function App() {
   const methods = useForm();
   const { register, handleSubmit } = methods;
   return (
@@ -22,3 +24,6 @@ function Test() {
   const data = useFormContext();
   return <input name="bill" ref={data.register} />;
 }
+
+const rootElement = document.getElementById("root");
+ReactDOM.render(<App />, rootElement);
