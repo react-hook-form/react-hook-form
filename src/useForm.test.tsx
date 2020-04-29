@@ -1114,7 +1114,7 @@ describe('useForm', () => {
         }),
       );
       act(() => {
-        result.current.register({ value: 'test', type: 'input', name: 'test' });
+        result.current.register({ type: 'input', name: 'test' });
       });
       expect(result.current.getValues('test')).toEqual('123');
     });
