@@ -782,11 +782,10 @@ export function useForm<
         fieldValues,
         fieldNames,
         watchFields,
-        {
-          [fieldNames]: isDefaultValueUndefined
-            ? get(combinedDefaultValues, fieldNames)
-            : defaultValue,
-        } as DeepPartial<FormValues>,
+        isDefaultValueUndefined
+          ? get(combinedDefaultValues, fieldNames)
+          : defaultValue,
+        true,
       );
     }
 
