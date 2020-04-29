@@ -1369,6 +1369,29 @@ describe('useForm', () => {
         expect(result.current.formState.isValid).toBeTruthy();
       });
     });
+
+    it('should be a proxy object that returns undefined for unknown properties', () => {
+      const { result } = renderHook(() => useForm());
+
+      // @ts-ignore
+      expect(result.current.formState.nonExistentProperty).toBe(undefined);
+    });
+
+    it('should be a proxy object that properly implements the has trap', () => {
+      const { result } = renderHook(() => useForm());
+
+      // @ts-ignore
+      expect('nonExistentProperty' in result.current.formState).toBe(false);
+    });
+
+    it('should be a proxy object that hasOwnProperty works on', () => {
+      const { result } = renderHook(() => useForm());
+
+      // @ts-ignore
+      expect(
+        result.current.formState.hasOwnProperty('nonExistentProperty'),
+      ).toBe(false);
+    });
   });
 
   describe('when component unMount', () => {
