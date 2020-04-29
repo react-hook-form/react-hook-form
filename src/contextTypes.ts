@@ -2,6 +2,8 @@ import * as React from 'react';
 import {
   DeepPartial,
   FieldValues,
+  Unpacked,
+  NestedValue,
   FormStateProxy,
   FieldErrors,
   OnSubmit,
@@ -47,22 +49,23 @@ export type FormContextValues<FormValues extends FieldValues = FieldValues> = {
           ? Extract<keyof FormValues, string>
           : string)[],
   ): void;
-  watch(): FormValues;
-  watch(option: { nest: boolean }): FormValues;
+  watch(): Unpacked<FormValues>;
   watch<T extends string, U extends unknown>(
     field: T,
     defaultValue?: T extends keyof FormValues
-      ? FormValues[T]
+      ? Unpacked<FormValues>[T]
       : LiteralToPrimitive<U>,
-  ): T extends keyof FormValues ? FormValues[T] : LiteralToPrimitive<U>;
+  ): T extends keyof FormValues
+    ? Unpacked<FormValues>[T]
+    : LiteralToPrimitive<U>;
   watch<T extends keyof FormValues>(
     fields: T[],
-    defaultValues?: DeepPartial<Pick<FormValues, T>>,
-  ): Pick<FormValues, T>;
+    defaultValues?: Unpacked<DeepPartial<Pick<FormValues, T>>>,
+  ): Unpacked<Pick<FormValues, T>>;
   watch(
     fields: string[],
-    defaultValues?: DeepPartial<FormValues>,
-  ): DeepPartial<FormValues>;
+    defaultValues?: Unpacked<DeepPartial<FormValues>>,
+  ): Unpacked<DeepPartial<FormValues>>;
   setError(
     name: IsFlatObject<FormValues> extends true
       ? Extract<keyof FormValues, string>
@@ -91,12 +94,14 @@ export type FormContextValues<FormValues extends FieldValues = FieldValues> = {
     value: T extends keyof FormValues
       ? IsAny<FormValues[T]> extends true
         ? any
-        : DeepPartial<FormValues[T]>
+        : FormValues[T] extends NestedValue<infer U>
+        ? U
+        : Unpacked<DeepPartial<FormValues[T]>>
       : LiteralToPrimitive<U>,
     shouldValidate?: boolean,
   ): void;
   setValue<T extends keyof FormValues>(
-    namesWithValue: DeepPartial<Pick<FormValues, T>>[],
+    namesWithValue: Unpacked<DeepPartial<Pick<FormValues, T>>>[],
     shouldValidate?: boolean,
   ): void;
   triggerValidation(
@@ -111,24 +116,18 @@ export type FormContextValues<FormValues extends FieldValues = FieldValues> = {
   errors: FieldErrors<FormValues>;
   formState: FormStateProxy<FormValues>;
   reset: (
-    values?: DeepPartial<FormValues>,
+    values?: Unpacked<DeepPartial<FormValues>>,
     omitResetState?: OmitResetState,
   ) => void;
-  getValues(): IsFlatObject<FormValues> extends false
-    ? Record<string, any>
-    : FormValues;
-  getValues<T extends boolean>(payload: {
-    nest: T;
-  }): T extends true
-    ? FormValues
-    : IsFlatObject<FormValues> extends true
-    ? FormValues
-    : Record<string, any>;
+  getValues(): Unpacked<FormValues>;
+  getValues<T extends keyof FormValues>(
+    payload: T[],
+  ): Unpacked<Pick<FormValues, T>>;
   getValues<T extends string, U extends unknown>(
     payload: T,
-  ): T extends keyof FormValues ? FormValues[T] : U;
+  ): T extends keyof FormValues ? Unpacked<FormValues>[T] : U;
   handleSubmit: (
-    callback: OnSubmit<FormValues>,
+    callback: OnSubmit<Unpacked<FormValues>>,
   ) => (e?: React.BaseSyntheticEvent) => Promise<void>;
   control: Control<FormValues>;
 };
