@@ -56,6 +56,8 @@ const Controller = <
   const isNotFieldArray = !isNameInFieldArray(fieldArrayNamesRef.current, name);
   rulesRef.current = rules;
 
+  const handleFocus = React.useCallback(() => onFocus && onFocus(), []);
+
   const shouldValidate = () =>
     !skipValidation({
       hasError: !!get(errorsRef.current, name),
@@ -88,7 +90,7 @@ const Controller = <
     }
 
     register(
-      Object.defineProperty({ name, focus: onFocus }, VALUE, {
+      Object.defineProperty({ name, focus: handleFocus }, VALUE, {
         set(data) {
           setInputStateValue(data);
           valueRef.current = data;
@@ -104,7 +106,7 @@ const Controller = <
     fieldsRef,
     rulesRef,
     name,
-    onFocus,
+    handleFocus,
     register,
     removeFieldEventListener,
   ]);
