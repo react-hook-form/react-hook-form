@@ -9,7 +9,14 @@ export default (obj: any, path: string, defaultValue?: any) => {
       (result, key) => (isNullOrUndefined(result) ? result : result[key]),
       obj,
     );
-  return isUndefined(result) || result === obj
-    ? obj[path] || defaultValue
-    : result;
+
+  if (isUndefined(result) || result === obj) {
+    if (!obj[path] && obj[path] !== '') {
+      return defaultValue;
+    }
+
+    return obj[path];
+  }
+
+  return result;
 };
