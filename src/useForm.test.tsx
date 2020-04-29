@@ -1104,6 +1104,20 @@ describe('useForm', () => {
       });
       expect(result.current.getValues()).toEqual({ test: 'test' });
     });
+
+    it('should get individual field value', () => {
+      const { result } = renderHook(() =>
+        useForm<{ test: string }>({
+          defaultValues: {
+            test: '123',
+          },
+        }),
+      );
+      act(() => {
+        result.current.register({ type: 'input', name: 'test' });
+      });
+      expect(result.current.getValues('test')).toEqual('123');
+    });
   });
 
   describe('setError', () => {

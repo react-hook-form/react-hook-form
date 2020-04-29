@@ -782,11 +782,10 @@ export function useForm<
         fieldValues,
         fieldNames,
         watchFields,
-        {
-          [fieldNames]: isDefaultValueUndefined
-            ? get(combinedDefaultValues, fieldNames)
-            : defaultValue,
-        } as DeepPartial<FormValues>,
+        isDefaultValueUndefined
+          ? get(combinedDefaultValues, fieldNames)
+          : defaultValue,
+        true,
       );
     }
 
@@ -1056,6 +1055,7 @@ export function useForm<
 
         if (isEmptyObject(fieldErrors)) {
           errorsRef.current = {};
+          reRender();
           await callback(transformToNestObject(fieldValues), e);
         } else {
           errorsRef.current = fieldErrors;
@@ -1180,7 +1180,7 @@ export function useForm<
     if (isString(payload)) {
       return fieldsRef.current[payload]
         ? getFieldValue(fieldsRef.current, fieldsRef.current[payload]!.ref)
-        : undefined;
+        : get(defaultValuesRef.current, payload);
     }
 
     const fieldValues = getFieldsValues(fieldsRef.current);
