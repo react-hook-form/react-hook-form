@@ -44,11 +44,7 @@ export type NonUndefined<T> = T extends undefined ? never : T;
 export type Unpacked<T> = {
   [K in keyof T]: NonUndefined<T[K]> extends NestedValue<infer U>
     ? U
-    : NonUndefined<T[K]> extends Array<infer U>
-    ? Array<Unpacked<U>>
-    : NonUndefined<T[K]> extends ReadonlyArray<infer U>
-    ? ReadonlyArray<Unpacked<U>>
-    : NonUndefined<T[K]> extends object
+    : T[K] extends object
     ? Unpacked<T[K]>
     : T[K];
 };
