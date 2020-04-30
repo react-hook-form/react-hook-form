@@ -67,7 +67,7 @@ import {
 
 export function useForm<
   TFieldValues extends FieldValues = FieldValues,
-  ValidationContext extends object = object
+  TValidationContext extends object = object
 >({
   mode = VALIDATION_MODE.onSubmit,
   reValidateMode = VALIDATION_MODE.onChange,
@@ -76,7 +76,7 @@ export function useForm<
   defaultValues = {} as Unpacked<DeepPartial<TFieldValues>>,
   submitFocusError = true,
   validateCriteriaMode,
-}: UseFormOptions<TFieldValues, ValidationContext> = {}): FormContextValues<
+}: UseFormOptions<TFieldValues, TValidationContext> = {}): FormContextValues<
   TFieldValues
 > {
   const fieldsRef = React.useRef<FieldRefs<TFieldValues>>({});
@@ -827,8 +827,8 @@ export function useForm<
     }
   }
 
-  function registerFieldsRef<Element extends FieldElement<TFieldValues>>(
-    ref: Element,
+  function registerFieldsRef<TFieldElement extends FieldElement<TFieldValues>>(
+    ref: TFieldElement,
     validateOptions: ValidationOptions | null = {},
   ): ((name: FieldName<TFieldValues>) => void) | void {
     if (!ref.name) {
@@ -948,33 +948,32 @@ export function useForm<
     }
   }
 
-  function register<
-    Element extends FieldElement<TFieldValues> = FieldElement<TFieldValues>
-  >(): (ref: Element | null) => void;
-  function register<
-    Element extends FieldElement<TFieldValues> = FieldElement<TFieldValues>
-  >(validationOptions: ValidationOptions): (ref: Element | null) => void;
+  function register<TFieldElement extends FieldElement<TFieldValues>>(): (
+    ref: TFieldElement | null,
+  ) => void;
+  function register<TFieldElement extends FieldElement<TFieldValues>>(
+    validationOptions: ValidationOptions,
+  ): (ref: TFieldElement | null) => void;
   function register(
     name: IsFlatObject<TFieldValues> extends true
       ? Extract<keyof TFieldValues, string>
       : string,
     validationOptions?: ValidationOptions,
   ): void;
-  function register<
-    Element extends FieldElement<TFieldValues> = FieldElement<TFieldValues>
-  >(ref: Element, validationOptions?: ValidationOptions): void;
-  function register<
-    Element extends FieldElement<TFieldValues> = FieldElement<TFieldValues>
-  >(
+  function register<TFieldElement extends FieldElement<TFieldValues>>(
+    ref: TFieldElement,
+    validationOptions?: ValidationOptions,
+  ): void;
+  function register<TFieldElement extends FieldElement<TFieldValues>>(
     refOrValidationOptions?:
       | (IsFlatObject<TFieldValues> extends true
           ? Extract<keyof TFieldValues, string>
           : string)
       | ValidationOptions
-      | Element
+      | TFieldElement
       | null,
     validationOptions?: ValidationOptions,
-  ): ((ref: Element | null) => void) | void {
+  ): ((ref: TFieldElement | null) => void) | void {
     if (isWindowUndefined) {
       return;
     }
@@ -989,7 +988,7 @@ export function useForm<
       return;
     }
 
-    return (ref: Element | null) =>
+    return (ref: TFieldElement | null) =>
       ref && registerFieldsRef(ref, refOrValidationOptions);
   }
 
