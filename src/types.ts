@@ -446,7 +446,7 @@ export type OmitResetState = Partial<{
 }>;
 
 export type UseWatchProps<TControlProp extends Control = Control> = {
-  name: string;
+  name?: string | string[];
   defaultValue?: unknown;
   control?: TControlProp;
 };

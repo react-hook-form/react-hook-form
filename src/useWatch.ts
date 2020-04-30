@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { useFormContext } from './useFormContext';
 import isUndefined from './utils/isUndefined';
+import isString from './utils/isString';
 import generateId from './logic/generateId';
 import { Control, UseWatchProps } from './types';
 
@@ -12,7 +13,13 @@ export const useWatch = <TControlProp extends Control = Control>({
   const methods = useFormContext();
   const { watchFieldsHookRef, watchFieldsHookRenderRef, watchInternal } =
     control || methods.control;
-  const [value, setValue] = React.useState<unknown>();
+  const [value, setValue] = React.useState<unknown>(
+    isUndefined(defaultValue)
+      ? isString(name)
+        ? defaultValue
+        : {}
+      : defaultValue,
+  );
   const idRef = React.useRef<string>();
   const defaultValueRef = React.useRef(defaultValue);
   const nameRef = React.useRef(name);
