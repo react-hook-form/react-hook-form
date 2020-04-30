@@ -249,10 +249,6 @@ export type FieldElement<TFieldValues extends FieldValues = FieldValues> =
 
 export type HandleChange = (evt: Event) => Promise<void | boolean>;
 
-export type FieldValuesFromErrors<
-  TFieldErrors
-> = TFieldErrors extends FieldErrors<infer TFieldValues> ? TFieldValues : never;
-
 export type EventFunction = (...args: any[]) => any;
 
 export type Control<TFieldValues extends FieldValues = FieldValues> = {
@@ -386,28 +382,6 @@ export type ControllerProps<
     valueName?: string;
     defaultValue?: unknown;
     control?: TControl;
-  },
-  AsProps<TAs>
->;
-
-export type ErrorMessageProps<
-  TFieldErrors extends FieldErrors,
-  TName extends FieldName<FieldValuesFromErrors<TFieldErrors>>,
-  TAs extends
-    | undefined
-    | React.ReactElement
-    | React.ComponentType<any>
-    | keyof JSX.IntrinsicElements = undefined
-> = Assign<
-  {
-    as?: TAs;
-    errors?: TFieldErrors;
-    name: TName;
-    message?: Message;
-    children?: (data: {
-      message: Message;
-      messages?: MultipleFieldErrors;
-    }) => React.ReactNode;
   },
   AsProps<TAs>
 >;
