@@ -946,7 +946,7 @@ export function useForm<
     } else if (!isEmptyObject(validateOptions)) {
       fieldsWithValidationRef.current.add(name);
 
-      if (readFormStateRef.current.isValid) {
+      if (!isOnSubmit && readFormStateRef.current.isValid) {
         validateField(fieldsRef, validateAllFieldCriteria, field).then(
           (error) => {
             const previousFormIsValid = isValidRef.current;
