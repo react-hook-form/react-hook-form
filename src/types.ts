@@ -4,9 +4,9 @@ export type IsAny<T> = boolean extends (T extends never ? true : false)
   ? true
   : false;
 
-export type IsFlatObject<T extends Record<string, unknown>> = Extract<
-  T[keyof T],
-  unknown[] | Record<string, unknown>
+export type IsFlatObject<T extends object> = Extract<
+  Exclude<T[keyof T], NestedValue>,
+  any[] | object
 > extends never
   ? true
   : false;
@@ -23,24 +23,40 @@ export type LiteralToPrimitive<T extends any> = T extends string
 
 export type FieldValues = Record<string, any>;
 
-export type FieldName<FormValues extends FieldValues> =
-  | (keyof FormValues & string)
+export type FieldName<TFieldValues extends FieldValues> =
+  | (keyof TFieldValues & string)
   | string;
 
-export type FieldValue<FormValues extends FieldValues> = FormValues[FieldName<
-  FormValues
->];
+export type FieldValue<
+  TFieldValues extends FieldValues
+> = TFieldValues[FieldName<TFieldValues>];
+
+declare const $NestedValue: unique symbol;
+
+export type NestedValue<TValue extends any[] | object = any[] | object> = {
+  [$NestedValue]: never;
+} & TValue;
+
+export type NonUndefined<T> = T extends undefined ? never : T;
+
+export type Unpacked<T> = {
+  [K in keyof T]: NonUndefined<T[K]> extends NestedValue<infer U>
+    ? U
+    : T[K] extends object
+    ? Unpacked<T[K]>
+    : T[K];
+};
 
 export type Ref = FieldElement;
 
 export type DeepPartial<T> = {
-  [P in keyof T]?: T[P] extends Array<infer U>
+  [K in keyof T]?: T[K] extends Array<infer U>
     ? Array<DeepPartial<U>>
-    : T[P] extends ReadonlyArray<infer U>
+    : T[K] extends ReadonlyArray<infer U>
     ? ReadonlyArray<DeepPartial<U>>
-    : T[P] extends { [key: string]: unknown }
-    ? DeepPartial<T[P]>
-    : T[P];
+    : T[K] extends Record<string, unknown>
+    ? DeepPartial<T[K]>
+    : T[K];
 };
 
 export type ValidationMode = {
@@ -51,8 +67,8 @@ export type ValidationMode = {
 
 export type Mode = keyof ValidationMode;
 
-export type OnSubmit<FormValues extends FieldValues> = (
-  data: FormValues,
+export type OnSubmit<TFieldValues extends FieldValues> = (
+  data: Unpacked<TFieldValues>,
   event?: React.BaseSyntheticEvent,
 ) => void | Promise<void>;
 
@@ -64,44 +80,44 @@ export type SchemaValidateOptions = Partial<{
   context: any;
 }>;
 
-export type EmptyObject = { [key in string | number]: never };
+export type EmptyObject = { [K in string | number]: never };
 
 export type SchemaValidationSuccess<
-  FormValues extends FieldValues = FieldValues
+  TFieldValues extends FieldValues = FieldValues
 > = {
-  values: FormValues;
+  values: Unpacked<TFieldValues>;
   errors: EmptyObject;
 };
 
 export type SchemaValidationError<
-  FormValues extends FieldValues = FieldValues
+  TFieldValues extends FieldValues = FieldValues
 > = {
   values: EmptyObject;
-  errors: FieldErrors<FormValues>;
+  errors: FieldErrors<TFieldValues>;
 };
 
 export type SchemaValidationResult<
-  FormValues extends FieldValues = FieldValues
-> = SchemaValidationSuccess<FormValues> | SchemaValidationError<FormValues>;
+  TFieldValues extends FieldValues = FieldValues
+> = SchemaValidationSuccess<TFieldValues> | SchemaValidationError<TFieldValues>;
 
 export type ValidationResolver<
-  FormValues extends FieldValues = FieldValues,
-  ValidationContext extends object = object
+  TFieldValues extends FieldValues = FieldValues,
+  TValidationContext extends object = object
 > = (
-  values: FormValues,
-  validationContext?: ValidationContext,
+  values: TFieldValues,
+  validationContext?: TValidationContext,
   validateAllFieldCriteria?: boolean,
-) => Promise<SchemaValidationResult<FormValues>>;
+) => Promise<SchemaValidationResult<TFieldValues>>;
 
 export type UseFormOptions<
-  FormValues extends FieldValues = FieldValues,
-  ValidationContext extends object = object
+  TFieldValues extends FieldValues = FieldValues,
+  TValidationContext extends object = object
 > = Partial<{
   mode: Mode;
   reValidateMode: Mode;
-  defaultValues: DeepPartial<FormValues>;
-  validationResolver: ValidationResolver<FormValues, ValidationContext>;
-  validationContext: ValidationContext;
+  defaultValues: Unpacked<DeepPartial<TFieldValues>>;
+  validationResolver: ValidationResolver<TFieldValues, TValidationContext>;
+  validationContext: TValidationContext;
   submitFocusError: boolean;
   validateCriteriaMode: 'firstError' | 'all';
 }>;
@@ -115,14 +131,14 @@ export type Message = string | React.ReactElement;
 
 export type ValidationValue = boolean | number | string | RegExp;
 
-export type ValidationOption<Value extends ValidationValue = ValidationValue> =
-  | Value
-  | ValidationValueMessage<Value>;
+export type ValidationOption<
+  TValidationValue extends ValidationValue = ValidationValue
+> = TValidationValue | ValidationValueMessage<TValidationValue>;
 
 export type ValidationValueMessage<
-  Value extends ValidationValue = ValidationValue
+  TValidationValue extends ValidationValue = ValidationValue
 > = {
-  value: Value;
+  value: TValidationValue;
   message: Message;
 };
 
@@ -150,9 +166,9 @@ export type FieldError = {
   isManual?: boolean;
 };
 
-export type ManualFieldError<FormValues extends FieldValues> = {
-  name: IsFlatObject<FormValues> extends true
-    ? Extract<keyof FormValues, string>
+export type ManualFieldError<TFieldValues extends FieldValues> = {
+  name: IsFlatObject<TFieldValues> extends true
+    ? Extract<keyof TFieldValues, string>
     : string;
   type: string;
   types?: MultipleFieldErrors;
@@ -165,64 +181,57 @@ export type Field = {
   options?: RadioOrCheckboxOption[];
 } & ValidationOptions;
 
-export type FieldRefs<FormValues extends FieldValues> = Partial<
-  Record<FieldName<FormValues>, Field>
+export type FieldRefs<TFieldValues extends FieldValues> = Partial<
+  Record<FieldName<TFieldValues>, Field>
 >;
 
-export type NestDataObject<FormValues, Value> = {
-  [Key in keyof FormValues]?: FormValues[Key] extends Array<infer U>
-    ? IsAny<U> extends true
-      ? any
-      : unknown extends U
-      ? Value[]
-      : object extends U
-      ? Value[]
-      : U extends Date
-      ? Value[]
-      : FormValues[Key] extends FileList
-      ? Value[]
-      : U extends object
-      ? NestDataObject<U, Value>[]
-      : Value[]
-    : IsAny<FormValues[Key]> extends true
+export type NestDataObject<T, TValue> = {
+  [K in keyof T]?: IsAny<T[K]> extends true
     ? any
-    : unknown extends FormValues[Key]
-    ? Value
-    : object extends FormValues[Key]
-    ? Value
-    : FormValues[Key] extends Date
-    ? Value
-    : FormValues[Key] extends FileList
-    ? Value
-    : FormValues[Key] extends object
-    ? NestDataObject<FormValues[Key], Value>
-    : Value;
+    : T[K] extends NestedValue
+    ? TValue
+    : T[K] extends Date
+    ? TValue
+    : T[K] extends FileList
+    ? TValue
+    : T[K] extends Array<infer U>
+    ? Array<NestDataObject<U, TValue>>
+    : T[K] extends ReadonlyArray<infer U>
+    ? ReadonlyArray<NestDataObject<U, TValue>>
+    : T[K] extends object
+    ? NestDataObject<T[K], TValue>
+    : TValue;
 };
 
-export type FieldErrors<FormValues> = NestDataObject<FormValues, FieldError>;
+export type FieldErrors<
+  TFieldValues extends FieldValues = FieldValues
+> = NestDataObject<TFieldValues, FieldError>;
 
-export type Touched<FormValues> = NestDataObject<FormValues, true>;
+export type Touched<TFieldValues extends FieldValues> = NestDataObject<
+  TFieldValues,
+  true
+>;
 
-export type FormStateProxy<FormValues extends FieldValues = FieldValues> = {
+export type FormStateProxy<TFieldValues extends FieldValues = FieldValues> = {
   dirty: boolean;
-  dirtyFields: Set<FieldName<FormValues>>;
+  dirtyFields: Set<FieldName<TFieldValues>>;
   isSubmitted: boolean;
   submitCount: number;
-  touched: Touched<FormValues>;
+  touched: Touched<TFieldValues>;
   isSubmitting: boolean;
   isValid: boolean;
 };
 
-export type ReadFormState = { [P in keyof FormStateProxy]: boolean };
+export type ReadFormState = { [K in keyof FormStateProxy]: boolean };
 
 export type RadioOrCheckboxOption = {
   ref: HTMLInputElement;
   mutationWatcher?: MutationWatcher;
 };
 
-export type CustomElement<FormValues extends FieldValues> = {
-  name: IsFlatObject<FormValues> extends true
-    ? Extract<keyof FormValues, string>
+export type CustomElement<TFieldValues extends FieldValues> = {
+  name: IsFlatObject<TFieldValues> extends true
+    ? Extract<keyof TFieldValues, string>
     : string;
   type?: string;
   value?: any;
@@ -232,87 +241,80 @@ export type CustomElement<FormValues extends FieldValues> = {
   focus?: () => void;
 };
 
-export type FieldElement<FormValues extends FieldValues = FieldValues> =
+export type FieldElement<TFieldValues extends FieldValues = FieldValues> =
   | HTMLInputElement
   | HTMLSelectElement
   | HTMLTextAreaElement
-  | CustomElement<FormValues>;
+  | CustomElement<TFieldValues>;
 
 export type HandleChange = (evt: Event) => Promise<void | boolean>;
 
-export type FormValuesFromErrors<Errors> = Errors extends FieldErrors<
-  infer FormValues
->
-  ? FormValues
-  : never;
+export type FieldValuesFromErrors<
+  TFieldErrors
+> = TFieldErrors extends FieldErrors<infer TFieldValues> ? TFieldValues : never;
 
 export type EventFunction = (...args: any[]) => any;
 
-export type Control<FormValues extends FieldValues = FieldValues> = {
+export type Control<TFieldValues extends FieldValues = FieldValues> = {
   reRender: () => void;
   removeFieldEventListener: (field: Field, forceDelete?: boolean) => void;
-  setValue<T extends keyof FormValues>(
-    namesWithValue: DeepPartial<Pick<FormValues, T>>[],
+  setValue<T extends keyof TFieldValues>(
+    namesWithValue: Unpacked<DeepPartial<Pick<TFieldValues, T>>>[],
     shouldValidate?: boolean,
   ): void;
   setValue<T extends string, U extends unknown>(
     name: T,
-    value: T extends keyof FormValues
-      ? IsAny<FormValues[T]> extends true
+    value: T extends keyof TFieldValues
+      ? IsAny<TFieldValues[T]> extends true
         ? any
-        : DeepPartial<FormValues[T]>
+        : TFieldValues[T] extends NestedValue<infer U>
+        ? U
+        : Unpacked<DeepPartial<TFieldValues[T]>>
       : LiteralToPrimitive<U>,
     shouldValidate?: boolean,
   ): void;
-  getValues(): IsFlatObject<FormValues> extends false
-    ? Record<string, unknown>
-    : FormValues;
-  getValues<T extends boolean>(payload: {
-    nest: T;
-  }): T extends true
-    ? FormValues
-    : IsFlatObject<FormValues> extends true
-    ? FormValues
-    : Record<string, unknown>;
-  getValues(payload?: { nest: boolean }): FormValues;
+  getValues(): Unpacked<TFieldValues>;
+  getValues<T extends keyof TFieldValues>(
+    payload: T[],
+  ): Unpacked<Pick<TFieldValues, T>>;
   getValues<T extends string, U extends unknown>(
     payload: T,
-  ): T extends keyof FormValues ? FormValues[T] : U;
+  ): T extends keyof TFieldValues ? Unpacked<TFieldValues>[T] : U;
   triggerValidation(
     payload?:
-      | (IsFlatObject<FormValues> extends true
-          ? Extract<keyof FormValues, string>
+      | (IsFlatObject<TFieldValues> extends true
+          ? Extract<keyof TFieldValues, string>
           : string)
-      | (IsFlatObject<FormValues> extends true
-          ? Extract<keyof FormValues, string>
+      | (IsFlatObject<TFieldValues> extends true
+          ? Extract<keyof TFieldValues, string>
           : string)[],
   ): Promise<boolean>;
-  register<
-    Element extends FieldElement<FormValues> = FieldElement<FormValues>
-  >(): (ref: Element | null) => void;
-  register<Element extends FieldElement<FormValues> = FieldElement<FormValues>>(
+  register<TFieldElement extends FieldElement<TFieldValues>>(): (
+    ref: TFieldElement | null,
+  ) => void;
+  register<TFieldElement extends FieldElement<TFieldValues>>(
     validationOptions: ValidationOptions,
-  ): (ref: Element | null) => void;
+  ): (ref: TFieldElement | null) => void;
   register(
-    name: IsFlatObject<FormValues> extends true
-      ? Extract<keyof FormValues, string>
+    name: IsFlatObject<TFieldValues> extends true
+      ? Extract<keyof TFieldValues, string>
       : string,
     validationOptions?: ValidationOptions,
   ): void;
-  register<Element extends FieldElement<FormValues> = FieldElement<FormValues>>(
-    ref: Element,
+  register<TFieldElement extends FieldElement<TFieldValues>>(
+    ref: TFieldElement,
     validationOptions?: ValidationOptions,
   ): void;
   unregister(
     name:
-      | (IsFlatObject<FormValues> extends true
-          ? Extract<keyof FormValues, string>
+      | (IsFlatObject<TFieldValues> extends true
+          ? Extract<keyof TFieldValues, string>
           : string)
-      | (IsFlatObject<FormValues> extends true
-          ? Extract<keyof FormValues, string>
+      | (IsFlatObject<TFieldValues> extends true
+          ? Extract<keyof TFieldValues, string>
           : string)[],
   ): void;
-  formState: FormStateProxy<FormValues>;
+  formState: FormStateProxy<TFieldValues>;
   mode: {
     isOnBlur: boolean;
     isOnSubmit: boolean;
@@ -323,15 +325,15 @@ export type Control<FormValues extends FieldValues = FieldValues> = {
     isReValidateOnSubmit: boolean;
   };
   fieldArrayDefaultValues: React.MutableRefObject<Record<string, any[]>>;
-  dirtyFieldsRef: React.MutableRefObject<Set<FieldName<FormValues>>>;
+  dirtyFieldsRef: React.MutableRefObject<Set<FieldName<TFieldValues>>>;
   validateSchemaIsValid?: (fieldsValues: any) => void;
-  touchedFieldsRef: React.MutableRefObject<Touched<FormValues>>;
-  watchFieldsRef: React.MutableRefObject<Set<FieldName<FormValues>>>;
+  touchedFieldsRef: React.MutableRefObject<Touched<TFieldValues>>;
+  watchFieldsRef: React.MutableRefObject<Set<FieldName<TFieldValues>>>;
   isWatchAllRef: React.MutableRefObject<boolean>;
-  validFieldsRef: React.MutableRefObject<Set<FieldName<FormValues>>>;
-  fieldsWithValidationRef: React.MutableRefObject<Set<FieldName<FormValues>>>;
-  errorsRef: React.MutableRefObject<FieldErrors<FormValues>>;
-  fieldsRef: React.MutableRefObject<FieldRefs<FormValues>>;
+  validFieldsRef: React.MutableRefObject<Set<FieldName<TFieldValues>>>;
+  fieldsWithValidationRef: React.MutableRefObject<Set<FieldName<TFieldValues>>>;
+  errorsRef: React.MutableRefObject<FieldErrors<TFieldValues>>;
+  fieldsRef: React.MutableRefObject<FieldRefs<TFieldValues>>;
   resetFieldArrayFunctionRef: React.MutableRefObject<
     Record<string, (values: any) => void>
   >;
@@ -347,7 +349,8 @@ export type Control<FormValues extends FieldValues = FieldValues> = {
     dirtyFields: boolean;
   }>;
   defaultValuesRef: React.MutableRefObject<
-    DeepPartial<FormValues> | FormValues[FieldName<FormValues>]
+    | Unpacked<DeepPartial<TFieldValues>>
+    | Unpacked<TFieldValues>[FieldName<TFieldValues>]
   >;
   watchFieldsHookRef: React.MutableRefObject<
     Record<string, Set<FieldName<FormValues>>>
@@ -362,26 +365,26 @@ export type Control<FormValues extends FieldValues = FieldValues> = {
 
 export type Assign<T extends object, U extends object> = T & Omit<U, keyof T>;
 
-export type AsProps<As> = As extends undefined
+export type AsProps<TAs> = TAs extends undefined
   ? {}
-  : As extends React.ReactElement
-  ? { [key: string]: any }
-  : As extends React.ComponentType<infer P>
+  : TAs extends React.ReactElement
+  ? Record<string, any>
+  : TAs extends React.ComponentType<infer P>
   ? P
-  : As extends keyof JSX.IntrinsicElements
-  ? JSX.IntrinsicElements[As]
+  : TAs extends keyof JSX.IntrinsicElements
+  ? JSX.IntrinsicElements[TAs]
   : never;
 
 export type ControllerProps<
-  As extends
+  TAs extends
     | React.ReactElement
     | React.ComponentType<any>
     | keyof JSX.IntrinsicElements,
-  ControlProp extends Control = Control
+  TControl extends Control = Control
 > = Assign<
   {
     name: string;
-    as: As;
+    as: TAs;
     rules?: ValidationOptions;
     onChange?: EventFunction;
     onFocus?: () => void;
@@ -391,46 +394,46 @@ export type ControllerProps<
     onBlurName?: string;
     valueName?: string;
     defaultValue?: unknown;
-    control?: ControlProp;
+    control?: TControl;
   },
-  AsProps<As>
+  AsProps<TAs>
 >;
 
 export type ErrorMessageProps<
-  Errors extends FieldErrors<any>,
-  Name extends FieldName<FormValuesFromErrors<Errors>>,
-  As extends
+  TFieldErrors extends FieldErrors,
+  TName extends FieldName<FieldValuesFromErrors<TFieldErrors>>,
+  TAs extends
     | undefined
     | React.ReactElement
     | React.ComponentType<any>
     | keyof JSX.IntrinsicElements = undefined
 > = Assign<
   {
-    as?: As;
-    errors?: Errors;
-    name: Name;
+    as?: TAs;
+    errors?: TFieldErrors;
+    name: TName;
     message?: Message;
     children?: (data: {
       message: Message;
       messages?: MultipleFieldErrors;
     }) => React.ReactNode;
   },
-  AsProps<As>
+  AsProps<TAs>
 >;
 
 export type UseFieldArrayProps<
-  KeyName extends string = 'id',
-  ControlProp extends Control = Control
+  TKeyName extends string = 'id',
+  TControl extends Control = Control
 > = {
   name: string;
-  keyName?: KeyName;
-  control?: ControlProp;
+  keyName?: TKeyName;
+  control?: TControl;
 };
 
 export type ArrayField<
-  FormArrayValues extends FieldValues = FieldValues,
-  KeyName extends string = 'id'
-> = FormArrayValues & Record<KeyName, string>;
+  TFieldArrayValues extends FieldValues = FieldValues,
+  TKeyName extends string = 'id'
+> = TFieldArrayValues & Record<TKeyName, string>;
 
 export type OmitResetState = Partial<{
   errors: boolean;
@@ -442,8 +445,8 @@ export type OmitResetState = Partial<{
   submitCount: boolean;
 }>;
 
-export type UseWatchProps<ControlProp extends Control = Control> = {
+export type UseWatchProps<TControlProp extends Control = Control> = {
   name: string;
   defaultValue?: unknown;
-  control?: ControlProp;
+  control?: TControlProp;
 };

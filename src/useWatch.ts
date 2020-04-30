@@ -4,11 +4,11 @@ import isUndefined from './utils/isUndefined';
 import generateId from './logic/generateId';
 import { Control, UseWatchProps } from './types';
 
-export const useWatch = <ControlProp extends Control = Control>({
+export const useWatch = <TControlProp extends Control = Control>({
   control,
   name,
   defaultValue,
-}: UseWatchProps<ControlProp>) => {
+}: UseWatchProps<TControlProp>) => {
   const methods = useFormContext();
   const { watchFieldsHookRef, watchFieldsHookRenderRef, watchInternal } =
     control || methods.control;

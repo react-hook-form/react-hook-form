@@ -10,11 +10,11 @@ import { VALIDATION_MODE, VALUE } from './constants';
 import { Control, ControllerProps, EventFunction, Field } from './types';
 
 const Controller = <
-  As extends
+  TAs extends
     | React.ReactElement
     | React.ComponentType<any>
     | keyof JSX.IntrinsicElements,
-  ControlProp extends Control = Control
+  TControl extends Control = Control
 >({
   name,
   rules,
@@ -28,7 +28,7 @@ const Controller = <
   control,
   onFocus,
   ...rest
-}: ControllerProps<As, ControlProp>) => {
+}: ControllerProps<TAs, TControl>) => {
   const methods = useFormContext();
   const {
     defaultValuesRef,
@@ -53,6 +53,7 @@ const Controller = <
   const isCheckboxInput = isBoolean(value);
   const shouldReValidateOnBlur = isOnBlur || isReValidateOnBlur;
   const rulesRef = React.useRef(rules);
+  const onFocusRef = React.useRef(onFocus);
   const isNotFieldArray = !isNameInFieldArray(fieldArrayNamesRef.current, name);
   rulesRef.current = rules;
 
@@ -83,12 +84,12 @@ const Controller = <
   };
 
   const registerField = React.useCallback(() => {
-    if (!isNotFieldArray && fieldsRef.current[name]) {
+    if (!isNotFieldArray) {
       removeFieldEventListener(fieldsRef.current[name] as Field, true);
     }
 
     register(
-      Object.defineProperty({ name, focus: onFocus }, VALUE, {
+      Object.defineProperty({ name, focus: onFocusRef.current }, VALUE, {
         set(data) {
           setInputStateValue(data);
           valueRef.current = data;
@@ -104,16 +105,17 @@ const Controller = <
     fieldsRef,
     rulesRef,
     name,
-    onFocus,
+    onFocusRef,
     register,
     removeFieldEventListener,
   ]);
 
-  React.useEffect(() => () => unregister(name), [unregister, name]);
-
-  React.useEffect(() => {
-    registerField();
-  }, [registerField]);
+  React.useEffect(
+    () => () => {
+      !isNameInFieldArray(fieldArrayNamesRef.current, name) && unregister(name);
+    },
+    [unregister, name, fieldArrayNamesRef],
+  );
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
   React.useEffect(() => {

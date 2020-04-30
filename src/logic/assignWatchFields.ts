@@ -3,14 +3,24 @@ import get from '../utils/get';
 import getPath from '../utils/getPath';
 import isEmptyObject from '../utils/isEmptyObject';
 import isUndefined from '../utils/isUndefined';
-import { DeepPartial, FieldValue, FieldValues, FieldName } from '../types';
+import {
+  DeepPartial,
+  FieldValue,
+  FieldValues,
+  FieldName,
+  Unpacked,
+} from '../types';
 
-export default <FormValues extends FieldValues>(
-  fieldValues: FormValues,
-  fieldName: FieldName<FormValues>,
-  watchFields: Set<FieldName<FormValues>>,
-  combinedDefaultValues: DeepPartial<FormValues>,
-): FieldValue<FormValues> | DeepPartial<FormValues> | undefined => {
+export default <TFieldValues extends FieldValues>(
+  fieldValues: TFieldValues,
+  fieldName: FieldName<TFieldValues>,
+  watchFields: Set<FieldName<TFieldValues>>,
+  inputValue: Unpacked<DeepPartial<TFieldValues>>,
+  isSingleField?: boolean,
+):
+  | FieldValue<TFieldValues>
+  | Unpacked<DeepPartial<TFieldValues>>
+  | undefined => {
   let value;
 
   watchFields.add(fieldName);
@@ -24,11 +34,15 @@ export default <FormValues extends FieldValues>(
     value = get(transformToNestObject(fieldValues), fieldName);
 
     if (!isUndefined(value)) {
-      getPath<FormValues>(fieldName, value).forEach((name: string) =>
+      getPath<TFieldValues>(fieldName, value).forEach((name: string) =>
         watchFields.add(name),
       );
     }
   }
 
-  return isUndefined(value) ? get(combinedDefaultValues, fieldName) : value;
+  return isUndefined(value)
+    ? isSingleField
+      ? inputValue
+      : get(inputValue, fieldName)
+    : value;
 };

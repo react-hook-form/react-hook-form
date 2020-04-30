@@ -6,7 +6,7 @@ import findRemovedFieldAndRemoveListener from './logic/findRemovedFieldAndRemove
 import validateField from './logic/validateField';
 import onDomRemove from './utils/onDomRemove';
 import { VALIDATION_MODE } from './constants';
-import { Control } from './types';
+import { Control, NestedValue } from './types';
 
 export const reconfigureControl = (
   controlOverrides: Partial<Control> = {},
@@ -546,6 +546,55 @@ describe('useForm', () => {
           preventDefault: () => {},
           persist: () => {},
         } as React.SyntheticEvent);
+      });
+    });
+
+    it('should set nested value correctly ', () => {
+      const { result } = renderHook(() =>
+        useForm<{
+          test1: NestedValue<string[]>;
+          test2: NestedValue<{
+            key1: string;
+            key2: number;
+          }>;
+          test3: NestedValue<
+            {
+              key1: string;
+              key2: number;
+            }[]
+          >;
+        }>(),
+      );
+
+      act(() => {
+        result.current.register('test1');
+        result.current.register('test2');
+        result.current.register('test3');
+      });
+
+      act(() => {
+        result.current.setValue('test1', ['1', '2', '3']);
+        result.current.setValue('test2', { key1: '1', key2: 2 });
+        result.current.setValue('test3', [
+          { key1: '1', key2: 2 },
+          { key1: '3', key2: 4 },
+        ]);
+
+        expect(result.current.control.fieldsRef.current['test1']).toEqual({
+          ref: { name: 'test1', value: ['1', '2', '3'] },
+        });
+        expect(result.current.control.fieldsRef.current['test2']).toEqual({
+          ref: { name: 'test2', value: { key1: '1', key2: 2 } },
+        });
+        expect(result.current.control.fieldsRef.current['test3']).toEqual({
+          ref: {
+            name: 'test3',
+            value: [
+              { key1: '1', key2: 2 },
+              { key1: '3', key2: 4 },
+            ],
+          },
+        });
       });
     });
 
@@ -1139,6 +1188,20 @@ describe('useForm', () => {
       });
       expect(result.current.getValues()).toEqual({ test: 'test' });
     });
+
+    it('should get individual field value', () => {
+      const { result } = renderHook(() =>
+        useForm<{ test: string }>({
+          defaultValues: {
+            test: '123',
+          },
+        }),
+      );
+      act(() => {
+        result.current.register({ type: 'input', name: 'test' });
+      });
+      expect(result.current.getValues('test')).toEqual('123');
+    });
   });
 
   describe('setError', () => {
@@ -1454,11 +1517,9 @@ describe('useForm', () => {
       );
 
       act(() => {
-        const test: string = result.current.getValues({ nest: true }).test;
+        const test: string = result.current.getValues().test;
         expect(test).toEqual('data');
-        const deep: { values: string } = result.current.getValues({
-          nest: true,
-        }).deep;
+        const deep: { values: string } = result.current.getValues().deep;
         expect(deep).toEqual({ values: '5' });
       });
     });
