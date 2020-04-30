@@ -54,7 +54,7 @@ export type DeepPartial<T> = {
     ? Array<DeepPartial<U>>
     : T[K] extends ReadonlyArray<infer U>
     ? ReadonlyArray<DeepPartial<U>>
-    : T[K] extends { [key: string]: unknown }
+    : T[K] extends Record<string, unknown>
     ? DeepPartial<T[K]>
     : T[K];
 };
@@ -203,12 +203,14 @@ export type NestDataObject<T, TValue> = {
     : TValue;
 };
 
-export type FieldErrors<TFieldValues> = NestDataObject<
-  TFieldValues,
-  FieldError
->;
+export type FieldErrors<
+  TFieldValues extends FieldValues = FieldValues
+> = NestDataObject<TFieldValues, FieldError>;
 
-export type Touched<TFieldValues> = NestDataObject<TFieldValues, true>;
+export type Touched<TFieldValues extends FieldValues> = NestDataObject<
+  TFieldValues,
+  true
+>;
 
 export type FormStateProxy<TFieldValues extends FieldValues = FieldValues> = {
   dirty: boolean;
@@ -357,7 +359,7 @@ export type Assign<T extends object, U extends object> = T & Omit<U, keyof T>;
 export type AsProps<TAs> = TAs extends undefined
   ? {}
   : TAs extends React.ReactElement
-  ? { [key: string]: any }
+  ? Record<string, any>
   : TAs extends React.ComponentType<infer P>
   ? P
   : TAs extends keyof JSX.IntrinsicElements
@@ -389,7 +391,7 @@ export type ControllerProps<
 >;
 
 export type ErrorMessageProps<
-  TFieldErrors extends FieldErrors<any>,
+  TFieldErrors extends FieldErrors,
   TName extends FieldName<FieldValuesFromErrors<TFieldErrors>>,
   TAs extends
     | undefined
