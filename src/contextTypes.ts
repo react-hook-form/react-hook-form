@@ -19,7 +19,9 @@ import {
   IsAny,
 } from './types';
 
-export type FormProps<TFieldValues extends FieldValues = FieldValues> = {
+export type FormProviderProps<
+  TFieldValues extends FieldValues = FieldValues
+> = {
   children: React.ReactNode;
 } & FormContextValues<TFieldValues>;
 

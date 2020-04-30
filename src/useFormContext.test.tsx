@@ -1,8 +1,8 @@
 import * as React from 'react';
 import { renderHook, act } from '@testing-library/react-hooks';
-import { FormContext, useFormContext } from './useFormContext';
+import { FormProvider, useFormContext } from './useFormContext';
 
-describe('FormContext', () => {
+describe('FormProvider', () => {
   beforeEach(() => {
     jest.resetAllMocks();
   });
@@ -13,7 +13,7 @@ describe('FormContext', () => {
       /* eslint-disable-next-line react/display-name */
       wrapper: (props: { children?: React.ReactNode }) => (
         // @ts-ignore
-        <FormContext register={mockRegister} {...props} />
+        <FormProvider register={mockRegister} {...props} />
       ),
     });
     const { register } = result.current;
