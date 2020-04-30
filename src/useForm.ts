@@ -63,7 +63,6 @@ import {
   IsFlatObject,
   IsAny,
 } from './types';
-import { useCallback } from 'react';
 
 export function useForm<
   FormValues extends FieldValues = FieldValues,
@@ -762,7 +761,7 @@ export function useForm<
     }
   }
 
-  const watchInternal = useCallback(
+  const watchInternal = React.useCallback(
     (
       defaultValue: unknown,
       fieldNames?: string | string[] | { nest: boolean },
@@ -939,7 +938,7 @@ export function useForm<
     } else if (!isEmptyObject(validateOptions)) {
       fieldsWithValidationRef.current.add(name);
 
-      if (!isOnSubmit && readFormStateRef.current.isValid) {
+      if (readFormStateRef.current.isValid) {
         validateField(fieldsRef, validateAllFieldCriteria, field).then(
           (error) => {
             const previousFormIsValid = isValidRef.current;
