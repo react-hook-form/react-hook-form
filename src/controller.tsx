@@ -10,11 +10,11 @@ import { VALIDATION_MODE, VALUE } from './constants';
 import { Control, ControllerProps, EventFunction, Field } from './types';
 
 const Controller = <
-  As extends
+  TAs extends
     | React.ReactElement
     | React.ComponentType<any>
     | keyof JSX.IntrinsicElements,
-  ControlProp extends Control = Control
+  TControl extends Control = Control
 >({
   name,
   rules,
@@ -28,7 +28,7 @@ const Controller = <
   control,
   onFocus,
   ...rest
-}: ControllerProps<As, ControlProp>) => {
+}: ControllerProps<TAs, TControl>) => {
   const methods = useFormContext();
   const {
     defaultValuesRef,

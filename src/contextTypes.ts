@@ -26,24 +26,20 @@ export type FormProps<TFieldValues extends FieldValues = FieldValues> = {
 export type FormContextValues<
   TFieldValues extends FieldValues = FieldValues
 > = {
-  register<
-    Element extends FieldElement<TFieldValues> = FieldElement<TFieldValues>
-  >(): (ref: Element | null) => void;
-  register<
-    Element extends FieldElement<TFieldValues> = FieldElement<TFieldValues>
-  >(
+  register<TFieldElement extends FieldElement<TFieldValues>>(): (
+    ref: TFieldElement | null,
+  ) => void;
+  register<TFieldElement extends FieldElement<TFieldValues>>(
     validationOptions: ValidationOptions,
-  ): (ref: Element | null) => void;
+  ): (ref: TFieldElement | null) => void;
   register(
     name: IsFlatObject<TFieldValues> extends true
       ? Extract<keyof TFieldValues, string>
       : string,
     validationOptions?: ValidationOptions,
   ): void;
-  register<
-    Element extends FieldElement<TFieldValues> = FieldElement<TFieldValues>
-  >(
-    ref: Element,
+  register<TFieldElement extends FieldElement<TFieldValues>>(
+    ref: TFieldElement,
     validationOptions?: ValidationOptions,
   ): void;
   unregister(

@@ -26,14 +26,14 @@ import {
 } from './types';
 
 export const useFieldArray = <
-  FormArrayValues extends FieldValues = FieldValues,
-  KeyName extends string = 'id',
-  ControlProp extends Control = Control
+  TFieldArrayValues extends FieldValues = FieldValues,
+  TKeyName extends string = 'id',
+  TControl extends Control = Control
 >({
   control,
   name,
-  keyName = 'id' as KeyName,
-}: UseFieldArrayProps<KeyName, ControlProp>) => {
+  keyName = 'id' as TKeyName,
+}: UseFieldArrayProps<TKeyName, TControl>) => {
   const methods = useFormContext();
   const {
     isWatchAllRef,
@@ -64,15 +64,15 @@ export const useFieldArray = <
       [],
     ),
   ];
-  const memoizedDefaultValues = React.useRef<Partial<FormArrayValues>[]>(
+  const memoizedDefaultValues = React.useRef<Partial<TFieldArrayValues>[]>(
     getDefaultValues(),
   );
   const [fields, setField] = React.useState<
-    Partial<ArrayField<FormArrayValues, KeyName>>[]
+    Partial<ArrayField<TFieldArrayValues, TKeyName>>[]
   >(mapIds(memoizedDefaultValues.current, keyName));
   const [isDeleted, setIsDeleted] = React.useState(false);
   const allFields = React.useRef<
-    Partial<ArrayField<FormArrayValues, KeyName>>[]
+    Partial<ArrayField<TFieldArrayValues, TKeyName>>[]
   >(fields);
   const isNameKey = isKey(name);
 
@@ -82,11 +82,11 @@ export const useFieldArray = <
     fieldArrayDefaultValues.current[name] = memoizedDefaultValues.current;
   }
 
-  const appendValueWithKey = (values: Partial<FormArrayValues>[]) =>
-    values.map((value: Partial<FormArrayValues>) => appendId(value, keyName));
+  const appendValueWithKey = (values: Partial<TFieldArrayValues>[]) =>
+    values.map((value: Partial<TFieldArrayValues>) => appendId(value, keyName));
 
   const setFieldAndValidState = (
-    fieldsValues: Partial<ArrayField<FormArrayValues, KeyName>>[],
+    fieldsValues: Partial<ArrayField<TFieldArrayValues, TKeyName>>[],
   ) => {
     setField(fieldsValues);
 
@@ -108,7 +108,7 @@ export const useFieldArray = <
     shouldRender?: boolean;
     isRemove?: boolean;
     index?: number | number[];
-    value?: Partial<FormArrayValues> | Partial<FormArrayValues>[];
+    value?: Partial<TFieldArrayValues> | Partial<TFieldArrayValues>[];
   } = {}) => {
     let render = shouldRender;
     const values = isArray(value) ? value : [value];
@@ -191,7 +191,9 @@ export const useFieldArray = <
     }
   };
 
-  const resetFields = (flagOrFields?: (Partial<FormArrayValues> | null)[]) => {
+  const resetFields = (
+    flagOrFields?: (Partial<TFieldArrayValues> | null)[],
+  ) => {
     if (readFormStateRef.current.dirty) {
       isDirtyRef.current = isUndefined(flagOrFields)
         ? true
@@ -209,7 +211,7 @@ export const useFieldArray = <
   };
 
   const mapCurrentFieldsValueWithState = () => {
-    const currentFieldsValue: Partial<FormArrayValues>[] = get(
+    const currentFieldsValue: Partial<TFieldArrayValues>[] = get(
       getValues(),
       name,
     );
@@ -225,7 +227,7 @@ export const useFieldArray = <
   };
 
   const append = (
-    value: Partial<FormArrayValues> | Partial<FormArrayValues>[],
+    value: Partial<TFieldArrayValues> | Partial<TFieldArrayValues>[],
   ) => {
     setFieldAndValidState([
       ...allFields.current,
@@ -237,7 +239,7 @@ export const useFieldArray = <
   };
 
   const prepend = (
-    value: Partial<FormArrayValues> | Partial<FormArrayValues>[],
+    value: Partial<TFieldArrayValues> | Partial<TFieldArrayValues>[],
   ) => {
     let shouldRender = false;
 
@@ -347,7 +349,7 @@ export const useFieldArray = <
 
   const insert = (
     index: number,
-    value: Partial<FormArrayValues> | Partial<FormArrayValues>[],
+    value: Partial<TFieldArrayValues> | Partial<TFieldArrayValues>[],
   ) => {
     mapCurrentFieldsValueWithState();
     resetFields(insertAt(getFieldValueByName(fieldsRef.current, name), index));
