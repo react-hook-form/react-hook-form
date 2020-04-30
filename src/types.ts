@@ -353,7 +353,7 @@ export type Control<TFieldValues extends FieldValues = FieldValues> = {
     | Unpacked<TFieldValues>[FieldName<TFieldValues>]
   >;
   watchFieldsHookRef: React.MutableRefObject<
-    Record<string, Set<FieldName<FormValues>>>
+    Record<string, Set<FieldName<TFieldValues>>>
   >;
   watchFieldsHookRenderRef: React.MutableRefObject<Record<string, Function>>;
   watchInternal: (
