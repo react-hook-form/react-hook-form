@@ -1244,7 +1244,7 @@ export function useForm<
               return obj[prop];
             }
 
-            return {};
+            return undefined;
           },
         })
       : formState,
