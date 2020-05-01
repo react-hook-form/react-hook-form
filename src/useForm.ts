@@ -770,10 +770,10 @@ export function useForm<
 
   const watchInternal = React.useCallback(
     (
-      defaultValue: unknown,
-      fieldNames?: string | string[] | { nest: boolean },
+      fieldNames?: string | string[],
+      defaultValue?: unknown,
       watchId?: string,
-    ): unknown => {
+    ) => {
       const watchFields = watchId
         ? watchFieldsHookRef.current[watchId]
         : watchFieldsRef.current;
@@ -844,7 +844,7 @@ export function useForm<
     fieldNames?: string | string[],
     defaultValue?: unknown,
   ): unknown {
-    return watchInternal(defaultValue, fieldNames);
+    return watchInternal(fieldNames, defaultValue);
   }
 
   function unregister(

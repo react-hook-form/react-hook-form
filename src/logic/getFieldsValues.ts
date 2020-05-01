@@ -6,10 +6,7 @@ import { FieldName, FieldValues, FieldRefs } from '../types';
 
 export default <TFieldValues extends FieldValues>(
   fields: FieldRefs<TFieldValues>,
-  search?:
-    | FieldName<TFieldValues>
-    | FieldName<TFieldValues>[]
-    | { nest: boolean },
+  search?: FieldName<TFieldValues> | FieldName<TFieldValues>[],
 ) => {
   const output = {} as TFieldValues;
 
@@ -18,9 +15,7 @@ export default <TFieldValues extends FieldValues>(
       isUndefined(search) ||
       (isString(search)
         ? name.startsWith(search)
-        : isArray(search)
-        ? search.find((data) => name.startsWith(data))
-        : search && search.nest)
+        : isArray(search) && search.find(name.startsWith))
     ) {
       output[name as FieldName<TFieldValues>] = getFieldValue(
         fields,

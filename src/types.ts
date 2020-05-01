@@ -72,14 +72,6 @@ export type OnSubmit<TFieldValues extends FieldValues> = (
   event?: React.BaseSyntheticEvent,
 ) => void | Promise<void>;
 
-export type SchemaValidateOptions = Partial<{
-  strict: boolean;
-  abortEarly: boolean;
-  stripUnknown: boolean;
-  recursive: boolean;
-  context: any;
-}>;
-
 export type EmptyObject = { [K in string | number]: never };
 
 export type SchemaValidationSuccess<
@@ -357,8 +349,8 @@ export type Control<TFieldValues extends FieldValues = FieldValues> = {
   >;
   watchFieldsHookRenderRef: React.MutableRefObject<Record<string, Function>>;
   watchInternal: (
-    defaultValue: unknown,
-    fieldNames?: string | string[] | { nest: boolean },
+    fieldNames?: string | string[],
+    defaultValue?: unknown,
     isUseWatch?: string,
   ) => unknown;
 };
@@ -446,7 +438,7 @@ export type OmitResetState = Partial<{
 }>;
 
 export type UseWatchProps<TControlProp extends Control = Control> = {
-  name?: string | string[];
   defaultValue?: unknown;
+  name?: string | string[];
   control?: TControlProp;
 };
