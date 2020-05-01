@@ -497,7 +497,7 @@ export function useForm<
 
     if (!isEmptyObject(watchFieldsHook)) {
       for (const key in watchFieldsHook) {
-        if (watchFieldsHook[key].has(name)) {
+        if (watchFieldsHook[key].has(name) || !watchFieldsHook[key].size) {
           if (watchFieldsHookRenderRef.current[key]) {
             watchFieldsHookRenderRef.current[key]();
             found = false;
