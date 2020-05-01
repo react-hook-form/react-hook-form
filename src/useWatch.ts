@@ -27,7 +27,7 @@ export const useWatch = <TWatchValues, TControlProp extends Control = Control>({
   const updateWatchValue = React.useCallback(
     () =>
       setValue(
-        watchInternal(defaultValueRef.current, nameRef.current, idRef.current),
+        watchInternal(nameRef.current, defaultValueRef.current, idRef.current),
       ),
     [setValue, watchInternal, defaultValueRef, nameRef, idRef],
   );
@@ -38,7 +38,7 @@ export const useWatch = <TWatchValues, TControlProp extends Control = Control>({
     const watchFieldsHook = watchFieldsHookRef.current;
     watchFieldsHook[id] = new Set();
     watchFieldsHookRender[id] = updateWatchValue;
-    watchInternal(defaultValueRef.current, nameRef.current, id);
+    watchInternal(nameRef.current, defaultValueRef.current, id);
 
     return () => {
       delete watchFieldsHook[id];
