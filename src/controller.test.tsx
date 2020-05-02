@@ -107,9 +107,9 @@ describe('Controller', () => {
   });
 
   it("should trigger component's onBlur method and invoke setValue method", () => {
-    const triggerValidation = jest.fn();
+    const trigger = jest.fn();
     const control = reconfigureControl({
-      triggerValidation,
+      trigger,
       mode: { isOnChange: false, isOnSubmit: true, isOnBlur: true },
     });
     const fieldsRef = {
@@ -140,7 +140,7 @@ describe('Controller', () => {
       },
     });
 
-    expect(triggerValidation).toBeCalledWith('test');
+    expect(trigger).toBeCalledWith('test');
   });
 
   it('should invoke custom event named method', () => {

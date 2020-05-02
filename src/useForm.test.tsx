@@ -38,7 +38,7 @@ export const reconfigureControl = (
   setValue: jest.fn(),
   register: jest.fn(),
   unregister: jest.fn(),
-  triggerValidation: jest.fn(),
+  trigger: jest.fn(),
   removeFieldEventListener: jest.fn(),
   errorsRef: { current: {} },
   touchedFieldsRef: { current: {} },
@@ -736,11 +736,11 @@ describe('useForm', () => {
     });
   });
 
-  describe('triggerValidation', () => {
+  describe('trigger', () => {
     it('should return false when field is not found', async () => {
       const { result } = renderHook(() => useForm<{ test: string }>());
       await act(async () => {
-        expect(await result.current.triggerValidation('test')).toBeFalsy();
+        expect(await result.current.trigger('test')).toBeFalsy();
       });
     });
 
@@ -754,7 +754,7 @@ describe('useForm', () => {
       (validateField as any).mockImplementation(async () => ({}));
 
       await act(async () => {
-        expect(await result.current.triggerValidation('test')).toBeTruthy();
+        expect(await result.current.trigger('test')).toBeTruthy();
       });
     });
 
@@ -777,7 +777,7 @@ describe('useForm', () => {
       });
 
       await act(async () => {
-        expect(await result.current.triggerValidation('test')).toBeTruthy();
+        expect(await result.current.trigger('test')).toBeTruthy();
       });
     });
 
@@ -800,7 +800,7 @@ describe('useForm', () => {
       });
 
       await act(async () => {
-        await result.current.triggerValidation(['test', 'test1'] as any);
+        await result.current.trigger(['test', 'test1'] as any);
       });
 
       expect(validateField).toBeCalledWith(
@@ -826,7 +826,7 @@ describe('useForm', () => {
     });
   });
 
-  describe('triggerValidation with schema', () => {
+  describe('trigger with schema', () => {
     it('should return the error with single field validation', async () => {
       const validationResolver = async (data: any) => {
         return {
@@ -854,7 +854,7 @@ describe('useForm', () => {
       });
 
       await act(async () => {
-        await result.current.triggerValidation('test');
+        await result.current.trigger('test');
         expect(result.current.errors).toEqual({ test: { type: 'test' } });
       });
     });
@@ -890,7 +890,7 @@ describe('useForm', () => {
       });
 
       await act(async () => {
-        const resultFalse = await result.current.triggerValidation('test2');
+        const resultFalse = await result.current.trigger('test2');
         expect(resultFalse).toEqual(false);
 
         expect(result.current.errors).toEqual({
@@ -929,7 +929,7 @@ describe('useForm', () => {
       });
 
       await act(async () => {
-        await result.current.triggerValidation('test');
+        await result.current.trigger('test');
       });
 
       expect(result.current.errors).toEqual({});
@@ -965,7 +965,7 @@ describe('useForm', () => {
       });
 
       await act(async () => {
-        await result.current.triggerValidation(['test', 'test1']);
+        await result.current.trigger(['test', 'test1']);
 
         expect(result.current.errors).toEqual({
           test1: {
@@ -1010,10 +1010,7 @@ describe('useForm', () => {
       });
 
       await act(async () => {
-        const resultTrue = await result.current.triggerValidation([
-          'test1',
-          'test2',
-        ]);
+        const resultTrue = await result.current.trigger(['test1', 'test2']);
         expect(resultTrue).toEqual(true);
       });
     });
@@ -1052,7 +1049,7 @@ describe('useForm', () => {
       });
 
       await act(async () => {
-        await result.current.triggerValidation();
+        await result.current.trigger();
 
         expect(result.current.errors).toEqual({
           test1: {

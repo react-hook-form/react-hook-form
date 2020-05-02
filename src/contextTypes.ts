@@ -108,7 +108,7 @@ export type FormContextValues<
     namesWithValue: Unpacked<DeepPartial<Pick<TFieldValues, T>>>[],
     shouldValidate?: boolean,
   ): void;
-  triggerValidation(
+  trigger(
     payload?:
       | (IsFlatObject<TFieldValues> extends true
           ? Extract<keyof TFieldValues, string>

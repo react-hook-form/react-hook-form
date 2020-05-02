@@ -276,7 +276,7 @@ export type Control<TFieldValues extends FieldValues = FieldValues> = {
   getValues<T extends string, U extends unknown>(
     payload: T,
   ): T extends keyof TFieldValues ? Unpacked<TFieldValues>[T] : U;
-  triggerValidation(
+  trigger(
     payload?:
       | (IsFlatObject<TFieldValues> extends true
           ? Extract<keyof TFieldValues, string>
