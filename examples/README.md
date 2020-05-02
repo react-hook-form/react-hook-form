@@ -22,7 +22,7 @@ you can view the source code within the folder or visit code sand box to see how
 | Dirty/Touched/Submitted                 | https://codesandbox.io/s/7o2wrp86k6                                           |
 | Disable Native Validation               | https://codesandbox.io/s/keen-mccarthy-4pqn6                                  |
 | Field Array                             | https://codesandbox.io/s/6j1760jkjk                                           |
-| FormContext                             | https://codesandbox.io/s/react-hook-form-form-context-dkvjz                   |
+| FormProvider                            | https://codesandbox.io/s/react-hook-form-form-context-dkvjz                   |
 | Parse and format input value            | https://codesandbox.io/s/react-hook-form-parse-and-format-textarea-furtc      |
 | Nested Fields                           | https://codesandbox.io/s/react-hook-form-nested-fields-mv1bb                  |
 | Normalize/Format/Mask Field             | https://codesandbox.io/s/387z7njwzp                                           |
