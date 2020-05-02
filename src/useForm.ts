@@ -403,7 +403,7 @@ export function useForm<
     ],
   );
 
-  const triggerValidation = React.useCallback(
+  const trigger = React.useCallback(
     async (
       payload?:
         | (IsFlatObject<TFieldValues> extends true
@@ -484,7 +484,7 @@ export function useForm<
     }
 
     if (shouldValidate || (isArrayValue && valueOrShouldValidate)) {
-      triggerValidation(isArrayValue ? undefined : (names as any));
+      trigger(isArrayValue ? undefined : (names as any));
     }
   }
 
@@ -1222,11 +1222,11 @@ export function useForm<
   };
 
   const commonProps = {
-    triggerValidation,
+    trigger,
     setValue: React.useCallback(setValue, [
       reRender,
       setInternalValue,
-      triggerValidation,
+      trigger,
     ]),
     register: React.useCallback(register, [
       defaultValuesRef.current,

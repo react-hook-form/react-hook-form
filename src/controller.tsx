@@ -37,7 +37,7 @@ const Controller = <
     unregister,
     errorsRef,
     removeFieldEventListener,
-    triggerValidation,
+    trigger,
     mode: { isOnSubmit, isOnBlur, isOnChange },
     reValidateMode: { isReValidateOnBlur, isReValidateOnSubmit },
     formState: { isSubmitted },
@@ -145,7 +145,7 @@ const Controller = <
             }
 
             if (shouldReValidateOnBlur) {
-              triggerValidation(name);
+              trigger(name);
             }
           },
         }
