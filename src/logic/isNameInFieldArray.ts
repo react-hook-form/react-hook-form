@@ -4,7 +4,4 @@ export const isMatchFieldArrayName = (name: string, searchName: string) =>
   ).test(name);
 
 export default (names: Set<string>, name: string) =>
-  [...names].reduce(
-    (prev, current) => (isMatchFieldArrayName(name, current) ? true : prev),
-    false,
-  );
+  [...names].some((current) => isMatchFieldArrayName(name, current));
