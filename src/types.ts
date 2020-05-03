@@ -72,14 +72,6 @@ export type OnSubmit<TFieldValues extends FieldValues> = (
   event?: React.BaseSyntheticEvent,
 ) => void | Promise<void>;
 
-export type SchemaValidateOptions = Partial<{
-  strict: boolean;
-  abortEarly: boolean;
-  stripUnknown: boolean;
-  recursive: boolean;
-  context: any;
-}>;
-
 export type EmptyObject = { [K in string | number]: never };
 
 export type SchemaValidationSuccess<
