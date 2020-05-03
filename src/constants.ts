@@ -4,6 +4,7 @@ export const VALIDATION_MODE: ValidationMode = {
   onBlur: 'onBlur',
   onChange: 'onChange',
   onSubmit: 'onSubmit',
+  all: 'all',
 };
 
 export const VALUE = 'value';
