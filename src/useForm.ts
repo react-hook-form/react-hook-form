@@ -114,10 +114,10 @@ export function useForm<
   const validationResolverRef = React.useRef(validationResolver);
   const fieldArrayNamesRef = React.useRef<Set<string>>(new Set());
   const [, render] = React.useState();
-  const { isOnBlur, isOnSubmit, isOnChange } = React.useRef(
+  const { isOnBlur, isOnSubmit, isOnChange, isOnAll } = React.useRef(
     modeChecker(mode),
   ).current;
-  const validateAllFieldCriteria = validateCriteriaMode === 'all';
+  const validateAllFieldCriteria = validateCriteriaMode === VALIDATION_MODE.all;
   const isWindowUndefined = typeof window === UNDEFINED;
   const isWeb =
     typeof document !== UNDEFINED &&
@@ -503,16 +503,18 @@ export function useForm<
         }
 
         const isBlurEvent = type === EVENTS.BLUR;
-        const shouldSkipValidation = skipValidation({
-          hasError: !!currentError,
-          isOnChange,
-          isBlurEvent,
-          isOnSubmit,
-          isReValidateOnSubmit,
-          isOnBlur,
-          isReValidateOnBlur,
-          isSubmitted: isSubmittedRef.current,
-        });
+        const shouldSkipValidation =
+          !isOnAll &&
+          skipValidation({
+            hasError: !!currentError,
+            isOnChange,
+            isBlurEvent,
+            isOnSubmit,
+            isReValidateOnSubmit,
+            isOnBlur,
+            isReValidateOnBlur,
+            isSubmitted: isSubmittedRef.current,
+          });
         const shouldUpdateDirty = setDirty(name);
         let shouldRender = isFieldWatched(name) || shouldUpdateDirty;
 

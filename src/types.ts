@@ -63,6 +63,7 @@ export type ValidationMode = {
   onBlur: 'onBlur';
   onChange: 'onChange';
   onSubmit: 'onSubmit';
+  all: 'all';
 };
 
 export type Mode = keyof ValidationMode;
