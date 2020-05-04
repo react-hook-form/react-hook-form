@@ -93,24 +93,24 @@ export type SchemaValidationResult<
   TFieldValues extends FieldValues = FieldValues
 > = SchemaValidationSuccess<TFieldValues> | SchemaValidationError<TFieldValues>;
 
-export type ValidationResolver<
+export type Resolver<
   TFieldValues extends FieldValues = FieldValues,
-  TValidationContext extends object = object
+  TContext extends object = object
 > = (
   values: TFieldValues,
-  validationContext?: TValidationContext,
+  context?: TContext,
   validateAllFieldCriteria?: boolean,
 ) => Promise<SchemaValidationResult<TFieldValues>>;
 
 export type UseFormOptions<
   TFieldValues extends FieldValues = FieldValues,
-  TValidationContext extends object = object
+  TContext extends object = object
 > = Partial<{
   mode: Mode;
   reValidateMode: Mode;
   defaultValues: Unpacked<DeepPartial<TFieldValues>>;
-  validationResolver: ValidationResolver<TFieldValues, TValidationContext>;
-  validationContext: TValidationContext;
+  resolver: Resolver<TFieldValues, TContext>;
+  context: TContext;
   submitFocusError: boolean;
   validateCriteriaMode: 'firstError' | 'all';
 }>;

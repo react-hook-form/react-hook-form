@@ -828,7 +828,7 @@ describe('useForm', () => {
 
   describe('trigger with schema', () => {
     it('should return the error with single field validation', async () => {
-      const validationResolver = async (data: any) => {
+      const resolver = async (data: any) => {
         return {
           values: data,
           errors: {
@@ -842,7 +842,7 @@ describe('useForm', () => {
       const { result } = renderHook(() =>
         useForm<{ test: string }>({
           mode: VALIDATION_MODE.onChange,
-          validationResolver,
+          resolver,
         }),
       );
 
@@ -860,7 +860,7 @@ describe('useForm', () => {
     });
 
     it('should return the status of the requested field with single field validation', async () => {
-      const validationResolver = async (data: any) => {
+      const resolver = async (data: any) => {
         return {
           values: data,
           errors: {
@@ -874,7 +874,7 @@ describe('useForm', () => {
       const { result } = renderHook(() =>
         useForm<{ test1: string; test2: string }>({
           mode: VALIDATION_MODE.onChange,
-          validationResolver,
+          resolver,
         }),
       );
 
@@ -902,7 +902,7 @@ describe('useForm', () => {
     });
 
     it('should not trigger any error when schema validation result not found', async () => {
-      const validationResolver = async (data: any) => {
+      const resolver = async (data: any) => {
         return {
           values: data,
           errors: {
@@ -917,7 +917,7 @@ describe('useForm', () => {
         useForm<{ test: string }>({
           mode: VALIDATION_MODE.onChange,
           // @ts-ignore
-          validationResolver,
+          resolver,
         }),
       );
 
@@ -936,7 +936,7 @@ describe('useForm', () => {
     });
 
     it('should support array of fields for schema validation', async () => {
-      const validationResolver = async (data: any) => {
+      const resolver = async (data: any) => {
         return {
           values: data,
           errors: {
@@ -953,7 +953,7 @@ describe('useForm', () => {
       const { result } = renderHook(() =>
         useForm<{ test: string; test1: string }>({
           mode: VALIDATION_MODE.onChange,
-          validationResolver,
+          resolver,
         }),
       );
 
@@ -979,7 +979,7 @@ describe('useForm', () => {
     });
 
     it('should return the status of the requested fields with array of fields for validation', async () => {
-      const validationResolver = async (data: any) => {
+      const resolver = async (data: any) => {
         return {
           values: data,
           errors: { test3: 'test3' },
@@ -990,7 +990,7 @@ describe('useForm', () => {
         useForm<{ test1: string; test2: string; test3: string }>({
           mode: VALIDATION_MODE.onChange,
           // @ts-ignore
-          validationResolver,
+          resolver,
         }),
       );
 
@@ -1016,7 +1016,7 @@ describe('useForm', () => {
     });
 
     it('should validate all fields when pass with undefined', async () => {
-      const validationResolver = async (data: any) => {
+      const resolver = async (data: any) => {
         return {
           values: data,
           errors: {
@@ -1033,7 +1033,7 @@ describe('useForm', () => {
       const { result } = renderHook(() =>
         useForm<{ test1: string; test: string }>({
           mode: VALIDATION_MODE.onChange,
-          validationResolver,
+          resolver,
         }),
       );
 
@@ -1104,7 +1104,7 @@ describe('useForm', () => {
 
   describe('handleSubmit with validationSchema', () => {
     it('should invoke callback when error not found', async () => {
-      const validationResolver = async (data: any) => {
+      const resolver = async (data: any) => {
         return {
           values: data,
           errors: {},
@@ -1114,7 +1114,7 @@ describe('useForm', () => {
       const { result } = renderHook(() =>
         useForm<{ test: string }>({
           mode: VALIDATION_MODE.onSubmit,
-          validationResolver,
+          resolver,
         }),
       );
 
@@ -1137,7 +1137,7 @@ describe('useForm', () => {
     });
 
     it('should invoke callback with transformed values', async () => {
-      const validationResolver = async () => {
+      const resolver = async () => {
         return {
           values: { test: 'test' },
           errors: {},
@@ -1147,7 +1147,7 @@ describe('useForm', () => {
       const { result } = renderHook(() =>
         useForm<{ test: string }>({
           mode: VALIDATION_MODE.onSubmit,
-          validationResolver,
+          resolver,
         }),
       );
 
