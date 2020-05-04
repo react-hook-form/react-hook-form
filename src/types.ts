@@ -267,16 +267,14 @@ export type Control<FormValues extends FieldValues = FieldValues> = {
     shouldValidate?: boolean,
   ): void;
   getValues(): IsFlatObject<FormValues> extends false
-    ? Record<string, any>
+    ? Record<string, unknown>
     : FormValues;
-  getValues<T extends boolean>(payload: {
-    nest: T;
-  }): T extends true
+  getValues(payload: { nest: true }): FormValues;
+  getValues(payload: {
+    nest: false;
+  }): IsFlatObject<FormValues> extends true
     ? FormValues
-    : IsFlatObject<FormValues> extends true
-    ? FormValues
-    : Record<string, any>;
-  getValues(payload?: { nest: boolean }): FormValues;
+    : Record<string, unknown>;
   getValues<T extends string, U extends unknown>(
     payload: T,
   ): T extends keyof FormValues ? FormValues[T] : U;
