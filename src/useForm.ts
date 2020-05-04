@@ -67,7 +67,7 @@ import {
 
 export function useForm<
   TFieldValues extends FieldValues = FieldValues,
-  TValidationContext extends object = object
+  TContext extends object = object
 >({
   mode = VALIDATION_MODE.onSubmit,
   reValidateMode = VALIDATION_MODE.onChange,
@@ -76,7 +76,7 @@ export function useForm<
   defaultValues = {} as Unpacked<DeepPartial<TFieldValues>>,
   submitFocusError = true,
   validateCriteriaMode,
-}: UseFormOptions<TFieldValues, TValidationContext> = {}): FormContextValues<
+}: UseFormOptions<TFieldValues, TContext> = {}): FormContextValues<
   TFieldValues
 > {
   const fieldsRef = React.useRef<FieldRefs<TFieldValues>>({});
@@ -110,8 +110,8 @@ export function useForm<
   const isSubmittingRef = React.useRef(false);
   const handleChangeRef = React.useRef<HandleChange>();
   const resetFieldArrayFunctionRef = React.useRef({});
-  const validationContextRef = React.useRef(context);
-  const validationResolverRef = React.useRef(resolver);
+  const contextRef = React.useRef(context);
+  const resolverRef = React.useRef(resolver);
   const fieldArrayNamesRef = React.useRef<Set<string>>(new Set());
   const [, render] = React.useState();
   const { isOnBlur, isOnSubmit, isOnChange, isOnAll } = React.useRef(
@@ -137,8 +137,8 @@ export function useForm<
     isOnBlur: isReValidateOnBlur,
     isOnSubmit: isReValidateOnSubmit,
   } = React.useRef(modeChecker(reValidateMode)).current;
-  validationContextRef.current = context;
-  validationResolverRef.current = resolver;
+  contextRef.current = context;
+  resolverRef.current = resolver;
 
   const reRender = React.useCallback(() => {
     if (!isUnMount.current) {
@@ -163,10 +163,7 @@ export function useForm<
         });
 
       if (isEmptyObject(error)) {
-        if (
-          fieldsWithValidationRef.current.has(name) ||
-          validationResolverRef.current
-        ) {
+        if (fieldsWithValidationRef.current.has(name) || resolverRef.current) {
           validFieldsRef.current.add(name);
           shouldReRender = shouldReRender || get(errorsRef.current, name);
         }
@@ -184,7 +181,7 @@ export function useForm<
         return true;
       }
     },
-    [reRender, validationResolverRef],
+    [reRender, resolverRef],
   );
 
   const setFieldValue = React.useCallback(
@@ -361,10 +358,10 @@ export function useForm<
 
   const executeSchemaOrResolverValidation = React.useCallback(
     async (payload: FieldName<TFieldValues> | FieldName<TFieldValues>[]) => {
-      if (validationResolverRef.current) {
-        const { errors } = await validationResolverRef.current(
+      if (resolverRef.current) {
+        const { errors } = await resolverRef.current(
           getFieldArrayValueByName(fieldsRef.current),
-          validationContextRef.current,
+          contextRef.current,
           validateAllFieldCriteria,
         );
         const previousFormIsValid = isValidRef.current;
@@ -395,12 +392,7 @@ export function useForm<
 
       return false;
     },
-    [
-      reRender,
-      shouldRenderBaseOnError,
-      validateAllFieldCriteria,
-      validationResolverRef,
-    ],
+    [reRender, shouldRenderBaseOnError, validateAllFieldCriteria, resolverRef],
   );
 
   const trigger = React.useCallback(
@@ -415,7 +407,7 @@ export function useForm<
     ): Promise<boolean> => {
       const fields = payload || Object.keys(fieldsRef.current);
 
-      if (validationResolverRef.current) {
+      if (resolverRef.current) {
         return executeSchemaOrResolverValidation(fields);
       }
 
@@ -433,7 +425,7 @@ export function useForm<
       executeSchemaOrResolverValidation,
       executeValidation,
       reRender,
-      validationResolverRef,
+      resolverRef,
     ],
   );
 
@@ -534,7 +526,7 @@ export function useForm<
         if (resolver) {
           const { errors } = await resolver(
             getFieldArrayValueByName(fields),
-            validationContextRef.current,
+            contextRef.current,
             validateAllFieldCriteria,
           );
           const previousFormIsValid = isValidRef.current;
@@ -566,14 +558,14 @@ export function useForm<
         ? getFieldsValues(fieldsRef.current)
         : defaultValuesRef.current;
 
-      if (validationResolverRef.current) {
-        validationResolverRef
+      if (resolverRef.current) {
+        resolverRef
           .current(
             transformToNestObject({
               ...fieldValues,
               ...values,
             }),
-            validationContextRef.current,
+            contextRef.current,
             validateAllFieldCriteria,
           )
           .then(({ errors }) => {
@@ -586,7 +578,7 @@ export function useForm<
           });
       }
     },
-    [reRender, validateAllFieldCriteria, validationResolverRef],
+    [reRender, validateAllFieldCriteria, resolverRef],
   );
 
   const removeFieldEventListener = React.useCallback(
@@ -637,17 +629,12 @@ export function useForm<
       ) {
         reRender();
 
-        if (validationResolverRef.current) {
+        if (resolverRef.current) {
           validateResolver();
         }
       }
     },
-    [
-      reRender,
-      validateResolver,
-      removeFieldEventListener,
-      validationResolverRef,
-    ],
+    [reRender, validateResolver, removeFieldEventListener, resolverRef],
   );
 
   function clearError(
@@ -1008,10 +995,10 @@ export function useForm<
       }
 
       try {
-        if (validationResolverRef.current) {
-          const { errors, values } = await validationResolverRef.current(
+        if (resolverRef.current) {
+          const { errors, values } = await resolverRef.current(
             transformToNestObject(fieldValues),
-            validationContextRef.current,
+            contextRef.current,
             validateAllFieldCriteria,
           );
           errorsRef.current = errors;
@@ -1059,13 +1046,7 @@ export function useForm<
         reRender();
       }
     },
-    [
-      isWeb,
-      reRender,
-      validationResolverRef,
-      submitFocusError,
-      validateAllFieldCriteria,
-    ],
+    [isWeb, reRender, resolverRef, submitFocusError, validateAllFieldCriteria],
   );
 
   const resetRefs = ({
