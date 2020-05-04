@@ -109,8 +109,8 @@ export type UseFormOptions<
   mode: Mode;
   reValidateMode: Mode;
   defaultValues: Unpacked<DeepPartial<TFieldValues>>;
-  validationResolver: ValidationResolver<TFieldValues, TValidationContext>;
-  validationContext: TValidationContext;
+  resolver: ValidationResolver<TFieldValues, TValidationContext>;
+  context: TValidationContext;
   submitFocusError: boolean;
   validateCriteriaMode: 'firstError' | 'all';
 }>;

@@ -71,8 +71,8 @@ export function useForm<
 >({
   mode = VALIDATION_MODE.onSubmit,
   reValidateMode = VALIDATION_MODE.onChange,
-  validationResolver,
-  validationContext,
+  resolver,
+  context,
   defaultValues = {} as Unpacked<DeepPartial<TFieldValues>>,
   submitFocusError = true,
   validateCriteriaMode,
@@ -110,8 +110,8 @@ export function useForm<
   const isSubmittingRef = React.useRef(false);
   const handleChangeRef = React.useRef<HandleChange>();
   const resetFieldArrayFunctionRef = React.useRef({});
-  const validationContextRef = React.useRef(validationContext);
-  const validationResolverRef = React.useRef(validationResolver);
+  const validationContextRef = React.useRef(context);
+  const validationResolverRef = React.useRef(resolver);
   const fieldArrayNamesRef = React.useRef<Set<string>>(new Set());
   const [, render] = React.useState();
   const { isOnBlur, isOnSubmit, isOnChange, isOnAll } = React.useRef(
@@ -137,8 +137,8 @@ export function useForm<
     isOnBlur: isReValidateOnBlur,
     isOnSubmit: isReValidateOnSubmit,
   } = React.useRef(modeChecker(reValidateMode)).current;
-  validationContextRef.current = validationContext;
-  validationResolverRef.current = validationResolver;
+  validationContextRef.current = context;
+  validationResolverRef.current = resolver;
 
   const reRender = React.useCallback(() => {
     if (!isUnMount.current) {
@@ -531,8 +531,8 @@ export function useForm<
           return shouldRender && reRender();
         }
 
-        if (validationResolver) {
-          const { errors } = await validationResolver(
+        if (resolver) {
+          const { errors } = await resolver(
             getFieldArrayValueByName(fields),
             validationContextRef.current,
             validateAllFieldCriteria,
@@ -903,11 +903,7 @@ export function useForm<
       }
     }
 
-    if (
-      validationResolver &&
-      !isFieldArray &&
-      readFormStateRef.current.isValid
-    ) {
+    if (resolver && !isFieldArray && readFormStateRef.current.isValid) {
       validateResolver();
     } else if (!isEmptyObject(validateOptions)) {
       fieldsWithValidationRef.current.add(name);
@@ -1205,7 +1201,7 @@ export function useForm<
     [removeFieldEventListenerAndRef],
   );
 
-  if (!validationResolver) {
+  if (!resolver) {
     isValidRef.current =
       validFieldsRef.current.size >= fieldsWithValidationRef.current.size &&
       isEmptyObject(errorsRef.current);
@@ -1253,7 +1249,7 @@ export function useForm<
   const control = {
     removeFieldEventListener,
     reRender,
-    ...(validationResolver ? { validateSchemaIsValid: validateResolver } : {}),
+    ...(resolver ? { validateSchemaIsValid: validateResolver } : {}),
     mode: {
       isOnBlur,
       isOnSubmit,
