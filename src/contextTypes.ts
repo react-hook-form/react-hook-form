@@ -2,7 +2,7 @@ import * as React from 'react';
 import {
   DeepPartial,
   FieldValues,
-  Unpacked,
+  UnpackNestedValue,
   FieldName,
   NestedValue,
   FormStateProxy,
@@ -43,23 +43,23 @@ export type FormContextValues<
     validationOptions?: ValidationOptions,
   ): void;
   unregister(name: FieldName<TFieldValues> | FieldName<TFieldValues>[]): void;
-  watch(): Unpacked<TFieldValues>;
+  watch(): UnpackNestedValue<TFieldValues>;
   watch<T extends string, U extends unknown>(
     field: T,
     defaultValue?: T extends keyof TFieldValues
-      ? Unpacked<TFieldValues>[T]
+      ? UnpackNestedValue<TFieldValues>[T]
       : LiteralToPrimitive<U>,
   ): T extends keyof TFieldValues
-    ? Unpacked<TFieldValues>[T]
+    ? UnpackNestedValue<TFieldValues>[T]
     : LiteralToPrimitive<U>;
   watch<T extends keyof TFieldValues>(
     fields: T[],
-    defaultValues?: Unpacked<DeepPartial<Pick<TFieldValues, T>>>,
-  ): Unpacked<Pick<TFieldValues, T>>;
+    defaultValues?: UnpackNestedValue<DeepPartial<Pick<TFieldValues, T>>>,
+  ): UnpackNestedValue<Pick<TFieldValues, T>>;
   watch(
     fields: string[],
-    defaultValues?: Unpacked<DeepPartial<TFieldValues>>,
-  ): Unpacked<DeepPartial<TFieldValues>>;
+    defaultValues?: UnpackNestedValue<DeepPartial<TFieldValues>>,
+  ): UnpackNestedValue<DeepPartial<TFieldValues>>;
   setError(name: FieldName<TFieldValues>, type: MultipleFieldErrors): void;
   setError(
     name: FieldName<TFieldValues>,
@@ -75,12 +75,12 @@ export type FormContextValues<
         ? any
         : TFieldValues[T] extends NestedValue<infer U>
         ? U
-        : Unpacked<DeepPartial<TFieldValues[T]>>
+        : UnpackNestedValue<DeepPartial<TFieldValues[T]>>
       : LiteralToPrimitive<U>,
     shouldValidate?: boolean,
   ): void;
   setValue<T extends keyof TFieldValues>(
-    namesWithValue: Unpacked<DeepPartial<Pick<TFieldValues, T>>>[],
+    namesWithValue: UnpackNestedValue<DeepPartial<Pick<TFieldValues, T>>>[],
     shouldValidate?: boolean,
   ): void;
   trigger(
@@ -89,18 +89,18 @@ export type FormContextValues<
   errors: FieldErrors<TFieldValues>;
   formState: FormStateProxy<TFieldValues>;
   reset: (
-    values?: Unpacked<DeepPartial<TFieldValues>>,
+    values?: UnpackNestedValue<DeepPartial<TFieldValues>>,
     omitResetState?: OmitResetState,
   ) => void;
-  getValues(): Unpacked<TFieldValues>;
+  getValues(): UnpackNestedValue<TFieldValues>;
   getValues<T extends keyof TFieldValues>(
     payload: T[],
-  ): Unpacked<Pick<TFieldValues, T>>;
+  ): UnpackNestedValue<Pick<TFieldValues, T>>;
   getValues<T extends string, U extends unknown>(
     payload: T,
-  ): T extends keyof TFieldValues ? Unpacked<TFieldValues>[T] : U;
+  ): T extends keyof TFieldValues ? UnpackNestedValue<TFieldValues>[T] : U;
   handleSubmit: (
-    callback: OnSubmit<Unpacked<TFieldValues>>,
+    callback: OnSubmit<TFieldValues>,
   ) => (e?: React.BaseSyntheticEvent) => Promise<void>;
   control: Control<TFieldValues>;
 };
