@@ -7,14 +7,14 @@ import {
   DeepPartial,
   FieldValue,
   FieldValues,
-  FieldName,
+  InternalFieldName,
   Unpacked,
 } from '../types';
 
 export default <TFieldValues extends FieldValues>(
   fieldValues: TFieldValues,
-  fieldName: FieldName<TFieldValues>,
-  watchFields: Set<FieldName<TFieldValues>>,
+  fieldName: InternalFieldName<TFieldValues>,
+  watchFields: Set<InternalFieldName<TFieldValues>>,
   inputValue: Unpacked<DeepPartial<TFieldValues>>,
   isSingleField?: boolean,
 ):
