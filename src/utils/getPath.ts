@@ -1,9 +1,9 @@
 import isPrimitive from './isPrimitive';
-import { FieldValues, FieldName } from '../types';
+import { FieldValues, InternalFieldName } from '../types';
 import isArray from './isArray';
 
 const getPath = <TFieldValues extends FieldValues = FieldValues>(
-  path: FieldName<TFieldValues>,
+  path: InternalFieldName<TFieldValues>,
   values: TFieldValues | any[],
 ): any[] => {
   const getInnerPath = (
@@ -23,6 +23,6 @@ const getPath = <TFieldValues extends FieldValues = FieldValues>(
 };
 
 export default <TFieldValues extends FieldValues = FieldValues>(
-  parentPath: FieldName<TFieldValues>,
+  parentPath: InternalFieldName<TFieldValues>,
   value: TFieldValues,
 ) => getPath(parentPath, value).flat(Infinity);

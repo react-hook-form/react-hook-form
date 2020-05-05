@@ -3,6 +3,7 @@ import {
   DeepPartial,
   FieldValues,
   Unpacked,
+  FieldName,
   NestedValue,
   FormStateProxy,
   FieldErrors,
@@ -15,7 +16,6 @@ import {
   OmitResetState,
   Message,
   LiteralToPrimitive,
-  IsFlatObject,
   IsAny,
 } from './types';
 
@@ -35,24 +35,14 @@ export type FormContextValues<
     validationOptions: ValidationOptions,
   ): (ref: TFieldElement | null) => void;
   register(
-    name: IsFlatObject<TFieldValues> extends true
-      ? Extract<keyof TFieldValues, string>
-      : string,
+    name: FieldName<TFieldValues>,
     validationOptions?: ValidationOptions,
   ): void;
   register<TFieldElement extends FieldElement<TFieldValues>>(
     ref: TFieldElement,
     validationOptions?: ValidationOptions,
   ): void;
-  unregister(
-    name:
-      | (IsFlatObject<TFieldValues> extends true
-          ? Extract<keyof TFieldValues, string>
-          : string)
-      | (IsFlatObject<TFieldValues> extends true
-          ? Extract<keyof TFieldValues, string>
-          : string)[],
-  ): void;
+  unregister(name: FieldName<TFieldValues> | FieldName<TFieldValues>[]): void;
   watch(): Unpacked<TFieldValues>;
   watch<T extends string, U extends unknown>(
     field: T,
@@ -70,29 +60,14 @@ export type FormContextValues<
     fields: string[],
     defaultValues?: Unpacked<DeepPartial<TFieldValues>>,
   ): Unpacked<DeepPartial<TFieldValues>>;
+  setError(name: FieldName<TFieldValues>, type: MultipleFieldErrors): void;
   setError(
-    name: IsFlatObject<TFieldValues> extends true
-      ? Extract<keyof TFieldValues, string>
-      : string,
-    type: MultipleFieldErrors,
-  ): void;
-  setError(
-    name: IsFlatObject<TFieldValues> extends true
-      ? Extract<keyof TFieldValues, string>
-      : string,
+    name: FieldName<TFieldValues>,
     type: string,
     message?: Message,
   ): void;
   setError(name: ManualFieldError<TFieldValues>[]): void;
-  clearError(
-    name?:
-      | (IsFlatObject<TFieldValues> extends true
-          ? Extract<keyof TFieldValues, string>
-          : string)
-      | (IsFlatObject<TFieldValues> extends true
-          ? Extract<keyof TFieldValues, string>
-          : string)[],
-  ): void;
+  clearError(name?: FieldName<TFieldValues> | FieldName<TFieldValues>[]): void;
   setValue<T extends string, U extends unknown>(
     name: T,
     value: T extends keyof TFieldValues
@@ -109,13 +84,7 @@ export type FormContextValues<
     shouldValidate?: boolean,
   ): void;
   trigger(
-    payload?:
-      | (IsFlatObject<TFieldValues> extends true
-          ? Extract<keyof TFieldValues, string>
-          : string)
-      | (IsFlatObject<TFieldValues> extends true
-          ? Extract<keyof TFieldValues, string>
-          : string)[],
+    payload?: FieldName<TFieldValues> | FieldName<TFieldValues>[],
   ): Promise<boolean>;
   errors: FieldErrors<TFieldValues>;
   formState: FormStateProxy<TFieldValues>;

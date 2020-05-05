@@ -42,6 +42,7 @@ import {
   FieldValues,
   Unpacked,
   FieldName,
+  InternalFieldName,
   FieldValue,
   FieldErrors,
   Field,
@@ -61,7 +62,6 @@ import {
   RadioOrCheckboxOption,
   OmitResetState,
   Message,
-  IsFlatObject,
   IsAny,
 } from './types';
 
@@ -83,23 +83,33 @@ export function useForm<
   const errorsRef = React.useRef<FieldErrors<TFieldValues>>({});
   const touchedFieldsRef = React.useRef<Touched<TFieldValues>>({});
   const fieldArrayDefaultValues = React.useRef<Record<string, unknown[]>>({});
-  const watchFieldsRef = React.useRef(new Set<FieldName<TFieldValues>>());
-  const dirtyFieldsRef = React.useRef(new Set<FieldName<TFieldValues>>());
-  const fieldsWithValidationRef = React.useRef(
-    new Set<FieldName<TFieldValues>>(),
+  const watchFieldsRef = React.useRef(
+    new Set<InternalFieldName<TFieldValues>>(),
   );
-  const validFieldsRef = React.useRef(new Set<FieldName<TFieldValues>>());
+  const dirtyFieldsRef = React.useRef(
+    new Set<InternalFieldName<TFieldValues>>(),
+  );
+  const fieldsWithValidationRef = React.useRef(
+    new Set<InternalFieldName<TFieldValues>>(),
+  );
+  const validFieldsRef = React.useRef(
+    new Set<InternalFieldName<TFieldValues>>(),
+  );
   const isValidRef = React.useRef(true);
   const defaultValuesRef = React.useRef<
     FieldValue<Unpacked<TFieldValues>> | Unpacked<DeepPartial<TFieldValues>>
   >(defaultValues);
   const defaultValuesAtRenderRef = React.useRef<
     Unpacked<
-      DeepPartial<Record<FieldName<TFieldValues>, FieldValue<TFieldValues>>>
+      DeepPartial<
+        Record<InternalFieldName<TFieldValues>, FieldValue<TFieldValues>>
+      >
     >
   >(
     {} as Unpacked<
-      DeepPartial<Record<FieldName<TFieldValues>, FieldValue<TFieldValues>>>
+      DeepPartial<
+        Record<InternalFieldName<TFieldValues>, FieldValue<TFieldValues>>
+      >
     >,
   );
   const isUnMount = React.useRef(false);
@@ -148,7 +158,7 @@ export function useForm<
 
   const shouldRenderBaseOnError = React.useCallback(
     (
-      name: FieldName<TFieldValues>,
+      name: InternalFieldName<TFieldValues>,
       error: FieldErrors<TFieldValues>,
       shouldRender: boolean | null = false,
     ): boolean | void => {
@@ -232,7 +242,7 @@ export function useForm<
     [isWeb],
   );
 
-  const setDirty = (name: FieldName<TFieldValues>): boolean => {
+  const setDirty = (name: InternalFieldName<TFieldValues>): boolean => {
     if (
       !fieldsRef.current[name] ||
       (!readFormStateRef.current.dirty && !readFormStateRef.current.dirtyFields)
@@ -273,7 +283,7 @@ export function useForm<
   };
 
   const setDirtyAndTouchedFields = React.useCallback(
-    (fieldName: FieldName<TFieldValues>): void | boolean => {
+    (fieldName: InternalFieldName<TFieldValues>): void | boolean => {
       if (
         setDirty(fieldName) ||
         (!get(touchedFieldsRef.current, fieldName) &&
@@ -287,7 +297,7 @@ export function useForm<
 
   const setInternalValues = React.useCallback(
     (
-      name: FieldName<TFieldValues>,
+      name: InternalFieldName<TFieldValues>,
       value: FieldValue<TFieldValues>,
       parentFieldName?: string,
     ) => {
@@ -314,7 +324,7 @@ export function useForm<
 
   const setInternalValue = React.useCallback(
     (
-      name: FieldName<TFieldValues>,
+      name: InternalFieldName<TFieldValues>,
       value: FieldValue<TFieldValues> | null | undefined | boolean,
     ): boolean | void => {
       const field = fieldsRef.current[name];
@@ -334,7 +344,7 @@ export function useForm<
 
   const executeValidation = React.useCallback(
     async (
-      name: FieldName<TFieldValues>,
+      name: InternalFieldName<TFieldValues>,
       skipReRender?: boolean,
     ): Promise<boolean> => {
       const field = fieldsRef.current[name] as Field;
@@ -357,7 +367,11 @@ export function useForm<
   );
 
   const executeSchemaOrResolverValidation = React.useCallback(
-    async (payload: FieldName<TFieldValues> | FieldName<TFieldValues>[]) => {
+    async (
+      payload:
+        | InternalFieldName<TFieldValues>
+        | InternalFieldName<TFieldValues>[],
+    ) => {
       if (resolverRef.current) {
         const { errors } = await resolverRef.current(
           getFieldArrayValueByName(fieldsRef.current),
@@ -397,13 +411,7 @@ export function useForm<
 
   const trigger = React.useCallback(
     async (
-      payload?:
-        | (IsFlatObject<TFieldValues> extends true
-            ? Extract<keyof TFieldValues, string>
-            : string)
-        | (IsFlatObject<TFieldValues> extends true
-            ? Extract<keyof TFieldValues, string>
-            : string)[],
+      payload?: FieldName<TFieldValues> | FieldName<TFieldValues>[],
     ): Promise<boolean> => {
       const fields = payload || Object.keys(fieldsRef.current);
 
@@ -638,13 +646,7 @@ export function useForm<
   );
 
   function clearError(
-    name?:
-      | (IsFlatObject<TFieldValues> extends true
-          ? Extract<keyof TFieldValues, string>
-          : string)
-      | (IsFlatObject<TFieldValues> extends true
-          ? Extract<keyof TFieldValues, string>
-          : string)[],
+    name?: FieldName<TFieldValues> | FieldName<TFieldValues>[],
   ): void {
     if (name) {
       unset(errorsRef.current, isArray(name) ? name : [name]);
@@ -662,7 +664,7 @@ export function useForm<
     message,
     shouldRender,
   }: {
-    name: FieldName<TFieldValues>;
+    name: InternalFieldName<TFieldValues>;
     type: string;
     types?: MultipleFieldErrors;
     message?: Message;
@@ -692,25 +694,17 @@ export function useForm<
   };
 
   function setError(
-    name: IsFlatObject<TFieldValues> extends true
-      ? Extract<keyof TFieldValues, string>
-      : string,
+    name: FieldName<TFieldValues>,
     type: MultipleFieldErrors,
   ): void;
   function setError(
-    name: IsFlatObject<TFieldValues> extends true
-      ? Extract<keyof TFieldValues, string>
-      : string,
+    name: FieldName<TFieldValues>,
     type: string,
     message?: Message,
   ): void;
   function setError(name: ManualFieldError<TFieldValues>[]): void;
   function setError(
-    name:
-      | (IsFlatObject<TFieldValues> extends true
-          ? Extract<keyof TFieldValues, string>
-          : string)
-      | ManualFieldError<TFieldValues>[],
+    name: FieldName<TFieldValues> | ManualFieldError<TFieldValues>[],
     type: string | MultipleFieldErrors = '',
     message?: Message,
   ): void {
@@ -801,13 +795,7 @@ export function useForm<
   }
 
   function unregister(
-    name:
-      | (IsFlatObject<TFieldValues> extends true
-          ? Extract<keyof TFieldValues, string>
-          : string)
-      | (IsFlatObject<TFieldValues> extends true
-          ? Extract<keyof TFieldValues, string>
-          : string)[],
+    name: FieldName<TFieldValues> | FieldName<TFieldValues>[],
   ): void {
     if (fieldsRef.current) {
       (isArray(name) ? name : [name]).forEach((fieldName) =>
@@ -819,7 +807,7 @@ export function useForm<
   function registerFieldsRef<TFieldElement extends FieldElement<TFieldValues>>(
     ref: TFieldElement,
     validateOptions: ValidationOptions | null = {},
-  ): ((name: FieldName<TFieldValues>) => void) | void {
+  ): ((name: InternalFieldName<TFieldValues>) => void) | void {
     if (!ref.name) {
       // eslint-disable-next-line no-console
       return console.warn('Missing name @', ref);
@@ -846,7 +834,7 @@ export function useForm<
           })
         : field && ref === field.ref
     ) {
-      fields[name as FieldName<TFieldValues>] = {
+      fields[name] = {
         ...field,
         ...validateOptions,
       };
@@ -878,7 +866,7 @@ export function useForm<
       field = fieldRefAndValidationOptions;
     }
 
-    fields[name as FieldName<TFieldValues>] = field;
+    fields[name] = field;
 
     if (!isEmptyObject(defaultValuesRef.current)) {
       defaultValue = get(defaultValuesRef.current, name);
@@ -916,9 +904,9 @@ export function useForm<
       !defaultValuesAtRenderRef.current[name] &&
       !(isFieldArray && isEmptyDefaultValue)
     ) {
-      defaultValuesAtRenderRef.current[
-        name as FieldName<TFieldValues>
-      ] = isEmptyDefaultValue ? getFieldValue(fields, field.ref) : defaultValue;
+      defaultValuesAtRenderRef.current[name] = isEmptyDefaultValue
+        ? getFieldValue(fields, field.ref)
+        : defaultValue;
     }
 
     if (type) {
@@ -940,9 +928,7 @@ export function useForm<
     validationOptions: ValidationOptions,
   ): (ref: TFieldElement | null) => void;
   function register(
-    name: IsFlatObject<TFieldValues> extends true
-      ? Extract<keyof TFieldValues, string>
-      : string,
+    name: FieldName<TFieldValues>,
     validationOptions?: ValidationOptions,
   ): void;
   function register<TFieldElement extends FieldElement<TFieldValues>>(
@@ -951,9 +937,7 @@ export function useForm<
   ): void;
   function register<TFieldElement extends FieldElement<TFieldValues>>(
     refOrValidationOptions?:
-      | (IsFlatObject<TFieldValues> extends true
-          ? Extract<keyof TFieldValues, string>
-          : string)
+      | FieldName<TFieldValues>
       | ValidationOptions
       | TFieldElement
       | null,
@@ -1090,7 +1074,9 @@ export function useForm<
     }
 
     defaultValuesAtRenderRef.current = {} as Unpacked<
-      DeepPartial<Record<FieldName<TFieldValues>, FieldValue<TFieldValues>>>
+      DeepPartial<
+        Record<InternalFieldName<TFieldValues>, FieldValue<TFieldValues>>
+      >
     >;
     fieldArrayDefaultValues.current = {};
     watchFieldsRef.current = new Set();
