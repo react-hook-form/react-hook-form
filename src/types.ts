@@ -246,6 +246,10 @@ export type HandleChange = (evt: Event) => Promise<void | boolean>;
 
 export type EventFunction = (...args: any[]) => any;
 
+export type FieldValuesFromControl<
+  TControl extends Control
+> = TControl extends Control<infer TFieldValues> ? TFieldValues : never;
+
 export type Control<TFieldValues extends FieldValues = FieldValues> = {
   reRender: () => void;
   removeFieldEventListener: (field: Field, forceDelete?: boolean) => void;
@@ -351,7 +355,7 @@ export type ControllerProps<
   TControl extends Control = Control
 > = Assign<
   {
-    name: string;
+    name: FieldName<FieldValuesFromControl<TControl>>;
     as: TAs;
     rules?: ValidationOptions;
     onChange?: EventFunction;
