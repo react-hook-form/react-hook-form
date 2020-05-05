@@ -8,18 +8,18 @@ import {
   FieldValue,
   FieldValues,
   InternalFieldName,
-  Unpacked,
+  UnpackNestedValue,
 } from '../types';
 
 export default <TFieldValues extends FieldValues>(
   fieldValues: TFieldValues,
   fieldName: InternalFieldName<TFieldValues>,
   watchFields: Set<InternalFieldName<TFieldValues>>,
-  inputValue: Unpacked<DeepPartial<TFieldValues>>,
+  inputValue: UnpackNestedValue<DeepPartial<TFieldValues>>,
   isSingleField?: boolean,
 ):
   | FieldValue<TFieldValues>
-  | Unpacked<DeepPartial<TFieldValues>>
+  | UnpackNestedValue<DeepPartial<TFieldValues>>
   | undefined => {
   let value;
 

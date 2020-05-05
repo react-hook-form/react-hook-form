@@ -40,7 +40,8 @@ import {
   LiteralToPrimitive,
   DeepPartial,
   FieldValues,
-  Unpacked,
+  NestedValue,
+  UnpackNestedValue,
   FieldName,
   InternalFieldName,
   FieldValue,
@@ -73,7 +74,7 @@ export function useForm<
   reValidateMode = VALIDATION_MODE.onChange,
   resolver,
   context,
-  defaultValues = {} as Unpacked<DeepPartial<TFieldValues>>,
+  defaultValues = {} as UnpackNestedValue<DeepPartial<TFieldValues>>,
   submitFocusError = true,
   validateCriteriaMode,
 }: UseFormOptions<TFieldValues, TContext> = {}): FormContextValues<
@@ -97,16 +98,17 @@ export function useForm<
   );
   const isValidRef = React.useRef(true);
   const defaultValuesRef = React.useRef<
-    FieldValue<Unpacked<TFieldValues>> | Unpacked<DeepPartial<TFieldValues>>
+    | FieldValue<UnpackNestedValue<TFieldValues>>
+    | UnpackNestedValue<DeepPartial<TFieldValues>>
   >(defaultValues);
   const defaultValuesAtRenderRef = React.useRef<
-    Unpacked<
+    UnpackNestedValue<
       DeepPartial<
         Record<InternalFieldName<TFieldValues>, FieldValue<TFieldValues>>
       >
     >
   >(
-    {} as Unpacked<
+    {} as UnpackNestedValue<
       DeepPartial<
         Record<InternalFieldName<TFieldValues>, FieldValue<TFieldValues>>
       >
@@ -199,7 +201,7 @@ export function useForm<
       field: Field,
       rawValue:
         | FieldValue<TFieldValues>
-        | Unpacked<DeepPartial<TFieldValues>>
+        | UnpackNestedValue<DeepPartial<TFieldValues>>
         | undefined
         | null
         | boolean,
@@ -447,16 +449,18 @@ export function useForm<
     value: T extends keyof TFieldValues
       ? IsAny<TFieldValues[T]> extends true
         ? any
-        : Unpacked<DeepPartial<TFieldValues[T]>>
+        : TFieldValues[T] extends NestedValue<infer U>
+        ? U
+        : UnpackNestedValue<DeepPartial<TFieldValues[T]>>
       : LiteralToPrimitive<U>,
     shouldValidate?: boolean,
   ): void;
   function setValue<T extends keyof TFieldValues>(
-    namesWithValue: Unpacked<DeepPartial<Pick<TFieldValues, T>>>[],
+    namesWithValue: UnpackNestedValue<DeepPartial<Pick<TFieldValues, T>>>[],
     shouldValidate?: boolean,
   ): void;
   function setValue<T extends keyof TFieldValues>(
-    names: string | Unpacked<DeepPartial<Pick<TFieldValues, T>>>[],
+    names: string | UnpackNestedValue<DeepPartial<Pick<TFieldValues, T>>>[],
     valueOrShouldValidate?: unknown,
     shouldValidate?: boolean,
   ): void {
@@ -464,7 +468,7 @@ export function useForm<
     const isArrayValue = isArray(names);
 
     (isArrayValue
-      ? (names as Unpacked<DeepPartial<Pick<TFieldValues, T>>>[])
+      ? (names as UnpackNestedValue<DeepPartial<Pick<TFieldValues, T>>>[])
       : [names]
     ).forEach((name: any) => {
       const isStringFieldName = isString(name);
@@ -728,23 +732,23 @@ export function useForm<
     }
   }
 
-  function watch(): Unpacked<TFieldValues>;
+  function watch(): UnpackNestedValue<TFieldValues>;
   function watch<T extends string, U extends unknown>(
     field: T,
     defaultValue?: T extends keyof TFieldValues
-      ? Unpacked<TFieldValues>[T]
+      ? UnpackNestedValue<TFieldValues>[T]
       : LiteralToPrimitive<U>,
   ): T extends keyof TFieldValues
-    ? Unpacked<TFieldValues>[T]
+    ? UnpackNestedValue<TFieldValues>[T]
     : LiteralToPrimitive<U>;
   function watch<T extends keyof TFieldValues>(
     fields: T[],
-    defaultValues?: Unpacked<DeepPartial<Pick<TFieldValues, T>>>,
-  ): Unpacked<Pick<TFieldValues, T>>;
+    defaultValues?: UnpackNestedValue<DeepPartial<Pick<TFieldValues, T>>>,
+  ): UnpackNestedValue<Pick<TFieldValues, T>>;
   function watch(
     fields: string[],
-    defaultValues?: Unpacked<DeepPartial<TFieldValues>>,
-  ): Unpacked<DeepPartial<TFieldValues>>;
+    defaultValues?: UnpackNestedValue<DeepPartial<TFieldValues>>,
+  ): UnpackNestedValue<DeepPartial<TFieldValues>>;
   function watch(
     fieldNames?: string | string[],
     defaultValue?: unknown,
@@ -760,13 +764,13 @@ export function useForm<
     );
 
     if (isString(fieldNames)) {
-      return assignWatchFields<Unpacked<TFieldValues>>(
+      return assignWatchFields<TFieldValues>(
         fieldValues,
         fieldNames,
         watchFields,
         isDefaultValueUndefined
           ? get(combinedDefaultValues, fieldNames)
-          : (defaultValue as Unpacked<DeepPartial<TFieldValues>>),
+          : (defaultValue as UnpackNestedValue<DeepPartial<TFieldValues>>),
         true,
       );
     }
@@ -775,11 +779,13 @@ export function useForm<
       return fieldNames.reduce(
         (previous, name) => ({
           ...previous,
-          [name]: assignWatchFields<Unpacked<TFieldValues>>(
+          [name]: assignWatchFields<TFieldValues>(
             fieldValues,
             name,
             watchFields,
-            combinedDefaultValues as Unpacked<DeepPartial<TFieldValues>>,
+            combinedDefaultValues as UnpackNestedValue<
+              DeepPartial<TFieldValues>
+            >,
           ),
         }),
         {},
@@ -1073,7 +1079,7 @@ export function useForm<
       submitCountRef.current = 0;
     }
 
-    defaultValuesAtRenderRef.current = {} as Unpacked<
+    defaultValuesAtRenderRef.current = {} as UnpackNestedValue<
       DeepPartial<
         Record<InternalFieldName<TFieldValues>, FieldValue<TFieldValues>>
       >
@@ -1084,7 +1090,7 @@ export function useForm<
   };
 
   const reset = (
-    values?: Unpacked<DeepPartial<TFieldValues>>,
+    values?: UnpackNestedValue<DeepPartial<TFieldValues>>,
     omitResetState: OmitResetState = {},
   ): void => {
     if (isWeb) {
@@ -1121,18 +1127,18 @@ export function useForm<
 
   const getValue = <T extends string, U extends unknown>(
     payload: T,
-  ): T extends keyof TFieldValues ? Unpacked<TFieldValues>[T] : U =>
+  ): T extends keyof TFieldValues ? UnpackNestedValue<TFieldValues>[T] : U =>
     fieldsRef.current[payload]
       ? getFieldValue(fieldsRef.current, fieldsRef.current[payload]!.ref)
       : get(defaultValuesRef.current, payload);
 
-  function getValues(): Unpacked<TFieldValues>;
+  function getValues(): UnpackNestedValue<TFieldValues>;
   function getValues<T extends keyof TFieldValues>(
     payload: T[],
-  ): Unpacked<Pick<TFieldValues, T>>;
+  ): UnpackNestedValue<Pick<TFieldValues, T>>;
   function getValues<T extends string, U extends unknown>(
     payload: T,
-  ): T extends keyof TFieldValues ? Unpacked<TFieldValues>[T] : U;
+  ): T extends keyof TFieldValues ? UnpackNestedValue<TFieldValues>[T] : U;
   function getValues(payload?: string[] | string): unknown {
     const fields = fieldsRef.current;
     if (isString(payload)) {
