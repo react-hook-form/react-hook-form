@@ -23,9 +23,9 @@ export type LiteralToPrimitive<T extends any> = T extends string
 
 export type FieldValues = Record<string, any>;
 
-export type InternalFieldName<
-  TFieldValues extends FieldValues
-> = keyof TFieldValues & string;
+export type InternalFieldName<TFieldValues extends FieldValues> =
+  | (keyof TFieldValues & string)
+  | string;
 
 export type FieldName<TFieldValues extends FieldValues> = IsFlatObject<
   TFieldValues
