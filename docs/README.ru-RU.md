@@ -6,7 +6,7 @@
     </p>
 </div>
 
-<p align="center">Быстрые, гибкие и расширяемые формы с простой в использовании проверкой.</p>
+<p align="center">Производительные, гибкие с возможностью расширения и простой в использовании валидацией формы.</p>
 
 <div align="center">
 
@@ -29,17 +29,17 @@
 
 <a href="https://github.com/react-hook-form/react-hook-form">🇦🇺English</a> | <a href="./docs/README.zh-CN.md">🇨🇳 简体中文</a> | <a href="./docs/README.ja-JP.md">🇯🇵 日本語</a> | <a href="./docs/README.ko-KR.md">🇰🇷한국어</a> | <a href="./docs/README.fr-FR.md">🇫🇷Français</a> | <a href="./docs/README.it-IT.md">🇮🇹Italiano</a> | <a href="./docs/README.pt-BR.md">🇧🇷Português</a> | <a href="./docs/README.es-ES.md">🇪🇸Español</a> | 🇷🇺Русский
 
-## Характеристики
+## Особенности
 
-- Создан с учетом производительности и DX
+- Нацелены на производительность и DX
 - Применение неконтролируемой проверки форм
-- Улучшить производительность контролируемой формы
-- [Крошечный размер](https://bundlephobia.com/result?p=react-hook-form@latest) без какой-либо зависимости
-- Соответствует стандартам HTML для валидации
-- Совместим с React Native
-- Поддерживает [Yup](https://github.com/jquense/yup), [Joi](https://github.com/hapijs/joi), [Superstruct](https://github.com/ianstormtaylor/superstruct) или обычай
+- Улучшение производительности контролируемых форм
+- [Крошечный размер](https://bundlephobia.com/result?p=react-hook-form@latest) без каких-либо зависимостей
+- Следование стандартам HTML для валидации
+- Совместимость с React Native
+- Поддержка [Yup](https://github.com/jquense/yup), [Joi](https://github.com/hapijs/joi), [Superstruct](https://github.com/ianstormtaylor/superstruct) и своих реализаций валидации
 - Поддержка нативной браузерной валидации
-- Быстро создавать формы с [конструктором форм](https://react-hook-form.com/form-builder)
+- Возможность быстро создавать формы с [конструктором форм](https://react-hook-form.com/form-builder)
 
 ## Установка
 
@@ -63,14 +63,14 @@ import React from 'react';
 import { useForm } from 'react-hook-form';
 
 function App() {
-  const { register, handleSubmit, errors } = useForm(); // инициализация хуков
+  const { register, handleSubmit, errors } = useForm(); // инициализация хука
   const onSubmit = data => {
     console.log(data);
   };
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
-      <input name="firstname" ref={register} /> {/* зарегистрировать вход */}
+      <input name="firstname" ref={register} /> {/* регистрация поля ввода */}
 
       <input name="lastname" ref={register({ required: true })} />
       {errors.lastname && 'Фамилия обязательна.'}
@@ -84,17 +84,17 @@ function App() {
 }
 ```
 
-## Покровители
+## Спонсоры
 
-Спасибо всем нашим покровителям! [[Стать покровителем](https://opencollective.com/react-hook-form#backer)].
+Спасибо всем кто поддерживает нас! [[Стать спонсором](https://opencollective.com/react-hook-form#backer)].
 
 <a href="https://opencollective.com/react-hook-form#backers">
     <img src="https://opencollective.com/react-hook-form/backers.svg?width=950" />
 </a>
 
-## организации
+## Организации
 
-Спасибо этим замечательным организациям! [[Способствовать](https://opencollective.com/react-hook-form/contribute)]
+Спасибо этим замечательным организациям! [[Спонсировать](https://opencollective.com/react-hook-form/contribute)]
 
 <a href="https://github.com/react-hook-form/react-hook-form/graphs/contributors">
     <img src="https://opencollective.com/react-hook-form/organizations.svg?width=950" />
