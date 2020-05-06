@@ -19,7 +19,7 @@ const validationSchema = Joi.object({
   checkbox: Joi.required(),
 });
 
-const validationResolver = async (data: any) => {
+const resolver = async (data: any) => {
   const { error, value: values } = validationSchema.validate(data, {
     abortEarly: false,
   });
@@ -54,7 +54,7 @@ const BasicSchemaValidation: React.FC = (props: any) => {
     multiple: string;
     validate: string;
   }>({
-    validationResolver,
+    resolver,
     mode: props.match.params.mode,
   });
   const onSubmit = () => {};

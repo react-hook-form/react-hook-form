@@ -22,9 +22,7 @@ const IsValid: React.FC = (props: any) => {
     checkbox: string;
   }>({
     mode: 'onChange',
-    ...(isBuildInValidation
-      ? {}
-      : { validationResolver: yupResolver(validationSchema) }),
+    ...(isBuildInValidation ? {} : { resolver: yupResolver(validationSchema) }),
     ...(props.match.params.defaultValues === 'defaultValues'
       ? {
           defaultValues: {

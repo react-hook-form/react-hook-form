@@ -45,7 +45,7 @@ export const reconfigureControl = (
   setValue: jest.fn(),
   register: jest.fn(),
   unregister: jest.fn(),
-  triggerValidation: jest.fn(),
+  trigger: jest.fn(),
   removeFieldEventListener: jest.fn(),
   errorsRef: { current: {} },
   touchedFieldsRef: { current: {} },
@@ -743,11 +743,11 @@ describe('useForm', () => {
     });
   });
 
-  describe('triggerValidation', () => {
+  describe('trigger', () => {
     it('should return false when field is not found', async () => {
       const { result } = renderHook(() => useForm<{ test: string }>());
       await act(async () => {
-        expect(await result.current.triggerValidation('test')).toBeFalsy();
+        expect(await result.current.trigger('test')).toBeFalsy();
       });
     });
 
@@ -761,7 +761,7 @@ describe('useForm', () => {
       (validateField as any).mockImplementation(async () => ({}));
 
       await act(async () => {
-        expect(await result.current.triggerValidation('test')).toBeTruthy();
+        expect(await result.current.trigger('test')).toBeTruthy();
       });
     });
 
@@ -784,7 +784,7 @@ describe('useForm', () => {
       });
 
       await act(async () => {
-        expect(await result.current.triggerValidation('test')).toBeTruthy();
+        expect(await result.current.trigger('test')).toBeTruthy();
       });
     });
 
@@ -807,7 +807,7 @@ describe('useForm', () => {
       });
 
       await act(async () => {
-        await result.current.triggerValidation(['test', 'test1'] as any);
+        await result.current.trigger(['test', 'test1'] as any);
       });
 
       expect(validateField).toBeCalledWith(
@@ -833,9 +833,9 @@ describe('useForm', () => {
     });
   });
 
-  describe('triggerValidation with schema', () => {
+  describe('trigger with schema', () => {
     it('should return the error with single field validation', async () => {
-      const validationResolver = async (data: any) => {
+      const resolver = async (data: any) => {
         return {
           values: data,
           errors: {
@@ -849,7 +849,7 @@ describe('useForm', () => {
       const { result } = renderHook(() =>
         useForm<{ test: string }>({
           mode: VALIDATION_MODE.onChange,
-          validationResolver,
+          resolver,
         }),
       );
 
@@ -861,13 +861,13 @@ describe('useForm', () => {
       });
 
       await act(async () => {
-        await result.current.triggerValidation('test');
+        await result.current.trigger('test');
         expect(result.current.errors).toEqual({ test: { type: 'test' } });
       });
     });
 
     it('should return the status of the requested field with single field validation', async () => {
-      const validationResolver = async (data: any) => {
+      const resolver = async (data: any) => {
         return {
           values: data,
           errors: {
@@ -881,7 +881,7 @@ describe('useForm', () => {
       const { result } = renderHook(() =>
         useForm<{ test1: string; test2: string }>({
           mode: VALIDATION_MODE.onChange,
-          validationResolver,
+          resolver,
         }),
       );
 
@@ -897,7 +897,7 @@ describe('useForm', () => {
       });
 
       await act(async () => {
-        const resultFalse = await result.current.triggerValidation('test2');
+        const resultFalse = await result.current.trigger('test2');
         expect(resultFalse).toEqual(false);
 
         expect(result.current.errors).toEqual({
@@ -909,7 +909,7 @@ describe('useForm', () => {
     });
 
     it('should not trigger any error when schema validation result not found', async () => {
-      const validationResolver = async (data: any) => {
+      const resolver = async (data: any) => {
         return {
           values: data,
           errors: {
@@ -924,7 +924,7 @@ describe('useForm', () => {
         useForm<{ test: string }>({
           mode: VALIDATION_MODE.onChange,
           // @ts-ignore
-          validationResolver,
+          resolver,
         }),
       );
 
@@ -936,14 +936,14 @@ describe('useForm', () => {
       });
 
       await act(async () => {
-        await result.current.triggerValidation('test');
+        await result.current.trigger('test');
       });
 
       expect(result.current.errors).toEqual({});
     });
 
     it('should support array of fields for schema validation', async () => {
-      const validationResolver = async (data: any) => {
+      const resolver = async (data: any) => {
         return {
           values: data,
           errors: {
@@ -960,7 +960,7 @@ describe('useForm', () => {
       const { result } = renderHook(() =>
         useForm<{ test: string; test1: string }>({
           mode: VALIDATION_MODE.onChange,
-          validationResolver,
+          resolver,
         }),
       );
 
@@ -972,7 +972,7 @@ describe('useForm', () => {
       });
 
       await act(async () => {
-        await result.current.triggerValidation(['test', 'test1']);
+        await result.current.trigger(['test', 'test1']);
 
         expect(result.current.errors).toEqual({
           test1: {
@@ -986,7 +986,7 @@ describe('useForm', () => {
     });
 
     it('should return the status of the requested fields with array of fields for validation', async () => {
-      const validationResolver = async (data: any) => {
+      const resolver = async (data: any) => {
         return {
           values: data,
           errors: { test3: 'test3' },
@@ -997,7 +997,7 @@ describe('useForm', () => {
         useForm<{ test1: string; test2: string; test3: string }>({
           mode: VALIDATION_MODE.onChange,
           // @ts-ignore
-          validationResolver,
+          resolver,
         }),
       );
 
@@ -1017,16 +1017,13 @@ describe('useForm', () => {
       });
 
       await act(async () => {
-        const resultTrue = await result.current.triggerValidation([
-          'test1',
-          'test2',
-        ]);
+        const resultTrue = await result.current.trigger(['test1', 'test2']);
         expect(resultTrue).toEqual(true);
       });
     });
 
     it('should validate all fields when pass with undefined', async () => {
-      const validationResolver = async (data: any) => {
+      const resolver = async (data: any) => {
         return {
           values: data,
           errors: {
@@ -1043,7 +1040,7 @@ describe('useForm', () => {
       const { result } = renderHook(() =>
         useForm<{ test1: string; test: string }>({
           mode: VALIDATION_MODE.onChange,
-          validationResolver,
+          resolver,
         }),
       );
 
@@ -1059,7 +1056,7 @@ describe('useForm', () => {
       });
 
       await act(async () => {
-        await result.current.triggerValidation();
+        await result.current.trigger();
 
         expect(result.current.errors).toEqual({
           test1: {
@@ -1114,7 +1111,7 @@ describe('useForm', () => {
 
   describe('handleSubmit with validationSchema', () => {
     it('should invoke callback when error not found', async () => {
-      const validationResolver = async (data: any) => {
+      const resolver = async (data: any) => {
         return {
           values: data,
           errors: {},
@@ -1124,7 +1121,7 @@ describe('useForm', () => {
       const { result } = renderHook(() =>
         useForm<{ test: string }>({
           mode: VALIDATION_MODE.onSubmit,
-          validationResolver,
+          resolver,
         }),
       );
 
@@ -1147,7 +1144,7 @@ describe('useForm', () => {
     });
 
     it('should invoke callback with transformed values', async () => {
-      const validationResolver = async () => {
+      const resolver = async () => {
         return {
           values: { test: 'test' },
           errors: {},
@@ -1157,7 +1154,7 @@ describe('useForm', () => {
       const { result } = renderHook(() =>
         useForm<{ test: string }>({
           mode: VALIDATION_MODE.onSubmit,
-          validationResolver,
+          resolver,
         }),
       );
 
@@ -1452,6 +1449,29 @@ describe('useForm', () => {
 
         expect(result.current.formState.isValid).toBeTruthy();
       });
+    });
+
+    it('should be a proxy object that returns undefined for unknown properties', () => {
+      const { result } = renderHook(() => useForm());
+
+      // @ts-ignore
+      expect(result.current.formState.nonExistentProperty).toBe(undefined);
+    });
+
+    it('should be a proxy object that properly implements the has trap', () => {
+      const { result } = renderHook(() => useForm());
+
+      // @ts-ignore
+      expect('nonExistentProperty' in result.current.formState).toBe(false);
+    });
+
+    it('should be a proxy object that hasOwnProperty works on', () => {
+      const { result } = renderHook(() => useForm());
+
+      // @ts-ignore
+      expect(
+        result.current.formState.hasOwnProperty('nonExistentProperty'),
+      ).toBe(false);
     });
   });
 

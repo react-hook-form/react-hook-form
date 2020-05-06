@@ -14,11 +14,11 @@ const defaultReturn: RadioFieldResult = {
 export default (options?: RadioOrCheckboxOption[]): RadioFieldResult =>
   isArray(options)
     ? options.reduce(
-        (previous, { ref: { checked, value } }): RadioFieldResult =>
-          checked
+        (previous, option): RadioFieldResult =>
+          option && option.ref.checked
             ? {
                 isValid: true,
-                value,
+                value: option.ref.value,
               }
             : previous,
         defaultReturn,

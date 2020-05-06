@@ -40,8 +40,10 @@ import {
   LiteralToPrimitive,
   DeepPartial,
   FieldValues,
-  Unpacked,
+  NestedValue,
+  UnpackNestedValue,
   FieldName,
+  InternalFieldName,
   FieldValue,
   FieldErrors,
   Field,
@@ -61,49 +63,59 @@ import {
   RadioOrCheckboxOption,
   OmitResetState,
   Message,
-  IsFlatObject,
   IsAny,
 } from './types';
 
 export function useForm<
   TFieldValues extends FieldValues = FieldValues,
-  TValidationContext extends object = object
+  TContext extends object = object
 >({
   mode = VALIDATION_MODE.onSubmit,
   reValidateMode = VALIDATION_MODE.onChange,
-  validationResolver,
-  validationContext,
-  defaultValues = {} as Unpacked<DeepPartial<TFieldValues>>,
+  resolver,
+  context,
+  defaultValues = {} as UnpackNestedValue<DeepPartial<TFieldValues>>,
   submitFocusError = true,
   validateCriteriaMode,
-}: UseFormOptions<TFieldValues, TValidationContext> = {}): FormContextValues<
+}: UseFormOptions<TFieldValues, TContext> = {}): FormContextValues<
   TFieldValues
 > {
   const fieldsRef = React.useRef<FieldRefs<TFieldValues>>({});
   const errorsRef = React.useRef<FieldErrors<TFieldValues>>({});
   const touchedFieldsRef = React.useRef<Touched<TFieldValues>>({});
   const fieldArrayDefaultValues = React.useRef<Record<string, unknown[]>>({});
-  const watchFieldsRef = React.useRef(new Set<FieldName<TFieldValues>>());
-  const dirtyFieldsRef = React.useRef(new Set<FieldName<TFieldValues>>());
+  const watchFieldsRef = React.useRef(
+    new Set<InternalFieldName<TFieldValues>>(),
+  );
+  const dirtyFieldsRef = React.useRef(
+    new Set<InternalFieldName<TFieldValues>>(),
+  );
   const watchFieldsHookRef = React.useRef<
-    Record<string, Set<FieldName<TFieldValues>>>
+    Record<string, Set<InternalFieldName<TFieldValues>>>
   >({});
   const watchFieldsHookRenderRef = React.useRef<Record<string, Function>>({});
   const fieldsWithValidationRef = React.useRef(
-    new Set<FieldName<TFieldValues>>(),
+    new Set<InternalFieldName<TFieldValues>>(),
   );
-  const validFieldsRef = React.useRef(new Set<FieldName<TFieldValues>>());
+  const validFieldsRef = React.useRef(
+    new Set<InternalFieldName<TFieldValues>>(),
+  );
   const isValidRef = React.useRef(true);
   const defaultValuesRef = React.useRef<
-    FieldValue<Unpacked<TFieldValues>> | Unpacked<DeepPartial<TFieldValues>>
+    | FieldValue<UnpackNestedValue<TFieldValues>>
+    | UnpackNestedValue<DeepPartial<TFieldValues>>
   >(defaultValues);
   const defaultValuesAtRenderRef = React.useRef<
-    Unpacked<
-      DeepPartial<Record<FieldName<TFieldValues>, FieldValue<TFieldValues>>>
+    UnpackNestedValue<
+      DeepPartial<
+        Record<InternalFieldName<TFieldValues>, FieldValue<TFieldValues>>
+      >
     >
   >(
-    {} as Unpacked<
-      DeepPartial<Record<FieldName<TFieldValues>, FieldValue<TFieldValues>>>
+    {} as UnpackNestedValue<
+      DeepPartial<
+        Record<InternalFieldName<TFieldValues>, FieldValue<TFieldValues>>
+      >
     >,
   );
   const isUnMount = React.useRef(false);
@@ -114,14 +126,14 @@ export function useForm<
   const isSubmittingRef = React.useRef(false);
   const handleChangeRef = React.useRef<HandleChange>();
   const resetFieldArrayFunctionRef = React.useRef({});
-  const validationContextRef = React.useRef(validationContext);
-  const validationResolverRef = React.useRef(validationResolver);
+  const contextRef = React.useRef(context);
+  const resolverRef = React.useRef(resolver);
   const fieldArrayNamesRef = React.useRef<Set<string>>(new Set());
   const [, render] = React.useState();
-  const { isOnBlur, isOnSubmit, isOnChange } = React.useRef(
+  const { isOnBlur, isOnSubmit, isOnChange, isOnAll } = React.useRef(
     modeChecker(mode),
   ).current;
-  const validateAllFieldCriteria = validateCriteriaMode === 'all';
+  const validateAllFieldCriteria = validateCriteriaMode === VALIDATION_MODE.all;
   const isWindowUndefined = typeof window === UNDEFINED;
   const isWeb =
     typeof document !== UNDEFINED &&
@@ -141,8 +153,8 @@ export function useForm<
     isOnBlur: isReValidateOnBlur,
     isOnSubmit: isReValidateOnSubmit,
   } = React.useRef(modeChecker(reValidateMode)).current;
-  validationContextRef.current = validationContext;
-  validationResolverRef.current = validationResolver;
+  contextRef.current = context;
+  resolverRef.current = resolver;
 
   const reRender = React.useCallback(() => {
     if (!isUnMount.current) {
@@ -152,7 +164,7 @@ export function useForm<
 
   const shouldRenderBaseOnError = React.useCallback(
     (
-      name: FieldName<TFieldValues>,
+      name: InternalFieldName<TFieldValues>,
       error: FieldErrors<TFieldValues>,
       shouldRender: boolean | null = false,
     ): boolean | void => {
@@ -167,10 +179,7 @@ export function useForm<
         });
 
       if (isEmptyObject(error)) {
-        if (
-          fieldsWithValidationRef.current.has(name) ||
-          validationResolverRef.current
-        ) {
+        if (fieldsWithValidationRef.current.has(name) || resolverRef.current) {
           validFieldsRef.current.add(name);
           shouldReRender = shouldReRender || get(errorsRef.current, name);
         }
@@ -188,7 +197,7 @@ export function useForm<
         return true;
       }
     },
-    [reRender, validationResolverRef],
+    [reRender, resolverRef],
   );
 
   const setFieldValue = React.useCallback(
@@ -196,7 +205,7 @@ export function useForm<
       field: Field,
       rawValue:
         | FieldValue<TFieldValues>
-        | Unpacked<DeepPartial<TFieldValues>>
+        | UnpackNestedValue<DeepPartial<TFieldValues>>
         | undefined
         | null
         | boolean,
@@ -239,7 +248,7 @@ export function useForm<
     [isWeb],
   );
 
-  const setDirty = (name: FieldName<TFieldValues>): boolean => {
+  const setDirty = (name: InternalFieldName<TFieldValues>): boolean => {
     if (
       !fieldsRef.current[name] ||
       (!readFormStateRef.current.dirty && !readFormStateRef.current.dirtyFields)
@@ -280,7 +289,7 @@ export function useForm<
   };
 
   const setDirtyAndTouchedFields = React.useCallback(
-    (fieldName: FieldName<TFieldValues>): void | boolean => {
+    (fieldName: InternalFieldName<TFieldValues>): void | boolean => {
       if (
         setDirty(fieldName) ||
         (!get(touchedFieldsRef.current, fieldName) &&
@@ -294,7 +303,7 @@ export function useForm<
 
   const setInternalValues = React.useCallback(
     (
-      name: FieldName<TFieldValues>,
+      name: InternalFieldName<TFieldValues>,
       value: FieldValue<TFieldValues>,
       parentFieldName?: string,
     ) => {
@@ -321,7 +330,7 @@ export function useForm<
 
   const setInternalValue = React.useCallback(
     (
-      name: FieldName<TFieldValues>,
+      name: InternalFieldName<TFieldValues>,
       value: FieldValue<TFieldValues> | null | undefined | boolean,
     ): boolean | void => {
       const field = fieldsRef.current[name];
@@ -341,7 +350,7 @@ export function useForm<
 
   const executeValidation = React.useCallback(
     async (
-      name: FieldName<TFieldValues>,
+      name: InternalFieldName<TFieldValues>,
       skipReRender?: boolean,
     ): Promise<boolean> => {
       const field = fieldsRef.current[name] as Field;
@@ -364,11 +373,15 @@ export function useForm<
   );
 
   const executeSchemaOrResolverValidation = React.useCallback(
-    async (payload: FieldName<TFieldValues> | FieldName<TFieldValues>[]) => {
-      if (validationResolverRef.current) {
-        const { errors } = await validationResolverRef.current(
+    async (
+      payload:
+        | InternalFieldName<TFieldValues>
+        | InternalFieldName<TFieldValues>[],
+    ) => {
+      if (resolverRef.current) {
+        const { errors } = await resolverRef.current(
           getFieldArrayValueByName(fieldsRef.current),
-          validationContextRef.current,
+          contextRef.current,
           validateAllFieldCriteria,
         );
         const previousFormIsValid = isValidRef.current;
@@ -399,27 +412,16 @@ export function useForm<
 
       return false;
     },
-    [
-      reRender,
-      shouldRenderBaseOnError,
-      validateAllFieldCriteria,
-      validationResolverRef,
-    ],
+    [reRender, shouldRenderBaseOnError, validateAllFieldCriteria, resolverRef],
   );
 
-  const triggerValidation = React.useCallback(
+  const trigger = React.useCallback(
     async (
-      payload?:
-        | (IsFlatObject<TFieldValues> extends true
-            ? Extract<keyof TFieldValues, string>
-            : string)
-        | (IsFlatObject<TFieldValues> extends true
-            ? Extract<keyof TFieldValues, string>
-            : string)[],
+      payload?: FieldName<TFieldValues> | FieldName<TFieldValues>[],
     ): Promise<boolean> => {
       const fields = payload || Object.keys(fieldsRef.current);
 
-      if (validationResolverRef.current) {
+      if (resolverRef.current) {
         return executeSchemaOrResolverValidation(fields);
       }
 
@@ -437,7 +439,7 @@ export function useForm<
       executeSchemaOrResolverValidation,
       executeValidation,
       reRender,
-      validationResolverRef,
+      resolverRef,
     ],
   );
 
@@ -451,16 +453,18 @@ export function useForm<
     value: T extends keyof TFieldValues
       ? IsAny<TFieldValues[T]> extends true
         ? any
-        : Unpacked<DeepPartial<TFieldValues[T]>>
+        : TFieldValues[T] extends NestedValue<infer U>
+        ? U
+        : UnpackNestedValue<DeepPartial<TFieldValues[T]>>
       : LiteralToPrimitive<U>,
     shouldValidate?: boolean,
   ): void;
   function setValue<T extends keyof TFieldValues>(
-    namesWithValue: Unpacked<DeepPartial<Pick<TFieldValues, T>>>[],
+    namesWithValue: UnpackNestedValue<DeepPartial<Pick<TFieldValues, T>>>[],
     shouldValidate?: boolean,
   ): void;
   function setValue<T extends keyof TFieldValues>(
-    names: string | Unpacked<DeepPartial<Pick<TFieldValues, T>>>[],
+    names: string | UnpackNestedValue<DeepPartial<Pick<TFieldValues, T>>>[],
     valueOrShouldValidate?: unknown,
     shouldValidate?: boolean,
   ): void {
@@ -468,7 +472,7 @@ export function useForm<
     const isArrayValue = isArray(names);
 
     (isArrayValue
-      ? (names as Unpacked<DeepPartial<Pick<TFieldValues, T>>>[])
+      ? (names as UnpackNestedValue<DeepPartial<Pick<TFieldValues, T>>>[])
       : [names]
     ).forEach((name: any) => {
       const isStringFieldName = isString(name);
@@ -488,7 +492,7 @@ export function useForm<
     }
 
     if (shouldValidate || (isArrayValue && valueOrShouldValidate)) {
-      triggerValidation(isArrayValue ? undefined : (names as any));
+      trigger(isArrayValue ? undefined : (names as any));
     }
   }
 
@@ -524,16 +528,18 @@ export function useForm<
         }
 
         const isBlurEvent = type === EVENTS.BLUR;
-        const shouldSkipValidation = skipValidation({
-          hasError: !!currentError,
-          isOnChange,
-          isBlurEvent,
-          isOnSubmit,
-          isReValidateOnSubmit,
-          isOnBlur,
-          isReValidateOnBlur,
-          isSubmitted: isSubmittedRef.current,
-        });
+        const shouldSkipValidation =
+          !isOnAll &&
+          skipValidation({
+            hasError: !!currentError,
+            isOnChange,
+            isBlurEvent,
+            isOnSubmit,
+            isReValidateOnSubmit,
+            isOnBlur,
+            isReValidateOnBlur,
+            isSubmitted: isSubmittedRef.current,
+          });
         const shouldUpdateDirty = setDirty(name);
         let shouldRender = isFieldWatched(name) || shouldUpdateDirty;
 
@@ -550,10 +556,10 @@ export function useForm<
           return renderWatchedInputs(name) && shouldRender && reRender();
         }
 
-        if (validationResolver) {
-          const { errors } = await validationResolver(
+        if (resolver) {
+          const { errors } = await resolver(
             getFieldArrayValueByName(fields),
-            validationContextRef.current,
+            contextRef.current,
             validateAllFieldCriteria,
           );
           const previousFormIsValid = isValidRef.current;
@@ -587,14 +593,14 @@ export function useForm<
         ? getFieldsValues(fieldsRef.current)
         : defaultValuesRef.current;
 
-      if (validationResolverRef.current) {
-        validationResolverRef
+      if (resolverRef.current) {
+        resolverRef
           .current(
             transformToNestObject({
               ...fieldValues,
               ...values,
             }),
-            validationContextRef.current,
+            contextRef.current,
             validateAllFieldCriteria,
           )
           .then(({ errors }) => {
@@ -607,7 +613,7 @@ export function useForm<
           });
       }
     },
-    [reRender, validateAllFieldCriteria, validationResolverRef],
+    [reRender, validateAllFieldCriteria, resolverRef],
   );
 
   const removeFieldEventListener = React.useCallback(
@@ -658,27 +664,16 @@ export function useForm<
       ) {
         reRender();
 
-        if (validationResolverRef.current) {
+        if (resolverRef.current) {
           validateResolver();
         }
       }
     },
-    [
-      reRender,
-      validateResolver,
-      removeFieldEventListener,
-      validationResolverRef,
-    ],
+    [reRender, validateResolver, removeFieldEventListener, resolverRef],
   );
 
   function clearError(
-    name?:
-      | (IsFlatObject<TFieldValues> extends true
-          ? Extract<keyof TFieldValues, string>
-          : string)
-      | (IsFlatObject<TFieldValues> extends true
-          ? Extract<keyof TFieldValues, string>
-          : string)[],
+    name?: FieldName<TFieldValues> | FieldName<TFieldValues>[],
   ): void {
     if (name) {
       unset(errorsRef.current, isArray(name) ? name : [name]);
@@ -696,7 +691,7 @@ export function useForm<
     message,
     shouldRender,
   }: {
-    name: FieldName<TFieldValues>;
+    name: InternalFieldName<TFieldValues>;
     type: string;
     types?: MultipleFieldErrors;
     message?: Message;
@@ -726,25 +721,17 @@ export function useForm<
   };
 
   function setError(
-    name: IsFlatObject<TFieldValues> extends true
-      ? Extract<keyof TFieldValues, string>
-      : string,
+    name: FieldName<TFieldValues>,
     type: MultipleFieldErrors,
   ): void;
   function setError(
-    name: IsFlatObject<TFieldValues> extends true
-      ? Extract<keyof TFieldValues, string>
-      : string,
+    name: FieldName<TFieldValues>,
     type: string,
     message?: Message,
   ): void;
   function setError(name: ManualFieldError<TFieldValues>[]): void;
   function setError(
-    name:
-      | (IsFlatObject<TFieldValues> extends true
-          ? Extract<keyof TFieldValues, string>
-          : string)
-      | ManualFieldError<TFieldValues>[],
+    name: FieldName<TFieldValues> | ManualFieldError<TFieldValues>[],
     type: string | MultipleFieldErrors = '',
     message?: Message,
   ): void {
@@ -787,13 +774,13 @@ export function useForm<
       );
 
       if (isString(fieldNames)) {
-        return assignWatchFields<Unpacked<TFieldValues>>(
+        return assignWatchFields<TFieldValues>(
           fieldValues,
           fieldNames,
           watchFields,
           isDefaultValueUndefined
             ? get(combinedDefaultValues, fieldNames)
-            : (defaultValue as Unpacked<DeepPartial<TFieldValues>>),
+            : (defaultValue as UnpackNestedValue<DeepPartial<TFieldValues>>),
           true,
         );
       }
@@ -802,11 +789,13 @@ export function useForm<
         return fieldNames.reduce(
           (previous, name) => ({
             ...previous,
-            [name]: assignWatchFields<Unpacked<TFieldValues>>(
+            [name]: assignWatchFields<TFieldValues>(
               fieldValues,
               name,
               watchFields,
-              combinedDefaultValues as Unpacked<DeepPartial<TFieldValues>>,
+              combinedDefaultValues as UnpackNestedValue<
+                DeepPartial<TFieldValues>
+              >,
             ),
           }),
           {},
@@ -823,23 +812,23 @@ export function useForm<
     [],
   );
 
-  function watch(): Unpacked<TFieldValues>;
+  function watch(): UnpackNestedValue<TFieldValues>;
   function watch<T extends string, U extends unknown>(
     field: T,
     defaultValue?: T extends keyof TFieldValues
-      ? Unpacked<TFieldValues>[T]
+      ? UnpackNestedValue<TFieldValues>[T]
       : LiteralToPrimitive<U>,
   ): T extends keyof TFieldValues
-    ? Unpacked<TFieldValues>[T]
+    ? UnpackNestedValue<TFieldValues>[T]
     : LiteralToPrimitive<U>;
   function watch<T extends keyof TFieldValues>(
     fields: T[],
-    defaultValues?: Unpacked<DeepPartial<Pick<TFieldValues, T>>>,
-  ): Unpacked<Pick<TFieldValues, T>>;
+    defaultValues?: UnpackNestedValue<DeepPartial<Pick<TFieldValues, T>>>,
+  ): UnpackNestedValue<Pick<TFieldValues, T>>;
   function watch(
     fields: string[],
-    defaultValues?: Unpacked<DeepPartial<TFieldValues>>,
-  ): Unpacked<DeepPartial<TFieldValues>>;
+    defaultValues?: UnpackNestedValue<DeepPartial<TFieldValues>>,
+  ): UnpackNestedValue<DeepPartial<TFieldValues>>;
   function watch(
     fieldNames?: string | string[],
     defaultValue?: unknown,
@@ -848,13 +837,7 @@ export function useForm<
   }
 
   function unregister(
-    name:
-      | (IsFlatObject<TFieldValues> extends true
-          ? Extract<keyof TFieldValues, string>
-          : string)
-      | (IsFlatObject<TFieldValues> extends true
-          ? Extract<keyof TFieldValues, string>
-          : string)[],
+    name: FieldName<TFieldValues> | FieldName<TFieldValues>[],
   ): void {
     if (fieldsRef.current) {
       (isArray(name) ? name : [name]).forEach((fieldName) =>
@@ -866,7 +849,7 @@ export function useForm<
   function registerFieldsRef<TFieldElement extends FieldElement<TFieldValues>>(
     ref: TFieldElement,
     validateOptions: ValidationOptions | null = {},
-  ): ((name: FieldName<TFieldValues>) => void) | void {
+  ): ((name: InternalFieldName<TFieldValues>) => void) | void {
     if (!ref.name) {
       // eslint-disable-next-line no-console
       return console.warn('Missing name @', ref);
@@ -893,7 +876,7 @@ export function useForm<
           })
         : field && ref === field.ref
     ) {
-      fields[name as FieldName<TFieldValues>] = {
+      fields[name] = {
         ...field,
         ...validateOptions,
       };
@@ -925,7 +908,7 @@ export function useForm<
       field = fieldRefAndValidationOptions;
     }
 
-    fields[name as FieldName<TFieldValues>] = field;
+    fields[name] = field;
 
     if (!isEmptyObject(defaultValuesRef.current)) {
       defaultValue = get(defaultValuesRef.current, name);
@@ -937,11 +920,7 @@ export function useForm<
       }
     }
 
-    if (
-      validationResolver &&
-      !isFieldArray &&
-      readFormStateRef.current.isValid
-    ) {
+    if (resolver && !isFieldArray && readFormStateRef.current.isValid) {
       validateResolver();
     } else if (!isEmptyObject(validateOptions)) {
       fieldsWithValidationRef.current.add(name);
@@ -967,9 +946,9 @@ export function useForm<
       !defaultValuesAtRenderRef.current[name] &&
       !(isFieldArray && isEmptyDefaultValue)
     ) {
-      defaultValuesAtRenderRef.current[
-        name as FieldName<TFieldValues>
-      ] = isEmptyDefaultValue ? getFieldValue(fields, field.ref) : defaultValue;
+      defaultValuesAtRenderRef.current[name] = isEmptyDefaultValue
+        ? getFieldValue(fields, field.ref)
+        : defaultValue;
     }
 
     if (type) {
@@ -991,9 +970,7 @@ export function useForm<
     validationOptions: ValidationOptions,
   ): (ref: TFieldElement | null) => void;
   function register(
-    name: IsFlatObject<TFieldValues> extends true
-      ? Extract<keyof TFieldValues, string>
-      : string,
+    name: FieldName<TFieldValues>,
     validationOptions?: ValidationOptions,
   ): void;
   function register<TFieldElement extends FieldElement<TFieldValues>>(
@@ -1002,9 +979,7 @@ export function useForm<
   ): void;
   function register<TFieldElement extends FieldElement<TFieldValues>>(
     refOrValidationOptions?:
-      | (IsFlatObject<TFieldValues> extends true
-          ? Extract<keyof TFieldValues, string>
-          : string)
+      | FieldName<TFieldValues>
       | ValidationOptions
       | TFieldElement
       | null,
@@ -1046,10 +1021,10 @@ export function useForm<
       }
 
       try {
-        if (validationResolverRef.current) {
-          const { errors, values } = await validationResolverRef.current(
+        if (resolverRef.current) {
+          const { errors, values } = await resolverRef.current(
             transformToNestObject(fieldValues),
-            validationContextRef.current,
+            contextRef.current,
             validateAllFieldCriteria,
           );
           errorsRef.current = errors;
@@ -1097,13 +1072,7 @@ export function useForm<
         reRender();
       }
     },
-    [
-      isWeb,
-      reRender,
-      validationResolverRef,
-      submitFocusError,
-      validateAllFieldCriteria,
-    ],
+    [isWeb, reRender, resolverRef, submitFocusError, validateAllFieldCriteria],
   );
 
   const resetRefs = ({
@@ -1146,8 +1115,10 @@ export function useForm<
       submitCountRef.current = 0;
     }
 
-    defaultValuesAtRenderRef.current = {} as Unpacked<
-      DeepPartial<Record<FieldName<TFieldValues>, FieldValue<TFieldValues>>>
+    defaultValuesAtRenderRef.current = {} as UnpackNestedValue<
+      DeepPartial<
+        Record<InternalFieldName<TFieldValues>, FieldValue<TFieldValues>>
+      >
     >;
     fieldArrayDefaultValues.current = {};
     watchFieldsRef.current = new Set();
@@ -1155,7 +1126,7 @@ export function useForm<
   };
 
   const reset = (
-    values?: Unpacked<DeepPartial<TFieldValues>>,
+    values?: UnpackNestedValue<DeepPartial<TFieldValues>>,
     omitResetState: OmitResetState = {},
   ): void => {
     if (isWeb) {
@@ -1192,18 +1163,18 @@ export function useForm<
 
   const getValue = <T extends string, U extends unknown>(
     payload: T,
-  ): T extends keyof TFieldValues ? Unpacked<TFieldValues>[T] : U =>
+  ): T extends keyof TFieldValues ? UnpackNestedValue<TFieldValues>[T] : U =>
     fieldsRef.current[payload]
       ? getFieldValue(fieldsRef.current, fieldsRef.current[payload]!.ref)
       : get(defaultValuesRef.current, payload);
 
-  function getValues(): Unpacked<TFieldValues>;
+  function getValues(): UnpackNestedValue<TFieldValues>;
   function getValues<T extends keyof TFieldValues>(
     payload: T[],
-  ): Unpacked<Pick<TFieldValues, T>>;
+  ): UnpackNestedValue<Pick<TFieldValues, T>>;
   function getValues<T extends string, U extends unknown>(
     payload: T,
-  ): T extends keyof TFieldValues ? Unpacked<TFieldValues>[T] : U;
+  ): T extends keyof TFieldValues ? UnpackNestedValue<TFieldValues>[T] : U;
   function getValues(payload?: string[] | string): unknown {
     const fields = fieldsRef.current;
     if (isString(payload)) {
@@ -1239,7 +1210,7 @@ export function useForm<
     [removeFieldEventListenerAndRef],
   );
 
-  if (!validationResolver) {
+  if (!resolver) {
     isValidRef.current =
       validFieldsRef.current.size >= fieldsWithValidationRef.current.size &&
       isEmptyObject(errorsRef.current);
@@ -1258,11 +1229,11 @@ export function useForm<
   };
 
   const commonProps = {
-    triggerValidation,
+    trigger,
     setValue: React.useCallback(setValue, [
       reRender,
       setInternalValue,
-      triggerValidation,
+      trigger,
     ]),
     register: React.useCallback(register, [
       defaultValuesRef.current,
@@ -1278,7 +1249,7 @@ export function useForm<
               return obj[prop];
             }
 
-            return {};
+            return undefined;
           },
         })
       : formState,
@@ -1288,7 +1259,7 @@ export function useForm<
     removeFieldEventListener,
     watchInternal,
     reRender,
-    ...(validationResolver ? { validateSchemaIsValid: validateResolver } : {}),
+    ...(resolver ? { validateSchemaIsValid: validateResolver } : {}),
     mode: {
       isOnBlur,
       isOnSubmit,

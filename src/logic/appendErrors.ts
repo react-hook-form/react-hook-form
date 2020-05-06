@@ -1,9 +1,9 @@
-import { FieldError, FieldName, ValidateResult } from '../types';
+import { FieldError, InternalFieldName, ValidateResult } from '../types';
 
 export default <TFieldValues>(
-  name: FieldName<TFieldValues>,
+  name: InternalFieldName<TFieldValues>,
   validateAllFieldCriteria: boolean,
-  errors: Record<FieldName<TFieldValues>, FieldError>,
+  errors: Record<InternalFieldName<TFieldValues>, FieldError>,
   type: string,
   message: ValidateResult,
 ) => {

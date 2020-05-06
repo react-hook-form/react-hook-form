@@ -3,7 +3,8 @@ export * from './useFieldArray';
 export * from './useWatch';
 export * from './controller';
 export * from './useFormContext';
-export * from './types';
-export * from './contextTypes';
 export * from './logic';
 export * from './utils';
+
+export * from './contextTypes';
+export * from './types';

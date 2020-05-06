@@ -21,7 +21,7 @@ const FormStateWithSchema: React.FC = (props: any) => {
     radio: string;
     checkbox: string;
   }>({
-    validationResolver: yupResolver(validationSchema),
+    resolver: yupResolver(validationSchema),
     mode: props.match.params.mode,
   });
   const onSubmit = () => {};

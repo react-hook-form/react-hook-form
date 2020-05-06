@@ -50,7 +50,7 @@ const BasicSchemaValidation: React.FC = (props: any) => {
     multiple: string;
     validate: string;
   }>({
-    validationResolver: yupResolver(validationSchema),
+    resolver: yupResolver(validationSchema),
     mode: props.match.params.mode,
   });
   const onSubmit = () => {};

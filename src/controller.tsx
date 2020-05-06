@@ -37,7 +37,7 @@ const Controller = <
     unregister,
     errorsRef,
     removeFieldEventListener,
-    triggerValidation,
+    trigger,
     mode: { isOnSubmit, isOnBlur, isOnChange },
     reValidateMode: { isReValidateOnBlur, isReValidateOnSubmit },
     formState: { isSubmitted },
@@ -75,13 +75,8 @@ const Controller = <
     return data;
   };
 
-  const eventWrapper = (event: EventFunction) => (...arg: any[]) =>
+  const eventWrapper = (event: EventFunction) => (...arg: any): any =>
     setValue(name, commonTask(event(...arg)), shouldValidate());
-
-  const handleChange = (event: any) => {
-    const data = commonTask(event);
-    setValue(name, data, shouldValidate());
-  };
 
   const registerField = React.useCallback(() => {
     if (!isNotFieldArray) {
@@ -136,16 +131,19 @@ const Controller = <
     ...rest,
     ...(onChange
       ? { [onChangeName]: eventWrapper(onChange) }
-      : { [onChangeName]: handleChange }),
+      : {
+          [onChangeName]: (event: any): any =>
+            setValue(name, commonTask(event), shouldValidate()),
+        }),
     ...(onBlur || shouldReValidateOnBlur
       ? {
-          [onBlurName]: (...args: any[]) => {
+          [onBlurName]: (...args: any) => {
             if (onBlur) {
               onBlur(...args);
             }
 
             if (shouldReValidateOnBlur) {
-              triggerValidation(name);
+              trigger(name);
             }
           },
         }

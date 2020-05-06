@@ -22,7 +22,7 @@ const SetValueWithSchema: React.FC = () => {
     multiple: string[];
     requiredField: string;
   }>({
-    validationResolver: yupResolver(validationSchema),
+    resolver: yupResolver(validationSchema),
   });
 
   renderCounter++;
