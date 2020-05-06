@@ -35,7 +35,7 @@ import isNullOrUndefined from './utils/isNullOrUndefined';
 import isRadioOrCheckboxFunction from './utils/isRadioOrCheckbox';
 import isHTMLElement from './utils/isHTMLElement';
 import { EVENTS, UNDEFINED, VALIDATION_MODE } from './constants';
-import { FormContextValues } from './contextTypes';
+import { UseFormMethods } from './contextTypes';
 import {
   LiteralToPrimitive,
   DeepPartial,
@@ -77,9 +77,7 @@ export function useForm<
   defaultValues = {} as UnpackNestedValue<DeepPartial<TFieldValues>>,
   submitFocusError = true,
   validateCriteriaMode,
-}: UseFormOptions<TFieldValues, TContext> = {}): FormContextValues<
-  TFieldValues
-> {
+}: UseFormOptions<TFieldValues, TContext> = {}): UseFormMethods<TFieldValues> {
   const fieldsRef = React.useRef<FieldRefs<TFieldValues>>({});
   const errorsRef = React.useRef<FieldErrors<TFieldValues>>({});
   const touchedFieldsRef = React.useRef<Touched<TFieldValues>>({});
