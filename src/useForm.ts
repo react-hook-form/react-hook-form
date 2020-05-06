@@ -90,6 +90,10 @@ export function useForm<
   const dirtyFieldsRef = React.useRef(
     new Set<InternalFieldName<TFieldValues>>(),
   );
+  const watchFieldsHookRef = React.useRef<
+    Record<string, Set<InternalFieldName<TFieldValues>>>
+  >({});
+  const watchFieldsHookRenderRef = React.useRef<Record<string, Function>>({});
   const fieldsWithValidationRef = React.useRef(
     new Set<InternalFieldName<TFieldValues>>(),
   );
@@ -492,6 +496,23 @@ export function useForm<
     }
   }
 
+  const renderWatchedInputs = (name: string, found = true): boolean => {
+    const watchFieldsHook = watchFieldsHookRef.current;
+
+    if (!isEmptyObject(watchFieldsHook)) {
+      for (const key in watchFieldsHook) {
+        if (watchFieldsHook[key].has(name) || !watchFieldsHook[key].size) {
+          if (watchFieldsHookRenderRef.current[key]) {
+            watchFieldsHookRenderRef.current[key]();
+            found = false;
+          }
+        }
+      }
+    }
+
+    return found;
+  };
+
   handleChangeRef.current = handleChangeRef.current
     ? handleChangeRef.current
     : async ({ type, target }: Event): Promise<void | boolean> => {
@@ -532,7 +553,7 @@ export function useForm<
         }
 
         if (shouldSkipValidation) {
-          return shouldRender && reRender();
+          return renderWatchedInputs(name) && shouldRender && reRender();
         }
 
         if (resolver) {
@@ -561,6 +582,8 @@ export function useForm<
 
         if (!shouldRenderBaseOnError(name, error) && shouldRender) {
           reRender();
+        } else {
+          renderWatchedInputs(name);
         }
       };
 
@@ -732,6 +755,63 @@ export function useForm<
     }
   }
 
+  const watchInternal = React.useCallback(
+    (
+      fieldNames?: string | string[],
+      defaultValue?: unknown,
+      watchId?: string,
+    ) => {
+      const watchFields = watchId
+        ? watchFieldsHookRef.current[watchId]
+        : watchFieldsRef.current;
+      const isDefaultValueUndefined = isUndefined(defaultValue);
+      const combinedDefaultValues = isDefaultValueUndefined
+        ? defaultValuesRef.current
+        : defaultValue;
+      const fieldValues = getFieldsValues<TFieldValues>(
+        fieldsRef.current,
+        fieldNames,
+      );
+
+      if (isString(fieldNames)) {
+        return assignWatchFields<TFieldValues>(
+          fieldValues,
+          fieldNames,
+          watchFields,
+          isDefaultValueUndefined
+            ? get(combinedDefaultValues, fieldNames)
+            : (defaultValue as UnpackNestedValue<DeepPartial<TFieldValues>>),
+          true,
+        );
+      }
+
+      if (isArray(fieldNames)) {
+        return fieldNames.reduce(
+          (previous, name) => ({
+            ...previous,
+            [name]: assignWatchFields<TFieldValues>(
+              fieldValues,
+              name,
+              watchFields,
+              combinedDefaultValues as UnpackNestedValue<
+                DeepPartial<TFieldValues>
+              >,
+            ),
+          }),
+          {},
+        );
+      }
+
+      isWatchAllRef.current = true;
+
+      return transformToNestObject(
+        (!isEmptyObject(fieldValues) && fieldValues) ||
+          (combinedDefaultValues as FieldValues),
+      );
+    },
+    [],
+  );
+
   function watch(): UnpackNestedValue<TFieldValues>;
   function watch<T extends string, U extends unknown>(
     field: T,
@@ -753,51 +833,7 @@ export function useForm<
     fieldNames?: string | string[],
     defaultValue?: unknown,
   ): unknown {
-    const watchFields = watchFieldsRef.current;
-    const isDefaultValueUndefined = isUndefined(defaultValue);
-    const combinedDefaultValues = isDefaultValueUndefined
-      ? defaultValuesRef.current
-      : defaultValue;
-    const fieldValues = getFieldsValues<TFieldValues>(
-      fieldsRef.current,
-      fieldNames,
-    );
-
-    if (isString(fieldNames)) {
-      return assignWatchFields<TFieldValues>(
-        fieldValues,
-        fieldNames,
-        watchFields,
-        isDefaultValueUndefined
-          ? get(combinedDefaultValues, fieldNames)
-          : (defaultValue as UnpackNestedValue<DeepPartial<TFieldValues>>),
-        true,
-      );
-    }
-
-    if (isArray(fieldNames)) {
-      return fieldNames.reduce(
-        (previous, name) => ({
-          ...previous,
-          [name]: assignWatchFields<TFieldValues>(
-            fieldValues,
-            name,
-            watchFields,
-            combinedDefaultValues as UnpackNestedValue<
-              DeepPartial<TFieldValues>
-            >,
-          ),
-        }),
-        {},
-      );
-    }
-
-    isWatchAllRef.current = true;
-
-    return transformToNestObject(
-      (!isEmptyObject(fieldValues) && fieldValues) ||
-        (combinedDefaultValues as FieldValues),
-    );
+    return watchInternal(fieldNames, defaultValue);
   }
 
   function unregister(
@@ -1221,6 +1257,7 @@ export function useForm<
 
   const control = {
     removeFieldEventListener,
+    watchInternal,
     reRender,
     ...(resolver ? { validateSchemaIsValid: validateResolver } : {}),
     mode: {
@@ -1238,6 +1275,8 @@ export function useForm<
     isWatchAllRef,
     watchFieldsRef,
     resetFieldArrayFunctionRef,
+    watchFieldsHookRef,
+    watchFieldsHookRenderRef,
     fieldArrayDefaultValues,
     validFieldsRef,
     dirtyFieldsRef,

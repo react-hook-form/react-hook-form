@@ -331,6 +331,15 @@ export type Control<TFieldValues extends FieldValues = FieldValues> = {
     | FieldValue<UnpackNestedValue<TFieldValues>>
     | UnpackNestedValue<DeepPartial<TFieldValues>>
   >;
+  watchFieldsHookRef: React.MutableRefObject<
+    Record<string, Set<InternalFieldName<TFieldValues>>>
+  >;
+  watchFieldsHookRenderRef: React.MutableRefObject<Record<string, Function>>;
+  watchInternal: (
+    fieldNames?: string | string[],
+    defaultValue?: unknown,
+    isUseWatch?: string,
+  ) => unknown;
 };
 
 export type Assign<T extends object, U extends object> = T & Omit<U, keyof T>;
@@ -392,3 +401,9 @@ export type OmitResetState = Partial<{
   isValid: boolean;
   submitCount: boolean;
 }>;
+
+export type UseWatchProps<TControlProp extends Control = Control> = {
+  defaultValue?: unknown;
+  name?: string | string[];
+  control?: TControlProp;
+};

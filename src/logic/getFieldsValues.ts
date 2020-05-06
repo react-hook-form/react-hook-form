@@ -18,9 +18,7 @@ export default <TFieldValues extends FieldValues>(
       isUndefined(search) ||
       (isString(search)
         ? name.startsWith(search)
-        : isArray(search)
-        ? search.find((data) => name.startsWith(data))
-        : search && search.nest)
+        : isArray(search) && search.find((data) => name.startsWith(data)))
     ) {
       output[name as InternalFieldName<TFieldValues>] = getFieldValue(
         fields,
