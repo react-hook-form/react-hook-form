@@ -332,7 +332,7 @@ export type Control<TFieldValues extends FieldValues = FieldValues> = {
     | UnpackNestedValue<DeepPartial<TFieldValues>>
   >;
   watchFieldsHookRef: React.MutableRefObject<
-    Record<string, Set<FieldName<TFieldValues>>>
+    Record<string, Set<InternalFieldName<TFieldValues>>>
   >;
   watchFieldsHookRenderRef: React.MutableRefObject<Record<string, Function>>;
   watchInternal: (
