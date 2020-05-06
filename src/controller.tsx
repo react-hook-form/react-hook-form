@@ -52,10 +52,8 @@ const Controller = <
   const valueRef = React.useRef(value);
   const isCheckboxInput = isBoolean(value);
   const shouldReValidateOnBlur = isOnBlur || isReValidateOnBlur;
-  const rulesRef = React.useRef(rules);
   const onFocusRef = React.useRef(onFocus);
   const isNotFieldArray = !isNameInFieldArray(fieldArrayNamesRef.current, name);
-  rulesRef.current = rules;
 
   const shouldValidate = () =>
     !skipValidation({
@@ -98,12 +96,12 @@ const Controller = <
           return valueRef.current;
         },
       }),
-      rulesRef.current,
+      rules,
     );
   }, [
     isNotFieldArray,
     fieldsRef,
-    rulesRef,
+    rules,
     name,
     onFocusRef,
     register,
