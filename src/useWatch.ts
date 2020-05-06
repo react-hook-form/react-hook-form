@@ -3,13 +3,13 @@ import { useFormContext } from './useFormContext';
 import isUndefined from './utils/isUndefined';
 import isString from './utils/isString';
 import generateId from './logic/generateId';
-import { Control, UseWatchProps } from './types';
+import { Control, UseWatchOptions } from './types';
 
-export const useWatch = <TWatchValues, TControlProp extends Control = Control>({
+export const useWatch = <TWatchValues, TControl extends Control = Control>({
   control,
   name,
   defaultValue,
-}: UseWatchProps<TControlProp>): TWatchValues => {
+}: UseWatchOptions<TControl>): TWatchValues => {
   const methods = useFormContext();
   const { watchFieldsHookRef, watchFieldsHookRenderRef, watchInternal } =
     control || methods.control;

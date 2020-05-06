@@ -20,7 +20,7 @@ import { REGEX_ARRAY_FIELD_INDEX } from './constants';
 import {
   Field,
   FieldValues,
-  UseFieldArrayProps,
+  UseFieldArrayOptions,
   Control,
   ArrayField,
 } from './types';
@@ -33,7 +33,7 @@ export const useFieldArray = <
   control,
   name,
   keyName = 'id' as TKeyName,
-}: UseFieldArrayProps<TKeyName, TControl>) => {
+}: UseFieldArrayOptions<TKeyName, TControl>) => {
   const methods = useFormContext();
   const {
     isWatchAllRef,

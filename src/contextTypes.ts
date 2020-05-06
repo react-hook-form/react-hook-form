@@ -23,11 +23,9 @@ export type FormProviderProps<
   TFieldValues extends FieldValues = FieldValues
 > = {
   children: React.ReactNode;
-} & FormContextValues<TFieldValues>;
+} & UseFormMethods<TFieldValues>;
 
-export type FormContextValues<
-  TFieldValues extends FieldValues = FieldValues
-> = {
+export type UseFormMethods<TFieldValues extends FieldValues = FieldValues> = {
   register<TFieldElement extends FieldElement<TFieldValues>>(): (
     ref: TFieldElement | null,
   ) => void;

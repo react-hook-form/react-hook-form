@@ -79,23 +79,19 @@ export type OnSubmit<TFieldValues extends FieldValues> = (
 
 export type EmptyObject = { [K in string | number]: never };
 
-export type SchemaValidationSuccess<
-  TFieldValues extends FieldValues = FieldValues
-> = {
+export type ResolverSuccess<TFieldValues extends FieldValues = FieldValues> = {
   values: UnpackNestedValue<TFieldValues>;
   errors: EmptyObject;
 };
 
-export type SchemaValidationError<
-  TFieldValues extends FieldValues = FieldValues
-> = {
+export type ResolverError<TFieldValues extends FieldValues = FieldValues> = {
   values: EmptyObject;
   errors: FieldErrors<TFieldValues>;
 };
 
-export type SchemaValidationResult<
-  TFieldValues extends FieldValues = FieldValues
-> = SchemaValidationSuccess<TFieldValues> | SchemaValidationError<TFieldValues>;
+export type ResolverResult<TFieldValues extends FieldValues = FieldValues> =
+  | ResolverSuccess<TFieldValues>
+  | ResolverError<TFieldValues>;
 
 export type Resolver<
   TFieldValues extends FieldValues = FieldValues,
@@ -104,7 +100,7 @@ export type Resolver<
   values: TFieldValues,
   context?: TContext,
   validateAllFieldCriteria?: boolean,
-) => Promise<SchemaValidationResult<TFieldValues>>;
+) => Promise<ResolverResult<TFieldValues>>;
 
 export type UseFormOptions<
   TFieldValues extends FieldValues = FieldValues,
@@ -180,7 +176,7 @@ export type FieldRefs<TFieldValues extends FieldValues> = Partial<
   Record<InternalFieldName<TFieldValues>, Field>
 >;
 
-export type NestDataObject<T, TValue> = {
+export type ReplaceFieldValue<T, TValue> = {
   [K in keyof T]?: IsAny<T[K]> extends true
     ? any
     : T[K] extends NestedValue
@@ -190,19 +186,19 @@ export type NestDataObject<T, TValue> = {
     : T[K] extends FileList
     ? TValue
     : T[K] extends Array<infer U>
-    ? Array<NestDataObject<U, TValue>>
+    ? Array<ReplaceFieldValue<U, TValue>>
     : T[K] extends ReadonlyArray<infer U>
-    ? ReadonlyArray<NestDataObject<U, TValue>>
+    ? ReadonlyArray<ReplaceFieldValue<U, TValue>>
     : T[K] extends object
-    ? NestDataObject<T[K], TValue>
+    ? ReplaceFieldValue<T[K], TValue>
     : TValue;
 };
 
 export type FieldErrors<
   TFieldValues extends FieldValues = FieldValues
-> = NestDataObject<TFieldValues, FieldError>;
+> = ReplaceFieldValue<TFieldValues, FieldError>;
 
-export type Touched<TFieldValues extends FieldValues> = NestDataObject<
+export type Touched<TFieldValues extends FieldValues> = ReplaceFieldValue<
   TFieldValues,
   true
 >;
@@ -378,7 +374,7 @@ export type ControllerProps<
   AsProps<TAs>
 >;
 
-export type UseFieldArrayProps<
+export type UseFieldArrayOptions<
   TKeyName extends string = 'id',
   TControl extends Control = Control
 > = {
@@ -402,8 +398,8 @@ export type OmitResetState = Partial<{
   submitCount: boolean;
 }>;
 
-export type UseWatchProps<TControlProp extends Control = Control> = {
+export type UseWatchOptions<TControl extends Control = Control> = {
   defaultValue?: unknown;
   name?: string | string[];
-  control?: TControlProp;
+  control?: TControl;
 };
