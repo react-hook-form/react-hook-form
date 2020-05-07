@@ -1,5 +1,10 @@
 import React from 'react';
-import { useForm, useFieldArray, Controller } from 'react-hook-form';
+import {
+  useForm,
+  useFieldArray,
+  Controller,
+  ErrorMessage,
+} from 'react-hook-form';
 
 let renderCount = 0;
 
@@ -77,12 +82,9 @@ const UseFieldArray: React.FC = (props: any) => {
                 data-order={index}
               />
             )}
-            {errors &&
-              errors.data &&
-              errors.data[index] &&
-              errors.data[index].name && (
-                <p id={`error${index}`}>{errors.data[index].name!.message}</p>
-              )}
+            <ErrorMessage errors={errors} name={`data[${index}].name`}>
+              {({ message }) => <p id={`error${index}`}>{message}</p>}
+            </ErrorMessage>
             <button id={`delete${index}`} onClick={() => remove(index)}>
               Delete
             </button>
