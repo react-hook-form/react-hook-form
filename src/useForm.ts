@@ -446,6 +446,23 @@ export function useForm<
     watchFieldsRef.current.has(name) ||
     watchFieldsRef.current.has((name.match(/\w+/) || [])[0]);
 
+  const renderWatchedInputs = (name: string, found = true): boolean => {
+    const watchFieldsHook = watchFieldsHookRef.current;
+
+    if (!isEmptyObject(watchFieldsHook)) {
+      for (const key in watchFieldsHook) {
+        if (watchFieldsHook[key].has(name) || !watchFieldsHook[key].size) {
+          if (watchFieldsHookRenderRef.current[key]) {
+            watchFieldsHookRenderRef.current[key]();
+            found = false;
+          }
+        }
+      }
+    }
+
+    return found;
+  };
+
   function setValue<T extends string, U extends unknown>(
     name: T,
     value: T extends keyof TFieldValues
@@ -468,11 +485,11 @@ export function useForm<
   ): void {
     let shouldRender = false;
     const isArrayValue = isArray(names);
-
-    (isArrayValue
+    const namesInArray = isArrayValue
       ? (names as UnpackNestedValue<DeepPartial<Pick<TFieldValues, T>>>[])
-      : [names]
-    ).forEach((name: any) => {
+      : [names];
+
+    namesInArray.forEach((name: any) => {
       const isStringFieldName = isString(name);
       shouldRender =
         setInternalValue(
@@ -487,29 +504,14 @@ export function useForm<
 
     if (shouldRender || isArrayValue) {
       reRender();
+    } else {
+      namesInArray.forEach((name: any) => renderWatchedInputs(name));
     }
 
     if (shouldValidate || (isArrayValue && valueOrShouldValidate)) {
       trigger(isArrayValue ? undefined : (names as any));
     }
   }
-
-  const renderWatchedInputs = (name: string, found = true): boolean => {
-    const watchFieldsHook = watchFieldsHookRef.current;
-
-    if (!isEmptyObject(watchFieldsHook)) {
-      for (const key in watchFieldsHook) {
-        if (watchFieldsHook[key].has(name) || !watchFieldsHook[key].size) {
-          if (watchFieldsHookRenderRef.current[key]) {
-            watchFieldsHookRenderRef.current[key]();
-            found = false;
-          }
-        }
-      }
-    }
-
-    return found;
-  };
 
   handleChangeRef.current = handleChangeRef.current
     ? handleChangeRef.current
@@ -800,7 +802,9 @@ export function useForm<
         );
       }
 
-      isWatchAllRef.current = true;
+      if (isUndefined(watchId)) {
+        isWatchAllRef.current = true;
+      }
 
       return transformToNestObject(
         (!isEmptyObject(fieldValues) && fieldValues) ||

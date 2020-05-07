@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { useForm, Control, useWatch } from 'react-hook-form';
+import { useForm, Control, useWatch, Controller } from 'react-hook-form';
 import { useRef } from 'react';
 
 let counter = 0;
@@ -107,12 +107,14 @@ export default () => {
         style={{ fontSize: 20 }}
       />
 
-      <input
-        ref={register}
+      <Controller
         name={'test1'}
-        autoComplete="off"
+        control={control}
         placeholder="👀 watching me :)"
+        autoComplete="off"
         style={{ fontSize: 20 }}
+        as={<input />}
+        defaultValue=""
       />
 
       <input
