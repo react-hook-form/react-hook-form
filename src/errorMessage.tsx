@@ -1,16 +1,10 @@
 import * as React from 'react';
 import { useFormContext } from './useFormContext';
 import get from './utils/get';
-import {
-  FieldErrors,
-  FieldName,
-  FieldValuesFromErrors,
-  ErrorMessageProps,
-} from './types';
+import { FieldErrors, ErrorMessageProps } from './types';
 
 const ErrorMessage = <
-  TFieldErrors extends FieldErrors<any>,
-  TFieldName extends FieldName<FieldValuesFromErrors<TFieldErrors>>,
+  TFieldErrors extends FieldErrors,
   TAs extends
     | undefined
     | React.ReactElement
@@ -23,7 +17,7 @@ const ErrorMessage = <
   message,
   children,
   ...rest
-}: ErrorMessageProps<TFieldErrors, TFieldName, TAs>) => {
+}: ErrorMessageProps<TFieldErrors, TAs>) => {
   const methods = useFormContext();
   const error = get(errors || methods.errors, name);
 

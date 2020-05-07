@@ -410,7 +410,6 @@ export type FieldValuesFromErrors<
 
 export type ErrorMessageProps<
   TFieldErrors extends FieldErrors,
-  TName extends FieldName<FieldValuesFromErrors<TFieldErrors>>,
   TAs extends
     | undefined
     | React.ReactElement
@@ -420,7 +419,7 @@ export type ErrorMessageProps<
   {
     as?: TAs;
     errors?: TFieldErrors;
-    name: TName;
+    name: FieldName<FieldValuesFromErrors<TFieldErrors>>;
     message?: Message;
     children?: (data: {
       message: Message;
