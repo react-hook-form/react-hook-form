@@ -54,6 +54,7 @@ export const useFieldArray = <
     fieldsWithValidationRef,
     fieldArrayDefaultValues,
     validateSchemaIsValid,
+    renderWatchedInputs,
   } = control || methods.control;
   const getDefaultValues = () => [
     ...get(
@@ -188,6 +189,8 @@ export const useFieldArray = <
 
     if (render && !isWatchAllRef.current) {
       reRender();
+    } else {
+      renderWatchedInputs(name);
     }
   };
 

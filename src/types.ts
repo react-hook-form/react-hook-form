@@ -336,6 +336,7 @@ export type Control<TFieldValues extends FieldValues = FieldValues> = {
     defaultValue?: unknown,
     isUseWatch?: string,
   ) => unknown;
+  renderWatchedInputs: (name: string, found?: boolean) => void;
 };
 
 export type Assign<T extends object, U extends object> = T & Omit<U, keyof T>;

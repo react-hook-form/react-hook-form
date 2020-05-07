@@ -86,6 +86,7 @@ export const reconfigureControl = (
       dirtyFields: false,
     },
   },
+  renderWatchedInputs: () => {},
   ...controlOverrides,
 });
 

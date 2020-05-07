@@ -1263,6 +1263,7 @@ export function useForm<
 
   const control = {
     removeFieldEventListener,
+    renderWatchedInputs,
     watchInternal,
     reRender,
     ...(resolver ? { validateSchemaIsValid: validateResolver } : {}),
