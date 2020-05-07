@@ -117,6 +117,10 @@ const Controller = <
     [unregister, name, fieldArrayNamesRef],
   );
 
+  React.useEffect(() => {
+    registerField();
+  }, [registerField]);
+
   // eslint-disable-next-line react-hooks/exhaustive-deps
   React.useEffect(() => {
     if (!fieldsRef.current[name]) {
