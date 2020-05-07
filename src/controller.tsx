@@ -2,6 +2,7 @@ import * as React from 'react';
 import isBoolean from './utils/isBoolean';
 import isUndefined from './utils/isUndefined';
 import get from './utils/get';
+import set from './utils/set';
 import getInputValue from './logic/getInputValue';
 import skipValidation from './logic/skipValidation';
 import isNameInFieldArray from './logic/isNameInFieldArray';
@@ -41,6 +42,9 @@ const Controller = <
     mode: { isOnSubmit, isOnBlur, isOnChange },
     reValidateMode: { isReValidateOnBlur, isReValidateOnSubmit },
     formState: { isSubmitted },
+    touchedFieldsRef,
+    readFormStateRef,
+    reRender,
     fieldsRef,
     fieldArrayNamesRef,
   } = control || methods.control;
@@ -141,19 +145,23 @@ const Controller = <
     ...(onChange
       ? { [onChangeName]: eventWrapper(onChange) }
       : { [onChangeName]: handleChange }),
-    ...(onBlur || shouldReValidateOnBlur
-      ? {
-          [onBlurName]: (...args: any[]) => {
-            if (onBlur) {
-              onBlur(args);
-            }
+    [onBlurName]: (...args: any[]) => {
+      if (onBlur) {
+        onBlur(args);
+      }
 
-            if (shouldReValidateOnBlur) {
-              triggerValidation(name);
-            }
-          },
-        }
-      : {}),
+      if (
+        readFormStateRef.current.touched &&
+        !get(touchedFieldsRef.current, name)
+      ) {
+        set(touchedFieldsRef.current, name, true);
+        reRender();
+      }
+
+      if (shouldReValidateOnBlur) {
+        triggerValidation(name);
+      }
+    },
     ...{ [valueName || (isCheckboxInput ? 'checked' : VALUE)]: value },
   };
 

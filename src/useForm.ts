@@ -231,7 +231,7 @@ export function useForm<
     [isWeb],
   );
 
-  const setDirty = (name: FieldName<FormValues>): boolean => {
+  const setDirty = React.useCallback((name: FieldName<FormValues>): boolean => {
     if (
       !fieldsRef.current[name] ||
       (!readFormStateRef.current.dirty && !readFormStateRef.current.dirtyFields)
@@ -269,20 +269,7 @@ export function useForm<
     return readFormStateRef.current.dirty
       ? isDirtyChanged
       : previousDirtyFieldsLength !== dirtyFieldsRef.current.size;
-  };
-
-  const setDirtyAndTouchedFields = React.useCallback(
-    (fieldName: FieldName<FormValues>): void | boolean => {
-      if (
-        setDirty(fieldName) ||
-        (!get(touchedFieldsRef.current, fieldName) &&
-          readFormStateRef.current.touched)
-      ) {
-        return !!set(touchedFieldsRef.current, fieldName, true);
-      }
-    },
-    [],
-  );
+  }, []);
 
   const setInternalValues = React.useCallback(
     (
@@ -304,11 +291,11 @@ export function useForm<
 
         if (field) {
           setFieldValue(field, value[key]);
-          setDirtyAndTouchedFields(fieldName);
+          setDirty(fieldName);
         }
       }
     },
-    [setFieldValue, setDirtyAndTouchedFields],
+    [setFieldValue, setDirty],
   );
 
   const setInternalValue = React.useCallback(
@@ -320,7 +307,7 @@ export function useForm<
       if (field) {
         setFieldValue(field as Field, value);
 
-        const output = setDirtyAndTouchedFields(name);
+        const output = setDirty(name);
         if (isBoolean(output)) {
           return output;
         }
@@ -328,7 +315,7 @@ export function useForm<
         setInternalValues(name, value);
       }
     },
-    [setDirtyAndTouchedFields, setFieldValue, setInternalValues],
+    [setDirty, setFieldValue, setInternalValues],
   );
 
   const executeValidation = React.useCallback(
