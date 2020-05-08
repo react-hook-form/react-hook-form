@@ -17,6 +17,7 @@ import isNameInFieldArray from './logic/isNameInFieldArray';
 import isCheckBoxInput from './utils/isCheckBoxInput';
 import isEmptyObject from './utils/isEmptyObject';
 import isRadioInput from './utils/isRadioInput';
+import isSelectInput from './utils/isSelectInput';
 import isFileInput from './utils/isFileInput';
 import isObject from './utils/isObject';
 import isBoolean from './utils/isBoolean';
@@ -932,7 +933,7 @@ export function useForm<
           isRadioOrCheckbox && field.options
             ? field.options[field.options.length - 1]
             : field,
-        isRadioOrCheckbox,
+        isRadioOrCheckbox: isRadioOrCheckbox || isSelectInput(ref),
         handleChange: handleChangeRef.current,
       });
     }
