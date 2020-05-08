@@ -17,6 +17,7 @@ import isNameInFieldArray from './logic/isNameInFieldArray';
 import isCheckBoxInput from './utils/isCheckBoxInput';
 import isEmptyObject from './utils/isEmptyObject';
 import isRadioInput from './utils/isRadioInput';
+import isSelectInput from './utils/isSelectInput';
 import isFileInput from './utils/isFileInput';
 import isObject from './utils/isObject';
 import isBoolean from './utils/isBoolean';
@@ -231,7 +232,7 @@ export function useForm<
     [isWeb],
   );
 
-  const setDirty = (name: FieldName<FormValues>): boolean => {
+  const setDirty = React.useCallback((name: FieldName<FormValues>): boolean => {
     if (
       !fieldsRef.current[name] ||
       (!readFormStateRef.current.dirty && !readFormStateRef.current.dirtyFields)
@@ -269,20 +270,7 @@ export function useForm<
     return readFormStateRef.current.dirty
       ? isDirtyChanged
       : previousDirtyFieldsLength !== dirtyFieldsRef.current.size;
-  };
-
-  const setDirtyAndTouchedFields = React.useCallback(
-    (fieldName: FieldName<FormValues>): void | boolean => {
-      if (
-        setDirty(fieldName) ||
-        (!get(touchedFieldsRef.current, fieldName) &&
-          readFormStateRef.current.touched)
-      ) {
-        return !!set(touchedFieldsRef.current, fieldName, true);
-      }
-    },
-    [],
-  );
+  }, []);
 
   const setInternalValues = React.useCallback(
     (
@@ -304,11 +292,11 @@ export function useForm<
 
         if (field) {
           setFieldValue(field, value[key]);
-          setDirtyAndTouchedFields(fieldName);
+          setDirty(fieldName);
         }
       }
     },
-    [setFieldValue, setDirtyAndTouchedFields],
+    [setFieldValue, setDirty],
   );
 
   const setInternalValue = React.useCallback(
@@ -320,7 +308,7 @@ export function useForm<
       if (field) {
         setFieldValue(field as Field, value);
 
-        const output = setDirtyAndTouchedFields(name);
+        const output = setDirty(name);
         if (isBoolean(output)) {
           return output;
         }
@@ -328,7 +316,7 @@ export function useForm<
         setInternalValues(name, value);
       }
     },
-    [setDirtyAndTouchedFields, setFieldValue, setInternalValues],
+    [setDirty, setFieldValue, setInternalValues],
   );
 
   const executeValidation = React.useCallback(
@@ -945,7 +933,7 @@ export function useForm<
           isRadioOrCheckbox && field.options
             ? field.options[field.options.length - 1]
             : field,
-        isRadioOrCheckbox,
+        isRadioOrCheckbox: isRadioOrCheckbox || isSelectInput(ref),
         handleChange: handleChangeRef.current,
       });
     }
@@ -1169,9 +1157,9 @@ export function useForm<
   function getValues(payload: { nest: true }): FormValues;
   function getValues(payload: {
     nest: false;
-  }): IsFlatObject<FormValues> extends true
-    ? FormValues
-    : Record<string, unknown>;
+  }): IsFlatObject<FormValues> extends false
+    ? Record<string, unknown>
+    : FormValues;
   function getValues<T extends string, U extends unknown>(
     payload: T,
   ): T extends keyof FormValues ? FormValues[T] : U;

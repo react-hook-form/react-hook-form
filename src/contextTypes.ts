@@ -120,9 +120,9 @@ export type FormContextValues<FormValues extends FieldValues = FieldValues> = {
   getValues(payload: { nest: true }): FormValues;
   getValues(payload: {
     nest: false;
-  }): IsFlatObject<FormValues> extends true
-    ? FormValues
-    : Record<string, unknown>;
+  }): IsFlatObject<FormValues> extends false
+    ? Record<string, unknown>
+    : FormValues;
   getValues<T extends string, U extends unknown>(
     payload: T,
   ): T extends keyof FormValues ? FormValues[T] : U;
