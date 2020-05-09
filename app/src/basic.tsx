@@ -44,7 +44,7 @@ const Basic: React.FC = (props: any) => {
         placeholder="arrayItem[0].test1"
         ref={register({ required: true })}
       />
-      {errors.arrayItem?.[0].test1 && <p>array item 1 error</p>}
+      {errors.arrayItem?.[0]?.test1 && <p>array item 1 error</p>}
       <input
         name="firstName"
         ref={register({ required: true })}
@@ -156,7 +156,7 @@ const Basic: React.FC = (props: any) => {
         type="validate"
         placeholder="validate"
         ref={register({
-          validate: value => value === 'test',
+          validate: (value) => value === 'test',
         })}
       />
       {errors.validate && <p>validate error</p>}
