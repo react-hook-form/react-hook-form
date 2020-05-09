@@ -112,7 +112,7 @@ export type UseFormOptions<
   resolver: Resolver<TFieldValues, TContext>;
   context: TContext;
   submitFocusError: boolean;
-  validateCriteriaMode: 'firstError' | 'all';
+  criteriaMode: 'firstError' | 'all';
 }>;
 
 export type MutationWatcher = {
