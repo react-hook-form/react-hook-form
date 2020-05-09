@@ -76,7 +76,7 @@ export function useForm<
   context,
   defaultValues = {} as UnpackNestedValue<DeepPartial<TFieldValues>>,
   submitFocusError = true,
-  validateCriteriaMode,
+  criteriaMode,
 }: UseFormOptions<TFieldValues, TContext> = {}): UseFormMethods<TFieldValues> {
   const fieldsRef = React.useRef<FieldRefs<TFieldValues>>({});
   const errorsRef = React.useRef<FieldErrors<TFieldValues>>({});
@@ -131,7 +131,7 @@ export function useForm<
   const { isOnBlur, isOnSubmit, isOnChange, isOnAll } = React.useRef(
     modeChecker(mode),
   ).current;
-  const validateAllFieldCriteria = validateCriteriaMode === VALIDATION_MODE.all;
+  const validateAllFieldCriteria = criteriaMode === VALIDATION_MODE.all;
   const isWindowUndefined = typeof window === UNDEFINED;
   const isWeb =
     typeof document !== UNDEFINED &&
