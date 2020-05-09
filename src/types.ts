@@ -176,29 +176,29 @@ export type FieldRefs<TFieldValues extends FieldValues> = Partial<
   Record<InternalFieldName<TFieldValues>, Field>
 >;
 
-export type ReplaceFieldValue<T, TValue> = {
+export type DeepMap<T, TValue> = {
   [K in keyof T]?: IsAny<T[K]> extends true
     ? any
-    : T[K] extends NestedValue
+    : NonUndefined<T[K]> extends NestedValue | Date | FileList
     ? TValue
-    : T[K] extends Date
-    ? TValue
-    : T[K] extends FileList
-    ? TValue
-    : T[K] extends Array<infer U>
-    ? Array<ReplaceFieldValue<U, TValue>>
-    : T[K] extends ReadonlyArray<infer U>
-    ? ReadonlyArray<ReplaceFieldValue<U, TValue>>
-    : T[K] extends object
-    ? ReplaceFieldValue<T[K], TValue>
+    : NonUndefined<T[K]> extends object
+    ? DeepMap<T[K], TValue>
+    : NonUndefined<T[K]> extends Array<infer U>
+    ? IsAny<U> extends true
+      ? Array<any>
+      : U extends NestedValue | Date | FileList
+      ? Array<TValue>
+      : U extends object
+      ? Array<DeepMap<U, TValue>>
+      : Array<TValue>
     : TValue;
 };
 
 export type FieldErrors<
   TFieldValues extends FieldValues = FieldValues
-> = ReplaceFieldValue<TFieldValues, FieldError>;
+> = DeepMap<TFieldValues, FieldError>;
 
-export type Touched<TFieldValues extends FieldValues> = ReplaceFieldValue<
+export type Touched<TFieldValues extends FieldValues> = DeepMap<
   TFieldValues,
   true
 >;
