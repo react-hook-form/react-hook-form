@@ -1,9 +1,8 @@
 import React from 'react';
-import ReactDOM from 'react-dom';
 import { useForm } from 'react-hook-form';
 
-const MyInput = React.forwardRef(
-  ({ name, children }, ref) => {
+const Input = React.forwardRef(
+  ({ name }, ref) => {
     return (
       <input ref={ref} name={name} />
     );
@@ -18,7 +17,8 @@ export default function App() {
   
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
-      <MyInput ref={register} name="firstName" />
+      <Input ref={register} name="firstName" />
+      <Input ref={register} name="lastName" />
 
       <button>Submit</button>
     </form>
