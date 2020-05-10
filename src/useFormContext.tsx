@@ -2,9 +2,7 @@ import * as React from 'react';
 import { FieldValues } from './types';
 import { UseFormMethods, FormProviderProps } from './contextTypes';
 
-export const FormContext = React.createContext<UseFormMethods<
-  FieldValues
-> | null>(null);
+export const FormContext = React.createContext<UseFormMethods | null>(null);
 
 export const useFormContext = <
   TFieldValues extends FieldValues
