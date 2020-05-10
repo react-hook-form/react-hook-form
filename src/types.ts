@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { UseFormMethods } from './contextTypes';
 
 export type IsAny<T> = boolean extends (T extends never ? true : false)
   ? true
@@ -244,50 +245,12 @@ export type FieldValuesFromControl<
   TControl extends Control
 > = TControl extends Control<infer TFieldValues> ? TFieldValues : never;
 
-export type Control<TFieldValues extends FieldValues = FieldValues> = {
+export type Control<TFieldValues extends FieldValues = FieldValues> = Pick<
+  UseFormMethods<TFieldValues>,
+  'register' | 'unregister' | 'setValue' | 'getValues' | 'trigger' | 'formState'
+> & {
   reRender: () => void;
   removeFieldEventListener: (field: Field, forceDelete?: boolean) => void;
-  setValue<T extends keyof TFieldValues>(
-    namesWithValue: UnpackNestedValue<DeepPartial<Pick<TFieldValues, T>>>[],
-    shouldValidate?: boolean,
-  ): void;
-  setValue<T extends string, U extends unknown>(
-    name: T,
-    value: T extends keyof TFieldValues
-      ? IsAny<TFieldValues[T]> extends true
-        ? any
-        : TFieldValues[T] extends NestedValue<infer U>
-        ? U
-        : UnpackNestedValue<DeepPartial<TFieldValues[T]>>
-      : LiteralToPrimitive<U>,
-    shouldValidate?: boolean,
-  ): void;
-  getValues(): UnpackNestedValue<TFieldValues>;
-  getValues<T extends keyof TFieldValues>(
-    payload: T[],
-  ): UnpackNestedValue<Pick<TFieldValues, T>>;
-  getValues<T extends string, U extends unknown>(
-    payload: T,
-  ): T extends keyof TFieldValues ? UnpackNestedValue<TFieldValues>[T] : U;
-  trigger(
-    payload?: FieldName<TFieldValues> | FieldName<TFieldValues>[],
-  ): Promise<boolean>;
-  register<TFieldElement extends FieldElement<TFieldValues>>(): (
-    ref: TFieldElement | null,
-  ) => void;
-  register<TFieldElement extends FieldElement<TFieldValues>>(
-    validationOptions: ValidationOptions,
-  ): (ref: TFieldElement | null) => void;
-  register(
-    name: FieldName<TFieldValues>,
-    validationOptions?: ValidationOptions,
-  ): void;
-  register<TFieldElement extends FieldElement<TFieldValues>>(
-    ref: TFieldElement,
-    validationOptions?: ValidationOptions,
-  ): void;
-  unregister(name: FieldName<TFieldValues> | FieldName<TFieldValues>[]): void;
-  formState: FormStateProxy<TFieldValues>;
   mode: {
     isOnBlur: boolean;
     isOnSubmit: boolean;
@@ -405,7 +368,7 @@ export type UseWatchOptions<TControl extends Control = Control> = {
   control?: TControl;
 };
 
-export type FieldValuesFromErrors<
+export type FieldValuesFromFieldErrors<
   TFieldErrors
 > = TFieldErrors extends FieldErrors<infer TFieldValues> ? TFieldValues : never;
 
@@ -420,7 +383,7 @@ export type ErrorMessageProps<
   {
     as?: TAs;
     errors?: TFieldErrors;
-    name: FieldName<FieldValuesFromErrors<TFieldErrors>>;
+    name: FieldName<FieldValuesFromFieldErrors<TFieldErrors>>;
     message?: Message;
     children?: (data: {
       message: Message;
