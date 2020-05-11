@@ -6,7 +6,7 @@
     </p>
 </div>
 
-<p align="center">Performant, flexible and extensible forms with easy to use validation.</p>
+<p align="center">Güçlü, esnek ve genişletilebilir, kolay doğrulama özelliğine sahip formlar.</p>
 
 <div align="center">
 
@@ -27,35 +27,35 @@
     </p>
 </div>
 
-English | <a href="./docs/README.zh-CN.md">简体中文</a> | <a href="./docs/README.ja-JP.md">日本語</a> | <a href="./docs/README.ko-KR.md">한국어</a> | <a href="./docs/README.fr-FR.md">Français</a> | <a href="./docs/README.it-IT.md">Italiano</a> | <a href="./docs/README.pt-BR.md">Português</a> | <a href="./docs/README.es-ES.md">Español</a> | <a href="./docs/README.ru-RU.md">Русский</a> | <a href="./docs/README.de-DE.md">Deutsch</a> | <a href="./docs/README.tr-TR.md">Türkçe</a>
+<a href="https://github.com/react-hook-form/react-hook-form">🇦🇺English</a> | <a href="./docs/README.zh-CN.md">🇨🇳 简体中文</a> | <a href="./docs/README.ja-JP.md">🇯🇵 日本語</a> | <a href="./docs/README.ko-KR.md">🇰🇷한국어</a> | <a href="./docs/README.fr-FR.md">🇫🇷Français</a> | <a href="./docs/README.it-IT.md">🇮🇹Italiano</a> | <a href="./docs/README.pt-BR.md">🇧🇷Português</a> | <a href="./docs/README.es-ES.md">🇪🇸Español</a> | <a href="./docs/README.ru-RU.md">🇷🇺Русский</a> | <a href="./docs/README.de-DE.md">🇩🇪Deutsch</a> | 🇹🇷Türkçe
 
 ## Features
 
-- Built with performance and DX in mind
-- Embrace uncontrolled form validation
-- Simple integration with [UI libraries](https://codesandbox.io/s/react-hook-form-controller-079xx)
-- [Tiny size](https://bundlephobia.com/result?p=react-hook-form@latest) without any dependency
-- Follows HTML standard for [validation](https://react-hook-form.com/get-started#Applyvalidation)
-- Compatible with React Native
-- Supports [Yup](https://github.com/jquense/yup), [Joi](https://github.com/hapijs/joi), [Superstruct](https://github.com/ianstormtaylor/superstruct) or custom
-- Build forms quickly with the [form builder](https://react-hook-form.com/form-builder)
+- Performans ve geliştirici deneyimi gözetilerek yazılmıştır
+- Kontrolsüz form doğrulamasını kabul eder
+- [Arayüz Kütüphaneleri](https://codesandbox.io/s/react-hook-form-controller-079xx) ile kolay entegrasyon
+- Herhangi bir bağımlılık olmadan [ufak boyut](https://bundlephobia.com/result?p=react-hook-form@latest)
+- [Validasyon](https://react-hook-form.com/get-started#Applyvalidation) için HTML standartlarını takip eder
+- React Native ile uyumludur
+- [Yup](https://github.com/jquense/yup), [Joi](https://github.com/hapijs/joi), [Superstruct](https://github.com/ianstormtaylor/superstruct) ya da kişisel validasyonlarınızı destekler
+- [Form Oluşturucu](https://react-hook-form.com/form-builder) ile formları hızlıca oluşturabilirsiniz
 
-## Install
+## Yükleme
 
     npm install react-hook-form
 
-## Links
+## Linkler
 
-- [Motivation](https://medium.com/@bruce1049/form-validation-with-hook-in-3kb-c5414edf7d64)
-- [Video tutorial](https://www.youtube.com/watch?v=-mFXqOaqgZk&t)
-- [Get started](https://react-hook-form.com/get-started)
+- [Motivasyon](https://medium.com/@bruce1049/form-validation-with-hook-in-3kb-c5414edf7d64)
+- [Video eğitimi](https://www.youtube.com/watch?v=-mFXqOaqgZk&t)
+- [Başlangıç](https://react-hook-form.com/get-started)
 - [API](https://react-hook-form.com/api)
-- [Examples](https://github.com/bluebill1049/react-hook-form/tree/master/examples)
+- [Örnekler](https://github.com/bluebill1049/react-hook-form/tree/master/examples)
 - [Demo](https://react-hook-form.com)
-- [Form Builder](https://react-hook-form.com/form-builder)
-- [FAQs](https://react-hook-form.com/faqs)
+- [Form Oluşturucu](https://react-hook-form.com/form-builder)
+- [Sıkça Sorulan Sorular](https://react-hook-form.com/faqs)
 
-## Quickstart
+## Hızlı Başlangıç
 
 ```jsx
 import React from 'react';
@@ -80,29 +80,29 @@ function App() {
 }
 ```
 
-## Sponsors
+## Sponsorlar
 
-Want your logo here? [DM on Twitter](https://twitter.com/HookForm)
+Logonuzu burada görmek istiyor musunuz? [Twitter'dan mesaj atın](https://twitter.com/HookForm)
 
-## Backers
+## Destekleyenler
 
-Thanks goes to all our backers! [[Become a backer](https://opencollective.com/react-hook-form#backer)].
+Tüm destekçilerimize teşekkür ediyoruz! [[Destekçi ol](https://opencollective.com/react-hook-form#backer)].
 
 <a href="https://opencollective.com/react-hook-form#backers">
     <img src="https://opencollective.com/react-hook-form/backers.svg?width=950" />
 </a>
 
-## Organizations
+## Organizasyonlar
 
-Thanks goes to these wonderful organizations! [[Contribute](https://opencollective.com/react-hook-form/contribute)].
+Bu harika organizasyonlar için çok teşekkürler! [[Katkıda bulunun](https://opencollective.com/react-hook-form/contribute)].
 
 <a href="https://github.com/react-hook-form/react-hook-form/graphs/contributors">
     <img src="https://opencollective.com/react-hook-form/organizations.svg?width=950" />
 </a>
 
-## Contributors
+## Katkıda bulunanlar
 
-Thanks goes to these wonderful people! [[Become a contributor](CONTRIBUTING.md)].
+Bu harika insanlara çok teşekkürler! [[Katkıda bulunun](CONTRIBUTING.md)].
 
 <a href="https://github.com/react-hook-form/react-hook-form/graphs/contributors">
     <img src="https://opencollective.com/react-hook-form/contributors.svg?width=950" />
