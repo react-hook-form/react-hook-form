@@ -170,8 +170,12 @@ export function useForm<
 
         errorsRef.current = unset(errorsRef.current, [name]);
       } else {
+        const currentError = get(errorsRef.current, name);
         validFieldsRef.current.delete(name);
-        shouldReRender = shouldReRender || !get(errorsRef.current, name);
+        shouldReRender =
+          shouldReRender ||
+          !currentError ||
+          !isSameError(currentError, error as FieldError);
 
         set(errorsRef.current, name, error[name]);
       }
@@ -672,7 +676,7 @@ export function useForm<
     const field = fieldsRef.current[name];
 
     if (
-      !isSameError(errorsRef.current[name] as FieldError, {
+      !isSameError(get(errorsRef.current, name) as FieldError, {
         type,
         message,
         types,
