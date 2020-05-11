@@ -21,7 +21,7 @@
 
 <div align="center"><p align="center"><a href="https://react-hook-form.com/zh" title="React Hook Form - Simple React forms validation"><img src="https://raw.githubusercontent.com/bluebill1049/react-hook-form/master/website/example.gif" alt="React Hook Form Logo - React hook form validation" width="100%" /></a></p></div>
 
-<a href="https://github.com/react-hook-form/react-hook-form">🇦🇺English</a> | 🇨🇳 简体中文 | <a href="./README.ja-JP.md">🇯🇵 日本語</a> | <a href="./README.ko-KR.md">🇰🇷한국어</a> | <a href="./README.fr-FR.md">🇫🇷Français</a> | <a href="./README.it-IT.md">🇮🇹Italiano</a> | <a href="./README.pt-BR.md">🇧🇷Português</a> | <a href="./README.es-ES.md">🇪🇸Español</a> | <a href="./docs/README.ru-RU.md">🇷🇺Русский</a> | <a href="./docs/README.de-DE.md">🇩🇪Deutsch</a>
+<a href="https://github.com/react-hook-form/react-hook-form">🇦🇺English</a> | 🇨🇳 简体中文 | <a href="./README.ja-JP.md">🇯🇵 日本語</a> | <a href="./README.ko-KR.md">🇰🇷한국어</a> | <a href="./README.fr-FR.md">🇫🇷Français</a> | <a href="./README.it-IT.md">🇮🇹Italiano</a> | <a href="./README.pt-BR.md">🇧🇷Português</a> | <a href="./README.es-ES.md">🇪🇸Español</a> | <a href="./docs/README.ru-RU.md">🇷🇺Русский</a> | <a href="./docs/README.de-DE.md">🇩🇪Deutsch</a> | <a href="./docs/README.tr-TR.md">🇹🇷Türkçe</a>
 
 ## 特性
 
@@ -30,7 +30,7 @@
 - 以性能和开发体验为基础构建
 - [迷你](https://bundlephobia.com/result?p=react-hook-form@latest)的体积而没有其他依赖
 - 遵循 html 标准进行校验
-- 与React Native兼容
+- 与 React Native 兼容
 - 支持[Yup](https://github.com/jquense/yup), [Joi](https://github.com/hapijs/joi), [Superstruct](https://github.com/ianstormtaylor/superstruct)或自定义
 - 支持浏览器原生校验
 - 从[这里](https://react-hook-form.com/zh/form-builder)快速构建你的表单
@@ -57,7 +57,7 @@ import { useForm } from 'react-hook-form';
 
 function App() {
   const { register, handleSubmit, errors } = useForm(); // initialise the hook
-  const onSubmit = data => {
+  const onSubmit = (data) => {
     console.log(data);
   };
 
