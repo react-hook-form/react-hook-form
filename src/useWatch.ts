@@ -3,13 +3,61 @@ import { useFormContext } from './useFormContext';
 import isUndefined from './utils/isUndefined';
 import isString from './utils/isString';
 import generateId from './logic/generateId';
-import { Control, UseWatchOptions } from './types';
+import {
+  UseWatchOptions,
+  FieldValuesFromControl,
+  UnpackNestedValue,
+  FieldName,
+  Control,
+  DeepPartial,
+  EmptyObject,
+  LiteralToPrimitive,
+} from './types';
 
-export const useWatch = <TWatchValues, TControl extends Control = Control>({
+export function useWatch<
+  TWatchValues extends FieldValuesFromControl<TControl>,
+  TControl extends Control = Control
+>(props: {
+  control?: TControl;
+  defaultValue?: UnpackNestedValue<DeepPartial<TWatchValues>>;
+}): EmptyObject | UnpackNestedValue<TWatchValues>;
+export function useWatch<
+  TWatchValue extends unknown,
+  TFieldName extends FieldName<FieldValuesFromControl<TControl>>,
+  TControl extends Control = Control
+>(props: {
+  name: TFieldName;
+  control?: TControl;
+  defaultValue?: TFieldName extends keyof FieldValuesFromControl<TControl>
+    ? UnpackNestedValue<FieldValuesFromControl<TControl>>[TFieldName]
+    : LiteralToPrimitive<TWatchValue>;
+}):
+  | undefined
+  | (TFieldName extends keyof FieldValuesFromControl<TControl>
+      ? UnpackNestedValue<FieldValuesFromControl<TControl>>[TFieldName]
+      : LiteralToPrimitive<TWatchValue>);
+export function useWatch<
+  TWatchValues extends FieldValuesFromControl<TControl>,
+  TFieldName extends keyof TWatchValues,
+  TControl extends Control = Control
+>(props: {
+  name: TFieldName[];
+  control?: TControl;
+  defaultValue?: UnpackNestedValue<DeepPartial<TWatchValues>>;
+}): EmptyObject | UnpackNestedValue<Pick<TWatchValues, TFieldName>>;
+export function useWatch<
+  TWatchValues extends FieldValuesFromControl<TControl>,
+  TControl extends Control = Control
+>(props: {
+  name: string[];
+  control?: TControl;
+  defaultValue?: UnpackNestedValue<DeepPartial<TWatchValues>>;
+}): EmptyObject | UnpackNestedValue<DeepPartial<TWatchValues>>;
+export function useWatch<TWatchValues, TControl extends Control = Control>({
   control,
   name,
   defaultValue,
-}: UseWatchOptions<TControl>): TWatchValues => {
+}: UseWatchOptions<TControl>): TWatchValues {
   const methods = useFormContext();
   const { watchFieldsHookRef, watchFieldsHookRenderRef, watchInternal } =
     control || methods.control;
@@ -54,4 +102,4 @@ export const useWatch = <TWatchValues, TControl extends Control = Control>({
   ]);
 
   return (isUndefined(value) ? defaultValue : value) as TWatchValues;
-};
+}
