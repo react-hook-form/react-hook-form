@@ -5,7 +5,7 @@ export type IsAny<T> = boolean extends (T extends never ? true : false)
   : false;
 
 export type IsFlatObject<T extends Record<string, unknown>> = Extract<
-  T[keyof T],
+  Exclude<T[keyof T], Date | FileList>,
   unknown[] | Record<string, unknown>
 > extends never
   ? true
