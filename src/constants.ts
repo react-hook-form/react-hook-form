@@ -17,6 +17,8 @@ export const EVENTS = {
   INPUT: 'input',
 };
 
+export const SELECT = 'select';
+
 export const INPUT_VALIDATION_RULES = {
   max: 'max',
   min: 'min',

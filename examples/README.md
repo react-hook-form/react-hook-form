@@ -13,6 +13,7 @@ you can view the source code within the folder or visit code sand box to see how
 | Custom Validation                       | https://codesandbox.io/s/8n937m64o9                                           |
 | Conditional Fields                      | https://codesandbox.io/s/13ykqx4wx7                                           |
 | Custom Input                            | https://codesandbox.io/s/72j69vnk1x                                           |
+| Custom Input with ForwardRef         | https://codesandbox.io/s/rhfex-en254                                          |
 | Custom Masked Input                     | https://codesandbox.io/s/trusting-agnesi-rdi5m                                |
 | Custom Masked Input with Controller     | https://codesandbox.io/s/morning-sunset-8n3sx                                 |
 | Controlled Input                        | https://codesandbox.io/s/j36w7xkk7w                                           |

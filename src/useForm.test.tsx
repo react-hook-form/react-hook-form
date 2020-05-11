@@ -1,5 +1,6 @@
 import * as React from 'react';
 import { renderHook, act } from '@testing-library/react-hooks';
+import { render, fireEvent } from '@testing-library/react';
 import { useForm } from './';
 import attachEventListeners from './logic/attachEventListeners';
 import findRemovedFieldAndRemoveListener from './logic/findRemovedFieldAndRemoveListener';
@@ -1543,6 +1544,47 @@ describe('useForm', () => {
         const deep: { values: string } = result.current.getValues().deep;
         expect(deep).toEqual({ values: '5' });
       });
+    });
+  });
+
+  describe('when errors changes', () => {
+    it('should display the latest error message', () => {
+      const Form = () => {
+        const { register, setError, errors } = useForm();
+
+        React.useEffect(() => {
+          setError('test', 'data', 'data');
+        });
+
+        return (
+          <div>
+            <input
+              ref={register({
+                maxLength: {
+                  message: 'max',
+                  value: 3,
+                },
+              })}
+              placeholder="test"
+              name="test"
+            />
+            <p>{errors.test && errors.test.message}</p>
+          </div>
+        );
+      };
+
+      const { getByPlaceholderText, getByText } = render(<Form />);
+
+      getByText('data');
+
+      const textInput = getByPlaceholderText('test');
+      fireEvent.input(textInput, {
+        target: {
+          value: 'test',
+        },
+      });
+
+      expect(getByText('data')).toBeTruthy();
     });
   });
 });

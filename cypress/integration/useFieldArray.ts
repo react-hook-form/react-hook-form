@@ -306,7 +306,7 @@ context('useFieldArray', () => {
     cy.get('#field0').type('1');
     cy.get('#field1').type('1');
     cy.get('#field2').type('1');
-    cy.get('#touched').contains('[{"name":true},{"name":true},{"name":true}]');
+    cy.get('#touched').contains('[{"name":true},{"name":true}]');
     cy.get('#append').click();
     cy.get('#prepend').click();
     cy.get('#touched').contains(

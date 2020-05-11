@@ -16,6 +16,7 @@ import isNameInFieldArray from './logic/isNameInFieldArray';
 import isCheckBoxInput from './utils/isCheckBoxInput';
 import isEmptyObject from './utils/isEmptyObject';
 import isRadioInput from './utils/isRadioInput';
+import isSelectInput from './utils/isSelectInput';
 import isFileInput from './utils/isFileInput';
 import isObject from './utils/isObject';
 import isBoolean from './utils/isBoolean';
@@ -184,8 +185,13 @@ export function useForm<
 
         errorsRef.current = unset(errorsRef.current, [name]);
       } else {
+        const previousError = get(errorsRef.current, name);
         validFieldsRef.current.delete(name);
-        shouldReRender = shouldReRender || !get(errorsRef.current, name);
+        shouldReRender =
+          shouldReRender ||
+          (previousError
+            ? !isSameError(previousError, error[name] as FieldError)
+            : true);
 
         set(errorsRef.current, name, error[name]);
       }
@@ -246,55 +252,47 @@ export function useForm<
     [isWeb],
   );
 
-  const setDirty = (name: InternalFieldName<TFieldValues>): boolean => {
-    if (
-      !fieldsRef.current[name] ||
-      (!readFormStateRef.current.dirty && !readFormStateRef.current.dirtyFields)
-    ) {
-      return false;
-    }
-
-    let isFieldDirty =
-      defaultValuesAtRenderRef.current[name] !==
-      getFieldValue(fieldsRef.current, fieldsRef.current[name]!.ref);
-    const isFieldArray = isNameInFieldArray(fieldArrayNamesRef.current, name);
-    const previousDirtyFieldsLength = dirtyFieldsRef.current.size;
-
-    if (isFieldArray) {
-      const fieldArrayName = getFieldArrayParentName(name);
-      isFieldDirty = getIsFieldsDifferent(
-        getFieldArrayValueByName(fieldsRef.current, fieldArrayName),
-        get(defaultValuesRef.current, fieldArrayName),
-      );
-    }
-
-    const isDirtyChanged =
-      (isFieldArray ? isDirtyRef.current : dirtyFieldsRef.current.has(name)) !==
-      isFieldDirty;
-
-    if (isFieldDirty) {
-      dirtyFieldsRef.current.add(name);
-    } else {
-      dirtyFieldsRef.current.delete(name);
-    }
-
-    isDirtyRef.current = isFieldArray
-      ? isFieldDirty
-      : !!dirtyFieldsRef.current.size;
-    return readFormStateRef.current.dirty
-      ? isDirtyChanged
-      : previousDirtyFieldsLength !== dirtyFieldsRef.current.size;
-  };
-
-  const setDirtyAndTouchedFields = React.useCallback(
-    (fieldName: InternalFieldName<TFieldValues>): void | boolean => {
+  const setDirty = React.useCallback(
+    (name: InternalFieldName<TFieldValues>): boolean => {
       if (
-        setDirty(fieldName) ||
-        (!get(touchedFieldsRef.current, fieldName) &&
-          readFormStateRef.current.touched)
+        !fieldsRef.current[name] ||
+        (!readFormStateRef.current.dirty &&
+          !readFormStateRef.current.dirtyFields)
       ) {
-        return !!set(touchedFieldsRef.current, fieldName, true);
+        return false;
       }
+
+      let isFieldDirty =
+        defaultValuesAtRenderRef.current[name] !==
+        getFieldValue(fieldsRef.current, fieldsRef.current[name]!.ref);
+      const isFieldArray = isNameInFieldArray(fieldArrayNamesRef.current, name);
+      const previousDirtyFieldsLength = dirtyFieldsRef.current.size;
+
+      if (isFieldArray) {
+        const fieldArrayName = getFieldArrayParentName(name);
+        isFieldDirty = getIsFieldsDifferent(
+          getFieldArrayValueByName(fieldsRef.current, fieldArrayName),
+          get(defaultValuesRef.current, fieldArrayName),
+        );
+      }
+
+      const isDirtyChanged =
+        (isFieldArray
+          ? isDirtyRef.current
+          : dirtyFieldsRef.current.has(name)) !== isFieldDirty;
+
+      if (isFieldDirty) {
+        dirtyFieldsRef.current.add(name);
+      } else {
+        dirtyFieldsRef.current.delete(name);
+      }
+
+      isDirtyRef.current = isFieldArray
+        ? isFieldDirty
+        : !!dirtyFieldsRef.current.size;
+      return readFormStateRef.current.dirty
+        ? isDirtyChanged
+        : previousDirtyFieldsLength !== dirtyFieldsRef.current.size;
     },
     [],
   );
@@ -319,11 +317,11 @@ export function useForm<
 
         if (field) {
           setFieldValue(field, value[key]);
-          setDirtyAndTouchedFields(fieldName);
+          setDirty(fieldName);
         }
       }
     },
-    [setFieldValue, setDirtyAndTouchedFields],
+    [setFieldValue, setDirty],
   );
 
   const setInternalValue = React.useCallback(
@@ -335,7 +333,7 @@ export function useForm<
       if (field) {
         setFieldValue(field as Field, value);
 
-        const output = setDirtyAndTouchedFields(name);
+        const output = setDirty(name);
         if (isBoolean(output)) {
           return output;
         }
@@ -343,7 +341,7 @@ export function useForm<
         setInternalValues(name, value);
       }
     },
-    [setDirtyAndTouchedFields, setFieldValue, setInternalValues],
+    [setDirty, setFieldValue, setInternalValues],
   );
 
   const executeValidation = React.useCallback(
@@ -704,7 +702,7 @@ export function useForm<
     const field = fieldsRef.current[name];
 
     if (
-      !isSameError(errorsRef.current[name] as FieldError, {
+      !isSameError(get(errorsRef.current, name) as FieldError, {
         type,
         message,
         types,
@@ -963,7 +961,7 @@ export function useForm<
           isRadioOrCheckbox && field.options
             ? field.options[field.options.length - 1]
             : field,
-        isRadioOrCheckbox,
+        isRadioOrCheckbox: isRadioOrCheckbox || isSelectInput(ref),
         handleChange: handleChangeRef.current,
       });
     }
@@ -1173,7 +1171,6 @@ export function useForm<
     fieldsRef.current[payload]
       ? getFieldValue(fieldsRef.current, fieldsRef.current[payload]!.ref)
       : get(defaultValuesRef.current, payload);
-
   function getValues(): UnpackNestedValue<TFieldValues>;
   function getValues<T extends keyof TFieldValues>(
     payload: T[],

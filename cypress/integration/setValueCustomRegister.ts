@@ -3,10 +3,8 @@ context('setValue with react native or web', () => {
     cy.visit('http://localhost:3000/setValueCustomRegister');
     cy.get('#dirty').contains('false');
     cy.get('#TriggerDirty').click();
-    cy.get('#touched').contains('lastName');
     cy.get('#dirty').contains('true');
     cy.get('#TriggerNothing').click();
-    cy.get('#touched').contains('lastNamefirstName');
     cy.get('#TriggerNothing').click();
     cy.get('#TriggerNothing').click();
     cy.get('#TriggerNothing').click();
