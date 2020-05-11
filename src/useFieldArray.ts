@@ -45,7 +45,7 @@ export const useFieldArray = <
     defaultValuesRef,
     removeFieldEventListener,
     mode: { isOnChange },
-    triggerValidation,
+    trigger,
     errorsRef,
     dirtyFieldsRef,
     isDirtyRef,
@@ -352,7 +352,7 @@ export const useFieldArray = <
     });
 
     if (isOnChange) {
-      triggerValidation(name);
+      trigger(name);
     }
   };
 

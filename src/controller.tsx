@@ -143,9 +143,9 @@ const Controller = <
           [onChangeName]: (event: any): any =>
             setValue(name, commonTask(event), shouldValidate()),
         }),
-    [onBlurName]: (...args: any[]) => {
+    [onBlurName]: (...args: any) => {
       if (onBlur) {
-        onBlur(args);
+        onBlur(...args);
       }
 
       if (
