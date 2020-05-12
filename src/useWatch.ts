@@ -7,7 +7,6 @@ import {
   UseWatchOptions,
   FieldValuesFromControl,
   UnpackNestedValue,
-  FieldName,
   Control,
   DeepPartial,
   LiteralToPrimitive,
@@ -27,30 +26,22 @@ export function useWatch<
   control?: TControl;
 }): UnpackNestedValue<TWatchFieldValues>;
 export function useWatch<
-  TWatchFieldValue extends unknown,
-  TFieldName extends FieldName<FieldValuesFromControl<TControl>>,
+  TWatchFieldValue extends FieldValuesFromControl<TControl>[TFieldName],
+  TFieldName extends string = string,
   TControl extends Control = Control
 >(props: {
   name: TFieldName;
   control?: TControl;
-}):
-  | undefined
-  | (TFieldName extends keyof FieldValuesFromControl<TControl>
-      ? UnpackNestedValue<FieldValuesFromControl<TControl>>[TFieldName]
-      : LiteralToPrimitive<TWatchFieldValue>);
+}): undefined | UnpackNestedValue<LiteralToPrimitive<TWatchFieldValue>>;
 export function useWatch<
-  TWatchFieldValue extends unknown,
-  TFieldName extends FieldName<FieldValuesFromControl<TControl>>,
+  TWatchFieldValue extends FieldValuesFromControl<TControl>[TFieldName],
+  TFieldName extends string = string,
   TControl extends Control = Control
 >(props: {
   name: TFieldName;
-  defaultValue: TFieldName extends keyof FieldValuesFromControl<TControl>
-    ? UnpackNestedValue<FieldValuesFromControl<TControl>>[TFieldName]
-    : LiteralToPrimitive<TWatchFieldValue>;
+  defaultValue: UnpackNestedValue<LiteralToPrimitive<TWatchFieldValue>>;
   control?: TControl;
-}): TFieldName extends keyof FieldValuesFromControl<TControl>
-  ? UnpackNestedValue<FieldValuesFromControl<TControl>>[TFieldName]
-  : LiteralToPrimitive<TWatchFieldValue>;
+}): UnpackNestedValue<LiteralToPrimitive<TWatchFieldValue>>;
 export function useWatch<
   TWatchFieldValues extends FieldValuesFromControl<TControl>,
   TFieldName extends keyof TWatchFieldValues,
