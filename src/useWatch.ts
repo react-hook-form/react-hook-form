@@ -14,16 +14,18 @@ import {
 } from './types';
 
 export function useWatch<
-  TWatchValues extends FieldValuesFromControl<TControl>,
-  TControl extends Control = Control
->(props: { control?: TControl }): UnpackNestedValue<DeepPartial<TWatchValues>>;
-export function useWatch<
-  TWatchValues extends FieldValuesFromControl<TControl>,
+  TWatchFieldValues extends FieldValuesFromControl<TControl>,
   TControl extends Control = Control
 >(props: {
-  defaultValue: UnpackNestedValue<DeepPartial<TWatchValues>>;
   control?: TControl;
-}): UnpackNestedValue<TWatchValues>;
+}): UnpackNestedValue<DeepPartial<TWatchFieldValues>>;
+export function useWatch<
+  TWatchFieldValues extends FieldValuesFromControl<TControl>,
+  TControl extends Control = Control
+>(props: {
+  defaultValue: UnpackNestedValue<DeepPartial<TWatchFieldValues>>;
+  control?: TControl;
+}): UnpackNestedValue<TWatchFieldValues>;
 export function useWatch<
   TWatchValue extends unknown,
   TFieldName extends FieldName<FieldValuesFromControl<TControl>>,
@@ -50,35 +52,38 @@ export function useWatch<
   ? UnpackNestedValue<FieldValuesFromControl<TControl>>[TFieldName]
   : LiteralToPrimitive<TWatchValue>;
 export function useWatch<
-  TWatchValues extends FieldValuesFromControl<TControl>,
-  TFieldName extends keyof TWatchValues,
+  TWatchFieldValues extends FieldValuesFromControl<TControl>,
+  TFieldName extends keyof TWatchFieldValues,
   TControl extends Control = Control
 >(props: {
   name: TFieldName[];
   control?: TControl;
-}): UnpackNestedValue<DeepPartial<Pick<TWatchValues, TFieldName>>>;
+}): UnpackNestedValue<DeepPartial<Pick<TWatchFieldValues, TFieldName>>>;
 export function useWatch<
-  TWatchValues extends FieldValuesFromControl<TControl>,
-  TFieldName extends keyof TWatchValues,
+  TWatchFieldValues extends FieldValuesFromControl<TControl>,
+  TFieldName extends keyof TWatchFieldValues,
   TControl extends Control = Control
 >(props: {
   name: TFieldName[];
-  defaultValue: UnpackNestedValue<DeepPartial<TWatchValues>>;
+  defaultValue: UnpackNestedValue<DeepPartial<TWatchFieldValues>>;
   control?: TControl;
-}): UnpackNestedValue<Pick<TWatchValues, TFieldName>>;
+}): UnpackNestedValue<Pick<TWatchFieldValues, TFieldName>>;
 export function useWatch<
-  TWatchValues extends FieldValuesFromControl<TControl>,
+  TWatchFieldValues extends FieldValuesFromControl<TControl>,
   TControl extends Control = Control
 >(props: {
   name: string[];
-  defaultValue?: UnpackNestedValue<DeepPartial<TWatchValues>>;
+  defaultValue?: UnpackNestedValue<DeepPartial<TWatchFieldValues>>;
   control?: TControl;
-}): UnpackNestedValue<DeepPartial<TWatchValues>>;
-export function useWatch<TWatchValues, TControl extends Control = Control>({
+}): UnpackNestedValue<DeepPartial<TWatchFieldValues>>;
+export function useWatch<
+  TWatchFieldValues,
+  TControl extends Control = Control
+>({
   control,
   name,
   defaultValue,
-}: UseWatchOptions<TControl>): TWatchValues {
+}: UseWatchOptions<TControl>): TWatchFieldValues {
   const methods = useFormContext();
   const { watchFieldsHookRef, watchFieldsHookRenderRef, watchInternal } =
     control || methods.control;
@@ -122,5 +127,5 @@ export function useWatch<TWatchValues, TControl extends Control = Control>({
     defaultValueRef,
   ]);
 
-  return (isUndefined(value) ? defaultValue : value) as TWatchValues;
+  return (isUndefined(value) ? defaultValue : value) as TWatchFieldValues;
 }
