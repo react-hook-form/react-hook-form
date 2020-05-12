@@ -10,14 +10,13 @@ import {
   FieldName,
   Control,
   DeepPartial,
-  EmptyObject,
   LiteralToPrimitive,
 } from './types';
 
 export function useWatch<
   TWatchValues extends FieldValuesFromControl<TControl>,
   TControl extends Control = Control
->(props: { control?: TControl }): EmptyObject | UnpackNestedValue<TWatchValues>;
+>(props: { control?: TControl }): UnpackNestedValue<DeepPartial<TWatchValues>>;
 export function useWatch<
   TWatchValues extends FieldValuesFromControl<TControl>,
   TControl extends Control = Control
@@ -57,7 +56,7 @@ export function useWatch<
 >(props: {
   name: TFieldName[];
   control?: TControl;
-}): EmptyObject | UnpackNestedValue<Pick<TWatchValues, TFieldName>>;
+}): UnpackNestedValue<DeepPartial<Pick<TWatchValues, TFieldName>>>;
 export function useWatch<
   TWatchValues extends FieldValuesFromControl<TControl>,
   TFieldName extends keyof TWatchValues,
@@ -72,14 +71,7 @@ export function useWatch<
   TControl extends Control = Control
 >(props: {
   name: string[];
-  control?: TControl;
-}): EmptyObject | UnpackNestedValue<DeepPartial<TWatchValues>>;
-export function useWatch<
-  TWatchValues extends FieldValuesFromControl<TControl>,
-  TControl extends Control = Control
->(props: {
-  name: string[];
-  defaultValue: UnpackNestedValue<DeepPartial<TWatchValues>>;
+  defaultValue?: UnpackNestedValue<DeepPartial<TWatchValues>>;
   control?: TControl;
 }): UnpackNestedValue<DeepPartial<TWatchValues>>;
 export function useWatch<TWatchValues, TControl extends Control = Control>({
