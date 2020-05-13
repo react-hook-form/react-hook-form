@@ -856,7 +856,7 @@ export function useForm<
   ): ((name: InternalFieldName<TFieldValues>) => void) | void {
     if (!ref.name) {
       // eslint-disable-next-line no-console
-      return console.warn('Missing name @', ref);
+      return console.warn('Miss name @', ref);
     }
 
     const { name, type, value } = ref;
@@ -865,7 +865,7 @@ export function useForm<
       ...validateOptions,
     };
     const fields = fieldsRef.current;
-    const isRadioOrCheckbox = isRadioOrCheckboxFunction(ref);
+    const isRadioOrCheckbox = isRadioOrCheckboxFunction(ref as FieldElement);
     let field = fields[name] as Field;
     let isEmptyDefaultValue = true;
     let isFieldArray;
@@ -888,7 +888,7 @@ export function useForm<
     }
 
     if (type) {
-      const mutationWatcher = onDomRemove(ref, () =>
+      const mutationWatcher = onDomRemove(ref as FieldElement, () =>
         removeFieldEventListenerAndRef(field),
       );
 
@@ -904,12 +904,12 @@ export function useForm<
             ref: { type, name },
             ...validateOptions,
           }
-        : {
+        : ({
             ...fieldRefAndValidationOptions,
             mutationWatcher,
-          };
+          } as Field);
     } else {
-      field = fieldRefAndValidationOptions;
+      field = fieldRefAndValidationOptions as Field;
     }
 
     fields[name] = field;
@@ -961,7 +961,8 @@ export function useForm<
           isRadioOrCheckbox && field.options
             ? field.options[field.options.length - 1]
             : field,
-        isRadioOrCheckbox: isRadioOrCheckbox || isSelectInput(ref),
+        isRadioOrCheckbox:
+          isRadioOrCheckbox || isSelectInput(ref as FieldElement),
         handleChange: handleChangeRef.current,
       });
     }
