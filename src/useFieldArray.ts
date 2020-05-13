@@ -44,8 +44,6 @@ export const useFieldArray = <
     getValues,
     defaultValuesRef,
     removeFieldEventListener,
-    mode: { isOnChange },
-    trigger,
     errorsRef,
     dirtyFieldsRef,
     isDirtyRef,
@@ -350,10 +348,6 @@ export const useFieldArray = <
       isRemove: true,
       index,
     });
-
-    if (isOnChange) {
-      trigger(name);
-    }
   };
 
   const insert = (
