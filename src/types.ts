@@ -285,7 +285,8 @@ export type Control<FormValues extends FieldValues = FieldValues> = {
           : string)
       | (IsFlatObject<FormValues> extends true
           ? Extract<keyof FormValues, string>
-          : string)[],
+          : string)[]
+      | RegExp,
   ): Promise<boolean>;
   register<
     Element extends FieldElement<FormValues> = FieldElement<FormValues>

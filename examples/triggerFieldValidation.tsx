@@ -9,7 +9,7 @@ export default function App() {
 
   return (
     <div className="App">
-      <h1>validationFeild</h1>
+      <h1>validationField</h1>
       <label>First name: </label>
       <input name="firstName" ref={register({ required: true })} />
 
@@ -19,13 +19,14 @@ export default function App() {
       <button
         type="button"
         onClick={async () => {
+          console.log('firstName', await triggerValidation('firstName'));
           console.log(
-            'firstName',
-            await triggerValidation({ name: 'firstName' }),
+            'firstName & lastName',
+            await triggerValidation(['firstName', 'lastName']),
           );
           console.log(
-            'lastName',
-            await triggerValidation({ name: 'lastName', value: 'test' }),
+            'firstName & lastName by regex',
+            await triggerValidation(/.*Name/),
           );
         }}
       >

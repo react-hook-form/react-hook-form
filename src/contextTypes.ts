@@ -106,7 +106,8 @@ export type FormContextValues<FormValues extends FieldValues = FieldValues> = {
           : string)
       | (IsFlatObject<FormValues> extends true
           ? Extract<keyof FormValues, string>
-          : string)[],
+          : string)[]
+      | RegExp,
   ): Promise<boolean>;
   errors: FieldErrors<FormValues>;
   formState: FormStateProxy<FormValues>;

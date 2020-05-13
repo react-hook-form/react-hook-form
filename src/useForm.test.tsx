@@ -778,6 +778,50 @@ describe('useForm', () => {
         { ref: { name: 'test1' } },
       );
     });
+
+    it('should trigger multiple fields validation by regex', async () => {
+      const { result } = renderHook(() =>
+        useForm<{ test: string; test1: string }>({
+          mode: VALIDATION_MODE.onChange,
+        }),
+      );
+
+      (validateField as any).mockImplementation(async () => ({}));
+
+      act(() => {
+        result.current.register({
+          name: 'test',
+        });
+        result.current.register({
+          name: 'test1',
+        });
+      });
+
+      await act(async () => {
+        await result.current.triggerValidation(/test.*/ as any);
+      });
+
+      expect(validateField).toBeCalledWith(
+        {
+          current: {
+            test: { ref: { name: 'test' } },
+            test1: { ref: { name: 'test1' } },
+          },
+        },
+        false,
+        { ref: { name: 'test' } },
+      );
+      expect(validateField).toBeCalledWith(
+        {
+          current: {
+            test: { ref: { name: 'test' } },
+            test1: { ref: { name: 'test1' } },
+          },
+        },
+        false,
+        { ref: { name: 'test1' } },
+      );
+    });
   });
 
   describe('triggerValidation with schema', () => {

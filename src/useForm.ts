@@ -402,9 +402,13 @@ export function useForm<
             : string)
         | (IsFlatObject<FormValues> extends true
             ? Extract<keyof FormValues, string>
-            : string)[],
+            : string)[]
+        | RegExp,
     ): Promise<boolean> => {
-      const fields = payload || Object.keys(fieldsRef.current);
+      const fields =
+        payload instanceof RegExp
+          ? Object.keys(fieldsRef.current).filter((name) => payload.test(name))
+          : payload || Object.keys(fieldsRef.current);
 
       if (shouldValidateSchemaOrResolver) {
         return executeSchemaOrResolverValidation(fields);

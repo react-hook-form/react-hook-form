@@ -5,6 +5,8 @@ context('form triggerValidation', () => {
     cy.get('#testError').should('be.empty');
     cy.get('#test1Error').should('be.empty');
     cy.get('#test2Error').should('be.empty');
+    cy.get('#test3Error').should('be.empty');
+    cy.get('#test4Error').should('be.empty');
 
     cy.get('#single').click();
     cy.get('#testError').contains('required');
@@ -14,9 +16,13 @@ context('form triggerValidation', () => {
     cy.get('#test1Error').contains('required');
     cy.get('#test2Error').contains('required');
 
-    cy.get('#renderCount').contains('3');
+    cy.get('#regex').click();
+    cy.get('#test3Error').contains('required');
+    cy.get('#test4Error').contains('required');
+
+    cy.get('#renderCount').contains('4');
 
     cy.get('#multiple').click();
-    cy.get('#renderCount').contains('4');
+    cy.get('#renderCount').contains('5');
   });
 });
