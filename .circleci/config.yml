@@ -7,5 +7,5 @@ jobs:
 
     steps:
       - checkout
-      - run: yarn install
-      - run: yarn test
+      - run: npm install
+      - run: npm test
