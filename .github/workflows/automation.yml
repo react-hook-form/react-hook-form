@@ -1,4 +1,4 @@
-name: After server responds
+name: E2E Test
 
 on: [pull_request]
 

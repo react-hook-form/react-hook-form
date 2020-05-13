@@ -1,4 +1,4 @@
-name: Unit Test
+name: Unit Test / Lint
 
 on: [pull_request]
 

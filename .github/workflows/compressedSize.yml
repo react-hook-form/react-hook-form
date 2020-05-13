@@ -1,4 +1,4 @@
-name: Compressed Size
+name: Package Size
 
 on: [pull_request]
 
