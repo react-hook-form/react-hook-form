@@ -1,0 +1,15 @@
+name: After server responds
+
+on: [pull_request]
+
+jobs:
+  cypress-run:
+    runs-on: ubuntu-16.04
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v1
+      - name: Cypress run
+        uses: cypress-io/github-action@v1
+        with:
+          start: npm run start:app
+          wait-on: 'http://localhost:3000'
