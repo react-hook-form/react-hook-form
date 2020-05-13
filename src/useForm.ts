@@ -856,7 +856,7 @@ export function useForm<
   ): ((name: InternalFieldName<TFieldValues>) => void) | void {
     if (!ref.name) {
       // eslint-disable-next-line no-console
-      return console.warn('Missing name @', ref);
+      return console.warn('Miss name @', ref);
     }
 
     const { name, type, value } = ref;
