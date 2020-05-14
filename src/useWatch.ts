@@ -5,6 +5,7 @@ import isString from './utils/isString';
 import generateId from './logic/generateId';
 import {
   UseWatchOptions,
+  FieldValues,
   FieldValuesFromControl,
   UnpackNestedValue,
   Control,
@@ -49,7 +50,9 @@ export function useWatch<
 >(props: {
   name: TFieldName[];
   control?: TControl;
-}): UnpackNestedValue<DeepPartial<Pick<TWatchFieldValues, TFieldName>>>;
+}): FieldValues extends TWatchFieldValues
+  ? Partial<FieldValues>
+  : UnpackNestedValue<DeepPartial<Pick<TWatchFieldValues, TFieldName>>>;
 export function useWatch<
   TWatchFieldValues extends FieldValuesFromControl<TControl>,
   TFieldName extends keyof TWatchFieldValues = keyof TWatchFieldValues,
@@ -65,9 +68,17 @@ export function useWatch<
   TControl extends Control = Control
 >(props: {
   name: TFieldName[];
-  defaultValue?: UnpackNestedValue<DeepPartial<TWatchFieldValues>>;
   control?: TControl;
 }): UnpackNestedValue<DeepPartial<TWatchFieldValues>>;
+export function useWatch<
+  TWatchFieldValues extends FieldValuesFromControl<TControl>,
+  TFieldName extends string = string,
+  TControl extends Control = Control
+>(props: {
+  name: TFieldName[];
+  defaultValue: UnpackNestedValue<DeepPartial<TWatchFieldValues>>;
+  control?: TControl;
+}): UnpackNestedValue<TWatchFieldValues>;
 export function useWatch<
   TWatchFieldValues,
   TControl extends Control = Control
