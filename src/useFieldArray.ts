@@ -188,7 +188,7 @@ export const useFieldArray = <
 
     if (readFormStateRef.current.dirtyFields && dirtyFieldsRef.current[name]) {
       dirtyFieldsRef.current[name] = prependAt(
-        touchedFieldsRef.current[name],
+        dirtyFieldsRef.current[name],
         filterBooleanArray(value),
       );
       shouldRender = true;
@@ -313,7 +313,7 @@ export const useFieldArray = <
       dirtyFieldsRef.current[name] = insertAt(
         dirtyFieldsRef.current[name],
         index,
-        emptyArray,
+        filterBooleanArray(value),
       );
       shouldRender = true;
     }

@@ -91,7 +91,21 @@ describe('useFieldArray', () => {
     ]);
 
     expect(dirtyFieldsRef.current).toEqual({
-      test: [true, true, true, true, true],
+      test: [
+        {
+          test: true,
+        },
+        {
+          test: true,
+        },
+        {},
+        {
+          test: true,
+        },
+        {
+          test: true,
+        },
+      ],
     });
   });
 
@@ -166,7 +180,21 @@ describe('useFieldArray', () => {
     ]);
 
     expect(dirtyFieldsRef.current).toEqual({
-      test: [true, true, true, true, true, true, true],
+      test: [
+        {
+          test: true,
+        },
+        {
+          test: true,
+        },
+        {},
+        {
+          test: true,
+        },
+        {
+          test: true,
+        },
+      ],
     });
   });
 
@@ -408,9 +436,31 @@ describe('useFieldArray', () => {
   });
 
   it('should remove all fields when index not supplied', () => {
+    const dirtyFieldsRef = {
+      current: {
+        test: [true, true],
+      },
+    };
+
+    const touchedFieldsRef = {
+      current: {
+        test: [true, true],
+      },
+    };
+
     const { result } = renderHook(() =>
       useFieldArray({
-        control: reconfigureControl(),
+        control: {
+          ...reconfigureControl(),
+          readFormStateRef: {
+            current: {
+              touched: true,
+              dirtyFields: true,
+            },
+          } as any,
+          dirtyFieldsRef,
+          touchedFieldsRef,
+        },
         name: 'test',
       }),
     );
@@ -420,9 +470,47 @@ describe('useFieldArray', () => {
     });
 
     expect(result.current.fields).toEqual([]);
+    expect(dirtyFieldsRef.current).toEqual({
+      test: [],
+    });
+    expect(touchedFieldsRef.current).toEqual({
+      test: [],
+    });
   });
 
   it('should remove specific fields when index is array', () => {
+    const dirtyFieldsRef = {
+      current: {
+        test: [
+          {
+            test: 1,
+          },
+          {
+            test1: 1,
+          },
+          {
+            test2: 1,
+          },
+        ],
+      },
+    };
+
+    const touchedFieldsRef = {
+      current: {
+        test: [
+          {
+            test: 1,
+          },
+          {
+            test1: 1,
+          },
+          {
+            test2: 1,
+          },
+        ],
+      },
+    };
+
     const { result } = renderHook(() =>
       useFieldArray({
         control: reconfigureControl({
@@ -439,6 +527,14 @@ describe('useFieldArray', () => {
               'test[2]': { ref: { name: 'test[2]', value: { test: '3' } } },
             },
           },
+          readFormStateRef: {
+            current: {
+              touched: true,
+              dirtyFields: true,
+            },
+          } as any,
+          dirtyFieldsRef,
+          touchedFieldsRef,
         }),
         name: 'test',
       }),
@@ -449,9 +545,39 @@ describe('useFieldArray', () => {
     });
 
     expect(result.current.fields).toEqual([{ test: '2', id: '1' }]);
+    expect(dirtyFieldsRef.current).toEqual({
+      test: [
+        {
+          test1: 1,
+        },
+      ],
+    });
+    expect(touchedFieldsRef.current).toEqual({
+      test: [
+        {
+          test1: 1,
+        },
+      ],
+    });
   });
 
   it('should insert data at index', () => {
+    const dirtyFieldsRef = {
+      current: {
+        test: [
+          {
+            test: 1,
+          },
+          {
+            test1: 1,
+          },
+          {
+            test2: 1,
+          },
+        ],
+      },
+    };
+
     const { result } = renderHook(() =>
       useFieldArray({
         control: reconfigureControl({
@@ -467,6 +593,12 @@ describe('useFieldArray', () => {
               'test[1]': { ref: { name: 'test[1]', value: { test: '2' } } },
             },
           },
+          readFormStateRef: {
+            current: {
+              dirtyFields: true,
+            },
+          } as any,
+          dirtyFieldsRef,
         }),
         name: 'test',
       }),
@@ -493,6 +625,22 @@ describe('useFieldArray', () => {
       { id: '1', test: '3' },
       { id: '1', test: '2' },
     ]);
+    expect(dirtyFieldsRef.current).toEqual({
+      test: [
+        {
+          test: 1,
+        },
+        { test: true },
+        { test: true },
+        { test: true },
+        {
+          test1: 1,
+        },
+        {
+          test2: 1,
+        },
+      ],
+    });
   });
 
   it('should insert touched fields', () => {
@@ -625,6 +773,22 @@ describe('useFieldArray', () => {
   });
 
   it('should swap data order', () => {
+    const dirtyFieldsRef = {
+      current: {
+        test: [
+          {
+            test: 1,
+          },
+          {
+            test1: 1,
+          },
+          {
+            test2: 1,
+          },
+        ],
+      },
+    };
+
     const { result } = renderHook(() =>
       useFieldArray({
         control: reconfigureControl({
@@ -640,6 +804,12 @@ describe('useFieldArray', () => {
               'test[1]': { ref: { name: 'test[1]', value: { test: '2' } } },
             },
           },
+          readFormStateRef: {
+            current: {
+              dirtyFields: true,
+            },
+          } as any,
+          dirtyFieldsRef,
         }),
         name: 'test',
       }),
@@ -653,6 +823,20 @@ describe('useFieldArray', () => {
       { id: '1', test: '2' },
       { id: '1', test: '1' },
     ]);
+
+    expect(dirtyFieldsRef.current).toEqual({
+      test: [
+        {
+          test1: 1,
+        },
+        {
+          test: 1,
+        },
+        {
+          test2: 1,
+        },
+      ],
+    });
   });
 
   it('should swap errors', () => {
@@ -735,6 +919,22 @@ describe('useFieldArray', () => {
   });
 
   it('should move into pointed position', () => {
+    const dirtyFieldsRef = {
+      current: {
+        test: [
+          {
+            test: 1,
+          },
+          {
+            test1: 1,
+          },
+          {
+            test2: 1,
+          },
+        ],
+      },
+    };
+
     const { result } = renderHook(() =>
       useFieldArray({
         control: reconfigureControl({
@@ -744,6 +944,11 @@ describe('useFieldArray', () => {
           getValues: () => ({
             test: [],
           }),
+          readFormStateRef: {
+            current: {
+              dirtyFields: true,
+            },
+          } as any,
           fieldsRef: {
             current: {
               'test[0]': { ref: { name: 'test[0]', value: { test: '1' } } },
@@ -751,6 +956,7 @@ describe('useFieldArray', () => {
               'test[2]': { ref: { name: 'test[2]', value: { test: '3' } } },
             },
           },
+          dirtyFieldsRef,
         }),
         name: 'test',
       }),
@@ -765,6 +971,20 @@ describe('useFieldArray', () => {
       { id: '1', test: '1' },
       { id: '1', test: '2' },
     ]);
+
+    expect(dirtyFieldsRef.current).toEqual({
+      test: [
+        {
+          test2: 1,
+        },
+        {
+          test: 1,
+        },
+        {
+          test1: 1,
+        },
+      ],
+    });
   });
 
   it('should move errors', () => {

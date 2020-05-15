@@ -9,11 +9,13 @@ function mapValueToBoolean(value: any) {
       object[key] = true;
     }
 
-    return object;
+    return [object];
   }
 
   return [true];
 }
 
-export const filterBooleanArray = (value: any): any[] =>
-  isArray(value) ? value.map(mapValueToBoolean) : mapValueToBoolean(value);
+export const filterBooleanArray = <T>(value: T): T[] =>
+  isArray(value)
+    ? value.map(mapValueToBoolean).flat()
+    : mapValueToBoolean(value);
