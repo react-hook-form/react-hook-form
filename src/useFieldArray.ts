@@ -5,7 +5,6 @@ import getFieldValueByName from './logic/getFieldArrayValueByName';
 import { appendId, mapIds } from './logic/mapIds';
 import getIsFieldsDifferent from './logic/getIsFieldsDifferent';
 import getFieldArrayParentName from './logic/getFieldArrayParentName';
-import getSortRemovedItems from './logic/getSortedArrayFieldIndexes';
 import get from './utils/get';
 import isUndefined from './utils/isUndefined';
 import removeArrayAt from './utils/remove';
@@ -16,7 +15,7 @@ import isArray from './utils/isArray';
 import insertAt from './utils/insert';
 import isKey from './utils/isKey';
 import fillEmptyArray from './utils/fillEmptyArray';
-import { REGEX_ARRAY_FIELD_INDEX } from './constants';
+import { filterBooleanArray } from './utils/filterBooleanArray';
 import {
   Field,
   FieldValues,
@@ -56,6 +55,7 @@ export const useFieldArray = <
     validateSchemaIsValid,
     renderWatchedInputs,
   } = control || methods.control;
+  let shouldRender;
   const getDefaultValues = () => [
     ...get(
       fieldArrayDefaultValues.current[getFieldArrayParentName(name)]
@@ -98,101 +98,10 @@ export const useFieldArray = <
     }
   };
 
-  const modifyDirtyFields = ({
-    shouldRender,
-    isRemove,
-    isPrePend,
-    index,
-    value = {},
-  }: {
-    isPrePend?: boolean;
-    shouldRender?: boolean;
-    isRemove?: boolean;
-    index?: number | number[];
-    value?: Partial<TFieldArrayValues> | Partial<TFieldArrayValues>[];
-  } = {}) => {
-    let render = shouldRender;
-    const values = isArray(value) ? value : [value];
-
-    if (readFormStateRef.current.dirty) {
-      const dirtyFieldIndexesAndValues: Record<number, string[]> = {};
-
-      if (isPrePend || isRemove) {
-        for (const dirtyField of [...dirtyFieldsRef.current].sort()) {
-          if (isMatchFieldArrayName(dirtyField, name)) {
-            const matchedIndexes = dirtyField.match(REGEX_ARRAY_FIELD_INDEX);
-
-            if (matchedIndexes) {
-              const matchIndex = +matchedIndexes[matchedIndexes.length - 1];
-
-              if (dirtyFieldIndexesAndValues[matchIndex]) {
-                dirtyFieldIndexesAndValues[matchIndex].push(dirtyField);
-              } else {
-                dirtyFieldIndexesAndValues[matchIndex] = [dirtyField];
-              }
-            }
-
-            dirtyFieldsRef.current.delete(dirtyField);
-          }
-        }
-      }
-
-      if (!isUndefined(index) || isPrePend) {
-        const updatedDirtyFieldIndexes = isUndefined(index)
-          ? []
-          : getSortRemovedItems(
-              Object.keys(dirtyFieldIndexesAndValues).map((i) => +i),
-              isArray(index) ? index : [index],
-            );
-
-        Object.values(dirtyFieldIndexesAndValues).forEach((values, index) => {
-          const updateIndex = isPrePend ? 0 : updatedDirtyFieldIndexes[index];
-
-          if (updateIndex > -1) {
-            for (const value of values) {
-              const matchedIndexes = value.match(REGEX_ARRAY_FIELD_INDEX);
-
-              if (matchedIndexes) {
-                dirtyFieldsRef.current.add(
-                  value.replace(
-                    /[\d+]([^[\d+]+)$/,
-                    `${
-                      isPrePend
-                        ? +matchedIndexes[matchedIndexes.length - 1] +
-                          values.length
-                        : updateIndex
-                    }$1`,
-                  ),
-                );
-              }
-            }
-          }
-        });
-      }
-
-      if (!isRemove) {
-        values.forEach((fieldValue, index) =>
-          Object.keys(fieldValue).forEach((key) =>
-            dirtyFieldsRef.current.add(
-              `${name}[${
-                isPrePend ? index : allFields.current.length + index
-              }].${key}`,
-            ),
-          ),
-        );
-
-        isDirtyRef.current = true;
-      }
-
-      render = true;
-    }
-
-    if (render && !isWatchAllRef.current) {
-      reRender();
-    } else {
-      renderWatchedInputs(name);
-    }
-  };
+  const shouldRenderFieldArray = (shouldRender: boolean) =>
+    shouldRender && !isWatchAllRef.current
+      ? reRender()
+      : renderWatchedInputs(name);
 
   const resetFields = (
     flagOrFields?: (Partial<TFieldArrayValues> | null)[],
@@ -232,19 +141,30 @@ export const useFieldArray = <
   const append = (
     value: Partial<TFieldArrayValues> | Partial<TFieldArrayValues>[],
   ) => {
+    shouldRender = false;
     setFieldAndValidState([
       ...allFields.current,
       ...(isArray(value)
         ? appendValueWithKey(value)
         : [appendId(value, keyName)]),
     ]);
-    modifyDirtyFields({ value });
+
+    if (readFormStateRef.current.dirtyFields && dirtyFieldsRef.current[name]) {
+      dirtyFieldsRef.current[name] = [
+        ...dirtyFieldsRef.current[name],
+        ...filterBooleanArray(value),
+      ];
+      shouldRender = true;
+    }
+
+    shouldRenderFieldArray(shouldRender);
   };
 
   const prepend = (
     value: Partial<TFieldArrayValues> | Partial<TFieldArrayValues>[],
   ) => {
-    let shouldRender = false;
+    const emptyArray = fillEmptyArray(value);
+    shouldRender = false;
 
     resetFields();
     setFieldAndValidState(
@@ -255,30 +175,31 @@ export const useFieldArray = <
     );
 
     if (errorsRef.current[name]) {
-      errorsRef.current[name] = prependAt(
-        errorsRef.current[name],
-        fillEmptyArray(value),
-      );
+      errorsRef.current[name] = prependAt(errorsRef.current[name], emptyArray);
     }
 
     if (readFormStateRef.current.touched && touchedFieldsRef.current[name]) {
       touchedFieldsRef.current[name] = prependAt(
         touchedFieldsRef.current[name],
-        fillEmptyArray(value),
+        emptyArray,
       );
       shouldRender = true;
     }
 
-    modifyDirtyFields({
-      shouldRender,
-      isPrePend: true,
-      value,
-    });
+    if (readFormStateRef.current.dirtyFields && dirtyFieldsRef.current[name]) {
+      dirtyFieldsRef.current[name] = prependAt(
+        touchedFieldsRef.current[name],
+        filterBooleanArray(value),
+      );
+      shouldRender = true;
+    }
+
+    shouldRenderFieldArray(shouldRender);
   };
 
   const remove = (index?: number | number[]) => {
-    let shouldRender = false;
     const isIndexUndefined = isUndefined(index);
+    shouldRender = false;
 
     if (!isIndexUndefined) {
       mapCurrentFieldsValueWithState();
@@ -300,6 +221,14 @@ export const useFieldArray = <
     if (readFormStateRef.current.touched && touchedFieldsRef.current[name]) {
       touchedFieldsRef.current[name] = removeArrayAt(
         touchedFieldsRef.current[name],
+        index,
+      );
+      shouldRender = true;
+    }
+
+    if (readFormStateRef.current.dirtyFields && dirtyFieldsRef.current[name]) {
+      dirtyFieldsRef.current[name] = removeArrayAt(
+        dirtyFieldsRef.current[name],
         index,
       );
       shouldRender = true;
@@ -343,17 +272,16 @@ export const useFieldArray = <
       }
     }
 
-    modifyDirtyFields({
-      shouldRender,
-      isRemove: true,
-      index,
-    });
+    shouldRenderFieldArray(shouldRender);
   };
 
   const insert = (
     index: number,
     value: Partial<TFieldArrayValues> | Partial<TFieldArrayValues>[],
   ) => {
+    shouldRender = false;
+    const emptyArray = fillEmptyArray(value);
+
     mapCurrentFieldsValueWithState();
     resetFields(insertAt(getFieldValueByName(fieldsRef.current, name), index));
     setFieldAndValidState(
@@ -368,7 +296,7 @@ export const useFieldArray = <
       errorsRef.current[name] = insertAt(
         errorsRef.current[name],
         index,
-        fillEmptyArray(value),
+        emptyArray,
       );
     }
 
@@ -376,13 +304,26 @@ export const useFieldArray = <
       touchedFieldsRef.current[name] = insertAt(
         touchedFieldsRef.current[name],
         index,
-        fillEmptyArray(value),
+        emptyArray,
       );
-      reRender();
+      shouldRender = true;
     }
+
+    if (readFormStateRef.current.dirtyFields && dirtyFieldsRef.current[name]) {
+      dirtyFieldsRef.current[name] = insertAt(
+        dirtyFieldsRef.current[name],
+        index,
+        emptyArray,
+      );
+      shouldRender = true;
+    }
+
+    shouldRenderFieldArray(shouldRender);
   };
 
   const swap = (indexA: number, indexB: number) => {
+    shouldRender = false;
+
     mapCurrentFieldsValueWithState();
     const fieldValues = getFieldValueByName(fieldsRef.current, name);
     swapArrayAt(fieldValues, indexA, indexB);
@@ -397,10 +338,20 @@ export const useFieldArray = <
     if (readFormStateRef.current.touched && touchedFieldsRef.current[name]) {
       swapArrayAt(touchedFieldsRef.current[name], indexA, indexB);
       reRender();
+      shouldRender = true;
     }
+
+    if (readFormStateRef.current.dirtyFields && dirtyFieldsRef.current[name]) {
+      swapArrayAt(dirtyFieldsRef.current[name], indexA, indexB);
+      reRender();
+      shouldRender = true;
+    }
+
+    shouldRenderFieldArray(shouldRender);
   };
 
   const move = (from: number, to: number) => {
+    shouldRender = false;
     mapCurrentFieldsValueWithState();
     const fieldValues = getFieldValueByName(fieldsRef.current, name);
     moveArrayAt(fieldValues, from, to);
@@ -414,8 +365,15 @@ export const useFieldArray = <
 
     if (readFormStateRef.current.touched && touchedFieldsRef.current[name]) {
       moveArrayAt(touchedFieldsRef.current[name], from, to);
-      reRender();
+      shouldRender = true;
     }
+
+    if (readFormStateRef.current.dirtyFields && dirtyFieldsRef.current[name]) {
+      moveArrayAt(dirtyFieldsRef.current[name], from, to);
+      shouldRender = true;
+    }
+
+    shouldRenderFieldArray(shouldRender);
   };
 
   const reset = () => {

@@ -31,7 +31,7 @@ export const reconfigureControl = (
     current: new Set(),
   },
   dirtyFieldsRef: {
-    current: new Set(),
+    current: {},
   },
   watchFieldsHookRef: {
     current: {},
@@ -58,7 +58,7 @@ export const reconfigureControl = (
   formState: {
     dirty: false,
     isSubmitted: false,
-    dirtyFields: new Set(),
+    dirtyFields: {},
     submitCount: 0,
     touched: {},
     isSubmitting: false,

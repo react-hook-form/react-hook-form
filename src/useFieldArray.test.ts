@@ -21,6 +21,18 @@ describe('useFieldArray', () => {
   });
 
   it('should append data into the fields', () => {
+    const dirtyFieldsRef = {
+      current: {
+        test: [],
+      },
+    };
+
+    const touchedFieldsRef = {
+      current: {
+        test: [],
+      },
+    };
+
     const { result } = renderHook(() =>
       useFieldArray({
         control: {
@@ -28,6 +40,14 @@ describe('useFieldArray', () => {
           getValues: () => ({
             test: [],
           }),
+          readFormStateRef: {
+            current: {
+              touched: true,
+              dirtyFields: true,
+            },
+          } as any,
+          dirtyFieldsRef,
+          touchedFieldsRef,
         },
         name: 'test',
       }),
@@ -69,9 +89,25 @@ describe('useFieldArray', () => {
       { id: '1', test: 'test2' },
       { id: '1', test: 'test3' },
     ]);
+
+    expect(dirtyFieldsRef.current).toEqual({
+      test: [true, true, true, true, true],
+    });
   });
 
   it('should pre-append data into the fields', () => {
+    const dirtyFieldsRef = {
+      current: {
+        test: [],
+      },
+    };
+
+    const touchedFieldsRef = {
+      current: {
+        test: [],
+      },
+    };
+
     const { result } = renderHook(() =>
       useFieldArray({
         control: {
@@ -79,6 +115,14 @@ describe('useFieldArray', () => {
           getValues: () => ({
             test: [],
           }),
+          readFormStateRef: {
+            current: {
+              touched: true,
+              dirtyFields: true,
+            },
+          } as any,
+          dirtyFieldsRef,
+          touchedFieldsRef,
         },
         name: 'test',
       }),
@@ -120,6 +164,10 @@ describe('useFieldArray', () => {
       { id: '1', test: 'test1' },
       { id: '1', test: 'test' },
     ]);
+
+    expect(dirtyFieldsRef.current).toEqual({
+      test: [true, true, true, true, true, true, true],
+    });
   });
 
   it('should prepend error', () => {
@@ -227,7 +275,15 @@ describe('useFieldArray', () => {
 
   it('should remove field according index', () => {
     const dirtyFieldsRef = {
-      current: new Set(['test[0]', 'test[1]']),
+      current: {
+        test: [true, true],
+      },
+    };
+
+    const touchedFieldsRef = {
+      current: {
+        test: [true, true],
+      },
     };
 
     const { result } = renderHook(() =>
@@ -240,6 +296,12 @@ describe('useFieldArray', () => {
             getValues: () => ({
               test: [],
             }),
+            readFormStateRef: {
+              current: {
+                touched: true,
+                dirtyFields: true,
+              },
+            } as any,
             fieldsRef: {
               current: {
                 'test[0]': { ref: { name: 'test[0]', value: { test: '1' } } },
@@ -248,16 +310,23 @@ describe('useFieldArray', () => {
             },
           }),
           dirtyFieldsRef,
+          touchedFieldsRef,
         },
         name: 'test',
       }),
     );
 
     act(() => {
-      result.current.remove(1);
+      result.current.remove(0);
     });
 
-    expect(dirtyFieldsRef.current).toEqual(new Set(['test[0]']));
+    expect(dirtyFieldsRef.current).toEqual({
+      test: [true],
+    });
+
+    expect(touchedFieldsRef.current).toEqual({
+      test: [true],
+    });
   });
 
   it('should remove error', () => {

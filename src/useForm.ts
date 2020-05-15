@@ -86,9 +86,7 @@ export function useForm<
   const watchFieldsRef = React.useRef(
     new Set<InternalFieldName<TFieldValues>>(),
   );
-  const dirtyFieldsRef = React.useRef(
-    new Set<InternalFieldName<TFieldValues>>(),
-  );
+  const dirtyFieldsRef = React.useRef<Touched<TFieldValues>>({});
   const watchFieldsHookRef = React.useRef<
     Record<string, Set<InternalFieldName<TFieldValues>>>
   >({});
@@ -266,7 +264,6 @@ export function useForm<
         defaultValuesAtRenderRef.current[name] !==
         getFieldValue(fieldsRef.current, fieldsRef.current[name]!.ref);
       const isFieldArray = isNameInFieldArray(fieldArrayNamesRef.current, name);
-      const previousDirtyFieldsLength = dirtyFieldsRef.current.size;
 
       if (isFieldArray) {
         const fieldArrayName = getFieldArrayParentName(name);
@@ -279,20 +276,18 @@ export function useForm<
       const isDirtyChanged =
         (isFieldArray
           ? isDirtyRef.current
-          : dirtyFieldsRef.current.has(name)) !== isFieldDirty;
+          : get(dirtyFieldsRef.current, name)) !== isFieldDirty;
 
       if (isFieldDirty) {
-        dirtyFieldsRef.current.add(name);
+        set(dirtyFieldsRef.current, name, true);
       } else {
-        dirtyFieldsRef.current.delete(name);
+        unset(dirtyFieldsRef.current, [name]);
       }
 
       isDirtyRef.current = isFieldArray
         ? isFieldDirty
         : !!dirtyFieldsRef.current.size;
-      return readFormStateRef.current.dirty
-        ? isDirtyChanged
-        : previousDirtyFieldsLength !== dirtyFieldsRef.current.size;
+      return readFormStateRef.current.dirty && isDirtyChanged;
     },
     [],
   );
@@ -649,12 +644,12 @@ export function useForm<
 
       errorsRef.current = unset(errorsRef.current, [name]);
       touchedFieldsRef.current = unset(touchedFieldsRef.current, [name]);
+      dirtyFieldsRef.current = unset(dirtyFieldsRef.current, [name]);
       defaultValuesAtRenderRef.current = unset(
         defaultValuesAtRenderRef.current,
         [name],
       );
       [
-        dirtyFieldsRef,
         fieldsWithValidationRef,
         validFieldsRef,
         watchFieldsRef,
@@ -1109,7 +1104,7 @@ export function useForm<
     }
 
     if (!dirtyFields) {
-      dirtyFieldsRef.current = new Set();
+      dirtyFieldsRef.current = {};
     }
 
     if (!isSubmitted) {
