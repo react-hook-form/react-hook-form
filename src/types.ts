@@ -6,7 +6,7 @@ export type IsAny<T> = boolean extends (T extends never ? true : false)
   : false;
 
 export type IsFlatObject<T extends object> = Extract<
-  Exclude<T[keyof T], NestedValue>,
+  Exclude<T[keyof T], NestedValue | Date | FileList>,
   any[] | object
 > extends never
   ? true
