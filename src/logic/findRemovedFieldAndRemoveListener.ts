@@ -42,7 +42,7 @@ export default function findRemovedFieldAndRemoveListener<
             mutationWatcher.disconnect();
           }
 
-          unset(options, [`[${index}]`]);
+          unset(options, `[${index}]`);
         }
       });
 

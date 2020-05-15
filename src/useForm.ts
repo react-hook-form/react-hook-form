@@ -181,7 +181,7 @@ export function useForm<
           shouldReRender = shouldReRender || get(errorsRef.current, name);
         }
 
-        errorsRef.current = unset(errorsRef.current, [name]);
+        errorsRef.current = unset(errorsRef.current, name);
       } else {
         const previousError = get(errorsRef.current, name);
         validFieldsRef.current.delete(name);
@@ -281,7 +281,7 @@ export function useForm<
       if (isFieldDirty) {
         set(dirtyFieldsRef.current, name, true);
       } else {
-        unset(dirtyFieldsRef.current, [name]);
+        unset(dirtyFieldsRef.current, name);
       }
 
       isDirtyRef.current = isFieldArray
@@ -385,7 +385,7 @@ export function useForm<
             if (error) {
               set(errorsRef.current, name, error);
             } else {
-              unset(errorsRef.current, [name]);
+              unset(errorsRef.current, name);
             }
           });
           reRender();
@@ -642,13 +642,12 @@ export function useForm<
 
       const { name } = field.ref;
 
-      errorsRef.current = unset(errorsRef.current, [name]);
-      touchedFieldsRef.current = unset(touchedFieldsRef.current, [name]);
-      dirtyFieldsRef.current = unset(dirtyFieldsRef.current, [name]);
-      defaultValuesAtRenderRef.current = unset(
-        defaultValuesAtRenderRef.current,
-        [name],
-      );
+      [
+        errorsRef,
+        touchedFieldsRef,
+        dirtyFieldsRef,
+        defaultValuesAtRenderRef,
+      ].forEach((data) => unset(data.current, name));
       [
         fieldsWithValidationRef,
         validFieldsRef,
@@ -673,7 +672,9 @@ export function useForm<
     name?: FieldName<TFieldValues> | FieldName<TFieldValues>[],
   ): void {
     if (name) {
-      unset(errorsRef.current, isArray(name) ? name : [name]);
+      (isArray(name) ? name : [name]).forEach((inputName) =>
+        unset(errorsRef.current, inputName),
+      );
     } else {
       errorsRef.current = {};
     }

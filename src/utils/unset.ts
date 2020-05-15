@@ -84,9 +84,7 @@ function baseUnset(object: any, path: string) {
   return result;
 }
 
-export default function unset(object: any, paths: string[]) {
-  paths.forEach((path) => {
-    baseUnset(object, path);
-  });
+export default function unset(object: any, path: string) {
+  baseUnset(object, path);
   return object;
 }
