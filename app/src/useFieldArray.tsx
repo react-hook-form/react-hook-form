@@ -138,7 +138,7 @@ const UseFieldArray: React.FC = (props: any) => {
       <div id="result">{JSON.stringify(data)}</div>
       <div id="dirty">{dirty ? 'yes' : 'no'}</div>
       <div id="isValid">{isValid ? 'yes' : 'no'}</div>
-      <div id="dirtyFields">{JSON.stringify([...dirtyFields])}</div>
+      <div id="dirtyFields">{JSON.stringify(dirtyFields)}</div>
       <div id="touched">{JSON.stringify(touched.data)}</div>
     </form>
   );
