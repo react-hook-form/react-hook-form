@@ -261,6 +261,7 @@ export function useForm<
         defaultValuesAtRenderRef.current[name] !==
         getFieldValue(fieldsRef.current, fieldsRef.current[name]!.ref);
       const isFieldArray = isNameInFieldArray(fieldArrayNamesRef.current, name);
+      const previousIsDirty = isDirtyRef.current;
 
       if (isFieldArray) {
         const fieldArrayName = getFieldArrayParentName(name);
@@ -269,11 +270,6 @@ export function useForm<
           get(defaultValuesRef.current, fieldArrayName),
         );
       }
-
-      const isDirtyChanged =
-        (isFieldArray
-          ? isDirtyRef.current
-          : get(dirtyFieldsRef.current, name)) !== isFieldDirty;
 
       if (isFieldDirty) {
         set(dirtyFieldsRef.current, name, true);
@@ -285,7 +281,7 @@ export function useForm<
         ? isFieldDirty
         : !isEmptyObject(dirtyFieldsRef.current);
 
-      return readFormStateRef.current.isDirty && isDirtyChanged;
+      return previousIsDirty !== isDirtyRef.current;
     },
     [],
   );

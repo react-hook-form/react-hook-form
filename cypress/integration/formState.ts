@@ -36,7 +36,7 @@ context('form state', () => {
     cy.get('#state').contains(
       '{"dirtyFields":["firstName","lastName"],"isSubmitted":true,"submitCount":2,"touched":["firstName","lastName"],"isDirty":true,"isSubmitting":false,"isValid":true}',
     );
-    cy.get('#renderCount').contains('15');
+    cy.get('#renderCount').contains('12');
   });
 
   it('should return correct form state with onChange mode', () => {
@@ -76,7 +76,7 @@ context('form state', () => {
     cy.get('#state').contains(
       '{"dirtyFields":["firstName","lastName"],"isSubmitted":true,"submitCount":2,"touched":["firstName","lastName"],"isDirty":true,"isSubmitting":false,"isValid":true}',
     );
-    cy.get('#renderCount').contains('16');
+    cy.get('#renderCount').contains('15');
   });
 
   it('should return correct form state with onBlur mode', () => {
@@ -116,7 +116,7 @@ context('form state', () => {
     cy.get('#state').contains(
       '{"dirtyFields":["firstName","lastName"],"isSubmitted":true,"submitCount":2,"touched":["firstName","lastName"],"isDirty":true,"isSubmitting":false,"isValid":true}',
     );
-    cy.get('#renderCount').contains('16');
+    cy.get('#renderCount').contains('14');
   });
 
   it('should reset dirty value when inputs reset back to default with onSubmit mode', () => {
@@ -178,7 +178,7 @@ context('form state', () => {
     cy.get('#state').contains(
       '{"dirtyFields":["radio"],"isSubmitted":false,"submitCount":0,"touched":["firstName","lastName","select","checkbox","checkbox-checked","radio"],"isDirty":true,"isSubmitting":false,"isValid":false}',
     );
-    cy.get('#renderCount').contains('24');
+    cy.get('#renderCount').contains('16');
   });
 
   it('should reset dirty value when inputs reset back to default with onBlur mode', () => {
@@ -199,7 +199,7 @@ context('form state', () => {
     cy.get('#state').contains(
       '{"dirtyFields":[],"isSubmitted":false,"submitCount":0,"touched":["firstName","lastName"],"isDirty":false,"isSubmitting":false,"isValid":false}',
     );
-    cy.get('#renderCount').contains('10');
+    cy.get('#renderCount').contains('8');
   });
 
   it('should reset dirty value when inputs reset back to default with onChange mode', () => {
@@ -231,6 +231,6 @@ context('form state', () => {
       '{"dirtyFields":[],"isSubmitted":false,"submitCount":0,"touched":["firstName","lastName"],"isDirty":false,"isSubmitting":false,"isValid":false}',
     );
 
-    cy.get('#renderCount').contains('15');
+    cy.get('#renderCount').contains('14');
   });
 });
