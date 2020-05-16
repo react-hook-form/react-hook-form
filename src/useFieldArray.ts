@@ -98,10 +98,18 @@ export const useFieldArray = <
     }
   };
 
-  const shouldRenderFieldArray = (shouldRender: boolean) =>
+  const shouldRenderFieldArray = (
+    shouldRender: boolean,
+    shouldUpdateDirty = true,
+  ) => {
+    if (shouldUpdateDirty) {
+      isDirtyRef.current = true;
+    }
+
     shouldRender && !isWatchAllRef.current
       ? reRender()
       : renderWatchedInputs(name);
+  };
 
   const resetFields = (
     flagOrFields?: (Partial<TFieldArrayValues> | null)[],
@@ -272,7 +280,7 @@ export const useFieldArray = <
       }
     }
 
-    shouldRenderFieldArray(shouldRender);
+    shouldRenderFieldArray(shouldRender, false);
   };
 
   const insert = (
