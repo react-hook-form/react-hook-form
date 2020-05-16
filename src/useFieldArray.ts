@@ -16,6 +16,7 @@ import insertAt from './utils/insert';
 import isKey from './utils/isKey';
 import fillEmptyArray from './utils/fillEmptyArray';
 import { filterBooleanArray } from './utils/filterBooleanArray';
+import unique from './utils/unique';
 import {
   Field,
   FieldValues,
@@ -221,7 +222,7 @@ export const useFieldArray = <
 
     if (errorsRef.current[name]) {
       errorsRef.current[name] = removeArrayAt(errorsRef.current[name], index);
-      if (!errorsRef.current[name].filter(Boolean).length) {
+      if (!unique(errorsRef.current[name]).length) {
         delete errorsRef.current[name];
       }
     }

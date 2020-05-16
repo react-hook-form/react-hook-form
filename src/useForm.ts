@@ -32,6 +32,7 @@ import set from './utils/set';
 import unset from './utils/unset';
 import modeChecker from './utils/validationModeChecker';
 import isMultipleSelect from './utils/isMultipleSelect';
+import unique from './utils/unique';
 import isNullOrUndefined from './utils/isNullOrUndefined';
 import isRadioOrCheckboxFunction from './utils/isRadioOrCheckbox';
 import isHTMLElement from './utils/isHTMLElement';
@@ -871,7 +872,7 @@ export function useForm<
       isRadioOrCheckbox
         ? field &&
           isArray(field.options) &&
-          field.options.filter(Boolean).find((option) => {
+          unique(field.options).find((option) => {
             return value === option.ref.value && option.ref === ref;
           })
         : field && ref === field.ref

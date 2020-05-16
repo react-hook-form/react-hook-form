@@ -4,6 +4,7 @@ import isCheckBoxInput from '../utils/isCheckBoxInput';
 import isDetached from '../utils/isDetached';
 import isArray from '../utils/isArray';
 import unset from '../utils/unset';
+import unique from '../utils/unique';
 import { Field, FieldRefs, FieldValues, Ref } from '../types';
 
 const isSameRef = (fieldValue: Field, ref: Ref) =>
@@ -33,7 +34,7 @@ export default function findRemovedFieldAndRemoveListener<
     const { options } = fieldValue;
 
     if (isArray(options) && options.length) {
-      options.filter(Boolean).forEach((option, index): void => {
+      unique(options).forEach((option, index): void => {
         const { ref, mutationWatcher } = option;
         if ((ref && isDetached(ref) && isSameRef(option, ref)) || forceDelete) {
           removeAllEventListeners(ref, handleChange);
@@ -46,7 +47,7 @@ export default function findRemovedFieldAndRemoveListener<
         }
       });
 
-      if (options && !options.filter(Boolean).length) {
+      if (options && !unique(options).length) {
         delete fields[name];
       }
     } else {
