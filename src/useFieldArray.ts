@@ -115,7 +115,7 @@ export const useFieldArray = <
   const resetFields = (
     flagOrFields?: (Partial<TFieldArrayValues> | null)[],
   ) => {
-    if (readFormStateRef.current.dirty) {
+    if (readFormStateRef.current.isDirty) {
       isDirtyRef.current = isUndefined(flagOrFields)
         ? true
         : getIsFieldsDifferent(

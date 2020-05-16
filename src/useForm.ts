@@ -139,7 +139,7 @@ export function useForm<
     !isUndefined(window.HTMLElement);
   const isProxyEnabled = isWeb ? 'Proxy' in window : typeof Proxy !== UNDEFINED;
   const readFormStateRef = React.useRef<ReadFormState>({
-    dirty: !isProxyEnabled,
+    isDirty: !isProxyEnabled,
     dirtyFields: !isProxyEnabled,
     isSubmitted: isOnSubmit,
     submitCount: !isProxyEnabled,
@@ -253,11 +253,7 @@ export function useForm<
 
   const setDirty = React.useCallback(
     (name: InternalFieldName<TFieldValues>): boolean => {
-      if (
-        !fieldsRef.current[name] ||
-        (!readFormStateRef.current.dirty &&
-          !readFormStateRef.current.dirtyFields)
-      ) {
+      if (!fieldsRef.current[name] || !readFormStateRef.current.isDirty) {
         return false;
       }
 
@@ -287,8 +283,9 @@ export function useForm<
 
       isDirtyRef.current = isFieldArray
         ? isFieldDirty
-        : !!dirtyFieldsRef.current.size;
-      return readFormStateRef.current.dirty && isDirtyChanged;
+        : !isEmptyObject(dirtyFieldsRef.current);
+
+      return readFormStateRef.current.isDirty && isDirtyChanged;
     },
     [],
   );
@@ -1079,7 +1076,7 @@ export function useForm<
 
   const resetRefs = ({
     errors,
-    dirty,
+    isDirty,
     isSubmitted,
     touched,
     isValid,
@@ -1101,7 +1098,7 @@ export function useForm<
       isValidRef.current = true;
     }
 
-    if (!dirty) {
+    if (!isDirty) {
       isDirtyRef.current = false;
     }
 
@@ -1218,11 +1215,11 @@ export function useForm<
   }
 
   const formState = {
-    dirty: isDirtyRef.current,
     dirtyFields: dirtyFieldsRef.current,
     isSubmitted: isSubmittedRef.current,
     submitCount: submitCountRef.current,
     touched: touchedFieldsRef.current,
+    isDirty: isDirtyRef.current,
     isSubmitting: isSubmittingRef.current,
     isValid: isOnSubmit
       ? isSubmittedRef.current && isEmptyObject(errorsRef.current)

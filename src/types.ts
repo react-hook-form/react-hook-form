@@ -210,7 +210,7 @@ export type Dirtyed<TFieldValues extends FieldValues> = DeepMap<
 >;
 
 export type FormStateProxy<TFieldValues extends FieldValues = FieldValues> = {
-  dirty: boolean;
+  isDirty: boolean;
   dirtyFields: Dirtyed<TFieldValues>;
   isSubmitted: boolean;
   submitCount: number;
@@ -283,7 +283,7 @@ export type Control<TFieldValues extends FieldValues = FieldValues> = Pick<
   fieldArrayNamesRef: React.MutableRefObject<Set<string>>;
   isDirtyRef: React.MutableRefObject<boolean>;
   readFormStateRef: React.MutableRefObject<{
-    dirty: boolean;
+    isDirty: boolean;
     isSubmitted: boolean;
     submitCount: boolean;
     touched: boolean;
@@ -359,7 +359,7 @@ export type ArrayField<
 
 export type OmitResetState = Partial<{
   errors: boolean;
-  dirty: boolean;
+  isDirty: boolean;
   dirtyFields: boolean;
   isSubmitted: boolean;
   touched: boolean;

@@ -55,8 +55,10 @@ const SetValueCustomRegister: React.FC = () => {
         WithOutError
       </button>
 
-      <div id="dirty">{formState.dirty.toString()}</div>
-      <div id="touched">{Object.keys(formState.touched).map(touch => touch)}</div>
+      <div id="dirty">{formState.isDirty.toString()}</div>
+      <div id="touched">
+        {Object.keys(formState.touched).map((touch) => touch)}
+      </div>
       <div id="renderCount">{renderCounter}</div>
     </form>
   );
