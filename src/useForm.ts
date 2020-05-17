@@ -255,13 +255,14 @@ export function useForm<
     (name: InternalFieldName<TFieldValues>): boolean => {
       const { isDirty, dirtyFields } = readFormStateRef.current;
 
-      if (!fieldsRef.current[name] || !isDirty || !dirtyFields) {
+      if (!fieldsRef.current[name] || (!isDirty && !dirtyFields)) {
         return false;
       }
 
       let isFieldDirty =
         defaultValuesAtRenderRef.current[name] !==
         getFieldValue(fieldsRef.current, fieldsRef.current[name]!.ref);
+      const isDirtyFieldExist = get(dirtyFieldsRef.current, name);
       const isFieldArray = isNameInFieldArray(fieldArrayNamesRef.current, name);
       const previousIsDirty = isDirtyRef.current;
 
@@ -285,7 +286,7 @@ export function useForm<
 
       return (
         (isDirty && previousIsDirty !== isDirtyRef.current) ||
-        (dirtyFields && isFieldDirty)
+        (dirtyFields && isDirtyFieldExist !== get(dirtyFieldsRef.current, name))
       );
     },
     [],
