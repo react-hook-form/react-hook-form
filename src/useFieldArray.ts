@@ -158,9 +158,9 @@ export const useFieldArray = <
         : [appendId(value, keyName)]),
     ]);
 
-    if (readFormStateRef.current.dirtyFields && dirtyFieldsRef.current[name]) {
+    if (readFormStateRef.current.dirtyFields) {
       dirtyFieldsRef.current[name] = [
-        ...dirtyFieldsRef.current[name],
+        ...(dirtyFieldsRef.current[name] || []),
         ...filterBooleanArray(value),
       ];
       shouldRender = true;

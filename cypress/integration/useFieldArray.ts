@@ -190,13 +190,13 @@ context('useFieldArray', () => {
     cy.get('#field1').type('test');
     cy.get('#prepend').click();
     cy.get('#delete2').click();
-    cy.get('#dirtyFields').contains('["data[0].name","data[3].name"]');
+    cy.get('#dirtyFields').contains('{"data":[{"name":true},{"name":true}]}');
     cy.get('#delete2').click();
-    cy.get('#dirtyFields').contains('["data[0].name","data[2].name"]');
-    cy.get('#delete2').click();
-    cy.get('#dirtyFields').contains('["data[0].name"]');
+    cy.get('#dirtyFields').contains('{"data":[{"name":true},{"name":true}]}');
     cy.get('#delete1').click();
-    cy.get('#dirtyFields').contains('["data[0].name"]');
+    cy.get('#dirtyFields').contains('{"data":[{"name":true}]}');
+    cy.get('#delete1').click();
+    cy.get('#dirtyFields').contains('{"data":[{"name":true}]}');
     cy.get('#delete0').click();
     cy.get('#dirtyFields').contains('[]');
     cy.get('#dirty').contains('yes');
@@ -209,7 +209,7 @@ context('useFieldArray', () => {
     cy.get('#dirty').contains('yes');
     cy.get('#field0').focus();
     cy.get('#field0').blur();
-    cy.get('#dirtyFields').contains('["data[0].name"]');
+    cy.get('#dirtyFields').contains('{"data":[{"name":true}]}');
     cy.get('#dirty').contains('yes');
     cy.get('#field0').type('test');
     cy.get('#field0').blur();
@@ -217,12 +217,12 @@ context('useFieldArray', () => {
     cy.get('#prepend').click();
     cy.get('#prepend').click();
     cy.get('#dirtyFields').contains(
-      '["data[1].name","data[2].name","data[0].name"]',
+      '{"data":[{"name":true},{"name":true},{"name":true}]}',
     );
     cy.get('#delete0').click();
-    cy.get('#dirtyFields').contains('["data[0].name","data[1].name"]');
+    cy.get('#dirtyFields').contains('{"data":[{"name":true},{"name":true}]}');
     cy.get('#delete1').click();
-    cy.get('#dirtyFields').contains('["data[0].name"]');
+    cy.get('#dirtyFields').contains('{"data":[{"name":true}]}');
     cy.get('#delete0').click();
     cy.get('#dirtyFields').contains('[]');
     cy.get('#dirty').contains('no');

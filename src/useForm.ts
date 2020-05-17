@@ -253,7 +253,9 @@ export function useForm<
 
   const setDirty = React.useCallback(
     (name: InternalFieldName<TFieldValues>): boolean => {
-      if (!fieldsRef.current[name] || !readFormStateRef.current.isDirty) {
+      const { isDirty, dirtyFields } = readFormStateRef.current;
+
+      if (!fieldsRef.current[name] || !isDirty || !dirtyFields) {
         return false;
       }
 
@@ -281,7 +283,10 @@ export function useForm<
         ? isFieldDirty
         : !isEmptyObject(dirtyFieldsRef.current);
 
-      return previousIsDirty !== isDirtyRef.current;
+      return (
+        (isDirty && previousIsDirty !== isDirtyRef.current) ||
+        (dirtyFields && isFieldDirty)
+      );
     },
     [],
   );
