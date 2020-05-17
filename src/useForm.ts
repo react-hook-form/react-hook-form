@@ -491,12 +491,11 @@ export function useForm<
         ) || isArrayValue
           ? true
           : isFieldWatched(name);
+      renderWatchedInputs(name);
     });
 
     if (shouldRender || isArrayValue) {
       reRender();
-    } else {
-      namesInArray.forEach((name: any) => renderWatchedInputs(name));
     }
 
     if (shouldValidate || (isArrayValue && valueOrShouldValidate)) {
@@ -544,7 +543,8 @@ export function useForm<
         }
 
         if (shouldSkipValidation) {
-          return renderWatchedInputs(name) && shouldRender && reRender();
+          renderWatchedInputs(name);
+          return shouldRender && reRender();
         }
 
         if (resolver) {
@@ -571,10 +571,10 @@ export function useForm<
           );
         }
 
+        renderWatchedInputs(name);
+
         if (!shouldRenderBaseOnError(name, error) && shouldRender) {
           reRender();
-        } else {
-          renderWatchedInputs(name);
         }
       };
 

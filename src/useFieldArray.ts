@@ -107,9 +107,9 @@ export const useFieldArray = <
       isDirtyRef.current = true;
     }
 
-    shouldRender && !isWatchAllRef.current
-      ? reRender()
-      : renderWatchedInputs(name);
+    renderWatchedInputs(name);
+
+    shouldRender && !isWatchAllRef.current && reRender();
   };
 
   const resetFields = (
