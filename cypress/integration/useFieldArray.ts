@@ -190,11 +190,15 @@ context('useFieldArray', () => {
     cy.get('#field1').type('test');
     cy.get('#prepend').click();
     cy.get('#delete2').click();
-    cy.get('#dirtyFields').contains('{"data":[{"name":true},{"name":true}]}');
+    cy.get('#dirtyFields').contains(
+      '{"data":[{"name":true},null,null,{"name":true}]}',
+    );
     cy.get('#delete2').click();
-    cy.get('#dirtyFields').contains('{"data":[{"name":true},{"name":true}]}');
+    cy.get('#dirtyFields').contains(
+      '{"data":[{"name":true},null,{"name":true}]}',
+    );
     cy.get('#delete1').click();
-    cy.get('#dirtyFields').contains('{"data":[{"name":true}]}');
+    cy.get('#dirtyFields').contains('{"data":[{"name":true},{"name":true}]}');
     cy.get('#delete1').click();
     cy.get('#dirtyFields').contains('{"data":[{"name":true}]}');
     cy.get('#delete0').click();

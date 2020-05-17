@@ -160,7 +160,7 @@ export const useFieldArray = <
 
     if (readFormStateRef.current.dirtyFields) {
       dirtyFieldsRef.current[name] = [
-        ...(dirtyFieldsRef.current[name] || []),
+        ...(dirtyFieldsRef.current[name] || fillEmptyArray(fields)),
         ...filterBooleanArray(value),
       ];
       shouldRender = true;
