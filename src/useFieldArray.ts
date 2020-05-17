@@ -187,10 +187,10 @@ export const useFieldArray = <
       render = true;
     }
 
+    renderWatchedInputs(name);
+
     if (render && !isWatchAllRef.current) {
       reRender();
-    } else {
-      renderWatchedInputs(name);
     }
   };
 
