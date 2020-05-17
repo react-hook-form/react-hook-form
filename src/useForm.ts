@@ -32,6 +32,7 @@ import set from './utils/set';
 import unset from './utils/unset';
 import modeChecker from './utils/validationModeChecker';
 import isMultipleSelect from './utils/isMultipleSelect';
+import unique from './utils/unique';
 import isNullOrUndefined from './utils/isNullOrUndefined';
 import isRadioOrCheckboxFunction from './utils/isRadioOrCheckbox';
 import isHTMLElement from './utils/isHTMLElement';
@@ -86,9 +87,7 @@ export function useForm<
   const watchFieldsRef = React.useRef(
     new Set<InternalFieldName<TFieldValues>>(),
   );
-  const dirtyFieldsRef = React.useRef(
-    new Set<InternalFieldName<TFieldValues>>(),
-  );
+  const dirtyFieldsRef = React.useRef<Touched<TFieldValues>>({});
   const watchFieldsHookRef = React.useRef<
     Record<string, Set<InternalFieldName<TFieldValues>>>
   >({});
@@ -140,7 +139,7 @@ export function useForm<
     !isUndefined(window.HTMLElement);
   const isProxyEnabled = isWeb ? 'Proxy' in window : typeof Proxy !== UNDEFINED;
   const readFormStateRef = React.useRef<ReadFormState>({
-    dirty: !isProxyEnabled,
+    isDirty: !isProxyEnabled,
     dirtyFields: !isProxyEnabled,
     isSubmitted: isOnSubmit,
     submitCount: !isProxyEnabled,
@@ -183,7 +182,7 @@ export function useForm<
           shouldReRender = shouldReRender || get(errorsRef.current, name);
         }
 
-        errorsRef.current = unset(errorsRef.current, [name]);
+        errorsRef.current = unset(errorsRef.current, name);
       } else {
         const previousError = get(errorsRef.current, name);
         validFieldsRef.current.delete(name);
@@ -254,19 +253,18 @@ export function useForm<
 
   const setDirty = React.useCallback(
     (name: InternalFieldName<TFieldValues>): boolean => {
-      if (
-        !fieldsRef.current[name] ||
-        (!readFormStateRef.current.dirty &&
-          !readFormStateRef.current.dirtyFields)
-      ) {
+      const { isDirty, dirtyFields } = readFormStateRef.current;
+
+      if (!fieldsRef.current[name] || (!isDirty && !dirtyFields)) {
         return false;
       }
 
       let isFieldDirty =
         defaultValuesAtRenderRef.current[name] !==
         getFieldValue(fieldsRef.current, fieldsRef.current[name]!.ref);
+      const isDirtyFieldExist = get(dirtyFieldsRef.current, name);
       const isFieldArray = isNameInFieldArray(fieldArrayNamesRef.current, name);
-      const previousDirtyFieldsLength = dirtyFieldsRef.current.size;
+      const previousIsDirty = isDirtyRef.current;
 
       if (isFieldArray) {
         const fieldArrayName = getFieldArrayParentName(name);
@@ -276,23 +274,20 @@ export function useForm<
         );
       }
 
-      const isDirtyChanged =
-        (isFieldArray
-          ? isDirtyRef.current
-          : dirtyFieldsRef.current.has(name)) !== isFieldDirty;
-
       if (isFieldDirty) {
-        dirtyFieldsRef.current.add(name);
+        set(dirtyFieldsRef.current, name, true);
       } else {
-        dirtyFieldsRef.current.delete(name);
+        unset(dirtyFieldsRef.current, name);
       }
 
       isDirtyRef.current = isFieldArray
         ? isFieldDirty
-        : !!dirtyFieldsRef.current.size;
-      return readFormStateRef.current.dirty
-        ? isDirtyChanged
-        : previousDirtyFieldsLength !== dirtyFieldsRef.current.size;
+        : !isEmptyObject(dirtyFieldsRef.current);
+
+      return (
+        (isDirty && previousIsDirty !== isDirtyRef.current) ||
+        (dirtyFields && isDirtyFieldExist !== get(dirtyFieldsRef.current, name))
+      );
     },
     [],
   );
@@ -390,7 +385,7 @@ export function useForm<
             if (error) {
               set(errorsRef.current, name, error);
             } else {
-              unset(errorsRef.current, [name]);
+              unset(errorsRef.current, name);
             }
           });
           reRender();
@@ -647,14 +642,13 @@ export function useForm<
 
       const { name } = field.ref;
 
-      errorsRef.current = unset(errorsRef.current, [name]);
-      touchedFieldsRef.current = unset(touchedFieldsRef.current, [name]);
-      defaultValuesAtRenderRef.current = unset(
-        defaultValuesAtRenderRef.current,
-        [name],
-      );
       [
+        errorsRef,
+        touchedFieldsRef,
         dirtyFieldsRef,
+        defaultValuesAtRenderRef,
+      ].forEach((data) => unset(data.current, name));
+      [
         fieldsWithValidationRef,
         validFieldsRef,
         watchFieldsRef,
@@ -678,7 +672,9 @@ export function useForm<
     name?: FieldName<TFieldValues> | FieldName<TFieldValues>[],
   ): void {
     if (name) {
-      unset(errorsRef.current, isArray(name) ? name : [name]);
+      (isArray(name) ? name : [name]).forEach((inputName) =>
+        unset(errorsRef.current, inputName),
+      );
     } else {
       errorsRef.current = {};
     }
@@ -875,7 +871,7 @@ export function useForm<
       isRadioOrCheckbox
         ? field &&
           isArray(field.options) &&
-          field.options.filter(Boolean).find((option) => {
+          unique(field.options).find((option) => {
             return value === option.ref.value && option.ref === ref;
           })
         : field && ref === field.ref
@@ -1082,7 +1078,7 @@ export function useForm<
 
   const resetRefs = ({
     errors,
-    dirty,
+    isDirty,
     isSubmitted,
     touched,
     isValid,
@@ -1104,12 +1100,12 @@ export function useForm<
       isValidRef.current = true;
     }
 
-    if (!dirty) {
+    if (!isDirty) {
       isDirtyRef.current = false;
     }
 
     if (!dirtyFields) {
-      dirtyFieldsRef.current = new Set();
+      dirtyFieldsRef.current = {};
     }
 
     if (!isSubmitted) {
@@ -1221,11 +1217,11 @@ export function useForm<
   }
 
   const formState = {
-    dirty: isDirtyRef.current,
     dirtyFields: dirtyFieldsRef.current,
     isSubmitted: isSubmittedRef.current,
     submitCount: submitCountRef.current,
     touched: touchedFieldsRef.current,
+    isDirty: isDirtyRef.current,
     isSubmitting: isSubmittingRef.current,
     isValid: isOnSubmit
       ? isSubmittedRef.current && isEmptyObject(errorsRef.current)

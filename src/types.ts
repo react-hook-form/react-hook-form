@@ -204,9 +204,14 @@ export type Touched<TFieldValues extends FieldValues> = DeepMap<
   true
 >;
 
+export type Dirtyed<TFieldValues extends FieldValues> = DeepMap<
+  TFieldValues,
+  true
+>;
+
 export type FormStateProxy<TFieldValues extends FieldValues = FieldValues> = {
-  dirty: boolean;
-  dirtyFields: Set<InternalFieldName<TFieldValues>>;
+  isDirty: boolean;
+  dirtyFields: Dirtyed<TFieldValues>;
   isSubmitted: boolean;
   submitCount: number;
   touched: Touched<TFieldValues>;
@@ -261,7 +266,7 @@ export type Control<TFieldValues extends FieldValues = FieldValues> = Pick<
     isReValidateOnSubmit: boolean;
   };
   fieldArrayDefaultValues: React.MutableRefObject<Record<string, any[]>>;
-  dirtyFieldsRef: React.MutableRefObject<Set<InternalFieldName<TFieldValues>>>;
+  dirtyFieldsRef: React.MutableRefObject<Dirtyed<TFieldValues>>;
   validateSchemaIsValid?: (fieldsValues: any) => void;
   touchedFieldsRef: React.MutableRefObject<Touched<TFieldValues>>;
   watchFieldsRef: React.MutableRefObject<Set<InternalFieldName<TFieldValues>>>;
@@ -278,7 +283,7 @@ export type Control<TFieldValues extends FieldValues = FieldValues> = Pick<
   fieldArrayNamesRef: React.MutableRefObject<Set<string>>;
   isDirtyRef: React.MutableRefObject<boolean>;
   readFormStateRef: React.MutableRefObject<{
-    dirty: boolean;
+    isDirty: boolean;
     isSubmitted: boolean;
     submitCount: boolean;
     touched: boolean;
@@ -354,7 +359,7 @@ export type ArrayField<
 
 export type OmitResetState = Partial<{
   errors: boolean;
-  dirty: boolean;
+  isDirty: boolean;
   dirtyFields: boolean;
   isSubmitted: boolean;
   touched: boolean;
