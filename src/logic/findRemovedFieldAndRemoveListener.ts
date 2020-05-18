@@ -5,7 +5,7 @@ import isDetached from '../utils/isDetached';
 import isArray from '../utils/isArray';
 import unset from '../utils/unset';
 import unique from '../utils/unique';
-import { Field, FieldRefs, FieldValues, Ref } from '../types';
+import { Field, FieldRefs, FieldValues, Ref } from '../types/types';
 
 const isSameRef = (fieldValue: Field, ref: Ref) =>
   fieldValue && fieldValue.ref === ref;

@@ -23,7 +23,7 @@ import {
   UseFieldArrayOptions,
   Control,
   ArrayField,
-} from './types';
+} from './types/types';
 
 export const useFieldArray = <
   TFieldArrayValues extends FieldValues = FieldValues,

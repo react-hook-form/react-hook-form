@@ -1,6 +1,6 @@
 import isObject from '../utils/isObject';
 import isRegex from '../utils/isRegex';
-import { ValidationOption, ValidationValueMessage } from '../types';
+import { ValidationOption, ValidationValueMessage } from '../types/types';
 
 export default (validationData?: ValidationOption) => {
   const isValueMessage = (

@@ -1,5 +1,5 @@
 import { VALIDATION_MODE } from '../constants';
-import { Mode } from '../types';
+import { Mode } from '../types/types';
 
 export default (
   mode?: Mode,

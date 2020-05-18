@@ -1,7 +1,7 @@
 import isEmptyObject from '../utils/isEmptyObject';
 import isSameError from '../utils/isSameError';
 import get from '../utils/get';
-import { FieldValues, InternalFieldName, FieldErrors } from '../types';
+import { FieldValues, InternalFieldName, FieldErrors } from '../types/types';
 
 export default function shouldRenderBasedOnError<
   TFieldValues extends FieldValues

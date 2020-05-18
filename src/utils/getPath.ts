@@ -1,5 +1,5 @@
 import isPrimitive from './isPrimitive';
-import { FieldValues, InternalFieldName } from '../types';
+import { FieldValues, InternalFieldName } from '../types/types';
 import isArray from './isArray';
 
 const getPath = <TFieldValues extends FieldValues = FieldValues>(

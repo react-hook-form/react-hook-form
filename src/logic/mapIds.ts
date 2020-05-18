@@ -1,7 +1,7 @@
 import isArray from '../utils/isArray';
 import isObject from '../utils/isObject';
 import generateId from './generateId';
-import { ArrayField } from '../types';
+import { ArrayField } from '../types/types';
 
 export const appendId = <TValue extends object, TKeyName extends string>(
   value: TValue,
