@@ -3,13 +3,38 @@ import { useFormContext } from './useFormContext';
 import isUndefined from './utils/isUndefined';
 import isString from './utils/isString';
 import generateId from './logic/generateId';
-import { Control, UseWatchOptions } from './types/types';
+import {
+  UseWatchOptions,
+  FieldValues,
+  UnpackNestedValue,
+  Control,
+  DeepPartial,
+  LiteralToPrimitive,
+} from './types/types';
 
-export const useWatch = <TWatchValues, TControl extends Control = Control>({
+export function useWatch<TWatchFieldValues extends FieldValues>(props: {
+  defaultValue?: UnpackNestedValue<DeepPartial<TWatchFieldValues>>;
+  control?: Control;
+}): UnpackNestedValue<DeepPartial<TWatchFieldValues>>;
+export function useWatch<TWatchFieldValue extends any>(props: {
+  name: string;
+  control?: Control;
+}): undefined | UnpackNestedValue<LiteralToPrimitive<TWatchFieldValue>>;
+export function useWatch<TWatchFieldValue extends any>(props: {
+  name: string;
+  defaultValue: UnpackNestedValue<LiteralToPrimitive<TWatchFieldValue>>;
+  control?: Control;
+}): UnpackNestedValue<LiteralToPrimitive<TWatchFieldValue>>;
+export function useWatch<TWatchFieldValues extends FieldValues>(props: {
+  name: string[];
+  defaultValue?: UnpackNestedValue<DeepPartial<TWatchFieldValues>>;
+  control?: Control;
+}): UnpackNestedValue<DeepPartial<TWatchFieldValues>>;
+export function useWatch<TWatchFieldValues>({
   control,
   name,
   defaultValue,
-}: UseWatchOptions<TControl>): TWatchValues => {
+}: UseWatchOptions): TWatchFieldValues {
   const methods = useFormContext();
   const { watchFieldsHookRef, watchFieldsHookRenderRef, watchInternal } =
     control || methods.control;
@@ -53,5 +78,5 @@ export const useWatch = <TWatchValues, TControl extends Control = Control>({
     defaultValueRef,
   ]);
 
-  return (isUndefined(value) ? defaultValue : value) as TWatchValues;
-};
+  return (isUndefined(value) ? defaultValue : value) as TWatchFieldValues;
+}

@@ -367,10 +367,10 @@ export type OmitResetState = Partial<{
   submitCount: boolean;
 }>;
 
-export type UseWatchOptions<TControl extends Control = Control> = {
+export type UseWatchOptions = {
   defaultValue?: unknown;
   name?: string | string[];
-  control?: TControl;
+  control?: Control;
 };
 
 export type FieldValuesFromFieldErrors<
