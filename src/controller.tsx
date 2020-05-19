@@ -8,7 +8,7 @@ import skipValidation from './logic/skipValidation';
 import isNameInFieldArray from './logic/isNameInFieldArray';
 import { useFormContext } from './useFormContext';
 import { VALIDATION_MODE, VALUE } from './constants';
-import { Control, ControllerProps, EventFunction, Field } from './types';
+import { Control, ControllerProps, EventFunction, Field } from './types/types';
 
 const Controller = <
   TAs extends

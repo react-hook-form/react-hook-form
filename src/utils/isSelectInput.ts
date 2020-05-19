@@ -1,4 +1,4 @@
-import { FieldElement } from '../types';
+import { FieldElement } from '../types/types';
 import { SELECT } from '../constants';
 
 export default (element: FieldElement): element is HTMLSelectElement =>

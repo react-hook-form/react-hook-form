@@ -1,4 +1,4 @@
-import { FieldError, InternalFieldName, ValidateResult } from '../types';
+import { FieldError, InternalFieldName, ValidateResult } from '../types/types';
 
 export default <TFieldValues>(
   name: InternalFieldName<TFieldValues>,

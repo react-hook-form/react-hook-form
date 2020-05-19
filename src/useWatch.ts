@@ -10,7 +10,7 @@ import {
   Control,
   DeepPartial,
   LiteralToPrimitive,
-} from './types';
+} from './types/types';
 
 export function useWatch<TWatchFieldValues extends FieldValues>(props: {
   defaultValue?: UnpackNestedValue<DeepPartial<TWatchFieldValues>>;

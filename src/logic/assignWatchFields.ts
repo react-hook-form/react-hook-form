@@ -9,7 +9,7 @@ import {
   FieldValues,
   InternalFieldName,
   UnpackNestedValue,
-} from '../types';
+} from '../types/types';
 
 export default <TFieldValues extends FieldValues>(
   fieldValues: TFieldValues,

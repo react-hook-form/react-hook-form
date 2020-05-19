@@ -1,4 +1,4 @@
-import { FieldElement } from '../types';
+import { FieldElement } from '../types/types';
 
 export default (element: FieldElement): element is HTMLInputElement =>
   element.type === 'file';

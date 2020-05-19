@@ -5,7 +5,7 @@ import isFileInput from '../utils/isFileInput';
 import isCheckBox from '../utils/isCheckBoxInput';
 import isMultipleSelect from '../utils/isMultipleSelect';
 import getCheckboxValue from './getCheckboxValue';
-import { FieldRefs, Ref, FieldValues } from '../types';
+import { FieldRefs, Ref, FieldValues } from '../types/types';
 
 export default function getFieldValue<TFieldValues extends FieldValues>(
   fields: FieldRefs<TFieldValues>,

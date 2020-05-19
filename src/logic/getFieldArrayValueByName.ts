@@ -1,7 +1,7 @@
 import transformToNestObject from './transformToNestObject';
 import getFieldsValues from './getFieldsValues';
 import get from '../utils/get';
-import { FieldValues, FieldRefs, InternalFieldName } from '../types';
+import { FieldValues, FieldRefs, InternalFieldName } from '../types/types';
 
 export default <TFieldValues extends FieldValues = FieldValues>(
   fields: FieldRefs<TFieldValues>,

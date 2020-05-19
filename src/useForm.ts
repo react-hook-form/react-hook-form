@@ -37,7 +37,7 @@ import isNullOrUndefined from './utils/isNullOrUndefined';
 import isRadioOrCheckboxFunction from './utils/isRadioOrCheckbox';
 import isHTMLElement from './utils/isHTMLElement';
 import { EVENTS, UNDEFINED, VALIDATION_MODE } from './constants';
-import { UseFormMethods } from './contextTypes';
+import { UseFormMethods } from './types/contextTypes';
 import {
   LiteralToPrimitive,
   DeepPartial,
@@ -66,7 +66,7 @@ import {
   OmitResetState,
   Message,
   IsAny,
-} from './types';
+} from './types/types';
 
 export function useForm<
   TFieldValues extends FieldValues = FieldValues,
