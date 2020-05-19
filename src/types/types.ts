@@ -204,14 +204,14 @@ export type Touched<TFieldValues extends FieldValues> = DeepMap<
   true
 >;
 
-export type Dirtyed<TFieldValues extends FieldValues> = DeepMap<
+export type Dirtied<TFieldValues extends FieldValues> = DeepMap<
   TFieldValues,
   true
 >;
 
 export type FormStateProxy<TFieldValues extends FieldValues = FieldValues> = {
   isDirty: boolean;
-  dirtyFields: Dirtyed<TFieldValues>;
+  dirtyFields: Dirtied<TFieldValues>;
   isSubmitted: boolean;
   submitCount: number;
   touched: Touched<TFieldValues>;
@@ -266,7 +266,7 @@ export type Control<TFieldValues extends FieldValues = FieldValues> = Pick<
     isReValidateOnSubmit: boolean;
   };
   fieldArrayDefaultValues: React.MutableRefObject<Record<string, any[]>>;
-  dirtyFieldsRef: React.MutableRefObject<Dirtyed<TFieldValues>>;
+  dirtyFieldsRef: React.MutableRefObject<Dirtied<TFieldValues>>;
   validateSchemaIsValid?: (fieldsValues: any) => void;
   touchedFieldsRef: React.MutableRefObject<Touched<TFieldValues>>;
   watchFieldsRef: React.MutableRefObject<Set<InternalFieldName<TFieldValues>>>;
