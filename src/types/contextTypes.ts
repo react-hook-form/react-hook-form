@@ -42,20 +42,22 @@ export type UseFormMethods<TFieldValues extends FieldValues = FieldValues> = {
   ): void;
   unregister(name: FieldName<TFieldValues> | FieldName<TFieldValues>[]): void;
   watch(): UnpackNestedValue<TFieldValues>;
-  watch<T extends string, U extends unknown>(
-    field: T,
-    defaultValue?: T extends keyof TFieldValues
-      ? UnpackNestedValue<TFieldValues>[T]
-      : LiteralToPrimitive<U>,
-  ): T extends keyof TFieldValues
-    ? UnpackNestedValue<TFieldValues>[T]
-    : LiteralToPrimitive<U>;
-  watch<T extends keyof TFieldValues>(
-    fields: T[],
-    defaultValues?: UnpackNestedValue<DeepPartial<Pick<TFieldValues, T>>>,
-  ): UnpackNestedValue<Pick<TFieldValues, T>>;
+  watch<TFieldName extends string, TFieldValue extends unknown>(
+    name: TFieldName,
+    defaultValue?: TFieldName extends keyof TFieldValues
+      ? UnpackNestedValue<TFieldValues>[TFieldName]
+      : LiteralToPrimitive<TFieldValue>,
+  ): TFieldName extends keyof TFieldValues
+    ? UnpackNestedValue<TFieldValues>[TFieldName]
+    : LiteralToPrimitive<TFieldValue>;
+  watch<TFieldName extends keyof TFieldValues>(
+    names: TFieldName[],
+    defaultValues?: UnpackNestedValue<
+      DeepPartial<Pick<TFieldValues, TFieldName>>
+    >,
+  ): UnpackNestedValue<Pick<TFieldValues, TFieldName>>;
   watch(
-    fields: string[],
+    names: string[],
     defaultValues?: UnpackNestedValue<DeepPartial<TFieldValues>>,
   ): UnpackNestedValue<DeepPartial<TFieldValues>>;
   setError(name: FieldName<TFieldValues>, type: MultipleFieldErrors): void;
@@ -66,23 +68,25 @@ export type UseFormMethods<TFieldValues extends FieldValues = FieldValues> = {
   ): void;
   setError(name: ManualFieldError<TFieldValues>[]): void;
   clearError(name?: FieldName<TFieldValues> | FieldName<TFieldValues>[]): void;
-  setValue<T extends string, U extends unknown>(
-    name: T,
-    value: T extends keyof TFieldValues
-      ? IsAny<TFieldValues[T]> extends true
+  setValue<TFieldName extends string, TFieldValue extends unknown>(
+    name: TFieldName,
+    value: TFieldName extends keyof TFieldValues
+      ? IsAny<TFieldValues[TFieldName]> extends true
         ? any
-        : TFieldValues[T] extends NestedValue<infer U>
+        : TFieldValues[TFieldName] extends NestedValue<infer U>
         ? U
-        : UnpackNestedValue<DeepPartial<TFieldValues[T]>>
-      : LiteralToPrimitive<U>,
+        : UnpackNestedValue<DeepPartial<TFieldValues[TFieldName]>>
+      : LiteralToPrimitive<TFieldValue>,
     shouldValidate?: boolean,
   ): void;
-  setValue<T extends keyof TFieldValues>(
-    namesWithValue: UnpackNestedValue<DeepPartial<Pick<TFieldValues, T>>>[],
+  setValue<TFieldName extends keyof TFieldValues>(
+    namesWithValue: UnpackNestedValue<
+      DeepPartial<Pick<TFieldValues, TFieldName>>
+    >[],
     shouldValidate?: boolean,
   ): void;
   trigger(
-    payload?: FieldName<TFieldValues> | FieldName<TFieldValues>[],
+    name?: FieldName<TFieldValues> | FieldName<TFieldValues>[],
   ): Promise<boolean>;
   errors: FieldErrors<TFieldValues>;
   formState: FormStateProxy<TFieldValues>;
@@ -91,12 +95,14 @@ export type UseFormMethods<TFieldValues extends FieldValues = FieldValues> = {
     omitResetState?: OmitResetState,
   ) => void;
   getValues(): UnpackNestedValue<TFieldValues>;
-  getValues<T extends keyof TFieldValues>(
-    payload: T[],
-  ): UnpackNestedValue<Pick<TFieldValues, T>>;
-  getValues<T extends string, U extends unknown>(
-    payload: T,
-  ): T extends keyof TFieldValues ? UnpackNestedValue<TFieldValues>[T] : U;
+  getValues<TFieldName extends string, TFieldValue extends unknown>(
+    name: TFieldName,
+  ): TFieldName extends keyof TFieldValues
+    ? UnpackNestedValue<TFieldValues>[TFieldName]
+    : TFieldValue;
+  getValues<TFieldName extends keyof TFieldValues>(
+    names: TFieldName[],
+  ): UnpackNestedValue<Pick<TFieldValues, TFieldName>>;
   handleSubmit: (
     callback: OnSubmit<TFieldValues>,
   ) => (e?: React.BaseSyntheticEvent) => Promise<void>;
