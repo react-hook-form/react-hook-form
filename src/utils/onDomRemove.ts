@@ -1,4 +1,4 @@
-import { Ref, MutationWatcher } from '../types';
+import { Ref, MutationWatcher } from '../types/types';
 import isDetached from './isDetached';
 
 export default function onDomRemove(

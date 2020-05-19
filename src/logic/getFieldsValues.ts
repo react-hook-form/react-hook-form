@@ -2,24 +2,25 @@ import getFieldValue from './getFieldValue';
 import isString from '../utils/isString';
 import isArray from '../utils/isArray';
 import isUndefined from '../utils/isUndefined';
-import { FieldName, FieldValues, FieldRefs } from '../types';
+import { InternalFieldName, FieldValues, FieldRefs } from '../types/types';
 
-export default <FormValues extends FieldValues>(
-  fields: FieldRefs<FormValues>,
-  search?: FieldName<FormValues> | FieldName<FormValues>[] | { nest: boolean },
+export default <TFieldValues extends FieldValues>(
+  fields: FieldRefs<TFieldValues>,
+  search?:
+    | InternalFieldName<TFieldValues>
+    | InternalFieldName<TFieldValues>[]
+    | { nest: boolean },
 ) => {
-  const output = {} as FormValues;
+  const output = {} as TFieldValues;
 
   for (const name in fields) {
     if (
       isUndefined(search) ||
       (isString(search)
         ? name.startsWith(search)
-        : isArray(search)
-        ? search.find((data) => name.startsWith(data))
-        : search && search.nest)
+        : isArray(search) && search.find((data) => name.startsWith(data)))
     ) {
-      output[name as FieldName<FormValues>] = getFieldValue(
+      output[name as InternalFieldName<TFieldValues>] = getFieldValue(
         fields,
         fields[name]!.ref,
       );

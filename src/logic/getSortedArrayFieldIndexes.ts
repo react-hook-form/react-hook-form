@@ -1,3 +1,5 @@
+import unique from '../utils/unique';
+
 export default (
   indexes: number[],
   removeIndexes: number[],
@@ -20,9 +22,9 @@ export default (
         index -
           count -
           (notFoundIndexes.length
-            ? notFoundIndexes
-                .map((notFoundIndex) => notFoundIndex < index)
-                .filter(Boolean).length
+            ? unique(
+                notFoundIndexes.map((notFoundIndex) => notFoundIndex < index),
+              ).length
             : 0),
       );
     }

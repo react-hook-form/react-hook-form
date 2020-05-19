@@ -2,15 +2,13 @@ import * as React from 'react';
 import { useForm } from 'react-hook-form';
 import { withRouter } from 'react-router';
 import * as yup from 'yup';
+import { yupResolver } from 'react-hook-form-resolvers';
 
 let renderCounter = 0;
 
 const validationSchema = yup.object().shape({
   firstName: yup.string().required(),
-  lastName: yup
-    .string()
-    .max(5)
-    .required(),
+  lastName: yup.string().max(5).required(),
 });
 
 const IsValid: React.FC = (props: any) => {
@@ -24,7 +22,7 @@ const IsValid: React.FC = (props: any) => {
     checkbox: string;
   }>({
     mode: 'onChange',
-    ...(isBuildInValidation ? {} : { validationSchema }),
+    ...(isBuildInValidation ? {} : { resolver: yupResolver(validationSchema) }),
     ...(props.match.params.defaultValues === 'defaultValues'
       ? {
           defaultValues: {

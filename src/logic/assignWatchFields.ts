@@ -3,15 +3,24 @@ import get from '../utils/get';
 import getPath from '../utils/getPath';
 import isEmptyObject from '../utils/isEmptyObject';
 import isUndefined from '../utils/isUndefined';
-import { DeepPartial, FieldValue, FieldValues, FieldName } from '../types';
+import {
+  DeepPartial,
+  FieldValue,
+  FieldValues,
+  InternalFieldName,
+  UnpackNestedValue,
+} from '../types/types';
 
-export default <FormValues extends FieldValues>(
-  fieldValues: FormValues,
-  fieldName: FieldName<FormValues>,
-  watchFields: Set<FieldName<FormValues>>,
-  inputValue: DeepPartial<FormValues>,
+export default <TFieldValues extends FieldValues>(
+  fieldValues: TFieldValues,
+  fieldName: InternalFieldName<TFieldValues>,
+  watchFields: Set<InternalFieldName<TFieldValues>>,
+  inputValue: UnpackNestedValue<DeepPartial<TFieldValues>>,
   isSingleField?: boolean,
-): FieldValue<FormValues> | DeepPartial<FormValues> | undefined => {
+):
+  | FieldValue<TFieldValues>
+  | UnpackNestedValue<DeepPartial<TFieldValues>>
+  | undefined => {
   let value;
 
   watchFields.add(fieldName);
@@ -25,7 +34,7 @@ export default <FormValues extends FieldValues>(
     value = get(transformToNestObject(fieldValues), fieldName);
 
     if (!isUndefined(value)) {
-      getPath<FormValues>(fieldName, value).forEach((name: string) =>
+      getPath<TFieldValues>(fieldName, value).forEach((name: string) =>
         watchFields.add(name),
       );
     }

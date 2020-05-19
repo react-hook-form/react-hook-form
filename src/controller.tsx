@@ -8,14 +8,14 @@ import skipValidation from './logic/skipValidation';
 import isNameInFieldArray from './logic/isNameInFieldArray';
 import { useFormContext } from './useFormContext';
 import { VALIDATION_MODE, VALUE } from './constants';
-import { Control, ControllerProps, EventFunction, Field } from './types';
+import { Control, ControllerProps, EventFunction, Field } from './types/types';
 
 const Controller = <
-  As extends
+  TAs extends
     | React.ReactElement
     | React.ComponentType<any>
     | keyof JSX.IntrinsicElements,
-  ControlProp extends Control = Control
+  TControl extends Control = Control
 >({
   name,
   rules,
@@ -29,7 +29,7 @@ const Controller = <
   control,
   onFocus,
   ...rest
-}: ControllerProps<As, ControlProp>) => {
+}: ControllerProps<TAs, TControl>) => {
   const methods = useFormContext();
   const {
     defaultValuesRef,
@@ -38,7 +38,7 @@ const Controller = <
     unregister,
     errorsRef,
     removeFieldEventListener,
-    triggerValidation,
+    trigger,
     mode: { isOnSubmit, isOnBlur, isOnChange },
     reValidateMode: { isReValidateOnBlur, isReValidateOnSubmit },
     formState: { isSubmitted },
@@ -79,13 +79,8 @@ const Controller = <
     return data;
   };
 
-  const eventWrapper = (event: EventFunction) => (...arg: any[]) =>
-    setValue(name, commonTask(event(arg)), shouldValidate());
-
-  const handleChange = (event: any) => {
-    const data = commonTask(event);
-    setValue(name, data, shouldValidate());
-  };
+  const eventWrapper = (event: EventFunction) => (...arg: any): any =>
+    setValue(name, commonTask(event(...arg)), shouldValidate());
 
   const registerField = React.useCallback(() => {
     if (!isNotFieldArray) {
@@ -144,10 +139,13 @@ const Controller = <
     ...rest,
     ...(onChange
       ? { [onChangeName]: eventWrapper(onChange) }
-      : { [onChangeName]: handleChange }),
-    [onBlurName]: (...args: any[]) => {
+      : {
+          [onChangeName]: (event: any): any =>
+            setValue(name, commonTask(event), shouldValidate()),
+        }),
+    [onBlurName]: (...args: any) => {
       if (onBlur) {
-        onBlur(args);
+        onBlur(...args);
       }
 
       if (
@@ -159,7 +157,7 @@ const Controller = <
       }
 
       if (shouldReValidateOnBlur) {
-        triggerValidation(name);
+        trigger(name);
       }
     },
     ...{ [valueName || (isCheckboxInput ? 'checked' : VALUE)]: value },

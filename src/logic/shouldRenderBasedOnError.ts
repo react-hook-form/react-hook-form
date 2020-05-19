@@ -1,10 +1,10 @@
 import isEmptyObject from '../utils/isEmptyObject';
 import isSameError from '../utils/isSameError';
 import get from '../utils/get';
-import { FieldValues, FieldName, FieldErrors } from '../types';
+import { FieldValues, InternalFieldName, FieldErrors } from '../types/types';
 
 export default function shouldRenderBasedOnError<
-  FormValues extends FieldValues
+  TFieldValues extends FieldValues
 >({
   errors,
   name,
@@ -12,11 +12,11 @@ export default function shouldRenderBasedOnError<
   validFields,
   fieldsWithValidation,
 }: {
-  errors: FieldErrors<FormValues>;
-  error: FieldErrors<FormValues>;
-  name: FieldName<FormValues>;
-  validFields: Set<FieldName<FormValues>>;
-  fieldsWithValidation: Set<FieldName<FormValues>>;
+  errors: FieldErrors<TFieldValues>;
+  error: FieldErrors<TFieldValues>;
+  name: InternalFieldName<TFieldValues>;
+  validFields: Set<InternalFieldName<TFieldValues>>;
+  fieldsWithValidation: Set<InternalFieldName<TFieldValues>>;
 }): boolean {
   const isFieldValid = isEmptyObject(error);
   const isFormValid = isEmptyObject(errors);

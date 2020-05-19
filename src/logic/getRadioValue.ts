@@ -1,5 +1,5 @@
 import isArray from '../utils/isArray';
-import { RadioOrCheckboxOption } from '../types';
+import { RadioOrCheckboxOption } from '../types/types';
 
 type RadioFieldResult = {
   isValid: boolean;

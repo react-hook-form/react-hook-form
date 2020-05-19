@@ -2,9 +2,17 @@ import * as React from 'react';
 import { render, fireEvent } from '@testing-library/react';
 import { Controller } from './controller';
 import { reconfigureControl } from './useForm.test';
-import { Field } from './types';
+import { Field } from './types/types';
 
 jest.spyOn(console, 'warn').mockImplementation(() => {});
+
+const Input = ({ onChange, onBlur, placeholder }: any) => (
+  <input
+    placeholder={placeholder}
+    onChange={() => onChange?.(1, 2)}
+    onBlur={() => onBlur?.(1, 2)}
+  />
+);
 
 describe('Controller', () => {
   it('should render correctly with as with string', () => {
@@ -99,9 +107,9 @@ describe('Controller', () => {
   });
 
   it("should trigger component's onBlur method and invoke setValue method", () => {
-    const triggerValidation = jest.fn();
+    const trigger = jest.fn();
     const control = reconfigureControl({
-      triggerValidation,
+      trigger,
       mode: { isOnChange: false, isOnSubmit: true, isOnBlur: true },
     });
     const fieldsRef = {
@@ -132,7 +140,7 @@ describe('Controller', () => {
       },
     });
 
-    expect(triggerValidation).toBeCalledWith('test');
+    expect(trigger).toBeCalledWith('test');
   });
 
   it('should invoke custom event named method', () => {
@@ -190,7 +198,7 @@ describe('Controller', () => {
       <Controller
         defaultValue=""
         name="test"
-        as={<input placeholder="test" />}
+        as={<Input placeholder="test" />}
         onChange={onChange}
         control={
           {
@@ -212,7 +220,7 @@ describe('Controller', () => {
     });
 
     expect(setValue).toBeCalled();
-    expect(onChange).toBeCalled();
+    expect(onChange).toBeCalledWith(1, 2);
   });
 
   it('should invoke custom onBlur method', () => {
@@ -228,7 +236,7 @@ describe('Controller', () => {
       <Controller
         defaultValue=""
         name="test"
-        as={<input placeholder="test" />}
+        as={<Input placeholder="test" />}
         onBlur={onBlur}
         control={
           {
@@ -249,7 +257,7 @@ describe('Controller', () => {
       },
     });
 
-    expect(onBlur).toBeCalled();
+    expect(onBlur).toBeCalledWith(1, 2);
   });
 
   it('should support default value from hook form', () => {

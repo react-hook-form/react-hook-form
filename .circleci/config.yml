@@ -1,26 +1,12 @@
-version: 2.1
-
-orbs:
-  cypress: cypress-io/cypress@1
-  node: circleci/node@1.1.4
-
-workflows:
-  version: 2
-  build:
-    jobs:
-      - build
-      - cypress/run:
-          yarn: true
-          start: npm run start:app
-          wait-on: http://localhost:3000
-
+version: 2
 jobs:
   build:
-    executor:
-      name: node/default
-      tag: lts
+    docker:
+      - image: circleci/node:lts
+    working_directory: ~/repo
+
     steps:
       - checkout
-      - run: yarn install --frozen-lockfile
+      - run: npm install
       - run: npm run build
       - run: npm run bundlesize

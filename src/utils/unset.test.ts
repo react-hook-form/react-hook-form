@@ -17,26 +17,11 @@ test('should unset the object', () => {
     },
   };
 
-  expect(unset(test, ['data.firstName', 'data.test[0]'])).toEqual({
-    data: {
-      test: [undefined, { data2: '' }],
-      clear: undefined,
-      data: {
-        test: undefined,
-        test1: {
-          ref: {
-            test: '',
-          },
-        },
-      },
-    },
-  });
-
   const test1 = {
     test: [{ min: 'required' }],
   };
 
-  expect(unset(test1, ['test[0].min'])).toEqual({});
+  expect(unset(test1, 'test[0].min')).toEqual({});
 
   const test2 = {
     test: {
@@ -44,7 +29,7 @@ test('should unset the object', () => {
     },
   };
 
-  expect(unset(test2, ['test.min'])).toEqual({});
+  expect(unset(test2, 'test.min')).toEqual({});
 
   const test3 = {
     test: {
@@ -54,7 +39,7 @@ test('should unset the object', () => {
     },
   };
 
-  expect(unset(test3, ['test.bill.min'])).toEqual({});
+  expect(unset(test3, 'test.bill.min')).toEqual({});
 
   const test4 = {
     test: {
@@ -65,35 +50,9 @@ test('should unset the object', () => {
     },
   };
 
-  expect(unset(test4, ['test.bill.min[0].test'])).toEqual({
+  expect(unset(test4, 'test.bill.min[0].test')).toEqual({
     test: {
       test: 'ha',
-    },
-  });
-});
-
-test('should unset multiple path', () => {
-  const test = {
-    data: {
-      firstName: 'test',
-      clear: undefined,
-      quick: {
-        test: undefined,
-        what: 'test',
-        test1: {
-          ref: {
-            test: '',
-          },
-        },
-      },
-    },
-  };
-
-  expect(unset(test, ['data.firstName', 'data.quick.test1'])).toEqual({
-    data: {
-      quick: {
-        what: 'test',
-      },
     },
   });
 });
@@ -105,7 +64,7 @@ test('should return empty object when inner object is empty object', () => {
     },
   };
 
-  expect(unset(test, ['data.firstName'])).toEqual({});
+  expect(unset(test, 'data.firstName')).toEqual({});
 });
 
 test('should clear empty array', () => {
@@ -126,7 +85,7 @@ test('should clear empty array', () => {
     },
   };
 
-  expect(unset(test, ['data.firstName.test[0]'])).toEqual({
+  expect(unset(test, 'data.firstName.test[0]')).toEqual({
     data: {
       firstName: {
         test: [undefined, { name: 'test', email: 'last' }],
@@ -150,7 +109,7 @@ test('should clear empty array', () => {
     data: 'test',
   };
 
-  expect(unset(test2, ['arrayItem[0].test1'])).toEqual({
+  expect(unset(test2, 'arrayItem[0].test1')).toEqual({
     arrayItem: [
       {
         test2: undefined,
@@ -179,7 +138,7 @@ test('should only remove relevant data', () => {
     },
   };
 
-  expect(unset(data, ['test'])).toEqual({
+  expect(unset(data, 'test')).toEqual({
     testing: {
       key1: 1,
       key2: [
@@ -206,5 +165,5 @@ it('should remove empty array item', () => {
     ],
   };
 
-  expect(unset(data, ['name[0]'])).toEqual({});
+  expect(unset(data, 'name[0]')).toEqual({});
 });

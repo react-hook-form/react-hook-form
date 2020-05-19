@@ -1,10 +1,10 @@
 import isPrimitive from './isPrimitive';
-import { FieldValues, FieldName } from '../types';
+import { FieldValues, InternalFieldName } from '../types/types';
 import isArray from './isArray';
 
-const getPath = <FormValues extends FieldValues = FieldValues>(
-  path: FieldName<FormValues>,
-  values: FormValues | any[],
+const getPath = <TFieldValues extends FieldValues = FieldValues>(
+  path: InternalFieldName<TFieldValues>,
+  values: TFieldValues | any[],
 ): any[] => {
   const getInnerPath = (
     value: any,
@@ -22,7 +22,7 @@ const getPath = <FormValues extends FieldValues = FieldValues>(
       );
 };
 
-export default <FormValues extends FieldValues = FieldValues>(
-  parentPath: FieldName<FormValues>,
-  value: FormValues,
+export default <TFieldValues extends FieldValues = FieldValues>(
+  parentPath: InternalFieldName<TFieldValues>,
+  value: TFieldValues,
 ) => getPath(parentPath, value).flat(Infinity);

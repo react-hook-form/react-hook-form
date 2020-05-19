@@ -1,18 +1,13 @@
 import React, { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import * as yup from 'yup';
+import { yupResolver } from 'react-hook-form-resolvers';
 
 let renderCounter = 0;
 
 const validationSchema = yup.object().shape({
-  lastName: yup
-    .string()
-    .min(10)
-    .required(),
-  firstName: yup
-    .string()
-    .min(10)
-    .required(),
+  lastName: yup.string().min(10).required(),
+  firstName: yup.string().min(10).required(),
   requiredField: yup.string().required(),
 });
 
@@ -25,9 +20,9 @@ const SetValueWithSchema: React.FC = () => {
     radio: string;
     select: string;
     multiple: string[];
-    requiredField: string,
+    requiredField: string;
   }>({
-    validationSchema,
+    resolver: yupResolver(validationSchema),
   });
 
   renderCounter++;
@@ -42,7 +37,7 @@ const SetValueWithSchema: React.FC = () => {
       <input
         name="firstName"
         placeholder="firstName"
-        onChange={e => {
+        onChange={(e) => {
           setValue('firstName', e.target.value, true);
         }}
       />
@@ -51,7 +46,7 @@ const SetValueWithSchema: React.FC = () => {
       <input
         name="lastName"
         placeholder="lastName"
-        onChange={e => {
+        onChange={(e) => {
           setValue('lastName', e.target.value, true);
         }}
       />
@@ -60,7 +55,7 @@ const SetValueWithSchema: React.FC = () => {
       <input
         name="age"
         ref={register}
-        onChange={e => {
+        onChange={(e) => {
           setValue('age', e.target.value, true);
         }}
       />
