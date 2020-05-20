@@ -1,5 +1,5 @@
 import { getConfig } from './rollup.config';
-import replace from 'rollup-plugin-replace';
+import replace from '@rollup/plugin-replace';
 import pkg from '../package.json';
 
 export default getConfig({
