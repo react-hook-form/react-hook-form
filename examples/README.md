@@ -24,7 +24,7 @@ you can view the source code within the folder or visit code sand box to see how
 | Disable Native Validation               | https://codesandbox.io/s/keen-mccarthy-4pqn6                                         |
 | Field Array                             | https://codesandbox.io/s/6j1760jkjk                                                  |
 | Field Array Min Length                  | https://codesandbox.io/s/react-hook-form-fieldsarray-yup-validation-min-length-57qtb |
-| FormProvider                             | https://codesandbox.io/s/react-hook-form-form-context-dkvjz                          |
+| FormProvider                            | https://codesandbox.io/s/react-hook-form-form-context-dkvjz                          |
 | Parse and format input value            | https://codesandbox.io/s/react-hook-form-parse-and-format-textarea-furtc             |
 | Nested Fields                           | https://codesandbox.io/s/react-hook-form-nested-fields-mv1bb                         |
 | Normalize/Format/Mask Field             | https://codesandbox.io/s/387z7njwzp                                                  |
@@ -39,3 +39,4 @@ you can view the source code within the folder or visit code sand box to see how
 | ValidationSchema                        | https://codesandbox.io/s/928po918qr                                                  |
 | Validation On Blur                      | https://codesandbox.io/s/w7p3km6nyw                                                  |
 | Validation On Change                    | https://codesandbox.io/s/74zw1oqozx                                                  |
+| Wizard form                             | https://codesandbox.io/s/form-wizard-pages-kkg7m                                     |
