@@ -1,8 +1,7 @@
 import { getConfig } from './rollup.config';
-import babel from 'rollup-plugin-babel';
+import { getBabelOutputPlugin } from '@rollup/plugin-babel';
 import resolve from '@rollup/plugin-node-resolve';
 import commonjs from '@rollup/plugin-commonjs';
-import { DEFAULT_EXTENSIONS } from '@babel/core';
 import pkg from '../package.json';
 
 export default getConfig({
@@ -19,15 +18,7 @@ export default getConfig({
     commonjs({
       include: 'node_modules/**'
     }),
-    babel({
-      extensions: [
-        ...DEFAULT_EXTENSIONS,
-        '.ts',
-        '.tsx'
-      ],
-      exclude: 'node_modules/**',
-      babelrc: false,
-      runtimeHelpers: true,
+    getBabelOutputPlugin({
       plugins: [
         ['@babel/plugin-transform-runtime',
           {
