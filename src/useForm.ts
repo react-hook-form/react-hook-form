@@ -65,7 +65,6 @@ import {
   RadioOrCheckboxOption,
   OmitResetState,
   Message,
-  IsAny,
 } from './types/types';
 
 export function useForm<
@@ -460,15 +459,14 @@ export function useForm<
     return found;
   };
 
-  function setValue<TFieldName extends string, TFieldValue extends unknown>(
+  function setValue<
+    TFieldName extends string,
+    TFieldValue extends TFieldValues[TFieldName]
+  >(
     name: TFieldName,
-    value: TFieldName extends keyof TFieldValues
-      ? IsAny<TFieldValues[TFieldName]> extends true
-        ? any
-        : TFieldValues[TFieldName] extends NestedValue<infer U>
-        ? U
-        : UnpackNestedValue<DeepPartial<TFieldValues[TFieldName]>>
-      : LiteralToPrimitive<TFieldValue>,
+    value: TFieldValue extends NestedValue<infer U>
+      ? U
+      : UnpackNestedValue<DeepPartial<LiteralToPrimitive<TFieldValue>>>,
     shouldValidate?: boolean,
   ): void;
   function setValue<TFieldName extends keyof TFieldValues>(
@@ -819,14 +817,13 @@ export function useForm<
   );
 
   function watch(): UnpackNestedValue<TFieldValues>;
-  function watch<TFieldName extends string, TFieldValue extends unknown>(
+  function watch<
+    TFieldName extends string,
+    TFieldValue extends TFieldValues[TFieldName]
+  >(
     name: TFieldName,
-    defaultValue?: TFieldName extends keyof TFieldValues
-      ? UnpackNestedValue<TFieldValues>[TFieldName]
-      : LiteralToPrimitive<TFieldValue>,
-  ): TFieldName extends keyof TFieldValues
-    ? UnpackNestedValue<TFieldValues>[TFieldName]
-    : LiteralToPrimitive<TFieldValue>;
+    defaultValue?: UnpackNestedValue<LiteralToPrimitive<TFieldValue>>,
+  ): UnpackNestedValue<LiteralToPrimitive<TFieldValue>>;
   function watch<TFieldName extends keyof TFieldValues>(
     names: TFieldName[],
     defaultValues?: UnpackNestedValue<

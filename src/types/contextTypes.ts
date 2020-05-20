@@ -16,7 +16,6 @@ import {
   OmitResetState,
   Message,
   LiteralToPrimitive,
-  IsAny,
 } from './types';
 
 export type FormProviderProps<
@@ -42,14 +41,13 @@ export type UseFormMethods<TFieldValues extends FieldValues = FieldValues> = {
   ): void;
   unregister(name: FieldName<TFieldValues> | FieldName<TFieldValues>[]): void;
   watch(): UnpackNestedValue<TFieldValues>;
-  watch<TFieldName extends string, TFieldValue extends unknown>(
+  watch<
+    TFieldName extends string,
+    TFieldValue extends TFieldValues[TFieldName]
+  >(
     name: TFieldName,
-    defaultValue?: TFieldName extends keyof TFieldValues
-      ? UnpackNestedValue<TFieldValues>[TFieldName]
-      : LiteralToPrimitive<TFieldValue>,
-  ): TFieldName extends keyof TFieldValues
-    ? UnpackNestedValue<TFieldValues>[TFieldName]
-    : LiteralToPrimitive<TFieldValue>;
+    defaultValue?: UnpackNestedValue<LiteralToPrimitive<TFieldValue>>,
+  ): UnpackNestedValue<LiteralToPrimitive<TFieldValue>>;
   watch<TFieldName extends keyof TFieldValues>(
     names: TFieldName[],
     defaultValues?: UnpackNestedValue<
@@ -68,15 +66,14 @@ export type UseFormMethods<TFieldValues extends FieldValues = FieldValues> = {
   ): void;
   setError(name: ManualFieldError<TFieldValues>[]): void;
   clearError(name?: FieldName<TFieldValues> | FieldName<TFieldValues>[]): void;
-  setValue<TFieldName extends string, TFieldValue extends unknown>(
+  setValue<
+    TFieldName extends string,
+    TFieldValue extends TFieldValues[TFieldName]
+  >(
     name: TFieldName,
-    value: TFieldName extends keyof TFieldValues
-      ? IsAny<TFieldValues[TFieldName]> extends true
-        ? any
-        : TFieldValues[TFieldName] extends NestedValue<infer U>
-        ? U
-        : UnpackNestedValue<DeepPartial<TFieldValues[TFieldName]>>
-      : LiteralToPrimitive<TFieldValue>,
+    value: TFieldValue extends NestedValue<infer U>
+      ? U
+      : UnpackNestedValue<DeepPartial<LiteralToPrimitive<TFieldValue>>>,
     shouldValidate?: boolean,
   ): void;
   setValue<TFieldName extends keyof TFieldValues>(
