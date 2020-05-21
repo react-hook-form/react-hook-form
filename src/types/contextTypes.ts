@@ -16,6 +16,7 @@ import {
   OmitResetState,
   Message,
   LiteralToPrimitive,
+  NonUndefined,
 } from './types';
 
 export type FormProviderProps<
@@ -43,7 +44,7 @@ export type UseFormMethods<TFieldValues extends FieldValues = FieldValues> = {
   watch(): UnpackNestedValue<TFieldValues>;
   watch<
     TFieldName extends string,
-    TFieldValue extends TFieldValues[TFieldName]
+    TFieldValue extends NonUndefined<TFieldValues[TFieldName]>
   >(
     name: TFieldName,
     defaultValue?: UnpackNestedValue<LiteralToPrimitive<TFieldValue>>,
@@ -68,7 +69,7 @@ export type UseFormMethods<TFieldValues extends FieldValues = FieldValues> = {
   clearError(name?: FieldName<TFieldValues> | FieldName<TFieldValues>[]): void;
   setValue<
     TFieldName extends string,
-    TFieldValue extends TFieldValues[TFieldName]
+    TFieldValue extends NonUndefined<TFieldValues[TFieldName]>
   >(
     name: TFieldName,
     value: TFieldValue extends NestedValue<infer U>

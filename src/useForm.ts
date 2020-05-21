@@ -65,6 +65,7 @@ import {
   RadioOrCheckboxOption,
   OmitResetState,
   Message,
+  NonUndefined,
 } from './types/types';
 
 export function useForm<
@@ -461,7 +462,7 @@ export function useForm<
 
   function setValue<
     TFieldName extends string,
-    TFieldValue extends TFieldValues[TFieldName]
+    TFieldValue extends NonUndefined<TFieldValues[TFieldName]>
   >(
     name: TFieldName,
     value: TFieldValue extends NestedValue<infer U>
@@ -819,7 +820,7 @@ export function useForm<
   function watch(): UnpackNestedValue<TFieldValues>;
   function watch<
     TFieldName extends string,
-    TFieldValue extends TFieldValues[TFieldName]
+    TFieldValue extends NonUndefined<TFieldValues[TFieldName]>
   >(
     name: TFieldName,
     defaultValue?: UnpackNestedValue<LiteralToPrimitive<TFieldValue>>,
