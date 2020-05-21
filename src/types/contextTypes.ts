@@ -37,7 +37,7 @@ export type UseFormMethods<TFieldValues extends FieldValues = FieldValues> = {
     validationOptions?: ValidationOptions,
   ): void;
   register<TFieldElement extends FieldElement<TFieldValues>>(
-    ref: TFieldElement,
+    ref: TFieldElement | null,
     validationOptions?: ValidationOptions,
   ): void;
   unregister(name: FieldName<TFieldValues> | FieldName<TFieldValues>[]): void;

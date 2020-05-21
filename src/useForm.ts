@@ -983,7 +983,7 @@ export function useForm<
     validationOptions?: ValidationOptions,
   ): void;
   function register<TFieldElement extends FieldElement<TFieldValues>>(
-    ref: TFieldElement,
+    ref: TFieldElement | null,
     validationOptions?: ValidationOptions,
   ): void;
   function register<TFieldElement extends FieldElement<TFieldValues>>(
