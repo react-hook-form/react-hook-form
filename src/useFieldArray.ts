@@ -107,7 +107,7 @@ export const useFieldArray = <
     shouldUpdateDirty = true,
   ) => {
     if (shouldUpdateDirty && isReadingDirty) {
-      isDirtyRef.current = isEmptyObject(dirtyFieldsRef.current);
+      isDirtyRef.current = !isEmptyObject(dirtyFieldsRef.current);
       shouldRender = true;
     }
 
