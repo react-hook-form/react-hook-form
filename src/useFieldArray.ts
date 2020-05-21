@@ -103,8 +103,9 @@ export const useFieldArray = <
     shouldRender: boolean,
     shouldUpdateDirty = true,
   ) => {
-    if (shouldUpdateDirty) {
+    if (shouldUpdateDirty && readFormStateRef.current.isDirty) {
       isDirtyRef.current = true;
+      shouldRender = true;
     }
 
     renderWatchedInputs(name);
