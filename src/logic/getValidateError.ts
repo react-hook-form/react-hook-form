@@ -1,6 +1,6 @@
 import isBoolean from '../utils/isBoolean';
 import isMessage from '../utils/isMessage';
-import { FieldError, ValidateResult, Ref } from '../types/types';
+import { FieldError, ValidateResult, Ref } from '../types/form';
 
 export default function getValidateError(
   result: ValidateResult,

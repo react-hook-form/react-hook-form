@@ -1,6 +1,6 @@
 import isHTMLElement from '../utils/isHTMLElement';
 import { EVENTS } from '../constants';
-import { Field } from '../types/types';
+import { Field } from '../types/form';
 
 export default function attachEventListeners({
   field: { ref },

@@ -1,26 +1,12 @@
 import * as React from 'react';
-import { UseFormMethods } from './contextTypes';
-
-export type IsAny<T> = boolean extends (T extends never ? true : false)
-  ? true
-  : false;
-
-export type IsFlatObject<T extends object> = Extract<
-  Exclude<T[keyof T], NestedValue | Date | FileList>,
-  any[] | object
-> extends never
-  ? true
-  : false;
-
-export type Primitive = string | boolean | number | symbol | null | undefined;
-
-export type LiteralToPrimitive<T extends any> = T extends string
-  ? string
-  : T extends number
-  ? number
-  : T extends boolean
-  ? boolean
-  : T;
+import {
+  EmptyObject,
+  NonUndefined,
+  LiteralToPrimitive,
+  DeepPartial,
+  DeepMap,
+  IsFlatObject,
+} from './utils';
 
 export type FieldValues = Record<string, any>;
 
@@ -44,8 +30,6 @@ export type NestedValue<TValue extends any[] | object = any[] | object> = {
   [$NestedValue]: never;
 } & TValue;
 
-export type NonUndefined<T> = T extends undefined ? never : T;
-
 export type UnpackNestedValue<T> = NonUndefined<T> extends NestedValue<infer U>
   ? U
   : NonUndefined<T> extends object
@@ -53,16 +37,6 @@ export type UnpackNestedValue<T> = NonUndefined<T> extends NestedValue<infer U>
   : T;
 
 export type Ref = FieldElement;
-
-export type DeepPartial<T> = {
-  [K in keyof T]?: T[K] extends Array<infer U>
-    ? Array<DeepPartial<U>>
-    : T[K] extends ReadonlyArray<infer U>
-    ? ReadonlyArray<DeepPartial<U>>
-    : T[K] extends Record<string, unknown>
-    ? DeepPartial<T[K]>
-    : T[K];
-};
 
 export type ValidationMode = {
   onBlur: 'onBlur';
@@ -77,8 +51,6 @@ export type OnSubmit<TFieldValues extends FieldValues> = (
   data: UnpackNestedValue<TFieldValues>,
   event?: React.BaseSyntheticEvent,
 ) => void | Promise<void>;
-
-export type EmptyObject = { [K in string | number]: never };
 
 export type ResolverSuccess<TFieldValues extends FieldValues = FieldValues> = {
   values: UnpackNestedValue<TFieldValues>;
@@ -176,24 +148,6 @@ export type Field = {
 export type FieldRefs<TFieldValues extends FieldValues> = Partial<
   Record<InternalFieldName<TFieldValues>, Field>
 >;
-
-export type DeepMap<T, TValue> = {
-  [K in keyof T]?: IsAny<T[K]> extends true
-    ? any
-    : NonUndefined<T[K]> extends NestedValue | Date | FileList
-    ? TValue
-    : NonUndefined<T[K]> extends object
-    ? DeepMap<T[K], TValue>
-    : NonUndefined<T[K]> extends Array<infer U>
-    ? IsAny<U> extends true
-      ? Array<any>
-      : U extends NestedValue | Date | FileList
-      ? Array<TValue>
-      : U extends object
-      ? Array<DeepMap<U, TValue>>
-      : Array<TValue>
-    : TValue;
-};
 
 export type FieldErrors<
   TFieldValues extends FieldValues = FieldValues
@@ -307,42 +261,6 @@ export type Control<TFieldValues extends FieldValues = FieldValues> = Pick<
   renderWatchedInputs: (name: string, found?: boolean) => void;
 };
 
-export type Assign<T extends object, U extends object> = T & Omit<U, keyof T>;
-
-export type AsProps<TAs> = TAs extends undefined
-  ? {}
-  : TAs extends React.ReactElement
-  ? Record<string, any>
-  : TAs extends React.ComponentType<infer P>
-  ? P
-  : TAs extends keyof JSX.IntrinsicElements
-  ? JSX.IntrinsicElements[TAs]
-  : never;
-
-export type ControllerProps<
-  TAs extends
-    | React.ReactElement
-    | React.ComponentType<any>
-    | keyof JSX.IntrinsicElements,
-  TControl extends Control = Control
-> = Assign<
-  {
-    name: FieldName<FieldValuesFromControl<TControl>>;
-    as: TAs;
-    rules?: ValidationOptions;
-    onChange?: EventFunction;
-    onFocus?: () => void;
-    onBlur?: EventFunction;
-    mode?: Mode;
-    onChangeName?: string;
-    onBlurName?: string;
-    valueName?: string;
-    defaultValue?: unknown;
-    control?: TControl;
-  },
-  AsProps<TAs>
->;
-
 export type UseFieldArrayOptions<
   TKeyName extends string = 'id',
   TControl extends Control = Control
@@ -377,23 +295,84 @@ export type FieldValuesFromFieldErrors<
   TFieldErrors
 > = TFieldErrors extends FieldErrors<infer TFieldValues> ? TFieldValues : never;
 
-export type ErrorMessageProps<
-  TFieldErrors extends FieldErrors,
-  TAs extends
-    | undefined
-    | React.ReactElement
-    | React.ComponentType<any>
-    | keyof JSX.IntrinsicElements = undefined
-> = Assign<
-  {
-    as?: TAs;
-    errors?: TFieldErrors;
-    name: FieldName<FieldValuesFromFieldErrors<TFieldErrors>>;
-    message?: Message;
-    children?: (data: {
-      message: Message;
-      messages?: MultipleFieldErrors;
-    }) => React.ReactNode;
-  },
-  AsProps<TAs>
->;
+export type UseFormMethods<TFieldValues extends FieldValues = FieldValues> = {
+  register<TFieldElement extends FieldElement<TFieldValues>>(): (
+    ref: TFieldElement | null,
+  ) => void;
+  register<TFieldElement extends FieldElement<TFieldValues>>(
+    validationOptions: ValidationOptions,
+  ): (ref: TFieldElement | null) => void;
+  register(
+    name: FieldName<TFieldValues>,
+    validationOptions?: ValidationOptions,
+  ): void;
+  register<TFieldElement extends FieldElement<TFieldValues>>(
+    ref: TFieldElement | null,
+    validationOptions?: ValidationOptions,
+  ): void;
+  unregister(name: FieldName<TFieldValues> | FieldName<TFieldValues>[]): void;
+  watch(): UnpackNestedValue<TFieldValues>;
+  watch<
+    TFieldName extends string,
+    TFieldValue extends NonUndefined<TFieldValues[TFieldName]>
+  >(
+    name: TFieldName,
+    defaultValue?: UnpackNestedValue<LiteralToPrimitive<TFieldValue>>,
+  ): UnpackNestedValue<LiteralToPrimitive<TFieldValue>>;
+  watch<TFieldName extends keyof TFieldValues>(
+    names: TFieldName[],
+    defaultValues?: UnpackNestedValue<
+      DeepPartial<Pick<TFieldValues, TFieldName>>
+    >,
+  ): UnpackNestedValue<Pick<TFieldValues, TFieldName>>;
+  watch(
+    names: string[],
+    defaultValues?: UnpackNestedValue<DeepPartial<TFieldValues>>,
+  ): UnpackNestedValue<DeepPartial<TFieldValues>>;
+  setError(name: FieldName<TFieldValues>, type: MultipleFieldErrors): void;
+  setError(
+    name: FieldName<TFieldValues>,
+    type: string,
+    message?: Message,
+  ): void;
+  setError(name: ManualFieldError<TFieldValues>[]): void;
+  clearError(name?: FieldName<TFieldValues> | FieldName<TFieldValues>[]): void;
+  setValue<
+    TFieldName extends string,
+    TFieldValue extends NonUndefined<TFieldValues[TFieldName]>
+  >(
+    name: TFieldName,
+    value: TFieldValue extends NestedValue<infer U>
+      ? U
+      : UnpackNestedValue<DeepPartial<LiteralToPrimitive<TFieldValue>>>,
+    shouldValidate?: boolean,
+  ): void;
+  setValue<TFieldName extends keyof TFieldValues>(
+    namesWithValue: UnpackNestedValue<
+      DeepPartial<Pick<TFieldValues, TFieldName>>
+    >[],
+    shouldValidate?: boolean,
+  ): void;
+  trigger(
+    name?: FieldName<TFieldValues> | FieldName<TFieldValues>[],
+  ): Promise<boolean>;
+  errors: FieldErrors<TFieldValues>;
+  formState: FormStateProxy<TFieldValues>;
+  reset: (
+    values?: UnpackNestedValue<DeepPartial<TFieldValues>>,
+    omitResetState?: OmitResetState,
+  ) => void;
+  getValues(): UnpackNestedValue<TFieldValues>;
+  getValues<TFieldName extends string, TFieldValue extends unknown>(
+    name: TFieldName,
+  ): TFieldName extends keyof TFieldValues
+    ? UnpackNestedValue<TFieldValues>[TFieldName]
+    : TFieldValue;
+  getValues<TFieldName extends keyof TFieldValues>(
+    names: TFieldName[],
+  ): UnpackNestedValue<Pick<TFieldValues, TFieldName>>;
+  handleSubmit: (
+    callback: OnSubmit<TFieldValues>,
+  ) => (e?: React.BaseSyntheticEvent) => Promise<void>;
+  control: Control<TFieldValues>;
+};

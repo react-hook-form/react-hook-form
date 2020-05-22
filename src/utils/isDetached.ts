@@ -1,4 +1,4 @@
-import { Ref } from '../types/types';
+import { Ref } from '../types/form';
 
 export default function isDetached(element: Ref): boolean {
   if (!element) {

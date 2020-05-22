@@ -1,1 +1,1 @@
-export { NestedValue, Resolver, OnSubmit, Control } from './types';
+export { NestedValue, Resolver, OnSubmit, Control } from './form';

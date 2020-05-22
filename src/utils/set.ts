@@ -2,7 +2,7 @@ import isObject from './isObject';
 import isArray from './isArray';
 import isKey from './isKey';
 import stringToPath from './stringToPath';
-import { FieldValues } from '../types/types';
+import { FieldValues } from '../types/form';
 
 export default function set(object: FieldValues, path: string, value: any) {
   let index = -1;

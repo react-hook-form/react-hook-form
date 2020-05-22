@@ -1,4 +1,4 @@
-import { ValidationMode } from './types/types';
+import { ValidationMode } from './types/form';
 
 export const VALIDATION_MODE: ValidationMode = {
   onBlur: 'onBlur',

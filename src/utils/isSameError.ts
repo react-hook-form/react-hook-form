@@ -1,6 +1,6 @@
 import isObject from './isObject';
 import compareObject from './compareObject';
-import { FieldError } from '../types/types';
+import { FieldError } from '../types/form';
 
 export default (
   error: FieldError | undefined,

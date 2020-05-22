@@ -23,7 +23,7 @@ import {
   FieldValues,
   FieldRefs,
   Message,
-} from '../types/types';
+} from '../types/form';
 
 export default async <TFieldValues extends FieldValues>(
   fieldsRef: React.MutableRefObject<FieldRefs<TFieldValues>>,
