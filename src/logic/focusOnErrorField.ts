@@ -1,5 +1,5 @@
 import get from '../utils/get';
-import { FieldErrors, FieldRefs } from '../types/types';
+import { FieldErrors, FieldRefs } from '../types/form';
 
 export default <TFieldValues>(
   fields: FieldRefs<TFieldValues>,

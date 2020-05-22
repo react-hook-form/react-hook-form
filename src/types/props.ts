@@ -11,7 +11,7 @@ import {
   ValidationOptions,
   EventFunction,
   Control,
-} from './types';
+} from './form';
 import { Assign } from './utils';
 
 export type FormProviderProps<

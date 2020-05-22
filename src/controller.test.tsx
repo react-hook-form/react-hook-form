@@ -2,7 +2,7 @@ import * as React from 'react';
 import { render, fireEvent } from '@testing-library/react';
 import { Controller } from './controller';
 import { reconfigureControl } from './useForm.test';
-import { Field } from './types/types';
+import { Field } from './types/form';
 
 jest.spyOn(console, 'warn').mockImplementation(() => {});
 

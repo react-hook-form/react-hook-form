@@ -7,7 +7,7 @@ import findRemovedFieldAndRemoveListener from './logic/findRemovedFieldAndRemove
 import validateField from './logic/validateField';
 import onDomRemove from './utils/onDomRemove';
 import { VALIDATION_MODE } from './constants';
-import { Control, NestedValue } from './types/types';
+import { Control, NestedValue } from './types/form';
 
 export const reconfigureControl = (
   controlOverrides: Partial<Control> = {},

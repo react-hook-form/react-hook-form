@@ -1,4 +1,4 @@
-import { NestedValue } from './types';
+import { NestedValue } from './form';
 
 export type Primitive = string | boolean | number | symbol | null | undefined;
 

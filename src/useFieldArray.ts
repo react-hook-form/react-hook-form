@@ -24,7 +24,7 @@ import {
   UseFieldArrayOptions,
   Control,
   ArrayField,
-} from './types/types';
+} from './types/form';
 
 export const useFieldArray = <
   TFieldArrayValues extends FieldValues = FieldValues,

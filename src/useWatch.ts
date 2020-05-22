@@ -8,7 +8,7 @@ import {
   FieldValues,
   UnpackNestedValue,
   Control,
-} from './types/types';
+} from './types/form';
 import { LiteralToPrimitive, DeepPartial } from './types/utils';
 
 export function useWatch<TWatchFieldValues extends FieldValues>(props: {

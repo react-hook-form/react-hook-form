@@ -2,7 +2,7 @@ import getFieldValue from './getFieldValue';
 import isString from '../utils/isString';
 import isArray from '../utils/isArray';
 import isUndefined from '../utils/isUndefined';
-import { InternalFieldName, FieldValues, FieldRefs } from '../types/types';
+import { InternalFieldName, FieldValues, FieldRefs } from '../types/form';
 
 export default <TFieldValues extends FieldValues>(
   fields: FieldRefs<TFieldValues>,

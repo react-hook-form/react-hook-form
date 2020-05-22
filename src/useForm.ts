@@ -63,7 +63,7 @@ import {
   RadioOrCheckboxOption,
   OmitResetState,
   Message,
-} from './types/types';
+} from './types/form';
 import { NonUndefined, LiteralToPrimitive, DeepPartial } from './types/utils';
 
 export function useForm<
