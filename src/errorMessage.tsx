@@ -1,7 +1,8 @@
 import * as React from 'react';
 import { useFormContext } from './useFormContext';
 import get from './utils/get';
-import { FieldErrors, ErrorMessageProps } from './types/types';
+import { FieldErrors } from './types/types';
+import { ErrorMessageProps } from './types/props';
 
 const ErrorMessage = <
   TFieldErrors extends FieldErrors,

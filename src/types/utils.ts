@@ -14,6 +14,8 @@ export type LiteralToPrimitive<T extends any> = T extends string
   ? boolean
   : T;
 
+export type Assign<T extends object, U extends object> = T & Omit<U, keyof T>;
+
 export type DeepPartial<T> = {
   [K in keyof T]?: T[K] extends Array<infer U>
     ? Array<DeepPartial<U>>

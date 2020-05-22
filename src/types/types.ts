@@ -261,42 +261,6 @@ export type Control<TFieldValues extends FieldValues = FieldValues> = Pick<
   renderWatchedInputs: (name: string, found?: boolean) => void;
 };
 
-export type Assign<T extends object, U extends object> = T & Omit<U, keyof T>;
-
-export type AsProps<TAs> = TAs extends undefined
-  ? {}
-  : TAs extends React.ReactElement
-  ? Record<string, any>
-  : TAs extends React.ComponentType<infer P>
-  ? P
-  : TAs extends keyof JSX.IntrinsicElements
-  ? JSX.IntrinsicElements[TAs]
-  : never;
-
-export type ControllerProps<
-  TAs extends
-    | React.ReactElement
-    | React.ComponentType<any>
-    | keyof JSX.IntrinsicElements,
-  TControl extends Control = Control
-> = Assign<
-  {
-    name: FieldName<FieldValuesFromControl<TControl>>;
-    as: TAs;
-    rules?: ValidationOptions;
-    onChange?: EventFunction;
-    onFocus?: () => void;
-    onBlur?: EventFunction;
-    mode?: Mode;
-    onChangeName?: string;
-    onBlurName?: string;
-    valueName?: string;
-    defaultValue?: unknown;
-    control?: TControl;
-  },
-  AsProps<TAs>
->;
-
 export type UseFieldArrayOptions<
   TKeyName extends string = 'id',
   TControl extends Control = Control
@@ -330,33 +294,6 @@ export type UseWatchOptions = {
 export type FieldValuesFromFieldErrors<
   TFieldErrors
 > = TFieldErrors extends FieldErrors<infer TFieldValues> ? TFieldValues : never;
-
-export type ErrorMessageProps<
-  TFieldErrors extends FieldErrors,
-  TAs extends
-    | undefined
-    | React.ReactElement
-    | React.ComponentType<any>
-    | keyof JSX.IntrinsicElements = undefined
-> = Assign<
-  {
-    as?: TAs;
-    errors?: TFieldErrors;
-    name: FieldName<FieldValuesFromFieldErrors<TFieldErrors>>;
-    message?: Message;
-    children?: (data: {
-      message: Message;
-      messages?: MultipleFieldErrors;
-    }) => React.ReactNode;
-  },
-  AsProps<TAs>
->;
-
-export type FormProviderProps<
-  TFieldValues extends FieldValues = FieldValues
-> = {
-  children: React.ReactNode;
-} & UseFormMethods<TFieldValues>;
 
 export type UseFormMethods<TFieldValues extends FieldValues = FieldValues> = {
   register<TFieldElement extends FieldElement<TFieldValues>>(): (
