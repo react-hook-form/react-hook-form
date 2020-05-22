@@ -170,10 +170,6 @@ export const useFieldArray = <
       shouldRender = true;
     }
 
-    if (!isArray(errorsRef.current[name])) {
-      delete errorsRef.current[name];
-    }
-
     shouldRenderFieldArray(shouldRender);
   };
 
@@ -191,7 +187,7 @@ export const useFieldArray = <
       ),
     );
 
-    if (errorsRef.current[name]) {
+    if (isArray(errorsRef.current[name])) {
       errorsRef.current[name] = prependAt(errorsRef.current[name], emptyArray);
     }
 
@@ -228,7 +224,7 @@ export const useFieldArray = <
     setFieldAndValidState(removeArrayAt(allFields.current, index));
     setIsDeleted(true);
 
-    if (errorsRef.current[name]) {
+    if (isArray(errorsRef.current[name])) {
       errorsRef.current[name] = removeArrayAt(errorsRef.current[name], index);
       if (!unique(errorsRef.current[name]).length) {
         delete errorsRef.current[name];
@@ -309,7 +305,7 @@ export const useFieldArray = <
       ),
     );
 
-    if (errorsRef.current[name]) {
+    if (isArray(errorsRef.current[name])) {
       errorsRef.current[name] = insertAt(
         errorsRef.current[name],
         index,
@@ -348,7 +344,7 @@ export const useFieldArray = <
     swapArrayAt(allFields.current, indexA, indexB);
     setFieldAndValidState([...allFields.current]);
 
-    if (errorsRef.current[name]) {
+    if (isArray(errorsRef.current[name])) {
       swapArrayAt(errorsRef.current[name], indexA, indexB);
     }
 
@@ -376,7 +372,7 @@ export const useFieldArray = <
     moveArrayAt(allFields.current, from, to);
     setFieldAndValidState([...allFields.current]);
 
-    if (errorsRef.current[name]) {
+    if (isArray(errorsRef.current[name])) {
       moveArrayAt(errorsRef.current[name], from, to);
     }
 
