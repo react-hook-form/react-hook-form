@@ -3,8 +3,8 @@ import get from '../utils/get';
 import getPath from '../utils/getPath';
 import isEmptyObject from '../utils/isEmptyObject';
 import isUndefined from '../utils/isUndefined';
+import { DeepPartial } from '../types/utils';
 import {
-  DeepPartial,
   FieldValue,
   FieldValues,
   InternalFieldName,

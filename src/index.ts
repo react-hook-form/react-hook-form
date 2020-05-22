@@ -5,5 +5,4 @@ export * from './controller';
 export * from './errorMessage';
 export * from './useFormContext';
 export * from './logic';
-export * from './types/contextTypes';
-export * from './types/types';
+export * from './types';
