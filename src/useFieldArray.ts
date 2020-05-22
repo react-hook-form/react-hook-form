@@ -170,6 +170,10 @@ export const useFieldArray = <
       shouldRender = true;
     }
 
+    if (!isArray(errorsRef.current[name])) {
+      delete errorsRef.current[name];
+    }
+
     shouldRenderFieldArray(shouldRender);
   };
 
