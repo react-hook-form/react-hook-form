@@ -736,6 +736,8 @@ export function useForm<
     type: string | MultipleFieldErrors = '',
     message?: Message,
   ): void {
+    isValidRef.current = false;
+
     if (isString(name)) {
       setInternalError({
         name,
