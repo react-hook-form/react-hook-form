@@ -1264,6 +1264,7 @@ describe('useForm', () => {
           test2: <p>test2</p>,
         });
       });
+
       expect(result.current.errors).toEqual({
         input: {
           type: '',
@@ -1276,6 +1277,7 @@ describe('useForm', () => {
           ref: {},
         },
       });
+      expect(result.current.formState.isValid).toBeFalsy();
     });
 
     it('should remove error', () => {
