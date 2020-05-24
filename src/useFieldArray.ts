@@ -434,6 +434,7 @@ export const useFieldArray = <
           field!.ref.focus
         ) {
           field!.ref.focus();
+          break;
         }
       }
     }
