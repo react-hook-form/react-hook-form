@@ -298,6 +298,7 @@ export const useFieldArray = <
   const insert = (
     index: number,
     value: Partial<TFieldArrayValues> | Partial<TFieldArrayValues>[],
+    shouldFocus = true,
   ) => {
     shouldRender = false;
     const emptyArray = fillEmptyArray(value);
@@ -339,6 +340,8 @@ export const useFieldArray = <
     }
 
     shouldRenderFieldArray(shouldRender);
+
+    focusIndexRef.current = shouldFocus ? index : -1;
   };
 
   const swap = (indexA: number, indexB: number) => {
