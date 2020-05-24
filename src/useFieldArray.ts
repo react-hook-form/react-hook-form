@@ -36,6 +36,7 @@ export const useFieldArray = <
   keyName = 'id' as TKeyName,
 }: UseFieldArrayOptions<TKeyName, TControl>) => {
   const methods = useFormContext();
+  const focusIndexRef = React.useRef(-1);
   const {
     isWatchAllRef,
     resetFieldArrayFunctionRef,
@@ -58,6 +59,7 @@ export const useFieldArray = <
     renderWatchedInputs,
   } = control || methods.control;
   let shouldRender;
+
   const getDefaultValues = () => [
     ...get(
       fieldArrayDefaultValues.current[getFieldArrayParentName(name)]
@@ -153,6 +155,7 @@ export const useFieldArray = <
 
   const append = (
     value: Partial<TFieldArrayValues> | Partial<TFieldArrayValues>[],
+    shouldFocus = true,
   ) => {
     shouldRender = false;
     setFieldAndValidState([
@@ -170,11 +173,14 @@ export const useFieldArray = <
       shouldRender = true;
     }
 
+    focusIndexRef.current = shouldFocus ? fields.length : -1;
+
     shouldRenderFieldArray(shouldRender);
   };
 
   const prepend = (
     value: Partial<TFieldArrayValues> | Partial<TFieldArrayValues>[],
+    shouldFocus = true,
   ) => {
     const emptyArray = fillEmptyArray(value);
     shouldRender = false;
@@ -208,6 +214,7 @@ export const useFieldArray = <
     }
 
     shouldRenderFieldArray(shouldRender);
+    focusIndexRef.current = shouldFocus ? 0 : -1;
   };
 
   const remove = (index?: number | number[]) => {
@@ -415,6 +422,18 @@ export const useFieldArray = <
         }
       }
     }
+
+    if (focusIndexRef.current > -1) {
+      for (const key in fieldsRef.current) {
+        const field = fieldsRef.current[key];
+        if (
+          key.startsWith(`${name}[${focusIndexRef.current}]`) &&
+          field!.ref.focus
+        ) {
+          field!.ref.focus();
+        }
+      }
+    }
   }, [
     fields,
     name,
@@ -422,6 +441,7 @@ export const useFieldArray = <
     isDeleted,
     isNameKey,
     reRender,
+    fieldsRef,
     watchFieldsRef,
     isWatchAllRef,
   ]);
