@@ -173,7 +173,7 @@ export const useFieldArray = <
       shouldRender = true;
     }
 
-    focusIndexRef.current = shouldFocus ? fields.length : -1;
+    focusIndexRef.current = shouldFocus ? allFields.current.length : -1;
 
     shouldRenderFieldArray(shouldRender);
   };
