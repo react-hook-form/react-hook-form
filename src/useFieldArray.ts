@@ -437,6 +437,8 @@ export const useFieldArray = <
         }
       }
     }
+
+    focusIndexRef.current = -1;
   }, [
     fields,
     name,
