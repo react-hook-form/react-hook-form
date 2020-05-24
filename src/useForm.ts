@@ -1209,17 +1209,18 @@ export function useForm<
     );
   }
 
-  React.useEffect(
-    () => () => {
+  React.useEffect(() => {
+    isUnMount.current = false;
+
+    return () => {
       isUnMount.current = true;
       fieldsRef.current &&
         process.env.NODE_ENV === 'production' &&
         Object.values(fieldsRef.current).forEach((field) =>
           removeFieldEventListenerAndRef(field, true),
         );
-    },
-    [removeFieldEventListenerAndRef],
-  );
+    };
+  }, [removeFieldEventListenerAndRef]);
 
   if (!resolver) {
     isValidRef.current =
