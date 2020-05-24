@@ -404,9 +404,7 @@ export const useFieldArray = <
     ) {
       fieldArrayDefaultValues.current[name].pop();
     }
-  }, [fields, name, fieldArrayDefaultValues, isDeleted, isNameKey]);
 
-  React.useEffect(() => {
     if (isWatchAllRef && isWatchAllRef.current) {
       reRender();
     } else if (watchFieldsRef) {
@@ -417,7 +415,16 @@ export const useFieldArray = <
         }
       }
     }
-  }, [fields, name, reRender, watchFieldsRef, isWatchAllRef]);
+  }, [
+    fields,
+    name,
+    fieldArrayDefaultValues,
+    isDeleted,
+    isNameKey,
+    reRender,
+    watchFieldsRef,
+    isWatchAllRef,
+  ]);
 
   React.useEffect(() => {
     const resetFunctions = resetFieldArrayFunctionRef.current;
