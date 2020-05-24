@@ -9,6 +9,7 @@ import {
 let renderCount = 0;
 
 const UseFieldArray: React.FC = (props: any) => {
+  const withoutFocus = props.match.params.mode === 'defaultAndWithoutFocus';
   const {
     control,
     handleSubmit,
@@ -19,7 +20,7 @@ const UseFieldArray: React.FC = (props: any) => {
   } = useForm<{
     data: { name: string }[];
   }>({
-    ...(props.match.params.mode === 'default'
+    ...(props.match.params.mode === 'default' || withoutFocus
       ? {
           defaultValues: {
             data: [{ name: 'test' }, { name: 'test1' }, { name: 'test2' }],
@@ -95,7 +96,7 @@ const UseFieldArray: React.FC = (props: any) => {
       <button
         id="append"
         type="button"
-        onClick={() => append({ name: renderCount.toString() })}
+        onClick={() => append({ name: renderCount.toString() }, !withoutFocus)}
       >
         append
       </button>
@@ -103,7 +104,7 @@ const UseFieldArray: React.FC = (props: any) => {
       <button
         id="prepend"
         type="button"
-        onClick={() => prepend({ name: renderCount.toString() })}
+        onClick={() => prepend({ name: renderCount.toString() }, !withoutFocus)}
       >
         prepend
       </button>
@@ -119,7 +120,9 @@ const UseFieldArray: React.FC = (props: any) => {
       <button
         id="insert"
         type="button"
-        onClick={() => insert(1, { name: renderCount.toString() })}
+        onClick={() =>
+          insert(1, { name: renderCount.toString() }, !withoutFocus)
+        }
       >
         insert
       </button>
