@@ -44,7 +44,6 @@ export default function App() {
 
   return (
     <form onSubmit={onSubmit}>
-      <h1>React Hook Form - NestedValue</h1>
       <div>
         <label>MUI Autocomplete</label>
         <Autocomplete
