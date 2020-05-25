@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React from 'react';
 import { useForm, NestedValue } from 'react-hook-form';
 
 import './styles.css';

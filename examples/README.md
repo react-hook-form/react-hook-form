@@ -41,12 +41,13 @@ You can view the source code for most examples within their folder, or visit Cod
 | Validation On Blur                      | https://codesandbox.io/s/w7p3km6nyw                                                  |
 | Validation On Change                    | https://codesandbox.io/s/74zw1oqozx                                                  |
 | Wizard (funnel / multi-step) form       | https://codesandbox.io/s/react-hook-form-wizard-form-13yud                           |
+| Native Multiple Input                   | https://codesandbox.io/s/react-hook-form-native-multiple-input-tyhue                 |
 
 ## Types
 
 The following table contains a list of support Types in this library.
 
-| Type Name             | Link                                                                 |
-| --------------------- | -------------------------------------------------------------------- |
-| NestedValue           | https://codesandbox.io/s/react-hook-form-nestedvalue-dujyc           |
-| Native Multiple Input | https://codesandbox.io/s/react-hook-form-native-multiple-input-tyhue |
+| Type Name   | Link                                                       |
+| ----------- | ---------------------------------------------------------- |
+| NestedValue | https://codesandbox.io/s/react-hook-form-nestedvalue-dujyc |
+| OnSubmit    | https://codesandbox.io/s/react-hook-form-onsubmit-kfmqy    |
