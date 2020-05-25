@@ -1,6 +1,6 @@
 ## Examples
 
-you can view the source code within the folder or visit code sand box to see how it works.
+You can view the source code for most examples within their folder, or visit Code Sandbox to see how the example works live.
 
 | Name                                    | Link                                                                                 |
 | --------------------------------------- | ------------------------------------------------------------------------------------ |
@@ -25,6 +25,7 @@ you can view the source code within the folder or visit code sand box to see how
 | Field Array                             | https://codesandbox.io/s/6j1760jkjk                                                  |
 | Field Array Min Length                  | https://codesandbox.io/s/react-hook-form-fieldsarray-yup-validation-min-length-57qtb |
 | FormProvider                            | https://codesandbox.io/s/react-hook-form-form-context-dkvjz                          |
+| Material UI Controlled Components       | https://codesandbox.io/s/react-hook-form-controller-079xx                          |
 | Parse and format input value            | https://codesandbox.io/s/react-hook-form-parse-and-format-textarea-furtc             |
 | Nested Fields                           | https://codesandbox.io/s/react-hook-form-nested-fields-mv1bb                         |
 | Normalize/Format/Mask Field             | https://codesandbox.io/s/387z7njwzp                                                  |
