@@ -1080,7 +1080,9 @@ export function useForm<
       }
     },
     [isWeb, reRender, resolverRef, submitFocusError, validateAllFieldCriteria],
-  );
+  ) as <TSubmitFieldValues extends FieldValues = TFieldValues>(
+    callback: OnSubmit<TSubmitFieldValues>,
+  ) => (e?: React.BaseSyntheticEvent) => Promise<void>;
 
   const resetRefs = ({
     errors,

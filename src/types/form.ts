@@ -371,8 +371,8 @@ export type UseFormMethods<TFieldValues extends FieldValues = FieldValues> = {
   getValues<TFieldName extends keyof TFieldValues>(
     names: TFieldName[],
   ): UnpackNestedValue<Pick<TFieldValues, TFieldName>>;
-  handleSubmit: (
-    callback: OnSubmit<TFieldValues>,
+  handleSubmit: <TSubmitFieldValues extends FieldValues = TFieldValues>(
+    callback: OnSubmit<TSubmitFieldValues>,
   ) => (e?: React.BaseSyntheticEvent) => Promise<void>;
   control: Control<TFieldValues>;
 };
