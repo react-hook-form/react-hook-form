@@ -17,6 +17,7 @@ You can view the source code for most examples within their folder, or visit Cod
 | Custom Masked Input                     | https://codesandbox.io/s/trusting-agnesi-rdi5m                                       |
 | Custom Masked Input with Controller     | https://codesandbox.io/s/morning-sunset-8n3sx                                        |
 | Controlled Input                        | https://codesandbox.io/s/j36w7xkk7w                                                  |
+| Controller (MUI, React-Select and etc)  | https://codesandbox.io/s/react-hook-form-controller-079xx                          |
 | Compare Field Values                    | https://codesandbox.io/s/react-hook-form-getvalues-compare-field-values-qrtvx        |
 | DefaultValues                           | https://codesandbox.io/s/react-hook-form-defaultvalues-n5gvx                         |
 | Default/Initial Form Value              | https://codesandbox.io/s/l3mxpvmm9                                                   |
@@ -25,7 +26,6 @@ You can view the source code for most examples within their folder, or visit Cod
 | Field Array                             | https://codesandbox.io/s/6j1760jkjk                                                  |
 | Field Array Min Length                  | https://codesandbox.io/s/react-hook-form-fieldsarray-yup-validation-min-length-57qtb |
 | FormProvider                            | https://codesandbox.io/s/react-hook-form-form-context-dkvjz                          |
-| Material UI Controlled Components       | https://codesandbox.io/s/react-hook-form-controller-079xx                          |
 | Parse and format input value            | https://codesandbox.io/s/react-hook-form-parse-and-format-textarea-furtc             |
 | Nested Fields                           | https://codesandbox.io/s/react-hook-form-nested-fields-mv1bb                         |
 | Normalize/Format/Mask Field             | https://codesandbox.io/s/387z7njwzp                                                  |
