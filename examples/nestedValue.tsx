@@ -30,7 +30,7 @@ export default function App() {
   const select = watch('select');
 
   const onSubmit = handleSubmit((data) => {
-    alert(JSON.stringify(data, null));
+    alert(JSON.stringify(data));
   });
 
   useEffect(() => {

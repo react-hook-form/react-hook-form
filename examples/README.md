@@ -46,6 +46,7 @@ You can view the source code for most examples within their folder, or visit Cod
 
 The following table contains a list of support Types in this library.
 
-| Type Name                               | Link                                                                                 |
-| --------------------------------------- | ------------------------------------------------------------------------------------ |
-| NestedValue                             | https://codesandbox.io/s/react-hook-form-nestedvalue-dujyc                           |
+| Type Name             | Link                                                                 |
+| --------------------- | -------------------------------------------------------------------- |
+| NestedValue           | https://codesandbox.io/s/react-hook-form-nestedvalue-dujyc           |
+| Native Multiple Input | https://codesandbox.io/s/react-hook-form-native-multiple-input-tyhue |
