@@ -44,6 +44,8 @@ You can view the source code for most examples within their folder, or visit Cod
 
 ## Types
 
+The following table contains a list of support Types in this library.
+
 | Type Name                               | Link                                                                                 |
 | --------------------------------------- | ------------------------------------------------------------------------------------ |
 | NestedValue                             | https://codesandbox.io/s/react-hook-form-nestedvalue-dujyc                           |
