@@ -45,4 +45,5 @@ You can view the source code for most examples within their folder, or visit Cod
 ## Types
 
 | Type Name                               | Link                                                                                 |
+| --------------------------------------- | ------------------------------------------------------------------------------------ |
 | NestedValue                             | https://codesandbox.io/s/react-hook-form-nestedvalue-dujyc                           |
