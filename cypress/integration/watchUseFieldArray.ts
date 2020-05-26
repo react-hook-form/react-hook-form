@@ -15,31 +15,32 @@ context('watchUseFieldArray', () => {
     cy.get('#append').click();
     cy.get('#append').click();
     cy.get('#result').contains(
-      '[{"name":"9"},{"name":"2test"},{"name":"11"},{"name":"13"},{"name":"15"}]',
+      '[{"name":"9"},{"name":"2test"},{"name":"12"},{"name":"15"},{"name":"18"}]',
     );
 
     cy.get('#swap').click();
     cy.get('#result').contains(
-      '[{"name":"9"},{"name":"11"},{"name":"2test"},{"name":"13"},{"name":"15"}]',
+      '[{"name":"9"},{"name":"12"},{"name":"2test"},{"name":"15"},{"name":"18"}]',
     );
 
     cy.get('#move').click();
     cy.get('#result').contains(
-      '[{"name":"2test"},{"name":"9"},{"name":"11"},{"name":"13"},{"name":"15"}]',
+      '[{"name":"2test"},{"name":"9"},{"name":"12"},{"name":"15"},{"name":"18"}]',
     );
 
     cy.get('#insert').click();
     cy.get('#result').contains(
-      '[{"name":"2test"},{"name":"21"},{"name":"9"},{"name":"11"},{"name":"13"},{"name":"15"}]',
+      '[{"name":"2test"},{"name":"25"},{"name":"9"},{"name":"12"},{"name":"15"},{"name":"18"}]',
     );
 
     cy.get('#remove').click();
     cy.get('#result').contains(
-      '[{"name":"2test"},{"name":"9"},{"name":"11"},{"name":"13"},{"name":"15"}]',
+      '[{"name":"2test"},{"name":"9"},{"name":"12"},{"name":"15"},{"name":"18"}]',
     );
 
     cy.get('#removeAll').click();
     cy.get('#result').should('be.empty');
+    cy.get('#renderCount').contains('32');
   });
 
   it('should return empty when items been removed and defaultValues are supplied', () => {

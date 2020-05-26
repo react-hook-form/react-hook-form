@@ -80,11 +80,111 @@ context('useFieldArray', () => {
     cy.get('#submit').click();
     cy.get('#result').contains('{}');
 
-    cy.get('#renderCount').contains('34');
+    cy.get('#renderCount').contains('35');
   });
 
   it('should behaviour correctly with defaultValue', () => {
     cy.visit('http://localhost:3000/useFieldArray/default');
+
+    cy.get('ul > li').its('length').should('equal', 3);
+
+    cy.get('ul > li').eq(0).find('input').should('have.value', 'test');
+
+    cy.get('ul > li').eq(1).find('input').should('have.value', 'test1');
+
+    cy.get('ul > li').eq(2).find('input').should('have.value', 'test2');
+
+    cy.get('#append').click();
+
+    cy.get('ul > li').eq(3).find('input').should('have.value', '1');
+
+    cy.get('#submit').click();
+    cy.get('#result').contains(
+      '{"data":[{"name":"test"},{"name":"test1"},{"name":"test2"},{"name":"1"}]}',
+    );
+
+    cy.get('#prepend').click();
+    cy.get('ul > li').its('length').should('equal', 5);
+
+    cy.get('ul > li').eq(0).get('input').should('have.value', '6');
+
+    cy.get('#submit').click();
+    cy.get('#result').contains(
+      '{"data":[{"name":"6"},{"name":"test"},{"name":"test1"},{"name":"test2"},{"name":"1"}]}',
+    );
+
+    cy.get('#swap').click();
+    cy.get('ul > li').eq(1).find('input').should('have.value', 'test1');
+    cy.get('ul > li').eq(2).find('input').should('have.value', 'test');
+
+    cy.get('#submit').click();
+    cy.get('#result').contains(
+      '{"data":[{"name":"6"},{"name":"test1"},{"name":"test"},{"name":"test2"},{"name":"1"}]}',
+    );
+
+    cy.get('#move').click();
+    cy.get('ul > li').eq(0).find('input').should('have.value', 'test');
+    cy.get('ul > li').eq(1).find('input').should('have.value', '6');
+
+    cy.get('#submit').click();
+    cy.get('#result').contains(
+      '{"data":[{"name":"test"},{"name":"6"},{"name":"test1"},{"name":"test2"},{"name":"1"}]}',
+    );
+
+    cy.get('#insert').click();
+    cy.get('ul > li').eq(1).find('input').should('have.value', '18');
+
+    cy.get('#submit').click();
+    cy.get('#result').contains(
+      '{"data":[{"name":"test"},{"name":"18"},{"name":"6"},{"name":"test1"},{"name":"test2"},{"name":"1"}]}',
+    );
+
+    cy.get('#remove').click();
+    cy.get('ul > li').eq(0).find('input').should('have.value', 'test');
+    cy.get('ul > li').eq(1).find('input').should('have.value', '6');
+
+    cy.get('#submit').click();
+    cy.get('#result').contains(
+      '{"data":[{"name":"test"},{"name":"6"},{"name":"test1"},{"name":"test2"},{"name":"1"}]}',
+    );
+
+    cy.get('#delete2').click();
+
+    cy.get('ul > li').its('length').should('equal', 4);
+
+    cy.get('ul > li').eq(0).find('input').should('have.value', 'test');
+    cy.get('ul > li').eq(1).find('input').should('have.value', '6');
+    cy.get('ul > li').eq(2).find('input').should('have.value', 'test2');
+    cy.get('ul > li').eq(3).find('input').should('have.value', '1');
+
+    cy.get('#delete3').click();
+
+    cy.get('ul > li').its('length').should('equal', 3);
+
+    cy.get('#submit').click();
+    cy.get('#result').contains(
+      '{"data":[{"name":"test"},{"name":"6"},{"name":"test2"}]}',
+    );
+
+    cy.get('#removeAll').click();
+    cy.get('ul > li').should('have.length', 0);
+
+    cy.get('#submit').click();
+    cy.get('#result').contains('{}');
+
+    cy.get('#append').click();
+
+    cy.get('ul > li').eq(0).find('input').should('have.value', '35');
+
+    cy.get('#prepend').click();
+
+    cy.get('ul > li').eq(0).find('input').should('have.value', '36');
+
+    cy.get('#renderCount').contains('37');
+  });
+
+  it('should behaviour correctly with defaultValue and without auto focus', () => {
+    cy.visit('http://localhost:3000/useFieldArray/defaultAndWithoutFocus');
 
     cy.get('ul > li').its('length').should('equal', 3);
 
@@ -307,6 +407,39 @@ context('useFieldArray', () => {
 
   it('should return correct touched values', () => {
     cy.visit('http://localhost:3000/useFieldArray/default');
+    cy.get('#field0').type('1');
+    cy.get('#field1').type('1');
+    cy.get('#field2').type('1');
+    cy.get('#touched').contains('[{"name":true},{"name":true}]');
+    cy.get('#append').click();
+    cy.get('#prepend').click();
+    cy.get('#touched').contains(
+      '[null,{"name":true},{"name":true},{"name":true},{"name":true}]',
+    );
+    cy.get('#insert').click();
+    cy.get('#touched').contains(
+      '[null,null,{"name":true},{"name":true},{"name":true},{"name":true}]',
+    );
+    cy.get('#swap').click();
+    cy.get('#touched').contains(
+      '[null,{"name":true},{"name":true},{"name":true},{"name":true},{"name":true}]',
+    );
+    cy.get('#move').click();
+    cy.get('#touched').contains(
+      '[{"name":true},null,{"name":true},{"name":true},{"name":true},{"name":true}]',
+    );
+    cy.get('#insert').click();
+    cy.get('#touched').contains(
+      '[{"name":true},null,null,{"name":true},{"name":true},{"name":true},{"name":true}]',
+    );
+    cy.get('#delete4').click();
+    cy.get('#touched').contains(
+      '[{"name":true},{"name":true},null,{"name":true},{"name":true},{"name":true}]',
+    );
+  });
+
+  it('should return correct touched values without autoFocus', () => {
+    cy.visit('http://localhost:3000/useFieldArray/defaultAndWithoutFocus');
     cy.get('#field0').type('1');
     cy.get('#field1').type('1');
     cy.get('#field2').type('1');
