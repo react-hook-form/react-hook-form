@@ -30,7 +30,7 @@ English | <a href="./docs/README.zh-CN.md">简体中文</a> | <a href="./docs/RE
 ## Features
 
 - Built with performance and DX in mind
-- Embrace uncontrolled form validation
+- Embrace native form validation
 - Simple integration with [UI libraries](https://codesandbox.io/s/react-hook-form-controller-079xx)
 - [Tiny size](https://bundlephobia.com/result?p=react-hook-form@latest) without any dependency
 - Follows HTML standard for [validation](https://react-hook-form.com/get-started#Applyvalidation)
