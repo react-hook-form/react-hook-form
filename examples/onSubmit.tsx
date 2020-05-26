@@ -11,9 +11,7 @@ type FormValues = {
 
 export default function App() {
   const { register, handleSubmit } = useForm<FormValues>();
-  const onSubmit: OnSubmit<FormValues> = (data) => {
-    alert(JSON.stringify(data));
-  };
+  const onSubmit: OnSubmit<FormValues> = (data) => alert(JSON.stringify(data));
 
   return (
     <div className="App">

@@ -51,3 +51,4 @@ The following table contains a list of support Types in this library.
 | ----------- | ---------------------------------------------------------- |
 | NestedValue | https://codesandbox.io/s/react-hook-form-nestedvalue-dujyc |
 | OnSubmit    | https://codesandbox.io/s/react-hook-form-onsubmit-kfmqy    |
+| Resolver    | https://codesandbox.io/s/react-hook-form-resolver-juwui    |
