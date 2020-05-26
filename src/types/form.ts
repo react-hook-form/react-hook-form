@@ -314,7 +314,7 @@ export type UseFormMethods<TFieldValues extends FieldValues = FieldValues> = {
   watch(): UnpackNestedValue<TFieldValues>;
   watch<
     TFieldName extends string,
-    TFieldValue extends NonUndefined<TFieldValues[TFieldName]>
+    TFieldValue extends TFieldValues[TFieldName]
   >(
     name: TFieldName,
     defaultValue?: UnpackNestedValue<LiteralToPrimitive<TFieldValue>>,
@@ -339,10 +339,10 @@ export type UseFormMethods<TFieldValues extends FieldValues = FieldValues> = {
   clearError(name?: FieldName<TFieldValues> | FieldName<TFieldValues>[]): void;
   setValue<
     TFieldName extends string,
-    TFieldValue extends NonUndefined<TFieldValues[TFieldName]>
+    TFieldValue extends TFieldValues[TFieldName]
   >(
     name: TFieldName,
-    value: TFieldValue extends NestedValue<infer U>
+    value: NonUndefined<TFieldValue> extends NestedValue<infer U>
       ? U
       : UnpackNestedValue<DeepPartial<LiteralToPrimitive<TFieldValue>>>,
     shouldValidate?: boolean,

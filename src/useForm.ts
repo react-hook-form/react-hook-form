@@ -460,10 +460,10 @@ export function useForm<
 
   function setValue<
     TFieldName extends string,
-    TFieldValue extends NonUndefined<TFieldValues[TFieldName]>
+    TFieldValue extends TFieldValues[TFieldName]
   >(
     name: TFieldName,
-    value: TFieldValue extends NestedValue<infer U>
+    value: NonUndefined<TFieldValue> extends NestedValue<infer U>
       ? U
       : UnpackNestedValue<DeepPartial<LiteralToPrimitive<TFieldValue>>>,
     shouldValidate?: boolean,
@@ -820,7 +820,7 @@ export function useForm<
   function watch(): UnpackNestedValue<TFieldValues>;
   function watch<
     TFieldName extends string,
-    TFieldValue extends NonUndefined<TFieldValues[TFieldName]>
+    TFieldValue extends TFieldValues[TFieldName]
   >(
     name: TFieldName,
     defaultValue?: UnpackNestedValue<LiteralToPrimitive<TFieldValue>>,
