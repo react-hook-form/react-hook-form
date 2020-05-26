@@ -47,8 +47,9 @@ You can view the source code for most examples within their folder, or visit Cod
 
 The following table contains a list of support Types in this library.
 
-| Type Name   | Link                                                       |
-| ----------- | ---------------------------------------------------------- |
-| NestedValue | https://codesandbox.io/s/react-hook-form-nestedvalue-dujyc |
-| OnSubmit    | https://codesandbox.io/s/react-hook-form-onsubmit-kfmqy    |
-| Resolver    | https://codesandbox.io/s/react-hook-form-resolver-juwui    |
+| Type Name      | Link                                                          |
+| -------------- | ------------------------------------------------------------- |
+| NestedValue    | https://codesandbox.io/s/react-hook-form-nestedvalue-dujyc    |
+| OnSubmit       | https://codesandbox.io/s/react-hook-form-onsubmit-kfmqy       |
+| Resolver       | https://codesandbox.io/s/react-hook-form-resolver-juwui       |
+| UseFormMethods | https://codesandbox.io/s/react-hook-form-useformmethods-mycp2 |
