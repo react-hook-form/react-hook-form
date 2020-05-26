@@ -1,8 +1,6 @@
 import React from 'react';
 import { useForm, OnSubmit } from 'react-hook-form';
 
-import './styles.css';
-
 type FormValues = {
   firstName: string;
   lastName: string;
