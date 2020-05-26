@@ -53,3 +53,4 @@ The following table contains a list of support Types in this library.
 | OnSubmit       | https://codesandbox.io/s/react-hook-form-onsubmit-kfmqy       |
 | Resolver       | https://codesandbox.io/s/react-hook-form-resolver-juwui       |
 | UseFormMethods | https://codesandbox.io/s/react-hook-form-useformmethods-mycp2 |
+| Control        | https://codesandbox.io/s/react-hook-form-control-yq73k        |

@@ -1,8 +1,6 @@
 import React from 'react';
 import { useForm, UseFormMethods, OnSubmit } from 'react-hook-form';
 
-import './styles.css';
-
 type InputProps = React.DetailedHTMLProps<
   React.InputHTMLAttributes<HTMLInputElement>,
   HTMLInputElement
@@ -57,24 +55,22 @@ export default function App() {
   const onSubmit = (data: FormValues) => alert(JSON.stringify(data));
 
   return (
-    <div className="App">
-      <Form<FormValues> onSubmit={onSubmit}>
-        {({ register }) => (
-          <>
-            <Input name="firstName" ref={register} />
-            <Input name="lastName" ref={register} />
-            <Select
-              name="sex"
-              ref={register}
-              options={[
-                { label: 'Female', value: 'female' },
-                { label: 'Male', value: 'male' },
-              ]}
-            />
-            <Input type="submit" />
-          </>
-        )}
-      </Form>
-    </div>
+    <Form<FormValues> onSubmit={onSubmit}>
+      {({ register }) => (
+        <>
+          <Input name="firstName" ref={register} />
+          <Input name="lastName" ref={register} />
+          <Select
+            name="sex"
+            ref={register}
+            options={[
+              { label: 'Female', value: 'female' },
+              { label: 'Male', value: 'male' },
+            ]}
+          />
+          <Input type="submit" />
+        </>
+      )}
+    </Form>
   );
 }

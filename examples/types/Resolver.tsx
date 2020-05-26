@@ -27,21 +27,19 @@ export default function App() {
   const onSubmit = handleSubmit((data) => alert(JSON.stringify(data)));
 
   return (
-    <div className="App">
-      <form onSubmit={onSubmit}>
-        <div>
-          <label htmlFor="firstName">First Name</label>
-          <input name="firstName" placeholder="Kotaro" ref={register} />
-          {errors?.firstName && <p>{errors.firstName.message}</p>}
-        </div>
+    <form onSubmit={onSubmit}>
+      <div>
+        <label>First Name</label>
+        <input name="firstName" ref={register} />
+        {errors?.firstName && <p>{errors.firstName.message}</p>}
+      </div>
 
-        <div>
-          <label htmlFor="lastName">Last Name</label>
-          <input name="lastName" placeholder="Sugawara" ref={register} />
-        </div>
+      <div>
+        <label>Last Name</label>
+        <input name="lastName" ref={register} />
+      </div>
 
-        <input type="submit" />
-      </form>
-    </div>
+      <input type="submit" />
+    </form>
   );
 }
