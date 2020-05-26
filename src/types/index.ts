@@ -1,1 +1,7 @@
-export { NestedValue, Resolver, OnSubmit, Control } from './form';
+export {
+  NestedValue,
+  Resolver,
+  OnSubmit,
+  Control,
+  UseFormMethods,
+} from './form';
