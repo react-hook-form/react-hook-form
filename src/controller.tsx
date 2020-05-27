@@ -7,7 +7,7 @@ import getInputValue from './logic/getInputValue';
 import skipValidation from './logic/skipValidation';
 import isNameInFieldArray from './logic/isNameInFieldArray';
 import { useFormContext } from './useFormContext';
-import { VALIDATION_MODE, VALUE } from './constants';
+import { VALUE } from './constants';
 import { Control, Field } from './types/form';
 import { ControllerProps } from './types/props';
 
@@ -148,8 +148,8 @@ const Controller = <
   const props = {
     name,
     ...rest,
-    [VALIDATION_MODE.onChange]: handleChange,
-    [VALIDATION_MODE.onBlur]: handleBlur,
+    onChange: handleChange,
+    onBlur: handleBlur,
   };
 
   return as
