@@ -39,15 +39,14 @@ export type ControllerProps<
 > = Assign<
   {
     name: FieldName<FieldValuesFromControl<TControl>>;
-    as: TAs;
+    as?: TAs;
     rules?: ValidationOptions;
-    onChange?: EventFunction;
     onFocus?: () => void;
-    onBlur?: EventFunction;
-    mode?: Mode;
-    onChangeName?: string;
-    onBlurName?: string;
-    valueName?: string;
+    render?: (data: {
+      handleChange: EventFunction;
+      handleBlur: EventFunction;
+      value: any;
+    }) => React.ReactElement;
     defaultValue?: unknown;
     control?: TControl;
   },
