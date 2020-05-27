@@ -50,7 +50,7 @@ import {
   FieldRefs,
   UseFormOptions,
   ValidationOptions,
-  OnSubmit,
+  SubmitHandler,
   FieldElement,
   FormStateProxy,
   ReadFormState,
@@ -1011,7 +1011,7 @@ export function useForm<
   }
 
   const handleSubmit = React.useCallback(
-    (callback: OnSubmit<TFieldValues>) => async (
+    (callback: SubmitHandler<TFieldValues>) => async (
       e?: React.BaseSyntheticEvent,
     ): Promise<void> => {
       if (e) {
@@ -1081,7 +1081,7 @@ export function useForm<
     },
     [isWeb, reRender, resolverRef, submitFocusError, validateAllFieldCriteria],
   ) as <TSubmitFieldValues extends FieldValues = TFieldValues>(
-    callback: OnSubmit<TSubmitFieldValues>,
+    callback: SubmitHandler<TSubmitFieldValues>,
   ) => (e?: React.BaseSyntheticEvent) => Promise<void>;
 
   const resetRefs = ({

@@ -1,5 +1,5 @@
 import React from 'react';
-import { useForm, OnSubmit } from 'react-hook-form';
+import { useForm, SubmitHandler } from 'react-hook-form';
 
 type FormValues = {
   firstName: string;
@@ -9,7 +9,8 @@ type FormValues = {
 
 export default function App() {
   const { register, handleSubmit } = useForm<FormValues>();
-  const onSubmit: OnSubmit<FormValues> = (data) => alert(JSON.stringify(data));
+  const onSubmit: SubmitHandler<FormValues> = (data) =>
+    alert(JSON.stringify(data));
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>

@@ -1,7 +1,7 @@
 export {
   NestedValue,
   Resolver,
-  OnSubmit,
+  SubmitHandler,
   Control,
   UseFormMethods,
 } from './form';
