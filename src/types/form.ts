@@ -47,7 +47,7 @@ export type ValidationMode = {
 
 export type Mode = keyof ValidationMode;
 
-export type OnSubmit<TFieldValues extends FieldValues> = (
+export type SubmitHandler<TFieldValues extends FieldValues> = (
   data: UnpackNestedValue<TFieldValues>,
   event?: React.BaseSyntheticEvent,
 ) => void | Promise<void>;
@@ -372,7 +372,7 @@ export type UseFormMethods<TFieldValues extends FieldValues = FieldValues> = {
     names: TFieldName[],
   ): UnpackNestedValue<Pick<TFieldValues, TFieldName>>;
   handleSubmit: <TSubmitFieldValues extends FieldValues = TFieldValues>(
-    callback: OnSubmit<TSubmitFieldValues>,
+    callback: SubmitHandler<TSubmitFieldValues>,
   ) => (e?: React.BaseSyntheticEvent) => Promise<void>;
   control: Control<TFieldValues>;
 };
