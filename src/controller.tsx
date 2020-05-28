@@ -122,7 +122,7 @@ const Controller = <TControl extends Control = Control>({
     }
   });
 
-  const handleBlur = () => {
+  const onBlur = () => {
     if (
       readFormStateRef.current.touched &&
       !get(touchedFieldsRef.current, name)
@@ -136,14 +136,14 @@ const Controller = <TControl extends Control = Control>({
     }
   };
 
-  const handleChange = (event: any): any =>
+  const onChange = (event: any): any =>
     setValue(name, commonTask(event), shouldValidate());
 
   const props = {
     name,
     ...rest,
-    onChange: handleChange,
-    onBlur: handleBlur,
+    onChange: onChange,
+    onBlur: onBlur,
   };
 
   return isReactComponentClass(InnerComponent) ? (
@@ -151,8 +151,8 @@ const Controller = <TControl extends Control = Control>({
   ) : (
     InnerComponent({
       value,
-      handleChange,
-      handleBlur,
+      onChange,
+      onBlur,
     })
   );
 };

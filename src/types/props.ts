@@ -36,8 +36,8 @@ export type ControllerProps<TControl extends Control = Control> = {
   render:
     | React.ComponentType<any>
     | ((data: {
-        handleChange: EventFunction;
-        handleBlur: EventFunction;
+        onChange: EventFunction;
+        onBlur: EventFunction;
         value: any;
       }) => React.ReactElement);
   defaultValue?: unknown;
