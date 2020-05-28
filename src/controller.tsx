@@ -12,14 +12,22 @@ import { VALUE } from './constants';
 import { Control, Field } from './types/form';
 import { ControllerProps } from './types/props';
 
-const Controller = <TControl extends Control = Control>({
+const Controller = <
+  TAs extends
+    | React.ReactElement
+    | React.ComponentType<any>
+    | keyof JSX.IntrinsicElements,
+  TControl extends Control = Control
+>({
   name,
   rules,
   render,
+  as,
   defaultValue,
   control,
   onFocus,
-}: ControllerProps<TControl>) => {
+  ...rest
+}: ControllerProps<TAs, TControl>) => {
   const methods = useFormContext();
   const {
     defaultValuesRef,
@@ -150,11 +158,22 @@ const Controller = <TControl extends Control = Control>({
       : setValue(name, commonTask(callbackOrEvent), shouldValidate());
   }
 
-  return render({
+  const props = {
     onChange,
     onBlur,
     value,
-  });
+    ...rest,
+  };
+
+  return as
+    ? React.isValidElement(as)
+      ? React.cloneElement(as, props)
+      : React.createElement(as as string, props)
+    : render({
+        onChange,
+        onBlur,
+        value,
+      });
 };
 
 export { Controller };
