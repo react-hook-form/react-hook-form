@@ -63,7 +63,7 @@ const Controller = <TControl extends Control = Control>({
     });
 
   const commonTask = (event: any[]) => {
-    const data = getInputValue(event, isCheckboxInput);
+    const data = getInputValue(event[0], isCheckboxInput);
     setInputStateValue(data);
     valueRef.current = data;
     return data;
@@ -147,7 +147,7 @@ const Controller = <TControl extends Control = Control>({
     return isFunction(firstArg)
       ? (event: any) =>
           setValue(name, commonTask(firstArg(event)), shouldValidate())
-      : setValue(name, commonTask(...callbackOrEvent), shouldValidate());
+      : setValue(name, commonTask(callbackOrEvent), shouldValidate());
   }
 
   return render({
