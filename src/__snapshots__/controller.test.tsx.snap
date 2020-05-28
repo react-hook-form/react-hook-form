@@ -9,20 +9,11 @@ exports[`Controller should render correctly with as with component 1`] = `
 </DocumentFragment>
 `;
 
-exports[`Controller should render correctly with as with string 1`] = `
-<DocumentFragment>
-  <input
-    name="test"
-    value=""
-  />
-</DocumentFragment>
-`;
-
 exports[`Controller should support custom value name 1`] = `
 <DocumentFragment>
   <input
     name="test"
-    selectedkey=""
+    value=""
   />
 </DocumentFragment>
 `;

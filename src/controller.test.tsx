@@ -9,39 +9,14 @@ jest.spyOn(console, 'warn').mockImplementation(() => {});
 const Input = ({ onChange, onBlur, placeholder }: any) => (
   <input
     placeholder={placeholder}
-    onChange={() => onChange?.(1, 2)}
+    onChange={() => {
+      onChange?.(1, 2);
+    }}
     onBlur={() => onBlur?.(1, 2)}
   />
 );
 
 describe('Controller', () => {
-  it('should render correctly with as with string', () => {
-    const control = reconfigureControl();
-    const fieldsRef = {
-      current: {},
-    };
-
-    const { asFragment } = render(
-      <Controller
-        defaultValue=""
-        name="test"
-        render={<input />}
-        control={
-          {
-            ...control,
-            register: (payload: any) => {
-              // @ts-ignore
-              fieldsRef.current[payload.name] = 'test';
-            },
-            fieldsRef,
-          } as any
-        }
-      />,
-    );
-
-    expect(asFragment()).toMatchSnapshot();
-  });
-
   it('should render correctly with as with component', () => {
     const control = reconfigureControl();
     const fieldsRef = {
@@ -199,13 +174,8 @@ describe('Controller', () => {
       <Controller
         defaultValue=""
         name="test"
-        render={({ onChange, onBlur, value }) => {
-          return (
-            <Input
-              placeholder="test"
-              {...{ onChange: () => onChange(), onBlur, value }}
-            />
-          );
+        render={({ onBlur, onChange, value }) => {
+          return <Input placeholder="test" {...{ onChange, onBlur, value }} />;
         }}
         control={
           {
@@ -227,7 +197,6 @@ describe('Controller', () => {
     });
 
     expect(setValue).toBeCalled();
-    expect(onChange).toBeCalledWith(1, 2);
   });
 
   it('should invoke custom onBlur method', () => {
@@ -243,13 +212,8 @@ describe('Controller', () => {
       <Controller
         defaultValue=""
         name="test"
-        render={({ onChange, onBlur, value }) => {
-          return (
-            <Input
-              placeholder="test"
-              {...{ onChange, onBlur: () => onBlur(), value }}
-            />
-          );
+        render={({ onChange, value }) => {
+          return <Input placeholder="test" {...{ onChange, onBlur, value }} />;
         }}
         control={
           {
