@@ -9,7 +9,7 @@ import skipValidation from './logic/skipValidation';
 import isNameInFieldArray from './logic/isNameInFieldArray';
 import { useFormContext } from './useFormContext';
 import { VALUE } from './constants';
-import { Control, Field } from './types/form';
+import { Control, Field, EventFunction } from './types/form';
 import { ControllerProps } from './types/props';
 
 const Controller = <TControl extends Control = Control>({
@@ -19,7 +19,6 @@ const Controller = <TControl extends Control = Control>({
   defaultValue,
   control,
   onFocus,
-  ...rest
 }: ControllerProps<TControl>) => {
   const methods = useFormContext();
   const {
@@ -140,20 +139,15 @@ const Controller = <TControl extends Control = Control>({
     setValue(name, commonTask(event), shouldValidate());
 
   const props = {
-    name,
-    ...rest,
-    onChange: onChange,
-    onBlur: onBlur,
+    onChange,
+    onBlur,
+    value,
   };
 
   return isReactComponentClass(InnerComponent) ? (
     <InnerComponent {...props} />
   ) : (
-    InnerComponent({
-      value,
-      onChange,
-      onBlur,
-    })
+    InnerComponent(props)
   );
 };
 
