@@ -38,6 +38,34 @@ describe('transformToNestObject', () => {
     ).toMatchSnapshot();
   });
 
+  it('should combine object objects correctly', () => {
+    expect(
+      transformToNestObject({
+        'date.month': { message: 'Month must be 1-12.' },
+        date: { message: 'Date of birth cannot be in the future.' },
+      }),
+    ).toEqual({
+      date: {
+        message: 'Date of birth cannot be in the future.',
+        month: { message: 'Month must be 1-12.' },
+      },
+    });
+  });
+
+  it('should combine object objects correctly with different key order', () => {
+    expect(
+      transformToNestObject({
+        date: { message: 'Date of birth cannot be in the future.' },
+        'date.month': { message: 'Month must be 1-12.' },
+      }),
+    ).toEqual({
+      date: {
+        message: 'Date of birth cannot be in the future.',
+        month: { message: 'Month must be 1-12.' },
+      },
+    });
+  });
+
   it('should return default name value', () => {
     expect(
       transformToNestObject({
