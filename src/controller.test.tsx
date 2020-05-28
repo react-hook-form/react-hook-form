@@ -25,7 +25,7 @@ describe('Controller', () => {
       <Controller
         defaultValue=""
         name="test"
-        as={'input' as 'input'}
+        render={<input />}
         control={
           {
             ...control,
@@ -52,7 +52,7 @@ describe('Controller', () => {
       <Controller
         defaultValue=""
         name="test"
-        as={<input />}
+        render={<input />}
         control={
           {
             ...control,
@@ -83,7 +83,7 @@ describe('Controller', () => {
       <Controller
         defaultValue=""
         name="test"
-        as={<input placeholder="test" />}
+        render={<input placeholder="test" />}
         control={
           {
             ...control,
@@ -120,7 +120,7 @@ describe('Controller', () => {
       <Controller
         defaultValue=""
         name="test"
-        as={<input placeholder="test" />}
+        render={<input placeholder="test" />}
         control={
           {
             ...control,
@@ -157,8 +157,9 @@ describe('Controller', () => {
       <Controller
         defaultValue=""
         name="test"
-        as={<input placeholder="test" />}
-        onChangeName="onChange"
+        render={(props) => {
+          return <input placeholder="test" {...props} />;
+        }}
         control={
           {
             ...control,
@@ -198,8 +199,14 @@ describe('Controller', () => {
       <Controller
         defaultValue=""
         name="test"
-        as={<Input placeholder="test" />}
-        onChange={onChange}
+        render={({ onChange, onBlur, value }) => {
+          return (
+            <Input
+              placeholder="test"
+              {...{ onChange: () => onChange(), onBlur, value }}
+            />
+          );
+        }}
         control={
           {
             ...control,
@@ -236,8 +243,14 @@ describe('Controller', () => {
       <Controller
         defaultValue=""
         name="test"
-        as={<Input placeholder="test" />}
-        onBlur={onBlur}
+        render={({ onChange, onBlur, value }) => {
+          return (
+            <Input
+              placeholder="test"
+              {...{ onChange, onBlur: () => onBlur(), value }}
+            />
+          );
+        }}
         control={
           {
             ...control,
@@ -275,7 +288,7 @@ describe('Controller', () => {
     const { asFragment } = render(
       <Controller
         name="test"
-        as={'input' as 'input'}
+        render={<input />}
         control={
           {
             ...control,
@@ -302,8 +315,7 @@ describe('Controller', () => {
       <Controller
         defaultValue=""
         name="test"
-        as={'input' as 'input'}
-        valueName="selectedkey"
+        render={<input />}
         control={
           {
             ...control,
@@ -328,8 +340,7 @@ describe('Controller', () => {
       <Controller
         defaultValue=""
         name="test[0]"
-        as={'input' as 'input'}
-        valueName="selectedkey"
+        render={<input />}
         control={{
           ...control,
           removeFieldEventListener,
