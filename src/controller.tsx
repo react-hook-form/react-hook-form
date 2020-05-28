@@ -9,7 +9,7 @@ import skipValidation from './logic/skipValidation';
 import isNameInFieldArray from './logic/isNameInFieldArray';
 import { useFormContext } from './useFormContext';
 import { VALUE } from './constants';
-import { Control, Field, EventFunction } from './types/form';
+import { Control, Field } from './types/form';
 import { ControllerProps } from './types/props';
 
 const Controller = <TControl extends Control = Control>({
