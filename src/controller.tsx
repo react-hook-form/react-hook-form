@@ -142,16 +142,12 @@ const Controller = <TControl extends Control = Control>({
   function onChange(
     ...callbackOrEvent: any[]
   ): ((...event: any[]) => void) | void {
-    if (!isFunction(callbackOrEvent[0])) {
-      setValue(name, commonTask(...callbackOrEvent), shouldValidate());
-    }
+    const [firstArg] = callbackOrEvent;
 
-    return (event: any) =>
-      setValue(
-        name,
-        commonTask(callbackOrEvent[0](...event)),
-        shouldValidate(),
-      );
+    return isFunction(firstArg)
+      ? (event: any) =>
+          setValue(name, commonTask(firstArg(event)), shouldValidate())
+      : setValue(name, commonTask(...callbackOrEvent), shouldValidate());
   }
 
   return render({
