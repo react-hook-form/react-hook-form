@@ -7,7 +7,6 @@ import {
   FieldErrors,
   MultipleFieldErrors,
   Message,
-  Mode,
   ValidationOptions,
   EventFunction,
   Control,
