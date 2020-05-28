@@ -1,6 +1,7 @@
 import * as React from 'react';
 import isBoolean from './utils/isBoolean';
 import isUndefined from './utils/isUndefined';
+import isReactComponentClass from './utils/isReactComponentClass';
 import get from './utils/get';
 import set from './utils/set';
 import getInputValue from './logic/getInputValue';
@@ -11,22 +12,15 @@ import { VALUE } from './constants';
 import { Control, Field } from './types/form';
 import { ControllerProps } from './types/props';
 
-const Controller = <
-  TAs extends
-    | React.ReactElement
-    | React.ComponentType<any>
-    | keyof JSX.IntrinsicElements,
-  TControl extends Control = Control
->({
+const Controller = <TControl extends Control = Control>({
   name,
   rules,
-  render,
-  as,
+  render: InnerComponent,
   defaultValue,
   control,
   onFocus,
   ...rest
-}: ControllerProps<TAs, TControl>) => {
+}: ControllerProps<TControl>) => {
   const methods = useFormContext();
   const {
     defaultValuesRef,
@@ -152,15 +146,15 @@ const Controller = <
     onBlur: handleBlur,
   };
 
-  return as
-    ? React.isValidElement(as)
-      ? React.cloneElement(as, props)
-      : React.createElement(as as string, props)
-    : render({
-        value,
-        handleChange,
-        handleBlur,
-      });
+  return isReactComponentClass(InnerComponent) ? (
+    <InnerComponent {...props} />
+  ) : (
+    InnerComponent({
+      value,
+      handleChange,
+      handleBlur,
+    })
+  );
 };
 
 export { Controller };
