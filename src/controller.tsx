@@ -1,7 +1,6 @@
 import * as React from 'react';
 import isBoolean from './utils/isBoolean';
 import isUndefined from './utils/isUndefined';
-import isReactComponentClass from './utils/isReactComponentClass';
 import get from './utils/get';
 import set from './utils/set';
 import getInputValue from './logic/getInputValue';
@@ -15,11 +14,10 @@ import { ControllerProps } from './types/props';
 const Controller = <TControl extends Control = Control>({
   name,
   rules,
-  render: InnerComponent,
+  render,
   defaultValue,
   control,
   onFocus,
-  ...rest
 }: ControllerProps<TControl>) => {
   const methods = useFormContext();
   const {
@@ -154,22 +152,11 @@ const Controller = <TControl extends Control = Control>({
       );
   }
 
-  return isReactComponentClass(InnerComponent) ? (
-    <InnerComponent
-      {...{
-        onChange,
-        onBlur,
-        ...{ [isCheckboxInput ? 'checked' : VALUE]: value },
-        ...rest,
-      }}
-    />
-  ) : (
-    InnerComponent({
-      onChange,
-      onBlur,
-      value,
-    })
-  );
+  return render({
+    onChange,
+    onBlur,
+    value,
+  });
 };
 
 export { Controller };
