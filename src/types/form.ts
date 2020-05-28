@@ -198,8 +198,6 @@ export type FieldElement<TFieldValues extends FieldValues = FieldValues> =
 
 export type HandleChange = (evt: Event) => Promise<void | boolean>;
 
-export type EventFunction = (...args: any[]) => any;
-
 export type FieldValuesFromControl<
   TControl extends Control
 > = TControl extends Control<infer TFieldValues> ? TFieldValues : never;

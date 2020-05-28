@@ -136,8 +136,23 @@ const Controller = <TControl extends Control = Control>({
     }
   };
 
-  const onChange = (event: any): any =>
-    setValue(name, commonTask(event), shouldValidate());
+  function onChange(...event: any[]): void;
+  function onChange(
+    callback: (...args: any[]) => any,
+  ): (...event: any[]) => void;
+  function onChange(
+    ...callbackOrEvent: any[]
+  ): ((...event: any[]) => void) | void {
+    if (typeof callbackOrEvent[0] !== 'function') {
+      setValue(name, commonTask(callbackOrEvent), shouldValidate());
+    }
+    return (event: any) =>
+      setValue(
+        name,
+        commonTask(callbackOrEvent[0](...event)),
+        shouldValidate(),
+      );
+  }
 
   return isReactComponentClass(InnerComponent) ? (
     <InnerComponent

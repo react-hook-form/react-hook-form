@@ -8,7 +8,6 @@ import {
   MultipleFieldErrors,
   Message,
   ValidationOptions,
-  EventFunction,
   Control,
 } from './form';
 import { Assign } from './utils';
@@ -36,8 +35,11 @@ export type ControllerProps<TControl extends Control = Control> = {
   render:
     | React.ComponentType<any>
     | ((data: {
-        onChange: EventFunction;
-        onBlur: EventFunction;
+        onChange: {
+          (...event: any[]): void;
+          (callback: (...args: any[]) => any): (...event: any[]) => void;
+        };
+        onBlur: () => void;
         value: any;
       }) => React.ReactElement);
   defaultValue?: unknown;
