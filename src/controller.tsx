@@ -3,6 +3,7 @@ import isBoolean from './utils/isBoolean';
 import isUndefined from './utils/isUndefined';
 import get from './utils/get';
 import set from './utils/set';
+import isFunction from './utils/isFunction';
 import getInputValue from './logic/getInputValue';
 import skipValidation from './logic/skipValidation';
 import isNameInFieldArray from './logic/isNameInFieldArray';
@@ -141,9 +142,10 @@ const Controller = <TControl extends Control = Control>({
   function onChange(
     ...callbackOrEvent: any[]
   ): ((...event: any[]) => void) | void {
-    if (typeof callbackOrEvent[0] !== 'function') {
+    if (!isFunction(callbackOrEvent[0])) {
       setValue(name, commonTask(...callbackOrEvent), shouldValidate());
     }
+
     return (event: any) =>
       setValue(
         name,
