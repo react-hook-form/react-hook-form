@@ -16,7 +16,7 @@ const ErrorMessage = <
   errors,
   name,
   message,
-  children,
+  render,
   ...rest
 }: ErrorMessageProps<TFieldErrors, TAs>) => {
   const methods = useFormContext();
@@ -29,8 +29,8 @@ const ErrorMessage = <
   const { message: messageFromRegister, types } = error;
   const props = {
     ...(InnerComponent ? rest : {}),
-    children: children
-      ? children({ message: messageFromRegister || message, messages: types })
+    render: render
+      ? render({ message: messageFromRegister || message, messages: types })
       : messageFromRegister || message,
   };
 
