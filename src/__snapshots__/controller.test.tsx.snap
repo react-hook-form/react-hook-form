@@ -1,18 +1,8 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`Controller should render correctly with as with component 1`] = `
-<DocumentFragment>
-  <input
-    name="test"
-    value=""
-  />
-</DocumentFragment>
-`;
-
 exports[`Controller should support custom value name 1`] = `
 <DocumentFragment>
   <input
-    name="test"
     value=""
   />
 </DocumentFragment>
@@ -21,7 +11,6 @@ exports[`Controller should support custom value name 1`] = `
 exports[`Controller should support default value from hook form 1`] = `
 <DocumentFragment>
   <input
-    name="test"
     value="data"
   />
 </DocumentFragment>
