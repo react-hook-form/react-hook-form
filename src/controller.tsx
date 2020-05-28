@@ -19,6 +19,7 @@ const Controller = <TControl extends Control = Control>({
   defaultValue,
   control,
   onFocus,
+  ...rest
 }: ControllerProps<TControl>) => {
   const methods = useFormContext();
   const {
@@ -138,16 +139,21 @@ const Controller = <TControl extends Control = Control>({
   const onChange = (event: any): any =>
     setValue(name, commonTask(event), shouldValidate());
 
-  const props = {
-    onChange,
-    onBlur,
-    value,
-  };
-
   return isReactComponentClass(InnerComponent) ? (
-    <InnerComponent {...props} />
+    <InnerComponent
+      {...{
+        onChange,
+        onBlur,
+        ...{ [isCheckboxInput ? 'checked' : VALUE]: value },
+        ...rest,
+      }}
+    />
   ) : (
-    InnerComponent(props)
+    InnerComponent({
+      onChange,
+      onBlur,
+      value,
+    })
   );
 };
 
