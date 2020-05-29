@@ -897,7 +897,7 @@ export function useForm<
       field = isRadioOrCheckbox
         ? {
             options: [
-              ...((field && field.options) || []),
+              ...unique((field && field.options) || []),
               {
                 ref,
                 mutationWatcher,
