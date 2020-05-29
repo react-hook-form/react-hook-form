@@ -218,7 +218,7 @@ export function useForm<
           : rawValue;
 
       if (isRadioInput(ref) && options) {
-        options.forEach(
+        options.filter(Boolean).forEach(
           ({ ref: radioRef }: { ref: HTMLInputElement }) =>
             (radioRef.checked = radioRef.value === value),
         );
