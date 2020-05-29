@@ -73,7 +73,7 @@ const UseFieldArray: React.FC = (props: any) => {
               />
             ) : (
               <Controller
-                as={<input id={`field${index}`} />}
+                render={(props) => <input id={`field${index}`} {...props} />}
                 control={control}
                 rules={{
                   required: 'This is required',

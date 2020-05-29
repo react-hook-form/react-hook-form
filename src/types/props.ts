@@ -32,14 +32,11 @@ export type ControllerProps<TControl extends Control = Control> = {
   name: FieldName<FieldValuesFromControl<TControl>>;
   rules?: ValidationOptions;
   onFocus?: () => void;
-  render: (data: {
-    onChange: {
-      (...event: any[]): void;
-      (callback: (...args: any[]) => any): (...event: any[]) => void;
-    };
-    onBlur: () => void;
+  render: React.ComponentType<{
     value: any;
-  }) => React.ReactElement;
+    onBlur: () => void;
+    onChange: (...args: any[]) => void;
+  }>;
   defaultValue?: unknown;
   control?: TControl;
 };
