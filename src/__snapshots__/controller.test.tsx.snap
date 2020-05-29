@@ -1,5 +1,11 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`Controller should render correctly with as with component 1`] = `
+<DocumentFragment>
+  <input />
+</DocumentFragment>
+`;
+
 exports[`Controller should support custom value name 1`] = `
 <DocumentFragment>
   <input
