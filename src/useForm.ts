@@ -1011,9 +1011,9 @@ export function useForm<
   }
 
   const handleSubmit = React.useCallback(
-    (callback: SubmitHandler<TFieldValues>) => async (
-      e?: React.BaseSyntheticEvent,
-    ): Promise<void> => {
+    <TSubmitFieldValues extends FieldValues = TFieldValues>(
+      callback: SubmitHandler<TSubmitFieldValues>,
+    ) => async (e?: React.BaseSyntheticEvent): Promise<void> => {
       if (e) {
         e.preventDefault();
         e.persist();
@@ -1080,9 +1080,7 @@ export function useForm<
       }
     },
     [isWeb, reRender, resolverRef, submitFocusError, validateAllFieldCriteria],
-  ) as <TSubmitFieldValues extends FieldValues = TFieldValues>(
-    callback: SubmitHandler<TSubmitFieldValues>,
-  ) => (e?: React.BaseSyntheticEvent) => Promise<void>;
+  );
 
   const resetRefs = ({
     errors,
