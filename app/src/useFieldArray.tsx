@@ -83,9 +83,11 @@ const UseFieldArray: React.FC = (props: any) => {
                 data-order={index}
               />
             )}
-            <ErrorMessage errors={errors} name={`data[${index}].name`}>
-              {({ message }) => <p id={`error${index}`}>{message}</p>}
-            </ErrorMessage>
+            <ErrorMessage
+              errors={errors}
+              name={`data[${index}].name`}
+              render={({ message }) => <p id={`error${index}`}>{message}</p>}
+            />
             <button id={`delete${index}`} onClick={() => remove(index)}>
               Delete
             </button>
