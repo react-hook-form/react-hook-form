@@ -53,9 +53,8 @@ describe('React Hook Form Error Message', () => {
         as={<span />}
         errors={{ flat: { type: 'flat', message: 'flat' } }}
         name="flat"
-      >
-        {({ message }) => message}
-      </ErrorMessage>,
+        render={({ message }) => message}
+      />,
     );
 
     expect(asFragment()).toMatchSnapshot();
@@ -68,9 +67,8 @@ describe('React Hook Form Error Message', () => {
         errors={{ flat: { type: 'flat', message: 'flat' } }}
         name="flat"
         className="test"
-      >
-        {({ message }) => message}
-      </ErrorMessage>,
+        render={({ message }) => message}
+      />,
     );
 
     expect(asFragment()).toMatchSnapshot();
@@ -91,14 +89,13 @@ describe('React Hook Form Error Message', () => {
           },
         }}
         name="flat"
-      >
-        {({ messages }) =>
+        render={({ messages }) =>
           messages &&
           Object.entries(messages).map(([type, message]) => (
             <span key={type}>{message}</span>
           ))
         }
-      </ErrorMessage>,
+      />,
     );
 
     expect(asFragment()).toMatchSnapshot();
@@ -120,14 +117,13 @@ describe('React Hook Form Error Message', () => {
           },
         }}
         name="flat"
-      >
-        {({ messages }) =>
+        render={({ messages }) =>
           messages &&
           Object.entries(messages).map(([type, message]) => (
             <span key={type}>{message}</span>
           ))
         }
-      </ErrorMessage>,
+      />,
     );
 
     expect(asFragment()).toMatchSnapshot();
@@ -174,9 +170,8 @@ describe('React Hook Form Error Message', () => {
           },
         }}
         name="nested.object"
-      >
-        {({ message }) => message}
-      </ErrorMessage>,
+        render={({ message }) => message}
+      />,
     );
 
     expect(asFragment()).toMatchSnapshot();
@@ -199,14 +194,13 @@ describe('React Hook Form Error Message', () => {
           },
         }}
         name="nested.object"
-      >
-        {({ messages }) =>
+        render={({ messages }) =>
           messages &&
           Object.entries(messages).map(([type, message]) => (
             <span key={type}>{message}</span>
           ))
         }
-      </ErrorMessage>,
+      />,
     );
 
     expect(asFragment()).toMatchSnapshot();
@@ -230,14 +224,13 @@ describe('React Hook Form Error Message', () => {
           },
         }}
         name="nested.object"
-      >
-        {({ messages }) =>
+        render={({ messages }) =>
           messages &&
           Object.entries(messages).map(([type, message]) => (
             <span key={type}>{message}</span>
           ))
         }
-      </ErrorMessage>,
+      />,
     );
 
     expect(asFragment()).toMatchSnapshot();
@@ -290,9 +283,8 @@ describe('React Hook Form Error Message', () => {
           ],
         }}
         name="nested[0].array"
-      >
-        {({ message }) => message}
-      </ErrorMessage>,
+        render={({ message }) => message}
+      />,
     );
 
     expect(asFragment()).toMatchSnapshot();
@@ -317,14 +309,13 @@ describe('React Hook Form Error Message', () => {
           ],
         }}
         name="nested[0].array"
-      >
-        {({ messages }) =>
+        render={({ messages }) =>
           messages &&
           Object.entries(messages).map(([type, message]) => (
             <span key={type}>{message}</span>
           ))
         }
-      </ErrorMessage>,
+      />,
     );
 
     expect(asFragment()).toMatchSnapshot();
@@ -350,14 +341,13 @@ describe('React Hook Form Error Message', () => {
           ],
         }}
         name="nested[0].array"
-      >
-        {({ messages }) =>
+        render={({ messages }) =>
           messages &&
           Object.entries(messages).map(([type, message]) => (
             <span key={type}>{message}</span>
           ))
         }
-      </ErrorMessage>,
+      />,
     );
 
     expect(asFragment()).toMatchSnapshot();

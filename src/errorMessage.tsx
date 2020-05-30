@@ -36,8 +36,12 @@ const ErrorMessage = <
     ? React.isValidElement(as)
       ? React.cloneElement(as, props)
       : React.createElement(as as string, props)
-    : render &&
-        render({ message: messageFromRegister || message, messages: types });
+    : render
+    ? (render({
+        message: messageFromRegister || message,
+        messages: types,
+      }) as React.ReactElement)
+    : null;
 };
 
 export { ErrorMessage };
