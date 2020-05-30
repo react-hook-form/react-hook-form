@@ -19,7 +19,7 @@ context('controller basic form validation', () => {
     cy.get('#input-ReactSelect > div').click();
     cy.get('#input-ReactSelect > div > div').eq(1).click();
 
-    cy.get('p').should('have.length', 0);
+    cy.get('p').should('have.length', 2);
     cy.get('#renderCount').contains('8');
   });
 
