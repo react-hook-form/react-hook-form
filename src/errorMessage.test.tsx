@@ -104,7 +104,6 @@ describe('React Hook Form Error Message', () => {
   it('should render correctly with flat multiple errors and as with component and children', () => {
     const { asFragment } = render(
       <ErrorMessage
-        as={<div />}
         errors={{
           flat: {
             type: 'flat',
@@ -209,7 +208,6 @@ describe('React Hook Form Error Message', () => {
   it('should render correctly with nested multiple errors and as with component and children', () => {
     const { asFragment } = render(
       <ErrorMessage
-        as={<div />}
         errors={{
           nested: {
             object: {
@@ -324,7 +322,6 @@ describe('React Hook Form Error Message', () => {
   it('should render correctly with nested multiple errors array and as with component and children', () => {
     const { asFragment } = render(
       <ErrorMessage
-        as={<div />}
         errors={{
           nested: [
             {
@@ -341,12 +338,14 @@ describe('React Hook Form Error Message', () => {
           ],
         }}
         name="nested[0].array"
-        render={({ messages }) =>
-          messages &&
-          Object.entries(messages).map(([type, message]) => (
-            <span key={type}>{message}</span>
-          ))
-        }
+        render={({ messages }) => {
+          return (
+            messages &&
+            Object.entries(messages).map(([type, message]) => (
+              <span key={type}>{message}</span>
+            ))
+          );
+        }}
       />,
     );
 

@@ -54,17 +54,15 @@ exports[`React Hook Form Error Message should render correctly with flat errors 
 
 exports[`React Hook Form Error Message should render correctly with flat multiple errors and as with component and children 1`] = `
 <DocumentFragment>
-  <div>
-    <span>
-      flat1
-    </span>
-    <span>
-      flat2
-    </span>
-    <span>
-      flat3
-    </span>
-  </div>
+  <span>
+    flat1
+  </span>
+  <span>
+    flat2
+  </span>
+  <span>
+    flat3
+  </span>
 </DocumentFragment>
 `;
 
@@ -142,17 +140,15 @@ exports[`React Hook Form Error Message should render correctly with nested error
 
 exports[`React Hook Form Error Message should render correctly with nested multiple errors and as with component and children 1`] = `
 <DocumentFragment>
-  <div>
-    <span>
-      object1
-    </span>
-    <span>
-      object2
-    </span>
-    <span>
-      object3
-    </span>
-  </div>
+  <span>
+    object1
+  </span>
+  <span>
+    object2
+  </span>
+  <span>
+    object3
+  </span>
 </DocumentFragment>
 `;
 
@@ -172,17 +168,15 @@ exports[`React Hook Form Error Message should render correctly with nested multi
 
 exports[`React Hook Form Error Message should render correctly with nested multiple errors array and as with component and children 1`] = `
 <DocumentFragment>
-  <div>
-    <span>
-      array1
-    </span>
-    <span>
-      array2
-    </span>
-    <span>
-      array3
-    </span>
-  </div>
+  <span>
+    array1
+  </span>
+  <span>
+    array2
+  </span>
+  <span>
+    array3
+  </span>
 </DocumentFragment>
 `;
 
