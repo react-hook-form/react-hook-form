@@ -150,7 +150,7 @@ const Controller = <TControl extends Control = Control>({
       : setValue(name, commonTask(callbackOrEvent), shouldValidate());
   }
 
-  return React.createElement(render, {
+  return render({
     onChange,
     onBlur,
     value,
