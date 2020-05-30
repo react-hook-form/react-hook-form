@@ -57,7 +57,7 @@ export type ErrorMessageProps<
     errors?: TFieldErrors;
     name: FieldName<FieldValuesFromFieldErrors<TFieldErrors>>;
     message?: Message;
-    children?: (data: {
+    render?: (data: {
       message: Message;
       messages?: MultipleFieldErrors;
     }) => React.ReactNode;

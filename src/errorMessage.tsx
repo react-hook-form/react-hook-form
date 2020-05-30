@@ -12,11 +12,11 @@ const ErrorMessage = <
     | React.ComponentType<any>
     | keyof JSX.IntrinsicElements = undefined
 >({
-  as: InnerComponent,
+  as,
   errors,
   name,
   message,
-  children,
+  render,
   ...rest
 }: ErrorMessageProps<TFieldErrors, TAs>) => {
   const methods = useFormContext();
@@ -28,21 +28,16 @@ const ErrorMessage = <
 
   const { message: messageFromRegister, types } = error;
   const props = {
-    ...(InnerComponent ? rest : {}),
-    children: children
-      ? children({ message: messageFromRegister || message, messages: types })
-      : messageFromRegister || message,
+    ...rest,
+    children: messageFromRegister || message,
   };
 
-  return InnerComponent ? (
-    React.isValidElement(InnerComponent) ? (
-      React.cloneElement(InnerComponent, props)
-    ) : (
-      React.createElement(InnerComponent as string, props)
-    )
-  ) : (
-    <React.Fragment {...props} />
-  );
+  return as
+    ? React.isValidElement(as)
+      ? React.cloneElement(as, props)
+      : React.createElement(as as string, props)
+    : render &&
+        render({ message: messageFromRegister || message, messages: types });
 };
 
 export { ErrorMessage };
