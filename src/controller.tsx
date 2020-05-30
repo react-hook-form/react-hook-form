@@ -151,8 +151,8 @@ const Controller = <TControl extends Control = Control>({
   }
 
   return render({
-    onChange: React.useCallback(onChange, []),
-    onBlur: React.useCallback(onBlur, []),
+    onChange,
+    onBlur,
     value,
   });
 };
