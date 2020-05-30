@@ -11,7 +11,7 @@ context('controller basic form validation', () => {
     cy.get('#switch').contains('switch Error');
 
     cy.get('#input-checkbox input').click();
-    cy.get('#input-radio-group input').click({ multiple: true });
+    cy.get('input[name="gender1"]').first().click();
     cy.get('#input-textField input').type('test');
     cy.get('#input-select > div > div').click();
     cy.get('.MuiPopover-root ul > li:first-child').click();
@@ -19,7 +19,7 @@ context('controller basic form validation', () => {
     cy.get('#input-ReactSelect > div').click();
     cy.get('#input-ReactSelect > div > div').eq(1).click();
 
-    cy.get('p').should('have.length', 2);
+    cy.get('p').should('have.length', 0);
     cy.get('#renderCount').contains('8');
   });
 

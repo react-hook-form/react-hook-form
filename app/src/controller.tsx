@@ -122,7 +122,9 @@ export default function Field(props: any) {
         <section id="input-switch">
           <label>MUI Switch</label>
           <Controller
-            render={(props) => <Switch value="checkedA" {...props} />}
+            render={(props) => (
+              <Switch value="checkedA" {...props} checked={props.value} />
+            )}
             name="switch"
             rules={{ required: true }}
             control={control}
@@ -135,12 +137,7 @@ export default function Field(props: any) {
           <label>React Select</label>
           <Controller
             render={(props) => (
-              <ReactSelect
-                isClearable
-                options={options}
-                {...props}
-                onChange={props.onChange((data: any) => data) as any}
-              />
+              <ReactSelect isClearable options={options} {...props} />
             )}
             name="ReactSelect"
             control={control}
