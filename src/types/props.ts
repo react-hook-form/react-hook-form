@@ -38,7 +38,7 @@ export type ControllerProps<
 > = Assign<
   {
     name: FieldName<FieldValuesFromControl<TControl>>;
-    as: TAs;
+    as?: TAs;
     rules?: ValidationOptions;
     onFocus?: () => void;
     onChangeName?: string;
@@ -46,7 +46,7 @@ export type ControllerProps<
     valueName?: string;
     defaultValue?: unknown;
     control?: TControl;
-    render: (data: {
+    render?: (data: {
       onChange: {
         (...event: any[]): void;
         (callback: (...args: any[]) => any): (...event: any[]) => void;

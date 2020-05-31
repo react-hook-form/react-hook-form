@@ -169,11 +169,13 @@ const Controller = <
     ? React.isValidElement(as)
       ? React.cloneElement(as, props)
       : React.createElement(as as string, props)
-    : render({
+    : render
+    ? render({
         onChange,
         onBlur,
         value,
-      });
+      })
+    : null;
 };
 
 export { Controller };
