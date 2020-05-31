@@ -55,7 +55,7 @@ export default function Field(props: any) {
         <section id="input-checkbox">
           <label>MUI Checkbox</label>
           <Controller
-            render={(props) => <Checkbox {...props} checked={props.value} />}
+            as={<Checkbox />}
             name="Checkbox"
             control={control}
             rules={{ required: true }}
@@ -92,7 +92,7 @@ export default function Field(props: any) {
         <section id="input-textField">
           <label>MUI TextField</label>
           <Controller
-            render={(props) => <TextField {...props} />}
+            as={<TextField />}
             name="TextField"
             control={control}
             rules={{ required: true }}
@@ -122,9 +122,7 @@ export default function Field(props: any) {
         <section id="input-switch">
           <label>MUI Switch</label>
           <Controller
-            render={(props) => (
-              <Switch value="checkedA" {...props} checked={props.value} />
-            )}
+            as={<Switch value="checkedA" />}
             name="switch"
             rules={{ required: true }}
             control={control}
