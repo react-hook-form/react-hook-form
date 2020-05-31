@@ -1,4 +1,4 @@
-import { Ref } from '../types/form';
+import { FieldElement } from '../types/form';
 
-export default (element: Ref): element is HTMLInputElement =>
+export default (element: FieldElement): element is HTMLInputElement =>
   element.type === 'radio';
