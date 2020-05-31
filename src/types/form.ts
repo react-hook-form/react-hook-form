@@ -36,6 +36,10 @@ export type UnpackNestedValue<T> = NonUndefined<T> extends NestedValue<infer U>
   ? { [K in keyof T]: UnpackNestedValue<T[K]> }
   : T;
 
+export type DefaultValuesAtRender<TFieldValues> = UnpackNestedValue<
+  DeepPartial<Record<InternalFieldName<TFieldValues>, FieldValue<TFieldValues>>>
+>;
+
 export type Ref = FieldElement;
 
 export type ValidationMode = {

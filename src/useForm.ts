@@ -63,6 +63,7 @@ import {
   RadioOrCheckboxOption,
   OmitResetState,
   Message,
+  DefaultValuesAtRender,
 } from './types/form';
 import { NonUndefined, LiteralToPrimitive, DeepPartial } from './types/utils';
 
@@ -101,18 +102,8 @@ export function useForm<
     | FieldValue<UnpackNestedValue<TFieldValues>>
     | UnpackNestedValue<DeepPartial<TFieldValues>>
   >(defaultValues);
-  const defaultValuesAtRenderRef = React.useRef<
-    UnpackNestedValue<
-      DeepPartial<
-        Record<InternalFieldName<TFieldValues>, FieldValue<TFieldValues>>
-      >
-    >
-  >(
-    {} as UnpackNestedValue<
-      DeepPartial<
-        Record<InternalFieldName<TFieldValues>, FieldValue<TFieldValues>>
-      >
-    >,
+  const defaultValuesAtRenderRef = React.useRef(
+    {} as DefaultValuesAtRender<TFieldValues>,
   );
   const isUnMount = React.useRef(false);
   const isWatchAllRef = React.useRef(false);
@@ -1122,10 +1113,8 @@ export function useForm<
       submitCountRef.current = 0;
     }
 
-    defaultValuesAtRenderRef.current = {} as UnpackNestedValue<
-      DeepPartial<
-        Record<InternalFieldName<TFieldValues>, FieldValue<TFieldValues>>
-      >
+    defaultValuesAtRenderRef.current = {} as DefaultValuesAtRender<
+      TFieldValues
     >;
     fieldArrayDefaultValues.current = {};
     watchFieldsRef.current = new Set();
