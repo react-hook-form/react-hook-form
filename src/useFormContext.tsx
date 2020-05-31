@@ -4,7 +4,7 @@ import { FormProviderProps } from './types/props';
 
 export const FormContext = React.createContext<UseFormMethods | null>(null);
 
-FormGlobalContext.displayName = 'ReactHookFormGlobalContext';
+FormContext.displayName = 'RHFContext';
 
 export const useFormContext = <
   TFieldValues extends FieldValues
