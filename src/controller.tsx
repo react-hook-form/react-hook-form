@@ -159,9 +159,9 @@ const Controller = <
   }
 
   const props = {
+    ...rest,
     onChange,
     onBlur,
-    ...rest,
     ...{ [isCheckboxInput ? 'checked' : VALUE]: value },
   };
 
