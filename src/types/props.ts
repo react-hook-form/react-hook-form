@@ -29,21 +29,34 @@ type AsProps<TAs> = TAs extends undefined
   ? JSX.IntrinsicElements[TAs]
   : never;
 
-export type ControllerProps<TControl extends Control = Control> = {
-  name: FieldName<FieldValuesFromControl<TControl>>;
-  rules?: ValidationOptions;
-  onFocus?: () => void;
-  render: (data: {
-    onChange: {
-      (...event: any[]): void;
-      (callback: (...args: any[]) => any): (...event: any[]) => void;
-    };
-    onBlur: () => void;
-    value: any;
-  }) => React.ReactElement;
-  defaultValue?: unknown;
-  control?: TControl;
-};
+export type ControllerProps<
+  TAs extends
+    | React.ReactElement
+    | React.ComponentType<any>
+    | keyof JSX.IntrinsicElements,
+  TControl extends Control = Control
+> = Assign<
+  {
+    name: FieldName<FieldValuesFromControl<TControl>>;
+    as: TAs;
+    rules?: ValidationOptions;
+    onFocus?: () => void;
+    onChangeName?: string;
+    onBlurName?: string;
+    valueName?: string;
+    defaultValue?: unknown;
+    control?: TControl;
+    render: (data: {
+      onChange: {
+        (...event: any[]): void;
+        (callback: (...args: any[]) => any): (...event: any[]) => void;
+      };
+      onBlur: () => void;
+      value: any;
+    }) => React.ReactElement;
+  },
+  AsProps<TAs>
+>;
 
 export type ErrorMessageProps<
   TFieldErrors extends FieldErrors,
