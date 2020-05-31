@@ -158,10 +158,14 @@ const Controller = <
       : setValue(name, commonTask(callbackOrEvent), shouldValidate());
   }
 
+  const handlerProps = {
+    onChange: React.useCallback(onChange, []),
+    onBlur: React.useCallback(onBlur, []),
+  };
+
   const props = {
     ...rest,
-    onChange,
-    onBlur,
+    ...handlerProps,
     ...{ [isCheckboxInput ? 'checked' : VALUE]: value },
   };
 
@@ -171,8 +175,7 @@ const Controller = <
       : React.createElement(as as string, props)
     : render
     ? render({
-        onChange,
-        onBlur,
+        ...handlerProps,
         value,
       })
     : null;
