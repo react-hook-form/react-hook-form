@@ -2,7 +2,17 @@
 
 exports[`Controller should render correctly with as with component 1`] = `
 <DocumentFragment>
-  <input />
+  <input
+    value=""
+  />
+</DocumentFragment>
+`;
+
+exports[`Controller should render correctly with as with string 1`] = `
+<DocumentFragment>
+  <input
+    value=""
+  />
 </DocumentFragment>
 `;
 
