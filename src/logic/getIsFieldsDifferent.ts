@@ -5,8 +5,6 @@ export default function getIsFieldsDifferent(
   referenceArray: unknown[],
   differenceArray: unknown[],
 ) {
-  let isMatch = false;
-
   if (
     !isArray<any>(referenceArray) ||
     !isArray<any>(differenceArray) ||
@@ -16,9 +14,6 @@ export default function getIsFieldsDifferent(
   }
 
   for (let i = 0; i < referenceArray.length; i++) {
-    if (isMatch) {
-      break;
-    }
     const dataA = referenceArray[i];
     const dataB = differenceArray[i];
 
@@ -26,17 +21,15 @@ export default function getIsFieldsDifferent(
       isUndefined(dataB) ||
       Object.keys(dataA).length !== Object.keys(dataB).length
     ) {
-      isMatch = true;
-      break;
+      return true;
     }
 
     for (const key in dataA) {
       if (dataA[key] !== dataB[key]) {
-        isMatch = true;
-        break;
+        return true;
       }
     }
   }
 
-  return isMatch;
+  return false;
 }
