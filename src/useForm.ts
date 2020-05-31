@@ -853,7 +853,7 @@ export function useForm<
   }
 
   function registerFieldsRef<TFieldElement extends FieldElement<TFieldValues>>(
-    ref: TFieldElement,
+    ref: TFieldElement & Ref,
     validateOptions: ValidationOptions | null = {},
   ): ((name: InternalFieldName<TFieldValues>) => void) | void {
     if (!ref.name) {
@@ -862,12 +862,12 @@ export function useForm<
     }
 
     const { name, type, value } = ref;
-    const fieldRefAndValidationOptions = {
+    const fieldRefAndValidationOptions: Field = {
       ref,
       ...validateOptions,
     };
     const fields = fieldsRef.current;
-    const isRadioOrCheckbox = isRadioOrCheckboxFunction(ref as FieldElement);
+    const isRadioOrCheckbox = isRadioOrCheckboxFunction(ref);
     let field = fields[name] as Field;
     let isEmptyDefaultValue = true;
     let isFieldArray;
@@ -890,7 +890,7 @@ export function useForm<
     }
 
     if (type) {
-      const mutationWatcher = onDomRemove(ref as FieldElement, () =>
+      const mutationWatcher = onDomRemove(ref, () =>
         removeFieldEventListenerAndRef(field),
       );
 
@@ -906,12 +906,12 @@ export function useForm<
             ref: { type, name },
             ...validateOptions,
           }
-        : ({
+        : {
             ...fieldRefAndValidationOptions,
             mutationWatcher,
-          } as Field);
+          };
     } else {
-      field = fieldRefAndValidationOptions as Field;
+      field = fieldRefAndValidationOptions;
     }
 
     fields[name] = field;
@@ -971,27 +971,27 @@ export function useForm<
   }
 
   function register<TFieldElement extends FieldElement<TFieldValues>>(): (
-    ref: TFieldElement | null,
+    ref: (TFieldElement & Ref) | null,
   ) => void;
   function register<TFieldElement extends FieldElement<TFieldValues>>(
     validationOptions: ValidationOptions,
-  ): (ref: TFieldElement | null) => void;
+  ): (ref: (TFieldElement & Ref) | null) => void;
   function register(
     name: FieldName<TFieldValues>,
     validationOptions?: ValidationOptions,
   ): void;
   function register<TFieldElement extends FieldElement<TFieldValues>>(
-    ref: TFieldElement | null,
+    ref: (TFieldElement & Ref) | null,
     validationOptions?: ValidationOptions,
   ): void;
   function register<TFieldElement extends FieldElement<TFieldValues>>(
     refOrValidationOptions?:
       | FieldName<TFieldValues>
       | ValidationOptions
-      | TFieldElement
+      | (TFieldElement & Ref)
       | null,
     validationOptions?: ValidationOptions,
-  ): ((ref: TFieldElement | null) => void) | void {
+  ): ((ref: (TFieldElement & Ref) | null) => void) | void {
     if (isWindowUndefined) {
       return;
     }
@@ -1006,7 +1006,7 @@ export function useForm<
       return;
     }
 
-    return (ref: TFieldElement | null) =>
+    return (ref: (TFieldElement & Ref) | null) =>
       ref && registerFieldsRef(ref, refOrValidationOptions);
   }
 

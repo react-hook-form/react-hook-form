@@ -1,4 +1,4 @@
-import { FieldElement } from '../types/form';
+import { Ref } from '../types/form';
 
-export default (element: FieldElement): element is HTMLInputElement =>
+export default (element: Ref): element is HTMLInputElement =>
   element.type === 'checkbox';
