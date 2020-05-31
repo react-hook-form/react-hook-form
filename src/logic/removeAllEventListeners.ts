@@ -1,6 +1,6 @@
 import isHTMLElement from '../utils/isHTMLElement';
 import { EVENTS } from '../constants';
-import { Ref } from '../types';
+import { Ref } from '../types/form';
 
 export default (
   ref: Ref,

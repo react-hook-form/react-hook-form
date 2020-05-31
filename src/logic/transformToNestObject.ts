@@ -1,6 +1,6 @@
 import set from '../utils/set';
 import isKey from '../utils/isKey';
-import { FieldValues } from '../types';
+import { FieldValues } from '../types/form';
 
 export default (data: FieldValues): any =>
   Object.entries(data).reduce(

@@ -20,7 +20,7 @@ const ValidateFieldCriteria: React.FC = () => {
     multiple: string;
     validate: string;
   }>({
-    validateCriteriaMode: 'all',
+    criteriaMode: 'all',
   });
   const onSubmit = () => {};
 
@@ -127,7 +127,7 @@ const ValidateFieldCriteria: React.FC = () => {
         multiple
         ref={register({
           required: true,
-          validate: value => value.includes('optionB'),
+          validate: (value) => value.includes('optionB'),
         })}
       >
         <option value="optionA">optionA</option>
@@ -145,9 +145,9 @@ const ValidateFieldCriteria: React.FC = () => {
         placeholder="validate"
         ref={register({
           validate: {
-            test: value => value !== '',
-            test1: value => value.length > 3,
-            test2: value => value === 'test',
+            test: (value) => value !== '',
+            test1: (value) => value.length > 3,
+            test2: (value) => value === 'test',
           },
         })}
       />

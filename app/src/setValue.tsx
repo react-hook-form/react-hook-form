@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { useForm } from 'react-hook-form';
+import { useForm, NestedValue } from 'react-hook-form';
 
 let renderCounter = 0;
 
@@ -20,6 +20,7 @@ const SetValue: React.FC = () => {
       lastName: string;
       middleName: string;
     };
+    nestedValue: NestedValue<string[]>;
   }>();
 
   useEffect(() => {
@@ -38,6 +39,7 @@ const SetValue: React.FC = () => {
       lastName: 'lastName',
       middleName: 'middleName',
     });
+    setValue('nestedValue', [], true);
   }, [register, setValue]);
 
   renderCounter++;
@@ -96,6 +98,15 @@ const SetValue: React.FC = () => {
       />
       {errors.trigger && <p id="trigger">Trigger error</p>}
 
+      <input
+        name="nestedValue"
+        ref={register({ required: 'required' })}
+        placeholder="nestedValue"
+      />
+      {errors.nestedValue && (
+        <p id="nestedValue">{errors.nestedValue.message}</p>
+      )}
+
       <button
         type="button"
         id="setMultipleValues"
@@ -109,6 +120,7 @@ const SetValue: React.FC = () => {
               },
             },
             { array: ['array[0]1', 'array[1]1', 'array[2]1'] },
+            { nestedValue: ['a', 'b'] },
           ]);
         }}
       >

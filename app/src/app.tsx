@@ -23,6 +23,7 @@ import Controller from './controller';
 import UseFieldArray from './useFieldArray';
 import CustomSchemaValidation from './customSchemaValidation';
 import WatchFieldArray from './watchUseFieldArray';
+import useWatch from './useWatch';
 
 const App: React.FC = () => {
   return (
@@ -86,6 +87,7 @@ const App: React.FC = () => {
         exact
         component={CustomSchemaValidation}
       />
+      <Route path="/useWatch" exact component={useWatch} />
     </Router>
   );
 };

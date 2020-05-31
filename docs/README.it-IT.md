@@ -27,7 +27,7 @@
     </p>
 </div>
 
-<a href="https://github.com/react-hook-form/react-hook-form">🇦🇺English</a> | <a href="./README.zh-CN.md">🇨🇳 简体中文</a> | <a href="./README.ja-JP.md">🇯🇵 日本語</a> | <a href="./README.ko-KR.md">🇰🇷한국어</a> | <a href="./README.fr-FR.md">🇫🇷Français</a> | 🇮🇹Italiano | <a href="./README.pt-BR.md">🇧🇷Português</a> | <a href="./README.es-ES.md">🇪🇸Español</a> | <a href="./docs/README.ru-RU.md">🇷🇺Русский</a>
+<a href="https://github.com/react-hook-form/react-hook-form">🇦🇺English</a> | <a href="./README.zh-CN.md">🇨🇳 简体中文</a> | <a href="./README.ja-JP.md">🇯🇵 日本語</a> | <a href="./README.ko-KR.md">🇰🇷한국어</a> | <a href="./README.fr-FR.md">🇫🇷Français</a> | 🇮🇹Italiano | <a href="./README.pt-BR.md">🇧🇷Português</a> | <a href="./README.es-ES.md">🇪🇸Español</a> | <a href="./docs/README.ru-RU.md">🇷🇺Русский</a> | <a href="./docs/README.de-DE.md">🇩🇪Deutsch</a> | <a href="./docs/README.tr-TR.md">🇹🇷Türkçe</a>
 
 ## Caratteritiche
 
@@ -64,7 +64,7 @@ import { useForm } from 'react-hook-form';
 
 function App() {
   const { register, handleSubmit, errors } = useForm(); // initialise the hook
-  const onSubmit = data => {
+  const onSubmit = (data) => {
     console.log(data);
   };
 

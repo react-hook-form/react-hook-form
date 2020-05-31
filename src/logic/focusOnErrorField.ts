@@ -1,9 +1,9 @@
 import get from '../utils/get';
-import { FieldErrors, FieldRefs } from '../types';
+import { FieldErrors, FieldRefs } from '../types/form';
 
-export default <FormValues>(
-  fields: FieldRefs<FormValues>,
-  fieldErrors: FieldErrors<FormValues>,
+export default <TFieldValues>(
+  fields: FieldRefs<TFieldValues>,
+  fieldErrors: FieldErrors<TFieldValues>,
 ) => {
   for (const key in fields) {
     if (get(fieldErrors, key)) {

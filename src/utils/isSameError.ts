@@ -1,18 +1,10 @@
 import isObject from './isObject';
-import { FieldError, MultipleFieldErrors, ValidateResult } from '../types';
 import compareObject from './compareObject';
+import { FieldError } from '../types/form';
 
 export default (
   error: FieldError | undefined,
-  {
-    type,
-    types,
-    message,
-  }: {
-    type: string;
-    types?: MultipleFieldErrors;
-    message: ValidateResult;
-  },
+  { type, types, message }: FieldError,
 ): boolean =>
   isObject(error) &&
   error.type === type &&

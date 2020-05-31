@@ -22,7 +22,7 @@ const ConditionalField: React.FC = () => {
 
   return (
     <form
-      onSubmit={handleSubmit(data => {
+      onSubmit={handleSubmit((data) => {
         setResult(data);
       })}
     >
@@ -76,6 +76,7 @@ const ConditionalField: React.FC = () => {
         {JSON.stringify({
           ...formState,
           touched: Object.keys(formState.touched),
+          dirtyFields: Object.keys(formState.dirtyFields),
         })}
       </div>
       <div id="result">{JSON.stringify(result)}</div>

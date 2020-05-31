@@ -1,9 +1,10 @@
-import { ValidationMode } from './types';
+import { ValidationMode } from './types/form';
 
 export const VALIDATION_MODE: ValidationMode = {
   onBlur: 'onBlur',
   onChange: 'onChange',
   onSubmit: 'onSubmit',
+  all: 'all',
 };
 
 export const VALUE = 'value';
@@ -15,6 +16,8 @@ export const EVENTS = {
   CHANGE: 'change',
   INPUT: 'input',
 };
+
+export const SELECT = 'select';
 
 export const INPUT_VALIDATION_RULES = {
   max: 'max',

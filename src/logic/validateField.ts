@@ -17,10 +17,16 @@ import isMessage from '../utils/isMessage';
 import getValidateError from './getValidateError';
 import appendErrors from './appendErrors';
 import { INPUT_VALIDATION_RULES } from '../constants';
-import { Field, FieldErrors, FieldValues, FieldRefs, Message } from '../types';
+import {
+  Field,
+  FieldErrors,
+  FieldValues,
+  FieldRefs,
+  Message,
+} from '../types/form';
 
-export default async <FormValues extends FieldValues>(
-  fieldsRef: React.MutableRefObject<FieldRefs<FormValues>>,
+export default async <TFieldValues extends FieldValues>(
+  fieldsRef: React.MutableRefObject<FieldRefs<TFieldValues>>,
   validateAllFieldCriteria: boolean,
   {
     ref,
@@ -34,7 +40,7 @@ export default async <FormValues extends FieldValues>(
     pattern,
     validate,
   }: Field,
-): Promise<FieldErrors<FormValues>> => {
+): Promise<FieldErrors<TFieldValues>> => {
   const fields = fieldsRef.current;
   const error: any = {};
   const isRadio = isRadioInput(ref);

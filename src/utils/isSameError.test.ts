@@ -1,5 +1,5 @@
 import isSameError from './isSameError';
-import { FieldError } from '../types';
+import { FieldError } from '../types/form';
 
 describe('isSameError', () => {
   it('should detect if it contain the same error', () => {

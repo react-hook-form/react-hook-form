@@ -2,19 +2,21 @@ import * as React from 'react';
 import isBoolean from './utils/isBoolean';
 import isUndefined from './utils/isUndefined';
 import get from './utils/get';
+import set from './utils/set';
 import getInputValue from './logic/getInputValue';
 import skipValidation from './logic/skipValidation';
 import isNameInFieldArray from './logic/isNameInFieldArray';
 import { useFormContext } from './useFormContext';
 import { VALIDATION_MODE, VALUE } from './constants';
-import { Control, ControllerProps, EventFunction, Field } from './types';
+import { Control, EventFunction, Field } from './types/form';
+import { ControllerProps } from './types/props';
 
 const Controller = <
-  As extends
+  TAs extends
     | React.ReactElement
     | React.ComponentType<any>
     | keyof JSX.IntrinsicElements,
-  ControlProp extends Control = Control
+  TControl extends Control = Control
 >({
   name,
   rules,
@@ -28,7 +30,7 @@ const Controller = <
   control,
   onFocus,
   ...rest
-}: ControllerProps<As, ControlProp>) => {
+}: ControllerProps<TAs, TControl>) => {
   const methods = useFormContext();
   const {
     defaultValuesRef,
@@ -37,10 +39,13 @@ const Controller = <
     unregister,
     errorsRef,
     removeFieldEventListener,
-    triggerValidation,
+    trigger,
     mode: { isOnSubmit, isOnBlur, isOnChange },
     reValidateMode: { isReValidateOnBlur, isReValidateOnSubmit },
     formState: { isSubmitted },
+    touchedFieldsRef,
+    readFormStateRef,
+    reRender,
     fieldsRef,
     fieldArrayNamesRef,
   } = control || methods.control;
@@ -75,13 +80,8 @@ const Controller = <
     return data;
   };
 
-  const eventWrapper = (event: EventFunction) => (...arg: any[]) =>
-    setValue(name, commonTask(event(arg)), shouldValidate());
-
-  const handleChange = (event: any) => {
-    const data = commonTask(event);
-    setValue(name, data, shouldValidate());
-  };
+  const eventWrapper = (event: EventFunction) => (...arg: any): any =>
+    setValue(name, commonTask(event(...arg)), shouldValidate());
 
   const registerField = React.useCallback(() => {
     if (!isNotFieldArray) {
@@ -117,6 +117,10 @@ const Controller = <
     [unregister, name, fieldArrayNamesRef],
   );
 
+  React.useEffect(() => {
+    registerField();
+  }, [registerField]);
+
   // eslint-disable-next-line react-hooks/exhaustive-deps
   React.useEffect(() => {
     if (!fieldsRef.current[name]) {
@@ -136,20 +140,27 @@ const Controller = <
     ...rest,
     ...(onChange
       ? { [onChangeName]: eventWrapper(onChange) }
-      : { [onChangeName]: handleChange }),
-    ...(onBlur || shouldReValidateOnBlur
-      ? {
-          [onBlurName]: (...args: any[]) => {
-            if (onBlur) {
-              onBlur(args);
-            }
+      : {
+          [onChangeName]: (event: any): any =>
+            setValue(name, commonTask(event), shouldValidate()),
+        }),
+    [onBlurName]: (...args: any) => {
+      if (onBlur) {
+        onBlur(...args);
+      }
 
-            if (shouldReValidateOnBlur) {
-              triggerValidation(name);
-            }
-          },
-        }
-      : {}),
+      if (
+        readFormStateRef.current.touched &&
+        !get(touchedFieldsRef.current, name)
+      ) {
+        set(touchedFieldsRef.current, name, true);
+        reRender();
+      }
+
+      if (shouldReValidateOnBlur) {
+        trigger(name);
+      }
+    },
     ...{ [valueName || (isCheckboxInput ? 'checked' : VALUE)]: value },
   };
 

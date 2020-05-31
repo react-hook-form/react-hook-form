@@ -9,17 +9,18 @@ import {
 let renderCount = 0;
 
 const UseFieldArray: React.FC = (props: any) => {
+  const withoutFocus = props.match.params.mode === 'defaultAndWithoutFocus';
   const {
     control,
     handleSubmit,
     register,
-    formState: { dirty, touched, isValid, dirtyFields },
+    formState: { isDirty, touched, isValid, dirtyFields },
     reset,
     errors,
   } = useForm<{
     data: { name: string }[];
   }>({
-    ...(props.match.params.mode === 'default'
+    ...(props.match.params.mode === 'default' || withoutFocus
       ? {
           defaultValues: {
             data: [{ name: 'test' }, { name: 'test1' }, { name: 'test2' }],
@@ -95,7 +96,7 @@ const UseFieldArray: React.FC = (props: any) => {
       <button
         id="append"
         type="button"
-        onClick={() => append({ name: renderCount.toString() })}
+        onClick={() => append({ name: renderCount.toString() }, !withoutFocus)}
       >
         append
       </button>
@@ -103,7 +104,7 @@ const UseFieldArray: React.FC = (props: any) => {
       <button
         id="prepend"
         type="button"
-        onClick={() => prepend({ name: renderCount.toString() })}
+        onClick={() => prepend({ name: renderCount.toString() }, !withoutFocus)}
       >
         prepend
       </button>
@@ -119,7 +120,9 @@ const UseFieldArray: React.FC = (props: any) => {
       <button
         id="insert"
         type="button"
-        onClick={() => insert(1, { name: renderCount.toString() })}
+        onClick={() =>
+          insert(1, { name: renderCount.toString() }, !withoutFocus)
+        }
       >
         insert
       </button>
@@ -136,9 +139,9 @@ const UseFieldArray: React.FC = (props: any) => {
 
       <div id="renderCount">{renderCount}</div>
       <div id="result">{JSON.stringify(data)}</div>
-      <div id="dirty">{dirty ? 'yes' : 'no'}</div>
+      <div id="dirty">{isDirty ? 'yes' : 'no'}</div>
       <div id="isValid">{isValid ? 'yes' : 'no'}</div>
-      <div id="dirtyFields">{JSON.stringify([...dirtyFields])}</div>
+      <div id="dirtyFields">{JSON.stringify(dirtyFields)}</div>
       <div id="touched">{JSON.stringify(touched.data)}</div>
     </form>
   );

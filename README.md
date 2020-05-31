@@ -15,8 +15,6 @@
 [![npm](https://img.shields.io/bundlephobia/minzip/react-hook-form?style=for-the-badge)](https://bundlephobia.com/result?p=react-hook-form)
 [![Coverage Status](https://img.shields.io/coveralls/github/bluebill1049/react-hook-form/master?style=for-the-badge)](https://coveralls.io/github/bluebill1049/react-hook-form?branch=master)
 
-[![Tweet](https://img.shields.io/twitter/url/http/shields.io.svg?style=social)](https://twitter.com/intent/tweet?text=React+hooks+for+form+validation+without+the+hassle&url=https://github.com/bluebill1049/react-hook-form)&nbsp;[![Join the community on Spectrum](https://withspectrum.github.io/badge/badge.svg)](https://spectrum.chat/react-hook-form)
-
 </div>
 
 <div align="center">
@@ -27,13 +25,13 @@
     </p>
 </div>
 
-🇦🇺English | <a href="./docs/README.zh-CN.md">🇨🇳 简体中文</a> | <a href="./docs/README.ja-JP.md">🇯🇵 日本語</a> | <a href="./docs/README.ko-KR.md">🇰🇷한국어</a> | <a href="./docs/README.fr-FR.md">🇫🇷Français</a> | <a href="./docs/README.it-IT.md">🇮🇹Italiano</a> | <a href="./docs/README.pt-BR.md">🇧🇷Português</a> | <a href="./docs/README.es-ES.md">🇪🇸Español</a> | <a href="./docs/README.ru-RU.md">🇷🇺Русский</a>
+English | <a href="./docs/README.zh-CN.md">简体中文</a> | <a href="./docs/README.ja-JP.md">日本語</a> | <a href="./docs/README.ko-KR.md">한국어</a> | <a href="./docs/README.fr-FR.md">Français</a> | <a href="./docs/README.it-IT.md">Italiano</a> | <a href="./docs/README.pt-BR.md">Português</a> | <a href="./docs/README.es-ES.md">Español</a> | <a href="./docs/README.ru-RU.md">Русский</a> | <a href="./docs/README.de-DE.md">Deutsch</a> | <a href="./docs/README.tr-TR.md">Türkçe</a>
 
 ## Features
 
 - Built with performance and DX in mind
-- Embrace uncontrolled form validation
-- Simple integration with [UI libraries](https://codesandbox.io/s/react-hook-form-controller-079xx) 
+- Embrace native form validation
+- Simple integration with [UI libraries](https://codesandbox.io/s/react-hook-form-controller-079xx)
 - [Tiny size](https://bundlephobia.com/result?p=react-hook-form@latest) without any dependency
 - Follows HTML standard for [validation](https://react-hook-form.com/get-started#Applyvalidation)
 - Compatible with React Native
@@ -63,20 +61,20 @@ import { useForm } from 'react-hook-form';
 
 function App() {
   const { register, handleSubmit, errors } = useForm(); // initialise the hook
-  const onSubmit = data => {
+  const onSubmit = (data) => {
     console.log(data);
   };
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
       <input name="firstname" ref={register} /> {/* register an input */}
-
+      
       <input name="lastname" ref={register({ required: true })} />
       {errors.lastname && 'Last name is required.'}
-
+      
       <input name="age" ref={register({ pattern: /\d+/ })} />
       {errors.age && 'Please enter number for age.'}
-
+      
       <input type="submit" />
     </form>
   );

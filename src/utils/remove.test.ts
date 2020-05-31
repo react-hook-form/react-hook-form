@@ -43,6 +43,9 @@ test('should remove item accordingly', () => {
     { type: 'required', message: '', ref: 'test' },
     { type: 'required', message: '', ref: 'test' },
   ]);
+
+  expect(remove([true, true, true], [1])).toEqual([true, true]);
+  expect(remove([true, true, true], [0])).toEqual([true, true]);
 });
 
 test('should remove all items', () => {
