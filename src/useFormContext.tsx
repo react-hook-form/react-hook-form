@@ -6,6 +6,8 @@ const FormGlobalContext = React.createContext<FormContextValues<
   FieldValues
 > | null>(null);
 
+FormGlobalContext.displayName = 'ReactHookFormGlobalContext'
+
 export function useFormContext<T extends FieldValues>(): FormContextValues<T> {
   return React.useContext(FormGlobalContext) as FormContextValues<T>;
 }
