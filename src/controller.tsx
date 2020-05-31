@@ -145,9 +145,6 @@ const Controller = <
 
   function onChange(...event: any[]): void;
   function onChange(
-    callback: (...args: any[]) => any,
-  ): (...event: any[]) => void;
-  function onChange(
     ...callbackOrEvent: any[]
   ): ((...event: any[]) => void) | void {
     const [firstArg] = callbackOrEvent;
