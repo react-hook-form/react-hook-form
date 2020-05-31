@@ -19,7 +19,7 @@ exports[`Controller should render correctly with as with string 1`] = `
 exports[`Controller should support custom value name 1`] = `
 <DocumentFragment>
   <input
-    value=""
+    value="test"
   />
 </DocumentFragment>
 `;

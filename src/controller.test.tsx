@@ -299,12 +299,19 @@ describe('Controller', () => {
     const fieldsRef = {
       current: {},
     };
+    const Input = ({ onChange, onBlur, selectedkey }: any) => (
+      <input
+        onChange={() => onChange?.(1, 2)}
+        onBlur={() => onBlur?.(1, 2)}
+        value={selectedkey}
+      />
+    );
 
     const { asFragment } = render(
       <Controller
-        defaultValue=""
+        defaultValue="test"
         name="test"
-        render={(props) => <input {...props} />}
+        render={(props) => <Input {...props} selectedkey={props.value} />}
         control={
           {
             ...control,
