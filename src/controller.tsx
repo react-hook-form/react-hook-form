@@ -142,9 +142,8 @@ const Controller = <
     }
   };
 
-  const onChange = (...event: any[]) => {
+  const onChange = (...event: any[]) =>
     setValue(name, commonTask(event), shouldValidate());
-  };
 
   const handlerProps = {
     onChange: React.useCallback(onChange, []),
