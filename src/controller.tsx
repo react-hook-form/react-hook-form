@@ -3,7 +3,6 @@ import isBoolean from './utils/isBoolean';
 import isUndefined from './utils/isUndefined';
 import get from './utils/get';
 import set from './utils/set';
-import isFunction from './utils/isFunction';
 import getInputValue from './logic/getInputValue';
 import skipValidation from './logic/skipValidation';
 import isNameInFieldArray from './logic/isNameInFieldArray';
@@ -143,19 +142,8 @@ const Controller = <
     }
   };
 
-  function onChange(...event: any[]): void;
-  function onChange(
-    callback: (...args: any[]) => any,
-  ): (...event: any[]) => void;
-  function onChange(
-    ...callbackOrEvent: any[]
-  ): ((...event: any[]) => void) | void {
-    const [firstArg] = callbackOrEvent;
-
-    return isFunction(firstArg)
-      ? (event: any) =>
-          setValue(name, commonTask(firstArg(event)), shouldValidate())
-      : setValue(name, commonTask(callbackOrEvent), shouldValidate());
+  function onChange(...event: any[]): void {
+    setValue(name, commonTask(event), shouldValidate());
   }
 
   const handlerProps = {

@@ -47,10 +47,7 @@ export type ControllerProps<
     defaultValue?: unknown;
     control?: TControl;
     render?: (data: {
-      onChange: {
-        (...event: any[]): void;
-        (callback: (...args: any[]) => any): (...event: any[]) => void;
-      };
+      onChange: (...event: any[]) => void;
       onBlur: () => void;
       value: any;
     }) => React.ReactElement;
