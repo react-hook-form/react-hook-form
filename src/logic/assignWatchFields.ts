@@ -29,7 +29,6 @@ export default <TFieldValues extends FieldValues>(
     value = undefined;
   } else if (!isUndefined(fieldValues[fieldName])) {
     value = fieldValues[fieldName];
-    watchFields.add(fieldName);
   } else {
     value = get(transformToNestObject(fieldValues), fieldName);
 
