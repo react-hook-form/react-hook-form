@@ -24,7 +24,7 @@ import {
   Message,
   FieldError,
   InternalFieldName,
-  FieldErrorMap,
+  FlatFieldErrors,
 } from '../types/form';
 
 export default async <TFieldValues extends FieldValues>(
@@ -42,10 +42,10 @@ export default async <TFieldValues extends FieldValues>(
     pattern,
     validate,
   }: Field,
-): Promise<FieldErrorMap<TFieldValues>> => {
+): Promise<FlatFieldErrors<TFieldValues>> => {
   const fields = fieldsRef.current;
-  const name = ref.name as InternalFieldName<TFieldValues>;
-  const error = {} as FieldErrorMap<TFieldValues>;
+  const name: InternalFieldName<TFieldValues> = ref.name;
+  const error: FlatFieldErrors<TFieldValues> = {};
   const isRadio = isRadioInput(ref);
   const isCheckBox = isCheckBoxInput(ref);
   const isRadioOrCheckbox = isRadio || isCheckBox;

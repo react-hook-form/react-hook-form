@@ -5,7 +5,7 @@ import {
   FieldValues,
   InternalFieldName,
   FieldErrors,
-  FieldErrorMap,
+  FlatFieldErrors,
 } from '../types/form';
 
 export default function shouldRenderBasedOnError<
@@ -18,7 +18,7 @@ export default function shouldRenderBasedOnError<
   fieldsWithValidation,
 }: {
   errors: FieldErrors<TFieldValues>;
-  error: FieldErrorMap<TFieldValues>;
+  error: FlatFieldErrors<TFieldValues>;
   name: InternalFieldName<TFieldValues>;
   validFields: Set<InternalFieldName<TFieldValues>>;
   fieldsWithValidation: Set<InternalFieldName<TFieldValues>>;
