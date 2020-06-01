@@ -64,6 +64,7 @@ import {
   OmitResetState,
   Message,
   DefaultValuesAtRender,
+  FieldErrorMap,
 } from './types/form';
 import { NonUndefined, LiteralToPrimitive, DeepPartial } from './types/utils';
 
@@ -152,7 +153,7 @@ export function useForm<
   const shouldRenderBaseOnError = React.useCallback(
     (
       name: InternalFieldName<TFieldValues>,
-      error: FieldErrors<TFieldValues>,
+      error: FieldErrorMap<TFieldValues>,
       shouldRender: boolean | null = false,
     ): boolean | void => {
       let shouldReRender =
@@ -382,7 +383,10 @@ export function useForm<
           const error = get(errors, payload);
           shouldRenderBaseOnError(
             payload,
-            (error ? { [payload]: error } : {}) as FieldErrors<TFieldValues>,
+            (error ? { [payload]: error } : {}) as Record<
+              InternalFieldName<TFieldValues>,
+              FieldError
+            >,
             previousFormIsValid !== isValidRef.current,
           );
         }
@@ -511,7 +515,7 @@ export function useForm<
         const errors = errorsRef.current;
         const field = fields[name];
         const currentError = get(errors, name);
-        let error;
+        let error: FieldErrorMap<TFieldValues>;
 
         if (!field) {
           return;
@@ -558,7 +562,7 @@ export function useForm<
 
           error = (get(errors, name)
             ? { [name]: get(errors, name) }
-            : {}) as FieldErrors<TFieldValues>;
+            : {}) as FieldErrorMap<TFieldValues>;
 
           if (previousFormIsValid !== isValidRef.current) {
             shouldRender = true;

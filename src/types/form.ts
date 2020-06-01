@@ -157,6 +157,11 @@ export type FieldErrors<
   TFieldValues extends FieldValues = FieldValues
 > = DeepMap<TFieldValues, FieldError>;
 
+export type FieldErrorMap<TFieldValues extends FieldValues> = Record<
+  InternalFieldName<TFieldValues>,
+  FieldError
+>;
+
 export type Touched<TFieldValues extends FieldValues> = DeepMap<
   TFieldValues,
   true
