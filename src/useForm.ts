@@ -383,10 +383,7 @@ export function useForm<
           const error = get(errors, payload);
           shouldRenderBaseOnError(
             payload,
-            (error ? { [payload]: error } : {}) as Record<
-              InternalFieldName<TFieldValues>,
-              FieldError
-            >,
+            (error ? { [payload]: error } : {}) as FieldErrorMap<TFieldValues>,
             previousFormIsValid !== isValidRef.current,
           );
         }
