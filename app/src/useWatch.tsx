@@ -110,10 +110,15 @@ export default () => {
       <Controller
         name={'test1'}
         control={control}
-        placeholder="👀 watching me :)"
-        autoComplete="off"
-        style={{ fontSize: 20 }}
-        as={<input />}
+        render={(props) => (
+          <input
+            placeholder="👀 watching me :)"
+            autoComplete="off"
+            name={'test1'}
+            style={{ fontSize: 20 }}
+            {...props}
+          />
+        )}
         defaultValue=""
       />
 

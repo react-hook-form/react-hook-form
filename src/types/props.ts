@@ -7,12 +7,11 @@ import {
   FieldErrors,
   MultipleFieldErrors,
   Message,
-  Mode,
   ValidationOptions,
-  EventFunction,
   Control,
 } from './form';
 import { Assign } from './utils';
+import * as React from 'react';
 
 export type FormProviderProps<
   TFieldValues extends FieldValues = FieldValues
@@ -39,17 +38,19 @@ export type ControllerProps<
 > = Assign<
   {
     name: FieldName<FieldValuesFromControl<TControl>>;
-    as: TAs;
+    as?: TAs;
     rules?: ValidationOptions;
-    onChange?: EventFunction;
     onFocus?: () => void;
-    onBlur?: EventFunction;
-    mode?: Mode;
     onChangeName?: string;
     onBlurName?: string;
     valueName?: string;
     defaultValue?: unknown;
     control?: TControl;
+    render?: (data: {
+      onChange: (...event: any[]) => void;
+      onBlur: () => void;
+      value: any;
+    }) => React.ReactElement;
   },
   AsProps<TAs>
 >;
@@ -67,7 +68,7 @@ export type ErrorMessageProps<
     errors?: TFieldErrors;
     name: FieldName<FieldValuesFromFieldErrors<TFieldErrors>>;
     message?: Message;
-    children?: (data: {
+    render?: (data: {
       message: Message;
       messages?: MultipleFieldErrors;
     }) => React.ReactNode;

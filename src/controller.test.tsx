@@ -157,8 +157,9 @@ describe('Controller', () => {
       <Controller
         defaultValue=""
         name="test"
-        as={<input placeholder="test" />}
-        onChangeName="onChange"
+        render={(props) => {
+          return <input placeholder="test" {...props} />;
+        }}
         control={
           {
             ...control,
@@ -198,8 +199,9 @@ describe('Controller', () => {
       <Controller
         defaultValue=""
         name="test"
-        as={<Input placeholder="test" />}
-        onChange={onChange}
+        render={({ onBlur, onChange, value }) => {
+          return <Input placeholder="test" {...{ onChange, onBlur, value }} />;
+        }}
         control={
           {
             ...control,
@@ -220,7 +222,6 @@ describe('Controller', () => {
     });
 
     expect(setValue).toBeCalled();
-    expect(onChange).toBeCalledWith(1, 2);
   });
 
   it('should invoke custom onBlur method', () => {
@@ -236,8 +237,9 @@ describe('Controller', () => {
       <Controller
         defaultValue=""
         name="test"
-        as={<Input placeholder="test" />}
-        onBlur={onBlur}
+        render={({ onChange, value }) => {
+          return <Input placeholder="test" {...{ onChange, onBlur, value }} />;
+        }}
         control={
           {
             ...control,
@@ -297,13 +299,19 @@ describe('Controller', () => {
     const fieldsRef = {
       current: {},
     };
+    const Input = ({ onChange, onBlur, selectedkey }: any) => (
+      <input
+        onChange={() => onChange?.(1, 2)}
+        onBlur={() => onBlur?.(1, 2)}
+        value={selectedkey}
+      />
+    );
 
     const { asFragment } = render(
       <Controller
-        defaultValue=""
+        defaultValue="test"
         name="test"
-        as={'input' as 'input'}
-        valueName="selectedkey"
+        render={(props) => <Input {...props} selectedkey={props.value} />}
         control={
           {
             ...control,
@@ -328,8 +336,7 @@ describe('Controller', () => {
       <Controller
         defaultValue=""
         name="test[0]"
-        as={'input' as 'input'}
-        valueName="selectedkey"
+        render={(props) => <input {...props} />}
         control={{
           ...control,
           removeFieldEventListener,

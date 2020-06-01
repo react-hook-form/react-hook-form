@@ -7,8 +7,8 @@ import getInputValue from './logic/getInputValue';
 import skipValidation from './logic/skipValidation';
 import isNameInFieldArray from './logic/isNameInFieldArray';
 import { useFormContext } from './useFormContext';
-import { VALIDATION_MODE, VALUE } from './constants';
-import { Control, EventFunction, Field } from './types/form';
+import { VALUE } from './constants';
+import { Control, Field } from './types/form';
 import { ControllerProps } from './types/props';
 
 const Controller = <
@@ -20,12 +20,8 @@ const Controller = <
 >({
   name,
   rules,
-  as: InnerComponent,
-  onBlur,
-  onChange,
-  onChangeName = VALIDATION_MODE.onChange,
-  onBlurName = VALIDATION_MODE.onBlur,
-  valueName,
+  as,
+  render,
   defaultValue,
   control,
   onFocus,
@@ -73,15 +69,12 @@ const Controller = <
       isSubmitted,
     });
 
-  const commonTask = (event: any) => {
-    const data = getInputValue(event, isCheckboxInput);
+  const commonTask = (event: any[]) => {
+    const data = getInputValue(event[0], isCheckboxInput);
     setInputStateValue(data);
     valueRef.current = data;
     return data;
   };
-
-  const eventWrapper = (event: EventFunction) => (...arg: any): any =>
-    setValue(name, commonTask(event(...arg)), shouldValidate());
 
   const registerField = React.useCallback(() => {
     if (!isNotFieldArray) {
@@ -135,38 +128,44 @@ const Controller = <
     }
   });
 
-  const props = {
-    name,
-    ...rest,
-    ...(onChange
-      ? { [onChangeName]: eventWrapper(onChange) }
-      : {
-          [onChangeName]: (event: any): any =>
-            setValue(name, commonTask(event), shouldValidate()),
-        }),
-    [onBlurName]: (...args: any) => {
-      if (onBlur) {
-        onBlur(...args);
-      }
+  const onBlur = () => {
+    if (
+      readFormStateRef.current.touched &&
+      !get(touchedFieldsRef.current, name)
+    ) {
+      set(touchedFieldsRef.current, name, true);
+      reRender();
+    }
 
-      if (
-        readFormStateRef.current.touched &&
-        !get(touchedFieldsRef.current, name)
-      ) {
-        set(touchedFieldsRef.current, name, true);
-        reRender();
-      }
-
-      if (shouldReValidateOnBlur) {
-        trigger(name);
-      }
-    },
-    ...{ [valueName || (isCheckboxInput ? 'checked' : VALUE)]: value },
+    if (shouldReValidateOnBlur) {
+      trigger(name);
+    }
   };
 
-  return React.isValidElement(InnerComponent)
-    ? React.cloneElement(InnerComponent, props)
-    : React.createElement(InnerComponent as string, props);
+  const onChange = (...event: any[]) =>
+    setValue(name, commonTask(event), shouldValidate());
+
+  const handlerProps = {
+    onChange: React.useCallback(onChange, []),
+    onBlur: React.useCallback(onBlur, []),
+  };
+
+  const props = {
+    ...rest,
+    ...handlerProps,
+    ...{ [isCheckboxInput ? 'checked' : VALUE]: value },
+  };
+
+  return as
+    ? React.isValidElement(as)
+      ? React.cloneElement(as, props)
+      : React.createElement(as as string, props)
+    : render
+    ? render({
+        ...handlerProps,
+        value,
+      })
+    : null;
 };
 
 export { Controller };
