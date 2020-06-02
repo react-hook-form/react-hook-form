@@ -130,7 +130,7 @@ export function useForm<
   const readFormStateRef = React.useRef<ReadFormState>({
     isDirty: !isProxyEnabled,
     dirtyFields: !isProxyEnabled,
-    isSubmitted: isOnSubmit,
+    isSubmitted: !isProxyEnabled,
     submitCount: !isProxyEnabled,
     touched: !isProxyEnabled,
     isSubmitting: !isProxyEnabled,
@@ -1059,19 +1059,21 @@ export function useForm<
           await callback(transformToNestObject(fieldValues), e);
         } else {
           errorsRef.current = fieldErrors;
+          reRender();
           if (submitFocusError && isWeb) {
             focusOnErrorField(fields, fieldErrors);
           }
         }
       } finally {
+        isSubmittedRef.current = true;
+        isSubmittingRef.current = false;
+        submitCountRef.current = submitCountRef.current + 1;
+
         if (
           readFormStateRef.current.isSubmitted ||
           readFormStateRef.current.isSubmitting ||
           readFormStateRef.current.submitCount
         ) {
-          isSubmittedRef.current = true;
-          isSubmittingRef.current = false;
-          submitCountRef.current = submitCountRef.current + 1;
           reRender();
         }
       }
@@ -1291,6 +1293,7 @@ export function useForm<
     fieldsWithValidationRef,
     fieldArrayNamesRef,
     isDirtyRef,
+    isSubmittedRef,
     readFormStateRef,
     defaultValuesRef,
     ...commonProps,

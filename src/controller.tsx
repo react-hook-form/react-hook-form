@@ -38,7 +38,7 @@ const Controller = <
     trigger,
     mode: { isOnSubmit, isOnBlur, isOnChange },
     reValidateMode: { isReValidateOnBlur, isReValidateOnSubmit },
-    formState: { isSubmitted },
+    isSubmittedRef,
     touchedFieldsRef,
     readFormStateRef,
     reRender,
@@ -57,6 +57,7 @@ const Controller = <
   const onFocusRef = React.useRef(onFocus);
   const isNotFieldArray = !isNameInFieldArray(fieldArrayNamesRef.current, name);
   rulesRef.current = rules;
+  const isSubmitted = isSubmittedRef.current;
 
   const shouldValidate = () =>
     !skipValidation({

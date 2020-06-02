@@ -238,6 +238,7 @@ export type Control<TFieldValues extends FieldValues = FieldValues> = Pick<
   >;
   fieldArrayNamesRef: React.MutableRefObject<Set<string>>;
   isDirtyRef: React.MutableRefObject<boolean>;
+  isSubmittedRef: React.MutableRefObject<boolean>;
   readFormStateRef: React.MutableRefObject<{
     isDirty: boolean;
     isSubmitted: boolean;
