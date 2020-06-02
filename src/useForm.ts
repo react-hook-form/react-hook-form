@@ -853,7 +853,7 @@ export function useForm<
     }
 
     const { name, type, value } = ref;
-    const fieldRefAndValidationOptions: Field = {
+    const fieldRefAndValidationOptions = {
       ref,
       ...validateOptions,
     };
@@ -1064,10 +1064,16 @@ export function useForm<
           }
         }
       } finally {
-        isSubmittedRef.current = true;
-        isSubmittingRef.current = false;
-        submitCountRef.current = submitCountRef.current + 1;
-        reRender();
+        if (
+          readFormStateRef.current.isSubmitted ||
+          readFormStateRef.current.isSubmitting ||
+          readFormStateRef.current.submitCount
+        ) {
+          isSubmittedRef.current = true;
+          isSubmittingRef.current = false;
+          submitCountRef.current = submitCountRef.current + 1;
+          reRender();
+        }
       }
     },
     [isWeb, reRender, resolverRef, submitFocusError, validateAllFieldCriteria],
