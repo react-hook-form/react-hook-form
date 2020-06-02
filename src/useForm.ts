@@ -1011,14 +1011,9 @@ export function useForm<
       }
       let fieldErrors: FieldErrors<TFieldValues> = {};
       const fields = fieldsRef.current;
-      const {
-        isSubmitting,
-        isSubmitted,
-        submitCount,
-      } = readFormStateRef.current;
       let fieldValues: FieldValues = getFieldsValues(fields);
 
-      if (isSubmitting) {
+      if (readFormStateRef.current.isSubmitting) {
         isSubmittingRef.current = true;
         reRender();
       }
@@ -1069,7 +1064,11 @@ export function useForm<
           }
         }
       } finally {
-        if (isSubmitted || isSubmitting || submitCount) {
+        if (
+          readFormStateRef.current.isSubmitted ||
+          readFormStateRef.current.isSubmitting ||
+          readFormStateRef.current.submitCount
+        ) {
           isSubmittedRef.current = true;
           isSubmittingRef.current = false;
           submitCountRef.current = submitCountRef.current + 1;
