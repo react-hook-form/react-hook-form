@@ -15,7 +15,6 @@ import isArray from './utils/isArray';
 import insertAt from './utils/insert';
 import isKey from './utils/isKey';
 import fillEmptyArray from './utils/fillEmptyArray';
-import isEmptyObject from './utils/isEmptyObject';
 import { filterBooleanArray } from './utils/filterBooleanArray';
 import unique from './utils/unique';
 import {
@@ -80,8 +79,6 @@ export const useFieldArray = <
     Partial<ArrayField<TFieldArrayValues, TKeyName>>[]
   >(fields);
   const isNameKey = isKey(name);
-  const isReadingDirty =
-    readFormStateRef.current.dirtyFields || readFormStateRef.current.isDirty;
 
   allFields.current = fields;
 
@@ -108,8 +105,10 @@ export const useFieldArray = <
     shouldRender: boolean,
     shouldUpdateDirty = true,
   ) => {
-    if (shouldUpdateDirty && isReadingDirty) {
-      isDirtyRef.current = !isEmptyObject(dirtyFieldsRef.current);
+    if (
+      (shouldUpdateDirty && readFormStateRef.current.dirtyFields) ||
+      readFormStateRef.current.isDirty
+    ) {
       shouldRender = true;
     }
 
@@ -170,6 +169,7 @@ export const useFieldArray = <
         ...(dirtyFieldsRef.current[name] || fillEmptyArray(fields)),
         ...filterBooleanArray(value),
       ];
+      isDirtyRef.current = true;
       shouldRender = true;
     }
 
@@ -205,7 +205,10 @@ export const useFieldArray = <
       shouldRender = true;
     }
 
-    if (isReadingDirty && dirtyFieldsRef.current[name]) {
+    if (
+      readFormStateRef.current.dirtyFields ||
+      (readFormStateRef.current.isDirty && dirtyFieldsRef.current[name])
+    ) {
       dirtyFieldsRef.current[name] = prependAt(
         dirtyFieldsRef.current[name],
         filterBooleanArray(value),
@@ -246,7 +249,10 @@ export const useFieldArray = <
       shouldRender = true;
     }
 
-    if (isReadingDirty && dirtyFieldsRef.current[name]) {
+    if (
+      readFormStateRef.current.dirtyFields ||
+      (readFormStateRef.current.isDirty && dirtyFieldsRef.current[name])
+    ) {
       dirtyFieldsRef.current[name] = removeArrayAt(
         dirtyFieldsRef.current[name],
         index,
@@ -330,7 +336,10 @@ export const useFieldArray = <
       shouldRender = true;
     }
 
-    if (isReadingDirty && dirtyFieldsRef.current[name]) {
+    if (
+      readFormStateRef.current.dirtyFields ||
+      (readFormStateRef.current.isDirty && dirtyFieldsRef.current[name])
+    ) {
       dirtyFieldsRef.current[name] = insertAt(
         dirtyFieldsRef.current[name],
         index,
@@ -364,7 +373,10 @@ export const useFieldArray = <
       shouldRender = true;
     }
 
-    if (isReadingDirty && dirtyFieldsRef.current[name]) {
+    if (
+      readFormStateRef.current.dirtyFields ||
+      (readFormStateRef.current.isDirty && dirtyFieldsRef.current[name])
+    ) {
       swapArrayAt(dirtyFieldsRef.current[name], indexA, indexB);
       reRender();
       shouldRender = true;
@@ -391,7 +403,10 @@ export const useFieldArray = <
       shouldRender = true;
     }
 
-    if (isReadingDirty && dirtyFieldsRef.current[name]) {
+    if (
+      readFormStateRef.current.dirtyFields ||
+      (readFormStateRef.current.isDirty && dirtyFieldsRef.current[name])
+    ) {
       moveArrayAt(dirtyFieldsRef.current[name], from, to);
       shouldRender = true;
     }
