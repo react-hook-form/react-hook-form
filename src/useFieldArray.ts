@@ -106,8 +106,8 @@ export const useFieldArray = <
     shouldUpdateDirty = true,
   ) => {
     if (
-      (shouldUpdateDirty && readFormStateRef.current.dirtyFields) ||
-      readFormStateRef.current.isDirty
+      shouldUpdateDirty &&
+      (readFormStateRef.current.dirtyFields || readFormStateRef.current.isDirty)
     ) {
       shouldRender = true;
     }
@@ -206,8 +206,9 @@ export const useFieldArray = <
     }
 
     if (
-      readFormStateRef.current.dirtyFields ||
-      (readFormStateRef.current.isDirty && dirtyFieldsRef.current[name])
+      (readFormStateRef.current.dirtyFields ||
+        readFormStateRef.current.isDirty) &&
+      dirtyFieldsRef.current[name]
     ) {
       dirtyFieldsRef.current[name] = prependAt(
         dirtyFieldsRef.current[name],
@@ -250,8 +251,9 @@ export const useFieldArray = <
     }
 
     if (
-      readFormStateRef.current.dirtyFields ||
-      (readFormStateRef.current.isDirty && dirtyFieldsRef.current[name])
+      (readFormStateRef.current.dirtyFields ||
+        readFormStateRef.current.isDirty) &&
+      dirtyFieldsRef.current[name]
     ) {
       dirtyFieldsRef.current[name] = removeArrayAt(
         dirtyFieldsRef.current[name],
@@ -337,8 +339,9 @@ export const useFieldArray = <
     }
 
     if (
-      readFormStateRef.current.dirtyFields ||
-      (readFormStateRef.current.isDirty && dirtyFieldsRef.current[name])
+      (readFormStateRef.current.dirtyFields ||
+        readFormStateRef.current.isDirty) &&
+      dirtyFieldsRef.current[name]
     ) {
       dirtyFieldsRef.current[name] = insertAt(
         dirtyFieldsRef.current[name],
@@ -374,8 +377,9 @@ export const useFieldArray = <
     }
 
     if (
-      readFormStateRef.current.dirtyFields ||
-      (readFormStateRef.current.isDirty && dirtyFieldsRef.current[name])
+      (readFormStateRef.current.dirtyFields ||
+        readFormStateRef.current.isDirty) &&
+      dirtyFieldsRef.current[name]
     ) {
       swapArrayAt(dirtyFieldsRef.current[name], indexA, indexB);
       reRender();
@@ -404,8 +408,9 @@ export const useFieldArray = <
     }
 
     if (
-      readFormStateRef.current.dirtyFields ||
-      (readFormStateRef.current.isDirty && dirtyFieldsRef.current[name])
+      (readFormStateRef.current.dirtyFields ||
+        readFormStateRef.current.isDirty) &&
+      dirtyFieldsRef.current[name]
     ) {
       moveArrayAt(dirtyFieldsRef.current[name], from, to);
       shouldRender = true;
