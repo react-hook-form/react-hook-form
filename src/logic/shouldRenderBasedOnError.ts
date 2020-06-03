@@ -1,7 +1,12 @@
 import isEmptyObject from '../utils/isEmptyObject';
 import isSameError from '../utils/isSameError';
 import get from '../utils/get';
-import { FieldValues, InternalFieldName, FieldErrors } from '../types/form';
+import {
+  FieldValues,
+  InternalFieldName,
+  FieldErrors,
+  FlatFieldErrors,
+} from '../types/form';
 
 export default function shouldRenderBasedOnError<
   TFieldValues extends FieldValues
@@ -13,7 +18,7 @@ export default function shouldRenderBasedOnError<
   fieldsWithValidation,
 }: {
   errors: FieldErrors<TFieldValues>;
-  error: FieldErrors<TFieldValues>;
+  error: FlatFieldErrors<TFieldValues>;
   name: InternalFieldName<TFieldValues>;
   validFields: Set<InternalFieldName<TFieldValues>>;
   fieldsWithValidation: Set<InternalFieldName<TFieldValues>>;

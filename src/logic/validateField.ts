@@ -19,10 +19,12 @@ import appendErrors from './appendErrors';
 import { INPUT_VALIDATION_RULES } from '../constants';
 import {
   Field,
-  FieldErrors,
   FieldValues,
   FieldRefs,
   Message,
+  FieldError,
+  InternalFieldName,
+  FlatFieldErrors,
 } from '../types/form';
 
 export default async <TFieldValues extends FieldValues>(
@@ -30,7 +32,7 @@ export default async <TFieldValues extends FieldValues>(
   validateAllFieldCriteria: boolean,
   {
     ref,
-    ref: { type, value, name },
+    ref: { type, value },
     options,
     required,
     maxLength,
@@ -40,9 +42,10 @@ export default async <TFieldValues extends FieldValues>(
     pattern,
     validate,
   }: Field,
-): Promise<FieldErrors<TFieldValues>> => {
+): Promise<FlatFieldErrors<TFieldValues>> => {
   const fields = fieldsRef.current;
-  const error: any = {};
+  const name: InternalFieldName<TFieldValues> = ref.name;
+  const error: FlatFieldErrors<TFieldValues> = {};
   const isRadio = isRadioInput(ref);
   const isCheckBox = isCheckBoxInput(ref);
   const isRadioOrCheckbox = isRadio || isCheckBox;
@@ -69,9 +72,6 @@ export default async <TFieldValues extends FieldValues>(
         ? appendErrorsCurry(maxType, message)
         : appendErrorsCurry(minType, message)),
     };
-    if (!validateAllFieldCriteria) {
-      return error;
-    }
   };
 
   if (
@@ -202,7 +202,7 @@ export default async <TFieldValues extends FieldValues>(
         }
       }
     } else if (isObject(validate)) {
-      let validationResult = {};
+      let validationResult = {} as FieldError;
       for (const [key, validateFunction] of Object.entries(validate)) {
         if (!isEmptyObject(validationResult) && !validateAllFieldCriteria) {
           break;
@@ -230,7 +230,7 @@ export default async <TFieldValues extends FieldValues>(
       if (!isEmptyObject(validationResult)) {
         error[name] = {
           ref: validateRef,
-          ...(validationResult as { type: string; message?: Message }),
+          ...validationResult,
         };
         if (!validateAllFieldCriteria) {
           return error;
