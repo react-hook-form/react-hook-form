@@ -856,7 +856,7 @@ export function useForm<
     }
 
     const { name, type, value } = ref;
-    const fieldRefAndValidationOptions: Field = {
+    const fieldRefAndValidationOptions = {
       ref,
       ...validateOptions,
     };
@@ -1288,6 +1288,7 @@ export function useForm<
     fieldsWithValidationRef,
     fieldArrayNamesRef,
     isDirtyRef,
+    isSubmittedRef,
     readFormStateRef,
     defaultValuesRef,
     ...commonProps,

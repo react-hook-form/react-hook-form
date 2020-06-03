@@ -76,6 +76,9 @@ export const reconfigureControl = (
   isDirtyRef: {
     current: false,
   },
+  isSubmittedRef: {
+    current: false,
+  },
   readFormStateRef: {
     current: {
       isDirty: true,
@@ -401,6 +404,7 @@ describe('useForm', () => {
 
       (validateField as any).mockImplementation(async () => ({}));
 
+      expect(result.current.formState.isSubmitted).toBeFalsy();
       await act(async () => {
         await result.current.handleSubmit((data) => {
           expect(data).toEqual({
