@@ -37,7 +37,7 @@ context('form setValue', () => {
 
     cy.get('#submit').click();
     cy.get('p').should('have.length', 0);
-    cy.get('#renderCount').contains('7');
+    cy.get('#renderCount').contains('8');
 
     cy.get('#setMultipleValues').click();
     cy.get('input[name="array[0]"]').should('have.value', 'array[0]1');
@@ -47,6 +47,6 @@ context('form setValue', () => {
     cy.get('input[name="object.lastName').should('have.value', 'lastName1');
     cy.get('input[name="object.middleName').should('have.value', 'middleName1');
     cy.get('input[name="nestedValue"]').should('have.value', 'a,b');
-    cy.get('#renderCount').contains('8');
+    cy.get('#renderCount').contains('9');
   });
 });
