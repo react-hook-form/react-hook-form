@@ -372,7 +372,6 @@ export const useFieldArray = <
 
     if (readFormStateRef.current.touched && touchedFieldsRef.current[name]) {
       swapArrayAt(touchedFieldsRef.current[name], indexA, indexB);
-      reRender();
       shouldRender = true;
     }
 
@@ -382,7 +381,6 @@ export const useFieldArray = <
       dirtyFieldsRef.current[name]
     ) {
       swapArrayAt(dirtyFieldsRef.current[name], indexA, indexB);
-      reRender();
       shouldRender = true;
     }
 
