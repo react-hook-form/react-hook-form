@@ -41,9 +41,6 @@ export type ControllerProps<
     as?: TAs;
     rules?: ValidationOptions;
     onFocus?: () => void;
-    onChangeName?: string;
-    onBlurName?: string;
-    valueName?: string;
     defaultValue?: unknown;
     control?: TControl;
     render?: (data: {
