@@ -1,8 +1,12 @@
 import * as React from 'react';
-import { render, fireEvent } from '@testing-library/react';
+import { render, fireEvent, act } from '@testing-library/react';
 import { Controller } from './controller';
 import { reconfigureControl } from './useForm.test';
 import { Field } from './types/form';
+import * as set from './utils/set';
+import { FormProvider } from './useFormContext';
+import { renderHook } from '@testing-library/react-hooks';
+import { useForm } from './useForm';
 
 jest.spyOn(console, 'warn').mockImplementation(() => {});
 
@@ -67,6 +71,178 @@ describe('Controller', () => {
     );
 
     expect(asFragment()).toMatchSnapshot();
+  });
+
+  it('should be assigned method.control variable if wrap with FormProvider', () => {
+    const { result } = renderHook(() => useForm());
+    const control = reconfigureControl();
+    const { asFragment } = render(
+      <FormProvider {...{ ...result.current, ...control }}>
+        <Controller defaultValue="" name="test" as={'input' as 'input'} />
+      </FormProvider>,
+    );
+    expect(asFragment()).toMatchSnapshot();
+  });
+
+  it('should be included checked props when value is boolean', () => {
+    const control = reconfigureControl();
+    const fieldsRef = {
+      current: {},
+    };
+
+    const { container } = render(
+      <Controller
+        defaultValue={false}
+        name="test"
+        as={<input />}
+        control={
+          {
+            ...control,
+            register: (payload: any) => {
+              // @ts-ignore
+              fieldsRef.current[payload.name] = 'test';
+            },
+            fieldsRef,
+          } as any
+        }
+      />,
+    );
+
+    expect(container.querySelector('input')!.checked).toBeFalsy();
+  });
+
+  it('should set defaultValue to value props when input was reset with SSR', () => {
+    const control = reconfigureControl();
+    const fieldsRef = {
+      current: {},
+    };
+    const defaultValue = 'defaultValue';
+
+    const { container, rerender } = render(
+      <Controller
+        defaultValue={defaultValue}
+        name="test"
+        as={<input />}
+        control={
+          {
+            ...control,
+            register: (payload: any) => {
+              // @ts-ignore
+              fieldsRef.current[payload.name] = 'test';
+            },
+            fieldsRef,
+          } as any
+        }
+      />,
+    );
+
+    // reset
+    fieldsRef.current = {};
+
+    rerender(
+      <Controller
+        defaultValue={defaultValue}
+        name="test"
+        as={<input />}
+        control={
+          {
+            ...control,
+            fieldsRef,
+          } as any
+        }
+      />,
+    );
+
+    expect(container.querySelector('input')!.value).toBe(defaultValue);
+  });
+
+  it('should set defaultValuesRef variable to value props when input was reset with SSR', () => {
+    const control = reconfigureControl();
+    const fieldsRef = {
+      current: {},
+    };
+    const defaultValue = 'defaultValue';
+    const defaultValuesRef = {
+      current: {
+        test: '',
+      },
+    };
+
+    const { container, rerender } = render(
+      <Controller
+        name="test"
+        as={<input />}
+        control={
+          {
+            ...control,
+            register: (payload: any) => {
+              // @ts-ignore
+              fieldsRef.current[payload.name] = 'test';
+            },
+            fieldsRef,
+            defaultValuesRef,
+          } as any
+        }
+      />,
+    );
+
+    // reset
+    fieldsRef.current = {};
+    defaultValuesRef.current = {
+      test: defaultValue,
+    };
+
+    rerender(
+      <Controller
+        name="test"
+        as={<input />}
+        control={
+          {
+            ...control,
+            fieldsRef,
+            defaultValuesRef,
+          } as any
+        }
+      />,
+    );
+
+    expect(container.querySelector('input')!.value).toBe(defaultValue);
+  });
+
+  it('should render when registered field values are updated', () => {
+    const control = reconfigureControl();
+    const fieldsRef = {
+      current: {},
+    };
+    let ref: Record<string, any> = {};
+
+    const { container } = render(
+      <Controller
+        defaultValue=""
+        name="test"
+        as={<input />}
+        control={
+          {
+            ...control,
+            register: (payload: any) => {
+              // @ts-ignore
+              fieldsRef.current[payload.name] = 'test';
+              ref = payload;
+            },
+            fieldsRef,
+          } as any
+        }
+      />,
+    );
+
+    const nextValue = 'test1';
+
+    act(() => {
+      ref.value = nextValue;
+    });
+
+    expect(container.querySelector('input')!.value).toBe(nextValue);
+    expect(ref.value).toBe(nextValue);
   });
 
   it("should trigger component's onChange method and invoke setValue method", () => {
@@ -140,6 +316,97 @@ describe('Controller', () => {
       },
     });
 
+    expect(trigger).toBeCalledWith('test');
+  });
+
+  it("should not invoke trigger method when call component's onBlur method if isOnBlur variable is false", () => {
+    const trigger = jest.fn();
+    const control = reconfigureControl({
+      trigger,
+      mode: { isOnChange: false, isOnSubmit: true, isOnBlur: false },
+    });
+    const fieldsRef = {
+      current: {},
+    };
+
+    const { getByPlaceholderText } = render(
+      <Controller
+        defaultValue=""
+        name="test"
+        as={<input placeholder="test" />}
+        control={
+          {
+            ...control,
+            register: (payload: any) => {
+              // @ts-ignore
+              fieldsRef.current[payload.name] = 'test';
+            },
+            fieldsRef,
+          } as any
+        }
+      />,
+    );
+
+    fireEvent.blur(getByPlaceholderText('test'), {
+      target: {
+        value: 'test',
+      },
+    });
+
+    expect(trigger).not.toBeCalled();
+  });
+
+  it("should trigger component's onBlur method and invoke set method and reRender method if touchedFieldsRef.current[name] is undefined", () => {
+    const trigger = jest.fn();
+    const reRender = jest.fn();
+    const control = reconfigureControl({
+      trigger,
+      reRender,
+      mode: { isOnChange: false, isOnSubmit: true, isOnBlur: true },
+    });
+    const fieldsRef = {
+      current: {},
+    };
+    const readFormStateRef = {
+      current: {
+        touched: true,
+      },
+    };
+    const touchedFieldsRef = {
+      current: {},
+    };
+    const setMock = jest.spyOn(set, 'default');
+
+    const { getByPlaceholderText } = render(
+      <Controller
+        defaultValue=""
+        name="test"
+        as={<input placeholder="test" />}
+        control={
+          {
+            ...control,
+            register: (payload: any) => {
+              // @ts-ignore
+              fieldsRef.current[payload.name] = 'test';
+            },
+            fieldsRef,
+            readFormStateRef,
+            touchedFieldsRef,
+          } as any
+        }
+      />,
+    );
+
+    fireEvent.blur(getByPlaceholderText('test'), {
+      target: {
+        value: 'test',
+      },
+    });
+
+    expect(setMock).toBeCalledWith(touchedFieldsRef.current, 'test', true);
+    expect(touchedFieldsRef.current).toEqual({ test: true });
+
+    expect(reRender).toBeCalled();
     expect(trigger).toBeCalledWith('test');
   });
 
@@ -353,5 +620,13 @@ describe('Controller', () => {
     );
 
     expect(removeFieldEventListener).toBeCalled();
+  });
+
+  it('should be null if as and render props are not given', () => {
+    const { container } = render(
+      <Controller defaultValue="" name="test" control={reconfigureControl()} />,
+    );
+
+    expect(container).toEqual(document.createElement('div'));
   });
 });

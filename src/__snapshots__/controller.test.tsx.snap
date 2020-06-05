@@ -1,5 +1,13 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`Controller should be assigned method.control variable if wrap with FormProvider 1`] = `
+<DocumentFragment>
+  <input
+    value=""
+  />
+</DocumentFragment>
+`;
+
 exports[`Controller should render correctly with as with component 1`] = `
 <DocumentFragment>
   <input
