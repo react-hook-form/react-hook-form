@@ -77,7 +77,10 @@ const Controller = <
 
   const registerField = React.useCallback(() => {
     if (fieldsRef.current[name]) {
-      register(name, rules);
+      fieldsRef.current[name] = {
+        ...fieldsRef.current[name],
+        ...rules,
+      } as Field;
     } else {
       if (!isNotFieldArray) {
         removeFieldEventListener(fieldsRef.current[name] as Field, true);
