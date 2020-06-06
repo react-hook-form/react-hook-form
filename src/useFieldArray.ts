@@ -101,13 +101,10 @@ export const useFieldArray = <
     }
   };
 
-  const shouldRenderFieldArray = (
-    shouldRender: boolean,
-    shouldUpdateDirty = true,
-  ) => {
+  const shouldRenderFieldArray = (shouldRender: boolean) => {
     if (
-      shouldUpdateDirty &&
-      (readFormStateRef.current.dirtyFields || readFormStateRef.current.isDirty)
+      readFormStateRef.current.dirtyFields ||
+      readFormStateRef.current.isDirty
     ) {
       shouldRender = true;
     }
@@ -300,7 +297,7 @@ export const useFieldArray = <
       }
     }
 
-    shouldRenderFieldArray(shouldRender, false);
+    shouldRenderFieldArray(shouldRender);
   };
 
   const insert = (

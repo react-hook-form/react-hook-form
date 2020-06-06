@@ -56,7 +56,6 @@ const Controller = <
   const rulesRef = React.useRef(rules);
   const onFocusRef = React.useRef(onFocus);
   const isNotFieldArray = !isNameInFieldArray(fieldArrayNamesRef.current, name);
-  rulesRef.current = rules;
   const isSubmitted = isSubmittedRef.current;
 
   const shouldValidate = () =>
