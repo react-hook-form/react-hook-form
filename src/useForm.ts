@@ -720,7 +720,10 @@ export function useForm<
   ): void {
     isValidRef.current = false;
 
-    if (isString(name)) {
+    if (isArray(name)) {
+      name.forEach((error) => setInternalError({ ...error }));
+      reRender();
+    } else {
       setInternalError({
         name,
         ...(isObject(type)
@@ -734,9 +737,6 @@ export function useForm<
             }),
         shouldRender: true,
       });
-    } else if (isArray(name)) {
-      name.forEach((error) => setInternalError({ ...error }));
-      reRender();
     }
   }
 
