@@ -690,24 +690,16 @@ export function useForm<
   }) => {
     const field = fieldsRef.current[name];
 
-    if (
-      !isSameError(get(errorsRef.current, name) as FieldError, {
-        type,
-        message,
-        types,
-      })
-    ) {
-      set(errorsRef.current, name, {
-        type,
-        types,
-        message,
-        ref: field ? field.ref : {},
-        isManual: true,
-      });
+    set(errorsRef.current, name, {
+      type,
+      types,
+      message,
+      ref: field ? field.ref : {},
+      isManual: true,
+    });
 
-      if (shouldRender) {
-        reRender();
-      }
+    if (shouldRender) {
+      reRender();
     }
   };
 
