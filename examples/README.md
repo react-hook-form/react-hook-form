@@ -27,6 +27,7 @@ You can view the source code for most examples within their folder, or visit Cod
 | Field Array Min Length                  | https://codesandbox.io/s/react-hook-form-fieldsarray-yup-validation-min-length-57qtb |
 | FormProvider                            | https://codesandbox.io/s/react-hook-form-form-context-dkvjz                          |
 | Parse and format input value            | https://codesandbox.io/s/react-hook-form-parse-and-format-textarea-furtc             |
+| Modal/Toggle input                      | https://codesandbox.io/s/react-hook-form-conditional-inputs-c7n0r                   |
 | Nested Fields                           | https://codesandbox.io/s/react-hook-form-nested-fields-mv1bb                         |
 | Normalize/Format/Mask Field             | https://codesandbox.io/s/387z7njwzp                                                  |
 | Format/Mask Field (Third Party Library) | https://codesandbox.io/s/react-hook-form-normalize-field-1jumn                       |
