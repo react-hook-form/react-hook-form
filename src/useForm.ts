@@ -688,26 +688,16 @@ export function useForm<
     message?: Message;
     shouldRender?: boolean;
   }) => {
-    const field = fieldsRef.current[name];
+    set(errorsRef.current, name, {
+      type,
+      types,
+      message,
+      ref: fieldsRef.current[name] ? fieldsRef.current[name]!.ref : {},
+      isManual: true,
+    });
 
-    if (
-      !isSameError(get(errorsRef.current, name) as FieldError, {
-        type,
-        message,
-        types,
-      })
-    ) {
-      set(errorsRef.current, name, {
-        type,
-        types,
-        message,
-        ref: field ? field.ref : {},
-        isManual: true,
-      });
-
-      if (shouldRender) {
-        reRender();
-      }
+    if (shouldRender) {
+      reRender();
     }
   };
 
@@ -728,7 +718,10 @@ export function useForm<
   ): void {
     isValidRef.current = false;
 
-    if (isString(name)) {
+    if (isArray(name)) {
+      name.forEach((error) => setInternalError({ ...error }));
+      reRender();
+    } else {
       setInternalError({
         name,
         ...(isObject(type)
@@ -742,9 +735,6 @@ export function useForm<
             }),
         shouldRender: true,
       });
-    } else if (isArray(name)) {
-      name.forEach((error) => setInternalError({ ...error }));
-      reRender();
     }
   }
 
