@@ -688,13 +688,11 @@ export function useForm<
     message?: Message;
     shouldRender?: boolean;
   }) => {
-    const field = fieldsRef.current[name];
-
     set(errorsRef.current, name, {
       type,
       types,
       message,
-      ref: field ? field.ref : {},
+      ref: fieldsRef.current[name] ? fieldsRef.current[name]!.ref : {},
       isManual: true,
     });
 
