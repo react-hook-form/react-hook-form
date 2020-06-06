@@ -19,7 +19,6 @@ import isRadioInput from './utils/isRadioInput';
 import isSelectInput from './utils/isSelectInput';
 import isFileInput from './utils/isFileInput';
 import isObject from './utils/isObject';
-import isBoolean from './utils/isBoolean';
 import isPrimitive from './utils/isPrimitive';
 import isFunction from './utils/isFunction';
 import isArray from './utils/isArray';
@@ -318,10 +317,7 @@ export function useForm<
       if (field) {
         setFieldValue(field as Field, value);
 
-        const output = setDirty(name);
-        if (isBoolean(output)) {
-          return output;
-        }
+        return setDirty(name);
       } else if (!isPrimitive(value)) {
         setInternalValues(name, value);
       }
