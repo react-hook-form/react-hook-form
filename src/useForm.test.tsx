@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { renderHook, act } from '@testing-library/react-hooks';
-import { render, fireEvent } from '@testing-library/react';
+import { render, fireEvent, waitFor } from '@testing-library/react';
 import { useForm } from './';
 import attachEventListeners from './logic/attachEventListeners';
 import findRemovedFieldAndRemoveListener from './logic/findRemovedFieldAndRemoveListener';
@@ -281,6 +281,43 @@ describe('useForm', () => {
           persist: () => {},
         } as React.SyntheticEvent);
       });
+    });
+
+    it('should re-render if errors ocurred with resolver with SSR', async () => {
+      const resolver = async (data: any) => {
+        return {
+          values: data,
+          errors: {
+            test: {
+              type: 'test',
+            },
+          },
+        };
+      };
+
+      let renderCount = 0;
+      const Component = () => {
+        const { register, control } = useForm<{ test: string }>({
+          resolver,
+        });
+
+        if (!control.readFormStateRef.current.isValid) {
+          control.readFormStateRef.current.isValid = true;
+        }
+
+        renderCount++;
+
+        return (
+          <div>
+            <input name="test" ref={register} />
+            {renderCount}
+          </div>
+        );
+      };
+
+      const { container } = render(<Component />);
+
+      await waitFor(() => expect(container.textContent).toBe('2'));
     });
 
     it('react native - allow registration as part of the register call', async () => {
