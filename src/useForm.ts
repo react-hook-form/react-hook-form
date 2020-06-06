@@ -868,12 +868,13 @@ export function useForm<
     let defaultValue;
 
     if (
-      isRadioOrCheckbox && field
+      field &&
+      (isRadioOrCheckbox
         ? isArray(field.options) &&
           unique(field.options).find((option) => {
             return value === option.ref.value && option.ref === ref;
           })
-        : ref === field.ref
+        : ref === field.ref)
     ) {
       fields[name] = {
         ...field,
