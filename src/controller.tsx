@@ -53,7 +53,6 @@ const Controller = <
   const valueRef = React.useRef(value);
   const isCheckboxInput = isBoolean(value);
   const shouldReValidateOnBlur = isOnBlur || isReValidateOnBlur;
-  const rulesRef = React.useRef(rules);
   const onFocusRef = React.useRef(onFocus);
   const isNotFieldArray = !isNameInFieldArray(fieldArrayNamesRef.current, name);
   const isSubmitted = isSubmittedRef.current;
@@ -77,26 +76,33 @@ const Controller = <
   };
 
   const registerField = React.useCallback(() => {
-    if (!isNotFieldArray) {
-      removeFieldEventListener(fieldsRef.current[name] as Field, true);
-    }
+    if (fieldsRef.current[name]) {
+      fieldsRef.current[name] = {
+        ref: fieldsRef.current[name]!.ref,
+        ...rules,
+      };
+    } else {
+      if (!isNotFieldArray) {
+        removeFieldEventListener(fieldsRef.current[name] as Field, true);
+      }
 
-    register(
-      Object.defineProperty({ name, focus: onFocusRef.current }, VALUE, {
-        set(data) {
-          setInputStateValue(data);
-          valueRef.current = data;
-        },
-        get() {
-          return valueRef.current;
-        },
-      }),
-      rulesRef.current,
-    );
+      register(
+        Object.defineProperty({ name, focus: onFocusRef.current }, VALUE, {
+          set(data) {
+            setInputStateValue(data);
+            valueRef.current = data;
+          },
+          get() {
+            return valueRef.current;
+          },
+        }),
+        rules,
+      );
+    }
   }, [
     isNotFieldArray,
     fieldsRef,
-    rulesRef,
+    rules,
     name,
     onFocusRef,
     register,

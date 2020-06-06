@@ -629,4 +629,49 @@ describe('Controller', () => {
 
     expect(container).toEqual(document.createElement('div'));
   });
+
+  it('should update rules when rules gets updated', () => {
+    const control = reconfigureControl();
+    const fieldsRef = {
+      current: {},
+    };
+    const defaultValue = '';
+
+    const { rerender } = render(
+      <Controller
+        defaultValue={defaultValue}
+        name="test"
+        as={<input />}
+        rules={{ required: true }}
+        control={
+          {
+            ...control,
+            register: (payload: any) => {
+              // @ts-ignore
+              fieldsRef.current[payload.name] = {
+                required: true,
+              };
+            },
+            fieldsRef,
+          } as any
+        }
+      />,
+    );
+
+    rerender(
+      <Controller
+        defaultValue={defaultValue}
+        name="test"
+        as={<input />}
+        rules={{ required: false }}
+        control={{
+          ...control,
+          fieldsRef,
+        }}
+      />,
+    );
+
+    // @ts-ignore
+    expect(fieldsRef.current.test.required).toBeFalsy();
+  });
 });
