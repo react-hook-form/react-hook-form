@@ -1,13 +1,15 @@
 import * as React from 'react';
 import { renderHook, act } from '@testing-library/react-hooks';
-import { render, fireEvent } from '@testing-library/react';
+import { render, fireEvent, waitFor } from '@testing-library/react';
 import { useForm } from './';
 import attachEventListeners from './logic/attachEventListeners';
 import findRemovedFieldAndRemoveListener from './logic/findRemovedFieldAndRemoveListener';
 import validateField from './logic/validateField';
 import onDomRemove from './utils/onDomRemove';
-import { VALIDATION_MODE } from './constants';
-import { Control, NestedValue } from './types/form';
+import { VALIDATION_MODE, EVENTS } from './constants';
+import { Control, NestedValue, UseFormMethods } from './types/form';
+import skipValidation from './logic/skipValidation';
+import * as shouldRenderBasedOnError from './logic/shouldRenderBasedOnError';
 
 export const reconfigureControl = (
   controlOverrides: Partial<Control> = {},
@@ -97,6 +99,7 @@ export const reconfigureControl = (
 jest.mock('./utils/onDomRemove');
 jest.mock('./logic/findRemovedFieldAndRemoveListener');
 jest.mock('./logic/validateField');
+jest.mock('./logic/skipValidation');
 jest.mock('./logic/attachEventListeners');
 jest.mock('./logic/transformToNestObject', () => ({
   default: (data: any) => data,
@@ -281,6 +284,43 @@ describe('useForm', () => {
           persist: () => {},
         } as React.SyntheticEvent);
       });
+    });
+
+    it('should re-render if errors ocurred with resolver with SSR', async () => {
+      const resolver = async (data: any) => {
+        return {
+          values: data,
+          errors: {
+            test: {
+              type: 'test',
+            },
+          },
+        };
+      };
+
+      let renderCount = 0;
+      const Component = () => {
+        const { register, control } = useForm<{ test: string }>({
+          resolver,
+        });
+
+        if (!control.readFormStateRef.current.isValid) {
+          control.readFormStateRef.current.isValid = true;
+        }
+
+        renderCount++;
+
+        return (
+          <div>
+            <input name="test" ref={register} />
+            {renderCount}
+          </div>
+        );
+      };
+
+      const { container } = render(<Component />);
+
+      await waitFor(() => expect(container.textContent).toBe('2'));
     });
 
     it('react native - allow registration as part of the register call', async () => {
@@ -1591,6 +1631,399 @@ describe('useForm', () => {
       });
 
       expect(getByText('data')).toBeTruthy();
+    });
+  });
+
+  describe('handleChangeRef', () => {
+    const skipValidationParams = {
+      isOnChange: false,
+      hasError: false,
+      isBlurEvent: false,
+      isOnSubmit: false,
+      isReValidateOnSubmit: false,
+      isOnBlur: false,
+      isReValidateOnBlur: false,
+      isSubmitted: false,
+    };
+    const validateFieldParams = (ref: HTMLInputElement) => [
+      {
+        current: {
+          test: {
+            ref,
+            required: 'required',
+            mutationWatcher: undefined,
+          },
+        },
+      },
+      false,
+      {
+        ref,
+        required: 'required',
+        mutationWatcher: undefined,
+      },
+    ];
+    const shouldRenderBasedOnErrorParams = {
+      errors: {},
+      name: 'test',
+      error: {},
+      validFields: new Set(),
+      fieldsWithValidation: new Set(),
+    };
+    let renderCount: number;
+    let Component: React.FC<{
+      resolver?: any;
+      mode?: 'onBlur' | 'onSubmit' | 'onChange';
+    }>;
+    let methods: UseFormMethods<{ test: string }>;
+
+    beforeEach(() => {
+      (attachEventListeners as any).mockImplementation(
+        ({
+          field: { ref },
+          handleChange,
+        }: {
+          field: { ref: HTMLInputElement };
+          handleChange?: EventListenerOrEventListenerObject;
+        }) => {
+          ref.addEventListener(EVENTS.INPUT, handleChange!);
+          ref.addEventListener(EVENTS.BLUR, handleChange!);
+        },
+      );
+      renderCount = 0;
+      Component = ({
+        resolver,
+        mode,
+      }: {
+        resolver?: any;
+        mode?: 'onBlur' | 'onSubmit' | 'onChange';
+      }) => {
+        const internationalMethods = useForm<{ test: string }>({
+          resolver,
+          mode,
+        });
+        const { register, handleSubmit, errors } = internationalMethods;
+        methods = internationalMethods;
+        renderCount++;
+
+        return (
+          <div>
+            <input
+              type="text"
+              name="test"
+              ref={resolver ? register : register({ required: 'required' })}
+            />
+            <p id="error">{errors?.test?.message && errors.test.message}</p>
+            <button onClick={handleSubmit(() => {})}>button</button>
+          </div>
+        );
+      };
+    });
+
+    afterEach(() => {
+      jest.clearAllMocks();
+    });
+
+    describe('onSubmit mode', () => {
+      it('should not contain error if value is valid', async () => {
+        (skipValidation as any).mockReturnValue(true);
+
+        const { container } = render(<Component />);
+
+        const input = container.querySelector('input')!;
+        fireEvent.input(input, { target: { name: 'test' } });
+
+        expect(skipValidation).toHaveBeenCalledWith({
+          ...skipValidationParams,
+          isOnSubmit: true,
+        });
+        expect(validateField).not.toHaveBeenCalled();
+        expect(container.querySelector('#error')!.textContent).toBe('');
+        expect(renderCount).toBe(1);
+      });
+
+      it('should not contain error if name is invalid', async () => {
+        const { container } = render(<Component />);
+
+        const input = container.querySelector('input')!;
+        fireEvent.input(input, { target: { name: 'test1' } });
+
+        expect(skipValidation).not.toHaveBeenCalled();
+        expect(validateField).not.toHaveBeenCalled();
+        expect(container.querySelector('#error')!.textContent).toBe('');
+        expect(renderCount).toBe(1);
+      });
+
+      it('should not contain error if value is valid when executed handleSubmit', async () => {
+        (skipValidation as any).mockReturnValue(false);
+        const mockShouldRenderBasedOnError = jest
+          .spyOn(shouldRenderBasedOnError, 'default')
+          .mockReturnValue(false);
+
+        const { container } = render(<Component />);
+
+        const input = container.querySelector('input')!;
+
+        (validateField as any).mockReturnValue({});
+
+        fireEvent.input(input, { target: { name: 'test', value: 'test' } });
+
+        fireEvent.click(container.querySelector('button')!);
+
+        await waitFor(() => {
+          expect(skipValidation).toHaveBeenCalledWith({
+            ...skipValidationParams,
+            isOnSubmit: true,
+          });
+          expect(validateField).toHaveBeenCalledWith(
+            ...validateFieldParams(input),
+          );
+          expect(mockShouldRenderBasedOnError).toHaveBeenCalledWith({
+            ...shouldRenderBasedOnErrorParams,
+            validFields: new Set(['test']),
+            fieldsWithValidation: new Set(['test']),
+          });
+          expect(container.querySelector('#error')!.textContent).toBe(''),
+            expect(renderCount).toBe(3);
+        });
+      });
+
+      it('should contain error if value is invalid when value was changed', async () => {
+        let input: any = null;
+
+        const error = {
+          test: {
+            type: 'required',
+            ref: input,
+            types: {
+              required: 'required',
+            },
+            message: 'required',
+          },
+        };
+        (validateField as any).mockReturnValue(error);
+
+        (skipValidation as any).mockReturnValue(false);
+        const mockShouldRenderBasedOnError = jest
+          .spyOn(shouldRenderBasedOnError, 'default')
+          .mockReturnValue(true);
+
+        const { container } = render(<Component />);
+
+        input = container.querySelector('input')!;
+
+        fireEvent.input(input, { target: { name: 'test' } });
+
+        await waitFor(() => {
+          expect(validateField).toHaveBeenCalledWith(
+            ...validateFieldParams(input),
+          );
+          expect(skipValidation).toHaveBeenCalledWith({
+            ...skipValidationParams,
+            isOnSubmit: true,
+          });
+          expect(mockShouldRenderBasedOnError).toHaveBeenCalledWith({
+            ...shouldRenderBasedOnErrorParams,
+            errors: {
+              test: {
+                message: 'required',
+                ref: null,
+                type: 'required',
+                types: {
+                  required: 'required',
+                },
+              },
+            },
+            error,
+            fieldsWithValidation: new Set(['test']),
+          });
+          expect(container.querySelector('#error')!.textContent).toBe(
+            'required',
+          );
+          expect(renderCount).toBe(2);
+        });
+      });
+
+      it('should not contain error if value is valid when value was changed', async () => {
+        let input: any = null;
+
+        const error = {
+          test: {
+            type: 'required',
+            ref: input,
+            types: {
+              required: 'required',
+            },
+            message: 'required',
+          },
+        };
+
+        (validateField as any).mockReturnValue(error);
+
+        (skipValidation as any).mockReturnValue(false);
+        const mockShouldRenderBasedOnError = jest
+          .spyOn(shouldRenderBasedOnError, 'default')
+          .mockReturnValue(true);
+
+        const { container } = render(<Component />);
+
+        input = container.querySelector('input')!;
+
+        fireEvent.input(input, { target: { name: 'test' } });
+
+        (validateField as any).mockReturnValue({});
+
+        fireEvent.input(input, { target: { name: 'test' } });
+
+        await waitFor(() => {
+          expect(validateField).toHaveBeenCalledWith(
+            ...validateFieldParams(input),
+          );
+          expect(skipValidation).toHaveBeenCalledWith({
+            ...skipValidationParams,
+            isOnSubmit: true,
+          });
+          // before submit
+          expect(mockShouldRenderBasedOnError.mock.calls[0]).toEqual([
+            {
+              errors: {},
+              name: 'test',
+              error,
+              validFields: new Set(['test']),
+              fieldsWithValidation: new Set(['test']),
+            },
+          ]);
+          // after submitted
+          expect(mockShouldRenderBasedOnError.mock.calls[1]).toEqual([
+            {
+              errors: {},
+              name: 'test',
+              error: {},
+              validFields: new Set(['test']),
+              fieldsWithValidation: new Set(['test']),
+            },
+          ]);
+          expect(container.querySelector('#error')!.textContent).toBe('');
+          expect(renderCount).toBe(3);
+        });
+      });
+    });
+
+    describe('onBlur mode', () => {
+      it('should not contain error if value is valid with ReactNative', async () => {
+        (skipValidation as any).mockReturnValue(false);
+        (validateField as any).mockReturnValue({});
+        const mockShouldRenderBasedOnError = jest
+          .spyOn(shouldRenderBasedOnError, 'default')
+          .mockReturnValue(false);
+
+        const { container } = render(<Component mode="onBlur" />);
+        methods.control.readFormStateRef.current.touched = true;
+
+        const input = container.querySelector('input')!;
+        fireEvent.blur(input, { target: { name: 'test' } });
+
+        await waitFor(() => {
+          expect(skipValidation).toHaveBeenCalledWith({
+            ...skipValidationParams,
+            isBlurEvent: true,
+            isOnBlur: true,
+          });
+          expect(validateField).toHaveBeenCalledWith(
+            ...validateFieldParams(input),
+          );
+          expect(mockShouldRenderBasedOnError).toHaveBeenCalledWith({
+            ...shouldRenderBasedOnErrorParams,
+            validFields: new Set(['test']),
+            fieldsWithValidation: new Set(['test']),
+          });
+          expect(methods.control.touchedFieldsRef.current).toEqual({
+            test: true,
+          });
+          expect(container.querySelector('#error')!.textContent).toBe('');
+          expect(renderCount).toBe(2);
+        });
+      });
+    });
+
+    describe('onChange mode', () => {
+      it('should not contain error if value is valid with ReactNative', async () => {
+        (skipValidation as any).mockReturnValue(true);
+        const mockShouldRenderBasedOnError = jest.spyOn(
+          shouldRenderBasedOnError,
+          'default',
+        );
+
+        const { container } = render(<Component mode="onChange" />);
+        methods.control.readFormStateRef.current.touched = true;
+
+        const input = container.querySelector('input')!;
+        fireEvent.blur(input, { target: { name: 'test' } });
+
+        await waitFor(() => {
+          expect(skipValidation).toHaveBeenCalledWith({
+            ...skipValidationParams,
+            isOnChange: true,
+            isBlurEvent: true,
+          });
+          expect(validateField).not.toHaveBeenCalled();
+          expect(mockShouldRenderBasedOnError).not.toHaveBeenCalled();
+          expect(methods.control.touchedFieldsRef.current).toEqual({
+            test: true,
+          });
+          expect(container.querySelector('#error')!.textContent).toBe('');
+          expect(renderCount).toBe(2);
+        });
+      });
+    });
+
+    describe('with resolver', () => {
+      it('should not contain error if value is invalid with resolver', async () => {
+        const resolver = jest.fn(async (data: any) => {
+          return {
+            values: data,
+            errors: {},
+          };
+        });
+
+        const { container } = render(<Component resolver={resolver} />);
+
+        fireEvent.input(container.querySelector('input')!, {
+          target: { name: 'test' },
+        });
+
+        await waitFor(() => {
+          expect(resolver).toHaveBeenCalled();
+          expect(container.querySelector('#error')!.textContent).toBe('');
+          expect(renderCount).toBe(1);
+        });
+      });
+
+      it('should contain error if value is invalid with resolver', async () => {
+        const resolver = jest.fn(async (data: any) => {
+          return {
+            values: data,
+            errors: {
+              test: {
+                message: 'resolver error',
+              },
+            },
+          };
+        });
+
+        const { container } = render(<Component resolver={resolver} />);
+
+        fireEvent.input(container.querySelector('input')!, {
+          target: { name: 'test' },
+        });
+
+        await waitFor(() => {
+          expect(resolver).toHaveBeenCalled();
+          expect(container.querySelector('#error')!.textContent).toBe(
+            'resolver error',
+          );
+          expect(renderCount).toBe(2);
+        });
+      });
     });
   });
 });
