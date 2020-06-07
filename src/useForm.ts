@@ -518,8 +518,7 @@ export function useForm<
             isReValidateOnBlur,
             isSubmitted: isSubmittedRef.current,
           });
-        const shouldUpdateDirty = setDirty(name);
-        let shouldRender = isFieldWatched(name) || shouldUpdateDirty;
+        let shouldRender = setDirty(name) || isFieldWatched(name);
 
         if (
           isBlurEvent &&
