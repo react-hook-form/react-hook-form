@@ -1041,7 +1041,7 @@ export function useForm<
       } finally {
         isSubmittedRef.current = true;
         isSubmittingRef.current = false;
-        submitCountRef.current = submitCountRef.current++;
+        submitCountRef.current = submitCountRef.current + 1;
         reRender();
       }
     },
