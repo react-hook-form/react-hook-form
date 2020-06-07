@@ -962,22 +962,19 @@ export function useForm<
       | null,
     validationOptions?: ValidationOptions,
   ): ((ref: (TFieldElement & Ref) | null) => void) | void {
-    if (isWindowUndefined) {
-      return;
+    if (!isWindowUndefined) {
+      if (isString(refOrValidationOptions)) {
+        registerFieldsRef({ name: refOrValidationOptions }, validationOptions);
+      } else if (
+        isObject(refOrValidationOptions) &&
+        'name' in refOrValidationOptions
+      ) {
+        registerFieldsRef(refOrValidationOptions, validationOptions);
+      } else {
+        return (ref: (TFieldElement & Ref) | null) =>
+          ref && registerFieldsRef(ref, refOrValidationOptions);
+      }
     }
-
-    if (isString(refOrValidationOptions)) {
-      registerFieldsRef({ name: refOrValidationOptions }, validationOptions);
-      return;
-    }
-
-    if (isObject(refOrValidationOptions) && 'name' in refOrValidationOptions) {
-      registerFieldsRef(refOrValidationOptions, validationOptions);
-      return;
-    }
-
-    return (ref: (TFieldElement & Ref) | null) =>
-      ref && registerFieldsRef(ref, refOrValidationOptions);
   }
 
   const handleSubmit = React.useCallback(
