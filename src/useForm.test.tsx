@@ -1675,6 +1675,7 @@ describe('useForm', () => {
       mode?: 'onBlur' | 'onSubmit' | 'onChange';
     }>;
     let methods: UseFormMethods<{ test: string }>;
+
     beforeEach(() => {
       (attachEventListeners as any).mockImplementation(
         ({
