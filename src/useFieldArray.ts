@@ -219,10 +219,9 @@ export const useFieldArray = <
   };
 
   const remove = (index?: number | number[]) => {
-    const isIndexUndefined = isUndefined(index);
     shouldRender = false;
 
-    if (!isIndexUndefined) {
+    if (!isUndefined(index)) {
       mapCurrentFieldsValueWithState();
     }
 
