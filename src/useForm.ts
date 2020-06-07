@@ -287,11 +287,9 @@ export function useForm<
       value: FieldValue<TFieldValues>,
       parentFieldName?: string,
     ) => {
-      const isValueArray = isArray(value);
-
       for (const key in value) {
         const fieldName = `${parentFieldName || name}${
-          isValueArray ? `[${key}]` : `.${key}`
+          isArray(value) ? `[${key}]` : `.${key}`
         }`;
         const field = fieldsRef.current[fieldName];
 
@@ -313,9 +311,8 @@ export function useForm<
       name: InternalFieldName<TFieldValues>,
       value: FieldValue<TFieldValues> | null | undefined | boolean,
     ): boolean | void => {
-      const field = fieldsRef.current[name];
-      if (field) {
-        setFieldValue(field as Field, value);
+      if (fieldsRef.current[name]) {
+        setFieldValue(fieldsRef.current[name] as Field, value);
 
         return setDirty(name);
       } else if (!isPrimitive(value)) {
