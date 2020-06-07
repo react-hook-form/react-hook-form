@@ -423,13 +423,11 @@ export function useForm<
     watchFieldsRef.current.has((name.match(/\w+/) || [])[0]);
 
   const renderWatchedInputs = (name: string, found = true): boolean => {
-    const watchFieldsHook = watchFieldsHookRef.current;
-
-    if (!isEmptyObject(watchFieldsHook)) {
-      for (const key in watchFieldsHook) {
+    if (!isEmptyObject(watchFieldsHookRef.current)) {
+      for (const key in watchFieldsHookRef.current) {
         if (
-          watchFieldsHook[key].has(name) ||
-          !watchFieldsHook[key].size ||
+          watchFieldsHookRef.current[key].has(name) ||
+          !watchFieldsHookRef.current[key].size ||
           isNameInFieldArray(fieldArrayNamesRef.current, name)
         ) {
           if (watchFieldsHookRenderRef.current[key]) {
