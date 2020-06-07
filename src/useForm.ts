@@ -755,8 +755,7 @@ export function useForm<
       const watchFields = watchId
         ? watchFieldsHookRef.current[watchId]
         : watchFieldsRef.current;
-      const isDefaultValueUndefined = isUndefined(defaultValue);
-      const combinedDefaultValues = isDefaultValueUndefined
+      const combinedDefaultValues = isUndefined(defaultValue)
         ? defaultValuesRef.current
         : defaultValue;
       const fieldValues = getFieldsValues<TFieldValues>(
@@ -769,7 +768,7 @@ export function useForm<
           fieldValues,
           fieldNames,
           watchFields,
-          isDefaultValueUndefined
+          isUndefined(defaultValue)
             ? get(combinedDefaultValues, fieldNames)
             : (defaultValue as UnpackNestedValue<DeepPartial<TFieldValues>>),
           true,

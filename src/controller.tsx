@@ -52,7 +52,6 @@ const Controller = <
   );
   const valueRef = React.useRef(value);
   const isCheckboxInput = isBoolean(value);
-  const shouldReValidateOnBlur = isOnBlur || isReValidateOnBlur;
   const onFocusRef = React.useRef(onFocus);
   const isNotFieldArray = !isNameInFieldArray(fieldArrayNamesRef.current, name);
   const isSubmitted = isSubmittedRef.current;
@@ -143,7 +142,7 @@ const Controller = <
       reRender();
     }
 
-    if (shouldReValidateOnBlur) {
+    if (isOnBlur || isReValidateOnBlur) {
       trigger(name);
     }
   };

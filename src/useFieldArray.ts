@@ -118,12 +118,12 @@ export const useFieldArray = <
     flagOrFields?: (Partial<TFieldArrayValues> | null)[],
   ) => {
     if (readFormStateRef.current.isDirty) {
-      isDirtyRef.current = isUndefined(flagOrFields)
-        ? true
-        : getIsFieldsDifferent(
-            flagOrFields,
-            defaultValuesRef.current[name] || [],
-          );
+      isDirtyRef.current =
+        isUndefined(flagOrFields) ||
+        getIsFieldsDifferent(
+          flagOrFields,
+          defaultValuesRef.current[name] || [],
+        );
     }
 
     for (const key in fieldsRef.current) {
@@ -219,10 +219,9 @@ export const useFieldArray = <
   };
 
   const remove = (index?: number | number[]) => {
-    const isIndexUndefined = isUndefined(index);
     shouldRender = false;
 
-    if (!isIndexUndefined) {
+    if (!isUndefined(index)) {
       mapCurrentFieldsValueWithState();
     }
 
