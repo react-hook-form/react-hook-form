@@ -1166,9 +1166,9 @@ export function useForm<
 
     const fieldValues = getFieldsValues(fields);
 
-    return transformToNestObject(
-      isEmptyObject(fieldValues) ? defaultValuesRef.current : fieldValues,
-    );
+    return isEmptyObject(fieldValues)
+      ? defaultValuesRef.current
+      : transformToNestObject(fieldValues);
   }
 
   React.useEffect(() => {
