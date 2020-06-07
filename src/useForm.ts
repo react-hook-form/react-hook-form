@@ -688,16 +688,24 @@ export function useForm<
     message?: Message;
     shouldRender?: boolean;
   }) => {
-    set(errorsRef.current, name, {
-      type,
-      types,
-      message,
-      ref: fieldsRef.current[name] ? fieldsRef.current[name]!.ref : {},
-      isManual: true,
-    });
+    if (
+      !isSameError(get(errorsRef.current, name), {
+        type,
+        message,
+        types,
+      })
+    ) {
+      set(errorsRef.current, name, {
+        type,
+        types,
+        message,
+        ref: fieldsRef.current[name] ? fieldsRef.current[name]!.ref : {},
+        isManual: true,
+      });
 
-    if (shouldRender) {
-      reRender();
+      if (shouldRender) {
+        reRender();
+      }
     }
   };
 
