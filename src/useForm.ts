@@ -621,19 +621,17 @@ export function useForm<
 
       removeFieldEventListener(field, forceDelete);
 
-      const { name } = field.ref;
-
       [
         errorsRef,
         touchedFieldsRef,
         dirtyFieldsRef,
         defaultValuesAtRenderRef,
-      ].forEach((data) => unset(data.current, name));
+      ].forEach((data) => unset(data.current, field.ref.name));
       [
         fieldsWithValidationRef,
         validFieldsRef,
         watchFieldsRef,
-      ].forEach((data) => data.current.delete(name));
+      ].forEach((data) => data.current.delete(field.ref.name));
 
       if (
         readFormStateRef.current.isValid ||
