@@ -1019,10 +1019,8 @@ export function useForm<
               if (fieldError[name]) {
                 set(fieldErrors, name, fieldError[name]);
                 validFieldsRef.current.delete(name);
-              } else {
-                if (fieldsWithValidationRef.current.has(name)) {
-                  validFieldsRef.current.add(name);
-                }
+              } else if (fieldsWithValidationRef.current.has(name)) {
+                validFieldsRef.current.add(name);
               }
             }
           }
