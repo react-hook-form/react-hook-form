@@ -37,6 +37,7 @@ You can view the source code for most examples within their folder, or visit Cod
 | Register Error Messages                 | https://codesandbox.io/s/o766kp4z05                                                  |
 | Set input/select value                  | https://codesandbox.io/s/react-hook-form-set-inputselect-value-c46ly                 |
 | Set input/select Error                  | https://codesandbox.io/s/o7rxyym3q5                                                  |
+| Tabs Form (MUI)                         | https://codesandbox.io/s/tabs-760h9                                                  |
 | Trigger field validation                | https://codesandbox.io/s/react-hook-form-trigger-validation-w1g0m                    |
 | ValidationSchema                        | https://codesandbox.io/s/928po918qr                                                  |
 | Validation On Blur                      | https://codesandbox.io/s/w7p3km6nyw                                                  |
