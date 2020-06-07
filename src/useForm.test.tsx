@@ -1704,6 +1704,7 @@ describe('useForm', () => {
         const { register, handleSubmit, errors } = internationalMethods;
         methods = internationalMethods;
         renderCount++;
+
         return (
           <div>
             <input
