@@ -327,13 +327,11 @@ export function useForm<
       name: InternalFieldName<TFieldValues>,
       skipReRender?: boolean,
     ): Promise<boolean> => {
-      const field = fieldsRef.current[name] as Field;
-
-      if (field) {
+      if (fieldsRef.current[name]) {
         const error = await validateField<TFieldValues>(
           fieldsRef,
           validateAllFieldCriteria,
-          field,
+          fieldsRef.current[name] as Field,
         );
 
         shouldRenderBaseOnError(name, error, skipReRender ? null : false);
