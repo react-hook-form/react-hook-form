@@ -611,36 +611,33 @@ export function useForm<
   const removeFieldEventListenerAndRef = React.useCallback(
     (field: Field | undefined, forceDelete?: boolean) => {
       if (
-        !field ||
-        (field &&
-          isNameInFieldArray(fieldArrayNamesRef.current, field.ref.name) &&
-          !forceDelete)
+        field &&
+        (!isNameInFieldArray(fieldArrayNamesRef.current, field.ref.name) ||
+          forceDelete)
       ) {
-        return;
-      }
+        removeFieldEventListener(field, forceDelete);
 
-      removeFieldEventListener(field, forceDelete);
+        [
+          errorsRef,
+          touchedFieldsRef,
+          dirtyFieldsRef,
+          defaultValuesAtRenderRef,
+        ].forEach((data) => unset(data.current, field.ref.name));
+        [
+          fieldsWithValidationRef,
+          validFieldsRef,
+          watchFieldsRef,
+        ].forEach((data) => data.current.delete(field.ref.name));
 
-      [
-        errorsRef,
-        touchedFieldsRef,
-        dirtyFieldsRef,
-        defaultValuesAtRenderRef,
-      ].forEach((data) => unset(data.current, field.ref.name));
-      [
-        fieldsWithValidationRef,
-        validFieldsRef,
-        watchFieldsRef,
-      ].forEach((data) => data.current.delete(field.ref.name));
+        if (
+          readFormStateRef.current.isValid ||
+          readFormStateRef.current.touched
+        ) {
+          reRender();
 
-      if (
-        readFormStateRef.current.isValid ||
-        readFormStateRef.current.touched
-      ) {
-        reRender();
-
-        if (resolverRef.current) {
-          validateResolver();
+          if (resolverRef.current) {
+            validateResolver();
+          }
         }
       }
     },
