@@ -836,8 +836,9 @@ export function useForm<
       ref,
       ...validateOptions,
     };
+    const fields = fieldsRef.current;
     const isRadioOrCheckbox = isRadioOrCheckboxFunction(ref);
-    let field = fieldsRef.current[name] as Field;
+    let field = fields[name] as Field;
     let isEmptyDefaultValue = true;
     let isFieldArray;
     let defaultValue;
@@ -851,7 +852,7 @@ export function useForm<
           })
         : ref === field.ref)
     ) {
-      fieldsRef.current[name] = {
+      fields[name] = {
         ...field,
         ...validateOptions,
       };
@@ -883,7 +884,7 @@ export function useForm<
       field = fieldRefAndValidationOptions;
     }
 
-    fieldsRef.current[name] = field;
+    fields[name] = field;
 
     if (!isEmptyObject(defaultValuesRef.current)) {
       defaultValue = get(defaultValuesRef.current, name);
