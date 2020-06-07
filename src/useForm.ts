@@ -689,7 +689,7 @@ export function useForm<
     shouldRender?: boolean;
   }) => {
     if (
-      !isSameError(get(errorsRef.current, name) as FieldError, {
+      !isSameError(get(errorsRef.current, name), {
         type,
         message,
         types,
