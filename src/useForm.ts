@@ -986,8 +986,7 @@ export function useForm<
         e.persist();
       }
       let fieldErrors: FieldErrors<TFieldValues> = {};
-      const fields = fieldsRef.current;
-      let fieldValues: FieldValues = getFieldsValues(fields);
+      let fieldValues: FieldValues = getFieldsValues(fieldsRef.current);
 
       if (readFormStateRef.current.isSubmitting) {
         isSubmittingRef.current = true;
@@ -1005,7 +1004,7 @@ export function useForm<
           fieldErrors = errors;
           fieldValues = values;
         } else {
-          for (const field of Object.values(fields)) {
+          for (const field of Object.values(fieldsRef.current)) {
             if (field) {
               const {
                 ref: { name },
@@ -1020,10 +1019,8 @@ export function useForm<
               if (fieldError[name]) {
                 set(fieldErrors, name, fieldError[name]);
                 validFieldsRef.current.delete(name);
-              } else {
-                if (fieldsWithValidationRef.current.has(name)) {
-                  validFieldsRef.current.add(name);
-                }
+              } else if (fieldsWithValidationRef.current.has(name)) {
+                validFieldsRef.current.add(name);
               }
             }
           }
@@ -1036,13 +1033,13 @@ export function useForm<
         } else {
           errorsRef.current = fieldErrors;
           if (submitFocusError && isWeb) {
-            focusOnErrorField(fields, fieldErrors);
+            focusOnErrorField(fieldsRef.current, fieldErrors);
           }
         }
       } finally {
         isSubmittedRef.current = true;
         isSubmittingRef.current = false;
-        submitCountRef.current = submitCountRef.current + 1;
+        submitCountRef.current = submitCountRef.current++;
         reRender();
       }
     },
