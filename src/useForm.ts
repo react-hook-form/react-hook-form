@@ -473,11 +473,10 @@ export function useForm<
       : [names];
 
     namesInArray.forEach((name: any) => {
-      const isStringFieldName = isString(name);
       shouldRender =
         setInternalValue(
-          isStringFieldName ? name : Object.keys(name)[0],
-          isStringFieldName
+          isString(name) ? name : Object.keys(name)[0],
+          isString(name)
             ? valueOrShouldValidate
             : (Object.values(name)[0] as any),
         ) || isArrayValue
