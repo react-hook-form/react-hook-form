@@ -54,6 +54,7 @@ const Controller = <
   const isCheckboxInput = isBoolean(value);
   const onFocusRef = React.useRef(onFocus);
   const isNotFieldArray = !isNameInFieldArray(fieldArrayNamesRef.current, name);
+  const isSubmitted = isSubmittedRef.current;
 
   const shouldValidate = () =>
     !skipValidation({
@@ -63,7 +64,7 @@ const Controller = <
       isOnChange,
       isReValidateOnBlur,
       isReValidateOnSubmit,
-      isSubmitted: isSubmittedRef.current,
+      isSubmitted,
     });
 
   const commonTask = (event: any[]) => {
