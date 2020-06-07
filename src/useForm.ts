@@ -498,9 +498,7 @@ export function useForm<
     ? handleChangeRef.current
     : async ({ type, target }: Event): Promise<void | boolean> => {
         const name = target ? (target as Ref).name : '';
-        const errors = errorsRef.current;
         const field = fieldsRef.current[name];
-        const currentError = get(errors, name);
         let error: FlatFieldErrors<TFieldValues>;
 
         if (!field) {
@@ -511,7 +509,7 @@ export function useForm<
         const shouldSkipValidation =
           !isOnAll &&
           skipValidation({
-            hasError: !!currentError,
+            hasError: !!get(errorsRef.current, name),
             isOnChange,
             isBlurEvent,
             isOnSubmit,
