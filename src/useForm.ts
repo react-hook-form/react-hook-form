@@ -479,9 +479,9 @@ export function useForm<
           isString(name)
             ? valueOrShouldValidate
             : (Object.values(name)[0] as any),
-        ) || isArrayValue
-          ? true
-          : isFieldWatched(name);
+        ) ||
+        isArrayValue ||
+        isFieldWatched(name);
       renderWatchedInputs(name);
     });
 
@@ -498,9 +498,8 @@ export function useForm<
     ? handleChangeRef.current
     : async ({ type, target }: Event): Promise<void | boolean> => {
         const name = target ? (target as Ref).name : '';
-        const fields = fieldsRef.current;
         const errors = errorsRef.current;
-        const field = fields[name];
+        const field = fieldsRef.current[name];
         const currentError = get(errors, name);
         let error: FlatFieldErrors<TFieldValues>;
 
@@ -540,7 +539,7 @@ export function useForm<
 
         if (resolver) {
           const { errors } = await resolver(
-            getFieldArrayValueByName(fields),
+            getFieldArrayValueByName(fieldsRef.current),
             contextRef.current,
             validateAllFieldCriteria,
           );
