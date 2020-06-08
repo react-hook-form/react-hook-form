@@ -42,7 +42,6 @@ export type ControllerProps<
     rules?: ValidationOptions;
     onFocus?: () => void;
     defaultValue?: unknown;
-    autoUnregister: boolean;
     control?: TControl;
     render?: (data: {
       onChange: (...event: any[]) => void;
