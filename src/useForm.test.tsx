@@ -14,6 +14,7 @@ import * as shouldRenderBasedOnError from './logic/shouldRenderBasedOnError';
 export const reconfigureControl = (
   controlOverrides: Partial<Control> = {},
 ): Control => ({
+  autoUnregister: true,
   defaultValuesRef: {
     current: {},
   },

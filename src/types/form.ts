@@ -241,6 +241,7 @@ export type Control<TFieldValues extends FieldValues = FieldValues> = Pick<
   resetFieldArrayFunctionRef: React.MutableRefObject<
     Record<string, (values: any) => void>
   >;
+  autoUnregister: boolean;
   fieldArrayNamesRef: React.MutableRefObject<Set<string>>;
   isDirtyRef: React.MutableRefObject<boolean>;
   isSubmittedRef: React.MutableRefObject<boolean>;
