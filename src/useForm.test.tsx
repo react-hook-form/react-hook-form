@@ -493,6 +493,64 @@ describe('useForm', () => {
       });
     });
 
+    it('should set value of file input correctly if value is FileList', async () => {
+      const { result } = renderHook(() => useForm<{ test: FileList }>());
+
+      act(() => {
+        result.current.register({ name: 'test', type: 'file', value: '' });
+      });
+
+      (validateField as any).mockImplementation(async () => {
+        return {};
+      });
+
+      const blob = new Blob([''], { type: 'image/png' }) as any;
+      blob['lastModifiedDate'] = '';
+      blob['name'] = 'filename';
+      const file = blob as File;
+      // @ts-ignore
+      const fileList: FileList = {
+        0: file,
+        1: file,
+        length: 2,
+        item: () => file,
+      };
+      act(() => {
+        result.current.setValue('test', fileList);
+      });
+
+      await act(async () => {
+        await result.current.handleSubmit((data) => {
+          expect(data).toEqual({
+            test: fileList,
+          });
+        })({
+          preventDefault: () => {},
+          persist: () => {},
+        } as React.SyntheticEvent);
+      });
+    });
+
+    it('should set value of file input correctly if value is string', async () => {
+      const { result } = renderHook(() => useForm<{ test: string }>());
+
+      act(() => {
+        result.current.register({ name: 'test', type: 'file', value: '' });
+      });
+
+      (validateField as any).mockImplementation(async () => {
+        return {};
+      });
+
+      act(() => {
+        result.current.setValue('test', 'path');
+      });
+
+      expect(
+        result.current.control.fieldsRef.current['test']?.ref.value,
+      ).toEqual('path');
+    });
+
     it('should set value of multiple checkbox input correctly', async () => {
       const { result } = renderHook(() => useForm<{ test: string }>());
 
