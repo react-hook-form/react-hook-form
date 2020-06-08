@@ -2026,4 +2026,55 @@ describe('useForm', () => {
       });
     });
   });
+
+  describe('renderWatchedInputs', () => {
+    const fieldName = 'test';
+    const id = 'id';
+    it('should be called watchFieldsHookRenderRef if watchFieldsHookRef have field name.', () => {
+      const { result } = renderHook(() => useForm());
+      const {
+        watchFieldsHookRef,
+        watchFieldsHookRenderRef,
+        renderWatchedInputs,
+      } = result.current.control;
+
+      watchFieldsHookRef.current[id] = new Set([fieldName]);
+      watchFieldsHookRenderRef.current[id] = jest.fn();
+
+      expect(renderWatchedInputs(fieldName)).toBeFalsy();
+      expect(watchFieldsHookRenderRef.current[id]).toHaveBeenCalled();
+    });
+
+    it('should be called watchFieldsHookRenderRef if watchFieldsHookRef not have field name but it have id.', () => {
+      const { result } = renderHook(() => useForm());
+      const {
+        watchFieldsHookRef,
+        watchFieldsHookRenderRef,
+        renderWatchedInputs,
+      } = result.current.control;
+
+      watchFieldsHookRef.current[id] = new Set();
+      watchFieldsHookRenderRef.current[id] = jest.fn();
+
+      expect(renderWatchedInputs(fieldName)).toBeFalsy();
+      expect(watchFieldsHookRenderRef.current[id]).toHaveBeenCalled();
+    });
+
+    it('should be called watchFieldsHookRenderRef if fieldArrayNamesRef have field name', () => {
+      const { result } = renderHook(() => useForm());
+      const {
+        fieldArrayNamesRef,
+        watchFieldsHookRef,
+        watchFieldsHookRenderRef,
+        renderWatchedInputs,
+      } = result.current.control;
+
+      fieldArrayNamesRef.current.add(fieldName);
+      watchFieldsHookRef.current[id] = new Set([fieldName]);
+      watchFieldsHookRenderRef.current[id] = jest.fn();
+
+      expect(renderWatchedInputs(`${fieldName}[0]`)).toBeFalsy();
+      expect(watchFieldsHookRenderRef.current[id]).toHaveBeenCalled();
+    });
+  });
 });
