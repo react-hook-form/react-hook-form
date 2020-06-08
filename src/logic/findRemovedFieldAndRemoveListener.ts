@@ -16,6 +16,7 @@ export default function findRemovedFieldAndRemoveListener<
   fields: FieldRefs<TFieldValues>,
   handleChange: ({ type, target }: Event) => Promise<void | boolean>,
   field: Field,
+  autoUnregister: boolean,
   forceDelete?: boolean,
 ): void {
   const {
@@ -24,6 +25,10 @@ export default function findRemovedFieldAndRemoveListener<
     mutationWatcher,
   } = field;
   const fieldValue = fields[name] as Field;
+
+  if (autoUnregister) {
+    return;
+  }
 
   if (!type) {
     delete fields[name];

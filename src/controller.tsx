@@ -45,9 +45,12 @@ const Controller = <
     reRender,
     fieldsRef,
     fieldArrayNamesRef,
+    getValues,
   } = control || methods.control;
   const [value, setInputStateValue] = React.useState(
-    isUndefined(defaultValue)
+    !autoUnregister && !isUndefined(getValues(name))
+      ? getValues(name)
+      : isUndefined(defaultValue)
       ? get(defaultValuesRef.current, name)
       : defaultValue,
   );

@@ -602,11 +602,12 @@ export function useForm<
           fieldsRef.current,
           handleChangeRef.current,
           field,
+          autoUnregister,
           forceDelete,
         );
       }
     },
-    [],
+    [autoUnregister],
   );
 
   const removeFieldEventListenerAndRef = React.useCallback(
@@ -845,6 +846,7 @@ export function useForm<
     let defaultValue;
 
     if (
+      autoUnregister &&
       field &&
       (isRadioOrCheckbox
         ? isArray(field.options) &&
@@ -861,9 +863,9 @@ export function useForm<
     }
 
     if (type) {
-      const mutationWatcher = autoUnregister
-        ? onDomRemove(ref, () => removeFieldEventListenerAndRef(field))
-        : undefined;
+      const mutationWatcher = onDomRemove(ref, () =>
+        removeFieldEventListenerAndRef(field),
+      );
 
       field = isRadioOrCheckbox
         ? {
