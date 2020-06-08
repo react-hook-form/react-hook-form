@@ -25,6 +25,7 @@ const Controller = <
   defaultValue,
   control,
   onFocus,
+  autoUnregister,
   ...rest
 }: ControllerProps<TAs, TControl>) => {
   const methods = useFormContext();
@@ -110,9 +111,11 @@ const Controller = <
 
   React.useEffect(
     () => () => {
-      !isNameInFieldArray(fieldArrayNamesRef.current, name) && unregister(name);
+      autoUnregister &&
+        !isNameInFieldArray(fieldArrayNamesRef.current, name) &&
+        unregister(name);
     },
-    [unregister, name, fieldArrayNamesRef],
+    [unregister, name, autoUnregister, fieldArrayNamesRef],
   );
 
   React.useLayoutEffect(() => {

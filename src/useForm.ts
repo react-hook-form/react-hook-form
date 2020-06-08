@@ -77,6 +77,7 @@ export function useForm<
   context,
   defaultValues = {} as UnpackNestedValue<DeepPartial<TFieldValues>>,
   submitFocusError = true,
+  autoUnregister = true,
   criteriaMode,
 }: UseFormOptions<TFieldValues, TContext> = {}): UseFormMethods<TFieldValues> {
   const fieldsRef = React.useRef<FieldRefs<TFieldValues>>({});
@@ -860,9 +861,9 @@ export function useForm<
     }
 
     if (type) {
-      const mutationWatcher = onDomRemove(ref, () =>
-        removeFieldEventListenerAndRef(field),
-      );
+      const mutationWatcher = autoUnregister
+        ? onDomRemove(ref, () => removeFieldEventListenerAndRef(field))
+        : undefined;
 
       field = isRadioOrCheckbox
         ? {
@@ -1261,6 +1262,7 @@ export function useForm<
     isSubmittedRef,
     readFormStateRef,
     defaultValuesRef,
+    autoUnregister,
     ...commonProps,
   };
 
