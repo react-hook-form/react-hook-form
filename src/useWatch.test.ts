@@ -1,7 +1,7 @@
 import { useWatch } from './useWatch';
 import generateId from './logic/generateId';
 import { renderHook } from '@testing-library/react-hooks';
-import { reconfigureControl } from './useForm.test';
+import { reconfigureControl } from './__mocks__/reconfigureControl';
 import { act } from 'react-test-renderer';
 
 jest.mock('./logic/generateId');

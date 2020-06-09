@@ -1,7 +1,7 @@
 import { act, renderHook } from '@testing-library/react-hooks';
 import { useFieldArray } from './useFieldArray';
 import { appendId } from './logic/mapIds';
-import { reconfigureControl } from './useForm.test';
+import { reconfigureControl } from './__mocks__/reconfigureControl';
 
 jest.spyOn(console, 'warn').mockImplementation(() => {});
 jest.mock('./logic/generateId', () => ({
