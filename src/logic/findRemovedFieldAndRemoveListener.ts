@@ -6,6 +6,7 @@ import isArray from '../utils/isArray';
 import unset from '../utils/unset';
 import unique from '../utils/unique';
 import { Field, FieldRefs, FieldValues, Ref } from '../types/form';
+import getFieldValue from './getFieldValue';
 
 const isSameRef = (fieldValue: Field, ref: Ref) =>
   fieldValue && fieldValue.ref === ref;
@@ -16,6 +17,7 @@ export default function findRemovedFieldAndRemoveListener<
   fields: FieldRefs<TFieldValues>,
   handleChange: ({ type, target }: Event) => Promise<void | boolean>,
   field: Field,
+  unmountFieldsStore: Record<string, any>,
   autoUnregister: boolean,
   forceDelete?: boolean,
 ): void {
@@ -24,10 +26,10 @@ export default function findRemovedFieldAndRemoveListener<
     ref: { name, type },
     mutationWatcher,
   } = field;
-  const fieldValue = fields[name] as Field;
+  const fieldRef = fields[name] as Field;
 
-  if (autoUnregister) {
-    return;
+  if (!autoUnregister) {
+    unmountFieldsStore[name] = getFieldValue(fields, fieldRef.ref);
   }
 
   if (!type) {
@@ -35,8 +37,8 @@ export default function findRemovedFieldAndRemoveListener<
     return;
   }
 
-  if ((isRadioInput(ref) || isCheckBoxInput(ref)) && fieldValue) {
-    const { options } = fieldValue;
+  if ((isRadioInput(ref) || isCheckBoxInput(ref)) && fieldRef) {
+    const { options } = fieldRef;
 
     if (isArray(options) && options.length) {
       unique(options).forEach((option, index): void => {
@@ -58,7 +60,7 @@ export default function findRemovedFieldAndRemoveListener<
     } else {
       delete fields[name];
     }
-  } else if ((isDetached(ref) && isSameRef(fieldValue, ref)) || forceDelete) {
+  } else if ((isDetached(ref) && isSameRef(fieldRef, ref)) || forceDelete) {
     removeAllEventListeners(ref, handleChange);
 
     if (mutationWatcher) {

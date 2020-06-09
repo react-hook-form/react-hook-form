@@ -113,6 +113,7 @@ export function useForm<
   const submitCountRef = React.useRef(0);
   const isSubmittingRef = React.useRef(false);
   const handleChangeRef = React.useRef<HandleChange>();
+  const unmountFieldsStore = React.useRef<Record<string, any>>({});
   const resetFieldArrayFunctionRef = React.useRef({});
   const contextRef = React.useRef(context);
   const resolverRef = React.useRef(resolver);
@@ -602,6 +603,7 @@ export function useForm<
           fieldsRef.current,
           handleChangeRef.current,
           field,
+          unmountFieldsStore,
           autoUnregister,
           forceDelete,
         );
@@ -925,9 +927,12 @@ export function useForm<
       !defaultValuesAtRenderRef.current[name] &&
       !(isFieldArray && isEmptyDefaultValue)
     ) {
-      defaultValuesAtRenderRef.current[name] = isEmptyDefaultValue
-        ? getFieldValue(fields, field.ref)
-        : defaultValue;
+      defaultValuesAtRenderRef.current[name] =
+        !autoUnregister && !isUndefined(unmountFieldsStore.current[name])
+          ? unmountFieldsStore.current[name]
+          : isEmptyDefaultValue
+          ? getFieldValue(fields, field.ref)
+          : defaultValue;
     }
 
     if (type) {
