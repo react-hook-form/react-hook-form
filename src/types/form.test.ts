@@ -28,6 +28,8 @@ describe('types/form', () => {
     test.push({ foo: '', deep: { foo: { array: [''] } } });
 
     // @ts-expect-error
+    test.push({});
+    // @ts-expect-error
     test.push({ foo: 1, bar: [1], baz: [''] });
     // @ts-expect-error
     test.push({ foo: '', bar: [''], baz: [''] });
@@ -86,6 +88,8 @@ describe('types/form', () => {
       deep: { foo: { array: [''], somethingKey: 1 }, somethingKeyOfFoo: 1 },
     });
 
+    // @ts-expect-error
+    test.push({});
     // @ts-expect-error
     test2.push({ foo: 1, bar: [1], baz: [''], somethingKey1: 1 });
     // @ts-expect-error

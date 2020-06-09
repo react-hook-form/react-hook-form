@@ -59,17 +59,30 @@ export type NotNullArrayTypeKeyOf<T> = {
   ? TValue
   : never;
 
+export type ObjectTypeKeyOf<T> = {
+  [P in keyof T]-?: T[P] extends Record<string, any> ? P : never;
+} extends { [TThisUnused in keyof T]: infer TValue }
+  ? TValue
+  : never;
+
 export type ToNullableArrayProperties<T> = Partial<
   Pick<T, NotNullArrayTypeKeyOf<T>>
 >;
-export type PickNotArrayProperties<T> = DeepPartial<
-  Omit<T, NotNullArrayTypeKeyOf<T>>
->;
+
+export type PickNotArrayProperties<T> = Omit<T, NotNullArrayTypeKeyOf<T>>;
+
+export type DeepPartialOnlyObject<T> = Omit<
+  PickNotArrayProperties<T>,
+  ObjectTypeKeyOf<PickNotArrayProperties<T>>
+> &
+  DeepPartial<
+    Pick<PickNotArrayProperties<T>, ObjectTypeKeyOf<PickNotArrayProperties<T>>>
+  >;
 
 export type NullableArrayProperties<T> = ToNullableArrayProperties<
   KnownKeyValueOf<T>
 > &
-  PickNotArrayProperties<KnownKeyValueOf<T>> &
+  DeepPartialOnlyObject<KnownKeyValueOf<T>> &
   Omit<T, KnownKeyOf<T>>; // for { [key: string]: any }, { [key: number]: any }
 
 export type SubmitHandler<TFieldValues extends FieldValues> = (
