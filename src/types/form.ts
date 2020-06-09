@@ -53,13 +53,11 @@ export type ValidationMode = {
 
 export type Mode = keyof ValidationMode;
 
-export type SpecificTypeKeyOf<T, TSpecific> = {
-  [P in keyof T]-?: T[P] extends TSpecific ? P : never;
+export type NotNullArrayOrObjectTypeKeyOf<T> = {
+  [P in keyof T]-?: T[P] extends Record<string, any> ? P : never;
 } extends { [TThisUnused in keyof T]: infer TValue }
   ? TValue
   : never;
-
-export type NotNullArrayOrObjectTypeKeyOf<T> = SpecificTypeKeyOf<T, Record<string, any>>;
 
 export type DeepPartialArrayOrObject<T> = Omit<T, NotNullArrayOrObjectTypeKeyOf<T>> &
   DeepPartial<Pick<T, NotNullArrayOrObjectTypeKeyOf<T>>>;
