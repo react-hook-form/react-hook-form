@@ -53,17 +53,14 @@ export type ValidationMode = {
 
 export type Mode = keyof ValidationMode;
 
-export type NotNullArrayTypeKeyOf<T> = {
-  [P in keyof T]-?: T[P] extends Array<any> ? P : never;
+export type SpecificTypeKeyOf<T, TSpecific> = {
+  [P in keyof T]-?: T[P] extends TSpecific ? P : never;
 } extends { [TThisUnused in keyof T]: infer TValue }
   ? TValue
   : never;
 
-export type ObjectTypeKeyOf<T> = {
-  [P in keyof T]-?: T[P] extends Record<string, any> ? P : never;
-} extends { [TThisUnused in keyof T]: infer TValue }
-  ? TValue
-  : never;
+export type NotNullArrayTypeKeyOf<T> = SpecificTypeKeyOf<T, Array<any>>;
+export type ObjectTypeKeyOf<T> = SpecificTypeKeyOf<T, Record<string, any>>;
 
 export type ToNullableArrayProperties<T> = Partial<
   Pick<T, NotNullArrayTypeKeyOf<T>>
