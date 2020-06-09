@@ -44,12 +44,11 @@ const Controller = <
     reRender,
     fieldsRef,
     fieldArrayNamesRef,
-    getValues,
-    autoUnregister,
+    unmountFieldsStore,
   } = control || methods.control;
   const [value, setInputStateValue] = React.useState(
-    !autoUnregister && !isUndefined(getValues(name))
-      ? getValues(name)
+    unmountFieldsStore.current[name]
+      ? unmountFieldsStore.current[name]
       : isUndefined(defaultValue)
       ? get(defaultValuesRef.current, name)
       : defaultValue,
@@ -114,11 +113,9 @@ const Controller = <
 
   React.useEffect(
     () => () => {
-      autoUnregister &&
-        !isNameInFieldArray(fieldArrayNamesRef.current, name) &&
-        unregister(name);
+      !isNameInFieldArray(fieldArrayNamesRef.current, name) && unregister(name);
     },
-    [unregister, name, autoUnregister, fieldArrayNamesRef],
+    [unregister, name, fieldArrayNamesRef],
   );
 
   React.useEffect(() => {

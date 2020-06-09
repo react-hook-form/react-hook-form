@@ -1284,7 +1284,7 @@ export function useForm<
     isSubmittedRef,
     readFormStateRef,
     defaultValuesRef,
-    autoUnregister,
+    unmountFieldsStore,
     ...commonProps,
   };
 
