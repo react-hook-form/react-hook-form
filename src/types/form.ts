@@ -68,18 +68,13 @@ export type ToNullableArrayProperties<T> = Partial<
 
 export type NotArrayProperties<T> = Omit<T, NotNullArrayTypeKeyOf<T>>;
 
-export type DeepPartialOnlyObject<T> = Omit<
-  NotArrayProperties<T>,
-  ObjectTypeKeyOf<NotArrayProperties<T>>
-> &
-  DeepPartial<
-    Pick<NotArrayProperties<T>, ObjectTypeKeyOf<NotArrayProperties<T>>>
-  >;
+export type DeepPartialOnlyObject<T> = Omit<T, ObjectTypeKeyOf<T>> &
+  DeepPartial<Pick<T, ObjectTypeKeyOf<T>>>;
 
 export type NullableArrayProperties<T> = ToNullableArrayProperties<
   KnownKeyValueOf<T>
 > &
-  DeepPartialOnlyObject<KnownKeyValueOf<T>> &
+  DeepPartialOnlyObject<NotArrayProperties<KnownKeyValueOf<T>>> &
   Omit<T, KnownKeyOf<T>>; // for { [key: string]: any }, { [key: number]: any }
 
 export type SubmitHandler<TFieldValues extends FieldValues> = (
