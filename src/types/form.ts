@@ -62,19 +62,13 @@ export type SpecificTypeKeyOf<T, TSpecific> = {
 export type NotNullArrayTypeKeyOf<T> = SpecificTypeKeyOf<T, Array<any>>;
 export type ObjectTypeKeyOf<T> = SpecificTypeKeyOf<T, Record<string, any>>;
 
-export type ToNullableArrayProperties<T> = Partial<
-  Pick<T, NotNullArrayTypeKeyOf<T>>
->;
 
-export type NotArrayProperties<T> = Omit<T, NotNullArrayTypeKeyOf<T>>;
+export type DeepPartialOnlyObject<T> = Omit<T, ObjectTypeKeyOf<T> | NotNullArrayTypeKeyOf<T>> &
+  DeepPartial<Pick<T, ObjectTypeKeyOf<T> | NotNullArrayTypeKeyOf<T>>>;
 
-export type DeepPartialOnlyObject<T> = Omit<T, ObjectTypeKeyOf<T>> &
-  DeepPartial<Pick<T, ObjectTypeKeyOf<T>>>;
-
-export type NullableArrayProperties<T> = ToNullableArrayProperties<
+export type NullableArrayProperties<T> = DeepPartialOnlyObject<
   KnownKeyValueOf<T>
 > &
-  DeepPartialOnlyObject<NotArrayProperties<KnownKeyValueOf<T>>> &
   Omit<T, KnownKeyOf<T>>; // for { [key: string]: any }, { [key: number]: any }
 
 export type SubmitHandler<TFieldValues extends FieldValues> = (

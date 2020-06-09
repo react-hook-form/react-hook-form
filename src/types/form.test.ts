@@ -18,8 +18,9 @@ describe('types/form', () => {
     }>;
     const test: T[] = [];
 
-    test.push({ foo: '', bar: [1], baz: [''], hoge: [{ nested: [''] }] });
     test.push({ foo: '' });
+    test.push({ foo: '', bar: [1], baz: [''], hoge: [{}] });
+    test.push({ foo: '', bar: [1], baz: [''], hoge: [{ nested: [''] }] });
     test.push({ foo: '', hoge2: '' });
     test.push({ foo: '', deep: {} });
     test.push({ foo: '', deep: { foo: {} } });
@@ -35,8 +36,6 @@ describe('types/form', () => {
     test.push({ foo: '', bar: [''], baz: [''] });
     // @ts-expect-error
     test.push({ foo: '', bar: [1], baz: [1] });
-    // @ts-expect-error
-    test.push({ foo: '', bar: [1], baz: [''], hoge: [{}] });
     // @ts-expect-error
     test.push({ foo: '', hoge2: 1 });
     // @ts-expect-error
