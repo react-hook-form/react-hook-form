@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { render, fireEvent, act } from '@testing-library/react';
 import { Controller } from './controller';
-import { reconfigureControl } from './useForm.test';
+import { reconfigureControl } from './__mocks__/reconfigureControl';
 import { Field } from './types/form';
 import * as set from './utils/set';
 import { FormProvider } from './useFormContext';
