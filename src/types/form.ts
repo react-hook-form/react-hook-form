@@ -59,7 +59,10 @@ export type NotNullArrayOrObjectTypeKeyOf<T> = {
   ? TValue
   : never;
 
-export type DeepPartialArrayOrObject<T> = Omit<T, NotNullArrayOrObjectTypeKeyOf<T>> &
+export type DeepPartialArrayOrObject<T> = Omit<
+  T,
+  NotNullArrayOrObjectTypeKeyOf<T>
+> &
   DeepPartial<Pick<T, NotNullArrayOrObjectTypeKeyOf<T>>>;
 
 export type NullableArrayProperties<T> = DeepPartialArrayOrObject<
