@@ -61,10 +61,10 @@ export type SpecificTypeKeyOf<T, TSpecific> = {
 
 export type NotNullArrayOrObjectTypeKeyOf<T> = SpecificTypeKeyOf<T, Array<any>> | SpecificTypeKeyOf<T, Record<string, any>>;
 
-export type DeepPartialOnlyObject<T> = Omit<T, NotNullArrayOrObjectTypeKeyOf<T>> &
+export type DeepPartialArrayOrObject<T> = Omit<T, NotNullArrayOrObjectTypeKeyOf<T>> &
   DeepPartial<Pick<T, NotNullArrayOrObjectTypeKeyOf<T>>>;
 
-export type NullableArrayProperties<T> = DeepPartialOnlyObject<
+export type NullableArrayProperties<T> = DeepPartialArrayOrObject<
   KnownKeyValueOf<T>
 > &
   Omit<T, KnownKeyOf<T>>; // for { [key: string]: any }, { [key: number]: any }
