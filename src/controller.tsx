@@ -25,7 +25,6 @@ const Controller = <
   defaultValue,
   control,
   onFocus,
-  autoUnregister,
   ...rest
 }: ControllerProps<TAs, TControl>) => {
   const methods = useFormContext();
@@ -46,6 +45,7 @@ const Controller = <
     fieldsRef,
     fieldArrayNamesRef,
     getValues,
+    autoUnregister,
   } = control || methods.control;
   const [value, setInputStateValue] = React.useState(
     !autoUnregister && !isUndefined(getValues(name))

@@ -1,3 +1,4 @@
+import * as React from 'react';
 import removeAllEventListeners from './removeAllEventListeners';
 import isRadioInput from '../utils/isRadioInput';
 import isCheckBoxInput from '../utils/isCheckBoxInput';
@@ -17,7 +18,7 @@ export default function findRemovedFieldAndRemoveListener<
   fields: FieldRefs<TFieldValues>,
   handleChange: ({ type, target }: Event) => Promise<void | boolean>,
   field: Field,
-  unmountFieldsStore: Record<string, any>,
+  unmountFieldsStore: React.MutableRefObject<Record<string, any>>,
   autoUnregister: boolean,
   forceDelete?: boolean,
 ): void {
@@ -29,7 +30,7 @@ export default function findRemovedFieldAndRemoveListener<
   const fieldRef = fields[name] as Field;
 
   if (!autoUnregister) {
-    unmountFieldsStore[name] = getFieldValue(fields, fieldRef.ref);
+    unmountFieldsStore.current[name] = getFieldValue(fields, fieldRef.ref);
   }
 
   if (!type) {

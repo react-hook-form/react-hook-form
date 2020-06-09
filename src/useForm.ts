@@ -891,8 +891,13 @@ export function useForm<
 
     fields[name] = field;
 
-    if (!isEmptyObject(defaultValuesRef.current)) {
-      defaultValue = get(defaultValuesRef.current, name);
+    if (
+      !isEmptyObject(defaultValuesRef.current) ||
+      !isUndefined(unmountFieldsStore.current[name])
+    ) {
+      defaultValue = autoUnregister
+        ? get(defaultValuesRef.current, name)
+        : unmountFieldsStore.current[name];
       isEmptyDefaultValue = isUndefined(defaultValue);
       isFieldArray = isNameInFieldArray(fieldArrayNamesRef.current, name);
 
@@ -927,12 +932,9 @@ export function useForm<
       !defaultValuesAtRenderRef.current[name] &&
       !(isFieldArray && isEmptyDefaultValue)
     ) {
-      defaultValuesAtRenderRef.current[name] =
-        !autoUnregister && !isUndefined(unmountFieldsStore.current[name])
-          ? unmountFieldsStore.current[name]
-          : isEmptyDefaultValue
-          ? getFieldValue(fields, field.ref)
-          : defaultValue;
+      defaultValuesAtRenderRef.current[name] = isEmptyDefaultValue
+        ? getFieldValue(fields, field.ref)
+        : defaultValue;
     }
 
     if (type) {
