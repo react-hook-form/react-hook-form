@@ -1037,7 +1037,13 @@ export function useForm<
         if (isEmptyObject(fieldErrors)) {
           errorsRef.current = {};
           reRender();
-          await callback(transformToNestObject(fieldValues), e);
+          await callback(
+            transformToNestObject({
+              ...(autoUnregister ? {} : unmountFieldsStore.current),
+              ...fieldValues,
+            }),
+            e,
+          );
         } else {
           errorsRef.current = fieldErrors;
           if (submitFocusError && isWeb) {
@@ -1051,7 +1057,14 @@ export function useForm<
         reRender();
       }
     },
-    [isWeb, reRender, resolverRef, submitFocusError, validateAllFieldCriteria],
+    [
+      isWeb,
+      reRender,
+      resolverRef,
+      submitFocusError,
+      validateAllFieldCriteria,
+      autoUnregister,
+    ],
   );
 
   const resetRefs = ({
