@@ -121,12 +121,12 @@ const Controller = <
     [unregister, name, autoUnregister, fieldArrayNamesRef],
   );
 
-  React.useLayoutEffect(() => {
+  React.useEffect(() => {
     registerField();
   }, [registerField]);
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  React.useLayoutEffect(() => {
+  React.useEffect(() => {
     if (!fieldsRef.current[name]) {
       registerField();
       if (isNotFieldArray) {
@@ -156,14 +156,10 @@ const Controller = <
   const onChange = (...event: any[]) =>
     setValue(name, commonTask(event), shouldValidate());
 
-  const handlerProps = {
-    onChange: React.useCallback(onChange, []),
-    onBlur: React.useCallback(onBlur, []),
-  };
-
   const props = {
     ...rest,
-    ...handlerProps,
+    onChange,
+    onBlur,
     ...{ [isCheckboxInput ? 'checked' : VALUE]: value },
   };
 
@@ -173,7 +169,8 @@ const Controller = <
       : React.createElement(as as string, props)
     : render
     ? render({
-        ...handlerProps,
+        onChange,
+        onBlur,
         value,
       })
     : null;
