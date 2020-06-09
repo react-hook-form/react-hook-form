@@ -2163,6 +2163,7 @@ describe('useForm', () => {
   describe('renderWatchedInputs', () => {
     const fieldName = 'test';
     const id = 'id';
+
     it('should be called watchFieldsHookRenderRef if watchFieldsHookRef have field name.', () => {
       const { result } = renderHook(() => useForm());
       const {
