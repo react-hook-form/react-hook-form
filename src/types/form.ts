@@ -6,6 +6,8 @@ import {
   DeepPartial,
   DeepMap,
   IsFlatObject,
+  KnownKeyValueOf,
+  KnownKeyOf,
 } from './utils';
 
 export type FieldValues = Record<string, any>;
@@ -51,8 +53,25 @@ export type ValidationMode = {
 
 export type Mode = keyof ValidationMode;
 
+export type NotNullArrayTypeKeyOf<T> = {
+  [P in keyof T]-?: T[P] extends Array<any> ? P : never;
+} extends { [TThisUnused in keyof T]: infer TValue }
+  ? TValue
+  : never;
+
+export type ToNullableArrayProperties<T> = Partial<
+  Pick<T, NotNullArrayTypeKeyOf<T>>
+>;
+export type PickNotArrayProperties<T> = Omit<T, NotNullArrayTypeKeyOf<T>>;
+
+export type NullableArrayProperties<T> = ToNullableArrayProperties<
+  KnownKeyValueOf<T>
+> &
+  PickNotArrayProperties<KnownKeyValueOf<T>> &
+  Omit<T, KnownKeyOf<T>>; // for { [key: string]: any }, { [key: number]: any }
+
 export type SubmitHandler<TFieldValues extends FieldValues> = (
-  data: UnpackNestedValue<TFieldValues>,
+  data: NullableArrayProperties<UnpackNestedValue<TFieldValues>>,
   event?: React.BaseSyntheticEvent,
 ) => void | Promise<void>;
 

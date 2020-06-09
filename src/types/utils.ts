@@ -54,3 +54,11 @@ export type IsFlatObject<T extends object> = Extract<
 > extends never
   ? true
   : false;
+
+export type KnownKeyOf<T> = {
+  [P in keyof T]: string extends P ? never : number extends P ? never : P;
+} extends { [TThisUnused in keyof T]: infer TValue }
+  ? TValue
+  : never;
+
+export type KnownKeyValueOf<T> = Pick<T, KnownKeyOf<T>>;
