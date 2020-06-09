@@ -10,6 +10,7 @@ import { VALIDATION_MODE, EVENTS } from './constants';
 import { Control, NestedValue, UseFormMethods } from './types/form';
 import skipValidation from './logic/skipValidation';
 import * as shouldRenderBasedOnError from './logic/shouldRenderBasedOnError';
+import { transformToNestObject } from './logic';
 
 export const reconfigureControl = (
   controlOverrides: Partial<Control> = {},
@@ -101,10 +102,7 @@ jest.mock('./logic/findRemovedFieldAndRemoveListener');
 jest.mock('./logic/validateField');
 jest.mock('./logic/skipValidation');
 jest.mock('./logic/attachEventListeners');
-jest.mock('./logic/transformToNestObject', () => ({
-  default: (data: any) => data,
-  esmodule: true,
-}));
+jest.mock('./logic/transformToNestObject');
 
 let nodeEnv: any;
 
@@ -113,6 +111,7 @@ describe('useForm', () => {
     nodeEnv = process.env.NODE_ENV;
     process.env.NODE_ENV = 'production';
     jest.resetAllMocks();
+    (transformToNestObject as any).mockImplementation((data: any) => data);
   });
 
   afterEach(() => {
@@ -702,14 +701,6 @@ describe('useForm', () => {
       });
     });
 
-    it('should return undefined when filed not found', () => {
-      const { result } = renderHook(() => useForm<{ test: string }>());
-
-      act(() => {
-        expect(result.current.setValue('test', '1')).toBeUndefined();
-      });
-    });
-
     it('should work with array fields', () => {
       const { result } = renderHook(() => useForm());
 
@@ -843,6 +834,175 @@ describe('useForm', () => {
             ref: { name: 'object.test', value: '3' },
           },
         );
+      });
+    });
+
+    describe('setDirty', () => {
+      it('should set name to dirtyFieldRef if field value is different with default value with ReactNative', () => {
+        const { result } = renderHook(() =>
+          useForm<{ test: string }>({
+            defaultValues: { test: 'default' },
+          }),
+        );
+        result.current.control.readFormStateRef.current.dirtyFields = true;
+
+        act(() => {
+          result.current.register('test');
+        });
+
+        act(() => {
+          result.current.setValue('test', '1');
+        });
+
+        expect(transformToNestObject).not.toHaveBeenCalled();
+        expect(result.current.formState.dirtyFields.test).toBeTruthy();
+      });
+
+      it('should unset name from dirtyFieldRef if field value is not different with default value with ReactNative', () => {
+        const { result } = renderHook(() =>
+          useForm<{ test: string }>({
+            defaultValues: { test: 'default' },
+          }),
+        );
+        result.current.control.readFormStateRef.current.dirtyFields = true;
+
+        act(() => {
+          result.current.register('test');
+        });
+
+        act(() => {
+          result.current.setValue('test', '1');
+        });
+
+        act(() => {
+          result.current.setValue('test', 'default');
+        });
+
+        expect(transformToNestObject).not.toHaveBeenCalled();
+        expect(result.current.formState.dirtyFields.test).toBeUndefined();
+      });
+
+      it('should set name to dirtyFieldRef if array field values are different with default value with ReactNative', async () => {
+        (transformToNestObject as any).mockReturnValue({
+          test: [
+            { name: 'default_update' },
+            { name: 'default1' },
+            { name: 'default2' },
+          ],
+        });
+
+        const { result } = renderHook(() =>
+          useForm({
+            defaultValues: {
+              test: [
+                { name: 'default' },
+                { name: 'default1' },
+                { name: 'default2' },
+              ],
+            },
+          }),
+        );
+        result.current.control.readFormStateRef.current.dirtyFields = true;
+        result.current.control.fieldArrayNamesRef.current.add('test');
+
+        act(() => {
+          result.current.register('test[0].name');
+          result.current.register('test[1].name');
+          result.current.register('test[2].name');
+        });
+
+        act(() => {
+          result.current.setValue('test', [
+            { name: 'default_update' },
+            { name: 'default1' },
+            { name: 'default2' },
+          ]);
+        });
+
+        await waitFor(() => {
+          expect((transformToNestObject as any).mock.calls[2]).toEqual([
+            {
+              'test[0].name': 'default_update',
+              'test[1].name': 'default1',
+              'test[2].name': 'default2',
+            },
+          ]);
+          expect(result.current.formState.dirtyFields.test!).toEqual([
+            { name: true },
+            { name: true },
+            { name: true },
+          ]);
+        });
+      });
+
+      it('should unset name from dirtyFieldRef if array field values are not different with default value with ReactNative', async () => {
+        const { result } = renderHook(() =>
+          useForm({
+            defaultValues: {
+              test: [
+                { name: 'default' },
+                { name: 'default1' },
+                { name: 'default2' },
+              ],
+            },
+          }),
+        );
+        result.current.control.readFormStateRef.current.dirtyFields = true;
+        result.current.control.fieldArrayNamesRef.current.add('test');
+
+        act(() => {
+          result.current.register('test[0].name');
+          result.current.register('test[1].name');
+          result.current.register('test[2].name');
+        });
+
+        (transformToNestObject as any).mockReturnValue({
+          test: [
+            { name: 'default_update' },
+            { name: 'default1' },
+            { name: 'default2' },
+          ],
+        });
+        act(() => {
+          result.current.setValue('test', [
+            { name: 'default_update' },
+            { name: 'default1' },
+            { name: 'default2' },
+          ]);
+        });
+
+        (transformToNestObject as any).mockReturnValue({
+          test: [
+            { name: 'default' },
+            { name: 'default1' },
+            { name: 'default2' },
+          ],
+        });
+        act(() => {
+          result.current.setValue('test', [
+            { name: 'default' },
+            { name: 'default1' },
+            { name: 'default2' },
+          ]);
+        });
+
+        await waitFor(() => {
+          expect((transformToNestObject as any).mock.calls[2]).toEqual([
+            {
+              'test[0].name': 'default_update',
+              'test[1].name': 'default1',
+              'test[2].name': 'default2',
+            },
+          ]);
+          expect((transformToNestObject as any).mock.calls[5]).toEqual([
+            {
+              'test[0].name': 'default',
+              'test[1].name': 'default1',
+              'test[2].name': 'default2',
+            },
+          ]);
+          expect(result.current.formState.dirtyFields?.test).toBeUndefined();
+        });
       });
     });
   });
