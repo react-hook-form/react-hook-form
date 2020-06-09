@@ -122,7 +122,7 @@ export const useFieldArray = <
         isUndefined(flagOrFields) ||
         getIsFieldsDifferent(
           flagOrFields,
-          defaultValuesRef.current[name] || [],
+          get(defaultValuesRef.current, name, []),
         );
     }
 
