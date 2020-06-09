@@ -7,104 +7,17 @@ import findRemovedFieldAndRemoveListener from './logic/findRemovedFieldAndRemove
 import validateField from './logic/validateField';
 import onDomRemove from './utils/onDomRemove';
 import { VALIDATION_MODE, EVENTS } from './constants';
-import { Control, NestedValue, UseFormMethods } from './types/form';
+import { NestedValue, UseFormMethods } from './types/form';
 import skipValidation from './logic/skipValidation';
 import * as shouldRenderBasedOnError from './logic/shouldRenderBasedOnError';
-
-export const reconfigureControl = (
-  controlOverrides: Partial<Control> = {},
-): Control => ({
-  defaultValuesRef: {
-    current: {},
-  },
-  isWatchAllRef: {
-    current: false,
-  },
-  validFieldsRef: {
-    current: new Set(),
-  },
-  fieldsWithValidationRef: {
-    current: new Set(),
-  },
-  fieldArrayDefaultValues: {
-    current: {},
-  },
-  watchFieldsRef: {
-    current: new Set(),
-  },
-  dirtyFieldsRef: {
-    current: {},
-  },
-  watchFieldsHookRef: {
-    current: {},
-  },
-  watchFieldsHookRenderRef: {
-    current: {},
-  },
-  watchInternal: jest.fn(),
-  validateSchemaIsValid: jest.fn(),
-  getValues: jest.fn(),
-  reRender: jest.fn(),
-  setValue: jest.fn(),
-  register: jest.fn(),
-  unregister: jest.fn(),
-  trigger: jest.fn(),
-  removeFieldEventListener: jest.fn(),
-  errorsRef: { current: {} },
-  touchedFieldsRef: { current: {} },
-  mode: { isOnSubmit: false, isOnBlur: false, isOnChange: false },
-  reValidateMode: {
-    isReValidateOnBlur: false,
-    isReValidateOnSubmit: false,
-  },
-  formState: {
-    isDirty: false,
-    isSubmitted: false,
-    dirtyFields: {},
-    submitCount: 0,
-    touched: {},
-    isSubmitting: false,
-    isValid: false,
-  },
-  fieldsRef: {
-    current: {},
-  },
-  resetFieldArrayFunctionRef: {
-    current: {},
-  },
-  fieldArrayNamesRef: {
-    current: new Set<string>(),
-  },
-  isDirtyRef: {
-    current: false,
-  },
-  isSubmittedRef: {
-    current: false,
-  },
-  readFormStateRef: {
-    current: {
-      isDirty: true,
-      isSubmitted: false,
-      submitCount: false,
-      touched: false,
-      isSubmitting: false,
-      isValid: false,
-      dirtyFields: false,
-    },
-  },
-  renderWatchedInputs: () => {},
-  ...controlOverrides,
-});
+import { transformToNestObject } from './logic';
 
 jest.mock('./utils/onDomRemove');
 jest.mock('./logic/findRemovedFieldAndRemoveListener');
 jest.mock('./logic/validateField');
 jest.mock('./logic/skipValidation');
 jest.mock('./logic/attachEventListeners');
-jest.mock('./logic/transformToNestObject', () => ({
-  default: (data: any) => data,
-  esmodule: true,
-}));
+jest.mock('./logic/transformToNestObject');
 
 let nodeEnv: any;
 
@@ -113,6 +26,7 @@ describe('useForm', () => {
     nodeEnv = process.env.NODE_ENV;
     process.env.NODE_ENV = 'production';
     jest.resetAllMocks();
+    (transformToNestObject as any).mockImplementation((data: any) => data);
   });
 
   afterEach(() => {
@@ -493,6 +407,64 @@ describe('useForm', () => {
       });
     });
 
+    it('should set value of file input correctly if value is FileList', async () => {
+      const { result } = renderHook(() => useForm<{ test: FileList }>());
+
+      act(() => {
+        result.current.register({ name: 'test', type: 'file', value: '' });
+      });
+
+      (validateField as any).mockImplementation(async () => {
+        return {};
+      });
+
+      const blob = new Blob([''], { type: 'image/png' }) as any;
+      blob['lastModifiedDate'] = '';
+      blob['name'] = 'filename';
+      const file = blob as File;
+      // @ts-ignore
+      const fileList: FileList = {
+        0: file,
+        1: file,
+        length: 2,
+        item: () => file,
+      };
+      act(() => {
+        result.current.setValue('test', fileList);
+      });
+
+      await act(async () => {
+        await result.current.handleSubmit((data) => {
+          expect(data).toEqual({
+            test: fileList,
+          });
+        })({
+          preventDefault: () => {},
+          persist: () => {},
+        } as React.SyntheticEvent);
+      });
+    });
+
+    it('should set value of file input correctly if value is string', async () => {
+      const { result } = renderHook(() => useForm<{ test: string }>());
+
+      act(() => {
+        result.current.register({ name: 'test', type: 'file', value: '' });
+      });
+
+      (validateField as any).mockImplementation(async () => {
+        return {};
+      });
+
+      act(() => {
+        result.current.setValue('test', 'path');
+      });
+
+      expect(
+        result.current.control.fieldsRef.current['test']?.ref.value,
+      ).toEqual('path');
+    });
+
     it('should set value of multiple checkbox input correctly', async () => {
       const { result } = renderHook(() => useForm<{ test: string }>());
 
@@ -644,14 +616,6 @@ describe('useForm', () => {
       });
     });
 
-    it('should return undefined when filed not found', () => {
-      const { result } = renderHook(() => useForm<{ test: string }>());
-
-      act(() => {
-        expect(result.current.setValue('test', '1')).toBeUndefined();
-      });
-    });
-
     it('should work with array fields', () => {
       const { result } = renderHook(() => useForm());
 
@@ -785,6 +749,175 @@ describe('useForm', () => {
             ref: { name: 'object.test', value: '3' },
           },
         );
+      });
+    });
+
+    describe('setDirty', () => {
+      it('should set name to dirtyFieldRef if field value is different with default value with ReactNative', () => {
+        const { result } = renderHook(() =>
+          useForm<{ test: string }>({
+            defaultValues: { test: 'default' },
+          }),
+        );
+        result.current.control.readFormStateRef.current.dirtyFields = true;
+
+        act(() => {
+          result.current.register('test');
+        });
+
+        act(() => {
+          result.current.setValue('test', '1');
+        });
+
+        expect(transformToNestObject).not.toHaveBeenCalled();
+        expect(result.current.formState.dirtyFields.test).toBeTruthy();
+      });
+
+      it('should unset name from dirtyFieldRef if field value is not different with default value with ReactNative', () => {
+        const { result } = renderHook(() =>
+          useForm<{ test: string }>({
+            defaultValues: { test: 'default' },
+          }),
+        );
+        result.current.control.readFormStateRef.current.dirtyFields = true;
+
+        act(() => {
+          result.current.register('test');
+        });
+
+        act(() => {
+          result.current.setValue('test', '1');
+        });
+
+        act(() => {
+          result.current.setValue('test', 'default');
+        });
+
+        expect(transformToNestObject).not.toHaveBeenCalled();
+        expect(result.current.formState.dirtyFields.test).toBeUndefined();
+      });
+
+      it('should set name to dirtyFieldRef if array field values are different with default value with ReactNative', async () => {
+        (transformToNestObject as any).mockReturnValue({
+          test: [
+            { name: 'default_update' },
+            { name: 'default1' },
+            { name: 'default2' },
+          ],
+        });
+
+        const { result } = renderHook(() =>
+          useForm({
+            defaultValues: {
+              test: [
+                { name: 'default' },
+                { name: 'default1' },
+                { name: 'default2' },
+              ],
+            },
+          }),
+        );
+        result.current.control.readFormStateRef.current.dirtyFields = true;
+        result.current.control.fieldArrayNamesRef.current.add('test');
+
+        act(() => {
+          result.current.register('test[0].name');
+          result.current.register('test[1].name');
+          result.current.register('test[2].name');
+        });
+
+        act(() => {
+          result.current.setValue('test', [
+            { name: 'default_update' },
+            { name: 'default1' },
+            { name: 'default2' },
+          ]);
+        });
+
+        await waitFor(() => {
+          expect((transformToNestObject as any).mock.calls[2]).toEqual([
+            {
+              'test[0].name': 'default_update',
+              'test[1].name': 'default1',
+              'test[2].name': 'default2',
+            },
+          ]);
+          expect(result.current.formState.dirtyFields.test!).toEqual([
+            { name: true },
+            { name: true },
+            { name: true },
+          ]);
+        });
+      });
+
+      it('should unset name from dirtyFieldRef if array field values are not different with default value with ReactNative', async () => {
+        const { result } = renderHook(() =>
+          useForm({
+            defaultValues: {
+              test: [
+                { name: 'default' },
+                { name: 'default1' },
+                { name: 'default2' },
+              ],
+            },
+          }),
+        );
+        result.current.control.readFormStateRef.current.dirtyFields = true;
+        result.current.control.fieldArrayNamesRef.current.add('test');
+
+        act(() => {
+          result.current.register('test[0].name');
+          result.current.register('test[1].name');
+          result.current.register('test[2].name');
+        });
+
+        (transformToNestObject as any).mockReturnValue({
+          test: [
+            { name: 'default_update' },
+            { name: 'default1' },
+            { name: 'default2' },
+          ],
+        });
+        act(() => {
+          result.current.setValue('test', [
+            { name: 'default_update' },
+            { name: 'default1' },
+            { name: 'default2' },
+          ]);
+        });
+
+        (transformToNestObject as any).mockReturnValue({
+          test: [
+            { name: 'default' },
+            { name: 'default1' },
+            { name: 'default2' },
+          ],
+        });
+        act(() => {
+          result.current.setValue('test', [
+            { name: 'default' },
+            { name: 'default1' },
+            { name: 'default2' },
+          ]);
+        });
+
+        await waitFor(() => {
+          expect((transformToNestObject as any).mock.calls[2]).toEqual([
+            {
+              'test[0].name': 'default_update',
+              'test[1].name': 'default1',
+              'test[2].name': 'default2',
+            },
+          ]);
+          expect((transformToNestObject as any).mock.calls[5]).toEqual([
+            {
+              'test[0].name': 'default',
+              'test[1].name': 'default1',
+              'test[2].name': 'default2',
+            },
+          ]);
+          expect(result.current.formState.dirtyFields?.test).toBeUndefined();
+        });
       });
     });
   });
@@ -2024,6 +2157,58 @@ describe('useForm', () => {
           expect(renderCount).toBe(2);
         });
       });
+    });
+  });
+
+  describe('renderWatchedInputs', () => {
+    const fieldName = 'test';
+    const id = 'id';
+
+    it('should be called watchFieldsHookRenderRef if watchFieldsHookRef have field name.', () => {
+      const { result } = renderHook(() => useForm());
+      const {
+        watchFieldsHookRef,
+        watchFieldsHookRenderRef,
+        renderWatchedInputs,
+      } = result.current.control;
+
+      watchFieldsHookRef.current[id] = new Set([fieldName]);
+      watchFieldsHookRenderRef.current[id] = jest.fn();
+
+      expect(renderWatchedInputs(fieldName)).toBeFalsy();
+      expect(watchFieldsHookRenderRef.current[id]).toHaveBeenCalled();
+    });
+
+    it('should be called watchFieldsHookRenderRef if watchFieldsHookRef not have field name but it have id.', () => {
+      const { result } = renderHook(() => useForm());
+      const {
+        watchFieldsHookRef,
+        watchFieldsHookRenderRef,
+        renderWatchedInputs,
+      } = result.current.control;
+
+      watchFieldsHookRef.current[id] = new Set();
+      watchFieldsHookRenderRef.current[id] = jest.fn();
+
+      expect(renderWatchedInputs(fieldName)).toBeFalsy();
+      expect(watchFieldsHookRenderRef.current[id]).toHaveBeenCalled();
+    });
+
+    it('should be called watchFieldsHookRenderRef if fieldArrayNamesRef have field name', () => {
+      const { result } = renderHook(() => useForm());
+      const {
+        fieldArrayNamesRef,
+        watchFieldsHookRef,
+        watchFieldsHookRenderRef,
+        renderWatchedInputs,
+      } = result.current.control;
+
+      fieldArrayNamesRef.current.add(fieldName);
+      watchFieldsHookRef.current[id] = new Set([fieldName]);
+      watchFieldsHookRenderRef.current[id] = jest.fn();
+
+      expect(renderWatchedInputs(`${fieldName}[0]`)).toBeFalsy();
+      expect(watchFieldsHookRenderRef.current[id]).toHaveBeenCalled();
     });
   });
 });
