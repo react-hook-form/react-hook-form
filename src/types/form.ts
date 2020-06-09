@@ -69,14 +69,14 @@ export type ToNullableArrayProperties<T> = Partial<
   Pick<T, NotNullArrayTypeKeyOf<T>>
 >;
 
-export type PickNotArrayProperties<T> = Omit<T, NotNullArrayTypeKeyOf<T>>;
+export type NotArrayProperties<T> = Omit<T, NotNullArrayTypeKeyOf<T>>;
 
 export type DeepPartialOnlyObject<T> = Omit<
-  PickNotArrayProperties<T>,
-  ObjectTypeKeyOf<PickNotArrayProperties<T>>
+  NotArrayProperties<T>,
+  ObjectTypeKeyOf<NotArrayProperties<T>>
 > &
   DeepPartial<
-    Pick<PickNotArrayProperties<T>, ObjectTypeKeyOf<PickNotArrayProperties<T>>>
+    Pick<NotArrayProperties<T>, ObjectTypeKeyOf<NotArrayProperties<T>>>
   >;
 
 export type NullableArrayProperties<T> = ToNullableArrayProperties<
