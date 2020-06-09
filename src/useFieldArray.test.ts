@@ -1124,4 +1124,43 @@ describe('useFieldArray', () => {
 
     expect(reRender).toBeCalled();
   });
+
+  it('should set dirty to true when remove nested field', () => {
+    const isDirtyRef = {
+      current: false,
+    };
+    const { result } = renderHook(() =>
+      useFieldArray({
+        control: reconfigureControl({
+          isDirtyRef,
+          defaultValuesRef: {
+            current: {
+              test: {
+                data: [{ name: 'Item 1' }],
+              },
+            },
+          },
+          fieldsRef: {
+            current: {
+              'test.data[0]': {
+                ref: { name: 'test.data[0]', value: { test: '1' } },
+              },
+            },
+          },
+          getValues: () => ({
+            test: {
+              data: [],
+            },
+          }),
+        }),
+        name: 'test.data',
+      }),
+    );
+
+    act(() => {
+      result.current.remove(0);
+    });
+
+    expect(isDirtyRef.current).toBeTruthy();
+  });
 });
