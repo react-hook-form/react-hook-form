@@ -1,13 +1,18 @@
 import * as React from 'react';
 import { renderHook, act } from '@testing-library/react-hooks';
-import { render, fireEvent, waitFor } from '@testing-library/react';
+import {
+  render,
+  fireEvent,
+  waitFor,
+  act as actComponent,
+} from '@testing-library/react';
 import { useForm } from './';
 import attachEventListeners from './logic/attachEventListeners';
 import findRemovedFieldAndRemoveListener from './logic/findRemovedFieldAndRemoveListener';
 import validateField from './logic/validateField';
 import onDomRemove from './utils/onDomRemove';
 import { VALIDATION_MODE, EVENTS } from './constants';
-import { NestedValue, UseFormMethods } from './types/form';
+import { NestedValue, UseFormMethods, Ref } from './types/form';
 import skipValidation from './logic/skipValidation';
 import * as shouldRenderBasedOnError from './logic/shouldRenderBasedOnError';
 import { transformToNestObject } from './logic';
@@ -50,6 +55,17 @@ describe('useForm', () => {
           result.current.register({ name: 'test', type: 'input' }, {}),
         ).toBeUndefined();
       });
+    });
+
+    it('should call console.worn when ref name is undefined', () => {
+      const mockConsoleWarn = spyOn(console, 'warn');
+      const Component = () => {
+        const { register } = useForm();
+        return <input ref={register} />;
+      };
+      render(<Component />);
+
+      expect(mockConsoleWarn).toHaveBeenCalled();
     });
 
     it('should register field and call attachEventListeners method', () => {
@@ -118,6 +134,27 @@ describe('useForm', () => {
         handleChange: expect.any(Function),
       });
       expect(onDomRemove).toBeCalled();
+    });
+
+    it('should call removeFieldEventListenerAndRef when onDomRemove method is executed', async () => {
+      let mockOnDetachCallback: VoidFunction;
+      (onDomRemove as any).mockImplementation(
+        (_: Ref, onDetachCallback: VoidFunction) => {
+          mockOnDetachCallback = onDetachCallback;
+        },
+      );
+
+      const { result } = renderHook(() =>
+        useForm({ defaultValues: { test: 'test' } }),
+      );
+
+      act(() => {
+        result.current.register({ type: 'text', name: 'test' });
+      });
+
+      act(() => mockOnDetachCallback());
+
+      expect(findRemovedFieldAndRemoveListener).toHaveBeenCalled();
     });
 
     it('should support register passed to ref', async () => {
@@ -375,6 +412,64 @@ describe('useForm', () => {
         result.current.reset();
       });
       expect(result.current.formState.isSubmitted).toBeFalsy();
+    });
+
+    it('should reset the form if ref is HTMLElement and parent element is form', async () => {
+      const mockReset = jest.spyOn(window.HTMLFormElement.prototype, 'reset');
+      let methods: UseFormMethods;
+      const Component = () => {
+        methods = useForm();
+        return (
+          <form>
+            <input name="test" ref={methods.register} />
+          </form>
+        );
+      };
+      render(<Component />);
+
+      actComponent(() => methods.reset());
+
+      await waitFor(() => expect(mockReset).toHaveBeenCalled());
+    });
+
+    it('should reset the form if ref is HTMLElement and parent element is not form', async () => {
+      const mockReset = jest.spyOn(window.HTMLFormElement.prototype, 'reset');
+      let methods: UseFormMethods;
+      const Component = () => {
+        methods = useForm();
+        return <input name="test" ref={methods.register} />;
+      };
+      render(<Component />);
+
+      actComponent(() => methods.reset());
+
+      await waitFor(() => expect(mockReset).not.toHaveBeenCalled());
+    });
+
+    it('should set default value if values is specified to first argument', async () => {
+      const { result } = renderHook(() => useForm());
+
+      act(() => result.current.register('test'));
+
+      act(() => result.current.reset({ test: 'test' }));
+
+      await waitFor(() =>
+        expect(result.current.control.defaultValuesRef.current).toEqual({
+          test: 'test',
+        }),
+      );
+    });
+
+    it('should execute resetFieldArrayFunctionRef if resetFieldArrayFunctionRef is exist', async () => {
+      const { result } = renderHook(() => useForm());
+      const reset = jest.fn();
+      result.current.control.resetFieldArrayFunctionRef.current['test'] = reset;
+
+      act(() => result.current.register('test'));
+
+      act(() => result.current.reset({ test: 'test' }));
+
+      await waitFor(() => expect(reset).toHaveBeenCalled());
     });
   });
 
@@ -750,6 +845,39 @@ describe('useForm', () => {
           },
         );
       });
+    });
+
+    it('should be called trigger method if shouldValidate variable is true', async () => {
+      (validateField as any).mockImplementation(async () => ({}));
+      const { result } = renderHook(() => useForm());
+
+      act(() =>
+        result.current.register({ name: 'test', required: 'required' }),
+      );
+
+      act(() => result.current.setValue('test', 'test', true));
+
+      await waitFor(() => expect(validateField).toHaveBeenCalled());
+    });
+
+    it('should be called trigger method if first argument is array', async () => {
+      (validateField as any).mockImplementation(async () => ({}));
+      const { result } = renderHook(() => useForm());
+
+      act(() => {
+        result.current.register({ name: 'test', required: 'required' });
+        result.current.register({ name: 'test1', required: 'required' });
+        result.current.register({ name: 'test2', required: 'required' });
+      });
+
+      await act(async () =>
+        result.current.setValue(
+          [{ test: 'value' }, { test1: 'value1' }, { test2: 'value2' }],
+          true,
+        ),
+      );
+
+      await waitFor(() => expect(validateField).toBeCalledTimes(3));
     });
 
     describe('setDirty', () => {
@@ -1263,6 +1391,42 @@ describe('useForm', () => {
       expect(callback).toBeCalled();
     });
 
+    it('should invoke reRender method when readFormStateRef.current.isSubmitting is true', async () => {
+      let renderCount = 0;
+      const Component = () => {
+        const { register, handleSubmit, formState } = useForm();
+        renderCount++;
+        return (
+          <div>
+            <input name="test" ref={register} />
+            <button onClick={handleSubmit(() => {})}></button>
+            <span>{formState.isSubmitting ? 'true' : 'false'}</span>
+          </div>
+        );
+      };
+
+      const { container } = render(<Component />);
+      (validateField as any).mockImplementation(async () => ({}));
+
+      fireEvent.click(container.querySelector('button')!);
+
+      const span = container.querySelector('span')!;
+      await waitFor(
+        () => {
+          if (renderCount === 2) {
+            expect(span.textContent).toBe('true');
+          } else {
+            expect(span.textContent).toBe('false');
+          }
+        },
+        { container: span },
+      );
+
+      await waitFor(() => {
+        expect(renderCount).toBe(4);
+      });
+    });
+
     it('should not invoke callback when there are errors', async () => {
       const { result } = renderHook(() => useForm<{ test: string }>());
 
@@ -1378,6 +1542,27 @@ describe('useForm', () => {
       });
       expect(result.current.getValues('test')).toEqual('123');
     });
+
+    it('should get all field values', () => {
+      const values = {
+        test: 'test',
+        test1: 'test1',
+        test2: 'test2',
+      };
+      const { result } = renderHook(() =>
+        useForm<{ test: string; test1: string; test2: string }>({
+          defaultValues: values,
+        }),
+      );
+      act(() => {
+        result.current.register({ type: 'input', name: 'test' });
+        result.current.register({ type: 'input', name: 'test1' });
+        result.current.register({ type: 'input', name: 'test2' });
+      });
+      expect(result.current.getValues(['test', 'test1', 'test2'])).toEqual(
+        values,
+      );
+    });
   });
 
   describe('setError', () => {
@@ -1456,7 +1641,9 @@ describe('useForm', () => {
       });
       expect(result.current.formState.isValid).toBeFalsy();
     });
+  });
 
+  describe('clearError', () => {
     it('should remove error', () => {
       const { result } = renderHook(() => useForm<{ input: string }>());
       act(() => {
@@ -1477,7 +1664,44 @@ describe('useForm', () => {
       act(() => {
         result.current.clearError('input.nested');
       });
-      expect(result.current.errors.input?.nested).not.toBeDefined();
+      expect(result.current.errors.input?.nested).toBeUndefined();
+    });
+
+    it('should remove all error', () => {
+      const { result } = renderHook(() =>
+        useForm<{ input: string; input1: string; input2: string }>(),
+      );
+      act(() => {
+        result.current.setError('input', 'test', 'message');
+        result.current.setError('input1', 'test', 'message');
+        result.current.setError('input2', 'test', 'message');
+      });
+      expect(result.current.errors).toEqual({
+        input: {
+          isManual: true,
+          message: 'message',
+          ref: {},
+          type: 'test',
+          types: undefined,
+        },
+        input1: {
+          isManual: true,
+          message: 'message',
+          ref: {},
+          type: 'test',
+          types: undefined,
+        },
+        input2: {
+          isManual: true,
+          message: 'message',
+          ref: {},
+          type: 'test',
+          types: undefined,
+        },
+      });
+
+      act(() => result.current.clearError());
+      expect(result.current.errors).toEqual({});
     });
   });
 
@@ -1663,6 +1887,24 @@ describe('useForm', () => {
       result.current.register({ type: 'text', name: 'test' });
       unmount();
       expect(findRemovedFieldAndRemoveListener).toBeCalled();
+    });
+
+    it('should call resolver with removeFieldEventListenerAndRef with ReactNative', () => {
+      const resolver = jest.fn(async (data: any) => {
+        return {
+          values: data,
+          errors: {},
+        };
+      });
+
+      const { result, unmount } = renderHook(() =>
+        useForm<{ test: string }>({ resolver }),
+      );
+      result.current.control.readFormStateRef.current.touched = true;
+
+      result.current.register({ type: 'text', name: 'test' });
+      unmount();
+      expect(resolver).toBeCalled();
     });
   });
 
