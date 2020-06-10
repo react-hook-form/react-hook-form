@@ -1,6 +1,11 @@
 import * as React from 'react';
 import { renderHook, act } from '@testing-library/react-hooks';
-import { render, fireEvent, waitFor } from '@testing-library/react';
+import {
+  render,
+  fireEvent,
+  waitFor,
+  act as actComponent,
+} from '@testing-library/react';
 import { useForm } from './';
 import attachEventListeners from './logic/attachEventListeners';
 import findRemovedFieldAndRemoveListener from './logic/findRemovedFieldAndRemoveListener';
@@ -407,6 +412,64 @@ describe('useForm', () => {
         result.current.reset();
       });
       expect(result.current.formState.isSubmitted).toBeFalsy();
+    });
+
+    it('should reset the form if ref is HTMLElement and parent element is form', async () => {
+      const mockReset = jest.spyOn(window.HTMLFormElement.prototype, 'reset');
+      let methods: UseFormMethods;
+      const Component = () => {
+        methods = useForm();
+        return (
+          <form>
+            <input name="test" ref={methods.register} />
+          </form>
+        );
+      };
+      render(<Component />);
+
+      actComponent(() => methods.reset());
+
+      await waitFor(() => expect(mockReset).toHaveBeenCalled());
+    });
+
+    it('should reset the form if ref is HTMLElement and parent element is not form', async () => {
+      const mockReset = jest.spyOn(window.HTMLFormElement.prototype, 'reset');
+      let methods: UseFormMethods;
+      const Component = () => {
+        methods = useForm();
+        return <input name="test" ref={methods.register} />;
+      };
+      render(<Component />);
+
+      actComponent(() => methods.reset());
+
+      await waitFor(() => expect(mockReset).not.toHaveBeenCalled());
+    });
+
+    it('should set default value if values is specified to first argument', async () => {
+      const { result } = renderHook(() => useForm());
+
+      act(() => result.current.register('test'));
+
+      act(() => result.current.reset({ test: 'test' }));
+
+      await waitFor(() =>
+        expect(result.current.control.defaultValuesRef.current).toEqual({
+          test: 'test',
+        }),
+      );
+    });
+
+    it('should execute resetFieldArrayFunctionRef if resetFieldArrayFunctionRef is exist', async () => {
+      const { result } = renderHook(() => useForm());
+      const reset = jest.fn();
+      result.current.control.resetFieldArrayFunctionRef.current['test'] = reset;
+
+      act(() => result.current.register('test'));
+
+      act(() => result.current.reset({ test: 'test' }));
+
+      await waitFor(() => expect(reset).toHaveBeenCalled());
     });
   });
 
