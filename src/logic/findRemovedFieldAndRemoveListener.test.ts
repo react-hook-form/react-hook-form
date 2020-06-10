@@ -273,4 +273,30 @@ describe('findMissDomAndClean', () => {
 
     expect(fields).toEqual({});
   });
+
+  it('should store state when component is getting unmount', () => {
+    const state = { current: {} };
+    const fields = {
+      test: {
+        name: 'test',
+        ref: {
+          value: 'test',
+        },
+      },
+    };
+
+    findRemovedFieldAndRemoveListener(
+      fields,
+      () => ({} as any),
+      {
+        ref: { name: 'test', type: 'text' },
+      },
+      state,
+      false,
+    );
+
+    expect(state).toEqual({
+      current: { test: 'test' },
+    });
+  });
 });
