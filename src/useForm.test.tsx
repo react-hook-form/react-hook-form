@@ -1542,6 +1542,27 @@ describe('useForm', () => {
       });
       expect(result.current.getValues('test')).toEqual('123');
     });
+
+    it('should get all field values', () => {
+      const values = {
+        test: 'test',
+        test1: 'test1',
+        test2: 'test2',
+      };
+      const { result } = renderHook(() =>
+        useForm<{ test: string; test1: string; test2: string }>({
+          defaultValues: values,
+        }),
+      );
+      act(() => {
+        result.current.register({ type: 'input', name: 'test' });
+        result.current.register({ type: 'input', name: 'test1' });
+        result.current.register({ type: 'input', name: 'test2' });
+      });
+      expect(result.current.getValues(['test', 'test1', 'test2'])).toEqual(
+        values,
+      );
+    });
   });
 
   describe('setError', () => {
