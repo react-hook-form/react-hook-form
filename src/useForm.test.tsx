@@ -1328,6 +1328,42 @@ describe('useForm', () => {
       expect(callback).toBeCalled();
     });
 
+    it('should invoke reRender method when readFormStateRef.current.isSubmitting is true', async () => {
+      let renderCount = 0;
+      const Component = () => {
+        const { register, handleSubmit, formState } = useForm();
+        renderCount++;
+        return (
+          <div>
+            <input name="test" ref={register} />
+            <button onClick={handleSubmit(() => {})}></button>
+            <span>{formState.isSubmitting ? 'true' : 'false'}</span>
+          </div>
+        );
+      };
+
+      const { container } = render(<Component />);
+      (validateField as any).mockImplementation(async () => ({}));
+
+      fireEvent.click(container.querySelector('button')!);
+
+      const span = container.querySelector('span')!;
+      await waitFor(
+        () => {
+          if (renderCount === 2) {
+            expect(span.textContent).toBe('true');
+          } else {
+            expect(span.textContent).toBe('false');
+          }
+        },
+        { container: span },
+      );
+
+      await waitFor(() => {
+        expect(renderCount).toBe(4);
+      });
+    });
+
     it('should not invoke callback when there are errors', async () => {
       const { result } = renderHook(() => useForm<{ test: string }>());
 
