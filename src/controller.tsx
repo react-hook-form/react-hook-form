@@ -44,11 +44,11 @@ const Controller = <
     reRender,
     fieldsRef,
     fieldArrayNamesRef,
-    unmountFieldsStore,
+    unmountFieldsState,
   } = control || methods.control;
   const [value, setInputStateValue] = React.useState(
-    unmountFieldsStore.current[name]
-      ? unmountFieldsStore.current[name]
+    unmountFieldsState.current[name]
+      ? unmountFieldsState.current[name]
       : isUndefined(defaultValue)
       ? get(defaultValuesRef.current, name)
       : defaultValue,

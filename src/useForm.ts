@@ -113,7 +113,7 @@ export function useForm<
   const submitCountRef = React.useRef(0);
   const isSubmittingRef = React.useRef(false);
   const handleChangeRef = React.useRef<HandleChange>();
-  const unmountFieldsStore = React.useRef<Record<string, any>>({});
+  const unmountFieldsState = React.useRef<Record<string, any>>({});
   const resetFieldArrayFunctionRef = React.useRef({});
   const contextRef = React.useRef(context);
   const resolverRef = React.useRef(resolver);
@@ -603,7 +603,7 @@ export function useForm<
           fieldsRef.current,
           handleChangeRef.current,
           field,
-          unmountFieldsStore,
+          unmountFieldsState,
           autoUnregister,
           forceDelete,
         );
@@ -893,11 +893,11 @@ export function useForm<
 
     if (
       !isEmptyObject(defaultValuesRef.current) ||
-      !isUndefined(unmountFieldsStore.current[name])
+      !isUndefined(unmountFieldsState.current[name])
     ) {
       defaultValue = autoUnregister
         ? get(defaultValuesRef.current, name)
-        : unmountFieldsStore.current[name];
+        : unmountFieldsState.current[name];
       isEmptyDefaultValue = isUndefined(defaultValue);
       isFieldArray = isNameInFieldArray(fieldArrayNamesRef.current, name);
 
@@ -996,7 +996,10 @@ export function useForm<
         e.persist();
       }
       let fieldErrors: FieldErrors<TFieldValues> = {};
-      let fieldValues: FieldValues = getFieldsValues(fieldsRef.current);
+      let fieldValues: FieldValues = {
+        ...(autoUnregister ? {} : unmountFieldsState.current),
+        ...getFieldsValues(fieldsRef.current),
+      };
 
       if (readFormStateRef.current.isSubmitting) {
         isSubmittingRef.current = true;
@@ -1039,13 +1042,7 @@ export function useForm<
         if (isEmptyObject(fieldErrors)) {
           errorsRef.current = {};
           reRender();
-          await callback(
-            transformToNestObject({
-              ...(autoUnregister ? {} : unmountFieldsStore.current),
-              ...fieldValues,
-            }),
-            e,
-          );
+          await callback(transformToNestObject(fieldValues), e);
         } else {
           errorsRef.current = fieldErrors;
           if (submitFocusError && isWeb) {
@@ -1284,7 +1281,7 @@ export function useForm<
     isSubmittedRef,
     readFormStateRef,
     defaultValuesRef,
-    unmountFieldsStore,
+    unmountFieldsState,
     ...commonProps,
   };
 
