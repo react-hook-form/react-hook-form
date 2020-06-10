@@ -350,41 +350,36 @@ export function useForm<
         | InternalFieldName<TFieldValues>
         | InternalFieldName<TFieldValues>[],
     ) => {
-      if (resolverRef.current) {
-        const { errors } = await resolverRef.current(
-          getFieldArrayValueByName(fieldsRef.current),
-          contextRef.current,
-          validateAllFieldCriteria,
+      // Use non-null assertion due to resolverRef is checked with trigger.
+      const { errors } = await resolverRef.current!(
+        getFieldArrayValueByName(fieldsRef.current),
+        contextRef.current,
+        validateAllFieldCriteria,
+      );
+      const previousFormIsValid = isValidRef.current;
+      isValidRef.current = isEmptyObject(errors);
+
+      if (isArray(payload)) {
+        payload.forEach((name) => {
+          const error = get(errors, name);
+
+          if (error) {
+            set(errorsRef.current, name, error);
+          } else {
+            unset(errorsRef.current, name);
+          }
+        });
+        reRender();
+      } else {
+        const error = get(errors, payload);
+        shouldRenderBaseOnError(
+          payload,
+          (error ? { [payload]: error } : {}) as FlatFieldErrors<TFieldValues>,
+          previousFormIsValid !== isValidRef.current,
         );
-        const previousFormIsValid = isValidRef.current;
-        isValidRef.current = isEmptyObject(errors);
-
-        if (isArray(payload)) {
-          payload.forEach((name) => {
-            const error = get(errors, name);
-
-            if (error) {
-              set(errorsRef.current, name, error);
-            } else {
-              unset(errorsRef.current, name);
-            }
-          });
-          reRender();
-        } else {
-          const error = get(errors, payload);
-          shouldRenderBaseOnError(
-            payload,
-            (error ? { [payload]: error } : {}) as FlatFieldErrors<
-              TFieldValues
-            >,
-            previousFormIsValid !== isValidRef.current,
-          );
-        }
-
-        return isEmptyObject(errorsRef.current);
       }
 
-      return false;
+      return isEmptyObject(errorsRef.current);
     },
     [reRender, shouldRenderBaseOnError, validateAllFieldCriteria, resolverRef],
   );
