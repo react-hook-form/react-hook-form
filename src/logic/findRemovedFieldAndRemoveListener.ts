@@ -8,6 +8,7 @@ import unset from '../utils/unset';
 import unique from '../utils/unique';
 import { Field, FieldRefs, FieldValues, Ref } from '../types/form';
 import getFieldValue from './getFieldValue';
+import isUndefined from '../utils/isUndefined';
 
 const isSameRef = (fieldValue: Field, ref: Ref) =>
   fieldValue && fieldValue.ref === ref;
@@ -30,7 +31,11 @@ export default function findRemovedFieldAndRemoveListener<
   const fieldRef = fields[name] as Field;
 
   if (!autoUnregister) {
-    unmountFieldsState.current[name] = getFieldValue(fields, fieldRef.ref);
+    const value = getFieldValue(fields, fieldRef.ref);
+
+    if (!isUndefined(value)) {
+      unmountFieldsState.current[name] = value;
+    }
   }
 
   if (!type) {
