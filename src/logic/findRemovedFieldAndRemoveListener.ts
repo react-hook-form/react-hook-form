@@ -1,14 +1,14 @@
 import * as React from 'react';
 import removeAllEventListeners from './removeAllEventListeners';
+import getFieldValue from './getFieldValue';
 import isRadioInput from '../utils/isRadioInput';
 import isCheckBoxInput from '../utils/isCheckBoxInput';
 import isDetached from '../utils/isDetached';
 import isArray from '../utils/isArray';
 import unset from '../utils/unset';
 import unique from '../utils/unique';
-import { Field, FieldRefs, FieldValues, Ref } from '../types/form';
-import getFieldValue from './getFieldValue';
 import isUndefined from '../utils/isUndefined';
+import { Field, FieldRefs, FieldValues, Ref } from '../types/form';
 
 const isSameRef = (fieldValue: Field, ref: Ref) =>
   fieldValue && fieldValue.ref === ref;
