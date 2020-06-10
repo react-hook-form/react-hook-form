@@ -47,7 +47,7 @@ const Controller = <
     unmountFieldsState,
   } = control || methods.control;
   const [value, setInputStateValue] = React.useState(
-    unmountFieldsState.current[name]
+    !isUndefined(unmountFieldsState.current[name])
       ? unmountFieldsState.current[name]
       : isUndefined(defaultValue)
       ? get(defaultValuesRef.current, name)

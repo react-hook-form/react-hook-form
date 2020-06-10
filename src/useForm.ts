@@ -895,7 +895,7 @@ export function useForm<
       !isEmptyObject(defaultValuesRef.current) ||
       !isUndefined(unmountFieldsState.current[name])
     ) {
-      defaultValue = autoUnregister
+      defaultValue = isUndefined(unmountFieldsState.current[name])
         ? get(defaultValuesRef.current, name)
         : unmountFieldsState.current[name];
       isEmptyDefaultValue = isUndefined(defaultValue);
@@ -1110,6 +1110,7 @@ export function useForm<
       TFieldValues
     >;
     fieldArrayDefaultValues.current = {};
+    unmountFieldsState.current = {};
     watchFieldsRef.current = new Set();
     isWatchAllRef.current = false;
   };

@@ -20,7 +20,7 @@ export default function findRemovedFieldAndRemoveListener<
   handleChange: ({ type, target }: Event) => Promise<void | boolean>,
   field: Field,
   unmountFieldsState: React.MutableRefObject<Record<string, any>>,
-  autoUnregister: boolean,
+  autoUnregister?: boolean,
   forceDelete?: boolean,
 ): void {
   const {
