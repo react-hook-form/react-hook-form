@@ -1697,6 +1697,24 @@ describe('useForm', () => {
       unmount();
       expect(findRemovedFieldAndRemoveListener).toBeCalled();
     });
+
+    it('should call resolver with removeFieldEventListenerAndRef with ReactNative', () => {
+      const resolver = jest.fn(async (data: any) => {
+        return {
+          values: data,
+          errors: {},
+        };
+      });
+
+      const { result, unmount } = renderHook(() =>
+        useForm<{ test: string }>({ resolver }),
+      );
+      result.current.control.readFormStateRef.current.touched = true;
+
+      result.current.register({ type: 'text', name: 'test' });
+      unmount();
+      expect(resolver).toBeCalled();
+    });
   });
 
   describe('when defaultValues is supplied', () => {
