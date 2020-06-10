@@ -848,7 +848,6 @@ export function useForm<
     let defaultValue;
 
     if (
-      autoUnregister &&
       field &&
       (isRadioOrCheckbox
         ? isArray(field.options) &&
@@ -997,7 +996,7 @@ export function useForm<
       }
       let fieldErrors: FieldErrors<TFieldValues> = {};
       let fieldValues: FieldValues = {
-        ...(autoUnregister ? {} : unmountFieldsState.current),
+        ...unmountFieldsState.current,
         ...getFieldsValues(fieldsRef.current),
       };
 
@@ -1056,14 +1055,7 @@ export function useForm<
         reRender();
       }
     },
-    [
-      isWeb,
-      reRender,
-      resolverRef,
-      submitFocusError,
-      validateAllFieldCriteria,
-      autoUnregister,
-    ],
+    [isWeb, reRender, resolverRef, submitFocusError, validateAllFieldCriteria],
   );
 
   const resetRefs = ({
