@@ -76,7 +76,7 @@ export function useForm<
   resolver,
   context,
   defaultValues = {} as UnpackNestedValue<DeepPartial<TFieldValues>>,
-  submitFocusError = true,
+  shouldFocusError = true,
   autoUnregister = true,
   criteriaMode,
 }: UseFormOptions<TFieldValues, TContext> = {}): UseFormMethods<TFieldValues> {
@@ -352,41 +352,35 @@ export function useForm<
         | InternalFieldName<TFieldValues>
         | InternalFieldName<TFieldValues>[],
     ) => {
-      if (resolverRef.current) {
-        const { errors } = await resolverRef.current(
-          getFieldArrayValueByName(fieldsRef.current),
-          contextRef.current,
-          validateAllFieldCriteria,
+      const { errors } = await resolverRef.current!(
+        getFieldArrayValueByName(fieldsRef.current),
+        contextRef.current,
+        validateAllFieldCriteria,
+      );
+      const previousFormIsValid = isValidRef.current;
+      isValidRef.current = isEmptyObject(errors);
+
+      if (isArray(payload)) {
+        payload.forEach((name) => {
+          const error = get(errors, name);
+
+          if (error) {
+            set(errorsRef.current, name, error);
+          } else {
+            unset(errorsRef.current, name);
+          }
+        });
+        reRender();
+      } else {
+        const error = get(errors, payload);
+        shouldRenderBaseOnError(
+          payload,
+          (error ? { [payload]: error } : {}) as FlatFieldErrors<TFieldValues>,
+          previousFormIsValid !== isValidRef.current,
         );
-        const previousFormIsValid = isValidRef.current;
-        isValidRef.current = isEmptyObject(errors);
-
-        if (isArray(payload)) {
-          payload.forEach((name) => {
-            const error = get(errors, name);
-
-            if (error) {
-              set(errorsRef.current, name, error);
-            } else {
-              unset(errorsRef.current, name);
-            }
-          });
-          reRender();
-        } else {
-          const error = get(errors, payload);
-          shouldRenderBaseOnError(
-            payload,
-            (error ? { [payload]: error } : {}) as FlatFieldErrors<
-              TFieldValues
-            >,
-            previousFormIsValid !== isValidRef.current,
-          );
-        }
-
-        return isEmptyObject(errorsRef.current);
       }
 
-      return false;
+      return isEmptyObject(errorsRef.current);
     },
     [reRender, shouldRenderBaseOnError, validateAllFieldCriteria, resolverRef],
   );
@@ -1044,7 +1038,7 @@ export function useForm<
           await callback(transformToNestObject(fieldValues), e);
         } else {
           errorsRef.current = fieldErrors;
-          if (submitFocusError && isWeb) {
+          if (shouldFocusError && isWeb) {
             focusOnErrorField(fieldsRef.current, fieldErrors);
           }
         }
@@ -1055,7 +1049,7 @@ export function useForm<
         reRender();
       }
     },
-    [isWeb, reRender, resolverRef, submitFocusError, validateAllFieldCriteria],
+    [isWeb, reRender, resolverRef, shouldFocusError, validateAllFieldCriteria],
   );
 
   const resetRefs = ({
