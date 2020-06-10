@@ -46,8 +46,9 @@ const Controller = <
     fieldArrayNamesRef,
     unmountFieldsState,
   } = control || methods.control;
+  const isNotFieldArray = !isNameInFieldArray(fieldArrayNamesRef.current, name);
   const [value, setInputStateValue] = React.useState(
-    !isUndefined(unmountFieldsState.current[name])
+    !isUndefined(unmountFieldsState.current[name]) && isNotFieldArray
       ? unmountFieldsState.current[name]
       : isUndefined(defaultValue)
       ? get(defaultValuesRef.current, name)
@@ -56,7 +57,6 @@ const Controller = <
   const valueRef = React.useRef(value);
   const isCheckboxInput = isBoolean(value);
   const onFocusRef = React.useRef(onFocus);
-  const isNotFieldArray = !isNameInFieldArray(fieldArrayNamesRef.current, name);
   const isSubmitted = isSubmittedRef.current;
 
   const shouldValidate = () =>
