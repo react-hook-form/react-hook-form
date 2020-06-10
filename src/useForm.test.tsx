@@ -7,7 +7,7 @@ import findRemovedFieldAndRemoveListener from './logic/findRemovedFieldAndRemove
 import validateField from './logic/validateField';
 import onDomRemove from './utils/onDomRemove';
 import { VALIDATION_MODE, EVENTS } from './constants';
-import { NestedValue, UseFormMethods } from './types/form';
+import { NestedValue, UseFormMethods, Ref } from './types/form';
 import skipValidation from './logic/skipValidation';
 import * as shouldRenderBasedOnError from './logic/shouldRenderBasedOnError';
 import { transformToNestObject } from './logic';
@@ -50,6 +50,17 @@ describe('useForm', () => {
           result.current.register({ name: 'test', type: 'input' }, {}),
         ).toBeUndefined();
       });
+    });
+
+    it('should call console.worn when ref name is undefined', () => {
+      const mockConsoleWarn = spyOn(console, 'warn');
+      const Component = () => {
+        const { register } = useForm();
+        return <input ref={register} />;
+      };
+      render(<Component />);
+
+      expect(mockConsoleWarn).toHaveBeenCalled();
     });
 
     it('should register field and call attachEventListeners method', () => {
@@ -118,6 +129,27 @@ describe('useForm', () => {
         handleChange: expect.any(Function),
       });
       expect(onDomRemove).toBeCalled();
+    });
+
+    it('should call removeFieldEventListenerAndRef when onDomRemove method is executed', async () => {
+      let mockOnDetachCallback: VoidFunction;
+      (onDomRemove as any).mockImplementation(
+        (_: Ref, onDetachCallback: VoidFunction) => {
+          mockOnDetachCallback = onDetachCallback;
+        },
+      );
+
+      const { result } = renderHook(() =>
+        useForm({ defaultValues: { test: 'test' } }),
+      );
+
+      act(() => {
+        result.current.register({ type: 'text', name: 'test' });
+      });
+
+      act(() => mockOnDetachCallback());
+
+      expect(findRemovedFieldAndRemoveListener).toHaveBeenCalled();
     });
 
     it('should support register passed to ref', async () => {
