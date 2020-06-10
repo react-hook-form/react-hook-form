@@ -625,6 +625,7 @@ export function useForm<
           fieldsWithValidationRef,
           validFieldsRef,
           watchFieldsRef,
+          unmountFieldsState,
         ].forEach((data) => data.current.delete(field.ref.name));
 
         if (
