@@ -752,6 +752,39 @@ describe('useForm', () => {
       });
     });
 
+    it('should be called trigger method if shouldValidate variable is true', async () => {
+      (validateField as any).mockImplementation(async () => ({}));
+      const { result } = renderHook(() => useForm());
+
+      act(() =>
+        result.current.register({ name: 'test', required: 'required' }),
+      );
+
+      act(() => result.current.setValue('test', 'test', true));
+
+      await waitFor(() => expect(validateField).toHaveBeenCalled());
+    });
+
+    it('should be called trigger method if first argument is array', async () => {
+      (validateField as any).mockImplementation(async () => ({}));
+      const { result } = renderHook(() => useForm());
+
+      act(() => {
+        result.current.register({ name: 'test', required: 'required' });
+        result.current.register({ name: 'test1', required: 'required' });
+        result.current.register({ name: 'test2', required: 'required' });
+      });
+
+      await act(async () =>
+        result.current.setValue(
+          [{ test: 'value' }, { test1: 'value1' }, { test2: 'value2' }],
+          true,
+        ),
+      );
+
+      await waitFor(() => expect(validateField).toBeCalledTimes(3));
+    });
+
     describe('setDirty', () => {
       it('should set name to dirtyFieldRef if field value is different with default value with ReactNative', () => {
         const { result } = renderHook(() =>
