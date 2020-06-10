@@ -20,7 +20,7 @@ export default function findRemovedFieldAndRemoveListener<
   handleChange: ({ type, target }: Event) => Promise<void | boolean>,
   field: Field,
   unmountFieldsState: React.MutableRefObject<Record<string, any>>,
-  autoUnregister?: boolean,
+  shouldUnregister?: boolean,
   forceDelete?: boolean,
 ): void {
   const {
@@ -30,7 +30,7 @@ export default function findRemovedFieldAndRemoveListener<
   } = field;
   const fieldRef = fields[name] as Field;
 
-  if (!autoUnregister) {
+  if (!shouldUnregister) {
     const value = getFieldValue(fields, fieldRef.ref);
 
     if (!isUndefined(value)) {

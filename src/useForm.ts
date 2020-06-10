@@ -77,7 +77,7 @@ export function useForm<
   context,
   defaultValues = {} as UnpackNestedValue<DeepPartial<TFieldValues>>,
   shouldFocusError = true,
-  autoUnregister = true,
+  shouldUnregister = true,
   criteriaMode,
 }: UseFormOptions<TFieldValues, TContext> = {}): UseFormMethods<TFieldValues> {
   const fieldsRef = React.useRef<FieldRefs<TFieldValues>>({});
@@ -598,12 +598,12 @@ export function useForm<
           handleChangeRef.current,
           field,
           unmountFieldsState,
-          autoUnregister,
+          shouldUnregister,
           forceDelete,
         );
       }
     },
-    [autoUnregister],
+    [shouldUnregister],
   );
 
   const removeFieldEventListenerAndRef = React.useCallback(

@@ -89,7 +89,7 @@ export type UseFormOptions<
   resolver: Resolver<TFieldValues, TContext>;
   context: TContext;
   shouldFocusError: boolean;
-  autoUnregister: boolean;
+  shouldUnregister: boolean;
   criteriaMode: 'firstError' | 'all';
 }>;
 

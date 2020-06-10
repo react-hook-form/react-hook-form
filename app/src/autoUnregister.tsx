@@ -10,7 +10,7 @@ const options = [
 
 export default function AutoUnregister() {
   const { register, control, handleSubmit } = useForm({
-    autoUnregister: false,
+    shouldUnregister: false,
   });
   const [show, setShow] = useState(true);
 
