@@ -47,13 +47,13 @@ const Controller = <
     unmountFieldsState,
   } = control || methods.control;
   const isNotFieldArray = !isNameInFieldArray(fieldArrayNamesRef.current, name);
-  const [value, setInputStateValue] = React.useState(
+  const getInitialValue = () =>
     !isUndefined(unmountFieldsState.current[name]) && isNotFieldArray
       ? unmountFieldsState.current[name]
       : isUndefined(defaultValue)
       ? get(defaultValuesRef.current, name)
-      : defaultValue,
-  );
+      : defaultValue;
+  const [value, setInputStateValue] = React.useState(getInitialValue());
   const valueRef = React.useRef(value);
   const isCheckboxInput = isBoolean(value);
   const onFocusRef = React.useRef(onFocus);
@@ -127,11 +127,7 @@ const Controller = <
     if (!fieldsRef.current[name]) {
       registerField();
       if (isNotFieldArray) {
-        setInputStateValue(
-          isUndefined(defaultValue)
-            ? get(defaultValuesRef.current, name)
-            : defaultValue,
-        );
+        setInputStateValue(getInitialValue());
       }
     }
   });
