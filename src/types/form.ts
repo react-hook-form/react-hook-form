@@ -88,7 +88,7 @@ export type UseFormOptions<
   defaultValues: UnpackNestedValue<DeepPartial<TFieldValues>>;
   resolver: Resolver<TFieldValues, TContext>;
   context: TContext;
-  submitFocusError: boolean;
+  shouldFocusError: boolean;
   criteriaMode: 'firstError' | 'all';
 }>;
 

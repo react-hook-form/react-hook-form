@@ -76,7 +76,7 @@ export function useForm<
   resolver,
   context,
   defaultValues = {} as UnpackNestedValue<DeepPartial<TFieldValues>>,
-  submitFocusError = true,
+  shouldFocusError = true,
   criteriaMode,
 }: UseFormOptions<TFieldValues, TContext> = {}): UseFormMethods<TFieldValues> {
   const fieldsRef = React.useRef<FieldRefs<TFieldValues>>({});
@@ -1026,7 +1026,7 @@ export function useForm<
           await callback(transformToNestObject(fieldValues), e);
         } else {
           errorsRef.current = fieldErrors;
-          if (submitFocusError && isWeb) {
+          if (shouldFocusError && isWeb) {
             focusOnErrorField(fieldsRef.current, fieldErrors);
           }
         }
@@ -1037,7 +1037,7 @@ export function useForm<
         reRender();
       }
     },
-    [isWeb, reRender, resolverRef, submitFocusError, validateAllFieldCriteria],
+    [isWeb, reRender, resolverRef, shouldFocusError, validateAllFieldCriteria],
   );
 
   const resetRefs = ({
