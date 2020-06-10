@@ -350,7 +350,6 @@ export function useForm<
         | InternalFieldName<TFieldValues>
         | InternalFieldName<TFieldValues>[],
     ) => {
-      // Use non-null assertion due to resolverRef is checked with trigger.
       const { errors } = await resolverRef.current!(
         getFieldArrayValueByName(fieldsRef.current),
         contextRef.current,
