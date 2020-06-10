@@ -1489,7 +1489,9 @@ describe('useForm', () => {
       });
       expect(result.current.formState.isValid).toBeFalsy();
     });
+  });
 
+  describe('clearError', () => {
     it('should remove error', () => {
       const { result } = renderHook(() => useForm<{ input: string }>());
       act(() => {
@@ -1510,7 +1512,44 @@ describe('useForm', () => {
       act(() => {
         result.current.clearError('input.nested');
       });
-      expect(result.current.errors.input?.nested).not.toBeDefined();
+      expect(result.current.errors.input?.nested).toBeUndefined();
+    });
+
+    it('should remove all error', () => {
+      const { result } = renderHook(() =>
+        useForm<{ input: string; input1: string; input2: string }>(),
+      );
+      act(() => {
+        result.current.setError('input', 'test', 'message');
+        result.current.setError('input1', 'test', 'message');
+        result.current.setError('input2', 'test', 'message');
+      });
+      expect(result.current.errors).toEqual({
+        input: {
+          isManual: true,
+          message: 'message',
+          ref: {},
+          type: 'test',
+          types: undefined,
+        },
+        input1: {
+          isManual: true,
+          message: 'message',
+          ref: {},
+          type: 'test',
+          types: undefined,
+        },
+        input2: {
+          isManual: true,
+          message: 'message',
+          ref: {},
+          type: 'test',
+          types: undefined,
+        },
+      });
+
+      act(() => result.current.clearError());
+      expect(result.current.errors).toEqual({});
     });
   });
 
