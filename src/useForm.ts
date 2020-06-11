@@ -884,11 +884,12 @@ export function useForm<
 
     fields[name] = field;
 
-    if (
-      !isEmptyObject(defaultValuesRef.current) ||
-      !isUndefined(unmountFieldsStateRef.current[name])
-    ) {
-      defaultValue = isUndefined(unmountFieldsStateRef.current[name])
+    const isEmptyUnmountFields = isUndefined(
+      unmountFieldsStateRef.current[name],
+    );
+
+    if (!isEmptyObject(defaultValuesRef.current) || !isEmptyUnmountFields) {
+      defaultValue = isEmptyUnmountFields
         ? get(defaultValuesRef.current, name)
         : unmountFieldsStateRef.current[name];
       isEmptyDefaultValue = isUndefined(defaultValue);
