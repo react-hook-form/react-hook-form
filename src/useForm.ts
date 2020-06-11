@@ -590,14 +590,12 @@ export function useForm<
 
   const removeFieldEventListener = React.useCallback(
     (field: Field, forceDelete?: boolean) => {
-      if (handleChangeRef.current && field) {
-        findRemovedFieldAndRemoveListener(
-          fieldsRef.current,
-          handleChangeRef.current,
-          field,
-          forceDelete,
-        );
-      }
+      findRemovedFieldAndRemoveListener(
+        fieldsRef.current,
+        handleChangeRef.current!,
+        field,
+        forceDelete,
+      );
     },
     [],
   );
