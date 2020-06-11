@@ -163,7 +163,7 @@ export const useFieldArray = <
 
     if (readFormStateRef.current.dirtyFields) {
       dirtyFieldsRef.current[name] = [
-        ...(dirtyFieldsRef.current[name] || fillEmptyArray(fields)),
+        ...(dirtyFieldsRef.current[name] || fillEmptyArray(fields.slice(0, 1))),
         ...filterBooleanArray(value),
       ];
       isDirtyRef.current = true;
@@ -255,6 +255,11 @@ export const useFieldArray = <
         dirtyFieldsRef.current[name],
         index,
       );
+
+      if (!dirtyFieldsRef.current[name].length) {
+        delete dirtyFieldsRef.current[name];
+      }
+
       shouldRender = true;
     }
 

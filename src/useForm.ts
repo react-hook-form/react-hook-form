@@ -248,20 +248,12 @@ export function useForm<
         return false;
       }
 
-      let isFieldDirty =
+      const isFieldDirty =
         defaultValuesAtRenderRef.current[name] !==
         getFieldValue(fieldsRef.current, fieldsRef.current[name]!.ref);
       const isDirtyFieldExist = get(dirtyFieldsRef.current, name);
       const isFieldArray = isNameInFieldArray(fieldArrayNamesRef.current, name);
       const previousIsDirty = isDirtyRef.current;
-
-      if (isFieldArray) {
-        const fieldArrayName = getFieldArrayParentName(name);
-        isFieldDirty = getIsFieldsDifferent(
-          getFieldArrayValueByName(fieldsRef.current, fieldArrayName),
-          get(defaultValuesRef.current, fieldArrayName),
-        );
-      }
 
       if (isFieldDirty) {
         set(dirtyFieldsRef.current, name, true);
@@ -270,7 +262,13 @@ export function useForm<
       }
 
       isDirtyRef.current = isFieldArray
-        ? isFieldDirty
+        ? getIsFieldsDifferent(
+            getFieldArrayValueByName(
+              fieldsRef.current,
+              getFieldArrayParentName(name),
+            ),
+            get(defaultValuesRef.current, getFieldArrayParentName(name)),
+          ) || !isEmptyObject(dirtyFieldsRef.current)
         : !isEmptyObject(dirtyFieldsRef.current);
 
       return (

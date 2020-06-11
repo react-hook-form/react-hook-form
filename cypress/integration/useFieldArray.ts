@@ -302,7 +302,7 @@ context('useFieldArray', () => {
     cy.get('#delete1').click();
     cy.get('#dirtyFields').contains('{"data":[{"name":true}]}');
     cy.get('#delete0').click();
-    cy.get('#dirtyFields').contains('[]');
+    cy.get('#dirtyFields').contains('{}');
     cy.get('#dirty').contains('yes');
   });
 
@@ -328,7 +328,7 @@ context('useFieldArray', () => {
     cy.get('#delete1').click();
     cy.get('#dirtyFields').contains('{"data":[{"name":true}]}');
     cy.get('#delete0').click();
-    cy.get('#dirtyFields').contains('[]');
+    cy.get('#dirtyFields').contains('{}');
     cy.get('#dirty').contains('no');
   });
 
