@@ -98,7 +98,7 @@ export type MutationWatcher = {
   observe?: any;
 };
 
-export type Message = string | React.ReactElement;
+export type Message = string;
 
 export type ValidationValue = boolean | number | string | RegExp;
 
