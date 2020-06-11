@@ -3,7 +3,7 @@ import { Control } from '../types';
 export const reconfigureControl = (
   controlOverrides: Partial<Control> = {},
 ): Control => ({
-  unmountFieldsState: {
+  unmountFieldsStateRef: {
     current: {},
   },
   defaultValuesRef: {

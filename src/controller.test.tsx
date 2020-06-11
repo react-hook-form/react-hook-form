@@ -686,7 +686,7 @@ describe('Controller', () => {
         control={
           {
             ...control,
-            unmountFieldsState: {
+            unmountFieldsStateRef: {
               current: {
                 test: 'what',
               },
@@ -716,7 +716,7 @@ describe('Controller', () => {
         control={
           {
             ...control,
-            unmountFieldsState: {
+            unmountFieldsStateRef: {
               current: {
                 test: 'what',
               },

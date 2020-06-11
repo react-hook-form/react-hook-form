@@ -113,7 +113,7 @@ export function useForm<
   const submitCountRef = React.useRef(0);
   const isSubmittingRef = React.useRef(false);
   const handleChangeRef = React.useRef<HandleChange>();
-  const unmountFieldsState = React.useRef<Record<string, any>>({});
+  const unmountFieldsStateRef = React.useRef<Record<string, any>>({});
   const resetFieldArrayFunctionRef = React.useRef({});
   const contextRef = React.useRef(context);
   const resolverRef = React.useRef(resolver);
@@ -597,7 +597,7 @@ export function useForm<
           fieldsRef.current,
           handleChangeRef.current,
           field,
-          unmountFieldsState,
+          unmountFieldsStateRef,
           shouldUnregister,
           forceDelete,
         );
@@ -625,7 +625,6 @@ export function useForm<
           fieldsWithValidationRef,
           validFieldsRef,
           watchFieldsRef,
-          unmountFieldsState,
         ].forEach((data) => data.current.delete(field.ref.name));
 
         if (
@@ -887,11 +886,11 @@ export function useForm<
 
     if (
       !isEmptyObject(defaultValuesRef.current) ||
-      !isUndefined(unmountFieldsState.current[name])
+      !isUndefined(unmountFieldsStateRef.current[name])
     ) {
-      defaultValue = isUndefined(unmountFieldsState.current[name])
+      defaultValue = isUndefined(unmountFieldsStateRef.current[name])
         ? get(defaultValuesRef.current, name)
-        : unmountFieldsState.current[name];
+        : unmountFieldsStateRef.current[name];
       isEmptyDefaultValue = isUndefined(defaultValue);
       isFieldArray = isNameInFieldArray(fieldArrayNamesRef.current, name);
 
@@ -991,7 +990,7 @@ export function useForm<
       }
       let fieldErrors: FieldErrors<TFieldValues> = {};
       let fieldValues: FieldValues = {
-        ...unmountFieldsState.current,
+        ...unmountFieldsStateRef.current,
         ...getFieldsValues(fieldsRef.current),
       };
 
@@ -1097,7 +1096,7 @@ export function useForm<
       TFieldValues
     >;
     fieldArrayDefaultValues.current = {};
-    unmountFieldsState.current = {};
+    unmountFieldsStateRef.current = {};
     watchFieldsRef.current = new Set();
     isWatchAllRef.current = false;
   };
@@ -1269,7 +1268,7 @@ export function useForm<
     isSubmittedRef,
     readFormStateRef,
     defaultValuesRef,
-    unmountFieldsState,
+    unmountFieldsStateRef,
     ...commonProps,
   };
 
