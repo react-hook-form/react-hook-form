@@ -120,11 +120,11 @@ export const useFieldArray = <
   ) => {
     if (readFormStateRef.current.isDirty) {
       isDirtyRef.current =
-        isUndefined(flagOrFields) ||
-        getIsFieldsDifferent(
-          flagOrFields,
-          get(defaultValuesRef.current, name, []),
-        ) ||
+        (isUndefined(flagOrFields) ||
+          getIsFieldsDifferent(
+            flagOrFields,
+            get(defaultValuesRef.current, name, []),
+          )) &&
         !isEmptyObject(dirtyFieldsRef.current);
     }
 
