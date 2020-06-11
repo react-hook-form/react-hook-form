@@ -64,7 +64,7 @@ export type ErrorMessageProps<
     as?: TAs;
     errors?: TFieldErrors;
     name: FieldName<FieldValuesFromFieldErrors<TFieldErrors>>;
-    message?: Message;
+    message?: string | React.ReactElement;
     render?: (data: {
       message: Message;
       messages?: MultipleFieldErrors;

@@ -1593,14 +1593,15 @@ describe('useForm', () => {
       });
 
       act(() => {
-        result.current.setError('input', 'test', <p>test</p>);
+        result.current.setError('input', 'test', 'test');
       });
       expect(result.current.errors).toEqual({
         input: {
           type: 'test',
           isManual: true,
-          message: <p>test</p>,
+          message: 'test',
           ref: {},
+          types: undefined,
         },
       });
 
@@ -1623,7 +1624,7 @@ describe('useForm', () => {
       act(() => {
         result.current.setError('input', {
           test1: 'test1',
-          test2: <p>test2</p>,
+          test2: 'test2',
         });
       });
 
@@ -1634,7 +1635,7 @@ describe('useForm', () => {
           message: undefined,
           types: {
             test1: 'test1',
-            test2: <p>test2</p>,
+            test2: 'test2',
           },
           ref: {},
         },
@@ -1725,7 +1726,7 @@ describe('useForm', () => {
           {
             type: 'test2',
             name: 'input2',
-            message: <p>wow2</p>,
+            message: 'wow2',
           },
         ]);
       });
@@ -1746,7 +1747,7 @@ describe('useForm', () => {
         input2: {
           type: 'test2',
           isManual: true,
-          message: <p>wow2</p>,
+          message: 'wow2',
           ref: {},
         },
       });
