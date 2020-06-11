@@ -269,9 +269,7 @@ export function useForm<
         unset(dirtyFieldsRef.current, name);
       }
 
-      isDirtyRef.current = isFieldArray
-        ? isFieldDirty
-        : !isEmptyObject(dirtyFieldsRef.current);
+      isDirtyRef.current = isEmptyObject(dirtyFieldsRef.current);
 
       return (
         (isDirty && previousIsDirty !== isDirtyRef.current) ||

@@ -15,6 +15,7 @@ import isArray from './utils/isArray';
 import insertAt from './utils/insert';
 import isKey from './utils/isKey';
 import fillEmptyArray from './utils/fillEmptyArray';
+import isEmptyObject from './utils/isEmptyObject';
 import { filterBooleanArray } from './utils/filterBooleanArray';
 import unique from './utils/unique';
 import {
@@ -123,7 +124,8 @@ export const useFieldArray = <
         getIsFieldsDifferent(
           flagOrFields,
           get(defaultValuesRef.current, name, []),
-        );
+        ) ||
+        !isEmptyObject(dirtyFieldsRef.current);
     }
 
     for (const key in fieldsRef.current) {
