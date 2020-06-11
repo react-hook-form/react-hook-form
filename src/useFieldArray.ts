@@ -15,7 +15,6 @@ import isArray from './utils/isArray';
 import insertAt from './utils/insert';
 import isKey from './utils/isKey';
 import fillEmptyArray from './utils/fillEmptyArray';
-import isEmptyObject from './utils/isEmptyObject';
 import { filterBooleanArray } from './utils/filterBooleanArray';
 import unique from './utils/unique';
 import {
@@ -120,12 +119,11 @@ export const useFieldArray = <
   ) => {
     if (readFormStateRef.current.isDirty) {
       isDirtyRef.current =
-        (isUndefined(flagOrFields) ||
-          getIsFieldsDifferent(
-            flagOrFields,
-            get(defaultValuesRef.current, name, []),
-          )) &&
-        !isEmptyObject(dirtyFieldsRef.current);
+        isUndefined(flagOrFields) ||
+        getIsFieldsDifferent(
+          flagOrFields,
+          get(defaultValuesRef.current, name, []),
+        );
     }
 
     for (const key in fieldsRef.current) {
@@ -165,7 +163,7 @@ export const useFieldArray = <
 
     if (readFormStateRef.current.dirtyFields) {
       dirtyFieldsRef.current[name] = [
-        ...(dirtyFieldsRef.current[name] || fillEmptyArray(fields)),
+        ...(dirtyFieldsRef.current[name] || fillEmptyArray(fields.slice(0, 1))),
         ...filterBooleanArray(value),
       ];
       isDirtyRef.current = true;
@@ -257,6 +255,11 @@ export const useFieldArray = <
         dirtyFieldsRef.current[name],
         index,
       );
+
+      if (!dirtyFieldsRef.current[name].length) {
+        delete dirtyFieldsRef.current[name];
+      }
+
       shouldRender = true;
     }
 

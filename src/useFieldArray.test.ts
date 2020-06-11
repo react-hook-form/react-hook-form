@@ -470,9 +470,7 @@ describe('useFieldArray', () => {
     });
 
     expect(result.current.fields).toEqual([]);
-    expect(dirtyFieldsRef.current).toEqual({
-      test: [],
-    });
+    expect(dirtyFieldsRef.current).toEqual({});
     expect(touchedFieldsRef.current).toEqual({
       test: [],
     });

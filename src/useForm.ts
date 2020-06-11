@@ -268,7 +268,7 @@ export function useForm<
               getFieldArrayParentName(name),
             ),
             get(defaultValuesRef.current, getFieldArrayParentName(name)),
-          )
+          ) || !isEmptyObject(dirtyFieldsRef.current)
         : !isEmptyObject(dirtyFieldsRef.current);
 
       return (
