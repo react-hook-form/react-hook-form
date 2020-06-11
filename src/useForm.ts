@@ -9,7 +9,9 @@ import shouldRenderBasedOnError from './logic/shouldRenderBasedOnError';
 import validateField from './logic/validateField';
 import assignWatchFields from './logic/assignWatchFields';
 import skipValidation from './logic/skipValidation';
+import getFieldArrayParentName from './logic/getFieldArrayParentName';
 import getFieldArrayValueByName from './logic/getFieldArrayValueByName';
+import getIsFieldsDifferent from './logic/getIsFieldsDifferent';
 import isNameInFieldArray from './logic/isNameInFieldArray';
 import isCheckBoxInput from './utils/isCheckBoxInput';
 import isEmptyObject from './utils/isEmptyObject';
@@ -250,6 +252,7 @@ export function useForm<
         defaultValuesAtRenderRef.current[name] !==
         getFieldValue(fieldsRef.current, fieldsRef.current[name]!.ref);
       const isDirtyFieldExist = get(dirtyFieldsRef.current, name);
+      const isFieldArray = isNameInFieldArray(fieldArrayNamesRef.current, name);
       const previousIsDirty = isDirtyRef.current;
 
       if (isFieldDirty) {
@@ -258,7 +261,15 @@ export function useForm<
         unset(dirtyFieldsRef.current, name);
       }
 
-      isDirtyRef.current = !isEmptyObject(dirtyFieldsRef.current);
+      isDirtyRef.current = isFieldArray
+        ? getIsFieldsDifferent(
+            getFieldArrayValueByName(
+              fieldsRef.current,
+              getFieldArrayParentName(name),
+            ),
+            get(defaultValuesRef.current, getFieldArrayParentName(name)),
+          )
+        : !isEmptyObject(dirtyFieldsRef.current);
 
       return (
         (isDirty && previousIsDirty !== isDirtyRef.current) ||
