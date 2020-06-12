@@ -1,5 +1,6 @@
 import React from 'react';
 import { BrowserRouter as Router, Route } from 'react-router-dom';
+import AutoUnregister from './autoUnregister';
 import Basic from './basic';
 import Watch from './watch';
 import BasicSchemaValidation from './basicSchemaValidation';
@@ -87,6 +88,7 @@ const App: React.FC = () => {
         exact
         component={CustomSchemaValidation}
       />
+      <Route path="/autoUnregister" exact component={AutoUnregister} />
       <Route path="/useWatch" exact component={useWatch} />
     </Router>
   );

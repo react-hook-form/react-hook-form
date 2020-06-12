@@ -646,4 +646,67 @@ describe('Controller', () => {
     // @ts-ignore
     expect(fieldsRef.current.test.required).toBeFalsy();
   });
+
+  it('should set initial state from unmount state', () => {
+    const control = reconfigureControl();
+
+    const { getByPlaceholderText } = render(
+      <Controller
+        defaultValue=""
+        name="test"
+        as={<input placeholder="test" />}
+        control={
+          {
+            ...control,
+            unmountFieldsStateRef: {
+              current: {
+                test: 'what',
+              },
+            },
+            fieldsRef: {
+              current: {
+                test: {},
+              },
+            },
+          } as any
+        }
+      />,
+    );
+
+    // @ts-ignore
+    expect(getByPlaceholderText('test').value).toEqual('what');
+  });
+
+  it('should not set initial state from unmount state when input is part of field array', () => {
+    const control = reconfigureControl();
+
+    const { getByPlaceholderText } = render(
+      <Controller
+        defaultValue=""
+        name="test[0]"
+        as={<input placeholder="test" />}
+        control={
+          {
+            ...control,
+            unmountFieldsStateRef: {
+              current: {
+                test: 'what',
+              },
+            },
+            fieldsRef: {
+              current: {
+                test: {},
+              },
+            },
+            fieldArrayNamesRef: {
+              current: new Set(['test']),
+            },
+          } as any
+        }
+      />,
+    );
+
+    // @ts-ignore
+    expect(getByPlaceholderText('test').value).toEqual('');
+  });
 });

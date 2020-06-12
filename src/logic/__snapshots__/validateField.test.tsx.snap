@@ -46,9 +46,7 @@ Object {
 exports[`validateField should return all validation error messages 3`] = `
 Object {
   "test": Object {
-    "message": <p>
-      minLength
-    </p>,
+    "message": "minLength",
     "ref": Object {
       "name": "test",
       "setCustomValidity": [Function],
@@ -57,19 +55,11 @@ Object {
     },
     "type": "minLength",
     "types": Object {
-      "minLength": <p>
-        minLength
-      </p>,
-      "pattern": <p>
-        pattern
-      </p>,
+      "minLength": "minLength",
+      "pattern": "pattern",
       "test": true,
-      "test1": <p>
-        Luo
-      </p>,
-      "test2": <p>
-        Bill
-      </p>,
+      "test1": "Luo",
+      "test2": "Bill",
     },
   },
 }
