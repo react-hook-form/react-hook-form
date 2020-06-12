@@ -20,9 +20,15 @@ describe('findMissDomAndClean', () => {
       test: 'test',
     };
     expect(
-      findRemovedFieldAndRemoveListener(fields as any, () => ({} as any), {
-        ref: { name: 'bill', type: 'radio' },
-      }),
+      findRemovedFieldAndRemoveListener(
+        fields as any,
+        () => ({} as any),
+        {
+          ref: { name: 'bill', type: 'radio' },
+        },
+        {},
+        true,
+      ),
     ).toEqual(undefined);
   });
 
@@ -49,9 +55,15 @@ describe('findMissDomAndClean', () => {
       },
     };
 
-    findRemovedFieldAndRemoveListener(fields, () => ({} as any), {
-      ref,
-    });
+    findRemovedFieldAndRemoveListener(
+      fields,
+      () => ({} as any),
+      {
+        ref,
+      },
+      {},
+      true,
+    );
 
     expect(fields).toEqual({});
   });
@@ -76,12 +88,17 @@ describe('findMissDomAndClean', () => {
       },
     };
 
-    findRemovedFieldAndRemoveListener(fields, () => ({} as any), {
-      ref,
-      mutationWatcher: {
-        disconnect,
+    findRemovedFieldAndRemoveListener(
+      fields,
+      () => ({} as any),
+      {
+        ref,
+        mutationWatcher: {
+          disconnect,
+        },
       },
-    });
+      {},
+    );
 
     expect(fields).toMatchSnapshot();
   });
@@ -109,13 +126,18 @@ describe('findMissDomAndClean', () => {
     };
 
     expect(
-      findRemovedFieldAndRemoveListener(fields, () => ({} as any), {
-        ref: { name: 'test', type: 'radio' },
-        options: [{ ref }],
-        mutationWatcher: {
-          disconnect,
+      findRemovedFieldAndRemoveListener(
+        fields,
+        () => ({} as any),
+        {
+          ref: { name: 'test', type: 'radio' },
+          options: [{ ref }],
+          mutationWatcher: {
+            disconnect,
+          },
         },
-      }),
+        {},
+      ),
     ).toMatchSnapshot();
   });
 
@@ -142,13 +164,18 @@ describe('findMissDomAndClean', () => {
     };
 
     expect(
-      findRemovedFieldAndRemoveListener(fields, () => ({} as any), {
-        ref: { name: 'test', type: 'checkbox' },
-        options: [{ ref }],
-        mutationWatcher: {
-          disconnect,
+      findRemovedFieldAndRemoveListener(
+        fields,
+        () => ({} as any),
+        {
+          ref: { name: 'test', type: 'checkbox' },
+          options: [{ ref }],
+          mutationWatcher: {
+            disconnect,
+          },
         },
-      }),
+        {},
+      ),
     ).toMatchSnapshot();
   });
 
@@ -175,24 +202,34 @@ describe('findMissDomAndClean', () => {
       },
     };
 
-    findRemovedFieldAndRemoveListener(fields, () => ({} as any), {
-      ref: { name: 'test', type: 'text' },
-      options: [
-        {
-          mutationWatcher: {
-            disconnect,
+    findRemovedFieldAndRemoveListener(
+      fields,
+      () => ({} as any),
+      {
+        ref: { name: 'test', type: 'text' },
+        options: [
+          {
+            mutationWatcher: {
+              disconnect,
+            },
+            ref: {},
           },
-          ref: {},
-        },
-      ],
-    });
+        ],
+      },
+      {},
+    );
 
     expect(fields).toMatchSnapshot();
 
     expect(
-      findRemovedFieldAndRemoveListener(fields, () => ({} as any), {
-        ref: { name: 'test', type: 'text' },
-      }),
+      findRemovedFieldAndRemoveListener(
+        fields,
+        () => ({} as any),
+        {
+          ref: { name: 'test', type: 'text' },
+        },
+        {},
+      ),
     ).toMatchSnapshot();
   });
 
@@ -229,9 +266,61 @@ describe('findMissDomAndClean', () => {
           },
         ],
       },
+      {},
+      false,
       true,
     );
 
     expect(fields).toEqual({});
+  });
+
+  it('should store state when component is getting unmount', () => {
+    const state = { current: {} };
+    const fields = {
+      test: {
+        name: 'test',
+        ref: {
+          value: 'test',
+        },
+      },
+    };
+
+    findRemovedFieldAndRemoveListener(
+      fields,
+      () => ({} as any),
+      {
+        ref: { name: 'test', type: 'text' },
+      },
+      state,
+      false,
+    );
+
+    expect(state).toEqual({
+      current: { test: 'test' },
+    });
+  });
+
+  it('should not store state when component is getting unmount and value is return undefined', () => {
+    const state = { current: {} };
+    const fields = {
+      test: {
+        name: 'test',
+        ref: {},
+      },
+    };
+
+    findRemovedFieldAndRemoveListener(
+      fields,
+      () => ({} as any),
+      {
+        ref: { name: 'test', type: 'text' },
+      },
+      state,
+      false,
+    );
+
+    expect(state).toEqual({
+      current: {},
+    });
   });
 });

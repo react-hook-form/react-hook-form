@@ -1,10 +1,13 @@
+import * as React from 'react';
 import removeAllEventListeners from './removeAllEventListeners';
+import getFieldValue from './getFieldValue';
 import isRadioInput from '../utils/isRadioInput';
 import isCheckBoxInput from '../utils/isCheckBoxInput';
 import isDetached from '../utils/isDetached';
 import isArray from '../utils/isArray';
 import unset from '../utils/unset';
 import unique from '../utils/unique';
+import isUndefined from '../utils/isUndefined';
 import { Field, FieldRefs, FieldValues, Ref } from '../types/form';
 
 const isSameRef = (fieldValue: Field, ref: Ref) =>
@@ -16,6 +19,8 @@ export default function findRemovedFieldAndRemoveListener<
   fields: FieldRefs<TFieldValues>,
   handleChange: ({ type, target }: Event) => Promise<void | boolean>,
   field: Field,
+  unmountFieldsStateRef: React.MutableRefObject<Record<string, any>>,
+  shouldUnregister?: boolean,
   forceDelete?: boolean,
 ): void {
   const {
@@ -23,15 +28,23 @@ export default function findRemovedFieldAndRemoveListener<
     ref: { name, type },
     mutationWatcher,
   } = field;
-  const fieldValue = fields[name] as Field;
+  const fieldRef = fields[name] as Field;
+
+  if (!shouldUnregister) {
+    const value = getFieldValue(fields, fieldRef.ref);
+
+    if (!isUndefined(value)) {
+      unmountFieldsStateRef.current[name] = value;
+    }
+  }
 
   if (!type) {
     delete fields[name];
     return;
   }
 
-  if ((isRadioInput(ref) || isCheckBoxInput(ref)) && fieldValue) {
-    const { options } = fieldValue;
+  if ((isRadioInput(ref) || isCheckBoxInput(ref)) && fieldRef) {
+    const { options } = fieldRef;
 
     if (isArray(options) && options.length) {
       unique(options).forEach((option, index): void => {
@@ -53,7 +66,7 @@ export default function findRemovedFieldAndRemoveListener<
     } else {
       delete fields[name];
     }
-  } else if ((isDetached(ref) && isSameRef(fieldValue, ref)) || forceDelete) {
+  } else if ((isDetached(ref) && isSameRef(fieldRef, ref)) || forceDelete) {
     removeAllEventListeners(ref, handleChange);
 
     if (mutationWatcher) {

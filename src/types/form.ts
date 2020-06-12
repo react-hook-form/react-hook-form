@@ -89,6 +89,7 @@ export type UseFormOptions<
   resolver: Resolver<TFieldValues, TContext>;
   context: TContext;
   shouldFocusError: boolean;
+  shouldUnregister: boolean;
   criteriaMode: 'firstError' | 'all';
 }>;
 
@@ -97,7 +98,7 @@ export type MutationWatcher = {
   observe?: any;
 };
 
-export type Message = string | React.ReactElement;
+export type Message = string;
 
 export type ValidationValue = boolean | number | string | RegExp;
 
@@ -240,6 +241,7 @@ export type Control<TFieldValues extends FieldValues = FieldValues> = Pick<
   resetFieldArrayFunctionRef: React.MutableRefObject<
     Record<string, (values: any) => void>
   >;
+  unmountFieldsStateRef: Record<string, any>;
   fieldArrayNamesRef: React.MutableRefObject<Set<string>>;
   isDirtyRef: React.MutableRefObject<boolean>;
   isSubmittedRef: React.MutableRefObject<boolean>;

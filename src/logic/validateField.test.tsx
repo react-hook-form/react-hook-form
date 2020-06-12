@@ -1,4 +1,3 @@
-import * as React from 'react';
 import validateField from './validateField';
 import getRadioValue from './getRadioValue';
 import getCheckboxValue from './getCheckboxValue';
@@ -47,12 +46,12 @@ describe('validateField', () => {
     expect(
       await validateField({} as any, false, {
         ref: { type: 'text', value: '', name: 'test', setCustomValidity },
-        required: <p>required</p>,
+        required: 'required',
       }),
     ).toEqual({
       test: {
         ref: { type: 'text', value: '', name: 'test', setCustomValidity },
-        message: <p>required</p>,
+        message: 'required',
         type: 'required',
       },
     });
@@ -78,13 +77,13 @@ describe('validateField', () => {
         ref: { type: 'text', value: '', name: 'test', setCustomValidity },
         required: {
           value: true,
-          message: <p>required</p>,
+          message: 'required',
         },
       }),
     ).toEqual({
       test: {
         ref: { type: 'text', value: '', name: 'test', setCustomValidity },
-        message: <p>required</p>,
+        message: 'required',
         type: 'required',
       },
     });
@@ -261,13 +260,13 @@ describe('validateField', () => {
         required: true,
         max: {
           value: 0,
-          message: <p>max</p>,
+          message: 'max',
         },
       }),
     ).toEqual({
       test: {
         type: 'max',
-        message: <p>max</p>,
+        message: 'max',
         ref: { type: 'number', name: 'test', value: 10, valueAsNumber: 10 },
       },
     });
@@ -405,13 +404,13 @@ describe('validateField', () => {
         required: true,
         min: {
           value: 0,
-          message: <p>min</p>,
+          message: 'min',
         },
       }),
     ).toEqual({
       test: {
         type: 'min',
-        message: <p>min</p>,
+        message: 'min',
         ref: { type: 'number', name: 'test', value: -1, valueAsNumber: -1 },
       },
     });
@@ -492,13 +491,13 @@ describe('validateField', () => {
         required: true,
         min: {
           value: '2019-3-12',
-          message: <p>min</p>,
+          message: 'min',
         },
       }),
     ).toEqual({
       test: {
         type: 'min',
-        message: <p>min</p>,
+        message: 'min',
         ref: {
           type: 'date',
           name: 'test',
@@ -626,7 +625,7 @@ describe('validateField', () => {
         required: true,
         maxLength: {
           value: 12,
-          message: <p>maxLength</p>,
+          message: 'maxLength',
         },
       }),
     ).toEqual({
@@ -637,7 +636,7 @@ describe('validateField', () => {
           value: 'This is a long text input',
           setCustomValidity,
         },
-        message: <p>maxLength</p>,
+        message: 'maxLength',
         type: 'maxLength',
       },
     });
@@ -706,7 +705,7 @@ describe('validateField', () => {
         required: true,
         minLength: {
           value: 200,
-          message: <p>minLength</p>,
+          message: 'minLength',
         },
       }),
     ).toEqual({
@@ -717,7 +716,7 @@ describe('validateField', () => {
           value: 'This is a long text input',
           setCustomValidity,
         },
-        message: <p>minLength</p>,
+        message: 'minLength',
         type: 'minLength',
       },
     });
@@ -788,7 +787,7 @@ describe('validateField', () => {
         required: true,
         pattern: {
           value: emailRegex,
-          message: <p>regex failed</p>,
+          message: 'regex failed',
         },
       }),
     ).toEqual({
@@ -799,7 +798,7 @@ describe('validateField', () => {
           value: 'This is a long text input',
           setCustomValidity,
         },
-        message: <p>regex failed</p>,
+        message: 'regex failed',
         type: 'pattern',
       },
     });
@@ -1054,7 +1053,7 @@ describe('validateField', () => {
           validate: {
             test: (value) => {
               if (value.toString().length > 3) {
-                return <p>max 3</p>;
+                return 'max 3';
               }
               return true;
             },
@@ -1064,7 +1063,7 @@ describe('validateField', () => {
     ).toEqual({
       test: {
         type: 'test',
-        message: <p>max 3</p>,
+        message: 'max 3',
         ref: {
           type: 'text',
           name: 'test',
@@ -1126,13 +1125,13 @@ describe('validateField', () => {
             value: 'This is a long text input',
             setCustomValidity,
           },
-          validate: (value) => value.toString().length < 3 || <p>bill</p>,
+          validate: (value) => value.toString().length < 3 || 'bill',
         },
       ),
     ).toEqual({
       test: {
         type: 'validate',
-        message: <p>bill</p>,
+        message: 'bill',
         ref: {
           type: 'text',
           name: 'test',
@@ -1238,19 +1237,19 @@ describe('validateField', () => {
     expect(
       await validateField({ current: {} }, true, {
         ref: { type: 'text', value: 'bil', name: 'test', setCustomValidity },
-        required: <p>test</p>,
+        required: 'test',
         minLength: {
           value: 10,
-          message: <p>minLength</p>,
+          message: 'minLength',
         },
         pattern: {
           value: /d/i,
-          message: <p>pattern</p>,
+          message: 'pattern',
         },
         validate: {
-          test: (value) => value === <p>test</p>,
-          test1: (value) => value == 'test' || <p>Luo</p>,
-          test2: (value) => value == 'test' || <p>Bill</p>,
+          test: (value) => value === 'test',
+          test1: (value) => value == 'test' || 'Luo',
+          test2: (value) => value == 'test' || 'Bill',
         },
       }),
     ).toMatchSnapshot();

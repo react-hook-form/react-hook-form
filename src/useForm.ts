@@ -77,6 +77,7 @@ export function useForm<
   context,
   defaultValues = {} as UnpackNestedValue<DeepPartial<TFieldValues>>,
   shouldFocusError = true,
+  shouldUnregister = true,
   criteriaMode,
 }: UseFormOptions<TFieldValues, TContext> = {}): UseFormMethods<TFieldValues> {
   const fieldsRef = React.useRef<FieldRefs<TFieldValues>>({});
@@ -112,6 +113,7 @@ export function useForm<
   const submitCountRef = React.useRef(0);
   const isSubmittingRef = React.useRef(false);
   const handleChangeRef = React.useRef<HandleChange>();
+  const unmountFieldsStateRef = React.useRef<Record<string, any>>({});
   const resetFieldArrayFunctionRef = React.useRef({});
   const contextRef = React.useRef(context);
   const resolverRef = React.useRef(resolver);
@@ -261,15 +263,16 @@ export function useForm<
         unset(dirtyFieldsRef.current, name);
       }
 
-      isDirtyRef.current = isFieldArray
-        ? getIsFieldsDifferent(
+      isDirtyRef.current =
+        (isFieldArray &&
+          getIsFieldsDifferent(
             getFieldArrayValueByName(
               fieldsRef.current,
               getFieldArrayParentName(name),
             ),
             get(defaultValuesRef.current, getFieldArrayParentName(name)),
-          ) || !isEmptyObject(dirtyFieldsRef.current)
-        : !isEmptyObject(dirtyFieldsRef.current);
+          )) ||
+        !isEmptyObject(dirtyFieldsRef.current);
 
       return (
         (isDirty && previousIsDirty !== isDirtyRef.current) ||
@@ -422,10 +425,8 @@ export function useForm<
           !watchFieldsHookRef.current[key].size ||
           isNameInFieldArray(fieldArrayNamesRef.current, name)
         ) {
-          if (watchFieldsHookRenderRef.current[key]) {
-            watchFieldsHookRenderRef.current[key]();
-            found = false;
-          }
+          watchFieldsHookRenderRef.current[key]();
+          found = false;
         }
       }
     }
@@ -465,16 +466,17 @@ export function useForm<
       : [names];
 
     namesInArray.forEach((name: any) => {
+      const keyName = isString(name) ? name : Object.keys(name)[0];
       shouldRender =
         setInternalValue(
-          isString(name) ? name : Object.keys(name)[0],
+          keyName,
           isString(name)
             ? valueOrShouldValidate
             : (Object.values(name)[0] as any),
         ) ||
         isArrayValue ||
-        isFieldWatched(name);
-      renderWatchedInputs(name);
+        isFieldWatched(keyName);
+      renderWatchedInputs(keyName);
     });
 
     if (shouldRender || isArrayValue) {
@@ -563,25 +565,21 @@ export function useForm<
         ? getFieldsValues(fieldsRef.current)
         : defaultValuesRef.current;
 
-      if (resolverRef.current) {
-        resolverRef
-          .current(
-            transformToNestObject({
-              ...fieldValues,
-              ...values,
-            }),
-            contextRef.current,
-            validateAllFieldCriteria,
-          )
-          .then(({ errors }) => {
-            const previousFormIsValid = isValidRef.current;
-            isValidRef.current = isEmptyObject(errors);
+      resolverRef.current!(
+        transformToNestObject({
+          ...fieldValues,
+          ...values,
+        }),
+        contextRef.current,
+        validateAllFieldCriteria,
+      ).then(({ errors }) => {
+        const previousFormIsValid = isValidRef.current;
+        isValidRef.current = isEmptyObject(errors);
 
-            if (previousFormIsValid !== isValidRef.current) {
-              reRender();
-            }
-          });
-      }
+        if (previousFormIsValid !== isValidRef.current) {
+          reRender();
+        }
+      });
     },
     [reRender, validateAllFieldCriteria, resolverRef],
   );
@@ -592,10 +590,12 @@ export function useForm<
         fieldsRef.current,
         handleChangeRef.current!,
         field,
+        unmountFieldsStateRef,
+        shouldUnregister,
         forceDelete,
       );
     },
-    [],
+    [shouldUnregister],
   );
 
   const removeFieldEventListenerAndRef = React.useCallback(
@@ -876,8 +876,14 @@ export function useForm<
 
     fields[name] = field;
 
-    if (!isEmptyObject(defaultValuesRef.current)) {
-      defaultValue = get(defaultValuesRef.current, name);
+    const isEmptyUnmountFields = isUndefined(
+      unmountFieldsStateRef.current[name],
+    );
+
+    if (!isEmptyObject(defaultValuesRef.current) || !isEmptyUnmountFields) {
+      defaultValue = isEmptyUnmountFields
+        ? get(defaultValuesRef.current, name)
+        : unmountFieldsStateRef.current[name];
       isEmptyDefaultValue = isUndefined(defaultValue);
       isFieldArray = isNameInFieldArray(fieldArrayNamesRef.current, name);
 
@@ -976,7 +982,10 @@ export function useForm<
         e.persist();
       }
       let fieldErrors: FieldErrors<TFieldValues> = {};
-      let fieldValues: FieldValues = getFieldsValues(fieldsRef.current);
+      let fieldValues: FieldValues = {
+        ...unmountFieldsStateRef.current,
+        ...getFieldsValues(fieldsRef.current),
+      };
 
       if (readFormStateRef.current.isSubmitting) {
         isSubmittingRef.current = true;
@@ -1080,6 +1089,7 @@ export function useForm<
       TFieldValues
     >;
     fieldArrayDefaultValues.current = {};
+    unmountFieldsStateRef.current = {};
     watchFieldsRef.current = new Set();
     isWatchAllRef.current = false;
   };
@@ -1251,6 +1261,7 @@ export function useForm<
     isSubmittedRef,
     readFormStateRef,
     defaultValuesRef,
+    unmountFieldsStateRef,
     ...commonProps,
   };
 
