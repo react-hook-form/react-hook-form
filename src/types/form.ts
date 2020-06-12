@@ -102,7 +102,7 @@ export type Message = string;
 
 export type ValidationValue = boolean | number | string | RegExp;
 
-export type ValidationOption<
+export type ValidationRule<
   TValidationValue extends ValidationValue = ValidationValue
 > = TValidationValue | ValidationValueMessage<TValidationValue>;
 
@@ -117,13 +117,13 @@ export type ValidateResult = Message | boolean | undefined;
 
 export type Validate = (data: any) => ValidateResult | Promise<ValidateResult>;
 
-export type ValidationOptions = Partial<{
-  required: Message | ValidationOption<boolean>;
-  min: ValidationOption<number | string>;
-  max: ValidationOption<number | string>;
-  maxLength: ValidationOption<number | string>;
-  minLength: ValidationOption<number | string>;
-  pattern: ValidationOption<RegExp>;
+export type ValidationRules = Partial<{
+  required: Message | ValidationRule<boolean>;
+  min: ValidationRule<number | string>;
+  max: ValidationRule<number | string>;
+  maxLength: ValidationRule<number | string>;
+  minLength: ValidationRule<number | string>;
+  pattern: ValidationRule<RegExp>;
   validate: Validate | Record<string, Validate>;
 }>;
 
@@ -148,7 +148,7 @@ export type Field = {
   ref: Ref;
   mutationWatcher?: MutationWatcher;
   options?: RadioOrCheckboxOption[];
-} & ValidationOptions;
+} & ValidationRules;
 
 export type FieldRefs<TFieldValues extends FieldValues> = Partial<
   Record<InternalFieldName<TFieldValues>, Field>
@@ -305,15 +305,12 @@ export type UseFormMethods<TFieldValues extends FieldValues = FieldValues> = {
     ref: TFieldElement | null,
   ) => void;
   register<TFieldElement extends FieldElement<TFieldValues>>(
-    validationOptions: ValidationOptions,
+    rules: ValidationRules,
   ): (ref: TFieldElement | null) => void;
-  register(
-    name: FieldName<TFieldValues>,
-    validationOptions?: ValidationOptions,
-  ): void;
+  register(name: FieldName<TFieldValues>, rules?: ValidationRules): void;
   register<TFieldElement extends FieldElement<TFieldValues>>(
     ref: TFieldElement | null,
-    validationOptions?: ValidationOptions,
+    rules?: ValidationRules,
   ): void;
   unregister(name: FieldName<TFieldValues> | FieldName<TFieldValues>[]): void;
   watch(): UnpackNestedValue<TFieldValues>;

@@ -1,12 +1,12 @@
 import isObject from '../utils/isObject';
 import isRegex from '../utils/isRegex';
-import { ValidationOption, ValidationValueMessage } from '../types/form';
+import { ValidationRule, ValidationValueMessage } from '../types/form';
 
 const isValueMessage = (
-  value?: ValidationOption,
+  value?: ValidationRule,
 ): value is ValidationValueMessage => isObject(value) && !isRegex(value);
 
-export default (validationData?: ValidationOption) =>
+export default (validationData?: ValidationRule) =>
   isValueMessage(validationData)
     ? validationData
     : {

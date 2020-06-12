@@ -48,7 +48,7 @@ import {
   Field,
   FieldRefs,
   UseFormOptions,
-  ValidationOptions,
+  ValidationRules,
   SubmitHandler,
   FieldElement,
   FormStateProxy,
@@ -814,7 +814,7 @@ export function useForm<
 
   function registerFieldsRef<TFieldElement extends FieldElement<TFieldValues>>(
     ref: TFieldElement & Ref,
-    validateOptions: ValidationOptions | null = {},
+    validateOptions: ValidationRules | null = {},
   ): ((name: InternalFieldName<TFieldValues>) => void) | void {
     if (!ref.name) {
       // eslint-disable-next-line no-console
@@ -940,32 +940,32 @@ export function useForm<
     ref: (TFieldElement & Ref) | null,
   ) => void;
   function register<TFieldElement extends FieldElement<TFieldValues>>(
-    validationOptions: ValidationOptions,
+    rules: ValidationRules,
   ): (ref: (TFieldElement & Ref) | null) => void;
   function register(
     name: FieldName<TFieldValues>,
-    validationOptions?: ValidationOptions,
+    rules?: ValidationRules,
   ): void;
   function register<TFieldElement extends FieldElement<TFieldValues>>(
     ref: (TFieldElement & Ref) | null,
-    validationOptions?: ValidationOptions,
+    rules?: ValidationRules,
   ): void;
   function register<TFieldElement extends FieldElement<TFieldValues>>(
     refOrValidationOptions?:
       | FieldName<TFieldValues>
-      | ValidationOptions
+      | ValidationRules
       | (TFieldElement & Ref)
       | null,
-    validationOptions?: ValidationOptions,
+    rules?: ValidationRules,
   ): ((ref: (TFieldElement & Ref) | null) => void) | void {
     if (!isWindowUndefined) {
       if (isString(refOrValidationOptions)) {
-        registerFieldsRef({ name: refOrValidationOptions }, validationOptions);
+        registerFieldsRef({ name: refOrValidationOptions }, rules);
       } else if (
         isObject(refOrValidationOptions) &&
         'name' in refOrValidationOptions
       ) {
-        registerFieldsRef(refOrValidationOptions, validationOptions);
+        registerFieldsRef(refOrValidationOptions, rules);
       } else {
         return (ref: (TFieldElement & Ref) | null) =>
           ref && registerFieldsRef(ref, refOrValidationOptions);
