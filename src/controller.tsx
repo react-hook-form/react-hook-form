@@ -8,7 +8,7 @@ import skipValidation from './logic/skipValidation';
 import isNameInFieldArray from './logic/isNameInFieldArray';
 import { useFormContext } from './useFormContext';
 import { VALUE } from './constants';
-import { Control, Field } from './types/form';
+import { Control } from './types/form';
 import { ControllerProps } from './types/props';
 
 const Controller = <
@@ -34,7 +34,6 @@ const Controller = <
     register,
     unregister,
     errorsRef,
-    removeFieldEventListener,
     trigger,
     mode: { isOnSubmit, isOnBlur, isOnChange },
     reValidateMode: { isReValidateOnBlur, isReValidateOnSubmit },
@@ -84,10 +83,6 @@ const Controller = <
         ...rules,
       };
     } else {
-      if (!isNotFieldArray) {
-        removeFieldEventListener(fieldsRef.current[name] as Field, true);
-      }
-
       register(
         Object.defineProperty({ name, focus: onFocusRef.current }, VALUE, {
           set(data) {
@@ -101,15 +96,7 @@ const Controller = <
         rules,
       );
     }
-  }, [
-    isNotFieldArray,
-    fieldsRef,
-    rules,
-    name,
-    onFocusRef,
-    register,
-    removeFieldEventListener,
-  ]);
+  }, [fieldsRef, rules, name, onFocusRef, register]);
 
   React.useEffect(
     () => () => {

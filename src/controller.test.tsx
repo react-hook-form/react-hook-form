@@ -2,7 +2,6 @@ import * as React from 'react';
 import { render, fireEvent, act } from '@testing-library/react';
 import { Controller } from './controller';
 import { reconfigureControl } from './__mocks__/reconfigureControl';
-import { Field } from './types/form';
 import * as set from './utils/set';
 import { FormProvider } from './useFormContext';
 import { renderHook } from '@testing-library/react-hooks';
@@ -593,33 +592,6 @@ describe('Controller', () => {
     );
 
     expect(asFragment()).toMatchSnapshot();
-  });
-
-  it('should invoke removeFieldEventListener to remove field with Field Array item', () => {
-    const control = reconfigureControl();
-    const removeFieldEventListener = jest.fn();
-
-    render(
-      <Controller
-        defaultValue=""
-        name="test[0]"
-        render={(props) => <input {...props} />}
-        control={{
-          ...control,
-          removeFieldEventListener,
-          fieldsRef: {
-            current: {
-              'test[1]': {} as Field,
-            },
-          },
-          fieldArrayNamesRef: {
-            current: new Set(['test']),
-          },
-        }}
-      />,
-    );
-
-    expect(removeFieldEventListener).toBeCalled();
   });
 
   it('should be null if as and render props are not given', () => {

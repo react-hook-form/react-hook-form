@@ -250,20 +250,12 @@ export function useForm<
         return false;
       }
 
-      let isFieldDirty =
+      const isFieldDirty =
         defaultValuesAtRenderRef.current[name] !==
         getFieldValue(fieldsRef.current, fieldsRef.current[name]!.ref);
       const isDirtyFieldExist = get(dirtyFieldsRef.current, name);
       const isFieldArray = isNameInFieldArray(fieldArrayNamesRef.current, name);
       const previousIsDirty = isDirtyRef.current;
-
-      if (isFieldArray) {
-        const fieldArrayName = getFieldArrayParentName(name);
-        isFieldDirty = getIsFieldsDifferent(
-          getFieldArrayValueByName(fieldsRef.current, fieldArrayName),
-          get(defaultValuesRef.current, fieldArrayName),
-        );
-      }
 
       if (isFieldDirty) {
         set(dirtyFieldsRef.current, name, true);
@@ -272,7 +264,13 @@ export function useForm<
       }
 
       isDirtyRef.current = isFieldArray
-        ? isFieldDirty
+        ? getIsFieldsDifferent(
+            getFieldArrayValueByName(
+              fieldsRef.current,
+              getFieldArrayParentName(name),
+            ),
+            get(defaultValuesRef.current, getFieldArrayParentName(name)),
+          ) || !isEmptyObject(dirtyFieldsRef.current)
         : !isEmptyObject(dirtyFieldsRef.current);
 
       return (
@@ -469,16 +467,17 @@ export function useForm<
       : [names];
 
     namesInArray.forEach((name: any) => {
+      const keyName = isString(name) ? name : Object.keys(name)[0];
       shouldRender =
         setInternalValue(
-          isString(name) ? name : Object.keys(name)[0],
+          keyName,
           isString(name)
             ? valueOrShouldValidate
             : (Object.values(name)[0] as any),
         ) ||
         isArrayValue ||
-        isFieldWatched(name);
-      renderWatchedInputs(name);
+        isFieldWatched(keyName);
+      renderWatchedInputs(keyName);
     });
 
     if (shouldRender || isArrayValue) {
@@ -592,16 +591,14 @@ export function useForm<
 
   const removeFieldEventListener = React.useCallback(
     (field: Field, forceDelete?: boolean) => {
-      if (handleChangeRef.current && field) {
-        findRemovedFieldAndRemoveListener(
-          fieldsRef.current,
-          handleChangeRef.current,
-          field,
-          unmountFieldsStateRef,
-          shouldUnregister,
-          forceDelete,
-        );
-      }
+      findRemovedFieldAndRemoveListener(
+        fieldsRef.current,
+        handleChangeRef.current!,
+        field,
+        unmountFieldsStateRef,
+        shouldUnregister,
+        forceDelete,
+      );
     },
     [shouldUnregister],
   );

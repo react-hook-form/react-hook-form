@@ -972,8 +972,6 @@ describe('useForm', () => {
           ]);
           expect(result.current.formState.dirtyFields.test!).toEqual([
             { name: true },
-            { name: true },
-            { name: true },
           ]);
         });
       });
