@@ -465,16 +465,17 @@ export function useForm<
       : [names];
 
     namesInArray.forEach((name: any) => {
+      const keyName = isString(name) ? name : Object.keys(name)[0];
       shouldRender =
         setInternalValue(
-          isString(name) ? name : Object.keys(name)[0],
+          keyName,
           isString(name)
             ? valueOrShouldValidate
             : (Object.values(name)[0] as any),
         ) ||
         isArrayValue ||
-        isFieldWatched(name);
-      renderWatchedInputs(name);
+        isFieldWatched(keyName);
+      renderWatchedInputs(keyName);
     });
 
     if (shouldRender || isArrayValue) {
