@@ -300,10 +300,6 @@ export type UseWatchOptions = {
   control?: Control;
 };
 
-export type FieldValuesFromFieldErrors<
-  TFieldErrors
-> = TFieldErrors extends FieldErrors<infer TFieldValues> ? TFieldValues : never;
-
 export type UseFormMethods<TFieldValues extends FieldValues = FieldValues> = {
   register<TFieldElement extends FieldElement<TFieldValues>>(): (
     ref: TFieldElement | null,

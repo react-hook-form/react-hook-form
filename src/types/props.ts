@@ -2,11 +2,7 @@ import {
   UseFormMethods,
   FieldValues,
   FieldValuesFromControl,
-  FieldValuesFromFieldErrors,
   FieldName,
-  FieldErrors,
-  MultipleFieldErrors,
-  Message,
   ValidationOptions,
   Control,
 } from './form';
@@ -48,27 +44,6 @@ export type ControllerProps<
       onBlur: () => void;
       value: any;
     }) => React.ReactElement;
-  },
-  AsProps<TAs>
->;
-
-export type ErrorMessageProps<
-  TFieldErrors extends FieldErrors,
-  TAs extends
-    | undefined
-    | React.ReactElement
-    | React.ComponentType<any>
-    | keyof JSX.IntrinsicElements = undefined
-> = Assign<
-  {
-    as?: TAs;
-    errors?: TFieldErrors;
-    name: FieldName<FieldValuesFromFieldErrors<TFieldErrors>>;
-    message?: string | React.ReactElement;
-    render?: (data: {
-      message: Message;
-      messages?: MultipleFieldErrors;
-    }) => React.ReactNode;
   },
   AsProps<TAs>
 >;
