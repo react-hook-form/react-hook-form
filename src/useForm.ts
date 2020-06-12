@@ -411,7 +411,9 @@ export function useForm<
   );
 
   const isFieldWatched = (name: string) =>
-    isWatchAllRef.current || watchFieldsRef.current.has(name);
+    isWatchAllRef.current ||
+    watchFieldsRef.current.has(name) ||
+    watchFieldsRef.current.has((name.match(/\w+/) || [])[0]);
 
   const renderWatchedInputs = (name: string, found = true): boolean => {
     if (!isEmptyObject(watchFieldsHookRef.current)) {
