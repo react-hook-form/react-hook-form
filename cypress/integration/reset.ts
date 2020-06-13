@@ -1,4 +1,4 @@
-context('form reset', () => {
+describe('form reset', () => {
   it('should be able to re-populate the form while reset', () => {
     cy.visit('http://localhost:3000/reset');
 
@@ -14,6 +14,9 @@ context('form reset', () => {
     cy.get('input[name="lastName"]').should('have.value', 'luo');
     cy.get('input[name="array[1]"]').should('have.value', 'test');
     cy.get('input[name="objectData.test"]').should('have.value', 'data');
-    cy.get('input[name="deepNest.level1.level2.data"]').should('have.value', 'hey');
+    cy.get('input[name="deepNest.level1.level2.data"]').should(
+      'have.value',
+      'hey',
+    );
   });
 });

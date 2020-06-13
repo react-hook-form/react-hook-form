@@ -1,4 +1,4 @@
-context('useWatch', () => {
+describe('useWatch', () => {
   it('should only trigger render when interact with input 1', () => {
     cy.visit('http://localhost:3000/useWatch');
     cy.get('input[name="test"]').type('t');

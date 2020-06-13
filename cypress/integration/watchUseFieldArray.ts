@@ -1,4 +1,4 @@
-context('watchUseFieldArray', () => {
+describe('watchUseFieldArray', () => {
   it('should behaviour correctly when watching the field array', () => {
     cy.visit('http://localhost:3000/watch-field-array/normal');
 

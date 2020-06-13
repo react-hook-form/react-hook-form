@@ -1,4 +1,4 @@
-context('form state with schema validation', () => {
+describe('form state with schema validation', () => {
   it('should return correct form state with onSubmit mode', () => {
     cy.visit('http://localhost:3000/formStateWithSchema/onSubmit');
 

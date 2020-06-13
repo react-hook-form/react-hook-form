@@ -1,4 +1,4 @@
-context('form setValue with trigger', () => {
+describe('form setValue with trigger', () => {
   it('should set input value and trigger validation', () => {
     cy.visit('http://localhost:3000/setValueWithTrigger');
 

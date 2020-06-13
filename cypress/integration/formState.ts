@@ -1,4 +1,4 @@
-context('form state', () => {
+describe('form state', () => {
   it('should return correct form state with onSubmit mode', () => {
     cy.visit('http://localhost:3000/formState/onSubmit');
 
