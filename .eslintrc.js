@@ -17,7 +17,6 @@ module.exports = {
     '@typescript-eslint/ban-ts-ignore': 'warn',
     '@typescript-eslint/no-explicit-any': 'off',
     '@typescript-eslint/explicit-function-return-type': 'off',
-    '@typescript-eslint/no-empty-function': 'off',
     '@typescript-eslint/no-object-literal-type-assertion': 'off',
     '@typescript-eslint/generic-type-naming': [
       'error',
