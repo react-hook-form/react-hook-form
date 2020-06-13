@@ -1,4 +1,4 @@
-context('isValid', () => {
+describe('isValid', () => {
   it('should showing valid correctly with build in validation', () => {
     cy.visit('http://localhost:3000/isValid/build-in/defaultValue');
     cy.get('#isValid').contains('false');

@@ -1,4 +1,4 @@
-context('basicSchemaValidation form validation', () => {
+describe('basicSchemaValidation form validation', () => {
   it('should validate the form with onSubmit mode', () => {
     cy.visit('http://localhost:3000/basic-schema-validation/onSubmit');
     cy.get('button').click();

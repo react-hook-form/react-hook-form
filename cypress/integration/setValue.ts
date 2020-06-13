@@ -1,4 +1,4 @@
-context('form setValue', () => {
+describe('form setValue', () => {
   it('should set input value, trigger validation and clear all errors', () => {
     cy.visit('http://localhost:3000/setValue');
 

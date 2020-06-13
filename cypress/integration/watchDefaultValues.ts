@@ -1,4 +1,4 @@
-context('watchDefaultValues', () => {
+describe('watchDefaultValues', () => {
   it('should return default value with watch', () => {
     cy.visit('http://localhost:3000/watch-default-values');
 

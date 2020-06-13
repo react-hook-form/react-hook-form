@@ -1,4 +1,4 @@
-context('controller basic form validation', () => {
+describe('controller basic form validation', () => {
   it('should validate the form and reset the form', () => {
     cy.visit('http://localhost:3000/controller/onSubmit');
     cy.get('#submit').click();

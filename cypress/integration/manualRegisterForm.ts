@@ -1,4 +1,4 @@
-context('manual register form validation', () => {
+describe('manual register form validation', () => {
   it('should validate the form', () => {
     cy.visit('http://localhost:3000/manual-register-form');
     cy.wait(200);
