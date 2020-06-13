@@ -16,6 +16,8 @@ import { NestedValue, UseFormMethods, Ref } from './types/form';
 import skipValidation from './logic/skipValidation';
 import * as shouldRenderBasedOnError from './logic/shouldRenderBasedOnError';
 import { transformToNestObject } from './logic';
+import * as focusOnErrorField from './logic/focusOnErrorField';
+import * as isSameError from './utils/isSameError';
 
 jest.mock('./utils/onDomRemove');
 jest.mock('./logic/findRemovedFieldAndRemoveListener');
@@ -31,6 +33,7 @@ describe('useForm', () => {
     nodeEnv = process.env.NODE_ENV;
     process.env.NODE_ENV = 'production';
     jest.resetAllMocks();
+    jest.restoreAllMocks();
     (transformToNestObject as any).mockImplementation((data: any) => data);
   });
 
@@ -155,6 +158,34 @@ describe('useForm', () => {
       act(() => mockOnDetachCallback());
 
       expect(findRemovedFieldAndRemoveListener).toHaveBeenCalled();
+    });
+
+    it('should call reRender method with removeFieldEventListenerAndRef when onDomRemove method is executed with ReactNative', async () => {
+      let mockOnDetachCallback: VoidFunction;
+      (onDomRemove as any).mockImplementation(
+        (_: Ref, onDetachCallback: VoidFunction) => {
+          mockOnDetachCallback = onDetachCallback;
+        },
+      );
+
+      let renderCount = 0;
+      const Component = () => {
+        const { register, control } = useForm();
+        renderCount++;
+        if (!control.readFormStateRef.current.touched) {
+          control.readFormStateRef.current.touched = true;
+        }
+        return <input name="test" ref={register} />;
+      };
+
+      actComponent(() => {
+        render(<Component />);
+      });
+
+      actComponent(() => mockOnDetachCallback());
+
+      expect(findRemovedFieldAndRemoveListener).toHaveBeenCalled();
+      expect(renderCount).toBe(2);
     });
 
     it('should support register passed to ref', async () => {
@@ -297,6 +328,18 @@ describe('useForm', () => {
         } as React.SyntheticEvent);
       });
     });
+
+    it('should be set default value from unmountFieldsStateRef', () => {
+      const { result } = renderHook(() => useForm());
+      result.current.control.unmountFieldsStateRef.current['test'] = 'value';
+
+      result.current.register('test');
+
+      expect(result.current.control.fieldsRef.current['test']?.ref).toEqual({
+        name: 'test',
+        value: 'value',
+      });
+    });
   });
 
   describe('unregister', () => {
@@ -323,6 +366,38 @@ describe('useForm', () => {
 
       expect(findRemovedFieldAndRemoveListener).toBeCalled();
     });
+
+    it('should unregister an registered item with array name', async () => {
+      const { result } = renderHook(() => useForm());
+
+      act(() => {
+        result.current.register({ name: 'input' });
+        result.current.unregister(['input']);
+      });
+
+      const callback = jest.fn();
+
+      (validateField as any).mockImplementation(async () => {
+        return {};
+      });
+
+      await act(async () => {
+        await result.current.handleSubmit(callback)({
+          preventDefault: () => {},
+          persist: () => {},
+        } as React.SyntheticEvent);
+      });
+
+      expect(findRemovedFieldAndRemoveListener).toBeCalled();
+    });
+
+    it('should not call findRemovedFieldAndRemoveListener when field variable does not exist', () => {
+      const { result } = renderHook(() => useForm());
+
+      result.current.unregister('test');
+
+      expect(findRemovedFieldAndRemoveListener).not.toHaveBeenCalled();
+    });
   });
 
   describe('watch', () => {
@@ -338,6 +413,12 @@ describe('useForm', () => {
       expect(result.current.control.watchFieldsRef).toEqual({
         current: new Set(['test']),
       });
+    });
+
+    it('should return default value if value is empty', () => {
+      const { result } = renderHook(() => useForm<{ test: string }>());
+
+      expect(result.current.watch('test', 'default')).toBe('default');
     });
 
     it('should watch array of inputs', () => {
@@ -373,14 +454,51 @@ describe('useForm', () => {
         useForm<{ test: string; test1: string }>(),
       );
 
-      expect(result.current.watch()).toEqual({});
-
       act(() => {
         result.current.register({ type: 'radio', name: 'test', value: '' });
         result.current.register({ type: 'radio', name: 'test1', value: '' });
       });
 
-      expect(result.current.control.isWatchAllRef).toBeTruthy();
+      act(() => {
+        expect(result.current.watch()).toEqual({ test: '', test1: '' });
+      });
+
+      expect(result.current.control.isWatchAllRef.current).toBeTruthy();
+    });
+  });
+
+  describe('watchInternal', () => {
+    it('should set value to watchFieldsHookRef if id is defined', () => {
+      const { result } = renderHook(() => useForm<{ test: string }>());
+
+      const id = 'id';
+      result.current.control.watchFieldsHookRef.current[id] = new Set();
+
+      expect(
+        result.current.control.watchInternal('test', undefined, id),
+      ).toBeUndefined();
+      expect(
+        result.current.control.watchFieldsHookRef.current[id].has('test'),
+      ).toBeTruthy();
+    });
+
+    it('should return default value if fields are undefined', () => {
+      const { result } = renderHook(() =>
+        useForm<{ test: string; test1: string }>(),
+      );
+
+      const id = 'id';
+      result.current.control.watchFieldsHookRef.current[id] = new Set();
+
+      expect(
+        result.current.control.watchInternal(
+          undefined,
+          { test: 'default', test1: 'default1' },
+          id,
+        ),
+      ).toEqual({ test: 'default', test1: 'default1' });
+
+      expect(result.current.control.isWatchAllRef.current).toBeFalsy();
     });
   });
 
@@ -470,6 +588,56 @@ describe('useForm', () => {
       act(() => result.current.reset({ test: 'test' }));
 
       await waitFor(() => expect(reset).toHaveBeenCalled());
+    });
+
+    it('should not reset if OmitResetState is specified', async () => {
+      const { result } = renderHook(() => useForm());
+
+      result.current.register('test');
+
+      // check only public variables
+      act(() => {
+        result.current.control.errorsRef.current = { test: 'test' };
+        result.current.control.touchedFieldsRef.current = { test: 'test' };
+        result.current.control.validFieldsRef.current = new Set(['test']);
+        result.current.control.fieldsWithValidationRef.current = new Set([
+          'test',
+        ]);
+        result.current.control.isDirtyRef.current = true;
+        result.current.control.isSubmittedRef.current = true;
+      });
+
+      act(() =>
+        result.current.reset(
+          { test: '' },
+          {
+            errors: true,
+            isDirty: true,
+            isSubmitted: true,
+            touched: true,
+            isValid: true,
+            submitCount: true,
+            dirtyFields: true,
+          },
+        ),
+      );
+
+      await waitFor(() => {
+        expect(result.current.control.errorsRef.current).toEqual({
+          test: 'test',
+        });
+        expect(result.current.control.touchedFieldsRef.current).toEqual({
+          test: 'test',
+        });
+        expect(result.current.control.validFieldsRef.current).toEqual(
+          new Set(['test']),
+        );
+        expect(result.current.control.fieldsWithValidationRef.current).toEqual(
+          new Set(['test']),
+        );
+        expect(result.current.control.isDirtyRef.current).toBeTruthy();
+        expect(result.current.control.isSubmittedRef.current).toBeTruthy();
+      });
     });
   });
 
@@ -880,6 +1048,18 @@ describe('useForm', () => {
       await waitFor(() => expect(validateField).toBeCalledTimes(3));
     });
 
+    it('should not work if field is not registered', () => {
+      const { result } = renderHook(() => useForm());
+
+      act(() => {
+        result.current.setValue('test', '1');
+
+        expect(
+          result.current.control.fieldsRef.current['test'],
+        ).toBeUndefined();
+      });
+    });
+
     describe('setDirty', () => {
       it('should set name to dirtyFieldRef if field value is different with default value with ReactNative', () => {
         const { result } = renderHook(() =>
@@ -888,6 +1068,26 @@ describe('useForm', () => {
           }),
         );
         result.current.control.readFormStateRef.current.dirtyFields = true;
+
+        act(() => {
+          result.current.register('test');
+        });
+
+        act(() => {
+          result.current.setValue('test', '1');
+        });
+
+        expect(transformToNestObject).not.toHaveBeenCalled();
+        expect(result.current.formState.dirtyFields.test).toBeTruthy();
+      });
+
+      it('should set name to dirtyFieldRef if field value is different with default value and isDirty is true', () => {
+        const { result } = renderHook(() =>
+          useForm<{ test: string }>({
+            defaultValues: { test: 'default' },
+          }),
+        );
+        result.current.control.readFormStateRef.current.isDirty = true;
 
         act(() => {
           result.current.register('test');
@@ -1448,6 +1648,39 @@ describe('useForm', () => {
       });
       expect(callback).not.toBeCalled();
     });
+
+    it('should not focus if shouldFocusError is false', async () => {
+      const errors = {
+        test: {
+          type: 'required',
+          ref: { name: 'test', value: '' },
+          types: {
+            required: 'required',
+          },
+          message: 'required',
+        },
+      };
+      (validateField as any).mockImplementation(async () => {
+        return errors;
+      });
+      const mockFocusOnErrorField = jest.spyOn(focusOnErrorField, 'default');
+
+      const { result } = renderHook(() => useForm({ shouldFocusError: false }));
+
+      result.current.register('test', { required: true });
+
+      const callback = jest.fn();
+      await act(async () => {
+        await result.current.handleSubmit(callback)({
+          preventDefault: () => {},
+          persist: () => {},
+        } as React.SyntheticEvent);
+      });
+
+      expect(callback).not.toBeCalled();
+      expect(mockFocusOnErrorField).not.toBeCalled();
+      expect(result.current.control.errorsRef.current).toEqual(errors);
+    });
   });
 
   describe('handleSubmit with validationSchema', () => {
@@ -1561,6 +1794,18 @@ describe('useForm', () => {
         values,
       );
     });
+
+    it('should get field value from default value', () => {
+      const { result } = renderHook(() =>
+        useForm({
+          defaultValues: {
+            test: 'test',
+          },
+        }),
+      );
+
+      expect(result.current.getValues('test')).toEqual('test');
+    });
   });
 
   describe('setError', () => {
@@ -1664,6 +1909,45 @@ describe('useForm', () => {
         result.current.clearError('input.nested');
       });
       expect(result.current.errors.input?.nested).toBeUndefined();
+    });
+
+    it('should remove specified errors', () => {
+      const { result } = renderHook(() =>
+        useForm<{ input: string; input1: string; input2: string }>(),
+      );
+      act(() => {
+        result.current.setError('input', 'test', 'message');
+        result.current.setError('input1', 'test', 'message');
+        result.current.setError('input2', 'test', 'message');
+      });
+
+      const errors = {
+        input: {
+          isManual: true,
+          message: 'message',
+          ref: {},
+          type: 'test',
+          types: undefined,
+        },
+        input1: {
+          isManual: true,
+          message: 'message',
+          ref: {},
+          type: 'test',
+          types: undefined,
+        },
+        input2: {
+          isManual: true,
+          message: 'message',
+          ref: {},
+          type: 'test',
+          types: undefined,
+        },
+      };
+      expect(result.current.errors).toEqual(errors);
+
+      act(() => result.current.clearError(['input', 'input1']));
+      expect(result.current.errors).toEqual({ input2: errors.input2 });
     });
 
     it('should remove all error', () => {
@@ -1888,6 +2172,28 @@ describe('useForm', () => {
       expect(findRemovedFieldAndRemoveListener).toBeCalled();
     });
 
+    it('should call removeFieldEventListenerAndRef when field variable is array', () => {
+      const { result, unmount } = renderHook(() => useForm());
+
+      result.current.control.fieldArrayNamesRef.current.add('test');
+
+      result.current.register({ type: 'text', name: 'test[0]' });
+      result.current.register({ type: 'text', name: 'test[1]' });
+      result.current.register({ type: 'text', name: 'test[2]' });
+
+      unmount();
+
+      expect(findRemovedFieldAndRemoveListener).toHaveBeenCalled();
+    });
+
+    it('should not call removeFieldEventListenerAndRef when field variable does not exist', () => {
+      const { unmount } = renderHook(() => useForm());
+
+      unmount();
+
+      expect(findRemovedFieldAndRemoveListener).not.toHaveBeenCalled();
+    });
+
     it('should call resolver with removeFieldEventListenerAndRef with ReactNative', () => {
       const resolver = jest.fn(async (data: any) => {
         return {
@@ -2019,10 +2325,10 @@ describe('useForm', () => {
       isReValidateOnBlur: false,
       isSubmitted: false,
     };
-    const validateFieldParams = (ref: HTMLInputElement) => [
+    const validateFieldParams = (ref: HTMLInputElement, name = 'test') => [
       {
         current: {
-          test: {
+          [name]: {
             ref,
             required: 'required',
             mutationWatcher: undefined,
@@ -2036,15 +2342,16 @@ describe('useForm', () => {
         mutationWatcher: undefined,
       },
     ];
-    const shouldRenderBasedOnErrorParams = {
+    const shouldRenderBasedOnErrorParams = (name = 'test') => ({
       errors: {},
-      name: 'test',
+      name,
       error: {},
       validFields: new Set(),
       fieldsWithValidation: new Set(),
-    };
+    });
     let renderCount: number;
     let Component: React.FC<{
+      name?: string;
       resolver?: any;
       mode?: 'onBlur' | 'onSubmit' | 'onChange';
     }>;
@@ -2065,9 +2372,11 @@ describe('useForm', () => {
       );
       renderCount = 0;
       Component = ({
+        name = 'test',
         resolver,
         mode,
       }: {
+        name?: string;
         resolver?: any;
         mode?: 'onBlur' | 'onSubmit' | 'onChange';
       }) => {
@@ -2083,7 +2392,7 @@ describe('useForm', () => {
           <div>
             <input
               type="text"
-              name="test"
+              name={name}
               ref={resolver ? register : register({ required: 'required' })}
             />
             <p id="error">{errors?.test?.message && errors.test.message}</p>
@@ -2152,7 +2461,7 @@ describe('useForm', () => {
             ...validateFieldParams(input),
           );
           expect(mockShouldRenderBasedOnError).toHaveBeenCalledWith({
-            ...shouldRenderBasedOnErrorParams,
+            ...shouldRenderBasedOnErrorParams(),
             validFields: new Set(['test']),
             fieldsWithValidation: new Set(['test']),
           });
@@ -2196,7 +2505,7 @@ describe('useForm', () => {
             isOnSubmit: true,
           });
           expect(mockShouldRenderBasedOnError).toHaveBeenCalledWith({
-            ...shouldRenderBasedOnErrorParams,
+            ...shouldRenderBasedOnErrorParams(),
             errors: {
               test: {
                 message: 'required',
@@ -2280,6 +2589,164 @@ describe('useForm', () => {
           expect(renderCount).toBe(3);
         });
       });
+
+      it('should call reRender method if previous error is undefined', async () => {
+        let input: any = null;
+
+        const error = {
+          test: {
+            type: 'required',
+            ref: input,
+            types: {
+              required: 'required',
+            },
+            message: 'required',
+          },
+        };
+
+        const mockIsSameError = jest.spyOn(isSameError, 'default');
+
+        (validateField as any).mockReturnValue(error);
+
+        (skipValidation as any).mockReturnValue(false);
+        const mockShouldRenderBasedOnError = jest
+          .spyOn(shouldRenderBasedOnError, 'default')
+          .mockReturnValue(false);
+
+        const { container } = render(<Component />);
+
+        input = container.querySelector('input')!;
+
+        fireEvent.input(input, { target: { name: 'test' } });
+
+        await waitFor(() => {
+          expect(validateField).toHaveBeenCalledWith(
+            ...validateFieldParams(input),
+          );
+          expect(skipValidation).toHaveBeenCalledWith({
+            ...skipValidationParams,
+            isOnSubmit: true,
+          });
+          expect(mockShouldRenderBasedOnError).toHaveBeenCalledWith({
+            errors: error,
+            name: 'test',
+            error,
+            validFields: new Set(),
+            fieldsWithValidation: new Set(['test']),
+          });
+          expect(mockIsSameError).not.toBeCalled();
+          expect(container.querySelector('#error')!.textContent).toBe(
+            'required',
+          );
+          expect(renderCount).toBe(2);
+        });
+      });
+
+      it('should not call reRender method if the current error is the same as the previous error', async () => {
+        let input: any = null;
+
+        const error = {
+          test: {
+            type: 'required',
+            ref: input,
+            types: {
+              required: 'required',
+            },
+            message: 'required',
+          },
+        };
+
+        const mockIsSameError = jest.spyOn(isSameError, 'default');
+
+        (validateField as any).mockReturnValue(error);
+
+        (skipValidation as any).mockReturnValue(false);
+        const mockShouldRenderBasedOnError = jest
+          .spyOn(shouldRenderBasedOnError, 'default')
+          .mockReturnValue(false);
+
+        const { container } = render(<Component />);
+
+        input = container.querySelector('input')!;
+
+        methods.control.errorsRef.current = error;
+
+        fireEvent.input(input, { target: { name: 'test' } });
+
+        await waitFor(() => {
+          expect(validateField).toHaveBeenCalledWith(
+            ...validateFieldParams(input),
+          );
+          expect(skipValidation).toHaveBeenCalledWith({
+            ...skipValidationParams,
+            isOnSubmit: true,
+            hasError: true,
+          });
+          expect(mockShouldRenderBasedOnError).toHaveBeenCalledWith({
+            errors: error,
+            name: 'test',
+            error,
+            validFields: new Set(),
+            fieldsWithValidation: new Set(['test']),
+          });
+          expect(mockIsSameError).toBeCalledWith(error.test, error.test);
+          expect(container.querySelector('#error')!.textContent).toBe('');
+          expect(renderCount).toBe(1);
+        });
+      });
+
+      it('should be called reRender method if isWatchAllRef is true', async () => {
+        (skipValidation as any).mockReturnValue(true);
+
+        const { container } = render(<Component />);
+
+        const input = container.querySelector('input')!;
+        methods.control.isWatchAllRef.current = true;
+        fireEvent.input(input, { target: { name: 'test' } });
+
+        expect(skipValidation).toHaveBeenCalledWith({
+          ...skipValidationParams,
+          isOnSubmit: true,
+        });
+        expect(validateField).not.toHaveBeenCalled();
+        expect(container.querySelector('#error')!.textContent).toBe('');
+        expect(renderCount).toBe(2);
+      });
+
+      it('should be called reRender method if field is watched', async () => {
+        (skipValidation as any).mockReturnValue(true);
+
+        const { container } = render(<Component />);
+
+        const input = container.querySelector('input')!;
+        methods.control.watchFieldsRef.current.add('test');
+        fireEvent.input(input, { target: { name: 'test' } });
+
+        expect(skipValidation).toHaveBeenCalledWith({
+          ...skipValidationParams,
+          isOnSubmit: true,
+        });
+        expect(validateField).not.toHaveBeenCalled();
+        expect(container.querySelector('#error')!.textContent).toBe('');
+        expect(renderCount).toBe(2);
+      });
+
+      it('should be called reRender method if field array is watched', async () => {
+        (skipValidation as any).mockReturnValue(true);
+
+        const { container } = render(<Component name="test[0]" />);
+
+        const input = container.querySelector('input')!;
+        methods.control.watchFieldsRef.current.add('test');
+        fireEvent.input(input, { target: { name: 'test[0]' } });
+
+        expect(skipValidation).toHaveBeenCalledWith({
+          ...skipValidationParams,
+          isOnSubmit: true,
+        });
+        expect(validateField).not.toHaveBeenCalled();
+        expect(renderCount).toBe(2);
+      });
     });
 
     describe('onBlur mode', () => {
@@ -2306,7 +2773,7 @@ describe('useForm', () => {
             ...validateFieldParams(input),
           );
           expect(mockShouldRenderBasedOnError).toHaveBeenCalledWith({
-            ...shouldRenderBasedOnErrorParams,
+            ...shouldRenderBasedOnErrorParams(),
             validFields: new Set(['test']),
             fieldsWithValidation: new Set(['test']),
           });
@@ -2450,6 +2917,89 @@ describe('useForm', () => {
 
       expect(renderWatchedInputs(`${fieldName}[0]`)).toBeFalsy();
       expect(watchFieldsHookRenderRef.current[id]).toHaveBeenCalled();
+    });
+
+    it("should not be called watchFieldsHookRenderRef if watchFieldsHookRef don't have field name", () => {
+      const { result } = renderHook(() => useForm());
+      const {
+        fieldArrayNamesRef,
+        watchFieldsHookRef,
+        watchFieldsHookRenderRef,
+        renderWatchedInputs,
+      } = result.current.control;
+
+      fieldArrayNamesRef.current.add(fieldName);
+      watchFieldsHookRef.current[id] = new Set([fieldName]);
+      watchFieldsHookRenderRef.current[id] = jest.fn();
+
+      expect(renderWatchedInputs('field')).toBeTruthy();
+      expect(watchFieldsHookRenderRef.current[id]).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('validateSchemaIsValid', () => {
+    it('should be defined when resolver is defined', () => {
+      const resolver = async (data: any) => {
+        return {
+          values: data,
+          errors: {},
+        };
+      };
+
+      const { result } = renderHook(() => useForm({ resolver }));
+
+      expect(result.current.control.validateSchemaIsValid).toBeDefined();
+    });
+
+    it('should be undefined when resolver is undefined', () => {
+      const { result } = renderHook(() => useForm());
+
+      expect(result.current.control.validateSchemaIsValid).toBeUndefined();
+    });
+
+    it('should be called resolver with default values if default value is defined', () => {
+      const resolver = async (data: any) => {
+        return {
+          values: data,
+          errors: {},
+        };
+      };
+
+      const { result } = renderHook(() =>
+        useForm({
+          resolver,
+          defaultValues: { test: 'default' },
+        }),
+      );
+
+      result.current.register('test');
+
+      result.current.control.validateSchemaIsValid!({});
+
+      expect(transformToNestObject).toBeCalledWith({ test: 'default' });
+    });
+
+    it('should be called resolver with field values if default value is undefined', async () => {
+      const resolver = async (data: any) => {
+        return {
+          values: data,
+          errors: {},
+        };
+      };
+
+      const { result } = renderHook(() =>
+        useForm({
+          resolver,
+        }),
+      );
+
+      result.current.register('test');
+
+      result.current.setValue('test', 'value');
+
+      result.current.control.validateSchemaIsValid!({});
+
+      expect(transformToNestObject).toBeCalledWith({ test: 'value' });
     });
   });
 });

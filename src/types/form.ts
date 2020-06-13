@@ -265,7 +265,7 @@ export type Control<TFieldValues extends FieldValues = FieldValues> = Pick<
   watchInternal: (
     fieldNames?: string | string[],
     defaultValue?: unknown,
-    isUseWatch?: string,
+    watchId?: string,
   ) => unknown;
   renderWatchedInputs: (name: string, found?: boolean) => void;
 };
