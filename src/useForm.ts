@@ -57,6 +57,7 @@ import {
 import { LiteralToPrimitive, DeepPartial } from './types/utils';
 import { useFormValue } from './useFormValue';
 import { useFormValidator } from './useFormValidator';
+import { useReRender } from './useReRender';
 
 export function useForm<
   TFieldValues extends FieldValues = FieldValues,
@@ -99,7 +100,6 @@ export function useForm<
   const unmountFieldsStateRef = React.useRef<Record<string, any>>({});
   const resetFieldArrayFunctionRef = React.useRef({});
   const fieldArrayNamesRef = React.useRef<Set<string>>(new Set());
-  const [, render] = React.useState();
   const { isOnBlur, isOnSubmit, isOnChange, isOnAll } = React.useRef(
     modeChecker(mode),
   ).current;
@@ -123,12 +123,7 @@ export function useForm<
     isOnBlur: isReValidateOnBlur,
     isOnSubmit: isReValidateOnSubmit,
   } = React.useRef(modeChecker(reValidateMode)).current;
-
-  const reRender = React.useCallback(() => {
-    if (!isUnMount.current) {
-      render({});
-    }
-  }, []);
+  const reRender = useReRender(isUnMount);
 
   const {
     shouldRenderBaseOnError,
