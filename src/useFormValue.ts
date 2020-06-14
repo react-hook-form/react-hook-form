@@ -7,9 +7,6 @@ import {
   FieldValue,
   FieldRefs,
   Field,
-  ReadFormState,
-  DefaultValuesAtRender,
-  Touched,
   FieldName,
 } from './types/form';
 import { NonUndefined, DeepPartial, LiteralToPrimitive } from './types/utils';
@@ -24,12 +21,6 @@ import isMultipleSelect from './utils/isMultipleSelect';
 import isCheckBoxInput from './utils/isCheckBoxInput';
 import getFieldValue from './logic/getFieldValue';
 import { get } from './utils';
-import isNameInFieldArray from './logic/isNameInFieldArray';
-import set from './utils/set';
-import unset from './utils/unset';
-import getIsFieldsDifferent from './logic/getIsFieldsDifferent';
-import getFieldArrayValueByName from './logic/getFieldArrayValueByName';
-import getFieldArrayParentName from './logic/getFieldArrayParentName';
 import isEmptyObject from './utils/isEmptyObject';
 import isPrimitive from './utils/isPrimitive';
 import getFieldsValues from './logic/getFieldsValues';
@@ -38,13 +29,6 @@ import { transformToNestObject } from './logic';
 interface UseFormValueProps<TFieldValues extends FieldValues = FieldValues> {
   isWeb: boolean;
   fieldsRef: React.MutableRefObject<FieldRefs<TFieldValues>>;
-  readFormStateRef: React.MutableRefObject<ReadFormState>;
-  defaultValuesAtRenderRef: React.MutableRefObject<
-    DefaultValuesAtRender<TFieldValues>
-  >;
-  dirtyFieldsRef: React.MutableRefObject<Touched<TFieldValues>>;
-  fieldArrayNamesRef: React.MutableRefObject<Set<string>>;
-  isDirtyRef: React.MutableRefObject<boolean>;
   defaultValuesRef: React.MutableRefObject<
     | FieldValue<UnpackNestedValue<TFieldValues>>
     | UnpackNestedValue<DeepPartial<TFieldValues>>
@@ -55,16 +39,13 @@ interface UseFormValueProps<TFieldValues extends FieldValues = FieldValues> {
   trigger: (
     name?: FieldName<TFieldValues> | FieldName<TFieldValues>[],
   ) => Promise<boolean>;
+  setDirty: (name: InternalFieldName<TFieldValues>) => boolean;
 }
 
 export function useFormValue<TFieldValues extends FieldValues = FieldValues>({
   isWeb,
   fieldsRef,
-  readFormStateRef,
-  defaultValuesAtRenderRef,
-  dirtyFieldsRef,
-  fieldArrayNamesRef,
-  isDirtyRef,
+  setDirty,
   defaultValuesRef,
   isFieldWatched,
   renderWatchedInputs,
@@ -117,54 +98,6 @@ export function useFormValue<TFieldValues extends FieldValues = FieldValues>({
       }
     },
     [isWeb],
-  );
-
-  const setDirty = React.useCallback(
-    (name: InternalFieldName<TFieldValues>): boolean => {
-      const { isDirty, dirtyFields } = readFormStateRef.current;
-
-      if (!fieldsRef.current[name] || (!isDirty && !dirtyFields)) {
-        return false;
-      }
-
-      const isFieldDirty =
-        defaultValuesAtRenderRef.current[name] !==
-        getFieldValue(fieldsRef.current, fieldsRef.current[name]!.ref);
-      const isDirtyFieldExist = get(dirtyFieldsRef.current, name);
-      const isFieldArray = isNameInFieldArray(fieldArrayNamesRef.current, name);
-      const previousIsDirty = isDirtyRef.current;
-
-      if (isFieldDirty) {
-        set(dirtyFieldsRef.current, name, true);
-      } else {
-        unset(dirtyFieldsRef.current, name);
-      }
-
-      isDirtyRef.current =
-        (isFieldArray &&
-          getIsFieldsDifferent(
-            getFieldArrayValueByName(
-              fieldsRef.current,
-              getFieldArrayParentName(name),
-            ),
-            get(defaultValuesRef.current, getFieldArrayParentName(name)),
-          )) ||
-        !isEmptyObject(dirtyFieldsRef.current);
-
-      return (
-        (isDirty && previousIsDirty !== isDirtyRef.current) ||
-        (dirtyFields && isDirtyFieldExist !== get(dirtyFieldsRef.current, name))
-      );
-    },
-    [
-      defaultValuesAtRenderRef,
-      defaultValuesRef,
-      dirtyFieldsRef,
-      fieldArrayNamesRef,
-      fieldsRef,
-      isDirtyRef,
-      readFormStateRef,
-    ],
   );
 
   const setInternalValues = React.useCallback(

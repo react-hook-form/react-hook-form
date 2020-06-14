@@ -58,6 +58,7 @@ import { useFormValue } from './useFormValue';
 import { useFormValidator } from './useFormValidator';
 import { useReRender } from './useReRender';
 import { useFormWatcher } from './useFormWatcher';
+import { useFormDirty } from './useFormDirty';
 
 export function useForm<
   TFieldValues extends FieldValues = FieldValues,
@@ -75,7 +76,6 @@ export function useForm<
   const fieldsRef = React.useRef<FieldRefs<TFieldValues>>({});
   const touchedFieldsRef = React.useRef<Touched<TFieldValues>>({});
   const fieldArrayDefaultValues = React.useRef<Record<string, unknown[]>>({});
-  const dirtyFieldsRef = React.useRef<Touched<TFieldValues>>({});
   const defaultValuesRef = React.useRef<
     | FieldValue<UnpackNestedValue<TFieldValues>>
     | UnpackNestedValue<DeepPartial<TFieldValues>>
@@ -85,7 +85,6 @@ export function useForm<
   );
   const isUnMount = React.useRef(false);
   const isSubmittedRef = React.useRef(false);
-  const isDirtyRef = React.useRef(false);
   const submitCountRef = React.useRef(0);
   const isSubmittingRef = React.useRef(false);
   const handleChangeRef = React.useRef<HandleChange>();
@@ -144,26 +143,25 @@ export function useForm<
     watchInternal,
     watch,
   } = useFormWatcher({ fieldsRef, fieldArrayNamesRef, defaultValuesRef });
-  const {
-    setFieldValue,
-    setDirty,
-    setInternalValue,
-    setValue,
-    getValues,
-  } = useFormValue({
-    isWeb,
+  const { isDirtyRef, dirtyFieldsRef, setDirty } = useFormDirty({
     fieldsRef,
     readFormStateRef,
     defaultValuesAtRenderRef,
-    dirtyFieldsRef,
-    fieldArrayNamesRef,
-    isDirtyRef,
     defaultValuesRef,
-    isFieldWatched,
-    renderWatchedInputs,
-    reRender,
-    trigger,
+    fieldArrayNamesRef,
   });
+  const { setFieldValue, setInternalValue, setValue, getValues } = useFormValue(
+    {
+      isWeb,
+      fieldsRef,
+      defaultValuesRef,
+      isFieldWatched,
+      renderWatchedInputs,
+      reRender,
+      trigger,
+      setDirty,
+    },
+  );
 
   handleChangeRef.current = handleChangeRef.current
     ? handleChangeRef.current
@@ -292,6 +290,7 @@ export function useForm<
       validFieldsRef,
       fieldsWithValidationRef,
       watchFieldsRef,
+      dirtyFieldsRef,
     ],
   );
 
