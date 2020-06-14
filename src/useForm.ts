@@ -6,7 +6,6 @@ import findRemovedFieldAndRemoveListener from './logic/findRemovedFieldAndRemove
 import getFieldsValues from './logic/getFieldsValues';
 import getFieldValue from './logic/getFieldValue';
 import validateField from './logic/validateField';
-import assignWatchFields from './logic/assignWatchFields';
 import skipValidation from './logic/skipValidation';
 import getFieldArrayValueByName from './logic/getFieldArrayValueByName';
 import isNameInFieldArray from './logic/isNameInFieldArray';
@@ -54,10 +53,11 @@ import {
   DefaultValuesAtRender,
   FlatFieldErrors,
 } from './types/form';
-import { LiteralToPrimitive, DeepPartial } from './types/utils';
+import { DeepPartial } from './types/utils';
 import { useFormValue } from './useFormValue';
 import { useFormValidator } from './useFormValidator';
 import { useReRender } from './useReRender';
+import { useFormWatcher } from './useFormWatcher';
 
 export function useForm<
   TFieldValues extends FieldValues = FieldValues,
@@ -75,14 +75,7 @@ export function useForm<
   const fieldsRef = React.useRef<FieldRefs<TFieldValues>>({});
   const touchedFieldsRef = React.useRef<Touched<TFieldValues>>({});
   const fieldArrayDefaultValues = React.useRef<Record<string, unknown[]>>({});
-  const watchFieldsRef = React.useRef(
-    new Set<InternalFieldName<TFieldValues>>(),
-  );
   const dirtyFieldsRef = React.useRef<Touched<TFieldValues>>({});
-  const watchFieldsHookRef = React.useRef<
-    Record<string, Set<InternalFieldName<TFieldValues>>>
-  >({});
-  const watchFieldsHookRenderRef = React.useRef<Record<string, Function>>({});
   const defaultValuesRef = React.useRef<
     | FieldValue<UnpackNestedValue<TFieldValues>>
     | UnpackNestedValue<DeepPartial<TFieldValues>>
@@ -91,7 +84,6 @@ export function useForm<
     {} as DefaultValuesAtRender<TFieldValues>,
   );
   const isUnMount = React.useRef(false);
-  const isWatchAllRef = React.useRef(false);
   const isSubmittedRef = React.useRef(false);
   const isDirtyRef = React.useRef(false);
   const submitCountRef = React.useRef(0);
@@ -124,7 +116,6 @@ export function useForm<
     isOnSubmit: isReValidateOnSubmit,
   } = React.useRef(modeChecker(reValidateMode)).current;
   const reRender = useReRender(isUnMount);
-
   const {
     shouldRenderBaseOnError,
     trigger,
@@ -143,29 +134,16 @@ export function useForm<
     defaultValuesRef,
     reRender,
   });
-
-  const isFieldWatched = (name: string) =>
-    isWatchAllRef.current ||
-    watchFieldsRef.current.has(name) ||
-    watchFieldsRef.current.has((name.match(/\w+/) || [])[0]);
-
-  const renderWatchedInputs = (name: string, found = true): boolean => {
-    if (!isEmptyObject(watchFieldsHookRef.current)) {
-      for (const key in watchFieldsHookRef.current) {
-        if (
-          watchFieldsHookRef.current[key].has(name) ||
-          !watchFieldsHookRef.current[key].size ||
-          isNameInFieldArray(fieldArrayNamesRef.current, name)
-        ) {
-          watchFieldsHookRenderRef.current[key]();
-          found = false;
-        }
-      }
-    }
-
-    return found;
-  };
-
+  const {
+    isWatchAllRef,
+    watchFieldsRef,
+    watchFieldsHookRef,
+    watchFieldsHookRenderRef,
+    isFieldWatched,
+    renderWatchedInputs,
+    watchInternal,
+    watch,
+  } = useFormWatcher({ fieldsRef, fieldArrayNamesRef, defaultValuesRef });
   const {
     setFieldValue,
     setDirty,
@@ -313,6 +291,7 @@ export function useForm<
       errorsRef,
       validFieldsRef,
       fieldsWithValidationRef,
+      watchFieldsRef,
     ],
   );
 
@@ -399,89 +378,6 @@ export function useForm<
         shouldRender: true,
       });
     }
-  }
-
-  const watchInternal = React.useCallback(
-    (
-      fieldNames?: string | string[],
-      defaultValue?: unknown,
-      watchId?: string,
-    ) => {
-      const watchFields = watchId
-        ? watchFieldsHookRef.current[watchId]
-        : watchFieldsRef.current;
-      const combinedDefaultValues = isUndefined(defaultValue)
-        ? defaultValuesRef.current
-        : defaultValue;
-      const fieldValues = getFieldsValues<TFieldValues>(
-        fieldsRef.current,
-        fieldNames,
-      );
-
-      if (isString(fieldNames)) {
-        return assignWatchFields<TFieldValues>(
-          fieldValues,
-          fieldNames,
-          watchFields,
-          isUndefined(defaultValue)
-            ? get(combinedDefaultValues, fieldNames)
-            : (defaultValue as UnpackNestedValue<DeepPartial<TFieldValues>>),
-          true,
-        );
-      }
-
-      if (isArray(fieldNames)) {
-        return fieldNames.reduce(
-          (previous, name) => ({
-            ...previous,
-            [name]: assignWatchFields<TFieldValues>(
-              fieldValues,
-              name,
-              watchFields,
-              combinedDefaultValues as UnpackNestedValue<
-                DeepPartial<TFieldValues>
-              >,
-            ),
-          }),
-          {},
-        );
-      }
-
-      if (isUndefined(watchId)) {
-        isWatchAllRef.current = true;
-      }
-
-      return transformToNestObject(
-        (!isEmptyObject(fieldValues) && fieldValues) ||
-          (combinedDefaultValues as FieldValues),
-      );
-    },
-    [],
-  );
-
-  function watch(): UnpackNestedValue<TFieldValues>;
-  function watch<
-    TFieldName extends string,
-    TFieldValue extends TFieldValues[TFieldName]
-  >(
-    name: TFieldName,
-    defaultValue?: UnpackNestedValue<LiteralToPrimitive<TFieldValue>>,
-  ): UnpackNestedValue<LiteralToPrimitive<TFieldValue>>;
-  function watch<TFieldName extends keyof TFieldValues>(
-    names: TFieldName[],
-    defaultValues?: UnpackNestedValue<
-      DeepPartial<Pick<TFieldValues, TFieldName>>
-    >,
-  ): UnpackNestedValue<Pick<TFieldValues, TFieldName>>;
-  function watch(
-    names: string[],
-    defaultValues?: UnpackNestedValue<DeepPartial<TFieldValues>>,
-  ): UnpackNestedValue<DeepPartial<TFieldValues>>;
-  function watch(
-    fieldNames?: string | string[],
-    defaultValue?: unknown,
-  ): unknown {
-    return watchInternal(fieldNames, defaultValue);
   }
 
   function unregister(
