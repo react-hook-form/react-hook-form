@@ -29,7 +29,9 @@ export type ControllerProps<
   TAs extends
     | React.ReactElement
     | React.ComponentType<any>
-    | keyof JSX.IntrinsicElements,
+    | 'input'
+    | 'select'
+    | 'textarea',
   TControl extends Control = Control
 > = Assign<
   {

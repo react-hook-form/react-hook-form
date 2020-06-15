@@ -15,7 +15,9 @@ const Controller = <
   TAs extends
     | React.ReactElement
     | React.ComponentType<any>
-    | keyof JSX.IntrinsicElements,
+    | 'input'
+    | 'select'
+    | 'textarea',
   TControl extends Control = Control
 >({
   name,
