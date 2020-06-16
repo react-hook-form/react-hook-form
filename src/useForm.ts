@@ -179,7 +179,7 @@ export function useForm<
         validFieldsRef.current.delete(name);
         shouldReRender =
           shouldReRender ||
-          previousError ||
+          !previousError ||
           !isSameError(previousError, error[name] as FieldError);
 
         set(errorsRef.current, name, error[name]);
