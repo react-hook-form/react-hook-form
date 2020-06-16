@@ -1207,10 +1207,7 @@ export function useForm<
       setInternalValue,
       trigger,
     ]),
-    register: React.useCallback(register, [
-      defaultValuesRef.current,
-      defaultValuesAtRenderRef.current,
-    ]),
+    register: React.useCallback(register, [defaultValuesRef.current]),
     unregister: React.useCallback(unregister, []),
     getValues: React.useCallback(getValues, []),
     formState: isProxyEnabled
