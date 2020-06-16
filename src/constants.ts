@@ -30,4 +30,3 @@ export const INPUT_VALIDATION_RULES = {
 };
 
 export const REGEX_PROP_NAME = /[^.[\]]+|\[(?:(-?\d+(?:\.\d+)?)|(["'])((?:(?!\2)[^\\]|\\.)*?)\2)\]|(?=(?:\.|\[\])(?:\.|\[\]|$))/g;
-export const REGEX_ESCAPE_CHAR = /\\(\\)?/g;
