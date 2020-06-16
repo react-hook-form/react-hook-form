@@ -166,22 +166,21 @@ export function useForm<
           validFields: validFieldsRef.current,
           fieldsWithValidation: fieldsWithValidationRef.current,
         });
+      const previousError = get(errorsRef.current, name);
 
       if (isEmptyObject(error)) {
         if (fieldsWithValidationRef.current.has(name) || resolverRef.current) {
           validFieldsRef.current.add(name);
-          shouldReRender = shouldReRender || get(errorsRef.current, name);
+          shouldReRender = shouldReRender || previousError;
         }
 
         errorsRef.current = unset(errorsRef.current, name);
       } else {
-        const previousError = get(errorsRef.current, name);
         validFieldsRef.current.delete(name);
         shouldReRender =
           shouldReRender ||
-          (previousError
-            ? !isSameError(previousError, error[name] as FieldError)
-            : true);
+          previousError ||
+          !isSameError(previousError, error[name] as FieldError);
 
         set(errorsRef.current, name, error[name]);
       }
@@ -196,7 +195,7 @@ export function useForm<
 
   const setFieldValue = React.useCallback(
     (
-      field: Field,
+      { ref, options }: Field,
       rawValue:
         | FieldValue<TFieldValues>
         | UnpackNestedValue<DeepPartial<TFieldValues>>
@@ -204,7 +203,6 @@ export function useForm<
         | null
         | boolean,
     ) => {
-      const { ref, options } = field;
       const value =
         isWeb && isHTMLElement(ref) && isNullOrUndefined(rawValue)
           ? ''
@@ -372,6 +370,7 @@ export function useForm<
         reRender();
       } else {
         const error = get(errors, payload);
+
         shouldRenderBaseOnError(
           payload,
           (error ? { [payload]: error } : {}) as FlatFieldErrors<TFieldValues>,
@@ -700,7 +699,7 @@ export function useForm<
     isValidRef.current = false;
 
     if (isArray(name)) {
-      name.forEach((error) => setInternalError({ ...error }));
+      name.forEach((error) => setInternalError(error));
       reRender();
     } else {
       setInternalError({
