@@ -1,14 +1,10 @@
-import { REGEX_ESCAPE_CHAR, REGEX_PROP_NAME } from '../constants';
-
 export default (string: string): string[] => {
   const result: string[] = [];
 
   string.replace(
-    REGEX_PROP_NAME,
+    /[^.[\]]+|\[(?:(-?\d+(?:\.\d+)?)|(["'])((?:(?!\2)[^\\]|\\.)*?)\2)\]|(?=(?:\.|\[\])(?:\.|\[\]|$))/g,
     (match: string, number: string, quote: string, string: string): any => {
-      result.push(
-        quote ? string.replace(REGEX_ESCAPE_CHAR, '$1') : number || match,
-      );
+      result.push(quote ? string.replace(/\\(\\)?/g, '$1') : number || match);
     },
   );
 
