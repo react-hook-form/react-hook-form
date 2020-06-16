@@ -1147,6 +1147,7 @@ export function useForm<
   ): UnpackNestedValue<Pick<TFieldValues, TFieldName>>;
   function getValues(payload?: string | string[]): unknown {
     const fields = fieldsRef.current;
+
     if (isString(payload)) {
       return getValue(payload);
     }
@@ -1206,10 +1207,7 @@ export function useForm<
       setInternalValue,
       trigger,
     ]),
-    register: React.useCallback(register, [
-      defaultValuesRef.current,
-      defaultValuesAtRenderRef.current,
-    ]),
+    register: React.useCallback(register, []),
     unregister: React.useCallback(unregister, []),
     getValues: React.useCallback(getValues, []),
     formState: isProxyEnabled
