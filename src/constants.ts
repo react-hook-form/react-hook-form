@@ -28,5 +28,3 @@ export const INPUT_VALIDATION_RULES = {
   required: 'required',
   validate: 'validate',
 };
-
-export const REGEX_PROP_NAME = /[^.[\]]+|\[(?:(-?\d+(?:\.\d+)?)|(["'])((?:(?!\2)[^\\]|\\.)*?)\2)\]|(?=(?:\.|\[\])(?:\.|\[\]|$))/g;
