@@ -1,6 +1,9 @@
+import * as React from 'react';
 import { act, renderHook } from '@testing-library/react-hooks';
 import { useFieldArray } from './useFieldArray';
 import { reconfigureControl } from './__mocks__/reconfigureControl';
+import { render, fireEvent } from '@testing-library/react';
+import { Control } from './types';
 
 jest.spyOn(console, 'warn').mockImplementation(() => {});
 jest.mock('./logic/generateId', () => ({
@@ -1165,6 +1168,87 @@ describe('useFieldArray', () => {
         { test: '2', id: '1' },
         { test: '3', id: '1' },
       ]);
+    });
+  });
+
+  describe('setFieldAndValidState', () => {
+    let renderCount = 0;
+    let Component: React.FC<{ control: Control<Record<string, any>> }>;
+    beforeEach(() => {
+      renderCount = 0;
+      Component = ({ control }: { control: Control<Record<string, any>> }) => {
+        const { append } = useFieldArray({
+          name: 'test',
+          control,
+        });
+        renderCount++;
+        return (
+          <div>
+            <button onClick={() => append({ test: 'value' })}></button>
+          </div>
+        );
+      };
+    });
+
+    afterEach(() => {
+      expect(renderCount).toBe(2);
+    });
+
+    it('should call validateSchemaIsValid method', () => {
+      const mockControl = reconfigureControl();
+
+      const { container } = render(
+        <Component
+          control={{
+            ...mockControl,
+            readFormStateRef: {
+              current: {
+                ...mockControl.readFormStateRef.current,
+                isValid: true,
+              },
+            },
+          }}
+        />,
+      );
+
+      fireEvent.click(container.querySelector('button')!);
+
+      expect(mockControl.validateSchemaIsValid).toBeCalledWith({
+        test: [{ id: '1', test: 'value' }],
+      });
+    });
+
+    it('should not call validateSchemaIsValid method if isValid is false', () => {
+      const mockControl = reconfigureControl();
+
+      const { container } = render(<Component control={mockControl} />);
+
+      fireEvent.click(container.querySelector('button')!);
+
+      expect(mockControl.validateSchemaIsValid).not.toBeCalled();
+    });
+
+    it('should not call validateSchemaIsValid method if validateSchemaIsValid is undefined', () => {
+      const mockControl = reconfigureControl();
+
+      const { container } = render(
+        <Component
+          control={{
+            ...mockControl,
+            readFormStateRef: {
+              current: {
+                ...mockControl.readFormStateRef.current,
+                isValid: true,
+              },
+            },
+            validateSchemaIsValid: undefined,
+          }}
+        />,
+      );
+
+      fireEvent.click(container.querySelector('button')!);
+
+      expect(mockControl.validateSchemaIsValid).not.toBeCalled();
     });
   });
 });
