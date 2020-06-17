@@ -42,7 +42,6 @@ export const useFieldArray = <
     fieldArrayNamesRef,
     reRender,
     fieldsRef,
-    getValues,
     defaultValuesRef,
     removeFieldEventListener,
     errorsRef,
@@ -133,22 +132,6 @@ export const useFieldArray = <
     }
   };
 
-  const mapCurrentFieldsValueWithState = () => {
-    const currentFieldsValue: Partial<TFieldArrayValues>[] = get(
-      getValues(),
-      name,
-    );
-
-    if (isArray(currentFieldsValue)) {
-      for (let i = 0; i < currentFieldsValue.length; i++) {
-        allFields.current[i] = {
-          ...allFields.current[i],
-          ...currentFieldsValue[i],
-        };
-      }
-    }
-  };
-
   const append = (
     value: Partial<TFieldArrayValues> | Partial<TFieldArrayValues>[],
     shouldFocus = true,
@@ -220,10 +203,6 @@ export const useFieldArray = <
 
   const remove = (index?: number | number[]) => {
     shouldRender = false;
-
-    if (!isUndefined(index)) {
-      mapCurrentFieldsValueWithState();
-    }
 
     resetFields(
       removeArrayAt(getFieldValueByName(fieldsRef.current, name), index),
@@ -312,7 +291,6 @@ export const useFieldArray = <
     shouldRender = false;
     const emptyArray = fillEmptyArray(value);
 
-    mapCurrentFieldsValueWithState();
     resetFields(insertAt(getFieldValueByName(fieldsRef.current, name), index));
     setFieldAndValidState(
       insertAt(
@@ -360,7 +338,6 @@ export const useFieldArray = <
   const swap = (indexA: number, indexB: number) => {
     shouldRender = false;
 
-    mapCurrentFieldsValueWithState();
     const fieldValues = getFieldValueByName(fieldsRef.current, name);
     swapArrayAt(fieldValues, indexA, indexB);
     resetFields(fieldValues);
@@ -390,7 +367,6 @@ export const useFieldArray = <
 
   const move = (from: number, to: number) => {
     shouldRender = false;
-    mapCurrentFieldsValueWithState();
     const fieldValues = getFieldValueByName(fieldsRef.current, name);
     moveArrayAt(fieldValues, from, to);
     resetFields(fieldValues);
