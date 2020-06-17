@@ -213,7 +213,7 @@ export type FieldValuesFromControl<
 
 export type Control<TFieldValues extends FieldValues = FieldValues> = Pick<
   UseFormMethods<TFieldValues>,
-  'register' | 'unregister' | 'setValue' | 'getValues' | 'trigger' | 'formState'
+  'register' | 'unregister' | 'setValue' | 'trigger' | 'formState'
 > & {
   reRender: () => void;
   removeFieldEventListener: (field: Field, forceDelete?: boolean) => void;
