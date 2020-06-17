@@ -1,10 +1,14 @@
 import { appendId } from './mapIds';
 
+jest.mock('../logic/generateId', () => ({
+  default: () => '1',
+}));
+
 describe('appendId', () => {
   it('should add an auto-generated ID', () => {
     expect(appendId({ value: 42 }, 'id')).toEqual({
       value: 42,
-      id: expect.any(String),
+      id: '1',
     });
   });
 
