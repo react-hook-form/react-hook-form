@@ -1209,7 +1209,6 @@ export function useForm<
     ]),
     register: React.useCallback(register, [defaultValuesRef.current]),
     unregister: React.useCallback(unregister, []),
-    getValues: React.useCallback(getValues, []),
     formState: isProxyEnabled
       ? new Proxy<FormStateProxy<TFieldValues>>(formState, {
           get: (obj, prop: keyof FormStateProxy) => {
@@ -1265,6 +1264,7 @@ export function useForm<
     control,
     handleSubmit,
     reset: React.useCallback(reset, []),
+    getValues: React.useCallback(getValues, []),
     clearError: React.useCallback(clearError, []),
     setError: React.useCallback(setError, []),
     errors: errorsRef.current,
