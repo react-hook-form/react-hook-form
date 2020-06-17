@@ -60,9 +60,6 @@ describe('useFieldArray', () => {
         useFieldArray({
           control: {
             ...reconfigureControl(),
-            getValues: () => ({
-              test: [],
-            }),
             readFormStateRef: {
               current: {
                 touched: true,
@@ -172,9 +169,6 @@ describe('useFieldArray', () => {
         useFieldArray({
           control: {
             ...reconfigureControl(),
-            getValues: () => ({
-              test: [],
-            }),
             readFormStateRef: {
               current: {
                 touched: true,
@@ -254,9 +248,6 @@ describe('useFieldArray', () => {
         useFieldArray({
           control: {
             ...reconfigureControl(),
-            getValues: () => ({
-              test: [],
-            }),
             errorsRef: errorsRef as any,
           },
           name: 'test',
@@ -294,9 +285,6 @@ describe('useFieldArray', () => {
         useFieldArray({
           control: {
             ...reconfigureControl(),
-            getValues: () => ({
-              test: [],
-            }),
             touchedFieldsRef: touchedFieldsRef as any,
             readFormStateRef: {
               current: {
@@ -351,9 +339,6 @@ describe('useFieldArray', () => {
               defaultValuesRef: {
                 current: { test: [{ test: '1' }, { test: '2' }] },
               },
-              getValues: () => ({
-                test: [],
-              }),
               readFormStateRef: {
                 current: {
                   touched: true,
@@ -399,9 +384,6 @@ describe('useFieldArray', () => {
             defaultValuesRef: {
               current: { test: [{ test: '1' }, { test: '2' }] },
             },
-            getValues: () => ({
-              test: [],
-            }),
             errorsRef: errorsRef as any,
             fieldsRef: {
               current: {
@@ -434,9 +416,6 @@ describe('useFieldArray', () => {
       const { result } = renderHook(() =>
         useFieldArray({
           control: reconfigureControl({
-            getValues: () => ({
-              test: [],
-            }),
             readFormStateRef: {
               current: {
                 touched: true,
@@ -545,9 +524,6 @@ describe('useFieldArray', () => {
             defaultValuesRef: {
               current: { test: [{ test: '1' }, { test: '2' }, { test: '3' }] },
             },
-            getValues: () => ({
-              test: [],
-            }),
             fieldsRef: {
               current: {
                 'test[0]': { ref: { name: 'test[0]', value: { test: '1' } } },
@@ -611,11 +587,6 @@ describe('useFieldArray', () => {
                 },
               },
             },
-            getValues: () => ({
-              test: {
-                data: [],
-              },
-            }),
           }),
           name: 'test.data',
         }),
@@ -653,9 +624,6 @@ describe('useFieldArray', () => {
             defaultValuesRef: {
               current: { test: [{ test: '1' }, { test: '2' }] },
             },
-            getValues: () => ({
-              test: [],
-            }),
             fieldsRef: {
               current: {
                 'test[0]': { ref: { name: 'test[0]', value: { test: '1' } } },
@@ -727,9 +695,6 @@ describe('useFieldArray', () => {
                 touched: true,
               },
             } as any,
-            getValues: () => ({
-              test: [],
-            }),
             touchedFieldsRef: touchedFieldsRef as any,
             fieldsRef: {
               current: {
@@ -789,9 +754,6 @@ describe('useFieldArray', () => {
         useFieldArray({
           control: {
             ...reconfigureControl(),
-            getValues: () => ({
-              test: [],
-            }),
             errorsRef: errorsRef as any,
             fieldsRef: {
               current: {
@@ -866,9 +828,6 @@ describe('useFieldArray', () => {
             defaultValuesRef: {
               current: { test: [{ test: '1' }, { test: '2' }] },
             },
-            getValues: () => ({
-              test: [],
-            }),
             fieldsRef: {
               current: {
                 'test[0]': { ref: { name: 'test[0]', value: { test: '1' } } },
@@ -923,9 +882,6 @@ describe('useFieldArray', () => {
             defaultValuesRef: {
               current: { test: [{ test: '1' }, { test: '2' }] },
             },
-            getValues: () => ({
-              test: [],
-            }),
             errorsRef: errorsRef as any,
             fieldsRef: {
               current: {
@@ -960,9 +916,6 @@ describe('useFieldArray', () => {
             defaultValuesRef: {
               current: { test: [{ test: '1' }, { test: '2' }] },
             },
-            getValues: () => ({
-              test: [],
-            }),
             readFormStateRef: {
               current: {
                 touched: true,
@@ -1014,9 +967,6 @@ describe('useFieldArray', () => {
             defaultValuesRef: {
               current: { test: [{ test: '1' }, { test: '2' }, { test: '3' }] },
             },
-            getValues: () => ({
-              test: [],
-            }),
             readFormStateRef: {
               current: {
                 dirtyFields: true,
@@ -1073,9 +1023,6 @@ describe('useFieldArray', () => {
             defaultValuesRef: {
               current: { test: [{ test: '1' }, { test: '2' }, { test: '3' }] },
             },
-            getValues: () => ({
-              test: [],
-            }),
             errorsRef: errorsRef as any,
           }),
           name: 'test',
@@ -1104,9 +1051,6 @@ describe('useFieldArray', () => {
             defaultValuesRef: {
               current: { test: [{ test: '1' }, { test: '2' }, { test: '3' }] },
             },
-            getValues: () => ({
-              test: [],
-            }),
             readFormStateRef: {
               current: {
                 touched: true,
@@ -1136,9 +1080,6 @@ describe('useFieldArray', () => {
         useFieldArray({
           control: reconfigureControl({
             resetFieldArrayFunctionRef,
-            getValues: () => ({
-              test: [],
-            }),
             defaultValuesRef: {
               current: { test: [{ test: '1' }, { test: '2' }, { test: '3' }] },
             },
