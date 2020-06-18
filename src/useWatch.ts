@@ -77,5 +77,5 @@ export function useWatch<TWatchFieldValues>({
     defaultValueRef,
   ]);
 
-  return (isUndefined(value) ? defaultValue : value) as TWatchFieldValues;
+  return value as TWatchFieldValues;
 }
