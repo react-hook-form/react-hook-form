@@ -23,7 +23,7 @@ const SetValueWithTrigger: React.FC = () => {
     register(
       { name: 'lastName' },
       {
-        validate: data => {
+        validate: (data) => {
           if (data === 'bill') {
             return true;
           }
@@ -45,14 +45,24 @@ const SetValueWithTrigger: React.FC = () => {
       <input
         name="firstName"
         placeholder="firstName"
-        onChange={e => setValue('firstName', e.target.value, true)}
+        onChange={(e) =>
+          setValue('firstName', e.target.value, {
+            shouldValidate: true,
+            shouldDirty: true,
+          })
+        }
       />
       {errors.firstName && <p>{errors.firstName.message}</p>}
 
       <input
         name="lastName"
         placeholder="lastName"
-        onChange={e => setValue('lastName', e.target.value, true)}
+        onChange={(e) =>
+          setValue('lastName', e.target.value, {
+            shouldValidate: true,
+            shouldDirty: true,
+          })
+        }
       />
       {errors.lastName && <p>{errors.lastName.message}</p>}
 

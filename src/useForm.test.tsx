@@ -963,58 +963,6 @@ describe('useForm', () => {
       });
     });
 
-    it('should work array of fields', () => {
-      const { result } = renderHook(() => useForm());
-
-      act(() => {
-        result.current.register('test.bill');
-        result.current.register('test.luo');
-        result.current.register('test.test');
-        result.current.register('array[0]');
-        result.current.register('array[1]');
-        result.current.register('array[2]');
-        result.current.register('object.bill');
-        result.current.register('object.luo');
-        result.current.register('object.test');
-      });
-
-      act(() => {
-        result.current.setValue([
-          { 'test.bill': '1' },
-          { array: ['1', '2', '3'] },
-          { object: { bill: '1', luo: '2', test: '3' } },
-        ]);
-
-        expect(result.current.control.fieldsRef.current['test.bill']).toEqual({
-          ref: { name: 'test.bill', value: '1' },
-        });
-
-        expect(result.current.control.fieldsRef.current['array[0]']).toEqual({
-          ref: { name: 'array[0]', value: '1' },
-        });
-        expect(result.current.control.fieldsRef.current['array[1]']).toEqual({
-          ref: { name: 'array[1]', value: '2' },
-        });
-        expect(result.current.control.fieldsRef.current['array[2]']).toEqual({
-          ref: { name: 'array[2]', value: '3' },
-        });
-
-        expect(result.current.control.fieldsRef.current['object.bill']).toEqual(
-          {
-            ref: { name: 'object.bill', value: '1' },
-          },
-        );
-        expect(result.current.control.fieldsRef.current['object.luo']).toEqual({
-          ref: { name: 'object.luo', value: '2' },
-        });
-        expect(result.current.control.fieldsRef.current['object.test']).toEqual(
-          {
-            ref: { name: 'object.test', value: '3' },
-          },
-        );
-      });
-    });
-
     it('should be called trigger method if shouldValidate variable is true', async () => {
       (validateField as any).mockImplementation(async () => ({}));
       const { result } = renderHook(() => useForm());
@@ -1023,29 +971,14 @@ describe('useForm', () => {
         result.current.register({ name: 'test', required: 'required' }),
       );
 
-      act(() => result.current.setValue('test', 'test', true));
-
-      await waitFor(() => expect(validateField).toHaveBeenCalled());
-    });
-
-    it('should be called trigger method if first argument is array', async () => {
-      (validateField as any).mockImplementation(async () => ({}));
-      const { result } = renderHook(() => useForm());
-
-      act(() => {
-        result.current.register({ name: 'test', required: 'required' });
-        result.current.register({ name: 'test1', required: 'required' });
-        result.current.register({ name: 'test2', required: 'required' });
-      });
-
-      await act(async () =>
-        result.current.setValue(
-          [{ test: 'value' }, { test1: 'value1' }, { test2: 'value2' }],
-          true,
-        ),
+      act(() =>
+        result.current.setValue('test', 'test', {
+          shouldValidate: true,
+          shouldDirty: true,
+        }),
       );
 
-      await waitFor(() => expect(validateField).toBeCalledTimes(3));
+      await waitFor(() => expect(validateField).toHaveBeenCalled());
     });
 
     it('should not work if field is not registered', () => {
@@ -1074,7 +1007,7 @@ describe('useForm', () => {
         });
 
         act(() => {
-          result.current.setValue('test', '1');
+          result.current.setValue('test', '1', { shouldDirty: true });
         });
 
         expect(transformToNestObject).not.toHaveBeenCalled();
@@ -1095,6 +1028,26 @@ describe('useForm', () => {
 
         act(() => {
           result.current.setValue('test', '1');
+        });
+
+        expect(transformToNestObject).not.toHaveBeenCalled();
+        expect(result.current.formState.dirtyFields.test).toBeFalsy();
+      });
+
+      it('should set name to dirtyFieldRef if field value is different with default value and isDirty is true', () => {
+        const { result } = renderHook(() =>
+          useForm<{ test: string }>({
+            defaultValues: { test: 'default' },
+          }),
+        );
+        result.current.control.readFormStateRef.current.isDirty = true;
+
+        act(() => {
+          result.current.register('test');
+        });
+
+        act(() => {
+          result.current.setValue('test', '1', { shouldDirty: true });
         });
 
         expect(transformToNestObject).not.toHaveBeenCalled();
@@ -1155,11 +1108,15 @@ describe('useForm', () => {
         });
 
         act(() => {
-          result.current.setValue('test', [
-            { name: 'default_update' },
-            { name: 'default1' },
-            { name: 'default2' },
-          ]);
+          result.current.setValue(
+            'test',
+            [
+              { name: 'default_update' },
+              { name: 'default1' },
+              { name: 'default2' },
+            ],
+            { shouldDirty: true },
+          );
         });
 
         await waitFor(() => {
@@ -1205,11 +1162,15 @@ describe('useForm', () => {
           ],
         });
         act(() => {
-          result.current.setValue('test', [
-            { name: 'default_update' },
-            { name: 'default1' },
-            { name: 'default2' },
-          ]);
+          result.current.setValue(
+            'test',
+            [
+              { name: 'default_update' },
+              { name: 'default1' },
+              { name: 'default2' },
+            ],
+            { shouldDirty: true },
+          );
         });
 
         (transformToNestObject as any).mockReturnValue({
@@ -1220,11 +1181,11 @@ describe('useForm', () => {
           ],
         });
         act(() => {
-          result.current.setValue('test', [
-            { name: 'default' },
-            { name: 'default1' },
-            { name: 'default2' },
-          ]);
+          result.current.setValue(
+            'test',
+            [{ name: 'default' }, { name: 'default1' }, { name: 'default2' }],
+            { shouldDirty: true },
+          );
         });
 
         await waitFor(() => {
