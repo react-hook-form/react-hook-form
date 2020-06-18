@@ -27,7 +27,7 @@ const SetValue: React.FC = () => {
     register({ name: 'lastName' }, { required: true });
     setValue('firstName', 'wrong');
     setValue('age', '2');
-    setValue('trigger', '', true);
+    setValue('trigger', '', { shouldValidate: true });
     setValue('checkbox', true);
     setValue('checkboxArray', ['2', '3']);
     setValue('radio', 'radio');
@@ -39,7 +39,9 @@ const SetValue: React.FC = () => {
       lastName: 'lastName',
       middleName: 'middleName',
     });
-    setValue('nestedValue', [], true);
+    setValue('nestedValue', [], {
+      shouldValidate: true,
+    });
   }, [register, setValue]);
 
   renderCounter++;
@@ -111,17 +113,13 @@ const SetValue: React.FC = () => {
         type="button"
         id="setMultipleValues"
         onClick={() => {
-          setValue([
-            {
-              object: {
-                firstName: 'firstName1',
-                lastName: 'lastName1',
-                middleName: 'middleName1',
-              },
-            },
-            { array: ['array[0]1', 'array[1]1', 'array[2]1'] },
-            { nestedValue: ['a', 'b'] },
-          ]);
+          setValue('object', {
+            firstName: 'firstName1',
+            lastName: 'lastName1',
+            middleName: 'middleName1',
+          });
+          setValue('array', ['array[0]1', 'array[1]1', 'array[2]1']);
+          setValue('nestedValue', ['a', 'b']);
         }}
       >
         Set Multiple Values

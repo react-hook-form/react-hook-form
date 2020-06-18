@@ -136,7 +136,9 @@ const Controller = <
   };
 
   const onChange = (...event: any[]) =>
-    setValue(name, commonTask(event), shouldValidate());
+    setValue(name, commonTask(event), {
+      shouldValidate: shouldValidate(),
+    });
 
   const props = {
     ...rest,

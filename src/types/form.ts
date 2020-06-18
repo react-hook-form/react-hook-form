@@ -344,16 +344,13 @@ export type UseFormMethods<TFieldValues extends FieldValues = FieldValues> = {
     TFieldValue extends TFieldValues[TFieldName]
   >(
     name: TFieldName,
-    value: NonUndefined<TFieldValue> extends NestedValue<infer U>
+    value?: NonUndefined<TFieldValue> extends NestedValue<infer U>
       ? U
       : UnpackNestedValue<DeepPartial<LiteralToPrimitive<TFieldValue>>>,
-    shouldValidate?: boolean,
-  ): void;
-  setValue<TFieldName extends keyof TFieldValues>(
-    namesWithValue: UnpackNestedValue<
-      DeepPartial<Pick<TFieldValues, TFieldName>>
-    >[],
-    shouldValidate?: boolean,
+    options?: Partial<{
+      shouldValidate?: boolean;
+      shouldDirty?: boolean;
+    }>,
   ): void;
   trigger(
     name?: FieldName<TFieldValues> | FieldName<TFieldValues>[],

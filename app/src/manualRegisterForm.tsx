@@ -41,58 +41,94 @@ const ManualRegisterForm: React.FC = () => {
       <input
         name="firstName"
         placeholder="firstName"
-        onChange={e => setValue('firstName', e.target.value, true)}
+        onChange={(e) =>
+          setValue('firstName', e.target.value, {
+            shouldValidate: true,
+          })
+        }
       />
       {errors.firstName && <p>firstName error</p>}
       <input
         name="lastName"
         placeholder="lastName"
-        onChange={e => setValue('lastName', e.target.value, true)}
+        onChange={(e) =>
+          setValue('lastName', e.target.value, {
+            shouldValidate: true,
+          })
+        }
       />
       {errors.lastName && <p>lastName error</p>}
       <input
         type="number"
         name="min"
         placeholder="min"
-        onChange={e => setValue('min', e.target.value, true)}
+        onChange={(e) =>
+          setValue('min', e.target.value, {
+            shouldValidate: true,
+          })
+        }
       />
       {errors.min && <p>min error</p>}
       <input
         type="number"
         name="max"
         placeholder="max"
-        onChange={e => setValue('max', e.target.value, true)}
+        onChange={(e) =>
+          setValue('max', e.target.value, {
+            shouldValidate: true,
+          })
+        }
       />
       {errors.max && <p>max error</p>}
       <input
         type="date"
         name="minDate"
         placeholder="minDate"
-        onChange={e => setValue('minDate', e.target.value, true)}
+        onChange={(e) =>
+          setValue('minDate', e.target.value, {
+            shouldValidate: true,
+          })
+        }
       />
       {errors.minDate && <p>minDate error</p>}
       <input
         type="date"
         name="maxDate"
         placeholder="maxDate"
-        onChange={e => setValue('maxDate', e.target.value, true)}
+        onChange={(e) =>
+          setValue('maxDate', e.target.value, {
+            shouldValidate: true,
+          })
+        }
       />
       {errors.maxDate && <p>maxDate error</p>}
       <input
         name="minLength"
         placeholder="minLength"
-        onChange={e => setValue('minLength', e.target.value, true)}
+        onChange={(e) =>
+          setValue('minLength', e.target.value, {
+            shouldValidate: true,
+          })
+        }
       />
       {errors.minLength && <p>minLength error</p>}
       <input
         name="minRequiredLength"
         placeholder="minRequiredLength"
-        onChange={e => setValue('minRequiredLength', e.target.value, true)}
+        onChange={(e) =>
+          setValue('minRequiredLength', e.target.value, {
+            shouldValidate: true,
+          })
+        }
       />
       {errors.minRequiredLength && <p>minRequiredLength error</p>}
       <select
         name="selectNumber"
-        onChange={e => setValue('selectNumber', e.target.value, true)}
+        onChange={(e) =>
+          setValue('selectNumber', e.target.value, {
+            shouldValidate: true,
+          })
+        }
       >
         <option value="">Select</option>
         <option value={1}>1</option>
@@ -102,7 +138,11 @@ const ManualRegisterForm: React.FC = () => {
       <input
         name="pattern"
         placeholder="pattern"
-        onChange={e => setValue('pattern', e.target.value, true)}
+        onChange={(e) =>
+          setValue('pattern', e.target.value, {
+            shouldValidate: true,
+          })
+        }
       />
       {errors.pattern && <p>pattern error</p>}
       Radio1
@@ -110,27 +150,43 @@ const ManualRegisterForm: React.FC = () => {
         type="radio"
         name="radio"
         value="1"
-        onChange={e => setValue('radio', e.target.value, true)}
+        onChange={(e) =>
+          setValue('radio', e.target.value, {
+            shouldValidate: true,
+          })
+        }
       />
       Radio2
       <input
         type="radio"
         name="radio"
         value="2"
-        onChange={e => setValue('radio', e.target.value, true)}
+        onChange={(e) =>
+          setValue('radio', e.target.value, {
+            shouldValidate: true,
+          })
+        }
       />
       Radio3
       <input
         type="radio"
         name="radio"
         value="3"
-        onChange={e => setValue('radio', e.target.value, true)}
+        onChange={(e) =>
+          setValue('radio', e.target.value, {
+            shouldValidate: true,
+          })
+        }
       />
       {errors.radio && <p>radio error</p>}
       <input
         type="checkbox"
         name="checkbox"
-        onChange={e => setValue('checkbox', e.target.value, true)}
+        onChange={(e) =>
+          setValue('checkbox', e.target.value, {
+            shouldValidate: true,
+          })
+        }
       />
       {errors.checkbox && <p>checkbox error</p>}
       <button id="submit">Submit</button>

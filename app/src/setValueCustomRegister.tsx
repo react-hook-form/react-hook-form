@@ -43,14 +43,20 @@ const SetValueCustomRegister: React.FC = () => {
       <button
         id="WithError"
         type="button"
-        onClick={() => setValue('firstName', '', true)}
+        onClick={() =>
+          setValue('firstName', '', { shouldValidate: true, shouldDirty: true })
+        }
       >
         WithError
       </button>
       <button
         id="WithoutError"
         type="button"
-        onClick={() => setValue('firstName', 'true', true)}
+        onClick={() =>
+          setValue('firstName', 'true', {
+            shouldValidate: true,
+          })
+        }
       >
         WithOutError
       </button>

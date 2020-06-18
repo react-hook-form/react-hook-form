@@ -278,7 +278,9 @@ describe('Controller', () => {
       },
     });
 
-    expect(setValue).toBeCalledWith('test', 'test', false);
+    expect(setValue).toBeCalledWith('test', 'test', {
+      shouldValidate: false,
+    });
   });
 
   it("should trigger component's onBlur method and invoke setValue method", () => {
@@ -445,7 +447,9 @@ describe('Controller', () => {
       },
     });
 
-    expect(setValue).toBeCalledWith('test', 'test', false);
+    expect(setValue).toBeCalledWith('test', 'test', {
+      shouldValidate: false,
+    });
   });
 
   it('should invoke custom onChange method', () => {

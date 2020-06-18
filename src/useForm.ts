@@ -39,7 +39,6 @@ import { EVENTS, UNDEFINED, VALIDATION_MODE } from './constants';
 import {
   UseFormMethods,
   FieldValues,
-  NestedValue,
   UnpackNestedValue,
   FieldName,
   InternalFieldName,
@@ -64,8 +63,9 @@ import {
   Message,
   DefaultValuesAtRender,
   FlatFieldErrors,
+  NestedValue,
 } from './types/form';
-import { NonUndefined, LiteralToPrimitive, DeepPartial } from './types/utils';
+import { LiteralToPrimitive, DeepPartial, NonUndefined } from './types/utils';
 
 export function useForm<
   TFieldValues extends FieldValues = FieldValues,
@@ -285,6 +285,7 @@ export function useForm<
       name: InternalFieldName<TFieldValues>,
       value: FieldValue<TFieldValues>,
       parentFieldName?: string,
+      shouldDirty = true,
     ) => {
       for (const key in value) {
         const fieldName = `${parentFieldName || name}${
@@ -298,7 +299,10 @@ export function useForm<
 
         if (field) {
           setFieldValue(field, value[key]);
-          setDirty(fieldName);
+
+          if (shouldDirty) {
+            setDirty(fieldName);
+          }
         }
       }
     },
@@ -309,13 +313,14 @@ export function useForm<
     (
       name: InternalFieldName<TFieldValues>,
       value: FieldValue<TFieldValues> | null | undefined | boolean,
+      shouldDirty = true,
     ): boolean | void => {
       if (fieldsRef.current[name]) {
         setFieldValue(fieldsRef.current[name] as Field, value);
 
-        return setDirty(name);
+        return shouldDirty && setDirty(name);
       } else if (!isPrimitive(value)) {
-        setInternalValues(name, value);
+        setInternalValues(name, value, undefined, shouldDirty);
       }
     },
     [setDirty, setFieldValue, setInternalValues],
@@ -441,49 +446,33 @@ export function useForm<
     value: NonUndefined<TFieldValue> extends NestedValue<infer U>
       ? U
       : UnpackNestedValue<DeepPartial<LiteralToPrimitive<TFieldValue>>>,
-    shouldValidate?: boolean,
-  ): void;
-  function setValue<TFieldName extends keyof TFieldValues>(
-    namesWithValue: UnpackNestedValue<
-      DeepPartial<Pick<TFieldValues, TFieldName>>
-    >[],
-    shouldValidate?: boolean,
-  ): void;
-  function setValue<TFieldName extends keyof TFieldValues>(
-    names:
-      | string
-      | UnpackNestedValue<DeepPartial<Pick<TFieldValues, TFieldName>>>[],
-    valueOrShouldValidate?: unknown,
-    shouldValidate?: boolean,
+    options: Partial<{
+      shouldValidate?: boolean;
+      shouldDirty?: boolean;
+    }> = {},
   ): void {
-    let shouldRender = false;
-    const isArrayValue = isArray(names);
-    const namesInArray = isArrayValue
-      ? (names as UnpackNestedValue<
-          DeepPartial<Pick<TFieldValues, TFieldName>>
-        >[])
-      : [names];
+    const partialOptions = {
+      shouldDirty: true,
+      ...options,
+    };
 
-    namesInArray.forEach((name: any) => {
-      const keyName = isString(name) ? name : Object.keys(name)[0];
-      shouldRender =
-        setInternalValue(
-          keyName,
-          isString(name)
-            ? valueOrShouldValidate
-            : (Object.values(name)[0] as any),
-        ) ||
-        isArrayValue ||
-        isFieldWatched(keyName);
-      renderWatchedInputs(keyName);
-    });
+    const shouldRender =
+      setInternalValue(
+        name,
+        value as TFieldValues[string],
+        partialOptions.shouldDirty,
+      ) ||
+      isArray(value) ||
+      isFieldWatched(name);
 
-    if (shouldRender || isArrayValue) {
+    renderWatchedInputs(name);
+
+    if (shouldRender) {
       reRender();
     }
 
-    if (shouldValidate || (isArrayValue && valueOrShouldValidate)) {
-      trigger(isArrayValue ? undefined : (names as any));
+    if (partialOptions.shouldValidate) {
+      trigger(isArray(value) ? undefined : (name as any));
     }
   }
 

@@ -47,6 +47,6 @@ describe('form setValue', () => {
     cy.get('input[name="object.lastName').should('have.value', 'lastName1');
     cy.get('input[name="object.middleName').should('have.value', 'middleName1');
     cy.get('input[name="nestedValue"]').should('have.value', 'a,b');
-    cy.get('#renderCount').contains('9');
+    cy.get('#renderCount').contains('8');
   });
 });
