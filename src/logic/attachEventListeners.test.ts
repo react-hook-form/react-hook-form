@@ -207,19 +207,4 @@ describe('attachEventListeners', () => {
     expect(addEventListener).toBeCalledWith('input', handleChange);
     expect(fields.test.eventAttached).toBeTruthy();
   });
-
-  it('should return undefined when addEventListener is not found', () => {
-    expect(
-      attachEventListeners({
-        field: {
-          ref: {
-            name: 'test',
-            addEventListener,
-          },
-        },
-        isRadioOrCheckbox: false,
-        handleChange: () => {},
-      }),
-    ).toBeUndefined();
-  });
 });

@@ -53,7 +53,7 @@
     "@rollup/plugin-replace": "^2.3.3",
     "@testing-library/react": "^10.3.0",
     "@testing-library/react-hooks": "^3.3.0",
-    "@types/jest": "^25.2.3",
+    "@types/jest": "^26.0.0",
     "@types/react": "^16.9.38",
     "@types/react-dom": "^16.9.8",
     "@types/react-test-renderer": "^16.9.2",
@@ -67,7 +67,7 @@
     "eslint-plugin-react": "^7.20.0",
     "eslint-plugin-react-hooks": "^3.0.0",
     "husky": "^4.2.5",
-    "jest": "^25.3.0",
+    "jest": "^26.0.1",
     "lint-staged": "^10.2.11",
     "mutationobserver-shim": "^0.3.7",
     "prettier": "^2.0.5",
@@ -77,7 +77,7 @@
     "rollup": "^2.17.0",
     "rollup-plugin-terser": "^6.1.0",
     "rollup-plugin-typescript2": "^0.27.1",
-    "ts-jest": "^25.5.1",
+    "ts-jest": "^26.1.0",
     "typescript": "^3.9.5"
   },
   "bundlesize": [
