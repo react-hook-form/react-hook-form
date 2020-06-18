@@ -983,13 +983,20 @@ export function useForm<
           }
         }
 
-        // need to figure out the erorr here
-        if (isEmptyObject(fieldErrors)) {
+        if (
+          isEmptyObject(fieldErrors) &&
+          Object.keys(errorsRef.current).every((name) =>
+            Object.keys(fieldsRef.current).includes(name),
+          )
+        ) {
           errorsRef.current = {};
           reRender();
           await callback(transformToNestObject(fieldValues), e);
         } else {
-          errorsRef.current = fieldErrors;
+          errorsRef.current = {
+            ...errorsRef.current,
+            ...fieldErrors,
+          };
           if (shouldFocusError && isWeb) {
             focusOnErrorField(fieldsRef.current, fieldErrors);
           }
