@@ -665,39 +665,20 @@ export function useForm<
 
   function setError(
     name: FieldName<TFieldValues>,
-    type: MultipleFieldErrors,
-  ): void;
-  function setError(
-    name: FieldName<TFieldValues>,
-    type: string,
-    message?: Message,
-  ): void;
-  function setError(name: ManualFieldError<TFieldValues>[]): void;
-  function setError(
-    name: FieldName<TFieldValues> | ManualFieldError<TFieldValues>[],
-    type: string | MultipleFieldErrors = '',
-    message?: Message,
+    error: Partial<{
+      types: MultipleFieldErrors;
+      message: Message;
+    }> & {
+      type: string;
+    },
   ): void {
     isValidRef.current = false;
 
-    if (isArray(name)) {
-      name.forEach((error) => setInternalError(error));
-      reRender();
-    } else {
-      setInternalError({
-        name,
-        ...(isObject(type)
-          ? {
-              types: type,
-              type: '',
-            }
-          : {
-              type,
-              message,
-            }),
-        shouldRender: true,
-      });
-    }
+    setInternalError({
+      name,
+      ...error,
+      shouldRender: true,
+    });
   }
 
   const watchInternal = React.useCallback(
