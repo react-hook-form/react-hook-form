@@ -376,7 +376,7 @@ export function useForm<
       name: InternalFieldName<TFieldValues>,
       value: FieldValue<TFieldValues>,
       parentFieldName?: string,
-      { shouldDirty, shouldValidate }: SetValueConfig = {},
+      config: SetValueConfig = {},
     ) => {
       for (const key in value) {
         const fieldName = `${parentFieldName || name}${
@@ -385,17 +385,17 @@ export function useForm<
         const field = fieldsRef.current[fieldName];
 
         if (isObject(value[key])) {
-          setInternalValues(name, value[key], fieldName);
+          setInternalValues(name, value[key], fieldName, config);
         }
 
         if (field) {
           setFieldValue(field, value[key]);
 
-          if (shouldDirty) {
+          if (config.shouldDirty) {
             setDirty(fieldName);
           }
 
-          if (shouldValidate) {
+          if (config.shouldValidate) {
             trigger(fieldName as FieldName<TFieldValues>);
           }
         }

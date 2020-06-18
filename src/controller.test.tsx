@@ -279,6 +279,7 @@ describe('Controller', () => {
     });
 
     expect(setValue).toBeCalledWith('test', 'test', {
+      shouldDirty: true,
       shouldValidate: false,
     });
   });
@@ -448,6 +449,7 @@ describe('Controller', () => {
     });
 
     expect(setValue).toBeCalledWith('test', 'test', {
+      shouldDirty: true,
       shouldValidate: false,
     });
   });
