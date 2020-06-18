@@ -52,7 +52,6 @@ import {
   FieldElement,
   FormStateProxy,
   ReadFormState,
-  ManualFieldError,
   MultipleFieldErrors,
   Ref,
   HandleChange,
@@ -615,7 +614,7 @@ export function useForm<
     [reRender, validateResolver, removeFieldEventListener, resolverRef],
   );
 
-  function clearError(
+  function clearErrors(
     name?: FieldName<TFieldValues> | FieldName<TFieldValues>[],
   ): void {
     if (name) {
@@ -1228,7 +1227,7 @@ export function useForm<
     handleSubmit,
     reset: React.useCallback(reset, []),
     getValues: React.useCallback(getValues, []),
-    clearError: React.useCallback(clearError, []),
+    clearErrors: React.useCallback(clearErrors, []),
     setError: React.useCallback(setError, []),
     errors: errorsRef.current,
     ...commonProps,

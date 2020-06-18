@@ -1773,7 +1773,7 @@ describe('useForm', () => {
     it('should only set an error when it is not existed', () => {
       const { result } = renderHook(() => useForm<{ input: string }>());
       act(() => {
-        result.current.setError('input', 'test');
+        result.current.setError('input', { type: 'test' });
       });
       expect(result.current.errors).toEqual({
         input: {
@@ -1785,7 +1785,7 @@ describe('useForm', () => {
       });
 
       act(() => {
-        result.current.setError('input', 'test', 'test');
+        result.current.setError('input', { type: 'test', message: 'test' });
       });
       expect(result.current.errors).toEqual({
         input: {
@@ -1797,7 +1797,7 @@ describe('useForm', () => {
       });
 
       act(() => {
-        result.current.setError('input', 'test', 'test');
+        result.current.setError('input', { type: 'test', message: 'test' });
       });
       expect(result.current.errors).toEqual({
         input: {
@@ -1810,7 +1810,10 @@ describe('useForm', () => {
       });
 
       act(() => {
-        result.current.setError('input', { test1: 'test1', test2: 'test2' });
+        result.current.setError('input', {
+          types: { test1: 'test1', test2: 'test2' },
+          type: '',
+        });
       });
       expect(result.current.errors).toEqual({
         input: {
@@ -1827,8 +1830,11 @@ describe('useForm', () => {
 
       act(() => {
         result.current.setError('input', {
-          test1: 'test1',
-          test2: 'test2',
+          types: {
+            test1: 'test1',
+            test2: 'test2',
+          },
+          type: '',
         });
       });
 
@@ -1848,12 +1854,15 @@ describe('useForm', () => {
     });
   });
 
-  describe('clearError', () => {
+  describe('clearErrors', () => {
     it('should remove error', () => {
       const { result } = renderHook(() => useForm<{ input: string }>());
       act(() => {
-        result.current.setError('input', 'test', 'message');
-        result.current.clearError('input');
+        result.current.setError('input', {
+          type: 'test',
+          message: 'message',
+        });
+        result.current.clearErrors('input');
       });
       expect(result.current.errors).toEqual({});
     });
@@ -1863,11 +1872,13 @@ describe('useForm', () => {
         useForm<{ input: { nested: string } }>(),
       );
       act(() => {
-        result.current.setError('input.nested', 'test');
+        result.current.setError('input.nested', {
+          type: 'test',
+        });
       });
       expect(result.current.errors.input?.nested).toBeDefined();
       act(() => {
-        result.current.clearError('input.nested');
+        result.current.clearErrors('input.nested');
       });
       expect(result.current.errors.input?.nested).toBeUndefined();
     });
@@ -1877,9 +1888,18 @@ describe('useForm', () => {
         useForm<{ input: string; input1: string; input2: string }>(),
       );
       act(() => {
-        result.current.setError('input', 'test', 'message');
-        result.current.setError('input1', 'test', 'message');
-        result.current.setError('input2', 'test', 'message');
+        result.current.setError('input', {
+          type: 'test',
+          message: 'message',
+        });
+        result.current.setError('input1', {
+          type: 'test',
+          message: 'message',
+        });
+        result.current.setError('input2', {
+          type: 'test',
+          message: 'message',
+        });
       });
 
       const errors = {
@@ -1907,7 +1927,7 @@ describe('useForm', () => {
       };
       expect(result.current.errors).toEqual(errors);
 
-      act(() => result.current.clearError(['input', 'input1']));
+      act(() => result.current.clearErrors(['input', 'input1']));
       expect(result.current.errors).toEqual({ input2: errors.input2 });
     });
 
@@ -1916,9 +1936,18 @@ describe('useForm', () => {
         useForm<{ input: string; input1: string; input2: string }>(),
       );
       act(() => {
-        result.current.setError('input', 'test', 'message');
-        result.current.setError('input1', 'test', 'message');
-        result.current.setError('input2', 'test', 'message');
+        result.current.setError('input', {
+          type: 'test',
+          message: 'message',
+        });
+        result.current.setError('input1', {
+          type: 'test',
+          message: 'message',
+        });
+        result.current.setError('input2', {
+          type: 'test',
+          message: 'message',
+        });
       });
       expect(result.current.errors).toEqual({
         input: {
@@ -1944,56 +1973,8 @@ describe('useForm', () => {
         },
       });
 
-      act(() => result.current.clearError());
+      act(() => result.current.clearErrors());
       expect(result.current.errors).toEqual({});
-    });
-  });
-
-  describe('setErrors', () => {
-    it('should set multiple errors for the form', () => {
-      const { result } = renderHook(() =>
-        useForm<{ input: string; input1: string; input2: string }>(),
-      );
-      act(() => {
-        result.current.setError([
-          {
-            type: 'test',
-            name: 'input',
-            message: 'wow',
-          },
-          {
-            type: 'test1',
-            name: 'input1',
-            message: 'wow1',
-          },
-          {
-            type: 'test2',
-            name: 'input2',
-            message: 'wow2',
-          },
-        ]);
-      });
-
-      expect(result.current.errors).toEqual({
-        input: {
-          type: 'test',
-          isManual: true,
-          message: 'wow',
-          ref: {},
-        },
-        input1: {
-          type: 'test1',
-          isManual: true,
-          message: 'wow1',
-          ref: {},
-        },
-        input2: {
-          type: 'test2',
-          isManual: true,
-          message: 'wow2',
-          ref: {},
-        },
-      });
     });
   });
 
@@ -2240,7 +2221,10 @@ describe('useForm', () => {
         const { register, setError, errors } = useForm();
 
         React.useEffect(() => {
-          setError('test', 'data', 'data');
+          setError('test', {
+            type: 'data',
+            message: 'data',
+          });
         });
 
         return (

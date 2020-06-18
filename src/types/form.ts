@@ -336,14 +336,16 @@ export type UseFormMethods<TFieldValues extends FieldValues = FieldValues> = {
     names: string[],
     defaultValues?: UnpackNestedValue<DeepPartial<TFieldValues>>,
   ): UnpackNestedValue<DeepPartial<TFieldValues>>;
-  setError(name: FieldName<TFieldValues>, type: MultipleFieldErrors): void;
   setError(
     name: FieldName<TFieldValues>,
-    type: string,
-    message?: Message,
+    error: Partial<{
+      types: MultipleFieldErrors;
+      message: Message;
+    }> & {
+      type: string;
+    },
   ): void;
-  setError(name: ManualFieldError<TFieldValues>[]): void;
-  clearError(name?: FieldName<TFieldValues> | FieldName<TFieldValues>[]): void;
+  clearErrors(name?: FieldName<TFieldValues> | FieldName<TFieldValues>[]): void;
   setValue<
     TFieldName extends string,
     TFieldValue extends TFieldValues[TFieldName]
