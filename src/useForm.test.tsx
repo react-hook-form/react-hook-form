@@ -1120,17 +1120,16 @@ describe('useForm', () => {
         });
 
         await waitFor(() => {
-          expect(transformToNestObject).toBeCalled();
-          // expect((transformToNestObject as any).mock.calls[2]).toEqual([
-          //   {
-          //     'test[0].name': 'default_update',
-          //     'test[1].name': 'default1',
-          //     'test[2].name': 'default2',
-          //   },
-          // ]);
-          // expect(result.current.formState.dirtyFields.test!).toEqual([
-          //   { name: true },
-          // ]);
+          expect((transformToNestObject as any).mock.calls[2]).toEqual([
+            {
+              'test[0].name': 'default_update',
+              'test[1].name': 'default1',
+              'test[2].name': 'default2',
+            },
+          ]);
+          expect(result.current.formState.dirtyFields.test!).toEqual([
+            { name: true },
+          ]);
         });
       });
 
