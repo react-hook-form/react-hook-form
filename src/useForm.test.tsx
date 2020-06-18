@@ -1778,7 +1778,6 @@ describe('useForm', () => {
       expect(result.current.errors).toEqual({
         input: {
           type: 'test',
-          isManual: true,
           message: undefined,
           ref: {},
         },
@@ -1790,7 +1789,6 @@ describe('useForm', () => {
       expect(result.current.errors).toEqual({
         input: {
           type: 'test',
-          isManual: true,
           message: 'test',
           ref: {},
         },
@@ -1802,7 +1800,6 @@ describe('useForm', () => {
       expect(result.current.errors).toEqual({
         input: {
           type: 'test',
-          isManual: true,
           message: 'test',
           ref: {},
           types: undefined,
@@ -1818,7 +1815,6 @@ describe('useForm', () => {
       expect(result.current.errors).toEqual({
         input: {
           type: '',
-          isManual: true,
           message: undefined,
           types: {
             test1: 'test1',
@@ -1841,7 +1837,6 @@ describe('useForm', () => {
       expect(result.current.errors).toEqual({
         input: {
           type: '',
-          isManual: true,
           message: undefined,
           types: {
             test1: 'test1',
@@ -1904,21 +1899,18 @@ describe('useForm', () => {
 
       const errors = {
         input: {
-          isManual: true,
           message: 'message',
           ref: {},
           type: 'test',
           types: undefined,
         },
         input1: {
-          isManual: true,
           message: 'message',
           ref: {},
           type: 'test',
           types: undefined,
         },
         input2: {
-          isManual: true,
           message: 'message',
           ref: {},
           type: 'test',
@@ -1951,21 +1943,18 @@ describe('useForm', () => {
       });
       expect(result.current.errors).toEqual({
         input: {
-          isManual: true,
           message: 'message',
           ref: {},
           type: 'test',
           types: undefined,
         },
         input1: {
-          isManual: true,
           message: 'message',
           ref: {},
           type: 'test',
           types: undefined,
         },
         input2: {
-          isManual: true,
           message: 'message',
           ref: {},
           type: 'test',

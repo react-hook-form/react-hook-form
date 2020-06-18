@@ -77,7 +77,7 @@ describe('shouldUpdateWithError', () => {
     expect(
       shouldRenderBasedOnError({
         errors: {
-          test: { isManual: true, message: 'test', type: 'input' },
+          test: { message: 'test', type: 'input' },
         } as any,
         name: 'test',
         error: { test: { type: 'input', message: 'test' } } as any,
@@ -120,6 +120,6 @@ describe('shouldUpdateWithError', () => {
         validFields: new Set(),
         fieldsWithValidation: new Set(),
       }),
-    ).toBeTruthy();
+    ).toBeFalsy();
   });
 });

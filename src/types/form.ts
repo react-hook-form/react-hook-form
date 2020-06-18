@@ -134,7 +134,6 @@ export type FieldError = {
   ref?: Ref;
   types?: MultipleFieldErrors;
   message?: Message;
-  isManual?: boolean;
 };
 
 export type ManualFieldError<TFieldValues extends FieldValues> = {

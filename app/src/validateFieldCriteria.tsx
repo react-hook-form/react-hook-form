@@ -4,7 +4,7 @@ import { useForm } from 'react-hook-form';
 let renderCounter = 0;
 
 const ValidateFieldCriteria: React.FC = () => {
-  const { register, handleSubmit, errors, setError, clearError } = useForm<{
+  const { register, handleSubmit, errors, setError, clearErrors } = useForm<{
     firstName: string;
     lastName: string;
     min: string;
@@ -167,8 +167,11 @@ const ValidateFieldCriteria: React.FC = () => {
         id="trigger"
         onClick={() => {
           setError('firstName', {
-            minLength: 'test1',
-            required: 'test2',
+            type: 'test',
+            types: {
+              minLength: 'test1',
+              required: 'test2',
+            },
           });
         }}
       >
@@ -179,7 +182,7 @@ const ValidateFieldCriteria: React.FC = () => {
         type="button"
         id="clear"
         onClick={() => {
-          clearError('firstName');
+          clearErrors('firstName');
         }}
       >
         Clear Error
