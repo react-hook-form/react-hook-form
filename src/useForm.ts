@@ -492,69 +492,67 @@ export function useForm<
     : async ({ type, target }: Event): Promise<void | boolean> => {
         const name = target ? (target as Ref).name : '';
         const field = fieldsRef.current[name];
-        let error: FlatFieldErrors<TFieldValues>;
 
-        if (!field) {
-          return;
-        }
+        if (field) {
+          let error: FlatFieldErrors<TFieldValues>;
+          const isBlurEvent = type === EVENTS.BLUR;
+          const shouldSkipValidation =
+            !isOnAll &&
+            skipValidation({
+              hasError: !!get(errorsRef.current, name),
+              isOnChange,
+              isBlurEvent,
+              isOnSubmit,
+              isReValidateOnSubmit,
+              isOnBlur,
+              isReValidateOnBlur,
+              isSubmitted: isSubmittedRef.current,
+            });
+          let shouldRender = setDirty(name) || isFieldWatched(name);
 
-        const isBlurEvent = type === EVENTS.BLUR;
-        const shouldSkipValidation =
-          !isOnAll &&
-          skipValidation({
-            hasError: !!get(errorsRef.current, name),
-            isOnChange,
-            isBlurEvent,
-            isOnSubmit,
-            isReValidateOnSubmit,
-            isOnBlur,
-            isReValidateOnBlur,
-            isSubmitted: isSubmittedRef.current,
-          });
-        let shouldRender = setDirty(name) || isFieldWatched(name);
-
-        if (
-          isBlurEvent &&
-          !get(touchedFieldsRef.current, name) &&
-          readFormStateRef.current.touched
-        ) {
-          set(touchedFieldsRef.current, name, true);
-          shouldRender = true;
-        }
-
-        if (shouldSkipValidation) {
-          renderWatchedInputs(name);
-          return shouldRender && reRender();
-        }
-
-        if (resolver) {
-          const { errors } = await resolver(
-            getFieldArrayValueByName(fieldsRef.current),
-            contextRef.current,
-            validateAllFieldCriteria,
-          );
-          const previousFormIsValid = isValidRef.current;
-          isValidRef.current = isEmptyObject(errors);
-
-          error = (get(errors, name)
-            ? { [name]: get(errors, name) }
-            : {}) as FlatFieldErrors<TFieldValues>;
-
-          if (previousFormIsValid !== isValidRef.current) {
+          if (
+            isBlurEvent &&
+            !get(touchedFieldsRef.current, name) &&
+            readFormStateRef.current.touched
+          ) {
+            set(touchedFieldsRef.current, name, true);
             shouldRender = true;
           }
-        } else {
-          error = await validateField<TFieldValues>(
-            fieldsRef,
-            validateAllFieldCriteria,
-            field,
-          );
-        }
 
-        renderWatchedInputs(name);
+          if (shouldSkipValidation) {
+            renderWatchedInputs(name);
+            return shouldRender && reRender();
+          }
 
-        if (!shouldRenderBaseOnError(name, error) && shouldRender) {
-          reRender();
+          if (resolver) {
+            const { errors } = await resolver(
+              getFieldArrayValueByName(fieldsRef.current),
+              contextRef.current,
+              validateAllFieldCriteria,
+            );
+            const previousFormIsValid = isValidRef.current;
+            isValidRef.current = isEmptyObject(errors);
+
+            error = (get(errors, name)
+              ? { [name]: get(errors, name) }
+              : {}) as FlatFieldErrors<TFieldValues>;
+
+            if (previousFormIsValid !== isValidRef.current) {
+              shouldRender = true;
+            }
+          } else {
+            error = await validateField<TFieldValues>(
+              fieldsRef,
+              validateAllFieldCriteria,
+              field,
+            );
+          }
+
+          renderWatchedInputs(name);
+
+          if (!shouldRenderBaseOnError(name, error) && shouldRender) {
+            reRender();
+          }
         }
       };
 
