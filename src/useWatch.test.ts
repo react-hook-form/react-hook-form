@@ -19,6 +19,66 @@ describe('useWatch', () => {
     expect(result.current).toEqual('test');
   });
 
+  it('should return empty object', () => {
+    const { result } = renderHook(() =>
+      useWatch({
+        control: reconfigureControl(),
+        name: ['test'],
+      }),
+    );
+
+    expect(result.current).toEqual({});
+  });
+
+  it('should return undefined', () => {
+    const { result } = renderHook(() =>
+      useWatch({
+        control: reconfigureControl(),
+        name: 'test',
+      }),
+    );
+
+    expect(result.current).toBeUndefined();
+  });
+
+  it('should return default value when value is undefined', () => {
+    (generateId as any).mockReturnValue('1');
+    const mockControl = reconfigureControl();
+    const { result } = renderHook(() =>
+      useWatch({
+        control: {
+          ...mockControl,
+          watchInternal: () => 'value',
+        },
+        name: 'test',
+        defaultValue: 'test',
+      }),
+    );
+
+    act(() => mockControl.watchFieldsHookRenderRef.current['1']());
+
+    expect(result.current).toEqual('value');
+  });
+
+  it('should return default value when value is undefined', () => {
+    (generateId as any).mockReturnValue('1');
+    const mockControl = reconfigureControl();
+    const { result } = renderHook(() =>
+      useWatch({
+        control: {
+          ...mockControl,
+          watchInternal: () => undefined,
+        },
+        name: 'test',
+        defaultValue: 'test',
+      }),
+    );
+
+    act(() => mockControl.watchFieldsHookRenderRef.current['1']());
+
+    expect(result.current).toEqual('test');
+  });
+
   it('should invoked generateId and set up watchFieldsHook and watchFieldsHookRender after mount ', () => {
     (generateId as any).mockImplementation(() => {
       return '123';
