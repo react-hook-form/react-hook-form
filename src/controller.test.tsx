@@ -28,7 +28,7 @@ describe('Controller', () => {
       <Controller
         defaultValue=""
         name="test"
-        as={'input' as 'input'}
+        as={'input' as const}
         control={
           {
             ...control,
@@ -77,7 +77,7 @@ describe('Controller', () => {
     const control = reconfigureControl();
     const { asFragment } = render(
       <FormProvider {...{ ...result.current, ...control }}>
-        <Controller defaultValue="" name="test" as={'input' as 'input'} />
+        <Controller defaultValue="" name="test" as={'input' as const} />
       </FormProvider>,
     );
     expect(asFragment()).toMatchSnapshot();
@@ -543,7 +543,7 @@ describe('Controller', () => {
     const { asFragment } = render(
       <Controller
         name="test"
-        as={'input' as 'input'}
+        as={'input' as const}
         control={
           {
             ...control,
