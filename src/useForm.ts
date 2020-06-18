@@ -64,6 +64,7 @@ import {
   DefaultValuesAtRender,
   FlatFieldErrors,
   NestedValue,
+  SetValueConfig,
 } from './types/form';
 import { LiteralToPrimitive, DeepPartial, NonUndefined } from './types/utils';
 
@@ -280,52 +281,6 @@ export function useForm<
     [],
   );
 
-  const setInternalValues = React.useCallback(
-    (
-      name: InternalFieldName<TFieldValues>,
-      value: FieldValue<TFieldValues>,
-      parentFieldName?: string,
-      shouldDirty = true,
-    ) => {
-      for (const key in value) {
-        const fieldName = `${parentFieldName || name}${
-          isArray(value) ? `[${key}]` : `.${key}`
-        }`;
-        const field = fieldsRef.current[fieldName];
-
-        if (isObject(value[key])) {
-          setInternalValues(name, value[key], fieldName);
-        }
-
-        if (field) {
-          setFieldValue(field, value[key]);
-
-          if (shouldDirty) {
-            setDirty(fieldName);
-          }
-        }
-      }
-    },
-    [setFieldValue, setDirty],
-  );
-
-  const setInternalValue = React.useCallback(
-    (
-      name: InternalFieldName<TFieldValues>,
-      value: FieldValue<TFieldValues> | null | undefined | boolean,
-      shouldDirty = true,
-    ): boolean | void => {
-      if (fieldsRef.current[name]) {
-        setFieldValue(fieldsRef.current[name] as Field, value);
-
-        return shouldDirty && setDirty(name);
-      } else if (!isPrimitive(value)) {
-        setInternalValues(name, value, undefined, shouldDirty);
-      }
-    },
-    [setDirty, setFieldValue, setInternalValues],
-  );
-
   const executeValidation = React.useCallback(
     async (
       name: InternalFieldName<TFieldValues>,
@@ -416,6 +371,56 @@ export function useForm<
     ],
   );
 
+  const setInternalValues = React.useCallback(
+    (
+      name: InternalFieldName<TFieldValues>,
+      value: FieldValue<TFieldValues>,
+      parentFieldName?: string,
+      { shouldDirty, shouldValidate }: SetValueConfig = {},
+    ) => {
+      for (const key in value) {
+        const fieldName = `${parentFieldName || name}${
+          isArray(value) ? `[${key}]` : `.${key}`
+        }`;
+        const field = fieldsRef.current[fieldName];
+
+        if (isObject(value[key])) {
+          setInternalValues(name, value[key], fieldName);
+        }
+
+        if (field) {
+          setFieldValue(field, value[key]);
+
+          if (shouldDirty) {
+            setDirty(fieldName);
+          }
+
+          if (shouldValidate) {
+            trigger(fieldName as FieldName<TFieldValues>);
+          }
+        }
+      }
+    },
+    [trigger, setFieldValue, setDirty],
+  );
+
+  const setInternalValue = React.useCallback(
+    (
+      name: InternalFieldName<TFieldValues>,
+      value: FieldValue<TFieldValues> | null | undefined | boolean,
+      config: SetValueConfig,
+    ): boolean | void => {
+      if (fieldsRef.current[name]) {
+        setFieldValue(fieldsRef.current[name] as Field, value);
+
+        return config.shouldDirty && setDirty(name);
+      } else if (!isPrimitive(value)) {
+        setInternalValues(name, value, undefined, config);
+      }
+    },
+    [setDirty, setFieldValue, setInternalValues],
+  );
+
   const isFieldWatched = (name: string) =>
     isWatchAllRef.current ||
     watchFieldsRef.current.has(name) ||
@@ -446,23 +451,11 @@ export function useForm<
     value: NonUndefined<TFieldValue> extends NestedValue<infer U>
       ? U
       : UnpackNestedValue<DeepPartial<LiteralToPrimitive<TFieldValue>>>,
-    options: Partial<{
-      shouldValidate?: boolean;
-      shouldDirty?: boolean;
-    }> = {},
+    config: SetValueConfig = {},
   ): void {
-    const partialOptions = {
-      shouldDirty: true,
-      ...options,
-    };
-
     const shouldRender =
-      setInternalValue(
-        name,
-        value as TFieldValues[string],
-        partialOptions.shouldDirty,
-      ) ||
-      isArray(value) ||
+      setInternalValue(name, value as TFieldValues[string], config) ||
+      !isPrimitive(value) ||
       isFieldWatched(name);
 
     renderWatchedInputs(name);
@@ -471,8 +464,8 @@ export function useForm<
       reRender();
     }
 
-    if (partialOptions.shouldValidate) {
-      trigger(isArray(value) ? undefined : (name as any));
+    if (config.shouldValidate) {
+      trigger(name as any);
     }
   }
 

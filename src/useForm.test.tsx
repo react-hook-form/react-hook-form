@@ -1007,7 +1007,7 @@ describe('useForm', () => {
         });
 
         act(() => {
-          result.current.setValue('test', '1');
+          result.current.setValue('test', '1', { shouldDirty: true });
         });
 
         expect(transformToNestObject).not.toHaveBeenCalled();
@@ -1138,11 +1138,15 @@ describe('useForm', () => {
           ],
         });
         act(() => {
-          result.current.setValue('test', [
-            { name: 'default_update' },
-            { name: 'default1' },
-            { name: 'default2' },
-          ]);
+          result.current.setValue(
+            'test',
+            [
+              { name: 'default_update' },
+              { name: 'default1' },
+              { name: 'default2' },
+            ],
+            { shouldDirty: true },
+          );
         });
 
         (transformToNestObject as any).mockReturnValue({

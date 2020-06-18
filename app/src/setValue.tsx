@@ -25,22 +25,32 @@ const SetValue: React.FC = () => {
 
   useEffect(() => {
     register({ name: 'lastName' }, { required: true });
-    setValue('firstName', 'wrong');
-    setValue('age', '2');
-    setValue('trigger', '', { shouldValidate: true });
-    setValue('checkbox', true);
-    setValue('checkboxArray', ['2', '3']);
-    setValue('radio', 'radio');
-    setValue('select', 'a');
-    setValue('multiple', ['a', 'b']);
-    setValue('array', ['array[0]', 'array[1]', 'array[2]']);
-    setValue('object', {
-      firstName: 'firstName',
-      lastName: 'lastName',
-      middleName: 'middleName',
+    setValue('firstName', 'wrong', { shouldDirty: true });
+    setValue('age', '2', { shouldDirty: true });
+    setValue('trigger', '', { shouldDirty: true, shouldValidate: true });
+    setValue('checkbox', true, { shouldDirty: true });
+    setValue('checkboxArray', ['2', '3'], {
+      shouldDirty: true,
+      shouldValidate: true,
     });
+    setValue('radio', 'radio', { shouldDirty: true });
+    setValue('select', 'a', { shouldDirty: true });
+    setValue('multiple', ['a', 'b'], { shouldDirty: true });
+    setValue('array', ['array[0]', 'array[1]', 'array[2]'], {
+      shouldDirty: true,
+    });
+    setValue(
+      'object',
+      {
+        firstName: 'firstName',
+        lastName: 'lastName',
+        middleName: 'middleName',
+      },
+      { shouldDirty: true },
+    );
     setValue('nestedValue', [], {
       shouldValidate: true,
+      shouldDirty: true,
     });
   }, [register, setValue]);
 
@@ -113,13 +123,19 @@ const SetValue: React.FC = () => {
         type="button"
         id="setMultipleValues"
         onClick={() => {
-          setValue('object', {
-            firstName: 'firstName1',
-            lastName: 'lastName1',
-            middleName: 'middleName1',
+          setValue(
+            'object',
+            {
+              firstName: 'firstName1',
+              lastName: 'lastName1',
+              middleName: 'middleName1',
+            },
+            { shouldDirty: true },
+          );
+          setValue('array', ['array[0]1', 'array[1]1', 'array[2]1'], {
+            shouldDirty: true,
           });
-          setValue('array', ['array[0]1', 'array[1]1', 'array[2]1']);
-          setValue('nestedValue', ['a', 'b']);
+          setValue('nestedValue', ['a', 'b'], { shouldDirty: true });
         }}
       >
         Set Multiple Values

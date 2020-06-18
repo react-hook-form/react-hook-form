@@ -138,6 +138,7 @@ const Controller = <
   const onChange = (...event: any[]) =>
     setValue(name, commonTask(event), {
       shouldValidate: shouldValidate(),
+      shouldDirty: true,
     });
 
   const props = {

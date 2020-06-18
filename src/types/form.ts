@@ -172,6 +172,11 @@ export type Dirtied<TFieldValues extends FieldValues> = DeepMap<
   true
 >;
 
+export type SetValueConfig = Partial<{
+  shouldValidate: boolean;
+  shouldDirty: boolean;
+}>;
+
 export type FormStateProxy<TFieldValues extends FieldValues = FieldValues> = {
   isDirty: boolean;
   dirtyFields: Dirtied<TFieldValues>;
@@ -347,10 +352,7 @@ export type UseFormMethods<TFieldValues extends FieldValues = FieldValues> = {
     value?: NonUndefined<TFieldValue> extends NestedValue<infer U>
       ? U
       : UnpackNestedValue<DeepPartial<LiteralToPrimitive<TFieldValue>>>,
-    options?: Partial<{
-      shouldValidate?: boolean;
-      shouldDirty?: boolean;
-    }>,
+    options?: SetValueConfig,
   ): void;
   trigger(
     name?: FieldName<TFieldValues> | FieldName<TFieldValues>[],

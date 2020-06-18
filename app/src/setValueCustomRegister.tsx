@@ -29,14 +29,14 @@ const SetValueCustomRegister: React.FC = () => {
       <button
         id="TriggerDirty"
         type="button"
-        onClick={() => setValue('lastName', 'test')}
+        onClick={() => setValue('lastName', 'test', { shouldDirty: true })}
       >
         TriggerDirty
       </button>
       <button
         id="TriggerNothing"
         type="button"
-        onClick={() => setValue('firstName', '')}
+        onClick={() => setValue('firstName', '', { shouldDirty: true })}
       >
         TriggerNothing
       </button>
@@ -55,6 +55,7 @@ const SetValueCustomRegister: React.FC = () => {
         onClick={() =>
           setValue('firstName', 'true', {
             shouldValidate: true,
+            shouldDirty: true,
           })
         }
       >
