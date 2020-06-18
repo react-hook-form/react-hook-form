@@ -147,7 +147,79 @@ describe('useFieldArray', () => {
         result.current.append({ test: 'test' });
       });
 
-      expect(reRender).toBeCalled();
+      expect(result.current.fields).toEqual([{ id: '1', test: 'test' }]);
+      expect(reRender).toBeCalledTimes(3);
+    });
+
+    it('should trigger reRender when user is watching the all field array', () => {
+      const reRender = jest.fn();
+      const { result } = renderHook(() =>
+        useFieldArray({
+          control: reconfigureControl({
+            reRender,
+            isWatchAllRef: {
+              current: true,
+            },
+          }),
+          name: 'test',
+        }),
+      );
+
+      act(() => {
+        result.current.append({ test: 'test' });
+      });
+
+      expect(result.current.fields).toEqual([{ id: '1', test: 'test' }]);
+      expect(reRender).toBeCalledTimes(2);
+    });
+
+    it('should focus if shouldFocus is true', () => {
+      const mockFocus = jest.fn();
+
+      const { result } = renderHook(() =>
+        useFieldArray({
+          control: reconfigureControl({
+            defaultValuesRef: {
+              current: { test: [{ test: '1' }, { test: '2' }] },
+            },
+            fieldsRef: {
+              current: {
+                'test[0]': {
+                  ref: {
+                    name: 'test[0]',
+                    value: { test: '1' },
+                    focus: mockFocus,
+                  },
+                },
+                'test[1]': {
+                  ref: {
+                    name: 'test[1]',
+                    value: { test: '2' },
+                    focus: mockFocus,
+                  },
+                },
+                'test[2]': {
+                  ref: {
+                    name: 'test[2]',
+                    value: { test: 'test' },
+                    focus: mockFocus,
+                  },
+                },
+              },
+            },
+          }),
+          name: 'test',
+        }),
+      );
+
+      act(() => result.current.append({ test: 'test' }));
+
+      expect(result.current.fields).toEqual([
+        { id: '1', test: '1' },
+        { id: '1', test: '2' },
+        { id: '1', test: 'test' },
+      ]);
+      expect(mockFocus).toBeCalledTimes(1);
     });
   });
 
@@ -316,6 +388,99 @@ describe('useFieldArray', () => {
         },
       });
     });
+
+    it('should trigger reRender when user is watching the field array', () => {
+      const reRender = jest.fn();
+      const { result } = renderHook(() =>
+        useFieldArray({
+          control: reconfigureControl({
+            reRender,
+            watchFieldsRef: {
+              current: new Set(['test']),
+            },
+          }),
+          name: 'test',
+        }),
+      );
+
+      act(() => {
+        result.current.prepend({ test: 'test' });
+      });
+
+      expect(result.current.fields).toEqual([{ id: '1', test: 'test' }]);
+      expect(reRender).toBeCalledTimes(3);
+    });
+
+    it('should trigger reRender when user is watching the all field array', () => {
+      const reRender = jest.fn();
+      const { result } = renderHook(() =>
+        useFieldArray({
+          control: reconfigureControl({
+            reRender,
+            isWatchAllRef: {
+              current: true,
+            },
+          }),
+          name: 'test',
+        }),
+      );
+
+      act(() => {
+        result.current.prepend({ test: 'test' });
+      });
+
+      expect(result.current.fields).toEqual([{ id: '1', test: 'test' }]);
+      expect(reRender).toBeCalledTimes(2);
+    });
+
+    it('should focus if shouldFocus is true', () => {
+      const mockFocus = jest.fn();
+
+      const { result } = renderHook(() =>
+        useFieldArray({
+          control: reconfigureControl({
+            defaultValuesRef: {
+              current: { test: [{ test: '1' }, { test: '2' }] },
+            },
+            fieldsRef: {
+              current: {
+                'test[0]': {
+                  ref: {
+                    name: 'test[0]',
+                    value: { test: 'test' },
+                    focus: mockFocus,
+                  },
+                },
+                'test[1]': {
+                  ref: {
+                    name: 'test[1]',
+                    value: { test: '1' },
+                    focus: mockFocus,
+                  },
+                },
+                'test[2]': {
+                  ref: {
+                    name: 'test[2]',
+                    value: { test: '2' },
+                    focus: mockFocus,
+                  },
+                },
+              },
+            },
+          }),
+          name: 'test',
+        }),
+      );
+
+      act(() => result.current.prepend({ test: 'test' }));
+
+      expect(result.current.fields).toEqual([
+        { id: '1', test: 'test' },
+        { id: '1', test: '1' },
+        { id: '1', test: '2' },
+      ]);
+      expect(mockFocus).toBeCalledTimes(1);
+    });
   });
 
   describe('remove', () => {
@@ -372,6 +537,93 @@ describe('useFieldArray', () => {
       });
     });
 
+    it('should remove field if isValid is true', () => {
+      const mockControl = reconfigureControl({
+        validFieldsRef: {
+          current: new Set([
+            'test[0].deep',
+            'test[1].deep',
+            'test[2].deep',
+            'test[3].deep',
+            'test[4].deep',
+          ]),
+        },
+        fieldsWithValidationRef: {
+          current: new Set([
+            'test[0].deep',
+            'test[1].deep',
+            'test[2].deep',
+            'test[3].deep',
+            'test[4].deep',
+          ]),
+        },
+      });
+      const { result } = renderHook(() =>
+        useFieldArray({
+          control: {
+            ...mockControl,
+            readFormStateRef: {
+              current: {
+                ...mockControl.readFormStateRef.current,
+                isValid: true,
+              },
+            },
+            validateSchemaIsValid: undefined,
+            defaultValuesRef: {
+              current: {
+                test: [
+                  { deep: '1' },
+                  { deep: '2' },
+                  { deep: '3' },
+                  { deep: '4' },
+                  { deep: '5' },
+                ],
+              },
+            },
+            fieldsRef: {
+              current: {
+                'test[0].deep': {
+                  ref: { name: 'test[0].deep', value: { deep: '1' } },
+                },
+                'test[1].deep': {
+                  ref: { name: 'test[1].deep', value: { deep: '2' } },
+                },
+                'test[2].deep': {
+                  ref: { name: 'test[2].deep', value: { deep: '3' } },
+                },
+                'test[3].deep': {
+                  ref: { name: 'test[3].deep', value: { deep: '4' } },
+                },
+                'test[4].deep': {
+                  ref: { name: 'test[4].deep', value: { deep: '5' } },
+                },
+              },
+            },
+          },
+          name: 'test',
+        }),
+      );
+
+      act(() => result.current.remove(1));
+
+      expect(mockControl.validFieldsRef.current).toEqual(
+        new Set([
+          'test[0].deep',
+          'test[1].deep',
+          'test[2].deep',
+          'test[3].deep',
+        ]),
+      );
+      expect(mockControl.fieldsWithValidationRef.current).toEqual(
+        new Set([
+          'test[0].deep',
+          'test[1].deep',
+          'test[2].deep',
+          'test[3].deep',
+        ]),
+      );
+    });
+
     it('should remove error', () => {
       const errorsRef = {
         current: {
@@ -405,6 +657,33 @@ describe('useFieldArray', () => {
           test: [{ test: '1' }, { test: '3' }],
         },
       });
+    });
+
+    it('should remove test field in errorsRef if errorsRef.test.length is 0', () => {
+      const errorsRef = {
+        current: {
+          test: [{ test: '1' }],
+        },
+      };
+      const { result } = renderHook(() =>
+        useFieldArray({
+          control: reconfigureControl({
+            errorsRef: errorsRef as any,
+            fieldsRef: {
+              current: {
+                'test[0]': { ref: { name: 'test[0]', value: { test: '1' } } },
+              },
+            },
+          }),
+          name: 'test',
+        }),
+      );
+
+      act(() => {
+        result.current.remove(0);
+      });
+
+      expect(errorsRef.current.test).toBeUndefined();
     });
 
     it('should remove touched fields', () => {
@@ -597,6 +876,64 @@ describe('useFieldArray', () => {
       });
 
       expect(isDirtyRef.current).toBeTruthy();
+    });
+
+    it('should trigger reRender when user is watching the field array', () => {
+      const reRender = jest.fn();
+      const { result } = renderHook(() =>
+        useFieldArray({
+          control: reconfigureControl({
+            fieldsRef: {
+              current: {
+                'test[0]': {
+                  ref: { name: 'test[0]', value: { test: '1' } },
+                },
+              },
+            },
+            reRender,
+            watchFieldsRef: {
+              current: new Set(['test']),
+            },
+          }),
+          name: 'test',
+        }),
+      );
+
+      act(() => {
+        result.current.remove(0);
+      });
+
+      expect(result.current.fields).toEqual([]);
+      expect(reRender).toBeCalledTimes(3);
+    });
+
+    it('should trigger reRender when user is watching the all field array', () => {
+      const reRender = jest.fn();
+      const { result } = renderHook(() =>
+        useFieldArray({
+          control: reconfigureControl({
+            fieldsRef: {
+              current: {
+                'test[0]': {
+                  ref: { name: 'test[0]', value: { test: '1' } },
+                },
+              },
+            },
+            reRender,
+            isWatchAllRef: {
+              current: true,
+            },
+          }),
+          name: 'test',
+        }),
+      );
+
+      act(() => {
+        result.current.remove(0);
+      });
+
+      expect(result.current.fields).toEqual([]);
+      expect(reRender).toBeCalledTimes(2);
     });
   });
 
@@ -802,6 +1139,125 @@ describe('useFieldArray', () => {
         },
       });
     });
+
+    it('should trigger reRender when user is watching the field array', () => {
+      const reRender = jest.fn();
+      const { result } = renderHook(() =>
+        useFieldArray({
+          control: reconfigureControl({
+            reRender,
+            watchFieldsRef: {
+              current: new Set(['test']),
+            },
+            defaultValuesRef: {
+              current: { test: [{ test: '1' }, { test: '2' }] },
+            },
+            fieldsRef: {
+              current: {
+                'test[0]': { ref: { name: 'test[0]', value: { test: '1' } } },
+                'test[1]': { ref: { name: 'test[1]', value: { test: '2' } } },
+              },
+            },
+          }),
+          name: 'test',
+        }),
+      );
+
+      act(() => {
+        result.current.insert(1, { test: 'test' });
+      });
+
+      expect(result.current.fields).toEqual([
+        { id: '1', test: '1' },
+        { id: '1', test: 'test' },
+        { id: '1', test: '2' },
+      ]);
+      expect(reRender).toBeCalledTimes(3);
+    });
+
+    it('should trigger reRender when user is watching the all field array', () => {
+      const reRender = jest.fn();
+      const { result } = renderHook(() =>
+        useFieldArray({
+          control: reconfigureControl({
+            reRender,
+            isWatchAllRef: {
+              current: true,
+            },
+            defaultValuesRef: {
+              current: { test: [{ test: '1' }, { test: '2' }] },
+            },
+            fieldsRef: {
+              current: {
+                'test[0]': { ref: { name: 'test[0]', value: { test: '1' } } },
+                'test[1]': { ref: { name: 'test[1]', value: { test: '2' } } },
+              },
+            },
+          }),
+          name: 'test',
+        }),
+      );
+
+      act(() => {
+        result.current.insert(1, { test: 'test' });
+      });
+
+      expect(result.current.fields).toEqual([
+        { id: '1', test: '1' },
+        { id: '1', test: 'test' },
+        { id: '1', test: '2' },
+      ]);
+      expect(reRender).toBeCalledTimes(2);
+    });
+
+    it('should focus if shouldFocus is true', () => {
+      const mockFocus = jest.fn();
+
+      const { result } = renderHook(() =>
+        useFieldArray({
+          control: reconfigureControl({
+            defaultValuesRef: {
+              current: { test: [{ test: '1' }, { test: '2' }] },
+            },
+            fieldsRef: {
+              current: {
+                'test[0]': {
+                  ref: {
+                    name: 'test[0]',
+                    value: { test: '1' },
+                    focus: mockFocus,
+                  },
+                },
+                'test[1]': {
+                  ref: {
+                    name: 'test[1]',
+                    value: { test: 'test' },
+                    focus: mockFocus,
+                  },
+                },
+                'test[2]': {
+                  ref: {
+                    name: 'test[2]',
+                    value: { test: '2' },
+                    focus: mockFocus,
+                  },
+                },
+              },
+            },
+          }),
+          name: 'test',
+        }),
+      );
+
+      act(() => result.current.insert(1, { test: 'test' }));
+
+      expect(result.current.fields).toEqual([
+        { id: '1', test: '1' },
+        { id: '1', test: 'test' },
+        { id: '1', test: '2' },
+      ]);
+      expect(mockFocus).toBeCalledTimes(1);
+    });
   });
 
   describe('swap', () => {
@@ -940,6 +1396,74 @@ describe('useFieldArray', () => {
       expect(touchedFieldsRef.current).toEqual({
         test: [{ test: '2' }, { test: '1' }, { test: '3' }],
       });
+    });
+
+    it('should trigger reRender when user is watching the field array', () => {
+      const reRender = jest.fn();
+      const { result } = renderHook(() =>
+        useFieldArray({
+          control: reconfigureControl({
+            reRender,
+            watchFieldsRef: {
+              current: new Set(['test']),
+            },
+            defaultValuesRef: {
+              current: { test: [{ test: '1' }, { test: '2' }] },
+            },
+            fieldsRef: {
+              current: {
+                'test[0]': { ref: { name: 'test[0]', value: { test: '1' } } },
+                'test[1]': { ref: { name: 'test[1]', value: { test: '2' } } },
+              },
+            },
+          }),
+          name: 'test',
+        }),
+      );
+
+      act(() => {
+        result.current.swap(0, 1);
+      });
+
+      expect(result.current.fields).toEqual([
+        { id: '1', test: '2' },
+        { id: '1', test: '1' },
+      ]);
+      expect(reRender).toBeCalledTimes(3);
+    });
+
+    it('should trigger reRender when user is watching the all field array', () => {
+      const reRender = jest.fn();
+      const { result } = renderHook(() =>
+        useFieldArray({
+          control: reconfigureControl({
+            reRender,
+            isWatchAllRef: {
+              current: true,
+            },
+            defaultValuesRef: {
+              current: { test: [{ test: '1' }, { test: '2' }] },
+            },
+            fieldsRef: {
+              current: {
+                'test[0]': { ref: { name: 'test[0]', value: { test: '1' } } },
+                'test[1]': { ref: { name: 'test[1]', value: { test: '2' } } },
+              },
+            },
+          }),
+          name: 'test',
+        }),
+      );
+
+      act(() => {
+        result.current.swap(0, 1);
+      });
+
+      expect(result.current.fields).toEqual([
+        { id: '1', test: '2' },
+        { id: '1', test: '1' },
+      ]);
+      expect(reRender).toBeCalledTimes(2);
     });
   });
 
@@ -1109,6 +1633,74 @@ describe('useFieldArray', () => {
         { test: '2', id: '1' },
         { test: '3', id: '1' },
       ]);
+    });
+
+    it('should trigger reRender when user is watching the field array', () => {
+      const reRender = jest.fn();
+      const { result } = renderHook(() =>
+        useFieldArray({
+          control: reconfigureControl({
+            reRender,
+            watchFieldsRef: {
+              current: new Set(['test']),
+            },
+            defaultValuesRef: {
+              current: { test: [{ test: '1' }, { test: '2' }] },
+            },
+            fieldsRef: {
+              current: {
+                'test[0]': { ref: { name: 'test[0]', value: { test: '1' } } },
+                'test[1]': { ref: { name: 'test[1]', value: { test: '2' } } },
+              },
+            },
+          }),
+          name: 'test',
+        }),
+      );
+
+      act(() => {
+        result.current.move(0, 1);
+      });
+
+      expect(result.current.fields).toEqual([
+        { id: '1', test: '2' },
+        { id: '1', test: '1' },
+      ]);
+      expect(reRender).toBeCalledTimes(3);
+    });
+
+    it('should trigger reRender when user is watching the all field array', () => {
+      const reRender = jest.fn();
+      const { result } = renderHook(() =>
+        useFieldArray({
+          control: reconfigureControl({
+            reRender,
+            isWatchAllRef: {
+              current: true,
+            },
+            defaultValuesRef: {
+              current: { test: [{ test: '1' }, { test: '2' }] },
+            },
+            fieldsRef: {
+              current: {
+                'test[0]': { ref: { name: 'test[0]', value: { test: '1' } } },
+                'test[1]': { ref: { name: 'test[1]', value: { test: '2' } } },
+              },
+            },
+          }),
+          name: 'test',
+        }),
+      );
+
+      act(() => {
+        result.current.move(0, 1);
+      });
+
+      expect(result.current.fields).toEqual([
+        { id: '1', test: '2' },
+        { id: '1', test: '1' },
+      ]);
+      expect(reRender).toBeCalledTimes(2);
     });
   });
 
