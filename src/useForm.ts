@@ -653,7 +653,6 @@ export function useForm<
         types,
         message,
         ref: fieldsRef.current[name] ? fieldsRef.current[name]!.ref : {},
-        isManual: true,
       });
 
       if (shouldRender) {
@@ -984,6 +983,7 @@ export function useForm<
           }
         }
 
+        // need to figure out the erorr here
         if (isEmptyObject(fieldErrors)) {
           errorsRef.current = {};
           reRender();
