@@ -1116,7 +1116,7 @@ export function useForm<
     : TFieldValue =>
     fieldsRef.current[name]
       ? getFieldValue(fieldsRef.current, fieldsRef.current[name]!.ref)
-      : get(defaultValuesRef.current, name);
+      : undefined;
 
   function getValues(): UnpackNestedValue<TFieldValues>;
   function getValues<TFieldName extends string, TFieldValue extends unknown>(

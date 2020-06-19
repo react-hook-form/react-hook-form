@@ -1756,16 +1756,10 @@ describe('useForm', () => {
       );
     });
 
-    it('should get field value from default value', () => {
-      const { result } = renderHook(() =>
-        useForm({
-          defaultValues: {
-            test: 'test',
-          },
-        }),
-      );
+    it('should get undefined when field not found', () => {
+      const { result } = renderHook(() => useForm());
 
-      expect(result.current.getValues('test')).toEqual('test');
+      expect(result.current.getValues('test')).toEqual(undefined);
     });
   });
 
