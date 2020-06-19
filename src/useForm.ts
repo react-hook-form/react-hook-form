@@ -1113,7 +1113,10 @@ export function useForm<
     name: TFieldName,
   ): TFieldName extends keyof TFieldValues
     ? UnpackNestedValue<TFieldValues>[TFieldName]
-    : TFieldValue => getFieldValue(fieldsRef.current, name);
+    : TFieldValue => {
+    const value = getFieldValue(fieldsRef.current, name);
+    return isUndefined(value) ? defaultValuesRef.current[name] : value;
+  };
 
   function getValues(): UnpackNestedValue<TFieldValues>;
   function getValues<TFieldName extends string, TFieldValue extends unknown>(
