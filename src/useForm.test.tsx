@@ -1779,7 +1779,7 @@ describe('useForm', () => {
         input: {
           type: 'test',
           message: undefined,
-          ref: {},
+          ref: undefined,
         },
       });
 
@@ -1790,7 +1790,7 @@ describe('useForm', () => {
         input: {
           type: 'test',
           message: 'test',
-          ref: {},
+          ref: undefined,
         },
       });
 
@@ -1801,7 +1801,7 @@ describe('useForm', () => {
         input: {
           type: 'test',
           message: 'test',
-          ref: {},
+          ref: undefined,
           types: undefined,
         },
       });
@@ -1813,13 +1813,11 @@ describe('useForm', () => {
       });
       expect(result.current.errors).toEqual({
         input: {
-          type: '',
-          message: undefined,
           types: {
             test1: 'test1',
             test2: 'test2',
           },
-          ref: {},
+          ref: undefined,
         },
       });
 
@@ -1834,13 +1832,11 @@ describe('useForm', () => {
 
       expect(result.current.errors).toEqual({
         input: {
-          type: '',
-          message: undefined,
           types: {
             test1: 'test1',
             test2: 'test2',
           },
-          ref: {},
+          ref: undefined,
         },
       });
       expect(result.current.formState.isValid).toBeFalsy();
@@ -1898,19 +1894,19 @@ describe('useForm', () => {
       const errors = {
         input: {
           message: 'message',
-          ref: {},
+          ref: undefined,
           type: 'test',
           types: undefined,
         },
         input1: {
           message: 'message',
-          ref: {},
+          ref: undefined,
           type: 'test',
           types: undefined,
         },
         input2: {
           message: 'message',
-          ref: {},
+          ref: undefined,
           type: 'test',
           types: undefined,
         },
@@ -1942,19 +1938,19 @@ describe('useForm', () => {
       expect(result.current.errors).toEqual({
         input: {
           message: 'message',
-          ref: {},
+          ref: undefined,
           type: 'test',
           types: undefined,
         },
         input1: {
           message: 'message',
-          ref: {},
+          ref: undefined,
           type: 'test',
           types: undefined,
         },
         input2: {
           message: 'message',
-          ref: {},
+          ref: undefined,
           type: 'test',
           types: undefined,
         },
@@ -2242,7 +2238,7 @@ describe('useForm', () => {
             type: 'data',
             message: 'data',
           });
-        });
+        }, [setError]);
 
         return (
           <div>
