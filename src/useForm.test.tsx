@@ -2200,7 +2200,7 @@ describe('useForm', () => {
       });
     });
 
-    it('should infer from defaultValues without a type parameter', () => {
+    it('should return undefined when inputs not yet registered', () => {
       const { result } = renderHook(() =>
         useForm({
           mode: VALIDATION_MODE.onSubmit,
@@ -2215,9 +2215,9 @@ describe('useForm', () => {
 
       act(() => {
         const test: string = result.current.getValues().test;
-        expect(test).toEqual('data');
+        expect(test).toEqual(undefined);
         const deep: { values: string } = result.current.getValues().deep;
-        expect(deep).toEqual({ values: '5' });
+        expect(deep).toEqual(undefined);
       });
     });
   });
