@@ -5,30 +5,35 @@ import isFileInput from '../utils/isFileInput';
 import isCheckBox from '../utils/isCheckBoxInput';
 import isMultipleSelect from '../utils/isMultipleSelect';
 import getCheckboxValue from './getCheckboxValue';
-import { FieldRefs, Ref, FieldValues } from '../types/form';
+import { FieldRefs, FieldValues, InternalFieldName } from '../types/form';
 
 export default function getFieldValue<TFieldValues extends FieldValues>(
   fields: FieldRefs<TFieldValues>,
-  ref: Ref,
+  name: InternalFieldName<TFieldValues>,
 ) {
-  const { name, value } = ref;
-  const field = fields[name];
+  if (fields[name]) {
+    const field = fields[name]!;
+    const {
+      ref: { value },
+      ref,
+    } = field;
 
-  if (isFileInput(ref)) {
-    return ref.files;
+    if (isFileInput(ref)) {
+      return ref.files;
+    }
+
+    if (isRadioInput(ref)) {
+      return field ? getRadioValue(field.options).value : '';
+    }
+
+    if (isMultipleSelect(ref)) {
+      return getMultipleSelectValue(ref.options);
+    }
+
+    if (isCheckBox(ref)) {
+      return field ? getCheckboxValue(field.options).value : false;
+    }
+
+    return value;
   }
-
-  if (isRadioInput(ref)) {
-    return field ? getRadioValue(field.options).value : '';
-  }
-
-  if (isMultipleSelect(ref)) {
-    return getMultipleSelectValue(ref.options);
-  }
-
-  if (isCheckBox(ref)) {
-    return field ? getCheckboxValue(field.options).value : false;
-  }
-
-  return value;
 }
