@@ -1059,10 +1059,10 @@ export function useForm<
     name: TFieldName,
   ): TFieldName extends keyof TFieldValues
     ? UnpackNestedValue<TFieldValues>[TFieldName]
-    : TFieldValue => {
-    const value = getFieldValue(fieldsRef.current, name);
-    return isUndefined(value) ? defaultValuesRef.current[name] : value;
-  };
+    : TFieldValue =>
+    fieldsRef.current[name]
+      ? getFieldValue(fieldsRef.current, name)
+      : defaultValuesRef.current[name];
 
   function getValues(): UnpackNestedValue<TFieldValues>;
   function getValues<TFieldName extends string, TFieldValue extends unknown>(
