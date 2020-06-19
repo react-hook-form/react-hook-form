@@ -1965,6 +1965,36 @@ describe('useForm', () => {
       act(() => result.current.clearErrors());
       expect(result.current.errors).toEqual({});
     });
+
+    it('should prevent the submission if there is a custom error', async () => {
+      const submit = jest.fn();
+      const { result } = renderHook(() =>
+        useForm<{ data: string; whatever: string }>(),
+      );
+
+      (validateField as any).mockImplementation(async () => {
+        return {};
+      });
+
+      act(() => {
+        result.current.register('data');
+        result.current.setError('whatever', { type: 'missing' });
+      });
+
+      await act(async () => {
+        await result.current.handleSubmit(submit)();
+        expect(submit).not.toBeCalled();
+      });
+
+      act(() => {
+        result.current.clearErrors('whatever');
+      });
+
+      await act(async () => {
+        await result.current.handleSubmit(submit)();
+        expect(submit).toBeCalled();
+      });
+    });
   });
 
   describe('formState', () => {
