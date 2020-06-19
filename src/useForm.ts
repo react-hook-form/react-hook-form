@@ -52,14 +52,12 @@ import {
   FieldElement,
   FormStateProxy,
   ReadFormState,
-  MultipleFieldErrors,
   Ref,
   HandleChange,
   Touched,
   FieldError,
   RadioOrCheckboxOption,
   OmitResetState,
-  Message,
   DefaultValuesAtRender,
   FlatFieldErrors,
   NestedValue,
@@ -629,48 +627,15 @@ export function useForm<
     reRender();
   }
 
-  const setInternalError = ({
-    name,
-    type,
-    types,
-    message,
-    shouldRender,
-  }: {
-    name: InternalFieldName<TFieldValues>;
-    type: string;
-    types?: MultipleFieldErrors;
-    message?: Message;
-    shouldRender?: boolean;
-  }) => {
-    if (
-      !isSameError(get(errorsRef.current, name), {
-        type,
-        message,
-        types,
-      })
-    ) {
-      set(errorsRef.current, name, {
-        type,
-        types,
-        message,
-        ref: fieldsRef.current[name] ? fieldsRef.current[name]!.ref : {},
-      });
-
-      if (shouldRender) {
-        reRender();
-      }
-    }
-  };
-
   function setError(name: FieldName<TFieldValues>, error: ErrorOption): void {
     isValidRef.current = false;
 
-    setInternalError({
-      name,
-      type: '',
+    set(errorsRef.current, name, {
       ...error,
-      shouldRender: true,
+      ref: fieldsRef.current[name]!.ref,
     });
+
+    reRender();
   }
 
   const watchInternal = React.useCallback(
