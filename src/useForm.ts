@@ -373,8 +373,8 @@ export function useForm<
     (
       name: InternalFieldName<TFieldValues>,
       value: FieldValue<TFieldValues>,
+      config: SetValueConfig,
       parentFieldName?: string,
-      config: SetValueConfig = {},
     ) => {
       for (const key in value) {
         const fieldName = `${parentFieldName || name}${
@@ -383,7 +383,7 @@ export function useForm<
         const field = fieldsRef.current[fieldName];
 
         if (isObject(value[key])) {
-          setInternalValues(name, value[key], fieldName, config);
+          setInternalValues(name, value[key], config, fieldName);
         }
 
         if (field) {
@@ -413,7 +413,7 @@ export function useForm<
 
         return config.shouldDirty && setDirty(name);
       } else if (!isPrimitive(value)) {
-        setInternalValues(name, value, undefined, config);
+        setInternalValues(name, value, config);
       }
     },
     [setDirty, setFieldValue, setInternalValues],
