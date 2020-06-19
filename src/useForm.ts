@@ -64,6 +64,7 @@ import {
   FlatFieldErrors,
   NestedValue,
   SetValueConfig,
+  ErrorOption,
 } from './types/form';
 import { LiteralToPrimitive, DeepPartial, NonUndefined } from './types/utils';
 
@@ -661,17 +662,7 @@ export function useForm<
     }
   };
 
-  function setError(
-    name: FieldName<TFieldValues>,
-    error:
-      | {
-          types: MultipleFieldErrors;
-        }
-      | {
-          message?: Message;
-          type: string;
-        },
-  ): void {
+  function setError(name: FieldName<TFieldValues>, error: ErrorOption): void {
     isValidRef.current = false;
 
     setInternalError({
