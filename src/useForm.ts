@@ -668,7 +668,7 @@ export function useForm<
           types: MultipleFieldErrors;
         }
       | {
-          message: Message;
+          message?: Message;
           type: string;
         },
   ): void {

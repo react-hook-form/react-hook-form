@@ -36,7 +36,6 @@ const SetError: React.FC = () => {
       setError(name as any, { type, message }),
     );
     setError('username', {
-      type: 'error',
       types: {
         required: 'This is required',
         minLength: 'This is minLength',

@@ -167,7 +167,6 @@ const ValidateFieldCriteria: React.FC = () => {
         id="trigger"
         onClick={() => {
           setError('firstName', {
-            type: 'test',
             types: {
               minLength: 'test1',
               required: 'test2',

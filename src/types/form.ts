@@ -342,7 +342,7 @@ export type UseFormMethods<TFieldValues extends FieldValues = FieldValues> = {
           types: MultipleFieldErrors;
         }
       | {
-          message: Message;
+          message?: Message;
           type: string;
         },
   ): void;

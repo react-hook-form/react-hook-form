@@ -1809,7 +1809,6 @@ describe('useForm', () => {
       act(() => {
         result.current.setError('input', {
           types: { test1: 'test1', test2: 'test2' },
-          type: '',
         });
       });
       expect(result.current.errors).toEqual({
@@ -1830,7 +1829,6 @@ describe('useForm', () => {
             test1: 'test1',
             test2: 'test2',
           },
-          type: '',
         });
       });
 
