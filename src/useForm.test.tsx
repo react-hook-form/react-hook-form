@@ -1773,87 +1773,85 @@ describe('useForm', () => {
     it('should only set an error when it is not existed', () => {
       const { result } = renderHook(() => useForm<{ input: string }>());
       act(() => {
-        result.current.setError('input', 'test');
+        result.current.setError('input', { type: 'test' });
       });
       expect(result.current.errors).toEqual({
         input: {
           type: 'test',
-          isManual: true,
           message: undefined,
-          ref: {},
+          ref: undefined,
         },
       });
 
       act(() => {
-        result.current.setError('input', 'test', 'test');
+        result.current.setError('input', { type: 'test', message: 'test' });
       });
       expect(result.current.errors).toEqual({
         input: {
           type: 'test',
-          isManual: true,
           message: 'test',
-          ref: {},
+          ref: undefined,
         },
       });
 
       act(() => {
-        result.current.setError('input', 'test', 'test');
+        result.current.setError('input', { type: 'test', message: 'test' });
       });
       expect(result.current.errors).toEqual({
         input: {
           type: 'test',
-          isManual: true,
           message: 'test',
-          ref: {},
+          ref: undefined,
           types: undefined,
         },
       });
 
       act(() => {
-        result.current.setError('input', { test1: 'test1', test2: 'test2' });
+        result.current.setError('input', {
+          types: { test1: 'test1', test2: 'test2' },
+        });
       });
       expect(result.current.errors).toEqual({
         input: {
-          type: '',
-          isManual: true,
-          message: undefined,
           types: {
             test1: 'test1',
             test2: 'test2',
           },
-          ref: {},
+          ref: undefined,
         },
       });
 
       act(() => {
         result.current.setError('input', {
-          test1: 'test1',
-          test2: 'test2',
+          types: {
+            test1: 'test1',
+            test2: 'test2',
+          },
         });
       });
 
       expect(result.current.errors).toEqual({
         input: {
-          type: '',
-          isManual: true,
-          message: undefined,
           types: {
             test1: 'test1',
             test2: 'test2',
           },
-          ref: {},
+          ref: undefined,
         },
       });
       expect(result.current.formState.isValid).toBeFalsy();
     });
   });
 
-  describe('clearError', () => {
+  describe('clearErrors', () => {
     it('should remove error', () => {
       const { result } = renderHook(() => useForm<{ input: string }>());
       act(() => {
-        result.current.setError('input', 'test', 'message');
-        result.current.clearError('input');
+        result.current.setError('input', {
+          type: 'test',
+          message: 'message',
+        });
+        result.current.clearErrors('input');
       });
       expect(result.current.errors).toEqual({});
     });
@@ -1863,11 +1861,13 @@ describe('useForm', () => {
         useForm<{ input: { nested: string } }>(),
       );
       act(() => {
-        result.current.setError('input.nested', 'test');
+        result.current.setError('input.nested', {
+          type: 'test',
+        });
       });
       expect(result.current.errors.input?.nested).toBeDefined();
       act(() => {
-        result.current.clearError('input.nested');
+        result.current.clearErrors('input.nested');
       });
       expect(result.current.errors.input?.nested).toBeUndefined();
     });
@@ -1877,37 +1877,43 @@ describe('useForm', () => {
         useForm<{ input: string; input1: string; input2: string }>(),
       );
       act(() => {
-        result.current.setError('input', 'test', 'message');
-        result.current.setError('input1', 'test', 'message');
-        result.current.setError('input2', 'test', 'message');
+        result.current.setError('input', {
+          type: 'test',
+          message: 'message',
+        });
+        result.current.setError('input1', {
+          type: 'test',
+          message: 'message',
+        });
+        result.current.setError('input2', {
+          type: 'test',
+          message: 'message',
+        });
       });
 
       const errors = {
         input: {
-          isManual: true,
           message: 'message',
-          ref: {},
+          ref: undefined,
           type: 'test',
           types: undefined,
         },
         input1: {
-          isManual: true,
           message: 'message',
-          ref: {},
+          ref: undefined,
           type: 'test',
           types: undefined,
         },
         input2: {
-          isManual: true,
           message: 'message',
-          ref: {},
+          ref: undefined,
           type: 'test',
           types: undefined,
         },
       };
       expect(result.current.errors).toEqual(errors);
 
-      act(() => result.current.clearError(['input', 'input1']));
+      act(() => result.current.clearErrors(['input', 'input1']));
       expect(result.current.errors).toEqual({ input2: errors.input2 });
     });
 
@@ -1916,83 +1922,71 @@ describe('useForm', () => {
         useForm<{ input: string; input1: string; input2: string }>(),
       );
       act(() => {
-        result.current.setError('input', 'test', 'message');
-        result.current.setError('input1', 'test', 'message');
-        result.current.setError('input2', 'test', 'message');
+        result.current.setError('input', {
+          type: 'test',
+          message: 'message',
+        });
+        result.current.setError('input1', {
+          type: 'test',
+          message: 'message',
+        });
+        result.current.setError('input2', {
+          type: 'test',
+          message: 'message',
+        });
       });
       expect(result.current.errors).toEqual({
         input: {
-          isManual: true,
           message: 'message',
-          ref: {},
+          ref: undefined,
           type: 'test',
           types: undefined,
         },
         input1: {
-          isManual: true,
           message: 'message',
-          ref: {},
+          ref: undefined,
           type: 'test',
           types: undefined,
         },
         input2: {
-          isManual: true,
           message: 'message',
-          ref: {},
+          ref: undefined,
           type: 'test',
           types: undefined,
         },
       });
 
-      act(() => result.current.clearError());
+      act(() => result.current.clearErrors());
       expect(result.current.errors).toEqual({});
     });
-  });
 
-  describe('setErrors', () => {
-    it('should set multiple errors for the form', () => {
+    it('should prevent the submission if there is a custom error', async () => {
+      const submit = jest.fn();
       const { result } = renderHook(() =>
-        useForm<{ input: string; input1: string; input2: string }>(),
+        useForm<{ data: string; whatever: string }>(),
       );
-      act(() => {
-        result.current.setError([
-          {
-            type: 'test',
-            name: 'input',
-            message: 'wow',
-          },
-          {
-            type: 'test1',
-            name: 'input1',
-            message: 'wow1',
-          },
-          {
-            type: 'test2',
-            name: 'input2',
-            message: 'wow2',
-          },
-        ]);
+
+      (validateField as any).mockImplementation(async () => {
+        return {};
       });
 
-      expect(result.current.errors).toEqual({
-        input: {
-          type: 'test',
-          isManual: true,
-          message: 'wow',
-          ref: {},
-        },
-        input1: {
-          type: 'test1',
-          isManual: true,
-          message: 'wow1',
-          ref: {},
-        },
-        input2: {
-          type: 'test2',
-          isManual: true,
-          message: 'wow2',
-          ref: {},
-        },
+      act(() => {
+        result.current.register('data');
+        result.current.setError('whatever', { type: 'missing' });
+      });
+
+      await act(async () => {
+        await result.current.handleSubmit(submit)();
+        expect(submit).not.toBeCalled();
+      });
+
+      act(() => {
+        result.current.clearErrors('whatever');
+      });
+
+      await act(async () => {
+        await result.current.handleSubmit(submit)();
+        expect(submit).toBeCalled();
       });
     });
   });
@@ -2240,8 +2234,11 @@ describe('useForm', () => {
         const { register, setError, errors } = useForm();
 
         React.useEffect(() => {
-          setError('test', 'data', 'data');
-        });
+          setError('test', {
+            type: 'data',
+            message: 'data',
+          });
+        }, [setError]);
 
         return (
           <div>
