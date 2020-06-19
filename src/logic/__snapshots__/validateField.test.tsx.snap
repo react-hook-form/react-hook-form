@@ -6,7 +6,6 @@ Object {
     "message": "test",
     "ref": Object {
       "name": "test",
-      "setCustomValidity": [Function],
       "type": "text",
       "value": "",
     },
@@ -27,7 +26,6 @@ Object {
     "message": "minLength",
     "ref": Object {
       "name": "test",
-      "setCustomValidity": [Function],
       "type": "text",
       "value": "bil",
     },
@@ -49,7 +47,6 @@ Object {
     "message": "minLength",
     "ref": Object {
       "name": "test",
-      "setCustomValidity": [Function],
       "type": "text",
       "value": "bil",
     },
@@ -71,7 +68,6 @@ Object {
     "message": "",
     "ref": Object {
       "name": "test",
-      "setCustomValidity": [Function],
       "type": "text",
       "value": "",
     },
@@ -90,7 +86,6 @@ Object {
     "message": "",
     "ref": Object {
       "name": "test",
-      "setCustomValidity": [Function],
       "type": "text",
       "value": "123",
     },
