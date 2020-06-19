@@ -18,6 +18,7 @@ import * as shouldRenderBasedOnError from './logic/shouldRenderBasedOnError';
 import { transformToNestObject } from './logic';
 import * as focusOnErrorField from './logic/focusOnErrorField';
 import * as isSameError from './utils/isSameError';
+import * as getFieldValue from './logic/getFieldValue';
 
 jest.mock('./utils/onDomRemove');
 jest.mock('./logic/findRemovedFieldAndRemoveListener');
@@ -965,11 +966,21 @@ describe('useForm', () => {
 
     it('should be called trigger method if shouldValidate variable is true', async () => {
       (validateField as any).mockImplementation(async () => ({}));
-      const { result } = renderHook(() => useForm());
+      // check if setDirty is called
+      const mockGetFieldValue = jest.spyOn(getFieldValue, 'default');
 
-      act(() =>
-        result.current.register({ name: 'test', required: 'required' }),
+      const { result } = renderHook(() =>
+        useForm({
+          defaultValues: {
+            test: '',
+          },
+        }),
       );
+
+      act(() => {
+        result.current.register({ name: 'test', required: 'required' });
+        result.current.control.readFormStateRef.current.isDirty = true;
+      });
 
       act(() =>
         result.current.setValue('test', 'test', {
@@ -978,7 +989,103 @@ describe('useForm', () => {
         }),
       );
 
-      await waitFor(() => expect(validateField).toHaveBeenCalled());
+      await waitFor(() => {
+        expect(mockGetFieldValue).toHaveBeenCalledTimes(1);
+        expect(validateField).toHaveBeenCalled();
+      });
+    });
+
+    it('should not be called trigger method if config is empty', async () => {
+      (validateField as any).mockImplementation(async () => ({}));
+      // check if setDirty is called
+      const mockGetFieldValue = jest.spyOn(getFieldValue, 'default');
+
+      const { result } = renderHook(() =>
+        useForm({
+          defaultValues: {
+            test: '',
+          },
+        }),
+      );
+
+      act(() =>
+        result.current.register({ name: 'test', required: 'required' }),
+      );
+
+      act(() => {
+        result.current.setValue('test', 'test');
+        result.current.control.readFormStateRef.current.isDirty = true;
+      });
+
+      await waitFor(() => {
+        expect(mockGetFieldValue).not.toHaveBeenCalled();
+        expect(validateField).not.toHaveBeenCalled();
+      });
+    });
+
+    it('should be called trigger method if shouldValidate variable is true and field value is array', async () => {
+      (validateField as any).mockImplementation(async () => ({}));
+      // check if setDirty is called
+      const mockGetFieldValue = jest.spyOn(getFieldValue, 'default');
+
+      const { result } = renderHook(() =>
+        useForm({
+          defaultValues: {
+            'test[0]': '',
+            'test[1]': '',
+            'test[2]': '',
+          },
+        }),
+      );
+
+      act(() => {
+        result.current.register({ name: 'test[0]', required: 'required' });
+        result.current.register({ name: 'test[1]', required: 'required' });
+        result.current.register({ name: 'test[2]', required: 'required' });
+        result.current.control.readFormStateRef.current.isDirty = true;
+      });
+
+      act(() =>
+        result.current.setValue('test', ['test', 'test1', 'test2'], {
+          shouldValidate: true,
+          shouldDirty: true,
+        }),
+      );
+
+      await waitFor(() => {
+        expect(mockGetFieldValue).toHaveBeenCalledTimes(3);
+        expect(validateField).toHaveBeenCalledTimes(3);
+      });
+    });
+
+    it('should not be called trigger method if config is empty and field value is array', async () => {
+      (validateField as any).mockImplementation(async () => ({}));
+      // check if setDirty is called
+      const mockGetFieldValue = jest.spyOn(getFieldValue, 'default');
+
+      const { result } = renderHook(() =>
+        useForm({
+          defaultValues: {
+            'test[0]': '',
+            'test[1]': '',
+            'test[2]': '',
+          },
+        }),
+      );
+
+      act(() => {
+        result.current.register({ name: 'test[0]', required: 'required' });
+        result.current.register({ name: 'test[1]', required: 'required' });
+        result.current.register({ name: 'test[2]', required: 'required' });
+        result.current.control.readFormStateRef.current.isDirty = true;
+      });
+
+      act(() => result.current.setValue('test', ['test', 'test1', 'test2']));
+
+      await waitFor(() => {
+        expect(mockGetFieldValue).not.toHaveBeenCalled();
+        expect(validateField).not.toHaveBeenCalled();
+      });
     });
 
     it('should not work if field is not registered', () => {
