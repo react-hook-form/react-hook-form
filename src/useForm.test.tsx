@@ -1756,16 +1756,10 @@ describe('useForm', () => {
       );
     });
 
-    it('should get field value from default value', () => {
-      const { result } = renderHook(() =>
-        useForm({
-          defaultValues: {
-            test: 'test',
-          },
-        }),
-      );
+    it('should get undefined when field not found', () => {
+      const { result } = renderHook(() => useForm());
 
-      expect(result.current.getValues('test')).toEqual('test');
+      expect(result.current.getValues('test')).toEqual(undefined);
     });
   });
 
@@ -2206,7 +2200,7 @@ describe('useForm', () => {
       });
     });
 
-    it('should infer from defaultValues without a type parameter', () => {
+    it('should return undefined when inputs not yet registered', () => {
       const { result } = renderHook(() =>
         useForm({
           mode: VALIDATION_MODE.onSubmit,
@@ -2221,9 +2215,9 @@ describe('useForm', () => {
 
       act(() => {
         const test: string = result.current.getValues().test;
-        expect(test).toEqual('data');
+        expect(test).toEqual(undefined);
         const deep: { values: string } = result.current.getValues().deep;
-        expect(deep).toEqual({ values: '5' });
+        expect(deep).toEqual(undefined);
       });
     });
   });

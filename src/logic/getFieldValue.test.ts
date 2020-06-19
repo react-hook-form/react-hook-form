@@ -23,32 +23,29 @@ describe('getFieldValue', () => {
       getFieldValue(
         {
           test: {
-            ref: 'test',
+            ref: {
+              type: 'radio',
+            },
           },
         },
-        {
-          type: 'radio',
-          name: 'test',
-        },
+        'test',
       ),
     ).toBe(2);
   });
 
-  it('should return teh correct select value when type is select-multiple', () => {
+  it('should return the correct select value when type is select-multiple', () => {
     expect(
       getFieldValue(
         {
           test: {
             ref: {
-              name: 'bill',
+              type: 'select-multiple',
+              name: 'test',
               value: 'test',
             },
           },
         },
-        {
-          type: 'select-multiple',
-          name: 'bill',
-        },
+        'test',
       ),
     ).toBe(3);
   });
@@ -57,12 +54,14 @@ describe('getFieldValue', () => {
     expect(
       getFieldValue(
         {
-          test: { ref: 'test' },
+          test: {
+            ref: {
+              name: 'test',
+              type: 'checkbox',
+            },
+          },
         },
-        {
-          type: 'checkbox',
-          name: 'test',
-        },
+        'test',
       ),
     ).toBe('testValue');
   });
@@ -73,30 +72,19 @@ describe('getFieldValue', () => {
         {
           test: {
             ref: {
+              type: 'text',
               name: 'bill',
-              value: 'test',
+              value: 'value',
             },
           },
         },
-        {
-          type: 'text',
-          value: 'value',
-        },
+        'test',
       ),
     ).toBe('value');
   });
 
   it('should return empty string when radio input value is not found', () => {
-    expect(
-      getFieldValue(
-        {},
-        {
-          type: 'radio',
-          value: 'value',
-          name: 'test',
-        },
-      ),
-    ).toEqual('');
+    expect(getFieldValue({}, '')).toEqual(undefined);
   });
 
   it('should return false when checkbox input value is not found', () => {
@@ -118,14 +106,13 @@ describe('getFieldValue', () => {
         {
           test: {
             ref: {
+              type: 'file',
+              name: 'test',
               files: 'files',
             },
           },
         },
-        {
-          type: 'file',
-          files: 'files',
-        },
+        'test',
       ),
     ).toEqual('files');
   });

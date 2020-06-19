@@ -249,7 +249,7 @@ export function useForm<
 
       const isFieldDirty =
         defaultValuesAtRenderRef.current[name] !==
-        getFieldValue(fieldsRef.current, fieldsRef.current[name]!.ref);
+        getFieldValue(fieldsRef.current, name);
       const isDirtyFieldExist = get(dirtyFieldsRef.current, name);
       const isFieldArray = isNameInFieldArray(fieldArrayNamesRef.current, name);
       const previousIsDirty = isDirtyRef.current;
@@ -836,7 +836,7 @@ export function useForm<
       !(isFieldArray && isEmptyDefaultValue)
     ) {
       defaultValuesAtRenderRef.current[name] = isEmptyDefaultValue
-        ? getFieldValue(fields, field.ref)
+        ? getFieldValue(fields, name)
         : defaultValue;
     }
 
@@ -1059,10 +1059,7 @@ export function useForm<
     name: TFieldName,
   ): TFieldName extends keyof TFieldValues
     ? UnpackNestedValue<TFieldValues>[TFieldName]
-    : TFieldValue =>
-    fieldsRef.current[name]
-      ? getFieldValue(fieldsRef.current, fieldsRef.current[name]!.ref)
-      : get(defaultValuesRef.current, name);
+    : TFieldValue => getFieldValue(fieldsRef.current, name);
 
   function getValues(): UnpackNestedValue<TFieldValues>;
   function getValues<TFieldName extends string, TFieldValue extends unknown>(
@@ -1090,11 +1087,7 @@ export function useForm<
       );
     }
 
-    const fieldValues = getFieldsValues(fields);
-
-    return isEmptyObject(fieldValues)
-      ? defaultValuesRef.current
-      : transformToNestObject(fieldValues);
+    return transformToNestObject(getFieldsValues(fields));
   }
 
   React.useEffect(() => {
