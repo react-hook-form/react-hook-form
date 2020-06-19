@@ -337,12 +337,14 @@ export type UseFormMethods<TFieldValues extends FieldValues = FieldValues> = {
   ): UnpackNestedValue<DeepPartial<TFieldValues>>;
   setError(
     name: FieldName<TFieldValues>,
-    error: Partial<{
-      types: MultipleFieldErrors;
-      message: Message;
-    }> & {
-      type: string;
-    },
+    error:
+      | {
+          types: MultipleFieldErrors;
+        }
+      | {
+          message: Message;
+          type: string;
+        },
   ): void;
   clearErrors(name?: FieldName<TFieldValues> | FieldName<TFieldValues>[]): void;
   setValue<

@@ -663,17 +663,20 @@ export function useForm<
 
   function setError(
     name: FieldName<TFieldValues>,
-    error: Partial<{
-      types: MultipleFieldErrors;
-      message: Message;
-    }> & {
-      type: string;
-    },
+    error:
+      | {
+          types: MultipleFieldErrors;
+        }
+      | {
+          message: Message;
+          type: string;
+        },
   ): void {
     isValidRef.current = false;
 
     setInternalError({
       name,
+      type: '',
       ...error,
       shouldRender: true,
     });
