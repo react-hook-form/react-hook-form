@@ -28,10 +28,7 @@ export default function shouldRenderBasedOnError<
   const currentFieldError = get(error, name);
   const existFieldError = get(errors, name);
 
-  if (
-    (isFieldValid && validFields.has(name)) ||
-    (existFieldError && existFieldError.isManual)
-  ) {
+  if (isFieldValid && validFields.has(name)) {
     return false;
   }
 

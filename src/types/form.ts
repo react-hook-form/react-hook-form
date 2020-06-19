@@ -134,7 +134,6 @@ export type FieldError = {
   ref?: Ref;
   types?: MultipleFieldErrors;
   message?: Message;
-  isManual?: boolean;
 };
 
 export type ManualFieldError<TFieldValues extends FieldValues> = {
@@ -143,6 +142,15 @@ export type ManualFieldError<TFieldValues extends FieldValues> = {
   types?: MultipleFieldErrors;
   message?: Message;
 };
+
+export type ErrorOption =
+  | {
+      types: MultipleFieldErrors;
+    }
+  | {
+      message?: Message;
+      type: string;
+    };
 
 export type Field = {
   ref: Ref;
@@ -336,14 +344,8 @@ export type UseFormMethods<TFieldValues extends FieldValues = FieldValues> = {
     names: string[],
     defaultValues?: UnpackNestedValue<DeepPartial<TFieldValues>>,
   ): UnpackNestedValue<DeepPartial<TFieldValues>>;
-  setError(name: FieldName<TFieldValues>, type: MultipleFieldErrors): void;
-  setError(
-    name: FieldName<TFieldValues>,
-    type: string,
-    message?: Message,
-  ): void;
-  setError(name: ManualFieldError<TFieldValues>[]): void;
-  clearError(name?: FieldName<TFieldValues> | FieldName<TFieldValues>[]): void;
+  setError(name: FieldName<TFieldValues>, error: ErrorOption): void;
+  clearErrors(name?: FieldName<TFieldValues> | FieldName<TFieldValues>[]): void;
   setValue<
     TFieldName extends string,
     TFieldValue extends TFieldValues[TFieldName]

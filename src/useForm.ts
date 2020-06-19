@@ -52,19 +52,17 @@ import {
   FieldElement,
   FormStateProxy,
   ReadFormState,
-  ManualFieldError,
-  MultipleFieldErrors,
   Ref,
   HandleChange,
   Touched,
   FieldError,
   RadioOrCheckboxOption,
   OmitResetState,
-  Message,
   DefaultValuesAtRender,
   FlatFieldErrors,
   NestedValue,
   SetValueConfig,
+  ErrorOption,
 } from './types/form';
 import { LiteralToPrimitive, DeepPartial, NonUndefined } from './types/utils';
 
@@ -615,7 +613,7 @@ export function useForm<
     [reRender, validateResolver, removeFieldEventListener, resolverRef],
   );
 
-  function clearError(
+  function clearErrors(
     name?: FieldName<TFieldValues> | FieldName<TFieldValues>[],
   ): void {
     if (name) {
@@ -629,75 +627,15 @@ export function useForm<
     reRender();
   }
 
-  const setInternalError = ({
-    name,
-    type,
-    types,
-    message,
-    shouldRender,
-  }: {
-    name: InternalFieldName<TFieldValues>;
-    type: string;
-    types?: MultipleFieldErrors;
-    message?: Message;
-    shouldRender?: boolean;
-  }) => {
-    if (
-      !isSameError(get(errorsRef.current, name), {
-        type,
-        message,
-        types,
-      })
-    ) {
-      set(errorsRef.current, name, {
-        type,
-        types,
-        message,
-        ref: fieldsRef.current[name] ? fieldsRef.current[name]!.ref : {},
-        isManual: true,
-      });
-
-      if (shouldRender) {
-        reRender();
-      }
-    }
-  };
-
-  function setError(
-    name: FieldName<TFieldValues>,
-    type: MultipleFieldErrors,
-  ): void;
-  function setError(
-    name: FieldName<TFieldValues>,
-    type: string,
-    message?: Message,
-  ): void;
-  function setError(name: ManualFieldError<TFieldValues>[]): void;
-  function setError(
-    name: FieldName<TFieldValues> | ManualFieldError<TFieldValues>[],
-    type: string | MultipleFieldErrors = '',
-    message?: Message,
-  ): void {
+  function setError(name: FieldName<TFieldValues>, error: ErrorOption): void {
     isValidRef.current = false;
 
-    if (isArray(name)) {
-      name.forEach((error) => setInternalError(error));
-      reRender();
-    } else {
-      setInternalError({
-        name,
-        ...(isObject(type)
-          ? {
-              types: type,
-              type: '',
-            }
-          : {
-              type,
-              message,
-            }),
-        shouldRender: true,
-      });
-    }
+    set(errorsRef.current, name, {
+      ...error,
+      ref: (fieldsRef.current[name] || {})!.ref,
+    });
+
+    reRender();
   }
 
   const watchInternal = React.useCallback(
@@ -1004,12 +942,20 @@ export function useForm<
           }
         }
 
-        if (isEmptyObject(fieldErrors)) {
+        if (
+          isEmptyObject(fieldErrors) &&
+          Object.keys(errorsRef.current).every((name) =>
+            Object.keys(fieldsRef.current).includes(name),
+          )
+        ) {
           errorsRef.current = {};
           reRender();
           await callback(transformToNestObject(fieldValues), e);
         } else {
-          errorsRef.current = fieldErrors;
+          errorsRef.current = {
+            ...errorsRef.current,
+            ...fieldErrors,
+          };
           if (shouldFocusError && isWeb) {
             focusOnErrorField(fieldsRef.current, fieldErrors);
           }
@@ -1247,7 +1193,7 @@ export function useForm<
     handleSubmit,
     reset: React.useCallback(reset, []),
     getValues: React.useCallback(getValues, []),
-    clearError: React.useCallback(clearError, []),
+    clearErrors: React.useCallback(clearErrors, []),
     setError: React.useCallback(setError, []),
     errors: errorsRef.current,
     ...commonProps,
