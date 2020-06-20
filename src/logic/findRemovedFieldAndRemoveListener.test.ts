@@ -1,6 +1,7 @@
 // @ts-nocheck
 import findRemovedFieldAndRemoveListener from './findRemovedFieldAndRemoveListener';
 import isDetached from '../utils/isDetached';
+import removeAllEventListeners from './removeAllEventListeners';
 
 jest.mock('./removeAllEventListeners');
 jest.mock('../utils/isDetached');
@@ -180,6 +181,39 @@ describe('findMissDomAndClean', () => {
       ).toMatchSnapshot();
     });
 
+    it('should not delete field when option have value', () => {
+      (isDetached as any).mockImplementation(() => {
+        return false;
+      });
+
+      const fields = {
+        test: {
+          name: 'test',
+          type: 'radio',
+          ref: {},
+          options: [{ ref: { name: 'test', type: 'radio' } }],
+        },
+      };
+
+      findRemovedFieldAndRemoveListener(
+        fields,
+        () => ({} as any),
+        {
+          ref: { name: 'test', type: 'radio' },
+        },
+        {},
+      );
+
+      expect(fields).toEqual({
+        test: {
+          name: 'test',
+          type: 'radio',
+          ref: {},
+          options: [{ ref: { name: 'test', type: 'radio' } }],
+        },
+      });
+    });
+
     it('should not remove event listener when type is not Element', () => {
       (isDetached as any).mockImplementation(() => {
         return false;
@@ -277,6 +311,67 @@ describe('findMissDomAndClean', () => {
   });
 
   describe('text', () => {
+    it('should delete field if type is text', () => {
+      const mockWatcher = jest.fn();
+      const state = { current: {} };
+      const fields = {
+        test: {
+          name: 'test',
+          ref: {
+            name: 'test',
+            type: 'text',
+            value: 'test',
+          },
+          mutationWatcher: {
+            disconnect: mockWatcher,
+          },
+        },
+      };
+
+      findRemovedFieldAndRemoveListener(
+        fields,
+        () => ({} as any),
+        fields.test,
+        state,
+      );
+
+      expect(state).toEqual({
+        current: { test: 'test' },
+      });
+      expect(mockWatcher).toBeCalled();
+      expect(fields).toEqual({});
+    });
+
+    it('should delete field if forceDelete is true', () => {
+      (isDetached as any).mockReturnValue(false);
+      const state = { current: {} };
+      const fields = {
+        test: {
+          name: 'test',
+          ref: {
+            name: 'test',
+            type: 'text',
+            value: 'test',
+          },
+        },
+      };
+
+      findRemovedFieldAndRemoveListener(
+        fields,
+        () => ({} as any),
+        fields.test,
+        state,
+        false,
+        true,
+      );
+
+      expect(state).toEqual({
+        current: { test: 'test' },
+      });
+      expect(removeAllEventListeners).toBeCalled();
+      expect(fields).toEqual({});
+    });
+
     it('should store state when component is getting unmount', () => {
       const state = { current: {} };
       const fields = {
