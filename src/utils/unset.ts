@@ -21,21 +21,21 @@ function baseGet(object: any, path: any) {
   return index == length ? object : undefined;
 }
 
-function baseSlice(array: string | string[], start: number, end: number) {
-  let index = -1;
-  let length = array.length;
+function parent(object: any, path: string | string[]) {
+  if (path.length == 1) {
+    return object;
+  }
 
-  length = end + length - start || 0;
+  let index = -1;
+
+  const length = path.length - 1 || 0;
 
   const result = Array(length);
   while (++index < length) {
-    result[index] = array[index + start];
+    result[index] = path[index];
   }
-  return result;
-}
 
-function parent(object: any, path: string | string[]) {
-  return path.length == 1 ? object : baseGet(object, baseSlice(path, 0, -1));
+  return baseGet(object, result);
 }
 
 function baseUnset(object: any, path: string) {
