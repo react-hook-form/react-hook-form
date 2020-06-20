@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`findMissDomAndClean should not remove event listener when type is not Element 1`] = `
+exports[`findMissDomAndClean radio should not remove event listener when type is not Element 1`] = `
 Object {
   "test": Object {
     "name": "test",
@@ -18,9 +18,9 @@ Object {
 }
 `;
 
-exports[`findMissDomAndClean should not remove event listener when type is not Element 2`] = `undefined`;
+exports[`findMissDomAndClean radio should not remove event listener when type is not Element 2`] = `undefined`;
 
-exports[`findMissDomAndClean should remove none radio field when found 1`] = `
+exports[`findMissDomAndClean radio should remove none radio field when found 1`] = `
 Object {
   "test1": Object {
     "name": "test",
@@ -29,6 +29,6 @@ Object {
 }
 `;
 
-exports[`findMissDomAndClean should work for checkbox type input 1`] = `undefined`;
+exports[`findMissDomAndClean radio should work for checkbox type input 1`] = `undefined`;
 
-exports[`findMissDomAndClean should work for radio type input 1`] = `undefined`;
+exports[`findMissDomAndClean radio should work for radio type input 1`] = `undefined`;
