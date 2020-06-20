@@ -1,6 +1,21 @@
 import skipValidation from './skipValidation';
 
 describe('should skip validation', () => {
+  it('when is onChange mode and blur event', () => {
+    expect(
+      skipValidation({
+        isOnChange: true,
+        hasError: false,
+        isBlurEvent: false,
+        isOnSubmit: false,
+        isReValidateOnSubmit: false,
+        isOnBlur: true,
+        isReValidateOnBlur: false,
+        isSubmitted: false,
+      }),
+    ).toBeTruthy();
+  });
+
   it('when is onSubmit mode and re-validate on Submit', () => {
     expect(
       skipValidation({
