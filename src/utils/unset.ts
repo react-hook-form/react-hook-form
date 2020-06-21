@@ -1,56 +1,26 @@
 import isArray from './isArray';
-import isUndefined from './isUndefined';
 import isKey from './isKey';
 import stringToPath from './stringToPath';
 import isEmptyObject from './isEmptyObject';
 import isObject from './isObject';
 
-function castPath(value: string) {
-  return isArray(value) ? value : stringToPath(value);
-}
-
 function baseGet(object: any, path: any) {
-  const updatePath = isKey(path) ? [path] : castPath(path);
-
-  const length = path.length;
-  let index = 0;
-
-  while (index < length) {
-    object = isUndefined(object) ? index++ : object[updatePath[index++]];
-  }
-  return index == length ? object : undefined;
+  return [...Array(path.length)].reduce(
+    (result, _, i) => result[path[i]] || result,
+    object,
+  );
 }
 
-function baseSlice(array: string | string[], start: number, end: number) {
-  let index = -1;
-  let length = array.length;
-
-  if (start < 0) {
-    start = -start > length ? 0 : length + start;
-  }
-  end = end > length ? length : end;
-  if (end < 0) {
-    end += length;
-  }
-  length = start > end ? 0 : end - start;
-
-  const result = Array(length);
-  while (++index < length) {
-    result[index] = array[index + start];
-  }
-  return result;
-}
-
-function parent(object: any, path: string | string[]) {
-  return path.length == 1 ? object : baseGet(object, baseSlice(path, 0, -1));
-}
-
-function baseUnset(object: any, path: string) {
-  const updatePath = isKey(path) ? [path] : castPath(path);
-  const childObject = parent(object, updatePath);
+export default function unset(object: any, path: string) {
+  const updatePath = isKey(path) ? [path] : stringToPath(path);
+  const childObject =
+    updatePath.length == 1 ? object : baseGet(object, updatePath.slice(0, -1));
   const key = updatePath[updatePath.length - 1];
-  const result = !(childObject != null) || delete childObject[key];
   let previousObjRef = undefined;
+
+  if (childObject) {
+    delete childObject[key];
+  }
 
   for (let k = 0; k < updatePath.slice(0, -1).length; k++) {
     let index = -1;
@@ -66,25 +36,19 @@ function baseUnset(object: any, path: string) {
       const item = currentPaths[index];
       objectRef = objectRef ? objectRef[item] : object[item];
 
-      if (currentPathsLength === index) {
-        if (
-          (isObject(objectRef) && isEmptyObject(objectRef)) ||
+      if (
+        currentPathsLength === index &&
+        ((isObject(objectRef) && isEmptyObject(objectRef)) ||
           (isArray(objectRef) &&
             !objectRef.filter((data) => isObject(data) && !isEmptyObject(data))
-              .length)
-        ) {
-          previousObjRef ? delete previousObjRef[item] : delete object[item];
-        }
+              .length))
+      ) {
+        previousObjRef ? delete previousObjRef[item] : delete object[item];
       }
 
       previousObjRef = objectRef;
     }
   }
 
-  return result;
-}
-
-export default function unset(object: any, path: string) {
-  baseUnset(object, path);
   return object;
 }
