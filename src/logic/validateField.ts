@@ -107,7 +107,8 @@ export default async <TFieldValues extends FieldValues>(
     const { value: minValue, message: minMessage } = getValueAndMessage(min);
 
     if (type === 'number' || (!type && !isNaN(value))) {
-      const valueNumber = (ref as HTMLInputElement).valueAsNumber || +value;
+      const valueNumber =
+        (ref as HTMLInputElement).valueAsNumber || parseFloat(value);
       if (!isNullOrUndefined(maxValue)) {
         exceedMax = valueNumber > maxValue;
       }
