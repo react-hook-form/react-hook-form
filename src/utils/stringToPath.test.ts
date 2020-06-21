@@ -8,5 +8,12 @@ describe('stringToPath', () => {
       2,
       'data',
     ]);
+
+    expect(stringToPath('test.test["2"].data')).toEqual([
+      'test',
+      'test',
+      '2',
+      'data',
+    ]);
   });
 });
