@@ -12,7 +12,7 @@ export default (input: string): (string | number)[] => {
       result.push(
         mathQuote
           ? originalString.replace(/\\(\\)?/g, '$1')
-          : Number(mathNumber) || match,
+          : +mathNumber || match,
       );
     },
   );
