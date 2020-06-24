@@ -5,6 +5,7 @@ import {
   fireEvent,
   waitFor,
   act as actComponent,
+  screen,
 } from '@testing-library/react';
 import { useForm } from './';
 import attachEventListeners from './logic/attachEventListeners';
@@ -12,13 +13,20 @@ import findRemovedFieldAndRemoveListener from './logic/findRemovedFieldAndRemove
 import validateField from './logic/validateField';
 import onDomRemove from './utils/onDomRemove';
 import { VALIDATION_MODE, EVENTS } from './constants';
-import { NestedValue, UseFormMethods, Ref } from './types/form';
+import {
+  NestedValue,
+  UseFormMethods,
+  Ref,
+  ErrorOption,
+  FieldError,
+} from './types/form';
 import skipValidation from './logic/skipValidation';
 import * as shouldRenderBasedOnError from './logic/shouldRenderBasedOnError';
 import { transformToNestObject } from './logic';
 import * as focusOnErrorField from './logic/focusOnErrorField';
 import * as isSameError from './utils/isSameError';
 import * as getFieldValue from './logic/getFieldValue';
+import { DeepMap } from './types/utils';
 
 jest.mock('./utils/onDomRemove');
 jest.mock('./logic/findRemovedFieldAndRemoveListener');
@@ -46,19 +54,15 @@ describe('useForm', () => {
     it('should return undefined when ref is defined', () => {
       const { result } = renderHook(() => useForm());
 
-      act(() => {
-        expect(result.current.register(undefined as any)).toBeDefined();
-      });
+      expect(result.current.register(undefined as any)).toBeDefined();
     });
 
     it('should return undefined when ref name is missing', () => {
       const { result } = renderHook(() => useForm());
 
-      act(() => {
-        expect(
-          result.current.register({ name: 'test', type: 'input' }, {}),
-        ).toBeUndefined();
-      });
+      expect(
+        result.current.register({ name: 'test', type: 'input' }, {}),
+      ).toBeUndefined();
     });
 
     it('should call console.worn when ref name is undefined', () => {
@@ -75,9 +79,7 @@ describe('useForm', () => {
     it('should register field and call attachEventListeners method', () => {
       const { result } = renderHook(() => useForm());
 
-      act(() => {
-        result.current.register({ type: 'input', name: 'test' });
-      });
+      result.current.register({ type: 'input', name: 'test' });
 
       expect(attachEventListeners).toHaveBeenCalledWith({
         field: {
@@ -96,9 +98,7 @@ describe('useForm', () => {
     it('should register field for radio type and call attachEventListeners method', () => {
       const { result } = renderHook(() => useForm());
 
-      act(() => {
-        result.current.register({ type: 'radio', name: 'test' });
-      });
+      result.current.register({ type: 'radio', name: 'test' });
 
       expect(attachEventListeners).toBeCalledWith({
         field: {
@@ -117,12 +117,10 @@ describe('useForm', () => {
     it('should register field for checkbox type and call attachEventListeners method', () => {
       const { result } = renderHook(() => useForm());
 
-      act(() => {
-        result.current.register({
-          type: 'checkbox',
-          name: 'test',
-          attributes: {},
-        });
+      result.current.register({
+        type: 'checkbox',
+        name: 'test',
+        attributes: {},
       });
 
       expect(attachEventListeners).toBeCalledWith({
@@ -152,9 +150,7 @@ describe('useForm', () => {
         useForm({ defaultValues: { test: 'test' } }),
       );
 
-      act(() => {
-        result.current.register({ type: 'text', name: 'test' });
-      });
+      result.current.register({ type: 'text', name: 'test' });
 
       act(() => mockOnDetachCallback());
 
@@ -179,9 +175,7 @@ describe('useForm', () => {
         return <input name="test" ref={register} />;
       };
 
-      actComponent(() => {
-        render(<Component />);
-      });
+      render(<Component />);
 
       actComponent(() => mockOnDetachCallback());
 
@@ -192,12 +186,10 @@ describe('useForm', () => {
     it('should support register passed to ref', async () => {
       const { result } = renderHook(() => useForm<{ test: string }>());
 
-      act(() => {
-        result.current.register({ required: true })!({
-          type: 'text',
-          name: 'test',
-          value: 'testData',
-        });
+      result.current.register({ required: true })!({
+        type: 'text',
+        name: 'test',
+        value: 'testData',
       });
 
       (validateField as any).mockImplementation(async () => {
@@ -219,11 +211,9 @@ describe('useForm', () => {
     it('should not register the same radio input', async () => {
       const { result } = renderHook(() => useForm<{ test: string }>());
 
-      act(() => {
-        const { register } = result.current;
-        register({ type: 'radio', name: 'test', value: '' });
-        register({ type: 'radio', name: 'test', value: '' });
-      });
+      const { register } = result.current;
+      register({ type: 'radio', name: 'test', value: '' });
+      register({ type: 'radio', name: 'test', value: '' });
 
       (validateField as any).mockImplementation(async () => {
         return {};
@@ -247,11 +237,9 @@ describe('useForm', () => {
       ref.setAttribute('name', 'test');
       ref.setAttribute('type', 'checkbox');
 
-      act(() => {
-        const { register } = result.current;
-        register(ref as any);
-        register(ref as any);
-      });
+      const { register } = result.current;
+      register(ref as any);
+      register(ref as any);
 
       (validateField as any).mockImplementation(async () => {
         return {};
@@ -296,23 +284,21 @@ describe('useForm', () => {
         return (
           <div>
             <input name="test" ref={register} />
-            {renderCount}
           </div>
         );
       };
 
-      const { container } = render(<Component />);
+      render(<Component />);
 
-      await waitFor(() => expect(container.textContent).toBe('2'));
+      await waitFor(() => expect(renderCount).toBe(2));
     });
 
     it('react native - allow registration as part of the register call', async () => {
       const { result } = renderHook(() => useForm<{ test: string }>());
 
-      act(() => {
-        result.current.register({ name: 'test' });
-        result.current.setValue('test', '1');
-      });
+      result.current.register({ name: 'test' });
+
+      result.current.setValue('test', '1');
 
       (validateField as any).mockImplementation(async () => {
         return {};
@@ -347,10 +333,8 @@ describe('useForm', () => {
     it('should unregister an registered item', async () => {
       const { result } = renderHook(() => useForm());
 
-      act(() => {
-        result.current.register({ name: 'input' });
-        result.current.unregister('input');
-      });
+      result.current.register({ name: 'input' });
+      result.current.unregister('input');
 
       const callback = jest.fn();
 
@@ -371,10 +355,8 @@ describe('useForm', () => {
     it('should unregister an registered item with array name', async () => {
       const { result } = renderHook(() => useForm());
 
-      act(() => {
-        result.current.register({ name: 'input' });
-        result.current.unregister(['input']);
-      });
+      result.current.register({ name: 'input' });
+      result.current.unregister(['input']);
 
       const callback = jest.fn();
 
@@ -407,9 +389,7 @@ describe('useForm', () => {
 
       expect(result.current.watch('test')).toBeUndefined();
 
-      act(() => {
-        result.current.register({ type: 'radio', name: 'test', value: 'data' });
-      });
+      result.current.register({ type: 'radio', name: 'test', value: 'data' });
 
       expect(result.current.control.watchFieldsRef).toEqual({
         current: new Set(['test']),
@@ -432,17 +412,15 @@ describe('useForm', () => {
         test1: undefined,
       });
 
-      act(() => {
-        result.current.register({
-          type: 'radio',
-          name: 'test',
-          value: 'data1',
-        });
-        result.current.register({
-          type: 'radio',
-          name: 'test1',
-          value: 'data2',
-        });
+      result.current.register({
+        type: 'radio',
+        name: 'test',
+        value: 'data1',
+      });
+      result.current.register({
+        type: 'radio',
+        name: 'test1',
+        value: 'data2',
       });
 
       expect(result.current.control.watchFieldsRef).toEqual({
@@ -455,15 +433,10 @@ describe('useForm', () => {
         useForm<{ test: string; test1: string }>(),
       );
 
-      act(() => {
-        result.current.register({ type: 'radio', name: 'test', value: '' });
-        result.current.register({ type: 'radio', name: 'test1', value: '' });
-      });
+      result.current.register({ type: 'radio', name: 'test', value: '' });
+      result.current.register({ type: 'radio', name: 'test1', value: '' });
 
-      act(() => {
-        expect(result.current.watch()).toEqual({ test: '', test1: '' });
-      });
-
+      expect(result.current.watch()).toEqual({ test: '', test1: '' });
       expect(result.current.control.isWatchAllRef.current).toBeTruthy();
     });
   });
@@ -507,10 +480,8 @@ describe('useForm', () => {
     it('should reset the form and re-render the form', async () => {
       const { result } = renderHook(() => useForm<{ test: string }>());
 
-      act(() => {
-        result.current.register({ name: 'test' });
-        result.current.setValue('test', 'data');
-      });
+      result.current.register({ name: 'test' });
+      result.current.setValue('test', 'data');
 
       (validateField as any).mockImplementation(async () => ({}));
 
@@ -527,9 +498,7 @@ describe('useForm', () => {
       });
 
       expect(result.current.formState.isSubmitted).toBeTruthy();
-      act(() => {
-        result.current.reset();
-      });
+      act(() => result.current.reset());
       expect(result.current.formState.isSubmitted).toBeFalsy();
     });
 
@@ -548,7 +517,7 @@ describe('useForm', () => {
 
       actComponent(() => methods.reset());
 
-      await waitFor(() => expect(mockReset).toHaveBeenCalled());
+      expect(mockReset).toHaveBeenCalled();
     });
 
     it('should reset the form if ref is HTMLElement and parent element is not form', async () => {
@@ -562,21 +531,19 @@ describe('useForm', () => {
 
       actComponent(() => methods.reset());
 
-      await waitFor(() => expect(mockReset).not.toHaveBeenCalled());
+      expect(mockReset).not.toHaveBeenCalled();
     });
 
     it('should set default value if values is specified to first argument', async () => {
       const { result } = renderHook(() => useForm());
 
-      act(() => result.current.register('test'));
+      result.current.register('test');
 
       act(() => result.current.reset({ test: 'test' }));
 
-      await waitFor(() =>
-        expect(result.current.control.defaultValuesRef.current).toEqual({
-          test: 'test',
-        }),
-      );
+      expect(result.current.control.defaultValuesRef.current).toEqual({
+        test: 'test',
+      });
     });
 
     it('should execute resetFieldArrayFunctionRef if resetFieldArrayFunctionRef is exist', async () => {
@@ -584,11 +551,11 @@ describe('useForm', () => {
       const reset = jest.fn();
       result.current.control.resetFieldArrayFunctionRef.current['test'] = reset;
 
-      act(() => result.current.register('test'));
+      result.current.register('test');
 
       act(() => result.current.reset({ test: 'test' }));
 
-      await waitFor(() => expect(reset).toHaveBeenCalled());
+      expect(reset).toHaveBeenCalled();
     });
 
     it('should not reset if OmitResetState is specified', async () => {
@@ -597,16 +564,14 @@ describe('useForm', () => {
       result.current.register('test');
 
       // check only public variables
-      act(() => {
-        result.current.control.errorsRef.current = { test: 'test' };
-        result.current.control.touchedFieldsRef.current = { test: 'test' };
-        result.current.control.validFieldsRef.current = new Set(['test']);
-        result.current.control.fieldsWithValidationRef.current = new Set([
-          'test',
-        ]);
-        result.current.control.isDirtyRef.current = true;
-        result.current.control.isSubmittedRef.current = true;
-      });
+      result.current.control.errorsRef.current = { test: 'test' };
+      result.current.control.touchedFieldsRef.current = { test: 'test' };
+      result.current.control.validFieldsRef.current = new Set(['test']);
+      result.current.control.fieldsWithValidationRef.current = new Set([
+        'test',
+      ]);
+      result.current.control.isDirtyRef.current = true;
+      result.current.control.isSubmittedRef.current = true;
 
       act(() =>
         result.current.reset(
@@ -623,22 +588,20 @@ describe('useForm', () => {
         ),
       );
 
-      await waitFor(() => {
-        expect(result.current.control.errorsRef.current).toEqual({
-          test: 'test',
-        });
-        expect(result.current.control.touchedFieldsRef.current).toEqual({
-          test: 'test',
-        });
-        expect(result.current.control.validFieldsRef.current).toEqual(
-          new Set(['test']),
-        );
-        expect(result.current.control.fieldsWithValidationRef.current).toEqual(
-          new Set(['test']),
-        );
-        expect(result.current.control.isDirtyRef.current).toBeTruthy();
-        expect(result.current.control.isSubmittedRef.current).toBeTruthy();
+      expect(result.current.control.errorsRef.current).toEqual({
+        test: 'test',
       });
+      expect(result.current.control.touchedFieldsRef.current).toEqual({
+        test: 'test',
+      });
+      expect(result.current.control.validFieldsRef.current).toEqual(
+        new Set(['test']),
+      );
+      expect(result.current.control.fieldsWithValidationRef.current).toEqual(
+        new Set(['test']),
+      );
+      expect(result.current.control.isDirtyRef.current).toBeTruthy();
+      expect(result.current.control.isSubmittedRef.current).toBeTruthy();
     });
   });
 
@@ -646,18 +609,14 @@ describe('useForm', () => {
     it('should set value of radio input correctly', async () => {
       const { result } = renderHook(() => useForm<{ test: string }>());
 
-      act(() => {
-        result.current.register({ name: 'test', type: 'radio', value: '1' });
-        result.current.register({ name: 'test', type: 'radio', value: '2' });
-      });
+      result.current.register({ name: 'test', type: 'radio', value: '1' });
+      result.current.register({ name: 'test', type: 'radio', value: '2' });
 
       (validateField as any).mockImplementation(async () => {
         return {};
       });
 
-      act(() => {
-        result.current.setValue('test', '1');
-      });
+      result.current.setValue('test', '1');
 
       await act(async () => {
         await result.current.handleSubmit((data) => {
@@ -674,9 +633,7 @@ describe('useForm', () => {
     it('should set value of file input correctly if value is FileList', async () => {
       const { result } = renderHook(() => useForm<{ test: FileList }>());
 
-      act(() => {
-        result.current.register({ name: 'test', type: 'file', value: '' });
-      });
+      result.current.register({ name: 'test', type: 'file', value: '' });
 
       (validateField as any).mockImplementation(async () => {
         return {};
@@ -693,9 +650,8 @@ describe('useForm', () => {
         length: 2,
         item: () => file,
       };
-      act(() => {
-        result.current.setValue('test', fileList);
-      });
+
+      act(() => result.current.setValue('test', fileList));
 
       await act(async () => {
         await result.current.handleSubmit((data) => {
@@ -712,17 +668,13 @@ describe('useForm', () => {
     it('should set value of file input correctly if value is string', async () => {
       const { result } = renderHook(() => useForm<{ test: string }>());
 
-      act(() => {
-        result.current.register({ name: 'test', type: 'file', value: '' });
-      });
+      result.current.register({ name: 'test', type: 'file', value: '' });
 
       (validateField as any).mockImplementation(async () => {
         return {};
       });
 
-      act(() => {
-        result.current.setValue('test', 'path');
-      });
+      result.current.setValue('test', 'path');
 
       expect(
         result.current.control.fieldsRef.current['test']?.ref.value,
@@ -732,28 +684,24 @@ describe('useForm', () => {
     it('should set value of multiple checkbox input correctly', async () => {
       const { result } = renderHook(() => useForm<{ test: string }>());
 
-      act(() => {
-        result.current.register({
-          name: 'test',
-          type: 'checkbox',
-          value: '1',
-          attributes: { value: '1' },
-        });
-        result.current.register({
-          name: 'test',
-          type: 'checkbox',
-          value: '2',
-          attributes: { value: '2' },
-        });
+      result.current.register({
+        name: 'test',
+        type: 'checkbox',
+        value: '1',
+        attributes: { value: '1' },
+      });
+      result.current.register({
+        name: 'test',
+        type: 'checkbox',
+        value: '2',
+        attributes: { value: '2' },
       });
 
       (validateField as any).mockImplementation(async () => {
         return {};
       });
 
-      act(() => {
-        result.current.setValue('test', '1');
-      });
+      result.current.setValue('test', '1');
 
       await act(async () => {
         await result.current.handleSubmit((data) => {
@@ -770,22 +718,18 @@ describe('useForm', () => {
     it('should set value of single checkbox input correctly', async () => {
       const { result } = renderHook(() => useForm<{ test: string }>());
 
-      act(() => {
-        result.current.register({
-          name: 'test',
-          type: 'checkbox',
-          value: '1',
-          attributes: { value: '1' },
-        });
+      result.current.register({
+        name: 'test',
+        type: 'checkbox',
+        value: '1',
+        attributes: { value: '1' },
       });
 
       (validateField as any).mockImplementation(async () => {
         return {};
       });
 
-      act(() => {
-        result.current.setValue('test', '1');
-      });
+      result.current.setValue('test', '1');
 
       await act(async () => {
         await result.current.handleSubmit((data) => {
@@ -815,9 +759,7 @@ describe('useForm', () => {
         return {};
       });
 
-      act(() => {
-        result.current.setValue('test', '1');
-      });
+      result.current.setValue('test', '1');
 
       await act(async () => {
         await result.current.handleSubmit((data) => {
@@ -848,11 +790,9 @@ describe('useForm', () => {
         }>(),
       );
 
-      act(() => {
-        result.current.register('test1');
-        result.current.register('test2');
-        result.current.register('test3');
-      });
+      result.current.register('test1');
+      result.current.register('test2');
+      result.current.register('test3');
 
       act(() => {
         result.current.setValue('test1', ['1', '2', '3']);
@@ -861,106 +801,91 @@ describe('useForm', () => {
           { key1: '1', key2: 2 },
           { key1: '3', key2: 4 },
         ]);
+      });
 
-        expect(result.current.control.fieldsRef.current['test1']).toEqual({
-          ref: { name: 'test1', value: ['1', '2', '3'] },
-        });
-        expect(result.current.control.fieldsRef.current['test2']).toEqual({
-          ref: { name: 'test2', value: { key1: '1', key2: 2 } },
-        });
-        expect(result.current.control.fieldsRef.current['test3']).toEqual({
-          ref: {
-            name: 'test3',
-            value: [
-              { key1: '1', key2: 2 },
-              { key1: '3', key2: 4 },
-            ],
-          },
-        });
+      expect(result.current.control.fieldsRef.current['test1']).toEqual({
+        ref: { name: 'test1', value: ['1', '2', '3'] },
+      });
+      expect(result.current.control.fieldsRef.current['test2']).toEqual({
+        ref: { name: 'test2', value: { key1: '1', key2: 2 } },
+      });
+      expect(result.current.control.fieldsRef.current['test3']).toEqual({
+        ref: {
+          name: 'test3',
+          value: [
+            { key1: '1', key2: 2 },
+            { key1: '3', key2: 4 },
+          ],
+        },
       });
     });
 
     it('should work with array fields', () => {
       const { result } = renderHook(() => useForm());
 
-      act(() => {
-        result.current.register('test1[0].test');
-        result.current.register('test[0]');
-        result.current.register('test[1]');
-        result.current.register('test[2]');
+      result.current.register('test1[0].test');
+      result.current.register('test[0]');
+      result.current.register('test[1]');
+      result.current.register('test[2]');
+
+      act(() => result.current.setValue('test', ['1', '2', '3']));
+
+      expect(result.current.control.fieldsRef.current['test[0]']).toEqual({
+        ref: { name: 'test[0]', value: '1' },
       });
-
-      act(() => {
-        result.current.setValue('test', ['1', '2', '3']);
-
-        expect(result.current.control.fieldsRef.current['test[0]']).toEqual({
-          ref: { name: 'test[0]', value: '1' },
-        });
-        expect(result.current.control.fieldsRef.current['test[1]']).toEqual({
-          ref: { name: 'test[1]', value: '2' },
-        });
-        expect(result.current.control.fieldsRef.current['test[2]']).toEqual({
-          ref: { name: 'test[2]', value: '3' },
-        });
+      expect(result.current.control.fieldsRef.current['test[1]']).toEqual({
+        ref: { name: 'test[1]', value: '2' },
+      });
+      expect(result.current.control.fieldsRef.current['test[2]']).toEqual({
+        ref: { name: 'test[2]', value: '3' },
       });
     });
 
     it('should worked with nested array fields with object', () => {
       const { result } = renderHook(() => useForm());
 
-      act(() => {
-        result.current.register('test[0].test');
-        result.current.register('test[1].test');
-        result.current.register('test[2].test');
-      });
+      result.current.register('test[0].test');
+      result.current.register('test[1].test');
+      result.current.register('test[2].test');
 
-      act(() => {
+      act(() =>
         result.current.setValue('test', [
           { test: '1' },
           { test: '2' },
           { test: '3' },
-        ]);
+        ]),
+      );
 
-        expect(
-          result.current.control.fieldsRef.current['test[0].test'],
-        ).toEqual({
-          ref: { name: 'test[0].test', value: '1' },
-        });
-        expect(
-          result.current.control.fieldsRef.current['test[1].test'],
-        ).toEqual({
-          ref: { name: 'test[1].test', value: '2' },
-        });
-        expect(
-          result.current.control.fieldsRef.current['test[2].test'],
-        ).toEqual({
-          ref: { name: 'test[2].test', value: '3' },
-        });
+      expect(result.current.control.fieldsRef.current['test[0].test']).toEqual({
+        ref: { name: 'test[0].test', value: '1' },
+      });
+      expect(result.current.control.fieldsRef.current['test[1].test']).toEqual({
+        ref: { name: 'test[1].test', value: '2' },
+      });
+      expect(result.current.control.fieldsRef.current['test[2].test']).toEqual({
+        ref: { name: 'test[2].test', value: '3' },
       });
     });
 
     it('should work with object fields', () => {
       const { result } = renderHook(() => useForm());
 
-      act(() => {
-        result.current.register('test1[0].test');
-        result.current.register('test.bill');
-        result.current.register('test.luo');
-        result.current.register('test.test');
+      result.current.register('test1[0].test');
+      result.current.register('test.bill');
+      result.current.register('test.luo');
+      result.current.register('test.test');
+
+      act(() =>
+        result.current.setValue('test', { bill: '1', luo: '2', test: '3' }),
+      );
+      expect(result.current.control.fieldsRef.current['test.bill']).toEqual({
+        ref: { name: 'test.bill', value: '1' },
       });
-
-      act(() => {
-        result.current.setValue('test', { bill: '1', luo: '2', test: '3' });
-
-        expect(result.current.control.fieldsRef.current['test.bill']).toEqual({
-          ref: { name: 'test.bill', value: '1' },
-        });
-        expect(result.current.control.fieldsRef.current['test.luo']).toEqual({
-          ref: { name: 'test.luo', value: '2' },
-        });
-        expect(result.current.control.fieldsRef.current['test.test']).toEqual({
-          ref: { name: 'test.test', value: '3' },
-        });
+      expect(result.current.control.fieldsRef.current['test.luo']).toEqual({
+        ref: { name: 'test.luo', value: '2' },
+      });
+      expect(result.current.control.fieldsRef.current['test.test']).toEqual({
+        ref: { name: 'test.test', value: '3' },
       });
     });
 
@@ -977,10 +902,8 @@ describe('useForm', () => {
         }),
       );
 
-      act(() => {
-        result.current.register({ name: 'test', required: 'required' });
-        result.current.control.readFormStateRef.current.isDirty = true;
-      });
+      result.current.register({ name: 'test', required: 'required' });
+      result.current.control.readFormStateRef.current.isDirty = true;
 
       act(() =>
         result.current.setValue('test', 'test', {
@@ -989,10 +912,8 @@ describe('useForm', () => {
         }),
       );
 
-      await waitFor(() => {
-        expect(mockGetFieldValue).toHaveBeenCalledTimes(1);
-        expect(validateField).toHaveBeenCalled();
-      });
+      expect(mockGetFieldValue).toHaveBeenCalledTimes(1);
+      expect(validateField).toHaveBeenCalled();
     });
 
     it('should not be called trigger method if config is empty', async () => {
@@ -1008,19 +929,13 @@ describe('useForm', () => {
         }),
       );
 
-      act(() =>
-        result.current.register({ name: 'test', required: 'required' }),
-      );
+      result.current.register({ name: 'test', required: 'required' }),
+        (result.current.control.readFormStateRef.current.isDirty = true);
 
-      act(() => {
-        result.current.setValue('test', 'test');
-        result.current.control.readFormStateRef.current.isDirty = true;
-      });
+      result.current.setValue('test', 'test');
 
-      await waitFor(() => {
-        expect(mockGetFieldValue).not.toHaveBeenCalled();
-        expect(validateField).not.toHaveBeenCalled();
-      });
+      expect(mockGetFieldValue).not.toHaveBeenCalled();
+      expect(validateField).not.toHaveBeenCalled();
     });
 
     it('should be called trigger method if shouldValidate variable is true and field value is array', async () => {
@@ -1038,12 +953,10 @@ describe('useForm', () => {
         }),
       );
 
-      act(() => {
-        result.current.register({ name: 'test[0]', required: 'required' });
-        result.current.register({ name: 'test[1]', required: 'required' });
-        result.current.register({ name: 'test[2]', required: 'required' });
-        result.current.control.readFormStateRef.current.isDirty = true;
-      });
+      result.current.register({ name: 'test[0]', required: 'required' });
+      result.current.register({ name: 'test[1]', required: 'required' });
+      result.current.register({ name: 'test[2]', required: 'required' });
+      result.current.control.readFormStateRef.current.isDirty = true;
 
       act(() =>
         result.current.setValue('test', ['test', 'test1', 'test2'], {
@@ -1052,10 +965,8 @@ describe('useForm', () => {
         }),
       );
 
-      await waitFor(() => {
-        expect(mockGetFieldValue).toHaveBeenCalledTimes(3);
-        expect(validateField).toHaveBeenCalledTimes(3);
-      });
+      expect(mockGetFieldValue).toHaveBeenCalledTimes(3);
+      expect(validateField).toHaveBeenCalledTimes(3);
     });
 
     it('should not be called trigger method if config is empty and field value is array', async () => {
@@ -1073,31 +984,23 @@ describe('useForm', () => {
         }),
       );
 
-      act(() => {
-        result.current.register({ name: 'test[0]', required: 'required' });
-        result.current.register({ name: 'test[1]', required: 'required' });
-        result.current.register({ name: 'test[2]', required: 'required' });
-        result.current.control.readFormStateRef.current.isDirty = true;
-      });
+      result.current.register({ name: 'test[0]', required: 'required' });
+      result.current.register({ name: 'test[1]', required: 'required' });
+      result.current.register({ name: 'test[2]', required: 'required' });
+      result.current.control.readFormStateRef.current.isDirty = true;
 
       act(() => result.current.setValue('test', ['test', 'test1', 'test2']));
 
-      await waitFor(() => {
-        expect(mockGetFieldValue).not.toHaveBeenCalled();
-        expect(validateField).not.toHaveBeenCalled();
-      });
+      expect(mockGetFieldValue).not.toHaveBeenCalled();
+      expect(validateField).not.toHaveBeenCalled();
     });
 
     it('should not work if field is not registered', () => {
       const { result } = renderHook(() => useForm());
 
-      act(() => {
-        result.current.setValue('test', '1');
+      result.current.setValue('test', '1');
 
-        expect(
-          result.current.control.fieldsRef.current['test'],
-        ).toBeUndefined();
-      });
+      expect(result.current.control.fieldsRef.current['test']).toBeUndefined();
     });
 
     describe('setDirty', () => {
@@ -1109,13 +1012,9 @@ describe('useForm', () => {
         );
         result.current.control.readFormStateRef.current.dirtyFields = true;
 
-        act(() => {
-          result.current.register('test');
-        });
+        result.current.register('test');
 
-        act(() => {
-          result.current.setValue('test', '1', { shouldDirty: true });
-        });
+        act(() => result.current.setValue('test', '1', { shouldDirty: true }));
 
         expect(transformToNestObject).not.toHaveBeenCalled();
         expect(result.current.formState.dirtyFields.test).toBeTruthy();
@@ -1129,13 +1028,9 @@ describe('useForm', () => {
         );
         result.current.control.readFormStateRef.current.isDirty = true;
 
-        act(() => {
-          result.current.register('test');
-        });
+        result.current.register('test');
 
-        act(() => {
-          result.current.setValue('test', '1');
-        });
+        result.current.setValue('test', '1');
 
         expect(transformToNestObject).not.toHaveBeenCalled();
         expect(result.current.formState.dirtyFields.test).toBeFalsy();
@@ -1149,13 +1044,9 @@ describe('useForm', () => {
         );
         result.current.control.readFormStateRef.current.isDirty = true;
 
-        act(() => {
-          result.current.register('test');
-        });
+        result.current.register('test');
 
-        act(() => {
-          result.current.setValue('test', '1', { shouldDirty: true });
-        });
+        act(() => result.current.setValue('test', '1', { shouldDirty: true }));
 
         expect(transformToNestObject).not.toHaveBeenCalled();
         expect(result.current.formState.dirtyFields.test).toBeTruthy();
@@ -1169,17 +1060,10 @@ describe('useForm', () => {
         );
         result.current.control.readFormStateRef.current.dirtyFields = true;
 
-        act(() => {
-          result.current.register('test');
-        });
+        result.current.register('test');
 
-        act(() => {
-          result.current.setValue('test', '1');
-        });
-
-        act(() => {
-          result.current.setValue('test', 'default');
-        });
+        result.current.setValue('test', '1');
+        result.current.setValue('test', 'default');
 
         expect(transformToNestObject).not.toHaveBeenCalled();
         expect(result.current.formState.dirtyFields.test).toBeUndefined();
@@ -1208,11 +1092,9 @@ describe('useForm', () => {
         result.current.control.readFormStateRef.current.dirtyFields = true;
         result.current.control.fieldArrayNamesRef.current.add('test');
 
-        act(() => {
-          result.current.register('test[0].name');
-          result.current.register('test[1].name');
-          result.current.register('test[2].name');
-        });
+        result.current.register('test[0].name');
+        result.current.register('test[1].name');
+        result.current.register('test[2].name');
 
         act(() => {
           result.current.setValue(
@@ -1226,18 +1108,16 @@ describe('useForm', () => {
           );
         });
 
-        await waitFor(() => {
-          expect((transformToNestObject as any).mock.calls[2]).toEqual([
-            {
-              'test[0].name': 'default_update',
-              'test[1].name': 'default1',
-              'test[2].name': 'default2',
-            },
-          ]);
-          expect(result.current.formState.dirtyFields.test!).toEqual([
-            { name: true },
-          ]);
-        });
+        expect((transformToNestObject as any).mock.calls[2]).toEqual([
+          {
+            'test[0].name': 'default_update',
+            'test[1].name': 'default1',
+            'test[2].name': 'default2',
+          },
+        ]);
+        expect(result.current.formState.dirtyFields.test!).toEqual([
+          { name: true },
+        ]);
       });
 
       it('should unset name from dirtyFieldRef if array field values are not different with default value with ReactNative', async () => {
@@ -1255,11 +1135,9 @@ describe('useForm', () => {
         result.current.control.readFormStateRef.current.dirtyFields = true;
         result.current.control.fieldArrayNamesRef.current.add('test');
 
-        act(() => {
-          result.current.register('test[0].name');
-          result.current.register('test[1].name');
-          result.current.register('test[2].name');
-        });
+        result.current.register('test[0].name');
+        result.current.register('test[1].name');
+        result.current.register('test[2].name');
 
         (transformToNestObject as any).mockReturnValue({
           test: [
@@ -1295,23 +1173,21 @@ describe('useForm', () => {
           );
         });
 
-        await waitFor(() => {
-          expect((transformToNestObject as any).mock.calls[2]).toEqual([
-            {
-              'test[0].name': 'default_update',
-              'test[1].name': 'default1',
-              'test[2].name': 'default2',
-            },
-          ]);
-          expect((transformToNestObject as any).mock.calls[5]).toEqual([
-            {
-              'test[0].name': 'default',
-              'test[1].name': 'default1',
-              'test[2].name': 'default2',
-            },
-          ]);
-          expect(result.current.formState.dirtyFields?.test).toBeUndefined();
-        });
+        expect((transformToNestObject as any).mock.calls[2]).toEqual([
+          {
+            'test[0].name': 'default_update',
+            'test[1].name': 'default1',
+            'test[2].name': 'default2',
+          },
+        ]);
+        expect((transformToNestObject as any).mock.calls[5]).toEqual([
+          {
+            'test[0].name': 'default',
+            'test[1].name': 'default1',
+            'test[2].name': 'default2',
+          },
+        ]);
+        expect(result.current.formState.dirtyFields?.test).toBeUndefined();
       });
     });
   });
@@ -1319,23 +1195,17 @@ describe('useForm', () => {
   describe('trigger', () => {
     it('should return false when field is not found', async () => {
       const { result } = renderHook(() => useForm<{ test: string }>());
-      await act(async () => {
-        expect(await result.current.trigger('test')).toBeFalsy();
-      });
+      expect(await result.current.trigger('test')).toBeFalsy();
     });
 
     it('should return true when field is found and validation pass', async () => {
       const { result } = renderHook(() => useForm<{ test: string }>());
 
-      act(() => {
-        result.current.register({ type: 'input', name: 'test' });
-      });
+      result.current.register({ type: 'input', name: 'test' });
 
       (validateField as any).mockImplementation(async () => ({}));
 
-      await act(async () => {
-        expect(await result.current.trigger('test')).toBeTruthy();
-      });
+      expect(await result.current.trigger('test')).toBeTruthy();
     });
 
     it('should update value when value is supplied', async () => {
@@ -1349,16 +1219,14 @@ describe('useForm', () => {
         return {};
       });
 
-      act(() => {
-        result.current.register(
-          { type: 'input', name: 'test' },
-          { required: true },
-        );
-      });
+      result.current.register(
+        { type: 'input', name: 'test' },
+        { required: true },
+      );
 
-      await act(async () => {
-        expect(await result.current.trigger('test')).toBeTruthy();
-      });
+      await act(async () =>
+        expect(await result.current.trigger('test')).toBeTruthy(),
+      );
     });
 
     it('should trigger multiple fields validation', async () => {
@@ -1370,13 +1238,11 @@ describe('useForm', () => {
 
       (validateField as any).mockImplementation(async () => ({}));
 
-      act(() => {
-        result.current.register({
-          name: 'test',
-        });
-        result.current.register({
-          name: 'test1',
-        });
+      result.current.register({
+        name: 'test',
+      });
+      result.current.register({
+        name: 'test1',
       });
 
       await act(async () => {
@@ -1426,17 +1292,15 @@ describe('useForm', () => {
         }),
       );
 
-      act(() => {
-        result.current.register(
-          { type: 'input', name: 'test' },
-          { required: true },
-        );
-      });
+      result.current.register(
+        { type: 'input', name: 'test' },
+        { required: true },
+      );
 
       await act(async () => {
         await result.current.trigger('test');
-        expect(result.current.errors).toEqual({ test: { type: 'test' } });
       });
+      expect(result.current.errors).toEqual({ test: { type: 'test' } });
     });
 
     it('should return the status of the requested field with single field validation', async () => {
@@ -1458,26 +1322,23 @@ describe('useForm', () => {
         }),
       );
 
-      act(() => {
-        result.current.register(
-          { type: 'input', name: 'test1' },
-          { required: false },
-        );
-        result.current.register(
-          { type: 'input', name: 'test2' },
-          { required: true },
-        );
-      });
+      result.current.register(
+        { type: 'input', name: 'test1' },
+        { required: false },
+      );
+      result.current.register(
+        { type: 'input', name: 'test2' },
+        { required: true },
+      );
 
-      await act(async () => {
-        const resultFalse = await result.current.trigger('test2');
-        expect(resultFalse).toEqual(false);
+      await act(async () =>
+        expect(await result.current.trigger('test2')).toBeFalsy(),
+      );
 
-        expect(result.current.errors).toEqual({
-          test2: {
-            type: 'test',
-          },
-        });
+      expect(result.current.errors).toEqual({
+        test2: {
+          type: 'test',
+        },
       });
     });
 
@@ -1501,12 +1362,10 @@ describe('useForm', () => {
         }),
       );
 
-      act(() => {
-        result.current.register(
-          { type: 'input', name: 'test' },
-          { required: true },
-        );
-      });
+      result.current.register(
+        { type: 'input', name: 'test' },
+        { required: true },
+      );
 
       await act(async () => {
         await result.current.trigger('test');
@@ -1537,24 +1396,22 @@ describe('useForm', () => {
         }),
       );
 
-      act(() => {
-        result.current.register(
-          { type: 'input', name: 'test' },
-          { required: true },
-        );
-      });
+      result.current.register(
+        { type: 'input', name: 'test' },
+        { required: true },
+      );
 
       await act(async () => {
         await result.current.trigger(['test', 'test1']);
+      });
 
-        expect(result.current.errors).toEqual({
-          test1: {
-            type: 'test1',
-          },
-          test: {
-            type: 'test',
-          },
-        });
+      expect(result.current.errors).toEqual({
+        test1: {
+          type: 'test1',
+        },
+        test: {
+          type: 'test',
+        },
       });
     });
 
@@ -1574,25 +1431,22 @@ describe('useForm', () => {
         }),
       );
 
-      act(() => {
-        result.current.register(
-          { type: 'input', name: 'test1' },
-          { required: false },
-        );
-        result.current.register(
-          { type: 'input', name: 'test2' },
-          { required: false },
-        );
-        result.current.register(
-          { type: 'input', name: 'test3' },
-          { required: true },
-        );
-      });
+      result.current.register(
+        { type: 'input', name: 'test1' },
+        { required: false },
+      );
+      result.current.register(
+        { type: 'input', name: 'test2' },
+        { required: false },
+      );
+      result.current.register(
+        { type: 'input', name: 'test3' },
+        { required: true },
+      );
 
-      await act(async () => {
-        const resultTrue = await result.current.trigger(['test1', 'test2']);
-        expect(resultTrue).toEqual(true);
-      });
+      await act(async () =>
+        expect(await result.current.trigger(['test1', 'test2'])).toBeTruthy(),
+      );
     });
 
     it('should validate all fields when pass with undefined', async () => {
@@ -1617,28 +1471,26 @@ describe('useForm', () => {
         }),
       );
 
-      act(() => {
-        result.current.register(
-          { type: 'input', name: 'test' },
-          { required: true },
-        );
-        result.current.register(
-          { type: 'input', name: 'test1' },
-          { required: true },
-        );
-      });
+      result.current.register(
+        { type: 'input', name: 'test' },
+        { required: true },
+      );
+      result.current.register(
+        { type: 'input', name: 'test1' },
+        { required: true },
+      );
 
       await act(async () => {
         await result.current.trigger();
+      });
 
-        expect(result.current.errors).toEqual({
-          test1: {
-            type: 'test1',
-          },
-          test: {
-            type: 'test',
-          },
-        });
+      expect(result.current.errors).toEqual({
+        test1: {
+          type: 'test1',
+        },
+        test: {
+          type: 'test',
+        },
       });
     });
   });
@@ -1666,17 +1518,19 @@ describe('useForm', () => {
           <div>
             <input name="test" ref={register} />
             <button onClick={handleSubmit(() => {})}></button>
-            <span>{formState.isSubmitting ? 'true' : 'false'}</span>
+            <span role="alert">
+              {formState.isSubmitting ? 'true' : 'false'}
+            </span>
           </div>
         );
       };
 
-      const { container } = render(<Component />);
+      render(<Component />);
       (validateField as any).mockImplementation(async () => ({}));
 
-      fireEvent.click(container.querySelector('button')!);
+      fireEvent.click(screen.getByRole('button'));
 
-      const span = container.querySelector('span')!;
+      const span = screen.getByRole('alert')!;
       await waitFor(
         () => {
           if (renderCount === 2) {
@@ -1696,12 +1550,10 @@ describe('useForm', () => {
     it('should not invoke callback when there are errors', async () => {
       const { result } = renderHook(() => useForm<{ test: string }>());
 
-      act(() => {
-        result.current.register(
-          { value: '', type: 'input', name: 'test' },
-          { required: true },
-        );
-      });
+      result.current.register(
+        { value: '', type: 'input', name: 'test' },
+        { required: true },
+      );
 
       const callback = jest.fn();
       (validateField as any).mockImplementation(async () => {
@@ -1767,12 +1619,10 @@ describe('useForm', () => {
         }),
       );
 
-      act(() => {
-        result.current.register(
-          { value: '', type: 'input', name: 'test' },
-          { required: true },
-        );
-      });
+      result.current.register(
+        { value: '', type: 'input', name: 'test' },
+        { required: true },
+      );
 
       const callback = jest.fn();
 
@@ -1800,12 +1650,10 @@ describe('useForm', () => {
         }),
       );
 
-      act(() => {
-        result.current.register(
-          { value: '', type: 'input', name: 'test' },
-          { required: true },
-        );
-      });
+      result.current.register(
+        { value: '', type: 'input', name: 'test' },
+        { required: true },
+      );
 
       const callback = jest.fn();
 
@@ -1822,9 +1670,7 @@ describe('useForm', () => {
   describe('getValues', () => {
     it('should call getFieldsValues and return all values', () => {
       const { result } = renderHook(() => useForm<{ test: string }>());
-      act(() => {
-        result.current.register({ value: 'test', type: 'input', name: 'test' });
-      });
+      result.current.register({ value: 'test', type: 'input', name: 'test' });
       expect(result.current.getValues()).toEqual({ test: 'test' });
     });
 
@@ -1836,9 +1682,7 @@ describe('useForm', () => {
           },
         }),
       );
-      act(() => {
-        result.current.register({ type: 'input', name: 'test' });
-      });
+      result.current.register({ type: 'input', name: 'test' });
       expect(result.current.getValues('test')).toEqual('123');
     });
 
@@ -1853,11 +1697,9 @@ describe('useForm', () => {
           defaultValues: values,
         }),
       );
-      act(() => {
-        result.current.register({ type: 'input', name: 'test' });
-        result.current.register({ type: 'input', name: 'test1' });
-        result.current.register({ type: 'input', name: 'test2' });
-      });
+      result.current.register({ type: 'input', name: 'test' });
+      result.current.register({ type: 'input', name: 'test1' });
+      result.current.register({ type: 'input', name: 'test2' });
       expect(result.current.getValues(['test', 'test1', 'test2'])).toEqual(
         values,
       );
@@ -1871,75 +1713,52 @@ describe('useForm', () => {
   });
 
   describe('setError', () => {
-    it('should only set an error when it is not existed', () => {
+    const tests: [string, ErrorOption, DeepMap<any, FieldError>][] = [
+      [
+        'should only set an error when it is not existed',
+        { type: 'test' },
+        {
+          input: {
+            type: 'test',
+            message: undefined,
+            ref: undefined,
+          },
+        },
+      ],
+      [
+        'should set error message',
+        { type: 'test', message: 'test' },
+        {
+          input: {
+            type: 'test',
+            message: 'test',
+            ref: undefined,
+            types: undefined,
+          },
+        },
+      ],
+      [
+        'should set multiple error type',
+        {
+          types: { test1: 'test1', test2: 'test2' },
+        },
+        {
+          input: {
+            types: {
+              test1: 'test1',
+              test2: 'test2',
+            },
+            ref: undefined,
+          },
+        },
+      ],
+    ];
+    test.each(tests)('%s', (_, input, output) => {
       const { result } = renderHook(() => useForm<{ input: string }>());
       act(() => {
-        result.current.setError('input', { type: 'test' });
+        result.current.setError('input', input);
       });
-      expect(result.current.errors).toEqual({
-        input: {
-          type: 'test',
-          message: undefined,
-          ref: undefined,
-        },
-      });
-
-      act(() => {
-        result.current.setError('input', { type: 'test', message: 'test' });
-      });
-      expect(result.current.errors).toEqual({
-        input: {
-          type: 'test',
-          message: 'test',
-          ref: undefined,
-        },
-      });
-
-      act(() => {
-        result.current.setError('input', { type: 'test', message: 'test' });
-      });
-      expect(result.current.errors).toEqual({
-        input: {
-          type: 'test',
-          message: 'test',
-          ref: undefined,
-          types: undefined,
-        },
-      });
-
-      act(() => {
-        result.current.setError('input', {
-          types: { test1: 'test1', test2: 'test2' },
-        });
-      });
-      expect(result.current.errors).toEqual({
-        input: {
-          types: {
-            test1: 'test1',
-            test2: 'test2',
-          },
-          ref: undefined,
-        },
-      });
-
-      act(() => {
-        result.current.setError('input', {
-          types: {
-            test1: 'test1',
-            test2: 'test2',
-          },
-        });
-      });
-
-      expect(result.current.errors).toEqual({
-        input: {
-          types: {
-            test1: 'test1',
-            test2: 'test2',
-          },
-          ref: undefined,
-        },
-      });
+      expect(result.current.errors).toEqual(output);
       expect(result.current.formState.isValid).toBeFalsy();
     });
   });
@@ -1947,13 +1766,15 @@ describe('useForm', () => {
   describe('clearErrors', () => {
     it('should remove error', () => {
       const { result } = renderHook(() => useForm<{ input: string }>());
-      act(() => {
+      act(() =>
         result.current.setError('input', {
           type: 'test',
           message: 'message',
-        });
-        result.current.clearErrors('input');
-      });
+        }),
+      );
+
+      act(() => result.current.clearErrors('input'));
+
       expect(result.current.errors).toEqual({});
     });
 
@@ -1961,15 +1782,13 @@ describe('useForm', () => {
       const { result } = renderHook(() =>
         useForm<{ input: { nested: string } }>(),
       );
-      act(() => {
+      act(() =>
         result.current.setError('input.nested', {
           type: 'test',
-        });
-      });
+        }),
+      );
       expect(result.current.errors.input?.nested).toBeDefined();
-      act(() => {
-        result.current.clearErrors('input.nested');
-      });
+      act(() => result.current.clearErrors('input.nested'));
       expect(result.current.errors.input?.nested).toBeUndefined();
     });
 
@@ -1977,38 +1796,30 @@ describe('useForm', () => {
       const { result } = renderHook(() =>
         useForm<{ input: string; input1: string; input2: string }>(),
       );
-      act(() => {
-        result.current.setError('input', {
-          type: 'test',
-          message: 'message',
-        });
-        result.current.setError('input1', {
-          type: 'test',
-          message: 'message',
-        });
-        result.current.setError('input2', {
-          type: 'test',
-          message: 'message',
-        });
-      });
+
+      const error = {
+        type: 'test',
+        message: 'message',
+      };
+
+      act(() => result.current.setError('input', error));
+      act(() => result.current.setError('input1', error));
+      act(() => result.current.setError('input2', error));
 
       const errors = {
         input: {
-          message: 'message',
+          ...error,
           ref: undefined,
-          type: 'test',
           types: undefined,
         },
         input1: {
-          message: 'message',
+          ...error,
           ref: undefined,
-          type: 'test',
           types: undefined,
         },
         input2: {
-          message: 'message',
+          ...error,
           ref: undefined,
-          type: 'test',
           types: undefined,
         },
       };
@@ -2022,37 +1833,28 @@ describe('useForm', () => {
       const { result } = renderHook(() =>
         useForm<{ input: string; input1: string; input2: string }>(),
       );
-      act(() => {
-        result.current.setError('input', {
-          type: 'test',
-          message: 'message',
-        });
-        result.current.setError('input1', {
-          type: 'test',
-          message: 'message',
-        });
-        result.current.setError('input2', {
-          type: 'test',
-          message: 'message',
-        });
-      });
+
+      const error = {
+        type: 'test',
+        message: 'message',
+      };
+      act(() => result.current.setError('input', error));
+      act(() => result.current.setError('input1', error));
+      act(() => result.current.setError('input2', error));
       expect(result.current.errors).toEqual({
         input: {
-          message: 'message',
+          ...error,
           ref: undefined,
-          type: 'test',
           types: undefined,
         },
         input1: {
-          message: 'message',
+          ...error,
           ref: undefined,
-          type: 'test',
           types: undefined,
         },
         input2: {
-          message: 'message',
+          ...error,
           ref: undefined,
-          type: 'test',
           types: undefined,
         },
       });
@@ -2071,24 +1873,19 @@ describe('useForm', () => {
         return {};
       });
 
-      act(() => {
-        result.current.register('data');
-        result.current.setError('whatever', { type: 'missing' });
-      });
+      result.current.register('data');
 
-      await act(async () => {
-        await result.current.handleSubmit(submit)();
-        expect(submit).not.toBeCalled();
-      });
+      act(() => result.current.setError('whatever', { type: 'missing' }));
+
+      await act(async () => await result.current.handleSubmit(submit)());
+      expect(submit).not.toBeCalled();
 
       act(() => {
         result.current.clearErrors('whatever');
       });
 
-      await act(async () => {
-        await result.current.handleSubmit(submit)();
-        expect(submit).toBeCalled();
-      });
+      await act(async () => await result.current.handleSubmit(submit)());
+      expect(submit).toBeCalled();
     });
   });
 
@@ -2136,9 +1933,7 @@ describe('useForm', () => {
         }),
       );
 
-      act(() => {
-        result.current.register({ type: 'text', name: 'test' });
-      });
+      result.current.register({ type: 'text', name: 'test' });
 
       expect(result.current.formState.isValid).toBeTruthy();
     });
@@ -2154,17 +1949,15 @@ describe('useForm', () => {
         return { issue: 'issue' };
       });
 
-      await act(async () => {
-        result.current.formState.isValid;
-      });
+      result.current.formState.isValid;
 
-      await act(async () => {
+      await act(async () =>
         result.current.register(
           { name: 'issue', value: 'test' },
           { required: true },
-        );
-        result.current.register({ name: 'input' });
-      });
+        ),
+      );
+      result.current.register({ name: 'input' });
 
       expect(result.current.formState.isValid).toBeFalsy();
     });
@@ -2180,19 +1973,15 @@ describe('useForm', () => {
         return {};
       });
 
-      await act(async () => {
-        result.current.formState.isValid;
-      });
+      result.current.formState.isValid;
 
-      await act(async () => {
-        result.current.register(
-          { name: 'issue', value: 'test' },
-          { required: true },
-        );
-        result.current.register({ name: 'input' }, { required: true });
+      result.current.register(
+        { name: 'issue', value: 'test' },
+        { required: true },
+      );
+      result.current.register({ name: 'input' }, { required: true });
 
-        expect(result.current.formState.isValid).toBeTruthy();
-      });
+      expect(result.current.formState.isValid).toBeTruthy();
     });
 
     it('should be a proxy object that returns undefined for unknown properties', () => {
@@ -2287,11 +2076,9 @@ describe('useForm', () => {
         return {};
       });
 
-      act(() => {
-        result.current.register({ type: 'text', name: 'test' });
-        result.current.register({ type: 'text', name: 'deep.nested' });
-        result.current.register({ type: 'text', name: 'deep.values' });
-      });
+      result.current.register({ type: 'text', name: 'test' });
+      result.current.register({ type: 'text', name: 'deep.nested' });
+      result.current.register({ type: 'text', name: 'deep.values' });
 
       await act(async () => {
         await result.current.handleSubmit((data: any) => {
@@ -2320,12 +2107,10 @@ describe('useForm', () => {
         }),
       );
 
-      act(() => {
-        const test: string = result.current.getValues().test;
-        expect(test).toEqual(undefined);
-        const deep: { values: string } = result.current.getValues().deep;
-        expect(deep).toEqual(undefined);
-      });
+      const test: string = result.current.getValues().test;
+      expect(test).toEqual(undefined);
+      const deep: { values: string } = result.current.getValues().deep;
+      expect(deep).toEqual(undefined);
     });
   });
 
@@ -2358,18 +2143,18 @@ describe('useForm', () => {
         );
       };
 
-      const { getByPlaceholderText, getByText } = render(<Form />);
+      render(<Form />);
 
-      getByText('data');
+      screen.getByText('data');
 
-      const textInput = getByPlaceholderText('test');
+      const textInput = screen.getByPlaceholderText('test');
       fireEvent.input(textInput, {
         target: {
           value: 'test',
         },
       });
 
-      expect(getByText('data')).toBeTruthy();
+      expect(screen.getByText('data')).toBeTruthy();
     });
   });
 
@@ -2454,7 +2239,9 @@ describe('useForm', () => {
               name={name}
               ref={resolver ? register : register({ required: 'required' })}
             />
-            <p id="error">{errors?.test?.message && errors.test.message}</p>
+            <span role="alert">
+              {errors?.test?.message && errors.test.message}
+            </span>
             <button onClick={handleSubmit(() => {})}>button</button>
           </div>
         );
@@ -2469,29 +2256,31 @@ describe('useForm', () => {
       it('should not contain error if value is valid', async () => {
         (skipValidation as any).mockReturnValue(true);
 
-        const { container } = render(<Component />);
+        render(<Component />);
 
-        const input = container.querySelector('input')!;
-        fireEvent.input(input, { target: { name: 'test' } });
+        fireEvent.input(screen.getByRole('textbox'), {
+          target: { name: 'test' },
+        });
 
         expect(skipValidation).toHaveBeenCalledWith({
           ...skipValidationParams,
           isOnSubmit: true,
         });
         expect(validateField).not.toHaveBeenCalled();
-        expect(container.querySelector('#error')!.textContent).toBe('');
+        expect(screen.getByRole('alert').textContent).toBe('');
         expect(renderCount).toBe(1);
       });
 
       it('should not contain error if name is invalid', async () => {
-        const { container } = render(<Component />);
+        render(<Component />);
 
-        const input = container.querySelector('input')!;
-        fireEvent.input(input, { target: { name: 'test1' } });
+        fireEvent.input(screen.getByRole('textbox'), {
+          target: { name: 'test1' },
+        });
 
         expect(skipValidation).not.toHaveBeenCalled();
         expect(validateField).not.toHaveBeenCalled();
-        expect(container.querySelector('#error')!.textContent).toBe('');
+        expect(screen.getByRole('alert').textContent).toBe('');
         expect(renderCount).toBe(1);
       });
 
@@ -2501,32 +2290,32 @@ describe('useForm', () => {
           .spyOn(shouldRenderBasedOnError, 'default')
           .mockReturnValue(false);
 
-        const { container } = render(<Component />);
+        render(<Component />);
 
-        const input = container.querySelector('input')!;
+        const input = screen.getByRole('textbox') as HTMLInputElement;
 
         (validateField as any).mockReturnValue({});
 
         fireEvent.input(input, { target: { name: 'test', value: 'test' } });
 
-        fireEvent.click(container.querySelector('button')!);
+        fireEvent.click(screen.getByRole('button'));
 
-        await waitFor(() => {
+        await waitFor(() =>
           expect(skipValidation).toHaveBeenCalledWith({
             ...skipValidationParams,
             isOnSubmit: true,
-          });
-          expect(validateField).toHaveBeenCalledWith(
-            ...validateFieldParams(input),
-          );
-          expect(mockShouldRenderBasedOnError).toHaveBeenCalledWith({
-            ...shouldRenderBasedOnErrorParams(),
-            validFields: new Set(['test']),
-            fieldsWithValidation: new Set(['test']),
-          });
-          expect(container.querySelector('#error')!.textContent).toBe(''),
-            expect(renderCount).toBe(3);
+          }),
+        );
+        expect(validateField).toHaveBeenCalledWith(
+          ...validateFieldParams(input),
+        );
+        expect(mockShouldRenderBasedOnError).toHaveBeenCalledWith({
+          ...shouldRenderBasedOnErrorParams(),
+          validFields: new Set(['test']),
+          fieldsWithValidation: new Set(['test']),
         });
+        expect(screen.getByRole('alert').textContent).toBe('');
+        expect(renderCount).toBe(3);
       });
 
       it('should contain error if value is invalid when value was changed', async () => {
@@ -2549,40 +2338,38 @@ describe('useForm', () => {
           .spyOn(shouldRenderBasedOnError, 'default')
           .mockReturnValue(true);
 
-        const { container } = render(<Component />);
+        render(<Component />);
 
-        input = container.querySelector('input')!;
+        input = screen.getByRole('textbox');
 
         fireEvent.input(input, { target: { name: 'test' } });
 
-        await waitFor(() => {
+        await waitFor(() =>
           expect(validateField).toHaveBeenCalledWith(
             ...validateFieldParams(input),
-          );
-          expect(skipValidation).toHaveBeenCalledWith({
-            ...skipValidationParams,
-            isOnSubmit: true,
-          });
-          expect(mockShouldRenderBasedOnError).toHaveBeenCalledWith({
-            ...shouldRenderBasedOnErrorParams(),
-            errors: {
-              test: {
-                message: 'required',
-                ref: null,
-                type: 'required',
-                types: {
-                  required: 'required',
-                },
+          ),
+        );
+        expect(skipValidation).toHaveBeenCalledWith({
+          ...skipValidationParams,
+          isOnSubmit: true,
+        });
+        expect(mockShouldRenderBasedOnError).toHaveBeenCalledWith({
+          ...shouldRenderBasedOnErrorParams(),
+          errors: {
+            test: {
+              message: 'required',
+              ref: null,
+              type: 'required',
+              types: {
+                required: 'required',
               },
             },
-            error,
-            fieldsWithValidation: new Set(['test']),
-          });
-          expect(container.querySelector('#error')!.textContent).toBe(
-            'required',
-          );
-          expect(renderCount).toBe(2);
+          },
+          error,
+          fieldsWithValidation: new Set(['test']),
         });
+        expect(screen.getByRole('alert').textContent).toBe('required');
+        expect(renderCount).toBe(2);
       });
 
       it('should not contain error if value is valid when value was changed', async () => {
@@ -2606,9 +2393,9 @@ describe('useForm', () => {
           .spyOn(shouldRenderBasedOnError, 'default')
           .mockReturnValue(true);
 
-        const { container } = render(<Component />);
+        render(<Component />);
 
-        input = container.querySelector('input')!;
+        input = screen.getByRole('textbox');
 
         fireEvent.input(input, { target: { name: 'test' } });
 
@@ -2616,37 +2403,37 @@ describe('useForm', () => {
 
         fireEvent.input(input, { target: { name: 'test' } });
 
-        await waitFor(() => {
+        await waitFor(() =>
           expect(validateField).toHaveBeenCalledWith(
             ...validateFieldParams(input),
-          );
-          expect(skipValidation).toHaveBeenCalledWith({
-            ...skipValidationParams,
-            isOnSubmit: true,
-          });
-          // before submit
-          expect(mockShouldRenderBasedOnError.mock.calls[0]).toEqual([
-            {
-              errors: {},
-              name: 'test',
-              error,
-              validFields: new Set(['test']),
-              fieldsWithValidation: new Set(['test']),
-            },
-          ]);
-          // after submitted
-          expect(mockShouldRenderBasedOnError.mock.calls[1]).toEqual([
-            {
-              errors: {},
-              name: 'test',
-              error: {},
-              validFields: new Set(['test']),
-              fieldsWithValidation: new Set(['test']),
-            },
-          ]);
-          expect(container.querySelector('#error')!.textContent).toBe('');
-          expect(renderCount).toBe(3);
+          ),
+        );
+        expect(skipValidation).toHaveBeenCalledWith({
+          ...skipValidationParams,
+          isOnSubmit: true,
         });
+        // before submit
+        expect(mockShouldRenderBasedOnError.mock.calls[0]).toEqual([
+          {
+            errors: {},
+            name: 'test',
+            error,
+            validFields: new Set(['test']),
+            fieldsWithValidation: new Set(['test']),
+          },
+        ]);
+        // after submitted
+        expect(mockShouldRenderBasedOnError.mock.calls[1]).toEqual([
+          {
+            errors: {},
+            name: 'test',
+            error: {},
+            validFields: new Set(['test']),
+            fieldsWithValidation: new Set(['test']),
+          },
+        ]);
+        expect(screen.getByRole('alert').textContent).toBe('');
+        expect(renderCount).toBe(3);
       });
 
       it('should call reRender method if previous error is undefined', async () => {
@@ -2672,33 +2459,31 @@ describe('useForm', () => {
           .spyOn(shouldRenderBasedOnError, 'default')
           .mockReturnValue(false);
 
-        const { container } = render(<Component />);
+        render(<Component />);
 
-        input = container.querySelector('input')!;
+        input = screen.getByRole('textbox');
 
         fireEvent.input(input, { target: { name: 'test' } });
 
-        await waitFor(() => {
+        await waitFor(() =>
           expect(validateField).toHaveBeenCalledWith(
             ...validateFieldParams(input),
-          );
-          expect(skipValidation).toHaveBeenCalledWith({
-            ...skipValidationParams,
-            isOnSubmit: true,
-          });
-          expect(mockShouldRenderBasedOnError).toHaveBeenCalledWith({
-            errors: error,
-            name: 'test',
-            error,
-            validFields: new Set(),
-            fieldsWithValidation: new Set(['test']),
-          });
-          expect(mockIsSameError).not.toBeCalled();
-          expect(container.querySelector('#error')!.textContent).toBe(
-            'required',
-          );
-          expect(renderCount).toBe(2);
+          ),
+        );
+        expect(skipValidation).toHaveBeenCalledWith({
+          ...skipValidationParams,
+          isOnSubmit: true,
         });
+        expect(mockShouldRenderBasedOnError).toHaveBeenCalledWith({
+          errors: error,
+          name: 'test',
+          error,
+          validFields: new Set(),
+          fieldsWithValidation: new Set(['test']),
+        });
+        expect(mockIsSameError).not.toBeCalled();
+        expect(screen.getByRole('alert').textContent).toBe('required');
+        expect(renderCount).toBe(2);
       });
 
       it('should not call reRender method if the current error is the same as the previous error', async () => {
@@ -2724,42 +2509,42 @@ describe('useForm', () => {
           .spyOn(shouldRenderBasedOnError, 'default')
           .mockReturnValue(false);
 
-        const { container } = render(<Component />);
+        render(<Component />);
 
-        input = container.querySelector('input')!;
+        input = screen.getByRole('textbox');
 
         methods.control.errorsRef.current = error;
 
         fireEvent.input(input, { target: { name: 'test' } });
 
-        await waitFor(() => {
+        await waitFor(() =>
           expect(validateField).toHaveBeenCalledWith(
             ...validateFieldParams(input),
-          );
-          expect(skipValidation).toHaveBeenCalledWith({
-            ...skipValidationParams,
-            isOnSubmit: true,
-            hasError: true,
-          });
-          expect(mockShouldRenderBasedOnError).toHaveBeenCalledWith({
-            errors: error,
-            name: 'test',
-            error,
-            validFields: new Set(),
-            fieldsWithValidation: new Set(['test']),
-          });
-          expect(mockIsSameError).toBeCalledWith(error.test, error.test);
-          expect(container.querySelector('#error')!.textContent).toBe('');
-          expect(renderCount).toBe(1);
+          ),
+        );
+        expect(skipValidation).toHaveBeenCalledWith({
+          ...skipValidationParams,
+          isOnSubmit: true,
+          hasError: true,
         });
+        expect(mockShouldRenderBasedOnError).toHaveBeenCalledWith({
+          errors: error,
+          name: 'test',
+          error,
+          validFields: new Set(),
+          fieldsWithValidation: new Set(['test']),
+        });
+        expect(mockIsSameError).toBeCalledWith(error.test, error.test);
+        expect(screen.getByRole('alert').textContent).toBe('');
+        expect(renderCount).toBe(1);
       });
 
       it('should be called reRender method if isWatchAllRef is true', async () => {
         (skipValidation as any).mockReturnValue(true);
 
-        const { container } = render(<Component />);
+        render(<Component />);
 
-        const input = container.querySelector('input')!;
+        const input = screen.getByRole('textbox');
         methods.control.isWatchAllRef.current = true;
         fireEvent.input(input, { target: { name: 'test' } });
 
@@ -2768,16 +2553,16 @@ describe('useForm', () => {
           isOnSubmit: true,
         });
         expect(validateField).not.toHaveBeenCalled();
-        expect(container.querySelector('#error')!.textContent).toBe('');
+        expect(screen.getByRole('alert').textContent).toBe('');
         expect(renderCount).toBe(2);
       });
 
       it('should be called reRender method if field is watched', async () => {
         (skipValidation as any).mockReturnValue(true);
 
-        const { container } = render(<Component />);
+        render(<Component />);
 
-        const input = container.querySelector('input')!;
+        const input = screen.getByRole('textbox');
         methods.control.watchFieldsRef.current.add('test');
         fireEvent.input(input, { target: { name: 'test' } });
 
@@ -2786,16 +2571,16 @@ describe('useForm', () => {
           isOnSubmit: true,
         });
         expect(validateField).not.toHaveBeenCalled();
-        expect(container.querySelector('#error')!.textContent).toBe('');
+        expect(screen.getByRole('alert').textContent).toBe('');
         expect(renderCount).toBe(2);
       });
 
       it('should be called reRender method if field array is watched', async () => {
         (skipValidation as any).mockReturnValue(true);
 
-        const { container } = render(<Component name="test[0]" />);
+        render(<Component name="test[0]" />);
 
-        const input = container.querySelector('input')!;
+        const input = screen.getByRole('textbox');
         methods.control.watchFieldsRef.current.add('test');
         fireEvent.input(input, { target: { name: 'test[0]' } });
 
@@ -2816,32 +2601,32 @@ describe('useForm', () => {
           .spyOn(shouldRenderBasedOnError, 'default')
           .mockReturnValue(false);
 
-        const { container } = render(<Component mode="onBlur" />);
+        render(<Component mode="onBlur" />);
         methods.control.readFormStateRef.current.touched = true;
 
-        const input = container.querySelector('input')!;
+        const input = screen.getByRole('textbox') as HTMLInputElement;
         fireEvent.blur(input, { target: { name: 'test' } });
 
-        await waitFor(() => {
+        await waitFor(() =>
           expect(skipValidation).toHaveBeenCalledWith({
             ...skipValidationParams,
             isBlurEvent: true,
             isOnBlur: true,
-          });
-          expect(validateField).toHaveBeenCalledWith(
-            ...validateFieldParams(input),
-          );
-          expect(mockShouldRenderBasedOnError).toHaveBeenCalledWith({
-            ...shouldRenderBasedOnErrorParams(),
-            validFields: new Set(['test']),
-            fieldsWithValidation: new Set(['test']),
-          });
-          expect(methods.control.touchedFieldsRef.current).toEqual({
-            test: true,
-          });
-          expect(container.querySelector('#error')!.textContent).toBe('');
-          expect(renderCount).toBe(2);
+          }),
+        );
+        expect(validateField).toHaveBeenCalledWith(
+          ...validateFieldParams(input),
+        );
+        expect(mockShouldRenderBasedOnError).toHaveBeenCalledWith({
+          ...shouldRenderBasedOnErrorParams(),
+          validFields: new Set(['test']),
+          fieldsWithValidation: new Set(['test']),
         });
+        expect(methods.control.touchedFieldsRef.current).toEqual({
+          test: true,
+        });
+        expect(screen.getByRole('alert').textContent).toBe('');
+        expect(renderCount).toBe(2);
       });
     });
 
@@ -2853,26 +2638,26 @@ describe('useForm', () => {
           'default',
         );
 
-        const { container } = render(<Component mode="onChange" />);
+        render(<Component mode="onChange" />);
         methods.control.readFormStateRef.current.touched = true;
 
-        const input = container.querySelector('input')!;
+        const input = screen.getByRole('textbox');
         fireEvent.blur(input, { target: { name: 'test' } });
 
-        await waitFor(() => {
+        await waitFor(() =>
           expect(skipValidation).toHaveBeenCalledWith({
             ...skipValidationParams,
             isOnChange: true,
             isBlurEvent: true,
-          });
-          expect(validateField).not.toHaveBeenCalled();
-          expect(mockShouldRenderBasedOnError).not.toHaveBeenCalled();
-          expect(methods.control.touchedFieldsRef.current).toEqual({
-            test: true,
-          });
-          expect(container.querySelector('#error')!.textContent).toBe('');
-          expect(renderCount).toBe(2);
+          }),
+        );
+        expect(validateField).not.toHaveBeenCalled();
+        expect(mockShouldRenderBasedOnError).not.toHaveBeenCalled();
+        expect(methods.control.touchedFieldsRef.current).toEqual({
+          test: true,
         });
+        expect(screen.getByRole('alert').textContent).toBe('');
+        expect(renderCount).toBe(2);
       });
     });
 
@@ -2885,17 +2670,15 @@ describe('useForm', () => {
           };
         });
 
-        const { container } = render(<Component resolver={resolver} />);
+        render(<Component resolver={resolver} />);
 
-        fireEvent.input(container.querySelector('input')!, {
+        fireEvent.input(screen.getByRole('textbox'), {
           target: { name: 'test' },
         });
 
-        await waitFor(() => {
-          expect(resolver).toHaveBeenCalled();
-          expect(container.querySelector('#error')!.textContent).toBe('');
-          expect(renderCount).toBe(1);
-        });
+        await waitFor(() => expect(resolver).toHaveBeenCalled());
+        expect(screen.getByRole('alert').textContent).toBe('');
+        expect(renderCount).toBe(1);
       });
 
       it('should contain error if value is invalid with resolver', async () => {
@@ -2910,19 +2693,15 @@ describe('useForm', () => {
           };
         });
 
-        const { container } = render(<Component resolver={resolver} />);
+        render(<Component resolver={resolver} />);
 
-        fireEvent.input(container.querySelector('input')!, {
+        fireEvent.input(screen.getByRole('textbox'), {
           target: { name: 'test' },
         });
 
-        await waitFor(() => {
-          expect(resolver).toHaveBeenCalled();
-          expect(container.querySelector('#error')!.textContent).toBe(
-            'resolver error',
-          );
-          expect(renderCount).toBe(2);
-        });
+        await waitFor(() => expect(resolver).toHaveBeenCalled());
+        expect(screen.getByRole('alert').textContent).toBe('resolver error');
+        expect(renderCount).toBe(2);
       });
     });
   });
