@@ -13,13 +13,20 @@ import findRemovedFieldAndRemoveListener from './logic/findRemovedFieldAndRemove
 import validateField from './logic/validateField';
 import onDomRemove from './utils/onDomRemove';
 import { VALIDATION_MODE, EVENTS } from './constants';
-import { NestedValue, UseFormMethods, Ref } from './types/form';
+import {
+  NestedValue,
+  UseFormMethods,
+  Ref,
+  ErrorOption,
+  FieldError,
+} from './types/form';
 import skipValidation from './logic/skipValidation';
 import * as shouldRenderBasedOnError from './logic/shouldRenderBasedOnError';
 import { transformToNestObject } from './logic';
 import * as focusOnErrorField from './logic/focusOnErrorField';
 import * as isSameError from './utils/isSameError';
 import * as getFieldValue from './logic/getFieldValue';
+import { DeepMap } from './types/utils';
 
 jest.mock('./utils/onDomRemove');
 jest.mock('./logic/findRemovedFieldAndRemoveListener');
@@ -1705,77 +1712,53 @@ describe('useForm', () => {
     });
   });
 
-  // TODO: refactor to table test
   describe('setError', () => {
-    it('should only set an error when it is not existed', () => {
+    const tests: [string, ErrorOption, DeepMap<any, FieldError>][] = [
+      [
+        'should only set an error when it is not existed',
+        { type: 'test' },
+        {
+          input: {
+            type: 'test',
+            message: undefined,
+            ref: undefined,
+          },
+        },
+      ],
+      [
+        'should set error message',
+        { type: 'test', message: 'test' },
+        {
+          input: {
+            type: 'test',
+            message: 'test',
+            ref: undefined,
+            types: undefined,
+          },
+        },
+      ],
+      [
+        'should set multiple error type',
+        {
+          types: { test1: 'test1', test2: 'test2' },
+        },
+        {
+          input: {
+            types: {
+              test1: 'test1',
+              test2: 'test2',
+            },
+            ref: undefined,
+          },
+        },
+      ],
+    ];
+    test.each(tests)('%s', (_, input, output) => {
       const { result } = renderHook(() => useForm<{ input: string }>());
       act(() => {
-        result.current.setError('input', { type: 'test' });
+        result.current.setError('input', input);
       });
-      expect(result.current.errors).toEqual({
-        input: {
-          type: 'test',
-          message: undefined,
-          ref: undefined,
-        },
-      });
-
-      act(() => {
-        result.current.setError('input', { type: 'test', message: 'test' });
-      });
-      expect(result.current.errors).toEqual({
-        input: {
-          type: 'test',
-          message: 'test',
-          ref: undefined,
-        },
-      });
-
-      act(() => {
-        result.current.setError('input', { type: 'test', message: 'test' });
-      });
-      expect(result.current.errors).toEqual({
-        input: {
-          type: 'test',
-          message: 'test',
-          ref: undefined,
-          types: undefined,
-        },
-      });
-
-      act(() => {
-        result.current.setError('input', {
-          types: { test1: 'test1', test2: 'test2' },
-        });
-      });
-      expect(result.current.errors).toEqual({
-        input: {
-          types: {
-            test1: 'test1',
-            test2: 'test2',
-          },
-          ref: undefined,
-        },
-      });
-
-      act(() => {
-        result.current.setError('input', {
-          types: {
-            test1: 'test1',
-            test2: 'test2',
-          },
-        });
-      });
-
-      expect(result.current.errors).toEqual({
-        input: {
-          types: {
-            test1: 'test1',
-            test2: 'test2',
-          },
-          ref: undefined,
-        },
-      });
+      expect(result.current.errors).toEqual(output);
       expect(result.current.formState.isValid).toBeFalsy();
     });
   });
