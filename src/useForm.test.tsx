@@ -5,6 +5,7 @@ import {
   fireEvent,
   waitFor,
   act as actComponent,
+  screen,
 } from '@testing-library/react';
 import { useForm } from './';
 import attachEventListeners from './logic/attachEventListeners';
@@ -1510,17 +1511,19 @@ describe('useForm', () => {
           <div>
             <input name="test" ref={register} />
             <button onClick={handleSubmit(() => {})}></button>
-            <span>{formState.isSubmitting ? 'true' : 'false'}</span>
+            <span role="alert">
+              {formState.isSubmitting ? 'true' : 'false'}
+            </span>
           </div>
         );
       };
 
-      const { container } = render(<Component />);
+      render(<Component />);
       (validateField as any).mockImplementation(async () => ({}));
 
-      fireEvent.click(container.querySelector('button')!);
+      fireEvent.click(screen.getByRole('button'));
 
-      const span = container.querySelector('span')!;
+      const span = screen.getByRole('alert')!;
       await waitFor(
         () => {
           if (renderCount === 2) {
@@ -2253,7 +2256,9 @@ describe('useForm', () => {
               name={name}
               ref={resolver ? register : register({ required: 'required' })}
             />
-            <p id="error">{errors?.test?.message && errors.test.message}</p>
+            <span role="alert">
+              {errors?.test?.message && errors.test.message}
+            </span>
             <button onClick={handleSubmit(() => {})}>button</button>
           </div>
         );
@@ -2268,29 +2273,31 @@ describe('useForm', () => {
       it('should not contain error if value is valid', async () => {
         (skipValidation as any).mockReturnValue(true);
 
-        const { container } = render(<Component />);
+        render(<Component />);
 
-        const input = container.querySelector('input')!;
-        fireEvent.input(input, { target: { name: 'test' } });
+        fireEvent.input(screen.getByRole('textbox'), {
+          target: { name: 'test' },
+        });
 
         expect(skipValidation).toHaveBeenCalledWith({
           ...skipValidationParams,
           isOnSubmit: true,
         });
         expect(validateField).not.toHaveBeenCalled();
-        expect(container.querySelector('#error')!.textContent).toBe('');
+        expect(screen.getByRole('alert').textContent).toBe('');
         expect(renderCount).toBe(1);
       });
 
       it('should not contain error if name is invalid', async () => {
-        const { container } = render(<Component />);
+        render(<Component />);
 
-        const input = container.querySelector('input')!;
-        fireEvent.input(input, { target: { name: 'test1' } });
+        fireEvent.input(screen.getByRole('textbox'), {
+          target: { name: 'test1' },
+        });
 
         expect(skipValidation).not.toHaveBeenCalled();
         expect(validateField).not.toHaveBeenCalled();
-        expect(container.querySelector('#error')!.textContent).toBe('');
+        expect(screen.getByRole('alert').textContent).toBe('');
         expect(renderCount).toBe(1);
       });
 
@@ -2300,15 +2307,15 @@ describe('useForm', () => {
           .spyOn(shouldRenderBasedOnError, 'default')
           .mockReturnValue(false);
 
-        const { container } = render(<Component />);
+        render(<Component />);
 
-        const input = container.querySelector('input')!;
+        const input = screen.getByRole('textbox') as HTMLInputElement;
 
         (validateField as any).mockReturnValue({});
 
         fireEvent.input(input, { target: { name: 'test', value: 'test' } });
 
-        fireEvent.click(container.querySelector('button')!);
+        fireEvent.click(screen.getByRole('button'));
 
         await waitFor(() =>
           expect(skipValidation).toHaveBeenCalledWith({
@@ -2324,7 +2331,7 @@ describe('useForm', () => {
           validFields: new Set(['test']),
           fieldsWithValidation: new Set(['test']),
         });
-        expect(container.querySelector('#error')!.textContent).toBe('');
+        expect(screen.getByRole('alert').textContent).toBe('');
         expect(renderCount).toBe(3);
       });
 
@@ -2348,9 +2355,9 @@ describe('useForm', () => {
           .spyOn(shouldRenderBasedOnError, 'default')
           .mockReturnValue(true);
 
-        const { container } = render(<Component />);
+        render(<Component />);
 
-        input = container.querySelector('input')!;
+        input = screen.getByRole('textbox');
 
         fireEvent.input(input, { target: { name: 'test' } });
 
@@ -2378,7 +2385,7 @@ describe('useForm', () => {
           error,
           fieldsWithValidation: new Set(['test']),
         });
-        expect(container.querySelector('#error')!.textContent).toBe('required');
+        expect(screen.getByRole('alert').textContent).toBe('required');
         expect(renderCount).toBe(2);
       });
 
@@ -2403,9 +2410,9 @@ describe('useForm', () => {
           .spyOn(shouldRenderBasedOnError, 'default')
           .mockReturnValue(true);
 
-        const { container } = render(<Component />);
+        render(<Component />);
 
-        input = container.querySelector('input')!;
+        input = screen.getByRole('textbox');
 
         fireEvent.input(input, { target: { name: 'test' } });
 
@@ -2442,7 +2449,7 @@ describe('useForm', () => {
             fieldsWithValidation: new Set(['test']),
           },
         ]);
-        expect(container.querySelector('#error')!.textContent).toBe('');
+        expect(screen.getByRole('alert').textContent).toBe('');
         expect(renderCount).toBe(3);
       });
 
@@ -2469,9 +2476,9 @@ describe('useForm', () => {
           .spyOn(shouldRenderBasedOnError, 'default')
           .mockReturnValue(false);
 
-        const { container } = render(<Component />);
+        render(<Component />);
 
-        input = container.querySelector('input')!;
+        input = screen.getByRole('textbox');
 
         fireEvent.input(input, { target: { name: 'test' } });
 
@@ -2492,7 +2499,7 @@ describe('useForm', () => {
           fieldsWithValidation: new Set(['test']),
         });
         expect(mockIsSameError).not.toBeCalled();
-        expect(container.querySelector('#error')!.textContent).toBe('required');
+        expect(screen.getByRole('alert').textContent).toBe('required');
         expect(renderCount).toBe(2);
       });
 
@@ -2519,9 +2526,9 @@ describe('useForm', () => {
           .spyOn(shouldRenderBasedOnError, 'default')
           .mockReturnValue(false);
 
-        const { container } = render(<Component />);
+        render(<Component />);
 
-        input = container.querySelector('input')!;
+        input = screen.getByRole('textbox');
 
         methods.control.errorsRef.current = error;
 
@@ -2545,16 +2552,16 @@ describe('useForm', () => {
           fieldsWithValidation: new Set(['test']),
         });
         expect(mockIsSameError).toBeCalledWith(error.test, error.test);
-        expect(container.querySelector('#error')!.textContent).toBe('');
+        expect(screen.getByRole('alert').textContent).toBe('');
         expect(renderCount).toBe(1);
       });
 
       it('should be called reRender method if isWatchAllRef is true', async () => {
         (skipValidation as any).mockReturnValue(true);
 
-        const { container } = render(<Component />);
+        render(<Component />);
 
-        const input = container.querySelector('input')!;
+        const input = screen.getByRole('textbox');
         methods.control.isWatchAllRef.current = true;
         fireEvent.input(input, { target: { name: 'test' } });
 
@@ -2563,16 +2570,16 @@ describe('useForm', () => {
           isOnSubmit: true,
         });
         expect(validateField).not.toHaveBeenCalled();
-        expect(container.querySelector('#error')!.textContent).toBe('');
+        expect(screen.getByRole('alert').textContent).toBe('');
         expect(renderCount).toBe(2);
       });
 
       it('should be called reRender method if field is watched', async () => {
         (skipValidation as any).mockReturnValue(true);
 
-        const { container } = render(<Component />);
+        render(<Component />);
 
-        const input = container.querySelector('input')!;
+        const input = screen.getByRole('textbox');
         methods.control.watchFieldsRef.current.add('test');
         fireEvent.input(input, { target: { name: 'test' } });
 
@@ -2581,16 +2588,16 @@ describe('useForm', () => {
           isOnSubmit: true,
         });
         expect(validateField).not.toHaveBeenCalled();
-        expect(container.querySelector('#error')!.textContent).toBe('');
+        expect(screen.getByRole('alert').textContent).toBe('');
         expect(renderCount).toBe(2);
       });
 
       it('should be called reRender method if field array is watched', async () => {
         (skipValidation as any).mockReturnValue(true);
 
-        const { container } = render(<Component name="test[0]" />);
+        render(<Component name="test[0]" />);
 
-        const input = container.querySelector('input')!;
+        const input = screen.getByRole('textbox');
         methods.control.watchFieldsRef.current.add('test');
         fireEvent.input(input, { target: { name: 'test[0]' } });
 
@@ -2611,10 +2618,10 @@ describe('useForm', () => {
           .spyOn(shouldRenderBasedOnError, 'default')
           .mockReturnValue(false);
 
-        const { container } = render(<Component mode="onBlur" />);
+        render(<Component mode="onBlur" />);
         methods.control.readFormStateRef.current.touched = true;
 
-        const input = container.querySelector('input')!;
+        const input = screen.getByRole('textbox') as HTMLInputElement;
         fireEvent.blur(input, { target: { name: 'test' } });
 
         await waitFor(() =>
@@ -2635,8 +2642,7 @@ describe('useForm', () => {
         expect(methods.control.touchedFieldsRef.current).toEqual({
           test: true,
         });
-        // TODO: fix
-        expect(container.querySelector('#error')!.textContent).toBe('');
+        expect(screen.getByRole('alert').textContent).toBe('');
         expect(renderCount).toBe(2);
       });
     });
@@ -2649,10 +2655,10 @@ describe('useForm', () => {
           'default',
         );
 
-        const { container } = render(<Component mode="onChange" />);
+        render(<Component mode="onChange" />);
         methods.control.readFormStateRef.current.touched = true;
 
-        const input = container.querySelector('input')!;
+        const input = screen.getByRole('textbox');
         fireEvent.blur(input, { target: { name: 'test' } });
 
         await waitFor(() =>
@@ -2667,8 +2673,7 @@ describe('useForm', () => {
         expect(methods.control.touchedFieldsRef.current).toEqual({
           test: true,
         });
-        // TODO: fix
-        expect(container.querySelector('#error')!.textContent).toBe('');
+        expect(screen.getByRole('alert').textContent).toBe('');
         expect(renderCount).toBe(2);
       });
     });
@@ -2682,15 +2687,14 @@ describe('useForm', () => {
           };
         });
 
-        const { container } = render(<Component resolver={resolver} />);
+        render(<Component resolver={resolver} />);
 
-        fireEvent.input(container.querySelector('input')!, {
+        fireEvent.input(screen.getByRole('textbox'), {
           target: { name: 'test' },
         });
 
         await waitFor(() => expect(resolver).toHaveBeenCalled());
-        // TODO: fix
-        expect(container.querySelector('#error')!.textContent).toBe('');
+        expect(screen.getByRole('alert').textContent).toBe('');
         expect(renderCount).toBe(1);
       });
 
@@ -2706,16 +2710,14 @@ describe('useForm', () => {
           };
         });
 
-        const { container } = render(<Component resolver={resolver} />);
+        render(<Component resolver={resolver} />);
 
-        fireEvent.input(container.querySelector('input')!, {
+        fireEvent.input(screen.getByRole('textbox'), {
           target: { name: 'test' },
         });
 
         await waitFor(() => expect(resolver).toHaveBeenCalled());
-        expect(container.querySelector('#error')!.textContent).toBe(
-          'resolver error',
-        );
+        expect(screen.getByRole('alert').textContent).toBe('resolver error');
         expect(renderCount).toBe(2);
       });
     });
