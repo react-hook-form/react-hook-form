@@ -2143,18 +2143,18 @@ describe('useForm', () => {
         );
       };
 
-      const { getByPlaceholderText, getByText } = render(<Form />);
+      render(<Form />);
 
-      getByText('data');
+      screen.getByText('data');
 
-      const textInput = getByPlaceholderText('test');
+      const textInput = screen.getByPlaceholderText('test');
       fireEvent.input(textInput, {
         target: {
           value: 'test',
         },
       });
 
-      expect(getByText('data')).toBeTruthy();
+      expect(screen.getByText('data')).toBeTruthy();
     });
   });
 
