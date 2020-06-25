@@ -6,7 +6,7 @@ export default getConfig({
   plugins: [terser()],
   output: [
     {
-      file: `dist/${pkg.name}.min.es.js`,
+      file: pkg['module:min'],
       format: 'es',
     },
   ],
