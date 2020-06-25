@@ -2131,24 +2131,26 @@ describe('useForm', () => {
               })}
               placeholder="test"
               name="test"
+              type="text"
             />
-            <p>{errors.test && errors.test.message}</p>
+            <span role="alert">{errors.test && errors.test.message}</span>
           </div>
         );
       };
 
       render(<Form />);
 
-      screen.getByText('data');
+      const span = screen.getByRole('alert');
 
-      const textInput = screen.getByPlaceholderText('test');
-      fireEvent.input(textInput, {
+      expect(span.textContent).toBe('data');
+
+      fireEvent.input(screen.getByRole('textbox'), {
         target: {
           value: 'test',
         },
       });
 
-      expect(screen.getByText('data')).toBeTruthy();
+      expect(span.textContent).toBe('data');
     });
   });
 
