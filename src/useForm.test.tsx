@@ -377,15 +377,21 @@ describe('useForm', () => {
         type: 'radio',
         name: 'test',
         value: 'data1',
+        checked: true,
       });
       result.current.register({
         type: 'radio',
         name: 'test1',
         value: 'data2',
+        checked: true,
       });
 
       expect(result.current.control.watchFieldsRef).toEqual({
         current: new Set(['test', 'test1']),
+      });
+      expect(result.current.watch(['test', 'test1'])).toEqual({
+        test: 'data1',
+        test1: 'data2',
       });
     });
 
