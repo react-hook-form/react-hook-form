@@ -321,14 +321,12 @@ describe('useForm', () => {
       result.current.register({ name: 'input' });
       result.current.unregister(['input']);
 
-      const callback = jest.fn();
-
       (validateField as any).mockImplementation(async () => {
         return {};
       });
 
       await act(async () => {
-        await result.current.handleSubmit(callback)({
+        await result.current.handleSubmit((data) => expect(data).toEqual({}))({
           preventDefault: () => {},
           persist: () => {},
         } as React.SyntheticEvent);
