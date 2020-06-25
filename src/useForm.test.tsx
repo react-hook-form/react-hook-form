@@ -1914,17 +1914,6 @@ describe('useForm', () => {
       expect(result.current.formState.isValid).toBeTruthy();
     });
 
-    it('should return true for onBlur when validation schema by default', () => {
-      const { result } = renderHook(() =>
-        useForm<{ input: string }>({
-          mode: VALIDATION_MODE.onBlur,
-          // validationSchema: {},
-        }),
-      );
-
-      expect(result.current.formState.isValid).toBeTruthy();
-    });
-
     it('should return true for onChange mode by default', () => {
       const { result } = renderHook(() =>
         useForm<{ input: string }>({
@@ -1997,23 +1986,19 @@ describe('useForm', () => {
       const { result } = renderHook(() => useForm());
 
       // @ts-ignore
-      expect(result.current.formState.nonExistentProperty).toBe(undefined);
+      expect(result.current.formState.nonExistentProperty).toBeUndefined();
     });
 
     it('should be a proxy object that properly implements the has trap', () => {
       const { result } = renderHook(() => useForm());
 
-      // @ts-ignore
-      expect('nonExistentProperty' in result.current.formState).toBe(false);
+      expect('nonExistentProperty' in result.current.formState).toBeFalsy();
     });
 
     it('should be a proxy object that hasOwnProperty works on', () => {
       const { result } = renderHook(() => useForm());
 
-      // @ts-ignore
-      expect(
-        result.current.formState.hasOwnProperty('nonExistentProperty'),
-      ).toBe(false);
+      expect(result.current.formState).toHaveProperty('hasOwnProperty');
     });
   });
 
