@@ -757,13 +757,11 @@ describe('useForm', () => {
     it('should set value of multiple select correctly', async () => {
       const { result } = renderHook(() => useForm<{ test: string }>());
 
-      act(() => {
-        result.current.register({
-          name: 'test',
-          type: 'select-multiple',
-          value: '1',
-          options: [{ value: '1', selected: true }] as any,
-        });
+      result.current.register({
+        name: 'test',
+        type: 'select-multiple',
+        value: '1',
+        options: [{ value: '1', selected: true }] as any,
       });
 
       (validateField as any).mockImplementation(async () => {
