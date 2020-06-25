@@ -2540,9 +2540,10 @@ describe('useForm', () => {
 
         render(<Component />);
 
-        const input = screen.getByRole('textbox');
         methods.control.isWatchAllRef.current = true;
-        fireEvent.input(input, { target: { name: 'test' } });
+        fireEvent.input(screen.getByRole('textbox'), {
+          target: { name: 'test' },
+        });
 
         expect(skipValidation).toHaveBeenCalledWith({
           ...skipValidationParams,
@@ -2558,9 +2559,10 @@ describe('useForm', () => {
 
         render(<Component />);
 
-        const input = screen.getByRole('textbox');
         methods.control.watchFieldsRef.current.add('test');
-        fireEvent.input(input, { target: { name: 'test' } });
+        fireEvent.input(screen.getByRole('textbox'), {
+          target: { name: 'test' },
+        });
 
         expect(skipValidation).toHaveBeenCalledWith({
           ...skipValidationParams,
@@ -2576,9 +2578,10 @@ describe('useForm', () => {
 
         render(<Component name="test[0]" />);
 
-        const input = screen.getByRole('textbox');
         methods.control.watchFieldsRef.current.add('test');
-        fireEvent.input(input, { target: { name: 'test[0]' } });
+        fireEvent.input(screen.getByRole('textbox'), {
+          target: { name: 'test[0]' },
+        });
 
         expect(skipValidation).toHaveBeenCalledWith({
           ...skipValidationParams,
@@ -2637,8 +2640,9 @@ describe('useForm', () => {
         render(<Component mode="onChange" />);
         methods.control.readFormStateRef.current.touched = true;
 
-        const input = screen.getByRole('textbox');
-        fireEvent.blur(input, { target: { name: 'test' } });
+        fireEvent.blur(screen.getByRole('textbox'), {
+          target: { name: 'test' },
+        });
 
         await waitFor(() =>
           expect(skipValidation).toHaveBeenCalledWith({
