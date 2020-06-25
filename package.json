@@ -88,7 +88,7 @@
   },
   "bundlesize": [
     {
-      "path": "./dist/index.min.es.js",
+      "path": "./dist/index.min.esm.js",
       "maxSize": "9.5 kB"
     }
   ],
