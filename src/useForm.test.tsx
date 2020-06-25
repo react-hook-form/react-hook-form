@@ -409,37 +409,81 @@ describe('useForm', () => {
   });
 
   describe('watchInternal', () => {
-    it('should set value to watchFieldsHookRef if id is defined', () => {
+    const tests: [
+      string,
+      [string | string[] | undefined, unknown | undefined, string | undefined],
+      {
+        watchValue?: unknown;
+        watchFieldsHookRef: string[];
+        watchFieldsRef: string[];
+        isWatchAllRef: boolean;
+      },
+    ][] = [
+      [
+        'should set value to watchFieldsHookRef if id is defined',
+        ['test', undefined, 'id'],
+        {
+          watchValue: undefined,
+          watchFieldsHookRef: ['test'],
+          watchFieldsRef: [],
+          isWatchAllRef: false,
+        },
+      ],
+      [
+        'should return default value if fields are undefined',
+        [undefined, { test: 'default', test1: 'default1' }, 'id'],
+        {
+          watchValue: { test: 'default', test1: 'default1' },
+          watchFieldsHookRef: [],
+          watchFieldsRef: [],
+          isWatchAllRef: false,
+        },
+      ],
+      [
+        'should set value to watchFieldsRef if id are undefined',
+        ['test', undefined, undefined],
+        {
+          watchValue: undefined,
+          watchFieldsHookRef: [],
+          watchFieldsRef: ['test'],
+          isWatchAllRef: false,
+        },
+      ],
+      [
+        'should set true to isWatchAllRef if id and fields are undefined',
+        [undefined, { test: 'default', test1: 'default1' }, undefined],
+        {
+          watchValue: { test: 'default', test1: 'default1' },
+          watchFieldsHookRef: [],
+          watchFieldsRef: [],
+          isWatchAllRef: true,
+        },
+      ],
+    ];
+    test.each(tests)('%s', (_, args, output) => {
       const { result } = renderHook(() => useForm<{ test: string }>());
 
-      const id = 'id';
-      result.current.control.watchFieldsHookRef.current[id] = new Set();
+      const id = args[2];
+      if (id) {
+        result.current.control.watchFieldsHookRef.current[id] = new Set();
+      }
 
-      expect(
-        result.current.control.watchInternal('test', undefined, id),
-      ).toBeUndefined();
-      expect(
-        result.current.control.watchFieldsHookRef.current[id].has('test'),
-      ).toBeTruthy();
-    });
-
-    it('should return default value if fields are undefined', () => {
-      const { result } = renderHook(() =>
-        useForm<{ test: string; test1: string }>(),
+      expect(result.current.control.watchInternal(...args)).toEqual(
+        output.watchValue,
       );
 
-      const id = 'id';
-      result.current.control.watchFieldsHookRef.current[id] = new Set();
+      if (id) {
+        expect(result.current.control.watchFieldsHookRef.current[id]).toEqual(
+          new Set(output.watchFieldsHookRef),
+        );
+      }
 
-      expect(
-        result.current.control.watchInternal(
-          undefined,
-          { test: 'default', test1: 'default1' },
-          id,
-        ),
-      ).toEqual({ test: 'default', test1: 'default1' });
-
-      expect(result.current.control.isWatchAllRef.current).toBeFalsy();
+      expect(result.current.control.isWatchAllRef.current).toBe(
+        output.isWatchAllRef,
+      );
+      expect(result.current.control.watchFieldsRef.current).toEqual(
+        new Set(output.watchFieldsRef),
+      );
     });
   });
 
