@@ -4,7 +4,7 @@
   "version": "6.0.0-rc.5",
   "main": "dist/index.js",
   "main:ie": "dist/index.ie11.js",
-  "umd:main": "dist/index.umd.min.js",
+  "umd:main": "dist/index.umd.js",
   "unpkg": "dist/index.umd.min.js",
   "module": "dist/index.esm.js",
   "module:min": "dist/index.min.esm.js",
