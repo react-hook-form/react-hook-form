@@ -1128,6 +1128,7 @@ export function useForm<
       setInternalValue,
       trigger,
     ]),
+    getValues: React.useCallback(getValues, []),
     register: React.useCallback(register, [defaultValuesRef.current]),
     unregister: React.useCallback(unregister, []),
     formState: isProxyEnabled
@@ -1185,7 +1186,6 @@ export function useForm<
     control,
     handleSubmit,
     reset: React.useCallback(reset, []),
-    getValues: React.useCallback(getValues, []),
     clearErrors: React.useCallback(clearErrors, []),
     setError: React.useCallback(setError, []),
     errors: errorsRef.current,
