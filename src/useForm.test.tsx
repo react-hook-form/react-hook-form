@@ -76,67 +76,30 @@ describe('useForm', () => {
       expect(mockConsoleWarn).toHaveBeenCalled();
     });
 
-    it('should register field and call attachEventListeners method', () => {
-      const { result } = renderHook(() => useForm());
+    test.each([['text'], ['radio'], ['checkbox']])(
+      'should register field for %s type and call attachEventListeners method',
+      (type) => {
+        const { result } = renderHook(() => useForm());
 
-      result.current.register({ type: 'input', name: 'test' });
+        result.current.register({ type, name: 'test' });
 
-      expect(attachEventListeners).toHaveBeenCalledWith({
-        field: {
-          mutationWatcher: undefined,
-          ref: {
-            name: 'test',
-            type: 'input',
+        expect(attachEventListeners).toHaveBeenCalledWith({
+          field: {
+            mutationWatcher: undefined,
+            ref: {
+              type,
+              name: 'test',
+            },
           },
-        },
-        isRadioOrCheckbox: false,
-        handleChange: expect.any(Function),
-      });
-      expect(onDomRemove).toHaveBeenCalled();
-    });
-
-    it('should register field for radio type and call attachEventListeners method', () => {
-      const { result } = renderHook(() => useForm());
-
-      result.current.register({ type: 'radio', name: 'test' });
-
-      expect(attachEventListeners).toBeCalledWith({
-        field: {
-          mutationWatcher: undefined,
-          ref: {
-            name: 'test',
-            type: 'radio',
-          },
-        },
-        isRadioOrCheckbox: true,
-        handleChange: expect.any(Function),
-      });
-      expect(onDomRemove).toBeCalled();
-    });
-
-    it('should register field for checkbox type and call attachEventListeners method', () => {
-      const { result } = renderHook(() => useForm());
-
-      result.current.register({
-        type: 'checkbox',
-        name: 'test',
-        attributes: {},
-      });
-
-      expect(attachEventListeners).toBeCalledWith({
-        field: {
-          mutationWatcher: undefined,
-          ref: {
-            name: 'test',
-            type: 'checkbox',
-            attributes: {},
-          },
-        },
-        isRadioOrCheckbox: true,
-        handleChange: expect.any(Function),
-      });
-      expect(onDomRemove).toBeCalled();
-    });
+          isRadioOrCheckbox: type === 'radio' || type === 'checkbox',
+          handleChange: expect.any(Function),
+        });
+        expect(onDomRemove).toBeCalledWith(
+          { type, name: 'test' },
+          expect.any(Function),
+        );
+      },
+    );
 
     it('should call removeFieldEventListenerAndRef when onDomRemove method is executed', async () => {
       let mockOnDetachCallback: VoidFunction;
