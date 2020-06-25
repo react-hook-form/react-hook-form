@@ -11,7 +11,7 @@ export default getConfig({
     },
     {
       name: 'ReactHookForm',
-      file: pkg['umd:main'],
+      file: pkg.unpkg,
       format: 'umd',
       globals: {
         react: 'React',
