@@ -9,5 +9,13 @@ export default getConfig({
       file: pkg['module:min'],
       format: 'es',
     },
+    {
+      name: 'ReactHookForm',
+      file: pkg['umd:main'],
+      format: 'umd',
+      globals: {
+        react: 'React',
+      },
+    },
   ],
 });
