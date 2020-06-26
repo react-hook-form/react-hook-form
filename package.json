@@ -2,10 +2,17 @@
   "name": "react-hook-form",
   "description": "Performant, flexible and extensible forms library for React Hooks",
   "version": "6.0.0-rc.5",
-  "main": "dist/react-hook-form.js",
-  "module": "dist/react-hook-form.es.js",
+  "main": "dist/index.js",
+  "main:ie": "dist/index.ie11.js",
+  "umd:main": "dist/index.umd.js",
+  "unpkg": "dist/index.umd.min.js",
+  "module": "dist/index.esm.js",
+  "module:min": "dist/index.min.esm.js",
   "types": "dist/index.d.ts",
   "sideEffects": true,
+  "files": [
+    "dist"
+  ],
   "scripts": {
     "clean": "rm -rf dist",
     "prebuild": "yarn clean",
@@ -42,7 +49,6 @@
   "homepage": "https://www.react-hook-form.com",
   "author": "<bluebill1049@hotmail.com>",
   "license": "MIT",
-  "unpkg": "dist/react-hook-form.umd.js",
   "devDependencies": {
     "@babel/core": "^7.10.2",
     "@babel/plugin-transform-runtime": "^7.10.1",
@@ -82,7 +88,7 @@
   },
   "bundlesize": [
     {
-      "path": "./dist/react-hook-form.min.es.js",
+      "path": "./dist/index.min.esm.js",
       "maxSize": "9.5 kB"
     }
   ],
