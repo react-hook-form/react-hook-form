@@ -8,7 +8,7 @@ export default getConfig({
   tsconfig: './tsconfig.ie11.json',
   output: [
     {
-      file: `dist/${pkg.name}.ie11.js`,
+      file: pkg["main:ie"],
       format: 'cjs',
       exports: 'named',
     },

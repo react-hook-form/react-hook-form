@@ -6,8 +6,16 @@ export default getConfig({
   plugins: [terser()],
   output: [
     {
-      file: `dist/${pkg.name}.min.es.js`,
+      file: pkg['module:min'],
       format: 'es',
+    },
+    {
+      name: 'ReactHookForm',
+      file: pkg.unpkg,
+      format: 'umd',
+      globals: {
+        react: 'React',
+      },
     },
   ],
 });
