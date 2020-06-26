@@ -3,6 +3,8 @@ import { useFormContext } from './useFormContext';
 import isUndefined from './utils/isUndefined';
 import isString from './utils/isString';
 import generateId from './logic/generateId';
+import get from './utils/get';
+import isArray from './utils/isArray';
 import {
   UseWatchOptions,
   FieldValues,
@@ -35,13 +37,25 @@ export function useWatch<TWatchFieldValues>({
   defaultValue,
 }: UseWatchOptions): TWatchFieldValues {
   const methods = useFormContext();
-  const { watchFieldsHookRef, watchFieldsHookRenderRef, watchInternal } =
-    control || methods.control;
+  const {
+    watchFieldsHookRef,
+    watchFieldsHookRenderRef,
+    watchInternal,
+    defaultValuesRef,
+  } = control || methods.control;
   const [value, setValue] = React.useState<unknown>(
     isUndefined(defaultValue)
       ? isString(name)
-        ? defaultValue
-        : {}
+        ? get(defaultValuesRef.current, name)
+        : isArray(name)
+        ? name.reduce(
+            (previous, inputName) => ({
+              ...previous,
+              [inputName]: get(defaultValuesRef.current, inputName),
+            }),
+            {},
+          )
+        : defaultValuesRef.current
       : defaultValue,
   );
   const idRef = React.useRef<string>();
