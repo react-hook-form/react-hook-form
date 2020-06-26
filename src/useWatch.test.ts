@@ -20,6 +20,62 @@ describe('useWatch', () => {
       expect(result.current).toEqual('test');
     });
 
+    it('should return default value for single input', () => {
+      const { result } = renderHook(() =>
+        useWatch({
+          control: {
+            ...reconfigureControl(),
+            defaultValuesRef: {
+              current: {
+                test: 'test',
+                test1: 'test1',
+              },
+            },
+          },
+          name: 'test',
+        }),
+      );
+
+      expect(result.current).toEqual('test');
+    });
+
+    it('should return default values for array of inputs', () => {
+      const { result } = renderHook(() =>
+        useWatch({
+          control: {
+            ...reconfigureControl(),
+            defaultValuesRef: {
+              current: {
+                test: 'test',
+                test1: 'test1',
+              },
+            },
+          },
+          name: ['test', 'test1'],
+        }),
+      );
+
+      expect(result.current).toEqual({ test: 'test', test1: 'test1' });
+    });
+
+    it('should return default value when name is undefined', () => {
+      const { result } = renderHook(() =>
+        useWatch({
+          control: {
+            ...reconfigureControl(),
+            defaultValuesRef: {
+              current: {
+                test: 'test',
+                test1: 'test1',
+              },
+            },
+          },
+        }),
+      );
+
+      expect(result.current).toEqual({ test: 'test', test1: 'test1' });
+    });
+
     it('should return empty object', () => {
       const { result } = renderHook(() =>
         useWatch({

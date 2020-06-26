@@ -55,7 +55,7 @@ export function useWatch<TWatchFieldValues>({
             }),
             {},
           )
-        : {}
+        : defaultValuesRef.current
       : defaultValue,
   );
   const idRef = React.useRef<string>();
