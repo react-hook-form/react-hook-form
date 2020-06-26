@@ -8,7 +8,7 @@ export default getConfig({
   tsconfig: './tsconfig.ie11.json',
   output: [
     {
-      file: pkg["main:ie"],
+      file: pkg['main:ie'],
       format: 'cjs',
       exports: 'named',
     },
@@ -16,16 +16,17 @@ export default getConfig({
   plugins: [
     resolve(),
     commonjs({
-      include: 'node_modules/**'
+      include: 'node_modules/**',
     }),
     getBabelOutputPlugin({
       plugins: [
-        ['@babel/plugin-transform-runtime',
+        [
+          '@babel/plugin-transform-runtime',
           {
             corejs: 3,
-          }
-        ]
+          },
+        ],
       ],
-    })
-  ]
+    }),
+  ],
 });

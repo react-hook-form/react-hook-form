@@ -16,14 +16,14 @@
   "scripts": {
     "clean": "rm -rf dist",
     "prebuild": "yarn clean",
-    "build": "yarn build:modern && yarn build:umd && yarn build:ie11 && yarn build:min",
+    "build": "npm run clean && yarn build:modern && yarn build:umd && yarn build:ie11 && yarn build:min",
     "build:modern": "rollup -c ./rollup/rollup.config.js",
     "build:min": "rollup -c ./rollup/rollup.min.config.js",
     "build:umd": "rollup -c ./rollup/rollup.umd.config.js",
     "build:ie11": "rollup -c ./rollup/rollup.ie11.config.js",
-    "prettier": "prettier --write './src/**/*.ts' './src/**/*.tsx' --config ./.prettierrc",
-    "lint": "yarn lint:check --fix && yarn prettier",
-    "lint:check": "eslint ./src --ext .tsx,.ts --report-unused-disable-directives",
+    "lint": "eslint '**/*.{js,ts,tsx}'",
+    "lint:fix": "npm run lint -- --fix",
+    "lint:types": "tsc --noEmit",
     "coverage": "jest --coverage --coverageReporters=text-lcov | coveralls",
     "postrelease": "yarn publish && git push --follow-tags",
     "test": "jest --runInBand",
@@ -63,15 +63,17 @@
     "@types/react": "^16.9.35",
     "@types/react-dom": "^16.9.8",
     "@types/react-test-renderer": "^16.9.2",
-    "@typescript-eslint/eslint-plugin": "^2.33.0",
-    "@typescript-eslint/parser": "^2.33.0",
+    "@typescript-eslint/eslint-plugin": "^3.4.0",
+    "@typescript-eslint/parser": "^3.4.0",
     "bundlesize": "^0.18.0",
     "core-js": "^3.6.5",
     "coveralls": "^3.1.0",
     "cypress": "^4.7.0",
     "eslint": "^7.2.0",
+    "eslint-config-prettier": "^6.11.0",
+    "eslint-plugin-prettier": "^3.1.4",
     "eslint-plugin-react": "^7.20.0",
-    "eslint-plugin-react-hooks": "^3.0.0",
+    "eslint-plugin-react-hooks": "^4.0.4",
     "husky": "^4.2.5",
     "jest": "^25.3.0",
     "lint-staged": "^10.2.9",
@@ -97,13 +99,16 @@
   },
   "husky": {
     "hooks": {
-      "pre-commit": "lint-staged"
+      "pre-commit": "npm run lint:types && lint-staged"
     }
   },
   "lint-staged": {
-    "*.{tsx,ts}": [
-      "npm run lint",
-      "npm run prettier"
+    "*.{js,ts,tsx}": [
+      "npm run lint:fix"
+    ],
+    "*.{md,json}": [
+      "prettier --write",
+      "git add"
     ]
   }
 }
