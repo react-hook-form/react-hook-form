@@ -14,7 +14,7 @@
     "dist"
   ],
   "scripts": {
-    "clean": "rm -rf dist",
+    "clean": "rimraf dist",
     "prebuild": "yarn clean",
     "build": "npm run clean && yarn build:modern && yarn build:umd && yarn build:ie11 && yarn build:min",
     "build:modern": "rollup -c ./rollup/rollup.config.js",
@@ -82,6 +82,7 @@
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
     "react-test-renderer": "^16.13.1",
+    "rimraf": "^3.0.2",
     "rollup": "^2.18.0",
     "rollup-plugin-terser": "^6.1.0",
     "rollup-plugin-typescript2": "^0.27.1",
