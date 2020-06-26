@@ -108,8 +108,7 @@
       "npm run lint:fix"
     ],
     "*.{md,json}": [
-      "prettier --write",
-      "git add"
+      "prettier --write"
     ]
   }
 }
