@@ -48,7 +48,13 @@ export function useWatch<TWatchFieldValues>({
       ? isString(name)
         ? get(defaultValuesRef.current, name)
         : isArray(name)
-        ? name.map((inputName) => get(defaultValuesRef.current, inputName))
+        ? name.reduce(
+            (previous, inputName) => ({
+              ...previous,
+              [inputName]: get(defaultValuesRef.current, inputName),
+            }),
+            {},
+          )
         : {}
       : defaultValue,
   );
