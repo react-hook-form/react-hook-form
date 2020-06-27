@@ -31,12 +31,11 @@ English | <a href="./docs/README.zh-CN.md">简体中文</a> | <a href="./docs/RE
 
 - Built with performance and DX in mind
 - Embrace native form validation
-- Simple integration with [UI libraries](https://codesandbox.io/s/react-hook-form-controller-079xx)
+- Simple integration with [UI libraries](https://codesandbox.io/s/react-hook-form-v6-controller-ts-4dpm9)
 - [Tiny size](https://bundlephobia.com/result?p=react-hook-form@latest) without any dependency
 - Follows HTML standard for [validation](https://react-hook-form.com/get-started#Applyvalidation)
-- Compatible with React Native
-- Supports [Yup](https://github.com/jquense/yup), [Joi](https://github.com/hapijs/joi), [Superstruct](https://github.com/ianstormtaylor/superstruct) or custom
-- Build forms quickly with the [form builder](https://react-hook-form.com/form-builder)
+- [Resolvers](https://github.com/react-hook-form/resolvers) support [Yup](https://github.com/jquense/yup), [Superstruct](https://github.com/ianstormtaylor/superstruct), [Joi](https://github.com/hapijs/joi) or custom
+- Build forms quickly with [Form Builder](https://react-hook-form.com/form-builder)
 
 ## Install
 
