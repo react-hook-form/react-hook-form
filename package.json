@@ -15,8 +15,8 @@
   ],
   "scripts": {
     "clean": "rimraf dist",
-    "prebuild": "yarn clean",
-    "build": "npm run clean && yarn build:modern && yarn build:umd && yarn build:ie11 && yarn build:min",
+    "prebuild": "npm run clean",
+    "build": "npm run build:modern && npm run build:umd && npm run build:ie11 && npm run build:min",
     "build:modern": "rollup -c ./rollup/rollup.config.js",
     "build:min": "rollup -c ./rollup/rollup.min.config.js",
     "build:umd": "rollup -c ./rollup/rollup.umd.config.js",
@@ -25,15 +25,15 @@
     "lint:fix": "npm run lint -- --fix",
     "lint:types": "tsc --noEmit",
     "coverage": "jest --coverage --coverageReporters=text-lcov | coveralls",
-    "postrelease": "yarn publish && git push --follow-tags",
     "test": "jest --runInBand",
     "test:coverage": "jest --runInBand --coverage",
-    "test:watch": "yarn test:coverage -- --watchAll",
+    "test:watch": "npm run test:coverage -- --watchAll",
     "cypress": "cypress run",
     "cypress:open": "cypress open",
-    "prepublishOnly": "yarn lint && yarn test && yarn run clean && yarn build",
-    "bundlesize": "yarn build:min && bundlesize",
-    "start:app": "yarn build:modern && yarn link && yarn --cwd node_modules/react link && yarn --cwd ./app link react react-hook-form && yarn --cwd ./app && yarn --cwd ./app run start"
+    "prepublishOnly": "npm run lint && npm run lint:types && npm test && npm run build",
+    "postrelease": "npm publish && git push --follow-tags",
+    "bundlesize": "npm run build:min && bundlesize",
+    "start:app": "npm run build:modern && yarn link && yarn --cwd node_modules/react link && yarn --cwd ./app link react react-hook-form && yarn --cwd ./app && yarn --cwd ./app run start"
   },
   "keywords": [
     "react",
