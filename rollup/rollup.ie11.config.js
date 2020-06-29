@@ -11,6 +11,7 @@ export default getConfig({
       file: pkg['main:ie'],
       format: 'cjs',
       exports: 'named',
+      sourcemap: true,
     },
   ],
   plugins: [
