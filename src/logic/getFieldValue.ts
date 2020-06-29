@@ -10,7 +10,7 @@ import { FieldRefs, FieldValues, InternalFieldName } from '../types/form';
 export default function getFieldValue<TFieldValues extends FieldValues>(
   fields: FieldRefs<TFieldValues>,
   name: InternalFieldName<TFieldValues>,
-  unmountFieldsState: Record<string, any> = {},
+  unmountFieldValue: any,
 ) {
   if (fields[name]) {
     const field = fields[name]!;
@@ -38,5 +38,5 @@ export default function getFieldValue<TFieldValues extends FieldValues>(
     return value;
   }
 
-  return unmountFieldsState[name];
+  return unmountFieldValue;
 }
