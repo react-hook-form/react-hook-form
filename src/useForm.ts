@@ -249,7 +249,7 @@ export function useForm<
 
       const isFieldDirty =
         defaultValuesAtRenderRef.current[name] !==
-        getFieldValue(fieldsRef.current, name);
+        getFieldValue(fieldsRef.current, name, unmountFieldsStateRef.current);
       const isDirtyFieldExist = get(dirtyFieldsRef.current, name);
       const isFieldArray = isNameInFieldArray(fieldArrayNamesRef.current, name);
       const previousIsDirty = isDirtyRef.current;
@@ -838,7 +838,7 @@ export function useForm<
       !(isFieldArray && isEmptyDefaultValue)
     ) {
       defaultValuesAtRenderRef.current[name] = isEmptyDefaultValue
-        ? getFieldValue(fields, name)
+        ? getFieldValue(fields, name, unmountFieldsStateRef.current)
         : defaultValue;
     }
 
@@ -1061,7 +1061,8 @@ export function useForm<
     name: TFieldName,
   ): TFieldName extends keyof TFieldValues
     ? UnpackNestedValue<TFieldValues>[TFieldName]
-    : TFieldValue => getFieldValue(fieldsRef.current, name);
+    : TFieldValue =>
+    getFieldValue(fieldsRef.current, name, unmountFieldsStateRef.current);
 
   function getValues(): UnpackNestedValue<TFieldValues>;
   function getValues<TFieldName extends string, TFieldValue extends unknown>(
