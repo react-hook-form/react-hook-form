@@ -109,7 +109,7 @@
     "*.{js,ts,tsx}": [
       "npm run lint:fix"
     ],
-    "*.{md,json}": [
+    "*.{md,json,yml}": [
       "prettier --write"
     ]
   }
