@@ -415,6 +415,8 @@ export function useForm<
       } else if (!isPrimitive(value)) {
         setInternalValues(name, value, config);
       }
+
+      unmountFieldsStateRef.current[name] = value;
     },
     [setDirty, setFieldValue, setInternalValues],
   );
