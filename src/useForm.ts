@@ -587,26 +587,28 @@ export function useForm<
       ) {
         removeFieldEventListener(field, forceDelete);
 
-        [
-          errorsRef,
-          touchedFieldsRef,
-          dirtyFieldsRef,
-          defaultValuesAtRenderRef,
-        ].forEach((data) => unset(data.current, field.ref.name));
-        [
-          fieldsWithValidationRef,
-          validFieldsRef,
-          watchFieldsRef,
-        ].forEach((data) => data.current.delete(field.ref.name));
+        if (shouldUnregister) {
+          [
+            errorsRef,
+            touchedFieldsRef,
+            dirtyFieldsRef,
+            defaultValuesAtRenderRef,
+          ].forEach((data) => unset(data.current, field.ref.name));
+          [
+            fieldsWithValidationRef,
+            validFieldsRef,
+            watchFieldsRef,
+          ].forEach((data) => data.current.delete(field.ref.name));
 
-        if (
-          readFormStateRef.current.isValid ||
-          readFormStateRef.current.touched
-        ) {
-          reRender();
+          if (
+            readFormStateRef.current.isValid ||
+            readFormStateRef.current.touched
+          ) {
+            reRender();
 
-          if (resolverRef.current) {
-            validateResolver();
+            if (resolverRef.current) {
+              validateResolver();
+            }
           }
         }
       }
@@ -861,11 +863,8 @@ export function useForm<
     }
   }
 
-  function register<TFieldElement extends FieldElement<TFieldValues>>(): (
-    ref: (TFieldElement & Ref) | null,
-  ) => void;
   function register<TFieldElement extends FieldElement<TFieldValues>>(
-    rules: ValidationRules,
+    rules?: ValidationRules,
   ): (ref: (TFieldElement & Ref) | null) => void;
   function register(
     name: FieldName<TFieldValues>,
