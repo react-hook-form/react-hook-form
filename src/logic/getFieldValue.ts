@@ -11,7 +11,7 @@ import { FieldRefs, FieldValues, InternalFieldName } from '../types/form';
 export default function getFieldValue<TFieldValues extends FieldValues>(
   fieldsRef: React.MutableRefObject<FieldRefs<TFieldValues>>,
   name: InternalFieldName<TFieldValues>,
-  unmountFieldValueRef?: React.MutableRefObject<Record<string, any>>,
+  unmountFieldsStateRef?: React.MutableRefObject<Record<string, any>>,
 ) {
   const field = fieldsRef.current[name]!;
 
@@ -40,7 +40,7 @@ export default function getFieldValue<TFieldValues extends FieldValues>(
     return value;
   }
 
-  if (unmountFieldValueRef) {
-    return unmountFieldValueRef.current[name];
+  if (unmountFieldsStateRef) {
+    return unmountFieldsStateRef.current[name];
   }
 }
