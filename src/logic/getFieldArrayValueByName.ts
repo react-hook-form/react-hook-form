@@ -5,9 +5,9 @@ import get from '../utils/get';
 import { FieldValues, FieldRefs, InternalFieldName } from '../types/form';
 
 export default <TFieldValues extends FieldValues = FieldValues>(
-  fields: React.MutableRefObject<FieldRefs<TFieldValues>>,
+  fieldsRef: React.MutableRefObject<FieldRefs<TFieldValues>>,
   name?: InternalFieldName<FieldValues>,
 ) => {
-  const results = transformToNestObject(getFieldsValues(fields));
+  const results = transformToNestObject(getFieldsValues(fieldsRef));
   return name ? get(results, name, results) : results;
 };

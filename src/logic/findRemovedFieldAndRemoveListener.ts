@@ -16,7 +16,7 @@ const isSameRef = (fieldValue: Field, ref: Ref) =>
 export default function findRemovedFieldAndRemoveListener<
   TFieldValues extends FieldValues
 >(
-  fields: React.MutableRefObject<FieldRefs<TFieldValues>>,
+  fieldsRef: React.MutableRefObject<FieldRefs<TFieldValues>>,
   handleChange: ({ type, target }: Event) => Promise<void | boolean>,
   field: Field,
   unmountFieldsStateRef: React.MutableRefObject<Record<string, any>>,
@@ -28,10 +28,10 @@ export default function findRemovedFieldAndRemoveListener<
     ref: { name, type },
     mutationWatcher,
   } = field;
-  const fieldRef = fields.current[name] as Field;
+  const fieldRef = fieldsRef.current[name] as Field;
 
   if (!shouldUnregister) {
-    const value = getFieldValue(fields, name, unmountFieldsStateRef);
+    const value = getFieldValue(fieldsRef, name, unmountFieldsStateRef);
 
     if (!isUndefined(value)) {
       unmountFieldsStateRef.current[name] = value;
@@ -39,7 +39,7 @@ export default function findRemovedFieldAndRemoveListener<
   }
 
   if (!type) {
-    delete fields.current[name];
+    delete fieldsRef.current[name];
     return;
   }
 
@@ -61,10 +61,10 @@ export default function findRemovedFieldAndRemoveListener<
       });
 
       if (options && !unique(options).length) {
-        delete fields.current[name];
+        delete fieldsRef.current[name];
       }
     } else {
-      delete fields.current[name];
+      delete fieldsRef.current[name];
     }
   } else if ((isDetached(ref) && isSameRef(fieldRef, ref)) || forceDelete) {
     removeAllEventListeners(ref, handleChange);
@@ -73,6 +73,6 @@ export default function findRemovedFieldAndRemoveListener<
       mutationWatcher.disconnect();
     }
 
-    delete fields.current[name];
+    delete fieldsRef.current[name];
   }
 }
