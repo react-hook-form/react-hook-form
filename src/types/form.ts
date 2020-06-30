@@ -314,15 +314,12 @@ export type UseWatchOptions = {
 };
 
 export type UseFormMethods<TFieldValues extends FieldValues = FieldValues> = {
-  register<TFieldElement extends FieldElement<TFieldValues>>(): (
-    ref: TFieldElement | null,
-  ) => void;
   register<TFieldElement extends FieldElement<TFieldValues>>(
-    rules: ValidationRules,
-  ): (ref: TFieldElement | null) => void;
+    rules?: ValidationRules,
+  ): (ref: (TFieldElement & Ref) | null) => void;
   register(name: FieldName<TFieldValues>, rules?: ValidationRules): void;
   register<TFieldElement extends FieldElement<TFieldValues>>(
-    ref: TFieldElement | null,
+    ref: (TFieldElement & Ref) | null,
     rules?: ValidationRules,
   ): void;
   unregister(name: FieldName<TFieldValues> | FieldName<TFieldValues>[]): void;

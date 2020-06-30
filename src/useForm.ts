@@ -855,11 +855,8 @@ export function useForm<
     }
   }
 
-  function register<TFieldElement extends FieldElement<TFieldValues>>(): (
-    ref: (TFieldElement & Ref) | null,
-  ) => void;
   function register<TFieldElement extends FieldElement<TFieldValues>>(
-    rules: ValidationRules,
+    rules?: ValidationRules,
   ): (ref: (TFieldElement & Ref) | null) => void;
   function register(
     name: FieldName<TFieldValues>,
