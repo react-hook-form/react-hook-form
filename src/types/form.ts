@@ -314,25 +314,14 @@ export type UseWatchOptions = {
 };
 
 export type UseFormMethods<TFieldValues extends FieldValues = FieldValues> = {
-  register<TFieldElement extends FieldElement<TFieldValues>>(): (
-    ref: (TFieldElement & Ref) | null,
-  ) => void;
   register<TFieldElement extends FieldElement<TFieldValues>>(
-    rules: ValidationRules,
+    rules?: ValidationRules,
   ): (ref: (TFieldElement & Ref) | null) => void;
   register(name: FieldName<TFieldValues>, rules?: ValidationRules): void;
   register<TFieldElement extends FieldElement<TFieldValues>>(
     ref: (TFieldElement & Ref) | null,
     rules?: ValidationRules,
   ): void;
-  register<TFieldElement extends FieldElement<TFieldValues>>(
-    refOrValidationOptions?:
-      | FieldName<TFieldValues>
-      | ValidationRules
-      | (TFieldElement & Ref)
-      | null,
-    rules?: ValidationRules,
-  ): ((ref: (TFieldElement & Ref) | null) => void) | void;
   unregister(name: FieldName<TFieldValues> | FieldName<TFieldValues>[]): void;
   watch(): UnpackNestedValue<TFieldValues>;
   watch<
