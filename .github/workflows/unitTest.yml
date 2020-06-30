@@ -8,7 +8,15 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2
-      - name: Run install
-        run: npm install
-      - name: Run test
-        run: npm run lint && npm run test
+      - name: Install dependencies
+        run: yarn install --frozen-lockfile
+      - name: Lint
+        run: |
+          npm run lint:types
+          npm run lint
+      - name: Test
+        run: npm test
+        env:
+          CI: true
+      - name: Build
+        run: npm run build
