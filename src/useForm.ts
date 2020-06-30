@@ -586,7 +586,7 @@ export function useForm<
       ) {
         removeFieldEventListener(field, forceDelete);
 
-        if (!shouldUnregister) {
+        if (shouldUnregister) {
           [
             errorsRef,
             touchedFieldsRef,
