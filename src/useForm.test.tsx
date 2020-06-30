@@ -1199,6 +1199,16 @@ describe('useForm', () => {
         expect(result.current.formState.dirtyFields?.test).toBeUndefined();
       });
     });
+
+    it('should set unmounted input value when field is not found', () => {
+      const { result } = renderHook(() => useForm());
+
+      result.current.setValue('test', 'data');
+
+      expect(result.current.control.unmountFieldsStateRef.current).toEqual({
+        test: 'data',
+      });
+    });
   });
 
   describe('trigger', () => {
