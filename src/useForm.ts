@@ -249,7 +249,7 @@ export function useForm<
 
       const isFieldDirty =
         defaultValuesAtRenderRef.current[name] !==
-        getFieldValue(fieldsRef.current, name, unmountFieldsStateRef);
+        getFieldValue(fieldsRef, name, unmountFieldsStateRef);
       const isDirtyFieldExist = get(dirtyFieldsRef.current, name);
       const isFieldArray = isNameInFieldArray(fieldArrayNamesRef.current, name);
       const previousIsDirty = isDirtyRef.current;
@@ -567,7 +567,7 @@ export function useForm<
   const removeFieldEventListener = React.useCallback(
     (field: Field, forceDelete?: boolean) => {
       findRemovedFieldAndRemoveListener(
-        fieldsRef.current,
+        fieldsRef,
         handleChangeRef.current!,
         field,
         unmountFieldsStateRef,
@@ -841,7 +841,7 @@ export function useForm<
       !(isFieldArray && isEmptyDefaultValue)
     ) {
       defaultValuesAtRenderRef.current[name] = isEmptyDefaultValue
-        ? getFieldValue(fields, name, unmountFieldsStateRef)
+        ? getFieldValue(fieldsRef, name, unmountFieldsStateRef)
         : defaultValue;
     }
 
@@ -1065,8 +1065,7 @@ export function useForm<
     name: TFieldName,
   ): TFieldName extends keyof TFieldValues
     ? UnpackNestedValue<TFieldValues>[TFieldName]
-    : TFieldValue =>
-    getFieldValue(fieldsRef.current, name, unmountFieldsStateRef);
+    : TFieldValue => getFieldValue(fieldsRef, name, unmountFieldsStateRef);
 
   function getValues(): UnpackNestedValue<TFieldValues>;
   function getValues<TFieldName extends string, TFieldValue extends unknown>(

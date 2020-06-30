@@ -23,7 +23,7 @@ export default <TFieldValues extends FieldValues>(
         : isArray(search) && search.find((data) => name.startsWith(data)))
     ) {
       output[name as InternalFieldName<TFieldValues>] = getFieldValue(
-        fields.current,
+        fields,
         name,
         unmountFieldsState,
       );

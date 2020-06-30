@@ -1,4 +1,4 @@
-import getFieldValueByName from './getFieldArrayValueByName';
+import getFieldArrayValueByName from './getFieldArrayValueByName';
 
 const testFields = {
   current: {
@@ -40,7 +40,7 @@ const testFields = {
 
 describe('getFieldValueByName', () => {
   it('should get fields value by email from test fields', () => {
-    expect(getFieldValueByName(testFields, 'email')).toEqual([
+    expect(getFieldArrayValueByName(testFields, 'email')).toEqual([
       'email[0]',
       'email[1]',
       'email[2]',
@@ -48,7 +48,7 @@ describe('getFieldValueByName', () => {
   });
 
   it('should get fields value by firstName from test fields', () => {
-    expect(getFieldValueByName(testFields, 'firstName')).toEqual([
+    expect(getFieldArrayValueByName(testFields, 'firstName')).toEqual([
       undefined,
       'firstName[1]',
       'firstName[2]',
@@ -56,7 +56,7 @@ describe('getFieldValueByName', () => {
   });
 
   it('should get fields value by lastname from test fields', () => {
-    expect(getFieldValueByName(testFields, 'lastName')).toEqual([
+    expect(getFieldArrayValueByName(testFields, 'lastName')).toEqual([
       undefined,
       undefined,
       'lastName[2]',
@@ -64,11 +64,11 @@ describe('getFieldValueByName', () => {
   });
 
   it('should get fields value by test from test fields', () => {
-    expect(getFieldValueByName(testFields, 'test')).toEqual('test');
+    expect(getFieldArrayValueByName(testFields, 'test')).toEqual('test');
   });
 
   it('should get fields value by nested.test from test fields', () => {
-    expect(getFieldValueByName(testFields, 'nested.test')).toEqual([
+    expect(getFieldArrayValueByName(testFields, 'nested.test')).toEqual([
       undefined,
       {
         what: 'nested.test[1].what',
@@ -86,7 +86,7 @@ describe('getFieldValueByName', () => {
   });
 
   it('should get fields value by nested.test[2] from test fields', () => {
-    expect(getFieldValueByName(testFields, 'nested.test[2]')).toEqual({
+    expect(getFieldArrayValueByName(testFields, 'nested.test[2]')).toEqual({
       what: [undefined, { test: 'nested.test[2].what[1].test' }],
     });
   });

@@ -9,12 +9,13 @@ import getCheckboxValue from './getCheckboxValue';
 import { FieldRefs, FieldValues, InternalFieldName } from '../types/form';
 
 export default function getFieldValue<TFieldValues extends FieldValues>(
-  fields: FieldRefs<TFieldValues>,
+  fields: React.MutableRefObject<FieldRefs<TFieldValues>>,
   name: InternalFieldName<TFieldValues>,
   unmountFieldValue?: React.MutableRefObject<Record<string, any>>,
 ) {
-  if (fields[name]) {
-    const field = fields[name]!;
+  const field = fields.current[name]!;
+
+  if (field) {
     const {
       ref: { value },
       ref,
