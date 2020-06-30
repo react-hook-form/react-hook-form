@@ -8,14 +8,13 @@ export default getConfig({
       'process.env.NODE_ENV': JSON.stringify('production'),
     }),
   ],
-  output: [
-    {
-      name: 'ReactHookForm',
-      file: pkg['umd:main'],
-      format: 'umd',
-      globals: {
-        react: 'React',
-      },
+  output: {
+    name: 'ReactHookForm',
+    file: pkg['umd:main'],
+    format: 'umd',
+    sourcemap: true,
+    globals: {
+      react: 'React',
     },
-  ],
+  },
 });
