@@ -15,7 +15,7 @@ export default <TFieldValues extends FieldValues>(
 ) => {
   const output = {} as TFieldValues;
 
-  for (const name in fields) {
+  for (const name in fields.current) {
     if (
       isUndefined(search) ||
       (isString(search)
@@ -25,7 +25,7 @@ export default <TFieldValues extends FieldValues>(
       output[name as InternalFieldName<TFieldValues>] = getFieldValue(
         fields.current,
         name,
-        unmountFieldsState && unmountFieldsState.current[name],
+        unmountFieldsState,
       );
     }
   }

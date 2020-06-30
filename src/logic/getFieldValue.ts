@@ -1,3 +1,4 @@
+import * as React from 'react';
 import getRadioValue from './getRadioValue';
 import getMultipleSelectValue from './getMultipleSelectValue';
 import isRadioInput from '../utils/isRadioInput';
@@ -10,7 +11,7 @@ import { FieldRefs, FieldValues, InternalFieldName } from '../types/form';
 export default function getFieldValue<TFieldValues extends FieldValues>(
   fields: FieldRefs<TFieldValues>,
   name: InternalFieldName<TFieldValues>,
-  unmountFieldValue: any,
+  unmountFieldValue?: React.MutableRefObject<Record<string, any>>,
 ) {
   if (fields[name]) {
     const field = fields[name]!;
@@ -38,5 +39,7 @@ export default function getFieldValue<TFieldValues extends FieldValues>(
     return value;
   }
 
-  return unmountFieldValue;
+  if (unmountFieldValue) {
+    return unmountFieldValue.current[name];
+  }
 }

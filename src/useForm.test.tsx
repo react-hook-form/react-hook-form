@@ -1267,6 +1267,7 @@ describe('useForm', () => {
         },
         false,
         { ref: { name: 'test' } },
+        { current: {} },
       );
       expect(validateField).toBeCalledWith(
         {
@@ -1277,6 +1278,7 @@ describe('useForm', () => {
         },
         false,
         { ref: { name: 'test1' } },
+        { current: {} },
       );
     });
   });
@@ -2181,6 +2183,7 @@ describe('useForm', () => {
         required: 'required',
         mutationWatcher: undefined,
       },
+      { current: {} },
     ];
     const shouldRenderBasedOnErrorParams = (name = 'test') => ({
       errors: {},
