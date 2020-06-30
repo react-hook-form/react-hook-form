@@ -1,0 +1,6 @@
+/app
+/examples
+/node_modules
+/dist
+/coverage
+!.*.js
