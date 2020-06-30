@@ -5,6 +5,7 @@ describe('isBoolean', () => {
   it('should return true when value is a Message', () => {
     expect(isMessage('test')).toBeTruthy();
     expect(isMessage(React.createElement('p'))).toBeTruthy();
+    expect(isMessage(() => 'p')).toBeTruthy();
   });
 
   it('should return false when value is not a Message', () => {
