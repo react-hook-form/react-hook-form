@@ -143,4 +143,22 @@ describe('getFieldValue', () => {
       ),
     ).toEqual(undefined);
   });
+
+  it('should return unmount field value when field is not found', () => {
+    expect(
+      getFieldValue(
+        {
+          current: {
+            test: {
+              ref: {
+                files: 'files',
+              },
+            },
+          },
+        },
+        'what',
+        { current: { what: 'data' } },
+      ),
+    ).toEqual('data');
+  });
 });
