@@ -1050,6 +1050,7 @@ export function useForm<
 
     if (values) {
       defaultValuesRef.current = values;
+      unmountFieldsStateRef.current = values;
     }
 
     Object.values(resetFieldArrayFunctionRef.current).forEach(
