@@ -800,9 +800,12 @@ export function useForm<
     );
 
     if (!isEmptyObject(defaultValuesRef.current) || !isEmptyUnmountFields) {
-      defaultValue = isEmptyUnmountFields
-        ? get(defaultValuesRef.current, name)
-        : unmountFieldsStateRef.current[name];
+      defaultValue = get(
+        isEmptyUnmountFields
+          ? defaultValuesRef.current
+          : unmountFieldsStateRef.current,
+        name,
+      );
       isEmptyDefaultValue = isUndefined(defaultValue);
       isFieldArray = isNameInFieldArray(fieldArrayNamesRef.current, name);
 
