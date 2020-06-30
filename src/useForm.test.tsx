@@ -101,7 +101,7 @@ describe('useForm', () => {
       },
     );
 
-    it('should call removeFieldEventListenerAndRef when onDomRemove method is executed', async () => {
+    it('should call removeFieldEventListenerAndRef when onDomRemove method is executed', () => {
       let mockOnDetachCallback: VoidFunction;
       (onDomRemove as any).mockImplementation(
         (_: Ref, onDetachCallback: VoidFunction) => {
@@ -120,7 +120,7 @@ describe('useForm', () => {
       expect(findRemovedFieldAndRemoveListener).toHaveBeenCalled();
     });
 
-    it('should call reRender method with removeFieldEventListenerAndRef when onDomRemove method is executed with ReactNative', async () => {
+    it('should call reRender method with removeFieldEventListenerAndRef when onDomRemove method is executed with ReactNative', () => {
       let mockOnDetachCallback: VoidFunction;
       (onDomRemove as any).mockImplementation(
         (_: Ref, onDetachCallback: VoidFunction) => {
@@ -460,6 +460,7 @@ describe('useForm', () => {
         },
       ],
     ];
+
     test.each(tests)('%s', (_, args, output) => {
       const { result } = renderHook(() => useForm<{ test: string }>());
 
@@ -513,7 +514,7 @@ describe('useForm', () => {
       expect(result.current.formState.isSubmitted).toBeFalsy();
     });
 
-    it('should reset the form if ref is HTMLElement and parent element is form', async () => {
+    it('should reset the form if ref is HTMLElement and parent element is form', () => {
       const mockReset = jest.spyOn(window.HTMLFormElement.prototype, 'reset');
       let methods: UseFormMethods;
       const Component = () => {
@@ -531,7 +532,7 @@ describe('useForm', () => {
       expect(mockReset).toHaveBeenCalled();
     });
 
-    it('should reset the form if ref is HTMLElement and parent element is not form', async () => {
+    it('should reset the form if ref is HTMLElement and parent element is not form', () => {
       const mockReset = jest.spyOn(window.HTMLFormElement.prototype, 'reset');
       let methods: UseFormMethods;
       const Component = () => {
@@ -545,7 +546,7 @@ describe('useForm', () => {
       expect(mockReset).not.toHaveBeenCalled();
     });
 
-    it('should set default value if values is specified to first argument', async () => {
+    it('should set default value if values is specified to first argument', () => {
       const { result } = renderHook(() => useForm());
 
       result.current.register('test');
@@ -557,7 +558,7 @@ describe('useForm', () => {
       });
     });
 
-    it('should execute resetFieldArrayFunctionRef if resetFieldArrayFunctionRef is exist', async () => {
+    it('should execute resetFieldArrayFunctionRef if resetFieldArrayFunctionRef is exist', () => {
       const { result } = renderHook(() => useForm());
       const reset = jest.fn();
       result.current.control.resetFieldArrayFunctionRef.current['test'] = reset;
@@ -569,12 +570,11 @@ describe('useForm', () => {
       expect(reset).toHaveBeenCalled();
     });
 
-    it('should not reset if OmitResetState is specified', async () => {
+    it('should not reset if OmitResetState is specified', () => {
       const { result } = renderHook(() => useForm());
 
       result.current.register('test');
 
-      // check only public variables
       result.current.control.errorsRef.current = { test: 'test' };
       result.current.control.touchedFieldsRef.current = { test: 'test' };
       result.current.control.validFieldsRef.current = new Set(['test']);
@@ -613,6 +613,16 @@ describe('useForm', () => {
       );
       expect(result.current.control.isDirtyRef.current).toBeTruthy();
       expect(result.current.control.isSubmittedRef.current).toBeTruthy();
+    });
+
+    it('should reset the unmounted input values', () => {
+      const { result } = renderHook(() => useForm());
+
+      act(() => result.current.reset({ test: 'test' }));
+
+      expect(result.current.control.unmountFieldsStateRef.current).toEqual({
+        test: 'test',
+      });
     });
   });
 
@@ -676,7 +686,7 @@ describe('useForm', () => {
       });
     });
 
-    it('should set value of file input correctly if value is string', async () => {
+    it('should set value of file input correctly if value is string', () => {
       const { result } = renderHook(() => useForm<{ test: string }>());
 
       result.current.register({ name: 'test', type: 'file', value: '' });
@@ -898,9 +908,8 @@ describe('useForm', () => {
       });
     });
 
-    it('should be called trigger method if shouldValidate variable is true', async () => {
+    it('should be called trigger method if shouldValidate variable is true', () => {
       (validateField as any).mockImplementation(async () => ({}));
-      // check if setDirty is called
       const mockGetFieldValue = jest.spyOn(getFieldValue, 'default');
 
       const { result } = renderHook(() =>
@@ -925,9 +934,8 @@ describe('useForm', () => {
       expect(validateField).toHaveBeenCalled();
     });
 
-    it('should not be called trigger method if config is empty', async () => {
+    it('should not be called trigger method if config is empty', () => {
       (validateField as any).mockImplementation(async () => ({}));
-      // check if setDirty is called
       const mockGetFieldValue = jest.spyOn(getFieldValue, 'default');
 
       const { result } = renderHook(() =>
@@ -948,8 +956,7 @@ describe('useForm', () => {
     });
 
     it('should be called trigger method if shouldValidate variable is true and field value is array', async () => {
-      (validateField as any).mockImplementation(async () => ({}));
-      // check if setDirty is called
+      (validateField as any).mockImplementation(() => ({}));
       const mockGetFieldValue = jest.spyOn(getFieldValue, 'default');
 
       const { result } = renderHook(() =>
@@ -978,9 +985,8 @@ describe('useForm', () => {
       expect(validateField).toHaveBeenCalledTimes(3);
     });
 
-    it('should not be called trigger method if config is empty and field value is array', async () => {
+    it('should not be called trigger method if config is empty and field value is array', () => {
       (validateField as any).mockImplementation(async () => ({}));
-      // check if setDirty is called
       const mockGetFieldValue = jest.spyOn(getFieldValue, 'default');
 
       const { result } = renderHook(() =>
@@ -1078,7 +1084,7 @@ describe('useForm', () => {
         expect(result.current.formState.dirtyFields.test).toBeUndefined();
       });
 
-      it('should set name to dirtyFieldRef if array field values are different with default value with ReactNative', async () => {
+      it('should set name to dirtyFieldRef if array field values are different with default value with ReactNative', () => {
         (transformToNestObject as any).mockReturnValue({
           test: [
             { name: 'default_update' },
@@ -1129,7 +1135,7 @@ describe('useForm', () => {
         ]);
       });
 
-      it('should unset name from dirtyFieldRef if array field values are not different with default value with ReactNative', async () => {
+      it('should unset name from dirtyFieldRef if array field values are not different with default value with ReactNative', () => {
         const { result } = renderHook(() =>
           useForm({
             defaultValues: {
@@ -1774,6 +1780,7 @@ describe('useForm', () => {
         },
       ],
     ];
+
     test.each(tests)('%s', (_, input, output) => {
       const { result } = renderHook(() => useForm<{ input: string }>());
       act(() => {
@@ -2262,7 +2269,7 @@ describe('useForm', () => {
     });
 
     describe('onSubmit mode', () => {
-      it('should not contain error if value is valid', async () => {
+      it('should not contain error if value is valid', () => {
         (skipValidation as any).mockReturnValue(true);
 
         render(<Component />);
@@ -2280,7 +2287,7 @@ describe('useForm', () => {
         expect(renderCount).toBe(1);
       });
 
-      it('should not contain error if name is invalid', async () => {
+      it('should not contain error if name is invalid', () => {
         render(<Component />);
 
         fireEvent.input(screen.getByRole('textbox'), {
@@ -2421,7 +2428,7 @@ describe('useForm', () => {
           ...skipValidationParams,
           isOnSubmit: true,
         });
-        // before submit
+
         expect(mockShouldRenderBasedOnError.mock.calls[0]).toEqual([
           {
             errors: {},
@@ -2431,7 +2438,7 @@ describe('useForm', () => {
             fieldsWithValidation: new Set(['test']),
           },
         ]);
-        // after submitted
+
         expect(mockShouldRenderBasedOnError.mock.calls[1]).toEqual([
           {
             errors: {},
@@ -2548,7 +2555,7 @@ describe('useForm', () => {
         expect(renderCount).toBe(1);
       });
 
-      it('should be called reRender method if isWatchAllRef is true', async () => {
+      it('should be called reRender method if isWatchAllRef is true', () => {
         (skipValidation as any).mockReturnValue(true);
 
         render(<Component />);
@@ -2567,7 +2574,7 @@ describe('useForm', () => {
         expect(renderCount).toBe(2);
       });
 
-      it('should be called reRender method if field is watched', async () => {
+      it('should be called reRender method if field is watched', () => {
         (skipValidation as any).mockReturnValue(true);
 
         render(<Component />);
@@ -2586,7 +2593,7 @@ describe('useForm', () => {
         expect(renderCount).toBe(2);
       });
 
-      it('should be called reRender method if field array is watched', async () => {
+      it('should be called reRender method if field array is watched', () => {
         (skipValidation as any).mockReturnValue(true);
 
         render(<Component name="test[0]" />);
@@ -2830,7 +2837,7 @@ describe('useForm', () => {
       expect(transformToNestObject).toBeCalledWith({ test: 'default' });
     });
 
-    it('should be called resolver with field values if default value is undefined', async () => {
+    it('should be called resolver with field values if default value is undefined', () => {
       const resolver = async (data: any) => {
         return {
           values: data,

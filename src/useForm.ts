@@ -1020,7 +1020,6 @@ export function useForm<
       TFieldValues
     >;
     fieldArrayDefaultValues.current = {};
-    unmountFieldsStateRef.current = {};
     watchFieldsRef.current = new Set();
     isWatchAllRef.current = false;
   };
@@ -1050,8 +1049,9 @@ export function useForm<
 
     if (values) {
       defaultValuesRef.current = values;
-      unmountFieldsStateRef.current = values;
     }
+
+    unmountFieldsStateRef.current = values || {};
 
     Object.values(resetFieldArrayFunctionRef.current).forEach(
       (resetFieldArray) => isFunction(resetFieldArray) && resetFieldArray(),
