@@ -9,11 +9,11 @@ import getCheckboxValue from './getCheckboxValue';
 import { FieldRefs, FieldValues, InternalFieldName } from '../types/form';
 
 export default function getFieldValue<TFieldValues extends FieldValues>(
-  fields: React.MutableRefObject<FieldRefs<TFieldValues>>,
+  fieldsRef: React.MutableRefObject<FieldRefs<TFieldValues>>,
   name: InternalFieldName<TFieldValues>,
-  unmountFieldValue?: React.MutableRefObject<Record<string, any>>,
+  unmountFieldValueRef?: React.MutableRefObject<Record<string, any>>,
 ) {
-  const field = fields.current[name]!;
+  const field = fieldsRef.current[name]!;
 
   if (field) {
     const {
@@ -40,7 +40,7 @@ export default function getFieldValue<TFieldValues extends FieldValues>(
     return value;
   }
 
-  if (unmountFieldValue) {
-    return unmountFieldValue.current[name];
+  if (unmountFieldValueRef) {
+    return unmountFieldValueRef.current[name];
   }
 }
