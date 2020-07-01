@@ -342,7 +342,7 @@ export function useForm<
           previousFormIsValid !== isValidRef.current,
         );
 
-        return isEmptyObject(error);
+        return !error;
       }
     },
     [reRender, shouldRenderBaseOnError, validateAllFieldCriteria, resolverRef],
