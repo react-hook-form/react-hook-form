@@ -3,11 +3,12 @@
   "description": "Performant, flexible and extensible forms library for React Hooks",
   "version": "6.0.0-rc.5",
   "main": "dist/index.js",
-  "main:ie": "dist/index.ie11.js",
-  "umd:main": "dist/index.umd.js",
-  "unpkg": "dist/index.umd.min.js",
   "module": "dist/index.esm.js",
-  "module:min": "dist/index.min.esm.js",
+  "umd:main": "dist/index.umd.production.min.js",
+  "unpkg": "dist/index.umd.production.min.js",
+  "jsdelivr": "dist/index.umd.production.min.js",
+  "jsnext:main": "dist/index.esm.js",
+  "source": "src/index.ts",
   "types": "dist/index.d.ts",
   "sideEffects": true,
   "files": [
@@ -16,10 +17,8 @@
   "scripts": {
     "clean": "rimraf dist",
     "prebuild": "npm run clean",
-    "build": "npm run build:modern && npm run build:umd && npm run build:ie11 && npm run build:min",
+    "build": "node rollup/writeCjsEntryFile.js && npm run build:modern && npm run build:ie11",
     "build:modern": "rollup -c ./rollup/rollup.config.js",
-    "build:min": "rollup -c ./rollup/rollup.min.config.js",
-    "build:umd": "rollup -c ./rollup/rollup.umd.config.js",
     "build:ie11": "rollup -c ./rollup/rollup.ie11.config.js",
     "lint": "eslint '**/*.{js,ts,tsx}'",
     "lint:fix": "npm run lint -- --fix",
@@ -93,7 +92,7 @@
   },
   "bundlesize": [
     {
-      "path": "./dist/index.min.esm.js",
+      "path": "./dist/index.production.min.cjs.js",
       "maxSize": "9.5 kB"
     }
   ],
