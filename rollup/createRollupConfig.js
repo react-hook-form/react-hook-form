@@ -59,7 +59,13 @@ export function createRollupConfig(opts, assignedPlugins = []) {
           'process.env.NODE_ENV': JSON.stringify(opts.env),
         }),
       sourcemaps(),
-      shouldMinify && terser(),
+      shouldMinify &&
+        terser({
+          output: { comments: false },
+          compress: {
+            drop_console: true,
+          },
+        }),
       ...assignedPlugins,
     ],
   };
