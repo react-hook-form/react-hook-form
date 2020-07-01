@@ -316,17 +316,19 @@ export function useForm<
       isValidRef.current = isEmptyObject(errors);
 
       if (isArray(payload)) {
-        const isInputsValid = payload.every((name) => {
-          const error = get(errors, name);
+        const isInputsValid = payload
+          .map((name) => {
+            const error = get(errors, name);
 
-          if (error) {
-            set(errorsRef.current, name, error);
-          } else {
-            unset(errorsRef.current, name);
-          }
+            if (error) {
+              set(errorsRef.current, name, error);
+            } else {
+              unset(errorsRef.current, name);
+            }
 
-          return !error;
-        });
+            return !error;
+          })
+          .every(Boolean);
 
         reRender();
 
