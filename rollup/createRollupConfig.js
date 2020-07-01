@@ -40,7 +40,7 @@ export function createRollupConfig(opts, assignedPlugins = []) {
       format: opts.format,
       name: umdName,
       sourcemap: true,
-      globals: { react: 'React', 'react-native': 'ReactNative' },
+      globals: { react: 'React' },
       exports: 'named',
     },
     plugins: [

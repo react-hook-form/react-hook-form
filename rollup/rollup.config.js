@@ -1,28 +1,27 @@
 import { createRollupConfig } from './createRollupConfig';
 import pkg from '../package.json';
 
-const input = pkg.source;
 const options = [
   {
     format: 'cjs',
     env: 'development',
-    input,
+    input: pkg.source,
   },
   {
     format: 'cjs',
     env: 'production',
-    input,
+    input: pkg.source,
   },
-  { format: 'esm', input },
+  { format: 'esm', input: pkg.source },
   {
     format: 'umd',
     env: 'development',
-    input,
+    input: pkg.source,
   },
   {
     format: 'umd',
     env: 'production',
-    input,
+    input: pkg.source,
   },
 ];
 
