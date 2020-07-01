@@ -1,13 +1,14 @@
 {
   "name": "react-hook-form",
   "description": "Performant, flexible and extensible forms library for React Hooks",
-  "version": "6.0.0-rc.5",
+  "version": "6.0.0",
   "main": "dist/index.js",
-  "main:ie": "dist/index.ie11.js",
-  "umd:main": "dist/index.umd.js",
-  "unpkg": "dist/index.umd.min.js",
   "module": "dist/index.esm.js",
-  "module:min": "dist/index.min.esm.js",
+  "umd:main": "dist/index.umd.production.min.js",
+  "unpkg": "dist/index.umd.production.min.js",
+  "jsdelivr": "dist/index.umd.production.min.js",
+  "jsnext:main": "dist/index.esm.js",
+  "source": "src/index.ts",
   "types": "dist/index.d.ts",
   "sideEffects": true,
   "files": [
@@ -16,10 +17,8 @@
   "scripts": {
     "clean": "rimraf dist",
     "prebuild": "npm run clean",
-    "build": "npm run build:modern && npm run build:umd && npm run build:ie11 && npm run build:min",
+    "build": "node rollup/writeCjsEntryFile.js && npm run build:modern && npm run build:ie11",
     "build:modern": "rollup -c ./rollup/rollup.config.js",
-    "build:min": "rollup -c ./rollup/rollup.min.config.js",
-    "build:umd": "rollup -c ./rollup/rollup.umd.config.js",
     "build:ie11": "rollup -c ./rollup/rollup.ie11.config.js",
     "lint": "eslint '**/*.{js,ts,tsx}'",
     "lint:fix": "npm run lint -- --fix",
@@ -32,7 +31,7 @@
     "cypress:open": "cypress open",
     "prepublishOnly": "npm run lint && npm run lint:types && npm test && npm run build",
     "postrelease": "npm publish && git push --follow-tags",
-    "bundlesize": "npm run build:min && bundlesize",
+    "bundlesize": "npm run build:modern && bundlesize",
     "start:app": "npm run build:modern && yarn link && yarn --cwd node_modules/react link && yarn --cwd ./app link react react-hook-form && yarn --cwd ./app && yarn --cwd ./app run start"
   },
   "keywords": [
@@ -93,7 +92,7 @@
   },
   "bundlesize": [
     {
-      "path": "./dist/index.min.esm.js",
+      "path": "./dist/index.cjs.production.min.js",
       "maxSize": "9.5 kB"
     }
   ],
