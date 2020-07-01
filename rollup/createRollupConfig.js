@@ -11,11 +11,9 @@ import { terser } from 'rollup-plugin-terser';
 const name = 'index';
 const umdName = 'ReactHookForm';
 
-export function createRollupConfig(opts, assignedPlugins = []) {
-  const shouldMinify =
-    opts.minify !== undefined ? opts.minify : opts.env === 'production';
-
-  const tsconfigPath = opts.tsconfig || 'tsconfig.json';
+export function createRollupConfig(options) {
+  const shouldMinify = options.minify || options.env === 'production';
+  const tsconfigPath = options.tsconfig || 'tsconfig.json';
   const tsconfigJSON = ts.readConfigFile(tsconfigPath, ts.sys.readFile).config;
   const tsCompilerOptions = ts.parseJsonConfigFileContent(
     tsconfigJSON,
@@ -25,8 +23,8 @@ export function createRollupConfig(opts, assignedPlugins = []) {
 
   const outputName = [
     path.join(tsCompilerOptions.outDir, name),
-    opts.formatName || opts.format,
-    opts.env,
+    options.formatName || options.format,
+    options.env,
     shouldMinify ? 'min' : '',
     'js',
   ]
@@ -34,10 +32,10 @@ export function createRollupConfig(opts, assignedPlugins = []) {
     .join('.');
 
   return {
-    input: opts.input,
+    input: options.input,
     output: {
       file: outputName,
-      format: opts.format,
+      format: options.format,
       name: umdName,
       sourcemap: true,
       globals: { react: 'React' },
@@ -46,17 +44,17 @@ export function createRollupConfig(opts, assignedPlugins = []) {
     plugins: [
       external(),
       typescript({
-        tsconfig: opts.tsconfig,
+        tsconfig: options.tsconfig,
         clean: true,
       }),
       resolve(),
-      opts.format === 'umd' &&
+      options.format === 'umd' &&
         commonjs({
           include: /\/node_modules\//,
         }),
-      opts.env !== undefined &&
+      options.env !== undefined &&
         replace({
-          'process.env.NODE_ENV': JSON.stringify(opts.env),
+          'process.env.NODE_ENV': JSON.stringify(options.env),
         }),
       sourcemaps(),
       shouldMinify &&
@@ -66,7 +64,7 @@ export function createRollupConfig(opts, assignedPlugins = []) {
             drop_console: true,
           },
         }),
-      ...assignedPlugins,
+      options.plugins,
     ],
   };
 }

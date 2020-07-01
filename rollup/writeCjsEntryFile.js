@@ -23,6 +23,7 @@ if (process.env.NODE_ENV === 'production') {
     ts.sys,
     './',
   ).options;
+
   const filename =
     formatName === 'cjs'
       ? [name, 'js'].join('.')

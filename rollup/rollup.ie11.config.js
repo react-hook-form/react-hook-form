@@ -21,16 +21,19 @@ const options = [
 ];
 
 export default options.map((option) =>
-  createRollupConfig(option, [
-    getBabelOutputPlugin({
-      plugins: [
-        [
-          '@babel/plugin-transform-runtime',
-          {
-            corejs: 3,
-          },
+  createRollupConfig({
+    ...option,
+    plugins: [
+      getBabelOutputPlugin({
+        plugins: [
+          [
+            '@babel/plugin-transform-runtime',
+            {
+              corejs: 3,
+            },
+          ],
         ],
-      ],
-    }),
-  ]),
+      }),
+    ],
+  }),
 );
