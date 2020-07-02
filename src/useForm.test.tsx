@@ -8,7 +8,6 @@ import {
   screen,
 } from '@testing-library/react';
 import { useForm } from './';
-import attachEventListeners from './logic/attachEventListeners';
 import findRemovedFieldAndRemoveListener from './logic/findRemovedFieldAndRemoveListener';
 import validateField from './logic/validateField';
 import { VALIDATION_MODE, EVENTS } from './constants';
@@ -29,7 +28,6 @@ import { DeepMap } from './types/utils';
 jest.mock('./logic/findRemovedFieldAndRemoveListener');
 jest.mock('./logic/validateField');
 jest.mock('./logic/skipValidation');
-jest.mock('./logic/attachEventListeners');
 jest.mock('./logic/transformToNestObject');
 
 let nodeEnv: any;
@@ -76,6 +74,8 @@ describe('useForm', () => {
     test.each([['text'], ['radio'], ['checkbox']])(
       'should register field for %s type',
       async (type) => {
+        jest.spyOn(HTMLInputElement.prototype, 'addEventListener');
+
         let renderCount = 0;
         const Component = () => {
           const { register } = useForm();
@@ -91,16 +91,14 @@ describe('useForm', () => {
 
         const ref = screen.getByRole(type === 'text' ? 'textbox' : type);
 
-        ref.remove();
+        expect(ref.addEventListener).toHaveBeenCalledWith(
+          type === 'radio' || type === 'checkbox'
+            ? EVENTS.CHANGE
+            : EVENTS.INPUT,
+          expect.any(Function),
+        );
 
-        expect(attachEventListeners).toHaveBeenCalledWith({
-          field: {
-            mutationWatcher: new MutationObserver(jest.fn()),
-            ref,
-          },
-          isRadioOrCheckbox: type === 'radio' || type === 'checkbox',
-          handleChange: expect.any(Function),
-        });
+        ref.remove();
 
         await waitFor(() =>
           expect(findRemovedFieldAndRemoveListener).toHaveBeenCalled(),
@@ -2097,7 +2095,9 @@ describe('useForm', () => {
   });
 
   describe('when errors changes', () => {
-    it('should display the latest error message', () => {
+    it('should display the latest error message', async () => {
+      (validateField as any).mockReturnValue({});
+
       const Form = () => {
         const { register, setError, errors } = useForm();
 
@@ -2130,7 +2130,7 @@ describe('useForm', () => {
 
       const span = screen.getByRole('alert');
 
-      expect(span.textContent).toBe('data');
+      await waitFor(() => expect(span.textContent).toBe('data'));
 
       fireEvent.input(screen.getByRole('textbox'), {
         target: {
@@ -2138,7 +2138,7 @@ describe('useForm', () => {
         },
       });
 
-      expect(span.textContent).toBe('data');
+      await waitFor(() => expect(span.textContent).toBe(''));
     });
   });
 
@@ -2186,18 +2186,6 @@ describe('useForm', () => {
     let methods: UseFormMethods<{ test: string }>;
 
     beforeEach(() => {
-      (attachEventListeners as any).mockImplementation(
-        ({
-          field: { ref },
-          handleChange,
-        }: {
-          field: { ref: HTMLInputElement };
-          handleChange?: EventListenerOrEventListenerObject;
-        }) => {
-          ref.addEventListener(EVENTS.INPUT, handleChange!);
-          ref.addEventListener(EVENTS.BLUR, handleChange!);
-        },
-      );
       renderCount = 0;
       Component = ({
         name = 'test',
