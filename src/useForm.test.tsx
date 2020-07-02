@@ -8,15 +8,12 @@ import {
   screen,
 } from '@testing-library/react';
 import { useForm } from './';
-import attachEventListeners from './logic/attachEventListeners';
 import findRemovedFieldAndRemoveListener from './logic/findRemovedFieldAndRemoveListener';
 import validateField from './logic/validateField';
-import onDomRemove from './utils/onDomRemove';
 import { VALIDATION_MODE, EVENTS } from './constants';
 import {
   NestedValue,
   UseFormMethods,
-  Ref,
   ErrorOption,
   FieldError,
 } from './types/form';
@@ -28,11 +25,9 @@ import * as isSameError from './utils/isSameError';
 import * as getFieldValue from './logic/getFieldValue';
 import { DeepMap } from './types/utils';
 
-jest.mock('./utils/onDomRemove');
 jest.mock('./logic/findRemovedFieldAndRemoveListener');
 jest.mock('./logic/validateField');
 jest.mock('./logic/skipValidation');
-jest.mock('./logic/attachEventListeners');
 jest.mock('./logic/transformToNestObject');
 
 let nodeEnv: any;
@@ -77,57 +72,42 @@ describe('useForm', () => {
     });
 
     test.each([['text'], ['radio'], ['checkbox']])(
-      'should register field for %s type and call attachEventListeners method',
-      (type) => {
-        const { result } = renderHook(() => useForm());
+      'should register field for %s type',
+      async (type) => {
+        jest.spyOn(HTMLInputElement.prototype, 'addEventListener');
 
-        result.current.register({ type, name: 'test' });
+        let renderCount = 0;
+        const Component = () => {
+          const { register } = useForm();
+          renderCount++;
+          return (
+            <div>
+              <input name="test" type={type} ref={register} />
+            </div>
+          );
+        };
 
-        expect(attachEventListeners).toHaveBeenCalledWith({
-          field: {
-            mutationWatcher: undefined,
-            ref: {
-              type,
-              name: 'test',
-            },
-          },
-          isRadioOrCheckbox: type === 'radio' || type === 'checkbox',
-          handleChange: expect.any(Function),
-        });
-        expect(onDomRemove).toBeCalledWith(
-          { type, name: 'test' },
+        render(<Component />);
+
+        const ref = screen.getByRole(type === 'text' ? 'textbox' : type);
+
+        expect(ref.addEventListener).toHaveBeenCalledWith(
+          type === 'radio' || type === 'checkbox'
+            ? EVENTS.CHANGE
+            : EVENTS.INPUT,
           expect.any(Function),
         );
+
+        ref.remove();
+
+        await waitFor(() =>
+          expect(findRemovedFieldAndRemoveListener).toHaveBeenCalled(),
+        );
+        expect(renderCount).toBe(1);
       },
     );
 
-    it('should call removeFieldEventListenerAndRef when onDomRemove method is executed', async () => {
-      let mockOnDetachCallback: VoidFunction;
-      (onDomRemove as any).mockImplementation(
-        (_: Ref, onDetachCallback: VoidFunction) => {
-          mockOnDetachCallback = onDetachCallback;
-        },
-      );
-
-      const { result } = renderHook(() =>
-        useForm({ defaultValues: { test: 'test' } }),
-      );
-
-      result.current.register({ type: 'text', name: 'test' });
-
-      act(() => mockOnDetachCallback());
-
-      expect(findRemovedFieldAndRemoveListener).toHaveBeenCalled();
-    });
-
     it('should call reRender method with removeFieldEventListenerAndRef when onDomRemove method is executed with ReactNative', async () => {
-      let mockOnDetachCallback: VoidFunction;
-      (onDomRemove as any).mockImplementation(
-        (_: Ref, onDetachCallback: VoidFunction) => {
-          mockOnDetachCallback = onDetachCallback;
-        },
-      );
-
       let renderCount = 0;
       const Component = () => {
         const { register, control } = useForm();
@@ -135,14 +115,20 @@ describe('useForm', () => {
         if (!control.readFormStateRef.current.touched) {
           control.readFormStateRef.current.touched = true;
         }
-        return <input name="test" ref={register} />;
+        return (
+          <div>
+            <input name="test" type="text" ref={register} />
+          </div>
+        );
       };
 
       render(<Component />);
 
-      actComponent(() => mockOnDetachCallback());
+      screen.getByRole('textbox').remove();
 
-      expect(findRemovedFieldAndRemoveListener).toHaveBeenCalled();
+      await waitFor(() =>
+        expect(findRemovedFieldAndRemoveListener).toHaveBeenCalled(),
+      );
       expect(renderCount).toBe(2);
     });
 
@@ -2109,7 +2095,9 @@ describe('useForm', () => {
   });
 
   describe('when errors changes', () => {
-    it('should display the latest error message', () => {
+    it('should display the latest error message', async () => {
+      (validateField as any).mockReturnValue({});
+
       const Form = () => {
         const { register, setError, errors } = useForm();
 
@@ -2142,7 +2130,7 @@ describe('useForm', () => {
 
       const span = screen.getByRole('alert');
 
-      expect(span.textContent).toBe('data');
+      await waitFor(() => expect(span.textContent).toBe('data'));
 
       fireEvent.input(screen.getByRole('textbox'), {
         target: {
@@ -2150,7 +2138,7 @@ describe('useForm', () => {
         },
       });
 
-      expect(span.textContent).toBe('data');
+      await waitFor(() => expect(span.textContent).toBe(''));
     });
   });
 
@@ -2171,7 +2159,7 @@ describe('useForm', () => {
           [name]: {
             ref,
             required: 'required',
-            mutationWatcher: undefined,
+            mutationWatcher: new MutationObserver(jest.fn()),
           },
         },
       },
@@ -2179,7 +2167,7 @@ describe('useForm', () => {
       {
         ref,
         required: 'required',
-        mutationWatcher: undefined,
+        mutationWatcher: new MutationObserver(jest.fn()),
       },
     ];
     const shouldRenderBasedOnErrorParams = (name = 'test') => ({
@@ -2198,18 +2186,6 @@ describe('useForm', () => {
     let methods: UseFormMethods<{ test: string }>;
 
     beforeEach(() => {
-      (attachEventListeners as any).mockImplementation(
-        ({
-          field: { ref },
-          handleChange,
-        }: {
-          field: { ref: HTMLInputElement };
-          handleChange?: EventListenerOrEventListenerObject;
-        }) => {
-          ref.addEventListener(EVENTS.INPUT, handleChange!);
-          ref.addEventListener(EVENTS.BLUR, handleChange!);
-        },
-      );
       renderCount = 0;
       Component = ({
         name = 'test',
