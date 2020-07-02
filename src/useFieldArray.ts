@@ -173,8 +173,11 @@ export const useFieldArray = <
       ),
     );
 
-    if (isArray(errorsRef.current[name])) {
-      errorsRef.current[name] = prependAt(errorsRef.current[name], emptyArray);
+    if (isArray(get(errorsRef.current, name))) {
+      errorsRef.current[name] = prependAt(
+        get(errorsRef.current, name),
+        emptyArray,
+      );
     }
 
     if (readFormStateRef.current.touched && touchedFieldsRef.current[name]) {
@@ -208,8 +211,11 @@ export const useFieldArray = <
     setFieldAndValidState(removeArrayAt(allFields.current, index));
     setIsDeleted(true);
 
-    if (isArray(errorsRef.current[name])) {
-      errorsRef.current[name] = removeArrayAt(errorsRef.current[name], index);
+    if (isArray(get(errorsRef.current, name))) {
+      errorsRef.current[name] = removeArrayAt(
+        get(errorsRef.current, name),
+        index,
+      );
       if (!unique(errorsRef.current[name]).length) {
         delete errorsRef.current[name];
       }
@@ -298,9 +304,9 @@ export const useFieldArray = <
       ),
     );
 
-    if (isArray(errorsRef.current[name])) {
+    if (isArray(get(errorsRef.current, name))) {
       errorsRef.current[name] = insertAt(
-        errorsRef.current[name],
+        get(errorsRef.current, name),
         index,
         emptyArray,
       );
@@ -342,8 +348,8 @@ export const useFieldArray = <
     swapArrayAt(allFields.current, indexA, indexB);
     setFieldAndValidState([...allFields.current]);
 
-    if (isArray(errorsRef.current[name])) {
-      swapArrayAt(errorsRef.current[name], indexA, indexB);
+    if (isArray(get(errorsRef.current, name))) {
+      swapArrayAt(get(errorsRef.current, name), indexA, indexB);
     }
 
     if (readFormStateRef.current.touched && touchedFieldsRef.current[name]) {
@@ -371,8 +377,8 @@ export const useFieldArray = <
     moveArrayAt(allFields.current, from, to);
     setFieldAndValidState([...allFields.current]);
 
-    if (isArray(errorsRef.current[name])) {
-      moveArrayAt(errorsRef.current[name], from, to);
+    if (isArray(get(errorsRef.current, name))) {
+      moveArrayAt(get(errorsRef.current, name), from, to);
     }
 
     if (readFormStateRef.current.touched && touchedFieldsRef.current[name]) {
