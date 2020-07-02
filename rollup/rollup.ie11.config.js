@@ -1,33 +1,39 @@
-import { getConfig } from './rollup.config';
+import { createRollupConfig } from './createRollupConfig';
 import { getBabelOutputPlugin } from '@rollup/plugin-babel';
-import resolve from '@rollup/plugin-node-resolve';
-import commonjs from '@rollup/plugin-commonjs';
 import pkg from '../package.json';
 
-export default getConfig({
-  tsconfig: './tsconfig.ie11.json',
-  output: [
-    {
-      file: pkg['main:ie'],
-      format: 'cjs',
-      exports: 'named',
-      sourcemap: true,
-    },
-  ],
-  plugins: [
-    resolve(),
-    commonjs({
-      include: 'node_modules/**',
-    }),
-    getBabelOutputPlugin({
-      plugins: [
-        [
-          '@babel/plugin-transform-runtime',
-          {
-            corejs: 3,
-          },
+const tsconfig = './tsconfig.ie11.json';
+const options = [
+  {
+    format: 'cjs',
+    formatName: 'ie11',
+    env: 'development',
+    input: pkg.source,
+    tsconfig,
+  },
+  {
+    format: 'cjs',
+    formatName: 'ie11',
+    env: 'production',
+    input: pkg.source,
+    tsconfig,
+  },
+];
+
+export default options.map((option) =>
+  createRollupConfig({
+    ...option,
+    plugins: [
+      getBabelOutputPlugin({
+        plugins: [
+          [
+            '@babel/plugin-transform-runtime',
+            {
+              corejs: 3,
+            },
+          ],
         ],
-      ],
-    }),
-  ],
-});
+      }),
+    ],
+  }),
+);

@@ -314,16 +314,23 @@ export function useForm<
       isValidRef.current = isEmptyObject(errors);
 
       if (isArray(payload)) {
-        payload.forEach((name) => {
-          const error = get(errors, name);
+        const isInputsValid = payload
+          .map((name) => {
+            const error = get(errors, name);
 
-          if (error) {
-            set(errorsRef.current, name, error);
-          } else {
-            unset(errorsRef.current, name);
-          }
-        });
+            if (error) {
+              set(errorsRef.current, name, error);
+            } else {
+              unset(errorsRef.current, name);
+            }
+
+            return !error;
+          })
+          .every(Boolean);
+
         reRender();
+
+        return isInputsValid;
       } else {
         const error = get(errors, payload);
 
@@ -332,9 +339,9 @@ export function useForm<
           (error ? { [payload]: error } : {}) as FlatFieldErrors<TFieldValues>,
           previousFormIsValid !== isValidRef.current,
         );
-      }
 
-      return isEmptyObject(errorsRef.current);
+        return !error;
+      }
     },
     [reRender, shouldRenderBaseOnError, validateAllFieldCriteria, resolverRef],
   );
