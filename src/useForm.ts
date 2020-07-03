@@ -619,7 +619,13 @@ export function useForm<
         }
       }
     },
-    [reRender, validateResolver, removeFieldEventListener, resolverRef],
+    [
+      reRender,
+      validateResolver,
+      removeFieldEventListener,
+      resolverRef,
+      shouldUnregister,
+    ],
   );
 
   function clearErrors(
@@ -1135,7 +1141,7 @@ export function useForm<
       trigger,
     ]),
     getValues: React.useCallback(getValues, []),
-    register: React.useCallback(register, [defaultValuesRef.current]),
+    register: React.useCallback(register, [defaultValuesRef]),
     unregister: React.useCallback(unregister, []),
     formState: isProxyEnabled
       ? new Proxy<FormStateProxy<TFieldValues>>(formState, {
@@ -1192,8 +1198,8 @@ export function useForm<
     control,
     handleSubmit,
     reset: React.useCallback(reset, []),
-    clearErrors: React.useCallback(clearErrors, []),
-    setError: React.useCallback(setError, []),
+    clearErrors: React.useCallback(clearErrors, [reRender]),
+    setError: React.useCallback(setError, [reRender]),
     errors: errorsRef.current,
     ...commonProps,
   };
