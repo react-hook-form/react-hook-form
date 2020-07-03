@@ -1,12 +1,12 @@
 import ts from 'typescript';
 import path from 'path';
+import compiler from '@ampproject/rollup-plugin-closure-compiler';
 import external from 'rollup-plugin-peer-deps-external';
 import replace from '@rollup/plugin-replace';
 import typescript from 'rollup-plugin-typescript2';
 import resolve from '@rollup/plugin-node-resolve';
 import commonjs from '@rollup/plugin-commonjs';
 import sourcemaps from 'rollup-plugin-sourcemaps';
-import { terser } from 'rollup-plugin-terser';
 
 const name = 'index';
 const umdName = 'ReactHookForm';
@@ -57,13 +57,7 @@ export function createRollupConfig(options) {
           'process.env.NODE_ENV': JSON.stringify(options.env),
         }),
       sourcemaps(),
-      shouldMinify &&
-        terser({
-          output: { comments: false },
-          compress: {
-            drop_console: true,
-          },
-        }),
+      shouldMinify && compiler(),
       options.plugins,
     ],
   };
