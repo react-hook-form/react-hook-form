@@ -4,4 +4,5 @@ export {
   SubmitHandler,
   Control,
   UseFormMethods,
+  ValidationRules,
 } from './form';
