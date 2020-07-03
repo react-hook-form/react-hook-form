@@ -3,18 +3,23 @@ import isKey from './isKey';
 import stringToPath from './stringToPath';
 import isEmptyObject from './isEmptyObject';
 import isObject from './isObject';
+import isUndefined from './isUndefined';
 
-function baseGet(object: any, path: any) {
-  return [...Array(path.length)].reduce(
-    (result, _, i) => result[path[i]] || result,
-    object,
-  );
+function baseGet(object: any, updatePath: (string | number)[]) {
+  const path = updatePath.slice(0, -1);
+  const length = path.length;
+  let index = 0;
+
+  while (index < length) {
+    object = isUndefined(object) ? index++ : object[updatePath[index++]];
+  }
+  return index == length ? object : undefined;
 }
 
 export default function unset(object: any, path: string) {
   const updatePath = isKey(path) ? [path] : stringToPath(path);
   const childObject =
-    updatePath.length == 1 ? object : baseGet(object, updatePath.slice(0, -1));
+    updatePath.length == 1 ? object : baseGet(object, updatePath);
   const key = updatePath[updatePath.length - 1];
   let previousObjRef = undefined;
 
