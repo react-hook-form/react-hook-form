@@ -9,7 +9,7 @@ import {
 } from '@testing-library/react';
 import { useForm } from './';
 import findRemovedFieldAndRemoveListener from './logic/findRemovedFieldAndRemoveListener';
-import validateField from './logic/validateField';
+import * as validateField from './logic/validateField';
 import { VALIDATION_MODE, EVENTS } from './constants';
 import {
   NestedValue,
@@ -20,13 +20,10 @@ import {
 import skipValidation from './logic/skipValidation';
 import * as shouldRenderBasedOnError from './logic/shouldRenderBasedOnError';
 import { transformToNestObject } from './logic';
-import * as focusOnErrorField from './logic/focusOnErrorField';
 import * as isSameError from './utils/isSameError';
-import * as getFieldValue from './logic/getFieldValue';
 import { DeepMap } from './types/utils';
 
 jest.mock('./logic/findRemovedFieldAndRemoveListener');
-jest.mock('./logic/validateField');
 jest.mock('./logic/skipValidation');
 jest.mock('./logic/transformToNestObject');
 
@@ -141,10 +138,6 @@ describe('useForm', () => {
         value: 'testData',
       });
 
-      (validateField as any).mockImplementation(async () => {
-        return {};
-      });
-
       await act(async () => {
         await result.current.handleSubmit((data) => {
           expect(data).toEqual({
@@ -163,10 +156,6 @@ describe('useForm', () => {
       const { register } = result.current;
       register({ type: 'radio', name: 'test', value: '' });
       register({ type: 'radio', name: 'test', value: '' });
-
-      (validateField as any).mockImplementation(async () => {
-        return {};
-      });
 
       await act(async () => {
         await result.current.handleSubmit((data) => {
@@ -189,10 +178,6 @@ describe('useForm', () => {
       const { register } = result.current;
       register(ref as any);
       register(ref as any);
-
-      (validateField as any).mockImplementation(async () => {
-        return {};
-      });
 
       await act(async () => {
         await result.current.handleSubmit((data) => {
@@ -249,10 +234,6 @@ describe('useForm', () => {
 
       result.current.setValue('test', '1');
 
-      (validateField as any).mockImplementation(async () => {
-        return {};
-      });
-
       await act(async () => {
         await result.current.handleSubmit((data) => {
           expect(data).toEqual({
@@ -287,10 +268,6 @@ describe('useForm', () => {
 
       const callback = jest.fn();
 
-      (validateField as any).mockImplementation(async () => {
-        return {};
-      });
-
       await act(async () => {
         await result.current.handleSubmit(callback)({
           preventDefault: () => {},
@@ -306,10 +283,6 @@ describe('useForm', () => {
 
       result.current.register({ name: 'input' });
       result.current.unregister(['input']);
-
-      (validateField as any).mockImplementation(async () => {
-        return {};
-      });
 
       await act(async () => {
         await result.current.handleSubmit((data) => expect(data).toEqual({}))({
@@ -480,8 +453,6 @@ describe('useForm', () => {
       result.current.register({ name: 'test' });
       result.current.setValue('test', 'data');
 
-      (validateField as any).mockImplementation(async () => ({}));
-
       expect(result.current.formState.isSubmitted).toBeFalsy();
       await act(async () => {
         await result.current.handleSubmit((data) => {
@@ -609,10 +580,6 @@ describe('useForm', () => {
       result.current.register({ name: 'test', type: 'radio', value: '1' });
       result.current.register({ name: 'test', type: 'radio', value: '2' });
 
-      (validateField as any).mockImplementation(async () => {
-        return {};
-      });
-
       result.current.setValue('test', '1');
 
       await act(async () => {
@@ -631,10 +598,6 @@ describe('useForm', () => {
       const { result } = renderHook(() => useForm<{ test: FileList }>());
 
       result.current.register({ name: 'test', type: 'file', value: '' });
-
-      (validateField as any).mockImplementation(async () => {
-        return {};
-      });
 
       const blob = new Blob([''], { type: 'image/png' }) as any;
       blob['lastModifiedDate'] = '';
@@ -667,10 +630,6 @@ describe('useForm', () => {
 
       result.current.register({ name: 'test', type: 'file', value: '' });
 
-      (validateField as any).mockImplementation(async () => {
-        return {};
-      });
-
       result.current.setValue('test', 'path');
 
       expect(
@@ -692,10 +651,6 @@ describe('useForm', () => {
         type: 'checkbox',
         value: '2',
         attributes: { value: '2' },
-      });
-
-      (validateField as any).mockImplementation(async () => {
-        return {};
       });
 
       result.current.setValue('test', '1');
@@ -722,10 +677,6 @@ describe('useForm', () => {
         attributes: { value: '1' },
       });
 
-      (validateField as any).mockImplementation(async () => {
-        return {};
-      });
-
       result.current.setValue('test', '1');
 
       await act(async () => {
@@ -748,10 +699,6 @@ describe('useForm', () => {
         type: 'select-multiple',
         value: '1',
         options: [{ value: '1', selected: true }] as any,
-      });
-
-      (validateField as any).mockImplementation(async () => {
-        return {};
       });
 
       result.current.setValue('test', '1');
@@ -885,109 +832,115 @@ describe('useForm', () => {
     });
 
     it('should be called trigger method if shouldValidate variable is true', async () => {
-      (validateField as any).mockImplementation(async () => ({}));
-      // check if setDirty is called
-      const mockGetFieldValue = jest.spyOn(getFieldValue, 'default');
+      const { result } = renderHook(() => useForm());
 
-      const { result } = renderHook(() =>
-        useForm({
-          defaultValues: {
-            test: '',
+      result.current.register(
+        {
+          name: 'test',
+        },
+        {
+          minLength: {
+            value: 5,
+            message: 'min',
           },
-        }),
+        },
       );
 
-      result.current.register({ name: 'test', required: 'required' });
-      result.current.control.readFormStateRef.current.isDirty = true;
+      result.current.formState.isDirty;
+      result.current.formState.dirtyFields;
 
-      act(() =>
-        result.current.setValue('test', 'test', {
+      await act(async () =>
+        result.current.setValue('test', 'abc', {
           shouldValidate: true,
           shouldDirty: true,
         }),
       );
 
-      expect(mockGetFieldValue).toHaveBeenCalledTimes(1);
-      expect(validateField).toHaveBeenCalled();
+      expect(result.current.errors?.test?.message).toBe('min');
+      expect(result.current.formState.isDirty).toBeTruthy();
+      expect(result.current.formState.dirtyFields).toEqual({ test: true });
     });
 
     it('should not be called trigger method if config is empty', async () => {
-      (validateField as any).mockImplementation(async () => ({}));
-      // check if setDirty is called
-      const mockGetFieldValue = jest.spyOn(getFieldValue, 'default');
+      const { result } = renderHook(() => useForm());
 
-      const { result } = renderHook(() =>
-        useForm({
-          defaultValues: {
-            test: '',
+      result.current.register(
+        {
+          name: 'test',
+        },
+        {
+          minLength: {
+            value: 5,
+            message: 'min',
           },
-        }),
+        },
       );
 
-      result.current.register({ name: 'test', required: 'required' }),
-        (result.current.control.readFormStateRef.current.isDirty = true);
+      result.current.formState.isDirty;
+      result.current.formState.dirtyFields;
 
-      result.current.setValue('test', 'test');
+      result.current.setValue('test', 'abc');
 
-      expect(mockGetFieldValue).not.toHaveBeenCalled();
-      expect(validateField).not.toHaveBeenCalled();
+      expect(result.current.errors?.test).toBeUndefined();
+      expect(result.current.formState.isDirty).toBeFalsy();
+      expect(result.current.formState.dirtyFields).toEqual({});
     });
 
     it('should be called trigger method if shouldValidate variable is true and field value is array', async () => {
-      (validateField as any).mockImplementation(async () => ({}));
-      // check if setDirty is called
-      const mockGetFieldValue = jest.spyOn(getFieldValue, 'default');
+      const { result } = renderHook(() => useForm());
 
-      const { result } = renderHook(() =>
-        useForm({
-          defaultValues: {
-            'test[0]': '',
-            'test[1]': '',
-            'test[2]': '',
-          },
-        }),
-      );
+      const rules = {
+        minLength: {
+          value: 5,
+          message: 'min',
+        },
+      };
 
-      result.current.register({ name: 'test[0]', required: 'required' });
-      result.current.register({ name: 'test[1]', required: 'required' });
-      result.current.register({ name: 'test[2]', required: 'required' });
-      result.current.control.readFormStateRef.current.isDirty = true;
+      result.current.register({ name: 'test[0]' }, rules);
+      result.current.register({ name: 'test[1]' }, rules);
+      result.current.register({ name: 'test[2]' }, rules);
 
-      act(() =>
-        result.current.setValue('test', ['test', 'test1', 'test2'], {
+      result.current.formState.isDirty;
+      result.current.formState.dirtyFields;
+
+      await act(async () =>
+        result.current.setValue('test', ['abc1', 'abc2', 'abc3'], {
           shouldValidate: true,
           shouldDirty: true,
         }),
       );
 
-      expect(mockGetFieldValue).toHaveBeenCalledTimes(3);
-      expect(validateField).toHaveBeenCalledTimes(3);
+      expect(result.current.errors?.test[0]?.message).toBe('min');
+      expect(result.current.errors?.test[1]?.message).toBe('min');
+      expect(result.current.errors?.test[2]?.message).toBe('min');
+      expect(result.current.formState.isDirty).toBeTruthy();
+      expect(result.current.formState.dirtyFields).toEqual({
+        test: [true, true, true],
+      });
     });
 
     it('should not be called trigger method if config is empty and field value is array', async () => {
-      (validateField as any).mockImplementation(async () => ({}));
-      // check if setDirty is called
-      const mockGetFieldValue = jest.spyOn(getFieldValue, 'default');
+      const { result } = renderHook(() => useForm());
 
-      const { result } = renderHook(() =>
-        useForm({
-          defaultValues: {
-            'test[0]': '',
-            'test[1]': '',
-            'test[2]': '',
-          },
-        }),
-      );
+      const rules = {
+        minLength: {
+          value: 5,
+          message: 'min',
+        },
+      };
 
-      result.current.register({ name: 'test[0]', required: 'required' });
-      result.current.register({ name: 'test[1]', required: 'required' });
-      result.current.register({ name: 'test[2]', required: 'required' });
-      result.current.control.readFormStateRef.current.isDirty = true;
+      result.current.register({ name: 'test[0]' }, rules);
+      result.current.register({ name: 'test[1]' }, rules);
+      result.current.register({ name: 'test[2]' }, rules);
+
+      result.current.formState.isDirty;
+      result.current.formState.dirtyFields;
 
       act(() => result.current.setValue('test', ['test', 'test1', 'test2']));
 
-      expect(mockGetFieldValue).not.toHaveBeenCalled();
-      expect(validateField).not.toHaveBeenCalled();
+      expect(result.current.errors?.test).toBeUndefined();
+      expect(result.current.formState.isDirty).toBeFalsy();
+      expect(result.current.formState.dirtyFields).toEqual({});
     });
 
     it('should not work if field is not registered', () => {
@@ -1198,26 +1151,18 @@ describe('useForm', () => {
 
       result.current.register({ type: 'input', name: 'test' });
 
-      (validateField as any).mockImplementation(async () => ({}));
-
       expect(await result.current.trigger('test')).toBeTruthy();
     });
 
     it('should update value when value is supplied', async () => {
-      const { result } = renderHook(() =>
-        useForm<{ test: string }>({
-          mode: VALIDATION_MODE.onChange,
-        }),
-      );
-
-      (validateField as any).mockImplementation(async () => {
-        return {};
-      });
+      const { result } = renderHook(() => useForm<{ test: string }>());
 
       result.current.register(
         { type: 'input', name: 'test' },
         { required: true },
       );
+
+      result.current.setValue('test', 'abc');
 
       await act(async () =>
         expect(await result.current.trigger('test')).toBeTruthy(),
@@ -1231,39 +1176,15 @@ describe('useForm', () => {
         }),
       );
 
-      (validateField as any).mockImplementation(async () => ({}));
-
-      result.current.register({
-        name: 'test',
-      });
-      result.current.register({
-        name: 'test1',
-      });
+      result.current.register({ name: 'test' }, { required: 'required' });
+      result.current.register({ name: 'test1' }, { required: 'required' });
 
       await act(async () => {
         await result.current.trigger(['test', 'test1'] as any);
       });
 
-      expect(validateField).toBeCalledWith(
-        {
-          current: {
-            test: { ref: { name: 'test' } },
-            test1: { ref: { name: 'test1' } },
-          },
-        },
-        false,
-        { ref: { name: 'test' } },
-      );
-      expect(validateField).toBeCalledWith(
-        {
-          current: {
-            test: { ref: { name: 'test' } },
-            test1: { ref: { name: 'test1' } },
-          },
-        },
-        false,
-        { ref: { name: 'test1' } },
-      );
+      expect(result.current.errors?.test?.message).toBe('required');
+      expect(result.current.errors?.test1?.message).toBe('required');
     });
   });
 
@@ -1521,7 +1442,6 @@ describe('useForm', () => {
       };
 
       render(<Component />);
-      (validateField as any).mockImplementation(async () => ({}));
 
       fireEvent.click(screen.getByRole('button'));
 
@@ -1551,9 +1471,6 @@ describe('useForm', () => {
       );
 
       const callback = jest.fn();
-      (validateField as any).mockImplementation(async () => {
-        return { test: { type: 'test' } };
-      });
 
       await act(async () => {
         await result.current.handleSubmit(callback)({
@@ -1564,25 +1481,14 @@ describe('useForm', () => {
       expect(callback).not.toBeCalled();
     });
 
-    it('should not focus if shouldFocusError is false', async () => {
-      const errors = {
-        test: {
-          type: 'required',
-          ref: { name: 'test', value: '' },
-          types: {
-            required: 'required',
-          },
-          message: 'required',
-        },
-      };
-      (validateField as any).mockImplementation(async () => {
-        return errors;
-      });
-      const mockFocusOnErrorField = jest.spyOn(focusOnErrorField, 'default');
+    it('should not focus if errors is exist', async () => {
+      const mockFocus = jest.spyOn(HTMLInputElement.prototype, 'focus');
 
-      const { result } = renderHook(() => useForm({ shouldFocusError: false }));
+      const { result } = renderHook(() => useForm());
 
-      result.current.register('test', { required: true });
+      const input = document.createElement('input');
+      input.name = 'test';
+      result.current.register({ required: true })(input);
 
       const callback = jest.fn();
       await act(async () => {
@@ -1593,8 +1499,30 @@ describe('useForm', () => {
       });
 
       expect(callback).not.toBeCalled();
-      expect(mockFocusOnErrorField).not.toBeCalled();
-      expect(result.current.control.errorsRef.current).toEqual(errors);
+      expect(mockFocus).toBeCalled();
+      expect(result.current.errors?.test.type).toBe('required');
+    });
+
+    it('should not focus if shouldFocusError is false', async () => {
+      const mockFocus = jest.spyOn(HTMLInputElement.prototype, 'focus');
+
+      const { result } = renderHook(() => useForm({ shouldFocusError: false }));
+
+      const input = document.createElement('input');
+      input.name = 'test';
+      result.current.register({ required: true })(input);
+
+      const callback = jest.fn();
+      await act(async () => {
+        await result.current.handleSubmit(callback)({
+          preventDefault: () => {},
+          persist: () => {},
+        } as React.SyntheticEvent);
+      });
+
+      expect(callback).not.toBeCalled();
+      expect(mockFocus).not.toBeCalled();
+      expect(result.current.errors?.test.type).toBe('required');
     });
   });
 
@@ -1864,10 +1792,6 @@ describe('useForm', () => {
         useForm<{ data: string; whatever: string }>(),
       );
 
-      (validateField as any).mockImplementation(async () => {
-        return {};
-      });
-
       result.current.register('data');
 
       act(() => result.current.setError('whatever', { type: 'missing' }));
@@ -1929,19 +1853,14 @@ describe('useForm', () => {
         }),
       );
 
-      (validateField as any).mockImplementation(async () => {
-        return { issue: 'issue' };
-      });
-
       result.current.formState.isValid;
 
       await act(async () =>
         result.current.register(
-          { name: 'issue', value: 'test' },
+          { name: 'issue', value: '' },
           { required: true },
         ),
       );
-      result.current.register({ name: 'input' });
 
       expect(result.current.formState.isValid).toBeFalsy();
     });
@@ -1953,17 +1872,14 @@ describe('useForm', () => {
         }),
       );
 
-      (validateField as any).mockImplementation(async () => {
-        return {};
-      });
-
       result.current.formState.isValid;
 
-      result.current.register(
-        { name: 'issue', value: 'test' },
-        { required: true },
+      await act(async () =>
+        result.current.register(
+          { name: 'issue', value: 'test' },
+          { required: true },
+        ),
       );
-      result.current.register({ name: 'input' }, { required: true });
 
       expect(result.current.formState.isValid).toBeTruthy();
     });
@@ -2052,10 +1968,6 @@ describe('useForm', () => {
         }),
       );
 
-      (validateField as any).mockImplementation(async () => {
-        return {};
-      });
-
       result.current.register({ type: 'text', name: 'test' });
       result.current.register({ type: 'text', name: 'deep.nested' });
       result.current.register({ type: 'text', name: 'deep.values' });
@@ -2096,8 +2008,6 @@ describe('useForm', () => {
 
   describe('when errors changes', () => {
     it('should display the latest error message', async () => {
-      (validateField as any).mockReturnValue({});
-
       const Form = () => {
         const { register, setError, errors } = useForm();
 
@@ -2138,7 +2048,7 @@ describe('useForm', () => {
         },
       });
 
-      await waitFor(() => expect(span.textContent).toBe(''));
+      await waitFor(() => expect(span.textContent).toBe('max'));
     });
   });
 
@@ -2226,6 +2136,7 @@ describe('useForm', () => {
 
     describe('onSubmit mode', () => {
       it('should not contain error if value is valid', async () => {
+        const mockValidateField = jest.spyOn(validateField, 'default');
         (skipValidation as any).mockReturnValue(true);
 
         render(<Component />);
@@ -2234,29 +2145,31 @@ describe('useForm', () => {
           target: { name: 'test' },
         });
 
+        await waitFor(() => expect(mockValidateField).not.toHaveBeenCalled());
         expect(skipValidation).toHaveBeenCalledWith({
           ...skipValidationParams,
           isOnSubmit: true,
         });
-        expect(validateField).not.toHaveBeenCalled();
         expect(screen.getByRole('alert').textContent).toBe('');
         expect(renderCount).toBe(1);
       });
 
       it('should not contain error if name is invalid', async () => {
+        const mockValidateField = jest.spyOn(validateField, 'default');
         render(<Component />);
 
         fireEvent.input(screen.getByRole('textbox'), {
           target: { name: 'test1' },
         });
 
+        await waitFor(() => expect(mockValidateField).not.toHaveBeenCalled());
         expect(skipValidation).not.toHaveBeenCalled();
-        expect(validateField).not.toHaveBeenCalled();
         expect(screen.getByRole('alert').textContent).toBe('');
         expect(renderCount).toBe(1);
       });
 
       it('should not contain error if value is valid when executed handleSubmit', async () => {
+        const mockValidateField = jest.spyOn(validateField, 'default');
         (skipValidation as any).mockReturnValue(false);
         const mockShouldRenderBasedOnError = jest
           .spyOn(shouldRenderBasedOnError, 'default')
@@ -2265,8 +2178,6 @@ describe('useForm', () => {
         render(<Component />);
 
         const input = screen.getByRole('textbox') as HTMLInputElement;
-
-        (validateField as any).mockReturnValue({});
 
         fireEvent.input(input, { target: { name: 'test', value: 'test' } });
 
@@ -2278,7 +2189,7 @@ describe('useForm', () => {
             isOnSubmit: true,
           }),
         );
-        expect(validateField).toHaveBeenCalledWith(
+        expect(mockValidateField).toHaveBeenCalledWith(
           ...validateFieldParams(input),
         );
         expect(mockShouldRenderBasedOnError).toHaveBeenCalledWith({
@@ -2292,20 +2203,8 @@ describe('useForm', () => {
 
       it('should contain error if value is invalid when value was changed', async () => {
         let input: any = null;
-
-        const error = {
-          test: {
-            type: 'required',
-            ref: input,
-            types: {
-              required: 'required',
-            },
-            message: 'required',
-          },
-        };
-        (validateField as any).mockReturnValue(error);
-
         (skipValidation as any).mockReturnValue(false);
+        const mockValidateField = jest.spyOn(validateField, 'default');
         const mockShouldRenderBasedOnError = jest
           .spyOn(shouldRenderBasedOnError, 'default')
           .mockReturnValue(true);
@@ -2317,7 +2216,7 @@ describe('useForm', () => {
         fireEvent.input(input, { target: { name: 'test' } });
 
         await waitFor(() =>
-          expect(validateField).toHaveBeenCalledWith(
+          expect(mockValidateField).toHaveBeenCalledWith(
             ...validateFieldParams(input),
           ),
         );
@@ -2330,82 +2229,21 @@ describe('useForm', () => {
           errors: {
             test: {
               message: 'required',
-              ref: null,
+              ref: input,
               type: 'required',
-              types: {
-                required: 'required',
-              },
             },
           },
-          error,
+          error: {
+            test: {
+              type: 'required',
+              ref: input,
+              message: 'required',
+            },
+          },
           fieldsWithValidation: new Set(['test']),
         });
         expect(screen.getByRole('alert').textContent).toBe('required');
         expect(renderCount).toBe(2);
-      });
-
-      it('should not contain error if value is valid when value was changed', async () => {
-        let input: any = null;
-
-        const error = {
-          test: {
-            type: 'required',
-            ref: input,
-            types: {
-              required: 'required',
-            },
-            message: 'required',
-          },
-        };
-
-        (validateField as any).mockReturnValue(error);
-
-        (skipValidation as any).mockReturnValue(false);
-        const mockShouldRenderBasedOnError = jest
-          .spyOn(shouldRenderBasedOnError, 'default')
-          .mockReturnValue(true);
-
-        render(<Component />);
-
-        input = screen.getByRole('textbox');
-
-        fireEvent.input(input, { target: { name: 'test' } });
-
-        (validateField as any).mockReturnValue({});
-
-        fireEvent.input(input, { target: { name: 'test' } });
-
-        await waitFor(() =>
-          expect(validateField).toHaveBeenCalledWith(
-            ...validateFieldParams(input),
-          ),
-        );
-        expect(skipValidation).toHaveBeenCalledWith({
-          ...skipValidationParams,
-          isOnSubmit: true,
-        });
-        // before submit
-        expect(mockShouldRenderBasedOnError.mock.calls[0]).toEqual([
-          {
-            errors: {},
-            name: 'test',
-            error,
-            validFields: new Set(['test']),
-            fieldsWithValidation: new Set(['test']),
-          },
-        ]);
-        // after submitted
-        expect(mockShouldRenderBasedOnError.mock.calls[1]).toEqual([
-          {
-            errors: {},
-            name: 'test',
-            error: {},
-            validFields: new Set(['test']),
-            fieldsWithValidation: new Set(['test']),
-          },
-        ]);
-        expect(screen.getByRole('alert').textContent).toBe('');
-        expect(renderCount).toBe(3);
       });
 
       it('should call reRender method if previous error is undefined', async () => {
@@ -2424,7 +2262,9 @@ describe('useForm', () => {
 
         const mockIsSameError = jest.spyOn(isSameError, 'default');
 
-        (validateField as any).mockReturnValue(error);
+        const mockValidateField = jest
+          .spyOn(validateField, 'default')
+          .mockReturnValue(Promise.resolve(error));
 
         (skipValidation as any).mockReturnValue(false);
         const mockShouldRenderBasedOnError = jest
@@ -2438,7 +2278,7 @@ describe('useForm', () => {
         fireEvent.input(input, { target: { name: 'test' } });
 
         await waitFor(() =>
-          expect(validateField).toHaveBeenCalledWith(
+          expect(mockValidateField).toHaveBeenCalledWith(
             ...validateFieldParams(input),
           ),
         );
@@ -2474,7 +2314,9 @@ describe('useForm', () => {
 
         const mockIsSameError = jest.spyOn(isSameError, 'default');
 
-        (validateField as any).mockReturnValue(error);
+        const mockValidateField = jest
+          .spyOn(validateField, 'default')
+          .mockReturnValue(Promise.resolve(error));
 
         (skipValidation as any).mockReturnValue(false);
         const mockShouldRenderBasedOnError = jest
@@ -2490,7 +2332,7 @@ describe('useForm', () => {
         fireEvent.input(input, { target: { name: 'test' } });
 
         await waitFor(() =>
-          expect(validateField).toHaveBeenCalledWith(
+          expect(mockValidateField).toHaveBeenCalledWith(
             ...validateFieldParams(input),
           ),
         );
@@ -2513,6 +2355,7 @@ describe('useForm', () => {
 
       it('should be called reRender method if isWatchAllRef is true', async () => {
         (skipValidation as any).mockReturnValue(true);
+        const mockValidateField = jest.spyOn(validateField, 'default');
 
         render(<Component />);
 
@@ -2525,13 +2368,14 @@ describe('useForm', () => {
           ...skipValidationParams,
           isOnSubmit: true,
         });
-        expect(validateField).not.toHaveBeenCalled();
+        expect(mockValidateField).not.toHaveBeenCalled();
         expect(screen.getByRole('alert').textContent).toBe('');
         expect(renderCount).toBe(2);
       });
 
       it('should be called reRender method if field is watched', async () => {
         (skipValidation as any).mockReturnValue(true);
+        const mockValidateField = jest.spyOn(validateField, 'default');
 
         render(<Component />);
 
@@ -2544,13 +2388,14 @@ describe('useForm', () => {
           ...skipValidationParams,
           isOnSubmit: true,
         });
-        expect(validateField).not.toHaveBeenCalled();
+        expect(mockValidateField).not.toHaveBeenCalled();
         expect(screen.getByRole('alert').textContent).toBe('');
         expect(renderCount).toBe(2);
       });
 
       it('should be called reRender method if field array is watched', async () => {
         (skipValidation as any).mockReturnValue(true);
+        const mockValidateField = jest.spyOn(validateField, 'default');
 
         render(<Component name="test[0]" />);
 
@@ -2563,7 +2408,7 @@ describe('useForm', () => {
           ...skipValidationParams,
           isOnSubmit: true,
         });
-        expect(validateField).not.toHaveBeenCalled();
+        expect(mockValidateField).not.toHaveBeenCalled();
         expect(renderCount).toBe(2);
       });
     });
@@ -2571,7 +2416,9 @@ describe('useForm', () => {
     describe('onBlur mode', () => {
       it('should not contain error if value is valid with ReactNative', async () => {
         (skipValidation as any).mockReturnValue(false);
-        (validateField as any).mockReturnValue({});
+        const mockValidateField = jest
+          .spyOn(validateField, 'default')
+          .mockReturnValue({} as any);
         const mockShouldRenderBasedOnError = jest
           .spyOn(shouldRenderBasedOnError, 'default')
           .mockReturnValue(false);
@@ -2589,7 +2436,7 @@ describe('useForm', () => {
             isOnBlur: true,
           }),
         );
-        expect(validateField).toHaveBeenCalledWith(
+        expect(mockValidateField).toHaveBeenCalledWith(
           ...validateFieldParams(input),
         );
         expect(mockShouldRenderBasedOnError).toHaveBeenCalledWith({
@@ -2612,6 +2459,7 @@ describe('useForm', () => {
           shouldRenderBasedOnError,
           'default',
         );
+        const mockValidateField = jest.spyOn(validateField, 'default');
 
         render(<Component mode="onChange" />);
         methods.control.readFormStateRef.current.touched = true;
@@ -2627,7 +2475,7 @@ describe('useForm', () => {
             isBlurEvent: true,
           }),
         );
-        expect(validateField).not.toHaveBeenCalled();
+        expect(mockValidateField).not.toHaveBeenCalled();
         expect(mockShouldRenderBasedOnError).not.toHaveBeenCalled();
         expect(methods.control.touchedFieldsRef.current).toEqual({
           test: true,
