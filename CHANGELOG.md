@@ -116,7 +116,7 @@ getValues(['test', 'test1']); // { test: 'test', test1: 'test1' }
 
 ```diff
 - setError('test', 'test', 'test')
-+ setErrror('test', { type: 'test', message: 'bill'})
++ setError('test', { type: 'test', message: 'bill'})
 ```
 
 - `setValue` will focus on input at a time
