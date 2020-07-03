@@ -66,14 +66,12 @@ import {
 } from './types/form';
 import { LiteralToPrimitive, DeepPartial, NonUndefined } from './types/utils';
 
-export const isWindowUndefined = typeof window === UNDEFINED;
-export const isWeb =
+const isWindowUndefined = typeof window === UNDEFINED;
+const isWeb =
   typeof document !== UNDEFINED &&
   !isWindowUndefined &&
   !isUndefined(window.HTMLElement);
-export const isProxyEnabled = isWeb
-  ? 'Proxy' in window
-  : typeof Proxy !== UNDEFINED;
+const isProxyEnabled = isWeb ? 'Proxy' in window : typeof Proxy !== UNDEFINED;
 
 export function useForm<
   TFieldValues extends FieldValues = FieldValues,
