@@ -2053,40 +2053,6 @@ describe('useForm', () => {
   });
 
   describe('handleChangeRef', () => {
-    const skipValidationParams = {
-      isOnChange: false,
-      hasError: false,
-      isBlurEvent: false,
-      isOnSubmit: false,
-      isReValidateOnSubmit: false,
-      isOnBlur: false,
-      isReValidateOnBlur: false,
-      isSubmitted: false,
-    };
-    const validateFieldParams = (ref: HTMLInputElement, name = 'test') => [
-      {
-        current: {
-          [name]: {
-            ref,
-            required: 'required',
-            mutationWatcher: new MutationObserver(jest.fn()),
-          },
-        },
-      },
-      false,
-      {
-        ref,
-        required: 'required',
-        mutationWatcher: new MutationObserver(jest.fn()),
-      },
-    ];
-    const shouldRenderBasedOnErrorParams = (name = 'test') => ({
-      errors: {},
-      name,
-      error: {},
-      validFields: new Set(),
-      fieldsWithValidation: new Set(),
-    });
     let renderCount: number;
     let Component: React.FC<{
       name?: string;
@@ -2130,10 +2096,6 @@ describe('useForm', () => {
       };
     });
 
-    afterEach(() => {
-      jest.clearAllMocks();
-    });
-
     describe('onSubmit mode', () => {
       it('should not contain error if value is valid', async () => {
         const mockValidateField = jest.spyOn(validateField, 'default');
@@ -2146,10 +2108,7 @@ describe('useForm', () => {
         });
 
         await waitFor(() => expect(mockValidateField).not.toHaveBeenCalled());
-        expect(skipValidation).toHaveBeenCalledWith({
-          ...skipValidationParams,
-          isOnSubmit: true,
-        });
+        expect(skipValidation).toHaveBeenCalled();
         expect(screen.getByRole('alert').textContent).toBe('');
         expect(renderCount).toBe(1);
       });
@@ -2183,20 +2142,9 @@ describe('useForm', () => {
 
         fireEvent.click(screen.getByRole('button'));
 
-        await waitFor(() =>
-          expect(skipValidation).toHaveBeenCalledWith({
-            ...skipValidationParams,
-            isOnSubmit: true,
-          }),
-        );
-        expect(mockValidateField).toHaveBeenCalledWith(
-          ...validateFieldParams(input),
-        );
-        expect(mockShouldRenderBasedOnError).toHaveBeenCalledWith({
-          ...shouldRenderBasedOnErrorParams(),
-          validFields: new Set(['test']),
-          fieldsWithValidation: new Set(['test']),
-        });
+        await waitFor(() => expect(skipValidation).toHaveBeenCalled());
+        expect(mockValidateField).toHaveBeenCalled();
+        expect(mockShouldRenderBasedOnError).toHaveBeenCalled();
         expect(screen.getByRole('alert').textContent).toBe('');
         expect(renderCount).toBe(3);
       });
@@ -2215,33 +2163,9 @@ describe('useForm', () => {
 
         fireEvent.input(input, { target: { name: 'test' } });
 
-        await waitFor(() =>
-          expect(mockValidateField).toHaveBeenCalledWith(
-            ...validateFieldParams(input),
-          ),
-        );
-        expect(skipValidation).toHaveBeenCalledWith({
-          ...skipValidationParams,
-          isOnSubmit: true,
-        });
-        expect(mockShouldRenderBasedOnError).toHaveBeenCalledWith({
-          ...shouldRenderBasedOnErrorParams(),
-          errors: {
-            test: {
-              message: 'required',
-              ref: input,
-              type: 'required',
-            },
-          },
-          error: {
-            test: {
-              type: 'required',
-              ref: input,
-              message: 'required',
-            },
-          },
-          fieldsWithValidation: new Set(['test']),
-        });
+        await waitFor(() => expect(mockValidateField).toHaveBeenCalled());
+        expect(skipValidation).toHaveBeenCalled();
+        expect(mockShouldRenderBasedOnError).toHaveBeenCalled();
         expect(screen.getByRole('alert').textContent).toBe('required');
         expect(renderCount).toBe(2);
       });
@@ -2249,108 +2173,56 @@ describe('useForm', () => {
       it('should call reRender method if previous error is undefined', async () => {
         let input: any = null;
 
-        const error = {
-          test: {
-            type: 'required',
-            ref: input,
-            types: {
-              required: 'required',
-            },
-            message: 'required',
-          },
-        };
-
         const mockIsSameError = jest.spyOn(isSameError, 'default');
-
-        const mockValidateField = jest
-          .spyOn(validateField, 'default')
-          .mockReturnValue(Promise.resolve(error));
-
-        (skipValidation as any).mockReturnValue(false);
-        const mockShouldRenderBasedOnError = jest
-          .spyOn(shouldRenderBasedOnError, 'default')
-          .mockReturnValue(false);
+        const mockValidateField = jest.spyOn(validateField, 'default');
+        const mockShouldRenderBasedOnError = jest.spyOn(
+          shouldRenderBasedOnError,
+          'default',
+        );
 
         render(<Component />);
 
         input = screen.getByRole('textbox');
 
-        fireEvent.input(input, { target: { name: 'test' } });
+        fireEvent.input(input, { target: { name: 'test', value: 'test' } });
 
-        await waitFor(() =>
-          expect(mockValidateField).toHaveBeenCalledWith(
-            ...validateFieldParams(input),
-          ),
-        );
-        expect(skipValidation).toHaveBeenCalledWith({
-          ...skipValidationParams,
-          isOnSubmit: true,
-        });
-        expect(mockShouldRenderBasedOnError).toHaveBeenCalledWith({
-          errors: error,
-          name: 'test',
-          error,
-          validFields: new Set(),
-          fieldsWithValidation: new Set(['test']),
-        });
+        fireEvent.click(screen.getByRole('button'));
+
+        fireEvent.input(input, { target: { name: 'test', value: '' } });
+
+        await waitFor(() => expect(mockValidateField).toHaveBeenCalled());
+        expect(skipValidation).toHaveBeenCalled();
+        expect(mockShouldRenderBasedOnError).toHaveBeenCalled();
         expect(mockIsSameError).not.toBeCalled();
         expect(screen.getByRole('alert').textContent).toBe('required');
-        expect(renderCount).toBe(2);
+        expect(renderCount).toBe(5);
       });
 
       it('should not call reRender method if the current error is the same as the previous error', async () => {
         let input: any = null;
 
-        const error = {
-          test: {
-            type: 'required',
-            ref: input,
-            types: {
-              required: 'required',
-            },
-            message: 'required',
-          },
-        };
-
         const mockIsSameError = jest.spyOn(isSameError, 'default');
 
-        const mockValidateField = jest
-          .spyOn(validateField, 'default')
-          .mockReturnValue(Promise.resolve(error));
-
-        (skipValidation as any).mockReturnValue(false);
-        const mockShouldRenderBasedOnError = jest
-          .spyOn(shouldRenderBasedOnError, 'default')
-          .mockReturnValue(false);
+        const mockShouldRenderBasedOnError = jest.spyOn(
+          shouldRenderBasedOnError,
+          'default',
+        );
 
         render(<Component />);
 
         input = screen.getByRole('textbox');
 
-        methods.control.errorsRef.current = error;
+        fireEvent.input(input, { target: { name: 'test', value: '' } });
 
-        fireEvent.input(input, { target: { name: 'test' } });
+        fireEvent.click(screen.getByRole('button'));
 
-        await waitFor(() =>
-          expect(mockValidateField).toHaveBeenCalledWith(
-            ...validateFieldParams(input),
-          ),
-        );
-        expect(skipValidation).toHaveBeenCalledWith({
-          ...skipValidationParams,
-          isOnSubmit: true,
-          hasError: true,
-        });
-        expect(mockShouldRenderBasedOnError).toHaveBeenCalledWith({
-          errors: error,
-          name: 'test',
-          error,
-          validFields: new Set(),
-          fieldsWithValidation: new Set(['test']),
-        });
-        expect(mockIsSameError).toBeCalledWith(error.test, error.test);
-        expect(screen.getByRole('alert').textContent).toBe('');
-        expect(renderCount).toBe(1);
+        fireEvent.input(input, { target: { name: 'test', value: '' } });
+
+        await waitFor(() => expect(skipValidation).toHaveBeenCalled());
+        expect(mockShouldRenderBasedOnError).toHaveBeenCalled();
+        expect(mockIsSameError).toHaveBeenCalled();
+        expect(screen.getByRole('alert').textContent).toBe('required');
+        expect(renderCount).toBe(3);
       });
 
       it('should be called reRender method if isWatchAllRef is true', async () => {
@@ -2364,10 +2236,7 @@ describe('useForm', () => {
           target: { name: 'test' },
         });
 
-        expect(skipValidation).toHaveBeenCalledWith({
-          ...skipValidationParams,
-          isOnSubmit: true,
-        });
+        expect(skipValidation).toHaveBeenCalled();
         expect(mockValidateField).not.toHaveBeenCalled();
         expect(screen.getByRole('alert').textContent).toBe('');
         expect(renderCount).toBe(2);
@@ -2384,10 +2253,7 @@ describe('useForm', () => {
           target: { name: 'test' },
         });
 
-        expect(skipValidation).toHaveBeenCalledWith({
-          ...skipValidationParams,
-          isOnSubmit: true,
-        });
+        expect(skipValidation).toHaveBeenCalled();
         expect(mockValidateField).not.toHaveBeenCalled();
         expect(screen.getByRole('alert').textContent).toBe('');
         expect(renderCount).toBe(2);
@@ -2404,10 +2270,7 @@ describe('useForm', () => {
           target: { name: 'test[0]' },
         });
 
-        expect(skipValidation).toHaveBeenCalledWith({
-          ...skipValidationParams,
-          isOnSubmit: true,
-        });
+        expect(skipValidation).toHaveBeenCalled();
         expect(mockValidateField).not.toHaveBeenCalled();
         expect(renderCount).toBe(2);
       });
@@ -2416,39 +2279,29 @@ describe('useForm', () => {
     describe('onBlur mode', () => {
       it('should not contain error if value is valid with ReactNative', async () => {
         (skipValidation as any).mockReturnValue(false);
-        const mockValidateField = jest
-          .spyOn(validateField, 'default')
-          .mockReturnValue({} as any);
-        const mockShouldRenderBasedOnError = jest
-          .spyOn(shouldRenderBasedOnError, 'default')
-          .mockReturnValue(false);
+        const mockShouldRenderBasedOnError = jest.spyOn(
+          shouldRenderBasedOnError,
+          'default',
+        );
 
         render(<Component mode="onBlur" />);
         methods.control.readFormStateRef.current.touched = true;
 
-        const input = screen.getByRole('textbox') as HTMLInputElement;
-        fireEvent.blur(input, { target: { name: 'test' } });
-
-        await waitFor(() =>
-          expect(skipValidation).toHaveBeenCalledWith({
-            ...skipValidationParams,
-            isBlurEvent: true,
-            isOnBlur: true,
-          }),
-        );
-        expect(mockValidateField).toHaveBeenCalledWith(
-          ...validateFieldParams(input),
-        );
-        expect(mockShouldRenderBasedOnError).toHaveBeenCalledWith({
-          ...shouldRenderBasedOnErrorParams(),
-          validFields: new Set(['test']),
-          fieldsWithValidation: new Set(['test']),
+        fireEvent.input(screen.getByRole('textbox'), {
+          target: { name: 'test', value: 'test' },
         });
+
+        fireEvent.blur(screen.getByRole('textbox'), {
+          target: { name: 'test' },
+        });
+
+        await waitFor(() => expect(skipValidation).toHaveBeenCalled());
+        expect(mockShouldRenderBasedOnError).toHaveBeenCalled();
         expect(methods.control.touchedFieldsRef.current).toEqual({
           test: true,
         });
         expect(screen.getByRole('alert').textContent).toBe('');
-        expect(renderCount).toBe(2);
+        expect(renderCount).toBe(3);
       });
     });
 
@@ -2468,13 +2321,7 @@ describe('useForm', () => {
           target: { name: 'test' },
         });
 
-        await waitFor(() =>
-          expect(skipValidation).toHaveBeenCalledWith({
-            ...skipValidationParams,
-            isOnChange: true,
-            isBlurEvent: true,
-          }),
-        );
+        await waitFor(() => expect(skipValidation).toHaveBeenCalled());
         expect(mockValidateField).not.toHaveBeenCalled();
         expect(mockShouldRenderBasedOnError).not.toHaveBeenCalled();
         expect(methods.control.touchedFieldsRef.current).toEqual({
