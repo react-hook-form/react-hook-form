@@ -3,6 +3,7 @@ import isKey from './isKey';
 import stringToPath from './stringToPath';
 import isEmptyObject from './isEmptyObject';
 import isObject from './isObject';
+import get from './get';
 
 function baseGet(object: any, path: any) {
   return [...Array(path.length)].reduce(
@@ -12,6 +13,10 @@ function baseGet(object: any, path: any) {
 }
 
 export default function unset(object: any, path: string) {
+  if (get(object, path) === undefined) {
+    return object;
+  }
+
   const updatePath = isKey(path) ? [path] : stringToPath(path);
   const childObject =
     updatePath.length == 1 ? object : baseGet(object, updatePath.slice(0, -1));

@@ -198,4 +198,30 @@ describe('unset', () => {
 
     expect(unset(data, 'name[0]')).toEqual({});
   });
+
+  it('should not remove nested empty array item', () => {
+    const data = {
+      scenario: {
+        steps: [
+          {
+            content: {
+              question: 'isRequired',
+            },
+          },
+        ],
+      },
+    };
+
+    expect(unset(data, 'scenario.steps[1].messages[0]')).toEqual({
+      scenario: {
+        steps: [
+          {
+            content: {
+              question: 'isRequired',
+            },
+          },
+        ],
+      },
+    });
+  });
 });
