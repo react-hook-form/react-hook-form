@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## [6.0.1] - 2020-07-3
+
+### Added
+
+- export `ValidationRules` type
+
 ## [6.0.0] - 2020-07-1
 
 ### Added
