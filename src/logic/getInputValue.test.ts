@@ -1,4 +1,4 @@
-import getInputValue from './getInputValue';
+import { getInputValue } from '../controller';
 
 test('getInputValue should return correct value', () => {
   expect(

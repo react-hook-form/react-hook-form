@@ -3,13 +3,23 @@ import isBoolean from './utils/isBoolean';
 import isUndefined from './utils/isUndefined';
 import get from './utils/get';
 import set from './utils/set';
-import getInputValue from './logic/getInputValue';
 import skipValidation from './logic/skipValidation';
 import isNameInFieldArray from './logic/isNameInFieldArray';
 import { useFormContext } from './useFormContext';
 import { VALUE } from './constants';
 import { Control } from './types/form';
 import { ControllerProps } from './types/props';
+import isPrimitive from './utils/isPrimitive';
+import isObject from './utils/isObject';
+
+export const getInputValue = (event: any, isCheckboxInput: boolean) =>
+  isPrimitive(event) ||
+  !isObject(event.target) ||
+  (isObject(event.target) && !event.type)
+    ? event
+    : isCheckboxInput || isUndefined(event.target.value)
+    ? event.target.checked
+    : event.target.value;
 
 const Controller = <
   TAs extends
