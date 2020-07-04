@@ -13,6 +13,7 @@ import getFieldArrayParentName from './logic/getFieldArrayParentName';
 import getFieldArrayValueByName from './logic/getFieldArrayValueByName';
 import getIsFieldsDifferent from './logic/getIsFieldsDifferent';
 import isNameInFieldArray from './logic/isNameInFieldArray';
+import detectEnvironment from './logic/detectEnvironment';
 import isCheckBoxInput from './utils/isCheckBoxInput';
 import isEmptyObject from './utils/isEmptyObject';
 import isRadioInput from './utils/isRadioInput';
@@ -35,7 +36,7 @@ import unique from './utils/unique';
 import isNullOrUndefined from './utils/isNullOrUndefined';
 import isRadioOrCheckboxFunction from './utils/isRadioOrCheckbox';
 import isHTMLElement from './utils/isHTMLElement';
-import { EVENTS, UNDEFINED, VALIDATION_MODE } from './constants';
+import { EVENTS, VALIDATION_MODE } from './constants';
 import {
   UseFormMethods,
   FieldValues,
@@ -66,12 +67,7 @@ import {
 } from './types/form';
 import { LiteralToPrimitive, DeepPartial, NonUndefined } from './types/utils';
 
-const isWindowUndefined = typeof window === UNDEFINED;
-const isWeb =
-  typeof document !== UNDEFINED &&
-  !isWindowUndefined &&
-  !isUndefined(window.HTMLElement);
-const isProxyEnabled = isWeb ? 'Proxy' in window : typeof Proxy !== UNDEFINED;
+const { isWeb, isWindowUndefined, isProxyEnabled } = detectEnvironment();
 
 export function useForm<
   TFieldValues extends FieldValues = FieldValues,
