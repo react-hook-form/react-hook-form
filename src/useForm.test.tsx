@@ -107,31 +107,6 @@ describe('useForm', () => {
       },
     );
 
-    it('should call reRender method with removeFieldEventListenerAndRef when onDomRemove method is executed with ReactNative', async () => {
-      let renderCount = 0;
-      const Component = () => {
-        const { register, control } = useForm();
-        renderCount++;
-        if (!control.readFormStateRef.current.touched) {
-          control.readFormStateRef.current.touched = true;
-        }
-        return (
-          <div>
-            <input name="test" type="text" ref={register} />
-          </div>
-        );
-      };
-
-      render(<Component />);
-
-      screen.getByRole('textbox').remove();
-
-      await waitFor(() =>
-        expect(findRemovedFieldAndRemoveListener).toHaveBeenCalled(),
-      );
-      expect(renderCount).toBe(2);
-    });
-
     it('should support register passed to ref', async () => {
       const { result } = renderHook(() => useForm<{ test: string }>());
 
@@ -194,7 +169,7 @@ describe('useForm', () => {
       });
     });
 
-    it('should re-render if errors ocurred with resolver with SSR', async () => {
+    it('should re-render if errors ocurred with resolver when formState.isValid is defined', async () => {
       const resolver = async (data: any) => {
         return {
           values: data,
@@ -208,19 +183,16 @@ describe('useForm', () => {
 
       let renderCount = 0;
       const Component = () => {
-        const { register, control } = useForm<{ test: string }>({
+        const { register, formState } = useForm<{ test: string }>({
           resolver,
         });
-
-        if (!control.readFormStateRef.current.isValid) {
-          control.readFormStateRef.current.isValid = true;
-        }
 
         renderCount++;
 
         return (
           <div>
             <input name="test" ref={register} />
+            <span role="alert">{`${formState.isValid}`}</span>
           </div>
         );
       };
@@ -228,25 +200,7 @@ describe('useForm', () => {
       render(<Component />);
 
       await waitFor(() => expect(renderCount).toBe(2));
-    });
-
-    it('react native - allow registration as part of the register call', async () => {
-      const { result } = renderHook(() => useForm<{ test: string }>());
-
-      result.current.register({ name: 'test' });
-
-      result.current.setValue('test', '1');
-
-      await act(async () => {
-        await result.current.handleSubmit((data) => {
-          expect(data).toEqual({
-            test: '1',
-          });
-        })({
-          preventDefault: () => {},
-          persist: () => {},
-        } as React.SyntheticEvent);
-      });
+      expect(screen.getByRole('alert').textContent).toBe('false');
     });
 
     it('should be set default value from unmountFieldsStateRef', () => {
@@ -955,13 +909,13 @@ describe('useForm', () => {
     });
 
     describe('setDirty', () => {
-      it('should set name to dirtyFieldRef if field value is different with default value with ReactNative', () => {
+      it('should set name to dirtyFieldRef if field value is different with default value when formState.dirtyFields is defined', () => {
         const { result } = renderHook(() =>
           useForm<{ test: string }>({
             defaultValues: { test: 'default' },
           }),
         );
-        result.current.control.readFormStateRef.current.dirtyFields = true;
+        result.current.formState.dirtyFields;
 
         result.current.register('test');
 
@@ -1003,13 +957,13 @@ describe('useForm', () => {
         expect(result.current.formState.dirtyFields.test).toBeTruthy();
       });
 
-      it('should unset name from dirtyFieldRef if field value is not different with default value with ReactNative', () => {
+      it('should unset name from dirtyFieldRef if field value is not different with default value when formState.dirtyFields is defined', () => {
         const { result } = renderHook(() =>
           useForm<{ test: string }>({
             defaultValues: { test: 'default' },
           }),
         );
-        result.current.control.readFormStateRef.current.dirtyFields = true;
+        result.current.formState.dirtyFields;
 
         result.current.register('test');
 
@@ -1020,7 +974,7 @@ describe('useForm', () => {
         expect(result.current.formState.dirtyFields.test).toBeUndefined();
       });
 
-      it('should set name to dirtyFieldRef if array field values are different with default value with ReactNative', async () => {
+      it('should set name to dirtyFieldRef if array field values are different with default value when formState.dirtyFields is defined', async () => {
         (transformToNestObject as any).mockReturnValue({
           test: [
             { name: 'default_update' },
@@ -1040,7 +994,9 @@ describe('useForm', () => {
             },
           }),
         );
-        result.current.control.readFormStateRef.current.dirtyFields = true;
+        result.current.formState.dirtyFields;
+
+        // mock useFieldArray
         result.current.control.fieldArrayNamesRef.current.add('test');
 
         result.current.register('test[0].name');
@@ -1059,19 +1015,13 @@ describe('useForm', () => {
           );
         });
 
-        expect((transformToNestObject as any).mock.calls[2]).toEqual([
-          {
-            'test[0].name': 'default_update',
-            'test[1].name': 'default1',
-            'test[2].name': 'default2',
-          },
-        ]);
-        expect(result.current.formState.dirtyFields.test!).toEqual([
-          { name: true },
-        ]);
+        expect(result.current.formState.dirtyFields).toEqual({
+          test: [{ name: true }],
+        });
+        expect(result.current.formState.isDirty).toBeTruthy();
       });
 
-      it('should unset name from dirtyFieldRef if array field values are not different with default value with ReactNative', async () => {
+      it('should unset name from dirtyFieldRef if array field values are not different with default value when formState.dirtyFields is defined', async () => {
         const { result } = renderHook(() =>
           useForm({
             defaultValues: {
@@ -1083,7 +1033,9 @@ describe('useForm', () => {
             },
           }),
         );
-        result.current.control.readFormStateRef.current.dirtyFields = true;
+        result.current.formState.dirtyFields;
+
+        // mock useFieldArray
         result.current.control.fieldArrayNamesRef.current.add('test');
 
         result.current.register('test[0].name');
@@ -1124,21 +1076,9 @@ describe('useForm', () => {
           );
         });
 
-        expect((transformToNestObject as any).mock.calls[2]).toEqual([
-          {
-            'test[0].name': 'default_update',
-            'test[1].name': 'default1',
-            'test[2].name': 'default2',
-          },
-        ]);
-        expect((transformToNestObject as any).mock.calls[5]).toEqual([
-          {
-            'test[0].name': 'default',
-            'test[1].name': 'default1',
-            'test[2].name': 'default2',
-          },
-        ]);
-        expect(result.current.formState.dirtyFields?.test).toBeUndefined();
+        expect(transformToNestObject).toHaveBeenCalled();
+        expect(result.current.formState.dirtyFields).toEqual({});
+        expect(result.current.formState.isDirty).toBeFalsy();
       });
     });
   });
@@ -1937,24 +1877,6 @@ describe('useForm', () => {
 
       expect(findRemovedFieldAndRemoveListener).not.toHaveBeenCalled();
     });
-
-    it('should call resolver with removeFieldEventListenerAndRef with ReactNative', () => {
-      const resolver = jest.fn(async (data: any) => {
-        return {
-          values: data,
-          errors: {},
-        };
-      });
-
-      const { result, unmount } = renderHook(() =>
-        useForm<{ test: string }>({ resolver }),
-      );
-      result.current.control.readFormStateRef.current.touched = true;
-
-      result.current.register({ type: 'text', name: 'test' });
-      unmount();
-      expect(resolver).toBeCalled();
-    });
   });
 
   describe('when defaultValues is supplied', () => {
@@ -2277,18 +2199,17 @@ describe('useForm', () => {
         expect(mockValidateField).not.toHaveBeenCalled();
         expect(renderCount).toBe(2);
       });
-    });
 
-    describe('onBlur mode', () => {
-      it('should not contain error if value is valid with ReactNative', async () => {
+      it('should set name to formState.touched when formState.touched is defined', async () => {
         (skipValidation as any).mockReturnValue(false);
         const mockShouldRenderBasedOnError = jest.spyOn(
           shouldRenderBasedOnError,
           'default',
         );
 
-        render(<Component mode="onBlur" />);
-        methods.control.readFormStateRef.current.touched = true;
+        render(<Component />);
+
+        methods.formState.touched;
 
         fireEvent.input(screen.getByRole('textbox'), {
           target: { name: 'test', value: 'test' },
@@ -2300,38 +2221,11 @@ describe('useForm', () => {
 
         await waitFor(() => expect(skipValidation).toHaveBeenCalled());
         expect(mockShouldRenderBasedOnError).toHaveBeenCalled();
-        expect(methods.control.touchedFieldsRef.current).toEqual({
+        expect(methods.formState.touched).toEqual({
           test: true,
         });
         expect(screen.getByRole('alert').textContent).toBe('');
         expect(renderCount).toBe(3);
-      });
-    });
-
-    describe('onChange mode', () => {
-      it('should not contain error if value is valid with ReactNative', async () => {
-        (skipValidation as any).mockReturnValue(true);
-        const mockShouldRenderBasedOnError = jest.spyOn(
-          shouldRenderBasedOnError,
-          'default',
-        );
-        const mockValidateField = jest.spyOn(validateField, 'default');
-
-        render(<Component mode="onChange" />);
-        methods.control.readFormStateRef.current.touched = true;
-
-        fireEvent.blur(screen.getByRole('textbox'), {
-          target: { name: 'test' },
-        });
-
-        await waitFor(() => expect(skipValidation).toHaveBeenCalled());
-        expect(mockValidateField).not.toHaveBeenCalled();
-        expect(mockShouldRenderBasedOnError).not.toHaveBeenCalled();
-        expect(methods.control.touchedFieldsRef.current).toEqual({
-          test: true,
-        });
-        expect(screen.getByRole('alert').textContent).toBe('');
-        expect(renderCount).toBe(2);
       });
     });
 
