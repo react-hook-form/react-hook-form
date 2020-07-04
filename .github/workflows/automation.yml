@@ -12,4 +12,4 @@ jobs:
         with:
           start: npm run start:app
           wait-on: 'http://localhost:3000'
-          wait-on-timeout: 60
+          wait-on-timeout: 120

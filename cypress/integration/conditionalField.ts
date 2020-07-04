@@ -22,7 +22,7 @@ describe('ConditionalField', () => {
 
     cy.get('select[name="selectNumber"]').select('2');
     cy.get('#state').contains(
-      '{"dirtyFields":["selectNumber"],"isSubmitted":true,"submitCount":1,"touched":["selectNumber"],"isDirty":true,"isSubmitting":false,"isValid":false}',
+      '{"dirtyFields":["selectNumber"],"isSubmitted":true,"submitCount":1,"touched":["selectNumber"],"isDirty":false,"isSubmitting":false,"isValid":false}',
     );
     cy.get('input[name="min"]').type('10');
     cy.get('input[name="max"]').type('2');
@@ -38,7 +38,7 @@ describe('ConditionalField', () => {
 
     cy.get('select[name="selectNumber"]').select('3');
     cy.get('#state').contains(
-      '{"dirtyFields":["selectNumber"],"isSubmitted":true,"submitCount":2,"touched":["selectNumber"],"isDirty":true,"isSubmitting":false,"isValid":true}',
+      '{"dirtyFields":["selectNumber"],"isSubmitted":true,"submitCount":2,"touched":["selectNumber"],"isDirty":false,"isSubmitting":false,"isValid":true}',
     );
     cy.get('input[name="notRequired"]').type('test');
     cy.get('input[name="notRequired"]').blur();

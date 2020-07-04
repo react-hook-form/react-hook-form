@@ -608,8 +608,10 @@ export function useForm<
 
           if (
             readFormStateRef.current.isValid ||
-            readFormStateRef.current.touched
+            readFormStateRef.current.touched ||
+            readFormStateRef.current.isDirty
           ) {
+            isDirtyRef.current = isEmptyObject(dirtyFieldsRef.current);
             reRender();
 
             if (resolverRef.current) {
