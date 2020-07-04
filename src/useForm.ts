@@ -66,13 +66,6 @@ import {
 } from './types/form';
 import { LiteralToPrimitive, DeepPartial, NonUndefined } from './types/utils';
 
-const isWindowUndefined = typeof window === UNDEFINED;
-const isWeb =
-  typeof document !== UNDEFINED &&
-  !isWindowUndefined &&
-  !isUndefined(window.HTMLElement);
-const isProxyEnabled = isWeb ? 'Proxy' in window : typeof Proxy !== UNDEFINED;
-
 export function useForm<
   TFieldValues extends FieldValues = FieldValues,
   TContext extends object = object
@@ -129,6 +122,12 @@ export function useForm<
     modeChecker(mode),
   ).current;
   const validateAllFieldCriteria = criteriaMode === VALIDATION_MODE.all;
+  const isWindowUndefined = typeof window === UNDEFINED;
+  const isWeb =
+    typeof document !== UNDEFINED &&
+    !isWindowUndefined &&
+    !isUndefined(window.HTMLElement);
+  const isProxyEnabled = isWeb ? 'Proxy' in window : typeof Proxy !== UNDEFINED;
   const readFormStateRef = React.useRef<ReadFormState>({
     isDirty: !isProxyEnabled,
     dirtyFields: !isProxyEnabled,
@@ -190,7 +189,7 @@ export function useForm<
         return true;
       }
     },
-    [reRender],
+    [reRender, resolverRef],
   );
 
   const setFieldValue = React.useCallback(
@@ -237,7 +236,7 @@ export function useForm<
         ref.value = value;
       }
     },
-    [],
+    [isWeb],
   );
 
   const setDirty = React.useCallback(
@@ -346,7 +345,7 @@ export function useForm<
         return !error;
       }
     },
-    [reRender, shouldRenderBaseOnError, validateAllFieldCriteria],
+    [reRender, shouldRenderBaseOnError, validateAllFieldCriteria, resolverRef],
   );
 
   const trigger = React.useCallback(
@@ -369,7 +368,12 @@ export function useForm<
 
       return await executeValidation(fields);
     },
-    [executeSchemaOrResolverValidation, executeValidation, reRender],
+    [
+      executeSchemaOrResolverValidation,
+      executeValidation,
+      reRender,
+      resolverRef,
+    ],
   );
 
   const setInternalValues = React.useCallback(
@@ -563,7 +567,7 @@ export function useForm<
         }
       });
     },
-    [reRender, validateAllFieldCriteria],
+    [reRender, validateAllFieldCriteria, resolverRef],
   );
 
   const removeFieldEventListener = React.useCallback(
@@ -617,7 +621,7 @@ export function useForm<
         }
       }
     },
-    [reRender, validateResolver, removeFieldEventListener],
+    [reRender, validateResolver, removeFieldEventListener, resolverRef],
   );
 
   function clearErrors(
@@ -971,7 +975,7 @@ export function useForm<
         reRender();
       }
     },
-    [reRender, shouldFocusError, validateAllFieldCriteria],
+    [isWeb, reRender, resolverRef, shouldFocusError, validateAllFieldCriteria],
   );
 
   const resetRefs = ({
