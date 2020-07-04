@@ -75,11 +75,12 @@ describe('useForm', () => {
 
         let renderCount = 0;
         const Component = () => {
-          const { register } = useForm();
+          const { register, formState } = useForm();
           renderCount++;
           return (
             <div>
               <input name="test" type={type} ref={register} />
+              <span role="alert">{`${formState.isDirty}`}</span>
             </div>
           );
         };
@@ -95,12 +96,14 @@ describe('useForm', () => {
           expect.any(Function),
         );
 
+        // check MutationObserver
         ref.remove();
 
         await waitFor(() =>
           expect(findRemovedFieldAndRemoveListener).toHaveBeenCalled(),
         );
-        expect(renderCount).toBe(1);
+        expect(screen.getByRole('alert').textContent).toBe('false');
+        expect(renderCount).toBe(2);
       },
     );
 
