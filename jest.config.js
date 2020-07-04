@@ -10,6 +10,7 @@ module.exports = {
   },
   testMatch: ['**/?(*.)+(spec|test).ts?(x)'],
   transformIgnorePatterns: ['[/\\\\]node_modules[/\\\\].+\\.(js|jsx)$'],
-  setupFiles: ['<rootDir>/setup.ts'],
+  setupFiles: ['<rootDir>/config/polyfills/setup.ts'],
+  setupFilesAfterEnv: ['<rootDir>/config/jest/setup.ts'],
   moduleFileExtensions: ['ts', 'tsx', 'js'],
 };
