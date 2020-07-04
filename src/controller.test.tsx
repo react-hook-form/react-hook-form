@@ -107,7 +107,7 @@ describe('Controller', () => {
       />,
     );
 
-    expect(container.querySelector('input')!.checked).toBeFalsy();
+    expect(container.querySelector('input')!).not.toBeChecked();
   });
 
   it('should set defaultValue to value props when input was reset with SSR', () => {

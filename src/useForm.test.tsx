@@ -1543,9 +1543,9 @@ describe('useForm', () => {
       await waitFor(
         () => {
           if (renderCount === 2) {
-            expect(span.textContent).toBe('true');
+            expect(span).toHaveTextContent('true');
           } else {
-            expect(span.textContent).toBe('false');
+            expect(span).toHaveTextContent('false');
           }
         },
         { container: span },
@@ -2142,7 +2142,7 @@ describe('useForm', () => {
 
       const span = screen.getByRole('alert');
 
-      expect(span.textContent).toBe('data');
+      expect(span).toHaveTextContent('data');
 
       fireEvent.input(screen.getByRole('textbox'), {
         target: {
@@ -2150,7 +2150,7 @@ describe('useForm', () => {
         },
       });
 
-      expect(span.textContent).toBe('data');
+      expect(span).toHaveTextContent('data');
     });
   });
 
@@ -2263,7 +2263,7 @@ describe('useForm', () => {
           isOnSubmit: true,
         });
         expect(validateField).not.toHaveBeenCalled();
-        expect(screen.getByRole('alert').textContent).toBe('');
+        expect(screen.getByRole('alert')).toHaveTextContent('');
         expect(renderCount).toBe(1);
       });
 
@@ -2276,7 +2276,7 @@ describe('useForm', () => {
 
         expect(skipValidation).not.toHaveBeenCalled();
         expect(validateField).not.toHaveBeenCalled();
-        expect(screen.getByRole('alert').textContent).toBe('');
+        expect(screen.getByRole('alert')).toHaveTextContent('');
         expect(renderCount).toBe(1);
       });
 
@@ -2310,7 +2310,7 @@ describe('useForm', () => {
           validFields: new Set(['test']),
           fieldsWithValidation: new Set(['test']),
         });
-        expect(screen.getByRole('alert').textContent).toBe('');
+        expect(screen.getByRole('alert')).toHaveTextContent('');
         expect(renderCount).toBe(3);
       });
 
@@ -2364,7 +2364,7 @@ describe('useForm', () => {
           error,
           fieldsWithValidation: new Set(['test']),
         });
-        expect(screen.getByRole('alert').textContent).toBe('required');
+        expect(screen.getByRole('alert')).toHaveTextContent('required');
         expect(renderCount).toBe(2);
       });
 
@@ -2428,7 +2428,7 @@ describe('useForm', () => {
             fieldsWithValidation: new Set(['test']),
           },
         ]);
-        expect(screen.getByRole('alert').textContent).toBe('');
+        expect(screen.getByRole('alert')).toHaveTextContent('');
         expect(renderCount).toBe(3);
       });
 
@@ -2478,7 +2478,7 @@ describe('useForm', () => {
           fieldsWithValidation: new Set(['test']),
         });
         expect(mockIsSameError).not.toBeCalled();
-        expect(screen.getByRole('alert').textContent).toBe('required');
+        expect(screen.getByRole('alert')).toHaveTextContent('required');
         expect(renderCount).toBe(2);
       });
 
@@ -2531,7 +2531,7 @@ describe('useForm', () => {
           fieldsWithValidation: new Set(['test']),
         });
         expect(mockIsSameError).toBeCalledWith(error.test, error.test);
-        expect(screen.getByRole('alert').textContent).toBe('');
+        expect(screen.getByRole('alert')).toHaveTextContent('');
         expect(renderCount).toBe(1);
       });
 
@@ -2550,7 +2550,7 @@ describe('useForm', () => {
           isOnSubmit: true,
         });
         expect(validateField).not.toHaveBeenCalled();
-        expect(screen.getByRole('alert').textContent).toBe('');
+        expect(screen.getByRole('alert')).toHaveTextContent('');
         expect(renderCount).toBe(2);
       });
 
@@ -2569,7 +2569,7 @@ describe('useForm', () => {
           isOnSubmit: true,
         });
         expect(validateField).not.toHaveBeenCalled();
-        expect(screen.getByRole('alert').textContent).toBe('');
+        expect(screen.getByRole('alert')).toHaveTextContent('');
         expect(renderCount).toBe(2);
       });
 
@@ -2624,7 +2624,7 @@ describe('useForm', () => {
         expect(methods.control.touchedFieldsRef.current).toEqual({
           test: true,
         });
-        expect(screen.getByRole('alert').textContent).toBe('');
+        expect(screen.getByRole('alert')).toHaveTextContent('');
         expect(renderCount).toBe(2);
       });
     });
@@ -2656,7 +2656,7 @@ describe('useForm', () => {
         expect(methods.control.touchedFieldsRef.current).toEqual({
           test: true,
         });
-        expect(screen.getByRole('alert').textContent).toBe('');
+        expect(screen.getByRole('alert')).toHaveTextContent('');
         expect(renderCount).toBe(2);
       });
     });
@@ -2677,7 +2677,7 @@ describe('useForm', () => {
         });
 
         await waitFor(() => expect(resolver).toHaveBeenCalled());
-        expect(screen.getByRole('alert').textContent).toBe('');
+        expect(screen.getByRole('alert')).toHaveTextContent('');
         expect(renderCount).toBe(1);
       });
 
@@ -2700,7 +2700,7 @@ describe('useForm', () => {
         });
 
         await waitFor(() => expect(resolver).toHaveBeenCalled());
-        expect(screen.getByRole('alert').textContent).toBe('resolver error');
+        expect(screen.getByRole('alert')).toHaveTextContent('resolver error');
         expect(renderCount).toBe(2);
       });
     });
