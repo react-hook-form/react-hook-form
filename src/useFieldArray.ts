@@ -352,11 +352,10 @@ export const useFieldArray = <
   const swap = (indexA: number, indexB: number) => {
     shouldRender = false;
 
-    const fieldValues = getValues()[name];
+    const fieldValues = getCurrentFieldsValues();
     swapArrayAt(fieldValues, indexA, indexB);
-    swapArrayAt(allFields.current, indexA, indexB);
-    setFieldAndValidState(getCurrentFieldsValues());
     resetFields(fieldValues);
+    setFieldAndValidState(fieldValues);
 
     if (isArray(get(errorsRef.current, name))) {
       swapArrayAt(get(errorsRef.current, name), indexA, indexB);
@@ -381,11 +380,10 @@ export const useFieldArray = <
 
   const move = (from: number, to: number) => {
     shouldRender = false;
-    const fieldValues = getValues()[name];
+    const fieldValues = getCurrentFieldsValues();
     moveArrayAt(fieldValues, from, to);
-    moveArrayAt(allFields.current, from, to);
-    setFieldAndValidState(getCurrentFieldsValues());
     resetFields(fieldValues);
+    setFieldAndValidState(fieldValues);
 
     if (isArray(get(errorsRef.current, name))) {
       moveArrayAt(get(errorsRef.current, name), from, to);
@@ -424,7 +422,7 @@ export const useFieldArray = <
       fieldArrayDefaultValues.current[name].pop();
     }
 
-    if (isWatchAllRef && isWatchAllRef.current) {
+    if (isWatchAllRef.current) {
       reRender();
     } else if (watchFieldsRef) {
       for (const watchField of watchFieldsRef.current) {
