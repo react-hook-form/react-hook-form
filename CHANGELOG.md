@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## [6.0.1] - 2020-07-3
+
+### Added
+
+- export `ValidationRules` type
+
 ## [6.0.0] - 2020-07-1
 
 ### Added
@@ -110,7 +116,7 @@ getValues(['test', 'test1']); // { test: 'test', test1: 'test1' }
 
 ```diff
 - setError('test', 'test', 'test')
-+ setErrror('test', { type: 'test', message: 'bill'})
++ setError('test', { type: 'test', message: 'bill'})
 ```
 
 - `setValue` will focus on input at a time
