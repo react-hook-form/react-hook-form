@@ -5,11 +5,6 @@ import { useForm } from './useForm';
 import * as focusOnErrorField from './logic/focusOnErrorField';
 
 describe('useForm with React Native', () => {
-  beforeEach(() => {
-    // @ts-ignore
-    global.window = global;
-  });
-
   afterEach(() => {
     jest.restoreAllMocks();
   });
@@ -51,8 +46,8 @@ describe('useForm with React Native', () => {
           <TextInput
             ref={() => register({ name: 'test' }, { required: true })}
           />
-          <Button title={'button'} onPress={handleSubmit(callback)} />
           <Text>{errors.test && 'required'}</Text>
+          <Button title={'button'} onPress={handleSubmit(callback)} />
         </View>
       );
     };
