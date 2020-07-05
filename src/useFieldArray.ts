@@ -55,6 +55,7 @@ export const useFieldArray = <
     fieldArrayDefaultValues,
     validateSchemaIsValid,
     renderWatchedInputs,
+    getValues,
   } = control || methods.control;
   let shouldRender;
 
@@ -207,10 +208,22 @@ export const useFieldArray = <
   const remove = (index?: number | number[]) => {
     shouldRender = false;
 
+    setFieldAndValidState(
+      removeArrayAt(
+        watchFieldsRef.current.has(name)
+          ? getValues()[name].map(
+              (item: Partial<TFieldArrayValues>, index: number) => ({
+                ...allFields.current[index],
+                ...item,
+              }),
+            )
+          : allFields.current,
+        index,
+      ),
+    );
     resetFields(
       removeArrayAt(getFieldValueByName(fieldsRef.current, name), index),
     );
-    setFieldAndValidState(removeArrayAt(allFields.current, index));
     setIsDeleted(true);
 
     if (isArray(get(errorsRef.current, name))) {
