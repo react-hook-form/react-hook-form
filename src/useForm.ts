@@ -10,7 +10,6 @@ import validateField from './logic/validateField';
 import assignWatchFields from './logic/assignWatchFields';
 import skipValidation from './logic/skipValidation';
 import getFieldArrayParentName from './logic/getFieldArrayParentName';
-import getFieldArrayValueByName from './logic/getFieldArrayValueByName';
 import getIsFieldsDifferent from './logic/getIsFieldsDifferent';
 import isNameInFieldArray from './logic/isNameInFieldArray';
 import isCheckBoxInput from './utils/isCheckBoxInput';
@@ -264,10 +263,7 @@ export function useForm<
       isDirtyRef.current =
         (isFieldArray &&
           getIsFieldsDifferent(
-            getFieldArrayValueByName(
-              fieldsRef.current,
-              getFieldArrayParentName(name),
-            ),
+            getValues()[getFieldArrayParentName(name)],
             get(defaultValuesRef.current, getFieldArrayParentName(name)),
           )) ||
         !isEmptyObject(dirtyFieldsRef.current);
@@ -309,7 +305,7 @@ export function useForm<
         | InternalFieldName<TFieldValues>[],
     ) => {
       const { errors } = await resolverRef.current!(
-        getFieldArrayValueByName(fieldsRef.current),
+        getValues() as any,
         contextRef.current,
         validateAllFieldCriteria,
       );
@@ -512,7 +508,7 @@ export function useForm<
 
         if (resolver) {
           const { errors } = await resolver(
-            getFieldArrayValueByName(fieldsRef.current),
+            getValues() as any,
             contextRef.current,
             validateAllFieldCriteria,
           );

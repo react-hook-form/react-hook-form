@@ -1,7 +1,6 @@
 import * as React from 'react';
 import { useFormContext } from './useFormContext';
 import { isMatchFieldArrayName } from './logic/isNameInFieldArray';
-import getFieldValueByName from './logic/getFieldArrayValueByName';
 import { appendId, mapIds } from './logic/mapIds';
 import getIsFieldsDifferent from './logic/getIsFieldsDifferent';
 import getFieldArrayParentName from './logic/getFieldArrayParentName';
@@ -219,9 +218,7 @@ export const useFieldArray = <
     shouldRender = false;
 
     setFieldAndValidState(removeArrayAt(getCurrentFieldsValues(), index));
-    resetFields(
-      removeArrayAt(getFieldValueByName(fieldsRef.current, name), index),
-    );
+    resetFields(removeArrayAt(getValues()[name], index));
     setIsDeleted(true);
 
     if (isArray(get(errorsRef.current, name))) {
@@ -315,7 +312,7 @@ export const useFieldArray = <
         isArray(value) ? appendValueWithKey(value) : [appendId(value, keyName)],
       ),
     );
-    resetFields(insertAt(getFieldValueByName(fieldsRef.current, name), index));
+    resetFields(insertAt(getValues()[name], index));
 
     if (isArray(get(errorsRef.current, name))) {
       errorsRef.current[name] = insertAt(
@@ -355,7 +352,7 @@ export const useFieldArray = <
   const swap = (indexA: number, indexB: number) => {
     shouldRender = false;
 
-    const fieldValues = getFieldValueByName(fieldsRef.current, name);
+    const fieldValues = getValues()[name];
     swapArrayAt(fieldValues, indexA, indexB);
     swapArrayAt(allFields.current, indexA, indexB);
     setFieldAndValidState(getCurrentFieldsValues());
@@ -384,7 +381,7 @@ export const useFieldArray = <
 
   const move = (from: number, to: number) => {
     shouldRender = false;
-    const fieldValues = getFieldValueByName(fieldsRef.current, name);
+    const fieldValues = getValues()[name];
     moveArrayAt(fieldValues, from, to);
     moveArrayAt(allFields.current, from, to);
     setFieldAndValidState(getCurrentFieldsValues());
