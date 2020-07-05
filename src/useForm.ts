@@ -305,7 +305,7 @@ export function useForm<
         | InternalFieldName<TFieldValues>[],
     ) => {
       const { errors } = await resolverRef.current!(
-        getValues() as any,
+        getValues() as TFieldValues,
         contextRef.current,
         validateAllFieldCriteria,
       );
@@ -508,7 +508,7 @@ export function useForm<
 
         if (resolver) {
           const { errors } = await resolver(
-            getValues() as any,
+            getValues() as TFieldValues,
             contextRef.current,
             validateAllFieldCriteria,
           );
