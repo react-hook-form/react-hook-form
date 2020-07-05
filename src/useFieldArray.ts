@@ -80,6 +80,16 @@ export const useFieldArray = <
   >(fields);
   const isNameKey = isKey(name);
 
+  const getCurrentFieldsValues = () =>
+    watchFieldsRef.current.has(name)
+      ? getValues()[name].map(
+          (item: Partial<TFieldArrayValues>, index: number) => ({
+            ...allFields.current[index],
+            ...item,
+          }),
+        )
+      : allFields.current;
+
   allFields.current = fields;
 
   if (isNameKey) {
@@ -166,13 +176,13 @@ export const useFieldArray = <
     const emptyArray = fillEmptyArray(value);
     shouldRender = false;
 
-    resetFields();
     setFieldAndValidState(
       prependAt(
-        allFields.current,
+        getCurrentFieldsValues(),
         isArray(value) ? appendValueWithKey(value) : [appendId(value, keyName)],
       ),
     );
+    resetFields();
 
     if (isArray(get(errorsRef.current, name))) {
       errorsRef.current[name] = prependAt(
@@ -208,19 +218,7 @@ export const useFieldArray = <
   const remove = (index?: number | number[]) => {
     shouldRender = false;
 
-    setFieldAndValidState(
-      removeArrayAt(
-        watchFieldsRef.current.has(name)
-          ? getValues()[name].map(
-              (item: Partial<TFieldArrayValues>, index: number) => ({
-                ...allFields.current[index],
-                ...item,
-              }),
-            )
-          : allFields.current,
-        index,
-      ),
-    );
+    setFieldAndValidState(removeArrayAt(getCurrentFieldsValues(), index));
     resetFields(
       removeArrayAt(getFieldValueByName(fieldsRef.current, name), index),
     );
@@ -310,14 +308,14 @@ export const useFieldArray = <
     shouldRender = false;
     const emptyArray = fillEmptyArray(value);
 
-    resetFields(insertAt(getFieldValueByName(fieldsRef.current, name), index));
     setFieldAndValidState(
       insertAt(
-        allFields.current,
+        getCurrentFieldsValues(),
         index,
         isArray(value) ? appendValueWithKey(value) : [appendId(value, keyName)],
       ),
     );
+    resetFields(insertAt(getFieldValueByName(fieldsRef.current, name), index));
 
     if (isArray(get(errorsRef.current, name))) {
       errorsRef.current[name] = insertAt(
@@ -359,9 +357,9 @@ export const useFieldArray = <
 
     const fieldValues = getFieldValueByName(fieldsRef.current, name);
     swapArrayAt(fieldValues, indexA, indexB);
-    resetFields(fieldValues);
     swapArrayAt(allFields.current, indexA, indexB);
-    setFieldAndValidState([...allFields.current]);
+    setFieldAndValidState(getCurrentFieldsValues());
+    resetFields(fieldValues);
 
     if (isArray(get(errorsRef.current, name))) {
       swapArrayAt(get(errorsRef.current, name), indexA, indexB);
@@ -388,9 +386,9 @@ export const useFieldArray = <
     shouldRender = false;
     const fieldValues = getFieldValueByName(fieldsRef.current, name);
     moveArrayAt(fieldValues, from, to);
-    resetFields(fieldValues);
     moveArrayAt(allFields.current, from, to);
-    setFieldAndValidState([...allFields.current]);
+    setFieldAndValidState(getCurrentFieldsValues());
+    resetFields(fieldValues);
 
     if (isArray(get(errorsRef.current, name))) {
       moveArrayAt(get(errorsRef.current, name), from, to);
