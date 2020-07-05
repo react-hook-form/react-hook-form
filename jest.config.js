@@ -48,6 +48,7 @@ const native = {
       tsConfig: 'tsconfig.jest.json',
       babelConfig: true,
     },
+    window: {},
   },
   transformIgnorePatterns: [
     '[/\\\\]node_modules[/\\\\](?!react-native)[/\\\\].+',
