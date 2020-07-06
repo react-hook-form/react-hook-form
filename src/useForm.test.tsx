@@ -8,7 +8,7 @@ import {
   screen,
 } from '@testing-library/react';
 import { useForm } from './';
-import findRemovedFieldAndRemoveListener from './logic/findRemovedFieldAndRemoveListener';
+import * as findRemovedFieldAndRemoveListener from './logic/findRemovedFieldAndRemoveListener';
 import * as validateField from './logic/validateField';
 import { VALIDATION_MODE, EVENTS } from './constants';
 import {
@@ -23,7 +23,6 @@ import { transformToNestObject } from './logic';
 import * as isSameError from './utils/isSameError';
 import { DeepMap } from './types/utils';
 
-jest.mock('./logic/findRemovedFieldAndRemoveListener');
 jest.mock('./logic/skipValidation');
 jest.mock('./logic/transformToNestObject');
 
@@ -92,6 +91,10 @@ describe('useForm', () => {
     test.each([['text'], ['radio'], ['checkbox']])(
       'should register field for %s type',
       async (type) => {
+        const mockListener = jest.spyOn(
+          findRemovedFieldAndRemoveListener,
+          'default',
+        );
         jest.spyOn(HTMLInputElement.prototype, 'addEventListener');
 
         let renderCount = 0;
@@ -120,9 +123,7 @@ describe('useForm', () => {
         // check MutationObserver
         ref.remove();
 
-        await waitFor(() =>
-          expect(findRemovedFieldAndRemoveListener).toHaveBeenCalled(),
-        );
+        await waitFor(() => expect(mockListener).toHaveBeenCalled());
         expect(screen.getByRole('alert').textContent).toBe('false');
         expect(renderCount).toBe(2);
       },
@@ -207,6 +208,10 @@ describe('useForm', () => {
 
   describe('unregister', () => {
     it('should unregister an registered item', async () => {
+      const mockListener = jest.spyOn(
+        findRemovedFieldAndRemoveListener,
+        'default',
+      );
       const { result } = renderHook(() => useForm());
 
       result.current.register({ name: 'input' });
@@ -221,10 +226,14 @@ describe('useForm', () => {
         } as React.SyntheticEvent);
       });
 
-      expect(findRemovedFieldAndRemoveListener).toBeCalled();
+      expect(mockListener).toBeCalled();
     });
 
     it('should unregister an registered item with array name', async () => {
+      const mockListener = jest.spyOn(
+        findRemovedFieldAndRemoveListener,
+        'default',
+      );
       const { result } = renderHook(() => useForm());
 
       result.current.register({ name: 'input' });
@@ -237,15 +246,19 @@ describe('useForm', () => {
         } as React.SyntheticEvent);
       });
 
-      expect(findRemovedFieldAndRemoveListener).toBeCalled();
+      expect(mockListener).toBeCalled();
     });
 
     it('should not call findRemovedFieldAndRemoveListener when field variable does not exist', () => {
+      const mockListener = jest.spyOn(
+        findRemovedFieldAndRemoveListener,
+        'default',
+      );
       const { result } = renderHook(() => useForm());
 
       result.current.unregister('test');
 
-      expect(findRemovedFieldAndRemoveListener).not.toHaveBeenCalled();
+      expect(mockListener).not.toHaveBeenCalled();
     });
   });
 
@@ -1838,14 +1851,22 @@ describe('useForm', () => {
 
   describe('when component unMount', () => {
     it('should call unSubscribe', () => {
+      const mockListener = jest.spyOn(
+        findRemovedFieldAndRemoveListener,
+        'default',
+      );
       const { result, unmount } = renderHook(() => useForm<{ test: string }>());
 
       result.current.register({ type: 'text', name: 'test' });
       unmount();
-      expect(findRemovedFieldAndRemoveListener).toBeCalled();
+      expect(mockListener).toBeCalled();
     });
 
     it('should call removeFieldEventListenerAndRef when field variable is array', () => {
+      const mockListener = jest.spyOn(
+        findRemovedFieldAndRemoveListener,
+        'default',
+      );
       const { result, unmount } = renderHook(() => useForm());
 
       result.current.control.fieldArrayNamesRef.current.add('test');
@@ -1856,15 +1877,19 @@ describe('useForm', () => {
 
       unmount();
 
-      expect(findRemovedFieldAndRemoveListener).toHaveBeenCalled();
+      expect(mockListener).toHaveBeenCalled();
     });
 
     it('should not call removeFieldEventListenerAndRef when field variable does not exist', () => {
+      const mockListener = jest.spyOn(
+        findRemovedFieldAndRemoveListener,
+        'default',
+      );
       const { unmount } = renderHook(() => useForm());
 
       unmount();
 
-      expect(findRemovedFieldAndRemoveListener).not.toHaveBeenCalled();
+      expect(mockListener).not.toHaveBeenCalled();
     });
   });
 
