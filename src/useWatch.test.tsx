@@ -173,32 +173,6 @@ describe('useWatch', () => {
   });
 
   describe('reset', () => {
-    it('should return current value', async () => {
-      const Component = () => {
-        const { register, reset, control } = useForm();
-        const test = useWatch<string>({ name: 'test', control });
-
-        React.useEffect(() => {
-          reset({ test: 'default' });
-        }, [reset]);
-
-        return (
-          <form>
-            <input name="test" ref={register} />
-            <span data-testid="result">{test}</span>
-          </form>
-        );
-      };
-
-      render(<Component />);
-
-      fireEvent.input(screen.getByRole('textbox'), {
-        target: { value: 'test' },
-      });
-
-      expect((await screen.findByTestId('result')).textContent).toBe('test');
-    });
-
     it('should return empty string when default value is set', async () => {
       const Component = () => {
         const { register, reset, control } = useForm();
