@@ -3,7 +3,7 @@ import { useForm } from './useForm';
 import { useWatch } from './useWatch';
 import generateId from './logic/generateId';
 import { renderHook, act } from '@testing-library/react-hooks';
-import { render, screen, fireEvent } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
 import { reconfigureControl } from './__mocks__/reconfigureControl';
 
 jest.mock('./logic/generateId');
