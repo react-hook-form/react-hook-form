@@ -193,16 +193,18 @@ describe('useForm', () => {
       expect(screen.getByRole('alert').textContent).toBe('false');
     });
 
-    it('should be set default value from unmountFieldsStateRef', () => {
-      const { result } = renderHook(() => useForm());
-      result.current.control.unmountFieldsStateRef.current['test'] = 'value';
+    it('should be set default value from unmountFieldsStateRef when shouldUnRegister is false', async () => {
+      const { result, unmount } = renderHook(() =>
+        useForm({ shouldUnregister: false }),
+      );
 
-      result.current.register('test');
+      result.current.register({ type: 'text', name: 'test', value: 'test' });
 
-      expect(result.current.control.fieldsRef.current['test']?.ref).toEqual({
-        name: 'test',
-        value: 'value',
-      });
+      unmount();
+
+      result.current.register({ type: 'text', name: 'test' });
+
+      expect(result.current.getValues()).toEqual({ test: 'test' });
     });
   });
 
@@ -1468,6 +1470,27 @@ describe('useForm', () => {
       expect(callback).not.toBeCalled();
       expect(mockFocus).not.toBeCalled();
       expect(result.current.errors?.test.type).toBe('required');
+    });
+
+    it('should submit data from unmountFieldsStateRef when shouldUnRegister is false', async () => {
+      const { result, unmount } = renderHook(() =>
+        useForm({ shouldUnregister: false }),
+      );
+
+      result.current.register({ type: 'text', name: 'test', value: 'test' });
+
+      unmount();
+
+      await act(async () =>
+        result.current.handleSubmit((data) => {
+          expect(data).toEqual({
+            test: 'test',
+          });
+        })({
+          preventDefault: () => {},
+          persist: () => {},
+        } as React.SyntheticEvent),
+      );
     });
   });
 
