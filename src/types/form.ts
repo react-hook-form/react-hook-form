@@ -136,13 +136,6 @@ export type Error = {
   message?: Message;
 };
 
-export type ManualFieldError<TFieldValues extends FieldValues> = {
-  name: FieldName<TFieldValues>;
-  type: string;
-  types?: MultipleFieldErrors;
-  message?: Message;
-};
-
 export type ErrorOption =
   | {
       types: MultipleFieldErrors;
