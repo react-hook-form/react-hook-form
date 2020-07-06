@@ -173,55 +173,90 @@ describe('useWatch', () => {
   });
 
   describe('reset', () => {
-    it('should return empty string when default value is set', async () => {
-      const Component = () => {
-        const { register, reset, control } = useForm();
-        const test = useWatch<string>({
-          name: 'test',
-          defaultValue: 'test',
-          control,
-        });
+    describe('with custom register', () => {
+      it('should return registered', async () => {
+        const Component = () => {
+          const { register, reset, control } = useForm();
+          const test = useWatch<string>({
+            name: 'test',
+            defaultValue: 'default',
+            control,
+          });
 
-        React.useEffect(() => {
-          reset({ test: 'default' });
-        }, [reset]);
+          React.useEffect(() => {
+            register({ name: 'test', value: 'test' });
+          }, [register]);
 
-        return (
-          <form>
-            <input name="test" ref={register} />
-            <span data-testid="result">{test}</span>
-          </form>
-        );
-      };
+          React.useEffect(() => {
+            reset({ test: 'default' });
+          }, [reset]);
 
-      render(<Component />);
+          return (
+            <form>
+              <input name="test" ref={register} />
+              <span data-testid="result">{test}</span>
+            </form>
+          );
+        };
 
-      expect((await screen.findByTestId('result')).textContent).toBe('');
-    });
+        render(<Component />);
 
-    it('should return default value of reset method', async () => {
-      const Component = () => {
-        const { register, reset, control } = useForm();
-        const test = useWatch<string>({ name: 'test', control });
+        expect((await screen.findByTestId('result')).textContent).toBe('test');
+      });
 
-        React.useEffect(() => {
-          register({ name: 'test' });
-        }, [register]);
+      it('should return default value of reset method', async () => {
+        const Component = () => {
+          const { register, reset, control } = useForm();
+          const test = useWatch<string>({ name: 'test', control });
 
-        React.useEffect(() => {
-          reset({ test: 'default' });
-        }, [reset]);
+          React.useEffect(() => {
+            register({ name: 'test' });
+          }, [register]);
 
-        return (
-          <form>
-            <span>{test}</span>
-          </form>
-        );
-      };
+          React.useEffect(() => {
+            reset({ test: 'default' });
+          }, [reset]);
 
-      render(<Component />);
+          return (
+            <form>
+              <span>{test}</span>
+            </form>
+          );
+        };
 
-      expect(await screen.findByText('default')).toBeDefined();
+        render(<Component />);
+
+        expect(await screen.findByText('default')).toBeDefined();
+      });
+
+      it('should return default value', async () => {
+        const Component = () => {
+          const { register, reset, control } = useForm();
+          const test = useWatch<string>({
+            name: 'test',
+            defaultValue: 'test',
+            control,
+          });
+
+          React.useEffect(() => {
+            register({ name: 'test' });
+          }, [register]);
+
+          React.useEffect(() => {
+            reset();
+          }, [reset]);
+
+          return (
+            <form>
+              <span>{test}</span>
+            </form>
+          );
+        };
+
+        render(<Component />);
+
+        expect(await screen.findByText('test')).toBeDefined();
+      });
     });
   });
 });
