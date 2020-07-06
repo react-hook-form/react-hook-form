@@ -68,6 +68,27 @@ describe('useForm', () => {
       expect(mockConsoleWarn).toHaveBeenCalled();
     });
 
+    it('should support register passed to ref', async () => {
+      const { result } = renderHook(() => useForm<{ test: string }>());
+
+      result.current.register({ required: true })!({
+        type: 'text',
+        name: 'test',
+        value: 'testData',
+      });
+
+      await act(async () => {
+        await result.current.handleSubmit((data) => {
+          expect(data).toEqual({
+            test: 'testData',
+          });
+        })({
+          preventDefault: () => {},
+          persist: () => {},
+        } as React.SyntheticEvent);
+      });
+    });
+
     test.each([['text'], ['radio'], ['checkbox']])(
       'should register field for %s type',
       async (type) => {
@@ -107,67 +128,35 @@ describe('useForm', () => {
       },
     );
 
-    it('should support register passed to ref', async () => {
-      const { result } = renderHook(() => useForm<{ test: string }>());
+    test.each([['text'], ['radio'], ['checkbox']])(
+      'should not register the same %s input',
+      async (type) => {
+        const callback = jest.fn();
+        const Component = () => {
+          const { register, handleSubmit } = useForm();
+          return (
+            <div>
+              <input name="test" type={type} ref={register} />
+              <input name="test" type={type} ref={register} />
+              <button onClick={handleSubmit(callback)}>submit</button>
+            </div>
+          );
+        };
 
-      result.current.register({ required: true })!({
-        type: 'text',
-        name: 'test',
-        value: 'testData',
-      });
+        render(<Component />);
 
-      await act(async () => {
-        await result.current.handleSubmit((data) => {
-          expect(data).toEqual({
-            test: 'testData',
-          });
-        })({
-          preventDefault: () => {},
-          persist: () => {},
-        } as React.SyntheticEvent);
-      });
-    });
+        fireEvent.click(screen.getByRole('button', { name: /submit/ }));
 
-    it('should not register the same radio input', async () => {
-      const { result } = renderHook(() => useForm<{ test: string }>());
-
-      const { register } = result.current;
-      register({ type: 'radio', name: 'test', value: '' });
-      register({ type: 'radio', name: 'test', value: '' });
-
-      await act(async () => {
-        await result.current.handleSubmit((data) => {
-          expect(data).toEqual({
-            test: '',
-          });
-        })({
-          preventDefault: () => {},
-          persist: () => {},
-        } as React.SyntheticEvent);
-      });
-    });
-
-    it('should not register the same checkbox input', async () => {
-      const { result } = renderHook(() => useForm<{ test: string }>());
-      const ref = document.createElement('INPUT');
-      ref.setAttribute('name', 'test');
-      ref.setAttribute('type', 'checkbox');
-
-      const { register } = result.current;
-      register(ref as any);
-      register(ref as any);
-
-      await act(async () => {
-        await result.current.handleSubmit((data) => {
-          expect(data).toEqual({
-            test: false,
-          });
-        })({
-          preventDefault: () => {},
-          persist: () => {},
-        } as React.SyntheticEvent);
-      });
-    });
+        await waitFor(() =>
+          expect(callback).toHaveBeenCalledWith(
+            {
+              test: type === 'checkbox' ? [] : '',
+            },
+            expect.any(Object),
+          ),
+        );
+      },
+    );
 
     it('should re-render if errors ocurred with resolver when formState.isValid is defined', async () => {
       const resolver = async (data: any) => {
