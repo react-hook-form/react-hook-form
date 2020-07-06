@@ -22,7 +22,7 @@ import {
   FieldValues,
   FieldRefs,
   Message,
-  FieldError,
+  Error,
   InternalFieldName,
   FlatFieldErrors,
 } from '../types/form';
@@ -202,7 +202,7 @@ export default async <TFieldValues extends FieldValues>(
         }
       }
     } else if (isObject(validate)) {
-      let validationResult = {} as FieldError;
+      let validationResult = {} as Error;
       for (const [key, validateFunction] of Object.entries(validate)) {
         if (!isEmptyObject(validationResult) && !validateAllFieldCriteria) {
           break;

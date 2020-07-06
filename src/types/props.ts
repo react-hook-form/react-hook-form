@@ -3,7 +3,7 @@ import {
   FieldValues,
   FieldValuesFromControl,
   FieldName,
-  ValidationRules,
+  Rules,
   Control,
 } from './form';
 import { Assign } from './utils';
@@ -37,7 +37,7 @@ export type ControllerProps<
   {
     name: FieldName<FieldValuesFromControl<TControl>>;
     as?: TAs;
-    rules?: ValidationRules;
+    rules?: Rules;
     onFocus?: () => void;
     defaultValue?: unknown;
     control?: TControl;

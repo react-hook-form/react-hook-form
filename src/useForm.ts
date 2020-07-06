@@ -46,7 +46,7 @@ import {
   Field,
   FieldRefs,
   UseFormOptions,
-  ValidationRules,
+  Rules,
   SubmitHandler,
   FieldElement,
   FormStateProxy,
@@ -54,7 +54,7 @@ import {
   Ref,
   HandleChange,
   Touched,
-  FieldError,
+  Error,
   RadioOrCheckboxOption,
   OmitResetState,
   DefaultValuesAtRender,
@@ -179,7 +179,7 @@ export function useForm<
         shouldReRender =
           shouldReRender ||
           !previousError ||
-          !isSameError(previousError, error[name] as FieldError);
+          !isSameError(previousError, error[name] as Error);
 
         set(errorsRef.current, name, error[name]);
       }
@@ -735,7 +735,7 @@ export function useForm<
 
   function registerFieldsRef<TFieldElement extends FieldElement<TFieldValues>>(
     ref: TFieldElement & Ref,
-    validateOptions: ValidationRules | null = {},
+    validateOptions: Rules | null = {},
   ): ((name: InternalFieldName<TFieldValues>) => void) | void {
     if (!ref.name) {
       // eslint-disable-next-line no-console
@@ -858,23 +858,20 @@ export function useForm<
   }
 
   function register<TFieldElement extends FieldElement<TFieldValues>>(
-    rules?: ValidationRules,
+    rules?: Rules,
   ): (ref: (TFieldElement & Ref) | null) => void;
-  function register(
-    name: FieldName<TFieldValues>,
-    rules?: ValidationRules,
-  ): void;
+  function register(name: FieldName<TFieldValues>, rules?: Rules): void;
   function register<TFieldElement extends FieldElement<TFieldValues>>(
     ref: (TFieldElement & Ref) | null,
-    rules?: ValidationRules,
+    rules?: Rules,
   ): void;
   function register<TFieldElement extends FieldElement<TFieldValues>>(
     refOrValidationOptions?:
       | FieldName<TFieldValues>
-      | ValidationRules
+      | Rules
       | (TFieldElement & Ref)
       | null,
-    rules?: ValidationRules,
+    rules?: Rules,
   ): ((ref: (TFieldElement & Ref) | null) => void) | void {
     if (!isWindowUndefined) {
       if (isString(refOrValidationOptions)) {

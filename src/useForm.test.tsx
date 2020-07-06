@@ -11,12 +11,7 @@ import { useForm } from './';
 import * as findRemovedFieldAndRemoveListener from './logic/findRemovedFieldAndRemoveListener';
 import * as validateField from './logic/validateField';
 import { VALIDATION_MODE, EVENTS } from './constants';
-import {
-  NestedValue,
-  UseFormMethods,
-  ErrorOption,
-  FieldError,
-} from './types/form';
+import { NestedValue, UseFormMethods, ErrorOption, Error } from './types/form';
 import skipValidation from './logic/skipValidation';
 import * as shouldRenderBasedOnError from './logic/shouldRenderBasedOnError';
 import { transformToNestObject } from './logic';
@@ -1604,7 +1599,7 @@ describe('useForm', () => {
   });
 
   describe('setError', () => {
-    const tests: [string, ErrorOption, DeepMap<any, FieldError>][] = [
+    const tests: [string, ErrorOption, DeepMap<any, Error>][] = [
       [
         'should only set an error when it is not existed',
         { type: 'test' },

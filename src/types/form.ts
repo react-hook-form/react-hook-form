@@ -117,7 +117,7 @@ export type ValidateResult = Message | boolean | undefined;
 
 export type Validate = (data: any) => ValidateResult | Promise<ValidateResult>;
 
-export type ValidationRules = Partial<{
+export type Rules = Partial<{
   required: Message | ValidationRule<boolean>;
   min: ValidationRule<number | string>;
   max: ValidationRule<number | string>;
@@ -129,7 +129,7 @@ export type ValidationRules = Partial<{
 
 export type MultipleFieldErrors = Record<string, ValidateResult>;
 
-export type FieldError = {
+export type Error = {
   type: string;
   ref?: Ref;
   types?: MultipleFieldErrors;
@@ -156,7 +156,7 @@ export type Field = {
   ref: Ref;
   mutationWatcher?: MutationWatcher;
   options?: RadioOrCheckboxOption[];
-} & ValidationRules;
+} & Rules;
 
 export type FieldRefs<TFieldValues extends FieldValues> = Partial<
   Record<InternalFieldName<TFieldValues>, Field>
@@ -164,10 +164,10 @@ export type FieldRefs<TFieldValues extends FieldValues> = Partial<
 
 export type FieldErrors<
   TFieldValues extends FieldValues = FieldValues
-> = DeepMap<TFieldValues, FieldError>;
+> = DeepMap<TFieldValues, Error>;
 
 export type FlatFieldErrors<TFieldValues extends FieldValues> = Partial<
-  Record<InternalFieldName<TFieldValues>, FieldError>
+  Record<InternalFieldName<TFieldValues>, Error>
 >;
 
 export type Touched<TFieldValues extends FieldValues> = DeepMap<
@@ -315,12 +315,12 @@ export type UseWatchOptions = {
 
 export type UseFormMethods<TFieldValues extends FieldValues = FieldValues> = {
   register<TFieldElement extends FieldElement<TFieldValues>>(
-    rules?: ValidationRules,
+    rules?: Rules,
   ): (ref: (TFieldElement & Ref) | null) => void;
-  register(name: FieldName<TFieldValues>, rules?: ValidationRules): void;
+  register(name: FieldName<TFieldValues>, rules?: Rules): void;
   register<TFieldElement extends FieldElement<TFieldValues>>(
     ref: (TFieldElement & Ref) | null,
-    rules?: ValidationRules,
+    rules?: Rules,
   ): void;
   unregister(name: FieldName<TFieldValues> | FieldName<TFieldValues>[]): void;
   watch(): UnpackNestedValue<TFieldValues>;
