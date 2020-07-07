@@ -117,7 +117,7 @@ export type ValidateResult = Message | boolean | undefined;
 
 export type Validate = (data: any) => ValidateResult | Promise<ValidateResult>;
 
-export type Rules = Partial<{
+export type ValidationRules = Partial<{
   required: Message | ValidationRule<boolean>;
   min: ValidationRule<number | string>;
   max: ValidationRule<number | string>;
@@ -149,7 +149,7 @@ export type Field = {
   ref: Ref;
   mutationWatcher?: MutationWatcher;
   options?: RadioOrCheckboxOption[];
-} & Rules;
+} & ValidationRules;
 
 export type FieldRefs<TFieldValues extends FieldValues> = Partial<
   Record<InternalFieldName<TFieldValues>, Field>
@@ -308,12 +308,12 @@ export type UseWatchOptions = {
 
 export type UseFormMethods<TFieldValues extends FieldValues = FieldValues> = {
   register<TFieldElement extends FieldElement<TFieldValues>>(
-    rules?: Rules,
+    rules?: ValidationRules,
   ): (ref: (TFieldElement & Ref) | null) => void;
-  register(name: FieldName<TFieldValues>, rules?: Rules): void;
+  register(name: FieldName<TFieldValues>, rules?: ValidationRules): void;
   register<TFieldElement extends FieldElement<TFieldValues>>(
     ref: (TFieldElement & Ref) | null,
-    rules?: Rules,
+    rules?: ValidationRules,
   ): void;
   unregister(name: FieldName<TFieldValues> | FieldName<TFieldValues>[]): void;
   watch(): UnpackNestedValue<TFieldValues>;

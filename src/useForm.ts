@@ -46,7 +46,7 @@ import {
   Field,
   FieldRefs,
   UseFormOptions,
-  Rules,
+  ValidationRules,
   SubmitHandler,
   FieldElement,
   FormStateProxy,
@@ -735,7 +735,7 @@ export function useForm<
 
   function registerFieldsRef<TFieldElement extends FieldElement<TFieldValues>>(
     ref: TFieldElement & Ref,
-    validateOptions: Rules | null = {},
+    validateOptions: ValidationRules | null = {},
   ): ((name: InternalFieldName<TFieldValues>) => void) | void {
     if (!ref.name) {
       // eslint-disable-next-line no-console
@@ -858,20 +858,23 @@ export function useForm<
   }
 
   function register<TFieldElement extends FieldElement<TFieldValues>>(
-    rules?: Rules,
+    rules?: ValidationRules,
   ): (ref: (TFieldElement & Ref) | null) => void;
-  function register(name: FieldName<TFieldValues>, rules?: Rules): void;
+  function register(
+    name: FieldName<TFieldValues>,
+    rules?: ValidationRules,
+  ): void;
   function register<TFieldElement extends FieldElement<TFieldValues>>(
     ref: (TFieldElement & Ref) | null,
-    rules?: Rules,
+    rules?: ValidationRules,
   ): void;
   function register<TFieldElement extends FieldElement<TFieldValues>>(
     refOrValidationOptions?:
       | FieldName<TFieldValues>
-      | Rules
+      | ValidationRules
       | (TFieldElement & Ref)
       | null,
-    rules?: Rules,
+    rules?: ValidationRules,
   ): ((ref: (TFieldElement & Ref) | null) => void) | void {
     if (!isWindowUndefined) {
       if (isString(refOrValidationOptions)) {
