@@ -582,7 +582,7 @@ export function useForm<
       resolverRef.current!(
         {
           ...defaultValuesRef.current,
-          ...getFieldsValues(fieldsRef, unmountFieldsStateRef),
+          ...getValues(),
           ...values,
         },
         contextRef.current,
@@ -945,7 +945,7 @@ export function useForm<
       let fieldErrors: FieldErrors<TFieldValues> = {};
       let fieldValues: FieldValues = {
         ...unmountFieldsStateRef.current,
-        ...getFieldsValues(fieldsRef, unmountFieldsStateRef),
+        ...getValues(),
       };
 
       if (readFormStateRef.current.isSubmitting) {
