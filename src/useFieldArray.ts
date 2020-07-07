@@ -207,9 +207,7 @@ export const useFieldArray = <
   const remove = (index?: number | number[]) => {
     shouldRender = false;
 
-    resetFields(
-      removeArrayAt(getFieldValueByName(fieldsRef.current, name), index),
-    );
+    resetFields(removeArrayAt(getFieldValueByName(fieldsRef, name), index));
     setFieldAndValidState(removeArrayAt(allFields.current, index));
     setIsDeleted(true);
 
@@ -297,7 +295,7 @@ export const useFieldArray = <
     shouldRender = false;
     const emptyArray = fillEmptyArray(value);
 
-    resetFields(insertAt(getFieldValueByName(fieldsRef.current, name), index));
+    resetFields(insertAt(getFieldValueByName(fieldsRef, name), index));
     setFieldAndValidState(
       insertAt(
         allFields.current,
@@ -344,7 +342,7 @@ export const useFieldArray = <
   const swap = (indexA: number, indexB: number) => {
     shouldRender = false;
 
-    const fieldValues = getFieldValueByName(fieldsRef.current, name);
+    const fieldValues = getFieldValueByName(fieldsRef, name);
     swapArrayAt(fieldValues, indexA, indexB);
     resetFields(fieldValues);
     swapArrayAt(allFields.current, indexA, indexB);
@@ -373,7 +371,7 @@ export const useFieldArray = <
 
   const move = (from: number, to: number) => {
     shouldRender = false;
-    const fieldValues = getFieldValueByName(fieldsRef.current, name);
+    const fieldValues = getFieldValueByName(fieldsRef, name);
     moveArrayAt(fieldValues, from, to);
     resetFields(fieldValues);
     moveArrayAt(allFields.current, from, to);

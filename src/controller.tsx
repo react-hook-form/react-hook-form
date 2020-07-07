@@ -50,7 +50,7 @@ const Controller = <
   } = control || methods.control;
   const isNotFieldArray = !isNameInFieldArray(fieldArrayNamesRef.current, name);
   const getInitialValue = () =>
-    !isUndefined(unmountFieldsStateRef.current[name]) && isNotFieldArray
+    !isUndefined(get(unmountFieldsStateRef.current, name)) && isNotFieldArray
       ? unmountFieldsStateRef.current[name]
       : isUndefined(defaultValue)
       ? get(defaultValuesRef.current, name)

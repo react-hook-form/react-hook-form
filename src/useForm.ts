@@ -249,7 +249,7 @@ export function useForm<
 
       const isFieldDirty =
         defaultValuesAtRenderRef.current[name] !==
-        getFieldValue(fieldsRef.current, name);
+        getFieldValue(fieldsRef, name, unmountFieldsStateRef);
       const isDirtyFieldExist = get(dirtyFieldsRef.current, name);
       const isFieldArray = isNameInFieldArray(fieldArrayNamesRef.current, name);
       const previousIsDirty = isDirtyRef.current;
@@ -263,7 +263,7 @@ export function useForm<
       isDirtyRef.current =
         (isFieldArray &&
           getIsFieldsDifferent(
-            getValues()[getFieldArrayParentName(name)],
+            get(getValues(), getFieldArrayParentName(name)),
             get(defaultValuesRef.current, getFieldArrayParentName(name)),
           )) ||
         !isEmptyObject(dirtyFieldsRef.current);
@@ -286,6 +286,7 @@ export function useForm<
           fieldsRef,
           validateAllFieldCriteria,
           fieldsRef.current[name] as Field,
+          unmountFieldsStateRef,
         );
 
         shouldRenderBaseOnError(name, error, skipReRender ? null : false);
@@ -414,6 +415,8 @@ export function useForm<
       } else if (!isPrimitive(value)) {
         setInternalValues(name, value, config);
       }
+
+      unmountFieldsStateRef.current[name] = value;
     },
     [setDirty, setFieldValue, setInternalValues],
   );
@@ -528,6 +531,7 @@ export function useForm<
             fieldsRef,
             validateAllFieldCriteria,
             field,
+            unmountFieldsStateRef,
           );
         }
 
@@ -541,7 +545,7 @@ export function useForm<
   const validateResolver = React.useCallback(
     (values: any = {}) => {
       const fieldValues = isEmptyObject(defaultValuesRef.current)
-        ? getFieldsValues(fieldsRef.current)
+        ? getFieldsValues(fieldsRef, unmountFieldsStateRef)
         : defaultValuesRef.current;
 
       resolverRef.current!(
@@ -566,7 +570,7 @@ export function useForm<
   const removeFieldEventListener = React.useCallback(
     (field: Field, forceDelete?: boolean) => {
       findRemovedFieldAndRemoveListener(
-        fieldsRef.current,
+        fieldsRef,
         handleChangeRef.current!,
         field,
         unmountFieldsStateRef,
@@ -655,7 +659,8 @@ export function useForm<
         ? defaultValuesRef.current
         : defaultValue;
       const fieldValues = getFieldsValues<TFieldValues>(
-        fieldsRef.current,
+        fieldsRef,
+        unmountFieldsStateRef,
         fieldNames,
       );
 
@@ -798,13 +803,16 @@ export function useForm<
     fields[name] = field;
 
     const isEmptyUnmountFields = isUndefined(
-      unmountFieldsStateRef.current[name],
+      get(unmountFieldsStateRef.current, name),
     );
 
     if (!isEmptyObject(defaultValuesRef.current) || !isEmptyUnmountFields) {
-      defaultValue = isEmptyUnmountFields
-        ? get(defaultValuesRef.current, name)
-        : unmountFieldsStateRef.current[name];
+      defaultValue = get(
+        isEmptyUnmountFields
+          ? defaultValuesRef.current
+          : unmountFieldsStateRef.current,
+        name,
+      );
       isEmptyDefaultValue = isUndefined(defaultValue);
       isFieldArray = isNameInFieldArray(fieldArrayNamesRef.current, name);
 
@@ -819,19 +827,22 @@ export function useForm<
       fieldsWithValidationRef.current.add(name);
 
       if (!isOnSubmit && readFormStateRef.current.isValid) {
-        validateField(fieldsRef, validateAllFieldCriteria, field).then(
-          (error) => {
-            const previousFormIsValid = isValidRef.current;
+        validateField(
+          fieldsRef,
+          validateAllFieldCriteria,
+          field,
+          unmountFieldsStateRef,
+        ).then((error) => {
+          const previousFormIsValid = isValidRef.current;
 
-            isEmptyObject(error)
-              ? validFieldsRef.current.add(name)
-              : (isValidRef.current = false);
+          isEmptyObject(error)
+            ? validFieldsRef.current.add(name)
+            : (isValidRef.current = false);
 
-            if (previousFormIsValid !== isValidRef.current) {
-              reRender();
-            }
-          },
-        );
+          if (previousFormIsValid !== isValidRef.current) {
+            reRender();
+          }
+        });
       }
     }
 
@@ -840,7 +851,7 @@ export function useForm<
       !(isFieldArray && isEmptyDefaultValue)
     ) {
       defaultValuesAtRenderRef.current[name] = isEmptyDefaultValue
-        ? getFieldValue(fields, name)
+        ? getFieldValue(fieldsRef, name, unmountFieldsStateRef)
         : defaultValue;
     }
 
@@ -902,7 +913,7 @@ export function useForm<
       let fieldErrors: FieldErrors<TFieldValues> = {};
       let fieldValues: FieldValues = {
         ...unmountFieldsStateRef.current,
-        ...getFieldsValues(fieldsRef.current),
+        ...getFieldsValues(fieldsRef, unmountFieldsStateRef),
       };
 
       if (readFormStateRef.current.isSubmitting) {
@@ -931,6 +942,7 @@ export function useForm<
                 fieldsRef,
                 validateAllFieldCriteria,
                 field,
+                unmountFieldsStateRef,
               );
 
               if (fieldError[name]) {
@@ -1015,7 +1027,6 @@ export function useForm<
       TFieldValues
     >;
     fieldArrayDefaultValues.current = {};
-    unmountFieldsStateRef.current = {};
     watchFieldsRef.current = new Set();
     isWatchAllRef.current = false;
   };
@@ -1048,6 +1059,8 @@ export function useForm<
       renderWatchedInputs('');
     }
 
+    unmountFieldsStateRef.current = values || {};
+
     Object.values(resetFieldArrayFunctionRef.current).forEach(
       (resetFieldArray) => isFunction(resetFieldArray) && resetFieldArray(),
     );
@@ -1061,7 +1074,7 @@ export function useForm<
     name: TFieldName,
   ): TFieldName extends keyof TFieldValues
     ? UnpackNestedValue<TFieldValues>[TFieldName]
-    : TFieldValue => getFieldValue(fieldsRef.current, name);
+    : TFieldValue => getFieldValue(fieldsRef, name, unmountFieldsStateRef);
 
   function getValues(): UnpackNestedValue<TFieldValues>;
   function getValues<TFieldName extends string, TFieldValue extends unknown>(
@@ -1073,8 +1086,6 @@ export function useForm<
     names: TFieldName[],
   ): UnpackNestedValue<Pick<TFieldValues, TFieldName>>;
   function getValues(payload?: string | string[]): unknown {
-    const fields = fieldsRef.current;
-
     if (isString(payload)) {
       return getValue(payload);
     }
@@ -1089,7 +1100,9 @@ export function useForm<
       );
     }
 
-    return transformToNestObject(getFieldsValues(fields));
+    return transformToNestObject(
+      getFieldsValues(fieldsRef, unmountFieldsStateRef),
+    );
   }
 
   React.useEffect(() => {

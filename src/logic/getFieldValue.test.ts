@@ -22,9 +22,11 @@ describe('getFieldValue', () => {
     expect(
       getFieldValue(
         {
-          test: {
-            ref: {
-              type: 'radio',
+          current: {
+            test: {
+              ref: {
+                type: 'radio',
+              },
             },
           },
         },
@@ -37,11 +39,13 @@ describe('getFieldValue', () => {
     expect(
       getFieldValue(
         {
-          test: {
-            ref: {
-              type: 'select-multiple',
-              name: 'test',
-              value: 'test',
+          current: {
+            test: {
+              ref: {
+                type: 'select-multiple',
+                name: 'test',
+                value: 'test',
+              },
             },
           },
         },
@@ -54,10 +58,12 @@ describe('getFieldValue', () => {
     expect(
       getFieldValue(
         {
-          test: {
-            ref: {
-              name: 'test',
-              type: 'checkbox',
+          current: {
+            test: {
+              ref: {
+                name: 'test',
+                type: 'checkbox',
+              },
             },
           },
         },
@@ -70,11 +76,13 @@ describe('getFieldValue', () => {
     expect(
       getFieldValue(
         {
-          test: {
-            ref: {
-              type: 'text',
-              name: 'bill',
-              value: 'value',
+          current: {
+            test: {
+              ref: {
+                type: 'text',
+                name: 'bill',
+                value: 'value',
+              },
             },
           },
         },
@@ -84,13 +92,13 @@ describe('getFieldValue', () => {
   });
 
   it('should return empty string when radio input value is not found', () => {
-    expect(getFieldValue({}, '')).toEqual(undefined);
+    expect(getFieldValue({ current: {} }, '')).toEqual(undefined);
   });
 
   it('should return false when checkbox input value is not found', () => {
     expect(
       getFieldValue(
-        {},
+        { current: {} },
         {
           type: 'checkbox',
           value: 'value',
@@ -104,11 +112,13 @@ describe('getFieldValue', () => {
     expect(
       getFieldValue(
         {
-          test: {
-            ref: {
-              type: 'file',
-              name: 'test',
-              files: 'files',
+          current: {
+            test: {
+              ref: {
+                type: 'file',
+                name: 'test',
+                files: 'files',
+              },
             },
           },
         },
@@ -121,14 +131,34 @@ describe('getFieldValue', () => {
     expect(
       getFieldValue(
         {
-          test: {
-            ref: {
-              files: 'files',
+          current: {
+            test: {
+              ref: {
+                files: 'files',
+              },
             },
           },
         },
         {},
       ),
     ).toEqual(undefined);
+  });
+
+  it('should return unmount field value when field is not found', () => {
+    expect(
+      getFieldValue(
+        {
+          current: {
+            test: {
+              ref: {
+                files: 'files',
+              },
+            },
+          },
+        },
+        'what',
+        { current: { what: 'data' } },
+      ),
+    ).toEqual('data');
   });
 });
