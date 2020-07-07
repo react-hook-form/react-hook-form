@@ -895,7 +895,7 @@ export function useForm<
     <TSubmitFieldValues extends FieldValues = TFieldValues>(
       callback: SubmitHandler<TSubmitFieldValues>,
     ) => async (e?: React.BaseSyntheticEvent): Promise<void> => {
-      if (e) {
+      if (e && e.preventDefault) {
         e.preventDefault();
         e.persist();
       }
