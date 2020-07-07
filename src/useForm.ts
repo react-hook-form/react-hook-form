@@ -10,7 +10,6 @@ import validateField from './logic/validateField';
 import assignWatchFields from './logic/assignWatchFields';
 import skipValidation from './logic/skipValidation';
 import getFieldArrayParentName from './logic/getFieldArrayParentName';
-import getFieldArrayValueByName from './logic/getFieldArrayValueByName';
 import getIsFieldsDifferent from './logic/getIsFieldsDifferent';
 import isNameInFieldArray from './logic/isNameInFieldArray';
 import isCheckBoxInput from './utils/isCheckBoxInput';
@@ -264,7 +263,7 @@ export function useForm<
       isDirtyRef.current =
         (isFieldArray &&
           getIsFieldsDifferent(
-            getFieldArrayValueByName(fieldsRef, getFieldArrayParentName(name)),
+            get(getValues(), getFieldArrayParentName(name)),
             get(defaultValuesRef.current, getFieldArrayParentName(name)),
           )) ||
         !isEmptyObject(dirtyFieldsRef.current);
@@ -307,7 +306,7 @@ export function useForm<
         | InternalFieldName<TFieldValues>[],
     ) => {
       const { errors } = await resolverRef.current!(
-        getFieldArrayValueByName(fieldsRef),
+        getValues() as TFieldValues,
         contextRef.current,
         validateAllFieldCriteria,
       );
@@ -431,6 +430,7 @@ export function useForm<
     if (!isEmptyObject(watchFieldsHookRef.current)) {
       for (const key in watchFieldsHookRef.current) {
         if (
+          name === '' ||
           watchFieldsHookRef.current[key].has(name) ||
           !watchFieldsHookRef.current[key].size ||
           isNameInFieldArray(fieldArrayNamesRef.current, name)
@@ -512,7 +512,7 @@ export function useForm<
 
         if (resolver) {
           const { errors } = await resolver(
-            getFieldArrayValueByName(fieldsRef),
+            getValues() as TFieldValues,
             contextRef.current,
             validateAllFieldCriteria,
           );
@@ -906,7 +906,7 @@ export function useForm<
     <TSubmitFieldValues extends FieldValues = TFieldValues>(
       callback: SubmitHandler<TSubmitFieldValues>,
     ) => async (e?: React.BaseSyntheticEvent): Promise<void> => {
-      if (e) {
+      if (e && e.preventDefault) {
         e.preventDefault();
         e.persist();
       }
@@ -1056,6 +1056,7 @@ export function useForm<
 
     if (values) {
       defaultValuesRef.current = values;
+      renderWatchedInputs('');
     }
 
     unmountFieldsStateRef.current = values || {};
