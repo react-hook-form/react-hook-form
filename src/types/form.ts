@@ -129,7 +129,7 @@ export type ValidationRules = Partial<{
 
 export type MultipleFieldErrors = Record<string, ValidateResult>;
 
-export type Error = {
+export type FieldError = {
   type: string;
   ref?: Ref;
   types?: MultipleFieldErrors;
@@ -157,10 +157,10 @@ export type FieldRefs<TFieldValues extends FieldValues> = Partial<
 
 export type FieldErrors<
   TFieldValues extends FieldValues = FieldValues
-> = DeepMap<TFieldValues, Error>;
+> = DeepMap<TFieldValues, FieldError>;
 
 export type FlatFieldErrors<TFieldValues extends FieldValues> = Partial<
-  Record<InternalFieldName<TFieldValues>, Error>
+  Record<InternalFieldName<TFieldValues>, FieldError>
 >;
 
 export type Touched<TFieldValues extends FieldValues> = DeepMap<

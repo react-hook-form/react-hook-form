@@ -7,7 +7,7 @@ export {
   UseFormOptions,
   UseFieldArrayOptions,
   ValidationRules,
-  Error,
+  FieldError,
   Field,
   Mode,
 } from './form';
