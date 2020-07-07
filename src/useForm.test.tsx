@@ -8,7 +8,7 @@ import {
   screen,
 } from '@testing-library/react';
 import { useForm } from './';
-import findRemovedFieldAndRemoveListener from './logic/findRemovedFieldAndRemoveListener';
+import * as findRemovedFieldAndRemoveListener from './logic/findRemovedFieldAndRemoveListener';
 import * as validateField from './logic/validateField';
 import { VALIDATION_MODE, EVENTS } from './constants';
 import {
@@ -23,7 +23,6 @@ import { transformToNestObject } from './logic';
 import * as isSameError from './utils/isSameError';
 import { DeepMap } from './types/utils';
 
-jest.mock('./logic/findRemovedFieldAndRemoveListener');
 jest.mock('./logic/skipValidation');
 jest.mock('./logic/transformToNestObject');
 
@@ -68,9 +67,34 @@ describe('useForm', () => {
       expect(mockConsoleWarn).toHaveBeenCalled();
     });
 
+    it('should support register passed to ref', async () => {
+      const { result } = renderHook(() => useForm<{ test: string }>());
+
+      result.current.register({ required: true })!({
+        type: 'text',
+        name: 'test',
+        value: 'testData',
+      });
+
+      await act(async () => {
+        await result.current.handleSubmit((data) => {
+          expect(data).toEqual({
+            test: 'testData',
+          });
+        })({
+          preventDefault: () => {},
+          persist: () => {},
+        } as React.SyntheticEvent);
+      });
+    });
+
     test.each([['text'], ['radio'], ['checkbox']])(
       'should register field for %s type',
       async (type) => {
+        const mockListener = jest.spyOn(
+          findRemovedFieldAndRemoveListener,
+          'default',
+        );
         jest.spyOn(HTMLInputElement.prototype, 'addEventListener');
 
         let renderCount = 0;
@@ -99,75 +123,41 @@ describe('useForm', () => {
         // check MutationObserver
         ref.remove();
 
-        await waitFor(() =>
-          expect(findRemovedFieldAndRemoveListener).toHaveBeenCalled(),
-        );
+        await waitFor(() => expect(mockListener).toHaveBeenCalled());
         expect(screen.getByRole('alert').textContent).toBe('false');
         expect(renderCount).toBe(2);
       },
     );
 
-    it('should support register passed to ref', async () => {
-      const { result } = renderHook(() => useForm<{ test: string }>());
+    test.each([['text'], ['radio'], ['checkbox']])(
+      'should not register the same %s input',
+      async (type) => {
+        const callback = jest.fn();
+        const Component = () => {
+          const { register, handleSubmit } = useForm();
+          return (
+            <div>
+              <input name="test" type={type} ref={register} />
+              <input name="test" type={type} ref={register} />
+              <button onClick={handleSubmit(callback)}>submit</button>
+            </div>
+          );
+        };
 
-      result.current.register({ required: true })!({
-        type: 'text',
-        name: 'test',
-        value: 'testData',
-      });
+        render(<Component />);
 
-      await act(async () => {
-        await result.current.handleSubmit((data) => {
-          expect(data).toEqual({
-            test: 'testData',
-          });
-        })({
-          preventDefault: () => {},
-          persist: () => {},
-        } as React.SyntheticEvent);
-      });
-    });
+        fireEvent.click(screen.getByRole('button', { name: /submit/ }));
 
-    it('should not register the same radio input', async () => {
-      const { result } = renderHook(() => useForm<{ test: string }>());
-
-      const { register } = result.current;
-      register({ type: 'radio', name: 'test', value: '' });
-      register({ type: 'radio', name: 'test', value: '' });
-
-      await act(async () => {
-        await result.current.handleSubmit((data) => {
-          expect(data).toEqual({
-            test: '',
-          });
-        })({
-          preventDefault: () => {},
-          persist: () => {},
-        } as React.SyntheticEvent);
-      });
-    });
-
-    it('should not register the same checkbox input', async () => {
-      const { result } = renderHook(() => useForm<{ test: string }>());
-      const ref = document.createElement('INPUT');
-      ref.setAttribute('name', 'test');
-      ref.setAttribute('type', 'checkbox');
-
-      const { register } = result.current;
-      register(ref as any);
-      register(ref as any);
-
-      await act(async () => {
-        await result.current.handleSubmit((data) => {
-          expect(data).toEqual({
-            test: false,
-          });
-        })({
-          preventDefault: () => {},
-          persist: () => {},
-        } as React.SyntheticEvent);
-      });
-    });
+        await waitFor(() =>
+          expect(callback).toHaveBeenCalledWith(
+            {
+              test: type === 'checkbox' ? [] : '',
+            },
+            expect.any(Object),
+          ),
+        );
+      },
+    );
 
     it('should re-render if errors ocurred with resolver when formState.isValid is defined', async () => {
       const resolver = async (data: any) => {
@@ -203,21 +193,27 @@ describe('useForm', () => {
       expect(screen.getByRole('alert').textContent).toBe('false');
     });
 
-    it('should be set default value from unmountFieldsStateRef', () => {
-      const { result } = renderHook(() => useForm());
-      result.current.control.unmountFieldsStateRef.current['test'] = 'value';
+    it('should be set default value from unmountFieldsStateRef when shouldUnRegister is false', async () => {
+      const { result, unmount } = renderHook(() =>
+        useForm({ shouldUnregister: false }),
+      );
 
-      result.current.register('test');
+      result.current.register({ type: 'text', name: 'test', value: 'test' });
 
-      expect(result.current.control.fieldsRef.current['test']?.ref).toEqual({
-        name: 'test',
-        value: 'value',
-      });
+      unmount();
+
+      result.current.register({ type: 'text', name: 'test' });
+
+      expect(result.current.getValues()).toEqual({ test: 'test' });
     });
   });
 
   describe('unregister', () => {
     it('should unregister an registered item', async () => {
+      const mockListener = jest.spyOn(
+        findRemovedFieldAndRemoveListener,
+        'default',
+      );
       const { result } = renderHook(() => useForm());
 
       result.current.register({ name: 'input' });
@@ -232,10 +228,14 @@ describe('useForm', () => {
         } as React.SyntheticEvent);
       });
 
-      expect(findRemovedFieldAndRemoveListener).toBeCalled();
+      expect(mockListener).toBeCalled();
     });
 
     it('should unregister an registered item with array name', async () => {
+      const mockListener = jest.spyOn(
+        findRemovedFieldAndRemoveListener,
+        'default',
+      );
       const { result } = renderHook(() => useForm());
 
       result.current.register({ name: 'input' });
@@ -248,15 +248,19 @@ describe('useForm', () => {
         } as React.SyntheticEvent);
       });
 
-      expect(findRemovedFieldAndRemoveListener).toBeCalled();
+      expect(mockListener).toBeCalled();
     });
 
     it('should not call findRemovedFieldAndRemoveListener when field variable does not exist', () => {
+      const mockListener = jest.spyOn(
+        findRemovedFieldAndRemoveListener,
+        'default',
+      );
       const { result } = renderHook(() => useForm());
 
       result.current.unregister('test');
 
-      expect(findRemovedFieldAndRemoveListener).not.toHaveBeenCalled();
+      expect(mockListener).not.toHaveBeenCalled();
     });
   });
 
@@ -1467,6 +1471,27 @@ describe('useForm', () => {
       expect(mockFocus).not.toBeCalled();
       expect(result.current.errors?.test.type).toBe('required');
     });
+
+    it('should submit data from unmountFieldsStateRef when shouldUnRegister is false', async () => {
+      const { result, unmount } = renderHook(() =>
+        useForm({ shouldUnregister: false }),
+      );
+
+      result.current.register({ type: 'text', name: 'test', value: 'test' });
+
+      unmount();
+
+      await act(async () =>
+        result.current.handleSubmit((data) => {
+          expect(data).toEqual({
+            test: 'test',
+          });
+        })({
+          preventDefault: () => {},
+          persist: () => {},
+        } as React.SyntheticEvent),
+      );
+    });
   });
 
   describe('handleSubmit with validationSchema', () => {
@@ -1849,14 +1874,22 @@ describe('useForm', () => {
 
   describe('when component unMount', () => {
     it('should call unSubscribe', () => {
+      const mockListener = jest.spyOn(
+        findRemovedFieldAndRemoveListener,
+        'default',
+      );
       const { result, unmount } = renderHook(() => useForm<{ test: string }>());
 
       result.current.register({ type: 'text', name: 'test' });
       unmount();
-      expect(findRemovedFieldAndRemoveListener).toBeCalled();
+      expect(mockListener).toBeCalled();
     });
 
     it('should call removeFieldEventListenerAndRef when field variable is array', () => {
+      const mockListener = jest.spyOn(
+        findRemovedFieldAndRemoveListener,
+        'default',
+      );
       const { result, unmount } = renderHook(() => useForm());
 
       result.current.control.fieldArrayNamesRef.current.add('test');
@@ -1867,15 +1900,19 @@ describe('useForm', () => {
 
       unmount();
 
-      expect(findRemovedFieldAndRemoveListener).toHaveBeenCalled();
+      expect(mockListener).toHaveBeenCalled();
     });
 
     it('should not call removeFieldEventListenerAndRef when field variable does not exist', () => {
+      const mockListener = jest.spyOn(
+        findRemovedFieldAndRemoveListener,
+        'default',
+      );
       const { unmount } = renderHook(() => useForm());
 
       unmount();
 
-      expect(findRemovedFieldAndRemoveListener).not.toHaveBeenCalled();
+      expect(mockListener).not.toHaveBeenCalled();
     });
   });
 

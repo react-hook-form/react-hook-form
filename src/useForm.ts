@@ -249,7 +249,7 @@ export function useForm<
 
       const isFieldDirty =
         defaultValuesAtRenderRef.current[name] !==
-        getFieldValue(fieldsRef.current, name);
+        getFieldValue(fieldsRef, name, unmountFieldsStateRef);
       const isDirtyFieldExist = get(dirtyFieldsRef.current, name);
       const isFieldArray = isNameInFieldArray(fieldArrayNamesRef.current, name);
       const previousIsDirty = isDirtyRef.current;
@@ -263,7 +263,7 @@ export function useForm<
       isDirtyRef.current =
         (isFieldArray &&
           getIsFieldsDifferent(
-            getValues()[getFieldArrayParentName(name)],
+            get(getValues(), getFieldArrayParentName(name)),
             get(defaultValuesRef.current, getFieldArrayParentName(name)),
           )) ||
         !isEmptyObject(dirtyFieldsRef.current);
@@ -286,6 +286,7 @@ export function useForm<
           fieldsRef,
           validateAllFieldCriteria,
           fieldsRef.current[name] as Field,
+          unmountFieldsStateRef,
         );
 
         shouldRenderBaseOnError(name, error, skipReRender ? null : false);
@@ -414,6 +415,8 @@ export function useForm<
       } else if (!isPrimitive(value)) {
         setInternalValues(name, value, config);
       }
+
+      unmountFieldsStateRef.current[name] = value;
     },
     [setDirty, setFieldValue, setInternalValues],
   );
@@ -427,6 +430,7 @@ export function useForm<
     if (!isEmptyObject(watchFieldsHookRef.current)) {
       for (const key in watchFieldsHookRef.current) {
         if (
+          name === '' ||
           watchFieldsHookRef.current[key].has(name) ||
           !watchFieldsHookRef.current[key].size ||
           isNameInFieldArray(fieldArrayNamesRef.current, name)
@@ -527,6 +531,7 @@ export function useForm<
             fieldsRef,
             validateAllFieldCriteria,
             field,
+            unmountFieldsStateRef,
           );
         }
 
@@ -541,7 +546,7 @@ export function useForm<
     name: TFieldName,
   ): TFieldName extends keyof TFieldValues
     ? UnpackNestedValue<TFieldValues>[TFieldName]
-    : TFieldValue => getFieldValue(fieldsRef.current, name);
+    : TFieldValue => getFieldValue(fieldsRef, name, unmountFieldsStateRef);
 
   function getValues(): UnpackNestedValue<TFieldValues>;
   function getValues<TFieldName extends string, TFieldValue extends unknown>(
@@ -567,7 +572,9 @@ export function useForm<
       );
     }
 
-    return transformToNestObject(getFieldsValues(fieldsRef.current));
+    return transformToNestObject(
+      getFieldsValues(fieldsRef, unmountFieldsStateRef),
+    );
   }
 
   const validateResolver = React.useCallback(
@@ -575,7 +582,7 @@ export function useForm<
       resolverRef.current!(
         {
           ...defaultValuesRef.current,
-          ...getValues(),
+          ...getFieldsValues(fieldsRef, unmountFieldsStateRef),
           ...values,
         },
         contextRef.current,
@@ -595,7 +602,7 @@ export function useForm<
   const removeFieldEventListener = React.useCallback(
     (field: Field, forceDelete?: boolean) => {
       findRemovedFieldAndRemoveListener(
-        fieldsRef.current,
+        fieldsRef,
         handleChangeRef.current!,
         field,
         unmountFieldsStateRef,
@@ -684,7 +691,8 @@ export function useForm<
         ? defaultValuesRef.current
         : defaultValue;
       const fieldValues = getFieldsValues<TFieldValues>(
-        fieldsRef.current,
+        fieldsRef,
+        unmountFieldsStateRef,
         fieldNames,
       );
 
@@ -827,13 +835,16 @@ export function useForm<
     fields[name] = field;
 
     const isEmptyUnmountFields = isUndefined(
-      unmountFieldsStateRef.current[name],
+      get(unmountFieldsStateRef.current, name),
     );
 
     if (!isEmptyObject(defaultValuesRef.current) || !isEmptyUnmountFields) {
-      defaultValue = isEmptyUnmountFields
-        ? get(defaultValuesRef.current, name)
-        : unmountFieldsStateRef.current[name];
+      defaultValue = get(
+        isEmptyUnmountFields
+          ? defaultValuesRef.current
+          : unmountFieldsStateRef.current,
+        name,
+      );
       isEmptyDefaultValue = isUndefined(defaultValue);
       isFieldArray = isNameInFieldArray(fieldArrayNamesRef.current, name);
 
@@ -848,19 +859,22 @@ export function useForm<
       fieldsWithValidationRef.current.add(name);
 
       if (!isOnSubmit && readFormStateRef.current.isValid) {
-        validateField(fieldsRef, validateAllFieldCriteria, field).then(
-          (error) => {
-            const previousFormIsValid = isValidRef.current;
+        validateField(
+          fieldsRef,
+          validateAllFieldCriteria,
+          field,
+          unmountFieldsStateRef,
+        ).then((error) => {
+          const previousFormIsValid = isValidRef.current;
 
-            isEmptyObject(error)
-              ? validFieldsRef.current.add(name)
-              : (isValidRef.current = false);
+          isEmptyObject(error)
+            ? validFieldsRef.current.add(name)
+            : (isValidRef.current = false);
 
-            if (previousFormIsValid !== isValidRef.current) {
-              reRender();
-            }
-          },
-        );
+          if (previousFormIsValid !== isValidRef.current) {
+            reRender();
+          }
+        });
       }
     }
 
@@ -869,7 +883,7 @@ export function useForm<
       !(isFieldArray && isEmptyDefaultValue)
     ) {
       defaultValuesAtRenderRef.current[name] = isEmptyDefaultValue
-        ? getFieldValue(fields, name)
+        ? getFieldValue(fieldsRef, name, unmountFieldsStateRef)
         : defaultValue;
     }
 
@@ -924,14 +938,14 @@ export function useForm<
     <TSubmitFieldValues extends FieldValues = TFieldValues>(
       callback: SubmitHandler<TSubmitFieldValues>,
     ) => async (e?: React.BaseSyntheticEvent): Promise<void> => {
-      if (e) {
+      if (e && e.preventDefault) {
         e.preventDefault();
         e.persist();
       }
       let fieldErrors: FieldErrors<TFieldValues> = {};
       let fieldValues: FieldValues = {
         ...unmountFieldsStateRef.current,
-        ...getValues(),
+        ...getFieldsValues(fieldsRef, unmountFieldsStateRef),
       };
 
       if (readFormStateRef.current.isSubmitting) {
@@ -960,6 +974,7 @@ export function useForm<
                 fieldsRef,
                 validateAllFieldCriteria,
                 field,
+                unmountFieldsStateRef,
               );
 
               if (fieldError[name]) {
@@ -1047,7 +1062,6 @@ export function useForm<
       TFieldValues
     >;
     fieldArrayDefaultValues.current = {};
-    unmountFieldsStateRef.current = {};
     watchFieldsRef.current = new Set();
     isWatchAllRef.current = false;
   };
@@ -1077,7 +1091,10 @@ export function useForm<
 
     if (values) {
       defaultValuesRef.current = values;
+      renderWatchedInputs('');
     }
+
+    unmountFieldsStateRef.current = values || {};
 
     Object.values(resetFieldArrayFunctionRef.current).forEach(
       (resetFieldArray) => isFunction(resetFieldArray) && resetFieldArray(),

@@ -8,14 +8,19 @@ describe('getFieldsValues', () => {
     // @ts-ignore
     getFieldValue.mockImplementation(() => 'test');
     expect(
-      getFieldsValues({
-        test: {
-          ref: { name: 'test' },
+      getFieldsValues(
+        {
+          current: {
+            test: {
+              ref: { name: 'test' },
+            },
+            test1: {
+              ref: { name: 'test1' },
+            },
+          },
         },
-        test1: {
-          ref: { name: 'test1' },
-        },
-      }),
+        { current: {} },
+      ),
     ).toEqual({
       test: 'test',
       test1: 'test',
@@ -26,16 +31,19 @@ describe('getFieldsValues', () => {
     expect(
       getFieldsValues(
         {
-          test: {
-            ref: { name: 'test' },
-          },
-          tex: {
-            ref: { name: 'test1' },
-          },
-          tex123: {
-            ref: { name: 'test1' },
+          current: {
+            test: {
+              ref: { name: 'test' },
+            },
+            tex: {
+              ref: { name: 'test1' },
+            },
+            tex123: {
+              ref: { name: 'test1' },
+            },
           },
         },
+        { current: {} },
         'test',
       ),
     ).toEqual({
@@ -47,19 +55,22 @@ describe('getFieldsValues', () => {
     expect(
       getFieldsValues(
         {
-          test: {
-            ref: { name: 'test' },
-          },
-          tex: {
-            ref: { name: 'test1' },
-          },
-          123: {
-            ref: { name: 'test1' },
-          },
-          1456: {
-            ref: { name: 'test1' },
+          current: {
+            test: {
+              ref: { name: 'test' },
+            },
+            tex: {
+              ref: { name: 'test1' },
+            },
+            123: {
+              ref: { name: 'test1' },
+            },
+            1456: {
+              ref: { name: 'test1' },
+            },
           },
         },
+        { current: {} },
         ['test', 'tex'],
       ),
     ).toEqual({

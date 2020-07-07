@@ -19,7 +19,9 @@ describe('findMissDomAndClean', () => {
     it('should return default fields value if nothing matches', () => {
       document.body.contains = jest.fn(() => true);
       const fields = {
-        test: 'test',
+        current: {
+          test: 'test',
+        },
       };
       expect(
         findRemovedFieldAndRemoveListener(
@@ -43,17 +45,19 @@ describe('findMissDomAndClean', () => {
 
       const disconnect = jest.fn();
       const fields = {
-        test: {
-          name: 'test',
-          ref,
-          options: [
-            {
-              ref,
-              mutationWatcher: {
-                disconnect,
+        current: {
+          test: {
+            name: 'test',
+            ref,
+            options: [
+              {
+                ref,
+                mutationWatcher: {
+                  disconnect,
+                },
               },
-            },
-          ],
+            ],
+          },
         },
       };
 
@@ -67,7 +71,9 @@ describe('findMissDomAndClean', () => {
         true,
       );
 
-      expect(fields).toEqual({});
+      expect(fields).toEqual({
+        current: {},
+      });
     });
 
     it('should remove none radio field when found', () => {
@@ -77,16 +83,18 @@ describe('findMissDomAndClean', () => {
       document.body.contains = jest.fn(() => false);
       const disconnect = jest.fn();
       const fields = {
-        test: {
-          name: 'test',
-          ref: {},
-          mutationWatcher: {
-            disconnect,
+        current: {
+          test: {
+            name: 'test',
+            ref: {},
+            mutationWatcher: {
+              disconnect,
+            },
           },
-        },
-        test1: {
-          name: 'test',
-          ref: {},
+          test1: {
+            name: 'test',
+            ref: {},
+          },
         },
       };
 
@@ -112,17 +120,19 @@ describe('findMissDomAndClean', () => {
       document.body.contains = jest.fn(() => false);
       const disconnect = jest.fn();
       const fields = {
-        test: {
-          name: 'test',
-          ref: {},
-          mutationWatcher: {
-            disconnect,
+        current: {
+          test: {
+            name: 'test',
+            ref: {},
+            mutationWatcher: {
+              disconnect,
+            },
           },
-        },
-        test1: {
-          name: 'test',
-          ref: {
-            type: 'radio',
+          test1: {
+            name: 'test',
+            ref: {
+              type: 'radio',
+            },
           },
         },
       };
@@ -150,17 +160,19 @@ describe('findMissDomAndClean', () => {
       document.body.contains = jest.fn(() => false);
       const disconnect = jest.fn();
       const fields = {
-        test: {
-          name: 'test',
-          ref: {},
-          mutationWatcher: {
-            disconnect,
+        current: {
+          test: {
+            name: 'test',
+            ref: {},
+            mutationWatcher: {
+              disconnect,
+            },
           },
-        },
-        test1: {
-          name: 'test',
-          ref: {
-            type: 'checkbox',
+          test1: {
+            name: 'test',
+            ref: {
+              type: 'checkbox',
+            },
           },
         },
       };
@@ -187,11 +199,13 @@ describe('findMissDomAndClean', () => {
       });
 
       const fields = {
-        test: {
-          name: 'test',
-          type: 'radio',
-          ref: {},
-          options: [{ ref: { name: 'test', type: 'radio' } }],
+        current: {
+          test: {
+            name: 'test',
+            type: 'radio',
+            ref: {},
+            options: [{ ref: { name: 'test', type: 'radio' } }],
+          },
         },
       };
 
@@ -205,11 +219,13 @@ describe('findMissDomAndClean', () => {
       );
 
       expect(fields).toEqual({
-        test: {
-          name: 'test',
-          type: 'radio',
-          ref: {},
-          options: [{ ref: { name: 'test', type: 'radio' } }],
+        current: {
+          test: {
+            name: 'test',
+            type: 'radio',
+            ref: {},
+            options: [{ ref: { name: 'test', type: 'radio' } }],
+          },
         },
       });
     });
@@ -222,18 +238,20 @@ describe('findMissDomAndClean', () => {
 
       const disconnect = jest.fn();
       const fields = {
-        test: {
-          name: 'test',
-          type: 'radio',
-          ref: {},
-          options: [
-            {
-              ref: 'test',
-              mutationWatcher: {
-                disconnect,
+        current: {
+          test: {
+            name: 'test',
+            type: 'radio',
+            ref: {},
+            options: [
+              {
+                ref: 'test',
+                mutationWatcher: {
+                  disconnect,
+                },
               },
-            },
-          ],
+            ],
+          },
         },
       };
 
@@ -281,10 +299,12 @@ describe('findMissDomAndClean', () => {
 
       const disconnect = jest.fn();
       const fields = {
-        test: {
-          name: 'test',
-          ref: {},
-          options: [],
+        current: {
+          test: {
+            name: 'test',
+            ref: {},
+            options: [],
+          },
         },
       };
       findRemovedFieldAndRemoveListener(
@@ -306,7 +326,9 @@ describe('findMissDomAndClean', () => {
         true,
       );
 
-      expect(fields).toEqual({});
+      expect(fields).toEqual({
+        current: {},
+      });
     });
   });
 
@@ -315,15 +337,17 @@ describe('findMissDomAndClean', () => {
       const mockWatcher = jest.fn();
       const state = { current: {} };
       const fields = {
-        test: {
-          name: 'test',
-          ref: {
+        current: {
+          test: {
             name: 'test',
-            type: 'text',
-            value: 'test',
-          },
-          mutationWatcher: {
-            disconnect: mockWatcher,
+            ref: {
+              name: 'test',
+              type: 'text',
+              value: 'test',
+            },
+            mutationWatcher: {
+              disconnect: mockWatcher,
+            },
           },
         },
       };
@@ -331,7 +355,7 @@ describe('findMissDomAndClean', () => {
       findRemovedFieldAndRemoveListener(
         fields,
         () => ({} as any),
-        fields.test,
+        fields.current.test,
         state,
       );
 
@@ -339,19 +363,23 @@ describe('findMissDomAndClean', () => {
         current: { test: 'test' },
       });
       expect(mockWatcher).toBeCalled();
-      expect(fields).toEqual({});
+      expect(fields).toEqual({
+        current: {},
+      });
     });
 
     it('should delete field if forceDelete is true', () => {
       (isDetached as any).mockReturnValue(false);
       const state = { current: {} };
       const fields = {
-        test: {
-          name: 'test',
-          ref: {
+        current: {
+          test: {
             name: 'test',
-            type: 'text',
-            value: 'test',
+            ref: {
+              name: 'test',
+              type: 'text',
+              value: 'test',
+            },
           },
         },
       };
@@ -359,7 +387,7 @@ describe('findMissDomAndClean', () => {
       findRemovedFieldAndRemoveListener(
         fields,
         () => ({} as any),
-        fields.test,
+        fields.current.test,
         state,
         false,
         true,
@@ -369,16 +397,20 @@ describe('findMissDomAndClean', () => {
         current: { test: 'test' },
       });
       expect(removeAllEventListeners).toBeCalled();
-      expect(fields).toEqual({});
+      expect(fields).toEqual({
+        current: {},
+      });
     });
 
     it('should store state when component is getting unmount', () => {
       const state = { current: {} };
       const fields = {
-        test: {
-          name: 'test',
-          ref: {
-            value: 'test',
+        current: {
+          test: {
+            name: 'test',
+            ref: {
+              value: 'test',
+            },
           },
         },
       };
@@ -401,9 +433,11 @@ describe('findMissDomAndClean', () => {
     it('should not store state when component is getting unmount and value is return undefined', () => {
       const state = { current: {} };
       const fields = {
-        test: {
-          name: 'test',
-          ref: {},
+        current: {
+          test: {
+            name: 'test',
+            ref: {},
+          },
         },
       };
 

@@ -48,12 +48,12 @@ const native = {
       tsConfig: 'tsconfig.jest.json',
       babelConfig: true,
     },
-    window: {},
   },
   transformIgnorePatterns: [
     '[/\\\\]node_modules[/\\\\](?!react-native)[/\\\\].+',
   ],
   setupFiles: [...jestPresets.setupFiles],
+  setupFilesAfterEnv: ['<rootDir>/setup.native.ts'],
 };
 
 module.exports = {
