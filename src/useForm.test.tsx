@@ -723,75 +723,6 @@ describe('useForm', () => {
       });
     });
 
-    it('should work with array fields', () => {
-      const { result } = renderHook(() => useForm());
-
-      result.current.register('test1[0].test');
-      result.current.register('test[0]');
-      result.current.register('test[1]');
-      result.current.register('test[2]');
-
-      act(() => result.current.setValue('test', ['1', '2', '3']));
-
-      expect(result.current.control.fieldsRef.current['test[0]']).toEqual({
-        ref: { name: 'test[0]', value: '1' },
-      });
-      expect(result.current.control.fieldsRef.current['test[1]']).toEqual({
-        ref: { name: 'test[1]', value: '2' },
-      });
-      expect(result.current.control.fieldsRef.current['test[2]']).toEqual({
-        ref: { name: 'test[2]', value: '3' },
-      });
-    });
-
-    it('should worked with nested array fields with object', () => {
-      const { result } = renderHook(() => useForm());
-
-      result.current.register('test[0].test');
-      result.current.register('test[1].test');
-      result.current.register('test[2].test');
-
-      act(() =>
-        result.current.setValue('test', [
-          { test: '1' },
-          { test: '2' },
-          { test: '3' },
-        ]),
-      );
-
-      expect(result.current.control.fieldsRef.current['test[0].test']).toEqual({
-        ref: { name: 'test[0].test', value: '1' },
-      });
-      expect(result.current.control.fieldsRef.current['test[1].test']).toEqual({
-        ref: { name: 'test[1].test', value: '2' },
-      });
-      expect(result.current.control.fieldsRef.current['test[2].test']).toEqual({
-        ref: { name: 'test[2].test', value: '3' },
-      });
-    });
-
-    it('should work with object fields', () => {
-      const { result } = renderHook(() => useForm());
-
-      result.current.register('test1[0].test');
-      result.current.register('test.bill');
-      result.current.register('test.luo');
-      result.current.register('test.test');
-
-      act(() =>
-        result.current.setValue('test', { bill: '1', luo: '2', test: '3' }),
-      );
-      expect(result.current.control.fieldsRef.current['test.bill']).toEqual({
-        ref: { name: 'test.bill', value: '1' },
-      });
-      expect(result.current.control.fieldsRef.current['test.luo']).toEqual({
-        ref: { name: 'test.luo', value: '2' },
-      });
-      expect(result.current.control.fieldsRef.current['test.test']).toEqual({
-        ref: { name: 'test.test', value: '3' },
-      });
-    });
-
     it('should be called trigger method if shouldValidate variable is true', async () => {
       const { result } = renderHook(() => useForm());
 
@@ -864,12 +795,20 @@ describe('useForm', () => {
       result.current.formState.isDirty;
       result.current.formState.dirtyFields;
 
-      await act(async () =>
-        result.current.setValue('test', ['abc1', 'abc2', 'abc3'], {
+      await act(async () => {
+        result.current.setValue('test[0]', 'abc1', {
           shouldValidate: true,
           shouldDirty: true,
-        }),
-      );
+        });
+        result.current.setValue('test[1]', 'abc2', {
+          shouldValidate: true,
+          shouldDirty: true,
+        });
+        result.current.setValue('test[2]', 'abc3', {
+          shouldValidate: true,
+          shouldDirty: true,
+        });
+      });
 
       expect(result.current.errors?.test[0]?.message).toBe('min');
       expect(result.current.errors?.test[1]?.message).toBe('min');
@@ -1008,15 +947,15 @@ describe('useForm', () => {
         result.current.register('test[2].name');
 
         act(() => {
-          result.current.setValue(
-            'test',
-            [
-              { name: 'default_update' },
-              { name: 'default1' },
-              { name: 'default2' },
-            ],
-            { shouldDirty: true },
-          );
+          result.current.setValue('test[0].name', 'default_update', {
+            shouldDirty: true,
+          });
+          result.current.setValue('test[1].name', 'default1', {
+            shouldDirty: true,
+          });
+          result.current.setValue('test[2].name', 'default2', {
+            shouldDirty: true,
+          });
         });
 
         expect(result.current.formState.dirtyFields).toEqual({
@@ -1054,15 +993,15 @@ describe('useForm', () => {
           ],
         });
         act(() => {
-          result.current.setValue(
-            'test',
-            [
-              { name: 'default_update' },
-              { name: 'default1' },
-              { name: 'default2' },
-            ],
-            { shouldDirty: true },
-          );
+          result.current.setValue('test[0].name', 'default_update', {
+            shouldDirty: true,
+          });
+          result.current.setValue('test[1].name', 'default1', {
+            shouldDirty: true,
+          });
+          result.current.setValue('test[2].name', 'default2', {
+            shouldDirty: true,
+          });
         });
 
         (transformToNestObject as any).mockReturnValue({
@@ -1073,11 +1012,15 @@ describe('useForm', () => {
           ],
         });
         act(() => {
-          result.current.setValue(
-            'test',
-            [{ name: 'default' }, { name: 'default1' }, { name: 'default2' }],
-            { shouldDirty: true },
-          );
+          result.current.setValue('test[0].name', 'default', {
+            shouldDirty: true,
+          });
+          result.current.setValue('test[1].name', 'default1', {
+            shouldDirty: true,
+          });
+          result.current.setValue('test[2].name', 'default2', {
+            shouldDirty: true,
+          });
         });
 
         expect(transformToNestObject).toHaveBeenCalled();
