@@ -456,7 +456,6 @@ export function useForm<
   ): void {
     const shouldRender =
       setInternalValue(name, value as TFieldValues[string], config) ||
-      !isPrimitive(value) ||
       isFieldWatched(name);
 
     renderWatchedInputs(name);
