@@ -83,7 +83,7 @@ function App() {
 
 ## 기여자
 
-모든 기여자 분들께 감사합니다! [[기여하기](CONTRIBUTING.md)]
+모든 기여자 분들께 감사합니다! [[기여하기](../CONTRIBUTING.md)]
 
 <a href="https://github.com/react-hook-form/react-hook-form/graphs/contributors">
     <img src="https://opencollective.com/react-hook-form/contributors.svg?width=950" />
