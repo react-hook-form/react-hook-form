@@ -99,7 +99,7 @@ Gracias a estas maravillosas organizaciones! [[Contribuir](https://opencollectiv
 
 ## Colaboradores
 
-Gracias a estas personas maravillosas! [[Hazte colaborador](CONTRIBUTING.md)].
+Gracias a estas personas maravillosas! [[Hazte colaborador](../CONTRIBUTING.md)].
 
 <a href="https://github.com/react-hook-form/react-hook-form/graphs/contributors">
     <img src="https://opencollective.com/react-hook-form/contributors.svg?width=950" />

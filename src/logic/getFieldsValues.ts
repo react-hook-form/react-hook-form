@@ -1,3 +1,4 @@
+import * as React from 'react';
 import getFieldValue from './getFieldValue';
 import isString from '../utils/isString';
 import isArray from '../utils/isArray';
@@ -5,7 +6,8 @@ import isUndefined from '../utils/isUndefined';
 import { InternalFieldName, FieldValues, FieldRefs } from '../types/form';
 
 export default <TFieldValues extends FieldValues>(
-  fields: FieldRefs<TFieldValues>,
+  fieldsRef: React.MutableRefObject<FieldRefs<TFieldValues>>,
+  unmountFieldsStateRef?: React.MutableRefObject<Record<string, any>>,
   search?:
     | InternalFieldName<TFieldValues>
     | InternalFieldName<TFieldValues>[]
@@ -13,7 +15,7 @@ export default <TFieldValues extends FieldValues>(
 ) => {
   const output = {} as TFieldValues;
 
-  for (const name in fields) {
+  for (const name in fieldsRef.current) {
     if (
       isUndefined(search) ||
       (isString(search)
@@ -21,8 +23,9 @@ export default <TFieldValues extends FieldValues>(
         : isArray(search) && search.find((data) => name.startsWith(data)))
     ) {
       output[name as InternalFieldName<TFieldValues>] = getFieldValue(
-        fields,
+        fieldsRef,
         name,
+        unmountFieldsStateRef,
       );
     }
   }

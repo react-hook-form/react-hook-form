@@ -11,6 +11,10 @@ jest.mock('./logic/generateId', () => ({
 }));
 
 describe('useFieldArray', () => {
+  beforeEach(() => {
+    jest.resetAllMocks();
+  });
+
   describe('initialize', () => {
     it('should return default fields value', () => {
       const { result } = renderHook(() =>
@@ -398,6 +402,7 @@ describe('useFieldArray', () => {
             watchFieldsRef: {
               current: new Set(['test']),
             },
+            getValues: () => ({ test: [] }),
           }),
           name: 'test',
         }),
@@ -516,6 +521,7 @@ describe('useFieldArray', () => {
                   'test[1]': { ref: { name: 'test[1]', value: { test: '2' } } },
                 },
               },
+              getValues: () => ({ test: [] }),
             }),
             dirtyFieldsRef,
             touchedFieldsRef,
@@ -599,6 +605,7 @@ describe('useFieldArray', () => {
                 },
               },
             },
+            getValues: () => ({ test: [] }),
           },
           name: 'test',
         }),
@@ -643,6 +650,7 @@ describe('useFieldArray', () => {
                 'test[1]': { ref: { name: 'test[1]', value: { test: '2' } } },
               },
             },
+            getValues: () => ({ test: [] }),
           }),
           name: 'test',
         }),
@@ -674,6 +682,7 @@ describe('useFieldArray', () => {
                 'test[0]': { ref: { name: 'test[0]', value: { test: '1' } } },
               },
             },
+            getValues: () => ({ test: [] }),
           }),
           name: 'test',
         }),
@@ -707,6 +716,7 @@ describe('useFieldArray', () => {
                 'test[1]': { ref: { name: 'test[1]', value: { test: '2' } } },
               },
             },
+            getValues: () => ({ test: [] }),
           }),
           name: 'test',
         }),
@@ -748,6 +758,7 @@ describe('useFieldArray', () => {
             } as any,
             dirtyFieldsRef,
             touchedFieldsRef,
+            getValues: () => ({ test: [] }),
           },
           name: 'test',
         }),
@@ -818,6 +829,7 @@ describe('useFieldArray', () => {
             } as any,
             dirtyFieldsRef,
             touchedFieldsRef,
+            getValues: () => ({ test: [] }),
           }),
           name: 'test',
         }),
@@ -866,6 +878,7 @@ describe('useFieldArray', () => {
                 },
               },
             },
+            getValues: () => ({ test: { data: [] } }),
           }),
           name: 'test.data',
         }),
@@ -894,6 +907,7 @@ describe('useFieldArray', () => {
             watchFieldsRef: {
               current: new Set(['test']),
             },
+            getValues: () => ({ test: [] }),
           }),
           name: 'test',
         }),
@@ -919,6 +933,7 @@ describe('useFieldArray', () => {
                 },
               },
             },
+            getValues: () => ({ test: [] }),
             reRender,
             isWatchAllRef: {
               current: true,
@@ -972,6 +987,7 @@ describe('useFieldArray', () => {
                 dirtyFields: true,
               },
             } as any,
+            getValues: () => ({ test: [] }),
             dirtyFieldsRef,
           }),
           name: 'test',
@@ -1033,6 +1049,7 @@ describe('useFieldArray', () => {
               },
             } as any,
             touchedFieldsRef: touchedFieldsRef as any,
+            getValues: () => ({ test: [] }),
             fieldsRef: {
               current: {
                 'test[0]': {
@@ -1091,6 +1108,7 @@ describe('useFieldArray', () => {
         useFieldArray({
           control: {
             ...reconfigureControl(),
+            getValues: () => ({ test: [] }),
             errorsRef: errorsRef as any,
             fieldsRef: {
               current: {
@@ -1158,6 +1176,7 @@ describe('useFieldArray', () => {
                 'test[1]': { ref: { name: 'test[1]', value: { test: '2' } } },
               },
             },
+            getValues: () => ({ test: [{}, {}] }),
           }),
           name: 'test',
         }),
@@ -1184,6 +1203,7 @@ describe('useFieldArray', () => {
             isWatchAllRef: {
               current: true,
             },
+            getValues: () => ({ test: [] }),
             defaultValuesRef: {
               current: { test: [{ test: '1' }, { test: '2' }] },
             },
@@ -1219,6 +1239,7 @@ describe('useFieldArray', () => {
             defaultValuesRef: {
               current: { test: [{ test: '1' }, { test: '2' }] },
             },
+            getValues: () => ({ test: [] }),
             fieldsRef: {
               current: {
                 'test[0]': {
@@ -1290,6 +1311,7 @@ describe('useFieldArray', () => {
                 'test[1]': { ref: { name: 'test[1]', value: { test: '2' } } },
               },
             },
+            getValues: () => ({ test: [] }),
             readFormStateRef: {
               current: {
                 dirtyFields: true,
@@ -1416,6 +1438,7 @@ describe('useFieldArray', () => {
                 'test[1]': { ref: { name: 'test[1]', value: { test: '2' } } },
               },
             },
+            getValues: () => ({ test: [{}, {}] }),
           }),
           name: 'test',
         }),
@@ -1450,6 +1473,7 @@ describe('useFieldArray', () => {
                 'test[1]': { ref: { name: 'test[1]', value: { test: '2' } } },
               },
             },
+            getValues: () => ({ test: [{}, {}] }),
           }),
           name: 'test',
         }),
@@ -1463,7 +1487,7 @@ describe('useFieldArray', () => {
         { id: '1', test: '2' },
         { id: '1', test: '1' },
       ]);
-      expect(reRender).toBeCalledTimes(2);
+      expect(reRender).toBeCalledTimes(1);
     });
   });
 
@@ -1653,6 +1677,7 @@ describe('useFieldArray', () => {
                 'test[1]': { ref: { name: 'test[1]', value: { test: '2' } } },
               },
             },
+            getValues: () => ({ test: [{}, {}] }),
           }),
           name: 'test',
         }),
@@ -1700,7 +1725,7 @@ describe('useFieldArray', () => {
         { id: '1', test: '2' },
         { id: '1', test: '1' },
       ]);
-      expect(reRender).toBeCalledTimes(2);
+      expect(reRender).toBeCalledTimes(1);
     });
   });
 

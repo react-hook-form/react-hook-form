@@ -2,18 +2,20 @@
 
 exports[`findMissDomAndClean radio should not remove event listener when type is not Element 1`] = `
 Object {
-  "test": Object {
-    "name": "test",
-    "options": Array [
-      Object {
-        "mutationWatcher": Object {
-          "disconnect": [MockFunction],
+  "current": Object {
+    "test": Object {
+      "name": "test",
+      "options": Array [
+        Object {
+          "mutationWatcher": Object {
+            "disconnect": [MockFunction],
+          },
+          "ref": "test",
         },
-        "ref": "test",
-      },
-    ],
-    "ref": Object {},
-    "type": "radio",
+      ],
+      "ref": Object {},
+      "type": "radio",
+    },
   },
 }
 `;
@@ -22,9 +24,11 @@ exports[`findMissDomAndClean radio should not remove event listener when type is
 
 exports[`findMissDomAndClean radio should remove none radio field when found 1`] = `
 Object {
-  "test1": Object {
-    "name": "test",
-    "ref": Object {},
+  "current": Object {
+    "test1": Object {
+      "name": "test",
+      "ref": Object {},
+    },
   },
 }
 `;
