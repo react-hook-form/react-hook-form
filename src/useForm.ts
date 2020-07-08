@@ -410,10 +410,10 @@ export function useForm<
     ): boolean | void => {
       if (fieldsRef.current[name]) {
         setFieldValue(fieldsRef.current[name] as Field, value);
-
         return config.shouldDirty && setDirty(name);
       } else if (!isPrimitive(value)) {
         setInternalValues(name, value, config);
+        return true;
       }
 
       unmountFieldsStateRef.current[name] = value;
