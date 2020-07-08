@@ -1,7 +1,6 @@
 import * as React from 'react';
 import { useFormContext } from './useFormContext';
 import { isMatchFieldArrayName } from './logic/isNameInFieldArray';
-import getFieldValueByName from './logic/getFieldArrayValueByName';
 import { appendId, mapIds } from './logic/mapIds';
 import getIsFieldsDifferent from './logic/getIsFieldsDifferent';
 import getFieldArrayParentName from './logic/getFieldArrayParentName';
@@ -55,6 +54,7 @@ export const useFieldArray = <
     fieldArrayDefaultValues,
     validateSchemaIsValid,
     renderWatchedInputs,
+    getValues,
   } = control || methods.control;
   let shouldRender;
 
@@ -78,6 +78,16 @@ export const useFieldArray = <
     Partial<ArrayField<TFieldArrayValues, TKeyName>>[]
   >(fields);
   const isNameKey = isKey(name);
+
+  const getCurrentFieldsValues = () =>
+    watchFieldsRef.current.has(name)
+      ? get(getValues(), name).map(
+          (item: Partial<TFieldArrayValues>, index: number) => ({
+            ...allFields.current[index],
+            ...item,
+          }),
+        )
+      : allFields.current;
 
   allFields.current = fields;
 
@@ -165,13 +175,13 @@ export const useFieldArray = <
     const emptyArray = fillEmptyArray(value);
     shouldRender = false;
 
-    resetFields();
     setFieldAndValidState(
       prependAt(
-        allFields.current,
+        getCurrentFieldsValues(),
         isArray(value) ? appendValueWithKey(value) : [appendId(value, keyName)],
       ),
     );
+    resetFields();
 
     if (isArray(get(errorsRef.current, name))) {
       errorsRef.current[name] = prependAt(
@@ -207,8 +217,8 @@ export const useFieldArray = <
   const remove = (index?: number | number[]) => {
     shouldRender = false;
 
-    resetFields(removeArrayAt(getFieldValueByName(fieldsRef, name), index));
-    setFieldAndValidState(removeArrayAt(allFields.current, index));
+    setFieldAndValidState(removeArrayAt(getCurrentFieldsValues(), index));
+    resetFields(removeArrayAt(get(getValues(), name), index));
     setIsDeleted(true);
 
     if (isArray(get(errorsRef.current, name))) {
@@ -295,14 +305,14 @@ export const useFieldArray = <
     shouldRender = false;
     const emptyArray = fillEmptyArray(value);
 
-    resetFields(insertAt(getFieldValueByName(fieldsRef, name), index));
     setFieldAndValidState(
       insertAt(
-        allFields.current,
+        getCurrentFieldsValues(),
         index,
         isArray(value) ? appendValueWithKey(value) : [appendId(value, keyName)],
       ),
     );
+    resetFields(insertAt(get(getValues(), name), index));
 
     if (isArray(get(errorsRef.current, name))) {
       errorsRef.current[name] = insertAt(
@@ -342,11 +352,10 @@ export const useFieldArray = <
   const swap = (indexA: number, indexB: number) => {
     shouldRender = false;
 
-    const fieldValues = getFieldValueByName(fieldsRef, name);
+    const fieldValues = getCurrentFieldsValues();
     swapArrayAt(fieldValues, indexA, indexB);
     resetFields(fieldValues);
-    swapArrayAt(allFields.current, indexA, indexB);
-    setFieldAndValidState([...allFields.current]);
+    setFieldAndValidState(fieldValues);
 
     if (isArray(get(errorsRef.current, name))) {
       swapArrayAt(get(errorsRef.current, name), indexA, indexB);
@@ -371,11 +380,10 @@ export const useFieldArray = <
 
   const move = (from: number, to: number) => {
     shouldRender = false;
-    const fieldValues = getFieldValueByName(fieldsRef, name);
+    const fieldValues = getCurrentFieldsValues();
     moveArrayAt(fieldValues, from, to);
     resetFields(fieldValues);
-    moveArrayAt(allFields.current, from, to);
-    setFieldAndValidState([...allFields.current]);
+    setFieldAndValidState(fieldValues);
 
     if (isArray(get(errorsRef.current, name))) {
       moveArrayAt(get(errorsRef.current, name), from, to);
@@ -414,7 +422,7 @@ export const useFieldArray = <
       fieldArrayDefaultValues.current[name].pop();
     }
 
-    if (isWatchAllRef && isWatchAllRef.current) {
+    if (isWatchAllRef.current) {
       reRender();
     } else if (watchFieldsRef) {
       for (const watchField of watchFieldsRef.current) {
