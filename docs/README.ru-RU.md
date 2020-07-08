@@ -99,7 +99,7 @@ function App() {
 
 ## Участники
 
-Спасибо этим замечательным людям! [[Стать участником](CONTRIBUTING.md)].
+Спасибо этим замечательным людям! [[Стать участником](../CONTRIBUTING.md)].
 
 <a href="https://github.com/react-hook-form/react-hook-form/graphs/contributors">
     <img src="https://opencollective.com/react-hook-form/contributors.svg?width=950" />

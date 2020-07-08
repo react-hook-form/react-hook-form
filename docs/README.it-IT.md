@@ -83,7 +83,7 @@ function App() {
 
 ## Contributors
 
-Grazie a queste splendide persone! [[Diventa un contributor](CONTRIBUTING.md)].
+Grazie a queste splendide persone! [[Diventa un contributor](../CONTRIBUTING.md)].
 
 <a href="https://github.com/react-hook-form/react-hook-form/graphs/contributors">
     <img src="https://opencollective.com/react-hook-form/contributors.svg?width=950" />

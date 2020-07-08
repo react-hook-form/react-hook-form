@@ -102,7 +102,7 @@ Unser Dank geht auch an folgende wundervolle Organisationen! [[Spenden](https://
 
 ## Kontributoren
 
-Unser Dank geht auch an folgende wundervolle Personen! [[Werde auch ein Kontributor](CONTRIBUTING.md)].
+Unser Dank geht auch an folgende wundervolle Personen! [[Werde auch ein Kontributor](../CONTRIBUTING.md)].
 
 <a href="https://github.com/react-hook-form/react-hook-form/graphs/contributors">
     <img src="https://opencollective.com/react-hook-form/contributors.svg?width=950" />
