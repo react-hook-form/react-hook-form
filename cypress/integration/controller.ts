@@ -20,7 +20,7 @@ describe('controller basic form validation', () => {
     cy.get('#input-ReactSelect > div > div').eq(1).click();
 
     cy.get('.container > p').should('have.length', 0);
-    cy.get('#renderCount').contains('9');
+    cy.get('#renderCount').contains('8');
   });
 
   it('should validate the form with onBlur mode and reset the form', () => {
