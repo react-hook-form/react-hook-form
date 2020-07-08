@@ -492,17 +492,49 @@ export function useForm<
         }
       };
 
-  const validateResolver = React.useCallback(
-    (values: any = {}) => {
-      const fieldValues = isEmptyObject(defaultValuesRef.current)
-        ? getFieldsValues(fieldsRef, unmountFieldsStateRef)
-        : defaultValuesRef.current;
+  const getValue = <TFieldName extends string, TFieldValue extends unknown>(
+    name: TFieldName,
+  ): TFieldName extends keyof TFieldValues
+    ? UnpackNestedValue<TFieldValues>[TFieldName]
+    : TFieldValue => getFieldValue(fieldsRef, name, unmountFieldsStateRef);
 
-      resolverRef.current!(
-        transformToNestObject({
-          ...fieldValues,
-          ...values,
+  function getValues(): UnpackNestedValue<TFieldValues>;
+  function getValues<TFieldName extends string, TFieldValue extends unknown>(
+    name: TFieldName,
+  ): TFieldName extends keyof TFieldValues
+    ? UnpackNestedValue<TFieldValues>[TFieldName]
+    : TFieldValue;
+  function getValues<TFieldName extends keyof TFieldValues>(
+    names: TFieldName[],
+  ): UnpackNestedValue<Pick<TFieldValues, TFieldName>>;
+  function getValues(payload?: string | string[]): unknown {
+    if (isString(payload)) {
+      return getValue(payload);
+    }
+
+    if (isArray(payload)) {
+      return payload.reduce(
+        (previous, name) => ({
+          ...previous,
+          [name]: getValue(name),
         }),
+        {},
+      );
+    }
+
+    return transformToNestObject(
+      getFieldsValues(fieldsRef, unmountFieldsStateRef),
+    );
+  }
+
+  const validateResolver = React.useCallback(
+    (values = {}) => {
+      resolverRef.current!(
+        {
+          ...defaultValuesRef.current,
+          ...getValues(),
+          ...values,
+        },
         contextRef.current,
         validateAllFieldCriteria,
       ).then(({ errors }) => {
@@ -863,7 +895,7 @@ export function useForm<
       let fieldErrors: FieldErrors<TFieldValues> = {};
       let fieldValues: FieldValues = {
         ...unmountFieldsStateRef.current,
-        ...getFieldsValues(fieldsRef, unmountFieldsStateRef),
+        ...getValues(),
       };
 
       if (readFormStateRef.current.isSubmitting) {
@@ -874,7 +906,7 @@ export function useForm<
       try {
         if (resolverRef.current) {
           const { errors, values } = await resolverRef.current(
-            transformToNestObject(fieldValues),
+            fieldValues as TFieldValues,
             contextRef.current,
             validateAllFieldCriteria,
           );
@@ -913,7 +945,10 @@ export function useForm<
         ) {
           errorsRef.current = {};
           reRender();
-          await callback(transformToNestObject(fieldValues), e);
+          await callback(
+            fieldValues as UnpackNestedValue<TSubmitFieldValues>,
+            e,
+          );
         } else {
           errorsRef.current = {
             ...errorsRef.current,
@@ -1019,41 +1054,6 @@ export function useForm<
 
     reRender();
   };
-
-  const getValue = <TFieldName extends string, TFieldValue extends unknown>(
-    name: TFieldName,
-  ): TFieldName extends keyof TFieldValues
-    ? UnpackNestedValue<TFieldValues>[TFieldName]
-    : TFieldValue => getFieldValue(fieldsRef, name, unmountFieldsStateRef);
-
-  function getValues(): UnpackNestedValue<TFieldValues>;
-  function getValues<TFieldName extends string, TFieldValue extends unknown>(
-    name: TFieldName,
-  ): TFieldName extends keyof TFieldValues
-    ? UnpackNestedValue<TFieldValues>[TFieldName]
-    : TFieldValue;
-  function getValues<TFieldName extends keyof TFieldValues>(
-    names: TFieldName[],
-  ): UnpackNestedValue<Pick<TFieldValues, TFieldName>>;
-  function getValues(payload?: string | string[]): unknown {
-    if (isString(payload)) {
-      return getValue(payload);
-    }
-
-    if (isArray(payload)) {
-      return payload.reduce(
-        (previous, name) => ({
-          ...previous,
-          [name]: getValue(name),
-        }),
-        {},
-      );
-    }
-
-    return transformToNestObject(
-      getFieldsValues(fieldsRef, unmountFieldsStateRef),
-    );
-  }
 
   React.useEffect(() => {
     isUnMount.current = false;
