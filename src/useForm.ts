@@ -18,7 +18,6 @@ import isRadioInput from './utils/isRadioInput';
 import isSelectInput from './utils/isSelectInput';
 import isFileInput from './utils/isFileInput';
 import isObject from './utils/isObject';
-import isPrimitive from './utils/isPrimitive';
 import isFunction from './utils/isFunction';
 import isArray from './utils/isArray';
 import isString from './utils/isString';
@@ -369,58 +368,6 @@ export function useForm<
     [executeSchemaOrResolverValidation, executeValidation, reRender],
   );
 
-  const setInternalValues = React.useCallback(
-    (
-      name: InternalFieldName<TFieldValues>,
-      value: FieldValue<TFieldValues>,
-      config: SetValueConfig,
-      parentFieldName?: string,
-    ) => {
-      for (const key in value) {
-        const fieldName = `${parentFieldName || name}${
-          isArray(value) ? `[${key}]` : `.${key}`
-        }`;
-        const field = fieldsRef.current[fieldName];
-
-        if (isObject(value[key])) {
-          setInternalValues(name, value[key], config, fieldName);
-        }
-
-        if (field) {
-          setFieldValue(field, value[key]);
-
-          if (config.shouldDirty) {
-            setDirty(fieldName);
-          }
-
-          if (config.shouldValidate) {
-            trigger(fieldName as FieldName<TFieldValues>);
-          }
-        }
-      }
-    },
-    [trigger, setFieldValue, setDirty],
-  );
-
-  const setInternalValue = React.useCallback(
-    (
-      name: InternalFieldName<TFieldValues>,
-      value: FieldValue<TFieldValues> | null | undefined | boolean,
-      config: SetValueConfig,
-    ): boolean | void => {
-      if (fieldsRef.current[name]) {
-        setFieldValue(fieldsRef.current[name] as Field, value);
-
-        return config.shouldDirty && setDirty(name);
-      } else if (!isPrimitive(value)) {
-        setInternalValues(name, value, config);
-      }
-
-      unmountFieldsStateRef.current[name] = value;
-    },
-    [setDirty, setFieldValue, setInternalValues],
-  );
-
   const isFieldWatched = (name: string) =>
     isWatchAllRef.current ||
     watchFieldsRef.current.has(name) ||
@@ -454,10 +401,13 @@ export function useForm<
       : UnpackNestedValue<DeepPartial<LiteralToPrimitive<TFieldValue>>>,
     config: SetValueConfig = {},
   ): void {
-    const shouldRender =
-      setInternalValue(name, value as TFieldValues[string], config) ||
-      !isPrimitive(value) ||
-      isFieldWatched(name);
+    let shouldRender = isFieldWatched(name);
+    unmountFieldsStateRef.current[name] = value;
+
+    if (fieldsRef.current[name]) {
+      setFieldValue(fieldsRef.current[name] as Field, value);
+      shouldRender = shouldRender || !!(config.shouldDirty && setDirty(name));
+    }
 
     renderWatchedInputs(name);
 
@@ -1138,11 +1088,7 @@ export function useForm<
 
   const commonProps = {
     trigger,
-    setValue: React.useCallback(setValue, [
-      reRender,
-      setInternalValue,
-      trigger,
-    ]),
+    setValue: React.useCallback(setValue, [reRender, trigger]),
     getValues: React.useCallback(getValues, []),
     register: React.useCallback(register, [defaultValuesRef.current]),
     unregister: React.useCallback(unregister, []),
