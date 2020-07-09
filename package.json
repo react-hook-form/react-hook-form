@@ -30,7 +30,6 @@
     "cypress": "cypress run",
     "cypress:open": "cypress open",
     "prepublishOnly": "npm run lint && npm run lint:types && npm test && npm run build",
-    "postrelease": "npm publish && git push --follow-tags",
     "bundlesize": "npm run build:modern && bundlesize",
     "start:app": "npm run build:modern && yarn link && yarn --cwd node_modules/react link && yarn --cwd ./app link react react-hook-form && yarn --cwd ./app && yarn --cwd ./app run start",
     "changeset": "changeset",
