@@ -432,8 +432,8 @@ export function useForm<
         if (
           name === '' ||
           watchFieldsHookRef.current[key].has(name) ||
-          !watchFieldsHookRef.current[key].size ||
-          isNameInFieldArray(fieldArrayNamesRef.current, name)
+          watchFieldsHookRef.current[key].has(getFieldArrayParentName(name)) ||
+          !watchFieldsHookRef.current[key].size
         ) {
           watchFieldsHookRenderRef.current[key]();
           found = false;
