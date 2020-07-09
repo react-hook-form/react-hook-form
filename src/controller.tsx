@@ -6,7 +6,6 @@ import getInputValue from './logic/getInputValue';
 import skipValidation from './logic/skipValidation';
 import isNameInFieldArray from './logic/isNameInFieldArray';
 import { useFormContext } from './useFormContext';
-import { VALUE } from './constants';
 import { Control } from './types/form';
 import { ControllerProps } from './types/props';
 
@@ -85,7 +84,7 @@ const Controller = <
       };
     } else {
       register(
-        Object.defineProperty({ name, focus: onFocusRef.current }, VALUE, {
+        Object.defineProperty({ name, focus: onFocusRef.current }, 'value', {
           set(data) {
             setInputStateValue(data);
             valueRef.current = data;
@@ -145,7 +144,7 @@ const Controller = <
     onChange,
     onBlur,
     name,
-    ...{ [VALUE]: value },
+    value,
   };
 
   return as
