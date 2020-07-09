@@ -432,6 +432,7 @@ export function useForm<
         if (
           name === '' ||
           watchFieldsHookRef.current[key].has(name) ||
+          watchFieldsHookRef.current[key].has(getFieldArrayParentName(name)) ||
           !watchFieldsHookRef.current[key].size
         ) {
           watchFieldsHookRenderRef.current[key]();
