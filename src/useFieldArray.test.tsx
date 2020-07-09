@@ -2,8 +2,9 @@ import * as React from 'react';
 import { act, renderHook } from '@testing-library/react-hooks';
 import { useFieldArray } from './useFieldArray';
 import { reconfigureControl } from './__mocks__/reconfigureControl';
-import { render, fireEvent } from '@testing-library/react';
+import { render, fireEvent, screen, waitFor } from '@testing-library/react';
 import { Control } from './types';
+import { useForm } from './useForm';
 
 jest.spyOn(console, 'warn').mockImplementation(() => {});
 jest.mock('./logic/generateId', () => ({
@@ -949,6 +950,67 @@ describe('useFieldArray', () => {
 
       expect(result.current.fields).toEqual([]);
       expect(reRender).toBeCalledTimes(2);
+    });
+
+    it('should return correct value with watch', async () => {
+      const renderedItems: any = [];
+      const Component = () => {
+        const { watch, register, control } = useForm();
+        const { fields, append, remove } = useFieldArray({
+          name: 'test',
+          control,
+        });
+        const watched = watch('test', fields);
+        const isRemoved = React.useRef(false);
+        if (isRemoved.current) {
+          renderedItems.push(watched);
+        }
+        return (
+          <div>
+            {fields.map((_, i) => (
+              <div key={i.toString()}>
+                <input type="text" name={`test[${i}]`} ref={register()} />
+              </div>
+            ))}
+            <button onClick={() => append({ test: '' })}>append</button>
+            <button
+              onClick={() => {
+                remove(2);
+                isRemoved.current = true;
+              }}
+            >
+              remove
+            </button>
+          </div>
+        );
+      };
+
+      render(<Component />);
+
+      fireEvent.click(screen.getByRole('button', { name: /append/i }));
+      fireEvent.click(screen.getByRole('button', { name: /append/i }));
+      fireEvent.click(screen.getByRole('button', { name: /append/i }));
+
+      const inputs = screen.getAllByRole('textbox');
+
+      fireEvent.input(inputs[0], {
+        target: { name: 'test[0]', value: '111' },
+      });
+      fireEvent.input(inputs[1], {
+        target: { name: 'test[1]', value: '222' },
+      });
+      fireEvent.input(inputs[2], {
+        target: { name: 'test[2]', value: '333' },
+      });
+
+      fireEvent.click(screen.getByRole('button', { name: /remove/i }));
+
+      await waitFor(() =>
+        expect(renderedItems).toEqual([
+          [{ test: '111' }, { test: '222' }],
+          [{ test: '111' }, { test: '222' }],
+        ]),
+      );
     });
   });
 
