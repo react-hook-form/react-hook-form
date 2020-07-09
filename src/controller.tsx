@@ -146,7 +146,9 @@ const Controller = <
     ...rest,
     onChange,
     onBlur,
-    ...{ [isCheckboxInput ? 'checked' : VALUE]: value },
+    name,
+    value,
+    ...(isCheckboxInput ? { checked: value } : {}),
   };
 
   return as
