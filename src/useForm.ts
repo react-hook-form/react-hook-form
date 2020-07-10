@@ -628,11 +628,9 @@ export function useForm<
             dirtyFieldsRef,
             defaultValuesAtRenderRef,
           ].forEach((data) => unset(data.current, field.ref.name));
-          [
-            fieldsWithValidationRef,
-            validFieldsRef,
-            watchFieldsRef,
-          ].forEach((data) => data.current.delete(field.ref.name));
+          [fieldsWithValidationRef, validFieldsRef].forEach((data) =>
+            data.current.delete(field.ref.name),
+          );
 
           if (
             readFormStateRef.current.isValid ||
