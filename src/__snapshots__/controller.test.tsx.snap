@@ -3,6 +3,7 @@
 exports[`Controller should be assigned method.control variable if wrap with FormProvider 1`] = `
 <DocumentFragment>
   <input
+    name="test"
     value=""
   />
 </DocumentFragment>
@@ -11,6 +12,7 @@ exports[`Controller should be assigned method.control variable if wrap with Form
 exports[`Controller should render correctly with as with component 1`] = `
 <DocumentFragment>
   <input
+    name="test"
     value=""
   />
 </DocumentFragment>
@@ -19,6 +21,7 @@ exports[`Controller should render correctly with as with component 1`] = `
 exports[`Controller should render correctly with as with string 1`] = `
 <DocumentFragment>
   <input
+    name="test"
     value=""
   />
 </DocumentFragment>
@@ -35,6 +38,7 @@ exports[`Controller should support custom value name 1`] = `
 exports[`Controller should support default value from hook form 1`] = `
 <DocumentFragment>
   <input
+    name="test"
     value="data"
   />
 </DocumentFragment>
