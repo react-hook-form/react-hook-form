@@ -134,28 +134,6 @@ describe('useFieldArray', () => {
       });
     });
 
-    it('should trigger reRender when user is watching the field array', () => {
-      const reRender = jest.fn();
-      const { result } = renderHook(() =>
-        useFieldArray({
-          control: reconfigureControl({
-            reRender,
-            watchFieldsRef: {
-              current: new Set(['test']),
-            },
-          }),
-          name: 'test',
-        }),
-      );
-
-      act(() => {
-        result.current.append({ test: 'test' });
-      });
-
-      expect(result.current.fields).toEqual([{ id: '1', test: 'test' }]);
-      expect(reRender).toBeCalledTimes(3);
-    });
-
     it('should trigger reRender when user is watching the all field array', () => {
       const reRender = jest.fn();
       const { result } = renderHook(() =>
@@ -225,6 +203,50 @@ describe('useFieldArray', () => {
         { id: '1', test: 'test' },
       ]);
       expect(mockFocus).toBeCalledTimes(1);
+    });
+
+    it('should return watched value with watch API', async () => {
+      const renderedItems: any = [];
+      let id = 0;
+      const Component = () => {
+        const { watch, register, control } = useForm();
+        const { fields, append } = useFieldArray({
+          name: 'test',
+          control,
+        });
+        const watched = watch('test', fields);
+        renderedItems.push(watched);
+        return (
+          <div>
+            {fields.map((field, i) => (
+              <div key={`${field.key}`}>
+                <input
+                  type="text"
+                  name={`test[${i}].value`}
+                  defaultValue={field.value}
+                  ref={register()}
+                />
+              </div>
+            ))}
+            <button onClick={() => append({ key: id++, value: 'test' })}>
+              append
+            </button>
+          </div>
+        );
+      };
+
+      render(<Component />);
+
+      fireEvent.click(screen.getByRole('button', { name: /append/i }));
+
+      await waitFor(() =>
+        expect(renderedItems).toEqual([
+          [],
+          [],
+          [{ id: '1', key: 0, value: 'test' }],
+          [{ value: 'test' }],
+        ]),
+      );
     });
   });
 
