@@ -1281,6 +1281,7 @@ describe('useFieldArray', () => {
 
     it('should return watched value with watch API', async () => {
       const renderedItems: any = [];
+      let id = 0;
       const Component = () => {
         const { watch, register, control } = useForm();
         const { fields, append, insert } = useFieldArray({
@@ -1294,15 +1295,22 @@ describe('useFieldArray', () => {
         }
         return (
           <div>
-            {fields.map((_, i) => (
-              <div key={i.toString()}>
-                <input type="text" name={`test[${i}].value`} ref={register()} />
+            {fields.map((field, i) => (
+              <div key={`${field.key}`}>
+                <input
+                  type="text"
+                  name={`test[${i}].value`}
+                  defaultValue={field.value}
+                  ref={register()}
+                />
               </div>
             ))}
-            <button onClick={() => append({ value: '' })}>append</button>
+            <button onClick={() => append({ key: id++, value: '' })}>
+              append
+            </button>
             <button
               onClick={() => {
-                insert(1, { value: 'test' });
+                insert(1, { key: id++, value: 'test' });
                 isInserted.current = true;
               }}
             >
@@ -1331,11 +1339,11 @@ describe('useFieldArray', () => {
       await waitFor(() =>
         expect(renderedItems).toEqual([
           [
-            { id: '1', value: '111' },
-            { id: '1', value: 'test' },
-            { id: '1', value: '222' },
+            { id: '1', key: '0', value: '111' },
+            { id: '1', key: '2', value: 'test' },
+            { id: '1', key: '1', value: '222' },
           ],
-          [{ value: '111' }, { value: '222' }, { value: '' }],
+          [{ value: '111' }, { value: 'test' }, { value: '222' }],
         ]),
       );
     });
