@@ -9,21 +9,17 @@ import {
 } from '@testing-library/react';
 import { useForm } from './';
 import * as findRemovedFieldAndRemoveListener from './logic/findRemovedFieldAndRemoveListener';
-import * as validateField from './logic/validateField';
 import { VALIDATION_MODE, EVENTS } from './constants';
 import {
   NestedValue,
   UseFormMethods,
   ErrorOption,
   FieldError,
+  ValidationRules,
 } from './types/form';
-import skipValidation from './logic/skipValidation';
-import * as shouldRenderBasedOnError from './logic/shouldRenderBasedOnError';
 import { transformToNestObject } from './logic';
-import * as isSameError from './utils/isSameError';
 import { DeepMap } from './types/utils';
 
-jest.mock('./logic/skipValidation');
 jest.mock('./logic/transformToNestObject');
 
 let nodeEnv: any;
@@ -32,12 +28,12 @@ describe('useForm', () => {
   beforeEach(() => {
     nodeEnv = process.env.NODE_ENV;
     process.env.NODE_ENV = 'production';
-    jest.resetAllMocks();
-    jest.restoreAllMocks();
     (transformToNestObject as any).mockImplementation((data: any) => data);
   });
 
   afterEach(() => {
+    jest.resetAllMocks();
+    jest.restoreAllMocks();
     process.env.NODE_ENV = nodeEnv;
   });
 
@@ -2010,7 +2006,7 @@ describe('useForm', () => {
         },
       });
 
-      await waitFor(() => expect(span.textContent).toBe('max'));
+      await waitFor(() => expect(span.textContent).toBe('data'));
     });
   });
 
@@ -2020,6 +2016,7 @@ describe('useForm', () => {
       name?: string;
       resolver?: any;
       mode?: 'onBlur' | 'onSubmit' | 'onChange';
+      rules?: ValidationRules;
     }>;
     let methods: UseFormMethods<{ test: string }>;
 
@@ -2029,10 +2026,12 @@ describe('useForm', () => {
         name = 'test',
         resolver,
         mode,
+        rules = { required: 'required' },
       }: {
         name?: string;
         resolver?: any;
         mode?: 'onBlur' | 'onSubmit' | 'onChange';
+        rules?: ValidationRules;
       }) => {
         const internationalMethods = useForm<{ test: string }>({
           resolver,
@@ -2047,7 +2046,7 @@ describe('useForm', () => {
             <input
               type="text"
               name={name}
-              ref={resolver ? register : register({ required: 'required' })}
+              ref={resolver ? register : register(rules)}
             />
             <span role="alert">
               {errors?.test?.message && errors.test.message}
@@ -2060,234 +2059,156 @@ describe('useForm', () => {
 
     describe('onSubmit mode', () => {
       it('should not contain error if value is valid', async () => {
-        const mockValidateField = jest.spyOn(validateField, 'default');
-        (skipValidation as any).mockReturnValue(true);
-
         render(<Component />);
-
-        fireEvent.input(screen.getByRole('textbox'), {
-          target: { name: 'test' },
-        });
-
-        await waitFor(() => expect(mockValidateField).not.toHaveBeenCalled());
-        expect(skipValidation).toHaveBeenCalled();
-        expect(screen.getByRole('alert').textContent).toBe('');
-        expect(renderCount).toBe(1);
-      });
-
-      it('should not contain error if name is invalid', async () => {
-        const mockValidateField = jest.spyOn(validateField, 'default');
-        render(<Component />);
-
-        fireEvent.input(screen.getByRole('textbox'), {
-          target: { name: 'test1' },
-        });
-
-        await waitFor(() => expect(mockValidateField).not.toHaveBeenCalled());
-        expect(skipValidation).not.toHaveBeenCalled();
-        expect(screen.getByRole('alert').textContent).toBe('');
-        expect(renderCount).toBe(1);
-      });
-
-      it('should not contain error if value is valid when executed handleSubmit', async () => {
-        const mockValidateField = jest.spyOn(validateField, 'default');
-        (skipValidation as any).mockReturnValue(false);
-        const mockShouldRenderBasedOnError = jest
-          .spyOn(shouldRenderBasedOnError, 'default')
-          .mockReturnValue(false);
-
-        render(<Component />);
-
-        const input = screen.getByRole('textbox') as HTMLInputElement;
-
-        fireEvent.input(input, { target: { name: 'test', value: 'test' } });
-
-        fireEvent.click(screen.getByRole('button'));
-
-        await waitFor(() => expect(skipValidation).toHaveBeenCalled());
-        expect(mockValidateField).toHaveBeenCalled();
-        expect(mockShouldRenderBasedOnError).toHaveBeenCalled();
-        expect(screen.getByRole('alert').textContent).toBe('');
-        expect(renderCount).toBe(3);
-      });
-
-      it('should contain error if value is invalid when value was changed', async () => {
-        let input: any = null;
-        (skipValidation as any).mockReturnValue(false);
-        const mockValidateField = jest.spyOn(validateField, 'default');
-        const mockShouldRenderBasedOnError = jest
-          .spyOn(shouldRenderBasedOnError, 'default')
-          .mockReturnValue(true);
-
-        render(<Component />);
-
-        input = screen.getByRole('textbox');
-
-        fireEvent.input(input, { target: { name: 'test' } });
-
-        await waitFor(() => expect(mockValidateField).toHaveBeenCalled());
-        expect(skipValidation).toHaveBeenCalled();
-        expect(mockShouldRenderBasedOnError).toHaveBeenCalled();
-        expect(screen.getByRole('alert').textContent).toBe('required');
-        expect(renderCount).toBe(2);
-      });
-
-      it('should call reRender method if previous error is undefined', async () => {
-        let input: any = null;
-
-        const mockIsSameError = jest.spyOn(isSameError, 'default');
-        const mockValidateField = jest.spyOn(validateField, 'default');
-        const mockShouldRenderBasedOnError = jest.spyOn(
-          shouldRenderBasedOnError,
-          'default',
-        );
-
-        render(<Component />);
-
-        input = screen.getByRole('textbox');
-
-        fireEvent.input(input, { target: { name: 'test', value: 'test' } });
-
-        fireEvent.click(screen.getByRole('button'));
-
-        fireEvent.input(input, { target: { name: 'test', value: '' } });
-
-        await waitFor(() => expect(mockValidateField).toHaveBeenCalled());
-        expect(skipValidation).toHaveBeenCalled();
-        expect(mockShouldRenderBasedOnError).toHaveBeenCalled();
-        expect(mockIsSameError).not.toBeCalled();
-        expect(screen.getByRole('alert').textContent).toBe('required');
-        expect(renderCount).toBe(5);
-      });
-
-      it('should not call reRender method if the current error is the same as the previous error', async () => {
-        let input: any = null;
-
-        const mockIsSameError = jest.spyOn(isSameError, 'default');
-
-        const mockShouldRenderBasedOnError = jest.spyOn(
-          shouldRenderBasedOnError,
-          'default',
-        );
-
-        render(<Component />);
-
-        input = screen.getByRole('textbox');
-
-        fireEvent.input(input, { target: { name: 'test', value: '' } });
-
-        fireEvent.click(screen.getByRole('button'));
-
-        fireEvent.input(input, { target: { name: 'test', value: '' } });
-
-        await waitFor(() => expect(skipValidation).toHaveBeenCalled());
-        expect(mockShouldRenderBasedOnError).toHaveBeenCalled();
-        expect(mockIsSameError).toHaveBeenCalled();
-        expect(screen.getByRole('alert').textContent).toBe('required');
-        expect(renderCount).toBe(3);
-      });
-
-      it('should be called reRender method if isWatchAllRef is true', async () => {
-        (skipValidation as any).mockReturnValue(true);
-        const mockValidateField = jest.spyOn(validateField, 'default');
-
-        render(<Component />);
-
-        methods.control.isWatchAllRef.current = true;
-        fireEvent.input(screen.getByRole('textbox'), {
-          target: { name: 'test' },
-        });
-
-        expect(skipValidation).toHaveBeenCalled();
-        expect(mockValidateField).not.toHaveBeenCalled();
-        expect(screen.getByRole('alert').textContent).toBe('');
-        expect(renderCount).toBe(2);
-      });
-
-      it('should be called reRender method if field is watched', async () => {
-        (skipValidation as any).mockReturnValue(true);
-        const mockValidateField = jest.spyOn(validateField, 'default');
-
-        render(<Component />);
-
-        methods.control.watchFieldsRef.current.add('test');
-        fireEvent.input(screen.getByRole('textbox'), {
-          target: { name: 'test' },
-        });
-
-        expect(skipValidation).toHaveBeenCalled();
-        expect(mockValidateField).not.toHaveBeenCalled();
-        expect(screen.getByRole('alert').textContent).toBe('');
-        expect(renderCount).toBe(2);
-      });
-
-      it('should be called reRender method if field array is watched', async () => {
-        (skipValidation as any).mockReturnValue(true);
-        const mockValidateField = jest.spyOn(validateField, 'default');
-
-        render(<Component name="test[0]" />);
-
-        methods.control.watchFieldsRef.current.add('test');
-        fireEvent.input(screen.getByRole('textbox'), {
-          target: { name: 'test[0]' },
-        });
-
-        expect(skipValidation).toHaveBeenCalled();
-        expect(mockValidateField).not.toHaveBeenCalled();
-        expect(renderCount).toBe(2);
-      });
-
-      it('should set name to formState.touched when formState.touched is defined', async () => {
-        (skipValidation as any).mockReturnValue(false);
-        const mockShouldRenderBasedOnError = jest.spyOn(
-          shouldRenderBasedOnError,
-          'default',
-        );
-
-        render(<Component />);
-
-        methods.formState.touched;
 
         fireEvent.input(screen.getByRole('textbox'), {
           target: { name: 'test', value: 'test' },
         });
 
-        fireEvent.blur(screen.getByRole('textbox'), {
-          target: { name: 'test' },
+        fireEvent.click(screen.getByRole('button'));
+
+        expect((await screen.findByRole('alert')).textContent).toBe('');
+
+        fireEvent.input(screen.getByRole('textbox'), {
+          target: { name: 'test', value: 'test' },
         });
 
-        await waitFor(() => expect(skipValidation).toHaveBeenCalled());
-        expect(mockShouldRenderBasedOnError).toHaveBeenCalled();
-        expect(methods.formState.touched).toEqual({
-          test: true,
-        });
-        expect(screen.getByRole('alert').textContent).toBe('');
+        expect((await screen.findByRole('alert')).textContent).toBe('');
         expect(renderCount).toBe(3);
       });
-    });
 
-    describe('with resolver', () => {
-      it('should not contain error if value is invalid with resolver', async () => {
-        const resolver = jest.fn(async (data: any) => {
-          return {
-            values: data,
-            errors: {},
-          };
+      it('should not contain error if name is invalid', async () => {
+        render(<Component />);
+
+        fireEvent.input(screen.getByRole('textbox'), {
+          target: { name: 'test', value: 'test' },
         });
 
-        render(<Component resolver={resolver} />);
+        fireEvent.click(screen.getByRole('button'));
 
+        expect((await screen.findByRole('alert')).textContent).toBe('');
+
+        fireEvent.input(screen.getByRole('textbox'), {
+          target: { name: 'wrongName', value: '' },
+        });
+
+        expect((await screen.findByRole('alert')).textContent).toBe('');
+        expect(renderCount).toBe(3);
+      });
+
+      it('should not contain error if value is valid when executed handleSubmit', async () => {
+        render(<Component />);
+
+        fireEvent.input(screen.getByRole('textbox'), {
+          target: { name: 'test', value: 'test' },
+        });
+
+        fireEvent.click(screen.getByRole('button'));
+
+        await waitFor(() =>
+          expect(screen.getByRole('alert').textContent).toBe(''),
+        );
+        expect(renderCount).toBe(3);
+      });
+
+      it('should contain error if value is invalid when value was changed', async () => {
+        render(<Component />);
+
+        const input = screen.getByRole('textbox');
+
+        fireEvent.input(input, { target: { name: 'test', value: 'test' } });
+
+        fireEvent.click(screen.getByRole('button'));
+
+        expect((await screen.findByRole('alert')).textContent).toBe('');
+
+        fireEvent.input(input, { target: { name: 'test', value: '' } });
+
+        expect((await screen.findByRole('alert')).textContent).toBe('required');
+
+        expect(renderCount).toBe(4);
+      });
+
+      it('should not call reRender method if the current error is the same as the previous error', async () => {
+        render(<Component />);
+
+        const input = screen.getByRole('textbox');
+
+        fireEvent.input(input, { target: { name: 'test', value: '' } });
+
+        fireEvent.click(screen.getByRole('button'));
+
+        expect((await screen.findByRole('alert')).textContent).toBe('required');
+
+        fireEvent.input(input, { target: { name: 'test', value: '' } });
+
+        expect((await screen.findByRole('alert')).textContent).toBe('required');
+        expect(renderCount).toBe(2);
+      });
+
+      it('should be called reRender method if isWatchAllRef is true', async () => {
+        render(<Component />);
+
+        // TODO: use watch method instead of using next line
+        methods.control.isWatchAllRef.current = true;
         fireEvent.input(screen.getByRole('textbox'), {
           target: { name: 'test' },
         });
 
-        await waitFor(() => expect(resolver).toHaveBeenCalled());
         expect(screen.getByRole('alert').textContent).toBe('');
-        expect(renderCount).toBe(1);
+        expect(renderCount).toBe(2);
       });
 
+      it('should be called reRender method if field is watched', async () => {
+        render(<Component />);
+
+        // TODO: use watch method instead of using next line
+        methods.control.watchFieldsRef.current.add('test');
+        fireEvent.input(screen.getByRole('textbox'), {
+          target: { name: 'test' },
+        });
+
+        expect(screen.getByRole('alert').textContent).toBe('');
+        expect(renderCount).toBe(2);
+      });
+
+      it('should be called reRender method if field array is watched', async () => {
+        render(<Component name="test[0]" />);
+
+        // TODO: use watch method instead of using next line
+        methods.control.watchFieldsRef.current.add('test');
+        fireEvent.input(screen.getByRole('textbox'), {
+          target: { name: 'test[0]' },
+        });
+
+        expect(renderCount).toBe(2);
+      });
+
+      it('should set name to formState.touched when formState.touched is defined', async () => {
+        render(<Component rules={{}} />);
+
+        methods.formState.touched;
+
+        fireEvent.click(screen.getByRole('button'));
+
+        fireEvent.blur(await screen.findByRole('textbox'), {
+          target: { name: 'test', value: 'test' },
+        });
+
+        expect((await screen.findByRole('alert')).textContent).toBe('');
+        expect(methods.formState.touched).toEqual({
+          test: true,
+        });
+        expect(renderCount).toBe(4);
+      });
+    });
+
+    describe('with resolver', () => {
       it('should contain error if value is invalid with resolver', async () => {
         const resolver = jest.fn(async (data: any) => {
+          if (data.test) {
+            return { values: data, errors: {} };
+          }
           return {
             values: data,
             errors: {
@@ -2301,12 +2222,21 @@ describe('useForm', () => {
         render(<Component resolver={resolver} />);
 
         fireEvent.input(screen.getByRole('textbox'), {
-          target: { name: 'test' },
+          target: { name: 'test', value: 'test' },
         });
 
-        await waitFor(() => expect(resolver).toHaveBeenCalled());
-        expect(screen.getByRole('alert').textContent).toBe('resolver error');
-        expect(renderCount).toBe(2);
+        fireEvent.click(await screen.findByRole('button'));
+
+        expect((await screen.findByRole('alert')).textContent).toBe('');
+
+        fireEvent.input(screen.getByRole('textbox'), {
+          target: { name: 'test', value: '' },
+        });
+
+        expect((await screen.findByRole('alert')).textContent).toBe(
+          'resolver error',
+        );
+        expect(renderCount).toBe(4);
       });
     });
   });

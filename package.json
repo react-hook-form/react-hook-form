@@ -30,9 +30,10 @@
     "cypress": "cypress run",
     "cypress:open": "cypress open",
     "prepublishOnly": "npm run lint && npm run lint:types && npm test && npm run build",
-    "postrelease": "npm publish && git push --follow-tags",
     "bundlesize": "npm run build:modern && bundlesize",
-    "start:app": "npm run build:modern && yarn link && yarn --cwd node_modules/react link && yarn --cwd ./app link react react-hook-form && yarn --cwd ./app && yarn --cwd ./app run start"
+    "start:app": "npm run build:modern && yarn link && yarn --cwd node_modules/react link && yarn --cwd ./app link react react-hook-form && yarn --cwd ./app && yarn --cwd ./app run start",
+    "changeset": "changeset",
+    "release": "changeset publish"
   },
   "keywords": [
     "react",
@@ -52,6 +53,8 @@
     "@babel/core": "^7.10.3",
     "@babel/plugin-transform-runtime": "^7.10.3",
     "@babel/runtime-corejs3": "^7.10.3",
+    "@changesets/changelog-github": "^0.2.6",
+    "@changesets/cli": "^2.9.1",
     "@rollup/plugin-babel": "^5.0.4",
     "@rollup/plugin-commonjs": "^13.0.0",
     "@rollup/plugin-node-resolve": "^8.1.0",
