@@ -1839,6 +1839,74 @@ describe('useFieldArray', () => {
       ]);
       expect(reRender).toBeCalledTimes(1);
     });
+
+    it('should return watched value with watch API', async () => {
+      const renderedItems: any = [];
+      let id = 0;
+      const Component = () => {
+        const { watch, register, control } = useForm();
+        const { fields, append, move } = useFieldArray({
+          name: 'test',
+          control,
+        });
+        const watched = watch('test', fields);
+        const isMoved = React.useRef(false);
+        if (isMoved.current) {
+          renderedItems.push(watched);
+        }
+        return (
+          <div>
+            {fields.map((field, i) => (
+              <div key={`${field.key}`}>
+                <input
+                  type="text"
+                  name={`test[${i}].value`}
+                  defaultValue={field.value}
+                  ref={register()}
+                />
+              </div>
+            ))}
+            <button onClick={() => append({ key: id++, value: '' })}>
+              append
+            </button>
+            <button
+              onClick={() => {
+                move(0, 1);
+                isMoved.current = true;
+              }}
+            >
+              move
+            </button>
+          </div>
+        );
+      };
+
+      render(<Component />);
+
+      fireEvent.click(screen.getByRole('button', { name: /append/i }));
+      fireEvent.click(screen.getByRole('button', { name: /append/i }));
+
+      const inputs = screen.getAllByRole('textbox');
+
+      fireEvent.input(inputs[0], {
+        target: { name: 'test[0].value', value: '111' },
+      });
+      fireEvent.input(inputs[1], {
+        target: { name: 'test[1].value', value: '222' },
+      });
+
+      fireEvent.click(screen.getByRole('button', { name: /move/i }));
+
+      await waitFor(() =>
+        expect(renderedItems).toEqual([
+          [
+            { id: '1', key: 1, value: '222' },
+            { id: '1', key: 0, value: '111' },
+          ],
+          [{ value: '222' }, { value: '111' }],
+        ]),
+      );
+    });
   });
 
   describe('setFieldAndValidState', () => {
