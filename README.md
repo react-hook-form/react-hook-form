@@ -67,13 +67,10 @@ function App() {
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
       <input name="firstname" ref={register} /> {/* register an input */}
-      
       <input name="lastname" ref={register({ required: true })} />
       {errors.lastname && 'Last name is required.'}
-      
       <input name="age" ref={register({ pattern: /\d+/ })} />
       {errors.age && 'Please enter number for age.'}
-      
       <input type="submit" />
     </form>
   );
@@ -81,6 +78,12 @@ function App() {
 ```
 
 ## Sponsors
+
+<a href="https://underbelly.is/" target="_blank">
+<img src="https://images.opencollective.com/underbelly/989a4a6/logo/256.png" width="75" height="75" />
+</a>
+
+<br />
 
 Want your logo here? [DM on Twitter](https://twitter.com/HookForm)
 
