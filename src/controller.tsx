@@ -72,8 +72,8 @@ const Controller = <
       isSubmitted,
     });
 
-  const commonTask = (event: any[]) => {
-    const data = getInputValue(event[0], isCheckboxInput);
+  const commonTask = ([event]: any[]) => {
+    const data = getInputValue(event);
     setInputStateValue(data);
     valueRef.current = data;
     return data;
