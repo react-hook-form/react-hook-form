@@ -35,7 +35,7 @@ describe('useForm with React Native', () => {
     });
   });
 
-  it('should not invoke focus', async () => {
+  it('should invoke focus with RN', async () => {
     const mockFocus = jest.spyOn(focusOnErrorField, 'default');
     const callback = jest.fn();
 
@@ -56,7 +56,7 @@ describe('useForm with React Native', () => {
 
     fireEvent.press(getByText('button'));
 
-    await wait(() => expect(mockFocus).not.toHaveBeenCalled());
+    await wait(() => expect(mockFocus).toHaveBeenCalled());
     expect(callback).not.toHaveBeenCalled();
     expect(getByText('required').props.children).toBe('required');
   });
