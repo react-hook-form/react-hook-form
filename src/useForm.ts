@@ -1001,7 +1001,7 @@ export function useForm<
             ...errorsRef.current,
             ...fieldErrors,
           };
-          if (shouldFocusError && isWeb) {
+          if (shouldFocusError) {
             focusOnErrorField(fieldsRef.current, fieldErrors);
           }
         }
