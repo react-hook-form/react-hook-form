@@ -46,7 +46,7 @@ describe('Controller with React Native', () => {
 
     fireEvent.press(getByText('submit'));
 
-    await wait(() => expect(mockFocus).not.toHaveBeenCalled());
+    await wait(() => expect(mockFocus).toHaveBeenCalled());
 
     expect(callback).not.toHaveBeenCalled();
     expect(input.props.value).toBe('test');
