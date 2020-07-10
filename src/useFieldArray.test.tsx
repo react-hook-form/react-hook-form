@@ -952,7 +952,7 @@ describe('useFieldArray', () => {
       expect(reRender).toBeCalledTimes(2);
     });
 
-    it('should return correct value with watch', async () => {
+    it('should return watched value with watch API', async () => {
       const renderedItems: any = [];
       const Component = () => {
         const { watch, register, control } = useForm();
@@ -969,10 +969,10 @@ describe('useFieldArray', () => {
           <div>
             {fields.map((_, i) => (
               <div key={i.toString()}>
-                <input type="text" name={`test[${i}]`} ref={register()} />
+                <input type="text" name={`test[${i}].value`} ref={register()} />
               </div>
             ))}
-            <button onClick={() => append({ test: '' })}>append</button>
+            <button onClick={() => append({ value: '' })}>append</button>
             <button
               onClick={() => {
                 remove(2);
@@ -994,21 +994,24 @@ describe('useFieldArray', () => {
       const inputs = screen.getAllByRole('textbox');
 
       fireEvent.input(inputs[0], {
-        target: { name: 'test[0]', value: '111' },
+        target: { name: 'test[0].value', value: '111' },
       });
       fireEvent.input(inputs[1], {
-        target: { name: 'test[1]', value: '222' },
+        target: { name: 'test[1].value', value: '222' },
       });
       fireEvent.input(inputs[2], {
-        target: { name: 'test[2]', value: '333' },
+        target: { name: 'test[2].value', value: '333' },
       });
 
       fireEvent.click(screen.getByRole('button', { name: /remove/i }));
 
       await waitFor(() =>
         expect(renderedItems).toEqual([
-          [{ test: '111' }, { test: '222' }],
-          [{ test: '111' }, { test: '222' }],
+          [
+            { id: '1', value: '111' },
+            { id: '1', value: '222' },
+          ],
+          [{ value: '111' }, { value: '222' }],
         ]),
       );
     });
