@@ -50,11 +50,7 @@ export default function Field(props: any) {
   renderCount++;
 
   return (
-    <form
-      onSubmit={handleSubmit((d) => {
-        console.log(d);
-      })}
-    >
+    <form onSubmit={handleSubmit(() => {})}>
       <div className="container">
         <section id="input-checkbox">
           <label>MUI Checkbox</label>
