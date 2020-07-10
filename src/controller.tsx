@@ -1,8 +1,8 @@
 import * as React from 'react';
-import isBoolean from './utils/isBoolean';
 import isUndefined from './utils/isUndefined';
 import get from './utils/get';
 import set from './utils/set';
+import isCheckBoxInput from './utils/isCheckBoxInput';
 import getInputValue from './logic/getInputValue';
 import skipValidation from './logic/skipValidation';
 import isNameInFieldArray from './logic/isNameInFieldArray';
@@ -57,7 +57,6 @@ const Controller = <
       : defaultValue;
   const [value, setInputStateValue] = React.useState(getInitialValue());
   const valueRef = React.useRef(value);
-  const isCheckboxInput = isBoolean(value);
   const onFocusRef = React.useRef(onFocus);
   const isSubmitted = isSubmittedRef.current;
 
@@ -73,7 +72,7 @@ const Controller = <
     });
 
   const commonTask = ([event]: any[]) => {
-    const data = getInputValue(event);
+    const data = getInputValue(event, isCheckBoxInput(event));
     setInputStateValue(data);
     valueRef.current = data;
     return data;
@@ -148,7 +147,7 @@ const Controller = <
     onBlur,
     name,
     value,
-    ...(isCheckboxInput ? { checked: value } : {}),
+    checked: value,
   };
 
   return as
