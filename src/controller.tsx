@@ -2,7 +2,6 @@ import * as React from 'react';
 import isUndefined from './utils/isUndefined';
 import get from './utils/get';
 import set from './utils/set';
-import isCheckBoxInput from './utils/isCheckBoxInput';
 import getInputValue from './logic/getInputValue';
 import skipValidation from './logic/skipValidation';
 import isNameInFieldArray from './logic/isNameInFieldArray';
@@ -72,7 +71,7 @@ const Controller = <
     });
 
   const commonTask = ([event]: any[]) => {
-    const data = getInputValue(event, isCheckBoxInput(event));
+    const data = getInputValue(event);
     setInputStateValue(data);
     valueRef.current = data;
     return data;
@@ -147,7 +146,6 @@ const Controller = <
     onBlur,
     name,
     value,
-    checked: value,
   };
 
   return as

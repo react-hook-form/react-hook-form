@@ -50,15 +50,24 @@ export default function Field(props: any) {
   renderCount++;
 
   return (
-    <form onSubmit={handleSubmit(() => {})}>
+    <form
+      onSubmit={handleSubmit((d) => {
+        console.log(d);
+      })}
+    >
       <div className="container">
         <section id="input-checkbox">
           <label>MUI Checkbox</label>
           <Controller
-            as={<Checkbox />}
             name="Checkbox"
             control={control}
             rules={{ required: true }}
+            render={(props) => (
+              <Checkbox
+                {...props}
+                onChange={(e) => props.onChange(e.target.checked)}
+              />
+            )}
           />
         </section>
 
@@ -122,9 +131,14 @@ export default function Field(props: any) {
         <section id="input-switch">
           <label>MUI Switch</label>
           <Controller
-            as={<Switch value="checkedA" />}
             name="switch"
             rules={{ required: true }}
+            render={(props) => (
+              <Switch
+                {...props}
+                onChange={(e) => props.onChange(e.target.checked)}
+              />
+            )}
             control={control}
           />
         </section>

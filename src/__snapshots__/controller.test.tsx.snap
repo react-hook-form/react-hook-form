@@ -38,7 +38,6 @@ exports[`Controller should support custom value name 1`] = `
 exports[`Controller should support default value from hook form 1`] = `
 <DocumentFragment>
   <input
-    checked=""
     name="test"
     value="data"
   />
