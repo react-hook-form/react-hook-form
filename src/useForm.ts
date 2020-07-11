@@ -212,12 +212,8 @@ export function useForm<
           ({ ref: radioRef }: { ref: HTMLInputElement }) =>
             (radioRef.checked = radioRef.value === value),
         );
-      } else if (isFileInput(ref)) {
-        if (isString(value)) {
-          ref.value = value;
-        } else {
-          ref.files = value as FileList;
-        }
+      } else if (isFileInput(ref) && !isString(value)) {
+        ref.files = value as FileList;
       } else if (isMultipleSelect(ref)) {
         [...ref.options].forEach(
           (selectRef) =>
