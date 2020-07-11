@@ -189,7 +189,7 @@ export function useForm<
         return true;
       }
     },
-    [reRender],
+    [],
   );
 
   const setFieldValue = React.useCallback(
@@ -343,7 +343,7 @@ export function useForm<
         return !error;
       }
     },
-    [reRender, shouldRenderBaseOnError, validateAllFieldCriteria],
+    [shouldRenderBaseOnError, validateAllFieldCriteria],
   );
 
   const trigger = React.useCallback(
@@ -366,7 +366,7 @@ export function useForm<
 
       return await executeValidation(fields);
     },
-    [executeSchemaOrResolverValidation, executeValidation, reRender],
+    [executeSchemaOrResolverValidation, executeValidation],
   );
 
   const setInternalValues = React.useCallback(
@@ -595,7 +595,7 @@ export function useForm<
         }
       });
     },
-    [reRender, validateAllFieldCriteria],
+    [validateAllFieldCriteria],
   );
 
   const removeFieldEventListener = React.useCallback(
@@ -647,7 +647,7 @@ export function useForm<
         }
       }
     },
-    [reRender, validateResolver, removeFieldEventListener],
+    [validateResolver, removeFieldEventListener],
   );
 
   function clearErrors(
@@ -1012,7 +1012,7 @@ export function useForm<
         reRender();
       }
     },
-    [reRender, shouldFocusError, validateAllFieldCriteria],
+    [shouldFocusError, validateAllFieldCriteria],
   );
 
   const resetRefs = ({
