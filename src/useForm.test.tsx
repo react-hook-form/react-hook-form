@@ -2126,15 +2126,13 @@ describe('useForm', () => {
           };
         };
 
-        render(<Component resolver={resolver} />);
+        render(<Component resolver={resolver} mode="onChange" />);
 
         methods.formState.isValid;
 
         fireEvent.input(screen.getByRole('textbox'), {
           target: { name: 'test', value: 'test' },
         });
-
-        fireEvent.click(await screen.findByRole('button'));
 
         expect((await screen.findByRole('alert')).textContent).toBe('');
         expect(methods.formState.isValid).toBeTruthy();
@@ -2148,7 +2146,7 @@ describe('useForm', () => {
         );
         expect(mockResolver).toHaveBeenCalled();
         expect(methods.formState.isValid).toBeFalsy();
-        expect(renderCount).toBe(4);
+        expect(renderCount).toBe(2);
       });
 
       it('should make isValid change to false if it contain error that is not related name with onChange mode', async () => {
