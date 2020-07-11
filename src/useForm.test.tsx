@@ -2110,10 +2110,12 @@ describe('useForm', () => {
 
     describe('with resolver', () => {
       it('should contain error if value is invalid with resolver', async () => {
-        const resolver = jest.fn(async (data: any) => {
+        const mockResolver = jest.fn();
+        const resolver = async (data: any) => {
           if (data.test) {
             return { values: data, errors: {} };
           }
+          mockResolver();
           return {
             values: data,
             errors: {
@@ -2122,9 +2124,11 @@ describe('useForm', () => {
               },
             },
           };
-        });
+        };
 
         render(<Component resolver={resolver} />);
+
+        methods.formState.isValid;
 
         fireEvent.input(screen.getByRole('textbox'), {
           target: { name: 'test', value: 'test' },
@@ -2133,6 +2137,7 @@ describe('useForm', () => {
         fireEvent.click(await screen.findByRole('button'));
 
         expect((await screen.findByRole('alert')).textContent).toBe('');
+        expect(methods.formState.isValid).toBeTruthy();
 
         fireEvent.input(screen.getByRole('textbox'), {
           target: { name: 'test', value: '' },
@@ -2141,7 +2146,87 @@ describe('useForm', () => {
         expect((await screen.findByRole('alert')).textContent).toBe(
           'resolver error',
         );
+        expect(mockResolver).toHaveBeenCalled();
+        expect(methods.formState.isValid).toBeFalsy();
         expect(renderCount).toBe(4);
+      });
+
+      it('should make isValid change to true if it contain error that is not related name with onSubmit mode', async () => {
+        const mockResolver = jest.fn();
+        const resolver = async (data: any) => {
+          if (data.test) {
+            return { values: data, errors: {} };
+          }
+          mockResolver();
+          return {
+            values: data,
+            errors: {
+              notRelatedName: {
+                message: 'resolver error',
+              },
+            },
+          };
+        };
+
+        render(<Component resolver={resolver} />);
+
+        methods.formState.isValid;
+
+        fireEvent.input(screen.getByRole('textbox'), {
+          target: { name: 'test', value: 'test' },
+        });
+
+        fireEvent.click(await screen.findByRole('button'));
+
+        expect((await screen.findByRole('alert')).textContent).toBe('');
+        expect(methods.formState.isValid).toBeTruthy();
+
+        fireEvent.input(screen.getByRole('textbox'), {
+          target: { name: 'test', value: '' },
+        });
+
+        expect((await screen.findByRole('alert')).textContent).toBe('');
+        expect(mockResolver).toHaveBeenCalled();
+        expect(methods.formState.isValid).toBeTruthy();
+        expect(renderCount).toBe(4);
+      });
+
+      it('should make isValid change to false if it contain error that is not related name with onChange mode', async () => {
+        const mockResolver = jest.fn();
+        const resolver = async (data: any) => {
+          if (data.test) {
+            return { values: data, errors: {} };
+          }
+          mockResolver();
+          return {
+            values: data,
+            errors: {
+              notRelatedName: {
+                message: 'resolver error',
+              },
+            },
+          };
+        };
+
+        render(<Component resolver={resolver} mode="onChange" />);
+
+        methods.formState.isValid;
+
+        fireEvent.input(screen.getByRole('textbox'), {
+          target: { name: 'test', value: 'test' },
+        });
+
+        expect((await screen.findByRole('alert')).textContent).toBe('');
+        expect(methods.formState.isValid).toBeTruthy();
+
+        fireEvent.input(screen.getByRole('textbox'), {
+          target: { name: 'test', value: '' },
+        });
+
+        expect((await screen.findByRole('alert')).textContent).toBe('');
+        expect(mockResolver).toHaveBeenCalled();
+        expect(methods.formState.isValid).toBeFalsy();
+        expect(renderCount).toBe(2);
       });
     });
   });
