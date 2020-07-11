@@ -1,8 +1,13 @@
 import isObject from './isObject';
-import compareObject from './compareObject';
 import { FieldError } from '../types/form';
 
 export default (
   error: FieldError | undefined,
-  { types }: FieldError,
-): boolean => isObject(error) && compareObject(error.types, types);
+  { type, types, message }: FieldError,
+): boolean =>
+  isObject(error) &&
+  error.type === type &&
+  error.message === message &&
+  Object.entries(error.types || {}).every(
+    ([key, value]) => (types || {})[key] === value,
+  );
