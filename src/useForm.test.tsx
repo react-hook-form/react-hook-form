@@ -1614,6 +1614,22 @@ describe('useForm', () => {
 
       expect(result.current.getValues('test')).toEqual(undefined);
     });
+
+    it('should return undefined when inputs not yet registered', () => {
+      const { result } = renderHook(() =>
+        useForm({
+          defaultValues: {
+            test: 'data',
+            deep: {
+              value: '5',
+            },
+          },
+        }),
+      );
+
+      const values = result.current.getValues();
+      expect(values).toEqual({});
+    });
   });
 
   describe('setError', () => {
