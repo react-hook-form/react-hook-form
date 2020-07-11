@@ -468,80 +468,72 @@ export function useForm<
   handleChangeRef.current = handleChangeRef.current
     ? handleChangeRef.current
     : async ({ type, target }: Event): Promise<void | boolean> => {
-        const name = target ? (target as Ref).name : '';
+        const name = (target as Ref)!.name;
         const field = fieldsRef.current[name];
         let error: FlatFieldErrors<TFieldValues>;
 
-        if (!field) {
-          return;
-        }
+        if (field) {
+          const isBlurEvent = type === EVENTS.BLUR;
+          const shouldSkipValidation =
+            !isOnAll &&
+            skipValidation({
+              hasError: !!get(errorsRef.current, name),
+              isOnChange,
+              isBlurEvent,
+              isOnSubmit,
+              isReValidateOnSubmit,
+              isOnBlur,
+              isReValidateOnBlur,
+              isSubmitted: isSubmittedRef.current,
+            });
+          let shouldRender = setDirty(name) || isFieldWatched(name);
 
-        const isBlurEvent = type === EVENTS.BLUR;
-        const shouldSkipValidation =
-          !isOnAll &&
-          skipValidation({
-            hasError: !!get(errorsRef.current, name),
-            isOnChange,
-            isBlurEvent,
-            isOnSubmit,
-            isReValidateOnSubmit,
-            isOnBlur,
-            isReValidateOnBlur,
-            isSubmitted: isSubmittedRef.current,
-          });
-        let shouldRender = setDirty(name) || isFieldWatched(name);
-
-        if (
-          isBlurEvent &&
-          !get(touchedFieldsRef.current, name) &&
-          readFormStateRef.current.touched
-        ) {
-          set(touchedFieldsRef.current, name, true);
-          shouldRender = true;
-        }
-
-        if (shouldSkipValidation) {
-          renderWatchedInputs(name);
-          return shouldRender && reRender();
-        }
-
-        if (resolver) {
-          const { errors } = await resolver(
-            getValues() as TFieldValues,
-            contextRef.current,
-            isValidateAllFieldCriteria,
-          );
-          const previousFormIsValid = isValidRef.current;
-          isValidRef.current = isEmptyObject(errors);
-
-          error = (get(errors, name)
-            ? { [name]: get(errors, name) }
-            : {}) as FlatFieldErrors<TFieldValues>;
-
-          if (previousFormIsValid !== isValidRef.current) {
+          if (
+            isBlurEvent &&
+            !get(touchedFieldsRef.current, name) &&
+            readFormStateRef.current.touched
+          ) {
+            set(touchedFieldsRef.current, name, true);
             shouldRender = true;
           }
-        } else {
-          error = await validateField<TFieldValues>(
-            fieldsRef,
-            isValidateAllFieldCriteria,
-            field,
-            unmountFieldsStateRef,
-          );
-        }
 
-        renderWatchedInputs(name);
+          if (shouldSkipValidation) {
+            renderWatchedInputs(name);
+            return shouldRender && reRender();
+          }
 
-        if (!shouldRenderBaseOnError(name, error) && shouldRender) {
-          reRender();
+          if (resolver) {
+            const { errors } = await resolver(
+              getValues() as TFieldValues,
+              contextRef.current,
+              isValidateAllFieldCriteria,
+            );
+            const previousFormIsValid = isValidRef.current;
+            isValidRef.current = isEmptyObject(errors);
+
+            error = (get(errors, name)
+              ? { [name]: get(errors, name) }
+              : {}) as FlatFieldErrors<TFieldValues>;
+
+            if (previousFormIsValid !== isValidRef.current) {
+              shouldRender = true;
+            }
+          } else {
+            error = await validateField<TFieldValues>(
+              fieldsRef,
+              isValidateAllFieldCriteria,
+              field,
+              unmountFieldsStateRef,
+            );
+          }
+
+          renderWatchedInputs(name);
+
+          if (!shouldRenderBaseOnError(name, error) && shouldRender) {
+            reRender();
+          }
         }
       };
-
-  const getValue = <TFieldName extends string, TFieldValue extends unknown>(
-    name: TFieldName,
-  ): TFieldName extends keyof TFieldValues
-    ? UnpackNestedValue<TFieldValues>[TFieldName]
-    : TFieldValue => getFieldValue(fieldsRef, name, unmountFieldsStateRef);
 
   function getValues(): UnpackNestedValue<TFieldValues>;
   function getValues<TFieldName extends string, TFieldValue extends unknown>(
@@ -554,14 +546,14 @@ export function useForm<
   ): UnpackNestedValue<Pick<TFieldValues, TFieldName>>;
   function getValues(payload?: string | string[]): unknown {
     if (isString(payload)) {
-      return getValue(payload);
+      return getFieldValue(fieldsRef, payload, unmountFieldsStateRef);
     }
 
     if (isArray(payload)) {
       return payload.reduce(
         (previous, name) => ({
           ...previous,
-          [name]: getValue(name),
+          [name]: getFieldValue(fieldsRef, name, unmountFieldsStateRef),
         }),
         {},
       );
