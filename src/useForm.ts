@@ -587,7 +587,7 @@ export function useForm<
   );
 
   const removeFieldEventListener = React.useCallback(
-    (field: Field, forceDelete?: boolean) => {
+    (field: Field, forceDelete?: boolean) =>
       findRemovedFieldAndRemoveListener(
         fieldsRef,
         handleChangeRef.current!,
@@ -595,8 +595,7 @@ export function useForm<
         unmountFieldsStateRef,
         shouldUnregister,
         forceDelete,
-      );
-    },
+      ),
     [shouldUnregister],
   );
 
@@ -616,6 +615,7 @@ export function useForm<
             dirtyFieldsRef,
             defaultValuesAtRenderRef,
           ].forEach((data) => unset(data.current, field.ref.name));
+
           [fieldsWithValidationRef, validFieldsRef].forEach((data) =>
             data.current.delete(field.ref.name),
           );
@@ -755,7 +755,7 @@ export function useForm<
     );
   }
 
-  function registerFieldsRef<TFieldElement extends FieldElement<TFieldValues>>(
+  function registerFieldRef<TFieldElement extends FieldElement<TFieldValues>>(
     ref: TFieldElement & Ref,
     validateOptions: ValidationRules | null = {},
   ): ((name: InternalFieldName<TFieldValues>) => void) | void {
@@ -906,15 +906,15 @@ export function useForm<
   ): ((ref: (TFieldElement & Ref) | null) => void) | void {
     if (!isWindowUndefined) {
       if (isString(refOrValidationOptions)) {
-        registerFieldsRef({ name: refOrValidationOptions }, rules);
+        registerFieldRef({ name: refOrValidationOptions }, rules);
       } else if (
         isObject(refOrValidationOptions) &&
         'name' in refOrValidationOptions
       ) {
-        registerFieldsRef(refOrValidationOptions, rules);
+        registerFieldRef(refOrValidationOptions, rules);
       } else {
         return (ref: (TFieldElement & Ref) | null) =>
-          ref && registerFieldsRef(ref, refOrValidationOptions);
+          ref && registerFieldRef(ref, refOrValidationOptions);
       }
     }
   }
