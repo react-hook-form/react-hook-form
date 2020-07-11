@@ -89,10 +89,10 @@ export function useForm<
   const errorsRef = React.useRef<FieldErrors<TFieldValues>>({});
   const touchedFieldsRef = React.useRef<Touched<TFieldValues>>({});
   const fieldArrayDefaultValues = React.useRef<Record<string, unknown[]>>({});
+  const dirtyFieldsRef = React.useRef<Touched<TFieldValues>>({});
   const watchFieldsRef = React.useRef(
     new Set<InternalFieldName<TFieldValues>>(),
   );
-  const dirtyFieldsRef = React.useRef<Touched<TFieldValues>>({});
   const watchFieldsHookRef = React.useRef<
     Record<string, Set<InternalFieldName<TFieldValues>>>
   >({});
@@ -119,15 +119,17 @@ export function useForm<
   const isSubmittingRef = React.useRef(false);
   const handleChangeRef = React.useRef<HandleChange>();
   const unmountFieldsStateRef = React.useRef<Record<string, any>>({});
-  const resetFieldArrayFunctionRef = React.useRef({});
+  const resetFieldArrayFunctionRef = React.useRef<Record<string, () => void>>(
+    {},
+  );
   const contextRef = React.useRef(context);
   const resolverRef = React.useRef(resolver);
   const fieldArrayNamesRef = React.useRef<Set<string>>(new Set());
   const [, render] = React.useState();
-  const { isOnBlur, isOnSubmit, isOnChange, isOnAll } = React.useRef(
-    modeChecker(mode),
-  ).current;
-  const validateAllFieldCriteria = criteriaMode === VALIDATION_MODE.all;
+  const {
+    current: { isOnBlur, isOnSubmit, isOnChange, isOnAll },
+  } = React.useRef(modeChecker(mode));
+  const isValidateAllFieldCriteria = criteriaMode === VALIDATION_MODE.all;
   const readFormStateRef = React.useRef<ReadFormState>({
     isDirty: !isProxyEnabled,
     dirtyFields: !isProxyEnabled,
@@ -138,17 +140,15 @@ export function useForm<
     isValid: !isProxyEnabled,
   });
   const {
-    isOnBlur: isReValidateOnBlur,
-    isOnSubmit: isReValidateOnSubmit,
-  } = React.useRef(modeChecker(reValidateMode)).current;
+    current: { isOnBlur: isReValidateOnBlur, isOnSubmit: isReValidateOnSubmit },
+  } = React.useRef(modeChecker(reValidateMode));
   contextRef.current = context;
   resolverRef.current = resolver;
 
-  const reRender = React.useCallback(() => {
-    if (!isUnMount.current) {
-      render({});
-    }
-  }, []);
+  const reRender = React.useCallback(
+    () => !isUnMount.current && render({}),
+    [],
+  );
 
   const shouldRenderBaseOnError = React.useCallback(
     (
@@ -284,7 +284,7 @@ export function useForm<
       if (fieldsRef.current[name]) {
         const error = await validateField<TFieldValues>(
           fieldsRef,
-          validateAllFieldCriteria,
+          isValidateAllFieldCriteria,
           fieldsRef.current[name] as Field,
           unmountFieldsStateRef,
         );
@@ -296,7 +296,7 @@ export function useForm<
 
       return false;
     },
-    [shouldRenderBaseOnError, validateAllFieldCriteria],
+    [shouldRenderBaseOnError, isValidateAllFieldCriteria],
   );
 
   const executeSchemaOrResolverValidation = React.useCallback(
@@ -308,7 +308,7 @@ export function useForm<
       const { errors } = await resolverRef.current!(
         getValues() as TFieldValues,
         contextRef.current,
-        validateAllFieldCriteria,
+        isValidateAllFieldCriteria,
       );
       const previousFormIsValid = isValidRef.current;
       isValidRef.current = isEmptyObject(errors);
@@ -343,7 +343,7 @@ export function useForm<
         return !error;
       }
     },
-    [shouldRenderBaseOnError, validateAllFieldCriteria],
+    [shouldRenderBaseOnError, isValidateAllFieldCriteria],
   );
 
   const trigger = React.useCallback(
@@ -513,7 +513,7 @@ export function useForm<
           const { errors } = await resolver(
             getValues() as TFieldValues,
             contextRef.current,
-            validateAllFieldCriteria,
+            isValidateAllFieldCriteria,
           );
           const previousFormIsValid = isValidRef.current;
           isValidRef.current = isEmptyObject(errors);
@@ -528,7 +528,7 @@ export function useForm<
         } else {
           error = await validateField<TFieldValues>(
             fieldsRef,
-            validateAllFieldCriteria,
+            isValidateAllFieldCriteria,
             field,
             unmountFieldsStateRef,
           );
@@ -585,7 +585,7 @@ export function useForm<
           ...values,
         },
         contextRef.current,
-        validateAllFieldCriteria,
+        isValidateAllFieldCriteria,
       ).then(({ errors }) => {
         const previousFormIsValid = isValidRef.current;
         isValidRef.current = isEmptyObject(errors);
@@ -595,7 +595,7 @@ export function useForm<
         }
       });
     },
-    [validateAllFieldCriteria],
+    [isValidateAllFieldCriteria],
   );
 
   const removeFieldEventListener = React.useCallback(
@@ -858,7 +858,7 @@ export function useForm<
       if (!isOnSubmit && readFormStateRef.current.isValid) {
         validateField(
           fieldsRef,
-          validateAllFieldCriteria,
+          isValidateAllFieldCriteria,
           field,
           unmountFieldsStateRef,
         ).then((error) => {
@@ -955,7 +955,7 @@ export function useForm<
           const { errors, values } = await resolverRef.current(
             fieldValues as TFieldValues,
             contextRef.current,
-            validateAllFieldCriteria,
+            isValidateAllFieldCriteria,
           );
           errorsRef.current = errors;
           fieldErrors = errors;
@@ -969,7 +969,7 @@ export function useForm<
 
               const fieldError = await validateField(
                 fieldsRef,
-                validateAllFieldCriteria,
+                isValidateAllFieldCriteria,
                 field,
                 unmountFieldsStateRef,
               );
@@ -1012,7 +1012,7 @@ export function useForm<
         reRender();
       }
     },
-    [shouldFocusError, validateAllFieldCriteria],
+    [shouldFocusError, isValidateAllFieldCriteria],
   );
 
   const resetRefs = ({
