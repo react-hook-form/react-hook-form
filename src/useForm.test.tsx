@@ -262,11 +262,17 @@ describe('useForm', () => {
 
       expect(result.current.watch('test')).toBeUndefined();
 
-      result.current.register({ type: 'radio', name: 'test', value: 'data' });
+      result.current.register({ type: 'text', name: 'test', value: 'data' });
 
-      expect(result.current.control.watchFieldsRef).toEqual({
-        current: new Set(['test']),
-      });
+      expect(result.current.watch('test')).toBe('data');
+    });
+
+    it('should return default value if field is undefined', () => {
+      const { result } = renderHook(() =>
+        useForm<{ test: string }>({ defaultValues: { test: 'test' } }),
+      );
+
+      expect(result.current.watch()).toEqual({ test: 'test' });
     });
 
     it('should return default value if value is empty', () => {
@@ -298,9 +304,6 @@ describe('useForm', () => {
         checked: true,
       });
 
-      expect(result.current.control.watchFieldsRef).toEqual({
-        current: new Set(['test', 'test1']),
-      });
       expect(result.current.watch(['test', 'test1'])).toEqual({
         test: 'data1',
         test1: 'data2',
@@ -317,85 +320,6 @@ describe('useForm', () => {
 
       expect(result.current.watch()).toEqual({ test: '', test1: '' });
       expect(result.current.control.isWatchAllRef.current).toBeTruthy();
-    });
-  });
-
-  describe('watchInternal', () => {
-    const tests: [
-      string,
-      [string | string[] | undefined, unknown | undefined, string | undefined],
-      {
-        watchValue?: unknown;
-        watchFieldsHookRef: string[];
-        watchFieldsRef: string[];
-        isWatchAllRef: boolean;
-      },
-    ][] = [
-      [
-        'should set value to watchFieldsHookRef if id is defined',
-        ['test', undefined, 'id'],
-        {
-          watchValue: undefined,
-          watchFieldsHookRef: ['test'],
-          watchFieldsRef: [],
-          isWatchAllRef: false,
-        },
-      ],
-      [
-        'should return default value if fields are undefined',
-        [undefined, { test: 'default', test1: 'default1' }, 'id'],
-        {
-          watchValue: { test: 'default', test1: 'default1' },
-          watchFieldsHookRef: [],
-          watchFieldsRef: [],
-          isWatchAllRef: false,
-        },
-      ],
-      [
-        'should set value to watchFieldsRef if id are undefined',
-        ['test', undefined, undefined],
-        {
-          watchValue: undefined,
-          watchFieldsHookRef: [],
-          watchFieldsRef: ['test'],
-          isWatchAllRef: false,
-        },
-      ],
-      [
-        'should set true to isWatchAllRef if id and fields are undefined',
-        [undefined, { test: 'default', test1: 'default1' }, undefined],
-        {
-          watchValue: { test: 'default', test1: 'default1' },
-          watchFieldsHookRef: [],
-          watchFieldsRef: [],
-          isWatchAllRef: true,
-        },
-      ],
-    ];
-    test.each(tests)('%s', (_, args, output) => {
-      const { result } = renderHook(() => useForm<{ test: string }>());
-
-      const id = args[2];
-      if (id) {
-        result.current.control.watchFieldsHookRef.current[id] = new Set();
-      }
-
-      expect(result.current.control.watchInternal(...args)).toEqual(
-        output.watchValue,
-      );
-
-      if (id) {
-        expect(result.current.control.watchFieldsHookRef.current[id]).toEqual(
-          new Set(output.watchFieldsHookRef),
-        );
-      }
-
-      expect(result.current.control.isWatchAllRef.current).toBe(
-        output.isWatchAllRef,
-      );
-      expect(result.current.control.watchFieldsRef.current).toEqual(
-        new Set(output.watchFieldsRef),
-      );
     });
   });
 
