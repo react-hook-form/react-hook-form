@@ -21,21 +21,30 @@ const common = {
 
 const web = {
   ...common,
-  displayName: 'Web',
+  displayName: {
+    name: 'Web',
+    color: 'cyan',
+  },
   testMatch: [getTestMatch()],
   setupFilesAfterEnv: ['<rootDir>/setup.ts'],
 };
 
 const server = {
   ...common,
-  displayName: 'Server',
+  displayName: {
+    name: 'Server',
+    color: 'blue',
+  },
   testMatch: [getTestMatch('server')],
   testEnvironment: 'node',
 };
 
 const native = {
   ...common,
-  displayName: 'Native',
+  displayName: {
+    name: 'Native',
+    color: 'magenta',
+  },
   preset: '@testing-library/react-native',
   testMatch: [getTestMatch('native')],
   transform: {
@@ -56,6 +65,22 @@ const native = {
   setupFilesAfterEnv: ['<rootDir>/setup.native.ts'],
 };
 
+const getProjects = () => {
+  const testEnv = process.env.TEST_ENV;
+  if (!testEnv) {
+    return [web, server, native];
+  }
+
+  switch (testEnv) {
+    case 'web':
+      return [web];
+    case 'server':
+      return [server];
+    case 'native':
+      return [native];
+  }
+};
+
 module.exports = {
-  projects: [web, server, native],
+  projects: getProjects(),
 };
