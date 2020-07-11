@@ -245,7 +245,7 @@ export type Control<TFieldValues extends FieldValues = FieldValues> = Pick<
   errorsRef: React.MutableRefObject<FieldErrors<TFieldValues>>;
   fieldsRef: React.MutableRefObject<FieldRefs<TFieldValues>>;
   resetFieldArrayFunctionRef: React.MutableRefObject<
-    Record<string, (values: any) => void>
+    Record<string, () => void>
   >;
   unmountFieldsStateRef: Record<string, any>;
   fieldArrayNamesRef: React.MutableRefObject<Set<string>>;
