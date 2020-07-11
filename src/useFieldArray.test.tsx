@@ -1588,6 +1588,7 @@ describe('useFieldArray', () => {
         { id: '1', test: '2' },
         { id: '1', test: '1' },
       ]);
+
       expect(reRender).toBeCalledTimes(2);
     });
 
