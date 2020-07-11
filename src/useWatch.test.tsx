@@ -10,7 +10,22 @@ jest.mock('./logic/generateId');
 
 describe('useWatch', () => {
   describe('initialize', () => {
-    it('should return default value', () => {
+    it('should return default value in useForm', () => {
+      (generateId as any).mockReturnValue('123');
+      let method: any;
+      let watched: any;
+      const Component = () => {
+        method = useForm({ defaultValues: { test: 'test' } });
+        watched = useWatch({ control: method.control });
+        return <div />;
+      };
+      render(<Component />);
+
+      expect(method.control.isWatchAllRef.current).toBeFalsy();
+      expect(watched).toEqual({ test: 'test' });
+    });
+
+    it('should return default value in useWatch', () => {
       const { result } = renderHook(() =>
         useWatch({
           control: reconfigureControl(),

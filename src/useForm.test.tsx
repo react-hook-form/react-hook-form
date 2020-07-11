@@ -17,10 +17,7 @@ import {
   FieldError,
   ValidationRules,
 } from './types/form';
-import { transformToNestObject } from './logic';
 import { DeepMap } from './types/utils';
-
-jest.mock('./logic/transformToNestObject');
 
 let nodeEnv: any;
 
@@ -28,7 +25,6 @@ describe('useForm', () => {
   beforeEach(() => {
     nodeEnv = process.env.NODE_ENV;
     process.env.NODE_ENV = 'production';
-    (transformToNestObject as any).mockImplementation((data: any) => data);
   });
 
   afterEach(() => {
@@ -266,11 +262,17 @@ describe('useForm', () => {
 
       expect(result.current.watch('test')).toBeUndefined();
 
-      result.current.register({ type: 'radio', name: 'test', value: 'data' });
+      result.current.register({ type: 'text', name: 'test', value: 'data' });
 
-      expect(result.current.control.watchFieldsRef).toEqual({
-        current: new Set(['test']),
-      });
+      expect(result.current.watch('test')).toBe('data');
+    });
+
+    it('should return default value if field is undefined', () => {
+      const { result } = renderHook(() =>
+        useForm<{ test: string }>({ defaultValues: { test: 'test' } }),
+      );
+
+      expect(result.current.watch()).toEqual({ test: 'test' });
     });
 
     it('should return default value if value is empty', () => {
@@ -302,9 +304,6 @@ describe('useForm', () => {
         checked: true,
       });
 
-      expect(result.current.control.watchFieldsRef).toEqual({
-        current: new Set(['test', 'test1']),
-      });
       expect(result.current.watch(['test', 'test1'])).toEqual({
         test: 'data1',
         test1: 'data2',
@@ -321,85 +320,6 @@ describe('useForm', () => {
 
       expect(result.current.watch()).toEqual({ test: '', test1: '' });
       expect(result.current.control.isWatchAllRef.current).toBeTruthy();
-    });
-  });
-
-  describe('watchInternal', () => {
-    const tests: [
-      string,
-      [string | string[] | undefined, unknown | undefined, string | undefined],
-      {
-        watchValue?: unknown;
-        watchFieldsHookRef: string[];
-        watchFieldsRef: string[];
-        isWatchAllRef: boolean;
-      },
-    ][] = [
-      [
-        'should set value to watchFieldsHookRef if id is defined',
-        ['test', undefined, 'id'],
-        {
-          watchValue: undefined,
-          watchFieldsHookRef: ['test'],
-          watchFieldsRef: [],
-          isWatchAllRef: false,
-        },
-      ],
-      [
-        'should return default value if fields are undefined',
-        [undefined, { test: 'default', test1: 'default1' }, 'id'],
-        {
-          watchValue: { test: 'default', test1: 'default1' },
-          watchFieldsHookRef: [],
-          watchFieldsRef: [],
-          isWatchAllRef: false,
-        },
-      ],
-      [
-        'should set value to watchFieldsRef if id are undefined',
-        ['test', undefined, undefined],
-        {
-          watchValue: undefined,
-          watchFieldsHookRef: [],
-          watchFieldsRef: ['test'],
-          isWatchAllRef: false,
-        },
-      ],
-      [
-        'should set true to isWatchAllRef if id and fields are undefined',
-        [undefined, { test: 'default', test1: 'default1' }, undefined],
-        {
-          watchValue: { test: 'default', test1: 'default1' },
-          watchFieldsHookRef: [],
-          watchFieldsRef: [],
-          isWatchAllRef: true,
-        },
-      ],
-    ];
-    test.each(tests)('%s', (_, args, output) => {
-      const { result } = renderHook(() => useForm<{ test: string }>());
-
-      const id = args[2];
-      if (id) {
-        result.current.control.watchFieldsHookRef.current[id] = new Set();
-      }
-
-      expect(result.current.control.watchInternal(...args)).toEqual(
-        output.watchValue,
-      );
-
-      if (id) {
-        expect(result.current.control.watchFieldsHookRef.current[id]).toEqual(
-          new Set(output.watchFieldsHookRef),
-        );
-      }
-
-      expect(result.current.control.isWatchAllRef.current).toBe(
-        output.isWatchAllRef,
-      );
-      expect(result.current.control.watchFieldsRef.current).toEqual(
-        new Set(output.watchFieldsRef),
-      );
     });
   });
 
@@ -921,39 +841,38 @@ describe('useForm', () => {
 
         act(() => result.current.setValue('test', '1', { shouldDirty: true }));
 
-        expect(transformToNestObject).not.toHaveBeenCalled();
+        expect(result.current.formState.isDirty).toBeTruthy();
         expect(result.current.formState.dirtyFields.test).toBeTruthy();
       });
 
-      it('should set name to dirtyFieldRef if field value is different with default value and isDirty is true', () => {
+      it('should not set dirty if shouldDirty is false and isDirty is true', () => {
         const { result } = renderHook(() =>
           useForm<{ test: string }>({
             defaultValues: { test: 'default' },
           }),
         );
-        result.current.control.readFormStateRef.current.isDirty = true;
+        result.current.formState.isDirty;
 
         result.current.register('test');
 
         result.current.setValue('test', '1');
 
-        expect(transformToNestObject).not.toHaveBeenCalled();
+        expect(result.current.formState.isDirty).toBeFalsy();
         expect(result.current.formState.dirtyFields.test).toBeFalsy();
       });
 
-      it('should set name to dirtyFieldRef if field value is different with default value and isDirty is true', () => {
+      it('should set dirty if field value is different with default value and isDirty is true', () => {
         const { result } = renderHook(() =>
           useForm<{ test: string }>({
             defaultValues: { test: 'default' },
           }),
         );
-        result.current.control.readFormStateRef.current.isDirty = true;
+        result.current.formState.isDirty;
 
         result.current.register('test');
 
         act(() => result.current.setValue('test', '1', { shouldDirty: true }));
 
-        expect(transformToNestObject).not.toHaveBeenCalled();
         expect(result.current.formState.dirtyFields.test).toBeTruthy();
       });
 
@@ -967,22 +886,21 @@ describe('useForm', () => {
 
         result.current.register('test');
 
-        result.current.setValue('test', '1');
-        result.current.setValue('test', 'default');
+        act(() => result.current.setValue('test', '1', { shouldDirty: true }));
 
-        expect(transformToNestObject).not.toHaveBeenCalled();
+        expect(result.current.formState.isDirty).toBeTruthy();
+        expect(result.current.formState.dirtyFields.test).toBeTruthy();
+
+        act(() =>
+          result.current.setValue('test', 'default', { shouldDirty: true }),
+        );
+
+        expect(result.current.formState.isDirty).toBeFalsy();
         expect(result.current.formState.dirtyFields.test).toBeUndefined();
       });
 
+      // TODO: move this test to useFieldArray test
       it('should set name to dirtyFieldRef if array field values are different with default value when formState.dirtyFields is defined', async () => {
-        (transformToNestObject as any).mockReturnValue({
-          test: [
-            { name: 'default_update' },
-            { name: 'default1' },
-            { name: 'default2' },
-          ],
-        });
-
         const { result } = renderHook(() =>
           useForm({
             defaultValues: {
@@ -1042,13 +960,6 @@ describe('useForm', () => {
         result.current.register('test[1].name');
         result.current.register('test[2].name');
 
-        (transformToNestObject as any).mockReturnValue({
-          test: [
-            { name: 'default_update' },
-            { name: 'default1' },
-            { name: 'default2' },
-          ],
-        });
         act(() => {
           result.current.setValue(
             'test',
@@ -1061,13 +972,11 @@ describe('useForm', () => {
           );
         });
 
-        (transformToNestObject as any).mockReturnValue({
-          test: [
-            { name: 'default' },
-            { name: 'default1' },
-            { name: 'default2' },
-          ],
+        expect(result.current.formState.dirtyFields).toEqual({
+          test: [{ name: true }],
         });
+        expect(result.current.formState.isDirty).toBeTruthy();
+
         act(() => {
           result.current.setValue(
             'test',
@@ -1076,7 +985,6 @@ describe('useForm', () => {
           );
         });
 
-        expect(transformToNestObject).toHaveBeenCalled();
         expect(result.current.formState.dirtyFields).toEqual({});
         expect(result.current.formState.isDirty).toBeFalsy();
       });
@@ -1368,6 +1276,39 @@ describe('useForm', () => {
       expect(callback).toBeCalled();
     });
 
+    it('should pass default value', async () => {
+      const { result } = renderHook(() =>
+        useForm<{ test: string; deep: { nested: string; values: string } }>({
+          mode: VALIDATION_MODE.onSubmit,
+          defaultValues: {
+            test: 'data',
+            deep: {
+              values: '5',
+            },
+          },
+        }),
+      );
+
+      result.current.register({ type: 'text', name: 'test' });
+      result.current.register({ type: 'text', name: 'deep.nested' });
+      result.current.register({ type: 'text', name: 'deep.values' });
+
+      await act(async () => {
+        await result.current.handleSubmit((data: any) => {
+          expect(data).toEqual({
+            test: 'data',
+            deep: {
+              nested: undefined,
+              values: '5',
+            },
+          });
+        })({
+          preventDefault: () => {},
+          persist: () => {},
+        } as React.SyntheticEvent);
+      });
+    });
+
     it('should invoke reRender method when readFormStateRef.current.isSubmitting is true', async () => {
       let renderCount = 0;
       const Component = () => {
@@ -1596,6 +1537,22 @@ describe('useForm', () => {
       const { result } = renderHook(() => useForm());
 
       expect(result.current.getValues('test')).toEqual(undefined);
+    });
+
+    it('should return undefined when inputs not yet registered', () => {
+      const { result } = renderHook(() =>
+        useForm({
+          defaultValues: {
+            test: 'data',
+            deep: {
+              value: '5',
+            },
+          },
+        }),
+      );
+
+      const values = result.current.getValues();
+      expect(values).toEqual({});
     });
   });
 
@@ -1909,58 +1866,6 @@ describe('useForm', () => {
       unmount();
 
       expect(mockListener).not.toHaveBeenCalled();
-    });
-  });
-
-  describe('when defaultValues is supplied', () => {
-    it('should populate the input with them', async () => {
-      const { result } = renderHook(() =>
-        useForm<{ test: string; deep: { nested: string; values: string } }>({
-          mode: VALIDATION_MODE.onSubmit,
-          defaultValues: {
-            test: 'data',
-            deep: {
-              values: '5',
-            },
-          },
-        }),
-      );
-
-      result.current.register({ type: 'text', name: 'test' });
-      result.current.register({ type: 'text', name: 'deep.nested' });
-      result.current.register({ type: 'text', name: 'deep.values' });
-
-      await act(async () => {
-        await result.current.handleSubmit((data: any) => {
-          expect(data).toEqual({
-            test: 'data',
-            'deep.nested': undefined,
-            'deep.values': '5',
-          });
-        })({
-          preventDefault: () => {},
-          persist: () => {},
-        } as React.SyntheticEvent);
-      });
-    });
-
-    it('should return undefined when inputs not yet registered', () => {
-      const { result } = renderHook(() =>
-        useForm({
-          mode: VALIDATION_MODE.onSubmit,
-          defaultValues: {
-            test: 'data',
-            deep: {
-              values: '5',
-            },
-          },
-        }),
-      );
-
-      const test: string = result.current.getValues().test;
-      expect(test).toEqual(undefined);
-      const deep: { values: string } = result.current.getValues().deep;
-      expect(deep).toEqual(undefined);
     });
   });
 
@@ -2331,7 +2236,9 @@ describe('useForm', () => {
     });
 
     it('should be called resolver with default values if default value is defined', () => {
+      let resolverData: any;
       const resolver = async (data: any) => {
+        resolverData = data;
         return {
           values: data,
           errors: {},
@@ -2349,11 +2256,15 @@ describe('useForm', () => {
 
       result.current.control.validateSchemaIsValid!({});
 
-      expect(transformToNestObject).toBeCalledWith({ test: 'default' });
+      expect(resolverData).toEqual({
+        test: 'default',
+      });
     });
 
-    it('should be called resolver with field values if default value is undefined', async () => {
+    it('should be called resolver with field values if value is undefined', async () => {
+      let resolverData: any;
       const resolver = async (data: any) => {
+        resolverData = data;
         return {
           values: data,
           errors: {},
@@ -2372,7 +2283,7 @@ describe('useForm', () => {
 
       result.current.control.validateSchemaIsValid!({});
 
-      expect(transformToNestObject).toBeCalledWith({ test: 'value' });
+      expect(resolverData).toEqual({ test: 'value' });
     });
   });
 });

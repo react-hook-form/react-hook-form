@@ -1588,7 +1588,8 @@ describe('useFieldArray', () => {
         { id: '1', test: '2' },
         { id: '1', test: '1' },
       ]);
-      expect(reRender).toBeCalledTimes(1);
+
+      expect(reRender).toBeCalledTimes(2);
     });
 
     it('should return watched value with watch API', async () => {
@@ -1859,7 +1860,7 @@ describe('useFieldArray', () => {
         { id: '1', test: '2' },
         { id: '1', test: '1' },
       ]);
-      expect(reRender).toBeCalledTimes(1);
+      expect(reRender).toBeCalledTimes(2);
     });
 
     it('should return watched value with watch API', async () => {
