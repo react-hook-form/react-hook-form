@@ -355,7 +355,7 @@ export const useFieldArray = <
     const fieldValues = getCurrentFieldsValues();
     swapArrayAt(fieldValues, indexA, indexB);
     resetFields(fieldValues);
-    setFieldAndValidState(fieldValues);
+    setFieldAndValidState([...fieldValues]);
 
     if (isArray(get(errorsRef.current, name))) {
       swapArrayAt(get(errorsRef.current, name), indexA, indexB);
@@ -383,7 +383,7 @@ export const useFieldArray = <
     const fieldValues = getCurrentFieldsValues();
     moveArrayAt(fieldValues, from, to);
     resetFields(fieldValues);
-    setFieldAndValidState(fieldValues);
+    setFieldAndValidState([...fieldValues]);
 
     if (isArray(get(errorsRef.current, name))) {
       moveArrayAt(get(errorsRef.current, name), from, to);
