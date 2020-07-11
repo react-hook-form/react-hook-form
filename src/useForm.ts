@@ -126,9 +126,9 @@ export function useForm<
   const resolverRef = React.useRef(resolver);
   const fieldArrayNamesRef = React.useRef<Set<string>>(new Set());
   const [, render] = React.useState();
-  const { isOnBlur, isOnSubmit, isOnChange, isOnAll } = React.useRef(
-    modeChecker(mode),
-  ).current;
+  const {
+    current: { isOnBlur, isOnSubmit, isOnChange, isOnAll },
+  } = React.useRef(modeChecker(mode));
   const isValidateAllFieldCriteria = criteriaMode === VALIDATION_MODE.all;
   const readFormStateRef = React.useRef<ReadFormState>({
     isDirty: !isProxyEnabled,
@@ -140,9 +140,8 @@ export function useForm<
     isValid: !isProxyEnabled,
   });
   const {
-    isOnBlur: isReValidateOnBlur,
-    isOnSubmit: isReValidateOnSubmit,
-  } = React.useRef(modeChecker(reValidateMode)).current;
+    current: { isOnBlur: isReValidateOnBlur, isOnSubmit: isReValidateOnSubmit },
+  } = React.useRef(modeChecker(reValidateMode));
   contextRef.current = context;
   resolverRef.current = resolver;
 
