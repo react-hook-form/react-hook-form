@@ -65,6 +65,22 @@ const native = {
   setupFilesAfterEnv: ['<rootDir>/setup.native.ts'],
 };
 
+const getProjects = () => {
+  const testEnv = process.env.TEST_ENV;
+  if (!testEnv) {
+    return [web, server, native];
+  }
+
+  switch (testEnv) {
+    case 'web':
+      return [web];
+    case 'server':
+      return [server];
+    case 'native':
+      return [native];
+  }
+};
+
 module.exports = {
-  projects: [web, server, native],
+  projects: getProjects(),
 };
