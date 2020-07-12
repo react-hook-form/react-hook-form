@@ -11,7 +11,6 @@ import isObject from '../utils/isObject';
 import isFunction from '../utils/isFunction';
 import getFieldsValue from './getFieldValue';
 import isRegex from '../utils/isRegex';
-import isEmptyString from '../utils/isEmptyString';
 import isBoolean from '../utils/isBoolean';
 import isMessage from '../utils/isMessage';
 import getValidateError from './getValidateError';
@@ -50,7 +49,7 @@ export default async <TFieldValues extends FieldValues>(
   const isRadio = isRadioInput(ref);
   const isCheckBox = isCheckBoxInput(ref);
   const isRadioOrCheckbox = isRadio || isCheckBox;
-  const isEmpty = isEmptyString(value);
+  const isEmpty = value === '';
   const appendErrorsCurry = appendErrors.bind(
     null,
     name,
