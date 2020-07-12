@@ -435,8 +435,7 @@ describe('validateField', () => {
           ref: {
             type: 'date',
             name: 'test',
-            value: '2019-2-12',
-            valueAsDate: new Date('2019-2-12'),
+            value: '2019-2-13',
           },
           required: true,
           max: '2019-1-12',
@@ -450,8 +449,7 @@ describe('validateField', () => {
         ref: {
           type: 'date',
           name: 'test',
-          value: '2019-2-12',
-          valueAsDate: new Date('2019-2-12'),
+          value: '2019-2-13',
         },
       },
     });
@@ -578,7 +576,6 @@ describe('validateField', () => {
             type: 'date',
             name: 'test',
             value: '2019-2-12',
-            valueAsDate: new Date('2019-2-12'),
           },
           required: true,
           min: {
@@ -596,7 +593,6 @@ describe('validateField', () => {
           type: 'date',
           name: 'test',
           value: '2019-2-12',
-          valueAsDate: new Date('2019-2-12'),
         },
       },
     });
