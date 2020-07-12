@@ -1,5 +1,4 @@
 import isObject from './isObject';
-import compareObject from './compareObject';
 import { FieldError } from '../types/form';
 
 export default (
@@ -9,4 +8,7 @@ export default (
   isObject(error) &&
   error.type === type &&
   error.message === message &&
-  compareObject(error.types, types);
+  Object.entries(error.types || {}).every(
+    ([key, value]) => (types || {})[key] === value,
+  ) &&
+  Object.keys(error.types || {}).length === Object.keys(types || {}).length;
