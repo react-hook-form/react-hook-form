@@ -21,5 +21,5 @@ export default ({
   (isOnSubmit && isReValidateOnSubmit) ||
   (isOnSubmit && !isSubmitted) ||
   (isOnBlur && !isBlurEvent && !hasError) ||
-  (isReValidateOnBlur && !isBlurEvent && hasError) ||
+  (isReValidateOnBlur && !isBlurEvent) ||
   (isReValidateOnSubmit && isSubmitted);
