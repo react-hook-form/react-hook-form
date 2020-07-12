@@ -25,7 +25,7 @@ import {
   ArrayField,
 } from './types/form';
 
-export const appendId = <TValue extends object, TKeyName extends string>(
+const appendId = <TValue extends object, TKeyName extends string>(
   value: TValue,
   keyName: TKeyName,
 ): Partial<ArrayField<TValue, TKeyName>> => ({
