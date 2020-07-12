@@ -1,6 +1,5 @@
 import isArray from '../utils/isArray';
 import isUndefined from '../utils/isUndefined';
-import isEmptyString from '../utils/isEmptyString';
 import { RadioOrCheckboxOption } from '../types/form';
 
 type CheckboxFieldResult = {
@@ -28,7 +27,7 @@ export default (options?: RadioOrCheckboxOption[]): CheckboxFieldResult => {
 
     return checked
       ? attributes && !isUndefined((attributes as any).value)
-        ? isUndefined(value) || isEmptyString(value)
+        ? isUndefined(value) || value === ''
           ? validResult
           : { value: value, isValid: true }
         : validResult
