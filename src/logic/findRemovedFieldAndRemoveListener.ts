@@ -4,7 +4,6 @@ import getFieldValue from './getFieldValue';
 import isRadioInput from '../utils/isRadioInput';
 import isCheckBoxInput from '../utils/isCheckBoxInput';
 import isDetached from '../utils/isDetached';
-import isArray from '../utils/isArray';
 import unset from '../utils/unset';
 import unique from '../utils/unique';
 import isUndefined from '../utils/isUndefined';
@@ -46,7 +45,7 @@ export default function findRemovedFieldAndRemoveListener<
   if ((isRadioInput(ref) || isCheckBoxInput(ref)) && fieldRef) {
     const { options } = fieldRef;
 
-    if (isArray(options) && options.length) {
+    if (Array.isArray(options) && options.length) {
       unique(options).forEach((option, index): void => {
         const { ref, mutationWatcher } = option;
         if ((ref && isDetached(ref) && isSameRef(option, ref)) || forceDelete) {

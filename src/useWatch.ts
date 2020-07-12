@@ -4,7 +4,6 @@ import isUndefined from './utils/isUndefined';
 import isString from './utils/isString';
 import generateId from './logic/generateId';
 import get from './utils/get';
-import isArray from './utils/isArray';
 import {
   UseWatchOptions,
   FieldValues,
@@ -47,7 +46,7 @@ export function useWatch<TWatchFieldValues>({
     isUndefined(defaultValue)
       ? isString(name)
         ? get(defaultValuesRef.current, name)
-        : isArray(name)
+        : Array.isArray(name)
         ? name.reduce(
             (previous, inputName) => ({
               ...previous,

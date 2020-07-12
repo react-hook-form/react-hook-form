@@ -1,4 +1,3 @@
-import isArray from './isArray';
 import isObject from './isObject';
 
 function mapValueToBoolean(value: any) {
@@ -16,6 +15,6 @@ function mapValueToBoolean(value: any) {
 }
 
 export const filterBooleanArray = <T>(value: T): T[] =>
-  isArray(value)
+  Array.isArray(value)
     ? value.map(mapValueToBoolean).flat()
     : mapValueToBoolean(value);

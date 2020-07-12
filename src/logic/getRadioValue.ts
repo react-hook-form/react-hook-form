@@ -1,4 +1,3 @@
-import isArray from '../utils/isArray';
 import { RadioOrCheckboxOption } from '../types/form';
 
 type RadioFieldResult = {
@@ -12,7 +11,7 @@ const defaultReturn: RadioFieldResult = {
 };
 
 export default (options?: RadioOrCheckboxOption[]): RadioFieldResult =>
-  isArray(options)
+  Array.isArray(options)
     ? options.reduce(
         (previous, option): RadioFieldResult =>
           option && option.ref.checked
