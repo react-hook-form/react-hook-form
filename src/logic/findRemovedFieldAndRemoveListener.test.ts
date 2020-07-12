@@ -492,5 +492,7 @@ describe('findMissDomAndClean', () => {
     );
 
     expect(mockDisconnect).not.toHaveBeenCalled();
+
+    document.body.contains.mockRestore();
   });
 });
