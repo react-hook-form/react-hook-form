@@ -1,4 +1,5 @@
 import isUndefined from './isUndefined';
+import isArray from './isArray';
 import unique from './unique';
 
 const removeAt = <T>(data: T[], index: number): T[] => [
@@ -21,6 +22,6 @@ function removeAtIndexes<T>(data: T[], index: number[]): T[] {
 export default <T>(data: T[], index?: number | number[]): T[] =>
   isUndefined(index)
     ? []
-    : Array.isArray(index)
+    : isArray(index)
     ? removeAtIndexes(data, index)
     : removeAt(data, index);

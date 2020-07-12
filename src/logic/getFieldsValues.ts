@@ -1,6 +1,7 @@
 import * as React from 'react';
 import getFieldValue from './getFieldValue';
 import isString from '../utils/isString';
+import isArray from '../utils/isArray';
 import isUndefined from '../utils/isUndefined';
 import { InternalFieldName, FieldValues, FieldRefs } from '../types/form';
 
@@ -23,7 +24,7 @@ export default <TFieldValues extends FieldValues>(
       isUndefined(search) ||
       (isString(search)
         ? name.startsWith(search)
-        : Array.isArray(search) && search.find((data) => name.startsWith(data)))
+        : isArray(search) && search.find((data) => name.startsWith(data)))
     ) {
       output[name as InternalFieldName<TFieldValues>] = getFieldValue(
         fieldsRef,

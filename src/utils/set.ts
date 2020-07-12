@@ -1,4 +1,5 @@
 import isObject from './isObject';
+import isArray from './isArray';
 import isKey from './isKey';
 import stringToPath from './stringToPath';
 import { FieldValues } from '../types/form';
@@ -16,7 +17,7 @@ export default function set(object: FieldValues, path: string, value: any) {
     if (index !== lastIndex) {
       const objValue = object[key];
       newValue =
-        isObject(objValue) || Array.isArray(objValue)
+        isObject(objValue) || isArray(objValue)
           ? objValue
           : !isNaN(+tempPath[index + 1])
           ? []

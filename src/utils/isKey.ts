@@ -1,4 +1,6 @@
+import isArray from './isArray';
+
 export default (value: [] | string) =>
-  !Array.isArray(value) &&
+  !isArray(value) &&
   (/^\w*$/.test(value) ||
     !/\.|\[(?:[^[\]]*|(["'])(?:(?!\1)[^\\]|\\.)*?\1)\]/.test(value));

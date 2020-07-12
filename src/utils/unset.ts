@@ -1,3 +1,4 @@
+import isArray from './isArray';
 import isKey from './isKey';
 import stringToPath from './stringToPath';
 import isEmptyObject from './isEmptyObject';
@@ -43,7 +44,7 @@ export default function unset(object: any, path: string) {
       if (
         currentPathsLength === index &&
         ((isObject(objectRef) && isEmptyObject(objectRef)) ||
-          (Array.isArray(objectRef) &&
+          (isArray(objectRef) &&
             !objectRef.filter((data) => isObject(data) && !isEmptyObject(data))
               .length))
       ) {

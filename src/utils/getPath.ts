@@ -1,5 +1,6 @@
 import isPrimitive from './isPrimitive';
 import { FieldValues, InternalFieldName } from '../types/form';
+import isArray from './isArray';
 
 const getPath = <TFieldValues extends FieldValues = FieldValues>(
   path: InternalFieldName<TFieldValues>,
@@ -14,7 +15,7 @@ const getPath = <TFieldValues extends FieldValues = FieldValues>(
     return isPrimitive(value) ? pathWithIndex : getPath(pathWithIndex, value);
   };
 
-  return Array.isArray(values)
+  return isArray(values)
     ? values.map((value, key) => getInnerPath(value, key))
     : Object.entries(values).map(([key, value]) =>
         getInnerPath(value, key, true),

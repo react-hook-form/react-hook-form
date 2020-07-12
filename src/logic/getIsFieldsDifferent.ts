@@ -1,12 +1,13 @@
 import isUndefined from '../utils/isUndefined';
+import isArray from '../utils/isArray';
 
 export default function getIsFieldsDifferent(
   referenceArray: unknown[],
   differenceArray: unknown[],
 ) {
   if (
-    !Array.isArray(referenceArray) ||
-    !Array.isArray(differenceArray) ||
+    !isArray<any>(referenceArray) ||
+    !isArray<any>(differenceArray) ||
     referenceArray.length !== differenceArray.length
   ) {
     return true;

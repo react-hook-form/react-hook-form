@@ -11,6 +11,7 @@ import removeArrayAt from './utils/remove';
 import moveArrayAt from './utils/move';
 import swapArrayAt from './utils/swap';
 import prependAt from './utils/prepend';
+import isArray from './utils/isArray';
 import insertAt from './utils/insert';
 import isKey from './utils/isKey';
 import fillEmptyArray from './utils/fillEmptyArray';
@@ -35,7 +36,7 @@ const appendId = <TValue extends object, TKeyName extends string>(
 const mapIds = <TData extends object, TKeyName extends string>(
   data: TData | TData[],
   keyName: TKeyName,
-) => (Array.isArray(data) ? data : []).map((value) => appendId(value, keyName));
+) => (isArray(data) ? data : []).map((value) => appendId(value, keyName));
 
 export const useFieldArray = <
   TFieldArrayValues extends FieldValues = FieldValues,
@@ -162,7 +163,7 @@ export const useFieldArray = <
     shouldRender = false;
     setFieldAndValidState([
       ...allFields.current,
-      ...(Array.isArray(value)
+      ...(isArray(value)
         ? appendValueWithKey(value)
         : [appendId(value, keyName)]),
     ]);
@@ -191,14 +192,12 @@ export const useFieldArray = <
     setFieldAndValidState(
       prependAt(
         getCurrentFieldsValues(),
-        Array.isArray(value)
-          ? appendValueWithKey(value)
-          : [appendId(value, keyName)],
+        isArray(value) ? appendValueWithKey(value) : [appendId(value, keyName)],
       ),
     );
     resetFields();
 
-    if (Array.isArray(get(errorsRef.current, name))) {
+    if (isArray(get(errorsRef.current, name))) {
       errorsRef.current[name] = prependAt(
         get(errorsRef.current, name),
         emptyArray,
@@ -236,7 +235,7 @@ export const useFieldArray = <
     resetFields(removeArrayAt(get(getValues(), name), index));
     setIsDeleted(true);
 
-    if (Array.isArray(get(errorsRef.current, name))) {
+    if (isArray(get(errorsRef.current, name))) {
       errorsRef.current[name] = removeArrayAt(
         get(errorsRef.current, name),
         index,
@@ -279,7 +278,7 @@ export const useFieldArray = <
       while (fieldIndex++ < fields.length) {
         const isLast = fieldIndex === fields.length - 1;
         const isCurrentIndex =
-          (Array.isArray(index) ? index : [index]).indexOf(fieldIndex) >= 0;
+          (isArray(index) ? index : [index]).indexOf(fieldIndex) >= 0;
 
         if (isCurrentIndex || isIndexUndefined) {
           isFound = true;
@@ -324,14 +323,12 @@ export const useFieldArray = <
       insertAt(
         getCurrentFieldsValues(),
         index,
-        Array.isArray(value)
-          ? appendValueWithKey(value)
-          : [appendId(value, keyName)],
+        isArray(value) ? appendValueWithKey(value) : [appendId(value, keyName)],
       ),
     );
     resetFields(insertAt(get(getValues(), name), index));
 
-    if (Array.isArray(get(errorsRef.current, name))) {
+    if (isArray(get(errorsRef.current, name))) {
       errorsRef.current[name] = insertAt(
         get(errorsRef.current, name),
         index,
@@ -374,7 +371,7 @@ export const useFieldArray = <
     resetFields(fieldValues);
     setFieldAndValidState([...fieldValues]);
 
-    if (Array.isArray(get(errorsRef.current, name))) {
+    if (isArray(get(errorsRef.current, name))) {
       swapArrayAt(get(errorsRef.current, name), indexA, indexB);
     }
 
@@ -402,7 +399,7 @@ export const useFieldArray = <
     resetFields(fieldValues);
     setFieldAndValidState([...fieldValues]);
 
-    if (Array.isArray(get(errorsRef.current, name))) {
+    if (isArray(get(errorsRef.current, name))) {
       moveArrayAt(get(errorsRef.current, name), from, to);
     }
 

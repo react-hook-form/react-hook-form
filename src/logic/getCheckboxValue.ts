@@ -1,3 +1,4 @@
+import isArray from '../utils/isArray';
 import isUndefined from '../utils/isUndefined';
 import { RadioOrCheckboxOption } from '../types/form';
 
@@ -14,7 +15,7 @@ const defaultResult: CheckboxFieldResult = {
 const validResult = { value: true, isValid: true };
 
 export default (options?: RadioOrCheckboxOption[]): CheckboxFieldResult => {
-  if (Array.isArray(options)) {
+  if (isArray(options)) {
     if (options.length > 1) {
       const values = options
         .filter((option) => option && option.ref.checked)

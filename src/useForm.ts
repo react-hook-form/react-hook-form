@@ -20,6 +20,7 @@ import isFileInput from './utils/isFileInput';
 import isObject from './utils/isObject';
 import isPrimitive from './utils/isPrimitive';
 import isFunction from './utils/isFunction';
+import isArray from './utils/isArray';
 import isString from './utils/isString';
 import isSameError from './utils/isSameError';
 import isUndefined from './utils/isUndefined';
@@ -308,7 +309,7 @@ export function useForm<
       const previousFormIsValid = isValidRef.current;
       isValidRef.current = isEmptyObject(errors);
 
-      if (Array.isArray(payload)) {
+      if (isArray(payload)) {
         const isInputsValid = payload
           .map((name) => {
             const error = get(errors, name);
@@ -351,7 +352,7 @@ export function useForm<
         return executeSchemaOrResolverValidation(fields);
       }
 
-      if (Array.isArray(fields)) {
+      if (isArray(fields)) {
         const result = await Promise.all(
           fields.map(async (data) => await executeValidation(data, true)),
         );
@@ -373,7 +374,7 @@ export function useForm<
     ) => {
       for (const key in value) {
         const fieldName = `${parentFieldName || name}${
-          Array.isArray(value) ? `[${key}]` : `.${key}`
+          isArray(value) ? `[${key}]` : `.${key}`
         }`;
         const field = fieldsRef.current[fieldName];
 
@@ -548,7 +549,7 @@ export function useForm<
       return getFieldValue(fieldsRef, payload, unmountFieldsStateRef);
     }
 
-    if (Array.isArray(payload)) {
+    if (isArray(payload)) {
       return payload.reduce(
         (previous, name) => ({
           ...previous,
@@ -641,7 +642,7 @@ export function useForm<
     name?: FieldName<TFieldValues> | FieldName<TFieldValues>[],
   ): void {
     if (name) {
-      (Array.isArray(name) ? name : [name]).forEach((inputName) =>
+      (isArray(name) ? name : [name]).forEach((inputName) =>
         unset(errorsRef.current, inputName),
       );
     } else {
@@ -692,7 +693,7 @@ export function useForm<
         );
       }
 
-      if (Array.isArray(fieldNames)) {
+      if (isArray(fieldNames)) {
         return fieldNames.reduce(
           (previous, name) => ({
             ...previous,
@@ -749,7 +750,7 @@ export function useForm<
   function unregister(
     name: FieldName<TFieldValues> | FieldName<TFieldValues>[],
   ): void {
-    (Array.isArray(name) ? name : [name]).forEach((fieldName) =>
+    (isArray(name) ? name : [name]).forEach((fieldName) =>
       removeFieldEventListenerAndRef(fieldsRef.current[fieldName], true),
     );
   }
@@ -778,7 +779,7 @@ export function useForm<
     if (
       field &&
       (isRadioOrCheckbox
-        ? Array.isArray(field.options) &&
+        ? isArray(field.options) &&
           unique(field.options).find((option) => {
             return value === option.ref.value && option.ref === ref;
           })
@@ -1059,7 +1060,7 @@ export function useForm<
         if (field) {
           const { ref, options } = field;
           const inputRef =
-            isRadioOrCheckboxFunction(ref) && Array.isArray(options)
+            isRadioOrCheckboxFunction(ref) && isArray(options)
               ? options[0].ref
               : ref;
 
