@@ -34,7 +34,6 @@ const Controller = <
     setValue,
     register,
     unregister,
-    errorsRef,
     trigger,
     mode: { isOnSubmit, isOnBlur, isOnChange },
     reValidateMode: { isReValidateOnBlur, isReValidateOnSubmit },
@@ -61,7 +60,6 @@ const Controller = <
 
   const shouldValidate = () =>
     !skipValidation({
-      hasError: !!get(errorsRef.current, name),
       isOnBlur,
       isOnSubmit,
       isOnChange,

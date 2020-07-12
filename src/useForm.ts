@@ -477,7 +477,6 @@ export function useForm<
           const shouldSkipValidation =
             !isOnAll &&
             skipValidation({
-              hasError: !!get(errorsRef.current, name),
               isOnChange,
               isBlurEvent,
               isOnSubmit,
