@@ -10,4 +10,5 @@ export default (
   error.message === message &&
   Object.entries(error.types || {}).every(
     ([key, value]) => (types || {})[key] === value,
-  );
+  ) &&
+  Object.keys(error.types || {}).length === Object.keys(types || {}).length;
