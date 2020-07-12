@@ -1,5 +1,6 @@
 export default ({
   isOnChange,
+  hasError,
   isBlurEvent,
   isOnSubmit,
   isReValidateOnSubmit,
@@ -7,6 +8,7 @@ export default ({
   isReValidateOnBlur,
   isSubmitted,
 }: {
+  hasError: boolean;
   isOnChange: boolean;
   isBlurEvent?: boolean;
   isOnSubmit: boolean;
@@ -18,6 +20,6 @@ export default ({
   (isOnChange && isBlurEvent) ||
   (isOnSubmit && isReValidateOnSubmit) ||
   (isOnSubmit && !isSubmitted) ||
-  (isOnBlur && !isBlurEvent) ||
+  (isOnBlur && !isBlurEvent && !hasError) ||
   (isReValidateOnBlur && !isBlurEvent) ||
   (isReValidateOnSubmit && isSubmitted);
