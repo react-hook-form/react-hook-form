@@ -108,13 +108,15 @@ describe('isSameError', () => {
           type: '',
           message: '',
           types: {
-            minLength: 'min',
             maxLength: 'max',
           },
         } as FieldError,
         {
           type: '',
           message: '',
+          types: {
+            minLength: 'min',
+          },
         },
       ),
     ).toBeFalsy();
