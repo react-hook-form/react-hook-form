@@ -1,4 +1,3 @@
-/* eslint-disable no-console */
 import * as React from 'react';
 import getRadioValue from './getRadioValue';
 import getCheckboxValue from './getCheckboxValue';
