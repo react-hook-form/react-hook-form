@@ -26,7 +26,7 @@ export default function getFieldValue<TFieldValues extends FieldValues>(
     }
 
     if (isRadioInput(ref)) {
-      return field ? getRadioValue(field.options).value : '';
+      return getRadioValue(field.options).value;
     }
 
     if (isMultipleSelect(ref)) {
@@ -34,7 +34,7 @@ export default function getFieldValue<TFieldValues extends FieldValues>(
     }
 
     if (isCheckBox(ref)) {
-      return field ? getCheckboxValue(field.options).value : false;
+      return getCheckboxValue(field.options).value;
     }
 
     return value;
