@@ -1,4 +1,4 @@
-import { appendId } from './mapIds';
+import { appendId, mapIds } from './mapIds';
 
 jest.mock('../logic/generateId', () => ({
   default: () => '1',
@@ -18,5 +18,19 @@ describe('appendId', () => {
 
   it('should be object when value is number', () => {
     expect(appendId(42 as any, 'id')).toEqual({ value: 42, id: '1' });
+  });
+});
+
+describe('mapIds', () => {
+  it('should map ID to each element of an array', () => {
+    expect(mapIds([1, 2, 3], 'id')).toEqual([
+      { value: 1, id: '1' },
+      { value: 2, id: '1' },
+      { value: 3, id: '1' },
+    ]);
+  });
+
+  it('should return an empty array when data passed is not an array', () => {
+    expect(mapIds({} as any, 'id')).toEqual([]);
   });
 });
