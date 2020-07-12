@@ -458,7 +458,9 @@ describe('findMissDomAndClean', () => {
   });
 
   it('should not call mutation watcher when not available', () => {
-    document.body.contains = jest.fn(() => false);
+    document.body.contains = jest
+      .spyOn(document.body, 'contains')
+      .mockReturnValue(false);
 
     const ref = document.createElement('input');
     ref.setAttribute('name', 'test');
