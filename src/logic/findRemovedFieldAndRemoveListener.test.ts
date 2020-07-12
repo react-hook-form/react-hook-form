@@ -466,7 +466,7 @@ describe('findMissDomAndClean', () => {
     ref.setAttribute('name', 'test');
     ref.setAttribute('type', 'radio');
 
-    const disconnect = jest.fn();
+    const mockDisconnect = jest.spyOn(MutationObserver.prototype, 'disconnect');
     const fields = {
       current: {
         test: {
@@ -491,6 +491,6 @@ describe('findMissDomAndClean', () => {
       true,
     );
 
-    expect(disconnect).not.toHaveBeenCalled();
+    expect(mockDisconnect).not.toHaveBeenCalled();
   });
 });
