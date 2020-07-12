@@ -1,7 +1,8 @@
 import * as React from 'react';
 import { useFormContext } from './useFormContext';
 import { isMatchFieldArrayName } from './logic/isNameInFieldArray';
-import { appendId, mapIds } from './logic/mapIds';
+import generateId from './logic/generateId';
+import isObject from './utils/isObject';
 import getIsFieldsDifferent from './logic/getIsFieldsDifferent';
 import getFieldArrayParentName from './logic/getFieldArrayParentName';
 import get from './utils/get';
@@ -23,6 +24,19 @@ import {
   Control,
   ArrayField,
 } from './types/form';
+
+export const appendId = <TValue extends object, TKeyName extends string>(
+  value: TValue,
+  keyName: TKeyName,
+): Partial<ArrayField<TValue, TKeyName>> => ({
+  [keyName]: generateId(),
+  ...(isObject(value) ? value : { value }),
+});
+
+export const mapIds = <TData extends object, TKeyName extends string>(
+  data: TData | TData[],
+  keyName: TKeyName,
+) => (isArray(data) ? data : []).map((value) => appendId(value, keyName));
 
 export const useFieldArray = <
   TFieldArrayValues extends FieldValues = FieldValues,
