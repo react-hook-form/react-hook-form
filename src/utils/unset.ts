@@ -13,7 +13,8 @@ function baseGet(object: any, updatePath: (string | number)[]) {
   while (index < length) {
     object = isUndefined(object) ? index++ : object[updatePath[index++]];
   }
-  return index == length ? object : undefined;
+
+  return object;
 }
 
 export default function unset(object: any, path: string) {
