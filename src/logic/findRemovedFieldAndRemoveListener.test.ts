@@ -456,4 +456,39 @@ describe('findMissDomAndClean', () => {
       });
     });
   });
+
+  it('should not call mutation watcher when not available', () => {
+    document.body.contains = jest.fn(() => false);
+
+    const ref = document.createElement('input');
+    ref.setAttribute('name', 'test');
+    ref.setAttribute('type', 'radio');
+
+    const disconnect = jest.fn();
+    const fields = {
+      current: {
+        test: {
+          name: 'test',
+          ref,
+          options: [
+            {
+              ref,
+            },
+          ],
+        },
+      },
+    };
+
+    findRemovedFieldAndRemoveListener(
+      fields,
+      () => ({} as any),
+      {
+        ref,
+      },
+      {},
+      true,
+    );
+
+    expect(disconnect).not.toHaveBeenCalled();
+  });
 });
