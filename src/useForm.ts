@@ -140,7 +140,7 @@ export function useForm<
     isValid: !isProxyEnabled,
   });
   const {
-    current: { isOnBlur: isReValidateOnBlur, isOnSubmit: isReValidateOnSubmit },
+    current: { isOnBlur: isReValidateOnBlur, isOnChange: isReValidateOnChange },
   } = React.useRef(modeChecker(reValidateMode));
   contextRef.current = context;
   resolverRef.current = resolver;
@@ -477,12 +477,10 @@ export function useForm<
           const shouldSkipValidation =
             !isOnAll &&
             skipValidation({
-              hasError: !!get(errorsRef.current, name),
               isOnChange,
-              isBlurEvent,
-              isOnSubmit,
-              isReValidateOnSubmit,
               isOnBlur,
+              isBlurEvent,
+              isReValidateOnChange,
               isReValidateOnBlur,
               isSubmitted: isSubmittedRef.current,
             });
@@ -759,7 +757,7 @@ export function useForm<
     ref: TFieldElement & Ref,
     validateOptions: ValidationRules | null = {},
   ): ((name: InternalFieldName<TFieldValues>) => void) | void {
-    if (!ref.name) {
+    if (process.env.NODE_ENV !== 'production' && !ref.name) {
       // eslint-disable-next-line no-console
       return console.warn('Missing name @', ref);
     }
@@ -1158,7 +1156,7 @@ export function useForm<
     },
     reValidateMode: {
       isReValidateOnBlur,
-      isReValidateOnSubmit,
+      isReValidateOnChange,
     },
     errorsRef,
     touchedFieldsRef,
