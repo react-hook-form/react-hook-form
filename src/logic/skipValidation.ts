@@ -1,25 +1,22 @@
 export default ({
-  isOnChange,
-  hasError,
-  isBlurEvent,
-  isOnSubmit,
-  isReValidateOnSubmit,
   isOnBlur,
+  isOnChange,
   isReValidateOnBlur,
+  isReValidateOnChange,
+  isBlurEvent,
   isSubmitted,
 }: {
-  hasError: boolean;
-  isOnChange: boolean;
-  isBlurEvent?: boolean;
-  isOnSubmit: boolean;
   isOnBlur: boolean;
-  isReValidateOnSubmit: boolean;
+  isOnChange: boolean;
   isReValidateOnBlur: boolean;
+  isReValidateOnChange: boolean;
+  isBlurEvent?: boolean;
   isSubmitted: boolean;
-}) =>
-  (isOnChange && isBlurEvent) ||
-  (isOnSubmit && isReValidateOnSubmit) ||
-  (isOnSubmit && !isSubmitted) ||
-  (isOnBlur && !isBlurEvent && !hasError) ||
-  (isReValidateOnBlur && !isBlurEvent) ||
-  (isReValidateOnSubmit && isSubmitted);
+}) => {
+  if (isSubmitted ? isReValidateOnBlur : isOnBlur) {
+    return !isBlurEvent;
+  } else if (isSubmitted ? isReValidateOnChange : isOnChange) {
+    return isBlurEvent;
+  }
+  return true;
+};

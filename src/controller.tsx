@@ -34,10 +34,9 @@ const Controller = <
     setValue,
     register,
     unregister,
-    errorsRef,
     trigger,
-    mode: { isOnSubmit, isOnBlur, isOnChange },
-    reValidateMode: { isReValidateOnBlur, isReValidateOnSubmit },
+    mode: { isOnChange, isOnBlur },
+    reValidateMode: { isReValidateOnBlur, isReValidateOnChange },
     isSubmittedRef,
     touchedFieldsRef,
     readFormStateRef,
@@ -61,12 +60,10 @@ const Controller = <
 
   const shouldValidate = () =>
     !skipValidation({
-      hasError: !!get(errorsRef.current, name),
       isOnBlur,
-      isOnSubmit,
       isOnChange,
       isReValidateOnBlur,
-      isReValidateOnSubmit,
+      isReValidateOnChange,
       isSubmitted,
     });
 

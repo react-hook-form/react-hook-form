@@ -121,10 +121,15 @@ describe('re-validate mode', () => {
     cy.get('input[name="lastName"]').blur();
     cy.get('input[name="lastName"] + p').contains('lastName error');
 
+    cy.get('input[name="firstName"]').clear();
+    cy.get('input[name="lastName"]').clear();
+
+    cy.get('button#submit').click();
+
     cy.get('input[name="firstName"]').type('luo123456');
     cy.get('input[name="lastName"]').type('luo12');
 
     cy.get('p').should('have.length', 0);
-    cy.get('#renderCount').contains('5');
+    cy.get('#renderCount').contains('6');
   });
 });
