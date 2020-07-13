@@ -230,7 +230,7 @@ export type Control<TFieldValues extends FieldValues = FieldValues> = Pick<
   };
   reValidateMode: {
     isReValidateOnBlur: boolean;
-    isReValidateOnSubmit: boolean;
+    isReValidateOnChange: boolean;
   };
   fieldArrayDefaultValues: React.MutableRefObject<Record<string, any[]>>;
   dirtyFieldsRef: React.MutableRefObject<Dirtied<TFieldValues>>;

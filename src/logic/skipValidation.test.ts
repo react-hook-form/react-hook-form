@@ -5,10 +5,8 @@ describe('should skip validation', () => {
     expect(
       skipValidation({
         isOnChange: true,
-        hasError: false,
         isBlurEvent: false,
-        isOnSubmit: false,
-        isReValidateOnSubmit: false,
+        isReValidateOnChange: true,
         isOnBlur: true,
         isReValidateOnBlur: false,
         isSubmitted: false,
@@ -20,10 +18,8 @@ describe('should skip validation', () => {
     expect(
       skipValidation({
         isOnChange: false,
-        hasError: false,
+        isReValidateOnChange: false,
         isBlurEvent: false,
-        isOnSubmit: true,
-        isReValidateOnSubmit: true,
         isOnBlur: false,
         isReValidateOnBlur: false,
         isSubmitted: false,
@@ -35,10 +31,8 @@ describe('should skip validation', () => {
     expect(
       skipValidation({
         isOnChange: false,
-        hasError: false,
         isBlurEvent: false,
-        isOnSubmit: true,
-        isReValidateOnSubmit: false,
+        isReValidateOnChange: true,
         isOnBlur: false,
         isReValidateOnBlur: false,
         isSubmitted: false,
@@ -50,10 +44,8 @@ describe('should skip validation', () => {
     expect(
       skipValidation({
         isOnChange: false,
-        hasError: false,
         isBlurEvent: false,
-        isOnSubmit: false,
-        isReValidateOnSubmit: false,
+        isReValidateOnChange: true,
         isOnBlur: true,
         isReValidateOnBlur: false,
         isSubmitted: false,
@@ -65,10 +57,8 @@ describe('should skip validation', () => {
     expect(
       skipValidation({
         isOnChange: false,
-        hasError: true,
         isBlurEvent: false,
-        isOnSubmit: false,
-        isReValidateOnSubmit: false,
+        isReValidateOnChange: true,
         isOnBlur: false,
         isReValidateOnBlur: true,
         isSubmitted: true,
@@ -80,11 +70,9 @@ describe('should skip validation', () => {
     expect(
       skipValidation({
         isOnChange: false,
-        hasError: true,
         isBlurEvent: false,
-        isOnSubmit: false,
-        isReValidateOnSubmit: true,
         isOnBlur: false,
+        isReValidateOnChange: false,
         isReValidateOnBlur: false,
         isSubmitted: true,
       }),
@@ -97,10 +85,8 @@ describe('should validate the input', () => {
     expect(
       skipValidation({
         isOnChange: false,
-        hasError: true,
         isBlurEvent: false,
-        isOnSubmit: false,
-        isReValidateOnSubmit: false,
+        isReValidateOnChange: true,
         isOnBlur: false,
         isReValidateOnBlur: false,
         isSubmitted: true,
@@ -112,10 +98,8 @@ describe('should validate the input', () => {
     expect(
       skipValidation({
         isOnChange: false,
-        hasError: false,
         isBlurEvent: true,
-        isOnSubmit: false,
-        isReValidateOnSubmit: false,
+        isReValidateOnChange: true,
         isOnBlur: true,
         isReValidateOnBlur: false,
         isSubmitted: false,
@@ -127,26 +111,9 @@ describe('should validate the input', () => {
     expect(
       skipValidation({
         isOnChange: false,
-        hasError: true,
         isBlurEvent: true,
-        isOnSubmit: false,
-        isReValidateOnSubmit: false,
+        isReValidateOnChange: true,
         isOnBlur: true,
-        isReValidateOnBlur: false,
-        isSubmitted: false,
-      }),
-    ).toBeFalsy();
-  });
-
-  it('when there is an error is not onSubmit mode', () => {
-    expect(
-      skipValidation({
-        isOnChange: false,
-        hasError: true,
-        isBlurEvent: false,
-        isOnSubmit: false,
-        isReValidateOnSubmit: false,
-        isOnBlur: false,
         isReValidateOnBlur: false,
         isSubmitted: false,
       }),
