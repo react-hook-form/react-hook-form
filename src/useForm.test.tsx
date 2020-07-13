@@ -2107,7 +2107,7 @@ describe('useForm', () => {
         expect(renderCount).toBe(4);
       });
 
-      // https://github.com/react-hook-form/react-hook-form/issues/2153
+      // check https://github.com/react-hook-form/react-hook-form/issues/2153
       it('should perform correct behavior when reValidateMode is onBlur', async () => {
         const flushPromise = () => new Promise(setImmediate);
 
