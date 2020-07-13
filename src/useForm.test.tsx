@@ -49,7 +49,10 @@ describe('useForm', () => {
     });
 
     it('should call console.worn when ref name is undefined', () => {
-      const mockConsoleWarn = spyOn(console, 'warn');
+      process.env.NODE_ENV = 'development';
+      const mockConsoleWarn = jest
+        .spyOn(console, 'warn')
+        .mockImplementation(() => {});
       const Component = () => {
         const { register } = useForm();
         return <input ref={register} />;
