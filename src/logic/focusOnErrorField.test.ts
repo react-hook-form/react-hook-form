@@ -47,16 +47,15 @@ describe('focusErrorField', () => {
   });
 
   it('should not call focus when field is undefined', () => {
-    const focus = jest.fn();
-    focusErrorField(
-      {
-        test: undefined,
-      },
-      {
-        test: 'test' as any,
-      },
-    );
-
-    expect(focus).not.toBeCalled();
+    expect(() => {
+      focusErrorField(
+        {
+          test: undefined,
+        },
+        {
+          test: 'test' as any,
+        },
+      );
+    }).not.toThrow();
   });
 });

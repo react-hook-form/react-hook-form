@@ -464,7 +464,6 @@ describe('findMissDomAndClean', () => {
     ref.setAttribute('name', 'test');
     ref.setAttribute('type', 'radio');
 
-    const mockDisconnect = jest.spyOn(MutationObserver.prototype, 'disconnect');
     const fields = {
       current: {
         test: {
@@ -479,17 +478,17 @@ describe('findMissDomAndClean', () => {
       },
     };
 
-    findRemovedFieldAndRemoveListener(
-      fields,
-      () => ({} as any),
-      {
-        ref,
-      },
-      {},
-      true,
-    );
-
-    expect(mockDisconnect).not.toHaveBeenCalled();
+    expect(() => {
+      findRemovedFieldAndRemoveListener(
+        fields,
+        () => ({} as any),
+        {
+          ref,
+        },
+        {},
+        true,
+      );
+    }).not.toThrow();
 
     document.body.contains.mockRestore();
   });
