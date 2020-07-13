@@ -2166,8 +2166,6 @@ describe('useForm', () => {
 
       // check https://github.com/react-hook-form/react-hook-form/issues/2153
       it('should perform correct behavior when reValidateMode is onBlur', async () => {
-        const flushPromise = () => new Promise(setImmediate);
-
         const Component = () => {
           const { register, handleSubmit, errors } = useForm({
             reValidateMode: 'onBlur',
@@ -2193,20 +2191,23 @@ describe('useForm', () => {
           },
         });
 
-        fireEvent.click(screen.getByRole('button', { name: /submit/i }));
-
-        await flushPromise();
-
-        fireEvent.input(screen.getByRole('textbox'), {
-          target: { value: '' },
+        await actComponent(async () => {
+          await fireEvent.click(
+            screen.getByRole('button', { name: /submit/i }),
+          );
         });
 
-        await flushPromise();
+        await actComponent(async () => {
+          await fireEvent.input(screen.getByRole('textbox'), {
+            target: { value: '' },
+          });
+        });
 
         expect(screen.queryByRole('alert')).not.toBeInTheDocument();
-        fireEvent.blur(screen.getByRole('textbox'));
 
-        await flushPromise();
+        await actComponent(async () => {
+          await fireEvent.blur(screen.getByRole('textbox'));
+        });
 
         expect(screen.queryByRole('alert')).toBeInTheDocument();
       });
