@@ -759,7 +759,7 @@ export function useForm<
     ref: TFieldElement & Ref,
     validateOptions: ValidationRules | null = {},
   ): ((name: InternalFieldName<TFieldValues>) => void) | void {
-    if (!ref.name) {
+    if (process.env.NODE_ENV !== 'production' && !ref.name) {
       // eslint-disable-next-line no-console
       return console.warn('Missing name @', ref);
     }
