@@ -47,7 +47,7 @@ export const reconfigureControl = (
   mode: { isOnSubmit: false, isOnBlur: false, isOnChange: false },
   reValidateMode: {
     isReValidateOnBlur: false,
-    isReValidateOnSubmit: false,
+    isReValidateOnChange: false,
   },
   formState: {
     isDirty: false,
