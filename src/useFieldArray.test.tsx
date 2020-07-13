@@ -47,6 +47,89 @@ describe('useFieldArray', () => {
     });
   });
 
+  describe('when component unMount', () => {
+    it('should call removeFieldEventListenerAndRef when field variable is array', () => {
+      let getValues: any;
+      const Component = () => {
+        const { register, control, getValues: tempGetValues } = useForm();
+        const { fields, append } = useFieldArray({ name: 'test', control });
+        getValues = tempGetValues;
+
+        return (
+          <div>
+            {fields.map((_, i) => (
+              <input
+                key={i.toString()}
+                name={`test[${i}].value`}
+                ref={register}
+              />
+            ))}
+            <button onClick={() => append({ value: '' })}>append</button>
+          </div>
+        );
+      };
+
+      const { unmount } = render(<Component />);
+
+      const button = screen.getByRole('button', { name: /append/i });
+
+      fireEvent.click(button);
+      fireEvent.click(button);
+      fireEvent.click(button);
+
+      unmount();
+
+      expect(getValues()).toEqual({});
+    });
+  });
+
+  describe('unregister', () => {
+    it('should not unregister field if unregister method is triggered', () => {
+      let getValues: any;
+      const Component = () => {
+        const {
+          register,
+          unregister,
+          control,
+          getValues: tempGetValues,
+        } = useForm();
+        const { fields, append } = useFieldArray({ name: 'test', control });
+        getValues = tempGetValues;
+
+        React.useEffect(() => {
+          if (fields.length >= 3) {
+            unregister('test');
+          }
+        }, [fields, unregister]);
+
+        return (
+          <div>
+            {fields.map((_, i) => (
+              <input
+                key={i.toString()}
+                name={`test[${i}].value`}
+                ref={register}
+              />
+            ))}
+            <button onClick={() => append({ value: '' })}>append</button>
+          </div>
+        );
+      };
+
+      render(<Component />);
+
+      const button = screen.getByRole('button', { name: /append/i });
+
+      fireEvent.click(button);
+      fireEvent.click(button);
+      fireEvent.click(button);
+
+      expect(getValues()).toEqual({
+        test: [{ value: '' }, { value: '' }, { value: '' }],
+      });
+    });
+  });
+
   describe('append', () => {
     it('should append data into the fields', () => {
       const dirtyFieldsRef = {
