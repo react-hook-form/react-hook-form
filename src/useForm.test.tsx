@@ -237,25 +237,16 @@ describe('useForm', () => {
 
   describe('when component unMount', () => {
     it('should call unSubscribe', () => {
-      const mockListener = jest.spyOn(
-        findRemovedFieldAndRemoveListener,
-        'default',
-      );
       const { result, unmount } = renderHook(() => useForm<{ test: string }>());
 
       result.current.register({ type: 'text', name: 'test' });
       unmount();
-      expect(mockListener).toBeCalled();
+
+      expect(result.current.getValues()).toEqual({});
     });
 
     it('should call removeFieldEventListenerAndRef when field variable is array', () => {
-      const mockListener = jest.spyOn(
-        findRemovedFieldAndRemoveListener,
-        'default',
-      );
       const { result, unmount } = renderHook(() => useForm());
-
-      result.current.control.fieldArrayNamesRef.current.add('test');
 
       result.current.register({ type: 'text', name: 'test[0]' });
       result.current.register({ type: 'text', name: 'test[1]' });
@@ -263,7 +254,91 @@ describe('useForm', () => {
 
       unmount();
 
-      expect(mockListener).toHaveBeenCalled();
+      expect(result.current.getValues()).toEqual({});
+    });
+
+    it('should unregister errors', async () => {
+      const { result, unmount } = renderHook(() => useForm());
+
+      result.current.register(
+        { type: 'text', name: 'test' },
+        { required: true },
+      );
+
+      await act(async () => {
+        await result.current.handleSubmit(() => {})({
+          preventDefault: () => {},
+          persist: () => {},
+        } as React.SyntheticEvent);
+      });
+
+      expect(result.current.errors.test).toBeDefined();
+
+      unmount();
+
+      expect(result.current.errors.test).toBeUndefined();
+    });
+
+    it('should unregister touched', () => {
+      let formState: any;
+      const Component = () => {
+        const { register, formState: tempFormState } = useForm();
+        formState = tempFormState;
+
+        formState.touched;
+
+        return (
+          <div>
+            <input type="text" name="test" ref={register({ required: true })} />
+          </div>
+        );
+      };
+      const { unmount } = render(<Component />);
+
+      fireEvent.blur(screen.getByRole('textbox'), {
+        target: {
+          value: 'test',
+        },
+      });
+
+      expect(formState.touched.test).toBeDefined();
+      expect(formState.isDirty).toBeFalsy();
+
+      unmount();
+
+      expect(formState.touched.test).toBeUndefined();
+      expect(formState.isDirty).toBeFalsy();
+    });
+
+    it('should unregister dirtyFields', () => {
+      let formState: any;
+      const Component = () => {
+        const { register, formState: tempFormState } = useForm();
+        formState = tempFormState;
+
+        formState.isDirty;
+
+        return (
+          <div>
+            <input type="text" name="test" ref={register({ required: true })} />
+          </div>
+        );
+      };
+      const { unmount } = render(<Component />);
+
+      fireEvent.input(screen.getByRole('textbox'), {
+        target: {
+          value: 'test',
+        },
+      });
+
+      expect(formState.dirtyFields.test).toBeDefined();
+      expect(formState.isDirty).toBeTruthy();
+
+      unmount();
+
+      expect(formState.dirtyFields.test).toBeUndefined();
+      expect(formState.isDirty).toBeTruthy();
     });
 
     it('should not call removeFieldEventListenerAndRef when field variable does not exist', () => {
