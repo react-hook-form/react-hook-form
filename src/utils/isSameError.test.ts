@@ -84,4 +84,41 @@ describe('isSameError', () => {
       }),
     ).toBeFalsy();
   });
+
+  it('should return false when they are not the same error', () => {
+    expect(
+      isSameError(
+        {
+          type: 'test',
+          message: 'what',
+          types: {
+            minLength: 'min',
+          },
+        } as FieldError,
+        {
+          type: 'test',
+          message: 'what',
+        },
+      ),
+    ).toBeFalsy();
+
+    expect(
+      isSameError(
+        {
+          type: '',
+          message: '',
+          types: {
+            maxLength: 'max',
+          },
+        } as FieldError,
+        {
+          type: '',
+          message: '',
+          types: {
+            minLength: 'min',
+          },
+        },
+      ),
+    ).toBeFalsy();
+  });
 });
