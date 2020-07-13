@@ -91,7 +91,9 @@ export default async <TFieldValues extends FieldValues>(
       error[name] = {
         type: INPUT_VALIDATION_RULES.required,
         message: requiredMessage,
-        ref: isRadioOrCheckbox ? (fields[name] as Field).options?.[0].ref : ref,
+        ref: isRadioOrCheckbox
+          ? ((fields[name] as Field).options || [])[0].ref
+          : ref,
         ...appendErrorsCurry(INPUT_VALIDATION_RULES.required, requiredMessage),
       };
       if (!validateAllFieldCriteria) {

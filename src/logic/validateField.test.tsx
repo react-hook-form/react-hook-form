@@ -332,8 +332,20 @@ describe('validateField', () => {
         {} as any,
         false,
         {
-          ref: { type: 'number', name: 'test', value: 10, valueAsNumber: 10 },
+          ref: { type: 'number', name: 'test', value: 8, valueAsNumber: 8 },
           required: true,
+          max: 8,
+        },
+        { current: {} },
+      ),
+    ).toEqual({});
+
+    expect(
+      await validateField(
+        {} as any,
+        true,
+        {
+          ref: { type: 'number', name: 'test', value: 10, valueAsNumber: 10 },
           max: 8,
         },
         { current: {} },
@@ -343,6 +355,9 @@ describe('validateField', () => {
         type: 'max',
         message: '',
         ref: { type: 'number', name: 'test', value: 10, valueAsNumber: 10 },
+        types: {
+          max: true,
+        },
       },
     });
 
@@ -435,8 +450,7 @@ describe('validateField', () => {
           ref: {
             type: 'date',
             name: 'test',
-            value: '2019-2-12',
-            valueAsDate: new Date('2019-2-12'),
+            value: '2019-2-13',
           },
           required: true,
           max: '2019-1-12',
@@ -450,8 +464,7 @@ describe('validateField', () => {
         ref: {
           type: 'date',
           name: 'test',
-          value: '2019-2-12',
-          valueAsDate: new Date('2019-2-12'),
+          value: '2019-2-13',
         },
       },
     });
@@ -578,7 +591,6 @@ describe('validateField', () => {
             type: 'date',
             name: 'test',
             value: '2019-2-12',
-            valueAsDate: new Date('2019-2-12'),
           },
           required: true,
           min: {
@@ -596,7 +608,6 @@ describe('validateField', () => {
           type: 'date',
           name: 'test',
           value: '2019-2-12',
-          valueAsDate: new Date('2019-2-12'),
         },
       },
     });
@@ -1179,6 +1190,39 @@ describe('validateField', () => {
         message: '',
       },
     });
+
+    expect(
+      await validateField(
+        {
+          current: {
+            test: {
+              ref: {
+                type: 'radio',
+                name: 'test',
+                value: 'This is a long text input!',
+              },
+            },
+          },
+        },
+        false,
+        {
+          ref: {
+            type: 'radio',
+            name: 'test',
+            value: 'This is a long text input!',
+          },
+          validate: {
+            test: () => true,
+          },
+          options: [
+            {
+              ref: 'data' as any,
+            },
+          ],
+        },
+        { current: {} },
+      ),
+    ).toEqual({});
   });
 
   it('should return error message when it is defined', async () => {
@@ -1361,6 +1405,30 @@ describe('validateField', () => {
             value: 'This is a long text input',
           },
           validate: () => undefined,
+        },
+        { current: {} },
+      ),
+    ).toEqual({});
+  });
+
+  it('should do nothing when validate is not an object nor function', async () => {
+    expect(
+      await validateField(
+        {
+          current: {
+            test: {
+              ref: {} as any,
+            },
+          },
+        },
+        false,
+        {
+          ref: {
+            type: 'text',
+            name: 'test',
+            value: 'This is a long text input',
+          },
+          validate: 'validate' as any,
         },
         { current: {} },
       ),

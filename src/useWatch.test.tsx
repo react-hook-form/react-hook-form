@@ -5,6 +5,7 @@ import generateId from './logic/generateId';
 import { renderHook, act } from '@testing-library/react-hooks';
 import { render, screen } from '@testing-library/react';
 import { reconfigureControl } from './__mocks__/reconfigureControl';
+import { FormProvider } from './useFormContext';
 
 jest.mock('./logic/generateId');
 
@@ -272,6 +273,29 @@ describe('useWatch', () => {
 
         expect(await screen.findByText('test')).toBeDefined();
       });
+    });
+  });
+
+  describe('formContext', () => {
+    it('should work with form context', async () => {
+      const Component = () => {
+        const test = useWatch<String>({ name: 'test' });
+        return <div>{test}</div>;
+      };
+
+      const Form = () => {
+        const methods = useForm({ defaultValues: { test: 'test' } });
+
+        return (
+          <FormProvider {...methods}>
+            <Component />
+          </FormProvider>
+        );
+      };
+
+      render(<Form />);
+
+      expect(await screen.findByText('test')).toBeDefined();
     });
   });
 });

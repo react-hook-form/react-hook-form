@@ -456,4 +456,40 @@ describe('findMissDomAndClean', () => {
       });
     });
   });
+
+  it('should not call mutation watcher when not available', () => {
+    jest.spyOn(document.body, 'contains').mockReturnValue(false);
+
+    const ref = document.createElement('input');
+    ref.setAttribute('name', 'test');
+    ref.setAttribute('type', 'radio');
+
+    const fields = {
+      current: {
+        test: {
+          name: 'test',
+          ref,
+          options: [
+            {
+              ref,
+            },
+          ],
+        },
+      },
+    };
+
+    expect(() => {
+      findRemovedFieldAndRemoveListener(
+        fields,
+        () => ({} as any),
+        {
+          ref,
+        },
+        {},
+        true,
+      );
+    }).not.toThrow();
+
+    document.body.contains.mockRestore();
+  });
 });
