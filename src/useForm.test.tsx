@@ -2213,6 +2213,86 @@ describe('useForm', () => {
       });
     });
 
+    describe('onChange', () => {
+      it('should display error with onChange', async () => {
+        render(<Component mode="onChange" />);
+
+        fireEvent.input(screen.getByRole('textbox'), {
+          target: {
+            value: '',
+          },
+        });
+
+        await waitFor(() =>
+          expect(screen.getByRole('alert').textContent).toBe('required'),
+        );
+      });
+
+      it('should not display error with onBlur', async () => {
+        render(<Component mode="onChange" />);
+
+        await actComponent(async () => {
+          fireEvent.blur(screen.getByRole('textbox'), {
+            target: {
+              value: '',
+            },
+          });
+        });
+
+        expect(screen.getByRole('alert').textContent).toBe('');
+      });
+
+      it('should not display error with onSubmit', async () => {
+        render(<Component mode="onChange" />);
+
+        await actComponent(async () => {
+          await fireEvent.click(screen.getByRole('button'));
+        });
+
+        expect(screen.getByRole('alert')).toBe('');
+      });
+    });
+
+    describe('onBlur', () => {
+      it('should display error with onBlur', async () => {
+        render(<Component mode="onBlur" />);
+
+        fireEvent.blur(screen.getByRole('textbox'), {
+          target: {
+            value: '',
+          },
+        });
+
+        await waitFor(() =>
+          expect(screen.getByRole('alert').textContent).toBe('required'),
+        );
+      });
+
+      it('should not display error with onSubmit', async () => {
+        render(<Component mode="onBlur" />);
+
+        await actComponent(async () => {
+          await fireEvent.click(screen.getByRole('button'));
+        });
+
+        expect(screen.getByRole('alert')).toBe('');
+      });
+
+      it('should not display error with onChange', async () => {
+        render(<Component mode="onBlur" />);
+
+        await actComponent(async () => {
+          await fireEvent.input(screen.getByRole('textbox'), {
+            target: {
+              value: '',
+            },
+          });
+        });
+
+        expect(screen.getByRole('alert').textContent).toBe('');
+      });
+    });
+
     describe('with resolver', () => {
       it('should contain error if value is invalid with resolver', async () => {
         const mockResolver = jest.fn();
