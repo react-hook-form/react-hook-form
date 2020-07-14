@@ -2109,44 +2109,6 @@ describe('useForm', () => {
         expect(renderCount).toBe(2);
       });
 
-      it('should be called reRender method if isWatchAllRef is true', async () => {
-        render(<Component />);
-
-        // TODO: use watch method instead of using next line
-        methods.control.isWatchAllRef.current = true;
-        fireEvent.input(screen.getByRole('textbox'), {
-          target: { name: 'test' },
-        });
-
-        expect(screen.getByRole('alert').textContent).toBe('');
-        expect(renderCount).toBe(2);
-      });
-
-      it('should be called reRender method if field is watched', async () => {
-        render(<Component />);
-
-        // TODO: use watch method instead of using next line
-        methods.control.watchFieldsRef.current.add('test');
-        fireEvent.input(screen.getByRole('textbox'), {
-          target: { name: 'test' },
-        });
-
-        expect(screen.getByRole('alert').textContent).toBe('');
-        expect(renderCount).toBe(2);
-      });
-
-      it('should be called reRender method if field array is watched', async () => {
-        render(<Component name="test[0]" />);
-
-        // TODO: use watch method instead of using next line
-        methods.control.watchFieldsRef.current.add('test');
-        fireEvent.input(screen.getByRole('textbox'), {
-          target: { name: 'test[0]' },
-        });
-
-        expect(renderCount).toBe(2);
-      });
-
       it('should set name to formState.touched when formState.touched is defined', async () => {
         render(<Component rules={{}} />);
 
@@ -2295,6 +2257,73 @@ describe('useForm', () => {
         });
 
         expect(screen.getByRole('alert').textContent).toBe('');
+      });
+    });
+
+    describe('with watch', () => {
+      it('should be called reRender method if isWatchAllRef is true', async () => {
+        let watchedField: any;
+        const Component = () => {
+          const { register, handleSubmit, watch } = useForm();
+          watchedField = watch();
+          return (
+            <form onSubmit={handleSubmit(() => {})}>
+              <input type="text" name="test" ref={register} />
+              <button>button</button>
+            </form>
+          );
+        };
+        render(<Component />);
+
+        fireEvent.input(screen.getByRole('textbox'), {
+          target: { name: 'test', value: 'test' },
+        });
+
+        expect(watchedField).toEqual({ test: 'test' });
+      });
+
+      it('should be called reRender method if field is watched', async () => {
+        let watchedField: any;
+        const Component = () => {
+          const { register, handleSubmit, watch } = useForm();
+          watchedField = watch('test');
+          return (
+            <form onSubmit={handleSubmit(() => {})}>
+              <input type="text" name="test" ref={register} />
+              <button>button</button>
+            </form>
+          );
+        };
+        render(<Component />);
+
+        fireEvent.input(screen.getByRole('textbox'), {
+          target: { name: 'test', value: 'test' },
+        });
+
+        expect(watchedField).toBe('test');
+      });
+
+      it('should be called reRender method if array field is watched', async () => {
+        let watchedField: any;
+        const Component = () => {
+          const { register, handleSubmit, watch } = useForm();
+          watchedField = watch('test');
+          return (
+            <form onSubmit={handleSubmit(() => {})}>
+              <input type="text" name="test[0]" ref={register} />
+              <input type="text" name="test[1]" ref={register} />
+              <input type="text" name="test[2]" ref={register} />
+              <button>button</button>
+            </form>
+          );
+        };
+        render(<Component />);
+
+        fireEvent.input(screen.getAllByRole('textbox')[0], {
+          target: { name: 'test[0]', value: 'test' },
+        });
+
+        expect(watchedField).toEqual(['test', '', '']);
       });
     });
 
