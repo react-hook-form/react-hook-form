@@ -1530,6 +1530,53 @@ describe('useForm', () => {
         } as React.SyntheticEvent),
       );
     });
+
+    it('should invoke onSubmit callback and reset nested errors when submit with valid form values', async () => {
+      const callback = jest.fn();
+      const { result } = renderHook(() =>
+        useForm<{
+          test: { firstName: string; lastName: string }[];
+        }>(),
+      );
+      const validate = () => {
+        return !!result.current
+          .getValues()
+          .test.some(({ firstName }) => firstName);
+      };
+
+      result.current.register('test[0].firstName', {
+        validate,
+      });
+      result.current.register('test[0].lastName', {
+        validate,
+      });
+      result.current.register('test[1].firstName', {
+        validate,
+      });
+      result.current.register('test[1].lastName', {
+        validate,
+      });
+
+      await act(async () => {
+        await result.current.handleSubmit(callback)({
+          preventDefault: () => {},
+          persist: () => {},
+        } as React.SyntheticEvent);
+      });
+
+      expect(callback).not.toBeCalled();
+
+      result.current.setValue('test[0].firstName', 'test');
+
+      await act(async () => {
+        await result.current.handleSubmit(callback)({
+          preventDefault: () => {},
+          persist: () => {},
+        } as React.SyntheticEvent);
+      });
+
+      expect(callback).toBeCalled();
+    });
   });
 
   describe('handleSubmit with validationSchema', () => {
