@@ -2228,6 +2228,16 @@ describe('useForm', () => {
         );
       });
 
+      it('should display error with onSubmit', async () => {
+        render(<Component mode="onChange" />);
+
+        fireEvent.click(screen.getByRole('button'));
+
+        await waitFor(() =>
+          expect(screen.getByRole('alert').textContent).toBe('required'),
+        );
+      });
+
       it('should not display error with onBlur', async () => {
         render(<Component mode="onChange" />);
 
@@ -2240,16 +2250,6 @@ describe('useForm', () => {
         });
 
         expect(screen.getByRole('alert').textContent).toBe('');
-      });
-
-      it('should not display error with onSubmit', async () => {
-        render(<Component mode="onChange" />);
-
-        await actComponent(async () => {
-          await fireEvent.click(screen.getByRole('button'));
-        });
-
-        expect(screen.getByRole('alert')).toBe('');
       });
     });
 
@@ -2268,14 +2268,14 @@ describe('useForm', () => {
         );
       });
 
-      it('should not display error with onSubmit', async () => {
+      it('should display error with onSubmit', async () => {
         render(<Component mode="onBlur" />);
 
-        await actComponent(async () => {
-          await fireEvent.click(screen.getByRole('button'));
-        });
+        fireEvent.click(screen.getByRole('button'));
 
-        expect(screen.getByRole('alert')).toBe('');
+        await waitFor(() =>
+          expect(screen.getByRole('alert').textContent).toBe('required'),
+        );
       });
 
       it('should not display error with onChange', async () => {
