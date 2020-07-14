@@ -1,5 +1,11 @@
 # Changelog
 
+## 6.0.5
+
+### Patch Changes
+
+- [`b94d7f0`](https://github.com/react-hook-form/react-hook-form/commit/b94d7f05656323d9001f88b9b346855af36d351d) [#2207](https://github.com/react-hook-form/react-hook-form/pull/2207) Thanks [@bluebill1049](https://github.com/bluebill1049)! - bug fix and no change were made
+
 All notable changes to this project will be documented in this file.
 
 ## [6.0.3] - 2020-07-10
