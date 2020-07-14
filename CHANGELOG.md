@@ -1,7 +1,5 @@
 # Changelog
 
-All notable changes to this project will be documented in this file.
-
 ## [6.0.3] - 2020-07-10
 
 ### Changed
