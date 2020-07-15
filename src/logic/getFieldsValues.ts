@@ -4,6 +4,7 @@ import isString from '../utils/isString';
 import isArray from '../utils/isArray';
 import isUndefined from '../utils/isUndefined';
 import { InternalFieldName, FieldValues, FieldRefs } from '../types/form';
+import transformToNestObject from './transformToNestObject';
 
 export default <TFieldValues extends FieldValues>(
   fieldsRef: React.MutableRefObject<FieldRefs<TFieldValues>>,
@@ -25,10 +26,12 @@ export default <TFieldValues extends FieldValues>(
       output[name as InternalFieldName<TFieldValues>] = getFieldValue(
         fieldsRef,
         name,
-        unmountFieldsStateRef,
       );
     }
   }
 
-  return output;
+  return {
+    ...(unmountFieldsStateRef || {}).current,
+    ...transformToNestObject(output),
+  };
 };
