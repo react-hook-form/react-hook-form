@@ -557,9 +557,10 @@ export function useForm<
       );
     }
 
-    return transformToNestObject(
-      getFieldsValues(fieldsRef, unmountFieldsStateRef),
-    );
+    return transformToNestObject({
+      ...unmountFieldsStateRef.current,
+      ...getFieldsValues(fieldsRef, unmountFieldsStateRef),
+    });
   }
 
   const validateResolver = React.useCallback(

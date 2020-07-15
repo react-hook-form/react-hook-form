@@ -14,12 +14,8 @@ export default <TFieldValues extends FieldValues>(
     | { nest: boolean },
 ) => {
   const output = {} as TFieldValues;
-  const fields = {
-    ...fieldsRef.current,
-    ...(unmountFieldsStateRef && unmountFieldsStateRef.current),
-  };
 
-  for (const name in fields) {
+  for (const name in fieldsRef.current) {
     if (
       isUndefined(search) ||
       (isString(search)
