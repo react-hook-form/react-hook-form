@@ -504,7 +504,7 @@ describe('useForm', () => {
       expect(reset).toHaveBeenCalled();
     });
 
-    // TODO: fixed to not use control
+    // TODO: fix to not use control
     it('should not reset if OmitResetState is specified', async () => {
       const { result } = renderHook(() => useForm());
 
