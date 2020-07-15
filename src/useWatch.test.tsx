@@ -3,9 +3,10 @@ import { useForm } from './useForm';
 import { useWatch } from './useWatch';
 import generateId from './logic/generateId';
 import { renderHook, act } from '@testing-library/react-hooks';
-import { render, screen } from '@testing-library/react';
+import { render, screen, fireEvent } from '@testing-library/react';
 import { reconfigureControl } from './__mocks__/reconfigureControl';
 import { FormProvider } from './useFormContext';
+import { useFieldArray } from './useFieldArray';
 
 jest.mock('./logic/generateId');
 
@@ -189,6 +190,66 @@ describe('useWatch', () => {
   });
 
   describe('reset', () => {
+    describe('with useFieldArray', () => {
+      // check https://github.com/react-hook-form/react-hook-form/issues/2229
+      it('should return current value with radio type', async () => {
+        let watchedValue: any;
+        const Component = () => {
+          const { register, reset, control } = useForm();
+          const { fields } = useFieldArray({ name: 'options', control });
+          watchedValue = useWatch({
+            control,
+          });
+
+          React.useEffect(() => {
+            reset({
+              options: [
+                {
+                  option: 'test',
+                },
+                {
+                  option: 'test1',
+                },
+              ],
+            });
+          }, [reset]);
+
+          return (
+            <form>
+              {fields.map((_, i) => (
+                <div key={i.toString()}>
+                  <input
+                    type="radio"
+                    value="yes"
+                    name={`options[${i}].option`}
+                    ref={register()}
+                  />
+                  <input
+                    type="radio"
+                    value="no"
+                    name={`options[${i}].option`}
+                    ref={register()}
+                  />
+                </div>
+              ))}
+            </form>
+          );
+        };
+
+        render(<Component />);
+
+        fireEvent.change(screen.getAllByRole('radio')[1], {
+          target: {
+            checked: true,
+          },
+        });
+
+        expect(watchedValue).toEqual({
+          options: [{ option: 'no' }, { option: '' }],
+        });
+      });
+    });
+
     describe('with custom register', () => {
       it('should return registered', async () => {
         const Component = () => {
