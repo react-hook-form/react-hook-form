@@ -2,7 +2,13 @@ import * as React from 'react';
 import { act, renderHook } from '@testing-library/react-hooks';
 import { useFieldArray } from './useFieldArray';
 import { reconfigureControl } from './__mocks__/reconfigureControl';
-import { render, fireEvent, screen, waitFor } from '@testing-library/react';
+import {
+  render,
+  fireEvent,
+  screen,
+  waitFor,
+  act as actComponent,
+} from '@testing-library/react';
 import { Control } from './types';
 import { useForm } from './useForm';
 
@@ -128,6 +134,145 @@ describe('useFieldArray', () => {
         test: [{ value: '' }, { value: '' }, { value: '' }],
       });
     });
+  });
+
+  describe('with setValue', () => {
+    it.each(['isDirty', 'dirtyFields'])(
+      'should set name to dirtyFieldRef if array field values are different with default value when formState.%s is defined',
+      (property) => {
+        let setValue: any;
+        let formState: any;
+        const Component = () => {
+          const {
+            register,
+            control,
+            formState: tempFormState,
+            setValue: tempSetValue,
+          } = useForm({
+            defaultValues: {
+              test: [
+                { name: 'default' },
+                { name: 'default1' },
+                { name: 'default2' },
+              ],
+            },
+          });
+          const { fields } = useFieldArray({ name: 'test', control });
+
+          setValue = tempSetValue;
+          formState = tempFormState;
+
+          // call isDirty or dirtyFields
+          formState[property];
+
+          return (
+            <form>
+              {fields.map((field, i) => (
+                <input
+                  name={`test[${i}].name`}
+                  key={i.toString()}
+                  ref={register()}
+                  defaultValue={field.name}
+                />
+              ))}
+            </form>
+          );
+        };
+
+        render(<Component />);
+
+        actComponent(() => {
+          setValue(
+            'test',
+            [
+              { name: 'default_update' },
+              { name: 'default1' },
+              { name: 'default2' },
+            ],
+            { shouldDirty: true },
+          );
+        });
+
+        expect(formState.dirtyFields).toEqual({
+          test: [{ name: true }],
+        });
+        expect(formState.isDirty).toBeTruthy();
+      },
+    );
+
+    it.each(['isDirty', 'dirtyFields'])(
+      'should unset name from dirtyFieldRef if array field values are not different with default value when formState.%s is defined',
+      (property) => {
+        let setValue: any;
+        let formState: any;
+        const Component = () => {
+          const {
+            register,
+            control,
+            formState: tempFormState,
+            setValue: tempSetValue,
+          } = useForm({
+            defaultValues: {
+              test: [
+                { name: 'default' },
+                { name: 'default1' },
+                { name: 'default2' },
+              ],
+            },
+          });
+          const { fields } = useFieldArray({ name: 'test', control });
+
+          setValue = tempSetValue;
+          formState = tempFormState;
+
+          // call isDirty or dirtyFields
+          formState[property];
+
+          return (
+            <form>
+              {fields.map((field, i) => (
+                <input
+                  name={`test[${i}].name`}
+                  key={i.toString()}
+                  ref={register()}
+                  defaultValue={field.name}
+                />
+              ))}
+            </form>
+          );
+        };
+
+        render(<Component />);
+
+        actComponent(() => {
+          setValue(
+            'test',
+            [
+              { name: 'default_update' },
+              { name: 'default1' },
+              { name: 'default2' },
+            ],
+            { shouldDirty: true },
+          );
+        });
+
+        expect(formState.dirtyFields).toEqual({
+          test: [{ name: true }],
+        });
+        expect(formState.isDirty).toBeTruthy();
+
+        actComponent(() => {
+          setValue(
+            'test',
+            [{ name: 'default' }, { name: 'default1' }, { name: 'default2' }],
+            { shouldDirty: true },
+          );
+        });
+
+        expect(formState.dirtyFields).toEqual({});
+        expect(formState.isDirty).toBeFalsy();
+      },
+    );
   });
 
   describe('append', () => {
