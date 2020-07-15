@@ -91,9 +91,7 @@ describe('getFieldsValues', () => {
         },
         {
           current: {
-            test1: {
-              ref: { name: 'test1' },
-            },
+            test1: 'test',
           },
         },
       ),
