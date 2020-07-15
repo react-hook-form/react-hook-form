@@ -78,28 +78,4 @@ describe('getFieldsValues', () => {
       tex: 'test',
     });
   });
-
-  it('should return unmounted values', () => {
-    expect(
-      getFieldsValues(
-        {
-          current: {
-            test: {
-              ref: { name: 'test' },
-            },
-          },
-        },
-        {
-          current: {
-            test1: {
-              ref: { name: 'test1' },
-            },
-          },
-        },
-      ),
-    ).toEqual({
-      test: 'test',
-      test1: 'test',
-    });
-  });
 });
