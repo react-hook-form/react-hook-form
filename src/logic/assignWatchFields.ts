@@ -1,4 +1,3 @@
-import transformToNestObject from './transformToNestObject';
 import get from '../utils/get';
 import getPath from '../utils/getPath';
 import isEmptyObject from '../utils/isEmptyObject';
@@ -27,10 +26,8 @@ export default <TFieldValues extends FieldValues>(
 
   if (isEmptyObject(fieldValues)) {
     value = undefined;
-  } else if (!isUndefined(fieldValues[fieldName])) {
-    value = fieldValues[fieldName];
   } else {
-    value = get(transformToNestObject(fieldValues), fieldName);
+    value = get(fieldValues, fieldName);
 
     if (!isUndefined(value)) {
       getPath<TFieldValues>(fieldName, value).forEach((name: string) =>

@@ -504,6 +504,7 @@ describe('useForm', () => {
       expect(reset).toHaveBeenCalled();
     });
 
+    // TODO: fix to not use control
     it('should not reset if OmitResetState is specified', async () => {
       const { result } = renderHook(() => useForm());
 
@@ -809,118 +810,6 @@ describe('useForm', () => {
       });
     });
 
-    it('should be called trigger method if shouldValidate variable is true', async () => {
-      const { result } = renderHook(() => useForm());
-
-      result.current.register(
-        {
-          name: 'test',
-        },
-        {
-          minLength: {
-            value: 5,
-            message: 'min',
-          },
-        },
-      );
-
-      result.current.formState.isDirty;
-      result.current.formState.dirtyFields;
-
-      await act(async () =>
-        result.current.setValue('test', 'abc', {
-          shouldValidate: true,
-          shouldDirty: true,
-        }),
-      );
-
-      expect(result.current.errors?.test?.message).toBe('min');
-      expect(result.current.formState.isDirty).toBeTruthy();
-      expect(result.current.formState.dirtyFields).toEqual({ test: true });
-    });
-
-    it('should not be called trigger method if config is empty', async () => {
-      const { result } = renderHook(() => useForm());
-
-      result.current.register(
-        {
-          name: 'test',
-        },
-        {
-          minLength: {
-            value: 5,
-            message: 'min',
-          },
-        },
-      );
-
-      result.current.formState.isDirty;
-      result.current.formState.dirtyFields;
-
-      result.current.setValue('test', 'abc');
-
-      expect(result.current.errors?.test).toBeUndefined();
-      expect(result.current.formState.isDirty).toBeFalsy();
-      expect(result.current.formState.dirtyFields).toEqual({});
-    });
-
-    it('should be called trigger method if shouldValidate variable is true and field value is array', async () => {
-      const { result } = renderHook(() => useForm());
-
-      const rules = {
-        minLength: {
-          value: 5,
-          message: 'min',
-        },
-      };
-
-      result.current.register({ name: 'test[0]' }, rules);
-      result.current.register({ name: 'test[1]' }, rules);
-      result.current.register({ name: 'test[2]' }, rules);
-
-      result.current.formState.isDirty;
-      result.current.formState.dirtyFields;
-
-      await act(async () =>
-        result.current.setValue('test', ['abc1', 'abc2', 'abc3'], {
-          shouldValidate: true,
-          shouldDirty: true,
-        }),
-      );
-
-      expect(result.current.errors?.test[0]?.message).toBe('min');
-      expect(result.current.errors?.test[1]?.message).toBe('min');
-      expect(result.current.errors?.test[2]?.message).toBe('min');
-      expect(result.current.formState.isDirty).toBeTruthy();
-      expect(result.current.formState.dirtyFields).toEqual({
-        test: [true, true, true],
-      });
-    });
-
-    it('should not be called trigger method if config is empty and field value is array', async () => {
-      const { result } = renderHook(() => useForm());
-
-      const rules = {
-        minLength: {
-          value: 5,
-          message: 'min',
-        },
-      };
-
-      result.current.register({ name: 'test[0]' }, rules);
-      result.current.register({ name: 'test[1]' }, rules);
-      result.current.register({ name: 'test[2]' }, rules);
-
-      result.current.formState.isDirty;
-      result.current.formState.dirtyFields;
-
-      act(() => result.current.setValue('test', ['test', 'test1', 'test2']));
-
-      expect(result.current.errors?.test).toBeUndefined();
-      expect(result.current.formState.isDirty).toBeFalsy();
-      expect(result.current.formState.dirtyFields).toEqual({});
-    });
-
     it('should not work if field is not registered', () => {
       const { result } = renderHook(() => useForm());
 
@@ -929,166 +818,212 @@ describe('useForm', () => {
       expect(result.current.control.fieldsRef.current['test']).toBeUndefined();
     });
 
-    describe('setDirty', () => {
-      it('should set name to dirtyFieldRef if field value is different with default value when formState.dirtyFields is defined', () => {
-        const { result } = renderHook(() =>
-          useForm<{ test: string }>({
-            defaultValues: { test: 'default' },
-          }),
-        );
-        result.current.formState.dirtyFields;
+    describe('with validation', () => {
+      it('should be called trigger method if shouldValidate variable is true', async () => {
+        const { result } = renderHook(() => useForm());
 
-        result.current.register('test');
-
-        act(() => result.current.setValue('test', '1', { shouldDirty: true }));
-
-        expect(result.current.formState.isDirty).toBeTruthy();
-        expect(result.current.formState.dirtyFields.test).toBeTruthy();
-      });
-
-      it('should not set dirty if shouldDirty is false and isDirty is true', () => {
-        const { result } = renderHook(() =>
-          useForm<{ test: string }>({
-            defaultValues: { test: 'default' },
-          }),
-        );
-        result.current.formState.isDirty;
-
-        result.current.register('test');
-
-        result.current.setValue('test', '1');
-
-        expect(result.current.formState.isDirty).toBeFalsy();
-        expect(result.current.formState.dirtyFields.test).toBeFalsy();
-      });
-
-      it('should set dirty if field value is different with default value and isDirty is true', () => {
-        const { result } = renderHook(() =>
-          useForm<{ test: string }>({
-            defaultValues: { test: 'default' },
-          }),
-        );
-        result.current.formState.isDirty;
-
-        result.current.register('test');
-
-        act(() => result.current.setValue('test', '1', { shouldDirty: true }));
-
-        expect(result.current.formState.dirtyFields.test).toBeTruthy();
-      });
-
-      it('should unset name from dirtyFieldRef if field value is not different with default value when formState.dirtyFields is defined', () => {
-        const { result } = renderHook(() =>
-          useForm<{ test: string }>({
-            defaultValues: { test: 'default' },
-          }),
-        );
-        result.current.formState.dirtyFields;
-
-        result.current.register('test');
-
-        act(() => result.current.setValue('test', '1', { shouldDirty: true }));
-
-        expect(result.current.formState.isDirty).toBeTruthy();
-        expect(result.current.formState.dirtyFields.test).toBeTruthy();
-
-        act(() =>
-          result.current.setValue('test', 'default', { shouldDirty: true }),
-        );
-
-        expect(result.current.formState.isDirty).toBeFalsy();
-        expect(result.current.formState.dirtyFields.test).toBeUndefined();
-      });
-
-      // TODO: move this test to useFieldArray test
-      it('should set name to dirtyFieldRef if array field values are different with default value when formState.dirtyFields is defined', async () => {
-        const { result } = renderHook(() =>
-          useForm({
-            defaultValues: {
-              test: [
-                { name: 'default' },
-                { name: 'default1' },
-                { name: 'default2' },
-              ],
+        result.current.register(
+          {
+            name: 'test',
+          },
+          {
+            minLength: {
+              value: 5,
+              message: 'min',
             },
-          }),
+          },
         );
+
         result.current.formState.dirtyFields;
 
-        // mock useFieldArray
-        result.current.control.fieldArrayNamesRef.current.add('test');
+        await act(async () =>
+          result.current.setValue('test', 'abc', {
+            shouldValidate: true,
+          }),
+        );
 
-        result.current.register('test[0].name');
-        result.current.register('test[1].name');
-        result.current.register('test[2].name');
-
-        act(() => {
-          result.current.setValue(
-            'test',
-            [
-              { name: 'default_update' },
-              { name: 'default1' },
-              { name: 'default2' },
-            ],
-            { shouldDirty: true },
-          );
-        });
-
-        expect(result.current.formState.dirtyFields).toEqual({
-          test: [{ name: true }],
-        });
-        expect(result.current.formState.isDirty).toBeTruthy();
+        expect(result.current.errors?.test?.message).toBe('min');
       });
 
-      it('should unset name from dirtyFieldRef if array field values are not different with default value when formState.dirtyFields is defined', async () => {
-        const { result } = renderHook(() =>
-          useForm({
-            defaultValues: {
-              test: [
-                { name: 'default' },
-                { name: 'default1' },
-                { name: 'default2' },
-              ],
+      it('should not be called trigger method if config is empty', async () => {
+        const { result } = renderHook(() => useForm());
+
+        result.current.register(
+          {
+            name: 'test',
+          },
+          {
+            minLength: {
+              value: 5,
+              message: 'min',
             },
+          },
+        );
+
+        result.current.setValue('test', 'abc');
+
+        expect(result.current.errors?.test).toBeUndefined();
+      });
+
+      it('should be called trigger method if shouldValidate variable is true and field value is array', async () => {
+        const { result } = renderHook(() => useForm());
+
+        const rules = {
+          minLength: {
+            value: 5,
+            message: 'min',
+          },
+        };
+
+        result.current.register({ name: 'test[0]' }, rules);
+        result.current.register({ name: 'test[1]' }, rules);
+        result.current.register({ name: 'test[2]' }, rules);
+
+        await act(async () =>
+          result.current.setValue('test', ['abc1', 'abc2', 'abc3'], {
+            shouldValidate: true,
           }),
         );
-        result.current.formState.dirtyFields;
 
-        // mock useFieldArray
-        result.current.control.fieldArrayNamesRef.current.add('test');
-
-        result.current.register('test[0].name');
-        result.current.register('test[1].name');
-        result.current.register('test[2].name');
-
-        act(() => {
-          result.current.setValue(
-            'test',
-            [
-              { name: 'default_update' },
-              { name: 'default1' },
-              { name: 'default2' },
-            ],
-            { shouldDirty: true },
-          );
-        });
-
-        expect(result.current.formState.dirtyFields).toEqual({
-          test: [{ name: true }],
-        });
-        expect(result.current.formState.isDirty).toBeTruthy();
-
-        act(() => {
-          result.current.setValue(
-            'test',
-            [{ name: 'default' }, { name: 'default1' }, { name: 'default2' }],
-            { shouldDirty: true },
-          );
-        });
-
-        expect(result.current.formState.dirtyFields).toEqual({});
-        expect(result.current.formState.isDirty).toBeFalsy();
+        expect(result.current.errors?.test[0]?.message).toBe('min');
+        expect(result.current.errors?.test[1]?.message).toBe('min');
+        expect(result.current.errors?.test[2]?.message).toBe('min');
       });
+
+      it('should not be called trigger method if config is empty and field value is array', async () => {
+        const { result } = renderHook(() => useForm());
+
+        const rules = {
+          minLength: {
+            value: 5,
+            message: 'min',
+          },
+        };
+
+        result.current.register({ name: 'test[0]' }, rules);
+        result.current.register({ name: 'test[1]' }, rules);
+        result.current.register({ name: 'test[2]' }, rules);
+
+        act(() => result.current.setValue('test', ['test', 'test1', 'test2']));
+
+        expect(result.current.errors?.test).toBeUndefined();
+      });
+    });
+
+    describe('with dirty', () => {
+      it.each(['isDirty', 'dirtyFields'])(
+        'should be dirty when %s is defined when shouldDirty is true',
+        (property) => {
+          const { result } = renderHook(() => useForm());
+
+          (result.current.formState as any)[property];
+
+          result.current.register({ type: 'text', name: 'test' });
+
+          act(() =>
+            result.current.setValue('test', 'test', { shouldDirty: true }),
+          );
+
+          expect(result.current.formState.isDirty).toBeTruthy();
+          expect(result.current.formState.dirtyFields).toEqual({ test: true });
+        },
+      );
+
+      it.each([
+        ['isDirty', ['test1', 'test2', 'test3'], [true, true, true]],
+        ['dirtyFields', ['test1', 'test2', 'test3'], [true, true, true]],
+        ['isDirty', ['test1', '', 'test3'], [undefined, undefined, true]],
+        ['dirtyFields', ['test1', '', 'test3'], [undefined, undefined, true]],
+      ])(
+        'should be dirty when %s is defined when shouldDirty is true with array fields',
+        (property, values, dirtyFields) => {
+          const { result } = renderHook(() => useForm());
+
+          (result.current.formState as any)[property];
+
+          result.current.register({ type: 'text', name: 'test[0]', value: '' });
+          result.current.register({ type: 'text', name: 'test[1]', value: '' });
+          result.current.register({ type: 'text', name: 'test[2]', value: '' });
+
+          act(() =>
+            result.current.setValue('test', values, {
+              shouldDirty: true,
+            }),
+          );
+
+          expect(result.current.formState.isDirty).toBeTruthy();
+          expect(result.current.formState.dirtyFields).toEqual({
+            test: dirtyFields,
+          });
+        },
+      );
+
+      it.each(['isDirty', 'dirtyFields'])(
+        'should not be dirty when %s is defined when shouldDirty is false',
+        (property) => {
+          const { result } = renderHook(() => useForm());
+
+          (result.current.formState as any)[property];
+
+          result.current.register({ type: 'text', name: 'test' });
+
+          act(() =>
+            result.current.setValue('test', 'test', { shouldDirty: false }),
+          );
+
+          expect(result.current.formState.isDirty).toBeFalsy();
+          expect(result.current.formState.dirtyFields).toEqual({});
+        },
+      );
+
+      it.each(['isDirty', 'dirtyFields'])(
+        'should set name to dirtyFieldRef if field value is different with default value when formState.dirtyFields is defined',
+        (property) => {
+          const { result } = renderHook(() =>
+            useForm<{ test: string }>({
+              defaultValues: { test: 'default' },
+            }),
+          );
+          (result.current.formState as any)[property];
+
+          result.current.register('test');
+
+          act(() =>
+            result.current.setValue('test', '1', { shouldDirty: true }),
+          );
+
+          expect(result.current.formState.isDirty).toBeTruthy();
+          expect(result.current.formState.dirtyFields.test).toBeTruthy();
+        },
+      );
+
+      it.each(['isDirty', 'dirtyFields'])(
+        'should unset name from dirtyFieldRef if field value is not different with default value when formState.dirtyFields is defined',
+        (property) => {
+          const { result } = renderHook(() =>
+            useForm<{ test: string }>({
+              defaultValues: { test: 'default' },
+            }),
+          );
+          (result.current.formState as any)[property];
+
+          result.current.register('test');
+
+          act(() =>
+            result.current.setValue('test', '1', { shouldDirty: true }),
+          );
+
+          expect(result.current.formState.isDirty).toBeTruthy();
+          expect(result.current.formState.dirtyFields.test).toBeTruthy();
+
+          act(() =>
+            result.current.setValue('test', 'default', { shouldDirty: true }),
+          );
+
+          expect(result.current.formState.isDirty).toBeFalsy();
+          expect(result.current.formState.dirtyFields.test).toBeUndefined();
+        },
+      );
     });
   });
 

@@ -17,7 +17,7 @@ describe('assignWatchFields', () => {
     const watchFields = new Set();
     expect(
       assignWatchFields<any>(
-        { 'test[0]': '', 'test[1]': '' },
+        { test: ['', ''] },
         'test',
         watchFields as any,
         {},
