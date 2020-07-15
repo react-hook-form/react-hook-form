@@ -56,28 +56,30 @@ export type SubmitHandler<TFieldValues extends FieldValues> = (
   event?: React.BaseSyntheticEvent,
 ) => void | Promise<void>;
 
-export type ResolverSuccess<TFieldValues extends FieldValues = FieldValues> = {
-  values: UnpackNestedValue<TFieldValues>;
+export type ResolverSuccess<T> = {
+  values: UnpackNestedValue<T>;
   errors: EmptyObject;
 };
 
-export type ResolverError<TFieldValues extends FieldValues = FieldValues> = {
+export type ResolverError<T> = {
   values: EmptyObject;
-  errors: FieldErrors<TFieldValues>;
+  errors: FieldErrors<T>;
 };
 
-export type ResolverResult<TFieldValues extends FieldValues = FieldValues> =
-  | ResolverSuccess<TFieldValues>
-  | ResolverError<TFieldValues>;
+export type ResolverResult<
+  TFieldValues extends FieldValues = FieldValues,
+  TResult = TFieldValues
+> = ResolverSuccess<TResult> | ResolverError<TResult>;
 
 export type Resolver<
   TFieldValues extends FieldValues = FieldValues,
-  TContext extends object = object
+  TContext extends object = object,
+  TResult = TFieldValues
 > = (
   values: TFieldValues,
   context?: TContext,
   validateAllFieldCriteria?: boolean,
-) => Promise<ResolverResult<TFieldValues>>;
+) => Promise<ResolverResult<TResult>>;
 
 export type UseFormOptions<
   TFieldValues extends FieldValues = FieldValues,
