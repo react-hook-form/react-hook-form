@@ -810,102 +810,104 @@ describe('useForm', () => {
       });
     });
 
-    it('should be called trigger method if shouldValidate variable is true', async () => {
-      const { result } = renderHook(() => useForm());
-
-      result.current.register(
-        {
-          name: 'test',
-        },
-        {
-          minLength: {
-            value: 5,
-            message: 'min',
-          },
-        },
-      );
-
-      result.current.formState.dirtyFields;
-
-      await act(async () =>
-        result.current.setValue('test', 'abc', {
-          shouldValidate: true,
-        }),
-      );
-
-      expect(result.current.errors?.test?.message).toBe('min');
-    });
-
-    it('should not be called trigger method if config is empty', async () => {
-      const { result } = renderHook(() => useForm());
-
-      result.current.register(
-        {
-          name: 'test',
-        },
-        {
-          minLength: {
-            value: 5,
-            message: 'min',
-          },
-        },
-      );
-
-      result.current.setValue('test', 'abc');
-
-      expect(result.current.errors?.test).toBeUndefined();
-    });
-
-    it('should be called trigger method if shouldValidate variable is true and field value is array', async () => {
-      const { result } = renderHook(() => useForm());
-
-      const rules = {
-        minLength: {
-          value: 5,
-          message: 'min',
-        },
-      };
-
-      result.current.register({ name: 'test[0]' }, rules);
-      result.current.register({ name: 'test[1]' }, rules);
-      result.current.register({ name: 'test[2]' }, rules);
-
-      await act(async () =>
-        result.current.setValue('test', ['abc1', 'abc2', 'abc3'], {
-          shouldValidate: true,
-        }),
-      );
-
-      expect(result.current.errors?.test[0]?.message).toBe('min');
-      expect(result.current.errors?.test[1]?.message).toBe('min');
-      expect(result.current.errors?.test[2]?.message).toBe('min');
-    });
-
-    it('should not be called trigger method if config is empty and field value is array', async () => {
-      const { result } = renderHook(() => useForm());
-
-      const rules = {
-        minLength: {
-          value: 5,
-          message: 'min',
-        },
-      };
-
-      result.current.register({ name: 'test[0]' }, rules);
-      result.current.register({ name: 'test[1]' }, rules);
-      result.current.register({ name: 'test[2]' }, rules);
-
-      act(() => result.current.setValue('test', ['test', 'test1', 'test2']));
-
-      expect(result.current.errors?.test).toBeUndefined();
-    });
-
     it('should not work if field is not registered', () => {
       const { result } = renderHook(() => useForm());
 
       result.current.setValue('test', '1');
 
       expect(result.current.control.fieldsRef.current['test']).toBeUndefined();
+    });
+
+    describe('with validation', () => {
+      it('should be called trigger method if shouldValidate variable is true', async () => {
+        const { result } = renderHook(() => useForm());
+
+        result.current.register(
+          {
+            name: 'test',
+          },
+          {
+            minLength: {
+              value: 5,
+              message: 'min',
+            },
+          },
+        );
+
+        result.current.formState.dirtyFields;
+
+        await act(async () =>
+          result.current.setValue('test', 'abc', {
+            shouldValidate: true,
+          }),
+        );
+
+        expect(result.current.errors?.test?.message).toBe('min');
+      });
+
+      it('should not be called trigger method if config is empty', async () => {
+        const { result } = renderHook(() => useForm());
+
+        result.current.register(
+          {
+            name: 'test',
+          },
+          {
+            minLength: {
+              value: 5,
+              message: 'min',
+            },
+          },
+        );
+
+        result.current.setValue('test', 'abc');
+
+        expect(result.current.errors?.test).toBeUndefined();
+      });
+
+      it('should be called trigger method if shouldValidate variable is true and field value is array', async () => {
+        const { result } = renderHook(() => useForm());
+
+        const rules = {
+          minLength: {
+            value: 5,
+            message: 'min',
+          },
+        };
+
+        result.current.register({ name: 'test[0]' }, rules);
+        result.current.register({ name: 'test[1]' }, rules);
+        result.current.register({ name: 'test[2]' }, rules);
+
+        await act(async () =>
+          result.current.setValue('test', ['abc1', 'abc2', 'abc3'], {
+            shouldValidate: true,
+          }),
+        );
+
+        expect(result.current.errors?.test[0]?.message).toBe('min');
+        expect(result.current.errors?.test[1]?.message).toBe('min');
+        expect(result.current.errors?.test[2]?.message).toBe('min');
+      });
+
+      it('should not be called trigger method if config is empty and field value is array', async () => {
+        const { result } = renderHook(() => useForm());
+
+        const rules = {
+          minLength: {
+            value: 5,
+            message: 'min',
+          },
+        };
+
+        result.current.register({ name: 'test[0]' }, rules);
+        result.current.register({ name: 'test[1]' }, rules);
+        result.current.register({ name: 'test[2]' }, rules);
+
+        act(() => result.current.setValue('test', ['test', 'test1', 'test2']));
+
+        expect(result.current.errors?.test).toBeUndefined();
+      });
     });
 
     describe('with dirty', () => {
