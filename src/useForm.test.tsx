@@ -504,6 +504,7 @@ describe('useForm', () => {
       expect(reset).toHaveBeenCalled();
     });
 
+    // TODO: fixed to not use control
     it('should not reset if OmitResetState is specified', async () => {
       const { result } = renderHook(() => useForm());
 
@@ -998,96 +999,6 @@ describe('useForm', () => {
 
         expect(result.current.formState.isDirty).toBeFalsy();
         expect(result.current.formState.dirtyFields.test).toBeUndefined();
-      });
-
-      // TODO: move this test to useFieldArray test
-      it('should set name to dirtyFieldRef if array field values are different with default value when formState.dirtyFields is defined', async () => {
-        const { result } = renderHook(() =>
-          useForm({
-            defaultValues: {
-              test: [
-                { name: 'default' },
-                { name: 'default1' },
-                { name: 'default2' },
-              ],
-            },
-          }),
-        );
-        result.current.formState.dirtyFields;
-
-        // mock useFieldArray
-        result.current.control.fieldArrayNamesRef.current.add('test');
-
-        result.current.register('test[0].name');
-        result.current.register('test[1].name');
-        result.current.register('test[2].name');
-
-        act(() => {
-          result.current.setValue(
-            'test',
-            [
-              { name: 'default_update' },
-              { name: 'default1' },
-              { name: 'default2' },
-            ],
-            { shouldDirty: true },
-          );
-        });
-
-        expect(result.current.formState.dirtyFields).toEqual({
-          test: [{ name: true }],
-        });
-        expect(result.current.formState.isDirty).toBeTruthy();
-      });
-
-      it('should unset name from dirtyFieldRef if array field values are not different with default value when formState.dirtyFields is defined', async () => {
-        const { result } = renderHook(() =>
-          useForm({
-            defaultValues: {
-              test: [
-                { name: 'default' },
-                { name: 'default1' },
-                { name: 'default2' },
-              ],
-            },
-          }),
-        );
-        result.current.formState.dirtyFields;
-
-        // mock useFieldArray
-        result.current.control.fieldArrayNamesRef.current.add('test');
-
-        result.current.register('test[0].name');
-        result.current.register('test[1].name');
-        result.current.register('test[2].name');
-
-        act(() => {
-          result.current.setValue(
-            'test',
-            [
-              { name: 'default_update' },
-              { name: 'default1' },
-              { name: 'default2' },
-            ],
-            { shouldDirty: true },
-          );
-        });
-
-        expect(result.current.formState.dirtyFields).toEqual({
-          test: [{ name: true }],
-        });
-        expect(result.current.formState.isDirty).toBeTruthy();
-
-        act(() => {
-          result.current.setValue(
-            'test',
-            [{ name: 'default' }, { name: 'default1' }, { name: 'default2' }],
-            { shouldDirty: true },
-          );
-        });
-
-        expect(result.current.formState.dirtyFields).toEqual({});
-        expect(result.current.formState.isDirty).toBeFalsy();
       });
     });
   });
