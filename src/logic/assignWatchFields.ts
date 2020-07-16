@@ -2,6 +2,7 @@ import get from '../utils/get';
 import getPath from '../utils/getPath';
 import isEmptyObject from '../utils/isEmptyObject';
 import isUndefined from '../utils/isUndefined';
+import isNullOrUndefined from '../utils/isNullOrUndefined';
 import { DeepPartial } from '../types/utils';
 import {
   FieldValue,
@@ -29,7 +30,7 @@ export default <TFieldValues extends FieldValues>(
   } else {
     value = get(fieldValues, fieldName);
 
-    if (!isUndefined(value)) {
+    if (!isNullOrUndefined(value)) {
       getPath<TFieldValues>(fieldName, value).forEach((name: string) =>
         watchFields.add(name),
       );
