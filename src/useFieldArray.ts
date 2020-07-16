@@ -9,6 +9,7 @@ import get from './utils/get';
 import set from './utils/set';
 import isUndefined from './utils/isUndefined';
 import removeArrayAt from './utils/remove';
+import unset from './utils/unset';
 import moveArrayAt from './utils/move';
 import swapArrayAt from './utils/swap';
 import prependAt from './utils/prepend';
@@ -25,7 +26,6 @@ import {
   Control,
   ArrayField,
 } from './types/form';
-import unset from './utils/unset';
 
 const appendId = <TValue extends object, TKeyName extends string>(
   value: TValue,
