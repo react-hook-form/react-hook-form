@@ -711,25 +711,6 @@ describe('useForm', () => {
         }),
       );
 
-      result.current.register({
-        name: 'test',
-        type: 'select-multiple',
-        value: '1',
-        options: [{ value: '1', selected: true }] as any,
-      });
-
-      result.current.register({
-        name: 'checkbox',
-        type: 'checkbox',
-        value: '1',
-      });
-
-      result.current.register({
-        name: 'checkbox',
-        type: 'checkbox',
-        value: '2',
-      });
-
       result.current.setValue('test', '1');
       result.current.setValue('checkbox', ['1', '2']);
 
