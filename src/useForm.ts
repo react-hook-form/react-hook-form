@@ -409,12 +409,13 @@ export function useForm<
         return config.shouldDirty && setDirty(name);
       } else if (!isPrimitive(value)) {
         setInternalValues(name, value, config);
-        return true;
       }
 
       if (!shouldUnregister) {
         unmountFieldsStateRef.current[name] = value;
       }
+
+      return true;
     },
     [setDirty, setFieldValue, setInternalValues],
   );

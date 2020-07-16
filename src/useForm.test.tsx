@@ -704,7 +704,7 @@ describe('useForm', () => {
       });
     });
 
-    it('should not set unmountFieldsState value when shouldUnregister is set to false', async () => {
+    it('should set unmountFieldsState value when shouldUnregister is set to false', async () => {
       const { result } = renderHook(() =>
         useForm<{ test: string; checkbox: string[] }>({
           shouldUnregister: false,
@@ -714,7 +714,10 @@ describe('useForm', () => {
       result.current.setValue('test', '1');
       result.current.setValue('checkbox', ['1', '2']);
 
-      expect(result.current.control.unmountFieldsStateRef.current).toEqual({});
+      expect(result.current.control.unmountFieldsStateRef.current).toEqual({
+        checkbox: ['1', '2'],
+        test: '1',
+      });
     });
 
     it('should set nested value correctly ', () => {
