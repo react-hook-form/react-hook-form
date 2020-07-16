@@ -113,7 +113,7 @@ export type ValidationValueMessage<
   message: Message;
 };
 
-export type ValidateResult = Message | boolean | undefined;
+export type ValidateResult = Message | Message[] | boolean | undefined;
 
 export type Validate = (data: any) => ValidateResult | Promise<ValidateResult>;
 
@@ -129,20 +129,16 @@ export type ValidationRules = Partial<{
 
 export type MultipleFieldErrors = Record<string, ValidateResult>;
 
-export type MultipleErrorMessages = Record<string, ValidateResult[]>;
-
 export type FieldError = {
   type: string;
   ref?: Ref;
   types?: MultipleFieldErrors;
   message?: Message;
-  messages?: MultipleErrorMessages;
 };
 
 export type ErrorOption =
   | {
       types: MultipleFieldErrors;
-      messages?: MultipleErrorMessages;
     }
   | {
       message?: Message;
