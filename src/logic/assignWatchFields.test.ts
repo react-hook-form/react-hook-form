@@ -37,4 +37,38 @@ describe('assignWatchFields', () => {
       assignWatchFields<any>({}, 'test', new Set(), 'test' as any),
     ).toEqual(undefined);
   });
+
+  it('should not append to more watchFields when value is null or undefined', () => {
+    const watchFields = new Set();
+
+    expect(
+      assignWatchFields<any>(
+        {
+          test: {
+            test: null,
+          },
+        },
+        'test.test',
+        watchFields as any,
+        'test' as any,
+      ),
+    ).toEqual(null);
+
+    expect(watchFields).toEqual(new Set(['test.test']));
+
+    expect(
+      assignWatchFields<any>(
+        {
+          test: {
+            test: undefined,
+          },
+        },
+        'test.test',
+        watchFields as any,
+        'test' as any,
+      ),
+    ).toEqual(undefined);
+
+    expect(watchFields).toEqual(new Set(['test.test']));
+  });
 });
