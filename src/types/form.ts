@@ -32,6 +32,8 @@ export type NestedValue<TValue extends any[] | object = any[] | object> = {
 
 export type UnpackNestedValue<T> = NonUndefined<T> extends NestedValue<infer U>
   ? U
+  : NonUndefined<T> extends Date | FileList
+  ? T
   : NonUndefined<T> extends object
   ? { [K in keyof T]: UnpackNestedValue<T[K]> }
   : T;
