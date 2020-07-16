@@ -492,12 +492,24 @@ describe('useForm', () => {
       });
     });
 
-    it('should not reset unmountFieldsState value when shouldUnregister set to false ', () => {
+    it('should reset unmountFieldsState value when shouldUnregister set to false', () => {
       const { result } = renderHook(() =>
         useForm({
           shouldUnregister: false,
         }),
       );
+
+      result.current.register('test');
+
+      act(() => result.current.reset({ test: 'test' }));
+
+      expect(result.current.control.unmountFieldsStateRef.current).toEqual({
+        test: 'test',
+      });
+    });
+
+    it('should not reset unmountFieldsState value by default', () => {
+      const { result } = renderHook(() => useForm());
 
       result.current.register('test');
 
