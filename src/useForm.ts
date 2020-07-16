@@ -412,7 +412,9 @@ export function useForm<
         return true;
       }
 
-      unmountFieldsStateRef.current[name] = value;
+      if (!shouldUnregister) {
+        unmountFieldsStateRef.current[name] = value;
+      }
     },
     [setDirty, setFieldValue, setInternalValues],
   );
@@ -924,10 +926,7 @@ export function useForm<
         e.persist();
       }
       let fieldErrors: FieldErrors<TFieldValues> = {};
-      let fieldValues: FieldValues = {
-        ...unmountFieldsStateRef.current,
-        ...getValues(),
-      };
+      let fieldValues: FieldValues = getValues();
 
       if (readFormStateRef.current.isSubmitting) {
         isSubmittingRef.current = true;
@@ -1076,7 +1075,7 @@ export function useForm<
       renderWatchedInputs('');
     }
 
-    unmountFieldsStateRef.current = values || {};
+    unmountFieldsStateRef.current = shouldUnregister ? {} : values || {};
 
     Object.values(resetFieldArrayFunctionRef.current).forEach(
       (resetFieldArray) => isFunction(resetFieldArray) && resetFieldArray(),
