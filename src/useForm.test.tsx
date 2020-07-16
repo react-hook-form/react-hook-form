@@ -493,7 +493,11 @@ describe('useForm', () => {
     });
 
     it('should not reset unmountFieldsState value when shouldUnregister set to false ', () => {
-      const { result } = renderHook(() => useForm());
+      const { result } = renderHook(() =>
+        useForm({
+          shouldUnregister: false,
+        }),
+      );
 
       result.current.register('test');
 
