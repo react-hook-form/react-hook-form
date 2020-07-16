@@ -711,8 +711,10 @@ describe('useForm', () => {
         }),
       );
 
-      result.current.setValue('test', '1');
-      result.current.setValue('checkbox', ['1', '2']);
+      act(() => {
+        result.current.setValue('test', '1');
+        result.current.setValue('checkbox', ['1', '2']);
+      });
 
       expect(result.current.control.unmountFieldsStateRef.current).toEqual({
         checkbox: ['1', '2'],
@@ -839,7 +841,9 @@ describe('useForm', () => {
     it('should not work if field is not registered', () => {
       const { result } = renderHook(() => useForm());
 
-      result.current.setValue('test', '1');
+      act(() => {
+        result.current.setValue('test', '1');
+      });
 
       expect(result.current.control.fieldsRef.current['test']).toBeUndefined();
     });
