@@ -2243,6 +2243,23 @@ describe('useForm', () => {
     });
 
     describe('with watch', () => {
+      it('should be return undefined or null value', () => {
+        const { result } = renderHook(() => useForm());
+
+        result.current.register({ type: 'text', name: 'test', value: null });
+        result.current.register({
+          type: 'text',
+          name: 'test1',
+          value: undefined,
+        });
+
+        const test = result.current.watch('test');
+        const test1 = result.current.watch('test1');
+
+        expect(test).toBeNull();
+        expect(test1).toBeUndefined();
+      });
+
       it('should be called reRender method if isWatchAllRef is true', async () => {
         let watchedField: any;
         const Component = () => {
