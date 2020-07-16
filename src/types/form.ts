@@ -8,6 +8,8 @@ import {
   IsFlatObject,
 } from './utils';
 
+declare const $NestedValue: unique symbol;
+
 export type FieldValues = Record<string, any>;
 
 export type InternalFieldName<TFieldValues extends FieldValues> =
@@ -24,8 +26,6 @@ export type FieldValue<
   TFieldValues extends FieldValues
 > = TFieldValues[InternalFieldName<TFieldValues>];
 
-declare const $NestedValue: unique symbol;
-
 export type NestedValue<TValue extends any[] | object = any[] | object> = {
   [$NestedValue]: never;
 } & TValue;
@@ -39,6 +39,12 @@ export type UnpackNestedValue<T> = NonUndefined<T> extends NestedValue<infer U>
 export type DefaultValuesAtRender<TFieldValues> = UnpackNestedValue<
   DeepPartial<Record<InternalFieldName<TFieldValues>, FieldValue<TFieldValues>>>
 >;
+
+export type FieldElement<TFieldValues extends FieldValues = FieldValues> =
+  | HTMLInputElement
+  | HTMLSelectElement
+  | HTMLTextAreaElement
+  | CustomElement<TFieldValues>;
 
 export type Ref = FieldElement;
 
@@ -130,7 +136,7 @@ export type ValidationRules = Partial<{
 export type MultipleFieldErrors = Record<string, ValidateResult>;
 
 export type FieldError = {
-  type: string;
+  type: keyof ValidationRules | string;
   ref?: Ref;
   types?: MultipleFieldErrors;
   message?: Message;
@@ -205,13 +211,7 @@ export type CustomElement<TFieldValues extends FieldValues> = {
   focus?: () => void;
 };
 
-export type FieldElement<TFieldValues extends FieldValues = FieldValues> =
-  | HTMLInputElement
-  | HTMLSelectElement
-  | HTMLTextAreaElement
-  | CustomElement<TFieldValues>;
-
-export type HandleChange = (evt: Event) => Promise<void | boolean>;
+export type HandleChange = (event: Event) => Promise<void | boolean>;
 
 export type FieldValuesFromControl<
   TControl extends Control
@@ -251,15 +251,9 @@ export type Control<TFieldValues extends FieldValues = FieldValues> = Pick<
   fieldArrayNamesRef: React.MutableRefObject<Set<string>>;
   isDirtyRef: React.MutableRefObject<boolean>;
   isSubmittedRef: React.MutableRefObject<boolean>;
-  readFormStateRef: React.MutableRefObject<{
-    isDirty: boolean;
-    isSubmitted: boolean;
-    submitCount: boolean;
-    touched: boolean;
-    isSubmitting: boolean;
-    isValid: boolean;
-    dirtyFields: boolean;
-  }>;
+  readFormStateRef: React.MutableRefObject<
+    { [k in keyof FormStateProxy<TFieldValues>]: boolean }
+  >;
   defaultValuesRef: React.MutableRefObject<
     | FieldValue<UnpackNestedValue<TFieldValues>>
     | UnpackNestedValue<DeepPartial<TFieldValues>>
@@ -290,15 +284,11 @@ export type ArrayField<
   TKeyName extends string = 'id'
 > = TFieldArrayValues & Record<TKeyName, string>;
 
-export type OmitResetState = Partial<{
-  errors: boolean;
-  isDirty: boolean;
-  dirtyFields: boolean;
-  isSubmitted: boolean;
-  touched: boolean;
-  isValid: boolean;
-  submitCount: boolean;
-}>;
+export type OmitResetState = Partial<
+  {
+    errors: boolean;
+  } & ReadFormState
+>;
 
 export type UseWatchOptions = {
   defaultValue?: unknown;

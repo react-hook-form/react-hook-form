@@ -26,6 +26,10 @@ export type DeepPartial<T> = {
     : T[K];
 };
 
+export type IsAny<T> = boolean extends (T extends never ? true : false)
+  ? true
+  : false;
+
 export type DeepMap<T, TValue> = {
   [K in keyof T]?: IsAny<T[K]> extends true
     ? any
@@ -43,10 +47,6 @@ export type DeepMap<T, TValue> = {
       : Array<TValue>
     : TValue;
 };
-
-export type IsAny<T> = boolean extends (T extends never ? true : false)
-  ? true
-  : false;
 
 export type IsFlatObject<T extends object> = Extract<
   Exclude<T[keyof T], NestedValue | Date | FileList>,
