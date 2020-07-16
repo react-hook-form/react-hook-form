@@ -492,6 +492,32 @@ describe('useForm', () => {
       });
     });
 
+    it('should reset unmountFieldsState value when shouldUnregister set to false', () => {
+      const { result } = renderHook(() =>
+        useForm({
+          shouldUnregister: false,
+        }),
+      );
+
+      result.current.register('test');
+
+      act(() => result.current.reset({ test: 'test' }));
+
+      expect(result.current.control.unmountFieldsStateRef.current).toEqual({
+        test: 'test',
+      });
+    });
+
+    it('should not reset unmountFieldsState value by default', () => {
+      const { result } = renderHook(() => useForm());
+
+      result.current.register('test');
+
+      act(() => result.current.reset({ test: 'test' }));
+
+      expect(result.current.control.unmountFieldsStateRef.current).toEqual({});
+    });
+
     it('should execute resetFieldArrayFunctionRef if resetFieldArrayFunctionRef is exist', async () => {
       const { result } = renderHook(() => useForm());
       const reset = jest.fn();
@@ -694,6 +720,24 @@ describe('useForm', () => {
       });
     });
 
+    it('should set unmountFieldsState value when shouldUnregister is set to false', async () => {
+      const { result } = renderHook(() =>
+        useForm<{ test: string; checkbox: string[] }>({
+          shouldUnregister: false,
+        }),
+      );
+
+      act(() => {
+        result.current.setValue('test', '1');
+        result.current.setValue('checkbox', ['1', '2']);
+      });
+
+      expect(result.current.control.unmountFieldsStateRef.current).toEqual({
+        checkbox: ['1', '2'],
+        test: '1',
+      });
+    });
+
     it('should set nested value correctly ', () => {
       const { result } = renderHook(() =>
         useForm<{
@@ -813,7 +857,9 @@ describe('useForm', () => {
     it('should not work if field is not registered', () => {
       const { result } = renderHook(() => useForm());
 
-      result.current.setValue('test', '1');
+      act(() => {
+        result.current.setValue('test', '1');
+      });
 
       expect(result.current.control.fieldsRef.current['test']).toBeUndefined();
     });
