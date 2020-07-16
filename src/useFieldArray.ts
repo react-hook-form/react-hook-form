@@ -6,6 +6,7 @@ import isObject from './utils/isObject';
 import getIsFieldsDifferent from './logic/getIsFieldsDifferent';
 import getFieldArrayParentName from './logic/getFieldArrayParentName';
 import get from './utils/get';
+import set from './utils/set';
 import isUndefined from './utils/isUndefined';
 import removeArrayAt from './utils/remove';
 import moveArrayAt from './utils/move';
@@ -24,6 +25,7 @@ import {
   Control,
   ArrayField,
 } from './types/form';
+import unset from './utils/unset';
 
 const appendId = <TValue extends object, TKeyName extends string>(
   value: TValue,
@@ -236,12 +238,14 @@ export const useFieldArray = <
     setIsDeleted(true);
 
     if (isArray(get(errorsRef.current, name))) {
-      errorsRef.current[name] = removeArrayAt(
-        get(errorsRef.current, name),
-        index,
+      set(
+        errorsRef.current,
+        name,
+        removeArrayAt(get(errorsRef.current, name), index),
       );
-      if (!unique(errorsRef.current[name]).length) {
-        delete errorsRef.current[name];
+
+      if (!unique(get(errorsRef.current, name, [])).length) {
+        unset(errorsRef.current, name);
       }
     }
 
