@@ -9,5 +9,6 @@ export {
   ValidationRules,
   FieldError,
   Field,
+  ArrayField,
   Mode,
 } from './form';
