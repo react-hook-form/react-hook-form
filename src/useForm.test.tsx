@@ -492,6 +492,16 @@ describe('useForm', () => {
       });
     });
 
+    it('should not reset unmountFieldsState value when shouldUnregister set to false ', () => {
+      const { result } = renderHook(() => useForm());
+
+      result.current.register('test');
+
+      act(() => result.current.reset({ test: 'test' }));
+
+      expect(result.current.control.unmountFieldsStateRef.current).toEqual({});
+    });
+
     it('should execute resetFieldArrayFunctionRef if resetFieldArrayFunctionRef is exist', async () => {
       const { result } = renderHook(() => useForm());
       const reset = jest.fn();
@@ -692,6 +702,25 @@ describe('useForm', () => {
           persist: () => {},
         } as React.SyntheticEvent);
       });
+    });
+
+    it('should not set unmountFieldsState value when shouldUnregister is set to false', async () => {
+      const { result } = renderHook(() =>
+        useForm<{ test: string }>({
+          shouldUnregister: false,
+        }),
+      );
+
+      result.current.register({
+        name: 'test',
+        type: 'select-multiple',
+        value: '1',
+        options: [{ value: '1', selected: true }] as any,
+      });
+
+      result.current.setValue('test', '1');
+
+      expect(result.current.control.unmountFieldsStateRef.current).toEqual({});
     });
 
     it('should set nested value correctly ', () => {
