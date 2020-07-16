@@ -150,6 +150,25 @@ describe('useWatch', () => {
   });
 
   describe('update', () => {
+    it('should not throw error when null or undefined is set', () => {
+      const watchedValue: Record<string, any> = {};
+      const Component = () => {
+        const { register, control } = useForm();
+
+        register({ type: 'text', name: 'test', value: null });
+        register({ type: 'text', name: 'test1', value: undefined });
+
+        watchedValue['test'] = useWatch({ name: 'test', control });
+        watchedValue['test1'] = useWatch({ name: 'test1', control });
+
+        return <div />;
+      };
+
+      render(<Component />);
+
+      expect(watchedValue).toEqual({ test: undefined, test1: undefined });
+    });
+
     it('should return default value when value is undefined', () => {
       (generateId as any).mockReturnValue('1');
       const mockControl = reconfigureControl();
