@@ -129,16 +129,20 @@ export type ValidationRules = Partial<{
 
 export type MultipleFieldErrors = Record<string, ValidateResult>;
 
+export type MultipleErrorMessages = Record<string, ValidateResult[]>;
+
 export type FieldError = {
   type: string;
   ref?: Ref;
   types?: MultipleFieldErrors;
   message?: Message;
+  messages?: MultipleErrorMessages;
 };
 
 export type ErrorOption =
   | {
       types: MultipleFieldErrors;
+      messages?: MultipleErrorMessages;
     }
   | {
       message?: Message;
