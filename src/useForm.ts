@@ -385,6 +385,10 @@ export function useForm<
         if (field) {
           setFieldValue(field, value[key]);
 
+          if (!shouldUnregister) {
+            unmountFieldsStateRef.current[fieldName] = value;
+          }
+
           if (config.shouldDirty) {
             setDirty(fieldName);
           }
@@ -406,14 +410,15 @@ export function useForm<
     ): boolean | void => {
       if (fieldsRef.current[name]) {
         setFieldValue(fieldsRef.current[name] as Field, value);
+
+        if (!shouldUnregister) {
+          unmountFieldsStateRef.current[name] = value;
+        }
+
         return config.shouldDirty && setDirty(name);
       } else if (!isPrimitive(value)) {
         setInternalValues(name, value, config);
         return true;
-      }
-
-      if (!shouldUnregister) {
-        unmountFieldsStateRef.current[name] = value;
       }
     },
     [setDirty, setFieldValue, setInternalValues],
