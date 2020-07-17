@@ -9,8 +9,9 @@ import {
   waitFor,
   act as actComponent,
 } from '@testing-library/react';
-import { Control } from './types';
+import { Control, ValidationRules, FieldError } from './types';
 import { useForm } from './useForm';
+import { DeepMap } from './types/utils';
 
 jest.spyOn(console, 'warn').mockImplementation(() => {});
 jest.mock('./logic/generateId', () => ({
@@ -962,6 +963,96 @@ describe('useFieldArray', () => {
           test: [{ test: '1' }, { test: '3' }],
         },
       });
+    });
+
+    it('should remove nested field array error', async () => {
+      let mockKey = 0;
+      const Nested = ({
+        register,
+        errors,
+        control,
+        index,
+      }: {
+        register: (rules?: ValidationRules) => (ref: HTMLInputElement) => void;
+        control: Control;
+        errors: DeepMap<Record<string, any>, FieldError>;
+        index: number;
+      }) => {
+        const { fields, append, remove } = useFieldArray({
+          name: `test[${index}].nested`,
+          control,
+        });
+        return (
+          <fieldset>
+            {fields.map((field, i) => (
+              <div key={field.key}>
+                <input
+                  name={`test[${index}].nested[${i}].test`}
+                  ref={register({ required: 'required' })}
+                />
+                {errors?.test &&
+                  errors.test[index]?.nested &&
+                  errors.test[index].nested[i]?.test && (
+                    <span data-testid="nested-error">
+                      {errors.test[index].nested[i].test.message}
+                    </span>
+                  )}
+                <button onClick={() => remove(i)}>nested delete</button>
+              </div>
+            ))}
+            <button onClick={() => append({ test: 'test', key: mockKey++ })}>
+              nested append
+            </button>
+          </fieldset>
+        );
+      };
+      const callback = jest.fn();
+      const Component = () => {
+        const { register, errors, handleSubmit, control } = useForm({
+          defaultValues: {
+            test: [{ nested: [{ test: '', key: mockKey }] as any }],
+          },
+        });
+        const { fields } = useFieldArray({ name: 'test', control });
+        return (
+          <form onSubmit={handleSubmit(callback)}>
+            {fields.map((_, i) => (
+              <Nested
+                key={i.toString()}
+                register={register}
+                errors={errors}
+                control={control}
+                index={i}
+              />
+            ))}
+            <button>submit</button>
+          </form>
+        );
+      };
+
+      render(<Component />);
+
+      await actComponent(async () => {
+        await fireEvent.click(screen.getByRole('button', { name: /submit/i }));
+      });
+
+      expect(screen.queryByTestId('nested-error')).toBeInTheDocument();
+
+      await actComponent(async () => {
+        await fireEvent.click(
+          screen.getByRole('button', { name: /nested delete/i }),
+        );
+      });
+
+      expect(screen.queryByTestId('nested-error')).not.toBeInTheDocument();
+
+      await actComponent(async () => {
+        await fireEvent.click(
+          screen.getByRole('button', { name: /nested append/i }),
+        );
+      });
+
+      expect(screen.queryByTestId('nested-error')).not.toBeInTheDocument();
     });
 
     it('should remove test field in errorsRef if errorsRef.test.length is 0', () => {
