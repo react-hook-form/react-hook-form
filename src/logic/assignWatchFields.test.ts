@@ -70,5 +70,35 @@ describe('assignWatchFields', () => {
     ).toEqual(undefined);
 
     expect(watchFields).toEqual(new Set(['test.test']));
+
+    expect(
+      assignWatchFields<any>(
+        {
+          test: {
+            test: '123',
+          },
+        },
+        'test.test',
+        watchFields as any,
+        'test' as any,
+      ),
+    ).toEqual('123');
+
+    expect(watchFields).toEqual(new Set(['test.test']));
+
+    expect(
+      assignWatchFields<any>(
+        {
+          test: {
+            test: false,
+          },
+        },
+        'test.test',
+        watchFields as any,
+        'test' as any,
+      ),
+    ).toEqual(false);
+
+    expect(watchFields).toEqual(new Set(['test.test']));
   });
 });
