@@ -1,5 +1,11 @@
 # Changelog
 
+## [6.0.3] - 2020-07-17
+
+### Added
+
+- export `ArrayField` type
+
 ## [6.0.3] - 2020-07-10
 
 ### Changed
