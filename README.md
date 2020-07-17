@@ -1,7 +1,7 @@
 <div align="center">
     <p align="center">
         <a href="https://react-hook-form.com" title="React Hook Form - Simple React forms validation">
-            <img src="https://raw.githubusercontent.com/bluebill1049/react-hook-form/master/website/logo.png" alt="React Hook Form Logo - React hook custom hook for form validation" width="300px" />
+            <img src="https://raw.githubusercontent.com/bluebill1049/react-hook-form/main/website/logo.png" alt="React Hook Form Logo - React hook custom hook for form validation" width="300px" />
         </a>
     </p>
 </div>
@@ -13,14 +13,14 @@
 [![npm downloads](https://img.shields.io/npm/dm/react-hook-form.svg?style=for-the-badge)](https://www.npmjs.com/package/react-hook-form)
 [![npm](https://img.shields.io/npm/dt/react-hook-form.svg?style=for-the-badge)](https://www.npmjs.com/package/react-hook-form)
 [![npm](https://img.shields.io/bundlephobia/minzip/react-hook-form?style=for-the-badge)](https://bundlephobia.com/result?p=react-hook-form)
-[![Coverage Status](https://img.shields.io/coveralls/github/bluebill1049/react-hook-form/master?style=for-the-badge)](https://coveralls.io/github/bluebill1049/react-hook-form?branch=master)
+[![Coverage Status](https://img.shields.io/coveralls/github/bluebill1049/react-hook-form/main?style=for-the-badge)](https://coveralls.io/github/bluebill1049/react-hook-form?branch=main)
 
 </div>
 
 <div align="center">
     <p align="center">
         <a href="https://react-hook-form.com" title="React Hook Form - Simple React forms validation">
-            <img src="https://raw.githubusercontent.com/bluebill1049/react-hook-form/master/website/example.gif" alt="React Hook Form video - React custom hook for form validation" width="100%" />
+            <img src="https://raw.githubusercontent.com/bluebill1049/react-hook-form/main/website/example.gif" alt="React Hook Form video - React custom hook for form validation" width="100%" />
         </a>
     </p>
 </div>
@@ -47,7 +47,7 @@ English | <a href="./docs/README.zh-CN.md">简体中文</a> | <a href="./docs/RE
 - [Video tutorial](https://www.youtube.com/watch?v=-mFXqOaqgZk&t)
 - [Get started](https://react-hook-form.com/get-started)
 - [API](https://react-hook-form.com/api)
-- [Examples](https://github.com/bluebill1049/react-hook-form/tree/master/examples)
+- [Examples](https://github.com/bluebill1049/react-hook-form/tree/main/examples)
 - [Demo](https://react-hook-form.com)
 - [Form Builder](https://react-hook-form.com/form-builder)
 - [FAQs](https://react-hook-form.com/faqs)

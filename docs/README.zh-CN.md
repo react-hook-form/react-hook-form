@@ -1,7 +1,7 @@
 <div align="center">
     <p align="center">
       <a href="https://react-hook-form.com/zh" title="React Hook Form - Simple React forms validation">
-        <img src="https://raw.githubusercontent.com/bluebill1049/react-hook-form/master/website/logo.png" alt="React Hook Form Logo - hook custom hook for form validation" width="330px" />
+        <img src="https://raw.githubusercontent.com/bluebill1049/react-hook-form/main/website/logo.png" alt="React Hook Form Logo - hook custom hook for form validation" width="330px" />
       </a>
     </p>
 </div>
@@ -13,13 +13,13 @@
 [![npm downloads](https://img.shields.io/npm/dm/react-hook-form.svg?style=for-the-badge)](https://www.npmjs.com/package/react-hook-form)
 [![npm](https://img.shields.io/npm/dt/react-hook-form.svg?style=for-the-badge)](https://www.npmjs.com/package/react-hook-form)
 [![npm](https://img.shields.io/bundlephobia/minzip/react-hook-form?style=for-the-badge)](https://bundlephobia.com/result?p=react-hook-form)
-[![Coverage Status](https://img.shields.io/coveralls/github/bluebill1049/react-hook-form/master?style=for-the-badge)](https://coveralls.io/github/bluebill1049/react-hook-form?branch=master)
+[![Coverage Status](https://img.shields.io/coveralls/github/bluebill1049/react-hook-form/main?style=for-the-badge)](https://coveralls.io/github/bluebill1049/react-hook-form?branch=main)
 
 [![Tweet](https://img.shields.io/twitter/url/http/shields.io.svg?style=social)](https://twitter.com/intent/tweet?text=React+hooks+for+form+validation+without+the+hassle&url=https://github.com/bluebill1049/react-hook-form)&nbsp;[![Join the community on Spectrum](https://withspectrum.github.io/badge/badge.svg)](https://spectrum.chat/react-hook-form)
 
 </div>
 
-<div align="center"><p align="center"><a href="https://react-hook-form.com/zh" title="React Hook Form - Simple React forms validation"><img src="https://raw.githubusercontent.com/bluebill1049/react-hook-form/master/website/example.gif" alt="React Hook Form Logo - React hook form validation" width="100%" /></a></p></div>
+<div align="center"><p align="center"><a href="https://react-hook-form.com/zh" title="React Hook Form - Simple React forms validation"><img src="https://raw.githubusercontent.com/bluebill1049/react-hook-form/main/website/example.gif" alt="React Hook Form Logo - React hook form validation" width="100%" /></a></p></div>
 
 <a href="https://github.com/react-hook-form/react-hook-form">English</a> | 简体中文 | <a href="./README.ja-JP.md">日本語</a> | <a href="./README.ko-KR.md">한국어</a> | <a href="./README.fr-FR.md">Français</a> | <a href="./README.it-IT.md">Italiano</a> | <a href="./README.pt-BR.md">Português</a> | <a href="./README.es-ES.md">Español</a> | <a href="./README.ru-RU.md">Русский</a> | <a href="./README.de-DE.md">Deutsch</a> | <a href="./README.tr-TR.md">Türkçe</a>
 
@@ -44,7 +44,7 @@
 - [动机](https://medium.com/@bruce1049/form-validation-with-hook-in-3kb-c5414edf7d64)
 - [开始](https://react-hook-form.com/zh/get-started)
 - [API](https://react-hook-form.com/zh/api)
-- [示例](https://github.com/bluebill1049/react-hook-form/tree/master/examples)
+- [示例](https://github.com/bluebill1049/react-hook-form/tree/main/examples)
 - [Demo](https://react-hook-form.com/zh)
 - [Form Builder](https://react-hook-form.com/zh/form-builder)
 - [常见问题](https://react-hook-form.com/zh/faqs)
