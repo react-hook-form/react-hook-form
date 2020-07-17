@@ -6,6 +6,15 @@
 
 - export `ArrayField` type
 
+### Changed
+
+- error message will support array of messages for specific type
+
+``` diff
+- export type ValidateResult = Message | boolean | undefined;
++ export type ValidateResult = Message | Message[] | boolean | undefined;
+```
+
 ## [6.0.3] - 2020-07-10
 
 ### Changed
