@@ -140,7 +140,7 @@ export const useFieldArray = <
   };
 
   const resetFields = (
-    flagOrFields?: (Partial<TFieldArrayValues> | null)[],
+    flagOrFields?: (Partial<TFieldArrayValues> | undefined)[],
   ) => {
     if (readFormStateRef.current.isDirty) {
       isDirtyRef.current =

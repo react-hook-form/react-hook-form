@@ -42,4 +42,17 @@ describe('move', () => {
   it('should return emtpy array when data passed was not an array', () => {
     expect(moveArrayAt({} as any, 0, 3)).toEqual([]);
   });
+
+  it('should move nested item with empty slot', () => {
+    expect(moveArrayAt([{ subFields: [{ test: '1' }] }], 0, 1)).toEqual([
+      undefined,
+      { subFields: [{ test: '1' }] },
+    ]);
+
+    expect(moveArrayAt([{ subFields: [{ test: '1' }] }], 0, 2)).toEqual([
+      undefined,
+      undefined,
+      { subFields: [{ test: '1' }] },
+    ]);
+  });
 });
