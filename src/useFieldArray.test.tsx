@@ -587,7 +587,7 @@ describe('useFieldArray', () => {
 
       expect(errorsRef).toEqual({
         current: {
-          test: [null, { test: '1' }, { test: '2' }, { test: '3' }],
+          test: [undefined, { test: '1' }, { test: '2' }, { test: '3' }],
         },
       });
 
@@ -597,7 +597,14 @@ describe('useFieldArray', () => {
 
       expect(errorsRef).toEqual({
         current: {
-          test: [null, null, null, { test: '1' }, { test: '2' }, { test: '3' }],
+          test: [
+            undefined,
+            undefined,
+            undefined,
+            { test: '1' },
+            { test: '2' },
+            { test: '3' },
+          ],
         },
       });
     });
@@ -629,7 +636,7 @@ describe('useFieldArray', () => {
 
       expect(touchedFieldsRef).toEqual({
         current: {
-          test: [null, { test: '1' }, { test: '2' }, { test: '3' }],
+          test: [undefined, { test: '1' }, { test: '2' }, { test: '3' }],
         },
       });
 
@@ -639,7 +646,14 @@ describe('useFieldArray', () => {
 
       expect(touchedFieldsRef).toEqual({
         current: {
-          test: [null, null, null, { test: '1' }, { test: '2' }, { test: '3' }],
+          test: [
+            undefined,
+            undefined,
+            undefined,
+            { test: '1' },
+            { test: '2' },
+            { test: '3' },
+          ],
         },
       });
     });
@@ -1414,7 +1428,7 @@ describe('useFieldArray', () => {
 
       expect(touchedFieldsRef).toEqual({
         current: {
-          test: [{ test: '1' }, null, { test: '2' }, { test: '3' }],
+          test: [{ test: '1' }, undefined, { test: '2' }, { test: '3' }],
         },
       });
 
@@ -1424,7 +1438,14 @@ describe('useFieldArray', () => {
 
       expect(touchedFieldsRef).toEqual({
         current: {
-          test: [{ test: '1' }, null, null, null, { test: '2' }, { test: '3' }],
+          test: [
+            { test: '1' },
+            undefined,
+            undefined,
+            undefined,
+            { test: '2' },
+            { test: '3' },
+          ],
         },
       });
     });
@@ -1474,7 +1495,7 @@ describe('useFieldArray', () => {
 
       expect(errorsRef).toEqual({
         current: {
-          test: [{ test: '1' }, null, { test: '2' }, { test: '3' }],
+          test: [{ test: '1' }, undefined, { test: '2' }, { test: '3' }],
         },
       });
 
@@ -1484,7 +1505,14 @@ describe('useFieldArray', () => {
 
       expect(errorsRef).toEqual({
         current: {
-          test: [{ test: '1' }, null, null, null, { test: '2' }, { test: '3' }],
+          test: [
+            { test: '1' },
+            undefined,
+            undefined,
+            undefined,
+            { test: '2' },
+            { test: '3' },
+          ],
         },
       });
     });
