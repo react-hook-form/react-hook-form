@@ -1919,17 +1919,40 @@ describe('useFieldArray', () => {
 
   describe('move', () => {
     it('should move into pointed position', () => {
+      const { result } = renderHook(() =>
+        useFieldArray({
+          control: reconfigureControl({
+            defaultValuesRef: {
+              current: { test: [{ test: '1' }, { test: '2' }, { test: '3' }] },
+            },
+          }),
+          name: 'test',
+        }),
+      );
+
+      act(() => {
+        result.current.move(2, 0);
+      });
+
+      expect(result.current.fields).toEqual([
+        { id: '1', test: '3' },
+        { id: '1', test: '1' },
+        { id: '1', test: '2' },
+      ]);
+    });
+
+    it('should move dirtyFields', () => {
       const dirtyFieldsRef = {
         current: {
           test: [
             {
-              test: 1,
+              test: true,
             },
             {
-              test1: 1,
+              test: true,
             },
             {
-              test2: 1,
+              test: true,
             },
           ],
         },
@@ -1946,13 +1969,6 @@ describe('useFieldArray', () => {
                 dirtyFields: true,
               },
             } as any,
-            fieldsRef: {
-              current: {
-                'test[0]': { ref: { name: 'test[0]', value: { test: '1' } } },
-                'test[1]': { ref: { name: 'test[1]', value: { test: '2' } } },
-                'test[2]': { ref: { name: 'test[2]', value: { test: '3' } } },
-              },
-            },
             dirtyFieldsRef,
           }),
           name: 'test',
@@ -1963,22 +1979,58 @@ describe('useFieldArray', () => {
         result.current.move(2, 0);
       });
 
-      expect(result.current.fields).toEqual([
-        { id: '1', test: '3' },
-        { id: '1', test: '1' },
-        { id: '1', test: '2' },
-      ]);
-
       expect(dirtyFieldsRef.current).toEqual({
         test: [
           {
-            test2: 1,
+            test: true,
           },
           {
-            test: 1,
+            test: true,
           },
           {
-            test1: 1,
+            test: true,
+          },
+        ],
+      });
+    });
+
+    it('should move dirtyFields when there are many more fields than dirtyFields', () => {
+      const dirtyFieldsRef = {
+        current: {
+          test: [
+            {
+              test: true,
+            },
+          ],
+        },
+      };
+
+      const { result } = renderHook(() =>
+        useFieldArray({
+          control: reconfigureControl({
+            defaultValuesRef: {
+              current: { test: [{ test: '1' }, { test: '2' }, { test: '3' }] },
+            },
+            readFormStateRef: {
+              current: {
+                dirtyFields: true,
+              },
+            } as any,
+            dirtyFieldsRef,
+          }),
+          name: 'test',
+        }),
+      );
+
+      act(() => {
+        result.current.move(0, 1);
+      });
+
+      expect(dirtyFieldsRef.current).toEqual({
+        test: [
+          undefined,
+          {
+            test: true,
           },
         ],
       });
@@ -2012,10 +2064,38 @@ describe('useFieldArray', () => {
       });
     });
 
+    it('should move errors when there are many more fields than errors', () => {
+      const errorsRef = {
+        current: {
+          test: [{ test: '1' }],
+        },
+      };
+
+      const { result } = renderHook(() =>
+        useFieldArray({
+          control: reconfigureControl({
+            defaultValuesRef: {
+              current: { test: [{ test: '1' }, { test: '2' }, { test: '3' }] },
+            },
+            errorsRef: errorsRef as any,
+          }),
+          name: 'test',
+        }),
+      );
+
+      act(() => {
+        result.current.move(0, 1);
+      });
+
+      expect(errorsRef.current).toEqual({
+        test: [undefined, { test: '1' }],
+      });
+    });
+
     it('should move touched fields', () => {
       const touchedFieldsRef = {
         current: {
-          test: [{ test: '1' }, { test: '2' }, { test: '3' }],
+          test: [{ test: true }, { test: true }, { test: true }],
         },
       };
 
@@ -2041,7 +2121,40 @@ describe('useFieldArray', () => {
       });
 
       expect(touchedFieldsRef.current).toEqual({
-        test: [{ test: '3' }, { test: '1' }, { test: '2' }],
+        test: [{ test: true }, { test: true }, { test: true }],
+      });
+    });
+
+    it('should move touched fields when there are many more fields than touchedFields', () => {
+      const touchedFieldsRef = {
+        current: {
+          test: [{ test: true }],
+        },
+      };
+
+      const { result } = renderHook(() =>
+        useFieldArray({
+          control: reconfigureControl({
+            defaultValuesRef: {
+              current: { test: [{ test: '1' }, { test: '2' }, { test: '3' }] },
+            },
+            readFormStateRef: {
+              current: {
+                touched: true,
+              },
+            } as any,
+            touchedFieldsRef: touchedFieldsRef as any,
+          }),
+          name: 'test',
+        }),
+      );
+
+      act(() => {
+        result.current.move(0, 1);
+      });
+
+      expect(touchedFieldsRef.current).toEqual({
+        test: [undefined, { test: true }],
       });
     });
 
