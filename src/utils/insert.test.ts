@@ -53,7 +53,7 @@ describe('insert', () => {
     ]);
   });
 
-  it('should insert null as value when value to be inserted is falsy', () => {
+  it('should insert undefined as value when value to be inserted is falsy', () => {
     expect(insert([1, 2, 4], 2)).toEqual([1, 2, undefined, 4]);
     expect(insert([1, 2, 4], 2, 0)).toEqual([1, 2, undefined, 4]);
     expect(insert([1, 2, 4], 2, false as any)).toEqual([1, 2, undefined, 4]);
