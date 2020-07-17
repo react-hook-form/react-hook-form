@@ -1,4 +1,3 @@
-import * as React from 'react';
 import removeAllEventListeners from './removeAllEventListeners';
 import getFieldValue from './getFieldValue';
 import isRadioInput from '../utils/isRadioInput';
@@ -16,10 +15,10 @@ const isSameRef = (fieldValue: Field, ref: Ref) =>
 export default function findRemovedFieldAndRemoveListener<
   TFieldValues extends FieldValues
 >(
-  fieldsRef: React.MutableRefObject<FieldRefs<TFieldValues>>,
+  fields: FieldRefs<TFieldValues>,
   handleChange: ({ type, target }: Event) => Promise<void | boolean>,
   field: Field,
-  unmountFieldsStateRef: React.MutableRefObject<Record<string, any>>,
+  unmountFieldsState: Record<string, any>,
   shouldUnregister?: boolean,
   forceDelete?: boolean,
 ): void {
@@ -28,18 +27,18 @@ export default function findRemovedFieldAndRemoveListener<
     ref: { name, type },
     mutationWatcher,
   } = field;
-  const fieldRef = fieldsRef.current[name] as Field;
+  const fieldRef = fields[name] as Field;
 
   if (!shouldUnregister) {
-    const value = getFieldValue(fieldsRef, name, unmountFieldsStateRef);
+    const value = getFieldValue(fields, name, unmountFieldsState);
 
     if (!isUndefined(value)) {
-      unmountFieldsStateRef.current[name] = value;
+      unmountFieldsState[name] = value;
     }
   }
 
   if (!type) {
-    delete fieldsRef.current[name];
+    delete fields[name];
     return;
   }
 
@@ -61,10 +60,10 @@ export default function findRemovedFieldAndRemoveListener<
       });
 
       if (options && !unique(options).length) {
-        delete fieldsRef.current[name];
+        delete fields[name];
       }
     } else {
-      delete fieldsRef.current[name];
+      delete fields[name];
     }
   } else if ((isDetached(ref) && isSameRef(fieldRef, ref)) || forceDelete) {
     removeAllEventListeners(ref, handleChange);
@@ -73,6 +72,6 @@ export default function findRemovedFieldAndRemoveListener<
       mutationWatcher.disconnect();
     }
 
-    delete fieldsRef.current[name];
+    delete fields[name];
   }
 }

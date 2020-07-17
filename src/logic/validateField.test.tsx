@@ -27,7 +27,7 @@ describe('validateField', () => {
           ref: { type: 'text', value: '', name: 'test' },
           required: true,
         },
-        { current: {} },
+        {},
       ),
     ).toEqual({
       test: {
@@ -45,7 +45,7 @@ describe('validateField', () => {
           ref: { type: 'text', value: '', name: 'test' },
           required: 'required',
         },
-        { current: {} },
+        {},
       ),
     ).toEqual({
       test: {
@@ -63,7 +63,7 @@ describe('validateField', () => {
           ref: { type: 'text', value: '', name: 'test' },
           required: 'required',
         },
-        { current: {} },
+        {},
       ),
     ).toEqual({
       test: {
@@ -84,7 +84,7 @@ describe('validateField', () => {
             message: 'required',
           },
         },
-        { current: {} },
+        {},
       ),
     ).toEqual({
       test: {
@@ -105,7 +105,7 @@ describe('validateField', () => {
             message: 'required',
           },
         },
-        { current: {} },
+        {},
       ),
     ).toEqual({
       test: {
@@ -126,22 +126,20 @@ describe('validateField', () => {
             message: 'required',
           },
         },
-        { current: {} },
+        {},
       ),
     ).toEqual({});
 
     expect(
       await validateField(
         {
-          current: {
-            test: {
-              ref: {} as any,
-              options: [
-                {
-                  ref: 'test',
-                } as any,
-              ],
-            },
+          test: {
+            ref: {} as any,
+            options: [
+              {
+                ref: 'test',
+              } as any,
+            ],
           },
         },
         false,
@@ -149,7 +147,7 @@ describe('validateField', () => {
           ref: { type: 'radio', name: 'test' },
           required: true,
         },
-        { current: {} },
+        {},
       ),
     ).toEqual({
       test: {
@@ -167,7 +165,7 @@ describe('validateField', () => {
           ref: { type: 'text', value: '', name: 'test' },
           required: 'test',
         },
-        { current: {} },
+        {},
       ),
     ).toEqual({
       test: {
@@ -180,15 +178,13 @@ describe('validateField', () => {
     expect(
       await validateField(
         {
-          current: {
-            test: {
-              ref: 'test' as any,
-              options: [
-                {
-                  ref: 'test',
-                } as any,
-              ],
-            },
+          test: {
+            ref: 'test' as any,
+            options: [
+              {
+                ref: 'test',
+              } as any,
+            ],
           },
         },
         false,
@@ -196,7 +192,7 @@ describe('validateField', () => {
           ref: { type: 'radio', value: '', name: 'test' },
           required: 'test',
         },
-        { current: {} },
+        {},
       ),
     ).toEqual({
       test: {
@@ -209,15 +205,13 @@ describe('validateField', () => {
     expect(
       await validateField(
         {
-          current: {
-            test: {
-              ref: 'test' as any,
-              options: [
-                {
-                  ref: 'test',
-                },
-              ] as any,
-            },
+          test: {
+            ref: 'test' as any,
+            options: [
+              {
+                ref: 'test',
+              },
+            ] as any,
           },
         },
         false,
@@ -225,7 +219,7 @@ describe('validateField', () => {
           ref: { type: 'checkbox', name: 'test' },
           required: 'test',
         },
-        { current: {} },
+        {},
       ),
     ).toEqual({
       test: {
@@ -242,15 +236,13 @@ describe('validateField', () => {
     expect(
       await validateField(
         {
-          current: {
-            test: {
-              ref: 'test' as any,
-              options: [
-                {
-                  ref: 'test',
-                },
-              ] as any,
-            },
+          test: {
+            ref: 'test' as any,
+            options: [
+              {
+                ref: 'test',
+              },
+            ] as any,
           },
         },
         false,
@@ -258,7 +250,7 @@ describe('validateField', () => {
           ref: { type: 'checkbox', name: 'test' },
           required: 'test',
         },
-        { current: {} },
+        {},
       ),
     ).toEqual({});
   });
@@ -273,7 +265,7 @@ describe('validateField', () => {
           required: true,
           max: 0,
         },
-        { current: {} },
+        {},
       ),
     ).toEqual({
       test: {
@@ -295,7 +287,7 @@ describe('validateField', () => {
             message: 'max',
           },
         },
-        { current: {} },
+        {},
       ),
     ).toEqual({
       test: {
@@ -317,7 +309,7 @@ describe('validateField', () => {
             message: 'max',
           },
         },
-        { current: {} },
+        {},
       ),
     ).toEqual({
       test: {
@@ -336,7 +328,7 @@ describe('validateField', () => {
           required: true,
           max: 8,
         },
-        { current: {} },
+        {},
       ),
     ).toEqual({});
 
@@ -348,7 +340,7 @@ describe('validateField', () => {
           ref: { type: 'number', name: 'test', value: 10, valueAsNumber: 10 },
           max: 8,
         },
-        { current: {} },
+        {},
       ),
     ).toEqual({
       test: {
@@ -369,7 +361,7 @@ describe('validateField', () => {
           ref: { type: 'custom', name: 'test', value: '', valueAsNumber: NaN },
           required: true,
         },
-        { current: {} },
+        {},
       ),
     ).toEqual({
       test: {
@@ -392,7 +384,7 @@ describe('validateField', () => {
           },
           required: true,
         },
-        { current: {} },
+        {},
       ),
     ).toEqual({
       test: {
@@ -420,7 +412,7 @@ describe('validateField', () => {
           },
           required: true,
         },
-        { current: {} },
+        {},
       ),
     ).toEqual({
       test: {
@@ -438,7 +430,7 @@ describe('validateField', () => {
           ref: { type: 'custom', name: 'test', value: 'ok' },
           required: true,
         },
-        { current: {} },
+        {},
       ),
     ).toEqual({});
 
@@ -455,7 +447,7 @@ describe('validateField', () => {
           required: true,
           max: '2019-1-12',
         },
-        { current: {} },
+        {},
       ),
     ).toEqual({
       test: {
@@ -480,7 +472,7 @@ describe('validateField', () => {
           required: true,
           min: 0,
         },
-        { current: {} },
+        {},
       ),
     ).toEqual({
       test: {
@@ -502,7 +494,7 @@ describe('validateField', () => {
             message: 'min',
           },
         },
-        { current: {} },
+        {},
       ),
     ).toEqual({
       test: {
@@ -524,7 +516,7 @@ describe('validateField', () => {
             message: 'min',
           },
         },
-        { current: {} },
+        {},
       ),
     ).toEqual({
       test: {
@@ -543,7 +535,7 @@ describe('validateField', () => {
           required: true,
           min: 12,
         },
-        { current: {} },
+        {},
       ),
     ).toEqual({
       test: {
@@ -567,7 +559,7 @@ describe('validateField', () => {
           required: true,
           min: '2019-3-12',
         },
-        { current: {} },
+        {},
       ),
     ).toEqual({
       test: {
@@ -598,7 +590,7 @@ describe('validateField', () => {
             message: 'min',
           },
         },
-        { current: {} },
+        {},
       ),
     ).toEqual({
       test: {
@@ -629,7 +621,7 @@ describe('validateField', () => {
             message: 'min',
           },
         },
-        { current: {} },
+        {},
       ),
     ).toEqual({
       test: {
@@ -655,7 +647,7 @@ describe('validateField', () => {
           required: true,
           min: '4',
         },
-        { current: {} },
+        {},
       ),
     ).toEqual({
       test: {
@@ -674,7 +666,7 @@ describe('validateField', () => {
           required: true,
           max: '2',
         },
-        { current: {} },
+        {},
       ),
     ).toEqual({
       test: {
@@ -698,7 +690,7 @@ describe('validateField', () => {
           required: true,
           max: '2019-1-12',
         },
-        { current: {} },
+        {},
       ),
     ).toEqual({
       test: {
@@ -728,7 +720,7 @@ describe('validateField', () => {
           required: true,
           maxLength: 12,
         },
-        { current: {} },
+        {},
       ),
     ).toEqual({
       test: {
@@ -758,7 +750,7 @@ describe('validateField', () => {
             message: 'maxLength',
           },
         },
-        { current: {} },
+        {},
       ),
     ).toEqual({
       test: {
@@ -788,7 +780,7 @@ describe('validateField', () => {
             message: 'maxLength',
           },
         },
-        { current: {} },
+        {},
       ),
     ).toEqual({
       test: {
@@ -817,7 +809,7 @@ describe('validateField', () => {
           required: true,
           minLength: 200,
         },
-        { current: {} },
+        {},
       ),
     ).toEqual({
       test: {
@@ -847,7 +839,7 @@ describe('validateField', () => {
             message: 'minLength',
           },
         },
-        { current: {} },
+        {},
       ),
     ).toEqual({
       test: {
@@ -877,7 +869,7 @@ describe('validateField', () => {
             message: 'minLength',
           },
         },
-        { current: {} },
+        {},
       ),
     ).toEqual({
       test: {
@@ -908,7 +900,7 @@ describe('validateField', () => {
           required: true,
           pattern: emailRegex,
         },
-        { current: {} },
+        {},
       ),
     ).toEqual({
       test: {
@@ -938,7 +930,7 @@ describe('validateField', () => {
             message: 'regex failed',
           },
         },
-        { current: {} },
+        {},
       ),
     ).toEqual({
       test: {
@@ -968,7 +960,7 @@ describe('validateField', () => {
             message: 'regex failed',
           },
         },
-        { current: {} },
+        {},
       ),
     ).toEqual({
       test: {
@@ -995,7 +987,7 @@ describe('validateField', () => {
           required: true,
           pattern: emailRegex,
         },
-        { current: {} },
+        {},
       ),
     ).toEqual({});
   });
@@ -1004,13 +996,11 @@ describe('validateField', () => {
     expect(
       await validateField(
         {
-          current: {
-            test: {
-              ref: {
-                type: 'text',
-                name: 'test',
-                value: 'This is a long text input',
-              },
+          test: {
+            ref: {
+              type: 'text',
+              name: 'test',
+              value: 'This is a long text input',
             },
           },
         },
@@ -1024,20 +1014,18 @@ describe('validateField', () => {
           required: true,
           validate: (value) => value.toString().length > 3,
         },
-        { current: {} },
+        {},
       ),
     ).toEqual({});
 
     expect(
       await validateField(
         {
-          current: {
-            test: {
-              ref: {
-                type: 'text',
-                name: 'test',
-                value: 'This is a long text input',
-              },
+          test: {
+            ref: {
+              type: 'text',
+              name: 'test',
+              value: 'This is a long text input',
             },
           },
         },
@@ -1051,7 +1039,7 @@ describe('validateField', () => {
           required: true,
           validate: (value) => value.toString().length < 3,
         },
-        { current: {} },
+        {},
       ),
     ).toEqual({
       test: {
@@ -1068,13 +1056,11 @@ describe('validateField', () => {
     expect(
       await validateField(
         {
-          current: {
-            test: {
-              ref: {
-                type: 'text',
-                name: 'test',
-                value: 'This is a long text input',
-              },
+          test: {
+            ref: {
+              type: 'text',
+              name: 'test',
+              value: 'This is a long text input',
             },
           },
         },
@@ -1091,7 +1077,7 @@ describe('validateField', () => {
             test1: (value) => value.toString().length > 10,
           },
         },
-        { current: {} },
+        {},
       ),
     ).toEqual({
       test: {
@@ -1115,13 +1101,11 @@ describe('validateField', () => {
     expect(
       await validateField(
         {
-          current: {
-            test: {
-              ref: {
-                type: 'text',
-                name: 'test',
-                value: 'This is a long text input!',
-              },
+          test: {
+            ref: {
+              type: 'text',
+              name: 'test',
+              value: 'This is a long text input!',
             },
           },
         },
@@ -1137,7 +1121,7 @@ describe('validateField', () => {
             test1: (value) => value.toString().length > 10,
           },
         },
-        { current: {} },
+        {},
       ),
     ).toEqual({
       test: {
@@ -1154,13 +1138,11 @@ describe('validateField', () => {
     expect(
       await validateField(
         {
-          current: {
-            test: {
-              ref: {
-                type: 'radio',
-                name: 'test',
-                value: 'This is a long text input!',
-              },
+          test: {
+            ref: {
+              type: 'radio',
+              name: 'test',
+              value: 'This is a long text input!',
             },
           },
         },
@@ -1181,7 +1163,7 @@ describe('validateField', () => {
             },
           ],
         },
-        { current: {} },
+        {},
       ),
     ).toEqual({
       test: {
@@ -1194,13 +1176,11 @@ describe('validateField', () => {
     expect(
       await validateField(
         {
-          current: {
-            test: {
-              ref: {
-                type: 'radio',
-                name: 'test',
-                value: 'This is a long text input!',
-              },
+          test: {
+            ref: {
+              type: 'radio',
+              name: 'test',
+              value: 'This is a long text input!',
             },
           },
         },
@@ -1220,7 +1200,7 @@ describe('validateField', () => {
             },
           ],
         },
-        { current: {} },
+        {},
       ),
     ).toEqual({});
   });
@@ -1229,13 +1209,11 @@ describe('validateField', () => {
     expect(
       await validateField(
         {
-          current: {
-            test: {
-              ref: {
-                type: 'text',
-                name: 'test',
-                value: 'This is a long text input',
-              },
+          test: {
+            ref: {
+              type: 'text',
+              name: 'test',
+              value: 'This is a long text input',
             },
           },
         },
@@ -1255,7 +1233,7 @@ describe('validateField', () => {
             },
           },
         },
-        { current: {} },
+        {},
       ),
     ).toEqual({
       test: {
@@ -1272,13 +1250,11 @@ describe('validateField', () => {
     expect(
       await validateField(
         {
-          current: {
-            test: {
-              ref: {
-                type: 'text',
-                name: 'test',
-                value: 'This is a long text input',
-              },
+          test: {
+            ref: {
+              type: 'text',
+              name: 'test',
+              value: 'This is a long text input',
             },
           },
         },
@@ -1298,7 +1274,7 @@ describe('validateField', () => {
             },
           },
         },
-        { current: {} },
+        {},
       ),
     ).toEqual({
       test: {
@@ -1317,13 +1293,11 @@ describe('validateField', () => {
     expect(
       await validateField(
         {
-          current: {
-            test: {
-              ref: {
-                type: 'text',
-                name: 'test',
-                value: 'This is a long text input',
-              },
+          test: {
+            ref: {
+              type: 'text',
+              name: 'test',
+              value: 'This is a long text input',
             },
           },
         },
@@ -1336,7 +1310,7 @@ describe('validateField', () => {
           },
           validate: (value) => value.toString().length < 3 || 'bill',
         },
-        { current: {} },
+        {},
       ),
     ).toEqual({
       test: {
@@ -1353,13 +1327,11 @@ describe('validateField', () => {
     expect(
       await validateField(
         {
-          current: {
-            test: {
-              ref: {
-                type: 'text',
-                name: 'test',
-                value: 'This is a long text input',
-              },
+          test: {
+            ref: {
+              type: 'text',
+              name: 'test',
+              value: 'This is a long text input',
             },
           },
         },
@@ -1372,7 +1344,7 @@ describe('validateField', () => {
           },
           validate: (value) => value.toString().length < 3 || 'bill',
         },
-        { current: {} },
+        {},
       ),
     ).toEqual({
       test: {
@@ -1391,10 +1363,8 @@ describe('validateField', () => {
     expect(
       await validateField(
         {
-          current: {
-            test: {
-              ref: {} as any,
-            },
+          test: {
+            ref: {} as any,
           },
         },
         false,
@@ -1406,7 +1376,7 @@ describe('validateField', () => {
           },
           validate: () => undefined,
         },
-        { current: {} },
+        {},
       ),
     ).toEqual({});
   });
@@ -1415,10 +1385,8 @@ describe('validateField', () => {
     expect(
       await validateField(
         {
-          current: {
-            test: {
-              ref: {} as any,
-            },
+          test: {
+            ref: {} as any,
           },
         },
         false,
@@ -1430,7 +1398,7 @@ describe('validateField', () => {
           },
           validate: 'validate' as any,
         },
-        { current: {} },
+        {},
       ),
     ).toEqual({});
   });
@@ -1442,9 +1410,7 @@ describe('validateField', () => {
     expect(
       await validateField(
         {
-          current: {
-            test: { ref: { type: 'text', value: '', name: 'test' } },
-          },
+          test: { ref: { type: 'text', value: '', name: 'test' } },
         },
         true,
         {
@@ -1454,13 +1420,13 @@ describe('validateField', () => {
           pattern: /d/i,
           validate: (value) => value === 'test',
         },
-        { current: {} },
+        {},
       ),
     ).toMatchSnapshot();
 
     expect(
       await validateField(
-        { current: {} },
+        {},
         true,
         {
           ref: { type: 'text', value: '123', name: 'test' },
@@ -1469,7 +1435,7 @@ describe('validateField', () => {
           pattern: /d/i,
           validate: (value) => value === 'test',
         },
-        { current: {} },
+        {},
       ),
     ).toMatchSnapshot();
   });
@@ -1481,10 +1447,8 @@ describe('validateField', () => {
     expect(
       await validateField(
         {
-          current: {
-            test: {
-              ref: { type: 'text', value: '', name: 'test' },
-            },
+          test: {
+            ref: { type: 'text', value: '', name: 'test' },
           },
         },
         true,
@@ -1505,13 +1469,13 @@ describe('validateField', () => {
             test2: (value) => value == 'test' || 'Bill',
           },
         },
-        { current: {} },
+        {},
       ),
     ).toMatchSnapshot();
 
     expect(
       await validateField(
-        { current: {} },
+        {},
         true,
         {
           ref: { type: 'text', value: 'bil', name: 'test' },
@@ -1530,13 +1494,13 @@ describe('validateField', () => {
             test2: (value) => value == 'test' || 'Bill',
           },
         },
-        { current: {} },
+        {},
       ),
     ).toMatchSnapshot();
 
     expect(
       await validateField(
-        { current: {} },
+        {},
         true,
         {
           ref: { type: 'text', value: 'bil', name: 'test' },
@@ -1555,7 +1519,7 @@ describe('validateField', () => {
             test2: (value) => value == 'test' || 'Bill',
           },
         },
-        { current: {} },
+        {},
       ),
     ).toMatchSnapshot();
   });

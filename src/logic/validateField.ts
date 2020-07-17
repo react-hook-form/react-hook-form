@@ -1,4 +1,3 @@
-import * as React from 'react';
 import getRadioValue from './getRadioValue';
 import getCheckboxValue from './getCheckboxValue';
 import isNullOrUndefined from '../utils/isNullOrUndefined';
@@ -27,7 +26,7 @@ import {
 } from '../types/form';
 
 export default async <TFieldValues extends FieldValues>(
-  fieldsRef: React.MutableRefObject<FieldRefs<TFieldValues>>,
+  fields: FieldRefs<TFieldValues>,
   validateAllFieldCriteria: boolean,
   {
     ref,
@@ -41,9 +40,8 @@ export default async <TFieldValues extends FieldValues>(
     pattern,
     validate,
   }: Field,
-  unmountFieldsStateRef: React.MutableRefObject<Record<string, any>>,
+  unmountFieldsState: Record<string, any>,
 ): Promise<FlatFieldErrors<TFieldValues>> => {
-  const fields = fieldsRef.current;
   const name: InternalFieldName<TFieldValues> = ref.name;
   const error: FlatFieldErrors<TFieldValues> = {};
   const isRadio = isRadioInput(ref);
@@ -184,7 +182,7 @@ export default async <TFieldValues extends FieldValues>(
   }
 
   if (validate) {
-    const fieldValue = getFieldsValue(fieldsRef, name, unmountFieldsStateRef);
+    const fieldValue = getFieldsValue(fields, name, unmountFieldsState);
     const validateRef = isRadioOrCheckbox && options ? options[0].ref : ref;
 
     if (isFunction(validate)) {

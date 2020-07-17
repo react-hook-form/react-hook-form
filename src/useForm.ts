@@ -245,7 +245,7 @@ export function useForm<
 
       const isFieldDirty =
         defaultValuesAtRenderRef.current[name] !==
-        getFieldValue(fieldsRef, name, unmountFieldsStateRef);
+        getFieldValue(fieldsRef.current, name, unmountFieldsStateRef);
       const isDirtyFieldExist = get(dirtyFieldsRef.current, name);
       const isFieldArray = isNameInFieldArray(fieldArrayNamesRef.current, name);
       const previousIsDirty = isDirtyRef.current;
@@ -279,7 +279,7 @@ export function useForm<
     ): Promise<boolean> => {
       if (fieldsRef.current[name]) {
         const error = await validateField<TFieldValues>(
-          fieldsRef,
+          fieldsRef.current,
           isValidateAllFieldCriteria,
           fieldsRef.current[name] as Field,
           unmountFieldsStateRef,
@@ -521,7 +521,7 @@ export function useForm<
             }
           } else {
             error = await validateField<TFieldValues>(
-              fieldsRef,
+              fieldsRef.current,
               isValidateAllFieldCriteria,
               field,
               unmountFieldsStateRef,
@@ -547,20 +547,20 @@ export function useForm<
   ): UnpackNestedValue<Pick<TFieldValues, TFieldName>>;
   function getValues(payload?: string | string[]): unknown {
     if (isString(payload)) {
-      return getFieldValue(fieldsRef, payload, unmountFieldsStateRef);
+      return getFieldValue(fieldsRef.current, payload, unmountFieldsStateRef);
     }
 
     if (isArray(payload)) {
       return payload.reduce(
         (previous, name) => ({
           ...previous,
-          [name]: getFieldValue(fieldsRef, name, unmountFieldsStateRef),
+          [name]: getFieldValue(fieldsRef.current, name, unmountFieldsStateRef),
         }),
         {},
       );
     }
 
-    return getFieldsValues(fieldsRef, unmountFieldsStateRef);
+    return getFieldsValues(fieldsRef.current, unmountFieldsStateRef);
   }
 
   const validateResolver = React.useCallback(
@@ -588,7 +588,7 @@ export function useForm<
   const removeFieldEventListener = React.useCallback(
     (field: Field, forceDelete?: boolean) =>
       findRemovedFieldAndRemoveListener(
-        fieldsRef,
+        fieldsRef.current,
         handleChangeRef.current!,
         field,
         unmountFieldsStateRef,
@@ -675,7 +675,7 @@ export function useForm<
         ? defaultValuesRef.current
         : defaultValue;
       const fieldValues = getFieldsValues<TFieldValues>(
-        fieldsRef,
+        fieldsRef.current,
         unmountFieldsStateRef,
         fieldNames,
       );
@@ -844,7 +844,7 @@ export function useForm<
 
       if (!isOnSubmit && readFormStateRef.current.isValid) {
         validateField(
-          fieldsRef,
+          fieldsRef.current,
           isValidateAllFieldCriteria,
           field,
           unmountFieldsStateRef,
@@ -867,7 +867,7 @@ export function useForm<
       !(isFieldArray && isEmptyDefaultValue)
     ) {
       defaultValuesAtRenderRef.current[name] = isEmptyDefaultValue
-        ? getFieldValue(fieldsRef, name, unmountFieldsStateRef)
+        ? getFieldValue(fieldsRef.current, name, unmountFieldsStateRef)
         : defaultValue;
     }
 
@@ -952,7 +952,7 @@ export function useForm<
               } = field;
 
               const fieldError = await validateField(
-                fieldsRef,
+                fieldsRef.current,
                 isValidateAllFieldCriteria,
                 field,
                 unmountFieldsStateRef,
