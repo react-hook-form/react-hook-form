@@ -1,5 +1,5 @@
 import get from '../utils/get';
-import getPath from '../utils/getPath';
+import { getPath } from '../utils/getPath';
 import isEmptyObject from '../utils/isEmptyObject';
 import isUndefined from '../utils/isUndefined';
 import isObject from '../utils/isObject';
