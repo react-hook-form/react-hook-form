@@ -48,7 +48,7 @@ const Form = <TFormValues extends Record<string, any> = Record<string, any>>({
 type FormValues = {
   firstName: string;
   lastName: string;
-  sex: string;
+  gender: string;
 };
 
 export default function App() {
@@ -61,11 +61,12 @@ export default function App() {
           <Input name="firstName" ref={register} />
           <Input name="lastName" ref={register} />
           <Select
-            name="sex"
+            name="gender"
             ref={register}
             options={[
               { label: 'Female', value: 'female' },
               { label: 'Male', value: 'male' },
+              { label: 'Other', value: 'other' },
             ]}
           />
           <Input type="submit" />
