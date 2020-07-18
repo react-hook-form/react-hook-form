@@ -156,7 +156,7 @@ describe('useWatch', () => {
   });
 
   describe('update', () => {
-    it('should partially re-render', async () => {
+    it('should partial re-render', async () => {
       let childCount = 0;
       const Child = ({
         register,
