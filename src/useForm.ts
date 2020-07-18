@@ -18,6 +18,7 @@ import isRadioInput from './utils/isRadioInput';
 import isSelectInput from './utils/isSelectInput';
 import isFileInput from './utils/isFileInput';
 import isObject from './utils/isObject';
+import { getPath } from './utils/getPath';
 import isPrimitive from './utils/isPrimitive';
 import isFunction from './utils/isFunction';
 import isArray from './utils/isArray';
@@ -369,31 +370,23 @@ export function useForm<
     (
       name: InternalFieldName<TFieldValues>,
       value: FieldValue<TFieldValues>,
-      config: SetValueConfig,
-      parentFieldName?: string,
+      { shouldDirty, shouldValidate }: SetValueConfig,
     ) => {
-      for (const key in value) {
-        const fieldName = `${parentFieldName || name}${
-          isArray(value) ? `[${key}]` : `.${key}`
-        }`;
+      getPath(name, value).forEach((fieldName) => {
         const field = fieldsRef.current[fieldName];
 
-        if (isObject(value[key])) {
-          setInternalValues(name, value[key], config, fieldName);
-        }
-
         if (field) {
-          setFieldValue(field, value[key]);
+          setFieldValue(field, get({ [name]: value }, fieldName));
 
-          if (config.shouldDirty) {
+          if (shouldDirty) {
             setDirty(fieldName);
           }
 
-          if (config.shouldValidate) {
+          if (shouldValidate) {
             trigger(fieldName as FieldName<TFieldValues>);
           }
         }
-      }
+      });
     },
     [trigger, setFieldValue, setDirty],
   );
