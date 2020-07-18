@@ -5,15 +5,15 @@ import { Field } from '../types/form';
 export default function attachEventListeners({
   field: { ref },
   handleChange,
-  isRadioOrCheckbox,
+  shouldAttachChangeEvent,
 }: {
   field: Field;
-  isRadioOrCheckbox: boolean;
+  shouldAttachChangeEvent: boolean;
   handleChange?: EventListenerOrEventListenerObject;
 }): void {
   if (isHTMLElement(ref) && handleChange) {
     ref.addEventListener(
-      isRadioOrCheckbox ? EVENTS.CHANGE : EVENTS.INPUT,
+      shouldAttachChangeEvent ? EVENTS.CHANGE : EVENTS.INPUT,
       handleChange,
     );
     ref.addEventListener(EVENTS.BLUR, handleChange);

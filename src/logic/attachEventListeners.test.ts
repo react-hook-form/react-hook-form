@@ -21,7 +21,7 @@ describe('attachEventListeners', () => {
 
     expect(
       attachEventListeners({
-        isRadioOrCheckbox: true,
+        shouldAttachChangeEvent: true,
         field: fields.test,
         handleChange,
       }),
@@ -48,7 +48,7 @@ describe('attachEventListeners', () => {
     expect(
       attachEventListeners({
         field: fields.test,
-        isRadioOrCheckbox: true,
+        shouldAttachChangeEvent: true,
         handleChange,
       }),
     ).toBeUndefined();
@@ -74,7 +74,7 @@ describe('attachEventListeners', () => {
     expect(
       attachEventListeners({
         field: fields.test,
-        isRadioOrCheckbox: true,
+        shouldAttachChangeEvent: true,
         handleChange,
       }),
     ).toBeUndefined();
@@ -99,7 +99,7 @@ describe('attachEventListeners', () => {
     expect(
       attachEventListeners({
         field: fields.test,
-        isRadioOrCheckbox: true,
+        shouldAttachChangeEvent: true,
         handleChange,
       }),
     ).toBeUndefined();
@@ -123,7 +123,7 @@ describe('attachEventListeners', () => {
     expect(
       attachEventListeners({
         field: fields.test,
-        isRadioOrCheckbox: false,
+        shouldAttachChangeEvent: false,
         handleChange,
       }),
     ).toBeUndefined();
@@ -149,7 +149,7 @@ describe('attachEventListeners', () => {
     expect(
       attachEventListeners({
         field: fields.test,
-        isRadioOrCheckbox: false,
+        shouldAttachChangeEvent: false,
         handleChange,
       }),
     ).toBeUndefined();
@@ -174,7 +174,7 @@ describe('attachEventListeners', () => {
     expect(
       attachEventListeners({
         field: fields.test,
-        isRadioOrCheckbox: true,
+        shouldAttachChangeEvent: true,
         handleChange,
       }),
     ).toBeUndefined();
@@ -199,7 +199,7 @@ describe('attachEventListeners', () => {
     expect(
       attachEventListeners({
         field: fields.test,
-        isRadioOrCheckbox: false,
+        shouldAttachChangeEvent: false,
         handleChange,
       }),
     ).toBeUndefined();
@@ -225,7 +225,7 @@ describe('attachEventListeners', () => {
     expect(
       attachEventListeners({
         field: fields.test as any,
-        isRadioOrCheckbox: false,
+        shouldAttachChangeEvent: false,
         handleChange: () => {},
       }),
     ).toBeUndefined();
@@ -249,7 +249,7 @@ describe('attachEventListeners', () => {
     expect(
       attachEventListeners({
         field: fields.test as any,
-        isRadioOrCheckbox: false,
+        shouldAttachChangeEvent: false,
       }),
     ).toBeUndefined();
     expect(addEventListener).not.toBeCalled();

@@ -870,8 +870,8 @@ export function useForm<
           isRadioOrCheckbox && field.options
             ? field.options[field.options.length - 1]
             : field,
-        isRadioOrCheckbox:
-          isRadioOrCheckbox || isSelectInput(ref as FieldElement),
+        shouldAttachChangeEvent:
+          isRadioOrCheckbox || isSelectInput(ref) || isFileInput(ref),
         handleChange: handleChangeRef.current,
       });
     }
