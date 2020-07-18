@@ -3,10 +3,16 @@ import { useForm } from './useForm';
 import { useWatch } from './useWatch';
 import generateId from './logic/generateId';
 import { renderHook, act } from '@testing-library/react-hooks';
-import { render, screen, fireEvent } from '@testing-library/react';
+import {
+  render,
+  screen,
+  fireEvent,
+  act as actComponent,
+} from '@testing-library/react';
 import { reconfigureControl } from './__mocks__/reconfigureControl';
 import { FormProvider } from './useFormContext';
 import { useFieldArray } from './useFieldArray';
+import { Control } from './types';
 
 jest.mock('./logic/generateId');
 
@@ -150,6 +156,65 @@ describe('useWatch', () => {
   });
 
   describe('update', () => {
+    it('should partially re-render', async () => {
+      let childCount = 0;
+      const Child = ({
+        register,
+        control,
+      }: {
+        register: (ref: HTMLInputElement) => void;
+        control: Control;
+      }) => {
+        useWatch({ name: 'child', control });
+        childCount++;
+        return <input type="text" name="child" ref={register} />;
+      };
+
+      let parentCount = 0;
+      const Parent = () => {
+        const { register, handleSubmit, control } = useForm();
+        parentCount++;
+        return (
+          <form onSubmit={handleSubmit(() => {})}>
+            <input type="text" name="parent" ref={register} />
+            <Child register={register} control={control} />
+            <button>submit</button>
+          </form>
+        );
+      };
+
+      render(<Parent />);
+
+      const childInput = screen.getAllByRole('textbox')[1];
+
+      fireEvent.input(childInput, {
+        target: { value: 'test' },
+      });
+
+      expect(parentCount).toBe(1);
+      expect(childCount).toBe(2);
+
+      parentCount = 0;
+      childCount = 0;
+
+      await actComponent(async () => {
+        await fireEvent.submit(screen.getByRole('button', { name: /submit/i }));
+      });
+
+      expect(parentCount).toBe(2);
+      expect(childCount).toBe(2);
+
+      parentCount = 0;
+      childCount = 0;
+
+      await actComponent(async () => {
+        await fireEvent.input(childInput, { target: { value: 'test1' } });
+      });
+
+      expect(parentCount).toBe(0);
+      expect(childCount).toBe(1);
+    });
+
     it('should not throw error when null or undefined is set', () => {
       const watchedValue: Record<string, any> = {};
       const Component = () => {
