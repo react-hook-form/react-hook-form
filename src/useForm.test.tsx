@@ -530,7 +530,6 @@ describe('useForm', () => {
       expect(reset).toHaveBeenCalled();
     });
 
-    // TODO: fix to not use control
     it('should not reset if OmitResetState is specified', async () => {
       const { result } = renderHook(() => useForm());
 
