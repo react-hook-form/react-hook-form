@@ -20,11 +20,7 @@ describe('attachEventListeners', () => {
     };
 
     expect(
-      attachEventListeners({
-        isRadioOrCheckbox: true,
-        field: fields.test,
-        handleChange,
-      }),
+      attachEventListeners(fields.test, true, handleChange),
     ).toBeUndefined();
 
     expect(addEventListener).toBeCalledWith('change', handleChange);
@@ -46,11 +42,7 @@ describe('attachEventListeners', () => {
     };
 
     expect(
-      attachEventListeners({
-        field: fields.test,
-        isRadioOrCheckbox: true,
-        handleChange,
-      }),
+      attachEventListeners(fields.test, true, handleChange),
     ).toBeUndefined();
 
     expect(addEventListener).toBeCalledWith('change', handleChange);
@@ -72,11 +64,7 @@ describe('attachEventListeners', () => {
     };
 
     expect(
-      attachEventListeners({
-        field: fields.test,
-        isRadioOrCheckbox: true,
-        handleChange,
-      }),
+      attachEventListeners(fields.test, true, handleChange),
     ).toBeUndefined();
 
     expect(addEventListener).toBeCalledWith('blur', handleChange);
@@ -97,11 +85,7 @@ describe('attachEventListeners', () => {
     };
 
     expect(
-      attachEventListeners({
-        field: fields.test,
-        isRadioOrCheckbox: true,
-        handleChange,
-      }),
+      attachEventListeners(fields.test, true, handleChange),
     ).toBeUndefined();
 
     expect(addEventListener).toBeCalledWith('blur', handleChange);
@@ -121,11 +105,7 @@ describe('attachEventListeners', () => {
     };
 
     expect(
-      attachEventListeners({
-        field: fields.test,
-        isRadioOrCheckbox: false,
-        handleChange,
-      }),
+      attachEventListeners(fields.test, false, handleChange),
     ).toBeUndefined();
 
     expect(addEventListener).toBeCalledWith('input', handleChange);
@@ -147,11 +127,7 @@ describe('attachEventListeners', () => {
     };
 
     expect(
-      attachEventListeners({
-        field: fields.test,
-        isRadioOrCheckbox: false,
-        handleChange,
-      }),
+      attachEventListeners(fields.test, false, handleChange),
     ).toBeUndefined();
 
     expect(addEventListener).toBeCalledWith('input', handleChange);
@@ -172,11 +148,7 @@ describe('attachEventListeners', () => {
     };
 
     expect(
-      attachEventListeners({
-        field: fields.test,
-        isRadioOrCheckbox: true,
-        handleChange,
-      }),
+      attachEventListeners(fields.test, true, handleChange),
     ).toBeUndefined();
 
     expect(addEventListener).toBeCalledWith('change', handleChange);
@@ -197,11 +169,7 @@ describe('attachEventListeners', () => {
     };
 
     expect(
-      attachEventListeners({
-        field: fields.test,
-        isRadioOrCheckbox: false,
-        handleChange,
-      }),
+      attachEventListeners(fields.test, false, handleChange),
     ).toBeUndefined();
 
     expect(addEventListener).toBeCalledWith('input', handleChange);
@@ -222,13 +190,7 @@ describe('attachEventListeners', () => {
       },
     };
 
-    expect(
-      attachEventListeners({
-        field: fields.test as any,
-        isRadioOrCheckbox: false,
-        handleChange: () => {},
-      }),
-    ).toBeUndefined();
+    expect(attachEventListeners(fields.test, false, () => {})).toBeUndefined();
     expect(addEventListener).not.toBeCalled();
   });
 
@@ -246,12 +208,7 @@ describe('attachEventListeners', () => {
       },
     };
 
-    expect(
-      attachEventListeners({
-        field: fields.test as any,
-        isRadioOrCheckbox: false,
-      }),
-    ).toBeUndefined();
+    expect(attachEventListeners(fields.test, false)).toBeUndefined();
     expect(addEventListener).not.toBeCalled();
   });
 });
