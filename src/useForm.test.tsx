@@ -518,19 +518,6 @@ describe('useForm', () => {
       expect(result.current.control.unmountFieldsStateRef.current).toEqual({});
     });
 
-    it('should execute resetFieldArrayFunctionRef if resetFieldArrayFunctionRef is exist', async () => {
-      const { result } = renderHook(() => useForm());
-      const reset = jest.fn();
-      result.current.control.resetFieldArrayFunctionRef.current['test'] = reset;
-
-      result.current.register('test');
-
-      act(() => result.current.reset({ test: 'test' }));
-
-      expect(reset).toHaveBeenCalled();
-    });
-
-    // TODO: fix to not use control
     it('should not reset if OmitResetState is specified', async () => {
       const { result } = renderHook(() => useForm());
 
