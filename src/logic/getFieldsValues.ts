@@ -31,7 +31,7 @@ export default <TFieldValues extends FieldValues>(
   }
 
   return {
-    ...(unmountFieldsStateRef || {}).current,
+    ...transformToNestObject((unmountFieldsStateRef || {}).current || {}),
     ...transformToNestObject(output),
   };
 };
