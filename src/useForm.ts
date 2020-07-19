@@ -859,21 +859,22 @@ export function useForm<
       !defaultValuesAtRenderRef.current[name] &&
       !(isFieldArray && isEmptyDefaultValue)
     ) {
+      const fieldValue = getFieldValue(fieldsRef, name, unmountFieldsStateRef);
       defaultValuesAtRenderRef.current[name] = isEmptyDefaultValue
-        ? getFieldValue(fieldsRef, name, unmountFieldsStateRef)
+        ? isObject(fieldValue)
+          ? { ...fieldValue }
+          : fieldValue
         : defaultValue;
     }
 
     if (type) {
-      attachEventListeners({
-        field:
-          isRadioOrCheckbox && field.options
-            ? field.options[field.options.length - 1]
-            : field,
-        shouldAttachChangeEvent:
-          isRadioOrCheckbox || isSelectInput(ref) || isFileInput(ref),
-        handleChange: handleChangeRef.current,
-      });
+      attachEventListeners(
+        isRadioOrCheckbox && field.options
+          ? field.options[field.options.length - 1]
+          : field,
+        isRadioOrCheckbox || isSelectInput(ref),
+        handleChangeRef.current,
+      );
     }
   }
 
