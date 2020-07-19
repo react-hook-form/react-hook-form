@@ -103,7 +103,7 @@ export type UseFormOptions<
 
 export type MutationWatcher = {
   disconnect: VoidFunction;
-  observe?: any;
+  observe?: (target: Node, options?: MutationObserverInit) => void;
 };
 
 export type Message = string;
