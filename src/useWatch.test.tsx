@@ -215,7 +215,7 @@ describe('useWatch', () => {
       expect(childCount).toBe(1);
     });
 
-    it("should not external re-render when field name don't match", async () => {
+    it("should not re-render external component when field name don't match", async () => {
       let key = 1;
 
       (generateId as any).mockImplementation(() => key++);
