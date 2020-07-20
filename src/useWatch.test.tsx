@@ -215,6 +215,46 @@ describe('useWatch', () => {
       expect(childCount).toBe(1);
     });
 
+    it("should not re-render external component when field name don't match", async () => {
+      let key = 1;
+
+      (generateId as any).mockImplementation(() => key++);
+
+      let renderCount = 0;
+
+      const Child = ({ control }: { control: Control }) => {
+        useWatch({ name: 'test2', control });
+
+        return <div />;
+      };
+
+      const Parent = () => {
+        const { register, control } = useForm();
+        useWatch({ name: 'test1', control });
+
+        renderCount++;
+
+        return (
+          <form>
+            <input type="text" name="test1" ref={register} />
+            <input type="text" name="test2" ref={register} />
+            <Child control={control} />
+          </form>
+        );
+      };
+
+      render(<Parent />);
+
+      fireEvent.input(screen.getAllByRole('textbox')[1], {
+        target: {
+          name: 'test2',
+          value: 'value',
+        },
+      });
+
+      expect(renderCount).toBe(1);
+    });
+
     it('should not throw error when null or undefined is set', () => {
       const watchedValue: Record<string, any> = {};
       const Component = () => {
