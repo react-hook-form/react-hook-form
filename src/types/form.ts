@@ -249,7 +249,7 @@ export type Control<TFieldValues extends FieldValues = FieldValues> = Pick<
     Record<FieldArrayName, any[]>
   >;
   dirtyFieldsRef: React.MutableRefObject<Dirtied<TFieldValues>>;
-  validateSchemaIsValid?: (fieldsValues: TFieldValues) => void;
+  validateSchemaIsValid?: (fieldsValues: any) => void;
   touchedFieldsRef: React.MutableRefObject<Touched<TFieldValues>>;
   watchFieldsRef: React.MutableRefObject<Set<InternalFieldName<TFieldValues>>>;
   isWatchAllRef: React.MutableRefObject<boolean>;
