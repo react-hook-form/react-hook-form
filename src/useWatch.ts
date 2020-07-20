@@ -11,7 +11,7 @@ import {
   UnpackNestedValue,
   Control,
 } from './types/form';
-import { LiteralToPrimitive, DeepPartial } from './types/utils';
+import { DeepPartial } from './types/utils';
 
 export function useWatch<TWatchFieldValues extends FieldValues>(props: {
   defaultValue?: UnpackNestedValue<DeepPartial<TWatchFieldValues>>;
@@ -20,12 +20,12 @@ export function useWatch<TWatchFieldValues extends FieldValues>(props: {
 export function useWatch<TWatchFieldValue extends any>(props: {
   name: string;
   control?: Control;
-}): undefined | UnpackNestedValue<LiteralToPrimitive<TWatchFieldValue>>;
+}): undefined | UnpackNestedValue<TWatchFieldValue>;
 export function useWatch<TWatchFieldValue extends any>(props: {
   name: string;
-  defaultValue: UnpackNestedValue<LiteralToPrimitive<TWatchFieldValue>>;
+  defaultValue: UnpackNestedValue<TWatchFieldValue>;
   control?: Control;
-}): UnpackNestedValue<LiteralToPrimitive<TWatchFieldValue>>;
+}): UnpackNestedValue<TWatchFieldValue>;
 export function useWatch<TWatchFieldValues extends FieldValues>(props: {
   name: string[];
   defaultValue?: UnpackNestedValue<DeepPartial<TWatchFieldValues>>;
