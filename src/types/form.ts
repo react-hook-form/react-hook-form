@@ -210,7 +210,7 @@ export type CustomElement<TFieldValues extends FieldValues> = {
   checked?: boolean;
   options?: HTMLOptionsCollection;
   files?: FileList | null;
-  focus?: () => void;
+  focus?: VoidFunction;
 };
 
 export type HandleChange = (event: Event) => Promise<void | boolean>;
@@ -223,20 +223,22 @@ export type Control<TFieldValues extends FieldValues = FieldValues> = Pick<
   UseFormMethods<TFieldValues>,
   'register' | 'unregister' | 'setValue' | 'getValues' | 'trigger' | 'formState'
 > & {
-  reRender: () => void;
+  reRender: VoidFunction;
   removeFieldEventListener: (field: Field, forceDelete?: boolean) => void;
   mode: {
-    isOnBlur: boolean;
-    isOnSubmit: boolean;
-    isOnChange: boolean;
+    readonly isOnBlur: boolean;
+    readonly isOnSubmit: boolean;
+    readonly isOnChange: boolean;
   };
   reValidateMode: {
-    isReValidateOnBlur: boolean;
-    isReValidateOnChange: boolean;
+    readonly isReValidateOnBlur: boolean;
+    readonly isReValidateOnChange: boolean;
   };
-  fieldArrayDefaultValues: React.MutableRefObject<Record<string, any[]>>;
+  fieldArrayDefaultValues: React.MutableRefObject<
+    Record<FieldArrayName, any[]>
+  >;
   dirtyFieldsRef: React.MutableRefObject<Dirtied<TFieldValues>>;
-  validateSchemaIsValid?: (fieldsValues: any) => void;
+  validateSchemaIsValid?: (fieldsValues: FieldValues) => void;
   touchedFieldsRef: React.MutableRefObject<Touched<TFieldValues>>;
   watchFieldsRef: React.MutableRefObject<Set<InternalFieldName<TFieldValues>>>;
   isWatchAllRef: React.MutableRefObject<boolean>;
@@ -247,10 +249,12 @@ export type Control<TFieldValues extends FieldValues = FieldValues> = Pick<
   errorsRef: React.MutableRefObject<FieldErrors<TFieldValues>>;
   fieldsRef: React.MutableRefObject<FieldRefs<TFieldValues>>;
   resetFieldArrayFunctionRef: React.MutableRefObject<
-    Record<string, () => void>
+    Record<string, VoidFunction>
   >;
-  unmountFieldsStateRef: Record<string, any>;
-  fieldArrayNamesRef: React.MutableRefObject<Set<string>>;
+  unmountFieldsStateRef: Record<InternalFieldName<FieldValues>, any>;
+  fieldArrayNamesRef: React.MutableRefObject<
+    Set<InternalFieldName<FieldValues>>
+  >;
   isDirtyRef: React.MutableRefObject<boolean>;
   isSubmittedRef: React.MutableRefObject<boolean>;
   readFormStateRef: React.MutableRefObject<
@@ -272,11 +276,13 @@ export type Control<TFieldValues extends FieldValues = FieldValues> = Pick<
   renderWatchedInputs: (name: string, found?: boolean) => void;
 };
 
+export type FieldArrayName = string;
+
 export type UseFieldArrayOptions<
   TKeyName extends string = 'id',
   TControl extends Control = Control
 > = {
-  name: string;
+  name: FieldArrayName;
   keyName?: TKeyName;
   control?: TControl;
 };
