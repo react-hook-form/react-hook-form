@@ -219,6 +219,17 @@ export type FieldValuesFromControl<
   TControl extends Control
 > = TControl extends Control<infer TFieldValues> ? TFieldValues : never;
 
+export type FieldArrayName = string;
+
+export type UseFieldArrayOptions<
+  TKeyName extends string = 'id',
+  TControl extends Control = Control
+> = {
+  name: FieldArrayName;
+  keyName?: TKeyName;
+  control?: TControl;
+};
+
 export type Control<TFieldValues extends FieldValues = FieldValues> = Pick<
   UseFormMethods<TFieldValues>,
   'register' | 'unregister' | 'setValue' | 'getValues' | 'trigger' | 'formState'
@@ -274,17 +285,6 @@ export type Control<TFieldValues extends FieldValues = FieldValues> = Pick<
     watchId?: string,
   ) => unknown;
   renderWatchedInputs: (name: string, found?: boolean) => void;
-};
-
-export type FieldArrayName = string;
-
-export type UseFieldArrayOptions<
-  TKeyName extends string = 'id',
-  TControl extends Control = Control
-> = {
-  name: FieldArrayName;
-  keyName?: TKeyName;
-  control?: TControl;
 };
 
 export type ArrayField<
