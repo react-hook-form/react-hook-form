@@ -100,4 +100,32 @@ describe('getFieldsValues', () => {
       test1: 'test',
     });
   });
+
+  it('should combined unmounted flat form values with form values', () => {
+    // @ts-ignore
+    getFieldValue.mockImplementation(() => 'test');
+    expect(
+      getFieldsValues(
+        {
+          current: {
+            test: {
+              ref: { name: 'test' },
+            },
+          },
+        },
+        {
+          current: {
+            test1: 'test',
+            'test2.test': 'test1',
+          },
+        },
+      ),
+    ).toEqual({
+      test: 'test',
+      test1: 'test',
+      test2: {
+        test: 'test1',
+      },
+    });
+  });
 });

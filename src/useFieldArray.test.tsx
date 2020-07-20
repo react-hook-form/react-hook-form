@@ -88,6 +88,46 @@ describe('useFieldArray', () => {
 
       expect(getValues()).toEqual({});
     });
+
+    it('should remove reset method when field array is unmouned', () => {
+      const { result, unmount } = renderHook(() => {
+        const { register, control } = useForm({
+          defaultValues: {
+            test: [{ value: 'default' }],
+          },
+        });
+        const { fields, append } = useFieldArray({
+          name: 'test',
+          control,
+        });
+        return { register, control, fields, append };
+      });
+
+      const input = document.createElement('input');
+      input.type = 'text';
+      input.name = 'test[0]';
+      input.removeEventListener = jest.fn();
+
+      result.current.register()(input);
+
+      act(() => {
+        result.current.append({ value: 'test' });
+      });
+
+      unmount();
+
+      expect(result.current.fields).toEqual([
+        { id: '1', value: 'default' },
+        { id: '1', value: 'test' },
+      ]);
+      expect(input.removeEventListener).toHaveBeenCalled();
+      expect(result.current.control.fieldArrayNamesRef.current).toEqual(
+        new Set(),
+      );
+      expect(result.current.control.resetFieldArrayFunctionRef.current).toEqual(
+        {},
+      );
+    });
   });
 
   describe('unregister', () => {
@@ -134,6 +174,35 @@ describe('useFieldArray', () => {
       expect(getValues()).toEqual({
         test: [{ value: '' }, { value: '' }, { value: '' }],
       });
+    });
+  });
+
+  describe('with reset', () => {
+    it('should reset with field array', () => {
+      const { result } = renderHook(() => {
+        const { register, reset, control } = useForm({
+          defaultValues: {
+            test: [{ value: 'default' }],
+          },
+        });
+        const { fields, append } = useFieldArray({
+          name: 'test',
+          control,
+        });
+        return { register, reset, fields, append };
+      });
+
+      result.current.register({ type: 'text', name: 'test[0]' });
+
+      act(() => {
+        result.current.append({ value: 'test' });
+      });
+
+      act(() => {
+        result.current.reset();
+      });
+
+      expect(result.current.fields).toEqual([{ id: '1', value: 'default' }]);
     });
   });
 
@@ -2247,46 +2316,6 @@ describe('useFieldArray', () => {
       expect(touchedFieldsRef.current).toEqual({
         test: [undefined, { test: true }],
       });
-    });
-
-    it('should call be able to reset the Field Array', () => {
-      const resetFieldArrayFunctionRef = {
-        current: {},
-      };
-
-      const { result } = renderHook(() =>
-        useFieldArray({
-          control: reconfigureControl({
-            resetFieldArrayFunctionRef,
-            defaultValuesRef: {
-              current: { test: [{ test: '1' }, { test: '2' }, { test: '3' }] },
-            },
-          }),
-          name: 'test',
-        }),
-      );
-
-      act(() => {
-        result.current.append({ test: 'test' });
-      });
-
-      expect(result.current.fields).toEqual([
-        { id: '1', test: '1' },
-        { id: '1', test: '2' },
-        { id: '1', test: '3' },
-        { id: '1', test: 'test' },
-      ]);
-
-      act(() => {
-        // @ts-ignore
-        resetFieldArrayFunctionRef.current['test']();
-      });
-
-      expect(result.current.fields).toEqual([
-        { test: '1', id: '1' },
-        { test: '2', id: '1' },
-        { test: '3', id: '1' },
-      ]);
     });
 
     it('should trigger reRender when user is watching the all field array', () => {
