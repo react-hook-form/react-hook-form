@@ -498,7 +498,7 @@ describe('useForm', () => {
 
       expect(result.current.formState.isValid).toBeFalsy();
 
-      await act(async () =>
+      act(() =>
         result.current.reset({
           issue: 'test',
         }),
