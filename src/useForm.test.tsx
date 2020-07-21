@@ -480,6 +480,24 @@ describe('useForm', () => {
       expect(mockReset).not.toHaveBeenCalled();
     });
 
+    it('should reset correct isValid formState', async () => {
+      const { result } = renderHook(() =>
+        useForm<{ test: string }>({
+          mode: 'onChange',
+        }),
+      );
+
+      result.current.register('test', { required: true });
+
+      expect(result.current.formState.isValid).toBeFalsy();
+
+      result.current.reset({
+        test: 'test',
+      });
+
+      expect(result.current.formState.isValid).toBeTruthy();
+    });
+
     it('should set default value if values is specified to first argument', async () => {
       const { result } = renderHook(() => useForm());
 
