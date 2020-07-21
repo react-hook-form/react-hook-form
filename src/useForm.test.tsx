@@ -2427,6 +2427,46 @@ describe('useForm', () => {
         expect(renderCount).toBe(2);
       });
 
+      it('with sync resolver it should contain error if value is invalid with resolver', async () => {
+        const mockResolver = jest.fn();
+        const resolver = (data: any) => {
+          if (data.test) {
+            return { values: data, errors: {} };
+          }
+          mockResolver();
+          return {
+            values: data,
+            errors: {
+              test: {
+                message: 'resolver error',
+              },
+            },
+          };
+        };
+
+        render(<Component resolver={resolver} mode="onChange" />);
+
+        methods.formState.isValid;
+
+        await actComponent(async () => {
+          await fireEvent.input(screen.getByRole('textbox'), {
+            target: { name: 'test', value: 'test' },
+          });
+        });
+
+        expect(screen.getByRole('alert').textContent).toBe('');
+        expect(methods.formState.isValid).toBeTruthy();
+
+        fireEvent.input(screen.getByRole('textbox'), {
+          target: { name: 'test', value: '' },
+        });
+
+        await waitFor(() => expect(mockResolver).toHaveBeenCalled());
+        expect(screen.getByRole('alert').textContent).toBe('resolver error');
+        expect(methods.formState.isValid).toBeFalsy();
+        expect(renderCount).toBe(2);
+      });
+
       it('should make isValid change to false if it contain error that is not related name with onChange mode', async () => {
         const mockResolver = jest.fn();
         const resolver = async (data: any) => {

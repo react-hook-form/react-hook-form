@@ -557,8 +557,8 @@ export function useForm<
   }
 
   const validateResolver = React.useCallback(
-    (values = {}) => {
-      resolverRef.current!(
+    async (values = {}) => {
+      const { errors } = await resolverRef.current!(
         {
           ...defaultValuesRef.current,
           ...getValues(),
@@ -566,14 +566,13 @@ export function useForm<
         },
         contextRef.current,
         isValidateAllFieldCriteria,
-      ).then(({ errors }) => {
-        const previousFormIsValid = isValidRef.current;
-        isValidRef.current = isEmptyObject(errors);
+      );
+      const previousFormIsValid = isValidRef.current;
+      isValidRef.current = isEmptyObject(errors);
 
-        if (previousFormIsValid !== isValidRef.current) {
-          reRender();
-        }
-      });
+      if (previousFormIsValid !== isValidRef.current) {
+        reRender();
+      }
     },
     [isValidateAllFieldCriteria],
   );
