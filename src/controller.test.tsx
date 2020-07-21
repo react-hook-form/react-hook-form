@@ -355,7 +355,7 @@ describe('Controller', () => {
       fireEvent.submit(screen.getByRole('button'));
     });
 
-    await act(async () => {
+    act(() => {
       fireEvent.input(screen.getByRole('textbox'), {
         target: {
           value: 'test',
