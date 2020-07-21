@@ -480,7 +480,7 @@ describe('useForm', () => {
       expect(mockReset).not.toHaveBeenCalled();
     });
 
-    it('should reset correct isValid formState', async () => {
+    it('should reset correct isValid formState after reset with valid value', async () => {
       const { result } = renderHook(() =>
         useForm<{ input: string; issue: string }>({
           mode: VALIDATION_MODE.onChange,
