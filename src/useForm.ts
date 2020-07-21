@@ -841,12 +841,13 @@ export function useForm<
           isValidateAllFieldCriteria,
           field,
           unmountFieldsStateRef,
-        ).then((error) => {
+        ).then((error: FieldErrors) => {
           const previousFormIsValid = isValidRef.current;
 
           isEmptyObject(error)
             ? validFieldsRef.current.add(name)
-            : (isValidRef.current = false);
+            : (isValidRef.current = false) &&
+              validFieldsRef.current.delete(name);
 
           if (previousFormIsValid !== isValidRef.current) {
             reRender();
