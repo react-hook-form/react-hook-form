@@ -482,18 +482,27 @@ describe('useForm', () => {
 
     it('should reset correct isValid formState', async () => {
       const { result } = renderHook(() =>
-        useForm<{ test: string }>({
-          mode: 'onChange',
+        useForm<{ input: string; issue: string }>({
+          mode: VALIDATION_MODE.onChange,
         }),
       );
 
-      result.current.register('test', { required: true });
+      result.current.formState.isValid;
+
+      await act(async () =>
+        result.current.register(
+          { name: 'issue', value: '' },
+          { required: true },
+        ),
+      );
 
       expect(result.current.formState.isValid).toBeFalsy();
 
-      result.current.reset({
-        test: 'test',
-      });
+      await act(async () =>
+        result.current.reset({
+          issue: 'test',
+        }),
+      );
 
       expect(result.current.formState.isValid).toBeTruthy();
     });
