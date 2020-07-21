@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { render, fireEvent, act } from '@testing-library/react';
+import { render, fireEvent, act, screen } from '@testing-library/react';
 import { Controller } from './controller';
 import { reconfigureControl } from './__mocks__/reconfigureControl';
 import * as set from './utils/set';
@@ -319,6 +319,61 @@ describe('Controller', () => {
     });
 
     expect(trigger).toBeCalledWith('test');
+  });
+
+  it('should call trigger method when revalidationMode is onBlur with blur event', async () => {
+    const Component = () => {
+      const { handleSubmit, control, errors } = useForm({
+        reValidateMode: 'onBlur',
+      });
+
+      return (
+        <form onSubmit={handleSubmit(() => {})}>
+          <Controller
+            defaultValue=""
+            name="test"
+            as={<input />}
+            control={control}
+            rules={{ required: true }}
+          />
+          {errors.test && <span role="alert">required</span>}
+          <button>submit</button>
+        </form>
+      );
+    };
+    render(<Component />);
+
+    fireEvent.blur(screen.getByRole('textbox'), {
+      target: {
+        value: '',
+      },
+    });
+
+    expect(screen.queryByRole('alert')).not.toBeInTheDocument();
+
+    await act(async () => {
+      fireEvent.submit(screen.getByRole('button'));
+    });
+
+    act(() => {
+      fireEvent.input(screen.getByRole('textbox'), {
+        target: {
+          value: 'test',
+        },
+      });
+    });
+
+    expect(screen.queryByRole('alert')).toBeInTheDocument();
+
+    await act(async () => {
+      fireEvent.blur(screen.getByRole('textbox'), {
+        target: {
+          value: 'test',
+        },
+      });
+    });
+
+    expect(screen.queryByRole('alert')).not.toBeInTheDocument();
   });
 
   it("should not invoke trigger method when call component's onBlur method if isOnBlur variable is false", () => {
