@@ -96,14 +96,12 @@ export const useFieldArray = <
   const isNameKey = isKey(name);
 
   const getCurrentFieldsValues = () =>
-    watchFieldsRef.current.has(name)
-      ? get(getValues(), name).map(
-          (item: Partial<TFieldArrayValues>, index: number) => ({
-            ...allFields.current[index],
-            ...item,
-          }),
-        )
-      : allFields.current;
+    get(getValues(), name).map(
+      (item: Partial<TFieldArrayValues>, index: number) => ({
+        ...allFields.current[index],
+        ...item,
+      }),
+    );
 
   allFields.current = fields;
 
