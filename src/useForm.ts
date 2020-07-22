@@ -845,8 +845,7 @@ export function useForm<
 
           isEmptyObject(error)
             ? validFieldsRef.current.add(name)
-            : (isValidRef.current = false) &&
-              validFieldsRef.current.delete(name);
+            : (isValidRef.current = false);
 
           if (previousFormIsValid !== isValidRef.current) {
             reRender();

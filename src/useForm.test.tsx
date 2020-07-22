@@ -201,6 +201,39 @@ describe('useForm', () => {
 
       expect(result.current.getValues()).toEqual({ test: 'test' });
     });
+
+    // check https://github.com/react-hook-form/react-hook-form/issues/2298
+    it('should reset isValid formState after reset with valid value in initial render', async () => {
+      const Component = () => {
+        const { register, reset, formState } = useForm({
+          mode: VALIDATION_MODE.onChange,
+        });
+
+        React.useEffect(() => {
+          setTimeout(() => {
+            reset({ issue: 'test', test: 'test' });
+          });
+        }, [reset]);
+
+        return (
+          <div>
+            <input type="text" name="test" ref={register({ required: true })} />
+            <input
+              type="text"
+              name="issue"
+              ref={register({ required: true })}
+            />
+            <button disabled={!formState.isValid}>submit</button>
+          </div>
+        );
+      };
+
+      await actComponent(async () => {
+        render(<Component />);
+      });
+
+      expect(screen.getByRole('button')).not.toBeDisabled();
+    });
   });
 
   describe('unregister', () => {
@@ -478,33 +511,6 @@ describe('useForm', () => {
       actComponent(() => methods.reset());
 
       expect(mockReset).not.toHaveBeenCalled();
-    });
-
-    it('should reset correct isValid formState after reset with valid value', async () => {
-      const { result } = renderHook(() =>
-        useForm<{ input: string; issue: string }>({
-          mode: VALIDATION_MODE.onChange,
-        }),
-      );
-
-      result.current.formState.isValid;
-
-      await act(async () =>
-        result.current.register(
-          { name: 'issue', value: '' },
-          { required: true },
-        ),
-      );
-
-      expect(result.current.formState.isValid).toBeFalsy();
-
-      act(() =>
-        result.current.reset({
-          issue: 'test',
-        }),
-      );
-
-      expect(result.current.formState.isValid).toBeTruthy();
     });
 
     it('should set default value if values is specified to first argument', async () => {
