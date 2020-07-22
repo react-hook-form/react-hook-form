@@ -85,7 +85,7 @@ export type Resolver<
   values: TFieldValues,
   context?: TContext,
   validateAllFieldCriteria?: boolean,
-) => Promise<ResolverResult<TFieldValues>>;
+) => Promise<ResolverResult<TFieldValues>> | ResolverResult<TFieldValues>;
 
 export type UseFormOptions<
   TFieldValues extends FieldValues = FieldValues,
