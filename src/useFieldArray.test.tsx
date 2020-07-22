@@ -1300,7 +1300,6 @@ describe('useFieldArray', () => {
             } as any,
             dirtyFieldsRef,
             touchedFieldsRef,
-            getValues: () => ({ test: [] }),
           }),
           name: 'test',
         }),
@@ -1492,7 +1491,6 @@ describe('useFieldArray', () => {
                 dirtyFields: true,
               },
             } as any,
-            getValues: () => ({ test: [] }),
             dirtyFieldsRef,
           }),
           name: 'test',
@@ -1554,7 +1552,6 @@ describe('useFieldArray', () => {
               },
             } as any,
             touchedFieldsRef: touchedFieldsRef as any,
-            getValues: () => ({ test: [] }),
             fieldsRef: {
               current: {
                 'test[0]': {
@@ -1620,7 +1617,6 @@ describe('useFieldArray', () => {
         useFieldArray({
           control: {
             ...reconfigureControl(),
-            getValues: () => ({ test: [] }),
             errorsRef: errorsRef as any,
             fieldsRef: {
               current: {
@@ -1686,7 +1682,6 @@ describe('useFieldArray', () => {
             isWatchAllRef: {
               current: true,
             },
-            getValues: () => ({ test: [] }),
             defaultValuesRef: {
               current: { test: [{ test: '1' }, { test: '2' }] },
             },
@@ -1722,7 +1717,6 @@ describe('useFieldArray', () => {
             defaultValuesRef: {
               current: { test: [{ test: '1' }, { test: '2' }] },
             },
-            getValues: () => ({ test: [] }),
             fieldsRef: {
               current: {
                 'test[0]': {
@@ -1863,7 +1857,6 @@ describe('useFieldArray', () => {
                 'test[1]': { ref: { name: 'test[1]', value: { test: '2' } } },
               },
             },
-            getValues: () => ({ test: [] }),
             readFormStateRef: {
               current: {
                 dirtyFields: true,
