@@ -593,6 +593,30 @@ describe('useForm', () => {
   });
 
   describe('setValue', () => {
+    it('should empty string when value is null or undefined when registered field is HTMLElement', () => {
+      const { result } = renderHook(() =>
+        useForm<{ test: string }>({
+          defaultValues: {
+            test: 'test',
+          },
+        }),
+      );
+
+      const elm = document.createElement('input');
+      elm.type = 'text';
+      elm.name = 'test';
+
+      result.current.register(elm);
+
+      result.current.setValue('test', null as any);
+
+      expect(result.current.control.fieldsRef.current.test?.ref.value).toBe('');
+
+      result.current.setValue('test', undefined);
+
+      expect(result.current.control.fieldsRef.current.test?.ref.value).toBe('');
+    });
+
     it('should set value of radio input correctly', async () => {
       const { result } = renderHook(() => useForm<{ test: string }>());
 
