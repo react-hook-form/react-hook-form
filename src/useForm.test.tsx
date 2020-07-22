@@ -599,6 +599,30 @@ describe('useForm', () => {
   });
 
   describe('setValue', () => {
+    it('should empty string when value is null or undefined when registered field is HTMLElement', () => {
+      const { result } = renderHook(() =>
+        useForm<{ test: string }>({
+          defaultValues: {
+            test: 'test',
+          },
+        }),
+      );
+
+      const elm = document.createElement('input');
+      elm.type = 'text';
+      elm.name = 'test';
+
+      result.current.register(elm);
+
+      result.current.setValue('test', null as any);
+
+      expect(result.current.control.fieldsRef.current.test?.ref.value).toBe('');
+
+      result.current.setValue('test', undefined);
+
+      expect(result.current.control.fieldsRef.current.test?.ref.value).toBe('');
+    });
+
     it('should set value of radio input correctly', async () => {
       const { result } = renderHook(() => useForm<{ test: string }>());
 
@@ -882,6 +906,25 @@ describe('useForm', () => {
       });
 
       expect(result.current.control.fieldsRef.current['test']).toBeUndefined();
+    });
+
+    // check https://github.com/react-hook-form/react-hook-form/issues/2276
+    it('should be dirty when field value is same memory object', () => {
+      const { result } = renderHook(() => useForm());
+
+      const fieldValue = { value: 'test' };
+
+      result.current.register({ name: 'test', value: fieldValue });
+
+      result.current.formState.isDirty;
+
+      fieldValue.value = 'test';
+
+      act(() =>
+        result.current.setValue('test', fieldValue, { shouldDirty: true }),
+      );
+
+      expect(result.current.formState.isDirty).toBeTruthy();
     });
 
     describe('with validation', () => {
