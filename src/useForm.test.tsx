@@ -902,6 +902,25 @@ describe('useForm', () => {
       expect(result.current.control.fieldsRef.current['test']).toBeUndefined();
     });
 
+    // check https://github.com/react-hook-form/react-hook-form/issues/2276
+    it('should be dirty when field value is same memory object', () => {
+      const { result } = renderHook(() => useForm());
+
+      const fieldValue = { value: 'test' };
+
+      result.current.register({ name: 'test', value: fieldValue });
+
+      result.current.formState.isDirty;
+
+      fieldValue.value = 'test';
+
+      act(() =>
+        result.current.setValue('test', fieldValue, { shouldDirty: true }),
+      );
+
+      expect(result.current.formState.isDirty).toBeTruthy();
+    });
+
     describe('with validation', () => {
       it('should be called trigger method if shouldValidate variable is true', async () => {
         const { result } = renderHook(() => useForm());
