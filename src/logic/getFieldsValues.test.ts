@@ -19,7 +19,10 @@ describe('getFieldsValues', () => {
             },
           },
         },
-        { current: {} },
+        {
+          unmountFieldsStateRef: { current: {} },
+          defaultValuesRef: { current: {} },
+        },
       ),
     ).toEqual({
       test: 'test',
@@ -43,7 +46,10 @@ describe('getFieldsValues', () => {
             },
           },
         },
-        { current: {} },
+        {
+          unmountFieldsStateRef: { current: {} },
+          defaultValuesRef: { current: {} },
+        },
         'test',
       ),
     ).toEqual({
@@ -70,12 +76,42 @@ describe('getFieldsValues', () => {
             },
           },
         },
-        { current: {} },
+        {
+          unmountFieldsStateRef: { current: {} },
+          defaultValuesRef: { current: {} },
+        },
         ['test', 'tex'],
       ),
     ).toEqual({
       test: 'test',
       tex: 'test',
+    });
+  });
+
+  it('should return default values', () => {
+    expect(
+      getFieldsValues(
+        {
+          current: {
+            test: {
+              ref: { name: 'test' },
+            },
+          },
+        },
+        {
+          unmountFieldsStateRef: {
+            current: {},
+          },
+          defaultValuesRef: {
+            current: {
+              test1: 'test',
+            },
+          },
+        },
+      ),
+    ).toEqual({
+      test: 'test',
+      test1: 'test',
     });
   });
 
@@ -90,9 +126,12 @@ describe('getFieldsValues', () => {
           },
         },
         {
-          current: {
-            test1: 'test',
+          unmountFieldsStateRef: {
+            current: {
+              test1: 'test',
+            },
           },
+          defaultValuesRef: { current: {} },
         },
       ),
     ).toEqual({
@@ -114,10 +153,13 @@ describe('getFieldsValues', () => {
           },
         },
         {
-          current: {
-            test1: 'test',
-            'test2.test': 'test1',
+          unmountFieldsStateRef: {
+            current: {
+              test1: 'test',
+              'test2.test': 'test1',
+            },
           },
+          defaultValuesRef: { current: {} },
         },
       ),
     ).toEqual({
@@ -126,6 +168,35 @@ describe('getFieldsValues', () => {
       test2: {
         test: 'test1',
       },
+    });
+  });
+
+  it('should return value that merged default values with unmounted values', () => {
+    expect(
+      getFieldsValues(
+        {
+          current: {
+            test: {
+              ref: { name: 'test' },
+            },
+          },
+        },
+        {
+          unmountFieldsStateRef: {
+            current: {
+              test1: 'unmounted',
+            },
+          },
+          defaultValuesRef: {
+            current: {
+              test1: 'default',
+            },
+          },
+        },
+      ),
+    ).toEqual({
+      test: 'test',
+      test1: 'unmounted',
     });
   });
 });
