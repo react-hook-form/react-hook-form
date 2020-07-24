@@ -197,9 +197,11 @@ describe('useForm', () => {
 
       unmount();
 
-      result.current.register({ type: 'text', name: 'test' });
+      const ref = { type: 'text', name: 'test' };
 
-      expect(result.current.getValues()).toEqual({ test: 'test' });
+      result.current.register(ref);
+
+      expect(ref).toEqual({ type: 'text', name: 'test', value: 'test' });
     });
 
     // check https://github.com/react-hook-form/react-hook-form/issues/2298
