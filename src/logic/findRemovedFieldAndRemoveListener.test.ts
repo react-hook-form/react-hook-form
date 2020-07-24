@@ -356,7 +356,7 @@ describe('findMissDomAndClean', () => {
         fields,
         () => ({} as any),
         fields.current.test,
-        state,
+        { unmountFieldsStateRef: state, defaultValuesRef: { current: {} } },
       );
 
       expect(state).toEqual({
@@ -388,7 +388,7 @@ describe('findMissDomAndClean', () => {
         fields,
         () => ({} as any),
         fields.current.test,
-        state,
+        { unmountFieldsStateRef: state, defaultValuesRef: { current: {} } },
         false,
         true,
       );
@@ -421,7 +421,7 @@ describe('findMissDomAndClean', () => {
         {
           ref: { name: 'test', type: 'text' },
         },
-        state,
+        { unmountFieldsStateRef: state, defaultValuesRef: { current: {} } },
         false,
       );
 
@@ -447,7 +447,7 @@ describe('findMissDomAndClean', () => {
         {
           ref: { name: 'test', type: 'text' },
         },
-        state,
+        { unmountFieldsStateRef: state, defaultValuesRef: { current: {} } },
         false,
       );
 
