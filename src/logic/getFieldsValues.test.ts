@@ -4,6 +4,10 @@ import getFieldValue from './getFieldValue';
 jest.mock('./getFieldValue');
 
 describe('getFieldsValues', () => {
+  afterEach(() => {
+    jest.restoreAllMocks();
+  });
+
   it('should return all fields value', () => {
     // @ts-ignore
     getFieldValue.mockImplementation(() => 'test');
@@ -88,15 +92,11 @@ describe('getFieldsValues', () => {
     });
   });
 
-  it('should return default values', () => {
+  it('should return default values when field is empty', () => {
     expect(
       getFieldsValues(
         {
-          current: {
-            test: {
-              ref: { name: 'test' },
-            },
-          },
+          current: {},
         },
         {
           unmountFieldsStateRef: {
@@ -110,12 +110,14 @@ describe('getFieldsValues', () => {
         },
       ),
     ).toEqual({
-      test: 'test',
       test1: 'test',
     });
   });
 
   it('should return unmounted values', () => {
+    // @ts-ignore
+    getFieldValue.mockImplementation(() => 'test');
+
     expect(
       getFieldsValues(
         {
