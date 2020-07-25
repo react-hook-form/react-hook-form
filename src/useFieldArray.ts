@@ -124,7 +124,7 @@ export const useFieldArray = <
     }
   };
 
-  const shouldRenderFieldArray = (shouldRender: boolean) => {
+  const shouldRenderFieldArray = (shouldRender?: boolean) => {
     if (
       readFormStateRef.current.dirtyFields ||
       readFormStateRef.current.isDirty
@@ -449,6 +449,8 @@ export const useFieldArray = <
           break;
         }
       }
+
+      shouldRenderFieldArray();
     }
 
     if (focusIndexRef.current > -1) {
