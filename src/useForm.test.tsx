@@ -766,6 +766,34 @@ describe('useForm', () => {
       });
     });
 
+    it('should set object array value', () => {
+      const { result } = renderHook(() =>
+        useForm<{ test: string; checkbox: string[] }>(),
+      );
+
+      result.current.register({ name: 'test[0].one' });
+      result.current.register({ name: 'test[0].two' });
+      result.current.register({ name: 'test[0].three' });
+
+      act(() => {
+        result.current.setValue('test[0]', {
+          one: 'ONE',
+          two: 'TWO',
+          three: 'THREE',
+        });
+      });
+
+      expect(result.current.getValues()).toEqual({
+        test: [
+          {
+            one: 'ONE',
+            two: 'TWO',
+            three: 'THREE',
+          },
+        ],
+      });
+    });
+
     it('should set unmountFieldsState value when shouldUnregister is set to false', async () => {
       const { result } = renderHook(() =>
         useForm<{ test: string; checkbox: string[] }>({
