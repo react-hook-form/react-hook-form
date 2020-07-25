@@ -443,14 +443,16 @@ export const useFieldArray = <
     if (isWatchAllRef.current) {
       reRender();
     } else if (watchFieldsRef) {
+      let shouldRenderUseWatch = true;
       for (const watchField of watchFieldsRef.current) {
         if (watchField.startsWith(name)) {
           reRender();
+          shouldRenderUseWatch = false;
           break;
         }
       }
 
-      shouldRenderFieldArray();
+      shouldRenderUseWatch && shouldRenderFieldArray();
     }
 
     if (focusIndexRef.current > -1) {
