@@ -452,7 +452,7 @@ export const useFieldArray = <
         }
       }
 
-      shouldRenderUseWatch && shouldRenderFieldArray();
+      shouldRenderUseWatch && renderWatchedInputs(name);
     }
 
     if (focusIndexRef.current > -1) {
