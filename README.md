@@ -25,7 +25,7 @@
     </p>
 </div>
 
-English | <a href="./docs/README.zh-CN.md">简体中文</a> | <a href="./docs/README.ja-JP.md">日本語</a> | <a href="./docs/README.ko-KR.md">한국어</a> | <a href="./docs/README.fr-FR.md">Français</a> | <a href="./docs/README.it-IT.md">Italiano</a> | <a href="./docs/README.pt-BR.md">Português</a> | <a href="./docs/README.es-ES.md">Español</a> | <a href="./docs/README.ru-RU.md">Русский</a> | <a href="./docs/README.de-DE.md">Deutsch</a> | <a href="./docs/README.tr-TR.md">Türkçe</a>
+English | <a href="./docs/README.zh-TW.md">繁中</a> | <a href="./docs/README.zh-CN.md">简中</a> | <a href="./docs/README.ja-JP.md">日本語</a> | <a href="./docs/README.ko-KR.md">한국어</a> | <a href="./docs/README.fr-FR.md">Français</a> | <a href="./docs/README.it-IT.md">Italiano</a> | <a href="./docs/README.pt-BR.md">Português</a> | <a href="./docs/README.es-ES.md">Español</a> | <a href="./docs/README.ru-RU.md">Русский</a> | <a href="./docs/README.de-DE.md">Deutsch</a> | <a href="./docs/README.tr-TR.md">Türkçe</a>
 
 ## Features
 
@@ -67,10 +67,13 @@ function App() {
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
       <input name="firstname" ref={register} /> {/* register an input */}
+      
       <input name="lastname" ref={register({ required: true })} />
       {errors.lastname && 'Last name is required.'}
+      
       <input name="age" ref={register({ pattern: /\d+/ })} />
       {errors.age && 'Please enter number for age.'}
+      
       <input type="submit" />
     </form>
   );

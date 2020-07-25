@@ -246,7 +246,7 @@ export function useForm<
 
       const isFieldDirty =
         defaultValuesAtRenderRef.current[name] !==
-        getFieldValue(fieldsRef, name, unmountFieldsStateRef);
+        getFieldValue(fieldsRef, name, unmountFieldsStateRef, defaultValuesRef);
       const isDirtyFieldExist = get(dirtyFieldsRef.current, name);
       const isFieldArray = isNameInFieldArray(fieldArrayNamesRef.current, name);
       const previousIsDirty = isDirtyRef.current;
@@ -284,6 +284,7 @@ export function useForm<
           isValidateAllFieldCriteria,
           fieldsRef.current[name] as Field,
           unmountFieldsStateRef,
+          defaultValuesRef,
         );
 
         shouldRenderBaseOnError(name, error, skipReRender ? null : false);
@@ -520,6 +521,7 @@ export function useForm<
               isValidateAllFieldCriteria,
               field,
               unmountFieldsStateRef,
+              defaultValuesRef,
             );
           }
 
@@ -542,20 +544,30 @@ export function useForm<
   ): UnpackNestedValue<Pick<TFieldValues, TFieldName>>;
   function getValues(payload?: string | string[]): unknown {
     if (isString(payload)) {
-      return getFieldValue(fieldsRef, payload, unmountFieldsStateRef);
+      return getFieldValue(
+        fieldsRef,
+        payload,
+        unmountFieldsStateRef,
+        defaultValuesRef,
+      );
     }
 
     if (isArray(payload)) {
       return payload.reduce(
         (previous, name) => ({
           ...previous,
-          [name]: getFieldValue(fieldsRef, name, unmountFieldsStateRef),
+          [name]: getFieldValue(
+            fieldsRef,
+            name,
+            unmountFieldsStateRef,
+            defaultValuesRef,
+          ),
         }),
         {},
       );
     }
 
-    return getFieldsValues(fieldsRef, unmountFieldsStateRef);
+    return getFieldsValues(fieldsRef, unmountFieldsStateRef, defaultValuesRef);
   }
 
   const validateResolver = React.useCallback(
@@ -586,6 +598,7 @@ export function useForm<
         handleChangeRef.current!,
         field,
         unmountFieldsStateRef,
+        defaultValuesRef,
         shouldUnregister,
         forceDelete,
       ),
@@ -671,6 +684,7 @@ export function useForm<
       const fieldValues = getFieldsValues<TFieldValues>(
         fieldsRef,
         unmountFieldsStateRef,
+        defaultValuesRef,
         fieldNames,
       );
 
@@ -842,13 +856,13 @@ export function useForm<
           isValidateAllFieldCriteria,
           field,
           unmountFieldsStateRef,
+          defaultValuesRef,
         ).then((error: FieldErrors) => {
           const previousFormIsValid = isValidRef.current;
 
           isEmptyObject(error)
             ? validFieldsRef.current.add(name)
-            : (isValidRef.current = false) &&
-              validFieldsRef.current.delete(name);
+            : (isValidRef.current = false);
 
           if (previousFormIsValid !== isValidRef.current) {
             reRender();
@@ -861,7 +875,12 @@ export function useForm<
       !defaultValuesAtRenderRef.current[name] &&
       !(isFieldArray && isEmptyDefaultValue)
     ) {
-      const fieldValue = getFieldValue(fieldsRef, name, unmountFieldsStateRef);
+      const fieldValue = getFieldValue(
+        fieldsRef,
+        name,
+        unmountFieldsStateRef,
+        defaultValuesRef,
+      );
       defaultValuesAtRenderRef.current[name] = isEmptyDefaultValue
         ? isObject(fieldValue)
           ? { ...fieldValue }
@@ -952,6 +971,7 @@ export function useForm<
                 isValidateAllFieldCriteria,
                 field,
                 unmountFieldsStateRef,
+                defaultValuesRef,
               );
 
               if (fieldError[name]) {
@@ -1005,7 +1025,6 @@ export function useForm<
     submitCount,
     dirtyFields,
   }: OmitResetState) => {
-    fieldsRef.current = {};
     if (!errors) {
       errorsRef.current = {};
     }
@@ -1066,6 +1085,8 @@ export function useForm<
         }
       }
     }
+
+    fieldsRef.current = {};
 
     if (values) {
       defaultValuesRef.current = values;

@@ -8,7 +8,15 @@ import isArray from '../utils/isArray';
 import unset from '../utils/unset';
 import unique from '../utils/unique';
 import isUndefined from '../utils/isUndefined';
-import { Field, FieldRefs, FieldValues, Ref } from '../types/form';
+import {
+  Field,
+  FieldRefs,
+  FieldValues,
+  Ref,
+  FieldValue,
+  UnpackNestedValue,
+} from '../types/form';
+import { DeepPartial } from '../types/utils';
 
 const isSameRef = (fieldValue: Field, ref: Ref) =>
   fieldValue && fieldValue.ref === ref;
@@ -20,6 +28,10 @@ export default function findRemovedFieldAndRemoveListener<
   handleChange: ({ type, target }: Event) => Promise<void | boolean>,
   field: Field,
   unmountFieldsStateRef: React.MutableRefObject<Record<string, any>>,
+  defaultValuesRef: React.MutableRefObject<
+    | FieldValue<UnpackNestedValue<TFieldValues>>
+    | UnpackNestedValue<DeepPartial<TFieldValues>>
+  >,
   shouldUnregister?: boolean,
   forceDelete?: boolean,
 ): void {
@@ -31,7 +43,12 @@ export default function findRemovedFieldAndRemoveListener<
   const fieldRef = fieldsRef.current[name] as Field;
 
   if (!shouldUnregister) {
-    const value = getFieldValue(fieldsRef, name, unmountFieldsStateRef);
+    const value = getFieldValue(
+      fieldsRef,
+      name,
+      unmountFieldsStateRef,
+      defaultValuesRef,
+    );
 
     if (!isUndefined(value)) {
       unmountFieldsStateRef.current[name] = value;

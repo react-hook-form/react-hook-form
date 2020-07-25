@@ -96,14 +96,12 @@ export const useFieldArray = <
   const isNameKey = isKey(name);
 
   const getCurrentFieldsValues = () =>
-    watchFieldsRef.current.has(name)
-      ? get(getValues(), name).map(
-          (item: Partial<TFieldArrayValues>, index: number) => ({
-            ...allFields.current[index],
-            ...item,
-          }),
-        )
-      : allFields.current;
+    get(getValues() || {}, name, allFields.current).map(
+      (item: Partial<TFieldArrayValues>, index: number) => ({
+        ...allFields.current[index],
+        ...item,
+      }),
+    );
 
   allFields.current = fields;
 
@@ -233,8 +231,9 @@ export const useFieldArray = <
   const remove = (index?: number | number[]) => {
     shouldRender = false;
 
-    setFieldAndValidState(removeArrayAt(getCurrentFieldsValues(), index));
-    resetFields(removeArrayAt(get(getValues(), name), index));
+    const fieldValues = getCurrentFieldsValues();
+    setFieldAndValidState(removeArrayAt(fieldValues, index));
+    resetFields(removeArrayAt(fieldValues, index));
     setIsDeleted(true);
 
     if (isArray(get(errorsRef.current, name))) {
@@ -322,15 +321,16 @@ export const useFieldArray = <
   ) => {
     shouldRender = false;
     const emptyArray = fillEmptyArray(value);
+    const fieldValues = getCurrentFieldsValues();
 
     setFieldAndValidState(
       insertAt(
-        getCurrentFieldsValues(),
+        fieldValues,
         index,
         isArray(value) ? appendValueWithKey(value) : [appendId(value, keyName)],
       ),
     );
-    resetFields(insertAt(get(getValues(), name), index));
+    resetFields(insertAt(fieldValues, index));
 
     if (isArray(get(errorsRef.current, name))) {
       errorsRef.current[name] = insertAt(
