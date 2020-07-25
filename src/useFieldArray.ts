@@ -124,7 +124,7 @@ export const useFieldArray = <
     }
   };
 
-  const shouldRenderFieldArray = (shouldRender: boolean) => {
+  const shouldRenderFieldArray = (shouldRender?: boolean) => {
     if (
       readFormStateRef.current.dirtyFields ||
       readFormStateRef.current.isDirty
@@ -443,12 +443,16 @@ export const useFieldArray = <
     if (isWatchAllRef.current) {
       reRender();
     } else if (watchFieldsRef) {
+      let shouldRenderUseWatch = true;
       for (const watchField of watchFieldsRef.current) {
         if (watchField.startsWith(name)) {
           reRender();
+          shouldRenderUseWatch = false;
           break;
         }
       }
+
+      shouldRenderUseWatch && renderWatchedInputs(name);
     }
 
     if (focusIndexRef.current > -1) {

@@ -1,14 +1,14 @@
 import * as React from 'react';
-import { useForm } from './useForm';
-import { useWatch } from './useWatch';
-import generateId from './logic/generateId';
-import { renderHook, act } from '@testing-library/react-hooks';
 import {
   render,
   screen,
   fireEvent,
   act as actComponent,
 } from '@testing-library/react';
+import { renderHook, act } from '@testing-library/react-hooks';
+import { useForm } from './useForm';
+import { useWatch } from './useWatch';
+import generateId from './logic/generateId';
 import { reconfigureControl } from './__mocks__/reconfigureControl';
 import { FormProvider } from './useFormContext';
 import { useFieldArray } from './useFieldArray';
@@ -393,6 +393,54 @@ describe('useWatch', () => {
         expect(watchedValue).toEqual({
           options: [{ option: 'no' }, { option: '' }],
         });
+      });
+
+      it("should watch item correctly with useFieldArray's remove method", async () => {
+        let watchedValue: any;
+        const Component = () => {
+          const { register, control } = useForm({
+            defaultValues: {
+              test: [{ firstName: 'test' }, { firstName: 'test1' }],
+            },
+          });
+          const { fields, remove } = useFieldArray({
+            name: 'test',
+            control,
+          });
+          watchedValue = useWatch({
+            name: 'test',
+            control,
+          });
+
+          return (
+            <form>
+              {fields.map((item, i) => (
+                <div key={item.firstName}>
+                  <input
+                    type="input"
+                    name={`test[${i}].firstName`}
+                    ref={register()}
+                  />
+
+                  <button type="button" onClick={() => remove(i)}>
+                    remove
+                  </button>
+                </div>
+              ))}
+            </form>
+          );
+        };
+
+        render(<Component />);
+
+        expect(watchedValue).toEqual([
+          { firstName: 'test' },
+          { firstName: 'test1' },
+        ]);
+
+        fireEvent.click(screen.getAllByRole('button')[0]);
+
+        expect(watchedValue).toEqual([{ firstName: 'test1' }]);
       });
     });
 
