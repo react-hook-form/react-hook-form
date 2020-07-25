@@ -6,12 +6,23 @@ import isFileInput from '../utils/isFileInput';
 import isCheckBox from '../utils/isCheckBoxInput';
 import isMultipleSelect from '../utils/isMultipleSelect';
 import getCheckboxValue from './getCheckboxValue';
-import { FieldRefs, FieldValues, InternalFieldName } from '../types/form';
+import {
+  FieldRefs,
+  FieldValues,
+  InternalFieldName,
+  FieldValue,
+  UnpackNestedValue,
+} from '../types/form';
+import { DeepPartial } from '../types/utils';
 
 export default function getFieldValue<TFieldValues extends FieldValues>(
   fieldsRef: React.MutableRefObject<FieldRefs<TFieldValues>>,
   name: InternalFieldName<TFieldValues>,
   unmountFieldsStateRef?: React.MutableRefObject<Record<string, any>>,
+  defaultValuesRef?: React.MutableRefObject<
+    | FieldValue<UnpackNestedValue<TFieldValues>>
+    | UnpackNestedValue<DeepPartial<TFieldValues>>
+  >,
 ) {
   const field = fieldsRef.current[name]!;
 
@@ -40,7 +51,7 @@ export default function getFieldValue<TFieldValues extends FieldValues>(
     return value;
   }
 
-  if (unmountFieldsStateRef) {
-    return unmountFieldsStateRef.current[name];
-  }
+  return (
+    unmountFieldsStateRef?.current[name] || defaultValuesRef?.current[name]
+  );
 }
