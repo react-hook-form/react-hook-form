@@ -314,6 +314,28 @@ describe('useWatch', () => {
   });
 
   describe('reset', () => {
+    it('should return default value of reset method', async () => {
+      const Component = () => {
+        const { register, reset, control } = useForm();
+        const test = useWatch<string>({ name: 'test', control });
+
+        React.useEffect(() => {
+          reset({ test: 'default' });
+        }, [reset]);
+
+        return (
+          <form>
+            <input type="text" name="test" ref={register} />
+            <span>{test}</span>
+          </form>
+        );
+      };
+
+      render(<Component />);
+
+      expect(await screen.findByText('default')).toBeDefined();
+    });
+
     describe('with useFieldArray', () => {
       // check https://github.com/react-hook-form/react-hook-form/issues/2229
       it('should return current value with radio type', async () => {
@@ -375,7 +397,7 @@ describe('useWatch', () => {
     });
 
     describe('with custom register', () => {
-      it('should return registered', async () => {
+      it('should return default value of reset method when value is not empty', async () => {
         const Component = () => {
           const { register, reset, control } = useForm();
           const test = useWatch<string>({
@@ -402,7 +424,9 @@ describe('useWatch', () => {
 
         render(<Component />);
 
-        expect((await screen.findByTestId('result')).textContent).toBe('test');
+        expect((await screen.findByTestId('result')).textContent).toBe(
+          'default',
+        );
       });
 
       it('should return default value of reset method', async () => {

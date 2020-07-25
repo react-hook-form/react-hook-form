@@ -1023,7 +1023,6 @@ export function useForm<
     submitCount,
     dirtyFields,
   }: OmitResetState) => {
-    fieldsRef.current = {};
     if (!errors) {
       errorsRef.current = {};
     }
@@ -1084,6 +1083,8 @@ export function useForm<
         }
       }
     }
+
+    fieldsRef.current = {};
 
     if (values) {
       defaultValuesRef.current = values;
