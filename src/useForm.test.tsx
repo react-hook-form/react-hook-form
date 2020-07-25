@@ -197,9 +197,11 @@ describe('useForm', () => {
 
       unmount();
 
-      result.current.register({ type: 'text', name: 'test' });
+      const ref = { type: 'text', name: 'test' };
 
-      expect(result.current.getValues()).toEqual({ test: 'test' });
+      result.current.register(ref);
+
+      expect(ref).toEqual({ type: 'text', name: 'test', value: 'test' });
     });
 
     // check https://github.com/react-hook-form/react-hook-form/issues/2298
@@ -1454,6 +1456,34 @@ describe('useForm', () => {
       });
     });
 
+    it('should pass default value when field is not registered', async () => {
+      const { result } = renderHook(() =>
+        useForm<{ test: string; deep: { nested: string; values: string } }>({
+          mode: VALIDATION_MODE.onSubmit,
+          defaultValues: {
+            test: 'data',
+            deep: {
+              values: '5',
+            },
+          },
+        }),
+      );
+
+      await act(async () => {
+        await result.current.handleSubmit((data: any) => {
+          expect(data).toEqual({
+            test: 'data',
+            deep: {
+              values: '5',
+            },
+          });
+        })({
+          preventDefault: () => {},
+          persist: () => {},
+        } as React.SyntheticEvent);
+      });
+    });
+
     it('should invoke reRender method when readFormStateRef.current.isSubmitting is true', async () => {
       let renderCount = 0;
       const Component = () => {
@@ -1731,20 +1761,124 @@ describe('useForm', () => {
       expect(result.current.getValues('test')).toEqual(undefined);
     });
 
-    it('should return undefined when inputs not yet registered', () => {
+    it('should get value from unmountFieldsStateRef by name', () => {
+      const { result, unmount } = renderHook(() =>
+        useForm({
+          shouldUnregister: false,
+        }),
+      );
+
+      result.current.register({ name: 'test', value: 'test' });
+
+      unmount();
+
+      expect(result.current.getValues('test')).toEqual('test');
+    });
+
+    it('should get value from unmountFieldsStateRef by array', () => {
+      const { result, unmount } = renderHook(() =>
+        useForm({
+          shouldUnregister: false,
+        }),
+      );
+
+      result.current.register({ name: 'test', value: 'test' });
+
+      unmount();
+
+      expect(result.current.getValues(['test'])).toEqual({ test: 'test' });
+    });
+
+    it('should get value from unmountFieldsStateRef', () => {
+      const { result, unmount } = renderHook(() =>
+        useForm({
+          shouldUnregister: false,
+        }),
+      );
+
+      result.current.register({ name: 'test', value: 'test' });
+
+      unmount();
+
+      expect(result.current.getValues()).toEqual({
+        test: 'test',
+      });
+    });
+
+    it('should get value from default value by name when field is not registered', () => {
       const { result } = renderHook(() =>
         useForm({
           defaultValues: {
-            test: 'data',
-            deep: {
-              value: '5',
-            },
+            test: 'default',
           },
         }),
       );
 
-      const values = result.current.getValues();
-      expect(values).toEqual({});
+      expect(result.current.getValues('test')).toEqual('default');
+    });
+
+    it('should get value from default value by array when field is not registered', () => {
+      const { result } = renderHook(() =>
+        useForm({
+          defaultValues: {
+            test: 'default',
+          },
+        }),
+      );
+
+      expect(result.current.getValues(['test'])).toEqual({ test: 'default' });
+    });
+
+    it('should get value from default value when field is not registered', () => {
+      const { result } = renderHook(() =>
+        useForm({
+          defaultValues: {
+            test: 'default',
+          },
+        }),
+      );
+
+      expect(result.current.getValues()).toEqual({ test: 'default' });
+    });
+
+    it('should get value from default value and unmountFieldsStateRef by array', () => {
+      const { result, unmount } = renderHook(() =>
+        useForm<{ default: string; test: string }>({
+          shouldUnregister: false,
+          defaultValues: {
+            default: 'default',
+          },
+        }),
+      );
+
+      result.current.register({ name: 'test', value: 'test' });
+
+      unmount();
+
+      expect(result.current.getValues(['default', 'test'])).toEqual({
+        default: 'default',
+        test: 'test',
+      });
+    });
+
+    it('should get value from default value and unmountFieldsStateRef', () => {
+      const { result, unmount } = renderHook(() =>
+        useForm<{ default: string; test: string }>({
+          shouldUnregister: false,
+          defaultValues: {
+            default: 'default',
+          },
+        }),
+      );
+
+      result.current.register({ name: 'test', value: 'test' });
+
+      unmount();
+
+      expect(result.current.getValues()).toEqual({
+        default: 'default',
+        test: 'test',
+      });
     });
   });
 
