@@ -44,13 +44,11 @@ export default async <TFieldValues extends FieldValues>(
     pattern,
     validate,
   }: Field,
-  optionalState: {
-    unmountFieldsStateRef: React.MutableRefObject<Record<string, any>>;
-    defaultValuesRef: React.MutableRefObject<
-      | FieldValue<UnpackNestedValue<TFieldValues>>
-      | UnpackNestedValue<DeepPartial<TFieldValues>>
-    >;
-  },
+  unmountFieldsStateRef: React.MutableRefObject<Record<string, any>>,
+  defaultValuesRef: React.MutableRefObject<
+    | FieldValue<UnpackNestedValue<TFieldValues>>
+    | UnpackNestedValue<DeepPartial<TFieldValues>>
+  >,
 ): Promise<FlatFieldErrors<TFieldValues>> => {
   const fields = fieldsRef.current;
   const name: InternalFieldName<TFieldValues> = ref.name;
@@ -193,7 +191,12 @@ export default async <TFieldValues extends FieldValues>(
   }
 
   if (validate) {
-    const fieldValue = getFieldsValue(fieldsRef, name, optionalState);
+    const fieldValue = getFieldsValue(
+      fieldsRef,
+      name,
+      unmountFieldsStateRef,
+      defaultValuesRef,
+    );
     const validateRef = isRadioOrCheckbox && options ? options[0].ref : ref;
 
     if (isFunction(validate)) {

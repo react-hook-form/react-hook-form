@@ -27,13 +27,11 @@ export default function findRemovedFieldAndRemoveListener<
   fieldsRef: React.MutableRefObject<FieldRefs<TFieldValues>>,
   handleChange: ({ type, target }: Event) => Promise<void | boolean>,
   field: Field,
-  optionalState: {
-    unmountFieldsStateRef: React.MutableRefObject<Record<string, any>>;
-    defaultValuesRef: React.MutableRefObject<
-      | FieldValue<UnpackNestedValue<TFieldValues>>
-      | UnpackNestedValue<DeepPartial<TFieldValues>>
-    >;
-  },
+  unmountFieldsStateRef: React.MutableRefObject<Record<string, any>>,
+  defaultValuesRef: React.MutableRefObject<
+    | FieldValue<UnpackNestedValue<TFieldValues>>
+    | UnpackNestedValue<DeepPartial<TFieldValues>>
+  >,
   shouldUnregister?: boolean,
   forceDelete?: boolean,
 ): void {
@@ -45,10 +43,15 @@ export default function findRemovedFieldAndRemoveListener<
   const fieldRef = fieldsRef.current[name] as Field;
 
   if (!shouldUnregister) {
-    const value = getFieldValue(fieldsRef, name, optionalState);
+    const value = getFieldValue(
+      fieldsRef,
+      name,
+      unmountFieldsStateRef,
+      defaultValuesRef,
+    );
 
     if (!isUndefined(value)) {
-      optionalState.unmountFieldsStateRef.current[name] = value;
+      unmountFieldsStateRef.current[name] = value;
     }
   }
 

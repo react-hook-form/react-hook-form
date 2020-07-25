@@ -18,13 +18,11 @@ import { DeepPartial } from '../types/utils';
 export default function getFieldValue<TFieldValues extends FieldValues>(
   fieldsRef: React.MutableRefObject<FieldRefs<TFieldValues>>,
   name: InternalFieldName<TFieldValues>,
-  optinalState?: {
-    unmountFieldsStateRef: React.MutableRefObject<Record<string, any>>;
-    defaultValuesRef: React.MutableRefObject<
-      | FieldValue<UnpackNestedValue<TFieldValues>>
-      | UnpackNestedValue<DeepPartial<TFieldValues>>
-    >;
-  },
+  unmountFieldsStateRef?: React.MutableRefObject<Record<string, any>>,
+  defaultValuesRef?: React.MutableRefObject<
+    | FieldValue<UnpackNestedValue<TFieldValues>>
+    | UnpackNestedValue<DeepPartial<TFieldValues>>
+  >,
 ) {
   const field = fieldsRef.current[name]!;
 
@@ -54,8 +52,6 @@ export default function getFieldValue<TFieldValues extends FieldValues>(
   }
 
   return (
-    optinalState &&
-    (optinalState.unmountFieldsStateRef.current[name] ||
-      optinalState.defaultValuesRef.current[name])
+    unmountFieldsStateRef?.current[name] || defaultValuesRef?.current[name]
   );
 }

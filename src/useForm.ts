@@ -246,10 +246,7 @@ export function useForm<
 
       const isFieldDirty =
         defaultValuesAtRenderRef.current[name] !==
-        getFieldValue(fieldsRef, name, {
-          unmountFieldsStateRef,
-          defaultValuesRef,
-        });
+        getFieldValue(fieldsRef, name, unmountFieldsStateRef, defaultValuesRef);
       const isDirtyFieldExist = get(dirtyFieldsRef.current, name);
       const isFieldArray = isNameInFieldArray(fieldArrayNamesRef.current, name);
       const previousIsDirty = isDirtyRef.current;
@@ -286,7 +283,8 @@ export function useForm<
           fieldsRef,
           isValidateAllFieldCriteria,
           fieldsRef.current[name] as Field,
-          { unmountFieldsStateRef, defaultValuesRef },
+          unmountFieldsStateRef,
+          defaultValuesRef,
         );
 
         shouldRenderBaseOnError(name, error, skipReRender ? null : false);
@@ -520,7 +518,8 @@ export function useForm<
               fieldsRef,
               isValidateAllFieldCriteria,
               field,
-              { unmountFieldsStateRef, defaultValuesRef },
+              unmountFieldsStateRef,
+              defaultValuesRef,
             );
           }
 
@@ -543,29 +542,30 @@ export function useForm<
   ): UnpackNestedValue<Pick<TFieldValues, TFieldName>>;
   function getValues(payload?: string | string[]): unknown {
     if (isString(payload)) {
-      return getFieldValue(fieldsRef, payload, {
+      return getFieldValue(
+        fieldsRef,
+        payload,
         unmountFieldsStateRef,
         defaultValuesRef,
-      });
+      );
     }
 
     if (isArray(payload)) {
       return payload.reduce(
         (previous, name) => ({
           ...previous,
-          [name]: getFieldValue(fieldsRef, name, {
+          [name]: getFieldValue(
+            fieldsRef,
+            name,
             unmountFieldsStateRef,
             defaultValuesRef,
-          }),
+          ),
         }),
         {},
       );
     }
 
-    return getFieldsValues(fieldsRef, {
-      unmountFieldsStateRef,
-      defaultValuesRef,
-    });
+    return getFieldsValues(fieldsRef, unmountFieldsStateRef, defaultValuesRef);
   }
 
   const validateResolver = React.useCallback(
@@ -595,7 +595,8 @@ export function useForm<
         fieldsRef,
         handleChangeRef.current!,
         field,
-        { unmountFieldsStateRef, defaultValuesRef },
+        unmountFieldsStateRef,
+        defaultValuesRef,
         shouldUnregister,
         forceDelete,
       ),
@@ -680,7 +681,8 @@ export function useForm<
         : defaultValue;
       const fieldValues = getFieldsValues<TFieldValues>(
         fieldsRef,
-        { unmountFieldsStateRef, defaultValuesRef },
+        unmountFieldsStateRef,
+        defaultValuesRef,
         fieldNames,
       );
 
@@ -847,10 +849,13 @@ export function useForm<
       fieldsWithValidationRef.current.add(name);
 
       if (!isOnSubmit && readFormStateRef.current.isValid) {
-        validateField(fieldsRef, isValidateAllFieldCriteria, field, {
+        validateField(
+          fieldsRef,
+          isValidateAllFieldCriteria,
+          field,
           unmountFieldsStateRef,
           defaultValuesRef,
-        }).then((error: FieldErrors) => {
+        ).then((error: FieldErrors) => {
           const previousFormIsValid = isValidRef.current;
 
           isEmptyObject(error)
@@ -868,10 +873,12 @@ export function useForm<
       !defaultValuesAtRenderRef.current[name] &&
       !(isFieldArray && isEmptyDefaultValue)
     ) {
-      const fieldValue = getFieldValue(fieldsRef, name, {
+      const fieldValue = getFieldValue(
+        fieldsRef,
+        name,
         unmountFieldsStateRef,
         defaultValuesRef,
-      });
+      );
       defaultValuesAtRenderRef.current[name] = isEmptyDefaultValue
         ? isObject(fieldValue)
           ? { ...fieldValue }
@@ -961,7 +968,8 @@ export function useForm<
                 fieldsRef,
                 isValidateAllFieldCriteria,
                 field,
-                { unmountFieldsStateRef, defaultValuesRef },
+                unmountFieldsStateRef,
+                defaultValuesRef,
               );
 
               if (fieldError[name]) {

@@ -31,6 +31,7 @@ describe('findMissDomAndClean', () => {
             ref: { name: 'bill', type: 'radio' },
           },
           {},
+          {},
           true,
         ),
       ).toEqual(undefined);
@@ -67,6 +68,7 @@ describe('findMissDomAndClean', () => {
         {
           ref,
         },
+        {},
         {},
         true,
       );
@@ -356,7 +358,8 @@ describe('findMissDomAndClean', () => {
         fields,
         () => ({} as any),
         fields.current.test,
-        { unmountFieldsStateRef: state, defaultValuesRef: { current: {} } },
+        state,
+        { current: {} },
       );
 
       expect(state).toEqual({
@@ -388,7 +391,8 @@ describe('findMissDomAndClean', () => {
         fields,
         () => ({} as any),
         fields.current.test,
-        { unmountFieldsStateRef: state, defaultValuesRef: { current: {} } },
+        state,
+        { current: {} },
         false,
         true,
       );
@@ -421,7 +425,8 @@ describe('findMissDomAndClean', () => {
         {
           ref: { name: 'test', type: 'text' },
         },
-        { unmountFieldsStateRef: state, defaultValuesRef: { current: {} } },
+        state,
+        { current: {} },
         false,
       );
 
@@ -447,7 +452,8 @@ describe('findMissDomAndClean', () => {
         {
           ref: { name: 'test', type: 'text' },
         },
-        { unmountFieldsStateRef: state, defaultValuesRef: { current: {} } },
+        state,
+        { current: {} },
         false,
       );
 
@@ -485,6 +491,7 @@ describe('findMissDomAndClean', () => {
         {
           ref,
         },
+        {},
         {},
         true,
       );

@@ -27,10 +27,8 @@ describe('validateField', () => {
           ref: { type: 'text', value: '', name: 'test' },
           required: true,
         },
-        {
-          defaultValuesRef: { current: {} },
-          unmountFieldsStateRef: { current: {} },
-        },
+        { current: {} },
+        { current: {} },
       ),
     ).toEqual({
       test: {
@@ -48,10 +46,8 @@ describe('validateField', () => {
           ref: { type: 'text', value: '', name: 'test' },
           required: 'required',
         },
-        {
-          defaultValuesRef: { current: {} },
-          unmountFieldsStateRef: { current: {} },
-        },
+        { current: {} },
+        { current: {} },
       ),
     ).toEqual({
       test: {
@@ -69,10 +65,8 @@ describe('validateField', () => {
           ref: { type: 'text', value: '', name: 'test' },
           required: 'required',
         },
-        {
-          defaultValuesRef: { current: {} },
-          unmountFieldsStateRef: { current: {} },
-        },
+        { current: {} },
+        { current: {} },
       ),
     ).toEqual({
       test: {
@@ -93,10 +87,8 @@ describe('validateField', () => {
             message: 'required',
           },
         },
-        {
-          defaultValuesRef: { current: {} },
-          unmountFieldsStateRef: { current: {} },
-        },
+        { current: {} },
+        { current: {} },
       ),
     ).toEqual({
       test: {
@@ -117,10 +109,8 @@ describe('validateField', () => {
             message: 'required',
           },
         },
-        {
-          defaultValuesRef: { current: {} },
-          unmountFieldsStateRef: { current: {} },
-        },
+        { current: {} },
+        { current: {} },
       ),
     ).toEqual({
       test: {
@@ -141,10 +131,8 @@ describe('validateField', () => {
             message: 'required',
           },
         },
-        {
-          defaultValuesRef: { current: {} },
-          unmountFieldsStateRef: { current: {} },
-        },
+        { current: {} },
+        { current: {} },
       ),
     ).toEqual({});
 
@@ -167,10 +155,8 @@ describe('validateField', () => {
           ref: { type: 'radio', name: 'test' },
           required: true,
         },
-        {
-          defaultValuesRef: { current: {} },
-          unmountFieldsStateRef: { current: {} },
-        },
+        { current: {} },
+        { current: {} },
       ),
     ).toEqual({
       test: {
@@ -188,10 +174,8 @@ describe('validateField', () => {
           ref: { type: 'text', value: '', name: 'test' },
           required: 'test',
         },
-        {
-          defaultValuesRef: { current: {} },
-          unmountFieldsStateRef: { current: {} },
-        },
+        { current: {} },
+        { current: {} },
       ),
     ).toEqual({
       test: {
@@ -220,10 +204,8 @@ describe('validateField', () => {
           ref: { type: 'radio', value: '', name: 'test' },
           required: 'test',
         },
-        {
-          defaultValuesRef: { current: {} },
-          unmountFieldsStateRef: { current: {} },
-        },
+        { current: {} },
+        { current: {} },
       ),
     ).toEqual({
       test: {
@@ -252,10 +234,8 @@ describe('validateField', () => {
           ref: { type: 'checkbox', name: 'test' },
           required: 'test',
         },
-        {
-          defaultValuesRef: { current: {} },
-          unmountFieldsStateRef: { current: {} },
-        },
+        { current: {} },
+        { current: {} },
       ),
     ).toEqual({
       test: {
@@ -288,10 +268,8 @@ describe('validateField', () => {
           ref: { type: 'checkbox', name: 'test' },
           required: 'test',
         },
-        {
-          defaultValuesRef: { current: {} },
-          unmountFieldsStateRef: { current: {} },
-        },
+        { current: {} },
+        { current: {} },
       ),
     ).toEqual({});
   });
@@ -306,10 +284,8 @@ describe('validateField', () => {
           required: true,
           max: 0,
         },
-        {
-          defaultValuesRef: { current: {} },
-          unmountFieldsStateRef: { current: {} },
-        },
+        { current: {} },
+        { current: {} },
       ),
     ).toEqual({
       test: {
@@ -331,10 +307,8 @@ describe('validateField', () => {
             message: 'max',
           },
         },
-        {
-          defaultValuesRef: { current: {} },
-          unmountFieldsStateRef: { current: {} },
-        },
+        { current: {} },
+        { current: {} },
       ),
     ).toEqual({
       test: {
@@ -356,10 +330,8 @@ describe('validateField', () => {
             message: 'max',
           },
         },
-        {
-          defaultValuesRef: { current: {} },
-          unmountFieldsStateRef: { current: {} },
-        },
+        { current: {} },
+        { current: {} },
       ),
     ).toEqual({
       test: {
@@ -378,10 +350,8 @@ describe('validateField', () => {
           required: true,
           max: 8,
         },
-        {
-          defaultValuesRef: { current: {} },
-          unmountFieldsStateRef: { current: {} },
-        },
+        { current: {} },
+        { current: {} },
       ),
     ).toEqual({});
 
@@ -393,10 +363,8 @@ describe('validateField', () => {
           ref: { type: 'number', name: 'test', value: 10, valueAsNumber: 10 },
           max: 8,
         },
-        {
-          defaultValuesRef: { current: {} },
-          unmountFieldsStateRef: { current: {} },
-        },
+        { current: {} },
+        { current: {} },
       ),
     ).toEqual({
       test: {
@@ -417,10 +385,8 @@ describe('validateField', () => {
           ref: { type: 'custom', name: 'test', value: '', valueAsNumber: NaN },
           required: true,
         },
-        {
-          defaultValuesRef: { current: {} },
-          unmountFieldsStateRef: { current: {} },
-        },
+        { current: {} },
+        { current: {} },
       ),
     ).toEqual({
       test: {
@@ -443,10 +409,8 @@ describe('validateField', () => {
           },
           required: true,
         },
-        {
-          defaultValuesRef: { current: {} },
-          unmountFieldsStateRef: { current: {} },
-        },
+        { current: {} },
+        { current: {} },
       ),
     ).toEqual({
       test: {
@@ -474,10 +438,8 @@ describe('validateField', () => {
           },
           required: true,
         },
-        {
-          defaultValuesRef: { current: {} },
-          unmountFieldsStateRef: { current: {} },
-        },
+        { current: {} },
+        { current: {} },
       ),
     ).toEqual({
       test: {
@@ -495,10 +457,8 @@ describe('validateField', () => {
           ref: { type: 'custom', name: 'test', value: 'ok' },
           required: true,
         },
-        {
-          defaultValuesRef: { current: {} },
-          unmountFieldsStateRef: { current: {} },
-        },
+        { current: {} },
+        { current: {} },
       ),
     ).toEqual({});
 
@@ -515,10 +475,8 @@ describe('validateField', () => {
           required: true,
           max: '2019-1-12',
         },
-        {
-          defaultValuesRef: { current: {} },
-          unmountFieldsStateRef: { current: {} },
-        },
+        { current: {} },
+        { current: {} },
       ),
     ).toEqual({
       test: {
@@ -543,10 +501,8 @@ describe('validateField', () => {
           required: true,
           min: 0,
         },
-        {
-          defaultValuesRef: { current: {} },
-          unmountFieldsStateRef: { current: {} },
-        },
+        { current: {} },
+        { current: {} },
       ),
     ).toEqual({
       test: {
@@ -568,10 +524,8 @@ describe('validateField', () => {
             message: 'min',
           },
         },
-        {
-          defaultValuesRef: { current: {} },
-          unmountFieldsStateRef: { current: {} },
-        },
+        { current: {} },
+        { current: {} },
       ),
     ).toEqual({
       test: {
@@ -593,10 +547,8 @@ describe('validateField', () => {
             message: 'min',
           },
         },
-        {
-          defaultValuesRef: { current: {} },
-          unmountFieldsStateRef: { current: {} },
-        },
+        { current: {} },
+        { current: {} },
       ),
     ).toEqual({
       test: {
@@ -615,10 +567,8 @@ describe('validateField', () => {
           required: true,
           min: 12,
         },
-        {
-          defaultValuesRef: { current: {} },
-          unmountFieldsStateRef: { current: {} },
-        },
+        { current: {} },
+        { current: {} },
       ),
     ).toEqual({
       test: {
@@ -642,10 +592,8 @@ describe('validateField', () => {
           required: true,
           min: '2019-3-12',
         },
-        {
-          defaultValuesRef: { current: {} },
-          unmountFieldsStateRef: { current: {} },
-        },
+        { current: {} },
+        { current: {} },
       ),
     ).toEqual({
       test: {
@@ -676,10 +624,8 @@ describe('validateField', () => {
             message: 'min',
           },
         },
-        {
-          defaultValuesRef: { current: {} },
-          unmountFieldsStateRef: { current: {} },
-        },
+        { current: {} },
+        { current: {} },
       ),
     ).toEqual({
       test: {
@@ -710,10 +656,8 @@ describe('validateField', () => {
             message: 'min',
           },
         },
-        {
-          defaultValuesRef: { current: {} },
-          unmountFieldsStateRef: { current: {} },
-        },
+        { current: {} },
+        { current: {} },
       ),
     ).toEqual({
       test: {
@@ -739,10 +683,8 @@ describe('validateField', () => {
           required: true,
           min: '4',
         },
-        {
-          defaultValuesRef: { current: {} },
-          unmountFieldsStateRef: { current: {} },
-        },
+        { current: {} },
+        { current: {} },
       ),
     ).toEqual({
       test: {
@@ -761,10 +703,8 @@ describe('validateField', () => {
           required: true,
           max: '2',
         },
-        {
-          defaultValuesRef: { current: {} },
-          unmountFieldsStateRef: { current: {} },
-        },
+        { current: {} },
+        { current: {} },
       ),
     ).toEqual({
       test: {
@@ -788,10 +728,8 @@ describe('validateField', () => {
           required: true,
           max: '2019-1-12',
         },
-        {
-          defaultValuesRef: { current: {} },
-          unmountFieldsStateRef: { current: {} },
-        },
+        { current: {} },
+        { current: {} },
       ),
     ).toEqual({
       test: {
@@ -821,10 +759,8 @@ describe('validateField', () => {
           required: true,
           maxLength: 12,
         },
-        {
-          defaultValuesRef: { current: {} },
-          unmountFieldsStateRef: { current: {} },
-        },
+        { current: {} },
+        { current: {} },
       ),
     ).toEqual({
       test: {
@@ -854,10 +790,8 @@ describe('validateField', () => {
             message: 'maxLength',
           },
         },
-        {
-          defaultValuesRef: { current: {} },
-          unmountFieldsStateRef: { current: {} },
-        },
+        { current: {} },
+        { current: {} },
       ),
     ).toEqual({
       test: {
@@ -887,10 +821,8 @@ describe('validateField', () => {
             message: 'maxLength',
           },
         },
-        {
-          defaultValuesRef: { current: {} },
-          unmountFieldsStateRef: { current: {} },
-        },
+        { current: {} },
+        { current: {} },
       ),
     ).toEqual({
       test: {
@@ -919,10 +851,8 @@ describe('validateField', () => {
           required: true,
           minLength: 200,
         },
-        {
-          defaultValuesRef: { current: {} },
-          unmountFieldsStateRef: { current: {} },
-        },
+        { current: {} },
+        { current: {} },
       ),
     ).toEqual({
       test: {
@@ -952,10 +882,8 @@ describe('validateField', () => {
             message: 'minLength',
           },
         },
-        {
-          defaultValuesRef: { current: {} },
-          unmountFieldsStateRef: { current: {} },
-        },
+        { current: {} },
+        { current: {} },
       ),
     ).toEqual({
       test: {
@@ -985,10 +913,8 @@ describe('validateField', () => {
             message: 'minLength',
           },
         },
-        {
-          defaultValuesRef: { current: {} },
-          unmountFieldsStateRef: { current: {} },
-        },
+        { current: {} },
+        { current: {} },
       ),
     ).toEqual({
       test: {
@@ -1019,10 +945,8 @@ describe('validateField', () => {
           required: true,
           pattern: emailRegex,
         },
-        {
-          defaultValuesRef: { current: {} },
-          unmountFieldsStateRef: { current: {} },
-        },
+        { current: {} },
+        { current: {} },
       ),
     ).toEqual({
       test: {
@@ -1052,10 +976,8 @@ describe('validateField', () => {
             message: 'regex failed',
           },
         },
-        {
-          defaultValuesRef: { current: {} },
-          unmountFieldsStateRef: { current: {} },
-        },
+        { current: {} },
+        { current: {} },
       ),
     ).toEqual({
       test: {
@@ -1085,10 +1007,8 @@ describe('validateField', () => {
             message: 'regex failed',
           },
         },
-        {
-          defaultValuesRef: { current: {} },
-          unmountFieldsStateRef: { current: {} },
-        },
+        { current: {} },
+        { current: {} },
       ),
     ).toEqual({
       test: {
@@ -1115,10 +1035,8 @@ describe('validateField', () => {
           required: true,
           pattern: emailRegex,
         },
-        {
-          defaultValuesRef: { current: {} },
-          unmountFieldsStateRef: { current: {} },
-        },
+        { current: {} },
+        { current: {} },
       ),
     ).toEqual({});
   });
@@ -1147,10 +1065,8 @@ describe('validateField', () => {
           required: true,
           validate: (value) => value.toString().length > 3,
         },
-        {
-          defaultValuesRef: { current: {} },
-          unmountFieldsStateRef: { current: {} },
-        },
+        { current: {} },
+        { current: {} },
       ),
     ).toEqual({});
 
@@ -1177,10 +1093,8 @@ describe('validateField', () => {
           required: true,
           validate: (value) => value.toString().length < 3,
         },
-        {
-          defaultValuesRef: { current: {} },
-          unmountFieldsStateRef: { current: {} },
-        },
+        { current: {} },
+        { current: {} },
       ),
     ).toEqual({
       test: {
@@ -1220,10 +1134,8 @@ describe('validateField', () => {
             test1: (value) => value.toString().length > 10,
           },
         },
-        {
-          defaultValuesRef: { current: {} },
-          unmountFieldsStateRef: { current: {} },
-        },
+        { current: {} },
+        { current: {} },
       ),
     ).toEqual({
       test: {
@@ -1269,10 +1181,8 @@ describe('validateField', () => {
             test1: (value) => value.toString().length > 10,
           },
         },
-        {
-          defaultValuesRef: { current: {} },
-          unmountFieldsStateRef: { current: {} },
-        },
+        { current: {} },
+        { current: {} },
       ),
     ).toEqual({
       test: {
@@ -1316,10 +1226,8 @@ describe('validateField', () => {
             },
           ],
         },
-        {
-          defaultValuesRef: { current: {} },
-          unmountFieldsStateRef: { current: {} },
-        },
+        { current: {} },
+        { current: {} },
       ),
     ).toEqual({
       test: {
@@ -1358,10 +1266,8 @@ describe('validateField', () => {
             },
           ],
         },
-        {
-          defaultValuesRef: { current: {} },
-          unmountFieldsStateRef: { current: {} },
-        },
+        { current: {} },
+        { current: {} },
       ),
     ).toEqual({});
   });
@@ -1396,10 +1302,8 @@ describe('validateField', () => {
             },
           },
         },
-        {
-          defaultValuesRef: { current: {} },
-          unmountFieldsStateRef: { current: {} },
-        },
+        { current: {} },
+        { current: {} },
       ),
     ).toEqual({
       test: {
@@ -1442,10 +1346,8 @@ describe('validateField', () => {
             },
           },
         },
-        {
-          defaultValuesRef: { current: {} },
-          unmountFieldsStateRef: { current: {} },
-        },
+        { current: {} },
+        { current: {} },
       ),
     ).toEqual({
       test: {
@@ -1483,10 +1385,8 @@ describe('validateField', () => {
           },
           validate: (value) => value.toString().length < 3 || 'bill',
         },
-        {
-          defaultValuesRef: { current: {} },
-          unmountFieldsStateRef: { current: {} },
-        },
+        { current: {} },
+        { current: {} },
       ),
     ).toEqual({
       test: {
@@ -1522,10 +1422,8 @@ describe('validateField', () => {
           },
           validate: (value) => value.toString().length < 3 || 'bill',
         },
-        {
-          defaultValuesRef: { current: {} },
-          unmountFieldsStateRef: { current: {} },
-        },
+        { current: {} },
+        { current: {} },
       ),
     ).toEqual({
       test: {
@@ -1559,10 +1457,8 @@ describe('validateField', () => {
           },
           validate: () => undefined,
         },
-        {
-          defaultValuesRef: { current: {} },
-          unmountFieldsStateRef: { current: {} },
-        },
+        { current: {} },
+        { current: {} },
       ),
     ).toEqual({});
   });
@@ -1586,10 +1482,8 @@ describe('validateField', () => {
           },
           validate: 'validate' as any,
         },
-        {
-          defaultValuesRef: { current: {} },
-          unmountFieldsStateRef: { current: {} },
-        },
+        { current: {} },
+        { current: {} },
       ),
     ).toEqual({});
   });
@@ -1613,10 +1507,8 @@ describe('validateField', () => {
           pattern: /d/i,
           validate: (value) => value === 'test',
         },
-        {
-          defaultValuesRef: { current: {} },
-          unmountFieldsStateRef: { current: {} },
-        },
+        { current: {} },
+        { current: {} },
       ),
     ).toMatchSnapshot();
 
@@ -1631,10 +1523,8 @@ describe('validateField', () => {
           pattern: /d/i,
           validate: (value) => value === 'test',
         },
-        {
-          defaultValuesRef: { current: {} },
-          unmountFieldsStateRef: { current: {} },
-        },
+        { current: {} },
+        { current: {} },
       ),
     ).toMatchSnapshot();
   });
@@ -1670,10 +1560,8 @@ describe('validateField', () => {
             test2: (value) => value == 'test' || 'Bill',
           },
         },
-        {
-          defaultValuesRef: { current: {} },
-          unmountFieldsStateRef: { current: {} },
-        },
+        { current: {} },
+        { current: {} },
       ),
     ).toMatchSnapshot();
 
@@ -1698,10 +1586,8 @@ describe('validateField', () => {
             test2: (value) => value == 'test' || 'Bill',
           },
         },
-        {
-          defaultValuesRef: { current: {} },
-          unmountFieldsStateRef: { current: {} },
-        },
+        { current: {} },
+        { current: {} },
       ),
     ).toMatchSnapshot();
 
@@ -1726,10 +1612,8 @@ describe('validateField', () => {
             test2: (value) => value == 'test' || 'Bill',
           },
         },
-        {
-          defaultValuesRef: { current: {} },
-          unmountFieldsStateRef: { current: {} },
-        },
+        { current: {} },
+        { current: {} },
       ),
     ).toMatchSnapshot();
   });

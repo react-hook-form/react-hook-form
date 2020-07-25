@@ -23,10 +23,8 @@ describe('getFieldsValues', () => {
             },
           },
         },
-        {
-          unmountFieldsStateRef: { current: {} },
-          defaultValuesRef: { current: {} },
-        },
+        { current: {} },
+        { current: {} },
       ),
     ).toEqual({
       test: 'test',
@@ -50,10 +48,8 @@ describe('getFieldsValues', () => {
             },
           },
         },
-        {
-          unmountFieldsStateRef: { current: {} },
-          defaultValuesRef: { current: {} },
-        },
+        { current: {} },
+        { current: {} },
         'test',
       ),
     ).toEqual({
@@ -80,10 +76,8 @@ describe('getFieldsValues', () => {
             },
           },
         },
-        {
-          unmountFieldsStateRef: { current: {} },
-          defaultValuesRef: { current: {} },
-        },
+        { current: {} },
+        { current: {} },
         ['test', 'tex'],
       ),
     ).toEqual({
@@ -99,13 +93,11 @@ describe('getFieldsValues', () => {
           current: {},
         },
         {
-          unmountFieldsStateRef: {
-            current: {},
-          },
-          defaultValuesRef: {
-            current: {
-              test1: 'test',
-            },
+          current: {},
+        },
+        {
+          current: {
+            test1: 'test',
           },
         },
       ),
@@ -128,13 +120,11 @@ describe('getFieldsValues', () => {
           },
         },
         {
-          unmountFieldsStateRef: {
-            current: {
-              test1: 'test',
-            },
+          current: {
+            test1: 'test',
           },
-          defaultValuesRef: { current: {} },
         },
+        { current: {} },
       ),
     ).toEqual({
       test: 'test',
@@ -155,14 +145,12 @@ describe('getFieldsValues', () => {
           },
         },
         {
-          unmountFieldsStateRef: {
-            current: {
-              test1: 'test',
-              'test2.test': 'test1',
-            },
+          current: {
+            test1: 'test',
+            'test2.test': 'test1',
           },
-          defaultValuesRef: { current: {} },
         },
+        { current: {} },
       ),
     ).toEqual({
       test: 'test',
@@ -184,15 +172,13 @@ describe('getFieldsValues', () => {
           },
         },
         {
-          unmountFieldsStateRef: {
-            current: {
-              test1: 'unmounted',
-            },
+          current: {
+            test1: 'unmounted',
           },
-          defaultValuesRef: {
-            current: {
-              test1: 'default',
-            },
+        },
+        {
+          current: {
+            test1: 'default',
           },
         },
       ),

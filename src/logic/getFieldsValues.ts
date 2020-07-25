@@ -15,16 +15,11 @@ import { DeepPartial } from '../types/utils';
 
 export default <TFieldValues extends FieldValues>(
   fieldsRef: React.MutableRefObject<FieldRefs<TFieldValues>>,
-  {
-    unmountFieldsStateRef,
-    defaultValuesRef,
-  }: {
-    unmountFieldsStateRef: React.MutableRefObject<Record<string, any>>;
-    defaultValuesRef: React.MutableRefObject<
-      | FieldValue<UnpackNestedValue<TFieldValues>>
-      | UnpackNestedValue<DeepPartial<TFieldValues>>
-    >;
-  },
+  unmountFieldsStateRef: React.MutableRefObject<Record<string, any>>,
+  defaultValuesRef: React.MutableRefObject<
+    | FieldValue<UnpackNestedValue<TFieldValues>>
+    | UnpackNestedValue<DeepPartial<TFieldValues>>
+  >,
   search?:
     | InternalFieldName<TFieldValues>
     | InternalFieldName<TFieldValues>[]

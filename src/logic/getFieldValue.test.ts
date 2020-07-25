@@ -157,10 +157,8 @@ describe('getFieldValue', () => {
           },
         },
         'what',
-        {
-          unmountFieldsStateRef: { current: { what: 'data' } },
-          defaultValuesRef: { current: {} },
-        },
+        { current: { what: 'data' } },
+        { current: {} },
       ),
     ).toEqual('data');
   });
@@ -178,10 +176,8 @@ describe('getFieldValue', () => {
           },
         },
         'what',
-        {
-          unmountFieldsStateRef: { current: {} },
-          defaultValuesRef: { current: { what: 'data' } },
-        },
+        { current: {} },
+        { current: { what: 'data' } },
       ),
     ).toEqual('data');
   });
