@@ -374,10 +374,12 @@ export function useForm<
       { shouldDirty, shouldValidate }: SetValueConfig,
     ) => {
       getPath(name, value).forEach((fieldName) => {
+        const data = {};
         const field = fieldsRef.current[fieldName];
 
         if (field) {
-          setFieldValue(field, get({ [name]: value }, fieldName));
+          set(data, name, value);
+          setFieldValue(field, get(data, fieldName));
 
           if (shouldDirty) {
             setDirty(fieldName);
