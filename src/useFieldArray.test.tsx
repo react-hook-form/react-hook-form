@@ -549,34 +549,15 @@ describe('useFieldArray', () => {
 
   describe('prepend', () => {
     it('should pre-append data into the fields', () => {
-      const dirtyFieldsRef = {
-        current: {
-          test: [],
-        },
-      };
-
-      const touchedFieldsRef = {
-        current: {
-          test: [],
-        },
-      };
-
-      const { result } = renderHook(() =>
-        useFieldArray({
-          control: {
-            ...reconfigureControl(),
-            readFormStateRef: {
-              current: {
-                touched: true,
-                dirtyFields: true,
-              },
-            } as any,
-            dirtyFieldsRef,
-            touchedFieldsRef,
-          },
+      const { result } = renderHook(() => {
+        const { control, formState } = useForm();
+        const { fields, prepend } = useFieldArray({
+          control,
           name: 'test',
-        }),
-      );
+        });
+
+        return { formState, fields, prepend };
+      });
 
       act(() => {
         result.current.prepend({ test: 'test' });
@@ -614,25 +595,41 @@ describe('useFieldArray', () => {
         { id: '1', test: 'test1' },
         { id: '0', test: 'test' },
       ]);
-
-      expect(dirtyFieldsRef.current).toEqual({
-        test: [
-          {
-            test: true,
-          },
-          {
-            test: true,
-          },
-          {},
-          {
-            test: true,
-          },
-          {
-            test: true,
-          },
-        ],
-      });
     });
+
+    it.each(['isDirty', 'dirtyFields'])(
+      'should be dirty when value is prepended with %s',
+      (property) => {
+        const { result } = renderHook(() => {
+          const { register, formState, control } = useForm();
+          const { fields, prepend } = useFieldArray({
+            control,
+            name: 'test',
+          });
+
+          return { register, formState, fields, prepend };
+        });
+
+        (result.current.formState as Record<string, any>)[property];
+
+        act(() => {
+          result.current.prepend({ value: 'test' });
+        });
+
+        act(() => {
+          result.current.prepend({ value: 'test1' });
+        });
+
+        act(() => {
+          result.current.prepend({ value: 'test2' });
+        });
+
+        expect(result.current.formState.isDirty).toBeTruthy();
+        expect(result.current.formState.dirtyFields).toEqual({
+          test: [{ value: true }, { value: true }, { value: true }],
+        });
+      },
+    );
 
     it('should prepend error', () => {
       const errorsRef = {

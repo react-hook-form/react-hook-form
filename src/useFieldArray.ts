@@ -140,7 +140,10 @@ export const useFieldArray = <
   const resetFields = (
     flagOrFields?: (Partial<TFieldArrayValues> | undefined)[],
   ) => {
-    if (readFormStateRef.current.isDirty) {
+    if (
+      readFormStateRef.current.isDirty ||
+      readFormStateRef.current.dirtyFields
+    ) {
       isDirtyRef.current =
         isUndefined(flagOrFields) ||
         getIsFieldsDifferent(
@@ -216,12 +219,11 @@ export const useFieldArray = <
     }
 
     if (
-      (readFormStateRef.current.dirtyFields ||
-        readFormStateRef.current.isDirty) &&
-      dirtyFieldsRef.current[name]
+      readFormStateRef.current.dirtyFields ||
+      readFormStateRef.current.isDirty
     ) {
       dirtyFieldsRef.current[name] = prependAt(
-        dirtyFieldsRef.current[name],
+        dirtyFieldsRef.current[name] || [],
         filterBooleanArray(value),
       );
       shouldRender = true;
