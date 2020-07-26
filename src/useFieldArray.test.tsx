@@ -12,15 +12,21 @@ import {
 import { Control, ValidationRules, FieldError } from './types';
 import { useForm } from './useForm';
 import { DeepMap } from './types/utils';
+import * as generateId from './logic/generateId';
 
-jest.spyOn(console, 'warn').mockImplementation(() => {});
-jest.mock('./logic/generateId', () => ({
-  default: () => '1',
-}));
+const mockGenerateId = () => {
+  let id = 0;
+  jest.spyOn(generateId, 'default').mockImplementation(() => (id++).toString());
+};
 
 describe('useFieldArray', () => {
   beforeEach(() => {
-    jest.resetAllMocks();
+    mockGenerateId();
+  });
+
+  afterEach(() => {
+    // @ts-ignore
+    generateId.default.mockRestore();
   });
 
   describe('initialize', () => {
@@ -48,7 +54,7 @@ describe('useFieldArray', () => {
       );
 
       expect(result.current.fields).toEqual([
-        { test: '1', id: '1' },
+        { test: '1', id: '0' },
         { test: '2', id: '1' },
       ]);
     });
@@ -117,7 +123,7 @@ describe('useFieldArray', () => {
       unmount();
 
       expect(result.current.fields).toEqual([
-        { id: '1', value: 'default' },
+        { id: '0', value: 'default' },
         { id: '1', value: 'test' },
       ]);
       expect(input.removeEventListener).toHaveBeenCalled();
@@ -202,7 +208,7 @@ describe('useFieldArray', () => {
         result.current.reset();
       });
 
-      expect(result.current.fields).toEqual([{ id: '1', value: 'default' }]);
+      expect(result.current.fields).toEqual([{ id: '3', value: 'default' }]);
     });
   });
 
@@ -380,14 +386,14 @@ describe('useFieldArray', () => {
         result.current.append({ test: 'test' });
       });
 
-      expect(result.current.fields).toEqual([{ id: '1', test: 'test' }]);
+      expect(result.current.fields).toEqual([{ id: '0', test: 'test' }]);
 
       act(() => {
         result.current.append({ test: 'test1' });
       });
 
       expect(result.current.fields).toEqual([
-        { id: '1', test: 'test' },
+        { id: '0', test: 'test' },
         { id: '1', test: 'test1' },
       ]);
 
@@ -396,9 +402,9 @@ describe('useFieldArray', () => {
       });
 
       expect(result.current.fields).toEqual([
-        { id: '1', test: 'test' },
+        { id: '0', test: 'test' },
         { id: '1', test: 'test1' },
-        { id: '1' },
+        { id: '2' },
       ]);
 
       act(() => {
@@ -406,11 +412,11 @@ describe('useFieldArray', () => {
       });
 
       expect(result.current.fields).toEqual([
-        { id: '1', test: 'test' },
+        { id: '0', test: 'test' },
         { id: '1', test: 'test1' },
-        { id: '1' },
-        { id: '1', test: 'test2' },
-        { id: '1', test: 'test3' },
+        { id: '2' },
+        { id: '3', test: 'test2' },
+        { id: '4', test: 'test3' },
       ]);
 
       expect(dirtyFieldsRef.current).toEqual({
@@ -450,7 +456,7 @@ describe('useFieldArray', () => {
         result.current.append({ test: 'test' });
       });
 
-      expect(result.current.fields).toEqual([{ id: '1', test: 'test' }]);
+      expect(result.current.fields).toEqual([{ id: '0', test: 'test' }]);
       expect(reRender).toBeCalledTimes(2);
     });
 
@@ -496,16 +502,15 @@ describe('useFieldArray', () => {
       act(() => result.current.append({ test: 'test' }));
 
       expect(result.current.fields).toEqual([
-        { id: '1', test: '1' },
+        { id: '0', test: '1' },
         { id: '1', test: '2' },
-        { id: '1', test: 'test' },
+        { id: '2', test: 'test' },
       ]);
       expect(mockFocus).toBeCalledTimes(1);
     });
 
     it('should return watched value with watch API', async () => {
       const renderedItems: any = [];
-      let id = 0;
       const Component = () => {
         const { watch, register, control } = useForm();
         const { fields, append } = useFieldArray({
@@ -517,7 +522,7 @@ describe('useFieldArray', () => {
         return (
           <div>
             {fields.map((field, i) => (
-              <div key={`${field.key}`}>
+              <div key={`${field.id}`}>
                 <input
                   type="text"
                   name={`test[${i}].value`}
@@ -526,9 +531,7 @@ describe('useFieldArray', () => {
                 />
               </div>
             ))}
-            <button onClick={() => append({ key: id++, value: 'test' })}>
-              append
-            </button>
+            <button onClick={() => append({ value: 'test' })}>append</button>
           </div>
         );
       };
@@ -541,7 +544,7 @@ describe('useFieldArray', () => {
         expect(renderedItems).toEqual([
           [],
           [],
-          [{ id: '1', key: 0, value: 'test' }],
+          [{ id: '0', value: 'test' }],
           [{ value: 'test' }],
         ]),
       );
@@ -583,7 +586,7 @@ describe('useFieldArray', () => {
         result.current.prepend({ test: 'test' });
       });
 
-      expect(result.current.fields).toEqual([{ id: '1', test: 'test' }]);
+      expect(result.current.fields).toEqual([{ id: '0', test: 'test' }]);
 
       act(() => {
         result.current.prepend({ test: 'test1' });
@@ -591,7 +594,7 @@ describe('useFieldArray', () => {
 
       expect(result.current.fields).toEqual([
         { id: '1', test: 'test1' },
-        { id: '1', test: 'test' },
+        { id: '0', test: 'test' },
       ]);
 
       act(() => {
@@ -599,9 +602,9 @@ describe('useFieldArray', () => {
       });
 
       expect(result.current.fields).toEqual([
-        { id: '1' },
+        { id: '2' },
         { id: '1', test: 'test1' },
-        { id: '1', test: 'test' },
+        { id: '0', test: 'test' },
       ]);
 
       act(() => {
@@ -609,11 +612,11 @@ describe('useFieldArray', () => {
       });
 
       expect(result.current.fields).toEqual([
-        { id: '1', test: 'test2' },
-        { id: '1', test: 'test3' },
-        { id: '1' },
+        { id: '3', test: 'test2' },
+        { id: '4', test: 'test3' },
+        { id: '2' },
         { id: '1', test: 'test1' },
-        { id: '1', test: 'test' },
+        { id: '0', test: 'test' },
       ]);
 
       expect(dirtyFieldsRef.current).toEqual({
@@ -746,7 +749,7 @@ describe('useFieldArray', () => {
         result.current.prepend({ test: 'test' });
       });
 
-      expect(result.current.fields).toEqual([{ id: '1', test: 'test' }]);
+      expect(result.current.fields).toEqual([{ id: '0', test: 'test' }]);
       expect(reRender).toBeCalledTimes(2);
     });
 
@@ -792,8 +795,8 @@ describe('useFieldArray', () => {
       act(() => result.current.prepend({ test: 'test' }));
 
       expect(result.current.fields).toEqual([
-        { id: '1', test: 'test' },
-        { id: '1', test: '1' },
+        { id: '2', test: 'test' },
+        { id: '0', test: '1' },
         { id: '1', test: '2' },
       ]);
       expect(mockFocus).toBeCalledTimes(1);
@@ -801,7 +804,6 @@ describe('useFieldArray', () => {
 
     it('should return watched value with watch API', async () => {
       const renderedItems: any = [];
-      let id = 0;
       const Component = () => {
         const { watch, register, control } = useForm();
         const { fields, append, prepend } = useFieldArray({
@@ -816,7 +818,7 @@ describe('useFieldArray', () => {
         return (
           <div>
             {fields.map((field, i) => (
-              <div key={`${field.key}`}>
+              <div key={`${field.id}`}>
                 <input
                   type="text"
                   name={`test[${i}].value`}
@@ -825,12 +827,10 @@ describe('useFieldArray', () => {
                 />
               </div>
             ))}
-            <button onClick={() => append({ key: id++, value: '' })}>
-              append
-            </button>
+            <button onClick={() => append({ value: '' })}>append</button>
             <button
               onClick={() => {
-                prepend({ key: id++, value: 'test' });
+                prepend({ value: 'test' });
                 isPrepended.current = true;
               }}
             >
@@ -859,9 +859,9 @@ describe('useFieldArray', () => {
       await waitFor(() =>
         expect(renderedItems).toEqual([
           [
-            { id: '1', key: 2, value: 'test' },
-            { id: '1', key: 0, value: '111' },
-            { id: '1', key: 1, value: '222' },
+            { id: '2', value: 'test' },
+            { id: '0', value: '111' },
+            { id: '1', value: '222' },
           ],
           [{ value: 'test' }, { value: '111' }, { value: '222' }],
         ]),
@@ -1068,7 +1068,7 @@ describe('useFieldArray', () => {
         return (
           <fieldset>
             {fields.map((field, i) => (
-              <div key={field.key}>
+              <div key={field.id}>
                 <input
                   name={`test[${index}].nested[${i}].test`}
                   ref={register({ required: 'required' })}
@@ -1447,7 +1447,7 @@ describe('useFieldArray', () => {
       await waitFor(() =>
         expect(renderedItems).toEqual([
           [
-            { id: '1', value: '111' },
+            { id: '0', value: '111' },
             { id: '1', value: '222' },
           ],
           [{ value: '111' }, { value: '222' }],
@@ -1502,8 +1502,8 @@ describe('useFieldArray', () => {
       });
 
       expect(result.current.fields).toEqual([
-        { id: '1', test: '1' },
-        { id: '1', test: '3' },
+        { id: '0', test: '1' },
+        { id: '2', test: '3' },
         { id: '1', test: '2' },
       ]);
 
@@ -1512,10 +1512,10 @@ describe('useFieldArray', () => {
       });
 
       expect(result.current.fields).toEqual([
-        { id: '1', test: '1' },
-        { id: '1', test: '4' },
-        { id: '1', test: '5' },
-        { id: '1', test: '3' },
+        { id: '0', test: '1' },
+        { id: '5', test: '4' },
+        { id: '6', test: '5' },
+        { id: '2', test: '3' },
         { id: '1', test: '2' },
       ]);
       expect(dirtyFieldsRef.current).toEqual({
@@ -1701,8 +1701,8 @@ describe('useFieldArray', () => {
       });
 
       expect(result.current.fields).toEqual([
-        { id: '1', test: '1' },
-        { id: '1', test: 'test' },
+        { id: '0', test: '1' },
+        { id: '2', test: 'test' },
         { id: '1', test: '2' },
       ]);
       expect(reRender).toBeCalledTimes(2);
@@ -1750,8 +1750,8 @@ describe('useFieldArray', () => {
       act(() => result.current.insert(1, { test: 'test' }));
 
       expect(result.current.fields).toEqual([
-        { id: '1', test: '1' },
-        { id: '1', test: 'test' },
+        { id: '0', test: '1' },
+        { id: '2', test: 'test' },
         { id: '1', test: '2' },
       ]);
       expect(mockFocus).toBeCalledTimes(1);
@@ -1759,7 +1759,6 @@ describe('useFieldArray', () => {
 
     it('should return watched value with watch API', async () => {
       const renderedItems: any = [];
-      let id = 0;
       const Component = () => {
         const { watch, register, control } = useForm();
         const { fields, append, insert } = useFieldArray({
@@ -1774,7 +1773,7 @@ describe('useFieldArray', () => {
         return (
           <div>
             {fields.map((field, i) => (
-              <div key={`${field.key}`}>
+              <div key={`${field.id}`}>
                 <input
                   type="text"
                   name={`test[${i}].value`}
@@ -1783,12 +1782,10 @@ describe('useFieldArray', () => {
                 />
               </div>
             ))}
-            <button onClick={() => append({ key: id++, value: '' })}>
-              append
-            </button>
+            <button onClick={() => append({ value: '' })}>append</button>
             <button
               onClick={() => {
-                insert(1, { key: id++, value: 'test' });
+                insert(1, { value: 'test' });
                 isInserted.current = true;
               }}
             >
@@ -1817,9 +1814,9 @@ describe('useFieldArray', () => {
       await waitFor(() =>
         expect(renderedItems).toEqual([
           [
-            { id: '1', key: 0, value: '111' },
-            { id: '1', key: 2, value: 'test' },
-            { id: '1', key: 1, value: '222' },
+            { id: '0', value: '111' },
+            { id: '2', value: 'test' },
+            { id: '1', value: '222' },
           ],
           [{ value: '111' }, { value: 'test' }, { value: '222' }],
         ]),
@@ -1874,7 +1871,7 @@ describe('useFieldArray', () => {
 
       expect(result.current.fields).toEqual([
         { id: '1', test: '2' },
-        { id: '1', test: '1' },
+        { id: '0', test: '1' },
       ]);
 
       expect(dirtyFieldsRef.current).toEqual({
@@ -1995,7 +1992,7 @@ describe('useFieldArray', () => {
 
       expect(result.current.fields).toEqual([
         { id: '1', test: '2' },
-        { id: '1', test: '1' },
+        { id: '0', test: '1' },
       ]);
 
       expect(reRender).toBeCalledTimes(2);
@@ -2003,7 +2000,6 @@ describe('useFieldArray', () => {
 
     it('should return watched value with watch API', async () => {
       const renderedItems: any = [];
-      let id = 0;
       const Component = () => {
         const { watch, register, control } = useForm();
         const { fields, append, swap } = useFieldArray({
@@ -2018,7 +2014,7 @@ describe('useFieldArray', () => {
         return (
           <div>
             {fields.map((field, i) => (
-              <div key={`${field.key}`}>
+              <div key={`${field.id}`}>
                 <input
                   type="text"
                   name={`test[${i}].value`}
@@ -2027,9 +2023,7 @@ describe('useFieldArray', () => {
                 />
               </div>
             ))}
-            <button onClick={() => append({ key: id++, value: '' })}>
-              append
-            </button>
+            <button onClick={() => append({ value: '' })}>append</button>
             <button
               onClick={() => {
                 swap(0, 1);
@@ -2061,8 +2055,8 @@ describe('useFieldArray', () => {
       await waitFor(() =>
         expect(renderedItems).toEqual([
           [
-            { id: '1', key: 1, value: '222' },
-            { id: '1', key: 0, value: '111' },
+            { id: '1', value: '222' },
+            { id: '0', value: '111' },
           ],
           [{ value: '222' }, { value: '111' }],
         ]),
@@ -2088,8 +2082,8 @@ describe('useFieldArray', () => {
       });
 
       expect(result.current.fields).toEqual([
-        { id: '1', test: '3' },
-        { id: '1', test: '1' },
+        { id: '2', test: '3' },
+        { id: '0', test: '1' },
         { id: '1', test: '2' },
       ]);
     });
@@ -2340,14 +2334,13 @@ describe('useFieldArray', () => {
 
       expect(result.current.fields).toEqual([
         { id: '1', test: '2' },
-        { id: '1', test: '1' },
+        { id: '0', test: '1' },
       ]);
       expect(reRender).toBeCalledTimes(2);
     });
 
     it('should return watched value with watch API', async () => {
       const renderedItems: any = [];
-      let id = 0;
       const Component = () => {
         const { watch, register, control } = useForm();
         const { fields, append, move } = useFieldArray({
@@ -2362,7 +2355,7 @@ describe('useFieldArray', () => {
         return (
           <div>
             {fields.map((field, i) => (
-              <div key={`${field.key}`}>
+              <div key={`${field.id}`}>
                 <input
                   type="text"
                   name={`test[${i}].value`}
@@ -2371,9 +2364,7 @@ describe('useFieldArray', () => {
                 />
               </div>
             ))}
-            <button onClick={() => append({ key: id++, value: '' })}>
-              append
-            </button>
+            <button onClick={() => append({ value: '' })}>append</button>
             <button
               onClick={() => {
                 move(0, 1);
@@ -2405,8 +2396,8 @@ describe('useFieldArray', () => {
       await waitFor(() =>
         expect(renderedItems).toEqual([
           [
-            { id: '1', key: 1, value: '222' },
-            { id: '1', key: 0, value: '111' },
+            { id: '1', value: '222' },
+            { id: '0', value: '111' },
           ],
           [{ value: '222' }, { value: '111' }],
         ]),
@@ -2457,7 +2448,7 @@ describe('useFieldArray', () => {
       fireEvent.click(container.querySelector('button')!);
 
       expect(mockControl.validateSchemaIsValid).toBeCalledWith({
-        test: [{ id: '1', test: 'value' }],
+        test: [{ id: '0', test: 'value' }],
       });
     });
 
