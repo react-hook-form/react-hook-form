@@ -1,5 +1,12 @@
 # Changelog
 
+## [6.0.7] - 2020-07-26
+
+### Changed
+
+- `resolver` supports both async and sync
+- `getValues` will return default values before inputs registration
+
 ## [6.0.7] - 2020-07-17
 
 ### Added
@@ -10,7 +17,7 @@
 
 - error message will support array of messages for specific type
 
-``` diff
+```diff
 - export type ValidateResult = Message | boolean | undefined;
 + export type ValidateResult = Message | Message[] | boolean | undefined;
 ```
