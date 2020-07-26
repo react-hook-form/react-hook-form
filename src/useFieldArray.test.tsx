@@ -31,27 +31,27 @@ describe('useFieldArray', () => {
 
   describe('initialize', () => {
     it('should return default fields value', () => {
-      const { result } = renderHook(() =>
-        useFieldArray({
-          control: reconfigureControl(),
+      const { result } = renderHook(() => {
+        const { control } = useForm();
+        return useFieldArray({
+          control: control,
           name: 'test',
-        }),
-      );
+        });
+      });
 
       expect(result.current.fields).toEqual([]);
     });
 
     it('should populate default values into fields', () => {
-      const { result } = renderHook(() =>
-        useFieldArray({
-          control: reconfigureControl({
-            defaultValuesRef: {
-              current: { test: [{ test: '1' }, { test: '2' }] },
-            },
-          }),
+      const { result } = renderHook(() => {
+        const { control } = useForm({
+          defaultValues: { test: [{ test: '1' }, { test: '2' }] },
+        });
+        return useFieldArray({
+          control,
           name: 'test',
-        }),
-      );
+        });
+      });
 
       expect(result.current.fields).toEqual([
         { test: '1', id: '0' },
