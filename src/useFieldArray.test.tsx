@@ -31,27 +31,27 @@ describe('useFieldArray', () => {
 
   describe('initialize', () => {
     it('should return default fields value', () => {
-      const { result } = renderHook(() =>
-        useFieldArray({
-          control: reconfigureControl(),
+      const { result } = renderHook(() => {
+        const { control } = useForm();
+        return useFieldArray({
+          control: control,
           name: 'test',
-        }),
-      );
+        });
+      });
 
       expect(result.current.fields).toEqual([]);
     });
 
     it('should populate default values into fields', () => {
-      const { result } = renderHook(() =>
-        useFieldArray({
-          control: reconfigureControl({
-            defaultValuesRef: {
-              current: { test: [{ test: '1' }, { test: '2' }] },
-            },
-          }),
+      const { result } = renderHook(() => {
+        const { control } = useForm({
+          defaultValues: { test: [{ test: '1' }, { test: '2' }] },
+        });
+        return useFieldArray({
+          control,
           name: 'test',
-        }),
-      );
+        });
+      });
 
       expect(result.current.fields).toEqual([
         { test: '1', id: '0' },
@@ -353,34 +353,17 @@ describe('useFieldArray', () => {
 
   describe('append', () => {
     it('should append data into the fields', () => {
-      const dirtyFieldsRef = {
-        current: {
-          test: [],
-        },
-      };
-
-      const touchedFieldsRef = {
-        current: {
-          test: [],
-        },
-      };
-
-      const { result } = renderHook(() =>
-        useFieldArray({
-          control: {
-            ...reconfigureControl(),
-            readFormStateRef: {
-              current: {
-                touched: true,
-                dirtyFields: true,
-              },
-            } as any,
-            dirtyFieldsRef,
-            touchedFieldsRef,
-          },
+      const { result } = renderHook(() => {
+        const { register, formState, control } = useForm();
+        const { fields, append } = useFieldArray({
+          control,
           name: 'test',
-        }),
-      );
+        });
+
+        return { register, formState, fields, append };
+      });
+
+      result.current.formState.dirtyFields;
 
       act(() => {
         result.current.append({ test: 'test' });
@@ -419,7 +402,8 @@ describe('useFieldArray', () => {
         { id: '4', test: 'test3' },
       ]);
 
-      expect(dirtyFieldsRef.current).toEqual({
+      expect(result.current.formState.isDirty).toBeTruthy();
+      expect(result.current.formState.dirtyFields).toEqual({
         test: [
           {
             test: true,
@@ -439,74 +423,73 @@ describe('useFieldArray', () => {
     });
 
     it('should trigger reRender when user is watching the all field array', () => {
-      const reRender = jest.fn();
-      const { result } = renderHook(() =>
-        useFieldArray({
-          control: reconfigureControl({
-            reRender,
-            isWatchAllRef: {
-              current: true,
-            },
-          }),
+      let watched: any;
+      const Component = () => {
+        const { register, watch, control } = useForm();
+        const { fields, append } = useFieldArray({
+          control,
           name: 'test',
-        }),
-      );
+        });
+        watched = watch();
 
-      act(() => {
-        result.current.append({ test: 'test' });
-      });
+        return (
+          <form>
+            {fields.map((field, i) => (
+              <input
+                key={field.id}
+                type="text"
+                name={`test[${i}].value`}
+                ref={register()}
+                defaultValue={field.value}
+              />
+            ))}
+            <button type="button" onClick={() => append({ value: 'test' })}>
+              append
+            </button>
+          </form>
+        );
+      };
 
-      expect(result.current.fields).toEqual([{ id: '0', test: 'test' }]);
-      expect(reRender).toBeCalledTimes(2);
+      render(<Component />);
+
+      fireEvent.click(screen.getByRole('button', { name: /append/i }));
+
+      expect(watched).toEqual({ test: [{ value: 'test' }] });
     });
 
     it('should focus if shouldFocus is true', () => {
-      const mockFocus = jest.fn();
+      const Component = () => {
+        const { register, control } = useForm({
+          defaultValues: { test: [{ value: '1' }, { value: '2' }] },
+        });
+        const { fields, append } = useFieldArray({ control, name: 'test' });
 
-      const { result } = renderHook(() =>
-        useFieldArray({
-          control: reconfigureControl({
-            defaultValuesRef: {
-              current: { test: [{ test: '1' }, { test: '2' }] },
-            },
-            fieldsRef: {
-              current: {
-                'test[0]': {
-                  ref: {
-                    name: 'test[0]',
-                    value: { test: '1' },
-                    focus: mockFocus,
-                  },
-                },
-                'test[1]': {
-                  ref: {
-                    name: 'test[1]',
-                    value: { test: '2' },
-                    focus: mockFocus,
-                  },
-                },
-                'test[2]': {
-                  ref: {
-                    name: 'test[2]',
-                    value: { test: 'test' },
-                    focus: mockFocus,
-                  },
-                },
-              },
-            },
-          }),
-          name: 'test',
-        }),
-      );
+        return (
+          <form>
+            {fields.map((field, i) => (
+              <input
+                key={field.id}
+                type="text"
+                name={`test[${i}].value`}
+                ref={register()}
+                defaultValue={field.value}
+              />
+            ))}
+            <button type="button" onClick={() => append({ value: '3' })}>
+              append
+            </button>
+          </form>
+        );
+      };
 
-      act(() => result.current.append({ test: 'test' }));
+      render(<Component />);
 
-      expect(result.current.fields).toEqual([
-        { id: '0', test: '1' },
-        { id: '1', test: '2' },
-        { id: '2', test: 'test' },
-      ]);
-      expect(mockFocus).toBeCalledTimes(1);
+      fireEvent.click(screen.getByRole('button', { name: /append/i }));
+
+      const inputs = screen.getAllByRole('textbox');
+
+      expect(inputs).toHaveLength(3);
+      expect(document.activeElement).toEqual(inputs[2]);
     });
 
     it('should return watched value with watch API', async () => {
