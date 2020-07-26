@@ -8,18 +8,29 @@ import {
 import { renderHook, act } from '@testing-library/react-hooks';
 import { useForm } from './useForm';
 import { useWatch } from './useWatch';
-import generateId from './logic/generateId';
+import * as generateId from './logic/generateId';
 import { reconfigureControl } from './__mocks__/reconfigureControl';
 import { FormProvider } from './useFormContext';
 import { useFieldArray } from './useFieldArray';
 import { Control } from './types';
 
-jest.mock('./logic/generateId');
+const mockGenerateId = () => {
+  let id = 0;
+  jest.spyOn(generateId, 'default').mockImplementation(() => (id++).toString());
+};
 
 describe('useWatch', () => {
+  beforeEach(() => {
+    mockGenerateId();
+  });
+
+  afterEach(() => {
+    // @ts-ignore
+    generateId.default.mockRestore();
+  });
+
   describe('initialize', () => {
     it('should return default value in useForm', () => {
-      (generateId as any).mockReturnValue('123');
       let method: any;
       let watched: any;
       const Component = () => {
@@ -124,9 +135,6 @@ describe('useWatch', () => {
     });
 
     it('should invoked generateId and set up watchFieldsHook and watchFieldsHookRender after mount', () => {
-      (generateId as any).mockImplementation(() => {
-        return '123';
-      });
       const watchFieldsHookRenderRef = {
         current: {},
       };
@@ -146,11 +154,10 @@ describe('useWatch', () => {
       );
 
       act(() => {
-        expect(Object.keys(watchFieldsHookRenderRef.current)).toEqual(['123']);
+        expect(Object.keys(watchFieldsHookRenderRef.current)).toEqual(['0']);
         expect(watchFieldsHookRef.current).toEqual({
-          '123': new Set(),
+          '0': new Set(),
         });
-        expect(generateId).toBeCalled();
       });
     });
   });
@@ -216,10 +223,6 @@ describe('useWatch', () => {
     });
 
     it("should not re-render external component when field name don't match", async () => {
-      let key = 1;
-
-      (generateId as any).mockImplementation(() => key++);
-
       let renderCount = 0;
 
       const Child = ({ control }: { control: Control }) => {
@@ -275,7 +278,6 @@ describe('useWatch', () => {
     });
 
     it('should return default value when value is undefined', () => {
-      (generateId as any).mockReturnValue('1');
       const mockControl = reconfigureControl();
       const { result } = renderHook(() =>
         useWatch({
@@ -288,13 +290,12 @@ describe('useWatch', () => {
         }),
       );
 
-      act(() => mockControl.watchFieldsHookRenderRef.current['1']());
+      act(() => mockControl.watchFieldsHookRenderRef.current['0']());
 
       expect(result.current).toEqual('value');
     });
 
     it('should return default value when value is undefined', () => {
-      (generateId as any).mockReturnValue('1');
       const mockControl = reconfigureControl();
       const { result } = renderHook(() =>
         useWatch({
@@ -307,7 +308,7 @@ describe('useWatch', () => {
         }),
       );
 
-      act(() => mockControl.watchFieldsHookRenderRef.current['1']());
+      act(() => mockControl.watchFieldsHookRenderRef.current['0']());
 
       expect(result.current).toEqual('test');
     });
