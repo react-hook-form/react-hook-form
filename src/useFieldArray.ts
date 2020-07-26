@@ -168,7 +168,10 @@ export const useFieldArray = <
         : [appendId(value, keyName)]),
     ]);
 
-    if (readFormStateRef.current.dirtyFields) {
+    if (
+      readFormStateRef.current.dirtyFields ||
+      readFormStateRef.current.isDirty
+    ) {
       dirtyFieldsRef.current[name] = [
         ...(dirtyFieldsRef.current[name] || fillEmptyArray(fields.slice(0, 1))),
         ...filterBooleanArray(value),

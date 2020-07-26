@@ -354,16 +354,14 @@ describe('useFieldArray', () => {
   describe('append', () => {
     it('should append data into the fields', () => {
       const { result } = renderHook(() => {
-        const { register, formState, control } = useForm();
+        const { register, control } = useForm();
         const { fields, append } = useFieldArray({
           control,
           name: 'test',
         });
 
-        return { register, formState, fields, append };
+        return { register, fields, append };
       });
-
-      result.current.formState.dirtyFields;
 
       act(() => {
         result.current.append({ test: 'test' });
@@ -401,26 +399,41 @@ describe('useFieldArray', () => {
         { id: '3', test: 'test2' },
         { id: '4', test: 'test3' },
       ]);
-
-      expect(result.current.formState.isDirty).toBeTruthy();
-      expect(result.current.formState.dirtyFields).toEqual({
-        test: [
-          {
-            test: true,
-          },
-          {
-            test: true,
-          },
-          {},
-          {
-            test: true,
-          },
-          {
-            test: true,
-          },
-        ],
-      });
     });
+
+    it.each(['isDirty', 'dirtyFields'])(
+      'should be dirty when value is appended with %s',
+      (property) => {
+        const { result } = renderHook(() => {
+          const { register, formState, control } = useForm();
+          const { fields, append } = useFieldArray({
+            control,
+            name: 'test',
+          });
+
+          return { register, formState, fields, append };
+        });
+
+        (result.current.formState as Record<string, any>)[property];
+
+        act(() => {
+          result.current.append({ value: 'test' });
+        });
+
+        act(() => {
+          result.current.append({ value: 'test1' });
+        });
+
+        act(() => {
+          result.current.append({ value: 'test2' });
+        });
+
+        expect(result.current.formState.isDirty).toBeTruthy();
+        expect(result.current.formState.dirtyFields).toEqual({
+          test: [{ value: true }, { value: true }, { value: true }],
+        });
+      },
+    );
 
     it('should trigger reRender when user is watching the all field array', () => {
       let watched: any;
