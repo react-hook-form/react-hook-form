@@ -942,7 +942,10 @@ export function useForm<
         e.persist();
       }
       let fieldErrors: FieldErrors<TFieldValues> = {};
-      let fieldValues: FieldValues = getValues();
+      let fieldValues: FieldValues = getFieldsValues(
+        fieldsRef,
+        unmountFieldsStateRef,
+      );
 
       if (readFormStateRef.current.isSubmitting) {
         isSubmittingRef.current = true;

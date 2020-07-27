@@ -3,6 +3,8 @@ import getFieldValue from './getFieldValue';
 import isString from '../utils/isString';
 import isArray from '../utils/isArray';
 import isUndefined from '../utils/isUndefined';
+import transformToNestObject from './transformToNestObject';
+import { DeepPartial } from '../types/utils';
 import {
   InternalFieldName,
   FieldValues,
@@ -10,13 +12,11 @@ import {
   UnpackNestedValue,
   FieldValue,
 } from '../types/form';
-import transformToNestObject from './transformToNestObject';
-import { DeepPartial } from '../types/utils';
 
 export default <TFieldValues extends FieldValues>(
   fieldsRef: React.MutableRefObject<FieldRefs<TFieldValues>>,
   unmountFieldsStateRef: React.MutableRefObject<Record<string, any>>,
-  defaultValuesRef: React.MutableRefObject<
+  defaultValuesRef?: React.MutableRefObject<
     | FieldValue<UnpackNestedValue<TFieldValues>>
     | UnpackNestedValue<DeepPartial<TFieldValues>>
   >,
@@ -42,7 +42,7 @@ export default <TFieldValues extends FieldValues>(
   }
 
   return {
-    ...transformToNestObject(defaultValuesRef.current),
+    ...transformToNestObject((defaultValuesRef || {}).current || {}),
     ...transformToNestObject(unmountFieldsStateRef.current),
     ...transformToNestObject(output),
   };
