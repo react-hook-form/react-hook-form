@@ -128,7 +128,7 @@ export function useForm<
   const fieldArrayNamesRef = React.useRef<Set<string>>(new Set());
   const [, render] = React.useState();
   const {
-    current: { isOnBlur, isOnSubmit, isOnChange, isOnAll },
+    current: { isOnBlur, isOnSubmit, isOnChange, isOnAll, isOnTouch },
   } = React.useRef(modeChecker(mode));
   const isValidateAllFieldCriteria = criteriaMode === VALIDATION_MODE.all;
   const readFormStateRef = React.useRef<ReadFormState>({
@@ -136,7 +136,7 @@ export function useForm<
     dirtyFields: !isProxyEnabled,
     isSubmitted: isOnSubmit,
     submitCount: !isProxyEnabled,
-    touched: !isProxyEnabled,
+    touched: !isProxyEnabled || isOnTouch,
     isSubmitting: !isProxyEnabled,
     isValid: !isProxyEnabled,
   });
@@ -478,10 +478,12 @@ export function useForm<
             skipValidation({
               isOnChange,
               isOnBlur,
+              isOnTouch,
               isBlurEvent,
               isReValidateOnChange,
               isReValidateOnBlur,
               isSubmitted: isSubmittedRef.current,
+              isTouched: !!get(touchedFieldsRef.current, name),
             });
           let shouldRender = setDirty(name) || isFieldWatched(name);
 
@@ -1168,6 +1170,7 @@ export function useForm<
     mode: {
       isOnBlur,
       isOnSubmit,
+      isOnTouch,
       isOnChange,
     },
     reValidateMode: {

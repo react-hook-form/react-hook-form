@@ -54,6 +54,7 @@ export type ValidationMode = {
   onBlur: 'onBlur';
   onChange: 'onChange';
   onSubmit: 'onSubmit';
+  onTouch: 'onTouch';
   all: 'all';
 };
 
@@ -240,6 +241,7 @@ export type Control<TFieldValues extends FieldValues = FieldValues> = Pick<
     readonly isOnBlur: boolean;
     readonly isOnSubmit: boolean;
     readonly isOnChange: boolean;
+    readonly isOnTouch: boolean;
   };
   reValidateMode: {
     readonly isReValidateOnBlur: boolean;

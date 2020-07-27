@@ -10,6 +10,8 @@ describe('should skip validation', () => {
         isOnBlur: true,
         isReValidateOnBlur: false,
         isSubmitted: false,
+        isTouched: false,
+        isOnTouch: false,
       }),
     ).toBeTruthy();
   });
@@ -23,6 +25,8 @@ describe('should skip validation', () => {
         isOnBlur: false,
         isReValidateOnBlur: false,
         isSubmitted: false,
+        isTouched: false,
+        isOnTouch: false,
       }),
     ).toBeTruthy();
   });
@@ -36,6 +40,8 @@ describe('should skip validation', () => {
         isOnBlur: false,
         isReValidateOnBlur: false,
         isSubmitted: false,
+        isTouched: false,
+        isOnTouch: false,
       }),
     ).toBeTruthy();
   });
@@ -49,6 +55,8 @@ describe('should skip validation', () => {
         isOnBlur: true,
         isReValidateOnBlur: false,
         isSubmitted: false,
+        isTouched: false,
+        isOnTouch: false,
       }),
     ).toBeTruthy();
   });
@@ -62,6 +70,8 @@ describe('should skip validation', () => {
         isOnBlur: false,
         isReValidateOnBlur: true,
         isSubmitted: true,
+        isTouched: false,
+        isOnTouch: false,
       }),
     ).toBeTruthy();
   });
@@ -75,6 +85,8 @@ describe('should skip validation', () => {
         isReValidateOnChange: false,
         isReValidateOnBlur: false,
         isSubmitted: true,
+        isTouched: false,
+        isOnTouch: false,
       }),
     ).toBeTruthy();
   });
@@ -90,6 +102,8 @@ describe('should validate the input', () => {
         isOnBlur: false,
         isReValidateOnBlur: false,
         isSubmitted: true,
+        isTouched: false,
+        isOnTouch: false,
       }),
     ).toBeFalsy();
   });
@@ -103,6 +117,8 @@ describe('should validate the input', () => {
         isOnBlur: true,
         isReValidateOnBlur: false,
         isSubmitted: false,
+        isTouched: false,
+        isOnTouch: false,
       }),
     ).toBeFalsy();
   });
@@ -116,6 +132,8 @@ describe('should validate the input', () => {
         isOnBlur: true,
         isReValidateOnBlur: false,
         isSubmitted: false,
+        isTouched: false,
+        isOnTouch: false,
       }),
     ).toBeFalsy();
   });

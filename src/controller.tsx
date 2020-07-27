@@ -35,7 +35,7 @@ const Controller = <
     register,
     unregister,
     trigger,
-    mode: { isOnChange, isOnBlur },
+    mode: { isOnChange, isOnBlur, isOnTouch },
     reValidateMode: { isReValidateOnBlur, isReValidateOnChange },
     isSubmittedRef,
     touchedFieldsRef,
@@ -62,9 +62,11 @@ const Controller = <
     !skipValidation({
       isOnBlur,
       isOnChange,
+      isOnTouch,
       isReValidateOnBlur,
       isReValidateOnChange,
       isSubmitted,
+      isTouched: !!get(touchedFieldsRef.current, name),
     });
 
   const commonTask = ([event]: any[]) => {
