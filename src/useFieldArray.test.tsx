@@ -965,9 +965,7 @@ describe('useFieldArray', () => {
 
       expect(formState.isDirty).toBeFalsy();
 
-      await actComponent(async () => {
-        await fireEvent.click(screen.getByRole('button', { name: /append/i }));
-      });
+      fireEvent.click(screen.getByRole('button', { name: /append/i }));
 
       expect(formState.isDirty).toBeTruthy();
 
