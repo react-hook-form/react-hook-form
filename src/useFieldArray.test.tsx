@@ -969,11 +969,9 @@ describe('useFieldArray', () => {
 
       expect(formState.isDirty).toBeTruthy();
 
-      await actComponent(async () => {
-        await fireEvent.click(
-          screen.getAllByRole('button', { name: /remove/i })[1],
-        );
-      });
+      fireEvent.click(
+        screen.getAllByRole('button', { name: /remove/i })[1],
+      );
 
       expect(formState.isDirty).toBeFalsy();
     });
