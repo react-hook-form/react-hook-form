@@ -1,7 +1,4 @@
 import * as React from 'react';
-import { act, renderHook } from '@testing-library/react-hooks';
-import { useFieldArray } from './useFieldArray';
-import { reconfigureControl } from './__mocks__/reconfigureControl';
 import {
   render,
   fireEvent,
@@ -9,10 +6,13 @@ import {
   waitFor,
   act as actComponent,
 } from '@testing-library/react';
-import { Control, ValidationRules, FieldError } from './types';
+import { act, renderHook } from '@testing-library/react-hooks';
+import { useFieldArray } from './useFieldArray';
+import { reconfigureControl } from './__mocks__/reconfigureControl';
 import { useForm } from './useForm';
 import { DeepMap } from './types/utils';
 import * as generateId from './logic/generateId';
+import { Control, ValidationRules, FieldError } from './types';
 
 const mockGenerateId = () => {
   let id = 0;
@@ -922,6 +922,58 @@ describe('useFieldArray', () => {
   });
 
   describe('remove', () => {
+    it('should update isDirty formState when item removed', async () => {
+      let formState: any;
+      const Component = () => {
+        const { register, control, formState: tempFormState } = useForm({
+          defaultValues: {
+            test: [{ name: 'default' }],
+          },
+        });
+        const { fields, remove, append } = useFieldArray({
+          name: 'test',
+          control,
+        });
+
+        formState = tempFormState;
+
+        formState.isDirty;
+
+        return (
+          <form>
+            {fields.map((field, i) => (
+              <div key={i.toString()}>
+                <input
+                  name={`test[${i}].name`}
+                  ref={register()}
+                  defaultValue={field.name}
+                />
+                <button type={'button'} onClick={() => remove(i)}>
+                  remove
+                </button>
+              </div>
+            ))}
+
+            <button type={'button'} onClick={() => append({})}>
+              append
+            </button>
+          </form>
+        );
+      };
+
+      render(<Component />);
+
+      expect(formState.isDirty).toBeFalsy();
+
+      fireEvent.click(screen.getByRole('button', { name: /append/i }));
+
+      expect(formState.isDirty).toBeTruthy();
+
+      fireEvent.click(screen.getAllByRole('button', { name: /remove/i })[1]);
+
+      expect(formState.isDirty).toBeFalsy();
+    });
+
     it('should remove field according index', () => {
       const dirtyFieldsRef = {
         current: {
