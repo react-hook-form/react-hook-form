@@ -6,6 +6,7 @@
 
 - `resolver` supports both async and sync
 - `getValues` will return default values before inputs registration
+  - By this change, handleSubmit has been to pass defaultValues even if the field is not registered
 
 ## [6.0.7] - 2020-07-17
 
