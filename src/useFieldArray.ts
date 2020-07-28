@@ -147,7 +147,7 @@ export const useFieldArray = <
       isDirtyRef.current =
         isUndefined(flagOrFields) ||
         getIsFieldsDifferent(
-          flagOrFields.map(({ [keyName]: omitted, ...rest }) => rest),
+          flagOrFields.map(({ [keyName]: omitted, ...rest } = {}) => rest),
           get(defaultValuesRef.current, name, []),
         );
     }
