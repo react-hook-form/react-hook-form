@@ -1509,12 +1509,7 @@ describe('useForm', () => {
 
       await act(async () => {
         await result.current.handleSubmit((data: any) => {
-          expect(data).toEqual({
-            test: 'data',
-            deep: {
-              values: '5',
-            },
-          });
+          expect(data).toEqual({});
         })({
           preventDefault: () => {},
           persist: () => {},

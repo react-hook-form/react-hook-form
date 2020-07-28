@@ -170,9 +170,7 @@ describe('useFieldArray', () => {
     cy.get('ul > li').should('have.length', 0);
 
     cy.get('#submit').click();
-    cy.get('#result').contains(
-      '{"data":[{"name":"test"},{"name":"test1"},{"name":"test2"}]}',
-    );
+    cy.get('#result').contains('{}');
 
     cy.get('#append').click();
 
@@ -272,9 +270,7 @@ describe('useFieldArray', () => {
     cy.get('ul > li').should('have.length', 0);
 
     cy.get('#submit').click();
-    cy.get('#result').contains(
-      '{"data":[{"name":"test"},{"name":"test1"},{"name":"test2"}]}',
-    );
+    cy.get('#result').contains('{}');
 
     cy.get('#append').click();
 
