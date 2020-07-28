@@ -969,9 +969,7 @@ describe('useFieldArray', () => {
 
       expect(formState.isDirty).toBeTruthy();
 
-      fireEvent.click(
-        screen.getAllByRole('button', { name: /remove/i })[1],
-      );
+      fireEvent.click(screen.getAllByRole('button', { name: /remove/i })[1]);
 
       expect(formState.isDirty).toBeFalsy();
     });
