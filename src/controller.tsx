@@ -57,7 +57,7 @@ const Controller = <
   const onFocusRef = React.useRef(onFocus);
   const isSubmitted = isSubmittedRef.current;
 
-  const shouldValidate = (isBlurEvent = false) =>
+  const shouldValidate = (isBlurEvent?: boolean) =>
     !skipValidation({
       isBlurEvent,
       isReValidateOnBlur,
