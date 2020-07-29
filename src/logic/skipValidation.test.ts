@@ -94,6 +94,20 @@ describe('should validate the input', () => {
     ).toBeFalsy();
   });
 
+  it('when mode is under all', () => {
+    expect(
+      skipValidation({
+        isOnChange: false,
+        isBlurEvent: false,
+        isReValidateOnChange: false,
+        isOnBlur: false,
+        isReValidateOnBlur: false,
+        isSubmitted: false,
+        isOnAll: true,
+      }),
+    ).toBeFalsy();
+  });
+
   it('when user blur input and there is no more error', () => {
     expect(
       skipValidation({
