@@ -4,10 +4,6 @@ import getFieldValue from './getFieldValue';
 jest.mock('./getFieldValue');
 
 describe('getFieldsValues', () => {
-  afterEach(() => {
-    jest.restoreAllMocks();
-  });
-
   it('should return all fields value', () => {
     // @ts-ignore
     getFieldValue.mockImplementation(() => 'test');
@@ -23,7 +19,6 @@ describe('getFieldsValues', () => {
             },
           },
         },
-        { current: {} },
         { current: {} },
       ),
     ).toEqual({
@@ -48,7 +43,6 @@ describe('getFieldsValues', () => {
             },
           },
         },
-        { current: {} },
         { current: {} },
         'test',
       ),
@@ -77,7 +71,6 @@ describe('getFieldsValues', () => {
           },
         },
         { current: {} },
-        { current: {} },
         ['test', 'tex'],
       ),
     ).toEqual({
@@ -86,30 +79,7 @@ describe('getFieldsValues', () => {
     });
   });
 
-  it('should return default values when field is empty', () => {
-    expect(
-      getFieldsValues(
-        {
-          current: {},
-        },
-        {
-          current: {},
-        },
-        {
-          current: {
-            test1: 'test',
-          },
-        },
-      ),
-    ).toEqual({
-      test1: 'test',
-    });
-  });
-
   it('should return unmounted values', () => {
-    // @ts-ignore
-    getFieldValue.mockImplementation(() => 'test');
-
     expect(
       getFieldsValues(
         {
@@ -124,7 +94,6 @@ describe('getFieldsValues', () => {
             test1: 'test',
           },
         },
-        { current: {} },
       ),
     ).toEqual({
       test: 'test',
@@ -150,7 +119,6 @@ describe('getFieldsValues', () => {
             'test2.test': 'test1',
           },
         },
-        { current: {} },
       ),
     ).toEqual({
       test: 'test',
@@ -158,33 +126,6 @@ describe('getFieldsValues', () => {
       test2: {
         test: 'test1',
       },
-    });
-  });
-
-  it('should return value that merged default values with unmounted values', () => {
-    expect(
-      getFieldsValues(
-        {
-          current: {
-            test: {
-              ref: { name: 'test' },
-            },
-          },
-        },
-        {
-          current: {
-            test1: 'unmounted',
-          },
-        },
-        {
-          current: {
-            test1: 'default',
-          },
-        },
-      ),
-    ).toEqual({
-      test: 'test',
-      test1: 'unmounted',
     });
   });
 });
