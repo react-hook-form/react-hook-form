@@ -248,7 +248,12 @@ describe('Controller', () => {
     const setValue = jest.fn();
     const control = reconfigureControl({
       setValue,
-      mode: { isOnChange: false, isOnSubmit: true, isOnBlur: false },
+      mode: {
+        isOnChange: false,
+        isOnSubmit: true,
+        isOnBlur: false,
+        isOnAll: false,
+      },
     });
     const fieldsRef = {
       current: {},
@@ -288,7 +293,12 @@ describe('Controller', () => {
     const trigger = jest.fn();
     const control = reconfigureControl({
       trigger,
-      mode: { isOnChange: false, isOnSubmit: true, isOnBlur: true },
+      mode: {
+        isOnChange: false,
+        isOnSubmit: true,
+        isOnBlur: true,
+        isOnAll: false,
+      },
     });
     const fieldsRef = {
       current: {},
@@ -380,7 +390,12 @@ describe('Controller', () => {
     const trigger = jest.fn();
     const control = reconfigureControl({
       trigger,
-      mode: { isOnChange: false, isOnSubmit: true, isOnBlur: false },
+      mode: {
+        isOnChange: false,
+        isOnSubmit: true,
+        isOnBlur: false,
+        isOnAll: false,
+      },
     });
     const fieldsRef = {
       current: {},
@@ -419,7 +434,12 @@ describe('Controller', () => {
     const control = reconfigureControl({
       trigger,
       reRender,
-      mode: { isOnChange: false, isOnSubmit: true, isOnBlur: true },
+      mode: {
+        isOnChange: false,
+        isOnSubmit: true,
+        isOnBlur: true,
+        isOnAll: false,
+      },
     });
     const fieldsRef = {
       current: {},
@@ -471,7 +491,12 @@ describe('Controller', () => {
     const setValue = jest.fn();
     const control = reconfigureControl({
       setValue,
-      mode: { isOnChange: false, isOnSubmit: true, isOnBlur: true },
+      mode: {
+        isOnChange: false,
+        isOnSubmit: true,
+        isOnBlur: true,
+        isOnAll: false,
+      },
     });
     const fieldsRef = {
       current: {},
@@ -514,7 +539,12 @@ describe('Controller', () => {
     const setValue = jest.fn();
     const control = reconfigureControl({
       setValue,
-      mode: { isOnChange: false, isOnSubmit: false, isOnBlur: true },
+      mode: {
+        isOnChange: false,
+        isOnSubmit: false,
+        isOnBlur: true,
+        isOnAll: false,
+      },
     });
     const fieldsRef = {
       current: {},
@@ -554,7 +584,12 @@ describe('Controller', () => {
   it('should invoke custom onBlur method', () => {
     const onBlur = jest.fn();
     const control = reconfigureControl({
-      mode: { isOnChange: false, isOnSubmit: false, isOnBlur: true },
+      mode: {
+        isOnChange: false,
+        isOnSubmit: false,
+        isOnBlur: true,
+        isOnAll: false,
+      },
     });
     const fieldsRef = {
       current: {},
