@@ -5,15 +5,19 @@ export default ({
   isReValidateOnChange,
   isBlurEvent,
   isSubmitted,
+  isOnAll,
 }: {
-  isOnBlur: boolean;
-  isOnChange: boolean;
-  isReValidateOnBlur: boolean;
-  isReValidateOnChange: boolean;
+  isOnAll?: boolean;
+  isOnBlur?: boolean;
+  isOnChange?: boolean;
+  isReValidateOnBlur?: boolean;
+  isReValidateOnChange?: boolean;
   isBlurEvent?: boolean;
-  isSubmitted: boolean;
+  isSubmitted?: boolean;
 }) => {
-  if (isSubmitted ? isReValidateOnBlur : isOnBlur) {
+  if (isOnAll) {
+    return false;
+  } else if (isSubmitted ? isReValidateOnBlur : isOnBlur) {
     return !isBlurEvent;
   } else if (isSubmitted ? isReValidateOnChange : isOnChange) {
     return isBlurEvent;

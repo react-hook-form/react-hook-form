@@ -35,7 +35,7 @@ const Controller = <
     register,
     unregister,
     trigger,
-    mode: { isOnChange, isOnBlur },
+    mode,
     reValidateMode: { isReValidateOnBlur, isReValidateOnChange },
     isSubmittedRef,
     touchedFieldsRef,
@@ -44,7 +44,6 @@ const Controller = <
     fieldsRef,
     fieldArrayNamesRef,
     unmountFieldsStateRef,
-    formState,
   } = control || methods.control;
   const isNotFieldArray = !isNameInFieldArray(fieldArrayNamesRef.current, name);
   const getInitialValue = () =>
@@ -58,13 +57,13 @@ const Controller = <
   const onFocusRef = React.useRef(onFocus);
   const isSubmitted = isSubmittedRef.current;
 
-  const shouldValidate = () =>
+  const shouldValidate = (isBlurEvent?: boolean) =>
     !skipValidation({
-      isOnBlur,
-      isOnChange,
+      isBlurEvent,
       isReValidateOnBlur,
       isReValidateOnChange,
       isSubmitted,
+      ...mode,
     });
 
   const commonTask = ([event]: any[]) => {
@@ -126,7 +125,7 @@ const Controller = <
       reRender();
     }
 
-    if (isOnBlur || (formState.isSubmitted && isReValidateOnBlur)) {
+    if (shouldValidate(true)) {
       trigger(name);
     }
   };
