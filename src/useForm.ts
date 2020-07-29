@@ -127,9 +127,10 @@ export function useForm<
   const resolverRef = React.useRef(resolver);
   const fieldArrayNamesRef = React.useRef<Set<string>>(new Set());
   const [, render] = React.useState();
+  const modeRef = React.useRef(modeChecker(mode));
   const {
-    current: { isOnBlur, isOnSubmit, isOnChange, isOnAll },
-  } = React.useRef(modeChecker(mode));
+    current: { isOnSubmit, isOnAll },
+  } = modeRef;
   const isValidateAllFieldCriteria = criteriaMode === VALIDATION_MODE.all;
   const readFormStateRef = React.useRef<ReadFormState>({
     isDirty: !isProxyEnabled,
@@ -476,12 +477,11 @@ export function useForm<
           const shouldSkipValidation =
             !isOnAll &&
             skipValidation({
-              isOnChange,
-              isOnBlur,
               isBlurEvent,
               isReValidateOnChange,
               isReValidateOnBlur,
               isSubmitted: isSubmittedRef.current,
+              ...modeRef.current,
             });
           let shouldRender = setDirty(name) || isFieldWatched(name);
 
@@ -1167,12 +1167,7 @@ export function useForm<
     renderWatchedInputs,
     watchInternal,
     reRender,
-    ...(resolver ? { validateSchemaIsValid: validateResolver } : {}),
-    mode: {
-      isOnBlur,
-      isOnSubmit,
-      isOnChange,
-    },
+    mode: modeRef.current,
     reValidateMode: {
       isReValidateOnBlur,
       isReValidateOnChange,
@@ -1195,6 +1190,7 @@ export function useForm<
     readFormStateRef,
     defaultValuesRef,
     unmountFieldsStateRef,
+    ...(resolver ? { validateSchemaIsValid: validateResolver } : {}),
     ...commonProps,
   };
 
