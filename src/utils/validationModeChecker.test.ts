@@ -42,5 +42,13 @@ describe('validationModeChecker', () => {
       isOnAll: true,
       isOnTouch: false,
     });
+
+    expect(validationModeChecker(VALIDATION_MODE.onTouch)).toEqual({
+      isOnSubmit: false,
+      isOnBlur: false,
+      isOnChange: false,
+      isOnAll: false,
+      isOnTouch: true,
+    });
   });
 });
