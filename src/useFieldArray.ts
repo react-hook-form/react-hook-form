@@ -127,7 +127,8 @@ export const useFieldArray = <
   const shouldRenderFieldArray = (shouldRender?: boolean) => {
     if (
       readFormStateRef.current.dirtyFields ||
-      readFormStateRef.current.isDirty
+      readFormStateRef.current.isDirty ||
+      readFormStateRef.current.isValid
     ) {
       shouldRender = true;
     }
