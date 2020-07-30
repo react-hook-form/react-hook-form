@@ -1494,7 +1494,7 @@ describe('useForm', () => {
       });
     });
 
-    it('should pass default value when field is not registered', async () => {
+    it('should not pass default value when field is not registered', async () => {
       const { result } = renderHook(() =>
         useForm<{ test: string; deep: { nested: string; values: string } }>({
           mode: VALIDATION_MODE.onSubmit,
@@ -1509,12 +1509,7 @@ describe('useForm', () => {
 
       await act(async () => {
         await result.current.handleSubmit((data: any) => {
-          expect(data).toEqual({
-            test: 'data',
-            deep: {
-              values: '5',
-            },
-          });
+          expect(data).toEqual({});
         })({
           preventDefault: () => {},
           persist: () => {},
@@ -1843,7 +1838,7 @@ describe('useForm', () => {
       });
     });
 
-    it('should get value from default value by name when field is not registered', () => {
+    it('should not get value from default value by name when field is not registered', () => {
       const { result } = renderHook(() =>
         useForm({
           defaultValues: {
@@ -1852,10 +1847,10 @@ describe('useForm', () => {
         }),
       );
 
-      expect(result.current.getValues('test')).toEqual('default');
+      expect(result.current.getValues('test')).toBeUndefined();
     });
 
-    it('should get value from default value by array when field is not registered', () => {
+    it('should not get value from default value by array when field is not registered', () => {
       const { result } = renderHook(() =>
         useForm({
           defaultValues: {
@@ -1864,10 +1859,10 @@ describe('useForm', () => {
         }),
       );
 
-      expect(result.current.getValues(['test'])).toEqual({ test: 'default' });
+      expect(result.current.getValues(['test'])).toEqual({ test: undefined });
     });
 
-    it('should get value from default value when field is not registered', () => {
+    it('should not get value from default value when field is not registered', () => {
       const { result } = renderHook(() =>
         useForm({
           defaultValues: {
@@ -1876,47 +1871,7 @@ describe('useForm', () => {
         }),
       );
 
-      expect(result.current.getValues()).toEqual({ test: 'default' });
-    });
-
-    it('should get value from default value and unmountFieldsStateRef by array', () => {
-      const { result, unmount } = renderHook(() =>
-        useForm<{ default: string; test: string }>({
-          shouldUnregister: false,
-          defaultValues: {
-            default: 'default',
-          },
-        }),
-      );
-
-      result.current.register({ name: 'test', value: 'test' });
-
-      unmount();
-
-      expect(result.current.getValues(['default', 'test'])).toEqual({
-        default: 'default',
-        test: 'test',
-      });
-    });
-
-    it('should get value from default value and unmountFieldsStateRef', () => {
-      const { result, unmount } = renderHook(() =>
-        useForm<{ default: string; test: string }>({
-          shouldUnregister: false,
-          defaultValues: {
-            default: 'default',
-          },
-        }),
-      );
-
-      result.current.register({ name: 'test', value: 'test' });
-
-      unmount();
-
-      expect(result.current.getValues()).toEqual({
-        default: 'default',
-        test: 'test',
-      });
+      expect(result.current.getValues()).toEqual({});
     });
   });
 

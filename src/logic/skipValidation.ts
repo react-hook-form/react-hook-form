@@ -7,17 +7,20 @@ export default ({
   isReValidateOnChange,
   isBlurEvent,
   isSubmitted,
+  isOnAll,
 }: {
-  isOnBlur: boolean;
-  isOnChange: boolean;
-  isOnTouch: boolean;
-  isReValidateOnBlur: boolean;
-  isReValidateOnChange: boolean;
+  isOnAll?: boolean;
+  isOnBlur?: boolean;
+  isOnChange?: boolean;
+  isReValidateOnBlur?: boolean;
+  isReValidateOnChange?: boolean;
   isBlurEvent?: boolean;
-  isSubmitted: boolean;
-  isTouched: boolean;
+  isSubmitted?: boolean;
+  isTouched?: boolean;
 }) => {
-  if (isSubmitted && isOnTouch) {
+  if (isOnAll) {
+    return false;
+  } else if (isSubmitted && isOnTouch) {
     return !isTouched;
   } else if (isSubmitted ? isReValidateOnBlur : isOnBlur) {
     return !isBlurEvent;

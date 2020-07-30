@@ -252,6 +252,7 @@ describe('Controller', () => {
         isOnChange: false,
         isOnSubmit: true,
         isOnBlur: false,
+        isOnAll: false,
         isOnTouch: false,
       },
     });
@@ -297,6 +298,7 @@ describe('Controller', () => {
         isOnChange: false,
         isOnSubmit: true,
         isOnBlur: true,
+        isOnAll: false,
         isOnTouch: false,
       },
     });
@@ -394,6 +396,7 @@ describe('Controller', () => {
         isOnChange: false,
         isOnSubmit: true,
         isOnBlur: false,
+        isOnAll: false,
         isOnTouch: false,
       },
     });
@@ -438,6 +441,7 @@ describe('Controller', () => {
         isOnChange: false,
         isOnSubmit: true,
         isOnBlur: true,
+        isOnAll: false,
         isOnTouch: false,
       },
     });
@@ -495,6 +499,7 @@ describe('Controller', () => {
         isOnChange: false,
         isOnSubmit: true,
         isOnBlur: true,
+        isOnAll: false,
         isOnTouch: false,
       },
     });
@@ -542,6 +547,7 @@ describe('Controller', () => {
       mode: {
         isOnChange: false,
         isOnSubmit: false,
+        isOnAll: false,
         isOnBlur: true,
         isOnTouch: false,
       },
@@ -587,6 +593,7 @@ describe('Controller', () => {
       mode: {
         isOnChange: false,
         isOnSubmit: false,
+        isOnAll: false,
         isOnBlur: true,
         isOnTouch: false,
       },

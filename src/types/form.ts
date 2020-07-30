@@ -241,6 +241,7 @@ export type Control<TFieldValues extends FieldValues = FieldValues> = Pick<
     readonly isOnBlur: boolean;
     readonly isOnSubmit: boolean;
     readonly isOnChange: boolean;
+    readonly isOnAll: boolean;
     readonly isOnTouch: boolean;
   };
   reValidateMode: {

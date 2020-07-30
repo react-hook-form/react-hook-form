@@ -158,26 +158,6 @@ describe('getFieldValue', () => {
         },
         'what',
         { current: { what: 'data' } },
-        { current: {} },
-      ),
-    ).toEqual('data');
-  });
-
-  it('should return default field value when field is not found', () => {
-    expect(
-      getFieldValue(
-        {
-          current: {
-            test: {
-              ref: {
-                files: 'files',
-              },
-            },
-          },
-        },
-        'what',
-        { current: {} },
-        { current: { what: 'data' } },
       ),
     ).toEqual('data');
   });

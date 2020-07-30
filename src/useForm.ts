@@ -127,9 +127,10 @@ export function useForm<
   const resolverRef = React.useRef(resolver);
   const fieldArrayNamesRef = React.useRef<Set<string>>(new Set());
   const [, render] = React.useState();
+  const modeRef = React.useRef(modeChecker(mode));
   const {
-    current: { isOnBlur, isOnSubmit, isOnChange, isOnAll, isOnTouch },
-  } = React.useRef(modeChecker(mode));
+    current: { isOnSubmit, isOnAll, isOnTouch },
+  } = modeRef;
   const isValidateAllFieldCriteria = criteriaMode === VALIDATION_MODE.all;
   const readFormStateRef = React.useRef<ReadFormState>({
     isDirty: !isProxyEnabled,
@@ -246,7 +247,7 @@ export function useForm<
 
       const isFieldDirty =
         defaultValuesAtRenderRef.current[name] !==
-        getFieldValue(fieldsRef, name, unmountFieldsStateRef, defaultValuesRef);
+        getFieldValue(fieldsRef, name, unmountFieldsStateRef);
       const isDirtyFieldExist = get(dirtyFieldsRef.current, name);
       const isFieldArray = isNameInFieldArray(fieldArrayNamesRef.current, name);
       const previousIsDirty = isDirtyRef.current;
@@ -284,7 +285,6 @@ export function useForm<
           isValidateAllFieldCriteria,
           fieldsRef.current[name] as Field,
           unmountFieldsStateRef,
-          defaultValuesRef,
         );
 
         shouldRenderBaseOnError(name, error, skipReRender ? null : false);
@@ -476,14 +476,12 @@ export function useForm<
           const shouldSkipValidation =
             !isOnAll &&
             skipValidation({
-              isOnChange,
-              isOnBlur,
-              isOnTouch,
               isBlurEvent,
               isReValidateOnChange,
               isReValidateOnBlur,
               isSubmitted: isSubmittedRef.current,
               isTouched: !!get(touchedFieldsRef.current, name),
+              ...modeRef.current,
             });
           let shouldRender = setDirty(name) || isFieldWatched(name);
 
@@ -523,7 +521,6 @@ export function useForm<
               isValidateAllFieldCriteria,
               field,
               unmountFieldsStateRef,
-              defaultValuesRef,
             );
           }
 
@@ -546,30 +543,20 @@ export function useForm<
   ): UnpackNestedValue<Pick<TFieldValues, TFieldName>>;
   function getValues(payload?: string | string[]): unknown {
     if (isString(payload)) {
-      return getFieldValue(
-        fieldsRef,
-        payload,
-        unmountFieldsStateRef,
-        defaultValuesRef,
-      );
+      return getFieldValue(fieldsRef, payload, unmountFieldsStateRef);
     }
 
     if (isArray(payload)) {
       return payload.reduce(
         (previous, name) => ({
           ...previous,
-          [name]: getFieldValue(
-            fieldsRef,
-            name,
-            unmountFieldsStateRef,
-            defaultValuesRef,
-          ),
+          [name]: getFieldValue(fieldsRef, name, unmountFieldsStateRef),
         }),
         {},
       );
     }
 
-    return getFieldsValues(fieldsRef, unmountFieldsStateRef, defaultValuesRef);
+    return getFieldsValues(fieldsRef, unmountFieldsStateRef);
   }
 
   const validateResolver = React.useCallback(
@@ -600,7 +587,6 @@ export function useForm<
         handleChangeRef.current!,
         field,
         unmountFieldsStateRef,
-        defaultValuesRef,
         shouldUnregister,
         forceDelete,
       ),
@@ -686,7 +672,6 @@ export function useForm<
       const fieldValues = getFieldsValues<TFieldValues>(
         fieldsRef,
         unmountFieldsStateRef,
-        defaultValuesRef,
         fieldNames,
       );
 
@@ -858,7 +843,6 @@ export function useForm<
           isValidateAllFieldCriteria,
           field,
           unmountFieldsStateRef,
-          defaultValuesRef,
         ).then((error: FieldErrors) => {
           const previousFormIsValid = isValidRef.current;
 
@@ -877,12 +861,7 @@ export function useForm<
       !defaultValuesAtRenderRef.current[name] &&
       !(isFieldArray && isEmptyDefaultValue)
     ) {
-      const fieldValue = getFieldValue(
-        fieldsRef,
-        name,
-        unmountFieldsStateRef,
-        defaultValuesRef,
-      );
+      const fieldValue = getFieldValue(fieldsRef, name, unmountFieldsStateRef);
       defaultValuesAtRenderRef.current[name] = isEmptyDefaultValue
         ? isObject(fieldValue)
           ? { ...fieldValue }
@@ -944,7 +923,10 @@ export function useForm<
         e.persist();
       }
       let fieldErrors: FieldErrors<TFieldValues> = {};
-      let fieldValues: FieldValues = getValues();
+      let fieldValues: FieldValues = getFieldsValues(
+        fieldsRef,
+        unmountFieldsStateRef,
+      );
 
       if (readFormStateRef.current.isSubmitting) {
         isSubmittingRef.current = true;
@@ -973,7 +955,6 @@ export function useForm<
                 isValidateAllFieldCriteria,
                 field,
                 unmountFieldsStateRef,
-                defaultValuesRef,
               );
 
               if (fieldError[name]) {
@@ -1166,13 +1147,7 @@ export function useForm<
     renderWatchedInputs,
     watchInternal,
     reRender,
-    ...(resolver ? { validateSchemaIsValid: validateResolver } : {}),
-    mode: {
-      isOnBlur,
-      isOnSubmit,
-      isOnTouch,
-      isOnChange,
-    },
+    mode: modeRef.current,
     reValidateMode: {
       isReValidateOnBlur,
       isReValidateOnChange,
@@ -1195,6 +1170,7 @@ export function useForm<
     readFormStateRef,
     defaultValuesRef,
     unmountFieldsStateRef,
+    ...(resolver ? { validateSchemaIsValid: validateResolver } : {}),
     ...commonProps,
   };
 
