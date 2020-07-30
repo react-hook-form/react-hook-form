@@ -978,6 +978,7 @@ describe('useFieldArray', () => {
       let formState: any;
       const Component = () => {
         const { register, control, formState: tempFormState } = useForm({
+          mode: 'onChange',
           defaultValues: {
             test: [{ name: 'default' }],
           },
@@ -1022,11 +1023,17 @@ describe('useFieldArray', () => {
 
       render(<Component />);
 
-      fireEvent.click(screen.getByRole('button', { name: /append/i }));
+      await actComponent(async () => {
+        await fireEvent.click(screen.getByRole('button', { name: /append/i }));
+      });
 
       expect(formState.isValid).toBeFalsy();
 
-      fireEvent.click(screen.getAllByRole('button', { name: /remove/i })[1]);
+      await actComponent(async () => {
+        await fireEvent.click(
+          screen.getAllByRole('button', { name: /remove/i })[1],
+        );
+      });
 
       expect(formState.isValid).toBeTruthy();
     });
