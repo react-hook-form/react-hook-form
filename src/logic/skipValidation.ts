@@ -16,6 +16,7 @@ export default ({
   isReValidateOnChange?: boolean;
   isBlurEvent?: boolean;
   isSubmitted?: boolean;
+  isOnTouch?: boolean;
   isTouched?: boolean;
 }) => {
   if (isOnAll) {
