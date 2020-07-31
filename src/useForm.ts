@@ -129,7 +129,7 @@ export function useForm<
   const [, render] = React.useState();
   const modeRef = React.useRef(modeChecker(mode));
   const {
-    current: { isOnSubmit, isOnAll, isOnTouch },
+    current: { isOnSubmit, isOnTouch },
   } = modeRef;
   const isValidateAllFieldCriteria = criteriaMode === VALIDATION_MODE.all;
   const readFormStateRef = React.useRef<ReadFormState>({
@@ -473,16 +473,14 @@ export function useForm<
 
         if (field) {
           const isBlurEvent = type === EVENTS.BLUR;
-          const shouldSkipValidation =
-            !isOnAll &&
-            skipValidation({
-              isBlurEvent,
-              isReValidateOnChange,
-              isReValidateOnBlur,
-              isSubmitted: isSubmittedRef.current,
-              isTouched: !!get(touchedFieldsRef.current, name),
-              ...modeRef.current,
-            });
+          const shouldSkipValidation = skipValidation({
+            isBlurEvent,
+            isReValidateOnChange,
+            isReValidateOnBlur,
+            isSubmitted: isSubmittedRef.current,
+            isTouched: !!get(touchedFieldsRef.current, name),
+            ...modeRef.current,
+          });
           let shouldRender = setDirty(name) || isFieldWatched(name);
 
           if (

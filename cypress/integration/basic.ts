@@ -74,6 +74,11 @@ describe('basic form validation', () => {
     cy.get('#renderCount').contains('32');
   });
 
+  it.only('should validate the form with onTouch mode and reset the form', () => {
+    cy.visit('http://localhost:3000/basic/onTouch');
+    // cy.focused().should('have.attr', 'name', 'nestItem.nest1');
+  });
+
   it('should validate the form with onBlur mode and reset the form', () => {
     cy.visit('http://localhost:3000/basic/onBlur');
 

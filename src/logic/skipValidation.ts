@@ -21,8 +21,8 @@ export default ({
 }) => {
   if (isOnAll) {
     return false;
-  } else if (isSubmitted && isOnTouch) {
-    return !isTouched;
+  } else if (!isSubmitted && isOnTouch) {
+    return !(isTouched || isBlurEvent);
   } else if (isSubmitted ? isReValidateOnBlur : isOnBlur) {
     return !isBlurEvent;
   } else if (isSubmitted ? isReValidateOnChange : isOnChange) {
