@@ -922,7 +922,7 @@ describe('useFieldArray', () => {
   });
 
   describe('remove', () => {
-    it('should update isDirty formState when item removed', async () => {
+    it('should update isDirty formState when item removed', () => {
       let formState: any;
       const Component = () => {
         const { register, control, formState: tempFormState } = useForm({
@@ -972,6 +972,70 @@ describe('useFieldArray', () => {
       fireEvent.click(screen.getAllByRole('button', { name: /remove/i })[1]);
 
       expect(formState.isDirty).toBeFalsy();
+    });
+
+    it('should update isValid formState when item removed', async () => {
+      let formState: any;
+      const Component = () => {
+        const { register, control, formState: tempFormState } = useForm({
+          mode: 'onChange',
+          defaultValues: {
+            test: [{ name: 'default' }],
+          },
+        });
+        const { fields, remove, append } = useFieldArray({
+          name: 'test',
+          control,
+        });
+
+        formState = tempFormState;
+
+        formState.isValid;
+
+        return (
+          <form>
+            {fields.map((field, i) => (
+              <div key={i.toString()}>
+                <input
+                  name={`test[${i}].name`}
+                  ref={register({ required: true })}
+                  defaultValue={field.name}
+                />
+                <button type={'button'} onClick={() => remove(i)}>
+                  remove
+                </button>
+              </div>
+            ))}
+
+            <button
+              type={'button'}
+              onClick={() =>
+                append({
+                  name: '',
+                })
+              }
+            >
+              append
+            </button>
+          </form>
+        );
+      };
+
+      render(<Component />);
+
+      await actComponent(async () => {
+        await fireEvent.click(screen.getByRole('button', { name: /append/i }));
+      });
+
+      expect(formState.isValid).toBeFalsy();
+
+      await actComponent(async () => {
+        await fireEvent.click(
+          screen.getAllByRole('button', { name: /remove/i })[1],
+        );
+      });
+
+      expect(formState.isValid).toBeTruthy();
     });
 
     it('should remove field according index', () => {
