@@ -4,7 +4,7 @@ interface IObject {
   [key: string]: any;
 }
 
-function deepMerge<T extends IObject, U extends IObject>(
+export function deepMerge<T extends IObject, U extends IObject>(
   target: T,
   source: U,
 ): T | U {
@@ -27,5 +27,3 @@ function deepMerge<T extends IObject, U extends IObject>(
 
   return target;
 }
-
-export default deepMerge;

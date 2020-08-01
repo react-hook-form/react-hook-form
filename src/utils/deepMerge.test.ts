@@ -1,4 +1,4 @@
-import deepMerge from './deepMerge';
+import { deepMerge } from './deepMerge';
 
 describe('deepMerge', () => {
   it('should deep merge object correctly', () => {
@@ -23,13 +23,17 @@ describe('deepMerge', () => {
       data: {},
       test: [{ value: '1' }],
     });
+  });
 
+  it('should overwrite array value ', () => {
     expect(
       deepMerge({ test: [{ value: '2' }] }, { test: [{ value: '1' }] }),
     ).toEqual({
       test: [{ value: '1' }],
     });
+  });
 
+  it('should overwrite different data type', () => {
     expect(deepMerge({ test: [{ value: '2' }] }, { test: {} })).toEqual({
       test: {},
     });
