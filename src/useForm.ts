@@ -1153,7 +1153,7 @@ export function useForm<
             ) {
               // eslint-disable-next-line no-console
               console.warn(
-                'formState.isValid is only applicable with onChange and onBlur mode. Please see https://react-hook-form.com/api#formState',
+                'formState.isValid is applicable with onChange and onBlur mode. https://react-hook-form.com/api#formState',
               );
             }
 
