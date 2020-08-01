@@ -1130,6 +1130,17 @@ export function useForm<
     formState: isProxyEnabled
       ? new Proxy<FormStateProxy<TFieldValues>>(formState, {
           get: (obj, prop: keyof FormStateProxy) => {
+            if (
+              process.env.NODE_ENV !== 'production' &&
+              prop === 'isValid' &&
+              isOnSubmit
+            ) {
+              // eslint-disable-next-line no-console
+              console.warn(
+                'formState.isValid is only applicable with onChange and onBlur mode. Please see https://react-hook-form.com/api#formState',
+              );
+            }
+
             if (prop in obj) {
               readFormStateRef.current[prop] = true;
               return obj[prop];
