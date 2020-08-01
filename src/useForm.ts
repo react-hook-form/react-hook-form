@@ -769,7 +769,7 @@ export function useForm<
     ) {
       // eslint-disable-next-line no-console
       return console.warn(
-        "Name should be in object shape: name="test[index].name". https://react-hook-form.com/api#useFieldArray",
+        'Name should be in object shape: name="test[index].name". https://react-hook-form.com/api#useFieldArray',
       );
     }
 
