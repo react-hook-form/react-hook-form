@@ -65,7 +65,6 @@ import {
   ErrorOption,
 } from './types/form';
 import { LiteralToPrimitive, DeepPartial, NonUndefined } from './types/utils';
-import stringToPath from './utils/stringToPath';
 
 const isWindowUndefined = typeof window === UNDEFINED;
 const isWeb =
@@ -760,9 +759,9 @@ export function useForm<
 
     if (
       process.env.NODE_ENV !== 'production' &&
-      fieldArrayNamesRef.current.has(stringToPath(ref.name)[0] as string) &&
+      fieldArrayNamesRef.current.has(ref.name.split(/\[\d+\]$/)[0]) &&
       !RegExp(
-        `^${stringToPath(ref.name)[0] as string}[\\d+]\.\\w+`
+        `^${ref.name.split(/\[\d+\]$/)[0]}[\\d+]\.\\w+`
           .replace(/\[/g, '\\[')
           .replace(/\]/g, '\\]'),
       ).test(ref.name)
