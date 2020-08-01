@@ -61,44 +61,92 @@ describe('useFieldArray', () => {
       ]);
     });
 
-    it('should output error message when registered field name is flat array in development environment', () => {
-      jest.spyOn(console, 'warn').mockImplementation(() => {});
+    it.each(['test', 'test[0].value'])(
+      'should output error message when registered field name is %s in development environment',
+      (name) => {
+        jest.spyOn(console, 'warn').mockImplementation(() => {});
 
-      const env = process.env.NODE_ENV;
-      process.env.NODE_ENV = 'development';
+        const env = process.env.NODE_ENV;
+        process.env.NODE_ENV = 'development';
 
-      const Component = () => {
-        const { register, control } = useForm();
-        const { fields, append } = useFieldArray({ name: 'test', control });
+        const Component = () => {
+          const { register, control } = useForm();
+          const { fields, append } = useFieldArray({ name, control });
 
-        return (
-          <form>
-            {fields.map((field, i) => (
-              <input
-                key={field.id}
-                name={`test[${i}]`}
-                type="text"
-                ref={register()}
-              />
-            ))}
-            <button type="button" onClick={() => append({})}>
-              append
-            </button>
-          </form>
-        );
-      };
+          return (
+            <form>
+              {fields.map((field, i) => (
+                <input
+                  key={field.id}
+                  name={`${name}[${i}]`}
+                  type="text"
+                  ref={register()}
+                />
+              ))}
+              <button type="button" onClick={() => append({})}>
+                append
+              </button>
+            </form>
+          );
+        };
 
-      render(<Component />);
+        render(<Component />);
 
-      fireEvent.click(screen.getByRole('button', { name: /append/i }));
+        fireEvent.click(screen.getByRole('button', { name: /append/i }));
 
-      expect(console.warn).toBeCalledTimes(1);
+        expect(console.warn).toBeCalledTimes(1);
 
-      process.env.NODE_ENV = env;
+        process.env.NODE_ENV = env;
 
-      // @ts-ignore
-      console.warn.mockRestore();
-    });
+        // @ts-ignore
+        console.warn.mockRestore();
+      },
+    );
+
+    it.each([
+      ['test', 'key'],
+      ['test[0].values', 'key'],
+    ])(
+      'should not output error message when registered field name is %s in development environment',
+      (name, key) => {
+        jest.spyOn(console, 'warn').mockImplementation(() => {});
+
+        const env = process.env.NODE_ENV;
+        process.env.NODE_ENV = 'development';
+
+        const Component = () => {
+          const { register, control } = useForm();
+          const { fields, append } = useFieldArray({ name, control });
+
+          return (
+            <form>
+              {fields.map((field, i) => (
+                <input
+                  key={field.id}
+                  name={`${name}[${i}].${key}`}
+                  type="text"
+                  ref={register()}
+                />
+              ))}
+              <button type="button" onClick={() => append({})}>
+                append
+              </button>
+            </form>
+          );
+        };
+
+        render(<Component />);
+
+        fireEvent.click(screen.getByRole('button', { name: /append/i }));
+
+        expect(console.warn).not.toBeCalled();
+
+        process.env.NODE_ENV = env;
+
+        // @ts-ignore
+        console.warn.mockRestore();
+      },
+    );
 
     it('should not output error message when registered field name is flat array in production environment', () => {
       jest.spyOn(console, 'warn').mockImplementation(() => {});
