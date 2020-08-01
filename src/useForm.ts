@@ -65,6 +65,7 @@ import {
   ErrorOption,
 } from './types/form';
 import { LiteralToPrimitive, DeepPartial, NonUndefined } from './types/utils';
+import stringToPath from './utils/stringToPath';
 
 const isWindowUndefined = typeof window === UNDEFINED;
 const isWeb =
@@ -757,6 +758,21 @@ export function useForm<
       return console.warn('Missing name @', ref);
     }
 
+    if (
+      process.env.NODE_ENV !== 'production' &&
+      fieldArrayNamesRef.current.has(stringToPath(ref.name)[0] as string) &&
+      !RegExp(
+        `^${stringToPath(ref.name)[0] as string}[\\d+]\.\\w+`
+          .replace(/\[/g, '\\[')
+          .replace(/\]/g, '\\]'),
+      ).test(ref.name)
+    ) {
+      // eslint-disable-next-line no-console
+      return console.warn(
+        'Name should be in object shape: name="test[index].name". https://react-hook-form.com/api#useFieldArray',
+      );
+    }
+
     const { name, type, value } = ref;
     const fieldRefAndValidationOptions = {
       ref,
@@ -1130,6 +1146,17 @@ export function useForm<
     formState: isProxyEnabled
       ? new Proxy<FormStateProxy<TFieldValues>>(formState, {
           get: (obj, prop: keyof FormStateProxy) => {
+            if (
+              process.env.NODE_ENV !== 'production' &&
+              prop === 'isValid' &&
+              isOnSubmit
+            ) {
+              // eslint-disable-next-line no-console
+              console.warn(
+                'formState.isValid is applicable with onChange and onBlur mode. https://react-hook-form.com/api#formState',
+              );
+            }
+
             if (prop in obj) {
               readFormStateRef.current[prop] = true;
               return obj[prop];
