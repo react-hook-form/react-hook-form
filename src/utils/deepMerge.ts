@@ -18,7 +18,7 @@ function deepMerge<T extends IObject, U extends IObject>(
 
     if (isObject(targetValue) && isObject(sourceValue)) {
       // @ts-ignore
-      target[key] = deepMerge(Object.assign({}, targetValue), sourceValue);
+      target[key] = deepMerge(targetValue, sourceValue);
     } else {
       // @ts-ignore
       target[key] = sourceValue;
