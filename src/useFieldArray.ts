@@ -436,10 +436,15 @@ export const useFieldArray = <
   };
 
   React.useEffect(() => {
-    const field = get(fieldArrayDefaultValues.current, name);
+    const defaultValues = get(fieldArrayDefaultValues.current, name);
 
-    if (isNameKey && isDeleted && field && fields.length < field.length) {
-      set(fieldArrayDefaultValues.current, name, field.pop());
+    if (
+      isNameKey &&
+      isDeleted &&
+      defaultValues &&
+      fields.length < defaultValues.length
+    ) {
+      set(fieldArrayDefaultValues.current, name, defaultValues.pop());
     }
 
     if (isWatchAllRef.current) {
