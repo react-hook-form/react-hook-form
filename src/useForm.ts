@@ -65,6 +65,7 @@ import {
   ErrorOption,
 } from './types/form';
 import { LiteralToPrimitive, DeepPartial, NonUndefined } from './types/utils';
+import stringToPath from './utils/stringToPath';
 
 const isWindowUndefined = typeof window === UNDEFINED;
 const isWeb =
@@ -755,6 +756,21 @@ export function useForm<
     if (process.env.NODE_ENV !== 'production' && !ref.name) {
       // eslint-disable-next-line no-console
       return console.warn('Missing name @', ref);
+    }
+
+    if (
+      process.env.NODE_ENV !== 'production' &&
+      fieldArrayNamesRef.current.has(stringToPath(ref.name)[0] as string) &&
+      !RegExp(
+        `^${stringToPath(ref.name)[0] as string}[\\d+]\.\\w+`
+          .replace(/\[/g, '\\[')
+          .replace(/\]/g, '\\]'),
+      ).test(ref.name)
+    ) {
+      // eslint-disable-next-line no-console
+      return console.warn(
+        "Make sure name is in object shape: name=test[index].name as we don't support flat arrays. Please see https://react-hook-form.com/api#useFieldArray",
+      );
     }
 
     const { name, type, value } = ref;

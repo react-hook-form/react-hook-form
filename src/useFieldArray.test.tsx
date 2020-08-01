@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 import * as React from 'react';
 import {
   render,
@@ -58,6 +59,84 @@ describe('useFieldArray', () => {
         { test: '2', id: '1' },
       ]);
     });
+
+    it('should output error message when registered field name is flat array in development environment', () => {
+      jest.spyOn(console, 'warn').mockImplementation(() => {});
+
+      const env = process.env.NODE_ENV;
+      process.env.NODE_ENV = 'development';
+
+      const Component = () => {
+        const { register, control } = useForm();
+        const { fields, append } = useFieldArray({ name: 'test', control });
+
+        return (
+          <form>
+            {fields.map((field, i) => (
+              <input
+                key={field.id}
+                name={`test[${i}]`}
+                type="text"
+                ref={register()}
+              />
+            ))}
+            <button type="button" onClick={() => append({})}>
+              append
+            </button>
+          </form>
+        );
+      };
+
+      render(<Component />);
+
+      fireEvent.click(screen.getByRole('button', { name: /append/i }));
+
+      expect(console.warn).toBeCalledTimes(1);
+
+      process.env.NODE_ENV = env;
+
+      // @ts-ignore
+      console.warn.mockRestore();
+    });
+
+    it('should not output error message when registered field name is flat array in production environment', () => {
+      jest.spyOn(console, 'warn').mockImplementation(() => {});
+
+      const env = process.env.NODE_ENV;
+      process.env.NODE_ENV = 'production';
+
+      const Component = () => {
+        const { register, control } = useForm();
+        const { fields, append } = useFieldArray({ name: 'test', control });
+
+        return (
+          <form>
+            {fields.map((field, i) => (
+              <input
+                key={field.id}
+                name={`test[${i}]`}
+                type="text"
+                ref={register()}
+              />
+            ))}
+            <button type="button" onClick={() => append({})}>
+              append
+            </button>
+          </form>
+        );
+      };
+
+      render(<Component />);
+
+      fireEvent.click(screen.getByRole('button', { name: /append/i }));
+
+      expect(console.warn).not.toBeCalled();
+
+      process.env.NODE_ENV = env;
+
+      // @ts-ignore
+      console.warn.mockRestore();
+    });
   });
 
   describe('when component unMount', () => {
@@ -111,7 +190,7 @@ describe('useFieldArray', () => {
 
       const input = document.createElement('input');
       input.type = 'text';
-      input.name = 'test[0]';
+      input.name = 'test[0].value';
       input.removeEventListener = jest.fn();
 
       result.current.register()(input);
@@ -198,11 +277,11 @@ describe('useFieldArray', () => {
         return { register, reset, fields, append };
       });
 
-      result.current.register({ type: 'text', name: 'test[0]' });
-
       act(() => {
         result.current.append({ value: 'test' });
       });
+
+      result.current.register({ type: 'text', name: 'test[0].value' });
 
       act(() => {
         result.current.reset();
