@@ -75,7 +75,9 @@ export const useFieldArray = <
   const getDefaultValues = () => {
     const value = get(fieldArrayDefaultValues.current, name, []);
 
-    return !value.length ? get(defaultValuesRef.current, name, []) : value;
+    return [
+      ...(!value.length ? get(defaultValuesRef.current, name, []) : value),
+    ];
   };
 
   const memoizedDefaultValues = React.useRef<Partial<TFieldArrayValues>[]>(
