@@ -1750,6 +1750,26 @@ describe('useForm', () => {
     });
   });
 
+  describe('handleSubmit with onValid/onInvalid callbacks', () => {
+    it('should invoke the callback when validation pass', async () => {
+      const { result } = renderHook(() => useForm());
+      const onValidCallback = jest.fn();
+      const onInvalidCallback = jest.fn();
+
+      await act(async () => {
+        await result.current.handleSubmit(
+          onValidCallback,
+          onInvalidCallback,
+        )({
+          preventDefault: () => {},
+          persist: () => {},
+        } as React.SyntheticEvent);
+      });
+      expect(onValidCallback).toBeCalledTimes(1);
+      expect(onInvalidCallback).not.toBeCalledTimes(1);
+    });
+  });
+
   describe('getValues', () => {
     it('should call getFieldsValues and return all values', () => {
       const { result } = renderHook(() => useForm<{ test: string }>());

@@ -63,6 +63,7 @@ import {
   NestedValue,
   SetValueConfig,
   ErrorOption,
+  SubmitErrorHandler,
 } from './types/form';
 import { LiteralToPrimitive, DeepPartial, NonUndefined } from './types/utils';
 
@@ -930,6 +931,8 @@ export function useForm<
   const handleSubmit = React.useCallback(
     <TSubmitFieldValues extends FieldValues = TFieldValues>(
       callback: SubmitHandler<TSubmitFieldValues>,
+      // TODO: Add business logics to use `onInvalidCallback`
+      _onError?: SubmitErrorHandler<TSubmitFieldValues>,
     ) => async (e?: React.BaseSyntheticEvent): Promise<void> => {
       if (e && e.preventDefault) {
         e.preventDefault();

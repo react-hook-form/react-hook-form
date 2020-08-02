@@ -64,6 +64,11 @@ export type SubmitHandler<TFieldValues extends FieldValues> = (
   event?: React.BaseSyntheticEvent,
 ) => void | Promise<void>;
 
+export type SubmitErrorHandler<TFieldValues extends FieldValues> = (
+  errors: FieldErrors<TFieldValues>,
+  event?: React.BaseSyntheticEvent,
+) => void | Promise<void>;
+
 export type ResolverSuccess<TFieldValues extends FieldValues = FieldValues> = {
   values: UnpackNestedValue<TFieldValues>;
   errors: EmptyObject;
@@ -361,6 +366,7 @@ export type UseFormMethods<TFieldValues extends FieldValues = FieldValues> = {
   ): UnpackNestedValue<Pick<TFieldValues, TFieldName>>;
   handleSubmit: <TSubmitFieldValues extends FieldValues = TFieldValues>(
     callback: SubmitHandler<TSubmitFieldValues>,
+    onInvalidCallback?: SubmitErrorHandler<TSubmitFieldValues>,
   ) => (e?: React.BaseSyntheticEvent) => Promise<void>;
   control: Control<TFieldValues>;
 };
