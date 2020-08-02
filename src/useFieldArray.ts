@@ -476,9 +476,7 @@ export const useFieldArray = <
   ]);
 
   React.useEffect(() => {
-    if (isNameKey) {
-      set(fieldArrayDefaultValues.current, name, memoizedDefaultValues.current);
-    }
+    set(fieldArrayDefaultValues.current, name, memoizedDefaultValues.current);
 
     const resetFunctions = resetFieldArrayFunctionRef.current;
     const fieldArrayNames = fieldArrayNamesRef.current;
