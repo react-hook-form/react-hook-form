@@ -2788,4 +2788,93 @@ describe('useFieldArray', () => {
       expect(mockControl.validateSchemaIsValid).not.toBeCalled();
     });
   });
+
+  describe('array of array fields', () => {
+    it('should render correct amount of child array fields', async () => {
+      const ChildComponent = ({
+        index,
+        control,
+      }: {
+        control: Control;
+        index: number;
+      }) => {
+        const { fields } = useFieldArray({
+          name: `nest.test[${index}].nestedArray`,
+          control,
+        });
+
+        return (
+          <div>
+            {fields.map((item, i) => (
+              <input
+                key={item.value}
+                name={`nest.test[${index}].nestedArray[${i}].value`}
+                ref={control.register()}
+                defaultValue={item.value}
+                placeholder="type"
+              />
+            ))}
+          </div>
+        );
+      };
+
+      const Component = () => {
+        const { register, control } = useForm({
+          defaultValues: {
+            test: [
+              { value: '1', nestedArray: [{ value: '2' }] },
+              { value: '3', nestedArray: [{ value: '4' }] },
+            ],
+          },
+        });
+        const { fields, remove, append } = useFieldArray({
+          name: 'nest.test',
+          control,
+        });
+
+        return (
+          <div>
+            {fields.map((item, i) => (
+              <div key={item.value}>
+                <input
+                  name={`nest.test[${i}].value`}
+                  ref={register()}
+                  defaultValue={item.value}
+                  placeholder="type"
+                />
+
+                <ChildComponent control={control} index={i} />
+
+                <button
+                  type={'button'}
+                  onClick={() => remove(i)}
+                  data-testid={item.value}
+                >
+                  remove
+                </button>
+              </div>
+            ))}
+
+            <button type={'button'} onClick={() => append({ value: 'test' })}>
+              append
+            </button>
+          </div>
+        );
+      };
+
+      render(<Component />);
+
+      await actComponent(async () => {
+        fireEvent.click(screen.getByTestId('1'));
+      });
+
+      expect(screen.getAllByPlaceholderText('type').length).toBe(2);
+
+      await actComponent(async () => {
+        fireEvent.click(screen.getByRole('button', { name: /append/i }));
+      });
+
+      expect(screen.getAllByPlaceholderText('type').length).toBe(3);
+    });
+  });
 });
