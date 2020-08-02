@@ -2872,7 +2872,7 @@ describe('useFieldArray', () => {
 
       fireEvent.click(screen.getByRole('button', { name: /append/i }));
 
-      expect(screen.getAllByPlaceholderText('type').length).toBe(3);
+      expect(screen.getAllByPlaceholderText('type')).toHaveLength(3);
     });
   });
 });
