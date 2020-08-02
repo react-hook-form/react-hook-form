@@ -2866,9 +2866,7 @@ describe('useFieldArray', () => {
 
       render(<Component />);
 
-      await actComponent(async () => {
-        fireEvent.click(screen.getByTestId('1'));
-      });
+      fireEvent.click(screen.getByTestId('1'));
 
       expect(screen.getAllByPlaceholderText('type').length).toBe(2);
 
