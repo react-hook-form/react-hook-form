@@ -88,11 +88,9 @@ export const useFieldArray = <
   const [fields, setField] = React.useState<
     Partial<ArrayField<TFieldArrayValues, TKeyName>>[]
   >(mapIds(memoizedDefaultValues.current, keyName));
-  const [isDeleted, setIsDeleted] = React.useState(false);
   const allFields = React.useRef<
     Partial<ArrayField<TFieldArrayValues, TKeyName>>[]
   >(fields);
-  const isNameKey = !name.includes('[');
 
   const getCurrentFieldsValues = () =>
     get(getValues() || {}, name, allFields.current).map(
@@ -104,9 +102,7 @@ export const useFieldArray = <
 
   allFields.current = fields;
 
-  if (isNameKey) {
-    set(fieldArrayDefaultValues.current, name, memoizedDefaultValues.current);
-  }
+  set(fieldArrayDefaultValues.current, name, memoizedDefaultValues.current);
 
   const appendValueWithKey = (values: Partial<TFieldArrayValues>[]) =>
     values.map((value: Partial<TFieldArrayValues>) => appendId(value, keyName));
@@ -239,7 +235,6 @@ export const useFieldArray = <
     const fieldValues = getCurrentFieldsValues();
     setFieldAndValidState(removeArrayAt(fieldValues, index));
     resetFields(removeArrayAt(fieldValues, index));
-    setIsDeleted(true);
 
     if (isArray(get(errorsRef.current, name))) {
       set(
@@ -438,12 +433,7 @@ export const useFieldArray = <
   React.useEffect(() => {
     const defaultValues = get(fieldArrayDefaultValues.current, name);
 
-    if (
-      isNameKey &&
-      isDeleted &&
-      defaultValues &&
-      fields.length < defaultValues.length
-    ) {
+    if (defaultValues && fields.length < defaultValues.length) {
       set(fieldArrayDefaultValues.current, name, defaultValues.pop());
     }
 
@@ -480,8 +470,6 @@ export const useFieldArray = <
     fields,
     name,
     fieldArrayDefaultValues,
-    isDeleted,
-    isNameKey,
     reRender,
     fieldsRef,
     watchFieldsRef,
