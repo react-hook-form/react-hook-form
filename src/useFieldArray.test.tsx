@@ -2821,10 +2821,12 @@ describe('useFieldArray', () => {
       const Component = () => {
         const { register, control } = useForm({
           defaultValues: {
-            test: [
-              { value: '1', nestedArray: [{ value: '2' }] },
-              { value: '3', nestedArray: [{ value: '4' }] },
-            ],
+            nest: {
+              test: [
+                { value: '1', nestedArray: [{ value: '2' }] },
+                { value: '3', nestedArray: [{ value: '4' }] },
+              ],
+            },
           },
         });
         const { fields, remove, append } = useFieldArray({
