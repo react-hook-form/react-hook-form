@@ -103,10 +103,6 @@ export const useFieldArray = <
 
   allFields.current = fields;
 
-  if (isNameKey) {
-    set(fieldArrayDefaultValues.current, name, memoizedDefaultValues.current);
-  }
-
   const appendValueWithKey = (values: Partial<TFieldArrayValues>[]) =>
     values.map((value: Partial<TFieldArrayValues>) => appendId(value, keyName));
 
@@ -480,6 +476,10 @@ export const useFieldArray = <
   ]);
 
   React.useEffect(() => {
+    if (isNameKey) {
+      set(fieldArrayDefaultValues.current, name, memoizedDefaultValues.current);
+    }
+
     const resetFunctions = resetFieldArrayFunctionRef.current;
     const fieldArrayNames = fieldArrayNamesRef.current;
     fieldArrayNames.add(name);
