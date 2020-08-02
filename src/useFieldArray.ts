@@ -76,7 +76,7 @@ export const useFieldArray = <
     const value = get(fieldArrayDefaultValues.current, name, []);
 
     return [
-      ...(!value.length ? get(defaultValuesRef.current, name, []) : value),
+      ...(value.length ? value : get(defaultValuesRef.current, name, [])),
     ];
   };
 
