@@ -2807,7 +2807,7 @@ describe('useFieldArray', () => {
           <div>
             {fields.map((item, i) => (
               <input
-                key={item.value}
+                key={item.id}
                 name={`nest.test[${index}].nestedArray[${i}].value`}
                 ref={control.register()}
                 defaultValue={item.value}
