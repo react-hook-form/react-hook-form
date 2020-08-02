@@ -2837,7 +2837,7 @@ describe('useFieldArray', () => {
         return (
           <div>
             {fields.map((item, i) => (
-              <div key={item.value}>
+              <div key={item.id}>
                 <input
                   name={`nest.test[${i}].value`}
                   ref={register()}
