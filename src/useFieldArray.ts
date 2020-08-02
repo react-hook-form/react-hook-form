@@ -444,7 +444,8 @@ export const useFieldArray = <
       defaultValues &&
       fields.length < defaultValues.length
     ) {
-      set(fieldArrayDefaultValues.current, name, defaultValues.pop());
+      defaultValues.pop();
+      set(fieldArrayDefaultValues.current, name, defaultValues);
     }
 
     if (isWatchAllRef.current) {
