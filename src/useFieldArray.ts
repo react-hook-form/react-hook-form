@@ -91,7 +91,6 @@ export const useFieldArray = <
   const allFields = React.useRef<
     Partial<ArrayField<TFieldArrayValues, TKeyName>>[]
   >(fields);
-  const isNameKey = !name.includes('[');
 
   const getCurrentFieldsValues = () =>
     get(getValues() || {}, name, allFields.current).map(
@@ -432,7 +431,11 @@ export const useFieldArray = <
   React.useEffect(() => {
     const defaultValues = get(fieldArrayDefaultValues.current, name);
 
-    if (isNameKey && defaultValues && fields.length < defaultValues.length) {
+    if (
+      !name.includes('[') &&
+      defaultValues &&
+      fields.length < defaultValues.length
+    ) {
       set(fieldArrayDefaultValues.current, name, defaultValues.pop());
     }
 
