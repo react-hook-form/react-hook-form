@@ -471,12 +471,12 @@ export const useFieldArray = <
   ]);
 
   React.useEffect(() => {
-    set(fieldArrayDefaultValues.current, name, memoizedDefaultValues.current);
-
     const resetFunctions = resetFieldArrayFunctionRef.current;
     const fieldArrayNames = fieldArrayNamesRef.current;
     fieldArrayNames.add(name);
     resetFunctions[name] = reset;
+
+    set(fieldArrayDefaultValues.current, name, memoizedDefaultValues.current);
 
     return () => {
       resetFields();
