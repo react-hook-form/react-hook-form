@@ -15,7 +15,6 @@ import swapArrayAt from './utils/swap';
 import prependAt from './utils/prepend';
 import isArray from './utils/isArray';
 import insertAt from './utils/insert';
-import isKey from './utils/isKey';
 import fillEmptyArray from './utils/fillEmptyArray';
 import { filterBooleanArray } from './utils/filterBooleanArray';
 import unique from './utils/unique';
@@ -76,7 +75,7 @@ export const useFieldArray = <
 
   const getDefaultValues = () => [
     ...get(
-      fieldArrayDefaultValues.current[getFieldArrayParentName(name)]
+      get(fieldArrayDefaultValues.current, getFieldArrayParentName(name))
         ? fieldArrayDefaultValues.current
         : defaultValuesRef.current,
       name,
@@ -93,7 +92,7 @@ export const useFieldArray = <
   const allFields = React.useRef<
     Partial<ArrayField<TFieldArrayValues, TKeyName>>[]
   >(fields);
-  const isNameKey = isKey(name);
+  const isNameKey = !name.includes('[');
 
   const getCurrentFieldsValues = () =>
     get(getValues() || {}, name, allFields.current).map(
@@ -106,7 +105,7 @@ export const useFieldArray = <
   allFields.current = fields;
 
   if (isNameKey) {
-    fieldArrayDefaultValues.current[name] = memoizedDefaultValues.current;
+    set(fieldArrayDefaultValues.current, name, memoizedDefaultValues.current);
   }
 
   const appendValueWithKey = (values: Partial<TFieldArrayValues>[]) =>
@@ -437,13 +436,15 @@ export const useFieldArray = <
   };
 
   React.useEffect(() => {
+    const defaultValues = get(fieldArrayDefaultValues.current, name);
+
     if (
       isNameKey &&
       isDeleted &&
-      fieldArrayDefaultValues.current[name] &&
-      fields.length < fieldArrayDefaultValues.current[name].length
+      defaultValues &&
+      fields.length < defaultValues.length
     ) {
-      fieldArrayDefaultValues.current[name].pop();
+      set(fieldArrayDefaultValues.current, name, defaultValues.pop());
     }
 
     if (isWatchAllRef.current) {
