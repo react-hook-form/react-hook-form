@@ -757,6 +757,21 @@ export function useForm<
       return console.warn('Missing name @', ref);
     }
 
+    if (
+      process.env.NODE_ENV !== 'production' &&
+      fieldArrayNamesRef.current.has(ref.name.split(/\[\d+\]$/)[0]) &&
+      !RegExp(
+        `^${ref.name.split(/\[\d+\]$/)[0]}[\\d+]\.\\w+`
+          .replace(/\[/g, '\\[')
+          .replace(/\]/g, '\\]'),
+      ).test(ref.name)
+    ) {
+      // eslint-disable-next-line no-console
+      return console.warn(
+        'Name should be in object shape: name="test[index].name". https://react-hook-form.com/api#useFieldArray',
+      );
+    }
+
     const { name, type, value } = ref;
     const fieldRefAndValidationOptions = {
       ref,
@@ -1130,6 +1145,17 @@ export function useForm<
     formState: isProxyEnabled
       ? new Proxy<FormStateProxy<TFieldValues>>(formState, {
           get: (obj, prop: keyof FormStateProxy) => {
+            if (
+              process.env.NODE_ENV !== 'production' &&
+              prop === 'isValid' &&
+              isOnSubmit
+            ) {
+              // eslint-disable-next-line no-console
+              console.warn(
+                'formState.isValid is applicable with onChange and onBlur mode. https://react-hook-form.com/api#formState',
+              );
+            }
+
             if (prop in obj) {
               readFormStateRef.current[prop] = true;
               return obj[prop];
