@@ -2870,9 +2870,7 @@ describe('useFieldArray', () => {
 
       expect(screen.getAllByPlaceholderText('type').length).toBe(2);
 
-      await actComponent(async () => {
-        fireEvent.click(screen.getByRole('button', { name: /append/i }));
-      });
+      fireEvent.click(screen.getByRole('button', { name: /append/i }));
 
       expect(screen.getAllByPlaceholderText('type').length).toBe(3);
     });
