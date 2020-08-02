@@ -2868,7 +2868,7 @@ describe('useFieldArray', () => {
 
       fireEvent.click(screen.getByTestId('1'));
 
-      expect(screen.getAllByPlaceholderText('type').length).toBe(2);
+      expect(screen.getAllByPlaceholderText('type')).toHaveLength(2);
 
       fireEvent.click(screen.getByRole('button', { name: /append/i }));
 
