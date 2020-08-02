@@ -953,6 +953,7 @@ export function useForm<
             fieldValues as TFieldValues,
             contextRef.current,
             isValidateAllFieldCriteria,
+            true,
           );
           errorsRef.current = errors;
           fieldErrors = errors;

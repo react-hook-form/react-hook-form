@@ -85,6 +85,7 @@ export type Resolver<
   values: TFieldValues,
   context?: TContext,
   validateAllFieldCriteria?: boolean,
+  isSubmitting?: boolean,
 ) => Promise<ResolverResult<TFieldValues>> | ResolverResult<TFieldValues>;
 
 export type UseFormOptions<
