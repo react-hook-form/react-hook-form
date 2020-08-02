@@ -4,6 +4,7 @@ import { isMatchFieldArrayName } from './logic/isNameInFieldArray';
 import generateId from './logic/generateId';
 import isObject from './utils/isObject';
 import getIsFieldsDifferent from './logic/getIsFieldsDifferent';
+import getFieldArrayParentName from './logic/getFieldArrayParentName';
 import get from './utils/get';
 import set from './utils/set';
 import isUndefined from './utils/isUndefined';
@@ -72,14 +73,15 @@ export const useFieldArray = <
   } = control || methods.control;
   let shouldRender;
 
-  const getDefaultValues = () => {
-    const value = get(fieldArrayDefaultValues.current, name, []);
-
-    return [
-      ...(value.length ? value : get(defaultValuesRef.current, name, [])),
-    ];
-  };
-
+  const getDefaultValues = () => [
+    ...get(
+      get(fieldArrayDefaultValues.current, getFieldArrayParentName(name))
+        ? fieldArrayDefaultValues.current
+        : defaultValuesRef.current,
+      name,
+      [],
+    ),
+  ];
   const memoizedDefaultValues = React.useRef<Partial<TFieldArrayValues>[]>(
     getDefaultValues(),
   );
