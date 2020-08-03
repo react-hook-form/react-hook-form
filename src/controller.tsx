@@ -68,7 +68,7 @@ const Controller = <
       console.warn('📋 Should use either `as` or `render` prop.');
     }
 
-    if (!control) {
+    if (!control && !methods.control) {
       console.warn('📋 Controller is missing `control` prop.');
     }
   }
