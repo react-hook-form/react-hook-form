@@ -766,7 +766,7 @@ export function useForm<
       ).test(ref.name)
     ) {
       return console.warn(
-        '📋 Name should be in object shape: name="test[index].name". https://react-hook-form.com/api#useFieldArray',
+        '📋 `name` prop should be in object shape: name="test[index].name". https://react-hook-form.com/api#useFieldArray',
       );
     }
 
@@ -1149,7 +1149,7 @@ export function useForm<
               isOnSubmit
             ) {
               console.warn(
-                '📋 formState.isValid is applicable with onChange and onBlur mode. https://react-hook-form.com/api#formState',
+                '📋 `formState.isValid` is applicable with `onChange` and `onBlur` mode. https://react-hook-form.com/api#formState',
               );
             }
 
