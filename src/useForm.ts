@@ -752,24 +752,23 @@ export function useForm<
     ref: TFieldElement & Ref,
     validateOptions: ValidationRules | null = {},
   ): ((name: InternalFieldName<TFieldValues>) => void) | void {
-    if (process.env.NODE_ENV !== 'production' && !ref.name) {
-      // eslint-disable-next-line no-console
-      return console.warn('Missing name @', ref);
-    }
+    if (process.env.NODE_ENV !== 'production') {
+      if (!ref.name) {
+        return console.warn('📋 Field is missing `name` attribute:', ref);
+      }
 
-    if (
-      process.env.NODE_ENV !== 'production' &&
-      fieldArrayNamesRef.current.has(ref.name.split(/\[\d+\]$/)[0]) &&
-      !RegExp(
-        `^${ref.name.split(/\[\d+\]$/)[0]}[\\d+]\.\\w+`
-          .replace(/\[/g, '\\[')
-          .replace(/\]/g, '\\]'),
-      ).test(ref.name)
-    ) {
-      // eslint-disable-next-line no-console
-      return console.warn(
-        'Name should be in object shape: name="test[index].name". https://react-hook-form.com/api#useFieldArray',
-      );
+      if (
+        fieldArrayNamesRef.current.has(ref.name.split(/\[\d+\]$/)[0]) &&
+        !RegExp(
+          `^${ref.name.split(/\[\d+\]$/)[0]}[\\d+]\.\\w+`
+            .replace(/\[/g, '\\[')
+            .replace(/\]/g, '\\]'),
+        ).test(ref.name)
+      ) {
+        return console.warn(
+          '📋 `name` prop should be in object shape: name="test[index].name". https://react-hook-form.com/api#useFieldArray',
+        );
+      }
     }
 
     const { name, type, value } = ref;
@@ -1150,9 +1149,8 @@ export function useForm<
               prop === 'isValid' &&
               isOnSubmit
             ) {
-              // eslint-disable-next-line no-console
               console.warn(
-                'formState.isValid is applicable with onChange and onBlur mode. https://react-hook-form.com/api#formState',
+                '📋 `formState.isValid` is applicable with `onChange` or `onBlur` mode. https://react-hook-form.com/api#formState',
               );
             }
 

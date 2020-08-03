@@ -1,4 +1,3 @@
-/* eslint-disable no-console */
 import * as React from 'react';
 import { renderHook, act } from '@testing-library/react-hooks';
 import {
