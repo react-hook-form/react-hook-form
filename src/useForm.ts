@@ -1149,7 +1149,7 @@ export function useForm<
               isOnSubmit
             ) {
               console.warn(
-                '📋 `formState.isValid` is applicable with `onChange` and `onBlur` mode. https://react-hook-form.com/api#formState',
+                '📋 `formState.isValid` is applicable with `onChange` or `onBlur` mode. https://react-hook-form.com/api#formState',
               );
             }
 
