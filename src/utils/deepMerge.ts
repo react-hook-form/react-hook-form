@@ -1,13 +1,9 @@
 import isObject from './isObject';
 
-interface IObject {
-  [key: string]: any;
-}
-
-export function deepMerge<T extends IObject, U extends IObject>(
-  target: T,
-  source: U,
-): T | U {
+export function deepMerge<
+  T extends Record<keyof T, any>,
+  U extends Record<keyof U, any>
+>(target: T, source: U): T & U {
   if (!isObject(target) || !isObject(source)) {
     return source;
   }
@@ -17,10 +13,8 @@ export function deepMerge<T extends IObject, U extends IObject>(
     const sourceValue = source[key];
 
     if (isObject(targetValue) && isObject(sourceValue)) {
-      // @ts-ignore
       target[key] = deepMerge(targetValue, sourceValue);
     } else {
-      // @ts-ignore
       target[key] = sourceValue;
     }
   }
