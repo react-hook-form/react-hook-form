@@ -754,7 +754,7 @@ export function useForm<
   ): ((name: InternalFieldName<TFieldValues>) => void) | void {
     if (process.env.NODE_ENV !== 'production' && !ref.name) {
       // eslint-disable-next-line no-console
-      return console.warn('Missing name @', ref);
+      return console.warn('Field is missing name attribute:', ref);
     }
 
     if (

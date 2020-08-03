@@ -74,6 +74,11 @@ const Controller = <
   };
 
   const registerField = React.useCallback(() => {
+    if (process.env.NODE_ENV !== 'production' && !name) {
+      // eslint-disable-next-line no-console
+      return console.warn('Field is missing name attribute.');
+    }
+
     if (fieldsRef.current[name]) {
       fieldsRef.current[name] = {
         ref: fieldsRef.current[name]!.ref,
