@@ -59,20 +59,17 @@ const Controller = <
 
   if (process.env.NODE_ENV !== 'production') {
     if (isUndefined(value)) {
-      // eslint-disable-next-line no-console
       console.warn(
-        '📋 Controller defaultValue or useForm defaultValues is missing.',
+        '📋 Controller `defaultValue` or useForm `defaultValues` is missing.',
       );
     }
 
     if (as && render) {
-      // eslint-disable-next-line no-console
-      console.warn('📋 Should use either as or render prop.');
+      console.warn('📋 Should use either `as` or `render` prop.');
     }
 
     if (!control) {
-      // eslint-disable-next-line no-console
-      console.warn('📋 Controller is missing control prop.');
+      console.warn('📋 Controller is missing `control` prop.');
     }
   }
 
@@ -94,8 +91,7 @@ const Controller = <
 
   const registerField = React.useCallback(() => {
     if (process.env.NODE_ENV !== 'production' && !name) {
-      // eslint-disable-next-line no-console
-      return console.warn('📋 Field is missing name prop.');
+      return console.warn('📋 Field is missing `name` prop.');
     }
 
     if (fieldsRef.current[name]) {

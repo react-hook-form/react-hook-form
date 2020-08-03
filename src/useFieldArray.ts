@@ -104,13 +104,11 @@ export const useFieldArray = <
 
   if (process.env.NODE_ENV !== 'production') {
     if (!control) {
-      // eslint-disable-next-line no-console
-      console.warn('📋 useFieldArray is missing control prop.');
+      console.warn('📋 useFieldArray is missing `control` prop.');
     }
 
     if (!name) {
-      // eslint-disable-next-line no-console
-      console.warn('📋 useFieldArray is missing name attribute.');
+      console.warn('📋 useFieldArray is missing `name` attribute.');
     }
   }
 
