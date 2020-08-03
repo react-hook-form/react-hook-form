@@ -103,7 +103,7 @@ export const useFieldArray = <
   allFields.current = fields;
 
   if (process.env.NODE_ENV !== 'production') {
-    if (!control) {
+    if (!control && methods.control) {
       console.warn('📋 useFieldArray is missing `control` prop.');
     }
 
