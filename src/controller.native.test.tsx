@@ -22,6 +22,7 @@ describe('Controller with React Native', () => {
             name="test"
             rules={{ minLength: 5 }}
             control={control}
+            defaultValue=""
             render={({ onChange, onBlur, value }) => (
               <TextInput
                 testID={'input'}

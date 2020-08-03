@@ -102,6 +102,16 @@ export const useFieldArray = <
 
   allFields.current = fields;
 
+  if (process.env.NODE_ENV !== 'production') {
+    if (!control && !methods.control) {
+      console.warn('📋 useFieldArray is missing `control` prop.');
+    }
+
+    if (!name) {
+      console.warn('📋 useFieldArray is missing `name` attribute.');
+    }
+  }
+
   const appendValueWithKey = (values: Partial<TFieldArrayValues>[]) =>
     values.map((value: Partial<TFieldArrayValues>) => appendId(value, keyName));
 
