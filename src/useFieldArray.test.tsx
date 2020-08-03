@@ -680,7 +680,7 @@ describe('useFieldArray', () => {
     });
 
     describe('with resolver', () => {
-      it('should be called resolver when formState.isValid true', async () => {
+      it('should invoke resolver when formState.isValid true', async () => {
         const resolver = jest.fn().mockReturnValue({});
 
         const { result } = renderHook(() => {
@@ -707,7 +707,7 @@ describe('useFieldArray', () => {
         );
       });
 
-      it('should not be called resolver when formState.isValid false', () => {
+      it('should not invoke resolver when formState.isValid false', () => {
         const resolver = jest.fn().mockReturnValue({});
 
         const { result } = renderHook(() => {
@@ -1097,7 +1097,7 @@ describe('useFieldArray', () => {
     });
 
     describe('with resolver', () => {
-      it('should be called resolver when formState.isValid true', async () => {
+      it('should invoke resolver when formState.isValid true', async () => {
         const resolver = jest.fn().mockReturnValue({});
 
         const { result } = renderHook(() => {
@@ -1124,7 +1124,7 @@ describe('useFieldArray', () => {
         );
       });
 
-      it('should not be called resolver when formState.isValid false', () => {
+      it('should not invoke resolver when formState.isValid false', () => {
         const resolver = jest.fn().mockReturnValue({});
 
         const { result } = renderHook(() => {
@@ -1855,7 +1855,7 @@ describe('useFieldArray', () => {
     });
 
     describe('with resolver', () => {
-      it('should be called resolver when formState.isValid true', async () => {
+      it('should invoke resolver when formState.isValid true', async () => {
         const resolver = jest.fn().mockReturnValue({});
 
         const { result } = renderHook(() => {
@@ -1885,7 +1885,7 @@ describe('useFieldArray', () => {
         );
       });
 
-      it('should not be called resolver when formState.isValid false', () => {
+      it('should not invoke resolver when formState.isValid false', () => {
         const resolver = jest.fn().mockReturnValue({});
 
         const { result } = renderHook(() => {
@@ -2364,7 +2364,7 @@ describe('useFieldArray', () => {
     });
 
     describe('with resolver', () => {
-      it('should be called resolver when formState.isValid true', async () => {
+      it('should invoke resolver when formState.isValid true', async () => {
         const resolver = jest.fn().mockReturnValue({});
 
         const { result } = renderHook(() => {
@@ -2391,7 +2391,7 @@ describe('useFieldArray', () => {
         );
       });
 
-      it('should not be called resolver when formState.isValid false', () => {
+      it('should not invoke resolver when formState.isValid false', () => {
         const resolver = jest.fn().mockReturnValue({});
 
         const { result } = renderHook(() => {
@@ -2652,7 +2652,7 @@ describe('useFieldArray', () => {
     });
 
     describe('with resolver', () => {
-      it('should be called resolver when formState.isValid true', async () => {
+      it('should invoke resolver when formState.isValid true', async () => {
         const resolver = jest.fn().mockReturnValue({});
 
         const { result } = renderHook(() => {
@@ -2685,7 +2685,7 @@ describe('useFieldArray', () => {
         );
       });
 
-      it('should not be called resolver when formState.isValid false', () => {
+      it('should not invoke resolver when formState.isValid false', () => {
         const resolver = jest.fn().mockReturnValue({});
 
         const { result } = renderHook(() => {
@@ -3050,7 +3050,7 @@ describe('useFieldArray', () => {
     });
 
     describe('with resolver', () => {
-      it('should be called resolver when formState.isValid true', async () => {
+      it('should invoke resolver when formState.isValid true', async () => {
         const resolver = jest.fn().mockReturnValue({});
 
         const { result } = renderHook(() => {
@@ -3083,7 +3083,7 @@ describe('useFieldArray', () => {
         );
       });
 
-      it('should not be called resolver when formState.isValid false', () => {
+      it('should not invoke resolver when formState.isValid false', () => {
         const resolver = jest.fn().mockReturnValue({});
 
         const { result } = renderHook(() => {
