@@ -678,6 +678,54 @@ describe('useFieldArray', () => {
         ]),
       );
     });
+
+    describe('with resolver', () => {
+      it('should be called resolver when formState.isValid true', async () => {
+        const resolver = jest.fn().mockReturnValue({});
+
+        const { result } = renderHook(() => {
+          const { formState, control } = useForm({
+            mode: VALIDATION_MODE.onChange,
+            resolver,
+          });
+          const { append } = useFieldArray({ control, name: 'test' });
+          return { formState, append };
+        });
+
+        result.current.formState.isValid;
+
+        await act(async () => {
+          result.current.append({ value: '1' });
+        });
+
+        expect(resolver).toBeCalledWith(
+          {
+            test: [{ id: '0', value: '1' }],
+          },
+          undefined,
+          false,
+        );
+      });
+
+      it('should not be called resolver when formState.isValid false', () => {
+        const resolver = jest.fn().mockReturnValue({});
+
+        const { result } = renderHook(() => {
+          const { formState, control } = useForm({
+            mode: VALIDATION_MODE.onChange,
+            resolver,
+          });
+          const { append } = useFieldArray({ control, name: 'test' });
+          return { formState, append };
+        });
+
+        act(() => {
+          result.current.append({ value: '1' });
+        });
+
+        expect(resolver).not.toBeCalled();
+      });
+    });
   });
 
   describe('prepend', () => {
@@ -1046,6 +1094,54 @@ describe('useFieldArray', () => {
 
       // @ts-ignore
       HTMLInputElement.prototype.removeEventListener.mockRestore();
+    });
+
+    describe('with resolver', () => {
+      it('should be called resolver when formState.isValid true', async () => {
+        const resolver = jest.fn().mockReturnValue({});
+
+        const { result } = renderHook(() => {
+          const { formState, control } = useForm({
+            mode: VALIDATION_MODE.onChange,
+            resolver,
+          });
+          const { prepend } = useFieldArray({ control, name: 'test' });
+          return { formState, prepend };
+        });
+
+        result.current.formState.isValid;
+
+        await act(async () => {
+          result.current.prepend({ value: '1' });
+        });
+
+        expect(resolver).toBeCalledWith(
+          {
+            test: [{ id: '0', value: '1' }],
+          },
+          undefined,
+          false,
+        );
+      });
+
+      it('should not be called resolver when formState.isValid false', () => {
+        const resolver = jest.fn().mockReturnValue({});
+
+        const { result } = renderHook(() => {
+          const { formState, control } = useForm({
+            mode: VALIDATION_MODE.onChange,
+            resolver,
+          });
+          const { prepend } = useFieldArray({ control, name: 'test' });
+          return { formState, prepend };
+        });
+
+        act(() => {
+          result.current.prepend({ value: '1' });
+        });
+
+        expect(resolver).not.toBeCalled();
+      });
     });
   });
 
@@ -1757,6 +1853,60 @@ describe('useFieldArray', () => {
         ]),
       );
     });
+
+    describe('with resolver', () => {
+      it('should be called resolver when formState.isValid true', async () => {
+        const resolver = jest.fn().mockReturnValue({});
+
+        const { result } = renderHook(() => {
+          const { formState, control } = useForm({
+            mode: VALIDATION_MODE.onChange,
+            resolver,
+            defaultValues: {
+              test: [{ value: 'test' }],
+            },
+          });
+          const { remove } = useFieldArray({ control, name: 'test' });
+          return { formState, remove };
+        });
+
+        result.current.formState.isValid;
+
+        await act(async () => {
+          result.current.remove(0);
+        });
+
+        expect(resolver).toBeCalledWith(
+          {
+            test: [],
+          },
+          undefined,
+          false,
+        );
+      });
+
+      it('should not be called resolver when formState.isValid false', () => {
+        const resolver = jest.fn().mockReturnValue({});
+
+        const { result } = renderHook(() => {
+          const { formState, control } = useForm({
+            mode: VALIDATION_MODE.onChange,
+            resolver,
+            defaultValues: {
+              test: [{ value: 'test' }],
+            },
+          });
+          const { remove } = useFieldArray({ control, name: 'test' });
+          return { formState, remove };
+        });
+
+        act(() => {
+          result.current.remove(0);
+        });
+
+        expect(resolver).not.toBeCalled();
+      });
+    });
   });
 
   describe('insert', () => {
@@ -2212,6 +2362,54 @@ describe('useFieldArray', () => {
         ]),
       );
     });
+
+    describe('with resolver', () => {
+      it('should be called resolver when formState.isValid true', async () => {
+        const resolver = jest.fn().mockReturnValue({});
+
+        const { result } = renderHook(() => {
+          const { formState, control } = useForm({
+            mode: VALIDATION_MODE.onChange,
+            resolver,
+          });
+          const { insert } = useFieldArray({ control, name: 'test' });
+          return { formState, insert };
+        });
+
+        result.current.formState.isValid;
+
+        await act(async () => {
+          result.current.insert(0, { value: '1' });
+        });
+
+        expect(resolver).toBeCalledWith(
+          {
+            test: [{ id: '0', value: '1' }],
+          },
+          undefined,
+          false,
+        );
+      });
+
+      it('should not be called resolver when formState.isValid false', () => {
+        const resolver = jest.fn().mockReturnValue({});
+
+        const { result } = renderHook(() => {
+          const { formState, control } = useForm({
+            mode: VALIDATION_MODE.onChange,
+            resolver,
+          });
+          const { insert } = useFieldArray({ control, name: 'test' });
+          return { formState, insert };
+        });
+
+        act(() => {
+          result.current.insert(0, { value: '1' });
+        });
+
+        expect(resolver).not.toBeCalled();
+      });
+    });
   });
 
   describe('swap', () => {
@@ -2451,6 +2649,63 @@ describe('useFieldArray', () => {
           [{ value: '222' }, { value: '111' }],
         ]),
       );
+    });
+
+    describe('with resolver', () => {
+      it('should be called resolver when formState.isValid true', async () => {
+        const resolver = jest.fn().mockReturnValue({});
+
+        const { result } = renderHook(() => {
+          const { formState, control } = useForm({
+            mode: VALIDATION_MODE.onChange,
+            resolver,
+            defaultValues: {
+              test: [{ value: '1' }, { value: '2' }],
+            },
+          });
+          const { swap } = useFieldArray({ control, name: 'test' });
+          return { formState, swap };
+        });
+
+        result.current.formState.isValid;
+
+        await act(async () => {
+          result.current.swap(0, 1);
+        });
+
+        expect(resolver).toBeCalledWith(
+          {
+            test: [
+              { id: '1', value: '2' },
+              { id: '0', value: '1' },
+            ],
+          },
+          undefined,
+          false,
+        );
+      });
+
+      it('should not be called resolver when formState.isValid false', () => {
+        const resolver = jest.fn().mockReturnValue({});
+
+        const { result } = renderHook(() => {
+          const { formState, control } = useForm({
+            mode: VALIDATION_MODE.onChange,
+            resolver,
+            defaultValues: {
+              test: [{ value: '1' }, { value: '2' }],
+            },
+          });
+          const { swap } = useFieldArray({ control, name: 'test' });
+          return { formState, swap };
+        });
+
+        act(() => {
+          result.current.swap(0, 1);
+        });
+
+        expect(resolver).not.toBeCalled();
+      });
     });
   });
 
@@ -2793,86 +3048,62 @@ describe('useFieldArray', () => {
         ]),
       );
     });
-  });
 
-  describe('setFieldAndValidState', () => {
-    let renderCount = 0;
-    let Component: React.FC<{ control: Control<Record<string, any>> }>;
-    beforeEach(() => {
-      renderCount = 0;
-      Component = ({ control }: { control: Control<Record<string, any>> }) => {
-        const { append } = useFieldArray({
-          name: 'test',
-          control,
+    describe('with resolver', () => {
+      it('should be called resolver when formState.isValid true', async () => {
+        const resolver = jest.fn().mockReturnValue({});
+
+        const { result } = renderHook(() => {
+          const { formState, control } = useForm({
+            mode: VALIDATION_MODE.onChange,
+            resolver,
+            defaultValues: {
+              test: [{ value: '1' }, { value: '2' }],
+            },
+          });
+          const { move } = useFieldArray({ control, name: 'test' });
+          return { formState, move };
         });
-        renderCount++;
-        return (
-          <div>
-            <button onClick={() => append({ test: 'value' })}></button>
-          </div>
+
+        result.current.formState.isValid;
+
+        await act(async () => {
+          result.current.move(0, 1);
+        });
+
+        expect(resolver).toBeCalledWith(
+          {
+            test: [
+              { id: '1', value: '2' },
+              { id: '0', value: '1' },
+            ],
+          },
+          undefined,
+          false,
         );
-      };
-    });
-
-    afterEach(() => {
-      expect(renderCount).toBe(2);
-    });
-
-    it('should call validateSchemaIsValid method', () => {
-      const mockControl = reconfigureControl();
-
-      const { container } = render(
-        <Component
-          control={{
-            ...mockControl,
-            readFormStateRef: {
-              current: {
-                ...mockControl.readFormStateRef.current,
-                isValid: true,
-              },
-            },
-          }}
-        />,
-      );
-
-      fireEvent.click(container.querySelector('button')!);
-
-      expect(mockControl.validateSchemaIsValid).toBeCalledWith({
-        test: [{ id: '0', test: 'value' }],
       });
-    });
 
-    it('should not call validateSchemaIsValid method if isValid is false', () => {
-      const mockControl = reconfigureControl();
+      it('should not be called resolver when formState.isValid false', () => {
+        const resolver = jest.fn().mockReturnValue({});
 
-      const { container } = render(<Component control={mockControl} />);
-
-      fireEvent.click(container.querySelector('button')!);
-
-      expect(mockControl.validateSchemaIsValid).not.toBeCalled();
-    });
-
-    it('should not call validateSchemaIsValid method if validateSchemaIsValid is undefined', () => {
-      const mockControl = reconfigureControl();
-
-      const { container } = render(
-        <Component
-          control={{
-            ...mockControl,
-            readFormStateRef: {
-              current: {
-                ...mockControl.readFormStateRef.current,
-                isValid: true,
-              },
+        const { result } = renderHook(() => {
+          const { formState, control } = useForm({
+            mode: VALIDATION_MODE.onChange,
+            resolver,
+            defaultValues: {
+              test: [{ value: '1' }, { value: '2' }],
             },
-            validateSchemaIsValid: undefined,
-          }}
-        />,
-      );
+          });
+          const { move } = useFieldArray({ control, name: 'test' });
+          return { formState, move };
+        });
 
-      fireEvent.click(container.querySelector('button')!);
+        act(() => {
+          result.current.move(0, 1);
+        });
 
-      expect(mockControl.validateSchemaIsValid).not.toBeCalled();
+        expect(resolver).not.toBeCalled();
+      });
     });
   });
 
