@@ -107,6 +107,11 @@ export const useFieldArray = <
       // eslint-disable-next-line no-console
       console.warn('📋 useFieldArray is missing control prop.');
     }
+
+    if (!name) {
+      // eslint-disable-next-line no-console
+      console.warn('📋 useFieldArray is missing name attribute.');
+    }
   }
 
   const appendValueWithKey = (values: Partial<TFieldArrayValues>[]) =>
