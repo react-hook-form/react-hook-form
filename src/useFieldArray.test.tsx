@@ -1760,45 +1760,19 @@ describe('useFieldArray', () => {
   });
 
   describe('insert', () => {
-    it('should insert data at index', () => {
-      const dirtyFieldsRef = {
-        current: {
-          test: [
-            {
-              test: 1,
-            },
-            {
-              test1: 1,
-            },
-            {
-              test2: 1,
-            },
-          ],
-        },
-      };
-
-      const { result } = renderHook(() =>
-        useFieldArray({
-          control: reconfigureControl({
-            defaultValuesRef: {
-              current: { test: [{ test: '1' }, { test: '2' }] },
-            },
-            fieldsRef: {
-              current: {
-                'test[0]': { ref: { name: 'test[0]', value: { test: '1' } } },
-                'test[1]': { ref: { name: 'test[1]', value: { test: '2' } } },
-              },
-            },
-            readFormStateRef: {
-              current: {
-                dirtyFields: true,
-              },
-            } as any,
-            dirtyFieldsRef,
-          }),
+    it('should insert data at index with single value', () => {
+      const { result } = renderHook(() => {
+        const { control } = useForm({
+          defaultValues: {
+            test: [{ test: '1' }, { test: '2' }],
+          },
+        });
+        const { fields, insert } = useFieldArray({
+          control,
           name: 'test',
-        }),
-      );
+        });
+        return { fields, insert };
+      });
 
       act(() => {
         result.current.insert(1, { test: '3' });
@@ -1809,255 +1783,368 @@ describe('useFieldArray', () => {
         { id: '2', test: '3' },
         { id: '1', test: '2' },
       ]);
+    });
+
+    it('should insert data at index with array value', () => {
+      const { result } = renderHook(() => {
+        const { control } = useForm({
+          defaultValues: {
+            test: [{ test: '1' }, { test: '2' }],
+          },
+        });
+        const { fields, insert } = useFieldArray({
+          control,
+          name: 'test',
+        });
+        return { fields, insert };
+      });
 
       act(() => {
-        result.current.insert(1, [{ test: '4' }, { test: '5' }]);
+        result.current.insert(1, [{ test: '3' }, { test: '4' }]);
       });
 
       expect(result.current.fields).toEqual([
         { id: '0', test: '1' },
-        { id: '5', test: '4' },
-        { id: '6', test: '5' },
         { id: '2', test: '3' },
+        { id: '3', test: '4' },
         { id: '1', test: '2' },
       ]);
-      expect(dirtyFieldsRef.current).toEqual({
-        test: [
-          {
-            test: 1,
-          },
-          { test: true },
-          { test: true },
-          { test: true },
-          {
-            test1: 1,
-          },
-          {
-            test2: 1,
-          },
-        ],
-      });
     });
 
-    it('should insert touched fields', () => {
-      const touchedFieldsRef = {
-        current: {
-          test: [{ test: '1' }, { test: '2' }, { test: '3' }],
-        },
-      };
-      const { result } = renderHook(() =>
-        useFieldArray({
-          control: {
-            ...reconfigureControl(),
-            readFormStateRef: {
-              current: {
-                touched: true,
-              },
-            } as any,
-            touchedFieldsRef: touchedFieldsRef as any,
-            fieldsRef: {
-              current: {
-                'test[0]': {
-                  ref: {
-                    value: 1,
-                    name: 'test[0]',
-                  },
-                },
-                'test[1]': {
-                  ref: {
-                    value: 2,
-                    name: 'test[1]',
-                  },
-                },
-                'test[2]': {
-                  ref: {
-                    value: 3,
-                    name: 'test[2]',
-                  },
-                },
-              },
-            } as any,
-          },
-          name: 'test',
-        }),
-      );
+    it.each(['isDirty', 'dirtyFields'])(
+      'should insert data to formState.%s at index with single value',
+      (property) => {
+        const { result } = renderHook(() => {
+          const { formState, control } = useForm({
+            defaultValues: { test: [{ value: '1' }] },
+          });
+          const { fields, append, insert } = useFieldArray({
+            control,
+            name: 'test',
+          });
 
-      act(() => {
-        result.current.insert(1, { test: 'test2' });
-      });
+          return { formState, fields, append, insert };
+        });
 
-      expect(touchedFieldsRef).toEqual({
-        current: {
-          test: [{ test: '1' }, undefined, { test: '2' }, { test: '3' }],
-        },
-      });
+        (result.current.formState as Record<string, any>)[property];
 
-      act(() => {
-        result.current.insert(1, [{ test: 'test2' }, { test: 'test3' }]);
-      });
+        act(() => {
+          result.current.append({ value: '2' });
+          result.current.insert(1, { value1: '3' });
+        });
 
-      expect(touchedFieldsRef).toEqual({
-        current: {
+        expect(result.current.formState.isDirty).toBeTruthy();
+        expect(result.current.formState.dirtyFields).toEqual({
+          test: [undefined, { value1: true }, { value: true }],
+        });
+      },
+    );
+
+    it.each(['isDirty', 'dirtyFields'])(
+      'should insert data to formState.%s at index with array value',
+      (property) => {
+        const { result } = renderHook(() => {
+          const { formState, control } = useForm({
+            defaultValues: { test: [{ value: '1' }] },
+          });
+          const { fields, append, insert } = useFieldArray({
+            control,
+            name: 'test',
+          });
+
+          return { formState, fields, append, insert };
+        });
+
+        (result.current.formState as Record<string, any>)[property];
+
+        act(() => {
+          result.current.append({ value: '2' });
+          result.current.insert(1, [{ value1: '3' }, { value2: '4' }]);
+        });
+
+        expect(result.current.formState.isDirty).toBeTruthy();
+        expect(result.current.formState.dirtyFields).toEqual({
           test: [
-            { test: '1' },
             undefined,
-            undefined,
-            undefined,
-            { test: '2' },
-            { test: '3' },
+            { value1: true },
+            { value2: true },
+            { value: true },
           ],
-        },
-      });
-    });
+        });
+      },
+    );
 
-    it('should insert error', () => {
-      const errorsRef = {
-        current: {
-          test: [{ test: '1' }, { test: '2' }, { test: '3' }],
-        },
+    it('should insert touched fields with single value', () => {
+      let touched: any;
+      const Component = () => {
+        const { register, formState, control } = useForm({
+          defaultValues: { test: [{ value: '1' }, { value: '2' }] },
+        });
+        const { fields, insert } = useFieldArray({
+          control,
+          name: 'test',
+        });
+
+        touched = formState.touched;
+
+        return (
+          <form>
+            {fields.map((field, i) => (
+              <input
+                key={field.id}
+                type="text"
+                name={`test[${i}].value`}
+                defaultValue={field.value}
+                ref={register()}
+              />
+            ))}
+            <button
+              type="button"
+              onClick={() => insert(1, { value: `${fields.length}` })}
+            >
+              insert
+            </button>
+          </form>
+        );
       };
-      const { result } = renderHook(() =>
-        useFieldArray({
-          control: {
-            ...reconfigureControl(),
-            errorsRef: errorsRef as any,
-            fieldsRef: {
-              current: {
-                'test[0]': {
-                  ref: {
-                    value: 1,
-                    name: 'test[0]',
-                  },
-                },
-                'test[1]': {
-                  ref: {
-                    value: 2,
-                    name: 'test[1]',
-                  },
-                },
-                'test[2]': {
-                  ref: {
-                    value: 3,
-                    name: 'test[2]',
-                  },
-                },
-              },
-            } as any,
-          },
-          name: 'test',
-        }),
-      );
 
-      act(() => {
-        result.current.insert(1, { test: 'test2' });
-      });
+      render(<Component />);
 
-      expect(errorsRef).toEqual({
-        current: {
-          test: [{ test: '1' }, undefined, { test: '2' }, { test: '3' }],
-        },
-      });
+      fireEvent.blur(screen.getAllByRole('textbox')[0]);
+      fireEvent.blur(screen.getAllByRole('textbox')[1]);
 
-      act(() => {
-        result.current.insert(1, [{ test: 'test2' }, { test: 'test3' }]);
-      });
+      fireEvent.click(screen.getByRole('button', { name: /insert/i }));
 
-      expect(errorsRef).toEqual({
-        current: {
-          test: [
-            { test: '1' },
-            undefined,
-            undefined,
-            undefined,
-            { test: '2' },
-            { test: '3' },
-          ],
-        },
+      expect(touched).toEqual({
+        test: [{ value: true }, undefined, { value: true }],
       });
     });
 
-    it('should trigger reRender when user is watching the all field array', () => {
-      const reRender = jest.fn();
-      const { result } = renderHook(() =>
-        useFieldArray({
-          control: reconfigureControl({
-            reRender,
-            isWatchAllRef: {
-              current: true,
-            },
-            defaultValuesRef: {
-              current: { test: [{ test: '1' }, { test: '2' }] },
-            },
-            fieldsRef: {
-              current: {
-                'test[0]': { ref: { name: 'test[0]', value: { test: '1' } } },
-                'test[1]': { ref: { name: 'test[1]', value: { test: '2' } } },
-              },
-            },
-          }),
+    it('should insert touched fields with array value', () => {
+      let touched: any;
+      const Component = () => {
+        const { register, formState, control } = useForm({
+          defaultValues: { test: [{ value: '1' }, { value: '2' }] },
+        });
+        const { fields, insert } = useFieldArray({
+          control,
           name: 'test',
-        }),
-      );
+        });
 
-      act(() => {
-        result.current.insert(1, { test: 'test' });
+        touched = formState.touched;
+
+        return (
+          <form>
+            {fields.map((field, i) => (
+              <input
+                key={field.id}
+                type="text"
+                name={`test[${i}].value`}
+                defaultValue={field.value}
+                ref={register()}
+              />
+            ))}
+            <button
+              type="button"
+              onClick={() =>
+                insert(1, [
+                  { value: `${fields.length}` },
+                  { value: `${fields.length + 1}` },
+                ])
+              }
+            >
+              insert array
+            </button>
+          </form>
+        );
+      };
+
+      render(<Component />);
+
+      fireEvent.blur(screen.getAllByRole('textbox')[0]);
+      fireEvent.blur(screen.getAllByRole('textbox')[1]);
+
+      fireEvent.click(screen.getByRole('button', { name: /insert array/i }));
+
+      expect(touched).toEqual({
+        test: [{ value: true }, undefined, undefined, { value: true }],
+      });
+    });
+
+    it('should insert error with single value', async () => {
+      let errors: any;
+      const Component = () => {
+        const { register, handleSubmit, control, ...rest } = useForm();
+        const { fields, append, insert } = useFieldArray({
+          control,
+          name: 'test',
+        });
+
+        errors = rest.errors;
+
+        return (
+          <form onSubmit={handleSubmit(() => {})}>
+            {fields.map((field, i) => (
+              <input
+                key={field.id}
+                type="text"
+                name={`test[${i}].value`}
+                ref={register({ required: true })}
+              />
+            ))}
+            <button type="button" onClick={() => append({ value: '' })}>
+              append
+            </button>
+            <button type="button" onClick={() => insert(1, { value: '' })}>
+              insert
+            </button>
+            <button>submit</button>
+          </form>
+        );
+      };
+
+      render(<Component />);
+
+      fireEvent.click(screen.getByRole('button', { name: /append/i }));
+      fireEvent.click(screen.getByRole('button', { name: /append/i }));
+
+      await actComponent(async () => {
+        fireEvent.click(screen.getByRole('button', { name: /submit/i }));
       });
 
-      expect(result.current.fields).toEqual([
-        { id: '0', test: '1' },
-        { id: '2', test: 'test' },
-        { id: '1', test: '2' },
-      ]);
-      expect(reRender).toBeCalledTimes(2);
+      fireEvent.click(screen.getByRole('button', { name: /insert/i }));
+
+      expect(errors.test[0]).toBeDefined();
+      expect(errors.test[1]).toBeUndefined();
+      expect(errors.test[2]).toBeDefined();
+    });
+
+    it('should insert error with array value', async () => {
+      let errors: any;
+      const Component = () => {
+        const { register, handleSubmit, control, ...rest } = useForm();
+        const { fields, append, insert } = useFieldArray({
+          control,
+          name: 'test',
+        });
+
+        errors = rest.errors;
+
+        return (
+          <form onSubmit={handleSubmit(() => {})}>
+            {fields.map((field, i) => (
+              <input
+                key={field.id}
+                type="text"
+                name={`test[${i}].value`}
+                ref={register({ required: true })}
+              />
+            ))}
+            <button type="button" onClick={() => append({ value: '' })}>
+              append
+            </button>
+            <button
+              type="button"
+              onClick={() => insert(1, [{ value: '' }, { value: '' }])}
+            >
+              insert array
+            </button>
+            <button>submit</button>
+          </form>
+        );
+      };
+
+      render(<Component />);
+
+      fireEvent.click(screen.getByRole('button', { name: /append/i }));
+      fireEvent.click(screen.getByRole('button', { name: /append/i }));
+
+      await actComponent(async () => {
+        fireEvent.click(screen.getByRole('button', { name: /submit/i }));
+      });
+
+      fireEvent.click(screen.getByRole('button', { name: /insert array/i }));
+
+      expect(errors.test[0]).toBeDefined();
+      expect(errors.test[1]).toBeUndefined();
+      expect(errors.test[2]).toBeUndefined();
+      expect(errors.test[3]).toBeDefined();
     });
 
     it('should focus if shouldFocus is true', () => {
-      const mockFocus = jest.fn();
+      const Component = () => {
+        const { register, control } = useForm({
+          defaultValues: {
+            test: [{ value: '1' }, { value: '2' }],
+          },
+        });
+        const { fields, insert } = useFieldArray({ name: 'test', control });
 
-      const { result } = renderHook(() =>
-        useFieldArray({
-          control: reconfigureControl({
-            defaultValuesRef: {
-              current: { test: [{ test: '1' }, { test: '2' }] },
-            },
-            fieldsRef: {
-              current: {
-                'test[0]': {
-                  ref: {
-                    name: 'test[0]',
-                    value: { test: '1' },
-                    focus: mockFocus,
-                  },
-                },
-                'test[1]': {
-                  ref: {
-                    name: 'test[1]',
-                    value: { test: 'test' },
-                    focus: mockFocus,
-                  },
-                },
-                'test[2]': {
-                  ref: {
-                    name: 'test[2]',
-                    value: { test: '2' },
-                    focus: mockFocus,
-                  },
-                },
-              },
-            },
-          }),
+        return (
+          <form>
+            {fields.map((field, i) => (
+              <input
+                key={field.id}
+                type="text"
+                name={`test[${i}].value`}
+                ref={register()}
+                defaultValue={field.value}
+              />
+            ))}
+            <button type="button" onClick={() => insert(1, { value: '' })}>
+              insert
+            </button>
+          </form>
+        );
+      };
+
+      render(<Component />);
+
+      fireEvent.click(screen.getByRole('button', { name: /insert/i }));
+
+      const inputs = screen.getAllByRole('textbox');
+
+      expect(inputs).toHaveLength(3);
+      expect(document.activeElement).toEqual(inputs[1]);
+    });
+
+    it('should trigger reRender when user is watching the all field array', () => {
+      const watched: any[] = [];
+      const Component = () => {
+        const { register, watch, control } = useForm();
+        const { fields, insert } = useFieldArray({
+          control,
           name: 'test',
-        }),
-      );
+        });
+        watched.push(watch());
 
-      act(() => result.current.insert(1, { test: 'test' }));
+        return (
+          <form>
+            {fields.map((field, i) => (
+              <input
+                key={field.id}
+                type="text"
+                name={`test[${i}].value`}
+                ref={register()}
+              />
+            ))}
+            <button type="button" onClick={() => insert(0, { value: '' })}>
+              insert
+            </button>
+          </form>
+        );
+      };
 
-      expect(result.current.fields).toEqual([
-        { id: '0', test: '1' },
-        { id: '2', test: 'test' },
-        { id: '1', test: '2' },
+      render(<Component />);
+
+      fireEvent.click(screen.getByRole('button', { name: 'insert' }));
+
+      expect(watched).toEqual([
+        {}, // first render
+        {}, // render inside useEffect in useFieldArray
+        {}, // render inside insert method
+        { test: [{ value: '' }] }, // render inside useEffect in useFieldArray
       ]);
-      expect(mockFocus).toBeCalledTimes(1);
     });
 
     it('should return watched value with watch API', async () => {
