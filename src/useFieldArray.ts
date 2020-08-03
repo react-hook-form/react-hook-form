@@ -102,6 +102,13 @@ export const useFieldArray = <
 
   allFields.current = fields;
 
+  if (process.env.NODE_ENV !== 'production') {
+    if (!control) {
+      // eslint-disable-next-line no-console
+      console.warn('📋 useFieldArray is missing control prop.');
+    }
+  }
+
   const appendValueWithKey = (values: Partial<TFieldArrayValues>[]) =>
     values.map((value: Partial<TFieldArrayValues>) => appendId(value, keyName));
 

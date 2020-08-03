@@ -57,6 +57,25 @@ const Controller = <
   const onFocusRef = React.useRef(onFocus);
   const isSubmitted = isSubmittedRef.current;
 
+  if (process.env.NODE_ENV !== 'production') {
+    if (isUndefined(value)) {
+      // eslint-disable-next-line no-console
+      console.warn(
+        '📋 Controller defaultValue or useForm defaultValues is missing.',
+      );
+    }
+
+    if (as && render) {
+      // eslint-disable-next-line no-console
+      console.warn('📋 Should use either as or render prop.');
+    }
+
+    if (!control) {
+      // eslint-disable-next-line no-console
+      console.warn('📋 Controller is missing control prop.');
+    }
+  }
+
   const shouldValidate = (isBlurEvent?: boolean) =>
     !skipValidation({
       isBlurEvent,
@@ -76,7 +95,7 @@ const Controller = <
   const registerField = React.useCallback(() => {
     if (process.env.NODE_ENV !== 'production' && !name) {
       // eslint-disable-next-line no-console
-      return console.warn('Field is missing name attribute.');
+      return console.warn('📋 Field is missing name attribute.');
     }
 
     if (fieldsRef.current[name]) {

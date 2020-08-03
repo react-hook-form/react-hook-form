@@ -754,7 +754,7 @@ export function useForm<
   ): ((name: InternalFieldName<TFieldValues>) => void) | void {
     if (process.env.NODE_ENV !== 'production' && !ref.name) {
       // eslint-disable-next-line no-console
-      return console.warn('Field is missing name attribute:', ref);
+      return console.warn('📋 Field is missing name attribute:', ref);
     }
 
     if (
@@ -768,7 +768,7 @@ export function useForm<
     ) {
       // eslint-disable-next-line no-console
       return console.warn(
-        'Name should be in object shape: name="test[index].name". https://react-hook-form.com/api#useFieldArray',
+        '📋 Name should be in object shape: name="test[index].name". https://react-hook-form.com/api#useFieldArray',
       );
     }
 
@@ -1152,7 +1152,7 @@ export function useForm<
             ) {
               // eslint-disable-next-line no-console
               console.warn(
-                'formState.isValid is applicable with onChange and onBlur mode. https://react-hook-form.com/api#formState',
+                '📋 formState.isValid is applicable with onChange and onBlur mode. https://react-hook-form.com/api#formState',
               );
             }
 
