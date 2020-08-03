@@ -70,10 +70,8 @@ export function useWatch<TWatchFieldValues>({
     [setValue, watchInternal, defaultValueRef, nameRef, idRef],
   );
 
-  if (process.env.NODE_ENV !== 'production') {
-    if (!control && !methods.control) {
-      console.warn('📋 useWatch is missing `control` prop.');
-    }
+  if (process.env.NODE_ENV !== 'production' && !control && !methods.control) {
+    console.warn('📋 useWatch is missing `control` prop.');
   }
 
   React.useEffect(() => {
