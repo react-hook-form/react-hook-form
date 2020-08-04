@@ -106,7 +106,9 @@ describe('useFieldArray', () => {
 
       const { result } = renderHook(() => useFieldArray({ name: 'test' }));
 
-      expect(result.error.name).toBe('RHFError');
+      expect(result.error.message).toBe(
+        '📋 useFieldArray is missing `control` prop.',
+      );
 
       process.env.NODE_ENV = env;
     });
@@ -117,7 +119,7 @@ describe('useFieldArray', () => {
 
       const { result } = renderHook(() => useFieldArray({ name: 'test' }));
 
-      expect(result.error.name).toBe('TypeError');
+      expect(result.error.name).toBe(new TypeError().name);
 
       process.env.NODE_ENV = env;
     });

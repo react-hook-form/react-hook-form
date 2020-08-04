@@ -25,7 +25,6 @@ import {
   Control,
   ArrayField,
 } from './types/form';
-import { RHFError } from './utils/rhfError';
 
 const appendId = <TValue extends object, TKeyName extends string>(
   value: TValue,
@@ -53,7 +52,7 @@ export const useFieldArray = <
 
   if (process.env.NODE_ENV !== 'production') {
     if (!control && !methods) {
-      throw new RHFError('📋 useFieldArray is missing `control` prop.');
+      throw new Error('📋 useFieldArray is missing `control` prop.');
     }
 
     if (!name) {
