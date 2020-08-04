@@ -5,6 +5,7 @@ import { reconfigureControl } from './__mocks__/reconfigureControl';
 import * as set from './utils/set';
 import { FormProvider } from './useFormContext';
 import { renderHook } from '@testing-library/react-hooks';
+import { useFieldArray } from './useFieldArray';
 import { useForm } from './useForm';
 
 jest.spyOn(console, 'warn').mockImplementation(() => {});
@@ -804,5 +805,45 @@ describe('Controller', () => {
 
     // @ts-ignore
     expect(getByPlaceholderText('test').value).toEqual('');
+  });
+
+  it('should warn the user when defaultValue is missing with useFieldArray', () => {
+    const env = process.env.NODE_ENV;
+    process.env.NODE_ENV = 'development';
+
+    const Component = () => {
+      const { control } = useForm({
+        defaultValues: {
+          test: [{ data: '' }],
+        },
+      });
+      const { fields } = useFieldArray({
+        control,
+        name: 'test',
+      });
+
+      return (
+        <form>
+          {fields.map(({ id }, index) => {
+            return (
+              <Controller
+                name={`test[${index}].data`}
+                control={control}
+                key={id}
+              />
+            );
+          })}
+        </form>
+      );
+    };
+
+    render(<Component />);
+
+    expect(console.warn).toBeCalledTimes(1);
+
+    process.env.NODE_ENV = env;
+
+    // @ts-ignore
+    console.warn.mockRestore();
   });
 });

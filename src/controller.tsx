@@ -72,10 +72,7 @@ const Controller = <
       console.warn('📋 Controller is missing `control` prop.');
     }
 
-    if (
-      fieldArrayNamesRef.current.has(name.split(/\[\d+\]$/)[0]) &&
-      isUndefined(defaultValue)
-    ) {
+    if (!isNotFieldArray && isUndefined(defaultValue)) {
       console.warn(
         '📋 Controller is missing `defaultValue` prop when using `useFieldArray`.',
       );

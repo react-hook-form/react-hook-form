@@ -958,6 +958,7 @@ describe('useFieldArray', () => {
                 type="text"
                 name={`test[${i}].value`}
                 ref={register()}
+                defaultValue={field.value}
               />
             ))}
             <button type="button" onClick={() => prepend({ value: '' })}>
@@ -1831,6 +1832,7 @@ describe('useFieldArray', () => {
                 key={field.id}
                 type="text"
                 name={`test[${i}].value`}
+                defaultValue={field.value}
                 ref={register()}
               />
             ))}
@@ -2426,6 +2428,7 @@ describe('useFieldArray', () => {
                 key={field.id}
                 type="text"
                 name={`test[${i}].value`}
+                defaultValue={field.value}
                 ref={register()}
               />
             ))}
@@ -2792,6 +2795,7 @@ describe('useFieldArray', () => {
                 key={field.id}
                 type="text"
                 name={`test[${i}].value`}
+                defaultValue={field.value}
                 ref={register()}
               />
             ))}
@@ -3163,6 +3167,7 @@ describe('useFieldArray', () => {
                 key={field.id}
                 type="text"
                 name={`test[${i}].value`}
+                defaultValue={field.value}
                 ref={register()}
               />
             ))}

@@ -420,6 +420,7 @@ describe('useWatch', () => {
                   <input
                     type="input"
                     name={`test[${i}].firstName`}
+                    defaultValue={item.firstName}
                     ref={register()}
                   />
 
