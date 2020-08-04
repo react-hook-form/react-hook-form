@@ -59,7 +59,10 @@ describe('useFieldArray', () => {
         { test: '2', id: '1' },
       ]);
     });
+  });
 
+  describe('error handling', () => {
+    it('should output error message')
     it.each(['test', 'test[0].value'])(
       'should output error message when registered field name is %s in development environment',
       (name) => {
