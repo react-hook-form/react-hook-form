@@ -25,6 +25,7 @@ import {
   Control,
   ArrayField,
 } from './types/form';
+import { RHFError } from './utils/rhfError';
 
 const appendId = <TValue extends object, TKeyName extends string>(
   value: TValue,
@@ -49,6 +50,17 @@ export const useFieldArray = <
   keyName = 'id' as TKeyName,
 }: UseFieldArrayOptions<TKeyName, TControl>) => {
   const methods = useFormContext();
+
+  if (process.env.NODE_ENV !== 'production') {
+    if (!control && !methods) {
+      throw new RHFError('📋 useFieldArray is missing `control` prop.');
+    }
+
+    if (!name) {
+      console.warn('📋 useFieldArray is missing `name` attribute.');
+    }
+  }
+
   const focusIndexRef = React.useRef(-1);
   const {
     isWatchAllRef,
@@ -101,16 +113,6 @@ export const useFieldArray = <
     );
 
   allFields.current = fields;
-
-  if (process.env.NODE_ENV !== 'production') {
-    if (!control && !methods.control) {
-      console.warn('📋 useFieldArray is missing `control` prop.');
-    }
-
-    if (!name) {
-      console.warn('📋 useFieldArray is missing `name` attribute.');
-    }
-  }
 
   const appendValueWithKey = (values: Partial<TFieldArrayValues>[]) =>
     values.map((value: Partial<TFieldArrayValues>) => appendId(value, keyName));

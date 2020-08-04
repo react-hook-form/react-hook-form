@@ -62,7 +62,66 @@ describe('useFieldArray', () => {
   });
 
   describe('error handling', () => {
-    it('should output error message')
+    it('should output error message when name is empty string in development mode', () => {
+      jest.spyOn(console, 'warn').mockImplementation(() => {});
+
+      const env = process.env.NODE_ENV;
+      process.env.NODE_ENV = 'development';
+
+      renderHook(() => {
+        const { control } = useForm();
+        useFieldArray({ control, name: '' });
+      });
+
+      expect(console.warn).toBeCalledTimes(1);
+
+      // @ts-ignore
+      console.warn.mockRestore();
+
+      process.env.NODE_ENV = env;
+    });
+
+    it('should not output error message when name is empty string in production mode', () => {
+      jest.spyOn(console, 'warn').mockImplementation(() => {});
+
+      const env = process.env.NODE_ENV;
+      process.env.NODE_ENV = 'production';
+
+      renderHook(() => {
+        const { control } = useForm();
+        useFieldArray({ control, name: '' });
+      });
+
+      expect(console.warn).not.toBeCalled();
+
+      // @ts-ignore
+      console.warn.mockRestore();
+
+      process.env.NODE_ENV = env;
+    });
+
+    it('should throw error when control is not defined in development mode', () => {
+      const env = process.env.NODE_ENV;
+      process.env.NODE_ENV = 'development';
+
+      const { result } = renderHook(() => useFieldArray({ name: 'test' }));
+
+      expect(result.error.name).toBe('RHFError');
+
+      process.env.NODE_ENV = env;
+    });
+
+    it('should not throw error when control is not defined in production mode', () => {
+      const env = process.env.NODE_ENV;
+      process.env.NODE_ENV = 'production';
+
+      const { result } = renderHook(() => useFieldArray({ name: 'test' }));
+
+      expect(result.error.name).toBe('TypeError');
+
+      process.env.NODE_ENV = env;
+    });
+
     it.each(['test', 'test[0].value'])(
       'should output error message when registered field name is %s in development environment',
       (name) => {
