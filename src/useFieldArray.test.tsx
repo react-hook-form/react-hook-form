@@ -636,6 +636,41 @@ describe('useFieldArray', () => {
       expect(document.activeElement).toEqual(inputs[2]);
     });
 
+    it('should not focus if shouldFocus is false', () => {
+      const Component = () => {
+        const { register, control } = useForm({
+          defaultValues: { test: [{ value: '1' }, { value: '2' }] },
+        });
+        const { fields, append } = useFieldArray({ control, name: 'test' });
+
+        return (
+          <form>
+            {fields.map((field, i) => (
+              <input
+                key={field.id}
+                type="text"
+                name={`test[${i}].value`}
+                ref={register()}
+                defaultValue={field.value}
+              />
+            ))}
+            <button type="button" onClick={() => append({ value: '3' }, false)}>
+              append
+            </button>
+          </form>
+        );
+      };
+
+      render(<Component />);
+
+      fireEvent.click(screen.getByRole('button', { name: /append/i }));
+
+      const inputs = screen.getAllByRole('textbox');
+
+      expect(inputs).toHaveLength(3);
+      expect(document.activeElement).toEqual(document.body);
+    });
+
     it('should return watched value with watch API', async () => {
       const renderedItems: any = [];
       const Component = () => {
@@ -1045,6 +1080,43 @@ describe('useFieldArray', () => {
 
       expect(inputs).toHaveLength(3);
       expect(document.activeElement).toEqual(inputs[0]);
+    });
+
+    it('should not focus if shouldFocus is false', () => {
+      const Component = () => {
+        const { register, control } = useForm({
+          defaultValues: {
+            test: [{ value: '1' }, { value: '2' }],
+          },
+        });
+        const { fields, prepend } = useFieldArray({ name: 'test', control });
+
+        return (
+          <form>
+            {fields.map((field, i) => (
+              <input
+                key={field.id}
+                type="text"
+                name={`test[${i}].value`}
+                ref={register()}
+                defaultValue={field.value}
+              />
+            ))}
+            <button type="button" onClick={() => prepend({ value: '' }, false)}>
+              prepend
+            </button>
+          </form>
+        );
+      };
+
+      render(<Component />);
+
+      fireEvent.click(screen.getByRole('button', { name: /prepend/i }));
+
+      const inputs = screen.getAllByRole('textbox');
+
+      expect(inputs).toHaveLength(3);
+      expect(document.activeElement).toEqual(document.body);
     });
 
     it('should remove event listener', () => {
@@ -1852,6 +1924,47 @@ describe('useFieldArray', () => {
       );
     });
 
+    it('should remove event listener', () => {
+      jest.spyOn(HTMLInputElement.prototype, 'removeEventListener');
+
+      const Component = () => {
+        const { register, control } = useForm({
+          defaultValues: { test: [{ value: 'test' }] },
+        });
+        const { fields, remove } = useFieldArray({
+          control,
+          name: 'test',
+        });
+
+        return (
+          <form>
+            {fields.map((field, i) => (
+              <input
+                key={field.id}
+                type="text"
+                name={`test[${i}].value`}
+                ref={register()}
+              />
+            ))}
+            <button type="button" onClick={() => remove(0)}>
+              remove
+            </button>
+          </form>
+        );
+      };
+
+      render(<Component />);
+
+      fireEvent.click(screen.getByRole('button', { name: /remove/i }));
+
+      expect(
+        HTMLInputElement.prototype.removeEventListener,
+      ).toHaveBeenCalledTimes(3);
+
+      // @ts-ignore
+      HTMLInputElement.prototype.removeEventListener.mockRestore();
+    });
+
     describe('with resolver', () => {
       it('should invoke resolver when formState.isValid true', async () => {
         const resolver = jest.fn().mockReturnValue({});
@@ -2256,6 +2369,46 @@ describe('useFieldArray', () => {
       expect(document.activeElement).toEqual(inputs[1]);
     });
 
+    it('should not focus if shouldFocus is false', () => {
+      const Component = () => {
+        const { register, control } = useForm({
+          defaultValues: {
+            test: [{ value: '1' }, { value: '2' }],
+          },
+        });
+        const { fields, insert } = useFieldArray({ name: 'test', control });
+
+        return (
+          <form>
+            {fields.map((field, i) => (
+              <input
+                key={field.id}
+                type="text"
+                name={`test[${i}].value`}
+                ref={register()}
+                defaultValue={field.value}
+              />
+            ))}
+            <button
+              type="button"
+              onClick={() => insert(1, { value: '' }, false)}
+            >
+              insert
+            </button>
+          </form>
+        );
+      };
+
+      render(<Component />);
+
+      fireEvent.click(screen.getByRole('button', { name: /insert/i }));
+
+      const inputs = screen.getAllByRole('textbox');
+
+      expect(inputs).toHaveLength(3);
+      expect(document.activeElement).toEqual(document.body);
+    });
+
     it('should trigger reRender when user is watching the all field array', () => {
       const watched: any[] = [];
       const Component = () => {
@@ -2359,6 +2512,52 @@ describe('useFieldArray', () => {
           [{ value: '111' }, { value: 'test' }, { value: '222' }],
         ]),
       );
+    });
+
+    it('should remove event listener', () => {
+      jest.spyOn(HTMLInputElement.prototype, 'removeEventListener');
+
+      const Component = () => {
+        const { register, control } = useForm({
+          defaultValues: {
+            test: [{ value: '1' }],
+          },
+        });
+        const { fields, insert } = useFieldArray({
+          control,
+          name: 'test',
+        });
+
+        return (
+          <form>
+            {fields.map((field, i) => (
+              <input
+                key={field.id}
+                type="text"
+                name={`test[${i}].value`}
+                ref={register()}
+              />
+            ))}
+            <button
+              type="button"
+              onClick={() => insert(1, { value: `test${1}` })}
+            >
+              insert
+            </button>
+          </form>
+        );
+      };
+
+      render(<Component />);
+
+      fireEvent.click(screen.getByRole('button', { name: /insert/i }));
+
+      expect(
+        HTMLInputElement.prototype.removeEventListener,
+      ).toHaveBeenCalledTimes(3);
+
+      // @ts-ignore
+      HTMLInputElement.prototype.removeEventListener.mockRestore();
     });
 
     describe('with resolver', () => {
@@ -2678,6 +2877,49 @@ describe('useFieldArray', () => {
           [{ value: '222' }, { value: '111' }],
         ]),
       );
+    });
+
+    it('should remove event listener', () => {
+      jest.spyOn(HTMLInputElement.prototype, 'removeEventListener');
+
+      const Component = () => {
+        const { register, control } = useForm({
+          defaultValues: {
+            test: [{ value: '1' }, { value: '2' }],
+          },
+        });
+        const { fields, swap } = useFieldArray({
+          control,
+          name: 'test',
+        });
+
+        return (
+          <form>
+            {fields.map((field, i) => (
+              <input
+                key={field.id}
+                type="text"
+                name={`test[${i}].value`}
+                ref={register()}
+              />
+            ))}
+            <button type="button" onClick={() => swap(0, 1)}>
+              swap
+            </button>
+          </form>
+        );
+      };
+
+      render(<Component />);
+
+      fireEvent.click(screen.getByRole('button', { name: /swap/i }));
+
+      expect(
+        HTMLInputElement.prototype.removeEventListener,
+      ).toHaveBeenCalledTimes(6);
+
+      // @ts-ignore
+      HTMLInputElement.prototype.removeEventListener.mockRestore();
     });
 
     describe('with resolver', () => {
@@ -3006,6 +3248,49 @@ describe('useFieldArray', () => {
           [{ value: '222' }, { value: '111' }],
         ]),
       );
+    });
+
+    it('should remove event listener', () => {
+      jest.spyOn(HTMLInputElement.prototype, 'removeEventListener');
+
+      const Component = () => {
+        const { register, control } = useForm({
+          defaultValues: {
+            test: [{ value: '1' }, { value: '2' }],
+          },
+        });
+        const { fields, move } = useFieldArray({
+          control,
+          name: 'test',
+        });
+
+        return (
+          <form>
+            {fields.map((field, i) => (
+              <input
+                key={field.id}
+                type="text"
+                name={`test[${i}].value`}
+                ref={register()}
+              />
+            ))}
+            <button type="button" onClick={() => move(0, 1)}>
+              move
+            </button>
+          </form>
+        );
+      };
+
+      render(<Component />);
+
+      fireEvent.click(screen.getByRole('button', { name: /move/i }));
+
+      expect(
+        HTMLInputElement.prototype.removeEventListener,
+      ).toHaveBeenCalledTimes(6);
+
+      // @ts-ignore
+      HTMLInputElement.prototype.removeEventListener.mockRestore();
     });
 
     describe('with resolver', () => {
