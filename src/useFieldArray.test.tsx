@@ -8,7 +8,6 @@ import {
 } from '@testing-library/react';
 import { act, renderHook } from '@testing-library/react-hooks';
 import { useFieldArray } from './useFieldArray';
-import { reconfigureControl } from './__mocks__/reconfigureControl';
 import { useForm } from './useForm';
 import { DeepMap } from './types/utils';
 import * as generateId from './logic/generateId';
