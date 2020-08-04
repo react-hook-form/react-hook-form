@@ -2413,176 +2413,207 @@ describe('useFieldArray', () => {
 
   describe('swap', () => {
     it('should swap data order', () => {
-      const dirtyFieldsRef = {
-        current: {
-          test: [
-            {
-              test: 1,
-            },
-            {
-              test1: 1,
-            },
-            {
-              test2: 1,
-            },
-          ],
-        },
-      };
-
-      const { result } = renderHook(() =>
-        useFieldArray({
-          control: reconfigureControl({
-            defaultValuesRef: {
-              current: { test: [{ test: '1' }, { test: '2' }] },
-            },
-            fieldsRef: {
-              current: {
-                'test[0]': { ref: { name: 'test[0]', value: { test: '1' } } },
-                'test[1]': { ref: { name: 'test[1]', value: { test: '2' } } },
-              },
-            },
-            readFormStateRef: {
-              current: {
-                dirtyFields: true,
-              },
-            } as any,
-            dirtyFieldsRef,
-          }),
+      const { result } = renderHook(() => {
+        const { register, control } = useForm({
+          defaultValues: { test: [{ value: '1' }] },
+        });
+        const methods = useFieldArray({
+          control,
           name: 'test',
-        }),
-      );
+        });
+
+        return { register, ...methods };
+      });
+
+      act(() => {
+        result.current.append({ value: '2' });
+      });
 
       act(() => {
         result.current.swap(0, 1);
       });
 
       expect(result.current.fields).toEqual([
-        { id: '1', test: '2' },
-        { id: '0', test: '1' },
+        { id: '1', value: '2' },
+        { id: '0', value: '1' },
       ]);
-
-      expect(dirtyFieldsRef.current).toEqual({
-        test: [
-          {
-            test1: 1,
-          },
-          {
-            test: 1,
-          },
-          {
-            test2: 1,
-          },
-        ],
-      });
     });
 
-    it('should swap errors', () => {
-      const errorsRef = {
-        current: {
-          test: [{ test: '1' }, { test: '2' }, { test: '3' }],
-        },
+    it.each(['isDirty', 'dirtyFields'])(
+      'should swap dirty order when formState.%s is defined',
+      (property) => {
+        const { result } = renderHook(() => {
+          const { formState, control } = useForm({
+            defaultValues: { test: [{ value: '1' }] },
+          });
+          const methods = useFieldArray({
+            control,
+            name: 'test',
+          });
+          return {
+            formState,
+            ...methods,
+          };
+        });
+
+        (result.current.formState as Record<string, any>)[property];
+
+        act(() => {
+          result.current.append({ value: '2' });
+          result.current.append({ value: '3' });
+        });
+
+        act(() => {
+          result.current.swap(0, 1);
+        });
+
+        expect(result.current.formState.isDirty).toBeTruthy();
+        expect(result.current.formState.dirtyFields).toEqual({
+          test: [{ value: true }, undefined, { value: true }],
+        });
+      },
+    );
+
+    it('should swap errors', async () => {
+      let errors: any;
+      const Component = () => {
+        const { register, handleSubmit, control, ...rest } = useForm({
+          defaultValues: { test: [{ value: 'test' }] },
+        });
+        const { fields, append, swap } = useFieldArray({
+          control,
+          name: 'test',
+        });
+        errors = rest.errors;
+
+        return (
+          <form onSubmit={handleSubmit(() => {})}>
+            {fields.map((field, i) => (
+              <input
+                key={field.id}
+                type="text"
+                name={`test[${i}].value`}
+                ref={register({ required: true })}
+                defaultValue={field.value}
+              />
+            ))}
+            <button type="button" onClick={() => append({ value: '' })}>
+              append
+            </button>
+            <button type="button" onClick={() => swap(0, 1)}>
+              swap
+            </button>
+            <button>submit</button>
+          </form>
+        );
       };
 
-      const { result } = renderHook(() =>
-        useFieldArray({
-          control: reconfigureControl({
-            defaultValuesRef: {
-              current: { test: [{ test: '1' }, { test: '2' }] },
-            },
-            errorsRef: errorsRef as any,
-            fieldsRef: {
-              current: {
-                'test[0]': { ref: { name: 'test[0]', value: { test: '1' } } },
-                'test[1]': { ref: { name: 'test[1]', value: { test: '2' } } },
-              },
-            },
-          }),
-          name: 'test',
-        }),
-      );
+      render(<Component />);
 
-      act(() => {
-        result.current.swap(0, 1);
+      fireEvent.click(screen.getByRole('button', { name: /append/i }));
+
+      await actComponent(async () => {
+        fireEvent.click(screen.getByRole('button', { name: /submit/i }));
       });
 
-      expect(errorsRef.current).toEqual({
-        test: [{ test: '2' }, { test: '1' }, { test: '3' }],
-      });
+      expect(errors.test[0]).toBeUndefined();
+      expect(errors.test[1]).toBeDefined();
+
+      fireEvent.click(screen.getByRole('button', { name: /swap/i }));
+
+      expect(errors.test[0]).toBeDefined();
+      expect(errors.test[1]).toBeUndefined();
     });
 
-    it('should swap touched fields', () => {
-      const touchedFieldsRef = {
-        current: {
-          test: [{ test: '1' }, { test: '2' }, { test: '3' }],
-        },
+    it('should swap touched fields', async () => {
+      let touched: any;
+      const Component = () => {
+        const { register, formState, control } = useForm({
+          defaultValues: { test: [{ value: 'test' }] },
+        });
+        const { fields, append, swap } = useFieldArray({
+          control,
+          name: 'test',
+        });
+
+        touched = formState.touched;
+
+        return (
+          <form>
+            {fields.map((field, i) => (
+              <input
+                key={field.id}
+                type="text"
+                name={`test[${i}].value`}
+                ref={register()}
+                defaultValue={field.value}
+              />
+            ))}
+            <button type="button" onClick={() => append({ value: '' })}>
+              append
+            </button>
+            <button type="button" onClick={() => swap(0, 1)}>
+              swap
+            </button>
+            <button>submit</button>
+          </form>
+        );
       };
 
-      const { result } = renderHook(() =>
-        useFieldArray({
-          control: reconfigureControl({
-            defaultValuesRef: {
-              current: { test: [{ test: '1' }, { test: '2' }] },
-            },
-            readFormStateRef: {
-              current: {
-                touched: true,
-              },
-            } as any,
-            touchedFieldsRef: touchedFieldsRef as any,
-            fieldsRef: {
-              current: {
-                'test[0]': { ref: { name: 'test[0]', value: { test: '1' } } },
-                'test[1]': { ref: { name: 'test[1]', value: { test: '2' } } },
-              },
-            },
-          }),
-          name: 'test',
-        }),
-      );
+      render(<Component />);
 
-      act(() => {
-        result.current.swap(0, 1);
-      });
+      fireEvent.click(screen.getByRole('button', { name: /append/i }));
 
-      expect(touchedFieldsRef.current).toEqual({
-        test: [{ test: '2' }, { test: '1' }, { test: '3' }],
+      fireEvent.blur(screen.getAllByRole('textbox')[0]);
+
+      fireEvent.click(screen.getByRole('button', { name: /swap/i }));
+
+      expect(touched).toEqual({
+        test: [undefined, { value: true }],
       });
     });
 
     it('should trigger reRender when user is watching the all field array', () => {
-      const reRender = jest.fn();
-      const { result } = renderHook(() =>
-        useFieldArray({
-          control: reconfigureControl({
-            reRender,
-            isWatchAllRef: {
-              current: true,
-            },
-            defaultValuesRef: {
-              current: { test: [{ test: '1' }, { test: '2' }] },
-            },
-            fieldsRef: {
-              current: {
-                'test[0]': { ref: { name: 'test[0]', value: { test: '1' } } },
-                'test[1]': { ref: { name: 'test[1]', value: { test: '2' } } },
-              },
-            },
-            getValues: () => ({ test: [{}, {}] }),
-          }),
+      const watched: any[] = [];
+      const Component = () => {
+        const { register, watch, control } = useForm({
+          defaultValues: {
+            test: [{ value: '1' }, { value: '2' }],
+          },
+        });
+        const { fields, swap } = useFieldArray({
+          control,
           name: 'test',
-        }),
-      );
+        });
+        watched.push(watch());
 
-      act(() => {
-        result.current.swap(0, 1);
-      });
+        return (
+          <form>
+            {fields.map((field, i) => (
+              <input
+                key={field.id}
+                type="text"
+                name={`test[${i}].value`}
+                ref={register()}
+              />
+            ))}
+            <button type="button" onClick={() => swap(0, 1)}>
+              swap
+            </button>
+          </form>
+        );
+      };
 
-      expect(result.current.fields).toEqual([
-        { id: '1', test: '2' },
-        { id: '0', test: '1' },
+      render(<Component />);
+
+      fireEvent.click(screen.getByRole('button', { name: 'swap' }));
+
+      expect(watched).toEqual([
+        { test: [{ value: '1' }, { value: '2' }] }, // first render
+        { test: [{ value: '1' }, { value: '2' }] }, // render inside useEffect in useFieldArray
+        { test: [{ value: '1' }, { value: '2' }] }, // render inside swap method
+        { test: [{ value: '2' }, { value: '1' }] }, // render inside useEffect in useFieldArray
       ]);
-
-      expect(reRender).toBeCalledTimes(2);
     });
 
     it('should return watched value with watch API', async () => {
