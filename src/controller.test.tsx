@@ -501,74 +501,289 @@ describe('Controller', () => {
     expect(screen.getByRole('textbox')).not.toHaveValue();
   });
 
-  it('should output error message if as and render props are given', () => {
-    jest.spyOn(console, 'warn').mockImplementation(() => {});
+  describe('error handling', () => {
+    it('should throw custom error if control is undefined in development environment', () => {
+      jest.spyOn(console, 'error').mockImplementation(() => {});
 
-    const env = process.env.NODE_ENV;
-    process.env.NODE_ENV = 'development';
+      const env = process.env.NODE_ENV;
+      process.env.NODE_ENV = 'development';
 
-    const Component = () => {
-      const { control } = useForm();
-      return (
-        <Controller
-          as={'input' as const}
-          render={() => <input />}
-          defaultValue=""
-          name="test"
-          control={control}
-        />
+      const Component = () => {
+        return <Controller as={'input' as const} name="test" defaultValue="" />;
+      };
+
+      expect(() => render(<Component />)).toThrow(
+        '📋 Controller is missing `control` prop.',
       );
-    };
 
-    render(<Component />);
+      process.env.NODE_ENV = env;
 
-    expect(console.warn).toBeCalledTimes(1);
+      // @ts-ignore
+      console.error.mockRestore();
+    });
 
-    process.env.NODE_ENV = env;
+    it('should throw TypeError if control is undefined in production environment', () => {
+      jest.spyOn(console, 'error').mockImplementation(() => {});
 
-    // @ts-ignore
-    console.warn.mockRestore();
-  });
+      const env = process.env.NODE_ENV;
+      process.env.NODE_ENV = 'production';
 
-  it('should warn the user when defaultValue is missing with useFieldArray', () => {
-    jest.spyOn(console, 'warn').mockImplementation(() => {});
+      const Component = () => {
+        return <Controller as={'input' as const} name="test" defaultValue="" />;
+      };
 
-    const env = process.env.NODE_ENV;
-    process.env.NODE_ENV = 'development';
-
-    const Component = () => {
-      const { control } = useForm({
-        defaultValues: {
-          test: [{ data: '' }],
-        },
-      });
-      const { fields } = useFieldArray({
-        control,
-        name: 'test',
-      });
-
-      return (
-        <form>
-          {fields.map(({ id }, index) => {
-            return (
-              <Controller
-                name={`test[${index}].data`}
-                control={control}
-                key={id}
-              />
-            );
-          })}
-        </form>
+      expect(() => render(<Component />)).toThrow(
+        "Cannot read property 'control' of null",
       );
-    };
 
-    render(<Component />);
+      process.env.NODE_ENV = env;
 
-    expect(console.warn).toBeCalledTimes(1);
+      // @ts-ignore
+      console.error.mockRestore();
+    });
 
-    process.env.NODE_ENV = env;
+    it('should output error message if name is empty string in development environment', () => {
+      jest.spyOn(console, 'warn').mockImplementation(() => {});
 
-    // @ts-ignore
-    console.warn.mockRestore();
+      const env = process.env.NODE_ENV;
+      process.env.NODE_ENV = 'development';
+
+      const Component = () => {
+        const { control } = useForm();
+        return (
+          <Controller
+            as={'input' as const}
+            name=""
+            control={control}
+            defaultValue=""
+          />
+        );
+      };
+
+      render(<Component />);
+
+      expect(console.warn).toBeCalledTimes(2);
+
+      process.env.NODE_ENV = env;
+
+      // @ts-ignore
+      console.warn.mockRestore();
+    });
+
+    it('should not output error message if name is empty string in production environment', () => {
+      jest.spyOn(console, 'warn').mockImplementation(() => {});
+
+      const env = process.env.NODE_ENV;
+      process.env.NODE_ENV = 'production';
+
+      const Component = () => {
+        const { control } = useForm();
+        return (
+          <Controller
+            as={'input' as const}
+            name=""
+            control={control}
+            defaultValue=""
+          />
+        );
+      };
+
+      render(<Component />);
+
+      expect(console.warn).not.toBeCalled();
+
+      process.env.NODE_ENV = env;
+
+      // @ts-ignore
+      console.warn.mockRestore();
+    });
+
+    it('should output error message if defaultValue is undefined in development environment', () => {
+      jest.spyOn(console, 'warn').mockImplementation(() => {});
+
+      const env = process.env.NODE_ENV;
+      process.env.NODE_ENV = 'development';
+
+      const Component = () => {
+        const { control } = useForm();
+        return (
+          <Controller as={'input' as const} name="test" control={control} />
+        );
+      };
+
+      render(<Component />);
+
+      expect(console.warn).toBeCalledTimes(1);
+
+      process.env.NODE_ENV = env;
+
+      // @ts-ignore
+      console.warn.mockRestore();
+    });
+
+    it('should not output error message if defaultValue is undefined in production environment', () => {
+      jest.spyOn(console, 'warn').mockImplementation(() => {});
+
+      const env = process.env.NODE_ENV;
+      process.env.NODE_ENV = 'production';
+
+      const Component = () => {
+        const { control } = useForm();
+        return (
+          <Controller as={'input' as const} name="test" control={control} />
+        );
+      };
+
+      render(<Component />);
+
+      expect(console.warn).not.toBeCalled();
+
+      process.env.NODE_ENV = env;
+
+      // @ts-ignore
+      console.warn.mockRestore();
+    });
+
+    it('should output error message if as and render props are given in development environment', () => {
+      jest.spyOn(console, 'warn').mockImplementation(() => {});
+
+      const env = process.env.NODE_ENV;
+      process.env.NODE_ENV = 'development';
+
+      const Component = () => {
+        const { control } = useForm();
+        return (
+          <Controller
+            as={'input' as const}
+            render={() => <input />}
+            defaultValue=""
+            name="test"
+            control={control}
+          />
+        );
+      };
+
+      render(<Component />);
+
+      expect(console.warn).toBeCalledTimes(1);
+
+      process.env.NODE_ENV = env;
+
+      // @ts-ignore
+      console.warn.mockRestore();
+    });
+
+    it('should not output error message if as and render props are given in production environment', () => {
+      jest.spyOn(console, 'warn').mockImplementation(() => {});
+
+      const env = process.env.NODE_ENV;
+      process.env.NODE_ENV = 'production';
+
+      const Component = () => {
+        const { control } = useForm();
+        return (
+          <Controller
+            as={'input' as const}
+            render={() => <input />}
+            defaultValue=""
+            name="test"
+            control={control}
+          />
+        );
+      };
+
+      render(<Component />);
+
+      expect(console.warn).not.toBeCalled();
+
+      process.env.NODE_ENV = env;
+
+      // @ts-ignore
+      console.warn.mockRestore();
+    });
+
+    it('should warn the user when defaultValue is missing with useFieldArray in development environment', () => {
+      jest.spyOn(console, 'warn').mockImplementation(() => {});
+
+      const env = process.env.NODE_ENV;
+      process.env.NODE_ENV = 'development';
+
+      const Component = () => {
+        const { control } = useForm({
+          defaultValues: {
+            test: [{ data: '' }],
+          },
+        });
+        const { fields } = useFieldArray({
+          control,
+          name: 'test',
+        });
+
+        return (
+          <form>
+            {fields.map(({ id }, index) => {
+              return (
+                <Controller
+                  name={`test[${index}].data`}
+                  control={control}
+                  key={id}
+                />
+              );
+            })}
+          </form>
+        );
+      };
+
+      render(<Component />);
+
+      expect(console.warn).toBeCalledTimes(1);
+
+      process.env.NODE_ENV = env;
+
+      // @ts-ignore
+      console.warn.mockRestore();
+    });
+
+    it('should not warn the user when defaultValue is missing with useFieldArray in production environment', () => {
+      jest.spyOn(console, 'warn').mockImplementation(() => {});
+
+      const env = process.env.NODE_ENV;
+      process.env.NODE_ENV = 'production';
+
+      const Component = () => {
+        const { control } = useForm({
+          defaultValues: {
+            test: [{ data: '' }],
+          },
+        });
+        const { fields } = useFieldArray({
+          control,
+          name: 'test',
+        });
+
+        return (
+          <form>
+            {fields.map(({ id }, index) => {
+              return (
+                <Controller
+                  name={`test[${index}].data`}
+                  control={control}
+                  key={id}
+                />
+              );
+            })}
+          </form>
+        );
+      };
+
+      render(<Component />);
+
+      expect(console.warn).not.toBeCalled();
+
+      process.env.NODE_ENV = env;
+
+      // @ts-ignore
+      console.warn.mockRestore();
+    });
   });
 });
