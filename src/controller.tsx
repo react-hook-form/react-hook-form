@@ -71,6 +71,12 @@ const Controller = <
     if (!control && !methods.control) {
       console.warn('📋 Controller is missing `control` prop.');
     }
+
+    if (!isNotFieldArray && isUndefined(defaultValue)) {
+      console.warn(
+        '📋 Controller is missing `defaultValue` prop when using `useFieldArray`.',
+      );
+    }
   }
 
   const shouldValidate = (isBlurEvent?: boolean) =>

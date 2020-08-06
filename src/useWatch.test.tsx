@@ -5,11 +5,10 @@ import {
   fireEvent,
   act as actComponent,
 } from '@testing-library/react';
-import { renderHook, act } from '@testing-library/react-hooks';
+import { renderHook } from '@testing-library/react-hooks';
 import { useForm } from './useForm';
 import { useWatch } from './useWatch';
 import * as generateId from './logic/generateId';
-import { reconfigureControl } from './__mocks__/reconfigureControl';
 import { FormProvider } from './useFormContext';
 import { useFieldArray } from './useFieldArray';
 import { Control } from './types';
@@ -45,120 +44,90 @@ describe('useWatch', () => {
     });
 
     it('should return default value in useWatch', () => {
-      const { result } = renderHook(() =>
-        useWatch({
-          control: reconfigureControl(),
+      const { result } = renderHook(() => {
+        const { control } = useForm();
+        return useWatch({
+          control,
           name: 'test',
           defaultValue: 'test',
-        }),
-      );
+        });
+      });
 
       expect(result.current).toEqual('test');
     });
 
     it('should return default value for single input', () => {
-      const { result } = renderHook(() =>
-        useWatch({
-          control: {
-            ...reconfigureControl(),
-            defaultValuesRef: {
-              current: {
-                test: 'test',
-                test1: 'test1',
-              },
-            },
+      const { result } = renderHook(() => {
+        const { control } = useForm({
+          defaultValues: {
+            test: 'test',
+            test1: 'test1',
           },
+        });
+        return useWatch({
+          control,
           name: 'test',
-        }),
-      );
+        });
+      });
 
       expect(result.current).toEqual('test');
     });
 
     it('should return default values for array of inputs', () => {
-      const { result } = renderHook(() =>
-        useWatch({
-          control: {
-            ...reconfigureControl(),
-            defaultValuesRef: {
-              current: {
-                test: 'test',
-                test1: 'test1',
-              },
-            },
+      const { result } = renderHook(() => {
+        const { control } = useForm({
+          defaultValues: {
+            test: 'test',
+            test1: 'test1',
           },
+        });
+        return useWatch({
+          control,
           name: ['test', 'test1'],
-        }),
-      );
+        });
+      });
 
       expect(result.current).toEqual({ test: 'test', test1: 'test1' });
     });
 
     it('should return default value when name is undefined', () => {
-      const { result } = renderHook(() =>
-        useWatch({
-          control: {
-            ...reconfigureControl(),
-            defaultValuesRef: {
-              current: {
-                test: 'test',
-                test1: 'test1',
-              },
-            },
+      const { result } = renderHook(() => {
+        const { control } = useForm({
+          defaultValues: {
+            test: 'test',
+            test1: 'test1',
           },
-        }),
-      );
+        });
+        return useWatch({
+          control,
+        });
+      });
 
       expect(result.current).toEqual({ test: 'test', test1: 'test1' });
     });
 
     it('should return empty object', () => {
-      const { result } = renderHook(() =>
-        useWatch({
-          control: reconfigureControl(),
+      const { result } = renderHook(() => {
+        const { control } = useForm();
+        return useWatch({
+          control,
           name: ['test'],
-        }),
-      );
+        });
+      });
 
       expect(result.current).toEqual({});
     });
 
     it('should return undefined', () => {
-      const { result } = renderHook(() =>
-        useWatch({
-          control: reconfigureControl(),
+      const { result } = renderHook(() => {
+        const { control } = useForm();
+        return useWatch({
+          control,
           name: 'test',
-        }),
-      );
-
-      expect(result.current).toBeUndefined();
-    });
-
-    it('should invoked generateId and set up watchFieldsHook and watchFieldsHookRender after mount', () => {
-      const watchFieldsHookRenderRef = {
-        current: {},
-      };
-      const watchFieldsHookRef = {
-        current: {},
-      };
-      renderHook(() =>
-        useWatch({
-          control: {
-            ...reconfigureControl(),
-            watchFieldsHookRenderRef,
-            watchFieldsHookRef,
-          },
-          name: 'test',
-          defaultValue: 'test',
-        }),
-      );
-
-      act(() => {
-        expect(Object.keys(watchFieldsHookRenderRef.current)).toEqual(['0']);
-        expect(watchFieldsHookRef.current).toEqual({
-          '0': new Set(),
         });
       });
+
+      expect(result.current).toBeUndefined();
     });
   });
 
@@ -276,42 +245,6 @@ describe('useWatch', () => {
 
       expect(watchedValue).toEqual({ test: undefined, test1: undefined });
     });
-
-    it('should return default value when value is undefined', () => {
-      const mockControl = reconfigureControl();
-      const { result } = renderHook(() =>
-        useWatch({
-          control: {
-            ...mockControl,
-            watchInternal: () => 'value',
-          },
-          name: 'test',
-          defaultValue: 'test',
-        }),
-      );
-
-      act(() => mockControl.watchFieldsHookRenderRef.current['0']());
-
-      expect(result.current).toEqual('value');
-    });
-
-    it('should return default value when value is undefined', () => {
-      const mockControl = reconfigureControl();
-      const { result } = renderHook(() =>
-        useWatch({
-          control: {
-            ...mockControl,
-            watchInternal: () => undefined,
-          },
-          name: 'test',
-          defaultValue: 'test',
-        }),
-      );
-
-      act(() => mockControl.watchFieldsHookRenderRef.current['0']());
-
-      expect(result.current).toEqual('test');
-    });
   });
 
   describe('reset', () => {
@@ -420,6 +353,7 @@ describe('useWatch', () => {
                   <input
                     type="input"
                     name={`test[${i}].firstName`}
+                    defaultValue={item.firstName}
                     ref={register()}
                   />
 

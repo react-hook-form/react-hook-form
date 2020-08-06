@@ -112,6 +112,7 @@ export const useFieldArray = <
     );
 
   allFields.current = fields;
+  fieldArrayNamesRef.current.add(name);
 
   const appendValueWithKey = (values: Partial<TFieldArrayValues>[]) =>
     values.map((value: Partial<TFieldArrayValues>) => appendId(value, keyName));
@@ -488,8 +489,6 @@ export const useFieldArray = <
 
   React.useEffect(() => {
     const resetFunctions = resetFieldArrayFunctionRef.current;
-    const fieldArrayNames = fieldArrayNamesRef.current;
-    fieldArrayNames.add(name);
     resetFunctions[name] = reset;
 
     set(fieldArrayDefaultValues.current, name, memoizedDefaultValues.current);
@@ -497,7 +496,7 @@ export const useFieldArray = <
     return () => {
       resetFields();
       delete resetFunctions[name];
-      fieldArrayNames.delete(name);
+      fieldArrayNamesRef.current.delete(name);
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
