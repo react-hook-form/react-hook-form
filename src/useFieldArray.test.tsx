@@ -13,6 +13,7 @@ import { DeepMap } from './types/utils';
 import * as generateId from './logic/generateId';
 import { Control, ValidationRules, FieldError } from './types';
 import { VALIDATION_MODE } from './constants';
+import { FormProvider } from './useFormContext';
 
 const mockGenerateId = () => {
   let id = 0;
@@ -58,6 +59,17 @@ describe('useFieldArray', () => {
         { test: '2', id: '1' },
       ]);
     });
+
+    it('should render with FormProvider', () => {
+      const Provider: React.FC = ({ children }) => {
+        const methods = useForm();
+        return <FormProvider {...methods}>{children}</FormProvider>;
+      };
+      const { result } = renderHook(() => useFieldArray({ name: 'test' }), {
+        wrapper: Provider,
+      });
+      expect(result.error).toBeUndefined();
+    });
   });
 
   describe('error handling', () => {
@@ -99,7 +111,7 @@ describe('useFieldArray', () => {
       process.env.NODE_ENV = env;
     });
 
-    it('should throw error when control is not defined in development mode', () => {
+    it('should throw custom error when control is not defined in development mode', () => {
       const env = process.env.NODE_ENV;
       process.env.NODE_ENV = 'development';
 
@@ -112,7 +124,7 @@ describe('useFieldArray', () => {
       process.env.NODE_ENV = env;
     });
 
-    it('should not throw error when control is not defined in production mode', () => {
+    it('should throw TypeError when control is not defined in production mode', () => {
       const env = process.env.NODE_ENV;
       process.env.NODE_ENV = 'production';
 
