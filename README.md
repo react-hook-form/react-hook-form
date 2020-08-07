@@ -67,13 +67,10 @@ function App() {
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
       <input name="firstname" ref={register} /> {/* register an input */}
-      
       <input name="lastname" ref={register({ required: true })} />
       {errors.lastname && 'Last name is required.'}
-      
       <input name="age" ref={register({ pattern: /\d+/ })} />
       {errors.age && 'Please enter number for age.'}
-      
       <input type="submit" />
     </form>
   );
@@ -103,7 +100,7 @@ Thanks goes to all our backers! [[Become a backer](https://opencollective.com/re
 Thanks goes to these wonderful organizations! [[Contribute](https://opencollective.com/react-hook-form/contribute)].
 
 <a href="https://github.com/react-hook-form/react-hook-form/graphs/contributors">
-    <img src="https://opencollective.com/react-hook-form/organizations.svg?width=950" />
+    <img src="https://opencollective.com/react-hook-form/organizations.svg?width=890" />
 </a>
 
 ## Contributors
@@ -111,5 +108,5 @@ Thanks goes to these wonderful organizations! [[Contribute](https://opencollecti
 Thanks goes to these wonderful people! [[Become a contributor](CONTRIBUTING.md)].
 
 <a href="https://github.com/react-hook-form/react-hook-form/graphs/contributors">
-    <img src="https://opencollective.com/react-hook-form/contributors.svg?width=950" />
+    <img src="https://opencollective.com/react-hook-form/contributors.svg?width=890" />
 </a>

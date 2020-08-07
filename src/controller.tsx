@@ -29,6 +29,11 @@ const Controller = <
   ...rest
 }: ControllerProps<TAs, TControl>) => {
   const methods = useFormContext();
+
+  if (process.env.NODE_ENV !== 'production' && !control && !methods) {
+    throw new Error('📋 Controller is missing `control` prop.');
+  }
+
   const {
     defaultValuesRef,
     setValue,
@@ -57,6 +62,24 @@ const Controller = <
   const onFocusRef = React.useRef(onFocus);
   const isSubmitted = isSubmittedRef.current;
 
+  if (process.env.NODE_ENV !== 'production') {
+    if (isUndefined(value)) {
+      console.warn(
+        '📋 Controller `defaultValue` or useForm `defaultValues` is missing.',
+      );
+    }
+
+    if (as && render) {
+      console.warn('📋 Should use either `as` or `render` prop.');
+    }
+
+    if (!isNotFieldArray && isUndefined(defaultValue)) {
+      console.warn(
+        '📋 Controller is missing `defaultValue` prop when using `useFieldArray`.',
+      );
+    }
+  }
+
   const shouldValidate = (isBlurEvent?: boolean) =>
     !skipValidation({
       isBlurEvent,
@@ -74,6 +97,10 @@ const Controller = <
   };
 
   const registerField = React.useCallback(() => {
+    if (process.env.NODE_ENV !== 'production' && !name) {
+      return console.warn('📋 Field is missing `name` prop.');
+    }
+
     if (fieldsRef.current[name]) {
       fieldsRef.current[name] = {
         ref: fieldsRef.current[name]!.ref,

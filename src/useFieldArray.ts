@@ -15,7 +15,6 @@ import swapArrayAt from './utils/swap';
 import prependAt from './utils/prepend';
 import isArray from './utils/isArray';
 import insertAt from './utils/insert';
-import isKey from './utils/isKey';
 import fillEmptyArray from './utils/fillEmptyArray';
 import { filterBooleanArray } from './utils/filterBooleanArray';
 import unique from './utils/unique';
@@ -50,6 +49,17 @@ export const useFieldArray = <
   keyName = 'id' as TKeyName,
 }: UseFieldArrayOptions<TKeyName, TControl>) => {
   const methods = useFormContext();
+
+  if (process.env.NODE_ENV !== 'production') {
+    if (!control && !methods) {
+      throw new Error('📋 useFieldArray is missing `control` prop.');
+    }
+
+    if (!name) {
+      console.warn('📋 useFieldArray is missing `name` attribute.');
+    }
+  }
+
   const focusIndexRef = React.useRef(-1);
   const {
     isWatchAllRef,
@@ -76,7 +86,7 @@ export const useFieldArray = <
 
   const getDefaultValues = () => [
     ...get(
-      fieldArrayDefaultValues.current[getFieldArrayParentName(name)]
+      get(fieldArrayDefaultValues.current, getFieldArrayParentName(name))
         ? fieldArrayDefaultValues.current
         : defaultValuesRef.current,
       name,
@@ -89,11 +99,9 @@ export const useFieldArray = <
   const [fields, setField] = React.useState<
     Partial<ArrayField<TFieldArrayValues, TKeyName>>[]
   >(mapIds(memoizedDefaultValues.current, keyName));
-  const [isDeleted, setIsDeleted] = React.useState(false);
   const allFields = React.useRef<
     Partial<ArrayField<TFieldArrayValues, TKeyName>>[]
   >(fields);
-  const isNameKey = isKey(name);
 
   const getCurrentFieldsValues = () =>
     get(getValues() || {}, name, allFields.current).map(
@@ -104,10 +112,7 @@ export const useFieldArray = <
     );
 
   allFields.current = fields;
-
-  if (isNameKey) {
-    fieldArrayDefaultValues.current[name] = memoizedDefaultValues.current;
-  }
+  fieldArrayNamesRef.current.add(name);
 
   const appendValueWithKey = (values: Partial<TFieldArrayValues>[]) =>
     values.map((value: Partial<TFieldArrayValues>) => appendId(value, keyName));
@@ -127,7 +132,8 @@ export const useFieldArray = <
   const shouldRenderFieldArray = (shouldRender?: boolean) => {
     if (
       readFormStateRef.current.dirtyFields ||
-      readFormStateRef.current.isDirty
+      readFormStateRef.current.isDirty ||
+      readFormStateRef.current.isValid
     ) {
       shouldRender = true;
     }
@@ -239,7 +245,6 @@ export const useFieldArray = <
     const fieldValues = getCurrentFieldsValues();
     setFieldAndValidState(removeArrayAt(fieldValues, index));
     resetFields(removeArrayAt(fieldValues, index));
-    setIsDeleted(true);
 
     if (isArray(get(errorsRef.current, name))) {
       set(
@@ -436,13 +441,11 @@ export const useFieldArray = <
   };
 
   React.useEffect(() => {
-    if (
-      isNameKey &&
-      isDeleted &&
-      fieldArrayDefaultValues.current[name] &&
-      fields.length < fieldArrayDefaultValues.current[name].length
-    ) {
-      fieldArrayDefaultValues.current[name].pop();
+    const defaultValues = get(fieldArrayDefaultValues.current, name);
+
+    if (defaultValues && fields.length < defaultValues.length) {
+      defaultValues.pop();
+      set(fieldArrayDefaultValues.current, name, defaultValues);
     }
 
     if (isWatchAllRef.current) {
@@ -478,8 +481,6 @@ export const useFieldArray = <
     fields,
     name,
     fieldArrayDefaultValues,
-    isDeleted,
-    isNameKey,
     reRender,
     fieldsRef,
     watchFieldsRef,
@@ -488,14 +489,14 @@ export const useFieldArray = <
 
   React.useEffect(() => {
     const resetFunctions = resetFieldArrayFunctionRef.current;
-    const fieldArrayNames = fieldArrayNamesRef.current;
-    fieldArrayNames.add(name);
     resetFunctions[name] = reset;
+
+    set(fieldArrayDefaultValues.current, name, memoizedDefaultValues.current);
 
     return () => {
       resetFields();
       delete resetFunctions[name];
-      fieldArrayNames.delete(name);
+      fieldArrayNamesRef.current.delete(name);
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);

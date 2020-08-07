@@ -751,9 +751,23 @@ export function useForm<
     ref: TFieldElement & Ref,
     validateOptions: ValidationRules | null = {},
   ): ((name: InternalFieldName<TFieldValues>) => void) | void {
-    if (process.env.NODE_ENV !== 'production' && !ref.name) {
-      // eslint-disable-next-line no-console
-      return console.warn('Missing name @', ref);
+    if (process.env.NODE_ENV !== 'production') {
+      if (!ref.name) {
+        return console.warn('📋 Field is missing `name` attribute:', ref);
+      }
+
+      if (
+        fieldArrayNamesRef.current.has(ref.name.split(/\[\d+\]$/)[0]) &&
+        !RegExp(
+          `^${ref.name.split(/\[\d+\]$/)[0]}[\\d+]\.\\w+`
+            .replace(/\[/g, '\\[')
+            .replace(/\]/g, '\\]'),
+        ).test(ref.name)
+      ) {
+        return console.warn(
+          '📋 `name` prop should be in object shape: name="test[index].name". https://react-hook-form.com/api#useFieldArray',
+        );
+      }
     }
 
     const { name, type, value } = ref;
@@ -1129,6 +1143,16 @@ export function useForm<
     formState: isProxyEnabled
       ? new Proxy<FormStateProxy<TFieldValues>>(formState, {
           get: (obj, prop: keyof FormStateProxy) => {
+            if (
+              process.env.NODE_ENV !== 'production' &&
+              prop === 'isValid' &&
+              isOnSubmit
+            ) {
+              console.warn(
+                '📋 `formState.isValid` is applicable with `onChange` or `onBlur` mode. https://react-hook-form.com/api#formState',
+              );
+            }
+
             if (prop in obj) {
               readFormStateRef.current[prop] = true;
               return obj[prop];

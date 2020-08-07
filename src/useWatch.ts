@@ -37,6 +37,17 @@ export function useWatch<TWatchFieldValues>({
   defaultValue,
 }: UseWatchOptions): TWatchFieldValues {
   const methods = useFormContext();
+
+  if (process.env.NODE_ENV !== 'production') {
+    if (!control && !methods) {
+      throw new Error('📋 useWatch is missing `control` prop.');
+    }
+
+    if (name === '') {
+      console.warn('📋 useWatch is missing `name` attribute.');
+    }
+  }
+
   const {
     watchFieldsHookRef,
     watchFieldsHookRenderRef,

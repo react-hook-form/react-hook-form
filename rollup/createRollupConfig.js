@@ -64,7 +64,7 @@ export function createRollupConfig(options) {
             drop_console: true,
           },
         }),
-      options.plugins,
+      ...(options.plugins || []),
     ],
   };
 }

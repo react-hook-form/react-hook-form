@@ -1,5 +1,11 @@
 # Changelog
 
+## [6.2.0] - 2020-07-30
+
+### Changed
+
+- revert `getValues` will return default values before inputs registration
+
 ## [6.1.0] - 2020-07-26
 
 ### Changed
