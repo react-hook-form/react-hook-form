@@ -1,4 +1,5 @@
 import { NestedValue } from './form';
+import { FileList } from './dom';
 
 export type Primitive = string | boolean | number | symbol | null | undefined;
 
