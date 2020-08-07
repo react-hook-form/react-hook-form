@@ -425,7 +425,7 @@ export function useForm<
     if (!isEmptyObject(watchFieldsHookRef.current)) {
       for (const key in watchFieldsHookRef.current) {
         if (
-          name === '' ||
+          !name ||
           watchFieldsHookRef.current[key].has(name) ||
           watchFieldsHookRef.current[key].has(getFieldArrayParentName(name)) ||
           !watchFieldsHookRef.current[key].size
@@ -649,7 +649,7 @@ export function useForm<
 
     set(errorsRef.current, name, {
       ...error,
-      ref: (fieldsRef.current[name] || {})!.ref,
+      ref: fieldsRef.current[name]!.ref,
     });
 
     reRender();
