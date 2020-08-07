@@ -29,6 +29,11 @@ const Controller = <
   ...rest
 }: ControllerProps<TAs, TControl>) => {
   const methods = useFormContext();
+
+  if (process.env.NODE_ENV !== 'production' && !control && !methods) {
+    throw new Error('📋 Controller is missing `control` prop.');
+  }
+
   const {
     defaultValuesRef,
     setValue,
@@ -66,10 +71,6 @@ const Controller = <
 
     if (as && render) {
       console.warn('📋 Should use either `as` or `render` prop.');
-    }
-
-    if (!control && !methods.control) {
-      console.warn('📋 Controller is missing `control` prop.');
     }
 
     if (!isNotFieldArray && isUndefined(defaultValue)) {
