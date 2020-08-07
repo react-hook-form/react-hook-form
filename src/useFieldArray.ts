@@ -86,7 +86,7 @@ export const useFieldArray = <
 
   const getDefaultValues = () => [
     ...get(
-      get(fieldArrayDefaultValues.current, getFieldArrayParentName(name))
+      fieldArrayDefaultValues.current[getFieldArrayParentName(name)]
         ? fieldArrayDefaultValues.current
         : defaultValuesRef.current,
       name,
