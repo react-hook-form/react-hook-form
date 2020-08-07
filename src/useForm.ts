@@ -929,7 +929,7 @@ export function useForm<
 
   const handleSubmit = React.useCallback(
     <TSubmitFieldValues extends FieldValues = TFieldValues>(
-      callback: SubmitHandler<TSubmitFieldValues>,
+      callback: SubmitHandler<TSubmitFieldValues, TFieldValues>,
     ) => async (e?: React.BaseSyntheticEvent): Promise<void> => {
       if (e && e.preventDefault) {
         e.preventDefault();
@@ -981,19 +981,26 @@ export function useForm<
           }
         }
 
-        if (
+        const dataIsValid = () =>
           isEmptyObject(fieldErrors) &&
           Object.keys(errorsRef.current).every((name) =>
             Object.keys(fieldsRef.current).includes(name),
-          )
-        ) {
+          );
+
+        if (dataIsValid()) {
           errorsRef.current = {};
           reRender();
-          await callback(
+          const result = await callback(
             fieldValues as UnpackNestedValue<TSubmitFieldValues>,
             e,
           );
-        } else {
+          if (result && result.errors) {
+            errorsRef.current = result.errors;
+            fieldErrors = result.errors;
+          }
+        }
+
+        if (!dataIsValid()) {
           errorsRef.current = {
             ...errorsRef.current,
             ...fieldErrors,

@@ -1461,6 +1461,26 @@ describe('useForm', () => {
       expect(callback).toBeCalled();
     });
 
+    it('should set errors when callback return errors', async () => {
+      const { result } = renderHook(() => useForm<{ test: string }>());
+      const callback = jest.fn().mockReturnValue({
+        errors: {
+          test: 'invalid',
+        },
+      });
+
+      await act(async () => {
+        await result.current.handleSubmit(callback)({
+          preventDefault: () => {},
+          persist: () => {},
+        } as React.SyntheticEvent);
+      });
+      expect(result.current.errors).toEqual({
+        test: 'invalid',
+      });
+      expect(result.current.formState.isValid).toBeFalsy();
+    });
+
     it('should pass default value', async () => {
       const { result } = renderHook(() =>
         useForm<{ test: string; deep: { nested: string; values: string } }>({
