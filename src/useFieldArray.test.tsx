@@ -3433,7 +3433,7 @@ describe('useFieldArray', () => {
   });
 
   describe('array of array fields', () => {
-    it('should render correct amount of child array fields', async () => {
+    it.only('should render correct amount of child array fields', async () => {
       const ChildComponent = ({
         index,
         control,
@@ -3454,6 +3454,7 @@ describe('useFieldArray', () => {
                 name={`nest.test[${index}].nestedArray[${i}].value`}
                 ref={control.register()}
                 defaultValue={item.value}
+                data-testid={`child-input-${i}`}
                 placeholder="type"
               />
             ))}
@@ -3516,6 +3517,9 @@ describe('useFieldArray', () => {
       fireEvent.click(screen.getByRole('button', { name: /append/i }));
 
       expect(screen.getAllByPlaceholderText('type')).toHaveLength(3);
+
+      // expect(screen.getByTestId('child-input-1')).toHaveValue('2');
+      // expect(screen.getByTestId('child-input-2')).toHaveValue('4');
     });
   });
 });

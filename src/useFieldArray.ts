@@ -491,7 +491,9 @@ export const useFieldArray = <
     const resetFunctions = resetFieldArrayFunctionRef.current;
     resetFunctions[name] = reset;
 
-    set(fieldArrayDefaultValues.current, name, memoizedDefaultValues.current);
+    if (name.includes('[')) {
+      set(fieldArrayDefaultValues.current, name, memoizedDefaultValues.current);
+    }
 
     return () => {
       resetFields();
