@@ -1084,11 +1084,11 @@ export function useForm<
 
     fieldsRef.current = {};
 
+    defaultValuesRef.current = values || { ...defaultValuesRef.current };
+
     if (values) {
       renderWatchedInputs('');
     }
-
-    defaultValuesRef.current = values || { ...defaultValuesRef.current };
 
     unmountFieldsStateRef.current = shouldUnregister ? {} : values || {};
 
