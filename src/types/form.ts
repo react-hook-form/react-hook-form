@@ -7,7 +7,13 @@ import {
   DeepMap,
   IsFlatObject,
 } from './utils';
-import { VoidFunction, FileList } from './dom';
+import {
+  VoidFunction,
+  FileList,
+  Node,
+  MutationObserverInit,
+  HTMLOptionsCollection,
+} from './dom';
 
 declare const $NestedValue: unique symbol;
 

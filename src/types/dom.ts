@@ -8,3 +8,9 @@ interface File extends Blob {
 export interface FileList {
   [Symbol.iterator](): IterableIterator<File>;
 }
+
+export type Node = any;
+
+export type MutationObserverInit = any;
+
+export type HTMLOptionsCollection = any;
