@@ -225,7 +225,7 @@ export function useForm<
         options.length > 1
           ? options.forEach(
               ({ ref: checkboxRef }) =>
-                (checkboxRef.checked = value.toString().includes(
+                (checkboxRef.checked = (value as boolean | string).toString().includes(
                   checkboxRef.value,
                 )),
             )
