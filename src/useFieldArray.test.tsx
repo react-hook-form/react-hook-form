@@ -412,6 +412,75 @@ describe('useFieldArray', () => {
 
       expect(result.current.fields).toEqual([{ id: '3', value: 'default' }]);
     });
+
+    it('should reset with async', async () => {
+      const Nested = ({
+        index,
+        control,
+      }: {
+        control: Control;
+        index: number;
+      }) => {
+        const { fields } = useFieldArray({
+          name: `test[${index}].nestedArray`,
+          control,
+        });
+
+        return (
+          <div>
+            {fields.map((item, i) => (
+              <input
+                key={item.id}
+                name={`test[${index}].nestedArray[${i}].value`}
+                ref={control.register()}
+                defaultValue={item.value}
+              />
+            ))}
+          </div>
+        );
+      };
+
+      const Component = () => {
+        const { register, reset, control } = useForm();
+        const { fields } = useFieldArray({
+          name: 'test',
+          control,
+        });
+
+        React.useEffect(() => {
+          setTimeout(() => {
+            reset({
+              test: [
+                { value: '1', nestedArray: [{ value: '2' }] },
+                { value: '3', nestedArray: [{ value: '4' }] },
+              ],
+            });
+          });
+        }, []);
+
+        return (
+          <form>
+            {fields.map((item, i) => (
+              <fieldset key={item.id}>
+                <input
+                  name={`test[${i}].value`}
+                  ref={register()}
+                  defaultValue={item.value}
+                />
+
+                <Nested control={control} index={i} />
+              </fieldset>
+            ))}
+          </form>
+        );
+      };
+
+      render(<Component />);
+
+      await waitFor(() =>
+        expect(screen.getAllByRole('textbox')).toHaveLength(4),
+      );
+    });
   });
 
   describe('with setValue', () => {
