@@ -54,9 +54,7 @@ const Controller = <
   const getInitialValue = () =>
     !isUndefined(get(unmountFieldsStateRef.current, name)) && isNotFieldArray
       ? unmountFieldsStateRef.current[name]
-      : isUndefined(defaultValue)
-      ? get(defaultValuesRef.current, name)
-      : defaultValue;
+      : get(defaultValuesRef.current, name) ?? defaultValue;
   const [value, setInputStateValue] = React.useState(getInitialValue());
   const valueRef = React.useRef(value);
   const onFocusRef = React.useRef(onFocus);
