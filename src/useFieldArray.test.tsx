@@ -3454,7 +3454,6 @@ describe('useFieldArray', () => {
                 name={`nest.test[${index}].nestedArray[${i}].value`}
                 ref={control.register()}
                 defaultValue={item.value}
-                data-testid={`child-input-${i}`}
               />
             ))}
           </div>
