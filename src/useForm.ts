@@ -1084,8 +1084,9 @@ export function useForm<
 
     fieldsRef.current = {};
 
+    defaultValuesRef.current = values || { ...defaultValuesRef.current };
+
     if (values) {
-      defaultValuesRef.current = values;
       renderWatchedInputs('');
     }
 
