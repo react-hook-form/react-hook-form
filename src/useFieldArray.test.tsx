@@ -13,6 +13,7 @@ import { DeepMap } from './types/utils';
 import * as generateId from './logic/generateId';
 import { Control, ValidationRules, FieldError } from './types';
 import { VALIDATION_MODE } from './constants';
+import { FormProvider } from './useFormContext';
 
 const mockGenerateId = () => {
   let id = 0;
@@ -57,6 +58,81 @@ describe('useFieldArray', () => {
         { test: '1', id: '0' },
         { test: '2', id: '1' },
       ]);
+    });
+
+    it('should render with FormProvider', () => {
+      const Provider: React.FC = ({ children }) => {
+        const methods = useForm();
+        return <FormProvider {...methods}>{children}</FormProvider>;
+      };
+      const { result } = renderHook(() => useFieldArray({ name: 'test' }), {
+        wrapper: Provider,
+      });
+      expect(result.error).toBeUndefined();
+    });
+  });
+
+  describe('error handling', () => {
+    it('should output error message when name is empty string in development mode', () => {
+      jest.spyOn(console, 'warn').mockImplementation(() => {});
+
+      const env = process.env.NODE_ENV;
+      process.env.NODE_ENV = 'development';
+
+      renderHook(() => {
+        const { control } = useForm();
+        useFieldArray({ control, name: '' });
+      });
+
+      expect(console.warn).toBeCalledTimes(1);
+
+      // @ts-ignore
+      console.warn.mockRestore();
+
+      process.env.NODE_ENV = env;
+    });
+
+    it('should not output error message when name is empty string in production mode', () => {
+      jest.spyOn(console, 'warn').mockImplementation(() => {});
+
+      const env = process.env.NODE_ENV;
+      process.env.NODE_ENV = 'production';
+
+      renderHook(() => {
+        const { control } = useForm();
+        useFieldArray({ control, name: '' });
+      });
+
+      expect(console.warn).not.toBeCalled();
+
+      // @ts-ignore
+      console.warn.mockRestore();
+
+      process.env.NODE_ENV = env;
+    });
+
+    it('should throw custom error when control is not defined in development mode', () => {
+      const env = process.env.NODE_ENV;
+      process.env.NODE_ENV = 'development';
+
+      const { result } = renderHook(() => useFieldArray({ name: 'test' }));
+
+      expect(result.error.message).toBe(
+        '📋 useFieldArray is missing `control` prop.',
+      );
+
+      process.env.NODE_ENV = env;
+    });
+
+    it('should throw TypeError when control is not defined in production mode', () => {
+      const env = process.env.NODE_ENV;
+      process.env.NODE_ENV = 'production';
+
+      const { result } = renderHook(() => useFieldArray({ name: 'test' }));
+
+      expect(result.error.name).toBe(new TypeError().name);
+
+      process.env.NODE_ENV = env;
     });
 
     it.each(['test', 'test[0].value'])(

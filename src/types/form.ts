@@ -101,11 +101,6 @@ export type UseFormOptions<
   criteriaMode: 'firstError' | 'all';
 }>;
 
-export type MutationWatcher = {
-  disconnect: () => void;
-  observe?: (target: Node, options?: MutationObserverInit) => void;
-};
-
 export type Message = string;
 
 export type ValidationValue = boolean | number | string | RegExp;
@@ -155,7 +150,7 @@ export type ErrorOption =
 
 export type Field = {
   ref: Ref;
-  mutationWatcher?: MutationWatcher;
+  mutationWatcher?: MutationObserver;
   options?: RadioOrCheckboxOption[];
 } & ValidationRules;
 
@@ -200,7 +195,7 @@ export type ReadFormState = { [K in keyof FormStateProxy]: boolean };
 
 export type RadioOrCheckboxOption = {
   ref: HTMLInputElement;
-  mutationWatcher?: MutationWatcher;
+  mutationWatcher?: MutationObserver;
 };
 
 export type CustomElement<TFieldValues extends FieldValues> = {

@@ -7,7 +7,5 @@ Warning: all of these interfaces are empty.
 If you want type definitions for various properties, you need to add `--lib DOM` (via command line or tsconfig.json).
 */
 
-interface Node {}
-interface MutationObserverInit {}
 interface HTMLOptionsCollection {}
 interface FileList {}
