@@ -223,11 +223,11 @@ export function useForm<
         );
       } else if (isCheckBoxInput(ref) && options) {
         options.length > 1
-          ? options.forEach(
+          ? options.forEachoptions.forEach(
               ({ ref: checkboxRef }) =>
-                (checkboxRef.checked = (value as boolean | string).toString().includes(
-                  checkboxRef.value,
-                )),
+                (checkboxRef.checked = (value as string | boolean)
+                  .toString()
+                  .includes(checkboxRef.value))
             )
           : (options[0].ref.checked = !!value);
       } else {
