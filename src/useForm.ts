@@ -223,7 +223,7 @@ export function useForm<
         );
       } else if (isCheckBoxInput(ref) && options) {
         options.length > 1
-          ? options.forEachoptions.forEach(
+          ? options.forEach(
               ({ ref: checkboxRef }) =>
                 (checkboxRef.checked = (value as string | boolean)
                   .toString()
