@@ -54,7 +54,9 @@ const Controller = <
   const getInitialValue = () =>
     !isUndefined(get(unmountFieldsStateRef.current, name)) && isNotFieldArray
       ? unmountFieldsStateRef.current[name]
-      : get(defaultValuesRef.current, name) ?? defaultValue;
+      : isUndefined(defaultValue)
+      ? get(defaultValuesRef.current, name)
+      : defaultValue;
   const [value, setInputStateValue] = React.useState(getInitialValue());
   const valueRef = React.useRef(value);
   const onFocusRef = React.useRef(onFocus);
@@ -117,7 +119,7 @@ const Controller = <
         }),
         rules,
       );
-      if (isNotFieldArray) {
+      if (isNotFieldArray && !get(defaultValuesRef.current, name)) {
         setInputStateValue(getInitialValue());
       }
     }
@@ -138,6 +140,9 @@ const Controller = <
   React.useEffect(() => {
     if (!fieldsRef.current[name]) {
       registerField();
+      if (isNotFieldArray) {
+        setInputStateValue(getInitialValue());
+      }
     }
   });
 
