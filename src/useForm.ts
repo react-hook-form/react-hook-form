@@ -227,7 +227,7 @@ export function useForm<
               ({ ref: checkboxRef }) =>
                 (checkboxRef.checked = (value as string | boolean)
                   .toString()
-                  .includes(checkboxRef.value))
+                  .includes(checkboxRef.value)),
             )
           : (options[0].ref.checked = !!value);
       } else {
