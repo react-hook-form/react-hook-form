@@ -205,7 +205,7 @@ export type CustomElement<TFieldValues extends FieldValues> = {
   checked?: boolean;
   options?: HTMLOptionsCollection;
   files?: FileList | null;
-  focus?: VoidFunction;
+  focus?: () => void;
 };
 
 export type HandleChange = (event: Event) => Promise<void | boolean>;
@@ -229,7 +229,7 @@ export type Control<TFieldValues extends FieldValues = FieldValues> = Pick<
   UseFormMethods<TFieldValues>,
   'register' | 'unregister' | 'setValue' | 'getValues' | 'trigger' | 'formState'
 > & {
-  reRender: VoidFunction;
+  reRender: () => void;
   removeFieldEventListener: (field: Field, forceDelete?: boolean) => void;
   mode: {
     readonly isOnBlur: boolean;
@@ -256,7 +256,7 @@ export type Control<TFieldValues extends FieldValues = FieldValues> = Pick<
   errorsRef: React.MutableRefObject<FieldErrors<TFieldValues>>;
   fieldsRef: React.MutableRefObject<FieldRefs<TFieldValues>>;
   resetFieldArrayFunctionRef: React.MutableRefObject<
-    Record<string, VoidFunction>
+    Record<string, () => void>
   >;
   unmountFieldsStateRef: Record<InternalFieldName<FieldValues>, any>;
   fieldArrayNamesRef: React.MutableRefObject<

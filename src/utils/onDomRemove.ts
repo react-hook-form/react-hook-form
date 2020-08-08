@@ -3,7 +3,7 @@ import isDetached from './isDetached';
 
 export default function onDomRemove(
   element: Ref,
-  onDetachCallback: VoidFunction,
+  onDetachCallback: () => void,
 ): MutationObserver {
   const observer = new MutationObserver((): void => {
     if (isDetached(element)) {
