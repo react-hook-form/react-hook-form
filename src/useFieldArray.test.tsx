@@ -3433,7 +3433,7 @@ describe('useFieldArray', () => {
   });
 
   describe('array of array fields', () => {
-    it.only('should render correct amount of child array fields', async () => {
+    it('should render correct amount of child array fields', async () => {
       const ChildComponent = ({
         index,
         control,
@@ -3455,7 +3455,6 @@ describe('useFieldArray', () => {
                 ref={control.register()}
                 defaultValue={item.value}
                 data-testid={`child-input-${i}`}
-                placeholder="type"
               />
             ))}
           </div>
@@ -3486,7 +3485,6 @@ describe('useFieldArray', () => {
                   name={`nest.test[${i}].value`}
                   ref={register()}
                   defaultValue={item.value}
-                  placeholder="type"
                 />
 
                 <ChildComponent control={control} index={i} />
@@ -3510,16 +3508,15 @@ describe('useFieldArray', () => {
 
       render(<Component />);
 
+      expect(screen.getAllByRole('textbox')).toHaveLength(4);
+
       fireEvent.click(screen.getByTestId('1'));
 
-      expect(screen.getAllByPlaceholderText('type')).toHaveLength(2);
+      expect(screen.getAllByRole('textbox')).toHaveLength(2);
 
       fireEvent.click(screen.getByRole('button', { name: /append/i }));
 
-      expect(screen.getAllByPlaceholderText('type')).toHaveLength(3);
-
-      // expect(screen.getByTestId('child-input-1')).toHaveValue('2');
-      // expect(screen.getByTestId('child-input-2')).toHaveValue('4');
+      expect(screen.getAllByRole('textbox')).toHaveLength(3);
     });
   });
 });

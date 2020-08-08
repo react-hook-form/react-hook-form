@@ -85,13 +85,9 @@ export const useFieldArray = <
   let shouldRender;
 
   const getDefaultValues = () => [
-    ...get(
-      fieldArrayDefaultValues.current[getFieldArrayParentName(name)]
-        ? fieldArrayDefaultValues.current
-        : defaultValuesRef.current,
-      name,
-      [],
-    ),
+    ...(get(fieldArrayDefaultValues.current, name) ||
+      get(defaultValuesRef.current, name) ||
+      []),
   ];
   const memoizedDefaultValues = React.useRef<Partial<TFieldArrayValues>[]>(
     getDefaultValues(),
@@ -102,6 +98,7 @@ export const useFieldArray = <
   const allFields = React.useRef<
     Partial<ArrayField<TFieldArrayValues, TKeyName>>[]
   >(fields);
+  const rootParentName = getFieldArrayParentName(name);
 
   const getCurrentFieldsValues = () =>
     get(getValues() || {}, name, allFields.current).map(
@@ -113,6 +110,14 @@ export const useFieldArray = <
 
   allFields.current = fields;
   fieldArrayNamesRef.current.add(name);
+
+  if (!get(fieldArrayDefaultValues.current, name) && rootParentName) {
+    set(
+      fieldArrayDefaultValues.current,
+      rootParentName,
+      get(defaultValuesRef.current, rootParentName),
+    );
+  }
 
   const appendValueWithKey = (values: Partial<TFieldArrayValues>[]) =>
     values.map((value: Partial<TFieldArrayValues>) => appendId(value, keyName));
@@ -490,10 +495,6 @@ export const useFieldArray = <
   React.useEffect(() => {
     const resetFunctions = resetFieldArrayFunctionRef.current;
     resetFunctions[name] = reset;
-
-    if (name.includes('[')) {
-      set(fieldArrayDefaultValues.current, name, memoizedDefaultValues.current);
-    }
 
     return () => {
       resetFields();
