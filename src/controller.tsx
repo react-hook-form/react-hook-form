@@ -119,6 +119,9 @@ const Controller = <
         }),
         rules,
       );
+      if (isNotFieldArray) {
+        setInputStateValue(getInitialValue());
+      }
     }
   }, [fieldsRef, rules, name, onFocusRef, register]);
 
@@ -137,9 +140,6 @@ const Controller = <
   React.useEffect(() => {
     if (!fieldsRef.current[name]) {
       registerField();
-      if (isNotFieldArray) {
-        setInputStateValue(getInitialValue());
-      }
     }
   });
 
