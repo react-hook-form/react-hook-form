@@ -74,8 +74,8 @@ describe('basic form validation', () => {
     cy.get('#renderCount').contains('32');
   });
 
-  it('should validate the form with onTouch mode', () => {
-    cy.visit('http://localhost:3000/basic/onTouch');
+  it('should validate the form with onTouched mode', () => {
+    cy.visit('http://localhost:3000/basic/onTouched');
     cy.get('input[name="nestItem.nest1"]').focus();
     cy.get('input[name="nestItem.nest1"]').type('test');
     cy.get('input[name="nestItem.nest1"]').clear();

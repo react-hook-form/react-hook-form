@@ -43,7 +43,7 @@ describe('validationModeChecker', () => {
       isOnTouch: false,
     });
 
-    expect(validationModeChecker(VALIDATION_MODE.onTouch)).toEqual({
+    expect(validationModeChecker(VALIDATION_MODE.onTouched)).toEqual({
       isOnSubmit: false,
       isOnBlur: false,
       isOnChange: false,

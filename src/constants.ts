@@ -10,7 +10,7 @@ export const VALIDATION_MODE: ValidationMode = {
   onBlur: 'onBlur',
   onChange: 'onChange',
   onSubmit: 'onSubmit',
-  onTouch: 'onTouch',
+  onTouched: 'onTouched',
   all: 'all',
 };
 

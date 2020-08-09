@@ -2833,11 +2833,11 @@ describe('useForm', () => {
     });
   });
 
-  describe('mode with onTouch', () => {
+  describe('mode with onTouched', () => {
     it('should validate form only when input is been touched', async () => {
       const Component = () => {
         const { register, errors } = useForm({
-          mode: 'onTouch',
+          mode: 'onTouched',
         });
 
         return (

@@ -14,5 +14,5 @@ export default (
   isOnBlur: mode === VALIDATION_MODE.onBlur,
   isOnChange: mode === VALIDATION_MODE.onChange,
   isOnAll: mode === VALIDATION_MODE.all,
-  isOnTouch: mode === VALIDATION_MODE.onTouch,
+  isOnTouch: mode === VALIDATION_MODE.onTouched,
 });
