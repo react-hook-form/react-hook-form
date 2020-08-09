@@ -225,8 +225,9 @@ export function useForm<
         options.length > 1
           ? options.forEach(
               ({ ref: checkboxRef }) =>
-                (checkboxRef.checked = String(value as string | boolean)
-                  .includes(checkboxRef.value)),
+                (checkboxRef.checked = String(
+                  value as string | boolean,
+                ).includes(checkboxRef.value)),
             )
           : (options[0].ref.checked = !!value);
       } else {
