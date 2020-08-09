@@ -2832,4 +2832,55 @@ describe('useForm', () => {
       expect(resolverData).toEqual({ test: 'value' });
     });
   });
+
+  describe('mode with onTouch', () => {
+    it('should validate form only when input is been touched', async () => {
+      const Component = () => {
+        const { register, errors } = useForm({
+          mode: 'onTouch',
+        });
+
+        return (
+          <>
+            <input
+              type="text"
+              name="test"
+              ref={register({ required: 'This is required.' })}
+            />
+            {errors.test?.message}
+          </>
+        );
+      };
+
+      render(<Component />);
+
+      screen.getByRole('textbox').focus();
+
+      await actComponent(async () => {
+        await fireEvent.blur(screen.getByRole('textbox'));
+      });
+
+      expect(screen.getByText('This is required.')).toBeInTheDocument();
+
+      await actComponent(async () => {
+        await fireEvent.input(screen.getByRole('textbox'), {
+          target: {
+            value: 'test',
+          },
+        });
+      });
+
+      expect(screen.queryByText('This is required.')).not.toBeInTheDocument();
+
+      await actComponent(async () => {
+        fireEvent.input(screen.getByRole('textbox'), {
+          target: {
+            value: '',
+          },
+        });
+      });
+
+      expect(screen.getByText('This is required.')).toBeInTheDocument();
+    });
+  });
 });
