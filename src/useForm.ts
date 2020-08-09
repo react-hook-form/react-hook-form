@@ -931,8 +931,7 @@ export function useForm<
   const handleSubmit = React.useCallback(
     <TSubmitFieldValues extends FieldValues = TFieldValues>(
       callback: SubmitHandler<TSubmitFieldValues>,
-      // TODO: Add business logics to use `onInvalidCallback`
-      _onError?: SubmitErrorHandler<TSubmitFieldValues>,
+      onError?: SubmitErrorHandler<TFieldValues>,
     ) => async (e?: React.BaseSyntheticEvent): Promise<void> => {
       if (e && e.preventDefault) {
         e.preventDefault();
@@ -1001,6 +1000,9 @@ export function useForm<
             ...errorsRef.current,
             ...fieldErrors,
           };
+          if (onError) {
+            await onError(fieldErrors);
+          }
           if (shouldFocusError) {
             focusOnErrorField(fieldsRef.current, fieldErrors);
           }
