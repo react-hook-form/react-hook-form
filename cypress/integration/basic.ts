@@ -1,3 +1,5 @@
+/// <reference types="cypress" />
+
 describe('basic form validation', () => {
   it('should validate the form and reset the form', () => {
     cy.visit('http://localhost:3000/basic/onSubmit');
@@ -72,6 +74,17 @@ describe('basic form validation', () => {
     cy.get('input[name="minDate"]').should('not.have.value');
     cy.get('input[name="maxDate"]').should('not.have.value');
     cy.get('#renderCount').contains('32');
+  });
+
+  it('should invoke the onError callback when the validation failed', () => {
+    cy.visit('http://localhost:3000/form-submit-with-on-error');
+
+    cy.get('input[name=firstName]').should('exist');
+    cy.get('button#submit').click();
+
+    cy.get('input[name=firstName]').should('not.exist');
+    cy.get('#isValid').contains('false');
+    cy.get('#invalid-message').contains(/invoked onerror callback/i);
   });
 
   it('should validate the form with onBlur mode and reset the form', () => {
