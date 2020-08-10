@@ -1750,8 +1750,8 @@ describe('useForm', () => {
     });
   });
 
-  describe('handleSubmit with onError callback', () => {
-    it('should invoke the callback when validation pass', async () => {
+  describe('handleSubmit with onInvalid callback', () => {
+    it('should invoke the onValid callback when validation pass', async () => {
       const { result } = renderHook(() => useForm());
       const onValidCallback = jest.fn();
       const onInvalidCallback = jest.fn();
@@ -1769,7 +1769,7 @@ describe('useForm', () => {
       expect(onInvalidCallback).not.toBeCalledTimes(1);
     });
 
-    it('should invoke the onError callback when validation failed', async () => {
+    it('should invoke the onInvalid callback when validation failed', async () => {
       const { result } = renderHook(() => useForm());
       result.current.register(
         { value: '', type: 'input', name: 'test' },
