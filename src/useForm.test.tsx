@@ -2880,7 +2880,7 @@ describe('useForm', () => {
         });
       });
 
-      expect(screen.getByText('This is required.')).toBeInTheDocument();
+      expect(screen.queryByText('This is required.')).toBeInTheDocument();
     });
   });
 });
