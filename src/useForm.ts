@@ -1001,7 +1001,7 @@ export function useForm<
             ...fieldErrors,
           };
           if (onInvalid) {
-            await onInvalid(fieldErrors);
+            await onInvalid(fieldErrors, e);
           }
           if (shouldFocusError) {
             focusOnErrorField(fieldsRef.current, fieldErrors);
