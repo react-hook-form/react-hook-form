@@ -157,6 +157,16 @@ export function useForm<
     [],
   );
 
+  const updateFormState = React.useCallback(
+    (state) =>
+      !isUnMount.current &&
+      setFormState({
+        ...formState,
+        ...state,
+      }),
+    [formState],
+  );
+
   const shouldRenderBaseOnError = React.useCallback(
     (
       name: InternalFieldName<TFieldValues>,
@@ -193,8 +203,7 @@ export function useForm<
 
       if (shouldReRender && !isNullOrUndefined(shouldRender)) {
         if (!resolver) {
-          setFormState({
-            ...formState,
+          updateFormState({
             isValid:
               validFieldsRef.current.size >=
                 fieldsWithValidationRef.current.size &&
@@ -283,8 +292,7 @@ export function useForm<
           )) ||
         !isEmptyObject(dirtyFieldsCopy);
 
-      setFormState({
-        ...formState,
+      updateFormState({
         isDirty: dirty,
         dirtyFields: dirtyFieldsCopy,
       });
@@ -349,8 +357,7 @@ export function useForm<
           })
           .every(Boolean);
 
-        setFormState({
-          ...formState,
+        updateFormState({
           isValid: isInputsValid,
         });
 
@@ -538,8 +545,7 @@ export function useForm<
               : {}) as FlatFieldErrors<TFieldValues>;
 
             if (previousFormIsValid !== currentIsValid) {
-              setFormState({
-                ...formState,
+              updateFormState({
                 isValid: currentIsValid,
               });
             }
@@ -602,8 +608,7 @@ export function useForm<
       const isValid = isEmptyObject(errors);
 
       if (previousFormIsValid !== isValid) {
-        setFormState({
-          ...formState,
+        updateFormState({
           isValid,
         });
       }
@@ -652,8 +657,7 @@ export function useForm<
             const touchedCopy = formState.touched;
             unset(touchedCopy, field.ref.name);
 
-            setFormState({
-              ...formState,
+            updateFormState({
               isDirty: !isEmptyObject(dirtyFieldsCopy),
               dirtyFields: dirtyFieldsCopy,
               touched: touchedCopy,
@@ -689,8 +693,7 @@ export function useForm<
       ref: (fieldsRef.current[name] || {})!.ref,
     });
 
-    setFormState({
-      ...formState,
+    updateFormState({
       isValid: false,
     });
   }
@@ -900,8 +903,7 @@ export function useForm<
             validFieldsRef.current.add(name);
             reRender();
           } else if (formState.isValid) {
-            setFormState({
-              ...formState,
+            updateFormState({
               isValid: false,
             });
           }
@@ -981,8 +983,7 @@ export function useForm<
       );
 
       if (readFormStateRef.current.isSubmitting) {
-        setFormState({
-          ...formState,
+        updateFormState({
           isSubmitting: true,
         });
       }
@@ -1044,8 +1045,7 @@ export function useForm<
           }
         }
       } finally {
-        setFormState({
-          ...formState,
+        updateFormState({
           isSubmitted: true,
           isSubmitting: false,
           submitCount: formState.submitCount + 1,
@@ -1080,8 +1080,7 @@ export function useForm<
     watchFieldsRef.current = new Set();
     isWatchAllRef.current = false;
 
-    setFormState({
-      ...formState,
+    updateFormState({
       isDirty: isDirty ? formState.isDirty : false,
       isSubmitted: isSubmitted ? formState.isSubmitted : false,
       submitCount: submitCount ? formState.submitCount : 0,
