@@ -2860,7 +2860,7 @@ describe('useForm', () => {
         await fireEvent.blur(screen.getByRole('textbox'));
       });
 
-      expect(screen.getByText('This is required.')).toBeInTheDocument();
+      expect(screen.queryByText('This is required.')).toBeInTheDocument();
 
       await actComponent(async () => {
         await fireEvent.input(screen.getByRole('textbox'), {
