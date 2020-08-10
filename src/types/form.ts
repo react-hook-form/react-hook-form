@@ -254,9 +254,9 @@ export type Control<TFieldValues extends FieldValues = FieldValues> = Pick<
   fieldArrayDefaultValues: React.MutableRefObject<
     Record<FieldArrayName, any[]>
   >;
-  dirtyFieldsRef: React.MutableRefObject<Dirtied<TFieldValues>>;
+  formState: FormState<FieldValues>;
+  setFormState: React.Dispatch<React.SetStateAction<FormState<TFieldValues>>>;
   validateSchemaIsValid?: (fieldsValues: any) => void;
-  touchedFieldsRef: React.MutableRefObject<Touched<TFieldValues>>;
   watchFieldsRef: React.MutableRefObject<Set<InternalFieldName<TFieldValues>>>;
   isWatchAllRef: React.MutableRefObject<boolean>;
   validFieldsRef: React.MutableRefObject<Set<InternalFieldName<TFieldValues>>>;
@@ -272,8 +272,6 @@ export type Control<TFieldValues extends FieldValues = FieldValues> = Pick<
   fieldArrayNamesRef: React.MutableRefObject<
     Set<InternalFieldName<FieldValues>>
   >;
-  isDirtyRef: React.MutableRefObject<boolean>;
-  isSubmittedRef: React.MutableRefObject<boolean>;
   readFormStateRef: React.MutableRefObject<
     { [k in keyof FormStateProxy<TFieldValues>]: boolean }
   >;

@@ -70,9 +70,9 @@ export const useFieldArray = <
     defaultValuesRef,
     removeFieldEventListener,
     errorsRef,
-    dirtyFieldsRef,
-    isDirtyRef,
-    touchedFieldsRef,
+    formState,
+    formState: { touched, dirtyFields },
+    setFormState,
     readFormStateRef,
     watchFieldsRef,
     validFieldsRef,
@@ -150,12 +150,15 @@ export const useFieldArray = <
       readFormStateRef.current.isDirty ||
       readFormStateRef.current.dirtyFields
     ) {
-      isDirtyRef.current =
-        isUndefined(flagOrFields) ||
-        getIsFieldsDifferent(
-          flagOrFields.map(({ [keyName]: omitted, ...rest } = {}) => rest),
-          get(defaultValuesRef.current, name, []),
-        );
+      setFormState({
+        ...formState,
+        isDirty:
+          isUndefined(flagOrFields) ||
+          getIsFieldsDifferent(
+            flagOrFields.map(({ [keyName]: omitted, ...rest } = {}) => rest),
+            get(defaultValuesRef.current, name, []),
+          ),
+      });
     }
 
     for (const key in fieldsRef.current) {
@@ -181,11 +184,14 @@ export const useFieldArray = <
       readFormStateRef.current.dirtyFields ||
       readFormStateRef.current.isDirty
     ) {
-      dirtyFieldsRef.current[name] = [
-        ...(dirtyFieldsRef.current[name] || fillEmptyArray(fields.slice(0, 1))),
-        ...filterBooleanArray(value),
-      ];
-      isDirtyRef.current = true;
+      setFormState({
+        ...formState,
+        dirtyFields: [
+          ...(dirtyFields[name] || fillEmptyArray(fields.slice(0, 1))),
+          ...filterBooleanArray(value),
+        ],
+        isDirty: true,
+      });
       shouldRender = true;
     }
 
@@ -216,23 +222,24 @@ export const useFieldArray = <
       );
     }
 
-    if (readFormStateRef.current.touched && touchedFieldsRef.current[name]) {
-      touchedFieldsRef.current[name] = prependAt(
-        touchedFieldsRef.current[name],
-        emptyArray,
-      );
-      shouldRender = true;
+    if (readFormStateRef.current.touched && touched[name]) {
+      setFormState({
+        ...formState,
+        touched: prependAt(touched[name], emptyArray),
+      });
     }
 
     if (
       readFormStateRef.current.dirtyFields ||
       readFormStateRef.current.isDirty
     ) {
-      dirtyFieldsRef.current[name] = prependAt(
-        dirtyFieldsRef.current[name] || [],
-        filterBooleanArray(value),
-      );
-      shouldRender = true;
+      setFormState({
+        ...formState,
+        dirtyFields: prependAt(
+          dirtyFields[name] || [],
+          filterBooleanArray(value),
+        ),
+      });
     }
 
     shouldRenderFieldArray(shouldRender);
@@ -258,29 +265,30 @@ export const useFieldArray = <
       }
     }
 
-    if (readFormStateRef.current.touched && touchedFieldsRef.current[name]) {
-      touchedFieldsRef.current[name] = removeArrayAt(
-        touchedFieldsRef.current[name],
-        index,
-      );
-      shouldRender = true;
+    if (readFormStateRef.current.touched && touched[name]) {
+      setFormState({
+        ...formState,
+        touched: removeArrayAt(touched[name], index),
+      });
     }
 
     if (
       (readFormStateRef.current.dirtyFields ||
         readFormStateRef.current.isDirty) &&
-      dirtyFieldsRef.current[name]
+      dirtyFields[name]
     ) {
-      dirtyFieldsRef.current[name] = removeArrayAt(
-        dirtyFieldsRef.current[name],
-        index,
-      );
+      const dirtyFieldsTemp = removeArrayAt(dirtyFields[name], index);
 
-      if (!dirtyFieldsRef.current[name].length) {
-        delete dirtyFieldsRef.current[name];
+      // @ts-ignore
+      if (!dirtyFieldsTemp[name].length) {
+        // @ts-ignore
+        delete dirtyFieldsTemp[name];
       }
 
-      shouldRender = true;
+      setFormState({
+        ...formState,
+        dirtyFields: dirtyFieldsTemp,
+      });
     }
 
     if (readFormStateRef.current.isValid && !validateSchemaIsValid) {
@@ -350,26 +358,26 @@ export const useFieldArray = <
       );
     }
 
-    if (readFormStateRef.current.touched && touchedFieldsRef.current[name]) {
-      touchedFieldsRef.current[name] = insertAt(
-        touchedFieldsRef.current[name],
-        index,
-        emptyArray,
-      );
-      shouldRender = true;
+    if (readFormStateRef.current.touched && touched[name]) {
+      setFormState({
+        ...formState,
+        touched: insertAt(touched[name], index, emptyArray),
+      });
     }
 
     if (
       (readFormStateRef.current.dirtyFields ||
         readFormStateRef.current.isDirty) &&
-      dirtyFieldsRef.current[name]
+      dirtyFields[name]
     ) {
-      dirtyFieldsRef.current[name] = insertAt(
-        dirtyFieldsRef.current[name],
-        index,
-        filterBooleanArray(value),
-      );
-      shouldRender = true;
+      setFormState({
+        ...formState,
+        dirtyFields: insertAt(
+          dirtyFields[name],
+          index,
+          filterBooleanArray(value),
+        ),
+      });
     }
 
     shouldRenderFieldArray(shouldRender);
@@ -389,18 +397,24 @@ export const useFieldArray = <
       swapArrayAt(get(errorsRef.current, name), indexA, indexB);
     }
 
-    if (readFormStateRef.current.touched && touchedFieldsRef.current[name]) {
-      swapArrayAt(touchedFieldsRef.current[name], indexA, indexB);
-      shouldRender = true;
+    if (readFormStateRef.current.touched && touched[name]) {
+      swapArrayAt(touched[name], indexA, indexB);
+      setFormState({
+        ...formState,
+        touched,
+      });
     }
 
     if (
       (readFormStateRef.current.dirtyFields ||
         readFormStateRef.current.isDirty) &&
-      dirtyFieldsRef.current[name]
+      dirtyFields[name]
     ) {
-      swapArrayAt(dirtyFieldsRef.current[name], indexA, indexB);
-      shouldRender = true;
+      swapArrayAt(dirtyFields[name], indexA, indexB);
+      setFormState({
+        ...formState,
+        dirtyFields,
+      });
     }
 
     shouldRenderFieldArray(shouldRender);
@@ -417,18 +431,24 @@ export const useFieldArray = <
       moveArrayAt(get(errorsRef.current, name), from, to);
     }
 
-    if (readFormStateRef.current.touched && touchedFieldsRef.current[name]) {
-      moveArrayAt(touchedFieldsRef.current[name], from, to);
-      shouldRender = true;
+    if (readFormStateRef.current.touched && touched[name]) {
+      moveArrayAt(touched[name], from, to);
+      setFormState({
+        ...formState,
+        touched,
+      });
     }
 
     if (
       (readFormStateRef.current.dirtyFields ||
         readFormStateRef.current.isDirty) &&
-      dirtyFieldsRef.current[name]
+      dirtyFields[name]
     ) {
-      moveArrayAt(dirtyFieldsRef.current[name], from, to);
-      shouldRender = true;
+      moveArrayAt(dirtyFields[name], from, to);
+      setFormState({
+        ...formState,
+        dirtyFields,
+      });
     }
 
     shouldRenderFieldArray(shouldRender);

@@ -42,10 +42,10 @@ const Controller = <
     trigger,
     mode,
     reValidateMode: { isReValidateOnBlur, isReValidateOnChange },
-    isSubmittedRef,
-    touchedFieldsRef,
+    formState,
+    formState: { isSubmitted, touched },
+    setFormState,
     readFormStateRef,
-    reRender,
     fieldsRef,
     fieldArrayNamesRef,
     unmountFieldsStateRef,
@@ -60,7 +60,6 @@ const Controller = <
   const [value, setInputStateValue] = React.useState(getInitialValue());
   const valueRef = React.useRef(value);
   const onFocusRef = React.useRef(onFocus);
-  const isSubmitted = isSubmittedRef.current;
 
   if (process.env.NODE_ENV !== 'production') {
     if (isUndefined(value)) {
@@ -144,12 +143,12 @@ const Controller = <
   });
 
   const onBlur = () => {
-    if (
-      readFormStateRef.current.touched &&
-      !get(touchedFieldsRef.current, name)
-    ) {
-      set(touchedFieldsRef.current, name, true);
-      reRender();
+    if (readFormStateRef.current.touched && !get(touched, name)) {
+      set(touched, name, true);
+      setFormState({
+        ...formState,
+        touched,
+      });
     }
 
     if (shouldValidate(true)) {

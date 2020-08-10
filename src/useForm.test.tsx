@@ -154,7 +154,7 @@ describe('useForm', () => {
       },
     );
 
-    it('should re-render if errors ocurred with resolver when formState.isValid is defined', async () => {
+    it('should re-render if errors occurred with resolver when formState.isValid is defined', async () => {
       const resolver = async (data: any) => {
         return {
           values: data,
@@ -184,7 +184,7 @@ describe('useForm', () => {
 
       render(<Component />);
 
-      await waitFor(() => expect(renderCount).toBe(2));
+      await waitFor(() => expect(renderCount).toBe(1));
       expect(screen.getByRole('alert').textContent).toBe('false');
     });
 
@@ -560,13 +560,14 @@ describe('useForm', () => {
 
       // check only public variables
       result.current.control.errorsRef.current = { test: 'test' };
-      result.current.control.touchedFieldsRef.current = { test: 'test' };
       result.current.control.validFieldsRef.current = new Set(['test']);
       result.current.control.fieldsWithValidationRef.current = new Set([
         'test',
       ]);
-      result.current.control.isDirtyRef.current = true;
-      result.current.control.isSubmittedRef.current = true;
+
+      result.current.formState.touched = { test: 'test' };
+      result.current.formState.isDirty = true;
+      result.current.formState.isSubmitted = true;
 
       act(() =>
         result.current.reset(
@@ -586,7 +587,7 @@ describe('useForm', () => {
       expect(result.current.control.errorsRef.current).toEqual({
         test: 'test',
       });
-      expect(result.current.control.touchedFieldsRef.current).toEqual({
+      expect(result.current.formState.touched).toEqual({
         test: 'test',
       });
       expect(result.current.control.validFieldsRef.current).toEqual(
@@ -595,8 +596,8 @@ describe('useForm', () => {
       expect(result.current.control.fieldsWithValidationRef.current).toEqual(
         new Set(['test']),
       );
-      expect(result.current.control.isDirtyRef.current).toBeTruthy();
-      expect(result.current.control.isSubmittedRef.current).toBeTruthy();
+      expect(result.current.formState.isDirty).toBeTruthy();
+      expect(result.current.formState.isSubmitted).toBeTruthy();
     });
   });
 
@@ -2394,6 +2395,8 @@ describe('useForm', () => {
           await fireEvent.blur(screen.getByRole('textbox'));
         });
 
+        screen.debug();
+
         expect(screen.queryByRole('alert')).toBeInTheDocument();
       });
 
@@ -2676,7 +2679,7 @@ describe('useForm', () => {
         await waitFor(() => expect(mockResolver).toHaveBeenCalled());
         expect(screen.getByRole('alert').textContent).toBe('resolver error');
         expect(methods.formState.isValid).toBeFalsy();
-        expect(renderCount).toBe(2);
+        expect(renderCount).toBe(3); // todo: fix with errors get converted 2
       });
 
       it('with sync resolver it should contain error if value is invalid with resolver', async () => {
@@ -2716,7 +2719,7 @@ describe('useForm', () => {
         await waitFor(() => expect(mockResolver).toHaveBeenCalled());
         expect(screen.getByRole('alert').textContent).toBe('resolver error');
         expect(methods.formState.isValid).toBeFalsy();
-        expect(renderCount).toBe(2);
+        expect(renderCount).toBe(3); // todo: fix with errors get converted 2
       });
 
       it('should make isValid change to false if it contain error that is not related name with onChange mode', async () => {

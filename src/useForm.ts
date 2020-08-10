@@ -132,7 +132,7 @@ export function useForm<
     submitCount: 0,
     touched: {},
     isSubmitting: false,
-    isValid: true,
+    isValid: !isOnSubmit,
   });
   const readFormStateRef = React.useRef<ReadFormState>({
     isDirty: !isProxyEnabled,
@@ -143,11 +143,14 @@ export function useForm<
     isSubmitting: !isProxyEnabled,
     isValid: !isProxyEnabled,
   });
+  const formStateRef = React.useRef(formState);
   const {
     current: { isOnBlur: isReValidateOnBlur, isOnChange: isReValidateOnChange },
   } = React.useRef(modeChecker(reValidateMode));
+
   contextRef.current = context;
   resolverRef.current = resolver;
+  formStateRef.current = formState;
 
   const reRender = React.useCallback(
     () => !isUnMount.current && render({}),
@@ -189,6 +192,17 @@ export function useForm<
       }
 
       if (shouldReRender && !isNullOrUndefined(shouldRender)) {
+        if (!resolver) {
+          setFormState({
+            ...formState,
+            isValid:
+              validFieldsRef.current.size >=
+                fieldsWithValidationRef.current.size &&
+              isEmptyObject(errorsRef.current),
+          });
+          return false;
+        }
+
         reRender();
         return true;
       }
@@ -253,7 +267,7 @@ export function useForm<
       const isDirtyFieldExist = get(formState.dirtyFields, name);
       const isFieldArray = isNameInFieldArray(fieldArrayNamesRef.current, name);
       const previousIsDirty = formState.isDirty;
-      const dirtyFieldsCopy = { ...formState.dirtyFields };
+      const dirtyFieldsCopy = formState.dirtyFields;
 
       if (isFieldDirty) {
         set(dirtyFieldsCopy, name, true);
@@ -491,7 +505,7 @@ export function useForm<
               isBlurEvent,
               isReValidateOnChange,
               isReValidateOnBlur,
-              isSubmitted: formState.isSubmitted,
+              isSubmitted: formStateRef.current.isSubmitted,
               ...modeRef.current,
             });
           let shouldRender = setDirty(name) || isFieldWatched(name);
@@ -524,7 +538,10 @@ export function useForm<
               : {}) as FlatFieldErrors<TFieldValues>;
 
             if (previousFormIsValid !== currentIsValid) {
-              shouldRender = true;
+              setFormState({
+                ...formState,
+                isValid: currentIsValid,
+              });
             }
           } else {
             error = await validateField<TFieldValues>(
@@ -630,9 +647,9 @@ export function useForm<
             readFormStateRef.current.touched ||
             readFormStateRef.current.isDirty
           ) {
-            const dirtyFieldsCopy = { ...formState.dirtyFields };
+            const dirtyFieldsCopy = formState.dirtyFields;
             unset(dirtyFieldsCopy, field.ref.name);
-            const touchedCopy = { ...formState.touched };
+            const touchedCopy = formState.touched;
             unset(touchedCopy, field.ref.name);
 
             setFormState({
@@ -1205,15 +1222,12 @@ export function useForm<
     defaultValuesRef,
     unmountFieldsStateRef,
     setFormState,
-    // @ts-ignore
-    formState,
     ...(resolver ? { validateSchemaIsValid: validateResolver } : {}),
     ...commonProps,
   };
 
   return {
     watch,
-    // @ts-ignore
     control,
     handleSubmit,
     reset: React.useCallback(reset, []),
