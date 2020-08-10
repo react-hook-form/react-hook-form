@@ -71,18 +71,9 @@ describe('basic form validation', () => {
     cy.get('input[name="pattern"]').should('not.have.value');
     cy.get('input[name="minDate"]').should('not.have.value');
     cy.get('input[name="maxDate"]').should('not.have.value');
-    cy.get('#renderCount').contains('32');
-  });
+    cy.get('#renderCount').contains('33');
 
-  it('should invoke the onError callback when the validation failed', () => {
-    cy.visit('http://localhost:3000/form-submit-with-on-error');
-
-    cy.get('input[name=firstName]').should('exist');
-    cy.get('button#submit').click();
-
-    cy.get('input[name=firstName]').should('not.exist');
-    cy.get('#isValid').contains('false');
-    cy.get('#invalid-message').contains(/invoked onerror callback/i);
+    cy.get('#on-invalid-called-times').contains('1');
   });
 
   it('should validate the form with onBlur mode and reset the form', () => {

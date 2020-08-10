@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
 
 let renderCounter = 0;
@@ -27,12 +27,14 @@ const Basic: React.FC = (props: any) => {
   }>({
     mode: props.match.params.mode,
   });
-  const onSubmit = () => {};
+  const [onInvalidCalledTimes, setOnInvalidCalledTimes] = useState(0);
+  const onValid = () => {};
+  const onInvalid = () => setOnInvalidCalledTimes((prevCount) => prevCount + 1);
 
   renderCounter++;
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)}>
+    <form onSubmit={handleSubmit(onValid, onInvalid)}>
       <input
         name="nestItem.nest1"
         placeholder="nest.nest1"
@@ -165,6 +167,9 @@ const Basic: React.FC = (props: any) => {
         Reset
       </button>
       <div id="renderCount">{renderCounter}</div>
+      <div id="on-invalid-called-times">
+        onInvalid callback called {onInvalidCalledTimes} times
+      </div>
     </form>
   );
 };
