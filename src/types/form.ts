@@ -225,6 +225,16 @@ export type UseFieldArrayOptions<
   control?: TControl;
 };
 
+export type FormState<TFieldValues> = {
+  isDirty: boolean;
+  dirtyFields: Touched<TFieldValues>;
+  isSubmitted: boolean;
+  submitCount: number;
+  touched: Touched<TFieldValues>;
+  isSubmitting: boolean;
+  isValid: boolean;
+};
+
 export type Control<TFieldValues extends FieldValues = FieldValues> = Pick<
   UseFormMethods<TFieldValues>,
   'register' | 'unregister' | 'setValue' | 'getValues' | 'trigger' | 'formState'
