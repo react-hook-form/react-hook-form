@@ -930,8 +930,8 @@ export function useForm<
 
   const handleSubmit = React.useCallback(
     <TSubmitFieldValues extends FieldValues = TFieldValues>(
-      callback: SubmitHandler<TSubmitFieldValues>,
-      onError?: SubmitErrorHandler<TFieldValues>,
+      onValid: SubmitHandler<TSubmitFieldValues>,
+      onInvalid?: SubmitErrorHandler<TFieldValues>,
     ) => async (e?: React.BaseSyntheticEvent): Promise<void> => {
       if (e && e.preventDefault) {
         e.preventDefault();
@@ -991,7 +991,7 @@ export function useForm<
         ) {
           errorsRef.current = {};
           reRender();
-          await callback(
+          await onValid(
             fieldValues as UnpackNestedValue<TSubmitFieldValues>,
             e,
           );
@@ -1000,8 +1000,8 @@ export function useForm<
             ...errorsRef.current,
             ...fieldErrors,
           };
-          if (onError) {
-            await onError(fieldErrors);
+          if (onInvalid) {
+            await onInvalid(fieldErrors);
           }
           if (shouldFocusError) {
             focusOnErrorField(fieldsRef.current, fieldErrors);
