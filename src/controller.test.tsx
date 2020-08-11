@@ -69,7 +69,7 @@ describe('Controller', () => {
     expect(() => render(<Component />)).not.toThrow();
   });
 
-  it('should reset value', () => {
+  it('should reset value', async () => {
     const Component = () => {
       const { reset, control } = useForm();
 
@@ -81,7 +81,9 @@ describe('Controller', () => {
             as={<input />}
             control={control}
           />
-          <button onClick={() => reset()}>reset</button>
+          <button type="button" onClick={() => reset()}>
+            reset
+          </button>
         </>
       );
     };

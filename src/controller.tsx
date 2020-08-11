@@ -118,6 +118,9 @@ const Controller = <
         }),
         rules,
       );
+      if (isNotFieldArray && !get(defaultValuesRef.current, name)) {
+        setInputStateValue(getInitialValue());
+      }
     }
   }, [fieldsRef, rules, name, onFocusRef, register]);
 

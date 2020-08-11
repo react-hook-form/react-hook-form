@@ -55,7 +55,7 @@ describe('Controller with React Native', () => {
 
     fireEvent.press(getByText('reset'));
 
-    expect(input.props.value).toBe('test');
+    expect(input.props.value).toBe('');
     expect(queryByText('required')).toBeNull();
   });
 });

@@ -412,6 +412,75 @@ describe('useFieldArray', () => {
 
       expect(result.current.fields).toEqual([{ id: '3', value: 'default' }]);
     });
+
+    it('should reset with async', async () => {
+      const Nested = ({
+        index,
+        control,
+      }: {
+        control: Control;
+        index: number;
+      }) => {
+        const { fields } = useFieldArray({
+          name: `test[${index}].nestedArray`,
+          control,
+        });
+
+        return (
+          <div>
+            {fields.map((item, i) => (
+              <input
+                key={item.id}
+                name={`test[${index}].nestedArray[${i}].value`}
+                ref={control.register()}
+                defaultValue={item.value}
+              />
+            ))}
+          </div>
+        );
+      };
+
+      const Component = () => {
+        const { register, reset, control } = useForm();
+        const { fields } = useFieldArray({
+          name: 'test',
+          control,
+        });
+
+        React.useEffect(() => {
+          setTimeout(() => {
+            reset({
+              test: [
+                { value: '1', nestedArray: [{ value: '2' }] },
+                { value: '3', nestedArray: [{ value: '4' }] },
+              ],
+            });
+          });
+        }, []);
+
+        return (
+          <form>
+            {fields.map((item, i) => (
+              <fieldset key={item.id}>
+                <input
+                  name={`test[${i}].value`}
+                  ref={register()}
+                  defaultValue={item.value}
+                />
+
+                <Nested control={control} index={i} />
+              </fieldset>
+            ))}
+          </form>
+        );
+      };
+
+      render(<Component />);
+
+      await waitFor(() =>
+        expect(screen.getAllByRole('textbox')).toHaveLength(4),
+      );
+    });
   });
 
   describe('with setValue', () => {
@@ -2043,6 +2112,43 @@ describe('useFieldArray', () => {
       HTMLInputElement.prototype.removeEventListener.mockRestore();
     });
 
+    it('should remove dirty fields with nested field inputs', () => {
+      const { result } = renderHook(() => {
+        const { register, formState, control } = useForm({
+          defaultValues: {
+            test: {
+              data: [{ value: 'default' }],
+            },
+          },
+        });
+        const { fields, append, remove } = useFieldArray({
+          control,
+          name: 'test.data',
+        });
+
+        return { register, formState, fields, append, remove };
+      });
+
+      result.current.formState.dirtyFields as Record<string, any>;
+      result.current.formState.isDirty;
+
+      act(() => {
+        result.current.append({ value: 'test' });
+      });
+
+      expect(result.current.formState.isDirty).toBeTruthy();
+      expect(result.current.formState.dirtyFields).toEqual({
+        test: { data: [undefined, { value: true }] },
+      });
+
+      act(() => {
+        result.current.remove(1);
+      });
+
+      expect(result.current.formState.isDirty).toBeFalsy();
+      expect(result.current.formState.dirtyFields).toEqual({});
+    });
+
     describe('with resolver', () => {
       it('should invoke resolver when formState.isValid true', async () => {
         const resolver = jest.fn().mockReturnValue({});
@@ -3454,7 +3560,6 @@ describe('useFieldArray', () => {
                 name={`nest.test[${index}].nestedArray[${i}].value`}
                 ref={control.register()}
                 defaultValue={item.value}
-                placeholder="type"
               />
             ))}
           </div>
@@ -3485,7 +3590,6 @@ describe('useFieldArray', () => {
                   name={`nest.test[${i}].value`}
                   ref={register()}
                   defaultValue={item.value}
-                  placeholder="type"
                 />
 
                 <ChildComponent control={control} index={i} />
@@ -3509,13 +3613,15 @@ describe('useFieldArray', () => {
 
       render(<Component />);
 
+      expect(screen.getAllByRole('textbox')).toHaveLength(4);
+
       fireEvent.click(screen.getByTestId('1'));
 
-      expect(screen.getAllByPlaceholderText('type')).toHaveLength(2);
+      expect(screen.getAllByRole('textbox')).toHaveLength(2);
 
       fireEvent.click(screen.getByRole('button', { name: /append/i }));
 
-      expect(screen.getAllByPlaceholderText('type')).toHaveLength(3);
+      expect(screen.getAllByRole('textbox')).toHaveLength(3);
     });
   });
 });
