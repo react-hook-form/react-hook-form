@@ -70,9 +70,8 @@ export const useFieldArray = <
     defaultValuesRef,
     removeFieldEventListener,
     errorsRef,
-    formState,
-    formState: { touched, dirtyFields },
-    setFormState,
+    formState: { dirtyFields, touched },
+    updateFormState,
     readFormStateRef,
     watchFieldsRef,
     validFieldsRef,
@@ -85,13 +84,9 @@ export const useFieldArray = <
   let shouldRender;
 
   const getDefaultValues = () => [
-    ...get(
-      get(fieldArrayDefaultValues.current, getFieldArrayParentName(name))
-        ? fieldArrayDefaultValues.current
-        : defaultValuesRef.current,
-      name,
-      [],
-    ),
+    ...(get(fieldArrayDefaultValues.current, name) ||
+      get(defaultValuesRef.current, name) ||
+      []),
   ];
   const memoizedDefaultValues = React.useRef<Partial<TFieldArrayValues>[]>(
     getDefaultValues(),
@@ -102,6 +97,7 @@ export const useFieldArray = <
   const allFields = React.useRef<
     Partial<ArrayField<TFieldArrayValues, TKeyName>>[]
   >(fields);
+  const rootParentName = getFieldArrayParentName(name);
 
   const getCurrentFieldsValues = () =>
     get(getValues() || {}, name, allFields.current).map(
@@ -113,6 +109,14 @@ export const useFieldArray = <
 
   allFields.current = fields;
   fieldArrayNamesRef.current.add(name);
+
+  if (!get(fieldArrayDefaultValues.current, name) && rootParentName) {
+    set(
+      fieldArrayDefaultValues.current,
+      rootParentName,
+      get(defaultValuesRef.current, rootParentName),
+    );
+  }
 
   const appendValueWithKey = (values: Partial<TFieldArrayValues>[]) =>
     values.map((value: Partial<TFieldArrayValues>) => appendId(value, keyName));
@@ -150,8 +154,7 @@ export const useFieldArray = <
       readFormStateRef.current.isDirty ||
       readFormStateRef.current.dirtyFields
     ) {
-      setFormState({
-        ...formState,
+      updateFormState({
         isDirty:
           isUndefined(flagOrFields) ||
           getIsFieldsDifferent(
@@ -184,13 +187,13 @@ export const useFieldArray = <
       readFormStateRef.current.dirtyFields ||
       readFormStateRef.current.isDirty
     ) {
-      setFormState({
-        ...formState,
-        dirtyFields: [
-          ...(dirtyFields[name] || fillEmptyArray(fields.slice(0, 1))),
-          ...filterBooleanArray(value),
-        ],
+      set(dirtyFields, name, [
+        ...(get(dirtyFields, name) || fillEmptyArray(fields.slice(0, 1))),
+        ...filterBooleanArray(value),
+      ]);
+      updateFormState({
         isDirty: true,
+        dirtyFields,
       });
       shouldRender = true;
     }
@@ -216,16 +219,17 @@ export const useFieldArray = <
     resetFields();
 
     if (isArray(get(errorsRef.current, name))) {
-      errorsRef.current[name] = prependAt(
-        get(errorsRef.current, name),
-        emptyArray,
+      set(
+        errorsRef.current,
+        name,
+        prependAt(get(errorsRef.current, name), emptyArray),
       );
     }
 
-    if (readFormStateRef.current.touched && touched[name]) {
-      setFormState({
-        ...formState,
-        touched: prependAt(touched[name], emptyArray),
+    if (readFormStateRef.current.touched && get(touched, name)) {
+      set(touched, name, prependAt(get(touched, name), emptyArray));
+      updateFormState({
+        touched,
       });
     }
 
@@ -233,12 +237,13 @@ export const useFieldArray = <
       readFormStateRef.current.dirtyFields ||
       readFormStateRef.current.isDirty
     ) {
-      setFormState({
-        ...formState,
-        dirtyFields: prependAt(
-          dirtyFields[name] || [],
-          filterBooleanArray(value),
-        ),
+      set(
+        dirtyFields,
+        name,
+        prependAt(get(dirtyFields, name) || [], filterBooleanArray(value)),
+      );
+      updateFormState({
+        dirtyFields,
       });
     }
 
@@ -265,29 +270,25 @@ export const useFieldArray = <
       }
     }
 
-    if (readFormStateRef.current.touched && touched[name]) {
-      setFormState({
-        ...formState,
-        touched: removeArrayAt(touched[name], index),
+    if (readFormStateRef.current.touched && get(touched, name)) {
+      updateFormState({
+        touched: set(touched, name, removeArrayAt(get(touched, name), index)),
       });
     }
 
     if (
       (readFormStateRef.current.dirtyFields ||
         readFormStateRef.current.isDirty) &&
-      dirtyFields[name]
+      get(dirtyFields, name)
     ) {
-      const dirtyFieldsTemp = removeArrayAt(dirtyFields[name], index);
+      set(dirtyFields, name, removeArrayAt(get(dirtyFields, name), index));
 
-      // @ts-ignore
-      if (!dirtyFieldsTemp[name].length) {
-        // @ts-ignore
-        delete dirtyFieldsTemp[name];
+      if (!unique(get(dirtyFields, name, [])).length) {
+        unset(dirtyFields, name);
       }
 
-      setFormState({
-        ...formState,
-        dirtyFields: dirtyFieldsTemp,
+      updateFormState({
+        dirtyFields,
       });
     }
 
@@ -351,32 +352,33 @@ export const useFieldArray = <
     resetFields(insertAt(fieldValues, index));
 
     if (isArray(get(errorsRef.current, name))) {
-      errorsRef.current[name] = insertAt(
-        get(errorsRef.current, name),
-        index,
-        emptyArray,
+      set(
+        errorsRef.current,
+        name,
+        insertAt(get(errorsRef.current, name), index, emptyArray),
       );
     }
 
-    if (readFormStateRef.current.touched && touched[name]) {
-      setFormState({
-        ...formState,
-        touched: insertAt(touched[name], index, emptyArray),
+    if (readFormStateRef.current.touched && get(touched, name)) {
+      set(touched, name, insertAt(get(touched, name), index, emptyArray));
+
+      updateFormState({
+        touched,
       });
     }
 
     if (
       (readFormStateRef.current.dirtyFields ||
         readFormStateRef.current.isDirty) &&
-      dirtyFields[name]
+      get(dirtyFields, name)
     ) {
-      setFormState({
-        ...formState,
-        dirtyFields: insertAt(
-          dirtyFields[name],
-          index,
-          filterBooleanArray(value),
-        ),
+      set(
+        dirtyFields,
+        name,
+        insertAt(get(dirtyFields, name), index, filterBooleanArray(value)),
+      );
+      updateFormState({
+        dirtyFields,
       });
     }
 
@@ -397,10 +399,9 @@ export const useFieldArray = <
       swapArrayAt(get(errorsRef.current, name), indexA, indexB);
     }
 
-    if (readFormStateRef.current.touched && touched[name]) {
-      swapArrayAt(touched[name], indexA, indexB);
-      setFormState({
-        ...formState,
+    if (readFormStateRef.current.touched && get(touched, name)) {
+      swapArrayAt(get(touched, name), indexA, indexB);
+      updateFormState({
         touched,
       });
     }
@@ -408,11 +409,10 @@ export const useFieldArray = <
     if (
       (readFormStateRef.current.dirtyFields ||
         readFormStateRef.current.isDirty) &&
-      dirtyFields[name]
+      get(dirtyFields, name)
     ) {
-      swapArrayAt(dirtyFields[name], indexA, indexB);
-      setFormState({
-        ...formState,
+      swapArrayAt(get(dirtyFields, name), indexA, indexB);
+      updateFormState({
         dirtyFields,
       });
     }
@@ -431,10 +431,9 @@ export const useFieldArray = <
       moveArrayAt(get(errorsRef.current, name), from, to);
     }
 
-    if (readFormStateRef.current.touched && touched[name]) {
-      moveArrayAt(touched[name], from, to);
-      setFormState({
-        ...formState,
+    if (readFormStateRef.current.touched && get(touched, name)) {
+      moveArrayAt(get(touched, name), from, to);
+      updateFormState({
         touched,
       });
     }
@@ -442,11 +441,10 @@ export const useFieldArray = <
     if (
       (readFormStateRef.current.dirtyFields ||
         readFormStateRef.current.isDirty) &&
-      dirtyFields[name]
+      get(dirtyFields, name)
     ) {
-      moveArrayAt(dirtyFields[name], from, to);
-      setFormState({
-        ...formState,
+      moveArrayAt(get(dirtyFields, name), from, to);
+      updateFormState({
         dirtyFields,
       });
     }
@@ -510,8 +508,6 @@ export const useFieldArray = <
   React.useEffect(() => {
     const resetFunctions = resetFieldArrayFunctionRef.current;
     resetFunctions[name] = reset;
-
-    set(fieldArrayDefaultValues.current, name, memoizedDefaultValues.current);
 
     return () => {
       resetFields();

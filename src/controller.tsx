@@ -42,9 +42,8 @@ const Controller = <
     trigger,
     mode,
     reValidateMode: { isReValidateOnBlur, isReValidateOnChange },
-    formState,
     formState: { isSubmitted, touched },
-    setFormState,
+    updateFormState,
     readFormStateRef,
     fieldsRef,
     fieldArrayNamesRef,
@@ -148,8 +147,7 @@ const Controller = <
   const onBlur = () => {
     if (readFormStateRef.current.touched && !get(touched, name)) {
       set(touched, name, true);
-      setFormState({
-        ...formState,
+      updateFormState({
         touched,
       });
     }
