@@ -12,12 +12,11 @@ export default function deepEqual(object1: any = [], object2: any = []) {
   for (const key of keys1) {
     const val1 = object1[key];
     const val2 = object2[key];
-    const areObjects =
-      (isObject(val1) || isArray(val1)) && (isObject(val2) || isArray(val2));
 
     if (
-      (areObjects && !deepEqual(val1, val2)) ||
-      (!areObjects && val1 !== val2)
+      (isObject(val1) || isArray(val1)) && (isObject(val2) || isArray(val2))
+        ? !deepEqual(val1, val2)
+        : val1 !== val2
     ) {
       return false;
     }
