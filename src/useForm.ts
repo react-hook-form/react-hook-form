@@ -558,6 +558,10 @@ export function useForm<
                 isValid: isEmptyObject(errors),
               });
             }
+
+            // if (!shouldRenderBaseOnError(name, error, undefined, isValid) && shouldRender) {
+            //   reRender();
+            // }
           } else {
             error = await validateField<TFieldValues>(
               fieldsRef,
@@ -565,13 +569,13 @@ export function useForm<
               field,
               unmountFieldsStateRef,
             );
+
+            if (!shouldRenderBaseOnError(name, error) && shouldRender) {
+              reRender();
+            }
           }
 
           renderWatchedInputs(name);
-
-          if (!shouldRenderBaseOnError(name, error) && shouldRender) {
-            reRender();
-          }
         }
       };
 
@@ -656,6 +660,13 @@ export function useForm<
             data.current.delete(field.ref.name),
           );
 
+          const errorsCopy = formState.errors;
+          unset(errorsCopy, field.ref.name);
+
+          updateFormState({
+            errors: errorsCopy,
+          });
+
           if (
             readFormStateRef.current.isValid ||
             readFormStateRef.current.touched ||
@@ -665,13 +676,10 @@ export function useForm<
             unset(dirtyFieldsCopy, field.ref.name);
             const touchedCopy = formState.touched;
             unset(touchedCopy, field.ref.name);
-            const errorsCopy = formState.errors;
-            unset(errorsCopy, field.ref.name);
 
             updateFormState({
               isDirty: !isEmptyObject(dirtyFieldsCopy),
               dirtyFields: dirtyFieldsCopy,
-              errors: errorsCopy,
               touched: touchedCopy,
             });
 
