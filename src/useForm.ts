@@ -87,7 +87,6 @@ export function useForm<
   criteriaMode,
 }: UseFormOptions<TFieldValues, TContext> = {}): UseFormMethods<TFieldValues> {
   const fieldsRef = React.useRef<FieldRefs<TFieldValues>>({});
-  const errorsRef = React.useRef<FieldErrors<TFieldValues>>({});
   const fieldArrayDefaultValues = React.useRef<Record<string, unknown[]>>({});
   const watchFieldsRef = React.useRef(
     new Set<InternalFieldName<TFieldValues>>(),
@@ -133,6 +132,7 @@ export function useForm<
     touched: {},
     isSubmitting: false,
     isValid: !isOnSubmit,
+    errors: {},
   });
   const readFormStateRef = React.useRef<ReadFormState>({
     isDirty: !isProxyEnabled,
@@ -142,6 +142,7 @@ export function useForm<
     touched: !isProxyEnabled,
     isSubmitting: !isProxyEnabled,
     isValid: !isProxyEnabled,
+    errors: !isProxyEnabled,
   });
   const formStateRef = React.useRef(formState);
   const {
@@ -158,8 +159,9 @@ export function useForm<
   );
 
   const updateFormState = React.useCallback(
-    (state) =>
+    (state: any) =>
       !isUnMount.current &&
+      // @ts-ignore
       setFormState({
         ...formState,
         ...state,
@@ -176,13 +178,13 @@ export function useForm<
       let shouldReRender =
         shouldRender ||
         shouldRenderBasedOnError<TFieldValues>({
-          errors: errorsRef.current,
+          errors: formState.errors,
           error,
           name,
           validFields: validFieldsRef.current,
           fieldsWithValidation: fieldsWithValidationRef.current,
         });
-      const previousError = get(errorsRef.current, name);
+      const previousError = get(formState.errors, name);
 
       if (isEmptyObject(error)) {
         if (fieldsWithValidationRef.current.has(name) || resolverRef.current) {
@@ -190,7 +192,10 @@ export function useForm<
           shouldReRender = shouldReRender || previousError;
         }
 
-        errorsRef.current = unset(errorsRef.current, name);
+        unset(formState.errors, name);
+        updateFormState({
+          error: formState.errors,
+        });
       } else {
         validFieldsRef.current.delete(name);
         shouldReRender =
@@ -198,7 +203,10 @@ export function useForm<
           !previousError ||
           !isSameError(previousError, error[name] as FieldError);
 
-        set(errorsRef.current, name, error[name]);
+        set(formState.errors, name, error[name]);
+        updateFormState({
+          errors: formState.errors,
+        });
       }
 
       if (shouldReRender && !isNullOrUndefined(shouldRender)) {
@@ -207,7 +215,7 @@ export function useForm<
             isValid:
               validFieldsRef.current.size >=
                 fieldsWithValidationRef.current.size &&
-              isEmptyObject(errorsRef.current),
+              isEmptyObject(formState.errors),
           });
           return false;
         }
@@ -348,9 +356,9 @@ export function useForm<
             const error = get(errors, name);
 
             if (error) {
-              set(errorsRef.current, name, error);
+              set(formState.errors, name, error);
             } else {
-              unset(errorsRef.current, name);
+              unset(formState.errors, name);
             }
 
             return !error;
@@ -359,6 +367,7 @@ export function useForm<
 
         updateFormState({
           isValid: isInputsValid,
+          errors: formState.errors,
         });
 
         return isInputsValid;
@@ -546,7 +555,7 @@ export function useForm<
 
             if (previousFormIsValid !== currentIsValid) {
               updateFormState({
-                isValid: currentIsValid,
+                isValid: isEmptyObject(errors),
               });
             }
           } else {
@@ -639,7 +648,7 @@ export function useForm<
         removeFieldEventListener(field, forceDelete);
 
         if (shouldUnregister) {
-          [errorsRef, defaultValuesAtRenderRef].forEach((data) =>
+          [defaultValuesAtRenderRef].forEach((data) =>
             unset(data.current, field.ref.name),
           );
 
@@ -656,10 +665,13 @@ export function useForm<
             unset(dirtyFieldsCopy, field.ref.name);
             const touchedCopy = formState.touched;
             unset(touchedCopy, field.ref.name);
+            const errorsCopy = formState.errors;
+            unset(errorsCopy, field.ref.name);
 
             updateFormState({
               isDirty: !isEmptyObject(dirtyFieldsCopy),
               dirtyFields: dirtyFieldsCopy,
+              errors: errorsCopy,
               touched: touchedCopy,
             });
 
@@ -678,23 +690,27 @@ export function useForm<
   ): void {
     if (name) {
       (isArray(name) ? name : [name]).forEach((inputName) =>
-        unset(errorsRef.current, inputName),
+        unset(formState.errors, inputName),
       );
+      updateFormState({
+        errors: formState.errors,
+      });
     } else {
-      errorsRef.current = {};
+      updateFormState({
+        errors: {},
+      });
     }
-
-    reRender();
   }
 
   function setError(name: FieldName<TFieldValues>, error: ErrorOption): void {
-    set(errorsRef.current, name, {
+    set(formState.errors, name, {
       ...error,
       ref: (fieldsRef.current[name] || {})!.ref,
     });
 
     updateFormState({
       isValid: false,
+      errors: formState.errors,
     });
   }
 
@@ -995,7 +1011,7 @@ export function useForm<
             contextRef.current,
             isValidateAllFieldCriteria,
           );
-          errorsRef.current = errors;
+          formState.errors = errors;
           fieldErrors = errors;
           fieldValues = values;
         } else {
@@ -1016,7 +1032,7 @@ export function useForm<
                 set(fieldErrors, name, fieldError[name]);
                 validFieldsRef.current.delete(name);
               } else if (fieldsWithValidationRef.current.has(name)) {
-                unset(errorsRef.current, name);
+                unset(formState.errors, name);
                 validFieldsRef.current.add(name);
               }
             }
@@ -1025,19 +1041,20 @@ export function useForm<
 
         if (
           isEmptyObject(fieldErrors) &&
-          Object.keys(errorsRef.current).every((name) =>
+          Object.keys(formState.errors).every((name) =>
             Object.keys(fieldsRef.current).includes(name),
           )
         ) {
-          errorsRef.current = {};
-          reRender();
+          updateFormState({
+            errors: {},
+          });
           await callback(
             fieldValues as UnpackNestedValue<TSubmitFieldValues>,
             e,
           );
         } else {
-          errorsRef.current = {
-            ...errorsRef.current,
+          formState.errors = {
+            ...formState.errors,
             ...fieldErrors,
           };
           if (shouldFocusError) {
@@ -1048,6 +1065,7 @@ export function useForm<
         updateFormState({
           isSubmitted: true,
           isSubmitting: false,
+          errors: formState.errors,
           submitCount: formState.submitCount + 1,
         });
       }
@@ -1064,10 +1082,6 @@ export function useForm<
     submitCount,
     dirtyFields,
   }: OmitResetState) => {
-    if (!errors) {
-      errorsRef.current = {};
-    }
-
     if (!isValid) {
       validFieldsRef.current = new Set();
       fieldsWithValidationRef.current = new Set();
@@ -1087,6 +1101,7 @@ export function useForm<
       isValid: isValid ? formState.isValid : true,
       dirtyFields: dirtyFields ? formState.dirtyFields : {},
       touched: touched ? formState.touched : {},
+      errors: errors ? formState.errors : {},
     });
   };
 
@@ -1148,20 +1163,8 @@ export function useForm<
   if (!resolver) {
     formState.isValid =
       validFieldsRef.current.size >= fieldsWithValidationRef.current.size &&
-      isEmptyObject(errorsRef.current);
+      isEmptyObject(formState.errors);
   }
-
-  // const formState = {
-  //   dirtyFields: dirtyFieldsRef.current,
-  //   isSubmitted: isSubmittedRef.current,
-  //   submitCount: submitCountRef.current,
-  //   touched: touchedFieldsRef.current,
-  //   isDirty: isDirtyRef.current,
-  //   isSubmitting: isSubmittingRef.current,
-  //   isValid: isOnSubmit
-  //     ? isSubmittedRef.current && isEmptyObject(errorsRef.current)
-  //     : isValidRef.current,
-  // };
 
   const commonProps = {
     trigger,
@@ -1207,7 +1210,6 @@ export function useForm<
       isReValidateOnBlur,
       isReValidateOnChange,
     },
-    errorsRef,
     fieldsRef,
     isWatchAllRef,
     watchFieldsRef,
@@ -1228,12 +1230,13 @@ export function useForm<
 
   return {
     watch,
+    // @ts-ignore
     control,
     handleSubmit,
     reset: React.useCallback(reset, []),
     clearErrors: React.useCallback(clearErrors, []),
     setError: React.useCallback(setError, []),
-    errors: errorsRef.current,
+    errors: formState.errors,
     ...commonProps,
   };
 }

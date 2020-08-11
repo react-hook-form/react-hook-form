@@ -69,6 +69,7 @@ export const useFieldArray = <
     fieldsRef,
     defaultValuesRef,
     removeFieldEventListener,
+    // @ts-ignore
     errorsRef,
     formState: { dirtyFields, touched },
     updateFormState,

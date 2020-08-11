@@ -189,6 +189,7 @@ export type FormStateProxy<TFieldValues extends FieldValues = FieldValues> = {
   touched: Touched<TFieldValues>;
   isSubmitting: boolean;
   isValid: boolean;
+  errors: FieldErrors<TFieldValues>;
 };
 
 export type ReadFormState = { [K in keyof FormStateProxy]: boolean };
@@ -233,6 +234,7 @@ export type FormState<TFieldValues> = {
   touched: Touched<TFieldValues>;
   isSubmitting: boolean;
   isValid: boolean;
+  errors: FieldErrors<TFieldValues>;
 };
 
 export type Control<TFieldValues extends FieldValues = FieldValues> = Pick<
@@ -263,7 +265,6 @@ export type Control<TFieldValues extends FieldValues = FieldValues> = Pick<
   fieldsWithValidationRef: React.MutableRefObject<
     Set<InternalFieldName<TFieldValues>>
   >;
-  errorsRef: React.MutableRefObject<FieldErrors<TFieldValues>>;
   fieldsRef: React.MutableRefObject<FieldRefs<TFieldValues>>;
   resetFieldArrayFunctionRef: React.MutableRefObject<
     Record<string, () => void>
