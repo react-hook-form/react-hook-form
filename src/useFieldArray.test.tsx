@@ -2112,6 +2112,43 @@ describe('useFieldArray', () => {
       HTMLInputElement.prototype.removeEventListener.mockRestore();
     });
 
+    it('should remove dirty fields with nested field inputs', () => {
+      const { result } = renderHook(() => {
+        const { register, formState, control } = useForm({
+          defaultValues: {
+            test: {
+              data: [{ value: 'default' }],
+            },
+          },
+        });
+        const { fields, append, remove } = useFieldArray({
+          control,
+          name: 'test.data',
+        });
+
+        return { register, formState, fields, append, remove };
+      });
+
+      result.current.formState.dirtyFields as Record<string, any>;
+      result.current.formState.isDirty;
+
+      act(() => {
+        result.current.append({ value: 'test' });
+      });
+
+      expect(result.current.formState.isDirty).toBeTruthy();
+      expect(result.current.formState.dirtyFields).toEqual({
+        test: { data: [undefined, { value: true }] },
+      });
+
+      act(() => {
+        result.current.remove(1);
+      });
+
+      expect(result.current.formState.isDirty).toBeFalsy();
+      expect(result.current.formState.dirtyFields).toEqual({});
+    });
+
     describe('with resolver', () => {
       it('should invoke resolver when formState.isValid true', async () => {
         const resolver = jest.fn().mockReturnValue({});
