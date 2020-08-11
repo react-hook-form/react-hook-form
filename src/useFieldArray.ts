@@ -296,7 +296,7 @@ export const useFieldArray = <
         removeArrayAt(get(dirtyFieldsRef.current, name), index),
       );
 
-      if (!get(dirtyFieldsRef.current, name).length) {
+      if (!get(dirtyFieldsRef.current, name).fitler(Boolean).length) {
         unset(dirtyFieldsRef.current, name);
       }
 
