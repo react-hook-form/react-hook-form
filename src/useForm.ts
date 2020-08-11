@@ -159,9 +159,8 @@ export function useForm<
   );
 
   const updateFormState = React.useCallback(
-    (state: any) =>
+    (state: Partial<FormState<TFieldValues>>) =>
       !isUnMount.current &&
-      // @ts-ignore
       setFormState({
         ...formState,
         ...state,
@@ -194,7 +193,7 @@ export function useForm<
 
         unset(formState.errors, name);
         updateFormState({
-          error: formState.errors,
+          errors: formState.errors,
         });
       } else {
         validFieldsRef.current.delete(name);
