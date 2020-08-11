@@ -1,7 +1,7 @@
 import deepEqual from './deepEqual';
 
 describe('deepEqual', () => {
-  it('should return true when two sets not match', () => {
+  it('should return false when two sets not match', () => {
     expect(
       deepEqual([{ test: '123' }, { test: '455' }, { test: '455' }], []),
     ).toBeFalsy();
