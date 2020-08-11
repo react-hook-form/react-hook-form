@@ -147,7 +147,7 @@ export const useFieldArray = <
     shouldRender && !isWatchAllRef.current && reRender();
   };
 
-  const resetFields = (
+  const updateDirty = (
     flagOrFields?: (Partial<TFieldArrayValues> | undefined)[],
   ) => {
     if (
@@ -163,7 +163,9 @@ export const useFieldArray = <
           ),
       });
     }
+  };
 
+  const resetFields = () => {
     for (const key in fieldsRef.current) {
       if (isMatchFieldArrayName(key, name) && fieldsRef.current[key]) {
         removeFieldEventListener(fieldsRef.current[key] as Field, true);
@@ -229,8 +231,10 @@ export const useFieldArray = <
     if (readFormStateRef.current.touched && get(touched, name)) {
       set(touched, name, prependAt(get(touched, name), emptyArray));
       updateFormState({
+        isDirty: true,
         touched,
       });
+      shouldRender = true;
     }
 
     if (
@@ -243,12 +247,15 @@ export const useFieldArray = <
         prependAt(get(dirtyFields, name) || [], filterBooleanArray(value)),
       );
       updateFormState({
+        isDirty: true,
         dirtyFields,
       });
+      shouldRender = true;
     }
 
     shouldRenderFieldArray(shouldRender);
     focusIndexRef.current = shouldFocus ? 0 : -1;
+    updateDirty();
   };
 
   const remove = (index?: number | number[]) => {
@@ -256,7 +263,7 @@ export const useFieldArray = <
 
     const fieldValues = getCurrentFieldsValues();
     setFieldAndValidState(removeArrayAt(fieldValues, index));
-    resetFields(removeArrayAt(fieldValues, index));
+    resetFields();
 
     if (isArray(get(errorsRef.current, name))) {
       set(
@@ -271,9 +278,12 @@ export const useFieldArray = <
     }
 
     if (readFormStateRef.current.touched && get(touched, name)) {
+      set(touched, name, removeArrayAt(get(touched, name), index));
+
       updateFormState({
-        touched: set(touched, name, removeArrayAt(get(touched, name), index)),
+        touched,
       });
+      shouldRender = true;
     }
 
     if (
@@ -290,6 +300,7 @@ export const useFieldArray = <
       updateFormState({
         dirtyFields,
       });
+      shouldRender = true;
     }
 
     if (readFormStateRef.current.isValid && !validateSchemaIsValid) {
@@ -331,6 +342,8 @@ export const useFieldArray = <
     }
 
     shouldRenderFieldArray(shouldRender);
+
+    updateDirty(removeArrayAt(fieldValues, index));
   };
 
   const insert = (
@@ -349,7 +362,7 @@ export const useFieldArray = <
         isArray(value) ? appendValueWithKey(value) : [appendId(value, keyName)],
       ),
     );
-    resetFields(insertAt(fieldValues, index));
+    resetFields();
 
     if (isArray(get(errorsRef.current, name))) {
       set(
@@ -365,6 +378,7 @@ export const useFieldArray = <
       updateFormState({
         touched,
       });
+      shouldRender = true;
     }
 
     if (
@@ -380,11 +394,14 @@ export const useFieldArray = <
       updateFormState({
         dirtyFields,
       });
+      shouldRender = true;
     }
 
     shouldRenderFieldArray(shouldRender);
 
     focusIndexRef.current = shouldFocus ? index : -1;
+
+    updateDirty(insertAt(fieldValues, index));
   };
 
   const swap = (indexA: number, indexB: number) => {
@@ -392,7 +409,7 @@ export const useFieldArray = <
 
     const fieldValues = getCurrentFieldsValues();
     swapArrayAt(fieldValues, indexA, indexB);
-    resetFields(fieldValues);
+    resetFields();
     setFieldAndValidState([...fieldValues]);
 
     if (isArray(get(errorsRef.current, name))) {
@@ -404,6 +421,7 @@ export const useFieldArray = <
       updateFormState({
         touched,
       });
+      shouldRender = true;
     }
 
     if (
@@ -415,16 +433,18 @@ export const useFieldArray = <
       updateFormState({
         dirtyFields,
       });
+      shouldRender = true;
     }
 
     shouldRenderFieldArray(shouldRender);
+    updateDirty(fieldValues);
   };
 
   const move = (from: number, to: number) => {
     shouldRender = false;
     const fieldValues = getCurrentFieldsValues();
     moveArrayAt(fieldValues, from, to);
-    resetFields(fieldValues);
+    resetFields();
     setFieldAndValidState([...fieldValues]);
 
     if (isArray(get(errorsRef.current, name))) {
@@ -436,6 +456,7 @@ export const useFieldArray = <
       updateFormState({
         touched,
       });
+      shouldRender = true;
     }
 
     if (
@@ -447,9 +468,11 @@ export const useFieldArray = <
       updateFormState({
         dirtyFields,
       });
+      shouldRender = true;
     }
 
     shouldRenderFieldArray(shouldRender);
+    updateDirty(fieldValues);
   };
 
   const reset = () => {

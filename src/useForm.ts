@@ -1145,11 +1145,11 @@ export function useForm<
     };
   }, [removeFieldEventListenerAndRef]);
 
-  // if (!resolver) {
-  //   isValidRef.current =
-  //     validFieldsRef.current.size >= fieldsWithValidationRef.current.size &&
-  //     isEmptyObject(errorsRef.current);
-  // }
+  if (!resolver) {
+    formState.isValid =
+      validFieldsRef.current.size >= fieldsWithValidationRef.current.size &&
+      isEmptyObject(errorsRef.current);
+  }
 
   // const formState = {
   //   dirtyFields: dirtyFieldsRef.current,
