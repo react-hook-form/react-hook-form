@@ -1,7 +1,7 @@
 import isObject from '../utils/isObject';
 import isArray from '../utils/isArray';
 
-export default function deepEqual(object1: any, object2: any) {
+export default function deepEqual(object1: any = [], object2: any = []) {
   const keys1 = Object.keys(object1);
   const keys2 = Object.keys(object2);
 
