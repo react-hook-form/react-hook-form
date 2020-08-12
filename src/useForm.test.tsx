@@ -2721,7 +2721,7 @@ describe('useForm', () => {
         await waitFor(() => expect(mockResolver).toHaveBeenCalled());
         // expect(screen.getByRole('alert').textContent).toBe('resolver error');
         expect(methods.formState.isValid).toBeFalsy();
-        expect(renderCount).toBe(3); //todo: fix render count 2
+        expect(renderCount).toBe(2);
       });
 
       it('should make isValid change to false if it contain error that is not related name with onChange mode', async () => {
