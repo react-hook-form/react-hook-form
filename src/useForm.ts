@@ -10,7 +10,7 @@ import validateField from './logic/validateField';
 import assignWatchFields from './logic/assignWatchFields';
 import skipValidation from './logic/skipValidation';
 import getFieldArrayParentName from './logic/getFieldArrayParentName';
-import getIsFieldsDifferent from './logic/getIsFieldsDifferent';
+import deepEqual from './logic/deepEqual';
 import isNameInFieldArray from './logic/isNameInFieldArray';
 import isCheckBoxInput from './utils/isCheckBoxInput';
 import isEmptyObject from './utils/isEmptyObject';
@@ -260,7 +260,7 @@ export function useForm<
 
       isDirtyRef.current =
         (isFieldArray &&
-          getIsFieldsDifferent(
+          !deepEqual(
             get(getValues(), getFieldArrayParentName(name)),
             get(defaultValuesRef.current, getFieldArrayParentName(name)),
           )) ||
@@ -497,8 +497,8 @@ export function useForm<
             return shouldRender && reRender();
           }
 
-          if (resolver) {
-            const { errors } = await resolver(
+          if (resolverRef.current) {
+            const { errors } = await resolverRef.current(
               getValues() as TFieldValues,
               contextRef.current,
               isValidateAllFieldCriteria,
@@ -1105,15 +1105,19 @@ export function useForm<
 
     return () => {
       isUnMount.current = true;
+
+      if (process.env.NODE_ENV !== 'production') {
+        return;
+      }
+
       fieldsRef.current &&
-        process.env.NODE_ENV === 'production' &&
         Object.values(fieldsRef.current).forEach((field) =>
           removeFieldEventListenerAndRef(field, true),
         );
     };
   }, [removeFieldEventListenerAndRef]);
 
-  if (!resolver) {
+  if (!resolver && readFormStateRef.current.isValid) {
     isValidRef.current =
       validFieldsRef.current.size >= fieldsWithValidationRef.current.size &&
       isEmptyObject(errorsRef.current);
@@ -1193,7 +1197,7 @@ export function useForm<
     readFormStateRef,
     defaultValuesRef,
     unmountFieldsStateRef,
-    ...(resolver ? { validateSchemaIsValid: validateResolver } : {}),
+    validateSchemaIsValid: resolver ? validateResolver : undefined,
     ...commonProps,
   };
 

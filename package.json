@@ -1,7 +1,7 @@
 {
   "name": "react-hook-form",
   "description": "Performant, flexible and extensible forms library for React Hooks",
-  "version": "6.3.2",
+  "version": "6.3.3",
   "main": "dist/index.js",
   "module": "dist/index.esm.js",
   "umd:main": "dist/index.umd.production.min.js",
@@ -56,7 +56,6 @@
   "devDependencies": {
     "@babel/core": "^7.10.4",
     "@babel/plugin-transform-runtime": "^7.10.4",
-    "@babel/runtime-corejs3": "^7.10.4",
     "@changesets/changelog-github": "^0.2.6",
     "@changesets/cli": "^2.9.2",
     "@rollup/plugin-babel": "^5.1.0",
