@@ -175,6 +175,7 @@ export function useForm<
       name: InternalFieldName<TFieldValues>,
       error: FlatFieldErrors<TFieldValues>,
       shouldRender: boolean | null = false,
+      dirtyValues?: any,
       isValid?: boolean,
     ): boolean | void => {
       let shouldReRender =
@@ -205,8 +206,9 @@ export function useForm<
         set(formStateRef.current.errors, name, error[name]);
       }
 
-      if (shouldReRender) {
+      if (shouldReRender || dirtyValues) {
         updateFormState({
+          ...(dirtyValues || {}),
           errors: formStateRef.current.errors,
           isValid: resolver
             ? isValid
@@ -263,7 +265,7 @@ export function useForm<
   );
 
   const setDirty = React.useCallback(
-    (name: InternalFieldName<TFieldValues>): boolean => {
+    (name: InternalFieldName<TFieldValues>, shouldUpdateState?: boolean) => {
       const { isDirty, dirtyFields } = readFormStateRef.current;
 
       if (!fieldsRef.current[name] || (!isDirty && !dirtyFields)) {
@@ -291,14 +293,22 @@ export function useForm<
           )) ||
         !isEmptyObject(formStateRef.current.dirtyFields);
 
-      updateFormState({
+      const values = {
         isDirty: dirty,
         dirtyFields: formStateRef.current.dirtyFields,
-      });
+      };
+
+      if (shouldUpdateState) {
+        updateFormState({
+          ...values,
+        });
+      }
 
       return (
-        (isDirty && previousIsDirty !== dirty) ||
-        (dirtyFields && isDirtyFieldExist !== get(formState.dirtyFields, name))
+        ((isDirty && previousIsDirty !== dirty) ||
+          (dirtyFields &&
+            isDirtyFieldExist !== get(formState.dirtyFields, name))) &&
+        values
       );
     },
     [],
@@ -415,7 +425,7 @@ export function useForm<
           setFieldValue(field, get(data, fieldName));
 
           if (shouldDirty) {
-            setDirty(fieldName);
+            setDirty(fieldName, true);
           }
 
           if (shouldValidate) {
@@ -435,7 +445,7 @@ export function useForm<
     ): boolean | void => {
       if (fieldsRef.current[name]) {
         setFieldValue(fieldsRef.current[name] as Field, value);
-        return config.shouldDirty && setDirty(name);
+        return config.shouldDirty && !!setDirty(name, true);
       } else if (!isPrimitive(value)) {
         setInternalValues(name, value, config);
       }
@@ -516,7 +526,8 @@ export function useForm<
               isSubmitted: formStateRef.current.isSubmitted,
               ...modeRef.current,
             });
-          let shouldRender = setDirty(name) || isFieldWatched(name);
+          const dirtyValues = setDirty(name);
+          let shouldRender = !!dirtyValues || isFieldWatched(name);
 
           if (
             isBlurEvent &&
@@ -531,7 +542,13 @@ export function useForm<
 
           if (shouldSkipValidation) {
             renderWatchedInputs(name);
-            return shouldRender && reRender();
+            if (dirtyValues) {
+              return updateFormState({
+                ...dirtyValues,
+              });
+            } else {
+              return shouldRender && reRender();
+            }
           }
 
           if (resolver) {
@@ -559,7 +576,13 @@ export function useForm<
           }
 
           renderWatchedInputs(name);
-          shouldRenderBaseOnError(name, error, shouldRender, isValid);
+          shouldRenderBaseOnError(
+            name,
+            error,
+            shouldRender,
+            dirtyValues,
+            isValid,
+          );
         }
       };
 
