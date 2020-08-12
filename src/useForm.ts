@@ -10,7 +10,7 @@ import validateField from './logic/validateField';
 import assignWatchFields from './logic/assignWatchFields';
 import skipValidation from './logic/skipValidation';
 import getFieldArrayParentName from './logic/getFieldArrayParentName';
-import getIsFieldsDifferent from './logic/getIsFieldsDifferent';
+import deepEqual from './logic/deepEqual';
 import isNameInFieldArray from './logic/isNameInFieldArray';
 import isCheckBoxInput from './utils/isCheckBoxInput';
 import isEmptyObject from './utils/isEmptyObject';
@@ -285,7 +285,7 @@ export function useForm<
 
       const dirty =
         (isFieldArray &&
-          getIsFieldsDifferent(
+          !deepEqual(
             get(getValues(), getFieldArrayParentName(name)),
             get(defaultValuesRef.current, getFieldArrayParentName(name)),
           )) ||

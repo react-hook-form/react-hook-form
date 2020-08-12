@@ -1,5 +1,11 @@
 # Changelog
 
+## [6.2.0] - 2020-08-11
+
+### Changed
+
+- IE 11 version will be required to install `@babel/runtime-corejs3` as dependency at your own project
+
 ## [6.2.0] - 2020-07-30
 
 ### Changed

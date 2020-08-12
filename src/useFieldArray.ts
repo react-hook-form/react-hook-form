@@ -3,7 +3,7 @@ import { useFormContext } from './useFormContext';
 import { isMatchFieldArrayName } from './logic/isNameInFieldArray';
 import generateId from './logic/generateId';
 import isObject from './utils/isObject';
-import getIsFieldsDifferent from './logic/getIsFieldsDifferent';
+import deepEqual from './logic/deepEqual';
 import getFieldArrayParentName from './logic/getFieldArrayParentName';
 import get from './utils/get';
 import set from './utils/set';
@@ -145,7 +145,7 @@ export const useFieldArray = <
     ) {
       return (
         isUndefined(flagOrFields) ||
-        getIsFieldsDifferent(
+        !deepEqual(
           flagOrFields.map(({ [keyName]: omitted, ...rest } = {}) => rest),
           get(defaultValuesRef.current, name, []),
         )
