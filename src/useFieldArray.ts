@@ -80,7 +80,6 @@ export const useFieldArray = <
     renderWatchedInputs,
     getValues,
   } = control || methods.control;
-  let shouldRender: boolean;
 
   const getDefaultValues = () => [
     ...(get(fieldArrayDefaultValues.current, name) ||
@@ -133,17 +132,8 @@ export const useFieldArray = <
   };
 
   const shouldRenderFieldArray = () => {
-    if (
-      readFormStateRef.current.dirtyFields ||
-      readFormStateRef.current.isDirty ||
-      readFormStateRef.current.isValid
-    ) {
-      shouldRender = true;
-    }
-
     renderWatchedInputs(name);
-
-    shouldRender && !isWatchAllRef.current && reRender();
+    !isWatchAllRef.current && reRender();
   };
 
   const getIsDirty = (
