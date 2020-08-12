@@ -257,7 +257,7 @@ export type Control<TFieldValues extends FieldValues = FieldValues> = Pick<
     Record<FieldArrayName, any[]>
   >;
   formState: FormState<FieldValues>;
-  updateFormState: (args: Partial<FormState<FieldValues>>) => void;
+  updateFormState: (args: Partial<FormState<TFieldValues>>) => void;
   validateSchemaIsValid?: (fieldsValues: any) => void;
   watchFieldsRef: React.MutableRefObject<Set<InternalFieldName<TFieldValues>>>;
   isWatchAllRef: React.MutableRefObject<boolean>;

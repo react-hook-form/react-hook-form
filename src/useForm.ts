@@ -161,12 +161,13 @@ export function useForm<
   );
 
   const updateFormState = React.useCallback(
-    (state: Partial<FormState<TFieldValues>>) =>
+    (state: Partial<FormState<TFieldValues>>): void => {
       !isUnMount.current &&
-      setFormState({
-        ...formStateRef.current,
-        ...state,
-      }),
+        setFormState({
+          ...formStateRef.current,
+          ...state,
+        });
+    },
     [formState],
   );
 
@@ -264,7 +265,7 @@ export function useForm<
     [],
   );
 
-  const setDirty = React.useCallback(
+  const updateDirtyState = React.useCallback(
     (name: InternalFieldName<TFieldValues>, shouldUpdateState?: boolean) => {
       const { isDirty, dirtyFields } = readFormStateRef.current;
 
@@ -425,7 +426,7 @@ export function useForm<
           setFieldValue(field, get(data, fieldName));
 
           if (shouldDirty) {
-            setDirty(fieldName, true);
+            updateDirtyState(fieldName, true);
           }
 
           if (shouldValidate) {
@@ -434,7 +435,7 @@ export function useForm<
         }
       });
     },
-    [trigger, setFieldValue, setDirty],
+    [trigger, setFieldValue, updateDirtyState],
   );
 
   const setInternalValue = React.useCallback(
@@ -445,7 +446,7 @@ export function useForm<
     ): boolean | void => {
       if (fieldsRef.current[name]) {
         setFieldValue(fieldsRef.current[name] as Field, value);
-        return config.shouldDirty && !!setDirty(name, true);
+        return config.shouldDirty && !!updateDirtyState(name, true);
       } else if (!isPrimitive(value)) {
         setInternalValues(name, value, config);
       }
@@ -456,7 +457,7 @@ export function useForm<
 
       return true;
     },
-    [setDirty, setFieldValue, setInternalValues],
+    [updateDirtyState, setFieldValue, setInternalValues],
   );
 
   const isFieldWatched = (name: string) =>
@@ -492,13 +493,11 @@ export function useForm<
       : UnpackNestedValue<DeepPartial<LiteralToPrimitive<TFieldValue>>>,
     config: SetValueConfig = {},
   ): void {
-    const shouldRender =
-      setInternalValue(name, value as TFieldValues[string], config) ||
-      isFieldWatched(name);
+    setInternalValue(name, value as TFieldValues[string], config);
 
     renderWatchedInputs(name);
 
-    if (shouldRender) {
+    if (isFieldWatched(name)) {
       reRender();
     }
 
@@ -526,7 +525,7 @@ export function useForm<
               isSubmitted: formStateRef.current.isSubmitted,
               ...modeRef.current,
             });
-          const dirtyValues = setDirty(name);
+          const dirtyValues = updateDirtyState(name);
           let shouldRender = !!dirtyValues || isFieldWatched(name);
 
           if (
@@ -1238,7 +1237,6 @@ export function useForm<
 
   return {
     watch,
-    // @ts-ignore
     control,
     handleSubmit,
     reset: React.useCallback(reset, []),
