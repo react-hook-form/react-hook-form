@@ -1106,15 +1106,19 @@ export function useForm<
 
     return () => {
       isUnMount.current = true;
+
+      if (process.env.NODE_ENV !== 'production') {
+        return;
+      }
+
       fieldsRef.current &&
-        process.env.NODE_ENV === 'production' &&
         Object.values(fieldsRef.current).forEach((field) =>
           removeFieldEventListenerAndRef(field, true),
         );
     };
   }, [removeFieldEventListenerAndRef]);
 
-  if (!resolver) {
+  if (!resolver && readFormStateRef.current.isValid) {
     isValidRef.current =
       validFieldsRef.current.size >= fieldsWithValidationRef.current.size &&
       isEmptyObject(errorsRef.current);
