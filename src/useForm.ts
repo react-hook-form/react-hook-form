@@ -1170,7 +1170,7 @@ export function useForm<
     };
   }, [removeFieldEventListenerAndRef]);
 
-  if (!resolver) {
+  if (!resolver && readFormStateRef.current.isValid) {
     formState.isValid =
       validFieldsRef.current.size >= fieldsWithValidationRef.current.size &&
       isEmptyObject(formState.errors);

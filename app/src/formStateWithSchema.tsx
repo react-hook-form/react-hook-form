@@ -14,7 +14,12 @@ const validationSchema = yup.object().shape({
 });
 
 const FormStateWithSchema: React.FC = (props: any) => {
-  const { register, handleSubmit, formState, reset } = useForm<{
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, ...rest },
+    reset,
+  } = useForm<{
     firstName: string;
     lastName: string;
     select: string;
@@ -50,9 +55,9 @@ const FormStateWithSchema: React.FC = (props: any) => {
       </button>
       <div id="state">
         {JSON.stringify({
-          ...formState,
-          touched: Object.keys(formState.touched),
-          dirtyFields: Object.keys(formState.dirtyFields),
+          ...rest,
+          touched: Object.keys(rest.touched),
+          dirtyFields: Object.keys(rest.dirtyFields),
         })}
       </div>
       <div id="renderCount">{renderCounter}</div>
