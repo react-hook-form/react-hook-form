@@ -111,7 +111,7 @@ export function useForm<
   );
   const isUnMount = React.useRef(false);
   const isWatchAllRef = React.useRef(false);
-  const handleChangeRef = React.useRef<HandleChange>();
+  const onChangeRef = React.useRef<HandleChange>();
   const unmountFieldsStateRef = React.useRef<Record<string, any>>({});
   const resetFieldArrayFunctionRef = React.useRef<Record<string, () => void>>(
     {},
@@ -497,8 +497,8 @@ export function useForm<
     }
   }
 
-  handleChangeRef.current = handleChangeRef.current
-    ? handleChangeRef.current
+  onChangeRef.current = onChangeRef.current
+    ? onChangeRef.current
     : async ({ type, target }: Event): Promise<void | boolean> => {
         const name = (target as Ref)!.name;
         const field = fieldsRef.current[name];
@@ -617,7 +617,7 @@ export function useForm<
     (field: Field, forceDelete?: boolean) =>
       findRemovedFieldAndRemoveListener(
         fieldsRef,
-        handleChangeRef.current!,
+        onChangeRef.current!,
         field,
         unmountFieldsStateRef,
         shouldUnregister,
@@ -936,7 +936,7 @@ export function useForm<
           ? field.options[field.options.length - 1]
           : field,
         isRadioOrCheckbox || isSelectInput(ref),
-        handleChangeRef.current,
+        onChangeRef.current,
       );
     }
   }
