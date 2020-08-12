@@ -11,7 +11,7 @@ import { terser } from 'rollup-plugin-terser';
 const name = 'index';
 const umdName = 'ReactHookForm';
 
-export function createRollupConfig(options) {
+export function createRollupConfig(options, callback) {
   const shouldMinify = options.minify || options.env === 'production';
   const tsconfigPath = options.tsconfig || 'tsconfig.json';
   const tsconfigJSON = ts.readConfigFile(tsconfigPath, ts.sys.readFile).config;
@@ -31,7 +31,7 @@ export function createRollupConfig(options) {
     .filter(Boolean)
     .join('.');
 
-  return {
+  const config = {
     input: options.input,
     output: {
       file: outputName,
@@ -64,7 +64,8 @@ export function createRollupConfig(options) {
             drop_console: true,
           },
         }),
-      options.plugins,
-    ],
+    ].filter(Boolean),
   };
+
+  return callback ? callback(config) : config;
 }
