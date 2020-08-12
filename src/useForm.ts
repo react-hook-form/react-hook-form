@@ -308,7 +308,8 @@ export function useForm<
       return (
         ((isDirty && previousIsDirty !== dirty) ||
           (dirtyFields &&
-            isDirtyFieldExist !== get(formState.dirtyFields, name))) &&
+            isDirtyFieldExist !==
+              get(formStateRef.current.dirtyFields, name))) &&
         values
       );
     },
@@ -349,7 +350,7 @@ export function useForm<
         contextRef.current,
         isValidateAllFieldCriteria,
       );
-      const previousFormIsValid = formState.isValid;
+      const previousFormIsValid = formStateRef.current.isValid;
       const currentIsValid = isEmptyObject(errors);
 
       if (isArray(payload)) {
@@ -535,7 +536,7 @@ export function useForm<
           ) {
             set(formStateRef.current.touched, name, true);
             updateFormState({
-              touched: formState.touched,
+              touched: formStateRef.current.touched,
             });
           }
 
@@ -623,7 +624,7 @@ export function useForm<
         contextRef.current,
         isValidateAllFieldCriteria,
       );
-      const previousFormIsValid = formState.isValid;
+      const previousFormIsValid = formStateRef.current.isValid;
       const isValid = isEmptyObject(errors);
 
       if (previousFormIsValid !== isValid) {
@@ -678,15 +679,13 @@ export function useForm<
             readFormStateRef.current.touched ||
             readFormStateRef.current.isDirty
           ) {
-            const dirtyFieldsCopy = formState.dirtyFields;
-            unset(dirtyFieldsCopy, field.ref.name);
-            const touchedCopy = formState.touched;
-            unset(touchedCopy, field.ref.name);
+            unset(formStateRef.current.dirtyFields, field.ref.name);
+            unset(formStateRef.current.touched, field.ref.name);
 
             updateFormState({
-              isDirty: !isEmptyObject(dirtyFieldsCopy),
-              dirtyFields: dirtyFieldsCopy,
-              touched: touchedCopy,
+              isDirty: !isEmptyObject(formStateRef.current.dirtyFields),
+              dirtyFields: formStateRef.current.dirtyFields,
+              touched: formStateRef.current.touched,
             });
 
             if (resolverRef.current) {
@@ -931,7 +930,7 @@ export function useForm<
         ).then((error: FieldErrors) => {
           if (isEmptyObject(error)) {
             validFieldsRef.current.add(name);
-          } else if (formState.isValid) {
+          } else if (formStateRef.current.isValid) {
             updateFormState({
               isValid: false,
             });
@@ -1108,13 +1107,13 @@ export function useForm<
     isWatchAllRef.current = false;
 
     updateFormState({
-      isDirty: isDirty ? formState.isDirty : false,
-      isSubmitted: isSubmitted ? formState.isSubmitted : false,
-      submitCount: submitCount ? formState.submitCount : 0,
-      isValid: isValid ? formState.isValid : true,
-      dirtyFields: dirtyFields ? formState.dirtyFields : {},
-      touched: touched ? formState.touched : {},
-      errors: errors ? formState.errors : {},
+      isDirty: isDirty ? formStateRef.current.isDirty : false,
+      isSubmitted: isSubmitted ? formStateRef.current.isSubmitted : false,
+      submitCount: submitCount ? formStateRef.current.submitCount : 0,
+      isValid: isValid ? formStateRef.current.isValid : true,
+      dirtyFields: dirtyFields ? formStateRef.current.dirtyFields : {},
+      touched: touched ? formStateRef.current.touched : {},
+      errors: errors ? formStateRef.current.errors : {},
     });
   };
 
@@ -1183,28 +1182,6 @@ export function useForm<
     getValues: React.useCallback(getValues, []),
     register: React.useCallback(register, [defaultValuesRef.current]),
     unregister: React.useCallback(unregister, []),
-    formState: isProxyEnabled
-      ? new Proxy<FormStateProxy<TFieldValues>>(formState, {
-          get: (obj, prop: keyof FormStateProxy) => {
-            if (
-              process.env.NODE_ENV !== 'production' &&
-              prop === 'isValid' &&
-              isOnSubmit
-            ) {
-              console.warn(
-                '📋 `formState.isValid` is applicable with `onChange` or `onBlur` mode. https://react-hook-form.com/api#formState',
-              );
-            }
-
-            if (prop in obj) {
-              readFormStateRef.current[prop] = true;
-              return obj[prop];
-            }
-
-            return undefined;
-          },
-        })
-      : formState,
   };
 
   const control = {
@@ -1228,6 +1205,7 @@ export function useForm<
     fieldsWithValidationRef,
     fieldArrayNamesRef,
     readFormStateRef,
+    formStateRef,
     defaultValuesRef,
     unmountFieldsStateRef,
     updateFormState,
@@ -1238,6 +1216,28 @@ export function useForm<
   return {
     watch,
     control,
+    formState: isProxyEnabled
+      ? new Proxy<FormStateProxy<TFieldValues>>(formState, {
+          get: (obj, prop: keyof FormStateProxy) => {
+            if (
+              process.env.NODE_ENV !== 'production' &&
+              prop === 'isValid' &&
+              isOnSubmit
+            ) {
+              console.warn(
+                '📋 `formState.isValid` is applicable with `onChange` or `onBlur` mode. https://react-hook-form.com/api#formState',
+              );
+            }
+
+            if (prop in obj) {
+              readFormStateRef.current[prop] = true;
+              return obj[prop];
+            }
+
+            return undefined;
+          },
+        })
+      : formState,
     handleSubmit,
     reset: React.useCallback(reset, []),
     clearErrors: React.useCallback(clearErrors, []),

@@ -69,7 +69,9 @@ export const useFieldArray = <
     fieldsRef,
     defaultValuesRef,
     removeFieldEventListener,
-    formState: { dirtyFields, touched, errors },
+    formStateRef: {
+      current: { dirtyFields, touched, errors },
+    },
     updateFormState,
     readFormStateRef,
     watchFieldsRef,

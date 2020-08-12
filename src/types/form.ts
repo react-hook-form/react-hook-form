@@ -239,7 +239,7 @@ export type FormState<TFieldValues> = {
 
 export type Control<TFieldValues extends FieldValues = FieldValues> = Pick<
   UseFormMethods<TFieldValues>,
-  'register' | 'unregister' | 'setValue' | 'getValues' | 'trigger' | 'formState'
+  'register' | 'unregister' | 'setValue' | 'getValues' | 'trigger'
 > & {
   reRender: () => void;
   removeFieldEventListener: (field: Field, forceDelete?: boolean) => void;
@@ -256,7 +256,7 @@ export type Control<TFieldValues extends FieldValues = FieldValues> = Pick<
   fieldArrayDefaultValues: React.MutableRefObject<
     Record<FieldArrayName, any[]>
   >;
-  formState: FormState<FieldValues>;
+  formStateRef: React.MutableRefObject<FormState<FieldValues>>;
   updateFormState: (args: Partial<FormState<TFieldValues>>) => void;
   validateSchemaIsValid?: (fieldsValues: any) => void;
   watchFieldsRef: React.MutableRefObject<Set<InternalFieldName<TFieldValues>>>;

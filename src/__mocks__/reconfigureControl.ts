@@ -49,15 +49,17 @@ export const reconfigureControl = (
     isReValidateOnBlur: false,
     isReValidateOnChange: false,
   },
-  formState: {
-    errors: {},
-    isDirty: false,
-    isSubmitted: false,
-    dirtyFields: {},
-    submitCount: 0,
-    touched: {},
-    isSubmitting: false,
-    isValid: false,
+  formStateRef: {
+    current: {
+      errors: {},
+      isDirty: false,
+      isSubmitted: false,
+      dirtyFields: {},
+      submitCount: 0,
+      touched: {},
+      isSubmitting: false,
+      isValid: false,
+    },
   },
   fieldsRef: {
     current: {},

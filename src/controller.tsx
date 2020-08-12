@@ -42,7 +42,9 @@ const Controller = <
     trigger,
     mode,
     reValidateMode: { isReValidateOnBlur, isReValidateOnChange },
-    formState: { isSubmitted, touched },
+    formStateRef: {
+      current: { isSubmitted, touched },
+    },
     updateFormState,
     readFormStateRef,
     fieldsRef,
