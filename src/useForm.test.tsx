@@ -1081,8 +1081,8 @@ describe('useForm', () => {
       it.each([
         ['isDirty', ['test1', 'test2', 'test3'], [true, true, true]],
         ['dirtyFields', ['test1', 'test2', 'test3'], [true, true, true]],
-        ['isDirty', ['test1', '', 'test3'], [undefined, undefined, true]],
-        ['dirtyFields', ['test1', '', 'test3'], [undefined, undefined, true]],
+        ['isDirty', ['test1', '', 'test3'], [true, undefined, true]],
+        ['dirtyFields', ['test1', '', 'test3'], [true, undefined, true]],
       ])(
         'should be dirty when %s is defined when shouldDirty is true with array fields',
         (property, values, dirtyFields) => {
