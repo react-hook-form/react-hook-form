@@ -273,14 +273,14 @@ export function useForm<
       const isFieldDirty =
         defaultValuesAtRenderRef.current[name] !==
         getFieldValue(fieldsRef, name, unmountFieldsStateRef);
-      const isDirtyFieldExist = get(formState.dirtyFields, name);
+      const isDirtyFieldExist = get(formStateRef.current.dirtyFields, name);
       const isFieldArray = isNameInFieldArray(fieldArrayNamesRef.current, name);
-      const previousIsDirty = formState.isDirty;
+      const previousIsDirty = formStateRef.current.isDirty;
 
       if (isFieldDirty) {
-        set(formState.dirtyFields, name, true);
+        set(formStateRef.current.dirtyFields, name, true);
       } else {
-        unset(formState.dirtyFields, name);
+        unset(formStateRef.current.dirtyFields, name);
       }
 
       const dirty =
@@ -289,11 +289,11 @@ export function useForm<
             get(getValues(), getFieldArrayParentName(name)),
             get(defaultValuesRef.current, getFieldArrayParentName(name)),
           )) ||
-        !isEmptyObject(formState.dirtyFields);
+        !isEmptyObject(formStateRef.current.dirtyFields);
 
       updateFormState({
         isDirty: dirty,
-        dirtyFields: formState.dirtyFields,
+        dirtyFields: formStateRef.current.dirtyFields,
       });
 
       return (
@@ -1057,7 +1057,7 @@ export function useForm<
           isSubmitted: true,
           isSubmitting: false,
           errors: formState.errors,
-          submitCount: formState.submitCount + 1,
+          submitCount: formStateRef.current.submitCount + 1,
         });
       }
     },
