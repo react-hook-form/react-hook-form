@@ -1198,7 +1198,7 @@ export function useForm<
     readFormStateRef,
     defaultValuesRef,
     unmountFieldsStateRef,
-    ...(resolver ? { validateSchemaIsValid: validateResolver } : {}),
+    validateSchemaIsValid: resolver ? validateResolver : null,
     ...commonProps,
   };
 
