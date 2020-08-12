@@ -173,6 +173,7 @@ export function useForm<
       name: InternalFieldName<TFieldValues>,
       error: FlatFieldErrors<TFieldValues>,
       shouldRender: boolean | null = false,
+      isValid?: boolean,
     ): boolean | void => {
       let shouldReRender =
         shouldRender ||
@@ -192,9 +193,6 @@ export function useForm<
         }
 
         unset(formState.errors, name);
-        updateFormState({
-          errors: formState.errors,
-        });
       } else {
         validFieldsRef.current.delete(name);
         shouldReRender =
@@ -203,24 +201,17 @@ export function useForm<
           !isSameError(previousError, error[name] as FieldError);
 
         set(formState.errors, name, error[name]);
-        updateFormState({
-          errors: formState.errors,
-        });
       }
 
-      if (shouldReRender && !isNullOrUndefined(shouldRender)) {
-        if (!resolver) {
-          updateFormState({
-            isValid:
-              validFieldsRef.current.size >=
+      if (shouldReRender) {
+        updateFormState({
+          errors: formState.errors,
+          isValid: resolver
+            ? isValid
+            : validFieldsRef.current.size >=
                 fieldsWithValidationRef.current.size &&
               isEmptyObject(formState.errors),
-          });
-          return false;
-        }
-
-        reRender();
-        return true;
+        });
       }
     },
     [],
@@ -557,10 +548,6 @@ export function useForm<
                 isValid: isEmptyObject(errors),
               });
             }
-
-            // if (!shouldRenderBaseOnError(name, error, undefined, isValid) && shouldRender) {
-            //   reRender();
-            // }
           } else {
             error = await validateField<TFieldValues>(
               fieldsRef,
@@ -568,13 +555,11 @@ export function useForm<
               field,
               unmountFieldsStateRef,
             );
-
-            if (!shouldRenderBaseOnError(name, error) && shouldRender) {
-              reRender();
-            }
           }
 
           renderWatchedInputs(name);
+
+          shouldRenderBaseOnError(name, error);
         }
       };
 
@@ -924,7 +909,6 @@ export function useForm<
         ).then((error: FieldErrors) => {
           if (isEmptyObject(error)) {
             validFieldsRef.current.add(name);
-            reRender();
           } else if (formState.isValid) {
             updateFormState({
               isValid: false,
@@ -1150,8 +1134,6 @@ export function useForm<
     );
 
     resetRefs(omitResetState);
-
-    reRender();
   };
 
   React.useEffect(() => {
@@ -1175,11 +1157,7 @@ export function useForm<
 
   const commonProps = {
     trigger,
-    setValue: React.useCallback(setValue, [
-      reRender,
-      setInternalValue,
-      trigger,
-    ]),
+    setValue: React.useCallback(setValue, [setInternalValue, trigger]),
     getValues: React.useCallback(getValues, []),
     register: React.useCallback(register, [defaultValuesRef.current]),
     unregister: React.useCallback(unregister, []),

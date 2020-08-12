@@ -2259,7 +2259,7 @@ describe('useForm', () => {
         });
 
         expect(screen.getByRole('alert').textContent).toBe('');
-        expect(renderCount).toBe(4); //todo: fix re-render 3
+        expect(renderCount).toBe(3);
       });
 
       it('should not contain error if name is invalid', async () => {
@@ -2304,7 +2304,7 @@ describe('useForm', () => {
           expect(screen.getByRole('alert').textContent).toBe('required'),
         );
 
-        expect(renderCount).toBe(5); // todo: fix re-render 4
+        expect(renderCount).toBe(4);
       });
 
       it('should not call reRender method if the current error is the same as the previous error', async () => {
@@ -2325,7 +2325,7 @@ describe('useForm', () => {
         });
 
         expect(screen.getByRole('alert').textContent).toBe('required');
-        expect(renderCount).toBe(3); // todo fix re-render: 2
+        expect(renderCount).toBe(2);
       });
 
       it('should set name to formState.touched when formState.touched is defined', async () => {
@@ -2721,7 +2721,7 @@ describe('useForm', () => {
         await waitFor(() => expect(mockResolver).toHaveBeenCalled());
         // expect(screen.getByRole('alert').textContent).toBe('resolver error');
         expect(methods.formState.isValid).toBeFalsy();
-        expect(renderCount).toBe(2);
+        expect(renderCount).toBe(3); //todo: fix render count 2
       });
 
       it('should make isValid change to false if it contain error that is not related name with onChange mode', async () => {

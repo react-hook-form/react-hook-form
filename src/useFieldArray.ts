@@ -69,9 +69,7 @@ export const useFieldArray = <
     fieldsRef,
     defaultValuesRef,
     removeFieldEventListener,
-    // @ts-ignore
-    errorsRef,
-    formState: { dirtyFields, touched },
+    formState: { dirtyFields, touched, errors },
     updateFormState,
     readFormStateRef,
     watchFieldsRef,
@@ -221,21 +219,12 @@ export const useFieldArray = <
     );
     resetFields();
 
-    if (isArray(get(errorsRef.current, name))) {
-      set(
-        errorsRef.current,
-        name,
-        prependAt(get(errorsRef.current, name), emptyArray),
-      );
+    if (isArray(get(errors, name))) {
+      set(errors, name, prependAt(get(errors, name), emptyArray));
     }
 
     if (readFormStateRef.current.touched && get(touched, name)) {
       set(touched, name, prependAt(get(touched, name), emptyArray));
-      updateFormState({
-        isDirty: true,
-        touched,
-      });
-      shouldRender = true;
     }
 
     if (
@@ -247,12 +236,14 @@ export const useFieldArray = <
         name,
         prependAt(get(dirtyFields, name) || [], filterBooleanArray(value)),
       );
-      updateFormState({
-        isDirty: true,
-        dirtyFields,
-      });
-      shouldRender = true;
     }
+
+    updateFormState({
+      errors,
+      dirtyFields,
+      isDirty: true,
+      touched,
+    });
 
     shouldRenderFieldArray(shouldRender);
     focusIndexRef.current = shouldFocus ? 0 : -1;
@@ -266,25 +257,16 @@ export const useFieldArray = <
     setFieldAndValidState(removeArrayAt(fieldValues, index));
     resetFields();
 
-    if (isArray(get(errorsRef.current, name))) {
-      set(
-        errorsRef.current,
-        name,
-        removeArrayAt(get(errorsRef.current, name), index),
-      );
+    if (isArray(get(errors, name))) {
+      set(errors, name, removeArrayAt(get(errors, name), index));
 
-      if (!unique(get(errorsRef.current, name, [])).length) {
-        unset(errorsRef.current, name);
+      if (!unique(get(errors, name, [])).length) {
+        unset(errors, name);
       }
     }
 
     if (readFormStateRef.current.touched && get(touched, name)) {
       set(touched, name, removeArrayAt(get(touched, name), index));
-
-      updateFormState({
-        touched,
-      });
-      shouldRender = true;
     }
 
     if (
@@ -297,11 +279,6 @@ export const useFieldArray = <
       if (!unique(get(dirtyFields, name, [])).length) {
         unset(dirtyFields, name);
       }
-
-      updateFormState({
-        dirtyFields,
-      });
-      shouldRender = true;
     }
 
     if (readFormStateRef.current.isValid && !validateSchemaIsValid) {
@@ -342,6 +319,12 @@ export const useFieldArray = <
       }
     }
 
+    updateFormState({
+      dirtyFields,
+      errors,
+      touched,
+    });
+
     shouldRenderFieldArray(shouldRender);
 
     updateDirty(removeArrayAt(fieldValues, index));
@@ -365,20 +348,12 @@ export const useFieldArray = <
     );
     resetFields();
 
-    if (isArray(get(errorsRef.current, name))) {
-      set(
-        errorsRef.current,
-        name,
-        insertAt(get(errorsRef.current, name), index, emptyArray),
-      );
+    if (isArray(get(errors, name))) {
+      set(errors, name, insertAt(get(errors, name), index, emptyArray));
     }
 
     if (readFormStateRef.current.touched && get(touched, name)) {
       set(touched, name, insertAt(get(touched, name), index, emptyArray));
-
-      updateFormState({
-        touched,
-      });
       shouldRender = true;
     }
 
@@ -392,11 +367,14 @@ export const useFieldArray = <
         name,
         insertAt(get(dirtyFields, name), index, filterBooleanArray(value)),
       );
-      updateFormState({
-        dirtyFields,
-      });
       shouldRender = true;
     }
+
+    updateFormState({
+      dirtyFields,
+      errors,
+      touched,
+    });
 
     shouldRenderFieldArray(shouldRender);
 
@@ -413,15 +391,12 @@ export const useFieldArray = <
     resetFields();
     setFieldAndValidState([...fieldValues]);
 
-    if (isArray(get(errorsRef.current, name))) {
-      swapArrayAt(get(errorsRef.current, name), indexA, indexB);
+    if (isArray(get(errors, name))) {
+      swapArrayAt(get(errors, name), indexA, indexB);
     }
 
     if (readFormStateRef.current.touched && get(touched, name)) {
       swapArrayAt(get(touched, name), indexA, indexB);
-      updateFormState({
-        touched,
-      });
       shouldRender = true;
     }
 
@@ -431,12 +406,14 @@ export const useFieldArray = <
       get(dirtyFields, name)
     ) {
       swapArrayAt(get(dirtyFields, name), indexA, indexB);
-      updateFormState({
-        dirtyFields,
-      });
       shouldRender = true;
     }
 
+    updateFormState({
+      dirtyFields,
+      errors,
+      touched,
+    });
     shouldRenderFieldArray(shouldRender);
     updateDirty(fieldValues);
   };
@@ -448,15 +425,12 @@ export const useFieldArray = <
     resetFields();
     setFieldAndValidState([...fieldValues]);
 
-    if (isArray(get(errorsRef.current, name))) {
-      moveArrayAt(get(errorsRef.current, name), from, to);
+    if (isArray(get(errors, name))) {
+      moveArrayAt(get(errors, name), from, to);
     }
 
     if (readFormStateRef.current.touched && get(touched, name)) {
       moveArrayAt(get(touched, name), from, to);
-      updateFormState({
-        touched,
-      });
       shouldRender = true;
     }
 
@@ -466,12 +440,14 @@ export const useFieldArray = <
       get(dirtyFields, name)
     ) {
       moveArrayAt(get(dirtyFields, name), from, to);
-      updateFormState({
-        dirtyFields,
-      });
       shouldRender = true;
     }
 
+    updateFormState({
+      dirtyFields,
+      errors,
+      touched,
+    });
     shouldRenderFieldArray(shouldRender);
     updateDirty(fieldValues);
   };
@@ -542,12 +518,12 @@ export const useFieldArray = <
   }, []);
 
   return {
-    swap: React.useCallback(swap, [name]),
-    move: React.useCallback(move, [name]),
-    prepend: React.useCallback(prepend, [name]),
-    append: React.useCallback(append, [name]),
-    remove: React.useCallback(remove, [fields, name]),
-    insert: React.useCallback(insert, [name]),
+    swap: React.useCallback(swap, [name, errors]),
+    move: React.useCallback(move, [name, errors]),
+    prepend: React.useCallback(prepend, [name, errors]),
+    append: React.useCallback(append, [name, errors]),
+    remove: React.useCallback(remove, [fields, name, errors]),
+    insert: React.useCallback(insert, [name, errors]),
     fields,
   };
 };
