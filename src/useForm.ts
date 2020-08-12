@@ -498,8 +498,8 @@ export function useForm<
             return shouldRender && reRender();
           }
 
-          if (resolver) {
-            const { errors } = await resolver(
+          if (resolverRef.current) {
+            const { errors } = await resolverRef.current(
               getValues() as TFieldValues,
               contextRef.current,
               isValidateAllFieldCriteria,
