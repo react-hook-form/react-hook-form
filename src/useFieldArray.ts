@@ -3,7 +3,7 @@ import { useFormContext } from './useFormContext';
 import { isMatchFieldArrayName } from './logic/isNameInFieldArray';
 import generateId from './logic/generateId';
 import isObject from './utils/isObject';
-import getIsFieldsDifferent from './logic/getIsFieldsDifferent';
+import deepEqual from './logic/deepEqual';
 import getFieldArrayParentName from './logic/getFieldArrayParentName';
 import get from './utils/get';
 import set from './utils/set';
@@ -157,7 +157,7 @@ export const useFieldArray = <
     ) {
       isDirtyRef.current =
         isUndefined(flagOrFields) ||
-        getIsFieldsDifferent(
+        !deepEqual(
           flagOrFields.map(({ [keyName]: omitted, ...rest } = {}) => rest),
           get(defaultValuesRef.current, name, []),
         );
@@ -186,10 +186,11 @@ export const useFieldArray = <
       readFormStateRef.current.dirtyFields ||
       readFormStateRef.current.isDirty
     ) {
-      dirtyFieldsRef.current[name] = [
-        ...(dirtyFieldsRef.current[name] || fillEmptyArray(fields.slice(0, 1))),
+      set(dirtyFieldsRef.current, name, [
+        ...(get(dirtyFieldsRef.current, name) ||
+          fillEmptyArray(fields.slice(0, 1))),
         ...filterBooleanArray(value),
-      ];
+      ]);
       isDirtyRef.current = true;
       shouldRender = true;
     }
@@ -215,16 +216,21 @@ export const useFieldArray = <
     resetFields();
 
     if (isArray(get(errorsRef.current, name))) {
-      errorsRef.current[name] = prependAt(
-        get(errorsRef.current, name),
-        emptyArray,
+      set(
+        errorsRef.current,
+        name,
+        prependAt(get(errorsRef.current, name), emptyArray),
       );
     }
 
-    if (readFormStateRef.current.touched && touchedFieldsRef.current[name]) {
-      touchedFieldsRef.current[name] = prependAt(
-        touchedFieldsRef.current[name],
-        emptyArray,
+    if (
+      readFormStateRef.current.touched &&
+      get(touchedFieldsRef.current, name)
+    ) {
+      set(
+        touchedFieldsRef.current,
+        name,
+        prependAt(get(touchedFieldsRef.current, name), emptyArray),
       );
       shouldRender = true;
     }
@@ -233,9 +239,13 @@ export const useFieldArray = <
       readFormStateRef.current.dirtyFields ||
       readFormStateRef.current.isDirty
     ) {
-      dirtyFieldsRef.current[name] = prependAt(
-        dirtyFieldsRef.current[name] || [],
-        filterBooleanArray(value),
+      set(
+        dirtyFieldsRef.current,
+        name,
+        prependAt(
+          get(dirtyFieldsRef.current, name) || [],
+          filterBooleanArray(value),
+        ),
       );
       shouldRender = true;
     }
@@ -263,10 +273,14 @@ export const useFieldArray = <
       }
     }
 
-    if (readFormStateRef.current.touched && touchedFieldsRef.current[name]) {
-      touchedFieldsRef.current[name] = removeArrayAt(
-        touchedFieldsRef.current[name],
-        index,
+    if (
+      readFormStateRef.current.touched &&
+      get(touchedFieldsRef.current, name)
+    ) {
+      set(
+        touchedFieldsRef.current,
+        name,
+        removeArrayAt(get(touchedFieldsRef.current, name), index),
       );
       shouldRender = true;
     }
@@ -274,15 +288,16 @@ export const useFieldArray = <
     if (
       (readFormStateRef.current.dirtyFields ||
         readFormStateRef.current.isDirty) &&
-      dirtyFieldsRef.current[name]
+      get(dirtyFieldsRef.current, name)
     ) {
-      dirtyFieldsRef.current[name] = removeArrayAt(
-        dirtyFieldsRef.current[name],
-        index,
+      set(
+        dirtyFieldsRef.current,
+        name,
+        removeArrayAt(get(dirtyFieldsRef.current, name), index),
       );
 
-      if (!dirtyFieldsRef.current[name].length) {
-        delete dirtyFieldsRef.current[name];
+      if (!unique(get(dirtyFieldsRef.current, name, [])).length) {
+        unset(dirtyFieldsRef.current, name);
       }
 
       shouldRender = true;
@@ -348,18 +363,21 @@ export const useFieldArray = <
     resetFields(insertAt(fieldValues, index));
 
     if (isArray(get(errorsRef.current, name))) {
-      errorsRef.current[name] = insertAt(
-        get(errorsRef.current, name),
-        index,
-        emptyArray,
+      set(
+        errorsRef.current,
+        name,
+        insertAt(get(errorsRef.current, name), index, emptyArray),
       );
     }
 
-    if (readFormStateRef.current.touched && touchedFieldsRef.current[name]) {
-      touchedFieldsRef.current[name] = insertAt(
-        touchedFieldsRef.current[name],
-        index,
-        emptyArray,
+    if (
+      readFormStateRef.current.touched &&
+      get(touchedFieldsRef.current, name)
+    ) {
+      set(
+        touchedFieldsRef.current,
+        name,
+        insertAt(get(touchedFieldsRef.current, name), index, emptyArray),
       );
       shouldRender = true;
     }
@@ -367,12 +385,16 @@ export const useFieldArray = <
     if (
       (readFormStateRef.current.dirtyFields ||
         readFormStateRef.current.isDirty) &&
-      dirtyFieldsRef.current[name]
+      get(dirtyFieldsRef.current, name)
     ) {
-      dirtyFieldsRef.current[name] = insertAt(
-        dirtyFieldsRef.current[name],
-        index,
-        filterBooleanArray(value),
+      set(
+        dirtyFieldsRef.current,
+        name,
+        insertAt(
+          get(dirtyFieldsRef.current, name),
+          index,
+          filterBooleanArray(value),
+        ),
       );
       shouldRender = true;
     }
@@ -394,17 +416,20 @@ export const useFieldArray = <
       swapArrayAt(get(errorsRef.current, name), indexA, indexB);
     }
 
-    if (readFormStateRef.current.touched && touchedFieldsRef.current[name]) {
-      swapArrayAt(touchedFieldsRef.current[name], indexA, indexB);
+    if (
+      readFormStateRef.current.touched &&
+      get(touchedFieldsRef.current, name)
+    ) {
+      swapArrayAt(get(touchedFieldsRef.current, name), indexA, indexB);
       shouldRender = true;
     }
 
     if (
       (readFormStateRef.current.dirtyFields ||
         readFormStateRef.current.isDirty) &&
-      dirtyFieldsRef.current[name]
+      get(dirtyFieldsRef.current, name)
     ) {
-      swapArrayAt(dirtyFieldsRef.current[name], indexA, indexB);
+      swapArrayAt(get(dirtyFieldsRef.current, name), indexA, indexB);
       shouldRender = true;
     }
 
@@ -422,17 +447,20 @@ export const useFieldArray = <
       moveArrayAt(get(errorsRef.current, name), from, to);
     }
 
-    if (readFormStateRef.current.touched && touchedFieldsRef.current[name]) {
-      moveArrayAt(touchedFieldsRef.current[name], from, to);
+    if (
+      readFormStateRef.current.touched &&
+      get(touchedFieldsRef.current, name)
+    ) {
+      moveArrayAt(get(touchedFieldsRef.current, name), from, to);
       shouldRender = true;
     }
 
     if (
       (readFormStateRef.current.dirtyFields ||
         readFormStateRef.current.isDirty) &&
-      dirtyFieldsRef.current[name]
+      get(dirtyFieldsRef.current, name)
     ) {
-      moveArrayAt(dirtyFieldsRef.current[name], from, to);
+      moveArrayAt(get(dirtyFieldsRef.current, name), from, to);
       shouldRender = true;
     }
 

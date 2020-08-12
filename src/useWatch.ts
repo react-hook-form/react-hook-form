@@ -71,14 +71,10 @@ export function useWatch<TWatchFieldValues>({
   );
   const idRef = React.useRef<string>();
   const defaultValueRef = React.useRef(defaultValue);
-  const nameRef = React.useRef(name);
 
   const updateWatchValue = React.useCallback(
-    () =>
-      setValue(
-        watchInternal(nameRef.current, defaultValueRef.current, idRef.current),
-      ),
-    [setValue, watchInternal, defaultValueRef, nameRef, idRef],
+    () => setValue(watchInternal(name, defaultValueRef.current, idRef.current)),
+    [setValue, watchInternal, defaultValueRef, name, idRef],
   );
 
   React.useEffect(() => {
@@ -87,14 +83,14 @@ export function useWatch<TWatchFieldValues>({
     const watchFieldsHook = watchFieldsHookRef.current;
     watchFieldsHook[id] = new Set();
     watchFieldsHookRender[id] = updateWatchValue;
-    watchInternal(nameRef.current, defaultValueRef.current, id);
+    watchInternal(name, defaultValueRef.current, id);
 
     return () => {
       delete watchFieldsHook[id];
       delete watchFieldsHookRender[id];
     };
   }, [
-    nameRef,
+    name,
     updateWatchValue,
     watchFieldsHookRenderRef,
     watchFieldsHookRef,
