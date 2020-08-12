@@ -230,7 +230,7 @@ describe('unset', () => {
       test: [true, undefined, true],
     };
 
-    expect(unset(data, 'left[2]')).toEqual({
+    expect(unset(data, 'test[2]')).toEqual({
       test: [true, undefined, undefined],
     });
   });
