@@ -778,6 +778,8 @@ export function useForm<
     };
     const fields = fieldsRef.current;
     const isRadioOrCheckbox = isRadioOrCheckboxFunction(ref);
+    const compareRef = (currentRef: Ref) =>
+      isWeb && isHTMLElement(ref) && currentRef === ref;
     let field = fields[name] as Field;
     let isEmptyDefaultValue = true;
     let isFieldArray;
@@ -788,9 +790,9 @@ export function useForm<
       (isRadioOrCheckbox
         ? isArray(field.options) &&
           unique(field.options).find((option) => {
-            return value === option.ref.value && option.ref === ref;
+            return value === option.ref.value && compareRef(option.ref);
           })
-        : ref === field.ref)
+        : compareRef(field.ref))
     ) {
       fields[name] = {
         ...field,
