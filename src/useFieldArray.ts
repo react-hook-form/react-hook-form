@@ -92,7 +92,7 @@ export const useFieldArray = <
   const memoizedDefaultValues = React.useRef<Partial<TFieldArrayValues>[]>(
     getDefaultValues(),
   );
-  const [fields, setField] = React.useState<
+  const [fields, setFields] = React.useState<
     Partial<ArrayField<TFieldArrayValues, TKeyName>>[]
   >(mapIds(memoizedDefaultValues.current, keyName));
   const allFields = React.useRef<
@@ -125,27 +125,27 @@ export const useFieldArray = <
   const setFieldAndValidState = (
     fieldsValues: Partial<ArrayField<TFieldArrayValues, TKeyName>>[],
   ) => {
-    setField(fieldsValues);
+    setFields(fieldsValues);
 
     if (readFormStateRef.current.isValid && validateSchemaIsValid) {
-      validateSchemaIsValid({
-        [name]: fieldsValues,
-      });
+      const values = set({}, name, fieldsValues);
+      validateSchemaIsValid(values);
     }
   };
 
   const shouldRenderFieldArray = (shouldRender?: boolean) => {
+    renderWatchedInputs(name);
+
     if (
-      readFormStateRef.current.dirtyFields ||
-      readFormStateRef.current.isDirty ||
-      readFormStateRef.current.isValid
+      (readFormStateRef.current.dirtyFields ||
+        readFormStateRef.current.isDirty ||
+        readFormStateRef.current.isValid) &&
+      !isWatchAllRef.current
     ) {
       shouldRender = true;
     }
 
-    renderWatchedInputs(name);
-
-    shouldRender && !isWatchAllRef.current && reRender();
+    shouldRender && reRender();
   };
 
   const resetFields = (
@@ -322,19 +322,18 @@ export const useFieldArray = <
         }
 
         for (const key in fields[fieldIndex]) {
-          const currentFieldName = `${name}[${fieldIndex}].${key}`;
+          const getFieldName = (index = 0) =>
+            `${name}[${fieldIndex - index}].${key}`;
 
           if (isCurrentIndex || isLast || isIndexUndefined) {
-            validFieldsRef.current.delete(currentFieldName);
-            fieldsWithValidationRef.current.delete(currentFieldName);
+            validFieldsRef.current.delete(getFieldName());
+            fieldsWithValidationRef.current.delete(getFieldName());
           } else {
-            const previousFieldName = `${name}[${fieldIndex - 1}].${key}`;
-
-            if (validFieldsRef.current.has(currentFieldName)) {
-              validFieldsRef.current.add(previousFieldName);
+            if (validFieldsRef.current.has(getFieldName())) {
+              validFieldsRef.current.add(getFieldName(-1));
             }
-            if (fieldsWithValidationRef.current.has(currentFieldName)) {
-              fieldsWithValidationRef.current.add(previousFieldName);
+            if (fieldsWithValidationRef.current.has(getFieldName())) {
+              fieldsWithValidationRef.current.add(getFieldName(-1));
             }
           }
         }
@@ -470,7 +469,7 @@ export const useFieldArray = <
   const reset = () => {
     resetFields();
     memoizedDefaultValues.current = getDefaultValues();
-    setField(mapIds(memoizedDefaultValues.current, keyName));
+    setFields(mapIds(memoizedDefaultValues.current, keyName));
   };
 
   React.useEffect(() => {
