@@ -779,7 +779,7 @@ export function useForm<
     const fields = fieldsRef.current;
     const isRadioOrCheckbox = isRadioOrCheckboxFunction(ref);
     const compareRef = (currentRef: Ref) =>
-      isWeb && isHTMLElement(ref) && currentRef === ref;
+      isWeb && (!isHTMLElement(ref) || currentRef === ref);
     let field = fields[name] as Field;
     let isEmptyDefaultValue = true;
     let isFieldArray;
