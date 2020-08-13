@@ -2,9 +2,11 @@ import { createRollupConfig } from './createRollupConfig';
 import { getBabelOutputPlugin } from '@rollup/plugin-babel';
 import pkg from '../package.json';
 
+const name = 'index';
 const tsconfig = './tsconfig.ie11.json';
 const options = [
   {
+    name,
     format: 'cjs',
     formatName: 'ie11',
     env: 'development',
@@ -12,6 +14,7 @@ const options = [
     tsconfig,
   },
   {
+    name,
     format: 'cjs',
     formatName: 'ie11',
     env: 'production',

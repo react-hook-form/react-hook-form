@@ -2,10 +2,13 @@
 const ts = require('typescript');
 const fs = require('fs-extra');
 const path = require('path');
+const pkg = require('../package.json');
 
-const name = 'index';
-
-function writeCjsEntryFile(formatName = 'cjs', tsconfig = 'tsconfig.json') {
+function writeCjsEntryFile(
+  name = pkg.name,
+  formatName = 'cjs',
+  tsconfig = 'tsconfig.json',
+) {
   const baseLine = `module.exports = require('./${name}`;
   const contents = `
 'use strict'
@@ -32,5 +35,5 @@ if (process.env.NODE_ENV === 'production') {
   return fs.outputFile(path.join(tsCompilerOptions.outDir, filename), contents);
 }
 
-writeCjsEntryFile();
-writeCjsEntryFile('ie11', 'tsconfig.ie11.json');
+writeCjsEntryFile('index');
+writeCjsEntryFile('index', 'ie11', 'tsconfig.ie11.json');
