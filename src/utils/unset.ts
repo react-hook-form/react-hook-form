@@ -4,6 +4,7 @@ import stringToPath from './stringToPath';
 import isEmptyObject from './isEmptyObject';
 import isObject from './isObject';
 import isUndefined from './isUndefined';
+import isBoolean from './isBoolean';
 
 function baseGet(object: any, updatePath: (string | number)[]) {
   const path = updatePath.slice(0, -1);
@@ -46,8 +47,10 @@ export default function unset(object: any, path: string) {
         currentPathsLength === index &&
         ((isObject(objectRef) && isEmptyObject(objectRef)) ||
           (isArray(objectRef) &&
-            !objectRef.filter((data) => isObject(data) && !isEmptyObject(data))
-              .length))
+            !objectRef.filter(
+              (data) =>
+                (isObject(data) && !isEmptyObject(data)) || isBoolean(data),
+            ).length))
       ) {
         previousObjRef ? delete previousObjRef[item] : delete object[item];
       }
