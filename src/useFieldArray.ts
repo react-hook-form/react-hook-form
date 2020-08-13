@@ -78,7 +78,7 @@ export const useFieldArray = <
     validFieldsRef,
     fieldsWithValidationRef,
     fieldArrayDefaultValues,
-    validateSchemaIsValid,
+    validateResolver,
     renderWatchedInputs,
     getValues,
   } = control || methods.control;
@@ -127,9 +127,10 @@ export const useFieldArray = <
   ) => {
     setFields(fieldsValues);
 
-    if (readFormStateRef.current.isValid && validateSchemaIsValid) {
-      const values = set({}, name, fieldsValues);
-      validateSchemaIsValid(values);
+    if (readFormStateRef.current.isValid && validateResolver) {
+      const values = {};
+      set(values, name, fieldsValues);
+      validateResolver(values);
     }
   };
 
@@ -303,7 +304,7 @@ export const useFieldArray = <
       shouldRender = true;
     }
 
-    if (readFormStateRef.current.isValid && !validateSchemaIsValid) {
+    if (readFormStateRef.current.isValid && !validateResolver) {
       let fieldIndex = -1;
       let isFound = false;
       const isIndexUndefined = isUndefined(index);
@@ -330,10 +331,10 @@ export const useFieldArray = <
             fieldsWithValidationRef.current.delete(getFieldName());
           } else {
             if (validFieldsRef.current.has(getFieldName())) {
-              validFieldsRef.current.add(getFieldName(-1));
+              validFieldsRef.current.add(getFieldName(1));
             }
             if (fieldsWithValidationRef.current.has(getFieldName())) {
-              fieldsWithValidationRef.current.add(getFieldName(-1));
+              fieldsWithValidationRef.current.add(getFieldName(1));
             }
           }
         }
