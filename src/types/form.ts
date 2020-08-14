@@ -54,6 +54,7 @@ export type ValidationMode = {
   onBlur: 'onBlur';
   onChange: 'onChange';
   onSubmit: 'onSubmit';
+  onTouched: 'onTouched';
   all: 'all';
 };
 
@@ -61,6 +62,11 @@ export type Mode = keyof ValidationMode;
 
 export type SubmitHandler<TFieldValues extends FieldValues> = (
   data: UnpackNestedValue<TFieldValues>,
+  event?: React.BaseSyntheticEvent,
+) => void | Promise<void>;
+
+export type SubmitErrorHandler<TFieldValues extends FieldValues> = (
+  errors: FieldErrors<TFieldValues>,
   event?: React.BaseSyntheticEvent,
 ) => void | Promise<void>;
 
@@ -92,7 +98,7 @@ export type UseFormOptions<
   TContext extends object = object
 > = Partial<{
   mode: Mode;
-  reValidateMode: Mode;
+  reValidateMode: Exclude<Mode, 'onTouched' | 'all'>;
   defaultValues: UnpackNestedValue<DeepPartial<TFieldValues>>;
   resolver: Resolver<TFieldValues, TContext>;
   context: TContext;
@@ -248,6 +254,7 @@ export type Control<TFieldValues extends FieldValues = FieldValues> = Pick<
     readonly isOnSubmit: boolean;
     readonly isOnChange: boolean;
     readonly isOnAll: boolean;
+    readonly isOnTouch: boolean;
   };
   reValidateMode: {
     readonly isReValidateOnBlur: boolean;
@@ -258,7 +265,7 @@ export type Control<TFieldValues extends FieldValues = FieldValues> = Pick<
   >;
   formStateRef: React.MutableRefObject<FormState<FieldValues>>;
   updateFormState: (args: Partial<FormState<TFieldValues>>) => void;
-  validateSchemaIsValid?: (fieldsValues: any) => void;
+  validateResolver: ((fieldsValues: any) => void) | undefined;
   watchFieldsRef: React.MutableRefObject<Set<InternalFieldName<TFieldValues>>>;
   isWatchAllRef: React.MutableRefObject<boolean>;
   validFieldsRef: React.MutableRefObject<Set<InternalFieldName<TFieldValues>>>;
@@ -369,7 +376,8 @@ export type UseFormMethods<TFieldValues extends FieldValues = FieldValues> = {
     names: TFieldName[],
   ): UnpackNestedValue<Pick<TFieldValues, TFieldName>>;
   handleSubmit: <TSubmitFieldValues extends FieldValues = TFieldValues>(
-    callback: SubmitHandler<TSubmitFieldValues>,
+    onValid: SubmitHandler<TSubmitFieldValues>,
+    onInvalid?: SubmitErrorHandler<TFieldValues>,
   ) => (e?: React.BaseSyntheticEvent) => Promise<void>;
   control: Control<TFieldValues>;
 };

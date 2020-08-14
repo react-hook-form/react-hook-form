@@ -63,6 +63,7 @@ import {
   SetValueConfig,
   ErrorOption,
   FormState,
+  SubmitErrorHandler,
 } from './types/form';
 import { LiteralToPrimitive, DeepPartial, NonUndefined } from './types/utils';
 
@@ -122,7 +123,7 @@ export function useForm<
   const [, render] = React.useState();
   const modeRef = React.useRef(modeChecker(mode));
   const {
-    current: { isOnSubmit, isOnAll },
+    current: { isOnSubmit, isOnTouch },
   } = modeRef;
   const isValidateAllFieldCriteria = criteriaMode === VALIDATION_MODE.all;
   const [formState, setFormState] = React.useState<FormState<TFieldValues>>({
@@ -140,7 +141,7 @@ export function useForm<
     dirtyFields: !isProxyEnabled,
     isSubmitted: isOnSubmit,
     submitCount: !isProxyEnabled,
-    touched: !isProxyEnabled,
+    touched: !isProxyEnabled || isOnTouch,
     isSubmitting: !isProxyEnabled,
     isValid: !isProxyEnabled,
     errors: !isProxyEnabled,
@@ -468,7 +469,7 @@ export function useForm<
     if (!isEmptyObject(watchFieldsHookRef.current)) {
       for (const key in watchFieldsHookRef.current) {
         if (
-          name === '' ||
+          !name ||
           watchFieldsHookRef.current[key].has(name) ||
           watchFieldsHookRef.current[key].has(getFieldArrayParentName(name)) ||
           !watchFieldsHookRef.current[key].size
@@ -515,15 +516,14 @@ export function useForm<
 
         if (field) {
           const isBlurEvent = type === EVENTS.BLUR;
-          const shouldSkipValidation =
-            !isOnAll &&
-            skipValidation({
-              isBlurEvent,
-              isReValidateOnChange,
-              isReValidateOnBlur,
-              isSubmitted: formStateRef.current.isSubmitted,
-              ...modeRef.current,
-            });
+          const shouldSkipValidation = skipValidation({
+            isBlurEvent,
+            isReValidateOnChange,
+            isReValidateOnBlur,
+            isTouched: !!get(formStateRef.current.touched, name),
+            isSubmitted: formStateRef.current.isSubmitted,
+            ...modeRef.current,
+          });
           const dirtyValues = updateDirtyState(name, false);
           let shouldRender = !!dirtyValues || isFieldWatched(name);
 
@@ -849,6 +849,8 @@ export function useForm<
     };
     const fields = fieldsRef.current;
     const isRadioOrCheckbox = isRadioOrCheckboxFunction(ref);
+    const compareRef = (currentRef: Ref) =>
+      isWeb && (!isHTMLElement(ref) || currentRef === ref);
     let field = fields[name] as Field;
     let isEmptyDefaultValue = true;
     let isFieldArray;
@@ -859,9 +861,9 @@ export function useForm<
       (isRadioOrCheckbox
         ? isArray(field.options) &&
           unique(field.options).find((option) => {
-            return value === option.ref.value && option.ref === ref;
+            return value === option.ref.value && compareRef(option.ref);
           })
-        : ref === field.ref)
+        : compareRef(field.ref))
     ) {
       fields[name] = {
         ...field,
@@ -1002,7 +1004,8 @@ export function useForm<
 
   const handleSubmit = React.useCallback(
     <TSubmitFieldValues extends FieldValues = TFieldValues>(
-      callback: SubmitHandler<TSubmitFieldValues>,
+      onValid: SubmitHandler<TSubmitFieldValues>,
+      onInvalid?: SubmitErrorHandler<TFieldValues>,
     ) => async (e?: React.BaseSyntheticEvent): Promise<void> => {
       if (e && e.preventDefault) {
         e.preventDefault();
@@ -1064,7 +1067,7 @@ export function useForm<
           updateFormState({
             errors: {},
           });
-          await callback(
+          await onValid(
             fieldValues as UnpackNestedValue<TSubmitFieldValues>,
             e,
           );
@@ -1073,6 +1076,9 @@ export function useForm<
             ...formState.errors,
             ...fieldErrors,
           };
+          if (onInvalid) {
+            await onInvalid(fieldErrors, e);
+          }
           if (shouldFocusError) {
             focusOnErrorField(fieldsRef.current, fieldErrors);
           }
@@ -1217,7 +1223,7 @@ export function useForm<
     defaultValuesRef,
     unmountFieldsStateRef,
     updateFormState,
-    validateSchemaIsValid: resolver ? validateResolver : undefined,
+    validateResolver: resolver ? validateResolver : undefined,
     ...commonProps,
   };
 

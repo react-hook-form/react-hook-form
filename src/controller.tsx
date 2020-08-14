@@ -85,7 +85,7 @@ const Controller = <
       isBlurEvent,
       isReValidateOnBlur,
       isReValidateOnChange,
-      isSubmitted,
+      isSubmitted: isSubmittedRef.current,
       ...mode,
     });
 
@@ -182,6 +182,7 @@ const Controller = <
         onChange,
         onBlur,
         value,
+        name,
       })
     : null;
 };

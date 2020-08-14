@@ -45,6 +45,7 @@ export type ControllerProps<
       onChange: (...event: any[]) => void;
       onBlur: () => void;
       value: any;
+      name: FieldName<FieldValuesFromControl<TControl>>;
     }) => React.ReactElement;
   },
   AsProps<TAs>

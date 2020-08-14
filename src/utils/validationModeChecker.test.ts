@@ -8,6 +8,7 @@ describe('validationModeChecker', () => {
       isOnBlur: true,
       isOnChange: false,
       isOnAll: false,
+      isOnTouch: false,
     });
 
     expect(validationModeChecker(VALIDATION_MODE.onChange)).toEqual({
@@ -15,6 +16,7 @@ describe('validationModeChecker', () => {
       isOnBlur: false,
       isOnChange: true,
       isOnAll: false,
+      isOnTouch: false,
     });
 
     expect(validationModeChecker(VALIDATION_MODE.onSubmit)).toEqual({
@@ -22,6 +24,7 @@ describe('validationModeChecker', () => {
       isOnBlur: false,
       isOnChange: false,
       isOnAll: false,
+      isOnTouch: false,
     });
 
     expect(validationModeChecker(undefined)).toEqual({
@@ -29,6 +32,7 @@ describe('validationModeChecker', () => {
       isOnBlur: false,
       isOnChange: false,
       isOnAll: false,
+      isOnTouch: false,
     });
 
     expect(validationModeChecker(VALIDATION_MODE.all)).toEqual({
@@ -36,6 +40,15 @@ describe('validationModeChecker', () => {
       isOnBlur: false,
       isOnChange: false,
       isOnAll: true,
+      isOnTouch: false,
+    });
+
+    expect(validationModeChecker(VALIDATION_MODE.onTouched)).toEqual({
+      isOnSubmit: false,
+      isOnBlur: false,
+      isOnChange: false,
+      isOnAll: false,
+      isOnTouch: true,
     });
   });
 });
