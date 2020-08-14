@@ -48,6 +48,7 @@ export const reconfigureControl = (
     isOnSubmit: false,
     isOnBlur: false,
     isOnChange: false,
+    isOnTouch: false,
     isOnAll: false,
   },
   reValidateMode: {

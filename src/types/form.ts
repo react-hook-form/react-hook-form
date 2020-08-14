@@ -54,6 +54,7 @@ export type ValidationMode = {
   onBlur: 'onBlur';
   onChange: 'onChange';
   onSubmit: 'onSubmit';
+  onTouched: 'onTouched';
   all: 'all';
 };
 
@@ -97,7 +98,7 @@ export type UseFormOptions<
   TContext extends object = object
 > = Partial<{
   mode: Mode;
-  reValidateMode: Mode;
+  reValidateMode: Exclude<Mode, 'onTouched' | 'all'>;
   defaultValues: UnpackNestedValue<DeepPartial<TFieldValues>>;
   resolver: Resolver<TFieldValues, TContext>;
   context: TContext;
@@ -241,6 +242,7 @@ export type Control<TFieldValues extends FieldValues = FieldValues> = Pick<
     readonly isOnSubmit: boolean;
     readonly isOnChange: boolean;
     readonly isOnAll: boolean;
+    readonly isOnTouch: boolean;
   };
   reValidateMode: {
     readonly isReValidateOnBlur: boolean;
