@@ -266,7 +266,7 @@ export function useForm<
   );
 
   const updateDirtyState = React.useCallback(
-    (name: InternalFieldName<TFieldValues>, shouldUpdateState?: boolean) => {
+    (name: InternalFieldName<TFieldValues>, shouldUpdateState = true) => {
       const { isDirty, dirtyFields } = readFormStateRef.current;
 
       if (!fieldsRef.current[name] || (!isDirty && !dirtyFields)) {
@@ -299,10 +299,12 @@ export function useForm<
         dirtyFields: formStateRef.current.dirtyFields,
       };
 
-      shouldUpdateState =
+      const isChanged =
         (isDirty && previousIsDirty !== dirty) ||
         (dirtyFields &&
           isDirtyFieldExist !== get(formStateRef.current.dirtyFields, name));
+
+      shouldUpdateState = isChanged && shouldUpdateState;
 
       if (shouldUpdateState) {
         updateFormState({
@@ -310,7 +312,7 @@ export function useForm<
         });
       }
 
-      return shouldUpdateState && values;
+      return isChanged && values;
     },
     [],
   );
@@ -524,7 +526,7 @@ export function useForm<
               isSubmitted: formStateRef.current.isSubmitted,
               ...modeRef.current,
             });
-          const dirtyValues = updateDirtyState(name);
+          const dirtyValues = updateDirtyState(name, false);
           let shouldRender = !!dirtyValues || isFieldWatched(name);
 
           if (
