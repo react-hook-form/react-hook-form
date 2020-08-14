@@ -63,6 +63,7 @@ import {
   NestedValue,
   SetValueConfig,
   ErrorOption,
+  SubmitErrorHandler,
 } from './types/form';
 import { LiteralToPrimitive, DeepPartial, NonUndefined } from './types/utils';
 
@@ -929,7 +930,8 @@ export function useForm<
 
   const handleSubmit = React.useCallback(
     <TSubmitFieldValues extends FieldValues = TFieldValues>(
-      callback: SubmitHandler<TSubmitFieldValues>,
+      onValid: SubmitHandler<TSubmitFieldValues>,
+      onInvalid?: SubmitErrorHandler<TFieldValues>,
     ) => async (e?: React.BaseSyntheticEvent): Promise<void> => {
       if (e && e.preventDefault) {
         e.preventDefault();
@@ -989,7 +991,7 @@ export function useForm<
         ) {
           errorsRef.current = {};
           reRender();
-          await callback(
+          await onValid(
             fieldValues as UnpackNestedValue<TSubmitFieldValues>,
             e,
           );
@@ -998,6 +1000,9 @@ export function useForm<
             ...errorsRef.current,
             ...fieldErrors,
           };
+          if (onInvalid) {
+            await onInvalid(fieldErrors, e);
+          }
           if (shouldFocusError) {
             focusOnErrorField(fieldsRef.current, fieldErrors);
           }

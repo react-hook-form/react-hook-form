@@ -1750,6 +1750,49 @@ describe('useForm', () => {
     });
   });
 
+  describe('handleSubmit with onInvalid callback', () => {
+    it('should invoke the onValid callback when validation pass', async () => {
+      const { result } = renderHook(() => useForm());
+      const onValidCallback = jest.fn();
+      const onInvalidCallback = jest.fn();
+
+      await act(async () => {
+        await result.current.handleSubmit(
+          onValidCallback,
+          onInvalidCallback,
+        )({
+          preventDefault: () => {},
+          persist: () => {},
+        } as React.SyntheticEvent);
+      });
+      expect(onValidCallback).toBeCalledTimes(1);
+      expect(onInvalidCallback).not.toBeCalledTimes(1);
+    });
+
+    it('should invoke the onInvalid callback when validation failed', async () => {
+      const { result } = renderHook(() => useForm());
+      result.current.register(
+        { value: '', type: 'input', name: 'test' },
+        { required: true },
+      );
+      const onValidCallback = jest.fn();
+      const onInvalidCallback = jest.fn();
+
+      await act(async () => {
+        await result.current.handleSubmit(
+          onValidCallback,
+          onInvalidCallback,
+        )({
+          preventDefault: () => {},
+          persist: () => {},
+        } as React.SyntheticEvent);
+      });
+
+      expect(onValidCallback).not.toBeCalledTimes(1);
+      expect(onInvalidCallback).toBeCalledTimes(1);
+    });
+  });
+
   describe('getValues', () => {
     it('should call getFieldsValues and return all values', () => {
       const { result } = renderHook(() => useForm<{ test: string }>());
