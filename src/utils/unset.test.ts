@@ -224,4 +224,14 @@ describe('unset', () => {
       },
     });
   });
+
+  it('should not remove parent if boolean value exists in array', () => {
+    const data = {
+      test: [true, undefined, true],
+    };
+
+    expect(unset(data, 'test[2]')).toEqual({
+      test: [true, undefined, undefined],
+    });
+  });
 });

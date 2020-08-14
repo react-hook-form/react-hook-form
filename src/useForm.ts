@@ -551,8 +551,8 @@ export function useForm<
             }
           }
 
-          if (resolver) {
-            const { errors } = await resolver(
+          if (resolverRef.current) {
+            const { errors } = await resolverRef.current(
               getValues() as TFieldValues,
               contextRef.current,
               isValidateAllFieldCriteria,
@@ -1162,8 +1162,12 @@ export function useForm<
 
     return () => {
       isUnMount.current = true;
+
+      if (process.env.NODE_ENV !== 'production') {
+        return;
+      }
+
       fieldsRef.current &&
-        process.env.NODE_ENV === 'production' &&
         Object.values(fieldsRef.current).forEach((field) =>
           removeFieldEventListenerAndRef(field, true),
         );
@@ -1209,7 +1213,7 @@ export function useForm<
     defaultValuesRef,
     unmountFieldsStateRef,
     updateFormState,
-    ...(resolver ? { validateSchemaIsValid: validateResolver } : {}),
+    validateSchemaIsValid: resolver ? validateResolver : undefined,
     ...commonProps,
   };
 
