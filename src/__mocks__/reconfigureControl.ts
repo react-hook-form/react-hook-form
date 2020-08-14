@@ -34,7 +34,7 @@ export const reconfigureControl = (
     current: {},
   },
   watchInternal: jest.fn(),
-  validateSchemaIsValid: jest.fn(),
+  validateResolver: jest.fn(),
   reRender: jest.fn(),
   setValue: jest.fn(),
   getValues: jest.fn(),

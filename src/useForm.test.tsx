@@ -2804,7 +2804,7 @@ describe('useForm', () => {
     });
   });
 
-  describe('validateSchemaIsValid', () => {
+  describe('validateResolver', () => {
     it('should be defined when resolver is defined', () => {
       const resolver = async (data: any) => {
         return {
@@ -2815,13 +2815,13 @@ describe('useForm', () => {
 
       const { result } = renderHook(() => useForm({ resolver }));
 
-      expect(result.current.control.validateSchemaIsValid).toBeDefined();
+      expect(result.current.control.validateResolver).toBeDefined();
     });
 
     it('should be undefined when resolver is undefined', () => {
       const { result } = renderHook(() => useForm());
 
-      expect(result.current.control.validateSchemaIsValid).toBeUndefined();
+      expect(result.current.control.validateResolver).toBeUndefined();
     });
 
     it('should be called resolver with default values if default value is defined', () => {
@@ -2843,7 +2843,7 @@ describe('useForm', () => {
 
       result.current.register('test');
 
-      result.current.control.validateSchemaIsValid!({});
+      result.current.control.validateResolver!({});
 
       expect(resolverData).toEqual({
         test: 'default',
@@ -2870,7 +2870,7 @@ describe('useForm', () => {
 
       result.current.setValue('test', 'value');
 
-      result.current.control.validateSchemaIsValid!({});
+      result.current.control.validateResolver!({});
 
       expect(resolverData).toEqual({ test: 'value' });
     });
