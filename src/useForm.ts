@@ -299,19 +299,18 @@ export function useForm<
         dirtyFields: formStateRef.current.dirtyFields,
       };
 
+      shouldUpdateState =
+        (isDirty && previousIsDirty !== dirty) ||
+        (dirtyFields &&
+          isDirtyFieldExist !== get(formStateRef.current.dirtyFields, name));
+
       if (shouldUpdateState) {
         updateFormState({
           ...values,
         });
       }
 
-      return (
-        ((isDirty && previousIsDirty !== dirty) ||
-          (dirtyFields &&
-            isDirtyFieldExist !==
-              get(formStateRef.current.dirtyFields, name))) &&
-        values
-      );
+      return shouldUpdateState && values;
     },
     [],
   );
@@ -403,7 +402,6 @@ export function useForm<
         const result = await Promise.all(
           fields.map(async (data) => await executeValidation(data, true)),
         );
-        reRender();
         return result.every(Boolean);
       }
 
