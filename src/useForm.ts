@@ -928,12 +928,16 @@ export function useForm<
           field,
           unmountFieldsStateRef,
         ).then((error: FieldErrors) => {
+          const previousFormIsValid = formStateRef.current.isValid;
+
           if (isEmptyObject(error)) {
             validFieldsRef.current.add(name);
-          } else if (formStateRef.current.isValid) {
-            updateFormState({
-              isValid: false,
-            });
+          } else {
+            validFieldsRef.current.delete(name);
+          }
+
+          if (previousFormIsValid !== isEmptyObject(error)) {
+            reRender();
           }
         });
       }
