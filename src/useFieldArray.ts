@@ -133,11 +133,6 @@ export const useFieldArray = <
     }
   };
 
-  const shouldRenderFieldArray = () => {
-    renderWatchedInputs(name);
-    !isWatchAllRef.current && reRender();
-  };
-
   const getIsDirty = (
     flagOrFields?: (Partial<TFieldArrayValues> | undefined)[],
   ): boolean => {
@@ -190,7 +185,7 @@ export const useFieldArray = <
     }
 
     focusIndexRef.current = shouldFocus ? allFields.current.length : -1;
-    shouldRenderFieldArray();
+    renderWatchedInputs(name);
   };
 
   const prepend = (
@@ -233,7 +228,7 @@ export const useFieldArray = <
       touched,
     });
 
-    shouldRenderFieldArray();
+    renderWatchedInputs(name);
     focusIndexRef.current = shouldFocus ? 0 : -1;
   };
 
@@ -311,7 +306,7 @@ export const useFieldArray = <
       isDirty: getIsDirty(removeArrayAt(fieldValues, index)),
     });
 
-    shouldRenderFieldArray();
+    renderWatchedInputs(name);
   };
 
   const insert = (
@@ -358,7 +353,7 @@ export const useFieldArray = <
       isDirty: getIsDirty(insertAt(fieldValues, index)),
     });
 
-    shouldRenderFieldArray();
+    renderWatchedInputs(name);
 
     focusIndexRef.current = shouldFocus ? index : -1;
   };
@@ -391,7 +386,7 @@ export const useFieldArray = <
       touched,
       isDirty: getIsDirty(fieldValues),
     });
-    shouldRenderFieldArray();
+    renderWatchedInputs(name);
   };
 
   const move = (from: number, to: number) => {
@@ -422,7 +417,7 @@ export const useFieldArray = <
       touched,
       isDirty: getIsDirty(fieldValues),
     });
-    shouldRenderFieldArray();
+    renderWatchedInputs(name);
   };
 
   const reset = () => {
