@@ -211,7 +211,7 @@ export function useForm<
         updateFormState({
           ...(dirtyValues || {}),
           errors: formStateRef.current.errors,
-          isValid: resolver
+          isValid: resolverRef.current
             ? !!isValid
             : validFieldsRef.current.size >=
                 fieldsWithValidationRef.current.size &&
@@ -566,6 +566,8 @@ export function useForm<
             if (previousFormIsValid !== isEmptyObject(errors)) {
               shouldRender = true;
             }
+
+            isValid = isEmptyObject(errors);
           } else {
             error = await validateField<TFieldValues>(
               fieldsRef,
