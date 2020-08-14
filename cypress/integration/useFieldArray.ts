@@ -106,11 +106,11 @@ describe('useFieldArray', () => {
     cy.get('#prepend').click();
     cy.get('ul > li').its('length').should('equal', 5);
 
-    cy.get('ul > li').eq(0).get('input').should('have.value', '6');
+    cy.get('ul > li').eq(0).get('input').should('have.value', '7');
 
     cy.get('#submit').click();
     cy.get('#result').contains(
-      '{"data":[{"name":"6"},{"name":"test"},{"name":"test1"},{"name":"test2"},{"name":"1"}]}',
+      '{"data":[{"name":"7"},{"name":"test"},{"name":"test1"},{"name":"test2"},{"name":"1"}]}',
     );
 
     cy.get('#swap').click();
@@ -119,33 +119,33 @@ describe('useFieldArray', () => {
 
     cy.get('#submit').click();
     cy.get('#result').contains(
-      '{"data":[{"name":"6"},{"name":"test1"},{"name":"test"},{"name":"test2"},{"name":"1"}]}',
+      '{"data":[{"name":"7"},{"name":"test1"},{"name":"test"},{"name":"test2"},{"name":"1"}]}',
     );
 
     cy.get('#move').click();
     cy.get('ul > li').eq(0).find('input').should('have.value', 'test');
-    cy.get('ul > li').eq(1).find('input').should('have.value', '6');
+    cy.get('ul > li').eq(1).find('input').should('have.value', '7');
 
     cy.get('#submit').click();
     cy.get('#result').contains(
-      '{"data":[{"name":"test"},{"name":"6"},{"name":"test1"},{"name":"test2"},{"name":"1"}]}',
+      '{"data":[{"name":"test"},{"name":"7"},{"name":"test1"},{"name":"test2"},{"name":"1"}]}',
     );
 
     cy.get('#insert').click();
-    cy.get('ul > li').eq(1).find('input').should('have.value', '18');
+    cy.get('ul > li').eq(1).find('input').should('have.value', '19');
 
     cy.get('#submit').click();
     cy.get('#result').contains(
-      '{"data":[{"name":"test"},{"name":"18"},{"name":"6"},{"name":"test1"},{"name":"test2"},{"name":"1"}]}',
+      '{"data":[{"name":"test"},{"name":"19"},{"name":"7"},{"name":"test1"},{"name":"test2"},{"name":"1"}]}',
     );
 
     cy.get('#remove').click();
     cy.get('ul > li').eq(0).find('input').should('have.value', 'test');
-    cy.get('ul > li').eq(1).find('input').should('have.value', '6');
+    cy.get('ul > li').eq(1).find('input').should('have.value', '7');
 
     cy.get('#submit').click();
     cy.get('#result').contains(
-      '{"data":[{"name":"test"},{"name":"6"},{"name":"test1"},{"name":"test2"},{"name":"1"}]}',
+      '{"data":[{"name":"test"},{"name":"7"},{"name":"test1"},{"name":"test2"},{"name":"1"}]}',
     );
 
     cy.get('#delete2').click();
@@ -153,7 +153,7 @@ describe('useFieldArray', () => {
     cy.get('ul > li').its('length').should('equal', 4);
 
     cy.get('ul > li').eq(0).find('input').should('have.value', 'test');
-    cy.get('ul > li').eq(1).find('input').should('have.value', '6');
+    cy.get('ul > li').eq(1).find('input').should('have.value', '7');
     cy.get('ul > li').eq(2).find('input').should('have.value', 'test2');
     cy.get('ul > li').eq(3).find('input').should('have.value', '1');
 
@@ -163,7 +163,7 @@ describe('useFieldArray', () => {
 
     cy.get('#submit').click();
     cy.get('#result').contains(
-      '{"data":[{"name":"test"},{"name":"6"},{"name":"test2"}]}',
+      '{"data":[{"name":"test"},{"name":"7"},{"name":"test2"}]}',
     );
 
     cy.get('#removeAll').click();
@@ -174,13 +174,13 @@ describe('useFieldArray', () => {
 
     cy.get('#append').click();
 
-    cy.get('ul > li').eq(0).find('input').should('have.value', '35');
+    cy.get('ul > li').eq(0).find('input').should('have.value', '36');
 
     cy.get('#prepend').click();
 
-    cy.get('ul > li').eq(0).find('input').should('have.value', '36');
+    cy.get('ul > li').eq(0).find('input').should('have.value', '37');
 
-    cy.get('#renderCount').contains('37');
+    cy.get('#renderCount').contains('38');
   });
 
   it('should behaviour correctly with defaultValue and without auto focus', () => {
