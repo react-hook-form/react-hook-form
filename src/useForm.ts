@@ -266,10 +266,12 @@ export function useForm<
   );
 
   const updateDirtyState = React.useCallback(
-    (name: InternalFieldName<TFieldValues>, shouldUpdateState = true) => {
-      const { isDirty, dirtyFields } = readFormStateRef.current;
-
-      if (!fieldsRef.current[name] || (!isDirty && !dirtyFields)) {
+    (name: InternalFieldName<TFieldValues>, shouldRender = true) => {
+      if (
+        !fieldsRef.current[name] ||
+        (!readFormStateRef.current.isDirty &&
+          !readFormStateRef.current.dirtyFields)
+      ) {
         return false;
       }
 
@@ -286,33 +288,30 @@ export function useForm<
         unset(formStateRef.current.dirtyFields, name);
       }
 
-      const dirty =
-        (isFieldArray &&
-          !deepEqual(
-            get(getValues(), getFieldArrayParentName(name)),
-            get(defaultValuesRef.current, getFieldArrayParentName(name)),
-          )) ||
-        !isEmptyObject(formStateRef.current.dirtyFields);
-
-      const values = {
-        isDirty: dirty,
+      const state = {
+        isDirty:
+          (isFieldArray &&
+            !deepEqual(
+              get(getValues(), getFieldArrayParentName(name)),
+              get(defaultValuesRef.current, getFieldArrayParentName(name)),
+            )) ||
+          !isEmptyObject(formStateRef.current.dirtyFields),
         dirtyFields: formStateRef.current.dirtyFields,
       };
 
       const isChanged =
-        (isDirty && previousIsDirty !== dirty) ||
-        (dirtyFields &&
+        (readFormStateRef.current.isDirty &&
+          previousIsDirty !== state.isDirty) ||
+        (readFormStateRef.current.dirtyFields &&
           isDirtyFieldExist !== get(formStateRef.current.dirtyFields, name));
 
-      shouldUpdateState = isChanged && shouldUpdateState;
-
-      if (shouldUpdateState) {
+      if (isChanged && shouldRender) {
         updateFormState({
-          ...values,
+          ...state,
         });
       }
 
-      return isChanged && values;
+      return isChanged && state;
     },
     [],
   );
