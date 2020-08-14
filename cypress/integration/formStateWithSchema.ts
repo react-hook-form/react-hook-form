@@ -37,7 +37,7 @@ describe('form state with schema validation', () => {
       '{"isDirty":true,"dirtyFields":["firstName","lastName"],"isSubmitted":true,"submitCount":2,"touched":["firstName","lastName"],"isSubmitting":false,"isValid":false}',
     );
     cy.get('select[name="select"]').select('1');
-    cy.get('#renderCount').contains('15');
+    cy.get('#renderCount').contains('14');
   });
 
   it('should return correct form state with onChange mode', () => {
@@ -117,7 +117,7 @@ describe('form state with schema validation', () => {
     cy.get('#state').contains(
       '{"isDirty":true,"dirtyFields":["firstName","lastName"],"isSubmitted":true,"submitCount":2,"touched":["firstName","lastName"],"isSubmitting":false,"isValid":true}',
     );
-    cy.get('#renderCount').contains('16');
+    cy.get('#renderCount').contains('18');
   });
 
   it('should reset dirty value when inputs reset back to default with onSubmit mode', () => {
@@ -161,7 +161,7 @@ describe('form state with schema validation', () => {
     cy.get('input[name="checkbox-checked"]').uncheck();
     cy.get('input[name="checkbox-checked"]').blur();
     cy.get('#state').contains(
-      '{"dirtyFields":["checkbox-checked"],"isSubmitted":false,"submitCount":0,"touched":["firstName","lastName","select","checkbox","checkbox-checked"],""isDirty":true,isSubmitting":false,"isValid":false}',
+      '{"isDirty":true,"dirtyFields":["checkbox-checked"],"isSubmitted":false,"submitCount":0,"touched":["firstName","lastName","select","checkbox","checkbox-checked"],"isSubmitting":false,"isValid":false}',
     );
     cy.get('input[name="checkbox-checked"]').check();
     cy.get('#state').contains(
@@ -199,7 +199,7 @@ describe('form state with schema validation', () => {
     cy.get('#state').contains(
       '{"isDirty":false,"dirtyFields":[],"isSubmitted":false,"submitCount":0,"touched":["firstName","lastName"],"isSubmitting":false,"isValid":false}',
     );
-    cy.get('#renderCount').contains('10');
+    cy.get('#renderCount').contains('12');
   });
 
   it('should reset dirty value when inputs reset back to default with onChange mode', () => {

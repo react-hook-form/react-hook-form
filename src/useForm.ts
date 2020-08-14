@@ -212,7 +212,7 @@ export function useForm<
           ...(dirtyValues || {}),
           errors: formStateRef.current.errors,
           isValid: resolver
-            ? isValid
+            ? !!isValid
             : validFieldsRef.current.size >=
                 fieldsWithValidationRef.current.size &&
               isEmptyObject(formStateRef.current.errors),

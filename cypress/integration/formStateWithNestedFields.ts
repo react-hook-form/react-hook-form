@@ -1,4 +1,4 @@
-describe('form state with nested fields', () => {
+describe.skip('form state with nested fields', () => {
   it('should return correct form state with onSubmit mode', () => {
     cy.visit('http://localhost:3000/formStateWithNestedFields/onSubmit');
 
