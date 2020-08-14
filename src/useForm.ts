@@ -196,7 +196,7 @@ export function useForm<
           shouldReRender = shouldReRender || previousError;
         }
 
-        unset(formState.errors, name);
+        unset(formStateRef.current.errors, name);
       } else {
         validFieldsRef.current.delete(name);
         shouldReRender =
@@ -351,7 +351,6 @@ export function useForm<
         isValidateAllFieldCriteria,
       );
       const previousFormIsValid = formStateRef.current.isValid;
-      const currentIsValid = isEmptyObject(errors);
 
       if (isArray(payload)) {
         const isInputsValid = payload
@@ -380,7 +379,7 @@ export function useForm<
         shouldRenderBaseOnError(
           payload,
           (error ? { [payload]: error } : {}) as FlatFieldErrors<TFieldValues>,
-          previousFormIsValid !== currentIsValid,
+          previousFormIsValid !== isEmptyObject(errors),
         );
 
         return !error;
@@ -546,7 +545,7 @@ export function useForm<
                 ...dirtyValues,
               });
             } else {
-              return shouldRender && reRender();
+              return shouldRender && updateFormState({});
             }
           }
 
