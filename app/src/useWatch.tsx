@@ -114,7 +114,6 @@ export default () => {
           <input
             placeholder="👀 watching me :)"
             autoComplete="off"
-            data-testid="test1-input"
             style={{ fontSize: 20 }}
             {...props}
           />

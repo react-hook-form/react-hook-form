@@ -176,7 +176,7 @@ describe('basic form validation', () => {
     cy.get('input[name="checkbox"]').check();
     cy.get('input[name="checkbox"]').blur();
 
-    cy.get('p').should('have.length', 1);
+    cy.get('p').should('have.length', 0);
 
     cy.get('#resetForm').click();
     cy.get('input[name="firstName"]').should('not.have.value');
