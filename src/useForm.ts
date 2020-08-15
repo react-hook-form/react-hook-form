@@ -121,7 +121,6 @@ export function useForm<
   const contextRef = React.useRef(context);
   const resolverRef = React.useRef(resolver);
   const fieldArrayNamesRef = React.useRef<Set<string>>(new Set());
-  const [, render] = React.useState();
   const modeRef = React.useRef(modeChecker(mode));
   const {
     current: { isOnSubmit, isOnTouch },
@@ -156,11 +155,6 @@ export function useForm<
   resolverRef.current = resolver;
   formStateRef.current = formState;
   errorsRef.current = formState.errors;
-
-  const reRender = React.useCallback(
-    () => !isUnMount.current && render({}),
-    [],
-  );
 
   const updateFormState = React.useCallback(
     (state: Partial<FormState<TFieldValues>> = {}): void => {
@@ -503,7 +497,7 @@ export function useForm<
     renderWatchedInputs(name);
 
     if (isFieldWatched(name)) {
-      reRender();
+      updateFormState();
     }
 
     if (config.shouldValidate) {
@@ -961,7 +955,7 @@ export function useForm<
           }
 
           if (previousFormIsValid !== isEmptyObject(error)) {
-            reRender();
+            updateFormState();
           }
         });
       }
