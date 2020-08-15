@@ -6,5 +6,5 @@ export const isObjectType = (value: unknown) => typeof value === 'object';
 export default <T extends object>(value: unknown): value is T =>
   !isNullOrUndefined(value) &&
   !isArray(value) &&
-  !(value instanceof Date) &&
-  isObjectType(value);
+  isObjectType(value) &&
+  !(value instanceof Date);
