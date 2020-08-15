@@ -2390,7 +2390,7 @@ describe('useForm', () => {
           }),
         );
         expect(screen.getByRole('alert').textContent).toBe('');
-        expect(renderCount).toBe(3);
+        expect(renderCount).toBe(4);
       });
 
       // check https://github.com/react-hook-form/react-hook-form/issues/2153

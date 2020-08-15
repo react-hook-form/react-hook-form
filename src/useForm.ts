@@ -64,6 +64,7 @@ import {
   ErrorOption,
   FormState,
   SubmitErrorHandler,
+  Touched,
 } from './types/form';
 import { LiteralToPrimitive, DeepPartial, NonUndefined } from './types/utils';
 
@@ -177,7 +178,11 @@ export function useForm<
       name: InternalFieldName<TFieldValues>,
       error: FlatFieldErrors<TFieldValues>,
       shouldRender: boolean | null = false,
-      dirtyValues?: any,
+      state?: {
+        dirtyFields?: Touched<TFieldValues>;
+        isDirty?: boolean;
+        touched?: Touched<TFieldValues>;
+      },
       isValid?: boolean,
     ): boolean | void => {
       let shouldReRender =
@@ -208,11 +213,10 @@ export function useForm<
         set(formStateRef.current.errors, name, error[name]);
       }
 
-      if (shouldReRender || dirtyValues) {
+      if (shouldReRender || state) {
         updateFormState({
-          ...(dirtyValues || {}),
+          ...(state || {}),
           errors: formStateRef.current.errors,
-          touched: formStateRef.current.touched,
           isValid: resolverRef.current
             ? !!isValid
             : validFieldsRef.current.size >=
@@ -525,8 +529,14 @@ export function useForm<
             isSubmitted: formStateRef.current.isSubmitted,
             ...modeRef.current,
           });
-          const dirtyValues = updateDirtyState(name, false);
-          let shouldRender = !!dirtyValues || isFieldWatched(name);
+          let state:
+            | {
+                dirtyFields?: Touched<TFieldValues>;
+                isDirty?: boolean;
+                touched?: Touched<TFieldValues>;
+              }
+            | boolean = updateDirtyState(name, false);
+          let shouldRender = !!state || isFieldWatched(name);
 
           if (
             isBlurEvent &&
@@ -534,13 +544,17 @@ export function useForm<
             readFormStateRef.current.touched
           ) {
             set(formStateRef.current.touched, name, true);
+            state = {
+              ...state,
+              touched: formStateRef.current.touched,
+            };
           }
 
           if (shouldSkipValidation) {
             renderWatchedInputs(name);
-            if (dirtyValues) {
+            if (state) {
               return updateFormState({
-                ...dirtyValues,
+                ...state,
                 touched: formStateRef.current.touched,
               });
             } else {
@@ -584,7 +598,11 @@ export function useForm<
             name,
             error,
             shouldRender,
-            dirtyValues,
+            state as {
+              dirtyFields?: Touched<TFieldValues>;
+              isDirty?: boolean;
+              touched?: Touched<TFieldValues>;
+            },
             isValid,
           );
         }
