@@ -19,7 +19,7 @@ describe('useWatch', () => {
 
   it('should only trigger render when interact with input 2', () => {
     cy.visit('http://localhost:3000/useWatch');
-    cy.get('input[name="test1"]').type('h');
+    cy.get('[data-testid="test1-input"]').type('h');
 
     cy.get('#parentCounter').contains('1');
     cy.get('#childCounter').contains('1');
@@ -27,7 +27,7 @@ describe('useWatch', () => {
     cy.get('#grandChild1Counter').contains('2');
     cy.get('#grandChild2Counter').contains('2');
 
-    cy.get('input[name="test1"]').type('h');
+    cy.get('[data-testid="test1-input"]').type('h');
     cy.get('input[name="test"]').type('h');
     cy.get('#grandchild00').contains('h');
     cy.get('#grandchild01').contains('h');
@@ -47,7 +47,7 @@ describe('useWatch', () => {
 
     cy.get('input[name="test2"]').type('eh');
 
-    cy.get('input[name="test1"]').type('eh');
+    cy.get('[data-testid="test1-input"]').type('eh');
     cy.get('input[name="test"]').type('eh');
     cy.get('#grandchild00').contains('eh');
     cy.get('#grandchild01').contains('eh');

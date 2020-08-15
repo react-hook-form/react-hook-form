@@ -71,7 +71,7 @@ describe('basic form validation', () => {
     cy.get('input[name="pattern"]').should('not.have.value');
     cy.get('input[name="minDate"]').should('not.have.value');
     cy.get('input[name="maxDate"]').should('not.have.value');
-    cy.get('#renderCount').contains('33');
+    cy.get('#renderCount').contains('32');
   });
 
   it('should validate the form with onBlur mode and reset the form', () => {
@@ -134,7 +134,7 @@ describe('basic form validation', () => {
     cy.get('input[name="checkbox"] + p').contains('checkbox error');
     cy.get('input[name="checkbox"]').check();
 
-    cy.get('p').should('have.length', 0);
+    cy.get('p').should('have.length', 1);
 
     cy.get('#resetForm').click();
     cy.get('input[name="firstName"]').should('not.have.value');
@@ -149,7 +149,7 @@ describe('basic form validation', () => {
     cy.get('input[name="pattern"]').should('not.have.value');
     cy.get('input[name="minDate"]').should('not.have.value');
     cy.get('input[name="maxDate"]').should('not.have.value');
-    cy.get('#renderCount').contains('32');
+    cy.get('#renderCount').contains('30');
   });
 
   it('should validate the form with onChange mode and reset the form', () => {

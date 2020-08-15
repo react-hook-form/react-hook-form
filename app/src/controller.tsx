@@ -62,13 +62,13 @@ export default function Field(props: any) {
           />
         </section>
 
-        {errors.Checkbox && <p id={'Checkbox'}>Checkbox Error</p>}
+        {errors.Checkbox && <p id="Checkbox">Checkbox Error</p>}
 
         <section id="input-radio-group">
           <label>Radio Group</label>
           <Controller
             render={(props) => (
-              <RadioGroup aria-label="gender" name="gender1" {...props}>
+              <RadioGroup aria-label="gender" data-testid="gender1-input" {...props}>
                 <FormControlLabel
                   value="female"
                   control={<Radio />}
@@ -87,7 +87,7 @@ export default function Field(props: any) {
           />
         </section>
 
-        {errors.RadioGroup && <p id={'RadioGroup'}>RadioGroup Error</p>}
+        {errors.RadioGroup && <p id="RadioGroup">RadioGroup Error</p>}
 
         <section id="input-textField">
           <label>MUI TextField</label>
