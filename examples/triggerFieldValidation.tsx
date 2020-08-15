@@ -1,9 +1,8 @@
 import React from 'react';
-import ReactDOM from 'react-dom';
 import { useForm } from 'react-hook-form';
 
 export default function App() {
-  const { register, errors, triggerValidation } = useForm();
+  const { register, errors, trigger } = useForm();
 
   console.log('errors', errors);
 
@@ -19,14 +18,10 @@ export default function App() {
       <button
         type="button"
         onClick={async () => {
-          console.log(
-            'firstName',
-            await triggerValidation({ name: 'firstName' }),
-          );
-          console.log(
-            'lastName',
-            await triggerValidation({ name: 'lastName', value: 'test' }),
-          );
+          const result = await trigger(['firstName', 'lastName']);
+          if (result) {
+            console.log('Valid input');
+          }
         }}
       >
         Trigger

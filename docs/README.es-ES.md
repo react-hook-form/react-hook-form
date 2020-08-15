@@ -27,7 +27,7 @@
     </p>
 </div>
 
-<a href="https://github.com/react-hook-form/react-hook-form">English</a> | <a href="./README.zh-CN.md">简体中文</a> | <a href="./README.ja-JP.md">日本語</a> | <a href="./README.ko-KR.md">한국어</a> | <a href="./README.fr-FR.md">Français</a> | <a href="./README.it-IT.md">Italiano</a> | <a href="./README.pt-BR.md">Português</a> | Español | <a href="./README.ru-RU.md">Русский</a> | <a href="./README.de-DE.md">Deutsch</a> | <a href="./README.tr-TR.md">Türkçe</a>
+<a href="https://github.com/react-hook-form/react-hook-form">English</a> | <a href="./README.zh-TW.md">繁中</a> | <a href="./README.zh-CN.md">简中</a> | <a href="./README.ja-JP.md">日本語</a> | <a href="./README.ko-KR.md">한국어</a> | <a href="./README.fr-FR.md">Français</a> | <a href="./README.it-IT.md">Italiano</a> | <a href="./README.pt-BR.md">Português</a> | Español | <a href="./README.ru-RU.md">Русский</a> | <a href="./README.de-DE.md">Deutsch</a> | <a href="./README.tr-TR.md">Türkçe</a>
 
 ## Caracteristicas
 
@@ -99,7 +99,7 @@ Gracias a estas maravillosas organizaciones! [[Contribuir](https://opencollectiv
 
 ## Colaboradores
 
-Gracias a estas personas maravillosas! [[Hazte colaborador](CONTRIBUTING.md)].
+Gracias a estas personas maravillosas! [[Hazte colaborador](../CONTRIBUTING.md)].
 
 <a href="https://github.com/react-hook-form/react-hook-form/graphs/contributors">
     <img src="https://opencollective.com/react-hook-form/contributors.svg?width=950" />

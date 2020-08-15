@@ -1,8 +1,9 @@
-import transformToNestObject from './transformToNestObject';
 import get from '../utils/get';
-import getPath from '../utils/getPath';
+import { getPath } from '../utils/getPath';
 import isEmptyObject from '../utils/isEmptyObject';
 import isUndefined from '../utils/isUndefined';
+import isObject from '../utils/isObject';
+import isArray from '../utils/isArray';
 import { DeepPartial } from '../types/utils';
 import {
   FieldValue,
@@ -27,15 +28,14 @@ export default <TFieldValues extends FieldValues>(
 
   if (isEmptyObject(fieldValues)) {
     value = undefined;
-  } else if (!isUndefined(fieldValues[fieldName])) {
-    value = fieldValues[fieldName];
   } else {
-    value = get(transformToNestObject(fieldValues), fieldName);
+    value = get(fieldValues, fieldName);
 
-    if (!isUndefined(value)) {
-      getPath<TFieldValues>(fieldName, value).forEach((name: string) =>
-        watchFields.add(name),
-      );
+    if (isObject(value) || isArray(value)) {
+      getPath<TFieldValues>(
+        fieldName,
+        value as TFieldValues,
+      ).forEach((name: string) => watchFields.add(name));
     }
   }
 

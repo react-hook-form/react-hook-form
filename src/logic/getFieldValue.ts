@@ -1,3 +1,4 @@
+import * as React from 'react';
 import getRadioValue from './getRadioValue';
 import getMultipleSelectValue from './getMultipleSelectValue';
 import isRadioInput from '../utils/isRadioInput';
@@ -8,11 +9,13 @@ import getCheckboxValue from './getCheckboxValue';
 import { FieldRefs, FieldValues, InternalFieldName } from '../types/form';
 
 export default function getFieldValue<TFieldValues extends FieldValues>(
-  fields: FieldRefs<TFieldValues>,
+  fieldsRef: React.MutableRefObject<FieldRefs<TFieldValues>>,
   name: InternalFieldName<TFieldValues>,
+  unmountFieldsStateRef?: React.MutableRefObject<Record<string, any>>,
 ) {
-  if (fields[name]) {
-    const field = fields[name]!;
+  const field = fieldsRef.current[name]!;
+
+  if (field) {
     const {
       ref: { value },
       ref,
@@ -23,7 +26,7 @@ export default function getFieldValue<TFieldValues extends FieldValues>(
     }
 
     if (isRadioInput(ref)) {
-      return field ? getRadioValue(field.options).value : '';
+      return getRadioValue(field.options).value;
     }
 
     if (isMultipleSelect(ref)) {
@@ -31,9 +34,13 @@ export default function getFieldValue<TFieldValues extends FieldValues>(
     }
 
     if (isCheckBox(ref)) {
-      return field ? getCheckboxValue(field.options).value : false;
+      return getCheckboxValue(field.options).value;
     }
 
     return value;
+  }
+
+  if (unmountFieldsStateRef) {
+    return unmountFieldsStateRef.current[name];
   }
 }

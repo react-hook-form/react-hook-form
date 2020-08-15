@@ -48,6 +48,7 @@ describe('controller basic form validation', () => {
     cy.get('#input-select > div > div').click();
     cy.get('.MuiPopover-root ul > li:first-child').click();
     cy.get('#input-switch input').click();
+    cy.get('#input-switch input').blur();
 
     cy.get('p').should('have.length', 1);
     cy.get('#renderCount').contains('8');

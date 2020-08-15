@@ -1,0 +1,12 @@
+{
+  "$schema": "https://unpkg.com/@changesets/config@1.3.0/schema.json",
+  "changelog": [
+    "@changesets/changelog-github",
+    { "repo": "react-hook-form/react-hook-form" }
+  ],
+  "commit": false,
+  "linked": [],
+  "access": "public",
+  "baseBranch": "master",
+  "ignore": []
+}

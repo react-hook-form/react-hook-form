@@ -11,7 +11,7 @@ import {
   UnpackNestedValue,
   Control,
 } from './types/form';
-import { LiteralToPrimitive, DeepPartial } from './types/utils';
+import { DeepPartial } from './types/utils';
 
 export function useWatch<TWatchFieldValues extends FieldValues>(props: {
   defaultValue?: UnpackNestedValue<DeepPartial<TWatchFieldValues>>;
@@ -20,12 +20,12 @@ export function useWatch<TWatchFieldValues extends FieldValues>(props: {
 export function useWatch<TWatchFieldValue extends any>(props: {
   name: string;
   control?: Control;
-}): undefined | UnpackNestedValue<LiteralToPrimitive<TWatchFieldValue>>;
+}): undefined | UnpackNestedValue<TWatchFieldValue>;
 export function useWatch<TWatchFieldValue extends any>(props: {
   name: string;
-  defaultValue: UnpackNestedValue<LiteralToPrimitive<TWatchFieldValue>>;
+  defaultValue: UnpackNestedValue<TWatchFieldValue>;
   control?: Control;
-}): UnpackNestedValue<LiteralToPrimitive<TWatchFieldValue>>;
+}): UnpackNestedValue<TWatchFieldValue>;
 export function useWatch<TWatchFieldValues extends FieldValues>(props: {
   name: string[];
   defaultValue?: UnpackNestedValue<DeepPartial<TWatchFieldValues>>;
@@ -37,6 +37,17 @@ export function useWatch<TWatchFieldValues>({
   defaultValue,
 }: UseWatchOptions): TWatchFieldValues {
   const methods = useFormContext();
+
+  if (process.env.NODE_ENV !== 'production') {
+    if (!control && !methods) {
+      throw new Error('📋 useWatch is missing `control` prop.');
+    }
+
+    if (name === '') {
+      console.warn('📋 useWatch is missing `name` attribute.');
+    }
+  }
+
   const {
     watchFieldsHookRef,
     watchFieldsHookRenderRef,
@@ -60,14 +71,10 @@ export function useWatch<TWatchFieldValues>({
   );
   const idRef = React.useRef<string>();
   const defaultValueRef = React.useRef(defaultValue);
-  const nameRef = React.useRef(name);
 
   const updateWatchValue = React.useCallback(
-    () =>
-      setValue(
-        watchInternal(nameRef.current, defaultValueRef.current, idRef.current),
-      ),
-    [setValue, watchInternal, defaultValueRef, nameRef, idRef],
+    () => setValue(watchInternal(name, defaultValueRef.current, idRef.current)),
+    [setValue, watchInternal, defaultValueRef, name, idRef],
   );
 
   React.useEffect(() => {
@@ -76,14 +83,14 @@ export function useWatch<TWatchFieldValues>({
     const watchFieldsHook = watchFieldsHookRef.current;
     watchFieldsHook[id] = new Set();
     watchFieldsHookRender[id] = updateWatchValue;
-    watchInternal(nameRef.current, defaultValueRef.current, id);
+    watchInternal(name, defaultValueRef.current, id);
 
     return () => {
       delete watchFieldsHook[id];
       delete watchFieldsHookRender[id];
     };
   }, [
-    nameRef,
+    name,
     updateWatchValue,
     watchFieldsHookRenderRef,
     watchFieldsHookRef,

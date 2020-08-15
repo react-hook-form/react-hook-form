@@ -27,7 +27,7 @@
     </p>
 </div>
 
-<a href="https://github.com/react-hook-form/react-hook-form">English</a> | <a href="./README.zh-CN.md">简体中文</a> | 日本語 | <a href="./README.ko-KR.md">한국어</a> | <a href="./README.fr-FR.md">Français</a> | <a href="./README.it-IT.md">Italiano</a> | <a href="./README.pt-BR.md">Português</a> | <a href="./README.es-ES.md">Español</a> | <a href="./README.ru-RU.md">Русский</a> | <a href="./README.de-DE.md">Deutsch</a> | <a href="./README.tr-TR.md">Türkçe</a>
+<a href="https://github.com/react-hook-form/react-hook-form">English</a> | <a href="./README.zh-TW.md">繁中</a> | <a href="./README.zh-CN.md">简中</a> | 日本語 | <a href="./README.ko-KR.md">한국어</a> | <a href="./README.fr-FR.md">Français</a> | <a href="./README.it-IT.md">Italiano</a> | <a href="./README.pt-BR.md">Português</a> | <a href="./README.es-ES.md">Español</a> | <a href="./README.ru-RU.md">Русский</a> | <a href="./README.de-DE.md">Deutsch</a> | <a href="./README.tr-TR.md">Türkçe</a>
 
 ## 特徴
 
@@ -82,7 +82,7 @@ function App() {
 
 ## コントリビューター
 
-これらの素晴らしい人々に感謝します![[コントリビューターになる](CONTRIBUTING.md)]
+これらの素晴らしい人々に感謝します![[コントリビューターになる](../CONTRIBUTING.md)]
 
 <a href="https://github.com/react-hook-form/react-hook-form/graphs/contributors">
     <img src="https://opencollective.com/react-hook-form/contributors.svg?width=950" />

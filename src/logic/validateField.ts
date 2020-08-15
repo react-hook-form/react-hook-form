@@ -11,7 +11,6 @@ import isObject from '../utils/isObject';
 import isFunction from '../utils/isFunction';
 import getFieldsValue from './getFieldValue';
 import isRegex from '../utils/isRegex';
-import isEmptyString from '../utils/isEmptyString';
 import isBoolean from '../utils/isBoolean';
 import isMessage from '../utils/isMessage';
 import getValidateError from './getValidateError';
@@ -42,6 +41,7 @@ export default async <TFieldValues extends FieldValues>(
     pattern,
     validate,
   }: Field,
+  unmountFieldsStateRef: React.MutableRefObject<Record<string, any>>,
 ): Promise<FlatFieldErrors<TFieldValues>> => {
   const fields = fieldsRef.current;
   const name: InternalFieldName<TFieldValues> = ref.name;
@@ -49,7 +49,7 @@ export default async <TFieldValues extends FieldValues>(
   const isRadio = isRadioInput(ref);
   const isCheckBox = isCheckBoxInput(ref);
   const isRadioOrCheckbox = isRadio || isCheckBox;
-  const isEmpty = isEmptyString(value);
+  const isEmpty = value === '';
   const appendErrorsCurry = appendErrors.bind(
     null,
     name,
@@ -91,7 +91,9 @@ export default async <TFieldValues extends FieldValues>(
       error[name] = {
         type: INPUT_VALIDATION_RULES.required,
         message: requiredMessage,
-        ref: isRadioOrCheckbox ? (fields[name] as Field).options?.[0].ref : ref,
+        ref: isRadioOrCheckbox
+          ? ((fields[name] as Field).options || [])[0].ref
+          : ref,
         ...appendErrorsCurry(INPUT_VALIDATION_RULES.required, requiredMessage),
       };
       if (!validateAllFieldCriteria) {
@@ -182,7 +184,7 @@ export default async <TFieldValues extends FieldValues>(
   }
 
   if (validate) {
-    const fieldValue = getFieldsValue(fields, name);
+    const fieldValue = getFieldsValue(fieldsRef, name, unmountFieldsStateRef);
     const validateRef = isRadioOrCheckbox && options ? options[0].ref : ref;
 
     if (isFunction(validate)) {

@@ -1,5 +1,4 @@
 import * as React from 'react';
-import isBoolean from './utils/isBoolean';
 import isUndefined from './utils/isUndefined';
 import get from './utils/get';
 import set from './utils/set';
@@ -30,15 +29,19 @@ const Controller = <
   ...rest
 }: ControllerProps<TAs, TControl>) => {
   const methods = useFormContext();
+
+  if (process.env.NODE_ENV !== 'production' && !control && !methods) {
+    throw new Error('📋 Controller is missing `control` prop.');
+  }
+
   const {
     defaultValuesRef,
     setValue,
     register,
     unregister,
-    errorsRef,
     trigger,
-    mode: { isOnSubmit, isOnBlur, isOnChange },
-    reValidateMode: { isReValidateOnBlur, isReValidateOnSubmit },
+    mode,
+    reValidateMode: { isReValidateOnBlur, isReValidateOnChange },
     isSubmittedRef,
     touchedFieldsRef,
     readFormStateRef,
@@ -46,40 +49,57 @@ const Controller = <
     fieldsRef,
     fieldArrayNamesRef,
     unmountFieldsStateRef,
-    formState,
   } = control || methods.control;
   const isNotFieldArray = !isNameInFieldArray(fieldArrayNamesRef.current, name);
   const getInitialValue = () =>
-    !isUndefined(unmountFieldsStateRef.current[name]) && isNotFieldArray
+    !isUndefined(get(unmountFieldsStateRef.current, name)) && isNotFieldArray
       ? unmountFieldsStateRef.current[name]
       : isUndefined(defaultValue)
       ? get(defaultValuesRef.current, name)
       : defaultValue;
   const [value, setInputStateValue] = React.useState(getInitialValue());
   const valueRef = React.useRef(value);
-  const isCheckboxInput = isBoolean(value);
   const onFocusRef = React.useRef(onFocus);
-  const isSubmitted = isSubmittedRef.current;
 
-  const shouldValidate = () =>
+  if (process.env.NODE_ENV !== 'production') {
+    if (isUndefined(value)) {
+      console.warn(
+        '📋 Controller `defaultValue` or useForm `defaultValues` is missing.',
+      );
+    }
+
+    if (as && render) {
+      console.warn('📋 Should use either `as` or `render` prop.');
+    }
+
+    if (!isNotFieldArray && isUndefined(defaultValue)) {
+      console.warn(
+        '📋 Controller is missing `defaultValue` prop when using `useFieldArray`.',
+      );
+    }
+  }
+
+  const shouldValidate = (isBlurEvent?: boolean) =>
     !skipValidation({
-      hasError: !!get(errorsRef.current, name),
-      isOnBlur,
-      isOnSubmit,
-      isOnChange,
+      isBlurEvent,
       isReValidateOnBlur,
-      isReValidateOnSubmit,
-      isSubmitted,
+      isReValidateOnChange,
+      isSubmitted: isSubmittedRef.current,
+      ...mode,
     });
 
-  const commonTask = (event: any[]) => {
-    const data = getInputValue(event[0], isCheckboxInput);
+  const commonTask = ([event]: any[]) => {
+    const data = getInputValue(event);
     setInputStateValue(data);
     valueRef.current = data;
     return data;
   };
 
   const registerField = React.useCallback(() => {
+    if (process.env.NODE_ENV !== 'production' && !name) {
+      return console.warn('📋 Field is missing `name` prop.');
+    }
+
     if (fieldsRef.current[name]) {
       fieldsRef.current[name] = {
         ref: fieldsRef.current[name]!.ref,
@@ -98,6 +118,9 @@ const Controller = <
         }),
         rules,
       );
+      if (isNotFieldArray && !get(defaultValuesRef.current, name)) {
+        setInputStateValue(getInitialValue());
+      }
     }
   }, [fieldsRef, rules, name, onFocusRef, register]);
 
@@ -131,7 +154,7 @@ const Controller = <
       reRender();
     }
 
-    if (isOnBlur || (formState.isSubmitted && isReValidateOnBlur)) {
+    if (shouldValidate(true)) {
       trigger(name);
     }
   };
@@ -146,7 +169,8 @@ const Controller = <
     ...rest,
     onChange,
     onBlur,
-    ...{ [isCheckboxInput ? 'checked' : VALUE]: value },
+    name,
+    value,
   };
 
   return as
@@ -158,6 +182,7 @@ const Controller = <
         onChange,
         onBlur,
         value,
+        name,
       })
     : null;
 };

@@ -34,7 +34,7 @@ export const reconfigureControl = (
     current: {},
   },
   watchInternal: jest.fn(),
-  validateSchemaIsValid: jest.fn(),
+  validateResolver: jest.fn(),
   reRender: jest.fn(),
   setValue: jest.fn(),
   getValues: jest.fn(),
@@ -44,10 +44,16 @@ export const reconfigureControl = (
   removeFieldEventListener: jest.fn(),
   errorsRef: { current: {} },
   touchedFieldsRef: { current: {} },
-  mode: { isOnSubmit: false, isOnBlur: false, isOnChange: false },
+  mode: {
+    isOnSubmit: false,
+    isOnBlur: false,
+    isOnChange: false,
+    isOnTouch: false,
+    isOnAll: false,
+  },
   reValidateMode: {
     isReValidateOnBlur: false,
-    isReValidateOnSubmit: false,
+    isReValidateOnChange: false,
   },
   formState: {
     isDirty: false,

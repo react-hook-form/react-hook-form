@@ -1,6 +1,63 @@
 # Changelog
 
-All notable changes to this project will be documented in this file.
+## [6.4.0] - 2020-08-15
+
+### Added
+
+- `Controller`'s `render` prop will pass down `name` prop
+- `handleSubmit` take a second callback for errors callback
+- new mode `onTouched` will only trigger validation after inputs are touched
+
+### Changed
+
+- `register` no longer compare `ref` difference with React Native
+
+## [6.2.0] - 2020-08-11
+
+### Changed
+
+- IE 11 version will be required to install `@babel/runtime-corejs3` as dependency at your own project
+
+## [6.2.0] - 2020-07-30
+
+### Changed
+
+- revert `getValues` will return default values before inputs registration
+
+## [6.1.0] - 2020-07-26
+
+### Changed
+
+- `resolver` supports both async and sync
+- `getValues` will return default values before inputs registration
+
+## [6.0.7] - 2020-07-17
+
+### Added
+
+- export `ArrayField` type
+
+### Changed
+
+- error message will support array of messages for specific type
+
+```diff
+- export type ValidateResult = Message | boolean | undefined;
++ export type ValidateResult = Message | Message[] | boolean | undefined;
+```
+
+## [6.0.3] - 2020-07-10
+
+### Changed
+
+- Controller `onFocus` works with React Native
+- Controller stop producing `checked` prop by boolean `value`
+
+## [6.0.2] - 2020-07-8
+
+### Added
+
+- export `UseFormOptions`, `UseFieldArrayOptions`, `FieldError`, `Field` and `Mode` type
 
 ## [6.0.1] - 2020-07-3
 
