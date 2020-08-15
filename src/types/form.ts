@@ -247,7 +247,6 @@ export type Control<TFieldValues extends FieldValues = FieldValues> = Pick<
   UseFormMethods<TFieldValues>,
   'register' | 'unregister' | 'setValue' | 'getValues' | 'trigger'
 > & {
-  reRender: () => void;
   removeFieldEventListener: (field: Field, forceDelete?: boolean) => void;
   mode: {
     readonly isOnBlur: boolean;
@@ -264,7 +263,7 @@ export type Control<TFieldValues extends FieldValues = FieldValues> = Pick<
     Record<FieldArrayName, any[]>
   >;
   formStateRef: React.MutableRefObject<FormState<FieldValues>>;
-  updateFormState: (args: Partial<FormState<TFieldValues>>) => void;
+  updateFormState: (args?: Partial<FormState<TFieldValues>>) => void;
   validateResolver: ((fieldsValues: any) => void) | undefined;
   watchFieldsRef: React.MutableRefObject<Set<InternalFieldName<TFieldValues>>>;
   isWatchAllRef: React.MutableRefObject<boolean>;

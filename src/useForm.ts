@@ -163,14 +163,14 @@ export function useForm<
   );
 
   const updateFormState = React.useCallback(
-    (state: Partial<FormState<TFieldValues>>): void => {
+    (state: Partial<FormState<TFieldValues>> = {}): void => {
       !isUnMount.current &&
         setFormState({
           ...formStateRef.current,
           ...state,
         });
     },
-    [formState],
+    [],
   );
 
   const shouldRenderBaseOnError = React.useCallback(
@@ -1224,7 +1224,6 @@ export function useForm<
     removeFieldEventListener,
     renderWatchedInputs,
     watchInternal,
-    reRender,
     mode: modeRef.current,
     reValidateMode: {
       isReValidateOnBlur,

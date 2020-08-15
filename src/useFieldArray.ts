@@ -65,7 +65,6 @@ export const useFieldArray = <
     isWatchAllRef,
     resetFieldArrayFunctionRef,
     fieldArrayNamesRef,
-    reRender,
     fieldsRef,
     defaultValuesRef,
     removeFieldEventListener,
@@ -434,12 +433,12 @@ export const useFieldArray = <
     }
 
     if (isWatchAllRef.current) {
-      reRender();
+      updateFormState();
     } else if (watchFieldsRef) {
       let shouldRenderUseWatch = true;
       for (const watchField of watchFieldsRef.current) {
         if (watchField.startsWith(name)) {
-          reRender();
+          updateFormState();
           shouldRenderUseWatch = false;
           break;
         }
@@ -466,7 +465,6 @@ export const useFieldArray = <
     fields,
     name,
     fieldArrayDefaultValues,
-    reRender,
     fieldsRef,
     watchFieldsRef,
     isWatchAllRef,
