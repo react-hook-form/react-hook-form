@@ -1,5 +1,17 @@
 # Changelog
 
+## [6.4.0] - 2020-08-15
+
+### Added
+
+- `Controller`'s `render` prop will pass down `name` prop
+- `handleSubmit` take a second callback for errors callback
+- new mode `onTouched` will only trigger validation after inputs are touched
+
+### Changed
+
+- `register` no longer compare `ref` difference with React Native
+
 ## [6.2.0] - 2020-08-11
 
 ### Changed
