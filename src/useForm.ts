@@ -212,6 +212,7 @@ export function useForm<
         updateFormState({
           ...(dirtyValues || {}),
           errors: formStateRef.current.errors,
+          touched: formStateRef.current.touched,
           isValid: resolverRef.current
             ? !!isValid
             : validFieldsRef.current.size >=
@@ -533,9 +534,6 @@ export function useForm<
             readFormStateRef.current.touched
           ) {
             set(formStateRef.current.touched, name, true);
-            updateFormState({
-              touched: formStateRef.current.touched,
-            });
           }
 
           if (shouldSkipValidation) {
@@ -543,9 +541,15 @@ export function useForm<
             if (dirtyValues) {
               return updateFormState({
                 ...dirtyValues,
+                touched: formStateRef.current.touched,
               });
             } else {
-              return shouldRender && updateFormState({});
+              return (
+                shouldRender &&
+                updateFormState({
+                  touched: formStateRef.current.touched,
+                })
+              );
             }
           }
 
