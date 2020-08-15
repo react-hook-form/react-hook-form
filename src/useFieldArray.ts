@@ -132,23 +132,16 @@ export const useFieldArray = <
     }
   };
 
-  const getIsDirty = (
+  const getIsDirtyState = (
     flagOrFields?: (Partial<TFieldArrayValues> | undefined)[],
-  ): boolean => {
-    if (
-      readFormStateRef.current.isDirty ||
-      readFormStateRef.current.dirtyFields
-    ) {
-      return (
-        isUndefined(flagOrFields) ||
-        !deepEqual(
-          flagOrFields.map(({ [keyName]: omitted, ...rest } = {}) => rest),
-          get(defaultValuesRef.current, name, []),
-        )
-      );
-    }
-    return false;
-  };
+  ): boolean =>
+    (readFormStateRef.current.isDirty ||
+      readFormStateRef.current.dirtyFields) &&
+    (isUndefined(flagOrFields) ||
+      !deepEqual(
+        flagOrFields.map(({ [keyName]: omitted, ...rest } = {}) => rest),
+        get(defaultValuesRef.current, name),
+      ));
 
   const resetFields = () => {
     for (const key in fieldsRef.current) {
@@ -301,7 +294,7 @@ export const useFieldArray = <
       dirtyFields,
       errors,
       touched,
-      isDirty: getIsDirty(removeArrayAt(fieldValues, index)),
+      isDirty: getIsDirtyState(removeArrayAt(fieldValues, index)),
     });
 
     renderWatchedInputs(name);
@@ -348,7 +341,7 @@ export const useFieldArray = <
       dirtyFields,
       errors,
       touched,
-      isDirty: getIsDirty(insertAt(fieldValues, index)),
+      isDirty: getIsDirtyState(insertAt(fieldValues, index)),
     });
 
     renderWatchedInputs(name);
@@ -382,7 +375,7 @@ export const useFieldArray = <
       dirtyFields,
       errors,
       touched,
-      isDirty: getIsDirty(fieldValues),
+      isDirty: getIsDirtyState(fieldValues),
     });
     renderWatchedInputs(name);
   };
@@ -413,7 +406,7 @@ export const useFieldArray = <
       dirtyFields,
       errors,
       touched,
-      isDirty: getIsDirty(fieldValues),
+      isDirty: getIsDirtyState(fieldValues),
     });
     renderWatchedInputs(name);
   };
