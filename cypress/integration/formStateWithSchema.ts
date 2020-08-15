@@ -117,7 +117,7 @@ describe('form state with schema validation', () => {
     cy.get('#state').contains(
       '{"isDirty":true,"dirtyFields":["firstName","lastName"],"isSubmitted":true,"submitCount":2,"touched":["firstName","lastName"],"isSubmitting":false,"isValid":true}',
     );
-    cy.get('#renderCount').contains('18');
+    cy.get('#renderCount').contains('16');
   });
 
   it('should reset dirty value when inputs reset back to default with onSubmit mode', () => {
@@ -199,7 +199,7 @@ describe('form state with schema validation', () => {
     cy.get('#state').contains(
       '{"isDirty":false,"dirtyFields":[],"isSubmitted":false,"submitCount":0,"touched":["firstName","lastName"],"isSubmitting":false,"isValid":false}',
     );
-    cy.get('#renderCount').contains('12');
+    cy.get('#renderCount').contains('10');
   });
 
   it('should reset dirty value when inputs reset back to default with onChange mode', () => {
