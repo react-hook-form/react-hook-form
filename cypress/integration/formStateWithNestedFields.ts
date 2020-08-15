@@ -76,7 +76,7 @@ describe('form state with nested fields', () => {
     cy.get('#state').contains(
       '{"isDirty":true,"dirtyFields":["left.1","left.2"],"isSubmitted":true,"submitCount":2,"touched":["left.1","left.2"],"isSubmitting":false,"isValid":true}',
     );
-    cy.get('#renderCount').contains('15');
+    cy.get('#renderCount').contains('17');
   });
 
   it('should return correct form state with onBlur mode', () => {
@@ -116,7 +116,7 @@ describe('form state with nested fields', () => {
     cy.get('#state').contains(
       '{"isDirty":true,"dirtyFields":["left.1","left.2"],"isSubmitted":true,"submitCount":2,"touched":["left.1","left.2"],"isSubmitting":false,"isValid":true}',
     );
-    cy.get('#renderCount').contains('16');
+    cy.get('#renderCount').contains('18');
   });
 
   it('should reset dirty value when inputs reset back to default with onSubmit mode', () => {
@@ -158,7 +158,7 @@ describe('form state with nested fields', () => {
     cy.get('#state').contains(
       '{"isDirty":false,"dirtyFields":[],"isSubmitted":false,"submitCount":0,"touched":["left.1","left.2"],"isSubmitting":false,"isValid":false}',
     );
-    cy.get('#renderCount').contains('10');
+    cy.get('#renderCount').contains('12');
   });
 
   it('should reset dirty value when inputs reset back to default with onChange mode', () => {
@@ -190,6 +190,6 @@ describe('form state with nested fields', () => {
       '{"isDirty":false,"dirtyFields":[],"isSubmitted":false,"submitCount":0,"touched":["left.1","left.2"],"isSubmitting":false,"isValid":false}',
     );
 
-    cy.get('#renderCount').contains('14');
+    cy.get('#renderCount').contains('18');
   });
 });
