@@ -129,7 +129,7 @@ describe('re-validate mode', () => {
     cy.get('input[name="firstName"]').type('luo123456');
     cy.get('input[name="lastName"]').type('luo12');
 
-    cy.get('p').should('have.length', 1);
+    cy.get('p').should('have.length', 0);
     cy.get('#renderCount').contains('6');
   });
 });

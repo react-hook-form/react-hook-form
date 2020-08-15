@@ -71,7 +71,7 @@ describe('basic form validation', () => {
     cy.get('input[name="pattern"]').should('not.have.value');
     cy.get('input[name="minDate"]').should('not.have.value');
     cy.get('input[name="maxDate"]').should('not.have.value');
-    cy.get('#renderCount').contains('32');
+    cy.get('#renderCount').contains('33');
 
     cy.get('#on-invalid-called-times').contains('1');
   });
@@ -176,7 +176,7 @@ describe('basic form validation', () => {
     cy.get('input[name="checkbox"]').check();
     cy.get('input[name="checkbox"]').blur();
 
-    cy.get('p').should('have.length', 1);
+    cy.get('p').should('have.length', 0);
 
     cy.get('#resetForm').click();
     cy.get('input[name="firstName"]').should('not.have.value');

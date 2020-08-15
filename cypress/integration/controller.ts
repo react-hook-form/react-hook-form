@@ -11,7 +11,7 @@ describe('controller basic form validation', () => {
     cy.get('#switch').contains('switch Error');
 
     cy.get('#input-checkbox input').click();
-    cy.get('[data-testid="gender1-input"]').first().click();
+    cy.get('input[name="gender1"]').first().click();
     cy.get('#input-textField input').type('test');
     cy.get('#input-select > div > div').click();
     cy.get('.MuiPopover-root ul > li:first-child').click();
