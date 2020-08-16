@@ -243,7 +243,10 @@ describe('useForm', () => {
       const { result } = renderHook(() => useForm());
 
       result.current.register({ type: 'text', name: 'input' });
-      result.current.unregister('input');
+
+      await act(async () => {
+        await result.current.unregister('input');
+      });
 
       expect(result.current.getValues()).toEqual({});
     });
@@ -255,19 +258,23 @@ describe('useForm', () => {
       result.current.register({ type: 'radio', name: 'input1' });
       result.current.register({ type: 'checkbox', name: 'input2' });
 
-      result.current.unregister(['input', 'input1', 'input2']);
+      await act(async () => {
+        await result.current.unregister(['input', 'input1', 'input2']);
+      });
 
       expect(result.current.getValues()).toEqual({});
     });
 
-    it('should not call findRemovedFieldAndRemoveListener when field variable does not exist', () => {
+    it('should not call findRemovedFieldAndRemoveListener when field variable does not exist', async () => {
       const mockListener = jest.spyOn(
         findRemovedFieldAndRemoveListener,
         'default',
       );
       const { result } = renderHook(() => useForm());
 
-      result.current.unregister('test');
+      await act(async () => {
+        await result.current.unregister('test');
+      });
 
       expect(mockListener).not.toHaveBeenCalled();
     });
@@ -2093,11 +2100,6 @@ describe('useForm', () => {
   });
 
   describe('formState', () => {
-    it.skip('should disable isValid for submit mode', () => {
-      const { result } = renderHook(() => useForm<{ input: string }>());
-      expect(result.current.formState.isValid).toBeFalsy();
-    });
-
     it('should return true for onBlur mode by default', () => {
       const { result } = renderHook(() =>
         useForm<{ input: string }>({
@@ -2829,7 +2831,7 @@ describe('useForm', () => {
       expect(result.current.control.validateResolver).toBeUndefined();
     });
 
-    it('should be called resolver with default values if default value is defined', () => {
+    it('should be called resolver with default values if default value is defined', async () => {
       let resolverData: any;
       const resolver = async (data: any) => {
         resolverData = data;
@@ -2848,7 +2850,9 @@ describe('useForm', () => {
 
       result.current.register('test');
 
-      result.current.control.validateResolver!({});
+      await act(async () => {
+        await result.current.control.validateResolver!({});
+      });
 
       expect(resolverData).toEqual({
         test: 'default',
@@ -2875,7 +2879,9 @@ describe('useForm', () => {
 
       result.current.setValue('test', 'value');
 
-      result.current.control.validateResolver!({});
+      await act(async () => {
+        result.current.control.validateResolver!({});
+      });
 
       expect(resolverData).toEqual({ test: 'value' });
     });
