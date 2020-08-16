@@ -449,10 +449,11 @@ export function useForm<
       name: InternalFieldName<TFieldValues>,
       value: FieldValue<TFieldValues> | null | undefined | boolean,
       config: SetValueConfig,
-    ): boolean | void => {
+    ) => {
       if (fieldsRef.current[name]) {
         setFieldValue(fieldsRef.current[name] as Field, value);
-        return config.shouldDirty && !!updateAndGetDirtyState(name);
+        config.shouldDirty && updateAndGetDirtyState(name);
+        return;
       } else if (!isPrimitive(value)) {
         setInternalValues(name, value, config);
       }
@@ -460,8 +461,6 @@ export function useForm<
       if (!shouldUnregister) {
         unmountFieldsStateRef.current[name] = value;
       }
-
-      return true;
     },
     [updateAndGetDirtyState, setFieldValue, setInternalValues],
   );

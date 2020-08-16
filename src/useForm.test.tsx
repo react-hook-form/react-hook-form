@@ -120,7 +120,7 @@ describe('useForm', () => {
 
         await waitFor(() => expect(mockListener).toHaveBeenCalled());
         expect(screen.getByRole('alert').textContent).toBe('false');
-        expect(renderCount).toBe(3); //todo: fix render
+        expect(renderCount).toBe(3);
       },
     );
 
@@ -2722,9 +2722,9 @@ describe('useForm', () => {
         });
 
         await waitFor(() => expect(mockResolver).toHaveBeenCalled());
-        // expect(screen.getByRole('alert').textContent).toBe('resolver error');
+        expect(screen.getByRole('alert').textContent).toBe('resolver error');
         expect(methods.formState.isValid).toBeFalsy();
-        // expect(renderCount).toBe(3); // todo: fix with errors get converted 2
+        expect(renderCount).toBe(2);
       });
 
       it('with sync resolver it should contain error if value is invalid with resolver', async () => {
