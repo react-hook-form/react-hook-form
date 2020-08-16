@@ -122,7 +122,9 @@ export function useForm<
   const resolverRef = React.useRef(resolver);
   const fieldArrayNamesRef = React.useRef<Set<string>>(new Set());
   const modeRef = React.useRef(modeChecker(mode));
-  const { isOnSubmit, isOnTouch } = modeRef.current;
+  const {
+    current: { isOnSubmit, isOnTouch },
+  } = modeRef;
   const isValidateAllFieldCriteria = criteriaMode === VALIDATION_MODE.all;
   const [formState, setFormState] = React.useState<FormState<TFieldValues>>({
     isDirty: false,
@@ -1008,7 +1010,9 @@ export function useForm<
         } else {
           for (const field of Object.values(fieldsRef.current)) {
             if (field) {
-              const name = field.ref.name;
+              const {
+                ref: { name },
+              } = field;
 
               const fieldError = await validateField(
                 fieldsRef,
@@ -1104,10 +1108,11 @@ export function useForm<
     if (isWeb) {
       for (const field of Object.values(fieldsRef.current)) {
         if (field) {
+          const { ref, options } = field;
           const inputRef =
-            isRadioOrCheckboxFunction(field.ref) && isArray(field.options)
-              ? field.options[0].ref
-              : field.ref;
+            isRadioOrCheckboxFunction(ref) && isArray(options)
+              ? options[0].ref
+              : ref;
 
           if (isHTMLElement(inputRef)) {
             try {
