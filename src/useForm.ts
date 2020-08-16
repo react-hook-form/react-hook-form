@@ -179,10 +179,11 @@ export function useForm<
       } = {},
       isValid?: boolean,
     ): boolean | void => {
+      const { errors } = formStateRef.current;
       let shouldReRender =
         shouldRender ||
         shouldRenderBasedOnError<TFieldValues>({
-          errors: formStateRef.current.errors,
+          errors,
           error,
           name,
           validFields: validFieldsRef.current,
@@ -196,7 +197,7 @@ export function useForm<
           shouldReRender = shouldReRender || previousError;
         }
 
-        unset(formStateRef.current.errors, name);
+        unset(errors, name);
       } else {
         validFieldsRef.current.delete(name);
         shouldReRender =
@@ -204,18 +205,17 @@ export function useForm<
           !previousError ||
           !isSameError(previousError, error[name] as FieldError);
 
-        set(formStateRef.current.errors, name, error[name]);
+        set(errors, name, error[name]);
       }
 
       if (shouldReRender || !isEmptyObject(state)) {
         updateFormState({
           ...state,
-          errors: formStateRef.current.errors,
+          errors: errors,
           isValid: resolverRef.current
             ? !!isValid
             : validFieldsRef.current.size >=
-                fieldsWithValidationRef.current.size &&
-              isEmptyObject(formStateRef.current.errors),
+                fieldsWithValidationRef.current.size && isEmptyObject(errors),
         });
       }
     },
