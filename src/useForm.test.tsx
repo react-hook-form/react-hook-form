@@ -812,7 +812,7 @@ describe('useForm', () => {
       act(() => {
         result.current.setValue('test', '1');
         result.current.setValue('checkbox', ['1', '2']);
-        result.current.setValue('test[0]', {
+        result.current.setValue('test1[0]', {
           one: 'ONE',
           two: 'TWO',
           three: 'THREE',
@@ -822,11 +822,13 @@ describe('useForm', () => {
       expect(result.current.control.unmountFieldsStateRef.current).toEqual({
         checkbox: ['1', '2'],
         test: '1',
-        'test[0]': {
-          one: 'ONE',
-          two: 'TWO',
-          three: 'THREE',
-        },
+        test1: [
+          {
+            one: 'ONE',
+            two: 'TWO',
+            three: 'THREE',
+          },
+        ],
       });
     });
 

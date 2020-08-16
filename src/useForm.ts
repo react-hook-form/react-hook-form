@@ -89,7 +89,6 @@ export function useForm<
   criteriaMode,
 }: UseFormOptions<TFieldValues, TContext> = {}): UseFormMethods<TFieldValues> {
   const fieldsRef = React.useRef<FieldRefs<TFieldValues>>({});
-  const errorsRef = React.useRef<FieldErrors<TFieldValues>>({});
   const fieldArrayDefaultValues = React.useRef<Record<string, unknown[]>>({});
   const watchFieldsRef = React.useRef(
     new Set<InternalFieldName<TFieldValues>>(),
@@ -154,7 +153,6 @@ export function useForm<
   contextRef.current = context;
   resolverRef.current = resolver;
   formStateRef.current = formState;
-  errorsRef.current = formState.errors;
 
   const updateFormState = React.useCallback(
     (state: Partial<FormState<TFieldValues>> = {}): void => {
@@ -457,7 +455,7 @@ export function useForm<
       }
 
       if (!shouldUnregister) {
-        unmountFieldsStateRef.current[name] = value;
+        set(unmountFieldsStateRef.current, name, value);
       }
     },
     [updateAndGetDirtyState, setFieldValue, setInternalValues],
@@ -563,11 +561,11 @@ export function useForm<
               ? { [name]: get(errors, name) }
               : {}) as FlatFieldErrors<TFieldValues>;
 
-            if (previousFormIsValid !== isEmptyObject(errors)) {
+            isValid = isEmptyObject(errors);
+
+            if (previousFormIsValid !== isValid) {
               shouldRender = true;
             }
-
-            isValid = isEmptyObject(errors);
           } else {
             error = await validateField<TFieldValues>(
               fieldsRef,
@@ -597,13 +595,13 @@ export function useForm<
     }
 
     if (isArray(payload)) {
-      return payload.reduce(
-        (previous, name) => ({
-          ...previous,
-          [name]: getFieldValue(fieldsRef, name, unmountFieldsStateRef),
-        }),
-        {},
-      );
+      const data = {};
+
+      for (const name of payload) {
+        set(data, name, getFieldValue(fieldsRef, name, unmountFieldsStateRef));
+      }
+
+      return data;
     }
 
     return getFieldsValues(fieldsRef, unmountFieldsStateRef);
