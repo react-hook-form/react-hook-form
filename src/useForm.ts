@@ -207,9 +207,9 @@ export function useForm<
         set(formStateRef.current.errors, name, error[name]);
       }
 
-      if (shouldReRender || !isEmptyObject(state)) {
+      if (shouldReRender || state) {
         updateFormState({
-          ...state,
+          ...(state || {}),
           errors: formStateRef.current.errors,
           isValid: resolverRef.current
             ? !!isValid
@@ -266,20 +266,13 @@ export function useForm<
   );
 
   const updateAndGetDirtyState = React.useCallback(
-    (
-      name: InternalFieldName<TFieldValues>,
-      shouldRender = true,
-    ): {
-      dirtyFields?: Touched<TFieldValues>;
-      isDirty?: boolean;
-      touched?: Touched<TFieldValues>;
-    } => {
+    (name: InternalFieldName<TFieldValues>, shouldRender = true) => {
       if (
         !fieldsRef.current[name] ||
         (!readFormStateRef.current.isDirty &&
           !readFormStateRef.current.dirtyFields)
       ) {
-        return {};
+        return false;
       }
 
       const isFieldDirty =
@@ -289,9 +282,11 @@ export function useForm<
       const isFieldArray = isNameInFieldArray(fieldArrayNamesRef.current, name);
       const previousIsDirty = formStateRef.current.isDirty;
 
-      isFieldDirty
-        ? set(formStateRef.current.dirtyFields, name, true)
-        : unset(formStateRef.current.dirtyFields, name);
+      if (isFieldDirty) {
+        set(formStateRef.current.dirtyFields, name, true);
+      } else {
+        unset(formStateRef.current.dirtyFields, name);
+      }
 
       const state = {
         isDirty:
@@ -316,7 +311,7 @@ export function useForm<
         });
       }
 
-      return isChanged ? state : {};
+      return isChanged && state;
     },
     [],
   );
@@ -450,9 +445,7 @@ export function useForm<
     ): boolean | void => {
       if (fieldsRef.current[name]) {
         setFieldValue(fieldsRef.current[name] as Field, value);
-        return (
-          config.shouldDirty && !isEmptyObject(updateAndGetDirtyState(name))
-        );
+        return config.shouldDirty && !!updateAndGetDirtyState(name);
       } else if (!isPrimitive(value)) {
         setInternalValues(name, value, config);
       }
@@ -537,30 +530,35 @@ export function useForm<
                 touched?: Touched<TFieldValues>;
               }
             | boolean = updateAndGetDirtyState(name, false);
-          let shouldRender = !isEmptyObject(state) || isFieldWatched(name);
+          let shouldRender = !!state || isFieldWatched(name);
 
           if (
             isBlurEvent &&
-            readFormStateRef.current.touched &&
-            !get(formStateRef.current.touched, name)
+            !get(formStateRef.current.touched, name) &&
+            readFormStateRef.current.touched
           ) {
             set(formStateRef.current.touched, name, true);
             state = {
               ...state,
               touched: formStateRef.current.touched,
             };
-            shouldRender = true;
           }
 
           if (shouldSkipValidation) {
             renderWatchedInputs(name);
-            return (
-              shouldRender &&
-              updateFormState({
+            if (state) {
+              return updateFormState({
                 ...state,
                 touched: formStateRef.current.touched,
-              })
-            );
+              });
+            } else {
+              return (
+                shouldRender &&
+                updateFormState({
+                  touched: formStateRef.current.touched,
+                })
+              );
+            }
           }
 
           if (resolverRef.current) {
@@ -569,7 +567,7 @@ export function useForm<
               contextRef.current,
               isValidateAllFieldCriteria,
             );
-            const previousFormIsValid = formStateRef.current.isValid;
+            const previousFormIsValid = !!formStateRef.current.isValid;
 
             error = (get(errors, name)
               ? { [name]: get(errors, name) }
@@ -590,7 +588,17 @@ export function useForm<
           }
 
           renderWatchedInputs(name);
-          shouldRenderBaseOnError(name, error, shouldRender, state, isValid);
+          shouldRenderBaseOnError(
+            name,
+            error,
+            shouldRender,
+            state as {
+              dirtyFields?: Touched<TFieldValues>;
+              isDirty?: boolean;
+              touched?: Touched<TFieldValues>;
+            },
+            isValid,
+          );
         }
       };
 
