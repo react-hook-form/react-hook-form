@@ -172,11 +172,11 @@ export function useForm<
       name: InternalFieldName<TFieldValues>,
       error: FlatFieldErrors<TFieldValues>,
       shouldRender: boolean | null = false,
-      state?: {
+      state: {
         dirtyFields?: Touched<TFieldValues>;
         isDirty?: boolean;
         touched?: Touched<TFieldValues>;
-      },
+      } = {},
       isValid?: boolean,
     ): boolean | void => {
       let shouldReRender =
@@ -207,9 +207,9 @@ export function useForm<
         set(formStateRef.current.errors, name, error[name]);
       }
 
-      if (shouldReRender || state) {
+      if (shouldReRender || !isEmptyObject(state)) {
         updateFormState({
-          ...(state || {}),
+          ...state,
           errors: formStateRef.current.errors,
           isValid: resolverRef.current
             ? !!isValid
@@ -266,13 +266,20 @@ export function useForm<
   );
 
   const updateAndGetDirtyState = React.useCallback(
-    (name: InternalFieldName<TFieldValues>, shouldRender = true) => {
+    (
+      name: InternalFieldName<TFieldValues>,
+      shouldRender = true,
+    ): {
+      dirtyFields?: Touched<TFieldValues>;
+      isDirty?: boolean;
+      touched?: Touched<TFieldValues>;
+    } => {
       if (
         !fieldsRef.current[name] ||
         (!readFormStateRef.current.isDirty &&
           !readFormStateRef.current.dirtyFields)
       ) {
-        return false;
+        return {};
       }
 
       const isFieldDirty =
@@ -311,7 +318,7 @@ export function useForm<
         });
       }
 
-      return isChanged && state;
+      return isChanged ? state : {};
     },
     [],
   );
@@ -523,14 +530,8 @@ export function useForm<
             isSubmitted: formStateRef.current.isSubmitted,
             ...modeRef.current,
           });
-          let state:
-            | {
-                dirtyFields?: Touched<TFieldValues>;
-                isDirty?: boolean;
-                touched?: Touched<TFieldValues>;
-              }
-            | boolean = updateAndGetDirtyState(name, false);
-          let shouldRender = !!state || isFieldWatched(name);
+          let state = updateAndGetDirtyState(name, false);
+          let shouldRender = !isEmptyObject(state) || isFieldWatched(name);
 
           if (
             isBlurEvent &&
@@ -539,7 +540,7 @@ export function useForm<
           ) {
             set(formStateRef.current.touched, name, true);
             state = {
-              ...(state || {}),
+              ...state,
               touched: formStateRef.current.touched,
             };
           }
@@ -547,10 +548,10 @@ export function useForm<
           if (shouldSkipValidation) {
             renderWatchedInputs(name);
             return (
-              (state || (shouldRender && !state)) &&
+              (!isEmptyObject(state) ||
+                (shouldRender && isEmptyObject(state))) &&
               updateFormState({
                 ...state,
-                touched: formStateRef.current.touched,
               })
             );
           }
@@ -561,7 +562,7 @@ export function useForm<
               contextRef.current,
               isValidateAllFieldCriteria,
             );
-            const previousFormIsValid = !!formStateRef.current.isValid;
+            const previousFormIsValid = formStateRef.current.isValid;
 
             error = (get(errors, name)
               ? { [name]: get(errors, name) }
@@ -582,17 +583,7 @@ export function useForm<
           }
 
           renderWatchedInputs(name);
-          shouldRenderBaseOnError(
-            name,
-            error,
-            shouldRender,
-            state as {
-              dirtyFields?: Touched<TFieldValues>;
-              isDirty?: boolean;
-              touched?: Touched<TFieldValues>;
-            },
-            isValid,
-          );
+          shouldRenderBaseOnError(name, error, shouldRender, state, isValid);
         }
       };
 
