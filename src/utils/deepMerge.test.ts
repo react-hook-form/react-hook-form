@@ -38,4 +38,12 @@ describe('deepMerge', () => {
       test: {},
     });
   });
+
+  it('should not merge object with date type', () => {
+    expect(
+      deepMerge({ test: new Date() }, { test: new Date('1999-02-02') }),
+    ).toEqual({
+      test: new Date('1999-02-02'),
+    });
+  });
 });
