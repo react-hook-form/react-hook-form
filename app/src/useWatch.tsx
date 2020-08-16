@@ -101,20 +101,19 @@ export default () => {
       <h2 style={{ margin: 0 }}>Parent:</h2>
       <input
         ref={register}
-        name={'test'}
+        name="test"
         autoComplete="off"
         placeholder="👀 watching me :)"
         style={{ fontSize: 20 }}
       />
 
       <Controller
-        name={'test1'}
+        name="test1"
         control={control}
         render={(props) => (
           <input
             placeholder="👀 watching me :)"
             autoComplete="off"
-            name={'test1'}
             style={{ fontSize: 20 }}
             {...props}
           />
@@ -124,7 +123,7 @@ export default () => {
 
       <input
         ref={register}
-        name={'test2'}
+        name="test2"
         autoComplete="off"
         placeholder="👀 watching me :)"
         style={{ fontSize: 20 }}
