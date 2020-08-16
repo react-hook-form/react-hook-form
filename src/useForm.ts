@@ -647,11 +647,7 @@ export function useForm<
 
   const removeFieldEventListenerAndRef = React.useCallback(
     (field: Field | undefined, forceDelete?: boolean) => {
-      if (
-        field &&
-        (!isNameInFieldArray(fieldArrayNamesRef.current, field.ref.name) ||
-          forceDelete)
-      ) {
+      if (field) {
         removeFieldEventListener(field, forceDelete);
 
         if (shouldUnregister) {
