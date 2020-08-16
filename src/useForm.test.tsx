@@ -2440,8 +2440,6 @@ describe('useForm', () => {
           await fireEvent.blur(screen.getByRole('textbox'));
         });
 
-        screen.debug();
-
         expect(screen.queryByRole('alert')).toBeInTheDocument();
       });
 
@@ -2764,7 +2762,7 @@ describe('useForm', () => {
         });
 
         await waitFor(() => expect(mockResolver).toHaveBeenCalled());
-        // expect(screen.getByRole('alert').textContent).toBe('resolver error');
+        expect(screen.getByRole('alert').textContent).toBe('resolver error');
         expect(methods.formState.isValid).toBeFalsy();
         expect(renderCount).toBe(2);
       });
