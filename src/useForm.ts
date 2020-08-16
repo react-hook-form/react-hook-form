@@ -657,39 +657,21 @@ export function useForm<
         removeFieldEventListener(field, forceDelete);
 
         if (shouldUnregister) {
-          [defaultValuesAtRenderRef].forEach((data) =>
-            unset(data.current, field.ref.name),
-          );
-
-          [fieldsWithValidationRef, validFieldsRef].forEach((data) =>
-            data.current.delete(field.ref.name),
-          );
-
-          const errorsCopy = formState.errors;
-          unset(errorsCopy, field.ref.name);
+          validFieldsRef.current.delete(field.ref.name);
+          fieldsWithValidationRef.current.delete(field.ref.name);
+          unset(defaultValuesAtRenderRef.current, field.ref.name);
+          unset(formState.errors, field.ref.name);
+          unset(formStateRef.current.dirtyFields, field.ref.name);
+          unset(formStateRef.current.touched, field.ref.name);
 
           updateFormState({
-            errors: errorsCopy,
+            errors: formState.errors,
+            isDirty: !isEmptyObject(formStateRef.current.dirtyFields),
+            dirtyFields: formStateRef.current.dirtyFields,
+            touched: formStateRef.current.touched,
           });
 
-          if (
-            readFormStateRef.current.isValid ||
-            readFormStateRef.current.touched ||
-            readFormStateRef.current.isDirty
-          ) {
-            unset(formStateRef.current.dirtyFields, field.ref.name);
-            unset(formStateRef.current.touched, field.ref.name);
-
-            updateFormState({
-              isDirty: !isEmptyObject(formStateRef.current.dirtyFields),
-              dirtyFields: formStateRef.current.dirtyFields,
-              touched: formStateRef.current.touched,
-            });
-
-            if (resolverRef.current) {
-              validateResolver();
-            }
-          }
+          resolverRef.current && validateResolver();
         }
       }
     },

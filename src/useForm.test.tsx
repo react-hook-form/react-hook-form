@@ -120,7 +120,7 @@ describe('useForm', () => {
 
         await waitFor(() => expect(mockListener).toHaveBeenCalled());
         expect(screen.getByRole('alert').textContent).toBe('false');
-        expect(renderCount).toBe(3);
+        expect(renderCount).toBe(2);
       },
     );
 

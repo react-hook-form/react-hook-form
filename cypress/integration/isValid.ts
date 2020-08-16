@@ -39,7 +39,7 @@ describe('isValid', () => {
     cy.get('#toggle').click();
     cy.get('input[name="firstName"]').type('test');
     cy.get('#isValid').contains('true');
-    cy.get('#renderCount').contains('9');
+    cy.get('#renderCount').contains('8');
   });
 
   it('should showing valid correctly with schema validation and default value supplied', () => {
