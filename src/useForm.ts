@@ -550,9 +550,7 @@ export function useForm<
             return (
               (!isEmptyObject(state) ||
                 (shouldRender && isEmptyObject(state))) &&
-              updateFormState({
-                ...state,
-              })
+              updateFormState(state)
             );
           }
 
