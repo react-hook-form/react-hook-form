@@ -172,7 +172,7 @@ export type FlatFieldErrors<TFieldValues extends FieldValues> = Partial<
   Record<InternalFieldName<TFieldValues>, FieldError>
 >;
 
-export type Touched<TFieldValues extends FieldValues> = DeepMap<
+export type FieldNames<TFieldValues extends FieldValues> = DeepMap<
   TFieldValues,
   true
 >;
@@ -192,7 +192,7 @@ export type FormStateProxy<TFieldValues extends FieldValues = FieldValues> = {
   dirtyFields: Dirtied<TFieldValues>;
   isSubmitted: boolean;
   submitCount: number;
-  touched: Touched<TFieldValues>;
+  touched: FieldNames<TFieldValues>;
   isSubmitting: boolean;
   isValid: boolean;
   errors: FieldErrors<TFieldValues>;
@@ -234,10 +234,10 @@ export type UseFieldArrayOptions<
 
 export type FormState<TFieldValues> = {
   isDirty: boolean;
-  dirtyFields: Touched<TFieldValues>;
+  dirtyFields: FieldNames<TFieldValues>;
   isSubmitted: boolean;
   submitCount: number;
-  touched: Touched<TFieldValues>;
+  touched: FieldNames<TFieldValues>;
   isSubmitting: boolean;
   isValid: boolean;
   errors: FieldErrors<TFieldValues>;

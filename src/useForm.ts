@@ -64,7 +64,7 @@ import {
   ErrorOption,
   FormState,
   SubmitErrorHandler,
-  Touched,
+  FieldNames,
 } from './types/form';
 import { LiteralToPrimitive, DeepPartial, NonUndefined } from './types/utils';
 
@@ -173,9 +173,9 @@ export function useForm<
       error: FlatFieldErrors<TFieldValues>,
       shouldRender: boolean | null = false,
       state: {
-        dirtyFields?: Touched<TFieldValues>;
+        dirtyFields?: FieldNames<TFieldValues>;
         isDirty?: boolean;
-        touched?: Touched<TFieldValues>;
+        touched?: FieldNames<TFieldValues>;
       } = {},
       isValid?: boolean,
     ): boolean | void => {
@@ -270,9 +270,9 @@ export function useForm<
       name: InternalFieldName<TFieldValues>,
       shouldRender = true,
     ): {
-      dirtyFields?: Touched<TFieldValues>;
+      dirtyFields?: FieldNames<TFieldValues>;
       isDirty?: boolean;
-      touched?: Touched<TFieldValues>;
+      touched?: FieldNames<TFieldValues>;
     } => {
       if (
         !fieldsRef.current[name] ||
