@@ -364,11 +364,9 @@ export function useForm<
           .map((name) => {
             const error = get(errors, name);
 
-            if (error) {
-              set(formState.errors, name, error);
-            } else {
-              unset(formState.errors, name);
-            }
+            error
+              ? set(formState.errors, name, error)
+              : unset(formState.errors, name);
 
             return !error;
           })
@@ -500,11 +498,11 @@ export function useForm<
   ): void {
     setInternalValue(name, value as TFieldValues[string], config);
 
-    renderWatchedInputs(name);
-
     if (isFieldWatched(name)) {
       updateFormState();
     }
+
+    renderWatchedInputs(name);
 
     if (config.shouldValidate) {
       trigger(name as any);
@@ -681,18 +679,14 @@ export function useForm<
   function clearErrors(
     name?: FieldName<TFieldValues> | FieldName<TFieldValues>[],
   ): void {
-    if (name) {
+    name &&
       (isArray(name) ? name : [name]).forEach((inputName) =>
         unset(formState.errors, inputName),
       );
-      updateFormState({
-        errors: formState.errors,
-      });
-    } else {
-      updateFormState({
-        errors: {},
-      });
-    }
+
+    updateFormState({
+      errors: name ? formState.errors : {},
+    });
   }
 
   function setError(name: FieldName<TFieldValues>, error: ErrorOption): void {
