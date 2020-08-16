@@ -265,7 +265,7 @@ export function useForm<
     [],
   );
 
-  const updateDirtyState = React.useCallback(
+  const updateAndGetDirtyState = React.useCallback(
     (name: InternalFieldName<TFieldValues>, shouldRender = true) => {
       if (
         !fieldsRef.current[name] ||
@@ -425,7 +425,7 @@ export function useForm<
           setFieldValue(field, get(data, fieldName));
 
           if (shouldDirty) {
-            updateDirtyState(fieldName, true);
+            updateAndGetDirtyState(fieldName);
           }
 
           if (shouldValidate) {
@@ -434,7 +434,7 @@ export function useForm<
         }
       });
     },
-    [trigger, setFieldValue, updateDirtyState],
+    [trigger, setFieldValue, updateAndGetDirtyState],
   );
 
   const setInternalValue = React.useCallback(
@@ -445,7 +445,7 @@ export function useForm<
     ): boolean | void => {
       if (fieldsRef.current[name]) {
         setFieldValue(fieldsRef.current[name] as Field, value);
-        return config.shouldDirty && !!updateDirtyState(name, true);
+        return config.shouldDirty && !!updateAndGetDirtyState(name);
       } else if (!isPrimitive(value)) {
         setInternalValues(name, value, config);
       }
@@ -456,7 +456,7 @@ export function useForm<
 
       return true;
     },
-    [updateDirtyState, setFieldValue, setInternalValues],
+    [updateAndGetDirtyState, setFieldValue, setInternalValues],
   );
 
   const isFieldWatched = (name: string) =>
@@ -529,7 +529,7 @@ export function useForm<
                 isDirty?: boolean;
                 touched?: Touched<TFieldValues>;
               }
-            | boolean = updateDirtyState(name, false);
+            | boolean = updateAndGetDirtyState(name, false);
           let shouldRender = !!state || isFieldWatched(name);
 
           if (
