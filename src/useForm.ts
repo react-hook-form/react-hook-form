@@ -539,26 +539,20 @@ export function useForm<
           ) {
             set(formStateRef.current.touched, name, true);
             state = {
-              ...state,
+              ...(state || {}),
               touched: formStateRef.current.touched,
             };
           }
 
           if (shouldSkipValidation) {
             renderWatchedInputs(name);
-            if (state) {
-              return updateFormState({
+            return (
+              (state || (shouldRender && !state)) &&
+              updateFormState({
                 ...state,
                 touched: formStateRef.current.touched,
-              });
-            } else {
-              return (
-                shouldRender &&
-                updateFormState({
-                  touched: formStateRef.current.touched,
-                })
-              );
-            }
+              })
+            );
           }
 
           if (resolverRef.current) {
