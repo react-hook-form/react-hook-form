@@ -182,13 +182,13 @@ export function useForm<
       let shouldReRender =
         shouldRender ||
         shouldRenderBasedOnError<TFieldValues>({
-          errors: formState.errors,
+          errors: formStateRef.current.errors,
           error,
           name,
           validFields: validFieldsRef.current,
           fieldsWithValidation: fieldsWithValidationRef.current,
         });
-      const previousError = get(formState.errors, name);
+      const previousError = get(formStateRef.current.errors, name);
 
       if (isEmptyObject(error)) {
         if (fieldsWithValidationRef.current.has(name) || resolverRef.current) {
@@ -196,7 +196,7 @@ export function useForm<
           shouldReRender = shouldReRender || previousError;
         }
 
-        unset(formState.errors, name);
+        unset(formStateRef.current.errors, name);
       } else {
         validFieldsRef.current.delete(name);
         shouldReRender =
@@ -204,18 +204,18 @@ export function useForm<
           !previousError ||
           !isSameError(previousError, error[name] as FieldError);
 
-        set(formState.errors, name, error[name]);
+        set(formStateRef.current.errors, name, error[name]);
       }
 
       if (shouldReRender || !isEmptyObject(state)) {
         updateFormState({
           ...state,
-          errors: formState.errors,
+          errors: formStateRef.current.errors,
           isValid: resolverRef.current
-            ? isValid
+            ? !!isValid
             : validFieldsRef.current.size >=
                 fieldsWithValidationRef.current.size &&
-              isEmptyObject(formState.errors),
+              isEmptyObject(formStateRef.current.errors),
         });
       }
     },
@@ -274,8 +274,11 @@ export function useForm<
       isDirty?: boolean;
       touched?: Touched<TFieldValues>;
     } => {
-      const { isDirty, dirtyFields } = readFormStateRef.current;
-      if (!fieldsRef.current[name] || (!isDirty && !dirtyFields)) {
+      if (
+        !fieldsRef.current[name] ||
+        (!readFormStateRef.current.isDirty &&
+          !readFormStateRef.current.dirtyFields)
+      ) {
         return {};
       }
 
@@ -304,8 +307,9 @@ export function useForm<
       };
 
       const isChanged =
-        (isDirty && previousIsDirty !== state.isDirty) ||
-        (dirtyFields &&
+        (readFormStateRef.current.isDirty &&
+          previousIsDirty !== state.isDirty) ||
+        (readFormStateRef.current.dirtyFields &&
           isDirtyFieldExist !== get(formStateRef.current.dirtyFields, name));
 
       if (isChanged && shouldRender) {
@@ -653,13 +657,19 @@ export function useForm<
         removeFieldEventListener(field, forceDelete);
 
         if (shouldUnregister) {
-          fieldsWithValidationRef.current.delete(field.ref.name);
-          validFieldsRef.current.delete(field.ref.name);
-          unset(defaultValuesAtRenderRef.current, field.ref.name);
-          unset(formState.errors, field.ref.name);
+          [defaultValuesAtRenderRef].forEach((data) =>
+            unset(data.current, field.ref.name),
+          );
+
+          [fieldsWithValidationRef, validFieldsRef].forEach((data) =>
+            data.current.delete(field.ref.name),
+          );
+
+          const errorsCopy = formState.errors;
+          unset(errorsCopy, field.ref.name);
 
           updateFormState({
-            errors: formState.errors,
+            errors: errorsCopy,
           });
 
           if (
@@ -693,10 +703,14 @@ export function useForm<
       (isArray(name) ? name : [name]).forEach((inputName) =>
         unset(formState.errors, inputName),
       );
+      updateFormState({
+        errors: formState.errors,
+      });
+    } else {
+      updateFormState({
+        errors: {},
+      });
     }
-    updateFormState({
-      errors: name ? formState.errors : {},
-    });
   }
 
   function setError(name: FieldName<TFieldValues>, error: ErrorOption): void {
@@ -916,9 +930,11 @@ export function useForm<
         ).then((error: FieldErrors) => {
           const previousFormIsValid = formStateRef.current.isValid;
 
-          isEmptyObject(error)
-            ? validFieldsRef.current.add(name)
-            : validFieldsRef.current.delete(name);
+          if (isEmptyObject(error)) {
+            validFieldsRef.current.add(name);
+          } else {
+            validFieldsRef.current.delete(name);
+          }
 
           if (previousFormIsValid !== isEmptyObject(error)) {
             updateFormState();
@@ -1105,7 +1121,7 @@ export function useForm<
       isValid: isValid ? formStateRef.current.isValid : true,
       dirtyFields: dirtyFields ? formStateRef.current.dirtyFields : {},
       touched: touched ? formStateRef.current.touched : {},
-      errors: errors ? formState.errors : {},
+      errors: errors ? formStateRef.current.errors : {},
     });
   };
 
