@@ -1103,7 +1103,7 @@ export function useForm<
       isValid: isValid ? formStateRef.current.isValid : true,
       dirtyFields: dirtyFields ? formStateRef.current.dirtyFields : {},
       touched: touched ? formStateRef.current.touched : {},
-      errors: errors ? formStateRef.current.errors : {},
+      errors: errors ? formState.errors : {},
     });
   };
 
