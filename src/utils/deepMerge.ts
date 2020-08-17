@@ -1,12 +1,10 @@
 import isObject from './isObject';
-import isArray from './isArray';
-import isPrimitive from './isPrimitive';
 
 export function deepMerge<
   T extends Record<keyof T, any>,
   U extends Record<keyof U, any>
 >(target: T, source: U): T & U {
-  if (isPrimitive(target) || isPrimitive(source)) {
+  if (!isObject(target) || !isObject(source)) {
     return source;
   }
 
@@ -14,10 +12,7 @@ export function deepMerge<
     const targetValue = target[key];
     const sourceValue = source[key];
 
-    if (
-      (isObject(targetValue) && isObject(sourceValue)) ||
-      (isArray(targetValue) && isArray(sourceValue))
-    ) {
+    if (isObject(targetValue) && isObject(sourceValue)) {
       target[key] = deepMerge(targetValue, sourceValue);
     } else {
       target[key] = sourceValue;
