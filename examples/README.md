@@ -7,6 +7,7 @@ You can view the source code for most examples within their folder, or visit Cod
 | Async Submit Validation                 | https://codesandbox.io/s/xrjv48o0qp                                                  |
 | Async Set Form Values                   | https://codesandbox.io/s/react-hook-from-async-set-form-values-ztpd6                 |
 | Async Field Validation                  | https://codesandbox.io/s/m5pj55yj7x                                                  |
+| Async Resolver Creation                 | https://codesandbox.io/s/react-hook-form-resolver-forked-eejbj                       |
 | Array of Field Array                    | https://codesandbox.io/s/react-hook-form-usefieldarray-nested-arrays-x7btr           |
 | Basic                                   | https://codesandbox.io/s/yj07z1639                                                   |
 | Basic Validation                        | https://codesandbox.io/s/rwpz2jn6ln                                                  |
