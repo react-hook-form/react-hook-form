@@ -1,14 +1,20 @@
-import React, { useEffect, useState } from "react";
-import { useForm } from "react-hook-form";
+import React, { useEffect, useState } from 'react';
+import { useForm, Resolver } from 'react-hook-form';
 
-type Resolver = (values: any) => { values: any; errors: any };
+interface FormValues {
+  username: string;
+}
 
-async function createUserResolver() {
+interface FormContext {
+  resolver: Resolver<any>;
+}
+
+async function createUserResolver(): Promise<Resolver<any>> {
   await new Promise((resolve) => setTimeout(resolve, 3000));
 
-  return (values: any) => {
+  const userResolver: Resolver<any> = (values: any) => {
     if (
-      typeof values?.username === "string" &&
+      typeof values?.username === 'string' &&
       values.username.length >= 3 &&
       values.username.length <= 30
     ) {
@@ -19,29 +25,31 @@ async function createUserResolver() {
       errors: {
         username: {
           message:
-            "The username is required and has to be between 3 and 30 characters long!",
+            'The username is required and has to be between 3 and 30 characters long!',
         },
       },
     };
   };
+
+  return userResolver;
 }
 
 export default function AsyncResolverCreation() {
-  const [userResolver, setUserResolver] = useState<Resolver>();
+  const [userResolver, setUserResolver] = useState<Resolver<any>>();
 
   useEffect(() => {
     createUserResolver().then((userResolver) =>
-      setUserResolver(() => userResolver)
+      setUserResolver(() => userResolver),
     );
   }, []);
 
-  const { register, handleSubmit, errors } = useForm({
+  const { register, handleSubmit, errors } = useForm<FormValues, FormContext>({
     resolver: async (values: any, context: any) =>
       context.resolver(values, context),
     context: {
       resolver: userResolver ?? ((values: any) => ({ values, errors: {} })),
     },
-    mode: "onChange",
+    mode: 'onChange',
   });
 
   const onSubmit = (values: any) => {
@@ -50,16 +58,17 @@ export default function AsyncResolverCreation() {
 
   return (
     <div className="App">
-      <h1>resolver</h1>
+      <h1>async resolver creation</h1>
 
       <form onSubmit={handleSubmit(onSubmit)}>
-        <label>Username</label>
-        <input type="text" name="username" ref={register} />
-        {errors.username && <p>{errors.username.message}</p>}
+        <div>
+          <label>Username</label>
+          <input type="text" name="username" ref={register} />
+          {errors.username && <p>{errors.username.message}</p>}
+        </div>
+
         {!userResolver && <p>Validation is being prepared...</p>}
-        <p>
-          <input disabled={!userResolver} type="submit" />
-        </p>
+        <input disabled={!userResolver} type="submit" />
       </form>
     </div>
   );
