@@ -73,7 +73,7 @@ export default function Field(props: any) {
           <label>Radio Group</label>
           <Controller
             render={(props) => (
-              <RadioGroup aria-label="gender" name="gender1" {...props}>
+              <RadioGroup aria-label="gender" {...props} name="gender1">
                 <FormControlLabel
                   value="female"
                   control={<Radio />}

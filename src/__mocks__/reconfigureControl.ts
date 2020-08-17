@@ -34,7 +34,7 @@ export const reconfigureControl = (
     current: {},
   },
   watchInternal: jest.fn(),
-  validateSchemaIsValid: jest.fn(),
+  validateResolver: jest.fn(),
   reRender: jest.fn(),
   setValue: jest.fn(),
   getValues: jest.fn(),
@@ -48,6 +48,7 @@ export const reconfigureControl = (
     isOnSubmit: false,
     isOnBlur: false,
     isOnChange: false,
+    isOnTouch: false,
     isOnAll: false,
   },
   reValidateMode: {

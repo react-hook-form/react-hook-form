@@ -1750,6 +1750,49 @@ describe('useForm', () => {
     });
   });
 
+  describe('handleSubmit with onInvalid callback', () => {
+    it('should invoke the onValid callback when validation pass', async () => {
+      const { result } = renderHook(() => useForm());
+      const onValidCallback = jest.fn();
+      const onInvalidCallback = jest.fn();
+
+      await act(async () => {
+        await result.current.handleSubmit(
+          onValidCallback,
+          onInvalidCallback,
+        )({
+          preventDefault: () => {},
+          persist: () => {},
+        } as React.SyntheticEvent);
+      });
+      expect(onValidCallback).toBeCalledTimes(1);
+      expect(onInvalidCallback).not.toBeCalledTimes(1);
+    });
+
+    it('should invoke the onInvalid callback when validation failed', async () => {
+      const { result } = renderHook(() => useForm());
+      result.current.register(
+        { value: '', type: 'input', name: 'test' },
+        { required: true },
+      );
+      const onValidCallback = jest.fn();
+      const onInvalidCallback = jest.fn();
+
+      await act(async () => {
+        await result.current.handleSubmit(
+          onValidCallback,
+          onInvalidCallback,
+        )({
+          preventDefault: () => {},
+          persist: () => {},
+        } as React.SyntheticEvent);
+      });
+
+      expect(onValidCallback).not.toBeCalledTimes(1);
+      expect(onInvalidCallback).toBeCalledTimes(1);
+    });
+  });
+
   describe('getValues', () => {
     it('should call getFieldsValues and return all values', () => {
       const { result } = renderHook(() => useForm<{ test: string }>());
@@ -2761,7 +2804,7 @@ describe('useForm', () => {
     });
   });
 
-  describe('validateSchemaIsValid', () => {
+  describe('validateResolver', () => {
     it('should be defined when resolver is defined', () => {
       const resolver = async (data: any) => {
         return {
@@ -2772,13 +2815,13 @@ describe('useForm', () => {
 
       const { result } = renderHook(() => useForm({ resolver }));
 
-      expect(result.current.control.validateSchemaIsValid).toBeDefined();
+      expect(result.current.control.validateResolver).toBeDefined();
     });
 
     it('should be undefined when resolver is undefined', () => {
       const { result } = renderHook(() => useForm());
 
-      expect(result.current.control.validateSchemaIsValid).toBeUndefined();
+      expect(result.current.control.validateResolver).toBeUndefined();
     });
 
     it('should be called resolver with default values if default value is defined', () => {
@@ -2800,7 +2843,7 @@ describe('useForm', () => {
 
       result.current.register('test');
 
-      result.current.control.validateSchemaIsValid!({});
+      result.current.control.validateResolver!({});
 
       expect(resolverData).toEqual({
         test: 'default',
@@ -2827,9 +2870,60 @@ describe('useForm', () => {
 
       result.current.setValue('test', 'value');
 
-      result.current.control.validateSchemaIsValid!({});
+      result.current.control.validateResolver!({});
 
       expect(resolverData).toEqual({ test: 'value' });
+    });
+  });
+
+  describe('mode with onTouched', () => {
+    it('should validate form only when input is been touched', async () => {
+      const Component = () => {
+        const { register, errors } = useForm({
+          mode: 'onTouched',
+        });
+
+        return (
+          <>
+            <input
+              type="text"
+              name="test"
+              ref={register({ required: 'This is required.' })}
+            />
+            {errors.test?.message}
+          </>
+        );
+      };
+
+      render(<Component />);
+
+      screen.getByRole('textbox').focus();
+
+      await actComponent(async () => {
+        await fireEvent.blur(screen.getByRole('textbox'));
+      });
+
+      expect(screen.queryByText('This is required.')).toBeInTheDocument();
+
+      await actComponent(async () => {
+        await fireEvent.input(screen.getByRole('textbox'), {
+          target: {
+            value: 'test',
+          },
+        });
+      });
+
+      expect(screen.queryByText('This is required.')).not.toBeInTheDocument();
+
+      await actComponent(async () => {
+        fireEvent.input(screen.getByRole('textbox'), {
+          target: {
+            value: '',
+          },
+        });
+      });
+
+      expect(screen.queryByText('This is required.')).toBeInTheDocument();
     });
   });
 });

@@ -60,7 +60,6 @@ const Controller = <
   const [value, setInputStateValue] = React.useState(getInitialValue());
   const valueRef = React.useRef(value);
   const onFocusRef = React.useRef(onFocus);
-  const isSubmitted = isSubmittedRef.current;
 
   if (process.env.NODE_ENV !== 'production') {
     if (isUndefined(value)) {
@@ -85,7 +84,7 @@ const Controller = <
       isBlurEvent,
       isReValidateOnBlur,
       isReValidateOnChange,
-      isSubmitted,
+      isSubmitted: isSubmittedRef.current,
       ...mode,
     });
 
@@ -183,6 +182,7 @@ const Controller = <
         onChange,
         onBlur,
         value,
+        name,
       })
     : null;
 };
