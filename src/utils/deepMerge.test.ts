@@ -46,10 +46,4 @@ describe('deepMerge', () => {
       test: new Date('1999-02-02'),
     });
   });
-
-  it('should deep merge array values  ', () => {
-    expect(deepMerge([{ hey: 'test' }], [{ id: 'id', text: '' }])).toEqual([
-      { hey: 'test', id: 'id', text: '' },
-    ]);
-  });
 });

@@ -1190,7 +1190,6 @@ export function useForm<
     defaultValuesRef,
     unmountFieldsStateRef,
     updateFormState,
-    shouldUnregister,
     validateResolver: resolver ? validateResolver : undefined,
     ...commonProps,
   };
