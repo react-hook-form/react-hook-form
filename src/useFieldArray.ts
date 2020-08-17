@@ -25,6 +25,7 @@ import {
   Control,
   ArrayField,
 } from './types/form';
+import { deepMerge } from './utils/deepMerge';
 
 const appendId = <TValue extends object, TKeyName extends string>(
   value: TValue,
@@ -71,6 +72,8 @@ export const useFieldArray = <
     formStateRef: {
       current: { dirtyFields, touched, errors },
     },
+    shouldUnregister,
+    unmountFieldsStateRef,
     updateFormState,
     readFormStateRef,
     watchFieldsRef,
@@ -482,6 +485,8 @@ export const useFieldArray = <
     append: React.useCallback(append, [name, errors]),
     remove: React.useCallback(remove, [fields, name, errors]),
     insert: React.useCallback(insert, [name, errors]),
-    fields,
+    fields: shouldUnregister
+      ? fields
+      : deepMerge(get(unmountFieldsStateRef.current, name), fields),
   };
 };
