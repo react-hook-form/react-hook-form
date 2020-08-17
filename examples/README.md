@@ -32,6 +32,7 @@ You can view the source code for most examples within their folder, or visit Cod
 | Normalize/Format/Mask Field             | https://codesandbox.io/s/387z7njwzp                                                  |
 | Format/Mask Field (Third Party Library) | https://codesandbox.io/s/react-hook-form-normalize-field-1jumn                       |
 | Native Validation                       | https://codesandbox.io/s/react-hook-form-native-validation-ez5ww                     |
+| Open API Resolver                       | https://codesandbox.io/s/react-hook-form-resolver-forked-out68                       |
 | Reset Form                              | https://codesandbox.io/s/jjm3wyqmjy                                                  |
 | Remote/Trigger Form Submit              | https://codesandbox.io/s/remote-handlesubmit-w0win                                   |
 | Register Error Messages                 | https://codesandbox.io/s/o766kp4z05                                                  |
