@@ -123,7 +123,7 @@ const Controller = <
         setInputStateValue(getInitialValue());
       }
     }
-  }, [fieldsRef, rules, name, onFocusRef, register]);
+  }, [rules, name, register]);
 
   React.useEffect(
     () => () => {
