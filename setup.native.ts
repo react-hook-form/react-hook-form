@@ -1,4 +1,3 @@
-// @ts-ignore
+// @ts-nocheck
 global.window = {};
-// @ts-ignore
 global.window = global;

@@ -456,7 +456,7 @@ describe('useFieldArray', () => {
               ],
             });
           });
-        }, []);
+        }, [reset]);
 
         return (
           <form>
