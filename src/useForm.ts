@@ -97,12 +97,8 @@ export function useForm<
     Record<string, Set<InternalFieldName<TFieldValues>>>
   >({});
   const watchFieldsHookRenderRef = React.useRef<Record<string, Function>>({});
-  const fieldsWithValidationRef = React.useRef(
-    new Set<InternalFieldName<TFieldValues>>(),
-  );
-  const validFieldsRef = React.useRef(
-    new Set<InternalFieldName<TFieldValues>>(),
-  );
+  const fieldsWithValidationRef = React.useRef({});
+  const validFieldsRef = React.useRef({});
   const defaultValuesRef = React.useRef<
     | FieldValue<UnpackNestedValue<TFieldValues>>
     | UnpackNestedValue<DeepPartial<TFieldValues>>
@@ -189,14 +185,14 @@ export function useForm<
       const previousError = get(formStateRef.current.errors, name);
 
       if (isEmptyObject(error)) {
-        if (fieldsWithValidationRef.current.has(name) || resolverRef.current) {
-          validFieldsRef.current.add(name);
+        if (get(fieldsWithValidationRef.current, name) || resolverRef.current) {
+          set(validFieldsRef.current, name, true);
           shouldReRender = shouldReRender || previousError;
         }
 
         unset(formStateRef.current.errors, name);
       } else {
-        validFieldsRef.current.delete(name);
+        unset(validFieldsRef.current, name);
         shouldReRender =
           shouldReRender ||
           !previousError ||
@@ -210,10 +206,11 @@ export function useForm<
           ...state,
           errors: formStateRef.current.errors,
           isValid: resolverRef.current
-            ? isValid
-            : validFieldsRef.current.size >=
-                fieldsWithValidationRef.current.size &&
-              isEmptyObject(formStateRef.current.errors),
+            ? !!isValid
+            : deepEqual(
+                validFieldsRef.current,
+                fieldsWithValidationRef.current,
+              ) && isEmptyObject(formStateRef.current.errors),
         });
       }
     },
@@ -649,8 +646,8 @@ export function useForm<
         removeFieldEventListener(field, forceDelete);
 
         if (shouldUnregister) {
-          validFieldsRef.current.delete(field.ref.name);
-          fieldsWithValidationRef.current.delete(field.ref.name);
+          unset(validFieldsRef.current, field.ref.name);
+          unset(fieldsWithValidationRef.current, field.ref.name);
           unset(defaultValuesAtRenderRef.current, field.ref.name);
           unset(formState.errors, field.ref.name);
           unset(formStateRef.current.dirtyFields, field.ref.name);
@@ -889,7 +886,7 @@ export function useForm<
     if (resolver && !isFieldArray && readFormStateRef.current.isValid) {
       validateResolver();
     } else if (!isEmptyObject(validateOptions)) {
-      fieldsWithValidationRef.current.add(name);
+      set(fieldsWithValidationRef.current, name, true);
 
       if (!isOnSubmit && readFormStateRef.current.isValid) {
         validateField(
@@ -901,9 +898,9 @@ export function useForm<
           const previousFormIsValid = formStateRef.current.isValid;
 
           if (isEmptyObject(error)) {
-            validFieldsRef.current.add(name);
+            set(validFieldsRef.current, name, true);
           } else {
-            validFieldsRef.current.delete(name);
+            unset(validFieldsRef.current, name);
           }
 
           if (previousFormIsValid !== isEmptyObject(error)) {
@@ -1017,10 +1014,10 @@ export function useForm<
 
               if (fieldError[name]) {
                 set(fieldErrors, name, fieldError[name]);
-                validFieldsRef.current.delete(name);
-              } else if (fieldsWithValidationRef.current.has(name)) {
+                unset(validFieldsRef.current, name);
+              } else if (get(fieldsWithValidationRef.current, name)) {
                 unset(formState.errors, name);
-                validFieldsRef.current.add(name);
+                set(validFieldsRef.current, name, true);
               }
             }
           }
@@ -1154,7 +1151,7 @@ export function useForm<
 
   if (!resolver && readFormStateRef.current.isValid) {
     formState.isValid =
-      validFieldsRef.current.size >= fieldsWithValidationRef.current.size &&
+      deepEqual(validFieldsRef.current, fieldsWithValidationRef.current) &&
       isEmptyObject(formState.errors);
   }
 

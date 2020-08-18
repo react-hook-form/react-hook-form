@@ -267,10 +267,8 @@ export type Control<TFieldValues extends FieldValues = FieldValues> = Pick<
   validateResolver: ((fieldsValues: any) => void) | undefined;
   watchFieldsRef: React.MutableRefObject<Set<InternalFieldName<TFieldValues>>>;
   isWatchAllRef: React.MutableRefObject<boolean>;
-  validFieldsRef: React.MutableRefObject<Set<InternalFieldName<TFieldValues>>>;
-  fieldsWithValidationRef: React.MutableRefObject<
-    Set<InternalFieldName<TFieldValues>>
-  >;
+  validFieldsRef: React.MutableRefObject<FieldNames<TFieldValues>>;
+  fieldsWithValidationRef: React.MutableRefObject<FieldNames<TFieldValues>>;
   fieldsRef: React.MutableRefObject<FieldRefs<TFieldValues>>;
   resetFieldArrayFunctionRef: React.MutableRefObject<
     Record<string, () => void>
