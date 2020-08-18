@@ -14,6 +14,10 @@ export type LiteralToPrimitive<T extends any> = T extends string
   ? boolean
   : T;
 
+export type LiteralUnion<T extends U, U extends Primitive> =
+  | T
+  | (U & { _?: never });
+
 export type Assign<T extends object, U extends object> = T & Omit<U, keyof T>;
 
 export type DeepPartial<T> = {

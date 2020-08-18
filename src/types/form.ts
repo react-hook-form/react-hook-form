@@ -6,6 +6,7 @@ import {
   DeepPartial,
   DeepMap,
   IsFlatObject,
+  LiteralUnion,
 } from './utils';
 
 declare const $NestedValue: unique symbol;
@@ -136,10 +137,14 @@ export type ValidationRules = Partial<{
   validate: Validate | Record<string, Validate>;
 }>;
 
-export type MultipleFieldErrors = Record<string, ValidateResult>;
+export type MultipleFieldErrors = {
+  [K in keyof ValidationRules]?: ValidateResult;
+} & {
+  [key: string]: ValidateResult;
+};
 
 export type FieldError = {
-  type: keyof ValidationRules | string;
+  type: LiteralUnion<keyof ValidationRules, string>;
   ref?: Ref;
   types?: MultipleFieldErrors;
   message?: Message;
@@ -151,7 +156,7 @@ export type ErrorOption =
     }
   | {
       message?: Message;
-      type: string;
+      type: LiteralUnion<keyof ValidationRules, string>;
     };
 
 export type Field = {
