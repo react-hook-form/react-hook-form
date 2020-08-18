@@ -210,7 +210,7 @@ export function useForm<
           ...state,
           errors: formStateRef.current.errors,
           isValid: resolverRef.current
-            ? !!isValid
+            ? isValid
             : validFieldsRef.current.size >=
                 fieldsWithValidationRef.current.size &&
               isEmptyObject(formStateRef.current.errors),
