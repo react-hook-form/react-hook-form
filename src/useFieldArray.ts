@@ -167,7 +167,7 @@ export const useFieldArray = <
       readFormStateRef.current.isDirty
     ) {
       set(dirtyFields, name, [
-        ...(get(dirtyFields, name) || [undefined]),
+        ...(get(dirtyFields, name) || fillEmptyArray(fields.slice(0, 1))),
         ...filterBooleanArray(value),
       ]);
       updateFormState({
@@ -254,39 +254,22 @@ export const useFieldArray = <
     }
 
     if (readFormStateRef.current.isValid && !validateResolver) {
-      let fieldIndex = -1;
-      let isFound = false;
-      const isIndexUndefined = isUndefined(index);
+      set(
+        validFieldsRef.current,
+        name,
+        removeArrayAt(get(validFieldsRef.current, name, []), index),
+      );
+      if (!unique(get(validFieldsRef.current, name, [])).length) {
+        unset(validFieldsRef.current, name);
+      }
 
-      while (fieldIndex++ < fields.length) {
-        const isLast = fieldIndex === fields.length - 1;
-        const isCurrentIndex =
-          (isArray(index) ? index : [index]).indexOf(fieldIndex) >= 0;
-
-        if (isCurrentIndex || isIndexUndefined) {
-          isFound = true;
-        }
-
-        if (!isFound) {
-          continue;
-        }
-
-        for (const key in fields[fieldIndex]) {
-          const getFieldName = (index = 0) =>
-            `${name}[${fieldIndex - index}].${key}`;
-
-          if (isCurrentIndex || isLast || isIndexUndefined) {
-            validFieldsRef.current.delete(getFieldName());
-            fieldsWithValidationRef.current.delete(getFieldName());
-          } else {
-            if (validFieldsRef.current.has(getFieldName())) {
-              validFieldsRef.current.add(getFieldName(1));
-            }
-            if (fieldsWithValidationRef.current.has(getFieldName())) {
-              fieldsWithValidationRef.current.add(getFieldName(1));
-            }
-          }
-        }
+      set(
+        fieldsWithValidationRef.current,
+        name,
+        removeArrayAt(get(fieldsWithValidationRef.current, name, []), index),
+      );
+      if (!unique(get(fieldsWithValidationRef.current, name, [])).length) {
+        unset(fieldsWithValidationRef.current, name);
       }
     }
 
