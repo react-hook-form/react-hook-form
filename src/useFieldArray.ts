@@ -413,7 +413,8 @@ export const useFieldArray = <
 
   const reset = () => {
     resetFields();
-    memoizedDefaultValues.current = getDefaultValues();
+    unset(fieldArrayDefaultValues.current, name);
+    memoizedDefaultValues.current = get(defaultValuesRef.current, name);
     setFields(mapIds(memoizedDefaultValues.current, keyName));
   };
 
