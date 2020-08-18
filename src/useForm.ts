@@ -247,7 +247,7 @@ export function useForm<
       }
 
       const isFieldDirty =
-        defaultValuesAtRenderRef.current[name] !==
+        defaultValuesAtRenderRef.current[name] !=
         getFieldValue(fieldsRef, name, unmountFieldsStateRef);
       const isDirtyFieldExist = get(dirtyFieldsRef.current, name);
       const isFieldArray = isNameInFieldArray(fieldArrayNamesRef.current, name);
