@@ -646,12 +646,14 @@ export function useForm<
         removeFieldEventListener(field, forceDelete);
 
         if (shouldUnregister) {
-          unset(validFieldsRef.current, field.ref.name);
-          unset(fieldsWithValidationRef.current, field.ref.name);
-          unset(defaultValuesAtRenderRef.current, field.ref.name);
-          unset(formState.errors, field.ref.name);
-          unset(formStateRef.current.dirtyFields, field.ref.name);
-          unset(formStateRef.current.touched, field.ref.name);
+          [
+            validFieldsRef.current,
+            fieldsWithValidationRef.current,
+            defaultValuesAtRenderRef.current,
+            formState.errors,
+            formStateRef.current.dirtyFields,
+            formStateRef.current.touched,
+          ].forEach((data) => unset(data, field.ref.name));
 
           updateFormState({
             errors: formState.errors,
