@@ -5,14 +5,18 @@ import { withRouter } from 'react-router';
 let renderCounter = 0;
 
 const FormState: React.FC = (props: any) => {
+  const defaultValues = {useFormDefaultValue: 42};
   const { register, handleSubmit, formState, reset } = useForm<{
     firstName: string;
     lastName: string;
     select: string;
     radio: string;
     checkbox: string;
+    useFormDefaultValue: number;
+    inputDefaultValue: number;
   }>({
     mode: props.match.params.mode,
+    defaultValues,
   });
 
   renderCounter++;
@@ -28,6 +32,17 @@ const FormState: React.FC = (props: any) => {
         name="lastName"
         ref={register({ required: true })}
         placeholder="lastName"
+      />
+      <input
+          name="useFormDefaultValue"
+          ref={register}
+          type="number"
+      />
+      <input
+          name="inputDefaultValue"
+          defaultValue={73}
+          ref={register}
+          type="number"
       />
       <div id="state">
         {JSON.stringify({
@@ -52,7 +67,7 @@ const FormState: React.FC = (props: any) => {
         ref={register}
       />
       <button id="submit">Submit</button>
-      <button type="button" onClick={() => reset()} id="resetForm">
+      <button type="button" onClick={() => reset({...defaultValues})} id="resetForm">
         Reset
       </button>
       <div id="renderCount">{renderCounter}</div>

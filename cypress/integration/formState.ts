@@ -36,7 +36,20 @@ describe('form state', () => {
     cy.get('#state').contains(
       '{"dirtyFields":["firstName","lastName"],"isSubmitted":true,"submitCount":2,"touched":["firstName","lastName"],"isDirty":true,"isSubmitting":false,"isValid":true}',
     );
-    cy.get('#renderCount').contains('14');
+
+    cy.get('input[name="inputDefaultValue"]').focus();
+    cy.get('input[name="inputDefaultValue"]').blur();
+    cy.get('#state').contains(
+      '{"dirtyFields":["firstName","lastName"],"isSubmitted":true,"submitCount":2,"touched":["firstName","lastName","inputDefaultValue"],"isDirty":true,"isSubmitting":false,"isValid":true}',
+    );
+
+    cy.get('input[name="useFormDefaultValue"]').focus();
+    cy.get('input[name="useFormDefaultValue"]').blur();
+    cy.get('#state').contains(
+      '{"dirtyFields":["firstName","lastName"],"isSubmitted":true,"submitCount":2,"touched":["firstName","lastName","inputDefaultValue","useFormDefaultValue"],"isDirty":true,"isSubmitting":false,"isValid":true}',
+    );
+
+    cy.get('#renderCount').contains('16');
   });
 
   it('should return correct form state with onChange mode', () => {
@@ -76,7 +89,20 @@ describe('form state', () => {
     cy.get('#state').contains(
       '{"dirtyFields":["firstName","lastName"],"isSubmitted":true,"submitCount":2,"touched":["firstName","lastName"],"isDirty":true,"isSubmitting":false,"isValid":true}',
     );
-    cy.get('#renderCount').contains('15');
+
+    cy.get('input[name="inputDefaultValue"]').focus();
+    cy.get('input[name="inputDefaultValue"]').blur();
+    cy.get('#state').contains(
+      '{"dirtyFields":["firstName","lastName"],"isSubmitted":true,"submitCount":2,"touched":["firstName","lastName","inputDefaultValue"],"isDirty":true,"isSubmitting":false,"isValid":true}',
+    );
+
+    cy.get('input[name="useFormDefaultValue"]').focus();
+    cy.get('input[name="useFormDefaultValue"]').blur();
+    cy.get('#state').contains(
+      '{"dirtyFields":["firstName","lastName"],"isSubmitted":true,"submitCount":2,"touched":["firstName","lastName","inputDefaultValue","useFormDefaultValue"],"isDirty":true,"isSubmitting":false,"isValid":true}',
+    );
+
+    cy.get('#renderCount').contains('17');
   });
 
   it('should return correct form state with onBlur mode', () => {
@@ -116,7 +142,20 @@ describe('form state', () => {
     cy.get('#state').contains(
       '{"dirtyFields":["firstName","lastName"],"isSubmitted":true,"submitCount":2,"touched":["firstName","lastName"],"isDirty":true,"isSubmitting":false,"isValid":true}',
     );
-    cy.get('#renderCount').contains('16');
+
+    cy.get('input[name="inputDefaultValue"]').focus();
+    cy.get('input[name="inputDefaultValue"]').blur();
+    cy.get('#state').contains(
+      '{"dirtyFields":["firstName","lastName"],"isSubmitted":true,"submitCount":2,"touched":["firstName","lastName","inputDefaultValue"],"isDirty":true,"isSubmitting":false,"isValid":true}',
+    );
+
+    cy.get('input[name="useFormDefaultValue"]').focus();
+    cy.get('input[name="useFormDefaultValue"]').blur();
+    cy.get('#state').contains(
+      '{"dirtyFields":["firstName","lastName"],"isSubmitted":true,"submitCount":2,"touched":["firstName","lastName","inputDefaultValue","useFormDefaultValue"],"isDirty":true,"isSubmitting":false,"isValid":true}',
+    );
+
+    cy.get('#renderCount').contains('18');
   });
 
   it('should reset dirty value when inputs reset back to default with onSubmit mode', () => {
