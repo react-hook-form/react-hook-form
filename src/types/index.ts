@@ -11,4 +11,7 @@ export {
   Field,
   ArrayField,
   Mode,
+  FieldValues,
+  FieldValue,
+  FormStateProxy,
 } from './form';
