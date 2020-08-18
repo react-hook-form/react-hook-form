@@ -26,7 +26,11 @@ export type FieldValue<
   TFieldValues extends FieldValues
 > = TFieldValues[InternalFieldName<TFieldValues>];
 
-export type NestedValue<TValue extends any[] | object = any[] | object> = {
+export type NestedValue<
+  TValue extends any[] | Record<string, unknown> =
+    | any[]
+    | Record<string, unknown>
+> = {
   [$NestedValue]: never;
 } & TValue;
 
@@ -34,7 +38,7 @@ export type UnpackNestedValue<T> = NonUndefined<T> extends NestedValue<infer U>
   ? U
   : NonUndefined<T> extends Date | FileList
   ? T
-  : NonUndefined<T> extends object
+  : NonUndefined<T> extends Record<string, unknown>
   ? { [K in keyof T]: UnpackNestedValue<T[K]> }
   : T;
 
