@@ -21,7 +21,7 @@ export default function AutoUnregister() {
           <Controller
             defaultValue=""
             control={control}
-            as={<input name={'test'} />}
+            as={<input name="test" />}
             name="test"
           />
           <section id="input-ReactSelect">
