@@ -12,6 +12,7 @@ import * as generateId from './logic/generateId';
 import { FormProvider } from './useFormContext';
 import { useFieldArray } from './useFieldArray';
 import { Control } from './types';
+import { perf } from 'react-performance-testing';
 
 const mockGenerateId = () => {
   let id = 0;
@@ -208,7 +209,6 @@ describe('useWatch', () => {
 
   describe('update', () => {
     it('should partial re-render', async () => {
-      let childCount = 0;
       const Child = ({
         register,
         control,
@@ -217,14 +217,11 @@ describe('useWatch', () => {
         control: Control;
       }) => {
         useWatch({ name: 'child', control });
-        childCount++;
         return <input type="text" name="child" ref={register} />;
       };
 
-      let parentCount = 0;
       const Parent = () => {
         const { register, handleSubmit, control } = useForm();
-        parentCount++;
         return (
           <form onSubmit={handleSubmit(() => {})}>
             <input type="text" name="parent" ref={register} />
@@ -234,6 +231,11 @@ describe('useWatch', () => {
         );
       };
 
+      const { renderCount } = perf<{
+        Parent: unknown;
+        Child: unknown;
+      }>(React);
+
       render(<Parent />);
 
       const childInput = screen.getAllByRole('textbox')[1];
@@ -242,33 +244,31 @@ describe('useWatch', () => {
         target: { value: 'test' },
       });
 
-      expect(parentCount).toBe(1);
-      expect(childCount).toBe(2);
+      expect(renderCount.current.Parent).toBeRenderedTimes(1);
+      expect(renderCount.current.Child).toBeRenderedTimes(2);
 
-      parentCount = 0;
-      childCount = 0;
+      renderCount.current.Parent!.value = 0;
+      renderCount.current.Child!.value = 0;
 
       await actComponent(async () => {
         await fireEvent.submit(screen.getByRole('button', { name: /submit/i }));
       });
 
-      expect(parentCount).toBe(2);
-      expect(childCount).toBe(2);
+      expect(renderCount.current.Parent).toBeRenderedTimes(2);
+      expect(renderCount.current.Child).toBeRenderedTimes(2);
 
-      parentCount = 0;
-      childCount = 0;
+      renderCount.current.Parent!.value = 0;
+      renderCount.current.Child!.value = 0;
 
       await actComponent(async () => {
         await fireEvent.input(childInput, { target: { value: 'test1' } });
       });
 
-      expect(parentCount).toBe(0);
-      expect(childCount).toBe(1);
+      expect(renderCount.current.Parent).toBeRenderedTimes(0);
+      expect(renderCount.current.Child).toBeRenderedTimes(1);
     });
 
     it("should not re-render external component when field name don't match", async () => {
-      let renderCount = 0;
-
       const Child = ({ control }: { control: Control }) => {
         useWatch({ name: 'test2', control });
 
@@ -279,8 +279,6 @@ describe('useWatch', () => {
         const { register, control } = useForm();
         useWatch({ name: 'test1', control });
 
-        renderCount++;
-
         return (
           <form>
             <input type="text" name="test1" ref={register} />
@@ -289,6 +287,8 @@ describe('useWatch', () => {
           </form>
         );
       };
+
+      const { renderCount } = perf<{ Parent: unknown; Child: unknown }>(React);
 
       render(<Parent />);
 
@@ -299,7 +299,7 @@ describe('useWatch', () => {
         },
       });
 
-      expect(renderCount).toBe(1);
+      expect(renderCount.current.Parent).toBeRenderedTimes(1);
     });
 
     it('should not throw error when null or undefined is set', () => {
