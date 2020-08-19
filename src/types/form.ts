@@ -6,6 +6,7 @@ import {
   DeepPartial,
   DeepMap,
   IsFlatObject,
+  LiteralUnion,
 } from './utils';
 
 declare const $NestedValue: unique symbol;
@@ -26,7 +27,11 @@ export type FieldValue<
   TFieldValues extends FieldValues
 > = TFieldValues[InternalFieldName<TFieldValues>];
 
-export type NestedValue<TValue extends any[] | object = any[] | object> = {
+export type NestedValue<
+  TValue extends any[] | Record<string, unknown> =
+    | any[]
+    | Record<string, unknown>
+> = {
   [$NestedValue]: never;
 } & TValue;
 
@@ -34,7 +39,7 @@ export type UnpackNestedValue<T> = NonUndefined<T> extends NestedValue<infer U>
   ? U
   : NonUndefined<T> extends Date | FileList
   ? T
-  : NonUndefined<T> extends object
+  : NonUndefined<T> extends Record<string, unknown>
   ? { [K in keyof T]: UnpackNestedValue<T[K]> }
   : T;
 
@@ -136,10 +141,14 @@ export type ValidationRules = Partial<{
   validate: Validate | Record<string, Validate>;
 }>;
 
-export type MultipleFieldErrors = Record<string, ValidateResult>;
+export type MultipleFieldErrors = {
+  [K in keyof ValidationRules]?: ValidateResult;
+} & {
+  [key: string]: ValidateResult;
+};
 
 export type FieldError = {
-  type: keyof ValidationRules | string;
+  type: LiteralUnion<keyof ValidationRules, string>;
   ref?: Ref;
   types?: MultipleFieldErrors;
   message?: Message;
@@ -151,7 +160,7 @@ export type ErrorOption =
     }
   | {
       message?: Message;
-      type: string;
+      type: LiteralUnion<keyof ValidationRules, string>;
     };
 
 export type Field = {
