@@ -28,10 +28,10 @@ describe('ConditionalField', () => {
         isValid: true,
       }),
     );
-    cy
-      .get('#result')
-      .contains('{"selectNumber":"1","firstName":"bill","lastName":"luo"}'),
-      cy.get('button#submit').click();
+    cy.get('button#submit').click();
+    cy.get('#result').contains(
+      '{"selectNumber":"1","firstName":"bill","lastName":"luo"}',
+    );
     cy.get('#state').should(($state) =>
       expect(JSON.parse($state.text())).to.be.deep.equal({
         dirtyFields: ['selectNumber', 'firstName', 'lastName'],
