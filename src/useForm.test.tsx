@@ -19,6 +19,7 @@ import {
 } from './types/form';
 import { DeepMap } from './types/utils';
 import { perf, PerfTools } from 'react-performance-testing';
+import 'jest-performance-testing';
 
 let nodeEnv: any;
 

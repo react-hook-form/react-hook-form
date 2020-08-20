@@ -13,6 +13,7 @@ import { FormProvider } from './useFormContext';
 import { useFieldArray } from './useFieldArray';
 import { Control } from './types';
 import { perf } from 'react-performance-testing';
+import 'jest-performance-testing';
 
 const mockGenerateId = () => {
   let id = 0;
