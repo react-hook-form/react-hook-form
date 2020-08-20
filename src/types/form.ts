@@ -218,6 +218,7 @@ export type CustomElement<TFieldValues extends FieldValues> = {
   name: FieldName<TFieldValues>;
   type?: string;
   value?: any;
+  disabled?: boolean;
   checked?: boolean;
   options?: HTMLOptionsCollection;
   files?: FileList | null;

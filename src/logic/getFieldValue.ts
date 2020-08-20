@@ -18,9 +18,13 @@ export default function getFieldValue<TFieldValues extends FieldValues>(
 
   if (field) {
     const {
-      ref: { value },
+      ref: { value, disabled },
       ref,
     } = field;
+
+    if (disabled) {
+      return;
+    }
 
     if (isFileInput(ref)) {
       return ref.files;
