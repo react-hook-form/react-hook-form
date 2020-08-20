@@ -89,14 +89,18 @@ export function useForm<
   criteriaMode,
 }: UseFormOptions<TFieldValues, TContext> = {}): UseFormMethods<TFieldValues> {
   const fieldsRef = React.useRef<FieldRefs<TFieldValues>>({});
-  const fieldArrayDefaultValues = React.useRef<Record<string, unknown[]>>({});
+  const fieldArrayDefaultValues = React.useRef<
+    Record<InternalFieldName<FieldValues>, unknown[]>
+  >({});
   const watchFieldsRef = React.useRef(
     new Set<InternalFieldName<TFieldValues>>(),
   );
   const watchFieldsHookRef = React.useRef<
-    Record<string, Set<InternalFieldName<TFieldValues>>>
+    Record<InternalFieldName<FieldValues>, Set<InternalFieldName<TFieldValues>>>
   >({});
-  const watchFieldsHookRenderRef = React.useRef<Record<string, Function>>({});
+  const watchFieldsHookRenderRef = React.useRef<
+    Record<InternalFieldName<FieldValues>, Function>
+  >({});
   const fieldsWithValidationRef = React.useRef({});
   const validFieldsRef = React.useRef({});
   const defaultValuesRef = React.useRef<
@@ -109,13 +113,17 @@ export function useForm<
   const isUnMount = React.useRef(false);
   const isWatchAllRef = React.useRef(false);
   const handleChangeRef = React.useRef<HandleChange>();
-  const unmountFieldsStateRef = React.useRef<Record<string, any>>({});
-  const resetFieldArrayFunctionRef = React.useRef<Record<string, () => void>>(
-    {},
-  );
+  const unmountFieldsStateRef = React.useRef<
+    Record<InternalFieldName<FieldValues>, any>
+  >({});
+  const resetFieldArrayFunctionRef = React.useRef<
+    Record<InternalFieldName<FieldValues>, () => void>
+  >({});
   const contextRef = React.useRef(context);
   const resolverRef = React.useRef(resolver);
-  const fieldArrayNamesRef = React.useRef<Set<string>>(new Set());
+  const fieldArrayNamesRef = React.useRef<Set<InternalFieldName<FieldValues>>>(
+    new Set(),
+  );
   const modeRef = React.useRef(modeChecker(mode));
   const {
     current: { isOnSubmit, isOnTouch },
