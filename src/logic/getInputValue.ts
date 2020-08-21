@@ -7,6 +7,6 @@ export default (event: any) =>
   !isObject(event.target) ||
   (isObject(event.target) && !event.type)
     ? event
-    : isUndefined(event.target.value)
+    : event.target.type === 'checkbox' || isUndefined(event.target.value)
     ? event.target.checked
     : event.target.value;

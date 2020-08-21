@@ -140,6 +140,37 @@ describe('Controller', () => {
     expect(screen.getByRole('textbox')).toHaveValue('test');
   });
 
+  it('should update checkbox input correctly', () => {
+    let fieldValues: any;
+    const Component = () => {
+      const { control, getValues } = useForm();
+      return (
+        <>
+          <Controller
+            defaultValue={false}
+            name="test"
+            type="checkbox"
+            as={<input type="checkbox" />}
+            control={control}
+          />
+          {/**
+           * We are checking if setValue method is invoked
+           */}
+          <button onClick={() => (fieldValues = getValues())}>getValues</button>
+        </>
+      );
+    };
+
+    render(<Component />);
+
+    fireEvent.click(screen.getByRole('checkbox'));
+
+    fireEvent.click(screen.getByRole('button', { name: /getValues/ }));
+
+    expect(screen.getByRole('checkbox')).toBeChecked();
+    expect(fieldValues).toEqual({ test: true });
+  });
+
   it("should trigger component's onChange method and invoke setValue method", () => {
     let fieldValues: any;
     const Component = () => {
