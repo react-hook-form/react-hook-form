@@ -1135,11 +1135,10 @@ export function useForm<
     resetRefs(omitResetState);
   };
 
-  observerRef.current = observerRef.current
-    ? observerRef.current
-    : isWeb
-    ? onDomRemove(fieldsRef, removeFieldEventListenerAndRef)
-    : undefined;
+  observerRef.current =
+    observerRef.current || !isWeb
+      ? observerRef.current
+      : onDomRemove(fieldsRef, removeFieldEventListenerAndRef);
 
   React.useEffect(() => {
     isUnMount.current = false;
