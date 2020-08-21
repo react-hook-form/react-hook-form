@@ -93,6 +93,7 @@
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
     "react-native": "^0.62.2",
+    "react-performance-testing": "^1.2.0",
     "react-test-renderer": "^16.13.1",
     "rimraf": "^3.0.2",
     "rollup": "^2.26.4",
