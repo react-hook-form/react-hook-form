@@ -14,7 +14,7 @@ describe('onDomRemove', () => {
       observe = jest.fn();
     };
     // @ts-ignore
-    const observer = onDomRemove({}, () => {});
+    const observer = onDomRemove({ current: {} }, () => {});
     expect(observer.observe).toBeCalledWith(window.document, {
       childList: true,
       subtree: true,
@@ -35,7 +35,7 @@ describe('onDomRemove', () => {
     const mockOnDetachCallback = jest.fn();
 
     // @ts-ignore
-    const observer = onDomRemove({}, mockOnDetachCallback);
+    const observer = onDomRemove({ current: {} }, mockOnDetachCallback);
 
     // @ts-ignore
     mockCallback();
@@ -63,7 +63,7 @@ describe('onDomRemove', () => {
     const mockOnDetachCallback = jest.fn();
 
     // @ts-ignore
-    const observer = onDomRemove({}, mockOnDetachCallback);
+    const observer = onDomRemove({ current: {} }, mockOnDetachCallback);
 
     // @ts-ignore
     mockCallback();

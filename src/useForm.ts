@@ -1137,7 +1137,9 @@ export function useForm<
 
   observerRef.current = observerRef.current
     ? observerRef.current
-    : onDomRemove(fieldsRef, removeFieldEventListenerAndRef);
+    : isWeb
+    ? onDomRemove(fieldsRef, removeFieldEventListenerAndRef)
+    : undefined;
 
   React.useEffect(() => {
     isUnMount.current = false;
