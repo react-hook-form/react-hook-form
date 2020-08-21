@@ -1,7 +1,7 @@
 import insert from './insert';
 
 describe('insert', () => {
-  it('should insert value to specific index into an array', () => {
+  it('should insert value at specific index in array', () => {
     expect(insert([1, 3, 4], 1, 2)).toEqual([1, 2, 3, 4]);
     expect(
       insert(

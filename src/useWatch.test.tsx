@@ -190,7 +190,7 @@ describe('useWatch', () => {
       const { result } = renderHook(() => useWatch({ name: 'test' }));
 
       expect(result.error.message).toBe(
-        '📋 useWatch is missing `control` prop.',
+        '📋 useWatch is missing `control` prop. https://react-hook-form.com/api#useWatch',
       );
 
       process.env.NODE_ENV = env;
