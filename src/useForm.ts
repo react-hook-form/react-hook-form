@@ -1105,7 +1105,7 @@ export function useForm<
     omitResetState: OmitResetState = {},
   ): void => {
     if (isWeb) {
-      let shouldFocus = false;
+      let shouldFocus = true;
 
       for (const field of Object.values(fieldsRef.current)) {
         if (field) {
