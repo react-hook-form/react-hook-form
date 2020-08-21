@@ -16,7 +16,7 @@ import isArray from './utils/isArray';
 import insertAt from './utils/insert';
 import fillEmptyArray from './utils/fillEmptyArray';
 import { filterBooleanArray } from './utils/filterBooleanArray';
-import unique from './utils/unique';
+import filterOutFalsy from './utils/filterOutFalsy';
 import {
   Field,
   FieldValues,
@@ -231,7 +231,7 @@ export const useFieldArray = <
     if (isArray(get(errors, name))) {
       set(errors, name, removeArrayAt(get(errors, name), index));
 
-      if (!unique(get(errors, name, [])).length) {
+      if (!filterOutFalsy(get(errors, name, [])).length) {
         unset(errors, name);
       }
     }
@@ -247,7 +247,7 @@ export const useFieldArray = <
     ) {
       set(dirtyFields, name, removeArrayAt(get(dirtyFields, name), index));
 
-      if (!unique(get(dirtyFields, name, [])).length) {
+      if (!filterOutFalsy(get(dirtyFields, name, [])).length) {
         unset(dirtyFields, name);
       }
     }
@@ -258,7 +258,7 @@ export const useFieldArray = <
         name,
         removeArrayAt(get(validFieldsRef.current, name, []), index),
       );
-      if (!unique(get(validFieldsRef.current, name, [])).length) {
+      if (!filterOutFalsy(get(validFieldsRef.current, name, [])).length) {
         unset(validFieldsRef.current, name);
       }
 
@@ -267,7 +267,9 @@ export const useFieldArray = <
         name,
         removeArrayAt(get(fieldsWithValidationRef.current, name, []), index),
       );
-      if (!unique(get(fieldsWithValidationRef.current, name, [])).length) {
+      if (
+        !filterOutFalsy(get(fieldsWithValidationRef.current, name, [])).length
+      ) {
         unset(fieldsWithValidationRef.current, name);
       }
     }
