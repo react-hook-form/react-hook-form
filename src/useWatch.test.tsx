@@ -12,7 +12,7 @@ import * as generateId from './logic/generateId';
 import { FormProvider } from './useFormContext';
 import { useFieldArray } from './useFieldArray';
 import { Control } from './types';
-import { perf } from 'react-performance-testing';
+import { perf, wait } from 'react-performance-testing';
 import 'jest-performance-testing';
 
 const mockGenerateId = () => {
@@ -245,8 +245,10 @@ describe('useWatch', () => {
         target: { value: 'test' },
       });
 
-      expect(renderCount.current.Parent).toBeRenderedTimes(1);
-      expect(renderCount.current.Child).toBeRenderedTimes(2);
+      await wait(() => {
+        expect(renderCount.current.Parent).toBeRenderedTimes(1);
+        expect(renderCount.current.Child).toBeRenderedTimes(2);
+      });
 
       renderCount.current.Parent!.value = 0;
       renderCount.current.Child!.value = 0;
@@ -255,8 +257,10 @@ describe('useWatch', () => {
         await fireEvent.submit(screen.getByRole('button', { name: /submit/i }));
       });
 
-      expect(renderCount.current.Parent).toBeRenderedTimes(2);
-      expect(renderCount.current.Child).toBeRenderedTimes(2);
+      await wait(() => {
+        expect(renderCount.current.Parent).toBeRenderedTimes(2);
+        expect(renderCount.current.Child).toBeRenderedTimes(2);
+      });
 
       renderCount.current.Parent!.value = 0;
       renderCount.current.Child!.value = 0;
@@ -265,8 +269,10 @@ describe('useWatch', () => {
         await fireEvent.input(childInput, { target: { value: 'test1' } });
       });
 
-      expect(renderCount.current.Parent).toBeRenderedTimes(0);
-      expect(renderCount.current.Child).toBeRenderedTimes(1);
+      await wait(() => {
+        expect(renderCount.current.Parent).toBeRenderedTimes(0);
+        expect(renderCount.current.Child).toBeRenderedTimes(1);
+      });
     });
 
     it("should not re-render external component when field name don't match", async () => {
@@ -300,7 +306,7 @@ describe('useWatch', () => {
         },
       });
 
-      expect(renderCount.current.Parent).toBeRenderedTimes(1);
+      await wait(() => expect(renderCount.current.Parent).toBeRenderedTimes(1));
     });
 
     it('should not throw error when null or undefined is set', () => {
