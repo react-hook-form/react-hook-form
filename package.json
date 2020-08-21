@@ -54,7 +54,7 @@
   "author": "<bluebill1049@hotmail.com>",
   "license": "MIT",
   "devDependencies": {
-    "@babel/core": "^7.10.4",
+    "@babel/core": "^7.11.4",
     "@babel/plugin-transform-runtime": "^7.10.4",
     "@changesets/changelog-github": "^0.2.6",
     "@changesets/cli": "^2.9.2",
@@ -78,7 +78,7 @@
     "copyfiles": "^2.3.0",
     "core-js": "^3.6.5",
     "coveralls": "^3.1.0",
-    "cypress": "4.10.0",
+    "cypress": "5.0.0",
     "eslint": "^7.4.0",
     "eslint-config-prettier": "^6.11.0",
     "eslint-plugin-cypress": "^2.11.1",
@@ -86,7 +86,7 @@
     "eslint-plugin-react": "^7.20.3",
     "eslint-plugin-react-hooks": "^4.0.8",
     "husky": "^4.2.5",
-    "jest": "^26.1.0",
+    "jest": "^26.4.1",
     "lint-staged": "^10.2.11",
     "metro-react-native-babel-preset": "^0.60.0",
     "prettier": "^2.0.5",
@@ -95,13 +95,13 @@
     "react-native": "^0.62.2",
     "react-test-renderer": "^16.13.1",
     "rimraf": "^3.0.2",
-    "rollup": "^2.21.0",
+    "rollup": "^2.26.4",
     "rollup-plugin-peer-deps-external": "^2.2.3",
     "rollup-plugin-sourcemaps": "^0.6.2",
     "rollup-plugin-terser": "^6.1.0",
     "rollup-plugin-typescript2": "^0.27.1",
     "ts-jest": "^26.1.2",
-    "typescript": "^3.9.6"
+    "typescript": "^4.0.2"
   },
   "bundlesize": [
     {

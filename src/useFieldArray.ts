@@ -2,7 +2,6 @@ import * as React from 'react';
 import { useFormContext } from './useFormContext';
 import { isMatchFieldArrayName } from './logic/isNameInFieldArray';
 import generateId from './logic/generateId';
-import isObject from './utils/isObject';
 import deepEqual from './logic/deepEqual';
 import getFieldArrayParentName from './logic/getFieldArrayParentName';
 import get from './utils/get';
@@ -31,7 +30,7 @@ const appendId = <TValue extends object, TKeyName extends string>(
   keyName: TKeyName,
 ): Partial<ArrayField<TValue, TKeyName>> => ({
   [keyName]: generateId(),
-  ...(isObject(value) ? value : { value }),
+  ...value,
 });
 
 const mapIds = <TData extends object, TKeyName extends string>(
