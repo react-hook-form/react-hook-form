@@ -42,10 +42,11 @@ const Controller = <
     trigger,
     mode,
     reValidateMode: { isReValidateOnBlur, isReValidateOnChange },
-    isSubmittedRef,
-    touchedFieldsRef,
+    formStateRef: {
+      current: { isSubmitted, touched },
+    },
+    updateFormState,
     readFormStateRef,
-    reRender,
     fieldsRef,
     fieldArrayNamesRef,
     unmountFieldsStateRef,
@@ -53,7 +54,7 @@ const Controller = <
   const isNotFieldArray = !isNameInFieldArray(fieldArrayNamesRef.current, name);
   const getInitialValue = () =>
     !isUndefined(get(unmountFieldsStateRef.current, name)) && isNotFieldArray
-      ? unmountFieldsStateRef.current[name]
+      ? get(unmountFieldsStateRef.current, name)
       : isUndefined(defaultValue)
       ? get(defaultValuesRef.current, name)
       : defaultValue;
@@ -84,7 +85,7 @@ const Controller = <
       isBlurEvent,
       isReValidateOnBlur,
       isReValidateOnChange,
-      isSubmitted: isSubmittedRef.current,
+      isSubmitted,
       ...mode,
     });
 
@@ -122,7 +123,7 @@ const Controller = <
         setInputStateValue(getInitialValue());
       }
     }
-  }, [fieldsRef, rules, name, onFocusRef, register]);
+  }, [rules, name, register]);
 
   React.useEffect(
     () => () => {
@@ -146,12 +147,11 @@ const Controller = <
   });
 
   const onBlur = () => {
-    if (
-      readFormStateRef.current.touched &&
-      !get(touchedFieldsRef.current, name)
-    ) {
-      set(touchedFieldsRef.current, name, true);
-      reRender();
+    if (readFormStateRef.current.touched && !get(touched, name)) {
+      set(touched, name, true);
+      updateFormState({
+        touched,
+      });
     }
 
     if (shouldValidate(true)) {

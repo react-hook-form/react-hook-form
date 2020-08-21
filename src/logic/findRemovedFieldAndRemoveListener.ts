@@ -2,6 +2,7 @@ import * as React from 'react';
 import removeAllEventListeners from './removeAllEventListeners';
 import getFieldValue from './getFieldValue';
 import isRadioInput from '../utils/isRadioInput';
+import set from '../utils/set';
 import isCheckBoxInput from '../utils/isCheckBoxInput';
 import isDetached from '../utils/isDetached';
 import isArray from '../utils/isArray';
@@ -34,7 +35,7 @@ export default function findRemovedFieldAndRemoveListener<
     const value = getFieldValue(fieldsRef, name, unmountFieldsStateRef);
 
     if (!isUndefined(value)) {
-      unmountFieldsStateRef.current[name] = value;
+      set(unmountFieldsStateRef.current, name, value);
     }
   }
 

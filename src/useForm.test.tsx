@@ -154,7 +154,7 @@ describe('useForm', () => {
       },
     );
 
-    it('should re-render if errors ocurred with resolver when formState.isValid is defined', async () => {
+    it('should re-render if errors occurred with resolver when formState.isValid is defined', async () => {
       const resolver = async (data: any) => {
         return {
           values: data,
@@ -184,7 +184,7 @@ describe('useForm', () => {
 
       render(<Component />);
 
-      await waitFor(() => expect(renderCount).toBe(2));
+      await waitFor(() => expect(renderCount).toBe(1));
       expect(screen.getByRole('alert').textContent).toBe('false');
     });
 
@@ -243,7 +243,10 @@ describe('useForm', () => {
       const { result } = renderHook(() => useForm());
 
       result.current.register({ type: 'text', name: 'input' });
-      result.current.unregister('input');
+
+      await act(async () => {
+        await result.current.unregister('input');
+      });
 
       expect(result.current.getValues()).toEqual({});
     });
@@ -255,19 +258,23 @@ describe('useForm', () => {
       result.current.register({ type: 'radio', name: 'input1' });
       result.current.register({ type: 'checkbox', name: 'input2' });
 
-      result.current.unregister(['input', 'input1', 'input2']);
+      await act(async () => {
+        await result.current.unregister(['input', 'input1', 'input2']);
+      });
 
       expect(result.current.getValues()).toEqual({});
     });
 
-    it('should not call findRemovedFieldAndRemoveListener when field variable does not exist', () => {
+    it('should not call findRemovedFieldAndRemoveListener when field variable does not exist', async () => {
       const mockListener = jest.spyOn(
         findRemovedFieldAndRemoveListener,
         'default',
       );
       const { result } = renderHook(() => useForm());
 
-      result.current.unregister('test');
+      await act(async () => {
+        await result.current.unregister('test');
+      });
 
       expect(mockListener).not.toHaveBeenCalled();
     });
@@ -559,14 +566,15 @@ describe('useForm', () => {
       result.current.register('test');
 
       // check only public variables
-      result.current.control.errorsRef.current = { test: 'test' };
-      result.current.control.touchedFieldsRef.current = { test: 'test' };
+      result.current.formState.errors = { test: 'test' };
       result.current.control.validFieldsRef.current = new Set(['test']);
       result.current.control.fieldsWithValidationRef.current = new Set([
         'test',
       ]);
-      result.current.control.isDirtyRef.current = true;
-      result.current.control.isSubmittedRef.current = true;
+
+      result.current.formState.touched = { test: 'test' };
+      result.current.formState.isDirty = true;
+      result.current.formState.isSubmitted = true;
 
       act(() =>
         result.current.reset(
@@ -583,10 +591,10 @@ describe('useForm', () => {
         ),
       );
 
-      expect(result.current.control.errorsRef.current).toEqual({
+      expect(result.current.formState.errors).toEqual({
         test: 'test',
       });
-      expect(result.current.control.touchedFieldsRef.current).toEqual({
+      expect(result.current.formState.touched).toEqual({
         test: 'test',
       });
       expect(result.current.control.validFieldsRef.current).toEqual(
@@ -595,8 +603,8 @@ describe('useForm', () => {
       expect(result.current.control.fieldsWithValidationRef.current).toEqual(
         new Set(['test']),
       );
-      expect(result.current.control.isDirtyRef.current).toBeTruthy();
-      expect(result.current.control.isSubmittedRef.current).toBeTruthy();
+      expect(result.current.formState.isDirty).toBeTruthy();
+      expect(result.current.formState.isSubmitted).toBeTruthy();
     });
   });
 
@@ -804,7 +812,7 @@ describe('useForm', () => {
       act(() => {
         result.current.setValue('test', '1');
         result.current.setValue('checkbox', ['1', '2']);
-        result.current.setValue('test[0]', {
+        result.current.setValue('test1[0]', {
           one: 'ONE',
           two: 'TWO',
           three: 'THREE',
@@ -814,11 +822,13 @@ describe('useForm', () => {
       expect(result.current.control.unmountFieldsStateRef.current).toEqual({
         checkbox: ['1', '2'],
         test: '1',
-        'test[0]': {
-          one: 'ONE',
-          two: 'TWO',
-          three: 'THREE',
-        },
+        test1: [
+          {
+            one: 'ONE',
+            two: 'TWO',
+            three: 'THREE',
+          },
+        ],
       });
     });
 
@@ -2092,11 +2102,6 @@ describe('useForm', () => {
   });
 
   describe('formState', () => {
-    it('should disable isValid for submit mode', () => {
-      const { result } = renderHook(() => useForm<{ input: string }>());
-      expect(result.current.formState.isValid).toBeFalsy();
-    });
-
     it('should return true for onBlur mode by default', () => {
       const { result } = renderHook(() =>
         useForm<{ input: string }>({
@@ -2712,8 +2717,10 @@ describe('useForm', () => {
         expect(screen.getByRole('alert').textContent).toBe('');
         expect(methods.formState.isValid).toBeTruthy();
 
-        fireEvent.input(screen.getByRole('textbox'), {
-          target: { name: 'test', value: '' },
+        await actComponent(async () => {
+          await fireEvent.input(screen.getByRole('textbox'), {
+            target: { name: 'test', value: '' },
+          });
         });
 
         await waitFor(() => expect(mockResolver).toHaveBeenCalled());
@@ -2824,7 +2831,7 @@ describe('useForm', () => {
       expect(result.current.control.validateResolver).toBeUndefined();
     });
 
-    it('should be called resolver with default values if default value is defined', () => {
+    it('should be called resolver with default values if default value is defined', async () => {
       let resolverData: any;
       const resolver = async (data: any) => {
         resolverData = data;
@@ -2843,7 +2850,9 @@ describe('useForm', () => {
 
       result.current.register('test');
 
-      result.current.control.validateResolver!({});
+      await act(async () => {
+        await result.current.control.validateResolver!({});
+      });
 
       expect(resolverData).toEqual({
         test: 'default',
@@ -2870,7 +2879,9 @@ describe('useForm', () => {
 
       result.current.setValue('test', 'value');
 
-      result.current.control.validateResolver!({});
+      await act(async () => {
+        result.current.control.validateResolver!({});
+      });
 
       expect(resolverData).toEqual({ test: 'value' });
     });

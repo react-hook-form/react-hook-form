@@ -32,7 +32,7 @@ export default <TFieldValues extends FieldValues>(
   }
 
   return deepMerge(
-    transformToNestObject((unmountFieldsStateRef || {}).current || {}),
+    { ...((unmountFieldsStateRef || {}).current || {}) },
     transformToNestObject(output),
   );
 };

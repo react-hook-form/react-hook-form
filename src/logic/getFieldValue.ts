@@ -2,6 +2,7 @@ import * as React from 'react';
 import getRadioValue from './getRadioValue';
 import getMultipleSelectValue from './getMultipleSelectValue';
 import isRadioInput from '../utils/isRadioInput';
+import get from '../utils/get';
 import isFileInput from '../utils/isFileInput';
 import isCheckBox from '../utils/isCheckBoxInput';
 import isMultipleSelect from '../utils/isMultipleSelect';
@@ -17,9 +18,13 @@ export default function getFieldValue<TFieldValues extends FieldValues>(
 
   if (field) {
     const {
-      ref: { value },
+      ref: { value, disabled },
       ref,
     } = field;
+
+    if (disabled) {
+      return;
+    }
 
     if (isFileInput(ref)) {
       return ref.files;
@@ -41,6 +46,6 @@ export default function getFieldValue<TFieldValues extends FieldValues>(
   }
 
   if (unmountFieldsStateRef) {
-    return unmountFieldsStateRef.current[name];
+    return get(unmountFieldsStateRef.current, name);
   }
 }

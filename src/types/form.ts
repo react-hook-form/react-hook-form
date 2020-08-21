@@ -181,7 +181,7 @@ export type FlatFieldErrors<TFieldValues extends FieldValues> = Partial<
   Record<InternalFieldName<TFieldValues>, FieldError>
 >;
 
-export type Touched<TFieldValues extends FieldValues> = DeepMap<
+export type FieldNames<TFieldValues extends FieldValues> = DeepMap<
   TFieldValues,
   true
 >;
@@ -201,9 +201,10 @@ export type FormStateProxy<TFieldValues extends FieldValues = FieldValues> = {
   dirtyFields: Dirtied<TFieldValues>;
   isSubmitted: boolean;
   submitCount: number;
-  touched: Touched<TFieldValues>;
+  touched: FieldNames<TFieldValues>;
   isSubmitting: boolean;
   isValid: boolean;
+  errors: FieldErrors<TFieldValues>;
 };
 
 export type ReadFormState = { [K in keyof FormStateProxy]: boolean };
@@ -217,6 +218,7 @@ export type CustomElement<TFieldValues extends FieldValues> = {
   name: FieldName<TFieldValues>;
   type?: string;
   value?: any;
+  disabled?: boolean;
   checked?: boolean;
   options?: HTMLOptionsCollection;
   files?: FileList | null;
@@ -240,11 +242,21 @@ export type UseFieldArrayOptions<
   control?: TControl;
 };
 
+export type FormState<TFieldValues> = {
+  isDirty: boolean;
+  dirtyFields: FieldNames<TFieldValues>;
+  isSubmitted: boolean;
+  submitCount: number;
+  touched: FieldNames<TFieldValues>;
+  isSubmitting: boolean;
+  isValid: boolean;
+  errors: FieldErrors<TFieldValues>;
+};
+
 export type Control<TFieldValues extends FieldValues = FieldValues> = Pick<
   UseFormMethods<TFieldValues>,
-  'register' | 'unregister' | 'setValue' | 'getValues' | 'trigger' | 'formState'
+  'register' | 'unregister' | 'setValue' | 'getValues' | 'trigger'
 > & {
-  reRender: () => void;
   removeFieldEventListener: (field: Field, forceDelete?: boolean) => void;
   mode: {
     readonly isOnBlur: boolean;
@@ -260,16 +272,13 @@ export type Control<TFieldValues extends FieldValues = FieldValues> = Pick<
   fieldArrayDefaultValues: React.MutableRefObject<
     Record<FieldArrayName, any[]>
   >;
-  dirtyFieldsRef: React.MutableRefObject<Dirtied<TFieldValues>>;
+  formStateRef: React.MutableRefObject<FormState<FieldValues>>;
+  updateFormState: (args?: Partial<FormState<TFieldValues>>) => void;
   validateResolver: ((fieldsValues: any) => void) | undefined;
-  touchedFieldsRef: React.MutableRefObject<Touched<TFieldValues>>;
   watchFieldsRef: React.MutableRefObject<Set<InternalFieldName<TFieldValues>>>;
   isWatchAllRef: React.MutableRefObject<boolean>;
-  validFieldsRef: React.MutableRefObject<Set<InternalFieldName<TFieldValues>>>;
-  fieldsWithValidationRef: React.MutableRefObject<
-    Set<InternalFieldName<TFieldValues>>
-  >;
-  errorsRef: React.MutableRefObject<FieldErrors<TFieldValues>>;
+  validFieldsRef: React.MutableRefObject<FieldNames<TFieldValues>>;
+  fieldsWithValidationRef: React.MutableRefObject<FieldNames<TFieldValues>>;
   fieldsRef: React.MutableRefObject<FieldRefs<TFieldValues>>;
   resetFieldArrayFunctionRef: React.MutableRefObject<
     Record<string, () => void>
@@ -278,8 +287,6 @@ export type Control<TFieldValues extends FieldValues = FieldValues> = Pick<
   fieldArrayNamesRef: React.MutableRefObject<
     Set<InternalFieldName<FieldValues>>
   >;
-  isDirtyRef: React.MutableRefObject<boolean>;
-  isSubmittedRef: React.MutableRefObject<boolean>;
   readFormStateRef: React.MutableRefObject<
     { [k in keyof FormStateProxy<TFieldValues>]: boolean }
   >;

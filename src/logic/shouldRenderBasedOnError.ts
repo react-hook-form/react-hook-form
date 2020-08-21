@@ -6,6 +6,7 @@ import {
   InternalFieldName,
   FieldErrors,
   FlatFieldErrors,
+  FieldNames,
 } from '../types/form';
 
 export default function shouldRenderBasedOnError<
@@ -20,22 +21,22 @@ export default function shouldRenderBasedOnError<
   errors: FieldErrors<TFieldValues>;
   error: FlatFieldErrors<TFieldValues>;
   name: InternalFieldName<TFieldValues>;
-  validFields: Set<InternalFieldName<TFieldValues>>;
-  fieldsWithValidation: Set<InternalFieldName<TFieldValues>>;
+  validFields: FieldNames<TFieldValues>;
+  fieldsWithValidation: FieldNames<TFieldValues>;
 }): boolean {
   const isFieldValid = isEmptyObject(error);
   const isFormValid = isEmptyObject(errors);
   const currentFieldError = get(error, name);
   const existFieldError = get(errors, name);
 
-  if (isFieldValid && validFields.has(name)) {
+  if (isFieldValid && get(validFields, name)) {
     return false;
   }
 
   if (
     isFormValid !== isFieldValid ||
     (!isFormValid && !existFieldError) ||
-    (isFieldValid && fieldsWithValidation.has(name) && !validFields.has(name))
+    (isFieldValid && get(fieldsWithValidation, name) && !get(validFields, name))
   ) {
     return true;
   }
