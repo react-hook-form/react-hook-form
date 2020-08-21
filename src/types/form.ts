@@ -165,7 +165,6 @@ export type ErrorOption =
 
 export type Field = {
   ref: Ref;
-  mutationWatcher?: MutationObserver;
   options?: RadioOrCheckboxOption[];
 } & ValidationRules;
 
