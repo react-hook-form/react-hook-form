@@ -114,7 +114,7 @@ export function useForm<
   const isWatchAllRef = React.useRef(false);
   const handleChangeRef = React.useRef<HandleChange>();
   const unmountFieldsStateRef = React.useRef<
-    Record<InternalFieldName<FieldValues>, any>
+    Record<InternalFieldName<FieldValues>, unknown>
   >({});
   const resetFieldArrayFunctionRef = React.useRef<
     Record<InternalFieldName<FieldValues>, () => void>
