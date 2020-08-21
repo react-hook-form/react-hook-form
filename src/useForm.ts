@@ -17,6 +17,7 @@ import isEmptyObject from './utils/isEmptyObject';
 import isRadioInput from './utils/isRadioInput';
 import isSelectInput from './utils/isSelectInput';
 import isFileInput from './utils/isFileInput';
+import onDomRemove from './utils/onDomRemove';
 import isObject from './utils/isObject';
 import { getPath } from './utils/getPath';
 import isPrimitive from './utils/isPrimitive';
@@ -66,7 +67,6 @@ import {
   FieldNames,
 } from './types/form';
 import { LiteralToPrimitive, DeepPartial, NonUndefined } from './types/utils';
-import onDomRemove from './utils/onDomRemove';
 
 const isWindowUndefined = typeof window === UNDEFINED;
 const isWeb =
