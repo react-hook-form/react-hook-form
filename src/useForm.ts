@@ -1105,18 +1105,23 @@ export function useForm<
     omitResetState: OmitResetState = {},
   ): void => {
     if (isWeb) {
+      let shouldFocus = false;
+
       for (const field of Object.values(fieldsRef.current)) {
         if (field) {
-          const { ref, options } = field;
+          const { ref, options, mutationWatcher } = field;
+          if (mutationWatcher) {
+            mutationWatcher.disconnect();
+          }
           const inputRef =
             isRadioOrCheckboxFunction(ref) && isArray(options)
               ? options[0].ref
               : ref;
 
-          if (isHTMLElement(inputRef)) {
+          if (isHTMLElement(inputRef) && shouldFocus) {
             try {
               inputRef.closest('form')!.reset();
-              break;
+              shouldFocus = false;
             } catch {}
           }
         }
