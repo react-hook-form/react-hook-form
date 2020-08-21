@@ -51,11 +51,15 @@ export const useFieldArray = <
 
   if (process.env.NODE_ENV !== 'production') {
     if (!control && !methods) {
-      throw new Error('📋 useFieldArray is missing `control` prop.');
+      throw new Error(
+        '📋 useFieldArray is missing `control` prop. https://react-hook-form.com/api#useFieldArray',
+      );
     }
 
     if (!name) {
-      console.warn('📋 useFieldArray is missing `name` attribute.');
+      console.warn(
+        '📋 useFieldArray is missing `name` attribute. https://react-hook-form.com/api#useFieldArray',
+      );
     }
   }
 
