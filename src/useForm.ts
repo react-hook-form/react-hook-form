@@ -159,13 +159,12 @@ export function useForm<
   formStateRef.current = formState;
 
   const updateFormState = React.useCallback(
-    (state: Partial<FormState<TFieldValues>> = {}): void => {
+    (state: Partial<FormState<TFieldValues>> = {}) =>
       !isUnMount.current &&
-        setFormState({
-          ...formStateRef.current,
-          ...state,
-        });
-    },
+      setFormState({
+        ...formStateRef.current,
+        ...state,
+      }),
     [],
   );
 
@@ -173,7 +172,7 @@ export function useForm<
     (
       name: InternalFieldName<TFieldValues>,
       error: FlatFieldErrors<TFieldValues>,
-      shouldRender: boolean | null = false,
+      shouldRender = false,
       state: {
         dirtyFields?: FieldNames<TFieldValues>;
         isDirty?: boolean;
@@ -292,11 +291,9 @@ export function useForm<
       const isFieldArray = isNameInFieldArray(fieldArrayNamesRef.current, name);
       const previousIsDirty = formStateRef.current.isDirty;
 
-      if (isFieldDirty) {
-        set(formStateRef.current.dirtyFields, name, true);
-      } else {
-        unset(formStateRef.current.dirtyFields, name);
-      }
+      isFieldDirty
+        ? set(formStateRef.current.dirtyFields, name, true)
+        : unset(formStateRef.current.dirtyFields, name);
 
       const state = {
         isDirty:
@@ -339,7 +336,7 @@ export function useForm<
           unmountFieldsStateRef,
         );
 
-        shouldRenderBaseOnError(name, error, skipReRender ? null : false);
+        shouldRenderBaseOnError(name, error, skipReRender);
 
         return isEmptyObject(error);
       }
