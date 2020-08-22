@@ -16,7 +16,7 @@ import isArray from './utils/isArray';
 import insertAt from './utils/insert';
 import fillEmptyArray from './utils/fillEmptyArray';
 import { filterBooleanArray } from './utils/filterBooleanArray';
-import unique from './utils/unique';
+import filterOutFalsy from './utils/filterOutFalsy';
 import {
   Field,
   FieldValues,
@@ -51,11 +51,15 @@ export const useFieldArray = <
 
   if (process.env.NODE_ENV !== 'production') {
     if (!control && !methods) {
-      throw new Error('📋 useFieldArray is missing `control` prop.');
+      throw new Error(
+        '📋 useFieldArray is missing `control` prop. https://react-hook-form.com/api#useFieldArray',
+      );
     }
 
     if (!name) {
-      console.warn('📋 useFieldArray is missing `name` attribute.');
+      console.warn(
+        '📋 useFieldArray is missing `name` attribute. https://react-hook-form.com/api#useFieldArray',
+      );
     }
   }
 
@@ -231,7 +235,7 @@ export const useFieldArray = <
     if (isArray(get(errors, name))) {
       set(errors, name, removeArrayAt(get(errors, name), index));
 
-      if (!unique(get(errors, name, [])).length) {
+      if (!filterOutFalsy(get(errors, name, [])).length) {
         unset(errors, name);
       }
     }
@@ -247,7 +251,7 @@ export const useFieldArray = <
     ) {
       set(dirtyFields, name, removeArrayAt(get(dirtyFields, name), index));
 
-      if (!unique(get(dirtyFields, name, [])).length) {
+      if (!filterOutFalsy(get(dirtyFields, name, [])).length) {
         unset(dirtyFields, name);
       }
     }
@@ -258,7 +262,7 @@ export const useFieldArray = <
         name,
         removeArrayAt(get(validFieldsRef.current, name, []), index),
       );
-      if (!unique(get(validFieldsRef.current, name, [])).length) {
+      if (!filterOutFalsy(get(validFieldsRef.current, name, [])).length) {
         unset(validFieldsRef.current, name);
       }
 
@@ -267,7 +271,9 @@ export const useFieldArray = <
         name,
         removeArrayAt(get(fieldsWithValidationRef.current, name, []), index),
       );
-      if (!unique(get(fieldsWithValidationRef.current, name, [])).length) {
+      if (
+        !filterOutFalsy(get(fieldsWithValidationRef.current, name, [])).length
+      ) {
         unset(fieldsWithValidationRef.current, name);
       }
     }

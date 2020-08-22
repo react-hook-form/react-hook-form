@@ -31,7 +31,9 @@ const Controller = <
   const methods = useFormContext();
 
   if (process.env.NODE_ENV !== 'production' && !control && !methods) {
-    throw new Error('📋 Controller is missing `control` prop.');
+    throw new Error(
+      '📋 Controller is missing `control` prop. https://react-hook-form.com/api#Controller',
+    );
   }
 
   const {
@@ -65,17 +67,19 @@ const Controller = <
   if (process.env.NODE_ENV !== 'production') {
     if (isUndefined(value)) {
       console.warn(
-        '📋 Controller `defaultValue` or useForm `defaultValues` is missing.',
+        '📋 Controller `defaultValue` or useForm `defaultValues` is missing. https://react-hook-form.com/api#Controller',
       );
     }
 
     if (as && render) {
-      console.warn('📋 Should use either `as` or `render` prop.');
+      console.warn(
+        '📋 Should use either `as` or `render` prop. https://react-hook-form.com/api#Controller',
+      );
     }
 
     if (!isNotFieldArray && isUndefined(defaultValue)) {
       console.warn(
-        '📋 Controller is missing `defaultValue` prop when using `useFieldArray`.',
+        '📋 Controller is missing `defaultValue` prop when using `useFieldArray`. https://react-hook-form.com/api#Controller',
       );
     }
   }
@@ -98,7 +102,9 @@ const Controller = <
 
   const registerField = React.useCallback(() => {
     if (process.env.NODE_ENV !== 'production' && !name) {
-      return console.warn('📋 Field is missing `name` prop.');
+      return console.warn(
+        '📋 Field is missing `name` prop. https://react-hook-form.com/api#Controller',
+      );
     }
 
     if (fieldsRef.current[name]) {

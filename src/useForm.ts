@@ -31,7 +31,7 @@ import set from './utils/set';
 import unset from './utils/unset';
 import modeChecker from './utils/validationModeChecker';
 import isMultipleSelect from './utils/isMultipleSelect';
-import unique from './utils/unique';
+import filterOutFalsy from './utils/filterOutFalsy';
 import isNullOrUndefined from './utils/isNullOrUndefined';
 import isRadioOrCheckboxFunction from './utils/isRadioOrCheckbox';
 import isHTMLElement from './utils/isHTMLElement';
@@ -798,7 +798,11 @@ export function useForm<
   ): ((name: InternalFieldName<TFieldValues>) => void) | void {
     if (process.env.NODE_ENV !== 'production') {
       if (!ref.name) {
-        return console.warn('📋 Field is missing `name` attribute:', ref);
+        return console.warn(
+          '📋 Field is missing `name` attribute',
+          ref,
+          `https://react-hook-form.com/api#useForm`,
+        );
       }
 
       if (
@@ -833,7 +837,7 @@ export function useForm<
       field &&
       (isRadioOrCheckbox
         ? isArray(field.options) &&
-          unique(field.options).find((option) => {
+          filterOutFalsy(field.options).find((option) => {
             return value === option.ref.value && compareRef(option.ref);
           })
         : compareRef(field.ref))
@@ -853,7 +857,7 @@ export function useForm<
       field = isRadioOrCheckbox
         ? {
             options: [
-              ...unique((field && field.options) || []),
+              ...filterOutFalsy((field && field.options) || []),
               {
                 ref,
                 mutationWatcher,
