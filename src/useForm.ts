@@ -454,14 +454,11 @@ export function useForm<
       if (fieldsRef.current[name]) {
         setFieldValue(fieldsRef.current[name] as Field, value);
         config.shouldDirty && updateAndGetDirtyState(name);
-        return;
       } else if (!isPrimitive(value)) {
         setInternalValues(name, value, config);
       }
 
-      if (!shouldUnregister) {
-        set(unmountFieldsStateRef.current, name, value);
-      }
+      set(unmountFieldsStateRef.current, name, value);
     },
     [updateAndGetDirtyState, setFieldValue, setInternalValues],
   );
