@@ -159,13 +159,12 @@ export function useForm<
   formStateRef.current = formState;
 
   const updateFormState = React.useCallback(
-    (state: Partial<FormState<TFieldValues>> = {}): void => {
+    (state: Partial<FormState<TFieldValues>> = {}) =>
       !isUnMount.current &&
-        setFormState({
-          ...formStateRef.current,
-          ...state,
-        });
-    },
+      setFormState({
+        ...formStateRef.current,
+        ...state,
+      }),
     [],
   );
 
@@ -173,7 +172,7 @@ export function useForm<
     (
       name: InternalFieldName<TFieldValues>,
       error: FlatFieldErrors<TFieldValues>,
-      shouldRender: boolean | null = false,
+      shouldRender = false,
       state: {
         dirtyFields?: FieldNames<TFieldValues>;
         isDirty?: boolean;
@@ -213,12 +212,7 @@ export function useForm<
         updateFormState({
           ...state,
           errors: formStateRef.current.errors,
-          isValid: resolverRef.current
-            ? !!isValid
-            : deepEqual(
-                validFieldsRef.current,
-                fieldsWithValidationRef.current,
-              ) && isEmptyObject(formStateRef.current.errors),
+          ...(resolverRef.current ? { isValid: !!isValid } : {}),
         });
       }
     },
@@ -292,11 +286,9 @@ export function useForm<
       const isFieldArray = isNameInFieldArray(fieldArrayNamesRef.current, name);
       const previousIsDirty = formStateRef.current.isDirty;
 
-      if (isFieldDirty) {
-        set(formStateRef.current.dirtyFields, name, true);
-      } else {
-        unset(formStateRef.current.dirtyFields, name);
-      }
+      isFieldDirty
+        ? set(formStateRef.current.dirtyFields, name, true)
+        : unset(formStateRef.current.dirtyFields, name);
 
       const state = {
         isDirty:
@@ -339,7 +331,7 @@ export function useForm<
           unmountFieldsStateRef,
         );
 
-        shouldRenderBaseOnError(name, error, skipReRender ? null : false);
+        shouldRenderBaseOnError(name, error, skipReRender);
 
         return isEmptyObject(error);
       }
@@ -906,11 +898,9 @@ export function useForm<
         ).then((error: FieldErrors) => {
           const previousFormIsValid = formStateRef.current.isValid;
 
-          if (isEmptyObject(error)) {
-            set(validFieldsRef.current, name, true);
-          } else {
-            unset(validFieldsRef.current, name);
-          }
+          isEmptyObject(error)
+            ? set(validFieldsRef.current, name, true)
+            : unset(validFieldsRef.current, name);
 
           if (previousFormIsValid !== isEmptyObject(error)) {
             updateFormState();

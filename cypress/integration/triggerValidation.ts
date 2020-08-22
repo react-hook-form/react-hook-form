@@ -17,6 +17,6 @@ describe('form trigger', () => {
     cy.get('#renderCount').contains('4');
 
     cy.get('#multiple').click();
-    cy.get('#renderCount').contains('4');
+    cy.get('#renderCount').contains('6');
   });
 });
