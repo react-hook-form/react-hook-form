@@ -212,12 +212,7 @@ export function useForm<
         updateFormState({
           ...state,
           errors: formStateRef.current.errors,
-          isValid: resolverRef.current
-            ? !!isValid
-            : deepEqual(
-                validFieldsRef.current,
-                fieldsWithValidationRef.current,
-              ) && isEmptyObject(formStateRef.current.errors),
+          ...(resolverRef.current ? { isValid: !!isValid } : {}),
         });
       }
     },
@@ -903,11 +898,9 @@ export function useForm<
         ).then((error: FieldErrors) => {
           const previousFormIsValid = formStateRef.current.isValid;
 
-          if (isEmptyObject(error)) {
-            set(validFieldsRef.current, name, true);
-          } else {
-            unset(validFieldsRef.current, name);
-          }
+          isEmptyObject(error)
+            ? set(validFieldsRef.current, name, true)
+            : unset(validFieldsRef.current, name);
 
           if (previousFormIsValid !== isEmptyObject(error)) {
             updateFormState();
