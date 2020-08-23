@@ -18,6 +18,8 @@ import {
   ValidationRules,
 } from './types/form';
 import { DeepMap } from './types/utils';
+import { perf, wait, PerfTools } from 'react-performance-testing';
+import 'jest-performance-testing';
 
 let nodeEnv: any;
 
@@ -92,10 +94,8 @@ describe('useForm', () => {
         );
         jest.spyOn(HTMLInputElement.prototype, 'addEventListener');
 
-        let renderCount = 0;
         const Component = () => {
           const { register, formState } = useForm();
-          renderCount++;
           return (
             <div>
               <input name="test" type={type} ref={register} />
@@ -103,6 +103,8 @@ describe('useForm', () => {
             </div>
           );
         };
+
+        const { renderCount } = perf<{ Component: unknown }>(React);
 
         render(<Component />);
 
@@ -120,7 +122,9 @@ describe('useForm', () => {
 
         await waitFor(() => expect(mockListener).toHaveBeenCalled());
         expect(screen.getByRole('alert').textContent).toBe('false');
-        expect(renderCount).toBe(2);
+        await wait(() =>
+          expect(renderCount.current.Component).toBeRenderedTimes(2),
+        );
       },
     );
 
@@ -166,13 +170,10 @@ describe('useForm', () => {
         };
       };
 
-      let renderCount = 0;
       const Component = () => {
         const { register, formState } = useForm<{ test: string }>({
           resolver,
         });
-
-        renderCount++;
 
         return (
           <div>
@@ -182,9 +183,11 @@ describe('useForm', () => {
         );
       };
 
+      const { renderCount } = perf<{ Component: unknown }>(React);
+
       render(<Component />);
 
-      await waitFor(() => expect(renderCount).toBe(1));
+      await wait(() => expect(renderCount.current.Component).toBeMounted());
       expect(screen.getByRole('alert').textContent).toBe('false');
     });
 
@@ -1528,10 +1531,8 @@ describe('useForm', () => {
     });
 
     it('should invoke reRender method when readFormStateRef.current.isSubmitting is true', async () => {
-      let renderCount = 0;
       const Component = () => {
         const { register, handleSubmit, formState } = useForm();
-        renderCount++;
         return (
           <div>
             <input name="test" ref={register} />
@@ -1543,6 +1544,8 @@ describe('useForm', () => {
         );
       };
 
+      const { renderCount } = perf<{ Component: unknown }>(React);
+
       render(<Component />);
 
       fireEvent.click(screen.getByRole('button'));
@@ -1550,7 +1553,7 @@ describe('useForm', () => {
       const span = screen.getByRole('alert')!;
       await waitFor(
         () => {
-          if (renderCount === 2) {
+          if (renderCount.current.Component?.value === 2) {
             expect(span.textContent).toBe('true');
           } else {
             expect(span.textContent).toBe('false');
@@ -1559,8 +1562,8 @@ describe('useForm', () => {
         { container: span },
       );
 
-      await waitFor(() => {
-        expect(renderCount).toBe(4);
+      await wait(() => {
+        expect(renderCount.current.Component).toBeRenderedTimes(4);
       });
     });
 
@@ -2239,7 +2242,7 @@ describe('useForm', () => {
   });
 
   describe('handleChangeRef', () => {
-    let renderCount: number;
+    let renderCount: PerfTools<{ Component: unknown }>['renderCount'];
     let Component: React.FC<{
       name?: string;
       resolver?: any;
@@ -2249,7 +2252,6 @@ describe('useForm', () => {
     let methods: UseFormMethods<{ test: string }>;
 
     beforeEach(() => {
-      renderCount = 0;
       Component = ({
         name = 'test',
         resolver,
@@ -2267,7 +2269,6 @@ describe('useForm', () => {
         });
         const { register, handleSubmit, errors } = internationalMethods;
         methods = internationalMethods;
-        renderCount++;
 
         return (
           <div>
@@ -2283,6 +2284,9 @@ describe('useForm', () => {
           </div>
         );
       };
+
+      const tools = perf<{ Component: unknown }>(React);
+      renderCount = tools.renderCount;
     });
 
     describe('onSubmit mode', () => {
@@ -2306,7 +2310,9 @@ describe('useForm', () => {
         });
 
         expect(screen.getByRole('alert').textContent).toBe('');
-        expect(renderCount).toBe(3);
+        await wait(() =>
+          expect(renderCount.current.Component).toBeRenderedTimes(3),
+        );
       });
 
       it('should not contain error if name is invalid', async () => {
@@ -2329,7 +2335,9 @@ describe('useForm', () => {
         });
 
         expect(screen.getByRole('alert').textContent).toBe('');
-        expect(renderCount).toBe(3);
+        await wait(() =>
+          expect(renderCount.current.Component).toBeRenderedTimes(3),
+        );
       });
 
       it('should contain error if value is invalid with revalidateMode is onChange', async () => {
@@ -2351,7 +2359,9 @@ describe('useForm', () => {
           expect(screen.getByRole('alert').textContent).toBe('required'),
         );
 
-        expect(renderCount).toBe(4);
+        await wait(() =>
+          expect(renderCount.current.Component).toBeRenderedTimes(4),
+        );
       });
 
       it('should not call reRender method if the current error is the same as the previous error', async () => {
@@ -2372,7 +2382,9 @@ describe('useForm', () => {
         });
 
         expect(screen.getByRole('alert').textContent).toBe('required');
-        expect(renderCount).toBe(2);
+        await wait(() =>
+          expect(renderCount.current.Component).toBeRenderedTimes(2),
+        );
       });
 
       it('should set name to formState.touched when formState.touched is defined', async () => {
@@ -2394,7 +2406,9 @@ describe('useForm', () => {
           }),
         );
         expect(screen.getByRole('alert').textContent).toBe('');
-        expect(renderCount).toBe(4);
+        await wait(() =>
+          expect(renderCount.current.Component).toBeRenderedTimes(4),
+        );
       });
 
       // check https://github.com/react-hook-form/react-hook-form/issues/2153
@@ -2726,7 +2740,9 @@ describe('useForm', () => {
         await waitFor(() => expect(mockResolver).toHaveBeenCalled());
         expect(screen.getByRole('alert').textContent).toBe('resolver error');
         expect(methods.formState.isValid).toBeFalsy();
-        expect(renderCount).toBe(2);
+        await wait(() =>
+          expect(renderCount.current.Component).toBeRenderedTimes(2),
+        );
       });
 
       it('with sync resolver it should contain error if value is invalid with resolver', async () => {
@@ -2766,7 +2782,9 @@ describe('useForm', () => {
         await waitFor(() => expect(mockResolver).toHaveBeenCalled());
         expect(screen.getByRole('alert').textContent).toBe('resolver error');
         expect(methods.formState.isValid).toBeFalsy();
-        expect(renderCount).toBe(2);
+        await wait(() =>
+          expect(renderCount.current.Component).toBeRenderedTimes(2),
+        );
       });
 
       it('should make isValid change to false if it contain error that is not related name with onChange mode', async () => {
@@ -2806,7 +2824,9 @@ describe('useForm', () => {
         await waitFor(() => expect(mockResolver).toHaveBeenCalled());
         expect(screen.getByRole('alert').textContent).toBe('');
         expect(methods.formState.isValid).toBeFalsy();
-        expect(renderCount).toBe(2);
+        await wait(() =>
+          expect(renderCount.current.Component).toBeRenderedTimes(2),
+        );
       });
     });
   });
