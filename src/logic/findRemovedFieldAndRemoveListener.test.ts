@@ -333,41 +333,6 @@ describe('findMissDomAndClean', () => {
   });
 
   describe('text', () => {
-    it('should delete field if type is text', () => {
-      const mockWatcher = jest.fn();
-      const state = { current: {} };
-      const fields = {
-        current: {
-          test: {
-            name: 'test',
-            ref: {
-              name: 'test',
-              type: 'text',
-              value: 'test',
-            },
-            mutationWatcher: {
-              disconnect: mockWatcher,
-            },
-          },
-        },
-      };
-
-      findRemovedFieldAndRemoveListener(
-        fields,
-        () => ({} as any),
-        fields.current.test,
-        state,
-      );
-
-      expect(state).toEqual({
-        current: { test: 'test' },
-      });
-      expect(mockWatcher).toBeCalled();
-      expect(fields).toEqual({
-        current: {},
-      });
-    });
-
     it('should delete field if forceDelete is true', () => {
       (isDetached as any).mockReturnValue(false);
       const state = { current: {} };
