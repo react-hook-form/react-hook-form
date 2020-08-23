@@ -17,7 +17,7 @@ export default function onDomRemove<TFieldValues>(
             removeFieldEventListenerAndRef(field);
           }
         }
-      } else if (isDetached(field.ref)) {
+      } else if (field && isDetached(field.ref)) {
         removeFieldEventListenerAndRef(field);
       }
     }
