@@ -17,6 +17,7 @@ import isEmptyObject from './utils/isEmptyObject';
 import isRadioInput from './utils/isRadioInput';
 import isSelectInput from './utils/isSelectInput';
 import isFileInput from './utils/isFileInput';
+import onDomRemove from './utils/onDomRemove';
 import isObject from './utils/isObject';
 import { getPath } from './utils/getPath';
 import isPrimitive from './utils/isPrimitive';
@@ -25,7 +26,6 @@ import isArray from './utils/isArray';
 import isString from './utils/isString';
 import isSameError from './utils/isSameError';
 import isUndefined from './utils/isUndefined';
-import onDomRemove from './utils/onDomRemove';
 import get from './utils/get';
 import set from './utils/set';
 import unset from './utils/unset';
@@ -150,6 +150,7 @@ export function useForm<
     errors: !isProxyEnabled,
   });
   const formStateRef = React.useRef(formState);
+  const observerRef = React.useRef<MutationObserver | undefined>();
   const {
     current: { isOnBlur: isReValidateOnBlur, isOnChange: isReValidateOnChange },
   } = React.useRef(modeChecker(reValidateMode));
@@ -839,17 +840,12 @@ export function useForm<
     }
 
     if (type) {
-      const mutationWatcher = onDomRemove(ref, () =>
-        removeFieldEventListenerAndRef(field),
-      );
-
       field = isRadioOrCheckbox
         ? {
             options: [
               ...filterOutFalsy((field && field.options) || []),
               {
                 ref,
-                mutationWatcher,
               } as RadioOrCheckboxOption,
             ],
             ref: { type, name },
@@ -857,7 +853,6 @@ export function useForm<
           }
         : {
             ...fieldRefAndValidationOptions,
-            mutationWatcher,
           };
     } else {
       field = fieldRefAndValidationOptions;
@@ -1096,23 +1091,18 @@ export function useForm<
     omitResetState: OmitResetState = {},
   ): void => {
     if (isWeb) {
-      let shouldFocus = true;
-
       for (const field of Object.values(fieldsRef.current)) {
         if (field) {
-          const { ref, options, mutationWatcher } = field;
-          if (mutationWatcher) {
-            mutationWatcher.disconnect();
-          }
+          const { ref, options } = field;
           const inputRef =
             isRadioOrCheckboxFunction(ref) && isArray(options)
               ? options[0].ref
               : ref;
 
-          if (isHTMLElement(inputRef) && shouldFocus) {
+          if (isHTMLElement(inputRef)) {
             try {
               inputRef.closest('form')!.reset();
-              shouldFocus = false;
+              break;
             } catch {}
           }
         }
@@ -1136,11 +1126,20 @@ export function useForm<
     resetRefs(omitResetState);
   };
 
+  observerRef.current =
+    observerRef.current || !isWeb
+      ? observerRef.current
+      : onDomRemove(fieldsRef, removeFieldEventListenerAndRef);
+
   React.useEffect(() => {
     isUnMount.current = false;
 
     return () => {
       isUnMount.current = true;
+
+      if (observerRef.current) {
+        observerRef.current.disconnect();
+      }
 
       if (process.env.NODE_ENV !== 'production') {
         return;
