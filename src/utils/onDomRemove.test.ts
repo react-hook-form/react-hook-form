@@ -21,33 +21,6 @@ describe('onDomRemove', () => {
     });
   });
 
-  it('should call the mutation callback', () => {
-    let mockCallback: () => void;
-    // @ts-ignore
-    window.MutationObserver = class {
-      constructor(callback: any) {
-        mockCallback = callback;
-      }
-      disconnect = jest.fn();
-      observe = jest.fn();
-    };
-
-    const mockOnDetachCallback = jest.fn();
-
-    // @ts-ignore
-    const observer = onDomRemove({ current: {} }, mockOnDetachCallback);
-
-    // @ts-ignore
-    mockCallback();
-
-    expect(observer.observe).toBeCalledWith(window.document, {
-      childList: true,
-      subtree: true,
-    });
-    expect(observer.disconnect).toBeCalled();
-    expect(mockOnDetachCallback).toBeCalled();
-  });
-
   it('should not call observer.disconnect if isDetached is false', () => {
     (isDetached as any).mockReturnValue(false);
     let mockCallback: () => void;
