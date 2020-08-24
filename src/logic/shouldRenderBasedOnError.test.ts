@@ -7,8 +7,8 @@ describe('shouldUpdateWithError', () => {
         errors: {},
         name: 'test',
         error: { test: 'test' } as any,
-        validFields: new Set(),
-        fieldsWithValidation: new Set(),
+        validFields: {},
+        fieldsWithValidation: {},
       }),
     ).toBeTruthy();
   });
@@ -19,8 +19,8 @@ describe('shouldUpdateWithError', () => {
         errors: {},
         name: 'test',
         error: {},
-        validFields: new Set(),
-        fieldsWithValidation: new Set(),
+        validFields: {},
+        fieldsWithValidation: {},
       }),
     ).toBeFalsy();
   });
@@ -31,8 +31,8 @@ describe('shouldUpdateWithError', () => {
         errors: { test: 'test' } as any,
         name: 'test',
         error: {},
-        validFields: new Set(),
-        fieldsWithValidation: new Set(),
+        validFields: {},
+        fieldsWithValidation: {},
       }),
     ).toBeTruthy();
   });
@@ -43,8 +43,8 @@ describe('shouldUpdateWithError', () => {
         errors: { test: 'test' } as any,
         name: '',
         error: { data: 'bill' } as any,
-        validFields: new Set(),
-        fieldsWithValidation: new Set(),
+        validFields: {},
+        fieldsWithValidation: {},
       }),
     ).toBeTruthy();
   });
@@ -55,8 +55,8 @@ describe('shouldUpdateWithError', () => {
         errors: { test: { type: 'test' } } as any,
         name: 'test',
         error: { test: { type: 'bill' } } as any,
-        validFields: new Set(),
-        fieldsWithValidation: new Set(),
+        validFields: {},
+        fieldsWithValidation: {},
       }),
     ).toBeTruthy();
   });
@@ -67,8 +67,8 @@ describe('shouldUpdateWithError', () => {
         errors: { test: { message: 'test', type: 'input' } } as any,
         name: 'test',
         error: { test: { type: 'input', message: 'test' } } as any,
-        validFields: new Set(),
-        fieldsWithValidation: new Set(),
+        validFields: {},
+        fieldsWithValidation: {},
       }),
     ).toBeFalsy();
   });
@@ -81,8 +81,8 @@ describe('shouldUpdateWithError', () => {
         } as any,
         name: 'test',
         error: { test: { type: 'input', message: 'test' } } as any,
-        validFields: new Set(),
-        fieldsWithValidation: new Set(),
+        validFields: {},
+        fieldsWithValidation: {},
       }),
     ).toBeFalsy();
   });
@@ -93,8 +93,8 @@ describe('shouldUpdateWithError', () => {
         errors: { test: { message: 'test', type: 'input' } } as any,
         name: 'test1',
         error: {},
-        validFields: new Set(['test']),
-        fieldsWithValidation: new Set(['test1']),
+        validFields: { test: true } as any,
+        fieldsWithValidation: { test1: true } as any,
       }),
     ).toBeTruthy();
   });
@@ -105,8 +105,8 @@ describe('shouldUpdateWithError', () => {
         errors: { test: { message: 'test', type: 'input' } } as any,
         name: 'test',
         error: {},
-        validFields: new Set(['test']),
-        fieldsWithValidation: new Set(['test']),
+        validFields: { test: true } as any,
+        fieldsWithValidation: { test: true } as any,
       }),
     ).toBeFalsy();
   });
@@ -117,8 +117,8 @@ describe('shouldUpdateWithError', () => {
         errors: { test: { message: 'test', type: 'input' } } as any,
         name: 'test',
         error: {},
-        validFields: new Set(),
-        fieldsWithValidation: new Set(),
+        validFields: {},
+        fieldsWithValidation: {},
       }),
     ).toBeTruthy();
   });

@@ -15,7 +15,9 @@ export function deepMerge<
     if (isObject(targetValue) && isObject(sourceValue)) {
       target[key] = deepMerge(targetValue, sourceValue);
     } else {
-      target[key] = sourceValue;
+      try {
+        target[key] = sourceValue;
+      } catch {}
     }
   }
 

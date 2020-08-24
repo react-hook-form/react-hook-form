@@ -1,4 +1,4 @@
-import unique from '../utils/unique';
+import filterOutFalsy from '../utils/filterOutFalsy';
 
 export default (
   indexes: number[],
@@ -22,7 +22,7 @@ export default (
         index -
           count -
           (notFoundIndexes.length
-            ? unique(
+            ? filterOutFalsy(
                 notFoundIndexes.map((notFoundIndex) => notFoundIndex < index),
               ).length
             : 0),

@@ -31,7 +31,9 @@ const Controller = <
   const methods = useFormContext();
 
   if (process.env.NODE_ENV !== 'production' && !control && !methods) {
-    throw new Error('📋 Controller is missing `control` prop.');
+    throw new Error(
+      '📋 Controller is missing `control` prop. https://react-hook-form.com/api#Controller',
+    );
   }
 
   const {
@@ -42,10 +44,11 @@ const Controller = <
     trigger,
     mode,
     reValidateMode: { isReValidateOnBlur, isReValidateOnChange },
-    isSubmittedRef,
-    touchedFieldsRef,
+    formStateRef: {
+      current: { isSubmitted, touched },
+    },
+    updateFormState,
     readFormStateRef,
-    reRender,
     fieldsRef,
     fieldArrayNamesRef,
     unmountFieldsStateRef,
@@ -53,7 +56,7 @@ const Controller = <
   const isNotFieldArray = !isNameInFieldArray(fieldArrayNamesRef.current, name);
   const getInitialValue = () =>
     !isUndefined(get(unmountFieldsStateRef.current, name)) && isNotFieldArray
-      ? unmountFieldsStateRef.current[name]
+      ? get(unmountFieldsStateRef.current, name)
       : isUndefined(defaultValue)
       ? get(defaultValuesRef.current, name)
       : defaultValue;
@@ -64,17 +67,19 @@ const Controller = <
   if (process.env.NODE_ENV !== 'production') {
     if (isUndefined(value)) {
       console.warn(
-        '📋 Controller `defaultValue` or useForm `defaultValues` is missing.',
+        '📋 Controller `defaultValue` or useForm `defaultValues` is missing. https://react-hook-form.com/api#Controller',
       );
     }
 
     if (as && render) {
-      console.warn('📋 Should use either `as` or `render` prop.');
+      console.warn(
+        '📋 Should use either `as` or `render` prop. https://react-hook-form.com/api#Controller',
+      );
     }
 
     if (!isNotFieldArray && isUndefined(defaultValue)) {
       console.warn(
-        '📋 Controller is missing `defaultValue` prop when using `useFieldArray`.',
+        '📋 Controller is missing `defaultValue` prop when using `useFieldArray`. https://react-hook-form.com/api#Controller',
       );
     }
   }
@@ -84,7 +89,7 @@ const Controller = <
       isBlurEvent,
       isReValidateOnBlur,
       isReValidateOnChange,
-      isSubmitted: isSubmittedRef.current,
+      isSubmitted,
       ...mode,
     });
 
@@ -97,7 +102,9 @@ const Controller = <
 
   const registerField = React.useCallback(() => {
     if (process.env.NODE_ENV !== 'production' && !name) {
-      return console.warn('📋 Field is missing `name` prop.');
+      return console.warn(
+        '📋 Field is missing `name` prop. https://react-hook-form.com/api#Controller',
+      );
     }
 
     if (fieldsRef.current[name]) {
@@ -122,7 +129,7 @@ const Controller = <
         setInputStateValue(getInitialValue());
       }
     }
-  }, [fieldsRef, rules, name, onFocusRef, register]);
+  }, [rules, name, register]);
 
   React.useEffect(
     () => () => {
@@ -146,12 +153,11 @@ const Controller = <
   });
 
   const onBlur = () => {
-    if (
-      readFormStateRef.current.touched &&
-      !get(touchedFieldsRef.current, name)
-    ) {
-      set(touchedFieldsRef.current, name, true);
-      reRender();
+    if (readFormStateRef.current.touched && !get(touched, name)) {
+      set(touched, name, true);
+      updateFormState({
+        touched,
+      });
     }
 
     if (shouldValidate(true)) {

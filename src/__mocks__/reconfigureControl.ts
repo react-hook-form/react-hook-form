@@ -24,9 +24,6 @@ export const reconfigureControl = (
   watchFieldsRef: {
     current: new Set(),
   },
-  dirtyFieldsRef: {
-    current: {},
-  },
   watchFieldsHookRef: {
     current: {},
   },
@@ -42,8 +39,6 @@ export const reconfigureControl = (
   unregister: jest.fn(),
   trigger: jest.fn(),
   removeFieldEventListener: jest.fn(),
-  errorsRef: { current: {} },
-  touchedFieldsRef: { current: {} },
   mode: {
     isOnSubmit: false,
     isOnBlur: false,
@@ -55,14 +50,17 @@ export const reconfigureControl = (
     isReValidateOnBlur: false,
     isReValidateOnChange: false,
   },
-  formState: {
-    isDirty: false,
-    isSubmitted: false,
-    dirtyFields: {},
-    submitCount: 0,
-    touched: {},
-    isSubmitting: false,
-    isValid: false,
+  formStateRef: {
+    current: {
+      errors: {},
+      isDirty: false,
+      isSubmitted: false,
+      dirtyFields: {},
+      submitCount: 0,
+      touched: {},
+      isSubmitting: false,
+      isValid: false,
+    },
   },
   fieldsRef: {
     current: {},
@@ -73,15 +71,11 @@ export const reconfigureControl = (
   fieldArrayNamesRef: {
     current: new Set<string>(),
   },
-  isDirtyRef: {
-    current: false,
-  },
-  isSubmittedRef: {
-    current: false,
-  },
+  updateFormState: () => {},
   readFormStateRef: {
     current: {
       isDirty: true,
+      errors: true,
       isSubmitted: false,
       submitCount: false,
       touched: false,

@@ -4,7 +4,12 @@ import { useForm } from 'react-hook-form';
 let renderCounter = 0;
 
 const ConditionalField: React.FC = () => {
-  const { register, handleSubmit, watch, formState } = useForm<{
+  const {
+    register,
+    handleSubmit,
+    watch,
+    formState: { errors, ...rest },
+  } = useForm<{
     selectNumber: string;
     firstName: string;
     lastName: string;
@@ -74,9 +79,9 @@ const ConditionalField: React.FC = () => {
       <button id="submit">Submit</button>
       <div id="state">
         {JSON.stringify({
-          ...formState,
-          touched: Object.keys(formState.touched),
-          dirtyFields: Object.keys(formState.dirtyFields),
+          ...rest,
+          touched: Object.keys(rest.touched),
+          dirtyFields: Object.keys(rest.dirtyFields),
         })}
       </div>
       <div id="result">{JSON.stringify(result)}</div>

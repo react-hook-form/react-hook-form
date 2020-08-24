@@ -5,13 +5,14 @@ import isString from './utils/isString';
 import generateId from './logic/generateId';
 import get from './utils/get';
 import isArray from './utils/isArray';
+import isObject from './utils/isObject';
+import { DeepPartial } from './types/utils';
 import {
   UseWatchOptions,
   FieldValues,
   UnpackNestedValue,
   Control,
 } from './types/form';
-import { DeepPartial } from './types/utils';
 
 export function useWatch<TWatchFieldValues extends FieldValues>(props: {
   defaultValue?: UnpackNestedValue<DeepPartial<TWatchFieldValues>>;
@@ -40,11 +41,15 @@ export function useWatch<TWatchFieldValues>({
 
   if (process.env.NODE_ENV !== 'production') {
     if (!control && !methods) {
-      throw new Error('📋 useWatch is missing `control` prop.');
+      throw new Error(
+        '📋 useWatch is missing `control` prop. https://react-hook-form.com/api#useWatch',
+      );
     }
 
     if (name === '') {
-      console.warn('📋 useWatch is missing `name` attribute.');
+      console.warn(
+        '📋 useWatch is missing `name` attribute. https://react-hook-form.com/api#useWatch',
+      );
     }
   }
 
@@ -72,10 +77,12 @@ export function useWatch<TWatchFieldValues>({
   const idRef = React.useRef<string>();
   const defaultValueRef = React.useRef(defaultValue);
 
-  const updateWatchValue = React.useCallback(
-    () => setValue(watchInternal(name, defaultValueRef.current, idRef.current)),
-    [setValue, watchInternal, defaultValueRef, name, idRef],
-  );
+  const updateWatchValue = React.useCallback(() => {
+    const value = watchInternal(name, defaultValueRef.current, idRef.current);
+    setValue(
+      isObject(value) ? { ...value } : isArray(value) ? [...value] : value,
+    );
+  }, [setValue, watchInternal, defaultValueRef, name, idRef]);
 
   React.useEffect(() => {
     const id = (idRef.current = generateId());

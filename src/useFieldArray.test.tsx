@@ -118,7 +118,7 @@ describe('useFieldArray', () => {
       const { result } = renderHook(() => useFieldArray({ name: 'test' }));
 
       expect(result.error.message).toBe(
-        '📋 useFieldArray is missing `control` prop.',
+        '📋 useFieldArray is missing `control` prop. https://react-hook-form.com/api#useFieldArray',
       );
 
       process.env.NODE_ENV = env;
@@ -456,7 +456,7 @@ describe('useFieldArray', () => {
               ],
             });
           });
-        }, []);
+        }, [reset]);
 
         return (
           <form>

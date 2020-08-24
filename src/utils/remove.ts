@@ -1,6 +1,6 @@
 import isUndefined from './isUndefined';
 import isArray from './isArray';
-import unique from './unique';
+import filterOutFalsy from './filterOutFalsy';
 
 const removeAt = <T>(data: T[], index: number): T[] => [
   ...data.slice(0, index),
@@ -16,7 +16,7 @@ function removeAtIndexes<T>(data: T[], index: number[]): T[] {
     }
   }
 
-  return unique(data);
+  return filterOutFalsy(data);
 }
 
 export default <T>(data: T[], index?: number | number[]): T[] =>

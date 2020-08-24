@@ -1,15 +1,16 @@
-import React from 'react';
-import { useForm, useFieldArray } from './src';
-import { object, array, string } from 'yup';
+import React from "react";
+import { useForm, useFieldArray } from "react-hook-form";
+import { object, array, string } from "yup";
+import { yupResolver } from "@hookform/resolvers";
 
 const validationSchema = object().shape({
   questions: array()
     .of(
       object().shape({
-        text: string().required('Some text is required'),
-      }),
+        text: string().required("Some text is required")
+      })
     )
-    .required(),
+    .required()
 });
 
 function App() {
@@ -17,53 +18,46 @@ function App() {
     control,
     register,
     errors,
-    clearError,
+    clearErrors,
     setValue,
     unregister,
     handleSubmit,
-    triggerValidation,
+    trigger
   } = useForm({
-    mode: 'onChange',
-    validationSchema,
+    mode: "onChange",
+    resolver: yupResolver(validationSchema)
   });
   const { fields, append, remove } = useFieldArray({
     control,
-    name: 'questions',
-    keyName: 'key',
+    name: "questions"
   });
 
   const isInitalRender = React.useRef(true);
   const appendQuestion = () => {
     append({
-      text: '',
+      text: ""
     });
 
-    if (errors.questions?.type === 'min') {
-      clearError('questions'); // always clear errors when there is add action.
+    if (errors.questions?.type === "min") {
+      clearErrors("questions"); // always clear errors when there is add action.
     }
   };
 
   React.useEffect(() => {
-    if (!fields.length) {
-      register('questions');
-      setValue('questions', []);
-      if (!isInitalRender.current) {
-        triggerValidation();
-      }
-    } else {
-      unregister('questions');
+    if (!fields.length && !isInitalRender.current) {
+      trigger("questions");
     }
 
     if (isInitalRender.current) {
       isInitalRender.current = false;
     }
-  }, [fields, register, setValue, unregister, triggerValidation]);
+  }, [fields, register, setValue, unregister, trigger]);
 
   return (
     <form onSubmit={handleSubmit(console.log)}>
       <h1>Yup Validation - Field Array</h1>
       {fields.map((question, questionIndex) => (
-        <div key={question.key}>
+        <div key={question.id}>
           <input
             ref={register()}
             name={`questions[${questionIndex}].text`}
@@ -75,7 +69,7 @@ function App() {
             type="button"
             onClick={() => {
               remove(questionIndex);
-              triggerValidation();
+              trigger();
             }}
           >
             Remove question {question.id}
@@ -83,7 +77,7 @@ function App() {
         </div>
       ))}
       <p>Errors: {JSON.stringify(errors)}</p>
-      <button type="buttoon" onClick={appendQuestion}>
+      <button type="button" onClick={appendQuestion}>
         Add question
       </button>
       <input type="submit" />
