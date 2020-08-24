@@ -200,11 +200,13 @@ export const useFieldArray = <
     );
     resetFields();
 
-    set(
-      unmountFieldsStateRef.current,
-      name,
-      prependAt(get(unmountFieldsStateRef.current, name), emptyArray),
-    );
+    if (isArray(get(unmountFieldsStateRef.current, name))) {
+      set(
+        unmountFieldsStateRef.current,
+        name,
+        prependAt(get(unmountFieldsStateRef.current, name), emptyArray),
+      );
+    }
 
     if (isArray(get(errors, name))) {
       set(errors, name, prependAt(get(errors, name), emptyArray));
@@ -241,11 +243,13 @@ export const useFieldArray = <
     setFieldAndValidState(removeArrayAt(fieldValues, index));
     resetFields();
 
-    set(
-      unmountFieldsStateRef.current,
-      name,
-      removeArrayAt(get(unmountFieldsStateRef.current, name), index),
-    );
+    if (isArray(get(unmountFieldsStateRef.current, name))) {
+      set(
+        unmountFieldsStateRef.current,
+        name,
+        removeArrayAt(get(unmountFieldsStateRef.current, name), index),
+      );
+    }
 
     if (isArray(get(errors, name))) {
       set(errors, name, removeArrayAt(get(errors, name), index));
@@ -320,11 +324,13 @@ export const useFieldArray = <
     );
     resetFields();
 
-    set(
-      unmountFieldsStateRef.current,
-      name,
-      insertAt(get(unmountFieldsStateRef.current, name), index, emptyArray),
-    );
+    if (isArray(get(unmountFieldsStateRef.current, name))) {
+      set(
+        unmountFieldsStateRef.current,
+        name,
+        insertAt(get(unmountFieldsStateRef.current, name), index, emptyArray),
+      );
+    }
 
     if (isArray(get(errors, name))) {
       set(errors, name, insertAt(get(errors, name), index, emptyArray));
@@ -364,7 +370,9 @@ export const useFieldArray = <
     resetFields();
     setFieldAndValidState([...fieldValues]);
 
-    swapArrayAt(get(unmountFieldsStateRef.current, name), indexA, indexB);
+    if (isArray(get(unmountFieldsStateRef.current, name))) {
+      swapArrayAt(get(unmountFieldsStateRef.current, name), indexA, indexB);
+    }
 
     if (isArray(get(errors, name))) {
       swapArrayAt(get(errors, name), indexA, indexB);
@@ -397,7 +405,9 @@ export const useFieldArray = <
     resetFields();
     setFieldAndValidState([...fieldValues]);
 
-    moveArrayAt(get(unmountFieldsStateRef.current, name), from, to);
+    if (isArray(get(unmountFieldsStateRef.current, name))) {
+      moveArrayAt(get(unmountFieldsStateRef.current, name), from, to);
+    }
 
     if (isArray(get(errors, name))) {
       moveArrayAt(get(errors, name), from, to);
