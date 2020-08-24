@@ -200,6 +200,12 @@ export const useFieldArray = <
     );
     resetFields();
 
+    set(
+      unmountFieldsStateRef.current,
+      name,
+      prependAt(get(unmountFieldsStateRef.current, name), emptyArray),
+    );
+
     if (isArray(get(errors, name))) {
       set(errors, name, prependAt(get(errors, name), emptyArray));
     }
@@ -234,6 +240,12 @@ export const useFieldArray = <
     const fieldValues = getCurrentFieldsValues();
     setFieldAndValidState(removeArrayAt(fieldValues, index));
     resetFields();
+
+    set(
+      unmountFieldsStateRef.current,
+      name,
+      removeArrayAt(get(unmountFieldsStateRef.current, name), index),
+    );
 
     if (isArray(get(errors, name))) {
       set(errors, name, removeArrayAt(get(errors, name), index));
@@ -308,6 +320,12 @@ export const useFieldArray = <
     );
     resetFields();
 
+    set(
+      unmountFieldsStateRef.current,
+      name,
+      insertAt(get(unmountFieldsStateRef.current, name), index, emptyArray),
+    );
+
     if (isArray(get(errors, name))) {
       set(errors, name, insertAt(get(errors, name), index, emptyArray));
     }
@@ -346,6 +364,8 @@ export const useFieldArray = <
     resetFields();
     setFieldAndValidState([...fieldValues]);
 
+    swapArrayAt(get(unmountFieldsStateRef.current, name), indexA, indexB);
+
     if (isArray(get(errors, name))) {
       swapArrayAt(get(errors, name), indexA, indexB);
     }
@@ -377,6 +397,8 @@ export const useFieldArray = <
     resetFields();
     setFieldAndValidState([...fieldValues]);
 
+    moveArrayAt(get(unmountFieldsStateRef.current, name), from, to);
+
     if (isArray(get(errors, name))) {
       moveArrayAt(get(errors, name), from, to);
     }
@@ -405,6 +427,7 @@ export const useFieldArray = <
   const reset = () => {
     resetFields();
     unset(fieldArrayDefaultValues.current, name);
+    unset(unmountFieldsStateRef.current, name);
     memoizedDefaultValues.current = get(defaultValuesRef.current, name);
     setFields(mapIds(memoizedDefaultValues.current, keyName));
   };
