@@ -5,8 +5,8 @@ import isString from './utils/isString';
 import generateId from './logic/generateId';
 import get from './utils/get';
 import isArray from './utils/isArray';
-import { DeepPartial } from './types/utils';
 import isObject from './utils/isObject';
+import { DeepPartial } from './types/utils';
 import {
   UseWatchOptions,
   FieldValues,
