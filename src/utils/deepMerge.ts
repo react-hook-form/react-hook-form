@@ -12,13 +12,13 @@ export function deepMerge<
     const targetValue = target[key];
     const sourceValue = source[key];
 
-    if (isObject(targetValue) && isObject(sourceValue)) {
-      target[key] = deepMerge(targetValue, sourceValue);
-    } else {
-      try {
+    try {
+      if (isObject(targetValue) && isObject(sourceValue)) {
+        target[key] = deepMerge(targetValue, sourceValue);
+      } else {
         target[key] = sourceValue;
-      } catch {}
-    }
+      }
+    } catch {}
   }
 
   return target;
