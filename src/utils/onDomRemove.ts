@@ -12,8 +12,8 @@ export default function onDomRemove<TFieldValues>(
   const observer = new MutationObserver((): void => {
     for (const field of Object.values(fieldsRef.current)) {
       if (field && field.options) {
-        for (const { ref } of field.options) {
-          if (isDetached(ref)) {
+        for (const option of field.options) {
+          if (option && option.ref && isDetached(option.ref)) {
             removeFieldEventListenerAndRef(field);
           }
         }
