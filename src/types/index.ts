@@ -8,6 +8,7 @@ export {
   UseFieldArrayOptions,
   ValidationRules,
   FieldError,
+  FieldErrors,
   Field,
   ArrayField,
   Mode,
