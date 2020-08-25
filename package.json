@@ -58,7 +58,6 @@
     "@babel/plugin-transform-runtime": "^7.10.4",
     "@changesets/changelog-github": "^0.2.6",
     "@changesets/cli": "^2.9.2",
-    "@rollup/plugin-babel": "^5.1.0",
     "@rollup/plugin-commonjs": "^13.0.0",
     "@rollup/plugin-node-resolve": "^8.4.0",
     "@rollup/plugin-replace": "^2.3.3",
