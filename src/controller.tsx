@@ -67,13 +67,13 @@ const Controller = <
   if (process.env.NODE_ENV !== 'production') {
     if (isUndefined(value)) {
       console.warn(
-        '📋 Controller `defaultValue` or useForm `defaultValues` is missing. https://react-hook-form.com/api#Controller',
+        `📋 ${name} is missing in the 'defaultValue' prop of either its Controller (https://react-hook-form.com/api#Controller) or useForm (http://localhost:8000/api#useForm)`,
       );
     }
 
     if (as && render) {
       console.warn(
-        '📋 Should use either `as` or `render` prop. https://react-hook-form.com/api#Controller',
+        `📋 ${name} Controller should use either the 'as' or 'render' prop, not both. https://react-hook-form.com/api#Controller`,
       );
     }
 
