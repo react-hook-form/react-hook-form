@@ -788,4 +788,60 @@ describe('Controller', () => {
       console.warn.mockRestore();
     });
   });
+
+  it('should not assign default value when field is removed with useFieldArray', () => {
+    const Component = () => {
+      const { control } = useForm();
+      const { fields, append, remove } = useFieldArray({
+        control,
+        name: 'test',
+      });
+
+      return (
+        <form>
+          {fields.map((field, i) => (
+            <div key={field.id}>
+              <Controller
+                as="input"
+                name={`test[${i}].value`}
+                defaultValue={''}
+                control={control}
+              />
+              <button type="button" onClick={() => remove(i)}>
+                remove{i}
+              </button>
+            </div>
+          ))}
+          <button type="button" onClick={() => append({ value: '' })}>
+            append
+          </button>
+        </form>
+      );
+    };
+
+    render(<Component />);
+
+    fireEvent.click(screen.getByRole('button', { name: /append/i }));
+    fireEvent.click(screen.getByRole('button', { name: /append/i }));
+    fireEvent.click(screen.getByRole('button', { name: /append/i }));
+
+    const inputs = screen.getAllByRole('textbox');
+
+    fireEvent.input(inputs[0], {
+      target: { value: '1' },
+    });
+
+    fireEvent.input(inputs[1], {
+      target: { value: '2' },
+    });
+
+    fireEvent.input(inputs[2], {
+      target: { value: '3' },
+    });
+
+    fireEvent.click(screen.getByRole('button', { name: /remove1/i }));
+
+    expect(screen.getAllByRole('textbox')[0]).toHaveValue('1');
+    expect(screen.getAllByRole('textbox')[1]).toHaveValue('3');
+  });
 });
