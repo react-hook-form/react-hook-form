@@ -876,7 +876,7 @@ export function useForm<
       isEmptyDefaultValue = isUndefined(defaultValue);
       isFieldArray = isNameInFieldArray(fieldArrayNamesRef.current, name);
 
-      if (!isEmptyDefaultValue && !isFieldArray) {
+      if (!isEmptyDefaultValue && isFieldArray && !shouldUnregister) {
         setFieldValue(field, defaultValue);
       }
     }
