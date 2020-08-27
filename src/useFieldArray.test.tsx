@@ -3571,8 +3571,8 @@ describe('useFieldArray', () => {
           defaultValues: {
             nest: {
               test: [
-                { value: '1', nestedArray: [{ value: '2' }] },
-                { value: '3', nestedArray: [{ value: '4' }] },
+                { value: '1', nestedArray: [{ value: '2' }, { value: '3' }] },
+                { value: '4', nestedArray: [{ value: '5' }] },
               ],
             },
           },
@@ -3587,7 +3587,7 @@ describe('useFieldArray', () => {
             {fields.map((item, i) => (
               <div key={item.id}>
                 <input
-                  name={`nest.test[${i}].value`}
+                  name={`nest[${i}].value`}
                   ref={register()}
                   defaultValue={item.value}
                 />
@@ -3595,7 +3595,7 @@ describe('useFieldArray', () => {
               </div>
             ))}
 
-            <button type={'button'} onClick={() => prepend({})}>
+            <button type={'button'} onClick={() => prepend({ value: 'test' })}>
               prepend
             </button>
           </>
@@ -3604,7 +3604,13 @@ describe('useFieldArray', () => {
 
       render(<Component />);
 
-      // todo assertion here
+      expect(screen.getAllByRole('textbox')).toHaveLength(5);
+
+      fireEvent.click(screen.getByRole('button', { name: /prepend/i }));
+
+      expect(screen.getAllByRole('textbox')).toHaveLength(6);
+
+      expect(screen.getAllByRole('textbox')[0].value).toEqual('test');
     });
 
     it('should render correct amount of child array fields', async () => {
