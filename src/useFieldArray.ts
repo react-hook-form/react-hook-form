@@ -23,7 +23,7 @@ import {
   UseFieldArrayOptions,
   Control,
   ArrayField,
-} from './types/form';
+} from './types';
 
 const appendId = <TValue extends object, TKeyName extends string>(
   value: TValue,
