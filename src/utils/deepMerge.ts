@@ -1,5 +1,4 @@
 import isObject from './isObject';
-import isArray from './isArray';
 import isPrimitive from './isPrimitive';
 
 export function deepMerge<
@@ -15,10 +14,7 @@ export function deepMerge<
     const sourceValue = source[key];
 
     try {
-      if (
-        (isObject(targetValue) && isObject(sourceValue)) ||
-        (isArray(targetValue) && isArray(sourceValue))
-      ) {
+      if (isObject(targetValue) && isObject(sourceValue)) {
         target[key] = deepMerge(targetValue, sourceValue);
       } else {
         target[key] = sourceValue;
