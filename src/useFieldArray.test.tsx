@@ -3539,6 +3539,81 @@ describe('useFieldArray', () => {
   });
 
   describe('array of array fields', () => {
+    it('should prepend correctly with default values on nested array fields', () => {
+      const ChildComponent = ({
+        index,
+        control,
+      }: {
+        control: Control;
+        index: number;
+      }) => {
+        const { fields } = useFieldArray({
+          name: `nest.test[${index}].nestedArray`,
+          control,
+        });
+
+        return (
+          <>
+            {fields.map((item, i) => (
+              <input
+                key={item.id}
+                name={`nest.test[${index}].nestedArray[${i}].value`}
+                ref={control.register()}
+                defaultValue={item.value}
+              />
+            ))}
+          </>
+        );
+      };
+
+      const Component = () => {
+        const { register, control } = useForm({
+          defaultValues: {
+            nest: {
+              test: [
+                { value: '1', nestedArray: [{ value: '2' }, { value: '3' }] },
+                { value: '4', nestedArray: [{ value: '5' }] },
+              ],
+            },
+          },
+        });
+        const { fields, prepend } = useFieldArray({
+          name: 'nest.test',
+          control,
+        });
+
+        return (
+          <>
+            {fields.map((item, i) => (
+              <div key={item.id}>
+                <input
+                  name={`nest[${i}].value`}
+                  ref={register()}
+                  defaultValue={item.value}
+                />
+                <ChildComponent control={control} index={i} />
+              </div>
+            ))}
+
+            <button type={'button'} onClick={() => prepend({ value: 'test' })}>
+              prepend
+            </button>
+          </>
+        );
+      };
+
+      render(<Component />);
+
+      expect(screen.getAllByRole('textbox')).toHaveLength(5);
+
+      fireEvent.click(screen.getByRole('button', { name: /prepend/i }));
+
+      expect(screen.getAllByRole('textbox')).toHaveLength(6);
+
+      // @ts-ignore
+      expect(screen.getAllByRole('textbox')[0].value).toEqual('test');
+    });
+
     it('should render correct amount of child array fields', async () => {
       const ChildComponent = ({
         index,
