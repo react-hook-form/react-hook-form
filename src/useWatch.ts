@@ -6,8 +6,8 @@ import generateId from './logic/generateId';
 import get from './utils/get';
 import isArray from './utils/isArray';
 import isObject from './utils/isObject';
-import { DeepPartial } from './types';
 import {
+  DeepPartial,
   UseWatchOptions,
   FieldValues,
   UnpackNestedValue,
