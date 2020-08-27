@@ -1,6 +1,6 @@
 import isArray from '../utils/isArray';
 import isUndefined from '../utils/isUndefined';
-import { RadioOrCheckboxOption } from '../types/form';
+import { RadioOrCheckboxOption } from '../types';
 
 type CheckboxFieldResult = {
   isValid: boolean;

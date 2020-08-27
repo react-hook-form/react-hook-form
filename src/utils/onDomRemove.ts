@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Field, FieldRefs } from '../types/form';
+import { Field, FieldRefs } from '../types';
 import isDetached from './isDetached';
 
 export default function onDomRemove<TFieldValues>(

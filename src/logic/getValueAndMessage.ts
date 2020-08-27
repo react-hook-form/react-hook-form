@@ -1,6 +1,6 @@
 import isObject from '../utils/isObject';
 import isRegex from '../utils/isRegex';
-import { ValidationRule, ValidationValueMessage } from '../types/form';
+import { ValidationRule, ValidationValueMessage } from '../types';
 
 const isValueMessage = (
   value?: ValidationRule,

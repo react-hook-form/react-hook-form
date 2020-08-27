@@ -1,8 +1,4 @@
-import {
-  InternalFieldName,
-  ValidateResult,
-  FlatFieldErrors,
-} from '../types/form';
+import { InternalFieldName, ValidateResult, FlatFieldErrors } from '../types';
 
 export default <TFieldValues>(
   name: InternalFieldName<TFieldValues>,

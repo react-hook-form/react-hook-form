@@ -4,13 +4,13 @@ import isEmptyObject from '../utils/isEmptyObject';
 import isUndefined from '../utils/isUndefined';
 import isObject from '../utils/isObject';
 import isArray from '../utils/isArray';
-import { DeepPartial } from '../types/utils';
 import {
+  DeepPartial,
   FieldValue,
   FieldValues,
   InternalFieldName,
   UnpackNestedValue,
-} from '../types/form';
+} from '../types';
 
 export default <TFieldValues extends FieldValues>(
   fieldValues: TFieldValues,

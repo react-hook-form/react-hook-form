@@ -9,7 +9,7 @@ import isArray from '../utils/isArray';
 import unset from '../utils/unset';
 import filterOutFalsy from '../utils/filterOutFalsy';
 import isUndefined from '../utils/isUndefined';
-import { Field, FieldRefs, FieldValues, Ref } from '../types/form';
+import { Field, FieldRefs, FieldValues, Ref } from '../types';
 
 const isSameRef = (fieldValue: Field, ref: Ref) =>
   fieldValue && fieldValue.ref === ref;
