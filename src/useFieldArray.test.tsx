@@ -3610,6 +3610,7 @@ describe('useFieldArray', () => {
 
       expect(screen.getAllByRole('textbox')).toHaveLength(6);
 
+      // @ts-ignore
       expect(screen.getAllByRole('textbox')[0].value).toEqual('test');
     });
 
