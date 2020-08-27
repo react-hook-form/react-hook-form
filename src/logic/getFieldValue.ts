@@ -7,7 +7,7 @@ import isFileInput from '../utils/isFileInput';
 import isCheckBox from '../utils/isCheckBoxInput';
 import isMultipleSelect from '../utils/isMultipleSelect';
 import getCheckboxValue from './getCheckboxValue';
-import { FieldRefs, FieldValues, InternalFieldName } from '../types/form';
+import { FieldRefs, FieldValues, InternalFieldName } from '../types';
 
 export default function getFieldValue<TFieldValues extends FieldValues>(
   fieldsRef: React.MutableRefObject<FieldRefs<TFieldValues>>,

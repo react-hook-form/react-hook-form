@@ -9,9 +9,8 @@ import {
 import { act, renderHook } from '@testing-library/react-hooks';
 import { useFieldArray } from './useFieldArray';
 import { useForm } from './useForm';
-import { DeepMap } from './types/utils';
 import * as generateId from './logic/generateId';
-import { Control, ValidationRules, FieldError } from './types';
+import { Control, ValidationRules, FieldError, DeepMap } from './types';
 import { VALIDATION_MODE } from './constants';
 import { FormProvider } from './useFormContext';
 

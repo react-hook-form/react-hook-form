@@ -17,7 +17,7 @@ import {
   FieldError,
   ValidationRules,
 } from './types';
-import { DeepMap } from './types/utils';
+import { DeepMap } from './types';
 import { perf, wait, PerfTools } from 'react-performance-testing';
 import 'jest-performance-testing';
 

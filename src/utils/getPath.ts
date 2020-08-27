@@ -1,6 +1,6 @@
 import isPrimitive from './isPrimitive';
 import isObject from './isObject';
-import { FieldValues, InternalFieldName } from '../types/form';
+import { FieldValues, InternalFieldName } from '../types';
 
 export const getPath = <TFieldValues extends FieldValues = FieldValues>(
   path: InternalFieldName<TFieldValues>,

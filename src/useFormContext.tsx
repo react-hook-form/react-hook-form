@@ -1,6 +1,5 @@
 import * as React from 'react';
-import { UseFormMethods, FieldValues } from './types';
-import { FormProviderProps } from './types/props';
+import { UseFormMethods, FieldValues, FormProviderProps } from './types';
 
 const FormContext = React.createContext<UseFormMethods | null>(null);
 

@@ -7,7 +7,7 @@ import {
   FieldErrors,
   FlatFieldErrors,
   FieldNames,
-} from '../types/form';
+} from '../types';
 
 export default function shouldRenderBasedOnError<
   TFieldValues extends FieldValues

@@ -1,4 +1,4 @@
-import { FieldValues, InternalFieldName } from '../types/form';
+import { FieldValues, InternalFieldName } from '../types';
 
 export const isMatchFieldArrayName = (name: string, searchName: string) =>
   RegExp(
