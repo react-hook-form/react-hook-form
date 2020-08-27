@@ -38,6 +38,13 @@ const mapIds = <TData extends object, TKeyName extends string>(
   keyName: TKeyName,
 ) => (isArray(data) ? data : []).map((value) => appendId(value, keyName));
 
+const batchUpdate = <T extends unknown[]>(
+  values: T,
+  callback: <U>(item: U) => void,
+): void => {
+  values.forEach((item) => isArray(get(item, name)) && callback(item));
+};
+
 export const useFieldArray = <
   TFieldArrayValues extends FieldValues = FieldValues,
   TKeyName extends string = 'id',
@@ -197,10 +204,9 @@ export const useFieldArray = <
     );
     resetFields();
 
-    [fieldArrayDefaultValues.current, errors, touched].forEach(
-      (item) =>
-        isArray(get(item, name)) &&
-        set(item, name, prependAt(get(item, name), emptyArray)),
+    batchUpdate(
+      [fieldArrayDefaultValues.current, errors, touched],
+      <T>(item: T) => set(item, name, prependAt(get(item, name), emptyArray)),
     );
 
     if (
@@ -210,7 +216,7 @@ export const useFieldArray = <
       set(
         dirtyFields,
         name,
-        prependAt(get(dirtyFields, name) || [], filterBooleanArray(value)),
+        prependAt(get(dirtyFields, name, []), filterBooleanArray(value)),
       );
     }
 
@@ -303,13 +309,9 @@ export const useFieldArray = <
     );
     resetFields();
 
-    if (isArray(get(errors, name))) {
-      set(errors, name, insertAt(get(errors, name), index, emptyArray));
-    }
-
-    if (readFormStateRef.current.touched && get(touched, name)) {
-      set(touched, name, insertAt(get(touched, name), index, emptyArray));
-    }
+    batchUpdate([errors, touched], <T>(item: T) =>
+      set(item, name, insertAt(get(touched, name), index, emptyArray)),
+    );
 
     if (
       (readFormStateRef.current.dirtyFields ||
@@ -341,21 +343,9 @@ export const useFieldArray = <
     resetFields();
     setFieldAndValidState([...fieldValues]);
 
-    if (isArray(get(errors, name))) {
-      swapArrayAt(get(errors, name), indexA, indexB);
-    }
-
-    if (readFormStateRef.current.touched && get(touched, name)) {
-      swapArrayAt(get(touched, name), indexA, indexB);
-    }
-
-    if (
-      (readFormStateRef.current.dirtyFields ||
-        readFormStateRef.current.isDirty) &&
-      get(dirtyFields, name)
-    ) {
-      swapArrayAt(get(dirtyFields, name), indexA, indexB);
-    }
+    batchUpdate([errors, touched, dirtyFields], <T>(item: T) =>
+      swapArrayAt(get(item, name), indexA, indexB),
+    );
 
     updateFormState({
       dirtyFields,
@@ -372,21 +362,9 @@ export const useFieldArray = <
     resetFields();
     setFieldAndValidState([...fieldValues]);
 
-    if (isArray(get(errors, name))) {
-      moveArrayAt(get(errors, name), from, to);
-    }
-
-    if (readFormStateRef.current.touched && get(touched, name)) {
-      moveArrayAt(get(touched, name), from, to);
-    }
-
-    if (
-      (readFormStateRef.current.dirtyFields ||
-        readFormStateRef.current.isDirty) &&
-      get(dirtyFields, name)
-    ) {
-      moveArrayAt(get(dirtyFields, name), from, to);
-    }
+    batchUpdate([errors, touched, dirtyFields], <T>(item: T) =>
+      moveArrayAt(get(item, name), from, to),
+    );
 
     updateFormState({
       dirtyFields,
