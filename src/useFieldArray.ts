@@ -197,21 +197,11 @@ export const useFieldArray = <
     );
     resetFields();
 
-    if (get(fieldArrayDefaultValues.current, name)) {
-      set(
-        fieldArrayDefaultValues.current,
-        name,
-        prependAt(get(fieldArrayDefaultValues.current, name), emptyArray),
-      );
-    }
-
-    if (isArray(get(errors, name))) {
-      set(errors, name, prependAt(get(errors, name), emptyArray));
-    }
-
-    if (readFormStateRef.current.touched && get(touched, name)) {
-      set(touched, name, prependAt(get(touched, name), emptyArray));
-    }
+    [fieldArrayDefaultValues.current, errors, touched].forEach(
+      (item) =>
+        isArray(get(item, name)) &&
+        set(item, name, prependAt(get(item, name), emptyArray)),
+    );
 
     if (
       readFormStateRef.current.dirtyFields ||
