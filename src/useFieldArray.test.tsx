@@ -3539,6 +3539,74 @@ describe('useFieldArray', () => {
   });
 
   describe('array of array fields', () => {
+    it('should prepend correctly with default values on nested array fields', () => {
+      const ChildComponent = ({
+        index,
+        control,
+      }: {
+        control: Control;
+        index: number;
+      }) => {
+        const { fields } = useFieldArray({
+          name: `nest.test[${index}].nestedArray`,
+          control,
+        });
+
+        return (
+          <>
+            {fields.map((item, i) => (
+              <input
+                key={item.id}
+                name={`nest.test[${index}].nestedArray[${i}].value`}
+                ref={control.register()}
+                defaultValue={item.value}
+              />
+            ))}
+          </>
+        );
+      };
+
+      const Component = () => {
+        const { register, control } = useForm({
+          defaultValues: {
+            nest: {
+              test: [
+                { value: '1', nestedArray: [{ value: '2' }] },
+                { value: '3', nestedArray: [{ value: '4' }] },
+              ],
+            },
+          },
+        });
+        const { fields, prepend } = useFieldArray({
+          name: 'nest.test',
+          control,
+        });
+
+        return (
+          <>
+            {fields.map((item, i) => (
+              <div key={item.id}>
+                <input
+                  name={`nest.test[${i}].value`}
+                  ref={register()}
+                  defaultValue={item.value}
+                />
+                <ChildComponent control={control} index={i} />
+              </div>
+            ))}
+
+            <button type={'button'} onClick={() => prepend({})}>
+              prepend
+            </button>
+          </>
+        );
+      };
+
+      render(<Component />);
+
+      // todo assertion here
+    });
+
     it('should render correct amount of child array fields', async () => {
       const ChildComponent = ({
         index,
