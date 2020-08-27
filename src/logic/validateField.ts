@@ -24,7 +24,7 @@ import {
   FieldError,
   InternalFieldName,
   FlatFieldErrors,
-} from '../types/form';
+} from '../types';
 
 export default async <TFieldValues extends FieldValues>(
   fieldsRef: React.MutableRefObject<FieldRefs<TFieldValues>>,

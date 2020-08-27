@@ -24,7 +24,7 @@ import {
   UseFieldArrayOptions,
   Control,
   ArrayField,
-} from './types/form';
+} from './types';
 
 const appendId = <TValue extends object, TKeyName extends string>(
   value: TValue,
@@ -88,10 +88,11 @@ export const useFieldArray = <
     getValues,
   } = control || methods.control;
 
+  const rootParentName = getFieldArrayParentName(name);
   const getDefaultValues = () => [
-    ...(get(fieldArrayDefaultValues.current, name) ||
-      get(defaultValuesRef.current, name) ||
-      []),
+    ...(get(fieldArrayDefaultValues.current, rootParentName)
+      ? get(fieldArrayDefaultValues.current, name, [])
+      : get(defaultValuesRef.current, name, [])),
   ];
   const memoizedDefaultValues = React.useRef<Partial<TFieldArrayValues>[]>(
     getDefaultValues(),
@@ -102,7 +103,6 @@ export const useFieldArray = <
   const allFields = React.useRef<
     Partial<ArrayField<TFieldArrayValues, TKeyName>>[]
   >(fields);
-  const rootParentName = getFieldArrayParentName(name);
 
   const getCurrentFieldsValues = () =>
     get(getValues() || {}, name, allFields.current).map(
@@ -115,7 +115,7 @@ export const useFieldArray = <
   allFields.current = fields;
   fieldArrayNamesRef.current.add(name);
 
-  if (!get(fieldArrayDefaultValues.current, name) && rootParentName) {
+  if (!get(fieldArrayDefaultValues.current, rootParentName)) {
     set(
       fieldArrayDefaultValues.current,
       rootParentName,
@@ -205,6 +205,14 @@ export const useFieldArray = <
         unmountFieldsStateRef.current,
         name,
         prependAt(get(unmountFieldsStateRef.current, name), emptyArray),
+      );
+    }
+
+    if (get(fieldArrayDefaultValues.current, name)) {
+      set(
+        fieldArrayDefaultValues.current,
+        name,
+        prependAt(get(fieldArrayDefaultValues.current, name), emptyArray),
       );
     }
 

@@ -65,8 +65,10 @@ import {
   FormState,
   SubmitErrorHandler,
   FieldNames,
-} from './types/form';
-import { LiteralToPrimitive, DeepPartial, NonUndefined } from './types/utils';
+  LiteralToPrimitive,
+  DeepPartial,
+  NonUndefined,
+} from './types';
 
 const isWindowUndefined = typeof window === UNDEFINED;
 const isWeb =
@@ -309,6 +311,10 @@ export function useForm<
           isDirtyFieldExist !== get(formStateRef.current.dirtyFields, name));
 
       if (isChanged && shouldRender) {
+        formStateRef.current = {
+          ...formStateRef.current,
+          ...state,
+        };
         updateFormState({
           ...state,
         });

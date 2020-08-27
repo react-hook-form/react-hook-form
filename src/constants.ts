@@ -1,4 +1,4 @@
-import { ValidationMode } from './types/form';
+import { ValidationMode } from './types';
 
 export const EVENTS = {
   BLUR: 'blur',

@@ -4,7 +4,7 @@ import isString from '../utils/isString';
 import isArray from '../utils/isArray';
 import { deepMerge } from '../utils/deepMerge';
 import isUndefined from '../utils/isUndefined';
-import { InternalFieldName, FieldValues, FieldRefs } from '../types/form';
+import { InternalFieldName, FieldValues, FieldRefs } from '../types';
 import transformToNestObject from './transformToNestObject';
 
 export default <TFieldValues extends FieldValues>(

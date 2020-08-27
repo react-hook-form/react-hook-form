@@ -8,7 +8,7 @@ import isNameInFieldArray from './logic/isNameInFieldArray';
 import { useFormContext } from './useFormContext';
 import { VALUE } from './constants';
 import { Control } from './types';
-import { ControllerProps } from './types/props';
+import { ControllerProps } from './types';
 
 const Controller = <
   TAs extends

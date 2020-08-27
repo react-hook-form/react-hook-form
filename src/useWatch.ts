@@ -6,13 +6,13 @@ import generateId from './logic/generateId';
 import get from './utils/get';
 import isArray from './utils/isArray';
 import isObject from './utils/isObject';
-import { DeepPartial } from './types/utils';
 import {
+  DeepPartial,
   UseWatchOptions,
   FieldValues,
   UnpackNestedValue,
   Control,
-} from './types/form';
+} from './types';
 
 export function useWatch<TWatchFieldValues extends FieldValues>(props: {
   defaultValue?: UnpackNestedValue<DeepPartial<TWatchFieldValues>>;
