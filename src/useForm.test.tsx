@@ -612,6 +612,15 @@ describe('useForm', () => {
   });
 
   describe('setValue', () => {
+    it('should not setValue for unmounted state with shouldUnregister', () => {
+      const { result } = renderHook(() => useForm<{ test1: string }>());
+
+      result.current.register('test1');
+      result.current.setValue('test1', 'data');
+
+      expect(result.current.control.unmountFieldsStateRef.current).toEqual({});
+    });
+
     it('should empty string when value is null or undefined when registered field is HTMLElement', () => {
       const { result } = renderHook(() =>
         useForm<{ test: string }>({
