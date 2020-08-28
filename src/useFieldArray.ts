@@ -154,6 +154,9 @@ export const useFieldArray = <
     }
   };
 
+  const cleanup = <T>(ref: T) =>
+    !filterOutFalsy(get(ref, name, [])).length && unset(ref, name);
+
   const batchStateUpdate = <T extends Function>(
     method: T,
     args: {
@@ -166,9 +169,6 @@ export const useFieldArray = <
     shouldSet = true,
     shouldUpdateValid = false,
   ) => {
-    const cleanup = <T>(ref: T) =>
-      !filterOutFalsy(get(ref, name, [])).length && unset(ref, name);
-
     if (get(fieldArrayDefaultValues.current, name)) {
       const output = method(
         get(fieldArrayDefaultValues.current, name),
