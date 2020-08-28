@@ -166,6 +166,9 @@ export const useFieldArray = <
     shouldSet = true,
     shouldUpdateValid = false,
   ) => {
+    const cleanup = <T>(ref: T) =>
+      !filterOutFalsy(get(ref, name, [])).length && unset(ref, name);
+
     if (get(fieldArrayDefaultValues.current, name)) {
       const output = method(
         get(fieldArrayDefaultValues.current, name),
@@ -178,19 +181,13 @@ export const useFieldArray = <
     if (isArray(get(errors, name))) {
       const output = method(get(errors, name), args.argA, args.argB);
       shouldSet && set(errors, name, output);
-
-      if (!filterOutFalsy(get(errors, name, [])).length) {
-        unset(errors, name);
-      }
+      cleanup(errors);
     }
 
     if (readFormStateRef.current.touched && get(touched, name)) {
       const output = method(get(touched, name), args.argA, args.argB);
       shouldSet && set(touched, name, output);
-
-      if (!filterOutFalsy(get(touched, name, [])).length) {
-        unset(touched, name);
-      }
+      cleanup(touched);
     }
 
     if (
@@ -199,10 +196,7 @@ export const useFieldArray = <
     ) {
       const output = method(get(dirtyFields, name, []), args.argC, args.argD);
       shouldSet && set(dirtyFields, name, output);
-
-      if (!filterOutFalsy(get(dirtyFields, name, [])).length) {
-        unset(dirtyFields, name);
-      }
+      cleanup(dirtyFields);
     }
 
     if (
@@ -215,22 +209,14 @@ export const useFieldArray = <
         name,
         method(get(validFieldsRef.current, name, []), args.argA),
       );
-
-      if (!filterOutFalsy(get(validFieldsRef.current, name, [])).length) {
-        unset(validFieldsRef.current, name);
-      }
+      cleanup(validFieldsRef.current);
 
       set(
         fieldsWithValidationRef.current,
         name,
         method(get(fieldsWithValidationRef.current, name, []), args.argA),
       );
-
-      if (
-        !filterOutFalsy(get(fieldsWithValidationRef.current, name, [])).length
-      ) {
-        unset(fieldsWithValidationRef.current, name);
-      }
+      cleanup(fieldsWithValidationRef.current);
     }
 
     updateFormState({
