@@ -629,11 +629,11 @@ describe('useForm', () => {
 
       result.current.setValue('test', null as any);
 
-      expect(result.current.control.fieldsRef.current.test?.ref.value).toBe('');
+      expect(elm).not.toHaveValue();
 
       result.current.setValue('test', undefined);
 
-      expect(result.current.control.fieldsRef.current.test?.ref.value).toBe('');
+      expect(elm).not.toHaveValue();
     });
 
     it('should set value of radio input correctly', async () => {
