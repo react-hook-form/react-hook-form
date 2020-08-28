@@ -16,8 +16,8 @@ import {
   ErrorOption,
   FieldError,
   ValidationRules,
+  DeepMap,
 } from './types';
-import { DeepMap } from './types';
 import { perf, wait, PerfTools } from 'react-performance-testing';
 import 'jest-performance-testing';
 
@@ -2105,6 +2105,54 @@ describe('useForm', () => {
   });
 
   describe('formState', () => {
+    it('should return isValid correctly with resolver', async () => {
+      let isValidValue = false;
+
+      const Component = () => {
+        const {
+          register,
+          formState: { isValid },
+        } = useForm<{ test: string }>({
+          mode: 'onChange',
+          resolver: async (data) => {
+            if (data.test) {
+              return {
+                values: data,
+                errors: {},
+              };
+            }
+            return {
+              values: {},
+              errors: {
+                test: 'issue',
+              } as any,
+            };
+          },
+        });
+
+        isValidValue = isValid;
+        return <input type="text" name="test" ref={register} />;
+      };
+
+      await actComponent(async () => {
+        render(<Component />);
+      });
+
+      expect(isValidValue).toBeFalsy();
+
+      await actComponent(async () => {
+        fireEvent.input(screen.getByRole('textbox'), {
+          target: {
+            value: 'test',
+          },
+        });
+      });
+
+      await actComponent(async () => {
+        expect(isValidValue).toBeTruthy();
+      });
+    });
+
     it('should return true for onBlur mode by default', () => {
       const { result } = renderHook(() =>
         useForm<{ input: string }>({
