@@ -459,7 +459,7 @@ export function useForm<
         setInternalValues(name, value, config);
       }
 
-      set(unmountFieldsStateRef.current, name, value);
+      !shouldUnregister && set(unmountFieldsStateRef.current, name, value);
     },
     [updateAndGetDirtyState, setFieldValue, setInternalValues],
   );
