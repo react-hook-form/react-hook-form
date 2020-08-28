@@ -176,6 +176,7 @@ export const useFieldArray = <
         args.argB,
       );
       shouldSet && set(fieldArrayDefaultValues.current, name, output);
+      cleanup(fieldArrayDefaultValues.current);
     }
 
     if (isArray(get(errors, name))) {
