@@ -629,11 +629,11 @@ describe('useForm', () => {
 
       result.current.setValue('test', null as any);
 
-      expect(result.current.control.fieldsRef.current.test?.ref.value).toBe('');
+      expect(elm).not.toHaveValue();
 
       result.current.setValue('test', undefined);
 
-      expect(result.current.control.fieldsRef.current.test?.ref.value).toBe('');
+      expect(elm).not.toHaveValue();
     });
 
     it('should set value of radio input correctly', async () => {
@@ -685,18 +685,6 @@ describe('useForm', () => {
           persist: () => {},
         } as React.SyntheticEvent);
       });
-    });
-
-    it('should set value of file input correctly if value is string', async () => {
-      const { result } = renderHook(() => useForm<{ test: string }>());
-
-      result.current.register({ name: 'test', type: 'file', value: '' });
-
-      result.current.setValue('test', 'path');
-
-      expect(
-        result.current.control.fieldsRef.current['test']?.ref.value,
-      ).toEqual('path');
     });
 
     it('should set value of multiple checkbox input correctly', async () => {
@@ -978,6 +966,24 @@ describe('useForm', () => {
       );
 
       expect(result.current.formState.isDirty).toBeTruthy();
+    });
+
+    describe('with watch', () => {
+      it('should get watched value', () => {
+        const { result } = renderHook(() => {
+          const { register, watch, setValue } = useForm();
+
+          register({ name: 'test' });
+
+          React.useEffect(() => {
+            setValue('test', 'abc');
+          }, []);
+
+          return watch('test');
+        });
+
+        expect(result.current).toBe('abc');
+      });
     });
 
     describe('with validation', () => {
