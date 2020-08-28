@@ -968,6 +968,24 @@ describe('useForm', () => {
       expect(result.current.formState.isDirty).toBeTruthy();
     });
 
+    describe('with watch', () => {
+      it('should get watched value', () => {
+        const { result } = renderHook(() => {
+          const { register, watch, setValue } = useForm();
+
+          register({ name: 'test' });
+
+          React.useEffect(() => {
+            setValue('test', 'abc');
+          }, []);
+
+          return watch('test');
+        });
+
+        expect(result.current).toBe('abc');
+      });
+    });
+
     describe('with validation', () => {
       it('should be called trigger method if shouldValidate variable is true', async () => {
         const { result } = renderHook(() => useForm());
