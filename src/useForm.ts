@@ -375,7 +375,7 @@ export function useForm<
           .every(Boolean);
 
         updateFormState({
-          isValid: isInputsValid,
+          isValid: isEmptyObject(errors),
           errors: formState.errors,
         });
 
@@ -387,6 +387,8 @@ export function useForm<
           payload,
           (error ? { [payload]: error } : {}) as FlatFieldErrors<TFieldValues>,
           previousFormIsValid !== isEmptyObject(errors),
+          {},
+          isEmptyObject(errors),
         );
 
         return !error;
