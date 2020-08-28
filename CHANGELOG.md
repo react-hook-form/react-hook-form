@@ -1,5 +1,11 @@
 # Changelog
 
+## [6.6.0] - 2020-08-28
+
+### Changed
+
+- all types from this lib has been exported. **Important:** only documented type: https://react-hook-form.com/ts will avoid breaking change.
+
 ## [6.5.0] - 2020-08-23
 
 ### Changed
