@@ -687,18 +687,6 @@ describe('useForm', () => {
       });
     });
 
-    it('should set value of file input correctly if value is string', async () => {
-      const { result } = renderHook(() => useForm<{ test: string }>());
-
-      result.current.register({ name: 'test', type: 'file', value: '' });
-
-      result.current.setValue('test', 'path');
-
-      expect(
-        result.current.control.fieldsRef.current['test']?.ref.value,
-      ).toEqual('path');
-    });
-
     it('should set value of multiple checkbox input correctly', async () => {
       const { result } = renderHook(() => useForm<{ test: string }>());
 
