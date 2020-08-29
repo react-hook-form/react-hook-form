@@ -68,6 +68,7 @@ import {
   LiteralToPrimitive,
   DeepPartial,
   NonUndefined,
+  ClearErrorsConfig,
 } from './types';
 
 const isWindowUndefined = typeof window === UNDEFINED;
@@ -501,9 +502,9 @@ export function useForm<
     value: NonUndefined<TFieldValue> extends NestedValue<infer U>
       ? U
       : UnpackNestedValue<DeepPartial<LiteralToPrimitive<TFieldValue>>>,
-    options: SetValueConfig = {},
+    config: SetValueConfig = {},
   ): void {
-    setInternalValue(name, value as TFieldValues[string], options);
+    setInternalValue(name, value as TFieldValues[string], config);
 
     if (isFieldWatched(name)) {
       updateFormState();
@@ -511,7 +512,7 @@ export function useForm<
 
     renderWatchedInputs(name);
 
-    if (options.shouldValidate) {
+    if (config.shouldValidate) {
       trigger(name as any);
     }
   }
@@ -681,12 +682,12 @@ export function useForm<
 
   function clearErrors(
     name?: FieldName<TFieldValues> | FieldName<TFieldValues>[],
-    options: { exact: boolean } = { exact: true },
+    config: ClearErrorsConfig = { exact: true },
   ): void {
     name &&
       (isArray(name) ? name : [name]).forEach(
         (inputName) =>
-          (fieldsRef.current[inputName] || !options.exact) &&
+          (fieldsRef.current[inputName] || !config.exact) &&
           unset(formState.errors, inputName),
       );
 
