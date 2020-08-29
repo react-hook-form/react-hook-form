@@ -726,7 +726,7 @@ describe('useForm', () => {
       });
     });
 
-    it('should set array value of multiple checkbox input correctly', async () => {
+    it('should set array value of multiple checkbox inputs correctly', async () => {
       const Component = () => {
         const { register } = useForm({
           defaultValues: {
