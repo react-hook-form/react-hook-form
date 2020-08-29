@@ -501,9 +501,9 @@ export function useForm<
     value: NonUndefined<TFieldValue> extends NestedValue<infer U>
       ? U
       : UnpackNestedValue<DeepPartial<LiteralToPrimitive<TFieldValue>>>,
-    config: SetValueConfig = {},
+    options: SetValueConfig = {},
   ): void {
-    setInternalValue(name, value as TFieldValues[string], config);
+    setInternalValue(name, value as TFieldValues[string], options);
 
     if (isFieldWatched(name)) {
       updateFormState();
@@ -511,7 +511,7 @@ export function useForm<
 
     renderWatchedInputs(name);
 
-    if (config.shouldValidate) {
+    if (options.shouldValidate) {
       trigger(name as any);
     }
   }
@@ -681,11 +681,13 @@ export function useForm<
 
   function clearErrors(
     name?: FieldName<TFieldValues> | FieldName<TFieldValues>[],
+    options: Partial<{ exact: boolean }> = { exact: true },
   ): void {
     name &&
       (isArray(name) ? name : [name]).forEach(
         (inputName) =>
-          fieldsRef.current[inputName] && unset(formState.errors, inputName),
+          ((options.exact && fieldsRef.current[inputName]) || !options.exact) &&
+          unset(formState.errors, inputName),
       );
 
     updateFormState({
