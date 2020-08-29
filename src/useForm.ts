@@ -686,7 +686,7 @@ export function useForm<
     name &&
       (isArray(name) ? name : [name]).forEach(
         (inputName) =>
-          ((options.exact && fieldsRef.current[inputName]) || !options.exact) &&
+          (fieldsRef.current[inputName] || !options.exact) &&
           unset(formState.errors, inputName),
       );
 
