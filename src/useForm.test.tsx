@@ -726,6 +726,30 @@ describe('useForm', () => {
       });
     });
 
+    it('should set array value of multiple checkbox inputs correctly', async () => {
+      const Component = () => {
+        const { register } = useForm({
+          defaultValues: {
+            test: ['1', '2'],
+          },
+        });
+
+        return (
+          <>
+            <input type="checkbox" value={'1'} ref={register} name="test" />
+            <input type="checkbox" value={'2'} ref={register} name="test" />
+          </>
+        );
+      };
+
+      render(<Component />);
+
+      screen
+        .getAllByRole('checkbox')
+        // @ts-ignore
+        .forEach((checkbox) => expect(checkbox.checked).toBeTruthy());
+    });
+
     it('should set value of single checkbox input correctly', async () => {
       const { result } = renderHook(() => useForm<{ test: string }>());
 
