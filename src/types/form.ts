@@ -195,6 +195,10 @@ export type SetValueConfig = Partial<{
   shouldDirty: boolean;
 }>;
 
+export type ClearErrorsConfig = {
+  exact: boolean;
+};
+
 export type FormStateProxy<TFieldValues extends FieldValues = FieldValues> = {
   isDirty: boolean;
   dirtyFields: Dirtied<TFieldValues>;
@@ -352,7 +356,10 @@ export type UseFormMethods<TFieldValues extends FieldValues = FieldValues> = {
     defaultValues?: UnpackNestedValue<DeepPartial<TFieldValues>>,
   ): UnpackNestedValue<DeepPartial<TFieldValues>>;
   setError(name: FieldName<TFieldValues>, error: ErrorOption): void;
-  clearErrors(name?: FieldName<TFieldValues> | FieldName<TFieldValues>[]): void;
+  clearErrors(
+    name?: FieldName<TFieldValues> | FieldName<TFieldValues>[],
+    config?: ClearErrorsConfig,
+  ): void;
   setValue<
     TFieldName extends string,
     TFieldValue extends TFieldValues[TFieldName]

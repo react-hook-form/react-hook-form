@@ -68,6 +68,7 @@ import {
   LiteralToPrimitive,
   DeepPartial,
   NonUndefined,
+  ClearErrorsConfig,
 } from './types';
 
 const isWindowUndefined = typeof window === UNDEFINED;
@@ -681,10 +682,13 @@ export function useForm<
 
   function clearErrors(
     name?: FieldName<TFieldValues> | FieldName<TFieldValues>[],
+    config: ClearErrorsConfig = { exact: true },
   ): void {
     name &&
-      (isArray(name) ? name : [name]).forEach((inputName) =>
-        unset(formState.errors, inputName),
+      (isArray(name) ? name : [name]).forEach(
+        (inputName) =>
+          (fieldsRef.current[inputName] || !config.exact) &&
+          unset(formState.errors, inputName),
       );
 
     updateFormState({

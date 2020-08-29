@@ -2024,12 +2024,13 @@ describe('useForm', () => {
   describe('clearErrors', () => {
     it('should remove error', () => {
       const { result } = renderHook(() => useForm<{ input: string }>());
-      act(() =>
+      act(() => {
+        result.current.register('input');
         result.current.setError('input', {
           type: 'test',
           message: 'message',
-        }),
-      );
+        });
+      });
 
       act(() => result.current.clearErrors('input'));
 
@@ -2046,7 +2047,7 @@ describe('useForm', () => {
         }),
       );
       expect(result.current.errors.input?.nested).toBeDefined();
-      act(() => result.current.clearErrors('input.nested'));
+      act(() => result.current.clearErrors('input.nested', { exact: false }));
       expect(result.current.errors.input?.nested).toBeUndefined();
     });
 
@@ -2060,24 +2061,35 @@ describe('useForm', () => {
         message: 'message',
       };
 
-      act(() => result.current.setError('input', error));
-      act(() => result.current.setError('input1', error));
-      act(() => result.current.setError('input2', error));
+      act(() => {
+        result.current.register('input');
+        result.current.register('input1');
+        result.current.register('input2');
+        result.current.setError('input', error);
+        result.current.setError('input1', error);
+        result.current.setError('input2', error);
+      });
 
       const errors = {
         input: {
           ...error,
-          ref: undefined,
+          ref: {
+            name: 'input',
+          },
           types: undefined,
         },
         input1: {
           ...error,
-          ref: undefined,
+          ref: {
+            name: 'input1',
+          },
           types: undefined,
         },
         input2: {
           ...error,
-          ref: undefined,
+          ref: {
+            name: 'input2',
+          },
           types: undefined,
         },
       };
@@ -2129,13 +2141,15 @@ describe('useForm', () => {
 
       result.current.register('data');
 
-      act(() => result.current.setError('whatever', { type: 'missing' }));
+      act(() => {
+        result.current.setError('whatever', { type: 'missing' });
+      });
 
       await act(async () => await result.current.handleSubmit(submit)());
       expect(submit).not.toBeCalled();
 
       act(() => {
-        result.current.clearErrors('whatever');
+        result.current.clearErrors('whatever', { exact: false });
       });
 
       await act(async () => await result.current.handleSubmit(submit)());
