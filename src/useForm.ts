@@ -681,7 +681,7 @@ export function useForm<
 
   function clearErrors(
     name?: FieldName<TFieldValues> | FieldName<TFieldValues>[],
-    options: Partial<{ exact: boolean }> = { exact: true },
+    options: { exact: boolean } = { exact: true },
   ): void {
     name &&
       (isArray(name) ? name : [name]).forEach(
