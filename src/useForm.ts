@@ -683,8 +683,9 @@ export function useForm<
     name?: FieldName<TFieldValues> | FieldName<TFieldValues>[],
   ): void {
     name &&
-      (isArray(name) ? name : [name]).forEach((inputName) =>
-        unset(formState.errors, inputName),
+      (isArray(name) ? name : [name]).forEach(
+        (inputName) =>
+          fieldsRef.current[inputName] && unset(formState.errors, inputName),
       );
 
     updateFormState({
