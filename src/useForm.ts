@@ -175,7 +175,7 @@ export function useForm<
     (
       name: InternalFieldName<TFieldValues>,
       error: FlatFieldErrors<TFieldValues>,
-      shouldRender = false,
+      shouldRender: boolean | null = false,
       state: {
         dirtyFields?: FieldNames<TFieldValues>;
         isDirty?: boolean;
@@ -211,7 +211,10 @@ export function useForm<
         set(formStateRef.current.errors, name, error[name]);
       }
 
-      if (shouldReRender || !isEmptyObject(state)) {
+      if (
+        (shouldReRender && !isNullOrUndefined(shouldRender)) ||
+        !isEmptyObject(state)
+      ) {
         updateFormState({
           ...state,
           errors: formStateRef.current.errors,
@@ -330,7 +333,7 @@ export function useForm<
   const executeValidation = React.useCallback(
     async (
       name: InternalFieldName<TFieldValues>,
-      skipReRender?: boolean,
+      skipReRender?: boolean | null,
     ): Promise<boolean> => {
       if (fieldsRef.current[name]) {
         const error = await validateField<TFieldValues>(
@@ -411,8 +414,9 @@ export function useForm<
 
       if (isArray(fields)) {
         const result = await Promise.all(
-          fields.map(async (data) => await executeValidation(data, true)),
+          fields.map(async (data) => await executeValidation(data, null)),
         );
+        updateFormState();
         return result.every(Boolean);
       }
 
