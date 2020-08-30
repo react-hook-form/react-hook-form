@@ -54,16 +54,12 @@ const Controller = <
     unmountFieldsStateRef,
   } = control || methods.control;
   const isNotFieldArray = !isNameInFieldArray(fieldArrayNamesRef.current, name);
-  const getInitialValue = React.useCallback(
-    () =>
-      !isUndefined(get(unmountFieldsStateRef.current, name)) && isNotFieldArray
-        ? get(unmountFieldsStateRef.current, name)
-        : isUndefined(defaultValue)
-        ? get(defaultValuesRef.current, name)
-        : defaultValue,
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [],
-  );
+  const getInitialValue = () =>
+    !isUndefined(get(unmountFieldsStateRef.current, name)) && isNotFieldArray
+      ? get(unmountFieldsStateRef.current, name)
+      : isUndefined(defaultValue)
+      ? get(defaultValuesRef.current, name)
+      : defaultValue;
   const [value, setInputStateValue] = React.useState(getInitialValue());
   const valueRef = React.useRef(value);
   const onFocusRef = React.useRef(onFocus);
@@ -134,7 +130,7 @@ const Controller = <
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [rules, name, register, isNotFieldArray]);
+  }, [rules, name]);
 
   React.useEffect(
     () => () => {
