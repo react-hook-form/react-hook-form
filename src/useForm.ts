@@ -373,8 +373,8 @@ export function useForm<
             const error = get(errors, name);
 
             error
-              ? set(formState.errors, name, error)
-              : unset(formState.errors, name);
+              ? set(formStateRef.current.errors, name, error)
+              : unset(formStateRef.current.errors, name);
 
             return !error;
           })
@@ -400,7 +400,7 @@ export function useForm<
         return !error;
       }
     },
-    [shouldRenderBaseOnError, isValidateAllFieldCriteria, formState],
+    [shouldRenderBaseOnError, isValidateAllFieldCriteria],
   );
 
   const trigger = React.useCallback(
@@ -468,12 +468,7 @@ export function useForm<
 
       !shouldUnregister && set(unmountFieldsStateRef.current, name, value);
     },
-    [
-      updateAndGetDirtyState,
-      setFieldValue,
-      setInternalValues,
-      shouldUnregister,
-    ],
+    [updateAndGetDirtyState, setFieldValue, setInternalValues],
   );
 
   const isFieldWatched = (name: string) =>
@@ -682,7 +677,7 @@ export function useForm<
         }
       }
     },
-    [validateResolver, removeFieldEventListener, formState, shouldUnregister],
+    [validateResolver, removeFieldEventListener],
   );
 
   function clearErrors(
@@ -701,7 +696,10 @@ export function useForm<
     });
   }
 
-  function setError(name: FieldName<TFieldValues>, error: ErrorOption): void {
+  function setError(
+    name: FieldName<TFieldValues>,
+    error: ErrorOption = {},
+  ): void {
     set(formState.errors, name, {
       ...error,
       ref: (fieldsRef.current[name] || {})!.ref,
@@ -1014,7 +1012,7 @@ export function useForm<
             contextRef.current,
             isValidateAllFieldCriteria,
           );
-          formState.errors = errors;
+          formStateRef.current.errors = errors;
           fieldErrors = errors;
           fieldValues = values;
         } else {
@@ -1056,8 +1054,8 @@ export function useForm<
             e,
           );
         } else {
-          formState.errors = {
-            ...formState.errors,
+          formStateRef.current.errors = {
+            ...formStateRef.current.errors,
             ...fieldErrors,
           };
           if (onInvalid) {
@@ -1071,12 +1069,12 @@ export function useForm<
         updateFormState({
           isSubmitted: true,
           isSubmitting: false,
-          errors: formState.errors,
+          errors: formStateRef.current.errors,
           submitCount: formStateRef.current.submitCount + 1,
         });
       }
     },
-    [shouldFocusError, isValidateAllFieldCriteria, formState],
+    [shouldFocusError, isValidateAllFieldCriteria],
   );
 
   const resetRefs = ({
@@ -1187,12 +1185,8 @@ export function useForm<
     trigger,
     setValue: React.useCallback(setValue, [setInternalValue, trigger]),
     getValues: React.useCallback(getValues, []),
-
-    register: React.useCallback(register, [
-      defaultValuesRef.current,
-      registerFieldRef,
-    ]),
-    unregister: React.useCallback(unregister, [removeFieldEventListenerAndRef]),
+    register: React.useCallback(register, [defaultValuesRef.current]),
+    unregister: React.useCallback(unregister, []),
   };
 
   const control = {
@@ -1249,9 +1243,9 @@ export function useForm<
         })
       : formState,
     handleSubmit,
-    reset: React.useCallback(reset, [shouldUnregister]),
-    clearErrors: React.useCallback(clearErrors, [formState]),
-    setError: React.useCallback(setError, [formState]),
+    reset: React.useCallback(reset, []),
+    clearErrors: React.useCallback(clearErrors, []),
+    setError: React.useCallback(setError, []),
     errors: formState.errors,
     ...commonProps,
   };
