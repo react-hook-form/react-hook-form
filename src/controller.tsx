@@ -133,7 +133,8 @@ const Controller = <
         setInputStateValue(getInitialValue());
       }
     }
-  }, [rules, name, register]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [rules, name, register, isNotFieldArray]);
 
   React.useEffect(
     () => () => {

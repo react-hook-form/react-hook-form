@@ -154,8 +154,11 @@ export const useFieldArray = <
     }
   };
 
-  const cleanup = <T>(ref: T) =>
-    !filterOutFalsy(get(ref, name, [])).length && unset(ref, name);
+  const cleanup = React.useCallback(
+    <T>(ref: T) =>
+      !filterOutFalsy(get(ref, name, [])).length && unset(ref, name),
+    [name],
+  );
 
   const batchStateUpdate = React.useCallback(
     <T extends Function>(
@@ -228,7 +231,15 @@ export const useFieldArray = <
         touched,
       });
     },
-    [],
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [
+      cleanup,
+      dirtyFields,
+      errors,
+      fieldArrayDefaultValues,
+      touched,
+      updateFormState,
+    ],
   );
 
   const append = (
@@ -411,33 +422,34 @@ export const useFieldArray = <
     }
 
     focusIndexRef.current = -1;
-  }, [
-    fields,
-    name,
-    fieldArrayDefaultValues,
-    fieldsRef,
-    watchFieldsRef,
-    isWatchAllRef,
-  ]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [fields, name, fieldArrayDefaultValues]);
 
   React.useEffect(() => {
     const resetFunctions = resetFieldArrayFunctionRef.current;
+    const fieldArrayNames = fieldArrayNamesRef.current;
     resetFunctions[name] = reset;
 
     return () => {
       resetFields();
       delete resetFunctions[name];
-      fieldArrayNamesRef.current.delete(name);
+      fieldArrayNames.delete(name);
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return {
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     swap: React.useCallback(swap, [name, errors]),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     move: React.useCallback(move, [name, errors]),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     prepend: React.useCallback(prepend, [name, errors]),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     append: React.useCallback(append, [name, errors, fields]),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     remove: React.useCallback(remove, [fields, name, errors]),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     insert: React.useCallback(insert, [name, errors]),
     fields,
   };
