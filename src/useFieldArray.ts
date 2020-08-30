@@ -424,15 +424,10 @@ export const useFieldArray = <
 
   return {
     swap: React.useCallback(swap, [name, errors]),
-
     move: React.useCallback(move, [name, errors]),
-
     prepend: React.useCallback(prepend, [name, errors]),
-
     append: React.useCallback(append, [name, errors, fields]),
-
     remove: React.useCallback(remove, [name, errors, fields]),
-
     insert: React.useCallback(insert, [name, errors]),
     fields,
   };
