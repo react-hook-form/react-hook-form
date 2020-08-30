@@ -718,7 +718,7 @@ export function useForm<
 
     set(formState.errors, name, {
       ...(error || {}),
-      ref: (fieldsRef.current[name] || {})!.ref,
+      ref: fieldsRef.current[name]!.ref,
     });
 
     updateFormState({
