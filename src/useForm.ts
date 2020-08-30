@@ -696,7 +696,10 @@ export function useForm<
     });
   }
 
-  function setError(name: FieldName<TFieldValues>, error: ErrorOption): void {
+  function setError(
+    name: FieldName<TFieldValues>,
+    error: ErrorOption = {},
+  ): void {
     set(formState.errors, name, {
       ...error,
       ref: (fieldsRef.current[name] || {})!.ref,

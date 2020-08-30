@@ -160,7 +160,7 @@ export type ErrorOption =
     }
   | {
       message?: Message;
-      type: LiteralUnion<keyof ValidationRules, string>;
+      type?: LiteralUnion<keyof ValidationRules, string>;
     };
 
 export type Field = {
