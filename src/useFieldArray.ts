@@ -154,11 +154,8 @@ export const useFieldArray = <
     }
   };
 
-  const cleanup = React.useCallback(
-    <T>(ref: T) =>
-      !filterOutFalsy(get(ref, name, [])).length && unset(ref, name),
-    [name],
-  );
+  const cleanup = <T>(ref: T) =>
+    !filterOutFalsy(get(ref, name, [])).length && unset(ref, name);
 
   const batchStateUpdate = <T extends Function>(
     method: T,
