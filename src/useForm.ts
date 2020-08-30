@@ -711,7 +711,7 @@ export function useForm<
     if (process.env.NODE_ENV !== 'production') {
       if (!fieldsRef.current[name]) {
         return console.warn(
-          `📋 Field ${name} is not found. https://react-hook-form.com/api#useForm`,
+          `📋 Field ${name} is not found. https://react-hook-form.com/api#setError`,
         );
       }
     }
