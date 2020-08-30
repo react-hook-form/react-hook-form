@@ -1079,40 +1079,37 @@ export function useForm<
     [shouldFocusError, isValidateAllFieldCriteria, formState],
   );
 
-  const resetRefs = React.useCallback(
-    ({
-      errors,
-      isDirty,
-      isSubmitted,
-      touched,
-      isValid,
-      submitCount,
-      dirtyFields,
-    }: OmitResetState) => {
-      if (!isValid) {
-        validFieldsRef.current = new Set();
-        fieldsWithValidationRef.current = new Set();
-      }
+  const resetRefs = ({
+    errors,
+    isDirty,
+    isSubmitted,
+    touched,
+    isValid,
+    submitCount,
+    dirtyFields,
+  }: OmitResetState) => {
+    if (!isValid) {
+      validFieldsRef.current = new Set();
+      fieldsWithValidationRef.current = new Set();
+    }
 
-      defaultValuesAtRenderRef.current = {} as DefaultValuesAtRender<
-        TFieldValues
-      >;
-      fieldArrayDefaultValues.current = {};
-      watchFieldsRef.current = new Set();
-      isWatchAllRef.current = false;
+    defaultValuesAtRenderRef.current = {} as DefaultValuesAtRender<
+      TFieldValues
+    >;
+    fieldArrayDefaultValues.current = {};
+    watchFieldsRef.current = new Set();
+    isWatchAllRef.current = false;
 
-      updateFormState({
-        isDirty: isDirty ? formStateRef.current.isDirty : false,
-        isSubmitted: isSubmitted ? formStateRef.current.isSubmitted : false,
-        submitCount: submitCount ? formStateRef.current.submitCount : 0,
-        isValid: isValid ? formStateRef.current.isValid : true,
-        dirtyFields: dirtyFields ? formStateRef.current.dirtyFields : {},
-        touched: touched ? formStateRef.current.touched : {},
-        errors: errors ? formState.errors : {},
-      });
-    },
-    [formState],
-  );
+    updateFormState({
+      isDirty: isDirty ? formStateRef.current.isDirty : false,
+      isSubmitted: isSubmitted ? formStateRef.current.isSubmitted : false,
+      submitCount: submitCount ? formStateRef.current.submitCount : 0,
+      isValid: isValid ? formStateRef.current.isValid : true,
+      dirtyFields: dirtyFields ? formStateRef.current.dirtyFields : {},
+      touched: touched ? formStateRef.current.touched : {},
+      errors: errors ? formState.errors : {},
+    });
+  };
 
   const reset = (
     values?: UnpackNestedValue<DeepPartial<TFieldValues>>,
@@ -1252,7 +1249,7 @@ export function useForm<
         })
       : formState,
     handleSubmit,
-    reset: React.useCallback(reset, [shouldUnregister, resetRefs]),
+    reset: React.useCallback(reset, [shouldUnregister]),
     clearErrors: React.useCallback(clearErrors, [formState]),
     setError: React.useCallback(setError, [formState]),
     errors: formState.errors,
