@@ -53,10 +53,7 @@ const Controller = <
     fieldArrayNamesRef,
     unmountFieldsStateRef,
   } = control || methods.control;
-  const isNotFieldArray = React.useMemo(
-    () => !isNameInFieldArray(fieldArrayNamesRef.current, name),
-    [name],
-  );
+  const isNotFieldArray = !isNameInFieldArray(fieldArrayNamesRef.current, name);
   const getInitialValue = React.useCallback(
     () =>
       !isUndefined(get(unmountFieldsStateRef.current, name)) && isNotFieldArray
