@@ -1010,7 +1010,7 @@ describe('useForm', () => {
 
           React.useEffect(() => {
             setValue('test', 'abc');
-          }, []);
+          }, [setValue]);
 
           return watch('test');
         });

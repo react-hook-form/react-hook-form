@@ -157,76 +157,79 @@ export const useFieldArray = <
   const cleanup = <T>(ref: T) =>
     !filterOutFalsy(get(ref, name, [])).length && unset(ref, name);
 
-  const batchStateUpdate = <T extends Function>(
-    method: T,
-    args: {
-      argA?: unknown;
-      argB?: unknown;
-      argC?: unknown;
-      argD?: unknown;
+  const batchStateUpdate = React.useCallback(
+    <T extends Function>(
+      method: T,
+      args: {
+        argA?: unknown;
+        argB?: unknown;
+        argC?: unknown;
+        argD?: unknown;
+      },
+      isDirty = true,
+      shouldSet = true,
+      shouldUpdateValid = false,
+    ) => {
+      if (get(fieldArrayDefaultValues.current, name)) {
+        const output = method(
+          get(fieldArrayDefaultValues.current, name),
+          args.argA,
+          args.argB,
+        );
+        shouldSet && set(fieldArrayDefaultValues.current, name, output);
+        cleanup(fieldArrayDefaultValues.current);
+      }
+
+      if (isArray(get(errors, name))) {
+        const output = method(get(errors, name), args.argA, args.argB);
+        shouldSet && set(errors, name, output);
+        cleanup(errors);
+      }
+
+      if (readFormStateRef.current.touched && get(touched, name)) {
+        const output = method(get(touched, name), args.argA, args.argB);
+        shouldSet && set(touched, name, output);
+        cleanup(touched);
+      }
+
+      if (
+        readFormStateRef.current.dirtyFields ||
+        readFormStateRef.current.isDirty
+      ) {
+        const output = method(get(dirtyFields, name, []), args.argC, args.argD);
+        shouldSet && set(dirtyFields, name, output);
+        cleanup(dirtyFields);
+      }
+
+      if (
+        shouldUpdateValid &&
+        readFormStateRef.current.isValid &&
+        !validateResolver
+      ) {
+        set(
+          validFieldsRef.current,
+          name,
+          method(get(validFieldsRef.current, name, []), args.argA),
+        );
+        cleanup(validFieldsRef.current);
+
+        set(
+          fieldsWithValidationRef.current,
+          name,
+          method(get(fieldsWithValidationRef.current, name, []), args.argA),
+        );
+        cleanup(fieldsWithValidationRef.current);
+      }
+
+      updateFormState({
+        errors,
+        dirtyFields,
+        isDirty,
+        touched,
+      });
     },
-    isDirty = true,
-    shouldSet = true,
-    shouldUpdateValid = false,
-  ) => {
-    if (get(fieldArrayDefaultValues.current, name)) {
-      const output = method(
-        get(fieldArrayDefaultValues.current, name),
-        args.argA,
-        args.argB,
-      );
-      shouldSet && set(fieldArrayDefaultValues.current, name, output);
-      cleanup(fieldArrayDefaultValues.current);
-    }
-
-    if (isArray(get(errors, name))) {
-      const output = method(get(errors, name), args.argA, args.argB);
-      shouldSet && set(errors, name, output);
-      cleanup(errors);
-    }
-
-    if (readFormStateRef.current.touched && get(touched, name)) {
-      const output = method(get(touched, name), args.argA, args.argB);
-      shouldSet && set(touched, name, output);
-      cleanup(touched);
-    }
-
-    if (
-      readFormStateRef.current.dirtyFields ||
-      readFormStateRef.current.isDirty
-    ) {
-      const output = method(get(dirtyFields, name, []), args.argC, args.argD);
-      shouldSet && set(dirtyFields, name, output);
-      cleanup(dirtyFields);
-    }
-
-    if (
-      shouldUpdateValid &&
-      readFormStateRef.current.isValid &&
-      !validateResolver
-    ) {
-      set(
-        validFieldsRef.current,
-        name,
-        method(get(validFieldsRef.current, name, []), args.argA),
-      );
-      cleanup(validFieldsRef.current);
-
-      set(
-        fieldsWithValidationRef.current,
-        name,
-        method(get(fieldsWithValidationRef.current, name, []), args.argA),
-      );
-      cleanup(fieldsWithValidationRef.current);
-    }
-
-    updateFormState({
-      errors,
-      dirtyFields,
-      isDirty,
-      touched,
-    });
-  };
+    [],
+  );
 
   const append = (
     value: Partial<TFieldArrayValues> | Partial<TFieldArrayValues>[],

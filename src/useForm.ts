@@ -400,7 +400,12 @@ export function useForm<
         return !error;
       }
     },
-    [shouldRenderBaseOnError, isValidateAllFieldCriteria],
+    [
+      shouldRenderBaseOnError,
+      isValidateAllFieldCriteria,
+      updateFormState,
+      formState,
+    ],
   );
 
   const trigger = React.useCallback(
@@ -468,7 +473,12 @@ export function useForm<
 
       !shouldUnregister && set(unmountFieldsStateRef.current, name, value);
     },
-    [updateAndGetDirtyState, setFieldValue, setInternalValues],
+    [
+      updateAndGetDirtyState,
+      setFieldValue,
+      setInternalValues,
+      shouldUnregister,
+    ],
   );
 
   const isFieldWatched = (name: string) =>
@@ -677,7 +687,13 @@ export function useForm<
         }
       }
     },
-    [validateResolver, removeFieldEventListener],
+    [
+      validateResolver,
+      removeFieldEventListener,
+      formState,
+      updateFormState,
+      shouldUnregister,
+    ],
   );
 
   function clearErrors(
@@ -1071,40 +1087,43 @@ export function useForm<
         });
       }
     },
-    [shouldFocusError, isValidateAllFieldCriteria],
+    [shouldFocusError, isValidateAllFieldCriteria, formState, updateFormState],
   );
 
-  const resetRefs = ({
-    errors,
-    isDirty,
-    isSubmitted,
-    touched,
-    isValid,
-    submitCount,
-    dirtyFields,
-  }: OmitResetState) => {
-    if (!isValid) {
-      validFieldsRef.current = new Set();
-      fieldsWithValidationRef.current = new Set();
-    }
+  const resetRefs = React.useCallback(
+    ({
+      errors,
+      isDirty,
+      isSubmitted,
+      touched,
+      isValid,
+      submitCount,
+      dirtyFields,
+    }: OmitResetState) => {
+      if (!isValid) {
+        validFieldsRef.current = new Set();
+        fieldsWithValidationRef.current = new Set();
+      }
 
-    defaultValuesAtRenderRef.current = {} as DefaultValuesAtRender<
-      TFieldValues
-    >;
-    fieldArrayDefaultValues.current = {};
-    watchFieldsRef.current = new Set();
-    isWatchAllRef.current = false;
+      defaultValuesAtRenderRef.current = {} as DefaultValuesAtRender<
+        TFieldValues
+      >;
+      fieldArrayDefaultValues.current = {};
+      watchFieldsRef.current = new Set();
+      isWatchAllRef.current = false;
 
-    updateFormState({
-      isDirty: isDirty ? formStateRef.current.isDirty : false,
-      isSubmitted: isSubmitted ? formStateRef.current.isSubmitted : false,
-      submitCount: submitCount ? formStateRef.current.submitCount : 0,
-      isValid: isValid ? formStateRef.current.isValid : true,
-      dirtyFields: dirtyFields ? formStateRef.current.dirtyFields : {},
-      touched: touched ? formStateRef.current.touched : {},
-      errors: errors ? formState.errors : {},
-    });
-  };
+      updateFormState({
+        isDirty: isDirty ? formStateRef.current.isDirty : false,
+        isSubmitted: isSubmitted ? formStateRef.current.isSubmitted : false,
+        submitCount: submitCount ? formStateRef.current.submitCount : 0,
+        isValid: isValid ? formStateRef.current.isValid : true,
+        dirtyFields: dirtyFields ? formStateRef.current.dirtyFields : {},
+        touched: touched ? formStateRef.current.touched : {},
+        errors: errors ? formState.errors : {},
+      });
+    },
+    [formState, updateFormState],
+  );
 
   const reset = (
     values?: UnpackNestedValue<DeepPartial<TFieldValues>>,
@@ -1180,10 +1199,18 @@ export function useForm<
 
   const commonProps = {
     trigger,
-    setValue: React.useCallback(setValue, [setInternalValue, trigger]),
+    setValue: React.useCallback(setValue, [
+      setInternalValue,
+      trigger,
+      updateFormState,
+    ]),
     getValues: React.useCallback(getValues, []),
-    register: React.useCallback(register, [defaultValuesRef.current]),
-    unregister: React.useCallback(unregister, []),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    register: React.useCallback(register, [
+      defaultValuesRef.current,
+      registerFieldRef,
+    ]),
+    unregister: React.useCallback(unregister, [removeFieldEventListenerAndRef]),
   };
 
   const control = {
@@ -1240,7 +1267,7 @@ export function useForm<
         })
       : formState,
     handleSubmit,
-    reset: React.useCallback(reset, []),
+    reset: React.useCallback(reset, [shouldUnregister, resetRefs]),
     clearErrors: React.useCallback(clearErrors, [updateFormState, formState]),
     setError: React.useCallback(setError, [updateFormState, formState]),
     errors: formState.errors,
