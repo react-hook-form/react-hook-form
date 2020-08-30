@@ -1,5 +1,18 @@
 # Changelog
 
+## [6.7.0] - 2020-08-30
+
+### Added
+
+- `clearError` have second option argument for clear errors which are exact or key name
+
+```ts
+register('test.firstName', { required: true });
+register('test.lastName', { required: true });
+clearErrors('test', { exact: false }); // will clear both errors from test.firstName and test.lastName
+clearErrors('test.firstName'); // for clear single input error
+```
+
 ## [6.6.0] - 2020-08-28
 
 ### Changed
