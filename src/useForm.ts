@@ -223,7 +223,7 @@ export function useForm<
         });
       }
     },
-    [],
+    [updateFormState],
   );
 
   const setFieldValue = React.useCallback(
@@ -328,7 +328,7 @@ export function useForm<
 
       return isChanged ? state : {};
     },
-    [],
+    [updateFormState],
   );
 
   const executeValidation = React.useCallback(
@@ -423,7 +423,7 @@ export function useForm<
 
       return await executeValidation(fields);
     },
-    [executeSchemaOrResolverValidation, executeValidation],
+    [executeSchemaOrResolverValidation, executeValidation, updateFormState],
   );
 
   const setInternalValues = React.useCallback(
@@ -637,7 +637,7 @@ export function useForm<
         });
       }
     },
-    [isValidateAllFieldCriteria],
+    [isValidateAllFieldCriteria, updateFormState],
   );
 
   const removeFieldEventListener = React.useCallback(
@@ -696,10 +696,7 @@ export function useForm<
     });
   }
 
-  function setError(
-    name: FieldName<TFieldValues>,
-    error: ErrorOption = {},
-  ): void {
+  function setError(name: FieldName<TFieldValues>, error: ErrorOption): void {
     set(formState.errors, name, {
       ...error,
       ref: (fieldsRef.current[name] || {})!.ref,
@@ -1244,8 +1241,8 @@ export function useForm<
       : formState,
     handleSubmit,
     reset: React.useCallback(reset, []),
-    clearErrors: React.useCallback(clearErrors, []),
-    setError: React.useCallback(setError, []),
+    clearErrors: React.useCallback(clearErrors, [updateFormState, formState]),
+    setError: React.useCallback(setError, [updateFormState, formState]),
     errors: formState.errors,
     ...commonProps,
   };
