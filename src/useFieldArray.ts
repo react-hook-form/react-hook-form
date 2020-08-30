@@ -437,7 +437,7 @@ export const useFieldArray = <
     // eslint-disable-next-line react-hooks/exhaustive-deps
     append: React.useCallback(append, [name, errors, fields]),
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    remove: React.useCallback(remove, [fields, name, errors]),
+    remove: React.useCallback(remove, [name, errors, fields]),
     // eslint-disable-next-line react-hooks/exhaustive-deps
     insert: React.useCallback(insert, [name, errors]),
     fields,
