@@ -684,17 +684,6 @@ export function useForm<
     name?: FieldName<TFieldValues> | FieldName<TFieldValues>[],
     config: ClearErrorsConfig = { exact: true },
   ): void {
-    if (process.env.NODE_ENV !== 'production') {
-      name &&
-        (isArray(name) ? name : [name]).forEach((inputName) => {
-          if (config.exact && !fieldsRef.current[inputName]) {
-            console.warn(
-              `📋 Field ${inputName} is not found (by default search name is exact). https://react-hook-form.com/api#clearErrors`,
-            );
-          }
-        });
-    }
-
     name &&
       (isArray(name) ? name : [name]).forEach(
         (inputName) =>
@@ -711,14 +700,6 @@ export function useForm<
     name: FieldName<TFieldValues>,
     error: ErrorOption = {},
   ): void {
-    if (process.env.NODE_ENV !== 'production') {
-      if (!fieldsRef.current[name]) {
-        return console.warn(
-          `📋 Field ${name} is not found. https://react-hook-form.com/api#setError`,
-        );
-      }
-    }
-
     set(formState.errors, name, {
       ...error,
       ref: (fieldsRef.current[name] || {})!.ref,
