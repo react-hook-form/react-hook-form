@@ -707,7 +707,10 @@ export function useForm<
     });
   }
 
-  function setError(name: FieldName<TFieldValues>, error?: ErrorOption): void {
+  function setError(
+    name: FieldName<TFieldValues>,
+    error: ErrorOption = {},
+  ): void {
     if (process.env.NODE_ENV !== 'production') {
       if (!fieldsRef.current[name]) {
         return console.warn(
@@ -717,7 +720,7 @@ export function useForm<
     }
 
     set(formState.errors, name, {
-      ...(error || {}),
+      ...error,
       ref: fieldsRef.current[name]!.ref,
     });
 
