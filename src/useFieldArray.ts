@@ -408,7 +408,6 @@ export const useFieldArray = <
     }
 
     focusIndexRef.current = -1;
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [fields, name, fieldArrayDefaultValues]);
 
   React.useEffect(() => {
@@ -421,21 +420,19 @@ export const useFieldArray = <
       delete resetFunctions[name];
       fieldArrayNames.delete(name);
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return {
-    // eslint-disable-next-line react-hooks/exhaustive-deps
     swap: React.useCallback(swap, [name, errors]),
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+
     move: React.useCallback(move, [name, errors]),
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+
     prepend: React.useCallback(prepend, [name, errors]),
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+
     append: React.useCallback(append, [name, errors, fields]),
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+
     remove: React.useCallback(remove, [name, errors, fields]),
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+
     insert: React.useCallback(insert, [name, errors]),
     fields,
   };

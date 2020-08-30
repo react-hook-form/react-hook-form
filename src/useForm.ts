@@ -223,7 +223,7 @@ export function useForm<
         });
       }
     },
-    [updateFormState],
+    [],
   );
 
   const setFieldValue = React.useCallback(
@@ -328,7 +328,7 @@ export function useForm<
 
       return isChanged ? state : {};
     },
-    [updateFormState],
+    [],
   );
 
   const executeValidation = React.useCallback(
@@ -400,12 +400,7 @@ export function useForm<
         return !error;
       }
     },
-    [
-      shouldRenderBaseOnError,
-      isValidateAllFieldCriteria,
-      updateFormState,
-      formState,
-    ],
+    [shouldRenderBaseOnError, isValidateAllFieldCriteria, formState],
   );
 
   const trigger = React.useCallback(
@@ -428,7 +423,7 @@ export function useForm<
 
       return await executeValidation(fields);
     },
-    [executeSchemaOrResolverValidation, executeValidation, updateFormState],
+    [executeSchemaOrResolverValidation, executeValidation],
   );
 
   const setInternalValues = React.useCallback(
@@ -647,7 +642,7 @@ export function useForm<
         });
       }
     },
-    [isValidateAllFieldCriteria, updateFormState],
+    [isValidateAllFieldCriteria],
   );
 
   const removeFieldEventListener = React.useCallback(
@@ -687,13 +682,7 @@ export function useForm<
         }
       }
     },
-    [
-      validateResolver,
-      removeFieldEventListener,
-      formState,
-      updateFormState,
-      shouldUnregister,
-    ],
+    [validateResolver, removeFieldEventListener, formState, shouldUnregister],
   );
 
   function clearErrors(
@@ -1087,7 +1076,7 @@ export function useForm<
         });
       }
     },
-    [shouldFocusError, isValidateAllFieldCriteria, formState, updateFormState],
+    [shouldFocusError, isValidateAllFieldCriteria, formState],
   );
 
   const resetRefs = React.useCallback(
@@ -1122,7 +1111,7 @@ export function useForm<
         errors: errors ? formState.errors : {},
       });
     },
-    [formState, updateFormState],
+    [formState],
   );
 
   const reset = (
@@ -1199,13 +1188,9 @@ export function useForm<
 
   const commonProps = {
     trigger,
-    setValue: React.useCallback(setValue, [
-      setInternalValue,
-      trigger,
-      updateFormState,
-    ]),
+    setValue: React.useCallback(setValue, [setInternalValue, trigger]),
     getValues: React.useCallback(getValues, []),
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+
     register: React.useCallback(register, [
       defaultValuesRef.current,
       registerFieldRef,
@@ -1268,8 +1253,8 @@ export function useForm<
       : formState,
     handleSubmit,
     reset: React.useCallback(reset, [shouldUnregister, resetRefs]),
-    clearErrors: React.useCallback(clearErrors, [updateFormState, formState]),
-    setError: React.useCallback(setError, [updateFormState, formState]),
+    clearErrors: React.useCallback(clearErrors, [formState]),
+    setError: React.useCallback(setError, [formState]),
     errors: formState.errors,
     ...commonProps,
   };
