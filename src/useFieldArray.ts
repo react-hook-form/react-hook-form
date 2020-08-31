@@ -244,7 +244,11 @@ export const useFieldArray = <
       readFormStateRef.current.isDirty
     ) {
       set(dirtyFields, name, [
-        ...get(dirtyFields, name, fillEmptyArray(fields)),
+        ...get(
+          dirtyFields,
+          name,
+          fillEmptyArray(new Array(allFields.current.length)),
+        ),
         ...filterBooleanArray(value),
       ]);
       updateFormState({
@@ -426,8 +430,8 @@ export const useFieldArray = <
     swap: React.useCallback(swap, [name, errors]),
     move: React.useCallback(move, [name, errors]),
     prepend: React.useCallback(prepend, [name, errors]),
-    append: React.useCallback(append, [name, errors, fields]),
-    remove: React.useCallback(remove, [name, errors, fields]),
+    append: React.useCallback(append, [name, errors]),
+    remove: React.useCallback(remove, [name, errors]),
     insert: React.useCallback(insert, [name, errors]),
     fields,
   };
