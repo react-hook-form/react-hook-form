@@ -51,5 +51,22 @@ describe('deepMerge', () => {
     expect(deepMerge([{ hey: 'test' }], [{ id: 'id', text: '' }])).toEqual([
       { hey: 'test', id: 'id', text: '' },
     ]);
+
+    expect(deepMerge([{ id: 'id', text: '' }], [{ hey: 'test' }])).toEqual([
+      { hey: 'test', id: 'id', text: '' },
+    ]);
+
+    expect(
+      deepMerge(
+        {
+          test: [{ id: 'id', text: '' }],
+        },
+        {
+          test: [{ hey: 'test' }],
+        },
+      ),
+    ).toEqual({
+      test: [{ hey: 'test', id: 'id', text: '' }],
+    });
   });
 });
