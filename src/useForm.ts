@@ -68,6 +68,7 @@ import {
   LiteralToPrimitive,
   DeepPartial,
   NonUndefined,
+  ClearErrorsConfig,
 } from './types';
 
 const isWindowUndefined = typeof window === UNDEFINED;
@@ -175,7 +176,7 @@ export function useForm<
     (
       name: InternalFieldName<TFieldValues>,
       error: FlatFieldErrors<TFieldValues>,
-      shouldRender = false,
+      shouldRender: boolean | null = false,
       state: {
         dirtyFields?: FieldNames<TFieldValues>;
         isDirty?: boolean;
@@ -211,7 +212,10 @@ export function useForm<
         set(formStateRef.current.errors, name, error[name]);
       }
 
-      if (shouldReRender || !isEmptyObject(state)) {
+      if (
+        (shouldReRender && !isNullOrUndefined(shouldRender)) ||
+        !isEmptyObject(state)
+      ) {
         updateFormState({
           ...state,
           errors: formStateRef.current.errors,
@@ -253,9 +257,11 @@ export function useForm<
         options.length > 1
           ? options.forEach(
               ({ ref: checkboxRef }) =>
-                (checkboxRef.checked = String(
-                  value as string | boolean,
-                ).includes(checkboxRef.value)),
+                (checkboxRef.checked = isArray(value)
+                  ? !!(value as []).find(
+                      (data: string) => data === checkboxRef.value,
+                    )
+                  : value === checkboxRef.value),
             )
           : (options[0].ref.checked = !!value);
       } else {
@@ -328,7 +334,7 @@ export function useForm<
   const executeValidation = React.useCallback(
     async (
       name: InternalFieldName<TFieldValues>,
-      skipReRender?: boolean,
+      skipReRender?: boolean | null,
     ): Promise<boolean> => {
       if (fieldsRef.current[name]) {
         const error = await validateField<TFieldValues>(
@@ -367,8 +373,8 @@ export function useForm<
             const error = get(errors, name);
 
             error
-              ? set(formState.errors, name, error)
-              : unset(formState.errors, name);
+              ? set(formStateRef.current.errors, name, error)
+              : unset(formStateRef.current.errors, name);
 
             return !error;
           })
@@ -376,7 +382,7 @@ export function useForm<
 
         updateFormState({
           isValid: isEmptyObject(errors),
-          errors: formState.errors,
+          errors: formStateRef.current.errors,
         });
 
         return isInputsValid;
@@ -409,8 +415,9 @@ export function useForm<
 
       if (isArray(fields)) {
         const result = await Promise.all(
-          fields.map(async (data) => await executeValidation(data, true)),
+          fields.map(async (data) => await executeValidation(data, null)),
         );
+        updateFormState();
         return result.every(Boolean);
       }
 
@@ -459,7 +466,7 @@ export function useForm<
         setInternalValues(name, value, config);
       }
 
-      set(unmountFieldsStateRef.current, name, value);
+      !shouldUnregister && set(unmountFieldsStateRef.current, name, value);
     },
     [updateAndGetDirtyState, setFieldValue, setInternalValues],
   );
@@ -655,12 +662,12 @@ export function useForm<
           unset(validFieldsRef.current, field.ref.name);
           unset(fieldsWithValidationRef.current, field.ref.name);
           unset(defaultValuesAtRenderRef.current, field.ref.name);
-          unset(formState.errors, field.ref.name);
+          unset(formStateRef.current.errors, field.ref.name);
           unset(formStateRef.current.dirtyFields, field.ref.name);
           unset(formStateRef.current.touched, field.ref.name);
 
           updateFormState({
-            errors: formState.errors,
+            errors: formStateRef.current.errors,
             isDirty: !isEmptyObject(formStateRef.current.dirtyFields),
             dirtyFields: formStateRef.current.dirtyFields,
             touched: formStateRef.current.touched,
@@ -675,26 +682,32 @@ export function useForm<
 
   function clearErrors(
     name?: FieldName<TFieldValues> | FieldName<TFieldValues>[],
+    config: ClearErrorsConfig = { exact: true },
   ): void {
     name &&
-      (isArray(name) ? name : [name]).forEach((inputName) =>
-        unset(formState.errors, inputName),
+      (isArray(name) ? name : [name]).forEach(
+        (inputName) =>
+          (fieldsRef.current[inputName] || !config.exact) &&
+          unset(formStateRef.current.errors, inputName),
       );
 
     updateFormState({
-      errors: name ? formState.errors : {},
+      errors: name ? formStateRef.current.errors : {},
     });
   }
 
-  function setError(name: FieldName<TFieldValues>, error: ErrorOption): void {
-    set(formState.errors, name, {
+  function setError(
+    name: FieldName<TFieldValues>,
+    error: ErrorOption = {},
+  ): void {
+    set(formStateRef.current.errors, name, {
       ...error,
       ref: (fieldsRef.current[name] || {})!.ref,
     });
 
     updateFormState({
       isValid: false,
-      errors: formState.errors,
+      errors: formStateRef.current.errors,
     });
   }
 
@@ -999,7 +1012,7 @@ export function useForm<
             contextRef.current,
             isValidateAllFieldCriteria,
           );
-          formState.errors = errors;
+          formStateRef.current.errors = errors;
           fieldErrors = errors;
           fieldValues = values;
         } else {
@@ -1020,7 +1033,7 @@ export function useForm<
                 set(fieldErrors, name, fieldError[name]);
                 unset(validFieldsRef.current, name);
               } else if (get(fieldsWithValidationRef.current, name)) {
-                unset(formState.errors, name);
+                unset(formStateRef.current.errors, name);
                 set(validFieldsRef.current, name, true);
               }
             }
@@ -1029,7 +1042,7 @@ export function useForm<
 
         if (
           isEmptyObject(fieldErrors) &&
-          Object.keys(formState.errors).every((name) =>
+          Object.keys(formStateRef.current.errors).every((name) =>
             Object.keys(fieldsRef.current).includes(name),
           )
         ) {
@@ -1041,8 +1054,8 @@ export function useForm<
             e,
           );
         } else {
-          formState.errors = {
-            ...formState.errors,
+          formStateRef.current.errors = {
+            ...formStateRef.current.errors,
             ...fieldErrors,
           };
           if (onInvalid) {
@@ -1056,7 +1069,7 @@ export function useForm<
         updateFormState({
           isSubmitted: true,
           isSubmitting: false,
-          errors: formState.errors,
+          errors: formStateRef.current.errors,
           submitCount: formStateRef.current.submitCount + 1,
         });
       }
@@ -1092,7 +1105,7 @@ export function useForm<
       isValid: isValid ? formStateRef.current.isValid : true,
       dirtyFields: dirtyFields ? formStateRef.current.dirtyFields : {},
       touched: touched ? formStateRef.current.touched : {},
-      errors: errors ? formState.errors : {},
+      errors: errors ? formStateRef.current.errors : {},
     });
   };
 
@@ -1165,7 +1178,7 @@ export function useForm<
   if (!resolver && readFormStateRef.current.isValid) {
     formState.isValid =
       deepEqual(validFieldsRef.current, fieldsWithValidationRef.current) &&
-      isEmptyObject(formState.errors);
+      isEmptyObject(formStateRef.current.errors);
   }
 
   const commonProps = {

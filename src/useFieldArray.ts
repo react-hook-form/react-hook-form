@@ -416,25 +416,18 @@ export const useFieldArray = <
     }
 
     focusIndexRef.current = -1;
-  }, [
-    fields,
-    name,
-    fieldArrayDefaultValues,
-    fieldsRef,
-    watchFieldsRef,
-    isWatchAllRef,
-  ]);
+  }, [fields, name, fieldArrayDefaultValues]);
 
   React.useEffect(() => {
     const resetFunctions = resetFieldArrayFunctionRef.current;
+    const fieldArrayNames = fieldArrayNamesRef.current;
     resetFunctions[name] = reset;
 
     return () => {
       resetFields();
       delete resetFunctions[name];
-      fieldArrayNamesRef.current.delete(name);
+      fieldArrayNames.delete(name);
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return {
@@ -442,7 +435,7 @@ export const useFieldArray = <
     move: React.useCallback(move, [name, errors]),
     prepend: React.useCallback(prepend, [name, errors]),
     append: React.useCallback(append, [name, errors, fields]),
-    remove: React.useCallback(remove, [fields, name, errors]),
+    remove: React.useCallback(remove, [name, errors, fields]),
     insert: React.useCallback(insert, [name, errors]),
     fields: shouldUnregister
       ? fields

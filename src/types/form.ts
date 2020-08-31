@@ -160,7 +160,7 @@ export type ErrorOption =
     }
   | {
       message?: Message;
-      type: LiteralUnion<keyof ValidationRules, string>;
+      type?: LiteralUnion<keyof ValidationRules, string>;
     };
 
 export type Field = {
@@ -194,6 +194,10 @@ export type SetValueConfig = Partial<{
   shouldValidate: boolean;
   shouldDirty: boolean;
 }>;
+
+export type ClearErrorsConfig = {
+  exact: boolean;
+};
 
 export type FormStateProxy<TFieldValues extends FieldValues = FieldValues> = {
   isDirty: boolean;
@@ -353,7 +357,10 @@ export type UseFormMethods<TFieldValues extends FieldValues = FieldValues> = {
     defaultValues?: UnpackNestedValue<DeepPartial<TFieldValues>>,
   ): UnpackNestedValue<DeepPartial<TFieldValues>>;
   setError(name: FieldName<TFieldValues>, error: ErrorOption): void;
-  clearErrors(name?: FieldName<TFieldValues> | FieldName<TFieldValues>[]): void;
+  clearErrors(
+    name?: FieldName<TFieldValues> | FieldName<TFieldValues>[],
+    config?: ClearErrorsConfig,
+  ): void;
   setValue<
     TFieldName extends string,
     TFieldValue extends TFieldValues[TFieldName]
