@@ -28,6 +28,7 @@ export default <TFieldValues extends FieldValues>(
       output[name as InternalFieldName<TFieldValues>] = getFieldValue(
         fieldsRef,
         name,
+        undefined,
         excludeDisabled,
       );
     }

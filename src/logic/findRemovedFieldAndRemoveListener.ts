@@ -31,7 +31,7 @@ export default function findRemovedFieldAndRemoveListener<
   const fieldRef = fieldsRef.current[name] as Field;
 
   if (!shouldUnregister) {
-    const value = getFieldValue(fieldsRef, name, false, unmountFieldsStateRef);
+    const value = getFieldValue(fieldsRef, name, unmountFieldsStateRef);
 
     if (!isUndefined(value)) {
       set(unmountFieldsStateRef.current, name, value);
