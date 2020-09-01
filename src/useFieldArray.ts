@@ -247,7 +247,7 @@ export const useFieldArray = <
         ...get(
           dirtyFields,
           name,
-          fillEmptyArray(new Array(allFields.current.length)),
+          fillEmptyArray(allFields.current),
         ),
         ...filterBooleanArray(value),
       ]);
