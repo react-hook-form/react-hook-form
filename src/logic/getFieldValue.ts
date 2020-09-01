@@ -13,6 +13,7 @@ export default function getFieldValue<TFieldValues extends FieldValues>(
   fieldsRef: React.MutableRefObject<FieldRefs<TFieldValues>>,
   name: InternalFieldName<TFieldValues>,
   unmountFieldsStateRef?: React.MutableRefObject<Record<string, any>>,
+  excludeDisabled?: boolean,
 ) {
   const field = fieldsRef.current[name]!;
 
@@ -22,7 +23,7 @@ export default function getFieldValue<TFieldValues extends FieldValues>(
       ref,
     } = field;
 
-    if (disabled) {
+    if (disabled && excludeDisabled) {
       return;
     }
 
