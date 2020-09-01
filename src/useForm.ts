@@ -92,7 +92,7 @@ export function useForm<
   criteriaMode,
 }: UseFormOptions<TFieldValues, TContext> = {}): UseFormMethods<TFieldValues> {
   const fieldsRef = React.useRef<FieldRefs<TFieldValues>>({});
-  const fieldArrayDefaultValues = React.useRef<
+  const fieldArrayDefaultValuesRef = React.useRef<
     Record<InternalFieldName<FieldValues>, unknown[]>
   >({});
   const watchFieldsRef = React.useRef(
@@ -1096,7 +1096,7 @@ export function useForm<
     defaultValuesAtRenderRef.current = {} as DefaultValuesAtRender<
       TFieldValues
     >;
-    fieldArrayDefaultValues.current = {};
+    fieldArrayDefaultValuesRef.current = {};
     watchFieldsRef.current = new Set();
     isWatchAllRef.current = false;
 
@@ -1206,7 +1206,7 @@ export function useForm<
     resetFieldArrayFunctionRef,
     watchFieldsHookRef,
     watchFieldsHookRenderRef,
-    fieldArrayDefaultValues,
+    fieldArrayDefaultValuesRef,
     validFieldsRef,
     fieldsWithValidationRef,
     fieldArrayNamesRef,
