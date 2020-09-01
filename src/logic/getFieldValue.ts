@@ -12,6 +12,7 @@ import { FieldRefs, FieldValues, InternalFieldName } from '../types';
 export default function getFieldValue<TFieldValues extends FieldValues>(
   fieldsRef: React.MutableRefObject<FieldRefs<TFieldValues>>,
   name: InternalFieldName<TFieldValues>,
+  excludeDisabled?: boolean,
   unmountFieldsStateRef?: React.MutableRefObject<Record<string, any>>,
 ) {
   const field = fieldsRef.current[name]!;
@@ -22,7 +23,7 @@ export default function getFieldValue<TFieldValues extends FieldValues>(
       ref,
     } = field;
 
-    if (disabled) {
+    if (disabled && excludeDisabled) {
       return;
     }
 

@@ -184,7 +184,12 @@ export default async <TFieldValues extends FieldValues>(
   }
 
   if (validate) {
-    const fieldValue = getFieldsValue(fieldsRef, name, unmountFieldsStateRef);
+    const fieldValue = getFieldsValue(
+      fieldsRef,
+      name,
+      false,
+      unmountFieldsStateRef,
+    );
     const validateRef = isRadioOrCheckbox && options ? options[0].ref : ref;
 
     if (isFunction(validate)) {

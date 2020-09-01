@@ -290,7 +290,7 @@ export function useForm<
 
       const isFieldDirty =
         defaultValuesAtRenderRef.current[name] !==
-        getFieldValue(fieldsRef, name, unmountFieldsStateRef);
+        getFieldValue(fieldsRef, name, false, unmountFieldsStateRef);
       const isDirtyFieldExist = get(formStateRef.current.dirtyFields, name);
       const isFieldArray = isNameInFieldArray(fieldArrayNamesRef.current, name);
       const previousIsDirty = formStateRef.current.isDirty;
@@ -601,14 +601,18 @@ export function useForm<
   ): UnpackNestedValue<Pick<TFieldValues, TFieldName>>;
   function getValues(payload?: string | string[]): unknown {
     if (isString(payload)) {
-      return getFieldValue(fieldsRef, payload, unmountFieldsStateRef);
+      return getFieldValue(fieldsRef, payload, false, unmountFieldsStateRef);
     }
 
     if (isArray(payload)) {
       const data = {};
 
       for (const name of payload) {
-        set(data, name, getFieldValue(fieldsRef, name, unmountFieldsStateRef));
+        set(
+          data,
+          name,
+          getFieldValue(fieldsRef, name, false, unmountFieldsStateRef),
+        );
       }
 
       return data;
@@ -726,6 +730,7 @@ export function useForm<
       const fieldValues = getFieldsValues<TFieldValues>(
         fieldsRef,
         unmountFieldsStateRef,
+        false,
         fieldNames,
       );
 
@@ -931,7 +936,12 @@ export function useForm<
       !defaultValuesAtRenderRef.current[name] &&
       !(isFieldArray && isEmptyDefaultValue)
     ) {
-      const fieldValue = getFieldValue(fieldsRef, name, unmountFieldsStateRef);
+      const fieldValue = getFieldValue(
+        fieldsRef,
+        name,
+        false,
+        unmountFieldsStateRef,
+      );
       defaultValuesAtRenderRef.current[name] = isEmptyDefaultValue
         ? isObject(fieldValue)
           ? { ...fieldValue }
@@ -997,6 +1007,7 @@ export function useForm<
       let fieldValues: FieldValues = getFieldsValues(
         fieldsRef,
         unmountFieldsStateRef,
+        true,
       );
 
       if (readFormStateRef.current.isSubmitting) {
