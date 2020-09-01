@@ -405,6 +405,7 @@ describe('Controller', () => {
   it('should be null if as and render props are not given', () => {
     const Component = () => {
       const { control } = useForm();
+      // @ts-ignore
       return <Controller defaultValue="" name="test" control={control} />;
     };
 
@@ -655,6 +656,7 @@ describe('Controller', () => {
       const Component = () => {
         const { control } = useForm();
         return (
+          // @ts-ignore
           <Controller
             as={'input' as const}
             render={() => <input />}
@@ -684,6 +686,7 @@ describe('Controller', () => {
       const Component = () => {
         const { control } = useForm();
         return (
+          // @ts-ignore
           <Controller
             as={'input' as const}
             render={() => <input />}
@@ -725,6 +728,7 @@ describe('Controller', () => {
           <form>
             {fields.map(({ id }, index) => {
               return (
+                // @ts-ignore
                 <Controller
                   name={`test[${index}].data`}
                   control={control}
@@ -767,6 +771,7 @@ describe('Controller', () => {
           <form>
             {fields.map(({ id }, index) => {
               return (
+                // @ts-ignore
                 <Controller
                   name={`test[${index}].data`}
                   control={control}

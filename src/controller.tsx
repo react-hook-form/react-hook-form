@@ -181,7 +181,7 @@ const Controller = <
   return as
     ? React.isValidElement(as)
       ? React.cloneElement(as, props)
-      : React.createElement(as as string, props)
+      : React.createElement(as as string, props as any)
     : render
     ? render({
         onChange,
