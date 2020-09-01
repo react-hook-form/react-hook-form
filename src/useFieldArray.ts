@@ -413,7 +413,10 @@ export const useFieldArray = <
   React.useEffect(() => {
     const resetFunctions = resetFieldArrayFunctionRef.current;
     const fieldArrayNames = fieldArrayNamesRef.current;
-    resetFunctions[name] = reset;
+
+    if (!getFieldArrayParentName(name)) {
+      resetFunctions[name] = reset;
+    }
 
     return () => {
       resetFields();
