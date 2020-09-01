@@ -44,6 +44,7 @@ describe('getFieldsValues', () => {
           },
         },
         { current: {} },
+        false,
         'test',
       ),
     ).toEqual({
@@ -71,6 +72,7 @@ describe('getFieldsValues', () => {
           },
         },
         { current: {} },
+        false,
         ['test', 'tex'],
       ),
     ).toEqual({

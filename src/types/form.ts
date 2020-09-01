@@ -272,7 +272,7 @@ export type Control<TFieldValues extends FieldValues = FieldValues> = Pick<
     readonly isReValidateOnBlur: boolean;
     readonly isReValidateOnChange: boolean;
   };
-  fieldArrayDefaultValues: React.MutableRefObject<
+  fieldArrayDefaultValuesRef: React.MutableRefObject<
     Record<FieldArrayName, any[]>
   >;
   shouldUnregister: boolean;

@@ -18,7 +18,7 @@ export const reconfigureControl = (
   fieldsWithValidationRef: {
     current: new Set(),
   },
-  fieldArrayDefaultValues: {
+  fieldArrayDefaultValuesRef: {
     current: {},
   },
   watchFieldsRef: {
@@ -32,7 +32,6 @@ export const reconfigureControl = (
   },
   watchInternal: jest.fn(),
   validateResolver: jest.fn(),
-  reRender: jest.fn(),
   setValue: jest.fn(),
   getValues: jest.fn(),
   register: jest.fn(),

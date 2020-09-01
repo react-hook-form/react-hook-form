@@ -72,8 +72,9 @@ export const useFieldArray = <
     fieldsRef,
     defaultValuesRef,
     removeFieldEventListener,
+    formStateRef,
     formStateRef: {
-      current: { dirtyFields, touched, errors },
+      current: { dirtyFields, touched },
     },
     shouldUnregister,
     unmountFieldsStateRef,
@@ -82,7 +83,7 @@ export const useFieldArray = <
     watchFieldsRef,
     validFieldsRef,
     fieldsWithValidationRef,
-    fieldArrayDefaultValues,
+    fieldArrayDefaultValuesRef,
     validateResolver,
     renderWatchedInputs,
     getValues,
@@ -90,8 +91,8 @@ export const useFieldArray = <
 
   const rootParentName = getFieldArrayParentName(name);
   const getDefaultValues = () => [
-    ...(get(fieldArrayDefaultValues.current, rootParentName)
-      ? get(fieldArrayDefaultValues.current, name, [])
+    ...(get(fieldArrayDefaultValuesRef.current, rootParentName)
+      ? get(fieldArrayDefaultValuesRef.current, name, [])
       : get(defaultValuesRef.current, name, [])),
   ];
   const memoizedDefaultValues = React.useRef<Partial<TFieldArrayValues>[]>(
@@ -115,9 +116,9 @@ export const useFieldArray = <
   allFields.current = fields;
   fieldArrayNamesRef.current.add(name);
 
-  if (!get(fieldArrayDefaultValues.current, rootParentName)) {
+  if (!get(fieldArrayDefaultValuesRef.current, rootParentName)) {
     set(
-      fieldArrayDefaultValues.current,
+      fieldArrayDefaultValuesRef.current,
       rootParentName,
       get(defaultValuesRef.current, rootParentName),
     );
@@ -176,20 +177,24 @@ export const useFieldArray = <
       method(get(unmountFieldsStateRef.current, name), args.argA, args.argB);
     }
 
-    if (get(fieldArrayDefaultValues.current, name)) {
+    if (get(fieldArrayDefaultValuesRef.current, name)) {
       const output = method(
-        get(fieldArrayDefaultValues.current, name),
+        get(fieldArrayDefaultValuesRef.current, name),
         args.argA,
         args.argB,
       );
-      shouldSet && set(fieldArrayDefaultValues.current, name, output);
-      cleanup(fieldArrayDefaultValues.current);
+      shouldSet && set(fieldArrayDefaultValuesRef.current, name, output);
+      cleanup(fieldArrayDefaultValuesRef.current);
     }
 
-    if (isArray(get(errors, name))) {
-      const output = method(get(errors, name), args.argA, args.argB);
-      shouldSet && set(errors, name, output);
-      cleanup(errors);
+    if (isArray(get(formStateRef.current.errors, name))) {
+      const output = method(
+        get(formStateRef.current.errors, name),
+        args.argA,
+        args.argB,
+      );
+      shouldSet && set(formStateRef.current.errors, name, output);
+      cleanup(formStateRef.current.errors);
     }
 
     if (readFormStateRef.current.touched && get(touched, name)) {
@@ -228,7 +233,7 @@ export const useFieldArray = <
     }
 
     updateFormState({
-      errors,
+      errors: formStateRef.current.errors,
       dirtyFields,
       isDirty,
       touched,
@@ -251,7 +256,7 @@ export const useFieldArray = <
       readFormStateRef.current.isDirty
     ) {
       set(dirtyFields, name, [
-        ...get(dirtyFields, name, fillEmptyArray(fields)),
+        ...get(dirtyFields, name, fillEmptyArray(allFields.current)),
         ...filterBooleanArray(value),
       ]);
       updateFormState({
@@ -373,18 +378,18 @@ export const useFieldArray = <
 
   const reset = () => {
     resetFields();
-    unset(fieldArrayDefaultValues.current, name);
+    unset(fieldArrayDefaultValuesRef.current, name);
     unset(unmountFieldsStateRef.current, name);
     memoizedDefaultValues.current = get(defaultValuesRef.current, name);
     setFields(mapIds(memoizedDefaultValues.current, keyName));
   };
 
   React.useEffect(() => {
-    const defaultValues = get(fieldArrayDefaultValues.current, name);
+    const defaultValues = get(fieldArrayDefaultValuesRef.current, name);
 
     if (defaultValues && fields.length < defaultValues.length) {
       defaultValues.pop();
-      set(fieldArrayDefaultValues.current, name, defaultValues);
+      set(fieldArrayDefaultValuesRef.current, name, defaultValues);
     }
 
     if (isWatchAllRef.current) {
@@ -416,12 +421,15 @@ export const useFieldArray = <
     }
 
     focusIndexRef.current = -1;
-  }, [fields, name, fieldArrayDefaultValues]);
+  }, [fields, name]);
 
   React.useEffect(() => {
     const resetFunctions = resetFieldArrayFunctionRef.current;
     const fieldArrayNames = fieldArrayNamesRef.current;
-    resetFunctions[name] = reset;
+
+    if (!getFieldArrayParentName(name)) {
+      resetFunctions[name] = reset;
+    }
 
     return () => {
       resetFields();
@@ -431,12 +439,12 @@ export const useFieldArray = <
   }, []);
 
   return {
-    swap: React.useCallback(swap, [name, errors]),
-    move: React.useCallback(move, [name, errors]),
-    prepend: React.useCallback(prepend, [name, errors]),
-    append: React.useCallback(append, [name, errors, fields]),
-    remove: React.useCallback(remove, [name, errors, fields]),
-    insert: React.useCallback(insert, [name, errors]),
+    swap: React.useCallback(swap, [name]),
+    move: React.useCallback(move, [name]),
+    prepend: React.useCallback(prepend, [name]),
+    append: React.useCallback(append, [name]),
+    remove: React.useCallback(remove, [name]),
+    insert: React.useCallback(insert, [name]),
     fields: shouldUnregister
       ? fields
       : (deepMerge(

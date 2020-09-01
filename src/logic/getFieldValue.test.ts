@@ -161,4 +161,24 @@ describe('getFieldValue', () => {
       ),
     ).toEqual('data');
   });
+
+  it('should not return value when the input is disabled', () => {
+    expect(
+      getFieldValue(
+        {
+          current: {
+            test: {
+              ref: {
+                disabled: true,
+                type: 'radio',
+              },
+            },
+          },
+        },
+        'test',
+        {},
+        true,
+      ),
+    ).toEqual(undefined);
+  });
 });
