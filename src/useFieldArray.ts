@@ -413,7 +413,7 @@ export const useFieldArray = <
     }
 
     focusIndexRef.current = -1;
-  }, [fields, name, fieldArrayDefaultValuesRef]);
+  }, [fields, name]);
 
   React.useEffect(() => {
     const resetFunctions = resetFieldArrayFunctionRef.current;
