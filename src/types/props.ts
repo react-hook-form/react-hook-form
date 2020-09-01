@@ -34,19 +34,26 @@ export type ControllerProps<
     | 'textarea',
   TControl extends Control = Control
 > = Assign<
-  {
+  (
+    | {
+        as: TAs;
+        render?: undefined;
+      }
+    | {
+        as?: undefined;
+        render: (data: {
+          onChange: (...event: any[]) => void;
+          onBlur: () => void;
+          value: any;
+          name: FieldName<FieldValuesFromControl<TControl>>;
+        }) => React.ReactElement;
+      }
+  ) & {
     name: FieldName<FieldValuesFromControl<TControl>>;
-    as?: TAs;
     rules?: ValidationRules;
     onFocus?: () => void;
     defaultValue?: unknown;
     control?: TControl;
-    render?: (data: {
-      onChange: (...event: any[]) => void;
-      onBlur: () => void;
-      value: any;
-      name: FieldName<FieldValuesFromControl<TControl>>;
-    }) => React.ReactElement;
   },
   AsProps<TAs>
 >;
