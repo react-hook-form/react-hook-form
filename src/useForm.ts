@@ -118,7 +118,7 @@ export function useForm<
   const handleChangeRef = React.useRef<HandleChange>();
   const unmountFieldsStateRef = React.useRef<
     Record<InternalFieldName<FieldValues>, unknown>
-  >({});
+  >(shouldUnregister ? {} : defaultValues);
   const resetFieldArrayFunctionRef = React.useRef<
     Record<InternalFieldName<FieldValues>, () => void>
   >({});
