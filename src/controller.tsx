@@ -92,6 +92,7 @@ const Controller = <
       isSubmitted,
       isTouched: !!get(touched, name),
       ...mode,
+      isTouched: !!get(touched, name),
     });
 
   const commonTask = ([event]: any[]) => {
