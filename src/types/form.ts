@@ -249,6 +249,7 @@ export type FormState<TFieldValues> = {
   isDirty: boolean;
   dirtyFields: FieldNames<TFieldValues>;
   isSubmitted: boolean;
+  isSuccessfullySubmitted: boolean;
   submitCount: number;
   touched: FieldNames<TFieldValues>;
   isSubmitting: boolean;

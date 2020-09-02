@@ -10,6 +10,7 @@ describe('form state', () => {
         touched: [],
         isDirty: false,
         isSubmitting: false,
+        isSuccessfullySubmitted: false,
         isValid: false,
       }),
     );
@@ -24,6 +25,7 @@ describe('form state', () => {
         touched: ['firstName'],
         isDirty: true,
         isSubmitting: false,
+        isSuccessfullySubmitted: false,
         isValid: false,
       }),
     );
@@ -37,6 +39,7 @@ describe('form state', () => {
         touched: ['firstName'],
         isDirty: false,
         isSubmitting: false,
+        isSuccessfullySubmitted: false,
         isValid: false,
       }),
     );
@@ -52,6 +55,7 @@ describe('form state', () => {
         touched: ['firstName', 'lastName'],
         isDirty: true,
         isSubmitting: false,
+        isSuccessfullySubmitted: false,
         isValid: false,
       }),
     );
@@ -67,6 +71,7 @@ describe('form state', () => {
         touched: ['firstName', 'lastName'],
         isDirty: true,
         isSubmitting: false,
+        isSuccessfullySubmitted: false,
         isValid: false,
       }),
     );
@@ -81,6 +86,7 @@ describe('form state', () => {
         touched: ['firstName', 'lastName'],
         isDirty: true,
         isSubmitting: false,
+        isSuccessfullySubmitted: true,
         isValid: true,
       }),
     );
@@ -98,6 +104,7 @@ describe('form state', () => {
         touched: [],
         isDirty: false,
         isSubmitting: false,
+        isSuccessfullySubmitted: false,
         isValid: false,
       }),
     );
@@ -112,6 +119,7 @@ describe('form state', () => {
         touched: ['firstName'],
         isDirty: true,
         isSubmitting: false,
+        isSuccessfullySubmitted: false,
         isValid: false,
       }),
     );
@@ -125,6 +133,7 @@ describe('form state', () => {
         touched: ['firstName'],
         isDirty: false,
         isSubmitting: false,
+        isSuccessfullySubmitted: false,
         isValid: false,
       }),
     );
@@ -140,6 +149,7 @@ describe('form state', () => {
         touched: ['firstName', 'lastName'],
         isDirty: true,
         isSubmitting: false,
+        isSuccessfullySubmitted: false,
         isValid: true,
       }),
     );
@@ -155,6 +165,7 @@ describe('form state', () => {
         touched: ['firstName', 'lastName'],
         isDirty: true,
         isSubmitting: false,
+        isSuccessfullySubmitted: false,
         isValid: false,
       }),
     );
@@ -169,6 +180,7 @@ describe('form state', () => {
         touched: ['firstName', 'lastName'],
         isDirty: true,
         isSubmitting: false,
+        isSuccessfullySubmitted: true,
         isValid: true,
       }),
     );
@@ -186,6 +198,7 @@ describe('form state', () => {
         touched: [],
         isDirty: false,
         isSubmitting: false,
+        isSuccessfullySubmitted: false,
         isValid: false,
       }),
     );
@@ -200,6 +213,7 @@ describe('form state', () => {
         touched: ['firstName'],
         isDirty: true,
         isSubmitting: false,
+        isSuccessfullySubmitted: false,
         isValid: false,
       }),
     );
@@ -213,6 +227,7 @@ describe('form state', () => {
         touched: ['firstName'],
         isDirty: false,
         isSubmitting: false,
+        isSuccessfullySubmitted: false,
         isValid: false,
       }),
     );
@@ -228,6 +243,7 @@ describe('form state', () => {
         touched: ['firstName', 'lastName'],
         isDirty: true,
         isSubmitting: false,
+        isSuccessfullySubmitted: false,
         isValid: true,
       }),
     );
@@ -243,6 +259,7 @@ describe('form state', () => {
         touched: ['firstName', 'lastName'],
         isDirty: true,
         isSubmitting: false,
+        isSuccessfullySubmitted: false,
         isValid: false,
       }),
     );
@@ -257,6 +274,7 @@ describe('form state', () => {
         touched: ['firstName', 'lastName'],
         isDirty: true,
         isSubmitting: false,
+        isSuccessfullySubmitted: true,
         isValid: true,
       }),
     );
@@ -278,6 +296,7 @@ describe('form state', () => {
         touched: ['firstName', 'lastName'],
         isDirty: true,
         isSubmitting: false,
+        isSuccessfullySubmitted: false,
         isValid: false,
       }),
     );
@@ -293,6 +312,7 @@ describe('form state', () => {
         touched: ['firstName', 'lastName'],
         isDirty: false,
         isSubmitting: false,
+        isSuccessfullySubmitted: false,
         isValid: false,
       }),
     );
@@ -307,6 +327,7 @@ describe('form state', () => {
         touched: ['firstName', 'lastName', 'select'],
         isDirty: true,
         isSubmitting: false,
+        isSuccessfullySubmitted: false,
         isValid: false,
       }),
     );
@@ -319,6 +340,7 @@ describe('form state', () => {
         touched: ['firstName', 'lastName', 'select'],
         isDirty: false,
         isSubmitting: false,
+        isSuccessfullySubmitted: false,
         isValid: false,
       }),
     );
@@ -333,6 +355,7 @@ describe('form state', () => {
         touched: ['firstName', 'lastName', 'select', 'checkbox'],
         isDirty: true,
         isSubmitting: false,
+        isSuccessfullySubmitted: false,
         isValid: false,
       }),
     );
@@ -346,6 +369,7 @@ describe('form state', () => {
         touched: ['firstName', 'lastName', 'select', 'checkbox'],
         isDirty: false,
         isSubmitting: false,
+        isSuccessfullySubmitted: false,
         isValid: false,
       }),
     );
@@ -366,6 +390,7 @@ describe('form state', () => {
         ],
         isDirty: true,
         isSubmitting: false,
+        isSuccessfullySubmitted: false,
         isValid: false,
       }),
     );
@@ -384,6 +409,7 @@ describe('form state', () => {
         ],
         isDirty: false,
         isSubmitting: false,
+        isSuccessfullySubmitted: false,
         isValid: false,
       }),
     );
@@ -405,6 +431,7 @@ describe('form state', () => {
         ],
         isDirty: true,
         isSubmitting: false,
+        isSuccessfullySubmitted: false,
         isValid: false,
       }),
     );
@@ -425,6 +452,7 @@ describe('form state', () => {
         ],
         isDirty: true,
         isSubmitting: false,
+        isSuccessfullySubmitted: false,
         isValid: false,
       }),
     );
@@ -446,6 +474,7 @@ describe('form state', () => {
         touched: ['firstName', 'lastName'],
         isDirty: true,
         isSubmitting: false,
+        isSuccessfullySubmitted: false,
         isValid: true,
       }),
     );
@@ -462,6 +491,7 @@ describe('form state', () => {
         touched: ['firstName', 'lastName'],
         isDirty: false,
         isSubmitting: false,
+        isSuccessfullySubmitted: false,
         isValid: false,
       }),
     );
@@ -483,6 +513,7 @@ describe('form state', () => {
         touched: ['firstName', 'lastName'],
         isDirty: true,
         isSubmitting: false,
+        isSuccessfullySubmitted: false,
         isValid: true,
       }),
     );
@@ -497,6 +528,7 @@ describe('form state', () => {
         touched: [],
         isDirty: false,
         isSubmitting: false,
+        isSuccessfullySubmitted: false,
         isValid: false,
       }),
     );
@@ -517,6 +549,7 @@ describe('form state', () => {
         touched: ['firstName', 'lastName'],
         isDirty: false,
         isSubmitting: false,
+        isSuccessfullySubmitted: false,
         isValid: false,
       }),
     );
