@@ -91,6 +91,7 @@ const Controller = <
       isReValidateOnChange,
       isSubmitted,
       ...mode,
+      isTouched: !!get(touched, name),
     });
 
   const commonTask = ([event]: any[]) => {
