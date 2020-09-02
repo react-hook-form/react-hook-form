@@ -90,8 +90,8 @@ const Controller = <
       isReValidateOnBlur,
       isReValidateOnChange,
       isSubmitted,
-      ...mode,
       isTouched: !!get(touched, name),
+      ...mode,
     });
 
   const commonTask = ([event]: any[]) => {
