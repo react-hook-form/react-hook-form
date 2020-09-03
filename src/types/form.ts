@@ -290,9 +290,7 @@ export type Control<TFieldValues extends FieldValues = FieldValues> = Pick<
   fieldArrayNamesRef: React.MutableRefObject<
     Set<InternalFieldName<FieldValues>>
   >;
-  readFormStateRef: React.MutableRefObject<
-    { [k in keyof FormStateProxy<TFieldValues>]: boolean }
-  >;
+  readFormStateRef: React.MutableRefObject<ReadFormState>;
   defaultValuesRef: React.MutableRefObject<
     | FieldValue<UnpackNestedValue<TFieldValues>>
     | UnpackNestedValue<DeepPartial<TFieldValues>>
