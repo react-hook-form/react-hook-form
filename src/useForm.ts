@@ -659,7 +659,7 @@ export function useForm<
       if (field) {
         removeFieldEventListener(field, forceDelete);
 
-        if (shouldUnregister) {
+        if (shouldUnregister && !filterOutFalsy(field.options || []).length) {
           unset(validFieldsRef.current, field.ref.name);
           unset(fieldsWithValidationRef.current, field.ref.name);
           unset(defaultValuesAtRenderRef.current, field.ref.name);
