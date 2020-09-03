@@ -90,6 +90,7 @@ const Controller = <
       isReValidateOnBlur,
       isReValidateOnChange,
       isSubmitted,
+      isTouched: !!get(touched, name),
       ...mode,
     });
 

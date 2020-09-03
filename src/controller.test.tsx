@@ -850,4 +850,45 @@ describe('Controller', () => {
     expect(screen.getAllByRole('textbox')[0]).toHaveValue('1');
     expect(screen.getAllByRole('textbox')[1]).toHaveValue('3');
   });
+
+  it('should validate input when input is touched and with onTouched mode', async () => {
+    let currentErrors: any = {};
+    const Component = () => {
+      const { errors, control } = useForm<{ test: string }>({
+        mode: 'onTouched',
+      });
+
+      currentErrors = errors;
+
+      return (
+        <form>
+          <Controller
+            name={'test'}
+            control={control}
+            defaultValue=""
+            rules={{ required: true }}
+            render={(props) => <input {...props} />}
+          />
+        </form>
+      );
+    };
+
+    render(<Component />);
+
+    const input = screen.getByRole('textbox');
+
+    await act(async () => {
+      fireEvent.blur(input);
+    });
+
+    expect(currentErrors.test).not.toBeUndefined();
+
+    await act(async () => {
+      fireEvent.input(input, {
+        target: { value: '1' },
+      });
+    });
+
+    expect(currentErrors.test).toBeUndefined();
+  });
 });
