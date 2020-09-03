@@ -1050,6 +1050,7 @@ export function useForm<
         ) {
           updateFormState({
             errors: {},
+            isSubmitting: true,
           });
           await onValid(
             fieldValues as UnpackNestedValue<TSubmitFieldValues>,
