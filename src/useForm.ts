@@ -69,6 +69,7 @@ import {
   DeepPartial,
   NonUndefined,
   ClearErrorsConfig,
+  Status,
 } from './types';
 
 const isWindowUndefined = typeof window === UNDEFINED;
@@ -139,10 +140,11 @@ export function useForm<
     submitCount: 0,
     touched: {},
     isSubmitting: false,
-    isSuccessfullySubmitted: false,
+    isSubmitSuccessfully: false,
     isValid: !isOnSubmit,
     errors: {},
   });
+  const statusRef = React.useRef<Status>(Status.DEFAULT);
   const readFormStateRef = React.useRef<ReadFormState>({
     isDirty: !isProxyEnabled,
     dirtyFields: !isProxyEnabled,
@@ -1001,6 +1003,7 @@ export function useForm<
         unmountFieldsStateRef,
         true,
       );
+      statusRef.current = Status.SUBMITTING;
 
       if (readFormStateRef.current.isSubmitting) {
         updateFormState({
@@ -1051,8 +1054,9 @@ export function useForm<
         ) {
           updateFormState({
             errors: {},
-            isSuccessfullySubmitted: true,
+            isSubmitSuccessfully: true,
           });
+          statusRef.current = Status.SUCCESS;
           await onValid(
             fieldValues as UnpackNestedValue<TSubmitFieldValues>,
             e,
@@ -1062,6 +1066,7 @@ export function useForm<
             ...formStateRef.current.errors,
             ...fieldErrors,
           };
+          statusRef.current = Status.ERROR;
           if (onInvalid) {
             await onInvalid(fieldErrors, e);
           }
@@ -1251,6 +1256,7 @@ export function useForm<
     clearErrors: React.useCallback(clearErrors, []),
     setError: React.useCallback(setError, []),
     errors: formState.errors,
+    status: statusRef.current,
     ...commonProps,
   };
 }

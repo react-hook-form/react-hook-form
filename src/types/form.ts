@@ -249,7 +249,7 @@ export type FormState<TFieldValues> = {
   isDirty: boolean;
   dirtyFields: FieldNames<TFieldValues>;
   isSubmitted: boolean;
-  isSuccessfullySubmitted: boolean;
+  isSubmitSuccessfully: boolean;
   submitCount: number;
   touched: FieldNames<TFieldValues>;
   isSubmitting: boolean;
@@ -327,6 +327,13 @@ export type UseWatchOptions = {
   control?: Control;
 };
 
+export enum Status {
+  SUBMITTING = 'submitting',
+  SUCCESS = 'success',
+  ERROR = 'error',
+  DEFAULT = '',
+}
+
 export type UseFormMethods<TFieldValues extends FieldValues = FieldValues> = {
   register<TFieldElement extends FieldElement<TFieldValues>>(
     rules?: ValidationRules,
@@ -394,4 +401,5 @@ export type UseFormMethods<TFieldValues extends FieldValues = FieldValues> = {
     onInvalid?: SubmitErrorHandler<TFieldValues>,
   ) => (e?: React.BaseSyntheticEvent) => Promise<void>;
   control: Control<TFieldValues>;
+  status: Status;
 };

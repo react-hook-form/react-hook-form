@@ -9,7 +9,7 @@ describe('ConditionalField', () => {
         touched: [],
         isDirty: false,
         isSubmitting: false,
-        isSuccessfullySubmitted: false,
+        isSubmitSuccessfully: false,
         isValid: false,
       });
     });
@@ -26,7 +26,7 @@ describe('ConditionalField', () => {
         touched: ['selectNumber', 'firstName', 'lastName'],
         isDirty: true,
         isSubmitting: false,
-        isSuccessfullySubmitted: false,
+        isSubmitSuccessfully: false,
         isValid: true,
       }),
     );
@@ -42,7 +42,7 @@ describe('ConditionalField', () => {
         touched: ['selectNumber', 'firstName', 'lastName'],
         isDirty: true,
         isSubmitting: false,
-        isSuccessfullySubmitted: true,
+        isSubmitSuccessfully: true,
         isValid: true,
       }),
     );
@@ -63,7 +63,7 @@ describe('ConditionalField', () => {
         touched: ['selectNumber'],
         isDirty: true,
         isSubmitting: false,
-        isSuccessfullySubmitted: true,
+        isSubmitSuccessfully: true,
         isValid: false,
       }),
     );
@@ -78,7 +78,7 @@ describe('ConditionalField', () => {
         touched: ['selectNumber', 'min', 'max'],
         isDirty: true,
         isSubmitting: false,
-        isSuccessfullySubmitted: true,
+        isSubmitSuccessfully: true,
         isValid: true,
       }),
     );
@@ -91,7 +91,7 @@ describe('ConditionalField', () => {
         touched: ['selectNumber', 'min', 'max'],
         isDirty: true,
         isSubmitting: false,
-        isSuccessfullySubmitted: true,
+        isSubmitSuccessfully: true,
         isValid: true,
       }),
     );
@@ -112,7 +112,7 @@ describe('ConditionalField', () => {
         touched: ['selectNumber'],
         isDirty: true,
         isSubmitting: false,
-        isSuccessfullySubmitted: true,
+        isSubmitSuccessfully: true,
         isValid: true,
       }),
     );
@@ -127,7 +127,7 @@ describe('ConditionalField', () => {
         touched: ['selectNumber', 'notRequired'],
         isDirty: true,
         isSubmitting: false,
-        isSuccessfullySubmitted: true,
+        isSubmitSuccessfully: true,
         isValid: true,
       }),
     );
