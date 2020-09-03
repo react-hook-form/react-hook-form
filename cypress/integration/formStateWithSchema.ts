@@ -528,7 +528,7 @@ describe('form state with schema validation', () => {
         touched: [],
         isDirty: false,
         isSubmitting: false,
-        isSuccessfullySubmitted: false,
+        isSubmitSuccessful: false,
         isValid: false,
       }),
     );
@@ -549,7 +549,7 @@ describe('form state with schema validation', () => {
         touched: ['firstName', 'lastName'],
         isDirty: false,
         isSubmitting: false,
-        isSuccessfullySubmitted: false,
+        isSubmitSuccessful: false,
         isValid: false,
       }),
     );
