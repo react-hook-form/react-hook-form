@@ -1206,7 +1206,7 @@ export function useForm<
     watch,
     control,
     formState: isProxyEnabled
-      ? new Proxy<FormState<TFieldValues>>(formState, {
+      ? new Proxy(formState, {
           get: (obj, prop: keyof FormStateProxy) => {
             if (
               process.env.NODE_ENV !== 'production' &&
