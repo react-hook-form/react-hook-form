@@ -447,9 +447,8 @@ export const useFieldArray = <
     insert: React.useCallback(insert, [name]),
     fields: shouldUnregister
       ? fields
-      : (deepMerge(
-          get(unmountFieldsStateRef.current, name),
-          fields.map(({ [keyName]: omitted, ...rest } = {}) => rest),
-        ) as Partial<ArrayField<TFieldArrayValues, TKeyName>>[]),
+      : (deepMerge(get(unmountFieldsStateRef.current, name), fields) as Partial<
+          ArrayField<TFieldArrayValues, TKeyName>
+        >[]),
   };
 };
