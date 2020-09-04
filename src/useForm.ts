@@ -802,7 +802,7 @@ export function useForm<
       if (
         fieldArrayNamesRef.current.has(ref.name.split(/\[\d+\]$/)[0]) &&
         !RegExp(
-          `^${ref.name.split(/\[\d+\]$/)[0]}[\\d+]\.\\w+`
+          `^${ref.name.split(/\[\d+\]$/)[0]}[\\d+].\\w+`
             .replace(/\[/g, '\\[')
             .replace(/\]/g, '\\]'),
         ).test(ref.name)
