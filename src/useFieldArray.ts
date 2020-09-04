@@ -1,7 +1,6 @@
 import * as React from 'react';
 import { useFormContext } from './useFormContext';
 import { isMatchFieldArrayName } from './logic/isNameInFieldArray';
-import { deepMerge } from './utils/deepMerge';
 import generateId from './logic/generateId';
 import deepEqual from './logic/deepEqual';
 import getFieldArrayParentName from './logic/getFieldArrayParentName';
@@ -76,7 +75,6 @@ export const useFieldArray = <
     formStateRef: {
       current: { dirtyFields, touched },
     },
-    shouldUnregister,
     unmountFieldsStateRef,
     updateFormState,
     readFormStateRef,
@@ -445,10 +443,6 @@ export const useFieldArray = <
     append: React.useCallback(append, [name]),
     remove: React.useCallback(remove, [name]),
     insert: React.useCallback(insert, [name]),
-    fields: shouldUnregister
-      ? fields
-      : (deepMerge(get(unmountFieldsStateRef.current, name), fields) as Partial<
-          ArrayField<TFieldArrayValues, TKeyName>
-        >[]),
+    fields,
   };
 };
