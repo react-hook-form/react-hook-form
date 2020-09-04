@@ -157,10 +157,12 @@ export type FieldError = {
 export type ErrorOption =
   | {
       types: MultipleFieldErrors;
+      shouldFocus?: boolean;
     }
   | {
       message?: Message;
       type?: LiteralUnion<keyof ValidationRules, string>;
+      shouldFocus?: boolean;
     };
 
 export type Field = {
