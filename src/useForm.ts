@@ -473,9 +473,7 @@ export function useForm<
           ];
 
           set(fieldArrayValues, name, value);
-          resetFieldArrayFunctionRef.current[name]({
-            ...fieldArrayValues,
-          });
+          resetFieldArrayFunctionRef.current[name](fieldArrayValues);
         }
       }
 
