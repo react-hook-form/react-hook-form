@@ -78,11 +78,13 @@ export type SubmitErrorHandler<TFieldValues extends FieldValues> = (
 export type ResolverSuccess<TFieldValues extends FieldValues = FieldValues> = {
   values: UnpackNestedValue<TFieldValues>;
   errors: EmptyObject;
+  warnings?: FieldWarnings<TFieldValues>;
 };
 
 export type ResolverError<TFieldValues extends FieldValues = FieldValues> = {
   values: EmptyObject;
   errors: FieldErrors<TFieldValues>;
+  warnings?: FieldWarnings<TFieldValues>;
 };
 
 export type ResolverResult<TFieldValues extends FieldValues = FieldValues> =
@@ -131,6 +133,8 @@ export type ValidateResult = Message | Message[] | boolean | undefined;
 
 export type Validate = (data: any) => ValidateResult | Promise<ValidateResult>;
 
+export type Warn = (data: any) => string | Promise<string>;
+
 export type ValidationRules = Partial<{
   required: Message | ValidationRule<boolean>;
   min: ValidationRule<number | string>;
@@ -139,6 +143,7 @@ export type ValidationRules = Partial<{
   minLength: ValidationRule<number | string>;
   pattern: ValidationRule<RegExp>;
   validate: Validate | Record<string, Validate>;
+  warn: Warn;
 }>;
 
 export type MultipleFieldErrors = {
@@ -153,6 +158,14 @@ export type FieldError = {
   types?: MultipleFieldErrors;
   message?: Message;
 };
+
+export type FieldWarning =
+  | {
+      message?: Message;
+    }
+  | {
+      messages?: Message[];
+    };
 
 export type ErrorOption =
   | {
@@ -175,6 +188,10 @@ export type FieldRefs<TFieldValues extends FieldValues> = Partial<
 export type FieldErrors<
   TFieldValues extends FieldValues = FieldValues
 > = DeepMap<TFieldValues, FieldError>;
+
+export type FieldWarnings<
+  TFieldValues extends FieldValues = FieldValues
+> = DeepMap<TFieldValues, FieldWarning>;
 
 export type FlatFieldErrors<TFieldValues extends FieldValues> = Partial<
   Record<InternalFieldName<TFieldValues>, FieldError>
@@ -254,6 +271,7 @@ export type FormState<TFieldValues> = {
   isSubmitting: boolean;
   isValid: boolean;
   errors: FieldErrors<TFieldValues>;
+  warnings: FieldWarnings<TFieldValues>;
 };
 
 export type Control<TFieldValues extends FieldValues = FieldValues> = Pick<

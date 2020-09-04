@@ -24,7 +24,9 @@ import {
   FieldError,
   InternalFieldName,
   FlatFieldErrors,
+  FieldWarning,
 } from '../types';
+import isArray from '../utils/isArray';
 
 export default async <TFieldValues extends FieldValues>(
   fieldsRef: React.MutableRefObject<FieldRefs<TFieldValues>>,
@@ -40,9 +42,14 @@ export default async <TFieldValues extends FieldValues>(
     max,
     pattern,
     validate,
+    warn,
   }: Field,
   unmountFieldsStateRef: React.MutableRefObject<Record<string, any>>,
-): Promise<FlatFieldErrors<TFieldValues>> => {
+): Promise<{
+  error: FlatFieldErrors<TFieldValues>;
+  warning?: FieldWarning;
+}> => {
+  let warning;
   const fields = fieldsRef.current;
   const name: InternalFieldName<TFieldValues> = ref.name;
   const error: FlatFieldErrors<TFieldValues> = {};
@@ -74,6 +81,15 @@ export default async <TFieldValues extends FieldValues>(
     };
   };
 
+  if (warn) {
+    const result = await warn(value);
+    warning = isString(result)
+      ? { message: result }
+      : isArray(result)
+      ? { messages: result }
+      : undefined;
+  }
+
   if (
     required &&
     ((!isRadio && !isCheckBox && (isEmpty || isNullOrUndefined(value))) ||
@@ -97,7 +113,7 @@ export default async <TFieldValues extends FieldValues>(
         ...appendErrorsCurry(INPUT_VALIDATION_RULES.required, requiredMessage),
       };
       if (!validateAllFieldCriteria) {
-        return error;
+        return { error, warning };
       }
     }
   }
@@ -137,7 +153,7 @@ export default async <TFieldValues extends FieldValues>(
         INPUT_VALIDATION_RULES.min,
       );
       if (!validateAllFieldCriteria) {
-        return error;
+        return { error, warning };
       }
     }
   }
@@ -160,7 +176,7 @@ export default async <TFieldValues extends FieldValues>(
     if (exceedMax || exceedMin) {
       getMinMaxMessage(!!exceedMax, maxLengthMessage, minLengthMessage);
       if (!validateAllFieldCriteria) {
-        return error;
+        return { error, warning };
       }
     }
   }
@@ -178,7 +194,7 @@ export default async <TFieldValues extends FieldValues>(
         ...appendErrorsCurry(INPUT_VALIDATION_RULES.pattern, patternMessage),
       };
       if (!validateAllFieldCriteria) {
-        return error;
+        return { error, warning };
       }
     }
   }
@@ -200,7 +216,7 @@ export default async <TFieldValues extends FieldValues>(
           ),
         };
         if (!validateAllFieldCriteria) {
-          return error;
+          return { error, warning };
         }
       }
     } else if (isObject(validate)) {
@@ -235,11 +251,11 @@ export default async <TFieldValues extends FieldValues>(
           ...validationResult,
         };
         if (!validateAllFieldCriteria) {
-          return error;
+          return { error, warning };
         }
       }
     }
   }
 
-  return error;
+  return { error, warning };
 };

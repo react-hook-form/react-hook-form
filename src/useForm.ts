@@ -69,6 +69,7 @@ import {
   DeepPartial,
   NonUndefined,
   ClearErrorsConfig,
+  FieldWarning,
 } from './types';
 
 const isWindowUndefined = typeof window === UNDEFINED;
@@ -141,6 +142,7 @@ export function useForm<
     isSubmitting: false,
     isValid: !isOnSubmit,
     errors: {},
+    warnings: {},
   });
   const readFormStateRef = React.useRef<ReadFormState>({
     isDirty: !isProxyEnabled,
@@ -183,6 +185,7 @@ export function useForm<
         touched?: FieldNames<TFieldValues>;
       } = {},
       isValid?: boolean,
+      warning?: FieldWarning,
     ): boolean | void => {
       let shouldReRender =
         shouldRender ||
@@ -192,7 +195,8 @@ export function useForm<
           name,
           validFields: validFieldsRef.current,
           fieldsWithValidation: fieldsWithValidationRef.current,
-        });
+        }) ||
+        get(formStateRef.current.warnings, name) !== warning;
       const previousError = get(formStateRef.current.errors, name);
 
       if (isEmptyObject(error)) {
@@ -216,9 +220,11 @@ export function useForm<
         (shouldReRender && !isNullOrUndefined(shouldRender)) ||
         !isEmptyObject(state)
       ) {
+        set(formStateRef.current.warnings, name, warning);
         updateFormState({
           ...state,
           errors: formStateRef.current.errors,
+          warnings: formStateRef.current.warnings,
           ...(resolverRef.current ? { isValid: !!isValid } : {}),
         });
       }
@@ -337,7 +343,7 @@ export function useForm<
       skipReRender?: boolean | null,
     ): Promise<boolean> => {
       if (fieldsRef.current[name]) {
-        const error = await validateField<TFieldValues>(
+        const { error } = await validateField<TFieldValues>(
           fieldsRef,
           isValidateAllFieldCriteria,
           fieldsRef.current[name] as Field,
@@ -360,7 +366,7 @@ export function useForm<
         | InternalFieldName<TFieldValues>
         | InternalFieldName<TFieldValues>[],
     ) => {
-      const { errors } = await resolverRef.current!(
+      const { errors, warnings } = await resolverRef.current!(
         getValues() as TFieldValues,
         contextRef.current,
         isValidateAllFieldCriteria,
@@ -383,6 +389,7 @@ export function useForm<
         updateFormState({
           isValid: isEmptyObject(errors),
           errors: formStateRef.current.errors,
+          warnings,
         });
 
         return isInputsValid;
@@ -523,6 +530,7 @@ export function useForm<
         const name = (target as Ref)!.name;
         const field = fieldsRef.current[name];
         let error: FlatFieldErrors<TFieldValues>;
+        let warning;
         let isValid;
 
         if (field) {
@@ -577,16 +585,26 @@ export function useForm<
               shouldRender = true;
             }
           } else {
-            error = await validateField<TFieldValues>(
+            const result = await validateField<TFieldValues>(
               fieldsRef,
               isValidateAllFieldCriteria,
               field,
               unmountFieldsStateRef,
             );
+
+            error = result.error;
+            warning = result.warning;
           }
 
           renderWatchedInputs(name);
-          shouldRenderBaseOnError(name, error, shouldRender, state, isValid);
+          shouldRenderBaseOnError(
+            name,
+            error,
+            shouldRender,
+            state,
+            isValid,
+            warning,
+          );
         }
       };
 
@@ -1024,15 +1042,15 @@ export function useForm<
                 ref: { name },
               } = field;
 
-              const fieldError = await validateField(
+              const { error } = await validateField(
                 fieldsRef,
                 isValidateAllFieldCriteria,
                 field,
                 unmountFieldsStateRef,
               );
 
-              if (fieldError[name]) {
-                set(fieldErrors, name, fieldError[name]);
+              if (error[name]) {
+                set(fieldErrors, name, error[name]);
                 unset(validFieldsRef.current, name);
               } else if (get(fieldsWithValidationRef.current, name)) {
                 unset(formStateRef.current.errors, name);
