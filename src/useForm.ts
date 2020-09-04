@@ -145,12 +145,9 @@ export function useForm<
   const readFormStateRef = React.useRef<ReadFormState>({
     isDirty: !isProxyEnabled,
     dirtyFields: !isProxyEnabled,
-    isSubmitted: isOnSubmit,
-    submitCount: !isProxyEnabled,
     touched: !isProxyEnabled || isOnTouch,
     isSubmitting: !isProxyEnabled,
     isValid: !isProxyEnabled,
-    errors: !isProxyEnabled,
   });
   const formStateRef = React.useRef(formState);
   const observerRef = React.useRef<MutationObserver | undefined>();
@@ -1050,6 +1047,7 @@ export function useForm<
         ) {
           updateFormState({
             errors: {},
+            isSubmitting: true,
           });
           await onValid(
             fieldValues as UnpackNestedValue<TSubmitFieldValues>,
@@ -1224,7 +1222,7 @@ export function useForm<
     watch,
     control,
     formState: isProxyEnabled
-      ? new Proxy<FormStateProxy<TFieldValues>>(formState, {
+      ? new Proxy(formState, {
           get: (obj, prop: keyof FormStateProxy) => {
             if (
               process.env.NODE_ENV !== 'production' &&
