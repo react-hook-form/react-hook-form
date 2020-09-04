@@ -808,11 +808,15 @@ describe('useForm', () => {
       result.current.register({ name: 'test[0].three' });
 
       act(() => {
-        result.current.setValue('test[0]', {
-          one: 'ONE',
-          two: 'TWO',
-          three: 'THREE',
-        });
+        result.current.setValue(
+          'test[0]',
+          {
+            one: 'ONE',
+            two: 'TWO',
+            three: 'THREE',
+          },
+          { exact: false },
+        );
       });
 
       expect(result.current.getValues()).toEqual({
@@ -911,7 +915,9 @@ describe('useForm', () => {
       result.current.register('test[1]');
       result.current.register('test[2]');
 
-      act(() => result.current.setValue('test', ['1', '2', '3']));
+      act(() =>
+        result.current.setValue('test', ['1', '2', '3'], { exact: false }),
+      );
 
       expect(result.current.control.fieldsRef.current['test[0]']).toEqual({
         ref: { name: 'test[0]', value: '1' },
@@ -932,11 +938,11 @@ describe('useForm', () => {
       result.current.register('test[2].test');
 
       act(() =>
-        result.current.setValue('test', [
-          { test: '1' },
-          { test: '2' },
-          { test: '3' },
-        ]),
+        result.current.setValue(
+          'test',
+          [{ test: '1' }, { test: '2' }, { test: '3' }],
+          { exact: false },
+        ),
       );
 
       expect(result.current.control.fieldsRef.current['test[0].test']).toEqual({
@@ -959,7 +965,11 @@ describe('useForm', () => {
       result.current.register('test.test');
 
       act(() =>
-        result.current.setValue('test', { bill: '1', luo: '2', test: '3' }),
+        result.current.setValue(
+          'test',
+          { bill: '1', luo: '2', test: '3' },
+          { exact: false },
+        ),
       );
       expect(result.current.control.fieldsRef.current['test.bill']).toEqual({
         ref: { name: 'test.bill', value: '1' },
