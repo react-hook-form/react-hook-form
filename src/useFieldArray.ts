@@ -23,6 +23,8 @@ import {
   UseFieldArrayOptions,
   Control,
   ArrayField,
+  UnpackNestedValue,
+  DeepPartial,
 } from './types';
 
 const appendId = <TValue extends object, TKeyName extends string>(
@@ -374,11 +376,13 @@ export const useFieldArray = <
     renderWatchedInputs(name);
   };
 
-  const reset = () => {
+  const reset = <TFieldValues>(
+    data?: UnpackNestedValue<DeepPartial<TFieldValues>>,
+  ) => {
     resetFields();
     unset(fieldArrayDefaultValuesRef.current, name);
     unset(unmountFieldsStateRef.current, name);
-    memoizedDefaultValues.current = get(defaultValuesRef.current, name);
+    memoizedDefaultValues.current = get(data || defaultValuesRef.current, name);
     setFields(mapIds(memoizedDefaultValues.current, keyName));
   };
 

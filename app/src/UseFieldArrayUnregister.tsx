@@ -32,6 +32,8 @@ const UseFieldArrayUnregister: React.FC = () => {
     control,
     handleSubmit,
     register,
+    setValue,
+    getValues,
     formState: { isDirty, touched, dirtyFields },
     errors,
   } = useForm<{
@@ -58,6 +60,9 @@ const UseFieldArrayUnregister: React.FC = () => {
   const [data, setData] = React.useState([]);
   const onSubmit = (data: any) => {
     setData(data);
+  };
+  const updateFieldArray = () => {
+    setValue('data', [...getValues().data, { name: 'test' }], { exact: false });
   };
 
   renderCount++;
@@ -141,6 +146,10 @@ const UseFieldArrayUnregister: React.FC = () => {
       </button>
 
       <button id="submit">Submit</button>
+
+      <button type={'button'} onClick={updateFieldArray}>
+        SetValue
+      </button>
 
       <div id="renderCount">{renderCount}</div>
       <div id="result">{JSON.stringify(data)}</div>

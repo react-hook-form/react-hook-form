@@ -193,6 +193,7 @@ export type Dirtied<TFieldValues extends FieldValues> = DeepMap<
 export type SetValueConfig = Partial<{
   shouldValidate: boolean;
   shouldDirty: boolean;
+  exact: boolean;
 }>;
 
 export type ClearErrorsConfig = {

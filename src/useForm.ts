@@ -120,7 +120,10 @@ export function useForm<
     Record<InternalFieldName<FieldValues>, unknown>
   >(shouldUnregister ? {} : defaultValues);
   const resetFieldArrayFunctionRef = React.useRef<
-    Record<InternalFieldName<FieldValues>, () => void>
+    Record<
+      InternalFieldName<FieldValues>,
+      (data?: UnpackNestedValue<DeepPartial<TFieldValues>>) => void
+    >
   >({});
   const contextRef = React.useRef(context);
   const resolverRef = React.useRef(resolver);
@@ -459,8 +462,22 @@ export function useForm<
       if (fieldsRef.current[name]) {
         setFieldValue(fieldsRef.current[name] as Field, value);
         config.shouldDirty && updateAndGetDirtyState(name);
-      } else if (!isPrimitive(value)) {
+      } else if (!config.exact && !isPrimitive(value)) {
         setInternalValues(name, value, config);
+
+        if (
+          isNameInFieldArray(fieldArrayNamesRef.current, name) ||
+          fieldArrayNamesRef.current.has(name)
+        ) {
+          const fieldArrayValues = getValues()[
+            getFieldArrayParentName(name) || name
+          ];
+
+          set(fieldArrayValues, name, value);
+          resetFieldArrayFunctionRef.current[name]({
+            ...fieldArrayValues,
+          });
+        }
       }
 
       !shouldUnregister && set(unmountFieldsStateRef.current, name, value);
@@ -499,7 +516,7 @@ export function useForm<
     value: NonUndefined<TFieldValue> extends NestedValue<infer U>
       ? U
       : UnpackNestedValue<DeepPartial<LiteralToPrimitive<TFieldValue>>>,
-    config: SetValueConfig = {},
+    config: SetValueConfig = { exact: true },
   ): void {
     setInternalValue(name, value as TFieldValues[string], config);
 
