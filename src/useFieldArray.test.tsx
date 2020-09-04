@@ -9,9 +9,8 @@ import {
 import { act, renderHook } from '@testing-library/react-hooks';
 import { useFieldArray } from './useFieldArray';
 import { useForm } from './useForm';
-import { DeepMap } from './types/utils';
 import * as generateId from './logic/generateId';
-import { Control, ValidationRules, FieldError } from './types';
+import { Control, ValidationRules, FieldError, DeepMap } from './types';
 import { VALIDATION_MODE } from './constants';
 import { FormProvider } from './useFormContext';
 
@@ -1660,9 +1659,7 @@ describe('useFieldArray', () => {
 
       fireEvent.click(screen.getByRole('button', { name: 'remove all' }));
 
-      expect(touched).toEqual({
-        test: [],
-      });
+      expect(touched).toEqual({});
     });
 
     it('should remove specific field if isValid is true', async () => {
@@ -3539,6 +3536,81 @@ describe('useFieldArray', () => {
   });
 
   describe('array of array fields', () => {
+    it('should prepend correctly with default values on nested array fields', () => {
+      const ChildComponent = ({
+        index,
+        control,
+      }: {
+        control: Control;
+        index: number;
+      }) => {
+        const { fields } = useFieldArray({
+          name: `nest.test[${index}].nestedArray`,
+          control,
+        });
+
+        return (
+          <>
+            {fields.map((item, i) => (
+              <input
+                key={item.id}
+                name={`nest.test[${index}].nestedArray[${i}].value`}
+                ref={control.register()}
+                defaultValue={item.value}
+              />
+            ))}
+          </>
+        );
+      };
+
+      const Component = () => {
+        const { register, control } = useForm({
+          defaultValues: {
+            nest: {
+              test: [
+                { value: '1', nestedArray: [{ value: '2' }, { value: '3' }] },
+                { value: '4', nestedArray: [{ value: '5' }] },
+              ],
+            },
+          },
+        });
+        const { fields, prepend } = useFieldArray({
+          name: 'nest.test',
+          control,
+        });
+
+        return (
+          <>
+            {fields.map((item, i) => (
+              <div key={item.id}>
+                <input
+                  name={`nest[${i}].value`}
+                  ref={register()}
+                  defaultValue={item.value}
+                />
+                <ChildComponent control={control} index={i} />
+              </div>
+            ))}
+
+            <button type={'button'} onClick={() => prepend({ value: 'test' })}>
+              prepend
+            </button>
+          </>
+        );
+      };
+
+      render(<Component />);
+
+      expect(screen.getAllByRole('textbox')).toHaveLength(5);
+
+      fireEvent.click(screen.getByRole('button', { name: /prepend/i }));
+
+      expect(screen.getAllByRole('textbox')).toHaveLength(6);
+
+      // @ts-ignore
+      expect(screen.getAllByRole('textbox')[0].value).toEqual('test');
+    });
+
     it('should render correct amount of child array fields', async () => {
       const ChildComponent = ({
         index,

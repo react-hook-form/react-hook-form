@@ -16,8 +16,8 @@ import {
   ErrorOption,
   FieldError,
   ValidationRules,
-} from './types/form';
-import { DeepMap } from './types/utils';
+  DeepMap,
+} from './types';
 import { perf, wait, PerfTools } from 'react-performance-testing';
 import 'jest-performance-testing';
 
@@ -612,6 +612,15 @@ describe('useForm', () => {
   });
 
   describe('setValue', () => {
+    it('should not setValue for unmounted state with shouldUnregister', () => {
+      const { result } = renderHook(() => useForm<{ test1: string }>());
+
+      result.current.register('test1');
+      result.current.setValue('test1', 'data');
+
+      expect(result.current.control.unmountFieldsStateRef.current).toEqual({});
+    });
+
     it('should empty string when value is null or undefined when registered field is HTMLElement', () => {
       const { result } = renderHook(() =>
         useForm<{ test: string }>({
@@ -629,11 +638,11 @@ describe('useForm', () => {
 
       result.current.setValue('test', null as any);
 
-      expect(result.current.control.fieldsRef.current.test?.ref.value).toBe('');
+      expect(elm).not.toHaveValue();
 
       result.current.setValue('test', undefined);
 
-      expect(result.current.control.fieldsRef.current.test?.ref.value).toBe('');
+      expect(elm).not.toHaveValue();
     });
 
     it('should set value of radio input correctly', async () => {
@@ -687,18 +696,6 @@ describe('useForm', () => {
       });
     });
 
-    it('should set value of file input correctly if value is string', async () => {
-      const { result } = renderHook(() => useForm<{ test: string }>());
-
-      result.current.register({ name: 'test', type: 'file', value: '' });
-
-      result.current.setValue('test', 'path');
-
-      expect(
-        result.current.control.fieldsRef.current['test']?.ref.value,
-      ).toEqual('path');
-    });
-
     it('should set value of multiple checkbox input correctly', async () => {
       const { result } = renderHook(() => useForm<{ test: string }>());
 
@@ -727,6 +724,30 @@ describe('useForm', () => {
           persist: () => {},
         } as React.SyntheticEvent);
       });
+    });
+
+    it('should set array value of multiple checkbox inputs correctly', async () => {
+      const Component = () => {
+        const { register } = useForm({
+          defaultValues: {
+            test: ['1', '2'],
+          },
+        });
+
+        return (
+          <>
+            <input type="checkbox" value={'1'} ref={register} name="test" />
+            <input type="checkbox" value={'2'} ref={register} name="test" />
+          </>
+        );
+      };
+
+      render(<Component />);
+
+      screen
+        .getAllByRole('checkbox')
+        // @ts-ignore
+        .forEach((checkbox) => expect(checkbox.checked).toBeTruthy());
     });
 
     it('should set value of single checkbox input correctly', async () => {
@@ -978,6 +999,24 @@ describe('useForm', () => {
       );
 
       expect(result.current.formState.isDirty).toBeTruthy();
+    });
+
+    describe('with watch', () => {
+      it('should get watched value', () => {
+        const { result } = renderHook(() => {
+          const { register, watch, setValue } = useForm();
+
+          register({ name: 'test' });
+
+          React.useEffect(() => {
+            setValue('test', 'abc');
+          }, [setValue]);
+
+          return watch('test');
+        });
+
+        expect(result.current).toBe('abc');
+      });
     });
 
     describe('with validation', () => {
@@ -1985,12 +2024,13 @@ describe('useForm', () => {
   describe('clearErrors', () => {
     it('should remove error', () => {
       const { result } = renderHook(() => useForm<{ input: string }>());
-      act(() =>
+      act(() => {
+        result.current.register('input');
         result.current.setError('input', {
           type: 'test',
           message: 'message',
-        }),
-      );
+        });
+      });
 
       act(() => result.current.clearErrors('input'));
 
@@ -2007,7 +2047,7 @@ describe('useForm', () => {
         }),
       );
       expect(result.current.errors.input?.nested).toBeDefined();
-      act(() => result.current.clearErrors('input.nested'));
+      act(() => result.current.clearErrors('input.nested', { exact: false }));
       expect(result.current.errors.input?.nested).toBeUndefined();
     });
 
@@ -2021,24 +2061,35 @@ describe('useForm', () => {
         message: 'message',
       };
 
-      act(() => result.current.setError('input', error));
-      act(() => result.current.setError('input1', error));
-      act(() => result.current.setError('input2', error));
+      act(() => {
+        result.current.register('input');
+        result.current.register('input1');
+        result.current.register('input2');
+        result.current.setError('input', error);
+        result.current.setError('input1', error);
+        result.current.setError('input2', error);
+      });
 
       const errors = {
         input: {
           ...error,
-          ref: undefined,
+          ref: {
+            name: 'input',
+          },
           types: undefined,
         },
         input1: {
           ...error,
-          ref: undefined,
+          ref: {
+            name: 'input1',
+          },
           types: undefined,
         },
         input2: {
           ...error,
-          ref: undefined,
+          ref: {
+            name: 'input2',
+          },
           types: undefined,
         },
       };
@@ -2090,13 +2141,15 @@ describe('useForm', () => {
 
       result.current.register('data');
 
-      act(() => result.current.setError('whatever', { type: 'missing' }));
+      act(() => {
+        result.current.setError('whatever', { type: 'missing' });
+      });
 
       await act(async () => await result.current.handleSubmit(submit)());
       expect(submit).not.toBeCalled();
 
       act(() => {
-        result.current.clearErrors('whatever');
+        result.current.clearErrors('whatever', { exact: false });
       });
 
       await act(async () => await result.current.handleSubmit(submit)());
@@ -2105,6 +2158,54 @@ describe('useForm', () => {
   });
 
   describe('formState', () => {
+    it('should return isValid correctly with resolver', async () => {
+      let isValidValue = false;
+
+      const Component = () => {
+        const {
+          register,
+          formState: { isValid },
+        } = useForm<{ test: string }>({
+          mode: 'onChange',
+          resolver: async (data) => {
+            if (data.test) {
+              return {
+                values: data,
+                errors: {},
+              };
+            }
+            return {
+              values: {},
+              errors: {
+                test: 'issue',
+              } as any,
+            };
+          },
+        });
+
+        isValidValue = isValid;
+        return <input type="text" name="test" ref={register} />;
+      };
+
+      await actComponent(async () => {
+        render(<Component />);
+      });
+
+      expect(isValidValue).toBeFalsy();
+
+      await actComponent(async () => {
+        fireEvent.input(screen.getByRole('textbox'), {
+          target: {
+            value: 'test',
+          },
+        });
+      });
+
+      await actComponent(async () => {
+        expect(isValidValue).toBeTruthy();
+      });
+    });
+
     it('should return true for onBlur mode by default', () => {
       const { result } = renderHook(() =>
         useForm<{ input: string }>({

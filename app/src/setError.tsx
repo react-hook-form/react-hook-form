@@ -16,6 +16,10 @@ const SetError: React.FC = () => {
     register({ name: 'firstName' });
     register({ name: 'lastName' });
     register({ name: 'age' });
+    register({ name: 'test' });
+    register({ name: 'test1' });
+    register({ name: 'username' });
+    register({ name: 'test2' });
 
     setError('firstName', { type: 'wrong' });
     setError('lastName', { type: 'wrong' });

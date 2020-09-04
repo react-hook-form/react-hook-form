@@ -59,7 +59,7 @@ import React from 'react';
 import { useForm } from 'react-hook-form';
 
 function App() {
-  const { register, handleSubmit, errors } = useForm(); // initialise the hook
+  const { register, handleSubmit, errors } = useForm(); // initialize the hook
   const onSubmit = (data) => {
     console.log(data);
   };

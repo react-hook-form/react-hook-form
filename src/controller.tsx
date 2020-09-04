@@ -7,8 +7,8 @@ import skipValidation from './logic/skipValidation';
 import isNameInFieldArray from './logic/isNameInFieldArray';
 import { useFormContext } from './useFormContext';
 import { VALUE } from './constants';
-import { Control } from './types/form';
-import { ControllerProps } from './types/props';
+import { Control } from './types';
+import { ControllerProps } from './types';
 
 const Controller = <
   TAs extends
@@ -67,13 +67,13 @@ const Controller = <
   if (process.env.NODE_ENV !== 'production') {
     if (isUndefined(value)) {
       console.warn(
-        '📋 Controller `defaultValue` or useForm `defaultValues` is missing. https://react-hook-form.com/api#Controller',
+        `📋 ${name} is missing in the 'defaultValue' prop of either its Controller (https://react-hook-form.com/api#Controller) or useForm (https://react-hook-form.com/api#useForm)`,
       );
     }
 
     if (as && render) {
       console.warn(
-        '📋 Should use either `as` or `render` prop. https://react-hook-form.com/api#Controller',
+        `📋 ${name} Controller should use either the 'as' or 'render' prop, not both. https://react-hook-form.com/api#Controller`,
       );
     }
 
@@ -90,6 +90,7 @@ const Controller = <
       isReValidateOnBlur,
       isReValidateOnChange,
       isSubmitted,
+      isTouched: !!get(touched, name),
       ...mode,
     });
 
@@ -142,7 +143,6 @@ const Controller = <
     registerField();
   }, [registerField]);
 
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   React.useEffect(() => {
     if (!fieldsRef.current[name]) {
       registerField();
@@ -182,7 +182,7 @@ const Controller = <
   return as
     ? React.isValidElement(as)
       ? React.cloneElement(as, props)
-      : React.createElement(as as string, props)
+      : React.createElement(as as string, props as any)
     : render
     ? render({
         onChange,

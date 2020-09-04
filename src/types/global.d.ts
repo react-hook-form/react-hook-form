@@ -9,3 +9,4 @@ If you want type definitions for various properties, you need to add `--lib DOM`
 
 interface HTMLOptionsCollection {}
 interface FileList {}
+interface MutationObserver {}

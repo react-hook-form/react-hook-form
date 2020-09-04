@@ -4,12 +4,13 @@ import isString from '../utils/isString';
 import isArray from '../utils/isArray';
 import { deepMerge } from '../utils/deepMerge';
 import isUndefined from '../utils/isUndefined';
-import { InternalFieldName, FieldValues, FieldRefs } from '../types/form';
+import { InternalFieldName, FieldValues, FieldRefs } from '../types';
 import transformToNestObject from './transformToNestObject';
 
 export default <TFieldValues extends FieldValues>(
   fieldsRef: React.MutableRefObject<FieldRefs<TFieldValues>>,
   unmountFieldsStateRef?: React.MutableRefObject<Record<string, any>>,
+  excludeDisabled?: boolean,
   search?:
     | InternalFieldName<TFieldValues>
     | InternalFieldName<TFieldValues>[]
@@ -27,6 +28,8 @@ export default <TFieldValues extends FieldValues>(
       output[name as InternalFieldName<TFieldValues>] = getFieldValue(
         fieldsRef,
         name,
+        undefined,
+        excludeDisabled,
       );
     }
   }

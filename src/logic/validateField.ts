@@ -24,7 +24,7 @@ import {
   FieldError,
   InternalFieldName,
   FlatFieldErrors,
-} from '../types/form';
+} from '../types';
 
 export default async <TFieldValues extends FieldValues>(
   fieldsRef: React.MutableRefObject<FieldRefs<TFieldValues>>,
@@ -92,7 +92,7 @@ export default async <TFieldValues extends FieldValues>(
         type: INPUT_VALIDATION_RULES.required,
         message: requiredMessage,
         ref: isRadioOrCheckbox
-          ? ((fields[name] as Field).options || [])[0].ref
+          ? (((fields[name] as Field).options || [])[0] || {}).ref
           : ref,
         ...appendErrorsCurry(INPUT_VALIDATION_RULES.required, requiredMessage),
       };

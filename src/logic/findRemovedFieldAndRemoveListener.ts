@@ -9,7 +9,7 @@ import isArray from '../utils/isArray';
 import unset from '../utils/unset';
 import filterOutFalsy from '../utils/filterOutFalsy';
 import isUndefined from '../utils/isUndefined';
-import { Field, FieldRefs, FieldValues, Ref } from '../types/form';
+import { Field, FieldRefs, FieldValues, Ref } from '../types';
 
 const isSameRef = (fieldValue: Field, ref: Ref) =>
   fieldValue && fieldValue.ref === ref;
@@ -27,7 +27,6 @@ export default function findRemovedFieldAndRemoveListener<
   const {
     ref,
     ref: { name, type },
-    mutationWatcher,
   } = field;
   const fieldRef = fieldsRef.current[name] as Field;
 
@@ -49,14 +48,9 @@ export default function findRemovedFieldAndRemoveListener<
 
     if (isArray(options) && options.length) {
       filterOutFalsy(options).forEach((option, index): void => {
-        const { ref, mutationWatcher } = option;
+        const { ref } = option;
         if ((ref && isDetached(ref) && isSameRef(option, ref)) || forceDelete) {
           removeAllEventListeners(ref, handleChange);
-
-          if (mutationWatcher) {
-            mutationWatcher.disconnect();
-          }
-
           unset(options, `[${index}]`);
         }
       });
@@ -69,10 +63,6 @@ export default function findRemovedFieldAndRemoveListener<
     }
   } else if ((isDetached(ref) && isSameRef(fieldRef, ref)) || forceDelete) {
     removeAllEventListeners(ref, handleChange);
-
-    if (mutationWatcher) {
-      mutationWatcher.disconnect();
-    }
 
     delete fieldsRef.current[name];
   }

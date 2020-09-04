@@ -160,12 +160,11 @@ export type ErrorOption =
     }
   | {
       message?: Message;
-      type: LiteralUnion<keyof ValidationRules, string>;
+      type?: LiteralUnion<keyof ValidationRules, string>;
     };
 
 export type Field = {
   ref: Ref;
-  mutationWatcher?: MutationObserver;
   options?: RadioOrCheckboxOption[];
 } & ValidationRules;
 
@@ -195,6 +194,10 @@ export type SetValueConfig = Partial<{
   shouldValidate: boolean;
   shouldDirty: boolean;
 }>;
+
+export type ClearErrorsConfig = {
+  exact: boolean;
+};
 
 export type FormStateProxy<TFieldValues extends FieldValues = FieldValues> = {
   isDirty: boolean;
@@ -266,7 +269,7 @@ export type Control<TFieldValues extends FieldValues = FieldValues> = Pick<
     readonly isReValidateOnBlur: boolean;
     readonly isReValidateOnChange: boolean;
   };
-  fieldArrayDefaultValues: React.MutableRefObject<
+  fieldArrayDefaultValuesRef: React.MutableRefObject<
     Record<FieldArrayName, any[]>
   >;
   formStateRef: React.MutableRefObject<FormState<FieldValues>>;
@@ -354,7 +357,10 @@ export type UseFormMethods<TFieldValues extends FieldValues = FieldValues> = {
     defaultValues?: UnpackNestedValue<DeepPartial<TFieldValues>>,
   ): UnpackNestedValue<DeepPartial<TFieldValues>>;
   setError(name: FieldName<TFieldValues>, error: ErrorOption): void;
-  clearErrors(name?: FieldName<TFieldValues> | FieldName<TFieldValues>[]): void;
+  clearErrors(
+    name?: FieldName<TFieldValues> | FieldName<TFieldValues>[],
+    config?: ClearErrorsConfig,
+  ): void;
   setValue<
     TFieldName extends string,
     TFieldValue extends TFieldValues[TFieldName]
