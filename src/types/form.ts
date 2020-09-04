@@ -369,7 +369,7 @@ export type UseFormMethods<TFieldValues extends FieldValues = FieldValues> = {
     name?: FieldName<TFieldValues> | FieldName<TFieldValues>[],
   ): Promise<boolean>;
   errors: FieldErrors<TFieldValues>;
-  formState: FormStateProxy<TFieldValues>;
+  formState: FormState<TFieldValues>;
   reset: (
     values?: UnpackNestedValue<DeepPartial<TFieldValues>>,
     omitResetState?: OmitResetState,
