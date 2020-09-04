@@ -193,12 +193,7 @@ export type Dirtied<TFieldValues extends FieldValues> = DeepMap<
 export type SetValueConfig = Partial<{
   shouldValidate: boolean;
   shouldDirty: boolean;
-  exact: boolean;
 }>;
-
-export type ClearErrorsConfig = {
-  exact: boolean;
-};
 
 export type FormStateProxy<TFieldValues extends FieldValues = FieldValues> = {
   isDirty: boolean;
@@ -359,10 +354,7 @@ export type UseFormMethods<TFieldValues extends FieldValues = FieldValues> = {
     defaultValues?: UnpackNestedValue<DeepPartial<TFieldValues>>,
   ): UnpackNestedValue<DeepPartial<TFieldValues>>;
   setError(name: FieldName<TFieldValues>, error: ErrorOption): void;
-  clearErrors(
-    name?: FieldName<TFieldValues> | FieldName<TFieldValues>[],
-    config?: ClearErrorsConfig,
-  ): void;
+  clearErrors(name?: FieldName<TFieldValues> | FieldName<TFieldValues>[]): void;
   setValue<
     TFieldName extends string,
     TFieldValue extends TFieldValues[TFieldName]

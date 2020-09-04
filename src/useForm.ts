@@ -68,7 +68,6 @@ import {
   LiteralToPrimitive,
   DeepPartial,
   NonUndefined,
-  ClearErrorsConfig,
 } from './types';
 
 const isWindowUndefined = typeof window === UNDEFINED;
@@ -462,7 +461,7 @@ export function useForm<
       if (fieldsRef.current[name]) {
         setFieldValue(fieldsRef.current[name] as Field, value);
         config.shouldDirty && updateAndGetDirtyState(name);
-      } else if (!config.exact && !isPrimitive(value)) {
+      } else if (!isPrimitive(value)) {
         setInternalValues(name, value, config);
 
         if (
@@ -516,7 +515,7 @@ export function useForm<
     value: NonUndefined<TFieldValue> extends NestedValue<infer U>
       ? U
       : UnpackNestedValue<DeepPartial<LiteralToPrimitive<TFieldValue>>>,
-    config: SetValueConfig = { exact: true },
+    config: SetValueConfig = {},
   ): void {
     setInternalValue(name, value as TFieldValues[string], config);
 
@@ -696,13 +695,12 @@ export function useForm<
 
   function clearErrors(
     name?: FieldName<TFieldValues> | FieldName<TFieldValues>[],
-    config: ClearErrorsConfig = { exact: true },
   ): void {
     name &&
-      (isArray(name) ? name : [name]).forEach(
-        (inputName) =>
-          (fieldsRef.current[inputName] || !config.exact) &&
-          unset(formStateRef.current.errors, inputName),
+      (isArray(name) ? name : [name]).forEach((inputName) =>
+        fieldsRef.current[inputName]
+          ? delete formStateRef.current.errors[inputName]
+          : unset(formStateRef.current.errors, inputName),
       );
 
     updateFormState({
