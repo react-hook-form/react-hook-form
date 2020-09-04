@@ -62,7 +62,7 @@ const UseFieldArrayUnregister: React.FC = () => {
     setData(data);
   };
   const updateFieldArray = () => {
-    setValue('data', [...getValues().data, { name: 'test' }], { exact: false });
+    setValue('data', [...getValues().data, { name: 'test' }]);
   };
 
   renderCount++;
