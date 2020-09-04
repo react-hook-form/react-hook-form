@@ -142,12 +142,9 @@ export function useForm<
   const readFormStateRef = React.useRef<ReadFormState>({
     isDirty: !isProxyEnabled,
     dirtyFields: !isProxyEnabled,
-    isSubmitted: isOnSubmit,
-    submitCount: !isProxyEnabled,
     touched: !isProxyEnabled || isOnTouch,
     isSubmitting: !isProxyEnabled,
     isValid: !isProxyEnabled,
-    errors: !isProxyEnabled,
   });
   const formStateRef = React.useRef(formState);
   const {

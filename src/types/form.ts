@@ -199,12 +199,9 @@ export type SetValueConfig = Partial<{
 export type FormStateProxy<TFieldValues extends FieldValues = FieldValues> = {
   isDirty: boolean;
   dirtyFields: Dirtied<TFieldValues>;
-  isSubmitted: boolean;
-  submitCount: number;
   touched: FieldNames<TFieldValues>;
   isSubmitting: boolean;
   isValid: boolean;
-  errors: FieldErrors<TFieldValues>;
 };
 
 export type ReadFormState = { [K in keyof FormStateProxy]: boolean };
@@ -311,11 +308,15 @@ export type ArrayField<
   TKeyName extends string = 'id'
 > = TFieldArrayValues & Record<TKeyName, string>;
 
-export type OmitResetState = Partial<
-  {
-    errors: boolean;
-  } & ReadFormState
->;
+export type OmitResetState = Partial<{
+  errors: boolean;
+  isDirty: boolean;
+  isSubmitted: boolean;
+  touched: boolean;
+  isValid: boolean;
+  submitCount: boolean;
+  dirtyFields: boolean;
+}>;
 
 export type UseWatchOptions = {
   defaultValue?: unknown;
