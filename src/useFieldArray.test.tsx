@@ -13,7 +13,6 @@ import * as generateId from './logic/generateId';
 import { Control, ValidationRules, FieldError, DeepMap } from './types';
 import { VALIDATION_MODE } from './constants';
 import { FormProvider } from './useFormContext';
-import { useEffect } from 'react';
 
 const mockGenerateId = () => {
   let id = 0;
@@ -3731,7 +3730,7 @@ describe('useFieldArray', () => {
           control,
         });
 
-        useEffect(() => {
+        React.useEffect(() => {
           setValue('nest', [
             {
               value: 1,
