@@ -89,9 +89,9 @@ export const useFieldArray = <
     getValues,
   } = control || methods.control;
 
-  const rootParentName = getFieldArrayParentName(name);
+  const fieldArrayParentName = getFieldArrayParentName(name);
   const getDefaultValues = () => [
-    ...(get(fieldArrayDefaultValuesRef.current, rootParentName)
+    ...(get(fieldArrayDefaultValuesRef.current, fieldArrayParentName)
       ? get(fieldArrayDefaultValuesRef.current, name, [])
       : get(defaultValuesRef.current, name, [])),
   ];
@@ -116,11 +116,11 @@ export const useFieldArray = <
   allFields.current = fields;
   fieldArrayNamesRef.current.add(name);
 
-  if (!get(fieldArrayDefaultValuesRef.current, rootParentName)) {
+  if (!get(fieldArrayDefaultValuesRef.current, fieldArrayParentName)) {
     set(
       fieldArrayDefaultValuesRef.current,
-      rootParentName,
-      get(defaultValuesRef.current, rootParentName),
+      fieldArrayParentName,
+      get(defaultValuesRef.current, fieldArrayParentName),
     );
   }
 
