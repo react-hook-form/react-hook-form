@@ -22,7 +22,7 @@ const ConditionField = ({
     defaultValue: 'yay! I am watching you :)',
   });
 
-  return output[index].name === 'bill' ? (
+  return output[index]?.name === 'bill' ? (
     <input ref={control.register()} name={`data[${index}].conditional`} />
   ) : null;
 };

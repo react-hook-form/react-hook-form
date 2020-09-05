@@ -173,8 +173,13 @@ export const useFieldArray = <
     shouldSet = true,
     shouldUpdateValid = false,
   ) => {
-    if (isArray(get(unmountFieldsStateRef.current, name))) {
-      method(get(unmountFieldsStateRef.current, name), args.argA, args.argB);
+    if (get(unmountFieldsStateRef.current, name)) {
+      const output = method(
+        get(unmountFieldsStateRef.current, name),
+        args.argA,
+        args.argB,
+      );
+      shouldSet && set(unmountFieldsStateRef.current, name, output);
     }
 
     if (get(fieldArrayDefaultValuesRef.current, name)) {
