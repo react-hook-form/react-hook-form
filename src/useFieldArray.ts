@@ -180,6 +180,7 @@ export const useFieldArray = <
         args.argB,
       );
       shouldSet && set(unmountFieldsStateRef.current, name, output);
+      cleanup(unmountFieldsStateRef.current);
     }
 
     if (get(fieldArrayDefaultValuesRef.current, name)) {
