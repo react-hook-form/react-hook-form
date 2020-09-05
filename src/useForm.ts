@@ -469,9 +469,7 @@ export function useForm<
           fieldArrayNamesRef.current.has(name)
         ) {
           const fieldArrayParentName = getFieldArrayParentName(name) || name;
-          const fieldArrayValues = get(getValues(), fieldArrayParentName, {
-            [fieldArrayParentName]: {},
-          });
+          const fieldArrayValues = get(getValues(), fieldArrayParentName, {});
 
           set(fieldArrayValues, fieldArrayParentName, value);
 
