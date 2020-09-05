@@ -386,7 +386,7 @@ export const useFieldArray = <
     data?: UnpackNestedValue<DeepPartial<TFieldValues>>,
   ) => {
     resetFields();
-    unset(fieldArrayDefaultValuesRef.current, name);
+    !data && unset(fieldArrayDefaultValuesRef.current, name);
     unset(unmountFieldsStateRef.current, name);
     memoizedDefaultValues.current = get(data || defaultValuesRef.current, name);
     setFields(mapIds(memoizedDefaultValues.current, keyName));

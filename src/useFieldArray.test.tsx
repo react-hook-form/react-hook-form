@@ -3697,7 +3697,7 @@ describe('useFieldArray', () => {
       expect(screen.getAllByRole('textbox')).toHaveLength(3);
     });
 
-    it.only('should populate array fields correctly with setValue', async () => {
+    it('should populate all array fields correctly with setValue', async () => {
       const ChildComponent = ({
         index,
         control,
@@ -3769,9 +3769,9 @@ describe('useFieldArray', () => {
         );
       };
 
-      render(<Component />);
+      const { asFragment } = render(<Component />);
 
-      screen.debug();
+      expect(asFragment()).toMatchSnapshot();
     });
   });
 });
