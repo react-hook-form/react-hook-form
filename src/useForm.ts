@@ -469,16 +469,10 @@ export function useForm<
           fieldArrayNamesRef.current.has(name)
         ) {
           const fieldArrayParentName = getFieldArrayParentName(name) || name;
-          const fieldArrayValues = get(getValues(), fieldArrayParentName, {});
-
-          set(fieldArrayValues, fieldArrayParentName, value);
-
-          fieldArrayDefaultValuesRef.current[fieldArrayParentName] =
-            fieldArrayValues[fieldArrayParentName];
-
-          resetFieldArrayFunctionRef.current[fieldArrayParentName](
-            fieldArrayValues,
-          );
+          fieldArrayDefaultValuesRef.current[fieldArrayParentName] = value;
+          resetFieldArrayFunctionRef.current[fieldArrayParentName]({
+            [name]: value,
+          } as UnpackNestedValue<DeepPartial<TFieldValues>>);
         }
       }
 
