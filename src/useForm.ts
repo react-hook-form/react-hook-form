@@ -1101,7 +1101,7 @@ export function useForm<
     updateFormState({
       isDirty: isDirty ? formStateRef.current.isDirty : false,
       isSubmitted: isSubmitted ? formStateRef.current.isSubmitted : false,
-      isSubmitting: formState.isSubmitting,
+      isSubmitting: false,
       submitCount: submitCount ? formStateRef.current.submitCount : 0,
       isValid: isValid ? formStateRef.current.isValid : true,
       dirtyFields: dirtyFields ? formStateRef.current.dirtyFields : {},
