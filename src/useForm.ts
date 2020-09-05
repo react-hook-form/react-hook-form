@@ -468,9 +468,10 @@ export function useForm<
           isNameInFieldArray(fieldArrayNamesRef.current, name) ||
           fieldArrayNamesRef.current.has(name)
         ) {
-          const fieldArrayValues = getValues()[
-            getFieldArrayParentName(name) || name
-          ];
+          const fieldArrayParentName = getFieldArrayParentName(name) || name;
+          const fieldArrayValues = get(getValues(), fieldArrayParentName, {
+            [fieldArrayParentName]: {},
+          });
 
           set(fieldArrayValues, name, value);
           resetFieldArrayFunctionRef.current[name](fieldArrayValues);

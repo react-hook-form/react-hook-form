@@ -13,6 +13,7 @@ import * as generateId from './logic/generateId';
 import { Control, ValidationRules, FieldError, DeepMap } from './types';
 import { VALIDATION_MODE } from './constants';
 import { FormProvider } from './useFormContext';
+import { useEffect } from 'react';
 
 const mockGenerateId = () => {
   let id = 0;
@@ -3694,6 +3695,83 @@ describe('useFieldArray', () => {
       fireEvent.click(screen.getByRole('button', { name: /append/i }));
 
       expect(screen.getAllByRole('textbox')).toHaveLength(3);
+    });
+
+    it.only('should populate array fields correctly with setValue', async () => {
+      const ChildComponent = ({
+        index,
+        control,
+      }: {
+        control: Control;
+        index: number;
+      }) => {
+        const { fields } = useFieldArray({
+          name: `nest[${index}].nestedArray`,
+          control,
+        });
+
+        return (
+          <div>
+            {fields.map((item, i) => (
+              <input
+                key={item.id}
+                name={`nest[${index}].nestedArray[${i}].value`}
+                ref={control.register()}
+                defaultValue={item.value}
+              />
+            ))}
+          </div>
+        );
+      };
+
+      const Component = () => {
+        const { register, control, setValue } = useForm();
+        const { fields } = useFieldArray({
+          name: 'nest',
+          control,
+        });
+
+        useEffect(() => {
+          setValue('nest', [
+            {
+              value: 1,
+              nestedArray: [
+                {
+                  value: 1,
+                },
+              ],
+            },
+            {
+              value: 2,
+              nestedArray: [
+                {
+                  value: 1,
+                },
+              ],
+            },
+          ]);
+        }, [setValue]);
+
+        return (
+          <div>
+            {fields.map((item, i) => (
+              <div key={item.id}>
+                <input
+                  name={`nest[${i}].value`}
+                  ref={register()}
+                  defaultValue={item.value}
+                />
+
+                <ChildComponent control={control} index={i} />
+              </div>
+            ))}
+          </div>
+        );
+      };
+
+      render(<Component />);
+
+      screen.debug();
     });
   });
 });
