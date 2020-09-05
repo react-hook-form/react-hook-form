@@ -123,5 +123,30 @@ describe('useFieldArrayUnregister', () => {
         ],
       }),
     );
+
+    cy.get('input[name="data[3].name"]').type('test');
+
+    cy.get('#submit').click();
+
+    cy.get('#result').should(($state) =>
+      expect(JSON.parse($state.text())).to.be.deep.equal({
+        data: [
+          { name: '5' },
+          { name: 'test2' },
+          { name: 'test1' },
+          { name: 'billtest', conditional: 'test' },
+        ],
+      }),
+    );
+
+    cy.get('#delete3').click();
+
+    cy.get('#submit').click();
+
+    cy.get('#result').should(($state) =>
+      expect(JSON.parse($state.text())).to.be.deep.equal({
+        data: [{ name: '5' }, { name: 'test2' }, { name: 'test1' }],
+      }),
+    );
   });
 });
