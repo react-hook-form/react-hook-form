@@ -125,7 +125,7 @@ const UseFieldArrayUnregister: React.FC = () => {
         swap
       </button>
 
-      <button id="move" onClick={() => move(2, 0)} type="button">
+      <button id="move" onClick={() => move(4, 2)} type="button">
         move
       </button>
 
