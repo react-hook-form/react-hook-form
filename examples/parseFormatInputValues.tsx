@@ -7,7 +7,7 @@ const ParseFormatTextarea = ({ value = [], onChange }) => {
   const handleChange = (e) => {
     const value = e.target.value.split('\n');
 
-    setText(value);
+    setText(e.target.value);
     onChange(value);
   };
 
@@ -22,13 +22,24 @@ export default function App() {
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
-      <Controller name="emails" as={ParseFormatTextarea} control={control} />
+      <Controller
+        name="emails"
+        as={ParseFormatTextarea}
+        control={control}
+        defaultValue={[]}
+      />
 
       <Controller
         name="number"
-        as={<input type="number" />}
-        onChange={([e]) => parseInt(e.target.value, 10)}
+        render={({ value, onChange }) => (
+          <input
+            type="number"
+            value={value}
+            onChange={(e) => onChange(parseInt(e.target.value, 10))}
+          />
+        )}
         control={control}
+        defaultValue={0}
       />
 
       <button type="submit">Submit</button>
