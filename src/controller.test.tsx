@@ -465,7 +465,7 @@ describe('Controller', () => {
 
   it('should not set initial state from unmount state when input is part of field array', () => {
     const Component = () => {
-      const { control } = useForm();
+      const { control } = useForm({ shouldUnregister: false });
       const { fields, append, remove } = useFieldArray({
         name: 'test',
         control,
