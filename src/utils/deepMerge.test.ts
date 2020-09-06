@@ -46,4 +46,9 @@ describe('deepMerge', () => {
       test: new Date('1999-02-02'),
     });
   });
+
+  it("should never merge non-objects, and always return the 'source' object", () => {
+    expect(deepMerge({}, 0)).toEqual(0);
+    expect(deepMerge(0, {})).toEqual({});
+  });
 });

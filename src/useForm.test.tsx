@@ -237,7 +237,9 @@ describe('useForm', () => {
         render(<Component />);
       });
 
-      expect(screen.getByRole('button')).not.toBeDisabled();
+      await waitFor(() => {
+        expect(screen.getByRole('button')).not.toBeDisabled();
+      });
     });
   });
 
