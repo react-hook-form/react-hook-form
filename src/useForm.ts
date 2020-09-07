@@ -697,7 +697,8 @@ export function useForm<
       (isArray(name) ? name : [name]).forEach((inputName) =>
         fieldsRef.current[inputName]
           ? delete formStateRef.current.errors[inputName]
-          : unset(formStateRef.current.errors, inputName),
+          : get(formStateRef.current.errors, inputName) &&
+            unset(formStateRef.current.errors, inputName),
       );
 
     updateFormState({
