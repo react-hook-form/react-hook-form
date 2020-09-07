@@ -64,7 +64,7 @@ import {
   ErrorOption,
   FormState,
   SubmitErrorHandler,
-  FieldNames,
+  FieldNamesMarkedBoolean,
   LiteralToPrimitive,
   DeepPartial,
   NonUndefined,
@@ -173,9 +173,9 @@ export function useForm<
       error: FlatFieldErrors<TFieldValues>,
       shouldRender: boolean | null = false,
       state: {
-        dirtyFields?: FieldNames<TFieldValues>;
+        dirtyFields?: FieldNamesMarkedBoolean<TFieldValues>;
         isDirty?: boolean;
-        touched?: FieldNames<TFieldValues>;
+        touched?: FieldNamesMarkedBoolean<TFieldValues>;
       } = {},
       isValid?: boolean,
     ): boolean | void => {
@@ -271,9 +271,9 @@ export function useForm<
       name: InternalFieldName<TFieldValues>,
       shouldRender = true,
     ): {
-      dirtyFields?: FieldNames<TFieldValues>;
+      dirtyFields?: FieldNamesMarkedBoolean<TFieldValues>;
       isDirty?: boolean;
-      touched?: FieldNames<TFieldValues>;
+      touched?: FieldNamesMarkedBoolean<TFieldValues>;
     } => {
       if (
         !fieldsRef.current[name] ||
