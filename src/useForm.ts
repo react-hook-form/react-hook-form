@@ -424,9 +424,9 @@ export function useForm<
   );
 
   const setInternalValues = React.useCallback(
-    (
-      name: InternalFieldName<TFieldValues>,
-      value: FieldValue<TFieldValues>,
+    <T extends string, U extends object | unknown[]>(
+      name: T,
+      value: U,
       { shouldDirty, shouldValidate }: SetValueConfig,
     ) => {
       getPath(name, value).forEach((fieldName) => {
