@@ -1,9 +1,9 @@
 import isArray from './isArray';
 import isObject from './isObject';
 
-function mapValueToBoolean(value: any) {
+function mapValueToBoolean<U>(value: U): boolean[] | Record<string, boolean>[] {
   if (isObject(value)) {
-    const object: any = {};
+    const object: Record<string, boolean> = {};
 
     for (const key in value) {
       object[key] = true;
@@ -15,7 +15,5 @@ function mapValueToBoolean(value: any) {
   return [true];
 }
 
-export const filterBooleanArray = <T>(value: T): T[] =>
-  isArray(value)
-    ? value.map(mapValueToBoolean).flat()
-    : mapValueToBoolean(value);
+export default <T>(value: T) =>
+  ((isArray(value) ? value : [value]) as T[]).map(mapValueToBoolean).flat();
