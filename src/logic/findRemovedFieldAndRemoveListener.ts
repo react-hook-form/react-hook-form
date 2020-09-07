@@ -20,7 +20,7 @@ export default function findRemovedFieldAndRemoveListener<
   fieldsRef: React.MutableRefObject<FieldRefs<TFieldValues>>,
   handleChange: ({ type, target }: Event) => Promise<void | boolean>,
   field: Field,
-  shallowFieldsStateRef: React.MutableRefObject<Record<string, any>>,
+  shallowFieldsStateRef: React.MutableRefObject<FieldValues>,
   shouldUnregister?: boolean,
   forceDelete?: boolean,
 ): void {

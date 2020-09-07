@@ -1,7 +1,7 @@
 import isArray from './isArray';
 import isObject from './isObject';
 
-function mapValueToBoolean(value: any) {
+function mapValueToBoolean<T>(value: T) {
   if (isObject(value)) {
     const object: any = {};
 
