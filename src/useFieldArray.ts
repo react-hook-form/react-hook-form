@@ -77,7 +77,7 @@ export const useFieldArray = <
     formStateRef: {
       current: { dirtyFields, touched },
     },
-    unmountFieldsStateRef,
+    shallowFieldsStateRef,
     updateFormState,
     readFormStateRef,
     watchFieldsRef,
@@ -173,14 +173,14 @@ export const useFieldArray = <
     shouldSet = true,
     shouldUpdateValid = false,
   ) => {
-    if (get(unmountFieldsStateRef.current, name)) {
+    if (get(shallowFieldsStateRef.current, name)) {
       const output = method(
-        get(unmountFieldsStateRef.current, name),
+        get(shallowFieldsStateRef.current, name),
         args.argA,
         args.argB,
       );
-      shouldSet && set(unmountFieldsStateRef.current, name, output);
-      cleanup(unmountFieldsStateRef.current);
+      shouldSet && set(shallowFieldsStateRef.current, name, output);
+      cleanup(shallowFieldsStateRef.current);
     }
 
     if (get(fieldArrayDefaultValuesRef.current, name)) {
@@ -387,7 +387,7 @@ export const useFieldArray = <
   ) => {
     resetFields();
     !data && unset(fieldArrayDefaultValuesRef.current, name);
-    unset(unmountFieldsStateRef.current, name);
+    unset(shallowFieldsStateRef.current, name);
     memoizedDefaultValues.current = get(data || defaultValuesRef.current, name);
     setFields(mapIds(memoizedDefaultValues.current, keyName));
   };
