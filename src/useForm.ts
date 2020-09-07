@@ -58,7 +58,7 @@ import {
   RadioOrCheckboxOption,
   OmitResetState,
   DefaultValuesAtRender,
-  FlatFieldErrors,
+  InternalFieldErrors,
   NestedValue,
   SetValueConfig,
   ErrorOption,
@@ -170,7 +170,7 @@ export function useForm<
   const shouldRenderBaseOnError = React.useCallback(
     (
       name: InternalFieldName<TFieldValues>,
-      error: FlatFieldErrors<TFieldValues>,
+      error: InternalFieldErrors<TFieldValues>,
       shouldRender: boolean | null = false,
       state: {
         dirtyFields?: FieldNamesMarkedBoolean<TFieldValues>;
@@ -386,7 +386,9 @@ export function useForm<
 
         shouldRenderBaseOnError(
           payload,
-          (error ? { [payload]: error } : {}) as FlatFieldErrors<TFieldValues>,
+          (error ? { [payload]: error } : {}) as InternalFieldErrors<
+            TFieldValues
+          >,
           previousFormIsValid !== isEmptyObject(errors),
           {},
           isEmptyObject(errors),
@@ -517,7 +519,7 @@ export function useForm<
     : async ({ type, target }: Event): Promise<void | boolean> => {
         const name = (target as Ref)!.name;
         const field = fieldsRef.current[name];
-        let error: FlatFieldErrors<TFieldValues>;
+        let error: InternalFieldErrors<TFieldValues>;
         let isValid;
 
         if (field) {
@@ -564,7 +566,7 @@ export function useForm<
 
             error = (get(errors, name)
               ? { [name]: get(errors, name) }
-              : {}) as FlatFieldErrors<TFieldValues>;
+              : {}) as InternalFieldErrors<TFieldValues>;
 
             isValid = isEmptyObject(errors);
 

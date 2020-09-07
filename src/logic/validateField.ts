@@ -23,7 +23,7 @@ import {
   Message,
   FieldError,
   InternalFieldName,
-  FlatFieldErrors,
+  InternalFieldErrors,
 } from '../types';
 
 export default async <TFieldValues extends FieldValues>(
@@ -42,10 +42,10 @@ export default async <TFieldValues extends FieldValues>(
     validate,
   }: Field,
   shallowFieldsStateRef: React.MutableRefObject<Record<string, any>>,
-): Promise<FlatFieldErrors<TFieldValues>> => {
+): Promise<InternalFieldErrors<TFieldValues>> => {
   const fields = fieldsRef.current;
   const name: InternalFieldName<TFieldValues> = ref.name;
-  const error: FlatFieldErrors<TFieldValues> = {};
+  const error: InternalFieldErrors<TFieldValues> = {};
   const isRadio = isRadioInput(ref);
   const isCheckBox = isCheckBoxInput(ref);
   const isRadioOrCheckbox = isRadio || isCheckBox;

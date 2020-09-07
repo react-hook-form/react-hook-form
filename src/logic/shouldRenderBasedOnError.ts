@@ -5,7 +5,7 @@ import {
   FieldValues,
   InternalFieldName,
   FieldErrors,
-  FlatFieldErrors,
+  InternalFieldErrors,
   FieldNamesMarkedBoolean,
 } from '../types';
 
@@ -19,7 +19,7 @@ export default function shouldRenderBasedOnError<
   fieldsWithValidation,
 }: {
   errors: FieldErrors<TFieldValues>;
-  error: FlatFieldErrors<TFieldValues>;
+  error: InternalFieldErrors<TFieldValues>;
   name: InternalFieldName<TFieldValues>;
   validFields: FieldNamesMarkedBoolean<TFieldValues>;
   fieldsWithValidation: FieldNamesMarkedBoolean<TFieldValues>;
