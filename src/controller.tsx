@@ -51,12 +51,12 @@ const Controller = <
     readFormStateRef,
     fieldsRef,
     fieldArrayNamesRef,
-    unmountFieldsStateRef,
+    shallowFieldsStateRef,
   } = control || methods.control;
   const isNotFieldArray = !isNameInFieldArray(fieldArrayNamesRef.current, name);
   const getInitialValue = () =>
-    !isUndefined(get(unmountFieldsStateRef.current, name)) && isNotFieldArray
-      ? get(unmountFieldsStateRef.current, name)
+    !isUndefined(get(shallowFieldsStateRef.current, name)) && isNotFieldArray
+      ? get(shallowFieldsStateRef.current, name)
       : isUndefined(defaultValue)
       ? get(defaultValuesRef.current, name)
       : defaultValue;

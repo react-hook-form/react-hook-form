@@ -283,7 +283,7 @@ export type Control<TFieldValues extends FieldValues = FieldValues> = Pick<
   resetFieldArrayFunctionRef: React.MutableRefObject<
     Record<string, () => void>
   >;
-  unmountFieldsStateRef: Record<InternalFieldName<FieldValues>, any>;
+  shallowFieldsStateRef: Record<InternalFieldName<FieldValues>, any>;
   fieldArrayNamesRef: React.MutableRefObject<
     Set<InternalFieldName<FieldValues>>
   >;
