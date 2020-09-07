@@ -191,7 +191,7 @@ describe('useForm', () => {
       expect(screen.getByRole('alert').textContent).toBe('false');
     });
 
-    it('should be set default value from unmountFieldsStateRef when shouldUnRegister is false', async () => {
+    it('should be set default value from shallowFieldsStateRef when shouldUnRegister is false', async () => {
       const { result, unmount } = renderHook(() =>
         useForm({ shouldUnregister: false }),
       );
@@ -237,7 +237,9 @@ describe('useForm', () => {
         render(<Component />);
       });
 
-      expect(screen.getByRole('button')).not.toBeDisabled();
+      await waitFor(() => {
+        expect(screen.getByRole('button')).not.toBeDisabled();
+      });
     });
   });
 
@@ -548,7 +550,7 @@ describe('useForm', () => {
 
       act(() => result.current.reset({ test: 'test' }));
 
-      expect(result.current.control.unmountFieldsStateRef.current).toEqual({
+      expect(result.current.control.shallowFieldsStateRef.current).toEqual({
         test: 'test',
       });
     });
@@ -560,7 +562,7 @@ describe('useForm', () => {
 
       act(() => result.current.reset({ test: 'test' }));
 
-      expect(result.current.control.unmountFieldsStateRef.current).toEqual({});
+      expect(result.current.control.shallowFieldsStateRef.current).toEqual({});
     });
 
     it('should not reset if OmitResetState is specified', async () => {
@@ -618,7 +620,7 @@ describe('useForm', () => {
       result.current.register('test1');
       result.current.setValue('test1', 'data');
 
-      expect(result.current.control.unmountFieldsStateRef.current).toEqual({});
+      expect(result.current.control.shallowFieldsStateRef.current).toEqual({});
     });
 
     it('should empty string when value is null or undefined when registered field is HTMLElement', () => {
@@ -843,7 +845,7 @@ describe('useForm', () => {
         });
       });
 
-      expect(result.current.control.unmountFieldsStateRef.current).toEqual({
+      expect(result.current.control.shallowFieldsStateRef.current).toEqual({
         checkbox: ['1', '2'],
         test: '1',
         test1: [
@@ -1669,7 +1671,7 @@ describe('useForm', () => {
       expect(result.current.errors?.test.type).toBe('required');
     });
 
-    it('should submit data from unmountFieldsStateRef when shouldUnRegister is false', async () => {
+    it('should submit data from shallowFieldsStateRef when shouldUnRegister is false', async () => {
       const { result, unmount } = renderHook(() =>
         useForm({ shouldUnregister: false }),
       );
@@ -1889,7 +1891,7 @@ describe('useForm', () => {
       expect(result.current.getValues('test')).toEqual(undefined);
     });
 
-    it('should get value from unmountFieldsStateRef by name', () => {
+    it('should get value from shallowFieldsStateRef by name', () => {
       const { result, unmount } = renderHook(() =>
         useForm({
           shouldUnregister: false,
@@ -1903,7 +1905,7 @@ describe('useForm', () => {
       expect(result.current.getValues('test')).toEqual('test');
     });
 
-    it('should get value from unmountFieldsStateRef by array', () => {
+    it('should get value from shallowFieldsStateRef by array', () => {
       const { result, unmount } = renderHook(() =>
         useForm({
           shouldUnregister: false,
@@ -1917,7 +1919,7 @@ describe('useForm', () => {
       expect(result.current.getValues(['test'])).toEqual({ test: 'test' });
     });
 
-    it('should get value from unmountFieldsStateRef', () => {
+    it('should get value from shallowFieldsStateRef', () => {
       const { result, unmount } = renderHook(() =>
         useForm({
           shouldUnregister: false,

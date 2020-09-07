@@ -4,7 +4,7 @@ import { Field } from '../types';
 
 export default function attachEventListeners(
   { ref }: Field,
-  shouldAttachChangeEvent: boolean,
+  shouldAttachChangeEvent?: boolean,
   handleChange?: EventListenerOrEventListenerObject,
 ): void {
   if (isHTMLElement(ref) && handleChange) {

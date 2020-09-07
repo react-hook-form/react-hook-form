@@ -9,7 +9,7 @@ import transformToNestObject from './transformToNestObject';
 
 export default <TFieldValues extends FieldValues>(
   fieldsRef: React.MutableRefObject<FieldRefs<TFieldValues>>,
-  unmountFieldsStateRef?: React.MutableRefObject<Record<string, any>>,
+  shallowFieldsStateRef?: React.MutableRefObject<Record<string, any>>,
   excludeDisabled?: boolean,
   search?:
     | InternalFieldName<TFieldValues>
@@ -35,7 +35,7 @@ export default <TFieldValues extends FieldValues>(
   }
 
   return deepMerge(
-    { ...((unmountFieldsStateRef || {}).current || {}) },
+    { ...((shallowFieldsStateRef || {}).current || {}) },
     transformToNestObject(output),
   );
 };

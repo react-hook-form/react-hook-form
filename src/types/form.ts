@@ -1,31 +1,26 @@
 import * as React from 'react';
 import {
-  EmptyObject,
   NonUndefined,
   LiteralToPrimitive,
   DeepPartial,
   DeepMap,
-  IsFlatObject,
-  LiteralUnion,
 } from './utils';
+import { Resolver } from './resolvers';
+import {
+  Field,
+  FieldElement,
+  FieldName,
+  FieldRefs,
+  FieldValue,
+  FieldValues,
+  InternalFieldName,
+  Ref,
+} from './fields';
+import { FieldArrayName } from './fieldArray';
+import { ErrorOption, FieldErrors } from './errors';
+import { ValidationRules } from './validator';
 
 declare const $NestedValue: unique symbol;
-
-export type FieldValues = Record<string, any>;
-
-export type InternalFieldName<TFieldValues extends FieldValues> =
-  | (keyof TFieldValues & string)
-  | string;
-
-export type FieldName<TFieldValues extends FieldValues> = IsFlatObject<
-  TFieldValues
-> extends true
-  ? Extract<keyof TFieldValues, string>
-  : string;
-
-export type FieldValue<
-  TFieldValues extends FieldValues
-> = TFieldValues[InternalFieldName<TFieldValues>];
 
 export type NestedValue<
   TValue extends any[] | Record<string, unknown> =
@@ -34,6 +29,8 @@ export type NestedValue<
 > = {
   [$NestedValue]: never;
 } & TValue;
+
+export type Message = string;
 
 export type UnpackNestedValue<T> = NonUndefined<T> extends NestedValue<infer U>
   ? U
@@ -46,14 +43,6 @@ export type UnpackNestedValue<T> = NonUndefined<T> extends NestedValue<infer U>
 export type DefaultValuesAtRender<TFieldValues> = UnpackNestedValue<
   DeepPartial<Record<InternalFieldName<TFieldValues>, FieldValue<TFieldValues>>>
 >;
-
-export type FieldElement<TFieldValues extends FieldValues = FieldValues> =
-  | HTMLInputElement
-  | HTMLSelectElement
-  | HTMLTextAreaElement
-  | CustomElement<TFieldValues>;
-
-export type Ref = FieldElement;
 
 export type ValidationMode = {
   onBlur: 'onBlur';
@@ -75,28 +64,16 @@ export type SubmitErrorHandler<TFieldValues extends FieldValues> = (
   event?: React.BaseSyntheticEvent,
 ) => void | Promise<void>;
 
-export type ResolverSuccess<TFieldValues extends FieldValues = FieldValues> = {
-  values: UnpackNestedValue<TFieldValues>;
-  errors: EmptyObject;
+export type SetValueConfig = Partial<{
+  shouldValidate: boolean;
+  shouldDirty: boolean;
+}>;
+
+export type ClearErrorsConfig = {
+  exact: boolean;
 };
 
-export type ResolverError<TFieldValues extends FieldValues = FieldValues> = {
-  values: EmptyObject;
-  errors: FieldErrors<TFieldValues>;
-};
-
-export type ResolverResult<TFieldValues extends FieldValues = FieldValues> =
-  | ResolverSuccess<TFieldValues>
-  | ResolverError<TFieldValues>;
-
-export type Resolver<
-  TFieldValues extends FieldValues = FieldValues,
-  TContext extends object = object
-> = (
-  values: TFieldValues,
-  context?: TContext,
-  validateAllFieldCriteria?: boolean,
-) => Promise<ResolverResult<TFieldValues>> | ResolverResult<TFieldValues>;
+export type HandleChange = (event: Event) => Promise<void | boolean>;
 
 export type UseFormOptions<
   TFieldValues extends FieldValues = FieldValues,
@@ -112,142 +89,45 @@ export type UseFormOptions<
   criteriaMode: 'firstError' | 'all';
 }>;
 
-export type Message = string;
-
-export type ValidationValue = boolean | number | string | RegExp;
-
-export type ValidationRule<
-  TValidationValue extends ValidationValue = ValidationValue
-> = TValidationValue | ValidationValueMessage<TValidationValue>;
-
-export type ValidationValueMessage<
-  TValidationValue extends ValidationValue = ValidationValue
-> = {
-  value: TValidationValue;
-  message: Message;
-};
-
-export type ValidateResult = Message | Message[] | boolean | undefined;
-
-export type Validate = (data: any) => ValidateResult | Promise<ValidateResult>;
-
-export type ValidationRules = Partial<{
-  required: Message | ValidationRule<boolean>;
-  min: ValidationRule<number | string>;
-  max: ValidationRule<number | string>;
-  maxLength: ValidationRule<number | string>;
-  minLength: ValidationRule<number | string>;
-  pattern: ValidationRule<RegExp>;
-  validate: Validate | Record<string, Validate>;
-}>;
-
-export type MultipleFieldErrors = {
-  [K in keyof ValidationRules]?: ValidateResult;
-} & {
-  [key: string]: ValidateResult;
-};
-
-export type FieldError = {
-  type: LiteralUnion<keyof ValidationRules, string>;
-  ref?: Ref;
-  types?: MultipleFieldErrors;
-  message?: Message;
-};
-
-export type ErrorOption =
-  | {
-      types: MultipleFieldErrors;
-    }
-  | {
-      message?: Message;
-      type?: LiteralUnion<keyof ValidationRules, string>;
-    };
-
-export type Field = {
-  ref: Ref;
-  options?: RadioOrCheckboxOption[];
-} & ValidationRules;
-
-export type FieldRefs<TFieldValues extends FieldValues> = Partial<
-  Record<InternalFieldName<TFieldValues>, Field>
->;
-
-export type FieldErrors<
-  TFieldValues extends FieldValues = FieldValues
-> = DeepMap<TFieldValues, FieldError>;
-
-export type FlatFieldErrors<TFieldValues extends FieldValues> = Partial<
-  Record<InternalFieldName<TFieldValues>, FieldError>
->;
-
-export type FieldNames<TFieldValues extends FieldValues> = DeepMap<
+export type FieldNamesMarkedBoolean<TFieldValues extends FieldValues> = DeepMap<
   TFieldValues,
   true
 >;
 
-export type Dirtied<TFieldValues extends FieldValues> = DeepMap<
-  TFieldValues,
-  true
->;
-
-export type SetValueConfig = Partial<{
-  shouldValidate: boolean;
-  shouldDirty: boolean;
-}>;
+export type FieldValuesFromControl<
+  TControl extends Control
+> = TControl extends Control<infer TFieldValues> ? TFieldValues : never;
 
 export type FormStateProxy<TFieldValues extends FieldValues = FieldValues> = {
   isDirty: boolean;
-  dirtyFields: Dirtied<TFieldValues>;
-  touched: FieldNames<TFieldValues>;
+  dirtyFields: FieldNamesMarkedBoolean<TFieldValues>;
+  touched: FieldNamesMarkedBoolean<TFieldValues>;
   isSubmitting: boolean;
   isValid: boolean;
 };
 
 export type ReadFormState = { [K in keyof FormStateProxy]: boolean };
 
-export type RadioOrCheckboxOption = {
-  ref: HTMLInputElement;
-  mutationWatcher?: MutationObserver;
-};
-
-export type CustomElement<TFieldValues extends FieldValues> = {
-  name: FieldName<TFieldValues>;
-  type?: string;
-  value?: any;
-  disabled?: boolean;
-  checked?: boolean;
-  options?: HTMLOptionsCollection;
-  files?: FileList | null;
-  focus?: () => void;
-};
-
-export type HandleChange = (event: Event) => Promise<void | boolean>;
-
-export type FieldValuesFromControl<
-  TControl extends Control
-> = TControl extends Control<infer TFieldValues> ? TFieldValues : never;
-
-export type FieldArrayName = string;
-
-export type UseFieldArrayOptions<
-  TKeyName extends string = 'id',
-  TControl extends Control = Control
-> = {
-  name: FieldArrayName;
-  keyName?: TKeyName;
-  control?: TControl;
-};
-
 export type FormState<TFieldValues> = {
   isDirty: boolean;
-  dirtyFields: FieldNames<TFieldValues>;
+  dirtyFields: FieldNamesMarkedBoolean<TFieldValues>;
   isSubmitted: boolean;
   submitCount: number;
-  touched: FieldNames<TFieldValues>;
+  touched: FieldNamesMarkedBoolean<TFieldValues>;
   isSubmitting: boolean;
   isValid: boolean;
   errors: FieldErrors<TFieldValues>;
 };
+
+export type OmitResetState = Partial<{
+  errors: boolean;
+  isDirty: boolean;
+  isSubmitted: boolean;
+  touched: boolean;
+  isValid: boolean;
+  submitCount: boolean;
+  dirtyFields: boolean;
+}>;
 
 export type Control<TFieldValues extends FieldValues = FieldValues> = Pick<
   UseFormMethods<TFieldValues>,
@@ -274,13 +154,15 @@ export type Control<TFieldValues extends FieldValues = FieldValues> = Pick<
   validateResolver: ((fieldsValues: any) => void) | undefined;
   watchFieldsRef: React.MutableRefObject<Set<InternalFieldName<TFieldValues>>>;
   isWatchAllRef: React.MutableRefObject<boolean>;
-  validFieldsRef: React.MutableRefObject<FieldNames<TFieldValues>>;
-  fieldsWithValidationRef: React.MutableRefObject<FieldNames<TFieldValues>>;
+  validFieldsRef: React.MutableRefObject<FieldNamesMarkedBoolean<TFieldValues>>;
+  fieldsWithValidationRef: React.MutableRefObject<
+    FieldNamesMarkedBoolean<TFieldValues>
+  >;
   fieldsRef: React.MutableRefObject<FieldRefs<TFieldValues>>;
   resetFieldArrayFunctionRef: React.MutableRefObject<
     Record<string, () => void>
   >;
-  unmountFieldsStateRef: Record<InternalFieldName<FieldValues>, any>;
+  shallowFieldsStateRef: Record<InternalFieldName<FieldValues>, any>;
   fieldArrayNamesRef: React.MutableRefObject<
     Set<InternalFieldName<FieldValues>>
   >;
@@ -302,21 +184,6 @@ export type Control<TFieldValues extends FieldValues = FieldValues> = Pick<
   ) => unknown;
   renderWatchedInputs: (name: string, found?: boolean) => void;
 };
-
-export type ArrayField<
-  TFieldArrayValues extends FieldValues = FieldValues,
-  TKeyName extends string = 'id'
-> = TFieldArrayValues & Record<TKeyName, string>;
-
-export type OmitResetState = Partial<{
-  errors: boolean;
-  isDirty: boolean;
-  isSubmitted: boolean;
-  touched: boolean;
-  isValid: boolean;
-  submitCount: boolean;
-  dirtyFields: boolean;
-}>;
 
 export type UseWatchOptions = {
   defaultValue?: unknown;
