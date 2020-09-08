@@ -71,7 +71,7 @@ const Controller = <
       );
     }
 
-    if (as && render) {
+    if ((!as && !render) || (as && render)) {
       console.warn(
         `📋 ${name} Controller should use either the 'as' or 'render' prop, not both. https://react-hook-form.com/api#Controller`,
       );

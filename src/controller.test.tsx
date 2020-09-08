@@ -403,6 +403,8 @@ describe('Controller', () => {
   });
 
   it('should be null if as and render props are not given', () => {
+    jest.spyOn(console, 'warn').mockImplementation(() => {});
+
     const Component = () => {
       const { control } = useForm();
       // @ts-ignore
@@ -412,6 +414,9 @@ describe('Controller', () => {
     const { container } = render(<Component />);
 
     expect(container).toEqual(document.createElement('div'));
+
+    // @ts-ignore
+    console.warn.mockRestore();
   });
 
   it('should update rules when rules gets updated', () => {
@@ -707,6 +712,54 @@ describe('Controller', () => {
       console.warn.mockRestore();
     });
 
+    it('should output error message if as and render props are not given in development environment', () => {
+      jest.spyOn(console, 'warn').mockImplementation(() => {});
+
+      const env = process.env.NODE_ENV;
+      process.env.NODE_ENV = 'development';
+
+      const Component = () => {
+        const { control } = useForm();
+        return (
+          // @ts-ignore
+          <Controller defaultValue="" name="test" control={control} />
+        );
+      };
+
+      render(<Component />);
+
+      expect(console.warn).toBeCalledTimes(1);
+
+      process.env.NODE_ENV = env;
+
+      // @ts-ignore
+      console.warn.mockRestore();
+    });
+
+    it('should not output error message if as and render props are not given in production environment', () => {
+      jest.spyOn(console, 'warn').mockImplementation(() => {});
+
+      const env = process.env.NODE_ENV;
+      process.env.NODE_ENV = 'production';
+
+      const Component = () => {
+        const { control } = useForm();
+        return (
+          // @ts-ignore
+          <Controller defaultValue="" name="test" control={control} />
+        );
+      };
+
+      render(<Component />);
+
+      expect(console.warn).not.toBeCalled();
+
+      process.env.NODE_ENV = env;
+
+      // @ts-ignore
+      console.warn.mockRestore();
+    });
+
     it('should warn the user when defaultValue is missing with useFieldArray in development environment', () => {
       jest.spyOn(console, 'warn').mockImplementation(() => {});
 
@@ -728,9 +781,9 @@ describe('Controller', () => {
           <form>
             {fields.map(({ id }, index) => {
               return (
-                // @ts-ignore
                 <Controller
                   name={`test[${index}].data`}
+                  as={'input' as const}
                   control={control}
                   key={id}
                 />
