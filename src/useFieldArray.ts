@@ -2,7 +2,7 @@ import * as React from 'react';
 import { useFormContext } from './useFormContext';
 import { isMatchFieldArrayName } from './logic/isNameInFieldArray';
 import generateId from './logic/generateId';
-import deepEqual from './logic/deepEqual';
+import deepEqual from './utils/deepEqual';
 import getFieldArrayParentName from './logic/getFieldArrayParentName';
 import get from './utils/get';
 import set from './utils/set';
@@ -15,7 +15,7 @@ import prependAt from './utils/prepend';
 import isArray from './utils/isArray';
 import insertAt from './utils/insert';
 import fillEmptyArray from './utils/fillEmptyArray';
-import { filterBooleanArray } from './utils/filterBooleanArray';
+import filterBooleanArray from './utils/filterBooleanArray';
 import filterOutFalsy from './utils/filterOutFalsy';
 import {
   Field,
