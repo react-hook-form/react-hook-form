@@ -23,6 +23,8 @@ import {
   UseFieldArrayOptions,
   Control,
   ArrayField,
+  UnpackNestedValue,
+  DeepPartial,
 } from './types';
 
 const appendId = <TValue extends object, TKeyName extends string>(
@@ -75,6 +77,7 @@ export const useFieldArray = <
     formStateRef: {
       current: { dirtyFields, touched },
     },
+    shallowFieldsStateRef,
     updateFormState,
     readFormStateRef,
     watchFieldsRef,
@@ -86,9 +89,9 @@ export const useFieldArray = <
     getValues,
   } = control || methods.control;
 
-  const rootParentName = getFieldArrayParentName(name);
+  const fieldArrayParentName = getFieldArrayParentName(name);
   const getDefaultValues = () => [
-    ...(get(fieldArrayDefaultValuesRef.current, rootParentName)
+    ...(get(fieldArrayDefaultValuesRef.current, fieldArrayParentName)
       ? get(fieldArrayDefaultValuesRef.current, name, [])
       : get(defaultValuesRef.current, name, [])),
   ];
@@ -113,11 +116,11 @@ export const useFieldArray = <
   allFields.current = fields;
   fieldArrayNamesRef.current.add(name);
 
-  if (!get(fieldArrayDefaultValuesRef.current, rootParentName)) {
+  if (!get(fieldArrayDefaultValuesRef.current, fieldArrayParentName)) {
     set(
       fieldArrayDefaultValuesRef.current,
-      rootParentName,
-      get(defaultValuesRef.current, rootParentName),
+      fieldArrayParentName,
+      get(defaultValuesRef.current, fieldArrayParentName),
     );
   }
 
@@ -170,6 +173,16 @@ export const useFieldArray = <
     shouldSet = true,
     shouldUpdateValid = false,
   ) => {
+    if (get(shallowFieldsStateRef.current, name)) {
+      const output = method(
+        get(shallowFieldsStateRef.current, name),
+        args.argA,
+        args.argB,
+      );
+      shouldSet && set(shallowFieldsStateRef.current, name, output);
+      cleanup(shallowFieldsStateRef.current);
+    }
+
     if (get(fieldArrayDefaultValuesRef.current, name)) {
       const output = method(
         get(fieldArrayDefaultValuesRef.current, name),
@@ -369,10 +382,13 @@ export const useFieldArray = <
     renderWatchedInputs(name);
   };
 
-  const reset = () => {
+  const reset = <TFieldValues>(
+    data?: UnpackNestedValue<DeepPartial<TFieldValues>>,
+  ) => {
     resetFields();
-    unset(fieldArrayDefaultValuesRef.current, name);
-    memoizedDefaultValues.current = get(defaultValuesRef.current, name);
+    !data && unset(fieldArrayDefaultValuesRef.current, name);
+    unset(shallowFieldsStateRef.current, name);
+    memoizedDefaultValues.current = get(data || defaultValuesRef.current, name);
     setFields(mapIds(memoizedDefaultValues.current, keyName));
   };
 

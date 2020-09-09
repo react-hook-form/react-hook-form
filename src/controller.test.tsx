@@ -475,6 +475,7 @@ describe('Controller', () => {
         name: 'test',
         control,
       });
+
       return (
         <form>
           {fields.map((field, i) => (

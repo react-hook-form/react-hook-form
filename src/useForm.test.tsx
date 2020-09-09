@@ -2049,7 +2049,7 @@ describe('useForm', () => {
         }),
       );
       expect(result.current.errors.input?.nested).toBeDefined();
-      act(() => result.current.clearErrors('input.nested', { exact: false }));
+      act(() => result.current.clearErrors('input.nested'));
       expect(result.current.errors.input?.nested).toBeUndefined();
     });
 
@@ -2151,7 +2151,7 @@ describe('useForm', () => {
       expect(submit).not.toBeCalled();
 
       act(() => {
-        result.current.clearErrors('whatever', { exact: false });
+        result.current.clearErrors('whatever');
       });
 
       await act(async () => await result.current.handleSubmit(submit)());

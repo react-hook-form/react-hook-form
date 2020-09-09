@@ -148,6 +148,7 @@ export type Control<TFieldValues extends FieldValues = FieldValues> = Pick<
   fieldArrayDefaultValuesRef: React.MutableRefObject<
     Record<FieldArrayName, any[]>
   >;
+  shouldUnregister: boolean;
   formStateRef: React.MutableRefObject<FormState<FieldValues>>;
   updateFormState: (args?: Partial<FormState<TFieldValues>>) => void;
   validateResolver: ((fieldsValues: any) => void) | undefined;
@@ -220,10 +221,7 @@ export type UseFormMethods<TFieldValues extends FieldValues = FieldValues> = {
     defaultValues?: UnpackNestedValue<DeepPartial<TFieldValues>>,
   ): UnpackNestedValue<DeepPartial<TFieldValues>>;
   setError(name: FieldName<TFieldValues>, error: ErrorOption): void;
-  clearErrors(
-    name?: FieldName<TFieldValues> | FieldName<TFieldValues>[],
-    config?: ClearErrorsConfig,
-  ): void;
+  clearErrors(name?: FieldName<TFieldValues> | FieldName<TFieldValues>[]): void;
   setValue<
     TFieldName extends string,
     TFieldValue extends TFieldValues[TFieldName]

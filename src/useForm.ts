@@ -68,7 +68,6 @@ import {
   LiteralToPrimitive,
   DeepPartial,
   NonUndefined,
-  ClearErrorsConfig,
 } from './types';
 
 const isWindowUndefined = typeof window === UNDEFINED;
@@ -116,9 +115,14 @@ export function useForm<
   const isUnMount = React.useRef(false);
   const isWatchAllRef = React.useRef(false);
   const handleChangeRef = React.useRef<HandleChange>();
-  const shallowFieldsStateRef = React.useRef({});
+  const shallowFieldsStateRef = React.useRef(
+    shouldUnregister ? {} : defaultValues,
+  );
   const resetFieldArrayFunctionRef = React.useRef<
-    Record<InternalFieldName<FieldValues>, () => void>
+    Record<
+      InternalFieldName<FieldValues>,
+      (data?: UnpackNestedValue<DeepPartial<TFieldValues>>) => void
+    >
   >({});
   const contextRef = React.useRef(context);
   const resolverRef = React.useRef(resolver);
@@ -461,6 +465,17 @@ export function useForm<
         config.shouldDirty && updateAndGetDirtyState(name);
       } else if (!isPrimitive(value)) {
         setInternalValues(name, value, config);
+
+        if (
+          isNameInFieldArray(fieldArrayNamesRef.current, name) ||
+          fieldArrayNamesRef.current.has(name)
+        ) {
+          const fieldArrayParentName = getFieldArrayParentName(name) || name;
+          fieldArrayDefaultValuesRef.current[fieldArrayParentName] = value;
+          resetFieldArrayFunctionRef.current[fieldArrayParentName]({
+            [name]: value,
+          } as UnpackNestedValue<DeepPartial<TFieldValues>>);
+        }
       }
 
       !shouldUnregister && set(shallowFieldsStateRef.current, name, value);
@@ -679,13 +694,12 @@ export function useForm<
 
   function clearErrors(
     name?: FieldName<TFieldValues> | FieldName<TFieldValues>[],
-    config: ClearErrorsConfig = { exact: true },
   ): void {
     name &&
-      (isArray(name) ? name : [name]).forEach(
-        (inputName) =>
-          (fieldsRef.current[inputName] || !config.exact) &&
-          unset(formStateRef.current.errors, inputName),
+      (isArray(name) ? name : [name]).forEach((inputName) =>
+        fieldsRef.current[inputName]
+          ? delete formStateRef.current.errors[inputName]
+          : unset(formStateRef.current.errors, inputName),
       );
 
     updateFormState({
@@ -1218,6 +1232,7 @@ export function useForm<
     defaultValuesRef,
     shallowFieldsStateRef,
     updateFormState,
+    shouldUnregister,
     validateResolver: resolver ? validateResolver : undefined,
     ...commonProps,
   };
