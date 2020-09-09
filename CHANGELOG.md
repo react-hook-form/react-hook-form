@@ -1,5 +1,34 @@
 # Changelog
 
+## [6.8.0] - 2020-09-09
+
+### Added
+
+- new formState `isSubmitSuccessful` to indicate successful submission
+- `setError` now support focus on the actual input
+
+```typescript jsx
+setError('test', { message: 'This is required', shouldFocus: true });
+```
+
+### Changed
+
+- with `shouldUnregister:false` `defaultValues` data will be part of the submission data
+- with `shouldUnregister:false` conditional field is going to work with `useFieldArray`
+- `setValue` now support `useFieldArray`
+
+```diff
+- setValue('test', 'data')
++ setValue('test', [{ test: '123' }]) // make it work for useFieldArray and target a field array key
+```
+
+- remove `exact` config at clearErrors
+
+```diff
+- clearErrors('test', { exact: false })
++ clearErrors('test') // does it automatically in the lib
+```
+
 ## [6.7.0] - 2020-08-30
 
 ### Added
