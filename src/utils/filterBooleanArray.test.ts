@@ -1,4 +1,4 @@
-import { filterBooleanArray } from './filterBooleanArray';
+import filterBooleanArray from './filterBooleanArray';
 
 describe('filterBooleanArray', () => {
   it('should be filtered array', () => {

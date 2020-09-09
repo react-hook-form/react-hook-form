@@ -32,10 +32,7 @@ export default <TFieldValues extends FieldValues>(
     value = get(fieldValues, fieldName);
 
     if (isObject(value) || isArray(value)) {
-      getPath<TFieldValues>(
-        fieldName,
-        value as TFieldValues,
-      ).forEach((name: string) => watchFields.add(name));
+      getPath(fieldName, value).forEach((name) => watchFields.add(name));
     }
   }
 

@@ -46,4 +46,32 @@ describe('deepMerge', () => {
       test: new Date('1999-02-02'),
     });
   });
+
+  it('should deep merge array values  ', () => {
+    expect(deepMerge([{ hey: 'test' }], [{ id: 'id', text: '' }])).toEqual([
+      { hey: 'test', id: 'id', text: '' },
+    ]);
+
+    expect(deepMerge([{ id: 'id', text: '' }], [{ hey: 'test' }])).toEqual([
+      { hey: 'test', id: 'id', text: '' },
+    ]);
+
+    expect(
+      deepMerge(
+        {
+          test: [{ id: 'id', text: '' }],
+        },
+        {
+          test: [{ hey: 'test' }],
+        },
+      ),
+    ).toEqual({
+      test: [{ hey: 'test', id: 'id', text: '' }],
+    });
+  });
+
+  it("should never merge non-objects, and always return the 'source' object", () => {
+    expect(deepMerge({}, 0)).toEqual(0);
+    expect(deepMerge(0, {})).toEqual({});
+  });
 });

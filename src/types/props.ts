@@ -1,13 +1,13 @@
+import * as React from 'react';
 import {
   UseFormMethods,
   FieldValues,
   FieldValuesFromControl,
   FieldName,
-  ValidationRules,
   Control,
-} from './form';
-import { Assign } from './utils';
-import * as React from 'react';
+  Assign,
+} from './';
+import { ValidationRules } from './validator';
 
 export type FormProviderProps<
   TFieldValues extends FieldValues = FieldValues
