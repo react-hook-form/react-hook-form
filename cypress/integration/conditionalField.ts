@@ -9,6 +9,7 @@ describe('ConditionalField', () => {
         touched: [],
         isDirty: false,
         isSubmitting: false,
+        isSubmitSuccessful: false,
         isValid: false,
       });
     });
@@ -25,6 +26,7 @@ describe('ConditionalField', () => {
         touched: ['selectNumber', 'firstName', 'lastName'],
         isDirty: true,
         isSubmitting: false,
+        isSubmitSuccessful: false,
         isValid: true,
       }),
     );
@@ -40,6 +42,7 @@ describe('ConditionalField', () => {
         touched: ['selectNumber', 'firstName', 'lastName'],
         isDirty: true,
         isSubmitting: false,
+        isSubmitSuccessful: true,
         isValid: true,
       }),
     );
@@ -60,6 +63,7 @@ describe('ConditionalField', () => {
         touched: ['selectNumber'],
         isDirty: true,
         isSubmitting: false,
+        isSubmitSuccessful: true,
         isValid: false,
       }),
     );
@@ -74,6 +78,7 @@ describe('ConditionalField', () => {
         touched: ['selectNumber', 'min', 'max'],
         isDirty: true,
         isSubmitting: false,
+        isSubmitSuccessful: true,
         isValid: true,
       }),
     );
@@ -86,6 +91,7 @@ describe('ConditionalField', () => {
         touched: ['selectNumber', 'min', 'max'],
         isDirty: true,
         isSubmitting: false,
+        isSubmitSuccessful: true,
         isValid: true,
       }),
     );
@@ -106,6 +112,7 @@ describe('ConditionalField', () => {
         touched: ['selectNumber'],
         isDirty: true,
         isSubmitting: false,
+        isSubmitSuccessful: true,
         isValid: true,
       }),
     );
@@ -120,6 +127,7 @@ describe('ConditionalField', () => {
         touched: ['selectNumber', 'notRequired'],
         isDirty: true,
         isSubmitting: false,
+        isSubmitSuccessful: true,
         isValid: true,
       }),
     );

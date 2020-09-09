@@ -10,6 +10,7 @@ describe('form state with schema validation', () => {
         touched: [],
         isDirty: false,
         isSubmitting: false,
+        isSubmitSuccessful: false,
         isValid: false,
       }),
     );
@@ -24,6 +25,7 @@ describe('form state with schema validation', () => {
         touched: ['firstName'],
         isDirty: true,
         isSubmitting: false,
+        isSubmitSuccessful: false,
         isValid: false,
       }),
     );
@@ -37,6 +39,7 @@ describe('form state with schema validation', () => {
         touched: ['firstName'],
         isDirty: false,
         isSubmitting: false,
+        isSubmitSuccessful: false,
         isValid: false,
       }),
     );
@@ -52,6 +55,7 @@ describe('form state with schema validation', () => {
         touched: ['firstName', 'lastName'],
         isDirty: true,
         isSubmitting: false,
+        isSubmitSuccessful: false,
         isValid: false,
       }),
     );
@@ -67,6 +71,7 @@ describe('form state with schema validation', () => {
         touched: ['firstName', 'lastName'],
         isDirty: true,
         isSubmitting: false,
+        isSubmitSuccessful: false,
         isValid: false,
       }),
     );
@@ -81,6 +86,7 @@ describe('form state with schema validation', () => {
         touched: ['firstName', 'lastName'],
         isDirty: true,
         isSubmitting: false,
+        isSubmitSuccessful: false,
         isValid: false,
       }),
     );
@@ -99,6 +105,7 @@ describe('form state with schema validation', () => {
         touched: [],
         isDirty: false,
         isSubmitting: false,
+        isSubmitSuccessful: false,
         isValid: false,
       }),
     );
@@ -113,6 +120,7 @@ describe('form state with schema validation', () => {
         touched: ['firstName'],
         isDirty: true,
         isSubmitting: false,
+        isSubmitSuccessful: false,
         isValid: false,
       }),
     );
@@ -126,6 +134,7 @@ describe('form state with schema validation', () => {
         touched: ['firstName'],
         isDirty: false,
         isSubmitting: false,
+        isSubmitSuccessful: false,
         isValid: false,
       }),
     );
@@ -141,6 +150,7 @@ describe('form state with schema validation', () => {
         touched: ['firstName', 'lastName'],
         isDirty: true,
         isSubmitting: false,
+        isSubmitSuccessful: false,
         isValid: true,
       }),
     );
@@ -156,6 +166,7 @@ describe('form state with schema validation', () => {
         touched: ['firstName', 'lastName'],
         isDirty: true,
         isSubmitting: false,
+        isSubmitSuccessful: false,
         isValid: false,
       }),
     );
@@ -170,6 +181,7 @@ describe('form state with schema validation', () => {
         touched: ['firstName', 'lastName'],
         isDirty: true,
         isSubmitting: false,
+        isSubmitSuccessful: true,
         isValid: true,
       }),
     );
@@ -187,6 +199,7 @@ describe('form state with schema validation', () => {
         touched: [],
         isDirty: false,
         isSubmitting: false,
+        isSubmitSuccessful: false,
         isValid: false,
       }),
     );
@@ -201,6 +214,7 @@ describe('form state with schema validation', () => {
         touched: ['firstName'],
         isDirty: true,
         isSubmitting: false,
+        isSubmitSuccessful: false,
         isValid: false,
       }),
     );
@@ -214,6 +228,7 @@ describe('form state with schema validation', () => {
         touched: ['firstName'],
         isDirty: false,
         isSubmitting: false,
+        isSubmitSuccessful: false,
         isValid: false,
       }),
     );
@@ -229,6 +244,7 @@ describe('form state with schema validation', () => {
         touched: ['firstName', 'lastName'],
         isDirty: true,
         isSubmitting: false,
+        isSubmitSuccessful: false,
         isValid: true,
       }),
     );
@@ -244,6 +260,7 @@ describe('form state with schema validation', () => {
         touched: ['firstName', 'lastName'],
         isDirty: true,
         isSubmitting: false,
+        isSubmitSuccessful: false,
         isValid: false,
       }),
     );
@@ -258,6 +275,7 @@ describe('form state with schema validation', () => {
         touched: ['firstName', 'lastName'],
         isDirty: true,
         isSubmitting: false,
+        isSubmitSuccessful: true,
         isValid: true,
       }),
     );
@@ -279,6 +297,7 @@ describe('form state with schema validation', () => {
         touched: ['firstName', 'lastName'],
         isDirty: true,
         isSubmitting: false,
+        isSubmitSuccessful: false,
         isValid: false,
       }),
     );
@@ -294,6 +313,7 @@ describe('form state with schema validation', () => {
         touched: ['firstName', 'lastName'],
         isDirty: false,
         isSubmitting: false,
+        isSubmitSuccessful: false,
         isValid: false,
       }),
     );
@@ -308,6 +328,7 @@ describe('form state with schema validation', () => {
         touched: ['firstName', 'lastName', 'select'],
         isDirty: true,
         isSubmitting: false,
+        isSubmitSuccessful: false,
         isValid: false,
       }),
     );
@@ -320,6 +341,7 @@ describe('form state with schema validation', () => {
         touched: ['firstName', 'lastName', 'select'],
         isDirty: false,
         isSubmitting: false,
+        isSubmitSuccessful: false,
         isValid: false,
       }),
     );
@@ -334,6 +356,7 @@ describe('form state with schema validation', () => {
         touched: ['firstName', 'lastName', 'select', 'checkbox'],
         isDirty: true,
         isSubmitting: false,
+        isSubmitSuccessful: false,
         isValid: false,
       }),
     );
@@ -346,6 +369,7 @@ describe('form state with schema validation', () => {
         touched: ['firstName', 'lastName', 'select', 'checkbox'],
         isDirty: false,
         isSubmitting: false,
+        isSubmitSuccessful: false,
         isValid: false,
       }),
     );
@@ -366,6 +390,7 @@ describe('form state with schema validation', () => {
         ],
         isDirty: true,
         isSubmitting: false,
+        isSubmitSuccessful: false,
         isValid: false,
       }),
     );
@@ -384,6 +409,7 @@ describe('form state with schema validation', () => {
         ],
         isDirty: false,
         isSubmitting: false,
+        isSubmitSuccessful: false,
         isValid: false,
       }),
     );
@@ -405,6 +431,7 @@ describe('form state with schema validation', () => {
         ],
         isDirty: true,
         isSubmitting: false,
+        isSubmitSuccessful: false,
         isValid: false,
       }),
     );
@@ -425,6 +452,7 @@ describe('form state with schema validation', () => {
         ],
         isDirty: true,
         isSubmitting: false,
+        isSubmitSuccessful: false,
         isValid: false,
       }),
     );
@@ -446,6 +474,7 @@ describe('form state with schema validation', () => {
         touched: ['firstName', 'lastName'],
         isDirty: true,
         isSubmitting: false,
+        isSubmitSuccessful: false,
         isValid: true,
       }),
     );
@@ -462,6 +491,7 @@ describe('form state with schema validation', () => {
         touched: ['firstName', 'lastName'],
         isDirty: false,
         isSubmitting: false,
+        isSubmitSuccessful: false,
         isValid: false,
       }),
     );
@@ -483,6 +513,7 @@ describe('form state with schema validation', () => {
         touched: ['firstName', 'lastName'],
         isDirty: true,
         isSubmitting: false,
+        isSubmitSuccessful: false,
         isValid: true,
       }),
     );
@@ -497,6 +528,7 @@ describe('form state with schema validation', () => {
         touched: [],
         isDirty: false,
         isSubmitting: false,
+        isSubmitSuccessful: false,
         isValid: false,
       }),
     );
@@ -517,6 +549,7 @@ describe('form state with schema validation', () => {
         touched: ['firstName', 'lastName'],
         isDirty: false,
         isSubmitting: false,
+        isSubmitSuccessful: false,
         isValid: false,
       }),
     );
