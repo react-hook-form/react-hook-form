@@ -697,15 +697,19 @@ export function useForm<
     name: FieldName<TFieldValues>,
     error: ErrorOption = {},
   ): void {
+    const ref = (fieldsRef.current[name] || {})!.ref;
+
     set(formStateRef.current.errors, name, {
       ...error,
-      ref: (fieldsRef.current[name] || {})!.ref,
+      ref,
     });
 
     updateFormState({
       isValid: false,
       errors: formStateRef.current.errors,
     });
+
+    error.shouldFocus && ref && ref.focus && ref.focus();
   }
 
   const watchInternal = React.useCallback(
