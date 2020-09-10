@@ -82,6 +82,8 @@ function App() {
 
 ## Sponsors
 
+Thanks go to these kind and lovely sponsors (company and individuals)! 
+
 <a href="https://underbelly.is/" target="_blank">
   <img src="https://images.opencollective.com/underbelly/989a4a6/logo/256.png" width="75" height="75" />
 </a>
@@ -217,7 +219,7 @@ function App() {
 
 ## Backers
 
-Thanks goes to all our backers! [[Become a backer](https://opencollective.com/react-hook-form#backer)].
+Thanks go to all our backers! [[Become a backer](https://opencollective.com/react-hook-form#backer)].
 
 <a href="https://opencollective.com/react-hook-form#backers">
     <img src="https://opencollective.com/react-hook-form/backers.svg?width=950" />
@@ -225,7 +227,7 @@ Thanks goes to all our backers! [[Become a backer](https://opencollective.com/re
 
 ## Organizations
 
-Thanks goes to these wonderful organizations! [[Contribute](https://opencollective.com/react-hook-form/contribute)].
+Thanks go to these wonderful organizations! [[Contribute](https://opencollective.com/react-hook-form/contribute)].
 
 <a href="https://github.com/react-hook-form/react-hook-form/graphs/contributors">
     <img src="https://opencollective.com/react-hook-form/organizations.svg?width=890" />
@@ -233,7 +235,7 @@ Thanks goes to these wonderful organizations! [[Contribute](https://opencollecti
 
 ## Contributors
 
-Thanks goes to these wonderful people! [[Become a contributor](CONTRIBUTING.md)].
+Thanks go to these wonderful people! [[Become a contributor](CONTRIBUTING.md)].
 
 <a href="https://github.com/react-hook-form/react-hook-form/graphs/contributors">
     <img src="https://opencollective.com/react-hook-form/contributors.svg?width=890" />
