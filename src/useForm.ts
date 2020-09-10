@@ -54,7 +54,6 @@ import {
   ReadFormState,
   Ref,
   HandleChange,
-  FieldError,
   RadioOrCheckboxOption,
   OmitResetState,
   DefaultValuesAtRender,
@@ -209,7 +208,7 @@ export function useForm<
         shouldReRender =
           shouldReRender ||
           !previousError ||
-          !isSameError(previousError, error[name] as FieldError);
+          !isSameError(previousError, error[name]);
 
         set(formStateRef.current.errors, name, error[name]);
       }

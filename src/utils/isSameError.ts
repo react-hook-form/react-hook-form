@@ -1,14 +1,13 @@
 import isObject from './isObject';
 import { FieldError } from '../types';
 
-export default (
-  error: FieldError | undefined,
-  { type, types = {}, message }: FieldError,
-): boolean =>
+export default (error?: FieldError, currentError?: FieldError): boolean =>
   isObject(error) &&
-  error.type === type &&
-  error.message === message &&
-  Object.keys(error.types || {}).length === Object.keys(types).length &&
+  isObject(currentError) &&
+  error.type === currentError.type &&
+  error.message === currentError.message &&
+  Object.keys(error.types || {}).length ===
+    Object.keys(currentError.types || {}).length &&
   Object.entries(error.types || {}).every(
-    ([key, value]) => types[key] === value,
+    ([key, value]) => (currentError.types || {})[key] === value,
   );
