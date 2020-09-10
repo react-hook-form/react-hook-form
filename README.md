@@ -82,13 +82,9 @@ function App() {
 
 ## Sponsors
 
-### Company
-
 <a href="https://underbelly.is/" target="_blank">
   <img src="https://images.opencollective.com/underbelly/989a4a6/logo/256.png" width="75" height="75" />
 </a>
-
-### Individual
 
 <p>
     <a href="https://github.com/sayav"
