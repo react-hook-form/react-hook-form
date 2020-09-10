@@ -23,8 +23,8 @@ import { ValidationRules } from './validator';
 declare const $NestedValue: unique symbol;
 
 export type NestedValue<
-  TValue extends any[] | Record<string, unknown> =
-    | any[]
+  TValue extends unknown[] | Record<string, unknown> =
+    | unknown[]
     | Record<string, unknown>
 > = {
   [$NestedValue]: never;
@@ -40,8 +40,9 @@ export type UnpackNestedValue<T> = NonUndefined<T> extends NestedValue<infer U>
   ? { [K in keyof T]: UnpackNestedValue<T[K]> }
   : T;
 
-export type DefaultValuesAtRender<TFieldValues> = UnpackNestedValue<
-  DeepPartial<Record<InternalFieldName<TFieldValues>, FieldValue<TFieldValues>>>
+export type DefaultValuesAtRender<TFieldValues> = Record<
+  InternalFieldName<TFieldValues>,
+  unknown
 >;
 
 export type ValidationMode = {
@@ -68,10 +69,6 @@ export type SetValueConfig = Partial<{
   shouldValidate: boolean;
   shouldDirty: boolean;
 }>;
-
-export type ClearErrorsConfig = {
-  exact: boolean;
-};
 
 export type HandleChange = (event: Event) => Promise<void | boolean>;
 
@@ -174,10 +171,12 @@ export type Control<TFieldValues extends FieldValues = FieldValues> = Pick<
     | FieldValue<UnpackNestedValue<TFieldValues>>
     | UnpackNestedValue<DeepPartial<TFieldValues>>
   >;
-  watchFieldsHookRef: React.MutableRefObject<
+  useWatchFieldsRef: React.MutableRefObject<
     Record<string, Set<InternalFieldName<TFieldValues>>>
   >;
-  watchFieldsHookRenderRef: React.MutableRefObject<Record<string, Function>>;
+  useWatchRenderFunctionsRef: React.MutableRefObject<
+    Record<string, () => void>
+  >;
   watchInternal: (
     fieldNames?: string | string[],
     defaultValue?: unknown,

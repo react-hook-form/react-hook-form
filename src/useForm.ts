@@ -97,11 +97,11 @@ export function useForm<
   const watchFieldsRef = React.useRef(
     new Set<InternalFieldName<TFieldValues>>(),
   );
-  const watchFieldsHookRef = React.useRef<
-    Record<InternalFieldName<FieldValues>, Set<InternalFieldName<TFieldValues>>>
+  const useWatchFieldsRef = React.useRef<
+    Record<string, Set<InternalFieldName<TFieldValues>>>
   >({});
-  const watchFieldsHookRenderRef = React.useRef<
-    Record<InternalFieldName<FieldValues>, Function>
+  const useWatchRenderFunctionsRef = React.useRef<
+    Record<InternalFieldName<FieldValues>, () => void>
   >({});
   const fieldsWithValidationRef = React.useRef({});
   const validFieldsRef = React.useRef({});
@@ -130,9 +130,7 @@ export function useForm<
     new Set(),
   );
   const modeRef = React.useRef(modeChecker(mode));
-  const {
-    current: { isOnSubmit, isOnTouch },
-  } = modeRef;
+  const { isOnSubmit, isOnTouch } = modeRef.current;
   const isValidateAllFieldCriteria = criteriaMode === VALIDATION_MODE.all;
   const [formState, setFormState] = React.useState<FormState<TFieldValues>>({
     isDirty: false,
@@ -155,8 +153,9 @@ export function useForm<
   const formStateRef = React.useRef(formState);
   const observerRef = React.useRef<MutationObserver | undefined>();
   const {
-    current: { isOnBlur: isReValidateOnBlur, isOnChange: isReValidateOnChange },
-  } = React.useRef(modeChecker(reValidateMode));
+    isOnBlur: isReValidateOnBlur,
+    isOnChange: isReValidateOnChange,
+  } = React.useRef(modeChecker(reValidateMode)).current;
 
   contextRef.current = context;
   resolverRef.current = resolver;
@@ -490,15 +489,15 @@ export function useForm<
     watchFieldsRef.current.has((name.match(/\w+/) || [])[0]);
 
   const renderWatchedInputs = (name: string, found = true): boolean => {
-    if (!isEmptyObject(watchFieldsHookRef.current)) {
-      for (const key in watchFieldsHookRef.current) {
+    if (!isEmptyObject(useWatchFieldsRef.current)) {
+      for (const key in useWatchFieldsRef.current) {
         if (
           !name ||
-          watchFieldsHookRef.current[key].has(name) ||
-          watchFieldsHookRef.current[key].has(getFieldArrayParentName(name)) ||
-          !watchFieldsHookRef.current[key].size
+          useWatchFieldsRef.current[key].has(name) ||
+          useWatchFieldsRef.current[key].has(getFieldArrayParentName(name)) ||
+          !useWatchFieldsRef.current[key].size
         ) {
-          watchFieldsHookRenderRef.current[key]();
+          useWatchRenderFunctionsRef.current[key]();
           found = false;
         }
       }
@@ -672,9 +671,9 @@ export function useForm<
         removeFieldEventListener(field, forceDelete);
 
         if (shouldUnregister && !filterOutFalsy(field.options || []).length) {
+          delete defaultValuesAtRenderRef.current[field.ref.name];
           unset(validFieldsRef.current, field.ref.name);
           unset(fieldsWithValidationRef.current, field.ref.name);
-          unset(defaultValuesAtRenderRef.current, field.ref.name);
           unset(formStateRef.current.errors, field.ref.name);
           unset(formStateRef.current.dirtyFields, field.ref.name);
           unset(formStateRef.current.touched, field.ref.name);
@@ -734,7 +733,7 @@ export function useForm<
       watchId?: string,
     ) => {
       const watchFields = watchId
-        ? watchFieldsHookRef.current[watchId]
+        ? useWatchFieldsRef.current[watchId]
         : watchFieldsRef.current;
       const combinedDefaultValues = isUndefined(defaultValue)
         ? defaultValuesRef.current
@@ -1223,8 +1222,8 @@ export function useForm<
     isWatchAllRef,
     watchFieldsRef,
     resetFieldArrayFunctionRef,
-    watchFieldsHookRef,
-    watchFieldsHookRenderRef,
+    useWatchFieldsRef,
+    useWatchRenderFunctionsRef,
     fieldArrayDefaultValuesRef,
     validFieldsRef,
     fieldsWithValidationRef,

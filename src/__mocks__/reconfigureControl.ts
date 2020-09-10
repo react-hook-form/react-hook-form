@@ -24,10 +24,10 @@ export const reconfigureControl = (
   watchFieldsRef: {
     current: new Set(),
   },
-  watchFieldsHookRef: {
+  useWatchFieldsRef: {
     current: {},
   },
-  watchFieldsHookRenderRef: {
+  useWatchRenderFunctionsRef: {
     current: {},
   },
   watchInternal: jest.fn(),
