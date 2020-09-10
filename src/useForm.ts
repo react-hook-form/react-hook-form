@@ -68,6 +68,7 @@ import {
   DeepPartial,
   NonUndefined,
   InternalNameSet,
+  DefaultValues,
 } from './types';
 
 const isWindowUndefined = typeof window === UNDEFINED;
@@ -85,7 +86,7 @@ export function useForm<
   reValidateMode = VALIDATION_MODE.onChange,
   resolver,
   context,
-  defaultValues = {} as UnpackNestedValue<DeepPartial<TFieldValues>>,
+  defaultValues = {},
   shouldFocusError = true,
   shouldUnregister = true,
   criteriaMode,
@@ -107,10 +108,9 @@ export function useForm<
   const validFieldsRef = React.useRef<FieldNamesMarkedBoolean<TFieldValues>>(
     {},
   );
-  const defaultValuesRef = React.useRef<
-    | FieldValue<UnpackNestedValue<TFieldValues>>
-    | UnpackNestedValue<DeepPartial<TFieldValues>>
-  >(defaultValues);
+  const defaultValuesRef = React.useRef<DefaultValues<TFieldValues>>(
+    defaultValues,
+  );
   const defaultValuesAtRenderRef = React.useRef(
     {} as DefaultValuesAtRender<TFieldValues>,
   );

@@ -1,7 +1,7 @@
 import isObject from './isObject';
 import { FieldError } from '../types';
 
-export default (error?: FieldError, currentError?: FieldError): boolean =>
+export default (error: FieldError, currentError?: FieldError): boolean =>
   isObject(error) &&
   isObject(currentError) &&
   error.type === currentError.type &&
