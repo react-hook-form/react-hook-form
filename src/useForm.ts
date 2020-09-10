@@ -102,8 +102,12 @@ export function useForm<
   const useWatchRenderFunctionsRef = React.useRef<
     Record<InternalFieldName<FieldValues>, () => void>
   >({});
-  const fieldsWithValidationRef = React.useRef({});
-  const validFieldsRef = React.useRef({});
+  const fieldsWithValidationRef = React.useRef<
+    FieldNamesMarkedBoolean<TFieldValues>
+  >({});
+  const validFieldsRef = React.useRef<FieldNamesMarkedBoolean<TFieldValues>>(
+    {},
+  );
   const defaultValuesRef = React.useRef<
     | FieldValue<UnpackNestedValue<TFieldValues>>
     | UnpackNestedValue<DeepPartial<TFieldValues>>
