@@ -110,7 +110,7 @@ function App() {
     /></a>
     <a href="https://github.com/lixunn"
     ><img
-            src="https://avatars2.githubusercontent.com/u/3017964?s=60&amp;v=4"
+            src="https://avatars0.githubusercontent.com/u/4017964?s=460&u=3a3fdffeb97749d7509d9c5e9be2cafcb98e426f&v=4"
             width="30"
             height="30"
             alt="@lixunn"
