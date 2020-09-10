@@ -533,7 +533,7 @@ export function useForm<
 
   handleChangeRef.current = handleChangeRef.current
     ? handleChangeRef.current
-    : async ({ type, target }): ReturnType<HandleChange> => {
+    : async ({ type, target }: Event): Promise<void | boolean> => {
         const name = (target as Ref)!.name;
         const field = fieldsRef.current[name];
         let error: InternalFieldErrors<TFieldValues>;
