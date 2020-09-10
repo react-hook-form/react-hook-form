@@ -363,7 +363,7 @@ export function useForm<
         | InternalFieldName<TFieldValues>[],
     ) => {
       const { errors } = await resolverRef.current!(
-        getValues() as TFieldValues,
+        getValues(),
         contextRef.current,
         isValidateAllFieldCriteria,
       );
@@ -534,7 +534,7 @@ export function useForm<
 
   handleChangeRef.current = handleChangeRef.current
     ? handleChangeRef.current
-    : async ({ type, target }: Event): Promise<void | boolean> => {
+    : async ({ type, target }): ReturnType<HandleChange> => {
         const name = (target as Ref)!.name;
         const field = fieldsRef.current[name];
         let error: InternalFieldErrors<TFieldValues>;
@@ -576,7 +576,7 @@ export function useForm<
 
           if (resolverRef.current) {
             const { errors } = await resolverRef.current(
-              getValues() as TFieldValues,
+              getValues(),
               contextRef.current,
               isValidateAllFieldCriteria,
             );
@@ -1013,11 +1013,7 @@ export function useForm<
         e.persist();
       }
       let fieldErrors: FieldErrors<TFieldValues> = {};
-      let fieldValues: FieldValues = getFieldsValues(
-        fieldsRef,
-        shallowFieldsStateRef,
-        true,
-      );
+      let fieldValues = getFieldsValues(fieldsRef, shallowFieldsStateRef, true);
 
       if (readFormStateRef.current.isSubmitting) {
         updateFormState({
@@ -1028,7 +1024,7 @@ export function useForm<
       try {
         if (resolverRef.current) {
           const { errors, values } = await resolverRef.current(
-            fieldValues as TFieldValues,
+            fieldValues,
             contextRef.current,
             isValidateAllFieldCriteria,
           );
