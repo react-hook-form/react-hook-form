@@ -53,6 +53,7 @@ clearErrors('test.firstName'); // for clear single input error
 ### Changed
 
 - `errors` is also part of `formState` object
+- `disabled` input will not be part of the submission data by following the [HTML standard](https://html.spec.whatwg.org/multipage/forms.html#constructing-the-form-data-set)
 
 ## [6.4.0] - 2020-08-15
 
