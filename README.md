@@ -103,7 +103,7 @@ function App() {
     /></a>
     <a href="https://github.com/washingtonsoares"
     ><img
-            src="https://avatars2.githubusercontent.com/u/5726130?s=60&amp;v=4"
+            src="https://avatars0.githubusercontent.com/u/5726140?s=460&u=b300a6fa08a24c59b9db6ebf246384cf8b16a140&v=4"
             width="30"
             height="30"
             alt="@washingtonsoares"
