@@ -68,6 +68,7 @@ import {
   LiteralToPrimitive,
   DeepPartial,
   NonUndefined,
+  InternalNameSet,
 } from './types';
 
 const isWindowUndefined = typeof window === UNDEFINED;
@@ -94,9 +95,7 @@ export function useForm<
   const fieldArrayDefaultValuesRef = React.useRef<
     Record<InternalFieldName<FieldValues>, unknown[]>
   >({});
-  const watchFieldsRef = React.useRef(
-    new Set<InternalFieldName<TFieldValues>>(),
-  );
+  const watchFieldsRef = React.useRef<InternalNameSet<TFieldValues>>(new Set());
   const useWatchFieldsRef = React.useRef<
     Record<string, Set<InternalFieldName<TFieldValues>>>
   >({});
@@ -126,7 +125,7 @@ export function useForm<
   >({});
   const contextRef = React.useRef(context);
   const resolverRef = React.useRef(resolver);
-  const fieldArrayNamesRef = React.useRef<Set<InternalFieldName<FieldValues>>>(
+  const fieldArrayNamesRef = React.useRef<InternalNameSet<TFieldValues>>(
     new Set(),
   );
   const modeRef = React.useRef(modeChecker(mode));
@@ -1106,8 +1105,8 @@ export function useForm<
     dirtyFields,
   }: OmitResetState) => {
     if (!isValid) {
-      validFieldsRef.current = new Set();
-      fieldsWithValidationRef.current = new Set();
+      validFieldsRef.current = {};
+      fieldsWithValidationRef.current = {};
     }
 
     defaultValuesAtRenderRef.current = {} as DefaultValuesAtRender<

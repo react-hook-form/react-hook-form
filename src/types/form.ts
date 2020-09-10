@@ -45,6 +45,8 @@ export type DefaultValuesAtRender<TFieldValues> = Record<
   unknown
 >;
 
+export type InternalNameSet<FieldValues> = Set<InternalFieldName<FieldValues>>;
+
 export type ValidationMode = {
   onBlur: 'onBlur';
   onChange: 'onChange';
