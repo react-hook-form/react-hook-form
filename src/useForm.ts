@@ -1064,7 +1064,6 @@ export function useForm<
           updateFormState({
             errors: {},
             isSubmitting: true,
-            isSubmitSuccessful: true,
           });
           await onValid(
             fieldValues as UnpackNestedValue<TSubmitFieldValues>,
@@ -1086,6 +1085,7 @@ export function useForm<
         updateFormState({
           isSubmitted: true,
           isSubmitting: false,
+          isSubmitSuccessful: isEmptyObject(formStateRef.current.errors),
           errors: formStateRef.current.errors,
           submitCount: formStateRef.current.submitCount + 1,
         });
@@ -1119,6 +1119,7 @@ export function useForm<
       isDirty: isDirty ? formStateRef.current.isDirty : false,
       isSubmitted: isSubmitted ? formStateRef.current.isSubmitted : false,
       isSubmitting: false,
+      isSubmitSuccessful: false,
       submitCount: submitCount ? formStateRef.current.submitCount : 0,
       isValid: isValid ? formStateRef.current.isValid : true,
       dirtyFields: dirtyFields ? formStateRef.current.dirtyFields : {},
