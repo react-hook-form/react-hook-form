@@ -536,7 +536,7 @@ export function useForm<
     : async ({ type, target }: Event): Promise<void | boolean> => {
         const name = (target as Ref)!.name;
         const field = fieldsRef.current[name];
-        let error: InternalFieldErrors<TFieldValues>;
+        let error;
         let isValid;
 
         if (field) {
