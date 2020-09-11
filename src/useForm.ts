@@ -249,8 +249,7 @@ export function useForm<
         ref.files = value as FileList;
       } else if (isMultipleSelect(ref)) {
         [...ref.options].forEach(
-          (selectRef) =>
-            (selectRef.selected = (value as string).includes(selectRef.value)),
+          (selectRef) => (selectRef.selected = value === selectRef.value),
         );
       } else if (isCheckBoxInput(ref) && options) {
         options.length > 1
@@ -1055,8 +1054,8 @@ export function useForm<
 
         if (
           isEmptyObject(fieldErrors) &&
-          Object.keys(formStateRef.current.errors).every((name) =>
-            Object.keys(fieldsRef.current).includes(name),
+          Object.keys(formStateRef.current.errors).every(
+            (name) => name in fieldsRef.current,
           )
         ) {
           updateFormState({
