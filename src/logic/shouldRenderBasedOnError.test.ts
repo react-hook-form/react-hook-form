@@ -18,7 +18,7 @@ describe('shouldUpdateWithError', () => {
       shouldRenderBasedOnError({
         errors: {},
         name: 'test',
-        error: {},
+        error: undefined,
         validFields: {},
         fieldsWithValidation: {},
       }),
@@ -30,7 +30,7 @@ describe('shouldUpdateWithError', () => {
       shouldRenderBasedOnError({
         errors: { test: 'test' } as any,
         name: 'test',
-        error: {},
+        error: undefined,
         validFields: {},
         fieldsWithValidation: {},
       }),
@@ -66,7 +66,7 @@ describe('shouldUpdateWithError', () => {
       shouldRenderBasedOnError({
         errors: { test: { message: 'test', type: 'input' } } as any,
         name: 'test',
-        error: { test: { type: 'input', message: 'test' } } as any,
+        error: { type: 'input', message: 'test' },
         validFields: {},
         fieldsWithValidation: {},
       }),
@@ -80,7 +80,7 @@ describe('shouldUpdateWithError', () => {
           test: { message: 'test', type: 'input' },
         } as any,
         name: 'test',
-        error: { test: { type: 'input', message: 'test' } } as any,
+        error: { type: 'input', message: 'test' },
         validFields: {},
         fieldsWithValidation: {},
       }),
@@ -92,7 +92,7 @@ describe('shouldUpdateWithError', () => {
       shouldRenderBasedOnError({
         errors: { test: { message: 'test', type: 'input' } } as any,
         name: 'test1',
-        error: {},
+        error: undefined,
         validFields: { test: true } as any,
         fieldsWithValidation: { test1: true } as any,
       }),
@@ -104,7 +104,7 @@ describe('shouldUpdateWithError', () => {
       shouldRenderBasedOnError({
         errors: { test: { message: 'test', type: 'input' } } as any,
         name: 'test',
-        error: {},
+        error: undefined,
         validFields: { test: true } as any,
         fieldsWithValidation: { test: true } as any,
       }),
@@ -116,7 +116,7 @@ describe('shouldUpdateWithError', () => {
       shouldRenderBasedOnError({
         errors: { test: { message: 'test', type: 'input' } } as any,
         name: 'test',
-        error: {},
+        error: undefined,
         validFields: {},
         fieldsWithValidation: {},
       }),

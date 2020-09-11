@@ -1,12 +1,13 @@
 import isEmptyObject from '../utils/isEmptyObject';
 import isSameError from '../utils/isSameError';
 import get from '../utils/get';
+import isUndefined from '../utils/isUndefined';
 import {
   FieldValues,
   InternalFieldName,
   FieldErrors,
-  InternalFieldErrors,
   FieldNamesMarkedBoolean,
+  FieldError,
 } from '../types';
 
 export default function shouldRenderBasedOnError<
@@ -19,14 +20,13 @@ export default function shouldRenderBasedOnError<
   fieldsWithValidation,
 }: {
   errors: FieldErrors<TFieldValues>;
-  error: InternalFieldErrors<TFieldValues>;
+  error: FieldError | undefined;
   name: InternalFieldName<TFieldValues>;
   validFields: FieldNamesMarkedBoolean<TFieldValues>;
   fieldsWithValidation: FieldNamesMarkedBoolean<TFieldValues>;
 }): boolean {
-  const isFieldValid = isEmptyObject(error);
+  const isFieldValid = isUndefined(error);
   const isFormValid = isEmptyObject(errors);
-  const currentFieldError = get(error, name);
   const existFieldError = get(errors, name);
 
   if (isFieldValid && get(validFields, name)) {
@@ -41,5 +41,5 @@ export default function shouldRenderBasedOnError<
     return true;
   }
 
-  return currentFieldError && !isSameError(existFieldError, currentFieldError);
+  return !isFieldValid && !isSameError(existFieldError, error);
 }

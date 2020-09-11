@@ -57,7 +57,6 @@ import {
   RadioOrCheckboxOption,
   OmitResetState,
   DefaultValuesAtRender,
-  InternalFieldErrors,
   NestedValue,
   SetValueConfig,
   ErrorOption,
@@ -69,6 +68,7 @@ import {
   NonUndefined,
   InternalNameSet,
   DefaultValues,
+  FieldError,
 } from './types';
 
 const isWindowUndefined = typeof window === UNDEFINED;
@@ -176,7 +176,7 @@ export function useForm<
   const shouldRenderBaseOnError = React.useCallback(
     (
       name: InternalFieldName<TFieldValues>,
-      error: InternalFieldErrors<TFieldValues>,
+      error: FieldError | undefined,
       shouldRender: boolean | null = false,
       state: {
         dirtyFields?: FieldNamesMarkedBoolean<TFieldValues>;
@@ -196,21 +196,19 @@ export function useForm<
         });
       const previousError = get(formStateRef.current.errors, name);
 
-      if (isEmptyObject(error)) {
-        if (get(fieldsWithValidationRef.current, name) || resolverRef.current) {
-          set(validFieldsRef.current, name, true);
-          shouldReRender = shouldReRender || previousError;
-        }
-
-        unset(formStateRef.current.errors, name);
-      } else {
+      if (error) {
         unset(validFieldsRef.current, name);
         shouldReRender =
           shouldReRender ||
           !previousError ||
-          !isSameError(previousError, error[name]);
-
-        set(formStateRef.current.errors, name, error[name]);
+          !isSameError(previousError, error);
+        set(formStateRef.current.errors, name, error);
+      } else {
+        if (get(fieldsWithValidationRef.current, name) || resolverRef.current) {
+          set(validFieldsRef.current, name, true);
+          shouldReRender = shouldReRender || previousError;
+        }
+        unset(formStateRef.current.errors, name);
       }
 
       if (
@@ -338,16 +336,18 @@ export function useForm<
       skipReRender?: boolean | null,
     ): Promise<boolean> => {
       if (fieldsRef.current[name]) {
-        const error = await validateField<TFieldValues>(
-          fieldsRef,
-          isValidateAllFieldCriteria,
-          fieldsRef.current[name] as Field,
-          shallowFieldsStateRef,
-        );
+        const error = (
+          await validateField<TFieldValues>(
+            fieldsRef,
+            isValidateAllFieldCriteria,
+            fieldsRef.current[name] as Field,
+            shallowFieldsStateRef,
+          )
+        )[name];
 
         shouldRenderBaseOnError(name, error, skipReRender);
 
-        return isEmptyObject(error);
+        return isUndefined(error);
       }
 
       return false;
@@ -357,7 +357,7 @@ export function useForm<
 
   const executeSchemaOrResolverValidation = React.useCallback(
     async (
-      payload:
+      names:
         | InternalFieldName<TFieldValues>
         | InternalFieldName<TFieldValues>[],
     ) => {
@@ -368,8 +368,8 @@ export function useForm<
       );
       const previousFormIsValid = formStateRef.current.isValid;
 
-      if (isArray(payload)) {
-        const isInputsValid = payload
+      if (isArray(names)) {
+        const isInputsValid = names
           .map((name) => {
             const error = get(errors, name);
 
@@ -388,13 +388,11 @@ export function useForm<
 
         return isInputsValid;
       } else {
-        const error = get(errors, payload);
+        const error = get(errors, names);
 
         shouldRenderBaseOnError(
-          payload,
-          (error ? { [payload]: error } : {}) as InternalFieldErrors<
-            TFieldValues
-          >,
+          names,
+          error,
           previousFormIsValid !== isEmptyObject(errors),
           {},
           isEmptyObject(errors),
@@ -581,9 +579,7 @@ export function useForm<
             );
             const previousFormIsValid = formStateRef.current.isValid;
 
-            error = (get(errors, name)
-              ? { [name]: get(errors, name) }
-              : {}) as InternalFieldErrors<TFieldValues>;
+            error = get(errors, name);
 
             isValid = isEmptyObject(errors);
 
@@ -591,12 +587,14 @@ export function useForm<
               shouldRender = true;
             }
           } else {
-            error = await validateField<TFieldValues>(
-              fieldsRef,
-              isValidateAllFieldCriteria,
-              field,
-              shallowFieldsStateRef,
-            );
+            error = (
+              await validateField<TFieldValues>(
+                fieldsRef,
+                isValidateAllFieldCriteria,
+                field,
+                shallowFieldsStateRef,
+              )
+            )[name];
           }
 
           renderWatchedInputs(name);
