@@ -231,6 +231,7 @@ export function useForm<
       rawValue:
         | FieldValue<TFieldValues>
         | UnpackNestedValue<DeepPartial<TFieldValues>>
+        | string[]
         | undefined
         | null
         | boolean,
@@ -250,7 +251,9 @@ export function useForm<
       } else if (isMultipleSelect(ref)) {
         [...ref.options].forEach(
           (selectRef) =>
-            (selectRef.selected = (value as string).includes(selectRef.value)),
+            (selectRef.selected = (value as string[]).includes(
+              selectRef.value,
+            )),
         );
       } else if (isCheckBoxInput(ref) && options) {
         options.length > 1
@@ -1055,8 +1058,8 @@ export function useForm<
 
         if (
           isEmptyObject(fieldErrors) &&
-          Object.keys(formStateRef.current.errors).every((name) =>
-            Object.keys(fieldsRef.current).includes(name),
+          Object.keys(formStateRef.current.errors).every(
+            (name) => name in fieldsRef.current,
           )
         ) {
           updateFormState({

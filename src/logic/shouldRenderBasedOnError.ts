@@ -1,4 +1,3 @@
-import isEmptyObject from '../utils/isEmptyObject';
 import isSameError from '../utils/isSameError';
 import get from '../utils/get';
 import isUndefined from '../utils/isUndefined';
@@ -25,21 +24,12 @@ export default function shouldRenderBasedOnError<
   validFields: FieldNamesMarkedBoolean<TFieldValues>;
   fieldsWithValidation: FieldNamesMarkedBoolean<TFieldValues>;
 }): boolean {
-  const isFieldValid = isUndefined(error);
-  const isFormValid = isEmptyObject(errors);
-  const existFieldError = get(errors, name);
+  const isValid = isUndefined(error);
+  const previousError = get(errors, name);
 
-  if (isFieldValid && get(validFields, name)) {
-    return false;
-  }
-
-  if (
-    isFormValid !== isFieldValid ||
-    (!isFormValid && !existFieldError) ||
-    (isFieldValid && get(fieldsWithValidation, name) && !get(validFields, name))
-  ) {
-    return true;
-  }
-
-  return !isFieldValid && !isSameError(existFieldError, error);
+  return (
+    (isValid && !!previousError) ||
+    (!isValid && !isSameError(previousError, error)) ||
+    (isValid && get(fieldsWithValidation, name) && !get(validFields, name))
+  );
 }

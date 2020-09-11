@@ -108,7 +108,7 @@ describe('shouldUpdateWithError', () => {
         validFields: { test: true } as any,
         fieldsWithValidation: { test: true } as any,
       }),
-    ).toBeFalsy();
+    ).toBeTruthy();
   });
 
   it('should return true when schema errors is different', () => {
