@@ -23,8 +23,8 @@ import { ValidationRules } from './validator';
 declare const $NestedValue: unique symbol;
 
 export type NestedValue<
-  TValue extends any[] | Record<string, unknown> =
-    | any[]
+  TValue extends unknown[] | Record<string, unknown> =
+    | unknown[]
     | Record<string, unknown>
 > = {
   [$NestedValue]: never;
@@ -40,9 +40,16 @@ export type UnpackNestedValue<T> = NonUndefined<T> extends NestedValue<infer U>
   ? { [K in keyof T]: UnpackNestedValue<T[K]> }
   : T;
 
-export type DefaultValuesAtRender<TFieldValues> = UnpackNestedValue<
-  DeepPartial<Record<InternalFieldName<TFieldValues>, FieldValue<TFieldValues>>>
+export type DefaultValuesAtRender<TFieldValues> = Record<
+  InternalFieldName<TFieldValues>,
+  unknown
 >;
+
+export type DefaultValues<TFieldValues> =
+  | Partial<FieldValue<UnpackNestedValue<TFieldValues>>>
+  | Partial<UnpackNestedValue<DeepPartial<TFieldValues>>>;
+
+export type InternalNameSet<FieldValues> = Set<InternalFieldName<FieldValues>>;
 
 export type ValidationMode = {
   onBlur: 'onBlur';
@@ -69,10 +76,6 @@ export type SetValueConfig = Partial<{
   shouldDirty: boolean;
 }>;
 
-export type ClearErrorsConfig = {
-  exact: boolean;
-};
-
 export type HandleChange = (event: Event) => Promise<void | boolean>;
 
 export type UseFormOptions<
@@ -81,7 +84,7 @@ export type UseFormOptions<
 > = Partial<{
   mode: Mode;
   reValidateMode: Exclude<Mode, 'onTouched' | 'all'>;
-  defaultValues: UnpackNestedValue<DeepPartial<TFieldValues>>;
+  defaultValues: Partial<UnpackNestedValue<DeepPartial<TFieldValues>>>;
   resolver: Resolver<TFieldValues, TContext>;
   context: TContext;
   shouldFocusError: boolean;
@@ -170,14 +173,13 @@ export type Control<TFieldValues extends FieldValues = FieldValues> = Pick<
   readFormStateRef: React.MutableRefObject<
     { [k in keyof FormStateProxy<TFieldValues>]: boolean }
   >;
-  defaultValuesRef: React.MutableRefObject<
-    | FieldValue<UnpackNestedValue<TFieldValues>>
-    | UnpackNestedValue<DeepPartial<TFieldValues>>
-  >;
-  watchFieldsHookRef: React.MutableRefObject<
+  defaultValuesRef: React.MutableRefObject<DefaultValues<TFieldValues>>;
+  useWatchFieldsRef: React.MutableRefObject<
     Record<string, Set<InternalFieldName<TFieldValues>>>
   >;
-  watchFieldsHookRenderRef: React.MutableRefObject<Record<string, Function>>;
+  useWatchRenderFunctionsRef: React.MutableRefObject<
+    Record<string, () => void>
+  >;
   watchInternal: (
     fieldNames?: string | string[],
     defaultValue?: unknown,

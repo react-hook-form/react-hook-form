@@ -54,7 +54,6 @@ import {
   ReadFormState,
   Ref,
   HandleChange,
-  FieldError,
   RadioOrCheckboxOption,
   OmitResetState,
   DefaultValuesAtRender,
@@ -68,6 +67,8 @@ import {
   LiteralToPrimitive,
   DeepPartial,
   NonUndefined,
+  InternalNameSet,
+  DefaultValues,
 } from './types';
 
 const isWindowUndefined = typeof window === UNDEFINED;
@@ -85,7 +86,7 @@ export function useForm<
   reValidateMode = VALIDATION_MODE.onChange,
   resolver,
   context,
-  defaultValues = {} as UnpackNestedValue<DeepPartial<TFieldValues>>,
+  defaultValues = {},
   shouldFocusError = true,
   shouldUnregister = true,
   criteriaMode,
@@ -94,21 +95,22 @@ export function useForm<
   const fieldArrayDefaultValuesRef = React.useRef<
     Record<InternalFieldName<FieldValues>, unknown[]>
   >({});
-  const watchFieldsRef = React.useRef(
-    new Set<InternalFieldName<TFieldValues>>(),
+  const watchFieldsRef = React.useRef<InternalNameSet<TFieldValues>>(new Set());
+  const useWatchFieldsRef = React.useRef<
+    Record<string, Set<InternalFieldName<TFieldValues>>>
+  >({});
+  const useWatchRenderFunctionsRef = React.useRef<
+    Record<InternalFieldName<FieldValues>, () => void>
+  >({});
+  const fieldsWithValidationRef = React.useRef<
+    FieldNamesMarkedBoolean<TFieldValues>
+  >({});
+  const validFieldsRef = React.useRef<FieldNamesMarkedBoolean<TFieldValues>>(
+    {},
   );
-  const watchFieldsHookRef = React.useRef<
-    Record<InternalFieldName<FieldValues>, Set<InternalFieldName<TFieldValues>>>
-  >({});
-  const watchFieldsHookRenderRef = React.useRef<
-    Record<InternalFieldName<FieldValues>, Function>
-  >({});
-  const fieldsWithValidationRef = React.useRef({});
-  const validFieldsRef = React.useRef({});
-  const defaultValuesRef = React.useRef<
-    | FieldValue<UnpackNestedValue<TFieldValues>>
-    | UnpackNestedValue<DeepPartial<TFieldValues>>
-  >(defaultValues);
+  const defaultValuesRef = React.useRef<DefaultValues<TFieldValues>>(
+    defaultValues,
+  );
   const defaultValuesAtRenderRef = React.useRef(
     {} as DefaultValuesAtRender<TFieldValues>,
   );
@@ -126,13 +128,11 @@ export function useForm<
   >({});
   const contextRef = React.useRef(context);
   const resolverRef = React.useRef(resolver);
-  const fieldArrayNamesRef = React.useRef<Set<InternalFieldName<FieldValues>>>(
+  const fieldArrayNamesRef = React.useRef<InternalNameSet<TFieldValues>>(
     new Set(),
   );
   const modeRef = React.useRef(modeChecker(mode));
-  const {
-    current: { isOnSubmit, isOnTouch },
-  } = modeRef;
+  const { isOnSubmit, isOnTouch } = modeRef.current;
   const isValidateAllFieldCriteria = criteriaMode === VALIDATION_MODE.all;
   const [formState, setFormState] = React.useState<FormState<TFieldValues>>({
     isDirty: false,
@@ -155,8 +155,9 @@ export function useForm<
   const formStateRef = React.useRef(formState);
   const observerRef = React.useRef<MutationObserver | undefined>();
   const {
-    current: { isOnBlur: isReValidateOnBlur, isOnChange: isReValidateOnChange },
-  } = React.useRef(modeChecker(reValidateMode));
+    isOnBlur: isReValidateOnBlur,
+    isOnChange: isReValidateOnChange,
+  } = React.useRef(modeChecker(reValidateMode)).current;
 
   contextRef.current = context;
   resolverRef.current = resolver;
@@ -207,7 +208,7 @@ export function useForm<
         shouldReRender =
           shouldReRender ||
           !previousError ||
-          !isSameError(previousError, error[name] as FieldError);
+          !isSameError(previousError, error[name]);
 
         set(formStateRef.current.errors, name, error[name]);
       }
@@ -361,7 +362,7 @@ export function useForm<
         | InternalFieldName<TFieldValues>[],
     ) => {
       const { errors } = await resolverRef.current!(
-        getValues() as TFieldValues,
+        getValues(),
         contextRef.current,
         isValidateAllFieldCriteria,
       );
@@ -490,15 +491,15 @@ export function useForm<
     watchFieldsRef.current.has((name.match(/\w+/) || [])[0]);
 
   const renderWatchedInputs = (name: string, found = true): boolean => {
-    if (!isEmptyObject(watchFieldsHookRef.current)) {
-      for (const key in watchFieldsHookRef.current) {
+    if (!isEmptyObject(useWatchFieldsRef.current)) {
+      for (const key in useWatchFieldsRef.current) {
         if (
           !name ||
-          watchFieldsHookRef.current[key].has(name) ||
-          watchFieldsHookRef.current[key].has(getFieldArrayParentName(name)) ||
-          !watchFieldsHookRef.current[key].size
+          useWatchFieldsRef.current[key].has(name) ||
+          useWatchFieldsRef.current[key].has(getFieldArrayParentName(name)) ||
+          !useWatchFieldsRef.current[key].size
         ) {
-          watchFieldsHookRenderRef.current[key]();
+          useWatchRenderFunctionsRef.current[key]();
           found = false;
         }
       }
@@ -535,7 +536,7 @@ export function useForm<
     : async ({ type, target }: Event): Promise<void | boolean> => {
         const name = (target as Ref)!.name;
         const field = fieldsRef.current[name];
-        let error: InternalFieldErrors<TFieldValues>;
+        let error;
         let isValid;
 
         if (field) {
@@ -574,7 +575,7 @@ export function useForm<
 
           if (resolverRef.current) {
             const { errors } = await resolverRef.current(
-              getValues() as TFieldValues,
+              getValues(),
               contextRef.current,
               isValidateAllFieldCriteria,
             );
@@ -672,9 +673,9 @@ export function useForm<
         removeFieldEventListener(field, forceDelete);
 
         if (shouldUnregister && !filterOutFalsy(field.options || []).length) {
+          delete defaultValuesAtRenderRef.current[field.ref.name];
           unset(validFieldsRef.current, field.ref.name);
           unset(fieldsWithValidationRef.current, field.ref.name);
-          unset(defaultValuesAtRenderRef.current, field.ref.name);
           unset(formStateRef.current.errors, field.ref.name);
           unset(formStateRef.current.dirtyFields, field.ref.name);
           unset(formStateRef.current.touched, field.ref.name);
@@ -734,7 +735,7 @@ export function useForm<
       watchId?: string,
     ) => {
       const watchFields = watchId
-        ? watchFieldsHookRef.current[watchId]
+        ? useWatchFieldsRef.current[watchId]
         : watchFieldsRef.current;
       const combinedDefaultValues = isUndefined(defaultValue)
         ? defaultValuesRef.current
@@ -1011,11 +1012,7 @@ export function useForm<
         e.persist();
       }
       let fieldErrors: FieldErrors<TFieldValues> = {};
-      let fieldValues: FieldValues = getFieldsValues(
-        fieldsRef,
-        shallowFieldsStateRef,
-        true,
-      );
+      let fieldValues = getFieldsValues(fieldsRef, shallowFieldsStateRef, true);
 
       if (readFormStateRef.current.isSubmitting) {
         updateFormState({
@@ -1026,7 +1023,7 @@ export function useForm<
       try {
         if (resolverRef.current) {
           const { errors, values } = await resolverRef.current(
-            fieldValues as TFieldValues,
+            fieldValues,
             contextRef.current,
             isValidateAllFieldCriteria,
           );
@@ -1107,8 +1104,8 @@ export function useForm<
     dirtyFields,
   }: OmitResetState) => {
     if (!isValid) {
-      validFieldsRef.current = new Set();
-      fieldsWithValidationRef.current = new Set();
+      validFieldsRef.current = {};
+      fieldsWithValidationRef.current = {};
     }
 
     defaultValuesAtRenderRef.current = {} as DefaultValuesAtRender<
@@ -1224,8 +1221,8 @@ export function useForm<
     isWatchAllRef,
     watchFieldsRef,
     resetFieldArrayFunctionRef,
-    watchFieldsHookRef,
-    watchFieldsHookRenderRef,
+    useWatchFieldsRef,
+    useWatchRenderFunctionsRef,
     fieldArrayDefaultValuesRef,
     validFieldsRef,
     fieldsWithValidationRef,

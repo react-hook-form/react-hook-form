@@ -51,13 +51,6 @@ describe('isSameError', () => {
 
   it('should return false when error is not even defined', () => {
     expect(
-      isSameError(undefined, {
-        type: '',
-        message: '',
-      }),
-    ).toBeFalsy();
-
-    expect(
       isSameError(
         {
           type: '',

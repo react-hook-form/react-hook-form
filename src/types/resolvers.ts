@@ -21,7 +21,7 @@ export type Resolver<
   TFieldValues extends FieldValues = FieldValues,
   TContext extends object = object
 > = (
-  values: TFieldValues,
+  values: UnpackNestedValue<TFieldValues>,
   context?: TContext,
   validateAllFieldCriteria?: boolean,
 ) => Promise<ResolverResult<TFieldValues>> | ResolverResult<TFieldValues>;
