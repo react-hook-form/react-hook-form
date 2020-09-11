@@ -262,7 +262,9 @@ export const useFieldArray = <
       readFormStateRef.current.isDirty
     ) {
       set(dirtyFields, name, [
-        ...get(dirtyFields, name, fillEmptyArray(allFields.current)),
+        ...(isArray(get(dirtyFields, name))
+          ? get(dirtyFields, name)
+          : fillEmptyArray(allFields.current)),
         ...filterBooleanArray(value),
       ]);
       updateFormState({
