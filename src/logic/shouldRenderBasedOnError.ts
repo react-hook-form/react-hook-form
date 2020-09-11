@@ -24,19 +24,12 @@ export default function shouldRenderBasedOnError<
   validFields: FieldNamesMarkedBoolean<TFieldValues>;
   fieldsWithValidation: FieldNamesMarkedBoolean<TFieldValues>;
 }): boolean {
-  const isFieldValid = isUndefined(error);
-  const existFieldError = get(errors, name);
+  const isValid = isUndefined(error);
+  const previousError = get(errors, name);
 
-  if (isFieldValid && get(validFields, name)) {
-    return false;
-  }
-
-  if (
-    (existFieldError && isFieldValid) ||
-    (isFieldValid && get(fieldsWithValidation, name) && !get(validFields, name))
-  ) {
-    return true;
-  }
-
-  return !isFieldValid && !isSameError(existFieldError, error);
+  return (
+    (isValid && !!previousError) ||
+    (!isValid && !isSameError(previousError, error)) ||
+    (isValid && get(fieldsWithValidation, name) && !get(validFields, name))
+  );
 }
