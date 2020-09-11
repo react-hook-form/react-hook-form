@@ -231,6 +231,7 @@ export function useForm<
       rawValue:
         | FieldValue<TFieldValues>
         | UnpackNestedValue<DeepPartial<TFieldValues>>
+        | string[]
         | undefined
         | null
         | boolean,
@@ -249,7 +250,10 @@ export function useForm<
         ref.files = value as FileList;
       } else if (isMultipleSelect(ref)) {
         [...ref.options].forEach(
-          (selectRef) => (selectRef.selected = value === selectRef.value),
+          (selectRef) =>
+            (selectRef.selected = (value as string[]).includes(
+              selectRef.value,
+            )),
         );
       } else if (isCheckBoxInput(ref) && options) {
         options.length > 1
