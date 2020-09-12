@@ -2653,7 +2653,6 @@ describe('useForm', () => {
       it('should not output error message when formState.isValid is called', () => {
         jest.spyOn(console, 'warn').mockImplementation(() => {});
 
-        const env = process.env.NODE_ENV;
         process.env.NODE_ENV = 'development';
 
         const { result } = renderHook(() =>
