@@ -2583,7 +2583,6 @@ describe('useForm', () => {
       it('should output error message when formState.isValid is called in development environment', () => {
         jest.spyOn(console, 'warn').mockImplementation(() => {});
 
-        const env = process.env.NODE_ENV;
         process.env.NODE_ENV = 'development';
 
         const { result } = renderHook(() => useForm());
@@ -2592,8 +2591,6 @@ describe('useForm', () => {
 
         expect(console.warn).toBeCalledTimes(1);
 
-        process.env.NODE_ENV = env;
-
         // @ts-ignore
         console.warn.mockRestore();
       });
@@ -2601,7 +2598,6 @@ describe('useForm', () => {
       it('should not output error message when formState.isValid is called in production environment', () => {
         jest.spyOn(console, 'warn').mockImplementation(() => {});
 
-        const env = process.env.NODE_ENV;
         process.env.NODE_ENV = 'production';
 
         const { result } = renderHook(() => useForm());
@@ -2609,8 +2605,6 @@ describe('useForm', () => {
         result.current.formState.isValid;
 
         expect(console.warn).not.toBeCalled();
-
-        process.env.NODE_ENV = env;
 
         // @ts-ignore
         console.warn.mockRestore();
@@ -2670,8 +2664,6 @@ describe('useForm', () => {
 
         expect(console.warn).not.toBeCalled();
 
-        process.env.NODE_ENV = env;
-
         // @ts-ignore
         console.warn.mockRestore();
       });
@@ -2719,7 +2711,6 @@ describe('useForm', () => {
       it('should not output error message when formState.isValid is called', () => {
         jest.spyOn(console, 'warn').mockImplementation(() => {});
 
-        const env = process.env.NODE_ENV;
         process.env.NODE_ENV = 'development';
 
         const { result } = renderHook(() =>
@@ -2729,8 +2720,6 @@ describe('useForm', () => {
         result.current.formState.isValid;
 
         expect(console.warn).not.toBeCalled();
-
-        process.env.NODE_ENV = env;
 
         // @ts-ignore
         console.warn.mockRestore();
