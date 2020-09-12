@@ -415,6 +415,24 @@ describe('useForm', () => {
       expect(result.current.watch('test')).toBe('data');
     });
 
+    it('should throw warning when watched input is not found', () => {
+      process.env.NODE_ENV = 'development';
+      jest.spyOn(console, 'warn').mockImplementation(() => {});
+      const { result } = renderHook(() => useForm());
+
+      result.current.register('test');
+      result.current.register('test.data');
+
+      result.current.watch('whatever');
+      expect(console.warn).toBeCalledTimes(1);
+
+      result.current.watch('test');
+      expect(console.warn).toBeCalledTimes(1);
+
+      // @ts-ignore
+      console.warn.mockRestore();
+    });
+
     it('should return default value if field is undefined', () => {
       const { result } = renderHook(() =>
         useForm<{ test: string }>({ defaultValues: { test: 'test' } }),
