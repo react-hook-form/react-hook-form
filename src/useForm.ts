@@ -748,6 +748,26 @@ export function useForm<
         fieldNames,
       );
 
+      if (process.env.NODE_ENV !== 'production') {
+        if (fieldNames) {
+          const fieldRefNames = Object.keys(fieldsRef.current);
+
+          if (fieldRefNames.length) {
+            (isArray(fieldNames) ? fieldNames : [fieldNames]).forEach(
+              (name) => {
+                if (
+                  !fieldRefNames.find((fieldName) => fieldName.startsWith(name))
+                ) {
+                  console.warn(
+                    `📋 watched fields: ${fieldNames} are not found.`,
+                  );
+                }
+              },
+            );
+          }
+        }
+      }
+
       if (isString(fieldNames)) {
         return assignWatchFields<TFieldValues>(
           fieldValues,
