@@ -514,12 +514,15 @@ export function useForm<
     TFieldValue extends TFieldValues[TFieldName]
   >(
     name: TFieldName,
-    value: NonUndefined<TFieldValue> extends NestedValue<infer U>
-      ? U
-      : UnpackNestedValue<DeepPartial<LiteralToPrimitive<TFieldValue>>>,
-    config: SetValueConfig = {},
+    value:
+      | (NonUndefined<TFieldValue> extends NestedValue<infer U>
+          ? U
+          : UnpackNestedValue<DeepPartial<LiteralToPrimitive<TFieldValue>>>)
+      | null
+      | undefined,
+    config?: SetValueConfig,
   ): void {
-    setInternalValue(name, value as TFieldValues[string], config);
+    setInternalValue(name, value as TFieldValues[string], config || {});
 
     if (isFieldWatched(name)) {
       updateFormState();
@@ -527,7 +530,7 @@ export function useForm<
 
     renderWatchedInputs(name);
 
-    if (config.shouldValidate) {
+    if ((config || {}).shouldValidate) {
       trigger(name as any);
     }
   }
