@@ -138,19 +138,19 @@ export type Control<TFieldValues extends FieldValues = FieldValues> = Pick<
   'register' | 'unregister' | 'setValue' | 'getValues' | 'trigger'
 > & {
   removeFieldEventListener: (field: Field, forceDelete?: boolean) => void;
-  mode: {
-    readonly isOnBlur: boolean;
-    readonly isOnSubmit: boolean;
-    readonly isOnChange: boolean;
-    readonly isOnAll: boolean;
-    readonly isOnTouch: boolean;
-  };
-  reValidateMode: {
-    readonly isReValidateOnBlur: boolean;
-    readonly isReValidateOnChange: boolean;
-  };
+  mode: Readonly<{
+    isOnBlur: boolean;
+    isOnSubmit: boolean;
+    isOnChange: boolean;
+    isOnAll: boolean;
+    isOnTouch: boolean;
+  }>;
+  reValidateMode: Readonly<{
+    isReValidateOnBlur: boolean;
+    isReValidateOnChange: boolean;
+  }>;
   fieldArrayDefaultValuesRef: React.MutableRefObject<
-    Record<FieldArrayName, any[]>
+    Record<FieldArrayName, unknown[]>
   >;
   shouldUnregister: boolean;
   formStateRef: React.MutableRefObject<FormState<FieldValues>>;
@@ -166,7 +166,7 @@ export type Control<TFieldValues extends FieldValues = FieldValues> = Pick<
   resetFieldArrayFunctionRef: React.MutableRefObject<
     Record<string, () => void>
   >;
-  shallowFieldsStateRef: Record<InternalFieldName<FieldValues>, any>;
+  shallowFieldsStateRef: React.MutableRefObject<Partial<FieldValues>>;
   fieldArrayNamesRef: React.MutableRefObject<
     Set<InternalFieldName<FieldValues>>
   >;
