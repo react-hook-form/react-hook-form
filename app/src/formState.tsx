@@ -1,10 +1,17 @@
 import React from 'react';
 import { useForm } from 'react-hook-form';
 import { withRouter } from 'react-router';
+import { ValidationMode } from '../../src/types';
 
 let renderCounter = 0;
 
-const FormState: React.FC = (props: any) => {
+const FormState = (props: {
+  match: {
+    params: {
+      mode: keyof ValidationMode;
+    };
+  };
+}) => {
   const {
     register,
     handleSubmit,

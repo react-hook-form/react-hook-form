@@ -13,7 +13,7 @@
 [![npm downloads](https://img.shields.io/npm/dm/react-hook-form.svg?style=for-the-badge)](https://www.npmjs.com/package/react-hook-form)
 [![npm](https://img.shields.io/npm/dt/react-hook-form.svg?style=for-the-badge)](https://www.npmjs.com/package/react-hook-form)
 [![npm](https://img.shields.io/bundlephobia/minzip/react-hook-form?style=for-the-badge)](https://bundlephobia.com/result?p=react-hook-form)
-[![Coverage Status](https://img.shields.io/coveralls/github/bluebill1049/react-hook-form/master?style=for-the-badge)](https://coveralls.io/github/bluebill1049/react-hook-form?branch=master)
+[![Discord](https://img.shields.io/discord/754891658327359538.svg?style=for-the-badge&label=&logo=discord&logoColor=ffffff&color=7389D8&labelColor=6A7EC2)](https://discord.gg/tMsTW9m)
 
 </div>
 
@@ -82,7 +82,7 @@ function App() {
 
 ## Sponsors
 
-Thanks go to these kind and lovely sponsors (company and individuals)! 
+Thanks go to these kind and lovely sponsors (company and individuals)!
 
 <a href="https://underbelly.is/" target="_blank">
   <img src="https://images.opencollective.com/underbelly/989a4a6/logo/256.png" width="75" height="75" />
