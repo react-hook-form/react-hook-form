@@ -97,11 +97,11 @@ export function useForm<
   >({});
   const watchFieldsRef = React.useRef<InternalNameSet<TFieldValues>>(new Set());
   const useWatchFieldsRef = React.useRef<
-    Record<string, Set<InternalFieldName<TFieldValues>>>
+    Record<string, InternalNameSet<TFieldValues>>
   >({});
-  const useWatchRenderFunctionsRef = React.useRef<
-    Record<InternalFieldName<FieldValues>, () => void>
-  >({});
+  const useWatchRenderFunctionsRef = React.useRef<Record<string, () => void>>(
+    {},
+  );
   const fieldsWithValidationRef = React.useRef<
     FieldNamesMarkedBoolean<TFieldValues>
   >({});

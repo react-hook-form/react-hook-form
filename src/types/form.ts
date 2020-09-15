@@ -138,24 +138,24 @@ export type Control<TFieldValues extends FieldValues = FieldValues> = Pick<
   'register' | 'unregister' | 'setValue' | 'getValues' | 'trigger'
 > & {
   removeFieldEventListener: (field: Field, forceDelete?: boolean) => void;
-  mode: {
-    readonly isOnBlur: boolean;
-    readonly isOnSubmit: boolean;
-    readonly isOnChange: boolean;
-    readonly isOnAll: boolean;
-    readonly isOnTouch: boolean;
-  };
-  reValidateMode: {
-    readonly isReValidateOnBlur: boolean;
-    readonly isReValidateOnChange: boolean;
-  };
+  mode: Readonly<{
+    isOnBlur: boolean;
+    isOnSubmit: boolean;
+    isOnChange: boolean;
+    isOnAll: boolean;
+    isOnTouch: boolean;
+  }>;
+  reValidateMode: Readonly<{
+    isReValidateOnBlur: boolean;
+    isReValidateOnChange: boolean;
+  }>;
   fieldArrayDefaultValuesRef: React.MutableRefObject<
-    Record<FieldArrayName, any[]>
+    Record<FieldArrayName, unknown[]>
   >;
   shouldUnregister: boolean;
   formStateRef: React.MutableRefObject<FormState<FieldValues>>;
   updateFormState: (args?: Partial<FormState<TFieldValues>>) => void;
-  validateResolver: ((fieldsValues: any) => void) | undefined;
+  validateResolver?: (fieldsValues: FieldValues) => void;
   watchFieldsRef: React.MutableRefObject<Set<InternalFieldName<TFieldValues>>>;
   isWatchAllRef: React.MutableRefObject<boolean>;
   validFieldsRef: React.MutableRefObject<FieldNamesMarkedBoolean<TFieldValues>>;
@@ -164,18 +164,16 @@ export type Control<TFieldValues extends FieldValues = FieldValues> = Pick<
   >;
   fieldsRef: React.MutableRefObject<FieldRefs<TFieldValues>>;
   resetFieldArrayFunctionRef: React.MutableRefObject<
-    Record<string, () => void>
+    Record<InternalFieldName<TFieldValues>, () => void>
   >;
-  shallowFieldsStateRef: Record<InternalFieldName<FieldValues>, any>;
-  fieldArrayNamesRef: React.MutableRefObject<
-    Set<InternalFieldName<FieldValues>>
-  >;
+  shallowFieldsStateRef: React.MutableRefObject<Partial<FieldValues>>;
+  fieldArrayNamesRef: React.MutableRefObject<InternalNameSet<TFieldValues>>;
   readFormStateRef: React.MutableRefObject<
     { [k in keyof FormStateProxy<TFieldValues>]: boolean }
   >;
   defaultValuesRef: React.MutableRefObject<DefaultValues<TFieldValues>>;
   useWatchFieldsRef: React.MutableRefObject<
-    Record<string, Set<InternalFieldName<TFieldValues>>>
+    Record<string, InternalNameSet<TFieldValues>>
   >;
   useWatchRenderFunctionsRef: React.MutableRefObject<
     Record<string, () => void>
