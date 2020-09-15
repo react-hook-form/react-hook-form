@@ -514,7 +514,7 @@ export function useForm<
     TFieldValue extends TFieldValues[TFieldName]
   >(
     name: TFieldName,
-    value?: NonUndefined<TFieldValue> extends NestedValue<infer U>
+    value: NonUndefined<TFieldValue> extends NestedValue<infer U>
       ? U
       : UnpackNestedValue<DeepPartial<LiteralToPrimitive<TFieldValue>>>,
     config: SetValueConfig = {},
