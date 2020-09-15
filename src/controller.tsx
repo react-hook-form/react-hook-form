@@ -94,7 +94,7 @@ const Controller = <
       ...mode,
     });
 
-  const commonTask = ([event]: any[]) => {
+  const commonTask = ([event]: IArguments[]) => {
     const data = getInputValue(event);
     setInputStateValue(data);
     valueRef.current = data;
@@ -165,7 +165,7 @@ const Controller = <
     }
   };
 
-  const onChange = (...event: any[]) =>
+  const onChange = (...event: IArguments[]) =>
     setValue(name, commonTask(event), {
       shouldValidate: shouldValidate(),
       shouldDirty: true,

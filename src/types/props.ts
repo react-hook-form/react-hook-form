@@ -37,10 +37,10 @@ export type ControllerProps<
   (
     | {
         as: TAs;
-        render?: undefined;
+        render: never;
       }
     | {
-        as?: undefined;
+        as: never;
         render: (data: {
           onChange: (...event: any[]) => void;
           onBlur: () => void;
