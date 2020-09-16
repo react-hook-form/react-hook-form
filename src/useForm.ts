@@ -463,8 +463,9 @@ export function useForm<
         setInternalValues(name, value, config);
 
         if (
-          isNameInFieldArray(fieldArrayNamesRef.current, name) ||
-          fieldArrayNamesRef.current.has(name)
+          (isNameInFieldArray(fieldArrayNamesRef.current, name) ||
+            fieldArrayNamesRef.current.has(name)) &&
+          isArray(value)
         ) {
           const fieldArrayParentName = getFieldArrayParentName(name) || name;
           fieldArrayDefaultValuesRef.current[fieldArrayParentName] = value;
@@ -472,13 +473,15 @@ export function useForm<
             [name]: value,
           } as UnpackNestedValue<DeepPartial<TFieldValues>>);
 
-          if (readFormStateRef.current.isDirty) {
+          if (
+            readFormStateRef.current.isDirty ||
+            readFormStateRef.current.dirtyFields
+          ) {
             updateFormState({
-              isDirty:
-                !deepEqual(
-                  value,
-                  get(defaultValuesRef.current, fieldArrayParentName),
-                ) || formStateRef.current.isDirty,
+              isDirty: !deepEqual(
+                { ...getValues(), [fieldArrayParentName]: value },
+                defaultValuesRef.current,
+              ),
             });
           }
         }
