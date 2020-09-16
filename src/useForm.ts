@@ -3,6 +3,7 @@ import attachEventListeners from './logic/attachEventListeners';
 import transformToNestObject from './logic/transformToNestObject';
 import focusOnErrorField from './logic/focusOnErrorField';
 import findRemovedFieldAndRemoveListener from './logic/findRemovedFieldAndRemoveListener';
+import { setFieldArrayDirtyFields } from './logic/setFieldArrayDirtyFields';
 import getFieldsValues from './logic/getFieldsValues';
 import getFieldValue from './logic/getFieldValue';
 import shouldRenderBasedOnError from './logic/shouldRenderBasedOnError';
@@ -70,7 +71,6 @@ import {
   DefaultValues,
   FieldError,
 } from './types';
-import { setFieldArrayDirtyFields } from './logic/setFieldArrayDirtyFields';
 
 const isWindowUndefined = typeof window === UNDEFINED;
 const isWeb =
