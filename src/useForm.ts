@@ -462,7 +462,7 @@ export function useForm<
     (
       name: InternalFieldName<TFieldValues>,
       value: FieldValue<TFieldValues> | null | undefined | boolean,
-      config: SetValueConfig,
+      config: SetValueConfig = {},
     ) => {
       if (fieldsRef.current[name]) {
         setFieldValue(name, value);
@@ -523,7 +523,7 @@ export function useForm<
       | undefined,
     config?: SetValueConfig,
   ): void {
-    setInternalValue(name, value as TFieldValues[string], config || {});
+    setInternalValue(name, value as TFieldValues[string], config);
 
     if (isFieldWatched(name)) {
       updateFormState();
