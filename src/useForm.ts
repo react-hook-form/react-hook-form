@@ -294,7 +294,6 @@ export function useForm<
         defaultValuesAtRenderRef.current[name] !==
         getFieldValue(fieldsRef, name, shallowFieldsStateRef);
       const isDirtyFieldExist = get(formStateRef.current.dirtyFields, name);
-      const isFieldArray = isNameInFieldArray(fieldArrayNamesRef.current, name);
       const previousIsDirty = formStateRef.current.isDirty;
 
       isFieldDirty
@@ -302,13 +301,7 @@ export function useForm<
         : unset(formStateRef.current.dirtyFields, name);
 
       const state = {
-        isDirty:
-          (isFieldArray &&
-            !deepEqual(
-              get(getValues(), getFieldArrayParentName(name)),
-              get(defaultValuesRef.current, getFieldArrayParentName(name)),
-            )) ||
-          !isEmptyObject(formStateRef.current.dirtyFields),
+        isDirty: !deepEqual(getValues(), defaultValuesRef.current),
         dirtyFields: formStateRef.current.dirtyFields,
       };
 
@@ -478,6 +471,16 @@ export function useForm<
           resetFieldArrayFunctionRef.current[fieldArrayParentName]({
             [name]: value,
           } as UnpackNestedValue<DeepPartial<TFieldValues>>);
+
+          if (readFormStateRef.current.isDirty) {
+            updateFormState({
+              isDirty:
+                !deepEqual(
+                  value,
+                  get(defaultValuesRef.current, fieldArrayParentName),
+                ) || formStateRef.current.isDirty,
+            });
+          }
         }
       }
 
@@ -518,7 +521,7 @@ export function useForm<
       ? U
       : UnpackNestedValue<DeepPartial<LiteralToPrimitive<TFieldValue>>>,
     config: SetValueConfig = {},
-  ): void {
+  ) {
     setInternalValue(name, value as TFieldValues[string], config);
 
     if (isFieldWatched(name)) {
