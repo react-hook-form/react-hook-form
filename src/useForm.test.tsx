@@ -1246,6 +1246,53 @@ describe('useForm', () => {
         },
       );
     });
+
+    it('should set hidden input value correctly and reflect on the submission data', async () => {
+      let submitData = undefined;
+
+      const Component = () => {
+        const { register, handleSubmit, setValue } = useForm();
+
+        return (
+          <div>
+            <input
+              type="hidden"
+              name="test"
+              ref={register}
+              defaultValue="test"
+            />
+            <button
+              onClick={() => {
+                setValue('test', 'changed');
+              }}
+            >
+              change
+            </button>
+            <button
+              onClick={handleSubmit((data) => {
+                submitData = data;
+              })}
+            >
+              submit
+            </button>
+          </div>
+        );
+      };
+
+      render(<Component />);
+
+      await actComponent(async () => {
+        await fireEvent.click(screen.getByRole('button', { name: 'change' }));
+      });
+
+      await actComponent(async () => {
+        await fireEvent.click(screen.getByRole('button', { name: 'submit' }));
+      });
+
+      expect(submitData).toEqual({
+        test: 'changed',
+      });
+    });
   });
 
   describe('trigger', () => {
