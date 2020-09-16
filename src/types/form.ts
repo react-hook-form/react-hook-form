@@ -133,10 +133,41 @@ export type OmitResetState = Partial<{
   dirtyFields: boolean;
 }>;
 
-export type Control<TFieldValues extends FieldValues = FieldValues> = Pick<
-  UseFormMethods<TFieldValues>,
-  'register' | 'unregister' | 'setValue' | 'getValues' | 'trigger'
-> & {
+export type Control<TFieldValues extends FieldValues = FieldValues> = {
+  trigger: (
+    name?: FieldName<TFieldValues> | FieldName<TFieldValues>[],
+  ) => Promise<boolean>;
+  getValues(): UnpackNestedValue<TFieldValues>;
+  getValues<TFieldName extends string, TFieldValue extends unknown>(
+    name: TFieldName,
+  ): TFieldName extends keyof TFieldValues
+    ? UnpackNestedValue<TFieldValues>[TFieldName]
+    : TFieldValue;
+  getValues<TFieldName extends keyof TFieldValues>(
+    names: TFieldName[],
+  ): UnpackNestedValue<Pick<TFieldValues, TFieldName>>;
+  setValue<
+    TFieldName extends string,
+    TFieldValue extends TFieldValues[TFieldName]
+  >(
+    name: TFieldName,
+    value:
+      | (NonUndefined<TFieldValue> extends NestedValue<infer U>
+          ? U
+          : UnpackNestedValue<DeepPartial<LiteralToPrimitive<TFieldValue>>>)
+      | null
+      | undefined,
+    options?: SetValueConfig,
+  ): void;
+  register<TFieldElement extends FieldElement<TFieldValues>>(
+    rules?: ValidationRules,
+  ): (ref: (TFieldElement & Ref) | null) => void;
+  register(name: FieldName<TFieldValues>, rules?: ValidationRules): void;
+  register<TFieldElement extends FieldElement<TFieldValues>>(
+    ref: (TFieldElement & Ref) | null,
+    rules?: ValidationRules,
+  ): void;
+  unregister(name: FieldName<TFieldValues> | FieldName<TFieldValues>[]): void;
   removeFieldEventListener: (field: Field, forceDelete?: boolean) => void;
   mode: Readonly<{
     isOnBlur: boolean;
