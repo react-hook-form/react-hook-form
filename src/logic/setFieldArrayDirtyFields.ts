@@ -2,35 +2,40 @@ import { get } from '../utils';
 import isArray from '../utils/isArray';
 import set from '../utils/set';
 
-const setFieldArrayDirtyFields = (
-  values: any,
-  defaultValues: any,
-  dirtyFields: any,
+const setFieldArrayDirtyFields = <
+  T extends Record<string, any>[],
+  U extends Record<string, any>[]
+>(
+  values: T,
+  defaultValues: U,
+  dirtyFields: Record<string, boolean | []>[],
 ) => {
-  let i = 0;
+  let index = 0;
 
   for (const value of values) {
     for (const key in value) {
       if (isArray(value[key])) {
-        dirtyFields[i][key] = [];
-
+        dirtyFields[index][key] = [];
         setFieldArrayDirtyFields(
           value[key],
-          get(defaultValues[i], key, []),
-          dirtyFields[i][key],
+          get(defaultValues[index], key, []),
+          dirtyFields[index][key] as [],
         );
       } else {
-        if (defaultValues[i] && get(defaultValues[i], key) === value[key]) {
-          dirtyFields[i] && set(dirtyFields[i], key, undefined);
+        if (
+          defaultValues[index] &&
+          get(defaultValues[index], key) === value[key]
+        ) {
+          dirtyFields[index] && set(dirtyFields[index], key, undefined);
         } else {
-          dirtyFields[i] = {
-            ...dirtyFields[i],
+          dirtyFields[index] = {
+            ...dirtyFields[index],
             [key]: true,
           };
         }
       }
     }
-    i++;
+    index++;
   }
 
   return dirtyFields;

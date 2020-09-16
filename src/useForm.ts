@@ -70,6 +70,7 @@ import {
   DefaultValues,
   FieldError,
 } from './types';
+import { setFieldArrayDirtyFields } from './logic/setFieldArrayDirtyFields';
 
 const isWindowUndefined = typeof window === UNDEFINED;
 const isWeb =
@@ -477,11 +478,28 @@ export function useForm<
             readFormStateRef.current.isDirty ||
             readFormStateRef.current.dirtyFields
           ) {
+            if (readFormStateRef.current.dirtyFields) {
+              set(
+                formStateRef.current.dirtyFields,
+                fieldArrayParentName,
+                setFieldArrayDirtyFields(
+                  value,
+                  get(defaultValuesRef.current, fieldArrayParentName),
+                  get(
+                    readFormStateRef.current.dirtyFields,
+                    fieldArrayParentName,
+                    [],
+                  ),
+                ),
+              );
+            }
+
             updateFormState({
               isDirty: !deepEqual(
                 { ...getValues(), [fieldArrayParentName]: value },
                 defaultValuesRef.current,
               ),
+              dirtyFields: formStateRef.current.dirtyFields,
             });
           }
         }
