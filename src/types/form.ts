@@ -221,8 +221,10 @@ export type UseFormMethods<TFieldValues extends FieldValues = FieldValues> = {
     names: string[],
     defaultValues?: UnpackNestedValue<DeepPartial<TFieldValues>>,
   ): UnpackNestedValue<DeepPartial<TFieldValues>>;
-  setError(name: FieldName<TFieldValues>, error: ErrorOption): void;
-  clearErrors(name?: FieldName<TFieldValues> | FieldName<TFieldValues>[]): void;
+  setError: (name: FieldName<TFieldValues>, error: ErrorOption) => void;
+  clearErrors: (
+    name?: FieldName<TFieldValues> | FieldName<TFieldValues>[],
+  ) => void;
   setValue<
     TFieldName extends string,
     TFieldValue extends TFieldValues[TFieldName]
@@ -236,15 +238,13 @@ export type UseFormMethods<TFieldValues extends FieldValues = FieldValues> = {
       | undefined,
     options?: SetValueConfig,
   ): void;
-  trigger(
+  trigger: (
     name?: FieldName<TFieldValues> | FieldName<TFieldValues>[],
-  ): Promise<boolean>;
-  errors: FieldErrors<TFieldValues>;
-  formState: FormState<TFieldValues>;
-  reset: (
-    values?: UnpackNestedValue<DeepPartial<TFieldValues>>,
-    omitResetState?: OmitResetState,
-  ) => void;
+  ) => Promise<boolean>;
+  handleSubmit: <TSubmitFieldValues extends FieldValues = TFieldValues>(
+    onValid: SubmitHandler<TSubmitFieldValues>,
+    onInvalid?: SubmitErrorHandler<TFieldValues>,
+  ) => (e?: React.BaseSyntheticEvent) => Promise<void>;
   getValues(): UnpackNestedValue<TFieldValues>;
   getValues<TFieldName extends string, TFieldValue extends unknown>(
     name: TFieldName,
@@ -254,9 +254,11 @@ export type UseFormMethods<TFieldValues extends FieldValues = FieldValues> = {
   getValues<TFieldName extends keyof TFieldValues>(
     names: TFieldName[],
   ): UnpackNestedValue<Pick<TFieldValues, TFieldName>>;
-  handleSubmit: <TSubmitFieldValues extends FieldValues = TFieldValues>(
-    onValid: SubmitHandler<TSubmitFieldValues>,
-    onInvalid?: SubmitErrorHandler<TFieldValues>,
-  ) => (e?: React.BaseSyntheticEvent) => Promise<void>;
+  errors: FieldErrors<TFieldValues>;
+  formState: FormState<TFieldValues>;
+  reset: (
+    values?: UnpackNestedValue<DeepPartial<TFieldValues>>,
+    omitResetState?: OmitResetState,
+  ) => void;
   control: Control<TFieldValues>;
 };
