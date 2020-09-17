@@ -204,6 +204,14 @@ export interface UseFormMethods<
       ref: (TFieldElement & Ref) | null,
       rules?: ValidationRules,
     ): void;
+    <TFieldElement extends FieldElement<TFieldValues>>(
+      refOrValidationOptions?:
+        | FieldName<TFieldValues>
+        | ValidationRules
+        | (TFieldElement & Ref)
+        | null,
+      rules?: ValidationRules,
+    ): ((ref: (TFieldElement & Ref) | null) => void) | void;
   };
   unregister: (
     name: FieldName<TFieldValues> | FieldName<TFieldValues>[],
@@ -211,14 +219,10 @@ export interface UseFormMethods<
   setError: (name: FieldName<TFieldValues>, error: ErrorOption) => void;
   watch: {
     (): UnpackNestedValue<TFieldValues>;
-    <TFieldName extends string, TFieldValue>(
+    <TFieldName extends string, TFieldValue extends TFieldValues[TFieldName]>(
       name: TFieldName,
-      defaultValue?: TFieldName extends keyof TFieldValues
-        ? UnpackNestedValue<TFieldValues[TFieldName]>
-        : UnpackNestedValue<LiteralToPrimitive<TFieldValue>>,
-    ): TFieldName extends keyof TFieldValues
-      ? UnpackNestedValue<TFieldValues[TFieldName]>
-      : UnpackNestedValue<LiteralToPrimitive<TFieldValue>>;
+      defaultValue?: UnpackNestedValue<LiteralToPrimitive<TFieldValue>>,
+    ): UnpackNestedValue<LiteralToPrimitive<TFieldValue>>;
     <TFieldName extends keyof TFieldValues>(
       names: TFieldName[],
       defaultValues?: UnpackNestedValue<
@@ -229,6 +233,7 @@ export interface UseFormMethods<
       names: string[],
       defaultValues?: UnpackNestedValue<DeepPartial<TFieldValues>>,
     ): UnpackNestedValue<DeepPartial<TFieldValues>>;
+    (fieldNames?: string | string[], defaultValue?: unknown): unknown;
   };
   setValue: <
     TFieldName extends string,
