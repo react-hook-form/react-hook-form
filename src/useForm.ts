@@ -485,7 +485,7 @@ export function useForm<
                 fieldArrayParentName,
                 setFieldArrayDirtyFields(
                   value,
-                  get(defaultValuesRef.current, fieldArrayParentName),
+                  get(defaultValuesRef.current, fieldArrayParentName, []),
                   get(
                     readFormStateRef.current.dirtyFields,
                     fieldArrayParentName,
