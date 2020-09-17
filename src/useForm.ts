@@ -523,7 +523,7 @@ export function useForm<
       | undefined,
     config?: SetValueConfig,
   ): void {
-    setInternalValue(name, value as TFieldValues[string], config || {});
+    setInternalValue(name, value as TFieldValues[string], config);
 
     if (isFieldWatched(name)) {
       updateFormState();
