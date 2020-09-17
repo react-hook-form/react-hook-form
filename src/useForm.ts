@@ -479,21 +479,21 @@ export function useForm<
             readFormStateRef.current.isDirty ||
             readFormStateRef.current.dirtyFields
           ) {
-            if (readFormStateRef.current.dirtyFields) {
+            const dirtyFields = setFieldArrayDirtyFields(
+              value,
+              get(defaultValuesRef.current, fieldArrayParentName, []),
+              get(
+                readFormStateRef.current.dirtyFields,
+                fieldArrayParentName,
+                [],
+              ),
+            );
+            dirtyFields.length &&
               set(
                 formStateRef.current.dirtyFields,
                 fieldArrayParentName,
-                setFieldArrayDirtyFields(
-                  value,
-                  get(defaultValuesRef.current, fieldArrayParentName, []),
-                  get(
-                    readFormStateRef.current.dirtyFields,
-                    fieldArrayParentName,
-                    [],
-                  ),
-                ),
+                dirtyFields,
               );
-            }
 
             updateFormState({
               isDirty: !deepEqual(
