@@ -4,7 +4,7 @@ import set from '../utils/set';
 
 export default function setFieldArrayDirtyFields<
   T extends U,
-  U extends Record<string, object | string>[]
+  U extends Record<string, unknown>[]
 >(values: T, defaultValues: U, dirtyFields: Record<string, boolean | []>[]) {
   let index = -1;
 
