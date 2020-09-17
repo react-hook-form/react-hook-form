@@ -727,10 +727,7 @@ export function useForm<
     });
   }
 
-  function setError(
-    name: FieldName<TFieldValues>,
-    error: ErrorOption = {},
-  ): void {
+  function setError(name: FieldName<TFieldValues>, error: ErrorOption): void {
     const ref = (fieldsRef.current[name] || {})!.ref;
 
     set(formStateRef.current.errors, name, {
