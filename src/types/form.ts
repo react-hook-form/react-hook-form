@@ -233,7 +233,6 @@ export interface UseFormMethods<
       names: string[],
       defaultValues?: UnpackNestedValue<DeepPartial<TFieldValues>>,
     ): UnpackNestedValue<DeepPartial<TFieldValues>>;
-    (fieldNames?: string | string[], defaultValue?: unknown): unknown;
   };
   setValue: <
     TFieldName extends string,
@@ -270,7 +269,6 @@ export interface UseFormMethods<
     <TFieldName extends keyof TFieldValues>(
       names: TFieldName[],
     ): UnpackNestedValue<Pick<TFieldValues, TFieldName>>;
-    (payload?: string | string[]): unknown;
   };
   handleSubmit: <TSubmitFieldValues extends FieldValues = TFieldValues>(
     onValid: SubmitHandler<TSubmitFieldValues>,
