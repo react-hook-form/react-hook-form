@@ -227,7 +227,7 @@ export function useForm<
 
   const setFieldValue = React.useCallback(
     (
-      { ref, options }: Field,
+      name: string,
       rawValue:
         | FieldValue<TFieldValues>
         | UnpackNestedValue<DeepPartial<TFieldValues>>
@@ -236,6 +236,7 @@ export function useForm<
         | null
         | boolean,
     ) => {
+      const { ref, options } = fieldsRef.current[name] as Field;
       const value =
         isWeb && isHTMLElement(ref) && isNullOrUndefined(rawValue)
           ? ''
@@ -442,7 +443,7 @@ export function useForm<
 
         if (field) {
           set(data, name, value);
-          setFieldValue(field, get(data, fieldName));
+          setFieldValue(fieldName, get(data, fieldName));
 
           if (shouldDirty) {
             updateAndGetDirtyState(fieldName);
@@ -461,10 +462,10 @@ export function useForm<
     (
       name: InternalFieldName<TFieldValues>,
       value: FieldValue<TFieldValues> | null | undefined | boolean,
-      config: SetValueConfig,
+      config: SetValueConfig = {},
     ) => {
       if (fieldsRef.current[name]) {
-        setFieldValue(fieldsRef.current[name] as Field, value);
+        setFieldValue(name, value);
         config.shouldDirty && updateAndGetDirtyState(name);
       } else if (!isPrimitive(value)) {
         setInternalValues(name, value, config);
@@ -940,7 +941,7 @@ export function useForm<
       isFieldArray = isNameInFieldArray(fieldArrayNamesRef.current, name);
 
       if (!isEmptyDefaultValue && !isFieldArray) {
-        setFieldValue(field, defaultValue);
+        setFieldValue(name, defaultValue);
       }
     }
 

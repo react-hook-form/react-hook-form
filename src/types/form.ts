@@ -242,7 +242,7 @@ export type UseFormMethods<TFieldValues extends FieldValues = FieldValues> = {
           : UnpackNestedValue<DeepPartial<LiteralToPrimitive<TFieldValue>>>)
       | null
       | undefined,
-    config?: SetValueConfig,
+    options?: SetValueConfig,
   ) => void;
   trigger: (
     name?: FieldName<TFieldValues> | FieldName<TFieldValues>[],
