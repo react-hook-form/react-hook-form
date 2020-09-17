@@ -477,7 +477,7 @@ export function useForm<
             const dirtyFields = setFieldArrayDirtyFields(
               value,
               get(defaultValuesRef.current, name, []),
-              get(readFormStateRef.current.dirtyFields, name, []),
+              get(formStateRef.current.dirtyFields, name, []),
             );
             dirtyFields.length &&
               set(formStateRef.current.dirtyFields, name, dirtyFields);
