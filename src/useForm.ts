@@ -464,16 +464,11 @@ export function useForm<
       } else if (!isPrimitive(value)) {
         setInternalValues(name, value, config);
 
-        if (
-          (isNameInFieldArray(fieldArrayNamesRef.current, name) ||
-            fieldArrayNamesRef.current.has(name)) &&
-          isArray(value)
-        ) {
-          const fieldArrayParentName = getFieldArrayParentName(name) || name;
-          fieldArrayDefaultValuesRef.current[fieldArrayParentName] = value;
-          resetFieldArrayFunctionRef.current[fieldArrayParentName]({
+        if (fieldArrayNamesRef.current.has(name)) {
+          fieldArrayDefaultValuesRef.current[name] = value;
+          resetFieldArrayFunctionRef.current[name]({
             [name]: value,
-          } as UnpackNestedValue<DeepPartial<TFieldValues>>);
+          });
 
           if (
             readFormStateRef.current.isDirty ||
@@ -481,23 +476,15 @@ export function useForm<
           ) {
             const dirtyFields = setFieldArrayDirtyFields(
               value,
-              get(defaultValuesRef.current, fieldArrayParentName, []),
-              get(
-                readFormStateRef.current.dirtyFields,
-                fieldArrayParentName,
-                [],
-              ),
+              get(defaultValuesRef.current, name, []),
+              get(readFormStateRef.current.dirtyFields, name, []),
             );
             dirtyFields.length &&
-              set(
-                formStateRef.current.dirtyFields,
-                fieldArrayParentName,
-                dirtyFields,
-              );
+              set(formStateRef.current.dirtyFields, name, dirtyFields);
 
             updateFormState({
               isDirty: !deepEqual(
-                { ...getValues(), [fieldArrayParentName]: value },
+                { ...getValues(), [name]: value },
                 defaultValuesRef.current,
               ),
               dirtyFields: formStateRef.current.dirtyFields,
