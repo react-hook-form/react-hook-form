@@ -1213,10 +1213,7 @@ export function useForm<
 
     return () => {
       isUnMount.current = true;
-
-      if (observerRef.current) {
-        observerRef.current.disconnect();
-      }
+      observerRef.current && observerRef.current.disconnect();
 
       if (process.env.NODE_ENV !== 'production') {
         return;
