@@ -22,14 +22,12 @@ const setFieldArrayDirtyFields = <
           dirtyFields[index][key] as [],
         );
       } else {
-        if (get(defaultValues[index] || {}, key) === values[index][key]) {
-          set(dirtyFields[index] || {}, key);
-        } else {
-          dirtyFields[index] = {
-            ...dirtyFields[index],
-            [key]: true,
-          };
-        }
+        get(defaultValues[index] || {}, key) === values[index][key]
+          ? set(dirtyFields[index] || {}, key)
+          : (dirtyFields[index] = {
+              ...dirtyFields[index],
+              [key]: true,
+            });
       }
     }
   }
