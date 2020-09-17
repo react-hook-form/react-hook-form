@@ -112,9 +112,9 @@ export function useForm<
   const defaultValuesRef = React.useRef<DefaultValues<TFieldValues>>(
     defaultValues,
   );
-  const defaultValuesAtRenderRef = React.useRef(
-    {} as DefaultValuesAtRender<TFieldValues>,
-  );
+  const defaultValuesAtRenderRef = React.useRef<
+    Partial<DefaultValuesAtRender<TFieldValues>>
+  >({});
   const isUnMount = React.useRef(false);
   const isWatchAllRef = React.useRef(false);
   const handleChangeRef = React.useRef<HandleChange>();
