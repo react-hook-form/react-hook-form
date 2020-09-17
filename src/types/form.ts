@@ -216,7 +216,6 @@ export interface UseFormMethods<
   unregister: (
     name: FieldName<TFieldValues> | FieldName<TFieldValues>[],
   ) => void;
-  setError: (name: FieldName<TFieldValues>, error: ErrorOption) => void;
   watch: {
     (): UnpackNestedValue<TFieldValues>;
     <TFieldName extends string, TFieldValue extends TFieldValues[TFieldName]>(
@@ -234,6 +233,10 @@ export interface UseFormMethods<
       defaultValues?: UnpackNestedValue<DeepPartial<TFieldValues>>,
     ): UnpackNestedValue<DeepPartial<TFieldValues>>;
   };
+  setError: (name: FieldName<TFieldValues>, error: ErrorOption) => void;
+  clearErrors: (
+    name?: FieldName<TFieldValues> | FieldName<TFieldValues>[],
+  ) => void;
   setValue: <
     TFieldName extends string,
     TFieldValue extends TFieldValues[TFieldName]
@@ -246,9 +249,6 @@ export interface UseFormMethods<
       | null
       | undefined,
     options?: SetValueConfig,
-  ) => void;
-  clearErrors: (
-    name?: FieldName<TFieldValues> | FieldName<TFieldValues>[],
   ) => void;
   trigger: (
     name?: FieldName<TFieldValues> | FieldName<TFieldValues>[],
