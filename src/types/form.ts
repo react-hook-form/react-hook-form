@@ -192,7 +192,9 @@ export type UseWatchOptions = {
   control?: Control;
 };
 
-export type UseFormMethods<TFieldValues extends FieldValues = FieldValues> = {
+export interface UseFormMethods<
+  TFieldValues extends FieldValues = FieldValues
+> {
   register: {
     <TFieldElement extends FieldElement<TFieldValues>>(
       rules?: ValidationRules,
@@ -269,4 +271,4 @@ export type UseFormMethods<TFieldValues extends FieldValues = FieldValues> = {
     onInvalid?: SubmitErrorHandler<TFieldValues>,
   ) => (e?: React.BaseSyntheticEvent) => Promise<void>;
   control: Control<TFieldValues>;
-};
+}
