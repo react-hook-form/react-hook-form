@@ -11,10 +11,11 @@ export default function setFieldArrayDirtyFields<
   while (++index < values.length) {
     for (const key in values[index]) {
       if (isArray(values[index][key])) {
+        !dirtyFields[index] && (dirtyFields[index] = {});
         dirtyFields[index][key] = [];
         setFieldArrayDirtyFields(
           values[index][key],
-          get(defaultValues[index], key, []),
+          get(defaultValues[index] || {}, key, []),
           dirtyFields[index][key] as [],
         );
       } else {
