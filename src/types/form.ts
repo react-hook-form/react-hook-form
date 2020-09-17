@@ -270,6 +270,7 @@ export interface UseFormMethods<
     <TFieldName extends keyof TFieldValues>(
       names: TFieldName[],
     ): UnpackNestedValue<Pick<TFieldValues, TFieldName>>;
+    (payload?: string | string[]): unknown;
   };
   handleSubmit: <TSubmitFieldValues extends FieldValues = TFieldValues>(
     onValid: SubmitHandler<TSubmitFieldValues>,
