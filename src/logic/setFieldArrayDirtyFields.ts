@@ -2,14 +2,10 @@ import { get } from '../utils';
 import isArray from '../utils/isArray';
 import set from '../utils/set';
 
-const setFieldArrayDirtyFields = <
+export default function setFieldArrayDirtyFields<
   T extends U,
   U extends Record<string, object | string>[]
->(
-  values: T,
-  defaultValues: U,
-  dirtyFields: Record<string, boolean | []>[],
-) => {
+>(values: T, defaultValues: U, dirtyFields: Record<string, boolean | []>[]) {
   let index = -1;
 
   while (++index < values.length) {
@@ -33,6 +29,4 @@ const setFieldArrayDirtyFields = <
   }
 
   return dirtyFields;
-};
-
-export { setFieldArrayDirtyFields };
+}

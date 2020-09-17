@@ -1,4 +1,4 @@
-import { setFieldArrayDirtyFields } from './setFieldArrayDirtyFields';
+import setFieldArrayDirtyFields from './setFieldArrayDirtyFields';
 
 describe('setFieldArrayDirtyFields', () => {
   it('should set correctly dirtyFields', () => {
