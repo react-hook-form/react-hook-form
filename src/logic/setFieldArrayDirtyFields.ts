@@ -4,13 +4,14 @@ import set from '../utils/set';
 
 export default function setFieldArrayDirtyFields<
   T extends U,
-  U extends Record<string, unknown>[]
+  U extends Record<string, unknown>[],
+  K extends Record<string, boolean | []>
 >(
   values: T,
   defaultValues: U,
   dirtyFields: Record<string, boolean | []>[],
-  parentNode?: any,
-  parentName?: any,
+  parentNode?: K,
+  parentName?: keyof K,
 ) {
   let index = -1;
 
@@ -35,7 +36,9 @@ export default function setFieldArrayDirtyFields<
             });
       }
     }
-    !dirtyFields.length && parentNode && delete parentNode[parentName];
+    !dirtyFields.length &&
+      parentNode &&
+      delete parentNode[parentName as keyof K];
   }
 
   return dirtyFields.length ? dirtyFields : undefined;
