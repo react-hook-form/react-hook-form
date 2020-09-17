@@ -474,13 +474,15 @@ export function useForm<
             readFormStateRef.current.isDirty ||
             readFormStateRef.current.dirtyFields
           ) {
-            const dirtyFields = setFieldArrayDirtyFields(
-              value,
-              get(defaultValuesRef.current, name, []),
-              get(formStateRef.current.dirtyFields, name, []),
+            set(
+              formStateRef.current.dirtyFields,
+              name,
+              setFieldArrayDirtyFields(
+                value,
+                get(defaultValuesRef.current, name, []),
+                get(formStateRef.current.dirtyFields, name, []),
+              ),
             );
-            dirtyFields.length &&
-              set(formStateRef.current.dirtyFields, name, dirtyFields);
 
             updateFormState({
               isDirty: !deepEqual(

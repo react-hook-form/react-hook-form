@@ -29,5 +29,5 @@ export default function setFieldArrayDirtyFields<
     }
   }
 
-  return dirtyFields;
+  return dirtyFields.length ? dirtyFields : undefined;
 }
