@@ -92,7 +92,6 @@ describe('setFieldArrayDirtyFields', () => {
       },
       {
         data: true,
-        nested: [],
         nested1: [{ data: true, data1: true }],
       },
     ]);
