@@ -468,7 +468,7 @@ export function useForm<
           fieldArrayDefaultValuesRef.current[name] = value;
           resetFieldArrayFunctionRef.current[name]({
             [name]: value,
-          });
+          } as UnpackNestedValue<DeepPartial<TFieldValues>>);
 
           if (
             readFormStateRef.current.isDirty ||
