@@ -4,7 +4,11 @@ import isKey from './isKey';
 import stringToPath from './stringToPath';
 import { FieldValues } from '../types';
 
-export default function set(object: FieldValues, path: string, value: unknown) {
+export default function set(
+  object: FieldValues,
+  path: string,
+  value?: unknown,
+) {
   let index = -1;
   const tempPath = isKey(path) ? [path] : stringToPath(path);
   const length = tempPath.length;

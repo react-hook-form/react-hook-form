@@ -3,6 +3,7 @@ import attachEventListeners from './logic/attachEventListeners';
 import transformToNestObject from './logic/transformToNestObject';
 import focusOnErrorField from './logic/focusOnErrorField';
 import findRemovedFieldAndRemoveListener from './logic/findRemovedFieldAndRemoveListener';
+import setFieldArrayDirtyFields from './logic/setFieldArrayDirtyFields';
 import getFieldsValues from './logic/getFieldsValues';
 import getFieldValue from './logic/getFieldValue';
 import shouldRenderBasedOnError from './logic/shouldRenderBasedOnError';
@@ -111,9 +112,9 @@ export function useForm<
   const defaultValuesRef = React.useRef<DefaultValues<TFieldValues>>(
     defaultValues,
   );
-  const defaultValuesAtRenderRef = React.useRef(
-    {} as DefaultValuesAtRender<TFieldValues>,
-  );
+  const defaultValuesAtRenderRef = React.useRef<
+    Partial<DefaultValuesAtRender<TFieldValues>>
+  >({});
   const isUnMount = React.useRef(false);
   const isWatchAllRef = React.useRef(false);
   const handleChangeRef = React.useRef<HandleChange>();
@@ -295,7 +296,6 @@ export function useForm<
         defaultValuesAtRenderRef.current[name] !==
         getFieldValue(fieldsRef, name, shallowFieldsStateRef);
       const isDirtyFieldExist = get(formStateRef.current.dirtyFields, name);
-      const isFieldArray = isNameInFieldArray(fieldArrayNamesRef.current, name);
       const previousIsDirty = formStateRef.current.isDirty;
 
       isFieldDirty
@@ -304,12 +304,10 @@ export function useForm<
 
       const state = {
         isDirty:
-          (isFieldArray &&
-            !deepEqual(
-              get(getValues(), getFieldArrayParentName(name)),
-              get(defaultValuesRef.current, getFieldArrayParentName(name)),
-            )) ||
-          !isEmptyObject(formStateRef.current.dirtyFields),
+          !deepEqual(
+            get(getValues(), getFieldArrayParentName(name)),
+            get(defaultValuesRef.current, getFieldArrayParentName(name)),
+          ) || !isEmptyObject(formStateRef.current.dirtyFields),
         dirtyFields: formStateRef.current.dirtyFields,
       };
 
@@ -470,15 +468,34 @@ export function useForm<
       } else if (!isPrimitive(value)) {
         setInternalValues(name, value, config);
 
-        if (
-          isNameInFieldArray(fieldArrayNamesRef.current, name) ||
-          fieldArrayNamesRef.current.has(name)
-        ) {
-          const fieldArrayParentName = getFieldArrayParentName(name) || name;
-          fieldArrayDefaultValuesRef.current[fieldArrayParentName] = value;
-          resetFieldArrayFunctionRef.current[fieldArrayParentName]({
+        if (fieldArrayNamesRef.current.has(name)) {
+          fieldArrayDefaultValuesRef.current[name] = value;
+          resetFieldArrayFunctionRef.current[name]({
             [name]: value,
           } as UnpackNestedValue<DeepPartial<TFieldValues>>);
+
+          if (
+            readFormStateRef.current.isDirty ||
+            readFormStateRef.current.dirtyFields
+          ) {
+            set(
+              formStateRef.current.dirtyFields,
+              name,
+              setFieldArrayDirtyFields(
+                value,
+                get(defaultValuesRef.current, name, []),
+                get(formStateRef.current.dirtyFields, name, []),
+              ),
+            );
+
+            updateFormState({
+              isDirty: !deepEqual(
+                { ...getValues(), [name]: value },
+                defaultValuesRef.current,
+              ),
+              dirtyFields: formStateRef.current.dirtyFields,
+            });
+          }
         }
       }
 
@@ -714,10 +731,7 @@ export function useForm<
     });
   }
 
-  function setError(
-    name: FieldName<TFieldValues>,
-    error: ErrorOption = {},
-  ): void {
+  function setError(name: FieldName<TFieldValues>, error: ErrorOption): void {
     const ref = (fieldsRef.current[name] || {})!.ref;
 
     set(formStateRef.current.errors, name, {
@@ -1203,10 +1217,7 @@ export function useForm<
 
     return () => {
       isUnMount.current = true;
-
-      if (observerRef.current) {
-        observerRef.current.disconnect();
-      }
+      observerRef.current && observerRef.current.disconnect();
 
       if (process.env.NODE_ENV !== 'production') {
         return;
