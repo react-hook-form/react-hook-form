@@ -35,7 +35,7 @@ export default function setFieldArrayDirtyFields<
             });
       }
     }
-    !dirtyFields.length && delete parentNode[parentName];
+    !dirtyFields.length && parentNode && delete parentNode[parentName];
   }
 
   return dirtyFields.length ? dirtyFields : undefined;
