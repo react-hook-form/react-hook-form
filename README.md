@@ -215,6 +215,18 @@ Thanks go to these kind and lovely sponsors (company and individuals)!
             height="30"
             alt="@mlukaszczyk"
     /></a>
+    <a href="https://github.com/susshma"
+    ><img
+            src="https://avatars0.githubusercontent.com/u/2566818?s=460&u=754ee26b96e321ff28dbc4a2744132015f534fe0&v=4"
+            width="30"
+            height="30"
+    /></a>
+    <a href="https://github.com/MatiasCiccone"
+    ><img
+            src="https://avatars3.githubusercontent.com/u/32602795?s=460&u=6a0c4dbe23c4f9a5628dc8867842b75989ecc4aa&v=4"
+            width="30"
+            height="30"
+    /></a>
 </p>
 
 ## Backers
