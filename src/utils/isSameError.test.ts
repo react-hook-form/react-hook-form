@@ -1,5 +1,4 @@
 import isSameError from './isSameError';
-import { FieldError } from '../types';
 
 describe('isSameError', () => {
   it('should detect if it contain the same error', () => {
@@ -8,7 +7,7 @@ describe('isSameError', () => {
         {
           type: 'test',
           message: 'what',
-        } as FieldError,
+        },
         {
           type: 'test',
           message: 'what',
@@ -21,7 +20,7 @@ describe('isSameError', () => {
         {
           type: '',
           message: '',
-        } as FieldError,
+        },
         {
           type: '',
           message: '',
@@ -37,7 +36,7 @@ describe('isSameError', () => {
             minLength: 'min',
           },
           message: '',
-        } as FieldError,
+        },
         {
           type: '',
           types: {
@@ -78,6 +77,46 @@ describe('isSameError', () => {
     ).toBeFalsy();
   });
 
+  it('should return false when errors object length not match', () => {
+    expect(
+      isSameError(
+        {
+          // @ts-ignore
+          test: {
+            type: '',
+            message: 'test',
+          },
+        },
+        {
+          type: '',
+          message: '',
+        },
+      ),
+    ).toBeFalsy();
+
+    expect(
+      isSameError(
+        {
+          // @ts-ignore
+          test: {
+            type: '',
+            message: 'test',
+          },
+        },
+        {
+          test: {
+            type: '',
+            message: 'test',
+          },
+          test1: {
+            type: '',
+            message: 'test',
+          },
+        },
+      ),
+    ).toBeFalsy();
+  });
+
   it('should return false when they are not the same error', () => {
     expect(
       isSameError(
@@ -87,7 +126,7 @@ describe('isSameError', () => {
           types: {
             minLength: 'min',
           },
-        } as FieldError,
+        },
         {
           type: 'test',
           message: 'what',
@@ -103,7 +142,7 @@ describe('isSameError', () => {
           types: {
             maxLength: 'max',
           },
-        } as FieldError,
+        },
         {
           type: '',
           message: '',
