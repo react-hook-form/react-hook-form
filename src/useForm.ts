@@ -25,7 +25,6 @@ import isPrimitive from './utils/isPrimitive';
 import isFunction from './utils/isFunction';
 import isArray from './utils/isArray';
 import isString from './utils/isString';
-import isSameError from './utils/isSameError';
 import isUndefined from './utils/isUndefined';
 import get from './utils/get';
 import set from './utils/set';
@@ -202,7 +201,7 @@ export function useForm<
         shouldReRender =
           shouldReRender ||
           !previousError ||
-          !isSameError(previousError, error);
+          !deepEqual(previousError, error, true);
         set(formStateRef.current.errors, name, error);
       } else {
         if (get(fieldsWithValidationRef.current, name) || resolverRef.current) {
