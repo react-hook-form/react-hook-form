@@ -1,72 +1,67 @@
-import React from 'react';
-import ReactDOM from 'react-dom';
-import { useForm } from 'react-hook-form';
+import React from "react";
+import { useForm, Controller } from "react-hook-form";
+import NumberFormat from "react-number-format";
+import { TextField, ThemeProvider, createMuiTheme } from "@material-ui/core";
 
-export default function App() {
-  const { register, handleSubmit } = useForm();
-  const onSubmit = data => {
-    alert(JSON.stringify(data));
+const theme = createMuiTheme({
+  palette: {
+    type: "dark"
+  }
+});
+const defaultValues = {
+  priceInCents: 1234567,
+  muiPriceInCents: 1234567
+};
+function App() {
+  const form = useForm({ defaultValues });
+
+  const onSubmit = (data) => {
+    form.reset(defaultValues);
   };
 
   return (
-    <div className="App">
-      <form onSubmit={handleSubmit(onSubmit)}>
-        <div>
-          <label htmlFor="firstName">First Name</label>
-          <input
-            name="firstName"
-            onChange={e => {
-              if (e.target.value) {
-                e.target.value = e.target.value.toUpperCase();
-              }
-            }}
-            placeholder="bill"
-            ref={register}
-          />
-        </div>
+    <ThemeProvider theme={theme}>
+      <form onSubmit={form.handleSubmit(onSubmit)}>
+        <label htmlFor="priceInCents">Price</label>
+        <label htmlFor="muiPriceInCents">Material UI Price</label>
+        <Controller
+          name="muiPriceInCents"
+          control={form.control}
+          render={(props) => <MuiCurrencyFormat {...props} />}
+        />
 
-        <div>
-          <label htmlFor="lastName">Last Name</label>
-          <input
-            name="lastName"
-            onChange={e => {
-              if (e.target.value) {
-                e.target.value = e.target.value.toLowerCase();
-              }
-            }}
-            placeholder="luo"
-            ref={register}
-          />
-        </div>
+        <input type="submit" />
+        <input
+          style={{ display: "block", marginTop: 20 }}
+          type="button"
+          onClick={() => form.reset(defaultValues)}
+          value="Custom Reset"
+        />
 
-        <div>
-          <label htmlFor="DOB">DOB</label>
-          <input
-            name="DOB"
-            onChange={e => {
-              const value = e.target.value;
-              if (value.match(/^\d{2}$/) !== null) {
-                e.target.value = value + '/';
-              } else if (value.match(/^\d{2}\/\d{2}$/) !== null) {
-                e.target.value = value + '/';
-              }
-            }}
-            placeholder="12/12/1999"
-            ref={register}
-          />
-        </div>
-
-        <div>
-          <label htmlFor="email">Email</label>
-          <input
-            name="email"
-            placeholder="bluebill1049@hotmail.com"
-            type="email"
-            ref={register}
-          />
-        </div>
-        <button type="submit">Submit</button>
+        <pre style={{ color: "#fff", marginTop: 24 }}>
+          {JSON.stringify(form.watch(), null, 2)}
+        </pre>
       </form>
-    </div>
+    </ThemeProvider>
   );
 }
+
+const MuiCurrencyFormat = (props) => {
+  const { onChange, value, ...rest } = props;
+
+  return (
+    <NumberFormat
+      customInput={TextField}
+      {...rest}
+      value={value}
+      fullWidth
+      thousandSeparator={true}
+      decimalScale={2}
+      onValueChange={(target) => {
+        onChange(target.floatValue);
+      }}
+      isNumericString
+      prefix="$ "
+    />
+  );
+};
