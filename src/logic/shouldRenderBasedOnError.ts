@@ -1,6 +1,6 @@
-import isSameError from '../utils/isSameError';
 import get from '../utils/get';
 import isUndefined from '../utils/isUndefined';
+import deepEqual from '../utils/deepEqual';
 import {
   FieldValues,
   InternalFieldName,
@@ -29,7 +29,7 @@ export default function shouldRenderBasedOnError<
 
   return (
     (isValid && !!previousError) ||
-    (!isValid && !isSameError(previousError, error)) ||
+    (!isValid && !deepEqual(previousError, error, true)) ||
     (isValid && get(fieldsWithValidation, name) && !get(validFields, name))
   );
 }
