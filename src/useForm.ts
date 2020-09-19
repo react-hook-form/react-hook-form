@@ -56,7 +56,6 @@ import {
   HandleChange,
   RadioOrCheckboxOption,
   OmitResetState,
-  DefaultValuesAtRender,
   NestedValue,
   SetValueConfig,
   ErrorOption,
@@ -112,7 +111,7 @@ export function useForm<
     defaultValues,
   );
   const defaultValuesAtRenderRef = React.useRef<
-    Partial<DefaultValuesAtRender<TFieldValues>>
+    Partial<DefaultValues<TFieldValues>>
   >({});
   const isUnMount = React.useRef(false);
   const isWatchAllRef = React.useRef(false);
@@ -292,7 +291,7 @@ export function useForm<
       }
 
       const isFieldDirty =
-        defaultValuesAtRenderRef.current[name] !==
+        get(defaultValuesAtRenderRef.current, name) !==
         getFieldValue(fieldsRef, name, shallowFieldsStateRef);
       const isDirtyFieldExist = get(formStateRef.current.dirtyFields, name);
       const previousIsDirty = formStateRef.current.isDirty;
@@ -303,8 +302,12 @@ export function useForm<
 
       const state = {
         isDirty:
-          !deepEqual(getValues(), defaultValuesRef.current) ||
-          !isEmptyObject(formStateRef.current.dirtyFields),
+          !deepEqual(
+            getValues(),
+            isEmptyObject(defaultValuesRef.current)
+              ? defaultValuesAtRenderRef.current
+              : defaultValuesRef.current,
+          ) || !isEmptyObject(formStateRef.current.dirtyFields),
         dirtyFields: formStateRef.current.dirtyFields,
       };
 
@@ -692,7 +695,7 @@ export function useForm<
         removeFieldEventListener(field, forceDelete);
 
         if (shouldUnregister && !filterOutFalsy(field.options || []).length) {
-          delete defaultValuesAtRenderRef.current[field.ref.name];
+          unset(defaultValuesAtRenderRef.current, field.ref.name);
           unset(validFieldsRef.current, field.ref.name);
           unset(fieldsWithValidationRef.current, field.ref.name);
           unset(formStateRef.current.errors, field.ref.name);
@@ -966,11 +969,15 @@ export function useForm<
       !(isFieldArray && isEmptyDefaultValue)
     ) {
       const fieldValue = getFieldValue(fieldsRef, name, shallowFieldsStateRef);
-      defaultValuesAtRenderRef.current[name] = isEmptyDefaultValue
-        ? isObject(fieldValue)
-          ? { ...fieldValue }
-          : fieldValue
-        : defaultValue;
+      set(
+        defaultValuesAtRenderRef.current,
+        name,
+        isEmptyDefaultValue
+          ? isObject(fieldValue)
+            ? { ...fieldValue }
+            : fieldValue
+          : defaultValue,
+      );
     }
 
     if (type) {
@@ -1124,9 +1131,7 @@ export function useForm<
       fieldsWithValidationRef.current = {};
     }
 
-    defaultValuesAtRenderRef.current = {} as DefaultValuesAtRender<
-      TFieldValues
-    >;
+    defaultValuesAtRenderRef.current = {};
     fieldArrayDefaultValuesRef.current = {};
     watchFieldsRef.current = new Set();
     isWatchAllRef.current = false;
