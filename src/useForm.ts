@@ -303,10 +303,8 @@ export function useForm<
 
       const state = {
         isDirty:
-          !deepEqual(
-            get(getValues(), getFieldArrayParentName(name)),
-            get(defaultValuesRef.current, getFieldArrayParentName(name)),
-          ) || !isEmptyObject(formStateRef.current.dirtyFields),
+          !deepEqual(getValues(), defaultValuesRef.current) ||
+          !isEmptyObject(formStateRef.current.dirtyFields),
         dirtyFields: formStateRef.current.dirtyFields,
       };
 
