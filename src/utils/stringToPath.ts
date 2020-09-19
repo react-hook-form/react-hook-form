@@ -1,5 +1,5 @@
-export default (input: string): (string | number)[] => {
-  const result: (string | number)[] = [];
+export default (input: string): string[] => {
+  const result: string[] = [];
 
   input.replace(
     /[^.[\]]+|\[(?:(-?\d+(?:\.\d+)?)|(["'])((?:(?!\2)[^\\]|\\.)*?)\2)\]|(?=(?:\.|\[\])(?:\.|\[\]|$))/g,
