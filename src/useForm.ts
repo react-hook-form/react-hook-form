@@ -274,8 +274,12 @@ export function useForm<
   );
 
   const isFormDirty = () =>
-    !deepEqual(getValues(), defaultValuesAtRenderRef.current) ||
-    !isEmptyObject(formStateRef.current.dirtyFields);
+    !deepEqual(
+      getValues(),
+      isEmptyObject(defaultValuesRef.current)
+        ? defaultValuesAtRenderRef.current
+        : defaultValuesRef.current,
+    ) || !isEmptyObject(formStateRef.current.dirtyFields);
 
   const updateAndGetDirtyState = React.useCallback(
     (
