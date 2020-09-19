@@ -878,11 +878,11 @@ export function useForm<
     };
     const fields = fieldsRef.current;
     const isRadioOrCheckbox = isRadioOrCheckboxFunction(ref);
+    const isFieldArray = isNameInFieldArray(fieldArrayNamesRef.current, name);
     const compareRef = (currentRef: Ref) =>
       isWeb && (!isHTMLElement(ref) || currentRef === ref);
     let field = fields[name] as Field;
     let isEmptyDefaultValue = true;
-    let isFieldArray;
     let defaultValue;
 
     if (
@@ -934,7 +934,6 @@ export function useForm<
         name,
       );
       isEmptyDefaultValue = isUndefined(defaultValue);
-      isFieldArray = isNameInFieldArray(fieldArrayNamesRef.current, name);
 
       if (!isEmptyDefaultValue && !isFieldArray) {
         setFieldValue(name, defaultValue);

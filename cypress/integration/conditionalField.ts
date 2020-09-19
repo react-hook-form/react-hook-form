@@ -57,7 +57,7 @@ describe('ConditionalField', () => {
     cy.get('select[name="selectNumber"]').select('2');
     cy.get('#state').should(($state) =>
       expect(JSON.parse($state.text())).to.be.deep.equal({
-        dirtyFields: ['selectNumber'],
+        dirtyFields: ['selectNumber', 'firstName', 'lastName'],
         isSubmitted: true,
         submitCount: 1,
         touched: ['selectNumber'],
@@ -72,7 +72,7 @@ describe('ConditionalField', () => {
     cy.get('input[name="max"]').blur();
     cy.get('#state').should(($state) =>
       expect(JSON.parse($state.text())).to.be.deep.equal({
-        dirtyFields: ['selectNumber', 'min', 'max'],
+        dirtyFields: ['selectNumber', 'firstName', 'lastName', 'min', 'max'],
         isSubmitted: true,
         submitCount: 1,
         touched: ['selectNumber', 'min', 'max'],
@@ -85,7 +85,7 @@ describe('ConditionalField', () => {
     cy.get('button#submit').click();
     cy.get('#state').should(($state) =>
       expect(JSON.parse($state.text())).to.be.deep.equal({
-        dirtyFields: ['selectNumber', 'min', 'max'],
+        dirtyFields: ['selectNumber', 'firstName', 'lastName', 'min', 'max'],
         isSubmitted: true,
         submitCount: 2,
         touched: ['selectNumber', 'min', 'max'],
@@ -106,7 +106,7 @@ describe('ConditionalField', () => {
     cy.get('select[name="selectNumber"]').select('3');
     cy.get('#state').should(($state) =>
       expect(JSON.parse($state.text())).to.be.deep.equal({
-        dirtyFields: ['selectNumber'],
+        dirtyFields: ['selectNumber', 'firstName', 'lastName', 'min', 'max'],
         isSubmitted: true,
         submitCount: 2,
         touched: ['selectNumber'],
@@ -121,7 +121,14 @@ describe('ConditionalField', () => {
     cy.get('input[name="notRequired"]').blur();
     cy.get('#state').should(($state) =>
       expect(JSON.parse($state.text())).to.be.deep.equal({
-        dirtyFields: ['selectNumber', 'notRequired'],
+        dirtyFields: [
+          'selectNumber',
+          'firstName',
+          'lastName',
+          'min',
+          'max',
+          'notRequired',
+        ],
         isSubmitted: true,
         submitCount: 2,
         touched: ['selectNumber', 'notRequired'],
