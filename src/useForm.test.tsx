@@ -332,7 +332,7 @@ describe('useForm', () => {
       expect(result.current.errors.test).toBeUndefined();
     });
 
-    it('should unregister touched', () => {
+    it('should not unregister touched', () => {
       let formState: any;
       const Component = () => {
         const { register, formState: tempFormState } = useForm();
@@ -359,7 +359,7 @@ describe('useForm', () => {
 
       unmount();
 
-      expect(formState.touched.test).toBeUndefined();
+      expect(formState.touched.test).toBeDefined();
       expect(formState.isDirty).toBeFalsy();
     });
 
