@@ -387,7 +387,7 @@ describe('useForm', () => {
 
       unmount();
 
-      expect(formState.dirtyFields.test).toBeUndefined();
+      expect(formState.dirtyFields.test).toBeDefined();
       expect(formState.isDirty).toBeTruthy();
     });
 

@@ -701,8 +701,8 @@ export function useForm<
           unset(validFieldsRef.current, field.ref.name);
           unset(fieldsWithValidationRef.current, field.ref.name);
           unset(formStateRef.current.errors, field.ref.name);
-          unset(formStateRef.current.dirtyFields, field.ref.name);
           unset(formStateRef.current.touched, field.ref.name);
+          set(formStateRef.current.dirtyFields, field.ref.name, true);
 
           updateFormState({
             errors: formStateRef.current.errors,
