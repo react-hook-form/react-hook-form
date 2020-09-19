@@ -360,7 +360,7 @@ describe('useForm', () => {
       expect(formState.isDirty).toBeFalsy();
     });
 
-    it('should unregister dirtyFields', () => {
+    it('should update dirtyFields during unregister', () => {
       let formState: any;
       const Component = () => {
         const { register, formState: tempFormState } = useForm();
