@@ -92,10 +92,6 @@ export type FieldNamesMarkedBoolean<TFieldValues extends FieldValues> = DeepMap<
   true
 >;
 
-export type FieldValuesFromControl<
-  TControl extends Control
-> = TControl extends Control<infer TFieldValues> ? TFieldValues : never;
-
 export type FormStateProxy<TFieldValues extends FieldValues = FieldValues> = {
   isDirty: boolean;
   dirtyFields: FieldNamesMarkedBoolean<TFieldValues>;
@@ -148,9 +144,9 @@ export type Control<TFieldValues extends FieldValues = FieldValues> = Pick<
     Record<FieldArrayName, unknown[]>
   >;
   shouldUnregister: boolean;
-  formStateRef: React.MutableRefObject<FormState<FieldValues>>;
+  formStateRef: React.MutableRefObject<FormState<TFieldValues>>;
   updateFormState: (args?: Partial<FormState<TFieldValues>>) => void;
-  validateResolver?: (fieldsValues: FieldValues) => void;
+  validateResolver?: (fieldsValues: TFieldValues) => void;
   watchFieldsRef: React.MutableRefObject<Set<InternalFieldName<TFieldValues>>>;
   isWatchAllRef: React.MutableRefObject<boolean>;
   validFieldsRef: React.MutableRefObject<FieldNamesMarkedBoolean<TFieldValues>>;
@@ -161,7 +157,7 @@ export type Control<TFieldValues extends FieldValues = FieldValues> = Pick<
   resetFieldArrayFunctionRef: React.MutableRefObject<
     Record<InternalFieldName<TFieldValues>, () => void>
   >;
-  shallowFieldsStateRef: React.MutableRefObject<Partial<FieldValues>>;
+  shallowFieldsStateRef: React.MutableRefObject<Partial<TFieldValues>>;
   fieldArrayNamesRef: React.MutableRefObject<InternalNameSet<TFieldValues>>;
   readFormStateRef: React.MutableRefObject<
     { [k in keyof FormStateProxy<TFieldValues>]: boolean }
@@ -187,9 +183,7 @@ export type UseWatchOptions = {
   control?: Control;
 };
 
-export interface UseFormMethods<
-  TFieldValues extends FieldValues = FieldValues
-> {
+export type UseFormMethods<TFieldValues extends FieldValues = FieldValues> = {
   register: {
     <TFieldElement extends FieldElement<TFieldValues>>(
       rules?: ValidationRules,
@@ -270,4 +264,4 @@ export interface UseFormMethods<
     onInvalid?: SubmitErrorHandler<TFieldValues>,
   ) => (e?: React.BaseSyntheticEvent) => Promise<void>;
   control: Control<TFieldValues>;
-}
+};

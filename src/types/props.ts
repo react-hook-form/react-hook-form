@@ -1,12 +1,5 @@
 import * as React from 'react';
-import {
-  UseFormMethods,
-  FieldValues,
-  FieldValuesFromControl,
-  FieldName,
-  Control,
-  Assign,
-} from './';
+import { UseFormMethods, FieldValues, FieldName, Control, Assign } from './';
 import { ValidationRules } from './validator';
 
 export type FormProviderProps<
@@ -32,7 +25,7 @@ export type ControllerProps<
     | 'input'
     | 'select'
     | 'textarea',
-  TControl extends Control = Control
+  TFieldValues extends FieldValues = FieldValues
 > = Assign<
   (
     | {
@@ -45,15 +38,15 @@ export type ControllerProps<
           onChange: (...event: any[]) => void;
           onBlur: () => void;
           value: any;
-          name: FieldName<FieldValuesFromControl<TControl>>;
+          name: FieldName<TFieldValues>;
         }) => React.ReactElement;
       }
   ) & {
-    name: FieldName<FieldValuesFromControl<TControl>>;
+    name: FieldName<TFieldValues>;
     rules?: ValidationRules;
     onFocus?: () => void;
     defaultValue?: unknown;
-    control?: TControl;
+    control?: Control<TFieldValues>;
   },
   AsProps<TAs>
 >;
