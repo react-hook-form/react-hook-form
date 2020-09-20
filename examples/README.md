@@ -29,7 +29,7 @@ You can view the source code for most examples within their folder, or visit Cod
 | Parse and format input value            | https://codesandbox.io/s/react-hook-form-parse-and-format-textarea-furtc             |
 | Modal/Toggle input                      | https://codesandbox.io/s/react-hook-form-conditional-inputs-c7n0r                    |
 | Nested Fields                           | https://codesandbox.io/s/react-hook-form-nested-fields-mv1bb                         |
-| Normalize/Format/Mask Field             | https://codesandbox.io/s/387z7njwzp                                                  |
+| Normalize/Format/Mask Field             | https://codesandbox.io/s/react-hook-form-normalize-field-forked-01lgs                |
 | Format/Mask Field (Third Party Library) | https://codesandbox.io/s/react-hook-form-normalize-field-1jumn                       |
 | Native Validation                       | https://codesandbox.io/s/react-hook-form-native-validation-ez5ww                     |
 | Reset Form                              | https://codesandbox.io/s/jjm3wyqmjy                                                  |

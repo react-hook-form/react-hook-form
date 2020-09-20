@@ -40,11 +40,6 @@ export type UnpackNestedValue<T> = NonUndefined<T> extends NestedValue<infer U>
   ? { [K in keyof T]: UnpackNestedValue<T[K]> }
   : T;
 
-export type DefaultValuesAtRender<TFieldValues> = Record<
-  InternalFieldName<TFieldValues>,
-  unknown
->;
-
 export type DefaultValues<TFieldValues> =
   | Partial<FieldValue<UnpackNestedValue<TFieldValues>>>
   | Partial<UnpackNestedValue<DeepPartial<TFieldValues>>>;
