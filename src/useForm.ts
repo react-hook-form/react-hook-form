@@ -1174,13 +1174,13 @@ export function useForm<
 
     fieldsRef.current = {};
 
-    defaultValuesRef.current = values || { ...defaultValuesRef.current };
+    defaultValuesRef.current = { ...(values || defaultValuesRef.current) };
 
     if (values) {
       renderWatchedInputs('');
     }
 
-    shallowFieldsStateRef.current = shouldUnregister ? {} : values || {};
+    shallowFieldsStateRef.current = shouldUnregister ? {} : { ...values } || {};
 
     Object.values(resetFieldArrayFunctionRef.current).forEach(
       (resetFieldArray) => isFunction(resetFieldArray) && resetFieldArray(),

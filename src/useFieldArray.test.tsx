@@ -412,6 +412,42 @@ describe('useFieldArray', () => {
       expect(result.current.fields).toEqual([{ id: '3', value: 'default' }]);
     });
 
+    it('should reset with field array with shouldUnregister set to false', () => {
+      const { result } = renderHook(() => {
+        const { register, reset, control } = useForm({
+          defaultValues: {
+            test: [{ value: 'default' }],
+          },
+          shouldUnregister: false,
+        });
+        const { fields, append } = useFieldArray({
+          name: 'test',
+          control,
+        });
+        return { register, reset, fields, append };
+      });
+
+      act(() => {
+        result.current.append({ value: 'test' });
+      });
+
+      result.current.register({ type: 'text', name: 'test[0].value' });
+
+      act(() => {
+        result.current.reset();
+      });
+
+      expect(result.current.fields).toEqual([{ id: '3', value: 'default' }]);
+
+      act(() => {
+        result.current.reset({
+          test: [{ value: 'data' }],
+        });
+      });
+
+      expect(result.current.fields).toEqual([{ id: '5', value: 'data' }]);
+    });
+
     it('should reset with async', async () => {
       const Nested = ({
         index,
