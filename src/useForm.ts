@@ -29,6 +29,7 @@ import isUndefined from './utils/isUndefined';
 import get from './utils/get';
 import set from './utils/set';
 import unset from './utils/unset';
+import isKey from './utils/isKey';
 import modeChecker from './utils/validationModeChecker';
 import isMultipleSelect from './utils/isMultipleSelect';
 import filterOutFalsy from './utils/filterOutFalsy';
@@ -722,7 +723,9 @@ export function useForm<
     name &&
       (isArray(name) ? name : [name]).forEach((inputName) =>
         fieldsRef.current[inputName]
-          ? set(formStateRef.current.errors, inputName, undefined)
+          ? isKey(inputName)
+            ? delete formStateRef.current.errors[inputName]
+            : set(formStateRef.current.errors, inputName, undefined)
           : unset(formStateRef.current.errors, inputName),
       );
 

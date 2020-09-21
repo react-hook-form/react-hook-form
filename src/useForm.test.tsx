@@ -2109,9 +2109,7 @@ describe('useForm', () => {
       const Component = () => {
         const { register, errors, trigger, clearErrors } = useForm<{
           test: { data: string };
-        }>({
-          mode: 'onChange',
-        });
+        }>();
 
         currentErrors = errors;
         return (
