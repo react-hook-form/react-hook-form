@@ -95,11 +95,14 @@ describe('useForm', () => {
         jest.spyOn(HTMLInputElement.prototype, 'addEventListener');
 
         const Component = () => {
-          const { register, formState } = useForm();
+          const {
+            register,
+            formState: { isDirty },
+          } = useForm();
           return (
             <div>
               <input name="test" type={type} ref={register} />
-              <span role="alert">{`${formState.isDirty}`}</span>
+              <span role="alert">{`${isDirty}`}</span>
             </div>
           );
         };
@@ -121,7 +124,7 @@ describe('useForm', () => {
         ref.remove();
 
         await waitFor(() => expect(mockListener).toHaveBeenCalled());
-        expect(screen.getByRole('alert').textContent).toBe('false');
+        expect(screen.getByRole('alert').textContent).toBe('true');
         await wait(() =>
           expect(renderCount.current.Component).toBeRenderedTimes(2),
         );
@@ -329,7 +332,7 @@ describe('useForm', () => {
       expect(result.current.errors.test).toBeUndefined();
     });
 
-    it('should unregister touched', () => {
+    it('should not unregister touched', () => {
       let formState: any;
       const Component = () => {
         const { register, formState: tempFormState } = useForm();
@@ -356,11 +359,11 @@ describe('useForm', () => {
 
       unmount();
 
-      expect(formState.touched.test).toBeUndefined();
+      expect(formState.touched.test).toBeDefined();
       expect(formState.isDirty).toBeFalsy();
     });
 
-    it('should unregister dirtyFields', () => {
+    it('should update dirtyFields during unregister', () => {
       let formState: any;
       const Component = () => {
         const { register, formState: tempFormState } = useForm();
@@ -387,7 +390,7 @@ describe('useForm', () => {
 
       unmount();
 
-      expect(formState.dirtyFields.test).toBeUndefined();
+      expect(formState.dirtyFields.test).toBeDefined();
       expect(formState.isDirty).toBeTruthy();
     });
 

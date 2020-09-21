@@ -273,6 +273,14 @@ export function useForm<
     [],
   );
 
+  const isFormDirty = () =>
+    !deepEqual(
+      getValues(),
+      isEmptyObject(defaultValuesRef.current)
+        ? defaultValuesAtRenderRef.current
+        : defaultValuesRef.current,
+    ) || !isEmptyObject(formStateRef.current.dirtyFields);
+
   const updateAndGetDirtyState = React.useCallback(
     (
       name: InternalFieldName<TFieldValues>,
@@ -301,13 +309,7 @@ export function useForm<
         : unset(formStateRef.current.dirtyFields, name);
 
       const state = {
-        isDirty:
-          !deepEqual(
-            getValues(),
-            isEmptyObject(defaultValuesRef.current)
-              ? defaultValuesAtRenderRef.current
-              : defaultValuesRef.current,
-          ) || !isEmptyObject(formStateRef.current.dirtyFields),
+        isDirty: isFormDirty(),
         dirtyFields: formStateRef.current.dirtyFields,
       };
 
@@ -699,14 +701,12 @@ export function useForm<
           unset(validFieldsRef.current, field.ref.name);
           unset(fieldsWithValidationRef.current, field.ref.name);
           unset(formStateRef.current.errors, field.ref.name);
-          unset(formStateRef.current.dirtyFields, field.ref.name);
-          unset(formStateRef.current.touched, field.ref.name);
+          set(formStateRef.current.dirtyFields, field.ref.name, true);
 
           updateFormState({
             errors: formStateRef.current.errors,
-            isDirty: !isEmptyObject(formStateRef.current.dirtyFields),
+            isDirty: isFormDirty(),
             dirtyFields: formStateRef.current.dirtyFields,
-            touched: formStateRef.current.touched,
           });
 
           resolverRef.current && validateResolver();
@@ -876,11 +876,11 @@ export function useForm<
     };
     const fields = fieldsRef.current;
     const isRadioOrCheckbox = isRadioOrCheckboxFunction(ref);
+    const isFieldArray = isNameInFieldArray(fieldArrayNamesRef.current, name);
     const compareRef = (currentRef: Ref) =>
       isWeb && (!isHTMLElement(ref) || currentRef === ref);
     let field = fields[name] as Field;
     let isEmptyDefaultValue = true;
-    let isFieldArray;
     let defaultValue;
 
     if (
@@ -932,7 +932,6 @@ export function useForm<
         name,
       );
       isEmptyDefaultValue = isUndefined(defaultValue);
-      isFieldArray = isNameInFieldArray(fieldArrayNamesRef.current, name);
 
       if (!isEmptyDefaultValue && !isFieldArray) {
         setFieldValue(name, defaultValue);
@@ -978,6 +977,7 @@ export function useForm<
             : fieldValue
           : defaultValue,
       );
+      !isFieldArray && unset(formStateRef.current.dirtyFields, name);
     }
 
     if (type) {
@@ -1200,6 +1200,7 @@ export function useForm<
     return () => {
       isUnMount.current = true;
       observerRef.current && observerRef.current.disconnect();
+      shallowFieldsStateRef.current = {};
 
       if (process.env.NODE_ENV !== 'production') {
         return;
