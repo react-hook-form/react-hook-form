@@ -1200,6 +1200,7 @@ export function useForm<
     return () => {
       isUnMount.current = true;
       observerRef.current && observerRef.current.disconnect();
+      shallowFieldsStateRef.current = {};
 
       if (process.env.NODE_ENV !== 'production') {
         return;
