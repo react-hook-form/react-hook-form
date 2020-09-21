@@ -2103,6 +2103,53 @@ describe('useForm', () => {
       expect(result.current.errors.input?.nested).toBeUndefined();
     });
 
+    it('should remove deep nested error and set it to undefined', async () => {
+      let currentErrors = {};
+
+      const Component = () => {
+        const { register, errors, trigger, clearErrors } = useForm<{
+          test: { data: string };
+        }>();
+
+        currentErrors = errors;
+        return (
+          <div>
+            <input
+              type="text"
+              name="test.data"
+              ref={register({ required: true })}
+            />
+            <button type={'button'} onClick={() => trigger()}>
+              submit
+            </button>
+            <button type={'button'} onClick={() => clearErrors(['test.data'])}>
+              clear
+            </button>
+          </div>
+        );
+      };
+
+      await actComponent(async () => {
+        render(<Component />);
+      });
+
+      await actComponent(async () => {
+        fireEvent.click(screen.getByRole('button', { name: 'submit' }));
+      });
+
+      expect(currentErrors).toMatchSnapshot();
+
+      await actComponent(async () => {
+        fireEvent.click(screen.getByRole('button', { name: 'clear' }));
+      });
+
+      expect(currentErrors).toEqual({
+        test: {
+          data: undefined,
+        },
+      });
+    });
+
     it('should remove specified errors', () => {
       const { result } = renderHook(() =>
         useForm<{ input: string; input1: string; input2: string }>(),
