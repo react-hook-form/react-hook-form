@@ -722,7 +722,7 @@ export function useForm<
     name &&
       (isArray(name) ? name : [name]).forEach((inputName) =>
         fieldsRef.current[inputName]
-          ? delete formStateRef.current.errors[inputName]
+          ? set(formStateRef.current.errors, inputName, undefined)
           : unset(formStateRef.current.errors, inputName),
       );
 
