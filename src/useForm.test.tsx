@@ -95,11 +95,14 @@ describe('useForm', () => {
         jest.spyOn(HTMLInputElement.prototype, 'addEventListener');
 
         const Component = () => {
-          const { register, formState } = useForm();
+          const {
+            register,
+            formState: { isDirty },
+          } = useForm();
           return (
             <div>
               <input name="test" type={type} ref={register} />
-              <span role="alert">{`${formState.isDirty}`}</span>
+              <span role="alert">{`${isDirty}`}</span>
             </div>
           );
         };
@@ -121,7 +124,7 @@ describe('useForm', () => {
         ref.remove();
 
         await waitFor(() => expect(mockListener).toHaveBeenCalled());
-        expect(screen.getByRole('alert').textContent).toBe('false');
+        expect(screen.getByRole('alert').textContent).toBe('true');
         await wait(() =>
           expect(renderCount.current.Component).toBeRenderedTimes(2),
         );
@@ -329,7 +332,7 @@ describe('useForm', () => {
       expect(result.current.errors.test).toBeUndefined();
     });
 
-    it('should unregister touched', () => {
+    it('should not unregister touched', () => {
       let formState: any;
       const Component = () => {
         const { register, formState: tempFormState } = useForm();
@@ -356,11 +359,11 @@ describe('useForm', () => {
 
       unmount();
 
-      expect(formState.touched.test).toBeUndefined();
+      expect(formState.touched.test).toBeDefined();
       expect(formState.isDirty).toBeFalsy();
     });
 
-    it('should unregister dirtyFields', () => {
+    it('should update dirtyFields during unregister', () => {
       let formState: any;
       const Component = () => {
         const { register, formState: tempFormState } = useForm();
@@ -387,7 +390,7 @@ describe('useForm', () => {
 
       unmount();
 
-      expect(formState.dirtyFields.test).toBeUndefined();
+      expect(formState.dirtyFields.test).toBeDefined();
       expect(formState.isDirty).toBeTruthy();
     });
 
@@ -2098,6 +2101,53 @@ describe('useForm', () => {
       expect(result.current.errors.input?.nested).toBeDefined();
       act(() => result.current.clearErrors('input.nested'));
       expect(result.current.errors.input?.nested).toBeUndefined();
+    });
+
+    it('should remove deep nested error and set it to undefined', async () => {
+      let currentErrors = {};
+
+      const Component = () => {
+        const { register, errors, trigger, clearErrors } = useForm<{
+          test: { data: string };
+        }>();
+
+        currentErrors = errors;
+        return (
+          <div>
+            <input
+              type="text"
+              name="test.data"
+              ref={register({ required: true })}
+            />
+            <button type={'button'} onClick={() => trigger()}>
+              submit
+            </button>
+            <button type={'button'} onClick={() => clearErrors(['test.data'])}>
+              clear
+            </button>
+          </div>
+        );
+      };
+
+      await actComponent(async () => {
+        render(<Component />);
+      });
+
+      await actComponent(async () => {
+        fireEvent.click(screen.getByRole('button', { name: 'submit' }));
+      });
+
+      expect(currentErrors).toMatchSnapshot();
+
+      await actComponent(async () => {
+        fireEvent.click(screen.getByRole('button', { name: 'clear' }));
+      });
+
+      expect(currentErrors).toEqual({
+        test: {
+          data: undefined,
+        },
+      });
     });
 
     it('should remove specified errors', () => {

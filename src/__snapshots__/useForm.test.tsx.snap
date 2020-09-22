@@ -1,0 +1,16 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`useForm clearErrors should remove deep nested error and set it to undefined 1`] = `
+Object {
+  "test": Object {
+    "data": Object {
+      "message": "",
+      "ref": <input
+        name="test.data"
+        type="text"
+      />,
+      "type": "required",
+    },
+  },
+}
+`;
