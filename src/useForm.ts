@@ -118,7 +118,7 @@ export function useForm<
   const isWatchAllRef = React.useRef(false);
   const handleChangeRef = React.useRef<HandleChange>();
   const shallowFieldsStateRef = React.useRef(
-    shouldUnregister ? {} : defaultValues,
+    shouldUnregister ? {} : { ...defaultValues },
   );
   const resetFieldArrayFunctionRef = React.useRef<
     Record<
