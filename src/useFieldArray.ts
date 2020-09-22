@@ -267,6 +267,7 @@ export const useFieldArray = <
           : fillEmptyArray(allFields.current)),
         ...filterBooleanArray(value),
       ]);
+      shallowFieldsStateRef.current = [value];
       updateFormState({
         isDirty: true,
         dirtyFields,
