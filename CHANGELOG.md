@@ -1,5 +1,9 @@
 # Changelog
 
+## [6.8.4] - 2020-09-22
+
+- when input unmounts `touched` and `dirtyFields` will no longer get removed from `formState` (shouldUnregister: true). 
+
 ## [6.8.0] - 2020-09-09
 
 ### Added

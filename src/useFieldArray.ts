@@ -87,6 +87,7 @@ export const useFieldArray = <
     validateResolver,
     renderWatchedInputs,
     getValues,
+    shouldUnregister,
   } = control || methods.control;
 
   const fieldArrayParentName = getFieldArrayParentName(name);
@@ -273,6 +274,9 @@ export const useFieldArray = <
       });
     }
 
+    if (!shouldUnregister) {
+      shallowFieldsStateRef.current[name] = [value];
+    }
     focusIndexRef.current = shouldFocus ? allFields.current.length : -1;
     renderWatchedInputs(name);
   };

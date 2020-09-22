@@ -29,6 +29,7 @@ import isUndefined from './utils/isUndefined';
 import get from './utils/get';
 import set from './utils/set';
 import unset from './utils/unset';
+import isKey from './utils/isKey';
 import modeChecker from './utils/validationModeChecker';
 import isMultipleSelect from './utils/isMultipleSelect';
 import filterOutFalsy from './utils/filterOutFalsy';
@@ -117,7 +118,7 @@ export function useForm<
   const isWatchAllRef = React.useRef(false);
   const handleChangeRef = React.useRef<HandleChange>();
   const shallowFieldsStateRef = React.useRef(
-    shouldUnregister ? {} : defaultValues,
+    shouldUnregister ? {} : { ...defaultValues },
   );
   const resetFieldArrayFunctionRef = React.useRef<
     Record<
@@ -722,7 +723,9 @@ export function useForm<
     name &&
       (isArray(name) ? name : [name]).forEach((inputName) =>
         fieldsRef.current[inputName]
-          ? delete formStateRef.current.errors[inputName]
+          ? isKey(inputName)
+            ? delete formStateRef.current.errors[inputName]
+            : set(formStateRef.current.errors, inputName, undefined)
           : unset(formStateRef.current.errors, inputName),
       );
 
@@ -1174,13 +1177,13 @@ export function useForm<
 
     fieldsRef.current = {};
 
-    defaultValuesRef.current = values || { ...defaultValuesRef.current };
+    defaultValuesRef.current = { ...(values || defaultValuesRef.current) };
 
     if (values) {
       renderWatchedInputs('');
     }
 
-    shallowFieldsStateRef.current = shouldUnregister ? {} : values || {};
+    shallowFieldsStateRef.current = shouldUnregister ? {} : { ...values } || {};
 
     Object.values(resetFieldArrayFunctionRef.current).forEach(
       (resetFieldArray) => isFunction(resetFieldArray) && resetFieldArray(),
@@ -1200,6 +1203,7 @@ export function useForm<
     return () => {
       isUnMount.current = true;
       observerRef.current && observerRef.current.disconnect();
+      shallowFieldsStateRef.current = {};
 
       if (process.env.NODE_ENV !== 'production') {
         return;
