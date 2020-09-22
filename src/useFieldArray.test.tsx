@@ -671,6 +671,28 @@ describe('useFieldArray', () => {
       ]);
     });
 
+    it('should update shallowFieldsStateRef during append action', async () => {
+      const { result } = renderHook(() => {
+        const { register, control } = useForm({
+          shouldUnregister: false,
+        });
+        const { fields, append } = useFieldArray({
+          control,
+          name: 'test',
+        });
+
+        return { register, fields, append, control };
+      });
+
+      act(() => {
+        result.current.append({ data: 'test' });
+      });
+
+      expect(result.current.control.shallowFieldsStateRef.current).toEqual({
+        test: [{ data: 'test' }],
+      });
+    });
+
     it.each(['isDirty', 'dirtyFields'])(
       'should be dirty when value is appended with %s',
       (property) => {

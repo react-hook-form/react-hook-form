@@ -267,13 +267,13 @@ export const useFieldArray = <
           : fillEmptyArray(allFields.current)),
         ...filterBooleanArray(value),
       ]);
-      shallowFieldsStateRef.current = [value];
       updateFormState({
         isDirty: true,
         dirtyFields,
       });
     }
 
+    shallowFieldsStateRef.current[name] = [value];
     focusIndexRef.current = shouldFocus ? allFields.current.length : -1;
     renderWatchedInputs(name);
   };
