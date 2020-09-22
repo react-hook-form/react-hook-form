@@ -352,6 +352,11 @@ export function useForm<
 
         shouldRenderBaseOnError(name, error, skipReRender);
 
+        !skipReRender &&
+          updateFormState({
+            isValid: isEmptyObject(formStateRef.current.errors),
+          });
+
         return isUndefined(error);
       }
 
@@ -421,9 +426,14 @@ export function useForm<
 
       if (isArray(fields)) {
         const result = await Promise.all(
-          fields.map(async (data) => await executeValidation(data, null)),
+          fields.map(
+            async (data, index) =>
+              await executeValidation(
+                data,
+                index === fields.length - 1 ? false : null,
+              ),
+          ),
         );
-        updateFormState();
         return result.every(Boolean);
       }
 
