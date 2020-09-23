@@ -361,33 +361,50 @@ export function useForm<
   );
 
   const executeSchemaOrResolverValidation = React.useCallback(
-    async (names?: InternalFieldName<TFieldValues>[]) => {
+    async (
+      names:
+        | InternalFieldName<TFieldValues>
+        | InternalFieldName<TFieldValues>[],
+    ) => {
       const { errors } = await resolverRef.current!(
         getValues(),
         contextRef.current,
         isValidateAllFieldCriteria,
       );
+      const previousFormIsValid = formStateRef.current.isValid;
 
-      const isValid = names
-        ? names
-            .map((name) => {
-              const error = get(errors, name);
+      if (isArray(names)) {
+        const isInputsValid = names
+          .map((name) => {
+            const error = get(errors, name);
 
-              error
-                ? set(formStateRef.current.errors, name, error)
-                : unset(formStateRef.current.errors, name);
+            error
+              ? set(formStateRef.current.errors, name, error)
+              : unset(formStateRef.current.errors, name);
 
-              return !error;
-            })
-            .every(Boolean)
-        : !isEmptyObject(errors);
+            return !error;
+          })
+          .every(Boolean);
 
-      updateFormState({
-        isValid: isEmptyObject(errors),
-        errors: names ? formStateRef.current.errors : errors,
-      });
+        updateFormState({
+          isValid: isEmptyObject(errors),
+          errors: formStateRef.current.errors,
+        });
 
-      return isValid;
+        return isInputsValid;
+      } else {
+        const error = get(errors, names);
+
+        shouldRenderBaseOnError(
+          names,
+          error,
+          previousFormIsValid !== isEmptyObject(errors),
+          {},
+          isEmptyObject(errors),
+        );
+
+        return !error;
+      }
     },
     [shouldRenderBaseOnError, isValidateAllFieldCriteria],
   );
@@ -396,19 +413,21 @@ export function useForm<
     async (
       name?: FieldName<TFieldValues> | FieldName<TFieldValues>[],
     ): Promise<boolean> => {
-      const fields = isArray(name) ? name : isUndefined(name) ? name : [name];
+      const fields = name || Object.keys(fieldsRef.current);
 
       if (resolverRef.current) {
         return executeSchemaOrResolverValidation(fields);
       }
 
-      const result = await Promise.all(
-        (fields || Object.keys(fieldsRef.current)).map(
-          async (data) => await executeValidation(data, null),
-        ),
-      );
-      updateFormState();
-      return result.every(Boolean);
+      if (isArray(fields)) {
+        const result = await Promise.all(
+          fields.map(async (data) => await executeValidation(data, null)),
+        );
+        updateFormState();
+        return result.every(Boolean);
+      }
+
+      return await executeValidation(fields, readFormStateRef.current.isValid);
     },
     [executeSchemaOrResolverValidation, executeValidation],
   );
