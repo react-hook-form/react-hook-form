@@ -367,28 +367,27 @@ export function useForm<
         contextRef.current,
         isValidateAllFieldCriteria,
       );
-      if (isArray(names)) {
-        const isInputsValid = names
-          .map((name) => {
-            const error = get(errors, name);
 
-            error
-              ? set(formStateRef.current.errors, name, error)
-              : unset(formStateRef.current.errors, name);
+      const isValid = names
+        ? names
+            .map((name) => {
+              const error = get(errors, name);
 
-            return !error;
-          })
-          .every(Boolean);
+              error
+                ? set(formStateRef.current.errors, name, error)
+                : unset(formStateRef.current.errors, name);
 
-        updateFormState({
-          isValid: isEmptyObject(errors),
-          errors: formStateRef.current.errors,
-        });
+              return !error;
+            })
+            .every(Boolean)
+        : !isEmptyObject(errors);
 
-        return isInputsValid;
-      }
+      updateFormState({
+        isValid: isEmptyObject(errors),
+        errors: names ? formStateRef.current.errors : errors,
+      });
 
-      return !isEmptyObject(errors);
+      return isValid;
     },
     [shouldRenderBaseOnError, isValidateAllFieldCriteria],
   );
