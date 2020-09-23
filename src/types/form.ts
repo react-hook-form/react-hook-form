@@ -92,10 +92,6 @@ export type FieldNamesMarkedBoolean<TFieldValues extends FieldValues> = DeepMap<
   true
 >;
 
-export type FieldValuesFromControl<
-  TControl extends Control
-> = TControl extends Control<infer TFieldValues> ? TFieldValues : never;
-
 export type FormStateProxy<TFieldValues extends FieldValues = FieldValues> = {
   isDirty: boolean;
   dirtyFields: FieldNamesMarkedBoolean<TFieldValues>;
@@ -148,7 +144,7 @@ export type Control<TFieldValues extends FieldValues = FieldValues> = Pick<
     Record<FieldArrayName, unknown[]>
   >;
   shouldUnregister: boolean;
-  formStateRef: React.MutableRefObject<FormState<FieldValues>>;
+  formStateRef: React.MutableRefObject<FormState<TFieldValues>>;
   updateFormState: (args?: Partial<FormState<TFieldValues>>) => void;
   validateResolver?: (fieldsValues: FieldValues) => void;
   watchFieldsRef: React.MutableRefObject<Set<InternalFieldName<TFieldValues>>>;
@@ -161,7 +157,7 @@ export type Control<TFieldValues extends FieldValues = FieldValues> = Pick<
   resetFieldArrayFunctionRef: React.MutableRefObject<
     Record<InternalFieldName<TFieldValues>, () => void>
   >;
-  shallowFieldsStateRef: React.MutableRefObject<Partial<FieldValues>>;
+  shallowFieldsStateRef: React.MutableRefObject<Partial<TFieldValues>>;
   fieldArrayNamesRef: React.MutableRefObject<InternalNameSet<TFieldValues>>;
   readFormStateRef: React.MutableRefObject<
     { [k in keyof FormStateProxy<TFieldValues>]: boolean }
@@ -188,37 +184,49 @@ export type UseWatchOptions = {
 };
 
 export type UseFormMethods<TFieldValues extends FieldValues = FieldValues> = {
-  register<TFieldElement extends FieldElement<TFieldValues>>(
-    rules?: ValidationRules,
-  ): (ref: (TFieldElement & Ref) | null) => void;
-  register(name: FieldName<TFieldValues>, rules?: ValidationRules): void;
-  register<TFieldElement extends FieldElement<TFieldValues>>(
-    ref: (TFieldElement & Ref) | null,
-    rules?: ValidationRules,
-  ): void;
-  unregister(name: FieldName<TFieldValues> | FieldName<TFieldValues>[]): void;
-  watch(): UnpackNestedValue<TFieldValues>;
-  watch<TFieldName extends string, TFieldValue>(
-    name: TFieldName,
-    defaultValue?: TFieldName extends keyof TFieldValues
-      ? UnpackNestedValue<TFieldValues[TFieldName]>
-      : UnpackNestedValue<LiteralToPrimitive<TFieldValue>>,
-  ): TFieldName extends keyof TFieldValues
-    ? UnpackNestedValue<TFieldValues[TFieldName]>
-    : UnpackNestedValue<LiteralToPrimitive<TFieldValue>>;
-  watch<TFieldName extends keyof TFieldValues>(
-    names: TFieldName[],
-    defaultValues?: UnpackNestedValue<
-      DeepPartial<Pick<TFieldValues, TFieldName>>
-    >,
-  ): UnpackNestedValue<Pick<TFieldValues, TFieldName>>;
-  watch(
-    names: string[],
-    defaultValues?: UnpackNestedValue<DeepPartial<TFieldValues>>,
-  ): UnpackNestedValue<DeepPartial<TFieldValues>>;
-  setError(name: FieldName<TFieldValues>, error: ErrorOption): void;
-  clearErrors(name?: FieldName<TFieldValues> | FieldName<TFieldValues>[]): void;
-  setValue<
+  register: {
+    <TFieldElement extends FieldElement<TFieldValues>>(
+      rules?: ValidationRules,
+    ): (ref: (TFieldElement & Ref) | null) => void;
+    (name: FieldName<TFieldValues>, rules?: ValidationRules): void;
+    <TFieldElement extends FieldElement<TFieldValues>>(
+      ref: (TFieldElement & Ref) | null,
+      rules?: ValidationRules,
+    ): void;
+    <TFieldElement extends FieldElement<TFieldValues>>(
+      refOrValidationOptions?:
+        | FieldName<TFieldValues>
+        | ValidationRules
+        | (TFieldElement & Ref)
+        | null,
+      rules?: ValidationRules,
+    ): ((ref: (TFieldElement & Ref) | null) => void) | void;
+  };
+  unregister: (
+    name: FieldName<TFieldValues> | FieldName<TFieldValues>[],
+  ) => void;
+  watch: {
+    (): UnpackNestedValue<TFieldValues>;
+    <TFieldName extends string, TFieldValue extends TFieldValues[TFieldName]>(
+      name: TFieldName,
+      defaultValue?: UnpackNestedValue<LiteralToPrimitive<TFieldValue>>,
+    ): UnpackNestedValue<LiteralToPrimitive<TFieldValue>>;
+    <TFieldName extends keyof TFieldValues>(
+      names: TFieldName[],
+      defaultValues?: UnpackNestedValue<
+        DeepPartial<Pick<TFieldValues, TFieldName>>
+      >,
+    ): UnpackNestedValue<Pick<TFieldValues, TFieldName>>;
+    (
+      names: string[],
+      defaultValues?: UnpackNestedValue<DeepPartial<TFieldValues>>,
+    ): UnpackNestedValue<DeepPartial<TFieldValues>>;
+  };
+  setError: (name: FieldName<TFieldValues>, error: ErrorOption) => void;
+  clearErrors: (
+    name?: FieldName<TFieldValues> | FieldName<TFieldValues>[],
+  ) => void;
+  setValue: <
     TFieldName extends string,
     TFieldValue extends TFieldValues[TFieldName]
   >(
@@ -230,25 +238,27 @@ export type UseFormMethods<TFieldValues extends FieldValues = FieldValues> = {
       | null
       | undefined,
     options?: SetValueConfig,
-  ): void;
-  trigger(
+  ) => void;
+  trigger: (
     name?: FieldName<TFieldValues> | FieldName<TFieldValues>[],
-  ): Promise<boolean>;
+  ) => Promise<boolean>;
   errors: FieldErrors<TFieldValues>;
   formState: FormState<TFieldValues>;
   reset: (
     values?: UnpackNestedValue<DeepPartial<TFieldValues>>,
     omitResetState?: OmitResetState,
   ) => void;
-  getValues(): UnpackNestedValue<TFieldValues>;
-  getValues<TFieldName extends string, TFieldValue extends unknown>(
-    name: TFieldName,
-  ): TFieldName extends keyof TFieldValues
-    ? UnpackNestedValue<TFieldValues>[TFieldName]
-    : TFieldValue;
-  getValues<TFieldName extends keyof TFieldValues>(
-    names: TFieldName[],
-  ): UnpackNestedValue<Pick<TFieldValues, TFieldName>>;
+  getValues: {
+    (): UnpackNestedValue<TFieldValues>;
+    <TFieldName extends string, TFieldValue extends unknown>(
+      name: TFieldName,
+    ): TFieldName extends keyof TFieldValues
+      ? UnpackNestedValue<TFieldValues>[TFieldName]
+      : TFieldValue;
+    <TFieldName extends keyof TFieldValues>(
+      names: TFieldName[],
+    ): UnpackNestedValue<Pick<TFieldValues, TFieldName>>;
+  };
   handleSubmit: <TSubmitFieldValues extends FieldValues = TFieldValues>(
     onValid: SubmitHandler<TSubmitFieldValues>,
     onInvalid?: SubmitErrorHandler<TFieldValues>,
