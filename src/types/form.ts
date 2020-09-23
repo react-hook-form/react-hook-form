@@ -146,7 +146,7 @@ export type Control<TFieldValues extends FieldValues = FieldValues> = Pick<
   shouldUnregister: boolean;
   formStateRef: React.MutableRefObject<FormState<TFieldValues>>;
   updateFormState: (args?: Partial<FormState<TFieldValues>>) => void;
-  validateResolver?: (fieldsValues: TFieldValues) => void;
+  validateResolver?: (fieldsValues: FieldValues) => void;
   watchFieldsRef: React.MutableRefObject<Set<InternalFieldName<TFieldValues>>>;
   isWatchAllRef: React.MutableRefObject<boolean>;
   validFieldsRef: React.MutableRefObject<FieldNamesMarkedBoolean<TFieldValues>>;
