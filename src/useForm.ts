@@ -427,7 +427,7 @@ export function useForm<
         return result.every(Boolean);
       }
 
-      return await executeValidation(fields);
+      return await executeValidation(fields, readFormStateRef.current.isValid);
     },
     [executeSchemaOrResolverValidation, executeValidation],
   );

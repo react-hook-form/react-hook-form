@@ -32,11 +32,11 @@ export type NestedValue<
 
 export type Message = string;
 
-export type UnpackNestedValue<T> = NonUndefined<T> extends NestedValue<infer U>
+export type UnpackNestedValue<T> = T extends NestedValue<infer U>
   ? U
-  : NonUndefined<T> extends Date | FileList
+  : T extends Date | FileList
   ? T
-  : NonUndefined<T> extends Record<string, unknown>
+  : T extends Record<string, unknown>
   ? { [K in keyof T]: UnpackNestedValue<T[K]> }
   : T;
 

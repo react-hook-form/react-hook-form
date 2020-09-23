@@ -1278,6 +1278,37 @@ describe('useForm', () => {
         test: 'changed',
       });
     });
+
+    it('should validate the input and return correct isValid formState', async () => {
+      const { result } = renderHook(() =>
+        useForm<{ test: { data: string; data1: string } }>({
+          mode: VALIDATION_MODE.onChange,
+        }),
+      );
+
+      result.current.formState.isValid;
+
+      await act(async () => {
+        await result.current.register('test.data', { required: true });
+        await result.current.register('test.data1', { required: true });
+      });
+
+      await act(async () => {
+        await result.current.trigger();
+      });
+
+      result.current.setValue('test.data', 'test', { shouldValidate: true });
+
+      expect(result.current.formState.isValid).toBeFalsy();
+
+      await act(async () => {
+        await result.current.setValue('test.data1', 'test', {
+          shouldValidate: true,
+        });
+      });
+
+      expect(result.current.formState.isValid).toBeTruthy();
+    });
   });
 
   describe('trigger', () => {
