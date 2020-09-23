@@ -352,11 +352,6 @@ export function useForm<
 
         shouldRenderBaseOnError(name, error, skipReRender);
 
-        !skipReRender &&
-          updateFormState({
-            isValid: isEmptyObject(formStateRef.current.errors),
-          });
-
         return isUndefined(error);
       }
 
@@ -366,18 +361,12 @@ export function useForm<
   );
 
   const executeSchemaOrResolverValidation = React.useCallback(
-    async (
-      names:
-        | InternalFieldName<TFieldValues>
-        | InternalFieldName<TFieldValues>[],
-    ) => {
+    async (names?: InternalFieldName<TFieldValues>[]) => {
       const { errors } = await resolverRef.current!(
         getValues(),
         contextRef.current,
         isValidateAllFieldCriteria,
       );
-      const previousFormIsValid = formStateRef.current.isValid;
-
       if (isArray(names)) {
         const isInputsValid = names
           .map((name) => {
@@ -397,19 +386,9 @@ export function useForm<
         });
 
         return isInputsValid;
-      } else {
-        const error = get(errors, names);
-
-        shouldRenderBaseOnError(
-          names,
-          error,
-          previousFormIsValid !== isEmptyObject(errors),
-          {},
-          isEmptyObject(errors),
-        );
-
-        return !error;
       }
+
+      return !isEmptyObject(errors);
     },
     [shouldRenderBaseOnError, isValidateAllFieldCriteria],
   );
@@ -418,26 +397,19 @@ export function useForm<
     async (
       name?: FieldName<TFieldValues> | FieldName<TFieldValues>[],
     ): Promise<boolean> => {
-      const fields = name || Object.keys(fieldsRef.current);
+      const fields = isArray(name) ? name : isUndefined(name) ? name : [name];
 
       if (resolverRef.current) {
         return executeSchemaOrResolverValidation(fields);
       }
 
-      if (isArray(fields)) {
-        const result = await Promise.all(
-          fields.map(
-            async (data, index) =>
-              await executeValidation(
-                data,
-                index === fields.length - 1 ? false : null,
-              ),
-          ),
-        );
-        return result.every(Boolean);
-      }
-
-      return await executeValidation(fields);
+      const result = await Promise.all(
+        (fields || Object.keys(fieldsRef.current)).map(
+          async (data) => await executeValidation(data, null),
+        ),
+      );
+      updateFormState();
+      return result.every(Boolean);
     },
     [executeSchemaOrResolverValidation, executeValidation],
   );
