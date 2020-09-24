@@ -45,12 +45,6 @@ export function useWatch<TWatchFieldValues>({
         '📋 useWatch is missing `control` prop. https://react-hook-form.com/api#useWatch',
       );
     }
-
-    if (name === '') {
-      console.warn(
-        '📋 useWatch is missing `name` attribute. https://react-hook-form.com/api#useWatch',
-      );
-    }
   }
 
   const {
@@ -85,6 +79,14 @@ export function useWatch<TWatchFieldValues>({
   }, [setValue, watchInternal, defaultValueRef, name, idRef]);
 
   React.useEffect(() => {
+    if (process.env.NODE_ENV !== 'production') {
+      if (name === '') {
+        console.warn(
+          '📋 useWatch is missing `name` attribute. https://react-hook-form.com/api#useWatch',
+        );
+      }
+    }
+
     const id = (idRef.current = generateId());
     const watchFieldsHookRender = useWatchRenderFunctionsRef.current;
     const watchFieldsHook = useWatchFieldsRef.current;

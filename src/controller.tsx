@@ -29,10 +29,12 @@ const Controller = <
 }: ControllerProps<TAs, TFieldValues>) => {
   const methods = useFormContext<TFieldValues>();
 
-  if (process.env.NODE_ENV !== 'production' && !control && !methods) {
-    throw new Error(
-      '📋 Controller is missing `control` prop. https://react-hook-form.com/api#Controller',
-    );
+  if (process.env.NODE_ENV !== 'production') {
+    if (!control && !methods) {
+      throw new Error(
+        '📋 Controller is missing `control` prop. https://react-hook-form.com/api#Controller',
+      );
+    }
   }
 
   const {
@@ -62,26 +64,6 @@ const Controller = <
   const [value, setInputStateValue] = React.useState(getInitialValue());
   const valueRef = React.useRef(value);
   const onFocusRef = React.useRef(onFocus);
-
-  if (process.env.NODE_ENV !== 'production') {
-    if (isUndefined(value)) {
-      console.warn(
-        `📋 ${name} is missing in the 'defaultValue' prop of either its Controller (https://react-hook-form.com/api#Controller) or useForm (https://react-hook-form.com/api#useForm)`,
-      );
-    }
-
-    if ((!as && !render) || (as && render)) {
-      console.warn(
-        `📋 ${name} Controller should use either the 'as' or 'render' prop, not both. https://react-hook-form.com/api#Controller`,
-      );
-    }
-
-    if (!isNotFieldArray && isUndefined(defaultValue)) {
-      console.warn(
-        '📋 Controller is missing `defaultValue` prop when using `useFieldArray`. https://react-hook-form.com/api#Controller',
-      );
-    }
-  }
 
   const shouldValidate = (isBlurEvent?: boolean) =>
     !skipValidation({
@@ -139,6 +121,26 @@ const Controller = <
   );
 
   React.useEffect(() => {
+    if (process.env.NODE_ENV !== 'production') {
+      if (isUndefined(value)) {
+        console.warn(
+          `📋 ${name} is missing in the 'defaultValue' prop of either its Controller (https://react-hook-form.com/api#Controller) or useForm (https://react-hook-form.com/api#useForm)`,
+        );
+      }
+
+      if ((!as && !render) || (as && render)) {
+        console.warn(
+          `📋 ${name} Controller should use either the 'as' or 'render' prop, not both. https://react-hook-form.com/api#Controller`,
+        );
+      }
+
+      if (!isNotFieldArray && isUndefined(defaultValue)) {
+        console.warn(
+          '📋 Controller is missing `defaultValue` prop when using `useFieldArray`. https://react-hook-form.com/api#Controller',
+        );
+      }
+    }
+
     registerField();
   }, [registerField]);
 
