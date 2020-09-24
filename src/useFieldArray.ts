@@ -51,6 +51,14 @@ export const useFieldArray = <
 }: UseFieldArrayOptions<TKeyName, TControl>) => {
   const methods = useFormContext();
 
+  if (process.env.NODE_ENV !== 'production') {
+    if (!control && !methods) {
+      throw new Error(
+        '📋 useFieldArray is missing `control` prop. https://react-hook-form.com/api#useFieldArray',
+      );
+    }
+  }
+
   const focusIndexRef = React.useRef(-1);
   const {
     isWatchAllRef,
@@ -386,12 +394,6 @@ export const useFieldArray = <
 
   React.useEffect(() => {
     if (process.env.NODE_ENV !== 'production') {
-      if (!control && !methods) {
-        throw new Error(
-          '📋 useFieldArray is missing `control` prop. https://react-hook-form.com/api#useFieldArray',
-        );
-      }
-
       if (!name) {
         console.warn(
           '📋 useFieldArray is missing `name` attribute. https://react-hook-form.com/api#useFieldArray',

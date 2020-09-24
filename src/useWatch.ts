@@ -39,6 +39,14 @@ export function useWatch<TWatchFieldValues>({
 }: UseWatchOptions): TWatchFieldValues {
   const methods = useFormContext();
 
+  if (process.env.NODE_ENV !== 'production') {
+    if (!control && !methods) {
+      throw new Error(
+        '📋 useWatch is missing `control` prop. https://react-hook-form.com/api#useWatch',
+      );
+    }
+  }
+
   const {
     useWatchFieldsRef,
     useWatchRenderFunctionsRef,
@@ -72,12 +80,6 @@ export function useWatch<TWatchFieldValues>({
 
   React.useEffect(() => {
     if (process.env.NODE_ENV !== 'production') {
-      if (!control && !methods) {
-        throw new Error(
-          '📋 useWatch is missing `control` prop. https://react-hook-form.com/api#useWatch',
-        );
-      }
-
       if (name === '') {
         console.warn(
           '📋 useWatch is missing `name` attribute. https://react-hook-form.com/api#useWatch',
