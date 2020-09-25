@@ -272,7 +272,6 @@ export const useFieldArray = <
       shallowFieldsStateRef.current[name] = [value];
     }
     focusIndexRef.current = shouldFocus ? allFields.current.length : -1;
-    renderWatchedInputs(name);
   };
 
   const prepend = (
@@ -292,7 +291,6 @@ export const useFieldArray = <
       argA: emptyArray,
       argC: filterBooleanArray(value),
     });
-    renderWatchedInputs(name);
     focusIndexRef.current = shouldFocus ? 0 : -1;
   };
 
@@ -310,8 +308,6 @@ export const useFieldArray = <
       true,
       true,
     );
-
-    renderWatchedInputs(name);
   };
 
   const insert = (
@@ -340,7 +336,6 @@ export const useFieldArray = <
       },
       getIsDirtyState(insertAt(fieldValues, index)),
     );
-    renderWatchedInputs(name);
     focusIndexRef.current = shouldFocus ? index : -1;
   };
 
@@ -360,7 +355,6 @@ export const useFieldArray = <
       getIsDirtyState(fieldValues),
       false,
     );
-    renderWatchedInputs(name);
   };
 
   const move = (from: number, to: number) => {
@@ -379,7 +373,6 @@ export const useFieldArray = <
       getIsDirtyState(fieldValues),
       false,
     );
-    renderWatchedInputs(name);
   };
 
   const reset = <TFieldValues>(
