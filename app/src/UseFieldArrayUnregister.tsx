@@ -9,21 +9,23 @@ import {
 
 let renderCount = 0;
 
-const ConditionField = ({
+const ConditionField = <T extends any[]>({
   control,
   index,
+  fields,
 }: {
   control: Control;
   index: number;
+  fields: T;
 }) => {
   const output = useWatch<any>({
     name: 'data',
     control,
-    defaultValue: 'yay! I am watching you :)',
+    defaultValue: fields,
   });
 
   return output[index]?.name === 'bill' ? (
-    <input ref={control.register()} name={`data[${index}].conditional`} />
+    <input ref={control.register()} name={`data[${index}].conditional`} defaultValue={output[index].conditional} />
   ) : null;
 };
 
@@ -96,7 +98,7 @@ const UseFieldArrayUnregister: React.FC = () => {
               <p id={`error${index}`}>{errors.data[index]!.name!.message}</p>
             )}
 
-            <ConditionField control={control} index={index} />
+            <ConditionField control={control} index={index} fields={fields} />
 
             <button id={`delete${index}`} onClick={() => remove(index)}>
               Delete
