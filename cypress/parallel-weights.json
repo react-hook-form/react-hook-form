@@ -1,0 +1,47 @@
+{
+  "cypress/integration/basic.ts": { "time": 15177, "weight": 3 },
+  "cypress/integration/basicSchemaValidation.ts": {
+    "time": 28196,
+    "weight": 6
+  },
+  "cypress/integration/customSchemaValidation.ts": {
+    "time": 40736,
+    "weight": 9
+  },
+  "cypress/integration/defaultValues.ts": { "time": 41495, "weight": 9 },
+  "cypress/integration/formStateWithSchema.ts": { "time": 49867, "weight": 11 },
+  "cypress/integration/isValid.ts": { "time": 53061, "weight": 12 },
+  "cypress/integration/reset.ts": { "time": 55058, "weight": 12 },
+  "cypress/integration/setError.ts": { "time": 56705, "weight": 13 },
+  "cypress/integration/setValueWithSchema.ts": { "time": 58703, "weight": 13 },
+  "cypress/integration/setValueWithTrigger.ts": { "time": 60483, "weight": 14 },
+  "cypress/integration/useFieldArrayUnregister.ts": {
+    "time": 63482,
+    "weight": 14
+  },
+  "cypress/integration/useWatch.ts": { "time": 65762, "weight": 15 },
+  "cypress/integration/watchDefaultValues.ts": { "time": 66510, "weight": 15 },
+  "cypress/integration/watchUseFieldArray.ts": { "time": 68532, "weight": 15 },
+  "cypress/integration/autoUnregister.tsx": { "time": 2098, "weight": 0 },
+  "cypress/integration/conditionalField.ts": { "time": 4830, "weight": 1 },
+  "cypress/integration/controller.ts": { "time": 9516, "weight": 2 },
+  "cypress/integration/formState.ts": { "time": 17761, "weight": 4 },
+  "cypress/integration/formStateWithNestedFields.ts": {
+    "time": 25377,
+    "weight": 5
+  },
+  "cypress/integration/manualRegisterForm.ts": { "time": 31449, "weight": 7 },
+  "cypress/integration/reValidateMode.ts": { "time": 36367, "weight": 8 },
+  "cypress/integration/setValue.ts": { "time": 38789, "weight": 9 },
+  "cypress/integration/setValueCustomRegister.ts": {
+    "time": 40652,
+    "weight": 9
+  },
+  "cypress/integration/triggerValidation.ts": { "time": 41876, "weight": 9 },
+  "cypress/integration/useFieldArray.ts": { "time": 59015, "weight": 13 },
+  "cypress/integration/validateFieldCriteria.ts": {
+    "time": 64668,
+    "weight": 15
+  },
+  "cypress/integration/watch.ts": { "time": 66865, "weight": 15 }
+}
