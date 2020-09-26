@@ -8,4 +8,8 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: Cypress run
-        run: npm run cy:parallel
+        uses: cypress-io/github-action@v1
+        with:
+          start: npm run start:app
+          wait-on: 'http://localhost:3000'
+          wait-on-timeout: 120

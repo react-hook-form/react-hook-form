@@ -20,3 +20,5 @@ jobs:
           CI: true
       - name: Build
         run: npm run build
+      - name: Cypress
+        run: npm run cy:parallel
