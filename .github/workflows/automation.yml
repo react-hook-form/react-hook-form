@@ -8,4 +8,4 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: Cypress run
-        run: cy:parallel
+        run: npm run cy:parallel
