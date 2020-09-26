@@ -7,7 +7,8 @@ import skipValidation from './logic/skipValidation';
 import isNameInFieldArray from './logic/isNameInFieldArray';
 import { useFormContext } from './useFormContext';
 import { VALUE } from './constants';
-import { ControllerProps, FieldValues } from './types';
+import { Control } from './types';
+import { ControllerProps } from './types';
 
 const Controller = <
   TAs extends
@@ -16,7 +17,7 @@ const Controller = <
     | 'input'
     | 'select'
     | 'textarea',
-  TFieldValues extends FieldValues = FieldValues
+  TControl extends Control = Control
 >({
   name,
   rules,
@@ -26,8 +27,8 @@ const Controller = <
   control,
   onFocus,
   ...rest
-}: ControllerProps<TAs, TFieldValues>) => {
-  const methods = useFormContext<TFieldValues>();
+}: ControllerProps<TAs, TControl>) => {
+  const methods = useFormContext();
 
   if (process.env.NODE_ENV !== 'production') {
     if (!control && !methods) {
