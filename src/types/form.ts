@@ -1,10 +1,5 @@
 import * as React from 'react';
-import {
-  NonUndefined,
-  LiteralToPrimitive,
-  DeepPartial,
-  DeepMap,
-} from './utils';
+import { LiteralToPrimitive, DeepPartial, DeepMap } from './utils';
 import { Resolver } from './resolvers';
 import {
   Field,
@@ -223,12 +218,9 @@ export type UseFormMethods<TFieldValues extends FieldValues = FieldValues> = {
     TFieldValue extends TFieldValues[TFieldName]
   >(
     name: TFieldName,
-    value:
-      | (NonUndefined<TFieldValue> extends NestedValue<infer U>
-          ? U
-          : UnpackNestedValue<DeepPartial<LiteralToPrimitive<TFieldValue>>>)
-      | null
-      | undefined,
+    value: TFieldValue extends NestedValue<infer U>
+      ? U
+      : UnpackNestedValue<DeepPartial<LiteralToPrimitive<TFieldValue>>>,
     options?: SetValueConfig,
   ): void;
   trigger(
