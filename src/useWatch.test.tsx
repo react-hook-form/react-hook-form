@@ -20,14 +20,21 @@ const mockGenerateId = () => {
   jest.spyOn(generateId, 'default').mockImplementation(() => (id++).toString());
 };
 
+let nodeEnv: string | undefined;
+
 describe('useWatch', () => {
   beforeEach(() => {
     mockGenerateId();
+    nodeEnv = process.env.NODE_ENV;
+    process.env.NODE_ENV = 'production';
   });
 
   afterEach(() => {
     // @ts-ignore
     generateId.default.mockRestore();
+    jest.resetAllMocks();
+    jest.restoreAllMocks();
+    process.env.NODE_ENV = nodeEnv;
   });
 
   describe('initialize', () => {
@@ -35,7 +42,7 @@ describe('useWatch', () => {
       let method: any;
       let watched: any;
       const Component = () => {
-        method = useForm({ defaultValues: { test: 'test' } });
+        method = useForm<{ test: string }>({ defaultValues: { test: 'test' } });
         watched = useWatch({ control: method.control });
         return <div />;
       };
@@ -47,7 +54,7 @@ describe('useWatch', () => {
 
     it('should return default value in useWatch', () => {
       const { result } = renderHook(() => {
-        const { control } = useForm();
+        const { control } = useForm<{ test: string }>();
         return useWatch({
           control,
           name: 'test',
@@ -60,7 +67,7 @@ describe('useWatch', () => {
 
     it('should return default value for single input', () => {
       const { result } = renderHook(() => {
-        const { control } = useForm({
+        const { control } = useForm<{ test: string; test1: string }>({
           defaultValues: {
             test: 'test',
             test1: 'test1',
@@ -77,7 +84,7 @@ describe('useWatch', () => {
 
     it('should return default values for array of inputs', () => {
       const { result } = renderHook(() => {
-        const { control } = useForm({
+        const { control } = useForm<{ test: string; test1: string }>({
           defaultValues: {
             test: 'test',
             test1: 'test1',
@@ -94,7 +101,7 @@ describe('useWatch', () => {
 
     it('should return default value when name is undefined', () => {
       const { result } = renderHook(() => {
-        const { control } = useForm({
+        const { control } = useForm<{ test: string; test1: string }>({
           defaultValues: {
             test: 'test',
             test1: 'test1',
@@ -110,7 +117,7 @@ describe('useWatch', () => {
 
     it('should return empty object', () => {
       const { result } = renderHook(() => {
-        const { control } = useForm();
+        const { control } = useForm<{ test: string }>();
         return useWatch({
           control,
           name: ['test'],
@@ -122,7 +129,7 @@ describe('useWatch', () => {
 
     it('should return undefined', () => {
       const { result } = renderHook(() => {
-        const { control } = useForm();
+        const { control } = useForm<{ test: string }>();
         return useWatch({
           control,
           name: 'test',
@@ -134,7 +141,7 @@ describe('useWatch', () => {
 
     it('should render with FormProvider', () => {
       const Provider: React.FC = ({ children }) => {
-        const methods = useForm();
+        const methods = useForm<{ test: string }>();
         return <FormProvider {...methods}>{children}</FormProvider>;
       };
       const { result } = renderHook(() => useWatch({ name: 'test' }), {
@@ -147,8 +154,6 @@ describe('useWatch', () => {
   describe('error handling', () => {
     it('should output error message when name is empty string in development mode', () => {
       jest.spyOn(console, 'warn').mockImplementation(() => {});
-
-      const env = process.env.NODE_ENV;
       process.env.NODE_ENV = 'development';
 
       renderHook(() => {
@@ -157,17 +162,11 @@ describe('useWatch', () => {
       });
 
       expect(console.warn).toBeCalledTimes(1);
-
-      // @ts-ignore
-      console.warn.mockRestore();
-
-      process.env.NODE_ENV = env;
     });
 
     it('should not output error message when name is empty string in production mode', () => {
       jest.spyOn(console, 'warn').mockImplementation(() => {});
 
-      const env = process.env.NODE_ENV;
       process.env.NODE_ENV = 'production';
 
       renderHook(() => {
@@ -176,15 +175,9 @@ describe('useWatch', () => {
       });
 
       expect(console.warn).not.toBeCalled();
-
-      // @ts-ignore
-      console.warn.mockRestore();
-
-      process.env.NODE_ENV = env;
     });
 
     it('should throw custom error when control is not defined in development mode', () => {
-      const env = process.env.NODE_ENV;
       process.env.NODE_ENV = 'development';
 
       const { result } = renderHook(() => useWatch({ name: 'test' }));
@@ -192,19 +185,14 @@ describe('useWatch', () => {
       expect(result.error.message).toBe(
         '📋 useWatch is missing `control` prop. https://react-hook-form.com/api#useWatch',
       );
-
-      process.env.NODE_ENV = env;
     });
 
     it('should throw TypeError when control is not defined in production mode', () => {
-      const env = process.env.NODE_ENV;
       process.env.NODE_ENV = 'production';
 
       const { result } = renderHook(() => useWatch({ name: 'test' }));
 
       expect(result.error.name).toBe(new TypeError().name);
-
-      process.env.NODE_ENV = env;
     });
   });
 
@@ -222,7 +210,10 @@ describe('useWatch', () => {
       };
 
       const Parent = () => {
-        const { register, handleSubmit, control } = useForm();
+        const { register, handleSubmit, control } = useForm<{
+          child: string;
+          parent: string;
+        }>();
         return (
           <form onSubmit={handleSubmit(() => {})}>
             <input type="text" name="parent" ref={register} />
@@ -283,7 +274,7 @@ describe('useWatch', () => {
       };
 
       const Parent = () => {
-        const { register, control } = useForm();
+        const { register, control } = useForm<{ test1: string }>();
         useWatch({ name: 'test1', control });
 
         return (
@@ -312,7 +303,10 @@ describe('useWatch', () => {
     it('should not throw error when null or undefined is set', () => {
       const watchedValue: Record<string, any> = {};
       const Component = () => {
-        const { register, control } = useForm();
+        const { register, control } = useForm<{
+          test: string;
+          test1: string;
+        }>();
 
         register({ type: 'text', name: 'test', value: null });
         register({ type: 'text', name: 'test1', value: undefined });
@@ -332,7 +326,9 @@ describe('useWatch', () => {
   describe('reset', () => {
     it('should return default value of reset method', async () => {
       const Component = () => {
-        const { register, reset, control } = useForm();
+        const { register, reset, control } = useForm<{
+          test: string;
+        }>();
         const test = useWatch<string>({ name: 'test', control });
 
         React.useEffect(() => {
@@ -357,7 +353,9 @@ describe('useWatch', () => {
       it('should return current value with radio type', async () => {
         let watchedValue: any;
         const Component = () => {
-          const { register, reset, control } = useForm();
+          const { register, reset, control } = useForm<{
+            options: { option: string }[];
+          }>();
           const { fields } = useFieldArray({ name: 'options', control });
           watchedValue = useWatch({
             control,
@@ -412,9 +410,14 @@ describe('useWatch', () => {
       });
 
       it("should watch item correctly with useFieldArray's remove method", async () => {
-        let watchedValue: any;
+        let watchedValue: { [x: string]: any } | undefined;
         const Component = () => {
-          const { register, control } = useForm({
+          const { register, control } = useForm<{
+            test: {
+              firstName: string;
+              lsatName: string;
+            }[];
+          }>({
             defaultValues: {
               test: [{ firstName: 'test' }, { firstName: 'test1' }],
             },
@@ -464,7 +467,7 @@ describe('useWatch', () => {
     describe('with custom register', () => {
       it('should return default value of reset method when value is not empty', async () => {
         const Component = () => {
-          const { register, reset, control } = useForm();
+          const { register, reset, control } = useForm<{ test: string }>();
           const test = useWatch<string>({
             name: 'test',
             defaultValue: 'default',
@@ -496,7 +499,9 @@ describe('useWatch', () => {
 
       it('should return default value of reset method', async () => {
         const Component = () => {
-          const { register, reset, control } = useForm();
+          const { register, reset, control } = useForm<{
+            test: string;
+          }>();
           const test = useWatch<string>({ name: 'test', control });
 
           React.useEffect(() => {
@@ -521,7 +526,7 @@ describe('useWatch', () => {
 
       it('should return default value', async () => {
         const Component = () => {
-          const { register, reset, control } = useForm();
+          const { register, reset, control } = useForm<{ test: string }>();
           const test = useWatch<string>({
             name: 'test',
             defaultValue: 'test',
@@ -553,12 +558,14 @@ describe('useWatch', () => {
   describe('formContext', () => {
     it('should work with form context', async () => {
       const Component = () => {
-        const test = useWatch<String>({ name: 'test' });
+        const test = useWatch<string>({ name: 'test' });
         return <div>{test}</div>;
       };
 
       const Form = () => {
-        const methods = useForm({ defaultValues: { test: 'test' } });
+        const methods = useForm<{ test: string }>({
+          defaultValues: { test: 'test' },
+        });
 
         return (
           <FormProvider {...methods}>
