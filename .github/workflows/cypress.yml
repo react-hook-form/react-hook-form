@@ -12,3 +12,7 @@ jobs:
         run: yarn install --frozen-lockfile
       - name: Cypress
         run: npm run cy:parallel
+        with:
+          start: npm run start:app
+          wait-on: 'http://localhost:3000'
+          wait-on-timeout: 120

@@ -27,7 +27,7 @@
     "coverage": "jest --coverage --coverageReporters=text-lcov | coveralls",
     "test": "jest --runInBand",
     "cy:run": "cypress run",
-    "cy:parallel": "cypress-parallel -s cy:run -t 2 -d -a",
+    "cy:parallel": "npm run start:app & sleep 60 & cypress-parallel -s cy:run -t 4 -d -a",
     "test:coverage": "jest --runInBand --coverage",
     "test:watch": "npm run test:coverage -- --watchAll",
     "test:web": "TEST_ENV=web jest --runInBand",
