@@ -181,10 +181,10 @@ export type Control<TFieldValues extends FieldValues = FieldValues> = Pick<
   renderWatchedInputs: (name: string, found?: boolean) => void;
 };
 
-export type UseWatchOptions = {
+export type UseWatchOptions<TFieldValues extends FieldValues = FieldValues> = {
   defaultValue?: unknown;
   name?: string | string[];
-  control?: Control;
+  control?: Control<TFieldValues>;
 };
 
 export type UseFormMethods<TFieldValues extends FieldValues = FieldValues> = {
