@@ -21,7 +21,7 @@ import {
 import { perf, wait, PerfTools } from 'react-performance-testing';
 import 'jest-performance-testing';
 
-let nodeEnv: any;
+let nodeEnv: string | undefined;
 
 describe('useForm', () => {
   beforeEach(() => {
