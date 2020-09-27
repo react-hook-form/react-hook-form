@@ -8,19 +8,13 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        # the actual items in the array do not matter,
-        # just the number - to force CI to sping 3 copies
-        # of the current job in parallel
         machines: [1, 2, 3]
     steps:
       - name: Checkout
         uses: actions/checkout@v1
 
-      # because of "record" and "parallel" parameters
-      # these machines will load balance all found tests among themselves
       - name: Cypress run
         uses: cypress-io/github-action@v1
         with:
-          record: true
           parallel: true
           group: 'Actions example'
