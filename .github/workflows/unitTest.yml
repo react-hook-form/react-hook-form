@@ -18,7 +18,7 @@ jobs:
         run: npm test
         env:
           CI: true
-      - npm: cypress
+      - npm: automation
         run: npm run cypress:parallel
       - name: Build
         run: npm run build
