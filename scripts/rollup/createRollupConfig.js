@@ -9,7 +9,7 @@ import sourcemaps from 'rollup-plugin-sourcemaps';
 import { terser } from 'rollup-plugin-terser';
 import { safePackageName } from './safePackageName';
 import { pascalcase } from './pascalcase';
-import pkg from '../package.json';
+import pkg from '../../package.json';
 
 export function createRollupConfig(options, callback) {
   const name = options.name || safePackageName(pkg.name);

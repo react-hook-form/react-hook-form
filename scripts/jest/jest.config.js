@@ -6,7 +6,7 @@ const getTestMatch = (name) =>
   ['**/+([a-zA-Z])', name, '(spec|test).ts?(x)'].filter(Boolean).join('.');
 
 const common = {
-  roots: ['<rootDir>/src'],
+  roots: ['../../'],
   transform: {
     '^.+\\.tsx?$': 'ts-jest',
   },
@@ -50,7 +50,7 @@ const native = {
   transform: {
     ...tsjPresets.transform,
     '^.+\\.tsx?$': 'ts-jest',
-    '^.+\\.jsx?$': '<rootDir>/node_modules/react-native/jest/preprocessor.js',
+    '^.+\\.jsx?$': '../../node_modules/react-native/jest/preprocessor.js',
   },
   globals: {
     'ts-jest': {
@@ -83,11 +83,11 @@ const getProjects = () => {
 
 module.exports = {
   collectCoverageFrom: [
-    '**/**/*.{ts,tsx}',
-    '!**/**/*.test.{ts,tsx}',
-    '!**/src/types/**',
-    '!**/node_modules/**',
-    '!**/dist/**',
+    '../../**/**/*.{ts,tsx}',
+    '../../!**/**/*.test.{ts,tsx}',
+    '../../!**/src/types/**',
+    '../../!**/node_modules/**',
+    '../../!**/dist/**',
   ],
   projects: getProjects(),
 };

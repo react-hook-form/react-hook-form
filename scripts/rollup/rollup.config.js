@@ -1,24 +1,32 @@
 import { createRollupConfig } from './createRollupConfig';
-import pkg from '../package.json';
+import pkg from '../../package.json';
 
 const name = 'index';
-const tsconfig = './tsconfig.ie11.json';
 const options = [
   {
     name,
     format: 'cjs',
-    formatName: 'ie11',
     env: 'development',
     input: pkg.source,
-    tsconfig,
   },
   {
     name,
     format: 'cjs',
-    formatName: 'ie11',
     env: 'production',
     input: pkg.source,
-    tsconfig,
+  },
+  { name, format: 'esm', input: pkg.source },
+  {
+    name,
+    format: 'umd',
+    env: 'development',
+    input: pkg.source,
+  },
+  {
+    name,
+    format: 'umd',
+    env: 'production',
+    input: pkg.source,
   },
 ];
 

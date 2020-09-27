@@ -2,7 +2,7 @@
 const ts = require('typescript');
 const fs = require('fs-extra');
 const path = require('path');
-const pkg = require('../package.json');
+const pkg = require('../../package.json');
 
 function writeCjsEntryFile(
   name = pkg.name,
