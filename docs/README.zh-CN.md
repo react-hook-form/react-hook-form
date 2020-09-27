@@ -1,7 +1,7 @@
 <div align="center">
     <p align="center">
       <a href="https://react-hook-form.com/zh" title="React Hook Form - Simple React forms validation">
-        <img src="https://raw.githubusercontent.com/bluebill1049/react-hook-form/master/website/logo.png" alt="React Hook Form Logo - hook custom hook for form validation" width="330px" />
+        <img src="https://raw.githubusercontent.com/bluebill1049/react-hook-form/master/docs/logo.png" alt="React Hook Form Logo - hook custom hook for form validation" width="330px" />
       </a>
     </p>
 </div>
@@ -19,7 +19,7 @@
 
 </div>
 
-<div align="center"><p align="center"><a href="https://react-hook-form.com/zh" title="React Hook Form - Simple React forms validation"><img src="https://raw.githubusercontent.com/bluebill1049/react-hook-form/master/website/example.gif" alt="React Hook Form Logo - React hook form validation" width="100%" /></a></p></div>
+<div align="center"><p align="center"><a href="https://react-hook-form.com/zh" title="React Hook Form - Simple React forms validation"><img src="https://raw.githubusercontent.com/bluebill1049/react-hook-form/master/docs/example.gif" alt="React Hook Form Logo - React hook form validation" width="100%" /></a></p></div>
 
 <a href="https://github.com/react-hook-form/react-hook-form">English</a> | <a href="./README.zh-TW.md">繁中</a> | 简中 | <a href="./README.ja-JP.md">日本語</a> | <a href="./README.ko-KR.md">한국어</a> | <a href="./README.fr-FR.md">Français</a> | <a href="./README.it-IT.md">Italiano</a> | <a href="./README.pt-BR.md">Português</a> | <a href="./README.es-ES.md">Español</a> | <a href="./README.ru-RU.md">Русский</a> | <a href="./README.de-DE.md">Deutsch</a> | <a href="./README.tr-TR.md">Türkçe</a>
 

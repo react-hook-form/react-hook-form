@@ -1,7 +1,7 @@
 <div align="center">
     <p align="center">
         <a href="https://react-hook-form.com" title="React Hook Form - Einfache React Formular Eingabeprüfung">
-            <img src="https://raw.githubusercontent.com/bluebill1049/react-hook-form/master/website/logo.png" alt="React Hook Form Logo - React einstellbare Hook für Formulareingabeprüfung" width="300px" />
+            <img src="https://raw.githubusercontent.com/bluebill1049/react-hook-form/master/docs/logo.png" alt="React Hook Form Logo - React einstellbare Hook für Formulareingabeprüfung" width="300px" />
         </a>
     </p>
 </div>
@@ -22,7 +22,7 @@
 <div align="center">
     <p align="center">
         <a href="https://react-hook-form.com" title="React Hook Form - Einfache React Formular Eingabeprüfung">
-            <img src="https://raw.githubusercontent.com/bluebill1049/react-hook-form/master/website/example.gif" alt="React Hook Form video - React einstellbare Hook für Formulareingabeprüfung" width="100%" />
+            <img src="https://raw.githubusercontent.com/bluebill1049/react-hook-form/master/docs/example.gif" alt="React Hook Form video - React einstellbare Hook für Formulareingabeprüfung" width="100%" />
         </a>
     </p>
 </div>
