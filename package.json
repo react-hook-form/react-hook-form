@@ -19,6 +19,7 @@
     "prebuild": "npm run clean",
     "build": "node scripts/rollup/writeCjsEntryFile.js && npm run build:modern && npm run build:ie11 && npm run cp:dts",
     "build:modern": "rollup -c ./scripts/rollup/rollup.config.js",
+    "build:esm": "rollup -c ./scripts/rollup/rollup.esm.config.js",
     "build:ie11": "rollup -c ./scripts/rollup/rollup.ie11.config.js",
     "cp:dts": "copyfiles -f ./src/**/*.d.ts dist",
     "lint": "eslint '**/*.{js,ts,tsx}'",
@@ -36,7 +37,7 @@
     "cypress:parallel": "cypress-parallel -s cypress -t 4 -d -a",
     "prepublishOnly": "npm run lint && npm run lint:types && npm test && npm run build",
     "bundlesize": "npm run build:modern && bundlesize",
-    "start:app": "npm run build:modern && yarn link && yarn --cwd node_modules/react link && yarn --cwd ./app link react react-hook-form && yarn --cwd ./app && yarn --cwd ./app run start",
+    "start:app": "npm run build:esm && yarn link && yarn --cwd node_modules/react link && yarn --cwd ./app link react react-hook-form && yarn --cwd ./app && yarn --cwd ./app run start",
     "changeset": "changeset",
     "release": "changeset publish"
   },
