@@ -33,5 +33,6 @@ example/build/
 .rpt2_cache
 package-lock.json
 /cypress/videos
+/cypress/parallel-weights.json
 /cypress/screenshots
 /cypress/fixtures

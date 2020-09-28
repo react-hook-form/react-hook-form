@@ -1,9 +1,9 @@
-import shouldRenderBasedOnError from './shouldRenderBasedOnError';
+import isErrorStateChanged from './isErrorStateChanged';
 
-describe('shouldUpdateWithError', () => {
+describe('isErrorChanged', () => {
   it('should return true when error message empty and error exists', () => {
     expect(
-      shouldRenderBasedOnError({
+      isErrorStateChanged({
         errors: {},
         name: 'test',
         error: { test: 'test' } as any,
@@ -15,7 +15,7 @@ describe('shouldUpdateWithError', () => {
 
   it('should return false when form is valid and field is valid', () => {
     expect(
-      shouldRenderBasedOnError({
+      isErrorStateChanged({
         errors: {},
         name: 'test',
         error: undefined,
@@ -27,7 +27,7 @@ describe('shouldUpdateWithError', () => {
 
   it('should return true when error disappeared', () => {
     expect(
-      shouldRenderBasedOnError({
+      isErrorStateChanged({
         errors: { test: 'test' } as any,
         name: 'test',
         error: undefined,
@@ -39,7 +39,7 @@ describe('shouldUpdateWithError', () => {
 
   it('should return true when error return and not found in error message', () => {
     expect(
-      shouldRenderBasedOnError({
+      isErrorStateChanged({
         errors: { test: 'test' } as any,
         name: '',
         error: { data: 'bill' } as any,
@@ -51,7 +51,7 @@ describe('shouldUpdateWithError', () => {
 
   it('should return true when error type or message not match in error message', () => {
     expect(
-      shouldRenderBasedOnError({
+      isErrorStateChanged({
         errors: { test: { type: 'test' } } as any,
         name: 'test',
         error: { test: { type: 'bill' } } as any,
@@ -63,7 +63,7 @@ describe('shouldUpdateWithError', () => {
 
   it('should return false if nothing matches', () => {
     expect(
-      shouldRenderBasedOnError({
+      isErrorStateChanged({
         errors: { test: { message: 'test', type: 'input' } } as any,
         name: 'test',
         error: { type: 'input', message: 'test' },
@@ -75,7 +75,7 @@ describe('shouldUpdateWithError', () => {
 
   it('should not clear error when it is set manually', () => {
     expect(
-      shouldRenderBasedOnError({
+      isErrorStateChanged({
         errors: {
           test: { message: 'test', type: 'input' },
         } as any,
@@ -89,7 +89,7 @@ describe('shouldUpdateWithError', () => {
 
   it('should return true when new validate field is been introduced', () => {
     expect(
-      shouldRenderBasedOnError({
+      isErrorStateChanged({
         errors: { test: { message: 'test', type: 'input' } } as any,
         name: 'test1',
         error: undefined,
@@ -101,7 +101,7 @@ describe('shouldUpdateWithError', () => {
 
   it('should return false when same valid input been triggered', () => {
     expect(
-      shouldRenderBasedOnError({
+      isErrorStateChanged({
         errors: { test: { message: 'test', type: 'input' } } as any,
         name: 'test',
         error: undefined,
@@ -113,7 +113,7 @@ describe('shouldUpdateWithError', () => {
 
   it('should return true when schema errors is different', () => {
     expect(
-      shouldRenderBasedOnError({
+      isErrorStateChanged({
         errors: { test: { message: 'test', type: 'input' } } as any,
         name: 'test',
         error: undefined,
