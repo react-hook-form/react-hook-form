@@ -1,47 +1,47 @@
 {
-  "cypress/integration/autoUnregister.tsx": { "time": 3009, "weight": 1 },
-  "cypress/integration/conditionalField.ts": { "time": 6127, "weight": 2 },
+  "cypress/integration/basic.ts": { "time": 25570, "weight": 8 },
+  "cypress/integration/defaultValues.ts": { "time": 26663, "weight": 9 },
+  "cypress/integration/isValid.ts": { "time": 30811, "weight": 10 },
+  "cypress/integration/manualRegisterForm.ts": { "time": 38576, "weight": 13 },
+  "cypress/integration/reValidateMode.ts": { "time": 43978, "weight": 14 },
+  "cypress/integration/triggerValidation.ts": { "time": 45185, "weight": 15 },
+  "cypress/integration/watch.ts": { "time": 47344, "weight": 16 },
+  "cypress/integration/autoUnregister.tsx": { "time": 2707, "weight": 0 },
   "cypress/integration/customSchemaValidation.ts": {
-    "time": 19438,
-    "weight": 6
+    "time": 15886,
+    "weight": 5
   },
-  "cypress/integration/formState.ts": { "time": 28220, "weight": 9 },
-  "cypress/integration/setError.ts": { "time": 30027, "weight": 10 },
+  "cypress/integration/formStateWithSchema.ts": { "time": 25673, "weight": 8 },
+  "cypress/integration/reset.ts": { "time": 27851, "weight": 9 },
   "cypress/integration/setValueCustomRegister.ts": {
-    "time": 32125,
-    "weight": 11
+    "time": 30015,
+    "weight": 10
   },
-  "cypress/integration/setValueWithSchema.ts": { "time": 34360, "weight": 12 },
-  "cypress/integration/useWatch.ts": { "time": 36777, "weight": 12 },
-  "cypress/integration/defaultValues.ts": { "time": 1596, "weight": 0 },
-  "cypress/integration/formStateWithNestedFields.ts": {
-    "time": 10118,
-    "weight": 3
-  },
-  "cypress/integration/reset.ts": { "time": 12420, "weight": 4 },
-  "cypress/integration/reValidateMode.ts": { "time": 17779, "weight": 6 },
-  "cypress/integration/watchDefaultValues.ts": { "time": 18711, "weight": 6 },
-  "cypress/integration/watchUseFieldArray.ts": { "time": 21084, "weight": 7 },
-  "cypress/integration/basic.ts": { "time": 24872, "weight": 8 },
-  "cypress/integration/controller.ts": { "time": 31298, "weight": 11 },
-  "cypress/integration/setValue.ts": { "time": 34401, "weight": 12 },
-  "cypress/integration/triggerValidation.ts": { "time": 35694, "weight": 12 },
-  "cypress/integration/useFieldArray.ts": { "time": 53366, "weight": 18 },
-  "cypress/integration/useFieldArrayUnregister.ts": {
-    "time": 56217,
-    "weight": 19
-  },
+  "cypress/integration/setValueWithSchema.ts": { "time": 32132, "weight": 10 },
   "cypress/integration/validateFieldCriteria.ts": {
-    "time": 61747,
-    "weight": 21
+    "time": 38778,
+    "weight": 13
   },
+  "cypress/integration/conditionalField.ts": { "time": 4063, "weight": 1 },
+  "cypress/integration/formState.ts": { "time": 13071, "weight": 4 },
+  "cypress/integration/formStateWithNestedFields.ts": {
+    "time": 21635,
+    "weight": 7
+  },
+  "cypress/integration/setValue.ts": { "time": 26302, "weight": 8 },
+  "cypress/integration/useFieldArrayUnregister.ts": {
+    "time": 30505,
+    "weight": 10
+  },
+  "cypress/integration/useWatch.ts": { "time": 33031, "weight": 11 },
+  "cypress/integration/watchUseFieldArray.ts": { "time": 36372, "weight": 12 },
   "cypress/integration/basicSchemaValidation.ts": {
-    "time": 18013,
+    "time": 20186,
     "weight": 6
   },
-  "cypress/integration/formStateWithSchema.ts": { "time": 27510, "weight": 9 },
-  "cypress/integration/isValid.ts": { "time": 30830, "weight": 10 },
-  "cypress/integration/manualRegisterForm.ts": { "time": 37422, "weight": 13 },
-  "cypress/integration/setValueWithTrigger.ts": { "time": 39589, "weight": 13 },
-  "cypress/integration/watch.ts": { "time": 41814, "weight": 14 }
+  "cypress/integration/controller.ts": { "time": 25650, "weight": 8 },
+  "cypress/integration/setError.ts": { "time": 27776, "weight": 9 },
+  "cypress/integration/setValueWithTrigger.ts": { "time": 29872, "weight": 10 },
+  "cypress/integration/useFieldArray.ts": { "time": 48205, "weight": 16 },
+  "cypress/integration/watchDefaultValues.ts": { "time": 48916, "weight": 16 }
 }

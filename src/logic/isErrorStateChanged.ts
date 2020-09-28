@@ -9,9 +9,7 @@ import {
   FieldError,
 } from '../types';
 
-export default function shouldRenderBasedOnError<
-  TFieldValues extends FieldValues
->({
+export default function isErrorStateChanged<TFieldValues extends FieldValues>({
   errors,
   name,
   error,
