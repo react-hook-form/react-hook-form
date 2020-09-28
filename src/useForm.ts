@@ -65,7 +65,6 @@ import {
   FieldNamesMarkedBoolean,
   LiteralToPrimitive,
   DeepPartial,
-  NonUndefined,
   InternalNameSet,
   DefaultValues,
   FieldError,
@@ -527,12 +526,9 @@ export function useForm<
     TFieldValue extends TFieldValues[TFieldName]
   >(
     name: TFieldName,
-    value:
-      | (NonUndefined<TFieldValue> extends NestedValue<infer U>
-          ? U
-          : UnpackNestedValue<DeepPartial<LiteralToPrimitive<TFieldValue>>>)
-      | null
-      | undefined,
+    value: TFieldValue extends NestedValue<infer U>
+      ? U
+      : UnpackNestedValue<DeepPartial<LiteralToPrimitive<TFieldValue>>>,
     config?: SetValueConfig,
   ): void {
     setInternalValue(name, value as TFieldValues[string], config);
