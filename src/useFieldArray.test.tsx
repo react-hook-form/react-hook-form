@@ -10,7 +10,13 @@ import { act, renderHook } from '@testing-library/react-hooks';
 import { useFieldArray } from './useFieldArray';
 import { useForm } from './useForm';
 import * as generateId from './logic/generateId';
-import { Control, ValidationRules, FieldError, DeepMap } from './types';
+import {
+  Control,
+  ValidationRules,
+  FieldError,
+  DeepMap,
+  SubmitHandler,
+} from './types';
 import { VALIDATION_MODE } from './constants';
 import { FormProvider } from './useFormContext';
 
@@ -3829,6 +3835,51 @@ describe('useFieldArray', () => {
       const { asFragment } = render(<Component />);
 
       expect(asFragment()).toMatchSnapshot();
+    });
+  });
+
+  describe('submit form', () => {
+    it('should leave defaultValues as empty array when shouldUnregister set to false', async () => {
+      let submitData: any;
+      type FormValues = { test: string[] };
+      const Component = () => {
+        const { register, control, handleSubmit } = useForm<FormValues>({
+          defaultValues: {
+            test: [],
+          },
+          shouldUnregister: false,
+        });
+        const { fields } = useFieldArray({
+          control,
+          name: 'test',
+        });
+        const onSubmit: SubmitHandler<FormValues> = (data) => {
+          submitData = data;
+        };
+
+        return (
+          <form onSubmit={handleSubmit(onSubmit)}>
+            {fields.map((field, i) => (
+              <input
+                key={field.id}
+                type="text"
+                name={`test[${i}].value`}
+                ref={register()}
+              />
+            ))}
+            <button>submit</button>
+          </form>
+        );
+      };
+
+      render(<Component />);
+      await actComponent(async () => {
+        await fireEvent.click(screen.getByRole('button'));
+      });
+
+      expect(submitData).toEqual({
+        test: [],
+      });
     });
   });
 });
