@@ -246,7 +246,7 @@ setValue('test', 'value', { shouldValidate: false, shouldDirty: false })
 - remove `validationSchema` and embrace validation `resolver`
 - remove `nest` option for `watch` & `getValues`, so data return from both methods will be in FormValues shape.
 
-```typescript diff
+```diff
 -getValues({ nest: true }); // { test: { data: 'test' }}
 -watch({ nest: true }); // { test: { data: 'test' }}
 +getValues(); // { test: { data: 'test' }}
@@ -259,7 +259,7 @@ setValue('test', 'value', { shouldValidate: false, shouldDirty: false })
 
 - `Controller`: onChange will only evaluate payload as event like object. eg: react-select will no longer need the extra `onChange` method at `Controller`.
 
-```typescript diff
+```diff
 import { TextInput } from 'react-native';
 
 -<Controller
@@ -309,20 +309,20 @@ triggerValidation(['firstName', 'lastName']);
 
 - watch support `{ nest: boolean }`
 
-```
+```tsx
 watch(); // { 'test.firstName': 'bill' }
 watch({ nest: true }); // { test: { firstName: 'bill' } }
 ```
 
 - improve custom `register`
 
-```
+```tsx
 register('test', { required: true });
 ```
 
 - setError` support nested object
 
-```
+```tsx
 setError('yourDetail.firstName', 'test');
 errors.yourDetails.firstName;
 ```
@@ -353,7 +353,7 @@ React Hook Form return a new `formState: Object` which contain the following inf
 - `touched`: what are the fields have interacted
 - `isSubmitted`: whether the form have been triggered with submitting
 
-```ts
+```tsx
 const {
   formState: { dirty, touched, isSubmitted },
 } = useForm();
