@@ -2,7 +2,7 @@
 
 ## [6.8.4] - 2020-09-22
 
-- when input unmounts `touched` and `dirtyFields` will no longer get removed from `formState` (shouldUnregister: true). 
+- when input unmounts `touched` and `dirtyFields` will no longer get removed from `formState` (shouldUnregister: true).
 
 ## [6.8.0] - 2020-09-09
 
@@ -252,3 +252,115 @@ setValue('test', 'value', { shouldValidate: false, shouldDirty: false })
 +getValues(); // { test: { data: 'test' }}
 +watch(); // { test: { data: 'test' }}
 ```
+
+## [5.0.0] - 2020-03-07
+
+### Breaking Change
+
+- `Controller`: onChange will only evaluate payload as event like object. eg: react-select will no longer need the extra `onChange` method at `Controller`.
+
+```typescript diff
+import { TextInput } from 'react-native';
+
+-<Controller
+-  as={<TextInput style={{ borderWidth: 2, borderColor: 'black'}} />}
+-  name="text"
+-  control={args => ({
+-    value: args[0].nativeEvent.text,
+-  })}
+-  onChange={onChange}
+-/>
++<Controller
++  as={<TextInput style={{ borderWidth: 2, borderColor: 'black'}} />}
++  name="text"
++  control={args => args[0].nativeEvent.text}
++  onChange={onChange}
++/>
+```
+
+## [4.0.0] - 2019-12-24
+
+### Breaking changes
+
+- improve module **exports**:
+
+```tsx
+import { useForm } from 'react-hook-form';
+```
+
+- nested `errors` object and better typescript support
+
+```tsx
+type form = {
+  yourDetail: {
+    firstName: string;
+  };
+};
+
+errors?.yourDetail?.firstName;
+```
+
+- triggerValidation argument change from `Object`, `Object[]` to `String`, `String[]`
+
+```tsx
+triggerValidation('firstName');
+triggerValidation(['firstName', 'lastName']);
+```
+
+- watch support `{ nest: boolean }`
+
+```
+watch(); // { 'test.firstName': 'bill' }
+watch({ nest: true }); // { test: { firstName: 'bill' } }
+```
+
+- improve custom `register`
+
+```
+register('test', { required: true });
+```
+
+- setError` support nested object
+
+```
+setError('yourDetail.firstName', 'test');
+errors.yourDetails.firstName;
+```
+
+- `handleSubmit` no longer rerun array inputs contains `undefined` or `null`
+
+### Added
+
+- move `RHFInput` into the main repo and rename it to `Controller`
+
+```tsx
+<Controller control={control} name="test" />
+```
+
+### Removed
+
+- `validationSchemaOption`: hardly anyone want to use validation with abort early, or change the config.
+
+- native validation: hardly anyone used this feature. https://react-hook-form.com/api/#Browserbuiltinvalidation
+
+## [3.0.0] - 2019-04-21
+
+### Added
+
+React Hook Form return a new `formState: Object` which contain the following information
+
+- `dirty`: when user interactive any fields
+- `touched`: what are the fields have interacted
+- `isSubmitted`: whether the form have been triggered with submitting
+
+```ts
+const {
+  formState: { dirty, touched, isSubmitted },
+} = useForm();
+```
+
+## [2.0.0] - 2019-03-29
+
+### Added
+
+- support `ref={register}` instead of only `ref={register()}`
