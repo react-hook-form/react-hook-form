@@ -611,6 +611,20 @@ export function useForm<
         }
       };
 
+  function setFieldArrayDefaultValues<T extends FieldValues>(data: T): T {
+    if (!shouldUnregister) {
+      for (const value of fieldArrayNamesRef.current) {
+        if (isKey(value) && !data[value]) {
+          data = {
+            ...data,
+            [value]: [],
+          };
+        }
+      }
+    }
+    return data;
+  }
+
   function getValues(): UnpackNestedValue<TFieldValues>;
   function getValues<TFieldName extends string, TFieldValue extends unknown>(
     name: TFieldName,
@@ -635,7 +649,9 @@ export function useForm<
       return data;
     }
 
-    return getFieldsValues(fieldsRef, shallowFieldsStateRef);
+    return setFieldArrayDefaultValues(
+      getFieldsValues(fieldsRef, shallowFieldsStateRef),
+    );
   }
 
   const validateResolver = React.useCallback(
@@ -1016,7 +1032,9 @@ export function useForm<
         e.persist();
       }
       let fieldErrors: FieldErrors<TFieldValues> = {};
-      let fieldValues = getFieldsValues(fieldsRef, shallowFieldsStateRef, true);
+      let fieldValues = setFieldArrayDefaultValues(
+        getFieldsValues(fieldsRef, shallowFieldsStateRef, true),
+      );
 
       if (readFormStateRef.current.isSubmitting) {
         updateFormState({

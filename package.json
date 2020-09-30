@@ -28,7 +28,7 @@
     "coverage": "jest --coverage --coverageReporters=text-lcov | coveralls",
     "test": "jest  --runInBand --config ./scripts/jest/jest.config.js",
     "test:coverage": "npm run test -- --coverage",
-    "test:watch": "npm run test -- --watchAll",
+    "test:watch": "npm run test -- --onlyChanged --watch",
     "test:web": "TEST_ENV=web npm run test",
     "test:server": "TEST_ENV=server npm run test",
     "test:native": "TEST_ENV=native npm run test",
