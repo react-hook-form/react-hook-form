@@ -85,7 +85,7 @@ export function useForm<
   reValidateMode = VALIDATION_MODE.onChange,
   resolver,
   context,
-  defaultValues = {},
+  defaultValues = {} as UnpackNestedValue<DeepPartial<TFieldValues>>,
   shouldFocusError = true,
   shouldUnregister = true,
   criteriaMode,
