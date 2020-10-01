@@ -74,7 +74,7 @@ export type UseFormOptions<
 > = Partial<{
   mode: Mode;
   reValidateMode: Exclude<Mode, 'onTouched' | 'all'>;
-  defaultValues: Partial<UnpackNestedValue<DeepPartial<TFieldValues>>>;
+  defaultValues: UnpackNestedValue<DeepPartial<TFieldValues>>;
   resolver: Resolver<TFieldValues, TContext>;
   context: TContext;
   shouldFocusError: boolean;
