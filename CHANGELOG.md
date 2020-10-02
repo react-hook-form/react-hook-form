@@ -1,5 +1,27 @@
 # Changelog
 
+## [6.9.0] - 2020-10-3
+
+- with shouldUnregister set to false, empty Field Array will default [] as submission result.
+
+```tsx
+const { handlSubmit } = useForm({
+  shouldUnregister: false,
+})
+
+useFieldArray({
+  name: 'test',
+})
+
+handlSubmit((data) => {
+  // shouldUnregister: false
+  // result:  { data: {test: []} } 
+
+  // shouldUnregister: true
+  // result: {}
+})
+```
+
 ## [6.8.4] - 2020-09-22
 
 - when input unmounts `touched` and `dirtyFields` will no longer get removed from `formState` (shouldUnregister: true).
