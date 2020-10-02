@@ -155,12 +155,7 @@ describe('useFieldArray', () => {
           return (
             <form>
               {fields.map((field, i) => (
-                <input
-                  key={field.id}
-                  name={`${name}[${i}]`}
-                  type="text"
-                  ref={register()}
-                />
+                <input key={field.id} name={`${name}[${i}]`} ref={register()} />
               ))}
               <button type="button" onClick={() => append({})}>
                 append
@@ -203,7 +198,6 @@ describe('useFieldArray', () => {
                 <input
                   key={field.id}
                   name={`${name}[${i}].${key}`}
-                  type="text"
                   ref={register()}
                 />
               ))}
@@ -240,12 +234,7 @@ describe('useFieldArray', () => {
         return (
           <form>
             {fields.map((field, i) => (
-              <input
-                key={field.id}
-                name={`test[${i}]`}
-                type="text"
-                ref={register()}
-              />
+              <input key={field.id} name={`test[${i}]`} ref={register()} />
             ))}
             <button type="button" onClick={() => append({})}>
               append
@@ -663,6 +652,50 @@ describe('useFieldArray', () => {
     );
   });
 
+  describe('with should unregister false', () => {
+    const Component = () => {
+      const { register, control } = useForm<{
+        test: string[];
+      }>({
+        shouldUnregister: false,
+      });
+      const [show, setShow] = React.useState(true);
+      const { fields, append } = useFieldArray({
+        control,
+        name: 'test',
+      });
+
+      return (
+        <form>
+          {show &&
+            fields.map((field, i) => (
+              <input
+                key={field.id}
+                name={`test[${i}].value`}
+                ref={register()}
+                defaultValue={field.value}
+              />
+            ))}
+          <button type="button" onClick={() => append({ value: '' })}>
+            append
+          </button>
+          <button type="button" onClick={() => setShow(!show)}>
+            toggle
+          </button>
+        </form>
+      );
+    };
+
+    render(<Component />);
+
+    fireEvent.click(screen.getByRole('button', { name: 'append' }));
+    expect(screen.getAllByRole('textbox').length).toEqual(1);
+    fireEvent.click(screen.getByRole('button', { name: 'toggle' }));
+    expect(screen.queryByRole('textbox')).toBeNull();
+    fireEvent.click(screen.getByRole('button', { name: 'toggle' }));
+    expect(screen.getAllByRole('textbox').length).toEqual(1);
+  });
+
   describe('append', () => {
     it('should append data into the fields', () => {
       const { result } = renderHook(() => {
@@ -784,7 +817,6 @@ describe('useFieldArray', () => {
             {fields.map((field, i) => (
               <input
                 key={field.id}
-                type="text"
                 name={`test[${i}].value`}
                 ref={register()}
                 defaultValue={field.value}
@@ -821,7 +853,6 @@ describe('useFieldArray', () => {
             {fields.map((field, i) => (
               <input
                 key={field.id}
-                type="text"
                 name={`test[${i}].value`}
                 ref={register()}
                 defaultValue={field.value}
@@ -856,7 +887,6 @@ describe('useFieldArray', () => {
             {fields.map((field, i) => (
               <input
                 key={field.id}
-                type="text"
                 name={`test[${i}].value`}
                 ref={register()}
                 defaultValue={field.value}
@@ -894,7 +924,6 @@ describe('useFieldArray', () => {
             {fields.map((field, i) => (
               <div key={`${field.id}`}>
                 <input
-                  type="text"
                   name={`test[${i}].value`}
                   defaultValue={field.value}
                   ref={register()}
@@ -1070,7 +1099,6 @@ describe('useFieldArray', () => {
             {fields.map((field, i) => (
               <input
                 key={field.id}
-                type="text"
                 name={`test[${i}].value`}
                 ref={register()}
               />
@@ -1120,7 +1148,6 @@ describe('useFieldArray', () => {
               <input
                 key={field.id}
                 ref={register({ required: true })}
-                type="text"
                 name={`test[${i}].value`}
                 defaultValue={field.value}
               />
@@ -1163,7 +1190,6 @@ describe('useFieldArray', () => {
             {fields.map((field, i) => (
               <input
                 key={field.id}
-                type="text"
                 name={`test[${i}].value`}
                 ref={register()}
                 defaultValue={field.value}
@@ -1206,7 +1232,6 @@ describe('useFieldArray', () => {
             {fields.map((field, i) => (
               <div key={`${field.id}`}>
                 <input
-                  type="text"
                   name={`test[${i}].value`}
                   defaultValue={field.value}
                   ref={register()}
@@ -1268,7 +1293,6 @@ describe('useFieldArray', () => {
             {fields.map((field, i) => (
               <input
                 key={field.id}
-                type="text"
                 name={`test[${i}].value`}
                 ref={register()}
                 defaultValue={field.value}
@@ -1305,7 +1329,6 @@ describe('useFieldArray', () => {
             {fields.map((field, i) => (
               <input
                 key={field.id}
-                type="text"
                 name={`test[${i}].value`}
                 ref={register()}
                 defaultValue={field.value}
@@ -1343,7 +1366,6 @@ describe('useFieldArray', () => {
             {fields.map((field, i) => (
               <input
                 key={field.id}
-                type="text"
                 name={`test[${i}].value`}
                 ref={register()}
               />
@@ -1681,7 +1703,6 @@ describe('useFieldArray', () => {
             {fields.map((field, i) => (
               <input
                 key={field.id}
-                type="text"
                 name={`test[${i}].value`}
                 ref={register()}
               />
@@ -1744,7 +1765,6 @@ describe('useFieldArray', () => {
               <input
                 key={field.id}
                 ref={register({ required: true })}
-                type="text"
                 name={`test[${i}].value`}
               />
             ))}
@@ -1836,7 +1856,6 @@ describe('useFieldArray', () => {
               <input
                 key={field.id}
                 ref={register({ required: true })}
-                type="text"
                 name={`test[${i}].value`}
               />
             ))}
@@ -1893,7 +1912,6 @@ describe('useFieldArray', () => {
             {fields.map((field, i) => (
               <input
                 key={field.id}
-                type="text"
                 name={`test[${i}].value`}
                 ref={register({ required: true })}
               />
@@ -2036,7 +2054,6 @@ describe('useFieldArray', () => {
             {fields.map((field, i) => (
               <input
                 key={field.id}
-                type="text"
                 name={`test[${i}].value`}
                 defaultValue={field.value}
                 ref={register()}
@@ -2085,7 +2102,7 @@ describe('useFieldArray', () => {
           <div>
             {fields.map((field, i) => (
               <div key={`${field.id}`}>
-                <input type="text" name={`test[${i}].value`} ref={register()} />
+                <input name={`test[${i}].value`} ref={register()} />
               </div>
             ))}
             <button onClick={() => append({ value: '' })}>append</button>
@@ -2149,7 +2166,6 @@ describe('useFieldArray', () => {
             {fields.map((field, i) => (
               <input
                 key={field.id}
-                type="text"
                 name={`test[${i}].value`}
                 ref={register()}
               />
@@ -2398,7 +2414,6 @@ describe('useFieldArray', () => {
             {fields.map((field, i) => (
               <input
                 key={field.id}
-                type="text"
                 name={`test[${i}].value`}
                 defaultValue={field.value}
                 ref={register()}
@@ -2444,7 +2459,6 @@ describe('useFieldArray', () => {
             {fields.map((field, i) => (
               <input
                 key={field.id}
-                type="text"
                 name={`test[${i}].value`}
                 defaultValue={field.value}
                 ref={register()}
@@ -2493,7 +2507,6 @@ describe('useFieldArray', () => {
             {fields.map((field, i) => (
               <input
                 key={field.id}
-                type="text"
                 name={`test[${i}].value`}
                 ref={register({ required: true })}
               />
@@ -2541,7 +2554,6 @@ describe('useFieldArray', () => {
             {fields.map((field, i) => (
               <input
                 key={field.id}
-                type="text"
                 name={`test[${i}].value`}
                 ref={register({ required: true })}
               />
@@ -2591,7 +2603,6 @@ describe('useFieldArray', () => {
             {fields.map((field, i) => (
               <input
                 key={field.id}
-                type="text"
                 name={`test[${i}].value`}
                 ref={register()}
                 defaultValue={field.value}
@@ -2628,7 +2639,6 @@ describe('useFieldArray', () => {
             {fields.map((field, i) => (
               <input
                 key={field.id}
-                type="text"
                 name={`test[${i}].value`}
                 ref={register()}
                 defaultValue={field.value}
@@ -2669,7 +2679,6 @@ describe('useFieldArray', () => {
             {fields.map((field, i) => (
               <input
                 key={field.id}
-                type="text"
                 name={`test[${i}].value`}
                 defaultValue={field.value}
                 ref={register()}
@@ -2712,7 +2721,6 @@ describe('useFieldArray', () => {
             {fields.map((field, i) => (
               <div key={`${field.id}`}>
                 <input
-                  type="text"
                   name={`test[${i}].value`}
                   defaultValue={field.value}
                   ref={register()}
@@ -2779,7 +2787,6 @@ describe('useFieldArray', () => {
             {fields.map((field, i) => (
               <input
                 key={field.id}
-                type="text"
                 name={`test[${i}].value`}
                 ref={register()}
               />
@@ -2935,7 +2942,6 @@ describe('useFieldArray', () => {
             {fields.map((field, i) => (
               <input
                 key={field.id}
-                type="text"
                 name={`test[${i}].value`}
                 ref={register({ required: true })}
                 defaultValue={field.value}
@@ -2987,7 +2993,6 @@ describe('useFieldArray', () => {
             {fields.map((field, i) => (
               <input
                 key={field.id}
-                type="text"
                 name={`test[${i}].value`}
                 ref={register()}
                 defaultValue={field.value}
@@ -3036,7 +3041,6 @@ describe('useFieldArray', () => {
             {fields.map((field, i) => (
               <input
                 key={field.id}
-                type="text"
                 name={`test[${i}].value`}
                 defaultValue={field.value}
                 ref={register()}
@@ -3079,7 +3083,6 @@ describe('useFieldArray', () => {
             {fields.map((field, i) => (
               <div key={`${field.id}`}>
                 <input
-                  type="text"
                   name={`test[${i}].value`}
                   defaultValue={field.value}
                   ref={register()}
@@ -3145,7 +3148,6 @@ describe('useFieldArray', () => {
             {fields.map((field, i) => (
               <input
                 key={field.id}
-                type="text"
                 name={`test[${i}].value`}
                 ref={register()}
               />
@@ -3307,7 +3309,6 @@ describe('useFieldArray', () => {
             {fields.map((field, i) => (
               <input
                 key={field.id}
-                type="text"
                 name={`test[${i}].value`}
                 ref={register({ required: true })}
                 defaultValue={field.value}
@@ -3359,7 +3360,6 @@ describe('useFieldArray', () => {
             {fields.map((field, i) => (
               <input
                 key={field.id}
-                type="text"
                 name={`test[${i}].value`}
                 ref={register()}
                 defaultValue={field.value}
@@ -3408,7 +3408,6 @@ describe('useFieldArray', () => {
             {fields.map((field, i) => (
               <input
                 key={field.id}
-                type="text"
                 name={`test[${i}].value`}
                 defaultValue={field.value}
                 ref={register()}
@@ -3451,7 +3450,6 @@ describe('useFieldArray', () => {
             {fields.map((field, i) => (
               <div key={`${field.id}`}>
                 <input
-                  type="text"
                   name={`test[${i}].value`}
                   defaultValue={field.value}
                   ref={register()}
@@ -3517,7 +3515,6 @@ describe('useFieldArray', () => {
             {fields.map((field, i) => (
               <input
                 key={field.id}
-                type="text"
                 name={`test[${i}].value`}
                 ref={register()}
               />
@@ -3862,7 +3859,6 @@ describe('useFieldArray', () => {
             {fields.map((field, i) => (
               <input
                 key={field.id}
-                type="text"
                 name={`test[${i}].value`}
                 ref={register()}
               />

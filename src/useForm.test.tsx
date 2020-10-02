@@ -225,7 +225,7 @@ describe('useForm', () => {
 
         return (
           <div>
-            <input type="text" name="test" ref={register({ required: true })} />
+            <input name="test" ref={register({ required: true })} />
             <input
               type="text"
               name="issue"
@@ -342,7 +342,7 @@ describe('useForm', () => {
 
         return (
           <div>
-            <input type="text" name="test" ref={register({ required: true })} />
+            <input name="test" ref={register({ required: true })} />
           </div>
         );
       };
@@ -373,7 +373,7 @@ describe('useForm', () => {
 
         return (
           <div>
-            <input type="text" name="test" ref={register({ required: true })} />
+            <input name="test" ref={register({ required: true })} />
           </div>
         );
       };
@@ -2316,7 +2316,7 @@ describe('useForm', () => {
         });
 
         isValidValue = isValid;
-        return <input type="text" name="test" ref={register} />;
+        return <input name="test" ref={register} />;
       };
 
       await actComponent(async () => {
@@ -2862,7 +2862,7 @@ describe('useForm', () => {
           watchedField = watch();
           return (
             <form onSubmit={handleSubmit(() => {})}>
-              <input type="text" name="test" ref={register} />
+              <input name="test" ref={register} />
               <button>button</button>
             </form>
           );
@@ -2883,7 +2883,7 @@ describe('useForm', () => {
           watchedField = watch('test');
           return (
             <form onSubmit={handleSubmit(() => {})}>
-              <input type="text" name="test" ref={register} />
+              <input name="test" ref={register} />
               <button>button</button>
             </form>
           );
@@ -2904,9 +2904,9 @@ describe('useForm', () => {
           watchedField = watch('test');
           return (
             <form onSubmit={handleSubmit(() => {})}>
-              <input type="text" name="test[0]" ref={register} />
-              <input type="text" name="test[1]" ref={register} />
-              <input type="text" name="test[2]" ref={register} />
+              <input name="test[0]" ref={register} />
+              <input name="test[1]" ref={register} />
+              <input name="test[2]" ref={register} />
               <button>button</button>
             </form>
           );

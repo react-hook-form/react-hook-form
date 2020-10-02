@@ -206,7 +206,7 @@ describe('useWatch', () => {
         control: Control;
       }) => {
         useWatch({ name: 'child', control });
-        return <input type="text" name="child" ref={register} />;
+        return <input name="child" ref={register} />;
       };
 
       const Parent = () => {
@@ -216,7 +216,7 @@ describe('useWatch', () => {
         }>();
         return (
           <form onSubmit={handleSubmit(() => {})}>
-            <input type="text" name="parent" ref={register} />
+            <input name="parent" ref={register} />
             <Child register={register} control={control} />
             <button>submit</button>
           </form>
@@ -279,8 +279,8 @@ describe('useWatch', () => {
 
         return (
           <form>
-            <input type="text" name="test1" ref={register} />
-            <input type="text" name="test2" ref={register} />
+            <input name="test1" ref={register} />
+            <input name="test2" ref={register} />
             <Child control={control} />
           </form>
         );
@@ -337,7 +337,7 @@ describe('useWatch', () => {
 
         return (
           <form>
-            <input type="text" name="test" ref={register} />
+            <input name="test" ref={register} />
             <span>{test}</span>
           </form>
         );
