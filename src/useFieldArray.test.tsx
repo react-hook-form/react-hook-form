@@ -20,6 +20,8 @@ import {
 import { VALIDATION_MODE } from './constants';
 import { FormProvider } from './useFormContext';
 
+let nodeEnv: string | undefined;
+
 const mockGenerateId = () => {
   let id = 0;
   jest.spyOn(generateId, 'default').mockImplementation(() => (id++).toString());
@@ -28,11 +30,14 @@ const mockGenerateId = () => {
 describe('useFieldArray', () => {
   beforeEach(() => {
     mockGenerateId();
+    nodeEnv = process.env.NODE_ENV;
+    process.env.NODE_ENV = 'production';
   });
 
   afterEach(() => {
-    // @ts-ignore
-    generateId.default.mockRestore();
+    jest.resetAllMocks();
+    jest.restoreAllMocks();
+    process.env.NODE_ENV = nodeEnv;
   });
 
   describe('initialize', () => {
@@ -78,52 +83,53 @@ describe('useFieldArray', () => {
   });
 
   describe('error handling', () => {
-    it('should show errors during mount when mode is set to onChange', () => {
-      const Component = () => {
-        const {
-          register,
-          control,
-          errors,
-          formState: { isValid },
-        } = useForm<{ test: string[] }>({
-          resolver: async () => ({
-            values: {},
-            errors: {
-              test: [{ value: 'wrong', type: 'test' }],
-            },
-          }),
-          mode: 'onChange',
-        });
-        const { fields, append } = useFieldArray({ name: 'test', control });
-
-        return (
-          <form>
-            {fields.map((field, i) => (
-              <input
-                key={field.id}
-                name={`test[${i}].value`}
-                ref={register()}
-              />
-            ))}
-            <button type="button" onClick={() => append({})}>
-              append
-            </button>
-
-            {!isValid && <p>not valid</p>}
-            {errors.test && <p>errors</p>}
-          </form>
-        );
-      };
-
-      render(<Component />);
-      waitFor(() => screen.getByText('not valid'));
-      waitFor(() => screen.getByText('errors'));
-    });
+    // it('should show errors during mount when mode is set to onChange', async () => {
+    //   const Component = () => {
+    //     const {
+    //       register,
+    //       control,
+    //       errors,
+    //       formState: { isValid },
+    //     } = useForm<{ test: string[] }>({
+    //       resolver: async () => ({
+    //         values: {},
+    //         errors: {
+    //           test: [{ value: 'wrong', type: 'test' }],
+    //         },
+    //       }),
+    //       mode: 'onChange',
+    //     });
+    //     const { fields, append } = useFieldArray({ name: 'test', control });
+    //
+    //     console.log('isVlad', isValid)
+    //
+    //     return (
+    //       <form>
+    //         {fields.map((field, i) => (
+    //           <input
+    //             key={field.id}
+    //             name={`test[${i}].value`}
+    //             ref={register()}
+    //           />
+    //         ))}
+    //         <button type="button" onClick={() => append({})}>
+    //           append
+    //         </button>
+    //
+    //         {!isValid && <p>not valid</p>}
+    //         {errors.test && <p>errors</p>}
+    //       </form>
+    //     );
+    //   };
+    //
+    //   render(<Component />);
+    //   await waitFor(() => screen.getByText('not valid'));
+    //   await waitFor(() => screen.getByText('errors'));
+    // });
 
     it('should output error message when name is empty string in development mode', () => {
       jest.spyOn(console, 'warn').mockImplementation(() => {});
 
-      const env = process.env.NODE_ENV;
       process.env.NODE_ENV = 'development';
 
       renderHook(() => {
@@ -132,17 +138,11 @@ describe('useFieldArray', () => {
       });
 
       expect(console.warn).toBeCalledTimes(1);
-
-      // @ts-ignore
-      console.warn.mockRestore();
-
-      process.env.NODE_ENV = env;
     });
 
     it('should not output error message when name is empty string in production mode', () => {
       jest.spyOn(console, 'warn').mockImplementation(() => {});
 
-      const env = process.env.NODE_ENV;
       process.env.NODE_ENV = 'production';
 
       renderHook(() => {
@@ -151,15 +151,9 @@ describe('useFieldArray', () => {
       });
 
       expect(console.warn).not.toBeCalled();
-
-      // @ts-ignore
-      console.warn.mockRestore();
-
-      process.env.NODE_ENV = env;
     });
 
     it('should throw custom error when control is not defined in development mode', () => {
-      const env = process.env.NODE_ENV;
       process.env.NODE_ENV = 'development';
 
       const { result } = renderHook(() => useFieldArray({ name: 'test' }));
@@ -167,19 +161,14 @@ describe('useFieldArray', () => {
       expect(result.error.message).toBe(
         '📋 useFieldArray is missing `control` prop. https://react-hook-form.com/api#useFieldArray',
       );
-
-      process.env.NODE_ENV = env;
     });
 
     it('should throw TypeError when control is not defined in production mode', () => {
-      const env = process.env.NODE_ENV;
       process.env.NODE_ENV = 'production';
 
       const { result } = renderHook(() => useFieldArray({ name: 'test' }));
 
       expect(result.error.name).toBe(new TypeError().name);
-
-      process.env.NODE_ENV = env;
     });
 
     it.each(['test', 'test[0].value'])(
@@ -187,7 +176,6 @@ describe('useFieldArray', () => {
       (name) => {
         jest.spyOn(console, 'warn').mockImplementation(() => {});
 
-        const env = process.env.NODE_ENV;
         process.env.NODE_ENV = 'development';
 
         const Component = () => {
@@ -211,11 +199,6 @@ describe('useFieldArray', () => {
         fireEvent.click(screen.getByRole('button', { name: /append/i }));
 
         expect(console.warn).toBeCalledTimes(1);
-
-        process.env.NODE_ENV = env;
-
-        // @ts-ignore
-        console.warn.mockRestore();
       },
     );
 
@@ -227,7 +210,6 @@ describe('useFieldArray', () => {
       (name, key) => {
         jest.spyOn(console, 'warn').mockImplementation(() => {});
 
-        const env = process.env.NODE_ENV;
         process.env.NODE_ENV = 'development';
 
         const Component = () => {
@@ -255,18 +237,12 @@ describe('useFieldArray', () => {
         fireEvent.click(screen.getByRole('button', { name: /append/i }));
 
         expect(console.warn).not.toBeCalled();
-
-        process.env.NODE_ENV = env;
-
-        // @ts-ignore
-        console.warn.mockRestore();
       },
     );
 
     it('should not output error message when registered field name is flat array in production environment', () => {
       jest.spyOn(console, 'warn').mockImplementation(() => {});
 
-      const env = process.env.NODE_ENV;
       process.env.NODE_ENV = 'production';
 
       const Component = () => {
@@ -290,11 +266,6 @@ describe('useFieldArray', () => {
       fireEvent.click(screen.getByRole('button', { name: /append/i }));
 
       expect(console.warn).not.toBeCalled();
-
-      process.env.NODE_ENV = env;
-
-      // @ts-ignore
-      console.warn.mockRestore();
     });
   });
 
@@ -580,8 +551,6 @@ describe('useFieldArray', () => {
 
           setValue = tempSetValue;
           formState = tempFormState;
-
-          // call isDirty or dirtyFields
           formState[property];
 
           return (
@@ -643,8 +612,6 @@ describe('useFieldArray', () => {
 
           setValue = tempSetValue;
           formState = tempFormState;
-
-          // call isDirty or dirtyFields
           formState[property];
 
           return (
@@ -1434,9 +1401,6 @@ describe('useFieldArray', () => {
       expect(
         HTMLInputElement.prototype.removeEventListener,
       ).toHaveBeenCalledTimes(6);
-
-      // @ts-ignore
-      HTMLInputElement.prototype.removeEventListener.mockRestore();
     });
 
     describe('with resolver', () => {
@@ -1503,7 +1467,6 @@ describe('useFieldArray', () => {
         });
 
         formState = tempFormState;
-
         formState.isDirty;
 
         return (
@@ -2226,9 +2189,6 @@ describe('useFieldArray', () => {
       expect(
         HTMLInputElement.prototype.removeEventListener,
       ).toHaveBeenCalledTimes(3);
-
-      // @ts-ignore
-      HTMLInputElement.prototype.removeEventListener.mockRestore();
     });
 
     it('should remove dirty fields with nested field inputs', () => {
@@ -2850,9 +2810,6 @@ describe('useFieldArray', () => {
       expect(
         HTMLInputElement.prototype.removeEventListener,
       ).toHaveBeenCalledTimes(3);
-
-      // @ts-ignore
-      HTMLInputElement.prototype.removeEventListener.mockRestore();
     });
 
     describe('with resolver', () => {
@@ -3208,9 +3165,6 @@ describe('useFieldArray', () => {
       expect(
         HTMLInputElement.prototype.removeEventListener,
       ).toHaveBeenCalledTimes(6);
-
-      // @ts-ignore
-      HTMLInputElement.prototype.removeEventListener.mockRestore();
     });
 
     describe('with resolver', () => {
@@ -3575,9 +3529,6 @@ describe('useFieldArray', () => {
       expect(
         HTMLInputElement.prototype.removeEventListener,
       ).toHaveBeenCalledTimes(6);
-
-      // @ts-ignore
-      HTMLInputElement.prototype.removeEventListener.mockRestore();
     });
 
     describe('with resolver', () => {
