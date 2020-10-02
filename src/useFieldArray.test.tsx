@@ -78,6 +78,48 @@ describe('useFieldArray', () => {
   });
 
   describe('error handling', () => {
+    it('should show errors during mount when mode is set to onChange', () => {
+      const Component = () => {
+        const {
+          register,
+          control,
+          errors,
+          formState: { isValid },
+        } = useForm<{ test: string[] }>({
+          resolver: async () => ({
+            values: {},
+            errors: {
+              test: [{ value: 'wrong', type: 'test' }],
+            },
+          }),
+          mode: 'onChange',
+        });
+        const { fields, append } = useFieldArray({ name: 'test', control });
+
+        return (
+          <form>
+            {fields.map((field, i) => (
+              <input
+                key={field.id}
+                name={`test[${i}].value`}
+                ref={register()}
+              />
+            ))}
+            <button type="button" onClick={() => append({})}>
+              append
+            </button>
+
+            {!isValid && <p>not valid</p>}
+            {errors.test && <p>errors</p>}
+          </form>
+        );
+      };
+
+      render(<Component />);
+      waitFor(() => screen.getByText('not valid'));
+      waitFor(() => screen.getByText('errors'));
+    });
+
     it('should output error message when name is empty string in development mode', () => {
       jest.spyOn(console, 'warn').mockImplementation(() => {});
 
