@@ -82,51 +82,99 @@ describe('useFieldArray', () => {
     });
   });
 
-  describe('error handling', () => {
-    // it('should show errors during mount when mode is set to onChange', async () => {
-    //   const Component = () => {
-    //     const {
-    //       register,
-    //       control,
-    //       errors,
-    //       formState: { isValid },
-    //     } = useForm<{ test: string[] }>({
-    //       resolver: async () => ({
-    //         values: {},
-    //         errors: {
-    //           test: [{ value: 'wrong', type: 'test' }],
-    //         },
-    //       }),
-    //       mode: 'onChange',
-    //     });
-    //     const { fields, append } = useFieldArray({ name: 'test', control });
-    //
-    //     console.log('isVlad', isValid)
-    //
-    //     return (
-    //       <form>
-    //         {fields.map((field, i) => (
-    //           <input
-    //             key={field.id}
-    //             name={`test[${i}].value`}
-    //             ref={register()}
-    //           />
-    //         ))}
-    //         <button type="button" onClick={() => append({})}>
-    //           append
-    //         </button>
-    //
-    //         {!isValid && <p>not valid</p>}
-    //         {errors.test && <p>errors</p>}
-    //       </form>
-    //     );
-    //   };
-    //
-    //   render(<Component />);
-    //   await waitFor(() => screen.getByText('not valid'));
-    //   await waitFor(() => screen.getByText('errors'));
-    // });
+  describe('with should unregister false', () => {
+    it('should still remain input value with toggle', () => {
+      const Component = () => {
+        const { register, control } = useForm<{
+          test: string[];
+        }>({
+          shouldUnregister: false,
+        });
+        const [show, setShow] = React.useState(true);
+        const { fields, append } = useFieldArray({
+          control,
+          name: 'test',
+        });
 
+        return (
+          <form>
+            {show &&
+              fields.map((field, i) => (
+                <input
+                  key={field.id}
+                  name={`test[${i}].value`}
+                  ref={register()}
+                  defaultValue={field.value}
+                />
+              ))}
+            <button type="button" onClick={() => append({ value: '' })}>
+              append
+            </button>
+            <button type="button" onClick={() => setShow(!show)}>
+              toggle
+            </button>
+          </form>
+        );
+      };
+
+      render(<Component />);
+
+      fireEvent.click(screen.getByRole('button', { name: 'append' }));
+      expect(screen.getAllByRole('textbox').length).toEqual(1);
+      fireEvent.click(screen.getByRole('button', { name: 'toggle' }));
+      expect(screen.queryByRole('textbox')).toBeNull();
+      fireEvent.click(screen.getByRole('button', { name: 'toggle' }));
+      expect(screen.getAllByRole('textbox').length).toEqual(1);
+    });
+
+    it.only('should show errors during mount when mode is set to onChange', async () => {
+      const Component = () => {
+        const {
+          register,
+          control,
+          errors,
+          formState: { isValid },
+        } = useForm<{ test: { value: string }[] }>({
+          defaultValues: {
+            test: [{ value: 'test' }],
+          },
+          resolver: async () => ({
+            values: {},
+            errors: {
+              test: [{ value: { message: 'wrong', type: 'test' } }],
+            },
+          }),
+          mode: 'onChange',
+        });
+        const { fields, append } = useFieldArray({ name: 'test', control });
+
+        return (
+          <form>
+            {fields.map((field, i) => (
+              <input
+                key={field.id}
+                name={`test[${i}].value`}
+                ref={register()}
+              />
+            ))}
+            <button type="button" onClick={() => append({})}>
+              append
+            </button>
+
+            {!isValid && <p>not valid</p>}
+            {errors.test && <p>errors</p>}
+          </form>
+        );
+      };
+
+      render(<Component />);
+      await waitFor(() => screen.getAllByRole('textbox'));
+      await waitFor(() => screen.getByText('not valid'));
+      await waitFor(() => screen.getByText('errors'));
+    });
+  });
+
+  describe('error handling', () => {
     it('should output error message when name is empty string in development mode', () => {
       jest.spyOn(console, 'warn').mockImplementation(() => {});
 
@@ -659,50 +707,6 @@ describe('useFieldArray', () => {
         expect(formState.isDirty).toBeFalsy();
       },
     );
-  });
-
-  describe('with should unregister false', () => {
-    const Component = () => {
-      const { register, control } = useForm<{
-        test: string[];
-      }>({
-        shouldUnregister: false,
-      });
-      const [show, setShow] = React.useState(true);
-      const { fields, append } = useFieldArray({
-        control,
-        name: 'test',
-      });
-
-      return (
-        <form>
-          {show &&
-            fields.map((field, i) => (
-              <input
-                key={field.id}
-                name={`test[${i}].value`}
-                ref={register()}
-                defaultValue={field.value}
-              />
-            ))}
-          <button type="button" onClick={() => append({ value: '' })}>
-            append
-          </button>
-          <button type="button" onClick={() => setShow(!show)}>
-            toggle
-          </button>
-        </form>
-      );
-    };
-
-    render(<Component />);
-
-    fireEvent.click(screen.getByRole('button', { name: 'append' }));
-    expect(screen.getAllByRole('textbox').length).toEqual(1);
-    fireEvent.click(screen.getByRole('button', { name: 'toggle' }));
-    expect(screen.queryByRole('textbox')).toBeNull();
-    fireEvent.click(screen.getByRole('button', { name: 'toggle' }));
-    expect(screen.getAllByRole('textbox').length).toEqual(1);
   });
 
   describe('append', () => {
