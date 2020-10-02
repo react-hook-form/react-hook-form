@@ -670,6 +670,7 @@ export function useForm<
       formStateRef.current.isValid !== isValid &&
         updateFormState({
           isValid,
+          errors,
         });
     },
     [isValidateAllFieldCriteria],
@@ -935,7 +936,7 @@ export function useForm<
       }
     }
 
-    if (resolver && !isFieldArray && readFormStateRef.current.isValid) {
+    if (resolver && readFormStateRef.current.isValid) {
       validateResolver();
     } else if (!isEmptyObject(validateOptions)) {
       set(fieldsWithValidationRef.current, name, true);
