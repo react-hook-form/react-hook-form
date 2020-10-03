@@ -936,9 +936,7 @@ export function useForm<
       }
     }
 
-    if (resolver && readFormStateRef.current.isValid) {
-      validateResolver();
-    } else if (!isEmptyObject(validateOptions)) {
+    if (!isEmptyObject(validateOptions)) {
       set(fieldsWithValidationRef.current, name, true);
 
       if (!isOnSubmit && readFormStateRef.current.isValid) {
@@ -1189,6 +1187,7 @@ export function useForm<
 
   React.useEffect(() => {
     isUnMount.current = false;
+    resolver && readFormStateRef.current.isValid && validateResolver();
 
     return () => {
       isUnMount.current = true;

@@ -127,7 +127,7 @@ describe('useFieldArray', () => {
       expect(screen.getAllByRole('textbox').length).toEqual(1);
     });
 
-    it.only('should show errors during mount when mode is set to onChange', async () => {
+    it('should show errors during mount when mode is set to onChange', async () => {
       const Component = () => {
         const {
           register,
