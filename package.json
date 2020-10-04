@@ -26,7 +26,7 @@
     "lint:fix": "npm run lint -- --fix",
     "lint:types": "tsc --noEmit",
     "coverage": "jest --coverage --coverageReporters=text-lcov | coveralls",
-    "test": "jest  --runInBand --config ./scripts/jest/jest.config.js",
+    "test": "jest --config ./scripts/jest/jest.config.js",
     "test:coverage": "npm run test -- --coverage",
     "test:watch": "npm run test -- --onlyChanged --watch",
     "test:web": "TEST_ENV=web npm run test",
