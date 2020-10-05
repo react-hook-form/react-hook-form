@@ -275,7 +275,10 @@ export const useFieldArray = <
     }
 
     if (!shouldUnregister) {
-      shallowFieldsStateRef.current[name] = [value];
+      shallowFieldsStateRef.current[name] = [
+        ...shallowFieldsStateRef.current[name],
+        value,
+      ];
     }
     focusIndexRef.current = shouldFocus ? allFields.current.length : -1;
   };
