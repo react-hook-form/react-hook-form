@@ -134,7 +134,7 @@ export const useFieldArray = <
     setFields(fieldsValues);
 
     if (readFormStateRef.current.isValid && validateResolver) {
-      const values = {};
+      const values = getValues();
       set(values, name, fieldsValues);
       validateResolver(values);
     }
