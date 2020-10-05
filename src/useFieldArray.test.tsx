@@ -317,6 +317,60 @@ describe('useFieldArray', () => {
     });
   });
 
+  describe('with resolver', () => {
+    it('should provide updated form value each action', async () => {
+      let formData = {};
+      const Component = () => {
+        const {
+          register,
+          control,
+          formState: { isValid },
+        } = useForm<{
+          data: string;
+          test: { value: string }[];
+        }>({
+          resolver: (data) => {
+            formData = data;
+            return {
+              values: {},
+              errors: {},
+            };
+          },
+        });
+        const { fields, append } = useFieldArray({ name: 'test', control });
+
+        return (
+          <div>
+            <input name="data" ref={register} defaultValue="test" />
+            {fields.map((field, i) => (
+              <input
+                key={field.id}
+                name={`test[${i}].value`}
+                ref={register}
+                defaultValue={field.value}
+              />
+            ))}
+            <button onClick={() => append({ value: '' })}>append</button>
+            <span>{isValid && 'valid'}</span>
+          </div>
+        );
+      };
+
+      render(<Component />);
+
+      await waitFor(() => screen.getByText('valid'));
+
+      await act(async () => {
+        fireEvent.click(screen.getByRole('button'));
+      });
+
+      expect(formData).toEqual({
+        data: 'test',
+        test: [{ id: '0', value: '' }],
+      });
+    });
+  });
+
   describe('when component unMount', () => {
     it('should call removeFieldEventListenerAndRef when field variable is array', () => {
       let getValues: any;
