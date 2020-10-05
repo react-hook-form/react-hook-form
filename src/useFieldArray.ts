@@ -276,7 +276,7 @@ export const useFieldArray = <
 
     if (!shouldUnregister) {
       shallowFieldsStateRef.current[name] = [
-        ...shallowFieldsStateRef.current[name],
+        ...(shallowFieldsStateRef.current[name] || []),
         value,
       ];
     }
