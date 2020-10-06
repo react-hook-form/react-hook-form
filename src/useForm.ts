@@ -670,7 +670,6 @@ export function useForm<
       formStateRef.current.isValid !== isValid &&
         updateFormState({
           isValid,
-          errors,
         });
     },
     [isValidateAllFieldCriteria],
