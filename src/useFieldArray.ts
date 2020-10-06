@@ -181,7 +181,6 @@ export const useFieldArray = <
         args.argB,
       );
       shouldSet && set(shallowFieldsStateRef.current, name, output);
-      cleanup(shallowFieldsStateRef.current);
     }
 
     if (get(fieldArrayDefaultValuesRef.current, name)) {
