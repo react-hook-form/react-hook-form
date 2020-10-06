@@ -764,6 +764,69 @@ describe('useFieldArray', () => {
   });
 
   describe('append', () => {
+    it('should append dirty fields correctly', async () => {
+      let dirtyInputs = {};
+      const Component = () => {
+        const {
+          register,
+          control,
+          formState: { dirtyFields },
+        } = useForm<{
+          test: { value: string }[];
+        }>({
+          defaultValues: {
+            test: [
+              { value: 'plz change' },
+              { value: 'dont change' },
+              { value: 'dont change' },
+            ],
+          },
+        });
+        const { fields, append } = useFieldArray({
+          control,
+          name: 'test',
+        });
+
+        dirtyInputs = dirtyFields;
+
+        return (
+          <form>
+            {fields.map((field, i) => (
+              <input
+                key={field.id}
+                name={`test[${i}].value`}
+                ref={register()}
+                defaultValue={field.value}
+              />
+            ))}
+            <button type="button" onClick={() => append({ value: '' })}>
+              append
+            </button>
+            {dirtyFields.test?.length && 'dirty'}
+          </form>
+        );
+      };
+
+      render(<Component />);
+
+      fireEvent.input(screen.getAllByRole('textbox')[0], {
+        target: { value: 'test' },
+      });
+      fireEvent.blur(screen.getAllByRole('textbox')[0]);
+
+      await waitFor(() => screen.getByText('dirty'));
+
+      expect(dirtyInputs).toEqual({
+        test: [{ value: true }],
+      });
+
+      fireEvent.click(screen.getByRole('button'));
+
+      expect(dirtyInputs).toEqual({
+        test: [{ value: true }, undefined, undefined, { value: true }],
+      });
+    });
+
     it('should append data into the fields', () => {
       const { result } = renderHook(() => {
         const { register, control } = useForm();
