@@ -369,6 +369,115 @@ describe('useFieldArray', () => {
         test: [{ id: '0', value: '' }],
       });
     });
+
+    it('should provide correct form data with nested field array', async () => {
+      let formData: any = {};
+      const Nested = ({
+        index,
+        control,
+      }: {
+        control: Control;
+        index: number;
+      }) => {
+        const { fields, append } = useFieldArray({
+          name: `test[${index}].nestedArray`,
+          control,
+        });
+
+        return (
+          <div>
+            {fields.map((item, i) => (
+              <input
+                key={item.id}
+                name={`test[${index}].nestedArray[${i}].value`}
+                ref={control.register()}
+                defaultValue={item.value}
+              />
+            ))}
+
+            <button type={'button'} onClick={() => append({ value: 'test' })}>
+              Append Nest
+            </button>
+          </div>
+        );
+      };
+
+      const Component = () => {
+        const {
+          register,
+          control,
+          formState: { isValid },
+        } = useForm<{
+          test: {
+            value: string;
+            nestedArray: {
+              value: string;
+            }[];
+          }[];
+        }>({
+          resolver: (data) => {
+            formData = data;
+            return {
+              values: data,
+              errors: {},
+            };
+          },
+          mode: 'onChange',
+          shouldUnregister: false,
+          defaultValues: {
+            test: [{ value: '1', nestedArray: [{ value: '2' }] }],
+          },
+        });
+        const { fields, remove } = useFieldArray({
+          name: 'test',
+          control,
+        });
+
+        return (
+          <form>
+            {fields.map((item, i) => (
+              <fieldset key={item.id}>
+                <input
+                  name={`test[${i}].value`}
+                  ref={register()}
+                  defaultValue={item.value}
+                />
+
+                <Nested control={control} index={i} />
+                <button type={'button'} onClick={() => remove(i)}>
+                  delete
+                </button>
+              </fieldset>
+            ))}
+            <span>{isValid && 'valid'}</span>
+          </form>
+        );
+      };
+
+      render(<Component />);
+
+      fireEvent.click(screen.getByRole('button', { name: 'Append Nest' }));
+
+      await waitFor(() => screen.getByText('valid'));
+
+      expect(formData).toEqual({
+        test: [
+          {
+            value: '1',
+            nestedArray: [
+              { id: '1', value: '2' },
+              { id: '2', value: 'test' },
+            ],
+          },
+        ],
+      });
+
+      fireEvent.click(screen.getByRole('button', { name: 'delete' }));
+
+      expect(formData).toEqual({
+        test: [],
+      });
+    });
   });
 
   describe('when component unMount', () => {
