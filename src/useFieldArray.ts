@@ -262,10 +262,13 @@ export const useFieldArray = <
       readFormStateRef.current.dirtyFields ||
       readFormStateRef.current.isDirty
     ) {
+      const dirtyInputs = get(dirtyFields, name, []);
       set(dirtyFields, name, [
-        ...(isArray(get(dirtyFields, name))
-          ? get(dirtyFields, name)
-          : fillEmptyArray(allFields.current)),
+        ...(allFields.current.length > dirtyInputs.length
+          ? (fillEmptyArray(allFields.current) || []).map(
+              (_, index) => dirtyInputs[index],
+            )
+          : dirtyInputs),
         ...filterBooleanArray(value),
       ]);
       updateFormState({

@@ -35,7 +35,7 @@ export default <TFieldValues extends FieldValues>(
   }
 
   return deepMerge(
-    { ...((shallowFieldsStateRef || {}).current || {}) },
+    transformToNestObject({ ...((shallowFieldsStateRef || {}).current || {}) }),
     transformToNestObject(output),
   );
 };
