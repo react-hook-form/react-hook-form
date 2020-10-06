@@ -247,5 +247,5 @@ Thanks go to these wonderful organizations! [[Contribute](https://opencollective
 Thanks go to these wonderful people! [[Become a contributor](CONTRIBUTING.md)].
 
 <a href="https://github.com/react-hook-form/react-hook-form/graphs/contributors">
-    <img src="https://opencollective.com/react-hook-form/contributors.svg?width=890" />
+    <img src="https://opencollective.com/react-hook-form/contributors.svg?width=890&button=false" />
 </a>
