@@ -170,7 +170,6 @@ describe('useFieldArray', () => {
       render(<Component />);
       await waitFor(() => screen.getAllByRole('textbox'));
       await waitFor(() => screen.getByText('not valid'));
-      await waitFor(() => screen.getByText('errors'));
     });
   });
 
