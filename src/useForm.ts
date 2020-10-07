@@ -273,13 +273,7 @@ export function useForm<
     [],
   );
 
-  const isFormDirty = () =>
-    !deepEqual(
-      getValues(),
-      isEmptyObject(defaultValuesRef.current)
-        ? defaultValuesAtRenderRef.current
-        : defaultValuesRef.current,
-    ) || !isEmptyObject(formStateRef.current.dirtyFields);
+  const isFormDirty = () => !isEmptyObject(formStateRef.current.dirtyFields);
 
   const updateAndGetDirtyState = React.useCallback(
     (
@@ -483,10 +477,7 @@ export function useForm<
             );
 
             updateFormState({
-              isDirty: !deepEqual(
-                { ...getValues(), [name]: value },
-                defaultValuesRef.current,
-              ),
+              isDirty: isFormDirty(),
               dirtyFields: formStateRef.current.dirtyFields,
             });
           }

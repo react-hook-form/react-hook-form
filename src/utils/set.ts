@@ -27,8 +27,12 @@ export default function set(
           ? []
           : {};
     }
-    object[key] = newValue;
-    object = object[key];
+    if (newValue === undefined) {
+      delete object[key];
+    } else {
+      object[key] = newValue;
+      object = object[key];
+    }
   }
   return object;
 }
