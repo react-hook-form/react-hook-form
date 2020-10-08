@@ -17,6 +17,7 @@ import insertAt from './utils/insert';
 import fillEmptyArray from './utils/fillEmptyArray';
 import filterBooleanArray from './utils/filterBooleanArray';
 import filterOutFalsy from './utils/filterOutFalsy';
+import isPrimitive from './utils/isPrimitive';
 import {
   Field,
   FieldValues,
@@ -26,7 +27,6 @@ import {
   UnpackNestedValue,
   DeepPartial,
 } from './types';
-import isPrimitive from './utils/isPrimitive';
 
 const appendId = <TValue extends object, TKeyName extends string>(
   value: TValue,
