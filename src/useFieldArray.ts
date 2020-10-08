@@ -298,7 +298,10 @@ export const useFieldArray = <
     ) {
       const dirtyInputs = get(dirtyFields, name, []);
 
-      if (updateFormValues.length <= dirtyFields.length) {
+      if (
+        updateFormValues.length <=
+        get(defaultValuesRef.current, name, []).length
+      ) {
         updateDirtyFieldsWithDefaultValues(updateFormValues);
       } else {
         set(dirtyFields, name, [
