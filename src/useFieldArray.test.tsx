@@ -1916,7 +1916,9 @@ describe('useFieldArray', () => {
         });
 
         expect(result.current.formState.isDirty).toBeTruthy();
-        expect(result.current.formState.dirtyFields).toEqual({});
+        expect(result.current.formState.dirtyFields).toEqual({
+          test: [{ value: true }],
+        });
       },
     );
 

@@ -26,6 +26,7 @@ import {
   UnpackNestedValue,
   DeepPartial,
 } from './types';
+import isPrimitive from './utils/isPrimitive';
 
 const appendId = <TValue extends object, TKeyName extends string>(
   value: TValue,
@@ -162,7 +163,10 @@ export const useFieldArray = <
   const cleanup = <T>(ref: T) =>
     !filterOutFalsy(get(ref, name, [])).length && unset(ref, name);
 
-  const batchStateUpdate = <T extends Function>(
+  const batchStateUpdate = <
+    T extends Function,
+    K extends { [k: string]: unknown }[]
+  >(
     method: T,
     args: {
       argA?: unknown;
@@ -173,6 +177,7 @@ export const useFieldArray = <
     isDirty = true,
     shouldSet = true,
     shouldUpdateValid = false,
+    updatedFieldValues?: K,
   ) => {
     if (get(shallowFieldsStateRef.current, name)) {
       const output = method(
@@ -215,6 +220,27 @@ export const useFieldArray = <
     ) {
       const output = method(get(dirtyFields, name, []), args.argC, args.argD);
       shouldSet && set(dirtyFields, name, output);
+      const defaultValues = get(defaultValuesRef.current, name);
+
+      if (updatedFieldValues && defaultValues) {
+        for (const key in defaultValues) {
+          for (const innerKey in defaultValues[key]) {
+            if (
+              !updatedFieldValues[+key] ||
+              (isPrimitive(defaultValues[key][innerKey]) &&
+                defaultValues[key][innerKey] !==
+                  updatedFieldValues[+key][innerKey])
+            ) {
+              const inputName = name + `[${key}]`;
+              set(dirtyFields, inputName, {
+                ...get(dirtyFields, inputName, {}),
+                [innerKey]: true,
+              });
+            }
+          }
+        }
+      }
+
       cleanup(dirtyFields);
     }
 
@@ -307,7 +333,13 @@ export const useFieldArray = <
 
   const remove = (index?: number | number[]) => {
     const fieldValues = getCurrentFieldsValues();
-    setFieldAndValidState(removeArrayAt(fieldValues, index));
+    const updatedFieldValues: { [k: string]: unknown }[] = removeArrayAt(
+      fieldValues,
+      index,
+    );
+    setFieldAndValidState(
+      updatedFieldValues as Partial<ArrayField<TFieldArrayValues, TKeyName>>[],
+    );
     resetFields();
     batchStateUpdate(
       removeArrayAt,
@@ -318,6 +350,7 @@ export const useFieldArray = <
       getIsDirtyState(removeArrayAt(fieldValues, index)),
       true,
       true,
+      updatedFieldValues,
     );
   };
 
