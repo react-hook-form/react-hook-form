@@ -202,10 +202,10 @@ export const useFieldArray = <
       argC?: unknown;
       argD?: unknown;
     },
+    updatedFieldValues?: K,
     isDirty = true,
     shouldSet = true,
     shouldUpdateValid = false,
-    updatedFieldValues?: K,
   ) => {
     if (get(shallowFieldsStateRef.current, name)) {
       const output = method(
@@ -335,18 +335,21 @@ export const useFieldArray = <
     shouldFocus = true,
   ) => {
     const emptyArray = fillEmptyArray(value);
-
-    setFieldAndValidState(
-      prependAt(
-        getCurrentFieldsValues(),
-        isArray(value) ? appendValueWithKey(value) : [appendId(value, keyName)],
-      ),
+    const updatedFieldArrayValues = prependAt(
+      getCurrentFieldsValues(),
+      isArray(value) ? appendValueWithKey(value) : [appendId(value, keyName)],
     );
+
+    setFieldAndValidState(updatedFieldArrayValues);
     resetFields();
-    batchStateUpdate(prependAt, {
-      argA: emptyArray,
-      argC: filterBooleanArray(value),
-    });
+    batchStateUpdate(
+      prependAt,
+      {
+        argA: emptyArray,
+        argC: filterBooleanArray(value),
+      },
+      updatedFieldArrayValues,
+    );
     focusIndexRef.current = shouldFocus ? 0 : -1;
   };
 
@@ -366,10 +369,10 @@ export const useFieldArray = <
         argA: index,
         argC: index,
       },
+      updatedFieldValues,
       getIsDirtyState(removeArrayAt(fieldValues, index)),
       true,
       true,
-      updatedFieldValues,
     );
   };
 
@@ -397,6 +400,7 @@ export const useFieldArray = <
         argC: index,
         argD: filterBooleanArray(value),
       },
+      undefined,
       getIsDirtyState(insertAt(fieldValues, index)),
     );
     focusIndexRef.current = shouldFocus ? index : -1;
@@ -415,6 +419,7 @@ export const useFieldArray = <
         argC: indexA,
         argD: indexB,
       },
+      undefined,
       getIsDirtyState(fieldValues),
       false,
     );
@@ -433,6 +438,7 @@ export const useFieldArray = <
         argC: from,
         argD: to,
       },
+      undefined,
       getIsDirtyState(fieldValues),
       false,
     );
