@@ -17,6 +17,7 @@ import insertAt from './utils/insert';
 import fillEmptyArray from './utils/fillEmptyArray';
 import filterBooleanArray from './utils/filterBooleanArray';
 import filterOutFalsy from './utils/filterOutFalsy';
+import isPrimitive from './utils/isPrimitive';
 import {
   Field,
   FieldValues,
@@ -162,7 +163,38 @@ export const useFieldArray = <
   const cleanup = <T>(ref: T) =>
     !filterOutFalsy(get(ref, name, [])).length && unset(ref, name);
 
-  const batchStateUpdate = <T extends Function>(
+  const updateDirtyFieldsWithDefaultValues = <
+    T extends { [k: string]: unknown }[]
+  >(
+    updatedFieldArrayValues?: T,
+  ) => {
+    const defaultFieldArrayValues = get(defaultValuesRef.current, name);
+
+    if (updatedFieldArrayValues && defaultFieldArrayValues) {
+      for (const key in defaultFieldArrayValues) {
+        const inputName = `${name}[${key}]`;
+
+        for (const innerKey in defaultFieldArrayValues[key]) {
+          if (
+            !updatedFieldArrayValues[+key] ||
+            (isPrimitive(defaultFieldArrayValues[key][innerKey]) &&
+              defaultFieldArrayValues[key][innerKey] !==
+                updatedFieldArrayValues[+key][innerKey])
+          ) {
+            set(dirtyFields, inputName, {
+              ...get(dirtyFields, inputName, {}),
+              [innerKey]: true,
+            });
+          }
+        }
+      }
+    }
+  };
+
+  const batchStateUpdate = <
+    T extends Function,
+    K extends { [k: string]: unknown }[]
+  >(
     method: T,
     args: {
       argA?: unknown;
@@ -173,6 +205,7 @@ export const useFieldArray = <
     isDirty = true,
     shouldSet = true,
     shouldUpdateValid = false,
+    updatedFieldValues?: K,
   ) => {
     if (get(shallowFieldsStateRef.current, name)) {
       const output = method(
@@ -215,6 +248,8 @@ export const useFieldArray = <
     ) {
       const output = method(get(dirtyFields, name, []), args.argC, args.argD);
       shouldSet && set(dirtyFields, name, output);
+      updateDirtyFieldsWithDefaultValues(updatedFieldValues);
+
       cleanup(dirtyFields);
     }
 
@@ -250,26 +285,36 @@ export const useFieldArray = <
     value: Partial<TFieldArrayValues> | Partial<TFieldArrayValues>[],
     shouldFocus = true,
   ) => {
-    setFieldAndValidState([
+    const updateFormValues = [
       ...allFields.current,
       ...(isArray(value)
         ? appendValueWithKey(value)
         : [appendId(value, keyName)]),
-    ]);
+    ];
+    setFieldAndValidState(updateFormValues);
 
     if (
       readFormStateRef.current.dirtyFields ||
       readFormStateRef.current.isDirty
     ) {
       const dirtyInputs = get(dirtyFields, name, []);
-      set(dirtyFields, name, [
-        ...(allFields.current.length > dirtyInputs.length
-          ? (fillEmptyArray(allFields.current) || []).map(
-              (_, index) => dirtyInputs[index],
-            )
-          : dirtyInputs),
-        ...filterBooleanArray(value),
-      ]);
+
+      if (
+        updateFormValues.length <=
+        get(defaultValuesRef.current, name, []).length
+      ) {
+        updateDirtyFieldsWithDefaultValues(updateFormValues);
+      } else {
+        set(dirtyFields, name, [
+          ...(updateFormValues.length > dirtyInputs.length
+            ? (fillEmptyArray(allFields.current) || []).map(
+                (_, index) => dirtyInputs[index],
+              )
+            : dirtyInputs),
+          ...filterBooleanArray(value),
+        ]);
+      }
+
       updateFormState({
         isDirty: true,
         dirtyFields,
@@ -307,7 +352,13 @@ export const useFieldArray = <
 
   const remove = (index?: number | number[]) => {
     const fieldValues = getCurrentFieldsValues();
-    setFieldAndValidState(removeArrayAt(fieldValues, index));
+    const updatedFieldValues: { [k: string]: unknown }[] = removeArrayAt(
+      fieldValues,
+      index,
+    );
+    setFieldAndValidState(
+      updatedFieldValues as Partial<ArrayField<TFieldArrayValues, TKeyName>>[],
+    );
     resetFields();
     batchStateUpdate(
       removeArrayAt,
@@ -318,6 +369,7 @@ export const useFieldArray = <
       getIsDirtyState(removeArrayAt(fieldValues, index)),
       true,
       true,
+      updatedFieldValues,
     );
   };
 

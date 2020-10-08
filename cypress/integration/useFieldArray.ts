@@ -407,7 +407,7 @@ describe('useFieldArray', () => {
     cy.get('#renderCount').contains('35');
   });
 
-  it('should display the correct dirty value with defualt value', () => {
+  it('should display the correct dirty value with default value', () => {
     cy.visit('http://localhost:3000/useFieldArray/default');
     cy.get('#dirty').contains('no');
     cy.get('#append').click();
@@ -416,30 +416,32 @@ describe('useFieldArray', () => {
     cy.get('#delete2').click();
     cy.get('#dirtyFields').should(($state) =>
       expect(JSON.parse($state.text())).to.be.deep.equal({
-        data: [{ name: true }, null, null, { name: true }],
+        data: [{ name: true }, { name: true }, null, { name: true }],
       }),
     );
     cy.get('#delete2').click();
     cy.get('#dirtyFields').should(($state) =>
       expect(JSON.parse($state.text())).to.be.deep.equal({
-        data: [{ name: true }, null, { name: true }],
+        data: [{ name: true }, { name: true }, { name: true }],
       }),
     );
     cy.get('#delete1').click();
     cy.get('#dirtyFields').should(($state) =>
       expect(JSON.parse($state.text())).to.be.deep.equal({
-        data: [{ name: true }, { name: true }],
+        data: [{ name: true }, { name: true }, { name: true }],
       }),
     );
     cy.get('#delete1').click();
     cy.get('#dirtyFields').should(($state) =>
       expect(JSON.parse($state.text())).to.be.deep.equal({
-        data: [{ name: true }],
+        data: [{ name: true }, { name: true }, { name: true }],
       }),
     );
     cy.get('#delete0').click();
     cy.get('#dirtyFields').should(($state) =>
-      expect(JSON.parse($state.text())).to.be.deep.equal({}),
+      expect(JSON.parse($state.text())).to.be.deep.equal({
+        data: [{ name: true }, { name: true }, { name: true }],
+      }),
     );
     cy.get('#dirty').contains('yes');
   });
