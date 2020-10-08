@@ -163,6 +163,33 @@ export const useFieldArray = <
   const cleanup = <T>(ref: T) =>
     !filterOutFalsy(get(ref, name, [])).length && unset(ref, name);
 
+  const updateDirtyFieldsWithDefaultValues = <
+    T extends { [k: string]: unknown }[]
+  >(
+    updatedFieldValues?: T,
+  ) => {
+    const defaultValues = get(defaultValuesRef.current, name);
+
+    if (updatedFieldValues && defaultValues) {
+      for (const key in defaultValues) {
+        for (const innerKey in defaultValues[key]) {
+          if (
+            !updatedFieldValues[+key] ||
+            (isPrimitive(defaultValues[key][innerKey]) &&
+              defaultValues[key][innerKey] !==
+                updatedFieldValues[+key][innerKey])
+          ) {
+            const inputName = name + `[${key}]`;
+            set(dirtyFields, inputName, {
+              ...get(dirtyFields, inputName, {}),
+              [innerKey]: true,
+            });
+          }
+        }
+      }
+    }
+  };
+
   const batchStateUpdate = <
     T extends Function,
     K extends { [k: string]: unknown }[]
@@ -220,26 +247,7 @@ export const useFieldArray = <
     ) {
       const output = method(get(dirtyFields, name, []), args.argC, args.argD);
       shouldSet && set(dirtyFields, name, output);
-      const defaultValues = get(defaultValuesRef.current, name);
-
-      if (updatedFieldValues && defaultValues) {
-        for (const key in defaultValues) {
-          for (const innerKey in defaultValues[key]) {
-            if (
-              !updatedFieldValues[+key] ||
-              (isPrimitive(defaultValues[key][innerKey]) &&
-                defaultValues[key][innerKey] !==
-                  updatedFieldValues[+key][innerKey])
-            ) {
-              const inputName = name + `[${key}]`;
-              set(dirtyFields, inputName, {
-                ...get(dirtyFields, inputName, {}),
-                [innerKey]: true,
-              });
-            }
-          }
-        }
-      }
+      updateDirtyFieldsWithDefaultValues(updatedFieldValues);
 
       cleanup(dirtyFields);
     }
@@ -276,26 +284,33 @@ export const useFieldArray = <
     value: Partial<TFieldArrayValues> | Partial<TFieldArrayValues>[],
     shouldFocus = true,
   ) => {
-    setFieldAndValidState([
+    const updateFormValues = [
       ...allFields.current,
       ...(isArray(value)
         ? appendValueWithKey(value)
         : [appendId(value, keyName)]),
-    ]);
+    ];
+    setFieldAndValidState(updateFormValues);
 
     if (
       readFormStateRef.current.dirtyFields ||
       readFormStateRef.current.isDirty
     ) {
       const dirtyInputs = get(dirtyFields, name, []);
-      set(dirtyFields, name, [
-        ...(allFields.current.length > dirtyInputs.length
-          ? (fillEmptyArray(allFields.current) || []).map(
-              (_, index) => dirtyInputs[index],
-            )
-          : dirtyInputs),
-        ...filterBooleanArray(value),
-      ]);
+
+      if (updateFormValues.length <= dirtyFields.length) {
+        updateDirtyFieldsWithDefaultValues(updateFormValues);
+      } else {
+        set(dirtyFields, name, [
+          ...(updateFormValues.length > dirtyInputs.length
+            ? (fillEmptyArray(allFields.current) || []).map(
+                (_, index) => dirtyInputs[index],
+              )
+            : dirtyInputs),
+          ...filterBooleanArray(value),
+        ]);
+      }
+
       updateFormState({
         isDirty: true,
         dirtyFields,
