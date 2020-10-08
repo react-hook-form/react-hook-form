@@ -166,20 +166,21 @@ export const useFieldArray = <
   const updateDirtyFieldsWithDefaultValues = <
     T extends { [k: string]: unknown }[]
   >(
-    updatedFieldValues?: T,
+    updatedFieldArrayValues?: T,
   ) => {
-    const defaultValues = get(defaultValuesRef.current, name);
+    const defaultFieldArrayValues = get(defaultValuesRef.current, name);
 
-    if (updatedFieldValues && defaultValues) {
-      for (const key in defaultValues) {
-        for (const innerKey in defaultValues[key]) {
+    if (updatedFieldArrayValues && defaultFieldArrayValues) {
+      for (const key in defaultFieldArrayValues) {
+        const inputName = name + `[${key}]`;
+
+        for (const innerKey in defaultFieldArrayValues[key]) {
           if (
-            !updatedFieldValues[+key] ||
-            (isPrimitive(defaultValues[key][innerKey]) &&
-              defaultValues[key][innerKey] !==
-                updatedFieldValues[+key][innerKey])
+            !updatedFieldArrayValues[+key] ||
+            (isPrimitive(defaultFieldArrayValues[key][innerKey]) &&
+              defaultFieldArrayValues[key][innerKey] !==
+                updatedFieldArrayValues[+key][innerKey])
           ) {
-            const inputName = name + `[${key}]`;
             set(dirtyFields, inputName, {
               ...get(dirtyFields, inputName, {}),
               [innerKey]: true,
