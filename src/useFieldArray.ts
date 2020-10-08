@@ -383,14 +383,13 @@ export const useFieldArray = <
   ) => {
     const emptyArray = fillEmptyArray(value);
     const fieldValues = getCurrentFieldsValues();
-
-    setFieldAndValidState(
-      insertAt(
-        fieldValues,
-        index,
-        isArray(value) ? appendValueWithKey(value) : [appendId(value, keyName)],
-      ),
+    const updatedFieldArrayValues = insertAt(
+      fieldValues,
+      index,
+      isArray(value) ? appendValueWithKey(value) : [appendId(value, keyName)],
     );
+
+    setFieldAndValidState(updatedFieldArrayValues);
     resetFields();
     batchStateUpdate(
       insertAt,
@@ -400,7 +399,7 @@ export const useFieldArray = <
         argC: index,
         argD: filterBooleanArray(value),
       },
-      undefined,
+      updatedFieldArrayValues,
       getIsDirtyState(insertAt(fieldValues, index)),
     );
     focusIndexRef.current = shouldFocus ? index : -1;
