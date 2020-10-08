@@ -172,7 +172,7 @@ export const useFieldArray = <
 
     if (updatedFieldArrayValues && defaultFieldArrayValues) {
       for (const key in defaultFieldArrayValues) {
-        const inputName = name + `[${key}]`;
+        const inputName = `${name}[${key}]`;
 
         for (const innerKey in defaultFieldArrayValues[key]) {
           if (
