@@ -173,6 +173,7 @@ export const useFieldArray = <
     isDirty = true,
     shouldSet = true,
     shouldUpdateValid = false,
+    shouldUpdateDirty = true,
   ) => {
     if (get(shallowFieldsStateRef.current, name)) {
       const output = method(
@@ -210,8 +211,9 @@ export const useFieldArray = <
     }
 
     if (
-      readFormStateRef.current.dirtyFields ||
-      readFormStateRef.current.isDirty
+      (readFormStateRef.current.dirtyFields ||
+        readFormStateRef.current.isDirty) &&
+      shouldUpdateDirty
     ) {
       const output = method(get(dirtyFields, name, []), args.argC, args.argD);
       shouldSet && set(dirtyFields, name, output);
@@ -268,7 +270,9 @@ export const useFieldArray = <
               (_, index) => dirtyInputs[index],
             )
           : dirtyInputs),
-        ...filterBooleanArray(value),
+        ...(allFields.current.length + 1 > dirtyInputs.length
+          ? filterBooleanArray(value)
+          : []),
       ]);
       updateFormState({
         isDirty: true,
@@ -307,6 +311,20 @@ export const useFieldArray = <
 
   const remove = (index?: number | number[]) => {
     const fieldValues = getCurrentFieldsValues();
+    const inputName = name + `[${index}]`;
+    const defaultValue = get(defaultValuesRef.current, inputName);
+    defaultValue &&
+      set(
+        dirtyFields,
+        inputName,
+        Object.keys(defaultValue).reduce((prev, current) => {
+          return {
+            ...prev,
+            [current]: true,
+          };
+        }, {}),
+      );
+
     setFieldAndValidState(removeArrayAt(fieldValues, index));
     resetFields();
     batchStateUpdate(
@@ -318,6 +336,7 @@ export const useFieldArray = <
       getIsDirtyState(removeArrayAt(fieldValues, index)),
       true,
       true,
+      !defaultValue,
     );
   };
 
