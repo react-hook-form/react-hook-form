@@ -270,9 +270,7 @@ export const useFieldArray = <
               (_, index) => dirtyInputs[index],
             )
           : dirtyInputs),
-        ...(allFields.current.length + 1 > dirtyInputs.length
-          ? filterBooleanArray(value)
-          : []),
+        ...filterBooleanArray(value),
       ]);
       updateFormState({
         isDirty: true,
