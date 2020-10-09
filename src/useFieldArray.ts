@@ -15,7 +15,7 @@ import prependAt from './utils/prepend';
 import isArray from './utils/isArray';
 import insertAt from './utils/insert';
 import fillEmptyArray from './utils/fillEmptyArray';
-import filterBooleanArray from './utils/filterBooleanArray';
+import fillBooleanArray from './utils/fillBooleanArray';
 import filterOutFalsy from './utils/filterOutFalsy';
 import isPrimitive from './utils/isPrimitive';
 import {
@@ -188,6 +188,24 @@ export const useFieldArray = <
           }
         }
       }
+
+      // for (const key in updatedFieldArrayValues) {
+      //   const inputName = `${name}[${key}]`;
+      //
+      //   for (const innerKey in updatedFieldArrayValues[key]) {
+      //     if (
+      //       innerKey !== keyName &&
+      //       (!defaultFieldArrayValues[key] ||
+      //         updatedFieldArrayValues[key][innerKey] !==
+      //           defaultFieldArrayValues[key][innerKey])
+      //     ) {
+      //       set(dirtyFields, inputName, {
+      //         ...get(dirtyFields, inputName, {}),
+      //         [innerKey]: true,
+      //       });
+      //     }
+      //   }
+      // }
     }
   };
 
@@ -311,7 +329,7 @@ export const useFieldArray = <
                 (_, index) => dirtyInputs[index],
               )
             : dirtyInputs),
-          ...filterBooleanArray(value),
+          ...fillBooleanArray(value),
         ]);
       }
 
@@ -346,7 +364,7 @@ export const useFieldArray = <
       prependAt,
       {
         argA: emptyArray,
-        argC: filterBooleanArray(value),
+        argC: fillBooleanArray(value),
       },
       updatedFieldArrayValues,
     );
@@ -397,7 +415,7 @@ export const useFieldArray = <
         argA: index,
         argB: emptyArray,
         argC: index,
-        argD: filterBooleanArray(value),
+        argD: fillBooleanArray(value),
       },
       updatedFieldArrayValues,
       getIsDirtyState(insertAt(fieldValues, index)),
