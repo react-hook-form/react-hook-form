@@ -168,43 +168,36 @@ export const useFieldArray = <
     updatedFieldArrayValues?: T,
   ) => {
     const defaultFieldArrayValues = get(defaultValuesRef.current, name, []);
+    const updateDirtyFieldsBaseOnDefaultValues = <U extends T>(
+      base: U,
+      target: U,
+    ) => {
+      for (const key in base) {
+        for (const innerKey in base[key]) {
+          if (
+            innerKey !== keyName &&
+            (!target[key] ||
+              !base[key] ||
+              base[key][innerKey] !== target[key][innerKey])
+          ) {
+            set(dirtyFields, `${name}[${key}]`, {
+              ...get(dirtyFields, `${name}[${key}]`, {}),
+              [innerKey]: true,
+            });
+          }
+        }
+      }
+    };
 
     if (updatedFieldArrayValues) {
-      for (const key in defaultFieldArrayValues) {
-        const inputName = `${name}[${key}]`;
-
-        for (const innerKey in defaultFieldArrayValues[key]) {
-          if (
-            innerKey !== keyName &&
-            (!updatedFieldArrayValues[+key] ||
-              defaultFieldArrayValues[key][innerKey] !==
-                updatedFieldArrayValues[+key][innerKey])
-          ) {
-            set(dirtyFields, inputName, {
-              ...get(dirtyFields, inputName, {}),
-              [innerKey]: true,
-            });
-          }
-        }
-      }
-
-      for (const key in updatedFieldArrayValues) {
-        const inputName = `${name}[${key}]`;
-
-        for (const innerKey in updatedFieldArrayValues[key]) {
-          if (
-            innerKey !== keyName &&
-            (!defaultFieldArrayValues[key] ||
-              updatedFieldArrayValues[key][innerKey] !==
-                defaultFieldArrayValues[key][innerKey])
-          ) {
-            set(dirtyFields, inputName, {
-              ...get(dirtyFields, inputName, {}),
-              [innerKey]: true,
-            });
-          }
-        }
-      }
+      updateDirtyFieldsBaseOnDefaultValues(
+        defaultFieldArrayValues,
+        updatedFieldArrayValues,
+      );
+      updateDirtyFieldsBaseOnDefaultValues(
+        updatedFieldArrayValues,
+        defaultFieldArrayValues,
+      );
     }
   };
 
