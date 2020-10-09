@@ -99,7 +99,9 @@ describe('Controller', () => {
 
   it('should set defaultValue to value props when input was reset', () => {
     const Component = () => {
-      const { reset, control } = useForm();
+      const { reset, control } = useForm<{
+        test: string;
+      }>();
 
       React.useEffect(() => {
         reset({ test: 'default' });
