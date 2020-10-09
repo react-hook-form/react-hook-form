@@ -620,17 +620,20 @@ describe('useForm', () => {
       );
 
       expect(result.current.formState.errors).toEqual({
-        test: 'test',
+        test: {
+          type: 'test',
+          message: 'something wrong',
+        },
       });
       expect(result.current.formState.touched).toEqual({
-        test: 'test',
+        test: true,
       });
-      expect(result.current.control.validFieldsRef.current).toEqual(
-        new Set(['test']),
-      );
-      expect(result.current.control.fieldsWithValidationRef.current).toEqual(
-        new Set(['test']),
-      );
+      expect(result.current.control.validFieldsRef.current).toEqual({
+        test: true,
+      });
+      expect(result.current.control.fieldsWithValidationRef.current).toEqual({
+        test: true,
+      });
       expect(result.current.formState.isDirty).toBeTruthy();
       expect(result.current.formState.isSubmitted).toBeTruthy();
     });
