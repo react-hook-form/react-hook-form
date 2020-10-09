@@ -170,16 +170,39 @@ export const useFieldArray = <
   ) => {
     const defaultFieldArrayValues = get(defaultValuesRef.current, name);
 
-    if (updatedFieldArrayValues && defaultFieldArrayValues) {
-      for (const key in defaultFieldArrayValues) {
+    if (updatedFieldArrayValues) {
+      if (defaultFieldArrayValues) {
+        for (const key in defaultFieldArrayValues) {
+          const inputName = `${name}[${key}]`;
+
+          for (const innerKey in defaultFieldArrayValues[key]) {
+            if (
+              innerKey !== keyName &&
+              defaultFieldArrayValues &&
+              (!updatedFieldArrayValues[+key] ||
+                (isPrimitive(defaultFieldArrayValues[key][innerKey]) &&
+                  defaultFieldArrayValues[key][innerKey] !==
+                    updatedFieldArrayValues[+key][innerKey]))
+            ) {
+              set(dirtyFields, inputName, {
+                ...get(dirtyFields, inputName, {}),
+                [innerKey]: true,
+              });
+            }
+          }
+        }
+      }
+
+      for (const key in updatedFieldArrayValues) {
         const inputName = `${name}[${key}]`;
 
-        for (const innerKey in defaultFieldArrayValues[key]) {
+        for (const innerKey in updatedFieldArrayValues[key]) {
           if (
-            !updatedFieldArrayValues[+key] ||
-            (isPrimitive(defaultFieldArrayValues[key][innerKey]) &&
-              defaultFieldArrayValues[key][innerKey] !==
-                updatedFieldArrayValues[+key][innerKey])
+            innerKey !== keyName &&
+            (!defaultFieldArrayValues ||
+              !defaultFieldArrayValues[key] ||
+              updatedFieldArrayValues[key][innerKey] !==
+                defaultFieldArrayValues[key][innerKey])
           ) {
             set(dirtyFields, inputName, {
               ...get(dirtyFields, inputName, {}),
@@ -188,24 +211,6 @@ export const useFieldArray = <
           }
         }
       }
-
-      // for (const key in updatedFieldArrayValues) {
-      //   const inputName = `${name}[${key}]`;
-      //
-      //   for (const innerKey in updatedFieldArrayValues[key]) {
-      //     if (
-      //       innerKey !== keyName &&
-      //       (!defaultFieldArrayValues[key] ||
-      //         updatedFieldArrayValues[key][innerKey] !==
-      //           defaultFieldArrayValues[key][innerKey])
-      //     ) {
-      //       set(dirtyFields, inputName, {
-      //         ...get(dirtyFields, inputName, {}),
-      //         [innerKey]: true,
-      //       });
-      //     }
-      //   }
-      // }
     }
   };
 
@@ -315,23 +320,7 @@ export const useFieldArray = <
       readFormStateRef.current.dirtyFields ||
       readFormStateRef.current.isDirty
     ) {
-      const dirtyInputs = get(dirtyFields, name, []);
-
-      if (
-        updateFormValues.length <=
-        get(defaultValuesRef.current, name, []).length
-      ) {
-        updateDirtyFieldsWithDefaultValues(updateFormValues);
-      } else {
-        set(dirtyFields, name, [
-          ...(updateFormValues.length > dirtyInputs.length
-            ? (fillEmptyArray(allFields.current) || []).map(
-                (_, index) => dirtyInputs[index],
-              )
-            : dirtyInputs),
-          ...fillBooleanArray(value),
-        ]);
-      }
+      updateDirtyFieldsWithDefaultValues(updateFormValues);
 
       updateFormState({
         isDirty: true,

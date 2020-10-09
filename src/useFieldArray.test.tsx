@@ -3141,6 +3141,9 @@ describe('useFieldArray', () => {
 
         act(() => {
           result.current.append({ value: '2' });
+        });
+
+        act(() => {
           result.current.append({ value: '3' });
         });
 
@@ -3505,6 +3508,9 @@ describe('useFieldArray', () => {
 
         act(() => {
           result.current.append({ value: '2' });
+        });
+
+        act(() => {
           result.current.append({ value: '3' });
         });
 
