@@ -124,7 +124,7 @@ describe('useForm', () => {
         ref.remove();
 
         await waitFor(() => expect(mockListener).toHaveBeenCalled());
-        expect(screen.getByRole('alert').textContent).toBe('true');
+        expect(screen.getByRole('alert').textContent).toBe('false');
         await wait(() =>
           expect(renderCount.current.Component).toBeRenderedTimes(2),
         );
@@ -987,25 +987,6 @@ describe('useForm', () => {
       });
 
       expect(result.current.control.fieldsRef.current['test']).toBeUndefined();
-    });
-
-    // check https://github.com/react-hook-form/react-hook-form/issues/2276
-    it('should be dirty when field value is same memory object', () => {
-      const { result } = renderHook(() => useForm());
-
-      const fieldValue = { value: 'test' };
-
-      result.current.register({ name: 'test', value: fieldValue });
-
-      result.current.formState.isDirty;
-
-      fieldValue.value = 'test';
-
-      act(() =>
-        result.current.setValue('test', fieldValue, { shouldDirty: true }),
-      );
-
-      expect(result.current.formState.isDirty).toBeTruthy();
     });
 
     describe('with watch', () => {
