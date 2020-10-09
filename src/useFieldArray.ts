@@ -167,26 +167,23 @@ export const useFieldArray = <
   >(
     updatedFieldArrayValues?: T,
   ) => {
-    const defaultFieldArrayValues = get(defaultValuesRef.current, name);
+    const defaultFieldArrayValues = get(defaultValuesRef.current, name, []);
 
     if (updatedFieldArrayValues) {
-      if (defaultFieldArrayValues) {
-        for (const key in defaultFieldArrayValues) {
-          const inputName = `${name}[${key}]`;
+      for (const key in defaultFieldArrayValues) {
+        const inputName = `${name}[${key}]`;
 
-          for (const innerKey in defaultFieldArrayValues[key]) {
-            if (
-              innerKey !== keyName &&
-              defaultFieldArrayValues &&
-              (!updatedFieldArrayValues[+key] ||
-                defaultFieldArrayValues[key][innerKey] !==
-                  updatedFieldArrayValues[+key][innerKey])
-            ) {
-              set(dirtyFields, inputName, {
-                ...get(dirtyFields, inputName, {}),
-                [innerKey]: true,
-              });
-            }
+        for (const innerKey in defaultFieldArrayValues[key]) {
+          if (
+            innerKey !== keyName &&
+            (!updatedFieldArrayValues[+key] ||
+              defaultFieldArrayValues[key][innerKey] !==
+                updatedFieldArrayValues[+key][innerKey])
+          ) {
+            set(dirtyFields, inputName, {
+              ...get(dirtyFields, inputName, {}),
+              [innerKey]: true,
+            });
           }
         }
       }
@@ -197,8 +194,7 @@ export const useFieldArray = <
         for (const innerKey in updatedFieldArrayValues[key]) {
           if (
             innerKey !== keyName &&
-            (!defaultFieldArrayValues ||
-              !defaultFieldArrayValues[key] ||
+            (!defaultFieldArrayValues[key] ||
               updatedFieldArrayValues[key][innerKey] !==
                 defaultFieldArrayValues[key][innerKey])
           ) {
