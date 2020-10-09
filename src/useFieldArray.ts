@@ -17,7 +17,6 @@ import insertAt from './utils/insert';
 import fillEmptyArray from './utils/fillEmptyArray';
 import fillBooleanArray from './utils/fillBooleanArray';
 import filterOutFalsy from './utils/filterOutFalsy';
-import isPrimitive from './utils/isPrimitive';
 import {
   Field,
   FieldValues,
@@ -180,9 +179,8 @@ export const useFieldArray = <
               innerKey !== keyName &&
               defaultFieldArrayValues &&
               (!updatedFieldArrayValues[+key] ||
-                (isPrimitive(defaultFieldArrayValues[key][innerKey]) &&
-                  defaultFieldArrayValues[key][innerKey] !==
-                    updatedFieldArrayValues[+key][innerKey]))
+                defaultFieldArrayValues[key][innerKey] !==
+                  updatedFieldArrayValues[+key][innerKey])
             ) {
               set(dirtyFields, inputName, {
                 ...get(dirtyFields, inputName, {}),
