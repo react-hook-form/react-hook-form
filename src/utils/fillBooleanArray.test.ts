@@ -1,9 +1,9 @@
-import filterBooleanArray from './filterBooleanArray';
+import fillBooleanArray from './fillBooleanArray';
 
 describe('filterBooleanArray', () => {
   it('should be filtered array', () => {
     expect(
-      filterBooleanArray([
+      fillBooleanArray([
         { test: 'test', test1: 'test1' },
         'test2',
         { test3: 'test3', test4: 'test4' },
@@ -19,7 +19,7 @@ describe('filterBooleanArray', () => {
   });
 
   it('should be filtered object', () => {
-    expect(filterBooleanArray({ test: 'test', test1: 'test1' })).toEqual([
+    expect(fillBooleanArray({ test: 'test', test1: 'test1' })).toEqual([
       {
         test: true,
         test1: true,
@@ -28,6 +28,6 @@ describe('filterBooleanArray', () => {
   });
 
   it('should be filtered string', () => {
-    expect(filterBooleanArray('test')).toEqual([true]);
+    expect(fillBooleanArray('test')).toEqual([true]);
   });
 });

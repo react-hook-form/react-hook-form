@@ -15,9 +15,8 @@ import prependAt from './utils/prepend';
 import isArray from './utils/isArray';
 import insertAt from './utils/insert';
 import fillEmptyArray from './utils/fillEmptyArray';
-import filterBooleanArray from './utils/filterBooleanArray';
+import fillBooleanArray from './utils/fillBooleanArray';
 import filterOutFalsy from './utils/filterOutFalsy';
-import isPrimitive from './utils/isPrimitive';
 import {
   Field,
   FieldValues,
@@ -168,26 +167,37 @@ export const useFieldArray = <
   >(
     updatedFieldArrayValues?: T,
   ) => {
-    const defaultFieldArrayValues = get(defaultValuesRef.current, name);
-
-    if (updatedFieldArrayValues && defaultFieldArrayValues) {
-      for (const key in defaultFieldArrayValues) {
-        const inputName = `${name}[${key}]`;
-
-        for (const innerKey in defaultFieldArrayValues[key]) {
+    const defaultFieldArrayValues = get(defaultValuesRef.current, name, []);
+    const updateDirtyFieldsBaseOnDefaultValues = <U extends T>(
+      base: U,
+      target: U,
+    ) => {
+      for (const key in base) {
+        for (const innerKey in base[key]) {
           if (
-            !updatedFieldArrayValues[+key] ||
-            (isPrimitive(defaultFieldArrayValues[key][innerKey]) &&
-              defaultFieldArrayValues[key][innerKey] !==
-                updatedFieldArrayValues[+key][innerKey])
+            innerKey !== keyName &&
+            (!target[key] ||
+              !base[key] ||
+              base[key][innerKey] !== target[key][innerKey])
           ) {
-            set(dirtyFields, inputName, {
-              ...get(dirtyFields, inputName, {}),
+            set(dirtyFields, `${name}[${key}]`, {
+              ...get(dirtyFields, `${name}[${key}]`, {}),
               [innerKey]: true,
             });
           }
         }
       }
+    };
+
+    if (updatedFieldArrayValues) {
+      updateDirtyFieldsBaseOnDefaultValues(
+        defaultFieldArrayValues,
+        updatedFieldArrayValues,
+      );
+      updateDirtyFieldsBaseOnDefaultValues(
+        updatedFieldArrayValues,
+        defaultFieldArrayValues,
+      );
     }
   };
 
@@ -202,10 +212,10 @@ export const useFieldArray = <
       argC?: unknown;
       argD?: unknown;
     },
+    updatedFieldValues?: K,
     isDirty = true,
     shouldSet = true,
     shouldUpdateValid = false,
-    updatedFieldValues?: K,
   ) => {
     if (get(shallowFieldsStateRef.current, name)) {
       const output = method(
@@ -297,23 +307,7 @@ export const useFieldArray = <
       readFormStateRef.current.dirtyFields ||
       readFormStateRef.current.isDirty
     ) {
-      const dirtyInputs = get(dirtyFields, name, []);
-
-      if (
-        updateFormValues.length <=
-        get(defaultValuesRef.current, name, []).length
-      ) {
-        updateDirtyFieldsWithDefaultValues(updateFormValues);
-      } else {
-        set(dirtyFields, name, [
-          ...(updateFormValues.length > dirtyInputs.length
-            ? (fillEmptyArray(allFields.current) || []).map(
-                (_, index) => dirtyInputs[index],
-              )
-            : dirtyInputs),
-          ...filterBooleanArray(value),
-        ]);
-      }
+      updateDirtyFieldsWithDefaultValues(updateFormValues);
 
       updateFormState({
         isDirty: true,
@@ -335,18 +329,21 @@ export const useFieldArray = <
     shouldFocus = true,
   ) => {
     const emptyArray = fillEmptyArray(value);
-
-    setFieldAndValidState(
-      prependAt(
-        getCurrentFieldsValues(),
-        isArray(value) ? appendValueWithKey(value) : [appendId(value, keyName)],
-      ),
+    const updatedFieldArrayValues = prependAt(
+      getCurrentFieldsValues(),
+      isArray(value) ? appendValueWithKey(value) : [appendId(value, keyName)],
     );
+
+    setFieldAndValidState(updatedFieldArrayValues);
     resetFields();
-    batchStateUpdate(prependAt, {
-      argA: emptyArray,
-      argC: filterBooleanArray(value),
-    });
+    batchStateUpdate(
+      prependAt,
+      {
+        argA: emptyArray,
+        argC: fillBooleanArray(value),
+      },
+      updatedFieldArrayValues,
+    );
     focusIndexRef.current = shouldFocus ? 0 : -1;
   };
 
@@ -366,10 +363,10 @@ export const useFieldArray = <
         argA: index,
         argC: index,
       },
+      updatedFieldValues,
       getIsDirtyState(removeArrayAt(fieldValues, index)),
       true,
       true,
-      updatedFieldValues,
     );
   };
 
@@ -380,14 +377,13 @@ export const useFieldArray = <
   ) => {
     const emptyArray = fillEmptyArray(value);
     const fieldValues = getCurrentFieldsValues();
-
-    setFieldAndValidState(
-      insertAt(
-        fieldValues,
-        index,
-        isArray(value) ? appendValueWithKey(value) : [appendId(value, keyName)],
-      ),
+    const updatedFieldArrayValues = insertAt(
+      fieldValues,
+      index,
+      isArray(value) ? appendValueWithKey(value) : [appendId(value, keyName)],
     );
+
+    setFieldAndValidState(updatedFieldArrayValues);
     resetFields();
     batchStateUpdate(
       insertAt,
@@ -395,8 +391,9 @@ export const useFieldArray = <
         argA: index,
         argB: emptyArray,
         argC: index,
-        argD: filterBooleanArray(value),
+        argD: fillBooleanArray(value),
       },
+      updatedFieldArrayValues,
       getIsDirtyState(insertAt(fieldValues, index)),
     );
     focusIndexRef.current = shouldFocus ? index : -1;
@@ -415,6 +412,7 @@ export const useFieldArray = <
         argC: indexA,
         argD: indexB,
       },
+      undefined,
       getIsDirtyState(fieldValues),
       false,
     );
@@ -433,6 +431,7 @@ export const useFieldArray = <
         argC: from,
         argD: to,
       },
+      undefined,
       getIsDirtyState(fieldValues),
       false,
     );

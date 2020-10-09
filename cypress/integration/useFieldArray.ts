@@ -416,7 +416,7 @@ describe('useFieldArray', () => {
     cy.get('#delete2').click();
     cy.get('#dirtyFields').should(($state) =>
       expect(JSON.parse($state.text())).to.be.deep.equal({
-        data: [{ name: true }, { name: true }, null, { name: true }],
+        data: [{ name: true }, { name: true }, { name: true }, { name: true }],
       }),
     );
     cy.get('#delete2').click();
