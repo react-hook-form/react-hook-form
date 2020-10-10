@@ -1,4 +1,4 @@
-import filterOutFalsy from './filterOutFalsy';
+import filterOutFalsy from './uniq';
 
 describe('filterOutFalsy', () => {
   it('should return filtered array when array value is falsy ', () => {

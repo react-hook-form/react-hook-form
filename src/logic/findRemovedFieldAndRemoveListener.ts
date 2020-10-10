@@ -7,7 +7,7 @@ import isCheckBoxInput from '../utils/isCheckBoxInput';
 import isDetached from '../utils/isDetached';
 import isArray from '../utils/isArray';
 import unset from '../utils/unset';
-import filterOutFalsy from '../utils/filterOutFalsy';
+import filterOutFalsy from '../utils/uniq';
 import isUndefined from '../utils/isUndefined';
 import { Field, FieldRefs, FieldValues, Ref } from '../types';
 

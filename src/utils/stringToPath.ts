@@ -1,7 +1,7 @@
-import filterOutFalsy from './filterOutFalsy';
+import uniq from './uniq';
 
 export default (input: string): string[] =>
-  filterOutFalsy(
+  uniq(
     input
       .replace(/["|']/g, '')
       .replace(/\[/g, '.')
