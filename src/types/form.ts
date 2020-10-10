@@ -54,12 +54,12 @@ export type Mode = keyof ValidationMode;
 export type SubmitHandler<TFieldValues extends FieldValues> = (
   data: UnpackNestedValue<TFieldValues>,
   event?: React.BaseSyntheticEvent,
-) => void | Promise<void>;
+) => any | Promise<any>;
 
 export type SubmitErrorHandler<TFieldValues extends FieldValues> = (
   errors: FieldErrors<TFieldValues>,
   event?: React.BaseSyntheticEvent,
-) => void | Promise<void>;
+) => any | Promise<any>;
 
 export type SetValueConfig = Partial<{
   shouldValidate: boolean;
