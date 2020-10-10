@@ -9,7 +9,9 @@ describe('Controller with SSR', () => {
    */
   it('should render correctly with as with component', () => {
     const Component = () => {
-      const { control } = useForm();
+      const { control } = useForm<{
+        test: string;
+      }>();
       return (
         <Controller
           defaultValue="default"

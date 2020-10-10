@@ -213,7 +213,10 @@ describe('useForm', () => {
     // check https://github.com/react-hook-form/react-hook-form/issues/2298
     it('should reset isValid formState after reset with valid value in initial render', async () => {
       const Component = () => {
-        const { register, reset, formState } = useForm({
+        const { register, reset, formState } = useForm<{
+          issue: string;
+          test: string;
+        }>({
           mode: VALIDATION_MODE.onChange,
         });
 
@@ -531,7 +534,11 @@ describe('useForm', () => {
     });
 
     it('should set default value if values is specified to first argument', async () => {
-      const { result } = renderHook(() => useForm());
+      const { result } = renderHook(() =>
+        useForm<{
+          test: string;
+        }>(),
+      );
 
       result.current.register('test');
 
@@ -544,7 +551,9 @@ describe('useForm', () => {
 
     it('should reset unmountFieldsState value when shouldUnregister set to false', () => {
       const { result } = renderHook(() =>
-        useForm({
+        useForm<{
+          test: string;
+        }>({
           shouldUnregister: false,
         }),
       );
@@ -559,7 +568,11 @@ describe('useForm', () => {
     });
 
     it('should not reset unmountFieldsState value by default', () => {
-      const { result } = renderHook(() => useForm());
+      const { result } = renderHook(() =>
+        useForm<{
+          test: string;
+        }>(),
+      );
 
       result.current.register('test');
 
@@ -569,18 +582,25 @@ describe('useForm', () => {
     });
 
     it('should not reset if OmitResetState is specified', async () => {
-      const { result } = renderHook(() => useForm());
+      const { result } = renderHook(() => useForm<{ test: string }>());
 
       result.current.register('test');
 
       // check only public variables
-      result.current.formState.errors = { test: 'test' };
-      result.current.control.validFieldsRef.current = new Set(['test']);
-      result.current.control.fieldsWithValidationRef.current = new Set([
-        'test',
-      ]);
+      result.current.formState.errors = {
+        test: {
+          type: 'test',
+          message: 'something wrong',
+        },
+      };
+      result.current.control.validFieldsRef.current = {
+        test: true,
+      };
+      result.current.control.fieldsWithValidationRef.current = {
+        test: true,
+      };
 
-      result.current.formState.touched = { test: 'test' };
+      result.current.formState.touched = { test: true };
       result.current.formState.isDirty = true;
       result.current.formState.isSubmitted = true;
 
@@ -600,17 +620,20 @@ describe('useForm', () => {
       );
 
       expect(result.current.formState.errors).toEqual({
-        test: 'test',
+        test: {
+          type: 'test',
+          message: 'something wrong',
+        },
       });
       expect(result.current.formState.touched).toEqual({
-        test: 'test',
+        test: true,
       });
-      expect(result.current.control.validFieldsRef.current).toEqual(
-        new Set(['test']),
-      );
-      expect(result.current.control.fieldsWithValidationRef.current).toEqual(
-        new Set(['test']),
-      );
+      expect(result.current.control.validFieldsRef.current).toEqual({
+        test: true,
+      });
+      expect(result.current.control.fieldsWithValidationRef.current).toEqual({
+        test: true,
+      });
       expect(result.current.formState.isDirty).toBeTruthy();
       expect(result.current.formState.isSubmitted).toBeTruthy();
     });

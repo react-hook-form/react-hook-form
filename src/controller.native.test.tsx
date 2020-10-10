@@ -15,7 +15,9 @@ describe('Controller with React Native', () => {
     const callback = jest.fn();
 
     const Component = () => {
-      const { handleSubmit, errors, reset, control } = useForm();
+      const { handleSubmit, errors, reset, control } = useForm<{
+        test: string;
+      }>();
       return (
         <View>
           <Controller
