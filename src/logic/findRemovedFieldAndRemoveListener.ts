@@ -7,7 +7,7 @@ import isCheckBoxInput from '../utils/isCheckBoxInput';
 import isDetached from '../utils/isDetached';
 import isArray from '../utils/isArray';
 import unset from '../utils/unset';
-import filterOutFalsy from '../utils/filterOutFalsy';
+import compact from '../utils/compact';
 import isUndefined from '../utils/isUndefined';
 import { Field, FieldRefs, FieldValues, Ref } from '../types';
 
@@ -47,7 +47,7 @@ export default function findRemovedFieldAndRemoveListener<
     const { options } = fieldRef;
 
     if (isArray(options) && options.length) {
-      filterOutFalsy(options).forEach((option, index): void => {
+      compact(options).forEach((option, index): void => {
         const { ref } = option;
         if ((ref && isDetached(ref) && isSameRef(option, ref)) || forceDelete) {
           removeAllEventListeners(ref, handleChange);
@@ -55,7 +55,7 @@ export default function findRemovedFieldAndRemoveListener<
         }
       });
 
-      if (options && !filterOutFalsy(options).length) {
+      if (options && !compact(options).length) {
         delete fieldsRef.current[name];
       }
     } else {

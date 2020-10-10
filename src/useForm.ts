@@ -32,7 +32,7 @@ import unset from './utils/unset';
 import isKey from './utils/isKey';
 import modeChecker from './utils/validationModeChecker';
 import isMultipleSelect from './utils/isMultipleSelect';
-import filterOutFalsy from './utils/filterOutFalsy';
+import compact from './utils/compact';
 import isNullOrUndefined from './utils/isNullOrUndefined';
 import isRadioOrCheckboxFunction from './utils/isRadioOrCheckbox';
 import isHTMLElement from './utils/isHTMLElement';
@@ -693,7 +693,7 @@ export function useForm<
       if (field) {
         removeFieldEventListener(field, forceDelete);
 
-        if (shouldUnregister && !filterOutFalsy(field.options || []).length) {
+        if (shouldUnregister && !compact(field.options || []).length) {
           unset(defaultValuesAtRenderRef.current, field.ref.name);
           unset(validFieldsRef.current, field.ref.name);
           unset(fieldsWithValidationRef.current, field.ref.name);
@@ -884,7 +884,7 @@ export function useForm<
       field &&
       (isRadioOrCheckbox
         ? isArray(field.options) &&
-          filterOutFalsy(field.options).find((option) => {
+          compact(field.options).find((option) => {
             return value === option.ref.value && compareRef(option.ref);
           })
         : compareRef(field.ref))
@@ -900,7 +900,7 @@ export function useForm<
       field = isRadioOrCheckbox
         ? {
             options: [
-              ...filterOutFalsy((field && field.options) || []),
+              ...compact((field && field.options) || []),
               {
                 ref,
               } as RadioOrCheckboxOption,

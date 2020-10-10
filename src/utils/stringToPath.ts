@@ -1,21 +1,10 @@
-export default (input: string): string[] => {
-  const result: string[] = [];
+import compact from './compact';
 
-  input.replace(
-    /[^.[\]]+|\[(?:(-?\d+(?:\.\d+)?)|(["'])((?:(?!\2)[^\\]|\\.)*?)\2)\]|(?=(?:\.|\[\])(?:\.|\[\]|$))/g,
-    (
-      match: string,
-      mathNumber: string,
-      mathQuote: string,
-      originalString: string,
-    ): any => {
-      result.push(
-        mathQuote
-          ? originalString.replace(/\\(\\)?/g, '$1')
-          : mathNumber || match,
-      );
-    },
+export default (input: string): string[] =>
+  compact(
+    input
+      .replace(/["|']/g, '')
+      .replace(/\[/g, '.')
+      .replace(/\]/g, '')
+      .split('.'),
   );
-
-  return result;
-};
