@@ -1,9 +1,9 @@
 import isUndefined from './isUndefined';
 import isNullOrUndefined from './isNullOrUndefined';
-import filterOutFalsy from './uniq';
+import uniq from './uniq';
 
 export default (obj: any, path: string, defaultValue?: unknown) => {
-  const result = filterOutFalsy(path.split(/[,[\].]+?/)).reduce(
+  const result = uniq(path.split(/[,[\].]+?/)).reduce(
     (result, key) => (isNullOrUndefined(result) ? result : result[key]),
     obj,
   );
