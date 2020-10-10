@@ -1,7 +1,7 @@
-import uniq from './uniq';
+import compact from './compact';
 
 export default (input: string): string[] =>
-  uniq(
+  compact(
     input
       .replace(/["|']/g, '')
       .replace(/\[/g, '.')

@@ -1,9 +1,9 @@
 import isUndefined from './isUndefined';
 import isNullOrUndefined from './isNullOrUndefined';
-import uniq from './uniq';
+import compact from './compact';
 
 export default (obj: any, path: string, defaultValue?: unknown) => {
-  const result = uniq(path.split(/[,[\].]+?/)).reduce(
+  const result = compact(path.split(/[,[\].]+?/)).reduce(
     (result, key) => (isNullOrUndefined(result) ? result : result[key]),
     obj,
   );

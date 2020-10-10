@@ -1,6 +1,6 @@
 import isUndefined from './isUndefined';
 import isArray from './isArray';
-import uniq from './uniq';
+import compact from './compact';
 
 const removeAt = <T>(data: T[], index: number): T[] => [
   ...data.slice(0, index),
@@ -16,7 +16,7 @@ function removeAtIndexes<T>(data: T[], index: number[]): T[] {
     }
   }
 
-  return uniq(data);
+  return compact(data);
 }
 
 export default <T>(data: T[], index?: number | number[]): T[] =>

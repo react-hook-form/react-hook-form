@@ -16,7 +16,7 @@ import isArray from './utils/isArray';
 import insertAt from './utils/insert';
 import fillEmptyArray from './utils/fillEmptyArray';
 import fillBooleanArray from './utils/fillBooleanArray';
-import uniq from './utils/uniq';
+import compact from './utils/compact';
 import {
   Field,
   FieldValues,
@@ -160,7 +160,7 @@ export const useFieldArray = <
   };
 
   const cleanup = <T>(ref: T) =>
-    !uniq(get(ref, name, [])).length && unset(ref, name);
+    !compact(get(ref, name, [])).length && unset(ref, name);
 
   const updateDirtyFieldsWithDefaultValues = <
     T extends { [k: string]: unknown }[]
