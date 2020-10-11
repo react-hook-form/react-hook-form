@@ -25,6 +25,7 @@ import {
   ArrayField,
   UnpackNestedValue,
   DeepPartial,
+  UseFieldArrayMethods,
 } from './types';
 
 const appendId = <TValue extends object, TKeyName extends string>(
@@ -48,7 +49,10 @@ export const useFieldArray = <
   control,
   name,
   keyName = 'id' as TKeyName,
-}: UseFieldArrayOptions<TKeyName, TControl>) => {
+}: UseFieldArrayOptions<TKeyName, TControl>): UseFieldArrayMethods<
+  TFieldArrayValues,
+  TKeyName
+> => {
   const methods = useFormContext();
 
   if (process.env.NODE_ENV !== 'production') {
