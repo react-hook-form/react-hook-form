@@ -34,7 +34,7 @@ English | <a href="./docs/README.zh-TW.md">繁中</a> | <a href="./docs/README.z
 - Simple integration with [UI libraries](https://codesandbox.io/s/react-hook-form-v6-controller-24gcl)
 - [Tiny size](https://bundlephobia.com/result?p=react-hook-form@latest) without any dependency
 - Follows HTML standard for [validation](https://react-hook-form.com/get-started#Applyvalidation)
-- [Resolvers](https://github.com/react-hook-form/resolvers) support [Yup](https://github.com/jquense/yup), [Superstruct](https://github.com/ianstormtaylor/superstruct), [Joi](https://github.com/hapijs/joi) or custom
+- [Resolvers](https://github.com/react-hook-form/resolvers) support [Yup](https://github.com/jquense/yup), [Zod](https://github.com/vriad/zod), [Superstruct](https://github.com/ianstormtaylor/superstruct), [Joi](https://github.com/hapijs/joi) or custom
 - Build forms quickly with [Form Builder](https://react-hook-form.com/form-builder)
 
 ## Install
