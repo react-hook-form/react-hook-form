@@ -25,17 +25,17 @@ export type UseFieldArrayMethods<
   move: (indexA: number, indexB: number) => void;
   prepend: (
     value: Partial<TFieldArrayValues> | Partial<TFieldArrayValues>[],
-    shouldFocus: boolean,
+    shouldFocus?: boolean,
   ) => void;
   append: (
     value: Partial<TFieldArrayValues> | Partial<TFieldArrayValues>[],
-    shouldFocus: boolean,
+    shouldFocus?: boolean,
   ) => void;
   remove: (index?: number | number[]) => void;
   insert: (
     index: number,
     value: Partial<TFieldArrayValues> | Partial<TFieldArrayValues>[],
-    shouldFocus: boolean,
+    shouldFocus?: boolean,
   ) => void;
   fields: Partial<ArrayField<TFieldArrayValues, TKeyName>>[];
 };
