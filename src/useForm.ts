@@ -461,7 +461,7 @@ export function useForm<
       } else if (!isPrimitive(value)) {
         setInternalValues(name, value, config);
 
-        if (fieldArrayNamesRef.current.has(name)) {
+        if (fieldArrayNamesRef.current.has(name) && config.shouldDirty) {
           fieldArrayDefaultValuesRef.current[name] = value;
           resetFieldArrayFunctionRef.current[name]({
             [name]: value,
