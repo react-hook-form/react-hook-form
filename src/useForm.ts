@@ -793,7 +793,7 @@ export function useForm<
         );
       }
 
-      isWatchAllRef.current = true;
+      isWatchAllRef.current = isUndefined(watchId);
 
       return transformToNestObject(
         (!isEmptyObject(fieldValues) && fieldValues) ||
@@ -929,9 +929,9 @@ export function useForm<
       );
       isEmptyDefaultValue = isUndefined(defaultValue);
 
-      !isEmptyDefaultValue &&
-        !isFieldArray &&
+      if (!isEmptyDefaultValue && !isFieldArray) {
         setFieldValue(name, defaultValue);
+      }
     }
 
     if (!isEmptyObject(validateOptions)) {
@@ -944,13 +944,15 @@ export function useForm<
           field,
           shallowFieldsStateRef,
         ).then((error: FieldErrors) => {
-          const { isValid } = formStateRef.current;
+          const previousFormIsValid = formStateRef.current.isValid;
 
           isEmptyObject(error)
             ? set(validFieldsRef.current, name, true)
             : unset(validFieldsRef.current, name);
 
-          isValid !== isEmptyObject(error) && updateFormState();
+          if (previousFormIsValid !== isEmptyObject(error)) {
+            updateFormState();
+          }
         });
       }
     }
@@ -1050,7 +1052,9 @@ export function useForm<
         } else {
           for (const field of Object.values(fieldsRef.current)) {
             if (field) {
-              const { name } = field.ref;
+              const {
+                ref: { name },
+              } = field;
 
               const fieldError = await validateField(
                 fieldsRef,
