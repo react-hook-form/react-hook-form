@@ -1178,14 +1178,14 @@ export function useForm<
     resetRefs(omitResetState);
   };
 
-  observerRef.current =
-    observerRef.current || !isWeb
-      ? observerRef.current
-      : onDomRemove(fieldsRef, removeFieldEventListenerAndRef);
-
   React.useEffect(() => {
     isUnMount.current = false;
     resolver && readFormStateRef.current.isValid && validateResolver();
+
+    observerRef.current =
+      observerRef.current || !isWeb
+        ? observerRef.current
+        : onDomRemove(fieldsRef, removeFieldEventListenerAndRef);
 
     return () => {
       isUnMount.current = true;
@@ -1196,10 +1196,9 @@ export function useForm<
         return;
       }
 
-      fieldsRef.current &&
-        Object.values(fieldsRef.current).forEach((field) =>
-          removeFieldEventListenerAndRef(field, true),
-        );
+      Object.values(fieldsRef.current).forEach((field) =>
+        removeFieldEventListenerAndRef(field, true),
+      );
     };
   }, [removeFieldEventListenerAndRef]);
 
