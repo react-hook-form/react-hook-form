@@ -1,7 +1,6 @@
 import * as React from 'react';
 import getFieldValue from './getFieldValue';
 import isString from '../utils/isString';
-import isArray from '../utils/isArray';
 import { deepMerge } from '../utils/deepMerge';
 import isUndefined from '../utils/isUndefined';
 import { InternalFieldName, FieldValues, FieldRefs } from '../types';
@@ -23,7 +22,7 @@ export default <TFieldValues extends FieldValues>(
       isUndefined(search) ||
       (isString(search)
         ? name.startsWith(search)
-        : isArray(search) && search.find((data) => name.startsWith(data)))
+        : Array.isArray(search) && search.find((data) => name.startsWith(data)))
     ) {
       output[name as InternalFieldName<TFieldValues>] = getFieldValue(
         fieldsRef,

@@ -1,5 +1,3 @@
-import isArray from './isArray';
-
 export default function insert<T>(data: T[], index: number): (T | undefined)[];
 export default function insert<T>(
   data: T[],
@@ -13,7 +11,7 @@ export default function insert<T>(
 ): (T | undefined)[] {
   return [
     ...data.slice(0, index),
-    ...(isArray(value) ? value : [value || undefined]),
+    ...(Array.isArray(value) ? value : [value || undefined]),
     ...data.slice(index),
   ];
 }

@@ -1,4 +1,3 @@
-import isArray from './isArray';
 import isObject from './isObject';
 
 function mapValueToBoolean<U>(value: U): boolean[] | Record<string, boolean>[] {
@@ -16,4 +15,6 @@ function mapValueToBoolean<U>(value: U): boolean[] | Record<string, boolean>[] {
 }
 
 export default <T>(value: T) =>
-  ((isArray(value) ? value : [value]) as T[]).map(mapValueToBoolean).flat();
+  ((Array.isArray(value) ? value : [value]) as T[])
+    .map(mapValueToBoolean)
+    .flat();

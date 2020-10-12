@@ -23,7 +23,6 @@ import isObject from './utils/isObject';
 import { getPath } from './utils/getPath';
 import isPrimitive from './utils/isPrimitive';
 import isFunction from './utils/isFunction';
-import isArray from './utils/isArray';
 import isString from './utils/isString';
 import isUndefined from './utils/isUndefined';
 import get from './utils/get';
@@ -259,7 +258,7 @@ export function useForm<
         options.length > 1
           ? options.forEach(
               ({ ref: checkboxRef }) =>
-                (checkboxRef.checked = isArray(value)
+                (checkboxRef.checked = Array.isArray(value)
                   ? !!(value as []).find(
                       (data: string) => data === checkboxRef.value,
                     )
@@ -371,7 +370,7 @@ export function useForm<
       );
       const previousFormIsValid = formStateRef.current.isValid;
 
-      if (isArray(names)) {
+      if (Array.isArray(names)) {
         const isInputsValid = names
           .map((name) => {
             const error = get(errors, name);
@@ -417,7 +416,7 @@ export function useForm<
         return executeSchemaOrResolverValidation(fields);
       }
 
-      if (isArray(fields)) {
+      if (Array.isArray(fields)) {
         const result = await Promise.all(
           fields.map(async (data) => await executeValidation(data, null)),
         );
@@ -639,7 +638,7 @@ export function useForm<
       return getFieldValue(fieldsRef, payload, shallowFieldsStateRef);
     }
 
-    if (isArray(payload)) {
+    if (Array.isArray(payload)) {
       const data = {};
 
       for (const name of payload) {
@@ -717,7 +716,7 @@ export function useForm<
     name?: FieldName<TFieldValues> | FieldName<TFieldValues>[],
   ): void {
     name &&
-      (isArray(name) ? name : [name]).forEach((inputName) =>
+      (Array.isArray(name) ? name : [name]).forEach((inputName) =>
         fieldsRef.current[inputName]
           ? isKey(inputName)
             ? delete formStateRef.current.errors[inputName]
@@ -777,7 +776,7 @@ export function useForm<
         );
       }
 
-      if (isArray(fieldNames)) {
+      if (Array.isArray(fieldNames)) {
         return fieldNames.reduce(
           (previous, name) => ({
             ...previous,
@@ -832,7 +831,7 @@ export function useForm<
   function unregister(
     name: FieldName<TFieldValues> | FieldName<TFieldValues>[],
   ): void {
-    for (const fieldName of isArray(name) ? name : [name]) {
+    for (const fieldName of Array.isArray(name) ? name : [name]) {
       removeFieldEventListenerAndRef(fieldsRef.current[fieldName], true);
     }
   }
@@ -883,7 +882,7 @@ export function useForm<
     if (
       field &&
       (isRadioOrCheckbox
-        ? isArray(field.options) &&
+        ? Array.isArray(field.options) &&
           compact(field.options).find((option) => {
             return value === option.ref.value && compareRef(option.ref);
           })
@@ -1148,7 +1147,7 @@ export function useForm<
         if (field) {
           const { ref, options } = field;
           const inputRef =
-            isRadioOrCheckboxFunction(ref) && isArray(options)
+            isRadioOrCheckboxFunction(ref) && Array.isArray(options)
               ? options[0].ref
               : ref;
 
@@ -1179,14 +1178,14 @@ export function useForm<
     resetRefs(omitResetState);
   };
 
-  observerRef.current =
-    observerRef.current || !isWeb
-      ? observerRef.current
-      : onDomRemove(fieldsRef, removeFieldEventListenerAndRef);
-
   React.useEffect(() => {
     isUnMount.current = false;
     resolver && readFormStateRef.current.isValid && validateResolver();
+
+    observerRef.current =
+      observerRef.current || !isWeb
+        ? observerRef.current
+        : onDomRemove(fieldsRef, removeFieldEventListenerAndRef);
 
     return () => {
       isUnMount.current = true;
@@ -1197,10 +1196,9 @@ export function useForm<
         return;
       }
 
-      fieldsRef.current &&
-        Object.values(fieldsRef.current).forEach((field) =>
-          removeFieldEventListenerAndRef(field, true),
-        );
+      Object.values(fieldsRef.current).forEach((field) =>
+        removeFieldEventListenerAndRef(field, true),
+      );
     };
   }, [removeFieldEventListenerAndRef]);
 
