@@ -3,7 +3,6 @@ import { getPath } from '../utils/getPath';
 import isEmptyObject from '../utils/isEmptyObject';
 import isUndefined from '../utils/isUndefined';
 import isObject from '../utils/isObject';
-import isArray from '../utils/isArray';
 import {
   DeepPartial,
   FieldValue,
@@ -31,7 +30,7 @@ export default <TFieldValues extends FieldValues>(
   } else {
     value = get(fieldValues, fieldName);
 
-    if (isObject(value) || isArray(value)) {
+    if (isObject(value) || Array.isArray(value)) {
       getPath(fieldName, value).forEach((name) => watchFields.add(name));
     }
   }

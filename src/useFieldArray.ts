@@ -12,7 +12,6 @@ import unset from './utils/unset';
 import moveArrayAt from './utils/move';
 import swapArrayAt from './utils/swap';
 import prependAt from './utils/prepend';
-import isArray from './utils/isArray';
 import insertAt from './utils/insert';
 import fillEmptyArray from './utils/fillEmptyArray';
 import fillBooleanArray from './utils/fillBooleanArray';
@@ -39,7 +38,7 @@ const appendId = <TValue extends object, TKeyName extends string>(
 const mapIds = <TData extends object, TKeyName extends string>(
   data: TData | TData[],
   keyName: TKeyName,
-) => (isArray(data) ? data : []).map((value) => appendId(value, keyName));
+) => (Array.isArray(data) ? data : []).map((value) => appendId(value, keyName));
 
 export const useFieldArray = <
   TFieldArrayValues extends FieldValues = FieldValues,
@@ -240,7 +239,7 @@ export const useFieldArray = <
       cleanup(fieldArrayDefaultValuesRef.current);
     }
 
-    if (isArray(get(formStateRef.current.errors, name))) {
+    if (Array.isArray(get(formStateRef.current.errors, name))) {
       const output = method(
         get(formStateRef.current.errors, name),
         args.argA,
@@ -301,7 +300,7 @@ export const useFieldArray = <
   ) => {
     const updateFormValues = [
       ...allFields.current,
-      ...(isArray(value)
+      ...(Array.isArray(value)
         ? appendValueWithKey(value)
         : [appendId(value, keyName)]),
     ];
@@ -335,7 +334,9 @@ export const useFieldArray = <
     const emptyArray = fillEmptyArray(value);
     const updatedFieldArrayValues = prependAt(
       getCurrentFieldsValues(),
-      isArray(value) ? appendValueWithKey(value) : [appendId(value, keyName)],
+      Array.isArray(value)
+        ? appendValueWithKey(value)
+        : [appendId(value, keyName)],
     );
 
     setFieldAndValidState(updatedFieldArrayValues);
@@ -384,7 +385,9 @@ export const useFieldArray = <
     const updatedFieldArrayValues = insertAt(
       fieldValues,
       index,
-      isArray(value) ? appendValueWithKey(value) : [appendId(value, keyName)],
+      Array.isArray(value)
+        ? appendValueWithKey(value)
+        : [appendId(value, keyName)],
     );
 
     setFieldAndValidState(updatedFieldArrayValues);

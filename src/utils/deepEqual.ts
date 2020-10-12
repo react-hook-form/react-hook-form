@@ -1,5 +1,4 @@
 import isObject from '../utils/isObject';
-import isArray from '../utils/isArray';
 
 export default function deepEqual(
   object1: any = [],
@@ -19,7 +18,8 @@ export default function deepEqual(
       const val2 = object2[key];
 
       if (
-        (isObject(val1) || isArray(val1)) && (isObject(val2) || isArray(val2))
+        (isObject(val1) || Array.isArray(val1)) &&
+        (isObject(val2) || Array.isArray(val2))
           ? !deepEqual(val1, val2, isErrorObject)
           : val1 !== val2
       ) {

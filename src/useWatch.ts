@@ -4,7 +4,6 @@ import isUndefined from './utils/isUndefined';
 import isString from './utils/isString';
 import generateId from './logic/generateId';
 import get from './utils/get';
-import isArray from './utils/isArray';
 import isObject from './utils/isObject';
 import {
   DeepPartial,
@@ -57,7 +56,7 @@ export function useWatch<TWatchFieldValues>({
     isUndefined(defaultValue)
       ? isString(name)
         ? get(defaultValuesRef.current, name)
-        : isArray(name)
+        : Array.isArray(name)
         ? name.reduce(
             (previous, inputName) => ({
               ...previous,
@@ -74,7 +73,11 @@ export function useWatch<TWatchFieldValues>({
   const updateWatchValue = React.useCallback(() => {
     const value = watchInternal(name, defaultValueRef.current, idRef.current);
     setValue(
-      isObject(value) ? { ...value } : isArray(value) ? [...value] : value,
+      isObject(value)
+        ? { ...value }
+        : Array.isArray(value)
+        ? [...value]
+        : value,
     );
   }, [setValue, watchInternal, defaultValueRef, name, idRef]);
 

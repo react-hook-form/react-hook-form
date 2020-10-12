@@ -1,5 +1,4 @@
 import { get } from '../utils';
-import isArray from '../utils/isArray';
 import set from '../utils/set';
 
 export default function setFieldArrayDirtyFields<
@@ -17,7 +16,7 @@ export default function setFieldArrayDirtyFields<
 
   while (++index < values.length) {
     for (const key in values[index]) {
-      if (isArray(values[index][key])) {
+      if (Array.isArray(values[index][key])) {
         !dirtyFields[index] && (dirtyFields[index] = {});
         dirtyFields[index][key] = [];
         setFieldArrayDirtyFields(
