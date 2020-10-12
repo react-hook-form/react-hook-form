@@ -1260,9 +1260,12 @@ export function useForm<
               }
             }
 
-            return prop in obj
-              ? (readFormStateRef.current[prop] = true) || obj[prop]
-              : undefined;
+            if (prop in obj) {
+              readFormStateRef.current[prop] = true;
+              return obj[prop];
+            }
+
+            return undefined;
           },
         })
       : formState,
