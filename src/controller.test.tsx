@@ -4,6 +4,7 @@ import { Controller } from './controller';
 import { FormProvider } from './useFormContext';
 import { useFieldArray } from './useFieldArray';
 import { useForm } from './useForm';
+import { Control } from './types';
 
 const Input = ({ onChange, onBlur, placeholder }: any) => (
   <input
@@ -945,5 +946,58 @@ describe('Controller', () => {
     });
 
     expect(currentErrors.test).toBeUndefined();
+  });
+
+  it('should allow assignment of strictly typed control to a more generic one control', () => {
+    const NestedComponentWithTypedControl = ({
+      control,
+    }: {
+      control: Control<{ lessStrict: string }>;
+    }) => (
+      <Controller
+        data-testid="less-strict"
+        name="lessStrict"
+        defaultValue=""
+        as={<input />}
+        control={control}
+      />
+    );
+
+    const NestedComponentWithGenericControl = ({
+      control,
+    }: {
+      control: Control;
+    }) => (
+      <Controller
+        data-testid="loose"
+        defaultValue=""
+        name="loose"
+        as={<input />}
+        control={control}
+      />
+    );
+
+    const Component = () => {
+      const { control } = useForm<{ lessStrict: string; loose: string }>();
+
+      return (
+        <>
+          <NestedComponentWithGenericControl control={control} />
+          <NestedComponentWithTypedControl control={control} />
+        </>
+      );
+    };
+
+    render(<Component />);
+
+    const lessStrict = screen.queryByTestId(
+      'less-strict',
+    ) as HTMLInputElement | null;
+    const loose = screen.queryByTestId('loose') as HTMLInputElement | null;
+
+    expect(lessStrict).toBeInTheDocument();
+    expect(loose).toBeInTheDocument();
+    expect(lessStrict?.name).toBe('lessStrict');
+    expect(loose?.name).toBe('loose');
   });
 });
