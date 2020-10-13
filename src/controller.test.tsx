@@ -4,8 +4,6 @@ import { Controller } from './controller';
 import { FormProvider } from './useFormContext';
 import { useFieldArray } from './useFieldArray';
 import { useForm } from './useForm';
-import { Control } from './types';
-import { renderHook } from '@testing-library/react-hooks';
 
 const Input = ({ onChange, onBlur, placeholder }: any) => (
   <input
@@ -947,22 +945,5 @@ describe('Controller', () => {
     });
 
     expect(currentErrors.test).toBeUndefined();
-  });
-
-  it('should allow assignment of strictly typed control to a more generic one control', () => {
-    const { result: looseResult } = renderHook(() => {
-      const { control } = useForm<{ test: string }>();
-      const looseControl: Control = control;
-      return looseControl;
-    });
-
-    const { result: lessStrict } = renderHook(() => {
-      const { control } = useForm<{ test: string; example: string }>();
-      const looseControl: Control<{ test: string }> = control;
-      return looseControl;
-    });
-
-    expect(looseResult.current).toBeTruthy();
-    expect(lessStrict.current).toBeTruthy();
   });
 });

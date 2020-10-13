@@ -17,6 +17,7 @@ import {
   FieldError,
   ValidationRules,
   DeepMap,
+  Control,
 } from './types';
 import { perf, wait, PerfTools } from 'react-performance-testing';
 import 'jest-performance-testing';
@@ -3180,6 +3181,25 @@ describe('useForm', () => {
       });
 
       expect(screen.queryByText('This is required.')).toBeInTheDocument();
+    });
+  });
+
+  describe('control', () => {
+    it('should allow assignment of strictly typed control to a more generic one control', () => {
+      const { result: looseResult } = renderHook(() => {
+        const { control } = useForm<{ test: string }>();
+        const looseControl: Control = control;
+        return looseControl;
+      });
+
+      const { result: lessStrict } = renderHook(() => {
+        const { control } = useForm<{ test: string; example: string }>();
+        const looseControl: Control<{ test: string }> = control;
+        return looseControl;
+      });
+
+      expect(looseResult.current).toBeTruthy();
+      expect(lessStrict.current).toBeTruthy();
     });
   });
 });
