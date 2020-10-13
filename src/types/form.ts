@@ -192,25 +192,27 @@ export type UseFormMethods<TFieldValues extends FieldValues = FieldValues> = {
     rules?: ValidationRules,
   ): void;
   unregister(name: FieldName<TFieldValues> | FieldName<TFieldValues>[]): void;
-  watch(): UnpackNestedValue<TFieldValues>;
-  watch<TFieldName extends string, TFieldValue>(
-    name: TFieldName,
-    defaultValue?: TFieldName extends keyof TFieldValues
+  watch: {
+    (): UnpackNestedValue<TFieldValues>;
+    <TFieldName extends string, TFieldValue>(
+      name: TFieldName,
+      defaultValue?: TFieldName extends keyof TFieldValues
+        ? UnpackNestedValue<TFieldValues[TFieldName]>
+        : UnpackNestedValue<LiteralToPrimitive<TFieldValue>>,
+    ): TFieldName extends keyof TFieldValues
       ? UnpackNestedValue<TFieldValues[TFieldName]>
-      : UnpackNestedValue<LiteralToPrimitive<TFieldValue>>,
-  ): TFieldName extends keyof TFieldValues
-    ? UnpackNestedValue<TFieldValues[TFieldName]>
-    : UnpackNestedValue<LiteralToPrimitive<TFieldValue>>;
-  watch<TFieldName extends keyof TFieldValues>(
-    names: TFieldName[],
-    defaultValues?: UnpackNestedValue<
-      DeepPartial<Pick<TFieldValues, TFieldName>>
-    >,
-  ): UnpackNestedValue<Pick<TFieldValues, TFieldName>>;
-  watch(
-    names: string[],
-    defaultValues?: UnpackNestedValue<DeepPartial<TFieldValues>>,
-  ): UnpackNestedValue<DeepPartial<TFieldValues>>;
+      : UnpackNestedValue<LiteralToPrimitive<TFieldValue>>;
+    <TFieldName extends keyof TFieldValues>(
+      names: TFieldName[],
+      defaultValues?: UnpackNestedValue<
+        DeepPartial<Pick<TFieldValues, TFieldName>>
+      >,
+    ): UnpackNestedValue<Pick<TFieldValues, TFieldName>>;
+    (
+      names: string[],
+      defaultValues?: UnpackNestedValue<DeepPartial<TFieldValues>>,
+    ): UnpackNestedValue<DeepPartial<TFieldValues>>;
+  };
   setError(name: FieldName<TFieldValues>, error: ErrorOption): void;
   clearErrors(name?: FieldName<TFieldValues> | FieldName<TFieldValues>[]): void;
   setValue<
