@@ -260,7 +260,7 @@ export const useFieldArray = <
       readFormStateRef.current.isDirty
     ) {
       const output = method(get(dirtyFields, name, []), args.argC, args.argD);
-      shouldSet && set(formStateRef.current, name, output);
+      shouldSet && set(formStateRef.current.dirtyFields, name, output);
       updateDirtyFieldsWithDefaultValues(updatedFieldValues);
 
       cleanup(formStateRef.current.dirtyFields);
