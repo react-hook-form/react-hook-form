@@ -5,6 +5,7 @@ import { FormProvider } from './useFormContext';
 import { useFieldArray } from './useFieldArray';
 import { useForm } from './useForm';
 import { Control } from './types';
+import { renderHook } from '@testing-library/react-hooks';
 
 const Input = ({ onChange, onBlur, placeholder }: any) => (
   <input
@@ -949,55 +950,19 @@ describe('Controller', () => {
   });
 
   it('should allow assignment of strictly typed control to a more generic one control', () => {
-    const NestedComponentWithTypedControl = ({
-      control,
-    }: {
-      control: Control<{ lessStrict: string }>;
-    }) => (
-      <Controller
-        data-testid="less-strict"
-        name="lessStrict"
-        defaultValue=""
-        as={<input />}
-        control={control}
-      />
-    );
+    const { result: looseResult } = renderHook(() => {
+      const { control } = useForm<{ test: string }>();
+      const looseControl: Control = control;
+      return looseControl;
+    });
 
-    const NestedComponentWithGenericControl = ({
-      control,
-    }: {
-      control: Control;
-    }) => (
-      <Controller
-        data-testid="loose"
-        defaultValue=""
-        name="loose"
-        as={<input />}
-        control={control}
-      />
-    );
+    const { result: lessStrict } = renderHook(() => {
+      const { control } = useForm<{ test: string; example: string }>();
+      const looseControl: Control<{ test: string }> = control;
+      return looseControl;
+    });
 
-    const Component = () => {
-      const { control } = useForm<{ lessStrict: string; loose: string }>();
-
-      return (
-        <>
-          <NestedComponentWithGenericControl control={control} />
-          <NestedComponentWithTypedControl control={control} />
-        </>
-      );
-    };
-
-    render(<Component />);
-
-    const lessStrict = screen.queryByTestId(
-      'less-strict',
-    ) as HTMLInputElement | null;
-    const loose = screen.queryByTestId('loose') as HTMLInputElement | null;
-
-    expect(lessStrict).toBeInTheDocument();
-    expect(loose).toBeInTheDocument();
-    expect(lessStrict?.name).toBe('lessStrict');
-    expect(loose?.name).toBe('loose');
+    expect(looseResult.current).toBeTruthy();
+    expect(lessStrict.current).toBeTruthy();
   });
 });
