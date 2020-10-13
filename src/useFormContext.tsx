@@ -6,15 +6,17 @@ const FormContext = React.createContext<UseFormMethods | null>(null);
 FormContext.displayName = 'RHFContext';
 
 export const useFormContext = <
-  TFieldValues extends FieldValues
+  TFieldValues extends FieldValues = FieldValues
 >(): UseFormMethods<TFieldValues> =>
   React.useContext(FormContext) as UseFormMethods<TFieldValues>;
 
-export const FormProvider = <TFieldValues extends FieldValues>({
+export const FormProvider = <TFieldValues extends FieldValues = FieldValues>({
   children,
   ...props
-}: FormProviderProps<TFieldValues>) => (
-  <FormContext.Provider value={{ ...props } as UseFormMethods}>
-    {children}
-  </FormContext.Provider>
-);
+}: FormProviderProps<TFieldValues>) => {
+  const Context = FormContext as React.Context<UseFormMethods<
+    TFieldValues
+  > | null>;
+
+  return <Context.Provider value={{ ...props }}>{children}</Context.Provider>;
+};
