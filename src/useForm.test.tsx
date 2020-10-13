@@ -2060,7 +2060,11 @@ describe('useForm', () => {
   });
 
   describe('setError', () => {
-    const tests: [string, ErrorOption, DeepMap<any, FieldError>][] = [
+    const tests: [
+      string,
+      ErrorOption | undefined,
+      DeepMap<any, FieldError>,
+    ][] = [
       [
         'should only set an error when it is not existed',
         { type: 'test' },
@@ -2099,9 +2103,20 @@ describe('useForm', () => {
           },
         },
       ],
+      [
+        'should produce an error object with no set properties',
+        undefined,
+        {
+          input: {
+            ref: undefined,
+            types: undefined,
+            message: undefined,
+          },
+        },
+      ],
     ];
     test.each(tests)('%s', (_, input, output) => {
-      const { result } = renderHook(() => useForm<{ input: string }>());
+      const { result } = renderHook(() => useForm<{ input?: string }>());
       act(() => {
         result.current.setError('input', input);
       });
