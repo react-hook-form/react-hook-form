@@ -3987,7 +3987,7 @@ describe('useFieldArray', () => {
       expect(screen.getAllByRole('textbox')).toHaveLength(3);
     });
 
-    it('should populate all array fields correctly with setValue', async () => {
+    it('should not populate all array fields with setValue by default', async () => {
       const ChildComponent = ({
         index,
         control,
@@ -4040,6 +4040,87 @@ describe('useFieldArray', () => {
               ],
             },
           ]);
+        }, [setValue]);
+
+        return (
+          <div>
+            {fields.map((item, i) => (
+              <div key={item.id}>
+                <input
+                  name={`nest[${i}].value`}
+                  ref={register()}
+                  defaultValue={item.value}
+                />
+
+                <ChildComponent control={control} index={i} />
+              </div>
+            ))}
+          </div>
+        );
+      };
+
+      const { asFragment } = render(<Component />);
+
+      expect(asFragment()).toMatchSnapshot();
+    });
+
+    it('should populate all array fields correctly with setValue', async () => {
+      const ChildComponent = ({
+        index,
+        control,
+      }: {
+        control: Control;
+        index: number;
+      }) => {
+        const { fields } = useFieldArray({
+          name: `nest[${index}].nestedArray`,
+          control,
+        });
+
+        return (
+          <div>
+            {fields.map((item, i) => (
+              <input
+                key={item.id}
+                name={`nest[${index}].nestedArray[${i}].value`}
+                ref={control.register()}
+                defaultValue={item.value}
+              />
+            ))}
+          </div>
+        );
+      };
+
+      const Component = () => {
+        const { register, control, setValue } = useForm();
+        const { fields } = useFieldArray({
+          name: 'nest',
+          control,
+        });
+
+        React.useEffect(() => {
+          setValue(
+            'nest',
+            [
+              {
+                value: 1,
+                nestedArray: [
+                  {
+                    value: 1,
+                  },
+                ],
+              },
+              {
+                value: 2,
+                nestedArray: [
+                  {
+                    value: 1,
+                  },
+                ],
+              },
+            ],
+            { shouldDirty: true },
+          );
         }, [setValue]);
 
         return (
