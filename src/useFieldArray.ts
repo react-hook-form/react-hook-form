@@ -263,7 +263,7 @@ export const useFieldArray = <
       shouldSet && set(formStateRef.current, name, output);
       updateDirtyFieldsWithDefaultValues(updatedFieldValues);
 
-      cleanup(dirtyFields);
+      cleanup(formStateRef.current.dirtyFields);
     }
 
     if (
@@ -288,7 +288,7 @@ export const useFieldArray = <
 
     updateFormState({
       errors: formStateRef.current.errors,
-      dirtyFields,
+      dirtyFields: formStateRef.current.dirtyFields,
       isDirty,
       touched,
     });
