@@ -72,7 +72,7 @@ export const useFieldArray = <
     removeFieldEventListener,
     formStateRef,
     formStateRef: {
-      current: { dirtyFields, touched },
+      current: { touched },
     },
     shallowFieldsStateRef,
     updateFormState,
@@ -183,8 +183,8 @@ export const useFieldArray = <
               !base[key] ||
               base[key][innerKey] !== target[key][innerKey])
           ) {
-            set(dirtyFields, `${name}[${key}]`, {
-              ...get(dirtyFields, `${name}[${key}]`, {}),
+            set(formStateRef.current.dirtyFields, `${name}[${key}]`, {
+              ...get(formStateRef.current.dirtyFields, `${name}[${key}]`, {}),
               [innerKey]: true,
             });
           }
@@ -259,11 +259,15 @@ export const useFieldArray = <
       readFormStateRef.current.dirtyFields ||
       readFormStateRef.current.isDirty
     ) {
-      const output = method(get(dirtyFields, name, []), args.argC, args.argD);
-      shouldSet && set(dirtyFields, name, output);
+      const output = method(
+        get(formStateRef.current.dirtyFields, name, []),
+        args.argC,
+        args.argD,
+      );
+      shouldSet && set(formStateRef.current.dirtyFields, name, output);
       updateDirtyFieldsWithDefaultValues(updatedFieldValues);
 
-      cleanup(dirtyFields);
+      cleanup(formStateRef.current.dirtyFields);
     }
 
     if (
@@ -288,7 +292,7 @@ export const useFieldArray = <
 
     updateFormState({
       errors: formStateRef.current.errors,
-      dirtyFields,
+      dirtyFields: formStateRef.current.dirtyFields,
       isDirty,
       touched,
     });
@@ -314,7 +318,7 @@ export const useFieldArray = <
 
       updateFormState({
         isDirty: true,
-        dirtyFields,
+        dirtyFields: formStateRef.current.dirtyFields,
       });
     }
 
