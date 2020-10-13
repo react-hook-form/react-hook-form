@@ -1125,7 +1125,7 @@ export function useForm<
     watchFieldsRef.current = new Set();
     isWatchAllRef.current = false;
 
-    formStateRef.current = {
+    updateFormState({
       submitCount: submitCount ? formStateRef.current.submitCount : 0,
       isDirty: isDirty ? formStateRef.current.isDirty : false,
       isSubmitted: isSubmitted ? formStateRef.current.isSubmitted : false,
@@ -1135,9 +1135,7 @@ export function useForm<
       errors: errors ? formStateRef.current.errors : {},
       isSubmitting: false,
       isSubmitSuccessful: false,
-    };
-
-    updateFormState(formStateRef.current);
+    });
   };
 
   const reset = (
