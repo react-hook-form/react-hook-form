@@ -72,7 +72,7 @@ export const useFieldArray = <
     removeFieldEventListener,
     formStateRef,
     formStateRef: {
-      current: { dirtyFields, touched },
+      current: { touched },
     },
     shallowFieldsStateRef,
     updateFormState,
@@ -259,7 +259,11 @@ export const useFieldArray = <
       readFormStateRef.current.dirtyFields ||
       readFormStateRef.current.isDirty
     ) {
-      const output = method(get(dirtyFields, name, []), args.argC, args.argD);
+      const output = method(
+        get(formStateRef.current.dirtyFields, name, []),
+        args.argC,
+        args.argD,
+      );
       shouldSet && set(formStateRef.current.dirtyFields, name, output);
       updateDirtyFieldsWithDefaultValues(updatedFieldValues);
 
