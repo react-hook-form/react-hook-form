@@ -183,8 +183,8 @@ export const useFieldArray = <
               !base[key] ||
               base[key][innerKey] !== target[key][innerKey])
           ) {
-            set(dirtyFields, `${name}[${key}]`, {
-              ...get(dirtyFields, `${name}[${key}]`, {}),
+            set(formStateRef.current.dirtyFields, `${name}[${key}]`, {
+              ...get(formStateRef.current.dirtyFields, `${name}[${key}]`, {}),
               [innerKey]: true,
             });
           }
@@ -260,7 +260,7 @@ export const useFieldArray = <
       readFormStateRef.current.isDirty
     ) {
       const output = method(get(dirtyFields, name, []), args.argC, args.argD);
-      shouldSet && set(dirtyFields, name, output);
+      shouldSet && set(formStateRef.current, name, output);
       updateDirtyFieldsWithDefaultValues(updatedFieldValues);
 
       cleanup(dirtyFields);
@@ -314,7 +314,7 @@ export const useFieldArray = <
 
       updateFormState({
         isDirty: true,
-        dirtyFields,
+        dirtyFields: formStateRef.current.dirtyFields,
       });
     }
 
