@@ -88,7 +88,7 @@ export const useFieldArray = <
   } = control || methods.control;
 
   const fieldArrayParentName = getFieldArrayParentName(name);
-  const getDefaultValues = () => [
+  const memoizedDefaultValues = React.useRef<Partial<TFieldArrayValues>[]>([
     ...(get(fieldArrayDefaultValuesRef.current, fieldArrayParentName)
       ? get(fieldArrayDefaultValuesRef.current, name, [])
       : get(
@@ -98,10 +98,7 @@ export const useFieldArray = <
           name,
           [],
         )),
-  ];
-  const memoizedDefaultValues = React.useRef<Partial<TFieldArrayValues>[]>(
-    getDefaultValues(),
-  );
+  ]);
   const [fields, setFields] = React.useState<
     Partial<ArrayField<TFieldArrayValues, TKeyName>>[]
   >(mapIds(memoizedDefaultValues.current, keyName));
