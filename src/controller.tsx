@@ -114,12 +114,7 @@ const Controller = <
     }
   }, [rules, name, register]);
 
-  React.useEffect(
-    () => () => {
-      !isNameInFieldArray(fieldArrayNamesRef.current, name) && unregister(name);
-    },
-    [unregister, name, fieldArrayNamesRef],
-  );
+  React.useEffect(() => () => unregister(name), [unregister, name]);
 
   React.useEffect(() => {
     if (process.env.NODE_ENV !== 'production') {
