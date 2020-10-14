@@ -82,147 +82,165 @@ function App() {
 Thanks go to these kind and lovely sponsors (company and individuals)!
 
 <a href="https://underbelly.is/" target="_blank">
-  <img src="https://images.opencollective.com/underbelly/989a4a6/logo/256.png" width="75" height="75" />
+  <img src="https://images.opencollective.com/underbelly/989a4a6/logo/256.png" width="84" height="84" />
 </a>
 
 <p>
     <a href="https://github.com/sayav"
     ><img
             src="https://avatars1.githubusercontent.com/u/42376060?s=60&amp;v=4"
-            width="30"
-            height="30"
+            width="40"
+            height="40"
             alt="@sayav"
     /></a>
     <a href="https://github.com/lemcii"
     ><img
             src="https://avatars1.githubusercontent.com/u/35668113?s=60&amp;v=4"
-            width="30"
-            height="30"
+            width="40"
+            height="40"
             alt="@lemcii"
     /></a>
     <a href="https://github.com/washingtonsoares"
     ><img
             src="https://avatars0.githubusercontent.com/u/5726140?s=460&u=b300a6fa08a24c59b9db6ebf246384cf8b16a140&v=4"
-            width="30"
-            height="30"
+            width="40"
+            height="40"
             alt="@washingtonsoares"
     /></a>
     <a href="https://github.com/lixunn"
     ><img
             src="https://avatars0.githubusercontent.com/u/4017964?s=460&u=3a3fdffeb97749d7509d9c5e9be2cafcb98e426f&v=4"
-            width="30"
-            height="30"
+            width="40"
+            height="40"
             alt="@lixunn"
     /></a>
     <a href="https://github.com/SamSamskies"
     ><img
             src="https://avatars2.githubusercontent.com/u/3655410?s=60&amp;v=4"
-            width="30"
-            height="30"
+            width="40"
+            height="40"
             alt="@SamSamskies"
     /></a>
     <a href="https://github.com/peaonunes"
     ><img
             src="https://avatars2.githubusercontent.com/u/3356720?s=60&amp;v=4"
-            width="30"
-            height="30"
+            width="40"
+            height="40"
             alt="@peaonunes"
     /></a>
     <a href="https://github.com/wilhelmeek"
     ><img
             src="https://avatars2.githubusercontent.com/u/609452?s=60&amp;v=4"
-            width="30"
-            height="30"
+            width="40"
+            height="40"
             alt="@wilhelmeek"
     /></a>
     <a href="https://github.com/iwarner"
     ><img
             src="https://avatars2.githubusercontent.com/u/279251?s=60&amp;v=4"
-            width="30"
-            height="30"
+            width="40"
+            height="40"
             alt="@iwarner"
     /></a>
     <a href="https://github.com/joejknowles"
     ><img
             src="https://avatars2.githubusercontent.com/u/10728145?s=60&amp;v=4"
-            width="30"
-            height="30"
+            width="40"
+            height="40"
             alt="@joejknowles"
     /></a>
     <a href="https://github.com/chris-gunawardena"
     ><img
             src="https://avatars0.githubusercontent.com/u/5763108?s=60&amp;v=4"
-            width="30"
-            height="30"
+            width="40"
+            height="40"
             alt="@chris-gunawardena"
     /></a>
     <a href="https://github.com/Tymek"
     ><img
             src="https://avatars1.githubusercontent.com/u/2625371?s=60&amp;v=4"
-            width="30"
-            height="30"
+            width="40"
+            height="40"
             alt="@Tymek"
     /></a>
     <a href="https://github.com/Luchanso"
     ><img
             src="https://avatars0.githubusercontent.com/u/2098777?s=60&amp;v=4"
-            width="30"
-            height="30"
+            width="40"
+            height="40"
             alt="@Luchanso"
     /></a>
     <a href="https://github.com/vcarel"
     ><img
             src="https://avatars1.githubusercontent.com/u/1541093?s=60&amp;v=4"
-            width="30"
-            height="30"
+            width="40"
+            height="40"
             alt="@vcarel"
     /></a>
     <a href="https://github.com/gragland"
     ><img
             src="https://avatars0.githubusercontent.com/u/1481077?s=60&amp;v=4"
-            width="30"
-            height="30"
+            width="40"
+            height="40"
             alt="@gragland"
     /></a>
     <a href="https://github.com/tjshipe"
     ><img
             src="https://avatars2.githubusercontent.com/u/1254942?s=60&amp;v=4"
-            width="30"
-            height="30"
+            width="40"
+            height="40"
             alt="@tjshipe"
     /></a>
     <a href="https://github.com/krnlde"
     ><img
             src="https://avatars1.githubusercontent.com/u/1087002?s=60&amp;v=4"
-            width="30"
-            height="30"
+            width="40"
+            height="40"
             alt="@krnlde"
     /></a>
     <a href="https://github.com/msutkowski"
     ><img
             src="https://avatars2.githubusercontent.com/u/784953?s=60&amp;v=4"
-            width="30"
-            height="30"
+            width="40"
+            height="40"
             alt="@msutkowski"
     /></a>
     <a href="https://github.com/mlukaszczyk"
     ><img
             src="https://avatars3.githubusercontent.com/u/599247?s=60&amp;v=4"
-            width="30"
-            height="30"
+            width="40"
+            height="40"
             alt="@mlukaszczyk"
     /></a>
     <a href="https://github.com/susshma"
     ><img
             src="https://avatars0.githubusercontent.com/u/2566818?s=460&u=754ee26b96e321ff28dbc4a2744132015f534fe0&v=4"
-            width="30"
-            height="30"
+            width="40"
+            height="40"
     /></a>
     <a href="https://github.com/MatiasCiccone"
     ><img
             src="https://avatars3.githubusercontent.com/u/32602795?s=460&u=6a0c4dbe23c4f9a5628dc8867842b75989ecc4aa&v=4"
-            width="30"
-            height="30"
+            width="40"
+            height="40"
+    /></a>
+    <a href="https://github.com/ghostwriternr"
+    ><img
+            src="https://avatars0.githubusercontent.com/u/10023615?s=460&u=3ec1e4ba991699762fd22a9d9ef47a0599f937dc&v=4"
+            width="40"
+            height="40"
+    /></a>
+    <a href="https://github.com/neighborhood999"
+    ><img
+            src="https://avatars3.githubusercontent.com/u/10325111?s=400&u=f60c932f81d95a60f77f5c7f2eab4590e07c29af&v=4"
+            width="40"
+            height="40"
+    /></a>
+    <a href="https://github.com/yjp20"
+    ><img
+            src="https://avatars3.githubusercontent.com/u/44457064?s=460&u=a55119c84e0167f6a3f830dbad3133b28f0c0a8f&v=4"
+            width="40"
+            height="40"
     /></a>
 </p>
 
