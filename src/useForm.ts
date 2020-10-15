@@ -29,6 +29,7 @@ import get from './utils/get';
 import set from './utils/set';
 import unset from './utils/unset';
 import isKey from './utils/isKey';
+import cloneObject from './utils/cloneObject';
 import modeChecker from './utils/validationModeChecker';
 import isMultipleSelect from './utils/isMultipleSelect';
 import compact from './utils/compact';
@@ -116,7 +117,7 @@ export function useForm<
   const isWatchAllRef = React.useRef(false);
   const handleChangeRef = React.useRef<HandleChange>();
   const shallowFieldsStateRef = React.useRef(
-    shouldUnregister ? {} : { ...defaultValues },
+    shouldUnregister ? {} : cloneObject(defaultValues),
   );
   const resetFieldArrayFunctionRef = React.useRef<
     Record<
