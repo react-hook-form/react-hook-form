@@ -4,11 +4,15 @@ describe('clone', () => {
   it('should clone object and not mutate the orginal object', () => {
     const data = {
       test: {
-        test: '12',
-        test1: [1, 2, 3, 4],
         date: new Date('2020-10-15'),
+        test0: 12,
+        test1: '12',
+        test2: [1, 2, 3, 4],
         deep: {
           date: new Date('2020-10-15'),
+          test0: 12,
+          test1: '12',
+          test2: [1, 2, 3, 4],
         },
       },
     };
@@ -22,11 +26,15 @@ describe('clone', () => {
 
     expect(data).toEqual({
       test: {
-        test: '12',
-        test1: [1, 2, 3, 4],
         date: new Date('2020-10-15'),
+        test0: 12,
+        test1: '12',
+        test2: [1, 2, 3, 4],
         deep: {
           date: new Date('2020-10-15'),
+          test0: 12,
+          test1: '12',
+          test2: [1, 2, 3, 4],
         },
       },
     });
