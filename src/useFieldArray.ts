@@ -71,9 +71,6 @@ export const useFieldArray = <
     defaultValuesRef,
     removeFieldEventListener,
     formStateRef,
-    formStateRef: {
-      current: { touched },
-    },
     shallowFieldsStateRef,
     updateFormState,
     readFormStateRef,
@@ -246,10 +243,17 @@ export const useFieldArray = <
       cleanup(formStateRef.current.errors);
     }
 
-    if (readFormStateRef.current.touched && get(touched, name)) {
-      const output = method(get(touched, name), args.argA, args.argB);
-      shouldSet && set(touched, name, output);
-      cleanup(touched);
+    if (
+      readFormStateRef.current.touched &&
+      get(formStateRef.current.touched, name)
+    ) {
+      const output = method(
+        get(formStateRef.current.touched, name),
+        args.argA,
+        args.argB,
+      );
+      shouldSet && set(formStateRef.current.touched, name, output);
+      cleanup(formStateRef.current.touched);
     }
 
     if (
@@ -291,7 +295,7 @@ export const useFieldArray = <
       errors: formStateRef.current.errors,
       dirtyFields: formStateRef.current.dirtyFields,
       isDirty,
-      touched,
+      touched: formStateRef.current.touched,
     });
   };
 
