@@ -1,7 +1,7 @@
 import cloneObject from './cloneObject';
 
 describe('clone', () => {
-  it('should clone object', () => {
+  it('should clone object and not mutate the orginal object', () => {
     const data = {
       test: {
         test: '12',
