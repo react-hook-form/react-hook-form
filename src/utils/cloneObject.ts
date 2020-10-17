@@ -1,4 +1,3 @@
-import isObject from './isObject';
 import isPrimitive from './isPrimitive';
 
 export default function cloneObject<T extends unknown>(object: T): T {
@@ -16,7 +15,7 @@ export default function cloneObject<T extends unknown>(object: T): T {
   copy = Array.isArray(object) ? [] : {};
 
   for (const key in object) {
-    copy[key] = isObject(object[key]) ? cloneObject(object[key]) : object[key];
+    copy[key] = cloneObject(object[key]);
   }
 
   return copy;

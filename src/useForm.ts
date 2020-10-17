@@ -612,17 +612,18 @@ export function useForm<
       };
 
   function setFieldArrayDefaultValues<T extends FieldValues>(data: T): T {
+    let copy = cloneObject(data);
     if (!shouldUnregister) {
       for (const value of fieldArrayNamesRef.current) {
-        if (isKey(value) && !data[value]) {
-          data = {
-            ...data,
+        if (isKey(value) && !copy[value]) {
+          copy = {
+            ...copy,
             [value]: [],
           };
         }
       }
     }
-    return data;
+    return copy;
   }
 
   function getValues(): UnpackNestedValue<TFieldValues>;
