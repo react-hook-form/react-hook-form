@@ -146,7 +146,7 @@ export const useFieldArray = <
 
   const resetFields = () => {
     for (const key in fieldsRef.current) {
-      if (isMatchFieldArrayName(key, name) && fieldsRef.current[key]) {
+      if (isMatchFieldArrayName(key, name)) {
         removeFieldEventListener(fieldsRef.current[key] as Field, true);
       }
     }
