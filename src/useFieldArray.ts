@@ -27,18 +27,17 @@ import {
   UseFieldArrayMethods,
 } from './types';
 
-const appendId = <TValue extends object, TKeyName extends string>(
-  value: TValue,
+const mapIds = <
+  TFieldArrayValues extends FieldValues = FieldValues,
+  TKeyName extends string = 'id'
+>(
+  values: Partial<TFieldArrayValues>[],
   keyName: TKeyName,
-): Partial<ArrayField<TValue, TKeyName>> => ({
-  [keyName]: generateId(),
-  ...value,
-});
-
-const mapIds = <TData extends object, TKeyName extends string>(
-  data: TData | TData[],
-  keyName: TKeyName,
-) => (Array.isArray(data) ? data : []).map((value) => appendId(value, keyName));
+): Partial<ArrayField<TFieldArrayValues, TKeyName>>[] =>
+  values.map((value: Partial<TFieldArrayValues>) => ({
+    [keyName]: generateId(),
+    ...value,
+  }));
 
 export const useFieldArray = <
   TFieldArrayValues extends FieldValues = FieldValues,
@@ -104,7 +103,7 @@ export const useFieldArray = <
   >(fields);
 
   const getCurrentFieldsValues = () =>
-    get(getValues() || {}, name, allFields.current).map(
+    get(getValues(), name, allFields.current).map(
       (item: Partial<TFieldArrayValues>, index: number) => ({
         ...allFields.current[index],
         ...item,
@@ -121,9 +120,6 @@ export const useFieldArray = <
       get(defaultValuesRef.current, fieldArrayParentName),
     );
   }
-
-  const appendValueWithKey = (values: Partial<TFieldArrayValues>[]) =>
-    values.map((value: Partial<TFieldArrayValues>) => appendId(value, keyName));
 
   const setFieldAndValidState = (
     fieldsValues: Partial<ArrayField<TFieldArrayValues, TKeyName>>[],
@@ -305,9 +301,7 @@ export const useFieldArray = <
   ) => {
     const updateFormValues = [
       ...allFields.current,
-      ...(Array.isArray(value)
-        ? appendValueWithKey(value)
-        : [appendId(value, keyName)]),
+      ...mapIds(Array.isArray(value) ? value : [value], keyName),
     ];
     setFieldAndValidState(updateFormValues);
 
@@ -339,9 +333,7 @@ export const useFieldArray = <
     const emptyArray = fillEmptyArray(value);
     const updatedFieldArrayValues = prependAt(
       getCurrentFieldsValues(),
-      Array.isArray(value)
-        ? appendValueWithKey(value)
-        : [appendId(value, keyName)],
+      mapIds(Array.isArray(value) ? value : [value], keyName),
     );
 
     setFieldAndValidState(updatedFieldArrayValues);
@@ -390,9 +382,7 @@ export const useFieldArray = <
     const updatedFieldArrayValues = insertAt(
       fieldValues,
       index,
-      Array.isArray(value)
-        ? appendValueWithKey(value)
-        : [appendId(value, keyName)],
+      mapIds(Array.isArray(value) ? value : [value], keyName),
     );
 
     setFieldAndValidState(updatedFieldArrayValues);
