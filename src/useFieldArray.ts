@@ -146,9 +146,8 @@ export const useFieldArray = <
 
   const resetFields = () => {
     for (const key in fieldsRef.current) {
-      if (isMatchFieldArrayName(key, name)) {
+      isMatchFieldArrayName(key, name) &&
         removeFieldEventListener(fieldsRef.current[key] as Field, true);
-      }
     }
   };
 
@@ -263,7 +262,6 @@ export const useFieldArray = <
       );
       shouldSet && set(formStateRef.current.dirtyFields, name, output);
       updateDirtyFieldsWithDefaultValues(updatedFieldValues);
-
       cleanup(formStateRef.current.dirtyFields);
     }
 
