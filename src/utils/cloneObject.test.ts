@@ -2,6 +2,7 @@ import cloneObject from './cloneObject';
 
 describe('clone', () => {
   it('should clone object and not mutate the orginal object', () => {
+    const fileData = new File([''], 'filename');
     const data = {
       test: {
         date: new Date('2020-10-15'),
@@ -12,9 +13,19 @@ describe('clone', () => {
           date: new Date('2020-10-15'),
           test0: 12,
           test1: '12',
-          test2: [1, 2, 3, 4],
+          test2: [
+            1,
+            2,
+            3,
+            4,
+            {
+              file: fileData,
+            },
+          ],
+          file: fileData,
         },
       },
+      file: fileData,
     };
 
     const copy = cloneObject(data);
@@ -34,9 +45,19 @@ describe('clone', () => {
           date: new Date('2020-10-15'),
           test0: 12,
           test1: '12',
-          test2: [1, 2, 3, 4],
+          test2: [
+            1,
+            2,
+            3,
+            4,
+            {
+              file: fileData,
+            },
+          ],
+          file: fileData,
         },
       },
+      file: fileData,
     });
   });
 });
