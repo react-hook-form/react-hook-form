@@ -613,14 +613,18 @@ export function useForm<
 
   function setFieldArrayDefaultValues<T extends FieldValues>(data: T): T {
     if (!shouldUnregister) {
+      let copy = cloneObject(data);
+
       for (const value of fieldArrayNamesRef.current) {
-        if (isKey(value) && !data[value]) {
-          data = {
-            ...data,
+        if (isKey(value) && !copy[value]) {
+          copy = {
+            ...copy,
             [value]: [],
           };
         }
       }
+
+      return copy;
     }
     return data;
   }
