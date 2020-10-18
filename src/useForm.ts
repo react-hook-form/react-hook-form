@@ -532,7 +532,6 @@ export function useForm<
     config?: SetValueConfig,
   ): void {
     setInternalValue(name, value as TFieldValues[string], config);
-
     isFieldWatched(name) && updateFormState();
     renderWatchedInputs(name);
     (config || {}).shouldValidate && trigger(name as any);
@@ -1038,11 +1037,10 @@ export function useForm<
         getFieldsValues(fieldsRef, shallowFieldsStateRef, true),
       );
 
-      if (readFormStateRef.current.isSubmitting) {
+      readFormStateRef.current.isSubmitting &&
         updateFormState({
           isSubmitting: true,
         });
-      }
 
       try {
         if (resolverRef.current) {
@@ -1051,8 +1049,7 @@ export function useForm<
             contextRef.current,
             isValidateAllFieldCriteria,
           );
-          formStateRef.current.errors = errors;
-          fieldErrors = errors;
+          formStateRef.current.errors = fieldErrors = errors;
           fieldValues = values;
         } else {
           for (const field of Object.values(fieldsRef.current)) {
@@ -1168,10 +1165,7 @@ export function useForm<
 
     fieldsRef.current = {};
     defaultValuesRef.current = cloneObject(values || defaultValuesRef.current);
-
-    if (values) {
-      renderWatchedInputs('');
-    }
+    values && renderWatchedInputs('');
 
     shallowFieldsStateRef.current = shouldUnregister
       ? {}
