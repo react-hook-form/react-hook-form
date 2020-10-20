@@ -462,15 +462,16 @@ export function useForm<
       } else if (!isPrimitive(value)) {
         setInternalValues(name, value, config);
 
-        if (fieldArrayNamesRef.current.has(name) && config.shouldDirty) {
+        if (fieldArrayNamesRef.current.has(name)) {
           fieldArrayDefaultValuesRef.current[name] = value;
           resetFieldArrayFunctionRef.current[name]({
             [name]: value,
           } as UnpackNestedValue<DeepPartial<TFieldValues>>);
 
           if (
-            readFormStateRef.current.isDirty ||
-            readFormStateRef.current.dirtyFields
+            (readFormStateRef.current.isDirty ||
+              readFormStateRef.current.dirtyFields) &&
+            config.shouldDirty
           ) {
             set(
               formStateRef.current.dirtyFields,
