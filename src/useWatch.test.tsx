@@ -4,6 +4,7 @@ import {
   screen,
   fireEvent,
   act as actComponent,
+  waitFor,
 } from '@testing-library/react';
 import { renderHook } from '@testing-library/react-hooks';
 import { useForm } from './useForm';
@@ -324,6 +325,38 @@ describe('useWatch', () => {
   });
 
   describe('reset', () => {
+    it('should return updated default value with watched field after reset', async () => {
+      function Watcher({ control }: { control: Control }) {
+        const testField = useWatch<string>({
+          name: 'test',
+          control: control,
+        });
+
+        return <div>{testField}</div>;
+      }
+
+      function Component() {
+        const { reset, control } = useForm({
+          defaultValues: {
+            test: '',
+            name: '',
+          },
+        });
+
+        React.useEffect(() => {
+          reset({
+            test: 'test',
+          });
+        }, [reset]);
+
+        return <Watcher control={control} />;
+      }
+
+      render(<Component />);
+
+      await waitFor(() => screen.getByText('test'));
+    });
+
     it('should return default value of reset method', async () => {
       const Component = () => {
         const { register, reset, control } = useForm<{
