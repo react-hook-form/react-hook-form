@@ -3987,7 +3987,7 @@ describe('useFieldArray', () => {
       expect(screen.getAllByRole('textbox')).toHaveLength(3);
     });
 
-    it('should not populate all array fields with setValue by default', async () => {
+    it('should populate all array fields with setValue when name match Field Array', async () => {
       const ChildComponent = ({
         index,
         control,

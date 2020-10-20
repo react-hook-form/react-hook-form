@@ -411,6 +411,40 @@ describe('useForm', () => {
   });
 
   describe('watch', () => {
+    it('should return undefined when input gets unmounted', async () => {
+      const Component = () => {
+        const { register, watch } = useForm<{ test: string }>();
+        const [show, setShow] = React.useState(true);
+        const data = watch('test');
+
+        return (
+          <>
+            {show && <input ref={register} name={'test'} />}
+            <span>{data}</span>
+            <button type="button" onClick={() => setShow(false)}>
+              hide
+            </button>
+          </>
+        );
+      };
+
+      render(<Component />);
+
+      fireEvent.input(screen.getByRole('textbox'), {
+        target: {
+          value: 'test',
+        },
+      });
+
+      screen.getByText('test');
+
+      await actComponent(async () => {
+        await fireEvent.click(screen.getByRole('button'));
+      });
+
+      expect(screen.queryByText('test')).toBeNull();
+    });
+
     it('should watch individual input', () => {
       const { result } = renderHook(() => useForm<{ test: string }>());
 
@@ -473,7 +507,6 @@ describe('useForm', () => {
       result.current.register({ type: 'radio', name: 'test1', value: '' });
 
       expect(result.current.watch()).toEqual({ test: '', test1: '' });
-      expect(result.current.control.isWatchAllRef.current).toBeTruthy();
     });
   });
 
@@ -499,6 +532,33 @@ describe('useForm', () => {
       expect(result.current.formState.isSubmitted).toBeTruthy();
       act(() => result.current.reset());
       expect(result.current.formState.isSubmitted).toBeFalsy();
+    });
+
+    it('should reset shallowStateRef when shouldUnregister set to false', () => {
+      let methods: any;
+      const Component = () => {
+        methods = useForm<{
+          test: string;
+        }>({
+          shouldUnregister: false,
+        });
+        return (
+          <form>
+            <input name="test" ref={methods.register} />
+          </form>
+        );
+      };
+      render(<Component />);
+
+      actComponent(() =>
+        methods.reset({
+          test: 'test',
+        }),
+      );
+
+      expect(methods.control.shallowFieldsStateRef.current).toEqual({
+        test: 'test',
+      });
     });
 
     it('should reset the form if ref is HTMLElement and parent element is form', async () => {

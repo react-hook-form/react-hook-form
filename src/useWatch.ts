@@ -68,7 +68,7 @@ export function useWatch<TWatchFieldValues>({
       : defaultValue,
   );
   const idRef = React.useRef<string>();
-  const defaultValueRef = React.useRef(value);
+  const defaultValueRef = React.useRef(defaultValue);
 
   const updateWatchValue = React.useCallback(() => {
     const value = watchInternal(name, defaultValueRef.current, idRef.current);
