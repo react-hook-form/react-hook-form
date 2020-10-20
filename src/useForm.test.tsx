@@ -501,6 +501,33 @@ describe('useForm', () => {
       expect(result.current.formState.isSubmitted).toBeFalsy();
     });
 
+    it('should reset shallowStateRef when shouldUnregister set to false', () => {
+      let methods: any;
+      const Component = () => {
+        methods = useForm<{
+          test: string;
+        }>({
+          shouldUnregister: false,
+        });
+        return (
+          <form>
+            <input name="test" ref={methods.register} />
+          </form>
+        );
+      };
+      render(<Component />);
+
+      actComponent(() =>
+        methods.reset({
+          test: 'test',
+        }),
+      );
+
+      expect(methods.control.shallowFieldsStateRef.current).toEqual({
+        test: 'test',
+      });
+    });
+
     it('should reset the form if ref is HTMLElement and parent element is form', async () => {
       const mockReset = jest.spyOn(window.HTMLFormElement.prototype, 'reset');
       let methods: UseFormMethods;
