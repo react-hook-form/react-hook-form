@@ -5,7 +5,7 @@
 - with shouldUnregister set to false, empty Field Array will default [] as submission result.
 
 ```tsx
-const { handlSubmit } = useForm({
+const { handleSubmit } = useForm({
   shouldUnregister: false,
 })
 
@@ -13,7 +13,7 @@ useFieldArray({
   name: 'test',
 })
 
-handlSubmit((data) => {
+handleSubmit((data) => {
   // shouldUnregister: false
   // result:  { data: {test: []} } 
 
