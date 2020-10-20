@@ -3387,4 +3387,32 @@ describe('useForm', () => {
       expect(errorsObject).toEqual({});
     });
   });
+
+  describe('control', () => {
+    it('does not change across re-renders', () => {
+      let control;
+
+      const Component = () => {
+        const form = useForm();
+
+        control = form.control;
+
+        return (
+          <>
+            <input type="text" name="test" ref={form.register()} />
+          </>
+        );
+      };
+
+      const { rerender } = render(<Component />);
+
+      const firstRenderControl = control;
+
+      rerender(<Component />);
+
+      const secondRenderControl = control;
+
+      expect(Object.is(firstRenderControl, secondRenderControl)).toBe(true);
+    });
+  });
 });
