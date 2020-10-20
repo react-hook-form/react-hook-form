@@ -411,6 +411,40 @@ describe('useForm', () => {
   });
 
   describe('watch', () => {
+    it('should return undefined when input gets unmounted', async () => {
+      const Component = () => {
+        const { register, watch } = useForm<{ test: string }>();
+        const [show, setShow] = React.useState(true);
+        const data = watch('test');
+
+        return (
+          <>
+            {show && <input ref={register} name={'test'} />}
+            <span>{data}</span>
+            <button type="button" onClick={() => setShow(false)}>
+              hide
+            </button>
+          </>
+        );
+      };
+
+      render(<Component />);
+
+      fireEvent.input(screen.getByRole('textbox'), {
+        target: {
+          value: 'test',
+        },
+      });
+
+      screen.getByText('test');
+
+      await actComponent(async () => {
+        await fireEvent.click(screen.getByRole('button'));
+      });
+
+      expect(screen.queryByText('test')).toBeNull();
+    });
+
     it('should watch individual input', () => {
       const { result } = renderHook(() => useForm<{ test: string }>());
 

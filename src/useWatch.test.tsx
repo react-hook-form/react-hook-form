@@ -321,6 +321,40 @@ describe('useWatch', () => {
 
       expect(watchedValue).toEqual({ test: undefined, test1: undefined });
     });
+
+    it('should return undefined when input gets removed', async () => {
+      const Component = () => {
+        const { register, control } = useForm<{ test: string }>();
+        const [show, setShow] = React.useState(true);
+        const data = useWatch<string>({ name: 'test', control });
+
+        return (
+          <>
+            {show && <input ref={register} name={'test'} />}
+            <span>{data}</span>
+            <button type="button" onClick={() => setShow(false)}>
+              hide
+            </button>
+          </>
+        );
+      };
+
+      render(<Component />);
+
+      fireEvent.input(screen.getByRole('textbox'), {
+        target: {
+          value: 'test',
+        },
+      });
+
+      screen.getByText('test');
+
+      await actComponent(async () => {
+        await fireEvent.click(screen.getByRole('button'));
+      });
+
+      expect(screen.queryByText('test')).toBeNull();
+    });
   });
 
   describe('reset', () => {
