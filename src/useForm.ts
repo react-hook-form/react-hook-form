@@ -692,6 +692,23 @@ export function useForm<
     [shouldUnregister],
   );
 
+  const updateWatchedValue = (name: string) => {
+    if (isWatchAllRef.current) {
+      updateFormState();
+    } else if (watchFieldsRef) {
+      let shouldRenderUseWatch = true;
+      for (const watchField of watchFieldsRef.current) {
+        if (watchField.startsWith(name)) {
+          updateFormState();
+          shouldRenderUseWatch = false;
+          break;
+        }
+      }
+
+      shouldRenderUseWatch && renderWatchedInputs(name);
+    }
+  };
+
   const removeFieldEventListenerAndRef = React.useCallback(
     (field: Field | undefined, forceDelete?: boolean) => {
       if (field) {
@@ -711,6 +728,7 @@ export function useForm<
           });
 
           resolverRef.current && validateResolver();
+          updateWatchedValue(field.ref.name);
         }
       }
     },
@@ -1218,7 +1236,7 @@ export function useForm<
   };
 
   const control = {
-    renderWatchedInputs,
+    updateWatchedValue,
     shouldUnregister,
     removeFieldEventListener,
     watchInternal,
@@ -1228,8 +1246,6 @@ export function useForm<
       isReValidateOnChange,
     },
     fieldsRef,
-    isWatchAllRef,
-    watchFieldsRef,
     resetFieldArrayFunctionRef,
     useWatchFieldsRef,
     useWatchRenderFunctionsRef,

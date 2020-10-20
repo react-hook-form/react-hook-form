@@ -473,7 +473,6 @@ describe('useForm', () => {
       result.current.register({ type: 'radio', name: 'test1', value: '' });
 
       expect(result.current.watch()).toEqual({ test: '', test1: '' });
-      expect(result.current.control.isWatchAllRef.current).toBeTruthy();
     });
   });
 

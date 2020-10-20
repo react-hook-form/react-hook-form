@@ -63,7 +63,7 @@ export const useFieldArray = <
 
   const focusIndexRef = React.useRef(-1);
   const {
-    isWatchAllRef,
+    updateWatchedValue,
     resetFieldArrayFunctionRef,
     fieldArrayNamesRef,
     fieldsRef,
@@ -73,12 +73,10 @@ export const useFieldArray = <
     shallowFieldsStateRef,
     updateFormState,
     readFormStateRef,
-    watchFieldsRef,
     validFieldsRef,
     fieldsWithValidationRef,
     fieldArrayDefaultValuesRef,
     validateResolver,
-    renderWatchedInputs,
     getValues,
     shouldUnregister,
   } = control || methods.control;
@@ -463,20 +461,7 @@ export const useFieldArray = <
       set(fieldArrayDefaultValuesRef.current, name, defaultValues);
     }
 
-    if (isWatchAllRef.current) {
-      updateFormState();
-    } else if (watchFieldsRef) {
-      let shouldRenderUseWatch = true;
-      for (const watchField of watchFieldsRef.current) {
-        if (watchField.startsWith(name)) {
-          updateFormState();
-          shouldRenderUseWatch = false;
-          break;
-        }
-      }
-
-      shouldRenderUseWatch && renderWatchedInputs(name);
-    }
+    updateWatchedValue(name);
 
     if (focusIndexRef.current > -1) {
       for (const key in fieldsRef.current) {

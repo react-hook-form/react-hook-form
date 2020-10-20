@@ -49,7 +49,6 @@ describe('useWatch', () => {
       };
       render(<Component />);
 
-      expect(method.control.isWatchAllRef.current).toBeFalsy();
       expect(watched).toEqual({ test: 'test' });
     });
 
