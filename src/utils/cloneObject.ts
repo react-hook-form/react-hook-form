@@ -1,21 +1,24 @@
 import isPrimitive from './isPrimitive';
 
-export default function cloneObject<T extends unknown>(object: T): T {
+export default function cloneObject<T extends unknown>(
+  data: T,
+  isWeb: boolean,
+): T {
   let copy: any;
 
-  if (isPrimitive(object)) {
-    return object;
+  if (isPrimitive(data) || (isWeb && data instanceof File)) {
+    return data;
   }
 
-  if (object instanceof Date) {
-    copy = new Date(object.getTime());
+  if (data instanceof Date) {
+    copy = new Date(data.getTime());
     return copy;
   }
 
-  copy = Array.isArray(object) ? [] : {};
+  copy = Array.isArray(data) ? [] : {};
 
-  for (const key in object) {
-    copy[key] = cloneObject(object[key]);
+  for (const key in data) {
+    copy[key] = cloneObject(data[key], isWeb);
   }
 
   return copy;
