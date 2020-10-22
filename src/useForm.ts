@@ -710,7 +710,7 @@ export function useForm<
   };
 
   const removeFieldEventListenerAndRef = React.useCallback(
-    (field: Field | undefined, forceDelete?: boolean) => {
+    (field?: Field, forceDelete?: boolean) => {
       if (field) {
         removeFieldEventListener(field, forceDelete);
 
@@ -727,7 +727,9 @@ export function useForm<
             dirtyFields: formStateRef.current.dirtyFields,
           });
 
-          resolverRef.current && validateResolver();
+          readFormStateRef.current.isValid &&
+            resolverRef.current &&
+            validateResolver();
           updateWatchedValue(field.ref.name);
         }
       }
