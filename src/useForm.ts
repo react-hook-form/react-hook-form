@@ -117,7 +117,7 @@ export function useForm<
   const isWatchAllRef = React.useRef(false);
   const handleChangeRef = React.useRef<HandleChange>();
   const shallowFieldsStateRef = React.useRef(
-    shouldUnregister ? {} : cloneObject(defaultValues),
+    shouldUnregister ? {} : cloneObject(defaultValues, isWeb),
   );
   const resetFieldArrayFunctionRef = React.useRef<
     Record<
@@ -613,7 +613,7 @@ export function useForm<
 
   function setFieldArrayDefaultValues<T extends FieldValues>(data: T): T {
     if (!shouldUnregister) {
-      let copy = cloneObject(data);
+      let copy = cloneObject(data, isWeb);
 
       for (const value of fieldArrayNamesRef.current) {
         if (isKey(value) && !copy[value]) {
@@ -1183,7 +1183,10 @@ export function useForm<
     }
 
     fieldsRef.current = {};
-    defaultValuesRef.current = cloneObject(values || defaultValuesRef.current);
+    defaultValuesRef.current = cloneObject(
+      values || defaultValuesRef.current,
+      isWeb,
+    );
     values && renderWatchedInputs('');
 
     Object.values(resetFieldArrayFunctionRef.current).forEach(
@@ -1192,7 +1195,7 @@ export function useForm<
 
     shallowFieldsStateRef.current = shouldUnregister
       ? {}
-      : cloneObject(values) || {};
+      : cloneObject(values, isWeb) || {};
 
     resetRefs(omitResetState);
   };
