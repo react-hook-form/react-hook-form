@@ -28,8 +28,8 @@ describe('clone', () => {
       file: fileData,
     };
 
-    const copy = cloneObject(data);
-    expect(cloneObject(data)).toEqual(copy);
+    const copy = cloneObject(data, true);
+    expect(cloneObject(data, true)).toEqual(copy);
 
     // @ts-ignore
     copy.test.what = '1243';
