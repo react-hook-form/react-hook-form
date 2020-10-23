@@ -15,14 +15,18 @@ export default function cloneObject<T extends unknown>(
     return copy;
   }
 
-  const isSet = data instanceof Set;
+  if (data instanceof Set) {
+    copy = new Set();
+    for (const item of data) {
+      copy.add(item);
+    }
+    return copy;
+  }
 
-  if (isSet || data instanceof Map) {
-    copy = isSet ? new Set() : new Map();
-    // @ts-ignore
-    for (const item of isSet ? data : data.keys()) {
-      // @ts-ignore
-      isSet ? copy.add(item) : copy.set(key, cloneObject(data.get(key), isWeb));
+  if (data instanceof Map) {
+    copy = new Map();
+    for (const key of data.keys()) {
+      copy.set(key, cloneObject(data.get(key), isWeb));
     }
     return copy;
   }
