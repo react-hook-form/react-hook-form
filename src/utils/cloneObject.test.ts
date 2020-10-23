@@ -26,6 +26,12 @@ describe('clone', () => {
         },
       },
       file: fileData,
+      test2: new Set([1, 2]),
+      test1: new Map([
+        [1, 'one'],
+        [2, 'two'],
+        [3, 'three'],
+      ]),
     };
 
     const copy = cloneObject(data, true);
@@ -58,6 +64,12 @@ describe('clone', () => {
         },
       },
       file: fileData,
+      test2: new Set([1, 2]),
+      test1: new Map([
+        [1, 'one'],
+        [2, 'two'],
+        [3, 'three'],
+      ]),
     });
   });
 });
