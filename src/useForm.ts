@@ -279,7 +279,7 @@ export function useForm<
       isEmptyObject(defaultValuesRef.current)
         ? defaultValuesAtRenderRef.current
         : defaultValuesRef.current,
-    );
+    ) || !isEmptyObject(formStateRef.current.dirtyFields);
 
   const updateAndGetDirtyState = React.useCallback(
     (
@@ -1113,8 +1113,9 @@ export function useForm<
             ...formStateRef.current.errors,
             ...fieldErrors,
           };
-          onInvalid && (await onInvalid(fieldErrors, e));
-          shouldFocusError && focusOnErrorField(fieldsRef.current, fieldErrors);
+          onInvalid && (await onInvalid(formStateRef.current.errors, e));
+          shouldFocusError &&
+            focusOnErrorField(fieldsRef.current, formStateRef.current.errors);
         }
       } finally {
         updateFormState({
