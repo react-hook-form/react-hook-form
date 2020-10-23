@@ -279,7 +279,7 @@ export function useForm<
       isEmptyObject(defaultValuesRef.current)
         ? defaultValuesAtRenderRef.current
         : defaultValuesRef.current,
-    );
+    ) || !isEmptyObject(formStateRef.current.dirtyFields);
 
   const updateAndGetDirtyState = React.useCallback(
     (
