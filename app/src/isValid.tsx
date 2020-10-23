@@ -2,7 +2,7 @@ import * as React from 'react';
 import { useForm } from 'react-hook-form';
 import { withRouter } from 'react-router';
 import * as yup from 'yup';
-import { yupResolver } from 'react-hook-form-resolvers';
+import { yupResolver } from '@hookform/resolvers/yup';
 
 let renderCounter = 0;
 
