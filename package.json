@@ -15,9 +15,8 @@
     "dist"
   ],
   "exports": {
-    ".": {
-      "import": "./dist/react-hook-form.es.js"
-    }
+    "import": "./dist/index.esm.js",
+    "require": "./dist/index.js"
   },
   "scripts": {
     "clean": "rimraf dist",
