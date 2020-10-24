@@ -418,6 +418,7 @@ export function useForm<
       }
 
       if (Array.isArray(fields)) {
+        !name && (formStateRef.current.errors = {});
         const result = await Promise.all(
           fields.map(async (data) => await executeValidation(data, null)),
         );
