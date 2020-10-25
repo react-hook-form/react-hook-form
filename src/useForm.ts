@@ -294,9 +294,10 @@ export function useForm<
         readFormStateRef.current.isDirty ||
         readFormStateRef.current.dirtyFields
       ) {
-        const isFieldDirty =
-          get(defaultValuesAtRenderRef.current, name) !==
-          getFieldValue(fieldsRef, name, shallowFieldsStateRef);
+        const isFieldDirty = !deepEqual(
+          get(defaultValuesAtRenderRef.current, name),
+          getFieldValue(fieldsRef, name, shallowFieldsStateRef),
+        );
         const isDirtyFieldExist = get(formStateRef.current.dirtyFields, name);
         const previousIsDirty = formStateRef.current.isDirty;
 

@@ -1,10 +1,15 @@
 import isObject from '../utils/isObject';
+import isPrimitive from './isPrimitive';
 
 export default function deepEqual(
   object1: any = [],
   object2: any = [],
   isErrorObject?: boolean,
 ) {
+  if (isPrimitive(object1) && isPrimitive(object2)) {
+    return object1 === object2;
+  }
+
   const keys1 = Object.keys(object1);
   const keys2 = Object.keys(object2);
 
