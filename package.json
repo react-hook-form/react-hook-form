@@ -15,8 +15,11 @@
     "dist"
   ],
   "exports": {
-    "import": "./dist/index.esm.js",
-    "require": "./dist/index.js"
+    "./package.json": "./package.json",
+    ".": {
+      "import": "./dist/index.esm.js",
+      "require": "./dist/index.js"
+    }
   },
   "scripts": {
     "clean": "rimraf dist",
