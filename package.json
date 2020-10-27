@@ -19,6 +19,10 @@
     ".": {
       "import": "./dist/index.esm.js",
       "require": "./dist/index.js"
+    },
+    "./dist/index.ie11": {
+      "import": "./dist/index.ie11.js",
+      "require": "./dist/index.ie11.js"
     }
   },
   "scripts": {
