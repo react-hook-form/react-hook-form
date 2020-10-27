@@ -65,6 +65,11 @@ const Controller = <
   const [value, setInputStateValue] = React.useState(getInitialValue());
   const valueRef = React.useRef(value);
   const onFocusRef = React.useRef(onFocus);
+  const inputRef = React.useRef({
+    focus: () => {},
+  });
+
+  onFocusRef.current = onFocus || (() => inputRef.current.focus());
 
   const shouldValidate = (isBlurEvent?: boolean) =>
     !skipValidation({
@@ -186,6 +191,7 @@ const Controller = <
         onBlur,
         value,
         name,
+        ref: inputRef,
       })
     : null;
 };
