@@ -173,12 +173,17 @@ const Controller = <
       shouldDirty: true,
     });
 
-  const props = {
-    ...rest,
+  const commonProps = {
     onChange,
     onBlur,
     name,
     value,
+    ref: inputRef,
+  };
+
+  const props = {
+    ...rest,
+    ...commonProps,
   };
 
   return as
@@ -186,13 +191,7 @@ const Controller = <
       ? React.cloneElement(as, props)
       : React.createElement(as as string, props as any)
     : render
-    ? render({
-        onChange,
-        onBlur,
-        value,
-        name,
-        ref: inputRef,
-      })
+    ? render(commonProps)
     : null;
 };
 
