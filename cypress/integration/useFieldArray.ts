@@ -183,14 +183,14 @@ describe('useFieldArray', () => {
     );
 
     cy.get('#insert').click();
-    cy.get('ul > li').eq(1).find('input').should('have.value', '18');
+    cy.get('ul > li').eq(1).find('input').should('have.value', '19');
 
     cy.get('#submit').click();
     cy.get('#result').should(($state) =>
       expect(JSON.parse($state.text())).to.be.deep.equal({
         data: [
           { name: 'test' },
-          { name: '18' },
+          { name: '19' },
           { name: '6' },
           { name: 'test1' },
           { name: 'test2' },
@@ -246,13 +246,13 @@ describe('useFieldArray', () => {
 
     cy.get('#append').click();
 
-    cy.get('ul > li').eq(0).find('input').should('have.value', '35');
+    cy.get('ul > li').eq(0).find('input').should('have.value', '36');
 
     cy.get('#prepend').click();
 
-    cy.get('ul > li').eq(0).find('input').should('have.value', '36');
+    cy.get('ul > li').eq(0).find('input').should('have.value', '38');
 
-    cy.get('#renderCount').contains('37');
+    cy.get('#renderCount').contains('39');
   });
 
   it('should behaviour correctly with defaultValue and without auto focus', () => {
@@ -577,23 +577,23 @@ describe('useFieldArray', () => {
     );
     cy.get('#insert').click();
     cy.get('#touched').contains(
-      '[null,null,{"name":true},{"name":true},{"name":true},{"name":true}]',
+      '[{"name":true},null,{"name":true},{"name":true},{"name":true},{"name":true}]',
     );
     cy.get('#swap').click();
     cy.get('#touched').contains(
-      '[null,{"name":true},{"name":true},{"name":true},{"name":true},{"name":true}]',
+      '[{"name":true},{"name":true},{"name":true},{"name":true},{"name":true},{"name":true}]',
     );
     cy.get('#move').click();
     cy.get('#touched').contains(
-      '[{"name":true},null,{"name":true},{"name":true},{"name":true},{"name":true}]',
+      '[{"name":true},{"name":true},{"name":true},{"name":true},{"name":true},{"name":true}]',
     );
     cy.get('#insert').click();
     cy.get('#touched').contains(
-      '[{"name":true},null,null,{"name":true},{"name":true},{"name":true},{"name":true}]',
+      '[{"name":true},null,{"name":true},{"name":true},{"name":true},{"name":true},{"name":true}]',
     );
     cy.get('#delete4').click();
     cy.get('#touched').contains(
-      '[{"name":true},{"name":true},null,{"name":true},{"name":true},{"name":true}]',
+      '[{"name":true},{"name":true},{"name":true},{"name":true},{"name":true},{"name":true}]',
     );
   });
 
