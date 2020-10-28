@@ -313,12 +313,11 @@ export const useFieldArray = <
       });
     }
 
-    if (!shouldUnregister) {
+    !shouldUnregister &&
       set(shallowFieldsStateRef.current, name, [
         ...(shallowFieldsStateRef.current[name] || []),
         value,
       ]);
-    }
     focusIndexRef.current = shouldFocus ? allFields.current.length : -1;
   };
 
