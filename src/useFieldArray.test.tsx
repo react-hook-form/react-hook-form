@@ -16,6 +16,8 @@ import {
   FieldError,
   DeepMap,
   SubmitHandler,
+  UseFormMethods,
+  FieldValues,
 } from './types';
 import { VALIDATION_MODE } from './constants';
 import { FormProvider } from './useFormContext';
@@ -3827,6 +3829,127 @@ describe('useFieldArray', () => {
   });
 
   describe('array of array fields', () => {
+    it('should remove correctly with nested field array and set shouldUnregister to false', () => {
+      const Component = () => {
+        const { register, control } = useForm({
+          shouldUnregister: false,
+        });
+        const { fields, append } = useFieldArray({
+          name: 'fieldArray',
+          control,
+        });
+
+        return (
+          <form>
+            {fields.map((field, index) => (
+              <ArrayField
+                key={field.id}
+                arrayIndex={index}
+                arrayField={field}
+                register={register}
+                control={control}
+              />
+            ))}
+
+            <button
+              type="button"
+              onClick={() => {
+                append({
+                  value: `fieldArray[${fields.length}].value`,
+                });
+              }}
+            >
+              Add array
+            </button>
+          </form>
+        );
+      };
+
+      const ArrayField = ({
+        arrayIndex,
+        arrayField,
+        register,
+        control,
+      }: {
+        arrayIndex: number;
+        register: UseFormMethods['register'];
+        arrayField: Partial<FieldValues>;
+        control: Control;
+      }) => {
+        const { fields, append, remove } = useFieldArray({
+          name: `fieldArray[${arrayIndex}].nestedFieldArray`,
+          control,
+        });
+
+        return (
+          <div>
+            <input
+              ref={register}
+              name={`fieldArray[${arrayIndex}].value`}
+              defaultValue={arrayField.value}
+            />
+            <br />
+            {fields.map((nestedField, index) => (
+              <div key={nestedField.id}>
+                <input
+                  ref={register()}
+                  name={`fieldArray[${arrayIndex}].nestedFieldArray[${index}].value`}
+                  defaultValue={nestedField.value}
+                />
+                <button type="button" onClick={() => remove(index)}>
+                  remove
+                </button>
+              </div>
+            ))}
+            <button
+              type="button"
+              onClick={() => {
+                append({
+                  value: `fieldArray[${arrayIndex}].nestedFieldArray[${fields.length}].value`,
+                });
+              }}
+            >
+              Add nested array
+            </button>
+          </div>
+        );
+      };
+
+      render(<Component />);
+
+      fireEvent.click(
+        screen.getByRole('button', {
+          name: 'Add array',
+        }),
+      );
+
+      fireEvent.click(
+        screen.getByRole('button', {
+          name: 'Add nested array',
+        }),
+      );
+
+      fireEvent.click(
+        screen.getByRole('button', {
+          name: 'Add nested array',
+        }),
+      );
+
+      fireEvent.click(
+        screen.getAllByRole('button', {
+          name: 'remove',
+        })[0],
+      );
+
+      fireEvent.click(
+        screen.getAllByRole('button', {
+          name: 'remove',
+        })[0],
+      );
+
+      expect(screen.getAllByRole('textbox').length).toEqual(1);
+    });
+
     it('should prepend correctly with default values on nested array fields', () => {
       const ChildComponent = ({
         index,
