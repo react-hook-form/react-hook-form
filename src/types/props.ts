@@ -46,6 +46,7 @@ export type ControllerProps<
           onBlur: () => void;
           value: any;
           name: FieldName<FieldValuesFromControl<TControl>>;
+          ref: React.MutableRefObject<any>;
         }) => React.ReactElement;
       }
   ) & {

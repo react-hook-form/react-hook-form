@@ -65,6 +65,11 @@ const Controller = <
   const [value, setInputStateValue] = React.useState(getInitialValue());
   const valueRef = React.useRef(value);
   const onFocusRef = React.useRef(onFocus);
+  const ref = React.useRef({
+    focus: () => {},
+  });
+
+  onFocusRef.current = onFocus || (() => ref.current.focus());
 
   const shouldValidate = (isBlurEvent?: boolean) =>
     !skipValidation({
@@ -168,12 +173,17 @@ const Controller = <
       shouldDirty: true,
     });
 
-  const props = {
-    ...rest,
+  const commonProps = {
     onChange,
     onBlur,
     name,
     value,
+    ref,
+  };
+
+  const props = {
+    ...rest,
+    ...commonProps,
   };
 
   return as
@@ -181,12 +191,7 @@ const Controller = <
       ? React.cloneElement(as, props)
       : React.createElement(as as string, props as any)
     : render
-    ? render({
-        onChange,
-        onBlur,
-        value,
-        name,
-      })
+    ? render(commonProps)
     : null;
 };
 
