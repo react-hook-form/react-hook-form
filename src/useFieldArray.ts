@@ -101,12 +101,12 @@ export const useFieldArray = <
   >(fields);
 
   const getCurrentFieldsValues = () =>
-    get(getValues(), name, allFields.current)
-      .slice(0, allFields.current.length)
-      .map((item: Partial<TFieldArrayValues>, index: number) => ({
+    get(getValues(), name, allFields.current).map(
+      (item: Partial<TFieldArrayValues>, index: number) => ({
         ...allFields.current[index],
         ...item,
-      }));
+      }),
+    );
 
   allFields.current = fields;
   fieldArrayNamesRef.current.add(name);
