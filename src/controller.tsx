@@ -2,7 +2,6 @@ import * as React from 'react';
 import isUndefined from './utils/isUndefined';
 import get from './utils/get';
 import set from './utils/set';
-import isFunction from './utils/isFunction';
 import getInputValue from './logic/getInputValue';
 import skipValidation from './logic/skipValidation';
 import isNameInFieldArray from './logic/isNameInFieldArray';
@@ -66,15 +65,11 @@ const Controller = <
   const [value, setInputStateValue] = React.useState(getInitialValue());
   const valueRef = React.useRef(value);
   const onFocusRef = React.useRef(onFocus);
-  const ref = React.useRef<{
-    focus?: () => void;
-  }>({});
+  const ref = React.useRef({
+    focus: () => {},
+  });
 
-  onFocusRef.current =
-    onFocus ||
-    (ref.current.focus
-      ? () => isFunction(ref.current.focus) && ref.current.focus()
-      : undefined);
+  onFocusRef.current = onFocus || (() => ref.current.focus());
 
   const shouldValidate = (isBlurEvent?: boolean) =>
     !skipValidation({
