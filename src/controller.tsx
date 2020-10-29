@@ -64,12 +64,8 @@ const Controller = <
       : defaultValue;
   const [value, setInputStateValue] = React.useState(getInitialValue());
   const valueRef = React.useRef(value);
-  const onFocusRef = React.useRef(onFocus);
-  const ref = React.useRef({
-    focus: () => {},
-  });
-
-  onFocusRef.current = onFocus || (() => ref.current.focus());
+  const ref = React.useRef<HTMLElement>();
+  const onFocusRef = React.useRef(onFocus || (() => ref.current?.focus()));
 
   const shouldValidate = (isBlurEvent?: boolean) =>
     !skipValidation({
@@ -102,15 +98,22 @@ const Controller = <
       };
     } else {
       register(
-        Object.defineProperty({ name, focus: onFocusRef.current }, VALUE, {
-          set(data) {
-            setInputStateValue(data);
-            valueRef.current = data;
+        Object.defineProperty(
+          {
+            name,
+            focus: onFocusRef.current,
           },
-          get() {
-            return valueRef.current;
+          VALUE,
+          {
+            set(data) {
+              setInputStateValue(data);
+              valueRef.current = data;
+            },
+            get() {
+              return valueRef.current;
+            },
           },
-        }),
+        ),
         rules,
       );
       if (isNotFieldArray && !get(defaultValuesRef.current, name)) {
