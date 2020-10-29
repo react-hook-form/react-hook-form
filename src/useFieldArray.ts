@@ -33,11 +33,24 @@ const mapIds = <
 >(
   values: Partial<TFieldArrayValues>[] = [],
   keyName: TKeyName,
-): Partial<ArrayField<TFieldArrayValues, TKeyName>>[] =>
-  values.map((value: Partial<TFieldArrayValues>) => ({
+): Partial<ArrayField<TFieldArrayValues, TKeyName>>[] => {
+  if (process.env.NODE_ENV !== 'production') {
+    for (const value of values) {
+      if (keyName in value) {
+        console.warn(
+          `📋 useFieldArray fieldValues contain the keyName \`${keyName}\` which is reserved for use by useFieldArray. https://react-hook-form.com/api#useFieldArray`,
+        );
+
+        break;
+      }
+    }
+  }
+
+  return values.map((value: Partial<TFieldArrayValues>) => ({
     [keyName]: generateId(),
     ...value,
   }));
+};
 
 export const useFieldArray = <
   TFieldArrayValues extends FieldValues = FieldValues,
