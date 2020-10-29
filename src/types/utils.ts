@@ -27,15 +27,15 @@ export type LiteralUnion<T extends U, U extends Primitive> =
 
 export type Assign<T extends object, U extends object> = T & Omit<U, keyof T>;
 
-export type DeepPartial<T> = T extends Primitive
-  ? Partial<T>
-  : {
-      [P in keyof T]?: T[P] extends (infer U)[]
-        ? DeepPartial<U>[]
-        : T[P] extends Readonly<infer U>[]
-        ? Readonly<DeepPartial<U>>[]
-        : DeepPartial<T[P]>;
-    };
+export type DeepPartial<T> = T extends Array<infer U>
+  ? Array<DeepPartial<U>>
+  : T extends ReadonlyArray<infer U>
+  ? ReadonlyArray<DeepPartial<U>>
+  : T extends Record<string, unknown>
+  ? {
+      [K in keyof T]?: DeepPartial<T[K]>;
+    }
+  : T;
 
 export type IsAny<T> = boolean extends (T extends never ? true : false)
   ? true
