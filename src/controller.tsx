@@ -65,7 +65,7 @@ const Controller = <
   const [value, setInputStateValue] = React.useState(getInitialValue());
   const valueRef = React.useRef(value);
   const ref = React.useRef({
-    focus: () => {},
+    focus: () => null,
   });
   const onFocusRef = React.useRef(onFocus || (() => ref.current.focus()));
 
