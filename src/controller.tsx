@@ -64,8 +64,10 @@ const Controller = <
       : defaultValue;
   const [value, setInputStateValue] = React.useState(getInitialValue());
   const valueRef = React.useRef(value);
-  const ref = React.useRef<HTMLElement>();
-  const onFocusRef = React.useRef(onFocus || (() => ref.current?.focus()));
+  const ref = React.useRef({
+    focus: () => {},
+  });
+  const onFocusRef = React.useRef(onFocus || (() => ref.current.focus()));
 
   const shouldValidate = (isBlurEvent?: boolean) =>
     !skipValidation({
