@@ -202,6 +202,40 @@ describe('useFieldArray', () => {
       expect(console.warn).not.toBeCalled();
     });
 
+    it('should output error message when a conflicting fieldArray keyName is found in the fieldValues in development mode', () => {
+      jest.spyOn(console, 'warn').mockImplementation(() => {});
+
+      process.env.NODE_ENV = 'development';
+
+      renderHook(() => {
+        const { control } = useForm({
+          defaultValues: {
+            test: [{ id: '123' }],
+          },
+        });
+        useFieldArray({ control, name: 'test' });
+      });
+
+      expect(console.warn).toBeCalledTimes(1);
+    });
+
+    it('should not output error message when a conflicting fieldArray keyName is found in the fieldValues in production mode', () => {
+      jest.spyOn(console, 'warn').mockImplementation(() => {});
+
+      process.env.NODE_ENV = 'production';
+
+      renderHook(() => {
+        const { control } = useForm({
+          defaultValues: {
+            test: [{ id: '123' }],
+          },
+        });
+        useFieldArray({ control, name: 'test' });
+      });
+
+      expect(console.warn).toBeCalledTimes(0);
+    });
+
     it('should throw custom error when control is not defined in development mode', () => {
       process.env.NODE_ENV = 'development';
 
