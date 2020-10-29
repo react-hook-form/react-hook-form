@@ -34,24 +34,22 @@ const mapIds = <
   values: Partial<TFieldArrayValues>[] = [],
   keyName: TKeyName,
 ): Partial<ArrayField<TFieldArrayValues, TKeyName>>[] => {
-  let reservedKeyUsed = false;
-  const result = values.map((value: Partial<TFieldArrayValues>) => {
-    if (keyName in value) {
-      reservedKeyUsed = true;
-    }
-    return {
-      [keyName]: generateId(),
-      ...value,
-    };
-  });
+  if (process.env.NODE_ENV !== 'production') {
+    for (const value of values) {
+      if (keyName in value) {
+        console.warn(
+          `📋 useFieldArray fieldValues contain the keyName \`${keyName}\` which is reserved for use by useFieldArray. https://react-hook-form.com/api#useFieldArray`,
+        );
 
-  if (process.env.NODE_ENV !== 'production' && reservedKeyUsed) {
-    console.warn(
-      `📋 useFieldArray fieldValues contain the keyName \`${keyName}\` which is reserved for use by useFieldArray. https://react-hook-form.com/api#useFieldArray`,
-    );
+        break;
+      }
+    }
   }
 
-  return result;
+  return values.map((value: Partial<TFieldArrayValues>) => ({
+    [keyName]: generateId(),
+    ...value,
+  }));
 };
 
 export const useFieldArray = <
