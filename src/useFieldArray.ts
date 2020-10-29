@@ -31,7 +31,7 @@ const mapIds = <
   TFieldArrayValues extends FieldValues = FieldValues,
   TKeyName extends string = 'id'
 >(
-  values: Partial<TFieldArrayValues>[],
+  values: Partial<TFieldArrayValues>[] = [],
   keyName: TKeyName,
 ): Partial<ArrayField<TFieldArrayValues, TKeyName>>[] =>
   values.map((value: Partial<TFieldArrayValues>) => ({
