@@ -172,6 +172,9 @@ export function useForm<
     [],
   );
 
+  const getParentNodeName = (name: string) =>
+    name.substring(0, name.lastIndexOf('.'));
+
   const shouldRenderBaseOnError = React.useCallback(
     (
       name: InternalFieldName<TFieldValues>,
@@ -211,7 +214,7 @@ export function useForm<
         if (get(formStateRef.current.errors, name)) {
           unset(formStateRef.current.errors, name);
         } else if (resolverRef.current) {
-          const keyName = name.substring(0, name.lastIndexOf('.'));
+          const keyName = getParentNodeName(name);
           keyName &&
             get(formStateRef.current.errors, keyName) &&
             unset(formStateRef.current.errors, keyName) &&
@@ -601,8 +604,7 @@ export function useForm<
 
             error =
               get(errors, name) ||
-              (resolverRef.current &&
-                get(errors, name.substring(0, name.lastIndexOf('.'))));
+              (resolverRef.current && get(errors, getParentNodeName(name)));
 
             isValid = isEmptyObject(errors);
 
