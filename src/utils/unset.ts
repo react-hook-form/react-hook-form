@@ -18,9 +18,6 @@ function baseGet(object: any, updatePath: (string | number)[]) {
 }
 
 export default function unset(object: any, path: string) {
-  if (!path) {
-    return object;
-  }
   const updatePath = isKey(path) ? [path] : stringToPath(path);
   const childObject =
     updatePath.length == 1 ? object : baseGet(object, updatePath);
