@@ -3337,7 +3337,7 @@ describe('useForm', () => {
       });
 
       expect(errorsObject).toEqual({
-        checkbox: [{ type: 'error', message: 'wrong' }],
+        checkbox: { type: 'error', message: 'wrong' },
       });
 
       await actComponent(async () => {
