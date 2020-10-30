@@ -3284,7 +3284,7 @@ describe('useForm', () => {
   });
 
   describe('with schema validation', () => {
-    it('should trigger and clear errors for checkbox group', async () => {
+    it('should trigger and clear errors for group errors object', async () => {
       let errorsObject = {};
 
       const Component = () => {
