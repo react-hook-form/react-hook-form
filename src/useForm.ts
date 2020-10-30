@@ -207,6 +207,7 @@ export function useForm<
           set(validFieldsRef.current, name, true);
           shouldReRender = shouldReRender || previousError;
         }
+
         unset(formStateRef.current.errors, name);
       }
 
@@ -543,7 +544,7 @@ export function useForm<
   handleChangeRef.current = handleChangeRef.current
     ? handleChangeRef.current
     : async ({ type, target }: Event): Promise<void | boolean> => {
-        const name = (target as Ref)!.name;
+        let name = (target as Ref)!.name;
         const field = fieldsRef.current[name];
         let error;
         let isValid;
@@ -589,8 +590,19 @@ export function useForm<
               isValidateAllFieldCriteria,
             );
             const previousFormIsValid = formStateRef.current.isValid;
+            const parentNodeName = name.substring(
+              0,
+              name.lastIndexOf('.') > name.lastIndexOf('[')
+                ? name.lastIndexOf('.')
+                : name.lastIndexOf('['),
+            );
 
-            error = get(errors, name);
+            error = get(errors, name)
+              ? get(errors, name)
+              : resolverRef.current &&
+                parentNodeName &&
+                (name = parentNodeName) &&
+                get(errors, name);
 
             isValid = isEmptyObject(errors);
 

@@ -3282,4 +3282,87 @@ describe('useForm', () => {
       expect(screen.queryByText('This is required.')).toBeInTheDocument();
     });
   });
+
+  describe('with schema validation', () => {
+    it('should trigger and clear errors for group errors object', async () => {
+      let errorsObject = {};
+
+      const Component = () => {
+        const { errors, register, handleSubmit } = useForm<{
+          checkbox: string[];
+        }>({
+          mode: 'onChange',
+          resolver: (data) => {
+            return {
+              errors: {
+                ...(data.checkbox.every((value) => !value)
+                  ? { checkbox: { type: 'error', message: 'wrong' } as any }
+                  : {}),
+              },
+              values: {},
+            };
+          },
+        });
+        errorsObject = errors;
+
+        return (
+          <form onSubmit={handleSubmit(() => {})}>
+            {[1, 2, 3].map((value, index) => (
+              <div key={`test[${index}]`}>
+                <label
+                  htmlFor={`checkbox[${index}]`}
+                >{`checkbox[${index}]`}</label>
+                <input
+                  type={'checkbox'}
+                  key={index}
+                  id={`checkbox[${index}]`}
+                  name={`checkbox[${index}]`}
+                  ref={register}
+                  value={value}
+                />
+              </div>
+            ))}
+
+            <button>Submit</button>
+          </form>
+        );
+      };
+
+      render(<Component />);
+
+      fireEvent.click(screen.getByLabelText('checkbox[0]'));
+
+      await actComponent(async () => {
+        await fireEvent.click(screen.getByLabelText('checkbox[0]'));
+      });
+
+      expect(errorsObject).toEqual({
+        checkbox: { type: 'error', message: 'wrong' },
+      });
+
+      await actComponent(async () => {
+        await fireEvent.click(screen.getByLabelText('checkbox[0]'));
+      });
+
+      expect(errorsObject).toEqual({});
+
+      await actComponent(async () => {
+        await fireEvent.click(screen.getByLabelText('checkbox[0]'));
+      });
+
+      await actComponent(async () => {
+        fireEvent.click(screen.getByRole('button'));
+      });
+
+      expect(errorsObject).toEqual({
+        checkbox: { type: 'error', message: 'wrong' },
+      });
+
+      await actComponent(async () => {
+        await fireEvent.click(screen.getByLabelText('checkbox[0]'));
+      });
+
+      expect(errorsObject).toEqual({});
+    });
+  });
 });

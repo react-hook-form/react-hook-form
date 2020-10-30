@@ -8,6 +8,14 @@ describe('unset', () => {
     expect(unset(test, '[2]')).toEqual([undefined, undefined, undefined]);
   });
 
+  it('should return original object when path is not defined', () => {
+    const test = {
+      test: 'test',
+    };
+
+    expect(unset(test, '')).toEqual(test);
+  });
+
   it('should unset the flat object', () => {
     const test = {
       test: 'test',
