@@ -207,7 +207,15 @@ export function useForm<
           set(validFieldsRef.current, name, true);
           shouldReRender = shouldReRender || previousError;
         }
-        unset(formStateRef.current.errors, name);
+
+        if (get(formStateRef.current.errors, name)) {
+          unset(formStateRef.current.errors, name);
+        } else if (resolverRef.current) {
+          const keyName = name.substring(0, name.lastIndexOf('.'));
+          keyName &&
+            unset(formStateRef.current.errors, keyName) &&
+            (shouldReRender = true);
+        }
       }
 
       if (
@@ -590,7 +598,10 @@ export function useForm<
             );
             const previousFormIsValid = formStateRef.current.isValid;
 
-            error = get(errors, name);
+            error =
+              get(errors, name) ||
+              (resolverRef.current &&
+                get(errors, name.substring(0, name.lastIndexOf('.'))));
 
             isValid = isEmptyObject(errors);
 
