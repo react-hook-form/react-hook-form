@@ -211,9 +211,8 @@ export function useForm<
 
         if (get(formStateRef.current.errors, name)) {
           unset(formStateRef.current.errors, name);
-        } else if (resolverRef.current) {
-          parentNodeName &&
-            get(formStateRef.current.errors, parentNodeName) &&
+        } else if (resolverRef.current && parentNodeName) {
+          get(formStateRef.current.errors, parentNodeName) &&
             unset(formStateRef.current.errors, parentNodeName) &&
             (shouldReRender = true);
         }
