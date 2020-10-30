@@ -214,7 +214,8 @@ export function useForm<
           resolverRef.current &&
           get(formStateRef.current.errors, name)
         ) {
-          unset(formStateRef.current.errors, name) && (shouldReRender = true);
+          unset(formStateRef.current.errors, name);
+          shouldReRender = true;
         }
       }
 
