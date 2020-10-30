@@ -599,15 +599,15 @@ export function useForm<
               isValidateAllFieldCriteria,
             );
             const previousFormIsValid = formStateRef.current.isValid;
+            const dotIndex = name.lastIndexOf('.');
+            const bracketIndex = name.lastIndexOf('[');
 
             error = get(errors, name)
               ? get(errors, name)
               : resolverRef.current &&
                 (parentNodeName = name.substring(
                   0,
-                  name.lastIndexOf('.') > name.lastIndexOf('[')
-                    ? name.lastIndexOf('.')
-                    : name.lastIndexOf('['),
+                  dotIndex > bracketIndex ? dotIndex : bracketIndex,
                 )) &&
                 get(errors, parentNodeName);
 
