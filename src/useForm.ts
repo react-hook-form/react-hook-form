@@ -590,16 +590,18 @@ export function useForm<
               isValidateAllFieldCriteria,
             );
             const previousFormIsValid = formStateRef.current.isValid;
+            const parentNodeName = name.substring(
+              0,
+              name.lastIndexOf('.') > name.lastIndexOf('[')
+                ? name.lastIndexOf('.')
+                : name.lastIndexOf('['),
+            );
 
             error = get(errors, name)
               ? get(errors, name)
               : resolverRef.current &&
-                (name = name.substring(
-                  0,
-                  name.lastIndexOf('.') > name.lastIndexOf('[')
-                    ? name.lastIndexOf('.')
-                    : name.lastIndexOf('['),
-                )) &&
+                parentNodeName &&
+                (name = parentNodeName) &&
                 get(errors, name);
 
             isValid = isEmptyObject(errors);
