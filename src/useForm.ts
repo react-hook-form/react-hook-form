@@ -556,7 +556,7 @@ export function useForm<
         const field = fieldsRef.current[name];
         let error;
         let isValid;
-        let parentNodeName = '';
+        let parentNodeName;
 
         if (field) {
           const isBlurEvent = type === EVENTS.BLUR;
