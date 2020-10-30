@@ -208,10 +208,7 @@ export function useForm<
           shouldReRender = shouldReRender || previousError;
         }
 
-        if (get(formStateRef.current.errors, name)) {
-          unset(formStateRef.current.errors, name);
-          shouldReRender = true;
-        }
+        unset(formStateRef.current.errors, name);
       }
 
       if (
