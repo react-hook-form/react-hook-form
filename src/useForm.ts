@@ -213,6 +213,7 @@ export function useForm<
         } else if (resolverRef.current) {
           const keyName = name.substring(0, name.lastIndexOf('.'));
           keyName &&
+            get(formStateRef.current.errors, keyName) &&
             unset(formStateRef.current.errors, keyName) &&
             (shouldReRender = true);
         }
