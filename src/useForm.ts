@@ -183,6 +183,7 @@ export function useForm<
         touched?: FieldNamesMarkedBoolean<TFieldValues>;
       } = {},
       isValid?: boolean,
+      parentNodeName?: string,
     ): boolean | void => {
       let shouldReRender =
         shouldRender ||
@@ -211,10 +212,9 @@ export function useForm<
         if (get(formStateRef.current.errors, name)) {
           unset(formStateRef.current.errors, name);
         } else if (resolverRef.current) {
-          const keyName = name.substring(0, name.lastIndexOf('.'));
-          keyName &&
-            get(formStateRef.current.errors, keyName) &&
-            unset(formStateRef.current.errors, keyName) &&
+          parentNodeName &&
+            get(formStateRef.current.errors, parentNodeName) &&
+            unset(formStateRef.current.errors, parentNodeName) &&
             (shouldReRender = true);
         }
       }
@@ -556,6 +556,7 @@ export function useForm<
         const field = fieldsRef.current[name];
         let error;
         let isValid;
+        let parentNodeName = '';
 
         if (field) {
           const isBlurEvent = type === EVENTS.BLUR;
@@ -599,10 +600,16 @@ export function useForm<
             );
             const previousFormIsValid = formStateRef.current.isValid;
 
-            error =
-              get(errors, name) ||
-              (resolverRef.current &&
-                get(errors, name.substring(0, name.lastIndexOf('.'))));
+            error = get(errors, name)
+              ? get(errors, name)
+              : resolverRef.current &&
+                (parentNodeName = name.substring(
+                  0,
+                  name.lastIndexOf('.') > name.lastIndexOf('[')
+                    ? name.lastIndexOf('.')
+                    : name.lastIndexOf('['),
+                )) &&
+                get(errors, parentNodeName);
 
             isValid = isEmptyObject(errors);
 
@@ -621,7 +628,14 @@ export function useForm<
           }
 
           renderWatchedInputs(name);
-          shouldRenderBaseOnError(name, error, shouldRender, state, isValid);
+          shouldRenderBaseOnError(
+            name,
+            error,
+            shouldRender,
+            state,
+            isValid,
+            parentNodeName,
+          );
         }
       };
 
