@@ -605,8 +605,9 @@ export function useForm<
                 (error = currentError);
 
               if (
-                currentError ||
-                get(formStateRef.current.errors, parentNodeName)
+                parentNodeName &&
+                (currentError ||
+                  get(formStateRef.current.errors, parentNodeName))
               ) {
                 name = parentNodeName;
               }
