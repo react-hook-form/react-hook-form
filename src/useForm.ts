@@ -599,10 +599,15 @@ export function useForm<
                   ? name.lastIndexOf('.')
                   : name.lastIndexOf('['),
               );
-              const tempError = get(errors, parentNodeName, {});
+              const currentError = get(errors, parentNodeName, {});
+              currentError.type &&
+                currentError.message &&
+                (error = currentError);
 
-              if (tempError.type && tempError.message) {
-                error = tempError;
+              if (
+                currentError ||
+                get(formStateRef.current.errors, parentNodeName)
+              ) {
                 name = parentNodeName;
               }
             }
