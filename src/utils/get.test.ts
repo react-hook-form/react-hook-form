@@ -27,4 +27,11 @@ describe('get', () => {
     };
     expect(get(test, 'bill')).toEqual('test');
   });
+
+  it('should return undefined when provided with empty path', () => {
+    const test = {
+      bill: 'test',
+    };
+    expect(get(test, '')).toEqual(undefined);
+  });
 });
