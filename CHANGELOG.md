@@ -1,6 +1,6 @@
 # Changelog
 
-## [6.10.0] - 2020-10-3
+## [6.10.0] - 2020-10-31
 
 ### Added
 
@@ -20,30 +20,30 @@
   }}
 />
 
-<Controlller
- name="test"
- as={<input />} // focus will work correct without the `onFocus` prop
-/>
+// focus will work correct without the `onFocus` prop
+<Controlller name="test" as={<input />} />
 ```
 
 ### Changed
 
 - `resolver` with group error object will no longer need with `trigger` to show and clear error. This minor version made hook form look at parent error node to detect if there is any group error to show and hide.
 
-```diff
+```tsx
 const schema = z.object({
   items: z.array(z.boolean()).refine((items) => items.some((item) => item)),
 });
 
-{items.map((flag, index) => (
-  <input
-    type="checkbox"
-    defaultChecked={false}
-    // onChange={() => trigger("items")} now can be removed
-    ref={register}
-    name={`items.${index}`}
-  />
-))}
+{
+  items.map((flag, index) => (
+    <input
+      type="checkbox"
+      defaultChecked={false}
+      // onChange={() => trigger("items")} now can be removed
+      ref={register}
+      name={`items.${index}`}
+    />
+  ));
+}
 ```
 
 ## [6.9.0] - 2020-10-3
