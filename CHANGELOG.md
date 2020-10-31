@@ -1,28 +1,77 @@
 # Changelog
 
+## [6.10.0] - 2020-10-3
+
+### Added
+
+- `Controller` will have an extra `ref` props to improve DX in terms of focus management.
+
+```tsx
+<Controlller
+  name="test"
+  render={(props) => {
+    return (
+      <input
+        value={props.value}
+        onChange={props.onChange}
+        ref={props.ref} // you can assign ref now withou the use of `onFocus`
+      />
+    );
+  }}
+/>
+
+<Controlller
+ name="test"
+ as={<input />} // focus will work correct without the `onFocus` prop
+/>
+```
+
+### Changed
+
+- `resolver` with group error object will no longer need with `trigger` to show and clear error. This minor version made hook form look at parent error node to detect if there is any group error to show and hide.
+
+```diff
+const schema = z.object({
+  items: z.array(z.boolean()).refine((items) => items.some((item) => item)),
+});
+
+{items.map((flag, index) => (
+  <input
+    type="checkbox"
+    defaultChecked={false}
+    // onChange={() => trigger("items")} now can be removed
+    ref={register}
+    name={`items.${index}`}
+  />
+))}
+```
+
 ## [6.9.0] - 2020-10-3
+
+### Changed
 
 - with shouldUnregister set to false, empty Field Array will default [] as submission result.
 
 ```tsx
 const { handleSubmit } = useForm({
   shouldUnregister: false,
-})
+});
 
 useFieldArray({
   name: 'test',
-})
+});
 
 handleSubmit((data) => {
   // shouldUnregister: false
-  // result:  { data: {test: []} } 
-
+  // result:  { data: {test: []} }
   // shouldUnregister: true
   // result: {}
-})
+});
 ```
 
 ## [6.8.4] - 2020-09-22
+
+### Changed
 
 - when input unmounts `touched` and `dirtyFields` will no longer get removed from `formState` (shouldUnregister: true).
 
