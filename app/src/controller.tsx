@@ -40,6 +40,8 @@ type Form = {
   RadioGroup: string;
 };
 
+const PureReactSelect = React.memo(ReactSelect)
+
 export default function Field(props: any) {
   const methods = useForm<Form>({
     defaultValues,
@@ -47,7 +49,10 @@ export default function Field(props: any) {
   });
   const { handleSubmit, errors, reset, control } = methods;
 
+  const [, setRerender] = React.useState(0)
   renderCount++;
+
+  const rerender = () => setRerender(Math.random())
 
   return (
     <form onSubmit={handleSubmit(() => {})}>
@@ -150,7 +155,7 @@ export default function Field(props: any) {
           <label>React Select</label>
           <Controller
             render={(props) => (
-              <ReactSelect isClearable options={options} {...props} />
+              <PureReactSelect isClearable options={options} {...props} />
             )}
             name="ReactSelect"
             control={control}
@@ -162,6 +167,8 @@ export default function Field(props: any) {
       </div>
 
       <span id="renderCount">{renderCount}</span>
+
+      <button type="button" onClick={rerender}>Rerender</button>
 
       <button
         type="button"

@@ -69,22 +69,32 @@ const Controller = <
   });
   const onFocusRef = React.useRef(onFocus || (() => ref.current.focus()));
 
-  const shouldValidate = (isBlurEvent?: boolean) =>
-    !skipValidation({
-      isBlurEvent,
+  const shouldValidate = React.useCallback(
+    (isBlurEvent?: boolean) =>
+      !skipValidation({
+        isBlurEvent,
+        isReValidateOnBlur,
+        isReValidateOnChange,
+        isSubmitted,
+        isTouched: !!get(touched, name),
+        ...mode,
+      }),
+    [
       isReValidateOnBlur,
       isReValidateOnChange,
       isSubmitted,
-      isTouched: !!get(touched, name),
-      ...mode,
-    });
+      touched,
+      name,
+      mode,
+    ],
+  );
 
-  const commonTask = ([event]: any[]) => {
+  const commonTask = React.useCallback(([event]: any[]) => {
     const data = getInputValue(event);
     setInputStateValue(data);
     valueRef.current = data;
     return data;
-  };
+  }, []);
 
   const registerField = React.useCallback(() => {
     if (process.env.NODE_ENV !== 'production' && !name) {
@@ -159,7 +169,7 @@ const Controller = <
     }
   });
 
-  const onBlur = () => {
+  const onBlur = React.useCallback(() => {
     if (readFormStateRef.current.touched && !get(touched, name)) {
       set(touched, name, true);
       updateFormState({
@@ -170,13 +180,23 @@ const Controller = <
     if (shouldValidate(true)) {
       trigger(name);
     }
-  };
+  }, [
+    name,
+    touched,
+    updateFormState,
+    shouldValidate,
+    trigger,
+    readFormStateRef,
+  ]);
 
-  const onChange = (...event: any[]) =>
-    setValue(name, commonTask(event), {
-      shouldValidate: shouldValidate(),
-      shouldDirty: true,
-    });
+  const onChange = React.useCallback(
+    (...event: any[]) =>
+      setValue(name, commonTask(event), {
+        shouldValidate: shouldValidate(),
+        shouldDirty: true,
+      }),
+    [setValue, commonTask, name, shouldValidate],
+  );
 
   const commonProps = {
     onChange,
