@@ -25,7 +25,7 @@ export default function deepEqual(
       if (
         (isObject(val1) || Array.isArray(val1)) &&
         (isObject(val2) || Array.isArray(val2))
-          ? !deepEqual(val1 || [], val2 || [], isErrorObject)
+          ? !deepEqual(val1, val2, isErrorObject)
           : val1 !== val2
       ) {
         return false;

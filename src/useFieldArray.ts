@@ -152,7 +152,7 @@ export const useFieldArray = <
     (isUndefined(flagOrFields) ||
       !deepEqual(
         flagOrFields.map(({ [keyName]: omitted, ...rest } = {}) => rest),
-        get(defaultValuesRef.current, name),
+        get(defaultValuesRef.current, name, []),
       ));
 
   const resetFields = () => {

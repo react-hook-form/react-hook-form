@@ -26,16 +26,7 @@ describe('deepEqual', () => {
   });
 
   it('should return true when two sets matches', () => {
-    expect(
-      deepEqual([{ name: 'useFieldArray' }], [{ name: 'useFieldArray' }]),
-    ).toBeTruthy();
-
-    expect(
-      deepEqual(
-        [{ test: '123' }, { test: '455' }, { test: '455' }],
-        [{ test: '123' }, { test: '455' }, { test: '455' }],
-      ),
-    ).toBeTruthy();
+    expect(deepEqual({}, {})).toBeTruthy();
 
     expect(deepEqual([], [])).toBeTruthy();
 
