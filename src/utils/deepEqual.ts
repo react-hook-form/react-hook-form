@@ -2,11 +2,11 @@ import isObject from '../utils/isObject';
 import isPrimitive from './isPrimitive';
 
 export default function deepEqual(
-  object1: any = [],
-  object2: any = [],
+  object1: any,
+  object2: any,
   isErrorObject?: boolean,
 ) {
-  if (isPrimitive(object1) && isPrimitive(object2)) {
+  if (isPrimitive(object1) || isPrimitive(object2)) {
     return object1 === object2;
   }
 
@@ -25,7 +25,7 @@ export default function deepEqual(
       if (
         (isObject(val1) || Array.isArray(val1)) &&
         (isObject(val2) || Array.isArray(val2))
-          ? !deepEqual(val1, val2, isErrorObject)
+          ? !deepEqual(val1 || [], val2 || [], isErrorObject)
           : val1 !== val2
       ) {
         return false;

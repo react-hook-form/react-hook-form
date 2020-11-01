@@ -18,6 +18,13 @@ describe('deepEqual', () => {
     expect(deepEqual([], [{}])).toBeFalsy();
   });
 
+  it('should return false when either type is primitive', () => {
+    expect(deepEqual(null, [])).toBeFalsy();
+    expect(deepEqual([], null)).toBeFalsy();
+    expect(deepEqual({}, undefined)).toBeFalsy();
+    expect(deepEqual(undefined, {})).toBeFalsy();
+  });
+
   it('should return true when two sets matches', () => {
     expect(
       deepEqual([{ name: 'useFieldArray' }], [{ name: 'useFieldArray' }]),
