@@ -719,16 +719,14 @@ export function useForm<
     if (isWatchAllRef.current) {
       updateFormState();
     } else if (watchFieldsRef) {
-      let shouldRenderUseWatch = true;
       for (const watchField of watchFieldsRef.current) {
         if (watchField.startsWith(name)) {
           updateFormState();
-          shouldRenderUseWatch = false;
           break;
         }
       }
 
-      shouldRenderUseWatch && renderWatchedInputs(name);
+      renderWatchedInputs(name);
     }
   };
 
@@ -765,10 +763,8 @@ export function useForm<
   ): void {
     name &&
       (Array.isArray(name) ? name : [name]).forEach((inputName) =>
-        fieldsRef.current[inputName]
-          ? isKey(inputName)
-            ? delete formStateRef.current.errors[inputName]
-            : set(formStateRef.current.errors, inputName, undefined)
+        fieldsRef.current[inputName] && isKey(inputName)
+          ? delete formStateRef.current.errors[inputName]
           : unset(formStateRef.current.errors, inputName),
       );
 

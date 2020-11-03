@@ -2280,16 +2280,17 @@ describe('useForm', () => {
         fireEvent.click(screen.getByRole('button', { name: 'clear' }));
       });
 
-      expect(currentErrors).toEqual({
-        test: {
-          data: undefined,
-        },
-      });
+      expect(currentErrors).toEqual({});
     });
 
     it('should remove specified errors', () => {
       const { result } = renderHook(() =>
-        useForm<{ input: string; input1: string; input2: string }>(),
+        useForm<{
+          input: string;
+          input1: string;
+          input2: string;
+          nest: { data: string; data1: string };
+        }>(),
       );
 
       const error = {
@@ -2304,6 +2305,11 @@ describe('useForm', () => {
         result.current.setError('input', error);
         result.current.setError('input1', error);
         result.current.setError('input2', error);
+
+        result.current.register('nest.data');
+        result.current.register('nest.data1');
+        result.current.setError('nest.data', error);
+        result.current.setError('nest.data1', error);
       });
 
       const errors = {
@@ -2312,27 +2318,43 @@ describe('useForm', () => {
           ref: {
             name: 'input',
           },
-          types: undefined,
         },
         input1: {
           ...error,
           ref: {
             name: 'input1',
           },
-          types: undefined,
         },
         input2: {
           ...error,
           ref: {
             name: 'input2',
           },
-          types: undefined,
+        },
+        nest: {
+          data: {
+            ...error,
+            ref: {
+              name: 'nest.data',
+            },
+          },
+          data1: {
+            ...error,
+            ref: {
+              name: 'nest.data1',
+            },
+          },
         },
       };
       expect(result.current.errors).toEqual(errors);
 
-      act(() => result.current.clearErrors(['input', 'input1']));
-      expect(result.current.errors).toEqual({ input2: errors.input2 });
+      act(() => result.current.clearErrors(['input', 'input1', 'nest.data']));
+      expect(result.current.errors).toEqual({
+        input2: errors.input2,
+        nest: {
+          data1: errors.nest.data1,
+        },
+      });
     });
 
     it('should remove all error', () => {
