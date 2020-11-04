@@ -328,7 +328,7 @@ export const useFieldArray = <
 
     !shouldUnregister &&
       set(shallowFieldsStateRef.current, name, [
-        ...(shallowFieldsStateRef.current[name] || []),
+        ...(get(shallowFieldsStateRef.current, name) || []),
         value,
       ]);
     focusIndexRef.current = shouldFocus ? allFields.current.length : -1;
