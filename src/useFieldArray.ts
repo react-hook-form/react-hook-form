@@ -328,7 +328,7 @@ export const useFieldArray = <
 
     !shouldUnregister &&
       set(shallowFieldsStateRef.current, name, [
-        ...(get(shallowFieldsStateRef.current, name) || []),
+        ...(shallowFieldsStateRef.current[name] || []),
         value,
       ]);
     focusIndexRef.current = shouldFocus ? allFields.current.length : -1;
@@ -473,11 +473,6 @@ export const useFieldArray = <
       set(fieldArrayDefaultValuesRef.current, name, defaultValues);
     }
 
-    set(
-      shallowFieldsStateRef.current,
-      name,
-      fields.map(({ [keyName]: omitted, ...rest } = {}) => rest),
-    );
     updateWatchedValue(name);
 
     if (focusIndexRef.current > -1) {
