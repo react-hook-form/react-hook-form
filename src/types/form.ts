@@ -127,6 +127,7 @@ export type Control<TFieldValues extends FieldValues = FieldValues> = Pick<
   UseFormMethods<TFieldValues>,
   'register' | 'unregister' | 'setValue' | 'getValues' | 'trigger'
 > & {
+  isFormDirty: (name?: string, data?: unknown[]) => boolean;
   removeFieldEventListener: (field: Field, forceDelete?: boolean) => void;
   mode: Readonly<{
     isOnBlur: boolean;

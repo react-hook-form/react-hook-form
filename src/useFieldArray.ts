@@ -2,11 +2,9 @@ import * as React from 'react';
 import { useFormContext } from './useFormContext';
 import { isMatchFieldArrayName } from './logic/isNameInFieldArray';
 import generateId from './logic/generateId';
-import deepEqual from './utils/deepEqual';
 import getFieldArrayParentName from './logic/getFieldArrayParentName';
 import get from './utils/get';
 import set from './utils/set';
-import isUndefined from './utils/isUndefined';
 import removeArrayAt from './utils/remove';
 import unset from './utils/unset';
 import moveArrayAt from './utils/move';
@@ -76,6 +74,7 @@ export const useFieldArray = <
 
   const focusIndexRef = React.useRef(-1);
   const {
+    isFormDirty,
     updateWatchedValue,
     resetFieldArrayFunctionRef,
     fieldArrayNamesRef,
@@ -147,17 +146,6 @@ export const useFieldArray = <
       validateResolver(values);
     }
   };
-
-  const getIsDirtyState = (
-    flagOrFields?: (Partial<TFieldArrayValues> | undefined)[],
-  ): boolean =>
-    (readFormStateRef.current.isDirty ||
-      readFormStateRef.current.dirtyFields) &&
-    (isUndefined(flagOrFields) ||
-      !deepEqual(
-        flagOrFields.map(({ [keyName]: omitted, ...rest } = {}) => rest),
-        get(defaultValuesRef.current, name, []),
-      ));
 
   const resetFields = () => {
     for (const key in fieldsRef.current) {
@@ -378,7 +366,7 @@ export const useFieldArray = <
         argC: index,
       },
       updatedFieldValues,
-      getIsDirtyState(removeArrayAt(fieldValues, index)),
+      isFormDirty(name, removeArrayAt(fieldValues, index)),
       true,
       true,
     );
@@ -408,7 +396,7 @@ export const useFieldArray = <
         argD: fillBooleanArray(value),
       },
       updatedFieldArrayValues,
-      getIsDirtyState(insertAt(fieldValues, index)),
+      isFormDirty(name, insertAt(fieldValues, index)),
     );
     focusIndexRef.current = shouldFocus ? index : -1;
   };
@@ -427,7 +415,7 @@ export const useFieldArray = <
         argD: indexB,
       },
       undefined,
-      getIsDirtyState(fieldValues),
+      isFormDirty(name, fieldValues),
       false,
     );
   };
@@ -446,7 +434,7 @@ export const useFieldArray = <
         argD: to,
       },
       undefined,
-      getIsDirtyState(fieldValues),
+      isFormDirty(name, fieldValues),
       false,
     );
   };
