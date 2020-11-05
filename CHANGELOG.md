@@ -1,28 +1,77 @@
 # Changelog
 
+## [6.10.0] - 2020-10-31
+
+### Added
+
+- `Controller` will have an extra `ref` props to improve DX in terms of focus management.
+
+```tsx
+<Controlller
+  name="test"
+  render={(props) => {
+    return (
+      <input
+        value={props.value}
+        onChange={props.onChange}
+        ref={props.ref} // you can assign ref now withou the use of `onFocus`
+      />
+    );
+  }}
+/>
+
+// focus will work correct without the `onFocus` prop
+<Controlller name="test" as={<input />} />
+```
+
+### Changed
+
+- `resolver` with group error object will no longer need with `trigger` to show and clear error. This minor version made hook form look at parent error node to detect if there is any group error to show and hide.
+
+```tsx
+const schema = z.object({
+  items: z.array(z.boolean()).refine((items) => items.some((item) => item)),
+});
+
+{
+  items.map((flag, index) => (
+    <input
+      type="checkbox"
+      defaultChecked={false}
+      // onChange={() => trigger("items")} now can be removed
+      ref={register}
+      name={`items.${index}`}
+    />
+  ));
+}
+```
+
 ## [6.9.0] - 2020-10-3
+
+### Changed
 
 - with shouldUnregister set to false, empty Field Array will default [] as submission result.
 
 ```tsx
-const { handlSubmit } = useForm({
+const { handleSubmit } = useForm({
   shouldUnregister: false,
-})
+});
 
 useFieldArray({
   name: 'test',
-})
+});
 
-handlSubmit((data) => {
+handleSubmit((data) => {
   // shouldUnregister: false
-  // result:  { data: {test: []} } 
-
+  // result:  { data: {test: []} }
   // shouldUnregister: true
   // result: {}
-})
+});
 ```
 
 ## [6.8.4] - 2020-09-22
+
+### Changed
 
 - when input unmounts `touched` and `dirtyFields` will no longer get removed from `formState` (shouldUnregister: true).
 
@@ -93,11 +142,17 @@ clearErrors('test.firstName'); // for clear single input error
 
 - `register` no longer compare `ref` difference with React Native
 
-## [6.2.0] - 2020-08-11
+## [6.3.2] - 2020-08-11
 
 ### Changed
 
 - IE 11 version will be required to install `@babel/runtime-corejs3` as dependency at your own project
+
+## [6.3.0] - 2020-08-8
+
+### Changed
+
+- `defaultValue` is become **required** for `useFieldArray` at each input
 
 ## [6.2.0] - 2020-07-30
 

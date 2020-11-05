@@ -124,7 +124,7 @@ describe('useForm', () => {
         ref.remove();
 
         await waitFor(() => expect(mockListener).toHaveBeenCalled());
-        expect(screen.getByRole('alert').textContent).toBe('false');
+        expect(screen.getByRole('alert').textContent).toBe('true');
         await wait(() =>
           expect(renderCount.current.Component).toBeRenderedTimes(2),
         );
@@ -411,6 +411,40 @@ describe('useForm', () => {
   });
 
   describe('watch', () => {
+    it('should return undefined when input gets unmounted', async () => {
+      const Component = () => {
+        const { register, watch } = useForm<{ test: string }>();
+        const [show, setShow] = React.useState(true);
+        const data = watch('test');
+
+        return (
+          <>
+            {show && <input ref={register} name={'test'} />}
+            <span>{data}</span>
+            <button type="button" onClick={() => setShow(false)}>
+              hide
+            </button>
+          </>
+        );
+      };
+
+      render(<Component />);
+
+      fireEvent.input(screen.getByRole('textbox'), {
+        target: {
+          value: 'test',
+        },
+      });
+
+      screen.getByText('test');
+
+      await actComponent(async () => {
+        await fireEvent.click(screen.getByRole('button'));
+      });
+
+      expect(screen.queryByText('test')).toBeNull();
+    });
+
     it('should watch individual input', () => {
       const { result } = renderHook(() => useForm<{ test: string }>());
 
@@ -473,7 +507,6 @@ describe('useForm', () => {
       result.current.register({ type: 'radio', name: 'test1', value: '' });
 
       expect(result.current.watch()).toEqual({ test: '', test1: '' });
-      expect(result.current.control.isWatchAllRef.current).toBeTruthy();
     });
   });
 
@@ -499,6 +532,33 @@ describe('useForm', () => {
       expect(result.current.formState.isSubmitted).toBeTruthy();
       act(() => result.current.reset());
       expect(result.current.formState.isSubmitted).toBeFalsy();
+    });
+
+    it('should reset shallowStateRef when shouldUnregister set to false', () => {
+      let methods: any;
+      const Component = () => {
+        methods = useForm<{
+          test: string;
+        }>({
+          shouldUnregister: false,
+        });
+        return (
+          <form>
+            <input name="test" ref={methods.register} />
+          </form>
+        );
+      };
+      render(<Component />);
+
+      actComponent(() =>
+        methods.reset({
+          test: 'test',
+        }),
+      );
+
+      expect(methods.control.shallowFieldsStateRef.current).toEqual({
+        test: 'test',
+      });
     });
 
     it('should reset the form if ref is HTMLElement and parent element is form', async () => {
@@ -1321,6 +1381,46 @@ describe('useForm', () => {
     it('should return false when field is not found', async () => {
       const { result } = renderHook(() => useForm<{ test: string }>());
       expect(await result.current.trigger('test')).toBeFalsy();
+    });
+
+    it('should remove all errors before set new errors wwhen trigger entire form', async () => {
+      const Component = () => {
+        const [show, setShow] = React.useState(true);
+        const { register, trigger, errors } = useForm<{
+          test: string;
+        }>();
+
+        return (
+          <div>
+            {show && <input name="test" ref={register({ required: true })} />}
+            <button type={'button'} onClick={() => trigger()}>
+              trigger
+            </button>
+            <button type={'button'} onClick={() => setShow(false)}>
+              toggle
+            </button>
+            {errors.test && <span>error</span>}
+          </div>
+        );
+      };
+
+      render(<Component />);
+
+      await actComponent(async () => {
+        await fireEvent.click(screen.getByRole('button', { name: 'trigger' }));
+      });
+
+      await waitFor(() => screen.getByText('error'));
+
+      await actComponent(async () => {
+        await fireEvent.click(screen.getByRole('button', { name: 'toggle' }));
+      });
+
+      await actComponent(async () => {
+        await fireEvent.click(screen.getByRole('button', { name: 'trigger' }));
+      });
+
+      expect(screen.queryByText('error')).toBeNull();
     });
 
     it('should return true when field is found and validation pass', async () => {
@@ -2195,16 +2295,17 @@ describe('useForm', () => {
         fireEvent.click(screen.getByRole('button', { name: 'clear' }));
       });
 
-      expect(currentErrors).toEqual({
-        test: {
-          data: undefined,
-        },
-      });
+      expect(currentErrors).toEqual({});
     });
 
     it('should remove specified errors', () => {
       const { result } = renderHook(() =>
-        useForm<{ input: string; input1: string; input2: string }>(),
+        useForm<{
+          input: string;
+          input1: string;
+          input2: string;
+          nest: { data: string; data1: string };
+        }>(),
       );
 
       const error = {
@@ -2219,6 +2320,11 @@ describe('useForm', () => {
         result.current.setError('input', error);
         result.current.setError('input1', error);
         result.current.setError('input2', error);
+
+        result.current.register('nest.data');
+        result.current.register('nest.data1');
+        result.current.setError('nest.data', error);
+        result.current.setError('nest.data1', error);
       });
 
       const errors = {
@@ -2227,27 +2333,43 @@ describe('useForm', () => {
           ref: {
             name: 'input',
           },
-          types: undefined,
         },
         input1: {
           ...error,
           ref: {
             name: 'input1',
           },
-          types: undefined,
         },
         input2: {
           ...error,
           ref: {
             name: 'input2',
           },
-          types: undefined,
+        },
+        nest: {
+          data: {
+            ...error,
+            ref: {
+              name: 'nest.data',
+            },
+          },
+          data1: {
+            ...error,
+            ref: {
+              name: 'nest.data1',
+            },
+          },
         },
       };
       expect(result.current.errors).toEqual(errors);
 
-      act(() => result.current.clearErrors(['input', 'input1']));
-      expect(result.current.errors).toEqual({ input2: errors.input2 });
+      act(() => result.current.clearErrors(['input', 'input1', 'nest.data']));
+      expect(result.current.errors).toEqual({
+        input2: errors.input2,
+        nest: {
+          data1: errors.nest.data1,
+        },
+      });
     });
 
     it('should remove all error', () => {
@@ -3195,6 +3317,117 @@ describe('useForm', () => {
       });
 
       expect(screen.queryByText('This is required.')).toBeInTheDocument();
+    });
+  });
+
+  describe('with schema validation', () => {
+    it('should trigger and clear errors for group errors object', async () => {
+      let errorsObject = {};
+
+      const Component = () => {
+        const { errors, register, handleSubmit } = useForm<{
+          checkbox: string[];
+        }>({
+          mode: 'onChange',
+          resolver: (data) => {
+            return {
+              errors: {
+                ...(data.checkbox.every((value) => !value)
+                  ? { checkbox: { type: 'error', message: 'wrong' } as any }
+                  : {}),
+              },
+              values: {},
+            };
+          },
+        });
+        errorsObject = errors;
+
+        return (
+          <form onSubmit={handleSubmit(() => {})}>
+            {[1, 2, 3].map((value, index) => (
+              <div key={`test[${index}]`}>
+                <label
+                  htmlFor={`checkbox[${index}]`}
+                >{`checkbox[${index}]`}</label>
+                <input
+                  type={'checkbox'}
+                  key={index}
+                  id={`checkbox[${index}]`}
+                  name={`checkbox[${index}]`}
+                  ref={register}
+                  value={value}
+                />
+              </div>
+            ))}
+
+            <button>Submit</button>
+          </form>
+        );
+      };
+
+      render(<Component />);
+
+      fireEvent.click(screen.getByLabelText('checkbox[0]'));
+
+      await actComponent(async () => {
+        await fireEvent.click(screen.getByLabelText('checkbox[0]'));
+      });
+
+      expect(errorsObject).toEqual({
+        checkbox: { type: 'error', message: 'wrong' },
+      });
+
+      await actComponent(async () => {
+        await fireEvent.click(screen.getByLabelText('checkbox[0]'));
+      });
+
+      expect(errorsObject).toEqual({});
+
+      await actComponent(async () => {
+        await fireEvent.click(screen.getByLabelText('checkbox[0]'));
+      });
+
+      await actComponent(async () => {
+        fireEvent.click(screen.getByRole('button'));
+      });
+
+      expect(errorsObject).toEqual({
+        checkbox: { type: 'error', message: 'wrong' },
+      });
+
+      await actComponent(async () => {
+        await fireEvent.click(screen.getByLabelText('checkbox[0]'));
+      });
+
+      expect(errorsObject).toEqual({});
+    });
+  });
+
+  describe('control', () => {
+    it('does not change across re-renders', () => {
+      let control;
+
+      const Component = () => {
+        const form = useForm();
+
+        control = form.control;
+
+        return (
+          <>
+            <input type="text" name="test" ref={form.register()} />
+          </>
+        );
+      };
+
+      const { rerender } = render(<Component />);
+
+      const firstRenderControl = control;
+
+      rerender(<Component />);
+
+      const secondRenderControl = control;
+
+      expect(Object.is(firstRenderControl, secondRenderControl)).toBe(true);
     });
   });
 });

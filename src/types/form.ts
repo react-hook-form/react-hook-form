@@ -127,6 +127,7 @@ export type Control<TFieldValues extends FieldValues = FieldValues> = Pick<
   UseFormMethods<TFieldValues>,
   'register' | 'unregister' | 'setValue' | 'getValues' | 'trigger'
 > & {
+  isFormDirty: (name?: string, data?: unknown[]) => boolean;
   removeFieldEventListener: (field: Field, forceDelete?: boolean) => void;
   mode: Readonly<{
     isOnBlur: boolean;
@@ -142,12 +143,13 @@ export type Control<TFieldValues extends FieldValues = FieldValues> = Pick<
   fieldArrayDefaultValuesRef: React.MutableRefObject<
     Record<FieldArrayName, unknown[]>
   >;
+  fieldArrayValuesRef: React.MutableRefObject<
+    Record<FieldArrayName, unknown[]>
+  >;
   shouldUnregister: boolean;
   formStateRef: React.MutableRefObject<FormState<TFieldValues>>;
   updateFormState: (args?: Partial<FormState<TFieldValues>>) => void;
   validateResolver?: (fieldsValues: FieldValues) => void;
-  watchFieldsRef: React.MutableRefObject<Set<InternalFieldName<TFieldValues>>>;
-  isWatchAllRef: React.MutableRefObject<boolean>;
   validFieldsRef: React.MutableRefObject<FieldNamesMarkedBoolean<TFieldValues>>;
   fieldsWithValidationRef: React.MutableRefObject<
     FieldNamesMarkedBoolean<TFieldValues>
@@ -173,7 +175,7 @@ export type Control<TFieldValues extends FieldValues = FieldValues> = Pick<
     defaultValue?: unknown,
     watchId?: string,
   ) => unknown;
-  renderWatchedInputs: (name: string, found?: boolean) => void;
+  updateWatchedValue: (name: string) => void;
 };
 
 export type UseWatchOptions<TFieldValues extends FieldValues = FieldValues> = {

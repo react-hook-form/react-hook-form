@@ -28,7 +28,7 @@ describe('useFieldArrayUnregister', () => {
     cy.get('#dirtyFields').should(($state) =>
       expect(JSON.parse($state.text())).to.be.deep.equal({
         data: [
-          { name: true, conditional: true },
+          { name: true },
           { name: true, conditional: true },
           { name: true },
           { name: true },
@@ -51,7 +51,7 @@ describe('useFieldArrayUnregister', () => {
     cy.get('#dirtyFields').should(($state) =>
       expect(JSON.parse($state.text())).to.be.deep.equal({
         data: [
-          { name: true, conditional: true },
+          { name: true },
           { name: true },
           { name: true, conditional: true },
           { name: true },
@@ -61,7 +61,7 @@ describe('useFieldArrayUnregister', () => {
 
     cy.get('#touched').should(($state) =>
       expect(JSON.parse($state.text())).to.be.deep.equal([
-        null,
+        { name: true },
         null,
         { name: true, conditional: true },
       ]),
@@ -69,13 +69,16 @@ describe('useFieldArrayUnregister', () => {
 
     cy.get('#insert').click();
 
-    cy.get('input[name="data[3].conditional"]').should('has.value', 'test');
+    cy.get('#insert').click();
+
+    cy.get('input[name="data[4].name"]').type('test');
 
     cy.get('#dirtyFields').should(($state) =>
       expect(JSON.parse($state.text())).to.be.deep.equal({
         data: [
-          { name: true, conditional: true },
-          { name: true, conditional: true },
+          { name: true },
+          { name: true },
+          { name: true },
           { name: true, conditional: true },
           { name: true, conditional: true },
           { name: true },
@@ -85,8 +88,9 @@ describe('useFieldArrayUnregister', () => {
 
     cy.get('#touched').should(($state) =>
       expect(JSON.parse($state.text())).to.be.deep.equal([
-        null,
-        null,
+        { name: true },
+        { name: true },
+        { name: true },
         null,
         { name: true, conditional: true },
       ]),
@@ -94,27 +98,30 @@ describe('useFieldArrayUnregister', () => {
 
     cy.get('#move').click();
 
+    cy.get('input[name="data[4].name"]').clear().type('bill');
+
     cy.get('input[name="data[4].conditional"]').should('has.value', 'test');
 
     cy.get('#dirtyFields').should(($state) =>
       expect(JSON.parse($state.text())).to.be.deep.equal({
         data: [
-          { name: true, conditional: true },
+          { name: true },
+          { name: true },
           { name: true, conditional: true },
           { name: true },
           { name: true, conditional: true },
-          { name: true, conditional: true },
+          { name: true },
         ],
       }),
     );
 
     cy.get('#touched').should(($state) =>
       expect(JSON.parse($state.text())).to.be.deep.equal([
-        null,
+        { name: true },
+        { name: true },
+        { name: true, conditional: true },
         { name: true },
         null,
-        null,
-        { name: true, conditional: true },
       ]),
     );
 
@@ -128,9 +135,10 @@ describe('useFieldArrayUnregister', () => {
       expect(JSON.parse($state.text())).to.be.deep.equal({
         data: [
           { name: '5' },
-          { name: 'test2' },
-          { name: 'test1', conditional: 'test' },
+          { name: 'billtest', conditional: 'test' },
+          { name: '8' },
           { name: 'bill', conditional: 'test' },
+          { name: 'test2', conditional: 'test' },
         ],
       }),
     );
@@ -143,9 +151,10 @@ describe('useFieldArrayUnregister', () => {
       expect(JSON.parse($state.text())).to.be.deep.equal({
         data: [
           { name: '5' },
-          { name: 'test2' },
-          { name: 'test1', conditional: 'test' },
           { name: 'billtest', conditional: 'test' },
+          { name: '8' },
+          { name: 'billtest', conditional: 'test' },
+          { name: 'test2', conditional: 'test' },
         ],
       }),
     );
@@ -158,8 +167,9 @@ describe('useFieldArrayUnregister', () => {
       expect(JSON.parse($state.text())).to.be.deep.equal({
         data: [
           { name: '5' },
-          { name: 'test2' },
-          { name: 'test1', conditional: 'test' },
+          { name: 'billtest', conditional: 'test' },
+          { name: '8' },
+          { name: 'test2', conditional: 'test' },
         ],
       }),
     );

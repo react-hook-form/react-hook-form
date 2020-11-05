@@ -4,6 +4,7 @@ import {
   screen,
   fireEvent,
   act as actComponent,
+  waitFor,
 } from '@testing-library/react';
 import { renderHook } from '@testing-library/react-hooks';
 import { useForm } from './useForm';
@@ -48,7 +49,6 @@ describe('useWatch', () => {
       };
       render(<Component />);
 
-      expect(method.control.isWatchAllRef.current).toBeFalsy();
       expect(watched).toEqual({ test: 'test' });
     });
 
@@ -321,9 +321,75 @@ describe('useWatch', () => {
 
       expect(watchedValue).toEqual({ test: undefined, test1: undefined });
     });
+
+    it('should return undefined when input gets removed', async () => {
+      const Component = () => {
+        const { register, control } = useForm<{ test: string }>();
+        const [show, setShow] = React.useState(true);
+        const data = useWatch<string>({ name: 'test', control });
+
+        return (
+          <>
+            {show && <input ref={register} name={'test'} />}
+            <span>{data}</span>
+            <button type="button" onClick={() => setShow(false)}>
+              hide
+            </button>
+          </>
+        );
+      };
+
+      render(<Component />);
+
+      fireEvent.input(screen.getByRole('textbox'), {
+        target: {
+          value: 'test',
+        },
+      });
+
+      screen.getByText('test');
+
+      await actComponent(async () => {
+        await fireEvent.click(screen.getByRole('button'));
+      });
+
+      expect(screen.queryByText('test')).toBeNull();
+    });
   });
 
   describe('reset', () => {
+    it('should return updated default value with watched field after reset', async () => {
+      function Watcher({ control }: { control: Control }) {
+        const testField = useWatch<string>({
+          name: 'test',
+          control: control,
+        });
+
+        return <div>{testField}</div>;
+      }
+
+      function Component() {
+        const { reset, control } = useForm({
+          defaultValues: {
+            test: '',
+            name: '',
+          },
+        });
+
+        React.useEffect(() => {
+          reset({
+            test: 'test',
+          });
+        }, [reset]);
+
+        return <Watcher control={control} />;
+      }
+
+      render(<Component />);
+
+      await waitFor(() => screen.getByText('test'));
+    });
+
     it('should return default value of reset method', async () => {
       const Component = () => {
         const { register, reset, control } = useForm<{

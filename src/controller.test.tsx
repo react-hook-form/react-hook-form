@@ -946,4 +946,35 @@ describe('Controller', () => {
 
     expect(currentErrors.test).toBeUndefined();
   });
+
+  it('does not trigger rerenders for memoized inputs', () => {
+    let renderCount = 0;
+
+    const MemoizedInput = React.memo(
+      React.forwardRef((_props: any, _ref) => {
+        renderCount++;
+        return null;
+      }),
+    );
+
+    const Component = () => {
+      const { control } = useForm();
+      return (
+        <Controller
+          defaultValue=""
+          name="test"
+          render={(props) => <MemoizedInput {...props} />}
+          control={control}
+        />
+      );
+    };
+
+    const { rerender } = render(<Component />);
+
+    expect(renderCount).toEqual(1);
+
+    rerender(<Component />);
+
+    expect(renderCount).toEqual(1);
+  });
 });
