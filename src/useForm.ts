@@ -94,6 +94,9 @@ export function useForm<
   const fieldArrayDefaultValuesRef = React.useRef<
     Record<InternalFieldName<FieldValues>, unknown[]>
   >({});
+  const fieldArrayValuesRef = React.useRef<
+    Record<InternalFieldName<FieldValues>, unknown[]>
+  >({});
   const watchFieldsRef = React.useRef<InternalNameSet<TFieldValues>>(new Set());
   const useWatchFieldsRef = React.useRef<
     Record<string, InternalNameSet<TFieldValues>>
@@ -801,7 +804,7 @@ export function useForm<
       const combinedDefaultValues = isUndefined(defaultValue)
         ? defaultValuesRef.current
         : defaultValue;
-      const fieldValues = getFieldsValues<TFieldValues>(
+      let fieldValues = getFieldsValues<TFieldValues>(
         fieldsRef,
         shallowFieldsStateRef,
         false,
@@ -809,17 +812,18 @@ export function useForm<
       );
 
       if (isString(fieldNames)) {
-        if (process.env.NODE_ENV !== 'production') {
-          if (
-            isNameInFieldArray(fieldArrayNamesRef.current, fieldNames) &&
-            isUndefined(defaultValue)
-          ) {
-            console.warn(
-              "📋 watch is missing `defaultValue` from useFieldArray's `fields` object",
-              fieldNames,
-              `https://react-hook-form.com/api/#watch`,
-            );
-          }
+        if (fieldArrayNamesRef.current.has(fieldNames)) {
+          const fieldArrayValue = get(
+            fieldArrayValuesRef.current,
+            fieldNames,
+            [],
+          );
+          fieldValues =
+            fieldArrayValue.length !==
+              compact(get(fieldValues, fieldNames, [])).length ||
+            !fieldArrayValue.length
+              ? fieldArrayValuesRef.current
+              : fieldValues;
         }
 
         return assignWatchFields<TFieldValues>(
@@ -1298,6 +1302,7 @@ export function useForm<
       formStateRef,
       defaultValuesRef,
       shallowFieldsStateRef,
+      fieldArrayValuesRef,
       ...commonProps,
     }),
     [
