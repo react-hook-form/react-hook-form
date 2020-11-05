@@ -52,12 +52,12 @@ describe('useFieldArray', () => {
     );
 
     cy.get('#insert').click();
-    cy.get('ul > li').eq(1).find('input').should('have.value', '21');
+    cy.get('ul > li').eq(1).find('input').should('have.value', '20');
 
     cy.get('#submit').click();
     cy.get('#result').should(($state) =>
       expect(JSON.parse($state.text())).to.be.deep.equal({
-        data: [{ name: '1' }, { name: '21' }, { name: '6' }, { name: '8' }],
+        data: [{ name: '1' }, { name: '20' }, { name: '6' }, { name: '8' }],
       }),
     );
 
@@ -100,7 +100,7 @@ describe('useFieldArray', () => {
       expect(JSON.parse($state.text())).to.be.deep.equal({}),
     );
 
-    cy.get('#renderCount').contains('38');
+    cy.get('#renderCount').contains('37');
   });
 
   it('should behaviour correctly with defaultValue', () => {
@@ -250,9 +250,9 @@ describe('useFieldArray', () => {
 
     cy.get('#prepend').click();
 
-    cy.get('ul > li').eq(0).find('input').should('have.value', '38');
+    cy.get('ul > li').eq(0).find('input').should('have.value', '37');
 
-    cy.get('#renderCount').contains('39');
+    cy.get('#renderCount').contains('38');
   });
 
   it('should behaviour correctly with defaultValue and without auto focus', () => {

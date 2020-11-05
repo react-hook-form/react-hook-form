@@ -36,7 +36,7 @@ const mapIds = <
 ): Partial<ArrayField<TFieldArrayValues, TKeyName>>[] => {
   if (process.env.NODE_ENV !== 'production') {
     for (const value of values) {
-      if (keyName in value) {
+      if (!!value && keyName in value) {
         console.warn(
           `📋 useFieldArray fieldValues contain the keyName \`${keyName}\` which is reserved for use by useFieldArray. https://react-hook-form.com/api#useFieldArray`,
         );
@@ -92,6 +92,7 @@ export const useFieldArray = <
     validateResolver,
     getValues,
     shouldUnregister,
+    fieldArrayValuesRef,
   } = control || methods.control;
 
   const fieldArrayParentName = getFieldArrayParentName(name);
@@ -109,19 +110,21 @@ export const useFieldArray = <
   const [fields, setFields] = React.useState<
     Partial<ArrayField<TFieldArrayValues, TKeyName>>[]
   >(mapIds(memoizedDefaultValues.current, keyName));
-  const allFields = React.useRef<
-    Partial<ArrayField<TFieldArrayValues, TKeyName>>[]
-  >(fields);
+  set(fieldArrayValuesRef.current, name, fields);
+
+  const getFieldArrayValue = React.useCallback(
+    () => get(fieldArrayValuesRef.current, name, []),
+    [],
+  );
 
   const getCurrentFieldsValues = () =>
-    get(getValues(), name, allFields.current).map(
+    get(getValues(), name, getFieldArrayValue()).map(
       (item: Partial<TFieldArrayValues>, index: number) => ({
-        ...allFields.current[index],
+        ...getFieldArrayValue()[index],
         ...item,
       }),
     );
 
-  allFields.current = fields;
   fieldArrayNamesRef.current.add(name);
 
   if (!get(fieldArrayDefaultValuesRef.current, fieldArrayParentName)) {
@@ -136,6 +139,7 @@ export const useFieldArray = <
     fieldsValues: Partial<ArrayField<TFieldArrayValues, TKeyName>>[],
   ) => {
     setFields(fieldsValues);
+    set(fieldArrayValuesRef.current, name, fieldsValues);
 
     if (readFormStateRef.current.isValid && validateResolver) {
       const values = getValues();
@@ -309,7 +313,7 @@ export const useFieldArray = <
     shouldFocus = true,
   ) => {
     const updateFormValues = [
-      ...allFields.current,
+      ...getFieldArrayValue(),
       ...mapIds(Array.isArray(value) ? value : [value], keyName),
     ];
     setFieldAndValidState(updateFormValues);
@@ -328,10 +332,10 @@ export const useFieldArray = <
 
     !shouldUnregister &&
       set(shallowFieldsStateRef.current, name, [
-        ...(shallowFieldsStateRef.current[name] || []),
+        ...(get(shallowFieldsStateRef.current, name) || []),
         value,
       ]);
-    focusIndexRef.current = shouldFocus ? allFields.current.length : -1;
+    focusIndexRef.current = shouldFocus ? fields.length : -1;
   };
 
   const prepend = (
@@ -502,6 +506,7 @@ export const useFieldArray = <
     return () => {
       resetFields();
       delete resetFunctions[name];
+      unset(fieldArrayValuesRef, name);
       fieldArrayNames.delete(name);
     };
   }, []);
