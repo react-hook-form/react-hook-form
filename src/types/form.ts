@@ -142,6 +142,9 @@ export type Control<TFieldValues extends FieldValues = FieldValues> = Pick<
   fieldArrayDefaultValuesRef: React.MutableRefObject<
     Record<FieldArrayName, unknown[]>
   >;
+  fieldArrayValuesRef: React.MutableRefObject<
+    Record<FieldArrayName, unknown[]>
+  >;
   shouldUnregister: boolean;
   formStateRef: React.MutableRefObject<FormState<TFieldValues>>;
   updateFormState: (args?: Partial<FormState<TFieldValues>>) => void;
