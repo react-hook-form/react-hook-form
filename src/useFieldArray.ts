@@ -2,11 +2,9 @@ import * as React from 'react';
 import { useFormContext } from './useFormContext';
 import { isMatchFieldArrayName } from './logic/isNameInFieldArray';
 import generateId from './logic/generateId';
-import deepEqual from './utils/deepEqual';
 import getFieldArrayParentName from './logic/getFieldArrayParentName';
 import get from './utils/get';
 import set from './utils/set';
-import isUndefined from './utils/isUndefined';
 import removeArrayAt from './utils/remove';
 import unset from './utils/unset';
 import moveArrayAt from './utils/move';
@@ -76,6 +74,7 @@ export const useFieldArray = <
 
   const focusIndexRef = React.useRef(-1);
   const {
+    isFormDirty,
     updateWatchedValue,
     resetFieldArrayFunctionRef,
     fieldArrayNamesRef,
@@ -148,17 +147,6 @@ export const useFieldArray = <
     }
   };
 
-  const getIsDirtyState = (
-    flagOrFields?: (Partial<TFieldArrayValues> | undefined)[],
-  ): boolean =>
-    (readFormStateRef.current.isDirty ||
-      readFormStateRef.current.dirtyFields) &&
-    (isUndefined(flagOrFields) ||
-      !deepEqual(
-        flagOrFields.map(({ [keyName]: omitted, ...rest } = {}) => rest),
-        get(defaultValuesRef.current, name, []),
-      ));
-
   const resetFields = () => {
     for (const key in fieldsRef.current) {
       isMatchFieldArrayName(key, name) &&
@@ -220,7 +208,7 @@ export const useFieldArray = <
       argD?: unknown;
     },
     updatedFieldValues?: K,
-    isDirty = true,
+    updatedFormValues: (Partial<TFieldArrayValues> | undefined)[] = [],
     shouldSet = true,
     shouldUpdateValid = false,
   ) => {
@@ -303,7 +291,10 @@ export const useFieldArray = <
     updateFormState({
       errors: formStateRef.current.errors,
       dirtyFields: formStateRef.current.dirtyFields,
-      isDirty,
+      isDirty: isFormDirty(
+        name,
+        updatedFormValues.map(({ [keyName]: omitted, ...rest } = {}) => rest),
+      ),
       touched: formStateRef.current.touched,
     });
   };
@@ -378,7 +369,7 @@ export const useFieldArray = <
         argC: index,
       },
       updatedFieldValues,
-      getIsDirtyState(removeArrayAt(fieldValues, index)),
+      removeArrayAt(fieldValues, index),
       true,
       true,
     );
@@ -408,7 +399,7 @@ export const useFieldArray = <
         argD: fillBooleanArray(value),
       },
       updatedFieldArrayValues,
-      getIsDirtyState(insertAt(fieldValues, index)),
+      insertAt(fieldValues, index),
     );
     focusIndexRef.current = shouldFocus ? index : -1;
   };
@@ -427,7 +418,7 @@ export const useFieldArray = <
         argD: indexB,
       },
       undefined,
-      getIsDirtyState(fieldValues),
+      fieldValues,
       false,
     );
   };
@@ -446,7 +437,7 @@ export const useFieldArray = <
         argD: to,
       },
       undefined,
-      getIsDirtyState(fieldValues),
+      fieldValues,
       false,
     );
   };

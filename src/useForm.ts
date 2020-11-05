@@ -277,13 +277,30 @@ export function useForm<
     [],
   );
 
-  const isFormDirty = () =>
-    !deepEqual(
-      getValues(),
-      isEmptyObject(defaultValuesRef.current)
-        ? defaultValuesAtRenderRef.current
-        : defaultValuesRef.current,
-    ) || !isEmptyObject(formStateRef.current.dirtyFields);
+  const isFormDirty = React.useCallback(
+    (name?: string, data?: unknown[]): boolean => {
+      if (
+        readFormStateRef.current.isDirty ||
+        readFormStateRef.current.dirtyFields
+      ) {
+        const formValues = getValues();
+
+        name && data && set(formValues, name, data);
+
+        return (
+          !deepEqual(
+            formValues,
+            isEmptyObject(defaultValuesRef.current)
+              ? defaultValuesAtRenderRef.current
+              : defaultValuesRef.current,
+          ) || !isEmptyObject(formStateRef.current.dirtyFields)
+        );
+      }
+
+      return false;
+    },
+    [],
+  );
 
   const updateAndGetDirtyState = React.useCallback(
     (
@@ -1279,6 +1296,7 @@ export function useForm<
 
   const control = React.useMemo(
     () => ({
+      isFormDirty,
       updateWatchedValue,
       shouldUnregister,
       updateFormState,

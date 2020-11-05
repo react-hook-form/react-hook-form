@@ -488,7 +488,7 @@ describe('useFieldArray', () => {
       expect(JSON.parse($state.text())).to.be.deep.equal({}),
     );
 
-    cy.get('#dirty').contains('no');
+    cy.get('#dirty').contains('yes');
   });
 
   it('should display the correct dirty value with default value', () => {
