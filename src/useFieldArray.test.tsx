@@ -1718,7 +1718,7 @@ describe('useFieldArray', () => {
   });
 
   describe('remove', () => {
-    it('should update isDirty formState when item removed', () => {
+    it('should update isDirty formState when item removed', async () => {
       let formState: any;
       const Component = () => {
         const { register, control, formState: tempFormState } = useForm({
@@ -1749,7 +1749,14 @@ describe('useFieldArray', () => {
               </div>
             ))}
 
-            <button type={'button'} onClick={() => append({})}>
+            <button
+              type={'button'}
+              onClick={() =>
+                append({
+                  name: '',
+                })
+              }
+            >
               append
             </button>
           </form>

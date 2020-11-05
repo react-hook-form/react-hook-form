@@ -208,7 +208,7 @@ export const useFieldArray = <
       argD?: unknown;
     },
     updatedFieldValues?: K,
-    isDirty = true,
+    updatedFormValues: (Partial<TFieldArrayValues> | undefined)[] = [],
     shouldSet = true,
     shouldUpdateValid = false,
   ) => {
@@ -291,7 +291,10 @@ export const useFieldArray = <
     updateFormState({
       errors: formStateRef.current.errors,
       dirtyFields: formStateRef.current.dirtyFields,
-      isDirty,
+      isDirty: isFormDirty(
+        name,
+        updatedFormValues.map(({ [keyName]: omitted, ...rest } = {}) => rest),
+      ),
       touched: formStateRef.current.touched,
     });
   };
@@ -366,7 +369,7 @@ export const useFieldArray = <
         argC: index,
       },
       updatedFieldValues,
-      isFormDirty(name, removeArrayAt(fieldValues, index)),
+      removeArrayAt(fieldValues, index),
       true,
       true,
     );
@@ -396,7 +399,7 @@ export const useFieldArray = <
         argD: fillBooleanArray(value),
       },
       updatedFieldArrayValues,
-      isFormDirty(name, insertAt(fieldValues, index)),
+      insertAt(fieldValues, index),
     );
     focusIndexRef.current = shouldFocus ? index : -1;
   };
@@ -415,7 +418,7 @@ export const useFieldArray = <
         argD: indexB,
       },
       undefined,
-      isFormDirty(name, fieldValues),
+      fieldValues,
       false,
     );
   };
@@ -434,7 +437,7 @@ export const useFieldArray = <
         argD: to,
       },
       undefined,
-      isFormDirty(name, fieldValues),
+      fieldValues,
       false,
     );
   };
