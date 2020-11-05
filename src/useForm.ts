@@ -718,7 +718,7 @@ export function useForm<
     [shouldUnregister],
   );
 
-  const updateWatchedValue = (name: string) => {
+  const updateWatchedValue = React.useCallback((name: string) => {
     if (isWatchAllRef.current) {
       updateFormState();
     } else if (watchFieldsRef) {
@@ -731,7 +731,7 @@ export function useForm<
 
       renderWatchedInputs(name);
     }
-  };
+  }, []);
 
   const removeFieldEventListenerAndRef = React.useCallback(
     (field?: Field, forceDelete?: boolean) => {
@@ -1277,33 +1277,42 @@ export function useForm<
     unregister: React.useCallback(unregister, []),
   };
 
-  const control = {
-    updateWatchedValue,
-    shouldUnregister,
-    removeFieldEventListener,
-    watchInternal,
-    mode: modeRef.current,
-    reValidateMode: {
-      isReValidateOnBlur,
-      isReValidateOnChange,
-    },
-    fieldsRef,
-    resetFieldArrayFunctionRef,
-    useWatchFieldsRef,
-    useWatchRenderFunctionsRef,
-    fieldArrayDefaultValuesRef,
-    validFieldsRef,
-    fieldsWithValidationRef,
-    fieldArrayNamesRef,
-    readFormStateRef,
-    formStateRef,
-    defaultValuesRef,
-    shallowFieldsStateRef,
-    fieldArrayValuesRef,
-    updateFormState,
-    validateResolver: resolver ? validateResolver : undefined,
-    ...commonProps,
-  };
+  const control = React.useMemo(
+    () => ({
+      updateWatchedValue,
+      shouldUnregister,
+      updateFormState,
+      removeFieldEventListener,
+      watchInternal,
+      mode: modeRef.current,
+      reValidateMode: {
+        isReValidateOnBlur,
+        isReValidateOnChange,
+      },
+      validateResolver: resolver ? validateResolver : undefined,
+      fieldsRef,
+      resetFieldArrayFunctionRef,
+      useWatchFieldsRef,
+      useWatchRenderFunctionsRef,
+      fieldArrayDefaultValuesRef,
+      validFieldsRef,
+      fieldsWithValidationRef,
+      fieldArrayNamesRef,
+      readFormStateRef,
+      formStateRef,
+      defaultValuesRef,
+      shallowFieldsStateRef,
+      fieldArrayValuesRef,
+      ...commonProps,
+    }),
+    [
+      defaultValuesRef.current,
+      updateWatchedValue,
+      shouldUnregister,
+      removeFieldEventListener,
+      watchInternal,
+    ],
+  );
 
   return {
     watch,
