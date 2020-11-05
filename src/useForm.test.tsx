@@ -124,7 +124,7 @@ describe('useForm', () => {
         ref.remove();
 
         await waitFor(() => expect(mockListener).toHaveBeenCalled());
-        expect(screen.getByRole('alert').textContent).toBe('true');
+        expect(screen.getByRole('alert').textContent).toBe('false');
         await wait(() =>
           expect(renderCount.current.Component).toBeRenderedTimes(2),
         );
