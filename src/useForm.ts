@@ -287,13 +287,11 @@ export function useForm<
 
         name && data && set(formValues, name, data);
 
-        return (
-          !deepEqual(
-            formValues,
-            isEmptyObject(defaultValuesRef.current)
-              ? defaultValuesAtRenderRef.current
-              : defaultValuesRef.current,
-          ) || !isEmptyObject(formStateRef.current.dirtyFields)
+        return !deepEqual(
+          formValues,
+          isEmptyObject(defaultValuesRef.current)
+            ? defaultValuesAtRenderRef.current
+            : defaultValuesRef.current,
         );
       }
 
