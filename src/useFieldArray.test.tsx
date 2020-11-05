@@ -1718,7 +1718,7 @@ describe('useFieldArray', () => {
   });
 
   describe('remove', () => {
-    it('should update isDirty formState when item removed', async () => {
+    it('should update isDirty formState when item removed', () => {
       let formState: any;
       const Component = () => {
         const { register, control, formState: tempFormState } = useForm({
