@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { LiteralToPrimitive, DeepPartial, DeepMap } from './utils';
+import { LiteralToPrimitive, DeepPartial, DeepMap, Primitive } from './utils';
 import { Resolver } from './resolvers';
 import {
   Field,
@@ -27,7 +27,9 @@ export type NestedValue<
 
 export type Message = string;
 
-export type UnpackNestedValue<T> = T extends NestedValue<infer U>
+export type UnpackNestedValue<T> = T extends Primitive
+  ? T
+  : T extends NestedValue<infer U>
   ? U
   : T extends Date | FileList
   ? T
