@@ -1,5 +1,17 @@
 # Changelog
 
+## [6.10.0] - 2020-11-07
+
+### Changed
+
+- `defaultValues` is **required** to measure `isDirty`, keep a single source of truth to avoid multiple issues raised around `isDirty`
+- when `watch` with `useFieldArray`, `fields` object is no longer required as defaultValue
+
+```diff
+- watch('fieldArray', fields);
++ watch('fieldArray');
+```
+
 ## [6.10.0] - 2020-10-31
 
 ### Added
