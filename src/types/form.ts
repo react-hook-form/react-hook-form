@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { LiteralToPrimitive, DeepPartial, DeepMap, Primitive } from './utils';
+import { LiteralToPrimitive, DeepPartial, DeepMap } from './utils';
 import { Resolver } from './resolvers';
 import {
   Field,
@@ -27,9 +27,7 @@ export type NestedValue<
 
 export type Message = string;
 
-export type UnpackNestedValue<T> = T extends Primitive
-  ? T
-  : T extends NestedValue<infer U>
+export type UnpackNestedValue<T> = T extends NestedValue<infer U>
   ? U
   : T extends Date | FileList
   ? T
@@ -217,14 +215,15 @@ export type UseFormMethods<TFieldValues extends FieldValues = FieldValues> = {
   ): UnpackNestedValue<DeepPartial<TFieldValues>>;
   setError(name: FieldName<TFieldValues>, error: ErrorOption): void;
   clearErrors(name?: FieldName<TFieldValues> | FieldName<TFieldValues>[]): void;
-  setValue<
-    TFieldName extends string,
-    TFieldValue extends TFieldValues[TFieldName]
-  >(
+  setValue<TFieldName extends string>(
     name: TFieldName,
-    value: TFieldValue extends NestedValue<infer U>
-      ? U
-      : UnpackNestedValue<DeepPartial<LiteralToPrimitive<TFieldValue>>>,
+    value:
+      | FieldValue<TFieldValues>
+      | UnpackNestedValue<DeepPartial<TFieldValues>>
+      | string[]
+      | undefined
+      | null
+      | boolean,
     options?: SetValueConfig,
   ): void;
   trigger(
