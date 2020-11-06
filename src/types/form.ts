@@ -215,14 +215,15 @@ export type UseFormMethods<TFieldValues extends FieldValues = FieldValues> = {
   ): UnpackNestedValue<DeepPartial<TFieldValues>>;
   setError(name: FieldName<TFieldValues>, error: ErrorOption): void;
   clearErrors(name?: FieldName<TFieldValues> | FieldName<TFieldValues>[]): void;
-  setValue<
-    TFieldName extends string,
-    TFieldValue extends TFieldValues[TFieldName]
-  >(
+  setValue<TFieldName extends string>(
     name: TFieldName,
-    value: TFieldValue extends NestedValue<infer U>
-      ? U
-      : UnpackNestedValue<DeepPartial<LiteralToPrimitive<TFieldValue>>>,
+    value:
+      | FieldValue<TFieldValues>
+      | UnpackNestedValue<DeepPartial<TFieldValues>>
+      | string[]
+      | undefined
+      | null
+      | boolean,
     options?: SetValueConfig,
   ): void;
   trigger(

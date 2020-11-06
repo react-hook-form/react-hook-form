@@ -724,12 +724,10 @@ describe('useForm', () => {
 
       result.current.register(elm);
 
-      // @ts-expect-error
       result.current.setValue('test', null);
 
       expect(elm).not.toHaveValue();
 
-      // @ts-expect-error
       result.current.setValue('test', undefined);
 
       expect(elm).not.toHaveValue();
