@@ -126,7 +126,10 @@ export const useFieldArray = <
 
   fieldArrayNamesRef.current.add(name);
 
-  if (!get(fieldArrayDefaultValuesRef.current, fieldArrayParentName)) {
+  if (
+    fieldArrayParentName &&
+    !get(fieldArrayDefaultValuesRef.current, fieldArrayParentName)
+  ) {
     set(
       fieldArrayDefaultValuesRef.current,
       fieldArrayParentName,
