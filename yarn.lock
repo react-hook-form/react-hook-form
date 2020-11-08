@@ -796,6 +796,13 @@
   dependencies:
     regenerator-runtime "^0.13.4"
 
+"@babel/runtime@^7.12.1":
+  version "7.12.5"
+  resolved "https://registry.yarnpkg.com/@babel/runtime/-/runtime-7.12.5.tgz#410e7e487441e1b360c29be715d870d9b985882e"
+  integrity sha512-plcc+hbExy3McchJCEQG3knOsuh3HH+Prx1P6cLIkET/0dLuQDEnrT+s27Axgc9bqfsmNUNHfscgMUdBpC9xfg==
+  dependencies:
+    regenerator-runtime "^0.13.4"
+
 "@babel/template@^7.0.0", "@babel/template@^7.10.4", "@babel/template@^7.3.3":
   version "7.10.4"
   resolved "https://registry.yarnpkg.com/@babel/template/-/template-7.10.4.tgz#3251996c4200ebc71d1a8fc405fba940f36ba278"
@@ -1770,21 +1777,24 @@
     kleur "^4.1.3"
     yargs-parser "^20.2.3"
 
-"@testing-library/dom@^7.22.3":
-  version "7.23.0"
-  resolved "https://registry.yarnpkg.com/@testing-library/dom/-/dom-7.23.0.tgz#c54c0fa53705ad867bcefb52fc0c96487fbc10f6"
-  integrity sha512-H5m090auYH+obdZmsaYLrSWC5OauWD2CvNbz88KBxQJoXgkJzbU0DpAG8BS7Evj5WqCC3nAAKrLS6vw0ljUYLg==
+"@testing-library/dom@^7.26.4":
+  version "7.26.5"
+  resolved "https://registry.yarnpkg.com/@testing-library/dom/-/dom-7.26.5.tgz#804a74fc893bf6da1a7970dbca7b94c2bbfe983d"
+  integrity sha512-2v/fv0s4keQjJIcD4bjfJMFtvxz5icartxUWdIZVNJR539WD9oxVrvIAPw+3Ydg4RLgxt0rvQx3L9cAjCci0Kg==
   dependencies:
+    "@babel/code-frame" "^7.10.4"
     "@babel/runtime" "^7.10.3"
     "@types/aria-query" "^4.2.0"
     aria-query "^4.2.2"
+    chalk "^4.1.0"
     dom-accessibility-api "^0.5.1"
+    lz-string "^1.4.4"
     pretty-format "^26.4.2"
 
-"@testing-library/jest-dom@^5.11.0":
-  version "5.11.4"
-  resolved "https://registry.yarnpkg.com/@testing-library/jest-dom/-/jest-dom-5.11.4.tgz#f325c600db352afb92995c2576022b35621ddc99"
-  integrity sha512-6RRn3epuweBODDIv3dAlWjOEHQLpGJHB2i912VS3JQtsD22+ENInhdDNl4ZZQiViLlIfFinkSET/J736ytV9sw==
+"@testing-library/jest-dom@^5.11.5":
+  version "5.11.5"
+  resolved "https://registry.yarnpkg.com/@testing-library/jest-dom/-/jest-dom-5.11.5.tgz#44010f37f4b1e15f9d433963b515db0b05182fc8"
+  integrity sha512-XI+ClHR864i6p2kRCEyhvpVejuer+ObVUF4cjCvRSF88eOMIfqw7RoS9+qoRhyigGswMfT64L6Nt0Ufotxbwtg==
   dependencies:
     "@babel/runtime" "^7.9.2"
     "@types/testing-library__jest-dom" "^5.9.1"
@@ -1811,13 +1821,13 @@
     pretty-format "^24.9.0"
     wait-for-expect "^3.0.0"
 
-"@testing-library/react@^10.4.6":
-  version "10.4.9"
-  resolved "https://registry.yarnpkg.com/@testing-library/react/-/react-10.4.9.tgz#9faa29c6a1a217bf8bbb96a28bd29d7a847ca150"
-  integrity sha512-pHZKkqUy0tmiD81afs8xfiuseXfU/N7rAX3iKjeZYje86t9VaB0LrxYVa+OOsvkrveX5jCK3IjajVn2MbePvqA==
+"@testing-library/react@^11.1.1":
+  version "11.1.1"
+  resolved "https://registry.yarnpkg.com/@testing-library/react/-/react-11.1.1.tgz#226d8dc7491b702fcaac2d7d88d42892e655893a"
+  integrity sha512-DT/P2opE9o4NWCd/oIL73b6VF/Xk9AY8iYSstKfz9cXw0XYPQ5IhA/cuYfoN9nU+mAynW8DpAVfEWdM6e7zF6g==
   dependencies:
-    "@babel/runtime" "^7.10.3"
-    "@testing-library/dom" "^7.22.3"
+    "@babel/runtime" "^7.12.1"
+    "@testing-library/dom" "^7.26.4"
 
 "@types/aria-query@^4.2.0":
   version "4.2.0"
@@ -6672,6 +6682,11 @@ lru-cache@^4.0.1:
     pseudomap "^1.0.2"
     yallist "^2.1.2"
 
+lz-string@^1.4.4:
+  version "1.4.4"
+  resolved "https://registry.yarnpkg.com/lz-string/-/lz-string-1.4.4.tgz#c0d8eaf36059f705796e1e344811cf4c498d3a26"
+  integrity sha1-wNjq82BZ9wV5bh40SBHPTEmNOiY=
+
 magic-string@^0.25.7:
   version "0.25.7"
   resolved "https://registry.yarnpkg.com/magic-string/-/magic-string-0.25.7.tgz#3f497d6fd34c669c6798dcb821f2ef31f5445051"
@@ -8238,12 +8253,12 @@ react-dom@^16.13.1:
     prop-types "^15.6.2"
     scheduler "^0.19.1"
 
-react-is@^16.12.0, react-is@^16.7.0, react-is@^16.8.1, react-is@^16.8.4, react-is@^16.8.6:
+react-is@^16.12.0, react-is@^16.7.0, react-is@^16.8.1, react-is@^16.8.4:
   version "16.13.1"
   resolved "https://registry.yarnpkg.com/react-is/-/react-is-16.13.1.tgz#789729a4dc36de2999dc156dd6c1d9c18cea56a4"
   integrity sha512-24e6ynE2H+OKt4kqsOvNd8kBpV65zoxbA4BVsEOB3ARVWQki/DHzaUoC5KuON/BiccDaCCTZBuOcfZs70kR8bQ==
 
-react-is@^17.0.1:
+"react-is@^16.12.0 || ^17.0.0", react-is@^17.0.1:
   version "17.0.1"
   resolved "https://registry.yarnpkg.com/react-is/-/react-is-17.0.1.tgz#5b3531bd76a645a4c9fb6e693ed36419e3301339"
   integrity sha512-NAnt2iGDXohE5LI7uBnLnqvLQMtzhkiAOLXTmv+qnF9Ky7xAPcX8Up/xWIhxvLVGJvuLiNc4xQLtuqDRzb4fSA==
@@ -8334,15 +8349,23 @@ react-refresh@^0.4.0:
   resolved "https://registry.yarnpkg.com/react-refresh/-/react-refresh-0.4.3.tgz#966f1750c191672e76e16c2efa569150cc73ab53"
   integrity sha512-Hwln1VNuGl/6bVwnd0Xdn1e84gT/8T9aYNL+HAKDArLCS7LWjwr7StE30IEYbIkx0Vi3vs+coQxe+SQDbGbbpA==
 
-react-test-renderer@^16.13.1:
-  version "16.14.0"
-  resolved "https://registry.yarnpkg.com/react-test-renderer/-/react-test-renderer-16.14.0.tgz#e98360087348e260c56d4fe2315e970480c228ae"
-  integrity sha512-L8yPjqPE5CZO6rKsKXRO/rVPiaCOy0tQQJbC+UjPNlobl5mad59lvPjwFsQHTvL03caVDIVr9x9/OSgDe6I5Eg==
+react-shallow-renderer@^16.13.1:
+  version "16.14.1"
+  resolved "https://registry.yarnpkg.com/react-shallow-renderer/-/react-shallow-renderer-16.14.1.tgz#bf0d02df8a519a558fd9b8215442efa5c840e124"
+  integrity sha512-rkIMcQi01/+kxiTE9D3fdS959U1g7gs+/rborw++42m1O9FAQiNI/UNRZExVUoAOprn4umcXf+pFRou8i4zuBg==
   dependencies:
     object-assign "^4.1.1"
-    prop-types "^15.6.2"
-    react-is "^16.8.6"
-    scheduler "^0.19.1"
+    react-is "^16.12.0 || ^17.0.0"
+
+react-test-renderer@^17.0.1:
+  version "17.0.1"
+  resolved "https://registry.yarnpkg.com/react-test-renderer/-/react-test-renderer-17.0.1.tgz#3187e636c3063e6ae498aedf21ecf972721574c7"
+  integrity sha512-/dRae3mj6aObwkjCcxZPlxDFh73XZLgvwhhyON2haZGUEhiaY5EjfAdw+d/rQmlcFwdTpMXCSGVk374QbCTlrA==
+  dependencies:
+    object-assign "^4.1.1"
+    react-is "^17.0.1"
+    react-shallow-renderer "^16.13.1"
+    scheduler "^0.20.1"
 
 react@^16.13.1:
   version "16.14.0"
@@ -8829,6 +8852,14 @@ scheduler@0.19.1, scheduler@^0.19.1:
   version "0.19.1"
   resolved "https://registry.yarnpkg.com/scheduler/-/scheduler-0.19.1.tgz#4f3e2ed2c1a7d65681f4c854fa8c5a1ccb40f196"
   integrity sha512-n/zwRWRYSUj0/3g/otKDRPMh6qv2SYMWNq85IEa8iZyAv8od9zDYpGSnpBEjNgcMNq6Scbu5KfIPxNF72R/2EA==
+  dependencies:
+    loose-envify "^1.1.0"
+    object-assign "^4.1.1"
+
+scheduler@^0.20.1:
+  version "0.20.1"
+  resolved "https://registry.yarnpkg.com/scheduler/-/scheduler-0.20.1.tgz#da0b907e24026b01181ecbc75efdc7f27b5a000c"
+  integrity sha512-LKTe+2xNJBNxu/QhHvDR14wUXHRQbVY5ZOYpOGWRzhydZUqrLb2JBvLPY7cAqFmqrWuDED0Mjk7013SZiOz6Bw==
   dependencies:
     loose-envify "^1.1.0"
     object-assign "^4.1.1"
