@@ -442,16 +442,6 @@ export const useFieldArray = <
     );
   };
 
-  const reset = <TFieldValues>(
-    data?: UnpackNestedValue<DeepPartial<TFieldValues>>,
-  ) => {
-    resetFields();
-    !data && unset(fieldArrayDefaultValuesRef.current, name);
-    unset(shallowFieldsStateRef.current, name);
-    memoizedDefaultValues.current = get(data || defaultValuesRef.current, name);
-    setFields(mapIds(memoizedDefaultValues.current, keyName));
-  };
-
   React.useEffect(() => {
     if (process.env.NODE_ENV !== 'production') {
       if (!name) {
@@ -491,7 +481,18 @@ export const useFieldArray = <
     const fieldArrayNames = fieldArrayNamesRef.current;
 
     if (!getFieldArrayParentName(name)) {
-      resetFunctions[name] = reset;
+      resetFunctions[name] = <TFieldValues>(
+        data?: UnpackNestedValue<DeepPartial<TFieldValues>>,
+      ) => {
+        resetFields();
+        !data && unset(fieldArrayDefaultValuesRef.current, name);
+        unset(shallowFieldsStateRef.current, name);
+        memoizedDefaultValues.current = get(
+          data || defaultValuesRef.current,
+          name,
+        );
+        setFields(mapIds(memoizedDefaultValues.current, keyName));
+      };
     }
 
     return () => {
