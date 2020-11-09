@@ -609,29 +609,6 @@ describe('Controller', () => {
       console.warn.mockRestore();
     });
 
-    it('should output error message if defaultValue is undefined in development environment', () => {
-      jest.spyOn(console, 'warn').mockImplementation(() => {});
-
-      const env = process.env.NODE_ENV;
-      process.env.NODE_ENV = 'development';
-
-      const Component = () => {
-        const { control } = useForm();
-        return (
-          <Controller as={'input' as const} name="test" control={control} />
-        );
-      };
-
-      render(<Component />);
-
-      expect(console.warn).toBeCalledTimes(1);
-
-      process.env.NODE_ENV = env;
-
-      // @ts-ignore
-      console.warn.mockRestore();
-    });
-
     it('should not output error message if defaultValue is undefined in production environment', () => {
       jest.spyOn(console, 'warn').mockImplementation(() => {});
 
