@@ -54,15 +54,14 @@ const Controller = <
     fieldsRef,
     fieldArrayNamesRef,
     shallowFieldsStateRef,
-    shouldUnregister,
   } = control || methods.control;
   const isNotFieldArray = !isNameInFieldArray(fieldArrayNamesRef.current, name);
   const getInitialValue = () =>
-    !shouldUnregister &&
-    isNotFieldArray &&
-    !isUndefined(get(shallowFieldsStateRef.current, name))
+    !isUndefined(get(shallowFieldsStateRef.current, name)) && isNotFieldArray
       ? get(shallowFieldsStateRef.current, name)
-      : get(defaultValuesRef.current, name, defaultValue);
+      : isUndefined(defaultValue)
+      ? get(defaultValuesRef.current, name)
+      : defaultValue;
   const [value, setInputStateValue] = React.useState(getInitialValue());
   const valueRef = React.useRef(value);
   const ref = React.useRef({
