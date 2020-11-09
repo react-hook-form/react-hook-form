@@ -83,21 +83,19 @@ export function useWatch<TWatchFieldValues>({
     defaultValueRef,
   ]);
 
-  const value = watchInternal(name, defaultValueRef.current, idRef.current);
-
-  return isUndefined(value)
-    ? isUndefined(defaultValue)
-      ? isString(name)
-        ? get(defaultValuesRef.current, name)
-        : Array.isArray(name)
-        ? name.reduce(
-            (previous, inputName) => ({
-              ...previous,
-              [inputName]: get(defaultValuesRef.current, inputName),
-            }),
-            {},
-          )
-        : defaultValuesRef.current
-      : defaultValue
-    : value;
+  return idRef.current
+    ? watchInternal(name, defaultValueRef.current, idRef.current)
+    : isUndefined(defaultValue)
+    ? isString(name)
+      ? get(defaultValuesRef.current, name)
+      : Array.isArray(name)
+      ? name.reduce(
+          (previous, inputName) => ({
+            ...previous,
+            [inputName]: get(defaultValuesRef.current, inputName),
+          }),
+          {},
+        )
+      : defaultValuesRef.current
+    : defaultValue;
 }

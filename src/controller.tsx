@@ -130,7 +130,7 @@ const Controller = <
           rules,
         );
 
-        shouldUpdateValue = true;
+        shouldUpdateValue = !get(defaultValuesRef.current, name);
       }
 
       shouldUpdateValue &&

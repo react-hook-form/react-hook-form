@@ -237,7 +237,7 @@ describe('useWatch', () => {
       });
 
       await wait(() => {
-        expect(renderCount.current.Parent).toBeRenderedTimes(2);
+        expect(renderCount.current.Parent).toBeRenderedTimes(1);
         expect(renderCount.current.Child).toBeRenderedTimes(2);
       });
 
@@ -261,8 +261,8 @@ describe('useWatch', () => {
       });
 
       await wait(() => {
-        expect(renderCount.current.Parent).toBeRenderedTimes(1);
-        expect(renderCount.current.Child).toBeRenderedTimes(2);
+        expect(renderCount.current.Parent).toBeRenderedTimes(0);
+        expect(renderCount.current.Child).toBeRenderedTimes(1);
       });
     });
 
@@ -297,7 +297,7 @@ describe('useWatch', () => {
         },
       });
 
-      await wait(() => expect(renderCount.current.Parent).toBeRenderedTimes(2));
+      await wait(() => expect(renderCount.current.Parent).toBeRenderedTimes(1));
     });
 
     it('should not throw error when null or undefined is set', () => {
@@ -319,7 +319,7 @@ describe('useWatch', () => {
 
       render(<Component />);
 
-      expect(watchedValue).toEqual({ test: null, test1: undefined });
+      expect(watchedValue).toEqual({ test: undefined, test1: undefined });
     });
 
     it('should return undefined when input gets removed', async () => {

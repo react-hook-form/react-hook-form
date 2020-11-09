@@ -79,7 +79,7 @@ describe('useFieldArrayUnregister', () => {
           { name: true },
           { name: true },
           { name: true },
-          { name: true, conditional: true },
+          { name: true },
           { name: true, conditional: true },
           { name: true },
         ],
@@ -98,9 +98,9 @@ describe('useFieldArrayUnregister', () => {
 
     cy.get('#move').click();
 
-    cy.get('input[name="data[4].name"]').clear().type('bill');
+    cy.get('input[name="data[2].name"]').clear().type('bill');
 
-    cy.get('input[name="data[4].conditional"]').should('has.value', 'test');
+    cy.get('input[name="data[2].conditional"]').should('has.value', 'test');
 
     cy.get('#dirtyFields').should(($state) =>
       expect(JSON.parse($state.text())).to.be.deep.equal({
@@ -109,7 +109,7 @@ describe('useFieldArrayUnregister', () => {
           { name: true },
           { name: true, conditional: true },
           { name: true },
-          { name: true, conditional: true },
+          { name: true },
           { name: true },
         ],
       }),
@@ -127,18 +127,18 @@ describe('useFieldArrayUnregister', () => {
 
     cy.get('#delete1').click();
 
-    cy.get('input[name="data[3].conditional"]').should('has.value', 'test');
+    cy.get('input[name="data[1].conditional"]').should('has.value', 'test');
 
     cy.get('#submit').click();
 
     cy.get('#result').should(($state) =>
       expect(JSON.parse($state.text())).to.be.deep.equal({
         data: [
-          { name: '5' },
-          { name: 'billtest', conditional: 'test' },
-          { name: '8' },
+          { name: '13' },
           { name: 'bill', conditional: 'test' },
-          { name: 'test2', conditional: 'test' },
+          { name: '18' },
+          { name: 'test1' },
+          { name: 'test2' },
         ],
       }),
     );
@@ -150,11 +150,11 @@ describe('useFieldArrayUnregister', () => {
     cy.get('#result').should(($state) =>
       expect(JSON.parse($state.text())).to.be.deep.equal({
         data: [
-          { name: '5' },
-          { name: 'billtest', conditional: 'test' },
-          { name: '8' },
-          { name: 'billtest', conditional: 'test' },
-          { name: 'test2', conditional: 'test' },
+          { name: '13' },
+          { name: 'bill', conditional: 'test' },
+          { name: '18' },
+          { name: 'test1test' },
+          { name: 'test2' },
         ],
       }),
     );
@@ -166,10 +166,10 @@ describe('useFieldArrayUnregister', () => {
     cy.get('#result').should(($state) =>
       expect(JSON.parse($state.text())).to.be.deep.equal({
         data: [
-          { name: '5' },
-          { name: 'billtest', conditional: 'test' },
-          { name: '8' },
-          { name: 'test2', conditional: 'test' },
+          { name: '13' },
+          { name: 'bill', conditional: 'test' },
+          { name: '18' },
+          { name: 'test2' },
         ],
       }),
     );
