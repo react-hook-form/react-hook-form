@@ -43,6 +43,8 @@ describe('useFieldArrayUnregister', () => {
       ]),
     );
 
+    cy.get('input[name="data[0].name"]').blur();
+
     cy.get('#swap').click();
 
     cy.get('input[name="data[1].conditional"]').should('not.exist');
@@ -134,9 +136,9 @@ describe('useFieldArrayUnregister', () => {
     cy.get('#result').should(($state) =>
       expect(JSON.parse($state.text())).to.be.deep.equal({
         data: [
-          { name: '13' },
+          { name: '5' },
           { name: 'bill', conditional: 'test' },
-          { name: '18' },
+          { name: '8' },
           { name: 'test1' },
           { name: 'test2' },
         ],
@@ -150,9 +152,9 @@ describe('useFieldArrayUnregister', () => {
     cy.get('#result').should(($state) =>
       expect(JSON.parse($state.text())).to.be.deep.equal({
         data: [
-          { name: '13' },
+          { name: '5' },
           { name: 'bill', conditional: 'test' },
-          { name: '18' },
+          { name: '8' },
           { name: 'test1test' },
           { name: 'test2' },
         ],
@@ -166,12 +168,14 @@ describe('useFieldArrayUnregister', () => {
     cy.get('#result').should(($state) =>
       expect(JSON.parse($state.text())).to.be.deep.equal({
         data: [
-          { name: '13' },
+          { name: '5' },
           { name: 'bill', conditional: 'test' },
-          { name: '18' },
+          { name: '8' },
           { name: 'test2' },
         ],
       }),
     );
+
+    cy.get('#renderCount').contains('25');
   });
 });
