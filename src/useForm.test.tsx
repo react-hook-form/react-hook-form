@@ -50,7 +50,7 @@ describe('useForm', () => {
       ).toBeUndefined();
     });
 
-    it('should call console.worn when ref name is undefined', () => {
+    it('should call console.warn when ref name is undefined', () => {
       process.env.NODE_ENV = 'development';
       const mockConsoleWarn = jest
         .spyOn(console, 'warn')
