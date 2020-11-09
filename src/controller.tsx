@@ -9,6 +9,7 @@ import { useFormContext } from './useFormContext';
 import { VALUE } from './constants';
 import { Control } from './types';
 import { ControllerProps } from './types';
+import isFunction from './utils/isFunction';
 
 const Controller = <
   TAs extends
@@ -67,7 +68,18 @@ const Controller = <
   const ref = React.useRef({
     focus: () => null,
   });
-  const onFocusRef = React.useRef(onFocus || (() => ref.current.focus()));
+  const onFocusRef = React.useRef(
+    onFocus ||
+      (() => {
+        if (isFunction(ref.current.focus)) {
+          ref.current.focus();
+        } else {
+          console.warn(
+            `📋 'ref' from Controller render prop must be attached to a React component or a DOM Element whose ref provides a 'focus()' method`,
+          );
+        }
+      }),
+  );
 
   const shouldValidate = React.useCallback(
     (isBlurEvent?: boolean) =>
