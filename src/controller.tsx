@@ -54,14 +54,15 @@ const Controller = <
     fieldsRef,
     fieldArrayNamesRef,
     shallowFieldsStateRef,
+    shouldUnregister,
   } = control || methods.control;
   const isNotFieldArray = !isNameInFieldArray(fieldArrayNamesRef.current, name);
   const getInitialValue = () =>
-    !isUndefined(get(shallowFieldsStateRef.current, name)) && isNotFieldArray
+    !shouldUnregister &&
+    isNotFieldArray &&
+    !isUndefined(get(shallowFieldsStateRef.current, name))
       ? get(shallowFieldsStateRef.current, name)
-      : isUndefined(defaultValue)
-      ? get(defaultValuesRef.current, name)
-      : defaultValue;
+      : get(defaultValuesRef.current, name, defaultValue);
   const [value, setInputStateValue] = React.useState(getInitialValue());
   const valueRef = React.useRef(value);
   const ref = React.useRef({
@@ -96,54 +97,54 @@ const Controller = <
     return data;
   }, []);
 
-  const registerField = React.useCallback(() => {
-    if (process.env.NODE_ENV !== 'production' && !name) {
-      return console.warn(
-        '📋 Field is missing `name` prop. https://react-hook-form.com/api#Controller',
-      );
-    }
-
-    if (fieldsRef.current[name]) {
-      fieldsRef.current[name] = {
-        ref: fieldsRef.current[name]!.ref,
-        ...rules,
-      };
-    } else {
-      register(
-        Object.defineProperty(
-          {
-            name,
-            focus: onFocusRef.current,
-          },
-          VALUE,
-          {
-            set(data) {
-              setInputStateValue(data);
-              valueRef.current = data;
-            },
-            get() {
-              return valueRef.current;
-            },
-          },
-        ),
-        rules,
-      );
-      if (isNotFieldArray && !get(defaultValuesRef.current, name)) {
-        setInputStateValue(getInitialValue());
+  const registerField = React.useCallback(
+    (shouldUpdateValue?: boolean) => {
+      if (process.env.NODE_ENV !== 'production' && !name) {
+        return console.warn(
+          '📋 Field is missing `name` prop. https://react-hook-form.com/api#Controller',
+        );
       }
-    }
-  }, [rules, name, register]);
+
+      if (fieldsRef.current[name]) {
+        fieldsRef.current[name] = {
+          ref: fieldsRef.current[name]!.ref,
+          ...rules,
+        };
+      } else {
+        register(
+          Object.defineProperty(
+            {
+              name,
+              focus: onFocusRef.current,
+            },
+            VALUE,
+            {
+              set(data) {
+                setInputStateValue(data);
+                valueRef.current = data;
+              },
+              get() {
+                return valueRef.current;
+              },
+            },
+          ),
+          rules,
+        );
+
+        shouldUpdateValue = true;
+      }
+
+      shouldUpdateValue &&
+        isNotFieldArray &&
+        setInputStateValue(getInitialValue());
+    },
+    [rules, name, register],
+  );
 
   React.useEffect(() => () => unregister(name), [unregister, name]);
 
   React.useEffect(() => {
     if (process.env.NODE_ENV !== 'production') {
-      if (isUndefined(value)) {
-        console.warn(
-          `📋 ${name} is missing in the 'defaultValue' prop of either its Controller (https://react-hook-form.com/api#Controller) or useForm (https://react-hook-form.com/api#useForm)`,
-        );
-      }
-
       if ((!as && !render) || (as && render)) {
         console.warn(
           `📋 ${name} Controller should use either the 'as' or 'render' prop, not both. https://react-hook-form.com/api#Controller`,
@@ -161,12 +162,7 @@ const Controller = <
   }, [registerField]);
 
   React.useEffect(() => {
-    if (!fieldsRef.current[name]) {
-      registerField();
-      if (isNotFieldArray) {
-        setInputStateValue(getInitialValue());
-      }
-    }
+    !fieldsRef.current[name] && registerField(true);
   });
 
   const onBlur = React.useCallback(() => {
@@ -177,9 +173,7 @@ const Controller = <
       });
     }
 
-    if (shouldValidate(true)) {
-      trigger(name);
-    }
+    shouldValidate(true) && trigger(name);
   }, [
     name,
     touched,
@@ -195,7 +189,7 @@ const Controller = <
         shouldValidate: shouldValidate(),
         shouldDirty: true,
       }),
-    [setValue, commonTask, name, shouldValidate],
+    [setValue, name, shouldValidate],
   );
 
   const commonProps = {

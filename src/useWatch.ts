@@ -4,7 +4,6 @@ import isUndefined from './utils/isUndefined';
 import isString from './utils/isString';
 import generateId from './logic/generateId';
 import get from './utils/get';
-import isObject from './utils/isObject';
 import {
   DeepPartial,
   UseWatchOptions,
@@ -52,34 +51,9 @@ export function useWatch<TWatchFieldValues>({
     watchInternal,
     defaultValuesRef,
   } = control || methods.control;
-  const [value, setValue] = React.useState<unknown>(
-    isUndefined(defaultValue)
-      ? isString(name)
-        ? get(defaultValuesRef.current, name)
-        : Array.isArray(name)
-        ? name.reduce(
-            (previous, inputName) => ({
-              ...previous,
-              [inputName]: get(defaultValuesRef.current, inputName),
-            }),
-            {},
-          )
-        : defaultValuesRef.current
-      : defaultValue,
-  );
+  const updateValue = React.useState<unknown>()[1];
   const idRef = React.useRef<string>();
   const defaultValueRef = React.useRef(defaultValue);
-
-  const updateWatchValue = React.useCallback(() => {
-    const value = watchInternal(name, defaultValueRef.current, idRef.current);
-    setValue(
-      isObject(value)
-        ? { ...value }
-        : Array.isArray(value)
-        ? [...value]
-        : value,
-    );
-  }, [setValue, watchInternal, defaultValueRef, name, idRef]);
 
   React.useEffect(() => {
     if (process.env.NODE_ENV !== 'production') {
@@ -94,7 +68,7 @@ export function useWatch<TWatchFieldValues>({
     const watchFieldsHookRender = useWatchRenderFunctionsRef.current;
     const watchFieldsHook = useWatchFieldsRef.current;
     watchFieldsHook[id] = new Set();
-    watchFieldsHookRender[id] = updateWatchValue;
+    watchFieldsHookRender[id] = () => updateValue({});
     watchInternal(name, defaultValueRef.current, id);
 
     return () => {
@@ -103,12 +77,27 @@ export function useWatch<TWatchFieldValues>({
     };
   }, [
     name,
-    updateWatchValue,
     useWatchRenderFunctionsRef,
     useWatchFieldsRef,
     watchInternal,
     defaultValueRef,
   ]);
 
-  return (isUndefined(value) ? defaultValue : value) as TWatchFieldValues;
+  const value = watchInternal(name, defaultValueRef.current, idRef.current);
+
+  return isUndefined(value)
+    ? isUndefined(defaultValue)
+      ? isString(name)
+        ? get(defaultValuesRef.current, name)
+        : Array.isArray(name)
+        ? name.reduce(
+            (previous, inputName) => ({
+              ...previous,
+              [inputName]: get(defaultValuesRef.current, inputName),
+            }),
+            {},
+          )
+        : defaultValuesRef.current
+      : defaultValue
+    : value;
 }

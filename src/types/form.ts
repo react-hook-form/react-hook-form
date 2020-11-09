@@ -168,7 +168,7 @@ export type Control<TFieldValues extends FieldValues = FieldValues> = Pick<
     Record<string, InternalNameSet<TFieldValues>>
   >;
   useWatchRenderFunctionsRef: React.MutableRefObject<
-    Record<string, () => void>
+    Record<string, React.Dispatch<unknown>>
   >;
   watchInternal: (
     fieldNames?: string | string[],
