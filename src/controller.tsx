@@ -74,9 +74,11 @@ const Controller = <
         if (isFunction(ref.current.focus)) {
           ref.current.focus();
         } else {
-          console.warn(
-            `📋 'ref' from Controller render prop must be attached to a React component or a DOM Element whose ref provides a 'focus()' method`,
-          );
+          if (process.env.NODE_ENV !== 'production') {
+            console.warn(
+              `📋 'ref' from Controller render prop must be attached to a React component or a DOM Element whose ref provides a 'focus()' method`,
+            );
+          }
         }
       }),
   );
