@@ -158,6 +158,12 @@ const Controller = <
 
   React.useEffect(() => {
     if (process.env.NODE_ENV !== 'production') {
+      if (isUndefined(value)) {
+        console.warn(
+          `📋 ${name} is missing in the 'defaultValue' prop of either its Controller (https://react-hook-form.com/api#Controller) or useForm (https://react-hook-form.com/api#useForm)`,
+        );
+      }
+
       if ((!as && !render) || (as && render)) {
         console.warn(
           `📋 ${name} Controller should use either the 'as' or 'render' prop, not both. https://react-hook-form.com/api#Controller`,

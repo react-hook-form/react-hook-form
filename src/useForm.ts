@@ -1255,28 +1255,24 @@ export function useForm<
   };
 
   React.useEffect(() => {
-    isUnMount.current = false;
     resolver && readFormStateRef.current.isValid && validateResolver();
-
     observerRef.current =
       observerRef.current || !isWeb
         ? observerRef.current
         : onDomRemove(fieldsRef, removeFieldEventListenerAndRef);
+  }, [removeFieldEventListenerAndRef, defaultValuesRef.current]);
 
-    return () => {
+  React.useEffect(
+    () => () => {
       isUnMount.current = true;
       observerRef.current && observerRef.current.disconnect();
-      shallowFieldsStateRef.current = {};
-
-      if (process.env.NODE_ENV !== 'production') {
-        return;
-      }
 
       Object.values(fieldsRef.current).forEach((field) =>
         removeFieldEventListenerAndRef(field, true),
       );
-    };
-  }, [removeFieldEventListenerAndRef]);
+    },
+    [],
+  );
 
   if (!resolver && readFormStateRef.current.isValid) {
     formState.isValid =

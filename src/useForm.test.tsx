@@ -609,7 +609,7 @@ describe('useForm', () => {
       });
     });
 
-    it('should reset unmountFieldsState value when shouldUnregister set to false', () => {
+    it('should reset unmountFieldsState value when shouldUnregister set to false', async () => {
       const { result } = renderHook(() =>
         useForm<{
           test: string;
@@ -620,7 +620,7 @@ describe('useForm', () => {
 
       result.current.register('test');
 
-      act(() => result.current.reset({ test: 'test' }));
+      await act(async () => await result.current.reset({ test: 'test' }));
 
       expect(result.current.control.shallowFieldsStateRef.current).toEqual({
         test: 'test',
