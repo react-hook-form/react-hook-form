@@ -6,7 +6,12 @@ export default function deepEqual(
   object2: any,
   isErrorObject?: boolean,
 ) {
-  if (isPrimitive(object1) || isPrimitive(object2)) {
+  if (
+    isPrimitive(object1) ||
+    isPrimitive(object2) ||
+    object1 instanceof Date ||
+    object2 instanceof Date
+  ) {
     return object1 === object2;
   }
 
