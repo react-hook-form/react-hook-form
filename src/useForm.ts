@@ -57,7 +57,6 @@ import {
   HandleChange,
   RadioOrCheckboxOption,
   OmitResetState,
-  NestedValue,
   SetValueConfig,
   ErrorOption,
   FormState,
@@ -119,9 +118,7 @@ export function useForm<
   const isUnMount = React.useRef(false);
   const isWatchAllRef = React.useRef(false);
   const handleChangeRef = React.useRef<HandleChange>();
-  const shallowFieldsStateRef = React.useRef(
-    shouldUnregister ? {} : cloneObject(defaultValues, isWeb),
-  );
+  const shallowFieldsStateRef = React.useRef({});
   const resetFieldArrayFunctionRef = React.useRef<
     Record<
       InternalFieldName<FieldValues>,
@@ -164,6 +161,11 @@ export function useForm<
   contextRef.current = context;
   resolverRef.current = resolver;
   formStateRef.current = formState;
+  shallowFieldsStateRef.current = shouldUnregister
+    ? {}
+    : isEmptyObject(shallowFieldsStateRef.current)
+    ? cloneObject(defaultValues, isWeb)
+    : shallowFieldsStateRef.current;
 
   const updateFormState = React.useCallback(
     (state: Partial<FormState<TFieldValues>> = {}) =>
@@ -543,14 +545,15 @@ export function useForm<
     return found;
   };
 
-  function setValue<
-    TFieldName extends string,
-    TFieldValue extends TFieldValues[TFieldName]
-  >(
-    name: TFieldName,
-    value: TFieldValue extends NestedValue<infer U>
-      ? U
-      : UnpackNestedValue<DeepPartial<LiteralToPrimitive<TFieldValue>>>,
+  function setValue(
+    name: FieldName<TFieldValues>,
+    value:
+      | FieldValue<TFieldValues>
+      | UnpackNestedValue<DeepPartial<TFieldValues>>
+      | string[]
+      | undefined
+      | null
+      | boolean,
     config?: SetValueConfig,
   ): void {
     setInternalValue(name, value as TFieldValues[string], config);
@@ -695,7 +698,11 @@ export function useForm<
     }
 
     return setFieldArrayDefaultValues(
-      getFieldsValues(fieldsRef, shallowFieldsStateRef),
+      getFieldsValues(
+        fieldsRef,
+        cloneObject(shallowFieldsStateRef.current, isWeb),
+        shouldUnregister,
+      ),
     );
   }
 
@@ -821,7 +828,8 @@ export function useForm<
         : defaultValue;
       let fieldValues = getFieldsValues<TFieldValues>(
         fieldsRef,
-        shallowFieldsStateRef,
+        cloneObject(shallowFieldsStateRef.current, isWeb),
+        shouldUnregister,
         false,
         fieldNames,
       );
@@ -1106,7 +1114,12 @@ export function useForm<
       }
       let fieldErrors: FieldErrors<TFieldValues> = {};
       let fieldValues = setFieldArrayDefaultValues(
-        getFieldsValues(fieldsRef, shallowFieldsStateRef, true),
+        getFieldsValues(
+          fieldsRef,
+          cloneObject(shallowFieldsStateRef.current, isWeb),
+          shouldUnregister,
+          true,
+        ),
       );
 
       readFormStateRef.current.isSubmitting &&
