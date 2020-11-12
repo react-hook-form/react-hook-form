@@ -1,9 +1,10 @@
 import cloneObject from './cloneObject';
 
 describe('clone', () => {
-  it('should clone object and not mutate the orginal object', () => {
+  it('should clone object and not mutate the original object', () => {
     const fileData = new File([''], 'filename');
     const data = {
+      items: [],
       test: {
         date: new Date('2020-10-15'),
         test0: 12,
@@ -39,9 +40,12 @@ describe('clone', () => {
 
     // @ts-ignore
     copy.test.what = '1243';
-    copy.test.date = new Date('2020-10-116');
+    copy.test.date = new Date('2020-10-16');
+    // @ts-ignore
+    copy.items[0] = 2;
 
     expect(data).toEqual({
+      items: [],
       test: {
         date: new Date('2020-10-15'),
         test0: 12,
@@ -71,5 +75,10 @@ describe('clone', () => {
         [3, 'three'],
       ]),
     });
+
+    // @ts-ignore
+    data.items = [1, 2, 3];
+
+    expect(copy.items).toEqual([2]);
   });
 });
