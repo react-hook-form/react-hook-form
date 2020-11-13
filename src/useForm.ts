@@ -1182,6 +1182,7 @@ export function useForm<
             focusOnErrorField(fieldsRef.current, formStateRef.current.errors);
         }
       } finally {
+        formStateRef.current.isSubmitting = false;
         updateFormState({
           isSubmitted: true,
           isSubmitting: false,
