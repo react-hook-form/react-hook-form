@@ -43,7 +43,6 @@ export default async <TFieldValues extends FieldValues>(
   }: Field,
   shallowFieldsStateRef: React.MutableRefObject<Record<string, any>>,
 ): Promise<InternalFieldErrors<TFieldValues>> => {
-  const fields = fieldsRef.current;
   const name: InternalFieldName<TFieldValues> = ref.name;
   const error: InternalFieldErrors<TFieldValues> = {};
   const isRadio = isRadioInput(ref);
@@ -90,7 +89,7 @@ export default async <TFieldValues extends FieldValues>(
         type: INPUT_VALIDATION_RULES.required,
         message,
         ref: isRadioOrCheckbox
-          ? (((fields[name] as Field).options || [])[0] || {}).ref
+          ? (((fieldsRef.current[name] as Field).options || [])[0] || {}).ref
           : ref,
         ...appendErrorsCurry(INPUT_VALIDATION_RULES.required, message),
       };
@@ -143,13 +142,12 @@ export default async <TFieldValues extends FieldValues>(
   if (isString(value) && !isEmpty && (maxLength || minLength)) {
     const maxLengthOutput = getValueAndMessage(maxLength);
     const minLengthOutput = getValueAndMessage(minLength);
-    const inputLength = value.toString().length;
     const exceedMax =
       !isNullOrUndefined(maxLengthOutput.value) &&
-      inputLength > maxLengthOutput.value;
+      value.length > maxLengthOutput.value;
     const exceedMin =
       !isNullOrUndefined(minLengthOutput.value) &&
-      inputLength < minLengthOutput.value;
+      value.length < minLengthOutput.value;
 
     if (exceedMax || exceedMin) {
       getMinMaxMessage(
