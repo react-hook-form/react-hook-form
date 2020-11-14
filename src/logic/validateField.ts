@@ -81,20 +81,18 @@ export default async <TFieldValues extends FieldValues>(
       (isCheckBox && !getCheckboxValue(options).isValid) ||
       (isRadio && !getRadioValue(options).isValid))
   ) {
-    const { value: requiredValue, message: requiredMessage } = isMessage(
-      required,
-    )
+    const { value, message } = isMessage(required)
       ? { value: !!required, message: required }
       : getValueAndMessage(required);
 
-    if (requiredValue) {
+    if (value) {
       error[name] = {
         type: INPUT_VALIDATION_RULES.required,
-        message: requiredMessage,
+        message,
         ref: isRadioOrCheckbox
           ? (((fields[name] as Field).options || [])[0] || {}).ref
           : ref,
-        ...appendErrorsCurry(INPUT_VALIDATION_RULES.required, requiredMessage),
+        ...appendErrorsCurry(INPUT_VALIDATION_RULES.required, message),
       };
       if (!validateAllFieldCriteria) {
         return error;
@@ -105,34 +103,34 @@ export default async <TFieldValues extends FieldValues>(
   if (!isNullOrUndefined(min) || !isNullOrUndefined(max)) {
     let exceedMax;
     let exceedMin;
-    const { value: maxValue, message: maxMessage } = getValueAndMessage(max);
-    const { value: minValue, message: minMessage } = getValueAndMessage(min);
+    const maxOutput = getValueAndMessage(max);
+    const minOutput = getValueAndMessage(min);
 
     if (type === 'number' || (!type && !isNaN(value))) {
       const valueNumber =
         (ref as HTMLInputElement).valueAsNumber || parseFloat(value);
-      if (!isNullOrUndefined(maxValue)) {
-        exceedMax = valueNumber > maxValue;
+      if (!isNullOrUndefined(maxOutput.value)) {
+        exceedMax = valueNumber > maxOutput.value;
       }
-      if (!isNullOrUndefined(minValue)) {
-        exceedMin = valueNumber < minValue;
+      if (!isNullOrUndefined(minOutput.value)) {
+        exceedMin = valueNumber < minOutput.value;
       }
     } else {
       const valueDate =
         (ref as HTMLInputElement).valueAsDate || new Date(value);
-      if (isString(maxValue)) {
-        exceedMax = valueDate > new Date(maxValue);
+      if (isString(maxOutput.value)) {
+        exceedMax = valueDate > new Date(maxOutput.value);
       }
-      if (isString(minValue)) {
-        exceedMin = valueDate < new Date(minValue);
+      if (isString(minOutput.value)) {
+        exceedMin = valueDate < new Date(minOutput.value);
       }
     }
 
     if (exceedMax || exceedMin) {
       getMinMaxMessage(
         !!exceedMax,
-        maxMessage,
-        minMessage,
+        maxOutput.message,
+        minOutput.message,
         INPUT_VALIDATION_RULES.max,
         INPUT_VALIDATION_RULES.min,
       );
@@ -143,22 +141,22 @@ export default async <TFieldValues extends FieldValues>(
   }
 
   if (isString(value) && !isEmpty && (maxLength || minLength)) {
-    const {
-      value: maxLengthValue,
-      message: maxLengthMessage,
-    } = getValueAndMessage(maxLength);
-    const {
-      value: minLengthValue,
-      message: minLengthMessage,
-    } = getValueAndMessage(minLength);
+    const maxLengthOutput = getValueAndMessage(maxLength);
+    const minLengthOutput = getValueAndMessage(minLength);
     const inputLength = value.toString().length;
     const exceedMax =
-      !isNullOrUndefined(maxLengthValue) && inputLength > maxLengthValue;
+      !isNullOrUndefined(maxLengthOutput.value) &&
+      inputLength > maxLengthOutput.value;
     const exceedMin =
-      !isNullOrUndefined(minLengthValue) && inputLength < minLengthValue;
+      !isNullOrUndefined(minLengthOutput.value) &&
+      inputLength < minLengthOutput.value;
 
     if (exceedMax || exceedMin) {
-      getMinMaxMessage(!!exceedMax, maxLengthMessage, minLengthMessage);
+      getMinMaxMessage(
+        exceedMax,
+        maxLengthOutput.message,
+        minLengthOutput.message,
+      );
       if (!validateAllFieldCriteria) {
         return error;
       }
@@ -166,16 +164,14 @@ export default async <TFieldValues extends FieldValues>(
   }
 
   if (pattern && !isEmpty) {
-    const { value: patternValue, message: patternMessage } = getValueAndMessage(
-      pattern,
-    );
+    const { value: patternValue, message } = getValueAndMessage(pattern);
 
     if (isRegex(patternValue) && !patternValue.test(value)) {
       error[name] = {
         type: INPUT_VALIDATION_RULES.pattern,
-        message: patternMessage,
+        message,
         ref,
-        ...appendErrorsCurry(INPUT_VALIDATION_RULES.pattern, patternMessage),
+        ...appendErrorsCurry(INPUT_VALIDATION_RULES.pattern, message),
       };
       if (!validateAllFieldCriteria) {
         return error;
