@@ -23,17 +23,20 @@ export default function findRemovedFieldAndRemoveListener<
   shouldUnregister?: boolean,
   forceDelete?: boolean,
 ): void {
-  const ref = field.ref;
-  const fieldRef = fieldsRef.current[ref.name] as Field;
+  const {
+    ref,
+    ref: { name, type },
+  } = field;
+  const fieldRef = fieldsRef.current[name] as Field;
 
   if (!shouldUnregister) {
-    const value = getFieldValue(fieldsRef, ref.name, shallowFieldsStateRef);
+    const value = getFieldValue(fieldsRef, name, shallowFieldsStateRef);
 
-    !isUndefined(value) && set(shallowFieldsStateRef.current, ref.name, value);
+    !isUndefined(value) && set(shallowFieldsStateRef.current, name, value);
   }
 
-  if (!ref.type) {
-    delete fieldsRef.current[ref.name];
+  if (!type) {
+    delete fieldsRef.current[name];
     return;
   }
 
@@ -52,14 +55,14 @@ export default function findRemovedFieldAndRemoveListener<
       });
 
       if (fieldRef.options && !compact(fieldRef.options).length) {
-        delete fieldsRef.current[ref.name];
+        delete fieldsRef.current[name];
       }
     } else {
-      delete fieldsRef.current[ref.name];
+      delete fieldsRef.current[name];
     }
   } else if ((isDetached(ref) && isSameRef(fieldRef, ref)) || forceDelete) {
     removeAllEventListeners(ref, handleChange);
 
-    delete fieldsRef.current[ref.name];
+    delete fieldsRef.current[name];
   }
 }
