@@ -1,6 +1,6 @@
 import get from '../utils/get';
-import { FieldErrors, FieldRefs } from '../types';
 import isUndefined from '../utils/isUndefined';
+import { FieldErrors, FieldRefs } from '../types';
 
 export default <TFieldValues>(
   fields: FieldRefs<TFieldValues>,
@@ -11,10 +11,8 @@ export default <TFieldValues>(
       const field = fields[key];
 
       if (field) {
-        if (field.ref.focus) {
-          if (isUndefined(field.ref.focus())) {
-            break;
-          }
+        if (field.ref.focus && isUndefined(field.ref.focus())) {
+          break;
         } else if (field.options) {
           field.options[0].ref.focus();
 
