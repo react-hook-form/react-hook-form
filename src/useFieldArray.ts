@@ -34,7 +34,7 @@ const mapIds = <
 ): Partial<ArrayField<TFieldArrayValues, TKeyName>>[] => {
   if (process.env.NODE_ENV !== 'production') {
     for (const value of values) {
-      if (!!value && keyName in value) {
+      if (!!value && typeof value === 'object' && keyName in value) {
         console.warn(
           `📋 useFieldArray fieldValues contain the keyName \`${keyName}\` which is reserved for use by useFieldArray. https://react-hook-form.com/api#useFieldArray`,
         );
