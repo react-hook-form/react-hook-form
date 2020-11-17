@@ -4,6 +4,13 @@ import { useForm } from 'react-hook-form';
 
 export default function App() {
   const { register, handleSubmit } = useForm();
+  // or you can set up the defaultValues at useForm
+  // const { register, handleSubmit } = useForm({
+  //   defaultValues: {
+  //     firstName: 'Bill',
+  //     lastName: 'luo',
+  //   }
+  // });
   const onSubmit = data => {
     alert(JSON.stringify(data));
   };
