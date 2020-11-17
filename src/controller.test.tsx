@@ -772,7 +772,7 @@ describe('Controller', () => {
       const Component = () => {
         const { control } = useForm({
           defaultValues: {
-            test: [{ data: '' }],
+            test: [{}],
           },
         });
         const { fields } = useFieldArray({

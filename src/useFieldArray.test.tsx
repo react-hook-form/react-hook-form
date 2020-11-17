@@ -3708,6 +3708,38 @@ describe('useFieldArray', () => {
       ]);
     });
 
+    it('should populate all fields with default values', () => {
+      let getValues: any;
+      const Component = () => {
+        const { register, control, getValues: tempGetValues } = useForm({
+          defaultValues: {
+            test: [{ value: '1' }, { value: '2' }],
+          },
+        });
+        const { fields } = useFieldArray({
+          control,
+          name: 'test',
+        });
+        getValues = tempGetValues;
+
+        return (
+          <form>
+            {fields.map((field, i) => (
+              <input
+                key={field.id}
+                name={`test[${i}].value`}
+                ref={register()}
+              />
+            ))}
+          </form>
+        );
+      };
+
+      render(<Component />);
+
+      expect(getValues()).toEqual({ test: [{ value: '1' }, { value: '2' }] });
+    });
+
     it('should return watched value with watch API', async () => {
       const renderedItems: any = [];
       const Component = () => {
