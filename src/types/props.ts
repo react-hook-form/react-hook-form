@@ -41,13 +41,16 @@ export type ControllerProps<
       }
     | {
         as?: undefined;
-        render: (data: {
-          onChange: (...event: any[]) => void;
-          onBlur: () => void;
-          value: any;
-          name: FieldName<FieldValuesFromControl<TControl>>;
-          ref: React.MutableRefObject<any>;
-        }) => React.ReactElement;
+        render: (
+          data: {
+            onChange: (...event: any[]) => void;
+            onBlur: () => void;
+            value: any;
+            name: FieldName<FieldValuesFromControl<TControl>>;
+            ref: React.MutableRefObject<any>;
+          },
+          state: any,
+        ) => React.ReactElement;
       }
   ) & {
     name: FieldName<FieldValuesFromControl<TControl>>;

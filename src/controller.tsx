@@ -47,7 +47,7 @@ const Controller = <
     mode,
     reValidateMode: { isReValidateOnBlur, isReValidateOnChange },
     formStateRef: {
-      current: { isSubmitted, touched },
+      current: { isSubmitted, touched, dirtyFields, errors },
     },
     updateFormState,
     readFormStateRef,
@@ -228,7 +228,12 @@ const Controller = <
       ? React.cloneElement(as, props)
       : React.createElement(as as string, props as any)
     : render
-    ? render(commonProps)
+    ? render(commonProps, {
+        isDirty: get(dirtyFields, name),
+        error: get(errors, name),
+        isValid: get(dirtyFields, name) && !get(touched, name),
+        isTouched: get(touched, name),
+      })
     : null;
 };
 
