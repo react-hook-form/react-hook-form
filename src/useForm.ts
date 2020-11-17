@@ -613,7 +613,11 @@ export function useForm<
             const previousFormIsValid = formStateRef.current.isValid;
             error = get(errors, name);
 
-            if (!error && resolverRef.current) {
+            if (
+              isCheckBoxInput(target as Ref) &&
+              !error &&
+              resolverRef.current
+            ) {
               const parentNodeName = name.substring(
                 0,
                 name.lastIndexOf('.') > name.lastIndexOf('[')
