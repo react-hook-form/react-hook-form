@@ -6,7 +6,6 @@ import getInputValue from './logic/getInputValue';
 import skipValidation from './logic/skipValidation';
 import isNameInFieldArray from './logic/isNameInFieldArray';
 import { useFormContext } from './useFormContext';
-import { VALUE } from './constants';
 import { Control } from './types';
 import { ControllerProps } from './types';
 import isFunction from './utils/isFunction';
@@ -130,7 +129,7 @@ const Controller = <
               name,
               focus: onFocusRef.current,
             },
-            VALUE,
+            'value',
             {
               set(data) {
                 setInputStateValue(data);

@@ -1,13 +1,9 @@
 import isObject from '../utils/isObject';
 import isRegex from '../utils/isRegex';
-import { ValidationRule, ValidationValueMessage } from '../types';
-
-const isValueMessage = (
-  value?: ValidationRule,
-): value is ValidationValueMessage => isObject(value) && !isRegex(value);
+import { ValidationRule } from '../types';
 
 export default (validationData?: ValidationRule) =>
-  isValueMessage(validationData)
+  isObject(validationData) && !isRegex(validationData)
     ? validationData
     : {
         value: validationData,

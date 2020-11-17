@@ -19,7 +19,8 @@ describe('getFieldsValues', () => {
             },
           },
         },
-        { current: {} },
+        {},
+        false,
       ),
     ).toEqual({
       test: 'test',
@@ -43,7 +44,8 @@ describe('getFieldsValues', () => {
             },
           },
         },
-        { current: {} },
+        {},
+        false,
         false,
         'test',
       ),
@@ -71,7 +73,8 @@ describe('getFieldsValues', () => {
             },
           },
         },
-        { current: {} },
+        {},
+        false,
         false,
         ['test', 'tex'],
       ),
@@ -92,10 +95,9 @@ describe('getFieldsValues', () => {
           },
         },
         {
-          current: {
-            test1: 'test',
-          },
+          test1: 'test',
         },
+        false,
       ),
     ).toEqual({
       test: 'test',
@@ -116,13 +118,12 @@ describe('getFieldsValues', () => {
           },
         },
         {
-          current: {
-            test1: 'test',
-            test2: {
-              test: 'test1',
-            },
+          test1: 'test',
+          test2: {
+            test: 'test1',
           },
         },
+        false,
       ),
     ).toEqual({
       test: 'test',

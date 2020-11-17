@@ -509,7 +509,7 @@ export const useFieldArray = <
     swap: React.useCallback(swap, [name]),
     move: React.useCallback(move, [name]),
     prepend: React.useCallback(prepend, [name]),
-    append: React.useCallback(append, [name]),
+    append: React.useCallback(append, [name, fields]),
     remove: React.useCallback(remove, [name]),
     insert: React.useCallback(insert, [name]),
     fields,

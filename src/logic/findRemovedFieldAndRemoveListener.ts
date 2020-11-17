@@ -32,9 +32,7 @@ export default function findRemovedFieldAndRemoveListener<
   if (!shouldUnregister) {
     const value = getFieldValue(fieldsRef, name, shallowFieldsStateRef);
 
-    if (!isUndefined(value)) {
-      set(shallowFieldsStateRef.current, name, value);
-    }
+    !isUndefined(value) && set(shallowFieldsStateRef.current, name, value);
   }
 
   if (!type) {
@@ -43,18 +41,20 @@ export default function findRemovedFieldAndRemoveListener<
   }
 
   if ((isRadioInput(ref) || isCheckBoxInput(ref)) && fieldRef) {
-    const { options } = fieldRef;
-
-    if (Array.isArray(options) && options.length) {
-      compact(options).forEach((option, index): void => {
-        const { ref } = option;
-        if ((ref && isDetached(ref) && isSameRef(option, ref)) || forceDelete) {
-          removeAllEventListeners(ref, handleChange);
-          unset(options, `[${index}]`);
+    if (Array.isArray(fieldRef.options) && fieldRef.options.length) {
+      compact(fieldRef.options).forEach((option, index): void => {
+        if (
+          (option.ref &&
+            isDetached(option.ref) &&
+            isSameRef(option, option.ref)) ||
+          forceDelete
+        ) {
+          removeAllEventListeners(option.ref, handleChange);
+          unset(fieldRef.options, `[${index}]`);
         }
       });
 
-      if (options && !compact(options).length) {
+      if (fieldRef.options && !compact(fieldRef.options).length) {
         delete fieldsRef.current[name];
       }
     } else {

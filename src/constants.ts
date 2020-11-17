@@ -14,8 +14,6 @@ export const VALIDATION_MODE: ValidationMode = {
   all: 'all',
 };
 
-export const VALUE = 'value';
-
 export const SELECT = 'select';
 
 export const UNDEFINED = 'undefined';
