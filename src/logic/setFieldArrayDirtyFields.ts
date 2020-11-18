@@ -37,12 +37,12 @@ function setDirtyFields<
       }
     }
 
-    !dirtyFields.length &&
-      parentNode &&
+    parentNode &&
+      !dirtyFields.length &&
       delete parentNode[parentName as keyof K];
   }
 
-  return dirtyFields.length ? dirtyFields : [];
+  return dirtyFields;
 }
 
 export default <T extends U, U extends Record<string, unknown>[]>(
