@@ -42,33 +42,15 @@ function setDirtyFields<
       delete parentNode[parentName as keyof K];
   }
 
-  return dirtyFields.length ? dirtyFields : undefined;
+  return dirtyFields.length ? dirtyFields : [];
 }
 
-export default <
-  T extends U,
-  U extends Record<string, unknown>[],
-  K extends Record<string, boolean | []>
->(
+export default <T extends U, U extends Record<string, unknown>[]>(
   values: T,
   defaultValues: U,
   dirtyFields: Record<string, boolean | []>[],
-  parentNode?: K,
-  parentName?: keyof K,
 ) =>
   deepMerge(
-    setDirtyFields(
-      values,
-      defaultValues,
-      dirtyFields,
-      parentNode,
-      parentName,
-    ) || [],
-    setDirtyFields(
-      defaultValues,
-      values,
-      dirtyFields,
-      parentNode,
-      parentName,
-    ) || [],
+    setDirtyFields(values, defaultValues, dirtyFields),
+    setDirtyFields(defaultValues, values, dirtyFields),
   );
