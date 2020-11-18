@@ -1,5 +1,6 @@
 import * as React from 'react';
 import { useFormContext } from './useFormContext';
+import setFieldArrayDirtyFields from './logic/setFieldArrayDirtyFields';
 import { isMatchFieldArrayName } from './logic/isNameInFieldArray';
 import generateId from './logic/generateId';
 import getFieldArrayParentName from './logic/getNodeParentName';
@@ -171,36 +172,17 @@ export const useFieldArray = <
   >(
     updatedFieldArrayValues?: T,
   ) => {
-    const defaultFieldArrayValues = get(defaultValuesRef.current, name, []);
-    const updateDirtyFieldsBaseOnDefaultValues = <U extends T>(
-      base: U,
-      target: U,
-    ) => {
-      for (const key in base) {
-        for (const innerKey in base[key]) {
-          if (
-            innerKey !== keyName &&
-            (!target[key] ||
-              !base[key] ||
-              base[key][innerKey] !== target[key][innerKey])
-          ) {
-            set(formStateRef.current.dirtyFields, `${name}[${key}]`, {
-              ...get(formStateRef.current.dirtyFields, `${name}[${key}]`, {}),
-              [innerKey]: true,
-            });
-          }
-        }
-      }
-    };
-
     if (updatedFieldArrayValues) {
-      updateDirtyFieldsBaseOnDefaultValues(
-        defaultFieldArrayValues,
-        updatedFieldArrayValues,
-      );
-      updateDirtyFieldsBaseOnDefaultValues(
-        updatedFieldArrayValues,
-        defaultFieldArrayValues,
+      set(
+        formStateRef.current.dirtyFields,
+        name,
+        setFieldArrayDirtyFields(
+          updatedFieldArrayValues.map(
+            ({ [keyName]: omitted, ...rest } = {}) => rest,
+          ) || [],
+          get(defaultValuesRef.current, name, []),
+          get(formStateRef.current.dirtyFields, name, []),
+        ),
       );
     }
   };
@@ -313,7 +295,7 @@ export const useFieldArray = <
     shouldFocus = true,
   ) => {
     const updateFormValues = [
-      ...getFieldArrayValue(),
+      ...getCurrentFieldsValues(),
       ...mapIds(Array.isArray(value) ? value : [value], keyName),
     ];
     setFieldAndValidState(updateFormValues);
