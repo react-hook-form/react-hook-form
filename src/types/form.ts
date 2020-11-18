@@ -184,6 +184,14 @@ export type UseWatchOptions<TFieldValues extends FieldValues = FieldValues> = {
   control?: Control<TFieldValues>;
 };
 
+export type SetFieldValue<TFieldValues> =
+  | FieldValue<TFieldValues>
+  | UnpackNestedValue<DeepPartial<TFieldValues>>
+  | string[]
+  | undefined
+  | null
+  | boolean;
+
 export type UseFormMethods<TFieldValues extends FieldValues = FieldValues> = {
   register<TFieldElement extends FieldElement<TFieldValues>>(
     rules?: ValidationRules,
@@ -217,14 +225,8 @@ export type UseFormMethods<TFieldValues extends FieldValues = FieldValues> = {
   clearErrors(name?: FieldName<TFieldValues> | FieldName<TFieldValues>[]): void;
   setValue(
     name: FieldName<TFieldValues>,
-    value:
-      | FieldValue<TFieldValues>
-      | UnpackNestedValue<DeepPartial<TFieldValues>>
-      | string[]
-      | undefined
-      | null
-      | boolean,
-    options?: SetValueConfig,
+    value: SetFieldValue<TFieldValues>,
+    config?: SetValueConfig,
   ): void;
   trigger(
     name?: FieldName<TFieldValues> | FieldName<TFieldValues>[],

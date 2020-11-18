@@ -2,7 +2,7 @@ import * as React from 'react';
 import { useFormContext } from './useFormContext';
 import { isMatchFieldArrayName } from './logic/isNameInFieldArray';
 import generateId from './logic/generateId';
-import getFieldArrayParentName from './logic/getFieldArrayParentName';
+import getFieldArrayParentName from './logic/getNodeParentName';
 import get from './utils/get';
 import set from './utils/set';
 import removeArrayAt from './utils/remove';

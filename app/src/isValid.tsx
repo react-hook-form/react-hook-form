@@ -79,7 +79,7 @@ const IsValid: React.FC = (props: any) => {
           setShow(!show);
         }}
       >
-        Add
+        Toggle
       </button>
     </form>
   );
