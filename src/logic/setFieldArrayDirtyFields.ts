@@ -20,8 +20,8 @@ function setDirtyFields<
       if (Array.isArray(values[index][key])) {
         !dirtyFields[index] && (dirtyFields[index] = {});
         dirtyFields[index][key] = [];
-        setFieldArrayDirtyFields(
-          values[index][key],
+        setDirtyFields(
+          values[index][key] as T,
           get(defaultValues[index] || {}, key, []),
           dirtyFields[index][key] as [],
           dirtyFields[index],
@@ -45,7 +45,7 @@ function setDirtyFields<
   return dirtyFields.length ? dirtyFields : undefined;
 }
 
-export default function setFieldArrayDirtyFields<
+export default <
   T extends U,
   U extends Record<string, unknown>[],
   K extends Record<string, boolean | []>
@@ -55,8 +55,8 @@ export default function setFieldArrayDirtyFields<
   dirtyFields: Record<string, boolean | []>[],
   parentNode?: K,
   parentName?: keyof K,
-) {
-  return deepMerge(
+) =>
+  deepMerge(
     setDirtyFields(
       values,
       defaultValues,
@@ -72,4 +72,3 @@ export default function setFieldArrayDirtyFields<
       parentName,
     ) || [],
   );
-}
