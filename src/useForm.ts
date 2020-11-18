@@ -500,11 +500,14 @@ export function useForm<
               readFormStateRef.current.dirtyFields) &&
             config.shouldDirty
           ) {
-            setFieldArrayDirtyFields(
+            set(
+              formStateRef.current.dirtyFields,
               name,
-              value as Record<string, unknown>[],
-              defaultValuesRef,
-              formStateRef,
+              setFieldArrayDirtyFields(
+                value,
+                get(defaultValuesRef.current, name, []),
+                get(formStateRef.current.dirtyFields, name, []),
+              ),
             );
 
             updateFormState({
