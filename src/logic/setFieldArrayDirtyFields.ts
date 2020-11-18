@@ -36,6 +36,7 @@ function setDirtyFields<
             });
       }
     }
+
     !dirtyFields.length &&
       parentNode &&
       delete parentNode[parentName as keyof K];
@@ -62,13 +63,13 @@ export default function setFieldArrayDirtyFields<
       dirtyFields,
       parentNode,
       parentName,
-    ) || {},
+    ) || [],
     setDirtyFields(
       defaultValues,
       values,
       dirtyFields,
       parentNode,
       parentName,
-    ) || {},
+    ) || [],
   );
 }

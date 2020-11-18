@@ -69,6 +69,24 @@ describe('setFieldArrayDirtyFields', () => {
     ]);
   });
 
+  it('should work for empty values compare with defaultValues', () => {
+    expect(
+      setFieldArrayDirtyFields(
+        [],
+        [{ data: 'bill' }, { data: 'luo2', data1: 'luo1' }],
+        [],
+      ),
+    ).toEqual([
+      {
+        data: true,
+      },
+      {
+        data: true,
+        data1: true,
+      },
+    ]);
+  });
+
   it('should set correctly with nested dirtyFields', () => {
     expect(
       setFieldArrayDirtyFields(

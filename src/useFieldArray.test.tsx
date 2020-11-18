@@ -578,7 +578,7 @@ describe('useFieldArray', () => {
       unmount();
 
       expect(result.current.fields).toEqual([
-        { id: '0', value: 'default' },
+        { id: '0', value: '' },
         { id: '1', value: 'test' },
       ]);
       expect(input.removeEventListener).toHaveBeenCalled();
