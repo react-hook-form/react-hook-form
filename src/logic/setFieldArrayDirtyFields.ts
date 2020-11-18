@@ -1,8 +1,9 @@
 import { get } from '../utils';
 import set from '../utils/set';
+import { deepMerge } from '../utils/deepMerge';
 
-export default function setFieldArrayDirtyFields<
-  T extends U,
+function setDirtyFields<
+  T extends Record<string, unknown>[],
   U extends Record<string, unknown>[],
   K extends Record<string, boolean | []>
 >(
@@ -41,4 +42,33 @@ export default function setFieldArrayDirtyFields<
   }
 
   return dirtyFields.length ? dirtyFields : undefined;
+}
+
+export default function setFieldArrayDirtyFields<
+  T extends U,
+  U extends Record<string, unknown>[],
+  K extends Record<string, boolean | []>
+>(
+  values: T,
+  defaultValues: U,
+  dirtyFields: Record<string, boolean | []>[],
+  parentNode?: K,
+  parentName?: keyof K,
+) {
+  return deepMerge(
+    setDirtyFields(
+      values,
+      defaultValues,
+      dirtyFields,
+      parentNode,
+      parentName,
+    ) || {},
+    setDirtyFields(
+      defaultValues,
+      values,
+      dirtyFields,
+      parentNode,
+      parentName,
+    ) || {},
+  );
 }

@@ -36,6 +36,39 @@ describe('setFieldArrayDirtyFields', () => {
     ]);
   });
 
+  it('should works in reverse dirty fields check', () => {
+    expect(
+      setFieldArrayDirtyFields(
+        [{ data: 'bill1' }, { data: 'luo2' }],
+        [{ data: 'bill' }, { data: 'luo', data1: 'luo1' }],
+        [],
+      ),
+    ).toEqual([
+      {
+        data: true,
+      },
+      {
+        data: true,
+        data1: true,
+      },
+    ]);
+
+    expect(
+      setFieldArrayDirtyFields(
+        [{ data: 'bill1' }, { data: 'luo2' }],
+        [{ data: 'bill' }, { data: 'luo2', data1: 'luo1' }],
+        [],
+      ),
+    ).toEqual([
+      {
+        data: true,
+      },
+      {
+        data1: true,
+      },
+    ]);
+  });
+
   it('should set correctly with nested dirtyFields', () => {
     expect(
       setFieldArrayDirtyFields(
