@@ -1,6 +1,9 @@
-import { get } from '../utils';
+import * as React from 'react';
+import get from '../utils/get';
 import set from '../utils/set';
 import { deepMerge } from '../utils/deepMerge';
+import unsetEmptyFieldArray from '../utils/unsetEmptyFieldArray';
+import { DefaultValues, FormState } from '../types';
 
 function setDirtyFields<
   T extends Record<string, unknown>[],
@@ -20,10 +23,10 @@ function setDirtyFields<
       if (Array.isArray(values[index][key])) {
         !dirtyFields[index] && (dirtyFields[index] = {});
         dirtyFields[index][key] = [];
-        setFieldArrayDirtyFields(
-          values[index][key],
+        setDirtyFields(
+          values[index][key] as Record<string, unknown>[],
           get(defaultValues[index] || {}, key, []),
-          dirtyFields[index][key] as [],
+          dirtyFields[index][key] as Record<string, boolean | []>[],
           dirtyFields[index],
           key,
         );
@@ -39,37 +42,30 @@ function setDirtyFields<
 
     !dirtyFields.length &&
       parentNode &&
-      delete parentNode[parentName as keyof K];
+      parentName &&
+      delete parentNode[parentName];
   }
 
-  return dirtyFields.length ? dirtyFields : undefined;
+  return dirtyFields.length ? dirtyFields : [];
 }
 
-export default function setFieldArrayDirtyFields<
-  T extends U,
-  U extends Record<string, unknown>[],
-  K extends Record<string, boolean | []>
->(
-  values: T,
-  defaultValues: U,
-  dirtyFields: Record<string, boolean | []>[],
-  parentNode?: K,
-  parentName?: keyof K,
+export default function setFieldArrayDirtyFields<TFieldValues>(
+  name: string,
+  values: Record<string, unknown>[],
+  defaultValuesRef: React.MutableRefObject<DefaultValues<TFieldValues>>,
+  formStateRef: React.MutableRefObject<FormState<TFieldValues>>,
 ) {
-  return deepMerge(
-    setDirtyFields(
-      values,
-      defaultValues,
-      dirtyFields,
-      parentNode,
-      parentName,
-    ) || [],
-    setDirtyFields(
-      defaultValues,
-      values,
-      dirtyFields,
-      parentNode,
-      parentName,
-    ) || [],
+  const dirtyFields = get(formStateRef.current.dirtyFields, name, []);
+  const defaultValues = get(defaultValuesRef.current, name, []);
+
+  set(
+    formStateRef.current.dirtyFields,
+    name,
+    deepMerge(
+      setDirtyFields(values, defaultValues, dirtyFields),
+      setDirtyFields(defaultValues, values, dirtyFields),
+    ),
   );
+
+  unsetEmptyFieldArray(formStateRef.current.dirtyFields, name);
 }

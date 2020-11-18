@@ -12,9 +12,9 @@ import moveArrayAt from './utils/move';
 import swapArrayAt from './utils/swap';
 import prependAt from './utils/prepend';
 import insertAt from './utils/insert';
+import unsetEmptyFieldArray from './utils/unsetEmptyFieldArray';
 import fillEmptyArray from './utils/fillEmptyArray';
 import fillBooleanArray from './utils/fillBooleanArray';
-import compact from './utils/compact';
 import {
   Field,
   FieldValues,
@@ -120,6 +120,10 @@ export const useFieldArray = <
   >(mapIds(memoizedDefaultValues.current, keyName));
   set(fieldArrayValuesRef.current, name, fields);
 
+  const omitKey = <T extends (Partial<TFieldArrayValues> | undefined)[] = []>(
+    fields: T,
+  ) => fields.map(({ [keyName]: omitted, ...rest } = {}) => rest);
+
   const getFieldArrayValue = React.useCallback(
     () => get(fieldArrayValuesRef.current, name, []),
     [],
@@ -164,32 +168,24 @@ export const useFieldArray = <
     }
   };
 
-  const cleanup = <T>(ref: T) =>
-    !compact(get(ref, name, [])).length && unset(ref, name);
-
   const updateDirtyFieldsWithDefaultValues = <
-    T extends { [k: string]: unknown }[]
+    T extends (Partial<TFieldArrayValues> | undefined)[] = []
   >(
     updatedFieldArrayValues?: T,
   ) => {
     if (updatedFieldArrayValues) {
-      set(
-        formStateRef.current.dirtyFields,
+      setFieldArrayDirtyFields(
         name,
-        setFieldArrayDirtyFields(
-          updatedFieldArrayValues.map(
-            ({ [keyName]: omitted, ...rest } = {}) => rest,
-          ) || [],
-          get(defaultValuesRef.current, name, []),
-          get(formStateRef.current.dirtyFields, name, []),
-        ),
+        omitKey(updatedFieldArrayValues),
+        defaultValuesRef,
+        formStateRef,
       );
     }
   };
 
   const batchStateUpdate = <
     T extends Function,
-    K extends { [k: string]: unknown }[]
+    K extends (Partial<TFieldArrayValues> | undefined)[] = []
   >(
     method: T,
     args: {
@@ -219,7 +215,7 @@ export const useFieldArray = <
         args.argB,
       );
       shouldSet && set(fieldArrayDefaultValuesRef.current, name, output);
-      cleanup(fieldArrayDefaultValuesRef.current);
+      unsetEmptyFieldArray(fieldArrayDefaultValuesRef.current, name);
     }
 
     if (Array.isArray(get(formStateRef.current.errors, name))) {
@@ -229,7 +225,7 @@ export const useFieldArray = <
         args.argB,
       );
       shouldSet && set(formStateRef.current.errors, name, output);
-      cleanup(formStateRef.current.errors);
+      unsetEmptyFieldArray(formStateRef.current.errors, name);
     }
 
     if (
@@ -242,7 +238,7 @@ export const useFieldArray = <
         args.argB,
       );
       shouldSet && set(formStateRef.current.touched, name, output);
-      cleanup(formStateRef.current.touched);
+      unsetEmptyFieldArray(formStateRef.current.touched, name);
     }
 
     if (
@@ -256,7 +252,6 @@ export const useFieldArray = <
       );
       shouldSet && set(formStateRef.current.dirtyFields, name, output);
       updateDirtyFieldsWithDefaultValues(updatedFieldValues);
-      cleanup(formStateRef.current.dirtyFields);
     }
 
     if (
@@ -269,23 +264,20 @@ export const useFieldArray = <
         name,
         method(get(validFieldsRef.current, name, []), args.argA),
       );
-      cleanup(validFieldsRef.current);
+      unsetEmptyFieldArray(validFieldsRef.current, name);
 
       set(
         fieldsWithValidationRef.current,
         name,
         method(get(fieldsWithValidationRef.current, name, []), args.argA),
       );
-      cleanup(fieldsWithValidationRef.current);
+      unsetEmptyFieldArray(fieldsWithValidationRef.current, name);
     }
 
     updateFormState({
       errors: formStateRef.current.errors,
       dirtyFields: formStateRef.current.dirtyFields,
-      isDirty: isFormDirty(
-        name,
-        updatedFormValues.map(({ [keyName]: omitted, ...rest } = {}) => rest),
-      ),
+      isDirty: isFormDirty(name, omitKey(updatedFormValues)),
       touched: formStateRef.current.touched,
     });
   };
@@ -345,10 +337,10 @@ export const useFieldArray = <
 
   const remove = (index?: number | number[]) => {
     const fieldValues = getCurrentFieldsValues();
-    const updatedFieldValues: { [k: string]: unknown }[] = removeArrayAt(
-      fieldValues,
-      index,
-    );
+    const updatedFieldValues: (
+      | Partial<TFieldArrayValues>
+      | undefined
+    )[] = ([] = removeArrayAt(fieldValues, index));
     setFieldAndValidState(
       updatedFieldValues as Partial<ArrayField<TFieldArrayValues, TKeyName>>[],
     );

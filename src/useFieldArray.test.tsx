@@ -901,9 +901,7 @@ describe('useFieldArray', () => {
           );
         });
 
-        expect(formState.dirtyFields).toEqual({
-          test: [],
-        });
+        expect(formState.dirtyFields).toEqual({});
         expect(formState.isDirty).toBeFalsy();
       },
     );
