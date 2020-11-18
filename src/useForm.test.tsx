@@ -1378,7 +1378,7 @@ describe('useForm', () => {
   });
 
   describe('trigger', () => {
-    it('should throw error when field is not found', async () => {
+    it('should console warn when field is not found', async () => {
       jest.spyOn(console, 'warn').mockImplementation(() => {});
 
       process.env.NODE_ENV = 'development';
@@ -1392,7 +1392,7 @@ describe('useForm', () => {
       console.warn.mockRestore();
     });
 
-    it('should remove all errors before set new errors wwhen trigger entire form', async () => {
+    it('should remove all errors before set new errors when trigger entire form', async () => {
       const Component = () => {
         const [show, setShow] = React.useState(true);
         const { register, trigger, errors } = useForm<{
