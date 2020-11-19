@@ -15,7 +15,7 @@ import isBoolean from '../utils/isBoolean';
 import isMessage from '../utils/isMessage';
 import getValidateError from './getValidateError';
 import appendErrors from './appendErrors';
-import { INPUT_VALIDATION_RULES } from '../constants';
+import { INPUT_VALIDATION_RULES, UNDEFINED } from '../constants';
 import {
   Field,
   FieldValues,
@@ -72,6 +72,11 @@ export default async <TFieldValues extends FieldValues>(
         : appendErrorsCurry(minType, message)),
     };
   };
+  const setCustomValidity = (message: string) =>
+    (ref as HTMLInputElement).setCustomValidity &&
+    (ref as HTMLInputElement).setCustomValidity(message);
+
+  setCustomValidity('');
 
   if (
     required &&
@@ -94,6 +99,7 @@ export default async <TFieldValues extends FieldValues>(
         ...appendErrorsCurry(INPUT_VALIDATION_RULES.required, message),
       };
       if (!validateAllFieldCriteria) {
+        setCustomValidity(message);
         return error;
       }
     }
@@ -133,7 +139,9 @@ export default async <TFieldValues extends FieldValues>(
         INPUT_VALIDATION_RULES.max,
         INPUT_VALIDATION_RULES.min,
       );
+
       if (!validateAllFieldCriteria) {
+        setCustomValidity(UNDEFINED);
         return error;
       }
     }
@@ -155,7 +163,9 @@ export default async <TFieldValues extends FieldValues>(
         maxLengthOutput.message,
         minLengthOutput.message,
       );
+
       if (!validateAllFieldCriteria) {
+        setCustomValidity(UNDEFINED);
         return error;
       }
     }
@@ -171,7 +181,9 @@ export default async <TFieldValues extends FieldValues>(
         ref,
         ...appendErrorsCurry(INPUT_VALIDATION_RULES.pattern, message),
       };
+
       if (!validateAllFieldCriteria) {
+        setCustomValidity(message);
         return error;
       }
     }
@@ -193,7 +205,9 @@ export default async <TFieldValues extends FieldValues>(
             validateError.message,
           ),
         };
+
         if (!validateAllFieldCriteria) {
+          setCustomValidity(UNDEFINED);
           return error;
         }
       }
@@ -228,12 +242,16 @@ export default async <TFieldValues extends FieldValues>(
           ref: validateRef,
           ...validationResult,
         };
+
         if (!validateAllFieldCriteria) {
+          setCustomValidity(UNDEFINED);
           return error;
         }
       }
     }
   }
+
+  setCustomValidity(isEmptyObject(error) ? '' : UNDEFINED);
 
   return error;
 };
