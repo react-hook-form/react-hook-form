@@ -3,10 +3,8 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
-    "@hapi/joi": "^17.1.0",
     "@hookform/resolvers": "^1.0.0",
     "@material-ui/core": "^4.8.0",
-    "@types/hapi__joi": "^17.1.6",
     "@types/jest": "26.0.15",
     "@types/node": "14.14.2",
     "@types/react": "16.9.53",
@@ -14,6 +12,7 @@
     "@types/react-router-dom": "^5.1.6",
     "@types/react-select": "^3.0.22",
     "@types/yup": "^0.29.8",
+    "joi": "^17.3.0",
     "react": "^17.0.1",
     "react-dom": "^17.0.1",
     "react-hook-form": "^6.9.6",

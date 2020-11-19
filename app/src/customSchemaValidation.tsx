@@ -1,6 +1,6 @@
 import React from 'react';
 import { useForm } from 'react-hook-form';
-import Joi from '@hapi/joi';
+import Joi from 'joi';
 
 let renderCounter = 0;
 
