@@ -480,6 +480,8 @@ export function useForm<
       value: SetFieldValue<TFieldValues>,
       config: SetValueConfig,
     ) => {
+      !isPrimitive(value) && set(shallowFieldsStateRef.current, name, value);
+
       if (fieldsRef.current[name]) {
         setFieldValue(name, value);
         config.shouldDirty && updateAndGetDirtyState(name);
@@ -590,6 +592,14 @@ export function useForm<
               ...state,
               touched: formStateRef.current.touched,
             };
+          }
+
+          if (!shouldUnregister && isCheckBoxInput(target as Ref)) {
+            set(
+              shallowFieldsStateRef.current,
+              name,
+              getFieldValue(fieldsRef, name),
+            );
           }
 
           if (shouldSkipValidation) {
