@@ -1,4 +1,4 @@
-import getFieldArrayParentName from './getFieldArrayParentName';
+import getFieldArrayParentName from './getNodeParentName';
 
 describe('getFieldArrayParentName', () => {
   it('should return parent name when name is field array', () => {

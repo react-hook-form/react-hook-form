@@ -52,16 +52,14 @@ describe('useForm', () => {
 
     it('should call console.warn when ref name is undefined', () => {
       process.env.NODE_ENV = 'development';
-      const mockConsoleWarn = jest
-        .spyOn(console, 'warn')
-        .mockImplementation(() => {});
+      jest.spyOn(console, 'warn').mockImplementation(() => {});
       const Component = () => {
         const { register } = useForm();
         return <input ref={register} />;
       };
       render(<Component />);
 
-      expect(mockConsoleWarn).toHaveBeenCalled();
+      expect(console.warn).toHaveBeenCalled();
     });
 
     it('should support register passed to ref', async () => {
@@ -1187,6 +1185,7 @@ describe('useForm', () => {
           const { result } = renderHook(() => useForm());
 
           (result.current.formState as any)[property];
+          result.current.formState.isDirty;
 
           result.current.register({ type: 'text', name: 'test' });
 
@@ -1210,6 +1209,7 @@ describe('useForm', () => {
           const { result } = renderHook(() => useForm());
 
           (result.current.formState as any)[property];
+          result.current.formState.isDirty;
 
           result.current.register({ type: 'text', name: 'test[0]', value: '' });
           result.current.register({ type: 'text', name: 'test[1]', value: '' });
@@ -1255,6 +1255,7 @@ describe('useForm', () => {
             }),
           );
           (result.current.formState as any)[property];
+          result.current.formState.isDirty;
 
           result.current.register('test');
 
@@ -1276,6 +1277,7 @@ describe('useForm', () => {
             }),
           );
           (result.current.formState as any)[property];
+          result.current.formState.isDirty;
 
           result.current.register('test');
 
@@ -1376,12 +1378,21 @@ describe('useForm', () => {
   });
 
   describe('trigger', () => {
-    it('should return false when field is not found', async () => {
+    it('should console warn when field is not found', async () => {
+      jest.spyOn(console, 'warn').mockImplementation(() => {});
+
+      process.env.NODE_ENV = 'development';
+
       const { result } = renderHook(() => useForm<{ test: string }>());
       expect(await result.current.trigger('test')).toBeFalsy();
+
+      expect(console.warn).toBeCalledTimes(1);
+
+      // @ts-ignore
+      console.warn.mockRestore();
     });
 
-    it('should remove all errors before set new errors wwhen trigger entire form', async () => {
+    it('should remove all errors before set new errors when trigger entire form', async () => {
       const Component = () => {
         const [show, setShow] = React.useState(true);
         const { register, trigger, errors } = useForm<{

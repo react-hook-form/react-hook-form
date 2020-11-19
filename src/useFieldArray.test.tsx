@@ -578,7 +578,7 @@ describe('useFieldArray', () => {
       unmount();
 
       expect(result.current.fields).toEqual([
-        { id: '0', value: 'default' },
+        { id: '0', value: '' },
         { id: '1', value: 'test' },
       ]);
       expect(input.removeEventListener).toHaveBeenCalled();
@@ -901,7 +901,9 @@ describe('useFieldArray', () => {
           );
         });
 
-        expect(formState.dirtyFields).toEqual({});
+        expect(formState.dirtyFields).toEqual({
+          test: [],
+        });
         expect(formState.isDirty).toBeFalsy();
       },
     );
@@ -1044,7 +1046,7 @@ describe('useFieldArray', () => {
 
     it.each(['isDirty', 'dirtyFields'])(
       'should be dirty when value is appended with %s',
-      (property) => {
+      () => {
         const { result } = renderHook(() => {
           const { register, formState, control } = useForm();
           const { fields, append } = useFieldArray({
@@ -1055,7 +1057,8 @@ describe('useFieldArray', () => {
           return { register, formState, fields, append };
         });
 
-        (result.current.formState as Record<string, any>)[property];
+        result.current.formState.isDirty;
+        result.current.formState.dirtyFields;
 
         act(() => {
           result.current.append({ value: 'test' });
@@ -1324,7 +1327,7 @@ describe('useFieldArray', () => {
 
     it.each(['isDirty', 'dirtyFields'])(
       'should be dirty when value is prepended with %s',
-      (property) => {
+      () => {
         const { result } = renderHook(() => {
           const { register, formState, control } = useForm();
           const { fields, prepend } = useFieldArray({
@@ -1335,7 +1338,8 @@ describe('useFieldArray', () => {
           return { register, formState, fields, prepend };
         });
 
-        (result.current.formState as Record<string, any>)[property];
+        result.current.formState.isDirty;
+        result.current.formState.dirtyFields;
 
         act(() => {
           result.current.prepend({ value: 'test' });
@@ -1920,7 +1924,7 @@ describe('useFieldArray', () => {
 
     it.each(['isDirty', 'dirtyFields'])(
       'should be dirty when value is remove with %s',
-      (property) => {
+      () => {
         const { result } = renderHook(() => {
           const { register, formState, control } = useForm({
             defaultValues: {
@@ -1935,7 +1939,8 @@ describe('useFieldArray', () => {
           return { register, formState, fields, append, remove };
         });
 
-        (result.current.formState as Record<string, any>)[property];
+        result.current.formState.isDirty;
+        result.current.formState.dirtyFields;
 
         act(() => {
           result.current.append({ value: 'test' });
@@ -2611,7 +2616,7 @@ describe('useFieldArray', () => {
 
     it.each(['isDirty', 'dirtyFields'])(
       'should insert data to formState.%s at index with single value',
-      (property) => {
+      () => {
         const { result } = renderHook(() => {
           const { formState, control } = useForm({
             defaultValues: { test: [{ value: '1' }] },
@@ -2624,7 +2629,8 @@ describe('useFieldArray', () => {
           return { formState, fields, append, insert };
         });
 
-        (result.current.formState as Record<string, any>)[property];
+        result.current.formState.isDirty;
+        result.current.formState.dirtyFields;
 
         act(() => {
           result.current.append({ value: '2' });
@@ -2640,7 +2646,7 @@ describe('useFieldArray', () => {
 
     it.each(['isDirty', 'dirtyFields'])(
       'should insert data to formState.%s at index with array value',
-      (property) => {
+      () => {
         const { result } = renderHook(() => {
           const { formState, control } = useForm({
             defaultValues: { test: [{ value: '1' }] },
@@ -2653,7 +2659,8 @@ describe('useFieldArray', () => {
           return { formState, fields, append, insert };
         });
 
-        (result.current.formState as Record<string, any>)[property];
+        result.current.formState.isDirty;
+        result.current.formState.dirtyFields;
 
         act(() => {
           result.current.append({ value: '2' });
@@ -3165,7 +3172,7 @@ describe('useFieldArray', () => {
 
     it.each(['isDirty', 'dirtyFields'])(
       'should swap dirty order when formState.%s is defined',
-      (property) => {
+      () => {
         const { result } = renderHook(() => {
           const { formState, control } = useForm({
             defaultValues: { test: [{ value: '1' }] },
@@ -3180,7 +3187,8 @@ describe('useFieldArray', () => {
           };
         });
 
-        (result.current.formState as Record<string, any>)[property];
+        result.current.formState.isDirty;
+        result.current.formState.dirtyFields;
 
         act(() => {
           result.current.append({ value: '2' });
@@ -3532,7 +3540,7 @@ describe('useFieldArray', () => {
 
     it.each(['isDirty', 'dirtyFields'])(
       'should move dirty into pointed position when formState.%s is defined',
-      (property) => {
+      () => {
         const { result } = renderHook(() => {
           const { formState, control } = useForm({
             defaultValues: { test: [{ value: '1' }] },
@@ -3547,7 +3555,8 @@ describe('useFieldArray', () => {
           };
         });
 
-        (result.current.formState as Record<string, any>)[property];
+        result.current.formState.isDirty;
+        result.current.formState.dirtyFields;
 
         act(() => {
           result.current.append({ value: '2' });
