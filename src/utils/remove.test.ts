@@ -3,7 +3,7 @@ import remove from './remove';
 test('should remove item accordingly', () => {
   expect(
     remove([, , { type: 'required', message: '', ref: 'test' }], 1),
-  ).toEqual([undefined, { type: 'required', message: '', ref: 'test' }]);
+  ).toEqual([{ type: 'required', message: '', ref: 'test' }]);
 
   expect(
     remove([, , { type: 'required', message: '', ref: 'test' }], [1, 2]),
