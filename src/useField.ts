@@ -110,10 +110,12 @@ export function useField<
 
   const registerField = React.useCallback(
     (shouldUpdateValue?: boolean) => {
-      if (process.env.NODE_ENV !== 'production' && !name) {
-        return console.warn(
-          '📋 Field is missing `name` prop. https://react-hook-form.com/api#Controller',
-        );
+      if (process.env.NODE_ENV !== 'production') {
+        if (!name) {
+          return console.warn(
+            '📋 Field is missing `name` prop. https://react-hook-form.com/api#Controller',
+          );
+        }
       }
 
       if (fieldsRef.current[name]) {
@@ -152,7 +154,7 @@ export function useField<
     [rules, name, register],
   );
 
-  React.useEffect(() => () => unregister(name), [unregister, name]);
+  React.useEffect(() => () => unregister(name), [name]);
 
   React.useEffect(() => {
     if (process.env.NODE_ENV !== 'production') {
