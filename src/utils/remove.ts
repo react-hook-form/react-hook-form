@@ -1,26 +1,19 @@
 import isUndefined from './isUndefined';
 import compact from './compact';
 
-const removeAt = <T>(data: T[], index: number): T[] => [
-  ...data.slice(0, index),
-  ...data.slice(index + 1),
-];
+function removeAtIndexes<T>(data: T[], indexes: number[]): T[] {
+  let i = 0;
+  const temp = [...data];
 
-function removeAtIndexes<T>(data: T[], index: number[]): T[] {
-  let k = -1;
-
-  while (++k < data.length) {
-    if (index.indexOf(k) >= 0) {
-      delete data[k];
-    }
+  for (const index of indexes) {
+    temp.splice(index - i, 1);
+    i++;
   }
 
-  return compact(data);
+  return compact(temp).length ? temp : [];
 }
 
 export default <T>(data: T[], index?: number | number[]): T[] =>
   isUndefined(index)
     ? []
-    : Array.isArray(index)
-    ? removeAtIndexes(data, index)
-    : removeAt(data, index);
+    : removeAtIndexes(data, (Array.isArray(index) ? index : [index]).sort());
