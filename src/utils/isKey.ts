@@ -1,3 +1,2 @@
 export default (value: [] | string) =>
-  !Array.isArray(value) &&
-  !/\.|\[(?:[^[\]]*|(["'])(?:(?!\1)[^\\]|\\.)*?\1)\]/.test(value);
+  !Array.isArray(value) && /^\w*$/.test(value);
