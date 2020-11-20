@@ -674,6 +674,6 @@ describe('useFieldArray', () => {
     cy.get('#delete1').click();
     cy.get('#delete1').click();
 
-    // cy.get('#isValid').get('#isValid').contains('yes');
+    cy.get('#isValid').get('#isValid').contains('yes');
   });
 });
