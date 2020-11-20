@@ -202,7 +202,7 @@ export function useField<
   );
 
   return {
-    props: {
+    field: {
       onChange,
       onBlur,
       name,

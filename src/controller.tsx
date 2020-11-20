@@ -14,22 +14,12 @@ const Controller = <
 >(
   props: ControllerProps<TAs, TControl>,
 ) => {
-  const {
-    name,
-    rules,
-    as,
-    render,
-    defaultValue,
-    control,
-    onFocus,
-    ...rest
-  } = props;
-
-  const { props: commonProps } = useField(props);
+  const { rules, as, render, defaultValue, control, onFocus, ...rest } = props;
+  const { field } = useField(props);
 
   const componentProps = {
     ...rest,
-    ...commonProps,
+    ...field,
   };
 
   return as
@@ -37,7 +27,7 @@ const Controller = <
       ? React.cloneElement(as, componentProps)
       : React.createElement(as as string, componentProps as any)
     : render
-    ? render(commonProps)
+    ? render(field)
     : null;
 };
 
