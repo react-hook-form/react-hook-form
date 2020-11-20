@@ -205,7 +205,7 @@ export function useField<
       ref,
     },
     state: {
-      inValid: !!get(errors, name),
+      inValid: !get(errors, name),
       isDirty: !!get(dirtyFields, name),
       isTouched: !!get(touched, name),
     },
