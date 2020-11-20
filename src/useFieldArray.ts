@@ -25,6 +25,7 @@ import {
   DeepPartial,
   UseFieldArrayMethods,
 } from './types';
+import cloneObject from './utils/cloneObject';
 
 const mapIds = <
   TFieldArrayValues extends FieldValues = FieldValues,
@@ -144,7 +145,7 @@ export const useFieldArray = <
     set(
       fieldArrayDefaultValuesRef.current,
       fieldArrayParentName,
-      get(defaultValuesRef.current, fieldArrayParentName),
+      cloneObject(get(defaultValuesRef.current, fieldArrayParentName)),
     );
   }
 

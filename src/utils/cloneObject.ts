@@ -2,7 +2,7 @@ import isPrimitive from './isPrimitive';
 
 export default function cloneObject<T extends unknown>(
   data: T,
-  isWeb: boolean,
+  isWeb = true,
 ): T {
   let copy: any;
 
