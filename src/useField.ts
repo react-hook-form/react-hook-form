@@ -55,7 +55,6 @@ export function useField<
   } = control || methods.control;
 
   const isNotFieldArray = !isNameInFieldArray(fieldArrayNamesRef.current, name);
-  const isTouched = !!get(touched, name);
   const getInitialValue = () =>
     !isUndefined(get(shallowFieldsStateRef.current, name)) && isNotFieldArray
       ? get(shallowFieldsStateRef.current, name)
@@ -89,13 +88,12 @@ export function useField<
         isReValidateOnBlur,
         isReValidateOnChange,
         isSubmitted,
-        isTouched,
+        isTouched: !!get(touched, name),
         ...mode,
       }),
     [
       isReValidateOnBlur,
       isReValidateOnChange,
-      isTouched,
       isSubmitted,
       touched,
       name,
@@ -179,7 +177,7 @@ export function useField<
   });
 
   const onBlur = React.useCallback(() => {
-    if (readFormStateRef.current.touched && !isTouched) {
+    if (readFormStateRef.current.touched && !get(touched, name)) {
       set(touched, name, true);
       updateFormState({
         touched,
@@ -187,14 +185,7 @@ export function useField<
     }
 
     shouldValidate(true) && trigger(name);
-  }, [
-    name,
-    isTouched,
-    updateFormState,
-    shouldValidate,
-    trigger,
-    readFormStateRef,
-  ]);
+  }, [name, updateFormState, shouldValidate, trigger, readFormStateRef]);
 
   const onChange = React.useCallback(
     (...event: any[]) =>
@@ -216,7 +207,7 @@ export function useField<
     state: {
       inValid: !!get(errors, name),
       isDirty: !!get(dirtyFields, name),
-      isTouched,
+      isTouched: !!get(touched, name),
     },
   };
 }
