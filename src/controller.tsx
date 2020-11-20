@@ -3,13 +3,10 @@ import { useField } from './useField';
 import { Control } from './types';
 import { ControllerProps } from './types';
 
+type NativeInputs = 'input' | 'select' | 'textarea';
+
 const Controller = <
-  TAs extends
-    | React.ReactElement
-    | React.ComponentType<any>
-    | 'input'
-    | 'select'
-    | 'textarea',
+  TAs extends React.ReactElement | React.ComponentType<any> | NativeInputs,
   TControl extends Control = Control
 >(
   props: ControllerProps<TAs, TControl>,
@@ -25,7 +22,7 @@ const Controller = <
   return as
     ? React.isValidElement(as)
       ? React.cloneElement(as, componentProps)
-      : React.createElement(as as string, componentProps as any)
+      : React.createElement(as as NativeInputs, componentProps as any)
     : render
     ? render(field)
     : null;

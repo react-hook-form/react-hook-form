@@ -7,7 +7,7 @@ import isFunction from './utils/isFunction';
 import skipValidation from './logic/skipValidation';
 import getInputValue from './logic/getInputValue';
 import set from './utils/set';
-import { Control, ControllerProps } from './types';
+import { Control, ControllerProps, UseField } from './types';
 
 export function useField<
   TAs extends
@@ -23,7 +23,9 @@ export function useField<
   defaultValue,
   control,
   onFocus,
-}: Exclude<ControllerProps<TAs, TControl>, 'as' | 'render'>) {
+}: Exclude<ControllerProps<TAs, TControl>, 'as' | 'render'>): UseField<
+  TControl
+> {
   const methods = useFormContext();
 
   if (process.env.NODE_ENV !== 'production') {
@@ -43,7 +45,7 @@ export function useField<
     mode,
     reValidateMode: { isReValidateOnBlur, isReValidateOnChange },
     formStateRef: {
-      current: { isSubmitted, touched },
+      current: { isSubmitted, touched, errors, dirtyFields },
     },
     updateFormState,
     readFormStateRef,
@@ -53,6 +55,7 @@ export function useField<
   } = control || methods.control;
 
   const isNotFieldArray = !isNameInFieldArray(fieldArrayNamesRef.current, name);
+  const isTouched = !!get(touched, name);
   const getInitialValue = () =>
     !isUndefined(get(shallowFieldsStateRef.current, name)) && isNotFieldArray
       ? get(shallowFieldsStateRef.current, name)
@@ -86,12 +89,13 @@ export function useField<
         isReValidateOnBlur,
         isReValidateOnChange,
         isSubmitted,
-        isTouched: !!get(touched, name),
+        isTouched,
         ...mode,
       }),
     [
       isReValidateOnBlur,
       isReValidateOnChange,
+      isTouched,
       isSubmitted,
       touched,
       name,
@@ -175,7 +179,7 @@ export function useField<
   });
 
   const onBlur = React.useCallback(() => {
-    if (readFormStateRef.current.touched && !get(touched, name)) {
+    if (readFormStateRef.current.touched && !isTouched) {
       set(touched, name, true);
       updateFormState({
         touched,
@@ -185,7 +189,7 @@ export function useField<
     shouldValidate(true) && trigger(name);
   }, [
     name,
-    touched,
+    isTouched,
     updateFormState,
     shouldValidate,
     trigger,
@@ -208,6 +212,11 @@ export function useField<
       name,
       value,
       ref,
+    },
+    state: {
+      inValid: !!get(errors, name),
+      isDirty: !!get(dirtyFields, name),
+      isTouched,
     },
   };
 }

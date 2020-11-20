@@ -14,6 +14,7 @@ import {
 import { FieldArrayName } from './fieldArray';
 import { ErrorOption, FieldErrors } from './errors';
 import { ValidationRules } from './validator';
+import { ControllerRenderProps } from './props';
 
 declare const $NestedValue: unique symbol;
 
@@ -251,4 +252,13 @@ export type UseFormMethods<TFieldValues extends FieldValues = FieldValues> = {
     onInvalid?: SubmitErrorHandler<TFieldValues>,
   ) => (e?: React.BaseSyntheticEvent) => Promise<void>;
   control: Control<TFieldValues>;
+};
+
+export type UseField<TControl extends Control = Control> = {
+  field: ControllerRenderProps<TControl>;
+  state: {
+    inValid: boolean;
+    isTouched: boolean;
+    isDirty: boolean;
+  };
 };
