@@ -71,8 +71,10 @@ export function useField<
       (() => {
         if (isFunction(ref.current.focus)) {
           ref.current.focus();
-        } else {
-          if (process.env.NODE_ENV !== 'production') {
+        }
+
+        if (process.env.NODE_ENV !== 'production') {
+          if (!isFunction(ref.current.focus)) {
             console.warn(
               `📋 'ref' from Controller render prop must be attached to a React component or a DOM Element whose ref provides a 'focus()' method`,
             );
