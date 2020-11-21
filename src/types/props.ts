@@ -25,6 +25,14 @@ type AsProps<TAs> = TAs extends undefined
   ? JSX.IntrinsicElements[TAs]
   : never;
 
+export type ControllerRenderProps<TControl extends Control = Control> = {
+  onChange: (...event: any[]) => void;
+  onBlur: () => void;
+  value: any;
+  name: FieldName<FieldValuesFromControl<TControl>>;
+  ref: React.MutableRefObject<any>;
+};
+
 export type ControllerProps<
   TAs extends
     | React.ReactElement
@@ -41,13 +49,7 @@ export type ControllerProps<
       }
     | {
         as?: undefined;
-        render: (data: {
-          onChange: (...event: any[]) => void;
-          onBlur: () => void;
-          value: any;
-          name: FieldName<FieldValuesFromControl<TControl>>;
-          ref: React.MutableRefObject<any>;
-        }) => React.ReactElement;
+        render: (data: ControllerRenderProps<TControl>) => React.ReactElement;
       }
   ) & {
     name: FieldName<FieldValuesFromControl<TControl>>;

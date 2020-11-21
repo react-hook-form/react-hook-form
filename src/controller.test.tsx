@@ -655,36 +655,6 @@ describe('Controller', () => {
       console.warn.mockRestore();
     });
 
-    it('should output error message if as and render props are given in development environment', () => {
-      jest.spyOn(console, 'warn').mockImplementation(() => {});
-
-      const env = process.env.NODE_ENV;
-      process.env.NODE_ENV = 'development';
-
-      const Component = () => {
-        const { control } = useForm();
-        return (
-          // @ts-ignore
-          <Controller
-            as={'input' as const}
-            render={() => <input />}
-            defaultValue=""
-            name="test"
-            control={control}
-          />
-        );
-      };
-
-      render(<Component />);
-
-      expect(console.warn).toBeCalledTimes(1);
-
-      process.env.NODE_ENV = env;
-
-      // @ts-ignore
-      console.warn.mockRestore();
-    });
-
     it('should not output error message if as and render props are given in production environment', () => {
       jest.spyOn(console, 'warn').mockImplementation(() => {});
 
@@ -708,30 +678,6 @@ describe('Controller', () => {
       render(<Component />);
 
       expect(console.warn).not.toBeCalled();
-
-      process.env.NODE_ENV = env;
-
-      // @ts-ignore
-      console.warn.mockRestore();
-    });
-
-    it('should output error message if as and render props are not given in development environment', () => {
-      jest.spyOn(console, 'warn').mockImplementation(() => {});
-
-      const env = process.env.NODE_ENV;
-      process.env.NODE_ENV = 'development';
-
-      const Component = () => {
-        const { control } = useForm();
-        return (
-          // @ts-ignore
-          <Controller defaultValue="" name="test" control={control} />
-        );
-      };
-
-      render(<Component />);
-
-      expect(console.warn).toBeCalledTimes(1);
 
       process.env.NODE_ENV = env;
 
