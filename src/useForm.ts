@@ -48,7 +48,7 @@ import {
   Field,
   FieldRefs,
   UseFormOptions,
-  ValidationRules,
+  RegisterOptions,
   SubmitHandler,
   FieldElement,
   FormStateProxy,
@@ -925,7 +925,7 @@ export function useForm<
 
   function registerFieldRef<TFieldElement extends FieldElement<TFieldValues>>(
     ref: TFieldElement & Ref,
-    validateOptions: ValidationRules | null = {},
+    options: RegisterOptions | null = {},
   ): ((name: InternalFieldName<TFieldValues>) => void) | void {
     if (process.env.NODE_ENV !== 'production') {
       if (!ref.name) {
@@ -955,7 +955,7 @@ export function useForm<
     const { name, type, value } = ref;
     const fieldRefAndValidationOptions = {
       ref,
-      ...validateOptions,
+      ...options,
     };
     const fields = fieldsRef.current;
     const isRadioOrCheckbox = isRadioOrCheckboxFunction(ref);
@@ -977,7 +977,7 @@ export function useForm<
     ) {
       fields[name] = {
         ...field,
-        ...validateOptions,
+        ...options,
       };
       return;
     }
@@ -992,7 +992,7 @@ export function useForm<
               } as RadioOrCheckboxOption,
             ],
             ref: { type, name },
-            ...validateOptions,
+            ...options,
           }
         : {
             ...fieldRefAndValidationOptions,
@@ -1021,7 +1021,7 @@ export function useForm<
       }
     }
 
-    if (!isEmptyObject(validateOptions)) {
+    if (!isEmptyObject(options)) {
       set(fieldsWithValidationRef.current, name, true);
 
       if (!isOnSubmit && readFormStateRef.current.isValid) {
@@ -1073,35 +1073,35 @@ export function useForm<
   }
 
   function register<TFieldElement extends FieldElement<TFieldValues>>(
-    rules?: ValidationRules,
+    options?: RegisterOptions,
   ): (ref: (TFieldElement & Ref) | null) => void;
   function register(
     name: FieldName<TFieldValues>,
-    rules?: ValidationRules,
+    options?: RegisterOptions,
   ): void;
   function register<TFieldElement extends FieldElement<TFieldValues>>(
     ref: (TFieldElement & Ref) | null,
-    rules?: ValidationRules,
+    options?: RegisterOptions,
   ): void;
   function register<TFieldElement extends FieldElement<TFieldValues>>(
-    refOrValidationOptions?:
+    refOrRegisterOptions?:
       | FieldName<TFieldValues>
-      | ValidationRules
+      | RegisterOptions
       | (TFieldElement & Ref)
       | null,
-    rules?: ValidationRules,
+    options?: RegisterOptions,
   ): ((ref: (TFieldElement & Ref) | null) => void) | void {
     if (!isWindowUndefined) {
-      if (isString(refOrValidationOptions)) {
-        registerFieldRef({ name: refOrValidationOptions }, rules);
+      if (isString(refOrRegisterOptions)) {
+        registerFieldRef({ name: refOrRegisterOptions }, options);
       } else if (
-        isObject(refOrValidationOptions) &&
-        'name' in refOrValidationOptions
+        isObject(refOrRegisterOptions) &&
+        'name' in refOrRegisterOptions
       ) {
-        registerFieldRef(refOrValidationOptions, rules);
+        registerFieldRef(refOrRegisterOptions, options);
       } else {
         return (ref: (TFieldElement & Ref) | null) =>
-          ref && registerFieldRef(ref, refOrValidationOptions);
+          ref && registerFieldRef(ref, refOrRegisterOptions);
       }
     }
   }

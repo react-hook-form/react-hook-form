@@ -17,7 +17,7 @@ export type ValidateResult = Message | Message[] | boolean | undefined;
 
 export type Validate = (data: any) => ValidateResult | Promise<ValidateResult>;
 
-export type ValidationRules = Partial<{
+export type RegisterOptions = Partial<{
   required: Message | ValidationRule<boolean>;
   min: ValidationRule<number | string>;
   max: ValidationRule<number | string>;
@@ -25,4 +25,6 @@ export type ValidationRules = Partial<{
   minLength: ValidationRule<number | string>;
   pattern: ValidationRule<RegExp>;
   validate: Validate | Record<string, Validate>;
+  valueAsNumber: boolean;
+  valueAsDate: boolean;
 }>;

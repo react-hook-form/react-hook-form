@@ -1,5 +1,5 @@
 import { IsFlatObject } from './utils';
-import { ValidationRules } from './validator';
+import { RegisterOptions } from './validator';
 
 export type RadioOrCheckboxOption = {
   ref: HTMLInputElement;
@@ -44,7 +44,7 @@ export type Ref = FieldElement;
 export type Field = {
   ref: Ref;
   options?: RadioOrCheckboxOption[];
-} & ValidationRules;
+} & RegisterOptions;
 
 export type FieldRefs<TFieldValues extends FieldValues> = Partial<
   Record<InternalFieldName<TFieldValues>, Field>

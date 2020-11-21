@@ -21,6 +21,8 @@ export default function getFieldValue<TFieldValues extends FieldValues>(
     const {
       ref: { value, disabled },
       ref,
+      valueAsNumber,
+      valueAsDate,
     } = field;
 
     if (disabled && excludeDisabled) {
@@ -43,7 +45,11 @@ export default function getFieldValue<TFieldValues extends FieldValues>(
       return getCheckboxValue(field.options).value;
     }
 
-    return value;
+    return valueAsNumber
+      ? +value
+      : valueAsDate
+      ? (ref as HTMLInputElement).valueAsDate
+      : value;
   }
 
   if (shallowFieldsStateRef) {

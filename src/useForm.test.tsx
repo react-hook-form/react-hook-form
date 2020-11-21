@@ -15,7 +15,7 @@ import {
   UseFormMethods,
   ErrorOption,
   FieldError,
-  ValidationRules,
+  RegisterOptions,
   DeepMap,
 } from './types';
 import { perf, wait, PerfTools } from 'react-performance-testing';
@@ -2615,7 +2615,7 @@ describe('useForm', () => {
       name?: string;
       resolver?: any;
       mode?: 'onBlur' | 'onSubmit' | 'onChange';
-      rules?: ValidationRules;
+      rules?: RegisterOptions;
     }>;
     let methods: UseFormMethods<{ test: string }>;
 
@@ -2629,7 +2629,7 @@ describe('useForm', () => {
         name?: string;
         resolver?: any;
         mode?: 'onBlur' | 'onSubmit' | 'onChange';
-        rules?: ValidationRules;
+        rules?: RegisterOptions;
       }) => {
         const internationalMethods = useForm<{ test: string }>({
           resolver,

@@ -12,7 +12,7 @@ import { useForm } from './useForm';
 import * as generateId from './logic/generateId';
 import {
   Control,
-  ValidationRules,
+  RegisterOptions,
   FieldError,
   DeepMap,
   SubmitHandler,
@@ -2241,7 +2241,7 @@ describe('useFieldArray', () => {
         control,
         index,
       }: {
-        register: (rules?: ValidationRules) => (ref: HTMLInputElement) => void;
+        register: (rules?: RegisterOptions) => (ref: HTMLInputElement) => void;
         control: Control;
         errors: DeepMap<Record<string, any>, FieldError>;
         index: number;
