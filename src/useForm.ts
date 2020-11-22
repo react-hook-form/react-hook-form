@@ -476,7 +476,7 @@ export function useForm<
 
   const setInternalValue = React.useCallback(
     (
-      name: InternalFieldName<TFieldValues>,
+      name: FieldName<TFieldValues>,
       value: SetFieldValue<TFieldValues>,
       config: SetValueConfig,
     ) => {
@@ -528,12 +528,15 @@ export function useForm<
     [updateAndGetDirtyState, setFieldValue, setInternalValues],
   );
 
-  const isFieldWatched = (name: string) =>
+  const isFieldWatched = <T extends FieldName<FieldValues>>(name: T) =>
     isWatchAllRef.current ||
     watchFieldsRef.current.has(name) ||
     watchFieldsRef.current.has((name.match(/\w+/) || [])[0]);
 
-  const renderWatchedInputs = (name: string, found = true): boolean => {
+  const renderWatchedInputs = <T extends FieldName<FieldValues>>(
+    name: T,
+    found = true,
+  ): boolean => {
     if (!isEmptyObject(useWatchFieldsRef.current)) {
       for (const key in useWatchFieldsRef.current) {
         if (
@@ -801,7 +804,7 @@ export function useForm<
     });
   }
 
-  function setError(name: FieldName<TFieldValues>, error: ErrorOption): void {
+  function setError(name: FieldName<TFieldValues>, error: ErrorOption) {
     const ref = (fieldsRef.current[name] || {})!.ref;
 
     set(formStateRef.current.errors, name, {
@@ -818,11 +821,7 @@ export function useForm<
   }
 
   const watchInternal = React.useCallback(
-    (
-      fieldNames?: string | string[],
-      defaultValue?: unknown,
-      watchId?: string,
-    ) => {
+    <T>(fieldNames?: string | string[], defaultValue?: T, watchId?: string) => {
       const watchFields = watchId
         ? useWatchFieldsRef.current[watchId]
         : watchFieldsRef.current;
