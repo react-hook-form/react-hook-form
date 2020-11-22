@@ -1,12 +1,5 @@
 import * as React from 'react';
-import {
-  UseFormMethods,
-  FieldValues,
-  FieldValuesFromControl,
-  FieldName,
-  Control,
-  Assign,
-} from './';
+import { UseFormMethods, FieldValues, FieldName, Control, Assign } from './';
 import { ValidationRules } from './validator';
 
 export type FormProviderProps<
@@ -25,11 +18,13 @@ type AsProps<TAs> = TAs extends undefined
   ? JSX.IntrinsicElements[TAs]
   : never;
 
-export type ControllerRenderProps<TControl extends Control = Control> = {
+export type ControllerRenderProps<
+  TFieldValues extends FieldValues = FieldValues
+> = {
   onChange: (...event: any[]) => void;
   onBlur: () => void;
   value: any;
-  name: FieldName<FieldValuesFromControl<TControl>>;
+  name: FieldName<Control<TFieldValues>>;
   ref: React.MutableRefObject<any>;
 };
 
@@ -40,7 +35,7 @@ export type ControllerProps<
     | 'input'
     | 'select'
     | 'textarea',
-  TControl extends Control = Control
+  TFieldValues extends FieldValues = FieldValues
 > = Assign<
   (
     | {
@@ -49,14 +44,16 @@ export type ControllerProps<
       }
     | {
         as?: undefined;
-        render: (data: ControllerRenderProps<TControl>) => React.ReactElement;
+        render: (
+          data: ControllerRenderProps<TFieldValues>,
+        ) => React.ReactElement;
       }
   ) & {
-    name: FieldName<FieldValuesFromControl<TControl>>;
+    name: FieldName<TFieldValues>;
     rules?: ValidationRules;
     onFocus?: () => void;
     defaultValue?: unknown;
-    control?: TControl;
+    control?: Control<TFieldValues>;
   },
   AsProps<TAs>
 >;
