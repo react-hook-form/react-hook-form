@@ -23,6 +23,7 @@ export default function getFieldValue<TFieldValues extends FieldValues>(
       ref,
       valueAsNumber,
       valueAsDate,
+      valueAs,
     } = field;
 
     if (disabled && excludeDisabled) {
@@ -49,6 +50,8 @@ export default function getFieldValue<TFieldValues extends FieldValues>(
       ? +value
       : valueAsDate
       ? (ref as HTMLInputElement).valueAsDate
+      : valueAs
+      ? valueAs(value)
       : value;
   }
 
