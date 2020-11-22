@@ -455,7 +455,7 @@ export function useForm<
   );
 
   const setInternalValues = React.useCallback(
-    <T extends string, U extends object | unknown[]>(
+    <T extends FieldName<TFieldValues>, U extends object | unknown[]>(
       name: T,
       value: U,
       { shouldDirty, shouldValidate }: SetValueConfig,
