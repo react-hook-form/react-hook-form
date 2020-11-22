@@ -43,7 +43,6 @@ import {
   UnpackNestedValue,
   FieldName,
   InternalFieldName,
-  FieldValue,
   FieldErrors,
   Field,
   FieldRefs,
@@ -232,16 +231,7 @@ export function useForm<
   );
 
   const setFieldValue = React.useCallback(
-    (
-      name: string,
-      rawValue:
-        | FieldValue<TFieldValues>
-        | UnpackNestedValue<DeepPartial<TFieldValues>>
-        | string[]
-        | undefined
-        | null
-        | boolean,
-    ) => {
+    (name: string, rawValue: SetFieldValue<TFieldValues>) => {
       const { ref, options } = fieldsRef.current[name] as Field;
       const value =
         isWeb && isHTMLElement(ref) && isNullOrUndefined(rawValue)
