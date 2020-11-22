@@ -10,9 +10,9 @@ export type InternalFieldName<TFieldValues extends FieldValues> =
   | (keyof TFieldValues & string)
   | string;
 
-export type FieldName<TFieldValues extends FieldValues> = IsFlatObject<
-  TFieldValues
-> extends true
+export type FieldName<
+  TFieldValues extends FieldValues
+> = IsFlatObject<TFieldValues> extends true
   ? Extract<keyof TFieldValues, string>
   : string;
 
