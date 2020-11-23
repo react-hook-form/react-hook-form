@@ -140,6 +140,8 @@ export const useFieldArray = <
       }),
     );
 
+  fieldArrayNamesRef.current.add(name);
+
   if (
     fieldArrayParentName &&
     !get(fieldArrayDefaultValuesRef.current, fieldArrayParentName)
