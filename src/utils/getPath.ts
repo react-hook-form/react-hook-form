@@ -9,9 +9,9 @@ export const getPath = <TFieldValues>(
 ): FieldName<TFieldValues>[] => {
   for (const property in values) {
     const rootName = (rootPath +
-      (isObject(values) ? `.${property}` : `[${property}]`)) as FieldName<
-      TFieldValues
-    >;
+      (isObject(values)
+        ? `.${property}`
+        : `[${property}]`)) as FieldName<TFieldValues>;
 
     isPrimitive(values[property])
       ? paths.push(rootName)
