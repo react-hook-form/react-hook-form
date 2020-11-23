@@ -744,7 +744,7 @@ describe('Controller', () => {
 
       render(<Component />);
 
-      expect(console.warn).toBeCalledTimes(2);
+      expect(console.warn).toBeCalledTimes(1);
 
       process.env.NODE_ENV = env;
 
