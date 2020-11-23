@@ -130,14 +130,14 @@ export function useForm<
   const isValidateAllFieldCriteria = criteriaMode === VALIDATION_MODE.all;
   const [formState, setFormState] = React.useState<FormState<TFieldValues>>({
     isDirty: false,
+    dirtyFields: {},
     isSubmitted: false,
+    submitCount: 0,
+    touched: {},
     isSubmitting: false,
     isSubmitSuccessful: false,
     isValid: !isOnSubmit,
-    dirtyFields: {},
-    touched: {},
     errors: {},
-    submitCount: 0,
   });
   const readFormStateRef = React.useRef<ReadFormState>({
     isDirty: !isProxyEnabled,
