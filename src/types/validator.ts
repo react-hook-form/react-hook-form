@@ -27,5 +27,5 @@ export type RegisterOptions = Partial<{
   validate: Validate | Record<string, Validate>;
   valueAsNumber: boolean;
   valueAsDate: boolean;
-  valueAs: <T>(value: string) => T;
+  setValueAs: <T>(value: string) => T;
 }>;
