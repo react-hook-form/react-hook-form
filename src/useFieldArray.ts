@@ -138,6 +138,8 @@ export const useFieldArray = <
       }),
     );
 
+  fieldArrayNamesRef.current.add(name);
+
   if (
     fieldArrayParentName &&
     !get(fieldArrayDefaultValuesRef.current, fieldArrayParentName)
@@ -470,7 +472,6 @@ export const useFieldArray = <
   React.useEffect(() => {
     const resetFunctions = resetFieldArrayFunctionRef.current;
     const fieldArrayNames = fieldArrayNamesRef.current;
-    fieldArrayNames.add(name);
 
     if (!getFieldArrayParentName(name)) {
       resetFunctions[name] = <TFieldValues>(
