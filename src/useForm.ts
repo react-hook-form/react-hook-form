@@ -43,7 +43,6 @@ import {
   UnpackNestedValue,
   FieldName,
   InternalFieldName,
-  FieldValue,
   FieldErrors,
   Field,
   FieldRefs,
@@ -68,6 +67,10 @@ import {
   DefaultValues,
   FieldError,
   SetFieldValue,
+  FieldArrayDefaultValues,
+  ResetFieldArrayFunctionRef,
+  UseWatchRenderFunctions,
+  RecordInternalNameSet,
 } from './types';
 
 const isWindowUndefined = typeof window === UNDEFINED;
@@ -85,25 +88,19 @@ export function useForm<
   reValidateMode = VALIDATION_MODE.onChange,
   resolver,
   context,
-  defaultValues = {} as UnpackNestedValue<DeepPartial<TFieldValues>>,
+  defaultValues = {} as DefaultValues<TFieldValues>,
   shouldFocusError = true,
   shouldUnregister = true,
   criteriaMode,
 }: UseFormOptions<TFieldValues, TContext> = {}): UseFormMethods<TFieldValues> {
   const fieldsRef = React.useRef<FieldRefs<TFieldValues>>({});
-  const fieldArrayDefaultValuesRef = React.useRef<
-    Record<InternalFieldName<FieldValues>, unknown[]>
-  >({});
-  const fieldArrayValuesRef = React.useRef<
-    Record<InternalFieldName<FieldValues>, unknown[]>
-  >({});
+  const fieldArrayDefaultValuesRef = React.useRef<FieldArrayDefaultValues>({});
+  const fieldArrayValuesRef = React.useRef<FieldArrayDefaultValues>({});
   const watchFieldsRef = React.useRef<InternalNameSet<TFieldValues>>(new Set());
-  const useWatchFieldsRef = React.useRef<
-    Record<string, InternalNameSet<TFieldValues>>
-  >({});
-  const useWatchRenderFunctionsRef = React.useRef<Record<string, () => void>>(
+  const useWatchFieldsRef = React.useRef<RecordInternalNameSet<TFieldValues>>(
     {},
   );
+  const useWatchRenderFunctionsRef = React.useRef<UseWatchRenderFunctions>({});
   const fieldsWithValidationRef = React.useRef<
     FieldNamesMarkedBoolean<TFieldValues>
   >({});
@@ -121,10 +118,7 @@ export function useForm<
   const handleChangeRef = React.useRef<HandleChange>();
   const shallowFieldsStateRef = React.useRef({});
   const resetFieldArrayFunctionRef = React.useRef<
-    Record<
-      InternalFieldName<FieldValues>,
-      (data?: UnpackNestedValue<DeepPartial<TFieldValues>>) => void
-    >
+    ResetFieldArrayFunctionRef<TFieldValues>
   >({});
   const contextRef = React.useRef(context);
   const resolverRef = React.useRef(resolver);
@@ -136,14 +130,14 @@ export function useForm<
   const isValidateAllFieldCriteria = criteriaMode === VALIDATION_MODE.all;
   const [formState, setFormState] = React.useState<FormState<TFieldValues>>({
     isDirty: false,
-    dirtyFields: {},
     isSubmitted: false,
-    submitCount: 0,
-    touched: {},
     isSubmitting: false,
     isSubmitSuccessful: false,
     isValid: !isOnSubmit,
+    dirtyFields: {},
+    touched: {},
     errors: {},
+    submitCount: 0,
   });
   const readFormStateRef = React.useRef<ReadFormState>({
     isDirty: !isProxyEnabled,
@@ -232,16 +226,7 @@ export function useForm<
   );
 
   const setFieldValue = React.useCallback(
-    (
-      name: string,
-      rawValue:
-        | FieldValue<TFieldValues>
-        | UnpackNestedValue<DeepPartial<TFieldValues>>
-        | string[]
-        | undefined
-        | null
-        | boolean,
-    ) => {
+    (name: FieldName<TFieldValues>, rawValue: SetFieldValue<TFieldValues>) => {
       const { ref, options } = fieldsRef.current[name] as Field;
       const value =
         isWeb && isHTMLElement(ref) && isNullOrUndefined(rawValue)
@@ -304,11 +289,9 @@ export function useForm<
     (
       name: InternalFieldName<TFieldValues>,
       shouldRender = true,
-    ): Partial<{
-      dirtyFields: FieldNamesMarkedBoolean<TFieldValues>;
-      isDirty: boolean;
-      touched: FieldNamesMarkedBoolean<TFieldValues>;
-    }> => {
+    ): Partial<
+      Pick<FormState<TFieldValues>, 'dirtyFields' | 'isDirty' | 'touched'>
+    > => {
       if (
         readFormStateRef.current.isDirty ||
         readFormStateRef.current.dirtyFields
@@ -455,9 +438,9 @@ export function useForm<
   );
 
   const setInternalValues = React.useCallback(
-    <T extends FieldName<TFieldValues>, U extends object | unknown[]>(
-      name: T,
-      value: U,
+    (
+      name: FieldName<TFieldValues>,
+      value: SetFieldValue<TFieldValues>,
       { shouldDirty, shouldValidate }: SetValueConfig,
     ) => {
       const data = {};
@@ -490,9 +473,7 @@ export function useForm<
         setInternalValues(name, value, config);
 
         if (fieldArrayNamesRef.current.has(name)) {
-          fieldArrayDefaultValuesRef.current[
-            name
-          ] = value as TFieldValues[string];
+          fieldArrayDefaultValuesRef.current[name] = value;
           resetFieldArrayFunctionRef.current[name]({
             [name]: value,
           } as UnpackNestedValue<DeepPartial<TFieldValues>>);
@@ -528,7 +509,7 @@ export function useForm<
     [updateAndGetDirtyState, setFieldValue, setInternalValues],
   );
 
-  const isFieldWatched = <T extends FieldName<FieldValues>>(name: T) =>
+  const isFieldWatched = <T extends FieldName<TFieldValues>>(name: T) =>
     isWatchAllRef.current ||
     watchFieldsRef.current.has(name) ||
     watchFieldsRef.current.has((name.match(/\w+/) || [])[0]);
@@ -583,7 +564,9 @@ export function useForm<
             ...modeRef.current,
           });
           let state = updateAndGetDirtyState(name, false);
-          let shouldRender = !isEmptyObject(state) || isFieldWatched(name);
+          let shouldRender =
+            !isEmptyObject(state) ||
+            isFieldWatched(name as FieldName<TFieldValues>);
 
           if (
             isBlurEvent &&
@@ -825,9 +808,6 @@ export function useForm<
       const watchFields = watchId
         ? useWatchFieldsRef.current[watchId]
         : watchFieldsRef.current;
-      const combinedDefaultValues = isUndefined(defaultValue)
-        ? defaultValuesRef.current
-        : defaultValue;
       let fieldValues = getFieldsValues<TFieldValues>(
         fieldsRef,
         cloneObject(shallowFieldsStateRef.current, isWeb),
@@ -855,12 +835,16 @@ export function useForm<
           fieldValues,
           fieldNames,
           watchFields,
-          isUndefined(defaultValue)
-            ? get(combinedDefaultValues, fieldNames)
-            : (defaultValue as UnpackNestedValue<DeepPartial<TFieldValues>>),
+          isUndefined(get(defaultValuesRef.current, fieldNames))
+            ? defaultValue
+            : get(defaultValuesRef.current, fieldNames),
           true,
         );
       }
+
+      const combinedDefaultValues = isUndefined(defaultValue)
+        ? defaultValuesRef.current
+        : defaultValue;
 
       if (Array.isArray(fieldNames)) {
         return fieldNames.reduce(
@@ -1016,7 +1000,7 @@ export function useForm<
       isEmptyDefaultValue = isUndefined(defaultValue);
 
       if (!isEmptyDefaultValue && !isFieldArray) {
-        setFieldValue(name, defaultValue);
+        setFieldValue(name as FieldName<TFieldValues>, defaultValue);
       }
     }
 
@@ -1230,7 +1214,7 @@ export function useForm<
   };
 
   const reset = (
-    values?: UnpackNestedValue<DeepPartial<TFieldValues>>,
+    values?: DefaultValues<TFieldValues>,
     omitResetState: OmitResetState = {},
   ): void => {
     if (isWeb) {

@@ -718,7 +718,7 @@ describe('Controller', () => {
       const Component = () => {
         const { control } = useForm({
           defaultValues: {
-            test: [{}],
+            test: [{ data: '' }],
           },
         });
         const { fields } = useFieldArray({
@@ -744,7 +744,7 @@ describe('Controller', () => {
 
       render(<Component />);
 
-      expect(console.warn).toBeCalledTimes(1);
+      expect(console.warn).toBeCalledTimes(2);
 
       process.env.NODE_ENV = env;
 

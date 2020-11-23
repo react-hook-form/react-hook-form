@@ -1,16 +1,22 @@
 import isPrimitive from './isPrimitive';
 import isObject from './isObject';
+import { FieldName } from '../types';
 
-export const getPath = <T extends string, U extends object | unknown[]>(
-  path: T,
-  values: U,
-): string[] => {
-  const getInnerPath = <K>(key: K, value: U, isObject?: boolean) => {
-    const pathWithIndex = isObject ? `${path}.${key}` : `${path}[${key}]`;
-    return isPrimitive(value) ? pathWithIndex : getPath(pathWithIndex, value);
-  };
+export const getPath = <TFieldValues>(
+  rootPath: FieldName<TFieldValues>,
+  values: any,
+  paths: FieldName<TFieldValues>[] = [],
+): FieldName<TFieldValues>[] => {
+  for (const property in values) {
+    const rootName = (rootPath +
+      (isObject(values) ? `.${property}` : `[${property}]`)) as FieldName<
+      TFieldValues
+    >;
 
-  return Object.entries(values)
-    .map(([key, value]) => getInnerPath(key, value, isObject(values)))
-    .flat(Infinity) as string[];
+    isPrimitive(values[property])
+      ? paths.push(rootName)
+      : getPath(rootName, values[property], paths);
+  }
+
+  return paths;
 };
