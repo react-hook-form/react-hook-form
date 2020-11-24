@@ -285,10 +285,7 @@ export const useFieldArray = <
     }
 
     updateFormState({
-      errors: formStateRef.current.errors,
-      dirtyFields: formStateRef.current.dirtyFields,
       isDirty: isFormDirty(name, omitKey(updatedFormValues)),
-      touched: formStateRef.current.touched,
     });
   };
 
