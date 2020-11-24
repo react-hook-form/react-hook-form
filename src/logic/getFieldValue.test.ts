@@ -1,4 +1,3 @@
-// @ts-nocheck
 import getFieldValue from './getFieldValue';
 
 jest.mock('./getRadioValue', () => ({
@@ -26,6 +25,7 @@ describe('getFieldValue', () => {
             test: {
               ref: {
                 type: 'radio',
+                name: 'test',
               },
             },
           },
@@ -97,14 +97,11 @@ describe('getFieldValue', () => {
 
   it('should return false when checkbox input value is not found', () => {
     expect(
-      getFieldValue(
-        { current: {} },
-        {
-          type: 'checkbox',
-          value: 'value',
-          name: 'test',
-        },
-      ),
+      getFieldValue({ current: {} }, {
+        type: 'checkbox',
+        value: 'value',
+        name: 'test',
+      } as any),
     ).toBeFalsy();
   });
 
@@ -117,7 +114,7 @@ describe('getFieldValue', () => {
               ref: {
                 type: 'file',
                 name: 'test',
-                files: 'files',
+                files: 'files' as any,
               },
             },
           },
@@ -134,12 +131,13 @@ describe('getFieldValue', () => {
           current: {
             test: {
               ref: {
-                files: 'files',
+                name: 'file',
+                files: 'files' as any,
               },
             },
           },
         },
-        {},
+        '',
       ),
     ).toEqual(undefined);
   });
@@ -151,7 +149,8 @@ describe('getFieldValue', () => {
           current: {
             test: {
               ref: {
-                files: 'files',
+                name: 'file',
+                files: 'files' as any,
               },
             },
           },
@@ -169,6 +168,7 @@ describe('getFieldValue', () => {
           current: {
             test: {
               ref: {
+                name: 'radio',
                 disabled: true,
                 type: 'radio',
               },
@@ -176,7 +176,7 @@ describe('getFieldValue', () => {
           },
         },
         'test',
-        {},
+        { current: {} },
         true,
       ),
     ).toEqual(undefined);
