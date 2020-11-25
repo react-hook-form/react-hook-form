@@ -785,6 +785,7 @@ describe('useFieldArray', () => {
             control,
             formState: tempFormState,
             setValue: tempSetValue,
+            watch,
           } = useForm({
             defaultValues: {
               test: [
@@ -795,6 +796,7 @@ describe('useFieldArray', () => {
             },
           });
           const { fields } = useFieldArray({ name: 'test', control });
+          watch();
 
           setValue = tempSetValue;
           formState = tempFormState;

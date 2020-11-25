@@ -93,10 +93,6 @@ export type FieldNamesMarkedBoolean<TFieldValues extends FieldValues> = DeepMap<
   true
 >;
 
-export type FieldValuesFromControl<
-  TControl extends Control
-> = TControl extends Control<infer TFieldValues> ? TFieldValues : never;
-
 export type FormStateProxy<TFieldValues extends FieldValues = FieldValues> = {
   isDirty: boolean;
   dirtyFields: FieldNamesMarkedBoolean<TFieldValues>;
@@ -257,8 +253,8 @@ export type UseFormMethods<TFieldValues extends FieldValues = FieldValues> = {
   control: Control<TFieldValues>;
 };
 
-export type UseField<TControl extends Control = Control> = {
-  field: ControllerRenderProps<TControl>;
+export type UseField<TFieldValues extends FieldValues = FieldValues> = {
+  field: ControllerRenderProps<TFieldValues>;
   state: {
     inValid: boolean;
     isTouched: boolean;

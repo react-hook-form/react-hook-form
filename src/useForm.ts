@@ -163,12 +163,15 @@ export function useForm<
     : shallowFieldsStateRef.current;
 
   const updateFormState = React.useCallback(
-    (state: Partial<FormState<TFieldValues>> = {}) =>
-      !isUnMount.current &&
-      setFormState({
-        ...formStateRef.current,
-        ...state,
-      }),
+    (state: Partial<FormState<TFieldValues>> = {}) => {
+      if (!isUnMount.current) {
+        formStateRef.current = {
+          ...formStateRef.current,
+          ...state,
+        };
+        setFormState(formStateRef.current);
+      }
+    },
     [],
   );
 
@@ -217,7 +220,6 @@ export function useForm<
       ) {
         updateFormState({
           ...state,
-          errors: formStateRef.current.errors,
           ...(resolverRef.current ? { isValid: !!isValid } : {}),
         });
       }
@@ -319,12 +321,8 @@ export function useForm<
             isDirtyFieldExist !== get(formStateRef.current.dirtyFields, name));
 
         if (isChanged && shouldRender) {
-          formStateRef.current = {
-            ...formStateRef.current,
-            ...state,
-          };
           updateFormState({
-            ...formStateRef.current,
+            ...state,
           });
         }
 
@@ -392,7 +390,6 @@ export function useForm<
 
         updateFormState({
           isValid: isEmptyObject(errors),
-          errors: formStateRef.current.errors,
         });
 
         return isInputsValid;
@@ -498,7 +495,6 @@ export function useForm<
                 { ...getValues(), [name]: value },
                 defaultValuesRef.current,
               ),
-              dirtyFields: formStateRef.current.dirtyFields,
             });
           }
         }
@@ -757,9 +753,7 @@ export function useForm<
           set(formStateRef.current.dirtyFields, field.ref.name, true);
 
           updateFormState({
-            errors: formStateRef.current.errors,
             isDirty: isFormDirty(),
-            dirtyFields: formStateRef.current.dirtyFields,
           });
 
           readFormStateRef.current.isValid &&
@@ -797,7 +791,6 @@ export function useForm<
 
     updateFormState({
       isValid: false,
-      errors: formStateRef.current.errors,
     });
 
     error.shouldFocus && ref && ref.focus && ref.focus();
@@ -1173,7 +1166,6 @@ export function useForm<
           isSubmitted: true,
           isSubmitting: false,
           isSubmitSuccessful: isEmptyObject(formStateRef.current.errors),
-          errors: formStateRef.current.errors,
           submitCount: formStateRef.current.submitCount + 1,
         });
       }
