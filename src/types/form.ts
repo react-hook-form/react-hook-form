@@ -11,7 +11,6 @@ import {
   InternalFieldName,
   Ref,
 } from './fields';
-import { FieldArrayName } from './fieldArray';
 import { ErrorOption, FieldErrors } from './errors';
 import { ValidationRules } from './validator';
 import { ControllerRenderProps } from './props';
@@ -138,10 +137,10 @@ export type Control<TFieldValues extends FieldValues = FieldValues> = Pick<
     isReValidateOnChange: boolean;
   }>;
   fieldArrayDefaultValuesRef: React.MutableRefObject<
-    Record<FieldArrayName, unknown[]>
+    Record<InternalFieldName<TFieldValues>, unknown[]>
   >;
   fieldArrayValuesRef: React.MutableRefObject<
-    Record<FieldArrayName, unknown[]>
+    Record<InternalFieldName<TFieldValues>, unknown[]>
   >;
   shouldUnregister: boolean;
   formStateRef: React.MutableRefObject<FormState<TFieldValues>>;

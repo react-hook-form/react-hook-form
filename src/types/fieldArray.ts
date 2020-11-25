@@ -1,15 +1,13 @@
 import { Control } from './form';
-import { FieldValues } from './fields';
-
-export type FieldArrayName = string;
+import { FieldValues, InternalFieldName } from './fields';
 
 export type UseFieldArrayOptions<
-  TKeyName extends string = 'id',
-  TControl extends Control = Control
+  TFieldArrayValues extends FieldValues = FieldValues,
+  TKeyName extends string = 'id'
 > = {
-  name: FieldArrayName;
+  name: InternalFieldName<TFieldArrayValues>;
   keyName?: TKeyName;
-  control?: TControl;
+  control?: Control<TFieldArrayValues>;
 };
 
 export type ArrayField<
