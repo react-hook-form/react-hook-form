@@ -3,10 +3,10 @@ import ReactDOM from 'react-dom';
 import { useForm, FormProvider, useFormContext } from 'react-hook-form';
 
 export default function App() {
-  const methods = useForm();
-  const { register, handleSubmit } = methods;
+  const formCtx = useForm();
+  const { register, handleSubmit } = formCtx;
   return (
-    <FormProvider {...methods}>
+    <FormProvider {...formCtx}>
       <form onSubmit={handleSubmit((data) => console.log(data))}>
         <label>Test</label>
         <input name="test" ref={register({ required: true })} />
@@ -19,6 +19,6 @@ export default function App() {
 }
 
 function Test() {
-  const data = useFormContext();
-  return <input name="bill" ref={data.register} />;
+  const ctx = useFormContext();
+  return <input name="bill" ref={ctx.register} />;
 }
