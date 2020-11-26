@@ -21,13 +21,11 @@ export default <TFieldValues extends FieldValues>(
   | FieldValue<TFieldValues>
   | UnpackNestedValue<DeepPartial<TFieldValues>>
   | undefined => {
-  let value;
+  let value = undefined;
 
   watchFields.add(fieldName);
 
-  if (isEmptyObject(fieldValues)) {
-    value = undefined;
-  } else {
+  if (!isEmptyObject(fieldValues)) {
     value = get(fieldValues, fieldName);
 
     if (isObject(value) || Array.isArray(value)) {

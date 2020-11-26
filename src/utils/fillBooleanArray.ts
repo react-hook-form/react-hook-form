@@ -1,20 +1,16 @@
 import isObject from './isObject';
 
-function mapValueToBoolean<U>(value: U): boolean[] | Record<string, boolean>[] {
-  if (isObject(value)) {
-    const object: Record<string, boolean> = {};
+export default <T>(value: T) =>
+  ((Array.isArray(value) ? value : [value]) as T[]).map((data) => {
+    if (isObject(data)) {
+      const object: Record<string, boolean> = {};
 
-    for (const key in value) {
-      object[key] = true;
+      for (const key in data) {
+        object[key] = true;
+      }
+
+      return object;
     }
 
-    return [object];
-  }
-
-  return [true];
-}
-
-export default <T>(value: T) =>
-  ((Array.isArray(value) ? value : [value]) as T[])
-    .map(mapValueToBoolean)
-    .flat();
+    return true;
+  });
