@@ -1,2 +1,1 @@
-export default (value: [] | string) =>
-  !Array.isArray(value) && /^\w*$/.test(value);
+export default (value: string) => /^\w*$/.test(value);
