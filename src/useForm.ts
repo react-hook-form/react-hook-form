@@ -77,7 +77,7 @@ const isWindowUndefined = typeof window === UNDEFINED;
 const isWeb =
   typeof document !== UNDEFINED &&
   !isWindowUndefined &&
-  !isUndefined(window.HTMLElement);
+  !isUndefined(HTMLElement);
 const isProxyEnabled = isWeb ? 'Proxy' in window : typeof Proxy !== UNDEFINED;
 
 export function useForm<
@@ -320,11 +320,7 @@ export function useForm<
           (readFormStateRef.current.dirtyFields &&
             isDirtyFieldExist !== get(formStateRef.current.dirtyFields, name));
 
-        if (isChanged && shouldRender) {
-          updateFormState({
-            ...state,
-          });
-        }
+        isChanged && shouldRender && updateFormState(state);
 
         return isChanged ? state : {};
       }
@@ -728,7 +724,7 @@ export function useForm<
   const updateWatchedValue = React.useCallback((name: string) => {
     if (isWatchAllRef.current) {
       updateFormState();
-    } else if (watchFieldsRef) {
+    } else {
       for (const watchField of watchFieldsRef.current) {
         if (watchField.startsWith(name)) {
           updateFormState();
@@ -1013,9 +1009,7 @@ export function useForm<
             ? set(validFieldsRef.current, name, true)
             : unset(validFieldsRef.current, name);
 
-          if (previousFormIsValid !== isEmptyObject(error)) {
-            updateFormState();
-          }
+          previousFormIsValid !== isEmptyObject(error) && updateFormState();
         });
       }
     }
@@ -1118,9 +1112,7 @@ export function useForm<
         } else {
           for (const field of Object.values(fieldsRef.current)) {
             if (field) {
-              const {
-                ref: { name },
-              } = field;
+              const { name } = field.ref;
 
               const fieldError = await validateField(
                 fieldsRef,
