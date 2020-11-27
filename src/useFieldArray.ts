@@ -15,6 +15,7 @@ import insertAt from './utils/insert';
 import fillEmptyArray from './utils/fillEmptyArray';
 import fillBooleanArray from './utils/fillBooleanArray';
 import compact from './utils/compact';
+import cloneObject from './utils/cloneObject';
 import {
   Field,
   FieldValues,
@@ -25,7 +26,6 @@ import {
   DeepPartial,
   UseFieldArrayMethods,
 } from './types';
-import cloneObject from './utils/cloneObject';
 
 const mapIds = <
   TFieldArrayValues extends FieldValues = FieldValues,
@@ -125,6 +125,8 @@ export const useFieldArray = <
     fields: T,
   ) => fields.map(({ [keyName]: omitted, ...rest } = {}) => rest);
 
+  fieldArrayNamesRef.current.add(name);
+
   const getFieldArrayValue = React.useCallback(
     () => get(fieldArrayValuesRef.current, name, []),
     [],
@@ -137,6 +139,8 @@ export const useFieldArray = <
         ...item,
       }),
     );
+
+  fieldArrayNamesRef.current.add(name);
 
   if (
     fieldArrayParentName &&
@@ -283,10 +287,7 @@ export const useFieldArray = <
     }
 
     updateFormState({
-      errors: formStateRef.current.errors,
-      dirtyFields: formStateRef.current.dirtyFields,
       isDirty: isFormDirty(name, omitKey(updatedFormValues)),
-      touched: formStateRef.current.touched,
     });
   };
 
@@ -470,7 +471,6 @@ export const useFieldArray = <
   React.useEffect(() => {
     const resetFunctions = resetFieldArrayFunctionRef.current;
     const fieldArrayNames = fieldArrayNamesRef.current;
-    fieldArrayNames.add(name);
 
     if (!getFieldArrayParentName(name)) {
       resetFunctions[name] = <TFieldValues>(

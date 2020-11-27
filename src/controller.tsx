@@ -1,15 +1,14 @@
 import * as React from 'react';
 import { useController } from './useController';
-import { Control } from './types';
-import { ControllerProps } from './types';
+import { ControllerProps, FieldValues } from './types';
 
 type NativeInputs = 'input' | 'select' | 'textarea';
 
 const Controller = <
   TAs extends React.ReactElement | React.ComponentType<any> | NativeInputs,
-  TControl extends Control = Control
+  TFieldValues extends FieldValues = FieldValues
 >(
-  props: ControllerProps<TAs, TControl>,
+  props: ControllerProps<TAs, TFieldValues>,
 ) => {
   const { rules, as, render, defaultValue, control, onFocus, ...rest } = props;
   const { field } = useController(props);

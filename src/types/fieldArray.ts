@@ -1,7 +1,10 @@
-import { Control } from './form';
+import { Control, UnpackNestedValue } from './form';
 import { FieldValues } from './fields';
+import { DeepPartial } from './utils';
 
 export type FieldArrayName = string;
+
+export type FieldArrayDefaultValues = Partial<Record<FieldArrayName, any>>;
 
 export type UseFieldArrayOptions<
   TKeyName extends string = 'id',
@@ -11,6 +14,11 @@ export type UseFieldArrayOptions<
   keyName?: TKeyName;
   control?: TControl;
 };
+
+export type ResetFieldArrayFunctionRef<TFieldValues> = Record<
+  FieldArrayName,
+  (data?: UnpackNestedValue<DeepPartial<TFieldValues>>) => void
+>;
 
 export type ArrayField<
   TFieldArrayValues extends FieldValues = FieldValues,

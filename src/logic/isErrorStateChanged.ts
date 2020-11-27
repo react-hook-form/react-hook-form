@@ -9,7 +9,7 @@ import {
   FieldError,
 } from '../types';
 
-export default function isErrorStateChanged<TFieldValues extends FieldValues>({
+export default <TFieldValues extends FieldValues>({
   errors,
   name,
   error,
@@ -21,7 +21,7 @@ export default function isErrorStateChanged<TFieldValues extends FieldValues>({
   name: InternalFieldName<TFieldValues>;
   validFields: FieldNamesMarkedBoolean<TFieldValues>;
   fieldsWithValidation: FieldNamesMarkedBoolean<TFieldValues>;
-}): boolean {
+}): boolean => {
   const isValid = isUndefined(error);
   const previousError = get(errors, name);
 
@@ -30,4 +30,4 @@ export default function isErrorStateChanged<TFieldValues extends FieldValues>({
     (!isValid && !deepEqual(previousError, error, true)) ||
     (isValid && get(fieldsWithValidation, name) && !get(validFields, name))
   );
-}
+};

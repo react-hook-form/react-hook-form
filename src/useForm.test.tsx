@@ -15,7 +15,7 @@ import {
   UseFormMethods,
   ErrorOption,
   FieldError,
-  ValidationRules,
+  RegisterOptions,
   DeepMap,
 } from './types';
 import { perf, wait, PerfTools } from 'react-performance-testing';
@@ -244,6 +244,51 @@ describe('useForm', () => {
       await waitFor(() => {
         expect(screen.getByRole('button')).not.toBeDisabled();
       });
+    });
+  });
+
+  describe('register valueAs', () => {
+    it('should return number value with valueAsNumber', async () => {
+      let output = {};
+      const Component = () => {
+        const { register, handleSubmit } = useForm<{
+          test: number;
+          test1: boolean;
+        }>();
+
+        return (
+          <form onSubmit={handleSubmit((data) => (output = data))}>
+            <input name="test" ref={register({ valueAsNumber: true })} />
+            <input
+              name="test1"
+              ref={register({
+                setValueAs: (value: string) => value === 'true',
+              })}
+            />
+            <button>submit</button>
+          </form>
+        );
+      };
+
+      render(<Component />);
+
+      fireEvent.input(screen.getAllByRole('textbox')[0], {
+        target: {
+          value: '12345',
+        },
+      });
+
+      fireEvent.input(screen.getAllByRole('textbox')[1], {
+        target: {
+          value: 'true',
+        },
+      });
+
+      await actComponent(async () => {
+        await fireEvent.click(screen.getByRole('button'));
+      });
+
+      expect(output).toEqual({ test: 12345, test1: true });
     });
   });
 
@@ -2615,7 +2660,7 @@ describe('useForm', () => {
       name?: string;
       resolver?: any;
       mode?: 'onBlur' | 'onSubmit' | 'onChange';
-      rules?: ValidationRules;
+      rules?: RegisterOptions;
     }>;
     let methods: UseFormMethods<{ test: string }>;
 
@@ -2629,7 +2674,7 @@ describe('useForm', () => {
         name?: string;
         resolver?: any;
         mode?: 'onBlur' | 'onSubmit' | 'onChange';
-        rules?: ValidationRules;
+        rules?: RegisterOptions;
       }) => {
         const internationalMethods = useForm<{ test: string }>({
           resolver,

@@ -11,10 +11,10 @@ import {
   InternalFieldName,
   Ref,
 } from './fields';
-import { FieldArrayName } from './fieldArray';
 import { ErrorOption, FieldErrors } from './errors';
-import { ValidationRules } from './validator';
+import { RegisterOptions } from './validator';
 import { ControllerRenderProps } from './props';
+import { FieldArrayDefaultValues } from './fieldArray';
 
 declare const $NestedValue: unique symbol;
 
@@ -36,11 +36,16 @@ export type UnpackNestedValue<T> = T extends NestedValue<infer U>
   ? { [K in keyof T]: UnpackNestedValue<T[K]> }
   : T;
 
-export type DefaultValues<TFieldValues> =
-  | Partial<FieldValue<UnpackNestedValue<TFieldValues>>>
-  | Partial<UnpackNestedValue<DeepPartial<TFieldValues>>>;
+export type DefaultValues<TFieldValues> = UnpackNestedValue<
+  DeepPartial<TFieldValues>
+>;
 
 export type InternalNameSet<FieldValues> = Set<InternalFieldName<FieldValues>>;
+
+export type RecordInternalNameSet<TFieldValues> = Record<
+  string,
+  InternalNameSet<TFieldValues>
+>;
 
 export type ValidationMode = {
   onBlur: 'onBlur';
@@ -75,7 +80,7 @@ export type UseFormOptions<
 > = Partial<{
   mode: Mode;
   reValidateMode: Exclude<Mode, 'onTouched' | 'all'>;
-  defaultValues: UnpackNestedValue<DeepPartial<TFieldValues>>;
+  defaultValues: DefaultValues<TFieldValues>;
   resolver: Resolver<TFieldValues, TContext>;
   context: TContext;
   shouldFocusError: boolean;
@@ -87,10 +92,6 @@ export type FieldNamesMarkedBoolean<TFieldValues extends FieldValues> = DeepMap<
   TFieldValues,
   true
 >;
-
-export type FieldValuesFromControl<
-  TControl extends Control
-> = TControl extends Control<infer TFieldValues> ? TFieldValues : never;
 
 export type FormStateProxy<TFieldValues extends FieldValues = FieldValues> = {
   isDirty: boolean;
@@ -141,12 +142,8 @@ export type Control<TFieldValues extends FieldValues = FieldValues> = Pick<
     isReValidateOnBlur: boolean;
     isReValidateOnChange: boolean;
   }>;
-  fieldArrayDefaultValuesRef: React.MutableRefObject<
-    Record<FieldArrayName, unknown[]>
-  >;
-  fieldArrayValuesRef: React.MutableRefObject<
-    Record<FieldArrayName, unknown[]>
-  >;
+  fieldArrayDefaultValuesRef: FieldArrayDefaultValues;
+  fieldArrayValuesRef: FieldArrayDefaultValues;
   shouldUnregister: boolean;
   formStateRef: React.MutableRefObject<FormState<TFieldValues>>;
   updateFormState: (args?: Partial<FormState<TFieldValues>>) => void;
@@ -166,7 +163,7 @@ export type Control<TFieldValues extends FieldValues = FieldValues> = Pick<
   >;
   defaultValuesRef: React.MutableRefObject<DefaultValues<TFieldValues>>;
   useWatchFieldsRef: React.MutableRefObject<
-    Record<string, InternalNameSet<TFieldValues>>
+    RecordInternalNameSet<TFieldValues>
   >;
   useWatchRenderFunctionsRef: React.MutableRefObject<
     Record<string, React.Dispatch<unknown>>
@@ -179,6 +176,8 @@ export type Control<TFieldValues extends FieldValues = FieldValues> = Pick<
   updateWatchedValue: (name: string) => void;
 };
 
+export type UseWatchRenderFunctions = Record<string, () => void>;
+
 export type UseWatchOptions<TFieldValues extends FieldValues = FieldValues> = {
   defaultValue?: unknown;
   name?: string | string[];
@@ -188,19 +187,19 @@ export type UseWatchOptions<TFieldValues extends FieldValues = FieldValues> = {
 export type SetFieldValue<TFieldValues> =
   | FieldValue<TFieldValues>
   | UnpackNestedValue<DeepPartial<TFieldValues>>
-  | string[]
+  | unknown[]
   | undefined
   | null
   | boolean;
 
 export type UseFormMethods<TFieldValues extends FieldValues = FieldValues> = {
   register<TFieldElement extends FieldElement<TFieldValues>>(
-    rules?: ValidationRules,
+    rules?: RegisterOptions,
   ): (ref: (TFieldElement & Ref) | null) => void;
-  register(name: FieldName<TFieldValues>, rules?: ValidationRules): void;
+  register(name: FieldName<TFieldValues>, rules?: RegisterOptions): void;
   register<TFieldElement extends FieldElement<TFieldValues>>(
     ref: (TFieldElement & Ref) | null,
-    rules?: ValidationRules,
+    rules?: RegisterOptions,
   ): void;
   unregister(name: FieldName<TFieldValues> | FieldName<TFieldValues>[]): void;
   watch(): UnpackNestedValue<TFieldValues>;
@@ -254,8 +253,8 @@ export type UseFormMethods<TFieldValues extends FieldValues = FieldValues> = {
   control: Control<TFieldValues>;
 };
 
-export type UseField<TControl extends Control = Control> = {
-  field: ControllerRenderProps<TControl>;
+export type UseField<TFieldValues extends FieldValues = FieldValues> = {
+  field: ControllerRenderProps<TFieldValues>;
   state: {
     inValid: boolean;
     isTouched: boolean;

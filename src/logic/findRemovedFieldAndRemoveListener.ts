@@ -25,7 +25,7 @@ export default function findRemovedFieldAndRemoveListener<
 ): void {
   const {
     ref,
-    ref: { name, type },
+    ref: { name },
   } = field;
   const fieldRef = fieldsRef.current[name] as Field;
 
@@ -35,18 +35,16 @@ export default function findRemovedFieldAndRemoveListener<
     !isUndefined(value) && set(shallowFieldsStateRef.current, name, value);
   }
 
-  if (!type) {
+  if (!ref.type || !fieldRef) {
     delete fieldsRef.current[name];
     return;
   }
 
-  if ((isRadioInput(ref) || isCheckBoxInput(ref)) && fieldRef) {
+  if (isRadioInput(ref) || isCheckBoxInput(ref)) {
     if (Array.isArray(fieldRef.options) && fieldRef.options.length) {
-      compact(fieldRef.options).forEach((option, index): void => {
+      compact(fieldRef.options).forEach((option = {}, index): void => {
         if (
-          (option.ref &&
-            isDetached(option.ref) &&
-            isSameRef(option, option.ref)) ||
+          (isDetached(option.ref) && isSameRef(option, option.ref)) ||
           forceDelete
         ) {
           removeAllEventListeners(option.ref, handleChange);

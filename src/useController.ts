@@ -7,7 +7,7 @@ import isFunction from './utils/isFunction';
 import skipValidation from './logic/skipValidation';
 import getInputValue from './logic/getInputValue';
 import set from './utils/set';
-import { Control, ControllerProps, UseField } from './types';
+import { ControllerProps, FieldValues, UseField } from './types';
 
 export function useController<
   TAs extends
@@ -16,7 +16,7 @@ export function useController<
     | 'input'
     | 'select'
     | 'textarea',
-  TControl extends Control = Control
+  TFieldValues extends FieldValues = FieldValues
 >({
   name,
   rules,
@@ -24,10 +24,10 @@ export function useController<
   control,
   onFocus,
 }: Exclude<
-  ControllerProps<TAs, TControl>,
+  ControllerProps<TAs, TFieldValues>,
   'as' | 'render'
->): UseField<TControl> {
-  const methods = useFormContext();
+>): UseField<TFieldValues> {
+  const methods = useFormContext<TFieldValues>();
 
   if (process.env.NODE_ENV !== 'production') {
     if (!control && !methods) {
