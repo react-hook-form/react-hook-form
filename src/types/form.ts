@@ -192,6 +192,12 @@ export type SetFieldValue<TFieldValues> =
   | null
   | boolean;
 
+export type InputState = {
+  inValid: boolean;
+  isTouched: boolean;
+  isDirty: boolean;
+};
+
 export type UseFormMethods<TFieldValues extends FieldValues = FieldValues> = {
   register<TFieldElement extends FieldElement<TFieldValues>>(
     rules?: RegisterOptions,
@@ -255,9 +261,5 @@ export type UseFormMethods<TFieldValues extends FieldValues = FieldValues> = {
 
 export type UseField<TFieldValues extends FieldValues = FieldValues> = {
   field: ControllerRenderProps<TFieldValues>;
-  state: {
-    inValid: boolean;
-    isTouched: boolean;
-    isDirty: boolean;
-  };
+  state: InputState;
 };

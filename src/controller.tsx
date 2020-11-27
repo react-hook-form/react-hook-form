@@ -11,7 +11,7 @@ const Controller = <
   props: ControllerProps<TAs, TFieldValues>,
 ) => {
   const { rules, as, render, defaultValue, control, onFocus, ...rest } = props;
-  const { field } = useController(props);
+  const { field, state } = useController(props);
 
   const componentProps = {
     ...rest,
@@ -23,7 +23,7 @@ const Controller = <
       ? React.cloneElement(as, componentProps)
       : React.createElement(as as NativeInputs, componentProps as any)
     : render
-    ? render(field)
+    ? render(field, { state })
     : null;
 };
 

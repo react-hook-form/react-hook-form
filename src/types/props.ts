@@ -1,5 +1,12 @@
 import * as React from 'react';
-import { UseFormMethods, FieldValues, FieldName, Control, Assign } from './';
+import {
+  UseFormMethods,
+  FieldValues,
+  FieldName,
+  Control,
+  Assign,
+  InputState,
+} from './';
 import { RegisterOptions } from './validator';
 
 export type FormProviderProps<
@@ -45,7 +52,8 @@ export type ControllerProps<
     | {
         as?: undefined;
         render: (
-          data: ControllerRenderProps<TFieldValues>,
+          props: ControllerRenderProps<TFieldValues>,
+          options: { state: InputState },
         ) => React.ReactElement;
       }
   ) & {
