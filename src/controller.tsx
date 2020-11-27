@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { useField } from './useField';
+import { useController } from './useController';
 import { Control } from './types';
 import { ControllerProps } from './types';
 
@@ -12,7 +12,7 @@ const Controller = <
   props: ControllerProps<TAs, TControl>,
 ) => {
   const { rules, as, render, defaultValue, control, onFocus, ...rest } = props;
-  const { field } = useField(props);
+  const { field } = useController(props);
 
   const componentProps = {
     ...rest,

@@ -9,7 +9,7 @@ import getInputValue from './logic/getInputValue';
 import set from './utils/set';
 import { Control, ControllerProps, UseField } from './types';
 
-export function useField<
+export function useController<
   TAs extends
     | React.ReactElement
     | React.ComponentType<any>
@@ -23,9 +23,10 @@ export function useField<
   defaultValue,
   control,
   onFocus,
-}: Exclude<ControllerProps<TAs, TControl>, 'as' | 'render'>): UseField<
-  TControl
-> {
+}: Exclude<
+  ControllerProps<TAs, TControl>,
+  'as' | 'render'
+>): UseField<TControl> {
   const methods = useFormContext();
 
   if (process.env.NODE_ENV !== 'production') {
