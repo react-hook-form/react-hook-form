@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { UseFormMethods, FieldValues, FieldName, Control, Assign } from './';
-import { ValidationRules } from './validator';
+import { RegisterOptions } from './validator';
 
 export type FormProviderProps<
   TFieldValues extends FieldValues = FieldValues
@@ -50,7 +50,7 @@ export type ControllerProps<
       }
   ) & {
     name: FieldName<TFieldValues>;
-    rules?: ValidationRules;
+    rules?: Exclude<RegisterOptions, 'valueAsNumber' | 'valueAsDate'>;
     onFocus?: () => void;
     defaultValue?: unknown;
     control?: Control<TFieldValues>;

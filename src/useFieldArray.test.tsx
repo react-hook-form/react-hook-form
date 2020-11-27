@@ -15,7 +15,7 @@ import { VALIDATION_MODE } from './constants';
 import { FormProvider } from './useFormContext';
 import {
   Control,
-  ValidationRules,
+  RegisterOptions,
   FieldError,
   DeepMap,
   SubmitHandler,
@@ -2244,7 +2244,7 @@ describe('useFieldArray', () => {
         control,
         index,
       }: {
-        register: (rules?: ValidationRules) => (ref: HTMLInputElement) => void;
+        register: (rules?: RegisterOptions) => (ref: HTMLInputElement) => void;
         control: Control;
         errors: DeepMap<Record<string, any>, FieldError>;
         index: number;

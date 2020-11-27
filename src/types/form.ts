@@ -12,7 +12,7 @@ import {
   Ref,
 } from './fields';
 import { ErrorOption, FieldErrors } from './errors';
-import { ValidationRules } from './validator';
+import { RegisterOptions } from './validator';
 import { ControllerRenderProps } from './props';
 import { FieldArrayDefaultValues } from './fieldArray';
 
@@ -194,12 +194,12 @@ export type SetFieldValue<TFieldValues> =
 
 export type UseFormMethods<TFieldValues extends FieldValues = FieldValues> = {
   register<TFieldElement extends FieldElement<TFieldValues>>(
-    rules?: ValidationRules,
+    rules?: RegisterOptions,
   ): (ref: (TFieldElement & Ref) | null) => void;
-  register(name: FieldName<TFieldValues>, rules?: ValidationRules): void;
+  register(name: FieldName<TFieldValues>, rules?: RegisterOptions): void;
   register<TFieldElement extends FieldElement<TFieldValues>>(
     ref: (TFieldElement & Ref) | null,
-    rules?: ValidationRules,
+    rules?: RegisterOptions,
   ): void;
   unregister(name: FieldName<TFieldValues> | FieldName<TFieldValues>[]): void;
   watch(): UnpackNestedValue<TFieldValues>;
