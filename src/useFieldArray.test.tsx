@@ -10,17 +10,18 @@ import { act, renderHook } from '@testing-library/react-hooks';
 import { useFieldArray } from './useFieldArray';
 import { useForm } from './useForm';
 import * as generateId from './logic/generateId';
+import { Controller } from './controller';
+import { VALIDATION_MODE } from './constants';
+import { FormProvider } from './useFormContext';
 import {
   Control,
-  ValidationRules,
+  RegisterOptions,
   FieldError,
   DeepMap,
   SubmitHandler,
   UseFormMethods,
   FieldValues,
 } from './types';
-import { VALIDATION_MODE } from './constants';
-import { FormProvider } from './useFormContext';
 
 let nodeEnv: string | undefined;
 
@@ -2243,7 +2244,7 @@ describe('useFieldArray', () => {
         control,
         index,
       }: {
-        register: (rules?: ValidationRules) => (ref: HTMLInputElement) => void;
+        register: (rules?: RegisterOptions) => (ref: HTMLInputElement) => void;
         control: Control;
         errors: DeepMap<Record<string, any>, FieldError>;
         index: number;
@@ -2507,6 +2508,64 @@ describe('useFieldArray', () => {
 
       expect(result.current.formState.isDirty).toBeFalsy();
       expect(result.current.formState.dirtyFields).toEqual({});
+    });
+
+    it("should not reset Controller's value during remove when Field Array name is already registered", () => {
+      function Component() {
+        const { control, handleSubmit } = useForm({
+          defaultValues: {
+            test: [{ firstName: 'Bill', lastName: '' }],
+          },
+        });
+        const { fields, append, remove } = useFieldArray({
+          control,
+          name: 'test',
+        });
+
+        return (
+          <form onSubmit={handleSubmit(() => {})}>
+            <ul>
+              {fields.map((item, index) => {
+                return (
+                  <li key={item.id}>
+                    <Controller
+                      name={`test[${index}].lastName`}
+                      control={control}
+                      defaultValue={item.lastName} // make sure to set up defaultValue
+                      render={(props: any) => <input {...props} />}
+                    />
+                    <button type="button" onClick={() => remove(index)}>
+                      Delete
+                    </button>
+                  </li>
+                );
+              })}
+            </ul>
+            <button
+              type="button"
+              onClick={() => {
+                append({ firstName: 'appendBill', lastName: 'appendLuo' });
+              }}
+            >
+              append
+            </button>
+          </form>
+        );
+      }
+
+      render(<Component />);
+
+      fireEvent.input(screen.getAllByRole('textbox')[0], {
+        target: { name: 'test[0].lastName', value: '111' },
+      });
+
+      fireEvent.click(screen.getByRole('button', { name: 'append' }));
+
+      fireEvent.click(screen.getAllByRole('button', { name: 'Delete' })[1]);
+
+      expect(
+        (screen.getAllByRole('textbox')[0] as HTMLInputElement).value,
+      ).toEqual('111');
     });
 
     describe('with resolver', () => {
@@ -3717,6 +3776,39 @@ describe('useFieldArray', () => {
         { test: [{ value: '1' }, { value: '2' }] }, // render inside move method
         { test: [{ value: '2' }, { value: '1' }] }, // render inside useEffect in useFieldArray
       ]);
+    });
+
+    it('should populate all fields with default values', () => {
+      let getValues: any;
+      const Component = () => {
+        const { register, control, getValues: tempGetValues } = useForm({
+          defaultValues: {
+            test: [{ value: '1' }, { value: '2' }],
+          },
+        });
+        const { fields } = useFieldArray({
+          control,
+          name: 'test',
+        });
+        getValues = tempGetValues;
+
+        return (
+          <form>
+            {fields.map((field, i) => (
+              <input
+                key={field.id}
+                name={`test[${i}].value`}
+                ref={register()}
+                defaultValue={field.value}
+              />
+            ))}
+          </form>
+        );
+      };
+
+      render(<Component />);
+
+      expect(getValues()).toEqual({ test: [{ value: '1' }, { value: '2' }] });
     });
 
     it('should return watched value with watch API', async () => {

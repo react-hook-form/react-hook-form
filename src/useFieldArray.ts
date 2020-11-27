@@ -15,6 +15,7 @@ import insertAt from './utils/insert';
 import fillEmptyArray from './utils/fillEmptyArray';
 import fillBooleanArray from './utils/fillBooleanArray';
 import compact from './utils/compact';
+import cloneObject from './utils/cloneObject';
 import {
   Field,
   FieldValues,
@@ -25,7 +26,6 @@ import {
   DeepPartial,
   UseFieldArrayMethods,
 } from './types';
-import cloneObject from './utils/cloneObject';
 
 const mapIds = <
   TFieldArrayValues extends FieldValues = FieldValues,
@@ -124,6 +124,8 @@ export const useFieldArray = <
   const omitKey = <T extends (Partial<TFieldArrayValues> | undefined)[]>(
     fields: T,
   ) => fields.map(({ [keyName]: omitted, ...rest } = {}) => rest);
+
+  fieldArrayNamesRef.current.add(name);
 
   const getFieldArrayValue = React.useCallback(
     () => get(fieldArrayValuesRef.current, name, []),
