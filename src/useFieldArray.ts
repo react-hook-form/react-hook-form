@@ -178,19 +178,17 @@ export const useFieldArray = <
     T extends (Partial<TFieldArrayValues> | undefined)[]
   >(
     updatedFieldArrayValues?: T,
-  ) => {
-    if (updatedFieldArrayValues) {
-      set(
-        formStateRef.current.dirtyFields,
-        name,
-        setFieldArrayDirtyFields(
-          omitKey(updatedFieldArrayValues),
-          get(defaultValuesRef.current, name, []),
-          get(formStateRef.current.dirtyFields, name, []),
-        ),
-      );
-    }
-  };
+  ) =>
+    updatedFieldArrayValues &&
+    set(
+      formStateRef.current.dirtyFields,
+      name,
+      setFieldArrayDirtyFields(
+        omitKey(updatedFieldArrayValues),
+        get(defaultValuesRef.current, name, []),
+        get(formStateRef.current.dirtyFields, name, []),
+      ),
+    );
 
   const batchStateUpdate = <
     T extends Function,
@@ -208,32 +206,35 @@ export const useFieldArray = <
     shouldSet = true,
     shouldUpdateValid = false,
   ) => {
-    if (get(shallowFieldsStateRef.current, name)) {
-      const output = method(
-        get(shallowFieldsStateRef.current, name),
-        args.argA,
-        args.argB,
+    get(shallowFieldsStateRef.current, name) &&
+      shouldSet &&
+      set(
+        shallowFieldsStateRef.current,
+        name,
+        method(get(shallowFieldsStateRef.current, name), args.argA, args.argB),
       );
-      shouldSet && set(shallowFieldsStateRef.current, name, output);
-    }
 
     if (get(fieldArrayDefaultValuesRef.current, name)) {
-      const output = method(
-        get(fieldArrayDefaultValuesRef.current, name),
-        args.argA,
-        args.argB,
-      );
-      shouldSet && set(fieldArrayDefaultValuesRef.current, name, output);
+      shouldSet &&
+        set(
+          fieldArrayDefaultValuesRef.current,
+          name,
+          method(
+            get(fieldArrayDefaultValuesRef.current, name),
+            args.argA,
+            args.argB,
+          ),
+        );
       cleanup(fieldArrayDefaultValuesRef.current);
     }
 
     if (Array.isArray(get(formStateRef.current.errors, name))) {
-      const output = method(
-        get(formStateRef.current.errors, name),
-        args.argA,
-        args.argB,
-      );
-      shouldSet && set(formStateRef.current.errors, name, output);
+      shouldSet &&
+        set(
+          formStateRef.current.errors,
+          name,
+          method(get(formStateRef.current.errors, name), args.argA, args.argB),
+        );
       cleanup(formStateRef.current.errors);
     }
 
@@ -241,12 +242,12 @@ export const useFieldArray = <
       readFormStateRef.current.touched &&
       get(formStateRef.current.touched, name)
     ) {
-      const output = method(
-        get(formStateRef.current.touched, name),
-        args.argA,
-        args.argB,
-      );
-      shouldSet && set(formStateRef.current.touched, name, output);
+      shouldSet &&
+        set(
+          formStateRef.current.touched,
+          name,
+          method(get(formStateRef.current.touched, name), args.argA, args.argB),
+        );
       cleanup(formStateRef.current.touched);
     }
 
@@ -254,12 +255,16 @@ export const useFieldArray = <
       readFormStateRef.current.dirtyFields ||
       readFormStateRef.current.isDirty
     ) {
-      const output = method(
-        get(formStateRef.current.dirtyFields, name, []),
-        args.argC,
-        args.argD,
-      );
-      shouldSet && set(formStateRef.current.dirtyFields, name, output);
+      shouldSet &&
+        set(
+          formStateRef.current.dirtyFields,
+          name,
+          method(
+            get(formStateRef.current.dirtyFields, name, []),
+            args.argC,
+            args.argD,
+          ),
+        );
       updateDirtyFieldsWithDefaultValues(updatedFieldValues);
       cleanup(formStateRef.current.dirtyFields);
     }
@@ -468,7 +473,6 @@ export const useFieldArray = <
 
   React.useEffect(() => {
     const resetFunctions = resetFieldArrayFunctionRef.current;
-    const fieldArrayNames = fieldArrayNamesRef.current;
 
     if (!getFieldArrayParentName(name)) {
       resetFunctions[name] = <TFieldValues>(
@@ -489,7 +493,7 @@ export const useFieldArray = <
       resetFields();
       delete resetFunctions[name];
       unset(fieldArrayValuesRef, name);
-      fieldArrayNames.delete(name);
+      fieldArrayNamesRef.current.delete(name);
     };
   }, []);
 
