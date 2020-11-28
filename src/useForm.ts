@@ -1080,7 +1080,7 @@ export function useForm<
     <TSubmitFieldValues extends FieldValues = TFieldValues>(
       onValid: SubmitHandler<TSubmitFieldValues>,
       onInvalid?: SubmitErrorHandler<TFieldValues>,
-    ) => async (e?: React.BaseSyntheticEvent): Promise<void> => {
+    ) => async (e?: React.BaseSyntheticEvent): Promise<any> => {
       if (e && e.preventDefault) {
         e.preventDefault();
         e.persist();
@@ -1099,6 +1099,8 @@ export function useForm<
         updateFormState({
           isSubmitting: true,
         });
+
+      let validReturnValue;
 
       try {
         if (resolverRef.current) {
@@ -1142,7 +1144,7 @@ export function useForm<
             errors: {},
             isSubmitting: true,
           });
-          await onValid(fieldValues, e);
+          validReturnValue = await onValid(fieldValues, e);
         } else {
           formStateRef.current.errors = {
             ...formStateRef.current.errors,
@@ -1160,6 +1162,9 @@ export function useForm<
           isSubmitSuccessful: isEmptyObject(formStateRef.current.errors),
           submitCount: formStateRef.current.submitCount + 1,
         });
+        if (validReturnValue) {
+          return validReturnValue;
+        }
       }
     },
     [shouldFocusError, isValidateAllFieldCriteria],
