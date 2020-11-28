@@ -1,7 +1,6 @@
 import * as React from 'react';
 import isObject from '../utils/isObject';
 import isPrimitive from './isPrimitive';
-import isHTMLElement from './isHTMLElement';
 
 export default function deepEqual(
   object1: any,
@@ -28,7 +27,7 @@ export default function deepEqual(
     for (const key of keys1) {
       const val1 = object1[key];
 
-      if (!isHTMLElement(val1)) {
+      if (!(isErrorObject && key === 'ref')) {
         const val2 = object2[key];
 
         if (
