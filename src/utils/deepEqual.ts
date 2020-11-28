@@ -19,7 +19,11 @@ export default function deepEqual(object1: any, object2: any) {
     return false;
   }
 
-  if (!React.isValidElement(object1) && !keys1.includes('ref')) {
+  if (
+    !React.isValidElement(object1) &&
+    !keys1.includes('ref') &&
+    !keys1.includes('context')
+  ) {
     for (const key of keys1) {
       const val1 = object1[key];
       const val2 = object2[key];
