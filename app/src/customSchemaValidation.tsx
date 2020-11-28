@@ -27,10 +27,13 @@ const resolver = async (data: any) => {
   return {
     values: error ? {} : values,
     errors: error
-      ? error.details.reduce((previous, currentError) => {
+      ? error.details.reduce((previous, { message, type, path }) => {
           return {
             ...previous,
-            [currentError.path[0]]: currentError,
+            [path[0]]: {
+              message,
+              type,
+            },
           };
         }, {})
       : {},

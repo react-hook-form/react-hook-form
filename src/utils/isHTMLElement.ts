@@ -1,2 +1,4 @@
+import isUndefined from './isUndefined';
+
 export default (value: any): value is HTMLElement =>
-  value instanceof HTMLElement;
+  !isUndefined(HTMLElement) && value instanceof HTMLElement;
