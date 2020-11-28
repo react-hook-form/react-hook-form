@@ -201,9 +201,7 @@ export function useForm<
       if (error) {
         unset(validFieldsRef.current, name);
         shouldReRender =
-          shouldReRender ||
-          !previousError ||
-          !deepEqual(previousError, error, true);
+          shouldReRender || !previousError || !deepEqual(previousError, error);
         set(formStateRef.current.errors, name, error);
       } else {
         if (get(fieldsWithValidationRef.current, name) || resolverRef.current) {

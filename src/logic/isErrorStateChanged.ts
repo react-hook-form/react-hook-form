@@ -27,7 +27,7 @@ export default <TFieldValues extends FieldValues>({
 
   return (
     (isValid && !!previousError) ||
-    (!isValid && !deepEqual(previousError, error, true)) ||
+    (!isValid && !deepEqual(previousError, error)) ||
     (isValid && get(fieldsWithValidation, name) && !get(validFields, name))
   );
 };

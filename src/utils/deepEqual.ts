@@ -2,11 +2,7 @@ import * as React from 'react';
 import isObject from '../utils/isObject';
 import isPrimitive from './isPrimitive';
 
-export default function deepEqual(
-  object1: any,
-  object2: any,
-  isErrorObject?: boolean,
-) {
+export default function deepEqual(object1: any, object2: any) {
   if (
     isPrimitive(object1) ||
     isPrimitive(object2) ||
@@ -23,15 +19,15 @@ export default function deepEqual(
     return false;
   }
 
-  for (const key of keys1) {
-    const val1 = object1[key];
-    const val2 = object2[key];
+  if (!React.isValidElement(object1) && !keys1.includes('ref')) {
+    for (const key of keys1) {
+      const val1 = object1[key];
+      const val2 = object2[key];
 
-    if (!React.isValidElement(val1) && !React.isValidElement(val2)) {
       if (
         (isObject(val1) || Array.isArray(val1)) &&
         (isObject(val2) || Array.isArray(val2))
-          ? !deepEqual(val1, val2, isErrorObject)
+          ? !deepEqual(val1, val2)
           : val1 !== val2
       ) {
         return false;

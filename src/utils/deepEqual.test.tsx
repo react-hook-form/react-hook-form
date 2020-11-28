@@ -31,6 +31,25 @@ describe('deepEqual', () => {
     expect(
       deepEqual({ test: <p>test</p> }, { test: <p>test</p> }),
     ).toBeTruthy();
+
+    /* eslint-disable */
+    expect(
+      deepEqual(
+        {
+          test: {
+            value: true,
+            message: <p>Email can't be empty.</p>,
+          },
+        },
+        {
+          test: {
+            value: true,
+            message: <p>Email can't be empty.</p>,
+          },
+        },
+      ),
+    ).toBeTruthy();
+    /* eslint-enable */
   });
 
   it('should return true when two sets matches', () => {
