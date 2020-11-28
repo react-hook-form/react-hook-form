@@ -1,3 +1,4 @@
+import * as React from 'react';
 import deepEqual from './deepEqual';
 
 describe('deepEqual', () => {
@@ -24,6 +25,12 @@ describe('deepEqual', () => {
     expect(deepEqual([], null)).toBeFalsy();
     expect(deepEqual({}, undefined)).toBeFalsy();
     expect(deepEqual(undefined, {})).toBeFalsy();
+  });
+
+  it('should skip JSX comparision', () => {
+    expect(
+      deepEqual({ test: <p>test</p> }, { test: <p>test</p> }),
+    ).toBeTruthy();
   });
 
   it('should return true when two sets matches', () => {
