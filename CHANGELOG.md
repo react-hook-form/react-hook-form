@@ -12,6 +12,7 @@ useWatch({
   defaultValue: 'data', // this value will only show on the inital render
 });
 ```
+- TS: name changed from `ValidationRules` to `RegisterOptions` due to valueAs functionality included as `register` function.
 
 ### Added
 
