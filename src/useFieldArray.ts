@@ -488,10 +488,6 @@ export const useFieldArray = <
     }
 
     return () => {
-      if (process.env.NODE_ENV !== 'production') {
-        return;
-      }
-
       resetFields();
       delete resetFunctions[name];
       unset(fieldArrayValuesRef, name);
