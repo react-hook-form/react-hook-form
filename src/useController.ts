@@ -178,7 +178,7 @@ export function useController<
   }, [registerField]);
 
   React.useEffect(() => {
-    !fieldsRef.current[name] && registerField(true);
+    isNotFieldArray && !fieldsRef.current[name] && registerField(true);
   });
 
   const onBlur = React.useCallback(() => {

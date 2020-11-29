@@ -1248,13 +1248,13 @@ export function useForm<
 
   React.useEffect(
     () => () => {
-      isUnMount.current = true;
       observerRef.current && observerRef.current.disconnect();
 
       if (process.env.NODE_ENV !== 'production') {
         return;
       }
 
+      isUnMount.current = true;
       Object.values(fieldsRef.current).forEach((field) =>
         removeFieldEventListenerAndRef(field, true),
       );
