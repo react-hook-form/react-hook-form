@@ -6,7 +6,7 @@ export default function cloneObject<T extends unknown>(
 ): T {
   let copy: any;
 
-  if (isPrimitive(data) || (isWeb && data instanceof File)) {
+  if (isPrimitive(data) || (isWeb && typeof File === 'function' && data instanceof File)) {
     return data;
   }
 
