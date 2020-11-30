@@ -1,15 +1,12 @@
 import isPrimitive from './isPrimitive';
+import { UNDEFINED } from '../constants';
 
-export default function cloneObject<T extends unknown>(
-  data: T,
-  isWeb = true,
-): T {
+const isWeb = typeof window !== UNDEFINED;
+
+export default function cloneObject<T extends unknown>(data: T): T {
   let copy: any;
 
-  if (
-    isPrimitive(data) ||
-    (isWeb && typeof File === 'function' && data instanceof File)
-  ) {
+  if (isPrimitive(data) || (isWeb && data instanceof File)) {
     return data;
   }
 
@@ -29,7 +26,7 @@ export default function cloneObject<T extends unknown>(
   if (data instanceof Map) {
     copy = new Map();
     for (const key of data.keys()) {
-      copy.set(key, cloneObject(data.get(key), isWeb));
+      copy.set(key, cloneObject(data.get(key)));
     }
     return copy;
   }
@@ -37,7 +34,7 @@ export default function cloneObject<T extends unknown>(
   copy = Array.isArray(data) ? [] : {};
 
   for (const key in data) {
-    copy[key] = cloneObject(data[key], isWeb);
+    copy[key] = cloneObject(data[key]);
   }
 
   return copy;
