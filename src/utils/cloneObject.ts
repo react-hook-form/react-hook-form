@@ -9,7 +9,7 @@ export default function cloneObject<T extends unknown>(
   if (
     isPrimitive(data) ||
     (isWeb && typeof File === 'function' && data instanceof File)
-    ) {
+  ) {
     return data;
   }
 
