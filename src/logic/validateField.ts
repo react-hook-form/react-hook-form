@@ -31,7 +31,7 @@ export default async <TFieldValues extends FieldValues>(
   validateAllFieldCriteria: boolean,
   {
     ref,
-    ref: { type, value },
+    ref: { value },
     options,
     required,
     maxLength,
@@ -99,13 +99,13 @@ export default async <TFieldValues extends FieldValues>(
     }
   }
 
-  if (!isNullOrUndefined(min) || !isNullOrUndefined(max)) {
+  if ((!isNullOrUndefined(min) || !isNullOrUndefined(max)) && value !== '') {
     let exceedMax;
     let exceedMin;
     const maxOutput = getValueAndMessage(max);
     const minOutput = getValueAndMessage(min);
 
-    if (type === 'number' || (!type && !isNaN(value))) {
+    if (!isNaN(value)) {
       const valueNumber =
         (ref as HTMLInputElement).valueAsNumber || parseFloat(value);
       if (!isNullOrUndefined(maxOutput.value)) {
