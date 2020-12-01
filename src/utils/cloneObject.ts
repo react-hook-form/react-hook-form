@@ -1,7 +1,7 @@
 import isPrimitive from './isPrimitive';
 import { UNDEFINED } from '../constants';
 
-const isWeb = typeof window !== UNDEFINED;
+const isWeb = typeof window !== UNDEFINED && !isUndefined(HTMLElement);
 
 export default function cloneObject<T extends unknown>(data: T): T {
   let copy: any;
