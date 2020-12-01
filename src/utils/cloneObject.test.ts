@@ -35,8 +35,8 @@ describe('clone', () => {
       ]),
     };
 
-    const copy = cloneObject(data, true);
-    expect(cloneObject(data, true)).toEqual(copy);
+    const copy = cloneObject(data);
+    expect(cloneObject(data)).toEqual(copy);
 
     // @ts-ignore
     copy.test.what = '1243';

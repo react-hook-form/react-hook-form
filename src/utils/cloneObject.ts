@@ -1,9 +1,7 @@
 import isPrimitive from './isPrimitive';
+import isWeb from './isWeb';
 
-export default function cloneObject<T extends unknown>(
-  data: T,
-  isWeb = true,
-): T {
+export default function cloneObject<T extends unknown>(data: T): T {
   let copy: any;
 
   if (isPrimitive(data) || (isWeb && data instanceof File)) {
@@ -26,7 +24,7 @@ export default function cloneObject<T extends unknown>(
   if (data instanceof Map) {
     copy = new Map();
     for (const key of data.keys()) {
-      copy.set(key, cloneObject(data.get(key), isWeb));
+      copy.set(key, cloneObject(data.get(key)));
     }
     return copy;
   }
@@ -34,7 +32,7 @@ export default function cloneObject<T extends unknown>(
   copy = Array.isArray(data) ? [] : {};
 
   for (const key in data) {
-    copy[key] = cloneObject(data[key], isWeb);
+    copy[key] = cloneObject(data[key]);
   }
 
   return copy;
