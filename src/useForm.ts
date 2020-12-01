@@ -159,7 +159,7 @@ export function useForm<
   shallowFieldsStateRef.current = shouldUnregister
     ? {}
     : isEmptyObject(shallowFieldsStateRef.current)
-    ? cloneObject(defaultValues, isWeb)
+    ? cloneObject(defaultValues)
     : shallowFieldsStateRef.current;
 
   const updateFormState = React.useCallback(
@@ -639,7 +639,7 @@ export function useForm<
 
   function setFieldArrayDefaultValues<T extends FieldValues>(data: T): T {
     if (!shouldUnregister) {
-      let copy = cloneObject(data, isWeb);
+      let copy = cloneObject(data);
 
       for (const value of fieldArrayNamesRef.current) {
         if (isKey(value) && !copy[value]) {
@@ -682,7 +682,7 @@ export function useForm<
     return setFieldArrayDefaultValues(
       getFieldsValues(
         fieldsRef,
-        cloneObject(shallowFieldsStateRef.current, isWeb),
+        cloneObject(shallowFieldsStateRef.current),
         shouldUnregister,
       ),
     );
@@ -799,7 +799,7 @@ export function useForm<
         : watchFieldsRef.current;
       let fieldValues = getFieldsValues<TFieldValues>(
         fieldsRef,
-        cloneObject(shallowFieldsStateRef.current, isWeb),
+        cloneObject(shallowFieldsStateRef.current),
         shouldUnregister,
         false,
         fieldNames,
@@ -1089,7 +1089,7 @@ export function useForm<
       let fieldValues = setFieldArrayDefaultValues(
         getFieldsValues(
           fieldsRef,
-          cloneObject(shallowFieldsStateRef.current, isWeb),
+          cloneObject(shallowFieldsStateRef.current),
           shouldUnregister,
           true,
         ),
@@ -1221,10 +1221,7 @@ export function useForm<
     }
 
     fieldsRef.current = {};
-    defaultValuesRef.current = cloneObject(
-      values || defaultValuesRef.current,
-      isWeb,
-    );
+    defaultValuesRef.current = cloneObject(values || defaultValuesRef.current);
     values && renderWatchedInputs('');
 
     Object.values(resetFieldArrayFunctionRef.current).forEach(
@@ -1233,7 +1230,7 @@ export function useForm<
 
     shallowFieldsStateRef.current = shouldUnregister
       ? {}
-      : cloneObject(values, isWeb) || {};
+      : cloneObject(values) || {};
 
     resetRefs(omitResetState);
   };
