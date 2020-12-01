@@ -35,6 +35,7 @@ import isMultipleSelect from './utils/isMultipleSelect';
 import compact from './utils/compact';
 import isNullOrUndefined from './utils/isNullOrUndefined';
 import isRadioOrCheckboxFunction from './utils/isRadioOrCheckbox';
+import isWeb from './utils/isWeb';
 import isHTMLElement from './utils/isHTMLElement';
 import { EVENTS, UNDEFINED, VALIDATION_MODE } from './constants';
 import {
@@ -74,10 +75,6 @@ import {
 } from './types';
 
 const isWindowUndefined = typeof window === UNDEFINED;
-const isWeb =
-  typeof document !== UNDEFINED &&
-  !isWindowUndefined &&
-  !isUndefined(HTMLElement);
 const isProxyEnabled = isWeb ? 'Proxy' in window : typeof Proxy !== UNDEFINED;
 
 export function useForm<
