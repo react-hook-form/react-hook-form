@@ -147,7 +147,7 @@ export function useField<
           rules,
         );
 
-        shouldUpdateValue = !get(defaultValuesRef.current, name);
+        shouldUpdateValue = isUndefined(get(defaultValuesRef.current, name));
       }
 
       shouldUpdateValue &&
@@ -177,7 +177,7 @@ export function useField<
     registerField();
   }, [registerField]);
 
-  React.useLayoutEffect(() => {
+  React.useEffect(() => {
     !fieldsRef.current[name] && registerField(true);
   });
 
