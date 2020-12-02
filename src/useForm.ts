@@ -422,7 +422,7 @@ export function useForm<
         return result.every(Boolean);
       }
 
-      return await executeValidation(fields, readFormStateRef.current.isValid);
+      return await executeValidation(fields);
     },
     [executeSchemaOrResolverValidation, executeValidation],
   );
@@ -810,9 +810,9 @@ export function useForm<
             [],
           );
           fieldValues =
+            !fieldArrayValue.length ||
             fieldArrayValue.length !==
-              compact(get(fieldValues, fieldNames, [])).length ||
-            !fieldArrayValue.length
+              compact(get(fieldValues, fieldNames, [])).length
               ? fieldArrayValuesRef.current
               : fieldValues;
         }

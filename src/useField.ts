@@ -147,7 +147,7 @@ export function useField<
           rules,
         );
 
-        shouldUpdateValue = !get(defaultValuesRef.current, name);
+        shouldUpdateValue = isUndefined(get(defaultValuesRef.current, name));
       }
 
       shouldUpdateValue &&
@@ -178,7 +178,7 @@ export function useField<
   }, [registerField]);
 
   React.useEffect(() => {
-    isNotFieldArray && !fieldsRef.current[name] && registerField(true);
+    !fieldsRef.current[name] && registerField(true);
   });
 
   const onBlur = React.useCallback(() => {

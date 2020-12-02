@@ -2510,6 +2510,82 @@ describe('useFieldArray', () => {
       expect(result.current.formState.dirtyFields).toEqual({});
     });
 
+    it('should remove Controller by index without error', () => {
+      const Component = () => {
+        const { control, handleSubmit } = useForm({
+          defaultValues: {
+            test: [],
+          },
+        });
+        const { fields, append, remove } = useFieldArray({
+          control,
+          name: 'test',
+        });
+
+        return (
+          <form onSubmit={handleSubmit(() => {})}>
+            <ul>
+              {fields.map((item, index) => {
+                return (
+                  <li key={item.id}>
+                    <Controller
+                      as={<input />}
+                      name={`test[${index}].firstName`}
+                      control={control}
+                      defaultValue={item.firstName} // make sure to set up defaultValue
+                    />
+                    <button type="button" onClick={() => remove(index)}>
+                      delete
+                    </button>
+                  </li>
+                );
+              })}
+            </ul>
+            <section>
+              <button
+                type="button"
+                onClick={() => {
+                  append({ firstName: 'appendBill' });
+                }}
+              >
+                append
+              </button>
+            </section>
+
+            <input type="submit" />
+          </form>
+        );
+      };
+
+      render(<Component />);
+
+      actComponent(() => {
+        fireEvent.click(screen.getByRole('button', { name: 'append' }));
+      });
+      actComponent(() => {
+        fireEvent.click(screen.getByRole('button', { name: 'append' }));
+      });
+      actComponent(() => {
+        fireEvent.click(screen.getByRole('button', { name: 'append' }));
+      });
+      actComponent(() => {
+        fireEvent.click(screen.getByRole('button', { name: 'append' }));
+      });
+
+      actComponent(() => {
+        fireEvent.click(screen.getAllByRole('button', { name: 'delete' })[1]);
+      });
+      actComponent(() => {
+        fireEvent.click(screen.getAllByRole('button', { name: 'delete' })[1]);
+      });
+      actComponent(() => {
+        fireEvent.click(screen.getAllByRole('button', { name: 'delete' })[1]);
+      });
+      actComponent(() => {
+        fireEvent.click(screen.getAllByRole('button', { name: 'delete' })[0]);
+      });
+    });
+
     it("should not reset Controller's value during remove when Field Array name is already registered", () => {
       function Component() {
         const { control, handleSubmit } = useForm({
