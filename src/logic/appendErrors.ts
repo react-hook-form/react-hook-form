@@ -10,18 +10,13 @@ export default <TFieldValues>(
   errors: InternalFieldErrors<TFieldValues>,
   type: string,
   message: ValidateResult,
-) => {
-  if (validateAllFieldCriteria) {
-    const error = errors[name];
-
-    return {
-      ...error,
-      types: {
-        ...(error && error.types ? error.types : {}),
-        [type]: message || true,
-      },
-    };
-  }
-
-  return {};
-};
+) =>
+  validateAllFieldCriteria
+    ? {
+        ...errors[name],
+        types: {
+          ...(errors[name] && errors[name]!.types ? errors[name]!.types : {}),
+          [type]: message || true,
+        },
+      }
+    : {};

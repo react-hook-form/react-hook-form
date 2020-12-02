@@ -1,6 +1,44 @@
 # Changelog
 
-## [6.10.0] - 2020-11-07
+## [6.12.0] - 2020-11-28
+
+### Changed
+
+- `useWatch` will retrieve the latest value from `reset(data)` instead of return `defaultValue`
+
+```tsx
+useWatch({
+  name: 'test',
+  defaultValue: 'data', // this value will only show on the inital render
+});
+```
+- TS: name changed from `ValidationRules` to `RegisterOptions` due to valueAs functionality included as `register` function.
+
+### Added
+
+- `register` function with additional options to transform value
+
+  - `valueAsDate`
+  - `valueAsNumber`
+  - `setValue`
+
+```tsx
+register({
+  valueAsNumber: true,
+});
+
+register({
+  valueAsNumber: true,
+});
+
+register({
+  setValueAs: (value) => value,
+});
+```
+
+### Added
+
+## [6.11.0] - 2020-11-07
 
 ### Changed
 

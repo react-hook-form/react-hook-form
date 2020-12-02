@@ -1,10 +1,6 @@
 import isKey from './isKey';
 
 describe('isKey', () => {
-  it('should return false if it is array', () => {
-    expect(isKey([])).toBeFalsy();
-  });
-
   it('should return true when it is not a deep key', () => {
     expect(isKey('test')).toBeTruthy();
     expect(isKey('fooBar')).toBeTruthy();
