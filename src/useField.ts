@@ -177,8 +177,8 @@ export function useField<
     registerField();
   }, [registerField]);
 
-  React.useEffect(() => {
-    isNotFieldArray && !fieldsRef.current[name] && registerField(true);
+  React.useLayoutEffect(() => {
+    !fieldsRef.current[name] && registerField(true);
   });
 
   const onBlur = React.useCallback(() => {

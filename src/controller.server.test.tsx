@@ -3,6 +3,9 @@ import { Controller } from './controller';
 import { useForm } from './useForm';
 import { renderToString } from 'react-dom/server';
 
+// @ts-ignore
+React.useLayoutEffect = React.useEffect;
+
 describe('Controller with SSR', () => {
   /**
    * This test is checking https://github.com/react-hook-form/react-hook-form/issues/1398
