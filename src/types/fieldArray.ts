@@ -7,12 +7,12 @@ export type FieldArrayName = string;
 export type FieldArrayDefaultValues = Partial<Record<FieldArrayName, any>>;
 
 export type UseFieldArrayOptions<
-  TKeyName extends string = 'id',
-  TControl extends Control = Control
+  TFieldValues extends FieldValues = FieldValues,
+  TKeyName extends string = 'id'
 > = {
   name: FieldArrayName;
   keyName?: TKeyName;
-  control?: TControl;
+  control?: Control<TFieldValues>;
 };
 
 export type ResetFieldArrayFunctionRef<TFieldValues> = Record<

@@ -20,7 +20,6 @@ import {
   Field,
   FieldValues,
   UseFieldArrayOptions,
-  Control,
   ArrayField,
   UnpackNestedValue,
   DeepPartial,
@@ -62,13 +61,12 @@ const mapIds = <
 
 export const useFieldArray = <
   TFieldArrayValues extends FieldValues = FieldValues,
-  TKeyName extends string = 'id',
-  TControl extends Control = Control
+  TKeyName extends string = 'id'
 >({
   control,
   name,
   keyName = 'id' as TKeyName,
-}: UseFieldArrayOptions<TKeyName, TControl>): UseFieldArrayMethods<
+}: UseFieldArrayOptions<FieldValues, TKeyName>): UseFieldArrayMethods<
   TFieldArrayValues,
   TKeyName
 > => {
