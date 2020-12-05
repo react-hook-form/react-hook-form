@@ -1218,7 +1218,7 @@ export function useForm<
     }
 
     fieldsRef.current = {};
-    defaultValuesRef.current = cloneObject(values || defaultValuesRef.current);
+    defaultValuesRef.current = { ...(values || defaultValuesRef.current) };
     values && renderWatchedInputs('');
 
     Object.values(resetFieldArrayFunctionRef.current).forEach(
