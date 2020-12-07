@@ -295,7 +295,7 @@ export const useFieldArray = <
     value: Partial<TFieldArrayValues> | Partial<TFieldArrayValues>[],
     shouldFocus = true,
   ) => {
-    const appendValue = [...(Array.isArray(value) ? value : [value])];
+    const appendValue = Array.isArray(value) ? value : [value];
     const updateFormValues = [
       ...getCurrentFieldsValues(),
       ...mapIds(appendValue, keyName),
