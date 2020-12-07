@@ -319,7 +319,10 @@ export const useFieldArray = <
         ...(get(shallowFieldsStateRef.current, name) || []),
         ...cloneObject(appendValue),
       ]);
-    focusIndexRef.current = shouldFocus ? fields.length : -1;
+
+    focusIndexRef.current = shouldFocus
+      ? get(fieldArrayValuesRef.current, name).length - 1
+      : -1;
   };
 
   const prepend = (
@@ -504,7 +507,7 @@ export const useFieldArray = <
     swap: React.useCallback(swap, [name]),
     move: React.useCallback(move, [name]),
     prepend: React.useCallback(prepend, [name]),
-    append: React.useCallback(append, [name, fields]),
+    append: React.useCallback(append, [name]),
     remove: React.useCallback(remove, [name]),
     insert: React.useCallback(insert, [name]),
     fields,
