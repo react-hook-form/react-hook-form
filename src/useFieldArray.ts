@@ -295,9 +295,10 @@ export const useFieldArray = <
     value: Partial<TFieldArrayValues> | Partial<TFieldArrayValues>[],
     shouldFocus = true,
   ) => {
+    const appendValue = [...(Array.isArray(value) ? value : [value])];
     const updateFormValues = [
       ...getCurrentFieldsValues(),
-      ...mapIds(Array.isArray(value) ? value : [value], keyName),
+      ...mapIds(appendValue, keyName),
     ];
     setFieldAndValidState(updateFormValues);
 
@@ -316,7 +317,7 @@ export const useFieldArray = <
     !shouldUnregister &&
       set(shallowFieldsStateRef.current, name, [
         ...(get(shallowFieldsStateRef.current, name) || []),
-        value,
+        ...cloneObject(appendValue),
       ]);
     focusIndexRef.current = shouldFocus ? fields.length : -1;
   };
