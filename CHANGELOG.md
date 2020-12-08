@@ -12,6 +12,7 @@ useWatch({
   defaultValue: 'data', // this value will only show on the inital render
 });
 ```
+- TS: name changed from `ValidationRules` to `RegisterOptions` due to valueAs functionality included as `register` function.
 
 ### Added
 
@@ -56,21 +57,21 @@ register({
 - `Controller` will have an extra `ref` props to improve DX in terms of focus management.
 
 ```tsx
-<Controlller
+<Controller
   name="test"
   render={(props) => {
     return (
       <input
         value={props.value}
         onChange={props.onChange}
-        ref={props.ref} // you can assign ref now withou the use of `onFocus`
+        ref={props.ref} // you can assign ref now without the use of `onFocus`
       />
     );
   }}
 />
 
 // focus will work correct without the `onFocus` prop
-<Controlller name="test" as={<input />} />
+<Controller name="test" as={<input />} />
 ```
 
 ### Changed
