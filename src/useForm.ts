@@ -1227,7 +1227,7 @@ export function useForm<
 
     shallowFieldsStateRef.current = shouldUnregister
       ? {}
-      : cloneObject(values) || {};
+      : cloneObject(values || defaultValuesRef.current);
 
     resetRefs(omitResetState);
   };
