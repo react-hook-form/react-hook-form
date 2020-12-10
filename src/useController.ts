@@ -199,7 +199,7 @@ export function useController<TFieldValues extends FieldValues = FieldValues>({
       value,
       ref,
     },
-    state: Object.defineProperties(
+    meta: Object.defineProperties(
       {
         invalid: get(errors, name),
       },
