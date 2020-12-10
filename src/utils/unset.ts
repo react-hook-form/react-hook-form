@@ -5,8 +5,9 @@ import isObject from './isObject';
 import isUndefined from './isUndefined';
 import isBoolean from './isBoolean';
 
-function baseGet(object: any, updatePath: (string | number)[], index = 0) {
+function baseGet(object: any, updatePath: (string | number)[]) {
   const length = updatePath.slice(0, -1).length;
+  let index = 0;
 
   while (index < length) {
     object = isUndefined(object) ? index++ : object[updatePath[index++]];
