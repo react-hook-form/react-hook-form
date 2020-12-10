@@ -45,8 +45,9 @@ export function useController<
     trigger,
     mode,
     reValidateMode: { isReValidateOnBlur, isReValidateOnChange },
+    formState,
     formStateRef: {
-      current: { isSubmitted, touched, errors, dirtyFields },
+      current: { isSubmitted, touched, errors },
     },
     updateFormState,
     readFormStateRef,
@@ -210,9 +211,9 @@ export function useController<
       ref,
     },
     state: {
-      inValid: !get(errors, name),
-      isDirty: !!get(dirtyFields, name),
-      isTouched: !!get(touched, name),
+      invalid: get(errors, name),
+      isDirty: !!get(formState.dirtyFields, name),
+      isTouched: !!get(formState.touched, name),
     },
   };
 }

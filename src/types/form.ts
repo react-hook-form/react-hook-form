@@ -145,6 +145,7 @@ export type Control<TFieldValues extends FieldValues = FieldValues> = Pick<
   fieldArrayDefaultValuesRef: FieldArrayDefaultValues;
   fieldArrayValuesRef: FieldArrayDefaultValues;
   shouldUnregister: boolean;
+  formState: FormState<TFieldValues>;
   formStateRef: React.MutableRefObject<FormState<TFieldValues>>;
   updateFormState: (args?: Partial<FormState<TFieldValues>>) => void;
   validateResolver?: (fieldsValues: FieldValues) => void;
@@ -193,7 +194,7 @@ export type SetFieldValue<TFieldValues> =
   | boolean;
 
 export type InputState = {
-  inValid: boolean;
+  invalid: boolean;
   isTouched: boolean;
   isDirty: boolean;
 };
