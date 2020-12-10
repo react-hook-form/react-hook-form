@@ -1092,10 +1092,9 @@ export function useForm<
         ),
       );
 
-      readFormStateRef.current.isSubmitting &&
-        updateFormState({
-          isSubmitting: true,
-        });
+      updateFormState({
+        isSubmitting: true,
+      });
 
       try {
         if (resolverRef.current) {
