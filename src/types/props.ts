@@ -35,6 +35,16 @@ export type ControllerRenderProps<
   ref: React.MutableRefObject<any>;
 };
 
+export type UseControllerProps<
+  TFieldValues extends FieldValues = FieldValues
+> = {
+  name: FieldName<TFieldValues>;
+  rules?: Exclude<RegisterOptions, 'valueAsNumber' | 'valueAsDate'>;
+  onFocus?: () => void;
+  defaultValue?: unknown;
+  control?: Control<TFieldValues>;
+};
+
 export type ControllerProps<
   TAs extends
     | React.ReactElement
@@ -56,12 +66,7 @@ export type ControllerProps<
           options: { state: InputState },
         ) => React.ReactElement;
       }
-  ) & {
-    name: FieldName<TFieldValues>;
-    rules?: Exclude<RegisterOptions, 'valueAsNumber' | 'valueAsDate'>;
-    onFocus?: () => void;
-    defaultValue?: unknown;
-    control?: Control<TFieldValues>;
-  },
+  ) &
+    UseControllerProps,
   AsProps<TAs>
 >;

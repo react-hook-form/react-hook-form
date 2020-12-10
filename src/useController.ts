@@ -7,26 +7,15 @@ import isFunction from './utils/isFunction';
 import skipValidation from './logic/skipValidation';
 import getInputValue from './logic/getInputValue';
 import set from './utils/set';
-import { ControllerProps, FieldValues, UseField } from './types';
+import { FieldValues, UseControllerProps, UseField } from './types';
 
-export function useController<
-  TAs extends
-    | React.ReactElement
-    | React.ComponentType<any>
-    | 'input'
-    | 'select'
-    | 'textarea',
-  TFieldValues extends FieldValues = FieldValues
->({
+export function useController<TFieldValues extends FieldValues = FieldValues>({
   name,
   rules,
   defaultValue,
   control,
   onFocus,
-}: Exclude<
-  ControllerProps<TAs, TFieldValues>,
-  'as' | 'render'
->): UseField<TFieldValues> {
+}: UseControllerProps<TFieldValues>): UseField<TFieldValues> {
   const methods = useFormContext<TFieldValues>();
 
   if (process.env.NODE_ENV !== 'production') {
