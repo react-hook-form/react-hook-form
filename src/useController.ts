@@ -118,19 +118,20 @@ export function useController<TFieldValues extends FieldValues = FieldValues>({
         };
       } else {
         register(
-          Object.defineProperty(
+          Object.defineProperties(
             {
               name,
               focus: onFocusRef.current,
             },
-            'value',
             {
-              set(data) {
-                setInputStateValue(data);
-                valueRef.current = data;
-              },
-              get() {
-                return valueRef.current;
+              value: {
+                set(data) {
+                  setInputStateValue(data);
+                  valueRef.current = data;
+                },
+                get() {
+                  return valueRef.current;
+                },
               },
             },
           ),
