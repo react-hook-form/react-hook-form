@@ -1,12 +1,11 @@
 import isBoolean from '../utils/isBoolean';
 import isMessage from '../utils/isMessage';
 import { FieldError, ValidateResult, Ref } from '../types';
-import { INPUT_VALIDATION_RULES } from '../constants';
 
 export default function getValidateError(
   result: ValidateResult,
   ref: Ref,
-  type = INPUT_VALIDATION_RULES.validate,
+  type = 'validate',
 ): FieldError | void {
   if (isMessage(result) || (isBoolean(result) && !result)) {
     return {
