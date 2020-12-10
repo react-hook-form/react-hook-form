@@ -202,14 +202,14 @@ export function useController<
   );
 
   return {
-    inputProps: {
+    field: {
       onChange,
       onBlur,
       name,
       value,
       ref,
     },
-    inputState: {
+    state: {
       inValid: !get(errors, name),
       isDirty: !!get(dirtyFields, name),
       isTouched: !!get(touched, name),
