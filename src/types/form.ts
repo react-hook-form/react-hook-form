@@ -260,6 +260,6 @@ export type UseFormMethods<TFieldValues extends FieldValues = FieldValues> = {
 };
 
 export type UseField<TFieldValues extends FieldValues = FieldValues> = {
-  field: ControllerRenderProps<TFieldValues>;
-  state: InputState;
+  inputProps: ControllerRenderProps<TFieldValues>;
+  inputState: InputState;
 };

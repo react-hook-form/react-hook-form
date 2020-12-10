@@ -11,11 +11,11 @@ const Controller = <
   props: ControllerProps<TAs, TFieldValues>,
 ) => {
   const { rules, as, render, defaultValue, control, onFocus, ...rest } = props;
-  const { field, state } = useController(props);
+  const { inputProps, inputState } = useController(props);
 
   const componentProps = {
     ...rest,
-    ...field,
+    ...inputState,
   };
 
   return as
@@ -23,7 +23,7 @@ const Controller = <
       ? React.cloneElement(as, componentProps)
       : React.createElement(as as NativeInputs, componentProps as any)
     : render
-    ? render(field, { state })
+    ? render(inputProps, inputState)
     : null;
 };
 
