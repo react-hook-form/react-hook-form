@@ -9,7 +9,7 @@ import getInputValue from './logic/getInputValue';
 import set from './utils/set';
 import { ControllerProps, FieldValues, UseField } from './types';
 
-export function useField<
+export function useController<
   TAs extends
     | React.ReactElement
     | React.ComponentType<any>
