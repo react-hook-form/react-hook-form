@@ -199,10 +199,22 @@ export function useController<TFieldValues extends FieldValues = FieldValues>({
       value,
       ref,
     },
-    state: {
-      invalid: get(errors, name),
-      isDirty: !!get(formState.dirtyFields, name),
-      isTouched: !!get(formState.touched, name),
-    },
+    state: Object.defineProperties(
+      {
+        invalid: get(errors, name),
+      },
+      {
+        isDirty: {
+          get() {
+            return !!get(formState.dirtyFields, name);
+          },
+        },
+        isTouched: {
+          get() {
+            return !!get(formState.touched, name);
+          },
+        },
+      },
+    ),
   };
 }
