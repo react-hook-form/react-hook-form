@@ -1243,12 +1243,12 @@ export function useForm<
   React.useEffect(
     () => () => {
       observerRef.current && observerRef.current.disconnect();
+      isUnMount.current = true;
 
       if (process.env.NODE_ENV !== 'production') {
         return;
       }
 
-      isUnMount.current = true;
       Object.values(fieldsRef.current).forEach((field) =>
         removeFieldEventListenerAndRef(field, true),
       );
