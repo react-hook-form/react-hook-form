@@ -6,8 +6,7 @@ import isUndefined from './isUndefined';
 import isBoolean from './isBoolean';
 
 function baseGet(object: any, updatePath: (string | number)[]) {
-  const path = updatePath.slice(0, -1);
-  const length = path.length;
+  const length = updatePath.slice(0, -1).length;
   let index = 0;
 
   while (index < length) {
@@ -22,7 +21,7 @@ export default function unset(object: any, path: string) {
   const childObject =
     updatePath.length == 1 ? object : baseGet(object, updatePath);
   const key = updatePath[updatePath.length - 1];
-  let previousObjRef = undefined;
+  let previousObjRef;
 
   if (childObject) {
     delete childObject[key];
@@ -30,7 +29,7 @@ export default function unset(object: any, path: string) {
 
   for (let k = 0; k < updatePath.slice(0, -1).length; k++) {
     let index = -1;
-    let objectRef = undefined;
+    let objectRef;
     const currentPaths = updatePath.slice(0, -(k + 1));
     const currentPathsLength = currentPaths.length - 1;
 
