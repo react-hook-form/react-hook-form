@@ -19,7 +19,7 @@ import { FieldArrayDefaultValues } from './fieldArray';
 declare const $NestedValue: unique symbol;
 
 export type NestedValue<
-  TValue extends unknown[] | Record<string, unknown> =
+  TValue extends unknown[] | Record<string, unknown> | Map<string, any> =
     | unknown[]
     | Record<string, unknown>
 > = {
