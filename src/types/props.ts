@@ -53,7 +53,7 @@ export type ControllerProps<
         as?: undefined;
         render: (
           field: ControllerRenderProps<TFieldValues>,
-          meta: InputState,
+          state: InputState,
         ) => React.ReactElement;
       }
   ) & {
