@@ -62,8 +62,8 @@ export type ControllerProps<
     | {
         as?: undefined;
         render: (
-          props: ControllerRenderProps<TFieldValues>,
-          options: { state: InputState },
+          field: ControllerRenderProps<TFieldValues>,
+          state: InputState,
         ) => React.ReactElement;
       }
   ) &

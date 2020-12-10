@@ -23,7 +23,7 @@ const Controller = <
       ? React.cloneElement(as, componentProps)
       : React.createElement(as as NativeInputs, componentProps as any)
     : render
-    ? render(field, { state })
+    ? render(field, state)
     : null;
 };
 
