@@ -39,7 +39,10 @@ export type UseControllerOptions<
   TFieldValues extends FieldValues = FieldValues
 > = {
   name: FieldName<TFieldValues>;
-  rules?: Exclude<RegisterOptions, 'valueAsNumber' | 'valueAsDate'>;
+  rules?: Exclude<
+    RegisterOptions,
+    'valueAsNumber' | 'valueAsDate' | 'setValueAs'
+  >;
   onFocus?: () => void;
   defaultValue?: unknown;
   control?: Control<TFieldValues>;
