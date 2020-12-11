@@ -1,5 +1,11 @@
 import * as React from 'react';
-import { render, fireEvent, act, screen } from '@testing-library/react';
+import {
+  render,
+  waitFor,
+  fireEvent,
+  act,
+  screen,
+} from '@testing-library/react';
 import { Controller } from './controller';
 import { FormProvider } from './useFormContext';
 import { useFieldArray } from './useFieldArray';
@@ -440,7 +446,6 @@ describe('Controller', () => {
 
     rerender(<Component required={false} />);
 
-    // @ts-ignore
     expect(fieldsRef.current.test.required).toBeFalsy();
   });
 
@@ -893,7 +898,7 @@ describe('Controller', () => {
     expect(currentErrors.test).toBeUndefined();
   });
 
-  it('does not trigger rerenders for memoized inputs', () => {
+  it('does not trigger rerender for memoized inputs', () => {
     let renderCount = 0;
 
     const MemoizedInput = React.memo(
@@ -922,5 +927,150 @@ describe('Controller', () => {
     rerender(<Component />);
 
     expect(renderCount).toEqual(1);
+  });
+
+  it('should show invalid input when there is an error', async () => {
+    const Component = () => {
+      const { control } = useForm({
+        mode: 'onChange',
+      });
+
+      return (
+        <Controller
+          defaultValue=""
+          name="test"
+          render={(props, meta) => (
+            <>
+              <input {...props} />
+              {meta.invalid && <p>Input is invalid.</p>}
+            </>
+          )}
+          control={control}
+          rules={{
+            required: true,
+          }}
+        />
+      );
+    };
+
+    render(<Component />);
+
+    fireEvent.change(screen.getByRole('textbox'), {
+      target: {
+        value: 'test',
+      },
+    });
+
+    expect(screen.queryByText('Input is invalid.')).toBeNull();
+
+    fireEvent.change(screen.getByRole('textbox'), {
+      target: {
+        value: '',
+      },
+    });
+
+    await waitFor(async () => screen.queryByText('Input is invalid.'));
+  });
+
+  it('should show input has been touched.', async () => {
+    const Component = () => {
+      const { control } = useForm();
+
+      return (
+        <Controller
+          defaultValue=""
+          name="test"
+          render={(props, meta) => (
+            <>
+              <input {...props} />
+              {meta.isTouched && <p>Input is touched.</p>}
+            </>
+          )}
+          control={control}
+          rules={{
+            required: true,
+          }}
+        />
+      );
+    };
+
+    render(<Component />);
+
+    expect(screen.queryByText('Input is touched.')).toBeNull();
+
+    fireEvent.blur(screen.getByRole('textbox'));
+
+    await waitFor(async () => screen.queryByText('Input is touched.'));
+  });
+
+  it('should show input is dirty.', async () => {
+    const Component = () => {
+      const { control } = useForm();
+
+      return (
+        <Controller
+          defaultValue=""
+          name="test"
+          render={(props, meta) => (
+            <>
+              <input {...props} />
+              {meta.isTouched && <p>Input is dirty.</p>}
+            </>
+          )}
+          control={control}
+          rules={{
+            required: true,
+          }}
+        />
+      );
+    };
+
+    render(<Component />);
+
+    expect(screen.queryByText('Input is dirty.')).toBeNull();
+
+    fireEvent.change(screen.getByRole('textbox'), {
+      target: {
+        value: 'test',
+      },
+    });
+
+    await waitFor(async () => screen.queryByText('Input is dirty.'));
+  });
+
+  it('should not trigger extra-render while not subscribed to any input state', () => {
+    let count = 0;
+
+    const Component = () => {
+      const { control } = useForm();
+      count++;
+
+      return (
+        <Controller
+          defaultValue=""
+          name="test"
+          render={(props, meta) => (
+            <>
+              <input {...props} />
+              {meta.isTouched && <p>Input is dirty.</p>}
+            </>
+          )}
+          control={control}
+          rules={{
+            required: true,
+          }}
+        />
+      );
+    };
+
+    render(<Component />);
+
+    fireEvent.change(screen.getByRole('textbox'), {
+      target: {
+        value: 'test',
+      },
+    });
+
+    expect(count).toEqual(1);
   });
 });

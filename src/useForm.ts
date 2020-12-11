@@ -1269,6 +1269,26 @@ export function useForm<
     getValues: React.useCallback(getValues, []),
     register: React.useCallback(register, [defaultValuesRef.current]),
     unregister: React.useCallback(unregister, []),
+    formState: isProxyEnabled
+      ? new Proxy(formState, {
+          get: (obj, prop: keyof FormStateProxy) => {
+            if (process.env.NODE_ENV !== 'production') {
+              if (prop === 'isValid' && isOnSubmit) {
+                console.warn(
+                  '📋 `formState.isValid` is applicable with `onTouched`, `onChange` or `onBlur` mode. https://react-hook-form.com/api#formState',
+                );
+              }
+            }
+
+            if (prop in obj) {
+              readFormStateRef.current[prop] = true;
+              return obj[prop];
+            }
+
+            return undefined;
+          },
+        })
+      : formState,
   };
 
   const control = React.useMemo(
@@ -1312,26 +1332,6 @@ export function useForm<
   return {
     watch,
     control,
-    formState: isProxyEnabled
-      ? new Proxy(formState, {
-          get: (obj, prop: keyof FormStateProxy) => {
-            if (process.env.NODE_ENV !== 'production') {
-              if (prop === 'isValid' && isOnSubmit) {
-                console.warn(
-                  '📋 `formState.isValid` is applicable with `onTouched`, `onChange` or `onBlur` mode. https://react-hook-form.com/api#formState',
-                );
-              }
-            }
-
-            if (prop in obj) {
-              readFormStateRef.current[prop] = true;
-              return obj[prop];
-            }
-
-            return undefined;
-          },
-        })
-      : formState,
     handleSubmit,
     reset: React.useCallback(reset, []),
     clearErrors: React.useCallback(clearErrors, []),

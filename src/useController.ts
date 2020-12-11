@@ -7,26 +7,19 @@ import isFunction from './utils/isFunction';
 import skipValidation from './logic/skipValidation';
 import getInputValue from './logic/getInputValue';
 import set from './utils/set';
-import { ControllerProps, FieldValues, UseField } from './types';
+import {
+  FieldValues,
+  UseControllerOptions,
+  UseControllerMethods,
+} from './types';
 
-export function useController<
-  TAs extends
-    | React.ReactElement
-    | React.ComponentType<any>
-    | 'input'
-    | 'select'
-    | 'textarea',
-  TFieldValues extends FieldValues = FieldValues
->({
+export function useController<TFieldValues extends FieldValues = FieldValues>({
   name,
   rules,
   defaultValue,
   control,
   onFocus,
-}: Exclude<
-  ControllerProps<TAs, TFieldValues>,
-  'as' | 'render'
->): UseField<TFieldValues> {
+}: UseControllerOptions<TFieldValues>): UseControllerMethods<TFieldValues> {
   const methods = useFormContext<TFieldValues>();
 
   if (process.env.NODE_ENV !== 'production') {
@@ -45,8 +38,9 @@ export function useController<
     trigger,
     mode,
     reValidateMode: { isReValidateOnBlur, isReValidateOnChange },
+    formState,
     formStateRef: {
-      current: { isSubmitted, touched, errors, dirtyFields },
+      current: { isSubmitted, touched, errors },
     },
     updateFormState,
     readFormStateRef,
@@ -128,19 +122,20 @@ export function useController<
         };
       } else {
         register(
-          Object.defineProperty(
+          Object.defineProperties(
             {
               name,
               focus: onFocusRef.current,
             },
-            'value',
             {
-              set(data) {
-                setInputStateValue(data);
-                valueRef.current = data;
-              },
-              get() {
-                return valueRef.current;
+              value: {
+                set(data) {
+                  setInputStateValue(data);
+                  valueRef.current = data;
+                },
+                get() {
+                  return valueRef.current;
+                },
               },
             },
           ),
@@ -209,10 +204,22 @@ export function useController<
       value,
       ref,
     },
-    state: {
-      inValid: !get(errors, name),
-      isDirty: !!get(dirtyFields, name),
-      isTouched: !!get(touched, name),
-    },
+    meta: Object.defineProperties(
+      {
+        invalid: get(errors, name),
+      },
+      {
+        isDirty: {
+          get() {
+            return !!get(formState.dirtyFields, name);
+          },
+        },
+        isTouched: {
+          get() {
+            return !!get(formState.touched, name);
+          },
+        },
+      },
+    ),
   };
 }
