@@ -7,7 +7,7 @@ import isFunction from './utils/isFunction';
 import skipValidation from './logic/skipValidation';
 import getInputValue from './logic/getInputValue';
 import set from './utils/set';
-import { FieldValues, UseControllerProps, UseField } from './types';
+import { FieldValues, UseControllerProps, UseControllerMethods } from './types';
 
 export function useController<TFieldValues extends FieldValues = FieldValues>({
   name,
@@ -15,7 +15,7 @@ export function useController<TFieldValues extends FieldValues = FieldValues>({
   defaultValue,
   control,
   onFocus,
-}: UseControllerProps<TFieldValues>): UseField<TFieldValues> {
+}: UseControllerProps<TFieldValues>): UseControllerMethods<TFieldValues> {
   const methods = useFormContext<TFieldValues>();
 
   if (process.env.NODE_ENV !== 'production') {
