@@ -295,9 +295,10 @@ export const useFieldArray = <
     value: Partial<TFieldArrayValues> | Partial<TFieldArrayValues>[],
     shouldFocus = true,
   ) => {
+    const appendValue = Array.isArray(value) ? value : [value];
     const updateFormValues = [
       ...getCurrentFieldsValues(),
-      ...mapIds(Array.isArray(value) ? value : [value], keyName),
+      ...mapIds(appendValue, keyName),
     ];
     setFieldAndValidState(updateFormValues);
 
@@ -316,9 +317,12 @@ export const useFieldArray = <
     !shouldUnregister &&
       set(shallowFieldsStateRef.current, name, [
         ...(get(shallowFieldsStateRef.current, name) || []),
-        value,
+        ...cloneObject(appendValue),
       ]);
-    focusIndexRef.current = shouldFocus ? fields.length : -1;
+
+    focusIndexRef.current = shouldFocus
+      ? get(fieldArrayValuesRef.current, name).length - 1
+      : -1;
   };
 
   const prepend = (
@@ -503,7 +507,7 @@ export const useFieldArray = <
     swap: React.useCallback(swap, [name]),
     move: React.useCallback(move, [name]),
     prepend: React.useCallback(prepend, [name]),
-    append: React.useCallback(append, [name, fields]),
+    append: React.useCallback(append, [name]),
     remove: React.useCallback(remove, [name]),
     insert: React.useCallback(insert, [name]),
     fields,

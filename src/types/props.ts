@@ -1,5 +1,12 @@
 import * as React from 'react';
-import { UseFormMethods, FieldValues, FieldName, Control, Assign } from './';
+import {
+  UseFormMethods,
+  FieldValues,
+  FieldName,
+  Control,
+  Assign,
+  InputState,
+} from './';
 import { RegisterOptions } from './validator';
 
 export type FormProviderProps<
@@ -28,6 +35,19 @@ export type ControllerRenderProps<
   ref: React.MutableRefObject<any>;
 };
 
+export type UseControllerOptions<
+  TFieldValues extends FieldValues = FieldValues
+> = {
+  name: FieldName<TFieldValues>;
+  rules?: Exclude<
+    RegisterOptions,
+    'valueAsNumber' | 'valueAsDate' | 'setValueAs'
+  >;
+  onFocus?: () => void;
+  defaultValue?: unknown;
+  control?: Control<TFieldValues>;
+};
+
 export type ControllerProps<
   TAs extends
     | React.ReactElement
@@ -45,15 +65,11 @@ export type ControllerProps<
     | {
         as?: undefined;
         render: (
-          data: ControllerRenderProps<TFieldValues>,
+          field: ControllerRenderProps<TFieldValues>,
+          state: InputState,
         ) => React.ReactElement;
       }
-  ) & {
-    name: FieldName<TFieldValues>;
-    rules?: Exclude<RegisterOptions, 'valueAsNumber' | 'valueAsDate'>;
-    onFocus?: () => void;
-    defaultValue?: unknown;
-    control?: Control<TFieldValues>;
-  },
+  ) &
+    UseControllerOptions,
   AsProps<TAs>
 >;

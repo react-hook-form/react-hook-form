@@ -19,7 +19,7 @@ import { FieldArrayDefaultValues } from './fieldArray';
 declare const $NestedValue: unique symbol;
 
 export type NestedValue<
-  TValue extends unknown[] | Record<string, unknown> =
+  TValue extends unknown[] | Record<string, unknown> | Map<unknown, unknown> =
     | unknown[]
     | Record<string, unknown>
 > = {
@@ -145,6 +145,7 @@ export type Control<TFieldValues extends FieldValues = FieldValues> = Pick<
   fieldArrayDefaultValuesRef: FieldArrayDefaultValues;
   fieldArrayValuesRef: FieldArrayDefaultValues;
   shouldUnregister: boolean;
+  formState: FormState<TFieldValues>;
   formStateRef: React.MutableRefObject<FormState<TFieldValues>>;
   updateFormState: (args?: Partial<FormState<TFieldValues>>) => void;
   validateResolver?: (fieldsValues: FieldValues) => void;
@@ -191,6 +192,12 @@ export type SetFieldValue<TFieldValues> =
   | undefined
   | null
   | boolean;
+
+export type InputState = {
+  invalid: boolean;
+  isTouched: boolean;
+  isDirty: boolean;
+};
 
 export type UseFormMethods<TFieldValues extends FieldValues = FieldValues> = {
   register<TFieldElement extends FieldElement<TFieldValues>>(
@@ -253,11 +260,9 @@ export type UseFormMethods<TFieldValues extends FieldValues = FieldValues> = {
   control: Control<TFieldValues>;
 };
 
-export type UseField<TFieldValues extends FieldValues = FieldValues> = {
+export type UseControllerMethods<
+  TFieldValues extends FieldValues = FieldValues
+> = {
   field: ControllerRenderProps<TFieldValues>;
-  state: {
-    inValid: boolean;
-    isTouched: boolean;
-    isDirty: boolean;
-  };
+  meta: InputState;
 };
