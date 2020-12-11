@@ -95,6 +95,7 @@ export type FieldNamesMarkedBoolean<TFieldValues extends FieldValues> = DeepMap<
 
 export type FormStateProxy<TFieldValues extends FieldValues = FieldValues> = {
   isDirty: boolean;
+  isValidating: boolean;
   dirtyFields: FieldNamesMarkedBoolean<TFieldValues>;
   touched: FieldNamesMarkedBoolean<TFieldValues>;
   isSubmitting: boolean;
@@ -111,6 +112,7 @@ export type FormState<TFieldValues> = {
   submitCount: number;
   touched: FieldNamesMarkedBoolean<TFieldValues>;
   isSubmitting: boolean;
+  isValidating: boolean;
   isValid: boolean;
   errors: FieldErrors<TFieldValues>;
 };
