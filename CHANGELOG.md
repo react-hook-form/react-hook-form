@@ -29,7 +29,7 @@ import { useController } from 'react-hook-form';
 function Input({ control, name }) {
   const {
     field: { ref, ...inputProps },
-    state: { invalid, isTouched, isDirty },
+    meta: { invalid, isTouched, isDirty },
   } = useController({
     name,
     control,
