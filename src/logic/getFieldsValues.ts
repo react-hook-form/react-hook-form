@@ -5,7 +5,6 @@ import { deepMerge } from '../utils/deepMerge';
 import isUndefined from '../utils/isUndefined';
 import { InternalFieldName, FieldValues, FieldRefs } from '../types';
 import transformToNestObject from './transformToNestObject';
-import cloneObject from '../utils/cloneObject';
 
 export default <TFieldValues extends FieldValues>(
   fieldsRef: React.MutableRefObject<FieldRefs<TFieldValues>>,
@@ -18,7 +17,6 @@ export default <TFieldValues extends FieldValues>(
     | { nest: boolean },
 ) => {
   const output = {} as TFieldValues;
-  cloneObject(fieldsRef.current);
 
   for (const name in fieldsRef.current) {
     if (
