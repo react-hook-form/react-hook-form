@@ -1,10 +1,14 @@
 import isPrimitive from './isPrimitive';
+import isHTMLElement from './isHTMLElement';
 import isWeb from './isWeb';
 
 export default function cloneObject<T extends unknown>(data: T): T {
   let copy: any;
 
-  if (isPrimitive(data) || (isWeb && data instanceof File)) {
+  if (
+    isPrimitive(data) ||
+    (isWeb && (data instanceof File || isHTMLElement(data)))
+  ) {
     return data;
   }
 
