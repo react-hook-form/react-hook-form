@@ -506,8 +506,9 @@ export function useForm<
 
   const renderWatchedInputs = <T extends FieldName<FieldValues>>(
     name: T,
-    found = true,
   ): boolean => {
+    let found = true;
+
     if (!isEmptyObject(useWatchFieldsRef.current)) {
       for (const key in useWatchFieldsRef.current) {
         if (
