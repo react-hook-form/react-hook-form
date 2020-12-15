@@ -55,7 +55,7 @@ const mapIds = <
   }
 
   return values.map((value: Partial<TFieldArrayValues>) => ({
-    [keyName]: generateId(),
+    [keyName]: value[keyName] || generateId(),
     ...value,
   }));
 };
@@ -133,8 +133,14 @@ export const useFieldArray = <
   );
 
   const getCurrentFieldsValues = () =>
-    get(getValues(), name, getFieldArrayValue()).map(
-      (item: Partial<TFieldArrayValues>, index: number) => ({
+    mapIds<TFieldArrayValues, TKeyName>(
+      get(getValues(), name, getFieldArrayValue()),
+      keyName,
+    ).map(
+      (
+        item: Partial<ArrayField<TFieldArrayValues, TKeyName>>,
+        index: number,
+      ) => ({
         ...getFieldArrayValue()[index],
         ...item,
       }),
