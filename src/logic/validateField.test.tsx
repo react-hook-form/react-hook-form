@@ -998,6 +998,23 @@ describe('validateField', () => {
         { current: {} },
       ),
     ).toEqual({});
+
+    expect(
+      await validateField(
+        {} as any,
+        false,
+        {
+          ref: {
+            type: 'text',
+            name: 'test',
+            value: null,
+          },
+          required: false,
+          pattern: emailRegex,
+        },
+        { current: {} },
+      ),
+    ).toEqual({});
   });
 
   it('should validate for custom validation', async () => {
