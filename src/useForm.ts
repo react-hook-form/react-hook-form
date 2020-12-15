@@ -464,9 +464,11 @@ export function useForm<
         setInternalValues(name, value, config);
 
         if (fieldArrayNamesRef.current.has(name)) {
-          fieldArrayDefaultValuesRef.current[name] = value;
-          resetFieldArrayFunctionRef.current[name]({
-            [name]: value,
+          const parentName = getNodeParentName(name) || name;
+          set(fieldArrayDefaultValuesRef.current, name, value);
+
+          resetFieldArrayFunctionRef.current[parentName]({
+            [parentName]: fieldArrayDefaultValuesRef.current[parentName],
           } as UnpackNestedValue<DeepPartial<TFieldValues>>);
 
           if (

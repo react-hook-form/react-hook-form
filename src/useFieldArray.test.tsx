@@ -910,6 +910,89 @@ describe('useFieldArray', () => {
         expect(formState.isDirty).toBeFalsy();
       },
     );
+
+    it('should set nested field array correctly', () => {
+      function NestedArray({
+        control,
+        name,
+      }: {
+        control: Control;
+        name: string;
+      }) {
+        const { fields } = useFieldArray({ name, control });
+
+        return (
+          <ul>
+            {fields.map((item, index) => (
+              <Controller
+                key={item.id}
+                as={<input aria-label={'name'} />}
+                name={`${name}[${index}].name`}
+                control={control}
+                defaultValue={item.name}
+              />
+            ))}
+          </ul>
+        );
+      }
+
+      function Component() {
+        const { register, control, setValue } = useForm({
+          defaultValues: {
+            test: [
+              {
+                firstName: 'Bill',
+                lastName: 'Luo',
+                keyValue: [{ name: '1a' }, { name: '1c' }],
+              },
+            ],
+          },
+        });
+        const { fields } = useFieldArray({
+          control,
+          name: 'test',
+        });
+
+        return (
+          <form>
+            {fields.map((item, index) => {
+              return (
+                <div key={item.id}>
+                  <input
+                    name={`test[${index}].firstName`}
+                    aria-label={`test[${index}].firstName`}
+                    defaultValue={`${item.firstName}`}
+                    ref={register()}
+                  />
+                  <NestedArray
+                    control={control}
+                    name={`test[${index}].keyValue`}
+                  />
+                </div>
+              );
+            })}
+            <button
+              type="button"
+              onClick={() => setValue('test[0].keyValue', [{ name: '2a' }])}
+            >
+              setValue
+            </button>
+          </form>
+        );
+      }
+
+      render(<Component />);
+
+      fireEvent.click(screen.getByRole('button', { name: 'setValue' }));
+
+      const input = screen.getByLabelText('name') as HTMLInputElement;
+
+      expect(input.value).toEqual('2a');
+
+      expect(
+        (screen.getByLabelText('test[0].firstName') as HTMLInputElement).value,
+      ).toEqual('Bill');
+    });
   });
 
   describe('append', () => {
