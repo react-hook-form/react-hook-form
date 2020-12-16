@@ -468,7 +468,7 @@ export function useForm<
           set(fieldArrayDefaultValuesRef.current, name, value);
 
           resetFieldArrayFunctionRef.current[parentName]({
-            [parentName]: fieldArrayDefaultValuesRef.current[parentName],
+            [parentName]: get(fieldArrayDefaultValuesRef.current, parentName),
           } as UnpackNestedValue<DeepPartial<TFieldValues>>);
 
           if (
