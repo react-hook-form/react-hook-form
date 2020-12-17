@@ -14,7 +14,8 @@ export const FormProvider = <TFieldValues extends FieldValues>({
   children,
   ...props
 }: FormProviderProps<TFieldValues>) => (
-  <FormContext.Provider value={{ ...props } as UseFormMethods}>
+  // @ts-ignore
+  <FormContext.Provider value={props as UseFormMethods}>
     {children}
   </FormContext.Provider>
 );

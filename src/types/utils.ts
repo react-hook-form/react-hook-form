@@ -65,3 +65,42 @@ export type IsFlatObject<T extends object> = Extract<
 > extends never
   ? true
   : false;
+
+type UnionToIntersection<U> = (U extends any ? (k: U) => void : never) extends (
+  k: infer I,
+) => void
+  ? I
+  : never;
+
+type LastOf<T> = UnionToIntersection<
+  T extends any ? () => T : never
+> extends () => infer R
+  ? R
+  : never;
+
+type Push<T extends any[], V> = [...T, V];
+
+export type TuplifyUnion<
+  T,
+  L = LastOf<T>,
+  N = [T] extends [never] ? true : false
+> = true extends N ? [] : Push<TuplifyUnion<Exclude<T, L>>, L>;
+
+type ArrayElementType<A> = A extends readonly (infer T)[] ? T : never;
+
+type Indexes = 0 | 1 | 2;
+
+export type PathFinder<
+  TFieldValues,
+  Key extends keyof TFieldValues = keyof TFieldValues
+> = Key extends string
+  ? TFieldValues[Key] extends NestedValue
+    ? Key
+    : TFieldValues[Key] extends (string | boolean | number | symbol)[]
+    ? `${Key}.${Indexes}`
+    : TFieldValues[Key] extends object[]
+    ? `${Key}.${Indexes}.${PathFinder<ArrayElementType<TFieldValues[Key]>>}`
+    : TFieldValues[Key] extends Record<string, Primitive>
+    ? `${Key}.${PathFinder<TFieldValues[Key]>}`
+    : Key
+  : never;

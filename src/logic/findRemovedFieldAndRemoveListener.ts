@@ -1,5 +1,4 @@
 import * as React from 'react';
-import removeAllEventListeners from './removeAllEventListeners';
 import getFieldValue from './getFieldValue';
 import isRadioInput from '../utils/isRadioInput';
 import set from '../utils/set';
@@ -17,7 +16,6 @@ export default function findRemovedFieldAndRemoveListener<
   TFieldValues extends FieldValues
 >(
   fieldsRef: React.MutableRefObject<FieldRefs<TFieldValues>>,
-  handleChange: ({ type, target }: Event) => Promise<void | boolean>,
   field: Field,
   shallowFieldsStateRef: React.MutableRefObject<FieldValues>,
   shouldUnregister?: boolean,
@@ -47,7 +45,6 @@ export default function findRemovedFieldAndRemoveListener<
           (isDetached(option.ref) && isSameRef(option, option.ref)) ||
           forceDelete
         ) {
-          removeAllEventListeners(option.ref, handleChange);
           unset(fieldRef.options, `[${index}]`);
         }
       });
@@ -59,8 +56,6 @@ export default function findRemovedFieldAndRemoveListener<
       delete fieldsRef.current[name];
     }
   } else if ((isDetached(ref) && isSameRef(fieldRef, ref)) || forceDelete) {
-    removeAllEventListeners(ref, handleChange);
-
     delete fieldsRef.current[name];
   }
 }

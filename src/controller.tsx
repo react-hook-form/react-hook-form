@@ -1,3 +1,4 @@
+// @ts-nocheck
 import * as React from 'react';
 import { useController } from './useController';
 import { ControllerProps, FieldValues } from './types';

@@ -1,5 +1,4 @@
 import * as React from 'react';
-import attachEventListeners from './logic/attachEventListeners';
 import transformToNestObject from './logic/transformToNestObject';
 import focusOnErrorField from './logic/focusOnErrorField';
 import findRemovedFieldAndRemoveListener from './logic/findRemovedFieldAndRemoveListener';
@@ -16,7 +15,6 @@ import isNameInFieldArray from './logic/isNameInFieldArray';
 import isCheckBoxInput from './utils/isCheckBoxInput';
 import isEmptyObject from './utils/isEmptyObject';
 import isRadioInput from './utils/isRadioInput';
-import isSelectInput from './utils/isSelectInput';
 import isFileInput from './utils/isFileInput';
 import onDomRemove from './utils/onDomRemove';
 import isObject from './utils/isObject';
@@ -72,6 +70,9 @@ import {
   ResetFieldArrayFunctionRef,
   UseWatchRenderFunctions,
   RecordInternalNameSet,
+  RegisterProps,
+  PathFinder,
+  TuplifyUnion,
 } from './types';
 
 const isWindowUndefined = typeof window === UNDEFINED;
@@ -711,7 +712,6 @@ export function useForm<
     (field: Field, forceDelete?: boolean) =>
       findRemovedFieldAndRemoveListener(
         fieldsRef,
-        handleChangeRef.current!,
         field,
         shallowFieldsStateRef,
         shouldUnregister,
@@ -887,16 +887,18 @@ export function useForm<
   }
 
   function unregister(
-    name: FieldName<TFieldValues> | FieldName<TFieldValues>[],
+    name: FieldName<TFieldValues> | TuplifyUnion<FieldName<TFieldValues>>,
   ): void {
     for (const fieldName of Array.isArray(name) ? name : [name]) {
+      // @ts-ignore
       removeFieldEventListenerAndRef(fieldsRef.current[fieldName], true);
     }
   }
 
-  function registerFieldRef<TFieldElement extends FieldElement<TFieldValues>>(
-    ref: TFieldElement & Ref,
-    options: RegisterOptions | null = {},
+  function registerFieldRef<TFieldValues extends FieldValues = FieldValues>(
+    name: PathFinder<TFieldValues>,
+    ref: any,
+    options: RegisterOptions = {},
   ): ((name: InternalFieldName<TFieldValues>) => void) | void {
     if (process.env.NODE_ENV !== 'production') {
       if (!ref.name) {
@@ -923,7 +925,7 @@ export function useForm<
       }
     }
 
-    const { name, type, value } = ref;
+    const { type, value } = ref;
     const fieldRefAndValidationOptions = {
       ref,
       ...options,
@@ -946,6 +948,7 @@ export function useForm<
           })
         : compareRef(field.ref))
     ) {
+      // @ts-ignore
       fields[name] = {
         ...field,
         ...options,
@@ -972,6 +975,7 @@ export function useForm<
       field = fieldRefAndValidationOptions;
     }
 
+    // @ts-ignore
     fields[name] = field;
 
     const isEmptyUnmountFields = isUndefined(
@@ -988,7 +992,8 @@ export function useForm<
       isEmptyDefaultValue = isUndefined(defaultValue);
 
       if (!isEmptyDefaultValue && !isFieldArray) {
-        setFieldValue(name as FieldName<TFieldValues>, defaultValue);
+        // @ts-ignore
+        setFieldValue(name, defaultValue);
       }
     }
 
@@ -1029,50 +1034,22 @@ export function useForm<
       );
       !isFieldArray && unset(formStateRef.current.dirtyFields, name);
     }
-
-    if (type) {
-      attachEventListeners(
-        isRadioOrCheckbox && field.options
-          ? field.options[field.options.length - 1]
-          : field,
-        isRadioOrCheckbox || isSelectInput(ref),
-        handleChangeRef.current,
-      );
-    }
   }
 
   function register<TFieldElement extends FieldElement<TFieldValues>>(
+    name: PathFinder<TFieldValues>,
     options?: RegisterOptions,
-  ): (ref: (TFieldElement & Ref) | null) => void;
-  function register(
-    name: FieldName<TFieldValues>,
-    options?: RegisterOptions,
-  ): void;
-  function register<TFieldElement extends FieldElement<TFieldValues>>(
-    ref: (TFieldElement & Ref) | null,
-    options?: RegisterOptions,
-  ): void;
-  function register<TFieldElement extends FieldElement<TFieldValues>>(
-    refOrRegisterOptions?:
-      | FieldName<TFieldValues>
-      | RegisterOptions
-      | (TFieldElement & Ref)
-      | null,
-    options?: RegisterOptions,
-  ): ((ref: (TFieldElement & Ref) | null) => void) | void {
+  ): RegisterProps {
     if (!isWindowUndefined) {
-      if (isString(refOrRegisterOptions)) {
-        registerFieldRef({ name: refOrRegisterOptions }, options);
-      } else if (
-        isObject(refOrRegisterOptions) &&
-        'name' in refOrRegisterOptions
-      ) {
-        registerFieldRef(refOrRegisterOptions, options);
-      } else {
-        return (ref: (TFieldElement & Ref) | null) =>
-          ref && registerFieldRef(ref, refOrRegisterOptions);
-      }
+      return {
+        onChange: handleChangeRef.current,
+        onBlur: handleChangeRef.current,
+        ref: (ref: (TFieldElement & Ref) | null) =>
+          registerFieldRef(name, ref, options),
+      };
     }
+
+    return {};
   }
 
   const handleSubmit = React.useCallback(
@@ -1332,6 +1309,7 @@ export function useForm<
 
   return {
     watch,
+    // @ts-ignore
     control,
     handleSubmit,
     reset: React.useCallback(reset, []),

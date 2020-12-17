@@ -1,15 +1,13 @@
 import * as React from 'react';
-import { LiteralToPrimitive, DeepPartial, DeepMap } from './utils';
+import { LiteralToPrimitive, DeepPartial, DeepMap, PathFinder } from './utils';
 import { Resolver } from './resolvers';
 import {
   Field,
-  FieldElement,
   FieldName,
   FieldRefs,
   FieldValue,
   FieldValues,
   InternalFieldName,
-  Ref,
 } from './fields';
 import { ErrorOption, FieldErrors } from './errors';
 import { RegisterOptions } from './validator';
@@ -199,15 +197,19 @@ export type InputState = {
   isDirty: boolean;
 };
 
+export type RegisterProps =
+  | {
+      onChange: React.ChangeEventHandler;
+      onBlur: React.ChangeEventHandler;
+      ref: React.Ref<any>;
+    }
+  | {};
+
 export type UseFormMethods<TFieldValues extends FieldValues = FieldValues> = {
-  register<TFieldElement extends FieldElement<TFieldValues>>(
-    rules?: RegisterOptions,
-  ): (ref: (TFieldElement & Ref) | null) => void;
-  register(name: FieldName<TFieldValues>, rules?: RegisterOptions): void;
-  register<TFieldElement extends FieldElement<TFieldValues>>(
-    ref: (TFieldElement & Ref) | null,
-    rules?: RegisterOptions,
-  ): void;
+  register(
+    name: PathFinder<TFieldValues>,
+    options?: RegisterOptions,
+  ): RegisterProps;
   unregister(name: FieldName<TFieldValues> | FieldName<TFieldValues>[]): void;
   watch(): UnpackNestedValue<TFieldValues>;
   watch<TFieldName extends string, TFieldValue>(
