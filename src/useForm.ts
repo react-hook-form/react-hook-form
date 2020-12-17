@@ -51,7 +51,6 @@ import {
   FormStateProxy,
   ReadFormState,
   Ref,
-  HandleChange,
   RadioOrCheckboxOption,
   OmitResetState,
   SetValueConfig,
@@ -112,7 +111,6 @@ export function useForm<
   >({});
   const isUnMount = React.useRef(false);
   const isWatchAllRef = React.useRef(false);
-  const handleChangeRef = React.useRef<HandleChange>();
   const shallowFieldsStateRef = React.useRef({});
   const resetFieldArrayFunctionRef = React.useRef<
     ResetFieldArrayFunctionRef<TFieldValues>
@@ -538,105 +536,98 @@ export function useForm<
     renderWatchedInputs(name);
   }
 
-  handleChangeRef.current = handleChangeRef.current
-    ? handleChangeRef.current
-    : async ({ type, target }: Event): Promise<void | boolean> => {
-        let name = (target as Ref)!.name;
-        const field = fieldsRef.current[name];
-        let error;
-        let isValid;
+  const handleChange = React.useCallback(
+    async ({ type, target }: Event): Promise<void | boolean> => {
+      let name = (target as Ref)!.name;
+      const field = fieldsRef.current[name];
+      let error;
+      let isValid;
 
-        if (field) {
-          const isBlurEvent = type === EVENTS.BLUR;
-          const shouldSkipValidation = skipValidation({
-            isBlurEvent,
-            isReValidateOnChange,
-            isReValidateOnBlur,
-            isTouched: !!get(formStateRef.current.touched, name),
-            isSubmitted: formStateRef.current.isSubmitted,
-            ...modeRef.current,
-          });
-          let state = updateAndGetDirtyState(name, false);
-          let shouldRender =
-            !isEmptyObject(state) ||
-            isFieldWatched(name as FieldName<TFieldValues>);
+      if (field) {
+        const isBlurEvent = type === EVENTS.BLUR;
+        const shouldSkipValidation = skipValidation({
+          isBlurEvent,
+          isReValidateOnChange,
+          isReValidateOnBlur,
+          isTouched: !!get(formStateRef.current.touched, name),
+          isSubmitted: formStateRef.current.isSubmitted,
+          ...modeRef.current,
+        });
+        let state = updateAndGetDirtyState(name, false);
+        let shouldRender =
+          !isEmptyObject(state) ||
+          isFieldWatched(name as FieldName<TFieldValues>);
 
-          if (
-            isBlurEvent &&
-            !get(formStateRef.current.touched, name) &&
-            readFormStateRef.current.touched
-          ) {
-            set(formStateRef.current.touched, name, true);
-            state = {
-              ...state,
-              touched: formStateRef.current.touched,
-            };
-          }
+        if (
+          isBlurEvent &&
+          !get(formStateRef.current.touched, name) &&
+          readFormStateRef.current.touched
+        ) {
+          set(formStateRef.current.touched, name, true);
+          state = {
+            ...state,
+            touched: formStateRef.current.touched,
+          };
+        }
 
-          if (!shouldUnregister && isCheckBoxInput(target as Ref)) {
-            set(
-              shallowFieldsStateRef.current,
-              name,
-              getFieldValue(fieldsRef, name),
-            );
-          }
+        if (!shouldUnregister && isCheckBoxInput(target as Ref)) {
+          set(
+            shallowFieldsStateRef.current,
+            name,
+            getFieldValue(fieldsRef, name),
+          );
+        }
 
-          if (shouldSkipValidation) {
-            renderWatchedInputs(name);
-            return (
-              (!isEmptyObject(state) ||
-                (shouldRender && isEmptyObject(state))) &&
-              updateFormState(state)
-            );
-          }
+        if (shouldSkipValidation) {
+          renderWatchedInputs(name);
+          return (
+            (!isEmptyObject(state) || (shouldRender && isEmptyObject(state))) &&
+            updateFormState(state)
+          );
+        }
 
-          if (resolverRef.current) {
-            const { errors } = await resolverRef.current(
-              getValues(),
-              contextRef.current,
-              isValidateAllFieldCriteria,
-            );
-            const previousFormIsValid = formStateRef.current.isValid;
-            error = get(errors, name);
+        if (resolverRef.current) {
+          const { errors } = await resolverRef.current(
+            getValues(),
+            contextRef.current,
+            isValidateAllFieldCriteria,
+          );
+          const previousFormIsValid = formStateRef.current.isValid;
+          error = get(errors, name);
+
+          if (isCheckBoxInput(target as Ref) && !error && resolverRef.current) {
+            const parentNodeName = getNodeParentName(name);
+            const currentError = get(errors, parentNodeName, {});
+            currentError.type && currentError.message && (error = currentError);
 
             if (
-              isCheckBoxInput(target as Ref) &&
-              !error &&
-              resolverRef.current
+              parentNodeName &&
+              (currentError || get(formStateRef.current.errors, parentNodeName))
             ) {
-              const parentNodeName = getNodeParentName(name);
-              const currentError = get(errors, parentNodeName, {});
-              currentError.type &&
-                currentError.message &&
-                (error = currentError);
-
-              if (
-                parentNodeName &&
-                (currentError ||
-                  get(formStateRef.current.errors, parentNodeName))
-              ) {
-                name = parentNodeName;
-              }
+              name = parentNodeName;
             }
-
-            isValid = isEmptyObject(errors);
-
-            previousFormIsValid !== isValid && (shouldRender = true);
-          } else {
-            error = (
-              await validateField<TFieldValues>(
-                fieldsRef,
-                isValidateAllFieldCriteria,
-                field,
-                shallowFieldsStateRef,
-              )
-            )[name];
           }
 
-          renderWatchedInputs(name);
-          shouldRenderBaseOnError(name, error, shouldRender, state, isValid);
+          isValid = isEmptyObject(errors);
+
+          previousFormIsValid !== isValid && (shouldRender = true);
+        } else {
+          error = (
+            await validateField<TFieldValues>(
+              fieldsRef,
+              isValidateAllFieldCriteria,
+              field,
+              shallowFieldsStateRef,
+            )
+          )[name];
         }
-      };
+
+        renderWatchedInputs(name);
+        shouldRenderBaseOnError(name, error, shouldRender, state, isValid);
+      }
+    },
+    [],
+  );
 
   function setFieldArrayDefaultValues<T extends FieldValues>(data: T): T {
     if (!shouldUnregister) {
@@ -1035,8 +1026,8 @@ export function useForm<
   ): RegisterProps {
     if (!isWindowUndefined) {
       return {
-        onChange: handleChangeRef.current,
-        onBlur: handleChangeRef.current,
+        onChange: handleChange,
+        onBlur: handleChange,
         ref: (ref: HTMLInputElement | null) =>
           ref && registerFieldRef(name, ref, options),
       };
