@@ -48,7 +48,6 @@ import {
   UseFormOptions,
   RegisterOptions,
   SubmitHandler,
-  FieldElement,
   FormStateProxy,
   ReadFormState,
   Ref,
@@ -898,30 +897,22 @@ export function useForm<
   }
 
   function registerFieldRef<TFieldValues extends FieldValues = FieldValues>(
-    name: PathFinder<TFieldValues>,
-    ref: any,
+    name: string,
+    ref: HTMLInputElement,
     options: RegisterOptions = {},
   ): ((name: InternalFieldName<TFieldValues>) => void) | void {
     if (process.env.NODE_ENV !== 'production') {
-      if (!ref.name) {
-        return console.warn(
-          '📋 Field is missing `name` attribute',
-          ref,
-          `https://react-hook-form.com/api#useForm`,
-        );
-      }
-
       if (
-        fieldArrayNamesRef.current.has(ref.name.split(/\[\d+\]$/)[0]) &&
+        fieldArrayNamesRef.current.has(name.split(/\[\d+\]$/)[0]) &&
         !RegExp(
-          `^${ref.name.split(/\[\d+\]$/)[0]}[\\d+].\\w+`
+          `^${name.split(/\[\d+\]$/)[0]}[\\d+].\\w+`
             .replace(/\[/g, '\\[')
             .replace(/\]/g, '\\]'),
-        ).test(ref.name)
+        ).test(name)
       ) {
         return console.warn(
           '📋 `name` prop should be in object shape: name="test[index].name"',
-          ref,
+          name,
           'https://react-hook-form.com/api#useFieldArray',
         );
       }
@@ -1038,7 +1029,7 @@ export function useForm<
     }
   }
 
-  function register<TFieldElement extends FieldElement<TFieldValues>>(
+  function register(
     name: PathFinder<TFieldValues>,
     options?: RegisterOptions,
   ): RegisterProps {
@@ -1046,8 +1037,8 @@ export function useForm<
       return {
         onChange: handleChangeRef.current,
         onBlur: handleChangeRef.current,
-        ref: (ref: (TFieldElement & Ref) | null) =>
-          registerFieldRef(name, ref, options),
+        ref: (ref: HTMLInputElement | null) =>
+          ref && registerFieldRef(name, ref, options),
       };
     }
 
