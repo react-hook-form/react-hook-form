@@ -559,7 +559,7 @@ export function useForm<
           let state = updateAndGetDirtyState(name, false);
           let shouldRender =
             !isEmptyObject(state) ||
-            isFieldWatched(name as FieldName<TFieldValues>);
+            (!isBlurEvent && isFieldWatched(name as FieldName<TFieldValues>));
 
           if (
             isBlurEvent &&
@@ -582,7 +582,7 @@ export function useForm<
           }
 
           if (shouldSkipValidation) {
-            renderWatchedInputs(name);
+            !isBlurEvent && renderWatchedInputs(name);
             return (
               (!isEmptyObject(state) ||
                 (shouldRender && isEmptyObject(state))) &&
@@ -633,7 +633,7 @@ export function useForm<
             )[name];
           }
 
-          renderWatchedInputs(name);
+          !isBlurEvent && renderWatchedInputs(name);
           shouldRenderBaseOnError(name, error, shouldRender, state, isValid);
         }
       };
