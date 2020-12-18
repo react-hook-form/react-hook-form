@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { UseFormMethods, FieldValues, FormProviderProps } from './types';
 
-const FormContext = React.createContext<UseFormMethods | null>(null);
+export const FormContext = React.createContext<UseFormMethods | null>(null);
 
 FormContext.displayName = 'RHFContext';
 
