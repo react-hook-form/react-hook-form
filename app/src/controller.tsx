@@ -40,7 +40,7 @@ type Form = {
   RadioGroup: string;
 };
 
-const PureReactSelect = React.memo(ReactSelect)
+const PureReactSelect = React.memo(ReactSelect);
 
 export default function Field(props: any) {
   const methods = useForm<Form>({
@@ -49,10 +49,10 @@ export default function Field(props: any) {
   });
   const { handleSubmit, errors, reset, control } = methods;
 
-  const [, setRerender] = React.useState(0)
+  const [, setRerender] = React.useState(0);
   renderCount++;
 
-  const rerender = () => setRerender(Math.random())
+  const rerender = () => setRerender(Math.random());
 
   return (
     <form onSubmit={handleSubmit(() => {})}>
@@ -63,7 +63,7 @@ export default function Field(props: any) {
             name="Checkbox"
             control={control}
             rules={{ required: true }}
-            render={(props) => (
+            render={({ field: props }) => (
               <Checkbox
                 {...props}
                 onChange={(e) => props.onChange(e.target.checked)}
@@ -107,7 +107,7 @@ export default function Field(props: any) {
         <section id="input-textField">
           <label>MUI TextField</label>
           <Controller
-            as={<TextField />}
+            render={({ field }) => <TextField {...field} />}
             name="TextField"
             control={control}
             rules={{ required: true }}
@@ -139,7 +139,7 @@ export default function Field(props: any) {
           <Controller
             name="switch"
             rules={{ required: true }}
-            render={(props) => (
+            render={({ field: props }) => (
               <Switch
                 {...props}
                 onChange={(e) => props.onChange(e.target.checked)}
@@ -168,7 +168,9 @@ export default function Field(props: any) {
 
       <span id="renderCount">{renderCount}</span>
 
-      <button type="button" onClick={rerender}>Rerender</button>
+      <button type="button" onClick={rerender}>
+        Rerender
+      </button>
 
       <button
         type="button"
