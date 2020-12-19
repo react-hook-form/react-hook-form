@@ -1258,7 +1258,11 @@ describe('useForm', () => {
           const { result } = renderHook(() =>
             useForm<{
               test: string[];
-            }>(),
+            }>({
+              defaultValues: {
+                test: ['', '', ''],
+              },
+            }),
           );
 
           (result.current.formState as any)[property];

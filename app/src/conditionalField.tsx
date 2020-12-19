@@ -8,7 +8,16 @@ const ConditionalField: React.FC = () => {
     register,
     handleSubmit,
     watch,
-    formState: { errors, ...rest },
+    formState: {
+      dirtyFields,
+      isSubmitted,
+      submitCount,
+      touched,
+      isDirty,
+      isSubmitting,
+      isSubmitSuccessful,
+      isValid,
+    },
   } = useForm<{
     selectNumber: string;
     firstName: string;
@@ -79,9 +88,14 @@ const ConditionalField: React.FC = () => {
       <button id="submit">Submit</button>
       <div id="state">
         {JSON.stringify({
-          ...rest,
-          touched: Object.keys(rest.touched),
-          dirtyFields: Object.keys(rest.dirtyFields),
+          isSubmitted,
+          submitCount,
+          isDirty,
+          isSubmitting,
+          isSubmitSuccessful,
+          isValid,
+          touched: Object.keys(touched),
+          dirtyFields: Object.keys(dirtyFields),
         })}
       </div>
       <div id="result">{JSON.stringify(result)}</div>

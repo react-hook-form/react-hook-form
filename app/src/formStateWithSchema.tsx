@@ -17,17 +17,33 @@ const FormStateWithSchema: React.FC = (props: any) => {
   const {
     register,
     handleSubmit,
-    formState: { errors, ...rest },
+    formState: {
+      dirtyFields,
+      isSubmitted,
+      submitCount,
+      touched,
+      isDirty,
+      isSubmitting,
+      isSubmitSuccessful,
+      isValid,
+    },
     reset,
   } = useForm<{
     firstName: string;
     lastName: string;
     select: string;
     radio: string;
-    checkbox: string;
+    checkbox: boolean;
   }>({
     resolver: yupResolver(validationSchema),
     mode: props.match.params.mode,
+    defaultValues: {
+      firstName: '',
+      lastName: '',
+      select: '',
+      checkbox: false,
+      radio: '',
+    },
   });
   const onSubmit = () => {};
 
@@ -55,9 +71,14 @@ const FormStateWithSchema: React.FC = (props: any) => {
       </button>
       <div id="state">
         {JSON.stringify({
-          ...rest,
-          touched: Object.keys(rest.touched),
-          dirtyFields: Object.keys(rest.dirtyFields),
+          isSubmitted,
+          submitCount,
+          isDirty,
+          isSubmitting,
+          isSubmitSuccessful,
+          isValid,
+          touched: Object.keys(touched),
+          dirtyFields: Object.keys(dirtyFields),
         })}
       </div>
       <div id="renderCount">{renderCounter}</div>

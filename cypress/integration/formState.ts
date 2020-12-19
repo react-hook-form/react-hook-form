@@ -331,7 +331,7 @@ describe('form state', () => {
         isValid: false,
       }),
     );
-    cy.get('select[name="select"]').select('test');
+    cy.get('select[name="select"]').select('');
     cy.get('#state').should(($state) =>
       expect(JSON.parse($state.text())).to.be.deep.equal({
         dirtyFields: [],
@@ -436,7 +436,7 @@ describe('form state', () => {
       }),
     );
 
-    cy.get('select[name="select"]').select('test');
+    cy.get('select[name="select"]').select('');
     cy.get('#state').should(($state) =>
       expect(JSON.parse($state.text())).to.be.deep.equal({
         dirtyFields: ['radio'],
