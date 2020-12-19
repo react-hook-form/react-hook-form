@@ -4,7 +4,6 @@ import {
   FieldValues,
   FieldName,
   Control,
-  Assign,
   InputState,
 } from './';
 import { RegisterOptions } from './validator';
@@ -14,16 +13,6 @@ export type FormProviderProps<
 > = {
   children: React.ReactNode;
 } & UseFormMethods<TFieldValues>;
-
-type AsProps<TAs> = TAs extends undefined
-  ? {}
-  : TAs extends React.ReactElement
-  ? Record<string, any>
-  : TAs extends React.ComponentType<infer P>
-  ? P
-  : TAs extends keyof JSX.IntrinsicElements
-  ? JSX.IntrinsicElements[TAs]
-  : never;
 
 export type ControllerRenderProps<
   TFieldValues extends FieldValues = FieldValues
@@ -48,28 +37,12 @@ export type UseControllerOptions<
   control?: Control<TFieldValues>;
 };
 
-export type ControllerProps<
-  TAs extends
-    | React.ReactElement
-    | React.ComponentType<any>
-    | 'input'
-    | 'select'
-    | 'textarea',
-  TFieldValues extends FieldValues = FieldValues
-> = Assign<
-  (
-    | {
-        as: TAs;
-        render?: undefined;
-      }
-    | {
-        as?: undefined;
-        render: (
-          field: ControllerRenderProps<TFieldValues>,
-          state: InputState,
-        ) => React.ReactElement;
-      }
-  ) &
-    UseControllerOptions,
-  AsProps<TAs>
->;
+export type ControllerProps<TFieldValues extends FieldValues = FieldValues> = {
+  render: ({
+    field,
+    meta,
+  }: {
+    field: ControllerRenderProps<TFieldValues>;
+    meta: InputState;
+  }) => React.ReactElement;
+} & UseControllerOptions;

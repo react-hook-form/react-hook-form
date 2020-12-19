@@ -21,13 +21,13 @@ export default function AutoUnregister() {
           <Controller
             defaultValue=""
             control={control}
-            as={<input name="test" />}
+            render={({ field }) => <input {...field} />}
             name="test"
           />
           <section id="input-ReactSelect">
             <Controller
-              render={(props) => (
-                <ReactSelect isClearable options={options} {...props} />
+              render={({ field}) => (
+                <ReactSelect isClearable options={options} {...field} />
               )}
               name="ReactSelect"
               control={control}

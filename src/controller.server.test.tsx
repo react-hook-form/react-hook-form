@@ -16,7 +16,7 @@ describe('Controller with SSR', () => {
         <Controller
           defaultValue="default"
           name="test"
-          as={<input />}
+          render={({ field }) => <input {...field} />}
           control={control}
         />
       );
