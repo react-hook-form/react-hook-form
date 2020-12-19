@@ -77,8 +77,8 @@ export default function Field(props: any) {
         <section id="input-radio-group">
           <label>Radio Group</label>
           <Controller
-            render={(props) => (
-              <RadioGroup aria-label="gender" {...props} name="gender1">
+            render={({ field }) => (
+              <RadioGroup aria-label="gender" {...field} name="gender1">
                 <FormControlLabel
                   value="female"
                   control={<Radio />}
@@ -119,8 +119,8 @@ export default function Field(props: any) {
         <section id="input-select">
           <label>MUI Select</label>
           <Controller
-            render={(props) => (
-              <Select {...props}>
+            render={({ field }) => (
+              <Select {...field}>
                 <MenuItem value={10}>Ten</MenuItem>
                 <MenuItem value={20}>Twenty</MenuItem>
                 <MenuItem value={30}>Thirty</MenuItem>
@@ -154,8 +154,8 @@ export default function Field(props: any) {
         <section id="input-ReactSelect">
           <label>React Select</label>
           <Controller
-            render={(props) => (
-              <PureReactSelect isClearable options={options} {...props} />
+            render={({ field }) => (
+              <PureReactSelect isClearable options={options} {...field} />
             )}
             name="ReactSelect"
             control={control}
