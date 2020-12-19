@@ -22,9 +22,18 @@ const FormState = (props: {
     lastName: string;
     select: string;
     radio: string;
-    checkbox: string;
+    checkbox: boolean;
+    ['checkbox-checked']: boolean;
   }>({
     mode: props.match.params.mode,
+    defaultValues: {
+      firstName: '',
+      lastName: '',
+      select: '',
+      checkbox: false,
+      radio: '',
+      'checkbox-checked': true,
+    },
   });
 
   renderCounter++;
@@ -49,6 +58,7 @@ const FormState = (props: {
         })}
       </div>
       <select name="select" ref={register} defaultValue="test">
+        <option value="">Select</option>
         <option value="test">test</option>
         <option value="test1">test1</option>
         <option value="test2">test3</option>
