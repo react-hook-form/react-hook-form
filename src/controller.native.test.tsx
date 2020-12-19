@@ -25,7 +25,7 @@ describe('Controller with React Native', () => {
             rules={{ minLength: 5 }}
             control={control}
             defaultValue=""
-            render={({ onChange, onBlur, value }) => (
+            render={({ field: { onChange, onBlur, value } }) => (
               <TextInput
                 testID={'input'}
                 onChange={onChange}

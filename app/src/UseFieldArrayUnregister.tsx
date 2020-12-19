@@ -25,7 +25,11 @@ const ConditionField = <T extends any[]>({
   });
 
   return output[index]?.name === 'bill' ? (
-    <input ref={control.register()} name={`data[${index}].conditional`} defaultValue={output[index].conditional} />
+    <input
+      ref={control.register()}
+      name={`data[${index}].conditional`}
+      defaultValue={output[index].conditional}
+    />
   ) : null;
 };
 
@@ -84,7 +88,9 @@ const UseFieldArrayUnregister: React.FC = () => {
               />
             ) : (
               <Controller
-                render={(props) => <input id={`field${index}`} {...props} />}
+                render={({ field }) => (
+                  <input id={`field${index}`} {...field} />
+                )}
                 control={control}
                 rules={{
                   required: 'This is required',

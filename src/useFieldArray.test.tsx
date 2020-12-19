@@ -926,7 +926,7 @@ describe('useFieldArray', () => {
             {fields.map((item, index) => (
               <Controller
                 key={item.id}
-                as={<input aria-label={'name'} />}
+                render={({ field }) => <input {...field} aria-label={'name'} />}
                 name={`${name}[${index}].name`}
                 control={control}
                 defaultValue={item.name}
@@ -2612,7 +2612,7 @@ describe('useFieldArray', () => {
                 return (
                   <li key={item.id}>
                     <Controller
-                      as={<input />}
+                      render={({ field }) => <input {...field} />}
                       name={`test[${index}].firstName`}
                       control={control}
                       defaultValue={item.firstName} // make sure to set up defaultValue

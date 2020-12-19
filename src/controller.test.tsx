@@ -7,7 +7,6 @@ import {
   screen,
 } from '@testing-library/react';
 import { Controller } from './controller';
-import { FormProvider } from './useFormContext';
 import { useFieldArray } from './useFieldArray';
 import { useForm } from './useForm';
 
@@ -27,7 +26,7 @@ describe('Controller', () => {
         <Controller
           defaultValue=""
           name="test"
-          as={'input' as const}
+          render={({ field }) => <input {...field} />}
           control={control}
         />
       );
@@ -48,7 +47,7 @@ describe('Controller', () => {
         <Controller
           defaultValue=""
           name="test"
-          as={<input />}
+          render={({ field }) => <input {...field} />}
           control={control}
         />
       );
@@ -62,19 +61,6 @@ describe('Controller', () => {
     expect(input?.name).toBe('test');
   });
 
-  it('should be assigned method.control variable if wrap with FormProvider', () => {
-    const Component = () => {
-      const methods = useForm();
-      return (
-        <FormProvider {...methods}>
-          <Controller defaultValue="" name="test" as={'input' as const} />
-        </FormProvider>
-      );
-    };
-
-    expect(() => render(<Component />)).not.toThrow();
-  });
-
   it('should reset value', async () => {
     const Component = () => {
       const { reset, control } = useForm();
@@ -84,7 +70,7 @@ describe('Controller', () => {
           <Controller
             defaultValue="default"
             name="test"
-            as={<input />}
+            render={({ field }) => <input {...field} />}
             control={control}
           />
           <button type="button" onClick={() => reset()}>
@@ -117,7 +103,7 @@ describe('Controller', () => {
         <Controller
           defaultValue=""
           name="test"
-          as={<input />}
+          render={({ field }) => <input {...field} />}
           control={control}
         />
       );
@@ -135,7 +121,7 @@ describe('Controller', () => {
         <Controller
           defaultValue=""
           name="test"
-          as={<input />}
+          render={({ field }) => <input {...field} />}
           control={control}
         />
       );
@@ -158,7 +144,7 @@ describe('Controller', () => {
           <Controller
             defaultValue=""
             name="test"
-            as={<input />}
+            render={({ field }) => <input {...field} />}
             control={control}
           />
           {/**
@@ -191,7 +177,7 @@ describe('Controller', () => {
         <Controller
           defaultValue="test"
           name="test"
-          as={<input />}
+          render={({ field }) => <input {...field} />}
           control={control}
           rules={{ required: true }}
         />
@@ -220,7 +206,7 @@ describe('Controller', () => {
         <Controller
           defaultValue=""
           name="test"
-          as={<input />}
+          render={({ field }) => <input {...field} />}
           control={control}
           rules={{ required: true }}
         />
@@ -249,7 +235,7 @@ describe('Controller', () => {
         <Controller
           defaultValue=""
           name="test"
-          as={<input />}
+          render={({ field }) => <input {...field} />}
           control={control}
         />
       );
@@ -275,7 +261,7 @@ describe('Controller', () => {
           <Controller
             defaultValue=""
             name="test"
-            as={<input />}
+            render={({ field }) => <input {...field} />}
             control={control}
             rules={{ required: true }}
           />
@@ -328,7 +314,7 @@ describe('Controller', () => {
           <Controller
             defaultValue=""
             name="test"
-            render={(props) => {
+            render={({ field: props }) => {
               return <input {...props} />;
             }}
             control={control}
@@ -363,7 +349,7 @@ describe('Controller', () => {
           <Controller
             defaultValue=""
             name="test"
-            render={({ onBlur, value }) => {
+            render={({ field: { onBlur, value } }) => {
               return (
                 <Input placeholder="test" {...{ onChange, onBlur, value }} />
               );
@@ -394,7 +380,7 @@ describe('Controller', () => {
           <Controller
             defaultValue=""
             name="test"
-            render={({ onChange, value }) => {
+            render={({ field: { onChange, value } }) => {
               return <Input {...{ onChange, onBlur, value }} />;
             }}
             control={control}
@@ -410,23 +396,6 @@ describe('Controller', () => {
     expect(onBlur).toBeCalled();
   });
 
-  it('should be null if as and render props are not given', () => {
-    jest.spyOn(console, 'warn').mockImplementation(() => {});
-
-    const Component = () => {
-      const { control } = useForm();
-      // @ts-ignore
-      return <Controller defaultValue="" name="test" control={control} />;
-    };
-
-    const { container } = render(<Component />);
-
-    expect(container).toEqual(document.createElement('div'));
-
-    // @ts-ignore
-    console.warn.mockRestore();
-  });
-
   it('should update rules when rules gets updated', () => {
     let fieldsRef: any;
     const Component = ({ required = true }: { required?: boolean }) => {
@@ -436,7 +405,7 @@ describe('Controller', () => {
         <Controller
           defaultValue=""
           name="test"
-          as={<input />}
+          render={({ field }) => <input {...field} />}
           rules={{ required }}
           control={control}
         />
@@ -456,7 +425,7 @@ describe('Controller', () => {
         <Controller
           defaultValue=""
           name="test"
-          as={<input />}
+          render={({ field }) => <input {...field} />}
           control={control}
         />
       );
@@ -490,7 +459,7 @@ describe('Controller', () => {
               key={field.id}
               defaultValue=""
               name={`test[${i}].value`}
-              as={<input />}
+              render={({ field }) => <input {...field} />}
               control={control}
             />
           ))}
@@ -525,7 +494,13 @@ describe('Controller', () => {
       process.env.NODE_ENV = 'development';
 
       const Component = () => {
-        return <Controller as={'input' as const} name="test" defaultValue="" />;
+        return (
+          <Controller
+            render={({ field }) => <input {...field} />}
+            name="test"
+            defaultValue=""
+          />
+        );
       };
 
       expect(() => render(<Component />)).toThrow(
@@ -545,7 +520,13 @@ describe('Controller', () => {
       process.env.NODE_ENV = 'production';
 
       const Component = () => {
-        return <Controller as={'input' as const} name="test" defaultValue="" />;
+        return (
+          <Controller
+            render={({ field }) => <input {...field} />}
+            name="test"
+            defaultValue=""
+          />
+        );
       };
 
       expect(() => render(<Component />)).toThrow(
@@ -568,7 +549,7 @@ describe('Controller', () => {
         const { control } = useForm();
         return (
           <Controller
-            as={'input' as const}
+            render={({ field }) => <input {...field} />}
             name=""
             control={control}
             defaultValue=""
@@ -596,7 +577,7 @@ describe('Controller', () => {
         const { control } = useForm();
         return (
           <Controller
-            as={'input' as const}
+            render={({ field }) => <input {...field} />}
             name=""
             control={control}
             defaultValue=""
@@ -623,7 +604,11 @@ describe('Controller', () => {
       const Component = () => {
         const { control } = useForm();
         return (
-          <Controller as={'input' as const} name="test" control={control} />
+          <Controller
+            render={({ field }) => <input {...field} />}
+            name="test"
+            control={control}
+          />
         );
       };
 
@@ -646,7 +631,11 @@ describe('Controller', () => {
       const Component = () => {
         const { control } = useForm();
         return (
-          <Controller as={'input' as const} name="test" control={control} />
+          <Controller
+            render={({ field }) => <input {...field} />}
+            name="test"
+            control={control}
+          />
         );
       };
 
@@ -671,8 +660,7 @@ describe('Controller', () => {
         return (
           // @ts-ignore
           <Controller
-            as={'input' as const}
-            render={() => <input />}
+            render={({ field }) => <input {...field} />}
             defaultValue=""
             name="test"
             control={control}
@@ -699,8 +687,12 @@ describe('Controller', () => {
       const Component = () => {
         const { control } = useForm();
         return (
-          // @ts-ignore
-          <Controller defaultValue="" name="test" control={control} />
+          <Controller
+            render={({ field }) => <input {...field} />}
+            defaultValue=""
+            name="test"
+            control={control}
+          />
         );
       };
 
@@ -737,7 +729,7 @@ describe('Controller', () => {
               return (
                 <Controller
                   name={`test[${index}].data`}
-                  as={'input' as const}
+                  render={({ field }) => <input {...field} />}
                   control={control}
                   key={id}
                 />
@@ -778,8 +770,8 @@ describe('Controller', () => {
           <form>
             {fields.map(({ id }, index) => {
               return (
-                // @ts-ignore
                 <Controller
+                  render={({ field }) => <input {...field} />}
                   name={`test[${index}].data`}
                   control={control}
                   key={id}
@@ -814,7 +806,7 @@ describe('Controller', () => {
           {fields.map((field, i) => (
             <div key={field.id}>
               <Controller
-                as="input"
+                render={({ field }) => <input {...field} />}
                 name={`test[${i}].value`}
                 defaultValue={''}
                 control={control}
@@ -873,7 +865,7 @@ describe('Controller', () => {
             control={control}
             defaultValue=""
             rules={{ required: true }}
-            render={(props) => <input {...props} />}
+            render={({ field }) => <input {...field} />}
           />
         </form>
       );
@@ -898,37 +890,6 @@ describe('Controller', () => {
     expect(currentErrors.test).toBeUndefined();
   });
 
-  it('does not trigger rerender for memoized inputs', () => {
-    let renderCount = 0;
-
-    const MemoizedInput = React.memo(
-      React.forwardRef((_props: any, _ref) => {
-        renderCount++;
-        return null;
-      }),
-    );
-
-    const Component = () => {
-      const { control } = useForm();
-      return (
-        <Controller
-          defaultValue=""
-          name="test"
-          render={(props) => <MemoizedInput {...props} />}
-          control={control}
-        />
-      );
-    };
-
-    const { rerender } = render(<Component />);
-
-    expect(renderCount).toEqual(1);
-
-    rerender(<Component />);
-
-    expect(renderCount).toEqual(1);
-  });
-
   it('should show invalid input when there is an error', async () => {
     const Component = () => {
       const { control } = useForm({
@@ -939,7 +900,7 @@ describe('Controller', () => {
         <Controller
           defaultValue=""
           name="test"
-          render={(props, meta) => (
+          render={({ field: props, meta }) => (
             <>
               <input {...props} />
               {meta.invalid && <p>Input is invalid.</p>}
@@ -980,7 +941,7 @@ describe('Controller', () => {
         <Controller
           defaultValue=""
           name="test"
-          render={(props, meta) => (
+          render={({ field: props, meta }) => (
             <>
               <input {...props} />
               {meta.isTouched && <p>Input is touched.</p>}
@@ -1011,7 +972,7 @@ describe('Controller', () => {
         <Controller
           defaultValue=""
           name="test"
-          render={(props, meta) => (
+          render={({ field: props, meta }) => (
             <>
               <input {...props} />
               {meta.isTouched && <p>Input is dirty.</p>}
@@ -1049,7 +1010,7 @@ describe('Controller', () => {
         <Controller
           defaultValue=""
           name="test"
-          render={(props, meta) => (
+          render={({ field: props, meta }) => (
             <>
               <input {...props} />
               {meta.isTouched && <p>Input is dirty.</p>}
