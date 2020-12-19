@@ -107,9 +107,6 @@ export function useForm<
   const defaultValuesRef = React.useRef<DefaultValues<TFieldValues>>(
     defaultValues,
   );
-  const defaultValuesAtRenderRef = React.useRef<
-    Partial<DefaultValues<TFieldValues>>
-  >({});
   const isUnMount = React.useRef(false);
   const isWatchAllRef = React.useRef(false);
   const handleChangeRef = React.useRef<HandleChange>();
@@ -271,12 +268,7 @@ export function useForm<
 
         name && data && set(formValues, name, data);
 
-        return !deepEqual(
-          formValues,
-          isEmptyObject(defaultValuesRef.current)
-            ? defaultValuesAtRenderRef.current
-            : defaultValuesRef.current,
-        );
+        return !deepEqual(formValues, defaultValuesRef.current);
       }
 
       return false;
@@ -296,7 +288,7 @@ export function useForm<
         readFormStateRef.current.dirtyFields
       ) {
         const isFieldDirty = !deepEqual(
-          get(defaultValuesAtRenderRef.current, name),
+          get(defaultValuesRef.current, name),
           getFieldValue(fieldsRef, name, shallowFieldsStateRef),
         );
         const isDirtyFieldExist = get(formStateRef.current.dirtyFields, name);
@@ -743,7 +735,6 @@ export function useForm<
         removeFieldEventListener(field, forceDelete);
 
         if (shouldUnregister && !compact(field.options || []).length) {
-          unset(defaultValuesAtRenderRef.current, field.ref.name);
           unset(validFieldsRef.current, field.ref.name);
           unset(fieldsWithValidationRef.current, field.ref.name);
           unset(formStateRef.current.errors, field.ref.name);
@@ -1015,20 +1006,7 @@ export function useForm<
       }
     }
 
-    if (
-      !defaultValuesAtRenderRef.current[name] &&
-      !(isFieldArray && isEmptyDefaultValue)
-    ) {
-      const fieldValue = getFieldValue(fieldsRef, name, shallowFieldsStateRef);
-      set(
-        defaultValuesAtRenderRef.current,
-        name,
-        isEmptyDefaultValue
-          ? isObject(fieldValue)
-            ? { ...fieldValue }
-            : fieldValue
-          : defaultValue,
-      );
+    if (!(isFieldArray && isEmptyDefaultValue)) {
       !isFieldArray && unset(formStateRef.current.dirtyFields, name);
     }
 
@@ -1180,7 +1158,6 @@ export function useForm<
       fieldsWithValidationRef.current = {};
     }
 
-    defaultValuesAtRenderRef.current = {};
     fieldArrayDefaultValuesRef.current = {};
     watchFieldsRef.current = new Set();
     isWatchAllRef.current = false;
