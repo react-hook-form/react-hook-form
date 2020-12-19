@@ -281,7 +281,7 @@ describe('form state', () => {
     cy.get('#renderCount').contains('16');
   });
 
-  it.only('should reset dirty value when inputs reset back to default with onSubmit mode', () => {
+  it('should reset dirty value when inputs reset back to default with onSubmit mode', () => {
     cy.visit('http://localhost:3000/formState/onSubmit');
     cy.get('input[name="firstName"]').type('test');
     cy.get('input[name="firstName"]').blur();
