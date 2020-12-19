@@ -8,7 +8,16 @@ const FormStateWithNestedFields: React.FC = (props: any) => {
   const {
     register,
     handleSubmit,
-    formState: { errors, ...rest },
+    formState: {
+      dirtyFields,
+      isSubmitted,
+      submitCount,
+      touched,
+      isDirty,
+      isSubmitting,
+      isSubmitSuccessful,
+      isValid,
+    },
     reset,
   } = useForm<{
     [topLevelKey: string]: {
@@ -16,6 +25,16 @@ const FormStateWithNestedFields: React.FC = (props: any) => {
     };
   }>({
     mode: props.match.params.mode,
+    defaultValues: {
+      left: {
+        1: '',
+        2: '',
+      },
+      right: {
+        1: '',
+        2: '',
+      },
+    },
   });
 
   renderCounter++;
@@ -52,14 +71,19 @@ const FormStateWithNestedFields: React.FC = (props: any) => {
       </div>
       <div id="state">
         {JSON.stringify({
-          ...rest,
-          touched: Object.keys(rest.touched).flatMap((topLevelKey) =>
-            Object.keys(rest.touched[topLevelKey] || {}).map(
+          isDirty,
+          isSubmitted,
+          submitCount,
+          isSubmitting,
+          isSubmitSuccessful,
+          isValid,
+          touched: Object.keys(touched).flatMap((topLevelKey) =>
+            Object.keys(touched[topLevelKey] || {}).map(
               (nestedKey) => `${topLevelKey}.${nestedKey}`,
             ),
           ),
-          dirtyFields: Object.keys(rest.dirtyFields).flatMap((topLevelKey) =>
-            Object.keys(rest.dirtyFields[topLevelKey] || {}).map(
+          dirtyFields: Object.keys(dirtyFields).flatMap((topLevelKey) =>
+            Object.keys(dirtyFields[topLevelKey] || {}).map(
               (nestedKey) => `${topLevelKey}.${nestedKey}`,
             ),
           ),
