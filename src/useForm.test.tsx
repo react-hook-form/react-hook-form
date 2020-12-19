@@ -1251,7 +1251,13 @@ describe('useForm', () => {
       ])(
         'should be dirty when %s is defined when shouldDirty is true with array fields',
         (property, values, dirtyFields) => {
-          const { result } = renderHook(() => useForm());
+          const { result } = renderHook(() =>
+            useForm({
+              defaultValues: {
+                test: ['', '', ''],
+              },
+            }),
+          );
 
           (result.current.formState as any)[property];
           result.current.formState.isDirty;

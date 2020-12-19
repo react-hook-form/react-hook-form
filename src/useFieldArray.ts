@@ -33,29 +33,32 @@ const mapIds = <
 >(
   values: Partial<TFieldArrayValues>[] = [],
   keyName: TKeyName,
+  skipWarn?: boolean,
 ): Partial<ArrayField<TFieldArrayValues, TKeyName>>[] => {
   if (process.env.NODE_ENV !== 'production') {
-    for (const value of values) {
-      if (typeof value === 'object') {
-        if (keyName in value) {
+    if (!skipWarn) {
+      for (const value of values) {
+        if (typeof value === 'object') {
+          if (keyName in value) {
+            console.warn(
+              `📋 useFieldArray fieldValues contain the keyName \`${keyName}\` which is reserved for use by useFieldArray. https://react-hook-form.com/api#useFieldArray`,
+            );
+
+            break;
+          }
+        } else {
           console.warn(
-            `📋 useFieldArray fieldValues contain the keyName \`${keyName}\` which is reserved for use by useFieldArray. https://react-hook-form.com/api#useFieldArray`,
+            `📋 useFieldArray input's name should be in object shape instead of flat array. https://react-hook-form.com/api#useFieldArray`,
           );
 
           break;
         }
-      } else {
-        console.warn(
-          `📋 useFieldArray input's name should be in object shape instead of flat array. https://react-hook-form.com/api#useFieldArray`,
-        );
-
-        break;
       }
     }
   }
 
   return values.map((value: Partial<TFieldArrayValues>) => ({
-    [keyName]: generateId(),
+    [keyName]: value[keyName] || generateId(),
     ...value,
   }));
 };
@@ -133,11 +136,15 @@ export const useFieldArray = <
   );
 
   const getCurrentFieldsValues = () =>
-    get(getValues(), name, getFieldArrayValue()).map(
-      (item: Partial<TFieldArrayValues>, index: number) => ({
-        ...getFieldArrayValue()[index],
-        ...item,
-      }),
+    mapIds<TFieldArrayValues, TKeyName>(
+      get(getValues(), name, getFieldArrayValue()).map(
+        (item: Partial<TFieldArrayValues>, index: number) => ({
+          ...getFieldArrayValue()[index],
+          ...item,
+        }),
+      ),
+      keyName,
+      true,
     );
 
   fieldArrayNamesRef.current.add(name);
@@ -168,8 +175,10 @@ export const useFieldArray = <
 
   const resetFields = () => {
     for (const key in fieldsRef.current) {
-      isMatchFieldArrayName(key, name) &&
+      if (isMatchFieldArrayName(key, name)) {
         removeFieldEventListener(fieldsRef.current[key] as Field, true);
+        delete fieldsRef.current[key];
+      }
     }
   };
 

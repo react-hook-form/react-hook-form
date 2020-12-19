@@ -1,5 +1,46 @@
 # Changelog
 
+## [6.12.0] - 2020-12-12
+
+### Changed
+
+- When invoking `reset({ value })` value will be shallow clone value object which you have supplied instead of deepClone.
+
+```tsx
+// ❌ avoid the following with deep nested default values
+const defaultValues = { object: { deepNest: { file: new File() } } };
+useForm({ defaultValues });
+reset(defaultValues); // share the same reference
+
+// ✅ it's safer with the following, as we only doing shallow clone with defaultValues
+useForm({ deepNest: { file: new File() } });
+reset({ deepNest: { file: new File() } });
+```
+
+### Added
+
+- New custom hook `useController`: This custom hook is what powers Controller, and shares the same props and methods as Controller. It's useful to create reusable Controlled input, while Controller is the flexible option to drop into your page or form.
+
+```tsx
+import React from 'react';
+import { TextField } from '@material-ui/core';
+import { useController } from 'react-hook-form';
+
+function Input({ control, name }) {
+  const {
+    field: { ref, ...inputProps },
+    meta: { invalid, isTouched, isDirty },
+  } = useController({
+    name,
+    control,
+    rules: { required: true },
+    defaultValue: '',
+  });
+
+  return <TextField {...inputProps} inputRef={ref} />;
+}
+```
+
 ## [6.12.0] - 2020-11-28
 
 ### Changed
@@ -12,6 +53,7 @@ useWatch({
   defaultValue: 'data', // this value will only show on the inital render
 });
 ```
+
 - TS: name changed from `ValidationRules` to `RegisterOptions` due to valueAs functionality included as `register` function.
 
 ### Added
