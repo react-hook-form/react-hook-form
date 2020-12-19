@@ -124,6 +124,7 @@ export function useForm<
   const isValidateAllFieldCriteria = criteriaMode === VALIDATION_MODE.all;
   const [formState, setFormState] = React.useState<FormState<TFieldValues>>({
     isDirty: false,
+    isValidating: false,
     dirtyFields: {},
     isSubmitted: false,
     submitCount: 0,
@@ -137,6 +138,7 @@ export function useForm<
     isDirty: !isProxyEnabled,
     dirtyFields: !isProxyEnabled,
     touched: !isProxyEnabled || isOnTouch,
+    isValidating: !isProxyEnabled,
     isSubmitting: !isProxyEnabled,
     isValid: !isProxyEnabled,
   });
@@ -168,6 +170,12 @@ export function useForm<
     },
     [],
   );
+
+  const updateIsValidating = () =>
+    readFormStateRef.current.isValidating &&
+    updateFormState({
+      isValidating: true,
+    });
 
   const shouldRenderBaseOnError = React.useCallback(
     (
@@ -210,11 +218,13 @@ export function useForm<
 
       if (
         (shouldReRender && !isNullOrUndefined(shouldRender)) ||
-        !isEmptyObject(state)
+        !isEmptyObject(state) ||
+        readFormStateRef.current.isValidating
       ) {
         updateFormState({
           ...state,
           ...(resolverRef.current ? { isValid: !!isValid } : {}),
+          isValidating: false,
         });
       }
     },
@@ -375,6 +385,7 @@ export function useForm<
 
         updateFormState({
           isValid: isEmptyObject(errors),
+          isValidating: false,
         });
 
         return isInputsValid;
@@ -400,6 +411,8 @@ export function useForm<
       name?: FieldName<TFieldValues> | FieldName<TFieldValues>[],
     ): Promise<boolean> => {
       const fields = name || Object.keys(fieldsRef.current);
+
+      updateIsValidating();
 
       if (resolverRef.current) {
         return executeSchemaOrResolverValidation(fields);
@@ -581,6 +594,8 @@ export function useForm<
               updateFormState(state)
             );
           }
+
+          updateIsValidating();
 
           if (resolverRef.current) {
             const { errors } = await resolverRef.current(
