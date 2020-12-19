@@ -16,6 +16,16 @@ const FormStateWithNestedFields: React.FC = (props: any) => {
     };
   }>({
     mode: props.match.params.mode,
+    defaultValues: {
+      left: {
+        1: '',
+        2: '',
+      },
+      right: {
+        1: '',
+        2: '',
+      },
+    },
   });
 
   renderCounter++;
