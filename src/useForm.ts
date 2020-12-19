@@ -16,7 +16,6 @@ import isCheckBoxInput from './utils/isCheckBoxInput';
 import isEmptyObject from './utils/isEmptyObject';
 import isRadioInput from './utils/isRadioInput';
 import isFileInput from './utils/isFileInput';
-import onDomRemove from './utils/onDomRemove';
 import isObject from './utils/isObject';
 import { getPath } from './utils/getPath';
 import isPrimitive from './utils/isPrimitive';
@@ -142,7 +141,6 @@ export function useForm<
     isValid: !isProxyEnabled,
   });
   const formStateRef = React.useRef(formState);
-  const observerRef = React.useRef<MutationObserver | undefined>();
   const {
     isOnBlur: isReValidateOnBlur,
     isOnChange: isReValidateOnChange,
@@ -1197,15 +1195,10 @@ export function useForm<
 
   React.useEffect(() => {
     resolver && readFormStateRef.current.isValid && validateResolver();
-    observerRef.current =
-      observerRef.current || !isWeb
-        ? observerRef.current
-        : onDomRemove(fieldsRef, removeFieldEventListenerAndRef);
   }, [removeFieldEventListenerAndRef, defaultValuesRef.current]);
 
   React.useEffect(
     () => () => {
-      observerRef.current && observerRef.current.disconnect();
       isUnMount.current = true;
 
       if (process.env.NODE_ENV !== 'production') {
