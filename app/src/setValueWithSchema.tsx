@@ -12,7 +12,12 @@ const validationSchema = yup.object().shape({
 });
 
 const SetValueWithSchema: React.FC = () => {
-  const { register, setValue, handleSubmit, errors } = useForm<{
+  const {
+    register,
+    setValue,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<{
     firstName: string;
     lastName: string;
     age: string;

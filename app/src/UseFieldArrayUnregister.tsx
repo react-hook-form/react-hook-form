@@ -40,8 +40,7 @@ const UseFieldArrayUnregister: React.FC = () => {
     register,
     setValue,
     getValues,
-    formState: { isDirty, touched, dirtyFields },
-    errors,
+    formState: { isDirty, touched, dirtyFields, errors },
   } = useForm<{
     data: { name: string }[];
   }>({

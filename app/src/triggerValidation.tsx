@@ -4,7 +4,11 @@ import { useForm } from 'react-hook-form';
 let renderCounter = 0;
 
 function TriggerValidation() {
-  const { register, trigger, errors } = useForm<{
+  const {
+    register,
+    trigger,
+    formState: { errors },
+  } = useForm<{
     test: string;
     test1: string;
     test2: string;

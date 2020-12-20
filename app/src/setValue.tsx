@@ -4,7 +4,12 @@ import { useForm, NestedValue } from 'react-hook-form';
 let renderCounter = 0;
 
 const SetValue: React.FC = () => {
-  const { register, setValue, handleSubmit, errors } = useForm<{
+  const {
+    register,
+    setValue,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<{
     firstName: string;
     lastName: string;
     age: string;
