@@ -171,7 +171,7 @@ describe('Controller', () => {
     const Component = () => {
       const { control, ...rest } = useForm({ mode: 'onChange' });
 
-      errors = rest.errors;
+      errors = rest.formState.errors;
 
       return (
         <Controller
@@ -200,7 +200,7 @@ describe('Controller', () => {
     const Component = () => {
       const { control, ...rest } = useForm({ mode: 'onBlur' });
 
-      errors = rest.errors;
+      errors = rest.formState.errors;
 
       return (
         <Controller
@@ -252,7 +252,11 @@ describe('Controller', () => {
 
   it('should call trigger method when revalidationMode is onBlur with blur event', async () => {
     const Component = () => {
-      const { handleSubmit, control, errors } = useForm({
+      const {
+        handleSubmit,
+        control,
+        formState: { errors },
+      } = useForm({
         reValidateMode: 'onBlur',
       });
 
@@ -852,7 +856,10 @@ describe('Controller', () => {
   it('should validate input when input is touched and with onTouched mode', async () => {
     let currentErrors: any = {};
     const Component = () => {
-      const { errors, control } = useForm<{ test: string }>({
+      const {
+        formState: { errors },
+        control,
+      } = useForm<{ test: string }>({
         mode: 'onTouched',
       });
 

@@ -40,7 +40,11 @@ describe('useForm with React Native', () => {
     const callback = jest.fn();
 
     const Component = () => {
-      const { register, handleSubmit, errors } = useForm();
+      const {
+        register,
+        handleSubmit,
+        formState: { errors },
+      } = useForm();
       return (
         <View>
           <TextInput

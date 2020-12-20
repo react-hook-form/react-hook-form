@@ -135,8 +135,7 @@ describe('useFieldArray', () => {
         const {
           register,
           control,
-          errors,
-          formState: { isValid },
+          formState: { isValid, errors },
         } = useForm<{ test: { value: string }[] }>({
           defaultValues: {
             test: [{ value: 'test' }],
@@ -1496,7 +1495,7 @@ describe('useFieldArray', () => {
       const Component = () => {
         const {
           register,
-          errors: tempErrors,
+          formState: { errors: tempErrors },
           handleSubmit,
           control,
         } = useForm();
@@ -2267,7 +2266,7 @@ describe('useFieldArray', () => {
       const Component = () => {
         const {
           register,
-          errors: tempErrors,
+          formState: { errors: tempErrors },
           handleSubmit,
           control,
         } = useForm();
@@ -2362,7 +2361,12 @@ describe('useFieldArray', () => {
       };
       const callback = jest.fn();
       const Component = () => {
-        const { register, errors, handleSubmit, control } = useForm({
+        const {
+          register,
+          formState: { errors },
+          handleSubmit,
+          control,
+        } = useForm({
           defaultValues: {
             test: [{ nested: [{ test: '', key: mockKey }] as any }],
           },
@@ -3003,7 +3007,7 @@ describe('useFieldArray', () => {
           name: 'test',
         });
 
-        errors = rest.errors;
+        errors = rest.formState.errors;
 
         return (
           <form onSubmit={handleSubmit(() => {})}>
@@ -3050,7 +3054,7 @@ describe('useFieldArray', () => {
           name: 'test',
         });
 
-        errors = rest.errors;
+        errors = rest.formState.errors;
 
         return (
           <form onSubmit={handleSubmit(() => {})}>
@@ -3439,7 +3443,7 @@ describe('useFieldArray', () => {
           control,
           name: 'test',
         });
-        errors = rest.errors;
+        errors = rest.formState.errors;
 
         return (
           <form onSubmit={handleSubmit(() => {})}>
@@ -3807,7 +3811,7 @@ describe('useFieldArray', () => {
           control,
           name: 'test',
         });
-        errors = rest.errors;
+        errors = rest.formState.errors;
 
         return (
           <form onSubmit={handleSubmit(() => {})}>

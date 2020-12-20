@@ -242,7 +242,6 @@ export type UseFormMethods<TFieldValues extends FieldValues = FieldValues> = {
   trigger(
     name?: FieldName<TFieldValues> | FieldName<TFieldValues>[],
   ): Promise<boolean>;
-  errors: FieldErrors<TFieldValues>;
   formState: FormState<TFieldValues>;
   reset: (
     values?: UnpackNestedValue<DeepPartial<TFieldValues>>,

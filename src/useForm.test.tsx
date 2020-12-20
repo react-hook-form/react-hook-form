@@ -371,11 +371,11 @@ describe('useForm', () => {
         } as React.SyntheticEvent);
       });
 
-      expect(result.current.errors.test).toBeDefined();
+      expect(result.current.formState.errors.test).toBeDefined();
 
       unmount();
 
-      expect(result.current.errors.test).toBeUndefined();
+      expect(result.current.formState.errors.test).toBeUndefined();
     });
 
     it('should not unregister touched', () => {
@@ -1155,7 +1155,7 @@ describe('useForm', () => {
           }),
         );
 
-        expect(result.current.errors?.test?.message).toBe('min');
+        expect(result.current.formState.errors?.test?.message).toBe('min');
       });
 
       it('should not be called trigger method if config is empty', async () => {
@@ -1175,7 +1175,7 @@ describe('useForm', () => {
 
         result.current.setValue('test', 'abc');
 
-        expect(result.current.errors?.test).toBeUndefined();
+        expect(result.current.formState.errors?.test).toBeUndefined();
       });
 
       it('should be called trigger method if shouldValidate variable is true and field value is array', async () => {
@@ -1198,9 +1198,9 @@ describe('useForm', () => {
           }),
         );
 
-        expect(result.current.errors?.test[0]?.message).toBe('min');
-        expect(result.current.errors?.test[1]?.message).toBe('min');
-        expect(result.current.errors?.test[2]?.message).toBe('min');
+        expect(result.current.formState.errors?.test[0]?.message).toBe('min');
+        expect(result.current.formState.errors?.test[1]?.message).toBe('min');
+        expect(result.current.formState.errors?.test[2]?.message).toBe('min');
       });
 
       it('should not be called trigger method if config is empty and field value is array', async () => {
@@ -1219,7 +1219,7 @@ describe('useForm', () => {
 
         act(() => result.current.setValue('test', ['test', 'test1', 'test2']));
 
-        expect(result.current.errors?.test).toBeUndefined();
+        expect(result.current.formState.errors?.test).toBeUndefined();
       });
     });
 
@@ -1446,7 +1446,11 @@ describe('useForm', () => {
     it('should remove all errors before set new errors when trigger entire form', async () => {
       const Component = () => {
         const [show, setShow] = React.useState(true);
-        const { register, trigger, errors } = useForm<{
+        const {
+          register,
+          trigger,
+          formState: { errors },
+        } = useForm<{
           test: string;
         }>();
 
@@ -1520,8 +1524,8 @@ describe('useForm', () => {
         await result.current.trigger(['test', 'test1'] as any);
       });
 
-      expect(result.current.errors?.test?.message).toBe('required');
-      expect(result.current.errors?.test1?.message).toBe('required');
+      expect(result.current.formState.errors?.test?.message).toBe('required');
+      expect(result.current.formState.errors?.test1?.message).toBe('required');
     });
   });
 
@@ -1553,7 +1557,9 @@ describe('useForm', () => {
       await act(async () => {
         await result.current.trigger('test');
       });
-      expect(result.current.errors).toEqual({ test: { type: 'test' } });
+      expect(result.current.formState.errors).toEqual({
+        test: { type: 'test' },
+      });
     });
 
     it('should return the status of the requested field with single field validation', async () => {
@@ -1588,7 +1594,7 @@ describe('useForm', () => {
         expect(await result.current.trigger('test2')).toBeFalsy(),
       );
 
-      expect(result.current.errors).toEqual({
+      expect(result.current.formState.errors).toEqual({
         test2: {
           type: 'test',
         },
@@ -1624,7 +1630,7 @@ describe('useForm', () => {
         await result.current.trigger('test');
       });
 
-      expect(result.current.errors).toEqual({});
+      expect(result.current.formState.errors).toEqual({});
     });
 
     it('should support array of fields for schema validation', async () => {
@@ -1658,7 +1664,7 @@ describe('useForm', () => {
         await result.current.trigger(['test', 'test1']);
       });
 
-      expect(result.current.errors).toEqual({
+      expect(result.current.formState.errors).toEqual({
         test1: {
           type: 'test1',
         },
@@ -1737,7 +1743,7 @@ describe('useForm', () => {
         await result.current.trigger();
       });
 
-      expect(result.current.errors).toEqual({
+      expect(result.current.formState.errors).toEqual({
         test1: {
           type: 'test1',
         },
@@ -1893,7 +1899,7 @@ describe('useForm', () => {
 
       expect(callback).not.toBeCalled();
       expect(mockFocus).toBeCalled();
-      expect(result.current.errors?.test.type).toBe('required');
+      expect(result.current.formState.errors?.test.type).toBe('required');
     });
 
     it('should not focus if shouldFocusError is false', async () => {
@@ -1915,7 +1921,7 @@ describe('useForm', () => {
 
       expect(callback).not.toBeCalled();
       expect(mockFocus).not.toBeCalled();
-      expect(result.current.errors?.test.type).toBe('required');
+      expect(result.current.formState.errors?.test.type).toBe('required');
     });
 
     it('should submit data from shallowFieldsStateRef when shouldUnRegister is false', async () => {
@@ -2265,7 +2271,7 @@ describe('useForm', () => {
       act(() => {
         result.current.setError('input', input);
       });
-      expect(result.current.errors).toEqual(output);
+      expect(result.current.formState.errors).toEqual(output);
       expect(result.current.formState.isValid).toBeFalsy();
     });
   });
@@ -2283,7 +2289,7 @@ describe('useForm', () => {
 
       act(() => result.current.clearErrors('input'));
 
-      expect(result.current.errors).toEqual({});
+      expect(result.current.formState.errors).toEqual({});
     });
 
     it('should remove nested error', () => {
@@ -2295,16 +2301,21 @@ describe('useForm', () => {
           type: 'test',
         }),
       );
-      expect(result.current.errors.input?.nested).toBeDefined();
+      expect(result.current.formState.errors.input?.nested).toBeDefined();
       act(() => result.current.clearErrors('input.nested'));
-      expect(result.current.errors.input?.nested).toBeUndefined();
+      expect(result.current.formState.errors.input?.nested).toBeUndefined();
     });
 
     it('should remove deep nested error and set it to undefined', async () => {
       let currentErrors = {};
 
       const Component = () => {
-        const { register, errors, trigger, clearErrors } = useForm<{
+        const {
+          register,
+          formState: { errors },
+          trigger,
+          clearErrors,
+        } = useForm<{
           test: { data: string };
         }>();
 
@@ -2406,10 +2417,10 @@ describe('useForm', () => {
           },
         },
       };
-      expect(result.current.errors).toEqual(errors);
+      expect(result.current.formState.errors).toEqual(errors);
 
       act(() => result.current.clearErrors(['input', 'input1', 'nest.data']));
-      expect(result.current.errors).toEqual({
+      expect(result.current.formState.errors).toEqual({
         input2: errors.input2,
         nest: {
           data1: errors.nest.data1,
@@ -2429,7 +2440,7 @@ describe('useForm', () => {
       act(() => result.current.setError('input', error));
       act(() => result.current.setError('input1', error));
       act(() => result.current.setError('input2', error));
-      expect(result.current.errors).toEqual({
+      expect(result.current.formState.errors).toEqual({
         input: {
           ...error,
           ref: undefined,
@@ -2448,7 +2459,7 @@ describe('useForm', () => {
       });
 
       act(() => result.current.clearErrors());
-      expect(result.current.errors).toEqual({});
+      expect(result.current.formState.errors).toEqual({});
     });
 
     it('should prevent the submission if there is a custom error', async () => {
@@ -2617,7 +2628,11 @@ describe('useForm', () => {
   describe('when errors changes', () => {
     it('should display the latest error message', async () => {
       const Form = () => {
-        const { register, setError, errors } = useForm();
+        const {
+          register,
+          setError,
+          formState: { errors },
+        } = useForm();
 
         React.useEffect(() => {
           setError('test', {
@@ -2686,7 +2701,11 @@ describe('useForm', () => {
           resolver,
           mode,
         });
-        const { register, handleSubmit, errors } = internationalMethods;
+        const {
+          register,
+          handleSubmit,
+          formState: { errors },
+        } = internationalMethods;
         methods = internationalMethods;
 
         return (
@@ -2833,7 +2852,11 @@ describe('useForm', () => {
       // check https://github.com/react-hook-form/react-hook-form/issues/2153
       it('should perform correct behavior when reValidateMode is onBlur', async () => {
         const Component = () => {
-          const { register, handleSubmit, errors } = useForm({
+          const {
+            register,
+            handleSubmit,
+            formState: { errors },
+          } = useForm({
             reValidateMode: 'onBlur',
           });
           return (
@@ -3317,7 +3340,10 @@ describe('useForm', () => {
   describe('mode with onTouched', () => {
     it('should validate form only when input is been touched', async () => {
       const Component = () => {
-        const { register, errors } = useForm({
+        const {
+          register,
+          formState: { errors },
+        } = useForm({
           mode: 'onTouched',
         });
 
@@ -3370,7 +3396,11 @@ describe('useForm', () => {
       let errorsObject = {};
 
       const Component = () => {
-        const { errors, register, handleSubmit } = useForm<{
+        const {
+          formState: { errors },
+          register,
+          handleSubmit,
+        } = useForm<{
           checkbox: string[];
         }>({
           mode: 'onChange',

@@ -1327,7 +1327,6 @@ export function useForm<
     reset: React.useCallback(reset, []),
     clearErrors: React.useCallback(clearErrors, []),
     setError: React.useCallback(setError, []),
-    errors: formState.errors,
     ...commonProps,
   };
 }
