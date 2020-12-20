@@ -5,6 +5,7 @@ import transformToNestObject from './logic/transformToNestObject';
 import focusOnErrorField from './logic/focusOnErrorField';
 import findRemovedFieldAndRemoveListener from './logic/findRemovedFieldAndRemoveListener';
 import setFieldArrayDirtyFields from './logic/setFieldArrayDirtyFields';
+import shouldRenderFormState from './logic/shouldRenderFormState';
 import getFieldsValues from './logic/getFieldsValues';
 import getFieldValue from './logic/getFieldValue';
 import isErrorStateChanged from './logic/isErrorStateChanged';
@@ -1233,14 +1234,7 @@ export function useForm<
   React.useEffect(() => {
     const tearDown = formStateSubjectRef.current.subscribe({
       next: (state: Partial<FormState<TFieldValues>> = {}) => {
-        if (
-          isEmptyObject(state) ||
-          Object.keys(state).length >=
-            Object.keys(readFormStateRef.current).length ||
-          Object.keys(state).find(
-            (key) => readFormStateRef.current[key as keyof ReadFormState],
-          )
-        ) {
+        if (shouldRenderFormState(state, readFormStateRef.current)) {
           formStateRef.current = {
             ...formStateRef.current,
             ...state,
