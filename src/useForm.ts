@@ -14,6 +14,8 @@ import skipValidation from './logic/skipValidation';
 import getNodeParentName from './logic/getNodeParentName';
 import deepEqual from './utils/deepEqual';
 import isNameInFieldArray from './logic/isNameInFieldArray';
+import getProxyFormState from './logic/getProxyFormState';
+import isProxyEnabled from './utils/isProxyEnabled';
 import isCheckBoxInput from './utils/isCheckBoxInput';
 import isEmptyObject from './utils/isEmptyObject';
 import isRadioInput from './utils/isRadioInput';
@@ -52,7 +54,6 @@ import {
   RegisterOptions,
   SubmitHandler,
   FieldElement,
-  FormStateProxy,
   ReadFormState,
   Ref,
   HandleChange,
@@ -76,7 +77,6 @@ import {
 } from './types';
 
 const isWindowUndefined = typeof window === UNDEFINED;
-const isProxyEnabled = isWeb ? 'Proxy' in window : typeof Proxy !== UNDEFINED;
 
 export function useForm<
   TFieldValues extends FieldValues = FieldValues,
@@ -93,7 +93,7 @@ export function useForm<
 }: UseFormProps<TFieldValues, TContext> = {}): UseFormMethods<TFieldValues> {
   const fieldsRef = React.useRef<FieldRefs<TFieldValues>>({});
   const formStateSubjectRef = React.useRef(
-    new Subject<Partial<FormState<TFieldValues>>>(),
+    new Subject<Partial<FormState<TFieldValues>> & { global?: boolean }>(),
   );
   const fieldArrayDefaultValuesRef = React.useRef<FieldArrayDefaultValues>({});
   const fieldArrayValuesRef = React.useRef<FieldArrayDefaultValues>({});
@@ -1260,26 +1260,11 @@ export function useForm<
     getValues: React.useCallback(getValues, []),
     register: React.useCallback(register, [defaultValuesRef.current]),
     unregister: React.useCallback(unregister, []),
-    formState: isProxyEnabled
-      ? new Proxy(formState, {
-          get: (obj, prop: keyof FormStateProxy) => {
-            if (process.env.NODE_ENV !== 'production') {
-              if (prop === 'isValid' && isOnSubmit) {
-                console.warn(
-                  '📋 `formState.isValid` is applicable with `onTouched`, `onChange` or `onBlur` mode. https://react-hook-form.com/api#formState',
-                );
-              }
-            }
-
-            if (prop in obj) {
-              readFormStateRef.current[prop] = true;
-              return obj[prop];
-            }
-
-            return undefined;
-          },
-        })
-      : formState,
+    formState: getProxyFormState(
+      isProxyEnabled,
+      formState,
+      readFormStateRef,
+    ) as FormState<TFieldValues>,
   };
 
   const control = React.useMemo(

@@ -1,4 +1,6 @@
 import * as React from 'react';
+import getProxyFormState from './logic/getProxyFormState';
+import isProxyEnabled from './utils/isProxyEnabled';
 import { Control, FieldValues, FormState } from './types';
 
 type UseFormStateProps<TFieldValues> = {
@@ -8,9 +10,9 @@ type UseFormStateProps<TFieldValues> = {
 function useFormState<TFieldValues extends FieldValues = FieldValues>({
   control,
 }: UseFormStateProps<TFieldValues>) {
-  const [formState, updateFormState] = React.useState<
-    Partial<FormState<TFieldValues>>
-  >(control.formState);
+  const [, updateFormState] = React.useState<Partial<FormState<TFieldValues>>>(
+    control.formState,
+  );
 
   React.useEffect(() => {
     control.formStateSubjectRef.current.subscribe({
@@ -23,7 +25,11 @@ function useFormState<TFieldValues extends FieldValues = FieldValues>({
     });
   }, []);
 
-  return formState;
+  return getProxyFormState(
+    isProxyEnabled,
+    control.formState,
+    control.readFormStateRef,
+  );
 }
 
 export { useFormState };
