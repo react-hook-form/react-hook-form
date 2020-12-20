@@ -295,7 +295,7 @@ export const useFieldArray = <
       cleanup(fieldsWithValidationRef.current);
     }
 
-    updateFormState({
+    updateFormState.next({
       isDirty: isFormDirty(name, omitKey(updatedFormValues)),
     });
   };
@@ -317,7 +317,7 @@ export const useFieldArray = <
     ) {
       updateDirtyFieldsWithDefaultValues(updateFormValues);
 
-      updateFormState({
+      updateFormState.next({
         isDirty: true,
         dirtyFields: formStateRef.current.dirtyFields,
       });

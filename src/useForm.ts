@@ -1,4 +1,5 @@
 import * as React from 'react';
+import Subject from './Subject';
 import attachEventListeners from './logic/attachEventListeners';
 import transformToNestObject from './logic/transformToNestObject';
 import focusOnErrorField from './logic/focusOnErrorField';
@@ -91,6 +92,9 @@ export function useForm<
   criteriaMode,
 }: UseFormOptions<TFieldValues, TContext> = {}): UseFormMethods<TFieldValues> {
   const fieldsRef = React.useRef<FieldRefs<TFieldValues>>({});
+  const formStateSubjectRef = React.useRef(
+    new Subject<Partial<FormState<TFieldValues>>>(),
+  );
   const fieldArrayDefaultValuesRef = React.useRef<FieldArrayDefaultValues>({});
   const fieldArrayValuesRef = React.useRef<FieldArrayDefaultValues>({});
   const watchFieldsRef = React.useRef<InternalNameSet<TFieldValues>>(new Set());
@@ -107,7 +111,6 @@ export function useForm<
   const defaultValuesRef = React.useRef<DefaultValues<TFieldValues>>(
     defaultValues,
   );
-  const isUnMount = React.useRef(false);
   const isWatchAllRef = React.useRef(false);
   const handleChangeRef = React.useRef<HandleChange>();
   const shallowFieldsStateRef = React.useRef({});
@@ -158,22 +161,9 @@ export function useForm<
     ? cloneObject(defaultValues)
     : shallowFieldsStateRef.current;
 
-  const updateFormState = React.useCallback(
-    (state: Partial<FormState<TFieldValues>> = {}) => {
-      if (!isUnMount.current) {
-        formStateRef.current = {
-          ...formStateRef.current,
-          ...state,
-        };
-        setFormState(formStateRef.current);
-      }
-    },
-    [],
-  );
-
   const updateIsValidating = () =>
     readFormStateRef.current.isValidating &&
-    updateFormState({
+    formStateSubjectRef.current.next({
       isValidating: true,
     });
 
@@ -221,7 +211,7 @@ export function useForm<
         !isEmptyObject(state) ||
         readFormStateRef.current.isValidating
       ) {
-        updateFormState({
+        formStateSubjectRef.current.next({
           ...state,
           ...(resolverRef.current ? { isValid: !!isValid } : {}),
           isValidating: false,
@@ -319,7 +309,7 @@ export function useForm<
           (readFormStateRef.current.dirtyFields &&
             isDirtyFieldExist !== get(formStateRef.current.dirtyFields, name));
 
-        isChanged && shouldRender && updateFormState(state);
+        isChanged && shouldRender && formStateSubjectRef.current.next(state);
 
         return isChanged ? state : {};
       }
@@ -383,7 +373,7 @@ export function useForm<
           })
           .every(Boolean);
 
-        updateFormState({
+        formStateSubjectRef.current.next({
           isValid: isEmptyObject(errors),
           isValidating: false,
         });
@@ -423,7 +413,7 @@ export function useForm<
         const result = await Promise.all(
           fields.map(async (data) => await executeValidation(data, null)),
         );
-        updateFormState();
+        formStateSubjectRef.current.next();
         return result.every(Boolean);
       }
 
@@ -491,7 +481,7 @@ export function useForm<
               ),
             );
 
-            updateFormState({
+            formStateSubjectRef.current.next({
               isDirty: !deepEqual(
                 { ...getValues(), [name]: value },
                 defaultValuesRef.current,
@@ -539,7 +529,7 @@ export function useForm<
     config?: SetValueConfig,
   ): void {
     setInternalValue(name, value, config || {});
-    isFieldWatched(name) && updateFormState();
+    isFieldWatched(name) && formStateSubjectRef.current.next();
     renderWatchedInputs(name);
   }
 
@@ -591,7 +581,7 @@ export function useForm<
             return (
               (!isEmptyObject(state) ||
                 (shouldRender && isEmptyObject(state))) &&
-              updateFormState(state)
+              formStateSubjectRef.current.next(state)
             );
           }
 
@@ -709,7 +699,7 @@ export function useForm<
       const isValid = isEmptyObject(errors);
 
       formStateRef.current.isValid !== isValid &&
-        updateFormState({
+        formStateSubjectRef.current.next({
           isValid,
         });
     },
@@ -731,11 +721,11 @@ export function useForm<
 
   const updateWatchedValue = React.useCallback((name: string) => {
     if (isWatchAllRef.current) {
-      updateFormState();
+      formStateSubjectRef.current.next();
     } else {
       for (const watchField of watchFieldsRef.current) {
         if (watchField.startsWith(name)) {
-          updateFormState();
+          formStateSubjectRef.current.next();
           break;
         }
       }
@@ -755,7 +745,7 @@ export function useForm<
           unset(formStateRef.current.errors, field.ref.name);
           set(formStateRef.current.dirtyFields, field.ref.name, true);
 
-          updateFormState({
+          formStateSubjectRef.current.next({
             isDirty: isFormDirty(),
           });
 
@@ -779,7 +769,7 @@ export function useForm<
           : unset(formStateRef.current.errors, inputName),
       );
 
-    updateFormState({
+    formStateSubjectRef.current.next({
       errors: name ? formStateRef.current.errors : {},
     });
   }
@@ -792,7 +782,7 @@ export function useForm<
       ref,
     });
 
-    updateFormState({
+    formStateSubjectRef.current.next({
       isValid: false,
     });
 
@@ -1016,7 +1006,8 @@ export function useForm<
             ? set(validFieldsRef.current, name, true)
             : unset(validFieldsRef.current, name);
 
-          previousFormIsValid !== isEmptyObject(error) && updateFormState();
+          previousFormIsValid !== isEmptyObject(error) &&
+            setFormState({ ...formState });
         });
       }
     }
@@ -1090,7 +1081,7 @@ export function useForm<
       );
 
       readFormStateRef.current.isSubmitting &&
-        updateFormState({
+        formStateSubjectRef.current.next({
           isSubmitting: true,
         });
 
@@ -1132,7 +1123,7 @@ export function useForm<
             (name) => name in fieldsRef.current,
           )
         ) {
-          updateFormState({
+          formStateSubjectRef.current.next({
             errors: {},
             isSubmitting: true,
           });
@@ -1148,7 +1139,7 @@ export function useForm<
         }
       } finally {
         formStateRef.current.isSubmitting = false;
-        updateFormState({
+        formStateSubjectRef.current.next({
           isSubmitted: true,
           isSubmitting: false,
           isSubmitSuccessful: isEmptyObject(formStateRef.current.errors),
@@ -1177,7 +1168,7 @@ export function useForm<
     watchFieldsRef.current = new Set();
     isWatchAllRef.current = false;
 
-    updateFormState({
+    formStateSubjectRef.current.next({
       submitCount: submitCount ? formStateRef.current.submitCount : 0,
       isDirty: isDirty ? formStateRef.current.isDirty : false,
       isSubmitted: isSubmitted ? formStateRef.current.isSubmitted : false,
@@ -1236,21 +1227,26 @@ export function useForm<
         : onDomRemove(fieldsRef, removeFieldEventListenerAndRef);
   }, [removeFieldEventListenerAndRef, defaultValuesRef.current]);
 
-  React.useEffect(
-    () => () => {
-      observerRef.current && observerRef.current.disconnect();
-      isUnMount.current = true;
+  React.useEffect(() => {
+    const tearDown = formStateSubjectRef.current.subscribe({
+      next: (state: Partial<FormState<TFieldValues>> = {}) => {
+        formStateRef.current = {
+          ...formStateRef.current,
+          ...state,
+        };
+        setFormState(formStateRef.current);
+      },
+    });
 
-      if (process.env.NODE_ENV !== 'production') {
-        return;
-      }
+    return () => {
+      observerRef.current && observerRef.current.disconnect();
+      tearDown.unsubscribe();
 
       Object.values(fieldsRef.current).forEach((field) =>
         removeFieldEventListenerAndRef(field, true),
       );
-    },
-    [],
-  );
+    };
+  }, []);
 
   if (!resolver && readFormStateRef.current.isValid) {
     formState.isValid =
@@ -1291,7 +1287,7 @@ export function useForm<
       isFormDirty,
       updateWatchedValue,
       shouldUnregister,
-      updateFormState,
+      updateFormState: formStateSubjectRef.current,
       removeFieldEventListener,
       watchInternal,
       mode: modeRef.current,

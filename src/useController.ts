@@ -179,7 +179,7 @@ export function useController<TFieldValues extends FieldValues = FieldValues>({
   const onBlur = React.useCallback(() => {
     if (readFormStateRef.current.touched && !get(touched, name)) {
       set(touched, name, true);
-      updateFormState({
+      updateFormState.next({
         touched,
       });
     }
