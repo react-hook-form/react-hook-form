@@ -104,7 +104,7 @@ export type FormStateProxy<TFieldValues extends FieldValues = FieldValues> = {
   isValid: boolean;
 };
 
-export type ReadFormState = { [K in keyof FormStateProxy]: boolean };
+export type ReadFormState = { [K in keyof FormStateProxy]: boolean | 'all' };
 
 export type FormState<TFieldValues> = {
   isDirty: boolean;
@@ -165,9 +165,7 @@ export type Control<TFieldValues extends FieldValues = FieldValues> = Pick<
   >;
   shallowFieldsStateRef: React.MutableRefObject<Partial<TFieldValues>>;
   fieldArrayNamesRef: React.MutableRefObject<InternalNameSet<TFieldValues>>;
-  readFormStateRef: React.MutableRefObject<
-    { [k in keyof FormStateProxy<TFieldValues>]: boolean }
-  >;
+  readFormStateRef: React.MutableRefObject<ReadFormState>;
   defaultValuesRef: React.MutableRefObject<DefaultValues<TFieldValues>>;
   useWatchFieldsRef: React.MutableRefObject<
     RecordInternalNameSet<TFieldValues>

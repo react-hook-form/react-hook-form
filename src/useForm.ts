@@ -1270,6 +1270,7 @@ export function useForm<
       isProxyEnabled,
       formState,
       readFormStateRef,
+      true,
     ),
   };
 
