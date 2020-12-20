@@ -1234,7 +1234,7 @@ export function useForm<
   React.useEffect(() => {
     const tearDown = formStateSubjectRef.current.subscribe({
       next: (state: Partial<FormState<TFieldValues>> = {}) => {
-        if (shouldRenderFormState(state, readFormStateRef.current)) {
+        if (shouldRenderFormState(state, readFormStateRef.current, true)) {
           formStateRef.current = {
             ...formStateRef.current,
             ...state,
