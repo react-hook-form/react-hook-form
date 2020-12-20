@@ -47,7 +47,12 @@ export default function Field(props: any) {
     defaultValues,
     mode: props.match.params.mode,
   });
-  const { handleSubmit, errors, reset, control } = methods;
+  const {
+    handleSubmit,
+    formState: { errors },
+    reset,
+    control,
+  } = methods;
 
   const [, setRerender] = React.useState(0);
   renderCount++;

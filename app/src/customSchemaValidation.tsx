@@ -41,7 +41,7 @@ const resolver = async (data: any) => {
 };
 
 const BasicSchemaValidation: React.FC = (props: any) => {
-  const { register, handleSubmit, errors } = useForm<{
+  const { register, handleSubmit, formState: { errors } } = useForm<{
     firstName: string;
     lastName: string;
     min: string;
