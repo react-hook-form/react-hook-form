@@ -19,7 +19,7 @@ import cloneObject from './utils/cloneObject';
 import {
   Field,
   FieldValues,
-  UseFieldArrayOptions,
+  UseFieldArrayProps,
   Control,
   ArrayField,
   UnpackNestedValue,
@@ -71,7 +71,7 @@ export const useFieldArray = <
   control,
   name,
   keyName = 'id' as TKeyName,
-}: UseFieldArrayOptions<TKeyName, TControl>): UseFieldArrayMethods<
+}: UseFieldArrayProps<TKeyName, TControl>): UseFieldArrayMethods<
   TFieldArrayValues,
   TKeyName
 > => {
@@ -96,7 +96,7 @@ export const useFieldArray = <
     removeFieldEventListener,
     formStateRef,
     shallowFieldsStateRef,
-    updateFormState,
+    formStateSubjectRef,
     readFormStateRef,
     validFieldsRef,
     fieldsWithValidationRef,
@@ -295,7 +295,7 @@ export const useFieldArray = <
       cleanup(fieldsWithValidationRef.current);
     }
 
-    updateFormState.next({
+    formStateSubjectRef.current.next({
       isDirty: isFormDirty(name, omitKey(updatedFormValues)),
     });
   };
@@ -317,7 +317,7 @@ export const useFieldArray = <
     ) {
       updateDirtyFieldsWithDefaultValues(updateFormValues);
 
-      updateFormState.next({
+      formStateSubjectRef.current.next({
         isDirty: true,
         dirtyFields: formStateRef.current.dirtyFields,
       });

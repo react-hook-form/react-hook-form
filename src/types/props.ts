@@ -24,7 +24,7 @@ export type ControllerRenderProps<
   ref: React.MutableRefObject<any>;
 };
 
-export type UseControllerOptions<
+export type UseControllerProps<
   TFieldValues extends FieldValues = FieldValues
 > = {
   name: FieldName<TFieldValues>;
@@ -45,4 +45,4 @@ export type ControllerProps<TFieldValues extends FieldValues = FieldValues> = {
     field: ControllerRenderProps<TFieldValues>;
     meta: InputState;
   }) => React.ReactElement;
-} & UseControllerOptions;
+} & UseControllerProps;

@@ -48,7 +48,7 @@ import {
   FieldErrors,
   Field,
   FieldRefs,
-  UseFormOptions,
+  UseFormProps,
   RegisterOptions,
   SubmitHandler,
   FieldElement,
@@ -90,7 +90,7 @@ export function useForm<
   shouldFocusError = true,
   shouldUnregister = true,
   criteriaMode,
-}: UseFormOptions<TFieldValues, TContext> = {}): UseFormMethods<TFieldValues> {
+}: UseFormProps<TFieldValues, TContext> = {}): UseFormMethods<TFieldValues> {
   const fieldsRef = React.useRef<FieldRefs<TFieldValues>>({});
   const formStateSubjectRef = React.useRef(
     new Subject<Partial<FormState<TFieldValues>>>(),
@@ -413,7 +413,7 @@ export function useForm<
         const result = await Promise.all(
           fields.map(async (data) => await executeValidation(data, null)),
         );
-        formStateSubjectRef.current.next();
+        formStateSubjectRef.current.next({});
         return result.every(Boolean);
       }
 
@@ -529,7 +529,7 @@ export function useForm<
     config?: SetValueConfig,
   ): void {
     setInternalValue(name, value, config || {});
-    isFieldWatched(name) && formStateSubjectRef.current.next();
+    isFieldWatched(name) && formStateSubjectRef.current.next({});
     renderWatchedInputs(name);
   }
 
@@ -721,11 +721,11 @@ export function useForm<
 
   const updateWatchedValue = React.useCallback((name: string) => {
     if (isWatchAllRef.current) {
-      formStateSubjectRef.current.next();
+      formStateSubjectRef.current.next({});
     } else {
       for (const watchField of watchFieldsRef.current) {
         if (watchField.startsWith(name)) {
-          formStateSubjectRef.current.next();
+          formStateSubjectRef.current.next({});
           break;
         }
       }
@@ -1287,7 +1287,7 @@ export function useForm<
       isFormDirty,
       updateWatchedValue,
       shouldUnregister,
-      updateFormState: formStateSubjectRef.current,
+      formStateSubjectRef,
       removeFieldEventListener,
       watchInternal,
       mode: modeRef.current,

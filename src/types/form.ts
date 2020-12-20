@@ -15,6 +15,7 @@ import { ErrorOption, FieldErrors } from './errors';
 import { RegisterOptions } from './validator';
 import { ControllerRenderProps } from './props';
 import { FieldArrayDefaultValues } from './fieldArray';
+import { SubjectType } from '../Subject';
 
 declare const $NestedValue: unique symbol;
 
@@ -74,7 +75,7 @@ export type SetValueConfig = Partial<{
 
 export type HandleChange = (event: Event) => Promise<void | boolean>;
 
-export type UseFormOptions<
+export type UseFormProps<
   TFieldValues extends FieldValues = FieldValues,
   TContext extends object = object
 > = Partial<{
@@ -149,9 +150,9 @@ export type Control<TFieldValues extends FieldValues = FieldValues> = Pick<
   shouldUnregister: boolean;
   formState: FormState<TFieldValues>;
   formStateRef: React.MutableRefObject<FormState<TFieldValues>>;
-  updateFormState: {
-    next: (args?: Partial<FormState<TFieldValues>>) => void;
-  };
+  formStateSubjectRef: React.MutableRefObject<
+    SubjectType<Partial<FormState<TFieldValues>>>
+  >;
   validateResolver?: (fieldsValues: FieldValues) => void;
   validFieldsRef: React.MutableRefObject<FieldNamesMarkedBoolean<TFieldValues>>;
   fieldsWithValidationRef: React.MutableRefObject<
