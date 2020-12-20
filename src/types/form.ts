@@ -149,7 +149,9 @@ export type Control<TFieldValues extends FieldValues = FieldValues> = Pick<
   shouldUnregister: boolean;
   formState: FormState<TFieldValues>;
   formStateRef: React.MutableRefObject<FormState<TFieldValues>>;
-  updateFormState: any;
+  updateFormState: {
+    next: (args?: Partial<FormState<TFieldValues>>) => void;
+  };
   validateResolver?: (fieldsValues: FieldValues) => void;
   validFieldsRef: React.MutableRefObject<FieldNamesMarkedBoolean<TFieldValues>>;
   fieldsWithValidationRef: React.MutableRefObject<
