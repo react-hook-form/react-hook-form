@@ -4,7 +4,13 @@ import { useForm } from 'react-hook-form';
 let renderCounter = 0;
 
 const ValidateFieldCriteria: React.FC = () => {
-  const { register, handleSubmit, errors, setError, clearErrors } = useForm<{
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+    setError,
+    clearErrors,
+  } = useForm<{
     firstName: string;
     lastName: string;
     min: string;

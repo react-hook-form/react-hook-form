@@ -2,7 +2,12 @@ import React, { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 
 const SetError: React.FC = () => {
-  const { register, setError, clearErrors, errors } = useForm<{
+  const {
+    register,
+    setError,
+    clearErrors,
+    formState: { errors },
+  } = useForm<{
     firstName: string;
     lastName: string;
     age: string;

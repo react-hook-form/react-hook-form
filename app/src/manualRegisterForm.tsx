@@ -4,7 +4,12 @@ import { useForm } from 'react-hook-form';
 let renderCounter = 0;
 
 const ManualRegisterForm: React.FC = () => {
-  const { register, handleSubmit, errors, setValue } = useForm<{
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+    setValue,
+  } = useForm<{
     firstName: string;
     lastName: string;
     min: string;

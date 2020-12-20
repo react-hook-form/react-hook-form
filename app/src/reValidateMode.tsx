@@ -4,7 +4,11 @@ import { useForm } from 'react-hook-form';
 let renderCounter = 0;
 
 const Basic: React.FC = (props: any) => {
-  const { register, handleSubmit, errors } = useForm({
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm({
     mode: props.match.params.mode,
     reValidateMode: props.match.params.reValidateMode,
   });

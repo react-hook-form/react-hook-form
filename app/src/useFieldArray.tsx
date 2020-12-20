@@ -9,9 +9,8 @@ const UseFieldArray: React.FC = (props: any) => {
     control,
     handleSubmit,
     register,
-    formState: { isDirty, touched, isValid, dirtyFields },
+    formState: { isDirty, touched, isValid, dirtyFields, errors },
     reset,
-    errors,
   } = useForm<{
     data: { name: string }[];
   }>({

@@ -4,7 +4,12 @@ import { useForm } from 'react-hook-form';
 let renderCounter = 0;
 
 const SetValueWithTrigger: React.FC = () => {
-  const { register, setValue, handleSubmit, errors } = useForm<{
+  const {
+    register,
+    setValue,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<{
     firstName: string;
     lastName: string;
   }>();
