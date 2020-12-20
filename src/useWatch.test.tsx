@@ -210,7 +210,12 @@ describe('useWatch', () => {
       };
 
       const Parent = () => {
-        const { register, handleSubmit, control } = useForm<{
+        const {
+          register,
+          handleSubmit,
+          control,
+          formState: { errors },
+        } = useForm<{
           child: string;
           parent: string;
         }>();
@@ -218,6 +223,7 @@ describe('useWatch', () => {
           <form onSubmit={handleSubmit(() => {})}>
             <input name="parent" ref={register} />
             <Child register={register} control={control} />
+            {errors.parent}
             <button>submit</button>
           </form>
         );

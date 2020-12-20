@@ -297,6 +297,8 @@ export const useFieldArray = <
 
     formStateSubjectRef.current.next({
       isDirty: isFormDirty(name, omitKey(updatedFormValues)),
+      errors: formStateRef.current.errors,
+      isValid: formStateRef.current.isValid,
     });
   };
 

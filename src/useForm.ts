@@ -162,12 +162,6 @@ export function useForm<
     ? cloneObject(defaultValues)
     : shallowFieldsStateRef.current;
 
-  const updateIsValidating = () =>
-    readFormStateRef.current.isValidating &&
-    formStateSubjectRef.current.next({
-      isValidating: true,
-    });
-
   const shouldRenderBaseOnError = React.useCallback(
     (
       name: InternalFieldName<TFieldValues>,
@@ -214,7 +208,8 @@ export function useForm<
       ) {
         formStateSubjectRef.current.next({
           ...state,
-          ...(resolverRef.current ? { isValid: !!isValid } : {}),
+          isValid,
+          errors: formStateRef.current.errors,
           isValidating: false,
         });
       }
@@ -403,7 +398,9 @@ export function useForm<
     ): Promise<boolean> => {
       const fields = name || Object.keys(fieldsRef.current);
 
-      updateIsValidating();
+      formStateSubjectRef.current.next({
+        isValidating: true,
+      });
 
       if (resolverRef.current) {
         return executeSchemaOrResolverValidation(fields);
@@ -483,6 +480,7 @@ export function useForm<
             );
 
             formStateSubjectRef.current.next({
+              dirtyFields: formStateRef.current.dirtyFields,
               isDirty: !deepEqual(
                 { ...getValues(), [name]: value },
                 defaultValuesRef.current,
@@ -586,7 +584,9 @@ export function useForm<
             );
           }
 
-          updateIsValidating();
+          formStateSubjectRef.current.next({
+            isValidating: true,
+          });
 
           if (resolverRef.current) {
             const { errors } = await resolverRef.current(
@@ -784,6 +784,7 @@ export function useForm<
     });
 
     formStateSubjectRef.current.next({
+      errors: formStateRef.current.errors,
       isValid: false,
     });
 
@@ -1145,6 +1146,7 @@ export function useForm<
           isSubmitting: false,
           isSubmitSuccessful: isEmptyObject(formStateRef.current.errors),
           submitCount: formStateRef.current.submitCount + 1,
+          errors: formStateRef.current.errors,
         });
       }
     },
@@ -1231,11 +1233,20 @@ export function useForm<
   React.useEffect(() => {
     const tearDown = formStateSubjectRef.current.subscribe({
       next: (state: Partial<FormState<TFieldValues>> = {}) => {
-        formStateRef.current = {
-          ...formStateRef.current,
-          ...state,
-        };
-        setFormState(formStateRef.current);
+        if (
+          isEmptyObject(state) ||
+          Object.keys(state).length >=
+            Object.keys(readFormStateRef.current).length ||
+          Object.keys(state).find(
+            (key) => readFormStateRef.current[key as keyof ReadFormState],
+          )
+        ) {
+          formStateRef.current = {
+            ...formStateRef.current,
+            ...state,
+          };
+          setFormState(formStateRef.current);
+        }
       },
     });
 

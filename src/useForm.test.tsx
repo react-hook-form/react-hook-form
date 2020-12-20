@@ -2901,7 +2901,7 @@ describe('useForm', () => {
         expect(screen.queryByRole('alert')).toBeInTheDocument();
       });
 
-      it('should output error message when formState.isValid is called in development environment', () => {
+      it.skip('should output error message when formState.isValid is called in development environment', () => {
         jest.spyOn(console, 'warn').mockImplementation(() => {});
 
         process.env.NODE_ENV = 'development';
