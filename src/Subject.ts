@@ -23,10 +23,7 @@ export class Subscription {
 class Subscriber<T> implements Observer<T> {
   closed = false;
 
-  constructor(
-    private observer: Observer<T>,
-    private subscription: Subscription,
-  ) {
+  constructor(private observer: Observer<T>, subscription: Subscription) {
     subscription.add(() => (this.closed = true));
   }
 
@@ -35,33 +32,7 @@ class Subscriber<T> implements Observer<T> {
       this.observer.next(value);
     }
   }
-
-  error(error: any) {
-    if (!this.closed && this.observer.error) {
-      this.observer.error(error);
-      this.subscription.unsubscribe();
-    }
-  }
-
-  complete() {
-    if (!this.closed) {
-      this.complete();
-      this.subscription.unsubscribe();
-    }
-  }
 }
-
-// export class Observable<T> {
-//   constructor(private init: (observer: Observer<T>) => TearDown) {}
-//
-//   subscribe(observer: Observer<T>): Subscription {
-//     const subscription = new Subscription();
-//     const subscriber = new Subscriber(observer, subscription);
-//     subscription.add(this.init(subscriber));
-//
-//     return subscription;
-//   }
-// }
 
 export default class Subject<T> {
   observers: Observer<T>[];
@@ -71,9 +42,9 @@ export default class Subject<T> {
   }
 
   next(value?: T) {
-    this.observers.forEach((observer) => {
+    for (const observer of this.observers) {
       observer.next(value);
-    });
+    }
   }
 
   subscribe(observer: Observer<T>) {
