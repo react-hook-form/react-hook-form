@@ -25,7 +25,7 @@ function useFormState<TFieldValues extends FieldValues = FieldValues>({
     });
   }, []);
 
-  return getProxyFormState(
+  return getProxyFormState<TFieldValues>(
     isProxyEnabled,
     control.formState,
     control.readFormStateRef,

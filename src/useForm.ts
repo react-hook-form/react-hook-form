@@ -144,6 +144,7 @@ export function useForm<
     isValidating: !isProxyEnabled,
     isSubmitting: !isProxyEnabled,
     isValid: !isProxyEnabled,
+    errors: !isProxyEnabled,
   });
   const formStateRef = React.useRef(formState);
   const observerRef = React.useRef<MutationObserver | undefined>();
@@ -1260,11 +1261,11 @@ export function useForm<
     getValues: React.useCallback(getValues, []),
     register: React.useCallback(register, [defaultValuesRef.current]),
     unregister: React.useCallback(unregister, []),
-    formState: getProxyFormState(
+    formState: getProxyFormState<TFieldValues>(
       isProxyEnabled,
       formState,
       readFormStateRef,
-    ) as FormState<TFieldValues>,
+    ),
   };
 
   const control = React.useMemo(

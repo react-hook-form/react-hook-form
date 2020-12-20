@@ -1,9 +1,9 @@
 import * as React from 'react';
-import { FormStateProxy, ReadFormState } from '../types';
+import { FormState, FormStateProxy, ReadFormState } from '../types';
 
-export default (
+export default <TFieldValues>(
   isProxyEnabled: boolean,
-  formState: FormStateProxy,
+  formState: FormState<TFieldValues>,
   readFormStateRef: React.MutableRefObject<ReadFormState>,
 ) =>
   isProxyEnabled
