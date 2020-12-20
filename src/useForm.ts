@@ -1007,7 +1007,7 @@ export function useForm<
             : unset(validFieldsRef.current, name);
 
           previousFormIsValid !== isEmptyObject(error) &&
-            formStateSubjectRef.current.next();
+            setFormState({ ...formState });
         });
       }
     }
