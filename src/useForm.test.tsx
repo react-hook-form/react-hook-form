@@ -3297,7 +3297,7 @@ describe('useForm', () => {
       result.current.register('test');
 
       await act(async () => {
-        await result.current.control.updateIsValid!({});
+        await result.current.control.updateIsValid({});
       });
 
       expect(resolverData).toEqual({
@@ -3326,7 +3326,7 @@ describe('useForm', () => {
       result.current.setValue('test', 'value');
 
       await act(async () => {
-        result.current.control.updateIsValid!({});
+        result.current.control.updateIsValid({});
       });
 
       expect(resolverData).toEqual({ test: 'value' });

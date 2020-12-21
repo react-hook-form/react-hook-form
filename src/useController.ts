@@ -181,13 +181,7 @@ export function useController<TFieldValues extends FieldValues = FieldValues>({
     }
 
     shouldValidate(true) && trigger(name);
-  }, [
-    name,
-    formStateSubjectRef.current,
-    shouldValidate,
-    trigger,
-    readFormStateRef,
-  ]);
+  }, [name, shouldValidate, trigger, readFormStateRef]);
 
   const onChange = React.useCallback(
     (...event: any[]) =>
