@@ -3,13 +3,13 @@ import { ReadFormState } from '../types';
 import { VALIDATION_MODE } from '../constants';
 
 export default <T, K extends ReadFormState>(
-  state: T,
+  formState: T,
   readFormStateRef: K,
   isRoot?: boolean,
 ) =>
-  isEmptyObject(state) ||
-  Object.keys(state).length >= Object.keys(readFormStateRef).length ||
-  Object.keys(state).find(
+  isEmptyObject(formState) ||
+  Object.keys(formState).length >= Object.keys(readFormStateRef).length ||
+  Object.keys(formState).find(
     (key) =>
       readFormStateRef[key as keyof ReadFormState] ===
       (isRoot ? VALIDATION_MODE.all : true),

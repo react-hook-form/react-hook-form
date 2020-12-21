@@ -1020,7 +1020,7 @@ export function useForm<
             : unset(validFieldsRef.current, name);
 
           previousFormIsValid !== isEmptyObject(error) &&
-            setFormState({ ...formState, isValid: getIsValid() });
+            setFormState({ ...formStateRef.current, isValid: getIsValid() });
         });
       }
     }
@@ -1243,11 +1243,11 @@ export function useForm<
 
   React.useEffect(() => {
     const tearDown = formStateSubjectRef.current.subscribe({
-      next: (state: Partial<FormState<TFieldValues>> = {}) => {
-        if (shouldRenderFormState(state, readFormStateRef.current, true)) {
+      next: (formState: Partial<FormState<TFieldValues>> = {}) => {
+        if (shouldRenderFormState(formState, readFormStateRef.current, true)) {
           formStateRef.current = {
             ...formStateRef.current,
-            ...state,
+            ...formState,
           };
           setFormState(formStateRef.current);
         }

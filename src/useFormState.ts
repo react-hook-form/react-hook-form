@@ -22,11 +22,11 @@ function useFormState<TFieldValues extends FieldValues = FieldValues>({
 
   React.useEffect(() => {
     control.formStateSubjectRef.current.subscribe({
-      next: (state: Partial<FormState<TFieldValues>>) => {
-        if (shouldRenderFormState(state, readFormStateRef.current)) {
+      next: (formState: Partial<FormState<TFieldValues>>) => {
+        if (shouldRenderFormState(formState, readFormStateRef.current)) {
           updateFormState({
             ...control.formStateRef.current,
-            ...state,
+            ...formState,
           });
         }
       },
