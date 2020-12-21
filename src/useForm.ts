@@ -94,7 +94,7 @@ export function useForm<
 }: UseFormProps<TFieldValues, TContext> = {}): UseFormMethods<TFieldValues> {
   const fieldsRef = React.useRef<FieldRefs<TFieldValues>>({});
   const formStateSubjectRef = React.useRef(
-    new Subject<Partial<FormState<TFieldValues>> & { global?: boolean }>(),
+    new Subject<Partial<FormState<TFieldValues>>>(),
   );
   const fieldArrayDefaultValuesRef = React.useRef<FieldArrayDefaultValues>({});
   const fieldArrayValuesRef = React.useRef<FieldArrayDefaultValues>({});
