@@ -6,7 +6,8 @@ export default <TFieldValues>(
   isProxyEnabled: boolean,
   formState: FormState<TFieldValues>,
   readFormStateRef: React.MutableRefObject<ReadFormState>,
-  isRoot?: boolean,
+  localReadFormStateRef?: React.MutableRefObject<ReadFormState>,
+  isRoot = true,
 ) =>
   isProxyEnabled
     ? new Proxy(formState, {
@@ -15,6 +16,8 @@ export default <TFieldValues>(
             readFormStateRef.current[prop] = isRoot
               ? VALIDATION_MODE.all
               : true;
+            localReadFormStateRef &&
+              (localReadFormStateRef.current[prop] = true);
             return obj[prop];
           }
 

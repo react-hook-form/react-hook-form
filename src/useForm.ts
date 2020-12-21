@@ -1,5 +1,5 @@
 import * as React from 'react';
-import Subject from './Subject';
+import Subject from './utils/Subject';
 import attachEventListeners from './logic/attachEventListeners';
 import transformToNestObject from './logic/transformToNestObject';
 import focusOnErrorField from './logic/focusOnErrorField';
@@ -163,6 +163,11 @@ export function useForm<
     ? cloneObject(defaultValues)
     : shallowFieldsStateRef.current;
 
+  const getIsValid = () =>
+    (formStateRef.current.isValid =
+      deepEqual(validFieldsRef.current, fieldsWithValidationRef.current) &&
+      isEmptyObject(formStateRef.current.errors));
+
   const shouldRenderBaseOnError = React.useCallback(
     (
       name: InternalFieldName<TFieldValues>,
@@ -209,7 +214,7 @@ export function useForm<
       ) {
         formStateSubjectRef.current.next({
           ...state,
-          isValid,
+          isValid: resolverRef.current ? isValid : getIsValid(),
           errors: formStateRef.current.errors,
           isValidating: false,
         });
@@ -688,22 +693,26 @@ export function useForm<
     );
   }
 
-  const validateResolver = React.useCallback(
+  const updateIsValid = React.useCallback(
     async (values = {}) => {
-      const { errors } = await resolverRef.current!(
-        {
-          ...getValues(),
-          ...values,
-        },
-        contextRef.current,
-        isValidateAllFieldCriteria,
-      );
-      const isValid = isEmptyObject(errors);
+      if (resolver) {
+        const { errors } = await resolverRef.current!(
+          {
+            ...getValues(),
+            ...values,
+          },
+          contextRef.current,
+          isValidateAllFieldCriteria,
+        );
+        const isValid = isEmptyObject(errors);
 
-      formStateRef.current.isValid !== isValid &&
-        formStateSubjectRef.current.next({
-          isValid,
-        });
+        formStateRef.current.isValid !== isValid &&
+          formStateSubjectRef.current.next({
+            isValid,
+          });
+      } else {
+        getIsValid();
+      }
     },
     [isValidateAllFieldCriteria],
   );
@@ -748,17 +757,18 @@ export function useForm<
           set(formStateRef.current.dirtyFields, field.ref.name, true);
 
           formStateSubjectRef.current.next({
+            ...formStateRef.current,
             isDirty: isFormDirty(),
           });
 
           readFormStateRef.current.isValid &&
             resolverRef.current &&
-            validateResolver();
+            updateIsValid();
           updateWatchedValue(field.ref.name);
         }
       }
     },
-    [validateResolver, removeFieldEventListener],
+    [updateIsValid, removeFieldEventListener],
   );
 
   function clearErrors(
@@ -1010,7 +1020,7 @@ export function useForm<
             : unset(validFieldsRef.current, name);
 
           previousFormIsValid !== isEmptyObject(error) &&
-            setFormState({ ...formState });
+            setFormState({ ...formState, isValid: getIsValid() });
         });
       }
     }
@@ -1224,7 +1234,7 @@ export function useForm<
   };
 
   React.useEffect(() => {
-    resolver && readFormStateRef.current.isValid && validateResolver();
+    resolver && readFormStateRef.current.isValid && updateIsValid();
     observerRef.current =
       observerRef.current || !isWeb
         ? observerRef.current
@@ -1254,12 +1264,6 @@ export function useForm<
     };
   }, []);
 
-  if (!resolver && readFormStateRef.current.isValid) {
-    formState.isValid =
-      deepEqual(validFieldsRef.current, fieldsWithValidationRef.current) &&
-      isEmptyObject(formStateRef.current.errors);
-  }
-
   const commonProps = {
     trigger,
     setValue: React.useCallback(setValue, [setInternalValue, trigger]),
@@ -1270,7 +1274,6 @@ export function useForm<
       isProxyEnabled,
       formState,
       readFormStateRef,
-      true,
     ),
   };
 
@@ -1287,7 +1290,7 @@ export function useForm<
         isReValidateOnBlur,
         isReValidateOnChange,
       },
-      validateResolver: resolver ? validateResolver : undefined,
+      updateIsValid,
       fieldsRef,
       resetFieldArrayFunctionRef,
       useWatchFieldsRef,

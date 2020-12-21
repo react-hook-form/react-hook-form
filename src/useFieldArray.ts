@@ -101,7 +101,7 @@ export const useFieldArray = <
     validFieldsRef,
     fieldsWithValidationRef,
     fieldArrayDefaultValuesRef,
-    validateResolver,
+    updateIsValid,
     getValues,
     shouldUnregister,
     fieldArrayValuesRef,
@@ -166,10 +166,10 @@ export const useFieldArray = <
     setFields(fieldsValues);
     set(fieldArrayValuesRef.current, name, fieldsValues);
 
-    if (readFormStateRef.current.isValid && validateResolver) {
+    if (readFormStateRef.current.isValid) {
       const values = getValues();
       set(values, name, fieldsValues);
-      validateResolver(values);
+      updateIsValid(values);
     }
   };
 
@@ -275,11 +275,7 @@ export const useFieldArray = <
       cleanup(formStateRef.current.dirtyFields);
     }
 
-    if (
-      shouldUpdateValid &&
-      readFormStateRef.current.isValid &&
-      !validateResolver
-    ) {
+    if (shouldUpdateValid && readFormStateRef.current.isValid) {
       set(
         validFieldsRef.current,
         name,
@@ -365,9 +361,6 @@ export const useFieldArray = <
       | Partial<TFieldArrayValues>
       | undefined
     )[] = removeArrayAt(fieldValues, index);
-    setFieldAndValidState(
-      updatedFieldValues as Partial<ArrayField<TFieldArrayValues, TKeyName>>[],
-    );
     resetFields();
     batchStateUpdate(
       removeArrayAt,
@@ -379,6 +372,9 @@ export const useFieldArray = <
       removeArrayAt(fieldValues, index),
       true,
       true,
+    );
+    setFieldAndValidState(
+      updatedFieldValues as Partial<ArrayField<TFieldArrayValues, TKeyName>>[],
     );
   };
 

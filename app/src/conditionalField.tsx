@@ -17,6 +17,7 @@ const ConditionalField: React.FC = () => {
       isSubmitting,
       isSubmitSuccessful,
       isValid,
+      errors,
     },
   } = useForm<{
     selectNumber: string;
@@ -33,6 +34,8 @@ const ConditionalField: React.FC = () => {
   const selectNumber = watch('selectNumber');
 
   renderCounter++;
+
+  console.log(errors);
 
   return (
     <form

@@ -1414,7 +1414,9 @@ describe('useForm', () => {
         await result.current.trigger();
       });
 
-      result.current.setValue('test.data', 'test', { shouldValidate: true });
+      await act(async () => {
+        result.current.setValue('test.data', 'test', { shouldValidate: true });
+      });
 
       expect(result.current.formState.isValid).toBeFalsy();
 
@@ -3261,7 +3263,7 @@ describe('useForm', () => {
     });
   });
 
-  describe('validateResolver', () => {
+  describe('updateIsValid', () => {
     it('should be defined when resolver is defined', () => {
       const resolver = async (data: any) => {
         return {
@@ -3272,13 +3274,7 @@ describe('useForm', () => {
 
       const { result } = renderHook(() => useForm({ resolver }));
 
-      expect(result.current.control.validateResolver).toBeDefined();
-    });
-
-    it('should be undefined when resolver is undefined', () => {
-      const { result } = renderHook(() => useForm());
-
-      expect(result.current.control.validateResolver).toBeUndefined();
+      expect(result.current.control.updateIsValid).toBeDefined();
     });
 
     it('should be called resolver with default values if default value is defined', async () => {
@@ -3301,7 +3297,7 @@ describe('useForm', () => {
       result.current.register('test');
 
       await act(async () => {
-        await result.current.control.validateResolver!({});
+        await result.current.control.updateIsValid!({});
       });
 
       expect(resolverData).toEqual({
@@ -3330,7 +3326,7 @@ describe('useForm', () => {
       result.current.setValue('test', 'value');
 
       await act(async () => {
-        result.current.control.validateResolver!({});
+        result.current.control.updateIsValid!({});
       });
 
       expect(resolverData).toEqual({ test: 'value' });
