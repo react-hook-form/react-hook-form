@@ -203,4 +203,44 @@ describe('useFormState', () => {
     expect(testCount).toEqual(4);
     expect(test1Count).toEqual(2);
   });
+
+  it('should render correct submit state', async () => {
+    let count = 0;
+    const Test = ({ control }: { control: Control }) => {
+      const { isSubmitted, submitCount } = useFormState({
+        control,
+      });
+
+      return (
+        <>
+          <div>{isSubmitted ? 'isSubmitted' : ''}</div>
+          <div>{submitCount}</div>
+        </>
+      );
+    };
+
+    const Component = () => {
+      const { control, handleSubmit } = useForm();
+
+      count++;
+
+      return (
+        <form onSubmit={handleSubmit(() => {})}>
+          <Test control={control} />
+          <button>Submit</button>
+        </form>
+      );
+    };
+
+    render(<Component />);
+
+    await act(async () => {
+      await fireEvent.click(screen.getByRole('button'));
+    });
+
+    screen.getByText('isSubmitted');
+    screen.getByText('1');
+
+    expect(count).toEqual(1);
+  });
 });
