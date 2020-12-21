@@ -1014,13 +1014,12 @@ export function useForm<
           field,
           shallowFieldsStateRef,
         ).then((error: FieldErrors) => {
-          const previousFormIsValid = formStateRef.current.isValid;
-
           isEmptyObject(error)
             ? set(validFieldsRef.current, name, true)
             : unset(validFieldsRef.current, name);
 
-          previousFormIsValid !== isEmptyObject(error) &&
+          formStateRef.current.isValid &&
+            !isEmptyObject(error) &&
             setFormState({ ...formStateRef.current, isValid: getIsValid() });
         });
       }
@@ -1187,7 +1186,7 @@ export function useForm<
       submitCount: submitCount ? formStateRef.current.submitCount : 0,
       isDirty: isDirty ? formStateRef.current.isDirty : false,
       isSubmitted: isSubmitted ? formStateRef.current.isSubmitted : false,
-      isValid: isValid ? formStateRef.current.isValid : false,
+      isValid: isValid ? formStateRef.current.isValid : !isOnSubmit,
       dirtyFields: dirtyFields ? formStateRef.current.dirtyFields : {},
       touched: touched ? formStateRef.current.touched : {},
       errors: errors ? formStateRef.current.errors : {},

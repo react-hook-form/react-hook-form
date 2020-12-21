@@ -208,7 +208,7 @@ describe('useForm', () => {
       expect(ref).toEqual({ type: 'text', name: 'test', value: 'test' });
     });
 
-    // check https://github.com/react-hook-form/react-hook-form/issues/2298
+    // issue: https://github.com/react-hook-form/react-hook-form/issues/2298
     it('should reset isValid formState after reset with valid value in initial render', async () => {
       const Component = () => {
         const { register, reset, formState } = useForm<{
@@ -2570,13 +2570,15 @@ describe('useForm', () => {
     });
 
     it('should return false when default value is not valid value', async () => {
-      const { result } = renderHook(() =>
-        useForm<{ input: string; issue: string }>({
+      const { result } = renderHook(() => {
+        const methods = useForm<{ input: string; issue: string }>({
           mode: VALIDATION_MODE.onChange,
-        }),
-      );
+        });
 
-      result.current.formState.isValid;
+        methods.formState.isValid;
+
+        return methods;
+      });
 
       await act(async () =>
         result.current.register(
