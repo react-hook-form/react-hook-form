@@ -417,6 +417,6 @@ describe('form state with nested fields', () => {
       }),
     );
 
-    cy.get('#renderCount').contains('13');
+    cy.get('#renderCount').contains('14');
   });
 });
