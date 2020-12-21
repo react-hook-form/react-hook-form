@@ -553,6 +553,6 @@ describe('form state with schema validation', () => {
         isValid: false,
       }),
     );
-    cy.get('#renderCount').contains('14');
+    cy.get('#renderCount').contains('13');
   });
 });

@@ -759,6 +759,7 @@ export function useForm<
           formStateSubjectRef.current.next({
             ...formStateRef.current,
             isDirty: isFormDirty(),
+            isValid: getIsValid(),
           });
 
           readFormStateRef.current.isValid &&

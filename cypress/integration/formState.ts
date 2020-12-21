@@ -554,6 +554,6 @@ describe('form state', () => {
       }),
     );
 
-    cy.get('#renderCount').contains('14');
+    cy.get('#renderCount').contains('13');
   });
 });
