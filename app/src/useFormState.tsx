@@ -17,11 +17,11 @@ const SubForm = ({ control }: { control: Control }) => {
   });
 
   return (
-    <p id="formState">
+    <p id="state">
       {JSON.stringify({
         isDirty,
-        dirtyFields,
-        touched,
+        touched: Object.keys(touched),
+        dirtyFields: Object.keys(dirtyFields),
         isSubmitted,
         isSubmitSuccessful,
         submitCount,

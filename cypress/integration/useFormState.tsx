@@ -16,8 +16,43 @@ describe('useFormState', () => {
     cy.get('input[name="maxDate"]').type('2019-08-02');
     cy.get('input[name="lastName"]').clear().type('luo');
     cy.get('input[name="minLength"]').type('b');
+    cy.get('input[name="minLength"]').blur();
 
-    // check again
+    cy.get('#state').should(($state) =>
+      expect(JSON.parse($state.text())).to.be.deep.equal({
+        isDirty: true,
+        touched: [
+          'nestItem',
+          'firstName',
+          'arrayItem',
+          'lastName',
+          'selectNumber',
+          'pattern',
+          'min',
+          'max',
+          'minDate',
+          'maxDate',
+          'minLength',
+        ],
+        dirtyFields: [
+          'nestItem',
+          'firstName',
+          'arrayItem',
+          'lastName',
+          'selectNumber',
+          'pattern',
+          'min',
+          'max',
+          'minDate',
+          'maxDate',
+          'minLength',
+        ],
+        isSubmitted: false,
+        isSubmitSuccessful: false,
+        submitCount: 0,
+        isValid: false,
+      }),
+    );
 
     cy.get('input[name="pattern"]').type('23');
     cy.get('input[name="minLength"]').type('bi');
@@ -27,11 +62,98 @@ describe('useFormState', () => {
     cy.get('input[name="minDate"]').type('2019-08-01');
     cy.get('input[name="maxDate"]').type('2019-08-01');
 
-    // check again
+    cy.get('#state').should(($state) =>
+      expect(JSON.parse($state.text())).to.be.deep.equal({
+        isDirty: true,
+        touched: [
+          'nestItem',
+          'firstName',
+          'arrayItem',
+          'lastName',
+          'selectNumber',
+          'pattern',
+          'min',
+          'max',
+          'minDate',
+          'maxDate',
+          'minLength',
+          'minRequiredLength',
+        ],
+        dirtyFields: [
+          'nestItem',
+          'firstName',
+          'arrayItem',
+          'lastName',
+          'selectNumber',
+          'pattern',
+          'min',
+          'max',
+          'minDate',
+          'maxDate',
+          'minLength',
+          'minRequiredLength',
+        ],
+        isSubmitted: false,
+        isSubmitSuccessful: false,
+        submitCount: 0,
+        isValid: true,
+      }),
+    );
+
+    cy.get('#submit').click();
+
+    cy.get('#state').should(($state) =>
+      expect(JSON.parse($state.text())).to.be.deep.equal({
+        isDirty: false,
+        touched: [
+          'nestItem',
+          'firstName',
+          'arrayItem',
+          'lastName',
+          'selectNumber',
+          'pattern',
+          'min',
+          'max',
+          'minDate',
+          'maxDate',
+          'minLength',
+          'minRequiredLength',
+        ],
+        dirtyFields: [
+          'nestItem',
+          'firstName',
+          'arrayItem',
+          'lastName',
+          'selectNumber',
+          'pattern',
+          'min',
+          'max',
+          'minDate',
+          'maxDate',
+          'minLength',
+          'minRequiredLength',
+        ],
+        isSubmitted: true,
+        isSubmitSuccessful: true,
+        submitCount: 1,
+        isValid: true,
+      }),
+    );
 
     cy.get('#resetForm').click();
 
-    // check again
+    cy.get('#state').should(($state) =>
+      expect(JSON.parse($state.text())).to.be.deep.equal({
+        isDirty: false,
+        touched: [],
+        dirtyFields: [],
+        isSubmitted: false,
+        isSubmitSuccessful: false,
+        submitCount: 0,
+        isValid: true,
+      }),
+    );
+
     cy.get('#renderCount').contains('2');
   });
 });
