@@ -1,6 +1,12 @@
-type Observer<T> = {
-  next: (value?: T) => void;
+export type Observer<T> = {
+  next: (value: T) => void;
 };
+
+export type SubjectType<T> = {
+  next: (value: T) => void;
+  subscribe: (value: Observer<T>) => void;
+};
+
 type TearDown = () => void;
 
 export class Subscription {
@@ -25,7 +31,7 @@ class Subscriber<T> implements Observer<T> {
     subscription.add(() => (this.closed = true));
   }
 
-  next(value?: T) {
+  next(value: T) {
     if (!this.closed) {
       this.observer.next(value);
     }
@@ -39,7 +45,7 @@ export default class Subject<T> {
     this.observers = [];
   }
 
-  next(value?: T) {
+  next(value: T) {
     for (const observer of this.observers) {
       observer.next(value);
     }

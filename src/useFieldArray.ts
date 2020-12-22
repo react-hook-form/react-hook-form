@@ -19,7 +19,7 @@ import cloneObject from './utils/cloneObject';
 import {
   Field,
   FieldValues,
-  UseFieldArrayOptions,
+  UseFieldArrayProps,
   Control,
   ArrayField,
   UnpackNestedValue,
@@ -71,7 +71,7 @@ export const useFieldArray = <
   control,
   name,
   keyName = 'id' as TKeyName,
-}: UseFieldArrayOptions<TKeyName, TControl>): UseFieldArrayMethods<
+}: UseFieldArrayProps<TKeyName, TControl>): UseFieldArrayMethods<
   TFieldArrayValues,
   TKeyName
 > => {
@@ -96,12 +96,12 @@ export const useFieldArray = <
     removeFieldEventListener,
     formStateRef,
     shallowFieldsStateRef,
-    updateFormState,
+    formStateSubjectRef,
     readFormStateRef,
     validFieldsRef,
     fieldsWithValidationRef,
     fieldArrayDefaultValuesRef,
-    validateResolver,
+    updateIsValid,
     getValues,
     shouldUnregister,
     fieldArrayValuesRef,
@@ -166,10 +166,10 @@ export const useFieldArray = <
     setFields(fieldsValues);
     set(fieldArrayValuesRef.current, name, fieldsValues);
 
-    if (readFormStateRef.current.isValid && validateResolver) {
+    if (readFormStateRef.current.isValid) {
       const values = getValues();
       set(values, name, fieldsValues);
-      validateResolver(values);
+      updateIsValid(values);
     }
   };
 
@@ -275,11 +275,7 @@ export const useFieldArray = <
       cleanup(formStateRef.current.dirtyFields);
     }
 
-    if (
-      shouldUpdateValid &&
-      readFormStateRef.current.isValid &&
-      !validateResolver
-    ) {
+    if (shouldUpdateValid && readFormStateRef.current.isValid) {
       set(
         validFieldsRef.current,
         name,
@@ -295,8 +291,10 @@ export const useFieldArray = <
       cleanup(fieldsWithValidationRef.current);
     }
 
-    updateFormState.next({
+    formStateSubjectRef.current.next({
       isDirty: isFormDirty(name, omitKey(updatedFormValues)),
+      errors: formStateRef.current.errors,
+      isValid: formStateRef.current.isValid,
     });
   };
 
@@ -317,7 +315,7 @@ export const useFieldArray = <
     ) {
       updateDirtyFieldsWithDefaultValues(updateFormValues);
 
-      updateFormState.next({
+      formStateSubjectRef.current.next({
         isDirty: true,
         dirtyFields: formStateRef.current.dirtyFields,
       });
@@ -363,9 +361,6 @@ export const useFieldArray = <
       | Partial<TFieldArrayValues>
       | undefined
     )[] = removeArrayAt(fieldValues, index);
-    setFieldAndValidState(
-      updatedFieldValues as Partial<ArrayField<TFieldArrayValues, TKeyName>>[],
-    );
     resetFields();
     batchStateUpdate(
       removeArrayAt,
@@ -377,6 +372,9 @@ export const useFieldArray = <
       removeArrayAt(fieldValues, index),
       true,
       true,
+    );
+    setFieldAndValidState(
+      updatedFieldValues as Partial<ArrayField<TFieldArrayValues, TKeyName>>[],
     );
   };
 

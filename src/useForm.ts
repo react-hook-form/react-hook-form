@@ -1,10 +1,11 @@
 import * as React from 'react';
-import Subject from './Subject';
+import Subject from './utils/Subject';
 import attachEventListeners from './logic/attachEventListeners';
 import transformToNestObject from './logic/transformToNestObject';
 import focusOnErrorField from './logic/focusOnErrorField';
 import findRemovedFieldAndRemoveListener from './logic/findRemovedFieldAndRemoveListener';
 import setFieldArrayDirtyFields from './logic/setFieldArrayDirtyFields';
+import shouldRenderFormState from './logic/shouldRenderFormState';
 import getFieldsValues from './logic/getFieldsValues';
 import getFieldValue from './logic/getFieldValue';
 import isErrorStateChanged from './logic/isErrorStateChanged';
@@ -14,6 +15,8 @@ import skipValidation from './logic/skipValidation';
 import getNodeParentName from './logic/getNodeParentName';
 import deepEqual from './utils/deepEqual';
 import isNameInFieldArray from './logic/isNameInFieldArray';
+import getProxyFormState from './logic/getProxyFormState';
+import isProxyEnabled from './utils/isProxyEnabled';
 import isCheckBoxInput from './utils/isCheckBoxInput';
 import isEmptyObject from './utils/isEmptyObject';
 import isRadioInput from './utils/isRadioInput';
@@ -48,11 +51,10 @@ import {
   FieldErrors,
   Field,
   FieldRefs,
-  UseFormOptions,
+  UseFormProps,
   RegisterOptions,
   SubmitHandler,
   FieldElement,
-  FormStateProxy,
   ReadFormState,
   Ref,
   HandleChange,
@@ -76,7 +78,6 @@ import {
 } from './types';
 
 const isWindowUndefined = typeof window === UNDEFINED;
-const isProxyEnabled = isWeb ? 'Proxy' in window : typeof Proxy !== UNDEFINED;
 
 export function useForm<
   TFieldValues extends FieldValues = FieldValues,
@@ -90,7 +91,7 @@ export function useForm<
   shouldFocusError = true,
   shouldUnregister = true,
   criteriaMode,
-}: UseFormOptions<TFieldValues, TContext> = {}): UseFormMethods<TFieldValues> {
+}: UseFormProps<TFieldValues, TContext> = {}): UseFormMethods<TFieldValues> {
   const fieldsRef = React.useRef<FieldRefs<TFieldValues>>({});
   const formStateSubjectRef = React.useRef(
     new Subject<Partial<FormState<TFieldValues>>>(),
@@ -144,6 +145,7 @@ export function useForm<
     isValidating: !isProxyEnabled,
     isSubmitting: !isProxyEnabled,
     isValid: !isProxyEnabled,
+    errors: !isProxyEnabled,
   });
   const formStateRef = React.useRef(formState);
   const observerRef = React.useRef<MutationObserver | undefined>();
@@ -161,11 +163,10 @@ export function useForm<
     ? cloneObject(defaultValues)
     : shallowFieldsStateRef.current;
 
-  const updateIsValidating = () =>
-    readFormStateRef.current.isValidating &&
-    formStateSubjectRef.current.next({
-      isValidating: true,
-    });
+  const getIsValid = () =>
+    (formStateRef.current.isValid =
+      deepEqual(validFieldsRef.current, fieldsWithValidationRef.current) &&
+      isEmptyObject(formStateRef.current.errors));
 
   const shouldRenderBaseOnError = React.useCallback(
     (
@@ -213,7 +214,8 @@ export function useForm<
       ) {
         formStateSubjectRef.current.next({
           ...state,
-          ...(resolverRef.current ? { isValid: !!isValid } : {}),
+          isValid: resolverRef.current ? isValid : getIsValid(),
+          errors: formStateRef.current.errors,
           isValidating: false,
         });
       }
@@ -402,7 +404,9 @@ export function useForm<
     ): Promise<boolean> => {
       const fields = name || Object.keys(fieldsRef.current);
 
-      updateIsValidating();
+      formStateSubjectRef.current.next({
+        isValidating: true,
+      });
 
       if (resolverRef.current) {
         return executeSchemaOrResolverValidation(fields);
@@ -413,7 +417,7 @@ export function useForm<
         const result = await Promise.all(
           fields.map(async (data) => await executeValidation(data, null)),
         );
-        formStateSubjectRef.current.next();
+        formStateSubjectRef.current.next({});
         return result.every(Boolean);
       }
 
@@ -482,6 +486,7 @@ export function useForm<
             );
 
             formStateSubjectRef.current.next({
+              dirtyFields: formStateRef.current.dirtyFields,
               isDirty: !deepEqual(
                 { ...getValues(), [name]: value },
                 defaultValuesRef.current,
@@ -529,7 +534,7 @@ export function useForm<
     config?: SetValueConfig,
   ): void {
     setInternalValue(name, value, config || {});
-    isFieldWatched(name) && formStateSubjectRef.current.next();
+    isFieldWatched(name) && formStateSubjectRef.current.next({});
     renderWatchedInputs(name);
   }
 
@@ -585,7 +590,9 @@ export function useForm<
             );
           }
 
-          updateIsValidating();
+          formStateSubjectRef.current.next({
+            isValidating: true,
+          });
 
           if (resolverRef.current) {
             const { errors } = await resolverRef.current(
@@ -686,22 +693,26 @@ export function useForm<
     );
   }
 
-  const validateResolver = React.useCallback(
+  const updateIsValid = React.useCallback(
     async (values = {}) => {
-      const { errors } = await resolverRef.current!(
-        {
-          ...getValues(),
-          ...values,
-        },
-        contextRef.current,
-        isValidateAllFieldCriteria,
-      );
-      const isValid = isEmptyObject(errors);
+      if (resolver) {
+        const { errors } = await resolverRef.current!(
+          {
+            ...getValues(),
+            ...values,
+          },
+          contextRef.current,
+          isValidateAllFieldCriteria,
+        );
+        const isValid = isEmptyObject(errors);
 
-      formStateRef.current.isValid !== isValid &&
-        formStateSubjectRef.current.next({
-          isValid,
-        });
+        formStateRef.current.isValid !== isValid &&
+          formStateSubjectRef.current.next({
+            isValid,
+          });
+      } else {
+        getIsValid();
+      }
     },
     [isValidateAllFieldCriteria],
   );
@@ -721,11 +732,11 @@ export function useForm<
 
   const updateWatchedValue = React.useCallback((name: string) => {
     if (isWatchAllRef.current) {
-      formStateSubjectRef.current.next();
+      formStateSubjectRef.current.next({});
     } else {
       for (const watchField of watchFieldsRef.current) {
         if (watchField.startsWith(name)) {
-          formStateSubjectRef.current.next();
+          formStateSubjectRef.current.next({});
           break;
         }
       }
@@ -746,17 +757,19 @@ export function useForm<
           set(formStateRef.current.dirtyFields, field.ref.name, true);
 
           formStateSubjectRef.current.next({
+            ...formStateRef.current,
             isDirty: isFormDirty(),
+            isValid: getIsValid(),
           });
 
           readFormStateRef.current.isValid &&
             resolverRef.current &&
-            validateResolver();
+            updateIsValid();
           updateWatchedValue(field.ref.name);
         }
       }
     },
-    [validateResolver, removeFieldEventListener],
+    [updateIsValid, removeFieldEventListener],
   );
 
   function clearErrors(
@@ -783,6 +796,7 @@ export function useForm<
     });
 
     formStateSubjectRef.current.next({
+      errors: formStateRef.current.errors,
       isValid: false,
     });
 
@@ -1000,14 +1014,13 @@ export function useForm<
           field,
           shallowFieldsStateRef,
         ).then((error: FieldErrors) => {
-          const previousFormIsValid = formStateRef.current.isValid;
-
           isEmptyObject(error)
             ? set(validFieldsRef.current, name, true)
             : unset(validFieldsRef.current, name);
 
-          previousFormIsValid !== isEmptyObject(error) &&
-            setFormState({ ...formState });
+          formStateRef.current.isValid &&
+            !isEmptyObject(error) &&
+            setFormState({ ...formStateRef.current, isValid: getIsValid() });
         });
       }
     }
@@ -1144,6 +1157,7 @@ export function useForm<
           isSubmitting: false,
           isSubmitSuccessful: isEmptyObject(formStateRef.current.errors),
           submitCount: formStateRef.current.submitCount + 1,
+          errors: formStateRef.current.errors,
         });
       }
     },
@@ -1172,7 +1186,7 @@ export function useForm<
       submitCount: submitCount ? formStateRef.current.submitCount : 0,
       isDirty: isDirty ? formStateRef.current.isDirty : false,
       isSubmitted: isSubmitted ? formStateRef.current.isSubmitted : false,
-      isValid: isValid ? formStateRef.current.isValid : false,
+      isValid: isValid ? formStateRef.current.isValid : !isOnSubmit,
       dirtyFields: dirtyFields ? formStateRef.current.dirtyFields : {},
       touched: touched ? formStateRef.current.touched : {},
       errors: errors ? formStateRef.current.errors : {},
@@ -1220,7 +1234,7 @@ export function useForm<
   };
 
   React.useEffect(() => {
-    resolver && readFormStateRef.current.isValid && validateResolver();
+    resolver && readFormStateRef.current.isValid && updateIsValid();
     observerRef.current =
       observerRef.current || !isWeb
         ? observerRef.current
@@ -1229,12 +1243,14 @@ export function useForm<
 
   React.useEffect(() => {
     const tearDown = formStateSubjectRef.current.subscribe({
-      next: (state: Partial<FormState<TFieldValues>> = {}) => {
-        formStateRef.current = {
-          ...formStateRef.current,
-          ...state,
-        };
-        setFormState(formStateRef.current);
+      next: (formState: Partial<FormState<TFieldValues>> = {}) => {
+        if (shouldRenderFormState(formState, readFormStateRef.current, true)) {
+          formStateRef.current = {
+            ...formStateRef.current,
+            ...formState,
+          };
+          setFormState(formStateRef.current);
+        }
       },
     });
 
@@ -1248,38 +1264,17 @@ export function useForm<
     };
   }, []);
 
-  if (!resolver && readFormStateRef.current.isValid) {
-    formState.isValid =
-      deepEqual(validFieldsRef.current, fieldsWithValidationRef.current) &&
-      isEmptyObject(formStateRef.current.errors);
-  }
-
   const commonProps = {
     trigger,
     setValue: React.useCallback(setValue, [setInternalValue, trigger]),
     getValues: React.useCallback(getValues, []),
     register: React.useCallback(register, [defaultValuesRef.current]),
     unregister: React.useCallback(unregister, []),
-    formState: isProxyEnabled
-      ? new Proxy(formState, {
-          get: (obj, prop: keyof FormStateProxy) => {
-            if (process.env.NODE_ENV !== 'production') {
-              if (prop === 'isValid' && isOnSubmit) {
-                console.warn(
-                  '📋 `formState.isValid` is applicable with `onTouched`, `onChange` or `onBlur` mode. https://react-hook-form.com/api#formState',
-                );
-              }
-            }
-
-            if (prop in obj) {
-              readFormStateRef.current[prop] = true;
-              return obj[prop];
-            }
-
-            return undefined;
-          },
-        })
-      : formState,
+    formState: getProxyFormState<TFieldValues>(
+      isProxyEnabled,
+      formState,
+      readFormStateRef,
+    ),
   };
 
   const control = React.useMemo(
@@ -1287,7 +1282,7 @@ export function useForm<
       isFormDirty,
       updateWatchedValue,
       shouldUnregister,
-      updateFormState: formStateSubjectRef.current,
+      formStateSubjectRef,
       removeFieldEventListener,
       watchInternal,
       mode: modeRef.current,
@@ -1295,7 +1290,7 @@ export function useForm<
         isReValidateOnBlur,
         isReValidateOnChange,
       },
-      validateResolver: resolver ? validateResolver : undefined,
+      updateIsValid,
       fieldsRef,
       resetFieldArrayFunctionRef,
       useWatchFieldsRef,

@@ -186,7 +186,7 @@ describe('form state with nested fields', () => {
         isValid: true,
       }),
     );
-    cy.get('#renderCount').contains('17');
+    cy.get('#renderCount').contains('15');
   });
 
   it('should return correct form state with onBlur mode', () => {
@@ -280,7 +280,7 @@ describe('form state with nested fields', () => {
         isValid: true,
       }),
     );
-    cy.get('#renderCount').contains('18');
+    cy.get('#renderCount').contains('16');
   });
 
   it('should reset dirty value when inputs reset back to default with onSubmit mode', () => {
@@ -358,7 +358,7 @@ describe('form state with nested fields', () => {
         isValid: false,
       }),
     );
-    cy.get('#renderCount').contains('12');
+    cy.get('#renderCount').contains('10');
   });
 
   it('should reset dirty value when inputs reset back to default with onChange mode', () => {
@@ -417,6 +417,6 @@ describe('form state with nested fields', () => {
       }),
     );
 
-    cy.get('#renderCount').contains('18');
+    cy.get('#renderCount').contains('14');
   });
 });

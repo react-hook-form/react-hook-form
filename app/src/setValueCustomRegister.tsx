@@ -4,7 +4,12 @@ import { useForm } from 'react-hook-form';
 let renderCounter = 0;
 
 const SetValueCustomRegister: React.FC = () => {
-  const { register, setValue, handleSubmit, formState } = useForm<{
+  const {
+    register,
+    setValue,
+    handleSubmit,
+    formState: { touched, isDirty, errors },
+  } = useForm<{
     firstName: string;
     lastName: string;
     age: string;
@@ -22,7 +27,7 @@ const SetValueCustomRegister: React.FC = () => {
 
   renderCounter++;
 
-  console.log(Object.keys(formState.touched));
+  console.log(errors);
 
   return (
     <form onSubmit={handleSubmit(() => {})}>
@@ -62,10 +67,8 @@ const SetValueCustomRegister: React.FC = () => {
         WithOutError
       </button>
 
-      <div id="dirty">{formState.isDirty.toString()}</div>
-      <div id="touched">
-        {Object.keys(formState.touched).map((touch) => touch)}
-      </div>
+      <div id="dirty">{isDirty.toString()}</div>
+      <div id="touched">{Object.keys(touched).map((touch) => touch)}</div>
       <div id="renderCount">{renderCounter}</div>
     </form>
   );

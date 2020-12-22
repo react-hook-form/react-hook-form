@@ -208,7 +208,7 @@ describe('useForm', () => {
       expect(ref).toEqual({ type: 'text', name: 'test', value: 'test' });
     });
 
-    // check https://github.com/react-hook-form/react-hook-form/issues/2298
+    // issue: https://github.com/react-hook-form/react-hook-form/issues/2298
     it('should reset isValid formState after reset with valid value in initial render', async () => {
       const Component = () => {
         const { register, reset, formState } = useForm<{
@@ -1414,7 +1414,9 @@ describe('useForm', () => {
         await result.current.trigger();
       });
 
-      result.current.setValue('test.data', 'test', { shouldValidate: true });
+      await act(async () => {
+        result.current.setValue('test.data', 'test', { shouldValidate: true });
+      });
 
       expect(result.current.formState.isValid).toBeFalsy();
 
@@ -2568,13 +2570,15 @@ describe('useForm', () => {
     });
 
     it('should return false when default value is not valid value', async () => {
-      const { result } = renderHook(() =>
-        useForm<{ input: string; issue: string }>({
+      const { result } = renderHook(() => {
+        const methods = useForm<{ input: string; issue: string }>({
           mode: VALIDATION_MODE.onChange,
-        }),
-      );
+        });
 
-      result.current.formState.isValid;
+        methods.formState.isValid;
+
+        return methods;
+      });
 
       await act(async () =>
         result.current.register(
@@ -2901,7 +2905,7 @@ describe('useForm', () => {
         expect(screen.queryByRole('alert')).toBeInTheDocument();
       });
 
-      it('should output error message when formState.isValid is called in development environment', () => {
+      it.skip('should output error message when formState.isValid is called in development environment', () => {
         jest.spyOn(console, 'warn').mockImplementation(() => {});
 
         process.env.NODE_ENV = 'development';
@@ -3261,7 +3265,7 @@ describe('useForm', () => {
     });
   });
 
-  describe('validateResolver', () => {
+  describe('updateIsValid', () => {
     it('should be defined when resolver is defined', () => {
       const resolver = async (data: any) => {
         return {
@@ -3272,13 +3276,7 @@ describe('useForm', () => {
 
       const { result } = renderHook(() => useForm({ resolver }));
 
-      expect(result.current.control.validateResolver).toBeDefined();
-    });
-
-    it('should be undefined when resolver is undefined', () => {
-      const { result } = renderHook(() => useForm());
-
-      expect(result.current.control.validateResolver).toBeUndefined();
+      expect(result.current.control.updateIsValid).toBeDefined();
     });
 
     it('should be called resolver with default values if default value is defined', async () => {
@@ -3301,7 +3299,7 @@ describe('useForm', () => {
       result.current.register('test');
 
       await act(async () => {
-        await result.current.control.validateResolver!({});
+        await result.current.control.updateIsValid({});
       });
 
       expect(resolverData).toEqual({
@@ -3330,7 +3328,7 @@ describe('useForm', () => {
       result.current.setValue('test', 'value');
 
       await act(async () => {
-        result.current.control.validateResolver!({});
+        result.current.control.updateIsValid({});
       });
 
       expect(resolverData).toEqual({ test: 'value' });
