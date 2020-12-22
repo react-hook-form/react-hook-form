@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { useFormContext } from './useFormContext';
 import getProxyFormState from './logic/getProxyFormState';
 import shouldRenderFormState from './logic/shouldRenderFormState';
 import isProxyEnabled from './utils/isProxyEnabled';
@@ -9,7 +10,6 @@ import {
   UseFormStateMethods,
   UseFormStateProps,
 } from './types';
-import { useFormContext } from './useFormContext';
 
 function useFormState<TFieldValues extends FieldValues = FieldValues>({
   control,
@@ -49,7 +49,7 @@ function useFormState<TFieldValues extends FieldValues = FieldValues>({
     isProxyEnabled,
     formState,
     readFormStateRef,
-    readFormStateRef,
+    readFormState,
     false,
   );
 }
