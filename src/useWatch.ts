@@ -46,36 +46,40 @@ export function useWatch<TWatchFieldValues>({
 
   const { watchInternal, defaultValuesRef, watchSubjectRef } =
     control || methods.control;
-  const [value, updateValue] = React.useState<unknown>(defaultValue);
+  const [value, updateValue] = React.useState<unknown>(
+    isUndefined(defaultValue)
+      ? Array.isArray(name)
+        ? name.reduce(
+            (previous, inputName) => ({
+              ...previous,
+              [inputName]: get(defaultValuesRef.current, inputName),
+            }),
+            {},
+          )
+        : isString(name)
+        ? get(defaultValuesRef.current, name)
+        : defaultValuesRef.current
+      : defaultValue,
+  );
 
   React.useEffect(() => {
-    watchSubjectRef.current.subscribe({
+    const tearDown = watchSubjectRef.current.subscribe({
       next: ({ inputName, inputValue }) => {
-        if (isString(name) && inputName === inputName) {
-          updateValue(
-            isUndefined(inputValue)
-              ? get(defaultValuesRef.current, name, defaultValue)
-              : inputValue,
-          );
-        } else {
-          const result = watchInternal(name, defaultValuesRef.current);
-
-          updateValue(
-            isUndefined(result)
-              ? Array.isArray(name)
-                ? name.reduce(
-                    (previous, inputName) => ({
-                      ...previous,
-                      [inputName]: get(defaultValuesRef.current, inputName),
-                    }),
-                    {},
-                  )
-                : defaultValuesRef.current
-              : result,
-          );
-        }
+        updateValue(
+          isString(name) && !isUndefined(inputName)
+            ? inputName === inputName
+              ? isUndefined(inputValue)
+                ? watchInternal(name, defaultValuesRef.current)
+                : inputValue
+              : get(inputValue, name, '')
+            : watchInternal(name, defaultValuesRef.current),
+        );
       },
     });
+
+    return () => {
+      tearDown.unsubscribe();
+    };
   }, []);
 
   return value as TWatchFieldValues;

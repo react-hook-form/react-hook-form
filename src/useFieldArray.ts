@@ -88,7 +88,7 @@ export const useFieldArray = <
   const focusIndexRef = React.useRef(-1);
   const {
     isFormDirty,
-    updateWatchedValue,
+    watchSubjectRef,
     resetFieldArrayFunctionRef,
     fieldArrayNamesRef,
     fieldsRef,
@@ -461,7 +461,7 @@ export const useFieldArray = <
       set(fieldArrayDefaultValuesRef.current, name, defaultValues);
     }
 
-    updateWatchedValue(name);
+    watchSubjectRef.current.next({ inputName: name });
 
     if (focusIndexRef.current > -1) {
       for (const key in fieldsRef.current) {

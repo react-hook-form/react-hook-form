@@ -96,8 +96,8 @@ export function useForm<
   );
   const watchSubjectRef = React.useRef(
     new Subject<{
-      inputName: string;
-      inputValue: unknown;
+      inputName?: string;
+      inputValue?: unknown;
     }>(),
   );
   const fieldArrayDefaultValuesRef = React.useRef<FieldArrayDefaultValues>({});
@@ -716,21 +716,6 @@ export function useForm<
     [shouldUnregister],
   );
 
-  const updateWatchedValue = React.useCallback((name: string) => {
-    if (isWatchAllRef.current) {
-      formStateSubjectRef.current.next({});
-    } else {
-      for (const watchField of watchFieldsRef.current) {
-        if (watchField.startsWith(name)) {
-          formStateSubjectRef.current.next({});
-          break;
-        }
-      }
-
-      watchSubjectRef.current.next({ inputName: name, inputValue: '' });
-    }
-  }, []);
-
   const removeFieldEventListenerAndRef = React.useCallback(
     (field?: Field, forceDelete?: boolean) => {
       if (field) {
@@ -751,7 +736,10 @@ export function useForm<
           readFormStateRef.current.isValid &&
             resolverRef.current &&
             updateIsValid();
-          updateWatchedValue(field.ref.name);
+          watchSubjectRef.current.next({
+            inputName: field.ref.name,
+            inputValue: '',
+          });
         }
       }
     },
@@ -1204,7 +1192,10 @@ export function useForm<
 
     fieldsRef.current = {};
     defaultValuesRef.current = { ...(values || defaultValuesRef.current) };
-    values && watchSubjectRef.current.next({ inputName: '', inputValue: {} });
+    values &&
+      watchSubjectRef.current.next({
+        inputValue: { ...defaultValuesRef.current },
+      });
 
     Object.values(resetFieldArrayFunctionRef.current).forEach(
       (resetFieldArray) => isFunction(resetFieldArray) && resetFieldArray(),
@@ -1264,7 +1255,6 @@ export function useForm<
   const control = React.useMemo(
     () => ({
       isFormDirty,
-      updateWatchedValue,
       shouldUnregister,
       formStateSubjectRef,
       watchSubjectRef,
@@ -1291,7 +1281,6 @@ export function useForm<
     }),
     [
       defaultValuesRef.current,
-      updateWatchedValue,
       shouldUnregister,
       removeFieldEventListener,
       watchInternal,

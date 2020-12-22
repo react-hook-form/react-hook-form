@@ -2,12 +2,16 @@ export type Observer<T> = {
   next: (value: T) => void;
 };
 
+type TearDown = () => void;
+
 export type SubjectType<T> = {
   next: (value: T) => void;
-  subscribe: (value: Observer<T>) => void;
+  subscribe: (
+    value: Observer<T>,
+  ) => {
+    unsubscribe: TearDown;
+  };
 };
-
-type TearDown = () => void;
 
 export class Subscription {
   private tearDowns: TearDown[] = [];

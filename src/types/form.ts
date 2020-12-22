@@ -156,8 +156,8 @@ export type Control<TFieldValues extends FieldValues = FieldValues> = Pick<
   >;
   watchSubjectRef: React.MutableRefObject<
     SubjectType<{
-      inputName: string;
-      inputValue: unknown;
+      inputName?: string;
+      inputValue?: unknown;
     }>
   >;
   updateIsValid: (fieldsValues: FieldValues) => void;
@@ -178,7 +178,6 @@ export type Control<TFieldValues extends FieldValues = FieldValues> = Pick<
     defaultValue?: unknown,
     watchId?: string,
   ) => unknown;
-  updateWatchedValue: (name: string) => void;
 };
 
 export type UseWatchRenderFunctions = Record<string, () => void>;
