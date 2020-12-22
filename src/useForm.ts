@@ -73,8 +73,6 @@ import {
   SetFieldValue,
   FieldArrayDefaultValues,
   ResetFieldArrayFunctionRef,
-  UseWatchRenderFunctions,
-  RecordInternalNameSet,
 } from './types';
 
 const isWindowUndefined = typeof window === UNDEFINED;
@@ -96,13 +94,15 @@ export function useForm<
   const formStateSubjectRef = React.useRef(
     new Subject<Partial<FormState<TFieldValues>>>(),
   );
+  const watchSubjectRef = React.useRef(
+    new Subject<{
+      inputName: string;
+      inputValue: unknown;
+    }>(),
+  );
   const fieldArrayDefaultValuesRef = React.useRef<FieldArrayDefaultValues>({});
   const fieldArrayValuesRef = React.useRef<FieldArrayDefaultValues>({});
   const watchFieldsRef = React.useRef<InternalNameSet<TFieldValues>>(new Set());
-  const useWatchFieldsRef = React.useRef<RecordInternalNameSet<TFieldValues>>(
-    {},
-  );
-  const useWatchRenderFunctionsRef = React.useRef<UseWatchRenderFunctions>({});
   const fieldsWithValidationRef = React.useRef<
     FieldNamesMarkedBoolean<TFieldValues>
   >({});
@@ -506,28 +506,6 @@ export function useForm<
     watchFieldsRef.current.has(name) ||
     watchFieldsRef.current.has((name.match(/\w+/) || [])[0]);
 
-  const renderWatchedInputs = <T extends FieldName<FieldValues>>(
-    name: T,
-  ): boolean => {
-    let found = true;
-
-    if (!isEmptyObject(useWatchFieldsRef.current)) {
-      for (const key in useWatchFieldsRef.current) {
-        if (
-          !name ||
-          !useWatchFieldsRef.current[key].size ||
-          useWatchFieldsRef.current[key].has(name) ||
-          useWatchFieldsRef.current[key].has(getNodeParentName(name))
-        ) {
-          useWatchRenderFunctionsRef.current[key]();
-          found = false;
-        }
-      }
-    }
-
-    return found;
-  };
-
   function setValue(
     name: FieldName<TFieldValues>,
     value: SetFieldValue<TFieldValues>,
@@ -535,7 +513,7 @@ export function useForm<
   ): void {
     setInternalValue(name, value, config || {});
     isFieldWatched(name) && formStateSubjectRef.current.next({});
-    renderWatchedInputs(name);
+    watchSubjectRef.current.next({ inputName: name, inputValue: value });
   }
 
   handleChangeRef.current = handleChangeRef.current
@@ -582,7 +560,11 @@ export function useForm<
           }
 
           if (shouldSkipValidation) {
-            !isBlurEvent && renderWatchedInputs(name);
+            !isBlurEvent &&
+              watchSubjectRef.current.next({
+                inputName: name,
+                inputValue: getFieldValue(fieldsRef, name),
+              });
             return (
               (!isEmptyObject(state) ||
                 (shouldRender && isEmptyObject(state))) &&
@@ -637,7 +619,11 @@ export function useForm<
             )[name];
           }
 
-          !isBlurEvent && renderWatchedInputs(name);
+          !isBlurEvent &&
+            watchSubjectRef.current.next({
+              inputName: name,
+              inputValue: getFieldValue(fieldsRef, name),
+            });
           shouldRenderBaseOnError(name, error, shouldRender, state, isValid);
         }
       };
@@ -741,7 +727,7 @@ export function useForm<
         }
       }
 
-      renderWatchedInputs(name);
+      watchSubjectRef.current.next({ inputName: name, inputValue: '' });
     }
   }, []);
 
@@ -804,10 +790,8 @@ export function useForm<
   }
 
   const watchInternal = React.useCallback(
-    <T>(fieldNames?: string | string[], defaultValue?: T, watchId?: string) => {
-      const watchFields = watchId
-        ? useWatchFieldsRef.current[watchId]
-        : watchFieldsRef.current;
+    <T>(fieldNames?: string | string[], defaultValue?: T) => {
+      const watchFields = watchFieldsRef.current;
       let fieldValues = getFieldsValues<TFieldValues>(
         fieldsRef,
         cloneObject(shallowFieldsStateRef.current),
@@ -863,7 +847,7 @@ export function useForm<
         );
       }
 
-      isWatchAllRef.current = isUndefined(watchId);
+      isWatchAllRef.current = true;
 
       return transformToNestObject(
         (!isEmptyObject(fieldValues) && fieldValues) ||
@@ -1220,7 +1204,7 @@ export function useForm<
 
     fieldsRef.current = {};
     defaultValuesRef.current = { ...(values || defaultValuesRef.current) };
-    values && renderWatchedInputs('');
+    values && watchSubjectRef.current.next({ inputName: '', inputValue: {} });
 
     Object.values(resetFieldArrayFunctionRef.current).forEach(
       (resetFieldArray) => isFunction(resetFieldArray) && resetFieldArray(),
@@ -1283,6 +1267,7 @@ export function useForm<
       updateWatchedValue,
       shouldUnregister,
       formStateSubjectRef,
+      watchSubjectRef,
       removeFieldEventListener,
       watchInternal,
       mode: modeRef.current,
@@ -1293,8 +1278,6 @@ export function useForm<
       updateIsValid,
       fieldsRef,
       resetFieldArrayFunctionRef,
-      useWatchFieldsRef,
-      useWatchRenderFunctionsRef,
       fieldArrayDefaultValuesRef,
       validFieldsRef,
       fieldsWithValidationRef,

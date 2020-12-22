@@ -154,6 +154,12 @@ export type Control<TFieldValues extends FieldValues = FieldValues> = Pick<
   formStateSubjectRef: React.MutableRefObject<
     SubjectType<Partial<FormState<TFieldValues>>>
   >;
+  watchSubjectRef: React.MutableRefObject<
+    SubjectType<{
+      inputName: string;
+      inputValue: unknown;
+    }>
+  >;
   updateIsValid: (fieldsValues: FieldValues) => void;
   validFieldsRef: React.MutableRefObject<FieldNamesMarkedBoolean<TFieldValues>>;
   fieldsWithValidationRef: React.MutableRefObject<
@@ -167,12 +173,6 @@ export type Control<TFieldValues extends FieldValues = FieldValues> = Pick<
   fieldArrayNamesRef: React.MutableRefObject<InternalNameSet<TFieldValues>>;
   readFormStateRef: React.MutableRefObject<ReadFormState>;
   defaultValuesRef: React.MutableRefObject<DefaultValues<TFieldValues>>;
-  useWatchFieldsRef: React.MutableRefObject<
-    RecordInternalNameSet<TFieldValues>
-  >;
-  useWatchRenderFunctionsRef: React.MutableRefObject<
-    Record<string, React.Dispatch<unknown>>
-  >;
   watchInternal: (
     fieldNames?: string | string[],
     defaultValue?: unknown,
