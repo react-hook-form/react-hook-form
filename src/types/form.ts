@@ -133,6 +133,8 @@ export type Control<TFieldValues extends FieldValues = FieldValues> = Pick<
   UseFormMethods<TFieldValues>,
   'register' | 'unregister' | 'setValue' | 'getValues' | 'trigger'
 > & {
+  isWatchAllRef: React.MutableRefObject<boolean>;
+  watchFieldsRef: React.MutableRefObject<InternalNameSet<TFieldValues>>;
   isFormDirty: (name?: string, data?: unknown[]) => boolean;
   removeFieldEventListener: (field: Field, forceDelete?: boolean) => void;
   mode: Readonly<{

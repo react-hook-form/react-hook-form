@@ -1254,6 +1254,8 @@ export function useForm<
 
   const control = React.useMemo(
     () => ({
+      isWatchAllRef,
+      watchFieldsRef,
       isFormDirty,
       shouldUnregister,
       formStateSubjectRef,

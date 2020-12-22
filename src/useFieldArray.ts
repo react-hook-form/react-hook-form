@@ -87,6 +87,8 @@ export const useFieldArray = <
 
   const focusIndexRef = React.useRef(-1);
   const {
+    isWatchAllRef,
+    watchFieldsRef,
     isFormDirty,
     watchSubjectRef,
     resetFieldArrayFunctionRef,
@@ -459,6 +461,17 @@ export const useFieldArray = <
     if (defaultValues && fields.length < defaultValues.length) {
       defaultValues.pop();
       set(fieldArrayDefaultValuesRef.current, name, defaultValues);
+    }
+
+    if (isWatchAllRef.current) {
+      formStateSubjectRef.current.next({});
+    } else {
+      for (const watchField of watchFieldsRef.current) {
+        if (watchField.startsWith(name)) {
+          formStateSubjectRef.current.next({});
+          break;
+        }
+      }
     }
 
     watchSubjectRef.current.next({ inputName: name });
