@@ -1,5 +1,5 @@
 import * as React from 'react';
-import Subject from './Subject';
+import Subject from './utils/Subject';
 import focusOnErrorField from './logic/focusOnErrorField';
 import findRemovedFieldAndRemoveListener from './logic/findRemovedFieldAndRemoveListener';
 import setFieldArrayDirtyFields from './logic/setFieldArrayDirtyFields';
@@ -15,6 +15,7 @@ import isNameInFieldArray from './logic/isNameInFieldArray';
 import getProxyFormState from './logic/getProxyFormState';
 import isProxyEnabled from './utils/isProxyEnabled';
 import isCheckBoxInput from './utils/isCheckBoxInput';
+import isObject from './utils/isObject';
 import isEmptyObject from './utils/isEmptyObject';
 import isRadioInput from './utils/isRadioInput';
 import isFileInput from './utils/isFileInput';
