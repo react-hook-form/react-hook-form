@@ -34,7 +34,7 @@ describe('useFormState', () => {
           'maxDate',
           'minLength',
         ],
-        dirtyFields: [
+        dirty: [
           'nestItem',
           'firstName',
           'arrayItem',
@@ -79,7 +79,7 @@ describe('useFormState', () => {
           'minLength',
           'minRequiredLength',
         ],
-        dirtyFields: [
+        dirty: [
           'nestItem',
           'firstName',
           'arrayItem',
@@ -119,7 +119,7 @@ describe('useFormState', () => {
           'minLength',
           'minRequiredLength',
         ],
-        dirtyFields: [
+        dirty: [
           'nestItem',
           'firstName',
           'arrayItem',
@@ -146,7 +146,7 @@ describe('useFormState', () => {
       expect(JSON.parse($state.text())).to.be.deep.equal({
         isDirty: false,
         touched: [],
-        dirtyFields: [],
+        dirty: [],
         isSubmitted: false,
         isSubmitSuccessful: false,
         submitCount: 0,

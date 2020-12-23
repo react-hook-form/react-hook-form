@@ -5,17 +5,17 @@ import { render, screen, fireEvent, act } from '@testing-library/react';
 import { Control } from './types';
 
 describe('useFormState', () => {
-  it('should render correct form state with isDirty, dirtyFields, touched', () => {
+  it('should render correct form state with isDirty, dirty, touched', () => {
     let count = 0;
     const Test = ({ control }: { control: Control }) => {
-      const { isDirty, dirtyFields, touched } = useFormState({
+      const { isDirty, dirty, touched } = useFormState({
         control,
       });
 
       return (
         <>
           <div>{isDirty ? 'isDirty' : ''}</div>
-          <div>{dirtyFields['test'] ? 'dirty field' : ''}</div>
+          <div>{dirty['test'] ? 'dirty field' : ''}</div>
           <div>{touched['test'] ? 'isTouched' : ''}</div>
         </>
       );
@@ -117,7 +117,7 @@ describe('useFormState', () => {
     let test1Count = 0;
 
     const Test1 = ({ control }: { control: Control }) => {
-      const { isDirty, dirtyFields } = useFormState({
+      const { isDirty, dirty } = useFormState({
         control,
       });
 
@@ -125,9 +125,7 @@ describe('useFormState', () => {
 
       return (
         <>
-          <div>
-            {dirtyFields['test'] ? 'hasDirtyField' : 'notHasDirtyField'}
-          </div>
+          <div>{dirty['test'] ? 'hasDirtyField' : 'notHasDirtyField'}</div>
           <div>{isDirty ? 'isDirty' : 'notDirty'}</div>
         </>
       );

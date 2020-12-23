@@ -1,7 +1,7 @@
 import setFieldArrayDirtyFields from './setFieldArrayDirtyFields';
 
 describe('setFieldArrayDirtyFields', () => {
-  it('should set correctly dirtyFields', () => {
+  it('should set correctly dirty', () => {
     expect(
       setFieldArrayDirtyFields(
         [{ data: 'bill' }, { data: 'luo', data1: 'luo1' }],
@@ -87,7 +87,7 @@ describe('setFieldArrayDirtyFields', () => {
     ]);
   });
 
-  it('should set correctly with nested dirtyFields', () => {
+  it('should set correctly with nested dirty', () => {
     expect(
       setFieldArrayDirtyFields(
         [

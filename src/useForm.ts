@@ -127,7 +127,7 @@ export function useForm<
   const [formState, setFormState] = React.useState<FormState<TFieldValues>>({
     isDirty: false,
     isValidating: false,
-    dirtyFields: {},
+    dirty: {},
     isSubmitted: false,
     submitCount: 0,
     touched: {},
@@ -138,7 +138,7 @@ export function useForm<
   });
   const readFormStateRef = React.useRef<ReadFormState>({
     isDirty: !isProxyEnabled,
-    dirtyFields: !isProxyEnabled,
+    dirty: !isProxyEnabled,
     touched: !isProxyEnabled || isOnTouch,
     isValidating: !isProxyEnabled,
     isSubmitting: !isProxyEnabled,
@@ -172,7 +172,7 @@ export function useForm<
       error: FieldError | undefined,
       shouldRender: boolean | null = false,
       state: {
-        dirtyFields?: FieldNamesMarkedBoolean<TFieldValues>;
+        dirty?: FieldNamesMarkedBoolean<TFieldValues>;
         isDirty?: boolean;
         touched?: FieldNamesMarkedBoolean<TFieldValues>;
       } = {},
@@ -281,33 +281,30 @@ export function useForm<
       name: InternalFieldName<TFieldValues>,
       shouldRender = true,
     ): Partial<
-      Pick<FormState<TFieldValues>, 'dirtyFields' | 'isDirty' | 'touched'>
+      Pick<FormState<TFieldValues>, 'dirty' | 'isDirty' | 'touched'>
     > => {
-      if (
-        readFormStateRef.current.isDirty ||
-        readFormStateRef.current.dirtyFields
-      ) {
+      if (readFormStateRef.current.isDirty || readFormStateRef.current.dirty) {
         const isFieldDirty = !deepEqual(
           get(defaultValuesRef.current, name),
           getFieldValue(fieldsRef, name, shallowFieldsStateRef),
         );
-        const isDirtyFieldExist = get(formStateRef.current.dirtyFields, name);
+        const isDirtyFieldExist = get(formStateRef.current.dirty, name);
         const previousIsDirty = formStateRef.current.isDirty;
 
         isFieldDirty
-          ? set(formStateRef.current.dirtyFields, name, true)
-          : unset(formStateRef.current.dirtyFields, name);
+          ? set(formStateRef.current.dirty, name, true)
+          : unset(formStateRef.current.dirty, name);
 
         const state = {
           isDirty: isFormDirty(),
-          dirtyFields: formStateRef.current.dirtyFields,
+          dirty: formStateRef.current.dirty,
         };
 
         const isChanged =
           (readFormStateRef.current.isDirty &&
             previousIsDirty !== state.isDirty) ||
-          (readFormStateRef.current.dirtyFields &&
-            isDirtyFieldExist !== get(formStateRef.current.dirtyFields, name));
+          (readFormStateRef.current.dirty &&
+            isDirtyFieldExist !== get(formStateRef.current.dirty, name));
 
         isChanged && shouldRender && formStateSubjectRef.current.next(state);
 
@@ -470,21 +467,21 @@ export function useForm<
 
           if (
             (readFormStateRef.current.isDirty ||
-              readFormStateRef.current.dirtyFields) &&
+              readFormStateRef.current.dirty) &&
             config.shouldDirty
           ) {
             set(
-              formStateRef.current.dirtyFields,
+              formStateRef.current.dirty,
               name,
               setFieldArrayDirtyFields(
                 value,
                 get(defaultValuesRef.current, name, []),
-                get(formStateRef.current.dirtyFields, name, []),
+                get(formStateRef.current.dirty, name, []),
               ),
             );
 
             formStateSubjectRef.current.next({
-              dirtyFields: formStateRef.current.dirtyFields,
+              dirty: formStateRef.current.dirty,
               isDirty: !deepEqual(
                 { ...getValues(), [name]: value },
                 defaultValuesRef.current,
@@ -723,7 +720,7 @@ export function useForm<
           unset(validFieldsRef.current, field.ref.name);
           unset(fieldsWithValidationRef.current, field.ref.name);
           unset(formStateRef.current.errors, field.ref.name);
-          set(formStateRef.current.dirtyFields, field.ref.name, true);
+          set(formStateRef.current.dirty, field.ref.name, true);
 
           formStateSubjectRef.current.next({
             ...formStateRef.current,
@@ -1005,7 +1002,7 @@ export function useForm<
     }
 
     if (!(isFieldArray && isEmptyDefaultValue)) {
-      !isFieldArray && unset(formStateRef.current.dirtyFields, name);
+      !isFieldArray && unset(formStateRef.current.dirty, name);
     }
 
     if (type) {
@@ -1150,7 +1147,7 @@ export function useForm<
     touched,
     isValid,
     submitCount,
-    dirtyFields,
+    dirty,
   }: OmitResetState) => {
     if (!isValid) {
       validFieldsRef.current = {};
@@ -1166,7 +1163,7 @@ export function useForm<
       isDirty: isDirty ? formStateRef.current.isDirty : false,
       isSubmitted: isSubmitted ? formStateRef.current.isSubmitted : false,
       isValid: isValid ? formStateRef.current.isValid : !isOnSubmit,
-      dirtyFields: dirtyFields ? formStateRef.current.dirtyFields : {},
+      dirty: dirty ? formStateRef.current.dirty : {},
       touched: touched ? formStateRef.current.touched : {},
       errors: errors ? formStateRef.current.errors : {},
       isSubmitting: false,

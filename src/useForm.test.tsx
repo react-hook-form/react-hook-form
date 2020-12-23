@@ -409,7 +409,7 @@ describe('useForm', () => {
       expect(formState.isDirty).toBeFalsy();
     });
 
-    it('should update dirtyFields during unregister', () => {
+    it('should update dirty during unregister', () => {
       let formState: any;
       const Component = () => {
         const { register, formState: tempFormState } = useForm();
@@ -431,12 +431,12 @@ describe('useForm', () => {
         },
       });
 
-      expect(formState.dirtyFields.test).toBeDefined();
+      expect(formState.dirty.test).toBeDefined();
       expect(formState.isDirty).toBeTruthy();
 
       unmount();
 
-      expect(formState.dirtyFields.test).toBeDefined();
+      expect(formState.dirty.test).toBeDefined();
       expect(formState.isDirty).toBeTruthy();
     });
 
@@ -717,7 +717,7 @@ describe('useForm', () => {
             touched: true,
             isValid: true,
             submitCount: true,
-            dirtyFields: true,
+            dirty: true,
           },
         ),
       );
@@ -1147,7 +1147,7 @@ describe('useForm', () => {
           },
         );
 
-        result.current.formState.dirtyFields;
+        result.current.formState.dirty;
 
         await act(async () =>
           result.current.setValue('test', 'abc', {
@@ -1239,7 +1239,7 @@ describe('useForm', () => {
           );
 
           expect(result.current.formState.isDirty).toBeTruthy();
-          expect(result.current.formState.dirtyFields).toEqual({ test: true });
+          expect(result.current.formState.dirty).toEqual({ test: true });
         },
       );
 
@@ -1273,7 +1273,7 @@ describe('useForm', () => {
           );
 
           expect(result.current.formState.isDirty).toBeTruthy();
-          expect(result.current.formState.dirtyFields).toEqual({
+          expect(result.current.formState.dirty).toEqual({
             test: dirtyFields,
           });
         },
@@ -1293,12 +1293,12 @@ describe('useForm', () => {
           );
 
           expect(result.current.formState.isDirty).toBeFalsy();
-          expect(result.current.formState.dirtyFields).toEqual({});
+          expect(result.current.formState.dirty).toEqual({});
         },
       );
 
       it.each(['isDirty', 'dirtyFields'])(
-        'should set name to dirtyFieldRef if field value is different with default value when formState.dirtyFields is defined',
+        'should set name to dirtyFieldRef if field value is different with default value when formState.dirty is defined',
         (property) => {
           const { result } = renderHook(() =>
             useForm<{ test: string }>({
@@ -1315,12 +1315,12 @@ describe('useForm', () => {
           );
 
           expect(result.current.formState.isDirty).toBeTruthy();
-          expect(result.current.formState.dirtyFields.test).toBeTruthy();
+          expect(result.current.formState.dirty.test).toBeTruthy();
         },
       );
 
       it.each(['isDirty', 'dirtyFields'])(
-        'should unset name from dirtyFieldRef if field value is not different with default value when formState.dirtyFields is defined',
+        'should unset name from dirtyFieldRef if field value is not different with default value when formState.dirty is defined',
         (property) => {
           const { result } = renderHook(() =>
             useForm<{ test: string }>({
@@ -1337,14 +1337,14 @@ describe('useForm', () => {
           );
 
           expect(result.current.formState.isDirty).toBeTruthy();
-          expect(result.current.formState.dirtyFields.test).toBeTruthy();
+          expect(result.current.formState.dirty.test).toBeTruthy();
 
           act(() =>
             result.current.setValue('test', 'default', { shouldDirty: true }),
           );
 
           expect(result.current.formState.isDirty).toBeFalsy();
-          expect(result.current.formState.dirtyFields.test).toBeUndefined();
+          expect(result.current.formState.dirty.test).toBeUndefined();
         },
       );
     });

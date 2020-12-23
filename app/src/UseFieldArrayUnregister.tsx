@@ -40,7 +40,7 @@ const UseFieldArrayUnregister: React.FC = () => {
     register,
     setValue,
     getValues,
-    formState: { isDirty, touched, dirtyFields, errors },
+    formState: { isDirty, touched, dirty, errors },
   } = useForm<{
     data: { name: string }[];
   }>({
@@ -161,7 +161,7 @@ const UseFieldArrayUnregister: React.FC = () => {
       <div id="renderCount">{renderCount}</div>
       <div id="result">{JSON.stringify(data)}</div>
       <div id="dirty">{isDirty ? 'yes' : 'no'}</div>
-      <div id="dirtyFields">{JSON.stringify(dirtyFields)}</div>
+      <div id="dirtyFields">{JSON.stringify(dirty)}</div>
       <div id="touched">{JSON.stringify(touched.data)}</div>
     </form>
   );

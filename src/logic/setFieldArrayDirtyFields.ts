@@ -9,7 +9,7 @@ function setDirtyFields<
 >(
   values: T,
   defaultValues: U,
-  dirtyFields: Record<string, boolean | []>[],
+  dirty: Record<string, boolean | []>[],
   parentNode?: K,
   parentName?: keyof K,
 ) {
@@ -18,39 +18,37 @@ function setDirtyFields<
   while (++index < values.length) {
     for (const key in values[index]) {
       if (Array.isArray(values[index][key])) {
-        !dirtyFields[index] && (dirtyFields[index] = {});
-        dirtyFields[index][key] = [];
+        !dirty[index] && (dirty[index] = {});
+        dirty[index][key] = [];
         setDirtyFields(
           values[index][key] as T,
           get(defaultValues[index] || {}, key, []),
-          dirtyFields[index][key] as [],
-          dirtyFields[index],
+          dirty[index][key] as [],
+          dirty[index],
           key,
         );
       } else {
         get(defaultValues[index] || {}, key) === values[index][key]
-          ? set(dirtyFields[index] || {}, key)
-          : (dirtyFields[index] = {
-              ...dirtyFields[index],
+          ? set(dirty[index] || {}, key)
+          : (dirty[index] = {
+              ...dirty[index],
               [key]: true,
             });
       }
     }
 
-    parentNode &&
-      !dirtyFields.length &&
-      delete parentNode[parentName as keyof K];
+    parentNode && !dirty.length && delete parentNode[parentName as keyof K];
   }
 
-  return dirtyFields;
+  return dirty;
 }
 
 export default <T extends U, U extends Record<string, unknown>[]>(
   values: T,
   defaultValues: U,
-  dirtyFields: Record<string, boolean | []>[],
+  dirty: Record<string, boolean | []>[],
 ) =>
   deepMerge(
-    setDirtyFields(values, defaultValues, dirtyFields),
-    setDirtyFields(defaultValues, values, dirtyFields),
+    setDirtyFields(values, defaultValues, dirty),
+    setDirtyFields(defaultValues, values, dirty),
   );

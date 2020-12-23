@@ -210,7 +210,7 @@ export function useController<TFieldValues extends FieldValues = FieldValues>({
         },
         isDirty: {
           get() {
-            return !!get(formState.dirtyFields, name);
+            return !!get(formState.dirty, name);
           },
         },
         isTouched: {

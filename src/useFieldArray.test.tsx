@@ -773,7 +773,7 @@ describe('useFieldArray', () => {
   });
 
   describe('with setValue', () => {
-    it.each(['isDirty', 'dirtyFields'])(
+    it.each(['isDirty', 'dirty'])(
       'should set name to dirtyFieldRef if array field values are different with default value when formState.%s is defined',
       (property) => {
         let setValue: any;
@@ -829,14 +829,14 @@ describe('useFieldArray', () => {
           );
         });
 
-        expect(formState.dirtyFields).toEqual({
+        expect(formState.dirty).toEqual({
           test: [{ name: true }],
         });
         expect(formState.isDirty).toBeTruthy();
       },
     );
 
-    it.each(['isDirty', 'dirtyFields'])(
+    it.each(['isDirty', 'dirty'])(
       'should unset name from dirtyFieldRef if array field values are not different with default value when formState.%s is defined',
       (property) => {
         let setValue: any;
@@ -890,7 +890,7 @@ describe('useFieldArray', () => {
           );
         });
 
-        expect(formState.dirtyFields).toEqual({
+        expect(formState.dirty).toEqual({
           test: [{ name: true }],
         });
         expect(formState.isDirty).toBeTruthy();
@@ -903,7 +903,7 @@ describe('useFieldArray', () => {
           );
         });
 
-        expect(formState.dirtyFields).toEqual({
+        expect(formState.dirty).toEqual({
           test: [],
         });
         expect(formState.isDirty).toBeFalsy();
@@ -1001,7 +1001,7 @@ describe('useFieldArray', () => {
         const {
           register,
           control,
-          formState: { dirtyFields },
+          formState: { dirty },
         } = useForm<{
           test: { value: string }[];
         }>({
@@ -1018,7 +1018,7 @@ describe('useFieldArray', () => {
           name: 'test',
         });
 
-        dirtyInputs = dirtyFields;
+        dirtyInputs = dirty;
 
         return (
           <form>
@@ -1033,7 +1033,7 @@ describe('useFieldArray', () => {
             <button type="button" onClick={() => append({ value: '' })}>
               append
             </button>
-            {dirtyFields.test?.length && 'dirty'}
+            {dirty.test?.length && 'dirty'}
           </form>
         );
       };
@@ -1143,7 +1143,7 @@ describe('useFieldArray', () => {
         });
 
         result.current.formState.isDirty;
-        result.current.formState.dirtyFields;
+        result.current.formState.dirty;
 
         act(() => {
           result.current.append({ value: 'test' });
@@ -1158,7 +1158,7 @@ describe('useFieldArray', () => {
         });
 
         expect(result.current.formState.isDirty).toBeTruthy();
-        expect(result.current.formState.dirtyFields).toEqual({
+        expect(result.current.formState.dirty).toEqual({
           test: [{ value: true }, { value: true }, { value: true }],
         });
       },
@@ -1424,7 +1424,7 @@ describe('useFieldArray', () => {
         });
 
         result.current.formState.isDirty;
-        result.current.formState.dirtyFields;
+        result.current.formState.dirty;
 
         act(() => {
           result.current.prepend({ value: 'test' });
@@ -1439,7 +1439,7 @@ describe('useFieldArray', () => {
         });
 
         expect(result.current.formState.isDirty).toBeTruthy();
-        expect(result.current.formState.dirtyFields).toEqual({
+        expect(result.current.formState.dirty).toEqual({
           test: [{ value: true }, { value: true }, { value: true }],
         });
       },
@@ -2025,7 +2025,7 @@ describe('useFieldArray', () => {
         });
 
         result.current.formState.isDirty;
-        result.current.formState.dirtyFields;
+        result.current.formState.dirty;
 
         act(() => {
           result.current.append({ value: 'test' });
@@ -2040,7 +2040,7 @@ describe('useFieldArray', () => {
         });
 
         expect(result.current.formState.isDirty).toBeTruthy();
-        expect(result.current.formState.dirtyFields).toEqual({
+        expect(result.current.formState.dirty).toEqual({
           test: [{ value: true }, { value: true }],
         });
 
@@ -2049,7 +2049,7 @@ describe('useFieldArray', () => {
         });
 
         expect(result.current.formState.isDirty).toBeTruthy();
-        expect(result.current.formState.dirtyFields).toEqual({
+        expect(result.current.formState.dirty).toEqual({
           test: [{ value: true }],
         });
       },
@@ -2577,7 +2577,7 @@ describe('useFieldArray', () => {
         return { register, formState, fields, append, remove };
       });
 
-      result.current.formState.dirtyFields as Record<string, any>;
+      result.current.formState.dirty as Record<string, any>;
       result.current.formState.isDirty;
 
       act(() => {
@@ -2585,7 +2585,7 @@ describe('useFieldArray', () => {
       });
 
       expect(result.current.formState.isDirty).toBeTruthy();
-      expect(result.current.formState.dirtyFields).toEqual({
+      expect(result.current.formState.dirty).toEqual({
         test: { data: [undefined, { value: true }] },
       });
 
@@ -2594,7 +2594,7 @@ describe('useFieldArray', () => {
       });
 
       expect(result.current.formState.isDirty).toBeFalsy();
-      expect(result.current.formState.dirtyFields).toEqual({});
+      expect(result.current.formState.dirty).toEqual({});
     });
 
     it('should remove Controller by index without error', () => {
@@ -2854,7 +2854,7 @@ describe('useFieldArray', () => {
         });
 
         result.current.formState.isDirty;
-        result.current.formState.dirtyFields;
+        result.current.formState.dirty;
 
         act(() => {
           result.current.append({ value: '2' });
@@ -2862,7 +2862,7 @@ describe('useFieldArray', () => {
         });
 
         expect(result.current.formState.isDirty).toBeTruthy();
-        expect(result.current.formState.dirtyFields).toEqual({
+        expect(result.current.formState.dirty).toEqual({
           test: [undefined, { value1: true }, { value: true }],
         });
       },
@@ -2884,7 +2884,7 @@ describe('useFieldArray', () => {
         });
 
         result.current.formState.isDirty;
-        result.current.formState.dirtyFields;
+        result.current.formState.dirty;
 
         act(() => {
           result.current.append({ value: '2' });
@@ -2892,7 +2892,7 @@ describe('useFieldArray', () => {
         });
 
         expect(result.current.formState.isDirty).toBeTruthy();
-        expect(result.current.formState.dirtyFields).toEqual({
+        expect(result.current.formState.dirty).toEqual({
           test: [
             undefined,
             { value1: true },
@@ -3412,7 +3412,7 @@ describe('useFieldArray', () => {
         });
 
         result.current.formState.isDirty;
-        result.current.formState.dirtyFields;
+        result.current.formState.dirty;
 
         act(() => {
           result.current.append({ value: '2' });
@@ -3427,7 +3427,7 @@ describe('useFieldArray', () => {
         });
 
         expect(result.current.formState.isDirty).toBeTruthy();
-        expect(result.current.formState.dirtyFields).toEqual({
+        expect(result.current.formState.dirty).toEqual({
           test: [{ value: true }, undefined, { value: true }],
         });
       },
@@ -3780,7 +3780,7 @@ describe('useFieldArray', () => {
         });
 
         result.current.formState.isDirty;
-        result.current.formState.dirtyFields;
+        result.current.formState.dirty;
 
         act(() => {
           result.current.append({ value: '2' });
@@ -3795,7 +3795,7 @@ describe('useFieldArray', () => {
         });
 
         expect(result.current.formState.isDirty).toBeTruthy();
-        expect(result.current.formState.dirtyFields).toEqual({
+        expect(result.current.formState.dirty).toEqual({
           test: [{ value: true }, undefined, { value: true }],
         });
       },
