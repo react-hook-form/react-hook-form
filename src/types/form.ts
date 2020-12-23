@@ -175,10 +175,10 @@ export type Control<TFieldValues extends FieldValues = FieldValues> = Pick<
   fieldArrayNamesRef: React.MutableRefObject<InternalNameSet<TFieldValues>>;
   readFormStateRef: React.MutableRefObject<ReadFormState>;
   defaultValuesRef: React.MutableRefObject<DefaultValues<TFieldValues>>;
-  watchInternal: (
+  watchInternal: <T>(
     fieldNames?: string | string[],
-    defaultValue?: unknown,
-    watchId?: string,
+    defaultValue?: T,
+    isGlobal?: boolean,
   ) => unknown;
 };
 

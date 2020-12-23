@@ -63,24 +63,26 @@ export function useWatch<TWatchFieldValues>({
   );
 
   React.useEffect(() => {
+    if (process.env.NODE_ENV !== 'production') {
+      if (name === '') {
+        console.warn(
+          '📋 useWatch `name` attribute can not be empty string. https://react-hook-form.com/api#useWatch',
+        );
+      }
+    }
+
     const tearDown = watchSubjectRef.current.subscribe({
       next: ({ inputName, inputValue }) => {
         updateValue(
-          isString(name) && !isUndefined(inputName)
-            ? name === inputName
-              ? isUndefined(inputValue)
-                ? watchInternal(name, defaultValuesRef.current)
-                : inputValue
-              : inputValue
+          isString(name) && name === inputName && !isUndefined(inputValue)
+            ? inputValue
             : watchInternal(name, defaultValuesRef.current),
         );
       },
     });
 
-    return () => {
-      tearDown.unsubscribe();
-    };
-  }, []);
+    return () => tearDown.unsubscribe();
+  }, [name]);
 
   return value as TWatchFieldValues;
 }

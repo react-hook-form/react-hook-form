@@ -14,8 +14,8 @@ import {
 export default <TFieldValues extends FieldValues>(
   fieldValues: TFieldValues,
   fieldName: InternalFieldName<TFieldValues>,
-  watchFields: Set<InternalFieldName<TFieldValues>>,
   inputValue: UnpackNestedValue<DeepPartial<TFieldValues>>,
+  watchFields?: Set<InternalFieldName<TFieldValues>>,
   isSingleField?: boolean,
 ):
   | FieldValue<TFieldValues>
@@ -23,12 +23,12 @@ export default <TFieldValues extends FieldValues>(
   | undefined => {
   let value = undefined;
 
-  watchFields.add(fieldName);
+  watchFields && watchFields.add(fieldName);
 
   if (!isEmptyObject(fieldValues)) {
     value = get(fieldValues, fieldName);
 
-    if (isObject(value) || Array.isArray(value)) {
+    if ((isObject(value) || Array.isArray(value)) && watchFields) {
       getPath(fieldName, value).forEach((name) => watchFields.add(name));
     }
   }

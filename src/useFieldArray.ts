@@ -413,7 +413,6 @@ export const useFieldArray = <
     const fieldValues = getCurrentFieldsValues();
     swapArrayAt(fieldValues, indexA, indexB);
     resetFields();
-    setFieldAndValidState([...fieldValues]);
     batchStateUpdate(
       swapArrayAt,
       {
@@ -426,6 +425,7 @@ export const useFieldArray = <
       fieldValues,
       false,
     );
+    setFieldAndValidState([...fieldValues]);
   };
 
   const move = (from: number, to: number) => {

@@ -152,7 +152,7 @@ describe('useWatch', () => {
   });
 
   describe('error handling', () => {
-    it.skip('should output error message when name is empty string in development mode', () => {
+    it('should output error message when name is empty string in development mode', () => {
       jest.spyOn(console, 'warn').mockImplementation(() => {});
       process.env.NODE_ENV = 'development';
 
