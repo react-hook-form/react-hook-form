@@ -1,18 +1,19 @@
 import * as React from 'react';
 import Subject from './Subject';
-import transformToNestObject from './logic/transformToNestObject';
 import focusOnErrorField from './logic/focusOnErrorField';
 import findRemovedFieldAndRemoveListener from './logic/findRemovedFieldAndRemoveListener';
 import setFieldArrayDirtyFields from './logic/setFieldArrayDirtyFields';
+import shouldRenderFormState from './logic/shouldRenderFormState';
 import getFieldsValues from './logic/getFieldsValues';
 import getFieldValue from './logic/getFieldValue';
 import isErrorStateChanged from './logic/isErrorStateChanged';
 import validateField from './logic/validateField';
-import assignWatchFields from './logic/assignWatchFields';
 import skipValidation from './logic/skipValidation';
 import getNodeParentName from './logic/getNodeParentName';
 import deepEqual from './utils/deepEqual';
 import isNameInFieldArray from './logic/isNameInFieldArray';
+import getProxyFormState from './logic/getProxyFormState';
+import isProxyEnabled from './utils/isProxyEnabled';
 import isCheckBoxInput from './utils/isCheckBoxInput';
 import isEmptyObject from './utils/isEmptyObject';
 import isRadioInput from './utils/isRadioInput';
@@ -44,10 +45,9 @@ import {
   FieldErrors,
   Field,
   FieldRefs,
-  UseFormOptions,
+  UseFormProps,
   RegisterOptions,
   SubmitHandler,
-  FormStateProxy,
   ReadFormState,
   Ref,
   RadioOrCheckboxOption,
@@ -65,15 +65,12 @@ import {
   SetFieldValue,
   FieldArrayDefaultValues,
   ResetFieldArrayFunctionRef,
-  UseWatchRenderFunctions,
-  RecordInternalNameSet,
   RegisterProps,
   PathFinder,
   TuplifyUnion,
 } from './types';
 
 const isWindowUndefined = typeof window === UNDEFINED;
-const isProxyEnabled = isWeb ? 'Proxy' in window : typeof Proxy !== UNDEFINED;
 
 export function useForm<
   TFieldValues extends FieldValues = FieldValues,
@@ -87,18 +84,20 @@ export function useForm<
   shouldFocusError = true,
   shouldUnregister = true,
   criteriaMode,
-}: UseFormOptions<TFieldValues, TContext> = {}): UseFormMethods<TFieldValues> {
+}: UseFormProps<TFieldValues, TContext> = {}): UseFormMethods<TFieldValues> {
   const fieldsRef = React.useRef<FieldRefs<TFieldValues>>({});
   const formStateSubjectRef = React.useRef(
     new Subject<Partial<FormState<TFieldValues>>>(),
   );
+  const watchSubjectRef = React.useRef(
+    new Subject<{
+      inputName?: string;
+      inputValue?: unknown;
+    }>(),
+  );
   const fieldArrayDefaultValuesRef = React.useRef<FieldArrayDefaultValues>({});
   const fieldArrayValuesRef = React.useRef<FieldArrayDefaultValues>({});
   const watchFieldsRef = React.useRef<InternalNameSet<TFieldValues>>(new Set());
-  const useWatchFieldsRef = React.useRef<RecordInternalNameSet<TFieldValues>>(
-    {},
-  );
-  const useWatchRenderFunctionsRef = React.useRef<UseWatchRenderFunctions>({});
   const fieldsWithValidationRef = React.useRef<
     FieldNamesMarkedBoolean<TFieldValues>
   >({});
@@ -124,7 +123,7 @@ export function useForm<
   const [formState, setFormState] = React.useState<FormState<TFieldValues>>({
     isDirty: false,
     isValidating: false,
-    dirtyFields: {},
+    dirty: {},
     isSubmitted: false,
     submitCount: 0,
     touched: {},
@@ -135,11 +134,12 @@ export function useForm<
   });
   const readFormStateRef = React.useRef<ReadFormState>({
     isDirty: !isProxyEnabled,
-    dirtyFields: !isProxyEnabled,
+    dirty: !isProxyEnabled,
     touched: !isProxyEnabled || isOnTouch,
     isValidating: !isProxyEnabled,
     isSubmitting: !isProxyEnabled,
     isValid: !isProxyEnabled,
+    errors: !isProxyEnabled,
   });
   const formStateRef = React.useRef(formState);
   const observerRef = React.useRef<MutationObserver | undefined>();
@@ -157,11 +157,10 @@ export function useForm<
     ? cloneObject(defaultValues)
     : shallowFieldsStateRef.current;
 
-  const updateIsValidating = () =>
-    readFormStateRef.current.isValidating &&
-    formStateSubjectRef.current.next({
-      isValidating: true,
-    });
+  const getIsValid = () =>
+    (formStateRef.current.isValid =
+      deepEqual(validFieldsRef.current, fieldsWithValidationRef.current) &&
+      isEmptyObject(formStateRef.current.errors));
 
   const shouldRenderBaseOnError = React.useCallback(
     (
@@ -169,7 +168,7 @@ export function useForm<
       error: FieldError | undefined,
       shouldRender: boolean | null = false,
       state: {
-        dirtyFields?: FieldNamesMarkedBoolean<TFieldValues>;
+        dirty?: FieldNamesMarkedBoolean<TFieldValues>;
         isDirty?: boolean;
         touched?: FieldNamesMarkedBoolean<TFieldValues>;
       } = {},
@@ -209,7 +208,8 @@ export function useForm<
       ) {
         formStateSubjectRef.current.next({
           ...state,
-          ...(resolverRef.current ? { isValid: !!isValid } : {}),
+          isValid: resolverRef.current ? isValid : getIsValid(),
+          errors: formStateRef.current.errors,
           isValidating: false,
         });
       }
@@ -277,33 +277,30 @@ export function useForm<
       name: InternalFieldName<TFieldValues>,
       shouldRender = true,
     ): Partial<
-      Pick<FormState<TFieldValues>, 'dirtyFields' | 'isDirty' | 'touched'>
+      Pick<FormState<TFieldValues>, 'dirty' | 'isDirty' | 'touched'>
     > => {
-      if (
-        readFormStateRef.current.isDirty ||
-        readFormStateRef.current.dirtyFields
-      ) {
+      if (readFormStateRef.current.isDirty || readFormStateRef.current.dirty) {
         const isFieldDirty = !deepEqual(
           get(defaultValuesRef.current, name),
           getFieldValue(fieldsRef, name, shallowFieldsStateRef),
         );
-        const isDirtyFieldExist = get(formStateRef.current.dirtyFields, name);
+        const isDirtyFieldExist = get(formStateRef.current.dirty, name);
         const previousIsDirty = formStateRef.current.isDirty;
 
         isFieldDirty
-          ? set(formStateRef.current.dirtyFields, name, true)
-          : unset(formStateRef.current.dirtyFields, name);
+          ? set(formStateRef.current.dirty, name, true)
+          : unset(formStateRef.current.dirty, name);
 
         const state = {
           isDirty: isFormDirty(),
-          dirtyFields: formStateRef.current.dirtyFields,
+          dirty: formStateRef.current.dirty,
         };
 
         const isChanged =
           (readFormStateRef.current.isDirty &&
             previousIsDirty !== state.isDirty) ||
-          (readFormStateRef.current.dirtyFields &&
-            isDirtyFieldExist !== get(formStateRef.current.dirtyFields, name));
+          (readFormStateRef.current.dirty &&
+            isDirtyFieldExist !== get(formStateRef.current.dirty, name));
 
         isChanged && shouldRender && formStateSubjectRef.current.next(state);
 
@@ -398,7 +395,9 @@ export function useForm<
     ): Promise<boolean> => {
       const fields = name || Object.keys(fieldsRef.current);
 
-      updateIsValidating();
+      formStateSubjectRef.current.next({
+        isValidating: true,
+      });
 
       if (resolverRef.current) {
         return executeSchemaOrResolverValidation(fields);
@@ -409,7 +408,7 @@ export function useForm<
         const result = await Promise.all(
           fields.map(async (data) => await executeValidation(data, null)),
         );
-        formStateSubjectRef.current.next();
+        formStateSubjectRef.current.next({});
         return result.every(Boolean);
       }
 
@@ -464,20 +463,21 @@ export function useForm<
 
           if (
             (readFormStateRef.current.isDirty ||
-              readFormStateRef.current.dirtyFields) &&
+              readFormStateRef.current.dirty) &&
             config.shouldDirty
           ) {
             set(
-              formStateRef.current.dirtyFields,
+              formStateRef.current.dirty,
               name,
               setFieldArrayDirtyFields(
                 value,
                 get(defaultValuesRef.current, name, []),
-                get(formStateRef.current.dirtyFields, name, []),
+                get(formStateRef.current.dirty, name, []),
               ),
             );
 
             formStateSubjectRef.current.next({
+              dirty: formStateRef.current.dirty,
               isDirty: !deepEqual(
                 { ...getValues(), [name]: value },
                 defaultValuesRef.current,
@@ -497,36 +497,14 @@ export function useForm<
     watchFieldsRef.current.has(name) ||
     watchFieldsRef.current.has((name.match(/\w+/) || [])[0]);
 
-  const renderWatchedInputs = <T extends FieldName<FieldValues>>(
-    name: T,
-  ): boolean => {
-    let found = true;
-
-    if (!isEmptyObject(useWatchFieldsRef.current)) {
-      for (const key in useWatchFieldsRef.current) {
-        if (
-          !name ||
-          !useWatchFieldsRef.current[key].size ||
-          useWatchFieldsRef.current[key].has(name) ||
-          useWatchFieldsRef.current[key].has(getNodeParentName(name))
-        ) {
-          useWatchRenderFunctionsRef.current[key]();
-          found = false;
-        }
-      }
-    }
-
-    return found;
-  };
-
   function setValue(
     name: FieldName<TFieldValues>,
     value: SetFieldValue<TFieldValues>,
     config?: SetValueConfig,
   ): void {
     setInternalValue(name, value, config || {});
-    isFieldWatched(name) && formStateSubjectRef.current.next();
-    renderWatchedInputs(name);
+    isFieldWatched(name) && formStateSubjectRef.current.next({});
+    watchSubjectRef.current.next({ inputName: name, inputValue: value });
   }
 
   const handleChange = React.useCallback(
@@ -572,14 +550,20 @@ export function useForm<
         }
 
         if (shouldSkipValidation) {
-          !isBlurEvent && renderWatchedInputs(name);
+          !isBlurEvent &&
+            watchSubjectRef.current.next({
+              inputName: name,
+              inputValue: getFieldValue(fieldsRef, name),
+            });
           return (
             (!isEmptyObject(state) || (shouldRender && isEmptyObject(state))) &&
             formStateSubjectRef.current.next(state)
           );
         }
 
-        updateIsValidating();
+        formStateSubjectRef.current.next({
+          isValidating: true,
+        });
 
         if (resolverRef.current) {
           const { errors } = await resolverRef.current(
@@ -617,7 +601,11 @@ export function useForm<
           )[name];
         }
 
-        !isBlurEvent && renderWatchedInputs(name);
+        !isBlurEvent &&
+          watchSubjectRef.current.next({
+            inputName: name,
+            inputValue: getFieldValue(fieldsRef, name),
+          });
         shouldRenderBaseOnError(name, error, shouldRender, state, isValid);
       }
     },
@@ -675,22 +663,26 @@ export function useForm<
     );
   }
 
-  const validateResolver = React.useCallback(
+  const updateIsValid = React.useCallback(
     async (values = {}) => {
-      const { errors } = await resolverRef.current!(
-        {
-          ...getValues(),
-          ...values,
-        },
-        contextRef.current,
-        isValidateAllFieldCriteria,
-      );
-      const isValid = isEmptyObject(errors);
+      if (resolver) {
+        const { errors } = await resolverRef.current!(
+          {
+            ...getValues(),
+            ...values,
+          },
+          contextRef.current,
+          isValidateAllFieldCriteria,
+        );
+        const isValid = isEmptyObject(errors);
 
-      formStateRef.current.isValid !== isValid &&
-        formStateSubjectRef.current.next({
-          isValid,
-        });
+        formStateRef.current.isValid !== isValid &&
+          formStateSubjectRef.current.next({
+            isValid,
+          });
+      } else {
+        getIsValid();
+      }
     },
     [isValidateAllFieldCriteria],
   );
@@ -707,21 +699,6 @@ export function useForm<
     [shouldUnregister],
   );
 
-  const updateWatchedValue = React.useCallback((name: string) => {
-    if (isWatchAllRef.current) {
-      formStateSubjectRef.current.next();
-    } else {
-      for (const watchField of watchFieldsRef.current) {
-        if (watchField.startsWith(name)) {
-          formStateSubjectRef.current.next();
-          break;
-        }
-      }
-
-      renderWatchedInputs(name);
-    }
-  }, []);
-
   const removeFieldEventListenerAndRef = React.useCallback(
     (field?: Field, forceDelete?: boolean) => {
       if (field) {
@@ -731,20 +708,25 @@ export function useForm<
           unset(validFieldsRef.current, field.ref.name);
           unset(fieldsWithValidationRef.current, field.ref.name);
           unset(formStateRef.current.errors, field.ref.name);
-          set(formStateRef.current.dirtyFields, field.ref.name, true);
+          set(formStateRef.current.dirty, field.ref.name, true);
 
           formStateSubjectRef.current.next({
+            ...formStateRef.current,
             isDirty: isFormDirty(),
+            isValid: getIsValid(),
           });
 
           readFormStateRef.current.isValid &&
             resolverRef.current &&
-            validateResolver();
-          updateWatchedValue(field.ref.name);
+            updateIsValid();
+          watchSubjectRef.current.next({
+            inputName: field.ref.name,
+            inputValue: '',
+          });
         }
       }
     },
-    [validateResolver, removeFieldEventListener],
+    [updateIsValid, removeFieldEventListener],
   );
 
   function clearErrors(
@@ -771,6 +753,7 @@ export function useForm<
     });
 
     formStateSubjectRef.current.next({
+      errors: formStateRef.current.errors,
       isValid: false,
     });
 
@@ -778,10 +761,12 @@ export function useForm<
   }
 
   const watchInternal = React.useCallback(
-    <T>(fieldNames?: string | string[], defaultValue?: T, watchId?: string) => {
-      const watchFields = watchId
-        ? useWatchFieldsRef.current[watchId]
-        : watchFieldsRef.current;
+    <T>(
+      fieldNames?: string | string[],
+      defaultValue?: T,
+      isGlobal?: boolean,
+    ) => {
+      const watchFields = isGlobal ? watchFieldsRef.current : undefined;
       let fieldValues = getFieldsValues<TFieldValues>(
         fieldsRef,
         cloneObject(shallowFieldsStateRef.current),
@@ -790,59 +775,52 @@ export function useForm<
         fieldNames,
       );
 
-      if (isString(fieldNames)) {
-        if (fieldArrayNamesRef.current.has(fieldNames)) {
-          const fieldArrayValue = get(
-            fieldArrayValuesRef.current,
-            fieldNames,
-            [],
-          );
+      fieldValues = isEmptyObject(fieldValues)
+        ? ((isEmptyObject(defaultValuesRef.current)
+            ? defaultValue
+            : defaultValuesRef.current) as UnpackNestedValue<
+            DeepPartial<TFieldValues>
+          >)
+        : fieldValues;
+
+      if (isUndefined(fieldNames)) {
+        return fieldValues || {};
+      }
+
+      const result = (Array.isArray(fieldNames)
+        ? fieldNames
+        : [fieldNames]
+      ).reduce((previous, name) => {
+        let value;
+        if (fieldArrayNamesRef.current.has(name)) {
+          const fieldArrayValue = get(fieldArrayValuesRef.current, name, []);
           fieldValues =
             !fieldArrayValue.length ||
             fieldArrayValue.length !==
-              compact(get(fieldValues, fieldNames, [])).length
+              compact(get(fieldValues, name, [])).length
               ? fieldArrayValuesRef.current
               : fieldValues;
         }
 
-        return assignWatchFields<TFieldValues>(
-          fieldValues,
-          fieldNames,
-          watchFields,
-          isUndefined(get(defaultValuesRef.current, fieldNames))
-            ? defaultValue
-            : get(defaultValuesRef.current, fieldNames),
-          true,
-        );
-      }
+        watchFields && watchFields.add(name);
 
-      const combinedDefaultValues = isUndefined(defaultValue)
-        ? defaultValuesRef.current
-        : defaultValue;
+        if (!isEmptyObject(fieldValues)) {
+          value = isPrimitive(fieldValues)
+            ? fieldValues
+            : get(fieldValues, name);
 
-      if (Array.isArray(fieldNames)) {
-        return fieldNames.reduce(
-          (previous, name) => ({
-            ...previous,
-            [name]: assignWatchFields<TFieldValues>(
-              fieldValues,
-              name,
-              watchFields,
-              combinedDefaultValues as UnpackNestedValue<
-                DeepPartial<TFieldValues>
-              >,
-            ),
-          }),
-          {},
-        );
-      }
+          if ((isObject(value) || Array.isArray(value)) && watchFields) {
+            getPath(name, value).forEach((name) => watchFields.add(name));
+          }
+        }
 
-      isWatchAllRef.current = isUndefined(watchId);
+        return {
+          ...previous,
+          [name]: value,
+        };
+      }, {});
 
-      return transformToNestObject(
-        (!isEmptyObject(fieldValues) && fieldValues) ||
-          (combinedDefaultValues as FieldValues),
-      );
+      return Array.isArray(fieldNames) ? result : get(result, fieldNames);
     },
     [],
   );
@@ -866,10 +844,22 @@ export function useForm<
     defaultValues?: UnpackNestedValue<DeepPartial<TFieldValues>>,
   ): UnpackNestedValue<DeepPartial<TFieldValues>>;
   function watch(
-    fieldNames?: string | string[],
+    callback: (value: UnpackNestedValue<TFieldValues>) => void,
+    defaultValues?: UnpackNestedValue<DeepPartial<TFieldValues>>,
+  ): void;
+  function watch(
+    watchField?: string | string[] | Function,
     defaultValue?: unknown,
   ): unknown {
-    return watchInternal(fieldNames, defaultValue);
+    if (isFunction(watchField)) {
+      watchSubjectRef.current.subscribe({
+        next: () => watchField(watchInternal(undefined, defaultValue)),
+      });
+      return;
+    } else {
+      isWatchAllRef.current = isUndefined(watchField);
+      return watchInternal(watchField, defaultValue, true);
+    }
   }
 
   function unregister(
@@ -985,20 +975,19 @@ export function useForm<
           field,
           shallowFieldsStateRef,
         ).then((error: FieldErrors) => {
-          const previousFormIsValid = formStateRef.current.isValid;
-
           isEmptyObject(error)
             ? set(validFieldsRef.current, name, true)
             : unset(validFieldsRef.current, name);
 
-          previousFormIsValid !== isEmptyObject(error) &&
-            setFormState({ ...formState });
+          formStateRef.current.isValid &&
+            !isEmptyObject(error) &&
+            setFormState({ ...formStateRef.current, isValid: getIsValid() });
         });
       }
     }
 
     if (!(isFieldArray && isEmptyDefaultValue)) {
-      !isFieldArray && unset(formStateRef.current.dirtyFields, name);
+      !isFieldArray && unset(formStateRef.current.dirty, name);
     }
   }
 
@@ -1101,6 +1090,7 @@ export function useForm<
           isSubmitting: false,
           isSubmitSuccessful: isEmptyObject(formStateRef.current.errors),
           submitCount: formStateRef.current.submitCount + 1,
+          errors: formStateRef.current.errors,
         });
       }
     },
@@ -1114,7 +1104,7 @@ export function useForm<
     touched,
     isValid,
     submitCount,
-    dirtyFields,
+    dirty,
   }: OmitResetState) => {
     if (!isValid) {
       validFieldsRef.current = {};
@@ -1129,8 +1119,8 @@ export function useForm<
       submitCount: submitCount ? formStateRef.current.submitCount : 0,
       isDirty: isDirty ? formStateRef.current.isDirty : false,
       isSubmitted: isSubmitted ? formStateRef.current.isSubmitted : false,
-      isValid: isValid ? formStateRef.current.isValid : false,
-      dirtyFields: dirtyFields ? formStateRef.current.dirtyFields : {},
+      isValid: isValid ? formStateRef.current.isValid : !isOnSubmit,
+      dirty: dirty ? formStateRef.current.dirty : {},
       touched: touched ? formStateRef.current.touched : {},
       errors: errors ? formStateRef.current.errors : {},
       isSubmitting: false,
@@ -1163,7 +1153,10 @@ export function useForm<
 
     fieldsRef.current = {};
     defaultValuesRef.current = { ...(values || defaultValuesRef.current) };
-    values && renderWatchedInputs('');
+    values &&
+      watchSubjectRef.current.next({
+        inputValue: { ...defaultValuesRef.current },
+      });
 
     Object.values(resetFieldArrayFunctionRef.current).forEach(
       (resetFieldArray) => isFunction(resetFieldArray) && resetFieldArray(),
@@ -1177,17 +1170,19 @@ export function useForm<
   };
 
   React.useEffect(() => {
-    resolver && readFormStateRef.current.isValid && validateResolver();
+    resolver && readFormStateRef.current.isValid && updateIsValid();
   }, [removeFieldEventListenerAndRef, defaultValuesRef.current]);
 
   React.useEffect(() => {
     const tearDown = formStateSubjectRef.current.subscribe({
-      next: (state: Partial<FormState<TFieldValues>> = {}) => {
-        formStateRef.current = {
-          ...formStateRef.current,
-          ...state,
-        };
-        setFormState(formStateRef.current);
+      next: (formState: Partial<FormState<TFieldValues>> = {}) => {
+        if (shouldRenderFormState(formState, readFormStateRef.current, true)) {
+          formStateRef.current = {
+            ...formStateRef.current,
+            ...formState,
+          };
+          setFormState(formStateRef.current);
+        }
       },
     });
 
@@ -1201,46 +1196,27 @@ export function useForm<
     };
   }, []);
 
-  if (!resolver && readFormStateRef.current.isValid) {
-    formState.isValid =
-      deepEqual(validFieldsRef.current, fieldsWithValidationRef.current) &&
-      isEmptyObject(formStateRef.current.errors);
-  }
-
   const commonProps = {
     trigger,
     setValue: React.useCallback(setValue, [setInternalValue, trigger]),
     getValues: React.useCallback(getValues, []),
     register: React.useCallback(register, [defaultValuesRef.current]),
     unregister: React.useCallback(unregister, []),
-    formState: isProxyEnabled
-      ? new Proxy(formState, {
-          get: (obj, prop: keyof FormStateProxy) => {
-            if (process.env.NODE_ENV !== 'production') {
-              if (prop === 'isValid' && isOnSubmit) {
-                console.warn(
-                  '📋 `formState.isValid` is applicable with `onTouched`, `onChange` or `onBlur` mode. https://react-hook-form.com/api#formState',
-                );
-              }
-            }
-
-            if (prop in obj) {
-              readFormStateRef.current[prop] = true;
-              return obj[prop];
-            }
-
-            return undefined;
-          },
-        })
-      : formState,
+    formState: getProxyFormState<TFieldValues>(
+      isProxyEnabled,
+      formState,
+      readFormStateRef,
+    ),
   };
 
   const control = React.useMemo(
     () => ({
+      isWatchAllRef,
+      watchFieldsRef,
       isFormDirty,
-      updateWatchedValue,
       shouldUnregister,
-      updateFormState: formStateSubjectRef.current,
+      formStateSubjectRef,
+      watchSubjectRef,
       removeFieldEventListener,
       watchInternal,
       mode: modeRef.current,
@@ -1248,11 +1224,9 @@ export function useForm<
         isReValidateOnBlur,
         isReValidateOnChange,
       },
-      validateResolver: resolver ? validateResolver : undefined,
+      updateIsValid,
       fieldsRef,
       resetFieldArrayFunctionRef,
-      useWatchFieldsRef,
-      useWatchRenderFunctionsRef,
       fieldArrayDefaultValuesRef,
       validFieldsRef,
       fieldsWithValidationRef,
@@ -1266,7 +1240,6 @@ export function useForm<
     }),
     [
       defaultValuesRef.current,
-      updateWatchedValue,
       shouldUnregister,
       removeFieldEventListener,
       watchInternal,

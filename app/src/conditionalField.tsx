@@ -9,7 +9,7 @@ const ConditionalField: React.FC = () => {
     handleSubmit,
     watch,
     formState: {
-      dirtyFields,
+      dirty,
       isSubmitted,
       submitCount,
       touched,
@@ -17,6 +17,7 @@ const ConditionalField: React.FC = () => {
       isSubmitting,
       isSubmitSuccessful,
       isValid,
+      errors,
     },
   } = useForm<{
     selectNumber: string;
@@ -33,6 +34,8 @@ const ConditionalField: React.FC = () => {
   const selectNumber = watch('selectNumber');
 
   renderCounter++;
+
+  console.log(errors);
 
   return (
     <form
@@ -95,7 +98,7 @@ const ConditionalField: React.FC = () => {
           isSubmitSuccessful,
           isValid,
           touched: Object.keys(touched),
-          dirtyFields: Object.keys(dirtyFields),
+          dirty: Object.keys(dirty),
         })}
       </div>
       <div id="result">{JSON.stringify(result)}</div>

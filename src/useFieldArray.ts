@@ -19,7 +19,7 @@ import cloneObject from './utils/cloneObject';
 import {
   Field,
   FieldValues,
-  UseFieldArrayOptions,
+  UseFieldArrayProps,
   Control,
   ArrayField,
   UnpackNestedValue,
@@ -71,7 +71,7 @@ export const useFieldArray = <
   control,
   name,
   keyName = 'id' as TKeyName,
-}: UseFieldArrayOptions<TKeyName, TControl>): UseFieldArrayMethods<
+}: UseFieldArrayProps<TKeyName, TControl>): UseFieldArrayMethods<
   TFieldArrayValues,
   TKeyName
 > => {
@@ -87,8 +87,10 @@ export const useFieldArray = <
 
   const focusIndexRef = React.useRef(-1);
   const {
+    isWatchAllRef,
+    watchFieldsRef,
     isFormDirty,
-    updateWatchedValue,
+    watchSubjectRef,
     resetFieldArrayFunctionRef,
     fieldArrayNamesRef,
     fieldsRef,
@@ -96,12 +98,12 @@ export const useFieldArray = <
     removeFieldEventListener,
     formStateRef,
     shallowFieldsStateRef,
-    updateFormState,
+    formStateSubjectRef,
     readFormStateRef,
     validFieldsRef,
     fieldsWithValidationRef,
     fieldArrayDefaultValuesRef,
-    validateResolver,
+    updateIsValid,
     getValues,
     shouldUnregister,
     fieldArrayValuesRef,
@@ -166,10 +168,10 @@ export const useFieldArray = <
     setFields(fieldsValues);
     set(fieldArrayValuesRef.current, name, fieldsValues);
 
-    if (readFormStateRef.current.isValid && validateResolver) {
+    if (readFormStateRef.current.isValid) {
       const values = getValues();
       set(values, name, fieldsValues);
-      validateResolver(values);
+      updateIsValid(values);
     }
   };
 
@@ -192,12 +194,12 @@ export const useFieldArray = <
   ) => {
     if (updatedFieldArrayValues) {
       set(
-        formStateRef.current.dirtyFields,
+        formStateRef.current.dirty,
         name,
         setFieldArrayDirtyFields(
           omitKey(updatedFieldArrayValues),
           get(defaultValuesRef.current, name, []),
-          get(formStateRef.current.dirtyFields, name, []),
+          get(formStateRef.current.dirty, name, []),
         ),
       );
     }
@@ -261,25 +263,18 @@ export const useFieldArray = <
       cleanup(formStateRef.current.touched);
     }
 
-    if (
-      readFormStateRef.current.dirtyFields ||
-      readFormStateRef.current.isDirty
-    ) {
+    if (readFormStateRef.current.dirty || readFormStateRef.current.isDirty) {
       const output = method(
-        get(formStateRef.current.dirtyFields, name, []),
+        get(formStateRef.current.dirty, name, []),
         args.argC,
         args.argD,
       );
-      shouldSet && set(formStateRef.current.dirtyFields, name, output);
+      shouldSet && set(formStateRef.current.dirty, name, output);
       updateDirtyFieldsWithDefaultValues(updatedFieldValues);
-      cleanup(formStateRef.current.dirtyFields);
+      cleanup(formStateRef.current.dirty);
     }
 
-    if (
-      shouldUpdateValid &&
-      readFormStateRef.current.isValid &&
-      !validateResolver
-    ) {
+    if (shouldUpdateValid && readFormStateRef.current.isValid) {
       set(
         validFieldsRef.current,
         name,
@@ -295,8 +290,10 @@ export const useFieldArray = <
       cleanup(fieldsWithValidationRef.current);
     }
 
-    updateFormState.next({
+    formStateSubjectRef.current.next({
       isDirty: isFormDirty(name, omitKey(updatedFormValues)),
+      errors: formStateRef.current.errors,
+      isValid: formStateRef.current.isValid,
     });
   };
 
@@ -311,15 +308,12 @@ export const useFieldArray = <
     ];
     setFieldAndValidState(updateFormValues);
 
-    if (
-      readFormStateRef.current.dirtyFields ||
-      readFormStateRef.current.isDirty
-    ) {
+    if (readFormStateRef.current.dirty || readFormStateRef.current.isDirty) {
       updateDirtyFieldsWithDefaultValues(updateFormValues);
 
-      updateFormState.next({
+      formStateSubjectRef.current.next({
         isDirty: true,
-        dirtyFields: formStateRef.current.dirtyFields,
+        dirty: formStateRef.current.dirty,
       });
     }
 
@@ -363,9 +357,6 @@ export const useFieldArray = <
       | Partial<TFieldArrayValues>
       | undefined
     )[] = removeArrayAt(fieldValues, index);
-    setFieldAndValidState(
-      updatedFieldValues as Partial<ArrayField<TFieldArrayValues, TKeyName>>[],
-    );
     resetFields();
     batchStateUpdate(
       removeArrayAt,
@@ -377,6 +368,9 @@ export const useFieldArray = <
       removeArrayAt(fieldValues, index),
       true,
       true,
+    );
+    setFieldAndValidState(
+      updatedFieldValues as Partial<ArrayField<TFieldArrayValues, TKeyName>>[],
     );
   };
 
@@ -413,7 +407,6 @@ export const useFieldArray = <
     const fieldValues = getCurrentFieldsValues();
     swapArrayAt(fieldValues, indexA, indexB);
     resetFields();
-    setFieldAndValidState([...fieldValues]);
     batchStateUpdate(
       swapArrayAt,
       {
@@ -426,6 +419,7 @@ export const useFieldArray = <
       fieldValues,
       false,
     );
+    setFieldAndValidState([...fieldValues]);
   };
 
   const move = (from: number, to: number) => {
@@ -463,7 +457,18 @@ export const useFieldArray = <
       set(fieldArrayDefaultValuesRef.current, name, defaultValues);
     }
 
-    updateWatchedValue(name);
+    if (isWatchAllRef.current) {
+      formStateSubjectRef.current.next({});
+    } else {
+      for (const watchField of watchFieldsRef.current) {
+        if (watchField.startsWith(name)) {
+          formStateSubjectRef.current.next({});
+          break;
+        }
+      }
+    }
+
+    watchSubjectRef.current.next({ inputName: name });
 
     if (focusIndexRef.current > -1) {
       for (const key in fieldsRef.current) {

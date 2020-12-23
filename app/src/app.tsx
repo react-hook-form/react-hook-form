@@ -27,6 +27,7 @@ import WatchFieldArray from './watchUseFieldArray';
 import useWatch from './useWatch';
 import FormStateWithNestedFields from './formStateWithNestedFields';
 import UseFieldArrayUnregister from './UseFieldArrayUnregister';
+import { UseFormState } from './useFormState';
 
 const App: React.FC = () => {
   return (
@@ -102,6 +103,7 @@ const App: React.FC = () => {
       />
       <Route path="/autoUnregister" exact component={AutoUnregister} />
       <Route path="/useWatch" exact component={useWatch} />
+      <Route path="/useFormState" exact component={UseFormState} />
     </Router>
   );
 };

@@ -8,11 +8,7 @@ import isFunction from './utils/isFunction';
 import skipValidation from './logic/skipValidation';
 import getInputValue from './logic/getInputValue';
 import set from './utils/set';
-import {
-  FieldValues,
-  UseControllerOptions,
-  UseControllerMethods,
-} from './types';
+import { FieldValues, UseControllerProps, UseControllerMethods } from './types';
 
 export function useController<TFieldValues extends FieldValues = FieldValues>({
   name,
@@ -20,7 +16,7 @@ export function useController<TFieldValues extends FieldValues = FieldValues>({
   defaultValue,
   control,
   onFocus,
-}: UseControllerOptions<TFieldValues>): UseControllerMethods<TFieldValues> {
+}: UseControllerProps<TFieldValues>): UseControllerMethods<TFieldValues> {
   const methods = useFormContext<TFieldValues>();
 
   if (process.env.NODE_ENV !== 'production') {
@@ -41,9 +37,9 @@ export function useController<TFieldValues extends FieldValues = FieldValues>({
     reValidateMode: { isReValidateOnBlur, isReValidateOnChange },
     formState,
     formStateRef: {
-      current: { isSubmitted, touched, errors },
+      current: { isSubmitted, touched },
     },
-    updateFormState,
+    formStateSubjectRef,
     readFormStateRef,
     fieldsRef,
     fieldArrayNamesRef,
@@ -180,13 +176,13 @@ export function useController<TFieldValues extends FieldValues = FieldValues>({
   const onBlur = React.useCallback(() => {
     if (readFormStateRef.current.touched && !get(touched, name)) {
       set(touched, name, true);
-      updateFormState.next({
+      formStateSubjectRef.current.next({
         touched,
       });
     }
 
     shouldValidate(true) && trigger(name);
-  }, [name, updateFormState, shouldValidate, trigger, readFormStateRef]);
+  }, [name, shouldValidate, trigger, readFormStateRef]);
 
   const onChange = React.useCallback(
     (...event: any[]) =>
@@ -209,13 +205,16 @@ export function useController<TFieldValues extends FieldValues = FieldValues>({
       ref,
     },
     meta: Object.defineProperties(
+      {},
       {
-        invalid: get(errors, name),
-      },
-      {
+        invalid: {
+          get() {
+            return !!get(formState.errors, name);
+          },
+        },
         isDirty: {
           get() {
-            return !!get(formState.dirtyFields, name);
+            return !!get(formState.dirty, name);
           },
         },
         isTouched: {

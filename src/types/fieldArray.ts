@@ -6,7 +6,7 @@ export type FieldArrayName = string;
 
 export type FieldArrayDefaultValues = Partial<Record<FieldArrayName, any>>;
 
-export type UseFieldArrayOptions<
+export type UseFieldArrayProps<
   TKeyName extends string = 'id',
   TControl extends Control = Control
 > = {

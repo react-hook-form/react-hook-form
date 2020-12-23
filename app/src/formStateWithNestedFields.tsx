@@ -9,7 +9,7 @@ const FormStateWithNestedFields: React.FC = (props: any) => {
     register,
     handleSubmit,
     formState: {
-      dirtyFields,
+      dirty,
       isSubmitted,
       submitCount,
       touched,
@@ -82,8 +82,8 @@ const FormStateWithNestedFields: React.FC = (props: any) => {
               (nestedKey) => `${topLevelKey}.${nestedKey}`,
             ),
           ),
-          dirtyFields: Object.keys(dirtyFields).flatMap((topLevelKey) =>
-            Object.keys(dirtyFields[topLevelKey] || {}).map(
+          dirty: Object.keys(dirty).flatMap((topLevelKey) =>
+            Object.keys(dirty[topLevelKey] || {}).map(
               (nestedKey) => `${topLevelKey}.${nestedKey}`,
             ),
           ),

@@ -200,7 +200,7 @@ describe('useForm', () => {
       expect(ref).toEqual({ type: 'text', name: 'test', value: 'test' });
     });
 
-    // check https://github.com/react-hook-form/react-hook-form/issues/2298
+    // issue: https://github.com/react-hook-form/react-hook-form/issues/2298
     it('should reset isValid formState after reset with valid value in initial render', async () => {
       const Component = () => {
         const { register, reset, formState } = useForm<{
@@ -410,7 +410,7 @@ describe('useForm', () => {
       expect(formState.isDirty).toBeFalsy();
     });
 
-    it('should update dirtyFields during unregister', () => {
+    it('should update dirty during unregister', () => {
       let formState: any;
       const Component = () => {
         const { register, formState: tempFormState } = useForm<{
@@ -430,12 +430,12 @@ describe('useForm', () => {
         },
       });
 
-      expect(formState.dirtyFields.test).toBeDefined();
+      expect(formState.dirty.test).toBeDefined();
       expect(formState.isDirty).toBeTruthy();
 
       unmount();
 
-      expect(formState.dirtyFields.test).toBeDefined();
+      expect(formState.dirty.test).toBeDefined();
       expect(formState.isDirty).toBeTruthy();
     });
 
@@ -710,7 +710,7 @@ describe('useForm', () => {
             touched: true,
             isValid: true,
             submitCount: true,
-            dirtyFields: true,
+            dirty: true,
           },
         ),
       );
@@ -1148,7 +1148,7 @@ describe('useForm', () => {
           },
         });
 
-        result.current.formState.dirtyFields;
+        result.current.formState.dirty;
 
         await act(async () =>
           result.current.setValue('test', 'abc', {
@@ -1243,7 +1243,7 @@ describe('useForm', () => {
           );
 
           expect(result.current.formState.isDirty).toBeTruthy();
-          expect(result.current.formState.dirtyFields).toEqual({ test: true });
+          expect(result.current.formState.dirty).toEqual({ test: true });
         },
       );
 
@@ -1279,7 +1279,7 @@ describe('useForm', () => {
           );
 
           expect(result.current.formState.isDirty).toBeTruthy();
-          expect(result.current.formState.dirtyFields).toEqual({
+          expect(result.current.formState.dirty).toEqual({
             test: dirtyFields,
           });
         },
@@ -1303,12 +1303,12 @@ describe('useForm', () => {
           );
 
           expect(result.current.formState.isDirty).toBeFalsy();
-          expect(result.current.formState.dirtyFields).toEqual({});
+          expect(result.current.formState.dirty).toEqual({});
         },
       );
 
       it.each(['isDirty', 'dirtyFields'])(
-        'should set name to dirtyFieldRef if field value is different with default value when formState.dirtyFields is defined',
+        'should set name to dirtyFieldRef if field value is different with default value when formState.dirty is defined',
         (property) => {
           const { result } = renderHook(() =>
             useForm<{ test: string }>({
@@ -1325,12 +1325,12 @@ describe('useForm', () => {
           );
 
           expect(result.current.formState.isDirty).toBeTruthy();
-          expect(result.current.formState.dirtyFields.test).toBeTruthy();
+          expect(result.current.formState.dirty.test).toBeTruthy();
         },
       );
 
       it.each(['isDirty', 'dirtyFields'])(
-        'should unset name from dirtyFieldRef if field value is not different with default value when formState.dirtyFields is defined',
+        'should unset name from dirtyFieldRef if field value is not different with default value when formState.dirty is defined',
         (property) => {
           const { result } = renderHook(() =>
             useForm<{ test: string }>({
@@ -1347,14 +1347,14 @@ describe('useForm', () => {
           );
 
           expect(result.current.formState.isDirty).toBeTruthy();
-          expect(result.current.formState.dirtyFields.test).toBeTruthy();
+          expect(result.current.formState.dirty.test).toBeTruthy();
 
           act(() =>
             result.current.setValue('test', 'default', { shouldDirty: true }),
           );
 
           expect(result.current.formState.isDirty).toBeFalsy();
-          expect(result.current.formState.dirtyFields.test).toBeUndefined();
+          expect(result.current.formState.dirty.test).toBeUndefined();
         },
       );
     });
@@ -1421,7 +1421,9 @@ describe('useForm', () => {
         await result.current.trigger();
       });
 
-      result.current.setValue('test.data', 'test', { shouldValidate: true });
+      await act(async () => {
+        result.current.setValue('test.data', 'test', { shouldValidate: true });
+      });
 
       expect(result.current.formState.isValid).toBeFalsy();
 
@@ -2540,13 +2542,15 @@ describe('useForm', () => {
     });
 
     it('should return false when default value is not valid value', async () => {
-      const { result } = renderHook(() =>
-        useForm<{ input: string; issue: string }>({
+      const { result } = renderHook(() => {
+        const methods = useForm<{ input: string; issue: string }>({
           mode: VALIDATION_MODE.onChange,
-        }),
-      );
+        });
 
-      result.current.formState.isValid;
+        methods.formState.isValid;
+
+        return methods;
+      });
 
       await act(async () => {
         result.current.register('issue', { required: true });
@@ -2866,7 +2870,7 @@ describe('useForm', () => {
         expect(screen.queryByRole('alert')).toBeInTheDocument();
       });
 
-      it('should output error message when formState.isValid is called in development environment', () => {
+      it.skip('should output error message when formState.isValid is called in development environment', () => {
         jest.spyOn(console, 'warn').mockImplementation(() => {});
 
         process.env.NODE_ENV = 'development';
@@ -3233,7 +3237,7 @@ describe('useForm', () => {
     });
   });
 
-  describe('validateResolver', () => {
+  describe('updateIsValid', () => {
     it('should be defined when resolver is defined', () => {
       const resolver = async (data: any) => {
         return {
@@ -3244,13 +3248,7 @@ describe('useForm', () => {
 
       const { result } = renderHook(() => useForm({ resolver }));
 
-      expect(result.current.control.validateResolver).toBeDefined();
-    });
-
-    it('should be undefined when resolver is undefined', () => {
-      const { result } = renderHook(() => useForm());
-
-      expect(result.current.control.validateResolver).toBeUndefined();
+      expect(result.current.control.updateIsValid).toBeDefined();
     });
 
     it('should be called resolver with default values if default value is defined', async () => {
@@ -3273,7 +3271,7 @@ describe('useForm', () => {
       result.current.register('test');
 
       await act(async () => {
-        await result.current.control.validateResolver!({});
+        await result.current.control.updateIsValid({});
       });
 
       expect(resolverData).toEqual({
@@ -3304,7 +3302,7 @@ describe('useForm', () => {
       result.current.setValue('test', 'value');
 
       await act(async () => {
-        result.current.control.validateResolver!({});
+        result.current.control.updateIsValid({});
       });
 
       expect(resolverData).toEqual({ test: 'value' });

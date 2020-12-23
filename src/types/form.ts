@@ -11,8 +11,9 @@ import {
 } from './fields';
 import { ErrorOption, FieldErrors } from './errors';
 import { RegisterOptions } from './validator';
-import { ControllerRenderProps } from './props';
+import { ControllerRenderProps } from './controller';
 import { FieldArrayDefaultValues } from './fieldArray';
+import { SubjectType } from '../utils/Subject';
 
 declare const $NestedValue: unique symbol;
 
@@ -72,7 +73,7 @@ export type SetValueConfig = Partial<{
 
 export type HandleChange = (event: Event) => Promise<void | boolean>;
 
-export type UseFormOptions<
+export type UseFormProps<
   TFieldValues extends FieldValues = FieldValues,
   TContext extends object = object
 > = Partial<{
@@ -94,17 +95,18 @@ export type FieldNamesMarkedBoolean<TFieldValues extends FieldValues> = DeepMap<
 export type FormStateProxy<TFieldValues extends FieldValues = FieldValues> = {
   isDirty: boolean;
   isValidating: boolean;
-  dirtyFields: FieldNamesMarkedBoolean<TFieldValues>;
+  dirty: FieldNamesMarkedBoolean<TFieldValues>;
   touched: FieldNamesMarkedBoolean<TFieldValues>;
   isSubmitting: boolean;
+  errors: boolean;
   isValid: boolean;
 };
 
-export type ReadFormState = { [K in keyof FormStateProxy]: boolean };
+export type ReadFormState = { [K in keyof FormStateProxy]: boolean | 'all' };
 
 export type FormState<TFieldValues> = {
   isDirty: boolean;
-  dirtyFields: FieldNamesMarkedBoolean<TFieldValues>;
+  dirty: FieldNamesMarkedBoolean<TFieldValues>;
   isSubmitted: boolean;
   isSubmitSuccessful: boolean;
   submitCount: number;
@@ -122,13 +124,15 @@ export type OmitResetState = Partial<{
   touched: boolean;
   isValid: boolean;
   submitCount: boolean;
-  dirtyFields: boolean;
+  dirty: boolean;
 }>;
 
 export type Control<TFieldValues extends FieldValues = FieldValues> = Pick<
   UseFormMethods<TFieldValues>,
   'register' | 'unregister' | 'setValue' | 'getValues' | 'trigger'
 > & {
+  isWatchAllRef: React.MutableRefObject<boolean>;
+  watchFieldsRef: React.MutableRefObject<InternalNameSet<TFieldValues>>;
   isFormDirty: (name?: string, data?: unknown[]) => boolean;
   removeFieldEventListener: (field: Field, forceDelete?: boolean) => void;
   mode: Readonly<{
@@ -147,10 +151,16 @@ export type Control<TFieldValues extends FieldValues = FieldValues> = Pick<
   shouldUnregister: boolean;
   formState: FormState<TFieldValues>;
   formStateRef: React.MutableRefObject<FormState<TFieldValues>>;
-  updateFormState: {
-    next: (args?: Partial<FormState<TFieldValues>>) => void;
-  };
-  validateResolver?: (fieldsValues: FieldValues) => void;
+  formStateSubjectRef: React.MutableRefObject<
+    SubjectType<Partial<FormState<TFieldValues>>>
+  >;
+  watchSubjectRef: React.MutableRefObject<
+    SubjectType<{
+      inputName?: string;
+      inputValue?: unknown;
+    }>
+  >;
+  updateIsValid: (fieldsValues: FieldValues) => void;
   validFieldsRef: React.MutableRefObject<FieldNamesMarkedBoolean<TFieldValues>>;
   fieldsWithValidationRef: React.MutableRefObject<
     FieldNamesMarkedBoolean<TFieldValues>
@@ -161,22 +171,13 @@ export type Control<TFieldValues extends FieldValues = FieldValues> = Pick<
   >;
   shallowFieldsStateRef: React.MutableRefObject<Partial<TFieldValues>>;
   fieldArrayNamesRef: React.MutableRefObject<InternalNameSet<TFieldValues>>;
-  readFormStateRef: React.MutableRefObject<
-    { [k in keyof FormStateProxy<TFieldValues>]: boolean }
-  >;
+  readFormStateRef: React.MutableRefObject<ReadFormState>;
   defaultValuesRef: React.MutableRefObject<DefaultValues<TFieldValues>>;
-  useWatchFieldsRef: React.MutableRefObject<
-    RecordInternalNameSet<TFieldValues>
-  >;
-  useWatchRenderFunctionsRef: React.MutableRefObject<
-    Record<string, React.Dispatch<unknown>>
-  >;
-  watchInternal: (
+  watchInternal: <T>(
     fieldNames?: string | string[],
-    defaultValue?: unknown,
-    watchId?: string,
+    defaultValue?: T,
+    isGlobal?: boolean,
   ) => unknown;
-  updateWatchedValue: (name: string) => void;
 };
 
 export type UseWatchRenderFunctions = Record<string, () => void>;
@@ -271,3 +272,9 @@ export type UseControllerMethods<
   field: ControllerRenderProps<TFieldValues>;
   meta: InputState;
 };
+
+export type UseFormStateProps<TFieldValues> = {
+  control: Control<TFieldValues>;
+};
+
+export type UseFormStateMethods<TFieldValues> = FormState<TFieldValues>;
