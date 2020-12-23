@@ -552,7 +552,7 @@ describe('useWatch', () => {
           }, [register]);
 
           React.useEffect(() => {
-            reset({ test: 'default' });
+            reset({ test: 'default1' });
           }, [reset]);
 
           return (
@@ -566,7 +566,7 @@ describe('useWatch', () => {
         render(<Component />);
 
         expect((await screen.findByTestId('result')).textContent).toBe(
-          'default',
+          'default1',
         );
       });
 

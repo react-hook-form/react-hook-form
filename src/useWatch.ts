@@ -76,7 +76,7 @@ export function useWatch<TWatchFieldValues>({
         updateValue(
           isString(name) && name === inputName && !isUndefined(inputValue)
             ? inputValue
-            : watchInternal(name, defaultValuesRef.current),
+            : watchInternal(name, defaultValue),
         );
       },
     });

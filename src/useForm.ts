@@ -9,7 +9,6 @@ import getFieldsValues from './logic/getFieldsValues';
 import getFieldValue from './logic/getFieldValue';
 import isErrorStateChanged from './logic/isErrorStateChanged';
 import validateField from './logic/validateField';
-import assignWatchFields from './logic/assignWatchFields';
 import skipValidation from './logic/skipValidation';
 import getNodeParentName from './logic/getNodeParentName';
 import deepEqual from './utils/deepEqual';
@@ -791,54 +790,52 @@ export function useForm<
         fieldNames,
       );
 
-      if (isString(fieldNames)) {
-        if (fieldArrayNamesRef.current.has(fieldNames)) {
-          const fieldArrayValue = get(
-            fieldArrayValuesRef.current,
-            fieldNames,
-            [],
-          );
+      fieldValues = isEmptyObject(fieldValues)
+        ? ((isEmptyObject(defaultValuesRef.current)
+            ? defaultValue
+            : defaultValuesRef.current) as UnpackNestedValue<
+            DeepPartial<TFieldValues>
+          >)
+        : fieldValues;
+
+      if (isUndefined(fieldNames)) {
+        return fieldValues || {};
+      }
+
+      const result = (Array.isArray(fieldNames)
+        ? fieldNames
+        : [fieldNames]
+      ).reduce((previous, name) => {
+        let value;
+        if (fieldArrayNamesRef.current.has(name)) {
+          const fieldArrayValue = get(fieldArrayValuesRef.current, name, []);
           fieldValues =
             !fieldArrayValue.length ||
             fieldArrayValue.length !==
-              compact(get(fieldValues, fieldNames, [])).length
+              compact(get(fieldValues, name, [])).length
               ? fieldArrayValuesRef.current
               : fieldValues;
         }
 
-        return assignWatchFields<TFieldValues>(
-          fieldValues,
-          fieldNames,
-          get(defaultValuesRef.current, fieldNames, defaultValue),
-          watchFields,
-          true,
-        );
-      }
+        watchFields && watchFields.add(name);
 
-      const combinedDefaultValues = isUndefined(defaultValue)
-        ? defaultValuesRef.current
-        : defaultValue;
+        if (!isEmptyObject(fieldValues)) {
+          value = isPrimitive(fieldValues)
+            ? fieldValues
+            : get(fieldValues, name);
 
-      if (Array.isArray(fieldNames)) {
-        return fieldNames.reduce(
-          (previous, name) => ({
-            ...previous,
-            [name]: assignWatchFields<TFieldValues>(
-              fieldValues,
-              name,
-              combinedDefaultValues as UnpackNestedValue<
-                DeepPartial<TFieldValues>
-              >,
-              watchFields,
-            ),
-          }),
-          {},
-        );
-      }
+          if ((isObject(value) || Array.isArray(value)) && watchFields) {
+            getPath(name, value).forEach((name) => watchFields.add(name));
+          }
+        }
 
-      return isEmptyObject(fieldValues)
-        ? (combinedDefaultValues as FieldValues)
-        : fieldValues;
+        return {
+          ...previous,
+          [name]: value,
+        };
+      }, {});
+
+      return Array.isArray(fieldNames) ? result : get(result, fieldNames);
     },
     [],
   );
