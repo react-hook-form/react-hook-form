@@ -6,7 +6,7 @@ let renderCounter = 0;
 const SubForm = ({ control }: { control: Control }) => {
   const {
     isDirty,
-    dirtyFields,
+    dirty,
     touched,
     isSubmitted,
     isSubmitSuccessful,
@@ -21,7 +21,7 @@ const SubForm = ({ control }: { control: Control }) => {
       {JSON.stringify({
         isDirty,
         touched: Object.keys(touched),
-        dirtyFields: Object.keys(dirtyFields),
+        dirty: Object.keys(dirty),
         isSubmitted,
         isSubmitSuccessful,
         submitCount,

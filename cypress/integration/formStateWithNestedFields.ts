@@ -5,7 +5,7 @@ describe('form state with nested fields', () => {
     cy.get('#state').should(($state) =>
       expect(JSON.parse($state.text())).to.be.deep.equal({
         isDirty: false,
-        dirtyFields: [],
+        dirty: [],
         isSubmitted: false,
         submitCount: 0,
         touched: [],
@@ -21,7 +21,7 @@ describe('form state with nested fields', () => {
     cy.get('#state').should(($state) =>
       expect(JSON.parse($state.text())).to.be.deep.equal({
         isDirty: true,
-        dirtyFields: ['left.1'],
+        dirty: ['left.1'],
         isSubmitted: false,
         submitCount: 0,
         touched: ['left.1'],
@@ -36,7 +36,7 @@ describe('form state with nested fields', () => {
     cy.get('#state').should(($state) =>
       expect(JSON.parse($state.text())).to.be.deep.equal({
         isDirty: false,
-        dirtyFields: [],
+        dirty: [],
         isSubmitted: false,
         submitCount: 0,
         touched: ['left.1'],
@@ -52,7 +52,7 @@ describe('form state with nested fields', () => {
     cy.get('#state').should(($state) =>
       expect(JSON.parse($state.text())).to.be.deep.equal({
         isDirty: true,
-        dirtyFields: ['left.1', 'left.2'],
+        dirty: ['left.1', 'left.2'],
         isSubmitted: false,
         submitCount: 0,
         touched: ['left.1', 'left.2'],
@@ -68,7 +68,7 @@ describe('form state with nested fields', () => {
     cy.get('#state').should(($state) =>
       expect(JSON.parse($state.text())).to.be.deep.equal({
         isDirty: true,
-        dirtyFields: ['left.1'],
+        dirty: ['left.1'],
         isSubmitted: true,
         submitCount: 1,
         touched: ['left.1', 'left.2'],
@@ -83,7 +83,7 @@ describe('form state with nested fields', () => {
     cy.get('#state').should(($state) =>
       expect(JSON.parse($state.text())).to.be.deep.equal({
         isDirty: true,
-        dirtyFields: ['left.1', 'left.2'],
+        dirty: ['left.1', 'left.2'],
         isSubmitted: true,
         submitCount: 2,
         touched: ['left.1', 'left.2'],
@@ -101,7 +101,7 @@ describe('form state with nested fields', () => {
     cy.get('#state').should(($state) =>
       expect(JSON.parse($state.text())).to.be.deep.equal({
         isDirty: false,
-        dirtyFields: [],
+        dirty: [],
         isSubmitted: false,
         submitCount: 0,
         touched: [],
@@ -116,7 +116,7 @@ describe('form state with nested fields', () => {
     cy.get('#state').should(($state) =>
       expect(JSON.parse($state.text())).to.be.deep.equal({
         isDirty: true,
-        dirtyFields: ['left.1'],
+        dirty: ['left.1'],
         isSubmitted: false,
         submitCount: 0,
         touched: ['left.1'],
@@ -130,7 +130,7 @@ describe('form state with nested fields', () => {
     cy.get('#state').should(($state) =>
       expect(JSON.parse($state.text())).to.be.deep.equal({
         isDirty: false,
-        dirtyFields: [],
+        dirty: [],
         isSubmitted: false,
         submitCount: 0,
         touched: ['left.1'],
@@ -146,7 +146,7 @@ describe('form state with nested fields', () => {
     cy.get('#state').should(($state) =>
       expect(JSON.parse($state.text())).to.be.deep.equal({
         isDirty: true,
-        dirtyFields: ['left.1', 'left.2'],
+        dirty: ['left.1', 'left.2'],
         isSubmitted: false,
         submitCount: 0,
         touched: ['left.1', 'left.2'],
@@ -162,7 +162,7 @@ describe('form state with nested fields', () => {
     cy.get('#state').should(($state) =>
       expect(JSON.parse($state.text())).to.be.deep.equal({
         isDirty: true,
-        dirtyFields: ['left.1'],
+        dirty: ['left.1'],
         isSubmitted: true,
         submitCount: 1,
         touched: ['left.1', 'left.2'],
@@ -177,7 +177,7 @@ describe('form state with nested fields', () => {
     cy.get('#state').should(($state) =>
       expect(JSON.parse($state.text())).to.be.deep.equal({
         isDirty: true,
-        dirtyFields: ['left.1', 'left.2'],
+        dirty: ['left.1', 'left.2'],
         isSubmitted: true,
         submitCount: 2,
         touched: ['left.1', 'left.2'],
@@ -195,7 +195,7 @@ describe('form state with nested fields', () => {
     cy.get('#state').should(($state) =>
       expect(JSON.parse($state.text())).to.be.deep.equal({
         isDirty: false,
-        dirtyFields: [],
+        dirty: [],
         isSubmitted: false,
         submitCount: 0,
         touched: [],
@@ -210,7 +210,7 @@ describe('form state with nested fields', () => {
     cy.get('#state').should(($state) =>
       expect(JSON.parse($state.text())).to.be.deep.equal({
         isDirty: true,
-        dirtyFields: ['left.1'],
+        dirty: ['left.1'],
         isSubmitted: false,
         submitCount: 0,
         touched: ['left.1'],
@@ -224,7 +224,7 @@ describe('form state with nested fields', () => {
     cy.get('#state').should(($state) =>
       expect(JSON.parse($state.text())).to.be.deep.equal({
         isDirty: false,
-        dirtyFields: [],
+        dirty: [],
         isSubmitted: false,
         submitCount: 0,
         touched: ['left.1'],
@@ -240,7 +240,7 @@ describe('form state with nested fields', () => {
     cy.get('#state').should(($state) =>
       expect(JSON.parse($state.text())).to.be.deep.equal({
         isDirty: true,
-        dirtyFields: ['left.1', 'left.2'],
+        dirty: ['left.1', 'left.2'],
         isSubmitted: false,
         submitCount: 0,
         touched: ['left.1', 'left.2'],
@@ -256,7 +256,7 @@ describe('form state with nested fields', () => {
     cy.get('#state').should(($state) =>
       expect(JSON.parse($state.text())).to.be.deep.equal({
         isDirty: true,
-        dirtyFields: ['left.1'],
+        dirty: ['left.1'],
         isSubmitted: true,
         submitCount: 1,
         touched: ['left.1', 'left.2'],
@@ -271,7 +271,7 @@ describe('form state with nested fields', () => {
     cy.get('#state').should(($state) =>
       expect(JSON.parse($state.text())).to.be.deep.equal({
         isDirty: true,
-        dirtyFields: ['left.1', 'left.2'],
+        dirty: ['left.1', 'left.2'],
         isSubmitted: true,
         submitCount: 2,
         touched: ['left.1', 'left.2'],
@@ -293,7 +293,7 @@ describe('form state with nested fields', () => {
     cy.get('#state').should(($state) =>
       expect(JSON.parse($state.text())).to.be.deep.equal({
         isDirty: true,
-        dirtyFields: ['left.1', 'left.2'],
+        dirty: ['left.1', 'left.2'],
         isSubmitted: false,
         submitCount: 0,
         touched: ['left.1', 'left.2'],
@@ -309,7 +309,7 @@ describe('form state with nested fields', () => {
     cy.get('#state').should(($state) =>
       expect(JSON.parse($state.text())).to.be.deep.equal({
         isDirty: false,
-        dirtyFields: [],
+        dirty: [],
         isSubmitted: false,
         submitCount: 0,
         touched: ['left.1', 'left.2'],
@@ -332,7 +332,7 @@ describe('form state with nested fields', () => {
     cy.get('#state').should(($state) =>
       expect(JSON.parse($state.text())).to.be.deep.equal({
         isDirty: true,
-        dirtyFields: ['left.1', 'left.2'],
+        dirty: ['left.1', 'left.2'],
         isSubmitted: false,
         submitCount: 0,
         touched: ['left.1', 'left.2'],
@@ -349,7 +349,7 @@ describe('form state with nested fields', () => {
     cy.get('#state').should(($state) =>
       expect(JSON.parse($state.text())).to.be.deep.equal({
         isDirty: false,
-        dirtyFields: [],
+        dirty: [],
         isSubmitted: false,
         submitCount: 0,
         touched: ['left.1', 'left.2'],
@@ -371,7 +371,7 @@ describe('form state with nested fields', () => {
     cy.get('#state').should(($state) =>
       expect(JSON.parse($state.text())).to.be.deep.equal({
         isDirty: true,
-        dirtyFields: ['left.1', 'left.2'],
+        dirty: ['left.1', 'left.2'],
         isSubmitted: false,
         submitCount: 0,
         touched: ['left.1', 'left.2'],
@@ -386,7 +386,7 @@ describe('form state with nested fields', () => {
     cy.get('#state').should(($state) =>
       expect(JSON.parse($state.text())).to.be.deep.equal({
         isDirty: false,
-        dirtyFields: [],
+        dirty: [],
         isSubmitted: false,
         submitCount: 0,
         touched: [],
@@ -407,7 +407,7 @@ describe('form state with nested fields', () => {
     cy.get('#state').should(($state) =>
       expect(JSON.parse($state.text())).to.be.deep.equal({
         isDirty: false,
-        dirtyFields: [],
+        dirty: [],
         isSubmitted: false,
         submitCount: 0,
         touched: ['left.1', 'left.2'],
