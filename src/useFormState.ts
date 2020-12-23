@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { useFormContext } from './useFormContext';
 import getProxyFormState from './logic/getProxyFormState';
 import shouldRenderFormState from './logic/shouldRenderFormState';
 import isProxyEnabled from './utils/isProxyEnabled';
@@ -13,19 +14,30 @@ import {
 function useFormState<TFieldValues extends FieldValues = FieldValues>({
   control,
 }: UseFormStateProps<TFieldValues>): UseFormStateMethods<TFieldValues> {
+  const methods = useFormContext();
+
+  if (process.env.NODE_ENV !== 'production') {
+    if (!control && !methods) {
+      throw new Error(
+        '📋 useWatch is missing `control` prop. https://react-hook-form.com/api#useWatch',
+      );
+    }
+  }
+
+  const { formStateRef, formStateSubjectRef, readFormStateRef } =
+    control || methods.control;
+
   const [formState, updateFormState] = React.useState<FormState<TFieldValues>>(
-    control.formStateRef.current,
+    formStateRef.current,
   );
-  const readFormStateRef = React.useRef(
-    cloneObject(control.readFormStateRef.current),
-  );
+  const readFormState = React.useRef(cloneObject(readFormStateRef.current));
 
   React.useEffect(() => {
-    control.formStateSubjectRef.current.subscribe({
+    formStateSubjectRef.current.subscribe({
       next: (formState: Partial<FormState<TFieldValues>>) => {
-        if (shouldRenderFormState(formState, readFormStateRef.current)) {
+        if (shouldRenderFormState(formState, readFormState.current)) {
           updateFormState({
-            ...control.formStateRef.current,
+            ...formStateRef.current,
             ...formState,
           });
         }
@@ -36,8 +48,8 @@ function useFormState<TFieldValues extends FieldValues = FieldValues>({
   return getProxyFormState<TFieldValues>(
     isProxyEnabled,
     formState,
-    control.readFormStateRef,
     readFormStateRef,
+    readFormState,
     false,
   );
 }

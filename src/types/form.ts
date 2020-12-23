@@ -133,6 +133,8 @@ export type Control<TFieldValues extends FieldValues = FieldValues> = Pick<
   UseFormMethods<TFieldValues>,
   'register' | 'unregister' | 'setValue' | 'getValues' | 'trigger'
 > & {
+  isWatchAllRef: React.MutableRefObject<boolean>;
+  watchFieldsRef: React.MutableRefObject<InternalNameSet<TFieldValues>>;
   isFormDirty: (name?: string, data?: unknown[]) => boolean;
   removeFieldEventListener: (field: Field, forceDelete?: boolean) => void;
   mode: Readonly<{
@@ -154,6 +156,12 @@ export type Control<TFieldValues extends FieldValues = FieldValues> = Pick<
   formStateSubjectRef: React.MutableRefObject<
     SubjectType<Partial<FormState<TFieldValues>>>
   >;
+  watchSubjectRef: React.MutableRefObject<
+    SubjectType<{
+      inputName?: string;
+      inputValue?: unknown;
+    }>
+  >;
   updateIsValid: (fieldsValues: FieldValues) => void;
   validFieldsRef: React.MutableRefObject<FieldNamesMarkedBoolean<TFieldValues>>;
   fieldsWithValidationRef: React.MutableRefObject<
@@ -167,18 +175,11 @@ export type Control<TFieldValues extends FieldValues = FieldValues> = Pick<
   fieldArrayNamesRef: React.MutableRefObject<InternalNameSet<TFieldValues>>;
   readFormStateRef: React.MutableRefObject<ReadFormState>;
   defaultValuesRef: React.MutableRefObject<DefaultValues<TFieldValues>>;
-  useWatchFieldsRef: React.MutableRefObject<
-    RecordInternalNameSet<TFieldValues>
-  >;
-  useWatchRenderFunctionsRef: React.MutableRefObject<
-    Record<string, React.Dispatch<unknown>>
-  >;
-  watchInternal: (
+  watchInternal: <T>(
     fieldNames?: string | string[],
-    defaultValue?: unknown,
-    watchId?: string,
+    defaultValue?: T,
+    isGlobal?: boolean,
   ) => unknown;
-  updateWatchedValue: (name: string) => void;
 };
 
 export type UseWatchRenderFunctions = Record<string, () => void>;

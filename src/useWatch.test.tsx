@@ -303,7 +303,7 @@ describe('useWatch', () => {
         },
       });
 
-      await wait(() => expect(renderCount.current.Parent).toBeRenderedTimes(1));
+      await wait(() => expect(renderCount.current.Parent).toBeRenderedTimes(2));
     });
 
     it('should not throw error when null or undefined is set', () => {
@@ -482,6 +482,7 @@ describe('useWatch', () => {
       });
 
       it("should watch item correctly with useFieldArray's remove method", async () => {
+        // @ts-ignore
         let watchedValue: { [x: string]: any } | undefined;
         const Component = () => {
           const { register, control } = useForm<{
@@ -551,7 +552,7 @@ describe('useWatch', () => {
           }, [register]);
 
           React.useEffect(() => {
-            reset({ test: 'default' });
+            reset({ test: 'default1' });
           }, [reset]);
 
           return (
@@ -565,7 +566,7 @@ describe('useWatch', () => {
         render(<Component />);
 
         expect((await screen.findByTestId('result')).textContent).toBe(
-          'default',
+          'default1',
         );
       });
 

@@ -87,8 +87,10 @@ export const useFieldArray = <
 
   const focusIndexRef = React.useRef(-1);
   const {
+    isWatchAllRef,
+    watchFieldsRef,
     isFormDirty,
-    updateWatchedValue,
+    watchSubjectRef,
     resetFieldArrayFunctionRef,
     fieldArrayNamesRef,
     fieldsRef,
@@ -411,7 +413,6 @@ export const useFieldArray = <
     const fieldValues = getCurrentFieldsValues();
     swapArrayAt(fieldValues, indexA, indexB);
     resetFields();
-    setFieldAndValidState([...fieldValues]);
     batchStateUpdate(
       swapArrayAt,
       {
@@ -424,6 +425,7 @@ export const useFieldArray = <
       fieldValues,
       false,
     );
+    setFieldAndValidState([...fieldValues]);
   };
 
   const move = (from: number, to: number) => {
@@ -461,7 +463,18 @@ export const useFieldArray = <
       set(fieldArrayDefaultValuesRef.current, name, defaultValues);
     }
 
-    updateWatchedValue(name);
+    if (isWatchAllRef.current) {
+      formStateSubjectRef.current.next({});
+    } else {
+      for (const watchField of watchFieldsRef.current) {
+        if (watchField.startsWith(name)) {
+          formStateSubjectRef.current.next({});
+          break;
+        }
+      }
+    }
+
+    watchSubjectRef.current.next({ inputName: name });
 
     if (focusIndexRef.current > -1) {
       for (const key in fieldsRef.current) {
