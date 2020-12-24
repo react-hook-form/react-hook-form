@@ -48,9 +48,9 @@ const Basic: React.FC = (props: any) => {
       />
       {errors.nestItem?.nest1 && <p>nest 1 error</p>}
       <input
-        name="arrayItem[0].test1"
         placeholder="arrayItem[0].test1"
         {...register('arrayItem.0.test1', { required: true })}
+        name="arrayItem.0.test1"
       />
       {errors.arrayItem?.[0]?.test1 && <p>array item 1 error</p>}
       <input
@@ -117,9 +117,9 @@ const Basic: React.FC = (props: any) => {
       />
       {errors.pattern && <p>pattern error</p>}
       Radio1
-      <input type="radio" name="radio" {...register} value="1" />
+      <input type="radio" name="radio" {...register('radio')} value="1" />
       Radio2
-      <input type="radio" name="radio" value="2" {...register} />
+      <input type="radio" name="radio" value="2" {...register('radio')} />
       Radio3
       <input
         type="radio"
