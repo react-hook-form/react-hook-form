@@ -15,7 +15,7 @@ import BasicSchemaValidation from './basicSchemaValidation';
 // import ReValidateMode from './reValidateMode';
 // import ValidateFieldCriteria from './validateFieldCriteria';
 // import SetValueCustomRegister from './setValueCustomRegister';
-// import ConditionalField from './conditionalField';
+import ConditionalField from './conditionalField';
 // import FormStateWithSchema from './formStateWithSchema';
 // import SetValueWithSchema from './setValueWithSchema';
 // import SetValueWithTrigger from './setValueWithTrigger';
@@ -61,7 +61,7 @@ const App: React.FC = () => {
       {/*  exact*/}
       {/*  component={SetValueWithTrigger}*/}
       {/*/>*/}
-      {/*<Route path="/conditionalField" exact component={ConditionalField} />*/}
+      <Route path="/conditionalField" exact component={ConditionalField} />
       {/*<Route path="/UseFieldArray/:mode" exact component={UseFieldArray} />*/}
       {/*<Route*/}
       {/*  path="/UseFieldArrayUnregister"*/}

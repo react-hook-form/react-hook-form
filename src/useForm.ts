@@ -873,7 +873,21 @@ export function useForm<
     if (!field) {
       return;
     }
+
     const isRadioOrCheckbox = isRadioOrCheckboxFunction(ref);
+
+    if (
+      (isRadioOrCheckbox
+        ? Array.isArray(field.options) &&
+          compact(field.options).find((option) => {
+            return ref.value === option.ref.value && option.ref === ref;
+          })
+        : ref === field.ref) ||
+      !field
+    ) {
+      return;
+    }
+
     const isFieldArray = isNameInFieldArray(fieldArrayNamesRef.current, name);
 
     let isEmptyDefaultValue = true;
