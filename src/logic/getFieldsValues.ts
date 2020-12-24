@@ -1,15 +1,12 @@
 import * as React from 'react';
 import getFieldValue from './getFieldValue';
 import isString from '../utils/isString';
-import { deepMerge } from '../utils/deepMerge';
 import isUndefined from '../utils/isUndefined';
 import { InternalFieldName, FieldValues, FieldRefs } from '../types';
 import transformToNestObject from './transformToNestObject';
 
 export default <TFieldValues extends FieldValues>(
   fieldsRef: React.MutableRefObject<FieldRefs>,
-  shallowFieldsState: Record<string, any>,
-  shouldUnregister: boolean,
   excludeDisabled?: boolean,
   search?: InternalFieldName | InternalFieldName[] | { nest: boolean },
 ) => {
@@ -27,7 +24,5 @@ export default <TFieldValues extends FieldValues>(
     }
   }
 
-  return shouldUnregister
-    ? transformToNestObject(output)
-    : deepMerge(shallowFieldsState, transformToNestObject(output));
+  return transformToNestObject(output);
 };

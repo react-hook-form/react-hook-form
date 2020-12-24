@@ -104,7 +104,6 @@ export const useFieldArray = <
     fieldArrayDefaultValuesRef,
     updateIsValid,
     getValues,
-    shouldUnregister,
     fieldArrayValuesRef,
   } = control || methods.control;
 
@@ -112,13 +111,7 @@ export const useFieldArray = <
   const memoizedDefaultValues = React.useRef<Partial<TFieldArrayValues>[]>([
     ...(get(fieldArrayDefaultValuesRef.current, fieldArrayParentName)
       ? get(fieldArrayDefaultValuesRef.current, name, [])
-      : get(
-          shouldUnregister
-            ? defaultValuesRef.current
-            : shallowFieldsStateRef.current,
-          name,
-          [],
-        )),
+      : get(defaultValuesRef.current, name, [])),
   ]);
   const [fields, setFields] = React.useState<
     Partial<ArrayField<TFieldArrayValues, TKeyName>>[]
@@ -314,12 +307,6 @@ export const useFieldArray = <
         dirty: formStateRef.current.dirty,
       });
     }
-
-    !shouldUnregister &&
-      set(shallowFieldsStateRef.current, name, [
-        ...(get(shallowFieldsStateRef.current, name) || []),
-        ...cloneObject(appendValue),
-      ]);
 
     focusIndexRef.current = shouldFocus
       ? get(fieldArrayValuesRef.current, name).length - 1

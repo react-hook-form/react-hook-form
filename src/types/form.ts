@@ -79,7 +79,6 @@ export type UseFormProps<
   resolver: Resolver<TFieldValues, TContext>;
   context: TContext;
   shouldFocusError: boolean;
-  shouldUnregister: boolean;
   criteriaMode: 'firstError' | 'all';
 }>;
 
@@ -143,7 +142,6 @@ export type Control<TFieldValues extends FieldValues = FieldValues> = Pick<
   }>;
   fieldArrayDefaultValuesRef: FieldArrayDefaultValues;
   fieldArrayValuesRef: FieldArrayDefaultValues;
-  shouldUnregister: boolean;
   formState: FormState<TFieldValues>;
   formStateRef: React.MutableRefObject<FormState<TFieldValues>>;
   formStateSubjectRef: React.MutableRefObject<

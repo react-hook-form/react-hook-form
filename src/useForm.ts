@@ -27,7 +27,6 @@ import get from './utils/get';
 import set from './utils/set';
 import unset from './utils/unset';
 import isKey from './utils/isKey';
-import cloneObject from './utils/cloneObject';
 import modeChecker from './utils/validationModeChecker';
 import isMultipleSelect from './utils/isMultipleSelect';
 import compact from './utils/compact';
@@ -80,7 +79,6 @@ export function useForm<
   context,
   defaultValues = {} as DefaultValues<TFieldValues>,
   shouldFocusError = true,
-  shouldUnregister = true,
   criteriaMode,
 }: UseFormProps<TFieldValues, TContext> = {}): UseFormMethods<TFieldValues> {
   const fieldsRef = React.useRef<FieldRefs>({});
@@ -147,11 +145,6 @@ export function useForm<
   contextRef.current = context;
   resolverRef.current = resolver;
   formStateRef.current = formState;
-  shallowFieldsStateRef.current = shouldUnregister
-    ? {}
-    : isEmptyObject(shallowFieldsStateRef.current)
-    ? cloneObject(defaultValues)
-    : shallowFieldsStateRef.current;
 
   const getIsValid = () =>
     (formStateRef.current.isValid =
@@ -435,13 +428,6 @@ export function useForm<
       value: SetFieldValue<TFieldValues>,
       config: SetValueConfig,
     ) => {
-      !shouldUnregister &&
-        set(
-          shallowFieldsStateRef.current,
-          name,
-          !isPrimitive(value) ? cloneObject(value) : value,
-        );
-
       if (fieldsRef.current[name]) {
         setFieldValue(name, value);
         config.shouldDirty && updateAndGetDirtyState(name);
@@ -482,8 +468,6 @@ export function useForm<
           }
         }
       }
-
-      !shouldUnregister && set(shallowFieldsStateRef.current, name, value);
     },
     [updateAndGetDirtyState, setFieldValue, setInternalValues],
   );
@@ -535,14 +519,6 @@ export function useForm<
             ...state,
             touched: formStateRef.current.touched,
           };
-        }
-
-        if (!shouldUnregister) {
-          set(
-            shallowFieldsStateRef.current,
-            name,
-            getFieldValue(fieldsRef, name),
-          );
         }
 
         if (shouldSkipValidation) {
@@ -608,24 +584,6 @@ export function useForm<
     [],
   );
 
-  function setFieldArrayDefaultValues<T extends FieldValues>(data: T): T {
-    if (!shouldUnregister) {
-      let copy = cloneObject(data);
-
-      for (const value of fieldArrayNamesRef.current) {
-        if (isKey(value) && !copy[value]) {
-          copy = {
-            ...copy,
-            [value]: [],
-          };
-        }
-      }
-
-      return copy;
-    }
-    return data;
-  }
-
   function getValues(): UnpackNestedValue<TFieldValues>;
   function getValues<TFieldName extends string, TFieldValue extends unknown>(
     name: TFieldName,
@@ -650,13 +608,7 @@ export function useForm<
       return data;
     }
 
-    return setFieldArrayDefaultValues(
-      getFieldsValues(
-        fieldsRef,
-        cloneObject(shallowFieldsStateRef.current),
-        shouldUnregister,
-      ),
-    );
+    return getFieldsValues(fieldsRef);
   }
 
   const updateIsValid = React.useCallback(
@@ -723,8 +675,6 @@ export function useForm<
       const watchFields = isGlobal ? watchFieldsRef.current : undefined;
       let fieldValues = getFieldsValues<TFieldValues>(
         fieldsRef,
-        cloneObject(shallowFieldsStateRef.current),
-        shouldUnregister,
         false,
         fieldNames,
       );
@@ -822,7 +772,7 @@ export function useForm<
     for (const fieldName of Array.isArray(name) ? name : [name]) {
       const field = fieldsRef.current[fieldName];
 
-      if (shouldUnregister && field && !compact(field.options || []).length) {
+      if (field && !compact(field.options || []).length) {
         unset(validFieldsRef.current, field.ref.name);
         unset(fieldsWithValidationRef.current, field.ref.name);
         unset(formStateRef.current.errors, field.ref.name);
@@ -997,14 +947,7 @@ export function useForm<
         e.persist();
       }
       let fieldErrors: FieldErrors<TFieldValues> = {};
-      let fieldValues = setFieldArrayDefaultValues(
-        getFieldsValues(
-          fieldsRef,
-          cloneObject(shallowFieldsStateRef.current),
-          shouldUnregister,
-          true,
-        ),
-      );
+      let fieldValues = getFieldsValues(fieldsRef);
 
       readFormStateRef.current.isSubmitting &&
         formStateSubjectRef.current.next({
@@ -1142,10 +1085,6 @@ export function useForm<
       (resetFieldArray) => isFunction(resetFieldArray) && resetFieldArray(),
     );
 
-    shallowFieldsStateRef.current = shouldUnregister
-      ? {}
-      : cloneObject(values || defaultValuesRef.current);
-
     resetRefs(omitResetState);
   };
 
@@ -1190,7 +1129,6 @@ export function useForm<
       isWatchAllRef,
       watchFieldsRef,
       isFormDirty,
-      shouldUnregister,
       formStateSubjectRef,
       watchSubjectRef,
       watchInternal,
@@ -1213,7 +1151,7 @@ export function useForm<
       fieldArrayValuesRef,
       ...commonProps,
     }),
-    [defaultValuesRef.current, shouldUnregister, watchInternal],
+    [defaultValuesRef.current, watchInternal],
   );
 
   return {

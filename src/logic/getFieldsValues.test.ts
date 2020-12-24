@@ -8,20 +8,16 @@ describe('getFieldsValues', () => {
     // @ts-ignore
     getFieldValue.mockImplementation(() => 'test');
     expect(
-      getFieldsValues(
-        {
-          current: {
-            test: {
-              ref: { name: 'test' },
-            },
-            test1: {
-              ref: { name: 'test1' },
-            },
+      getFieldsValues({
+        current: {
+          test: {
+            ref: { name: 'test' },
+          },
+          test1: {
+            ref: { name: 'test1' },
           },
         },
-        {},
-        false,
-      ),
+      }),
     ).toEqual({
       test: 'test',
       test1: 'test',
@@ -44,8 +40,6 @@ describe('getFieldsValues', () => {
             },
           },
         },
-        {},
-        false,
         false,
         'test',
       ),
@@ -73,8 +67,6 @@ describe('getFieldsValues', () => {
             },
           },
         },
-        {},
-        false,
         false,
         ['test', 'tex'],
       ),
@@ -86,19 +78,13 @@ describe('getFieldsValues', () => {
 
   it('should return unmounted values', () => {
     expect(
-      getFieldsValues(
-        {
-          current: {
-            test: {
-              ref: { name: 'test' },
-            },
+      getFieldsValues({
+        current: {
+          test: {
+            ref: { name: 'test' },
           },
         },
-        {
-          test1: 'test',
-        },
-        false,
-      ),
+      }),
     ).toEqual({
       test: 'test',
       test1: 'test',
@@ -109,22 +95,13 @@ describe('getFieldsValues', () => {
     // @ts-ignore
     getFieldValue.mockImplementation(() => 'test');
     expect(
-      getFieldsValues(
-        {
-          current: {
-            test: {
-              ref: { name: 'test' },
-            },
+      getFieldsValues({
+        current: {
+          test: {
+            ref: { name: 'test' },
           },
         },
-        {
-          test1: 'test',
-          test2: {
-            test: 'test1',
-          },
-        },
-        false,
-      ),
+      }),
     ).toEqual({
       test: 'test',
       test1: 'test',
