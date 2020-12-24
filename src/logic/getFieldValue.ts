@@ -2,17 +2,15 @@ import * as React from 'react';
 import getRadioValue from './getRadioValue';
 import getMultipleSelectValue from './getMultipleSelectValue';
 import isRadioInput from '../utils/isRadioInput';
-import get from '../utils/get';
 import isFileInput from '../utils/isFileInput';
 import isCheckBox from '../utils/isCheckBoxInput';
 import isMultipleSelect from '../utils/isMultipleSelect';
 import getCheckboxValue from './getCheckboxValue';
-import { FieldRefs, FieldValues, InternalFieldName } from '../types';
+import { FieldRefs, InternalFieldName } from '../types';
 
 export default function getFieldValue(
   fieldsRef: React.MutableRefObject<FieldRefs>,
   name: InternalFieldName,
-  shallowFieldsStateRef?: React.MutableRefObject<Partial<FieldValues>>,
   excludeDisabled?: boolean,
 ) {
   const field = fieldsRef.current[name]!;
@@ -53,9 +51,5 @@ export default function getFieldValue(
       : setValueAs
       ? setValueAs(value)
       : value;
-  }
-
-  if (shallowFieldsStateRef) {
-    return get(shallowFieldsStateRef.current, name);
   }
 }

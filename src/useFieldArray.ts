@@ -96,7 +96,6 @@ export const useFieldArray = <
     defaultValuesRef,
     unregister,
     formStateRef,
-    shallowFieldsStateRef,
     formStateSubjectRef,
     readFormStateRef,
     validFieldsRef,
@@ -212,15 +211,6 @@ export const useFieldArray = <
     shouldSet = true,
     shouldUpdateValid = false,
   ) => {
-    if (get(shallowFieldsStateRef.current, name)) {
-      const output = method(
-        get(shallowFieldsStateRef.current, name),
-        args.argA,
-        args.argB,
-      );
-      shouldSet && set(shallowFieldsStateRef.current, name, output);
-    }
-
     if (get(fieldArrayDefaultValuesRef.current, name)) {
       const output = method(
         get(fieldArrayDefaultValuesRef.current, name),
@@ -481,7 +471,6 @@ export const useFieldArray = <
       ) => {
         resetFields();
         !data && unset(fieldArrayDefaultValuesRef.current, name);
-        unset(shallowFieldsStateRef.current, name);
         memoizedDefaultValues.current = get(
           data || defaultValuesRef.current,
           name,

@@ -40,7 +40,6 @@ export default async (
     pattern,
     validate,
   }: Field,
-  shallowFieldsStateRef: React.MutableRefObject<Record<string, any>>,
 ): Promise<InternalFieldErrors> => {
   const name: InternalFieldName = ref.name;
   const error: InternalFieldErrors = {};
@@ -177,7 +176,7 @@ export default async (
   }
 
   if (validate) {
-    const fieldValue = getFieldsValue(fieldsRef, name, shallowFieldsStateRef);
+    const fieldValue = getFieldsValue(fieldsRef, name);
     const validateRef = isRadioOrCheckbox && options ? options[0].ref : ref;
 
     if (isFunction(validate)) {

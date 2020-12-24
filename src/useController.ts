@@ -43,14 +43,11 @@ export function useController<TFieldValues extends FieldValues = FieldValues>({
     readFormStateRef,
     fieldsRef,
     fieldArrayNamesRef,
-    shallowFieldsStateRef,
   } = control || methods.control;
 
   const isNotFieldArray = !isNameInFieldArray(fieldArrayNamesRef.current, name);
   const getInitialValue = () =>
-    !isUndefined(get(shallowFieldsStateRef.current, name)) && isNotFieldArray
-      ? get(shallowFieldsStateRef.current, name)
-      : isUndefined(defaultValue)
+    isUndefined(defaultValue)
       ? get(defaultValuesRef.current, name)
       : defaultValue;
   const [value, setInputStateValue] = React.useState(getInitialValue());

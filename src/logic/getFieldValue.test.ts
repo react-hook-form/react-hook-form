@@ -156,7 +156,6 @@ describe('getFieldValue', () => {
           },
         },
         'what',
-        { current: { what: 'data' } },
       ),
     ).toEqual('data');
   });
@@ -176,7 +175,6 @@ describe('getFieldValue', () => {
           },
         },
         'test',
-        { current: {} },
         true,
       ),
     ).toEqual(undefined);

@@ -104,7 +104,6 @@ export function useForm<
     defaultValues,
   );
   const isWatchAllRef = React.useRef(false);
-  const shallowFieldsStateRef = React.useRef({});
   const resetFieldArrayFunctionRef = React.useRef<
     ResetFieldArrayFunctionRef<TFieldValues>
   >({});
@@ -271,7 +270,7 @@ export function useForm<
       if (readFormStateRef.current.isDirty || readFormStateRef.current.dirty) {
         const isFieldDirty = !deepEqual(
           get(defaultValuesRef.current, name),
-          getFieldValue(fieldsRef, name, shallowFieldsStateRef),
+          getFieldValue(fieldsRef, name),
         );
         const isDirtyFieldExist = get(formStateRef.current.dirty, name);
         const previousIsDirty = formStateRef.current.isDirty;
@@ -318,7 +317,6 @@ export function useForm<
           fieldsRef,
           isValidateAllFieldCriteria,
           fieldsRef.current[name] as Field,
-          shallowFieldsStateRef,
         )
       )[name];
 
@@ -564,12 +562,7 @@ export function useForm<
           previousFormIsValid !== isValid && (shouldRender = true);
         } else {
           error = (
-            await validateField(
-              fieldsRef,
-              isValidateAllFieldCriteria,
-              field,
-              shallowFieldsStateRef,
-            )
+            await validateField(fieldsRef, isValidateAllFieldCriteria, field)
           )[name];
         }
 
@@ -595,14 +588,14 @@ export function useForm<
   ): UnpackNestedValue<Pick<TFieldValues, TFieldName>>;
   function getValues(payload?: string | string[]): unknown {
     if (isString(payload)) {
-      return getFieldValue(fieldsRef, payload, shallowFieldsStateRef);
+      return getFieldValue(fieldsRef, payload);
     }
 
     if (Array.isArray(payload)) {
       const data = {};
 
       for (const name of payload) {
-        set(data, name, getFieldValue(fieldsRef, name, shallowFieldsStateRef));
+        set(data, name, getFieldValue(fieldsRef, name));
       }
 
       return data;
@@ -861,17 +854,8 @@ export function useForm<
 
     fieldsRef.current[name] = field;
 
-    const isEmptyUnmountFields = isUndefined(
-      get(shallowFieldsStateRef.current, name),
-    );
-
-    if (!isEmptyObject(defaultValuesRef.current) || !isEmptyUnmountFields) {
-      defaultValue = get(
-        isEmptyUnmountFields
-          ? defaultValuesRef.current
-          : shallowFieldsStateRef.current,
-        name,
-      );
+    if (!isEmptyObject(defaultValuesRef.current)) {
+      defaultValue = get(defaultValuesRef.current, name);
       isEmptyDefaultValue = isUndefined(defaultValue);
 
       if (!isEmptyDefaultValue && !isFieldArray) {
@@ -883,20 +867,17 @@ export function useForm<
       set(fieldsWithValidationRef.current, name, true);
 
       if (!isOnSubmit && field && readFormStateRef.current.isValid) {
-        validateField(
-          fieldsRef,
-          isValidateAllFieldCriteria,
-          field,
-          shallowFieldsStateRef,
-        ).then((error) => {
-          isEmptyObject(error)
-            ? set(validFieldsRef.current, name, true)
-            : unset(validFieldsRef.current, name);
+        validateField(fieldsRef, isValidateAllFieldCriteria, field).then(
+          (error) => {
+            isEmptyObject(error)
+              ? set(validFieldsRef.current, name, true)
+              : unset(validFieldsRef.current, name);
 
-          formStateRef.current.isValid &&
-            !isEmptyObject(error) &&
-            setFormState({ ...formStateRef.current, isValid: getIsValid() });
-        });
+            formStateRef.current.isValid &&
+              !isEmptyObject(error) &&
+              setFormState({ ...formStateRef.current, isValid: getIsValid() });
+          },
+        );
       }
     }
 
@@ -972,7 +953,6 @@ export function useForm<
                 fieldsRef,
                 isValidateAllFieldCriteria,
                 field,
-                shallowFieldsStateRef,
               );
 
               if (fieldError[name]) {
@@ -1147,7 +1127,6 @@ export function useForm<
       readFormStateRef,
       formStateRef,
       defaultValuesRef,
-      shallowFieldsStateRef,
       fieldArrayValuesRef,
       ...commonProps,
     }),
