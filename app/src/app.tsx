@@ -3,7 +3,7 @@ import { BrowserRouter as Router, Route } from 'react-router-dom';
 // import AutoUnregister from './autoUnregister';
 import Basic from './basic';
 // import Watch from './watch';
-// import BasicSchemaValidation from './basicSchemaValidation';
+import BasicSchemaValidation from './basicSchemaValidation';
 // import SetError from './setError';
 // import SetValue from './setValue';
 // import FormState from './formState';
@@ -50,11 +50,11 @@ const App: React.FC = () => {
       {/*  component={ManualRegisterForm}*/}
       {/*/>*/}
       {/*<Route path="/watch" exact component={Watch} />*/}
-      {/*<Route*/}
-      {/*  path="/basic-schema-validation/:mode"*/}
-      {/*  exact*/}
-      {/*  component={BasicSchemaValidation}*/}
-      {/*/>*/}
+      <Route
+        path="/basic-schema-validation/:mode"
+        exact
+        component={BasicSchemaValidation}
+      />
       {/*<Route path="/setError" exact component={SetError} />*/}
       {/*<Route*/}
       {/*  path="/setValueWithTrigger"*/}
