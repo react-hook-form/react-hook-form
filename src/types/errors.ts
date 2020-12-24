@@ -31,6 +31,6 @@ export type FieldErrors<
   TFieldValues extends FieldValues = FieldValues
 > = DeepMap<TFieldValues, FieldError>;
 
-export type InternalFieldErrors<TFieldValues extends FieldValues> = Partial<
-  Record<InternalFieldName<TFieldValues>, FieldError>
+export type InternalFieldErrors = Partial<
+  Record<InternalFieldName, FieldError>
 >;

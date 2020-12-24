@@ -2,7 +2,6 @@ import * as React from 'react';
 import { LiteralToPrimitive, DeepPartial, DeepMap, PathFinder } from './utils';
 import { Resolver } from './resolvers';
 import {
-  Field,
   FieldName,
   FieldRefs,
   FieldValue,
@@ -39,12 +38,9 @@ export type DefaultValues<TFieldValues> = UnpackNestedValue<
   DeepPartial<TFieldValues>
 >;
 
-export type InternalNameSet<FieldValues> = Set<InternalFieldName<FieldValues>>;
+export type InternalNameSet = Set<InternalFieldName>;
 
-export type RecordInternalNameSet<TFieldValues> = Record<
-  string,
-  InternalNameSet<TFieldValues>
->;
+export type RecordInternalNameSet = Record<string, InternalNameSet>;
 
 export type ValidationMode = {
   onBlur: 'onBlur';
@@ -132,9 +128,8 @@ export type Control<TFieldValues extends FieldValues = FieldValues> = Pick<
   'register' | 'unregister' | 'setValue' | 'getValues' | 'trigger'
 > & {
   isWatchAllRef: React.MutableRefObject<boolean>;
-  watchFieldsRef: React.MutableRefObject<InternalNameSet<TFieldValues>>;
+  watchFieldsRef: React.MutableRefObject<InternalNameSet>;
   isFormDirty: (name?: string, data?: unknown[]) => boolean;
-  removeFieldEventListener: (field: Field, forceDelete?: boolean) => void;
   mode: Readonly<{
     isOnBlur: boolean;
     isOnSubmit: boolean;
@@ -165,12 +160,12 @@ export type Control<TFieldValues extends FieldValues = FieldValues> = Pick<
   fieldsWithValidationRef: React.MutableRefObject<
     FieldNamesMarkedBoolean<TFieldValues>
   >;
-  fieldsRef: React.MutableRefObject<FieldRefs<TFieldValues>>;
+  fieldsRef: React.MutableRefObject<FieldRefs>;
   resetFieldArrayFunctionRef: React.MutableRefObject<
-    Record<InternalFieldName<TFieldValues>, () => void>
+    Record<InternalFieldName, () => void>
   >;
   shallowFieldsStateRef: React.MutableRefObject<Partial<TFieldValues>>;
-  fieldArrayNamesRef: React.MutableRefObject<InternalNameSet<TFieldValues>>;
+  fieldArrayNamesRef: React.MutableRefObject<InternalNameSet>;
   readFormStateRef: React.MutableRefObject<ReadFormState>;
   defaultValuesRef: React.MutableRefObject<DefaultValues<TFieldValues>>;
   watchInternal: <T>(

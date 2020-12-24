@@ -6,9 +6,7 @@ export type RadioOrCheckboxOption = {
   mutationWatcher?: MutationObserver;
 };
 
-export type InternalFieldName<TFieldValues extends FieldValues> =
-  | (keyof TFieldValues & string)
-  | string;
+export type InternalFieldName = string;
 
 export type FieldName<
   TFieldValues extends FieldValues
@@ -29,7 +27,7 @@ export type CustomElement<TFieldValues extends FieldValues> = {
 
 export type FieldValue<
   TFieldValues extends FieldValues
-> = TFieldValues[InternalFieldName<TFieldValues>];
+> = TFieldValues[InternalFieldName];
 
 export type FieldValues = Record<string, any>;
 
@@ -46,6 +44,4 @@ export type Field = {
   options?: RadioOrCheckboxOption[];
 } & RegisterOptions;
 
-export type FieldRefs<TFieldValues extends FieldValues> = Partial<
-  Record<InternalFieldName<TFieldValues>, Field>
->;
+export type FieldRefs = Partial<Record<InternalFieldName, Field>>;

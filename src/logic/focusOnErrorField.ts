@@ -3,7 +3,7 @@ import isUndefined from '../utils/isUndefined';
 import { FieldErrors, FieldRefs } from '../types';
 
 export default <TFieldValues>(
-  fields: FieldRefs<TFieldValues>,
+  fields: FieldRefs,
   fieldErrors: FieldErrors<TFieldValues>,
 ) => {
   for (const key in fields) {

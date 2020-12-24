@@ -454,13 +454,13 @@ describe('useWatch', () => {
                     type="radio"
                     value="yes"
                     name={`options[${i}].option`}
-                    ref={register()}
+                    {...register()}
                   />
                   <input
                     type="radio"
                     value="no"
                     name={`options[${i}].option`}
-                    ref={register()}
+                    {...register()}
                   />
                 </div>
               ))}
@@ -510,9 +510,8 @@ describe('useWatch', () => {
                 <div key={item.firstName}>
                   <input
                     type="input"
-                    name={`test[${i}].firstName`}
                     defaultValue={item.firstName}
-                    ref={register()}
+                    {...register('test[${i}].firstName')}
                   />
 
                   <button type="button" onClick={() => remove(i)}>
@@ -540,7 +539,9 @@ describe('useWatch', () => {
     describe('with custom register', () => {
       it('should return default value of reset method when value is not empty', async () => {
         const Component = () => {
-          const { register, reset, control } = useForm<{ test: string }>();
+          const { register, reset, control, setValue } = useForm<{
+            test: string;
+          }>();
           const test = useWatch<string>({
             name: 'test',
             defaultValue: 'default',
@@ -548,7 +549,8 @@ describe('useWatch', () => {
           });
 
           React.useEffect(() => {
-            register({ name: 'test', value: 'test' });
+            register('test');
+            setValue('test', 'test');
           }, [register]);
 
           React.useEffect(() => {
@@ -557,7 +559,7 @@ describe('useWatch', () => {
 
           return (
             <form>
-              <input name="test" ref={register} />
+              <input {...register('test')} />
               <span data-testid="result">{test}</span>
             </form>
           );

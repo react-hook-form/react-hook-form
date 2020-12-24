@@ -18,7 +18,6 @@ import appendErrors from './appendErrors';
 import { INPUT_VALIDATION_RULES } from '../constants';
 import {
   Field,
-  FieldValues,
   FieldRefs,
   Message,
   FieldError,
@@ -26,8 +25,8 @@ import {
   InternalFieldErrors,
 } from '../types';
 
-export default async <TFieldValues extends FieldValues>(
-  fieldsRef: React.MutableRefObject<FieldRefs<TFieldValues>>,
+export default async (
+  fieldsRef: React.MutableRefObject<FieldRefs>,
   validateAllFieldCriteria: boolean,
   {
     ref,
@@ -42,9 +41,9 @@ export default async <TFieldValues extends FieldValues>(
     validate,
   }: Field,
   shallowFieldsStateRef: React.MutableRefObject<Record<string, any>>,
-): Promise<InternalFieldErrors<TFieldValues>> => {
-  const name: InternalFieldName<TFieldValues> = ref.name;
-  const error: InternalFieldErrors<TFieldValues> = {};
+): Promise<InternalFieldErrors> => {
+  const name: InternalFieldName = ref.name;
+  const error: InternalFieldErrors = {};
   const isRadio = isRadioInput(ref);
   const isCheckBox = isCheckBoxInput(ref);
   const isRadioOrCheckbox = isRadio || isCheckBox;

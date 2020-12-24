@@ -8,8 +8,7 @@ import {
   screen,
 } from '@testing-library/react';
 import { useForm } from './';
-import * as findRemovedFieldAndRemoveListener from './logic/findRemovedFieldAndRemoveListener';
-import { VALIDATION_MODE, EVENTS } from './constants';
+import { VALIDATION_MODE } from './constants';
 import {
   NestedValue,
   UseFormMethods,
@@ -36,25 +35,33 @@ describe('useForm', () => {
   });
 
   describe('register', () => {
-    it('should return undefined when ref name is missing', () => {
+    it('should return throw error when name is missing', () => {
+      process.env.NODE_ENV = 'development';
       const { result } = renderHook(() => useForm<{ test: string }>());
 
-      expect(result.current.register('test', {})).toBeUndefined();
+      // @ts-expect-error
+      const registerCallback = () => result.current.register();
+
+      expect(registerCallback).toThrow(
+        new Error(
+          '📋 `name` prop is missing during register: https://react-hook-form.com/api#register',
+        ),
+      );
     });
 
-    it('should call console.warn when ref name is undefined', () => {
-      process.env.NODE_ENV = 'development';
-      jest.spyOn(console, 'warn').mockImplementation(() => {});
-      const Component = () => {
-        const { register } = useForm();
-        return <input {...register} />;
-      };
-      render(<Component />);
+    // it.only('should call console.warn when ref name is undefined', () => {
+    //   process.env.NODE_ENV = 'development';
+    //   jest.spyOn(console, 'warn').mockImplementation(() => {});
+    //   const Component = () => {
+    //     const { register } = useForm();
+    //     return <input {...register} />;
+    //   };
+    //   render(<Component />);
+    //
+    //   expect(console.warn).toHaveBeenCalled();
+    // });
 
-      expect(console.warn).toHaveBeenCalled();
-    });
-
-    it('should support register passed to ref', async () => {
+    it.only('should support register passed to ref', async () => {
       const { result } = renderHook(() => useForm<{ test: string }>());
 
       result.current.register('test');
@@ -71,53 +78,53 @@ describe('useForm', () => {
       });
     });
 
-    test.each([['text'], ['radio'], ['checkbox']])(
-      'should register field for %s type',
-      async (type) => {
-        const mockListener = jest.spyOn(
-          findRemovedFieldAndRemoveListener,
-          'default',
-        );
-        jest.spyOn(HTMLInputElement.prototype, 'addEventListener');
-
-        const Component = () => {
-          const {
-            register,
-            formState: { isDirty },
-          } = useForm<{
-            test: string;
-          }>();
-          return (
-            <div>
-              <input type={type} {...register('test')} />
-              <span role="alert">{`${isDirty}`}</span>
-            </div>
-          );
-        };
-
-        const { renderCount } = perf<{ Component: unknown }>(React);
-
-        render(<Component />);
-
-        const ref = screen.getByRole(type === 'text' ? 'textbox' : type);
-
-        expect(ref.addEventListener).toHaveBeenCalledWith(
-          type === 'radio' || type === 'checkbox'
-            ? EVENTS.CHANGE
-            : EVENTS.INPUT,
-          expect.any(Function),
-        );
-
-        // check MutationObserver
-        ref.remove();
-
-        await waitFor(() => expect(mockListener).toHaveBeenCalled());
-        expect(screen.getByRole('alert').textContent).toBe('false');
-        await wait(() =>
-          expect(renderCount.current.Component).toBeRenderedTimes(2),
-        );
-      },
-    );
+    // test.each([['text'], ['radio'], ['checkbox']])(
+    //   'should register field for %s type',
+    //   async (type) => {
+    //     const mockListener = jest.spyOn(
+    //       findRemovedFieldAndRemoveListener,
+    //       'default',
+    //     );
+    //     jest.spyOn(HTMLInputElement.prototype, 'addEventListener');
+    //
+    //     const Component = () => {
+    //       const {
+    //         register,
+    //         formState: { isDirty },
+    //       } = useForm<{
+    //         test: string;
+    //       }>();
+    //       return (
+    //         <div>
+    //           <input type={type} {...register('test')} />
+    //           <span role="alert">{`${isDirty}`}</span>
+    //         </div>
+    //       );
+    //     };
+    //
+    //     const { renderCount } = perf<{ Component: unknown }>(React);
+    //
+    //     render(<Component />);
+    //
+    //     const ref = screen.getByRole(type === 'text' ? 'textbox' : type);
+    //
+    //     expect(ref.addEventListener).toHaveBeenCalledWith(
+    //       type === 'radio' || type === 'checkbox'
+    //         ? EVENTS.CHANGE
+    //         : EVENTS.INPUT,
+    //       expect.any(Function),
+    //     );
+    //
+    //     // check MutationObserver
+    //     ref.remove();
+    //
+    //     await waitFor(() => expect(mockListener).toHaveBeenCalled());
+    //     expect(screen.getByRole('alert').textContent).toBe('false');
+    //     await wait(() =>
+    //       expect(renderCount.current.Component).toBeRenderedTimes(2),
+    //     );
+    //   },
+    // );
 
     test.each([['text'], ['radio'], ['checkbox']])(
       'should not register the same %s input',
@@ -315,19 +322,19 @@ describe('useForm', () => {
       expect(result.current.getValues()).toEqual({});
     });
 
-    it('should not call findRemovedFieldAndRemoveListener when field variable does not exist', async () => {
-      const mockListener = jest.spyOn(
-        findRemovedFieldAndRemoveListener,
-        'default',
-      );
-      const { result } = renderHook(() => useForm());
-
-      await act(async () => {
-        await result.current.unregister('test');
-      });
-
-      expect(mockListener).not.toHaveBeenCalled();
-    });
+    // it('should not call findRemovedFieldAndRemoveListener when field variable does not exist', async () => {
+    //   const mockListener = jest.spyOn(
+    //     findRemovedFieldAndRemoveListener,
+    //     'default',
+    //   );
+    //   const { result } = renderHook(() => useForm());
+    //
+    //   await act(async () => {
+    //     await result.current.unregister('test');
+    //   });
+    //
+    //   expect(mockListener).not.toHaveBeenCalled();
+    // });
   });
 
   describe('when component unMount', () => {
@@ -439,17 +446,17 @@ describe('useForm', () => {
       expect(formState.isDirty).toBeTruthy();
     });
 
-    it('should not call removeFieldEventListenerAndRef when field variable does not exist', () => {
-      const mockListener = jest.spyOn(
-        findRemovedFieldAndRemoveListener,
-        'default',
-      );
-      const { unmount } = renderHook(() => useForm());
-
-      unmount();
-
-      expect(mockListener).not.toHaveBeenCalled();
-    });
+    // it('should not call removeFieldEventListenerAndRef when field variable does not exist', () => {
+    //   const mockListener = jest.spyOn(
+    //     findRemovedFieldAndRemoveListener,
+    //     'default',
+    //   );
+    //   const { unmount } = renderHook(() => useForm());
+    //
+    //   unmount();
+    //
+    //   expect(mockListener).not.toHaveBeenCalled();
+    // });
   });
 
   describe('watch', () => {
@@ -576,7 +583,7 @@ describe('useForm', () => {
         });
         return (
           <form>
-            <input name="test" ref={methods.register} />
+            <input {...methods.register('test')} />
           </form>
         );
       };

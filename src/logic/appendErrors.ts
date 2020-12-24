@@ -4,10 +4,10 @@ import {
   InternalFieldErrors,
 } from '../types';
 
-export default <TFieldValues>(
-  name: InternalFieldName<TFieldValues>,
+export default (
+  name: InternalFieldName,
   validateAllFieldCriteria: boolean,
-  errors: InternalFieldErrors<TFieldValues>,
+  errors: InternalFieldErrors,
   type: string,
   message: ValidateResult,
 ) =>

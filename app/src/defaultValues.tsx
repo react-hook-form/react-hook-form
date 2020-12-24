@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React from 'react';
 import { useForm, NestedValue } from 'react-hook-form';
 

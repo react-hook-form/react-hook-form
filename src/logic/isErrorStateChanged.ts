@@ -18,7 +18,7 @@ export default <TFieldValues extends FieldValues>({
 }: {
   errors: FieldErrors<TFieldValues>;
   error: FieldError | undefined;
-  name: InternalFieldName<TFieldValues>;
+  name: InternalFieldName;
   validFields: FieldNamesMarkedBoolean<TFieldValues>;
   fieldsWithValidation: FieldNamesMarkedBoolean<TFieldValues>;
 }): boolean => {

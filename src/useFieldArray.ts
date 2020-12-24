@@ -17,7 +17,6 @@ import fillBooleanArray from './utils/fillBooleanArray';
 import compact from './utils/compact';
 import cloneObject from './utils/cloneObject';
 import {
-  Field,
   FieldValues,
   UseFieldArrayProps,
   Control,
@@ -95,7 +94,7 @@ export const useFieldArray = <
     fieldArrayNamesRef,
     fieldsRef,
     defaultValuesRef,
-    removeFieldEventListener,
+    unregister,
     formStateRef,
     shallowFieldsStateRef,
     formStateSubjectRef,
@@ -178,8 +177,7 @@ export const useFieldArray = <
   const resetFields = () => {
     for (const key in fieldsRef.current) {
       if (isMatchFieldArrayName(key, name)) {
-        removeFieldEventListener(fieldsRef.current[key] as Field, true);
-        delete fieldsRef.current[key];
+        unregister(key);
       }
     }
   };

@@ -9,9 +9,9 @@ import isMultipleSelect from '../utils/isMultipleSelect';
 import getCheckboxValue from './getCheckboxValue';
 import { FieldRefs, FieldValues, InternalFieldName } from '../types';
 
-export default function getFieldValue<TFieldValues extends FieldValues>(
-  fieldsRef: React.MutableRefObject<FieldRefs<TFieldValues>>,
-  name: InternalFieldName<TFieldValues>,
+export default function getFieldValue(
+  fieldsRef: React.MutableRefObject<FieldRefs>,
+  name: InternalFieldName,
   shallowFieldsStateRef?: React.MutableRefObject<Partial<FieldValues>>,
   excludeDisabled?: boolean,
 ) {
