@@ -424,7 +424,7 @@ describe('Controller', () => {
 
   it('should set initial state from unmount state', () => {
     const Component = ({ isHide }: { isHide?: boolean }) => {
-      const { control } = useForm({ shouldUnregister: false });
+      const { control } = useForm();
       return isHide ? null : (
         <Controller
           defaultValue=""
@@ -450,7 +450,7 @@ describe('Controller', () => {
 
   it('should not set initial state from unmount state when input is part of field array', () => {
     const Component = () => {
-      const { control } = useForm({ shouldUnregister: false });
+      const { control } = useForm();
       const { fields, append, remove } = useFieldArray({
         name: 'test',
         control,

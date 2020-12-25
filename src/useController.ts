@@ -15,7 +15,6 @@ export function useController<TFieldValues extends FieldValues = FieldValues>({
   rules,
   defaultValue,
   control,
-  onFocus,
 }: UseControllerProps<TFieldValues>): UseControllerMethods<TFieldValues> {
   const methods = useFormContext<TFieldValues>();
 
@@ -54,22 +53,19 @@ export function useController<TFieldValues extends FieldValues = FieldValues>({
   const ref = React.useRef({
     focus: () => null,
   });
-  const onFocusRef = React.useRef(
-    onFocus ||
-      (() => {
-        if (isFunction(ref.current.focus)) {
-          ref.current.focus();
-        }
+  const onFocusRef = React.useRef(() => {
+    if (isFunction(ref.current.focus)) {
+      ref.current.focus();
+    }
 
-        if (process.env.NODE_ENV !== 'production') {
-          if (!isFunction(ref.current.focus)) {
-            console.warn(
-              `📋 'ref' from Controller render prop must be attached to a React component or a DOM Element whose ref provides a 'focus()' method`,
-            );
-          }
-        }
-      }),
-  );
+    if (process.env.NODE_ENV !== 'production') {
+      if (!isFunction(ref.current.focus)) {
+        console.warn(
+          `📋 'ref' from Controller render prop must be attached to a React component or a DOM Element whose ref provides a 'focus()' method`,
+        );
+      }
+    }
+  });
 
   const shouldValidate = React.useCallback(
     (isBlurEvent?: boolean) =>

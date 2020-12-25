@@ -32,7 +32,6 @@ export type UseControllerProps<
     RegisterOptions,
     'valueAsNumber' | 'valueAsDate' | 'setValueAs'
   >;
-  onFocus?: () => void;
   defaultValue?: unknown;
   control?: Control<TFieldValues>;
 };
