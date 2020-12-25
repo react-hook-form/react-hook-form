@@ -1,4 +1,3 @@
-// @ts-nocheck
 import * as React from 'react';
 import { useFormState, useForm, Control } from 'react-hook-form';
 
@@ -44,6 +43,12 @@ export const UseFormState: React.FC = () => {
     minRequiredLength: string;
     selectNumber: string;
     pattern: string;
+    nestItem: {
+      nest1: string;
+    };
+    arrayItem: {
+      test1: string;
+    }[];
   }>({
     mode: 'onChange',
   });
@@ -56,65 +61,68 @@ export const UseFormState: React.FC = () => {
       <input
         name="nestItem.nest1"
         placeholder="nest.nest1"
-        ref={register({ required: true })}
+        {...register('nestItem.nest1', { required: true })}
       />
       <input
-        name="arrayItem[0].test1"
-        placeholder="arrayItem[0].test1"
-        ref={register({ required: true })}
+        name="arrayItem.0.test1"
+        placeholder="arrayItem.0.test1"
+        {...register('arrayItem.0.test1', { required: true })}
       />
       <input
         name="firstName"
-        ref={register({ required: true })}
+        {...register('firstName', { required: true })}
         placeholder="firstName"
       />
       <input
         name="lastName"
-        ref={register({ required: true, maxLength: 5 })}
+        {...register('lastName', { required: true, maxLength: 5 })}
         placeholder="lastName"
       />
       <input
         type="number"
         name="min"
-        ref={register({ min: 10 })}
+        {...register('min', { min: 10 })}
         placeholder="min"
       />
       <input
         type="number"
         name="max"
-        ref={register({ max: 20 })}
+        {...register('max', { max: 20 })}
         placeholder="max"
       />
       <input
         type="date"
         name="minDate"
-        ref={register({ min: '2019-08-01' })}
+        {...register('minDate', { min: '2019-08-01' })}
         placeholder="minDate"
       />
       <input
         type="date"
         name="maxDate"
-        ref={register({ max: '2019-08-01' })}
+        {...register('maxDate', { max: '2019-08-01' })}
         placeholder="maxDate"
       />
       <input
         name="minLength"
-        ref={register({ minLength: 2 })}
+        {...register('minLength', { minLength: 2 })}
         placeholder="minLength"
       />
       <input
         name="minRequiredLength"
-        ref={register({ minLength: 2, required: true })}
+        {...register('minRequiredLength', { minLength: 2, required: true })}
         placeholder="minRequiredLength"
       />
-      <select name="selectNumber" ref={register({ required: true })}>
+      <select
+        name="selectNumber"
+        {...register('selectNumber', { required: true })}
+      >
         <option value="">Select</option>
         <option value={1}>1</option>
         <option value={2}>1</option>
       </select>
       <input
         name="pattern"
-        ref={register({ pattern: /\d+/ })}
+        {...register('pattern', { pattern: /\d+/ })}
         placeholder="pattern"
       />
       <button id="submit">Submit</button>
@@ -122,7 +130,8 @@ export const UseFormState: React.FC = () => {
         Reset
       </button>
       <div id="renderCount">{renderCounter}</div>
-      <SubForm control={control} />
+      {/* Todo: fix type issue */}
+      <SubForm control={control as any} />
     </form>
   );
 };
