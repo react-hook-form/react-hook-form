@@ -1109,7 +1109,6 @@ export function useForm<
 
   return {
     watch,
-    // @ts-ignore
     control: React.useMemo(
       () => ({
         isWatchAllRef,

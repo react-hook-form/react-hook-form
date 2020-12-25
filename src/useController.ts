@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { useFormContext } from './useFormContext';
 import { useFormState } from './useFormState';
 import isNameInFieldArray from './logic/isNameInFieldArray';
@@ -190,13 +189,10 @@ export function useController<TFieldValues extends FieldValues = FieldValues>({
     [setValue, name, shouldValidate],
   );
 
-  // @ts-ignore
   return {
-    // @ts-ignore
     field: {
       onChange,
       onBlur,
-      // @ts-ignore
       name,
       value,
       ref,

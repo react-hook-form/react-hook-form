@@ -19,8 +19,11 @@ export default <TFieldValues extends FieldValues>(
         ? name.startsWith(search)
         : Array.isArray(search) && search.find((data) => name.startsWith(data)))
     ) {
-      // @ts-ignore
-      output[name] = getFieldValue(fieldsRef, name, undefined, excludeDisabled);
+      output[name as keyof TFieldValues] = getFieldValue(
+        fieldsRef,
+        name,
+        excludeDisabled,
+      );
     }
   }
 

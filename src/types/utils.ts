@@ -94,7 +94,7 @@ export type PathFinder<
   TFieldValues,
   Key extends keyof TFieldValues = keyof TFieldValues
 > = Key extends string
-  ? TFieldValues[Key] extends NestedValue
+  ? TFieldValues[Key] extends NestedValue | FileList
     ? Key
     : TFieldValues[Key] extends (string | boolean | number | symbol)[]
     ? `${Key}.${Indexes}`

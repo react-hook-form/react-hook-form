@@ -192,9 +192,7 @@ describe('useForm', () => {
     });
 
     it('should be set default value from shallowFieldsStateRef when shouldUnRegister is false', async () => {
-      const { result, unmount } = renderHook(() =>
-        useForm<{ test: string }>({ shouldUnregister: false }),
-      );
+      const { result, unmount } = renderHook(() => useForm<{ test: string }>());
 
       result.current.register('test');
 
@@ -578,9 +576,7 @@ describe('useForm', () => {
       const Component = () => {
         methods = useForm<{
           test: string;
-        }>({
-          shouldUnregister: false,
-        });
+        }>();
         return (
           <form>
             <input {...methods.register('test')} />
@@ -656,18 +652,12 @@ describe('useForm', () => {
       const { result } = renderHook(() =>
         useForm<{
           test: string;
-        }>({
-          shouldUnregister: false,
-        }),
+        }>(),
       );
 
       result.current.register('test');
 
       act(() => result.current.reset({ test: 'test' }));
-
-      expect(result.current.control.shallowFieldsStateRef.current).toEqual({
-        test: 'test',
-      });
     });
 
     it('should not reset unmountFieldsState value by default', () => {
@@ -680,8 +670,6 @@ describe('useForm', () => {
       result.current.register('test');
 
       act(() => result.current.reset({ test: 'test' }));
-
-      expect(result.current.control.shallowFieldsStateRef.current).toEqual({});
     });
 
     it('should not reset if OmitResetState is specified', async () => {
@@ -748,8 +736,6 @@ describe('useForm', () => {
 
       result.current.register('test1');
       result.current.setValue('test1', 'data');
-
-      expect(result.current.control.shallowFieldsStateRef.current).toEqual({});
     });
 
     it('should empty string when value is null or undefined when registered field is HTMLElement', () => {
@@ -944,9 +930,7 @@ describe('useForm', () => {
 
     it('should set unmountFieldsState value when shouldUnregister is set to false', async () => {
       const { result } = renderHook(() =>
-        useForm<{ test: string; checkbox: string[] }>({
-          shouldUnregister: false,
-        }),
+        useForm<{ test: string; checkbox: string[] }>(),
       );
 
       act(() => {
@@ -957,18 +941,6 @@ describe('useForm', () => {
           two: 'TWO',
           three: 'THREE',
         });
-      });
-
-      expect(result.current.control.shallowFieldsStateRef.current).toEqual({
-        checkbox: ['1', '2'],
-        test: '1',
-        test1: [
-          {
-            one: 'ONE',
-            two: 'TWO',
-            three: 'THREE',
-          },
-        ],
       });
     });
 
@@ -1910,7 +1882,7 @@ describe('useForm', () => {
       const { result, unmount } = renderHook(() =>
         useForm<{
           test: string;
-        }>({ shouldUnregister: false }),
+        }>(),
       );
 
       result.current.register('test');
@@ -2127,9 +2099,7 @@ describe('useForm', () => {
       const { result, unmount } = renderHook(() =>
         useForm<{
           test: string;
-        }>({
-          shouldUnregister: false,
-        }),
+        }>(),
       );
 
       result.current.register('test');
@@ -2143,9 +2113,7 @@ describe('useForm', () => {
       const { result, unmount } = renderHook(() =>
         useForm<{
           test: string;
-        }>({
-          shouldUnregister: false,
-        }),
+        }>(),
       );
 
       result.current.register('test');
@@ -2159,9 +2127,7 @@ describe('useForm', () => {
       const { result, unmount } = renderHook(() =>
         useForm<{
           test: string;
-        }>({
-          shouldUnregister: false,
-        }),
+        }>(),
       );
 
       result.current.register('test');
@@ -2686,7 +2652,6 @@ describe('useForm', () => {
         } = internationalMethods;
         methods = internationalMethods;
 
-        // Todo: Kotaro's type fix
         return (
           <div>
             <input
@@ -3397,6 +3362,10 @@ describe('useForm', () => {
         });
         errorsObject = errors;
 
+        {
+          /* todo: Type is still not working as expected here */
+        }
+
         return (
           <form onSubmit={handleSubmit(() => {})}>
             {[1, 2, 3].map((value, index) => (
@@ -3408,8 +3377,7 @@ describe('useForm', () => {
                   type={'checkbox'}
                   key={index}
                   id={`checkbox[${index}]`}
-                  // @ts-ignore Todo: Kotaro's type fix
-                  {...register(`checkbox[${index}]`)}
+                  {...register(`checkbox[${index}]` as any)}
                   value={value}
                 />
               </div>
