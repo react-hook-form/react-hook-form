@@ -1,4 +1,3 @@
-// @ts-nocheck
 import React, { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 
@@ -13,17 +12,11 @@ const SetValueCustomRegister: React.FC = () => {
   } = useForm<{
     firstName: string;
     lastName: string;
-    age: string;
-    trigger: string;
-    checkbox: boolean;
-    radio: string;
-    select: string;
-    multiple: string[];
   }>();
 
   useEffect(() => {
-    register({ name: 'firstName' }, { required: true });
-    register({ name: 'lastName' }, { required: true });
+    register('firstName', { required: true });
+    register('lastName', { required: true });
   }, [register]);
 
   renderCounter++;

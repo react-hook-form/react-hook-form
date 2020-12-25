@@ -14,7 +14,7 @@ import BasicSchemaValidation from './basicSchemaValidation';
 // import TriggerValidation from './triggerValidation';
 import ReValidateMode from './reValidateMode';
 import ValidateFieldCriteria from './validateFieldCriteria';
-// import SetValueCustomRegister from './setValueCustomRegister';
+import SetValueCustomRegister from './setValueCustomRegister';
 import ConditionalField from './conditionalField';
 // import FormStateWithSchema from './formStateWithSchema';
 // import SetValueWithSchema from './setValueWithSchema';
@@ -71,11 +71,11 @@ const App: React.FC = () => {
       {/*<Route path="/reset" exact component={Reset} />*/}
       {/*<Route path="/setValue" exact component={SetValue} />*/}
       {/*<Route path="/setValueWithSchema" exact component={SetValueWithSchema} />*/}
-      {/*<Route*/}
-      {/*  path="/SetValueCustomRegister"*/}
-      {/*  exact*/}
-      {/*  component={SetValueCustomRegister}*/}
-      {/*/>*/}
+      <Route
+        path="/SetValueCustomRegister"
+        exact
+        component={SetValueCustomRegister}
+      />
       {/*<Route path="/formState/:mode" exact component={FormState} />*/}
       {/*<Route*/}
       {/*  path="/formStateWithNestedFields/:mode"*/}
