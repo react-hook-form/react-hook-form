@@ -8,7 +8,7 @@ import BasicSchemaValidation from './basicSchemaValidation';
 import SetValue from './setValue';
 import FormState from './formState';
 import ManualRegisterForm from './manualRegisterForm';
-// import DefaultValues from './defaultValues';
+import DefaultValues from './defaultValues';
 // import WatchDefaultValues from './watchDefaultValues';
 // import Reset from './reset';
 // import TriggerValidation from './triggerValidation';
@@ -88,7 +88,7 @@ const App: React.FC = () => {
         component={FormStateWithSchema}
       />
       <Route path="/isValid/:mode/:defaultValues" exact component={IsValid} />
-      {/*<Route path="/default-values" exact component={DefaultValues} />*/}
+      <Route path="/default-values" exact component={DefaultValues} />
       {/*<Route path="/trigger-validation" exact component={TriggerValidation} />*/}
       {/*<Route*/}
       {/*  path="/watch-default-values"*/}

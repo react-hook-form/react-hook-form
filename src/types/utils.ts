@@ -88,7 +88,7 @@ export type TuplifyUnion<
 
 type ArrayElementType<A> = A extends readonly (infer T)[] ? T : never;
 
-type Indexes = 0 | 1 | 2;
+type Indexes = 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10;
 
 export type PathFinder<
   TFieldValues,
@@ -100,7 +100,7 @@ export type PathFinder<
     ? `${Key}.${Indexes}`
     : TFieldValues[Key] extends object[]
     ? `${Key}.${Indexes}.${PathFinder<ArrayElementType<TFieldValues[Key]>>}`
-    : TFieldValues[Key] extends Record<string, Primitive>
+    : TFieldValues[Key] extends Record<string, any>
     ? `${Key}.${PathFinder<TFieldValues[Key]>}`
     : Key
   : never;

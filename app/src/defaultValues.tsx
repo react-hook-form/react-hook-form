@@ -1,6 +1,5 @@
-// @ts-nocheck
 import React from 'react';
-import { useForm, NestedValue } from 'react-hook-form';
+import { useForm } from 'react-hook-form';
 
 function DefaultValues() {
   const { register } = useForm<{
@@ -11,9 +10,7 @@ function DefaultValues() {
       deep: {
         nest: string;
       };
-      nestedValue: NestedValue<string[]>;
     };
-    ['flatName[1].whatever']: string;
   }>({
     defaultValues: {
       test: 'test',
@@ -23,22 +20,21 @@ function DefaultValues() {
         deep: {
           nest: 'nest',
         },
-        nestedValue: ['test1', 'test2'],
       },
-      'flatName[1].whatever': 'flat',
     },
   });
 
   return (
     <form>
-      <input name="test" ref={register} />
-      <input name="test1.firstName" ref={register} />
-      <input name="test1.deep.nest" ref={register} />
-      <input name="test1.deep.nest.notFound" ref={register} />
-      <input name="test1.lastName[0]" ref={register} />
-      <input name="test1.lastName[1]" ref={register} />
-      <input name="test1.nestedValue" ref={register} />
-      <input name="flatName[1].whatever" ref={register} />
+      <input name="test" {...register('test')} />
+      <input name="test1.firstName" {...register('test1.firstName')} />
+      <input name="test1.deep.nest" {...register('test1.deep.nest')} />
+      <input
+        name="test1.deep.nest"
+        {...register('test1.deep.nest')}
+      />
+      <input name="test1.lastName.0" {...register('test1.lastName.0')} />
+      <input name="test1.lastName.1" {...register('test1.lastName.1')} />
     </form>
   );
 }
