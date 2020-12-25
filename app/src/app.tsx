@@ -22,7 +22,7 @@ import SetValueWithTrigger from './setValueWithTrigger';
 import IsValid from './isValid';
 // import Controller from './controller';
 // import UseFieldArray from './useFieldArray';
-// import CustomSchemaValidation from './customSchemaValidation';
+import CustomSchemaValidation from './customSchemaValidation';
 // import WatchFieldArray from './watchUseFieldArray';
 // import useWatch from './useWatch';
 // import FormStateWithNestedFields from './formStateWithNestedFields';
@@ -96,11 +96,11 @@ const App: React.FC = () => {
         component={WatchDefaultValues}
       />
       {/*<Route path="/watch-field-array/:mode" component={WatchFieldArray} />*/}
-      {/*<Route*/}
-      {/*  path="/customSchemaValidation/:mode"*/}
-      {/*  exact*/}
-      {/*  component={CustomSchemaValidation}*/}
-      {/*/>*/}
+      <Route
+        path="/customSchemaValidation/:mode"
+        exact
+        component={CustomSchemaValidation}
+      />
       {/*<Route path="/autoUnregister" exact component={AutoUnregister} />*/}
       {/*<Route path="/useWatch" exact component={useWatch} />*/}
       {/*<Route path="/useFormState" exact component={UseFormState} />*/}

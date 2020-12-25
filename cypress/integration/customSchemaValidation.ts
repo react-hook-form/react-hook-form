@@ -132,6 +132,6 @@ describe('customSchemaValidation form validation', () => {
     cy.get('input[name="checkbox"]').check();
 
     cy.get('p').should('have.length', 0);
-    cy.get('#renderCount').contains('25');
+    cy.get('#renderCount').contains('23');
   });
 });
