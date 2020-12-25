@@ -14,7 +14,7 @@ export default <TFieldValues>(
         if (field.ref.focus && isUndefined(field.ref.focus())) {
           break;
         } else if (field.options) {
-          field.options[0].ref.focus();
+          field.options[0].focus();
 
           break;
         }

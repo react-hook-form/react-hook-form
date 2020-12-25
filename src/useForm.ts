@@ -218,7 +218,7 @@ export function useForm<
 
       if (isRadioInput(ref)) {
         (options || []).forEach(
-          ({ ref: radioRef }: { ref: HTMLInputElement }) =>
+          (radioRef: HTMLInputElement) =>
             (radioRef.checked = radioRef.value === value),
         );
       } else if (isFileInput(ref) && !isString(value)) {
@@ -233,14 +233,14 @@ export function useForm<
       } else if (isCheckBoxInput(ref) && options) {
         options.length > 1
           ? options.forEach(
-              ({ ref: checkboxRef }) =>
+              (checkboxRef) =>
                 (checkboxRef.checked = Array.isArray(value)
                   ? !!(value as []).find(
                       (data: string) => data === checkboxRef.value,
                     )
                   : value === checkboxRef.value),
             )
-          : (options[0].ref.checked = !!value);
+          : (options[0].checked = !!value);
       } else {
         ref.value = value;
       }
@@ -842,12 +842,7 @@ export function useForm<
     field = isRadioOrCheckbox
       ? {
           ...field,
-          options: [
-            ...compact(field.options || []),
-            {
-              ref,
-            },
-          ],
+          options: [...compact(field.options || []), ref],
           ref: { type: ref.type, name },
         }
       : {
@@ -1049,7 +1044,7 @@ export function useForm<
           const { ref, options } = field;
           const inputRef =
             isRadioOrCheckboxFunction(ref) && Array.isArray(options)
-              ? options[0].ref
+              ? options[0]
               : ref;
 
           if (isHTMLElement(inputRef)) {

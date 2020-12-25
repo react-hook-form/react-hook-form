@@ -1,11 +1,6 @@
 import { IsFlatObject } from './utils';
 import { RegisterOptions } from './validator';
 
-export type RadioOrCheckboxOption = {
-  ref: HTMLInputElement;
-  mutationWatcher?: MutationObserver;
-};
-
 export type InternalFieldName = string;
 
 export type FieldName<
@@ -41,7 +36,7 @@ export type Ref = FieldElement;
 
 export type Field = {
   ref: Ref;
-  options?: RadioOrCheckboxOption[];
+  options?: HTMLInputElement[];
 } & RegisterOptions;
 
 export type FieldRefs = Partial<Record<InternalFieldName, Field>>;

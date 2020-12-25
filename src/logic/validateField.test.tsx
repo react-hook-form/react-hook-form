@@ -994,11 +994,7 @@ describe('validateField', () => {
             test: (value) => value.toString().length < 3,
             test1: (value) => value.toString().length > 10,
           },
-          options: [
-            {
-              ref: 'data' as any,
-            },
-          ],
+          options: ['data' as any],
         },
       ),
     ).toEqual({
@@ -1032,11 +1028,7 @@ describe('validateField', () => {
           validate: {
             test: () => true,
           },
-          options: [
-            {
-              ref: 'data' as any,
-            },
-          ],
+          options: ['data' as any],
         },
       ),
     ).toEqual({});

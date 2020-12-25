@@ -31,10 +31,8 @@ describe('focusErrorField', () => {
           ref: {} as any,
           options: [
             {
-              ref: {
-                focus,
-              } as any,
-            },
+              focus,
+            } as any,
           ],
         },
       },

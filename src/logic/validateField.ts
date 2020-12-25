@@ -87,7 +87,7 @@ export default async (
         type: INPUT_VALIDATION_RULES.required,
         message,
         ref: isRadioOrCheckbox
-          ? (((fieldsRef.current[name] as Field).options || [])[0] || {}).ref
+          ? ((fieldsRef.current[name] as Field).options || [])[0] || {}
           : ref,
         ...appendErrorsCurry(INPUT_VALIDATION_RULES.required, message),
       };
@@ -177,7 +177,7 @@ export default async (
 
   if (validate) {
     const fieldValue = getFieldsValue(fieldsRef, name);
-    const validateRef = isRadioOrCheckbox && options ? options[0].ref : ref;
+    const validateRef = isRadioOrCheckbox && options ? options[0] : ref;
 
     if (isFunction(validate)) {
       const result = await validate(fieldValue);
