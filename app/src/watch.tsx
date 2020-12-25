@@ -1,4 +1,3 @@
-// @ts-nocheck
 import React from 'react';
 import { useForm } from 'react-hook-form';
 
@@ -16,37 +15,41 @@ const Watch: React.FC = () => {
   const test = watch('test');
   const testObject = watch('testObject');
   const testSingle = watch('testSingle');
-  const testArray = watch(['test[0]', 'test[1]']);
+  const testArray = watch(['test.0', 'test.1']);
   const toggle = watch('toggle');
   const watchAll = watch();
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
-      <input name="testSingle" ref={register} placeholder="testSingle" />
+      <input
+        name="testSingle"
+        {...register('testSingle')}
+        placeholder="testSingle"
+      />
       {testSingle === 'testSingle' && (
         <div id="HideTestSingle">Hide Content TestSingle</div>
       )}
 
-      <input name="test[0]" ref={register} placeholder="test[0]" />
-      <input name="test[1]" ref={register} placeholder="test[1]" />
+      <input {...register('test.0')} placeholder="test[0]" />
+      <input {...register('test.1')} placeholder="test[1]" />
 
       <div id="testData">{JSON.stringify(test)}</div>
-      <div id="testArray">{JSON.stringify(testArray)}</div>
+        <div id="testArray">{JSON.stringify(testArray)}</div>
 
       <input
         name="testObject.firstName"
-        ref={register}
+        {...register('testObject.firstName')}
         placeholder="testObject.firstName"
       />
       <input
         name="testObject.lastName"
-        ref={register}
+        {...register('testObject.lastName')}
         placeholder="testObject.lastName"
       />
 
       <div id="testObject">{JSON.stringify(testObject)}</div>
 
-      <input type="checkbox" name="toggle" ref={register} />
+      <input type="checkbox" name="toggle" {...register('toggle')} />
       {toggle && <div id="hideContent">Hide Content</div>}
 
       <div id="watchAll">{JSON.stringify(watchAll)}</div>

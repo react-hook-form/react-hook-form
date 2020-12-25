@@ -2,7 +2,7 @@ import React from 'react';
 import { BrowserRouter as Router, Route } from 'react-router-dom';
 // import AutoUnregister from './autoUnregister';
 import Basic from './basic';
-// import Watch from './watch';
+import Watch from './watch';
 import BasicSchemaValidation from './basicSchemaValidation';
 // import SetError from './setError';
 // import SetValue from './setValue';
@@ -49,7 +49,7 @@ const App: React.FC = () => {
       {/*  exact*/}
       {/*  component={ManualRegisterForm}*/}
       {/*/>*/}
-      {/*<Route path="/watch" exact component={Watch} />*/}
+      <Route path="/watch" exact component={Watch} />
       <Route
         path="/basic-schema-validation/:mode"
         exact
