@@ -192,6 +192,7 @@ export type InputState = {
   invalid: boolean;
   isTouched: boolean;
   isDirty: boolean;
+  isValidating: boolean;
 };
 
 export type RegisterProps =

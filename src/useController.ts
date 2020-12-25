@@ -1,5 +1,6 @@
 // @ts-nocheck
 import { useFormContext } from './useFormContext';
+import { useFormState } from './useFormState';
 import isNameInFieldArray from './logic/isNameInFieldArray';
 import isUndefined from './utils/isUndefined';
 import get from './utils/get';
@@ -35,10 +36,6 @@ export function useController<TFieldValues extends FieldValues = FieldValues>({
     trigger,
     mode,
     reValidateMode: { isReValidateOnBlur, isReValidateOnChange },
-    formState,
-    formStateRef: {
-      current: { isSubmitted, touched },
-    },
     formStateSubjectRef,
     readFormStateRef,
     fieldsRef,
@@ -51,6 +48,9 @@ export function useController<TFieldValues extends FieldValues = FieldValues>({
       ? get(defaultValuesRef.current, name)
       : defaultValue;
   const [value, setInputStateValue] = React.useState(getInitialValue());
+  const { errors, dirty, touched, isValidating, isSubmitted } = useFormState({
+    control: control || methods.control,
+  });
   const valueRef = React.useRef(value);
   const ref = React.useRef({
     focus: () => null,
@@ -201,25 +201,11 @@ export function useController<TFieldValues extends FieldValues = FieldValues>({
       value,
       ref,
     },
-    meta: Object.defineProperties(
-      {},
-      {
-        invalid: {
-          get() {
-            return !!get(formState.errors, name);
-          },
-        },
-        isDirty: {
-          get() {
-            return !!get(formState.dirty, name);
-          },
-        },
-        isTouched: {
-          get() {
-            return !!get(formState.touched, name);
-          },
-        },
-      },
-    ),
+    meta: {
+      invalid: !!get(errors, name),
+      isDirty: !!get(dirty, name),
+      isTouched: !!get(touched, name),
+      isValidating,
+    },
   };
 }
