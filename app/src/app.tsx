@@ -4,12 +4,12 @@ import { BrowserRouter as Router, Route } from 'react-router-dom';
 import Basic from './basic';
 import Watch from './watch';
 import BasicSchemaValidation from './basicSchemaValidation';
-// import SetError from './setError';
+import SetError from './setError';
 import SetValue from './setValue';
 import FormState from './formState';
 import ManualRegisterForm from './manualRegisterForm';
 import DefaultValues from './defaultValues';
-// import WatchDefaultValues from './watchDefaultValues';
+import WatchDefaultValues from './watchDefaultValues';
 import Reset from './reset';
 import TriggerValidation from './triggerValidation';
 import ReValidateMode from './reValidateMode';
@@ -55,7 +55,7 @@ const App: React.FC = () => {
         exact
         component={BasicSchemaValidation}
       />
-      {/*<Route path="/setError" exact component={SetError} />*/}
+      <Route path="/setError" exact component={SetError} />
       {/*<Route*/}
       {/*  path="/setValueWithTrigger"*/}
       {/*  exact*/}
@@ -90,11 +90,11 @@ const App: React.FC = () => {
       <Route path="/isValid/:mode/:defaultValues" exact component={IsValid} />
       <Route path="/default-values" exact component={DefaultValues} />
       <Route path="/trigger-validation" exact component={TriggerValidation} />
-      {/*<Route*/}
-      {/*  path="/watch-default-values"*/}
-      {/*  exact*/}
-      {/*  component={WatchDefaultValues}*/}
-      {/*/>*/}
+      <Route
+        path="/watch-default-values"
+        exact
+        component={WatchDefaultValues}
+      />
       {/*<Route path="/watch-field-array/:mode" component={WatchFieldArray} />*/}
       {/*<Route*/}
       {/*  path="/customSchemaValidation/:mode"*/}

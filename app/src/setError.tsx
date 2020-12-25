@@ -1,4 +1,3 @@
-// @ts-nocheck
 import React, { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 
@@ -19,13 +18,13 @@ const SetError: React.FC = () => {
   }>();
 
   useEffect(() => {
-    register({ name: 'firstName' });
-    register({ name: 'lastName' });
-    register({ name: 'age' });
-    register({ name: 'test' });
-    register({ name: 'test1' });
-    register({ name: 'username' });
-    register({ name: 'test2' });
+    register('firstName');
+    register('lastName');
+    register('age');
+    register('test');
+    register('test1');
+    register('username');
+    register('test2');
 
     setError('firstName', { type: 'wrong' });
     setError('lastName', { type: 'wrong' });
