@@ -1,4 +1,3 @@
-// @ts-nocheck
 import React from 'react';
 import { useForm } from 'react-hook-form';
 import { withRouter } from 'react-router';
@@ -52,12 +51,12 @@ const FormState = (props: {
     <form onSubmit={handleSubmit(() => {})}>
       <input
         name="firstName"
-        ref={register({ required: true })}
+        {...register('firstName', { required: true })}
         placeholder="firstName"
       />
       <input
         name="lastName"
-        ref={register({ required: true })}
+        {...register('lastName', { required: true })}
         placeholder="lastName"
       />
       <div id="state">
@@ -72,21 +71,20 @@ const FormState = (props: {
           dirty: Object.keys(dirty),
         })}
       </div>
-      <select name="select" ref={register} defaultValue="test">
+      <select name="select" {...register('select')} defaultValue="test">
         <option value="">Select</option>
         <option value="test">test</option>
         <option value="test1">test1</option>
         <option value="test2">test3</option>
       </select>
 
-      <input type="radio" name="radio" ref={register} />
+      <input type="radio" name="radio" {...register('radio')} />
 
-      <input type="checkbox" name="checkbox" ref={register} />
+      <input type="checkbox" name="checkbox" {...register('checkbox')} />
       <input
         type="checkbox"
         name="checkbox-checked"
-        defaultChecked
-        ref={register}
+        {...register('checkbox-checked')}
       />
       <button id="submit">Submit</button>
       <button type="button" onClick={() => reset()} id="resetForm">

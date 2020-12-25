@@ -906,11 +906,12 @@ export function useForm<
     }
 
     fieldsRef.current[name] = {
-      ref: fieldsRef.current[name]
-        ? fieldsRef.current[name]!.ref
-        : {
-            name,
-          },
+      ...(fieldsRef.current[name]
+        ? {
+            ref: fieldsRef.current[name]!.ref,
+            ...fieldsRef.current[name],
+          }
+        : { ref: { name } }),
       ...options,
     };
 

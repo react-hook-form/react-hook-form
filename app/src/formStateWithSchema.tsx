@@ -1,4 +1,3 @@
-// @ts-nocheck
 import React from 'react';
 import { useForm } from 'react-hook-form';
 import * as yup from 'yup';
@@ -52,20 +51,24 @@ const FormStateWithSchema: React.FC = (props: any) => {
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
-      <input name="firstName" ref={register} placeholder="firstName" />
-      <input name="lastName" ref={register} placeholder="lastName" />
-      <select name="select" ref={register}>
+      <input
+        name="firstName"
+        {...register('firstName')}
+        placeholder="firstName"
+      />
+      <input name="lastName" {...register('lastName')} placeholder="lastName" />
+      <select name="select" {...register('select')}>
         <option value="">Select</option>
         <option value={1}>1</option>
         <option value={2}>1</option>
       </select>
       Radio1
-      <input type="radio" name="radio" ref={register} value="1" />
+      <input type="radio" name="radio" {...register('radio')} value="1" />
       Radio2
-      <input type="radio" name="radio" ref={register} value="2" />
+      <input type="radio" name="radio" {...register('radio')} value="2" />
       Radio3
-      <input type="radio" name="radio" ref={register} value="3" />
-      <input type="checkbox" name="checkbox" ref={register} />
+      <input type="radio" name="radio" {...register('radio')} value="3" />
+      <input type="checkbox" name="checkbox" {...register('checkbox')} />
       <button id="submit">Submit</button>
       <button type="button" onClick={() => reset()} id="resetForm">
         Reset
