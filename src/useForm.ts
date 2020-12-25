@@ -669,11 +669,7 @@ export function useForm<
       isGlobal?: boolean,
     ) => {
       const watchFields = isGlobal ? watchFieldsRef.current : undefined;
-      let fieldValues = getFieldsValues<TFieldValues>(
-        fieldsRef,
-        false,
-        fieldNames,
-      );
+      let fieldValues = getFieldsValues(fieldsRef, false, fieldNames);
 
       fieldValues = isEmptyObject(fieldValues)
         ? ((isEmptyObject(defaultValuesRef.current)

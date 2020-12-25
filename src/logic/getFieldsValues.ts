@@ -1,29 +1,24 @@
 import * as React from 'react';
 import getFieldValue from './getFieldValue';
-import isString from '../utils/isString';
 import isUndefined from '../utils/isUndefined';
-import { InternalFieldName, FieldValues, FieldRefs } from '../types';
 import transformToNestObject from './transformToNestObject';
+import { InternalFieldName, FieldRefs } from '../types';
 
-export default <TFieldValues extends FieldValues>(
+export default (
   fieldsRef: React.MutableRefObject<FieldRefs>,
   excludeDisabled?: boolean,
-  search?: InternalFieldName | InternalFieldName[] | { nest: boolean },
+  search?: InternalFieldName | InternalFieldName[],
 ) => {
-  const output = {} as TFieldValues;
+  const output: Record<string, unknown> = {};
 
   for (const name in fieldsRef.current) {
     if (
       isUndefined(search) ||
-      (isString(search)
-        ? name.startsWith(search)
-        : Array.isArray(search) && search.find((data) => name.startsWith(data)))
+      (Array.isArray(search) ? search : [search]).find((data) =>
+        name.startsWith(data),
+      )
     ) {
-      output[name as keyof TFieldValues] = getFieldValue(
-        fieldsRef,
-        name,
-        excludeDisabled,
-      );
+      output[name] = getFieldValue(fieldsRef, name, excludeDisabled);
     }
   }
 
