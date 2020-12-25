@@ -196,6 +196,12 @@ export function useController<TFieldValues extends FieldValues = FieldValues>({
     [setValue, name, shouldValidate],
   );
 
+  // On SSR, delegate registering only to useEffect, as calling directly
+  // causes an infinite render loop (see #1398)
+  if (typeof window !== 'undefined') {
+    registerField();
+  }
+
   return {
     field: {
       onChange,
