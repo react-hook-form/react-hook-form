@@ -49,6 +49,7 @@ export default function Field(props: any) {
   });
   const {
     handleSubmit,
+    formState,
     formState: { errors },
     reset,
     control,
@@ -58,6 +59,8 @@ export default function Field(props: any) {
   renderCount++;
 
   const rerender = () => setRerender(Math.random());
+
+  console.log('render...', formState)
 
   return (
     <form onSubmit={handleSubmit(() => {})}>

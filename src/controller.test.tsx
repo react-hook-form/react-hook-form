@@ -250,7 +250,7 @@ describe('Controller', () => {
     expect(touched).toEqual({ test: true });
   });
 
-  it('should call trigger method when revalidationMode is onBlur with blur event', async () => {
+  it('should call trigger method when re-validate mode is onBlur with blur event', async () => {
     const Component = () => {
       const {
         handleSubmit,
