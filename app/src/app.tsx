@@ -11,7 +11,7 @@ import ManualRegisterForm from './manualRegisterForm';
 import DefaultValues from './defaultValues';
 // import WatchDefaultValues from './watchDefaultValues';
 import Reset from './reset';
-// import TriggerValidation from './triggerValidation';
+import TriggerValidation from './triggerValidation';
 import ReValidateMode from './reValidateMode';
 import ValidateFieldCriteria from './validateFieldCriteria';
 import SetValueCustomRegister from './setValueCustomRegister';
@@ -89,7 +89,7 @@ const App: React.FC = () => {
       />
       <Route path="/isValid/:mode/:defaultValues" exact component={IsValid} />
       <Route path="/default-values" exact component={DefaultValues} />
-      {/*<Route path="/trigger-validation" exact component={TriggerValidation} />*/}
+      <Route path="/trigger-validation" exact component={TriggerValidation} />
       {/*<Route*/}
       {/*  path="/watch-default-values"*/}
       {/*  exact*/}
