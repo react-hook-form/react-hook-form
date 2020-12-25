@@ -7,7 +7,7 @@ import BasicSchemaValidation from './basicSchemaValidation';
 // import SetError from './setError';
 import SetValue from './setValue';
 import FormState from './formState';
-// import ManualRegisterForm from './manualRegisterForm';
+import ManualRegisterForm from './manualRegisterForm';
 // import DefaultValues from './defaultValues';
 // import WatchDefaultValues from './watchDefaultValues';
 // import Reset from './reset';
@@ -44,11 +44,11 @@ const App: React.FC = () => {
         exact
         component={ReValidateMode}
       />
-      {/*<Route*/}
-      {/*  path="/manual-register-form"*/}
-      {/*  exact*/}
-      {/*  component={ManualRegisterForm}*/}
-      {/*/>*/}
+      <Route
+        path="/manual-register-form"
+        exact
+        component={ManualRegisterForm}
+      />
       <Route path="/watch" exact component={Watch} />
       <Route
         path="/basic-schema-validation/:mode"

@@ -1,4 +1,3 @@
-// @ts-nocheck
 import React, { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 
@@ -28,18 +27,18 @@ const ManualRegisterForm: React.FC = () => {
   renderCounter++;
 
   useEffect(() => {
-    register({ name: 'firstName' }, { required: true });
-    register({ name: 'lastName' }, { required: true, maxLength: 5 });
-    register({ name: 'min', type: 'number' }, { min: 10 });
-    register({ name: 'max', type: 'number' }, { max: 20 });
-    register({ name: 'minDate', type: 'date' }, { min: '2019-08-01' });
-    register({ name: 'maxDate', type: 'date' }, { max: '2019-08-01' });
-    register({ name: 'minLength' }, { minLength: 2 });
-    register({ name: 'minRequiredLength' }, { minLength: 2, required: true });
-    register({ name: 'selectNumber' }, { required: true });
-    register({ name: 'pattern' }, { pattern: /\d+/ });
-    register({ name: 'radio' }, { required: true });
-    register({ name: 'checkbox' }, { required: true });
+    register('firstName', { required: true });
+    register('lastName', { required: true, maxLength: 5 });
+    register('min', { min: 10 });
+    register('max', { max: 20 });
+    register('minDate', { min: '2019-08-01' });
+    register('maxDate', { max: '2019-08-01' });
+    register('minLength', { minLength: 2 });
+    register('minRequiredLength', { minLength: 2, required: true });
+    register('selectNumber', { required: true });
+    register('pattern', { pattern: /\d+/ });
+    register('radio', { required: true });
+    register('checkbox', { required: true });
   }, [register]);
 
   return (
