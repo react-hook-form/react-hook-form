@@ -1107,39 +1107,37 @@ export function useForm<
     ),
   };
 
-  const control = React.useMemo(
-    () => ({
-      isWatchAllRef,
-      watchFieldsRef,
-      isFormDirty,
-      formStateSubjectRef,
-      watchSubjectRef,
-      watchInternal,
-      mode: modeRef.current,
-      reValidateMode: {
-        isReValidateOnBlur,
-        isReValidateOnChange,
-      },
-      updateIsValid,
-      fieldsRef,
-      resetFieldArrayFunctionRef,
-      fieldArrayDefaultValuesRef,
-      validFieldsRef,
-      fieldsWithValidationRef,
-      fieldArrayNamesRef,
-      readFormStateRef,
-      formStateRef,
-      defaultValuesRef,
-      fieldArrayValuesRef,
-      ...commonProps,
-    }),
-    [defaultValuesRef.current, watchInternal],
-  );
-
   return {
     watch,
     // @ts-ignore
-    control,
+    control: React.useMemo(
+      () => ({
+        isWatchAllRef,
+        watchFieldsRef,
+        isFormDirty,
+        formStateSubjectRef,
+        watchSubjectRef,
+        watchInternal,
+        mode: modeRef.current,
+        reValidateMode: {
+          isReValidateOnBlur,
+          isReValidateOnChange,
+        },
+        updateIsValid,
+        fieldsRef,
+        resetFieldArrayFunctionRef,
+        fieldArrayDefaultValuesRef,
+        validFieldsRef,
+        fieldsWithValidationRef,
+        fieldArrayNamesRef,
+        readFormStateRef,
+        formStateRef,
+        defaultValuesRef,
+        fieldArrayValuesRef,
+        ...commonProps,
+      }),
+      [defaultValuesRef.current, watchInternal],
+    ),
     handleSubmit,
     reset: React.useCallback(reset, []),
     clearErrors: React.useCallback(clearErrors, []),
