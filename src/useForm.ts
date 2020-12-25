@@ -197,7 +197,6 @@ export function useForm<
           ...state,
           isValid: resolverRef.current ? isValid : getIsValid(),
           errors: formStateRef.current.errors,
-          isValidating: false,
         });
       }
 
@@ -763,8 +762,8 @@ export function useForm<
     }
   }
 
-  function unregister(
-    name: PathFinder<TFieldValues> | PathFinder<TFieldValues>[],
+  function unregister<TName extends string>(
+    name: RegisterPath<TName> | RegisterPath<TName>[],
   ): void {
     for (const fieldName of Array.isArray(name) ? name : [name]) {
       const field = fieldsRef.current[fieldName];
@@ -890,8 +889,12 @@ export function useForm<
     }
   }
 
-  function register(
-    name: PathFinder<TFieldValues>,
+  type RegisterPath<TName extends string> = string extends TName
+    ? string
+    : PathFinder<TFieldValues>;
+
+  function register<TName extends string>(
+    name: RegisterPath<TName>,
     options?: RegisterOptions,
   ): RegisterProps {
     if (process.env.NODE_ENV !== 'production') {

@@ -19,7 +19,7 @@ import ConditionalField from './conditionalField';
 // import FormStateWithSchema from './formStateWithSchema';
 // import SetValueWithSchema from './setValueWithSchema';
 // import SetValueWithTrigger from './setValueWithTrigger';
-// import IsValid from './isValid';
+import IsValid from './isValid';
 // import Controller from './controller';
 // import UseFieldArray from './useFieldArray';
 // import CustomSchemaValidation from './customSchemaValidation';
@@ -87,7 +87,7 @@ const App: React.FC = () => {
       {/*  exact*/}
       {/*  component={FormStateWithSchema}*/}
       {/*/>*/}
-      {/*<Route path="/isValid/:mode/:defaultValues" exact component={IsValid} />*/}
+      <Route path="/isValid/:mode/:defaultValues" exact component={IsValid} />
       {/*<Route path="/default-values" exact component={DefaultValues} />*/}
       {/*<Route path="/trigger-validation" exact component={TriggerValidation} />*/}
       {/*<Route*/}
