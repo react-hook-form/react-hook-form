@@ -1,5 +1,3 @@
-// @ts-nocheck
-
 import React from 'react';
 import { useForm } from 'react-hook-form';
 
@@ -38,7 +36,7 @@ const ValidateFieldCriteria: React.FC = () => {
     <form onSubmit={handleSubmit(onSubmit)}>
       <input
         name="firstName"
-        ref={register({ required: true, minLength: 4 })}
+        {...register('firstName', { required: true, minLength: 4 })}
         placeholder="firstName"
       />
       {errors.firstName &&
@@ -59,7 +57,7 @@ const ValidateFieldCriteria: React.FC = () => {
       <input
         type="number"
         name="min"
-        ref={register({ required: true, min: 10, max: 30 })}
+        {...register('min', { required: true, min: 10, max: 30 })}
         placeholder="min"
       />
       {errors.min && errors.min.types && errors.min.types.required && (
@@ -70,7 +68,7 @@ const ValidateFieldCriteria: React.FC = () => {
       <input
         type="date"
         name="minDate"
-        ref={register({ required: true, min: '2019-08-01' })}
+        {...register('minDate', { required: true, min: '2019-08-01' })}
         placeholder="minDate"
       />
       {errors.minDate &&
@@ -82,7 +80,7 @@ const ValidateFieldCriteria: React.FC = () => {
       <input
         type="date"
         name="maxDate"
-        ref={register({ required: true, max: '2019-08-01' })}
+        {...register('maxDate', { required: true, max: '2019-08-01' })}
         placeholder="maxDate"
       />
       {errors.maxDate &&
@@ -93,7 +91,7 @@ const ValidateFieldCriteria: React.FC = () => {
       )}
       <input
         name="minLength"
-        ref={register({ required: true, minLength: 2 })}
+        {...register('minLength', { required: true, minLength: 2 })}
         placeholder="minLength"
       />
       {errors.minLength &&
@@ -104,7 +102,7 @@ const ValidateFieldCriteria: React.FC = () => {
         errors.minLength.types.minLength && <p>minLength minLength</p>}
       <select
         name="selectNumber"
-        ref={register({ required: true, minLength: 2 })}
+        {...register('selectNumber', { required: true, minLength: 2 })}
       >
         <option value="">Select</option>
         <option value="1">1</option>
@@ -118,7 +116,11 @@ const ValidateFieldCriteria: React.FC = () => {
         errors.selectNumber.types.minLength && <p>selectNumber minLength</p>}
       <input
         name="pattern"
-        ref={register({ pattern: /\d+/, required: true, minLength: 3 })}
+        {...register('pattern', {
+          pattern: /\d+/,
+          required: true,
+          minLength: 3,
+        })}
         placeholder="pattern"
       />
       {errors.pattern &&
@@ -133,7 +135,7 @@ const ValidateFieldCriteria: React.FC = () => {
       <select
         name="multiple"
         multiple
-        ref={register({
+        {...register('multiple', {
           required: true,
           validate: (value) => value.includes('optionB'),
         })}
@@ -151,7 +153,7 @@ const ValidateFieldCriteria: React.FC = () => {
         name="validate"
         type="validate"
         placeholder="validate"
-        ref={register({
+        {...register('validate', {
           validate: {
             test: (value) => value !== '',
             test1: (value) => value.length > 3,

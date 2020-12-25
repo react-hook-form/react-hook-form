@@ -13,7 +13,7 @@ import BasicSchemaValidation from './basicSchemaValidation';
 // import Reset from './reset';
 // import TriggerValidation from './triggerValidation';
 import ReValidateMode from './reValidateMode';
-// import ValidateFieldCriteria from './validateFieldCriteria';
+import ValidateFieldCriteria from './validateFieldCriteria';
 // import SetValueCustomRegister from './setValueCustomRegister';
 import ConditionalField from './conditionalField';
 // import FormStateWithSchema from './formStateWithSchema';
@@ -33,11 +33,11 @@ const App: React.FC = () => {
   return (
     <Router>
       <Route path="/basic/:mode" exact component={Basic} />
-      {/*<Route*/}
-      {/*  path="/validate-field-criteria"*/}
-      {/*  exact*/}
-      {/*  component={ValidateFieldCriteria}*/}
-      {/*/>*/}
+      <Route
+        path="/validate-field-criteria"
+        exact
+        component={ValidateFieldCriteria}
+      />
       {/*<Route path="/controller/:mode" exact component={Controller} />*/}
       <Route
         path="/re-validate-mode/:mode/:reValidateMode"
