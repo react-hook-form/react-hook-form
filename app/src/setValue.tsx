@@ -1,4 +1,3 @@
-// @ts-nocheck
 import React, { useEffect } from 'react';
 import { useForm, NestedValue } from 'react-hook-form';
 
@@ -16,10 +15,10 @@ const SetValue: React.FC = () => {
     age: string;
     trigger: string;
     checkbox: boolean;
-    checkboxArray: string[];
+    checkboxArray: string;
     radio: string;
     select: string;
-    multiple: string[];
+    multiple: NestedValue<string[]>;
     array: string[];
     object: {
       firstName: string;
@@ -30,7 +29,7 @@ const SetValue: React.FC = () => {
   }>();
 
   useEffect(() => {
-    register({ name: 'lastName' }, { required: true });
+    register('lastName', { required: true });
     setValue('firstName', 'wrong', { shouldDirty: true });
     setValue('age', '2', { shouldDirty: true });
     setValue('trigger', '', { shouldDirty: true, shouldValidate: true });
@@ -42,7 +41,7 @@ const SetValue: React.FC = () => {
     setValue('radio', 'radio', { shouldDirty: true });
     setValue('select', 'a', { shouldDirty: true });
     setValue('multiple', ['a', 'b'], { shouldDirty: true });
-    setValue('array', ['array[0]', 'array[1]', 'array[2]'], {
+    setValue('array', ['array.0', 'array.1', 'array.2'], {
       shouldDirty: true,
     });
     setValue(
@@ -64,37 +63,56 @@ const SetValue: React.FC = () => {
 
   return (
     <form onSubmit={handleSubmit(() => {})}>
-      <input name="firstName" ref={register} placeholder="firstName" />
-      <input name="array[0]" ref={register} placeholder="array[0]" />
-      <input name="array[1]" ref={register} placeholder="array[1]" />
-      <input name="array[2]" ref={register} placeholder="array[2]" />
+      <input
+        name="firstName"
+        {...register('firstName')}
+        placeholder="firstName"
+      />
+      <input {...register('array.0')} placeholder="array[0]" />
+      <input {...register('array.1')} placeholder="array[1]" />
+      <input {...register('array.2')} placeholder="array[2]" />
       <input
         name="object.firstName"
-        ref={register}
+        {...register('object.firstName')}
         placeholder="object.firstName"
       />
       <input
         name="object.lastName"
-        ref={register}
+        {...register('object.lastName')}
         placeholder="object.lastName"
       />
       <input
         name="object.middleName"
-        ref={register}
+        {...register('object.middleName')}
         placeholder="object.middleName"
       />
-      <input name="age" type="number" ref={register} placeholder="age" />
-      <input name="radio" value="radio" type="radio" ref={register} />
-      <input name="checkbox" type="checkbox" ref={register} />
-      <input name="checkboxArray" type="checkbox" value="1" ref={register} />
-      <input name="checkboxArray" type="checkbox" value="2" ref={register} />
-      <input name="checkboxArray" type="checkbox" value="3" ref={register} />
-      <select name="select" ref={register}>
+      <input name="age" type="number" {...register('age')} placeholder="age" />
+      <input name="radio" value="radio" type="radio" {...register('radio')} />
+      <input name="checkbox" type="checkbox" {...register('checkbox')} />
+      <input
+        name="checkboxArray"
+        type="checkbox"
+        value="1"
+        {...register('checkboxArray')}
+      />
+      <input
+        name="checkboxArray"
+        type="checkbox"
+        value="2"
+        {...register('checkboxArray')}
+      />
+      <input
+        name="checkboxArray"
+        type="checkbox"
+        value="3"
+        {...register('checkboxArray')}
+      />
+      <select name="select" {...register('select')}>
         <option>Select</option>
         <option value="a">a</option>
         <option value="b">b</option>
       </select>
-      <select multiple name="multiple" ref={register}>
+      <select multiple name="multiple" {...register('multiple')}>
         <option>Select</option>
         <option value="a">a</option>
         <option value="b">b</option>
@@ -111,14 +129,14 @@ const SetValue: React.FC = () => {
 
       <input
         name="trigger"
-        ref={register({ required: true })}
+        {...register('trigger', { required: true })}
         placeholder="trigger"
       />
       {errors.trigger && <p id="trigger">Trigger error</p>}
 
       <input
         name="nestedValue"
-        ref={register({ required: 'required' })}
+        {...register('nestedValue', { required: 'required' })}
         placeholder="nestedValue"
       />
       {errors.nestedValue && (

@@ -1,5 +1,4 @@
 import isPrimitive from './isPrimitive';
-import isObject from './isObject';
 import { FieldName } from '../types';
 
 export const getPath = <TFieldValues>(
@@ -8,14 +7,11 @@ export const getPath = <TFieldValues>(
   paths: FieldName<TFieldValues>[] = [],
 ): FieldName<TFieldValues>[] => {
   for (const property in values) {
-    const rootName = (rootPath +
-      (isObject(values)
-        ? `.${property}`
-        : `[${property}]`)) as FieldName<TFieldValues>;
-
-    isPrimitive(values[property])
-      ? paths.push(rootName)
-      : getPath(rootName, values[property], paths);
+    for (const key of [`${rootPath}.${property}`, `${rootPath}[${property}]`]) {
+      isPrimitive(values[property])
+        ? paths.push(key as FieldName<TFieldValues>)
+        : getPath(key as FieldName<TFieldValues>, values[property], paths);
+    }
   }
 
   return paths;

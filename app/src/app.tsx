@@ -5,7 +5,7 @@ import Basic from './basic';
 import Watch from './watch';
 import BasicSchemaValidation from './basicSchemaValidation';
 // import SetError from './setError';
-// import SetValue from './setValue';
+import SetValue from './setValue';
 import FormState from './formState';
 // import ManualRegisterForm from './manualRegisterForm';
 // import DefaultValues from './defaultValues';
@@ -69,7 +69,7 @@ const App: React.FC = () => {
       {/*  component={UseFieldArrayUnregister}*/}
       {/*/>*/}
       {/*<Route path="/reset" exact component={Reset} />*/}
-      {/*<Route path="/setValue" exact component={SetValue} />*/}
+      <Route path="/setValue" exact component={SetValue} />
       {/*<Route path="/setValueWithSchema" exact component={SetValueWithSchema} />*/}
       <Route
         path="/SetValueCustomRegister"

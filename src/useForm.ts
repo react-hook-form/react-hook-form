@@ -826,7 +826,7 @@ export function useForm<
       (isRadioOrCheckbox
         ? Array.isArray(field.options) &&
           compact(field.options).find((option) => {
-            return ref.value === option.ref.value && option.ref === ref;
+            return ref.value === option.value && option === ref;
           })
         : ref === field.ref) ||
       !field
