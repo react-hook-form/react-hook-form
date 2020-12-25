@@ -10,7 +10,7 @@ import FormState from './formState';
 import ManualRegisterForm from './manualRegisterForm';
 import DefaultValues from './defaultValues';
 // import WatchDefaultValues from './watchDefaultValues';
-// import Reset from './reset';
+import Reset from './reset';
 // import TriggerValidation from './triggerValidation';
 import ReValidateMode from './reValidateMode';
 import ValidateFieldCriteria from './validateFieldCriteria';
@@ -68,7 +68,7 @@ const App: React.FC = () => {
       {/*  exact*/}
       {/*  component={UseFieldArrayUnregister}*/}
       {/*/>*/}
-      {/*<Route path="/reset" exact component={Reset} />*/}
+      <Route path="/reset" exact component={Reset} />
       <Route path="/setValue" exact component={SetValue} />
       {/*<Route path="/setValueWithSchema" exact component={SetValueWithSchema} />*/}
       <Route

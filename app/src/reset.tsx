@@ -1,4 +1,3 @@
-// @ts-nocheck
 import React from 'react';
 import { useForm } from 'react-hook-form';
 
@@ -20,11 +19,11 @@ function Reset() {
   }>();
   return (
     <>
-      <input name="firstName" ref={register} />
-      <input name="array[1]" ref={register} />
-      <input name="objectData.test" ref={register} />
-      <input name="lastName" ref={register} />
-      <input name="deepNest.level1.level2.data" ref={register} />
+      <input name="firstName" {...register('firstName')} />
+      <input name="array.1" {...register('array.1')} />
+      <input name="objectData.test" {...register('objectData.test')} />
+      <input name="lastName" {...register('lastName')} />
+      <input name="deepNest.level1.level2.data" {...register('deepNest.level1.level2.data')} />
       <button
         type="button"
         onClick={() =>
