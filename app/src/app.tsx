@@ -18,7 +18,7 @@ import SetValueCustomRegister from './setValueCustomRegister';
 import ConditionalField from './conditionalField';
 import FormStateWithSchema from './formStateWithSchema';
 import SetValueWithSchema from './setValueWithSchema';
-// import SetValueWithTrigger from './setValueWithTrigger';
+import SetValueWithTrigger from './setValueWithTrigger';
 import IsValid from './isValid';
 // import Controller from './controller';
 // import UseFieldArray from './useFieldArray';
@@ -56,11 +56,11 @@ const App: React.FC = () => {
         component={BasicSchemaValidation}
       />
       <Route path="/setError" exact component={SetError} />
-      {/*<Route*/}
-      {/*  path="/setValueWithTrigger"*/}
-      {/*  exact*/}
-      {/*  component={SetValueWithTrigger}*/}
-      {/*/>*/}
+      <Route
+        path="/setValueWithTrigger"
+        exact
+        component={SetValueWithTrigger}
+      />
       <Route path="/conditionalField" exact component={ConditionalField} />
       {/*<Route path="/UseFieldArray/:mode" exact component={UseFieldArray} />*/}
       {/*<Route*/}
