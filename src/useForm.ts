@@ -207,8 +207,7 @@ export function useForm<
 
       if (
         (shouldReRender && !isNullOrUndefined(shouldRender)) ||
-        !isEmptyObject(state) ||
-        readFormStateRef.current.isValidating
+        !isEmptyObject(state)
       ) {
         formStateSubjectRef.current.next({
           ...state,
@@ -217,6 +216,11 @@ export function useForm<
           isValidating: false,
         });
       }
+
+      readFormStateRef.current.isValidating &&
+        formStateSubjectRef.current.next({
+          isValidating: false,
+        });
     },
     [],
   );
