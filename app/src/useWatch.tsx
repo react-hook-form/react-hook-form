@@ -93,7 +93,9 @@ const Child = ({ control }: { control: Control }) => {
 };
 
 export default () => {
-  const { register, control } = useForm();
+  const { register, control } = useForm<{
+    test: string;
+  }>();
 
   counter++;
 
@@ -101,8 +103,7 @@ export default () => {
     <div style={{ border: '2px solid red', padding: 10, margin: 5 }}>
       <h2 style={{ margin: 0 }}>Parent:</h2>
       <input
-        ref={register}
-        name="test"
+        {...register('test')}
         autoComplete="off"
         placeholder="👀 watching me :)"
         style={{ fontSize: 20 }}
@@ -123,7 +124,7 @@ export default () => {
       />
 
       <input
-        ref={register}
+        {...register('test2')}
         name="test2"
         autoComplete="off"
         placeholder="👀 watching me :)"

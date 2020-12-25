@@ -1,4 +1,3 @@
-// @ts-nocheck
 import React from 'react';
 import { useForm } from 'react-hook-form';
 import { withRouter } from 'react-router';
@@ -21,19 +20,24 @@ const FormStateWithNestedFields: React.FC = (props: any) => {
     },
     reset,
   } = useForm<{
-    [topLevelKey: string]: {
-      [nestedKey: number]: string;
+    left: {
+      test1: string;
+      test2: string;
+    };
+    right: {
+      test1: string;
+      test2: string;
     };
   }>({
     mode: props.match.params.mode,
     defaultValues: {
       left: {
-        1: '',
-        2: '',
+        test1: '',
+        test2: '',
       },
       right: {
-        1: '',
-        2: '',
+        test1: '',
+        test2: '',
       },
     },
   });
@@ -47,25 +51,24 @@ const FormStateWithNestedFields: React.FC = (props: any) => {
           <h4>Left</h4>
           <input
             name="left.1"
-            ref={register({ required: true })}
+            {...register('left.test1', { required: true })}
             placeholder="firstName"
           />
           <input
             name="left.2"
-            ref={register({ required: true })}
+            {...register('left.test2', { required: true })}
             placeholder="lastName"
           />
         </div>
         <div style={{ display: 'flex', flexDirection: 'column' }}>
           <h4>Right</h4>
           <input
-            name="right.1"
-            ref={register({ required: false })}
+            {...register('right.test1', { required: false })}
             placeholder="firstName"
           />
           <input
             name="right.2"
-            ref={register({ required: false })}
+            {...register('right.test2', { required: false })}
             placeholder="lastName"
           />
         </div>
@@ -78,12 +81,16 @@ const FormStateWithNestedFields: React.FC = (props: any) => {
           isSubmitting,
           isSubmitSuccessful,
           isValid,
-          touched: Object.keys(touched).flatMap((topLevelKey) =>
+          touched: (Object.keys(touched) as Array<
+            keyof typeof touched
+          >).flatMap((topLevelKey) =>
             Object.keys(touched[topLevelKey] || {}).map(
               (nestedKey) => `${topLevelKey}.${nestedKey}`,
             ),
           ),
-          dirty: Object.keys(dirty).flatMap((topLevelKey) =>
+          dirty: (Object.keys(dirty) as Array<
+            keyof typeof touched
+          >).flatMap((topLevelKey) =>
             Object.keys(dirty[topLevelKey] || {}).map(
               (nestedKey) => `${topLevelKey}.${nestedKey}`,
             ),
