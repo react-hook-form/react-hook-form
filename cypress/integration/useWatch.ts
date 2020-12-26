@@ -6,7 +6,7 @@ describe('useWatch', () => {
     cy.get('#parentCounter').contains('1');
     cy.get('#childCounter').contains('1');
     cy.get('#grandChildCounter').contains('2');
-    cy.get('#grandChild1Counter').contains('3');
+    cy.get('#grandChild1Counter').contains('2');
     cy.get('#grandChild2Counter').contains('2');
     cy.get('#grandchild01').contains('t');
     cy.get('#grandchild00').contains('t');
@@ -42,7 +42,7 @@ describe('useWatch', () => {
     cy.get('#parentCounter').contains('1');
     cy.get('#childCounter').contains('1');
     cy.get('#grandChildCounter').contains('2');
-    cy.get('#grandChild1Counter').contains('3');
+    cy.get('#grandChild1Counter').contains('2');
     cy.get('#grandChild2Counter').contains('2');
 
     cy.get('input[name="test2"]').type('eh');

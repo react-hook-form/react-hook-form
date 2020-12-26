@@ -1,4 +1,3 @@
-// @ts-nocheck
 import * as React from 'react';
 import { useForm, Control, useWatch, Controller } from 'react-hook-form';
 import { useRef } from 'react';
@@ -95,6 +94,7 @@ const Child = ({ control }: { control: Control }) => {
 export default () => {
   const { register, control } = useForm<{
     test: string;
+    test2: string;
   }>();
 
   counter++;
@@ -109,6 +109,7 @@ export default () => {
         style={{ fontSize: 20 }}
       />
 
+      {/* @ts-ignore */}
       <Controller
         name="test1"
         control={control}

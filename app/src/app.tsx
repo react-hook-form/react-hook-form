@@ -24,7 +24,7 @@ import Controller from './controller';
 import UseFieldArray from './useFieldArray';
 import CustomSchemaValidation from './customSchemaValidation';
 import WatchFieldArray from './watchUseFieldArray';
-// import UseWatch from './useWatch';
+import UseWatch from './useWatch';
 import FormStateWithNestedFields from './formStateWithNestedFields';
 import UseFieldArrayUnregister from './UseFieldArrayUnregister';
 import { UseFormState } from './useFormState';
@@ -102,7 +102,7 @@ const App: React.FC = () => {
         component={CustomSchemaValidation}
       />
       {/*<Route path="/autoUnregister" exact component={AutoUnregister} />*/}
-      {/*<Route path="/useWatch" exact component={UseWatch} />*/}
+      <Route path="/useWatch" exact component={UseWatch} />
       <Route path="/useFormState" exact component={UseFormState} />
     </Router>
   );
