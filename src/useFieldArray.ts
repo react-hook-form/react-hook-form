@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { useFormContext } from './useFormContext';
 import setFieldArrayDirtyFields from './logic/setFieldArrayDirtyFields';
-// import { isMatchFieldArrayName } from './logic/isNameInFieldArray';
+import { isMatchFieldArrayName } from './logic/isNameInFieldArray';
 import generateId from './logic/generateId';
 import getFieldArrayParentName from './logic/getNodeParentName';
 import get from './utils/get';
@@ -25,7 +25,6 @@ import {
   DeepPartial,
   UseFieldArrayMethods,
 } from './types';
-import { isMatchFieldArrayName } from './logic/isNameInFieldArray';
 
 const mapIds = <
   TFieldArrayValues extends FieldValues = FieldValues,
