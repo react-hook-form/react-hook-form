@@ -331,46 +331,32 @@ export function useForm<
   );
 
   const executeSchemaOrResolverValidation = React.useCallback(
-    async (names: InternalFieldName | InternalFieldName[]) => {
+    async (names: InternalFieldName[]) => {
       const { errors } = await resolverRef.current!(
         getValues(),
         contextRef.current,
         isValidateAllFieldCriteria,
       );
-      const previousFormIsValid = formStateRef.current.isValid;
 
-      if (Array.isArray(names)) {
-        const isInputsValid = names
-          .map((name) => {
-            const error = get(errors, name);
+      const isInputsValid = names
+        .map((name) => {
+          const error = get(errors, name);
 
-            error
-              ? set(formStateRef.current.errors, name, error)
-              : unset(formStateRef.current.errors, name);
+          error
+            ? set(formStateRef.current.errors, name, error)
+            : unset(formStateRef.current.errors, name);
 
-            return !error;
-          })
-          .every(Boolean);
+          return !error;
+        })
+        .every(Boolean);
 
-        formStateSubjectRef.current.next({
-          isValid: isEmptyObject(errors),
-          isValidating: false,
-        });
+      formStateSubjectRef.current.next({
+        errors: formStateRef.current.errors,
+        isValid: isEmptyObject(errors),
+        isValidating: false,
+      });
 
-        return isInputsValid;
-      } else {
-        const error = get(errors, names);
-
-        shouldRenderBaseOnError(
-          names,
-          error,
-          previousFormIsValid !== isEmptyObject(errors),
-          {},
-          isEmptyObject(errors),
-        );
-
-        return !error;
-      }
+      return isInputsValid;
     },
     [shouldRenderBaseOnError, isValidateAllFieldCriteria],
   );
@@ -379,7 +365,11 @@ export function useForm<
     async (
       name?: FieldName<TFieldValues> | FieldName<TFieldValues>[],
     ): Promise<boolean> => {
-      const fields = name || Object.keys(fieldsRef.current);
+      const fields = isUndefined(name)
+        ? Object.keys(fieldsRef.current)
+        : Array.isArray(name)
+        ? name
+        : [name];
 
       formStateSubjectRef.current.next({
         isValidating: true,
@@ -387,18 +377,13 @@ export function useForm<
 
       if (resolverRef.current) {
         return executeSchemaOrResolverValidation(fields);
-      }
-
-      if (Array.isArray(fields)) {
-        !name && (formStateRef.current.errors = {});
+      } else {
         const result = await Promise.all(
           fields.map(async (data) => await executeValidation(data, null)),
         );
         formStateSubjectRef.current.next({});
         return result.every(Boolean);
       }
-
-      return await executeValidation(fields);
     },
     [executeSchemaOrResolverValidation, executeValidation],
   );
