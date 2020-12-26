@@ -1,4 +1,3 @@
-// @ts-nocheck
 import React from 'react';
 import { useForm, useFieldArray } from 'react-hook-form';
 
@@ -25,6 +24,7 @@ const WatchUseFieldArray: React.FC = (props: any) => {
     move,
     insert,
     remove,
+    // @ts-ignore
   } = useFieldArray<{ name: string }>({
     control,
     name: 'data',
@@ -51,10 +51,9 @@ const WatchUseFieldArray: React.FC = (props: any) => {
           <li key={data.id}>
             <input
               id={`field${index}`}
-              name={`data[${index}].name`}
               defaultValue={data.name}
               data-order={index}
-              ref={register()}
+              {...register(`data[${index}].name` as any)}
             />
             <button id={`delete${index}`} onClick={() => remove(index)}>
               Delete

@@ -23,7 +23,7 @@ import IsValid from './isValid';
 import Controller from './controller';
 import UseFieldArray from './useFieldArray';
 import CustomSchemaValidation from './customSchemaValidation';
-// import WatchFieldArray from './watchUseFieldArray';
+import WatchFieldArray from './watchUseFieldArray';
 // import UseWatch from './useWatch';
 import FormStateWithNestedFields from './formStateWithNestedFields';
 import UseFieldArrayUnregister from './UseFieldArrayUnregister';
@@ -95,7 +95,7 @@ const App: React.FC = () => {
         exact
         component={WatchDefaultValues}
       />
-      {/*<Route path="/watch-field-array/:mode" component={WatchFieldArray} />*/}
+      <Route path="/watch-field-array/:mode" component={WatchFieldArray} />
       <Route
         path="/customSchemaValidation/:mode"
         exact
