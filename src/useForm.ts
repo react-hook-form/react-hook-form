@@ -338,17 +338,15 @@ export function useForm<
         isValidateAllFieldCriteria,
       );
 
-      const isInputsValid = names
-        .map((name) => {
-          const error = get(errors, name);
+      const isInputsValid = names.map((name) => {
+        const error = get(errors, name);
 
-          error
-            ? set(formStateRef.current.errors, name, error)
-            : unset(formStateRef.current.errors, name);
+        error
+          ? set(formStateRef.current.errors, name, error)
+          : unset(formStateRef.current.errors, name);
 
-          return !error;
-        })
-        .every(Boolean);
+        return !error;
+      });
 
       formStateSubjectRef.current.next({
         errors: formStateRef.current.errors,
@@ -370,20 +368,21 @@ export function useForm<
         : Array.isArray(name)
         ? name
         : [name];
+      let result;
 
       formStateSubjectRef.current.next({
         isValidating: true,
       });
 
       if (resolverRef.current) {
-        return executeSchemaOrResolverValidation(fields);
+        result = await executeSchemaOrResolverValidation(fields);
       } else {
-        const result = await Promise.all(
+        result = await Promise.all(
           fields.map(async (data) => await executeValidation(data, null)),
         );
         formStateSubjectRef.current.next({});
-        return result.every(Boolean);
       }
+      return result.every(Boolean);
     },
     [executeSchemaOrResolverValidation, executeValidation],
   );
