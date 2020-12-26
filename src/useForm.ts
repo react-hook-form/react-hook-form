@@ -760,7 +760,6 @@ export function useForm<
         unset(validFieldsRef.current, field.ref.name);
         unset(fieldsWithValidationRef.current, field.ref.name);
         unset(formStateRef.current.errors, field.ref.name);
-        set(formStateRef.current.dirty, field.ref.name, true);
         delete fieldsRef.current[fieldName];
 
         formStateSubjectRef.current.next({

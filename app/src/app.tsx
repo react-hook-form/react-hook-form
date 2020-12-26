@@ -26,7 +26,7 @@ import CustomSchemaValidation from './customSchemaValidation';
 // import WatchFieldArray from './watchUseFieldArray';
 // import UseWatch from './useWatch';
 import FormStateWithNestedFields from './formStateWithNestedFields';
-// import UseFieldArrayUnregister from './UseFieldArrayUnregister';
+import UseFieldArrayUnregister from './UseFieldArrayUnregister';
 import { UseFormState } from './useFormState';
 
 const App: React.FC = () => {
@@ -63,11 +63,11 @@ const App: React.FC = () => {
       />
       <Route path="/conditionalField" exact component={ConditionalField} />
       <Route path="/UseFieldArray/:mode" exact component={UseFieldArray} />
-      {/*<Route*/}
-      {/*  path="/UseFieldArrayUnregister"*/}
-      {/*  exact*/}
-      {/*  component={UseFieldArrayUnregister}*/}
-      {/*/>*/}
+      <Route
+        path="/UseFieldArrayUnregister"
+        exact
+        component={UseFieldArrayUnregister}
+      />
       <Route path="/reset" exact component={Reset} />
       <Route path="/setValue" exact component={SetValue} />
       <Route path="/setValueWithSchema" exact component={SetValueWithSchema} />

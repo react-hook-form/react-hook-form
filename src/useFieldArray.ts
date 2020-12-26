@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { useFormContext } from './useFormContext';
 import setFieldArrayDirtyFields from './logic/setFieldArrayDirtyFields';
-import { isMatchFieldArrayName } from './logic/isNameInFieldArray';
+// import { isMatchFieldArrayName } from './logic/isNameInFieldArray';
 import generateId from './logic/generateId';
 import getFieldArrayParentName from './logic/getNodeParentName';
 import get from './utils/get';
@@ -25,6 +25,7 @@ import {
   DeepPartial,
   UseFieldArrayMethods,
 } from './types';
+import { isMatchFieldArrayName } from './logic/isNameInFieldArray';
 
 const mapIds = <
   TFieldArrayValues extends FieldValues = FieldValues,
@@ -94,7 +95,6 @@ export const useFieldArray = <
     fieldArrayNamesRef,
     fieldsRef,
     defaultValuesRef,
-    unregister,
     formStateRef,
     formStateSubjectRef,
     readFormStateRef,
@@ -169,7 +169,7 @@ export const useFieldArray = <
   const resetFields = () => {
     for (const key in fieldsRef.current) {
       if (isMatchFieldArrayName(key, name)) {
-        unregister(key);
+        delete fieldsRef.current[key];
       }
     }
   };
@@ -312,9 +312,7 @@ export const useFieldArray = <
       getCurrentFieldsValues(),
       mapIds(Array.isArray(value) ? value : [value], keyName),
     );
-
     setFieldAndValidState(updatedFieldArrayValues);
-    resetFields();
     batchStateUpdate(
       prependAt,
       {
@@ -363,7 +361,6 @@ export const useFieldArray = <
     );
 
     setFieldAndValidState(updatedFieldArrayValues);
-    resetFields();
     batchStateUpdate(
       insertAt,
       {
@@ -381,7 +378,6 @@ export const useFieldArray = <
   const swap = (indexA: number, indexB: number) => {
     const fieldValues = getCurrentFieldsValues();
     swapArrayAt(fieldValues, indexA, indexB);
-    resetFields();
     batchStateUpdate(
       swapArrayAt,
       {
@@ -400,7 +396,6 @@ export const useFieldArray = <
   const move = (from: number, to: number) => {
     const fieldValues = getCurrentFieldsValues();
     moveArrayAt(fieldValues, from, to);
-    resetFields();
     setFieldAndValidState([...fieldValues]);
     batchStateUpdate(
       moveArrayAt,

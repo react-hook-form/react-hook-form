@@ -81,7 +81,7 @@ describe('useFieldArrayUnregister', () => {
           { name: true },
           { name: true },
           { name: true },
-          { name: true, conditional: true },
+          { name: true },
           { name: true, conditional: true },
           { name: true },
         ],
@@ -111,7 +111,7 @@ describe('useFieldArrayUnregister', () => {
           { name: true },
           { name: true, conditional: true },
           { name: true },
-          { name: true, conditional: true },
+          { name: true },
           { name: true },
         ],
       }),
@@ -138,8 +138,8 @@ describe('useFieldArrayUnregister', () => {
         data: [
           { name: '5' },
           { name: 'bill', conditional: 'test' },
-          { name: '8', conditional: 'test' },
-          { name: 'test1', conditional: 'test' },
+          { name: '10' },
+          { name: 'test1' },
           { name: 'test2' },
         ],
       }),
@@ -154,8 +154,8 @@ describe('useFieldArrayUnregister', () => {
         data: [
           { name: '5' },
           { name: 'bill', conditional: 'test' },
-          { name: '8', conditional: 'test' },
-          { name: 'test1test', conditional: 'test' },
+          { name: '10' },
+          { name: 'test1test' },
           { name: 'test2' },
         ],
       }),
@@ -170,12 +170,12 @@ describe('useFieldArrayUnregister', () => {
         data: [
           { name: '5' },
           { name: 'bill', conditional: 'test' },
-          { name: '8', conditional: 'test' },
+          { name: '10' },
           { name: 'test2' },
         ],
       }),
     );
 
-    cy.get('#renderCount').contains('25');
+    cy.get('#renderCount').contains('31');
   });
 });
