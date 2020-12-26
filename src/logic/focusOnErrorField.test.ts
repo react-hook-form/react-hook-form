@@ -10,6 +10,7 @@ describe('focusErrorField', () => {
     focusErrorField(
       {
         test: {
+          name: 'test',
           ref: {
             focus,
           } as any,
@@ -28,8 +29,9 @@ describe('focusErrorField', () => {
     focusErrorField(
       {
         test: {
+          name: 'test',
           ref: {} as any,
-          options: [
+          refs: [
             {
               focus,
             } as any,

@@ -1,4 +1,3 @@
-// @ts-nocheck
 import React from 'react';
 import {
   useForm,
@@ -25,11 +24,17 @@ const ConditionField = <T extends any[]>({
     defaultValue: fields,
   });
 
+  React.useEffect(() => {
+    return () => {
+      control.unregister(`data[${index}].conditional`)
+    };
+  }, [control, index]);
+
   return output[index]?.name === 'bill' ? (
     <input
-      ref={control.register()}
       name={`data[${index}].conditional`}
-      defaultValue={output[index].conditional}
+      {...control.register(`data[${index}].conditional` as any)}
+      defaultValue={fields[index].conditional}
     />
   ) : null;
 };
@@ -49,7 +54,6 @@ const UseFieldArrayUnregister: React.FC = () => {
       data: [{ name: 'test' }, { name: 'test1' }, { name: 'test2' }],
     },
     mode: 'onSubmit',
-    shouldUnregister: false,
   });
   const {
     fields,
@@ -59,6 +63,7 @@ const UseFieldArrayUnregister: React.FC = () => {
     move,
     insert,
     remove,
+    // @ts-ignore
   } = useFieldArray<{ name: string }>({
     control,
     name: 'data',
@@ -81,10 +86,11 @@ const UseFieldArrayUnregister: React.FC = () => {
             {index % 2 ? (
               <input
                 id={`field${index}`}
-                name={`data[${index}].name`}
                 defaultValue={data.name}
                 data-order={index}
-                ref={register({ required: 'This is required' })}
+                {...register(`data[${index}].name` as any, {
+                  required: 'This is required',
+                })}
               />
             ) : (
               <Controller

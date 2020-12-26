@@ -94,7 +94,6 @@ export const useFieldArray = <
     fieldArrayNamesRef,
     fieldsRef,
     defaultValuesRef,
-    unregister,
     formStateRef,
     formStateSubjectRef,
     readFormStateRef,
@@ -169,7 +168,7 @@ export const useFieldArray = <
   const resetFields = () => {
     for (const key in fieldsRef.current) {
       if (isMatchFieldArrayName(key, name)) {
-        unregister(key);
+        delete fieldsRef.current[key];
       }
     }
   };
@@ -312,9 +311,7 @@ export const useFieldArray = <
       getCurrentFieldsValues(),
       mapIds(Array.isArray(value) ? value : [value], keyName),
     );
-
     setFieldAndValidState(updatedFieldArrayValues);
-    resetFields();
     batchStateUpdate(
       prependAt,
       {
@@ -363,7 +360,6 @@ export const useFieldArray = <
     );
 
     setFieldAndValidState(updatedFieldArrayValues);
-    resetFields();
     batchStateUpdate(
       insertAt,
       {
@@ -381,7 +377,6 @@ export const useFieldArray = <
   const swap = (indexA: number, indexB: number) => {
     const fieldValues = getCurrentFieldsValues();
     swapArrayAt(fieldValues, indexA, indexB);
-    resetFields();
     batchStateUpdate(
       swapArrayAt,
       {
@@ -400,7 +395,6 @@ export const useFieldArray = <
   const move = (from: number, to: number) => {
     const fieldValues = getCurrentFieldsValues();
     moveArrayAt(fieldValues, from, to);
-    resetFields();
     setFieldAndValidState([...fieldValues]);
     batchStateUpdate(
       moveArrayAt,

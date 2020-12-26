@@ -1,4 +1,3 @@
-// @ts-nocheck
 import React from 'react';
 import { useForm, useFieldArray, Controller } from 'react-hook-form';
 
@@ -12,9 +11,7 @@ const UseFieldArray: React.FC = (props: any) => {
     register,
     formState: { isDirty, touched, isValid, dirty, errors },
     reset,
-  } = useForm<{
-    data: { name: string }[];
-  }>({
+  } = useForm<{ data: { name: string }[] }>({
     ...(props.match.params.mode === 'default' || withoutFocus
       ? {
           defaultValues: {
@@ -32,6 +29,7 @@ const UseFieldArray: React.FC = (props: any) => {
     move,
     insert,
     remove,
+    // @ts-ignore
   } = useFieldArray<{ name: string }>({
     control,
     name: 'data',
@@ -61,10 +59,11 @@ const UseFieldArray: React.FC = (props: any) => {
             {index % 2 ? (
               <input
                 id={`field${index}`}
-                name={`data[${index}].name`}
                 defaultValue={data.name}
                 data-order={index}
-                ref={register({ required: 'This is required' })}
+                {...register(`data[${index}].name` as any, {
+                  required: 'This is required',
+                })}
               />
             ) : (
               <Controller
