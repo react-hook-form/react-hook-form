@@ -21,7 +21,6 @@ import {
   FieldRefs,
   Message,
   FieldError,
-  InternalFieldName,
   InternalFieldErrors,
 } from '../types';
 
@@ -30,8 +29,7 @@ export default async (
   validateAllFieldCriteria: boolean,
   {
     ref,
-    ref: { value },
-    options,
+    refs,
     required,
     maxLength,
     minLength,
@@ -39,11 +37,12 @@ export default async (
     max,
     pattern,
     validate,
+    name,
   }: Field,
 ): Promise<InternalFieldErrors> => {
-  const name: InternalFieldName = ref.name;
   const error: InternalFieldErrors = {};
   const isRadio = isRadioInput(ref);
+  const value = getFieldsValue(fieldsRef, name);
   const isCheckBox = isCheckBoxInput(ref);
   const isRadioOrCheckbox = isRadio || isCheckBox;
   const isEmpty = value === '';
@@ -75,8 +74,8 @@ export default async (
     required &&
     ((!isRadio && !isCheckBox && (isEmpty || isNullOrUndefined(value))) ||
       (isBoolean(value) && !value) ||
-      (isCheckBox && !getCheckboxValue(options).isValid) ||
-      (isRadio && !getRadioValue(options).isValid))
+      (isCheckBox && !getCheckboxValue(refs).isValid) ||
+      (isRadio && !getRadioValue(refs).isValid))
   ) {
     const { value, message } = isMessage(required)
       ? { value: !!required, message: required }
@@ -87,7 +86,7 @@ export default async (
         type: INPUT_VALIDATION_RULES.required,
         message,
         ref: isRadioOrCheckbox
-          ? ((fieldsRef.current[name] as Field).options || [])[0] || {}
+          ? ((fieldsRef.current[name] as Field).refs || [])[0] || {}
           : ref,
         ...appendErrorsCurry(INPUT_VALIDATION_RULES.required, message),
       };
@@ -177,7 +176,7 @@ export default async (
 
   if (validate) {
     const fieldValue = getFieldsValue(fieldsRef, name);
-    const validateRef = isRadioOrCheckbox && options ? options[0] : ref;
+    const validateRef = isRadioOrCheckbox && refs ? refs[0] : ref;
 
     if (isFunction(validate)) {
       const result = await validate(fieldValue);

@@ -21,11 +21,13 @@ describe('validateField', () => {
 
     expect(
       await validateField({} as any, false, {
+        name: 'test',
         ref: { type: 'text', value: '', name: 'test' },
         required: true,
       }),
     ).toEqual({
       test: {
+        name: 'test',
         ref: { type: 'text', value: '', name: 'test' },
         message: '',
         type: 'required',
@@ -34,11 +36,13 @@ describe('validateField', () => {
 
     expect(
       await validateField({} as any, false, {
+        name: 'test',
         ref: { type: 'text', value: '', name: 'test' },
         required: 'required',
       }),
     ).toEqual({
       test: {
+        name: 'test',
         ref: { type: 'text', value: '', name: 'test' },
         message: 'required',
         type: 'required',
@@ -47,11 +51,13 @@ describe('validateField', () => {
 
     expect(
       await validateField({} as any, false, {
+        name: 'test',
         ref: { type: 'text', value: '', name: 'test' },
         required: 'required',
       }),
     ).toEqual({
       test: {
+        name: 'test',
         ref: { type: 'text', value: '', name: 'test' },
         message: 'required',
         type: 'required',
@@ -60,6 +66,7 @@ describe('validateField', () => {
 
     expect(
       await validateField({} as any, false, {
+        name: 'test',
         ref: { type: 'text', value: '', name: 'test' },
         required: {
           value: true,
@@ -68,6 +75,7 @@ describe('validateField', () => {
       }),
     ).toEqual({
       test: {
+        name: 'test',
         ref: { type: 'text', value: '', name: 'test' },
         message: 'required',
         type: 'required',
@@ -76,6 +84,7 @@ describe('validateField', () => {
 
     expect(
       await validateField({} as any, false, {
+        name: 'test',
         ref: { type: 'text', value: '', name: 'test' },
         required: {
           value: true,
@@ -84,6 +93,7 @@ describe('validateField', () => {
       }),
     ).toEqual({
       test: {
+        name: 'test',
         ref: { type: 'text', value: '', name: 'test' },
         message: 'required',
         type: 'required',
@@ -92,6 +102,7 @@ describe('validateField', () => {
 
     expect(
       await validateField({} as any, false, {
+        name: 'test',
         ref: { type: 'text', value: '', name: 'test' },
         required: {
           value: false,
@@ -105,8 +116,9 @@ describe('validateField', () => {
         {
           current: {
             test: {
+              name: 'test',
               ref: {} as any,
-              options: [
+              refs: [
                 {
                   ref: 'test',
                 } as any,
@@ -116,6 +128,7 @@ describe('validateField', () => {
         },
         false,
         {
+          name: 'test',
           ref: { type: 'radio', name: 'test' },
           required: true,
         },
@@ -130,6 +143,7 @@ describe('validateField', () => {
 
     expect(
       await validateField({} as any, false, {
+        name: 'test',
         ref: { type: 'text', value: '', name: 'test' },
         required: 'test',
       }),
@@ -146,8 +160,9 @@ describe('validateField', () => {
         {
           current: {
             test: {
+              name: 'test',
               ref: 'test' as any,
-              options: [
+              refs: [
                 {
                   ref: 'test',
                 } as any,
@@ -157,6 +172,7 @@ describe('validateField', () => {
         },
         false,
         {
+          name: 'test',
           ref: { type: 'radio', value: '', name: 'test' },
           required: 'test',
         },
@@ -174,8 +190,9 @@ describe('validateField', () => {
         {
           current: {
             test: {
+              name: 'test',
               ref: 'test' as any,
-              options: [
+              refs: [
                 {
                   ref: 'test',
                 },
@@ -185,6 +202,7 @@ describe('validateField', () => {
         },
         false,
         {
+          name: 'test',
           ref: { type: 'checkbox', name: 'test' },
           required: 'test',
         },
@@ -206,8 +224,9 @@ describe('validateField', () => {
         {
           current: {
             test: {
+              name: 'test',
               ref: 'test' as any,
-              options: [
+              refs: [
                 {
                   ref: 'test',
                 },
@@ -217,6 +236,7 @@ describe('validateField', () => {
         },
         false,
         {
+          name: 'test',
           ref: { type: 'checkbox', name: 'test' },
           required: 'test',
         },
@@ -227,6 +247,7 @@ describe('validateField', () => {
   it('should return max error', async () => {
     expect(
       await validateField({} as any, false, {
+        name: 'test',
         ref: { type: 'number', name: 'test', value: 10, valueAsNumber: 10 },
         required: true,
         max: 0,
@@ -241,6 +262,7 @@ describe('validateField', () => {
 
     expect(
       await validateField({} as any, false, {
+        name: 'test',
         ref: { type: 'number', name: 'test', value: 10, valueAsNumber: 10 },
         required: true,
         max: {
@@ -258,6 +280,7 @@ describe('validateField', () => {
 
     expect(
       await validateField({} as any, false, {
+        name: 'test',
         ref: { type: 'number', name: 'test', value: 10, valueAsNumber: 10 },
         required: true,
         max: {
@@ -275,6 +298,7 @@ describe('validateField', () => {
 
     expect(
       await validateField({} as any, false, {
+        name: 'test',
         ref: { type: 'number', name: 'test', value: 8, valueAsNumber: 8 },
         required: true,
         max: 8,
@@ -283,6 +307,7 @@ describe('validateField', () => {
 
     expect(
       await validateField({} as any, true, {
+        name: 'test',
         ref: { type: 'number', name: 'test', value: 10, valueAsNumber: 10 },
         max: 8,
       }),
@@ -299,6 +324,7 @@ describe('validateField', () => {
 
     expect(
       await validateField({} as any, false, {
+        name: 'test',
         ref: { type: 'custom', name: 'test', value: '', valueAsNumber: NaN },
         required: true,
       }),
@@ -312,6 +338,7 @@ describe('validateField', () => {
 
     expect(
       await validateField({} as any, false, {
+        name: 'test',
         ref: {
           type: 'custom',
           name: 'test',
@@ -335,6 +362,7 @@ describe('validateField', () => {
 
     expect(
       await validateField({} as any, false, {
+        name: 'test',
         ref: {
           type: 'custom',
           name: 'test',
@@ -353,6 +381,7 @@ describe('validateField', () => {
 
     expect(
       await validateField({} as any, false, {
+        name: 'test',
         ref: { type: 'custom', name: 'test', value: 'ok' },
         required: true,
       }),
@@ -360,6 +389,7 @@ describe('validateField', () => {
 
     expect(
       await validateField({} as any, false, {
+        name: 'test',
         ref: {
           type: 'date',
           name: 'test',
@@ -384,6 +414,7 @@ describe('validateField', () => {
   it('should return min error', async () => {
     expect(
       await validateField({} as any, false, {
+        name: 'test',
         ref: { type: 'number', name: 'test', value: -1, valueAsNumber: -1 },
         required: true,
         min: 0,
@@ -398,6 +429,7 @@ describe('validateField', () => {
 
     expect(
       await validateField({} as any, false, {
+        name: 'test',
         ref: { type: 'number', name: 'test', value: -1, valueAsNumber: -1 },
         required: true,
         min: {
@@ -415,6 +447,7 @@ describe('validateField', () => {
 
     expect(
       await validateField({} as any, false, {
+        name: 'test',
         ref: { type: 'number', name: 'test', value: -1, valueAsNumber: -1 },
         required: true,
         min: {
@@ -432,6 +465,7 @@ describe('validateField', () => {
 
     expect(
       await validateField({} as any, false, {
+        name: 'test',
         ref: { type: 'number', name: 'test', value: 10, valueAsNumber: 10 },
         required: true,
         min: 12,
@@ -446,6 +480,7 @@ describe('validateField', () => {
 
     expect(
       await validateField({} as any, false, {
+        name: 'test',
         ref: {
           type: 'date',
           name: 'test',
@@ -470,6 +505,7 @@ describe('validateField', () => {
 
     expect(
       await validateField({} as any, false, {
+        name: 'test',
         ref: {
           type: 'date',
           name: 'test',
@@ -495,6 +531,7 @@ describe('validateField', () => {
 
     expect(
       await validateField({} as any, false, {
+        name: 'test',
         ref: {
           type: 'date',
           name: 'test',
@@ -524,6 +561,7 @@ describe('validateField', () => {
   it('should return min and max error for custom input', async () => {
     expect(
       await validateField({} as any, false, {
+        name: 'test',
         ref: { type: '', name: 'test', value: '1' },
         required: true,
         min: '4',
@@ -538,6 +576,7 @@ describe('validateField', () => {
 
     expect(
       await validateField({} as any, false, {
+        name: 'test',
         ref: { type: '', name: 'test', value: '4' },
         required: true,
         max: '2',
@@ -552,6 +591,7 @@ describe('validateField', () => {
 
     expect(
       await validateField({} as any, false, {
+        name: 'test',
         ref: {
           type: '',
           name: 'test',
@@ -578,6 +618,7 @@ describe('validateField', () => {
   it('should return max length error ', async () => {
     expect(
       await validateField({} as any, false, {
+        name: 'test',
         ref: {
           type: 'text',
           name: 'test',
@@ -600,6 +641,7 @@ describe('validateField', () => {
 
     expect(
       await validateField({} as any, false, {
+        name: 'test',
         ref: {
           type: 'text',
           name: 'test',
@@ -625,6 +667,7 @@ describe('validateField', () => {
 
     expect(
       await validateField({} as any, false, {
+        name: 'test',
         ref: {
           type: 'text',
           name: 'test',
@@ -652,6 +695,7 @@ describe('validateField', () => {
   it('should return min length error ', async () => {
     expect(
       await validateField({} as any, false, {
+        name: 'test',
         ref: {
           type: 'text',
           name: 'test',
@@ -674,6 +718,7 @@ describe('validateField', () => {
 
     expect(
       await validateField({} as any, false, {
+        name: 'test',
         ref: {
           type: 'text',
           name: 'test',
@@ -699,6 +744,7 @@ describe('validateField', () => {
 
     expect(
       await validateField({} as any, false, {
+        name: 'test',
         ref: {
           type: 'text',
           name: 'test',
@@ -728,6 +774,7 @@ describe('validateField', () => {
 
     expect(
       await validateField({} as any, false, {
+        name: 'test',
         ref: {
           type: 'text',
           name: 'test',
@@ -750,6 +797,7 @@ describe('validateField', () => {
 
     expect(
       await validateField({} as any, false, {
+        name: 'test',
         ref: {
           type: 'text',
           name: 'test',
@@ -775,6 +823,7 @@ describe('validateField', () => {
 
     expect(
       await validateField({} as any, false, {
+        name: 'test',
         ref: {
           type: 'text',
           name: 'test',
@@ -800,6 +849,7 @@ describe('validateField', () => {
 
     expect(
       await validateField({} as any, false, {
+        name: 'test',
         ref: {
           type: 'text',
           name: 'test',
@@ -812,6 +862,7 @@ describe('validateField', () => {
 
     expect(
       await validateField({} as any, false, {
+        name: 'test',
         ref: {
           type: 'text',
           name: 'test',
@@ -829,6 +880,7 @@ describe('validateField', () => {
         {
           current: {
             test: {
+              name: 'test',
               ref: {
                 type: 'text',
                 name: 'test',
@@ -839,6 +891,7 @@ describe('validateField', () => {
         },
         false,
         {
+          name: 'test',
           ref: {
             type: 'text',
             name: 'test',
@@ -855,6 +908,7 @@ describe('validateField', () => {
         {
           current: {
             test: {
+              name: 'test',
               ref: {
                 type: 'text',
                 name: 'test',
@@ -865,6 +919,7 @@ describe('validateField', () => {
         },
         false,
         {
+          name: 'test',
           ref: {
             type: 'text',
             name: 'test',
@@ -891,6 +946,7 @@ describe('validateField', () => {
         {
           current: {
             test: {
+              name: 'test',
               ref: {
                 type: 'text',
                 name: 'test',
@@ -901,6 +957,7 @@ describe('validateField', () => {
         },
         false,
         {
+          name: 'test',
           ref: {
             type: 'text',
             name: 'test',
@@ -937,6 +994,7 @@ describe('validateField', () => {
         {
           current: {
             test: {
+              name: 'test',
               ref: {
                 type: 'text',
                 name: 'test',
@@ -947,6 +1005,7 @@ describe('validateField', () => {
         },
         false,
         {
+          name: 'test',
           ref: {
             type: 'text',
             name: 'test',
@@ -975,6 +1034,7 @@ describe('validateField', () => {
         {
           current: {
             test: {
+              name: 'test',
               ref: {
                 type: 'radio',
                 name: 'test',
@@ -985,6 +1045,7 @@ describe('validateField', () => {
         },
         false,
         {
+          name: 'test',
           ref: {
             type: 'radio',
             name: 'test',
@@ -994,7 +1055,7 @@ describe('validateField', () => {
             test: (value) => value.toString().length < 3,
             test1: (value) => value.toString().length > 10,
           },
-          options: ['data' as any],
+          refs: ['data' as any],
         },
       ),
     ).toEqual({
@@ -1010,6 +1071,7 @@ describe('validateField', () => {
         {
           current: {
             test: {
+              name: 'test',
               ref: {
                 type: 'radio',
                 name: 'test',
@@ -1020,6 +1082,7 @@ describe('validateField', () => {
         },
         false,
         {
+          name: 'test',
           ref: {
             type: 'radio',
             name: 'test',
@@ -1028,7 +1091,7 @@ describe('validateField', () => {
           validate: {
             test: () => true,
           },
-          options: ['data' as any],
+          refs: ['data' as any],
         },
       ),
     ).toEqual({});
@@ -1040,6 +1103,7 @@ describe('validateField', () => {
         {
           current: {
             test: {
+              name: 'test',
               ref: {
                 type: 'text',
                 name: 'test',
@@ -1050,6 +1114,7 @@ describe('validateField', () => {
         },
         false,
         {
+          name: 'test',
           ref: {
             type: 'text',
             name: 'test',
@@ -1082,6 +1147,7 @@ describe('validateField', () => {
         {
           current: {
             test: {
+              name: 'test',
               ref: {
                 type: 'text',
                 name: 'test',
@@ -1092,6 +1158,7 @@ describe('validateField', () => {
         },
         false,
         {
+          name: 'test',
           ref: {
             type: 'text',
             name: 'test',
@@ -1126,6 +1193,7 @@ describe('validateField', () => {
         {
           current: {
             test: {
+              name: 'test',
               ref: {
                 type: 'text',
                 name: 'test',
@@ -1136,6 +1204,7 @@ describe('validateField', () => {
         },
         false,
         {
+          name: 'test',
           ref: {
             type: 'text',
             name: 'test',
@@ -1161,6 +1230,7 @@ describe('validateField', () => {
         {
           current: {
             test: {
+              name: 'test',
               ref: {
                 type: 'text',
                 name: 'test',
@@ -1171,6 +1241,7 @@ describe('validateField', () => {
         },
         false,
         {
+          name: 'test',
           ref: {
             type: 'text',
             name: 'test',
@@ -1198,12 +1269,14 @@ describe('validateField', () => {
         {
           current: {
             test: {
+              name: 'test',
               ref: {} as any,
             },
           },
         },
         false,
         {
+          name: 'test',
           ref: {
             type: 'text',
             name: 'test',
@@ -1221,12 +1294,14 @@ describe('validateField', () => {
         {
           current: {
             test: {
+              name: 'test',
               ref: {} as any,
             },
           },
         },
         false,
         {
+          name: 'test',
           ref: {
             type: 'text',
             name: 'test',
@@ -1246,11 +1321,15 @@ describe('validateField', () => {
       await validateField(
         {
           current: {
-            test: { ref: { type: 'text', value: '', name: 'test' } },
+            test: {
+              name: 'test',
+              ref: { type: 'text', value: '', name: 'test' },
+            },
           },
         },
         true,
         {
+          name: 'test',
           ref: { type: 'text', value: '', name: 'test' },
           required: true,
           minLength: 10,
@@ -1262,6 +1341,7 @@ describe('validateField', () => {
 
     expect(
       await validateField({ current: {} }, true, {
+        name: 'test',
         ref: { type: 'text', value: '123', name: 'test' },
         required: true,
         minLength: 10,
@@ -1280,12 +1360,14 @@ describe('validateField', () => {
         {
           current: {
             test: {
+              name: 'test',
               ref: { type: 'text', value: '', name: 'test' },
             },
           },
         },
         true,
         {
+          name: 'test',
           ref: { type: 'text', value: '', name: 'test' },
           required: 'test',
           minLength: {
@@ -1307,6 +1389,7 @@ describe('validateField', () => {
 
     expect(
       await validateField({ current: {} }, true, {
+        name: 'test',
         ref: { type: 'text', value: 'bil', name: 'test' },
         required: 'test',
         minLength: {
@@ -1327,6 +1410,7 @@ describe('validateField', () => {
 
     expect(
       await validateField({ current: {} }, true, {
+        name: 'test',
         ref: { type: 'text', value: 'bil', name: 'test' },
         required: 'test',
         minLength: {

@@ -23,6 +23,7 @@ describe('getFieldValue', () => {
         {
           current: {
             test: {
+              name: 'test',
               ref: {
                 type: 'radio',
                 name: 'test',
@@ -41,6 +42,7 @@ describe('getFieldValue', () => {
         {
           current: {
             test: {
+              name: 'test',
               ref: {
                 type: 'select-multiple',
                 name: 'test',
@@ -60,6 +62,7 @@ describe('getFieldValue', () => {
         {
           current: {
             test: {
+              name: 'test',
               ref: {
                 name: 'test',
                 type: 'checkbox',
@@ -78,6 +81,7 @@ describe('getFieldValue', () => {
         {
           current: {
             test: {
+              name: 'test',
               ref: {
                 type: 'text',
                 name: 'bill',
@@ -111,6 +115,7 @@ describe('getFieldValue', () => {
         {
           current: {
             test: {
+              name: 'test',
               ref: {
                 type: 'file',
                 name: 'test',
@@ -130,6 +135,7 @@ describe('getFieldValue', () => {
         {
           current: {
             test: {
+              name: 'test',
               ref: {
                 name: 'file',
                 files: 'files' as any,
@@ -148,6 +154,7 @@ describe('getFieldValue', () => {
         {
           current: {
             test: {
+              name: 'test',
               ref: {
                 name: 'file',
                 files: 'files' as any,
@@ -166,6 +173,7 @@ describe('getFieldValue', () => {
         {
           current: {
             test: {
+              name: 'test',
               ref: {
                 name: 'radio',
                 disabled: true,

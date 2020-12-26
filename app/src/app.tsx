@@ -20,8 +20,8 @@ import FormStateWithSchema from './formStateWithSchema';
 import SetValueWithSchema from './setValueWithSchema';
 import SetValueWithTrigger from './setValueWithTrigger';
 import IsValid from './isValid';
-// import Controller from './controller';
-// import UseFieldArray from './useFieldArray';
+import Controller from './controller';
+import UseFieldArray from './useFieldArray';
 import CustomSchemaValidation from './customSchemaValidation';
 // import WatchFieldArray from './watchUseFieldArray';
 // import UseWatch from './useWatch';
@@ -38,7 +38,7 @@ const App: React.FC = () => {
         exact
         component={ValidateFieldCriteria}
       />
-      {/*<Route path="/controller/:mode" exact component={Controller} />*/}
+      <Route path="/controller/:mode" exact component={Controller} />
       <Route
         path="/re-validate-mode/:mode/:reValidateMode"
         exact
@@ -62,7 +62,7 @@ const App: React.FC = () => {
         component={SetValueWithTrigger}
       />
       <Route path="/conditionalField" exact component={ConditionalField} />
-      {/*<Route path="/UseFieldArray/:mode" exact component={UseFieldArray} />*/}
+      <Route path="/UseFieldArray/:mode" exact component={UseFieldArray} />
       {/*<Route*/}
       {/*  path="/UseFieldArrayUnregister"*/}
       {/*  exact*/}

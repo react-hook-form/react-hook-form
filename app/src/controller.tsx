@@ -61,7 +61,11 @@ export default function Field(props: any) {
   const rerender = () => setRerender(Math.random());
 
   return (
-    <form onSubmit={handleSubmit(() => {})}>
+    <form
+      onSubmit={handleSubmit((d) => {
+        console.log(d);
+      })}
+    >
       <div className="container">
         <section id="input-checkbox">
           <label>MUI Checkbox</label>

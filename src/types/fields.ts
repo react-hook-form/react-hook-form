@@ -36,7 +36,9 @@ export type Ref = FieldElement;
 
 export type Field = {
   ref: Ref;
-  options?: HTMLInputElement[];
+  name: InternalFieldName;
+  value?: unknown;
+  refs?: HTMLInputElement[];
 } & RegisterOptions;
 
 export type FieldRefs = Partial<Record<InternalFieldName, Field>>;

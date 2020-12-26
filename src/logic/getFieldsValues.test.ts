@@ -11,9 +11,11 @@ describe('getFieldsValues', () => {
       getFieldsValues({
         current: {
           test: {
+            name: 'test',
             ref: { name: 'test' },
           },
           test1: {
+            name: 'test1',
             ref: { name: 'test1' },
           },
         },
@@ -30,13 +32,16 @@ describe('getFieldsValues', () => {
         {
           current: {
             test: {
+              name: 'test',
               ref: { name: 'test' },
             },
             tex: {
+              name: 'test1',
               ref: { name: 'test1' },
             },
             tex123: {
-              ref: { name: 'test1' },
+              name: 'test123',
+              ref: { name: 'test123' },
             },
           },
         },
@@ -54,15 +59,19 @@ describe('getFieldsValues', () => {
         {
           current: {
             test: {
+              name: 'test',
               ref: { name: 'test' },
             },
             tex: {
+              name: 'test1',
               ref: { name: 'test1' },
             },
-            123: {
-              ref: { name: 'test1' },
+            test123: {
+              name: 'test123',
+              ref: { name: 'test123' },
             },
-            1456: {
+            test1456: {
+              name: '146',
               ref: { name: 'test1' },
             },
           },
@@ -81,6 +90,7 @@ describe('getFieldsValues', () => {
       getFieldsValues({
         current: {
           test: {
+            name: 'test',
             ref: { name: 'test' },
           },
         },
@@ -98,6 +108,7 @@ describe('getFieldsValues', () => {
       getFieldsValues({
         current: {
           test: {
+            name: 'test',
             ref: { name: 'test' },
           },
         },
