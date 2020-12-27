@@ -499,8 +499,7 @@ export function useForm<
         inputValue =
           isWeb && isHTMLElement(target)
             ? getFieldValue(fieldsRef.current[name])
-            : // @ts-ignore
-              getInputValue(target!.value);
+            : getInputValue((target as Ref)!.value);
 
         if (!isUndefined(inputValue)) {
           field.value = inputValue;
@@ -817,7 +816,12 @@ export function useForm<
     field = isRadioOrCheckbox
       ? {
           ...field,
-          refs: [...compact(field.refs || []), ref],
+          refs: [
+            ...compact(field.refs || []).filter((ref) =>
+              document.contains(ref),
+            ),
+            ref,
+          ],
           ref: { type: ref.type, name },
         }
       : {

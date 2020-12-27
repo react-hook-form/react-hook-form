@@ -12,7 +12,7 @@ export default function AutoUnregister() {
   const { register, control, handleSubmit } = useForm<{
     test: string;
     test1: string;
-    test2: string;
+    test2: boolean;
     test3: string;
     test4: string;
   }>();
