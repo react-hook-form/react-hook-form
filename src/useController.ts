@@ -3,7 +3,7 @@ import { useFormState } from './useFormState';
 import isUndefined from './utils/isUndefined';
 import get from './utils/get';
 import * as React from 'react';
-import getInputValue from './logic/getControllerValue';
+import getControllerValue from './logic/getControllerValue';
 import { EVENTS } from './constants';
 import { FieldValues, UseControllerProps, UseControllerMethods } from './types';
 
@@ -46,10 +46,10 @@ export function useController<TFieldValues extends FieldValues = FieldValues>({
   return {
     field: {
       onChange: (event: any) => {
-        setInputStateValue(getInputValue(event));
+        setInputStateValue(getControllerValue(event));
         onChange({
           target: {
-            value: getInputValue(event),
+            value: getControllerValue(event),
             name,
           },
         });

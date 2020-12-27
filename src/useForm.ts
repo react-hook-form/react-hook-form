@@ -10,7 +10,7 @@ import validateField from './logic/validateField';
 import skipValidation from './logic/skipValidation';
 import getNodeParentName from './logic/getNodeParentName';
 import deepEqual from './utils/deepEqual';
-import getInputValue from './logic/getControllerValue';
+import getControllerValue from './logic/getControllerValue';
 import isNameInFieldArray from './logic/isNameInFieldArray';
 import getProxyFormState from './logic/getProxyFormState';
 import isProxyEnabled from './utils/isProxyEnabled';
@@ -499,7 +499,7 @@ export function useForm<
         inputValue =
           isWeb && isHTMLElement(target)
             ? getFieldValue(fieldsRef.current[name])
-            : getInputValue((target as Ref)!.value);
+            : getControllerValue((target as Ref)!.value);
 
         if (!isUndefined(inputValue)) {
           field.value = inputValue;
