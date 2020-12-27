@@ -6,7 +6,6 @@ import isFileInput from '../utils/isFileInput';
 import isCheckBox from '../utils/isCheckBoxInput';
 import isMultipleSelect from '../utils/isMultipleSelect';
 import getCheckboxValue from './getCheckboxValue';
-import isUndefined from '../utils/isUndefined';
 import { FieldRefs, InternalFieldName } from '../types';
 
 export default function getFieldValue(
@@ -17,21 +16,10 @@ export default function getFieldValue(
   const field = fieldsRef.current[name]!;
 
   if (field) {
-    const {
-      ref: { value, disabled },
-      ref,
-      value: controllerValue,
-      valueAsNumber,
-      valueAsDate,
-      setValueAs,
-    } = field;
+    const { ref, valueAsNumber, valueAsDate, setValueAs } = field;
 
-    if (disabled && excludeDisabled) {
+    if (ref.disabled && excludeDisabled) {
       return;
-    }
-
-    if (!isUndefined(controllerValue)) {
-      return controllerValue;
     }
 
     if (isFileInput(ref)) {
@@ -51,11 +39,11 @@ export default function getFieldValue(
     }
 
     return valueAsNumber
-      ? +value
+      ? +ref.value
       : valueAsDate
       ? (ref as HTMLInputElement).valueAsDate
       : setValueAs
-      ? setValueAs(value)
-      : value;
+      ? setValueAs(ref.value)
+      : ref.value;
   }
 }

@@ -1,4 +1,3 @@
-// @ts-nocheck
 import React, { useState } from 'react';
 import ReactSelect from 'react-select';
 import { useForm, Controller } from 'react-hook-form';
@@ -16,15 +15,14 @@ export default function AutoUnregister() {
     test2: string;
     test3: string;
     test4: string;
-  }>({
-    shouldUnregister: false,
-  });
+  }>();
   const [show, setShow] = useState(true);
 
   return (
     <form onSubmit={handleSubmit((d) => console.log(d))}>
       {show && (
         <>
+          {/* @ts-ignore */}
           <Controller
             defaultValue=""
             control={control}

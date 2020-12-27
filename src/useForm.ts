@@ -478,6 +478,7 @@ export function useForm<
       const field = fieldsRef.current[name];
       let error;
       let isValid;
+      let inputValue;
 
       if (field) {
         const isBlurEvent = type === EVENTS.BLUR;
@@ -494,13 +495,8 @@ export function useForm<
           !isEmptyObject(state) ||
           (!isBlurEvent && isFieldWatched(name as FieldName<TFieldValues>));
 
-        if (
-          !field.ref.type &&
-          target &&
-          !isUndefined((target as HTMLTextAreaElement).value)
-        ) {
-          field.value = (target as HTMLTextAreaElement).value;
-        }
+        inputValue = getFieldValue(fieldsRef, name);
+        field.value = inputValue;
 
         if (
           isBlurEvent &&
@@ -518,7 +514,7 @@ export function useForm<
           !isBlurEvent &&
             watchSubjectRef.current.next({
               inputName: name,
-              inputValue: getFieldValue(fieldsRef, name),
+              inputValue,
             });
           return (
             (!isEmptyObject(state) || (shouldRender && isEmptyObject(state))) &&
@@ -564,7 +560,7 @@ export function useForm<
         !isBlurEvent &&
           watchSubjectRef.current.next({
             inputName: name,
-            inputValue: getFieldValue(fieldsRef, name),
+            inputValue,
           });
         shouldRenderBaseOnError(name, error, shouldRender, state, isValid);
       }
@@ -751,7 +747,7 @@ export function useForm<
   }
 
   function unregister<TName extends string>(
-    name: RegisterPath<TName> | RegisterPath<TName>[],
+    name: PathFinder<TName> | PathFinder<TName>[],
   ): void {
     for (const fieldName of Array.isArray(name) ? name : [name]) {
       const field = fieldsRef.current[fieldName];
@@ -785,24 +781,8 @@ export function useForm<
     ref: HTMLInputElement,
     options?: RegisterOptions,
   ): ((name: InternalFieldName) => void) | void {
-    if (process.env.NODE_ENV !== 'production') {
-      if (
-        fieldArrayNamesRef.current.has(name.split(/\[\d+\]$/)[0]) &&
-        !RegExp(
-          `^${name.split(/\[\d+\]$/)[0]}[\\d+].\\w+`
-            .replace(/\[/g, '\\[')
-            .replace(/\]/g, '\\]'),
-        ).test(name)
-      ) {
-        return console.warn(
-          '📋 `name` prop should be in object shape: name="test.index..name"',
-          name,
-          'https://react-hook-form.com/api#useFieldArray',
-        );
-      }
-    }
-
     let field = fieldsRef.current[name];
+
     if (!field) {
       return;
     }
@@ -823,7 +803,7 @@ export function useForm<
 
     const isFieldArray = isNameInFieldArray(fieldArrayNamesRef.current, name);
 
-    let isEmptyDefaultValue = true;
+    const isEmptyDefaultValue = true;
     let defaultValue;
 
     field = isRadioOrCheckbox
@@ -839,12 +819,14 @@ export function useForm<
 
     fieldsRef.current[name] = field;
 
-    if (!isEmptyObject(defaultValuesRef.current)) {
-      defaultValue = get(defaultValuesRef.current, name);
-      isEmptyDefaultValue = isUndefined(defaultValue);
+    if (!isEmptyObject(defaultValuesRef.current) || !isUndefined(field.value)) {
+      defaultValue = isUndefined(field.value)
+        ? get(defaultValuesRef.current, name)
+        : field.value;
 
-      if (!isEmptyDefaultValue && !isFieldArray) {
+      if (!isUndefined(defaultValue) && !isFieldArray) {
         setFieldValue(name, defaultValue);
+        fieldsRef.current[name]!.value = defaultValue;
       }
     }
 
@@ -871,12 +853,8 @@ export function useForm<
     }
   }
 
-  type RegisterPath<TName extends string> = string extends TName
-    ? string
-    : PathFinder<TFieldValues>;
-
   function register<TName extends string>(
-    name: RegisterPath<TName>,
+    name: PathFinder<TName>,
     options?: RegisterOptions,
   ): RegisterProps {
     if (process.env.NODE_ENV !== 'production') {
@@ -1095,6 +1073,7 @@ export function useForm<
 
   return {
     watch,
+    // @ts-ignore
     control: React.useMemo(
       () => ({
         isWatchAllRef,

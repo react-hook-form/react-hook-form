@@ -45,7 +45,7 @@ export default async (
   const value = getFieldsValue(fieldsRef, name);
   const isCheckBox = isCheckBoxInput(ref);
   const isRadioOrCheckbox = isRadio || isCheckBox;
-  const isEmpty = value === '';
+  const isEmpty = !value || (Array.isArray(value) && !value.length);
   const appendErrorsCurry = appendErrors.bind(
     null,
     name,
