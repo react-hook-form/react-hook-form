@@ -124,22 +124,11 @@ export type OmitResetState = Partial<{
 
 export type Control<TFieldValues extends FieldValues = FieldValues> = Pick<
   UseFormMethods<TFieldValues>,
-  'register' | 'unregister' | 'setValue' | 'getValues' | 'trigger'
+  'register' | 'unregister' | 'getValues'
 > & {
   isWatchAllRef: React.MutableRefObject<boolean>;
   watchFieldsRef: React.MutableRefObject<InternalNameSet>;
   isFormDirty: (name?: string, data?: unknown[]) => boolean;
-  mode: Readonly<{
-    isOnBlur: boolean;
-    isOnSubmit: boolean;
-    isOnChange: boolean;
-    isOnAll: boolean;
-    isOnTouch: boolean;
-  }>;
-  reValidateMode: Readonly<{
-    isReValidateOnBlur: boolean;
-    isReValidateOnChange: boolean;
-  }>;
   fieldArrayDefaultValuesRef: FieldArrayDefaultValues;
   fieldArrayValuesRef: FieldArrayDefaultValues;
   formState: FormState<TFieldValues>;

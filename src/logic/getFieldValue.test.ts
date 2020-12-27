@@ -1,4 +1,5 @@
 import getFieldValue from './getFieldValue';
+import { Field } from '../types';
 
 jest.mock('./getRadioValue', () => ({
   default: () => ({
@@ -19,151 +20,105 @@ jest.mock('./getCheckboxValue', () => ({
 describe('getFieldValue', () => {
   it('should return correct value when type is radio', () => {
     expect(
-      getFieldValue(
-        {
-          current: {
-            test: {
-              name: 'test',
-              ref: {
-                type: 'radio',
-                name: 'test',
-              },
-            },
-          },
+      getFieldValue({
+        name: 'test',
+        ref: {
+          type: 'radio',
+          name: 'test',
         },
-        'test',
-      ),
+      }),
     ).toBe(2);
   });
 
   it('should return the correct select value when type is select-multiple', () => {
     expect(
-      getFieldValue(
-        {
-          current: {
-            test: {
-              name: 'test',
-              ref: {
-                type: 'select-multiple',
-                name: 'test',
-                value: 'test',
-              },
-            },
-          },
+      getFieldValue({
+        name: 'test',
+        ref: {
+          type: 'select-multiple',
+          name: 'test',
+          value: 'test',
         },
-        'test',
-      ),
+      }),
     ).toBe(3);
   });
 
   it('should return the correct value when type is checkbox', () => {
     expect(
-      getFieldValue(
-        {
-          current: {
-            test: {
-              name: 'test',
-              ref: {
-                name: 'test',
-                type: 'checkbox',
-              },
-            },
-          },
+      getFieldValue({
+        name: 'test',
+        ref: {
+          name: 'test',
+          type: 'checkbox',
         },
-        'test',
-      ),
+      }),
     ).toBe('testValue');
   });
 
   it('should return it value for other types', () => {
     expect(
-      getFieldValue(
-        {
-          current: {
-            test: {
-              name: 'test',
-              ref: {
-                type: 'text',
-                name: 'bill',
-                value: 'value',
-              },
-            },
-          },
+      getFieldValue({
+        name: 'test',
+        ref: {
+          type: 'text',
+          name: 'bill',
+          value: 'value',
         },
-        'test',
-      ),
+      }),
     ).toBe('value');
   });
 
   it('should return empty string when radio input value is not found', () => {
-    expect(getFieldValue({ current: {} }, '')).toEqual(undefined);
+    expect(getFieldValue({ ref: {} } as Field)).toEqual(undefined);
   });
 
   it('should return false when checkbox input value is not found', () => {
     expect(
-      getFieldValue({ current: {} }, {
-        type: 'checkbox',
-        value: 'value',
-        name: 'test',
-      } as any),
+      getFieldValue(
+        {} as Field,
+        {
+          type: 'checkbox',
+          value: 'value',
+          name: 'test',
+        } as any,
+      ),
     ).toBeFalsy();
   });
 
   it('should return files for input type file', () => {
     expect(
-      getFieldValue(
-        {
-          current: {
-            test: {
-              name: 'test',
-              ref: {
-                type: 'file',
-                name: 'test',
-                files: 'files' as any,
-              },
-            },
-          },
+      getFieldValue({
+        name: 'test',
+        ref: {
+          type: 'file',
+          name: 'test',
+          files: 'files' as any,
         },
-        'test',
-      ),
+      }),
     ).toEqual('files');
   });
 
   it('should return undefined when input is not found', () => {
     expect(
-      getFieldValue(
-        {
-          current: {
-            test: {
-              name: 'test',
-              ref: {
-                name: 'file',
-                files: 'files' as any,
-              },
-            },
-          },
+      getFieldValue({
+        name: 'test',
+        ref: {
+          name: 'file',
+          files: 'files' as any,
         },
-        '',
-      ),
+      }),
     ).toEqual(undefined);
   });
 
   it('should return unmount field value when field is not found', () => {
     expect(
-      getFieldValue(
-        {
-          current: {
-            test: {
-              name: 'test',
-              ref: {
-                name: 'file',
-                files: 'files' as any,
-              },
-            },
-          },
+      getFieldValue({
+        name: 'test',
+        ref: {
+          name: 'file',
+          files: 'files' as any,
         },
-        'what',
-      ),
+      }),
     ).toEqual('data');
   });
 
@@ -171,18 +126,13 @@ describe('getFieldValue', () => {
     expect(
       getFieldValue(
         {
-          current: {
-            test: {
-              name: 'test',
-              ref: {
-                name: 'radio',
-                disabled: true,
-                type: 'radio',
-              },
-            },
+          name: 'test',
+          ref: {
+            name: 'radio',
+            disabled: true,
+            type: 'radio',
           },
         },
-        'test',
         true,
       ),
     ).toEqual(undefined);

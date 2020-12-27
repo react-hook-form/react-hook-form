@@ -273,7 +273,7 @@ export function useForm<
       if (readFormStateRef.current.isDirty || readFormStateRef.current.dirty) {
         const isFieldDirty = !deepEqual(
           get(defaultValuesRef.current, name),
-          getFieldValue(fieldsRef, name),
+          getFieldValue(fieldsRef.current[name]),
         );
         const isDirtyFieldExist = get(formStateRef.current.dirty, name);
         const previousIsDirty = formStateRef.current.isDirty;
@@ -495,7 +495,7 @@ export function useForm<
           !isEmptyObject(state) ||
           (!isBlurEvent && isFieldWatched(name as FieldName<TFieldValues>));
 
-        inputValue = getFieldValue(fieldsRef, name);
+        inputValue = getFieldValue(fieldsRef.current[name]);
         field.value = inputValue;
 
         if (
@@ -579,14 +579,14 @@ export function useForm<
   ): UnpackNestedValue<Pick<TFieldValues, TFieldName>>;
   function getValues(payload?: string | string[]): unknown {
     if (isString(payload)) {
-      return getFieldValue(fieldsRef, payload);
+      return getFieldValue(fieldsRef.current[payload]);
     }
 
     if (Array.isArray(payload)) {
       const data = {};
 
       for (const name of payload) {
-        set(data, name, getFieldValue(fieldsRef, name));
+        set(data, name, getFieldValue(fieldsRef.current[name]));
       }
 
       return data;
@@ -1059,8 +1059,6 @@ export function useForm<
   }, []);
 
   const commonProps = {
-    trigger,
-    setValue: React.useCallback(setValue, [setInternalValue, trigger]),
     getValues: React.useCallback(getValues, []),
     register: React.useCallback(register, [defaultValuesRef.current]),
     unregister: React.useCallback(unregister, []),
@@ -1082,11 +1080,6 @@ export function useForm<
         formStateSubjectRef,
         watchSubjectRef,
         watchInternal,
-        mode: modeRef.current,
-        reValidateMode: {
-          isReValidateOnBlur,
-          isReValidateOnChange,
-        },
         updateIsValid,
         fieldsRef,
         resetFieldArrayFunctionRef,
@@ -1102,6 +1095,8 @@ export function useForm<
       }),
       [defaultValuesRef.current, watchInternal],
     ),
+    trigger,
+    setValue: React.useCallback(setValue, [setInternalValue, trigger]),
     handleSubmit,
     reset: React.useCallback(reset, []),
     clearErrors: React.useCallback(clearErrors, []),

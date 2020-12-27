@@ -18,7 +18,7 @@ export default (
         name.startsWith(data),
       )
     ) {
-      output[name] = getFieldValue(fieldsRef, name, excludeDisabled);
+      output[name] = getFieldValue(fieldsRef.current[name], excludeDisabled);
     }
   }
 

@@ -1,4 +1,3 @@
-import * as React from 'react';
 import getRadioValue from './getRadioValue';
 import getMultipleSelectValue from './getMultipleSelectValue';
 import isRadioInput from '../utils/isRadioInput';
@@ -6,15 +5,12 @@ import isFileInput from '../utils/isFileInput';
 import isCheckBox from '../utils/isCheckBoxInput';
 import isMultipleSelect from '../utils/isMultipleSelect';
 import getCheckboxValue from './getCheckboxValue';
-import { FieldRefs, InternalFieldName } from '../types';
+import { Field } from '../types';
 
 export default function getFieldValue(
-  fieldsRef: React.MutableRefObject<FieldRefs>,
-  name: InternalFieldName,
+  field?: Field,
   excludeDisabled?: boolean,
 ) {
-  const field = fieldsRef.current[name]!;
-
   if (field) {
     const { ref, valueAsNumber, valueAsDate, setValueAs } = field;
 

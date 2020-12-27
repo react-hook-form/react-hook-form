@@ -27,7 +27,9 @@ import {
 export default async (
   fieldsRef: React.MutableRefObject<FieldRefs>,
   validateAllFieldCriteria: boolean,
-  {
+  field: Field,
+): Promise<InternalFieldErrors> => {
+  const {
     ref,
     refs,
     required,
@@ -38,14 +40,14 @@ export default async (
     pattern,
     validate,
     name,
-  }: Field,
-): Promise<InternalFieldErrors> => {
+  } = field;
   const error: InternalFieldErrors = {};
   const isRadio = isRadioInput(ref);
-  const value = getFieldsValue(fieldsRef, name);
+  const inputValue = getFieldsValue(field);
   const isCheckBox = isCheckBoxInput(ref);
   const isRadioOrCheckbox = isRadio || isCheckBox;
-  const isEmpty = !value || (Array.isArray(value) && !value.length);
+  const isEmpty =
+    !inputValue || (Array.isArray(inputValue) && !inputValue.length);
   const appendErrorsCurry = appendErrors.bind(
     null,
     name,
@@ -72,8 +74,8 @@ export default async (
 
   if (
     required &&
-    ((!isRadio && !isCheckBox && (isEmpty || isNullOrUndefined(value))) ||
-      (isBoolean(value) && !value) ||
+    ((!isRadio && !isCheckBox && (isEmpty || isNullOrUndefined(inputValue))) ||
+      (isBoolean(inputValue) && !inputValue) ||
       (isCheckBox && !getCheckboxValue(refs).isValid) ||
       (isRadio && !getRadioValue(refs).isValid))
   ) {
@@ -96,15 +98,18 @@ export default async (
     }
   }
 
-  if ((!isNullOrUndefined(min) || !isNullOrUndefined(max)) && value !== '') {
+  if (
+    (!isNullOrUndefined(min) || !isNullOrUndefined(max)) &&
+    inputValue !== ''
+  ) {
     let exceedMax;
     let exceedMin;
     const maxOutput = getValueAndMessage(max);
     const minOutput = getValueAndMessage(min);
 
-    if (!isNaN(value)) {
+    if (!isNaN(inputValue)) {
       const valueNumber =
-        (ref as HTMLInputElement).valueAsNumber || parseFloat(value);
+        (ref as HTMLInputElement).valueAsNumber || parseFloat(inputValue);
       if (!isNullOrUndefined(maxOutput.value)) {
         exceedMax = valueNumber > maxOutput.value;
       }
@@ -113,7 +118,7 @@ export default async (
       }
     } else {
       const valueDate =
-        (ref as HTMLInputElement).valueAsDate || new Date(value);
+        (ref as HTMLInputElement).valueAsDate || new Date(inputValue);
       if (isString(maxOutput.value)) {
         exceedMax = valueDate > new Date(maxOutput.value);
       }
@@ -136,15 +141,15 @@ export default async (
     }
   }
 
-  if (isString(value) && !isEmpty && (maxLength || minLength)) {
+  if (isString(inputValue) && !isEmpty && (maxLength || minLength)) {
     const maxLengthOutput = getValueAndMessage(maxLength);
     const minLengthOutput = getValueAndMessage(minLength);
     const exceedMax =
       !isNullOrUndefined(maxLengthOutput.value) &&
-      value.length > maxLengthOutput.value;
+      inputValue.length > maxLengthOutput.value;
     const exceedMin =
       !isNullOrUndefined(minLengthOutput.value) &&
-      value.length < minLengthOutput.value;
+      inputValue.length < minLengthOutput.value;
 
     if (exceedMax || exceedMin) {
       getMinMaxMessage(
@@ -158,10 +163,10 @@ export default async (
     }
   }
 
-  if (isString(value) && pattern && !isEmpty) {
+  if (isString(inputValue) && pattern && !isEmpty) {
     const { value: patternValue, message } = getValueAndMessage(pattern);
 
-    if (isRegex(patternValue) && !patternValue.test(value)) {
+    if (isRegex(patternValue) && !patternValue.test(inputValue)) {
       error[name] = {
         type: INPUT_VALIDATION_RULES.pattern,
         message,
@@ -175,11 +180,10 @@ export default async (
   }
 
   if (validate) {
-    const fieldValue = getFieldsValue(fieldsRef, name);
     const validateRef = isRadioOrCheckbox && refs ? refs[0] : ref;
 
     if (isFunction(validate)) {
-      const result = await validate(fieldValue);
+      const result = await validate(inputValue);
       const validateError = getValidateError(result, validateRef);
 
       if (validateError) {
@@ -201,7 +205,7 @@ export default async (
           break;
         }
 
-        const validateResult = await validateFunction(fieldValue);
+        const validateResult = await validateFunction(inputValue);
         const validateError = getValidateError(
           validateResult,
           validateRef,
