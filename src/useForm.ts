@@ -10,6 +10,7 @@ import validateField from './logic/validateField';
 import skipValidation from './logic/skipValidation';
 import getNodeParentName from './logic/getNodeParentName';
 import deepEqual from './utils/deepEqual';
+import getInputValue from './logic/getControllerValue';
 import isNameInFieldArray from './logic/isNameInFieldArray';
 import getProxyFormState from './logic/getProxyFormState';
 import isProxyEnabled from './utils/isProxyEnabled';
@@ -495,8 +496,15 @@ export function useForm<
           !isEmptyObject(state) ||
           (!isBlurEvent && isFieldWatched(name as FieldName<TFieldValues>));
 
-        inputValue = getFieldValue(fieldsRef.current[name]);
-        field.value = inputValue;
+        inputValue =
+          isWeb && isHTMLElement(target)
+            ? getFieldValue(fieldsRef.current[name])
+            : // @ts-ignore
+              getInputValue(target!.value);
+
+        if (!isUndefined(inputValue)) {
+          field.value = inputValue;
+        }
 
         if (
           isBlurEvent &&

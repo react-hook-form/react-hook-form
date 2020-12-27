@@ -3,7 +3,7 @@ import { useFormState } from './useFormState';
 import isUndefined from './utils/isUndefined';
 import get from './utils/get';
 import * as React from 'react';
-import getInputValue from './logic/getInputValue';
+import getInputValue from './logic/getControllerValue';
 import { EVENTS } from './constants';
 import { FieldValues, UseControllerProps, UseControllerMethods } from './types';
 
