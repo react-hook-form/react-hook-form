@@ -216,6 +216,7 @@ export function useForm<
         isWeb && isHTMLElement(ref) && isNullOrUndefined(rawValue)
           ? ''
           : rawValue;
+      fieldsRef.current[name]!.value = rawValue;
 
       if (isRadioInput(ref)) {
         (refs || []).forEach(
@@ -507,7 +508,7 @@ export function useForm<
         inputValue = custom ? value : getFieldValue(fieldsRef.current[name]);
 
         if (!isUndefined(inputValue)) {
-          field.value = inputValue;
+          fieldsRef.current[name]!.value = inputValue;
         }
 
         if (
@@ -843,9 +844,10 @@ export function useForm<
 
       if (!isUndefined(defaultValue) && !isFieldArray) {
         setFieldValue(name, defaultValue);
-        fieldsRef.current[name]!.value = defaultValue;
       }
     }
+
+    fieldsRef.current[name]!.value = getFieldValue(fieldsRef.current[name]);
 
     if (options) {
       set(fieldsWithValidationRef.current, name, true);

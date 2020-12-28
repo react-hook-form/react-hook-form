@@ -1,9 +1,10 @@
+import * as React from 'react';
 import { useFormContext } from './useFormContext';
 import { useFormState } from './useFormState';
 import isUndefined from './utils/isUndefined';
 import get from './utils/get';
-import * as React from 'react';
 import getControllerValue from './logic/getControllerValue';
+import isNameInFieldArray from './logic/isNameInFieldArray';
 import { EVENTS } from './constants';
 import { FieldValues, UseControllerProps, UseControllerMethods } from './types';
 
@@ -23,16 +24,22 @@ export function useController<TFieldValues extends FieldValues = FieldValues>({
     }
   }
 
-  const { defaultValuesRef, register, fieldsRef } = control || methods.control;
+  const { defaultValuesRef, register, fieldsRef, fieldArrayNamesRef } =
+    control || methods.control;
 
   // @ts-ignore
   const { onChange, onBlur, ref } = register(name, rules);
   const getInitialValue = () => {
-    const value = isUndefined(fieldsRef.current[name]!.value)
-      ? isUndefined(defaultValue)
-        ? get(defaultValuesRef.current, name)
-        : defaultValue
-      : fieldsRef.current[name]!.value;
+    const isNotFieldArray = !isNameInFieldArray(
+      fieldArrayNamesRef.current,
+      name,
+    );
+    const value =
+      isUndefined(fieldsRef.current[name]!.value) || !isNotFieldArray
+        ? isUndefined(defaultValue)
+          ? get(defaultValuesRef.current, name)
+          : defaultValue
+        : fieldsRef.current[name]!.value;
 
     fieldsRef.current[name]!.value = value;
     return value;
