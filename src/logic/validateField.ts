@@ -9,7 +9,6 @@ import isString from '../utils/isString';
 import isEmptyObject from '../utils/isEmptyObject';
 import isObject from '../utils/isObject';
 import isFunction from '../utils/isFunction';
-import getFieldsValue from './getFieldValue';
 import isRegex from '../utils/isRegex';
 import isBoolean from '../utils/isBoolean';
 import isMessage from '../utils/isMessage';
@@ -43,7 +42,7 @@ export default async (
   } = field;
   const error: InternalFieldErrors = {};
   const isRadio = isRadioInput(ref);
-  const inputValue = getFieldsValue(field);
+  const inputValue: any = field.value;
   const isCheckBox = isCheckBoxInput(ref);
   const isRadioOrCheckbox = isRadio || isCheckBox;
   const isEmpty =

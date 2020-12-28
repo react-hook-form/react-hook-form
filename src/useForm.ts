@@ -10,7 +10,6 @@ import validateField from './logic/validateField';
 import skipValidation from './logic/skipValidation';
 import getNodeParentName from './logic/getNodeParentName';
 import deepEqual from './utils/deepEqual';
-import getControllerValue from './logic/getControllerValue';
 import isNameInFieldArray from './logic/isNameInFieldArray';
 import getProxyFormState from './logic/getProxyFormState';
 import isProxyEnabled from './utils/isProxyEnabled';
@@ -66,6 +65,7 @@ import {
   ResetFieldArrayFunctionRef,
   RegisterProps,
   PathFinder,
+  ControllerEvent,
 } from './types';
 
 const isWindowUndefined = typeof window === UNDEFINED;
@@ -474,7 +474,15 @@ export function useForm<
   }
 
   const handleChange = React.useCallback(
-    async ({ type, target }: Event): Promise<void | boolean> => {
+    async (event: Event | ControllerEvent): Promise<void | boolean> => {
+      const {
+        type,
+        target,
+        // @ts-ignore
+        target: { value },
+        // @ts-ignore
+        custom,
+      } = event;
       let name = (target as Ref)!.name;
       const field = fieldsRef.current[name];
       let error;
@@ -496,10 +504,7 @@ export function useForm<
           !isEmptyObject(state) ||
           (!isBlurEvent && isFieldWatched(name as FieldName<TFieldValues>));
 
-        inputValue =
-          isWeb && isHTMLElement(target)
-            ? getFieldValue(fieldsRef.current[name])
-            : getControllerValue((target as Ref)!.value);
+        inputValue = custom ? value : getFieldValue(fieldsRef.current[name]);
 
         if (!isUndefined(inputValue)) {
           field.value = inputValue;

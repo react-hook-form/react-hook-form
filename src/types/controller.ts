@@ -45,3 +45,12 @@ export type ControllerProps<TFieldValues extends FieldValues = FieldValues> = {
     meta: InputState;
   }) => React.ReactElement;
 } & UseControllerProps;
+
+export type ControllerEvent = {
+  type: string;
+  target: {
+    value: string;
+  };
+  name: string;
+  custom: boolean;
+};

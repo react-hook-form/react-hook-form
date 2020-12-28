@@ -47,15 +47,19 @@ export function useController<TFieldValues extends FieldValues = FieldValues>({
     field: {
       onChange: (event: any) => {
         setInputStateValue(getControllerValue(event));
+        const value = getControllerValue(event);
+
         onChange({
+          custom: true,
           target: {
-            value: getControllerValue(event),
+            value,
             name,
           },
         });
       },
       onBlur: () => {
         onBlur({
+          custom: true,
           target: {
             name,
           },
