@@ -45,6 +45,7 @@ You can view the source code for most examples within their folder, or visit Cod
 | Validation On Change                    | https://codesandbox.io/s/74zw1oqozx                                                  |
 | Wizard (funnel / multi-step) form       | https://codesandbox.io/s/react-hook-form-wizard-form-13yud                           |
 | Native Multiple Input                   | https://codesandbox.io/s/react-hook-form-native-multiple-input-tyhue                 |
+| Custom Masked Input                     | https://codesandbox.io/s/react-hook-form-gv5su                                       |
 
 ## Types
 
