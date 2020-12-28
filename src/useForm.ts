@@ -347,11 +347,7 @@ export function useForm<
           : unset(formStateRef.current.errors, name);
       }
 
-      formStateSubjectRef.current.next({
-        errors: formStateRef.current.errors,
-        isValid: isEmptyObject(errors),
-        isValidating: false,
-      });
+      return errors;
     },
     [shouldRenderBaseOnError, isValidateAllFieldCriteria],
   );
@@ -363,19 +359,29 @@ export function useForm<
         : Array.isArray(name)
         ? name
         : [name];
+      let schemaValidationResult;
 
       formStateSubjectRef.current.next({
         isValidating: true,
       });
 
-      if (resolverRef.current) {
-        await executeSchemaOrResolverValidation(fields);
+      if (resolver) {
+        schemaValidationResult = await executeSchemaOrResolverValidation(
+          fields,
+        );
       } else {
         await Promise.all(
           fields.map(async (data) => await executeValidation(data, null)),
         );
-        formStateSubjectRef.current.next({});
       }
+
+      formStateSubjectRef.current.next({
+        errors: formStateRef.current.errors,
+        isValidating: false,
+        isValid: resolver
+          ? isEmptyObject(schemaValidationResult)
+          : formStateRef.current.isValid,
+      });
     },
     [executeSchemaOrResolverValidation, executeValidation],
   );
