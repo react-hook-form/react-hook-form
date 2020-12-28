@@ -340,51 +340,42 @@ export function useForm<
         isValidateAllFieldCriteria,
       );
 
-      const isInputsValid = names.map((name) => {
+      for (const name of names) {
         const error = get(errors, name);
-
         error
           ? set(formStateRef.current.errors, name, error)
           : unset(formStateRef.current.errors, name);
-
-        return !error;
-      });
+      }
 
       formStateSubjectRef.current.next({
         errors: formStateRef.current.errors,
         isValid: isEmptyObject(errors),
         isValidating: false,
       });
-
-      return isInputsValid;
     },
     [shouldRenderBaseOnError, isValidateAllFieldCriteria],
   );
 
   const trigger = React.useCallback(
-    async (
-      name?: FieldName<TFieldValues> | FieldName<TFieldValues>[],
-    ): Promise<boolean> => {
+    async (name?: FieldName<TFieldValues> | FieldName<TFieldValues>[]) => {
       const fields = isUndefined(name)
         ? Object.keys(fieldsRef.current)
         : Array.isArray(name)
         ? name
         : [name];
-      let result;
 
       formStateSubjectRef.current.next({
         isValidating: true,
       });
 
       if (resolverRef.current) {
-        result = await executeSchemaOrResolverValidation(fields);
+        await executeSchemaOrResolverValidation(fields);
       } else {
-        result = await Promise.all(
+        await Promise.all(
           fields.map(async (data) => await executeValidation(data, null)),
         );
         formStateSubjectRef.current.next({});
       }
-      return result.every(Boolean);
     },
     [executeSchemaOrResolverValidation, executeValidation],
   );
