@@ -451,8 +451,9 @@ export function useForm<
       value: SetFieldValue<TFieldValues>,
       config: SetValueConfig,
     ) => {
-      !isPrimitive(value) &&
-        set(shallowFieldsStateRef.current, name, cloneObject(value));
+      !shouldUnregister &&
+        !isPrimitive(value) &&
+        set(shallowFieldsStateRef.current, name, { ...value });
 
       if (fieldsRef.current[name]) {
         setFieldValue(name, value);

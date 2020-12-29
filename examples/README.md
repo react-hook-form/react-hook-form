@@ -15,6 +15,7 @@ You can view the source code for most examples within their folder, or visit Cod
 | Custom Input                            | https://codesandbox.io/s/72j69vnk1x                                                  |
 | Custom Input with ForwardRef            | https://codesandbox.io/s/rhfex-en254                                                 |
 | Custom Masked Input with Controller     | https://codesandbox.io/s/morning-sunset-8n3sx                                        |
+| Custom Masked Input with Tel Number     | https://codesandbox.io/s/react-hook-form-gv5su                                       |
 | Controller (MUI, React-Select and etc)  | https://codesandbox.io/s/react-hook-form-controller-079xx                            |
 | Controller modify return value          | https://codesandbox.io/s/react-hook-form-v6-customise-controller-return-value-jopm9  |
 | Checkbox minimum checked (Native)       | https://codesandbox.io/s/checkbox-min-checked-5vocd                                  |
@@ -27,6 +28,7 @@ You can view the source code for most examples within their folder, or visit Cod
 | Field Array Min Length                  | https://codesandbox.io/s/react-hook-form-fieldsarray-yup-validation-min-length-57qtb |
 | FormProvider                            | https://codesandbox.io/s/react-hook-form-form-context-dkvjz                          |
 | Parse and format input value            | https://codesandbox.io/s/react-hook-form-parse-and-format-textarea-furtc             |
+| Persist input value on onUnmount        | https://codesandbox.io/s/headless-sound-wgetb                                        |
 | Modal/Toggle input                      | https://codesandbox.io/s/react-hook-form-conditional-inputs-c7n0r                    |
 | Nested Fields                           | https://codesandbox.io/s/react-hook-form-nested-fields-mv1bb                         |
 | Normalize/Format/Mask Field             | https://codesandbox.io/s/react-hook-form-normalize-field-forked-01lgs                |
