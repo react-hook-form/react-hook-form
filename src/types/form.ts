@@ -142,6 +142,9 @@ export type Control<TFieldValues extends FieldValues = FieldValues> = Pick<
       inputValue?: unknown;
     }>
   >;
+  controllerSubjectRef: React.MutableRefObject<
+    SubjectType<DefaultValues<TFieldValues>>
+  >;
   updateIsValid: (fieldsValues: FieldValues) => void;
   validFieldsRef: React.MutableRefObject<FieldNamesMarkedBoolean<TFieldValues>>;
   fieldsWithValidationRef: React.MutableRefObject<

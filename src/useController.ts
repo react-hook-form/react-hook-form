@@ -24,31 +24,38 @@ export function useController<TFieldValues extends FieldValues = FieldValues>({
     }
   }
 
-  const { defaultValuesRef, register, fieldsRef, fieldArrayNamesRef } =
-    control || methods.control;
+  const {
+    defaultValuesRef,
+    register,
+    fieldsRef,
+    fieldArrayNamesRef,
+    controllerSubjectRef,
+  } = control || methods.control;
 
   // @ts-ignore
   const { onChange, onBlur, ref } = register(name, rules);
   const getInitialValue = () => {
-    const isNotFieldArray = !isNameInFieldArray(
-      fieldArrayNamesRef.current,
-      name,
-    );
-    const value =
-      isUndefined(fieldsRef.current[name]!.value) || !isNotFieldArray
-        ? isUndefined(defaultValue)
-          ? get(defaultValuesRef.current, name)
-          : defaultValue
-        : fieldsRef.current[name]!.value;
-
-    fieldsRef.current[name]!.value = value;
-    return value;
+    return isUndefined(fieldsRef.current[name]!.value) ||
+      isNameInFieldArray(fieldArrayNamesRef.current, name)
+      ? isUndefined(defaultValue)
+        ? get(defaultValuesRef.current, name)
+        : defaultValue
+      : fieldsRef.current[name]!.value;
   };
 
   const [value, setInputStateValue] = React.useState(getInitialValue());
   const { errors, dirty, touched, isValidating } = useFormState({
     control: control || methods.control,
   });
+
+  React.useEffect(() => {
+    fieldsRef.current[name]!.value = getInitialValue();
+    const tearDown = controllerSubjectRef.current.subscribe({
+      next: (values) => setInputStateValue(get(values, name, '')),
+    });
+
+    return () => tearDown.unsubscribe();
+  }, []);
 
   return {
     field: {
@@ -57,7 +64,6 @@ export function useController<TFieldValues extends FieldValues = FieldValues>({
         const value = getControllerValue(event);
 
         onChange({
-          custom: true,
           target: {
             value,
             name,
@@ -66,7 +72,6 @@ export function useController<TFieldValues extends FieldValues = FieldValues>({
       },
       onBlur: () => {
         onBlur({
-          custom: true,
           target: {
             name,
           },

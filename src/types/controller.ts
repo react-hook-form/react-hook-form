@@ -5,6 +5,7 @@ import {
   FieldName,
   Control,
   InputState,
+  PathFinder,
 } from './';
 import { RegisterOptions } from './validator';
 
@@ -27,7 +28,7 @@ export type ControllerRenderProps<
 export type UseControllerProps<
   TFieldValues extends FieldValues = FieldValues
 > = {
-  name: FieldName<TFieldValues>;
+  name: PathFinder<TFieldValues>;
   rules?: Exclude<
     RegisterOptions,
     'valueAsNumber' | 'valueAsDate' | 'setValueAs'
@@ -52,5 +53,4 @@ export type ControllerEvent = {
     value: string;
   };
   name: string;
-  custom: boolean;
 };

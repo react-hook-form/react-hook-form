@@ -92,6 +92,9 @@ export function useForm<
       inputValue?: unknown;
     }>(),
   );
+  const controllerSubjectRef = React.useRef(
+    new Subject<DefaultValues<TFieldValues>>(),
+  );
   const fieldArrayDefaultValuesRef = React.useRef<FieldArrayDefaultValues>({});
   const fieldArrayValuesRef = React.useRef<FieldArrayDefaultValues>({});
   const watchFieldsRef = React.useRef<InternalNameSet>(new Set());
@@ -319,9 +322,8 @@ export function useForm<
 
       const error = (
         await validateField(
-          fieldsRef,
-          isValidateAllFieldCriteria,
           fieldsRef.current[name] as Field,
+          isValidateAllFieldCriteria,
         )
       )[name];
 
@@ -477,9 +479,8 @@ export function useForm<
         type,
         target,
         // @ts-ignore
-        target: { value },
+        target: { value, type: inputType },
         // @ts-ignore
-        custom,
       } = event;
       let name = (target as Ref)!.name;
       const field = fieldsRef.current[name];
@@ -488,6 +489,11 @@ export function useForm<
       let inputValue;
 
       if (field) {
+        inputValue = inputType ? getFieldValue(fieldsRef.current[name]) : value;
+        if (!isUndefined(inputValue)) {
+          fieldsRef.current[name]!.value = inputValue;
+        }
+
         const isBlurEvent = type === EVENTS.BLUR;
         const shouldSkipValidation = skipValidation({
           isBlurEvent,
@@ -501,12 +507,6 @@ export function useForm<
         let shouldRender =
           !isEmptyObject(state) ||
           (!isBlurEvent && isFieldWatched(name as FieldName<TFieldValues>));
-
-        inputValue = custom ? value : getFieldValue(fieldsRef.current[name]);
-
-        if (!isUndefined(inputValue)) {
-          fieldsRef.current[name]!.value = inputValue;
-        }
 
         if (
           isBlurEvent &&
@@ -562,9 +562,9 @@ export function useForm<
 
           previousFormIsValid !== isValid && (shouldRender = true);
         } else {
-          error = (
-            await validateField(fieldsRef, isValidateAllFieldCriteria, field)
-          )[name];
+          error = (await validateField(field, isValidateAllFieldCriteria))[
+            name
+          ];
         }
 
         !isBlurEvent &&
@@ -667,7 +667,7 @@ export function useForm<
       isGlobal?: boolean,
     ) => {
       const watchFields = isGlobal ? watchFieldsRef.current : undefined;
-      let fieldValues = getFieldsValues(fieldsRef, false, fieldNames);
+      let fieldValues = getFieldsValues(fieldsRef, fieldNames);
 
       fieldValues = isEmptyObject(fieldValues)
         ? ((isEmptyObject(defaultValuesRef.current)
@@ -850,17 +850,15 @@ export function useForm<
       set(fieldsWithValidationRef.current, name, true);
 
       if (!isOnSubmit && field && readFormStateRef.current.isValid) {
-        validateField(fieldsRef, isValidateAllFieldCriteria, field).then(
-          (error) => {
-            isEmptyObject(error)
-              ? set(validFieldsRef.current, name, true)
-              : unset(validFieldsRef.current, name);
+        validateField(field, isValidateAllFieldCriteria).then((error) => {
+          isEmptyObject(error)
+            ? set(validFieldsRef.current, name, true)
+            : unset(validFieldsRef.current, name);
 
-            formStateRef.current.isValid &&
-              !isEmptyObject(error) &&
-              setFormState({ ...formStateRef.current, isValid: getIsValid() });
-          },
-        );
+          formStateRef.current.isValid &&
+            !isEmptyObject(error) &&
+            setFormState({ ...formStateRef.current, isValid: getIsValid() });
+        });
       }
     }
 
@@ -933,9 +931,8 @@ export function useForm<
           for (const field of Object.values(fieldsRef.current)) {
             if (field) {
               const fieldError = await validateField(
-                fieldsRef,
-                isValidateAllFieldCriteria,
                 field,
+                isValidateAllFieldCriteria,
               );
 
               if (fieldError[field.name]) {
@@ -1039,10 +1036,14 @@ export function useForm<
 
     fieldsRef.current = {};
     defaultValuesRef.current = { ...(values || defaultValuesRef.current) };
-    values &&
-      watchSubjectRef.current.next({
-        inputValue: { ...defaultValuesRef.current },
-      });
+
+    controllerSubjectRef.current.next({
+      ...defaultValuesRef.current,
+    } as DefaultValues<TFieldValues>);
+
+    watchSubjectRef.current.next({
+      inputValue: { ...defaultValuesRef.current },
+    });
 
     Object.values(resetFieldArrayFunctionRef.current).forEach(
       (resetFieldArray) => isFunction(resetFieldArray) && resetFieldArray(),
@@ -1094,6 +1095,7 @@ export function useForm<
         watchFieldsRef,
         isFormDirty,
         formStateSubjectRef,
+        controllerSubjectRef,
         watchSubjectRef,
         watchInternal,
         updateIsValid,

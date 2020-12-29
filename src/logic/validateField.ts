@@ -1,4 +1,3 @@
-import * as React from 'react';
 import getRadioValue from './getRadioValue';
 import getCheckboxValue from './getCheckboxValue';
 import isNullOrUndefined from '../utils/isNullOrUndefined';
@@ -15,20 +14,10 @@ import isMessage from '../utils/isMessage';
 import getValidateError from './getValidateError';
 import appendErrors from './appendErrors';
 import { INPUT_VALIDATION_RULES } from '../constants';
-import {
-  Field,
-  FieldRefs,
-  Message,
-  FieldError,
-  InternalFieldErrors,
-} from '../types';
+import { Field, Message, FieldError, InternalFieldErrors } from '../types';
 
 export default async (
-  fieldsRef: React.MutableRefObject<FieldRefs>,
-  validateAllFieldCriteria: boolean,
-  field: Field,
-): Promise<InternalFieldErrors> => {
-  const {
+  {
     ref,
     refs,
     required,
@@ -39,10 +28,12 @@ export default async (
     pattern,
     validate,
     name,
-  } = field;
+    value: inputValue,
+  }: Field,
+  validateAllFieldCriteria: boolean,
+): Promise<InternalFieldErrors> => {
   const error: InternalFieldErrors = {};
   const isRadio = isRadioInput(ref);
-  const inputValue: any = field.value;
   const isCheckBox = isCheckBoxInput(ref);
   const isRadioOrCheckbox = isRadio || isCheckBox;
   const isEmpty =
@@ -86,9 +77,7 @@ export default async (
       error[name] = {
         type: INPUT_VALIDATION_RULES.required,
         message,
-        ref: isRadioOrCheckbox
-          ? ((fieldsRef.current[name] as Field).refs || [])[0] || {}
-          : ref,
+        ref: isRadioOrCheckbox ? (refs || [])[0] || {} : ref,
         ...appendErrorsCurry(INPUT_VALIDATION_RULES.required, message),
       };
       if (!validateAllFieldCriteria) {

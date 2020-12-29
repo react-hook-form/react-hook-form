@@ -23,8 +23,10 @@ describe('Controller with React Native', () => {
       } = useForm<{
         test: string;
       }>();
+
       return (
         <View>
+          {/* @ts-ignore */}
           <Controller
             name="test"
             rules={{ minLength: 5 }}

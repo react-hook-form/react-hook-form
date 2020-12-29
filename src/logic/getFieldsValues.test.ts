@@ -1,22 +1,19 @@
 import getFieldsValues from './getFieldsValues';
-import getFieldValue from './getFieldValue';
-
-jest.mock('./getFieldValue');
 
 describe('getFieldsValues', () => {
   it('should return all fields value', () => {
-    // @ts-ignore
-    getFieldValue.mockImplementation(() => 'test');
     expect(
       getFieldsValues({
         current: {
           test: {
             name: 'test',
             ref: { name: 'test' },
+            value: 'test',
           },
           test1: {
             name: 'test1',
             ref: { name: 'test1' },
+            value: 'test',
           },
         },
       }),
@@ -34,18 +31,20 @@ describe('getFieldsValues', () => {
             test: {
               name: 'test',
               ref: { name: 'test' },
+              value: 'test',
             },
             tex: {
               name: 'test1',
               ref: { name: 'test1' },
+              value: 'test',
             },
             tex123: {
               name: 'test123',
               ref: { name: 'test123' },
+              value: 'test',
             },
           },
         },
-        false,
         'test',
       ),
     ).toEqual({
@@ -61,22 +60,25 @@ describe('getFieldsValues', () => {
             test: {
               name: 'test',
               ref: { name: 'test' },
+              value: 'test',
             },
             tex: {
-              name: 'test1',
-              ref: { name: 'test1' },
+              name: 'tex',
+              ref: { name: 'tex' },
+              value: 'test',
             },
-            test123: {
-              name: 'test123',
+            whattest123: {
+              name: 'whattest123',
               ref: { name: 'test123' },
+              value: 'test',
             },
-            test1456: {
-              name: '146',
-              ref: { name: 'test1' },
+            156: {
+              name: '156',
+              ref: { name: 'test1456s' },
+              value: 'test',
             },
           },
         },
-        false,
         ['test', 'tex'],
       ),
     ).toEqual({
@@ -92,6 +94,14 @@ describe('getFieldsValues', () => {
           test: {
             name: 'test',
             ref: { name: 'test' },
+            value: 'test',
+          },
+          test1: {
+            name: 'test1',
+            ref: {
+              name: 'test1',
+            },
+            value: 'test',
           },
         },
       }),
@@ -101,23 +111,26 @@ describe('getFieldsValues', () => {
     });
   });
 
-  it('should combined unmounted flat form values with form values', () => {
-    // @ts-ignore
-    getFieldValue.mockImplementation(() => 'test');
+  it('should return nested value', () => {
     expect(
       getFieldsValues({
         current: {
-          test: {
+          ['test.test']: {
             name: 'test',
             ref: { name: 'test' },
+            value: 'test',
+          },
+          ['test.test1']: {
+            name: 'test',
+            ref: { name: 'test' },
+            value: 'test',
           },
         },
       }),
     ).toEqual({
-      test: 'test',
-      test1: 'test',
-      test2: {
-        test: 'test1',
+      test: {
+        test: 'test',
+        test1: 'test',
       },
     });
   });

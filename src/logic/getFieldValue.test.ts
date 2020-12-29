@@ -72,19 +72,6 @@ describe('getFieldValue', () => {
     expect(getFieldValue({ ref: {} } as Field)).toEqual(undefined);
   });
 
-  it('should return false when checkbox input value is not found', () => {
-    expect(
-      getFieldValue(
-        {} as Field,
-        {
-          type: 'checkbox',
-          value: 'value',
-          name: 'test',
-        } as any,
-      ),
-    ).toBeFalsy();
-  });
-
   it('should return files for input type file', () => {
     expect(
       getFieldValue({
@@ -111,15 +98,8 @@ describe('getFieldValue', () => {
   });
 
   it('should return unmount field value when field is not found', () => {
-    expect(
-      getFieldValue({
-        name: 'test',
-        ref: {
-          name: 'file',
-          files: 'files' as any,
-        },
-      }),
-    ).toEqual('data');
+    expect(getFieldValue(undefined, false)).toBeFalsy();
+    expect(getFieldValue(undefined)).toBeFalsy();
   });
 
   it('should not return value when the input is disabled', () => {

@@ -22,13 +22,16 @@ describe('useFormState', () => {
     };
 
     const Component = () => {
-      const { register, control } = useForm();
+      const { register, control } = useForm<{
+        test: string;
+      }>();
 
       count++;
 
       return (
         <div>
-          <input name="test" aria-label="test" ref={register} />
+          <input aria-label="test" {...register('test')} />
+          {/* @ts-ignore */}
           <Test control={control} />
         </div>
       );
@@ -78,7 +81,7 @@ describe('useFormState', () => {
           <input
             name="test"
             aria-label="test"
-            ref={register({ minLength: 5 })}
+            {...register('test', { minLength: 5 })}
           />
           <Test control={control} />
         </div>
@@ -157,7 +160,7 @@ describe('useFormState', () => {
           <input
             name="test"
             aria-label="test"
-            ref={register({ minLength: 5 })}
+            {...register('test', { minLength: 5 })}
           />
           <Test control={control} />
           <Test1 control={control} />

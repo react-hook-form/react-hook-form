@@ -1,12 +1,10 @@
 import * as React from 'react';
-import getFieldValue from './getFieldValue';
 import isUndefined from '../utils/isUndefined';
 import transformToNestObject from './transformToNestObject';
 import { InternalFieldName, FieldRefs } from '../types';
 
 export default (
   fieldsRef: React.MutableRefObject<FieldRefs>,
-  excludeDisabled?: boolean,
   search?: InternalFieldName | InternalFieldName[],
 ) => {
   const output: Record<string, unknown> = {};
@@ -18,7 +16,9 @@ export default (
         name.startsWith(data),
       )
     ) {
-      output[name] = getFieldValue(fieldsRef.current[name], excludeDisabled);
+      const field = fieldsRef.current[name];
+
+      output[name] = field!.ref.disabled ? undefined : field!.value;
     }
   }
 

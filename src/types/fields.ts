@@ -37,7 +37,7 @@ export type Ref = FieldElement;
 export type Field = {
   ref: Ref;
   name: InternalFieldName;
-  value?: unknown;
+  value?: any;
   refs?: HTMLInputElement[];
 } & RegisterOptions;
 
