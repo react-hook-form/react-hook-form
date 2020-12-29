@@ -15,6 +15,7 @@ You can view the source code for most examples within their folder, or visit Cod
 | Custom Input                            | https://codesandbox.io/s/72j69vnk1x                                                  |
 | Custom Input with ForwardRef            | https://codesandbox.io/s/rhfex-en254                                                 |
 | Custom Masked Input with Controller     | https://codesandbox.io/s/morning-sunset-8n3sx                                        |
+| Custom Masked Input with Tel Number     | https://codesandbox.io/s/react-hook-form-gv5su                                       |
 | Controller (MUI, React-Select and etc)  | https://codesandbox.io/s/react-hook-form-controller-079xx                            |
 | Controller modify return value          | https://codesandbox.io/s/react-hook-form-v6-customise-controller-return-value-jopm9  |
 | Checkbox minimum checked (Native)       | https://codesandbox.io/s/checkbox-min-checked-5vocd                                  |
