@@ -423,7 +423,9 @@ export function useForm<
         const result = await Promise.all(
           fields.map(async (data) => await executeValidation(data, null)),
         );
-        updateFormState();
+        updateFormState({
+          isValidating: false,
+        });
         return result.every(Boolean);
       }
 
@@ -458,8 +460,9 @@ export function useForm<
       value: SetFieldValue<TFieldValues>,
       config: SetValueConfig,
     ) => {
-      !isPrimitive(value) &&
-        set(shallowFieldsStateRef.current, name, cloneObject(value));
+      !shouldUnregister &&
+        !isPrimitive(value) &&
+        set(shallowFieldsStateRef.current, name, { ...value });
 
       if (fieldsRef.current[name]) {
         setFieldValue(name, value);
