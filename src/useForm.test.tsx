@@ -49,22 +49,23 @@ describe('useForm', () => {
       );
     });
 
-    // it.only('should call console.warn when ref name is undefined', () => {
-    //   process.env.NODE_ENV = 'development';
-    //   jest.spyOn(console, 'warn').mockImplementation(() => {});
-    //   const Component = () => {
-    //     const { register } = useForm();
-    //     return <input {...register} />;
-    //   };
-    //   render(<Component />);
-    //
-    //   expect(console.warn).toHaveBeenCalled();
-    // });
+    it('should support register passed to ref', async () => {
+      const { result } = renderHook(() =>
+        useForm<{ test: string }>({
+          defaultValues: {
+            test: 'testData',
+          },
+        }),
+      );
 
-    it.only('should support register passed to ref', async () => {
-      const { result } = renderHook(() => useForm<{ test: string }>());
+      const { ref } = result.current.register('test');
 
-      result.current.register('test');
+      // @ts-ignore
+      ref({
+        target: {
+          value: 'testData',
+        },
+      });
 
       await act(async () => {
         await result.current.handleSubmit((data) => {
@@ -136,7 +137,7 @@ describe('useForm', () => {
           }>();
           return (
             <div>
-              <input name="test" type={type} {...register('test')} />
+              <input type={type} {...register('test')} />
 
               <button onClick={handleSubmit(callback)}>submit</button>
             </div>
@@ -150,7 +151,7 @@ describe('useForm', () => {
         await waitFor(() =>
           expect(callback).toHaveBeenCalledWith(
             {
-              test: type === 'checkbox' ? [] : '',
+              test: type === 'checkbox' ? false : '',
             },
             expect.any(Object),
           ),
@@ -191,10 +192,12 @@ describe('useForm', () => {
       expect(screen.getByRole('alert').textContent).toBe('false');
     });
 
-    it('should be set default value from shallowFieldsStateRef when shouldUnRegister is false', async () => {
+    it('should be set default value when item is remounted again', async () => {
       const { result, unmount } = renderHook(() => useForm<{ test: string }>());
 
       result.current.register('test');
+
+      result.current.setValue('test', 'test');
 
       unmount();
 
@@ -202,7 +205,9 @@ describe('useForm', () => {
 
       result.current.register('test');
 
-      expect(ref).toEqual({ type: 'text', name: 'test', value: 'test' });
+      expect(ref).toEqual({ type: 'text', name: 'test' });
+
+      expect(result.current.getValues()).toEqual({ test: 'test' });
     });
 
     // issue: https://github.com/react-hook-form/react-hook-form/issues/2298
@@ -224,11 +229,7 @@ describe('useForm', () => {
         return (
           <div>
             <input {...register('test', { required: true })} />
-            <input
-              type="text"
-              name="issue"
-              {...register('issue', { required: true })}
-            />
+            <input type="text" {...register('issue', { required: true })} />
             <button disabled={!formState.isValid}>submit</button>
           </div>
         );
@@ -319,20 +320,6 @@ describe('useForm', () => {
 
       expect(result.current.getValues()).toEqual({});
     });
-
-    // it('should not call findRemovedFieldAndRemoveListener when field variable does not exist', async () => {
-    //   const mockListener = jest.spyOn(
-    //     findRemovedFieldAndRemoveListener,
-    //     'default',
-    //   );
-    //   const { result } = renderHook(() => useForm());
-    //
-    //   await act(async () => {
-    //     await result.current.unregister('test');
-    //   });
-    //
-    //   expect(mockListener).not.toHaveBeenCalled();
-    // });
   });
 
   describe('when component unMount', () => {
@@ -345,7 +332,7 @@ describe('useForm', () => {
       expect(result.current.getValues()).toEqual({});
     });
 
-    it('should call removeFieldEventListenerAndRef when field variable is array', () => {
+    it('should remain array field values when inputs gets unmounted', () => {
       const { result, unmount } = renderHook(() =>
         useForm<{ test: string[] }>(),
       );
@@ -356,10 +343,12 @@ describe('useForm', () => {
 
       unmount();
 
-      expect(result.current.getValues()).toEqual({});
+      expect(result.current.getValues()).toEqual({
+        test: [undefined, undefined, undefined],
+      });
     });
 
-    it('should unregister errors', async () => {
+    it('should not unregister errors when unmounted', async () => {
       const { result, unmount } = renderHook(() =>
         useForm<{
           test: string;
@@ -379,7 +368,32 @@ describe('useForm', () => {
 
       unmount();
 
-      expect(result.current.formState.errors.test).toBeUndefined();
+      expect(result.current.formState.errors.test).toBeDefined();
+    });
+
+    it('should only unregister errors when unregister method invoked', async () => {
+      const { result } = renderHook(() =>
+        useForm<{
+          test: string;
+        }>(),
+      );
+
+      result.current.register('test', { required: true });
+
+      await act(async () => {
+        await result.current.handleSubmit(() => {})({
+          preventDefault: () => {},
+          persist: () => {},
+        } as React.SyntheticEvent);
+      });
+
+      expect(result.current.formState.errors.test).toBeDefined();
+
+      await act(async () => {
+        result.current.unregister('test');
+      });
+
+      expect(result.current.formState.errors.test).not.toBeDefined();
     });
 
     it('should not unregister touched', () => {
@@ -443,32 +457,19 @@ describe('useForm', () => {
       expect(formState.dirty.test).toBeDefined();
       expect(formState.isDirty).toBeTruthy();
     });
-
-    // it('should not call removeFieldEventListenerAndRef when field variable does not exist', () => {
-    //   const mockListener = jest.spyOn(
-    //     findRemovedFieldAndRemoveListener,
-    //     'default',
-    //   );
-    //   const { unmount } = renderHook(() => useForm());
-    //
-    //   unmount();
-    //
-    //   expect(mockListener).not.toHaveBeenCalled();
-    // });
   });
 
   describe('watch', () => {
-    it('should return undefined when input gets unmounted', async () => {
+    it('should return undefined when input gets unregister', async () => {
       const Component = () => {
-        const { register, watch } = useForm<{ test: string }>();
-        const [show, setShow] = React.useState(true);
+        const { register, watch, unregister } = useForm<{ test: string }>();
         const data = watch('test');
 
         return (
           <>
-            {show && <input {...register('test')} />}
+            <input {...register('test')} />
             <span>{data}</span>
-            <button type="button" onClick={() => setShow(false)}>
+            <button type="button" onClick={() => unregister('test')}>
               hide
             </button>
           </>
@@ -492,14 +493,24 @@ describe('useForm', () => {
       expect(screen.queryByText('test')).toBeNull();
     });
 
-    it('should watch individual input', () => {
-      const { result } = renderHook(() => useForm<{ test: string }>());
+    it('should watch individual input', async () => {
+      const { result } = renderHook(() =>
+        useForm<{ test: string }>({
+          defaultValues: {
+            test: 'data',
+          },
+        }),
+      );
 
-      expect(result.current.watch('test')).toBeUndefined();
+      expect(result.current.watch('test')).toBe('data');
 
       result.current.register('test');
 
-      expect(result.current.watch('test')).toBe('data');
+      await act(async () => {
+        result.current.setValue('test', 'data1');
+      });
+
+      await expect(result.current.watch('test')).toBe('data1');
     });
 
     it('should return default value if field is undefined', () => {
@@ -526,8 +537,18 @@ describe('useForm', () => {
         test1: undefined,
       });
 
-      result.current.register('test');
-      result.current.register('test1');
+      const { ref } = result.current.register('test');
+      // @ts-ignore
+      ref({
+        name: 'test',
+        value: 'data1',
+      });
+      const { ref: ref1 } = result.current.register('test1');
+      // @ts-ignore
+      ref1({
+        name: 'test1',
+        value: 'data2',
+      });
 
       expect(result.current.watch(['test', 'test1'])).toEqual({
         test: 'data1',
@@ -540,10 +561,20 @@ describe('useForm', () => {
         useForm<{ test: string; test1: string }>(),
       );
 
-      result.current.register('test');
-      result.current.register('test1');
+      const { ref } = result.current.register('test');
+      // @ts-ignore
+      ref({
+        name: 'test',
+        value: 'data1',
+      });
+      const { ref: ref1 } = result.current.register('test1');
+      // @ts-ignore
+      ref1({
+        name: 'test1',
+        value: 'data2',
+      });
 
-      expect(result.current.watch()).toEqual({ test: '', test1: '' });
+      expect(result.current.watch()).toEqual({ test: 'data1', test1: 'data2' });
     });
   });
 
@@ -571,7 +602,7 @@ describe('useForm', () => {
       expect(result.current.formState.isSubmitted).toBeFalsy();
     });
 
-    it('should reset shallowStateRef when shouldUnregister set to false', () => {
+    it('should reset form value', () => {
       let methods: any;
       const Component = () => {
         methods = useForm<{
@@ -591,7 +622,7 @@ describe('useForm', () => {
         }),
       );
 
-      expect(methods.control.shallowFieldsStateRef.current).toEqual({
+      expect(methods.getValues()).toEqual({
         test: 'test',
       });
     });
@@ -1444,7 +1475,7 @@ describe('useForm', () => {
 
         return (
           <div>
-            {show && <input name="test" {...register('test')} />}
+            {show && <input {...register('test')} />}
             <button type={'button'} onClick={() => trigger()}>
               trigger
             </button>

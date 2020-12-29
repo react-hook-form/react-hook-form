@@ -63,7 +63,7 @@ import {
   SetFieldValue,
   FieldArrayDefaultValues,
   ResetFieldArrayFunctionRef,
-  RegisterProps,
+  RegisterMethods,
   PathFinder,
   ControllerEvent,
 } from './types';
@@ -744,7 +744,7 @@ export function useForm<
   function watch(
     watchField?: string | string[] | Function,
     defaultValue?: unknown,
-  ): unknown {
+  ): unknown | void {
     if (isFunction(watchField)) {
       watchSubjectRef.current.subscribe({
         next: () => watchField(watchInternal(undefined, defaultValue)),
@@ -867,10 +867,10 @@ export function useForm<
     }
   }
 
-  function register<TName extends string>(
-    name: PathFinder<TName>,
+  function register(
+    name: PathFinder<TFieldValues>,
     options?: RegisterOptions,
-  ): RegisterProps {
+  ): RegisterMethods {
     if (process.env.NODE_ENV !== 'production') {
       if (isUndefined(name)) {
         throw new Error(
@@ -892,13 +892,13 @@ export function useForm<
 
     return !isWindowUndefined
       ? {
-          name,
+          name: name as InternalFieldName,
           onChange: handleChange,
           onBlur: handleChange,
           ref: (ref: HTMLInputElement | null) =>
             ref && registerFieldRef(name, ref, options),
         }
-      : {};
+      : ({} as RegisterMethods);
   }
 
   const handleSubmit = React.useCallback(

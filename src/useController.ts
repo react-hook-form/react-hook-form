@@ -6,7 +6,12 @@ import get from './utils/get';
 import getControllerValue from './logic/getControllerValue';
 import isNameInFieldArray from './logic/isNameInFieldArray';
 import { EVENTS } from './constants';
-import { FieldValues, UseControllerProps, UseControllerMethods } from './types';
+import {
+  FieldValues,
+  UseControllerProps,
+  UseControllerMethods,
+  InternalFieldName,
+} from './types';
 
 export function useController<TFieldValues extends FieldValues = FieldValues>({
   name,
@@ -32,7 +37,6 @@ export function useController<TFieldValues extends FieldValues = FieldValues>({
     controllerSubjectRef,
   } = control || methods.control;
 
-  // @ts-ignore
   const { onChange, onBlur, ref } = register(name, rules);
   const getInitialValue = () => {
     return isUndefined(fieldsRef.current[name]!.value) ||
@@ -66,14 +70,14 @@ export function useController<TFieldValues extends FieldValues = FieldValues>({
         onChange({
           target: {
             value,
-            name,
+            name: name as InternalFieldName,
           },
         });
       },
       onBlur: () => {
         onBlur({
           target: {
-            name,
+            name: name as InternalFieldName,
           },
           type: EVENTS.BLUR,
         });

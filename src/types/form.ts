@@ -10,7 +10,7 @@ import {
 } from './fields';
 import { ErrorOption, FieldErrors } from './errors';
 import { RegisterOptions } from './validator';
-import { ControllerRenderProps } from './controller';
+import { ControllerEvent, ControllerRenderProps } from './controller';
 import { FieldArrayDefaultValues } from './fieldArray';
 import { SubjectType } from '../utils/Subject';
 
@@ -67,7 +67,9 @@ export type SetValueConfig = Partial<{
   shouldDirty: boolean;
 }>;
 
-export type HandleChange = (event: Event) => Promise<void | boolean>;
+export type HandleChange = (
+  event: Event | ControllerEvent,
+) => Promise<void | boolean>;
 
 export type UseFormProps<
   TFieldValues extends FieldValues = FieldValues,
@@ -122,10 +124,53 @@ export type OmitResetState = Partial<{
   dirty: boolean;
 }>;
 
-export type Control<TFieldValues extends FieldValues = FieldValues> = Pick<
-  UseFormMethods<TFieldValues>,
-  'register' | 'unregister' | 'getValues'
-> & {
+export type UseWatchOptions<TFieldValues extends FieldValues = FieldValues> = {
+  defaultValue?: unknown;
+  name?: string | string[];
+  control?: Control<TFieldValues>;
+};
+
+export type SetFieldValue<TFieldValues> =
+  | FieldValue<TFieldValues>
+  | UnpackNestedValue<DeepPartial<TFieldValues>>
+  | unknown[]
+  | undefined
+  | null
+  | boolean;
+
+export type InputState = {
+  invalid: boolean;
+  isTouched: boolean;
+  isDirty: boolean;
+  isValidating: boolean;
+};
+
+export type RegisterMethods = {
+  onChange: HandleChange;
+  onBlur: HandleChange;
+  ref: React.Ref<any>;
+  name: InternalFieldName;
+};
+
+type UseFormCommonMethods<TFieldValues> = {
+  register: (
+    name: PathFinder<TFieldValues>,
+    options?: RegisterOptions,
+  ) => RegisterMethods;
+  unregister(name: FieldName<TFieldValues> | FieldName<TFieldValues>[]): void;
+  getValues(): UnpackNestedValue<TFieldValues>;
+  getValues<TFieldName extends string, TFieldValue extends unknown>(
+    name: TFieldName,
+  ): TFieldName extends keyof TFieldValues
+    ? // @ts-ignore
+      UnpackNestedValue<TFieldValues>[TFieldName]
+    : TFieldValue;
+  getValues<TFieldName extends keyof TFieldValues>(
+    names: TFieldName[],
+  ): UnpackNestedValue<Pick<TFieldValues, TFieldName>>;
+};
+
+export type Control<TFieldValues extends FieldValues = FieldValues> = {
   isWatchAllRef: React.MutableRefObject<boolean>;
   watchFieldsRef: React.MutableRefObject<InternalNameSet>;
   isFormDirty: (name?: string, data?: unknown[]) => boolean;
@@ -162,45 +207,9 @@ export type Control<TFieldValues extends FieldValues = FieldValues> = Pick<
     defaultValue?: T,
     isGlobal?: boolean,
   ) => unknown;
-};
-
-export type UseWatchRenderFunctions = Record<string, () => void>;
-
-export type UseWatchOptions<TFieldValues extends FieldValues = FieldValues> = {
-  defaultValue?: unknown;
-  name?: string | string[];
-  control?: Control<TFieldValues>;
-};
-
-export type SetFieldValue<TFieldValues> =
-  | FieldValue<TFieldValues>
-  | UnpackNestedValue<DeepPartial<TFieldValues>>
-  | unknown[]
-  | undefined
-  | null
-  | boolean;
-
-export type InputState = {
-  invalid: boolean;
-  isTouched: boolean;
-  isDirty: boolean;
-  isValidating: boolean;
-};
-
-export type RegisterProps =
-  | {
-      onChange: React.ChangeEventHandler;
-      onBlur: React.ChangeEventHandler;
-      ref: React.Ref<any>;
-    }
-  | {};
+} & UseFormCommonMethods<TFieldValues>;
 
 export type UseFormMethods<TFieldValues extends FieldValues = FieldValues> = {
-  register(
-    name: PathFinder<TFieldValues>,
-    options?: RegisterOptions,
-  ): RegisterProps;
-  unregister(name: FieldName<TFieldValues> | FieldName<TFieldValues>[]): void;
   watch(): UnpackNestedValue<TFieldValues>;
   watch<TFieldName extends string, TFieldValue>(
     name: TFieldName,
@@ -220,6 +229,10 @@ export type UseFormMethods<TFieldValues extends FieldValues = FieldValues> = {
     names: string[],
     defaultValues?: UnpackNestedValue<DeepPartial<TFieldValues>>,
   ): UnpackNestedValue<DeepPartial<TFieldValues>>;
+  watch(
+    callback: (value: UnpackNestedValue<TFieldValues>) => void,
+    defaultValues?: UnpackNestedValue<DeepPartial<TFieldValues>>,
+  ): void;
   setError(name: FieldName<TFieldValues>, error: ErrorOption): void;
   clearErrors(name?: FieldName<TFieldValues> | FieldName<TFieldValues>[]): void;
   setValue(
@@ -233,21 +246,12 @@ export type UseFormMethods<TFieldValues extends FieldValues = FieldValues> = {
     values?: UnpackNestedValue<DeepPartial<TFieldValues>>,
     omitResetState?: OmitResetState,
   ) => void;
-  getValues(): UnpackNestedValue<TFieldValues>;
-  getValues<TFieldName extends string, TFieldValue extends unknown>(
-    name: TFieldName,
-  ): TFieldName extends keyof TFieldValues
-    ? UnpackNestedValue<TFieldValues>[TFieldName]
-    : TFieldValue;
-  getValues<TFieldName extends keyof TFieldValues>(
-    names: TFieldName[],
-  ): UnpackNestedValue<Pick<TFieldValues, TFieldName>>;
   handleSubmit: <TSubmitFieldValues extends FieldValues = TFieldValues>(
     onValid: SubmitHandler<TSubmitFieldValues>,
     onInvalid?: SubmitErrorHandler<TFieldValues>,
   ) => (e?: React.BaseSyntheticEvent) => Promise<void>;
   control: Control<TFieldValues>;
-};
+} & UseFormCommonMethods<TFieldValues>;
 
 export type UseControllerMethods<
   TFieldValues extends FieldValues = FieldValues

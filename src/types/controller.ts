@@ -6,6 +6,7 @@ import {
   Control,
   InputState,
   PathFinder,
+  InternalFieldName,
 } from './';
 import { RegisterOptions } from './validator';
 
@@ -22,7 +23,7 @@ export type ControllerRenderProps<
   onBlur: () => void;
   value: any;
   name: FieldName<Control<TFieldValues>>;
-  ref: React.MutableRefObject<any>;
+  ref: React.Ref<any>;
 };
 
 export type UseControllerProps<
@@ -48,9 +49,9 @@ export type ControllerProps<TFieldValues extends FieldValues = FieldValues> = {
 } & UseControllerProps;
 
 export type ControllerEvent = {
-  type: string;
+  type?: string;
   target: {
-    value: string;
+    value?: string;
+    name: InternalFieldName;
   };
-  name: string;
 };
