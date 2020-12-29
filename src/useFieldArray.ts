@@ -124,7 +124,7 @@ export const useFieldArray = <
 
   const getFieldArrayValue = React.useCallback(
     () => get(fieldArrayValuesRef.current, name, []),
-    [],
+    [name],
   );
 
   const getCurrentFieldsValues = () =>
