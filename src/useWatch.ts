@@ -9,6 +9,7 @@ import {
   FieldValues,
   UnpackNestedValue,
   Control,
+  Path,
 } from './types';
 
 export function useWatch<TFieldValues extends FieldValues>(props: {
@@ -19,12 +20,12 @@ export function useWatch<
   TFieldValues extends FieldValues,
   TWatchFieldValue extends any
 >(props: {
-  name: string;
+  name: Path<TFieldValues>;
   defaultValue?: UnpackNestedValue<TWatchFieldValue>;
   control?: Control<TFieldValues>;
 }): UnpackNestedValue<TWatchFieldValue>;
 export function useWatch<TFieldValues extends FieldValues>(props: {
-  name: string[];
+  name: Path<TFieldValues>[];
   defaultValue?: UnpackNestedValue<DeepPartial<TFieldValues>>;
   control?: Control<TFieldValues>;
 }): UnpackNestedValue<DeepPartial<TFieldValues>>;
@@ -51,7 +52,7 @@ export function useWatch<TFieldValues>({
         ? name.reduce(
             (previous, inputName) => ({
               ...previous,
-              [inputName]: get(defaultValuesRef.current, inputName),
+              [inputName]: get(defaultValuesRef.current, inputName as string),
             }),
             {},
           )
@@ -75,7 +76,7 @@ export function useWatch<TFieldValues>({
         updateValue(
           isString(name) && name === inputName && !isUndefined(inputValue)
             ? inputValue
-            : watchInternal(name, defaultValue),
+            : watchInternal(name as string, defaultValue),
         );
       },
     });

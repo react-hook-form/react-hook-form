@@ -252,7 +252,7 @@ export type UseFormStateMethods<TFieldValues> = FormState<TFieldValues>;
 
 export type UseWatchProps<TFieldValues extends FieldValues = FieldValues> = {
   defaultValue?: unknown;
-  name?: string | string[];
+  name?: Path<TFieldValues> | Path<TFieldValues>[];
   control?: Control<TFieldValues>;
 };
 
