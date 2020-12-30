@@ -22,13 +22,11 @@ const Basic: React.FC = (props: any) => {
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
       <input
-        name="firstName"
         {...register('firstName', { required: true })}
         placeholder="firstName"
       />
       {errors.firstName && <p>firstName error</p>}
       <input
-        name="lastName"
         {...register('lastName', { required: true, maxLength: 5 })}
         placeholder="lastName"
       />

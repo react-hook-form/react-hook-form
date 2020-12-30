@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { NativeSyntheticEvent } from 'react-native';
 import { LiteralToPrimitive, DeepPartial, DeepMap, PathFinder } from './utils';
 import { Resolver } from './resolvers';
 import {
@@ -10,7 +11,7 @@ import {
 } from './fields';
 import { ErrorOption, FieldErrors } from './errors';
 import { RegisterOptions } from './validator';
-import { ControllerEvent, ControllerRenderProps } from './controller';
+import { ControllerEvent } from './controller';
 import { FieldArrayDefaultValues } from './fieldArray';
 import { SubjectType } from '../utils/Subject';
 
@@ -68,7 +69,7 @@ export type SetValueConfig = Partial<{
 }>;
 
 export type HandleChange = (
-  event: Event | ControllerEvent,
+  event: Event | NativeSyntheticEvent<any> | ControllerEvent,
 ) => Promise<void | boolean>;
 
 export type UseFormProps<
@@ -124,12 +125,6 @@ export type OmitResetState = Partial<{
   dirty: boolean;
 }>;
 
-export type UseWatchOptions<TFieldValues extends FieldValues = FieldValues> = {
-  defaultValue?: unknown;
-  name?: string | string[];
-  control?: Control<TFieldValues>;
-};
-
 export type SetFieldValue<TFieldValues> =
   | FieldValue<TFieldValues>
   | UnpackNestedValue<DeepPartial<TFieldValues>>
@@ -137,13 +132,6 @@ export type SetFieldValue<TFieldValues> =
   | undefined
   | null
   | boolean;
-
-export type InputState = {
-  invalid: boolean;
-  isTouched: boolean;
-  isDirty: boolean;
-  isValidating: boolean;
-};
 
 export type RegisterMethods = {
   onChange: HandleChange;
@@ -157,7 +145,7 @@ type UseFormCommonMethods<TFieldValues> = {
     name: PathFinder<TFieldValues>,
     options?: RegisterOptions,
   ) => RegisterMethods;
-  unregister(name: FieldName<TFieldValues> | FieldName<TFieldValues>[]): void;
+  unregister(name: PathFinder<TFieldValues> | PathFinder<TFieldValues>[]): void;
   getValues(): UnpackNestedValue<TFieldValues>;
   getValues<TFieldName extends string, TFieldValue extends unknown>(
     name: TFieldName,
@@ -176,7 +164,6 @@ export type Control<TFieldValues extends FieldValues = FieldValues> = {
   isFormDirty: (name?: string, data?: unknown[]) => boolean;
   fieldArrayDefaultValuesRef: FieldArrayDefaultValues;
   fieldArrayValuesRef: FieldArrayDefaultValues;
-  formState: FormState<TFieldValues>;
   formStateRef: React.MutableRefObject<FormState<TFieldValues>>;
   formStateSubjectRef: React.MutableRefObject<
     SubjectType<Partial<FormState<TFieldValues>>>
@@ -253,15 +240,20 @@ export type UseFormMethods<TFieldValues extends FieldValues = FieldValues> = {
   control: Control<TFieldValues>;
 } & UseFormCommonMethods<TFieldValues>;
 
-export type UseControllerMethods<
-  TFieldValues extends FieldValues = FieldValues
-> = {
-  field: ControllerRenderProps<TFieldValues>;
-  meta: InputState;
-};
-
 export type UseFormStateProps<TFieldValues> = {
   control: Control<TFieldValues>;
 };
 
 export type UseFormStateMethods<TFieldValues> = FormState<TFieldValues>;
+
+export type UseWatchProps<TFieldValues extends FieldValues = FieldValues> = {
+  defaultValue?: unknown;
+  name?: string | string[];
+  control?: Control<TFieldValues>;
+};
+
+export type FormProviderProps<
+  TFieldValues extends FieldValues = FieldValues
+> = {
+  children: React.ReactNode;
+} & UseFormMethods<TFieldValues>;

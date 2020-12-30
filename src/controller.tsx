@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { useController } from './useController';
 import { ControllerProps, FieldValues } from './types';
 

@@ -43,7 +43,7 @@ const ConditionalField: React.FC = () => {
         setResult(data);
       })}
     >
-      <select name="selectNumber" {...register('selectNumber', { required: true })}>
+      <select {...register('selectNumber', { required: true })}>
         <option value="">Select</option>
         <option value="1">1</option>
         <option value="2">2</option>
@@ -53,12 +53,10 @@ const ConditionalField: React.FC = () => {
       {selectNumber === '1' && (
         <>
           <input
-            name="firstName"
             {...register('firstName', { required: true })}
             placeholder="firstName"
           />
           <input
-            name="lastName"
             {...register('lastName', { required: true })}
             placeholder="lastName"
           />
@@ -69,13 +67,11 @@ const ConditionalField: React.FC = () => {
         <>
           <input
             type="number"
-            name="min"
             {...register('min', { required: true, min: 10 })}
             placeholder="min"
           />
           <input
             type="number"
-            name="max"
             {...register('max', { required: true, max: 20 })}
             placeholder="max"
           />
@@ -84,7 +80,7 @@ const ConditionalField: React.FC = () => {
 
       {selectNumber === '3' && (
         <>
-          <input name="notRequired" {...register('notRequired')} placeholder="notRequired" />
+          <input {...register('notRequired')} placeholder="notRequired" />
         </>
       )}
 

@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React from 'react';
 import { useForm, useFieldArray } from 'react-hook-form';
 
@@ -24,7 +25,6 @@ const WatchUseFieldArray: React.FC = (props: any) => {
     move,
     insert,
     remove,
-    // @ts-ignore
   } = useFieldArray<{ name: string }>({
     control,
     name: 'data',

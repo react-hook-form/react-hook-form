@@ -18,13 +18,13 @@ function TriggerValidation() {
 
   return (
     <>
-      <input name="test" {...register('test', { required: true })} />
+      <input {...register('test', { required: true })} />
       <div id="testError">{errors.test && 'required'}</div>
 
-      <input name="test1" {...register('test1', { required: true })} />
+      <input {...register('test1', { required: true })} />
       <div id="test1Error">{errors.test1 && 'required'}</div>
 
-      <input name="test2" {...register('test2', { required: true })} />
+      <input {...register('test2', { required: true })} />
       <div id="test2Error">{errors.test2 && 'required'}</div>
 
       <button id="single" type="button" onClick={() => trigger('test')}>

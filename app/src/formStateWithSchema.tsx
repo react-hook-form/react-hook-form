@@ -51,24 +51,20 @@ const FormStateWithSchema: React.FC = (props: any) => {
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
-      <input
-        name="firstName"
-        {...register('firstName')}
-        placeholder="firstName"
-      />
-      <input name="lastName" {...register('lastName')} placeholder="lastName" />
-      <select name="select" {...register('select')}>
+      <input {...register('firstName')} placeholder="firstName" />
+      <input {...register('lastName')} placeholder="lastName" />
+      <select {...register('select')}>
         <option value="">Select</option>
         <option value={1}>1</option>
         <option value={2}>1</option>
       </select>
       Radio1
-      <input type="radio" name="radio" {...register('radio')} value="1" />
+      <input type="radio" {...register('radio')} value="1" />
       Radio2
-      <input type="radio" name="radio" {...register('radio')} value="2" />
+      <input type="radio" {...register('radio')} value="2" />
       Radio3
-      <input type="radio" name="radio" {...register('radio')} value="3" />
-      <input type="checkbox" name="checkbox" {...register('checkbox')} />
+      <input type="radio" {...register('radio')} value="3" />
+      <input type="checkbox" {...register('checkbox')} />
       <button id="submit">Submit</button>
       <button type="button" onClick={() => reset()} id="resetForm">
         Reset

@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React from 'react';
 import {
   useForm,
@@ -18,7 +19,7 @@ const ConditionField = <T extends any[]>({
   index: number;
   fields: T;
 }) => {
-  const output = useWatch<any>({
+  const output = useWatch({
     name: 'data',
     control,
     defaultValue: fields,

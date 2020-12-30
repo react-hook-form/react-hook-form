@@ -63,56 +63,28 @@ const SetValue: React.FC = () => {
 
   return (
     <form onSubmit={handleSubmit(() => {})}>
-      <input
-        name="firstName"
-        {...register('firstName')}
-        placeholder="firstName"
-      />
+      <input {...register('firstName')} placeholder="firstName" />
       <input {...register('array.0')} placeholder="array[0]" />
       <input {...register('array.1')} placeholder="array[1]" />
       <input {...register('array.2')} placeholder="array[2]" />
+      <input {...register('object.firstName')} placeholder="object.firstName" />
+      <input {...register('object.lastName')} placeholder="object.lastName" />
       <input
-        name="object.firstName"
-        {...register('object.firstName')}
-        placeholder="object.firstName"
-      />
-      <input
-        name="object.lastName"
-        {...register('object.lastName')}
-        placeholder="object.lastName"
-      />
-      <input
-        name="object.middleName"
         {...register('object.middleName')}
         placeholder="object.middleName"
       />
-      <input name="age" type="number" {...register('age')} placeholder="age" />
-      <input name="radio" value="radio" type="radio" {...register('radio')} />
-      <input name="checkbox" type="checkbox" {...register('checkbox')} />
-      <input
-        name="checkboxArray"
-        type="checkbox"
-        value="1"
-        {...register('checkboxArray')}
-      />
-      <input
-        name="checkboxArray"
-        type="checkbox"
-        value="2"
-        {...register('checkboxArray')}
-      />
-      <input
-        name="checkboxArray"
-        type="checkbox"
-        value="3"
-        {...register('checkboxArray')}
-      />
-      <select name="select" {...register('select')}>
+      <input type="number" {...register('age')} placeholder="age" />
+      <input value="radio" type="radio" {...register('radio')} />
+      <input type="checkbox" {...register('checkbox')} />
+      <input type="checkbox" value="1" {...register('checkboxArray')} />
+      <input type="checkbox" value="2" {...register('checkboxArray')} />
+      <input type="checkbox" value="3" {...register('checkboxArray')} />
+      <select {...register('select')}>
         <option>Select</option>
         <option value="a">a</option>
         <option value="b">b</option>
       </select>
-      <select multiple name="multiple" {...register('multiple')}>
+      <select multiple {...register('multiple')}>
         <option>Select</option>
         <option value="a">a</option>
         <option value="b">b</option>
@@ -128,14 +100,12 @@ const SetValue: React.FC = () => {
       {errors.lastName && <p id="lastName">Last name error</p>}
 
       <input
-        name="trigger"
         {...register('trigger', { required: true })}
         placeholder="trigger"
       />
       {errors.trigger && <p id="trigger">Trigger error</p>}
 
       <input
-        name="nestedValue"
         {...register('nestedValue', { required: 'required' })}
         placeholder="nestedValue"
       />

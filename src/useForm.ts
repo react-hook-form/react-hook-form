@@ -35,6 +35,7 @@ import isRadioOrCheckboxFunction from './utils/isRadioOrCheckbox';
 import isWeb from './utils/isWeb';
 import isHTMLElement from './utils/isHTMLElement';
 import { EVENTS, UNDEFINED, VALIDATION_MODE } from './constants';
+import { NativeSyntheticEvent } from 'react-native';
 import {
   UseFormMethods,
   FieldValues,
@@ -474,7 +475,9 @@ export function useForm<
   }
 
   const handleChange = React.useCallback(
-    async (event: Event | ControllerEvent): Promise<void | boolean> => {
+    async (
+      event: Event | ControllerEvent | NativeSyntheticEvent<any>,
+    ): Promise<void | boolean> => {
       const {
         type,
         target,
@@ -756,8 +759,8 @@ export function useForm<
     }
   }
 
-  function unregister<TName extends string>(
-    name: PathFinder<TName> | PathFinder<TName>[],
+  function unregister(
+    name: PathFinder<TFieldValues> | PathFinder<TFieldValues>[],
   ): void {
     for (const fieldName of Array.isArray(name) ? name : [name]) {
       const field = fieldsRef.current[fieldName];
@@ -1079,16 +1082,10 @@ export function useForm<
     getValues: React.useCallback(getValues, []),
     register: React.useCallback(register, [defaultValuesRef.current]),
     unregister: React.useCallback(unregister, []),
-    formState: getProxyFormState<TFieldValues>(
-      isProxyEnabled,
-      formState,
-      readFormStateRef,
-    ),
   };
 
   return {
     watch,
-    // @ts-ignore
     control: React.useMemo(
       () => ({
         isWatchAllRef,
@@ -1112,6 +1109,11 @@ export function useForm<
         ...commonProps,
       }),
       [defaultValuesRef.current, watchInternal],
+    ),
+    formState: getProxyFormState<TFieldValues>(
+      isProxyEnabled,
+      formState,
+      readFormStateRef,
     ),
     trigger,
     setValue: React.useCallback(setValue, [setInternalValue, trigger]),

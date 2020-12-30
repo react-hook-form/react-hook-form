@@ -1,20 +1,19 @@
 import * as React from 'react';
 import {
-  UseFormMethods,
   FieldValues,
   FieldName,
   Control,
-  InputState,
   PathFinder,
   InternalFieldName,
 } from './';
 import { RegisterOptions } from './validator';
 
-export type FormProviderProps<
-  TFieldValues extends FieldValues = FieldValues
-> = {
-  children: React.ReactNode;
-} & UseFormMethods<TFieldValues>;
+export type ControllerMeta = {
+  invalid: boolean;
+  isTouched: boolean;
+  isDirty: boolean;
+  isValidating: boolean;
+};
 
 export type ControllerRenderProps<
   TFieldValues extends FieldValues = FieldValues
@@ -38,15 +37,23 @@ export type UseControllerProps<
   control?: Control<TFieldValues>;
 };
 
+export type UseControllerMethods<
+  TFieldValues extends FieldValues = FieldValues
+> = {
+  field: ControllerRenderProps<TFieldValues>;
+  meta: ControllerMeta;
+};
+
 export type ControllerProps<TFieldValues extends FieldValues = FieldValues> = {
   render: ({
     field,
     meta,
   }: {
     field: ControllerRenderProps<TFieldValues>;
-    meta: InputState;
+    meta: ControllerMeta;
   }) => React.ReactElement;
-} & UseControllerProps;
+  name: PathFinder<TFieldValues>;
+};
 
 export type ControllerEvent = {
   type?: string;

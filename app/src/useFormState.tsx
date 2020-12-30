@@ -59,69 +59,55 @@ export const UseFormState: React.FC = () => {
   return (
     <form onSubmit={handleSubmit(onValid)}>
       <input
-        name="nestItem.nest1"
         placeholder="nest.nest1"
         {...register('nestItem.nest1', { required: true })}
       />
       <input
-        name="arrayItem.0.test1"
         placeholder="arrayItem.0.test1"
         {...register('arrayItem.0.test1', { required: true })}
       />
       <input
-        name="firstName"
         {...register('firstName', { required: true })}
         placeholder="firstName"
       />
       <input
-        name="lastName"
         {...register('lastName', { required: true, maxLength: 5 })}
         placeholder="lastName"
       />
       <input
         type="number"
-        name="min"
         {...register('min', { min: 10 })}
         placeholder="min"
       />
       <input
         type="number"
-        name="max"
         {...register('max', { max: 20 })}
         placeholder="max"
       />
       <input
         type="date"
-        name="minDate"
         {...register('minDate', { min: '2019-08-01' })}
         placeholder="minDate"
       />
       <input
         type="date"
-        name="maxDate"
         {...register('maxDate', { max: '2019-08-01' })}
         placeholder="maxDate"
       />
       <input
-        name="minLength"
         {...register('minLength', { minLength: 2 })}
         placeholder="minLength"
       />
       <input
-        name="minRequiredLength"
         {...register('minRequiredLength', { minLength: 2, required: true })}
         placeholder="minRequiredLength"
       />
-      <select
-        name="selectNumber"
-        {...register('selectNumber', { required: true })}
-      >
+      <select {...register('selectNumber', { required: true })}>
         <option value="">Select</option>
         <option value={1}>1</option>
         <option value={2}>1</option>
       </select>
       <input
-        name="pattern"
         {...register('pattern', { pattern: /\d+/ })}
         placeholder="pattern"
       />

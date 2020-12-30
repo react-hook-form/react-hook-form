@@ -35,7 +35,6 @@ const ValidateFieldCriteria: React.FC = () => {
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
       <input
-        name="firstName"
         {...register('firstName', { required: true, minLength: 4 })}
         placeholder="firstName"
       />
@@ -56,7 +55,6 @@ const ValidateFieldCriteria: React.FC = () => {
 
       <input
         type="number"
-        name="min"
         {...register('min', { required: true, min: 10, max: 30 })}
         placeholder="min"
       />
@@ -67,7 +65,6 @@ const ValidateFieldCriteria: React.FC = () => {
       {errors.min && errors.min.types && errors.min.types.max && <p>min max</p>}
       <input
         type="date"
-        name="minDate"
         {...register('minDate', { required: true, min: '2019-08-01' })}
         placeholder="minDate"
       />
@@ -79,7 +76,6 @@ const ValidateFieldCriteria: React.FC = () => {
       )}
       <input
         type="date"
-        name="maxDate"
         {...register('maxDate', { required: true, max: '2019-08-01' })}
         placeholder="maxDate"
       />
@@ -90,7 +86,6 @@ const ValidateFieldCriteria: React.FC = () => {
         <p>maxDate max</p>
       )}
       <input
-        name="minLength"
         {...register('minLength', { required: true, minLength: 2 })}
         placeholder="minLength"
       />
@@ -100,10 +95,7 @@ const ValidateFieldCriteria: React.FC = () => {
       {errors.minLength &&
         errors.minLength.types &&
         errors.minLength.types.minLength && <p>minLength minLength</p>}
-      <select
-        name="selectNumber"
-        {...register('selectNumber', { required: true, minLength: 2 })}
-      >
+      <select {...register('selectNumber', { required: true, minLength: 2 })}>
         <option value="">Select</option>
         <option value="1">1</option>
         <option value="12">2</option>
@@ -115,7 +107,6 @@ const ValidateFieldCriteria: React.FC = () => {
         errors.selectNumber.types &&
         errors.selectNumber.types.minLength && <p>selectNumber minLength</p>}
       <input
-        name="pattern"
         {...register('pattern', {
           pattern: /\d+/,
           required: true,
@@ -133,7 +124,6 @@ const ValidateFieldCriteria: React.FC = () => {
         errors.pattern.types &&
         errors.pattern.types.minLength && <p>pattern minLength</p>}
       <select
-        name="multiple"
         multiple
         {...register('multiple', {
           required: true,
@@ -150,7 +140,6 @@ const ValidateFieldCriteria: React.FC = () => {
         errors.multiple.types &&
         errors.multiple.types.validate && <p>multiple validate</p>}
       <input
-        name="validate"
         type="validate"
         placeholder="validate"
         {...register('validate', {

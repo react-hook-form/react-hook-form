@@ -59,50 +59,29 @@ const IsValid: React.FC = (props: any) => {
     <form onSubmit={handleSubmit(() => {})}>
       {isBuildInValidation ? (
         <>
+          <input {...register('location')} placeholder="location" />
           <input
-            name="location"
-            {...register('location')}
-            placeholder="location"
-          />
-          <input
-            name="firstName"
             {...register('firstName', { required: true })}
             placeholder="firstName"
           />
           <input
-            name="lastName"
             {...register('lastName', { required: true })}
             placeholder="lastName"
           />
           {!show && (
             <input
-              name="hidden"
               {...register('hidden', { required: true })}
               placeholder="hidden"
             />
           )}
-          <input name="age" {...register('age')} placeholder="age" />
+          <input {...register('age')} placeholder="age" />
         </>
       ) : (
         <>
-          <input
-            name="location"
-            {...register('location')}
-            placeholder="location"
-          />
-          {show && (
-            <input
-              name="firstName"
-              {...register('firstName')}
-              placeholder="firstName"
-            />
-          )}
-          <input
-            name="lastName"
-            {...register('lastName')}
-            placeholder="lastName"
-          />
-          <input name="age" {...register('age')} placeholder="age" />
+          <input {...register('location')} placeholder="location" />
+          {show && <input {...register('firstName')} placeholder="firstName" />}
+          <input {...register('lastName')} placeholder="lastName" />
+          <input {...register('age')} placeholder="age" />
         </>
       )}
       <div id="isValid">{JSON.stringify(isValid)}</div>

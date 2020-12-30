@@ -26,15 +26,12 @@ function DefaultValues() {
 
   return (
     <form>
-      <input name="test" {...register('test')} />
-      <input name="test1.firstName" {...register('test1.firstName')} />
-      <input name="test1.deep.nest" {...register('test1.deep.nest')} />
-      <input
-        name="test1.deep.nest"
-        {...register('test1.deep.nest')}
-      />
-      <input name="test1.lastName.0" {...register('test1.lastName.0')} />
-      <input name="test1.lastName.1" {...register('test1.lastName.1')} />
+      <input {...register('test')} />
+      <input {...register('test1.firstName')} />
+      <input {...register('test1.deep.nest')} />
+      <input {...register('test1.deep.nest')} />
+      <input {...register('test1.lastName.0')} />
+      <input {...register('test1.lastName.1')} />
     </form>
   );
 }

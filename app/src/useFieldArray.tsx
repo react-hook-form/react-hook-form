@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React from 'react';
 import { useForm, useFieldArray, Controller } from 'react-hook-form';
 
@@ -21,19 +22,12 @@ const UseFieldArray: React.FC = (props: any) => {
       : {}),
     mode: props.match.params.mode === 'formState' ? 'onChange' : 'onSubmit',
   });
-  const {
-    fields,
-    append,
-    prepend,
-    swap,
-    move,
-    insert,
-    remove,
-    // @ts-ignore
-  } = useFieldArray<{ name: string }>({
-    control,
-    name: 'data',
-  });
+  const { fields, append, prepend, swap, move, insert, remove } = useFieldArray(
+    {
+      control,
+      name: 'data',
+    },
+  );
   const [data, setData] = React.useState([]);
   const onSubmit = (data: any) => {
     setData(data);

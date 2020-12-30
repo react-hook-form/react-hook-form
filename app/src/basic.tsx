@@ -42,7 +42,6 @@ const Basic: React.FC = (props: any) => {
   return (
     <form onSubmit={handleSubmit(onValid, onInvalid)}>
       <input
-        name="nestItem.nest1"
         placeholder="nest.nest1"
         {...register('nestItem.nest1', { required: true })}
       />
@@ -54,53 +53,45 @@ const Basic: React.FC = (props: any) => {
       />
       {errors.arrayItem?.[0]?.test1 && <p>array item 1 error</p>}
       <input
-        name="firstName"
         {...register('firstName', { required: true })}
         placeholder="firstName"
       />
       {errors.firstName && <p>firstName error</p>}
       <input
-        name="lastName"
         {...register('lastName', { required: true, maxLength: 5 })}
         placeholder="lastName"
       />
       {errors.lastName && <p>lastName error</p>}
       <input
         type="number"
-        name="min"
         {...register('min', { min: 10 })}
         placeholder="min"
       />
       {errors.min && <p>min error</p>}
       <input
         type="number"
-        name="max"
         {...register('max', { max: 20 })}
         placeholder="max"
       />
       {errors.max && <p>max error</p>}
       <input
         type="date"
-        name="minDate"
         {...register('minDate', { min: '2019-08-01' })}
         placeholder="minDate"
       />
       {errors.minDate && <p>minDate error</p>}
       <input
         type="date"
-        name="maxDate"
         {...register('maxDate', { max: '2019-08-01' })}
         placeholder="maxDate"
       />
       {errors.maxDate && <p>maxDate error</p>}
       <input
-        name="minLength"
         {...register('minLength', { minLength: 2 })}
         placeholder="minLength"
       />
       {errors.minLength && <p>minLength error</p>}
       <input
-        name="minRequiredLength"
         {...register('minRequiredLength', { minLength: 2, required: true })}
         placeholder="minRequiredLength"
       />
@@ -117,13 +108,12 @@ const Basic: React.FC = (props: any) => {
       />
       {errors.pattern && <p>pattern error</p>}
       Radio1
-      <input type="radio" name="radio" {...register('radio')} value="1" />
+      <input type="radio" {...register('radio')} value="1" />
       Radio2
-      <input type="radio" name="radio" value="2" {...register('radio')} />
+      <input type="radio" value="2" {...register('radio')} />
       Radio3
       <input
         type="radio"
-        name="radio"
         value="3"
         {...register('radio', { required: true })}
       />
@@ -132,19 +122,16 @@ const Basic: React.FC = (props: any) => {
       {errors.checkbox && <p>checkbox error</p>}
       <input
         type="checkbox"
-        name="checkboxArray"
         value="1"
         {...register('checkboxArray' as any, { required: true })}
       />
       <input
         type="checkbox"
-        name="checkboxArray"
         value="2"
         {...register('checkboxArray' as any, { required: true })}
       />
       <input
         type="checkbox"
-        name="checkboxArray"
         value="3"
         {...register('checkboxArray' as any, { required: true })}
       />
@@ -155,7 +142,6 @@ const Basic: React.FC = (props: any) => {
       </select>
       {errors.multiple && <p>multiple error</p>}
       <input
-        name="validate"
         type="validate"
         placeholder="validate"
         {...register('validate', {

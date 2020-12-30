@@ -19,11 +19,11 @@ function Reset() {
   }>();
   return (
     <>
-      <input name="firstName" {...register('firstName')} />
-      <input name="array.1" {...register('array.1')} />
-      <input name="objectData.test" {...register('objectData.test')} />
-      <input name="lastName" {...register('lastName')} />
-      <input name="deepNest.level1.level2.data" {...register('deepNest.level1.level2.data')} />
+      <input {...register('firstName')} />
+      <input {...register('array.1')} />
+      <input {...register('objectData.test')} />
+      <input {...register('lastName')} />
+      <input {...register('deepNest.level1.level2.data')} />
       <button
         type="button"
         onClick={() =>

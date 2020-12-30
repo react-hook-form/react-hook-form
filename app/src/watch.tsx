@@ -21,11 +21,7 @@ const Watch: React.FC = () => {
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
-      <input
-        name="testSingle"
-        {...register('testSingle')}
-        placeholder="testSingle"
-      />
+      <input {...register('testSingle')} placeholder="testSingle" />
       {testSingle === 'testSingle' && (
         <div id="HideTestSingle">Hide Content TestSingle</div>
       )}
@@ -34,22 +30,20 @@ const Watch: React.FC = () => {
       <input {...register('test.1')} placeholder="test[1]" />
 
       <div id="testData">{JSON.stringify(test)}</div>
-        <div id="testArray">{JSON.stringify(testArray)}</div>
+      <div id="testArray">{JSON.stringify(testArray)}</div>
 
       <input
-        name="testObject.firstName"
         {...register('testObject.firstName')}
         placeholder="testObject.firstName"
       />
       <input
-        name="testObject.lastName"
         {...register('testObject.lastName')}
         placeholder="testObject.lastName"
       />
 
       <div id="testObject">{JSON.stringify(testObject)}</div>
 
-      <input type="checkbox" name="toggle" {...register('toggle')} />
+      <input type="checkbox" {...register('toggle')} />
       {toggle && <div id="hideContent">Hide Content</div>}
 
       <div id="watchAll">{JSON.stringify(watchAll)}</div>

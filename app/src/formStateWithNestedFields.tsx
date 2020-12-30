@@ -50,12 +50,10 @@ const FormStateWithNestedFields: React.FC = (props: any) => {
         <div style={{ display: 'flex', flexDirection: 'column' }}>
           <h4>Left</h4>
           <input
-            name="left.1"
             {...register('left.test1', { required: true })}
             placeholder="firstName"
           />
           <input
-            name="left.2"
             {...register('left.test2', { required: true })}
             placeholder="lastName"
           />
@@ -67,7 +65,6 @@ const FormStateWithNestedFields: React.FC = (props: any) => {
             placeholder="firstName"
           />
           <input
-            name="right.2"
             {...register('right.test2', { required: false })}
             placeholder="lastName"
           />

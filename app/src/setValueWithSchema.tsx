@@ -74,7 +74,6 @@ const SetValueWithSchema: React.FC = () => {
       />
 
       <input
-        name="requiredField"
         placeholder="requiredField"
         {...register('requiredField')}
       />

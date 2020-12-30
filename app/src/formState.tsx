@@ -50,12 +50,10 @@ const FormState = (props: {
   return (
     <form onSubmit={handleSubmit(() => {})}>
       <input
-        name="firstName"
         {...register('firstName', { required: true })}
         placeholder="firstName"
       />
       <input
-        name="lastName"
         {...register('lastName', { required: true })}
         placeholder="lastName"
       />
@@ -71,21 +69,17 @@ const FormState = (props: {
           dirty: Object.keys(dirty),
         })}
       </div>
-      <select name="select" {...register('select')} defaultValue="test">
+      <select {...register('select')} defaultValue="test">
         <option value="">Select</option>
         <option value="test">test</option>
         <option value="test1">test1</option>
         <option value="test2">test3</option>
       </select>
 
-      <input type="radio" name="radio" {...register('radio')} />
+      <input type="radio" {...register('radio')} />
 
-      <input type="checkbox" name="checkbox" {...register('checkbox')} />
-      <input
-        type="checkbox"
-        name="checkbox-checked"
-        {...register('checkbox-checked')}
-      />
+      <input type="checkbox" {...register('checkbox')} />
+      <input type="checkbox" {...register('checkbox-checked')} />
       <button id="submit">Submit</button>
       <button type="button" onClick={() => reset()} id="resetForm">
         Reset
