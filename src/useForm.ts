@@ -67,6 +67,8 @@ import {
   RegisterMethods,
   PathFinder,
   ControllerEvent,
+  Path,
+  WatchCallback,
 } from './types';
 
 const isWindowUndefined = typeof window === UNDEFINED;
@@ -723,29 +725,24 @@ export function useForm<
   );
 
   function watch(): UnpackNestedValue<TFieldValues>;
-  function watch<
-    TFieldName extends string,
-    TFieldValue extends TFieldValues[TFieldName]
-  >(
+  function watch<TFieldName extends Path<TFieldValues>>(
     name: TFieldName,
-    defaultValue?: UnpackNestedValue<LiteralToPrimitive<TFieldValue>>,
-  ): UnpackNestedValue<LiteralToPrimitive<TFieldValue>>;
-  function watch<TFieldName extends keyof TFieldValues>(
-    names: TFieldName[],
-    defaultValues?: UnpackNestedValue<
-      DeepPartial<Pick<TFieldValues, TFieldName>>
-    >,
-  ): UnpackNestedValue<Pick<TFieldValues, TFieldName>>;
+    defaultValue?: TFieldName extends keyof TFieldValues
+      ? UnpackNestedValue<TFieldValues[TFieldName]>
+      : UnpackNestedValue<LiteralToPrimitive<TFieldName>>,
+  ): TFieldName extends keyof TFieldValues
+    ? UnpackNestedValue<TFieldValues[TFieldName]>
+    : UnpackNestedValue<LiteralToPrimitive<TFieldName>>;
   function watch(
-    names: string[],
+    names: Path<TFieldValues>[],
     defaultValues?: UnpackNestedValue<DeepPartial<TFieldValues>>,
   ): UnpackNestedValue<DeepPartial<TFieldValues>>;
   function watch(
-    callback: (value: UnpackNestedValue<TFieldValues>) => void,
+    callback: WatchCallback,
     defaultValues?: UnpackNestedValue<DeepPartial<TFieldValues>>,
   ): void;
   function watch(
-    watchField?: string | string[] | Function,
+    watchField?: Path<TFieldValues> | Path<TFieldValues>[] | WatchCallback,
     defaultValue?: unknown,
   ): unknown | void {
     if (isFunction(watchField)) {
@@ -755,7 +752,7 @@ export function useForm<
       return;
     } else {
       isWatchAllRef.current = isUndefined(watchField);
-      return watchInternal(watchField, defaultValue, true);
+      return watchInternal(watchField as string | string[], defaultValue, true);
     }
   }
 

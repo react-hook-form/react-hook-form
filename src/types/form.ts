@@ -1,6 +1,12 @@
 import * as React from 'react';
 import { NativeSyntheticEvent } from 'react-native';
-import { LiteralToPrimitive, DeepPartial, DeepMap, PathFinder } from './utils';
+import {
+  LiteralToPrimitive,
+  DeepPartial,
+  DeepMap,
+  PathFinder,
+  Path,
+} from './utils';
 import { Resolver } from './resolvers';
 import {
   FieldName,
@@ -196,28 +202,26 @@ export type Control<TFieldValues extends FieldValues = FieldValues> = {
   ) => unknown;
 } & UseFormCommonMethods<TFieldValues>;
 
+export type WatchCallback = <TFieldValues>(
+  value: UnpackNestedValue<TFieldValues>,
+) => void;
+
 export type UseFormMethods<TFieldValues extends FieldValues = FieldValues> = {
   watch(): UnpackNestedValue<TFieldValues>;
-  watch<TFieldName extends string, TFieldValue>(
+  watch<TFieldName extends Path<TFieldValues>>(
     name: TFieldName,
     defaultValue?: TFieldName extends keyof TFieldValues
       ? UnpackNestedValue<TFieldValues[TFieldName]>
-      : UnpackNestedValue<LiteralToPrimitive<TFieldValue>>,
+      : UnpackNestedValue<LiteralToPrimitive<TFieldName>>,
   ): TFieldName extends keyof TFieldValues
     ? UnpackNestedValue<TFieldValues[TFieldName]>
-    : UnpackNestedValue<LiteralToPrimitive<TFieldValue>>;
-  watch<TFieldName extends keyof TFieldValues>(
-    names: TFieldName[],
-    defaultValues?: UnpackNestedValue<
-      DeepPartial<Pick<TFieldValues, TFieldName>>
-    >,
-  ): UnpackNestedValue<Pick<TFieldValues, TFieldName>>;
+    : UnpackNestedValue<LiteralToPrimitive<TFieldName>>;
   watch(
-    names: string[],
+    names: Path<TFieldValues>[],
     defaultValues?: UnpackNestedValue<DeepPartial<TFieldValues>>,
   ): UnpackNestedValue<DeepPartial<TFieldValues>>;
   watch(
-    callback: (value: UnpackNestedValue<TFieldValues>) => void,
+    callback: WatchCallback,
     defaultValues?: UnpackNestedValue<DeepPartial<TFieldValues>>,
   ): void;
   setError(name: FieldName<TFieldValues>, error: ErrorOption): void;

@@ -104,3 +104,33 @@ export type PathFinder<
     ? `${Key}.${PathFinder<TFieldValues[Key]>}`
     : Key
   : never;
+
+type GenerateArrayKeyType<T extends string, K extends number> = `${T}.${K}`;
+
+type PathImpl<T, Key extends keyof T> = Key extends string
+  ? T[Key] extends readonly unknown[]
+    ? GenerateArrayKeyType<Key, Indexes>
+    : T[Key] extends Record<string, any>
+    ? // | `${Key}.${PathImpl<T[Key], Exclude<keyof T[Key], keyof any[]>> &
+      //     string}`
+      `${Key}.${Exclude<keyof T[Key], keyof any[]> & string}`
+    : never
+  : never;
+
+type PathImpl2<T> = PathImpl<T, keyof T> | keyof T;
+
+export type Path<T> = PathImpl2<T> extends string | keyof T
+  ? PathImpl2<T>
+  : keyof T;
+
+// export type PathValue<T, P extends Path<T>> = P extends `${infer Key}.${infer Rest}`
+//   ? Key extends keyof T
+//     ? Rest extends Path<T[Key]>
+//       ? PathValue<T[Key], Rest>
+//       : T[Key] extends (infer U)[]
+//       ? U
+//       : never
+//     : never
+//   : P extends keyof T
+//   ? T[P]
+//   : never;
