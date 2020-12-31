@@ -53,6 +53,20 @@ export function useController<TFieldValues extends FieldValues = FieldValues>({
   });
 
   React.useEffect(() => {
+    if (process.env.NODE_ENV !== 'production') {
+      if (!(name as string)) {
+        return console.warn(
+          '📋 Field is missing `name` prop. https://react-hook-form.com/api#Controller',
+        );
+      }
+
+      if (isUndefined(value)) {
+        console.warn(
+          `📋 ${name} is missing in the 'defaultValue' prop of either its Controller (https://react-hook-form.com/api#Controller) or useForm (https://react-hook-form.com/api#useForm)`,
+        );
+      }
+    }
+
     fieldsRef.current[name]!.value = getInitialValue();
     const tearDown = controllerSubjectRef.current.subscribe({
       next: (values) => setInputStateValue(get(values, name, '')),

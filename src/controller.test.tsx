@@ -19,7 +19,20 @@ const Input = ({ onChange, onBlur, placeholder }: any) => (
   />
 );
 
+let nodeEnv: string | undefined;
+
 describe('Controller', () => {
+  beforeEach(() => {
+    nodeEnv = process.env.NODE_ENV;
+    process.env.NODE_ENV = 'production';
+  });
+
+  afterEach(() => {
+    jest.resetAllMocks();
+    jest.restoreAllMocks();
+    process.env.NODE_ENV = nodeEnv;
+  });
+
   it('should render correctly with as with string', () => {
     const Component = () => {
       const { control } = useForm();
@@ -74,7 +87,14 @@ describe('Controller', () => {
             render={({ field }) => <input {...field} />}
             control={control}
           />
-          <button type="button" onClick={() => reset()}>
+          <button
+            type="button"
+            onClick={() =>
+              reset({
+                test: 'default',
+              })
+            }
+          >
             reset
           </button>
         </>
@@ -495,7 +515,6 @@ describe('Controller', () => {
     it('should throw custom error if control is undefined in development environment', () => {
       jest.spyOn(console, 'error').mockImplementation(() => {});
 
-      const env = process.env.NODE_ENV;
       process.env.NODE_ENV = 'development';
 
       const Component = () => {
@@ -511,17 +530,11 @@ describe('Controller', () => {
       expect(() => render(<Component />)).toThrow(
         '📋 Controller is missing `control` prop.',
       );
-
-      process.env.NODE_ENV = env;
-
-      // @ts-ignore
-      console.error.mockRestore();
     });
 
     it('should throw TypeError if control is undefined in production environment', () => {
       jest.spyOn(console, 'error').mockImplementation(() => {});
 
-      const env = process.env.NODE_ENV;
       process.env.NODE_ENV = 'production';
 
       const Component = () => {
@@ -537,17 +550,11 @@ describe('Controller', () => {
       expect(() => render(<Component />)).toThrow(
         "Cannot read property 'control' of null",
       );
-
-      process.env.NODE_ENV = env;
-
-      // @ts-ignore
-      console.error.mockRestore();
     });
 
     it('should output error message if name is empty string in development environment', () => {
       jest.spyOn(console, 'warn').mockImplementation(() => {});
 
-      const env = process.env.NODE_ENV;
       process.env.NODE_ENV = 'development';
 
       const Component = () => {
@@ -564,18 +571,12 @@ describe('Controller', () => {
 
       render(<Component />);
 
-      expect(console.warn).toBeCalledTimes(2);
-
-      process.env.NODE_ENV = env;
-
-      // @ts-ignore
-      console.warn.mockRestore();
+      expect(console.warn).toBeCalledTimes(1);
     });
 
     it('should not output error message if name is empty string in production environment', () => {
       jest.spyOn(console, 'warn').mockImplementation(() => {});
 
-      const env = process.env.NODE_ENV;
       process.env.NODE_ENV = 'production';
 
       const Component = () => {
@@ -593,17 +594,11 @@ describe('Controller', () => {
       render(<Component />);
 
       expect(console.warn).not.toBeCalled();
-
-      process.env.NODE_ENV = env;
-
-      // @ts-ignore
-      console.warn.mockRestore();
     });
 
     it('should output error message if defaultValue is undefined in development environment', () => {
       jest.spyOn(console, 'warn').mockImplementation(() => {});
 
-      const env = process.env.NODE_ENV;
       process.env.NODE_ENV = 'development';
 
       const Component = () => {
@@ -620,17 +615,11 @@ describe('Controller', () => {
       render(<Component />);
 
       expect(console.warn).toBeCalledTimes(1);
-
-      process.env.NODE_ENV = env;
-
-      // @ts-ignore
-      console.warn.mockRestore();
     });
 
     it('should not output error message if defaultValue is undefined in production environment', () => {
       jest.spyOn(console, 'warn').mockImplementation(() => {});
 
-      const env = process.env.NODE_ENV;
       process.env.NODE_ENV = 'production';
 
       const Component = () => {
@@ -647,17 +636,11 @@ describe('Controller', () => {
       render(<Component />);
 
       expect(console.warn).not.toBeCalled();
-
-      process.env.NODE_ENV = env;
-
-      // @ts-ignore
-      console.warn.mockRestore();
     });
 
     it('should not output error message if as and render props are given in production environment', () => {
       jest.spyOn(console, 'warn').mockImplementation(() => {});
 
-      const env = process.env.NODE_ENV;
       process.env.NODE_ENV = 'production';
 
       const Component = () => {
@@ -676,17 +659,11 @@ describe('Controller', () => {
       render(<Component />);
 
       expect(console.warn).not.toBeCalled();
-
-      process.env.NODE_ENV = env;
-
-      // @ts-ignore
-      console.warn.mockRestore();
     });
 
     it('should not output error message if as and render props are not given in production environment', () => {
       jest.spyOn(console, 'warn').mockImplementation(() => {});
 
-      const env = process.env.NODE_ENV;
       process.env.NODE_ENV = 'production';
 
       const Component = () => {
@@ -704,17 +681,11 @@ describe('Controller', () => {
       render(<Component />);
 
       expect(console.warn).not.toBeCalled();
-
-      process.env.NODE_ENV = env;
-
-      // @ts-ignore
-      console.warn.mockRestore();
     });
 
-    it('should warn the user when defaultValue is missing with useFieldArray in development environment', () => {
+    it.skip('should warn the user when defaultValue is missing with useFieldArray in development environment', () => {
       jest.spyOn(console, 'warn').mockImplementation(() => {});
 
-      const env = process.env.NODE_ENV;
       process.env.NODE_ENV = 'development';
 
       const Component = () => {
@@ -747,17 +718,11 @@ describe('Controller', () => {
       render(<Component />);
 
       expect(console.warn).toBeCalledTimes(1);
-
-      process.env.NODE_ENV = env;
-
-      // @ts-ignore
-      console.warn.mockRestore();
     });
 
     it('should not warn the user when defaultValue is missing with useFieldArray in production environment', () => {
       jest.spyOn(console, 'warn').mockImplementation(() => {});
 
-      const env = process.env.NODE_ENV;
       process.env.NODE_ENV = 'production';
 
       const Component = () => {
@@ -790,11 +755,6 @@ describe('Controller', () => {
       render(<Component />);
 
       expect(console.warn).not.toBeCalled();
-
-      process.env.NODE_ENV = env;
-
-      // @ts-ignore
-      console.warn.mockRestore();
     });
   });
 

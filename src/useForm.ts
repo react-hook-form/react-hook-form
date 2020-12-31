@@ -820,8 +820,8 @@ export function useForm<
       ? {
           ...field,
           refs: [
-            ...compact(field.refs || []).filter((ref) =>
-              document.contains(ref),
+            ...compact(field.refs || []).filter(
+              (ref) => isHTMLElement(ref) && document.contains(ref),
             ),
             ref,
           ],
@@ -844,7 +844,9 @@ export function useForm<
       }
     }
 
-    fieldsRef.current[name]!.value = getFieldValue(fieldsRef.current[name]);
+    if (isUndefined(fieldsRef.current[name]!.value)) {
+      fieldsRef.current[name]!.value = getFieldValue(fieldsRef.current[name]);
+    }
 
     if (options) {
       set(fieldsWithValidationRef.current, name, true);

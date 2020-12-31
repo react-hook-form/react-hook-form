@@ -19,6 +19,7 @@ import {
 } from './types';
 import { perf, wait, PerfTools } from 'react-performance-testing';
 import 'jest-performance-testing';
+import isFunction from './utils/isFunction';
 
 let nodeEnv: string | undefined;
 
@@ -60,12 +61,12 @@ describe('useForm', () => {
 
       const { ref } = result.current.register('test');
 
-      // @ts-ignore
-      ref({
-        target: {
-          value: 'testData',
-        },
-      });
+      isFunction(ref) &&
+        ref({
+          target: {
+            value: 'testData',
+          },
+        });
 
       await act(async () => {
         await result.current.handleSubmit((data) => {
@@ -538,17 +539,18 @@ describe('useForm', () => {
       });
 
       const { ref } = result.current.register('test');
-      // @ts-ignore
-      ref({
-        name: 'test',
-        value: 'data1',
-      });
+      isFunction(ref) &&
+        ref({
+          name: 'test',
+          value: 'data1',
+        });
+
       const { ref: ref1 } = result.current.register('test1');
-      // @ts-ignore
-      ref1({
-        name: 'test1',
-        value: 'data2',
-      });
+      isFunction(ref1) &&
+        ref1({
+          name: 'test1',
+          value: 'data2',
+        });
 
       expect(result.current.watch(['test', 'test1'])).toEqual({
         test: 'data1',
@@ -846,8 +848,29 @@ describe('useForm', () => {
     it('should set value of multiple checkbox input correctly', async () => {
       const { result } = renderHook(() => useForm<{ test: string }>());
 
-      result.current.register('test');
-      result.current.setValue('test', '1');
+      const { ref } = result.current.register('test');
+
+      const elm = document.createElement('input');
+      elm.type = 'checkbox';
+      elm.name = 'test';
+      elm.value = '2';
+
+      document.body.append(elm);
+      // @ts-ignore
+      ref(elm);
+
+      const { ref: ref1 } = result.current.register('test');
+
+      const elm1 = document.createElement('input');
+      elm1.type = 'checkbox';
+      elm1.name = 'test';
+      elm1.value = '1';
+
+      document.body.append(elm1);
+      // @ts-ignore
+      ref1(elm1);
+
+      result.current.setValue('test', ['1']);
 
       await act(async () => {
         await result.current.handleSubmit((data) => {
@@ -883,8 +906,9 @@ describe('useForm', () => {
 
       screen
         .getAllByRole('checkbox')
-        // @ts-ignore
-        .forEach((checkbox) => expect(checkbox.checked).toBeTruthy());
+        .forEach((checkbox) =>
+          expect((checkbox as HTMLInputElement).checked).toBeTruthy(),
+        );
     });
 
     it('should set value of single checkbox input correctly', async () => {
@@ -3254,7 +3278,7 @@ describe('useForm', () => {
       expect(result.current.control.updateIsValid).toBeDefined();
     });
 
-    it('should be called resolver with default values if default value is defined', async () => {
+    it.only('should be called resolver with default values if default value is defined', async () => {
       let resolverData: any;
       const resolver = async (data: any) => {
         resolverData = data;
@@ -3271,7 +3295,14 @@ describe('useForm', () => {
         }),
       );
 
-      result.current.register('test');
+      const { ref } = result.current.register('test');
+
+      isFunction(ref) &&
+        ref({
+          target: {
+            value: '',
+          },
+        });
 
       await act(async () => {
         await result.current.control.updateIsValid({});

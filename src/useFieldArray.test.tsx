@@ -49,7 +49,7 @@ describe('useFieldArray', () => {
       const { result } = renderHook(() => {
         const { control } = useForm();
         return useFieldArray({
-          control: control,
+          control,
           name: 'test',
         });
       });
@@ -86,7 +86,7 @@ describe('useFieldArray', () => {
     });
   });
 
-  describe('with should unregister false', () => {
+  describe.only('with should unregister false', () => {
     it('should still remain input value with toggle', () => {
       const Component = () => {
         const { register, control } = useForm<{
@@ -106,8 +106,7 @@ describe('useFieldArray', () => {
               fields.map((field, i) => (
                 <input
                   key={field.id}
-                  name={`test[${i}].value`}
-                  ref={register()}
+                  {...register(`test[${i}].value`)}
                   defaultValue={field.value}
                 />
               ))}
@@ -154,11 +153,7 @@ describe('useFieldArray', () => {
         return (
           <form>
             {fields.map((field, i) => (
-              <input
-                key={field.id}
-                name={`test[${i}].value`}
-                ref={register()}
-              />
+              <input key={field.id} {...register(`test[${i}].value`)} />
             ))}
             <button type="button" onClick={() => append({})}>
               append
@@ -269,7 +264,7 @@ describe('useFieldArray', () => {
           return (
             <form>
               {fields.map((field, i) => (
-                <input key={field.id} name={`${name}[${i}]`} ref={register()} />
+                <input key={field.id} {...register(`${name}[${i}]`)} />
               ))}
               <button type="button" onClick={() => append({})}>
                 append
@@ -303,11 +298,7 @@ describe('useFieldArray', () => {
           return (
             <form>
               {fields.map((field, i) => (
-                <input
-                  key={field.id}
-                  name={`${name}[${i}].${key}`}
-                  ref={register()}
-                />
+                <input key={field.id} {...register(`${name}[${i}].${key}`)} />
               ))}
               <button type="button" onClick={() => append({})}>
                 append
@@ -336,7 +327,7 @@ describe('useFieldArray', () => {
         return (
           <form>
             {fields.map((field, i) => (
-              <input key={field.id} name={`test[${i}]`} ref={register()} />
+              <input key={field.id} {...register(`test[${i}]`)} />
             ))}
             <button type="button" onClick={() => append({})}>
               append
@@ -425,8 +416,7 @@ describe('useFieldArray', () => {
             {fields.map((item, i) => (
               <input
                 key={item.id}
-                name={`test[${index}].nestedArray[${i}].value`}
-                ref={control.register()}
+                ref={control.register(`test[${index}].nestedArray[${i}].value`)}
                 defaultValue={item.value}
               />
             ))}
@@ -474,8 +464,7 @@ describe('useFieldArray', () => {
             {fields.map((item, i) => (
               <fieldset key={item.id}>
                 <input
-                  name={`test[${i}].value`}
-                  ref={register()}
+                  {...register(`test[${i}].value`)}
                   defaultValue={item.value}
                 />
 
@@ -570,7 +559,9 @@ describe('useFieldArray', () => {
       input.name = 'test[0].value';
       input.removeEventListener = jest.fn();
 
-      result.current.register()(input);
+      const { ref } = result.current.register('test[0].value');
+
+      ref(input);
 
       act(() => {
         result.current.append({ value: 'test' });
@@ -614,11 +605,7 @@ describe('useFieldArray', () => {
         return (
           <div>
             {fields.map((_, i) => (
-              <input
-                key={i.toString()}
-                name={`test[${i}].value`}
-                ref={register}
-              />
+              <input key={i.toString()} {...register(`test[${i}].value`)} />
             ))}
             <button onClick={() => append({ value: '' })}>append</button>
           </div>
@@ -721,8 +708,7 @@ describe('useFieldArray', () => {
             {fields.map((item, i) => (
               <input
                 key={item.id}
-                name={`test[${index}].nestedArray[${i}].value`}
-                ref={control.register()}
+                {...control.register(`test[${index}].nestedArray[${i}].value`)}
                 defaultValue={item.value}
               />
             ))}
@@ -753,8 +739,7 @@ describe('useFieldArray', () => {
             {fields.map((item, i) => (
               <fieldset key={item.id}>
                 <input
-                  name={`test[${i}].value`}
-                  ref={register()}
+                  {...register(`test[${i}].value`)}
                   defaultValue={item.value}
                 />
 
@@ -806,9 +791,8 @@ describe('useFieldArray', () => {
             <form>
               {fields.map((field, i) => (
                 <input
-                  name={`test[${i}].name`}
                   key={i.toString()}
-                  ref={register()}
+                  {...register(`test[${i}].name`)}
                   defaultValue={field.name}
                 />
               ))}
@@ -867,9 +851,8 @@ describe('useFieldArray', () => {
             <form>
               {fields.map((field, i) => (
                 <input
-                  name={`test[${i}].name`}
                   key={i.toString()}
-                  ref={register()}
+                  {...register(`test[${i}].name`)}
                   defaultValue={field.name}
                 />
               ))}
@@ -959,10 +942,9 @@ describe('useFieldArray', () => {
               return (
                 <div key={item.id}>
                   <input
-                    name={`test[${index}].firstName`}
                     aria-label={`test[${index}].firstName`}
                     defaultValue={`${item.firstName}`}
-                    ref={register()}
+                    {...register(`test[${index}].firstName`)}
                   />
                   <NestedArray
                     control={control}
@@ -1026,8 +1008,7 @@ describe('useFieldArray', () => {
             {fields.map((field, i) => (
               <input
                 key={field.id}
-                name={`test[${i}].value`}
-                ref={register()}
+                {...register(`test[${i}].value`)}
                 defaultValue={field.value}
               />
             ))}
@@ -1180,8 +1161,7 @@ describe('useFieldArray', () => {
             {fields.map((field, i) => (
               <input
                 key={field.id}
-                name={`test[${i}].value`}
-                ref={register()}
+                {...register(`test[${i}].value`)}
                 defaultValue={field.value}
               />
             ))}
@@ -1216,8 +1196,7 @@ describe('useFieldArray', () => {
             {fields.map((field, i) => (
               <input
                 key={field.id}
-                name={`test[${i}].value`}
-                ref={register()}
+                {...register(`test[${i}].value`)}
                 defaultValue={field.value}
               />
             ))}
@@ -1250,8 +1229,7 @@ describe('useFieldArray', () => {
             {fields.map((field, i) => (
               <input
                 key={field.id}
-                name={`test[${i}].value`}
-                ref={register()}
+                {...register(`test[${i}].value`)}
                 defaultValue={field.value}
               />
             ))}
@@ -1287,9 +1265,8 @@ describe('useFieldArray', () => {
             {fields.map((field, i) => (
               <div key={`${field.id}`}>
                 <input
-                  name={`test[${i}].value`}
                   defaultValue={field.value}
-                  ref={register()}
+                  {...register(`test[${i}].value`)}
                 />
               </div>
             ))}
@@ -1461,11 +1438,7 @@ describe('useFieldArray', () => {
         return (
           <form>
             {fields.map((field, i) => (
-              <input
-                key={field.id}
-                name={`test[${i}].value`}
-                ref={register()}
-              />
+              <input key={field.id} {...register(`test[${i}].value`)} />
             ))}
             <button
               type="button"
@@ -1511,8 +1484,7 @@ describe('useFieldArray', () => {
             {fields.map((field, i) => (
               <input
                 key={field.id}
-                ref={register({ required: true })}
-                name={`test[${i}].value`}
+                {...register(`test[${i}].value`, { required: true })}
                 defaultValue={field.value}
               />
             ))}
@@ -1554,8 +1526,7 @@ describe('useFieldArray', () => {
             {fields.map((field, i) => (
               <input
                 key={field.id}
-                name={`test[${i}].value`}
-                ref={register()}
+                {...register(`test[${i}].value`)}
                 defaultValue={field.value}
               />
             ))}
@@ -1596,9 +1567,8 @@ describe('useFieldArray', () => {
             {fields.map((field, i) => (
               <div key={`${field.id}`}>
                 <input
-                  name={`test[${i}].value`}
                   defaultValue={field.value}
-                  ref={register()}
+                  {...register(`test[${i}].value`)}
                 />
               </div>
             ))}
@@ -1657,8 +1627,7 @@ describe('useFieldArray', () => {
             {fields.map((field, i) => (
               <input
                 key={field.id}
-                name={`test[${i}].value`}
-                ref={register()}
+                {...register(`test[${i}].value`)}
                 defaultValue={field.value}
               />
             ))}
@@ -1693,8 +1662,7 @@ describe('useFieldArray', () => {
             {fields.map((field, i) => (
               <input
                 key={field.id}
-                name={`test[${i}].value`}
-                ref={register()}
+                {...register(`test[${i}].value`)}
                 defaultValue={field.value}
               />
             ))}
@@ -1728,11 +1696,7 @@ describe('useFieldArray', () => {
         return (
           <form>
             {fields.map((field, i) => (
-              <input
-                key={field.id}
-                name={`test[${i}].value`}
-                ref={register()}
-              />
+              <input key={field.id} {...register(`test[${i}].value`)} />
             ))}
             <button type="button" onClick={() => append({ value: `test${1}` })}>
               append
@@ -1829,8 +1793,7 @@ describe('useFieldArray', () => {
             {fields.map((field, i) => (
               <div key={i.toString()}>
                 <input
-                  name={`test[${i}].name`}
-                  ref={register()}
+                  {...register(`test[${i}].name`)}
                   defaultValue={field.name}
                 />
                 <button type={'button'} onClick={() => remove(i)}>
@@ -2071,11 +2034,7 @@ describe('useFieldArray', () => {
         return (
           <form>
             {fields.map((field, i) => (
-              <input
-                key={field.id}
-                name={`test[${i}].value`}
-                ref={register()}
-              />
+              <input key={field.id} {...register(`test[${i}].value`)} />
             ))}
             <button type="button" onClick={() => append({ value: 'append' })}>
               append
@@ -2429,9 +2388,8 @@ describe('useFieldArray', () => {
             {fields.map((field, i) => (
               <input
                 key={field.id}
-                name={`test[${i}].value`}
                 defaultValue={field.value}
-                ref={register()}
+                {...register(`test[${i}].value`)}
               />
             ))}
             <button type="button" onClick={() => append({ value: '' })}>
@@ -2477,7 +2435,7 @@ describe('useFieldArray', () => {
           <div>
             {fields.map((field, i) => (
               <div key={`${field.id}`}>
-                <input name={`test[${i}].value`} ref={register()} />
+                <input {...register(`test[${i}].value`)} />
               </div>
             ))}
             <button onClick={() => append({ value: '' })}>append</button>
@@ -2539,11 +2497,7 @@ describe('useFieldArray', () => {
         return (
           <form>
             {fields.map((field, i) => (
-              <input
-                key={field.id}
-                name={`test[${i}].value`}
-                ref={register()}
-              />
+              <input key={field.id} {...register(`test[${i}].value`)} />
             ))}
             <button type="button" onClick={() => remove(0)}>
               remove
@@ -2922,9 +2876,8 @@ describe('useFieldArray', () => {
             {fields.map((field, i) => (
               <input
                 key={field.id}
-                name={`test[${i}].value`}
                 defaultValue={field.value}
-                ref={register()}
+                {...register(`test[${i}].value`)}
               />
             ))}
             <button
@@ -2967,9 +2920,8 @@ describe('useFieldArray', () => {
             {fields.map((field, i) => (
               <input
                 key={field.id}
-                name={`test[${i}].value`}
                 defaultValue={field.value}
-                ref={register()}
+                {...register(`test[${i}].value`)}
               />
             ))}
             <button
@@ -3111,8 +3063,7 @@ describe('useFieldArray', () => {
             {fields.map((field, i) => (
               <input
                 key={field.id}
-                name={`test[${i}].value`}
-                ref={register()}
+                {...register(`test[${i}].value`)}
                 defaultValue={field.value}
               />
             ))}
@@ -3147,8 +3098,7 @@ describe('useFieldArray', () => {
             {fields.map((field, i) => (
               <input
                 key={field.id}
-                name={`test[${i}].value`}
-                ref={register()}
+                {...register(`test[${i}].value`)}
                 defaultValue={field.value}
               />
             ))}
@@ -3187,9 +3137,8 @@ describe('useFieldArray', () => {
             {fields.map((field, i) => (
               <input
                 key={field.id}
-                name={`test[${i}].value`}
                 defaultValue={field.value}
-                ref={register()}
+                {...register(`test[${i}].value`)}
               />
             ))}
             <button type="button" onClick={() => insert(0, { value: '' })}>
@@ -3229,9 +3178,8 @@ describe('useFieldArray', () => {
             {fields.map((field, i) => (
               <div key={`${field.id}`}>
                 <input
-                  name={`test[${i}].value`}
                   defaultValue={field.value}
-                  ref={register()}
+                  {...register(`test[${i}].value`)}
                 />
               </div>
             ))}
@@ -3293,11 +3241,7 @@ describe('useFieldArray', () => {
         return (
           <form>
             {fields.map((field, i) => (
-              <input
-                key={field.id}
-                name={`test[${i}].value`}
-                ref={register()}
-              />
+              <input key={field.id} {...register(`test[${i}].value`)} />
             ))}
             <button
               type="button"
@@ -3502,8 +3446,7 @@ describe('useFieldArray', () => {
             {fields.map((field, i) => (
               <input
                 key={field.id}
-                name={`test[${i}].value`}
-                ref={register()}
+                {...register(`test[${i}].value`)}
                 defaultValue={field.value}
               />
             ))}
@@ -3550,9 +3493,8 @@ describe('useFieldArray', () => {
             {fields.map((field, i) => (
               <input
                 key={field.id}
-                name={`test[${i}].value`}
                 defaultValue={field.value}
-                ref={register()}
+                {...register(`test[${i}].value`)}
               />
             ))}
             <button type="button" onClick={() => swap(0, 1)}>
@@ -3592,9 +3534,8 @@ describe('useFieldArray', () => {
             {fields.map((field, i) => (
               <div key={`${field.id}`}>
                 <input
-                  name={`test[${i}].value`}
                   defaultValue={field.value}
-                  ref={register()}
+                  {...register(`test[${i}].value`)}
                 />
               </div>
             ))}
@@ -3655,11 +3596,7 @@ describe('useFieldArray', () => {
         return (
           <form>
             {fields.map((field, i) => (
-              <input
-                key={field.id}
-                name={`test[${i}].value`}
-                ref={register()}
-              />
+              <input key={field.id} {...register(`test[${i}].value`)} />
             ))}
             <button type="button" onClick={() => swap(0, 1)}>
               swap
@@ -3870,8 +3807,7 @@ describe('useFieldArray', () => {
             {fields.map((field, i) => (
               <input
                 key={field.id}
-                name={`test[${i}].value`}
-                ref={register()}
+                {...register(`test[${i}].value`)}
                 defaultValue={field.value}
               />
             ))}
@@ -3918,9 +3854,8 @@ describe('useFieldArray', () => {
             {fields.map((field, i) => (
               <input
                 key={field.id}
-                name={`test[${i}].value`}
                 defaultValue={field.value}
-                ref={register()}
+                {...register(`test[${i}].value`)}
               />
             ))}
             <button type="button" onClick={() => move(0, 1)}>
@@ -3961,8 +3896,7 @@ describe('useFieldArray', () => {
             {fields.map((field, i) => (
               <input
                 key={field.id}
-                name={`test[${i}].value`}
-                ref={register()}
+                {...register(`test[${i}].value`)}
                 defaultValue={field.value}
               />
             ))}
@@ -3993,9 +3927,8 @@ describe('useFieldArray', () => {
             {fields.map((field, i) => (
               <div key={`${field.id}`}>
                 <input
-                  name={`test[${i}].value`}
                   defaultValue={field.value}
-                  ref={register()}
+                  {...register(`test[${i}].value`)}
                 />
               </div>
             ))}
@@ -4056,11 +3989,7 @@ describe('useFieldArray', () => {
         return (
           <form>
             {fields.map((field, i) => (
-              <input
-                key={field.id}
-                name={`test[${i}].value`}
-                ref={register()}
-              />
+              <input key={field.id} {...register(`test[${i}].value`)} />
             ))}
             <button type="button" onClick={() => move(0, 1)}>
               move
@@ -4200,8 +4129,9 @@ describe('useFieldArray', () => {
             {fields.map((nestedField, index) => (
               <div key={nestedField.id}>
                 <input
-                  ref={register()}
-                  name={`fieldArray[${arrayIndex}].nestedFieldArray[${index}].value`}
+                  {...register(
+                    `fieldArray[${arrayIndex}].nestedFieldArray[${index}].value`,
+                  )}
                   defaultValue={nestedField.value}
                 />
                 <button type="button" onClick={() => remove(index)}>
@@ -4276,8 +4206,9 @@ describe('useFieldArray', () => {
             {fields.map((item, i) => (
               <input
                 key={item.id}
-                name={`nest.test[${index}].nestedArray[${i}].value`}
-                ref={control.register()}
+                ref={control.register(
+                  `nest.test[${index}].nestedArray[${i}].value`,
+                )}
                 defaultValue={item.value}
               />
             ))}
@@ -4306,8 +4237,7 @@ describe('useFieldArray', () => {
             {fields.map((item, i) => (
               <div key={item.id}>
                 <input
-                  name={`nest[${i}].value`}
-                  ref={register()}
+                  {...register(`nest[${i}].value`)}
                   defaultValue={item.value}
                 />
                 <ChildComponent control={control} index={i} />
@@ -4351,8 +4281,9 @@ describe('useFieldArray', () => {
             {fields.map((item, i) => (
               <input
                 key={item.id}
-                name={`nest.test[${index}].nestedArray[${i}].value`}
-                ref={control.register()}
+                ref={control.register(
+                  `nest.test[${index}].nestedArray[${i}].value`,
+                )}
                 defaultValue={item.value}
               />
             ))}
@@ -4381,8 +4312,7 @@ describe('useFieldArray', () => {
             {fields.map((item, i) => (
               <div key={item.id}>
                 <input
-                  name={`nest.test[${i}].value`}
-                  ref={register()}
+                  {...register(`nest.test[${i}].value`)}
                   defaultValue={item.value}
                 />
 
@@ -4436,8 +4366,7 @@ describe('useFieldArray', () => {
             {fields.map((item, i) => (
               <input
                 key={item.id}
-                name={`nest[${index}].nestedArray[${i}].value`}
-                ref={control.register()}
+                ref={control.register(`nest[${index}].nestedArray[${i}].value`)}
                 defaultValue={item.value}
               />
             ))}
@@ -4478,8 +4407,7 @@ describe('useFieldArray', () => {
             {fields.map((item, i) => (
               <div key={item.id}>
                 <input
-                  name={`nest[${i}].value`}
-                  ref={register()}
+                  {...register(`nest[${i}].value`)}
                   defaultValue={item.value}
                 />
 
@@ -4513,8 +4441,7 @@ describe('useFieldArray', () => {
             {fields.map((item, i) => (
               <input
                 key={item.id}
-                name={`nest[${index}].nestedArray[${i}].value`}
-                ref={control.register()}
+                {...control.register(`nest[${index}].nestedArray[${i}].value`)}
                 defaultValue={item.value}
               />
             ))}
@@ -4559,8 +4486,7 @@ describe('useFieldArray', () => {
             {fields.map((item, i) => (
               <div key={item.id}>
                 <input
-                  name={`nest[${i}].value`}
-                  ref={register()}
+                  {...register(`nest[${i}].value`)}
                   defaultValue={item.value}
                 />
 
@@ -4599,11 +4525,7 @@ describe('useFieldArray', () => {
         return (
           <form onSubmit={handleSubmit(onSubmit)}>
             {fields.map((field, i) => (
-              <input
-                key={field.id}
-                name={`test[${i}].value`}
-                ref={register()}
-              />
+              <input key={field.id} {...register(`test[${i}].value`)} />
             ))}
             <button>submit</button>
           </form>
