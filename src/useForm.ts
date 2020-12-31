@@ -844,9 +844,7 @@ export function useForm<
       }
     }
 
-    if (isUndefined(fieldsRef.current[name]!.value)) {
-      fieldsRef.current[name]!.value = getFieldValue(fieldsRef.current[name]);
-    }
+    fieldsRef.current[name]!.value = getFieldValue(fieldsRef.current[name]);
 
     if (options) {
       set(fieldsWithValidationRef.current, name, true);
