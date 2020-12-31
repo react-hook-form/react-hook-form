@@ -1,5 +1,21 @@
 # Changelog
 
+## [6.12.0] - 2020-12-31
+
+### Changed
+
+- `setValue` without shouldUnregister:false will no longer deep clone its value instead with shallow clone
+
+### Added
+
+- new formState `isValidating`, this will set to `true` during validation.
+
+```ts
+const {
+  formState: { isValidating },
+} = useForm();
+```
+
 ## [6.12.0] - 2020-12-12
 
 ### Changed
