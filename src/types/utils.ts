@@ -121,19 +121,34 @@ type Indexes =
   | 29
   | 30;
 
+type ArrayChild = string | boolean | number | symbol | bigint;
+
+type Pred = [never, 0, 1, 2, 3, 4, 5, 6, 7];
+
 export type PathFinder<
   TFieldValues,
-  Key extends keyof TFieldValues = keyof TFieldValues
-> = Key extends string
-  ? TFieldValues[Key] extends NestedValue | FileList
-    ? Key
-    : TFieldValues[Key] extends (string | boolean | number | symbol)[]
-    ? `${Key}.${Indexes}`
-    : TFieldValues[Key] extends object[]
-    ? `${Key}.${Indexes}.${PathFinder<ArrayElementType<TFieldValues[Key]>>}`
-    : TFieldValues[Key] extends Record<string, any>
-    ? `${Key}.${PathFinder<TFieldValues[Key]>}`
-    : Key
+  TKey extends keyof TFieldValues = keyof TFieldValues,
+  TMaxRecursive extends number = 4
+> = [TMaxRecursive] extends [0]
+  ? 'RECURSIVE_EXCEED'
+  : TKey extends string
+  ? TFieldValues[TKey] extends NestedValue | FileList
+    ? TKey
+    : TFieldValues[TKey] extends ArrayChild[] | Set<ArrayChild>
+    ? `${TKey}.${Indexes}`
+    : TFieldValues[TKey] extends object[]
+    ? `${TKey}.${Indexes}.${PathFinder<
+        ArrayElementType<TFieldValues[TKey]>,
+        keyof ArrayElementType<TFieldValues[TKey]>,
+        Pred[TMaxRecursive]
+      >}`
+    : TFieldValues[TKey] extends Record<string, any>
+    ? `${TKey}.${PathFinder<
+        TFieldValues[TKey],
+        keyof TFieldValues[TKey],
+        Pred[TMaxRecursive]
+      >}`
+    : TKey
   : never;
 
 type GenerateArrayKeyType<T extends string, K extends number> = `${T}.${K}`;

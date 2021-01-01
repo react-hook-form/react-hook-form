@@ -26,7 +26,6 @@ describe('Controller with React Native', () => {
 
       return (
         <View>
-          {/* @ts-ignore */}
           <Controller
             name="test"
             rules={{ minLength: 5 }}

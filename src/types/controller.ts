@@ -52,8 +52,7 @@ export type ControllerProps<TFieldValues extends FieldValues = FieldValues> = {
     field: ControllerRenderProps<TFieldValues>;
     meta: ControllerMeta;
   }) => React.ReactElement;
-  name: PathFinder<TFieldValues>;
-};
+} & UseControllerProps<TFieldValues>;
 
 export type ControllerEvent = {
   type?: string;
