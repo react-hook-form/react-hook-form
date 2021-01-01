@@ -128,7 +128,7 @@ type Pred = [never, 0, 1, 2, 3, 4, 5, 6, 7];
 export type PathFinder<
   TFieldValues,
   TKey extends keyof TFieldValues = keyof TFieldValues,
-  TMaxRecursive extends number = 4
+  TMaxRecursive extends number = 7
 > = [TMaxRecursive] extends [0]
   ? 'RECURSIVE_EXCEED'
   : TKey extends string
