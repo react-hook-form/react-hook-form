@@ -1,4 +1,3 @@
-// @ts-nocheck
 import * as React from 'react';
 import { Controller } from './controller';
 import { useForm } from './useForm';
@@ -13,6 +12,7 @@ describe('Controller with SSR', () => {
       const { control } = useForm<{
         test: string;
       }>();
+
       return (
         <Controller
           defaultValue="default"

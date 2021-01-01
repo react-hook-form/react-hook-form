@@ -1,4 +1,3 @@
-// @ts-nocheck
 import * as React from 'react';
 import {
   render,
@@ -644,9 +643,11 @@ describe('Controller', () => {
       process.env.NODE_ENV = 'production';
 
       const Component = () => {
-        const { control } = useForm();
+        const { control } = useForm<{
+          test: string;
+        }>();
+
         return (
-          // @ts-ignore
           <Controller
             render={({ field }) => <input {...field} />}
             defaultValue=""
@@ -683,79 +684,79 @@ describe('Controller', () => {
       expect(console.warn).not.toBeCalled();
     });
 
-    it.skip('should warn the user when defaultValue is missing with useFieldArray in development environment', () => {
-      jest.spyOn(console, 'warn').mockImplementation(() => {});
+    // it.skip('should warn the user when defaultValue is missing with useFieldArray in development environment', () => {
+    //   jest.spyOn(console, 'warn').mockImplementation(() => {});
+    //
+    //   process.env.NODE_ENV = 'development';
+    //
+    //   const Component = () => {
+    //     const { control } = useForm({
+    //       defaultValues: {
+    //         test: [{ data: '' }],
+    //       },
+    //     });
+    //     const { fields } = useFieldArray({
+    //       control,
+    //       name: 'test',
+    //     });
+    //
+    //     return (
+    //       <form>
+    //         {fields.map(({ id }, index) => {
+    //           return (
+    //             <Controller
+    //               name={`test[${index}].data`}
+    //               render={({ field }) => <input {...field} />}
+    //               control={control}
+    //               key={id}
+    //             />
+    //           );
+    //         })}
+    //       </form>
+    //     );
+    //   };
+    //
+    //   render(<Component />);
+    //
+    //   expect(console.warn).toBeCalledTimes(1);
+    // });
 
-      process.env.NODE_ENV = 'development';
-
-      const Component = () => {
-        const { control } = useForm({
-          defaultValues: {
-            test: [{ data: '' }],
-          },
-        });
-        const { fields } = useFieldArray({
-          control,
-          name: 'test',
-        });
-
-        return (
-          <form>
-            {fields.map(({ id }, index) => {
-              return (
-                <Controller
-                  name={`test[${index}].data`}
-                  render={({ field }) => <input {...field} />}
-                  control={control}
-                  key={id}
-                />
-              );
-            })}
-          </form>
-        );
-      };
-
-      render(<Component />);
-
-      expect(console.warn).toBeCalledTimes(1);
-    });
-
-    it('should not warn the user when defaultValue is missing with useFieldArray in production environment', () => {
-      jest.spyOn(console, 'warn').mockImplementation(() => {});
-
-      process.env.NODE_ENV = 'production';
-
-      const Component = () => {
-        const { control } = useForm({
-          defaultValues: {
-            test: [{ data: '' }],
-          },
-        });
-        const { fields } = useFieldArray({
-          control,
-          name: 'test',
-        });
-
-        return (
-          <form>
-            {fields.map(({ id }, index) => {
-              return (
-                <Controller
-                  render={({ field }) => <input {...field} />}
-                  name={`test[${index}].data`}
-                  control={control}
-                  key={id}
-                />
-              );
-            })}
-          </form>
-        );
-      };
-
-      render(<Component />);
-
-      expect(console.warn).not.toBeCalled();
-    });
+    //   it('should not warn the user when defaultValue is missing with useFieldArray in production environment', () => {
+    //     jest.spyOn(console, 'warn').mockImplementation(() => {});
+    //
+    //     process.env.NODE_ENV = 'production';
+    //
+    //     const Component = () => {
+    //       const { control } = useForm({
+    //         defaultValues: {
+    //           test: [{ data: '' }],
+    //         },
+    //       });
+    //       const { fields } = useFieldArray({
+    //         control,
+    //         name: 'test',
+    //       });
+    //
+    //       return (
+    //         <form>
+    //           {fields.map(({ id }, index) => {
+    //             return (
+    //               <Controller
+    //                 render={({ field }) => <input {...field} />}
+    //                 name={`test[${index}].data`}
+    //                 control={control}
+    //                 key={id}
+    //               />
+    //             );
+    //           })}
+    //         </form>
+    //       );
+    //     };
+    //
+    //     render(<Component />);
+    //
+    //     expect(console.warn).not.toBeCalled();
+    //   });
   });
 
   it('should not assign default value when field is removed with useFieldArray', () => {
