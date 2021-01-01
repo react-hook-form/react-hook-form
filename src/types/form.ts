@@ -4,7 +4,7 @@ import {
   LiteralToPrimitive,
   DeepPartial,
   DeepMap,
-  PathFinder,
+  FieldPath,
   Path,
 } from './utils';
 import { Resolver } from './resolvers';
@@ -148,10 +148,10 @@ export type RegisterMethods = {
 
 type UseFormCommonMethods<TFieldValues> = {
   register: (
-    name: PathFinder<TFieldValues>,
+    name: FieldPath<TFieldValues>,
     options?: RegisterOptions,
   ) => RegisterMethods;
-  unregister(name: PathFinder<TFieldValues> | PathFinder<TFieldValues>[]): void;
+  unregister(name: FieldPath<TFieldValues> | FieldPath<TFieldValues>[]): void;
   getValues(): UnpackNestedValue<TFieldValues>;
   getValues<TFieldName extends string, TFieldValue extends unknown>(
     name: TFieldName,

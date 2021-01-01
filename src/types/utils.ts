@@ -125,7 +125,7 @@ type ArrayChild = string | boolean | number | symbol | bigint;
 
 type Pred = [never, 0, 1, 2, 3, 4, 5, 6, 7];
 
-export type PathFinder<
+export type FieldPath<
   TFieldValues,
   TKey extends keyof TFieldValues = keyof TFieldValues,
   TMaxRecursive extends number = 7
@@ -137,13 +137,13 @@ export type PathFinder<
     : TFieldValues[TKey] extends ArrayChild[] | Set<ArrayChild>
     ? `${TKey}.${Indexes}`
     : TFieldValues[TKey] extends object[]
-    ? `${TKey}.${Indexes}.${PathFinder<
+    ? `${TKey}.${Indexes}.${FieldPath<
         ArrayElementType<TFieldValues[TKey]>,
         keyof ArrayElementType<TFieldValues[TKey]>,
         Pred[TMaxRecursive]
       >}`
     : TFieldValues[TKey] extends Record<string, any>
-    ? `${TKey}.${PathFinder<
+    ? `${TKey}.${FieldPath<
         TFieldValues[TKey],
         keyof TFieldValues[TKey],
         Pred[TMaxRecursive]

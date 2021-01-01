@@ -65,7 +65,7 @@ import {
   FieldArrayDefaultValues,
   ResetFieldArrayFunctionRef,
   RegisterMethods,
-  PathFinder,
+  FieldPath,
   ControllerEvent,
   Path,
   WatchCallback,
@@ -757,7 +757,7 @@ export function useForm<
   }
 
   function unregister(
-    name: PathFinder<TFieldValues> | PathFinder<TFieldValues>[],
+    name: FieldPath<TFieldValues> | FieldPath<TFieldValues>[],
   ): void {
     for (const fieldName of Array.isArray(name) ? name : [name]) {
       const field = fieldsRef.current[fieldName];
@@ -873,7 +873,7 @@ export function useForm<
   }
 
   function register(
-    name: PathFinder<TFieldValues>,
+    name: FieldPath<TFieldValues>,
     options?: RegisterOptions,
   ): RegisterMethods {
     if (process.env.NODE_ENV !== 'production') {
