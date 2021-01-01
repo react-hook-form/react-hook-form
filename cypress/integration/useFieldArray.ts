@@ -1,5 +1,5 @@
 describe('useFieldArray', () => {
-  it.only('should behaviour correctly without defaultValues', () => {
+  it('should behaviour correctly without defaultValues', () => {
     cy.visit('http://localhost:3000/useFieldArray/normal');
 
     cy.get('#append').click();

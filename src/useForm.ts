@@ -844,7 +844,12 @@ export function useForm<
       }
     }
 
-    fieldsRef.current[name]!.value = getFieldValue(fieldsRef.current[name]);
+    fieldsRef.current[name]!.value =
+      isRadioOrCheckbox &&
+      !Array.isArray(fieldsRef.current[name]!.value) &&
+      Array.isArray(defaultValue)
+        ? defaultValue
+        : getFieldValue(fieldsRef.current[name]);
 
     if (options) {
       set(fieldsWithValidationRef.current, name, true);

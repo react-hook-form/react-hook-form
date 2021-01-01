@@ -4,7 +4,7 @@ import { render, fireEvent, wait } from '@testing-library/react-native';
 import { useForm } from './useForm';
 import * as focusOnErrorField from './logic/focusOnErrorField';
 
-describe('useForm with React Native', () => {
+describe.skip('useForm with React Native', () => {
   afterEach(() => {
     jest.restoreAllMocks();
   });
