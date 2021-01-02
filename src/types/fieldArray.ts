@@ -44,22 +44,22 @@ export type UseFieldArrayMethods<
   move: (indexA: number, indexB: number) => void;
   prepend: (
     value:
-      | ArrayField<TFieldArrayValues, TName>
-      | ArrayField<TFieldArrayValues, TName>[],
+      | Partial<ArrayField<TFieldArrayValues, TName>>
+      | Partial<ArrayField<TFieldArrayValues, TName>>[],
     shouldFocus?: boolean,
   ) => void;
   append: (
     value:
-      | ArrayField<TFieldArrayValues, TName>
-      | ArrayField<TFieldArrayValues, TName>[],
+      | Partial<ArrayField<TFieldArrayValues, TName>>
+      | Partial<ArrayField<TFieldArrayValues, TName>>[],
     shouldFocus?: boolean,
   ) => void;
   remove: (index?: number | number[]) => void;
   insert: (
     index: number,
     value:
-      | ArrayField<TFieldArrayValues, TName>
-      | ArrayField<TFieldArrayValues, TName>[],
+      | Partial<ArrayField<TFieldArrayValues, TName>>
+      | Partial<ArrayField<TFieldArrayValues, TName>>[],
     shouldFocus?: boolean,
   ) => void;
   fields: ArrayFieldWithId<TFieldArrayValues, TName, TKeyName>[];

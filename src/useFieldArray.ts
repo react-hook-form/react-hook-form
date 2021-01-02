@@ -24,6 +24,7 @@ import {
   UnpackNestedValue,
   DeepPartial,
   UseFieldArrayMethods,
+  ArrayField,
 } from './types';
 
 const mapIds = <
@@ -302,7 +303,9 @@ export const useFieldArray = <
   };
 
   const append = (
-    value: Partial<TFieldArrayValues> | Partial<TFieldArrayValues>[],
+    value:
+      | Partial<ArrayField<TFieldArrayValues, TName>>
+      | Partial<ArrayField<TFieldArrayValues, TName>>[],
     shouldFocus = true,
   ) => {
     const appendValue = Array.isArray(value) ? value : [value];
@@ -328,7 +331,9 @@ export const useFieldArray = <
   };
 
   const prepend = (
-    value: Partial<TFieldArrayValues> | Partial<TFieldArrayValues>[],
+    value:
+      | Partial<ArrayField<TFieldArrayValues, TName>>
+      | Partial<ArrayField<TFieldArrayValues, TName>>[],
     shouldFocus = true,
   ) => {
     const emptyArray = fillEmptyArray(value);
@@ -371,7 +376,9 @@ export const useFieldArray = <
 
   const insert = (
     index: number,
-    value: Partial<TFieldArrayValues> | Partial<TFieldArrayValues>[],
+    value:
+      | Partial<ArrayField<TFieldArrayValues, TName>>
+      | Partial<ArrayField<TFieldArrayValues, TName>>[],
     shouldFocus = true,
   ) => {
     const emptyArray = fillEmptyArray(value);

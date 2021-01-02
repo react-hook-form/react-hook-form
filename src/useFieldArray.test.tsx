@@ -15,7 +15,6 @@ import { VALIDATION_MODE } from './constants';
 import { FormProvider } from './useFormContext';
 import {
   Control,
-  RegisterOptions,
   FieldError,
   DeepMap,
   SubmitHandler,
@@ -917,6 +916,7 @@ describe('useFieldArray', () => {
         control: Control<FormValues>;
         name: string;
       }) {
+        // @ts-ignore
         const { fields } = useFieldArray({ name, control });
 
         return (
@@ -1175,7 +1175,7 @@ describe('useFieldArray', () => {
             {fields.map((field, i) => (
               <input
                 key={field.id}
-                {...register(`test[${i}].value`)}
+                {...register(`test[${i}].value` as any)}
                 defaultValue={field.value}
               />
             ))}
@@ -1286,7 +1286,7 @@ describe('useFieldArray', () => {
               <div key={`${field.id}`}>
                 <input
                   defaultValue={field.value}
-                  {...register(`test[${i}].value`)}
+                  {...register(`test[${i}].value` as any)}
                 />
               </div>
             ))}
@@ -1492,7 +1492,9 @@ describe('useFieldArray', () => {
           formState: { errors: tempErrors },
           handleSubmit,
           control,
-        } = useForm();
+        } = useForm<{
+          test: { value: string }[];
+        }>();
         const { fields, prepend } = useFieldArray({
           control,
           name: 'test',
@@ -1504,7 +1506,7 @@ describe('useFieldArray', () => {
             {fields.map((field, i) => (
               <input
                 key={field.id}
-                {...register(`test[${i}].value`, { required: true })}
+                {...register(`test[${i}].value` as any, { required: true })}
                 defaultValue={field.value}
               />
             ))}
@@ -1534,7 +1536,9 @@ describe('useFieldArray', () => {
     it('should trigger reRender when user is watching the all field array', () => {
       const watched: any[] = [];
       const Component = () => {
-        const { register, watch, control } = useForm();
+        const { register, watch, control } = useForm<{
+          test: { value: string }[];
+        }>();
         const { fields, prepend } = useFieldArray({
           control,
           name: 'test',
@@ -1546,7 +1550,7 @@ describe('useFieldArray', () => {
             {fields.map((field, i) => (
               <input
                 key={field.id}
-                {...register(`test[${i}].value`)}
+                {...register(`test[${i}].value` as any)}
                 defaultValue={field.value}
               />
             ))}
@@ -1572,7 +1576,11 @@ describe('useFieldArray', () => {
     it('should return watched value with watch API', async () => {
       const renderedItems: any = [];
       const Component = () => {
-        const { watch, register, control } = useForm();
+        const { watch, register, control } = useForm<{
+          test: {
+            value: string;
+          }[];
+        }>();
         const { fields, append, prepend } = useFieldArray({
           name: 'test',
           control,
@@ -1588,7 +1596,7 @@ describe('useFieldArray', () => {
               <div key={`${field.id}`}>
                 <input
                   defaultValue={field.value}
-                  {...register(`test[${i}].value`)}
+                  {...register(`test[${i}].value` as any)}
                 />
               </div>
             ))}
@@ -1635,7 +1643,9 @@ describe('useFieldArray', () => {
 
     it('should focus if shouldFocus is true', () => {
       const Component = () => {
-        const { register, control } = useForm({
+        const { register, control } = useForm<{
+          test: { value: string }[];
+        }>({
           defaultValues: {
             test: [{ value: '1' }, { value: '2' }],
           },
@@ -1647,7 +1657,7 @@ describe('useFieldArray', () => {
             {fields.map((field, i) => (
               <input
                 key={field.id}
-                {...register(`test[${i}].value`)}
+                {...register(`test[${i}].value` as any)}
                 defaultValue={field.value}
               />
             ))}
@@ -1682,7 +1692,7 @@ describe('useFieldArray', () => {
             {fields.map((field, i) => (
               <input
                 key={field.id}
-                {...register(`test[${i}].value`)}
+                {...register(`test[${i}].value` as any)}
                 defaultValue={field.value}
               />
             ))}
@@ -1813,7 +1823,7 @@ describe('useFieldArray', () => {
             {fields.map((field, i) => (
               <div key={i.toString()}>
                 <input
-                  {...register(`test[${i}].name`)}
+                  {...register(`test[${i}].name` as any)}
                   defaultValue={field.name}
                 />
                 <button type={'button'} onClick={() => remove(i)}>
@@ -1872,8 +1882,7 @@ describe('useFieldArray', () => {
             {fields.map((field, i) => (
               <div key={i.toString()}>
                 <input
-                  name={`test[${i}].name`}
-                  ref={register({ required: true })}
+                  {...register(`test[${i}].name` as any, { required: true })}
                   defaultValue={field.name}
                 />
                 <button type={'button'} onClick={() => remove(i)}>
@@ -2113,8 +2122,7 @@ describe('useFieldArray', () => {
             {fields.map((field, i) => (
               <input
                 key={field.id}
-                ref={register({ required: true })}
-                name={`test[${i}].value`}
+                {...register(`test[${i}].value` as any, { required: true })}
               />
             ))}
             <button type="button" onClick={() => append({ value: '' })}>
@@ -2204,8 +2212,7 @@ describe('useFieldArray', () => {
             {fields.map((field, i) => (
               <input
                 key={field.id}
-                ref={register({ required: true })}
-                name={`test[${i}].value`}
+                {...register(`test[${i}].value` as any, { required: true })}
               />
             ))}
             <button type="button" onClick={() => append({ value: '' })}>
@@ -2261,8 +2268,7 @@ describe('useFieldArray', () => {
             {fields.map((field, i) => (
               <input
                 key={field.id}
-                name={`test[${i}].value`}
-                ref={register({ required: true })}
+                {...register(`test[${i}].value` as any, { required: true })}
               />
             ))}
             <button type="button" onClick={() => append({ value: '' })}>
@@ -2299,6 +2305,14 @@ describe('useFieldArray', () => {
     });
 
     it('should remove nested field array error', async () => {
+      type FormValues = {
+        test: {
+          nested: {
+            test: string;
+          };
+        }[];
+      };
+
       let mockKey = 0;
       const Nested = ({
         register,
@@ -2306,12 +2320,13 @@ describe('useFieldArray', () => {
         control,
         index,
       }: {
-        register: (rules?: RegisterOptions) => (ref: HTMLInputElement) => void;
-        control: Control;
+        register: UseFormMethods['register'];
+        control: Control<FormValues>;
         errors: DeepMap<Record<string, any>, FieldError>;
         index: number;
       }) => {
         const { fields, append, remove } = useFieldArray({
+          // @ts-ignore
           name: `test[${index}].nested`,
           control,
         });
@@ -2320,8 +2335,9 @@ describe('useFieldArray', () => {
             {fields.map((field, i) => (
               <div key={field.id}>
                 <input
-                  name={`test[${index}].nested[${i}].test`}
-                  ref={register({ required: 'required' })}
+                  {...register(`test[${index}].nested[${i}].test`, {
+                    required: 'required',
+                  })}
                 />
                 {errors?.test &&
                   errors.test[index]?.nested &&
@@ -2333,6 +2349,7 @@ describe('useFieldArray', () => {
                 <button onClick={() => remove(i)}>nested delete</button>
               </div>
             ))}
+            {/* @ts-ignore */}
             <button onClick={() => append({ test: 'test', key: mockKey++ })}>
               nested append
             </button>
@@ -2346,7 +2363,7 @@ describe('useFieldArray', () => {
           formState: { errors },
           handleSubmit,
           control,
-        } = useForm({
+        } = useForm<FormValues>({
           defaultValues: {
             test: [{ nested: [{ test: '', key: mockKey }] as any }],
           },
@@ -2357,6 +2374,7 @@ describe('useFieldArray', () => {
             {fields.map((_, i) => (
               <Nested
                 key={i.toString()}
+                // @ts-ignore
                 register={register}
                 errors={errors}
                 control={control}
@@ -2396,7 +2414,11 @@ describe('useFieldArray', () => {
     it('should trigger reRender when user is watching the all field array', () => {
       const watched: any[] = [];
       const Component = () => {
-        const { register, watch, control } = useForm();
+        const { register, watch, control } = useForm<{
+          test: {
+            value: string;
+          }[];
+        }>();
         const { fields, append, remove } = useFieldArray({
           control,
           name: 'test',
@@ -2409,7 +2431,7 @@ describe('useFieldArray', () => {
               <input
                 key={field.id}
                 defaultValue={field.value}
-                {...register(`test[${i}].value`)}
+                {...register(`test[${i}].value` as any)}
               />
             ))}
             <button type="button" onClick={() => append({ value: '' })}>
@@ -2517,7 +2539,7 @@ describe('useFieldArray', () => {
         return (
           <form>
             {fields.map((field, i) => (
-              <input key={field.id} {...register(`test[${i}].value`)} />
+              <input key={field.id} {...register(`test[${i}].value` as any)} />
             ))}
             <button type="button" onClick={() => remove(0)}>
               remove
@@ -2574,7 +2596,11 @@ describe('useFieldArray', () => {
 
     it('should remove Controller by index without error', () => {
       const Component = () => {
-        const { control, handleSubmit } = useForm({
+        const { control, handleSubmit } = useForm<{
+          test: {
+            firstName: string;
+          }[];
+        }>({
           defaultValues: {
             test: [],
           },
@@ -2592,9 +2618,9 @@ describe('useFieldArray', () => {
                   <li key={item.id}>
                     <Controller
                       render={({ field }) => <input {...field} />}
-                      name={`test[${index}].firstName`}
+                      name={`test[${index}].firstName` as any}
                       control={control}
-                      defaultValue={item.firstName} // make sure to set up defaultValue
+                      defaultValue={item.firstName}
                     />
                     <button type="button" onClick={() => remove(index)}>
                       delete
@@ -2667,7 +2693,7 @@ describe('useFieldArray', () => {
                 return (
                   <li key={item.id}>
                     <Controller
-                      name={`test[${index}].lastName`}
+                      name={`test[${index}].lastName` as any}
                       control={control}
                       defaultValue={item.lastName} // make sure to set up defaultValue
                       render={(props: any) => <input {...props} />}
@@ -2817,7 +2843,9 @@ describe('useFieldArray', () => {
       'should insert data to formState.%s at index with single value',
       () => {
         const { result } = renderHook(() => {
-          const { formState, control } = useForm({
+          const { formState, control } = useForm<{
+            test: { value: string; value1: string }[];
+          }>({
             defaultValues: { test: [{ value: '1' }] },
           });
           const { fields, append, insert } = useFieldArray({
@@ -2847,7 +2875,9 @@ describe('useFieldArray', () => {
       'should insert data to formState.%s at index with array value',
       () => {
         const { result } = renderHook(() => {
-          const { formState, control } = useForm({
+          const { formState, control } = useForm<{
+            test: { value1: string; value2: string; value: string }[];
+          }>({
             defaultValues: { test: [{ value: '1' }] },
           });
           const { fields, append, insert } = useFieldArray({
@@ -2897,7 +2927,7 @@ describe('useFieldArray', () => {
               <input
                 key={field.id}
                 defaultValue={field.value}
-                {...register(`test[${i}].value`)}
+                {...register(`test[${i}].value` as any)}
               />
             ))}
             <button
@@ -2941,7 +2971,7 @@ describe('useFieldArray', () => {
               <input
                 key={field.id}
                 defaultValue={field.value}
-                {...register(`test[${i}].value`)}
+                {...register(`test[${i}].value` as any)}
               />
             ))}
             <button
@@ -2987,8 +3017,7 @@ describe('useFieldArray', () => {
             {fields.map((field, i) => (
               <input
                 key={field.id}
-                name={`test[${i}].value`}
-                ref={register({ required: true })}
+                {...register(`test[${i}].value`, { required: true })}
               />
             ))}
             <button type="button" onClick={() => append({ value: '' })}>
@@ -3034,8 +3063,7 @@ describe('useFieldArray', () => {
             {fields.map((field, i) => (
               <input
                 key={field.id}
-                name={`test[${i}].value`}
-                ref={register({ required: true })}
+                {...register(`test[${i}].value`, { required: true })}
               />
             ))}
             <button type="button" onClick={() => append({ value: '' })}>
@@ -3083,7 +3111,7 @@ describe('useFieldArray', () => {
             {fields.map((field, i) => (
               <input
                 key={field.id}
-                {...register(`test[${i}].value`)}
+                {...register(`test[${i}].value` as any)}
                 defaultValue={field.value}
               />
             ))}
@@ -3118,7 +3146,7 @@ describe('useFieldArray', () => {
             {fields.map((field, i) => (
               <input
                 key={field.id}
-                {...register(`test[${i}].value`)}
+                {...register(`test[${i}].value` as any)}
                 defaultValue={field.value}
               />
             ))}
@@ -3145,7 +3173,11 @@ describe('useFieldArray', () => {
     it('should trigger reRender when user is watching the all field array', () => {
       const watched: any[] = [];
       const Component = () => {
-        const { register, watch, control } = useForm();
+        const { register, watch, control } = useForm<{
+          test: {
+            value: string;
+          }[];
+        }>();
         const { fields, insert } = useFieldArray({
           control,
           name: 'test',
@@ -3158,7 +3190,7 @@ describe('useFieldArray', () => {
               <input
                 key={field.id}
                 defaultValue={field.value}
-                {...register(`test[${i}].value`)}
+                {...register(`test[${i}].value` as any)}
               />
             ))}
             <button type="button" onClick={() => insert(0, { value: '' })}>
@@ -3183,7 +3215,11 @@ describe('useFieldArray', () => {
     it('should return watched value with watch API', async () => {
       const renderedItems: any = [];
       const Component = () => {
-        const { watch, register, control } = useForm();
+        const { watch, register, control } = useForm<{
+          test: {
+            value: string;
+          }[];
+        }>();
         const { fields, append, insert } = useFieldArray({
           name: 'test',
           control,
@@ -3199,7 +3235,7 @@ describe('useFieldArray', () => {
               <div key={`${field.id}`}>
                 <input
                   defaultValue={field.value}
-                  {...register(`test[${i}].value`)}
+                  {...register(`test[${i}].value` as any)}
                 />
               </div>
             ))}
@@ -3261,7 +3297,7 @@ describe('useFieldArray', () => {
         return (
           <form>
             {fields.map((field, i) => (
-              <input key={field.id} {...register(`test[${i}].value`)} />
+              <input key={field.id} {...register(`test[${i}].value` as any)} />
             ))}
             <button
               type="button"
@@ -3415,8 +3451,7 @@ describe('useFieldArray', () => {
             {fields.map((field, i) => (
               <input
                 key={field.id}
-                name={`test[${i}].value`}
-                ref={register({ required: true })}
+                {...register(`test[${i}].value` as any, { required: true })}
                 defaultValue={field.value}
               />
             ))}
@@ -3466,7 +3501,7 @@ describe('useFieldArray', () => {
             {fields.map((field, i) => (
               <input
                 key={field.id}
-                {...register(`test[${i}].value`)}
+                {...register(`test[${i}].value` as any)}
                 defaultValue={field.value}
               />
             ))}
@@ -3514,7 +3549,7 @@ describe('useFieldArray', () => {
               <input
                 key={field.id}
                 defaultValue={field.value}
-                {...register(`test[${i}].value`)}
+                {...register(`test[${i}].value` as any)}
               />
             ))}
             <button type="button" onClick={() => swap(0, 1)}>
@@ -3539,7 +3574,11 @@ describe('useFieldArray', () => {
     it('should return watched value with watch API', async () => {
       const renderedItems: any = [];
       const Component = () => {
-        const { watch, register, control } = useForm();
+        const { watch, register, control } = useForm<{
+          test: {
+            value: string;
+          }[];
+        }>();
         const { fields, append, swap } = useFieldArray({
           name: 'test',
           control,
@@ -3555,7 +3594,7 @@ describe('useFieldArray', () => {
               <div key={`${field.id}`}>
                 <input
                   defaultValue={field.value}
-                  {...register(`test[${i}].value`)}
+                  {...register(`test[${i}].value` as any)}
                 />
               </div>
             ))}
@@ -3616,7 +3655,7 @@ describe('useFieldArray', () => {
         return (
           <form>
             {fields.map((field, i) => (
-              <input key={field.id} {...register(`test[${i}].value`)} />
+              <input key={field.id} {...register(`test[${i}].value` as any)} />
             ))}
             <button type="button" onClick={() => swap(0, 1)}>
               swap
@@ -3776,8 +3815,7 @@ describe('useFieldArray', () => {
             {fields.map((field, i) => (
               <input
                 key={field.id}
-                name={`test[${i}].value`}
-                ref={register({ required: true })}
+                {...register(`test[${i}].value` as any, { required: true })}
                 defaultValue={field.value}
               />
             ))}
@@ -3827,7 +3865,7 @@ describe('useFieldArray', () => {
             {fields.map((field, i) => (
               <input
                 key={field.id}
-                {...register(`test[${i}].value`)}
+                {...register(`test[${i}].value` as any)}
                 defaultValue={field.value}
               />
             ))}
@@ -3875,7 +3913,7 @@ describe('useFieldArray', () => {
               <input
                 key={field.id}
                 defaultValue={field.value}
-                {...register(`test[${i}].value`)}
+                {...register(`test[${i}].value` as any)}
               />
             ))}
             <button type="button" onClick={() => move(0, 1)}>
@@ -3916,7 +3954,7 @@ describe('useFieldArray', () => {
             {fields.map((field, i) => (
               <input
                 key={field.id}
-                {...register(`test[${i}].value`)}
+                {...register(`test[${i}].value` as any)}
                 defaultValue={field.value}
               />
             ))}
@@ -3932,7 +3970,11 @@ describe('useFieldArray', () => {
     it('should return watched value with watch API', async () => {
       const renderedItems: any = [];
       const Component = () => {
-        const { watch, register, control } = useForm();
+        const { watch, register, control } = useForm<{
+          test: {
+            value: string;
+          }[];
+        }>();
         const { fields, append, move } = useFieldArray({
           name: 'test',
           control,
@@ -3948,7 +3990,7 @@ describe('useFieldArray', () => {
               <div key={`${field.id}`}>
                 <input
                   defaultValue={field.value}
-                  {...register(`test[${i}].value`)}
+                  {...register(`test[${i}].value` as any)}
                 />
               </div>
             ))}
@@ -4009,7 +4051,7 @@ describe('useFieldArray', () => {
         return (
           <form>
             {fields.map((field, i) => (
-              <input key={field.id} {...register(`test[${i}].value`)} />
+              <input key={field.id} {...register(`test[${i}].value` as any)} />
             ))}
             <button type="button" onClick={() => move(0, 1)}>
               move
@@ -4087,6 +4129,57 @@ describe('useFieldArray', () => {
 
   describe('array of array fields', () => {
     it('should remove correctly with nested field array and set shouldUnregister to false', () => {
+      const ArrayField = ({
+        arrayIndex,
+        arrayField,
+        register,
+        control,
+      }: {
+        arrayIndex: number;
+        register: UseFormMethods['register'];
+        arrayField: Partial<FieldValues>;
+        control: Control;
+      }) => {
+        const { fields, append, remove } = useFieldArray({
+          name: `fieldArray[${arrayIndex}].nestedFieldArray`,
+          control,
+        });
+
+        return (
+          <div>
+            <input
+              {...register(`fieldArray[${arrayIndex}].value`)}
+              defaultValue={arrayField.value}
+            />
+            <br />
+            {fields.map((nestedField, index) => (
+              <div key={nestedField.id}>
+                <input
+                  {...register(
+                    `fieldArray[${arrayIndex}].nestedFieldArray[${index}].value`,
+                  )}
+                  // @ts-ignore
+                  defaultValue={nestedField.value}
+                />
+                <button type="button" onClick={() => remove(index)}>
+                  remove
+                </button>
+              </div>
+            ))}
+            <button
+              type="button"
+              onClick={() => {
+                append({
+                  value: `fieldArray[${arrayIndex}].nestedFieldArray[${fields.length}].value`,
+                });
+              }}
+            >
+              Add nested array
+            </button>
+          </div>
+        );
+      };
+
       const Component = () => {
         const { register, control } = useForm({});
         const { fields, append } = useFieldArray({
@@ -4117,57 +4210,6 @@ describe('useFieldArray', () => {
               Add array
             </button>
           </form>
-        );
-      };
-
-      const ArrayField = ({
-        arrayIndex,
-        arrayField,
-        register,
-        control,
-      }: {
-        arrayIndex: number;
-        register: UseFormMethods['register'];
-        arrayField: Partial<FieldValues>;
-        control: Control;
-      }) => {
-        const { fields, append, remove } = useFieldArray({
-          name: `fieldArray[${arrayIndex}].nestedFieldArray`,
-          control,
-        });
-
-        return (
-          <div>
-            <input
-              ref={register}
-              name={`fieldArray[${arrayIndex}].value`}
-              defaultValue={arrayField.value}
-            />
-            <br />
-            {fields.map((nestedField, index) => (
-              <div key={nestedField.id}>
-                <input
-                  {...register(
-                    `fieldArray[${arrayIndex}].nestedFieldArray[${index}].value`,
-                  )}
-                  defaultValue={nestedField.value}
-                />
-                <button type="button" onClick={() => remove(index)}>
-                  remove
-                </button>
-              </div>
-            ))}
-            <button
-              type="button"
-              onClick={() => {
-                append({
-                  value: `fieldArray[${arrayIndex}].nestedFieldArray[${fields.length}].value`,
-                });
-              }}
-            >
-              Add nested array
-            </button>
-          </div>
         );
       };
 
@@ -4207,14 +4249,23 @@ describe('useFieldArray', () => {
     });
 
     it('should prepend correctly with default values on nested array fields', () => {
+      type FormInputs = {
+        nest: {
+          test: {
+            value: string;
+            nestedArray: { value: string }[];
+          }[];
+        };
+      };
       const ChildComponent = ({
         index,
         control,
       }: {
-        control: Control;
+        control: Control<FormInputs>;
         index: number;
       }) => {
         const { fields } = useFieldArray({
+          // @ts-ignore
           name: `nest.test[${index}].nestedArray`,
           control,
         });
@@ -4224,9 +4275,10 @@ describe('useFieldArray', () => {
             {fields.map((item, i) => (
               <input
                 key={item.id}
-                ref={control.register(
-                  `nest.test[${index}].nestedArray[${i}].value`,
+                {...control.register(
+                  `nest.test[${index}].nestedArray[${i}].value` as any,
                 )}
+                // @ts-ignore
                 defaultValue={item.value}
               />
             ))}
@@ -4235,7 +4287,7 @@ describe('useFieldArray', () => {
       };
 
       const Component = () => {
-        const { register, control } = useForm({
+        const { register, control } = useForm<FormInputs>({
           defaultValues: {
             nest: {
               test: [
@@ -4255,7 +4307,7 @@ describe('useFieldArray', () => {
             {fields.map((item, i) => (
               <div key={item.id}>
                 <input
-                  {...register(`nest[${i}].value`)}
+                  {...register(`nest[${i}].value` as any)}
                   defaultValue={item.value}
                 />
                 <ChildComponent control={control} index={i} />
@@ -4282,11 +4334,21 @@ describe('useFieldArray', () => {
     });
 
     it('should render correct amount of child array fields', async () => {
+      type FormValues = {
+        nest: {
+          test: {
+            value: string;
+            nestedArray: {
+              value: string;
+            }[];
+          }[];
+        };
+      };
       const ChildComponent = ({
         index,
         control,
       }: {
-        control: Control;
+        control: Control<FormValues>;
         index: number;
       }) => {
         const { fields } = useFieldArray({
@@ -4299,9 +4361,10 @@ describe('useFieldArray', () => {
             {fields.map((item, i) => (
               <input
                 key={item.id}
-                ref={control.register(
+                {...control.register(
                   `nest.test[${index}].nestedArray[${i}].value`,
                 )}
+                // @ts-ignore
                 defaultValue={item.value}
               />
             ))}
@@ -4330,7 +4393,7 @@ describe('useFieldArray', () => {
             {fields.map((item, i) => (
               <div key={item.id}>
                 <input
-                  {...register(`nest.test[${i}].value`)}
+                  {...register(`nest.test[${i}].value` as any)}
                   defaultValue={item.value}
                 />
 
@@ -4384,7 +4447,7 @@ describe('useFieldArray', () => {
         index: number;
       }) => {
         const { fields } = useFieldArray({
-          name: `nest[${index}].nestedArray`,
+          name: `nest[${index}].nestedArray` as any,
           control,
         });
 
@@ -4472,7 +4535,8 @@ describe('useFieldArray', () => {
               <input
                 key={item.id}
                 {...control.register(`nest[${index}].nestedArray[${i}].value`)}
-                defaultValue={item.value as any}
+                // @ts-ignore
+                defaultValue={item.value}
               />
             ))}
           </div>
@@ -4517,7 +4581,8 @@ describe('useFieldArray', () => {
               <div key={item.id}>
                 <input
                   {...register(`nest[${i}].value`)}
-                  defaultValue={item.value as any}
+                  // @ts-ignore
+                  defaultValue={item.value}
                 />
 
                 <ChildComponent control={control} index={i} />
