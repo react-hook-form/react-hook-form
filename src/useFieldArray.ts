@@ -301,7 +301,7 @@ export const useFieldArray = <
   };
 
   const append = (
-    value: Partial<TFieldArrayValues> | Partial<TFieldArrayValues>[],
+    value: Partial<TFieldArrayValues> | Partial<TFieldArrayValues>[] = {},
     shouldFocus = true,
   ) => {
     const appendValue = Array.isArray(value) ? value : [value];
@@ -335,7 +335,7 @@ export const useFieldArray = <
   };
 
   const prepend = (
-    value: Partial<TFieldArrayValues> | Partial<TFieldArrayValues>[],
+    value: Partial<TFieldArrayValues> | Partial<TFieldArrayValues>[] = {},
     shouldFocus = true,
   ) => {
     const emptyArray = fillEmptyArray(value);
@@ -382,7 +382,7 @@ export const useFieldArray = <
 
   const insert = (
     index: number,
-    value: Partial<TFieldArrayValues> | Partial<TFieldArrayValues>[],
+    value: Partial<TFieldArrayValues> | Partial<TFieldArrayValues>[] = {},
     shouldFocus = true,
   ) => {
     const emptyArray = fillEmptyArray(value);
