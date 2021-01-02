@@ -30,6 +30,11 @@ export type ArrayField<
 > = InferArrayType<PathValue<TFieldArrayValues, TName>> &
   Record<TKeyName, string>;
 
+export type ArrayFieldNoId<
+  TFieldArrayValues extends FieldValues = FieldValues,
+  TName extends Path<TFieldArrayValues> = Path<TFieldArrayValues>
+> = InferArrayType<PathValue<TFieldArrayValues, TName>>;
+
 export type UseFieldArrayMethods<
   TFieldArrayValues extends FieldValues = FieldValues,
   TName extends Path<TFieldArrayValues> = Path<TFieldArrayValues>,
@@ -38,19 +43,23 @@ export type UseFieldArrayMethods<
   swap: (indexA: number, indexB: number) => void;
   move: (indexA: number, indexB: number) => void;
   prepend: (
-    value: Partial<TFieldArrayValues> | Partial<TFieldArrayValues>[],
+    value:
+      | ArrayFieldNoId<TFieldArrayValues, TName>
+      | ArrayFieldNoId<TFieldArrayValues, TName>[],
     shouldFocus?: boolean,
   ) => void;
   append: (
     value:
-      | ArrayField<TFieldArrayValues, TName, TKeyName>
-      | ArrayField<TFieldArrayValues, TName, TKeyName>[],
+      | ArrayFieldNoId<TFieldArrayValues, TName>
+      | ArrayFieldNoId<TFieldArrayValues, TName>[],
     shouldFocus?: boolean,
   ) => void;
   remove: (index?: number | number[]) => void;
   insert: (
     index: number,
-    value: Partial<TFieldArrayValues> | Partial<TFieldArrayValues>[],
+    value:
+      | ArrayFieldNoId<TFieldArrayValues, TName>
+      | ArrayFieldNoId<TFieldArrayValues, TName>[],
     shouldFocus?: boolean,
   ) => void;
   fields: ArrayField<TFieldArrayValues, TName, TKeyName>[];
