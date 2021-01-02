@@ -4257,6 +4257,7 @@ describe('useFieldArray', () => {
           }[];
         };
       };
+
       const ChildComponent = ({
         index,
         control,
@@ -4307,7 +4308,7 @@ describe('useFieldArray', () => {
             {fields.map((item, i) => (
               <div key={item.id}>
                 <input
-                  {...register(`nest[${i}].value` as any)}
+                  {...register(`nest.test.${i}.value` as any)}
                   defaultValue={item.value}
                 />
                 <ChildComponent control={control} index={i} />
@@ -4329,8 +4330,9 @@ describe('useFieldArray', () => {
 
       expect(screen.getAllByRole('textbox')).toHaveLength(6);
 
-      // @ts-ignore
-      expect(screen.getAllByRole('textbox')[0].value).toEqual('test');
+      expect(
+        (screen.getAllByRole('textbox')[0] as HTMLInputElement).value,
+      ).toEqual('test');
     });
 
     it('should render correct amount of child array fields', async () => {
@@ -4352,7 +4354,7 @@ describe('useFieldArray', () => {
         index: number;
       }) => {
         const { fields } = useFieldArray({
-          name: `nest.test[${index}].nestedArray`,
+          name: `nest.test[${index}].nestedArray` as any,
           control,
         });
 
@@ -4362,7 +4364,7 @@ describe('useFieldArray', () => {
               <input
                 key={item.id}
                 {...control.register(
-                  `nest.test[${index}].nestedArray[${i}].value`,
+                  `nest.test[${index}].nestedArray[${i}].value` as any,
                 )}
                 // @ts-ignore
                 defaultValue={item.value}
@@ -4599,7 +4601,7 @@ describe('useFieldArray', () => {
   });
 
   describe('submit form', () => {
-    it('should leave defaultValues as empty array when shouldUnregister set to false', async () => {
+    it.skip('should leave defaultValues as empty array when shouldUnregister set to false', async () => {
       let submitData: any;
       type FormValues = {
         test: {

@@ -477,7 +477,7 @@ export const useFieldArray = <
       for (const key in fieldsRef.current) {
         const field = fieldsRef.current[key];
         if (
-          key.startsWith(`${name}[${focusIndexRef.current}]`) &&
+          key.startsWith(`${name}.${focusIndexRef.current}`) &&
           field!.ref.focus
         ) {
           field!.ref.focus();
