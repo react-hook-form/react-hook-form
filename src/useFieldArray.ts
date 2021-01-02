@@ -20,7 +20,7 @@ import {
   FieldValues,
   UseFieldArrayProps,
   Path,
-  ArrayField,
+  ArrayFieldWithId,
   UnpackNestedValue,
   DeepPartial,
   UseFieldArrayMethods,
@@ -35,7 +35,7 @@ const mapIds = <
   name: TName,
   keyName: TKeyName,
   skipWarn?: boolean,
-  // ): Partial<ArrayField<TFieldArrayValues, TName, TKeyName>>[] => {
+  // ): Partial<ArrayFieldWithId<TFieldArrayValues, TName, TKeyName>>[] => {
 ): any => {
   if (process.env.NODE_ENV !== 'production') {
     if (!name) {
@@ -123,7 +123,7 @@ export const useFieldArray = <
         get(defaultValuesRef.current, name, [])),
   ]);
   const [fields, setFields] = React.useState<
-    Partial<ArrayField<TFieldArrayValues, TName, TKeyName>>[]
+    Partial<ArrayFieldWithId<TFieldArrayValues, TName, TKeyName>>[]
     // @ts-ignore
   >(mapIds(memoizedDefaultValues.current, name, keyName));
   // @ts-ignore
@@ -170,7 +170,9 @@ export const useFieldArray = <
   }
 
   const setFieldAndValidState = (
-    fieldsValues: Partial<ArrayField<TFieldArrayValues, TName, TKeyName>>[],
+    fieldsValues: Partial<
+      ArrayFieldWithId<TFieldArrayValues, TName, TKeyName>
+    >[],
   ) => {
     setFields(fieldsValues);
     set(fieldArrayValuesRef.current, name as string, fieldsValues);
@@ -518,6 +520,6 @@ export const useFieldArray = <
     append: React.useCallback(append, [name]),
     remove: React.useCallback(remove, [name]),
     insert: React.useCallback(insert, [name]),
-    fields: fields as ArrayField<TFieldArrayValues, TName, TKeyName>,
+    fields: fields as ArrayFieldWithId<TFieldArrayValues, TName, TKeyName>,
   };
 };
