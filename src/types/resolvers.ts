@@ -17,10 +17,10 @@ export type ResolverResult<TFieldValues extends FieldValues = FieldValues> =
   | ResolverSuccess<TFieldValues>
   | ResolverError<TFieldValues>;
 
-export type Resolver<
-  TFieldValues extends FieldValues = FieldValues,
-  TContext extends object = object
-> = (
+export type Resolver<V = FieldValues, C = Record<string, any>> = <
+  TFieldValues extends FieldValues = V,
+  TContext extends Record<string, any> = C
+>(
   values: UnpackNestedValue<TFieldValues>,
   context?: TContext,
   validateAllFieldCriteria?: boolean,
