@@ -114,32 +114,25 @@ export const useFieldArray = <
     fieldArrayValuesRef,
   } = control || methods.control;
 
-  // @ts-ignore
-  const fieldArrayParentName = getFieldArrayParentName(name);
+  const fieldArrayParentName = getFieldArrayParentName(name as string);
   const memoizedDefaultValues = React.useRef<Partial<TFieldArrayValues>[]>([
     ...(get(fieldArrayDefaultValuesRef.current, fieldArrayParentName)
-      ? // @ts-ignore
-        get(fieldArrayDefaultValuesRef.current, name, [])
-      : // @ts-ignore
-        get(defaultValuesRef.current, name, [])),
+      ? get(fieldArrayDefaultValuesRef.current, name as string, [])
+      : get(defaultValuesRef.current, name as string, [])),
   ]);
   const [fields, setFields] = React.useState<
     Partial<ArrayFieldWithId<TFieldArrayValues, TName, TKeyName>>[]
-    // @ts-ignore
-  >(mapIds(memoizedDefaultValues.current, name, keyName));
-  // @ts-ignore
-  set(fieldArrayValuesRef.current, name, fields);
+  >(mapIds(memoizedDefaultValues.current, name as string, keyName));
+  set(fieldArrayValuesRef.current, name as string, fields);
 
   const omitKey = <T extends (Partial<TFieldArrayValues> | undefined)[]>(
     fields: T,
   ) => fields.map(({ [keyName]: omitted, ...rest } = {}) => rest);
 
-  // @ts-ignore
-  fieldArrayNamesRef.current.add(name);
+  fieldArrayNamesRef.current.add(name as string);
 
   const getFieldArrayValue = React.useCallback(
-    // @ts-ignore
-    () => get(fieldArrayValuesRef.current, name, []),
+    () => get(fieldArrayValuesRef.current, name as string, []),
     [name],
   );
 
@@ -386,8 +379,7 @@ export const useFieldArray = <
     const updatedFieldArrayValues = insertAt(
       fieldValues,
       index,
-      // @ts-ignore
-      mapIds(Array.isArray(value) ? value : [value], name, keyName),
+      mapIds(Array.isArray(value) ? value : [value], name as string, keyName),
     );
 
     setFieldAndValidState(updatedFieldArrayValues);
@@ -503,8 +495,9 @@ export const useFieldArray = <
           data || defaultValuesRef.current,
           name as any,
         );
-        // @ts-ignore
-        setFields(mapIds(memoizedDefaultValues.current, name, keyName));
+        setFields(
+          mapIds(memoizedDefaultValues.current, name as string, keyName),
+        );
       };
     }
 
