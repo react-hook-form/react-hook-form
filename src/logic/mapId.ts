@@ -2,7 +2,7 @@ import { FieldValues } from '../types';
 import isEmptyObject from '../utils/isEmptyObject';
 import generateId from './generateId';
 
-const mapIds = <
+export default <
   TFieldArrayValues extends FieldValues = FieldValues,
   TKeyName extends string = 'id'
 >(
@@ -37,5 +37,3 @@ const mapIds = <
     ...value,
   }));
 };
-
-export default mapIds;

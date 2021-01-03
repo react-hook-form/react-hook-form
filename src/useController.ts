@@ -39,7 +39,8 @@ export function useController<TFieldValues extends FieldValues = FieldValues>({
 
   const { onChange, onBlur, ref } = register(name, rules);
   const getInitialValue = () => {
-    return isUndefined(fieldsRef.current[name]!.value) ||
+    return (fieldsRef.current[name] &&
+      isUndefined(fieldsRef.current[name]!.value)) ||
       isNameInFieldArray(fieldArrayNamesRef.current, name)
       ? isUndefined(defaultValue)
         ? get(defaultValuesRef.current, name)
@@ -67,7 +68,9 @@ export function useController<TFieldValues extends FieldValues = FieldValues>({
       }
     }
 
-    fieldsRef.current[name]!.value = getInitialValue();
+    if (fieldsRef.current[name]) {
+      fieldsRef.current[name]!.value = getInitialValue();
+    }
     const tearDown = controllerSubjectRef.current.subscribe({
       next: (values) => setInputStateValue(get(values, name, '')),
     });

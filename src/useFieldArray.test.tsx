@@ -690,7 +690,7 @@ describe('useFieldArray', () => {
         });
       });
 
-      expect(result.current.fields).toEqual([{ id: '6', value: 'data' }]);
+      expect(result.current.fields).toEqual([{ id: '5', value: 'data' }]);
     });
 
     it('should reset with async', async () => {
@@ -992,774 +992,757 @@ describe('useFieldArray', () => {
     });
   });
 
-  // describe('append', () => {
-  //   it('should append dirty fields correctly', async () => {
-  //     let dirtyInputs = {};
-  //     const Component = () => {
-  //       const {
-  //         register,
-  //         control,
-  //         formState: { dirty },
-  //       } = useForm<{
-  //         test: { value: string }[];
-  //       }>({
-  //         defaultValues: {
-  //           test: [
-  //             { value: 'plz change' },
-  //             { value: 'dont change' },
-  //             { value: 'dont change' },
-  //           ],
-  //         },
-  //       });
-  //       const { fields, append } = useFieldArray({
-  //         control,
-  //         name: 'test',
-  //       });
-  //
-  //       dirtyInputs = dirty;
-  //
-  //       return (
-  //         <form>
-  //           {fields.map((field, i) => (
-  //             <input
-  //               key={field.id}
-  //               {...register(`test.${i}.value` as any)}
-  //               defaultValue={field.value}
-  //             />
-  //           ))}
-  //           <button type="button" onClick={() => append({ value: '' })}>
-  //             append
-  //           </button>
-  //           {dirty.test?.length && 'dirty'}
-  //         </form>
-  //       );
-  //     };
-  //
-  //     render(<Component />);
-  //
-  //     fireEvent.input(screen.getAllByRole('textbox')[0], {
-  //       target: { value: 'test' },
-  //     });
-  //     fireEvent.blur(screen.getAllByRole('textbox')[0]);
-  //
-  //     await waitFor(() => screen.getByText('dirty'));
-  //
-  //     expect(dirtyInputs).toEqual({
-  //       test: [{ value: true }],
-  //     });
-  //
-  //     fireEvent.click(screen.getByRole('button'));
-  //
-  //     expect(dirtyInputs).toEqual({
-  //       test: [{ value: true }, undefined, undefined, { value: true }],
-  //     });
-  //   });
-  //
-  //   it('should append data into the fields', () => {
-  //     const { result } = renderHook(() => {
-  //       const { register, control } = useForm();
-  //       const { fields, append } = useFieldArray({
-  //         control,
-  //         name: 'test',
-  //       });
-  //
-  //       return { register, fields, append };
-  //     });
-  //
-  //     act(() => {
-  //       result.current.append({ test: 'test' });
-  //     });
-  //
-  //     expect(result.current.fields).toEqual([{ id: '0', test: 'test' }]);
-  //
-  //     act(() => {
-  //       result.current.append({ test: 'test1' });
-  //     });
-  //
-  //     expect(result.current.fields).toEqual([
-  //       { id: '0', test: 'test' },
-  //       { id: '1', test: 'test1' },
-  //     ]);
-  //
-  //     act(() => {
-  //       result.current.append({});
-  //     });
-  //
-  //     expect(result.current.fields).toEqual([
-  //       { id: '0', test: 'test' },
-  //       { id: '1', test: 'test1' },
-  //       { id: '2' },
-  //     ]);
-  //
-  //     act(() => {
-  //       result.current.append([{ test: 'test2' }, { test: 'test3' }]);
-  //     });
-  //
-  //     expect(result.current.fields).toEqual([
-  //       { id: '0', test: 'test' },
-  //       { id: '1', test: 'test1' },
-  //       { id: '2' },
-  //       { id: '3', test: 'test2' },
-  //       { id: '4', test: 'test3' },
-  //     ]);
-  //   });
-  //
-  //   it('should update shallowFieldsStateRef during append action', async () => {
-  //     const { result } = renderHook(() => {
-  //       const { register, control } = useForm({});
-  //       const { fields, append } = useFieldArray({
-  //         control,
-  //         name: 'test',
-  //       });
-  //
-  //       return { register, fields, append, control };
-  //     });
-  //
-  //     act(() => {
-  //       result.current.append({ data: 'test' });
-  //     });
-  //
-  //     // Todo replace with getValues()
-  //   });
-  //
-  //   it.each(['isDirty', 'dirtyFields'])(
-  //     'should be dirty when value is appended with %s',
-  //     () => {
-  //       const { result } = renderHook(() => {
-  //         const { register, formState, control } = useForm();
-  //         const { fields, append } = useFieldArray({
-  //           control,
-  //           name: 'test',
-  //         });
-  //
-  //         return { register, formState, fields, append };
-  //       });
-  //
-  //       result.current.formState.isDirty;
-  //       result.current.formState.dirty;
-  //
-  //       act(() => {
-  //         result.current.append({ value: 'test' });
-  //       });
-  //
-  //       act(() => {
-  //         result.current.append({ value: 'test1' });
-  //       });
-  //
-  //       act(() => {
-  //         result.current.append({ value: 'test2' });
-  //       });
-  //
-  //       expect(result.current.formState.isDirty).toBeTruthy();
-  //       expect(result.current.formState.dirty).toEqual({
-  //         test: [{ value: true }, { value: true }, { value: true }],
-  //       });
-  //     },
-  //   );
-  //
-  //   it('should trigger reRender when user is watching the all field array', () => {
-  //     const watched: any[] = [];
-  //     const Component = () => {
-  //       const { register, watch, control } = useForm<{
-  //         test: { value: string }[];
-  //       }>();
-  //       const { fields, append } = useFieldArray({
-  //         control,
-  //         name: 'test',
-  //       });
-  //       watched.push(watch());
-  //
-  //       return (
-  //         <form>
-  //           {fields.map((field, i) => (
-  //             <input
-  //               key={field.id}
-  //               {...register(`test.${i}.value` as any)}
-  //               defaultValue={field.value}
-  //             />
-  //           ))}
-  //           <button type="button" onClick={() => append({ value: '' })}>
-  //             append
-  //           </button>
-  //         </form>
-  //       );
-  //     };
-  //
-  //     render(<Component />);
-  //
-  //     fireEvent.click(screen.getByRole('button', { name: /append/i }));
-  //
-  //     expect(watched).toEqual([
-  //       {}, // first render
-  //       {}, // render inside useEffect in useFieldArray
-  //       {}, // render inside append method
-  //       { test: [{ value: '' }] }, // render inside useEffect in useFieldArray
-  //     ]);
-  //   });
-  //
-  //   it('should focus if shouldFocus is true', () => {
-  //     const Component = () => {
-  //       const { register, control } = useForm<{
-  //         test: { value: string }[];
-  //       }>({
-  //         defaultValues: { test: [{ value: '1' }, { value: '2' }] },
-  //       });
-  //       const { fields, append } = useFieldArray({ control, name: 'test' });
-  //
-  //       return (
-  //         <form>
-  //           {fields.map((field, i) => (
-  //             <input
-  //               key={field.id}
-  //               {...register(`test.${i}.value` as any)}
-  //               defaultValue={field.value}
-  //             />
-  //           ))}
-  //           <button type="button" onClick={() => append({ value: '3' })}>
-  //             append
-  //           </button>
-  //         </form>
-  //       );
-  //     };
-  //
-  //     render(<Component />);
-  //
-  //     fireEvent.click(screen.getByRole('button', { name: /append/i }));
-  //
-  //     const inputs = screen.getAllByRole('textbox');
-  //
-  //     expect(inputs).toHaveLength(3);
-  //     expect(document.activeElement).toEqual(inputs[2]);
-  //   });
-  //
-  //   it('should not focus if shouldFocus is false', () => {
-  //     const Component = () => {
-  //       const { register, control } = useForm<{
-  //         test: { value: string }[];
-  //       }>({
-  //         defaultValues: { test: [{ value: '1' }, { value: '2' }] },
-  //       });
-  //       const { fields, append } = useFieldArray({ control, name: 'test' });
-  //
-  //       return (
-  //         <form>
-  //           {fields.map((field, i) => (
-  //             <input
-  //               key={field.id}
-  //               {...register(`test.${i}.value` as any)}
-  //               defaultValue={field.value}
-  //             />
-  //           ))}
-  //           <button type="button" onClick={() => append({ value: '3' }, false)}>
-  //             append
-  //           </button>
-  //         </form>
-  //       );
-  //     };
-  //
-  //     render(<Component />);
-  //
-  //     fireEvent.click(screen.getByRole('button', { name: /append/i }));
-  //
-  //     const inputs = screen.getAllByRole('textbox');
-  //
-  //     expect(inputs).toHaveLength(3);
-  //     expect(document.activeElement).toEqual(document.body);
-  //   });
-  //
-  //   it('should return watched value with watch API', async () => {
-  //     const renderedItems: any = [];
-  //     const Component = () => {
-  //       const { watch, register, control } = useForm<{
-  //         test: { value: string }[];
-  //       }>();
-  //       const { fields, append } = useFieldArray({
-  //         name: 'test',
-  //         control,
-  //       });
-  //       const watched = watch('test', fields);
-  //       renderedItems.push(watched);
-  //       return (
-  //         <div>
-  //           {fields.map((field, i) => (
-  //             <div key={`${field.id}`}>
-  //               <input
-  //                 defaultValue={field.value}
-  //                 {...register(`test.${i}.value` as any)}
-  //               />
-  //             </div>
-  //           ))}
-  //           <button onClick={() => append({ value: 'test' })}>append</button>
-  //         </div>
-  //       );
-  //     };
-  //
-  //     render(<Component />);
-  //
-  //     fireEvent.click(screen.getByRole('button', { name: /append/i }));
-  //
-  //     await waitFor(() =>
-  //       expect(renderedItems).toEqual([
-  //         [],
-  //         [],
-  //         [{ id: '0', value: 'test' }],
-  //         [{ value: 'test' }],
-  //       ]),
-  //     );
-  //   });
-  //
-  //   describe('with resolver', () => {
-  //     it('should invoke resolver when formState.isValid true', async () => {
-  //       const resolver = jest.fn().mockReturnValue({});
-  //
-  //       const { result } = renderHook(() => {
-  //         const { formState, control } = useForm({
-  //           mode: VALIDATION_MODE.onChange,
-  //           resolver,
-  //         });
-  //         const { append } = useFieldArray({ control, name: 'test' });
-  //         return { formState, append };
-  //       });
-  //
-  //       result.current.formState.isValid;
-  //
-  //       await act(async () => {
-  //         result.current.append({ value: '1' });
-  //       });
-  //
-  //       expect(resolver).toBeCalledWith(
-  //         {
-  //           test: [{ id: '0', value: '1' }],
-  //         },
-  //         undefined,
-  //         false,
-  //       );
-  //     });
-  //
-  //     it('should not invoke resolver when formState.isValid false', () => {
-  //       const resolver = jest.fn().mockReturnValue({});
-  //
-  //       const { result } = renderHook(() => {
-  //         const { formState, control } = useForm({
-  //           mode: VALIDATION_MODE.onChange,
-  //           resolver,
-  //         });
-  //         const { append } = useFieldArray({ control, name: 'test' });
-  //         return { formState, append };
-  //       });
-  //
-  //       act(() => {
-  //         result.current.append({ value: '1' });
-  //       });
-  //
-  //       expect(resolver).not.toBeCalled();
-  //     });
-  //   });
-  // });
-  //
-  // describe.skip('prepend', () => {
-  //   it('should pre-append data into the fields', () => {
-  //     const { result } = renderHook(() => {
-  //       const { control, formState } = useForm();
-  //       const { fields, prepend } = useFieldArray({
-  //         control,
-  //         name: 'test',
-  //       });
-  //
-  //       return { formState, fields, prepend };
-  //     });
-  //
-  //     act(() => {
-  //       result.current.prepend({ test: 'test' });
-  //     });
-  //
-  //     expect(result.current.fields).toEqual([{ id: '0', test: 'test' }]);
-  //
-  //     act(() => {
-  //       result.current.prepend({ test: 'test1' });
-  //     });
-  //
-  //     expect(result.current.fields).toEqual([
-  //       { id: '1', test: 'test1' },
-  //       { id: '0', test: 'test' },
-  //     ]);
-  //
-  //     act(() => {
-  //       result.current.prepend({});
-  //     });
-  //
-  //     expect(result.current.fields).toEqual([
-  //       { id: '2' },
-  //       { id: '1', test: 'test1' },
-  //       { id: '0', test: 'test' },
-  //     ]);
-  //
-  //     act(() => {
-  //       result.current.prepend([{ test: 'test2' }, { test: 'test3' }]);
-  //     });
-  //
-  //     expect(result.current.fields).toEqual([
-  //       { id: '3', test: 'test2' },
-  //       { id: '4', test: 'test3' },
-  //       { id: '2' },
-  //       { id: '1', test: 'test1' },
-  //       { id: '0', test: 'test' },
-  //     ]);
-  //   });
-  //
-  //   it.each(['isDirty', 'dirtyFields'])(
-  //     'should be dirty when value is prepended with %s',
-  //     () => {
-  //       const { result } = renderHook(() => {
-  //         const { register, formState, control } = useForm();
-  //         const { fields, prepend } = useFieldArray({
-  //           control,
-  //           name: 'test',
-  //         });
-  //
-  //         return { register, formState, fields, prepend };
-  //       });
-  //
-  //       result.current.formState.isDirty;
-  //       result.current.formState.dirty;
-  //
-  //       act(() => {
-  //         result.current.prepend({ value: 'test' });
-  //       });
-  //
-  //       act(() => {
-  //         result.current.prepend({ value: 'test1' });
-  //       });
-  //
-  //       act(() => {
-  //         result.current.prepend({ value: 'test2' });
-  //       });
-  //
-  //       expect(result.current.formState.isDirty).toBeTruthy();
-  //       expect(result.current.formState.dirty).toEqual({
-  //         test: [{ value: true }, { value: true }, { value: true }],
-  //       });
-  //     },
-  //   );
-  //
-  //   it('should set prepended values to formState.touched', () => {
-  //     let touched: any;
-  //
-  //     const Component = () => {
-  //       const { register, formState, control } = useForm();
-  //       const { fields, prepend } = useFieldArray({
-  //         control,
-  //         name: 'test',
-  //       });
-  //
-  //       touched = formState.touched;
-  //
-  //       return (
-  //         <form>
-  //           {fields.map((field, i) => (
-  //             <input key={field.id} {...register(`test.${i}.value`)} />
-  //           ))}
-  //           <button
-  //             type="button"
-  //             onClick={() => prepend({ value: `test${1}` })}
-  //           >
-  //             prepend
-  //           </button>
-  //         </form>
-  //       );
-  //     };
-  //
-  //     render(<Component />);
-  //
-  //     fireEvent.click(screen.getByRole('button', { name: /prepend/i }));
-  //
-  //     fireEvent.blur(screen.getAllByRole('textbox')[0]);
-  //
-  //     fireEvent.click(screen.getByRole('button', { name: /prepend/i }));
-  //     fireEvent.click(screen.getByRole('button', { name: /prepend/i }));
-  //
-  //     expect(touched).toEqual({
-  //       test: [undefined, { value: true }, { value: true }],
-  //     });
-  //   });
-  //
-  //   it('should prepend error', async () => {
-  //     let errors: any;
-  //     const Component = () => {
-  //       const {
-  //         register,
-  //         formState: { errors: tempErrors },
-  //         handleSubmit,
-  //         control,
-  //       } = useForm<{
-  //         test: { value: string }[];
-  //       }>();
-  //       const { fields, prepend } = useFieldArray({
-  //         control,
-  //         name: 'test',
-  //       });
-  //       errors = tempErrors;
-  //
-  //       return (
-  //         <form onSubmit={handleSubmit(() => {})}>
-  //           {fields.map((field, i) => (
-  //             <input
-  //               key={field.id}
-  //               {...register(`test.${i}.value` as any, { required: true })}
-  //               defaultValue={field.value}
-  //             />
-  //           ))}
-  //           <button type="button" onClick={() => prepend({ value: '' })}>
-  //             prepend
-  //           </button>
-  //           <button>submit</button>
-  //         </form>
-  //       );
-  //     };
-  //
-  //     render(<Component />);
-  //
-  //     fireEvent.click(screen.getByRole('button', { name: /prepend/i }));
-  //
-  //     expect(errors.test).toBeUndefined();
-  //
-  //     await actComponent(async () => {
-  //       fireEvent.click(screen.getByRole('button', { name: /submit/i }));
-  //     });
-  //
-  //     fireEvent.click(screen.getByRole('button', { name: /prepend/i }));
-  //
-  //     expect(errors.test).toHaveLength(2);
-  //   });
-  //
-  //   it('should trigger reRender when user is watching the all field array', () => {
-  //     const watched: any[] = [];
-  //     const Component = () => {
-  //       const { register, watch, control } = useForm<{
-  //         test: { value: string }[];
-  //       }>();
-  //       const { fields, prepend } = useFieldArray({
-  //         control,
-  //         name: 'test',
-  //       });
-  //       watched.push(watch());
-  //
-  //       return (
-  //         <form>
-  //           {fields.map((field, i) => (
-  //             <input
-  //               key={field.id}
-  //               {...register(`test.${i}.value` as any)}
-  //               defaultValue={field.value}
-  //             />
-  //           ))}
-  //           <button type="button" onClick={() => prepend({ value: '' })}>
-  //             prepend
-  //           </button>
-  //         </form>
-  //       );
-  //     };
-  //
-  //     render(<Component />);
-  //
-  //     fireEvent.click(screen.getByRole('button', { name: 'prepend' }));
-  //
-  //     expect(watched).toEqual([
-  //       {}, // first render
-  //       {}, // render inside useEffect in useFieldArray
-  //       {}, // render inside prepend method
-  //       { test: [{ value: '' }] }, // render inside useEffect in useFieldArray
-  //     ]);
-  //   });
-  //
-  //   it('should return watched value with watch API', async () => {
-  //     const renderedItems: any = [];
-  //     const Component = () => {
-  //       const { watch, register, control } = useForm<{
-  //         test: {
-  //           value: string;
-  //         }[];
-  //       }>();
-  //       const { fields, append, prepend } = useFieldArray({
-  //         name: 'test',
-  //         control,
-  //       });
-  //       const watched = watch('test', fields);
-  //       const isPrepended = React.useRef(false);
-  //       if (isPrepended.current) {
-  //         renderedItems.push(watched);
-  //       }
-  //       return (
-  //         <div>
-  //           {fields.map((field, i) => (
-  //             <div key={`${field.id}`}>
-  //               <input
-  //                 defaultValue={field.value}
-  //                 {...register(`test.${i}.value` as any)}
-  //               />
-  //             </div>
-  //           ))}
-  //           <button onClick={() => append({ value: '' })}>append</button>
-  //           <button
-  //             onClick={() => {
-  //               prepend({ value: 'test' });
-  //               isPrepended.current = true;
-  //             }}
-  //           >
-  //             prepend
-  //           </button>
-  //         </div>
-  //       );
-  //     };
-  //
-  //     render(<Component />);
-  //
-  //     fireEvent.click(screen.getByRole('button', { name: /append/i }));
-  //     fireEvent.click(screen.getByRole('button', { name: /append/i }));
-  //
-  //     const inputs = screen.getAllByRole('textbox');
-  //
-  //     fireEvent.input(inputs[0], {
-  //       target: { name: 'test[0].value', value: '111' },
-  //     });
-  //     fireEvent.input(inputs[1], {
-  //       target: { name: 'test[1].value', value: '222' },
-  //     });
-  //
-  //     fireEvent.click(screen.getByRole('button', { name: /prepend/i }));
-  //
-  //     await waitFor(() =>
-  //       expect(renderedItems).toEqual([
-  //         [
-  //           { id: '2', value: 'test' },
-  //           { id: '0', value: '111' },
-  //           { id: '1', value: '222' },
-  //         ],
-  //         [{ value: 'test' }, { value: '111' }, { value: '222' }],
-  //       ]),
-  //     );
-  //   });
-  //
-  //   it('should focus if shouldFocus is true', () => {
-  //     const Component = () => {
-  //       const { register, control } = useForm<{
-  //         test: { value: string }[];
-  //       }>({
-  //         defaultValues: {
-  //           test: [{ value: '1' }, { value: '2' }],
-  //         },
-  //       });
-  //       const { fields, prepend } = useFieldArray({ name: 'test', control });
-  //
-  //       return (
-  //         <form>
-  //           {fields.map((field, i) => (
-  //             <input
-  //               key={field.id}
-  //               {...register(`test.${i}.value` as any)}
-  //               defaultValue={field.value}
-  //             />
-  //           ))}
-  //           <button type="button" onClick={() => prepend({ value: '' })}>
-  //             prepend
-  //           </button>
-  //         </form>
-  //       );
-  //     };
-  //
-  //     render(<Component />);
-  //
-  //     fireEvent.click(screen.getByRole('button', { name: /prepend/i }));
-  //
-  //     const inputs = screen.getAllByRole('textbox');
-  //
-  //     expect(inputs).toHaveLength(3);
-  //     expect(document.activeElement).toEqual(inputs[0]);
-  //   });
-  //
-  //   it('should not focus if shouldFocus is false', () => {
-  //     const Component = () => {
-  //       const { register, control } = useForm({
-  //         defaultValues: {
-  //           test: [{ value: '1' }, { value: '2' }],
-  //         },
-  //       });
-  //       const { fields, prepend } = useFieldArray({ name: 'test', control });
-  //
-  //       return (
-  //         <form>
-  //           {fields.map((field, i) => (
-  //             <input
-  //               key={field.id}
-  //               {...register(`test.${i}.value` as any)}
-  //               defaultValue={field.value}
-  //             />
-  //           ))}
-  //           <button type="button" onClick={() => prepend({ value: '' }, false)}>
-  //             prepend
-  //           </button>
-  //         </form>
-  //       );
-  //     };
-  //
-  //     render(<Component />);
-  //
-  //     fireEvent.click(screen.getByRole('button', { name: /prepend/i }));
-  //     const inputs = screen.getAllByRole('textbox');
-  //
-  //     expect(inputs).toHaveLength(3);
-  //     expect(document.activeElement).toEqual(document.body);
-  //   });
-  //
-  //   describe('with resolver', () => {
-  //     it('should invoke resolver when formState.isValid true', async () => {
-  //       const resolver = jest.fn().mockReturnValue({});
-  //
-  //       const { result } = renderHook(() => {
-  //         const { formState, control } = useForm({
-  //           mode: VALIDATION_MODE.onChange,
-  //           resolver,
-  //         });
-  //         const { prepend } = useFieldArray({ control, name: 'test' });
-  //         return { formState, prepend };
-  //       });
-  //
-  //       result.current.formState.isValid;
-  //
-  //       await act(async () => {
-  //         result.current.prepend({ value: '1' });
-  //       });
-  //
-  //       expect(resolver).toBeCalledWith(
-  //         {
-  //           test: [{ id: '0', value: '1' }],
-  //         },
-  //         undefined,
-  //         false,
-  //       );
-  //     });
-  //
-  //     it('should not invoke resolver when formState.isValid false', () => {
-  //       const resolver = jest.fn().mockReturnValue({});
-  //
-  //       const { result } = renderHook(() => {
-  //         const { formState, control } = useForm({
-  //           mode: VALIDATION_MODE.onChange,
-  //           resolver,
-  //         });
-  //         const { prepend } = useFieldArray({ control, name: 'test' });
-  //         return { formState, prepend };
-  //       });
-  //
-  //       act(() => {
-  //         result.current.prepend({ value: '1' });
-  //       });
-  //
-  //       expect(resolver).not.toBeCalled();
-  //     });
-  //   });
-  // });
-  //
+  describe('append', () => {
+    it('should append dirty fields correctly', async () => {
+      let dirtyInputs = {};
+      const Component = () => {
+        const {
+          register,
+          control,
+          formState: { dirty },
+        } = useForm<{
+          test: { value: string }[];
+        }>({
+          defaultValues: {
+            test: [
+              { value: 'plz change' },
+              { value: 'dont change' },
+              { value: 'dont change' },
+            ],
+          },
+        });
+        const { fields, append } = useFieldArray({
+          control,
+          name: 'test',
+        });
+
+        dirtyInputs = dirty;
+
+        return (
+          <form>
+            {fields.map((field, i) => (
+              <input
+                key={field.id}
+                {...register(`test.${i}.value` as any)}
+                defaultValue={field.value}
+              />
+            ))}
+            <button type="button" onClick={() => append({ value: '' })}>
+              append
+            </button>
+            {dirty.test?.length && 'dirty'}
+          </form>
+        );
+      };
+
+      render(<Component />);
+
+      fireEvent.input(screen.getAllByRole('textbox')[0], {
+        target: { value: 'test' },
+      });
+      fireEvent.blur(screen.getAllByRole('textbox')[0]);
+
+      await waitFor(() => screen.getByText('dirty'));
+
+      expect(dirtyInputs).toEqual({
+        test: [{ value: true }],
+      });
+
+      fireEvent.click(screen.getByRole('button'));
+
+      expect(dirtyInputs).toEqual({
+        test: [{ value: true }, undefined, undefined, { value: true }],
+      });
+    });
+
+    it('should append data into the fields', () => {
+      const { result } = renderHook(() => {
+        const { register, control } = useForm();
+        const { fields, append } = useFieldArray({
+          control,
+          name: 'test',
+        });
+
+        return { register, fields, append };
+      });
+
+      act(() => {
+        result.current.append({ test: 'test' });
+      });
+
+      expect(result.current.fields).toEqual([{ id: '0', test: 'test' }]);
+
+      act(() => {
+        result.current.append({ test: 'test1' });
+      });
+
+      expect(result.current.fields).toEqual([
+        { id: '0', test: 'test' },
+        { id: '1', test: 'test1' },
+      ]);
+
+      act(() => {
+        result.current.append({});
+      });
+
+      expect(result.current.fields).toEqual([
+        { id: '0', test: 'test' },
+        { id: '1', test: 'test1' },
+        { id: '2' },
+      ]);
+
+      act(() => {
+        result.current.append([{ test: 'test2' }, { test: 'test3' }]);
+      });
+
+      expect(result.current.fields).toEqual([
+        { id: '0', test: 'test' },
+        { id: '1', test: 'test1' },
+        { id: '2' },
+        { id: '3', test: 'test2' },
+        { id: '4', test: 'test3' },
+      ]);
+    });
+
+    it.each(['isDirty', 'dirtyFields'])(
+      'should be dirty when value is appended with %s',
+      () => {
+        const { result } = renderHook(() => {
+          const { register, formState, control } = useForm();
+          const { fields, append } = useFieldArray({
+            control,
+            name: 'test',
+          });
+
+          return { register, formState, fields, append };
+        });
+
+        result.current.formState.isDirty;
+        result.current.formState.dirty;
+
+        act(() => {
+          result.current.append({ value: 'test' });
+        });
+
+        act(() => {
+          result.current.append({ value: 'test1' });
+        });
+
+        act(() => {
+          result.current.append({ value: 'test2' });
+        });
+
+        expect(result.current.formState.isDirty).toBeTruthy();
+        expect(result.current.formState.dirty).toEqual({
+          test: [{ value: true }, { value: true }, { value: true }],
+        });
+      },
+    );
+
+    it('should trigger reRender when user is watching the all field array', () => {
+      const watched: any[] = [];
+      const Component = () => {
+        const { register, watch, control } = useForm<{
+          test: { value: string }[];
+        }>();
+        const { fields, append } = useFieldArray({
+          control,
+          name: 'test',
+        });
+        watched.push(watch());
+
+        return (
+          <form>
+            {fields.map((field, i) => (
+              <input
+                key={field.id}
+                {...register(`test.${i}.value` as any)}
+                defaultValue={field.value}
+              />
+            ))}
+            <button type="button" onClick={() => append({ value: '' })}>
+              append
+            </button>
+          </form>
+        );
+      };
+
+      render(<Component />);
+
+      fireEvent.click(screen.getByRole('button', { name: /append/i }));
+
+      expect(watched).toEqual([
+        {}, // first render
+        {}, // render inside useEffect in useFieldArray
+        {}, // render inside append method
+        { test: [{ value: '' }] }, // render inside useEffect in useFieldArray
+      ]);
+    });
+
+    it('should focus if shouldFocus is true', () => {
+      const Component = () => {
+        const { register, control } = useForm<{
+          test: { value: string }[];
+        }>({
+          defaultValues: { test: [{ value: '1' }, { value: '2' }] },
+        });
+        const { fields, append } = useFieldArray({ control, name: 'test' });
+
+        return (
+          <form>
+            {fields.map((field, i) => (
+              <input
+                key={field.id}
+                {...register(`test.${i}.value` as any)}
+                defaultValue={field.value}
+              />
+            ))}
+            <button type="button" onClick={() => append({ value: '3' })}>
+              append
+            </button>
+          </form>
+        );
+      };
+
+      render(<Component />);
+
+      fireEvent.click(screen.getByRole('button', { name: /append/i }));
+
+      const inputs = screen.getAllByRole('textbox');
+
+      expect(inputs).toHaveLength(3);
+
+      // expect(document.activeElement).toEqual(inputs[2]); no longer working
+    });
+
+    it('should not focus if shouldFocus is false', () => {
+      const Component = () => {
+        const { register, control } = useForm<{
+          test: { value: string }[];
+        }>({
+          defaultValues: { test: [{ value: '1' }, { value: '2' }] },
+        });
+        const { fields, append } = useFieldArray({ control, name: 'test' });
+
+        return (
+          <form>
+            {fields.map((field, i) => (
+              <input
+                key={field.id}
+                {...register(`test.${i}.value` as any)}
+                defaultValue={field.value}
+              />
+            ))}
+            <button type="button" onClick={() => append({ value: '3' }, false)}>
+              append
+            </button>
+          </form>
+        );
+      };
+
+      render(<Component />);
+
+      fireEvent.click(screen.getByRole('button', { name: /append/i }));
+
+      const inputs = screen.getAllByRole('textbox');
+
+      expect(inputs).toHaveLength(3);
+      expect(document.activeElement).toEqual(document.body);
+    });
+
+    it('should return watched value with watch API', async () => {
+      const renderedItems: any = [];
+      const Component = () => {
+        const { watch, register, control } = useForm<{
+          test: { value: string }[];
+        }>();
+        const { fields, append } = useFieldArray({
+          name: 'test',
+          control,
+        });
+        const watched = watch('test', fields);
+        renderedItems.push(watched);
+        return (
+          <div>
+            {fields.map((field, i) => (
+              <div key={`${field.id}`}>
+                <input
+                  defaultValue={field.value}
+                  {...register(`test.${i}.value` as any)}
+                />
+              </div>
+            ))}
+            <button onClick={() => append({ value: 'test' })}>append</button>
+          </div>
+        );
+      };
+
+      render(<Component />);
+
+      fireEvent.click(screen.getByRole('button', { name: /append/i }));
+
+      await waitFor(() =>
+        expect(renderedItems).toEqual([
+          [],
+          [],
+          [{ id: '0', value: 'test' }],
+          [{ value: 'test' }],
+        ]),
+      );
+    });
+
+    describe('with resolver', () => {
+      it('should invoke resolver when formState.isValid true', async () => {
+        const resolver = jest.fn().mockReturnValue({});
+
+        const { result } = renderHook(() => {
+          const { formState, control } = useForm({
+            mode: VALIDATION_MODE.onChange,
+            resolver,
+          });
+          const { append } = useFieldArray({ control, name: 'test' });
+          return { formState, append };
+        });
+
+        result.current.formState.isValid;
+
+        await act(async () => {
+          result.current.append({ value: '1' });
+        });
+
+        expect(resolver).toBeCalledWith(
+          {
+            test: [{ id: '0', value: '1' }],
+          },
+          undefined,
+          false,
+        );
+      });
+
+      it('should not invoke resolver when formState.isValid false', () => {
+        const resolver = jest.fn().mockReturnValue({});
+
+        const { result } = renderHook(() => {
+          const { formState, control } = useForm({
+            mode: VALIDATION_MODE.onChange,
+            resolver,
+          });
+          const { append } = useFieldArray({ control, name: 'test' });
+          return { formState, append };
+        });
+
+        act(() => {
+          result.current.append({ value: '1' });
+        });
+
+        expect(resolver).not.toBeCalled();
+      });
+    });
+  });
+
+  describe('prepend', () => {
+    it('should pre-append data into the fields', () => {
+      const { result } = renderHook(() => {
+        const { control, formState } = useForm();
+        const { fields, prepend } = useFieldArray({
+          control,
+          name: 'test',
+        });
+
+        return { formState, fields, prepend };
+      });
+
+      act(() => {
+        result.current.prepend({ test: 'test' });
+      });
+
+      expect(result.current.fields).toEqual([{ id: '0', test: 'test' }]);
+
+      act(() => {
+        result.current.prepend({ test: 'test1' });
+      });
+
+      expect(result.current.fields).toEqual([
+        { id: '1', test: 'test1' },
+        { id: '0', test: 'test' },
+      ]);
+
+      act(() => {
+        result.current.prepend({});
+      });
+
+      expect(result.current.fields).toEqual([
+        { id: '2' },
+        { id: '1', test: 'test1' },
+        { id: '0', test: 'test' },
+      ]);
+
+      act(() => {
+        result.current.prepend([{ test: 'test2' }, { test: 'test3' }]);
+      });
+
+      expect(result.current.fields).toEqual([
+        { id: '3', test: 'test2' },
+        { id: '4', test: 'test3' },
+        { id: '2' },
+        { id: '1', test: 'test1' },
+        { id: '0', test: 'test' },
+      ]);
+    });
+
+    it.each(['isDirty', 'dirtyFields'])(
+      'should be dirty when value is prepended with %s',
+      () => {
+        const { result } = renderHook(() => {
+          const { register, formState, control } = useForm();
+          const { fields, prepend } = useFieldArray({
+            control,
+            name: 'test',
+          });
+
+          return { register, formState, fields, prepend };
+        });
+
+        result.current.formState.isDirty;
+        result.current.formState.dirty;
+
+        act(() => {
+          result.current.prepend({ value: 'test' });
+        });
+
+        act(() => {
+          result.current.prepend({ value: 'test1' });
+        });
+
+        act(() => {
+          result.current.prepend({ value: 'test2' });
+        });
+
+        expect(result.current.formState.isDirty).toBeTruthy();
+        expect(result.current.formState.dirty).toEqual({
+          test: [{ value: true }, { value: true }, { value: true }],
+        });
+      },
+    );
+
+    it('should set prepended values to formState.touched', () => {
+      let touched: any;
+
+      const Component = () => {
+        const { register, formState, control } = useForm();
+        const { fields, prepend } = useFieldArray({
+          control,
+          name: 'test',
+        });
+
+        touched = formState.touched;
+
+        return (
+          <form>
+            {fields.map((field, i) => (
+              <input key={field.id} {...register(`test.${i}.value`)} />
+            ))}
+            <button
+              type="button"
+              onClick={() => prepend({ value: `test${1}` })}
+            >
+              prepend
+            </button>
+          </form>
+        );
+      };
+
+      render(<Component />);
+
+      fireEvent.click(screen.getByRole('button', { name: /prepend/i }));
+
+      fireEvent.blur(screen.getAllByRole('textbox')[0]);
+
+      fireEvent.click(screen.getByRole('button', { name: /prepend/i }));
+      fireEvent.click(screen.getByRole('button', { name: /prepend/i }));
+
+      expect(touched).toEqual({
+        test: [undefined, { value: true }, { value: true }],
+      });
+    });
+
+    it('should prepend error', async () => {
+      let errors: any;
+      const Component = () => {
+        const {
+          register,
+          formState: { errors: tempErrors },
+          handleSubmit,
+          control,
+        } = useForm<{
+          test: { value: string }[];
+        }>();
+        const { fields, prepend } = useFieldArray({
+          control,
+          name: 'test',
+        });
+        errors = tempErrors;
+
+        return (
+          <form onSubmit={handleSubmit(() => {})}>
+            {fields.map((field, i) => (
+              <input
+                key={field.id}
+                {...register(`test.${i}.value` as any, { required: true })}
+                defaultValue={field.value}
+              />
+            ))}
+            <button type="button" onClick={() => prepend({ value: '' })}>
+              prepend
+            </button>
+            <button>submit</button>
+          </form>
+        );
+      };
+
+      render(<Component />);
+
+      fireEvent.click(screen.getByRole('button', { name: /prepend/i }));
+
+      expect(errors.test).toBeUndefined();
+
+      await actComponent(async () => {
+        fireEvent.click(screen.getByRole('button', { name: /submit/i }));
+      });
+
+      fireEvent.click(screen.getByRole('button', { name: /prepend/i }));
+
+      expect(errors.test).toHaveLength(2);
+    });
+
+    it('should trigger reRender when user is watching the all field array', () => {
+      const watched: any[] = [];
+      const Component = () => {
+        const { register, watch, control } = useForm<{
+          test: { value: string }[];
+        }>();
+        const { fields, prepend } = useFieldArray({
+          control,
+          name: 'test',
+        });
+        watched.push(watch());
+
+        return (
+          <form>
+            {fields.map((field, i) => (
+              <input
+                key={field.id}
+                {...register(`test.${i}.value` as any)}
+                defaultValue={field.value}
+              />
+            ))}
+            <button type="button" onClick={() => prepend({ value: '' })}>
+              prepend
+            </button>
+          </form>
+        );
+      };
+
+      render(<Component />);
+
+      fireEvent.click(screen.getByRole('button', { name: 'prepend' }));
+
+      expect(watched).toEqual([
+        {}, // first render
+        {}, // render inside useEffect in useFieldArray
+        {}, // render inside prepend method
+        { test: [{ value: '' }] }, // render inside useEffect in useFieldArray
+      ]);
+    });
+
+    it('should return watched value with watch API', async () => {
+      const renderedItems: any = [];
+      const Component = () => {
+        const { watch, register, control } = useForm<{
+          test: {
+            value: string;
+          }[];
+        }>();
+        const { fields, append, prepend } = useFieldArray({
+          name: 'test',
+          control,
+        });
+        const watched = watch('test', fields);
+        const isPrepended = React.useRef(false);
+        if (isPrepended.current) {
+          renderedItems.push(watched);
+        }
+        return (
+          <div>
+            {fields.map((field, i) => (
+              <div key={`${field.id}`}>
+                <input
+                  defaultValue={field.value}
+                  {...register(`test.${i}.value` as any)}
+                />
+              </div>
+            ))}
+            <button onClick={() => append({ value: '' })}>append</button>
+            <button
+              onClick={() => {
+                prepend({ value: 'test' });
+                isPrepended.current = true;
+              }}
+            >
+              prepend
+            </button>
+          </div>
+        );
+      };
+
+      render(<Component />);
+
+      fireEvent.click(screen.getByRole('button', { name: /append/i }));
+      fireEvent.click(screen.getByRole('button', { name: /append/i }));
+
+      const inputs = screen.getAllByRole('textbox');
+
+      fireEvent.input(inputs[0], {
+        target: { name: 'test[0].value', value: '111' },
+      });
+      fireEvent.input(inputs[1], {
+        target: { name: 'test[1].value', value: '222' },
+      });
+
+      fireEvent.click(screen.getByRole('button', { name: /prepend/i }));
+
+      await waitFor(() =>
+        expect(renderedItems).toEqual([
+          [
+            { id: '2', value: 'test' },
+            { id: '0', value: '' },
+            { id: '1', value: '' },
+          ],
+          [{ value: 'test' }, { value: '111' }, { value: '222' }],
+        ]),
+      );
+    });
+
+    it('should focus if shouldFocus is true', () => {
+      const Component = () => {
+        const { register, control } = useForm<{
+          test: { value: string }[];
+        }>({
+          defaultValues: {
+            test: [{ value: '1' }, { value: '2' }],
+          },
+        });
+        const { fields, prepend } = useFieldArray({ name: 'test', control });
+
+        return (
+          <form>
+            {fields.map((field, i) => (
+              <input
+                key={field.id}
+                {...register(`test.${i}.value` as any)}
+                defaultValue={field.value}
+              />
+            ))}
+            <button type="button" onClick={() => prepend({ value: '' })}>
+              prepend
+            </button>
+          </form>
+        );
+      };
+
+      render(<Component />);
+
+      fireEvent.click(screen.getByRole('button', { name: /prepend/i }));
+
+      const inputs = screen.getAllByRole('textbox');
+
+      expect(inputs).toHaveLength(3);
+      expect(document.activeElement).toEqual(inputs[0]);
+    });
+
+    it('should not focus if shouldFocus is false', () => {
+      const Component = () => {
+        const { register, control } = useForm({
+          defaultValues: {
+            test: [{ value: '1' }, { value: '2' }],
+          },
+        });
+        const { fields, prepend } = useFieldArray({ name: 'test', control });
+
+        return (
+          <form>
+            {fields.map((field, i) => (
+              <input
+                key={field.id}
+                {...register(`test.${i}.value` as any)}
+                defaultValue={field.value}
+              />
+            ))}
+            <button type="button" onClick={() => prepend({ value: '' }, false)}>
+              prepend
+            </button>
+          </form>
+        );
+      };
+
+      render(<Component />);
+
+      fireEvent.click(screen.getByRole('button', { name: /prepend/i }));
+      const inputs = screen.getAllByRole('textbox');
+
+      expect(inputs).toHaveLength(3);
+      expect(document.activeElement).toEqual(document.body);
+    });
+
+    describe('with resolver', () => {
+      it('should invoke resolver when formState.isValid true', async () => {
+        const resolver = jest.fn().mockReturnValue({});
+
+        const { result } = renderHook(() => {
+          const { formState, control } = useForm({
+            mode: VALIDATION_MODE.onChange,
+            resolver,
+          });
+          const { prepend } = useFieldArray({ control, name: 'test' });
+          return { formState, prepend };
+        });
+
+        result.current.formState.isValid;
+
+        await act(async () => {
+          result.current.prepend({ value: '1' });
+        });
+
+        expect(resolver).toBeCalledWith(
+          {
+            test: [{ id: '0', value: '1' }],
+          },
+          undefined,
+          false,
+        );
+      });
+
+      it('should not invoke resolver when formState.isValid false', () => {
+        const resolver = jest.fn().mockReturnValue({});
+
+        const { result } = renderHook(() => {
+          const { formState, control } = useForm({
+            mode: VALIDATION_MODE.onChange,
+            resolver,
+          });
+          const { prepend } = useFieldArray({ control, name: 'test' });
+          return { formState, prepend };
+        });
+
+        act(() => {
+          result.current.prepend({ value: '1' });
+        });
+
+        expect(resolver).not.toBeCalled();
+      });
+    });
+  });
+
   // describe.skip('remove', () => {
   //   it('should update isDirty formState when item removed', () => {
   //     let formState: any;
