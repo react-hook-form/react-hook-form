@@ -1,5 +1,6 @@
 import * as React from 'react';
-import { useFieldArray, useForm, Control } from 'react-hook-form';
+import { useFieldArray, useForm } from 'react-hook-form';
+import { Control } from '../../src/types';
 
 type FormInputs = {
   nest: {
@@ -19,11 +20,9 @@ const ChildComponent = ({
 }) => {
   const { fields } = useFieldArray({
     // @ts-ignore
-    name: `nest.test[${index}].nestedArray`,
+    name: `nest.test.${index}.nestedArray`,
     control,
   });
-
-  console.log('chil', fields);
 
   return (
     <>
@@ -67,6 +66,7 @@ const Component = () => {
             {...register(`nest.test.${i}.value` as any)}
             defaultValue={item.value}
           />
+
           <div>
             child:
             <ChildComponent control={control} index={i} />
@@ -74,7 +74,7 @@ const Component = () => {
         </div>
       ))}
 
-      <button type={'button'} onClick={() => prepend({ value: 'test' })}>
+      <button type={'button'} onClick={() => prepend({ value: '1' })}>
         prepend
       </button>
     </>

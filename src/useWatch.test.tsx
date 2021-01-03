@@ -470,13 +470,13 @@ describe('useWatch', () => {
     //               <input
     //                 type="radio"
     //                 value="yes"
-    //                 name={`options[${i}].option`}
+    //                 name={`options.${i}.option`}
     //                 {...register()}
     //               />
     //               <input
     //                 type="radio"
     //                 value="no"
-    //                 name={`options[${i}].option`}
+    //                 name={`options.${i}.option`}
     //                 {...register()}
     //               />
     //             </div>
@@ -528,7 +528,7 @@ describe('useWatch', () => {
     //               <input
     //                 type="input"
     //                 defaultValue={item.firstName}
-    //                 {...register('test[${i}].firstName')}
+    //                 {...register('test.${i}.firstName')}
     //               />
     //
     //               <button type="button" onClick={() => remove(i)}>

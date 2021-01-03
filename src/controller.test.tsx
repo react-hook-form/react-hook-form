@@ -482,7 +482,7 @@ describe('Controller', () => {
             <Controller
               key={field.id}
               defaultValue=""
-              name={`test[${i}].value`}
+              name={`test.${i}.value`}
               render={({ field }) => <input {...field} />}
               control={control}
             />
@@ -773,7 +773,7 @@ describe('Controller', () => {
             <div key={field.id}>
               <Controller
                 render={({ field }) => <input {...field} />}
-                name={`test[${i}].value`}
+                name={`test.${i}.value`}
                 defaultValue={''}
                 control={control}
               />

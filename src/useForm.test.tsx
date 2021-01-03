@@ -3431,15 +3431,15 @@ describe('useForm', () => {
         return (
           <form onSubmit={handleSubmit(() => {})}>
             {[1, 2, 3].map((value, index) => (
-              <div key={`test[${index}]`}>
+              <div key={`test.${index}`}>
                 <label
-                  htmlFor={`checkbox[${index}]`}
-                >{`checkbox[${index}]`}</label>
+                  htmlFor={`checkbox.${index}`}
+                >{`checkbox.${index}`}</label>
                 <input
                   type={'checkbox'}
                   key={index}
-                  id={`checkbox[${index}]`}
-                  {...register(`checkbox[${index}]` as any)}
+                  id={`checkbox.${index}`}
+                  {...register(`checkbox.${index}` as any)}
                   value={value}
                 />
               </div>
