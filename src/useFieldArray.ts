@@ -258,12 +258,15 @@ export const useFieldArray = <
     }
 
     if (readFormStateRef.current.dirty || readFormStateRef.current.isDirty) {
-      const output = method(
-        get(formStateRef.current.dirty, name as string, []),
-        args.argC,
-        args.argD,
+      set(
+        formStateRef.current.dirty,
+        name,
+        setFieldArrayDirtyFields(
+          omitKey(updatedFormValues),
+          get(defaultValuesRef.current, name, []),
+          get(formStateRef.current.dirty, name, []),
+        ),
       );
-      shouldSet && set(formStateRef.current.dirty, name as string, output);
       updateDirtyFieldsWithDefaultValues(updatedFieldValues);
       cleanup(formStateRef.current.dirty);
     }
