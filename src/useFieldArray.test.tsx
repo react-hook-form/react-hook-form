@@ -2859,7 +2859,7 @@ describe('useFieldArray', () => {
 
         expect(result.current.formState.isDirty).toBeTruthy();
         expect(result.current.formState.dirtyFields).toEqual({
-          test: [undefined, { value1: true }, { value: true }],
+          test: [undefined, { value: true, value1: true }, { value: true }],
         });
       },
     );
@@ -2891,8 +2891,8 @@ describe('useFieldArray', () => {
         expect(result.current.formState.dirtyFields).toEqual({
           test: [
             undefined,
-            { value1: true },
-            { value2: true },
+            { value1: true, value: true },
+            { value2: true, value: true },
             { value: true },
           ],
         });
@@ -3424,7 +3424,7 @@ describe('useFieldArray', () => {
 
         expect(result.current.formState.isDirty).toBeTruthy();
         expect(result.current.formState.dirtyFields).toEqual({
-          test: [{ value: true }, undefined, { value: true }],
+          test: [{ value: true }, { value: true }, { value: true }],
         });
       },
     );
@@ -3792,7 +3792,7 @@ describe('useFieldArray', () => {
 
         expect(result.current.formState.isDirty).toBeTruthy();
         expect(result.current.formState.dirtyFields).toEqual({
-          test: [{ value: true }, undefined, { value: true }],
+          test: [{ value: true }, { value: true }, { value: true }],
         });
       },
     );
