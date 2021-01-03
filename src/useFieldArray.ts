@@ -260,11 +260,11 @@ export const useFieldArray = <
     if (readFormStateRef.current.dirty || readFormStateRef.current.isDirty) {
       set(
         formStateRef.current.dirty,
-        name,
+        name as string,
         setFieldArrayDirtyFields(
           omitKey(updatedFormValues),
-          get(defaultValuesRef.current, name, []),
-          get(formStateRef.current.dirty, name, []),
+          get(defaultValuesRef.current, name as string, []),
+          get(formStateRef.current.dirty, name as string, []),
         ),
       );
       updateDirtyFieldsWithDefaultValues(updatedFieldValues);
