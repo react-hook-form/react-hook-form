@@ -5,24 +5,24 @@ exports[`useFieldArray array of array fields should populate all array fields co
   <div>
     <div>
       <input
-        name="nest[0].value"
+        name="nest.0.value"
         value="1"
       />
       <div>
         <input
-          name="nest[0].nestedArray[0].value"
+          name="nest.0.nestedArray.0.value"
           value="1"
         />
       </div>
     </div>
     <div>
       <input
-        name="nest[1].value"
+        name="nest.1.value"
         value="2"
       />
       <div>
         <input
-          name="nest[1].nestedArray[0].value"
+          name="nest.1.nestedArray.0.value"
           value="1"
         />
       </div>
@@ -36,24 +36,24 @@ exports[`useFieldArray array of array fields should populate all array fields wi
   <div>
     <div>
       <input
-        name="nest[0].value"
+        name="nest.0.value"
         value="1"
       />
       <div>
         <input
-          name="nest[0].nestedArray[0].value"
+          name="nest.0.nestedArray.0.value"
           value="1"
         />
       </div>
     </div>
     <div>
       <input
-        name="nest[1].value"
+        name="nest.1.value"
         value="2"
       />
       <div>
         <input
-          name="nest[1].nestedArray[0].value"
+          name="nest.1.nestedArray.0.value"
           value="1"
         />
       </div>

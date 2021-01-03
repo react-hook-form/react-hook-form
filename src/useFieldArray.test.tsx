@@ -3933,519 +3933,519 @@ describe('useFieldArray', () => {
     });
   });
 
-  // describe.skip('array of array fields', () => {
-  //   it('should remove correctly with nested field array and set shouldUnregister to false', () => {
-  //     const ArrayField = ({
-  //       arrayIndex,
-  //       arrayField,
-  //       register,
-  //       control,
-  //     }: {
-  //       arrayIndex: number;
-  //       register: UseFormMethods['register'];
-  //       arrayField: Partial<FieldValues>;
-  //       control: Control;
-  //     }) => {
-  //       const { fields, append, remove } = useFieldArray({
-  //         name: `fieldArray[${arrayIndex}].nestedFieldArray`,
-  //         control,
-  //       });
-  //
-  //       return (
-  //         <div>
-  //           <input
-  //             {...register(`fieldArray[${arrayIndex}].value`)}
-  //             defaultValue={arrayField.value}
-  //           />
-  //           <br />
-  //           {fields.map((nestedField, index) => (
-  //             <div key={nestedField.id}>
-  //               <input
-  //                 {...register(
-  //                   `fieldArray[${arrayIndex}].nestedFieldArray.${index}.value`,
-  //                 )}
-  //                 // @ts-ignore
-  //                 defaultValue={nestedField.value}
-  //               />
-  //               <button type="button" onClick={() => remove(index)}>
-  //                 remove
-  //               </button>
-  //             </div>
-  //           ))}
-  //           <button
-  //             type="button"
-  //             onClick={() => {
-  //               append({
-  //                 value: `fieldArray[${arrayIndex}].nestedFieldArray[${fields.length}].value`,
-  //               });
-  //             }}
-  //           >
-  //             Add nested array
-  //           </button>
-  //         </div>
-  //       );
-  //     };
-  //
-  //     const Component = () => {
-  //       const { register, control } = useForm({});
-  //       const { fields, append } = useFieldArray({
-  //         name: 'fieldArray',
-  //         control,
-  //       });
-  //
-  //       return (
-  //         <form>
-  //           {fields.map((field, index) => (
-  //             <ArrayField
-  //               key={field.id}
-  //               arrayIndex={index}
-  //               arrayField={field}
-  //               register={register}
-  //               control={control}
-  //             />
-  //           ))}
-  //
-  //           <button
-  //             type="button"
-  //             onClick={() => {
-  //               append({
-  //                 value: `fieldArray[${fields.length}].value`,
-  //               });
-  //             }}
-  //           >
-  //             Add array
-  //           </button>
-  //         </form>
-  //       );
-  //     };
-  //
-  //     render(<Component />);
-  //
-  //     fireEvent.click(
-  //       screen.getByRole('button', {
-  //         name: 'Add array',
-  //       }),
-  //     );
-  //
-  //     fireEvent.click(
-  //       screen.getByRole('button', {
-  //         name: 'Add nested array',
-  //       }),
-  //     );
-  //
-  //     fireEvent.click(
-  //       screen.getByRole('button', {
-  //         name: 'Add nested array',
-  //       }),
-  //     );
-  //
-  //     fireEvent.click(
-  //       screen.getAllByRole('button', {
-  //         name: 'remove',
-  //       })[0],
-  //     );
-  //
-  //     fireEvent.click(
-  //       screen.getAllByRole('button', {
-  //         name: 'remove',
-  //       })[0],
-  //     );
-  //
-  //     expect(screen.getAllByRole('textbox').length).toEqual(1);
-  //   });
-  //
-  //   it('should prepend correctly with default values on nested array fields', () => {
-  //     type FormInputs = {
-  //       nest: {
-  //         test: {
-  //           value: string;
-  //           nestedArray: { value: string }[];
-  //         }[];
-  //       };
-  //     };
-  //
-  //     const ChildComponent = ({
-  //       index,
-  //       control,
-  //     }: {
-  //       control: Control<FormInputs>;
-  //       index: number;
-  //     }) => {
-  //       const { fields } = useFieldArray({
-  //         // @ts-ignore
-  //         name: `nest.test.${index}.nestedArray`,
-  //         control,
-  //       });
-  //
-  //       return (
-  //         <>
-  //           {fields.map((item, i) => (
-  //             <input
-  //               key={item.id}
-  //               {...control.register(
-  //                 `nest.test.${index}.nestedArray.${i}.value` as any,
-  //               )}
-  //               // @ts-ignore
-  //               defaultValue={item.value}
-  //             />
-  //           ))}
-  //         </>
-  //       );
-  //     };
-  //
-  //     const Component = () => {
-  //       const { register, control } = useForm<FormInputs>({
-  //         defaultValues: {
-  //           nest: {
-  //             test: [
-  //               { value: '1', nestedArray: [{ value: '2' }, { value: '3' }] },
-  //               { value: '4', nestedArray: [{ value: '5' }] },
-  //             ],
-  //           },
-  //         },
-  //       });
-  //       const { fields, prepend } = useFieldArray({
-  //         name: 'nest.test',
-  //         control,
-  //       });
-  //
-  //       return (
-  //         <>
-  //           {fields.map((item, i) => (
-  //             <div key={item.id}>
-  //               <input
-  //                 {...register(`nest.test.${i}.value` as any)}
-  //                 defaultValue={item.value}
-  //               />
-  //               <ChildComponent control={control} index={i} />
-  //             </div>
-  //           ))}
-  //
-  //           <button type={'button'} onClick={() => prepend({ value: 'test' })}>
-  //             prepend
-  //           </button>
-  //         </>
-  //       );
-  //     };
-  //
-  //     render(<Component />);
-  //
-  //     expect(screen.getAllByRole('textbox')).toHaveLength(5);
-  //
-  //     fireEvent.click(screen.getByRole('button', { name: /prepend/i }));
-  //
-  //     expect(screen.getAllByRole('textbox')).toHaveLength(6);
-  //
-  //     expect(
-  //       (screen.getAllByRole('textbox')[0] as HTMLInputElement).value,
-  //     ).toEqual('test');
-  //   });
-  //
-  //   it('should render correct amount of child array fields', async () => {
-  //     type FormValues = {
-  //       nest: {
-  //         test: {
-  //           value: string;
-  //           nestedArray: {
-  //             value: string;
-  //           }[];
-  //         }[];
-  //       };
-  //     };
-  //     const ChildComponent = ({
-  //       index,
-  //       control,
-  //     }: {
-  //       control: Control<FormValues>;
-  //       index: number;
-  //     }) => {
-  //       const { fields } = useFieldArray({
-  //         name: `nest.test.${index}.nestedArray` as any,
-  //         control,
-  //       });
-  //
-  //       return (
-  //         <div>
-  //           {fields.map((item, i) => (
-  //             <input
-  //               key={item.id}
-  //               {...control.register(
-  //                 `nest.test.${index}.nestedArray.${i}.value` as any,
-  //               )}
-  //               // @ts-ignore
-  //               defaultValue={item.value}
-  //             />
-  //           ))}
-  //         </div>
-  //       );
-  //     };
-  //
-  //     const Component = () => {
-  //       const { register, control } = useForm({
-  //         defaultValues: {
-  //           nest: {
-  //             test: [
-  //               { value: '1', nestedArray: [{ value: '2' }] },
-  //               { value: '3', nestedArray: [{ value: '4' }] },
-  //             ],
-  //           },
-  //         },
-  //       });
-  //       const { fields, remove, append } = useFieldArray({
-  //         name: 'nest.test',
-  //         control,
-  //       });
-  //
-  //       return (
-  //         <div>
-  //           {fields.map((item, i) => (
-  //             <div key={item.id}>
-  //               <input
-  //                 {...register(`nest.test.${i}.value` as any)}
-  //                 defaultValue={item.value}
-  //               />
-  //
-  //               <ChildComponent control={control} index={i} />
-  //
-  //               <button
-  //                 type={'button'}
-  //                 onClick={() => remove(i)}
-  //                 data-testid={item.value}
-  //               >
-  //                 remove
-  //               </button>
-  //             </div>
-  //           ))}
-  //
-  //           <button type={'button'} onClick={() => append({ value: 'test' })}>
-  //             append
-  //           </button>
-  //         </div>
-  //       );
-  //     };
-  //
-  //     render(<Component />);
-  //
-  //     expect(screen.getAllByRole('textbox')).toHaveLength(4);
-  //
-  //     fireEvent.click(screen.getByTestId('1'));
-  //
-  //     expect(screen.getAllByRole('textbox')).toHaveLength(2);
-  //
-  //     fireEvent.click(screen.getByRole('button', { name: /append/i }));
-  //
-  //     expect(screen.getAllByRole('textbox')).toHaveLength(3);
-  //   });
-  //
-  //   it('should populate all array fields with setValue when name match Field Array', async () => {
-  //     type FormInputs = {
-  //       nest: {
-  //         value: string;
-  //         nestedArray: {
-  //           value: string;
-  //         }[];
-  //       }[];
-  //     };
-  //
-  //     const ChildComponent = ({
-  //       index,
-  //       control,
-  //     }: {
-  //       control: Control<FormInputs>;
-  //       index: number;
-  //     }) => {
-  //       const { fields } = useFieldArray({
-  //         name: `nest.${index}.nestedArray` as any,
-  //         control,
-  //       });
-  //
-  //       return (
-  //         <div>
-  //           {fields.map((item, i) => (
-  //             <input
-  //               key={item.id}
-  //               {...control.register(
-  //                 `nest.${index}.nestedArray.${i}.value` as any,
-  //               )}
-  //               // @ts-ignore
-  //               defaultValue={item.value}
-  //             />
-  //           ))}
-  //         </div>
-  //       );
-  //     };
-  //
-  //     const Component = () => {
-  //       const { register, control, setValue } = useForm<FormInputs>();
-  //       const { fields } = useFieldArray({
-  //         name: 'nest',
-  //         control,
-  //       });
-  //
-  //       React.useEffect(() => {
-  //         setValue('nest', [
-  //           {
-  //             value: 1,
-  //             nestedArray: [
-  //               {
-  //                 value: 1,
-  //               },
-  //             ],
-  //           },
-  //           {
-  //             value: 2,
-  //             nestedArray: [
-  //               {
-  //                 value: 1,
-  //               },
-  //             ],
-  //           },
-  //         ]);
-  //       }, [setValue]);
-  //
-  //       return (
-  //         <div>
-  //           {fields.map((item, i) => (
-  //             <div key={item.id}>
-  //               <input
-  //                 {...register(`nest.${i}.value` as any)}
-  //                 defaultValue={item.value}
-  //               />
-  //
-  //               <ChildComponent control={control} index={i} />
-  //             </div>
-  //           ))}
-  //         </div>
-  //       );
-  //     };
-  //
-  //     const { asFragment } = render(<Component />);
-  //
-  //     expect(asFragment()).toMatchSnapshot();
-  //   });
-  //
-  //   it('should populate all array fields correctly with setValue', async () => {
-  //     const ChildComponent = ({
-  //       index,
-  //       control,
-  //     }: {
-  //       control: Control;
-  //       index: number;
-  //     }) => {
-  //       const { fields } = useFieldArray({
-  //         name: `nest.${index}.nestedArray`,
-  //         control,
-  //       });
-  //
-  //       return (
-  //         <div>
-  //           {fields.map((item, i) => (
-  //             <input
-  //               key={item.id}
-  //               {...control.register(`nest.${index}.nestedArray.${i}.value`)}
-  //               // @ts-ignore
-  //               defaultValue={item.value}
-  //             />
-  //           ))}
-  //         </div>
-  //       );
-  //     };
-  //
-  //     const Component = () => {
-  //       const { register, control, setValue } = useForm();
-  //       const { fields } = useFieldArray({
-  //         name: 'nest',
-  //         control,
-  //       });
-  //
-  //       React.useEffect(() => {
-  //         setValue(
-  //           'nest',
-  //           [
-  //             {
-  //               value: 1,
-  //               nestedArray: [
-  //                 {
-  //                   value: 1,
-  //                 },
-  //               ],
-  //             },
-  //             {
-  //               value: 2,
-  //               nestedArray: [
-  //                 {
-  //                   value: 1,
-  //                 },
-  //               ],
-  //             },
-  //           ],
-  //           { shouldDirty: true },
-  //         );
-  //       }, [setValue]);
-  //
-  //       return (
-  //         <div>
-  //           {fields.map((item, i) => (
-  //             <div key={item.id}>
-  //               <input
-  //                 {...register(`nest.${i}.value`)}
-  //                 // @ts-ignore
-  //                 defaultValue={item.value}
-  //               />
-  //
-  //               <ChildComponent control={control} index={i} />
-  //             </div>
-  //           ))}
-  //         </div>
-  //       );
-  //     };
-  //
-  //     const { asFragment } = render(<Component />);
-  //
-  //     expect(asFragment()).toMatchSnapshot();
-  //   });
-  // });
-  //
-  // describe.skip('submit form', () => {
-  //   it.skip('should leave defaultValues as empty array when shouldUnregister set to false', async () => {
-  //     let submitData: any;
-  //     type FormValues = {
-  //       test: {
-  //         value: string;
-  //       }[];
-  //     };
-  //     const Component = () => {
-  //       const { register, control, handleSubmit } = useForm<FormValues>({
-  //         defaultValues: {
-  //           test: [],
-  //         },
-  //       });
-  //       const { fields } = useFieldArray({
-  //         control,
-  //         name: 'test',
-  //       });
-  //       const onSubmit: SubmitHandler<FormValues> = (data) => {
-  //         submitData = data;
-  //       };
-  //
-  //       return (
-  //         <form onSubmit={handleSubmit(onSubmit)}>
-  //           {fields.map((field, i) => (
-  //             <input key={field.id} {...register(`test.${i}.value` as any)} />
-  //           ))}
-  //           <button>submit</button>
-  //         </form>
-  //       );
-  //     };
-  //
-  //     render(<Component />);
-  //     await actComponent(async () => {
-  //       await fireEvent.click(screen.getByRole('button'));
-  //     });
-  //
-  //     expect(submitData).toEqual({
-  //       test: [],
-  //     });
-  //   });
-  // });
+  describe('array of array fields', () => {
+    it('should remove correctly with nested field array and set shouldUnregister to false', () => {
+      const ArrayField = ({
+        arrayIndex,
+        arrayField,
+        register,
+        control,
+      }: {
+        arrayIndex: number;
+        register: UseFormMethods['register'];
+        arrayField: Partial<FieldValues>;
+        control: Control;
+      }) => {
+        const { fields, append, remove } = useFieldArray({
+          name: `fieldArray[${arrayIndex}].nestedFieldArray`,
+          control,
+        });
+
+        return (
+          <div>
+            <input
+              {...register(`fieldArray[${arrayIndex}].value`)}
+              defaultValue={arrayField.value}
+            />
+            <br />
+            {fields.map((nestedField, index) => (
+              <div key={nestedField.id}>
+                <input
+                  {...register(
+                    `fieldArray[${arrayIndex}].nestedFieldArray.${index}.value`,
+                  )}
+                  // @ts-ignore
+                  defaultValue={nestedField.value}
+                />
+                <button type="button" onClick={() => remove(index)}>
+                  remove
+                </button>
+              </div>
+            ))}
+            <button
+              type="button"
+              onClick={() => {
+                append({
+                  value: `fieldArray[${arrayIndex}].nestedFieldArray[${fields.length}].value`,
+                });
+              }}
+            >
+              Add nested array
+            </button>
+          </div>
+        );
+      };
+
+      const Component = () => {
+        const { register, control } = useForm({});
+        const { fields, append } = useFieldArray({
+          name: 'fieldArray',
+          control,
+        });
+
+        return (
+          <form>
+            {fields.map((field, index) => (
+              <ArrayField
+                key={field.id}
+                arrayIndex={index}
+                arrayField={field}
+                register={register}
+                control={control}
+              />
+            ))}
+
+            <button
+              type="button"
+              onClick={() => {
+                append({
+                  value: `fieldArray[${fields.length}].value`,
+                });
+              }}
+            >
+              Add array
+            </button>
+          </form>
+        );
+      };
+
+      render(<Component />);
+
+      fireEvent.click(
+        screen.getByRole('button', {
+          name: 'Add array',
+        }),
+      );
+
+      fireEvent.click(
+        screen.getByRole('button', {
+          name: 'Add nested array',
+        }),
+      );
+
+      fireEvent.click(
+        screen.getByRole('button', {
+          name: 'Add nested array',
+        }),
+      );
+
+      fireEvent.click(
+        screen.getAllByRole('button', {
+          name: 'remove',
+        })[0],
+      );
+
+      fireEvent.click(
+        screen.getAllByRole('button', {
+          name: 'remove',
+        })[0],
+      );
+
+      expect(screen.getAllByRole('textbox').length).toEqual(1);
+    });
+
+    it('should prepend correctly with default values on nested array fields', () => {
+      type FormInputs = {
+        nest: {
+          test: {
+            value: string;
+            nestedArray: { value: string }[];
+          }[];
+        };
+      };
+
+      const ChildComponent = ({
+        index,
+        control,
+      }: {
+        control: Control<FormInputs>;
+        index: number;
+      }) => {
+        const { fields } = useFieldArray({
+          // @ts-ignore
+          name: `nest.test.${index}.nestedArray`,
+          control,
+        });
+
+        return (
+          <>
+            {fields.map((item, i) => (
+              <input
+                key={item.id}
+                {...control.register(
+                  `nest.test.${index}.nestedArray.${i}.value` as any,
+                )}
+                // @ts-ignore
+                defaultValue={item.value}
+              />
+            ))}
+          </>
+        );
+      };
+
+      const Component = () => {
+        const { register, control } = useForm<FormInputs>({
+          defaultValues: {
+            nest: {
+              test: [
+                { value: '1', nestedArray: [{ value: '2' }, { value: '3' }] },
+                { value: '4', nestedArray: [{ value: '5' }] },
+              ],
+            },
+          },
+        });
+        const { fields, prepend } = useFieldArray({
+          name: 'nest.test',
+          control,
+        });
+
+        return (
+          <>
+            {fields.map((item, i) => (
+              <div key={item.id}>
+                <input
+                  {...register(`nest.test.${i}.value` as any)}
+                  defaultValue={item.value}
+                />
+                <ChildComponent control={control} index={i} />
+              </div>
+            ))}
+
+            <button type={'button'} onClick={() => prepend({ value: 'test' })}>
+              prepend
+            </button>
+          </>
+        );
+      };
+
+      render(<Component />);
+
+      expect(screen.getAllByRole('textbox')).toHaveLength(5);
+
+      fireEvent.click(screen.getByRole('button', { name: /prepend/i }));
+
+      expect(screen.getAllByRole('textbox')).toHaveLength(6);
+
+      expect(
+        (screen.getAllByRole('textbox')[0] as HTMLInputElement).value,
+      ).toEqual('test');
+    });
+
+    it('should render correct amount of child array fields', async () => {
+      type FormValues = {
+        nest: {
+          test: {
+            value: string;
+            nestedArray: {
+              value: string;
+            }[];
+          }[];
+        };
+      };
+      const ChildComponent = ({
+        index,
+        control,
+      }: {
+        control: Control<FormValues>;
+        index: number;
+      }) => {
+        const { fields } = useFieldArray({
+          name: `nest.test.${index}.nestedArray` as any,
+          control,
+        });
+
+        return (
+          <div>
+            {fields.map((item, i) => (
+              <input
+                key={item.id}
+                {...control.register(
+                  `nest.test.${index}.nestedArray.${i}.value` as any,
+                )}
+                // @ts-ignore
+                defaultValue={item.value}
+              />
+            ))}
+          </div>
+        );
+      };
+
+      const Component = () => {
+        const { register, control } = useForm({
+          defaultValues: {
+            nest: {
+              test: [
+                { value: '1', nestedArray: [{ value: '2' }] },
+                { value: '3', nestedArray: [{ value: '4' }] },
+              ],
+            },
+          },
+        });
+        const { fields, remove, append } = useFieldArray({
+          name: 'nest.test',
+          control,
+        });
+
+        return (
+          <div>
+            {fields.map((item, i) => (
+              <div key={item.id}>
+                <input
+                  {...register(`nest.test.${i}.value` as any)}
+                  defaultValue={item.value}
+                />
+
+                <ChildComponent control={control} index={i} />
+
+                <button
+                  type={'button'}
+                  onClick={() => remove(i)}
+                  data-testid={item.value}
+                >
+                  remove
+                </button>
+              </div>
+            ))}
+
+            <button type={'button'} onClick={() => append({ value: 'test' })}>
+              append
+            </button>
+          </div>
+        );
+      };
+
+      render(<Component />);
+
+      expect(screen.getAllByRole('textbox')).toHaveLength(4);
+
+      fireEvent.click(screen.getByTestId('1'));
+
+      expect(screen.getAllByRole('textbox')).toHaveLength(2);
+
+      fireEvent.click(screen.getByRole('button', { name: /append/i }));
+
+      expect(screen.getAllByRole('textbox')).toHaveLength(3);
+    });
+
+    it('should populate all array fields with setValue when name match Field Array', async () => {
+      type FormInputs = {
+        nest: {
+          value: string;
+          nestedArray: {
+            value: string;
+          }[];
+        }[];
+      };
+
+      const ChildComponent = ({
+        index,
+        control,
+      }: {
+        control: Control<FormInputs>;
+        index: number;
+      }) => {
+        const { fields } = useFieldArray({
+          name: `nest.${index}.nestedArray` as any,
+          control,
+        });
+
+        return (
+          <div>
+            {fields.map((item, i) => (
+              <input
+                key={item.id}
+                {...control.register(
+                  `nest.${index}.nestedArray.${i}.value` as any,
+                )}
+                // @ts-ignore
+                defaultValue={item.value}
+              />
+            ))}
+          </div>
+        );
+      };
+
+      const Component = () => {
+        const { register, control, setValue } = useForm<FormInputs>();
+        const { fields } = useFieldArray({
+          name: 'nest',
+          control,
+        });
+
+        React.useEffect(() => {
+          setValue('nest', [
+            {
+              value: 1,
+              nestedArray: [
+                {
+                  value: 1,
+                },
+              ],
+            },
+            {
+              value: 2,
+              nestedArray: [
+                {
+                  value: 1,
+                },
+              ],
+            },
+          ]);
+        }, [setValue]);
+
+        return (
+          <div>
+            {fields.map((item, i) => (
+              <div key={item.id}>
+                <input
+                  {...register(`nest.${i}.value` as any)}
+                  defaultValue={item.value}
+                />
+
+                <ChildComponent control={control} index={i} />
+              </div>
+            ))}
+          </div>
+        );
+      };
+
+      const { asFragment } = render(<Component />);
+
+      expect(asFragment()).toMatchSnapshot();
+    });
+
+    it('should populate all array fields correctly with setValue', async () => {
+      const ChildComponent = ({
+        index,
+        control,
+      }: {
+        control: Control;
+        index: number;
+      }) => {
+        const { fields } = useFieldArray({
+          name: `nest.${index}.nestedArray`,
+          control,
+        });
+
+        return (
+          <div>
+            {fields.map((item, i) => (
+              <input
+                key={item.id}
+                {...control.register(`nest.${index}.nestedArray.${i}.value`)}
+                // @ts-ignore
+                defaultValue={item.value}
+              />
+            ))}
+          </div>
+        );
+      };
+
+      const Component = () => {
+        const { register, control, setValue } = useForm();
+        const { fields } = useFieldArray({
+          name: 'nest',
+          control,
+        });
+
+        React.useEffect(() => {
+          setValue(
+            'nest',
+            [
+              {
+                value: 1,
+                nestedArray: [
+                  {
+                    value: 1,
+                  },
+                ],
+              },
+              {
+                value: 2,
+                nestedArray: [
+                  {
+                    value: 1,
+                  },
+                ],
+              },
+            ],
+            { shouldDirty: true },
+          );
+        }, [setValue]);
+
+        return (
+          <div>
+            {fields.map((item, i) => (
+              <div key={item.id}>
+                <input
+                  {...register(`nest.${i}.value`)}
+                  // @ts-ignore
+                  defaultValue={item.value}
+                />
+
+                <ChildComponent control={control} index={i} />
+              </div>
+            ))}
+          </div>
+        );
+      };
+
+      const { asFragment } = render(<Component />);
+
+      expect(asFragment()).toMatchSnapshot();
+    });
+  });
+
+  describe.skip('submit form', () => {
+    it.skip('should leave defaultValues as empty array when shouldUnregister set to false', async () => {
+      let submitData: any;
+      type FormValues = {
+        test: {
+          value: string;
+        }[];
+      };
+      const Component = () => {
+        const { register, control, handleSubmit } = useForm<FormValues>({
+          defaultValues: {
+            test: [],
+          },
+        });
+        const { fields } = useFieldArray({
+          control,
+          name: 'test',
+        });
+        const onSubmit: SubmitHandler<FormValues> = (data) => {
+          submitData = data;
+        };
+
+        return (
+          <form onSubmit={handleSubmit(onSubmit)}>
+            {fields.map((field, i) => (
+              <input key={field.id} {...register(`test.${i}.value` as any)} />
+            ))}
+            <button>submit</button>
+          </form>
+        );
+      };
+
+      render(<Component />);
+      await actComponent(async () => {
+        await fireEvent.click(screen.getByRole('button'));
+      });
+
+      expect(submitData).toEqual({
+        test: [],
+      });
+    });
+  });
 });
