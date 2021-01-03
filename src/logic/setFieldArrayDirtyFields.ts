@@ -49,6 +49,6 @@ export default <T extends U, U extends Record<string, unknown>[]>(
   dirty: Record<string, boolean | []>[],
 ) =>
   deepMerge(
-    setDirtyFields(values, defaultValues, dirty),
-    setDirtyFields(defaultValues, values, dirty),
+    setDirtyFields(values, defaultValues, dirty.slice(0, values.length)),
+    setDirtyFields(defaultValues, values, dirty.slice(0, values.length)),
   );
