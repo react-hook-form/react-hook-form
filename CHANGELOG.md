@@ -1,11 +1,5 @@
 # Changelog
 
-## [6.15.0] - 2021-01-02
-
-### Changed
-
-- for the functions `append`, `prepend`, and `insert` returned from `useFieldArray`, the `value` argument is now optional and defaults to `{}`
-
 ## [6.14.0] - 2020-12-31
 
 ### Changed
