@@ -78,11 +78,7 @@ describe('useFormState', () => {
 
       return (
         <div>
-          <input
-            name="test"
-            aria-label="test"
-            {...register('test', { minLength: 5 })}
-          />
+          <input aria-label="test" {...register('test', { minLength: 5 })} />
           <Test control={control} />
         </div>
       );
@@ -157,11 +153,7 @@ describe('useFormState', () => {
 
       return (
         <div>
-          <input
-            name="test"
-            aria-label="test"
-            {...register('test', { minLength: 5 })}
-          />
+          <input aria-label="test" {...register('test', { minLength: 5 })} />
           <Test control={control} />
           <Test1 control={control} />
         </div>

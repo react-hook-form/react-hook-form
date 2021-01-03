@@ -168,14 +168,17 @@ export type Path<T> = PathImpl2<T> extends string | keyof T
   ? PathImpl2<T>
   : keyof T;
 
-// export type PathValue<T, P extends Path<T>> = P extends `${infer Key}.${infer Rest}`
-//   ? Key extends keyof T
-//     ? Rest extends Path<T[Key]>
-//       ? PathValue<T[Key], Rest>
-//       : T[Key] extends (infer U)[]
-//       ? U
-//       : never
-//     : never
-//   : P extends keyof T
-//   ? T[P]
-//   : never;
+export type PathValue<
+  T,
+  P extends Path<T>
+> = P extends `${infer Key}.${infer Rest}`
+  ? Key extends keyof T
+    ? Rest extends Path<T[Key]>
+      ? PathValue<T[Key], Rest>
+      : T[Key] extends (infer U)[]
+      ? U
+      : never
+    : never
+  : P extends keyof T
+  ? T[P]
+  : never;
