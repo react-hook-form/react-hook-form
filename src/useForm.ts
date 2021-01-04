@@ -786,6 +786,30 @@ export function useForm<
     }
   }
 
+  function updateValueAndGetFieldInfo(name: InternalFieldName) {
+    let defaultValue;
+    const isFieldArray = isNameInFieldArray(fieldArrayNamesRef.current, name);
+    const field = fieldsRef.current[name];
+
+    if (
+      field &&
+      (!isEmptyObject(defaultValuesRef.current) || !isUndefined(field.value))
+    ) {
+      defaultValue = isUndefined(field.value)
+        ? get(defaultValuesRef.current, name)
+        : field.value;
+
+      if (!isUndefined(defaultValue) && !isFieldArray) {
+        setFieldValue(name, defaultValue);
+      }
+    }
+
+    return {
+      isFieldArray,
+      defaultValue,
+    };
+  }
+
   function registerFieldRef(
     name: InternalFieldName,
     ref: HTMLInputElement,
@@ -811,11 +835,6 @@ export function useForm<
       return;
     }
 
-    const isFieldArray = isNameInFieldArray(fieldArrayNamesRef.current, name);
-
-    const isEmptyDefaultValue = true;
-    let defaultValue;
-
     field = isRadioOrCheckbox
       ? {
           ...field,
@@ -834,15 +853,7 @@ export function useForm<
 
     fieldsRef.current[name] = field;
 
-    if (!isEmptyObject(defaultValuesRef.current) || !isUndefined(field.value)) {
-      defaultValue = isUndefined(field.value)
-        ? get(defaultValuesRef.current, name)
-        : field.value;
-
-      if (!isUndefined(defaultValue) && !isFieldArray) {
-        setFieldValue(name, defaultValue);
-      }
-    }
+    const { defaultValue, isFieldArray } = updateValueAndGetFieldInfo(name);
 
     if (
       isRadioOrCheckbox && Array.isArray(defaultValue)
@@ -868,7 +879,7 @@ export function useForm<
       }
     }
 
-    if (!(isFieldArray && isEmptyDefaultValue)) {
+    if (!isFieldArray) {
       !isFieldArray && unset(formStateRef.current.dirty, name);
     }
   }
@@ -896,20 +907,7 @@ export function useForm<
       ...options,
     };
 
-    const isFieldArray = isNameInFieldArray(fieldArrayNamesRef.current, name);
-
-    if (
-      !isEmptyObject(defaultValuesRef.current) ||
-      !isUndefined(fieldsRef.current[name]!.value)
-    ) {
-      const defaultValue = isUndefined(fieldsRef.current[name]!.value)
-        ? get(defaultValuesRef.current, name)
-        : fieldsRef.current[name]!.value;
-
-      if (!isUndefined(defaultValue) && !isFieldArray) {
-        setFieldValue(name, defaultValue);
-      }
-    }
+    updateValueAndGetFieldInfo(name);
 
     return !isWindowUndefined
       ? {
