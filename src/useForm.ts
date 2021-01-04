@@ -786,7 +786,7 @@ export function useForm<
     }
   }
 
-  function updateValueAndGetFieldInfo(name: InternalFieldName) {
+  function updateValueAndGetDefault(name: InternalFieldName) {
     let defaultValue;
     const isFieldArray = isNameInFieldArray(fieldArrayNamesRef.current, name);
     const field = fieldsRef.current[name];
@@ -804,10 +804,7 @@ export function useForm<
       }
     }
 
-    return {
-      isFieldArray,
-      defaultValue,
-    };
+    return defaultValue;
   }
 
   function registerFieldRef(
@@ -853,7 +850,7 @@ export function useForm<
 
     fieldsRef.current[name] = field;
 
-    const { defaultValue, isFieldArray } = updateValueAndGetFieldInfo(name);
+    const defaultValue = updateValueAndGetDefault(name);
 
     if (
       isRadioOrCheckbox && Array.isArray(defaultValue)
@@ -877,10 +874,6 @@ export function useForm<
             setFormState({ ...formStateRef.current, isValid: getIsValid() });
         });
       }
-    }
-
-    if (!isFieldArray) {
-      !isFieldArray && unset(formStateRef.current.dirty, name);
     }
   }
 
@@ -907,7 +900,7 @@ export function useForm<
       ...options,
     };
 
-    updateValueAndGetFieldInfo(name);
+    updateValueAndGetDefault(name);
 
     return !isWindowUndefined
       ? {
