@@ -420,7 +420,7 @@ export function useForm<
       if (fieldsRef.current[name]) {
         setFieldValue(name, value);
         config.shouldDirty && updateAndGetDirtyState(name);
-        config.shouldValidate && trigger(name as any);
+        config.shouldValidate && trigger(name as FieldName<TFieldValues>);
       } else if (!isPrimitive(value)) {
         setInternalValues(name, value, config);
 
@@ -844,12 +844,13 @@ export function useForm<
       }
     }
 
-    fieldsRef.current[name]!.value =
-      isRadioOrCheckbox &&
-      !Array.isArray(fieldsRef.current[name]!.value) &&
-      Array.isArray(defaultValue)
-        ? defaultValue
-        : getFieldValue(fieldsRef.current[name]);
+    if (
+      isRadioOrCheckbox && Array.isArray(defaultValue)
+        ? !deepEqual(fieldsRef.current[name]!.value, defaultValue)
+        : true
+    ) {
+      fieldsRef.current[name]!.value = getFieldValue(fieldsRef.current[name]);
+    }
 
     if (options) {
       set(fieldsWithValidationRef.current, name, true);

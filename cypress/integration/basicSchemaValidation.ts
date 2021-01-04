@@ -42,7 +42,7 @@ describe('basicSchemaValidation form validation', () => {
     cy.get('input[name="checkbox"]').check();
 
     cy.get('p').should('have.length', 0);
-    cy.get('#renderCount').contains('24');
+    cy.get('#renderCount').contains('25');
   });
 
   it('should validate the form with onBlur mode', () => {
@@ -135,6 +135,6 @@ describe('basicSchemaValidation form validation', () => {
     cy.get('input[name="checkbox"]').check();
 
     cy.get('p').should('have.length', 0);
-    cy.get('#renderCount').contains('27');
+    cy.get('#renderCount').contains('28');
   });
 });

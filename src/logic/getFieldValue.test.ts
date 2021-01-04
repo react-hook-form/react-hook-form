@@ -79,10 +79,10 @@ describe('getFieldValue', () => {
         ref: {
           type: 'file',
           name: 'test',
-          files: 'files' as any,
+          files: null,
         },
       }),
-    ).toEqual('files');
+    ).toEqual(null);
   });
 
   it('should return undefined when input is not found', () => {
@@ -91,7 +91,7 @@ describe('getFieldValue', () => {
         name: 'test',
         ref: {
           name: 'file',
-          files: 'files' as any,
+          files: null,
         },
       }),
     ).toEqual(undefined);

@@ -1,4 +1,4 @@
-import React from 'react';
+import * as React from 'react';
 import { NestedValue, useForm } from 'react-hook-form';
 
 function DefaultValues() {
@@ -25,18 +25,26 @@ function DefaultValues() {
       },
     },
   });
+  const [show, setShow] = React.useState(true);
 
   return (
-    <form>
-      <input {...register('test')} />
-      <input {...register('test1.firstName')} />
-      <input {...register('test1.deep.nest')} />
-      <input {...register('test1.deep.nest')} />
-      <input {...register('test1.lastName.0')} />
-      <input {...register('test1.lastName.1')} />
-      <input type="checkbox" value={'1'} {...register('checkbox')} />
-      <input type="checkbox" value={'2'} {...register('checkbox')} />
-    </form>
+    <>
+      {show ? (
+        <form>
+          <input {...register('test')} />
+          <input {...register('test1.firstName')} />
+          <input {...register('test1.deep.nest')} />
+          <input {...register('test1.deep.nest')} />
+          <input {...register('test1.lastName.0')} />
+          <input {...register('test1.lastName.1')} />
+          <input type="checkbox" value={'1'} {...register('checkbox')} />
+          <input type="checkbox" value={'2'} {...register('checkbox')} />
+        </form>
+      ) : null}
+      <button type={'button'} id={'toggle'} onClick={() => setShow(!show)}>
+        toggle
+      </button>
+    </>
   );
 }
 

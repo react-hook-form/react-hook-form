@@ -1,4 +1,3 @@
-// @ts-nocheck
 import React from 'react';
 import {
   useForm,
@@ -10,31 +9,36 @@ import {
 
 let renderCount = 0;
 
+type FormInputs = {
+  data: { name: string; conditional: string }[];
+};
+
 const ConditionField = <T extends any[]>({
   control,
   index,
   fields,
 }: {
-  control: Control;
+  control: Control<FormInputs>;
   index: number;
   fields: T;
 }) => {
   const output = useWatch({
     name: 'data',
     control,
+    // @ts-ignore
     defaultValue: fields,
   });
 
   React.useEffect(() => {
     return () => {
-      control.unregister(`data[${index}].conditional`)
+      control.unregister(`data[${index}].conditional` as any);
     };
   }, [control, index]);
 
+  // @ts-ignore
   return output[index]?.name === 'bill' ? (
     <input
-      name={`data[${index}].conditional`}
-      {...control.register(`data[${index}].conditional` as any)}
+      {...control.register(`data.${index}.conditional` as any)}
       defaultValue={fields[index].conditional}
     />
   ) : null;
@@ -48,9 +52,7 @@ const UseFieldArrayUnregister: React.FC = () => {
     setValue,
     getValues,
     formState: { isDirty, touched, dirty, errors },
-  } = useForm<{
-    data: { name: string }[];
-  }>({
+  } = useForm<FormInputs>({
     defaultValues: {
       data: [{ name: 'test' }, { name: 'test1' }, { name: 'test2' }],
     },
@@ -65,7 +67,7 @@ const UseFieldArrayUnregister: React.FC = () => {
     insert,
     remove,
     // @ts-ignore
-  } = useFieldArray<{ name: string }>({
+  } = useFieldArray({
     control,
     name: 'data',
   });
@@ -89,7 +91,7 @@ const UseFieldArrayUnregister: React.FC = () => {
                 id={`field${index}`}
                 defaultValue={data.name}
                 data-order={index}
-                {...register(`data[${index}].name` as any, {
+                {...register(`data.${index}.name` as any, {
                   required: 'This is required',
                 })}
               />
@@ -102,7 +104,7 @@ const UseFieldArrayUnregister: React.FC = () => {
                 rules={{
                   required: 'This is required',
                 }}
-                name={`data[${index}].name`}
+                name={`data.${index}.name` as any}
                 defaultValue={data.name}
                 data-order={index}
               />

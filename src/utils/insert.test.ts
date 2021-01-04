@@ -56,14 +56,11 @@ describe('insert', () => {
   it('should insert undefined as value when value to be inserted is falsy', () => {
     expect(insert([1, 2, 4], 2)).toEqual([1, 2, undefined, 4]);
     expect(insert([1, 2, 4], 2, 0)).toEqual([1, 2, undefined, 4]);
-    expect(insert([1, 2, 4], 2, false as any)).toEqual([1, 2, undefined, 4]);
-    expect(insert([1, 2, 4], 2, '' as any)).toEqual([1, 2, undefined, 4]);
-    expect(insert([1, 2, 4], 2, undefined as any)).toEqual([
-      1,
-      2,
-      undefined,
-      4,
-    ]);
+    // @ts-ignore
+    expect(insert([1, 2, 4], 2, false)).toEqual([1, 2, undefined, 4]);
+    // @ts-ignore
+    expect(insert([1, 2, 4], 2, '')).toEqual([1, 2, undefined, 4]);
+    expect(insert([1, 2, 4], 2, undefined)).toEqual([1, 2, undefined, 4]);
   });
 
   it('should spread value when it is an array at one deep-level', () => {

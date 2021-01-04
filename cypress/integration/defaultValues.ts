@@ -8,5 +8,19 @@ describe('defaultValues', () => {
     cy.get('input[name="test1.lastName.1"]').should('have.value', 'lastName1');
     cy.get('input[name="checkbox"]').eq(0).should('have.checked');
     cy.get('input[name="checkbox"]').eq(1).should('have.checked');
+
+    cy.get('input[name="checkbox"]').eq(0).click();
+    cy.get('#toggle').click();
+    cy.get('#toggle').click();
+
+    cy.get('input[name="checkbox"]').eq(0).should('not.have.checked');
+    cy.get('input[name="checkbox"]').eq(1).should('have.checked');
+    cy.get('input[name="checkbox"]').eq(1).click();
+
+    cy.get('#toggle').click();
+    cy.get('#toggle').click();
+
+    cy.get('input[name="checkbox"]').eq(0).should('not.have.checked');
+    cy.get('input[name="checkbox"]').eq(1).should('not.have.checked');
   });
 });

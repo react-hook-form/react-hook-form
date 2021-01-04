@@ -34,73 +34,73 @@ describe('useFieldArray', () => {
     cy.get('ul > li').eq(2).find('input').should('have.value', '1');
 
     cy.get('#submit').click();
-    // cy.get('#result').should(($state) =>
-    //   expect(JSON.parse($state.text())).to.be.deep.equal({
-    //     data: [{ name: '6' }, { name: '8' }, { name: '1' }],
-    //   }),
-    // );
-    //
-    // cy.get('#move').click();
-    // cy.get('ul > li').eq(0).find('input').should('have.value', '1');
-    // cy.get('ul > li').eq(1).find('input').should('have.value', '6');
+    cy.get('#result').should(($state) =>
+      expect(JSON.parse($state.text())).to.be.deep.equal({
+        data: [{ name: '6' }, { name: '8' }, { name: '1' }],
+      }),
+    );
 
-    // cy.get('#submit').click();
-    // cy.get('#result').should(($state) =>
-    //   expect(JSON.parse($state.text())).to.be.deep.equal({
-    //     data: [{ name: '1' }, { name: '6' }, { name: '8' }],
-    //   }),
-    // );
-    //
-    // cy.get('#insert').click();
-    // cy.get('ul > li').eq(1).find('input').should('have.value', '21');
-    //
-    // cy.get('#submit').click();
-    // cy.get('#result').should(($state) =>
-    //   expect(JSON.parse($state.text())).to.be.deep.equal({
-    //     data: [{ name: '1' }, { name: '21' }, { name: '6' }, { name: '8' }],
-    //   }),
-    // );
-    //
-    // cy.get('#remove').click();
-    // cy.get('ul > li').eq(0).find('input').should('have.value', '1');
-    // cy.get('ul > li').eq(1).find('input').should('have.value', '6');
-    //
-    // cy.get('#submit').click();
-    // cy.get('#result').should(($state) =>
-    //   expect(JSON.parse($state.text())).to.be.deep.equal({
-    //     data: [{ name: '1' }, { name: '6' }, { name: '8' }],
-    //   }),
-    // );
-    //
-    // cy.get('#delete1').click();
-    //
-    // cy.get('ul > li').its('length').should('equal', 2);
-    //
-    // cy.get('ul > li').eq(0).find('input').should('have.value', '1');
-    // cy.get('ul > li').eq(1).find('input').should('have.value', '8');
-    //
-    // cy.get('#delete1').click();
-    //
-    // cy.get('ul > li').its('length').should('equal', 1);
-    //
-    // cy.get('ul > li').eq(0).find('input').should('have.value', '1');
-    //
-    // cy.get('#submit').click();
-    // cy.get('#result').should(($state) =>
-    //   expect(JSON.parse($state.text())).to.be.deep.equal({
-    //     data: [{ name: '1' }],
-    //   }),
-    // );
-    //
-    // cy.get('#removeAll').click();
-    // cy.get('ul > li').should('have.length', 0);
-    //
-    // cy.get('#submit').click();
-    // cy.get('#result').should(($state) =>
-    //   expect(JSON.parse($state.text())).to.be.deep.equal({}),
-    // );
-    //
-    // cy.get('#renderCount').contains('38');
+    cy.get('#move').click();
+    cy.get('ul > li').eq(0).find('input').should('have.value', '1');
+    cy.get('ul > li').eq(1).find('input').should('have.value', '6');
+
+    cy.get('#submit').click();
+    cy.get('#result').should(($state) =>
+      expect(JSON.parse($state.text())).to.be.deep.equal({
+        data: [{ name: '1' }, { name: '6' }, { name: '8' }],
+      }),
+    );
+
+    cy.get('#insert').click();
+    cy.get('ul > li').eq(1).find('input').should('have.value', '21');
+
+    cy.get('#submit').click();
+    cy.get('#result').should(($state) =>
+      expect(JSON.parse($state.text())).to.be.deep.equal({
+        data: [{ name: '1' }, { name: '21' }, { name: '6' }, { name: '8' }],
+      }),
+    );
+
+    cy.get('#remove').click();
+    cy.get('ul > li').eq(0).find('input').should('have.value', '1');
+    cy.get('ul > li').eq(1).find('input').should('have.value', '6');
+
+    cy.get('#submit').click();
+    cy.get('#result').should(($state) =>
+      expect(JSON.parse($state.text())).to.be.deep.equal({
+        data: [{ name: '1' }, { name: '6' }, { name: '8' }],
+      }),
+    );
+
+    cy.get('#delete1').click();
+
+    cy.get('ul > li').its('length').should('equal', 2);
+
+    cy.get('ul > li').eq(0).find('input').should('have.value', '1');
+    cy.get('ul > li').eq(1).find('input').should('have.value', '8');
+
+    cy.get('#delete1').click();
+
+    cy.get('ul > li').its('length').should('equal', 1);
+
+    cy.get('ul > li').eq(0).find('input').should('have.value', '1');
+
+    cy.get('#submit').click();
+    cy.get('#result').should(($state) =>
+      expect(JSON.parse($state.text())).to.be.deep.equal({
+        data: [{ name: '1' }],
+      }),
+    );
+
+    cy.get('#removeAll').click();
+    cy.get('ul > li').should('have.length', 0);
+
+    cy.get('#submit').click();
+    cy.get('#result').should(($state) =>
+      expect(JSON.parse($state.text())).to.be.deep.equal({}),
+    );
+
+    cy.get('#renderCount').contains('38');
   });
 
   it('should behaviour correctly with defaultValue', () => {

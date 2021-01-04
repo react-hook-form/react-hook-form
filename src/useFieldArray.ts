@@ -85,7 +85,9 @@ export const useFieldArray = <
   >(mapIds(memoizedDefaultValues.current, keyName));
   set(fieldArrayValuesRef.current, name as InternalFieldName, fields);
 
-  const omitKey = <T extends (Partial<TFieldArrayValues> | undefined)[]>(
+  const omitKey = <
+    T extends Partial<ArrayFieldWithId<TFieldArrayValues, TName, TKeyName>>[]
+  >(
     fields: T,
   ) => fields.map(({ [keyName]: omitted, ...rest } = {}) => rest);
 
@@ -148,7 +150,7 @@ export const useFieldArray = <
     unset(ref, name as InternalFieldName);
 
   const updateDirtyFieldsWithDefaultValues = <
-    T extends (Partial<TFieldArrayValues> | undefined)[]
+    T extends Partial<ArrayFieldWithId<TFieldArrayValues, TName, TKeyName>>[]
   >(
     updatedFieldArrayValues?: T,
   ) => {
@@ -167,7 +169,7 @@ export const useFieldArray = <
 
   const batchStateUpdate = <
     T extends Function,
-    K extends (Partial<TFieldArrayValues> | undefined)[]
+    K extends Partial<ArrayFieldWithId<TFieldArrayValues, TName, TKeyName>>[]
   >(
     method: T,
     args: {
@@ -177,7 +179,9 @@ export const useFieldArray = <
       argD?: unknown;
     },
     updatedFieldValues?: K,
-    updatedFormValues: (Partial<TFieldArrayValues> | undefined)[] = [],
+    updatedFormValues: Partial<
+      ArrayFieldWithId<TFieldArrayValues, TName, TKeyName>
+    >[] = [],
     shouldSet = true,
     shouldUpdateValid = false,
   ) => {
@@ -293,9 +297,7 @@ export const useFieldArray = <
       });
     }
 
-    focusIndexRef.current = shouldFocus
-      ? get(fieldArrayValuesRef.current, name as InternalFieldName).length - 1
-      : -1;
+    focusIndexRef.current = shouldFocus ? updateFormValues.length - 1 : -1;
   };
 
   const prepend = (
@@ -322,10 +324,9 @@ export const useFieldArray = <
 
   const remove = (index?: number | number[]) => {
     const fieldValues = getCurrentFieldsValues();
-    const updatedFieldValues: (
-      | Partial<TFieldArrayValues>
-      | undefined
-    )[] = removeArrayAt(fieldValues, index);
+    const updatedFieldValues: Partial<
+      ArrayFieldWithId<TFieldArrayValues, TName, TKeyName>
+    >[] = removeArrayAt(fieldValues, index);
     resetFields();
     batchStateUpdate(
       removeArrayAt,
@@ -338,7 +339,7 @@ export const useFieldArray = <
       true,
       true,
     );
-    setFieldAndValidState(updatedFieldValues as any);
+    setFieldAndValidState(updatedFieldValues);
   };
 
   const insert = (
@@ -366,7 +367,7 @@ export const useFieldArray = <
         argD: fillBooleanArray(value),
       },
       updatedFieldArrayValues,
-      insertAt(fieldValues, index),
+      fieldValues && insertAt(fieldValues, index),
     );
     focusIndexRef.current = shouldFocus ? index : -1;
   };

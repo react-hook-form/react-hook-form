@@ -1,8 +1,8 @@
 import get from '../utils/get';
 import isUndefined from '../utils/isUndefined';
-import { FieldErrors, FieldRefs } from '../types';
+import { FieldErrors, FieldRefs, FieldValues } from '../types';
 
-export default <TFieldValues>(
+export default <TFieldValues extends FieldValues = FieldValues>(
   fields: FieldRefs,
   fieldErrors: FieldErrors<TFieldValues>,
 ) => {

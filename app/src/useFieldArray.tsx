@@ -1,4 +1,3 @@
-// @ts-nocheck
 import React from 'react';
 import { useForm, useFieldArray, Controller } from 'react-hook-form';
 
@@ -55,7 +54,7 @@ const UseFieldArray: React.FC = (props: any) => {
                 id={`field${index}`}
                 defaultValue={data.name}
                 data-order={index}
-                {...register(`data[${index}].name` as any, {
+                {...register(`data.${index}.name` as any, {
                   required: 'This is required',
                 })}
               />
@@ -68,7 +67,7 @@ const UseFieldArray: React.FC = (props: any) => {
                 rules={{
                   required: 'This is required',
                 }}
-                name={`data[${index}].name`}
+                name={`data.${index}.name` as any}
                 defaultValue={data.name}
                 data-order={index}
               />

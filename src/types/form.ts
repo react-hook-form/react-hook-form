@@ -151,7 +151,9 @@ type UseFormCommonMethods<TFieldValues> = {
     name: FieldPath<TFieldValues>,
     options?: RegisterOptions,
   ) => RegisterMethods;
-  unregister(name: FieldPath<TFieldValues> | FieldPath<TFieldValues>[]): void;
+  unregister: (
+    name: FieldPath<TFieldValues> | FieldPath<TFieldValues>[],
+  ) => void;
   getValues(): UnpackNestedValue<TFieldValues>;
   getValues<TFieldName extends string, TFieldValue extends unknown>(
     name: TFieldName,
@@ -224,14 +226,16 @@ export type UseFormMethods<TFieldValues extends FieldValues = FieldValues> = {
     callback: WatchCallback,
     defaultValues?: UnpackNestedValue<DeepPartial<TFieldValues>>,
   ): void;
-  setError(name: FieldName<TFieldValues>, error: ErrorOption): void;
-  clearErrors(name?: FieldName<TFieldValues> | FieldName<TFieldValues>[]): void;
-  setValue(
+  setError: (name: FieldName<TFieldValues>, error: ErrorOption) => void;
+  clearErrors: (
+    name?: FieldName<TFieldValues> | FieldName<TFieldValues>[],
+  ) => void;
+  setValue: (
     name: FieldName<TFieldValues>,
     value: SetFieldValue<TFieldValues>,
     config?: SetValueConfig,
-  ): void;
-  trigger(name?: FieldName<TFieldValues> | FieldName<TFieldValues>[]): void;
+  ) => void;
+  trigger: (name?: FieldName<TFieldValues> | FieldName<TFieldValues>[]) => void;
   formState: FormState<TFieldValues>;
   reset: (
     values?: UnpackNestedValue<DeepPartial<TFieldValues>>,

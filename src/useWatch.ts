@@ -12,7 +12,9 @@ import {
   Path,
 } from './types';
 
-export function useWatch<TFieldValues extends FieldValues>(props: {
+export function useWatch<
+  TFieldValues extends FieldValues = FieldValues
+>(props: {
   defaultValue?: UnpackNestedValue<DeepPartial<TFieldValues>>;
   control?: Control<TFieldValues>;
 }): UnpackNestedValue<DeepPartial<TFieldValues>>;

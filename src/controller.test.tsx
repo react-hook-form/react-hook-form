@@ -684,17 +684,13 @@ describe('Controller', () => {
       expect(console.warn).not.toBeCalled();
     });
 
-    it.only('should warn the user when defaultValue is missing with useFieldArray in development environment', () => {
+    it.skip('should warn the user when defaultValue is missing with useFieldArray in development environment', () => {
       jest.spyOn(console, 'warn').mockImplementation(() => {});
 
       process.env.NODE_ENV = 'development';
 
       const Component = () => {
-        const { control } = useForm({
-          defaultValues: {
-            test: [{ data: '' }],
-          },
-        });
+        const { control } = useForm();
         const { fields } = useFieldArray({
           control,
           name: 'test',
