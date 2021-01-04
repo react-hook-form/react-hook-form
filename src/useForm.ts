@@ -896,6 +896,21 @@ export function useForm<
       ...options,
     };
 
+    const isFieldArray = isNameInFieldArray(fieldArrayNamesRef.current, name);
+
+    if (
+      !isEmptyObject(defaultValuesRef.current) ||
+      !isUndefined(fieldsRef.current[name]!.value)
+    ) {
+      const defaultValue = isUndefined(fieldsRef.current[name]!.value)
+        ? get(defaultValuesRef.current, name)
+        : fieldsRef.current[name]!.value;
+
+      if (!isUndefined(defaultValue) && !isFieldArray) {
+        setFieldValue(name, defaultValue);
+      }
+    }
+
     return !isWindowUndefined
       ? {
           name: name as InternalFieldName,
