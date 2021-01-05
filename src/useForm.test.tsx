@@ -1522,9 +1522,6 @@ describe('useForm', () => {
       expect(await result.current.trigger('test')).toBeFalsy();
 
       expect(console.warn).toBeCalledTimes(1);
-
-      // @ts-ignore
-      console.warn.mockRestore();
     });
 
     it('should remove all errors before set new errors when trigger entire form', async () => {
@@ -1584,12 +1581,12 @@ describe('useForm', () => {
 
       result.current.register('test');
 
-      await actComponent(async () => {
+      await act(async () => {
         await result.current.trigger('test');
       });
 
-      await actComponent(async () => {
-        expect(errors).toEqual({});
+      await act(async () => {
+        await expect(errors).toEqual({});
       });
     });
 
@@ -1606,7 +1603,9 @@ describe('useForm', () => {
         await result.current.trigger('test');
       });
 
-      expect(errors).toEqual({});
+      await actComponent(async () => {
+        expect(errors).toEqual({});
+      });
     });
 
     it('should trigger multiple fields validation', async () => {
