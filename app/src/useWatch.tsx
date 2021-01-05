@@ -44,8 +44,8 @@ const GrandChild1 = ({ control }: { control: Control }) => {
     <div style={{ border: '2px solid blue', padding: 10, margin: 5 }}>
       <h2 style={{ margin: 0 }}>Grandchild 1:</h2>
       <p id="grandchild1">
-        {output.test}
-        {output.test1}
+        {output[0]}
+        {output[1]}
       </p>
       <p id="grandChild1Counter">Render counter: {counter.current}</p>
     </div>

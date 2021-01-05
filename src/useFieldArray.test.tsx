@@ -1259,7 +1259,7 @@ describe('useFieldArray', () => {
           name: 'test',
           control,
         });
-        const watched = watch('test', fields);
+        const watched = watch('test');
         renderedItems.push(watched);
         return (
           <div>
@@ -1282,9 +1282,9 @@ describe('useFieldArray', () => {
 
       await waitFor(() =>
         expect(renderedItems).toEqual([
-          [],
-          [],
-          [{ id: '0', value: 'test' }],
+          undefined,
+          undefined,
+          undefined,
           [{ value: 'test' }],
         ]),
       );
@@ -1566,7 +1566,7 @@ describe('useFieldArray', () => {
           name: 'test',
           control,
         });
-        const watched = watch('test', fields);
+        const watched = watch('test');
         const isPrepended = React.useRef(false);
         if (isPrepended.current) {
           renderedItems.push(watched);
@@ -1612,11 +1612,7 @@ describe('useFieldArray', () => {
 
       await waitFor(() =>
         expect(renderedItems).toEqual([
-          [
-            { id: '2', value: 'test' },
-            { id: '0', value: '' },
-            { id: '1', value: '' },
-          ],
+          [{ value: '' }, { value: '' }],
           [{ value: 'test' }, { value: '111' }, { value: '222' }],
         ]),
       );
@@ -3190,11 +3186,7 @@ describe('useFieldArray', () => {
       fireEvent.click(screen.getByRole('button', { name: /insert/i }));
 
       expect(renderedItems).toEqual([
-        [
-          { id: '0', value: '' },
-          { id: '2', value: 'test' },
-          { id: '1', value: '' },
-        ],
+        [{ value: '' }, { value: '' }],
         [{ value: '' }, { value: 'test' }, { value: '222' }],
       ]);
     });

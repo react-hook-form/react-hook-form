@@ -22,10 +22,7 @@ describe('watch form validation', () => {
     cy.get('input[name="test.1"]').type('luo');
     cy.get('#testData').contains('["bill","luo"]');
     cy.get('#testArray').should(($state) =>
-      expect(JSON.parse($state.text())).to.be.deep.equal({
-        'test.0': 'bill',
-        'test.1': 'luo',
-      }),
+      expect(JSON.parse($state.text())).to.be.deep.equal(['bill', 'luo']),
     );
 
     cy.get('#watchAll').should(($state) =>
@@ -47,10 +44,7 @@ describe('watch form validation', () => {
     );
 
     cy.get('#testArray').should(($state) =>
-      expect(JSON.parse($state.text())).to.be.deep.equal({
-        'test.0': 'bill',
-        'test.1': 'luo',
-      }),
+      expect(JSON.parse($state.text())).to.be.deep.equal(['bill', 'luo']),
     );
 
     cy.get('#watchAll').should(($state) =>

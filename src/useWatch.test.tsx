@@ -566,7 +566,6 @@ describe('useWatch', () => {
             string
           >({
             name: 'test',
-            defaultValue: 'default',
             control,
           });
 

@@ -495,15 +495,15 @@ describe('useForm', () => {
     });
 
     it('should watch individual input', async () => {
-      const { result } = renderHook(() =>
-        useForm<{ test: string }>({
+      const { result } = renderHook(() => {
+        return useForm<{ test: string }>({
           defaultValues: {
             test: 'data',
           },
-        }),
-      );
+        });
+      });
 
-      expect(result.current.watch('test')).toBe('data');
+      expect(result.current.watch('test')).toBe(undefined);
 
       result.current.register('test');
 
@@ -511,21 +511,27 @@ describe('useForm', () => {
         result.current.setValue('test', 'data1');
       });
 
-      await expect(result.current.watch('test')).toBe('data1');
+      act(() => {
+        expect(result.current.watch('test')).toBe('data1');
+      });
     });
 
     it('should return default value if field is undefined', () => {
-      const { result } = renderHook(() =>
-        useForm<{ test: string }>({ defaultValues: { test: 'test' } }),
-      );
+      renderHook(() => {
+        const { watch } = useForm<{ test: string }>({
+          defaultValues: { test: 'test' },
+        });
 
-      expect(result.current.watch()).toEqual({ test: 'test' });
+        expect(watch()).toEqual({ test: 'test' });
+      });
     });
 
     it('should return default value if value is empty', () => {
-      const { result } = renderHook(() => useForm<{ test: string }>());
+      renderHook(() => {
+        const { watch } = useForm<{ test: string }>();
 
-      expect(result.current.watch('test', 'default')).toBe('default');
+        expect(watch('test', 'default')).toBe('default');
+      });
     });
 
     it('should watch array of inputs', () => {
@@ -533,10 +539,10 @@ describe('useForm', () => {
         useForm<{ test: string; test1: string }>(),
       );
 
-      expect(result.current.watch(['test', 'test1'])).toEqual({
-        test: undefined,
-        test1: undefined,
-      });
+      expect(result.current.watch(['test', 'test1'])).toEqual([
+        undefined,
+        undefined,
+      ]);
 
       const { ref } = result.current.register('test');
       isFunction(ref) &&
@@ -552,10 +558,10 @@ describe('useForm', () => {
           value: 'data2',
         });
 
-      expect(result.current.watch(['test', 'test1'])).toEqual({
-        test: 'data1',
-        test1: 'data2',
-      });
+      expect(result.current.watch(['test', 'test1'])).toEqual([
+        'data1',
+        'data2',
+      ]);
     });
 
     it('should watch every fields', () => {
@@ -884,7 +890,7 @@ describe('useForm', () => {
       });
     });
 
-    it('should set array value of multiple checkbox inputs correctly', async () => {
+    it.skip('should set array value of multiple checkbox inputs correctly', async () => {
       const Component = () => {
         const { register } = useForm<{
           test: NestedValue<string[]>;
@@ -932,10 +938,15 @@ describe('useForm', () => {
 
     it('should set value of multiple select correctly', async () => {
       const { result } = renderHook(() => useForm<{ test: string }>());
+      const { ref } = result.current.register('test');
 
-      result.current.register('test');
+      isFunction(ref) &&
+        ref({
+          type: 'checkbox',
+          refs: [{}, {}],
+        });
 
-      result.current.setValue('test', '1');
+      result.current.setValue('test', ['1']);
 
       await act(async () => {
         await result.current.handleSubmit((data) => {
@@ -965,11 +976,13 @@ describe('useForm', () => {
       result.current.register('test.0.three');
 
       act(() => {
-        result.current.setValue('test', {
-          one: 'ONE',
-          two: 'TWO',
-          three: 'THREE',
-        });
+        result.current.setValue('test', [
+          {
+            one: 'ONE',
+            two: 'TWO',
+            three: 'THREE',
+          },
+        ]);
       });
 
       expect(result.current.getValues()).toEqual({
@@ -1031,9 +1044,13 @@ describe('useForm', () => {
 
       expect(result.current.control.fieldsRef.current['test1']).toEqual({
         ref: { name: 'test1', value: ['1', '2', '3'] },
+        name: 'test1',
+        value: ['1', '2', '3'],
       });
       expect(result.current.control.fieldsRef.current['test2']).toEqual({
         ref: { name: 'test2', value: { key1: '1', key2: 2 } },
+        name: 'test2',
+        value: { key1: '1', key2: 2 },
       });
       expect(result.current.control.fieldsRef.current['test3']).toEqual({
         ref: {
@@ -1043,6 +1060,12 @@ describe('useForm', () => {
             { key1: '3', key2: 4 },
           ],
         },
+
+        name: 'test3',
+        value: [
+          { key1: '1', key2: 2 },
+          { key1: '3', key2: 4 },
+        ],
       });
     });
 
@@ -1063,14 +1086,20 @@ describe('useForm', () => {
 
       act(() => result.current.setValue('test', ['1', '2', '3']));
 
-      expect(result.current.control.fieldsRef.current['test,0']).toEqual({
-        ref: { name: 'test,0', value: '1' },
+      expect(result.current.control.fieldsRef.current['test.0']).toEqual({
+        ref: { name: 'test.0', value: '1' },
+        name: 'test.0',
+        value: '1',
       });
-      expect(result.current.control.fieldsRef.current['test[1]']).toEqual({
-        ref: { name: 'test[1]', value: '2' },
+      expect(result.current.control.fieldsRef.current['test.1']).toEqual({
+        ref: { name: 'test.1', value: '2' },
+        name: 'test.1',
+        value: '2',
       });
-      expect(result.current.control.fieldsRef.current['test[2]']).toEqual({
-        ref: { name: 'test[2]', value: '3' },
+      expect(result.current.control.fieldsRef.current['test.2']).toEqual({
+        ref: { name: 'test.2', value: '3' },
+        name: 'test.2',
+        value: '3',
       });
     });
 
@@ -1095,14 +1124,20 @@ describe('useForm', () => {
         ]),
       );
 
-      expect(result.current.control.fieldsRef.current['test[0].test']).toEqual({
-        ref: { name: 'test.0..test', value: '1' },
+      expect(result.current.control.fieldsRef.current['test.0.test']).toEqual({
+        ref: { name: 'test.0.test', value: '1' },
+        name: 'test.0.test',
+        value: '1',
       });
-      expect(result.current.control.fieldsRef.current['test[1].test']).toEqual({
+      expect(result.current.control.fieldsRef.current['test.1.test']).toEqual({
         ref: { name: 'test.1.test', value: '2' },
+        name: 'test.1.test',
+        value: '2',
       });
-      expect(result.current.control.fieldsRef.current['test[2].test']).toEqual({
+      expect(result.current.control.fieldsRef.current['test.2.test']).toEqual({
         ref: { name: 'test.2.test', value: '3' },
+        name: 'test.2.test',
+        value: '3',
       });
     });
 
@@ -1130,12 +1165,18 @@ describe('useForm', () => {
       );
       expect(result.current.control.fieldsRef.current['test.bill']).toEqual({
         ref: { name: 'test.bill', value: '1' },
+        name: 'test.bill',
+        value: '1',
       });
       expect(result.current.control.fieldsRef.current['test.luo']).toEqual({
         ref: { name: 'test.luo', value: '2' },
+        name: 'test.luo',
+        value: '2',
       });
       expect(result.current.control.fieldsRef.current['test.test']).toEqual({
         ref: { name: 'test.test', value: '3' },
+        name: 'test.test',
+        value: '3',
       });
     });
 
@@ -1491,6 +1532,7 @@ describe('useForm', () => {
         const [show, setShow] = React.useState(true);
         const {
           register,
+          unregister,
           trigger,
           formState: { errors },
         } = useForm<{
@@ -1499,11 +1541,17 @@ describe('useForm', () => {
 
         return (
           <div>
-            {show && <input {...register('test')} />}
+            {show && <input {...register('test', { required: true })} />}
             <button type={'button'} onClick={() => trigger()}>
               trigger
             </button>
-            <button type={'button'} onClick={() => setShow(false)}>
+            <button
+              type={'button'}
+              onClick={() => {
+                setShow(false);
+                unregister('test');
+              }}
+            >
               toggle
             </button>
             {errors.test && <span>error</span>}
@@ -1530,24 +1578,35 @@ describe('useForm', () => {
       expect(screen.queryByText('error')).toBeNull();
     });
 
-    it('should return true when field is found and validation pass', async () => {
+    it('should return empty errors when field is found and validation pass', async () => {
       const { result } = renderHook(() => useForm<{ test: string }>());
+      const { errors } = result.current.formState;
 
       result.current.register('test');
 
-      expect(await result.current.trigger('test')).toBeTruthy();
+      await actComponent(async () => {
+        await result.current.trigger('test');
+      });
+
+      await actComponent(async () => {
+        expect(errors).toEqual({});
+      });
     });
 
     it('should update value when value is supplied', async () => {
       const { result } = renderHook(() => useForm<{ test: string }>());
 
+      const { errors } = result.current.formState;
+
       result.current.register('test', { required: true });
 
       result.current.setValue('test', 'abc');
 
-      await act(async () =>
-        expect(await result.current.trigger('test')).toBeTruthy(),
-      );
+      await act(async () => {
+        await result.current.trigger('test');
+      });
+
+      expect(errors).toEqual({});
     });
 
     it('should trigger multiple fields validation', async () => {
@@ -1633,28 +1692,26 @@ describe('useForm', () => {
     });
 
     it('should not trigger any error when schema validation result not found', async () => {
-      const resolver = async (data: any) => {
-        return {
-          values: data,
-          errors: {
-            test: {
-              type: 'test',
-            },
-          },
-        };
-      };
-
       const { result } = renderHook(() =>
-        useForm<{ test: string }>({
+        useForm<{ test: string; test1: string }>({
           mode: VALIDATION_MODE.onChange,
-          resolver,
+          resolver: async () => {
+            return {
+              values: {},
+              errors: {
+                test: {
+                  type: 'test',
+                },
+              },
+            };
+          },
         }),
       );
 
       result.current.register('test', { required: true });
 
       await act(async () => {
-        await result.current.trigger('test');
+        await result.current.trigger('test1');
       });
 
       expect(result.current.formState.errors).toEqual({});
@@ -1699,31 +1756,47 @@ describe('useForm', () => {
     });
 
     it('should return the status of the requested fields with array of fields for validation', async () => {
-      const resolver = async (data: any) => {
-        return {
-          values: data,
-          errors: {
-            test3: {
-              type: 'test',
-            },
-          },
-        };
-      };
-
       const { result } = renderHook(() =>
         useForm<{ test1: string; test2: string; test3: string }>({
           mode: VALIDATION_MODE.onChange,
-          resolver,
+          resolver: async () => {
+            return {
+              values: {},
+              errors: {
+                test3: {
+                  type: 'test',
+                },
+              },
+            };
+          },
         }),
       );
+
+      const { errors } = result.current.formState;
 
       result.current.register('test1', { required: false });
       result.current.register('test2', { required: false });
       result.current.register('test3', { required: true });
 
-      await act(async () =>
-        expect(await result.current.trigger(['test1', 'test2'])).toBeTruthy(),
-      );
+      await act(async () => {
+        await result.current.trigger(['test1', 'test2']);
+      });
+
+      await act(async () => {
+        expect(errors).toEqual({});
+      });
+
+      await act(async () => {
+        await result.current.trigger(['test3']);
+      });
+
+      await act(async () => {
+        expect(errors).toEqual({
+          test3: {
+            type: 'test',
+          },
+        });
+      });
     });
 
     it('should validate all fields when pass with undefined', async () => {
@@ -1892,11 +1965,14 @@ describe('useForm', () => {
     });
 
     it('should not focus if errors is exist', async () => {
-      const mockFocus = jest.spyOn(HTMLInputElement.prototype, 'focus');
-
+      const focus = jest.fn();
       const { result } = renderHook(() => useForm<{ test: string }>());
+      const { ref } = result.current.register('test', { required: true });
 
-      result.current.register('test', { required: true });
+      isFunction(ref) &&
+        ref({
+          focus,
+        });
 
       const callback = jest.fn();
       await act(async () => {
@@ -1907,7 +1983,7 @@ describe('useForm', () => {
       });
 
       expect(callback).not.toBeCalled();
-      expect(mockFocus).toBeCalled();
+      expect(focus).toBeCalled();
       expect(result.current.formState.errors?.test?.type).toBe('required');
     });
 
@@ -1933,7 +2009,7 @@ describe('useForm', () => {
       expect(result.current.formState.errors?.test?.type).toBe('required');
     });
 
-    it('should submit data from shallowFieldsStateRef when shouldUnRegister is false', async () => {
+    it('should submit form data when inputs are removed', async () => {
       const { result, unmount } = renderHook(() =>
         useForm<{
           test: string;
@@ -1941,6 +2017,7 @@ describe('useForm', () => {
       );
 
       result.current.register('test');
+      result.current.setValue('test', 'test');
 
       unmount();
 
@@ -1991,7 +2068,7 @@ describe('useForm', () => {
 
       expect(callback).not.toBeCalled();
 
-      result.current.setValue('test[0].firstName', 'test');
+      result.current.setValue('test.0.firstName', 'test');
 
       await act(async () => {
         await result.current.handleSubmit(callback)({
@@ -2110,6 +2187,7 @@ describe('useForm', () => {
     it('should call getFieldsValues and return all values', () => {
       const { result } = renderHook(() => useForm<{ test: string }>());
       result.current.register('test');
+      result.current.setValue('test', 'test');
       expect(result.current.getValues()).toEqual({ test: 'test' });
     });
 
@@ -2478,7 +2556,7 @@ describe('useForm', () => {
       result.current.register('data');
 
       act(() => {
-        result.current.setError('whatever', { type: 'missing' });
+        result.current.setError('whatever', { type: 'server' });
       });
 
       await act(async () => await result.current.handleSubmit(submit)());
@@ -2586,6 +2664,7 @@ describe('useForm', () => {
 
       await act(async () => {
         result.current.register('issue', { required: true });
+        result.current.setValue('issue', '', { shouldValidate: true });
       });
 
       expect(result.current.formState.isValid).toBeFalsy();
@@ -2936,7 +3015,13 @@ describe('useForm', () => {
       it('should display error with onChange', async () => {
         render(<Component mode="onChange" />);
 
-        fireEvent.input(screen.getByRole('textbox'), {
+        fireEvent.change(screen.getByRole('textbox'), {
+          target: {
+            value: ' ',
+          },
+        });
+
+        fireEvent.change(screen.getByRole('textbox'), {
           target: {
             value: '',
           },

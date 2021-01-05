@@ -14,7 +14,6 @@ import isNameInFieldArray from './logic/isNameInFieldArray';
 import getProxyFormState from './logic/getProxyFormState';
 import isProxyEnabled from './utils/isProxyEnabled';
 import isCheckBoxInput from './utils/isCheckBoxInput';
-import isObject from './utils/isObject';
 import isEmptyObject from './utils/isEmptyObject';
 import isRadioInput from './utils/isRadioInput';
 import isFileInput from './utils/isFileInput';
@@ -101,6 +100,7 @@ export function useForm<
   const fieldArrayDefaultValuesRef = React.useRef<FieldArrayDefaultValues>({});
   const fieldArrayValuesRef = React.useRef<FieldArrayDefaultValues>({});
   const watchFieldsRef = React.useRef<InternalNameSet>(new Set());
+  const isMountedRef = React.useRef(false);
   const fieldsWithValidationRef = React.useRef<
     FieldNamesMarkedBoolean<TFieldValues>
   >({});
@@ -385,7 +385,7 @@ export function useForm<
         isValidating: false,
         isValid: resolver
           ? isEmptyObject(schemaValidationResult)
-          : formStateRef.current.isValid,
+          : getIsValid(),
       });
     },
     [executeSchemaOrResolverValidation, executeValidation],
@@ -485,7 +485,6 @@ export function useForm<
         target,
         // @ts-ignore
         target: { value, type: inputType },
-        // @ts-ignore
       } = event;
       let name = (target as Ref)!.name;
       const field = fieldsRef.current[name];
@@ -671,55 +670,28 @@ export function useForm<
       defaultValue?: T,
       isGlobal?: boolean,
     ) => {
-      const watchFields = isGlobal ? watchFieldsRef.current : undefined;
-      let fieldValues = getFieldsValues(fieldsRef, fieldNames);
-
-      fieldValues = isEmptyObject(fieldValues)
-        ? ((isEmptyObject(defaultValuesRef.current)
-            ? defaultValue
-            : defaultValuesRef.current) as UnpackNestedValue<
-            DeepPartial<TFieldValues>
-          >)
-        : fieldValues;
+      const isArrayNames = Array.isArray(fieldNames);
+      const fieldValues = isMountedRef.current
+        ? getFieldsValues(fieldsRef, fieldNames)
+        : isUndefined(defaultValue)
+        ? defaultValuesRef.current
+        : isArrayNames
+        ? defaultValue || {}
+        : { [fieldNames as string]: defaultValue };
 
       if (isUndefined(fieldNames)) {
-        return fieldValues || {};
+        isWatchAllRef.current = true;
+        return fieldValues;
       }
 
-      const result = (Array.isArray(fieldNames)
-        ? fieldNames
-        : [fieldNames]
-      ).reduce((previous, name) => {
-        let value;
-        if (fieldArrayNamesRef.current.has(name)) {
-          const fieldArrayValue = get(fieldArrayValuesRef.current, name, []);
-          fieldValues =
-            !fieldArrayValue.length ||
-            fieldArrayValue.length !==
-              compact(get(fieldValues, name, [])).length
-              ? fieldArrayValuesRef.current
-              : fieldValues;
-        }
+      const result = [];
 
-        watchFields && watchFields.add(name);
+      for (const fieldName of isArrayNames ? fieldNames : [fieldNames]) {
+        isGlobal && watchFieldsRef.current.add(fieldName as string);
+        result.push(get(fieldValues, fieldName as string));
+      }
 
-        if (!isEmptyObject(fieldValues)) {
-          value = isPrimitive(fieldValues)
-            ? fieldValues
-            : get(fieldValues, name);
-
-          if ((isObject(value) || Array.isArray(value)) && watchFields) {
-            getPath(name, value).forEach((name) => watchFields.add(name));
-          }
-        }
-
-        return {
-          ...previous,
-          [name]: value,
-        };
-      }, {});
-
-      return Array.isArray(fieldNames) ? result : get(result, fieldNames);
+      return isArrayNames ? result : result[0];
     },
     [],
   );
@@ -751,7 +723,6 @@ export function useForm<
       });
       return;
     } else {
-      isWatchAllRef.current = isUndefined(watchField);
       return watchInternal(watchField as string | string[], defaultValue, true);
     }
   }
@@ -960,8 +931,8 @@ export function useForm<
 
         if (
           isEmptyObject(fieldErrors) &&
-          Object.keys(formStateRef.current.errors).every(
-            (name) => name in fieldsRef.current,
+          Object.keys(formStateRef.current.errors).every((name) =>
+            get(fieldValues, name),
           )
         ) {
           formStateSubjectRef.current.next({
@@ -1047,6 +1018,7 @@ export function useForm<
     }
 
     fieldsRef.current = {};
+    isMountedRef.current = false;
     defaultValuesRef.current = { ...(values || defaultValuesRef.current) };
 
     controllerSubjectRef.current.next({
@@ -1069,6 +1041,7 @@ export function useForm<
   }, [defaultValuesRef.current]);
 
   React.useEffect(() => {
+    isMountedRef.current = true;
     const tearDown = formStateSubjectRef.current.subscribe({
       next: (formState: Partial<FormState<TFieldValues>> = {}) => {
         if (shouldRenderFormState(formState, readFormStateRef.current, true)) {

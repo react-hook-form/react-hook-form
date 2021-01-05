@@ -30,7 +30,7 @@ const WatchUseFieldArray: React.FC = (props: any) => {
     name: 'data',
   });
   const onSubmit = () => {};
-  const watchAll = watch('data');
+  const watchAll = watch('data') || [];
 
   React.useEffect(() => {
     setTimeout(() => {
