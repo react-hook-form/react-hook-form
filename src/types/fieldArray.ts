@@ -7,13 +7,13 @@ export type FieldArrayName = string;
 export type FieldArrayDefaultValues = Partial<Record<FieldArrayName, any>>;
 
 export type UseFieldArrayProps<
-  TFieldArrayValues extends FieldValues = FieldValues,
-  TName extends Path<TFieldArrayValues> = Path<TFieldArrayValues>,
+  TFieldValues extends FieldValues = FieldValues,
+  TName extends Path<TFieldValues> = Path<TFieldValues>,
   TKeyName extends string = 'id'
 > = {
   name: TName;
   keyName?: TKeyName;
-  control?: Control<TFieldArrayValues>;
+  control?: Control<TFieldValues>;
 };
 
 export type ResetFieldArrayFunctionRef<TFieldValues> = Record<
@@ -24,43 +24,42 @@ export type ResetFieldArrayFunctionRef<TFieldValues> = Record<
 type InferArrayType<T> = T extends (infer U)[] ? U : never;
 
 export type ArrayFieldWithId<
-  TFieldArrayValues extends FieldValues = FieldValues,
-  TName extends Path<TFieldArrayValues> = Path<TFieldArrayValues>,
+  TFieldValues extends FieldValues = FieldValues,
+  TName extends Path<TFieldValues> = Path<TFieldValues>,
   TKeyName extends string = 'id'
-> = InferArrayType<PathValue<TFieldArrayValues, TName>> &
-  Record<TKeyName, string>;
+> = InferArrayType<PathValue<TFieldValues, TName>> & Record<TKeyName, string>;
 
 export type ArrayField<
-  TFieldArrayValues extends FieldValues = FieldValues,
-  TName extends Path<TFieldArrayValues> = Path<TFieldArrayValues>
-> = InferArrayType<PathValue<TFieldArrayValues, TName>>;
+  TFieldValues extends FieldValues = FieldValues,
+  TName extends Path<TFieldValues> = Path<TFieldValues>
+> = InferArrayType<PathValue<TFieldValues, TName>>;
 
 export type UseFieldArrayMethods<
-  TFieldArrayValues extends FieldValues = FieldValues,
-  TName extends Path<TFieldArrayValues> = Path<TFieldArrayValues>,
+  TFieldValues extends FieldValues = FieldValues,
+  TName extends Path<TFieldValues> = Path<TFieldValues>,
   TKeyName extends string = 'id'
 > = {
   swap: (indexA: number, indexB: number) => void;
   move: (indexA: number, indexB: number) => void;
   prepend: (
     value:
-      | Partial<ArrayField<TFieldArrayValues, TName>>
-      | Partial<ArrayField<TFieldArrayValues, TName>>[],
+      | Partial<ArrayField<TFieldValues, TName>>
+      | Partial<ArrayField<TFieldValues, TName>>[],
     shouldFocus?: boolean,
   ) => void;
   append: (
     value:
-      | Partial<ArrayField<TFieldArrayValues, TName>>
-      | Partial<ArrayField<TFieldArrayValues, TName>>[],
+      | Partial<ArrayField<TFieldValues, TName>>
+      | Partial<ArrayField<TFieldValues, TName>>[],
     shouldFocus?: boolean,
   ) => void;
   remove: (index?: number | number[]) => void;
   insert: (
     index: number,
     value:
-      | Partial<ArrayField<TFieldArrayValues, TName>>
-      | Partial<ArrayField<TFieldArrayValues, TName>>[],
+      | Partial<ArrayField<TFieldValues, TName>>
+      | Partial<ArrayField<TFieldValues, TName>>[],
     shouldFocus?: boolean,
   ) => void;
-  fields: ArrayFieldWithId<TFieldArrayValues, TName, TKeyName>[];
+  fields: ArrayFieldWithId<TFieldValues, TName, TKeyName>[];
 };

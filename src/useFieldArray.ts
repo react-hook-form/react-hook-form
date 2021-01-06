@@ -29,18 +29,18 @@ import {
 } from './types';
 
 export const useFieldArray = <
-  TFieldArrayValues extends FieldValues = FieldValues,
-  TName extends Path<TFieldArrayValues> = Path<TFieldArrayValues>,
+  TFieldValues extends FieldValues = FieldValues,
+  TName extends Path<TFieldValues> = Path<TFieldValues>,
   TKeyName extends string = 'id'
 >({
   control,
   name,
   keyName = 'id' as TKeyName,
-}: UseFieldArrayProps<
-  TFieldArrayValues,
+}: UseFieldArrayProps<TFieldValues, TName, TKeyName>): UseFieldArrayMethods<
+  TFieldValues,
   TName,
   TKeyName
->): UseFieldArrayMethods<TFieldArrayValues, TName, TKeyName> => {
+> => {
   const methods = useFormContext();
 
   if (process.env.NODE_ENV !== 'production') {
@@ -75,18 +75,18 @@ export const useFieldArray = <
   const fieldArrayParentName = getFieldArrayParentName(
     name as InternalFieldName,
   );
-  const memoizedDefaultValues = React.useRef<Partial<TFieldArrayValues>[]>([
+  const memoizedDefaultValues = React.useRef<Partial<TFieldValues>[]>([
     ...(get(fieldArrayDefaultValuesRef.current, fieldArrayParentName)
       ? get(fieldArrayDefaultValuesRef.current, name as InternalFieldName, [])
       : get(defaultValuesRef.current, name as InternalFieldName, [])),
   ]);
   const [fields, setFields] = React.useState<
-    Partial<ArrayFieldWithId<TFieldArrayValues, TName, TKeyName>>[]
+    Partial<ArrayFieldWithId<TFieldValues, TName, TKeyName>>[]
   >(mapIds(memoizedDefaultValues.current, keyName));
   set(fieldArrayValuesRef.current, name as InternalFieldName, fields);
 
   const omitKey = <
-    T extends Partial<ArrayFieldWithId<TFieldArrayValues, TName, TKeyName>>[]
+    T extends Partial<ArrayFieldWithId<TFieldValues, TName, TKeyName>>[]
   >(
     fields: T,
   ) => fields.map(({ [keyName]: omitted, ...rest } = {}) => rest);
@@ -99,9 +99,9 @@ export const useFieldArray = <
   );
 
   const getCurrentFieldsValues = () =>
-    mapIds<TFieldArrayValues, TKeyName>(
+    mapIds<TFieldValues, TKeyName>(
       get(getValues(), name as InternalFieldName, getFieldArrayValue()).map(
-        (item: Partial<TFieldArrayValues>, index: number) => ({
+        (item: Partial<TFieldValues>, index: number) => ({
           ...getFieldArrayValue()[index],
           ...item,
         }),
@@ -124,9 +124,7 @@ export const useFieldArray = <
   }
 
   const setFieldAndValidState = (
-    fieldsValues: Partial<
-      ArrayFieldWithId<TFieldArrayValues, TName, TKeyName>
-    >[],
+    fieldsValues: Partial<ArrayFieldWithId<TFieldValues, TName, TKeyName>>[],
   ) => {
     setFields(fieldsValues);
 
@@ -150,7 +148,7 @@ export const useFieldArray = <
     unset(ref, name as InternalFieldName);
 
   const updateDirtyFieldsWithDefaultValues = <
-    T extends Partial<ArrayFieldWithId<TFieldArrayValues, TName, TKeyName>>[]
+    T extends Partial<ArrayFieldWithId<TFieldValues, TName, TKeyName>>[]
   >(
     updatedFieldArrayValues?: T,
   ) => {
@@ -169,7 +167,7 @@ export const useFieldArray = <
 
   const batchStateUpdate = <
     T extends Function,
-    K extends Partial<ArrayFieldWithId<TFieldArrayValues, TName, TKeyName>>[]
+    K extends Partial<ArrayFieldWithId<TFieldValues, TName, TKeyName>>[]
   >(
     method: T,
     args: {
@@ -180,7 +178,7 @@ export const useFieldArray = <
     },
     updatedFieldValues?: K,
     updatedFormValues: Partial<
-      ArrayFieldWithId<TFieldArrayValues, TName, TKeyName>
+      ArrayFieldWithId<TFieldValues, TName, TKeyName>
     >[] = [],
     shouldSet = true,
     shouldUpdateValid = false,
@@ -276,8 +274,8 @@ export const useFieldArray = <
 
   const append = (
     value:
-      | Partial<ArrayField<TFieldArrayValues, TName>>
-      | Partial<ArrayField<TFieldArrayValues, TName>>[],
+      | Partial<ArrayField<TFieldValues, TName>>
+      | Partial<ArrayField<TFieldValues, TName>>[],
     shouldFocus = true,
   ) => {
     const appendValue = Array.isArray(value) ? value : [value];
@@ -302,8 +300,8 @@ export const useFieldArray = <
 
   const prepend = (
     value:
-      | Partial<ArrayField<TFieldArrayValues, TName>>
-      | Partial<ArrayField<TFieldArrayValues, TName>>[],
+      | Partial<ArrayField<TFieldValues, TName>>
+      | Partial<ArrayField<TFieldValues, TName>>[],
     shouldFocus = true,
   ) => {
     const updatedFieldArrayValues = prependAt(
@@ -325,7 +323,7 @@ export const useFieldArray = <
   const remove = (index?: number | number[]) => {
     const fieldValues = getCurrentFieldsValues();
     const updatedFieldValues: Partial<
-      ArrayFieldWithId<TFieldArrayValues, TName, TKeyName>
+      ArrayFieldWithId<TFieldValues, TName, TKeyName>
     >[] = removeArrayAt(fieldValues, index);
     resetFields();
     batchStateUpdate(
@@ -345,8 +343,8 @@ export const useFieldArray = <
   const insert = (
     index: number,
     value:
-      | Partial<ArrayField<TFieldArrayValues, TName>>
-      | Partial<ArrayField<TFieldArrayValues, TName>>[],
+      | Partial<ArrayField<TFieldValues, TName>>
+      | Partial<ArrayField<TFieldValues, TName>>[],
     shouldFocus = true,
   ) => {
     const emptyArray = fillEmptyArray(value);
@@ -498,6 +496,6 @@ export const useFieldArray = <
     append: React.useCallback(append, [name]),
     remove: React.useCallback(remove, [name]),
     insert: React.useCallback(insert, [name]),
-    fields: fields as ArrayFieldWithId<TFieldArrayValues, TName, TKeyName>,
+    fields: fields as ArrayFieldWithId<TFieldValues, TName, TKeyName>,
   };
 };

@@ -146,7 +146,7 @@ export type RegisterMethods = {
   name: InternalFieldName;
 };
 
-type UseFormCommonMethods<TFieldValues> = {
+type UseFormCommonMethods<TFieldValues extends FieldValues = FieldValues> = {
   register: (
     name: FieldPath<TFieldValues>,
     options?: RegisterOptions,
@@ -158,8 +158,7 @@ type UseFormCommonMethods<TFieldValues> = {
   getValues<TFieldName extends string, TFieldValue extends unknown>(
     name: TFieldName,
   ): TFieldName extends keyof TFieldValues
-    ? // @ts-ignore
-      UnpackNestedValue<TFieldValues>[TFieldName]
+    ? UnpackNestedValue<TFieldValues>[TFieldName]
     : TFieldValue;
   getValues<TFieldName extends keyof TFieldValues>(
     names: TFieldName[],
