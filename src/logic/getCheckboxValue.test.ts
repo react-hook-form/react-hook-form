@@ -15,17 +15,17 @@ describe('getCheckboxValue', () => {
           name: 'bill',
           checked: true,
           value: '3',
+          // @ts-expect-error
           attributes: { value: '3' },
-        } as any,
+        },
       ]),
     ).toEqual({ value: '3', isValid: true });
   });
 
   it('should return true if single checkbox is checked and has no value', () => {
     expect(
-      getCheckboxValue([
-        { name: 'bill', checked: true, attributes: {} } as any,
-      ]),
+      // @ts-expect-error
+      getCheckboxValue([{ name: 'bill', checked: true, attributes: {} }]),
     ).toEqual({ value: true, isValid: true });
   });
 
@@ -36,17 +36,19 @@ describe('getCheckboxValue', () => {
           name: 'bill',
           checked: true,
           value: '',
+          // @ts-expect-error
           attributes: { value: 'test' },
-        } as any,
+        },
       ]),
-    ).toEqual({ value: true, isValid: true });
+    ).toEqual({ value: '', isValid: true });
     expect(
       getCheckboxValue([
         {
           name: 'bill',
           checked: true,
+          // @ts-expect-error
           attributes: { value: 'test' },
-        } as any,
+        },
       ]),
     ).toEqual({ value: true, isValid: true });
   });
@@ -57,8 +59,9 @@ describe('getCheckboxValue', () => {
         {
           name: 'bill',
           checked: false,
+          // @ts-expect-error
           attributes: {},
-        } as any,
+        },
       ]),
     ).toEqual({ value: false, isValid: false });
   });
@@ -70,14 +73,16 @@ describe('getCheckboxValue', () => {
           name: 'bill',
           checked: true,
           value: '2',
+          // @ts-expect-error
           attributes: { value: '2' },
-        } as any,
+        },
         {
           name: 'bill',
           checked: true,
           value: '3',
+          // @ts-expect-error
           attributes: { value: '3' },
-        } as any,
+        },
       ]),
     ).toEqual({ value: ['2', '3'], isValid: true });
   });
@@ -89,20 +94,23 @@ describe('getCheckboxValue', () => {
           name: 'bill',
           checked: false,
           value: '2',
+          // @ts-expect-error
           attributes: { value: '2' },
-        } as any,
+        },
         {
           name: 'bill',
           checked: true,
           value: '3',
+          // @ts-expect-error
           attributes: { value: '3' },
-        } as any,
+        },
         {
           name: 'bill',
           checked: false,
           value: '4',
+          // @ts-expect-error
           attributes: { value: '4' },
-        } as any,
+        },
       ]),
     ).toEqual({ value: ['3'], isValid: true });
   });
@@ -114,14 +122,16 @@ describe('getCheckboxValue', () => {
           name: 'bill',
           checked: false,
           value: '2',
+          // @ts-expect-error
           attributes: { value: '2' },
-        } as any,
+        },
         {
           name: 'bill',
           checked: false,
           value: '3',
+          // @ts-expect-error
           attributes: { value: '3' },
-        } as any,
+        },
       ]),
     ).toEqual({ value: [], isValid: false });
   });
@@ -129,13 +139,15 @@ describe('getCheckboxValue', () => {
   it('should not return error when check box ref is undefined', () => {
     expect(
       getCheckboxValue([
-        undefined as any,
+        // @ts-expect-error
+        undefined,
         {
           name: 'bill',
           checked: false,
           value: '2',
+          // @ts-expect-error
           attributes: { value: '2' },
-        } as any,
+        },
       ]),
     ).toEqual({ value: [], isValid: false });
   });

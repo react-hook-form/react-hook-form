@@ -3,7 +3,7 @@ import cloneObject from './cloneObject';
 describe('clone', () => {
   it('should clone object and not mutate the original object', () => {
     const fileData = new File([''], 'filename');
-    const data = {
+    const data: any = {
       items: [],
       test: {
         date: new Date('2020-10-15'),
@@ -35,13 +35,11 @@ describe('clone', () => {
       ]),
     };
 
-    const copy = cloneObject(data);
+    const copy: any = cloneObject(data);
     expect(cloneObject(data)).toEqual(copy);
 
-    // @ts-ignore
     copy.test.what = '1243';
     copy.test.date = new Date('2020-10-16');
-    // @ts-ignore
     copy.items[0] = 2;
 
     expect(data).toEqual({
@@ -76,7 +74,6 @@ describe('clone', () => {
       ]),
     });
 
-    // @ts-ignore
     data.items = [1, 2, 3];
 
     expect(copy.items).toEqual([2]);

@@ -570,17 +570,18 @@ describe('useForm', () => {
       );
 
       const { ref } = result.current.register('test');
-      // @ts-ignore
-      ref({
-        name: 'test',
-        value: 'data1',
-      });
+      isFunction(ref) &&
+        ref({
+          name: 'test',
+          value: 'data1',
+        });
+
       const { ref: ref1 } = result.current.register('test1');
-      // @ts-ignore
-      ref1({
-        name: 'test1',
-        value: 'data2',
-      });
+      isFunction(ref1) &&
+        ref1({
+          name: 'test1',
+          value: 'data2',
+        });
 
       expect(result.current.watch()).toEqual({ test: 'data1', test1: 'data2' });
     });
@@ -651,6 +652,35 @@ describe('useForm', () => {
       actComponent(() => methods.reset());
 
       expect(mockReset).toHaveBeenCalled();
+    });
+
+    it('should set array value of multiple checkbox inputs correctly', async () => {
+      const Component = () => {
+        const { register } = useForm<{
+          test: NestedValue<string[]>;
+        }>({
+          defaultValues: {
+            test: ['1', '2'],
+          },
+        });
+
+        return (
+          <>
+            <input type="checkbox" value={'1'} {...register('test')} />
+            <input type="checkbox" value={'2'} {...register('test')} />
+          </>
+        );
+      };
+
+      render(<Component />);
+
+      actComponent(() => {
+        screen
+          .getAllByRole('checkbox')
+          .forEach((checkbox) =>
+            expect((checkbox as HTMLInputElement).checked).toBeTruthy(),
+          );
+      });
     });
 
     it('should reset the form if ref is HTMLElement and parent element is not form', async () => {
@@ -825,12 +855,9 @@ describe('useForm', () => {
 
       result.current.register('test');
 
-      const blob = new Blob([''], { type: 'image/png' }) as any;
-      blob['lastModifiedDate'] = '';
-      blob['name'] = 'filename';
+      const blob = new Blob([''], { type: 'image/png' });
       const file = blob as File;
-      // @ts-ignore
-      const fileList: FileList = {
+      const fileList = {
         0: file,
         1: file,
         length: 2,
@@ -862,8 +889,7 @@ describe('useForm', () => {
       elm.value = '2';
 
       document.body.append(elm);
-      // @ts-ignore
-      ref(elm);
+      isFunction(ref) && ref(elm);
 
       const { ref: ref1 } = result.current.register('test');
 
@@ -888,33 +914,6 @@ describe('useForm', () => {
           persist: () => {},
         } as React.SyntheticEvent);
       });
-    });
-
-    it.skip('should set array value of multiple checkbox inputs correctly', async () => {
-      const Component = () => {
-        const { register } = useForm<{
-          test: NestedValue<string[]>;
-        }>({
-          defaultValues: {
-            test: ['1', '2'],
-          },
-        });
-
-        return (
-          <>
-            <input type="checkbox" value={'1'} {...register('test')} />
-            <input type="checkbox" value={'2'} {...register('test')} />
-          </>
-        );
-      };
-
-      render(<Component />);
-
-      screen
-        .getAllByRole('checkbox')
-        .forEach((checkbox) =>
-          expect((checkbox as HTMLInputElement).checked).toBeTruthy(),
-        );
     });
 
     it('should set value of single checkbox input correctly', async () => {
@@ -1303,12 +1302,12 @@ describe('useForm', () => {
     });
 
     describe('with dirty', () => {
-      it.each(['isDirty', 'dirtyFields'])(
+      it.each(['isDirty', 'dirty'])(
         'should be dirty when %s is defined when shouldDirty is true',
         (property) => {
           const { result } = renderHook(() => useForm<{ test: string }>());
 
-          (result.current.formState as any)[property];
+          result.current.formState[property as 'dirty' | 'isDirty'];
           result.current.formState.isDirty;
 
           result.current.register('test');
@@ -1324,9 +1323,9 @@ describe('useForm', () => {
 
       it.each([
         ['isDirty', ['test1', 'test2', 'test3'], [true, true, true]],
-        ['dirtyFields', ['test1', 'test2', 'test3'], [true, true, true]],
+        ['dirty', ['test1', 'test2', 'test3'], [true, true, true]],
         ['isDirty', ['test1', '', 'test3'], [true, undefined, true]],
-        ['dirtyFields', ['test1', '', 'test3'], [true, undefined, true]],
+        ['dirty', ['test1', '', 'test3'], [true, undefined, true]],
       ])(
         'should be dirty when %s is defined when shouldDirty is true with array fields',
         (property, values, dirtyFields) => {
@@ -1340,7 +1339,7 @@ describe('useForm', () => {
             }),
           );
 
-          (result.current.formState as any)[property];
+          result.current.formState[property as 'isDirty' | 'dirty'];
           result.current.formState.isDirty;
 
           result.current.register('test.0');
@@ -1360,7 +1359,7 @@ describe('useForm', () => {
         },
       );
 
-      it.each(['isDirty', 'dirtyFields'])(
+      it.each(['isDirty', 'dirty'])(
         'should not be dirty when %s is defined when shouldDirty is false',
         (property) => {
           const { result } = renderHook(() =>
@@ -1369,7 +1368,7 @@ describe('useForm', () => {
             }>(),
           );
 
-          (result.current.formState as any)[property];
+          result.current.formState[property as 'isDirty' | 'dirty'];
 
           result.current.register('test');
 
@@ -1390,7 +1389,7 @@ describe('useForm', () => {
               defaultValues: { test: 'default' },
             }),
           );
-          (result.current.formState as any)[property];
+          result.current.formState[property as 'dirty' | 'isDirty'];
           result.current.formState.isDirty;
 
           result.current.register('test');
@@ -1404,7 +1403,7 @@ describe('useForm', () => {
         },
       );
 
-      it.each(['isDirty', 'dirtyFields'])(
+      it.each(['isDirty', 'dirty'])(
         'should unset name from dirtyFieldRef if field value is not different with default value when formState.dirty is defined',
         (property) => {
           const { result } = renderHook(() =>
@@ -1412,7 +1411,7 @@ describe('useForm', () => {
               defaultValues: { test: 'default' },
             }),
           );
-          (result.current.formState as any)[property];
+          result.current.formState[property as 'isDirty' | 'dirty'];
           result.current.formState.isDirty;
 
           result.current.register('test');
@@ -1619,7 +1618,7 @@ describe('useForm', () => {
       result.current.register('test1', { required: 'required' });
 
       await act(async () => {
-        await result.current.trigger(['test', 'test1'] as any);
+        await result.current.trigger(['test', 'test1']);
       });
 
       expect(result.current.formState.errors?.test?.message).toBe('required');
@@ -2232,7 +2231,7 @@ describe('useForm', () => {
       expect(result.current.getValues('test')).toEqual(undefined);
     });
 
-    it.skip('should get value from shallowFieldsStateRef by name', () => {
+    it('should get value from shallowFieldsStateRef by name', () => {
       const { result, unmount } = renderHook(() =>
         useForm<{
           test: string;
@@ -2240,13 +2239,14 @@ describe('useForm', () => {
       );
 
       result.current.register('test');
+      result.current.setValue('test', 'test');
 
       unmount();
 
       expect(result.current.getValues('test')).toEqual('test');
     });
 
-    it.skip('should get value from shallowFieldsStateRef by array', () => {
+    it('should get value from shallowFieldsStateRef by array', () => {
       const { result, unmount } = renderHook(() =>
         useForm<{
           test: string;
@@ -2254,13 +2254,14 @@ describe('useForm', () => {
       );
 
       result.current.register('test');
+      result.current.setValue('test', 'test');
 
       unmount();
 
       expect(result.current.getValues(['test'])).toEqual({ test: 'test' });
     });
 
-    it.skip('should get value from shallowFieldsStateRef', () => {
+    it('should get value from shallowFieldsStateRef', () => {
       const { result, unmount } = renderHook(() =>
         useForm<{
           test: string;
@@ -2268,6 +2269,7 @@ describe('useForm', () => {
       );
 
       result.current.register('test');
+      result.current.setValue('test', 'test');
 
       unmount();
 
@@ -2688,7 +2690,7 @@ describe('useForm', () => {
     it('should be a proxy object that returns undefined for unknown properties', () => {
       const { result } = renderHook(() => useForm());
 
-      // @ts-ignore
+      // @ts-expect-error
       expect(result.current.formState.nonExistentProperty).toBeUndefined();
     });
 
@@ -2793,7 +2795,7 @@ describe('useForm', () => {
           <div>
             <input
               type="text"
-              {...register(name as any, resolver ? {} : rules)}
+              {...register(name as 'test', resolver ? {} : rules)}
             />
             <span role="alert">
               {errors?.test?.message && errors.test.message}
@@ -2979,21 +2981,6 @@ describe('useForm', () => {
         expect(screen.queryByRole('alert')).toBeInTheDocument();
       });
 
-      it.skip('should output error message when formState.isValid is called in development environment', () => {
-        jest.spyOn(console, 'warn').mockImplementation(() => {});
-
-        process.env.NODE_ENV = 'development';
-
-        const { result } = renderHook(() => useForm());
-
-        result.current.formState.isValid;
-
-        expect(console.warn).toBeCalledTimes(1);
-
-        // @ts-ignore
-        console.warn.mockRestore();
-      });
-
       it('should not output error message when formState.isValid is called in production environment', () => {
         jest.spyOn(console, 'warn').mockImplementation(() => {});
 
@@ -3004,9 +2991,6 @@ describe('useForm', () => {
         result.current.formState.isValid;
 
         expect(console.warn).not.toBeCalled();
-
-        // @ts-ignore
-        console.warn.mockRestore();
       });
     });
 
@@ -3067,9 +3051,6 @@ describe('useForm', () => {
         result.current.formState.isValid;
 
         expect(console.warn).not.toBeCalled();
-
-        // @ts-ignore
-        console.warn.mockRestore();
       });
     });
 
@@ -3124,14 +3105,11 @@ describe('useForm', () => {
         result.current.formState.isValid;
 
         expect(console.warn).not.toBeCalled();
-
-        // @ts-ignore
-        console.warn.mockRestore();
       });
     });
 
     describe('with watch', () => {
-      it.skip('should be return undefined or null value', () => {
+      it('should be return undefined or null value', () => {
         const { result } = renderHook(() =>
           useForm<{
             test: string;
@@ -3141,6 +3119,14 @@ describe('useForm', () => {
 
         result.current.register('test');
         result.current.register('test1');
+
+        act(() => {
+          result.current.setValue('test', null);
+        });
+
+        act(() => {
+          result.current.setValue('test1', undefined);
+        });
 
         const test = result.current.watch('test');
         const test1 = result.current.watch('test1');
@@ -3195,7 +3181,7 @@ describe('useForm', () => {
         expect(watchedField).toBe('test');
       });
 
-      it.skip('should be called reRender method if array field is watched', async () => {
+      it('should be called reRender method if array field is watched', async () => {
         let watchedField: any;
         const Component = () => {
           const { register, handleSubmit, watch } = useForm<{
@@ -3511,10 +3497,6 @@ describe('useForm', () => {
           },
         });
         errorsObject = errors;
-
-        {
-          /* todo: Type is still not working as expected here */
-        }
 
         return (
           <form onSubmit={handleSubmit(() => {})}>

@@ -11,7 +11,7 @@ import { useForm } from './useForm';
 import { useWatch } from './useWatch';
 import * as generateId from './logic/generateId';
 import { FormProvider } from './useFormContext';
-// import { useFieldArray } from './useFieldArray';
+import { useFieldArray } from './useFieldArray';
 import { Control, UseFormMethods } from './types';
 import { perf, wait } from 'react-performance-testing';
 import 'jest-performance-testing';
@@ -31,8 +31,7 @@ describe('useWatch', () => {
   });
 
   afterEach(() => {
-    // @ts-ignore
-    generateId.default.mockRestore();
+    (generateId.default as jest.Mock<any>).mockRestore();
     jest.resetAllMocks();
     jest.restoreAllMocks();
     process.env.NODE_ENV = nodeEnv;
@@ -437,121 +436,124 @@ describe('useWatch', () => {
       expect(await screen.findByText('default')).toBeDefined();
     });
 
-    // describe('with useFieldArray', () => {
-    //   // check https://github.com/react-hook-form/react-hook-form/issues/2229
-    //   it('should return current value with radio type', async () => {
-    //     let watchedValue: any;
-    //     const Component = () => {
-    //       const { register, reset, control } = useForm<{
-    //         options: { option: string }[];
-    //       }>();
-    //       const { fields } = useFieldArray({ name: 'options', control });
-    //       watchedValue = useWatch({
-    //         control,
-    //       });
-    //
-    //       React.useEffect(() => {
-    //         reset({
-    //           options: [
-    //             {
-    //               option: 'test',
-    //             },
-    //             {
-    //               option: 'test1',
-    //             },
-    //           ],
-    //         });
-    //       }, [reset]);
-    //
-    //       return (
-    //         <form>
-    //           {fields.map((_, i) => (
-    //             <div key={i.toString()}>
-    //               <input
-    //                 type="radio"
-    //                 value="yes"
-    //                 name={`options.${i}.option`}
-    //                 {...register()}
-    //               />
-    //               <input
-    //                 type="radio"
-    //                 value="no"
-    //                 name={`options.${i}.option`}
-    //                 {...register()}
-    //               />
-    //             </div>
-    //           ))}
-    //         </form>
-    //       );
-    //     };
-    //
-    //     render(<Component />);
-    //
-    //     fireEvent.change(screen.getAllByRole('radio')[1], {
-    //       target: {
-    //         checked: true,
-    //       },
-    //     });
-    //
-    //     expect(watchedValue).toEqual({
-    //       options: [{ option: 'no' }, { option: '' }],
-    //     });
-    //   });
-    //
-    //   it("should watch item correctly with useFieldArray's remove method", async () => {
-    //     // @ts-ignore
-    //     let watchedValue: { [x: string]: any } | undefined;
-    //     const Component = () => {
-    //       const { register, control } = useForm<{
-    //         test: {
-    //           firstName: string;
-    //           lsatName: string;
-    //         }[];
-    //       }>({
-    //         defaultValues: {
-    //           test: [{ firstName: 'test' }, { firstName: 'test1' }],
-    //         },
-    //       });
-    //       const { fields, remove } = useFieldArray({
-    //         name: 'test',
-    //         control,
-    //       });
-    //       watchedValue = useWatch({
-    //         name: 'test',
-    //         control,
-    //       });
-    //
-    //       return (
-    //         <form>
-    //           {fields.map((item, i) => (
-    //             <div key={item.firstName}>
-    //               <input
-    //                 type="input"
-    //                 defaultValue={item.firstName}
-    //                 {...register('test.${i}.firstName')}
-    //               />
-    //
-    //               <button type="button" onClick={() => remove(i)}>
-    //                 remove
-    //               </button>
-    //             </div>
-    //           ))}
-    //         </form>
-    //       );
-    //     };
-    //
-    //     render(<Component />);
-    //
-    //     expect(watchedValue).toEqual([
-    //       { firstName: 'test' },
-    //       { firstName: 'test1' },
-    //     ]);
-    //
-    //     fireEvent.click(screen.getAllByRole('button')[0]);
-    //
-    //     expect(watchedValue).toEqual([{ firstName: 'test1' }]);
-    //   });
-    // });
+    describe.only('with useFieldArray', () => {
+      // issue: https://github.com/react-hook-form/react-hook-form/issues/2229
+      it('should return current value with radio type', async () => {
+        let watchedValue: any;
+        const Component = () => {
+          const { register, reset, control } = useForm<{
+            options: { option: string }[];
+          }>();
+          const { fields } = useFieldArray({ name: 'options', control });
+          watchedValue = useWatch({
+            control,
+          });
+
+          React.useEffect(() => {
+            reset({
+              options: [
+                {
+                  option: 'test',
+                },
+                {
+                  option: 'test1',
+                },
+              ],
+            });
+          }, [reset]);
+
+          return (
+            <form>
+              {fields.map((_, i) => (
+                <div key={i.toString()}>
+                  <input
+                    type="radio"
+                    value="yes"
+                    {...register(`options.${i}.option` as any)}
+                  />
+                  <input
+                    type="radio"
+                    value="no"
+                    {...register(`options.${i}.option` as any)}
+                  />
+                </div>
+              ))}
+            </form>
+          );
+        };
+
+        render(<Component />);
+
+        fireEvent.change(screen.getAllByRole('radio')[1], {
+          target: {
+            checked: true,
+          },
+        });
+
+        expect(watchedValue).toEqual({
+          options: [{ option: '' }, { option: '' }],
+        });
+
+        actComponent(() => {
+          expect(watchedValue).toEqual({
+            options: [{ option: '' }, { option: '' }],
+          });
+        });
+      });
+
+      it("should watch item correctly with useFieldArray's remove method", async () => {
+        let watchedValue: { [x: string]: any } | undefined;
+        const Component = () => {
+          const { register, control } = useForm<{
+            test: {
+              firstName: string;
+              lsatName: string;
+            }[];
+          }>({
+            defaultValues: {
+              test: [{ firstName: 'test' }, { firstName: 'test1' }],
+            },
+          });
+          const { fields, remove } = useFieldArray({
+            name: 'test',
+            control,
+          });
+          watchedValue = useWatch({
+            name: 'test',
+            control,
+          });
+
+          return (
+            <form>
+              {fields.map((item, i) => (
+                <div key={item.firstName}>
+                  <input
+                    type="input"
+                    defaultValue={item.firstName}
+                    {...register(`test.${i}.firstName` as any)}
+                  />
+
+                  <button type="button" onClick={() => remove(i)}>
+                    remove
+                  </button>
+                </div>
+              ))}
+            </form>
+          );
+        };
+
+        render(<Component />);
+
+        expect(watchedValue).toEqual([
+          { firstName: 'test' },
+          { firstName: 'test1' },
+        ]);
+
+        fireEvent.click(screen.getAllByRole('button')[0]);
+
+        expect(watchedValue).toEqual([{ firstName: 'test1' }]);
+      });
+    });
 
     describe('with custom register', () => {
       it('should return default value of reset method when value is not empty', async () => {

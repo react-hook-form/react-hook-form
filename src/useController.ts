@@ -38,15 +38,13 @@ export function useController<TFieldValues extends FieldValues = FieldValues>({
   } = control || methods.control;
 
   const { onChange, onBlur, ref } = register(name, rules);
-  const getInitialValue = () => {
-    return (fieldsRef.current[name] &&
-      isUndefined(fieldsRef.current[name]!.value)) ||
-      isNameInFieldArray(fieldArrayNamesRef.current, name)
+  const getInitialValue = () =>
+    (fieldsRef.current[name] && isUndefined(fieldsRef.current[name]!.value)) ||
+    isNameInFieldArray(fieldArrayNamesRef.current, name)
       ? isUndefined(defaultValue)
         ? get(defaultValuesRef.current, name)
         : defaultValue
       : fieldsRef.current[name]!.value;
-  };
 
   const [value, setInputStateValue] = React.useState(getInitialValue());
   const { errors, dirty, touched, isValidating } = useFormState({

@@ -1018,7 +1018,6 @@ export function useForm<
     }
 
     fieldsRef.current = {};
-    isMountedRef.current = false;
     defaultValuesRef.current = { ...(values || defaultValuesRef.current) };
 
     controllerSubjectRef.current.next({

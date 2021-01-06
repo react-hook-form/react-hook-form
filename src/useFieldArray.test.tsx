@@ -204,7 +204,7 @@ describe('useFieldArray', () => {
       expect(console.warn).not.toBeCalled();
     });
 
-    it.skip('should output error message when a conflicting fieldArray keyName is found in the fieldValues in development mode', () => {
+    it('should output error message when a conflicting fieldArray keyName is found in the fieldValues in development mode', () => {
       jest.spyOn(console, 'warn').mockImplementation(() => {});
 
       process.env.NODE_ENV = 'development';
@@ -1738,7 +1738,7 @@ describe('useFieldArray', () => {
     });
   });
 
-  describe.skip('remove', () => {
+  describe('remove', () => {
     it('should update isDirty formState when item removed', () => {
       let formState: any;
       const Component = () => {
@@ -2100,17 +2100,6 @@ describe('useFieldArray', () => {
         });
       });
 
-      /**
-       * we should not enter value to the second input field.
-       * Because we have checked if valid field move to removed field position or not.
-       *
-       * await actComponent(async () => {
-       *   fireEvent.input(inputs[1], {
-       *     target: { value: 'test' },
-       *   });
-       * });
-       */
-
       await actComponent(async () => {
         fireEvent.input(inputs[2], {
           target: { value: 'test' },
@@ -2246,7 +2235,8 @@ describe('useFieldArray', () => {
         test: {
           nested: {
             test: string;
-          };
+            key: number;
+          }[];
         }[];
       };
 
@@ -2263,8 +2253,7 @@ describe('useFieldArray', () => {
         index: number;
       }) => {
         const { fields, append, remove } = useFieldArray({
-          // @ts-ignore
-          name: `test.${index}.nested`,
+          name: `test.${index}.nested` as any,
           control,
         });
         return (
@@ -2286,7 +2275,6 @@ describe('useFieldArray', () => {
                 <button onClick={() => remove(i)}>nested delete</button>
               </div>
             ))}
-            {/* @ts-ignore */}
             <button onClick={() => append({ test: 'test', key: mockKey++ })}>
               nested append
             </button>
@@ -2302,7 +2290,7 @@ describe('useFieldArray', () => {
           control,
         } = useForm<FormValues>({
           defaultValues: {
-            test: [{ nested: [{ test: '', key: mockKey }] as any }],
+            test: [{ nested: [{ test: '', key: mockKey }] }],
           },
         });
         const { fields } = useFieldArray({ name: 'test', control });
@@ -2409,11 +2397,12 @@ describe('useFieldArray', () => {
           name: 'test',
           control,
         });
-        const watched = watch('test', fields);
+        const watched = watch('test');
         const isRemoved = React.useRef(false);
         if (isRemoved.current) {
           renderedItems.push(watched);
         }
+
         return (
           <div>
             {fields.map((field, i) => (
@@ -2459,10 +2448,7 @@ describe('useFieldArray', () => {
 
       await waitFor(() =>
         expect(renderedItems).toEqual([
-          [
-            { id: '0', value: '' },
-            { id: '1', value: '' },
-          ],
+          undefined,
           [{ value: '111' }, { value: '222' }],
         ]),
       );
@@ -4398,7 +4384,7 @@ describe('useFieldArray', () => {
   });
 
   describe.skip('submit form', () => {
-    it.skip('should leave defaultValues as empty array when shouldUnregister set to false', async () => {
+    it('should leave defaultValues as empty array when shouldUnregister set to false', async () => {
       let submitData: any;
       type FormValues = {
         test: {

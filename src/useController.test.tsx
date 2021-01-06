@@ -3,7 +3,7 @@ import { useForm } from './useForm';
 import { useController } from './useController';
 import { render } from '@testing-library/react';
 
-describe.skip('useController', () => {
+describe('useController', () => {
   it('should render input correctly', () => {
     const Component = () => {
       const { control } = useForm<{

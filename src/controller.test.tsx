@@ -167,9 +167,6 @@ describe('Controller', () => {
             render={({ field }) => <input {...field} />}
             control={control}
           />
-          {/**
-           * We are checking if setValue method is invoked
-           */}
           <button onClick={() => (fieldValues = getValues())}>getValues</button>
         </>
       );
@@ -343,9 +340,6 @@ describe('Controller', () => {
             }}
             control={control}
           />
-          {/**
-           * We are checking if setValue method is invoked
-           */}
           <button onClick={() => (fieldValues = getValues())}>getValues</button>
         </>
       );
@@ -684,17 +678,21 @@ describe('Controller', () => {
       expect(console.warn).not.toBeCalled();
     });
 
-    it.skip('should warn the user when defaultValue is missing with useFieldArray in development environment', () => {
+    it('should warn the user when defaultValue is missing with useFieldArray in development environment', async () => {
+      let appendMethod: any;
       jest.spyOn(console, 'warn').mockImplementation(() => {});
 
       process.env.NODE_ENV = 'development';
 
       const Component = () => {
-        const { control } = useForm();
-        const { fields } = useFieldArray({
+        const { control } = useForm<{
+          test: { data: string }[];
+        }>();
+        const { fields, append } = useFieldArray({
           control,
           name: 'test',
         });
+        appendMethod = append;
 
         return (
           <form>
@@ -714,7 +712,13 @@ describe('Controller', () => {
 
       render(<Component />);
 
-      expect(console.warn).toBeCalledTimes(1);
+      await act(async () => {
+        await appendMethod({ value: '' });
+      });
+
+      act(() => {
+        expect(console.warn).toBeCalledTimes(1);
+      });
     });
 
     it('should not warn the user when defaultValue is missing with useFieldArray in production environment', () => {

@@ -11,10 +11,10 @@ describe('validateField', () => {
   });
 
   it('should return required true when input not filled with required', async () => {
-    (getRadioValue as any).mockImplementation(() => ({
+    (getRadioValue as jest.Mock<any>).mockImplementation(() => ({
       value: '2',
     }));
-    (getCheckboxValue as any).mockImplementation(() => ({
+    (getCheckboxValue as jest.Mock<any>).mockImplementation(() => ({
       value: false,
       isValid: false,
     }));
@@ -193,7 +193,7 @@ describe('validateField', () => {
       },
     });
 
-    (getCheckboxValue as any).mockImplementation(() => ({
+    (getCheckboxValue as jest.Mock<any>).mockImplementation(() => ({
       value: 'test',
       isValid: true,
     }));
@@ -1001,7 +1001,7 @@ describe('validateField', () => {
       },
     });
 
-    (getRadioValue as any).mockImplementation(() => {
+    (getRadioValue as jest.Mock<any>).mockImplementation(() => {
       return {
         isValid: false,
         value: 'test',
@@ -1048,13 +1048,13 @@ describe('validateField', () => {
             test: (value) => value.toString().length < 3,
             test1: (value) => value.toString().length > 10,
           },
-          refs: ['data' as any],
+          refs: [{ type: 'data' } as HTMLInputElement],
         },
         false,
       ),
     ).toEqual({
       test: {
-        ref: 'data',
+        ref: { type: 'data' },
         type: 'test',
         message: '',
       },
@@ -1072,7 +1072,11 @@ describe('validateField', () => {
           validate: {
             test: () => true,
           },
-          refs: ['data' as any],
+          refs: [
+            {
+              type: 'data',
+            } as HTMLInputElement,
+          ],
         },
         false,
       ),
@@ -1220,7 +1224,8 @@ describe('validateField', () => {
             name: 'test',
           },
           value: 'This is a long text input',
-          validate: 'validate' as any,
+          // @ts-expect-error
+          validate: 'validate',
         },
         false,
       ),
@@ -1228,7 +1233,7 @@ describe('validateField', () => {
   });
 
   it('should return all validation errors', async () => {
-    (getRadioValue as any).mockImplementation(() => ({
+    (getRadioValue as jest.Mock<any>).mockImplementation(() => ({
       value: '',
     }));
     expect(
@@ -1263,7 +1268,7 @@ describe('validateField', () => {
   });
 
   it('should return all validation error messages', async () => {
-    (getRadioValue as any).mockImplementation(() => ({
+    (getRadioValue as jest.Mock<any>).mockImplementation(() => ({
       value: '',
     }));
     expect(

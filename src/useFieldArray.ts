@@ -473,7 +473,7 @@ export const useFieldArray = <
           unset(fieldArrayDefaultValuesRef.current, name as InternalFieldName);
         memoizedDefaultValues.current = get(
           data || defaultValuesRef.current,
-          name as any,
+          name as InternalFieldName,
         );
         setFields(mapIds(memoizedDefaultValues.current, keyName));
       };

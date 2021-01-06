@@ -42,9 +42,10 @@ describe('focusErrorField', () => {
             name: 'test',
           },
           refs: [
+            // @ts-expect-error
             {
               focus,
-            } as any,
+            },
           ],
         },
       },

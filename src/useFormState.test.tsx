@@ -7,7 +7,13 @@ import { Control } from './types';
 describe('useFormState', () => {
   it('should render correct form state with isDirty, dirty, touched', () => {
     let count = 0;
-    const Test = ({ control }: { control: Control }) => {
+    const Test = ({
+      control,
+    }: {
+      control: Control<{
+        test: string;
+      }>;
+    }) => {
       const { isDirty, dirty, touched } = useFormState({
         control,
       });
@@ -31,7 +37,6 @@ describe('useFormState', () => {
       return (
         <div>
           <input aria-label="test" {...register('test')} />
-          {/* @ts-ignore */}
           <Test control={control} />
         </div>
       );
