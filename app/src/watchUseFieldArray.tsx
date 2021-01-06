@@ -1,34 +1,31 @@
-// @ts-nocheck
 import React from 'react';
 import { useForm, useFieldArray } from 'react-hook-form';
 
 let renderCount = 0;
 
+type FormInputs = {
+  data: { name: string }[];
+};
+
 const WatchUseFieldArray: React.FC = (props: any) => {
-  const { control, handleSubmit, reset, watch, register } = useForm<{
-    data: { name: string }[];
-  }>({
-    ...(props.match.params.mode === 'default'
-      ? {
-          defaultValues: {
-            data: [{ name: 'test' }, { name: 'test1' }, { name: 'test2' }],
-          },
-        }
-      : {}),
-    mode: props.match.params.mode === 'formState' ? 'onChange' : 'onSubmit',
-  });
-  const {
-    fields,
-    append,
-    prepend,
-    swap,
-    move,
-    insert,
-    remove,
-  } = useFieldArray<{ name: string }>({
-    control,
-    name: 'data',
-  });
+  const { control, handleSubmit, reset, watch, register } = useForm<FormInputs>(
+    {
+      ...(props.match.params.mode === 'default'
+        ? {
+            defaultValues: {
+              data: [{ name: 'test' }, { name: 'test1' }, { name: 'test2' }],
+            },
+          }
+        : {}),
+      mode: props.match.params.mode === 'formState' ? 'onChange' : 'onSubmit',
+    },
+  );
+  const { fields, append, prepend, swap, move, insert, remove } = useFieldArray(
+    {
+      control,
+      name: 'data',
+    },
+  );
   const onSubmit = () => {};
   const watchAll = watch('data') || [];
 

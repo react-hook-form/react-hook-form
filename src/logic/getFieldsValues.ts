@@ -1,24 +1,15 @@
 import * as React from 'react';
-import isUndefined from '../utils/isUndefined';
 import transformToNestObject from './transformToNestObject';
-import { InternalFieldName, FieldRefs } from '../types';
+import { FieldRefs } from '../types';
 
-export default (
-  fieldsRef: React.MutableRefObject<FieldRefs>,
-  search?: InternalFieldName | InternalFieldName[],
-) => {
+export default (fieldsRef: React.MutableRefObject<FieldRefs>) => {
   const output: Record<string, unknown> = {};
 
   for (const name in fieldsRef.current) {
-    if (
-      isUndefined(search) ||
-      (Array.isArray(search) ? search : [search]).find((data) =>
-        name.startsWith(data),
-      )
-    ) {
-      const field = fieldsRef.current[name];
+    const field = fieldsRef.current[name];
 
-      output[name] = field!.ref.disabled ? undefined : field!.value;
+    if (field && !field.ref.disabled) {
+      output[name] = field!.value;
     }
   }
 

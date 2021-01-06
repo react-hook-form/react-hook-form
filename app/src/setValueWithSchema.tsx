@@ -38,7 +38,11 @@ const SetValueWithSchema: React.FC = () => {
   }, [register]);
 
   return (
-    <form onSubmit={handleSubmit(() => {})}>
+    <form
+      onSubmit={handleSubmit((d) => {
+        console.log(d);
+      })}
+    >
       <input
         name="firstName"
         placeholder="firstName"
@@ -64,7 +68,7 @@ const SetValueWithSchema: React.FC = () => {
       {errors.lastName && <p>lastName error</p>}
 
       <input
-        name="age"
+        {...register('age')}
         onChange={(e) => {
           setValue('age', e.target.value, {
             shouldValidate: true,
@@ -73,10 +77,7 @@ const SetValueWithSchema: React.FC = () => {
         }}
       />
 
-      <input
-        placeholder="requiredField"
-        {...register('requiredField')}
-      />
+      <input placeholder="requiredField" {...register('requiredField')} />
       {errors.requiredField && <p>RequiredField error</p>}
 
       <button

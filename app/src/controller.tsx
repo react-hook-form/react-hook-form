@@ -1,4 +1,3 @@
-// @ts-nocheck
 import React from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import ReactSelect from 'react-select';

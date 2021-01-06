@@ -1,4 +1,3 @@
-// @ts-nocheck
 import React, { useState } from 'react';
 import ReactSelect from 'react-select';
 import { useForm, Controller, NestedValue } from 'react-hook-form';

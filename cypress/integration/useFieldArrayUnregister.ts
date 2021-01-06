@@ -1,4 +1,5 @@
 describe('useFieldArrayUnregister', () => {
+  // todo: useFieldArray conditional input fix
   it.skip('should behaviour correctly', () => {
     cy.visit('http://localhost:3000/UseFieldArrayUnregister');
 

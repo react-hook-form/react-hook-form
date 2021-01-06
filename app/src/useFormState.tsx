@@ -3,7 +3,26 @@ import { useFormState, useForm, Control } from 'react-hook-form';
 
 let renderCounter = 0;
 
-const SubForm = ({ control }: { control: Control }) => {
+type FormInputs = {
+  firstName: string;
+  lastName: string;
+  min: string;
+  max: string;
+  minDate: string;
+  maxDate: string;
+  minLength: string;
+  minRequiredLength: string;
+  selectNumber: string;
+  pattern: string;
+  nestItem: {
+    nest1: string;
+  };
+  arrayItem: {
+    test1: string;
+  }[];
+};
+
+const SubForm = ({ control }: { control: Control<FormInputs> }) => {
   const {
     isDirty,
     dirty,
@@ -32,24 +51,7 @@ const SubForm = ({ control }: { control: Control }) => {
 };
 
 export const UseFormState: React.FC = () => {
-  const { register, handleSubmit, control, reset } = useForm<{
-    firstName: string;
-    lastName: string;
-    min: string;
-    max: string;
-    minDate: string;
-    maxDate: string;
-    minLength: string;
-    minRequiredLength: string;
-    selectNumber: string;
-    pattern: string;
-    nestItem: {
-      nest1: string;
-    };
-    arrayItem: {
-      test1: string;
-    }[];
-  }>({
+  const { register, handleSubmit, control, reset } = useForm<FormInputs>({
     mode: 'onChange',
   });
   const onValid = () => {};
@@ -116,8 +118,7 @@ export const UseFormState: React.FC = () => {
         Reset
       </button>
       <div id="renderCount">{renderCounter}</div>
-      {/* Todo: fix type issue */}
-      <SubForm control={control as any} />
+      <SubForm control={control} />
     </form>
   );
 };

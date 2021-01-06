@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
-import { useForm } from 'react-hook-form';
-import { NestedValue } from '../../src/types';
+import { useForm, NestedValue } from 'react-hook-form';
 
 let renderCounter = 0;
 
@@ -49,7 +48,6 @@ const Basic: React.FC = (props: any) => {
       <input
         placeholder="arrayItem[0].test1"
         {...register('arrayItem.0.test1', { required: true })}
-        name="arrayItem.0.test1"
       />
       {errors.arrayItem?.[0]?.test1 && <p>array item 1 error</p>}
       <input
@@ -123,17 +121,17 @@ const Basic: React.FC = (props: any) => {
       <input
         type="checkbox"
         value="1"
-        {...register('checkboxArray' as any, { required: true })}
+        {...register('checkboxArray', { required: true })}
       />
       <input
         type="checkbox"
         value="2"
-        {...register('checkboxArray' as any, { required: true })}
+        {...register('checkboxArray', { required: true })}
       />
       <input
         type="checkbox"
         value="3"
-        {...register('checkboxArray' as any, { required: true })}
+        {...register('checkboxArray', { required: true })}
       />
       {errors.checkboxArray && <p>checkboxArray error</p>}
       <select multiple {...register('multiple', { required: true })}>
