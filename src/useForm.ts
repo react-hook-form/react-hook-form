@@ -1024,7 +1024,7 @@ export function useForm<
       }
     }
 
-    if (!(isFieldArray && isEmptyDefaultValue)) {
+    if (shouldUnregister && !(isFieldArray && isEmptyDefaultValue)) {
       !isFieldArray && unset(formStateRef.current.dirtyFields, name);
     }
 
