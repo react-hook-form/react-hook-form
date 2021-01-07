@@ -206,7 +206,7 @@ export function useController<TFieldValues extends FieldValues = FieldValues>({
     },
     meta: Object.defineProperties(
       {
-        invalid: get(errors, name),
+        invalid: !!get(errors, name),
       },
       {
         isDirty: {
