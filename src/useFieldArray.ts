@@ -75,11 +75,11 @@ export const useFieldArray = <
   const fieldArrayParentName = getFieldArrayParentName(
     name as InternalFieldName,
   );
-  const memoizedDefaultValues = React.useRef<Partial<TFieldValues>[]>([
-    ...(get(fieldArrayDefaultValuesRef.current, fieldArrayParentName)
+  const memoizedDefaultValues = React.useRef<Partial<TFieldValues>[]>(
+    get(fieldArrayDefaultValuesRef.current, fieldArrayParentName)
       ? get(fieldArrayDefaultValuesRef.current, name as InternalFieldName, [])
-      : get(defaultValuesRef.current, name as InternalFieldName, [])),
-  ]);
+      : get(defaultValuesRef.current, name as InternalFieldName, []),
+  );
   const [fields, setFields] = React.useState<
     Partial<ArrayFieldWithId<TFieldValues, TName, TKeyName>>[]
   >(mapIds(memoizedDefaultValues.current, keyName));
