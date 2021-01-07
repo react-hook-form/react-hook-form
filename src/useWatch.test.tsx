@@ -436,6 +436,7 @@ describe('useWatch', () => {
       expect(await screen.findByText('default')).toBeDefined();
     });
 
+    // todo: fix the tests
     describe.only('with useFieldArray', () => {
       // issue: https://github.com/react-hook-form/react-hook-form/issues/2229
       it('should return current value with radio type', async () => {

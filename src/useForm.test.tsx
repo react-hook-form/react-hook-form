@@ -899,8 +899,8 @@ describe('useForm', () => {
       elm1.value = '1';
 
       document.body.append(elm1);
-      // @ts-ignore
-      ref1(elm1);
+
+      isFunction(ref1) && ref1(elm1);
 
       result.current.setValue('test', ['1']);
 
