@@ -86,7 +86,7 @@ export type TuplifyUnion<
   N = [T] extends [never] ? true : false
 > = true extends N ? [] : Push<TuplifyUnion<Exclude<T, L>>, L>;
 
-type ArrayElementType<A> = A extends readonly (infer T)[] ? T : never;
+// type ArrayElementType<A> = A extends readonly (infer T)[] ? T : never;
 
 type Indexes =
   | 0
@@ -121,35 +121,35 @@ type Indexes =
   | 29
   | 30;
 
-type ArrayChild = string | boolean | number | symbol | bigint;
+// type ArrayChild = string | boolean | number | symbol | bigint;
 
-type Pred = [never, 0, 1, 2, 3, 4, 5, 6, 7];
+// type Pred = [never, 0, 1, 2, 3, 4, 5, 6, 7];
 
-export type FieldPath<
-  TFieldValues,
-  TKey extends keyof TFieldValues = keyof TFieldValues,
-  TMaxRecursive extends number = 7
-> = [TMaxRecursive] extends [0]
-  ? 'RECURSIVE_EXCEED'
-  : TKey extends string
-  ? TFieldValues[TKey] extends NestedValue | FileList
-    ? TKey
-    : TFieldValues[TKey] extends ArrayChild[] | Set<ArrayChild>
-    ? `${TKey}.${Indexes}`
-    : TFieldValues[TKey] extends object[]
-    ? `${TKey}.${Indexes}.${FieldPath<
-        ArrayElementType<TFieldValues[TKey]>,
-        keyof ArrayElementType<TFieldValues[TKey]>,
-        Pred[TMaxRecursive]
-      >}`
-    : TFieldValues[TKey] extends Record<string, any>
-    ? `${TKey}.${FieldPath<
-        TFieldValues[TKey],
-        keyof TFieldValues[TKey],
-        Pred[TMaxRecursive]
-      >}`
-    : TKey
-  : never;
+// export type FieldPath<
+//   TFieldValues,
+//   TKey extends keyof TFieldValues = keyof TFieldValues,
+//   TMaxRecursive extends number = 7
+// > = [TMaxRecursive] extends [0]
+//   ? 'RECURSIVE_EXCEED'
+//   : TKey extends string
+//   ? TFieldValues[TKey] extends NestedValue | FileList
+//     ? TKey
+//     : TFieldValues[TKey] extends ArrayChild[] | Set<ArrayChild>
+//     ? `${TKey}.${Indexes}`
+//     : TFieldValues[TKey] extends object[]
+//     ? `${TKey}.${Indexes}.${FieldPath<
+//         ArrayElementType<TFieldValues[TKey]>,
+//         keyof ArrayElementType<TFieldValues[TKey]>,
+//         Pred[TMaxRecursive]
+//       >}`
+//     : TFieldValues[TKey] extends Record<string, any>
+//     ? `${TKey}.${FieldPath<
+//         TFieldValues[TKey],
+//         keyof TFieldValues[TKey],
+//         Pred[TMaxRecursive]
+//       >}`
+//     : TKey
+//   : never;
 
 type GenerateArrayKeyType<T extends string, K extends number> = `${T}.${K}`;
 
@@ -182,3 +182,34 @@ export type PathValue<
   : P extends keyof T
   ? T[P]
   : never;
+
+type Digits = '0' | NonZeroDigits;
+type NonZeroDigits = '1' | '2' | '3' | '4' | '5' | '6' | '7' | '8' | '9';
+
+type IsPrimitive<T> = T extends
+  | undefined
+  | null
+  | boolean
+  | number
+  | string
+  | symbol
+  | bigint
+  ? true
+  : false;
+
+type ArrayKey = number | Digits | `${NonZeroDigits}${Digits}`;
+// | `${NonZeroDigits}${Digits}${Digits}`;
+
+type ValueOf<T> = T[keyof T];
+
+export type FieldPath<Root> = Root extends ReadonlyArray<infer E>
+  ? IsPrimitive<E> extends true
+    ? ArrayKey
+    : ArrayKey | `${ArrayKey}.${FieldPath<E>}`
+  : ValueOf<
+      {
+        [K in keyof Root]: IsPrimitive<Root[K]> extends true
+          ? K & string
+          : (K & string) | `${K & string}.${FieldPath<Root[K]>}`;
+      }
+    >;

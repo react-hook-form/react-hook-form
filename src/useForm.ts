@@ -848,8 +848,8 @@ export function useForm<
     }
   }
 
-  function register(
-    name: FieldPath<TFieldValues>,
+  function register<Path extends FieldPath<TFieldValues>>(
+    name: Path,
     options?: RegisterOptions,
   ): RegisterMethods {
     if (process.env.NODE_ENV !== 'production') {
