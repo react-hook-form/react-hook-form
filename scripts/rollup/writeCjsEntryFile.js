@@ -36,4 +36,3 @@ if (process.env.NODE_ENV === 'production') {
 }
 
 writeCjsEntryFile('index');
-writeCjsEntryFile('index', 'ie11', 'tsconfig.ie11.json');
