@@ -19,7 +19,7 @@ import cloneObject from './utils/cloneObject';
 import {
   FieldValues,
   UseFieldArrayProps,
-  Path,
+  FieldPath,
   ArrayFieldWithId,
   UnpackNestedValue,
   DeepPartial,
@@ -30,7 +30,7 @@ import {
 
 export const useFieldArray = <
   TFieldValues extends FieldValues = FieldValues,
-  TName extends Path<TFieldValues> = Path<TFieldValues>,
+  TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
   TKeyName extends string = 'id'
 >({
   control,

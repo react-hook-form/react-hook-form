@@ -9,7 +9,7 @@ import {
   FieldValues,
   UnpackNestedValue,
   Control,
-  Path,
+  FieldPath,
 } from './types';
 
 export function useWatch<
@@ -22,12 +22,12 @@ export function useWatch<
   TFieldValues extends FieldValues,
   TWatchFieldValue extends any
 >(props: {
-  name: Path<TFieldValues>;
+  name: FieldPath<TFieldValues>;
   defaultValue?: UnpackNestedValue<TWatchFieldValue>;
   control?: Control<TFieldValues>;
 }): UnpackNestedValue<TWatchFieldValue>;
 export function useWatch<TFieldValues extends FieldValues>(props: {
-  name: Path<TFieldValues>[];
+  name: FieldPath<TFieldValues>[];
   defaultValue?: UnpackNestedValue<DeepPartial<TFieldValues>>;
   control?: Control<TFieldValues>;
 }): UnpackNestedValue<DeepPartial<TFieldValues>>;

@@ -1,6 +1,6 @@
 import { Control, UnpackNestedValue } from './form';
 import { FieldValues } from './fields';
-import { DeepPartial, Path, PathValue } from './utils';
+import { DeepPartial, FieldPath, FieldPathValue } from './utils';
 
 export type FieldArrayName = string;
 
@@ -8,7 +8,7 @@ export type FieldArrayDefaultValues = Partial<Record<FieldArrayName, any>>;
 
 export type UseFieldArrayProps<
   TFieldValues extends FieldValues = FieldValues,
-  TName extends Path<TFieldValues> = Path<TFieldValues>,
+  TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
   TKeyName extends string = 'id'
 > = {
   name: TName;
@@ -25,18 +25,19 @@ type InferArrayType<T> = T extends (infer U)[] ? U : never;
 
 export type ArrayFieldWithId<
   TFieldValues extends FieldValues = FieldValues,
-  TName extends Path<TFieldValues> = Path<TFieldValues>,
+  TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
   TKeyName extends string = 'id'
-> = InferArrayType<PathValue<TFieldValues, TName>> & Record<TKeyName, string>;
+> = InferArrayType<FieldPathValue<TFieldValues, TName>> &
+  Record<TKeyName, string>;
 
 export type ArrayField<
   TFieldValues extends FieldValues = FieldValues,
-  TName extends Path<TFieldValues> = Path<TFieldValues>
-> = InferArrayType<PathValue<TFieldValues, TName>>;
+  TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>
+> = InferArrayType<FieldPathValue<TFieldValues, TName>>;
 
 export type UseFieldArrayMethods<
   TFieldValues extends FieldValues = FieldValues,
-  TName extends Path<TFieldValues> = Path<TFieldValues>,
+  TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
   TKeyName extends string = 'id'
 > = {
   swap: (indexA: number, indexB: number) => void;

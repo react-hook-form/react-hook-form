@@ -1,12 +1,6 @@
 import * as React from 'react';
 import { NativeSyntheticEvent } from 'react-native';
-import {
-  LiteralToPrimitive,
-  DeepPartial,
-  DeepMap,
-  FieldPath,
-  Path,
-} from './utils';
+import { LiteralToPrimitive, DeepPartial, DeepMap, FieldPath } from './utils';
 import { Resolver } from './resolvers';
 import {
   FieldName,
@@ -209,7 +203,7 @@ export type WatchCallback = <TFieldValues>(
 
 export type UseFormMethods<TFieldValues extends FieldValues = FieldValues> = {
   watch(): UnpackNestedValue<TFieldValues>;
-  watch<TFieldName extends Path<TFieldValues>>(
+  watch<TFieldName extends FieldPath<TFieldValues>>(
     name: TFieldName,
     defaultValue?: TFieldName extends keyof TFieldValues
       ? UnpackNestedValue<TFieldValues[TFieldName]>
@@ -218,7 +212,7 @@ export type UseFormMethods<TFieldValues extends FieldValues = FieldValues> = {
     ? UnpackNestedValue<TFieldValues[TFieldName]>
     : UnpackNestedValue<LiteralToPrimitive<TFieldName>>;
   watch(
-    names: Path<TFieldValues>[],
+    names: FieldPath<TFieldValues>[],
     defaultValues?: UnpackNestedValue<DeepPartial<TFieldValues>>,
   ): UnpackNestedValue<DeepPartial<TFieldValues>>;
   watch(
@@ -255,7 +249,7 @@ export type UseFormStateMethods<TFieldValues> = FormState<TFieldValues>;
 
 export type UseWatchProps<TFieldValues extends FieldValues = FieldValues> = {
   defaultValue?: unknown;
-  name?: Path<TFieldValues> | Path<TFieldValues>[];
+  name?: FieldPath<TFieldValues> | FieldPath<TFieldValues>[];
   control?: Control<TFieldValues>;
 };
 

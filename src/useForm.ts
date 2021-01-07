@@ -64,9 +64,8 @@ import {
   FieldArrayDefaultValues,
   ResetFieldArrayFunctionRef,
   RegisterMethods,
-  FieldPath,
   ControllerEvent,
-  Path,
+  FieldPath,
   WatchCallback,
 } from './types';
 
@@ -697,7 +696,7 @@ export function useForm<
   );
 
   function watch(): UnpackNestedValue<TFieldValues>;
-  function watch<TFieldName extends Path<TFieldValues>>(
+  function watch<TFieldName extends FieldPath<TFieldValues>>(
     name: TFieldName,
     defaultValue?: TFieldName extends keyof TFieldValues
       ? UnpackNestedValue<TFieldValues[TFieldName]>
@@ -706,7 +705,7 @@ export function useForm<
     ? UnpackNestedValue<TFieldValues[TFieldName]>
     : UnpackNestedValue<LiteralToPrimitive<TFieldName>>;
   function watch(
-    names: Path<TFieldValues>[],
+    names: FieldPath<TFieldValues>[],
     defaultValues?: UnpackNestedValue<DeepPartial<TFieldValues>>,
   ): UnpackNestedValue<DeepPartial<TFieldValues>>;
   function watch(
@@ -714,7 +713,10 @@ export function useForm<
     defaultValues?: UnpackNestedValue<DeepPartial<TFieldValues>>,
   ): void;
   function watch(
-    watchField?: Path<TFieldValues> | Path<TFieldValues>[] | WatchCallback,
+    watchField?:
+      | FieldPath<TFieldValues>
+      | FieldPath<TFieldValues>[]
+      | WatchCallback,
     defaultValue?: unknown,
   ): unknown | void {
     if (isFunction(watchField)) {
