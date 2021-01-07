@@ -3509,7 +3509,7 @@ describe('useForm', () => {
                   type={'checkbox'}
                   key={index}
                   id={`checkbox.${index}`}
-                  {...register(`checkbox.${index}` as any)}
+                  {...register(`checkbox.${index}` as const)}
                   value={value}
                 />
               </div>

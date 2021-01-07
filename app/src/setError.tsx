@@ -1,5 +1,16 @@
 import React, { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
+import {FieldPath} from "../../src/types";
+
+type FormInputs = {
+  firstName: string;
+  lastName: string;
+  age: string;
+  test: string;
+  test1: string;
+  test2: string;
+  username: string;
+};
 
 const SetError: React.FC = () => {
   const {
@@ -7,15 +18,7 @@ const SetError: React.FC = () => {
     setError,
     clearErrors,
     formState: { errors },
-  } = useForm<{
-    firstName: string;
-    lastName: string;
-    age: string;
-    test: string;
-    test1: string;
-    test2: string;
-    username: string;
-  }>();
+  } = useForm<FormInputs>();
 
   useEffect(() => {
     register('firstName');
@@ -42,7 +45,7 @@ const SetError: React.FC = () => {
         message: 'Minlength is 10',
       },
     ].forEach(({ name, type, message }) =>
-      setError(name as any, { type, message }),
+      setError(name as FieldPath<FormInputs>, { type, message }),
     );
     setError('username', {
       types: {

@@ -470,12 +470,12 @@ describe('useWatch', () => {
                   <input
                     type="radio"
                     value="yes"
-                    {...register(`options.${i}.option` as any)}
+                    {...register(`options.${i}.option` as const)}
                   />
                   <input
                     type="radio"
                     value="no"
-                    {...register(`options.${i}.option` as any)}
+                    {...register(`options.${i}.option` as const)}
                   />
                 </div>
               ))}
@@ -531,7 +531,7 @@ describe('useWatch', () => {
                   <input
                     type="input"
                     defaultValue={item.firstName}
-                    {...register(`test.${i}.firstName` as any)}
+                    {...register(`test.${i}.firstName` as const)}
                   />
 
                   <button type="button" onClick={() => remove(i)}>

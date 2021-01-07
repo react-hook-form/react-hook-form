@@ -699,7 +699,7 @@ describe('Controller', () => {
             {fields.map(({ id }, index) => {
               return (
                 <Controller
-                  name={`test.${index}.data` as any}
+                  name={`test.${index}.data` as const}
                   render={({ field }) => <input {...field} />}
                   control={control}
                   key={id}
@@ -743,7 +743,7 @@ describe('Controller', () => {
               return (
                 <Controller
                   render={({ field }) => <input {...field} />}
-                  name={`test.${index}.data` as any}
+                  name={`test.${index}.data` as const}
                   control={control}
                   key={id}
                 />
