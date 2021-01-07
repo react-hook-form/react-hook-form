@@ -187,16 +187,7 @@ export type IsFlatObject<T extends object> = Extract<
 type Digits = '0' | NonZeroDigits;
 type NonZeroDigits = '1' | '2' | '3' | '4' | '5' | '6' | '7' | '8' | '9';
 
-type IsPrimitive<T> = T extends
-  | undefined
-  | null
-  | boolean
-  | number
-  | string
-  | symbol
-  | bigint
-  ? true
-  : false;
+type IsPrimitive<T> = T extends Primitive ? true : false;
 
 type ArrayKey = number | Digits | `${NonZeroDigits}${Digits}`;
 // | `${NonZeroDigits}${Digits}${Digits}`;
