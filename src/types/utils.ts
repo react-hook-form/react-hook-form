@@ -202,14 +202,14 @@ type ArrayKey = number | Digits | `${NonZeroDigits}${Digits}`;
 
 type ValueOf<T> = T[keyof T];
 
-export type FieldPath<Root> = Root extends ReadonlyArray<infer E>
-  ? IsPrimitive<E> extends true
+export type FieldPath<Root> = Root extends ReadonlyArray<infer TArray>
+  ? IsPrimitive<TArray> extends true
     ? ArrayKey
-    : ArrayKey | `${ArrayKey}.${FieldPath<E>}`
+    : ArrayKey | `${ArrayKey}.${FieldPath<TArray>}`
   : ValueOf<
       {
-        [K in keyof Root]: IsPrimitive<Root[K]> extends true
-          ? K & string
-          : (K & string) | `${K & string}.${FieldPath<Root[K]>}`;
+        [Key in keyof Root]: IsPrimitive<Root[Key]> extends true
+          ? Key & string
+          : (Key & string) | `${string}.${FieldPath<Root[Key]>}`;
       }
     >;
