@@ -219,4 +219,6 @@ export type FieldPathValue<
     : never
   : TPath extends keyof TFieldValues
   ? TFieldValues[TPath]
+  : TPath & number extends keyof TFieldValues
+  ? TFieldValues[TPath & number]
   : never;

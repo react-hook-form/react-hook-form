@@ -420,8 +420,8 @@ describe('useFieldArray', () => {
         control: Control<FormValues>;
         index: number;
       }) => {
-        const { fields, append } = useFieldArray({
-          name: `test.${index}.nestedArray` as any,
+        const { fields, append } = useFieldArray<FormValues>({
+          name: `test.${index}.nestedArray` as const,
           control,
         });
 
@@ -431,7 +431,7 @@ describe('useFieldArray', () => {
               <input
                 key={item.id}
                 {...control.register(
-                  `test.${index}.nestedArray.${i}.value` as any,
+                  `test.${index}.nestedArray.${i}.value` as const,
                 )}
                 // @ts-ignore
                 defaultValue={item.value}
@@ -925,7 +925,7 @@ describe('useFieldArray', () => {
                 render={({ field }) => <input {...field} aria-label={'name'} />}
                 name={`${name}.${index}.name` as any}
                 control={control}
-                // @ts-ignore
+                // @ts-ignore todo: how to fix this when pass name down as prop
                 defaultValue={item.name}
               />
             ))}
@@ -4137,9 +4137,8 @@ describe('useFieldArray', () => {
         control: Control<FormValues>;
         index: number;
       }) => {
-        const { fields } = useFieldArray({
-          // todo: fix type
-          name: `nest.test.${index}.nestedArray` as any,
+        const { fields } = useFieldArray<FormValues>({
+          name: `nest.test.${index}.nestedArray` as const,
           control,
         });
 
@@ -4149,7 +4148,7 @@ describe('useFieldArray', () => {
               <input
                 key={item.id}
                 {...control.register(
-                  `nest.test.${index}.nestedArray.${i}.value` as any,
+                  `nest.test.${index}.nestedArray.${i}.value` as const,
                 )}
                 // @ts-ignore
                 defaultValue={item.value}
@@ -4233,8 +4232,8 @@ describe('useFieldArray', () => {
         control: Control<FormInputs>;
         index: number;
       }) => {
-        const { fields } = useFieldArray({
-          name: `nest.${index}.nestedArray` as any,
+        const { fields } = useFieldArray<FormInputs>({
+          name: `nest.${index}.nestedArray` as const,
           control,
         });
 
@@ -4244,7 +4243,7 @@ describe('useFieldArray', () => {
               <input
                 key={item.id}
                 {...control.register(
-                  `nest.${index}.nestedArray.${i}.value` as any,
+                  `nest.${index}.nestedArray.${i}.value` as const,
                 )}
                 // @ts-ignore
                 defaultValue={item.value}
