@@ -154,15 +154,16 @@ type UseFormCommonMethods<TFieldValues extends FieldValues = FieldValues> = {
   unregister: (
     name: FieldPath<TFieldValues> | FieldPath<TFieldValues>[],
   ) => void;
-  getValues(): UnpackNestedValue<TFieldValues>;
-  getValues<TFieldName extends string, TFieldValue extends unknown>(
-    name: TFieldName,
-  ): TFieldName extends keyof TFieldValues
-    ? UnpackNestedValue<TFieldValues>[TFieldName]
-    : TFieldValue;
-  getValues<TFieldName extends keyof TFieldValues>(
-    names: TFieldName[],
-  ): UnpackNestedValue<Pick<TFieldValues, TFieldName>>;
+  getValues: {
+    (): UnpackNestedValue<TFieldValues>;
+    <TName extends FieldPath<TFieldValues>>(fieldName: TName): FieldPathValue<
+      TFieldValues,
+      TName
+    >;
+    <TName extends FieldPath<TFieldValues>[]>(
+      fieldNames: TName,
+    ): FieldPathValues<TFieldValues, TName>;
+  };
 };
 
 export type Control<TFieldValues extends FieldValues = FieldValues> = {

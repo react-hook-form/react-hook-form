@@ -583,30 +583,26 @@ export function useForm<
   );
 
   function getValues(): UnpackNestedValue<TFieldValues>;
-  function getValues<TFieldName extends string, TFieldValue extends unknown>(
-    name: TFieldName,
-  ): TFieldName extends keyof TFieldValues
-    ? UnpackNestedValue<TFieldValues>[TFieldName]
-    : TFieldValue;
-  function getValues<TFieldName extends keyof TFieldValues>(
-    names: TFieldName[],
-  ): UnpackNestedValue<Pick<TFieldValues, TFieldName>>;
-  function getValues(payload?: string | string[]): unknown {
-    if (isString(payload)) {
-      return getFieldValue(fieldsRef.current[payload]);
+  function getValues<TName extends FieldPath<TFieldValues>>(
+    fieldName: TName,
+  ): FieldPathValue<TFieldValues, TName>;
+  function getValues<TName extends FieldPath<TFieldValues>[]>(
+    fieldNames: TName,
+  ): FieldPathValues<TFieldValues, TName>;
+  function getValues(
+    fieldNames?: FieldPath<TFieldValues> | FieldPath<TFieldValues>[],
+  ): unknown {
+    const values = getFieldsValues(fieldsRef);
+
+    if (isUndefined(fieldNames)) {
+      return values;
     }
 
-    if (Array.isArray(payload)) {
-      const data = {};
-
-      for (const name of payload) {
-        set(data, name, getFieldValue(fieldsRef.current[name]));
-      }
-
-      return data;
+    if (isString(fieldNames)) {
+      return get(values, fieldNames as InternalFieldName);
     }
 
-    return getFieldsValues(fieldsRef);
+    return fieldNames.map((name) => get(values, name as InternalFieldName));
   }
 
   const updateIsValid = React.useCallback(
