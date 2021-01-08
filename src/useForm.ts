@@ -55,7 +55,6 @@ import {
   FormState,
   SubmitErrorHandler,
   FieldNamesMarkedBoolean,
-  LiteralToPrimitive,
   DeepPartial,
   InternalNameSet,
   DefaultValues,
@@ -67,6 +66,8 @@ import {
   ControllerEvent,
   FieldPath,
   WatchCallback,
+  FieldPathValue,
+  FieldPathValues,
 } from './types';
 
 const isWindowUndefined = typeof window === UNDEFINED;
@@ -696,36 +697,32 @@ export function useForm<
   );
 
   function watch(): UnpackNestedValue<TFieldValues>;
-  function watch<TFieldName extends FieldPath<TFieldValues>>(
-    name: TFieldName,
-    defaultValue?: TFieldName extends keyof TFieldValues
-      ? UnpackNestedValue<TFieldValues[TFieldName]>
-      : UnpackNestedValue<LiteralToPrimitive<TFieldName>>,
-  ): TFieldName extends keyof TFieldValues
-    ? UnpackNestedValue<TFieldValues[TFieldName]>
-    : UnpackNestedValue<LiteralToPrimitive<TFieldName>>;
-  function watch(
-    names: FieldPath<TFieldValues>[],
-    defaultValues?: UnpackNestedValue<DeepPartial<TFieldValues>>,
-  ): UnpackNestedValue<DeepPartial<TFieldValues>>;
+  function watch<TName extends FieldPath<TFieldValues>>(
+    fieldName: TName,
+    defaultValue?: FieldPathValue<TFieldValues, TName>,
+  ): FieldPathValue<TFieldValues, TName>;
+  function watch<TName extends FieldPath<TFieldValues>[]>(
+    fieldName: TName,
+    defaultValue?: FieldPathValues<TFieldValues, TName>,
+  ): FieldPathValues<TFieldValues, TName>;
   function watch(
     callback: WatchCallback,
     defaultValues?: UnpackNestedValue<DeepPartial<TFieldValues>>,
   ): void;
   function watch(
-    watchField?:
+    fieldName?:
       | FieldPath<TFieldValues>
       | FieldPath<TFieldValues>[]
       | WatchCallback,
     defaultValue?: unknown,
-  ): unknown | void {
-    if (isFunction(watchField)) {
+  ): any {
+    if (isFunction(fieldName)) {
       watchSubjectRef.current.subscribe({
-        next: () => watchField(watchInternal(undefined, defaultValue)),
+        next: () => fieldName(watchInternal(undefined, defaultValue)),
       });
       return;
     } else {
-      return watchInternal(watchField as string | string[], defaultValue, true);
+      return watchInternal(fieldName as string | string[], defaultValue, true);
     }
   }
 

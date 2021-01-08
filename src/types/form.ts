@@ -1,6 +1,12 @@
 import * as React from 'react';
 import { NativeSyntheticEvent } from 'react-native';
-import { LiteralToPrimitive, DeepPartial, DeepMap, FieldPath } from './utils';
+import {
+  DeepPartial,
+  DeepMap,
+  FieldPath,
+  FieldPathValues,
+  FieldPathValue,
+} from './utils';
 import { Resolver } from './resolvers';
 import {
   FieldName,
@@ -203,18 +209,14 @@ export type WatchCallback = <TFieldValues>(
 
 export type UseFormMethods<TFieldValues extends FieldValues = FieldValues> = {
   watch(): UnpackNestedValue<TFieldValues>;
-  watch<TFieldName extends FieldPath<TFieldValues>>(
-    name: TFieldName,
-    defaultValue?: TFieldName extends keyof TFieldValues
-      ? UnpackNestedValue<TFieldValues[TFieldName]>
-      : UnpackNestedValue<LiteralToPrimitive<TFieldName>>,
-  ): TFieldName extends keyof TFieldValues
-    ? UnpackNestedValue<TFieldValues[TFieldName]>
-    : UnpackNestedValue<LiteralToPrimitive<TFieldName>>;
-  watch(
-    names: FieldPath<TFieldValues>[],
-    defaultValues?: UnpackNestedValue<DeepPartial<TFieldValues>>,
-  ): UnpackNestedValue<DeepPartial<TFieldValues>>;
+  watch<TName extends FieldPath<TFieldValues>>(
+    fieldName: TName,
+    defaultValue?: FieldPathValue<TFieldValues, TName>,
+  ): FieldPathValue<TFieldValues, TName>;
+  watch<TName extends FieldPath<TFieldValues>[]>(
+    fieldName: TName,
+    defaultValue?: FieldPathValues<TFieldValues, TName>,
+  ): FieldPathValues<TFieldValues, TName>;
   watch(
     callback: WatchCallback,
     defaultValues?: UnpackNestedValue<DeepPartial<TFieldValues>>,

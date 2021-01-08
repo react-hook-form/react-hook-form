@@ -222,3 +222,13 @@ export type FieldPathValue<
   : TPath & number extends keyof TFieldValues
   ? TFieldValues[TPath & number]
   : never;
+
+export type FieldPathValues<
+  TFieldValues extends FieldValues,
+  TPath extends FieldPath<TFieldValues>[]
+> = {} & {
+  [K in keyof TPath]: FieldPathValue<
+    TFieldValues,
+    TPath[K] & FieldPath<TFieldValues>
+  >;
+};
