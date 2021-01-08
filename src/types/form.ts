@@ -208,19 +208,21 @@ export type WatchCallback = <TFieldValues>(
 ) => void;
 
 export type UseFormMethods<TFieldValues extends FieldValues = FieldValues> = {
-  watch(): UnpackNestedValue<TFieldValues>;
-  watch<TName extends FieldPath<TFieldValues>>(
-    fieldName: TName,
-    defaultValue?: FieldPathValue<TFieldValues, TName>,
-  ): FieldPathValue<TFieldValues, TName>;
-  watch<TName extends FieldPath<TFieldValues>[]>(
-    fieldName: TName,
-    defaultValue?: FieldPathValues<TFieldValues, TName>,
-  ): FieldPathValues<TFieldValues, TName>;
-  watch(
-    callback: WatchCallback,
-    defaultValues?: UnpackNestedValue<DeepPartial<TFieldValues>>,
-  ): void;
+  watch: {
+    (): UnpackNestedValue<TFieldValues>;
+    <TName extends FieldPath<TFieldValues>>(
+      fieldName: TName,
+      defaultValue?: FieldPathValue<TFieldValues, TName>,
+    ): FieldPathValue<TFieldValues, TName>;
+    <TName extends FieldPath<TFieldValues>[]>(
+      fieldName: TName,
+      defaultValue?: FieldPathValues<TFieldValues, TName>,
+    ): FieldPathValues<TFieldValues, TName>;
+    (
+      callback: WatchCallback,
+      defaultValues?: UnpackNestedValue<DeepPartial<TFieldValues>>,
+    ): void;
+  };
   setError: (name: FieldName<TFieldValues>, error: ErrorOption) => void;
   clearErrors: (
     name?: FieldName<TFieldValues> | FieldName<TFieldValues>[],
