@@ -11,9 +11,9 @@ describe('getRadioValue', () => {
   it('should return valid to true when value found', () => {
     expect(
       getRadioValue([
-        { ref: { name: 'bill', checked: false, value: '1' } },
-        { ref: { name: 'bill', checked: true, value: '2' } },
-      ] as any),
+        { name: 'bill', checked: false, value: '1' } as HTMLInputElement,
+        { name: 'bill', checked: true, value: '2' } as HTMLInputElement,
+      ]),
     ).toEqual({
       isValid: true,
       value: '2',

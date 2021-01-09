@@ -17,10 +17,14 @@ const IsValid: React.FC = (props: any) => {
   const {
     register,
     handleSubmit,
+    unregister,
     formState: { isValid },
   } = useForm<{
     firstName: string;
     lastName: string;
+    hidden: string;
+    age: string;
+    location: string;
     select: string;
     radio: string;
     checkbox: string;
@@ -37,40 +41,47 @@ const IsValid: React.FC = (props: any) => {
       : {}),
   });
 
+  React.useEffect(() => {
+    if (isBuildInValidation) {
+      if (show) {
+        unregister('hidden');
+      }
+    } else {
+      if (!show) {
+        unregister('firstName');
+      }
+    }
+  }, [show, isBuildInValidation, unregister]);
+
   renderCounter++;
 
   return (
     <form onSubmit={handleSubmit(() => {})}>
       {isBuildInValidation ? (
         <>
-          <input name="location" ref={register} placeholder="location" />
+          <input {...register('location')} placeholder="location" />
           <input
-            name="firstName"
-            ref={register({ required: true })}
+            {...register('firstName', { required: true })}
             placeholder="firstName"
           />
           <input
-            name="lastName"
-            ref={register({ required: true })}
+            {...register('lastName', { required: true })}
             placeholder="lastName"
           />
           {!show && (
             <input
-              name="hidden"
-              ref={register({ required: true })}
+              {...register('hidden', { required: true })}
               placeholder="hidden"
             />
           )}
-          <input name="age" ref={register} placeholder="age" />
+          <input {...register('age')} placeholder="age" />
         </>
       ) : (
         <>
-          <input name="location" ref={register} placeholder="location" />
-          {show && (
-            <input name="firstName" ref={register} placeholder="firstName" />
-          )}
-          <input name="lastName" ref={register} placeholder="lastName" />
-          <input name="age" ref={register} placeholder="age" />
+          <input {...register('location')} placeholder="location" />
+          {show && <input {...register('firstName')} placeholder="firstName" />}
+          <input {...register('lastName')} placeholder="lastName" />
+          <input {...register('age')} placeholder="age" />
         </>
       )}
       <div id="isValid">{JSON.stringify(isValid)}</div>

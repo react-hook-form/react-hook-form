@@ -5,35 +5,37 @@ import isString from './utils/isString';
 import get from './utils/get';
 import {
   DeepPartial,
-  UseWatchOptions,
+  UseWatchProps,
   FieldValues,
   UnpackNestedValue,
   Control,
+  FieldPath,
 } from './types';
 
-export function useWatch<TWatchFieldValues extends FieldValues>(props: {
-  defaultValue?: UnpackNestedValue<DeepPartial<TWatchFieldValues>>;
-  control?: Control;
-}): UnpackNestedValue<DeepPartial<TWatchFieldValues>>;
-export function useWatch<TWatchFieldValue extends any>(props: {
-  name: string;
-  control?: Control;
-}): undefined | UnpackNestedValue<TWatchFieldValue>;
-export function useWatch<TWatchFieldValue extends any>(props: {
-  name: string;
-  defaultValue: UnpackNestedValue<TWatchFieldValue>;
-  control?: Control;
+export function useWatch<
+  TFieldValues extends FieldValues = FieldValues
+>(props: {
+  defaultValue?: UnpackNestedValue<DeepPartial<TFieldValues>>;
+  control?: Control<TFieldValues>;
+}): UnpackNestedValue<DeepPartial<TFieldValues>>;
+export function useWatch<
+  TFieldValues extends FieldValues,
+  TWatchFieldValue extends any
+>(props: {
+  name: FieldPath<TFieldValues>;
+  defaultValue?: UnpackNestedValue<TWatchFieldValue>;
+  control?: Control<TFieldValues>;
 }): UnpackNestedValue<TWatchFieldValue>;
-export function useWatch<TWatchFieldValues extends FieldValues>(props: {
-  name: string[];
-  defaultValue?: UnpackNestedValue<DeepPartial<TWatchFieldValues>>;
-  control?: Control;
-}): UnpackNestedValue<DeepPartial<TWatchFieldValues>>;
-export function useWatch<TWatchFieldValues>({
+export function useWatch<TFieldValues extends FieldValues>(props: {
+  name: FieldPath<TFieldValues>[];
+  defaultValue?: UnpackNestedValue<DeepPartial<TFieldValues>>;
+  control?: Control<TFieldValues>;
+}): UnpackNestedValue<DeepPartial<TFieldValues>>;
+export function useWatch<TFieldValues>({
   control,
   name,
   defaultValue,
-}: UseWatchOptions): TWatchFieldValues {
+}: UseWatchProps<TFieldValues>): unknown {
   const methods = useFormContext();
 
   if (process.env.NODE_ENV !== 'production') {
@@ -52,7 +54,7 @@ export function useWatch<TWatchFieldValues>({
         ? name.reduce(
             (previous, inputName) => ({
               ...previous,
-              [inputName]: get(defaultValuesRef.current, inputName),
+              [inputName]: get(defaultValuesRef.current, inputName as string),
             }),
             {},
           )
@@ -76,7 +78,7 @@ export function useWatch<TWatchFieldValues>({
         updateValue(
           isString(name) && name === inputName && !isUndefined(inputValue)
             ? inputValue
-            : watchInternal(name, defaultValue),
+            : watchInternal(name as string, defaultValue),
         );
       },
     });
@@ -84,5 +86,5 @@ export function useWatch<TWatchFieldValues>({
     return () => tearDown.unsubscribe();
   }, [name]);
 
-  return value as TWatchFieldValues;
+  return value;
 }

@@ -18,7 +18,20 @@ const Input = ({ onChange, onBlur, placeholder }: any) => (
   />
 );
 
+let nodeEnv: string | undefined;
+
 describe('Controller', () => {
+  beforeEach(() => {
+    nodeEnv = process.env.NODE_ENV;
+    process.env.NODE_ENV = 'production';
+  });
+
+  afterEach(() => {
+    jest.resetAllMocks();
+    jest.restoreAllMocks();
+    process.env.NODE_ENV = nodeEnv;
+  });
+
   it('should render correctly with as with string', () => {
     const Component = () => {
       const { control } = useForm();
@@ -73,7 +86,14 @@ describe('Controller', () => {
             render={({ field }) => <input {...field} />}
             control={control}
           />
-          <button type="button" onClick={() => reset()}>
+          <button
+            type="button"
+            onClick={() =>
+              reset({
+                test: 'default',
+              })
+            }
+          >
             reset
           </button>
         </>
@@ -147,9 +167,6 @@ describe('Controller', () => {
             render={({ field }) => <input {...field} />}
             control={control}
           />
-          {/**
-           * We are checking if setValue method is invoked
-           */}
           <button onClick={() => (fieldValues = getValues())}>getValues</button>
         </>
       );
@@ -323,9 +340,6 @@ describe('Controller', () => {
             }}
             control={control}
           />
-          {/**
-           * We are checking if setValue method is invoked
-           */}
           <button onClick={() => (fieldValues = getValues())}>getValues</button>
         </>
       );
@@ -424,7 +438,7 @@ describe('Controller', () => {
 
   it('should set initial state from unmount state', () => {
     const Component = ({ isHide }: { isHide?: boolean }) => {
-      const { control } = useForm({ shouldUnregister: false });
+      const { control } = useForm();
       return isHide ? null : (
         <Controller
           defaultValue=""
@@ -450,7 +464,7 @@ describe('Controller', () => {
 
   it('should not set initial state from unmount state when input is part of field array', () => {
     const Component = () => {
-      const { control } = useForm({ shouldUnregister: false });
+      const { control } = useForm();
       const { fields, append, remove } = useFieldArray({
         name: 'test',
         control,
@@ -462,7 +476,7 @@ describe('Controller', () => {
             <Controller
               key={field.id}
               defaultValue=""
-              name={`test[${i}].value`}
+              name={`test.${i}.value`}
               render={({ field }) => <input {...field} />}
               control={control}
             />
@@ -494,7 +508,6 @@ describe('Controller', () => {
     it('should throw custom error if control is undefined in development environment', () => {
       jest.spyOn(console, 'error').mockImplementation(() => {});
 
-      const env = process.env.NODE_ENV;
       process.env.NODE_ENV = 'development';
 
       const Component = () => {
@@ -510,17 +523,11 @@ describe('Controller', () => {
       expect(() => render(<Component />)).toThrow(
         '📋 Controller is missing `control` prop.',
       );
-
-      process.env.NODE_ENV = env;
-
-      // @ts-ignore
-      console.error.mockRestore();
     });
 
     it('should throw TypeError if control is undefined in production environment', () => {
       jest.spyOn(console, 'error').mockImplementation(() => {});
 
-      const env = process.env.NODE_ENV;
       process.env.NODE_ENV = 'production';
 
       const Component = () => {
@@ -536,17 +543,11 @@ describe('Controller', () => {
       expect(() => render(<Component />)).toThrow(
         "Cannot read property 'control' of null",
       );
-
-      process.env.NODE_ENV = env;
-
-      // @ts-ignore
-      console.error.mockRestore();
     });
 
     it('should output error message if name is empty string in development environment', () => {
       jest.spyOn(console, 'warn').mockImplementation(() => {});
 
-      const env = process.env.NODE_ENV;
       process.env.NODE_ENV = 'development';
 
       const Component = () => {
@@ -563,18 +564,12 @@ describe('Controller', () => {
 
       render(<Component />);
 
-      expect(console.warn).toBeCalledTimes(2);
-
-      process.env.NODE_ENV = env;
-
-      // @ts-ignore
-      console.warn.mockRestore();
+      expect(console.warn).toBeCalledTimes(1);
     });
 
     it('should not output error message if name is empty string in production environment', () => {
       jest.spyOn(console, 'warn').mockImplementation(() => {});
 
-      const env = process.env.NODE_ENV;
       process.env.NODE_ENV = 'production';
 
       const Component = () => {
@@ -592,17 +587,11 @@ describe('Controller', () => {
       render(<Component />);
 
       expect(console.warn).not.toBeCalled();
-
-      process.env.NODE_ENV = env;
-
-      // @ts-ignore
-      console.warn.mockRestore();
     });
 
     it('should output error message if defaultValue is undefined in development environment', () => {
       jest.spyOn(console, 'warn').mockImplementation(() => {});
 
-      const env = process.env.NODE_ENV;
       process.env.NODE_ENV = 'development';
 
       const Component = () => {
@@ -619,17 +608,11 @@ describe('Controller', () => {
       render(<Component />);
 
       expect(console.warn).toBeCalledTimes(1);
-
-      process.env.NODE_ENV = env;
-
-      // @ts-ignore
-      console.warn.mockRestore();
     });
 
     it('should not output error message if defaultValue is undefined in production environment', () => {
       jest.spyOn(console, 'warn').mockImplementation(() => {});
 
-      const env = process.env.NODE_ENV;
       process.env.NODE_ENV = 'production';
 
       const Component = () => {
@@ -646,23 +629,19 @@ describe('Controller', () => {
       render(<Component />);
 
       expect(console.warn).not.toBeCalled();
-
-      process.env.NODE_ENV = env;
-
-      // @ts-ignore
-      console.warn.mockRestore();
     });
 
     it('should not output error message if as and render props are given in production environment', () => {
       jest.spyOn(console, 'warn').mockImplementation(() => {});
 
-      const env = process.env.NODE_ENV;
       process.env.NODE_ENV = 'production';
 
       const Component = () => {
-        const { control } = useForm();
+        const { control } = useForm<{
+          test: string;
+        }>();
+
         return (
-          // @ts-ignore
           <Controller
             render={({ field }) => <input {...field} />}
             defaultValue=""
@@ -675,17 +654,11 @@ describe('Controller', () => {
       render(<Component />);
 
       expect(console.warn).not.toBeCalled();
-
-      process.env.NODE_ENV = env;
-
-      // @ts-ignore
-      console.warn.mockRestore();
     });
 
     it('should not output error message if as and render props are not given in production environment', () => {
       jest.spyOn(console, 'warn').mockImplementation(() => {});
 
-      const env = process.env.NODE_ENV;
       process.env.NODE_ENV = 'production';
 
       const Component = () => {
@@ -703,36 +676,30 @@ describe('Controller', () => {
       render(<Component />);
 
       expect(console.warn).not.toBeCalled();
-
-      process.env.NODE_ENV = env;
-
-      // @ts-ignore
-      console.warn.mockRestore();
     });
 
-    it('should warn the user when defaultValue is missing with useFieldArray in development environment', () => {
+    it('should warn the user when defaultValue is missing with useFieldArray in development environment', async () => {
+      let appendMethod: any;
       jest.spyOn(console, 'warn').mockImplementation(() => {});
 
-      const env = process.env.NODE_ENV;
       process.env.NODE_ENV = 'development';
 
       const Component = () => {
-        const { control } = useForm({
-          defaultValues: {
-            test: [{ data: '' }],
-          },
-        });
-        const { fields } = useFieldArray({
+        const { control } = useForm<{
+          test: { data: string }[];
+        }>();
+        const { fields, append } = useFieldArray({
           control,
           name: 'test',
         });
+        appendMethod = append;
 
         return (
           <form>
             {fields.map(({ id }, index) => {
               return (
                 <Controller
-                  name={`test[${index}].data`}
+                  name={`test.${index}.data` as const}
                   render={({ field }) => <input {...field} />}
                   control={control}
                   key={id}
@@ -745,18 +712,18 @@ describe('Controller', () => {
 
       render(<Component />);
 
-      expect(console.warn).toBeCalledTimes(1);
+      await act(async () => {
+        await appendMethod({ value: '' });
+      });
 
-      process.env.NODE_ENV = env;
-
-      // @ts-ignore
-      console.warn.mockRestore();
+      act(() => {
+        expect(console.warn).toBeCalledTimes(1);
+      });
     });
 
     it('should not warn the user when defaultValue is missing with useFieldArray in production environment', () => {
       jest.spyOn(console, 'warn').mockImplementation(() => {});
 
-      const env = process.env.NODE_ENV;
       process.env.NODE_ENV = 'production';
 
       const Component = () => {
@@ -776,7 +743,7 @@ describe('Controller', () => {
               return (
                 <Controller
                   render={({ field }) => <input {...field} />}
-                  name={`test[${index}].data`}
+                  name={`test.${index}.data` as const}
                   control={control}
                   key={id}
                 />
@@ -789,11 +756,6 @@ describe('Controller', () => {
       render(<Component />);
 
       expect(console.warn).not.toBeCalled();
-
-      process.env.NODE_ENV = env;
-
-      // @ts-ignore
-      console.warn.mockRestore();
     });
   });
 
@@ -811,7 +773,7 @@ describe('Controller', () => {
             <div key={field.id}>
               <Controller
                 render={({ field }) => <input {...field} />}
-                name={`test[${i}].value`}
+                name={`test.${i}.value`}
                 defaultValue={''}
                 control={control}
               />

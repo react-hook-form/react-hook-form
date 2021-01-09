@@ -1,18 +1,19 @@
 import { Control, UnpackNestedValue } from './form';
 import { FieldValues } from './fields';
-import { DeepPartial } from './utils';
+import { DeepPartial, FieldPath, FieldPathValue } from './utils';
 
 export type FieldArrayName = string;
 
 export type FieldArrayDefaultValues = Partial<Record<FieldArrayName, any>>;
 
 export type UseFieldArrayProps<
-  TKeyName extends string = 'id',
-  TControl extends Control = Control
+  TFieldValues extends FieldValues = FieldValues,
+  TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
+  TKeyName extends string = 'id'
 > = {
-  name: FieldArrayName;
+  name: TName;
   keyName?: TKeyName;
-  control?: TControl;
+  control?: Control<TFieldValues>;
 };
 
 export type ResetFieldArrayFunctionRef<TFieldValues> = Record<
@@ -20,30 +21,46 @@ export type ResetFieldArrayFunctionRef<TFieldValues> = Record<
   (data?: UnpackNestedValue<DeepPartial<TFieldValues>>) => void
 >;
 
-export type ArrayField<
-  TFieldArrayValues extends FieldValues = FieldValues,
+type InferArrayType<T> = T extends (infer U)[] ? U : never;
+
+export type ArrayFieldWithId<
+  TFieldValues extends FieldValues = FieldValues,
+  TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
   TKeyName extends string = 'id'
-> = TFieldArrayValues & Record<TKeyName, string>;
+> = InferArrayType<FieldPathValue<TFieldValues, TName>> &
+  Record<TKeyName, string>;
+
+export type ArrayField<
+  TFieldValues extends FieldValues = FieldValues,
+  TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>
+> = InferArrayType<FieldPathValue<TFieldValues, TName>>;
 
 export type UseFieldArrayMethods<
-  TFieldArrayValues extends FieldValues = FieldValues,
+  TFieldValues extends FieldValues = FieldValues,
+  TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
   TKeyName extends string = 'id'
 > = {
   swap: (indexA: number, indexB: number) => void;
   move: (indexA: number, indexB: number) => void;
   prepend: (
-    value: Partial<TFieldArrayValues> | Partial<TFieldArrayValues>[],
+    value:
+      | Partial<ArrayField<TFieldValues, TName>>
+      | Partial<ArrayField<TFieldValues, TName>>[],
     shouldFocus?: boolean,
   ) => void;
   append: (
-    value: Partial<TFieldArrayValues> | Partial<TFieldArrayValues>[],
+    value:
+      | Partial<ArrayField<TFieldValues, TName>>
+      | Partial<ArrayField<TFieldValues, TName>>[],
     shouldFocus?: boolean,
   ) => void;
   remove: (index?: number | number[]) => void;
   insert: (
     index: number,
-    value: Partial<TFieldArrayValues> | Partial<TFieldArrayValues>[],
+    value:
+      | Partial<ArrayField<TFieldValues, TName>>
+      | Partial<ArrayField<TFieldValues, TName>>[],
     shouldFocus?: boolean,
   ) => void;
-  fields: Partial<ArrayField<TFieldArrayValues, TKeyName>>[];
+  fields: ArrayFieldWithId<TFieldValues, TName, TKeyName>[];
 };

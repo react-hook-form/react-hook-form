@@ -33,7 +33,7 @@ function useFormState<TFieldValues extends FieldValues = FieldValues>({
   const readFormState = React.useRef(cloneObject(readFormStateRef.current));
 
   React.useEffect(() => {
-    formStateSubjectRef.current.subscribe({
+    const tearDown = formStateSubjectRef.current.subscribe({
       next: (formState: Partial<FormState<TFieldValues>>) => {
         if (shouldRenderFormState(formState, readFormState.current)) {
           updateFormState({
@@ -43,6 +43,8 @@ function useFormState<TFieldValues extends FieldValues = FieldValues>({
         }
       },
     });
+
+    return () => tearDown.unsubscribe();
   }, []);
 
   return getProxyFormState<TFieldValues>(

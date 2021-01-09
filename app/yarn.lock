@@ -10591,10 +10591,10 @@ typedarray@^0.0.6:
   resolved "https://registry.yarnpkg.com/typedarray/-/typedarray-0.0.6.tgz#867ac74e3864187b1d3d47d996a78ec5c8830777"
   integrity sha1-hnrHTjhkGHsdPUfZlqeOxciDB3c=
 
-typescript@4.0.3:
-  version "4.0.3"
-  resolved "https://registry.yarnpkg.com/typescript/-/typescript-4.0.3.tgz#153bbd468ef07725c1df9c77e8b453f8d36abba5"
-  integrity sha512-tEu6DGxGgRJPb/mVPIZ48e69xCn2yRmCgYmDugAVwmJ6o+0u1RI18eO7E7WBTLYLaEVVOhwQmcdhQHweux/WPg==
+typescript@4.2.0-dev.20210101:
+  version "4.2.0-dev.20210101"
+  resolved "https://registry.yarnpkg.com/typescript/-/typescript-4.2.0-dev.20210101.tgz#a4c26ac45a09eb98d1351f4d170415f4138ab7ab"
+  integrity sha512-5JQb1+xXO+kHCEk/aJNxbX7oTIqhiePPJL3IRh349QsYUT0F4jEAtu6O0daCQ8+7LUvzBTm8+Xs0QoXLbxgqsA==
 
 unicode-canonical-property-names-ecmascript@^1.0.4:
   version "1.0.4"

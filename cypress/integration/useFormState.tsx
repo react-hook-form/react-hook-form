@@ -5,7 +5,7 @@ describe('useFormState', () => {
 
     cy.get('input[name="firstName"]').type('bill');
     cy.get('input[name="firstName"]').type('a');
-    cy.get('input[name="arrayItem[0].test1"]').type('ab');
+    cy.get('input[name="arrayItem.0.test1"]').type('ab');
     cy.get('input[name="nestItem.nest1"]').type('ab');
     cy.get('input[name="lastName"]').type('luo123456');
     cy.get('select[name="selectNumber"]').select('1');

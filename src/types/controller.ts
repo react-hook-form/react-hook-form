@@ -1,18 +1,19 @@
 import * as React from 'react';
 import {
-  UseFormMethods,
   FieldValues,
   FieldName,
   Control,
-  InputState,
+  FieldPath,
+  InternalFieldName,
 } from './';
 import { RegisterOptions } from './validator';
 
-export type FormProviderProps<
-  TFieldValues extends FieldValues = FieldValues
-> = {
-  children: React.ReactNode;
-} & UseFormMethods<TFieldValues>;
+export type ControllerMeta = {
+  invalid: boolean;
+  isTouched: boolean;
+  isDirty: boolean;
+  isValidating: boolean;
+};
 
 export type ControllerRenderProps<
   TFieldValues extends FieldValues = FieldValues
@@ -21,20 +22,26 @@ export type ControllerRenderProps<
   onBlur: () => void;
   value: any;
   name: FieldName<Control<TFieldValues>>;
-  ref: React.MutableRefObject<any>;
+  ref: React.Ref<any>;
 };
 
 export type UseControllerProps<
   TFieldValues extends FieldValues = FieldValues
 > = {
-  name: FieldName<TFieldValues>;
+  name: FieldPath<TFieldValues>;
   rules?: Exclude<
     RegisterOptions,
     'valueAsNumber' | 'valueAsDate' | 'setValueAs'
   >;
-  onFocus?: () => void;
   defaultValue?: unknown;
   control?: Control<TFieldValues>;
+};
+
+export type UseControllerMethods<
+  TFieldValues extends FieldValues = FieldValues
+> = {
+  field: ControllerRenderProps<TFieldValues>;
+  meta: ControllerMeta;
 };
 
 export type ControllerProps<TFieldValues extends FieldValues = FieldValues> = {
@@ -43,6 +50,14 @@ export type ControllerProps<TFieldValues extends FieldValues = FieldValues> = {
     meta,
   }: {
     field: ControllerRenderProps<TFieldValues>;
-    meta: InputState;
+    meta: ControllerMeta;
   }) => React.ReactElement;
-} & UseControllerProps;
+} & UseControllerProps<TFieldValues>;
+
+export type ControllerEvent = {
+  type?: string;
+  target: {
+    value?: string;
+    name: InternalFieldName;
+  };
+};

@@ -4,14 +4,23 @@ describe('defaultValues', () => {
 
     cy.get('input[name="test"]').should('have.value', 'test');
     cy.get('input[name="test1.firstName"]').should('have.value', 'firstName');
-    cy.get('input[name="test1.deep.nest"]').should('have.value', 'nest');
-    cy.get('input[name="test1.deep.nest.notFound"]').should('have.value', '');
-    cy.get('input[name="test1.lastName[0]"]').should('have.value', 'lastName0');
-    cy.get('input[name="test1.lastName[1]"]').should('have.value', 'lastName1');
-    cy.get('input[name="test1.nestedValue"]').should(
-      'have.value',
-      'test1,test2',
-    );
-    cy.get('input[name="flatName[1].whatever"]').should('have.value', 'flat');
+    cy.get('input[name="test1.lastName.0"]').should('have.value', 'lastName0');
+    cy.get('input[name="test1.lastName.1"]').should('have.value', 'lastName1');
+    cy.get('input[name="checkbox"]').eq(0).should('have.checked');
+    cy.get('input[name="checkbox"]').eq(1).should('have.checked');
+
+    cy.get('input[name="checkbox"]').eq(0).click();
+    cy.get('#toggle').click();
+    cy.get('#toggle').click();
+
+    cy.get('input[name="checkbox"]').eq(0).should('not.have.checked');
+    cy.get('input[name="checkbox"]').eq(1).should('have.checked');
+    cy.get('input[name="checkbox"]').eq(1).click();
+
+    cy.get('#toggle').click();
+    cy.get('#toggle').click();
+
+    cy.get('input[name="checkbox"]').eq(0).should('not.have.checked');
+    cy.get('input[name="checkbox"]').eq(1).should('not.have.checked');
   });
 });

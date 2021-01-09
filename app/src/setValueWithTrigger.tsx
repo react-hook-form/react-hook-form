@@ -15,32 +15,26 @@ const SetValueWithTrigger: React.FC = () => {
   }>();
 
   useEffect(() => {
-    register(
-      { name: 'firstName' },
-      {
-        required: 'required',
-        minLength: {
-          value: 10,
-          message: 'minLength 10',
-        },
+    register('firstName', {
+      required: 'required',
+      minLength: {
+        value: 10,
+        message: 'minLength 10',
       },
-    );
-    register(
-      { name: 'lastName' },
-      {
-        validate: (data) => {
-          if (data === 'bill') {
-            return true;
-          }
+    });
+    register('lastName', {
+      validate: (data) => {
+        if (data === 'bill') {
+          return true;
+        }
 
-          if (data && data.length < 10) {
-            return 'too short';
-          }
+        if (data && data.length < 10) {
+          return 'too short';
+        }
 
-          return 'error message';
-        },
+        return 'error message';
       },
-    );
+    });
   }, [register]);
 
   renderCounter++;

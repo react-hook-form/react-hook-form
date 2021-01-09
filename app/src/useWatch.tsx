@@ -2,17 +2,23 @@ import * as React from 'react';
 import { useForm, Control, useWatch, Controller } from 'react-hook-form';
 import { useRef } from 'react';
 
+type FormInputs = {
+  test: string;
+  test1: string;
+  test2: string;
+};
+
 let counter = 0;
 
 const GrandChild = ({
   control,
   index = 0,
 }: {
-  control: Control;
+  control: Control<FormInputs>;
   index?: number;
 }) => {
   const counter1 = useRef(0);
-  const output = useWatch<string>({
+  const output = useWatch({
     name: 'test',
     control,
     defaultValue: 'yay! I am watching you :)',
@@ -29,9 +35,14 @@ const GrandChild = ({
   );
 };
 
-const GrandChild1 = ({ control }: { control: Control }) => {
+const GrandChild1 = ({
+  control,
+}: {
+  control: Control<{ test: string; test1: string }>;
+}) => {
   const counter = useRef(0);
-  const output = useWatch<{ test: string; test1: string }>({
+  // todo: fix useWatch type issue
+  const output: any = useWatch<{ test: string; test1: string }>({
     name: ['test', 'test1'],
     control,
     defaultValue: { test: '', test1: '' },
@@ -43,15 +54,23 @@ const GrandChild1 = ({ control }: { control: Control }) => {
     <div style={{ border: '2px solid blue', padding: 10, margin: 5 }}>
       <h2 style={{ margin: 0 }}>Grandchild 1:</h2>
       <p id="grandchild1">
-        {output.test}
-        {output.test1}
+        {output[0]}
+        {output[1]}
       </p>
       <p id="grandChild1Counter">Render counter: {counter.current}</p>
     </div>
   );
 };
 
-const GrandChild2 = ({ control }: { control: Control }) => {
+const GrandChild2 = ({
+  control,
+}: {
+  control: Control<{
+    test: string;
+    test1: string;
+    test2: string;
+  }>;
+}) => {
   const counter = useRef(0);
   const output = useWatch<{
     test: string;
@@ -76,7 +95,7 @@ const GrandChild2 = ({ control }: { control: Control }) => {
   );
 };
 
-const Child = ({ control }: { control: Control }) => {
+const Child = ({ control }: { control: Control<FormInputs> }) => {
   const counter1 = useRef(0);
   counter1.current++;
 
@@ -92,7 +111,7 @@ const Child = ({ control }: { control: Control }) => {
 };
 
 export default () => {
-  const { register, control } = useForm();
+  const { register, control } = useForm<FormInputs>();
 
   counter++;
 
@@ -100,8 +119,7 @@ export default () => {
     <div style={{ border: '2px solid red', padding: 10, margin: 5 }}>
       <h2 style={{ margin: 0 }}>Parent:</h2>
       <input
-        ref={register}
-        name="test"
+        {...register('test')}
         autoComplete="off"
         placeholder="👀 watching me :)"
         style={{ fontSize: 20 }}
@@ -122,7 +140,7 @@ export default () => {
       />
 
       <input
-        ref={register}
+        {...register('test2')}
         name="test2"
         autoComplete="off"
         placeholder="👀 watching me :)"

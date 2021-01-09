@@ -19,19 +19,14 @@
     ".": {
       "import": "./dist/index.esm.js",
       "require": "./dist/index.js"
-    },
-    "./dist/index.ie11": {
-      "import": "./dist/index.ie11.js",
-      "require": "./dist/index.ie11.js"
     }
   },
   "scripts": {
     "clean": "rimraf dist",
     "prebuild": "npm run clean",
-    "build": "node scripts/rollup/writeCjsEntryFile.js && npm run build:modern && npm run build:ie11 && npm run cp:dts",
+    "build": "node scripts/rollup/writeCjsEntryFile.js && npm run build:modern && npm run cp:dts",
     "build:modern": "rollup -c ./scripts/rollup/rollup.config.js",
     "build:esm": "rollup -c ./scripts/rollup/rollup.esm.config.js",
-    "build:ie11": "rollup -c ./scripts/rollup/rollup.ie11.config.js",
     "cp:dts": "copyfiles -f ./src/**/*.d.ts dist && rimraf dist/**/*.test.d.ts",
     "lint": "eslint '**/*.{js,ts,tsx}'",
     "lint:fix": "npm run lint -- --fix",
@@ -88,8 +83,8 @@
     "@types/react-dom": "^17.0.0",
     "@types/react-native": "^0.63.37",
     "@types/react-test-renderer": "^17.0.0",
-    "@typescript-eslint/eslint-plugin": "^4.8.2",
-    "@typescript-eslint/parser": "^4.8.2",
+    "@typescript-eslint/eslint-plugin": "^4.9.1",
+    "@typescript-eslint/parser": "^4.9.1",
     "babel-jest": "^26.6.3",
     "bundlesize": "^0.18.0",
     "copyfiles": "^2.3.0",
@@ -121,7 +116,7 @@
     "rollup-plugin-terser": "^7.0.2",
     "rollup-plugin-typescript2": "^0.29.0",
     "ts-jest": "^26.4.4",
-    "typescript": "^4.1.2"
+    "typescript": "^4.2.0-dev.20210101"
   },
   "bundlesize": [
     {

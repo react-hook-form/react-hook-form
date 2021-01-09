@@ -3,7 +3,26 @@ import { useFormState, useForm, Control } from 'react-hook-form';
 
 let renderCounter = 0;
 
-const SubForm = ({ control }: { control: Control }) => {
+type FormInputs = {
+  firstName: string;
+  lastName: string;
+  min: string;
+  max: string;
+  minDate: string;
+  maxDate: string;
+  minLength: string;
+  minRequiredLength: string;
+  selectNumber: string;
+  pattern: string;
+  nestItem: {
+    nest1: string;
+  };
+  arrayItem: {
+    test1: string;
+  }[];
+};
+
+const SubForm = ({ control }: { control: Control<FormInputs> }) => {
   const {
     isDirty,
     dirty,
@@ -32,18 +51,7 @@ const SubForm = ({ control }: { control: Control }) => {
 };
 
 export const UseFormState: React.FC = () => {
-  const { register, handleSubmit, control, reset } = useForm<{
-    firstName: string;
-    lastName: string;
-    min: string;
-    max: string;
-    minDate: string;
-    maxDate: string;
-    minLength: string;
-    minRequiredLength: string;
-    selectNumber: string;
-    pattern: string;
-  }>({
+  const { register, handleSubmit, control, reset } = useForm<FormInputs>({
     mode: 'onChange',
   });
   const onValid = () => {};
@@ -53,67 +61,56 @@ export const UseFormState: React.FC = () => {
   return (
     <form onSubmit={handleSubmit(onValid)}>
       <input
-        name="nestItem.nest1"
         placeholder="nest.nest1"
-        ref={register({ required: true })}
+        {...register('nestItem.nest1', { required: true })}
       />
       <input
-        name="arrayItem[0].test1"
-        placeholder="arrayItem[0].test1"
-        ref={register({ required: true })}
+        placeholder="arrayItem.0.test1"
+        {...register('arrayItem.0.test1', { required: true })}
       />
       <input
-        name="firstName"
-        ref={register({ required: true })}
+        {...register('firstName', { required: true })}
         placeholder="firstName"
       />
       <input
-        name="lastName"
-        ref={register({ required: true, maxLength: 5 })}
+        {...register('lastName', { required: true, maxLength: 5 })}
         placeholder="lastName"
       />
       <input
         type="number"
-        name="min"
-        ref={register({ min: 10 })}
+        {...register('min', { min: 10 })}
         placeholder="min"
       />
       <input
         type="number"
-        name="max"
-        ref={register({ max: 20 })}
+        {...register('max', { max: 20 })}
         placeholder="max"
       />
       <input
         type="date"
-        name="minDate"
-        ref={register({ min: '2019-08-01' })}
+        {...register('minDate', { min: '2019-08-01' })}
         placeholder="minDate"
       />
       <input
         type="date"
-        name="maxDate"
-        ref={register({ max: '2019-08-01' })}
+        {...register('maxDate', { max: '2019-08-01' })}
         placeholder="maxDate"
       />
       <input
-        name="minLength"
-        ref={register({ minLength: 2 })}
+        {...register('minLength', { minLength: 2 })}
         placeholder="minLength"
       />
       <input
-        name="minRequiredLength"
-        ref={register({ minLength: 2, required: true })}
+        {...register('minRequiredLength', { minLength: 2, required: true })}
         placeholder="minRequiredLength"
       />
-      <select name="selectNumber" ref={register({ required: true })}>
+      <select {...register('selectNumber', { required: true })}>
         <option value="">Select</option>
         <option value={1}>1</option>
         <option value={2}>1</option>
       </select>
       <input
-        name="pattern"
-        ref={register({ pattern: /\d+/ })}
+        {...register('pattern', { pattern: /\d+/ })}
         placeholder="pattern"
       />
       <button id="submit">Submit</button>

@@ -11,23 +11,23 @@ describe('validateField', () => {
   });
 
   it('should return required true when input not filled with required', async () => {
-    (getRadioValue as any).mockImplementation(() => ({
+    (getRadioValue as jest.Mock<any>).mockImplementation(() => ({
       value: '2',
     }));
-    (getCheckboxValue as any).mockImplementation(() => ({
+    (getCheckboxValue as jest.Mock<any>).mockImplementation(() => ({
       value: false,
       isValid: false,
     }));
 
     expect(
       await validateField(
-        {} as any,
-        false,
         {
+          name: 'test',
           ref: { type: 'text', value: '', name: 'test' },
           required: true,
+          value: '',
         },
-        { current: {} },
+        false,
       ),
     ).toEqual({
       test: {
@@ -39,13 +39,12 @@ describe('validateField', () => {
 
     expect(
       await validateField(
-        {} as any,
-        false,
         {
+          name: 'test',
           ref: { type: 'text', value: '', name: 'test' },
           required: 'required',
         },
-        { current: {} },
+        false,
       ),
     ).toEqual({
       test: {
@@ -57,13 +56,12 @@ describe('validateField', () => {
 
     expect(
       await validateField(
-        {} as any,
-        false,
         {
+          name: 'test',
           ref: { type: 'text', value: '', name: 'test' },
           required: 'required',
         },
-        { current: {} },
+        false,
       ),
     ).toEqual({
       test: {
@@ -75,16 +73,15 @@ describe('validateField', () => {
 
     expect(
       await validateField(
-        {} as any,
-        false,
         {
+          name: 'test',
           ref: { type: 'text', value: '', name: 'test' },
           required: {
             value: true,
             message: 'required',
           },
         },
-        { current: {} },
+        false,
       ),
     ).toEqual({
       test: {
@@ -96,16 +93,15 @@ describe('validateField', () => {
 
     expect(
       await validateField(
-        {} as any,
-        false,
         {
+          name: 'test',
           ref: { type: 'text', value: '', name: 'test' },
           required: {
             value: true,
             message: 'required',
           },
         },
-        { current: {} },
+        false,
       ),
     ).toEqual({
       test: {
@@ -117,57 +113,43 @@ describe('validateField', () => {
 
     expect(
       await validateField(
-        {} as any,
-        false,
         {
+          name: 'test',
           ref: { type: 'text', value: '', name: 'test' },
           required: {
             value: false,
             message: 'required',
           },
         },
-        { current: {} },
+        false,
       ),
     ).toEqual({});
 
     expect(
       await validateField(
         {
-          current: {
-            test: {
-              ref: {} as any,
-              options: [
-                {
-                  ref: 'test',
-                } as any,
-              ],
-            },
-          },
-        },
-        false,
-        {
+          name: 'test',
           ref: { type: 'radio', name: 'test' },
           required: true,
         },
-        { current: {} },
+        false,
       ),
     ).toEqual({
       test: {
         message: '',
         type: 'required',
-        ref: 'test',
+        ref: {},
       },
     });
 
     expect(
       await validateField(
-        {} as any,
-        false,
         {
+          name: 'test',
           ref: { type: 'text', value: '', name: 'test' },
           required: 'test',
         },
-        { current: {} },
+        false,
       ),
     ).toEqual({
       test: {
@@ -180,85 +162,49 @@ describe('validateField', () => {
     expect(
       await validateField(
         {
-          current: {
-            test: {
-              ref: 'test' as any,
-              options: [
-                {
-                  ref: 'test',
-                } as any,
-              ],
-            },
-          },
-        },
-        false,
-        {
+          name: 'test',
           ref: { type: 'radio', value: '', name: 'test' },
           required: 'test',
         },
-        { current: {} },
+        false,
       ),
     ).toEqual({
       test: {
         message: 'test',
         type: 'required',
-        ref: 'test',
+        ref: {},
       },
     });
 
     expect(
       await validateField(
         {
-          current: {
-            test: {
-              ref: 'test' as any,
-              options: [
-                {
-                  ref: 'test',
-                },
-              ] as any,
-            },
-          },
-        },
-        false,
-        {
+          name: 'test',
           ref: { type: 'checkbox', name: 'test' },
           required: 'test',
         },
-        { current: {} },
+        false,
       ),
     ).toEqual({
       test: {
         message: 'test',
         type: 'required',
-        ref: 'test',
+        ref: {},
       },
     });
 
-    (getCheckboxValue as any).mockImplementation(() => ({
+    (getCheckboxValue as jest.Mock<any>).mockImplementation(() => ({
       value: 'test',
       isValid: true,
     }));
     expect(
       await validateField(
         {
-          current: {
-            test: {
-              ref: 'test' as any,
-              options: [
-                {
-                  ref: 'test',
-                },
-              ] as any,
-            },
-          },
-        },
-        false,
-        {
+          name: 'test',
           ref: { type: 'checkbox', name: 'test' },
           required: 'test',
         },
-        { current: {} },
+        false,
       ),
     ).toEqual({});
   });
@@ -266,95 +212,95 @@ describe('validateField', () => {
   it('should return max error', async () => {
     expect(
       await validateField(
-        {} as any,
-        false,
         {
-          ref: { type: 'number', name: 'test', value: 10, valueAsNumber: 10 },
+          name: 'test',
+          ref: { type: 'number', name: 'test', valueAsNumber: 10 },
+          value: 10,
           required: true,
           max: 0,
         },
-        { current: {} },
+        false,
       ),
     ).toEqual({
       test: {
         type: 'max',
         message: '',
-        ref: { type: 'number', name: 'test', value: 10, valueAsNumber: 10 },
+        ref: { type: 'number', name: 'test', valueAsNumber: 10 },
       },
     });
 
     expect(
       await validateField(
-        {} as any,
-        false,
         {
-          ref: { type: 'number', name: 'test', value: 10, valueAsNumber: 10 },
+          name: 'test',
+          ref: { type: 'number', name: 'test', valueAsNumber: 10 },
+          value: 10,
           required: true,
           max: {
             value: 0,
             message: 'max',
           },
         },
-        { current: {} },
+        false,
       ),
     ).toEqual({
       test: {
         type: 'max',
         message: 'max',
-        ref: { type: 'number', name: 'test', value: 10, valueAsNumber: 10 },
+        ref: { type: 'number', name: 'test', valueAsNumber: 10 },
       },
     });
 
     expect(
       await validateField(
-        {} as any,
-        false,
         {
-          ref: { type: 'number', name: 'test', value: 10, valueAsNumber: 10 },
+          name: 'test',
+          ref: { type: 'number', name: 'test', valueAsNumber: 10 },
           required: true,
           max: {
             value: 0,
             message: 'max',
           },
+          value: 10,
         },
-        { current: {} },
+        false,
       ),
     ).toEqual({
       test: {
         type: 'max',
         message: 'max',
-        ref: { type: 'number', name: 'test', value: 10, valueAsNumber: 10 },
+        ref: { type: 'number', name: 'test', valueAsNumber: 10 },
       },
     });
 
     expect(
       await validateField(
-        {} as any,
-        false,
         {
-          ref: { type: 'number', name: 'test', value: 8, valueAsNumber: 8 },
+          name: 'test',
+          ref: { type: 'number', name: 'test', valueAsNumber: 8 },
+          value: 8,
           required: true,
           max: 8,
         },
-        { current: {} },
+        false,
       ),
     ).toEqual({});
 
     expect(
       await validateField(
-        {} as any,
-        true,
         {
-          ref: { type: 'number', name: 'test', value: 10, valueAsNumber: 10 },
+          name: 'test',
+          ref: { type: 'number', name: 'test', valueAsNumber: 10 },
+          value: 10,
           max: 8,
         },
-        { current: {} },
+        true,
       ),
     ).toEqual({
       test: {
         type: 'max',
         message: '',
-        ref: { type: 'number', name: 'test', value: 10, valueAsNumber: 10 },
+        ref: { type: 'number', name: 'test', valueAsNumber: 10 },
         types: {
           max: true,
         },
@@ -363,36 +309,35 @@ describe('validateField', () => {
 
     expect(
       await validateField(
-        {} as any,
-        false,
         {
-          ref: { type: 'custom', name: 'test', value: '', valueAsNumber: NaN },
+          name: 'test',
+          ref: { type: 'custom', name: 'test', valueAsNumber: NaN },
+          value: '',
           required: true,
         },
-        { current: {} },
+        false,
       ),
     ).toEqual({
       test: {
         type: 'required',
         message: '',
-        ref: { type: 'custom', name: 'test', value: '', valueAsNumber: NaN },
+        ref: { type: 'custom', name: 'test', valueAsNumber: NaN },
       },
     });
 
     expect(
       await validateField(
-        {} as any,
-        false,
         {
+          name: 'test',
           ref: {
             type: 'custom',
             name: 'test',
-            value: undefined,
             valueAsNumber: NaN,
           },
+          value: undefined,
           required: true,
         },
-        { current: {} },
+        false,
       ),
     ).toEqual({
       test: {
@@ -409,53 +354,51 @@ describe('validateField', () => {
 
     expect(
       await validateField(
-        {} as any,
-        false,
         {
+          name: 'test',
           ref: {
             type: 'custom',
             name: 'test',
-            value: null,
             valueAsNumber: NaN,
           },
+          value: null,
           required: true,
         },
-        { current: {} },
+        false,
       ),
     ).toEqual({
       test: {
         type: 'required',
         message: '',
-        ref: { type: 'custom', name: 'test', value: null, valueAsNumber: NaN },
+        ref: { type: 'custom', name: 'test', valueAsNumber: NaN },
       },
     });
 
     expect(
       await validateField(
-        {} as any,
-        false,
         {
-          ref: { type: 'custom', name: 'test', value: 'ok' },
+          name: 'test',
+          ref: { type: 'custom', name: 'test' },
           required: true,
+          value: 'ok',
         },
-        { current: {} },
+        false,
       ),
     ).toEqual({});
 
     expect(
       await validateField(
-        {} as any,
-        false,
         {
+          name: 'test',
           ref: {
             type: 'date',
             name: 'test',
-            value: '2019-2-13',
           },
+          value: '2019-2-13',
           required: true,
           max: '2019-1-12',
         },
-        { current: {} },
+        false,
       ),
     ).toEqual({
       test: {
@@ -464,7 +407,6 @@ describe('validateField', () => {
         ref: {
           type: 'date',
           name: 'test',
-          value: '2019-2-13',
         },
       },
     });
@@ -473,101 +415,100 @@ describe('validateField', () => {
   it('should return min error', async () => {
     expect(
       await validateField(
-        {} as any,
-        false,
         {
-          ref: { type: 'number', name: 'test', value: -1, valueAsNumber: -1 },
+          name: 'test',
+          ref: { type: 'number', name: 'test', valueAsNumber: -1 },
+          value: -1,
           required: true,
           min: 0,
         },
-        { current: {} },
+        false,
       ),
     ).toEqual({
       test: {
         type: 'min',
         message: '',
-        ref: { type: 'number', name: 'test', value: -1, valueAsNumber: -1 },
+        ref: { type: 'number', name: 'test', valueAsNumber: -1 },
       },
     });
 
     expect(
       await validateField(
-        {} as any,
-        false,
         {
-          ref: { type: 'number', name: 'test', value: -1, valueAsNumber: -1 },
+          name: 'test',
+          ref: { type: 'number', name: 'test', valueAsNumber: -1 },
+          value: -1,
           required: true,
           min: {
             value: 0,
             message: 'min',
           },
         },
-        { current: {} },
+        false,
       ),
     ).toEqual({
       test: {
         type: 'min',
         message: 'min',
-        ref: { type: 'number', name: 'test', value: -1, valueAsNumber: -1 },
+        ref: { type: 'number', name: 'test', valueAsNumber: -1 },
       },
     });
 
     expect(
       await validateField(
-        {} as any,
-        false,
         {
-          ref: { type: 'number', name: 'test', value: -1, valueAsNumber: -1 },
+          name: 'test',
+          ref: { type: 'number', name: 'test', valueAsNumber: -1 },
+          value: -1,
           required: true,
           min: {
             value: 0,
             message: 'min',
           },
         },
-        { current: {} },
+        false,
       ),
     ).toEqual({
       test: {
         type: 'min',
         message: 'min',
-        ref: { type: 'number', name: 'test', value: -1, valueAsNumber: -1 },
+        ref: { type: 'number', name: 'test', valueAsNumber: -1 },
       },
     });
 
     expect(
       await validateField(
-        {} as any,
-        false,
         {
-          ref: { type: 'number', name: 'test', value: 10, valueAsNumber: 10 },
+          name: 'test',
+          ref: { type: 'number', name: 'test', valueAsNumber: 10 },
+          value: 10,
           required: true,
           min: 12,
         },
-        { current: {} },
+        false,
       ),
     ).toEqual({
       test: {
         type: 'min',
         message: '',
-        ref: { type: 'number', name: 'test', value: 10, valueAsNumber: 10 },
+        ref: { type: 'number', name: 'test', valueAsNumber: 10 },
       },
     });
 
     expect(
       await validateField(
-        {} as any,
-        false,
         {
+          name: 'test',
           ref: {
             type: 'date',
             name: 'test',
-            value: '2019-2-12',
             valueAsDate: new Date('2019-2-12'),
           },
+          value: '2019-2-12',
           required: true,
           min: '2019-3-12',
         },
-        { current: {} },
+        false,
       ),
     ).toEqual({
       test: {
@@ -576,7 +517,6 @@ describe('validateField', () => {
         ref: {
           type: 'date',
           name: 'test',
-          value: '2019-2-12',
           valueAsDate: new Date('2019-2-12'),
         },
       },
@@ -584,21 +524,20 @@ describe('validateField', () => {
 
     expect(
       await validateField(
-        {} as any,
-        false,
         {
+          name: 'test',
           ref: {
             type: 'date',
             name: 'test',
-            value: '2019-2-12',
           },
+          value: '2019-2-12',
           required: true,
           min: {
             value: '2019-3-12',
             message: 'min',
           },
         },
-        { current: {} },
+        false,
       ),
     ).toEqual({
       test: {
@@ -607,29 +546,27 @@ describe('validateField', () => {
         ref: {
           type: 'date',
           name: 'test',
-          value: '2019-2-12',
         },
       },
     });
 
     expect(
       await validateField(
-        {} as any,
-        false,
         {
+          name: 'test',
           ref: {
             type: 'date',
             name: 'test',
-            value: '2019-2-12',
             valueAsDate: new Date('2019-2-12'),
           },
+          value: '2019-2-12',
           required: true,
           min: {
             value: '2019-3-12',
             message: 'min',
           },
         },
-        { current: {} },
+        false,
       ),
     ).toEqual({
       test: {
@@ -638,7 +575,6 @@ describe('validateField', () => {
         ref: {
           type: 'date',
           name: 'test',
-          value: '2019-2-12',
           valueAsDate: new Date('2019-2-12'),
         },
       },
@@ -648,57 +584,56 @@ describe('validateField', () => {
   it('should return min and max error for custom input', async () => {
     expect(
       await validateField(
-        {} as any,
-        false,
         {
-          ref: { type: '', name: 'test', value: '1' },
+          name: 'test',
+          ref: { type: '', name: 'test' },
+          value: '1',
           required: true,
           min: '4',
         },
-        { current: {} },
+        false,
       ),
     ).toEqual({
       test: {
         type: 'min',
         message: '',
-        ref: { type: '', name: 'test', value: '1' },
+        ref: { type: '', name: 'test' },
       },
     });
 
     expect(
       await validateField(
-        {} as any,
-        false,
         {
-          ref: { type: '', name: 'test', value: '4' },
+          name: 'test',
+          ref: { type: '', name: 'test' },
+          value: '4',
           required: true,
           max: '2',
         },
-        { current: {} },
+        false,
       ),
     ).toEqual({
       test: {
         type: 'max',
         message: '',
-        ref: { type: '', name: 'test', value: '4' },
+        ref: { type: '', name: 'test' },
       },
     });
 
     expect(
       await validateField(
-        {} as any,
-        false,
         {
+          name: 'test',
           ref: {
             type: '',
             name: 'test',
-            value: '2019-2-12',
             valueAsDate: new Date('2019-2-12'),
           },
+          value: '2019-2-12',
           required: true,
           max: '2019-1-12',
         },
-        { current: {} },
+        false,
       ),
     ).toEqual({
       test: {
@@ -707,7 +642,6 @@ describe('validateField', () => {
         ref: {
           type: '',
           name: 'test',
-          value: '2019-2-12',
           valueAsDate: new Date('2019-2-12'),
         },
       },
@@ -717,25 +651,23 @@ describe('validateField', () => {
   it('should return max length error ', async () => {
     expect(
       await validateField(
-        {} as any,
-        false,
         {
+          name: 'test',
           ref: {
             type: 'text',
             name: 'test',
-            value: 'This is a long text input',
           },
+          value: 'This is a long text input',
           required: true,
           maxLength: 12,
         },
-        { current: {} },
+        false,
       ),
     ).toEqual({
       test: {
         ref: {
           type: 'text',
           name: 'test',
-          value: 'This is a long text input',
         },
         message: '',
         type: 'maxLength',
@@ -744,28 +676,26 @@ describe('validateField', () => {
 
     expect(
       await validateField(
-        {} as any,
-        false,
         {
+          name: 'test',
           ref: {
             type: 'text',
             name: 'test',
-            value: 'This is a long text input',
           },
+          value: 'This is a long text input',
           required: true,
           maxLength: {
             value: 12,
             message: 'maxLength',
           },
         },
-        { current: {} },
+        false,
       ),
     ).toEqual({
       test: {
         ref: {
           type: 'text',
           name: 'test',
-          value: 'This is a long text input',
         },
         message: 'maxLength',
         type: 'maxLength',
@@ -774,28 +704,26 @@ describe('validateField', () => {
 
     expect(
       await validateField(
-        {} as any,
-        false,
         {
+          name: 'test',
           ref: {
             type: 'text',
             name: 'test',
-            value: 'This is a long text input',
           },
+          value: 'This is a long text input',
           required: true,
           maxLength: {
             value: 12,
             message: 'maxLength',
           },
         },
-        { current: {} },
+        false,
       ),
     ).toEqual({
       test: {
         ref: {
           type: 'text',
           name: 'test',
-          value: 'This is a long text input',
         },
         message: 'maxLength',
         type: 'maxLength',
@@ -806,25 +734,23 @@ describe('validateField', () => {
   it('should return min length error ', async () => {
     expect(
       await validateField(
-        {} as any,
-        false,
         {
+          name: 'test',
           ref: {
             type: 'text',
             name: 'test',
-            value: 'This is a long text input',
           },
+          value: 'This is a long text input',
           required: true,
           minLength: 200,
         },
-        { current: {} },
+        false,
       ),
     ).toEqual({
       test: {
         ref: {
           type: 'text',
           name: 'test',
-          value: 'This is a long text input',
         },
         message: '',
         type: 'minLength',
@@ -833,28 +759,26 @@ describe('validateField', () => {
 
     expect(
       await validateField(
-        {} as any,
-        false,
         {
+          name: 'test',
           ref: {
             type: 'text',
             name: 'test',
-            value: 'This is a long text input',
           },
+          value: 'This is a long text input',
           required: true,
           minLength: {
             value: 200,
             message: 'minLength',
           },
         },
-        { current: {} },
+        false,
       ),
     ).toEqual({
       test: {
         ref: {
           type: 'text',
           name: 'test',
-          value: 'This is a long text input',
         },
         message: 'minLength',
         type: 'minLength',
@@ -863,28 +787,26 @@ describe('validateField', () => {
 
     expect(
       await validateField(
-        {} as any,
-        false,
         {
+          name: 'test',
           ref: {
             type: 'text',
             name: 'test',
-            value: 'This is a long text input',
           },
+          value: 'This is a long text input',
           required: true,
           minLength: {
             value: 200,
             message: 'minLength',
           },
         },
-        { current: {} },
+        false,
       ),
     ).toEqual({
       test: {
         ref: {
           type: 'text',
           name: 'test',
-          value: 'This is a long text input',
         },
         message: 'minLength',
         type: 'minLength',
@@ -897,25 +819,23 @@ describe('validateField', () => {
 
     expect(
       await validateField(
-        {} as any,
-        false,
         {
+          name: 'test',
           ref: {
             type: 'text',
             name: 'test',
-            value: 'This is a long text input',
           },
+          value: 'This is a long text input',
           required: true,
           pattern: emailRegex,
         },
-        { current: {} },
+        false,
       ),
     ).toEqual({
       test: {
         ref: {
           type: 'text',
           name: 'test',
-          value: 'This is a long text input',
         },
         message: '',
         type: 'pattern',
@@ -924,28 +844,26 @@ describe('validateField', () => {
 
     expect(
       await validateField(
-        {} as any,
-        false,
         {
+          name: 'test',
           ref: {
             type: 'text',
             name: 'test',
-            value: 'This is a long text input',
           },
           required: true,
+          value: 'This is a long text input',
           pattern: {
             value: emailRegex,
             message: 'regex failed',
           },
         },
-        { current: {} },
+        false,
       ),
     ).toEqual({
       test: {
         ref: {
           type: 'text',
           name: 'test',
-          value: 'This is a long text input',
         },
         message: 'regex failed',
         type: 'pattern',
@@ -954,28 +872,26 @@ describe('validateField', () => {
 
     expect(
       await validateField(
-        {} as any,
-        false,
         {
+          name: 'test',
           ref: {
             type: 'text',
             name: 'test',
-            value: 'This is a long text input',
           },
+          value: 'This is a long text input',
           required: true,
           pattern: {
             value: emailRegex,
             message: 'regex failed',
           },
         },
-        { current: {} },
+        false,
       ),
     ).toEqual({
       test: {
         ref: {
           type: 'text',
           name: 'test',
-          value: 'This is a long text input',
         },
         message: 'regex failed',
         type: 'pattern',
@@ -984,35 +900,33 @@ describe('validateField', () => {
 
     expect(
       await validateField(
-        {} as any,
-        false,
         {
+          name: 'test',
           ref: {
             type: 'text',
             name: 'test',
-            value: 'test@test.com',
           },
+          value: 'test@test.com',
           required: true,
           pattern: emailRegex,
         },
-        { current: {} },
+        false,
       ),
     ).toEqual({});
 
     expect(
       await validateField(
-        {} as any,
-        false,
         {
+          name: 'test',
           ref: {
             type: 'text',
             name: 'test',
-            value: null,
           },
+          value: null,
           required: false,
           pattern: emailRegex,
         },
-        { current: {} },
+        false,
       ),
     ).toEqual({});
   });
@@ -1021,54 +935,32 @@ describe('validateField', () => {
     expect(
       await validateField(
         {
-          current: {
-            test: {
-              ref: {
-                type: 'text',
-                name: 'test',
-                value: 'This is a long text input',
-              },
-            },
-          },
-        },
-        false,
-        {
+          name: 'test',
           ref: {
             type: 'text',
             name: 'test',
-            value: 'This is a long text input',
           },
+          value: 'This is a long text input',
           required: true,
           validate: (value) => value.toString().length > 3,
         },
-        { current: {} },
+        false,
       ),
     ).toEqual({});
 
     expect(
       await validateField(
         {
-          current: {
-            test: {
-              ref: {
-                type: 'text',
-                name: 'test',
-                value: 'This is a long text input',
-              },
-            },
-          },
-        },
-        false,
-        {
+          name: 'test',
           ref: {
             type: 'text',
             name: 'test',
-            value: 'This is a long text input',
           },
+          value: 'This is a long text input',
           required: true,
           validate: (value) => value.toString().length < 3,
         },
-        { current: {} },
+        false,
       ),
     ).toEqual({
       test: {
@@ -1076,7 +968,6 @@ describe('validateField', () => {
         ref: {
           type: 'text',
           name: 'test',
-          value: 'This is a long text input',
         },
         type: 'validate',
       },
@@ -1085,44 +976,32 @@ describe('validateField', () => {
     expect(
       await validateField(
         {
-          current: {
-            test: {
-              ref: {
-                type: 'text',
-                name: 'test',
-                value: 'This is a long text input',
-              },
-            },
-          },
-        },
-        false,
-        {
+          name: 'test',
           ref: {
             type: 'text',
             name: 'test',
-            value: 'This is a long text input',
           },
+          value: 'This is a long text input',
           required: true,
           validate: {
             test: (value) => value.toString().length < 3,
             test1: (value) => value.toString().length > 10,
           },
         },
-        { current: {} },
+        false,
       ),
     ).toEqual({
       test: {
         ref: {
           type: 'text',
           name: 'test',
-          value: 'This is a long text input',
         },
         type: 'test',
         message: '',
       },
     });
 
-    (getRadioValue as any).mockImplementation(() => {
+    (getRadioValue as jest.Mock<any>).mockImplementation(() => {
       return {
         isValid: false,
         value: 'test',
@@ -1132,36 +1011,24 @@ describe('validateField', () => {
     expect(
       await validateField(
         {
-          current: {
-            test: {
-              ref: {
-                type: 'text',
-                name: 'test',
-                value: 'This is a long text input!',
-              },
-            },
-          },
-        },
-        false,
-        {
+          name: 'test',
           ref: {
             type: 'text',
             name: 'test',
-            value: 'This is a long text input!',
           },
+          value: 'This is a long text input!',
           validate: {
             test: (value) => value.toString().length < 3,
             test1: (value) => value.toString().length > 10,
           },
         },
-        { current: {} },
+        false,
       ),
     ).toEqual({
       test: {
         ref: {
           name: 'test',
           type: 'text',
-          value: 'This is a long text input!',
         },
         type: 'test',
         message: '',
@@ -1171,38 +1038,23 @@ describe('validateField', () => {
     expect(
       await validateField(
         {
-          current: {
-            test: {
-              ref: {
-                type: 'radio',
-                name: 'test',
-                value: 'This is a long text input!',
-              },
-            },
-          },
-        },
-        false,
-        {
+          name: 'test',
           ref: {
             type: 'radio',
             name: 'test',
-            value: 'This is a long text input!',
           },
+          value: 'This is a long text input!',
           validate: {
             test: (value) => value.toString().length < 3,
             test1: (value) => value.toString().length > 10,
           },
-          options: [
-            {
-              ref: 'data' as any,
-            },
-          ],
+          refs: [{ type: 'data' } as HTMLInputElement],
         },
-        { current: {} },
+        false,
       ),
     ).toEqual({
       test: {
-        ref: 'data',
+        ref: { type: 'data' },
         type: 'test',
         message: '',
       },
@@ -1211,33 +1063,22 @@ describe('validateField', () => {
     expect(
       await validateField(
         {
-          current: {
-            test: {
-              ref: {
-                type: 'radio',
-                name: 'test',
-                value: 'This is a long text input!',
-              },
-            },
-          },
-        },
-        false,
-        {
+          name: 'test',
           ref: {
             type: 'radio',
             name: 'test',
-            value: 'This is a long text input!',
           },
+          value: 'This is a long text input!',
           validate: {
             test: () => true,
           },
-          options: [
+          refs: [
             {
-              ref: 'data' as any,
-            },
+              type: 'data',
+            } as HTMLInputElement,
           ],
         },
-        { current: {} },
+        false,
       ),
     ).toEqual({});
   });
@@ -1246,23 +1087,12 @@ describe('validateField', () => {
     expect(
       await validateField(
         {
-          current: {
-            test: {
-              ref: {
-                type: 'text',
-                name: 'test',
-                value: 'This is a long text input',
-              },
-            },
-          },
-        },
-        false,
-        {
+          name: 'test',
           ref: {
             type: 'text',
             name: 'test',
-            value: 'This is a long text input',
           },
+          value: 'This is a long text input',
           validate: {
             test: (value) => {
               if (value.toString().length > 3) {
@@ -1272,7 +1102,7 @@ describe('validateField', () => {
             },
           },
         },
-        { current: {} },
+        false,
       ),
     ).toEqual({
       test: {
@@ -1281,7 +1111,6 @@ describe('validateField', () => {
         ref: {
           type: 'text',
           name: 'test',
-          value: 'This is a long text input',
         },
       },
     });
@@ -1289,23 +1118,12 @@ describe('validateField', () => {
     expect(
       await validateField(
         {
-          current: {
-            test: {
-              ref: {
-                type: 'text',
-                name: 'test',
-                value: 'This is a long text input',
-              },
-            },
-          },
-        },
-        false,
-        {
+          name: 'test',
           ref: {
             type: 'text',
             name: 'test',
-            value: 'This is a long text input',
           },
+          value: 'This is a long text input',
           validate: {
             test: (value) => {
               if (value.toString().length > 3) {
@@ -1315,7 +1133,7 @@ describe('validateField', () => {
             },
           },
         },
-        { current: {} },
+        false,
       ),
     ).toEqual({
       test: {
@@ -1324,7 +1142,6 @@ describe('validateField', () => {
         ref: {
           type: 'text',
           name: 'test',
-          value: 'This is a long text input',
         },
       },
     });
@@ -1334,26 +1151,15 @@ describe('validateField', () => {
     expect(
       await validateField(
         {
-          current: {
-            test: {
-              ref: {
-                type: 'text',
-                name: 'test',
-                value: 'This is a long text input',
-              },
-            },
-          },
-        },
-        false,
-        {
+          name: 'test',
           ref: {
             type: 'text',
             name: 'test',
-            value: 'This is a long text input',
           },
+          value: 'This is a long text input',
           validate: (value) => value.toString().length < 3 || 'bill',
         },
-        { current: {} },
+        false,
       ),
     ).toEqual({
       test: {
@@ -1362,7 +1168,6 @@ describe('validateField', () => {
         ref: {
           type: 'text',
           name: 'test',
-          value: 'This is a long text input',
         },
       },
     });
@@ -1370,26 +1175,15 @@ describe('validateField', () => {
     expect(
       await validateField(
         {
-          current: {
-            test: {
-              ref: {
-                type: 'text',
-                name: 'test',
-                value: 'This is a long text input',
-              },
-            },
-          },
-        },
-        false,
-        {
+          name: 'test',
           ref: {
             type: 'text',
             name: 'test',
-            value: 'This is a long text input',
           },
+          value: 'This is a long text input',
           validate: (value) => value.toString().length < 3 || 'bill',
         },
-        { current: {} },
+        false,
       ),
     ).toEqual({
       test: {
@@ -1398,7 +1192,6 @@ describe('validateField', () => {
         ref: {
           type: 'text',
           name: 'test',
-          value: 'This is a long text input',
         },
       },
     });
@@ -1408,22 +1201,15 @@ describe('validateField', () => {
     expect(
       await validateField(
         {
-          current: {
-            test: {
-              ref: {} as any,
-            },
-          },
-        },
-        false,
-        {
+          name: 'test',
           ref: {
             type: 'text',
             name: 'test',
-            value: 'This is a long text input',
           },
+          value: 'This is a long text input',
           validate: () => undefined,
         },
-        { current: {} },
+        false,
       ),
     ).toEqual({});
   });
@@ -1432,81 +1218,65 @@ describe('validateField', () => {
     expect(
       await validateField(
         {
-          current: {
-            test: {
-              ref: {} as any,
-            },
-          },
-        },
-        false,
-        {
+          name: 'test',
           ref: {
             type: 'text',
             name: 'test',
-            value: 'This is a long text input',
           },
-          validate: 'validate' as any,
+          value: 'This is a long text input',
+          // @ts-expect-error
+          validate: 'validate',
         },
-        { current: {} },
+        false,
       ),
     ).toEqual({});
   });
 
   it('should return all validation errors', async () => {
-    (getRadioValue as any).mockImplementation(() => ({
+    (getRadioValue as jest.Mock<any>).mockImplementation(() => ({
       value: '',
     }));
     expect(
       await validateField(
         {
-          current: {
-            test: { ref: { type: 'text', value: '', name: 'test' } },
-          },
-        },
-        true,
-        {
-          ref: { type: 'text', value: '', name: 'test' },
+          name: 'test',
+          ref: { type: 'text', name: 'test' },
+          value: '',
           required: true,
           minLength: 10,
           pattern: /d/i,
           validate: (value) => value === 'test',
         },
-        { current: {} },
+        true,
       ),
     ).toMatchSnapshot();
 
     expect(
       await validateField(
-        { current: {} },
-        true,
         {
-          ref: { type: 'text', value: '123', name: 'test' },
+          name: 'test',
+          ref: { type: 'text', name: 'test' },
+          value: '123',
           required: true,
           minLength: 10,
           pattern: /d/i,
           validate: (value) => value === 'test',
         },
-        { current: {} },
+        true,
       ),
     ).toMatchSnapshot();
   });
 
   it('should return all validation error messages', async () => {
-    (getRadioValue as any).mockImplementation(() => ({
+    (getRadioValue as jest.Mock<any>).mockImplementation(() => ({
       value: '',
     }));
     expect(
       await validateField(
         {
-          current: {
-            test: {
-              ref: { type: 'text', value: '', name: 'test' },
-            },
-          },
-        },
-        true,
-        {
-          ref: { type: 'text', value: '', name: 'test' },
+          name: 'test',
+          ref: { type: 'text', name: 'test' },
+          value: '',
           required: 'test',
           minLength: {
             value: 10,
@@ -1522,16 +1292,16 @@ describe('validateField', () => {
             test2: (value) => value == 'test' || 'Bill',
           },
         },
-        { current: {} },
+        true,
       ),
     ).toMatchSnapshot();
 
     expect(
       await validateField(
-        { current: {} },
-        true,
         {
-          ref: { type: 'text', value: 'bil', name: 'test' },
+          name: 'test',
+          ref: { type: 'text', name: 'test' },
+          value: 'bil',
           required: 'test',
           minLength: {
             value: 10,
@@ -1547,16 +1317,16 @@ describe('validateField', () => {
             test2: (value) => value == 'test' || 'Bill',
           },
         },
-        { current: {} },
+        true,
       ),
     ).toMatchSnapshot();
 
     expect(
       await validateField(
-        { current: {} },
-        true,
         {
-          ref: { type: 'text', value: 'bil', name: 'test' },
+          name: 'test',
+          ref: { type: 'text', name: 'test' },
+          value: 'bil',
           required: 'test',
           minLength: {
             value: 10,
@@ -1572,7 +1342,7 @@ describe('validateField', () => {
             test2: (value) => value == 'test' || 'Bill',
           },
         },
-        { current: {} },
+        true,
       ),
     ).toMatchSnapshot();
   });

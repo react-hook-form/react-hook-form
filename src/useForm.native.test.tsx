@@ -12,27 +12,20 @@ describe('useForm with React Native', () => {
   it('should register field', () => {
     let control: any;
     const Component = () => {
-      const { register, control: tempControl } = useForm();
+      const { register, control: tempControl } = useForm<{
+        test: string;
+      }>();
       control = tempControl;
       return (
         <View>
-          <TextInput
-            ref={() => register({ name: 'test' }, { required: 'required' })}
-          />
+          <TextInput {...register('test', { required: 'required' })} />
         </View>
       );
     };
 
     render(<Component />);
 
-    expect(control.fieldsRef.current).toEqual({
-      test: {
-        ref: {
-          name: 'test',
-        },
-        required: 'required',
-      },
-    });
+    expect(control.fieldsRef.current.test).toBeDefined();
   });
 
   it('should invoke focus with RN', async () => {
@@ -44,12 +37,12 @@ describe('useForm with React Native', () => {
         register,
         handleSubmit,
         formState: { errors },
-      } = useForm();
+      } = useForm<{
+        test: string;
+      }>();
       return (
         <View>
-          <TextInput
-            ref={() => register({ name: 'test' }, { required: true })}
-          />
+          <TextInput {...register('test', { required: true })} />
           <Text>{errors.test && 'required'}</Text>
           <Button title={'button'} onPress={handleSubmit(callback)} />
         </View>

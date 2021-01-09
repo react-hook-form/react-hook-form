@@ -9,26 +9,37 @@ import {
 
 let renderCount = 0;
 
+type FormInputs = {
+  data: { name: string; conditional: string }[];
+};
+
 const ConditionField = <T extends any[]>({
   control,
   index,
   fields,
 }: {
-  control: Control;
+  control: Control<FormInputs>;
   index: number;
   fields: T;
 }) => {
-  const output = useWatch<any>({
+  const output = useWatch({
     name: 'data',
     control,
+    // @ts-ignore
     defaultValue: fields,
   });
 
+  React.useEffect(() => {
+    return () => {
+      control.unregister(`data[${index}].conditional` as any);
+    };
+  }, [control, index]);
+
+  // @ts-ignore
   return output[index]?.name === 'bill' ? (
     <input
-      ref={control.register()}
-      name={`data[${index}].conditional`}
-      defaultValue={output[index].conditional}
+      {...control.register(`data.${index}.conditional` as any)}
+      defaultValue={fields[index].conditional}
     />
   ) : null;
 };
@@ -41,14 +52,11 @@ const UseFieldArrayUnregister: React.FC = () => {
     setValue,
     getValues,
     formState: { isDirty, touched, dirty, errors },
-  } = useForm<{
-    data: { name: string }[];
-  }>({
+  } = useForm<FormInputs>({
     defaultValues: {
       data: [{ name: 'test' }, { name: 'test1' }, { name: 'test2' }],
     },
     mode: 'onSubmit',
-    shouldUnregister: false,
   });
   const {
     fields,
@@ -58,7 +66,8 @@ const UseFieldArrayUnregister: React.FC = () => {
     move,
     insert,
     remove,
-  } = useFieldArray<{ name: string }>({
+    // @ts-ignore
+  } = useFieldArray({
     control,
     name: 'data',
   });
@@ -80,10 +89,11 @@ const UseFieldArrayUnregister: React.FC = () => {
             {index % 2 ? (
               <input
                 id={`field${index}`}
-                name={`data[${index}].name`}
                 defaultValue={data.name}
                 data-order={index}
-                ref={register({ required: 'This is required' })}
+                {...register(`data.${index}.name` as any, {
+                  required: 'This is required',
+                })}
               />
             ) : (
               <Controller
@@ -94,7 +104,7 @@ const UseFieldArrayUnregister: React.FC = () => {
                 rules={{
                   required: 'This is required',
                 }}
-                name={`data[${index}].name`}
+                name={`data.${index}.name` as any}
                 defaultValue={data.name}
                 data-order={index}
               />

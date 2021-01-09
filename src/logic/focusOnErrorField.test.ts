@@ -7,16 +7,23 @@ jest.mock('../utils/isHTMLElement', () => ({
 describe('focusErrorField', () => {
   it('should focus on the first error it encounter', () => {
     const focus = jest.fn();
-    focusErrorField(
+    focusErrorField<{
+      test: string;
+    }>(
       {
         test: {
+          name: 'test',
           ref: {
+            name: 'test',
             focus,
-          } as any,
+          },
         },
       },
       {
-        test: 'test' as any,
+        test: {
+          message: 'test',
+          type: 'required',
+        },
       },
     );
 
@@ -25,21 +32,28 @@ describe('focusErrorField', () => {
 
   it('should focus on first option when options input error encounters', () => {
     const focus = jest.fn();
-    focusErrorField(
+    focusErrorField<{
+      test: string;
+    }>(
       {
         test: {
-          ref: {} as any,
-          options: [
+          name: 'test',
+          ref: {
+            name: 'test',
+          },
+          refs: [
+            // @ts-expect-error
             {
-              ref: {
-                focus,
-              } as any,
+              focus,
             },
           ],
         },
       },
       {
-        test: 'test' as any,
+        test: {
+          message: 'test',
+          type: 'required',
+        },
       },
     );
 
@@ -48,12 +62,17 @@ describe('focusErrorField', () => {
 
   it('should not call focus when field is undefined', () => {
     expect(() => {
-      focusErrorField(
+      focusErrorField<{
+        test: string;
+      }>(
         {
           test: undefined,
         },
         {
-          test: 'test' as any,
+          test: {
+            message: 'test',
+            type: 'required',
+          },
         },
       );
     }).not.toThrow();

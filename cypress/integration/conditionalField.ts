@@ -98,6 +98,8 @@ describe('ConditionalField', () => {
     cy.get('#result').should(($state) =>
       expect(JSON.parse($state.text())).to.be.deep.equal({
         selectNumber: '2',
+        firstName: 'bill',
+        lastName: 'luo',
         min: '10',
         max: '2',
       }),
@@ -150,10 +152,14 @@ describe('ConditionalField', () => {
     cy.get('#result').should(($state) =>
       expect(JSON.parse($state.text())).to.be.deep.equal({
         selectNumber: '3',
+        firstName: 'bill',
+        lastName: 'luo',
+        min: '10',
+        max: '2',
         notRequired: 'test',
       }),
     );
 
-    cy.get('#renderCount').contains('34');
+    cy.get('#renderCount').contains('31');
   });
 });

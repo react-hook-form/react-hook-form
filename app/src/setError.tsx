@@ -1,5 +1,16 @@
 import React, { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
+import {FieldPath} from "../../src/types";
+
+type FormInputs = {
+  firstName: string;
+  lastName: string;
+  age: string;
+  test: string;
+  test1: string;
+  test2: string;
+  username: string;
+};
 
 const SetError: React.FC = () => {
   const {
@@ -7,24 +18,16 @@ const SetError: React.FC = () => {
     setError,
     clearErrors,
     formState: { errors },
-  } = useForm<{
-    firstName: string;
-    lastName: string;
-    age: string;
-    test: string;
-    test1: string;
-    test2: string;
-    username: string;
-  }>();
+  } = useForm<FormInputs>();
 
   useEffect(() => {
-    register({ name: 'firstName' });
-    register({ name: 'lastName' });
-    register({ name: 'age' });
-    register({ name: 'test' });
-    register({ name: 'test1' });
-    register({ name: 'username' });
-    register({ name: 'test2' });
+    register('firstName');
+    register('lastName');
+    register('age');
+    register('test');
+    register('test1');
+    register('username');
+    register('test2');
 
     setError('firstName', { type: 'wrong' });
     setError('lastName', { type: 'wrong' });
@@ -42,7 +45,7 @@ const SetError: React.FC = () => {
         message: 'Minlength is 10',
       },
     ].forEach(({ name, type, message }) =>
-      setError(name as any, { type, message }),
+      setError(name as FieldPath<FormInputs>, { type, message }),
     );
     setError('username', {
       types: {

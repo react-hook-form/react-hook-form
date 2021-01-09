@@ -1,19 +1,23 @@
 import * as React from 'react';
-import { LiteralToPrimitive, DeepPartial, DeepMap } from './utils';
+import { NativeSyntheticEvent } from 'react-native';
+import {
+  DeepPartial,
+  DeepMap,
+  FieldPath,
+  FieldPathValues,
+  FieldPathValue,
+} from './utils';
 import { Resolver } from './resolvers';
 import {
-  Field,
-  FieldElement,
   FieldName,
   FieldRefs,
   FieldValue,
   FieldValues,
   InternalFieldName,
-  Ref,
 } from './fields';
 import { ErrorOption, FieldErrors } from './errors';
 import { RegisterOptions } from './validator';
-import { ControllerRenderProps } from './controller';
+import { ControllerEvent } from './controller';
 import { FieldArrayDefaultValues } from './fieldArray';
 import { SubjectType } from '../utils/Subject';
 
@@ -41,12 +45,9 @@ export type DefaultValues<TFieldValues> = UnpackNestedValue<
   DeepPartial<TFieldValues>
 >;
 
-export type InternalNameSet<FieldValues> = Set<InternalFieldName<FieldValues>>;
+export type InternalNameSet = Set<InternalFieldName>;
 
-export type RecordInternalNameSet<TFieldValues> = Record<
-  string,
-  InternalNameSet<TFieldValues>
->;
+export type RecordInternalNameSet = Record<string, InternalNameSet>;
 
 export type ValidationMode = {
   onBlur: 'onBlur';
@@ -73,7 +74,9 @@ export type SetValueConfig = Partial<{
   shouldDirty: boolean;
 }>;
 
-export type HandleChange = (event: Event) => Promise<void | boolean>;
+export type HandleChange = (
+  event: Event | NativeSyntheticEvent<any> | ControllerEvent,
+) => Promise<void | boolean>;
 
 export type UseFormProps<
   TFieldValues extends FieldValues = FieldValues,
@@ -85,7 +88,6 @@ export type UseFormProps<
   resolver: Resolver<TFieldValues, TContext>;
   context: TContext;
   shouldFocusError: boolean;
-  shouldUnregister: boolean;
   criteriaMode: 'firstError' | 'all';
 }>;
 
@@ -129,29 +131,47 @@ export type OmitResetState = Partial<{
   dirty: boolean;
 }>;
 
-export type Control<TFieldValues extends FieldValues = FieldValues> = Pick<
-  UseFormMethods<TFieldValues>,
-  'register' | 'unregister' | 'setValue' | 'getValues' | 'trigger'
-> & {
+export type SetFieldValue<TFieldValues> =
+  | FieldValue<TFieldValues>
+  | UnpackNestedValue<DeepPartial<TFieldValues>>
+  | unknown[]
+  | undefined
+  | null
+  | boolean;
+
+export type RegisterMethods = {
+  onChange: HandleChange;
+  onBlur: HandleChange;
+  ref: React.Ref<any>;
+  name: InternalFieldName;
+};
+
+type UseFormCommonMethods<TFieldValues extends FieldValues = FieldValues> = {
+  register: (
+    name: FieldPath<TFieldValues>,
+    options?: RegisterOptions,
+  ) => RegisterMethods;
+  unregister: (
+    name: FieldPath<TFieldValues> | FieldPath<TFieldValues>[],
+  ) => void;
+  getValues: {
+    (): UnpackNestedValue<TFieldValues>;
+    <TName extends FieldPath<TFieldValues>>(fieldName: TName): FieldPathValue<
+      TFieldValues,
+      TName
+    >;
+    <TName extends FieldPath<TFieldValues>[]>(
+      fieldNames: TName,
+    ): FieldPathValues<TFieldValues, TName>;
+  };
+};
+
+export type Control<TFieldValues extends FieldValues = FieldValues> = {
   isWatchAllRef: React.MutableRefObject<boolean>;
-  watchFieldsRef: React.MutableRefObject<InternalNameSet<TFieldValues>>;
+  watchFieldsRef: React.MutableRefObject<InternalNameSet>;
   isFormDirty: (name?: string, data?: unknown[]) => boolean;
-  removeFieldEventListener: (field: Field, forceDelete?: boolean) => void;
-  mode: Readonly<{
-    isOnBlur: boolean;
-    isOnSubmit: boolean;
-    isOnChange: boolean;
-    isOnAll: boolean;
-    isOnTouch: boolean;
-  }>;
-  reValidateMode: Readonly<{
-    isReValidateOnBlur: boolean;
-    isReValidateOnChange: boolean;
-  }>;
   fieldArrayDefaultValuesRef: FieldArrayDefaultValues;
   fieldArrayValuesRef: FieldArrayDefaultValues;
-  shouldUnregister: boolean;
-  formState: FormState<TFieldValues>;
   formStateRef: React.MutableRefObject<FormState<TFieldValues>>;
   formStateSubjectRef: React.MutableRefObject<
     SubjectType<Partial<FormState<TFieldValues>>>
@@ -162,17 +182,19 @@ export type Control<TFieldValues extends FieldValues = FieldValues> = Pick<
       inputValue?: unknown;
     }>
   >;
+  controllerSubjectRef: React.MutableRefObject<
+    SubjectType<DefaultValues<TFieldValues>>
+  >;
   updateIsValid: (fieldsValues: FieldValues) => void;
   validFieldsRef: React.MutableRefObject<FieldNamesMarkedBoolean<TFieldValues>>;
   fieldsWithValidationRef: React.MutableRefObject<
     FieldNamesMarkedBoolean<TFieldValues>
   >;
-  fieldsRef: React.MutableRefObject<FieldRefs<TFieldValues>>;
+  fieldsRef: React.MutableRefObject<FieldRefs>;
   resetFieldArrayFunctionRef: React.MutableRefObject<
-    Record<InternalFieldName<TFieldValues>, () => void>
+    Record<InternalFieldName, () => void>
   >;
-  shallowFieldsStateRef: React.MutableRefObject<Partial<TFieldValues>>;
-  fieldArrayNamesRef: React.MutableRefObject<InternalNameSet<TFieldValues>>;
+  fieldArrayNamesRef: React.MutableRefObject<InternalNameSet>;
   readFormStateRef: React.MutableRefObject<ReadFormState>;
   defaultValuesRef: React.MutableRefObject<DefaultValues<TFieldValues>>;
   watchInternal: <T>(
@@ -180,100 +202,64 @@ export type Control<TFieldValues extends FieldValues = FieldValues> = Pick<
     defaultValue?: T,
     isGlobal?: boolean,
   ) => unknown;
-};
+} & UseFormCommonMethods<TFieldValues>;
 
-export type UseWatchRenderFunctions = Record<string, () => void>;
-
-export type UseWatchOptions<TFieldValues extends FieldValues = FieldValues> = {
-  defaultValue?: unknown;
-  name?: string | string[];
-  control?: Control<TFieldValues>;
-};
-
-export type SetFieldValue<TFieldValues> =
-  | FieldValue<TFieldValues>
-  | UnpackNestedValue<DeepPartial<TFieldValues>>
-  | unknown[]
-  | undefined
-  | null
-  | boolean;
-
-export type InputState = {
-  invalid: boolean;
-  isTouched: boolean;
-  isDirty: boolean;
-  isValidating: boolean;
-};
+export type WatchCallback = <TFieldValues>(
+  value: UnpackNestedValue<TFieldValues>,
+) => void;
 
 export type UseFormMethods<TFieldValues extends FieldValues = FieldValues> = {
-  register<TFieldElement extends FieldElement<TFieldValues>>(
-    rules?: RegisterOptions,
-  ): (ref: (TFieldElement & Ref) | null) => void;
-  register(name: FieldName<TFieldValues>, rules?: RegisterOptions): void;
-  register<TFieldElement extends FieldElement<TFieldValues>>(
-    ref: (TFieldElement & Ref) | null,
-    rules?: RegisterOptions,
-  ): void;
-  unregister(name: FieldName<TFieldValues> | FieldName<TFieldValues>[]): void;
-  watch(): UnpackNestedValue<TFieldValues>;
-  watch<TFieldName extends string, TFieldValue>(
-    name: TFieldName,
-    defaultValue?: TFieldName extends keyof TFieldValues
-      ? UnpackNestedValue<TFieldValues[TFieldName]>
-      : UnpackNestedValue<LiteralToPrimitive<TFieldValue>>,
-  ): TFieldName extends keyof TFieldValues
-    ? UnpackNestedValue<TFieldValues[TFieldName]>
-    : UnpackNestedValue<LiteralToPrimitive<TFieldValue>>;
-  watch<TFieldName extends keyof TFieldValues>(
-    names: TFieldName[],
-    defaultValues?: UnpackNestedValue<
-      DeepPartial<Pick<TFieldValues, TFieldName>>
-    >,
-  ): UnpackNestedValue<Pick<TFieldValues, TFieldName>>;
-  watch(
-    names: string[],
-    defaultValues?: UnpackNestedValue<DeepPartial<TFieldValues>>,
-  ): UnpackNestedValue<DeepPartial<TFieldValues>>;
-  setError(name: FieldName<TFieldValues>, error: ErrorOption): void;
-  clearErrors(name?: FieldName<TFieldValues> | FieldName<TFieldValues>[]): void;
-  setValue(
+  watch: {
+    (): UnpackNestedValue<TFieldValues>;
+    <TName extends FieldPath<TFieldValues>>(
+      fieldName: TName,
+      defaultValue?: FieldPathValue<TFieldValues, TName>,
+    ): FieldPathValue<TFieldValues, TName>;
+    <TName extends FieldPath<TFieldValues>[]>(
+      fieldName: TName,
+      defaultValue?: FieldPathValues<TFieldValues, TName>,
+    ): FieldPathValues<TFieldValues, TName>;
+    (
+      callback: WatchCallback,
+      defaultValues?: UnpackNestedValue<DeepPartial<TFieldValues>>,
+    ): void;
+  };
+  setError: (name: FieldName<TFieldValues>, error: ErrorOption) => void;
+  clearErrors: (
+    name?: FieldName<TFieldValues> | FieldName<TFieldValues>[],
+  ) => void;
+  setValue: (
     name: FieldName<TFieldValues>,
     value: SetFieldValue<TFieldValues>,
     config?: SetValueConfig,
-  ): void;
-  trigger(
-    name?: FieldName<TFieldValues> | FieldName<TFieldValues>[],
-  ): Promise<boolean>;
+  ) => void;
+  trigger: (name?: FieldName<TFieldValues> | FieldName<TFieldValues>[]) => void;
   formState: FormState<TFieldValues>;
   reset: (
     values?: UnpackNestedValue<DeepPartial<TFieldValues>>,
     omitResetState?: OmitResetState,
   ) => void;
-  getValues(): UnpackNestedValue<TFieldValues>;
-  getValues<TFieldName extends string, TFieldValue extends unknown>(
-    name: TFieldName,
-  ): TFieldName extends keyof TFieldValues
-    ? UnpackNestedValue<TFieldValues>[TFieldName]
-    : TFieldValue;
-  getValues<TFieldName extends keyof TFieldValues>(
-    names: TFieldName[],
-  ): UnpackNestedValue<Pick<TFieldValues, TFieldName>>;
   handleSubmit: <TSubmitFieldValues extends FieldValues = TFieldValues>(
     onValid: SubmitHandler<TSubmitFieldValues>,
     onInvalid?: SubmitErrorHandler<TFieldValues>,
   ) => (e?: React.BaseSyntheticEvent) => Promise<void>;
   control: Control<TFieldValues>;
-};
-
-export type UseControllerMethods<
-  TFieldValues extends FieldValues = FieldValues
-> = {
-  field: ControllerRenderProps<TFieldValues>;
-  meta: InputState;
-};
+} & UseFormCommonMethods<TFieldValues>;
 
 export type UseFormStateProps<TFieldValues> = {
   control: Control<TFieldValues>;
 };
 
 export type UseFormStateMethods<TFieldValues> = FormState<TFieldValues>;
+
+export type UseWatchProps<TFieldValues extends FieldValues = FieldValues> = {
+  defaultValue?: unknown;
+  name?: FieldPath<TFieldValues> | FieldPath<TFieldValues>[];
+  control?: Control<TFieldValues>;
+};
+
+export type FormProviderProps<
+  TFieldValues extends FieldValues = FieldValues
+> = {
+  children: React.ReactNode;
+} & UseFormMethods<TFieldValues>;

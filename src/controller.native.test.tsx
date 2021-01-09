@@ -23,6 +23,7 @@ describe('Controller with React Native', () => {
       } = useForm<{
         test: string;
       }>();
+
       return (
         <View>
           <Controller

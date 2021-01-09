@@ -11,9 +11,7 @@ const UseFieldArray: React.FC = (props: any) => {
     register,
     formState: { isDirty, touched, isValid, dirty, errors },
     reset,
-  } = useForm<{
-    data: { name: string }[];
-  }>({
+  } = useForm<{ data: { name: string }[] }>({
     ...(props.match.params.mode === 'default' || withoutFocus
       ? {
           defaultValues: {
@@ -23,18 +21,12 @@ const UseFieldArray: React.FC = (props: any) => {
       : {}),
     mode: props.match.params.mode === 'formState' ? 'onChange' : 'onSubmit',
   });
-  const {
-    fields,
-    append,
-    prepend,
-    swap,
-    move,
-    insert,
-    remove,
-  } = useFieldArray<{ name: string }>({
-    control,
-    name: 'data',
-  });
+  const { fields, append, prepend, swap, move, insert, remove } = useFieldArray(
+    {
+      control,
+      name: 'data',
+    },
+  );
   const [data, setData] = React.useState([]);
   const onSubmit = (data: any) => {
     setData(data);
@@ -60,10 +52,11 @@ const UseFieldArray: React.FC = (props: any) => {
             {index % 2 ? (
               <input
                 id={`field${index}`}
-                name={`data[${index}].name`}
                 defaultValue={data.name}
                 data-order={index}
-                ref={register({ required: 'This is required' })}
+                {...register(`data.${index}.name` as const, {
+                  required: 'This is required',
+                })}
               />
             ) : (
               <Controller
@@ -74,7 +67,7 @@ const UseFieldArray: React.FC = (props: any) => {
                 rules={{
                   required: 'This is required',
                 }}
-                name={`data[${index}].name`}
+                name={`data.${index}.name` as any}
                 defaultValue={data.name}
                 data-order={index}
               />

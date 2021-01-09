@@ -1,21 +1,23 @@
+import * as React from 'react';
 import { useFormContext } from './useFormContext';
 import { useFormState } from './useFormState';
-import isNameInFieldArray from './logic/isNameInFieldArray';
 import isUndefined from './utils/isUndefined';
 import get from './utils/get';
-import * as React from 'react';
-import isFunction from './utils/isFunction';
-import skipValidation from './logic/skipValidation';
-import getInputValue from './logic/getInputValue';
-import set from './utils/set';
-import { FieldValues, UseControllerProps, UseControllerMethods } from './types';
+import getControllerValue from './logic/getControllerValue';
+import isNameInFieldArray from './logic/isNameInFieldArray';
+import { EVENTS } from './constants';
+import {
+  FieldValues,
+  UseControllerProps,
+  UseControllerMethods,
+  InternalFieldName,
+} from './types';
 
 export function useController<TFieldValues extends FieldValues = FieldValues>({
   name,
   rules,
   defaultValue,
   control,
-  onFocus,
 }: UseControllerProps<TFieldValues>): UseControllerMethods<TFieldValues> {
   const methods = useFormContext<TFieldValues>();
 
@@ -29,173 +31,72 @@ export function useController<TFieldValues extends FieldValues = FieldValues>({
 
   const {
     defaultValuesRef,
-    setValue,
     register,
-    unregister,
-    trigger,
-    mode,
-    reValidateMode: { isReValidateOnBlur, isReValidateOnChange },
-    formStateSubjectRef,
-    readFormStateRef,
     fieldsRef,
     fieldArrayNamesRef,
-    shallowFieldsStateRef,
+    controllerSubjectRef,
   } = control || methods.control;
 
-  const isNotFieldArray = !isNameInFieldArray(fieldArrayNamesRef.current, name);
+  const { onChange, onBlur, ref } = register(name, rules);
   const getInitialValue = () =>
-    !isUndefined(get(shallowFieldsStateRef.current, name)) && isNotFieldArray
-      ? get(shallowFieldsStateRef.current, name)
-      : isUndefined(defaultValue)
-      ? get(defaultValuesRef.current, name)
-      : defaultValue;
+    (fieldsRef.current[name] && isUndefined(fieldsRef.current[name]!.value)) ||
+    isNameInFieldArray(fieldArrayNamesRef.current, name)
+      ? isUndefined(defaultValue)
+        ? get(defaultValuesRef.current, name)
+        : defaultValue
+      : fieldsRef.current[name]!.value;
+
   const [value, setInputStateValue] = React.useState(getInitialValue());
-  const { errors, dirty, touched, isValidating, isSubmitted } = useFormState({
+  const { errors, dirty, touched, isValidating } = useFormState({
     control: control || methods.control,
   });
-  const valueRef = React.useRef(value);
-  const ref = React.useRef({
-    focus: () => null,
-  });
-  const onFocusRef = React.useRef(
-    onFocus ||
-      (() => {
-        if (isFunction(ref.current.focus)) {
-          ref.current.focus();
-        }
-
-        if (process.env.NODE_ENV !== 'production') {
-          if (!isFunction(ref.current.focus)) {
-            console.warn(
-              `📋 'ref' from Controller render prop must be attached to a React component or a DOM Element whose ref provides a 'focus()' method`,
-            );
-          }
-        }
-      }),
-  );
-
-  const shouldValidate = React.useCallback(
-    (isBlurEvent?: boolean) =>
-      !skipValidation({
-        isBlurEvent,
-        isReValidateOnBlur,
-        isReValidateOnChange,
-        isSubmitted,
-        isTouched: !!get(touched, name),
-        ...mode,
-      }),
-    [
-      isReValidateOnBlur,
-      isReValidateOnChange,
-      isSubmitted,
-      touched,
-      name,
-      mode,
-    ],
-  );
-
-  const commonTask = React.useCallback(([event]: any[]) => {
-    const data = getInputValue(event);
-    setInputStateValue(data);
-    valueRef.current = data;
-    return data;
-  }, []);
-
-  const registerField = React.useCallback(
-    (shouldUpdateValue?: boolean) => {
-      if (process.env.NODE_ENV !== 'production') {
-        if (!name) {
-          return console.warn(
-            '📋 Field is missing `name` prop. https://react-hook-form.com/api#Controller',
-          );
-        }
-      }
-
-      if (fieldsRef.current[name]) {
-        fieldsRef.current[name] = {
-          ref: fieldsRef.current[name]!.ref,
-          ...rules,
-        };
-      } else {
-        register(
-          Object.defineProperties(
-            {
-              name,
-              focus: onFocusRef.current,
-            },
-            {
-              value: {
-                set(data) {
-                  setInputStateValue(data);
-                  valueRef.current = data;
-                },
-                get() {
-                  return valueRef.current;
-                },
-              },
-            },
-          ),
-          rules,
-        );
-
-        shouldUpdateValue = isUndefined(get(defaultValuesRef.current, name));
-      }
-
-      shouldUpdateValue &&
-        isNotFieldArray &&
-        setInputStateValue(getInitialValue());
-    },
-    [rules, name, register],
-  );
-
-  React.useEffect(() => () => unregister(name), [name]);
 
   React.useEffect(() => {
     if (process.env.NODE_ENV !== 'production') {
+      if (!(name as string)) {
+        return console.warn(
+          '📋 Field is missing `name` prop. https://react-hook-form.com/api#Controller',
+        );
+      }
+
       if (isUndefined(value)) {
         console.warn(
           `📋 ${name} is missing in the 'defaultValue' prop of either its Controller (https://react-hook-form.com/api#Controller) or useForm (https://react-hook-form.com/api#useForm)`,
         );
       }
-
-      if (!isNotFieldArray && isUndefined(defaultValue)) {
-        console.warn(
-          '📋 Controller is missing `defaultValue` prop when using `useFieldArray`. https://react-hook-form.com/api#Controller',
-        );
-      }
     }
 
-    registerField();
-  }, [registerField]);
-
-  React.useEffect(() => {
-    !fieldsRef.current[name] && registerField(true);
-  });
-
-  const onBlur = React.useCallback(() => {
-    if (readFormStateRef.current.touched && !get(touched, name)) {
-      set(touched, name, true);
-      formStateSubjectRef.current.next({
-        touched,
-      });
+    if (fieldsRef.current[name]) {
+      fieldsRef.current[name]!.value = getInitialValue();
     }
+    const tearDown = controllerSubjectRef.current.subscribe({
+      next: (values) => setInputStateValue(get(values, name, '')),
+    });
 
-    shouldValidate(true) && trigger(name);
-  }, [name, shouldValidate, trigger, readFormStateRef]);
-
-  const onChange = React.useCallback(
-    (...event: any[]) =>
-      setValue(name, commonTask(event), {
-        shouldValidate: shouldValidate(),
-        shouldDirty: true,
-      }),
-    [setValue, name, shouldValidate],
-  );
+    return () => tearDown.unsubscribe();
+  }, []);
 
   return {
     field: {
-      onChange,
-      onBlur,
+      onChange: (event: any) => {
+        setInputStateValue(getControllerValue(event));
+        const value = getControllerValue(event);
+
+        onChange({
+          target: {
+            value,
+            name: name as InternalFieldName,
+          },
+        });
+      },
+      onBlur: () => {
+        onBlur({
+          target: {
+            name: name as InternalFieldName,
+          },
+          type: EVENTS.BLUR,
+        });
+      },
       name,
       value,
       ref,

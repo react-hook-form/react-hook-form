@@ -23,7 +23,9 @@ function WatchDefaultValues() {
   const singleObject = watch('test1.firstName');
   const arrayStringOrObject = watch(['test', 'test1.firstName']);
   const getDeepArray = watch('test1.lastName');
-  const singleDeepArray = watch('test1.lastName[0]');
+  // Todo: fix the watch Type
+  // @ts-ignore
+  const singleDeepArray = watch('test1.lastName.0');
 
   return (
     <>

@@ -7,7 +7,13 @@ import { Control } from './types';
 describe('useFormState', () => {
   it('should render correct form state with isDirty, dirty, touched', () => {
     let count = 0;
-    const Test = ({ control }: { control: Control }) => {
+    const Test = ({
+      control,
+    }: {
+      control: Control<{
+        test: string;
+      }>;
+    }) => {
       const { isDirty, dirty, touched } = useFormState({
         control,
       });
@@ -22,13 +28,15 @@ describe('useFormState', () => {
     };
 
     const Component = () => {
-      const { register, control } = useForm();
+      const { register, control } = useForm<{
+        test: string;
+      }>();
 
       count++;
 
       return (
         <div>
-          <input name="test" aria-label="test" ref={register} />
+          <input aria-label="test" {...register('test')} />
           <Test control={control} />
         </div>
       );
@@ -75,11 +83,7 @@ describe('useFormState', () => {
 
       return (
         <div>
-          <input
-            name="test"
-            aria-label="test"
-            ref={register({ minLength: 5 })}
-          />
+          <input aria-label="test" {...register('test', { minLength: 5 })} />
           <Test control={control} />
         </div>
       );
@@ -154,11 +158,7 @@ describe('useFormState', () => {
 
       return (
         <div>
-          <input
-            name="test"
-            aria-label="test"
-            ref={register({ minLength: 5 })}
-          />
+          <input aria-label="test" {...register('test', { minLength: 5 })} />
           <Test control={control} />
           <Test1 control={control} />
         </div>

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import ReactSelect from 'react-select';
-import { useForm, Controller } from 'react-hook-form';
+import { useForm, Controller, NestedValue } from 'react-hook-form';
 
 const options = [
   { value: 'chocolate', label: 'Chocolate' },
@@ -9,9 +9,14 @@ const options = [
 ];
 
 export default function AutoUnregister() {
-  const { register, control, handleSubmit } = useForm({
-    shouldUnregister: false,
-  });
+  const { register, control, handleSubmit } = useForm<{
+    test: string;
+    test1: string;
+    test2: boolean;
+    test3: string;
+    test4: string;
+    ReactSelect: NestedValue<{ label: string; value: string }>;
+  }>();
   const [show, setShow] = useState(true);
 
   return (
@@ -26,7 +31,7 @@ export default function AutoUnregister() {
           />
           <section id="input-ReactSelect">
             <Controller
-              render={({ field}) => (
+              render={({ field }) => (
                 <ReactSelect isClearable options={options} {...field} />
               )}
               name="ReactSelect"
@@ -35,10 +40,10 @@ export default function AutoUnregister() {
             />
           </section>
 
-          <input name="test1" ref={register} />
-          <input name="test2" type="checkbox" ref={register} />
-          <input name="test3" type="radio" ref={register} />
-          <select name="test4" ref={register}>
+          <input {...register('test1')} />
+          <input type="checkbox" {...register('test2')} />
+          <input type="radio" {...register('test3')} />
+          <select {...register('test4')}>
             <option>Select...</option>
             <option value="bill">Bill</option>
           </select>
