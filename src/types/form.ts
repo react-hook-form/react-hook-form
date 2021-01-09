@@ -18,7 +18,6 @@ import {
 import { ErrorOption, FieldErrors } from './errors';
 import { RegisterOptions } from './validator';
 import { ControllerEvent } from './controller';
-import { FieldArrayDefaultValues } from './fieldArray';
 import { SubjectType } from '../utils/Subject';
 
 declare const $NestedValue: unique symbol;
@@ -170,7 +169,6 @@ export type Control<TFieldValues extends FieldValues = FieldValues> = {
   isWatchAllRef: React.MutableRefObject<boolean>;
   watchFieldsRef: React.MutableRefObject<InternalNameSet>;
   isFormDirty: (name?: string, data?: unknown[]) => boolean;
-  fieldArrayDefaultValuesRef: FieldArrayDefaultValues;
   formStateRef: React.MutableRefObject<FormState<TFieldValues>>;
   formStateSubjectRef: React.MutableRefObject<
     SubjectType<Partial<FormState<TFieldValues>>>
@@ -184,18 +182,13 @@ export type Control<TFieldValues extends FieldValues = FieldValues> = {
   controllerSubjectRef: React.MutableRefObject<
     SubjectType<DefaultValues<TFieldValues>>
   >;
-  useFieldArraySubjectRef: React.MutableRefObject<
-    SubjectType<DefaultValues<TFieldValues>>
-  >;
+  useFieldArraySubjectRef: React.MutableRefObject<SubjectType<any>>;
   updateIsValid: (fieldsValues: FieldValues) => void;
   validFieldsRef: React.MutableRefObject<FieldNamesMarkedBoolean<TFieldValues>>;
   fieldsWithValidationRef: React.MutableRefObject<
     FieldNamesMarkedBoolean<TFieldValues>
   >;
   fieldsRef: React.MutableRefObject<FieldRefs>;
-  resetFieldArrayFunctionRef: React.MutableRefObject<
-    Record<InternalFieldName, () => void>
-  >;
   fieldArrayNamesRef: React.MutableRefObject<InternalNameSet>;
   readFormStateRef: React.MutableRefObject<ReadFormState>;
   defaultValuesRef: React.MutableRefObject<DefaultValues<TFieldValues>>;

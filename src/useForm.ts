@@ -60,8 +60,6 @@ import {
   DefaultValues,
   FieldError,
   SetFieldValue,
-  FieldArrayDefaultValues,
-  ResetFieldArrayFunctionRef,
   RegisterMethods,
   ControllerEvent,
   FieldPath,
@@ -97,10 +95,12 @@ export function useForm<
   const controllerSubjectRef = React.useRef(
     new Subject<DefaultValues<TFieldValues>>(),
   );
-  const useFieldArraySubjectRef = React.useRef(
-    new Subject<DefaultValues<TFieldValues>>(),
-  );
-  const fieldArrayDefaultValuesRef = React.useRef<FieldArrayDefaultValues>({});
+  const useFieldArraySubjectRef = React.useRef(new Subject<any>());
+  const useFieldArrayStateRef = React.useRef({
+    name: false,
+    fields: false,
+    defaultValues: {},
+  });
   const watchFieldsRef = React.useRef<InternalNameSet>(new Set());
   const isMountedRef = React.useRef(false);
   const fieldsWithValidationRef = React.useRef<
@@ -113,9 +113,6 @@ export function useForm<
     defaultValues,
   );
   const isWatchAllRef = React.useRef(false);
-  const resetFieldArrayFunctionRef = React.useRef<
-    ResetFieldArrayFunctionRef<TFieldValues>
-  >({});
   const contextRef = React.useRef(context);
   const resolverRef = React.useRef(resolver);
   const fieldArrayNamesRef = React.useRef<InternalNameSet>(new Set());
@@ -144,7 +141,6 @@ export function useForm<
     errors: !isProxyEnabled,
   });
   const formStateRef = React.useRef(formState);
-  const observerRef = React.useRef<MutationObserver | undefined>();
   const {
     isOnBlur: isReValidateOnBlur,
     isOnChange: isReValidateOnChange,
@@ -427,12 +423,11 @@ export function useForm<
         setInternalValues(name, value, config);
 
         if (fieldArrayNamesRef.current.has(name)) {
-          const parentName = getNodeParentName(name) || name;
-          set(fieldArrayDefaultValuesRef.current, name, value);
+          set(defaultValuesRef.current, name, value);
 
-          resetFieldArrayFunctionRef.current[parentName]({
-            [parentName]: get(fieldArrayDefaultValuesRef.current, parentName),
-          } as UnpackNestedValue<DeepPartial<TFieldValues>>);
+          useFieldArraySubjectRef.current.next({
+            defaultValues: { ...defaultValuesRef.current },
+          });
 
           if (
             (readFormStateRef.current.isDirty ||
@@ -668,6 +663,7 @@ export function useForm<
       defaultValue?: T,
       isGlobal?: boolean,
     ) => {
+      const { fields, name } = useFieldArrayStateRef.current;
       const isArrayNames = Array.isArray(fieldNames);
       const fieldValues = isMountedRef.current
         ? getFieldsValues(fieldsRef)
@@ -676,6 +672,12 @@ export function useForm<
         : isArrayNames
         ? defaultValue || {}
         : { [fieldNames as string]: defaultValue };
+
+      if (isString(name) && fields) {
+        set(fieldValues, name, fields);
+        useFieldArrayStateRef.current.fields = false;
+        useFieldArrayStateRef.current.name = false;
+      }
 
       if (isUndefined(fieldNames)) {
         isWatchAllRef.current = true;
@@ -715,10 +717,9 @@ export function useForm<
     defaultValue?: unknown,
   ): any {
     if (isFunction(fieldName)) {
-      watchSubjectRef.current.subscribe({
+      return watchSubjectRef.current.subscribe({
         next: () => fieldName(watchInternal(undefined, defaultValue)),
       });
-      return;
     } else {
       return watchInternal(fieldName as string | string[], defaultValue, true);
     }
@@ -974,7 +975,6 @@ export function useForm<
       fieldsWithValidationRef.current = {};
     }
 
-    fieldArrayDefaultValuesRef.current = {};
     watchFieldsRef.current = new Set();
     isWatchAllRef.current = false;
 
@@ -1036,7 +1036,7 @@ export function useForm<
 
   React.useEffect(() => {
     isMountedRef.current = true;
-    const tearDown = formStateSubjectRef.current.subscribe({
+    const formStateSubjectTearDown = formStateSubjectRef.current.subscribe({
       next: (formState: Partial<FormState<TFieldValues>> = {}) => {
         if (shouldRenderFormState(formState, readFormStateRef.current, true)) {
           formStateRef.current = {
@@ -1048,9 +1048,19 @@ export function useForm<
       },
     });
 
+    const useFieldArraySubjectTearDown = useFieldArraySubjectRef.current.subscribe(
+      {
+        next: (state) => {
+          if (state.fields && state.name) {
+            useFieldArrayStateRef.current = state;
+          }
+        },
+      },
+    );
+
     return () => {
-      observerRef.current && observerRef.current.disconnect();
-      tearDown.unsubscribe();
+      formStateSubjectTearDown.unsubscribe();
+      useFieldArraySubjectTearDown.unsubscribe();
     };
   }, []);
 
@@ -1074,8 +1084,6 @@ export function useForm<
         watchInternal,
         updateIsValid,
         fieldsRef,
-        resetFieldArrayFunctionRef,
-        fieldArrayDefaultValuesRef,
         validFieldsRef,
         fieldsWithValidationRef,
         fieldArrayNamesRef,

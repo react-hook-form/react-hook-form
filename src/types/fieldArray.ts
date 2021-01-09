@@ -1,10 +1,6 @@
-import { Control, UnpackNestedValue } from './form';
+import { Control } from './form';
 import { FieldValues } from './fields';
-import { DeepPartial, FieldPath, FieldPathValue } from './utils';
-
-export type FieldArrayName = string;
-
-export type FieldArrayDefaultValues = Partial<Record<FieldArrayName, any>>;
+import { FieldPath, FieldPathValue } from './utils';
 
 export type UseFieldArrayProps<
   TFieldValues extends FieldValues = FieldValues,
@@ -15,11 +11,6 @@ export type UseFieldArrayProps<
   keyName?: TKeyName;
   control?: Control<TFieldValues>;
 };
-
-export type ResetFieldArrayFunctionRef<TFieldValues> = Record<
-  FieldArrayName,
-  (data?: UnpackNestedValue<DeepPartial<TFieldValues>>) => void
->;
 
 type InferArrayType<T> = T extends (infer U)[] ? U : never;
 
@@ -46,13 +37,13 @@ export type UseFieldArrayMethods<
     value:
       | Partial<ArrayField<TFieldValues, TName>>
       | Partial<ArrayField<TFieldValues, TName>>[],
-    shouldFocus?: boolean,
+    options?: { shouldFocus: boolean },
   ) => void;
   append: (
     value:
       | Partial<ArrayField<TFieldValues, TName>>
       | Partial<ArrayField<TFieldValues, TName>>[],
-    shouldFocus?: boolean,
+    options?: { shouldFocus: boolean },
   ) => void;
   remove: (index?: number | number[]) => void;
   insert: (
@@ -60,7 +51,7 @@ export type UseFieldArrayMethods<
     value:
       | Partial<ArrayField<TFieldValues, TName>>
       | Partial<ArrayField<TFieldValues, TName>>[],
-    shouldFocus?: boolean,
+    options?: { shouldFocus: boolean },
   ) => void;
   fields: ArrayFieldWithId<TFieldValues, TName, TKeyName>[];
 };
