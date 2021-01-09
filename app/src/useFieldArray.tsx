@@ -54,7 +54,7 @@ const UseFieldArray: React.FC = (props: any) => {
                 id={`field${index}`}
                 defaultValue={data.name}
                 data-order={index}
-                {...register(`data.${index}.name` as any, {
+                {...register(`data.${index}.name` as const, {
                   required: 'This is required',
                 })}
               />

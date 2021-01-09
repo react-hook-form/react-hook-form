@@ -2220,9 +2220,11 @@ describe('useForm', () => {
       result.current.setValue('test1', 'test1');
       result.current.setValue('test2', 'test2');
 
-      expect(result.current.getValues(['test', 'test1', 'test2'])).toEqual(
-        values,
-      );
+      expect(result.current.getValues(['test', 'test1', 'test2'])).toEqual([
+        'test',
+        'test1',
+        'test2',
+      ]);
     });
 
     it('should get undefined when field not found', () => {
@@ -2258,7 +2260,7 @@ describe('useForm', () => {
 
       unmount();
 
-      expect(result.current.getValues(['test'])).toEqual({ test: 'test' });
+      expect(result.current.getValues(['test'])).toEqual(['test']);
     });
 
     it('should get value from shallowFieldsStateRef', () => {
@@ -2299,7 +2301,7 @@ describe('useForm', () => {
         }),
       );
 
-      expect(result.current.getValues(['test'])).toEqual({ test: undefined });
+      expect(result.current.getValues(['test'])).toEqual([undefined]);
     });
 
     it('should not get value from default value when field is not registered', () => {
@@ -3509,7 +3511,7 @@ describe('useForm', () => {
                   type={'checkbox'}
                   key={index}
                   id={`checkbox.${index}`}
-                  {...register(`checkbox.${index}` as any)}
+                  {...register(`checkbox.${index}` as const)}
                   value={value}
                 />
               </div>

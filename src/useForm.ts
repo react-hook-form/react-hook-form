@@ -55,7 +55,6 @@ import {
   FormState,
   SubmitErrorHandler,
   FieldNamesMarkedBoolean,
-  LiteralToPrimitive,
   DeepPartial,
   InternalNameSet,
   DefaultValues,
@@ -64,10 +63,11 @@ import {
   FieldArrayDefaultValues,
   ResetFieldArrayFunctionRef,
   RegisterMethods,
-  FieldPath,
   ControllerEvent,
-  Path,
+  FieldPath,
   WatchCallback,
+  FieldPathValue,
+  FieldPathValues,
 } from './types';
 
 const isWindowUndefined = typeof window === UNDEFINED;
@@ -583,30 +583,26 @@ export function useForm<
   );
 
   function getValues(): UnpackNestedValue<TFieldValues>;
-  function getValues<TFieldName extends string, TFieldValue extends unknown>(
-    name: TFieldName,
-  ): TFieldName extends keyof TFieldValues
-    ? UnpackNestedValue<TFieldValues>[TFieldName]
-    : TFieldValue;
-  function getValues<TFieldName extends keyof TFieldValues>(
-    names: TFieldName[],
-  ): UnpackNestedValue<Pick<TFieldValues, TFieldName>>;
-  function getValues(payload?: string | string[]): unknown {
-    if (isString(payload)) {
-      return getFieldValue(fieldsRef.current[payload]);
+  function getValues<TName extends FieldPath<TFieldValues>>(
+    fieldName: TName,
+  ): FieldPathValue<TFieldValues, TName>;
+  function getValues<TName extends FieldPath<TFieldValues>[]>(
+    fieldNames: TName,
+  ): FieldPathValues<TFieldValues, TName>;
+  function getValues(
+    fieldNames?: FieldPath<TFieldValues> | FieldPath<TFieldValues>[],
+  ): unknown {
+    const values = getFieldsValues(fieldsRef);
+
+    if (isUndefined(fieldNames)) {
+      return values;
     }
 
-    if (Array.isArray(payload)) {
-      const data = {};
-
-      for (const name of payload) {
-        set(data, name, getFieldValue(fieldsRef.current[name]));
-      }
-
-      return data;
+    if (isString(fieldNames)) {
+      return get(values, fieldNames as InternalFieldName);
     }
 
-    return getFieldsValues(fieldsRef);
+    return fieldNames.map((name) => get(values, name as InternalFieldName));
   }
 
   const updateIsValid = React.useCallback(
@@ -697,33 +693,32 @@ export function useForm<
   );
 
   function watch(): UnpackNestedValue<TFieldValues>;
-  function watch<TFieldName extends Path<TFieldValues>>(
-    name: TFieldName,
-    defaultValue?: TFieldName extends keyof TFieldValues
-      ? UnpackNestedValue<TFieldValues[TFieldName]>
-      : UnpackNestedValue<LiteralToPrimitive<TFieldName>>,
-  ): TFieldName extends keyof TFieldValues
-    ? UnpackNestedValue<TFieldValues[TFieldName]>
-    : UnpackNestedValue<LiteralToPrimitive<TFieldName>>;
-  function watch(
-    names: Path<TFieldValues>[],
-    defaultValues?: UnpackNestedValue<DeepPartial<TFieldValues>>,
-  ): UnpackNestedValue<DeepPartial<TFieldValues>>;
+  function watch<TName extends FieldPath<TFieldValues>>(
+    fieldName: TName,
+    defaultValue?: FieldPathValue<TFieldValues, TName>,
+  ): FieldPathValue<TFieldValues, TName>;
+  function watch<TName extends FieldPath<TFieldValues>[]>(
+    fieldName: TName,
+    defaultValue?: FieldPathValues<TFieldValues, TName>,
+  ): FieldPathValues<TFieldValues, TName>;
   function watch(
     callback: WatchCallback,
     defaultValues?: UnpackNestedValue<DeepPartial<TFieldValues>>,
   ): void;
   function watch(
-    watchField?: Path<TFieldValues> | Path<TFieldValues>[] | WatchCallback,
+    fieldName?:
+      | FieldPath<TFieldValues>
+      | FieldPath<TFieldValues>[]
+      | WatchCallback,
     defaultValue?: unknown,
-  ): unknown | void {
-    if (isFunction(watchField)) {
+  ): any {
+    if (isFunction(fieldName)) {
       watchSubjectRef.current.subscribe({
-        next: () => watchField(watchInternal(undefined, defaultValue)),
+        next: () => fieldName(watchInternal(undefined, defaultValue)),
       });
       return;
     } else {
-      return watchInternal(watchField as string | string[], defaultValue, true);
+      return watchInternal(fieldName as string | string[], defaultValue, true);
     }
   }
 
@@ -848,8 +843,8 @@ export function useForm<
     }
   }
 
-  function register(
-    name: FieldPath<TFieldValues>,
+  function register<Path extends FieldPath<TFieldValues>>(
+    name: Path,
     options?: RegisterOptions,
   ): RegisterMethods {
     if (process.env.NODE_ENV !== 'production') {

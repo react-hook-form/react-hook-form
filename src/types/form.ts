@@ -1,11 +1,11 @@
 import * as React from 'react';
 import { NativeSyntheticEvent } from 'react-native';
 import {
-  LiteralToPrimitive,
   DeepPartial,
   DeepMap,
   FieldPath,
-  Path,
+  FieldPathValues,
+  FieldPathValue,
 } from './utils';
 import { Resolver } from './resolvers';
 import {
@@ -154,15 +154,16 @@ type UseFormCommonMethods<TFieldValues extends FieldValues = FieldValues> = {
   unregister: (
     name: FieldPath<TFieldValues> | FieldPath<TFieldValues>[],
   ) => void;
-  getValues(): UnpackNestedValue<TFieldValues>;
-  getValues<TFieldName extends string, TFieldValue extends unknown>(
-    name: TFieldName,
-  ): TFieldName extends keyof TFieldValues
-    ? UnpackNestedValue<TFieldValues>[TFieldName]
-    : TFieldValue;
-  getValues<TFieldName extends keyof TFieldValues>(
-    names: TFieldName[],
-  ): UnpackNestedValue<Pick<TFieldValues, TFieldName>>;
+  getValues: {
+    (): UnpackNestedValue<TFieldValues>;
+    <TName extends FieldPath<TFieldValues>>(fieldName: TName): FieldPathValue<
+      TFieldValues,
+      TName
+    >;
+    <TName extends FieldPath<TFieldValues>[]>(
+      fieldNames: TName,
+    ): FieldPathValues<TFieldValues, TName>;
+  };
 };
 
 export type Control<TFieldValues extends FieldValues = FieldValues> = {
@@ -208,23 +209,21 @@ export type WatchCallback = <TFieldValues>(
 ) => void;
 
 export type UseFormMethods<TFieldValues extends FieldValues = FieldValues> = {
-  watch(): UnpackNestedValue<TFieldValues>;
-  watch<TFieldName extends Path<TFieldValues>>(
-    name: TFieldName,
-    defaultValue?: TFieldName extends keyof TFieldValues
-      ? UnpackNestedValue<TFieldValues[TFieldName]>
-      : UnpackNestedValue<LiteralToPrimitive<TFieldName>>,
-  ): TFieldName extends keyof TFieldValues
-    ? UnpackNestedValue<TFieldValues[TFieldName]>
-    : UnpackNestedValue<LiteralToPrimitive<TFieldName>>;
-  watch(
-    names: Path<TFieldValues>[],
-    defaultValues?: UnpackNestedValue<DeepPartial<TFieldValues>>,
-  ): UnpackNestedValue<DeepPartial<TFieldValues>>;
-  watch(
-    callback: WatchCallback,
-    defaultValues?: UnpackNestedValue<DeepPartial<TFieldValues>>,
-  ): void;
+  watch: {
+    (): UnpackNestedValue<TFieldValues>;
+    <TName extends FieldPath<TFieldValues>>(
+      fieldName: TName,
+      defaultValue?: FieldPathValue<TFieldValues, TName>,
+    ): FieldPathValue<TFieldValues, TName>;
+    <TName extends FieldPath<TFieldValues>[]>(
+      fieldName: TName,
+      defaultValue?: FieldPathValues<TFieldValues, TName>,
+    ): FieldPathValues<TFieldValues, TName>;
+    (
+      callback: WatchCallback,
+      defaultValues?: UnpackNestedValue<DeepPartial<TFieldValues>>,
+    ): void;
+  };
   setError: (name: FieldName<TFieldValues>, error: ErrorOption) => void;
   clearErrors: (
     name?: FieldName<TFieldValues> | FieldName<TFieldValues>[],
@@ -255,7 +254,7 @@ export type UseFormStateMethods<TFieldValues> = FormState<TFieldValues>;
 
 export type UseWatchProps<TFieldValues extends FieldValues = FieldValues> = {
   defaultValue?: unknown;
-  name?: Path<TFieldValues> | Path<TFieldValues>[];
+  name?: FieldPath<TFieldValues> | FieldPath<TFieldValues>[];
   control?: Control<TFieldValues>;
 };
 

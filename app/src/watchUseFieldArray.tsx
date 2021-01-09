@@ -50,7 +50,7 @@ const WatchUseFieldArray: React.FC = (props: any) => {
               id={`field${index}`}
               defaultValue={data.name}
               data-order={index}
-              {...register(`data[${index}].name` as any)}
+              {...register(`data.${index}.name` as const)}
             />
             <button id={`delete${index}`} onClick={() => remove(index)}>
               Delete
