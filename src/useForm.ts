@@ -97,8 +97,10 @@ export function useForm<
   const controllerSubjectRef = React.useRef(
     new Subject<DefaultValues<TFieldValues>>(),
   );
+  const useFieldArraySubjectRef = React.useRef(
+    new Subject<DefaultValues<TFieldValues>>(),
+  );
   const fieldArrayDefaultValuesRef = React.useRef<FieldArrayDefaultValues>({});
-  const fieldArrayValuesRef = React.useRef<FieldArrayDefaultValues>({});
   const watchFieldsRef = React.useRef<InternalNameSet>(new Set());
   const isMountedRef = React.useRef(false);
   const fieldsWithValidationRef = React.useRef<
@@ -1023,9 +1025,7 @@ export function useForm<
       inputValue: { ...defaultValuesRef.current },
     });
 
-    Object.values(resetFieldArrayFunctionRef.current).forEach(
-      (resetFieldArray) => isFunction(resetFieldArray) && resetFieldArray(),
-    );
+    useFieldArraySubjectRef.current.next({ ...defaultValuesRef.current });
 
     resetRefs(omitResetState);
   };
@@ -1068,6 +1068,7 @@ export function useForm<
         watchFieldsRef,
         isFormDirty,
         formStateSubjectRef,
+        useFieldArraySubjectRef,
         controllerSubjectRef,
         watchSubjectRef,
         watchInternal,
@@ -1081,7 +1082,6 @@ export function useForm<
         readFormStateRef,
         formStateRef,
         defaultValuesRef,
-        fieldArrayValuesRef,
         ...commonProps,
       }),
       [defaultValuesRef.current, watchInternal],

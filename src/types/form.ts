@@ -171,7 +171,6 @@ export type Control<TFieldValues extends FieldValues = FieldValues> = {
   watchFieldsRef: React.MutableRefObject<InternalNameSet>;
   isFormDirty: (name?: string, data?: unknown[]) => boolean;
   fieldArrayDefaultValuesRef: FieldArrayDefaultValues;
-  fieldArrayValuesRef: FieldArrayDefaultValues;
   formStateRef: React.MutableRefObject<FormState<TFieldValues>>;
   formStateSubjectRef: React.MutableRefObject<
     SubjectType<Partial<FormState<TFieldValues>>>
@@ -183,6 +182,9 @@ export type Control<TFieldValues extends FieldValues = FieldValues> = {
     }>
   >;
   controllerSubjectRef: React.MutableRefObject<
+    SubjectType<DefaultValues<TFieldValues>>
+  >;
+  useFieldArraySubjectRef: React.MutableRefObject<
     SubjectType<DefaultValues<TFieldValues>>
   >;
   updateIsValid: (fieldsValues: FieldValues) => void;

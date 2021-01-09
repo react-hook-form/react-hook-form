@@ -21,8 +21,6 @@ import {
   UseFieldArrayProps,
   FieldPath,
   ArrayFieldWithId,
-  UnpackNestedValue,
-  DeepPartial,
   UseFieldArrayMethods,
   ArrayField,
   InternalFieldName,
@@ -57,7 +55,7 @@ export const useFieldArray = <
     watchFieldsRef,
     isFormDirty,
     watchSubjectRef,
-    resetFieldArrayFunctionRef,
+    useFieldArraySubjectRef,
     fieldArrayNamesRef,
     fieldsRef,
     defaultValuesRef,
@@ -69,7 +67,6 @@ export const useFieldArray = <
     fieldArrayDefaultValuesRef,
     updateIsValid,
     getValues,
-    fieldArrayValuesRef,
   } = control || methods.control;
 
   const fieldArrayParentName = getFieldArrayParentName(
@@ -83,7 +80,6 @@ export const useFieldArray = <
   const [fields, setFields] = React.useState<
     Partial<ArrayFieldWithId<TFieldValues, TName, TKeyName>>[]
   >(mapIds(memoizedDefaultValues.current, keyName));
-  set(fieldArrayValuesRef.current, name as InternalFieldName, fields);
 
   const omitKey = <
     T extends Partial<ArrayFieldWithId<TFieldValues, TName, TKeyName>>[]
@@ -94,7 +90,7 @@ export const useFieldArray = <
   fieldArrayNamesRef.current.add(name as InternalFieldName);
 
   const getFieldArrayValue = React.useCallback(
-    () => get(fieldArrayValuesRef.current, name as InternalFieldName, []),
+    () => get(defaultValuesRef.current, name as InternalFieldName, []),
     [name],
   );
 
@@ -459,32 +455,19 @@ export const useFieldArray = <
   }, [fields, name]);
 
   React.useEffect(() => {
-    const resetFunctions = resetFieldArrayFunctionRef.current;
     const fieldArrayNames = fieldArrayNamesRef.current;
-
-    if (!getFieldArrayParentName(name as InternalFieldName)) {
-      resetFunctions[name as InternalFieldName] = <TFieldValues>(
-        data?: UnpackNestedValue<DeepPartial<TFieldValues>>,
-      ) => {
-        resetFields();
-        !data &&
-          unset(fieldArrayDefaultValuesRef.current, name as InternalFieldName);
-        memoizedDefaultValues.current = get(
-          data || defaultValuesRef.current,
-          name as InternalFieldName,
-        );
-        setFields(mapIds(memoizedDefaultValues.current, keyName));
-      };
-    }
+    const tearDown = useFieldArraySubjectRef.current.subscribe({
+      next: (data: any) => {
+        if (!getFieldArrayParentName(name as InternalFieldName)) {
+          resetFields();
+          setFields(mapIds(get(data, name), keyName));
+        }
+      },
+    });
 
     return () => {
-      if (process.env.NODE_ENV !== 'production') {
-        return;
-      }
-
+      tearDown.unsubscribe();
       resetFields();
-      delete resetFunctions[name as InternalFieldName];
-      unset(fieldArrayValuesRef, name as InternalFieldName);
       fieldArrayNames.delete(name as InternalFieldName);
     };
   }, []);

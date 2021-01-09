@@ -124,6 +124,18 @@ const UseFieldArray: React.FC = (props: any) => {
         remove all
       </button>
 
+      <button
+        id="reset"
+        type="button"
+        onClick={() => {
+          reset({
+            data: [{ name: 'test' }, { name: 'test1' }, { name: 'test2' }],
+          });
+        }}
+      >
+        reset
+      </button>
+
       <button id="submit">Submit</button>
 
       <div id="renderCount">{renderCount}</div>
