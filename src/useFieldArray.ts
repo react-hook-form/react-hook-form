@@ -91,9 +91,9 @@ export const useFieldArray = <
       get(
         getValues(),
         name as InternalFieldName,
-        get(defaultValuesRef.current, name as InternalFieldName, []),
+        fieldArrayDefaultValuesRef.current,
       ).map((item: Partial<TFieldValues>, index: number) => ({
-        ...get(defaultValuesRef.current, name as InternalFieldName, [])[index],
+        ...fieldArrayDefaultValuesRef.current[index],
         ...item,
       })),
       keyName,
@@ -104,15 +104,16 @@ export const useFieldArray = <
   const setFieldAndValidState = (
     fieldsValues: Partial<ArrayFieldWithId<TFieldValues, TName, TKeyName>>[],
   ) => {
+    const fields = omitKey(fieldsValues);
     useFieldArraySubjectRef.current.next({
       name,
-      fields: fieldsValues,
+      fields,
     });
     setFields(fieldsValues);
 
     if (readFormStateRef.current.isValid) {
       const values = getValues();
-      set(values, name as InternalFieldName, fieldsValues);
+      set(values, name as InternalFieldName, fields);
       updateIsValid(values);
     }
   };
@@ -165,13 +166,15 @@ export const useFieldArray = <
     shouldSet = true,
     shouldUpdateValid = false,
   ) => {
-    if (get(defaultValuesRef.current, name as InternalFieldName)) {
-      shouldSet &&
-        set(
-          defaultValuesRef.current,
-          name as InternalFieldName,
-          updatedFieldValues,
-        );
+    if (
+      get(fieldArrayDefaultValuesRef.current, name as InternalFieldName) &&
+      updatedFieldValues
+    ) {
+      set(
+        fieldArrayDefaultValuesRef.current,
+        name as InternalFieldName,
+        omitKey(updatedFieldValues),
+      );
     }
 
     if (
@@ -257,14 +260,20 @@ export const useFieldArray = <
     },
   ) => {
     const appendValue = Array.isArray(value) ? value : [value];
-    const updateFormValues = [
+    const updatedFieldValues = [
       ...getCurrentFieldsValues(),
       ...mapIds(appendValue, keyName),
     ];
-    setFieldAndValidState(updateFormValues);
+    setFieldAndValidState(updatedFieldValues);
+
+    set(
+      fieldArrayDefaultValuesRef.current,
+      name as InternalFieldName,
+      omitKey(updatedFieldValues),
+    );
 
     if (readFormStateRef.current.dirty || readFormStateRef.current.isDirty) {
-      updateDirtyFieldsWithDefaultValues(updateFormValues);
+      updateDirtyFieldsWithDefaultValues(updatedFieldValues);
 
       formStateSubjectRef.current.next({
         isDirty: true,
@@ -274,7 +283,7 @@ export const useFieldArray = <
     }
 
     focusIndexRef.current =
-      options && !options.shouldFocus ? -1 : updateFormValues.length - 1;
+      options && !options.shouldFocus ? -1 : updatedFieldValues.length - 1;
   };
 
   const prepend = (
@@ -409,6 +418,7 @@ export const useFieldArray = <
     }
 
     watchSubjectRef.current.next({ inputName: name as InternalFieldName });
+    fieldArrayDefaultValuesRef.current = fields;
 
     if (focusIndexRef.current > -1) {
       for (const key in fieldsRef.current) {

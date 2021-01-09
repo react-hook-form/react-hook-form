@@ -498,10 +498,7 @@ describe('useFieldArray', () => {
         test: [
           {
             value: '1',
-            nestedArray: [
-              { id: '1', value: '2' },
-              { id: '2', value: 'test' },
-            ],
+            nestedArray: [{ value: '2' }, { value: 'test' }],
           },
         ],
       });
@@ -1168,10 +1165,10 @@ describe('useFieldArray', () => {
       fireEvent.click(screen.getByRole('button', { name: /append/i }));
 
       expect(watched).toEqual([
-        {}, // first render
-        {}, // render inside useEffect in useFieldArray
-        {}, // render inside append method
-        { test: [{ value: '' }] }, // render inside useEffect in useFieldArray
+        {},
+        {},
+        { test: [{ value: '' }] },
+        { test: [{ value: '' }] },
       ]);
     });
 
@@ -1264,7 +1261,7 @@ describe('useFieldArray', () => {
         return (
           <div>
             {fields.map((field, i) => (
-              <div key={`${field.id}`}>
+              <div key={field.id}>
                 <input
                   defaultValue={field.value}
                   {...register(`test.${i}.value` as const)}
@@ -1284,7 +1281,7 @@ describe('useFieldArray', () => {
         expect(renderedItems).toEqual([
           undefined,
           undefined,
-          undefined,
+          [{ value: 'test' }],
           [{ value: 'test' }],
         ]),
       );
@@ -3578,12 +3575,12 @@ describe('useFieldArray', () => {
       });
 
       expect(result.current.fields).toEqual([
-        { id: '1', value: '2' },
-        { id: '0', value: '1' },
+        { id: '6', value: '2' },
+        { id: '5', value: '1' },
       ]);
     });
 
-    it.each(['isDirty', 'dirtyFields'])(
+    it.each(['dirty'])(
       'should move dirty into pointed position when formState.%s is defined',
       () => {
         const { result } = renderHook(() => {
@@ -3754,7 +3751,7 @@ describe('useFieldArray', () => {
       expect(watched).toEqual([
         { test: [{ value: '1' }, { value: '2' }] }, // first render
         { test: [{ value: '1' }, { value: '2' }] }, // render inside useEffect in useFieldArray
-        { test: [{ value: '1' }, { value: '2' }] }, // render inside move method
+        { test: [{ value: '2' }, { value: '1' }] }, // render inside move method
         { test: [{ value: '2' }, { value: '1' }] }, // render inside useEffect in useFieldArray
       ]);
     });
@@ -3791,7 +3788,7 @@ describe('useFieldArray', () => {
       expect(getValues()).toEqual({ test: [{ value: '1' }, { value: '2' }] });
     });
 
-    it.only('should return watched value with watch API', async () => {
+    it('should return watched value with watch API', async () => {
       const renderedItems: any = [];
       const Component = () => {
         const { watch, register, control } = useForm<{
@@ -3808,7 +3805,7 @@ describe('useFieldArray', () => {
         if (isMoved.current) {
           renderedItems.push(watched);
         }
-        // console.log(watched);
+
         return (
           <div>
             {fields.map((field, i) => (
@@ -3880,10 +3877,7 @@ describe('useFieldArray', () => {
 
         expect(resolver).toBeCalledWith(
           {
-            test: [
-              { id: '1', value: '2' },
-              { id: '0', value: '1' },
-            ],
+            test: [{ value: '2' }, { value: '1' }],
           },
           undefined,
           false,
