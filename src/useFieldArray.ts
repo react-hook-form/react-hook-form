@@ -402,20 +402,6 @@ export const useFieldArray = <
       }
     }
 
-    const defaultValues = get(
-      fieldArrayValuesRef.current,
-      name as InternalFieldName,
-    );
-
-    if (defaultValues && fields.length < defaultValues.length) {
-      defaultValues.pop();
-      set(
-        fieldArrayValuesRef.current,
-        name as InternalFieldName,
-        defaultValues,
-      );
-    }
-
     if (isWatchAllRef.current) {
       formStateSubjectRef.current.next({});
     } else {
