@@ -3837,12 +3837,12 @@ describe('useFieldArray', () => {
 
       fireEvent.click(screen.getByRole('button', { name: /move/i }));
 
-      // await waitFor(() =>
-      //   expect(renderedItems).toEqual([
-      //     [{ value: '' }, { value: '' }],
-      //     [{ value: '222' }, { value: '111' }],
-      //   ]),
-      // );
+      await waitFor(() =>
+        expect(renderedItems).toEqual([
+          [{ value: '' }, { value: '' }],
+          [{ value: '222' }, { value: '111' }],
+        ]),
+      );
     });
 
     describe('with resolver', () => {
