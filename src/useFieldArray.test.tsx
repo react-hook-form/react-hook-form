@@ -398,7 +398,7 @@ describe('useFieldArray', () => {
 
       expect(formData).toEqual({
         data: 'test',
-        test: [{ id: '0', value: '' }],
+        test: [{ value: '' }],
       });
     });
 
@@ -1164,12 +1164,7 @@ describe('useFieldArray', () => {
 
       fireEvent.click(screen.getByRole('button', { name: /append/i }));
 
-      expect(watched).toEqual([
-        {},
-        {},
-        { test: [{ value: '' }] },
-        { test: [{ value: '' }] },
-      ]);
+      expect(watched).toEqual([{}, {}, {}, { test: [{ value: '' }] }]);
     });
 
     it('should focus if shouldFocus is true', () => {
@@ -1281,7 +1276,7 @@ describe('useFieldArray', () => {
         expect(renderedItems).toEqual([
           undefined,
           undefined,
-          [{ value: 'test' }],
+          undefined,
           [{ value: 'test' }],
         ]),
       );
@@ -1308,7 +1303,7 @@ describe('useFieldArray', () => {
 
         expect(resolver).toBeCalledWith(
           {
-            test: [{ id: '0', value: '1' }],
+            test: [{ value: '1' }],
           },
           undefined,
           false,
@@ -3127,7 +3122,7 @@ describe('useFieldArray', () => {
           name: 'test',
           control,
         });
-        const watched = watch('test', fields);
+        const watched = watch('test');
         const isInserted = React.useRef(false);
         if (isInserted.current) {
           renderedItems.push(watched);
@@ -3442,7 +3437,7 @@ describe('useFieldArray', () => {
           name: 'test',
           control,
         });
-        const watched = watch('test', fields);
+        const watched = watch('test');
         const isSwapped = React.useRef(false);
         if (isSwapped.current) {
           renderedItems.push(watched);

@@ -426,10 +426,10 @@ export function useForm<
         setInternalValues(name, value, config);
 
         if (fieldArrayNamesRef.current.has(name)) {
-          set(defaultValuesRef.current, name, value);
+          set(fieldArrayDefaultValuesRef.current, name, value);
 
           useFieldArraySubjectRef.current.next({
-            defaultValues: { ...defaultValuesRef.current },
+            defaultValues: { ...fieldArrayDefaultValuesRef.current },
           });
 
           if (
@@ -1028,7 +1028,9 @@ export function useForm<
       inputValue: { ...defaultValuesRef.current },
     });
 
-    useFieldArraySubjectRef.current.next({ ...defaultValuesRef.current });
+    useFieldArraySubjectRef.current.next({
+      defaultValues: { ...defaultValuesRef.current },
+    });
 
     resetRefs(omitResetState);
   };

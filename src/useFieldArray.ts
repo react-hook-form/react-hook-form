@@ -93,15 +93,13 @@ export const useFieldArray = <
     fields: T,
   ) => fields.map(({ [keyName]: omitted, ...rest } = {}) => rest);
 
-  fieldArrayNamesRef.current.add(name as InternalFieldName);
-
   const getFieldArrayValue = React.useCallback(
     () => get(fieldArrayValuesRef.current, name as InternalFieldName, []),
     [name],
   );
 
-  const getCurrentFieldsValues = () => {
-    return mapIds<TFieldValues, TKeyName>(
+  const getCurrentFieldsValues = () =>
+    mapIds<TFieldValues, TKeyName>(
       get(getValues(), name as InternalFieldName, getFieldArrayValue()).map(
         (item: Partial<TFieldValues>, index: number) => ({
           ...getFieldArrayValue()[index],
@@ -111,7 +109,8 @@ export const useFieldArray = <
       keyName,
       true,
     );
-  };
+
+  fieldArrayNamesRef.current.add(name as InternalFieldName);
 
   if (
     fieldArrayParentName &&
@@ -131,7 +130,7 @@ export const useFieldArray = <
 
     if (readFormStateRef.current.isValid) {
       const values = getValues();
-      set(values, name as InternalFieldName, omitKey(fields));
+      set(values, name as InternalFieldName, omitKey(fieldsValues));
       updateIsValid(values);
     }
   };
@@ -196,7 +195,6 @@ export const useFieldArray = <
           name as InternalFieldName,
           output,
         );
-      cleanup(fieldArrayDefaultValuesRef.current);
     }
 
     if (
