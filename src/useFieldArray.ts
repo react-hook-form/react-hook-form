@@ -126,7 +126,7 @@ export const useFieldArray = <
   const setFieldAndValidState = (
     fieldsValues: Partial<FieldArrayWithId<TFieldValues, TName, TKeyName>>[],
   ) => {
-    setFields(fieldsValues);
+    setFields(mapIds(fieldsValues, keyName));
 
     if (readFormStateRef.current.isValid) {
       const values = getValues();
@@ -270,10 +270,7 @@ export const useFieldArray = <
     options?: FieldArrayMethodsOption,
   ) => {
     const appendValue = Array.isArray(value) ? value : [value];
-    const updatedFieldValues = [
-      ...getCurrentFieldsValues(),
-      ...mapIds(appendValue, keyName),
-    ];
+    const updatedFieldValues = [...getCurrentFieldsValues(), ...appendValue];
     setFieldAndValidState(updatedFieldValues);
 
     if (readFormStateRef.current.dirty || readFormStateRef.current.isDirty) {
@@ -300,7 +297,7 @@ export const useFieldArray = <
   ) => {
     const updatedFieldArrayValues = prependAt(
       getCurrentFieldsValues(),
-      mapIds(Array.isArray(value) ? value : [value], keyName),
+      Array.isArray(value) ? value : [value],
     );
     setFieldAndValidState(updatedFieldArrayValues);
     batchStateUpdate(
@@ -344,7 +341,7 @@ export const useFieldArray = <
     const updatedFieldArrayValues = insertAt(
       fieldValues,
       index,
-      mapIds(Array.isArray(value) ? value : [value], keyName),
+      Array.isArray(value) ? value : [value],
     );
 
     setFieldAndValidState(updatedFieldArrayValues);
@@ -435,7 +432,7 @@ export const useFieldArray = <
     const tearDown = useFieldArraySubjectRef.current.subscribe({
       next: ({ defaultValues }) => {
         resetFields();
-        setFieldAndValidState(mapIds(get(defaultValues, name), keyName));
+        setFieldAndValidState(get(defaultValues, name));
       },
     });
 
