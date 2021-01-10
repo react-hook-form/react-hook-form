@@ -19,9 +19,9 @@ import {
   FieldValues,
   UseFieldArrayProps,
   FieldPath,
-  ArrayFieldWithId,
+  FieldArrayWithId,
   UseFieldArrayMethods,
-  ArrayField,
+  FieldArray,
   InternalFieldName,
 } from './types';
 
@@ -81,14 +81,14 @@ export const useFieldArray = <
   );
 
   const [fields, setFields] = React.useState<
-    Partial<ArrayFieldWithId<TFieldValues, TName, TKeyName>>[]
+    Partial<FieldArrayWithId<TFieldValues, TName, TKeyName>>[]
   >(defaultStateRef.current);
 
   set(fieldArrayValuesRef.current, name as InternalFieldName, fields);
   fieldArrayNamesRef.current.add(name as InternalFieldName);
 
   const omitKey = <
-    T extends Partial<ArrayFieldWithId<TFieldValues, TName, TKeyName>>[]
+    T extends Partial<FieldArrayWithId<TFieldValues, TName, TKeyName>>[]
   >(
     fields: T,
   ) => fields.map(({ [keyName]: omitted, ...rest } = {}) => rest);
@@ -113,7 +113,7 @@ export const useFieldArray = <
   };
 
   const setFieldAndValidState = (
-    fieldsValues: Partial<ArrayFieldWithId<TFieldValues, TName, TKeyName>>[],
+    fieldsValues: Partial<FieldArrayWithId<TFieldValues, TName, TKeyName>>[],
   ) => {
     setFields(fieldsValues);
 
@@ -137,7 +137,7 @@ export const useFieldArray = <
     unset(ref, name as InternalFieldName);
 
   const updateDirtyFieldsWithDefaultValues = <
-    T extends Partial<ArrayFieldWithId<TFieldValues, TName, TKeyName>>[]
+    T extends Partial<FieldArrayWithId<TFieldValues, TName, TKeyName>>[]
   >(
     updatedFieldArrayValues?: T,
   ) => {
@@ -156,7 +156,7 @@ export const useFieldArray = <
 
   const batchStateUpdate = <
     T extends Function,
-    K extends Partial<ArrayFieldWithId<TFieldValues, TName, TKeyName>>[]
+    K extends Partial<FieldArrayWithId<TFieldValues, TName, TKeyName>>[]
   >(
     method: T,
     args: {
@@ -167,7 +167,7 @@ export const useFieldArray = <
     },
     updatedFieldValues?: K,
     updatedFormValues: Partial<
-      ArrayFieldWithId<TFieldValues, TName, TKeyName>
+      FieldArrayWithId<TFieldValues, TName, TKeyName>
     >[] = [],
     shouldSet = true,
     shouldUpdateValid = false,
@@ -258,8 +258,8 @@ export const useFieldArray = <
 
   const append = (
     value:
-      | Partial<ArrayField<TFieldValues, TName>>
-      | Partial<ArrayField<TFieldValues, TName>>[],
+      | Partial<FieldArray<TFieldValues, TName>>
+      | Partial<FieldArray<TFieldValues, TName>>[],
     options?: {
       shouldFocus: boolean;
     },
@@ -287,8 +287,8 @@ export const useFieldArray = <
 
   const prepend = (
     value:
-      | Partial<ArrayField<TFieldValues, TName>>
-      | Partial<ArrayField<TFieldValues, TName>>[],
+      | Partial<FieldArray<TFieldValues, TName>>
+      | Partial<FieldArray<TFieldValues, TName>>[],
     options?: {
       shouldFocus: boolean;
     },
@@ -312,7 +312,7 @@ export const useFieldArray = <
   const remove = (index?: number | number[]) => {
     const fieldValues = getCurrentFieldsValues();
     const updatedFieldValues: Partial<
-      ArrayFieldWithId<TFieldValues, TName, TKeyName>
+      FieldArrayWithId<TFieldValues, TName, TKeyName>
     >[] = removeArrayAt(fieldValues, index);
     resetFields();
     batchStateUpdate(
@@ -332,8 +332,8 @@ export const useFieldArray = <
   const insert = (
     index: number,
     value:
-      | Partial<ArrayField<TFieldValues, TName>>
-      | Partial<ArrayField<TFieldValues, TName>>[],
+      | Partial<FieldArray<TFieldValues, TName>>
+      | Partial<FieldArray<TFieldValues, TName>>[],
     options?: {
       shouldFocus: boolean;
     },
@@ -449,7 +449,6 @@ export const useFieldArray = <
   }, [fields, name]);
 
   React.useEffect(() => {
-    const fieldArrayNames = fieldArrayNamesRef.current;
     const tearDown = useFieldArraySubjectRef.current.subscribe({
       next: ({ defaultValues }) => {
         resetFields();
@@ -461,7 +460,7 @@ export const useFieldArray = <
       tearDown.unsubscribe();
       resetFields();
       unset(fieldArrayValuesRef, name as InternalFieldName);
-      fieldArrayNames.delete(name as InternalFieldName);
+      fieldArrayNamesRef.current.delete(name as InternalFieldName);
     };
   }, []);
 
@@ -472,6 +471,6 @@ export const useFieldArray = <
     append: React.useCallback(append, [name]),
     remove: React.useCallback(remove, [name]),
     insert: React.useCallback(insert, [name]),
-    fields: fields as ArrayFieldWithId<TFieldValues, TName, TKeyName>,
+    fields: fields as FieldArrayWithId<TFieldValues, TName, TKeyName>,
   };
 };
