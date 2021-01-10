@@ -119,7 +119,6 @@ export const useFieldArray = <
         }),
       ),
       keyName,
-      true,
     );
   };
 
