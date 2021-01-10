@@ -92,22 +92,24 @@ export const useFieldArray = <
     fields: T,
   ) => fields.map(({ [keyName]: omitted, ...rest } = {}) => rest);
 
-  const getFieldArrayValue = React.useCallback(
-    () => get(fieldArrayValuesRef.current, name as InternalFieldName, []),
-    [name],
-  );
+  const getCurrentFieldsValues = () => {
+    const fieldArrayValues = get(
+      fieldArrayValuesRef.current,
+      name as InternalFieldName,
+      [],
+    );
 
-  const getCurrentFieldsValues = () =>
-    mapIds<TFieldValues, TKeyName>(
-      get(getValues(), name as InternalFieldName, getFieldArrayValue()).map(
+    return mapIds<TFieldValues, TKeyName>(
+      get(getValues(), name as InternalFieldName, fieldArrayValues).map(
         (item: Partial<TFieldValues>, index: number) => ({
-          ...getFieldArrayValue()[index],
+          ...fieldArrayValues[index],
           ...item,
         }),
       ),
       keyName,
       true,
     );
+  };
 
   fieldArrayNamesRef.current.add(name as InternalFieldName);
 
