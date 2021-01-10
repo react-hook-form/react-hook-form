@@ -13,7 +13,6 @@ import swapArrayAt from './utils/swap';
 import prependAt from './utils/prepend';
 import insertAt from './utils/insert';
 import fillEmptyArray from './utils/fillEmptyArray';
-import fillBooleanArray from './utils/fillBooleanArray';
 import compact from './utils/compact';
 import {
   FieldValues,
@@ -163,8 +162,6 @@ export const useFieldArray = <
     args: {
       argA?: unknown;
       argB?: unknown;
-      argC?: unknown;
-      argD?: unknown;
     },
     updatedFieldValues?: K,
     updatedFormValues: Partial<
@@ -299,7 +296,6 @@ export const useFieldArray = <
       prependAt,
       {
         argA: fillEmptyArray(value),
-        argC: fillBooleanArray(value),
       },
       updatedFieldArrayValues,
     );
@@ -316,7 +312,6 @@ export const useFieldArray = <
       removeArrayAt,
       {
         argA: index,
-        argC: index,
       },
       updatedFieldValues,
       removeArrayAt(fieldValues, index),
@@ -346,8 +341,6 @@ export const useFieldArray = <
       {
         argA: index,
         argB: fillEmptyArray(value),
-        argC: index,
-        argD: fillBooleanArray(value),
       },
       updatedFieldArrayValues,
       fieldValues && insertAt(fieldValues, index),
@@ -363,8 +356,6 @@ export const useFieldArray = <
       {
         argA: indexA,
         argB: indexB,
-        argC: indexA,
-        argD: indexB,
       },
       undefined,
       fieldValues,
@@ -382,8 +373,6 @@ export const useFieldArray = <
       {
         argA: from,
         argB: to,
-        argC: from,
-        argD: to,
       },
       undefined,
       fieldValues,
