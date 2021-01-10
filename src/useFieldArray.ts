@@ -15,7 +15,6 @@ import insertAt from './utils/insert';
 import fillEmptyArray from './utils/fillEmptyArray';
 import fillBooleanArray from './utils/fillBooleanArray';
 import compact from './utils/compact';
-import cloneObject from './utils/cloneObject';
 import {
   FieldValues,
   UseFieldArrayProps,
@@ -84,7 +83,9 @@ export const useFieldArray = <
   const [fields, setFields] = React.useState<
     Partial<ArrayFieldWithId<TFieldValues, TName, TKeyName>>[]
   >(defaultStateRef.current);
+
   set(fieldArrayValuesRef.current, name as InternalFieldName, fields);
+  fieldArrayNamesRef.current.add(name as InternalFieldName);
 
   const omitKey = <
     T extends Partial<ArrayFieldWithId<TFieldValues, TName, TKeyName>>[]
@@ -110,19 +111,6 @@ export const useFieldArray = <
       true,
     );
   };
-
-  fieldArrayNamesRef.current.add(name as InternalFieldName);
-
-  if (
-    fieldArrayParentName &&
-    !get(fieldArrayValuesRef.current, fieldArrayParentName)
-  ) {
-    set(
-      fieldArrayValuesRef.current,
-      fieldArrayParentName,
-      cloneObject(get(defaultValuesRef.current, fieldArrayParentName)),
-    );
-  }
 
   const setFieldAndValidState = (
     fieldsValues: Partial<ArrayFieldWithId<TFieldValues, TName, TKeyName>>[],
