@@ -170,7 +170,6 @@ export type Control<TFieldValues extends FieldValues = FieldValues> = {
   isWatchAllRef: React.MutableRefObject<boolean>;
   watchFieldsRef: React.MutableRefObject<InternalNameSet>;
   isFormDirty: (name?: string, data?: unknown[]) => boolean;
-  fieldArrayDefaultValuesRef: FieldArrayDefaultValues;
   fieldArrayValuesRef: FieldArrayDefaultValues;
   formStateRef: React.MutableRefObject<FormState<TFieldValues>>;
   formStateSubjectRef: React.MutableRefObject<

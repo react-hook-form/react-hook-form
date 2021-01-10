@@ -64,10 +64,9 @@ export const useFieldArray = <
     readFormStateRef,
     validFieldsRef,
     fieldsWithValidationRef,
-    fieldArrayDefaultValuesRef,
+    fieldArrayValuesRef,
     updateIsValid,
     getValues,
-    fieldArrayValuesRef,
   } = control || methods.control;
 
   const fieldArrayParentName = getFieldArrayParentName(
@@ -75,8 +74,8 @@ export const useFieldArray = <
   );
   const defaultStateRef = React.useRef(
     mapIds(
-      get(fieldArrayDefaultValuesRef.current, fieldArrayParentName)
-        ? get(fieldArrayDefaultValuesRef.current, name as InternalFieldName, [])
+      get(fieldArrayValuesRef.current, fieldArrayParentName)
+        ? get(fieldArrayValuesRef.current, name as InternalFieldName, [])
         : get(defaultValuesRef.current, name as InternalFieldName, []),
       keyName,
     ),
@@ -114,10 +113,10 @@ export const useFieldArray = <
 
   if (
     fieldArrayParentName &&
-    !get(fieldArrayDefaultValuesRef.current, fieldArrayParentName)
+    !get(fieldArrayValuesRef.current, fieldArrayParentName)
   ) {
     set(
-      fieldArrayDefaultValuesRef.current,
+      fieldArrayValuesRef.current,
       fieldArrayParentName,
       cloneObject(get(defaultValuesRef.current, fieldArrayParentName)),
     );
@@ -183,18 +182,14 @@ export const useFieldArray = <
     shouldSet = true,
     shouldUpdateValid = false,
   ) => {
-    if (get(fieldArrayDefaultValuesRef.current, name as InternalFieldName)) {
+    if (get(fieldArrayValuesRef.current, name as InternalFieldName)) {
       const output = method(
-        get(fieldArrayDefaultValuesRef.current, name as InternalFieldName),
+        get(fieldArrayValuesRef.current, name as InternalFieldName),
         args.argA,
         args.argB,
       );
       shouldSet &&
-        set(
-          fieldArrayDefaultValuesRef.current,
-          name as InternalFieldName,
-          output,
-        );
+        set(fieldArrayValuesRef.current, name as InternalFieldName, output);
     }
 
     if (
@@ -421,14 +416,14 @@ export const useFieldArray = <
     }
 
     const defaultValues = get(
-      fieldArrayDefaultValuesRef.current,
+      fieldArrayValuesRef.current,
       name as InternalFieldName,
     );
 
     if (defaultValues && fields.length < defaultValues.length) {
       defaultValues.pop();
       set(
-        fieldArrayDefaultValuesRef.current,
+        fieldArrayValuesRef.current,
         name as InternalFieldName,
         defaultValues,
       );
@@ -467,13 +462,8 @@ export const useFieldArray = <
     const fieldArrayNames = fieldArrayNamesRef.current;
     const tearDown = useFieldArraySubjectRef.current.subscribe({
       next: ({ defaultValues }) => {
-        if (
-          !getFieldArrayParentName(name as InternalFieldName) &&
-          defaultValues
-        ) {
-          resetFields();
-          setFields(mapIds(get(defaultValues, name), keyName));
-        }
+        resetFields();
+        setFieldAndValidState(mapIds(get(defaultValues, name), keyName));
       },
     });
 

@@ -102,7 +102,6 @@ export function useForm<
     fields: false,
     defaultValues: {},
   });
-  const fieldArrayDefaultValuesRef = React.useRef<FieldArrayDefaultValues>({});
   const fieldArrayValuesRef = React.useRef<FieldArrayDefaultValues>({});
   const watchFieldsRef = React.useRef<InternalNameSet>(new Set());
   const isMountedRef = React.useRef(false);
@@ -426,10 +425,10 @@ export function useForm<
         setInternalValues(name, value, config);
 
         if (fieldArrayNamesRef.current.has(name)) {
-          set(fieldArrayDefaultValuesRef.current, name, value);
+          set(fieldArrayValuesRef.current, name, value);
 
           useFieldArraySubjectRef.current.next({
-            defaultValues: { ...fieldArrayDefaultValuesRef.current },
+            defaultValues: { ...fieldArrayValuesRef.current },
           });
 
           if (
@@ -1084,7 +1083,6 @@ export function useForm<
         isFormDirty,
         formStateSubjectRef,
         useFieldArraySubjectRef,
-        fieldArrayDefaultValuesRef,
         controllerSubjectRef,
         watchSubjectRef,
         watchInternal,
