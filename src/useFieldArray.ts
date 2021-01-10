@@ -81,21 +81,19 @@ export const useFieldArray = <
     getValues,
   } = control || methods.control;
 
-  const fieldArrayParentName = getFieldArrayParentName(
-    name as InternalFieldName,
-  );
-  const defaultStateRef = React.useRef(
+  const [fields, setFields] = React.useState<
+    Partial<FieldArrayWithId<TFieldValues, TName, TKeyName>>[]
+  >(
     mapIds(
-      get(fieldArrayValuesRef.current, fieldArrayParentName)
+      get(
+        fieldArrayValuesRef.current,
+        getFieldArrayParentName(name as InternalFieldName),
+      )
         ? get(fieldArrayValuesRef.current, name as InternalFieldName, [])
         : get(defaultValuesRef.current, name as InternalFieldName, []),
       keyName,
     ),
   );
-
-  const [fields, setFields] = React.useState<
-    Partial<FieldArrayWithId<TFieldValues, TName, TKeyName>>[]
-  >(defaultStateRef.current);
 
   set(fieldArrayValuesRef.current, name as InternalFieldName, fields);
   fieldArrayNamesRef.current.add(name as InternalFieldName);
@@ -153,19 +151,17 @@ export const useFieldArray = <
     T extends Partial<FieldArrayWithId<TFieldValues, TName, TKeyName>>[]
   >(
     updatedFieldArrayValues?: T,
-  ) => {
-    if (updatedFieldArrayValues) {
-      set(
-        formStateRef.current.dirty,
-        name as InternalFieldName,
-        setFieldArrayDirtyFields(
-          omitKey(updatedFieldArrayValues),
-          get(defaultValuesRef.current, name as InternalFieldName, []),
-          get(formStateRef.current.dirty, name as InternalFieldName, []),
-        ),
-      );
-    }
-  };
+  ) =>
+    updatedFieldArrayValues &&
+    set(
+      formStateRef.current.dirty,
+      name as InternalFieldName,
+      setFieldArrayDirtyFields(
+        omitKey(updatedFieldArrayValues),
+        get(defaultValuesRef.current, name as InternalFieldName, []),
+        get(formStateRef.current.dirty, name as InternalFieldName, []),
+      ),
+    );
 
   const batchStateUpdate = <
     T extends Function,

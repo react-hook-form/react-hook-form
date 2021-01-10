@@ -33,7 +33,7 @@ export default <
   }
 
   return values.map((value: Partial<TFieldArrayValues>) => ({
-    [keyName]: value[keyName] || generateId(),
+    [keyName]: (value && value[keyName]) || generateId(),
     ...value,
   }));
 };

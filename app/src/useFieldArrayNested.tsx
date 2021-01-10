@@ -12,9 +12,11 @@ type FormValues = {
 function NestedArray({
   control,
   name,
+  index,
 }: {
   control: Control<FormValues>;
   name: string;
+  index: number;
 }) {
   // @ts-ignore
   const { fields, append, prepend, swap, move, remove, insert } = useFieldArray(
@@ -41,7 +43,7 @@ function NestedArray({
       </ul>
 
       <button
-        id="append"
+        id={`nest-append-${index}`}
         type="button"
         // @ts-ignore
         onClick={() => append({ name: 'append' })}
@@ -50,7 +52,7 @@ function NestedArray({
       </button>
 
       <button
-        id="prepend"
+        id={`nest-prepend-${index}`}
         type="button"
         // @ts-ignore
         onClick={() => prepend({ name: 'prepend' })}
@@ -58,16 +60,24 @@ function NestedArray({
         prepend
       </button>
 
-      <button id="swap" onClick={() => swap(1, 2)} type="button">
+      <button
+        id={`nest-swap-${index}`}
+        onClick={() => swap(1, 2)}
+        type="button"
+      >
         swap
       </button>
 
-      <button id="move" onClick={() => move(2, 0)} type="button">
+      <button
+        id={`nest-move-${index}`}
+        onClick={() => move(2, 0)}
+        type="button"
+      >
         move
       </button>
 
       <button
-        id="insert"
+        id={`nest-insert-${index}`}
         type="button"
         onClick={() =>
           // @ts-ignore
@@ -77,11 +87,19 @@ function NestedArray({
         insert
       </button>
 
-      <button id="remove" type="button" onClick={() => remove(1)}>
+      <button
+        id={`nest-remove-${index}`}
+        type="button"
+        onClick={() => remove(1)}
+      >
         remove
       </button>
 
-      <button id="removeAll" type="button" onClick={() => remove()}>
+      <button
+        id={`nest-remove-all-${index}`}
+        type="button"
+        onClick={() => remove()}
+      >
         remove all
       </button>
     </div>
@@ -89,7 +107,7 @@ function NestedArray({
 }
 
 export default () => {
-  const { register, control, reset } = useForm<FormValues>({
+  const { register, control, reset, setValue } = useForm<FormValues>({
     defaultValues: {
       test: [
         {
@@ -117,7 +135,11 @@ export default () => {
               defaultValue={`${item.firstName}`}
               {...register(`test.${index}.firstName` as const)}
             />
-            <NestedArray control={control} name={`test.${index}.keyValue`} />
+            <NestedArray
+              control={control}
+              name={`test.${index}.keyValue`}
+              index={index}
+            />
           </div>
         );
       })}
@@ -160,6 +182,20 @@ export default () => {
 
       <button id="removeAll" type="button" onClick={() => remove()}>
         remove all
+      </button>
+
+      <button
+        id="setValue"
+        type={'button'}
+        onClick={() =>
+          setValue('test', [
+            { firstName: 'test' },
+            { firstName: 'test1' },
+            { firstName: 'test2' },
+          ])
+        }
+      >
+        setValue
       </button>
 
       <button
