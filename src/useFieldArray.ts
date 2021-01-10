@@ -15,6 +15,7 @@ import insertAt from './utils/insert';
 import fillEmptyArray from './utils/fillEmptyArray';
 import fillBooleanArray from './utils/fillBooleanArray';
 import compact from './utils/compact';
+import cloneObject from './utils/cloneObject';
 import {
   FieldValues,
   UseFieldArrayProps,
@@ -63,20 +64,28 @@ export const useFieldArray = <
     readFormStateRef,
     validFieldsRef,
     fieldsWithValidationRef,
+    fieldArrayDefaultValuesRef,
     updateIsValid,
     getValues,
+    fieldArrayValuesRef,
   } = control || methods.control;
 
-  const fieldArrayDefaultValuesRef = React.useRef(
+  const fieldArrayParentName = getFieldArrayParentName(
+    name as InternalFieldName,
+  );
+  const defaultStateRef = React.useRef(
     mapIds(
-      get(defaultValuesRef.current, name as InternalFieldName, []),
+      get(fieldArrayDefaultValuesRef.current, fieldArrayParentName)
+        ? get(fieldArrayDefaultValuesRef.current, name as InternalFieldName, [])
+        : get(defaultValuesRef.current, name as InternalFieldName, []),
       keyName,
     ),
   );
 
   const [fields, setFields] = React.useState<
     Partial<ArrayFieldWithId<TFieldValues, TName, TKeyName>>[]
-  >(fieldArrayDefaultValuesRef.current);
+  >(defaultStateRef.current);
+  set(fieldArrayValuesRef.current, name as InternalFieldName, fields);
 
   const omitKey = <
     T extends Partial<ArrayFieldWithId<TFieldValues, TName, TKeyName>>[]
@@ -86,34 +95,43 @@ export const useFieldArray = <
 
   fieldArrayNamesRef.current.add(name as InternalFieldName);
 
+  const getFieldArrayValue = React.useCallback(
+    () => get(fieldArrayValuesRef.current, name as InternalFieldName, []),
+    [name],
+  );
+
   const getCurrentFieldsValues = () => {
     return mapIds<TFieldValues, TKeyName>(
-      get(
-        getValues(),
-        name as InternalFieldName,
-        fieldArrayDefaultValuesRef.current,
-      ).map((item: Partial<TFieldValues>, index: number) => ({
-        ...fieldArrayDefaultValuesRef.current[index],
-        ...item,
-      })),
+      get(getValues(), name as InternalFieldName, getFieldArrayValue()).map(
+        (item: Partial<TFieldValues>, index: number) => ({
+          ...getFieldArrayValue()[index],
+          ...item,
+        }),
+      ),
       keyName,
       true,
     );
   };
 
+  if (
+    fieldArrayParentName &&
+    !get(fieldArrayDefaultValuesRef.current, fieldArrayParentName)
+  ) {
+    set(
+      fieldArrayDefaultValuesRef.current,
+      fieldArrayParentName,
+      cloneObject(get(defaultValuesRef.current, fieldArrayParentName)),
+    );
+  }
+
   const setFieldAndValidState = (
     fieldsValues: Partial<ArrayFieldWithId<TFieldValues, TName, TKeyName>>[],
   ) => {
-    const fields = omitKey(fieldsValues);
-    useFieldArraySubjectRef.current.next({
-      name,
-      fields,
-    });
     setFields(fieldsValues);
 
     if (readFormStateRef.current.isValid) {
       const values = getValues();
-      set(values, name as InternalFieldName, fields);
+      set(values, name as InternalFieldName, omitKey(fields));
       updateIsValid(values);
     }
   };
@@ -166,15 +184,19 @@ export const useFieldArray = <
     shouldSet = true,
     shouldUpdateValid = false,
   ) => {
-    if (
-      get(fieldArrayDefaultValuesRef.current, name as InternalFieldName) &&
-      updatedFieldValues
-    ) {
-      set(
-        fieldArrayDefaultValuesRef.current,
-        name as InternalFieldName,
-        omitKey(updatedFieldValues),
+    if (get(fieldArrayDefaultValuesRef.current, name as InternalFieldName)) {
+      const output = method(
+        get(fieldArrayDefaultValuesRef.current, name as InternalFieldName),
+        args.argA,
+        args.argB,
       );
+      shouldSet &&
+        set(
+          fieldArrayDefaultValuesRef.current,
+          name as InternalFieldName,
+          output,
+        );
+      cleanup(fieldArrayDefaultValuesRef.current);
     }
 
     if (
@@ -265,12 +287,6 @@ export const useFieldArray = <
       ...mapIds(appendValue, keyName),
     ];
     setFieldAndValidState(updatedFieldValues);
-
-    set(
-      fieldArrayDefaultValuesRef.current,
-      name as InternalFieldName,
-      omitKey(updatedFieldValues),
-    );
 
     if (readFormStateRef.current.dirty || readFormStateRef.current.isDirty) {
       updateDirtyFieldsWithDefaultValues(updatedFieldValues);
@@ -406,6 +422,20 @@ export const useFieldArray = <
       }
     }
 
+    const defaultValues = get(
+      fieldArrayDefaultValuesRef.current,
+      name as InternalFieldName,
+    );
+
+    if (defaultValues && fields.length < defaultValues.length) {
+      defaultValues.pop();
+      set(
+        fieldArrayDefaultValuesRef.current,
+        name as InternalFieldName,
+        defaultValues,
+      );
+    }
+
     if (isWatchAllRef.current) {
       formStateSubjectRef.current.next({});
     } else {
@@ -418,7 +448,6 @@ export const useFieldArray = <
     }
 
     watchSubjectRef.current.next({ inputName: name as InternalFieldName });
-    fieldArrayDefaultValuesRef.current = fields;
 
     if (focusIndexRef.current > -1) {
       for (const key in fieldsRef.current) {
@@ -453,6 +482,7 @@ export const useFieldArray = <
     return () => {
       tearDown.unsubscribe();
       resetFields();
+      unset(fieldArrayValuesRef, name as InternalFieldName);
       fieldArrayNames.delete(name as InternalFieldName);
     };
   }, []);

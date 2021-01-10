@@ -60,6 +60,7 @@ import {
   DefaultValues,
   FieldError,
   SetFieldValue,
+  FieldArrayDefaultValues,
   RegisterMethods,
   ControllerEvent,
   FieldPath,
@@ -101,6 +102,8 @@ export function useForm<
     fields: false,
     defaultValues: {},
   });
+  const fieldArrayDefaultValuesRef = React.useRef<FieldArrayDefaultValues>({});
+  const fieldArrayValuesRef = React.useRef<FieldArrayDefaultValues>({});
   const watchFieldsRef = React.useRef<InternalNameSet>(new Set());
   const isMountedRef = React.useRef(false);
   const fieldsWithValidationRef = React.useRef<
@@ -1079,6 +1082,7 @@ export function useForm<
         isFormDirty,
         formStateSubjectRef,
         useFieldArraySubjectRef,
+        fieldArrayDefaultValuesRef,
         controllerSubjectRef,
         watchSubjectRef,
         watchInternal,
@@ -1090,6 +1094,7 @@ export function useForm<
         readFormStateRef,
         formStateRef,
         defaultValuesRef,
+        fieldArrayValuesRef,
         ...commonProps,
       }),
       [defaultValuesRef.current, watchInternal],

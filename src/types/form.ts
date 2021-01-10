@@ -18,6 +18,7 @@ import {
 import { ErrorOption, FieldErrors } from './errors';
 import { RegisterOptions } from './validator';
 import { ControllerEvent } from './controller';
+import { FieldArrayDefaultValues } from './fieldArray';
 import { SubjectType } from '../utils/Subject';
 
 declare const $NestedValue: unique symbol;
@@ -169,6 +170,8 @@ export type Control<TFieldValues extends FieldValues = FieldValues> = {
   isWatchAllRef: React.MutableRefObject<boolean>;
   watchFieldsRef: React.MutableRefObject<InternalNameSet>;
   isFormDirty: (name?: string, data?: unknown[]) => boolean;
+  fieldArrayDefaultValuesRef: FieldArrayDefaultValues;
+  fieldArrayValuesRef: FieldArrayDefaultValues;
   formStateRef: React.MutableRefObject<FormState<TFieldValues>>;
   formStateSubjectRef: React.MutableRefObject<
     SubjectType<Partial<FormState<TFieldValues>>>

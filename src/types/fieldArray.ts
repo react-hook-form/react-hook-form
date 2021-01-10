@@ -2,6 +2,10 @@ import { Control } from './form';
 import { FieldValues } from './fields';
 import { FieldPath, FieldPathValue } from './utils';
 
+export type FieldArrayName = string;
+
+export type FieldArrayDefaultValues = Partial<Record<FieldArrayName, any>>;
+
 export type UseFieldArrayProps<
   TFieldValues extends FieldValues = FieldValues,
   TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
