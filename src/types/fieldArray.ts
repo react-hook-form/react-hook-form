@@ -32,7 +32,7 @@ export type FieldArray<
 
 export type FieldArrayMethodsOption = {
   shouldFocus?: boolean;
-  shouldDirty?: boolean;
+  focusIndex?: number;
 };
 
 export type UseFieldArrayMethods<

@@ -14,6 +14,7 @@ import prependAt from './utils/prepend';
 import insertAt from './utils/insert';
 import fillEmptyArray from './utils/fillEmptyArray';
 import compact from './utils/compact';
+import isUndefined from './utils/isUndefined';
 import {
   FieldValues,
   UseFieldArrayProps,
@@ -24,6 +25,18 @@ import {
   InternalFieldName,
   FieldArrayMethodsOption,
 } from './types';
+
+const getFocusIndex = (index: number, options?: FieldArrayMethodsOption) => {
+  if (options) {
+    if (!options.shouldFocus) {
+      return -1;
+    }
+    if (!isUndefined(options.focusIndex)) {
+      return options.focusIndex;
+    }
+  }
+  return index;
+};
 
 export const useFieldArray = <
   TFieldValues extends FieldValues = FieldValues,
@@ -277,8 +290,10 @@ export const useFieldArray = <
       });
     }
 
-    focusIndexRef.current =
-      options && !options.shouldFocus ? -1 : updatedFieldValues.length - 1;
+    focusIndexRef.current = getFocusIndex(
+      updatedFieldValues.length - 1,
+      options,
+    );
   };
 
   const prepend = (
@@ -299,7 +314,8 @@ export const useFieldArray = <
       },
       updatedFieldArrayValues,
     );
-    focusIndexRef.current = options && !options.shouldFocus ? -1 : 0;
+
+    focusIndexRef.current = getFocusIndex(0, options);
   };
 
   const remove = (index?: number | number[]) => {
@@ -345,7 +361,8 @@ export const useFieldArray = <
       updatedFieldArrayValues,
       fieldValues && insertAt(fieldValues, index),
     );
-    focusIndexRef.current = options && !options.shouldFocus ? -1 : index;
+
+    focusIndexRef.current = getFocusIndex(index, options);
   };
 
   const swap = (indexA: number, indexB: number) => {
