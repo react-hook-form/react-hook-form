@@ -23,6 +23,7 @@ import {
   UseFieldArrayMethods,
   FieldArray,
   InternalFieldName,
+  FieldArrayMethodsOption,
 } from './types';
 
 export const useFieldArray = <
@@ -260,9 +261,7 @@ export const useFieldArray = <
     value:
       | Partial<FieldArray<TFieldValues, TName>>
       | Partial<FieldArray<TFieldValues, TName>>[],
-    options?: {
-      shouldFocus: boolean;
-    },
+    options?: FieldArrayMethodsOption,
   ) => {
     const appendValue = Array.isArray(value) ? value : [value];
     const updatedFieldValues = [
@@ -289,9 +288,7 @@ export const useFieldArray = <
     value:
       | Partial<FieldArray<TFieldValues, TName>>
       | Partial<FieldArray<TFieldValues, TName>>[],
-    options?: {
-      shouldFocus: boolean;
-    },
+    options?: FieldArrayMethodsOption,
   ) => {
     const updatedFieldArrayValues = prependAt(
       getCurrentFieldsValues(),
@@ -334,9 +331,7 @@ export const useFieldArray = <
     value:
       | Partial<FieldArray<TFieldValues, TName>>
       | Partial<FieldArray<TFieldValues, TName>>[],
-    options?: {
-      shouldFocus: boolean;
-    },
+    options?: FieldArrayMethodsOption,
   ) => {
     const fieldValues = getCurrentFieldsValues();
     const updatedFieldArrayValues = insertAt(

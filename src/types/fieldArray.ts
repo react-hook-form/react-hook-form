@@ -30,6 +30,11 @@ export type FieldArray<
   TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>
 > = InferArrayType<FieldPathValue<TFieldValues, TName>>;
 
+export type FieldArrayMethodsOption = {
+  shouldFocus?: boolean;
+  shouldDirty?: boolean;
+};
+
 export type UseFieldArrayMethods<
   TFieldValues extends FieldValues = FieldValues,
   TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
@@ -41,13 +46,13 @@ export type UseFieldArrayMethods<
     value:
       | Partial<FieldArray<TFieldValues, TName>>
       | Partial<FieldArray<TFieldValues, TName>>[],
-    options?: { shouldFocus: boolean },
+    options?: FieldArrayMethodsOption,
   ) => void;
   append: (
     value:
       | Partial<FieldArray<TFieldValues, TName>>
       | Partial<FieldArray<TFieldValues, TName>>[],
-    options?: { shouldFocus: boolean },
+    options?: FieldArrayMethodsOption,
   ) => void;
   remove: (index?: number | number[]) => void;
   insert: (
@@ -55,7 +60,7 @@ export type UseFieldArrayMethods<
     value:
       | Partial<FieldArray<TFieldValues, TName>>
       | Partial<FieldArray<TFieldValues, TName>>[],
-    options?: { shouldFocus: boolean },
+    options?: FieldArrayMethodsOption,
   ) => void;
   fields: FieldArrayWithId<TFieldValues, TName, TKeyName>[];
 };
