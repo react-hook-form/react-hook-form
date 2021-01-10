@@ -22,11 +22,12 @@ import SetValueWithTrigger from './setValueWithTrigger';
 import IsValid from './isValid';
 import Controller from './controller';
 import UseFieldArray from './useFieldArray';
+import UseFieldArrayNested from './useFieldArrayNested';
 import CustomSchemaValidation from './customSchemaValidation';
 import WatchFieldArray from './watchUseFieldArray';
 import UseWatch from './useWatch';
 import FormStateWithNestedFields from './formStateWithNestedFields';
-import UseFieldArrayUnregister from './UseFieldArrayUnregister';
+import UseFieldArrayUnregister from './useFieldArrayUnregister';
 import Test from './test';
 import { UseFormState } from './useFormState';
 
@@ -105,7 +106,8 @@ const App: React.FC = () => {
       <Route path="/autoUnregister" exact component={AutoUnregister} />
       <Route path="/useWatch" exact component={UseWatch} />
       <Route path="/useFormState" exact component={UseFormState} />
-      <Route path="/test" component={Test} />
+      <Route path="/useFieldArrayNested" exact component={UseFieldArrayNested} />
+      <Route path="/test" exact component={Test} />
     </Router>
   );
 };
