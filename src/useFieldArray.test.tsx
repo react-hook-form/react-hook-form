@@ -1705,7 +1705,7 @@ describe('useFieldArray', () => {
 
         expect(resolver).toBeCalledWith(
           {
-            test: [{ id: '0', value: '1' }],
+            test: [{ value: '1' }],
           },
           undefined,
           false,
@@ -3193,7 +3193,7 @@ describe('useFieldArray', () => {
 
         expect(resolver).toBeCalledWith(
           {
-            test: [{ id: '0', value: '1' }],
+            test: [{ value: '1' }],
           },
           undefined,
           false,
@@ -3222,6 +3222,33 @@ describe('useFieldArray', () => {
   });
 
   describe('swap', () => {
+    it('should swap into pointed position', () => {
+      const { result } = renderHook(() => {
+        const { register, control } = useForm({
+          defaultValues: { test: [{ value: '1' }] },
+        });
+        const methods = useFieldArray({
+          control,
+          name: 'test',
+        });
+
+        return { register, ...methods };
+      });
+
+      act(() => {
+        result.current.append({ value: '2' });
+      });
+
+      act(() => {
+        result.current.swap(0, 1);
+      });
+
+      expect(result.current.fields).toEqual([
+        { id: '1', value: '2' },
+        { id: '0', value: '1' },
+      ]);
+    });
+
     it('should swap data order', () => {
       const { result } = renderHook(() => {
         const { register, control } = useForm({
@@ -3513,10 +3540,7 @@ describe('useFieldArray', () => {
 
         expect(resolver).toBeCalledWith(
           {
-            test: [
-              { id: '1', value: '2' },
-              { id: '0', value: '1' },
-            ],
+            test: [{ value: '2' }, { value: '1' }],
           },
           undefined,
           false,
@@ -3548,33 +3572,6 @@ describe('useFieldArray', () => {
   });
 
   describe('move', () => {
-    it('should move into pointed position', () => {
-      const { result } = renderHook(() => {
-        const { register, control } = useForm({
-          defaultValues: { test: [{ value: '1' }] },
-        });
-        const methods = useFieldArray({
-          control,
-          name: 'test',
-        });
-
-        return { register, ...methods };
-      });
-
-      act(() => {
-        result.current.append({ value: '2' });
-      });
-
-      act(() => {
-        result.current.swap(0, 1);
-      });
-
-      expect(result.current.fields).toEqual([
-        { id: '6', value: '2' },
-        { id: '5', value: '1' },
-      ]);
-    });
-
     it.each(['dirty'])(
       'should move dirty into pointed position when formState.%s is defined',
       () => {
@@ -3746,7 +3743,7 @@ describe('useFieldArray', () => {
       expect(watched).toEqual([
         { test: [{ value: '1' }, { value: '2' }] }, // first render
         { test: [{ value: '1' }, { value: '2' }] }, // render inside useEffect in useFieldArray
-        { test: [{ value: '2' }, { value: '1' }] }, // render inside move method
+        { test: [{ value: '1' }, { value: '2' }] }, // render inside move method
         { test: [{ value: '2' }, { value: '1' }] }, // render inside useEffect in useFieldArray
       ]);
     });
