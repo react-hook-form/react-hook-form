@@ -11,7 +11,6 @@ const UseFieldArray: React.FC = (props: any) => {
     handleSubmit,
     register,
     formState: { isDirty, touched, isValid, dirty, errors },
-    watch,
     reset,
   } = useForm<{ data: { name: string }[] }>({
     ...(props.match.params.mode === 'default' || withoutFocus
@@ -43,8 +42,6 @@ const UseFieldArray: React.FC = (props: any) => {
       }
     }, 10);
   }, [reset, props.match.params.mode]);
-
-  console.log(watch('data'));
 
   renderCount++;
 
