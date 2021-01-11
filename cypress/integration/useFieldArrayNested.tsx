@@ -166,51 +166,47 @@ describe('useFieldArrayNested', () => {
       'append',
     );
 
-    cy.get('#touched-nested-3').contains(
-      '{"test":[{"firstName":true,"keyValue":[{"name":true},{"name":true},{"name":true}]},{"firstName":true},{"firstName":true},{"keyValue":[{"name":true},{"name":true}]}]}',
+    cy.get('#dirty-nested-0').should(($state) =>
+      expect(JSON.parse($state.text())).to.be.deep.equal({
+        test: [
+          {
+            firstName: true,
+            lastName: true,
+            keyValue: [{ name: true }, { name: true }, { name: true }],
+          },
+          {
+            firstName: true,
+            lastName: true,
+            keyValue: [
+              { name: true },
+              { name: true },
+              { name: true },
+              { name: true },
+            ],
+          },
+          {
+            firstName: true,
+            lastName: true,
+            keyValue: [
+              { name: true },
+              { name: true },
+              { name: true },
+              { name: true },
+            ],
+          },
+          {
+            firstName: true,
+            lastName: true,
+            keyValue: [{ name: true }, { name: true }],
+          },
+        ],
+      }),
     );
 
-    // cy.get('#dirty-nested-0').should(($state) =>
-    //   expect(JSON.parse($state.text())).to.be.deep.equal({
-    //     test: [
-    //       {
-    //         firstName: true,
-    //         lastName: true,
-    //         keyValue: [{ name: true }, { name: true }, { name: true }],
-    //       },
-    //       {
-    //         firstName: true,
-    //         lastName: true,
-    //         keyValue: [
-    //           { name: true },
-    //           { name: true },
-    //           { name: true },
-    //           { name: true },
-    //         ],
-    //       },
-    //       {
-    //         firstName: true,
-    //         lastName: true,
-    //         keyValue: [
-    //           { name: true },
-    //           { name: true },
-    //           { name: true },
-    //           { name: true },
-    //         ],
-    //       },
-    //       {
-    //         firstName: true,
-    //         lastName: true,
-    //         keyValue: [{ name: true }, { name: true }],
-    //       },
-    //     ],
-    //   }),
-    // );
-    //
-    // cy.get('#nest-remove-all-3').click();
-    // cy.get('#nest-remove-all-2').click();
-    // cy.get('#nest-remove-all-1').click();
-    // cy.get('#nest-remove-all-0').click();
+    cy.get('#nest-remove-all-3').click();
+    cy.get('#nest-remove-all-2').click();
+    cy.get('#nest-remove-all-1').click();
+    cy.get('#nest-remove-all-0').click();
 
     // cy.get('#touched-nested-2').contains(
     //   '{"test":[{"firstName":true},{"firstName":true},{"firstName":true},null]}',
