@@ -224,8 +224,6 @@ describe('useFieldArrayNested', () => {
       '{"test":[{"firstName":true,"lastName":true,"keyValue":[{"name":true},{"name":true}]}]}',
     );
 
-    cy.get('#touched-nested-0').contains('{"test":[{"firstName":true}]}');
-
     cy.get('#count-nest-0').contains('24');
 
     cy.get('#removeAll').click();
