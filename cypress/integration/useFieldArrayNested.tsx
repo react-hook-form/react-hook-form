@@ -155,16 +155,17 @@ describe('useFieldArrayNested', () => {
     cy.get('input').its('length').should('eq', 11);
 
     cy.get('#nest-remove-3').click();
+    cy.get('#nest-remove-3').click();
 
-    cy.get('input[name="test.3.keyValue.0.name"]').should(
-      'has.value',
-      'insert',
-    );
-    cy.get('input[name="test.3.keyValue.1.name"]').should(
-      'has.value',
-      'append',
-    );
-
+    // cy.get('input[name="test.3.keyValue.0.name"]').should(
+    //   'has.value',
+    //   'insert',
+    // );
+    // cy.get('input[name="test.3.keyValue.1.name"]').should(
+    //   'has.value',
+    //   'append',
+    // );
+    //
     // cy.get('#touched-nested-3').should(($state) =>
     //   expect(JSON.parse($state.text())).to.be.deep.equal({
     //     test: [
