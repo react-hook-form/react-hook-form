@@ -1,5 +1,11 @@
 import * as React from 'react';
-import { Controller, useFieldArray, useForm, Control } from 'react-hook-form';
+import {
+  Controller,
+  useFieldArray,
+  useFormState,
+  useForm,
+  Control,
+} from 'react-hook-form';
 
 type FormValues = {
   test: {
@@ -11,36 +17,45 @@ type FormValues = {
 
 function NestedArray({
   control,
-  name,
   index,
 }: {
   control: Control<FormValues>;
-  name: string;
   index: number;
 }) {
   // @ts-ignore
   const { fields, append, prepend, swap, move, remove, insert } = useFieldArray(
     {
       // @ts-ignore
-      name,
+      name: `test.${index}.keyValue` as const,
       control,
     },
   );
+  const { touched, dirty } = useFormState({
+    control,
+  });
+  const renderCountRef = React.useRef(0);
+  renderCountRef.current++;
+
+  console.log(`test.${index}.keyValue`)
 
   return (
     <div>
       <ul>
-        {fields.map((item, index) => (
+        {fields.map((item, i) => (
           <Controller
+            // @ts-ignore
             key={item.id}
             render={({ field }) => <input {...field} aria-label={'name'} />}
-            name={`${name}.${index}.name` as any}
+            name={`test.${index}.keyValue.${i}.name` as any}
             control={control}
             // @ts-ignore
             defaultValue={item.name}
           />
         ))}
       </ul>
+
+      {/*<div id={`dirty-nested-${index}`}>{JSON.stringify(dirty)}</div>*/}
+      {/*<div id={`touched-nested-${index}`}>{JSON.stringify(touched)}</div>*/}
 
       <button
         id={`nest-append-${index}`}
@@ -102,6 +117,8 @@ function NestedArray({
       >
         remove all
       </button>
+
+      <div id={`count-nest-${index}`}>{renderCountRef.current}</div>
     </div>
   );
 }
@@ -124,6 +141,8 @@ export default () => {
       name: 'test',
     },
   );
+  const renderCountRef = React.useRef(0);
+  renderCountRef.current++;
 
   return (
     <form>
@@ -137,12 +156,13 @@ export default () => {
             />
             <NestedArray
               control={control}
-              name={`test.${index}.keyValue`}
               index={index}
             />
           </div>
         );
       })}
+
+      <hr />
 
       <button
         id="append"
@@ -190,7 +210,14 @@ export default () => {
         onClick={() =>
           setValue('test', [
             { firstName: 'test' },
-            { firstName: 'test1' },
+            {
+              firstName: 'test1',
+              keyValue: [
+                {
+                  name: 'test',
+                },
+              ],
+            },
             { firstName: 'test2' },
           ])
         }
@@ -213,6 +240,8 @@ export default () => {
       >
         reset
       </button>
+
+      <div id="count">{renderCountRef.current}</div>
     </form>
   );
 };

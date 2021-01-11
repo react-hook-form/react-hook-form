@@ -1,6 +1,6 @@
 import * as React from 'react';
 import Subject from './utils/Subject';
-import focusOnErrorField from './logic/focusOnErrorField';
+import focusFieldBy from './logic/focusFieldBy';
 import setFieldArrayDirtyFields from './logic/setFieldArrayDirtyFields';
 import shouldRenderFormState from './logic/shouldRenderFormState';
 import getFieldsValues from './logic/getFieldsValues';
@@ -947,7 +947,9 @@ export function useForm<
           };
           onInvalid && (await onInvalid(formStateRef.current.errors, e));
           shouldFocusError &&
-            focusOnErrorField(fieldsRef.current, formStateRef.current.errors);
+            focusFieldBy(fieldsRef.current, (key: string) =>
+              get(formStateRef.current.errors, key),
+            );
         }
       } finally {
         formStateRef.current.isSubmitting = false;

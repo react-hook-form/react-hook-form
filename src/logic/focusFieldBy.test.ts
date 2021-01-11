@@ -1,15 +1,14 @@
-import focusErrorField from './focusOnErrorField';
+import focusFieldBy from './focusFieldBy';
+import get from '../utils/get';
 
 jest.mock('../utils/isHTMLElement', () => ({
   default: () => true,
 }));
 
-describe('focusErrorField', () => {
+describe('focusFieldBy', () => {
   it('should focus on the first error it encounter', () => {
     const focus = jest.fn();
-    focusErrorField<{
-      test: string;
-    }>(
+    focusFieldBy(
       {
         test: {
           name: 'test',
@@ -19,12 +18,16 @@ describe('focusErrorField', () => {
           },
         },
       },
-      {
-        test: {
-          message: 'test',
-          type: 'required',
-        },
-      },
+      (key) =>
+        get(
+          {
+            test: {
+              message: 'test',
+              type: 'required',
+            },
+          },
+          key,
+        ),
     );
 
     expect(focus).toBeCalled();
@@ -32,9 +35,7 @@ describe('focusErrorField', () => {
 
   it('should focus on first option when options input error encounters', () => {
     const focus = jest.fn();
-    focusErrorField<{
-      test: string;
-    }>(
+    focusFieldBy(
       {
         test: {
           name: 'test',
@@ -49,12 +50,16 @@ describe('focusErrorField', () => {
           ],
         },
       },
-      {
-        test: {
-          message: 'test',
-          type: 'required',
-        },
-      },
+      (key) =>
+        get(
+          {
+            test: {
+              message: 'test',
+              type: 'required',
+            },
+          },
+          key,
+        ),
     );
 
     expect(focus).toBeCalled();
@@ -62,18 +67,20 @@ describe('focusErrorField', () => {
 
   it('should not call focus when field is undefined', () => {
     expect(() => {
-      focusErrorField<{
-        test: string;
-      }>(
+      focusFieldBy(
         {
           test: undefined,
         },
-        {
-          test: {
-            message: 'test',
-            type: 'required',
-          },
-        },
+        (key) =>
+          get(
+            {
+              test: {
+                message: 'test',
+                type: 'required',
+              },
+            },
+            key,
+          ),
       );
     }).not.toThrow();
   });

@@ -1,13 +1,9 @@
-import get from '../utils/get';
 import isUndefined from '../utils/isUndefined';
-import { FieldErrors, FieldRefs, FieldValues } from '../types';
+import { FieldRefs } from '../types';
 
-export default <TFieldValues extends FieldValues = FieldValues>(
-  fields: FieldRefs,
-  fieldErrors: FieldErrors<TFieldValues>,
-) => {
+export default (fields: FieldRefs, callback: (name: string) => boolean) => {
   for (const key in fields) {
-    if (get(fieldErrors, key)) {
+    if (callback(key)) {
       const field = fields[key];
 
       if (field) {
@@ -15,7 +11,6 @@ export default <TFieldValues extends FieldValues = FieldValues>(
           break;
         } else if (field.refs) {
           field.refs[0].focus();
-
           break;
         }
       }

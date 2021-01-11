@@ -2,7 +2,7 @@ import * as React from 'react';
 import { View, TextInput, Button, Text } from 'react-native';
 import { render, fireEvent, wait } from '@testing-library/react-native';
 import { useForm } from './useForm';
-import * as focusOnErrorField from './logic/focusOnErrorField';
+import * as focusOnErrorField from './logic/focusFieldBy';
 
 describe('useForm with React Native', () => {
   afterEach(() => {

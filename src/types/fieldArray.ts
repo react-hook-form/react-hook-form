@@ -33,6 +33,7 @@ export type FieldArray<
 export type FieldArrayMethodsOption = {
   shouldFocus?: boolean;
   focusIndex?: number;
+  focusName?: string;
 };
 
 export type UseFieldArrayMethods<

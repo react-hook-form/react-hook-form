@@ -15,6 +15,7 @@ import insertAt from './utils/insert';
 import fillEmptyArray from './utils/fillEmptyArray';
 import compact from './utils/compact';
 import isUndefined from './utils/isUndefined';
+import focusFieldBy from './logic/focusFieldBy';
 import {
   FieldValues,
   UseFieldArrayProps,
@@ -25,18 +26,6 @@ import {
   InternalFieldName,
   FieldArrayMethodsOption,
 } from './types';
-
-const getFocusIndex = (index: number, options?: FieldArrayMethodsOption) => {
-  if (options) {
-    if (!options.shouldFocus) {
-      return -1;
-    }
-    if (!isUndefined(options.focusIndex)) {
-      return options.focusIndex;
-    }
-  }
-  return index;
-};
 
 export const useFieldArray = <
   TFieldValues extends FieldValues = FieldValues,
@@ -61,7 +50,7 @@ export const useFieldArray = <
     }
   }
 
-  const focusIndexRef = React.useRef(-1);
+  const focusNameRef = React.useRef('');
   const {
     isWatchAllRef,
     watchFieldsRef,
@@ -105,21 +94,40 @@ export const useFieldArray = <
   ) => fields.map(({ [keyName]: omitted, ...rest } = {}) => rest);
 
   const getCurrentFieldsValues = () => {
-    const fieldArrayValues = get(
-      fieldArrayValuesRef.current,
-      name as InternalFieldName,
-      [],
-    );
+    const values = get(getValues(), name, []);
 
     return mapIds<TFieldValues, TKeyName>(
-      get(getValues(), name as InternalFieldName, fieldArrayValues).map(
+      get(fieldArrayValuesRef.current, name as InternalFieldName, []).map(
         (item: Partial<TFieldValues>, index: number) => ({
-          ...fieldArrayValues[index],
           ...item,
+          ...values[index],
         }),
       ),
       keyName,
     );
+  };
+
+  const getFocusDetail = (index: number, options?: FieldArrayMethodsOption) => {
+    if (options) {
+      if (!isUndefined(options.focusIndex)) {
+        return `${name}.${options.focusIndex}`;
+      }
+      if (options.focusName) {
+        return options.focusName;
+      }
+      if (!options.shouldFocus) {
+        return '';
+      }
+    }
+    return `${name}.${index}`;
+  };
+
+  const resetFields = () => {
+    for (const key in fieldsRef.current) {
+      if (isMatchFieldArrayName(key, name as InternalFieldName)) {
+        delete fieldsRef.current[key];
+      }
+    }
   };
 
   const setFieldAndValidState = (
@@ -131,14 +139,6 @@ export const useFieldArray = <
       const values = getValues();
       set(values, name as InternalFieldName, omitKey(fieldsValues));
       updateIsValid(values);
-    }
-  };
-
-  const resetFields = () => {
-    for (const key in fieldsRef.current) {
-      if (isMatchFieldArrayName(key, name as InternalFieldName)) {
-        delete fieldsRef.current[key];
-      }
     }
   };
 
@@ -282,7 +282,7 @@ export const useFieldArray = <
       });
     }
 
-    focusIndexRef.current = getFocusIndex(
+    focusNameRef.current = getFocusDetail(
       updatedFieldValues.length - 1,
       options,
     );
@@ -307,7 +307,7 @@ export const useFieldArray = <
       updatedFieldArrayValues,
     );
 
-    focusIndexRef.current = getFocusIndex(0, options);
+    focusNameRef.current = getFocusDetail(0, options);
   };
 
   const remove = (index?: number | number[]) => {
@@ -354,7 +354,7 @@ export const useFieldArray = <
       fieldValues && insertAt(fieldValues, index),
     );
 
-    focusIndexRef.current = getFocusIndex(index, options);
+    focusNameRef.current = getFocusDetail(index, options);
   };
 
   const swap = (indexA: number, indexB: number) => {
@@ -411,20 +411,12 @@ export const useFieldArray = <
 
     watchSubjectRef.current.next({ inputName: name as InternalFieldName });
 
-    if (focusIndexRef.current > -1) {
-      for (const key in fieldsRef.current) {
-        const field = fieldsRef.current[key];
-        if (
-          key.startsWith(`${name}.${focusIndexRef.current}`) &&
-          field!.ref.focus
-        ) {
-          field!.ref.focus();
-          break;
-        }
-      }
-    }
+    focusNameRef.current &&
+      focusFieldBy(fieldsRef.current, (key: string) =>
+        key.startsWith(focusNameRef.current),
+      );
 
-    focusIndexRef.current = -1;
+    focusNameRef.current = '';
   }, [fields, name]);
 
   React.useEffect(() => {
