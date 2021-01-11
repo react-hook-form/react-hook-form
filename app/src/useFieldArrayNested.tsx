@@ -36,8 +36,6 @@ function NestedArray({
   const renderCountRef = React.useRef(0);
   renderCountRef.current++;
 
-  console.log(`test.${index}.keyValue`)
-
   return (
     <div>
       <ul>
