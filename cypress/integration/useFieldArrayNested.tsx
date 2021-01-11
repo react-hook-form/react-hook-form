@@ -208,14 +208,14 @@ describe('useFieldArrayNested', () => {
     cy.get('#nest-remove-all-1').click();
     cy.get('#nest-remove-all-0').click();
 
-    // cy.get('#touched-nested-2').contains(
-    //   '{"test":[{"firstName":true},{"firstName":true},{"firstName":true},null]}',
-    // );
-    //
-    // cy.get('#dirty-nested-2').contains(
-    //   '{"test":[{"firstName":true,"lastName":true,"keyValue":[{"name":true},{"name":true}]},{"firstName":true,"lastName":true},{"firstName":true,"lastName":true},{"firstName":true,"lastName":true}]}',
-    // );
-    //
+    cy.get('#touched-nested-2').contains(
+      '{"test":[{"firstName":true},{"firstName":true},{"firstName":true},null]}',
+    );
+
+    cy.get('#dirty-nested-2').contains(
+      '{"test":[{"firstName":true,"lastName":true,"keyValue":[{"name":true},{"name":true}]},{"firstName":true,"lastName":true},{"firstName":true,"lastName":true},{"firstName":true,"lastName":true}]}',
+    );
+
     // cy.get('#remove').click();
     // cy.get('#remove').click();
     // cy.get('#remove').click();
