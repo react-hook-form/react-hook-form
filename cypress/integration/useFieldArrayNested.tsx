@@ -180,43 +180,43 @@ describe('useFieldArrayNested', () => {
     //   }),
     // );
 
-    // cy.get('#dirty-nested-0').should(($state) =>
-    //   expect(JSON.parse($state.text())).to.be.deep.equal({
-    //     test: [
-    //       {
-    //         firstName: true,
-    //         lastName: true,
-    //         keyValue: [{ name: true }, { name: true }, { name: true }],
-    //       },
-    //       {
-    //         firstName: true,
-    //         lastName: true,
-    //         keyValue: [
-    //           { name: true },
-    //           { name: true },
-    //           { name: true },
-    //           { name: true },
-    //         ],
-    //       },
-    //       {
-    //         firstName: true,
-    //         lastName: true,
-    //         keyValue: [
-    //           { name: true },
-    //           { name: true },
-    //           { name: true },
-    //           { name: true },
-    //         ],
-    //       },
-    //       {
-    //         firstName: true,
-    //         lastName: true,
-    //         keyValue: [{ name: true }, { name: true }],
-    //       },
-    //     ],
-    //   }),
-    // );
-    //
+    cy.get('#dirty-nested-0').should(($state) =>
+      expect(JSON.parse($state.text())).to.be.deep.equal({
+        test: [
+          {
+            firstName: true,
+            lastName: true,
+            keyValue: [{ name: true }, { name: true }, { name: true }],
+          },
+          {
+            firstName: true,
+            lastName: true,
+            keyValue: [
+              { name: true },
+              { name: true },
+              { name: true },
+              { name: true },
+            ],
+          },
+          {
+            firstName: true,
+            lastName: true,
+            keyValue: [
+              { name: true },
+              { name: true },
+              { name: true },
+              { name: true },
+            ],
+          },
+          {
+            firstName: true,
+            lastName: true,
+            keyValue: [{ name: true }, { name: true }],
+          },
+        ],
+      }),
+    );
+
     // cy.get('#nest-remove-all-3').click();
     // cy.get('#nest-remove-all-2').click();
     // cy.get('#nest-remove-all-1').click();
