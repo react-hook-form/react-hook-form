@@ -165,21 +165,21 @@ describe('useFieldArrayNested', () => {
     //   'has.value',
     //   'append',
     // );
-    //
-    // cy.get('#touched-nested-3').should(($state) =>
-    //   expect(JSON.parse($state.text())).to.be.deep.equal({
-    //     test: [
-    //       {
-    //         firstName: true,
-    //         keyValue: [{ name: true }, { name: true }, { name: true }],
-    //       },
-    //       { firstName: true },
-    //       { firstName: true },
-    //       { keyValue: [{ name: true }, { name: true }] },
-    //     ],
-    //   }),
-    // );
-    //
+
+    cy.get('#touched-nested-3').should(($state) =>
+      expect(JSON.parse($state.text())).to.be.deep.equal({
+        test: [
+          {
+            firstName: true,
+            keyValue: [{ name: true }, { name: true }, { name: true }],
+          },
+          { firstName: true },
+          { firstName: true },
+          { keyValue: [{ name: true }, { name: true }] },
+        ],
+      }),
+    );
+
     // cy.get('#dirty-nested-0').should(($state) =>
     //   expect(JSON.parse($state.text())).to.be.deep.equal({
     //     test: [
