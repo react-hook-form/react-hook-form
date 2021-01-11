@@ -235,7 +235,6 @@ export const useFieldArray = <
         args.argB,
       );
       shouldSet && set(fieldArrayDefaultValuesRef.current, name, output);
-      cleanup(fieldArrayDefaultValuesRef.current);
     }
 
     if (Array.isArray(get(formStateRef.current.errors, name))) {
@@ -462,8 +461,7 @@ export const useFieldArray = <
     const defaultValues = get(fieldArrayDefaultValuesRef.current, name);
 
     if (defaultValues && fields.length < defaultValues.length) {
-      defaultValues.pop();
-      set(fieldArrayDefaultValuesRef.current, name, defaultValues);
+      set(fieldArrayDefaultValuesRef.current, name, defaultValues.slice(1));
     }
 
     updateWatchedValue(name);
