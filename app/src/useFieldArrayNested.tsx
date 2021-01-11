@@ -54,8 +54,8 @@ function NestedArray({
         ))}
       </ul>
 
-      {/*<div id={`dirty-nested-${index}`}>{JSON.stringify(dirty)}</div>*/}
-      {/*<div id={`touched-nested-${index}`}>{JSON.stringify(touched)}</div>*/}
+      <div id={`dirty-nested-${index}`}>{JSON.stringify(dirty)}</div>
+      <div id={`touched-nested-${index}`}>{JSON.stringify(touched)}</div>
 
       <button
         id={`nest-append-${index}`}
