@@ -31,7 +31,6 @@
     "lint": "eslint '**/*.{js,ts,tsx}'",
     "lint:fix": "npm run lint -- --fix",
     "lint:types": "tsc --noEmit",
-    "check:package": "package-check",
     "coverage": "jest --coverage --coverageReporters=text-lcov | coveralls",
     "test": "jest --config ./scripts/jest/jest.config.js",
     "test:coverage": "npm run test -- --coverage",
