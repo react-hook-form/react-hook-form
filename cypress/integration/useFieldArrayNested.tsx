@@ -146,12 +146,12 @@ describe('useFieldArrayNested', () => {
       }),
     );
 
-    // cy.get(`#nest-append-0`).click();
-    // cy.get(`#nest-prepend-0`).click();
-    // cy.get(`#nest-insert-0`).click();
-    // cy.get(`#nest-swap-0`).click();
-    // cy.get(`#nest-move-0`).click();
-    //
+    cy.get(`#nest-append-0`).click();
+    cy.get(`#nest-prepend-0`).click();
+    cy.get(`#nest-insert-0`).click();
+    cy.get(`#nest-swap-0`).click();
+    cy.get(`#nest-move-0`).click();
+
     // cy.get('input').its('length').should('eq', 11);
     //
     // cy.get('#nest-remove-3').click();
