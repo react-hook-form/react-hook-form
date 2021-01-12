@@ -959,7 +959,7 @@ describe('useForm', () => {
       });
     });
 
-    it('should set object array value', () => {
+    it.only('should set object array value', () => {
       const { result } = renderHook(() =>
         useForm<{
           test: {

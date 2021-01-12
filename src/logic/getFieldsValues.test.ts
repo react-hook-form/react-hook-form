@@ -159,7 +159,7 @@ describe('getFieldsValues', () => {
     });
   });
 
-  it('should work with nested fieldsRef', () => {
+  it('should work with nested fieldsRef object', () => {
     expect(
       getFieldsValues({
         current: {
@@ -187,6 +187,34 @@ describe('getFieldsValues', () => {
         test: 'test',
         test1: 'test',
       },
+    });
+  });
+
+  it('should work with array fieldsRef object', () => {
+    expect(
+      getFieldsValues({
+        current: {
+          // @ts-ignore
+          test2: [
+            {
+              __field: {
+                name: 'test.test',
+                ref: { name: 'test.test' },
+                value: 'test',
+              },
+            },
+            {
+              __field: {
+                name: 'test.test1',
+                ref: { name: 'test.test1' },
+                value: 'test',
+              },
+            },
+          ],
+        },
+      }),
+    ).toEqual({
+      test2: ['test', 'test'],
     });
   });
 });

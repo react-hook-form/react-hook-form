@@ -217,43 +217,44 @@ export function useForm<
 
   const setFieldValue = React.useCallback(
     (name: InternalFieldName, rawValue: SetFieldValue<TFieldValues>) => {
-      const {
-        __field,
-        __field: { ref, refs },
-      } = get(fieldsRef.current, name) as Field;
-      const value =
-        isWeb && isHTMLElement(ref) && isNullOrUndefined(rawValue)
-          ? ''
-          : rawValue;
-      __field.value = rawValue;
+      const { __field } = get(fieldsRef.current, name) as Field;
 
-      if (isRadioInput(ref)) {
-        (refs || []).forEach(
-          (radioRef: HTMLInputElement) =>
-            (radioRef.checked = radioRef.value === value),
-        );
-      } else if (isFileInput(ref) && !isString(value)) {
-        ref.files = value as FileList;
-      } else if (isMultipleSelect(ref)) {
-        [...ref.options].forEach(
-          (selectRef) =>
-            (selectRef.selected = (value as string[]).includes(
-              selectRef.value,
-            )),
-        );
-      } else if (isCheckBoxInput(ref) && refs) {
-        refs.length > 1
-          ? refs.forEach(
-              (checkboxRef) =>
-                (checkboxRef.checked = Array.isArray(value)
-                  ? !!(value as []).find(
-                      (data: string) => data === checkboxRef.value,
-                    )
-                  : value === checkboxRef.value),
-            )
-          : (refs[0].checked = !!value);
-      } else {
-        ref.value = value;
+      if (__field) {
+        const { ref, refs } = __field;
+        const value =
+          isWeb && isHTMLElement(ref) && isNullOrUndefined(rawValue)
+            ? ''
+            : rawValue;
+        __field.value = rawValue;
+
+        if (isRadioInput(ref)) {
+          (refs || []).forEach(
+            (radioRef: HTMLInputElement) =>
+              (radioRef.checked = radioRef.value === value),
+          );
+        } else if (isFileInput(ref) && !isString(value)) {
+          ref.files = value as FileList;
+        } else if (isMultipleSelect(ref)) {
+          [...ref.options].forEach(
+            (selectRef) =>
+              (selectRef.selected = (value as string[]).includes(
+                selectRef.value,
+              )),
+          );
+        } else if (isCheckBoxInput(ref) && refs) {
+          refs.length > 1
+            ? refs.forEach(
+                (checkboxRef) =>
+                  (checkboxRef.checked = Array.isArray(value)
+                    ? !!(value as []).find(
+                        (data: string) => data === checkboxRef.value,
+                      )
+                    : value === checkboxRef.value),
+              )
+            : (refs[0].checked = !!value);
+        } else {
+          ref.value = value;
+        }
       }
     },
     [],
@@ -828,7 +829,7 @@ export function useForm<
           },
     };
 
-    fieldsRef.current[name] = field;
+    set(fieldsRef.current, name, field);
 
     const defaultValue = updateValueAndGetDefault(name);
 
@@ -871,7 +872,7 @@ export function useForm<
       }
     }
 
-    fieldsRef.current[name] = {
+    set(fieldsRef.current, name, {
       __field: {
         ...(get(fieldsRef.current, name)
           ? {
@@ -882,7 +883,7 @@ export function useForm<
         name,
         ...options,
       },
-    };
+    });
 
     updateValueAndGetDefault(name);
 

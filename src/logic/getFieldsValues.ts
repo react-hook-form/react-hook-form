@@ -12,7 +12,15 @@ const getFieldsValues = (
 
     if (field) {
       const { __field, ...current } = field;
-      set(output, name, __field && !__field.ref.disabled ? __field.value : {});
+      set(
+        output,
+        name,
+        __field && !__field.ref.disabled
+          ? __field.value
+          : Array.isArray(field)
+          ? []
+          : {},
+      );
 
       if (isObject(current)) {
         getFieldsValues(
