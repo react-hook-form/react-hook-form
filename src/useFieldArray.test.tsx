@@ -1314,7 +1314,7 @@ describe('useFieldArray', () => {
             test: [{ id: '0', value: '1' }],
           },
           undefined,
-          false,
+          { criteriaMode: undefined },
         );
       });
 
@@ -1713,7 +1713,7 @@ describe('useFieldArray', () => {
             test: [{ id: '0', value: '1' }],
           },
           undefined,
-          false,
+          { criteriaMode: undefined },
         );
       });
 
@@ -2656,7 +2656,7 @@ describe('useFieldArray', () => {
             test: [],
           },
           undefined,
-          false,
+          { criteriaMode: undefined },
         );
       });
 
@@ -3201,7 +3201,7 @@ describe('useFieldArray', () => {
             test: [{ id: '0', value: '1' }],
           },
           undefined,
-          false,
+          { criteriaMode: undefined },
         );
       });
 
@@ -3524,7 +3524,7 @@ describe('useFieldArray', () => {
             ],
           },
           undefined,
-          false,
+          { criteriaMode: undefined },
         );
       });
 
@@ -3882,7 +3882,7 @@ describe('useFieldArray', () => {
             ],
           },
           undefined,
-          false,
+          { criteriaMode: undefined },
         );
       });
 

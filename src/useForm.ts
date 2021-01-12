@@ -342,7 +342,7 @@ export function useForm<
       const { errors } = await resolverRef.current!(
         getValues(),
         contextRef.current,
-        isValidateAllFieldCriteria,
+        { criteriaMode },
       );
 
       for (const name of names) {
@@ -354,7 +354,7 @@ export function useForm<
 
       return errors;
     },
-    [shouldRenderBaseOnError, isValidateAllFieldCriteria],
+    [shouldRenderBaseOnError, criteriaMode],
   );
 
   const trigger = React.useCallback(
@@ -544,7 +544,7 @@ export function useForm<
           const { errors } = await resolverRef.current(
             getValues(),
             contextRef.current,
-            isValidateAllFieldCriteria,
+            { criteriaMode },
           );
           const previousFormIsValid = formStateRef.current.isValid;
           error = get(errors, name);
@@ -614,7 +614,7 @@ export function useForm<
             ...values,
           },
           contextRef.current,
-          isValidateAllFieldCriteria,
+          { criteriaMode },
         );
         const isValid = isEmptyObject(errors);
 
@@ -626,7 +626,7 @@ export function useForm<
         getIsValid();
       }
     },
-    [isValidateAllFieldCriteria],
+    [criteriaMode],
   );
 
   function clearErrors(
@@ -901,7 +901,7 @@ export function useForm<
           const { errors, values } = await resolverRef.current(
             fieldValues,
             contextRef.current,
-            isValidateAllFieldCriteria,
+            { criteriaMode },
           );
           formStateRef.current.errors = fieldErrors = errors;
           fieldValues = values;
@@ -955,7 +955,7 @@ export function useForm<
         });
       }
     },
-    [shouldFocusError, isValidateAllFieldCriteria],
+    [shouldFocusError, isValidateAllFieldCriteria, criteriaMode],
   );
 
   const resetRefs = ({
