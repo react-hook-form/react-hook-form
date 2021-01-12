@@ -13,9 +13,9 @@ const focusFieldBy = (
       if (field) {
         const { __field, ...current } = field;
 
-        if (field.__field.ref.focus && isUndefined(field.__field.ref.focus())) {
+        if (__field && __field.ref.focus && isUndefined(__field.ref.focus())) {
           break;
-        } else if (field.__field.refs) {
+        } else if (field.__field && field.__field.refs) {
           field.__field.refs[0].focus();
           break;
         }

@@ -1,7 +1,6 @@
 import * as React from 'react';
 import set from '../utils/set';
 import { FieldRefs } from '../types';
-import isObject from '../utils/isObject';
 
 const getFieldsValues = (
   fieldsRef: React.MutableRefObject<FieldRefs>,
@@ -22,7 +21,7 @@ const getFieldsValues = (
           : {},
       );
 
-      if (isObject(current)) {
+      if (current) {
         getFieldsValues(
           {
             current,

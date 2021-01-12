@@ -7,6 +7,7 @@ import {
   act as actComponent,
   screen,
 } from '@testing-library/react';
+import get from './utils/get';
 import { useForm } from './';
 import { VALIDATION_MODE } from './constants';
 import {
@@ -959,7 +960,7 @@ describe('useForm', () => {
       });
     });
 
-    it.only('should set object array value', () => {
+    it('should set object array value', () => {
       const { result } = renderHook(() =>
         useForm<{
           test: {
@@ -1090,21 +1091,21 @@ describe('useForm', () => {
 
       act(() => result.current.setValue('test', ['1', '2', '3']));
 
-      expect(result.current.control.fieldsRef.current['test.0']).toEqual({
+      expect(get(result.current.control.fieldsRef.current, 'test.0')).toEqual({
         __field: {
           ref: { name: 'test.0', value: '1' },
           name: 'test.0',
           value: '1',
         },
       });
-      expect(result.current.control.fieldsRef.current['test.1']).toEqual({
+      expect(get(result.current.control.fieldsRef.current, 'test.1')).toEqual({
         __field: {
           ref: { name: 'test.1', value: '2' },
           name: 'test.1',
           value: '2',
         },
       });
-      expect(result.current.control.fieldsRef.current['test.2']).toEqual({
+      expect(get(result.current.control.fieldsRef.current, 'test.2')).toEqual({
         __field: {
           ref: { name: 'test.2', value: '3' },
           name: 'test.2',
@@ -1134,21 +1135,27 @@ describe('useForm', () => {
         ]),
       );
 
-      expect(result.current.control.fieldsRef.current['test.0.test']).toEqual({
+      expect(
+        get(result.current.control.fieldsRef.current, 'test.0.test'),
+      ).toEqual({
         __field: {
           ref: { name: 'test.0.test', value: '1' },
           name: 'test.0.test',
           value: '1',
         },
       });
-      expect(result.current.control.fieldsRef.current['test.1.test']).toEqual({
+      expect(
+        get(result.current.control.fieldsRef.current, 'test.1.test'),
+      ).toEqual({
         __field: {
           ref: { name: 'test.1.test', value: '2' },
           name: 'test.1.test',
           value: '2',
         },
       });
-      expect(result.current.control.fieldsRef.current['test.2.test']).toEqual({
+      expect(
+        get(result.current.control.fieldsRef.current, 'test.2.test'),
+      ).toEqual({
         __field: {
           ref: { name: 'test.2.test', value: '3' },
           name: 'test.2.test',
@@ -1179,21 +1186,27 @@ describe('useForm', () => {
       act(() =>
         result.current.setValue('test', { bill: '1', luo: '2', test: '3' }),
       );
-      expect(result.current.control.fieldsRef.current['test.bill']).toEqual({
+      expect(
+        get(result.current.control.fieldsRef.current, 'test.bill'),
+      ).toEqual({
         __field: {
           ref: { name: 'test.bill', value: '1' },
           name: 'test.bill',
           value: '1',
         },
       });
-      expect(result.current.control.fieldsRef.current['test.luo']).toEqual({
-        __field: {
-          ref: { name: 'test.luo', value: '2' },
-          name: 'test.luo',
-          value: '2',
+      expect(get(result.current.control.fieldsRef.current, 'test.luo')).toEqual(
+        {
+          __field: {
+            ref: { name: 'test.luo', value: '2' },
+            name: 'test.luo',
+            value: '2',
+          },
         },
-      });
-      expect(result.current.control.fieldsRef.current['test.test']).toEqual({
+      );
+      expect(
+        get(result.current.control.fieldsRef.current, 'test.test'),
+      ).toEqual({
         __field: {
           ref: { name: 'test.test', value: '3' },
           name: 'test.test',

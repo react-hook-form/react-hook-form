@@ -18,14 +18,12 @@ import isEmptyObject from './utils/isEmptyObject';
 import isRadioInput from './utils/isRadioInput';
 import isFileInput from './utils/isFileInput';
 import { getPath } from './utils/getPath';
-import isPrimitive from './utils/isPrimitive';
 import isFunction from './utils/isFunction';
 import isString from './utils/isString';
 import isUndefined from './utils/isUndefined';
 import get from './utils/get';
 import set from './utils/set';
 import unset from './utils/unset';
-import isKey from './utils/isKey';
 import modeChecker from './utils/validationModeChecker';
 import isMultipleSelect from './utils/isMultipleSelect';
 import compact from './utils/compact';
@@ -41,7 +39,6 @@ import {
   UnpackNestedValue,
   FieldName,
   InternalFieldName,
-  FieldErrors,
   Field,
   FieldRefs,
   UseFormProps,
@@ -361,6 +358,39 @@ export function useForm<
     [shouldRenderBaseOnError, isValidateAllFieldCriteria],
   );
 
+  const validateForm = async (fieldsRef: React.MutableRefObject<FieldRefs>) => {
+    for (const name in fieldsRef.current) {
+      const field = fieldsRef.current[name];
+
+      if (field) {
+        const { __field, ...current } = field;
+
+        if (__field) {
+          const fieldError = await validateField(
+            field,
+            isValidateAllFieldCriteria,
+          );
+
+          if (fieldError[field.__field.name]) {
+            set(
+              formStateRef.current.errors,
+              field.__field.name,
+              fieldError[field.__field.name],
+            );
+            unset(validFieldsRef.current, field.__field.name);
+          } else if (get(fieldsWithValidationRef.current, field.__field.name)) {
+            unset(formStateRef.current.errors, field.__field.name);
+            set(validFieldsRef.current, field.__field.name, true);
+          }
+        }
+
+        if (current) {
+          await validateForm({ current });
+        }
+      }
+    }
+  };
+
   const trigger = React.useCallback(
     async (name?: FieldName<TFieldValues> | FieldName<TFieldValues>[]) => {
       const fields = isUndefined(name)
@@ -379,9 +409,11 @@ export function useForm<
           fields,
         );
       } else {
-        await Promise.all(
-          fields.map(async (data) => await executeValidation(data, null)),
-        );
+        isUndefined(name)
+          ? await validateForm(fieldsRef)
+          : await Promise.all(
+              fields.map(async (data) => await executeValidation(data, null)),
+            );
       }
 
       formStateSubjectRef.current.next({
@@ -421,42 +453,46 @@ export function useForm<
       value: SetFieldValue<TFieldValues>,
       config: SetValueConfig,
     ) => {
-      if (get(fieldsRef.current, name) as Field) {
-        setFieldValue(name, value);
-        config.shouldDirty && updateAndGetDirtyState(name);
-        config.shouldValidate && trigger(name as FieldName<TFieldValues>);
-      } else if (!isPrimitive(value)) {
-        setInternalValues(name, value, config);
+      const field = get(fieldsRef.current, name);
 
-        if (fieldArrayNamesRef.current.has(name)) {
-          set(fieldArrayValuesRef.current, name, value);
+      if (field) {
+        if (field.__field) {
+          setFieldValue(name, value);
+          config.shouldDirty && updateAndGetDirtyState(name);
+          config.shouldValidate && trigger(name as FieldName<TFieldValues>);
+        } else {
+          setInternalValues(name, value, config);
 
-          useFieldArraySubjectRef.current.next({
-            defaultValues: { ...fieldArrayValuesRef.current },
-          });
+          if (fieldArrayNamesRef.current.has(name)) {
+            set(fieldArrayValuesRef.current, name, value);
 
-          if (
-            (readFormStateRef.current.isDirty ||
-              readFormStateRef.current.dirty) &&
-            config.shouldDirty
-          ) {
-            set(
-              formStateRef.current.dirty,
-              name,
-              setFieldArrayDirtyFields(
-                value,
-                get(defaultValuesRef.current, name, []),
-                get(formStateRef.current.dirty, name, []),
-              ),
-            );
-
-            formStateSubjectRef.current.next({
-              dirty: formStateRef.current.dirty,
-              isDirty: !deepEqual(
-                { ...getValues(), [name]: value },
-                defaultValuesRef.current,
-              ),
+            useFieldArraySubjectRef.current.next({
+              defaultValues: { ...fieldArrayValuesRef.current },
             });
+
+            if (
+              (readFormStateRef.current.isDirty ||
+                readFormStateRef.current.dirty) &&
+              config.shouldDirty
+            ) {
+              set(
+                formStateRef.current.dirty,
+                name,
+                setFieldArrayDirtyFields(
+                  value,
+                  get(defaultValuesRef.current, name, []),
+                  get(formStateRef.current.dirty, name, []),
+                ),
+              );
+
+              formStateSubjectRef.current.next({
+                dirty: formStateRef.current.dirty,
+                isDirty: !deepEqual(
+                  { ...getValues(), [name]: value },
+                  defaultValuesRef.current,
+                ),
+              });
+            }
           }
         }
       }
@@ -636,13 +672,9 @@ export function useForm<
     name?: FieldName<TFieldValues> | FieldName<TFieldValues>[],
   ): void {
     name &&
-      (Array.isArray(name) ? name : [name]).forEach((inputName) =>
-        (get(fieldsRef.current, inputName) as Field) &&
-        (get(fieldsRef.current, inputName) as Field).__field &&
-        isKey(inputName)
-          ? delete formStateRef.current.errors[inputName]
-          : unset(formStateRef.current.errors, inputName),
-      );
+      (Array.isArray(name) ? name : [name]).forEach((inputName) => {
+        unset(formStateRef.current.errors, inputName);
+      });
 
     formStateSubjectRef.current.next({
       errors: name ? formStateRef.current.errors : {},
@@ -844,8 +876,6 @@ export function useForm<
     }
 
     if (options) {
-      set(fieldsWithValidationRef.current, name, true);
-
       if (!isOnSubmit && field && readFormStateRef.current.isValid) {
         validateField(field, isValidateAllFieldCriteria).then((error) => {
           isEmptyObject(error)
@@ -884,6 +914,7 @@ export function useForm<
         ...options,
       },
     });
+    options && set(fieldsWithValidationRef.current, name, true);
 
     updateValueAndGetDefault(name);
 
@@ -907,7 +938,6 @@ export function useForm<
         e.preventDefault();
         e.persist();
       }
-      let fieldErrors: FieldErrors<TFieldValues> = {};
       let fieldValues = getFieldsValues(fieldsRef);
 
       readFormStateRef.current.isSubmitting &&
@@ -922,35 +952,14 @@ export function useForm<
             contextRef.current,
             isValidateAllFieldCriteria,
           );
-          formStateRef.current.errors = fieldErrors = errors;
+          formStateRef.current.errors = errors;
           fieldValues = values;
         } else {
-          for (const field of Object.values(fieldsRef.current)) {
-            if (field) {
-              const fieldError = await validateField(
-                field,
-                isValidateAllFieldCriteria,
-              );
-
-              if (fieldError[field.__field.name]) {
-                set(
-                  fieldErrors,
-                  field.__field.name,
-                  fieldError[field.__field.name],
-                );
-                unset(validFieldsRef.current, field.__field.name);
-              } else if (
-                get(fieldsWithValidationRef.current, field.__field.name)
-              ) {
-                unset(formStateRef.current.errors, field.__field.name);
-                set(validFieldsRef.current, field.__field.name, true);
-              }
-            }
-          }
+          await validateForm(fieldsRef);
         }
 
         if (
-          isEmptyObject(fieldErrors) &&
+          isEmptyObject(formStateRef.current.errors) &&
           Object.keys(formStateRef.current.errors).every((name) =>
             get(fieldValues, name),
           )
@@ -961,10 +970,6 @@ export function useForm<
           });
           await onValid(fieldValues, e);
         } else {
-          formStateRef.current.errors = {
-            ...formStateRef.current.errors,
-            ...fieldErrors,
-          };
           onInvalid && (await onInvalid(formStateRef.current.errors, e));
           shouldFocusError &&
             focusFieldBy(fieldsRef.current, (key: string) =>
