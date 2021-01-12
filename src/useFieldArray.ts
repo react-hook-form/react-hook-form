@@ -84,7 +84,7 @@ export const useFieldArray = <
     ),
   );
 
-  set(fieldArrayValuesRef.current, name as InternalFieldName, fields);
+  set(fieldArrayValuesRef.current, name as InternalFieldName, [...fields]);
   fieldArrayNamesRef.current.add(name as InternalFieldName);
 
   const omitKey = <
