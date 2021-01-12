@@ -218,13 +218,14 @@ export function useForm<
   const setFieldValue = React.useCallback(
     (name: InternalFieldName, rawValue: SetFieldValue<TFieldValues>) => {
       const {
+        __field,
         __field: { ref, refs },
       } = get(fieldsRef.current, name) as Field;
       const value =
         isWeb && isHTMLElement(ref) && isNullOrUndefined(rawValue)
           ? ''
           : rawValue;
-      fieldsRef.current[name]!.__field.value = rawValue;
+      __field.value = rawValue;
 
       if (isRadioInput(ref)) {
         (refs || []).forEach(
