@@ -178,6 +178,15 @@ export const useFieldArray = <
     shouldSet = true,
     shouldUpdateValid = false,
   ) => {
+    if (get(fieldsRef.current, name)) {
+      const output = method(
+        get(fieldsRef.current, name as InternalFieldName),
+        args.argA,
+        args.argB,
+      );
+      shouldSet && set(fieldsRef.current, name as InternalFieldName, output);
+    }
+
     if (get(fieldArrayValuesRef.current, name as InternalFieldName)) {
       const output = method(
         get(fieldArrayValuesRef.current, name as InternalFieldName),

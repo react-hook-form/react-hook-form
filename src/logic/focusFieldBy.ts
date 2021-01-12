@@ -7,22 +7,20 @@ const focusFieldBy = (
   callback: (name: string) => boolean,
 ) => {
   for (const key in fields) {
-    if (callback(key)) {
-      const field = fields[key];
+    const field = fields[key];
 
-      if (field) {
-        const { __field, ...current } = field;
+    if (field) {
+      const { __field, ...current } = field;
 
-        if (__field && __field.ref.focus && isUndefined(__field.ref.focus())) {
+      if (__field && callback(__field.name)) {
+        if (__field.ref.focus && isUndefined(__field.ref.focus())) {
           break;
-        } else if (field.__field && field.__field.refs) {
-          field.__field.refs[0].focus();
+        } else if (__field.refs) {
+          __field.refs[0].focus();
           break;
         }
-
-        if (isObject(current)) {
-          focusFieldBy(current, callback);
-        }
+      } else if (isObject(current)) {
+        focusFieldBy(current, callback);
       }
     }
   }
