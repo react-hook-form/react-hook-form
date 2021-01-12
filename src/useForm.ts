@@ -455,44 +455,42 @@ export function useForm<
     ) => {
       const field = get(fieldsRef.current, name);
 
-      if (field) {
-        if (field.__field) {
-          setFieldValue(name, value);
-          config.shouldDirty && updateAndGetDirtyState(name);
-          config.shouldValidate && trigger(name as FieldName<TFieldValues>);
-        } else {
-          setInternalValues(name, value, config);
+      if (field && field.__field) {
+        setFieldValue(name, value);
+        config.shouldDirty && updateAndGetDirtyState(name);
+        config.shouldValidate && trigger(name as FieldName<TFieldValues>);
+      } else {
+        setInternalValues(name, value, config);
 
-          if (fieldArrayNamesRef.current.has(name)) {
-            set(fieldArrayValuesRef.current, name, value);
+        if (fieldArrayNamesRef.current.has(name)) {
+          set(fieldArrayValuesRef.current, name, value);
 
-            useFieldArraySubjectRef.current.next({
-              defaultValues: { ...fieldArrayValuesRef.current },
+          useFieldArraySubjectRef.current.next({
+            defaultValues: { ...fieldArrayValuesRef.current },
+          });
+
+          if (
+            (readFormStateRef.current.isDirty ||
+              readFormStateRef.current.dirty) &&
+            config.shouldDirty
+          ) {
+            set(
+              formStateRef.current.dirty,
+              name,
+              setFieldArrayDirtyFields(
+                value,
+                get(defaultValuesRef.current, name, []),
+                get(formStateRef.current.dirty, name, []),
+              ),
+            );
+
+            formStateSubjectRef.current.next({
+              dirty: formStateRef.current.dirty,
+              isDirty: !deepEqual(
+                { ...getValues(), [name]: value },
+                defaultValuesRef.current,
+              ),
             });
-
-            if (
-              (readFormStateRef.current.isDirty ||
-                readFormStateRef.current.dirty) &&
-              config.shouldDirty
-            ) {
-              set(
-                formStateRef.current.dirty,
-                name,
-                setFieldArrayDirtyFields(
-                  value,
-                  get(defaultValuesRef.current, name, []),
-                  get(formStateRef.current.dirty, name, []),
-                ),
-              );
-
-              formStateSubjectRef.current.next({
-                dirty: formStateRef.current.dirty,
-                isDirty: !deepEqual(
-                  { ...getValues(), [name]: value },
-                  defaultValuesRef.current,
-                ),
-              });
-            }
           }
         }
       }
@@ -769,14 +767,14 @@ export function useForm<
   function unregister(
     name: FieldPath<TFieldValues> | FieldPath<TFieldValues>[],
   ): void {
-    for (const fieldName of Array.isArray(name) ? name : [name]) {
-      const field = get(fieldsRef.current, fieldName) as Field;
+    for (const inputName of Array.isArray(name) ? name : [name]) {
+      const field = get(fieldsRef.current, inputName) as Field;
 
-      if (field && !compact(field.__field.refs || []).length) {
-        unset(validFieldsRef.current, field.__field.ref.name);
-        unset(fieldsWithValidationRef.current, field.__field.ref.name);
-        unset(formStateRef.current.errors, field.__field.ref.name);
-        unset(fieldsRef.current, fieldName);
+      if (field) {
+        unset(validFieldsRef.current, inputName);
+        unset(fieldsWithValidationRef.current, inputName);
+        unset(formStateRef.current.errors, inputName);
+        unset(fieldsRef.current, inputName);
 
         formStateSubjectRef.current.next({
           ...formStateRef.current,
@@ -789,7 +787,7 @@ export function useForm<
           updateIsValid();
 
         watchSubjectRef.current.next({
-          inputName: field.__field.ref.name,
+          inputName,
           inputValue: '',
         });
       }
@@ -1026,7 +1024,7 @@ export function useForm<
   ): void => {
     if (isWeb) {
       for (const field of Object.values(fieldsRef.current)) {
-        if (field) {
+        if (field && field.__field) {
           const { ref, refs } = field.__field;
           const inputRef =
             isRadioOrCheckboxFunction(ref) && Array.isArray(refs)

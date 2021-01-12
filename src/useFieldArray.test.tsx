@@ -1477,7 +1477,7 @@ describe('useFieldArray', () => {
 
       await waitFor(() =>
         expect(renderedItems).toEqual([
-          [{ value: '' }, { value: '' }],
+          [undefined, { value: '111' }, { value: '222' }],
           [{ value: 'test' }, { value: '111' }, { value: '222' }],
         ]),
       );
@@ -3040,8 +3040,8 @@ describe('useFieldArray', () => {
       fireEvent.click(screen.getByRole('button', { name: /insert/i }));
 
       expect(renderedItems).toEqual([
-        [{ value: '' }, { value: '' }],
-        [{ value: '' }, { value: 'test' }, { value: '222' }],
+        [{ value: '111' }, undefined, { value: '222' }],
+        [{ value: '111' }, { value: 'test' }, { value: '222' }],
       ]);
     });
 
@@ -3320,7 +3320,7 @@ describe('useFieldArray', () => {
       expect(watched).toEqual([
         { test: [{ value: '1' }, { value: '2' }] }, // first render
         { test: [{ value: '1' }, { value: '2' }] }, // render inside useEffect in useFieldArray
-        { test: [{ value: '1' }, { value: '2' }] }, // render inside swap method
+        { test: [{ value: '2' }, { value: '1' }] }, // render inside swap method
         { test: [{ value: '2' }, { value: '1' }] }, // render inside useEffect in useFieldArray
       ]);
     });
@@ -3383,7 +3383,7 @@ describe('useFieldArray', () => {
 
       await waitFor(() =>
         expect(renderedItems).toEqual([
-          [{ value: '' }, { value: '' }],
+          [{ value: '222' }, { value: '111' }],
           [{ value: '222' }, { value: '111' }],
         ]),
       );
@@ -3616,7 +3616,7 @@ describe('useFieldArray', () => {
       expect(watched).toEqual([
         { test: [{ value: '1' }, { value: '2' }] }, // first render
         { test: [{ value: '1' }, { value: '2' }] }, // render inside useEffect in useFieldArray
-        { test: [{ value: '1' }, { value: '2' }] }, // render inside move method
+        { test: [{ value: '2' }, { value: '1' }] }, // render inside move method
         { test: [{ value: '2' }, { value: '1' }] }, // render inside useEffect in useFieldArray
       ]);
     });
@@ -3712,7 +3712,7 @@ describe('useFieldArray', () => {
 
       await waitFor(() =>
         expect(renderedItems).toEqual([
-          [{ value: '' }, { value: '' }],
+          [{ value: '222' }, { value: '111' }],
           [{ value: '222' }, { value: '111' }],
         ]),
       );

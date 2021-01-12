@@ -1,7 +1,6 @@
 import * as React from 'react';
 import { useFormContext } from './useFormContext';
 import setFieldArrayDirtyFields from './logic/setFieldArrayDirtyFields';
-import { isMatchFieldArrayName } from './logic/isNameInFieldArray';
 import mapIds from './logic/mapId';
 import getFieldArrayParentName from './logic/getNodeParentName';
 import get from './utils/get';
@@ -122,13 +121,7 @@ export const useFieldArray = <
     return `${name}.${index}`;
   };
 
-  const resetFields = () => {
-    for (const key in fieldsRef.current) {
-      if (isMatchFieldArrayName(key, name as InternalFieldName)) {
-        delete fieldsRef.current[key];
-      }
-    }
-  };
+  const resetFields = () => unset(fieldsRef.current, name);
 
   const setFieldAndValidState = (
     fieldsValues: Partial<FieldArrayWithId<TFieldValues, TName, TKeyName>>[],
