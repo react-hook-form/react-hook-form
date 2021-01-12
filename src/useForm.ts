@@ -217,7 +217,7 @@ export function useForm<
 
   const setFieldValue = React.useCallback(
     (name: InternalFieldName, rawValue: SetFieldValue<TFieldValues>) => {
-      const { ref, refs } = fieldsRef.current[name] as Field;
+      const { ref, refs } = get(fieldsRef.current, name) as Field;
       const value =
         isWeb && isHTMLElement(ref) && isNullOrUndefined(rawValue)
           ? ''
@@ -281,7 +281,7 @@ export function useForm<
       if (readFormStateRef.current.isDirty || readFormStateRef.current.dirty) {
         const isFieldDirty = !deepEqual(
           get(defaultValuesRef.current, name),
-          getFieldValue(fieldsRef.current[name]),
+          getFieldValue(get(fieldsRef.current, name)),
         );
         const isDirtyFieldExist = get(formStateRef.current.dirty, name);
         const previousIsDirty = formStateRef.current.isDirty;
@@ -317,7 +317,7 @@ export function useForm<
       skipReRender?: boolean | null,
     ): Promise<boolean> => {
       if (process.env.NODE_ENV !== 'production') {
-        if (!fieldsRef.current[name]) {
+        if (!get(fieldsRef.current, name)) {
           console.warn('📋 Field is missing with `name` attribute: ', name);
           return false;
         }
@@ -325,7 +325,7 @@ export function useForm<
 
       const error = (
         await validateField(
-          fieldsRef.current[name] as Field,
+          get(fieldsRef.current, name) as Field,
           isValidateAllFieldCriteria,
         )
       )[name];
@@ -401,7 +401,7 @@ export function useForm<
       set(data, name, value);
 
       for (const fieldName of getPath(name, value)) {
-        if (fieldsRef.current[fieldName]) {
+        if (get(fieldsRef.current, fieldName)) {
           setFieldValue(fieldName, get(data, fieldName));
           shouldDirty && updateAndGetDirtyState(fieldName);
           shouldValidate && trigger(fieldName as FieldName<TFieldValues>);
@@ -417,7 +417,7 @@ export function useForm<
       value: SetFieldValue<TFieldValues>,
       config: SetValueConfig,
     ) => {
-      if (fieldsRef.current[name]) {
+      if (get(fieldsRef.current, name)) {
         setFieldValue(name, value);
         config.shouldDirty && updateAndGetDirtyState(name);
         config.shouldValidate && trigger(name as FieldName<TFieldValues>);
@@ -486,15 +486,15 @@ export function useForm<
         target: { value, type: inputType },
       } = event;
       let name = (target as Ref)!.name;
-      const field = fieldsRef.current[name];
+      const field = get(fieldsRef.current, name);
       let error;
       let isValid;
       let inputValue;
 
       if (field) {
-        inputValue = inputType ? getFieldValue(fieldsRef.current[name]) : value;
+        inputValue = inputType ? getFieldValue(field) : value;
         if (!isUndefined(inputValue)) {
-          fieldsRef.current[name]!.value = inputValue;
+          field!.value = inputValue;
         }
 
         const isBlurEvent = type === EVENTS.BLUR;
@@ -633,7 +633,7 @@ export function useForm<
   ): void {
     name &&
       (Array.isArray(name) ? name : [name]).forEach((inputName) =>
-        fieldsRef.current[inputName] && isKey(inputName)
+        get(fieldsRef.current, inputName) && isKey(inputName)
           ? delete formStateRef.current.errors[inputName]
           : unset(formStateRef.current.errors, inputName),
       );
@@ -644,7 +644,7 @@ export function useForm<
   }
 
   function setError(name: FieldName<TFieldValues>, error: ErrorOption) {
-    const ref = (fieldsRef.current[name] || {})!.ref;
+    const ref = (get(fieldsRef.current, name) || {})!.ref;
 
     set(formStateRef.current.errors, name, {
       ...error,
@@ -731,13 +731,13 @@ export function useForm<
     name: FieldPath<TFieldValues> | FieldPath<TFieldValues>[],
   ): void {
     for (const fieldName of Array.isArray(name) ? name : [name]) {
-      const field = fieldsRef.current[fieldName];
+      const field = get(fieldsRef.current, fieldName);
 
       if (field && !compact(field.refs || []).length) {
         unset(validFieldsRef.current, field.ref.name);
         unset(fieldsWithValidationRef.current, field.ref.name);
         unset(formStateRef.current.errors, field.ref.name);
-        delete fieldsRef.current[fieldName];
+        unset(fieldsRef.current, fieldName);
 
         formStateSubjectRef.current.next({
           ...formStateRef.current,
@@ -760,7 +760,7 @@ export function useForm<
   function updateValueAndGetDefault(name: InternalFieldName) {
     let defaultValue;
     const isFieldArray = isNameInFieldArray(fieldArrayNamesRef.current, name);
-    const field = fieldsRef.current[name];
+    const field = get(fieldsRef.current, name);
 
     if (
       field &&
@@ -783,7 +783,7 @@ export function useForm<
     ref: HTMLInputElement,
     options?: RegisterOptions,
   ): ((name: InternalFieldName) => void) | void {
-    let field = fieldsRef.current[name];
+    let field = get(fieldsRef.current, name);
 
     if (!field) {
       return;
@@ -825,10 +825,12 @@ export function useForm<
 
     if (
       isRadioOrCheckbox && Array.isArray(defaultValue)
-        ? !deepEqual(fieldsRef.current[name]!.value, defaultValue)
+        ? !deepEqual(get(fieldsRef.current, name)!.value, defaultValue)
         : true
     ) {
-      fieldsRef.current[name]!.value = getFieldValue(fieldsRef.current[name]);
+      get(fieldsRef.current, name).value = getFieldValue(
+        get(fieldsRef.current, name),
+      );
     }
 
     if (options) {
@@ -861,10 +863,10 @@ export function useForm<
     }
 
     fieldsRef.current[name] = {
-      ...(fieldsRef.current[name]
+      ...(get(fieldsRef.current, name)
         ? {
-            ref: fieldsRef.current[name]!.ref,
-            ...fieldsRef.current[name],
+            ref: get(fieldsRef.current, name)!.ref,
+            ...get(fieldsRef.current, name),
           }
         : { ref: { name } }),
       name,

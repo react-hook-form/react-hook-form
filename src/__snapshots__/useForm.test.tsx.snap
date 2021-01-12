@@ -14,3 +14,5 @@ Object {
   },
 }
 `;
+
+exports[`useForm clearErrors should remove specified errors 1`] = `Object {}`;
