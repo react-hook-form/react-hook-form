@@ -35,10 +35,12 @@ export type FieldElement<TFieldValues extends FieldValues = FieldValues> =
 export type Ref = FieldElement;
 
 export type Field = {
-  ref: Ref;
-  name: InternalFieldName;
-  value?: any;
-  refs?: HTMLInputElement[];
-} & RegisterOptions;
+  __field: {
+    ref: Ref;
+    name: InternalFieldName;
+    value?: any;
+    refs?: HTMLInputElement[];
+  } & RegisterOptions;
+};
 
 export type FieldRefs = Partial<Record<InternalFieldName, Field>>;

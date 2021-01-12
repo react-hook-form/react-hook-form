@@ -217,12 +217,14 @@ export function useForm<
 
   const setFieldValue = React.useCallback(
     (name: InternalFieldName, rawValue: SetFieldValue<TFieldValues>) => {
-      const { ref, refs } = get(fieldsRef.current, name) as Field;
+      const {
+        __field: { ref, refs },
+      } = get(fieldsRef.current, name) as Field;
       const value =
         isWeb && isHTMLElement(ref) && isNullOrUndefined(rawValue)
           ? ''
           : rawValue;
-      fieldsRef.current[name]!.value = rawValue;
+      fieldsRef.current[name]!.__field.value = rawValue;
 
       if (isRadioInput(ref)) {
         (refs || []).forEach(
@@ -281,7 +283,7 @@ export function useForm<
       if (readFormStateRef.current.isDirty || readFormStateRef.current.dirty) {
         const isFieldDirty = !deepEqual(
           get(defaultValuesRef.current, name),
-          getFieldValue(get(fieldsRef.current, name)),
+          getFieldValue(get(fieldsRef.current, name) as Field),
         );
         const isDirtyFieldExist = get(formStateRef.current.dirty, name);
         const previousIsDirty = formStateRef.current.isDirty;
@@ -417,7 +419,7 @@ export function useForm<
       value: SetFieldValue<TFieldValues>,
       config: SetValueConfig,
     ) => {
-      if (get(fieldsRef.current, name)) {
+      if (get(fieldsRef.current, name) as Field) {
         setFieldValue(name, value);
         config.shouldDirty && updateAndGetDirtyState(name);
         config.shouldValidate && trigger(name as FieldName<TFieldValues>);
@@ -486,7 +488,7 @@ export function useForm<
         target: { value, type: inputType },
       } = event;
       let name = (target as Ref)!.name;
-      const field = get(fieldsRef.current, name);
+      const field = get(fieldsRef.current, name) as Field;
       let error;
       let isValid;
       let inputValue;
@@ -494,7 +496,7 @@ export function useForm<
       if (field) {
         inputValue = inputType ? getFieldValue(field) : value;
         if (!isUndefined(inputValue)) {
-          field!.value = inputValue;
+          field.__field.value = inputValue;
         }
 
         const isBlurEvent = type === EVENTS.BLUR;
@@ -633,7 +635,9 @@ export function useForm<
   ): void {
     name &&
       (Array.isArray(name) ? name : [name]).forEach((inputName) =>
-        get(fieldsRef.current, inputName) && isKey(inputName)
+        (get(fieldsRef.current, inputName) as Field) &&
+        (get(fieldsRef.current, inputName) as Field).__field &&
+        isKey(inputName)
           ? delete formStateRef.current.errors[inputName]
           : unset(formStateRef.current.errors, inputName),
       );
@@ -644,7 +648,8 @@ export function useForm<
   }
 
   function setError(name: FieldName<TFieldValues>, error: ErrorOption) {
-    const ref = (get(fieldsRef.current, name) || {})!.ref;
+    const ref = ((get(fieldsRef.current, name) as Field) || { __field: {} })
+      .__field.ref;
 
     set(formStateRef.current.errors, name, {
       ...error,
@@ -731,12 +736,12 @@ export function useForm<
     name: FieldPath<TFieldValues> | FieldPath<TFieldValues>[],
   ): void {
     for (const fieldName of Array.isArray(name) ? name : [name]) {
-      const field = get(fieldsRef.current, fieldName);
+      const field = get(fieldsRef.current, fieldName) as Field;
 
-      if (field && !compact(field.refs || []).length) {
-        unset(validFieldsRef.current, field.ref.name);
-        unset(fieldsWithValidationRef.current, field.ref.name);
-        unset(formStateRef.current.errors, field.ref.name);
+      if (field && !compact(field.__field.refs || []).length) {
+        unset(validFieldsRef.current, field.__field.ref.name);
+        unset(fieldsWithValidationRef.current, field.__field.ref.name);
+        unset(formStateRef.current.errors, field.__field.ref.name);
         unset(fieldsRef.current, fieldName);
 
         formStateSubjectRef.current.next({
@@ -750,7 +755,7 @@ export function useForm<
           updateIsValid();
 
         watchSubjectRef.current.next({
-          inputName: field.ref.name,
+          inputName: field.__field.ref.name,
           inputValue: '',
         });
       }
@@ -760,15 +765,16 @@ export function useForm<
   function updateValueAndGetDefault(name: InternalFieldName) {
     let defaultValue;
     const isFieldArray = isNameInFieldArray(fieldArrayNamesRef.current, name);
-    const field = get(fieldsRef.current, name);
+    const field = get(fieldsRef.current, name) as Field;
 
     if (
       field &&
-      (!isEmptyObject(defaultValuesRef.current) || !isUndefined(field.value))
+      (!isEmptyObject(defaultValuesRef.current) ||
+        !isUndefined(field.__field.value))
     ) {
-      defaultValue = isUndefined(field.value)
+      defaultValue = isUndefined(field.__field.value)
         ? get(defaultValuesRef.current, name)
-        : field.value;
+        : field.__field.value;
 
       if (!isUndefined(defaultValue) && !isFieldArray) {
         setFieldValue(name, defaultValue);
@@ -783,7 +789,7 @@ export function useForm<
     ref: HTMLInputElement,
     options?: RegisterOptions,
   ): ((name: InternalFieldName) => void) | void {
-    let field = get(fieldsRef.current, name);
+    let field = get(fieldsRef.current, name) as Field;
 
     if (!field) {
       return;
@@ -793,31 +799,33 @@ export function useForm<
 
     if (
       (isRadioOrCheckbox
-        ? Array.isArray(field.refs) &&
-          compact(field.refs).find((option) => {
-            return ref.value === option.value && option === ref;
-          })
-        : ref === field.ref) ||
+        ? Array.isArray(field.__field.refs) &&
+          compact(field.__field.refs).find(
+            (option) => ref.value === option.value && option === ref,
+          )
+        : ref === field.__field.ref) ||
       !field
     ) {
       return;
     }
 
-    field = isRadioOrCheckbox
-      ? {
-          ...field,
-          refs: [
-            ...compact(field.refs || []).filter(
-              (ref) => isHTMLElement(ref) && document.contains(ref),
-            ),
+    field = {
+      __field: isRadioOrCheckbox
+        ? {
+            ...field.__field,
+            refs: [
+              ...compact(field.__field.refs || []).filter(
+                (ref) => isHTMLElement(ref) && document.contains(ref),
+              ),
+              ref,
+            ],
+            ref: { type: ref.type, name },
+          }
+        : {
+            ...field.__field,
             ref,
-          ],
-          ref: { type: ref.type, name },
-        }
-      : {
-          ...field,
-          ref,
-        };
+          },
+    };
 
     fieldsRef.current[name] = field;
 
@@ -825,10 +833,10 @@ export function useForm<
 
     if (
       isRadioOrCheckbox && Array.isArray(defaultValue)
-        ? !deepEqual(get(fieldsRef.current, name)!.value, defaultValue)
+        ? !deepEqual(get(fieldsRef.current, name).__field.value, defaultValue)
         : true
     ) {
-      get(fieldsRef.current, name).value = getFieldValue(
+      get(fieldsRef.current, name).__field.value = getFieldValue(
         get(fieldsRef.current, name),
       );
     }
@@ -863,14 +871,16 @@ export function useForm<
     }
 
     fieldsRef.current[name] = {
-      ...(get(fieldsRef.current, name)
-        ? {
-            ref: get(fieldsRef.current, name)!.ref,
-            ...get(fieldsRef.current, name),
-          }
-        : { ref: { name } }),
-      name,
-      ...options,
+      __field: {
+        ...(get(fieldsRef.current, name)
+          ? {
+              ref: get(fieldsRef.current, name).__field.ref,
+              ...get(fieldsRef.current, name).__field,
+            }
+          : { ref: { name } }),
+        name,
+        ...options,
+      },
     };
 
     updateValueAndGetDefault(name);
@@ -920,12 +930,18 @@ export function useForm<
                 isValidateAllFieldCriteria,
               );
 
-              if (fieldError[field.name]) {
-                set(fieldErrors, field.name, fieldError[field.name]);
-                unset(validFieldsRef.current, field.name);
-              } else if (get(fieldsWithValidationRef.current, field.name)) {
-                unset(formStateRef.current.errors, field.name);
-                set(validFieldsRef.current, field.name, true);
+              if (fieldError[field.__field.name]) {
+                set(
+                  fieldErrors,
+                  field.__field.name,
+                  fieldError[field.__field.name],
+                );
+                unset(validFieldsRef.current, field.__field.name);
+              } else if (
+                get(fieldsWithValidationRef.current, field.__field.name)
+              ) {
+                unset(formStateRef.current.errors, field.__field.name);
+                set(validFieldsRef.current, field.__field.name, true);
               }
             }
           }
@@ -1004,7 +1020,7 @@ export function useForm<
     if (isWeb) {
       for (const field of Object.values(fieldsRef.current)) {
         if (field) {
-          const { ref, refs } = field;
+          const { ref, refs } = field.__field;
           const inputRef =
             isRadioOrCheckboxFunction(ref) && Array.isArray(refs)
               ? refs[0]

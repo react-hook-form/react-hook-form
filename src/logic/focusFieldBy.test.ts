@@ -11,10 +11,12 @@ describe('focusFieldBy', () => {
     focusFieldBy(
       {
         test: {
-          name: 'test',
-          ref: {
+          __field: {
             name: 'test',
-            focus,
+            ref: {
+              name: 'test',
+              focus,
+            },
           },
         },
       },
@@ -38,16 +40,18 @@ describe('focusFieldBy', () => {
     focusFieldBy(
       {
         test: {
-          name: 'test',
-          ref: {
+          __field: {
             name: 'test',
-          },
-          refs: [
-            // @ts-expect-error
-            {
-              focus,
+            ref: {
+              name: 'test',
             },
-          ],
+            refs: [
+              // @ts-expect-error
+              {
+                focus,
+              },
+            ],
+          },
         },
       },
       (key) =>

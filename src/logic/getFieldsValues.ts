@@ -6,10 +6,10 @@ export default (fieldsRef: React.MutableRefObject<FieldRefs>) => {
   const output: Record<string, unknown> = {};
 
   for (const name in fieldsRef.current) {
-    const field = fieldsRef.current[name];
+    const field = fieldsRef.current[name]!.__field;
 
     if (field && !field.ref.disabled) {
-      output[name] = field!.value;
+      output[name] = field.value;
     }
   }
 

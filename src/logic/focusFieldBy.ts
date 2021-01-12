@@ -7,10 +7,10 @@ export default (fields: FieldRefs, callback: (name: string) => boolean) => {
       const field = fields[key];
 
       if (field) {
-        if (field.ref.focus && isUndefined(field.ref.focus())) {
+        if (field.__field.ref.focus && isUndefined(field.__field.ref.focus())) {
           break;
-        } else if (field.refs) {
-          field.refs[0].focus();
+        } else if (field.__field.refs) {
+          field.__field.refs[0].focus();
           break;
         }
       }
