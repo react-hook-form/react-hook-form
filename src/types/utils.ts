@@ -41,23 +41,25 @@ export type IsAny<T> = boolean extends (T extends never ? true : false)
   ? true
   : false;
 
-export type DeepMap<T, TValue> = {
-  [K in keyof T]?: IsAny<T[K]> extends true
-    ? any
-    : NonUndefined<T[K]> extends NestedValue | Date | FileList
-    ? TValue
-    : NonUndefined<T[K]> extends object
-    ? DeepMap<T[K], TValue>
-    : NonUndefined<T[K]> extends Array<infer U>
-    ? IsAny<U> extends true
-      ? Array<any>
-      : U extends NestedValue | Date | FileList
-      ? Array<TValue>
-      : U extends object
-      ? Array<DeepMap<U, TValue>>
-      : Array<TValue>
-    : TValue;
-};
+export type DeepMap<T, TValue> = T extends T
+  ? {
+      [K in keyof T]?: IsAny<T[K]> extends true
+        ? any
+        : NonUndefined<T[K]> extends NestedValue | Date | FileList
+        ? TValue
+        : NonUndefined<T[K]> extends object
+        ? DeepMap<T[K], TValue>
+        : NonUndefined<T[K]> extends Array<infer U>
+        ? IsAny<U> extends true
+          ? Array<any>
+          : U extends NestedValue | Date | FileList
+          ? Array<TValue>
+          : U extends object
+          ? Array<DeepMap<U, TValue>>
+          : Array<TValue>
+        : TValue;
+    }
+  : never;
 
 export type IsFlatObject<T extends object> = Extract<
   Exclude<T[keyof T], NestedValue | Date | FileList>,

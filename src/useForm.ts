@@ -100,9 +100,9 @@ export function useForm<
   const useWatchRenderFunctionsRef = React.useRef<UseWatchRenderFunctions>({});
   const fieldsWithValidationRef = React.useRef<
     FieldNamesMarkedBoolean<TFieldValues>
-  >({});
+  >({} as FieldNamesMarkedBoolean<TFieldValues>);
   const validFieldsRef = React.useRef<FieldNamesMarkedBoolean<TFieldValues>>(
-    {},
+    {} as FieldNamesMarkedBoolean<TFieldValues>,
   );
   const defaultValuesRef = React.useRef<DefaultValues<TFieldValues>>(
     defaultValues,
@@ -125,14 +125,14 @@ export function useForm<
   const [formState, setFormState] = React.useState<FormState<TFieldValues>>({
     isDirty: false,
     isValidating: false,
-    dirtyFields: {},
+    dirtyFields: {} as FieldNamesMarkedBoolean<TFieldValues>,
     isSubmitted: false,
     submitCount: 0,
-    touched: {},
+    touched: {} as FieldNamesMarkedBoolean<TFieldValues>,
     isSubmitting: false,
     isSubmitSuccessful: false,
     isValid: !isOnSubmit,
-    errors: {},
+    errors: {} as FieldErrors<TFieldValues>,
   });
   const readFormStateRef = React.useRef<ReadFormState>({
     isDirty: !isProxyEnabled,
@@ -419,7 +419,8 @@ export function useForm<
       }
 
       if (Array.isArray(fields)) {
-        !name && (formStateRef.current.errors = {});
+        !name &&
+          (formStateRef.current.errors = {} as FieldErrors<TFieldValues>);
         const result = await Promise.all(
           fields.map(async (data) => await executeValidation(data, null)),
         );
@@ -783,7 +784,9 @@ export function useForm<
       );
 
     updateFormState({
-      errors: name ? formStateRef.current.errors : {},
+      errors: name
+        ? formStateRef.current.errors
+        : ({} as FieldErrors<TFieldValues>),
     });
   }
 
@@ -1082,7 +1085,7 @@ export function useForm<
         e.preventDefault();
         e.persist();
       }
-      let fieldErrors: FieldErrors<TFieldValues> = {};
+      let fieldErrors = {} as FieldErrors<TFieldValues>;
       let fieldValues = setFieldArrayDefaultValues(
         getFieldsValues(
           fieldsRef,
@@ -1104,7 +1107,7 @@ export function useForm<
             contextRef.current,
             isValidateAllFieldCriteria,
           );
-          formStateRef.current.errors = fieldErrors = errors;
+          formStateRef.current.errors = fieldErrors = errors as FieldErrors<TFieldValues>;
           fieldValues = values;
         } else {
           for (const field of Object.values(fieldsRef.current)) {
@@ -1136,7 +1139,7 @@ export function useForm<
           )
         ) {
           updateFormState({
-            errors: {},
+            errors: {} as FieldErrors<TFieldValues>,
             isSubmitting: true,
           });
           await onValid(fieldValues, e);
@@ -1172,8 +1175,8 @@ export function useForm<
     dirtyFields,
   }: OmitResetState) => {
     if (!isValid) {
-      validFieldsRef.current = {};
-      fieldsWithValidationRef.current = {};
+      validFieldsRef.current = {} as FieldNamesMarkedBoolean<TFieldValues>;
+      fieldsWithValidationRef.current = {} as FieldNamesMarkedBoolean<TFieldValues>;
     }
 
     fieldArrayDefaultValuesRef.current = {};
@@ -1185,9 +1188,15 @@ export function useForm<
       isDirty: isDirty ? formStateRef.current.isDirty : false,
       isSubmitted: isSubmitted ? formStateRef.current.isSubmitted : false,
       isValid: isValid ? formStateRef.current.isValid : false,
-      dirtyFields: dirtyFields ? formStateRef.current.dirtyFields : {},
-      touched: touched ? formStateRef.current.touched : {},
-      errors: errors ? formStateRef.current.errors : {},
+      dirtyFields: dirtyFields
+        ? formStateRef.current.dirtyFields
+        : ({} as FieldNamesMarkedBoolean<TFieldValues>),
+      touched: touched
+        ? formStateRef.current.touched
+        : ({} as FieldNamesMarkedBoolean<TFieldValues>),
+      errors: errors
+        ? formStateRef.current.errors
+        : ({} as FieldErrors<TFieldValues>),
       isSubmitting: false,
       isSubmitSuccessful: false,
     });
