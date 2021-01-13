@@ -553,9 +553,6 @@ export function useForm<
           ...modeRef.current,
         });
         let state = updateAndGetDirtyState(name, false);
-        let shouldRender =
-          !isEmptyObject(state) ||
-          (!isBlurEvent && isFieldWatched(name as FieldName<TFieldValues>));
 
         if (
           isBlurEvent &&
@@ -569,16 +566,17 @@ export function useForm<
           };
         }
 
+        let shouldRender =
+          !isEmptyObject(state) ||
+          (!isBlurEvent && isFieldWatched(name as FieldName<TFieldValues>));
+
         if (shouldSkipValidation) {
           !isBlurEvent &&
             watchSubjectRef.current.next({
               name,
               value: inputValue,
             });
-          return (
-            (!isEmptyObject(state) || (shouldRender && isEmptyObject(state))) &&
-            formStateSubjectRef.current.next(state)
-          );
+          return shouldRender && formStateSubjectRef.current.next(state);
         }
 
         formStateSubjectRef.current.next({

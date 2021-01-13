@@ -28,6 +28,7 @@ import WatchFieldArray from './watchUseFieldArray';
 import UseWatch from './useWatch';
 import FormStateWithNestedFields from './formStateWithNestedFields';
 import UseFieldArrayUnregister from './useFieldArrayUnregister';
+import WatchUseFieldArrayNested from './watchUseFieldArrayNested';
 import Test from './test';
 import { UseFormState } from './useFormState';
 
@@ -107,6 +108,7 @@ const App: React.FC = () => {
       <Route path="/useWatch" exact component={UseWatch} />
       <Route path="/useFormState" exact component={UseFormState} />
       <Route path="/useFieldArrayNested" exact component={UseFieldArrayNested} />
+      <Route path="/watchUseFieldArrayNested" exact component={WatchUseFieldArrayNested} />
       <Route path="/test" exact component={Test} />
     </Router>
   );
