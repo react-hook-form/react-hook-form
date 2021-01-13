@@ -146,10 +146,11 @@ export default () => {
     },
   );
   const renderCountRef = React.useRef(0);
+  const [result, setResult] = React.useState({});
   renderCountRef.current++;
 
   return (
-    <form onSubmit={handleSubmit((e) => console.log(e))}>
+    <form onSubmit={handleSubmit((e) => setResult(e))}>
       {fields.map((item, index) => {
         return (
           <div key={item.id}>
@@ -244,7 +245,9 @@ export default () => {
 
       <div id="count">{renderCountRef.current}</div>
 
-      <button>Submit</button>
+      <p id="result">{JSON.stringify(result)}</p>
+
+      <button id={"submit"}>Submit</button>
     </form>
   );
 };

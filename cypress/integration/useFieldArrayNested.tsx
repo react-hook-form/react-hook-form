@@ -51,6 +51,12 @@ describe('useFieldArrayNested', () => {
       }),
     );
 
+    cy.get('#submit').click();
+
+    cy.get('#result').contains(
+      '{"test":[{"firstName":"Bill","keyValue":[{"name":"insert"},{"name":"1a"},{"name":"1c"},{"name":"append"}]}]}',
+    );
+
     cy.get('#prepend').click();
 
     cy.get('#dirty-nested-0').should(($state) =>
@@ -141,6 +147,12 @@ describe('useFieldArrayNested', () => {
       }),
     );
 
+    cy.get('#submit').click();
+
+    cy.get('#result').contains(
+      '{"test":[{"firstName":"prepend"},{"firstName":"insert"},{"firstName":"append"},{"firstName":"Bill","keyValue":[{"name":"insert"},{"name":"1a"},{"name":"1c"},{"name":"append"}]}]}',
+    );
+
     cy.get(`#nest-append-0`).click();
     cy.get(`#nest-prepend-0`).click();
     cy.get(`#nest-insert-0`).click();
@@ -198,6 +210,11 @@ describe('useFieldArrayNested', () => {
       }),
     );
 
+    cy.get('#submit').click();
+    cy.get('#result').contains(
+      '{"test":[{"firstName":"prepend","keyValue":[{"name":"insert"},{"name":"prepend"},{"name":"append"}]},{"firstName":"insert"},{"firstName":"append"},{"firstName":"Bill","keyValue":[{"name":"insert"},{"name":"append"}]}]}',
+    );
+
     cy.get('#nest-remove-all-3').click();
     cy.get('#nest-remove-all-2').click();
     cy.get('#nest-remove-all-1').click();
@@ -211,6 +228,11 @@ describe('useFieldArrayNested', () => {
       '{"test":[{"firstName":true,"lastName":true,"keyValue":[{"name":true},{"name":true}]},{"firstName":true,"lastName":true},{"firstName":true,"lastName":true},{"firstName":true,"lastName":true}]}',
     );
 
+    cy.get('#submit').click();
+    cy.get('#result').contains(
+      '{"test":[{"firstName":"prepend"},{"firstName":"insert"},{"firstName":"append"},{"firstName":"Bill"}]}',
+    );
+
     cy.get('#remove').click();
     cy.get('#remove').click();
     cy.get('#remove').click();
@@ -219,12 +241,18 @@ describe('useFieldArrayNested', () => {
       '{"test":[{"firstName":true,"lastName":true,"keyValue":[{"name":true},{"name":true}]}]}',
     );
 
+    cy.get('#submit').click();
+    cy.get('#result').contains('{"test":[{"firstName":"prepend"}]}');
+
     cy.get('#removeAll').click();
 
     cy.get('#dirty-nested-0').should('not.exist');
 
     cy.get('#touched-nested-0').should('not.exist');
 
-    cy.get('#count').contains('9');
+    cy.get('#submit').click();
+    cy.get('#result').contains('{}');
+
+    cy.get('#count').contains('15');
   });
 });

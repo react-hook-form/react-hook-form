@@ -3981,93 +3981,94 @@ describe('useFieldArray', () => {
       expect(screen.getAllByRole('textbox').length).toEqual(1);
     });
 
-    // issue: type issue with nested field array
-    // it('should prepend correctly with default values on nested array fields', () => {
-    //   type FormInputs = {
-    //     nest: {
-    //       test: {
-    //         value: string;
-    //         nestedArray: { value: string }[];
-    //       }[];
-    //     };
-    //   };
-    //
-    //   const ChildComponent = ({
-    //     index,
-    //     control,
-    //   }: {
-    //     control: Control<FormInputs>;
-    //     index: number;
-    //   }) => {
-    //     const { fields } = useFieldArray({
-    //       // @ts-ignore
-    //       name: `nest.test.${index}.nestedArray` as const,
-    //       control,
-    //     });
-    //
-    //     return (
-    //       <>
-    //         {fields.map((item, i) => (
-    //           <input
-    //             key={item.id}
-    //             {...control.register(
-    //               `nest.test.${index}.nestedArray.${i}.value` as const,
-    //             )}
-    //             // @ts-ignore
-    //             defaultValue={item.value}
-    //           />
-    //         ))}
-    //       </>
-    //     );
-    //   };
-    //
-    //   const Component = () => {
-    //     const { register, control } = useForm<FormInputs>({
-    //       defaultValues: {
-    //         nest: {
-    //           test: [
-    //             { value: '1', nestedArray: [{ value: '2' }, { value: '3' }] },
-    //             { value: '4', nestedArray: [{ value: '5' }] },
-    //           ],
-    //         },
-    //       },
-    //     });
-    //     const { fields, prepend } = useFieldArray({
-    //       name: 'nest.test',
-    //       control,
-    //     });
-    //
-    //     return (
-    //       <>
-    //         {fields.map((item, i) => (
-    //           <div key={item.id}>
-    //             <input
-    //               {...register(`nest.test.${i}.value` as const)}
-    //               defaultValue={item.value}
-    //             />
-    //             <ChildComponent control={control} index={i} />
-    //           </div>
-    //         ))}
-    //
-    //         <button type={'button'} onClick={() => prepend({ value: 'test' })}>
-    //           prepend
-    //         </button>
-    //       </>
-    //     );
-    //   };
-    //
-    //   render(<Component />);
-    //
-    //   expect(screen.getAllByRole('textbox')).toHaveLength(5);
-    //
-    //   fireEvent.click(screen.getByRole('button', { name: /prepend/i }));
-    //
-    //   expect(screen.getAllByRole('textbox')).toHaveLength(6);
-    //
-    //   expect(
-    //     (screen.getAllByRole('textbox')[0] as HTMLInputElement).value,
-    //   ).toEqual('test');
-    // });
+    // todo: issue: type issue with nested field array
+    it('should prepend correctly with default values on nested array fields', () => {
+      type FormInputs = {
+        nest: {
+          test: {
+            value: string;
+            nestedArray: { value: string }[];
+          }[];
+        };
+      };
+
+      const ChildComponent = ({
+        index,
+        control,
+      }: {
+        control: Control<FormInputs>;
+        index: number;
+      }) => {
+        const { fields } = useFieldArray({
+          // @ts-ignore
+          name: `nest.test.${index}.nestedArray` as const,
+          control,
+        });
+
+        return (
+          <>
+            {fields.map((item, i) => (
+              <input
+                // @ts-ignore
+                key={item.id}
+                {...control.register(
+                  `nest.test.${index}.nestedArray.${i}.value` as const,
+                )}
+                // @ts-ignore
+                defaultValue={item.value}
+              />
+            ))}
+          </>
+        );
+      };
+
+      const Component = () => {
+        const { register, control } = useForm<FormInputs>({
+          defaultValues: {
+            nest: {
+              test: [
+                { value: '1', nestedArray: [{ value: '2' }, { value: '3' }] },
+                { value: '4', nestedArray: [{ value: '5' }] },
+              ],
+            },
+          },
+        });
+        const { fields, prepend } = useFieldArray({
+          name: 'nest.test',
+          control,
+        });
+
+        return (
+          <>
+            {fields.map((item, i) => (
+              <div key={item.id}>
+                <input
+                  {...register(`nest.test.${i}.value` as const)}
+                  defaultValue={item.value}
+                />
+                <ChildComponent control={control} index={i} />
+              </div>
+            ))}
+
+            <button type={'button'} onClick={() => prepend({ value: 'test' })}>
+              prepend
+            </button>
+          </>
+        );
+      };
+
+      render(<Component />);
+
+      expect(screen.getAllByRole('textbox')).toHaveLength(5);
+
+      fireEvent.click(screen.getByRole('button', { name: /prepend/i }));
+
+      expect(screen.getAllByRole('textbox')).toHaveLength(6);
+
+      expect(
+        (screen.getAllByRole('textbox')[0] as HTMLInputElement).value,
+      ).toEqual('test');
+    });
 
     it('should render correct amount of child array fields', async () => {
       type FormValues = {
