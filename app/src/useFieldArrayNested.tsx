@@ -122,7 +122,13 @@ function NestedArray({
 }
 
 export default () => {
-  const { register, control, reset, setValue } = useForm<FormValues>({
+  const {
+    register,
+    control,
+    reset,
+    setValue,
+    handleSubmit,
+  } = useForm<FormValues>({
     defaultValues: {
       test: [
         {
@@ -143,7 +149,7 @@ export default () => {
   renderCountRef.current++;
 
   return (
-    <form>
+    <form onSubmit={handleSubmit((e) => console.log(e))}>
       {fields.map((item, index) => {
         return (
           <div key={item.id}>
@@ -152,10 +158,7 @@ export default () => {
               defaultValue={`${item.firstName}`}
               {...register(`test.${index}.firstName` as const)}
             />
-            <NestedArray
-              control={control}
-              index={index}
-            />
+            <NestedArray control={control} index={index} />
           </div>
         );
       })}
@@ -240,6 +243,8 @@ export default () => {
       </button>
 
       <div id="count">{renderCountRef.current}</div>
+
+      <button>Submit</button>
     </form>
   );
 };

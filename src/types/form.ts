@@ -177,14 +177,20 @@ export type Control<TFieldValues extends FieldValues = FieldValues> = {
   >;
   watchSubjectRef: React.MutableRefObject<
     SubjectType<{
-      inputName?: string;
-      inputValue?: unknown;
+      name?: string;
+      value?: unknown;
     }>
   >;
   controllerSubjectRef: React.MutableRefObject<
     SubjectType<DefaultValues<TFieldValues>>
   >;
-  useFieldArraySubjectRef: React.MutableRefObject<SubjectType<any>>;
+  fieldArraySubjectRef: React.MutableRefObject<
+    SubjectType<{
+      name?: string;
+      fields: any;
+      isReset?: boolean;
+    }>
+  >;
   updateIsValid: (fieldsValues: FieldValues) => void;
   validFieldsRef: React.MutableRefObject<FieldNamesMarkedBoolean<TFieldValues>>;
   fieldsWithValidationRef: React.MutableRefObject<

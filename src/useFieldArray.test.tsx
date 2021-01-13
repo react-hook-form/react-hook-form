@@ -789,7 +789,9 @@ describe('useFieldArray', () => {
             {fields.map((item, index) => (
               <Controller
                 key={item.id}
-                render={({ field }) => <input {...field} aria-label={'name'} />}
+                render={({ field }) => (
+                  <input {...field} aria-label={`${name}.${index}.name`} />
+                )}
                 name={`${name}.${index}.name` as any}
                 control={control}
                 // @ts-ignore todo: how to fix this when pass name down as prop
@@ -848,7 +850,9 @@ describe('useFieldArray', () => {
 
       fireEvent.click(screen.getByRole('button', { name: 'setValue' }));
 
-      const input = screen.getByLabelText('name') as HTMLInputElement;
+      const input = screen.getByLabelText(
+        'test.0.keyValue.0.name',
+      ) as HTMLInputElement;
 
       expect(input.value).toEqual('2a');
 
@@ -922,85 +926,136 @@ describe('useFieldArray', () => {
     });
 
     it('should append data into the fields', () => {
-      const { result } = renderHook(() => {
-        const { register, control } = useForm();
+      let currentFields: any = [];
+      const Component = () => {
+        const { register, control } = useForm<{
+          test: { test: string }[];
+        }>();
         const { fields, append } = useFieldArray({
           control,
           name: 'test',
         });
 
-        return { register, fields, append };
+        currentFields = fields;
+
+        return (
+          <form>
+            {fields.map((field, index) => {
+              return (
+                <input
+                  key={field.id}
+                  {...register(`test.${index}.test`)}
+                  defaultValue={field.test}
+                />
+              );
+            })}
+            <button type={'button'} onClick={() => append({ test: 'test' })}>
+              append
+            </button>
+            <button
+              type={'button'}
+              onClick={() =>
+                append([{ test: 'test-batch' }, { test: 'test-batch1' }])
+              }
+            >
+              appendBatch
+            </button>
+          </form>
+        );
+      };
+
+      render(<Component />);
+
+      act(() => {
+        fireEvent.click(screen.getByRole('button', { name: 'append' }));
       });
 
       act(() => {
-        result.current.append({ test: 'test' });
+        expect(currentFields).toEqual([{ id: '0', test: 'test' }]);
       });
-
-      expect(result.current.fields).toEqual([{ id: '0', test: 'test' }]);
 
       act(() => {
-        result.current.append({ test: 'test1' });
+        fireEvent.click(screen.getByRole('button', { name: 'append' }));
       });
-
-      expect(result.current.fields).toEqual([
-        { id: '0', test: 'test' },
-        { id: '1', test: 'test1' },
-      ]);
 
       act(() => {
-        result.current.append({});
+        expect(currentFields).toEqual([
+          { id: '0', test: 'test' },
+          { id: '1', test: 'test' },
+        ]);
       });
-
-      expect(result.current.fields).toEqual([
-        { id: '0', test: 'test' },
-        { id: '1', test: 'test1' },
-        { id: '2' },
-      ]);
 
       act(() => {
-        result.current.append([{ test: 'test2' }, { test: 'test3' }]);
+        fireEvent.click(screen.getByRole('button', { name: 'appendBatch' }));
       });
 
-      expect(result.current.fields).toEqual([
-        { id: '0', test: 'test' },
-        { id: '1', test: 'test1' },
-        { id: '2' },
-        { id: '3', test: 'test2' },
-        { id: '4', test: 'test3' },
-      ]);
+      act(() => {
+        expect(currentFields).toEqual([
+          { id: '0', test: 'test' },
+          { id: '1', test: 'test' },
+          { id: '2', test: 'test-batch' },
+          { id: '3', test: 'test-batch1' },
+        ]);
+      });
     });
 
     it.each(['isDirty', 'dirtyFields'])(
       'should be dirty when value is appended with %s',
       () => {
-        const { result } = renderHook(() => {
-          const { register, formState, control } = useForm();
+        let isDirtyValue;
+        let dirtyValue;
+
+        const Component = () => {
+          const {
+            register,
+            control,
+            formState: { isDirty, dirty },
+          } = useForm<{
+            test: { test: string }[];
+          }>();
           const { fields, append } = useFieldArray({
             control,
             name: 'test',
           });
 
-          return { register, formState, fields, append };
-        });
+          isDirtyValue = isDirty;
+          dirtyValue = dirty;
 
-        result.current.formState.isDirty;
-        result.current.formState.dirty;
+          return (
+            <form>
+              {fields.map((field, index) => {
+                return (
+                  <input
+                    key={field.id}
+                    {...register(`test.${index}.test`)}
+                    defaultValue={field.test}
+                  />
+                );
+              })}
+              <button type={'button'} onClick={() => append({ test: 'test' })}>
+                append
+              </button>
+            </form>
+          );
+        };
+
+        render(<Component />);
 
         act(() => {
-          result.current.append({ value: 'test' });
+          fireEvent.click(screen.getByRole('button', { name: 'append' }));
         });
 
         act(() => {
-          result.current.append({ value: 'test1' });
+          fireEvent.click(screen.getByRole('button', { name: 'append' }));
         });
 
         act(() => {
-          result.current.append({ value: 'test2' });
+          fireEvent.click(screen.getByRole('button', { name: 'append' }));
         });
 
-        expect(result.current.formState.isDirty).toBeTruthy();
-        expect(result.current.formState.dirty).toEqual({
-          test: [{ value: true }, { value: true }, { value: true }],
+        expect(isDirtyValue).toBeTruthy();
+        expect(dirtyValue).toEqual({
+          test: [{ test: true }, { test: true }, { test: true }],
         });
       },
     );
@@ -1037,7 +1092,12 @@ describe('useFieldArray', () => {
 
       fireEvent.click(screen.getByRole('button', { name: /append/i }));
 
-      expect(watched).toEqual([{}, {}, {}, { test: [{ value: '' }] }]);
+      expect(watched).toEqual([
+        {},
+        {},
+        { test: [{ value: '' }] },
+        { test: [{ value: '' }] },
+      ]);
     });
 
     it('should focus if shouldFocus is true', () => {
@@ -1149,7 +1209,7 @@ describe('useFieldArray', () => {
         expect(renderedItems).toEqual([
           undefined,
           undefined,
-          undefined,
+          [{ value: 'test' }],
           [{ value: 'test' }],
         ]),
       );
@@ -1206,52 +1266,79 @@ describe('useFieldArray', () => {
 
   describe('prepend', () => {
     it('should pre-append data into the fields', () => {
-      const { result } = renderHook(() => {
-        const { control, formState } = useForm();
+      let currentFields: any = [];
+
+      const Component = () => {
+        const { control, register } = useForm<{
+          test: {
+            test: string;
+          }[];
+        }>();
         const { fields, prepend } = useFieldArray({
           control,
           name: 'test',
         });
 
-        return { formState, fields, prepend };
+        currentFields = fields;
+
+        return (
+          <form>
+            {fields.map((field, index) => (
+              <div key={field.id}>
+                <input
+                  {...register(`test.${index}.test` as const)}
+                  defaultValue={field.test}
+                />
+              </div>
+            ))}
+            <button type={'button'} onClick={() => prepend({ test: 'test' })}>
+              prepend
+            </button>
+            <button
+              type={'button'}
+              onClick={() =>
+                prepend([{ test: 'test-batch' }, { test: 'test-batch1' }])
+              }
+            >
+              prependBatch
+            </button>
+          </form>
+        );
+      };
+
+      render(<Component />);
+
+      act(() => {
+        fireEvent.click(screen.getByRole('button', { name: 'prepend' }));
       });
 
       act(() => {
-        result.current.prepend({ test: 'test' });
+        expect(currentFields).toEqual([{ id: '0', test: 'test' }]);
       });
-
-      expect(result.current.fields).toEqual([{ id: '0', test: 'test' }]);
 
       act(() => {
-        result.current.prepend({ test: 'test1' });
+        fireEvent.click(screen.getByRole('button', { name: 'prepend' }));
       });
-
-      expect(result.current.fields).toEqual([
-        { id: '1', test: 'test1' },
-        { id: '0', test: 'test' },
-      ]);
 
       act(() => {
-        result.current.prepend({});
+        expect(currentFields).toEqual([
+          { id: '1', test: 'test' },
+          { id: '0', test: 'test' },
+        ]);
       });
-
-      expect(result.current.fields).toEqual([
-        { id: '2' },
-        { id: '1', test: 'test1' },
-        { id: '0', test: 'test' },
-      ]);
 
       act(() => {
-        result.current.prepend([{ test: 'test2' }, { test: 'test3' }]);
+        fireEvent.click(screen.getByRole('button', { name: 'prependBatch' }));
       });
 
-      expect(result.current.fields).toEqual([
-        { id: '3', test: 'test2' },
-        { id: '4', test: 'test3' },
-        { id: '2' },
-        { id: '1', test: 'test1' },
-        { id: '0', test: 'test' },
-      ]);
+      act(() => {
+        expect(currentFields).toEqual([
+          { id: '2', test: 'test-batch' },
+          { id: '3', test: 'test-batch1' },
+          { id: '1', test: 'test' },
+          { id: '0', test: 'test' },
+        ]);
+      });
     });
 
     it.each(['isDirty', 'dirtyFields'])(
@@ -1414,7 +1501,7 @@ describe('useFieldArray', () => {
       expect(watched).toEqual([
         {}, // first render
         {}, // render inside useEffect in useFieldArray
-        {}, // render inside prepend method
+        { test: [{ value: '' }] }, // render inside prepend method
         { test: [{ value: '' }] }, // render inside useEffect in useFieldArray
       ]);
     });
@@ -1477,7 +1564,7 @@ describe('useFieldArray', () => {
 
       await waitFor(() =>
         expect(renderedItems).toEqual([
-          [{ value: '' }, { value: '' }],
+          [{ value: 'test' }, { value: '111' }, { value: '222' }],
           [{ value: 'test' }, { value: '111' }, { value: '222' }],
         ]),
       );
@@ -2246,9 +2333,9 @@ describe('useFieldArray', () => {
       expect(watched).toEqual([
         {}, // first render
         {}, // render inside useEffect in useFieldArray
-        {}, // render inside append method
+        { test: [{ value: '' }] }, // render inside append method
         { test: [{ value: '' }] }, // render inside useEffect in useFieldArray
-        {}, // render inside remove method
+        { test: [] }, // render inside remove method
         {}, // render inside useEffect in useFieldArray
       ]);
     });
@@ -2316,7 +2403,7 @@ describe('useFieldArray', () => {
 
       await waitFor(() =>
         expect(renderedItems).toEqual([
-          undefined,
+          [{ value: '111' }, { value: '222' }],
           [{ value: '111' }, { value: '222' }],
         ]),
       );
@@ -2978,7 +3065,7 @@ describe('useFieldArray', () => {
       expect(watched).toEqual([
         {}, // first render
         {}, // render inside useEffect in useFieldArray
-        {}, // render inside insert method
+        { test: [{ value: '' }] }, // render inside insert method
         { test: [{ value: '' }] }, // render inside useEffect in useFieldArray
       ]);
     });
@@ -3040,8 +3127,8 @@ describe('useFieldArray', () => {
       fireEvent.click(screen.getByRole('button', { name: /insert/i }));
 
       expect(renderedItems).toEqual([
-        [{ value: '' }, { value: '' }],
-        [{ value: '' }, { value: 'test' }, { value: '222' }],
+        [{ value: '111' }, { value: 'test' }, { value: '222' }],
+        [{ value: '111' }, { value: 'test' }, { value: '222' }],
       ]);
     });
 
@@ -3320,7 +3407,7 @@ describe('useFieldArray', () => {
       expect(watched).toEqual([
         { test: [{ value: '1' }, { value: '2' }] }, // first render
         { test: [{ value: '1' }, { value: '2' }] }, // render inside useEffect in useFieldArray
-        { test: [{ value: '1' }, { value: '2' }] }, // render inside swap method
+        { test: [{ value: '2' }, { value: '1' }] }, // render inside swap method
         { test: [{ value: '2' }, { value: '1' }] }, // render inside useEffect in useFieldArray
       ]);
     });
@@ -3383,7 +3470,7 @@ describe('useFieldArray', () => {
 
       await waitFor(() =>
         expect(renderedItems).toEqual([
-          [{ value: '' }, { value: '' }],
+          [{ value: '222' }, { value: '111' }],
           [{ value: '222' }, { value: '111' }],
         ]),
       );
@@ -3616,7 +3703,7 @@ describe('useFieldArray', () => {
       expect(watched).toEqual([
         { test: [{ value: '1' }, { value: '2' }] }, // first render
         { test: [{ value: '1' }, { value: '2' }] }, // render inside useEffect in useFieldArray
-        { test: [{ value: '1' }, { value: '2' }] }, // render inside move method
+        { test: [{ value: '2' }, { value: '1' }] }, // render inside move method
         { test: [{ value: '2' }, { value: '1' }] }, // render inside useEffect in useFieldArray
       ]);
     });
@@ -3712,7 +3799,7 @@ describe('useFieldArray', () => {
 
       await waitFor(() =>
         expect(renderedItems).toEqual([
-          [{ value: '' }, { value: '' }],
+          [{ value: '222' }, { value: '111' }],
           [{ value: '222' }, { value: '111' }],
         ]),
       );

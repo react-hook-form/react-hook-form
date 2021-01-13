@@ -105,12 +105,7 @@ describe('useFieldArrayNested', () => {
           {
             firstName: true,
             lastName: true,
-            keyValue: [
-              { name: true },
-              { name: true },
-              { name: true },
-              { name: true },
-            ],
+            keyValue: [{ name: true }, { name: true }],
           },
           {
             firstName: true,

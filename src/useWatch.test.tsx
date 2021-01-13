@@ -491,13 +491,9 @@ describe('useWatch', () => {
           },
         });
 
-        expect(watchedValue).toEqual({
-          options: [{ option: '' }, { option: '' }],
-        });
-
         actComponent(() => {
           expect(watchedValue).toEqual({
-            options: [{ option: '' }, { option: '' }],
+            options: [{ option: 'test' }, { option: 'test1' }],
           });
         });
       });

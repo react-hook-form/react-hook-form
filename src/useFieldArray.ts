@@ -1,7 +1,6 @@
 import * as React from 'react';
 import { useFormContext } from './useFormContext';
 import setFieldArrayDirtyFields from './logic/setFieldArrayDirtyFields';
-import { isMatchFieldArrayName } from './logic/isNameInFieldArray';
 import mapIds from './logic/mapId';
 import getFieldArrayParentName from './logic/getNodeParentName';
 import get from './utils/get';
@@ -56,7 +55,7 @@ export const useFieldArray = <
     watchFieldsRef,
     isFormDirty,
     watchSubjectRef,
-    useFieldArraySubjectRef,
+    fieldArraySubjectRef,
     fieldArrayNamesRef,
     fieldsRef,
     defaultValuesRef,
@@ -84,7 +83,7 @@ export const useFieldArray = <
     ),
   );
 
-  set(fieldArrayValuesRef.current, name as InternalFieldName, fields);
+  set(fieldArrayValuesRef.current, name as InternalFieldName, [...fields]);
   fieldArrayNamesRef.current.add(name as InternalFieldName);
 
   const omitKey = <
@@ -122,18 +121,16 @@ export const useFieldArray = <
     return `${name}.${index}`;
   };
 
-  const resetFields = () => {
-    for (const key in fieldsRef.current) {
-      if (isMatchFieldArrayName(key, name as InternalFieldName)) {
-        delete fieldsRef.current[key];
-      }
-    }
-  };
+  const resetFields = () => unset(fieldsRef.current, name);
 
   const setFieldAndValidState = (
     fieldsValues: Partial<FieldArrayWithId<TFieldValues, TName, TKeyName>>[],
   ) => {
     setFields(mapIds(fieldsValues, keyName));
+    fieldArraySubjectRef.current.next({
+      name,
+      fields: omitKey(fieldsValues),
+    });
 
     if (readFormStateRef.current.isValid) {
       const values = getValues();
@@ -178,14 +175,13 @@ export const useFieldArray = <
     shouldSet = true,
     shouldUpdateValid = false,
   ) => {
-    if (get(fieldArrayValuesRef.current, name as InternalFieldName)) {
+    if (get(fieldsRef.current, name)) {
       const output = method(
-        get(fieldArrayValuesRef.current, name as InternalFieldName),
+        get(fieldsRef.current, name as InternalFieldName),
         args.argA,
         args.argB,
       );
-      shouldSet &&
-        set(fieldArrayValuesRef.current, name as InternalFieldName, output);
+      shouldSet && set(fieldsRef.current, name as InternalFieldName, output);
     }
 
     if (
@@ -409,7 +405,7 @@ export const useFieldArray = <
       }
     }
 
-    watchSubjectRef.current.next({ inputName: name as InternalFieldName });
+    watchSubjectRef.current.next({ name });
 
     focusNameRef.current &&
       focusFieldBy(fieldsRef.current, (key: string) =>
@@ -420,10 +416,19 @@ export const useFieldArray = <
   }, [fields, name]);
 
   React.useEffect(() => {
-    const tearDown = useFieldArraySubjectRef.current.subscribe({
-      next: ({ defaultValues }) => {
-        resetFields();
-        setFieldAndValidState(get(defaultValues, name));
+    const tearDown = fieldArraySubjectRef.current.subscribe({
+      next: ({ name: inputName, fields, isReset }) => {
+        if (isReset) {
+          if (inputName) {
+            const value = getValues();
+            set(value, inputName, fields);
+            set(fieldArrayValuesRef.current, name, fields);
+            setFieldAndValidState(get(value, name));
+          } else {
+            fieldArrayValuesRef.current = { ...fields };
+            setFieldAndValidState(get(fields, name));
+          }
+        }
       },
     });
 
