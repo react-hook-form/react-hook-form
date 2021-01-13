@@ -552,6 +552,8 @@ export function useForm<
           isSubmitted: formStateRef.current.isSubmitted,
           ...modeRef.current,
         });
+        const isWatched =
+          !isBlurEvent && isFieldWatched(name as FieldName<TFieldValues>);
         let state = updateAndGetDirtyState(name, false);
 
         if (
@@ -566,9 +568,7 @@ export function useForm<
           };
         }
 
-        let shouldRender =
-          !isEmptyObject(state) ||
-          (!isBlurEvent && isFieldWatched(name as FieldName<TFieldValues>));
+        let shouldRender = !isEmptyObject(state) || isWatched;
 
         if (shouldSkipValidation) {
           !isBlurEvent &&
@@ -576,7 +576,10 @@ export function useForm<
               name,
               value: inputValue,
             });
-          return shouldRender && formStateSubjectRef.current.next(state);
+          return (
+            shouldRender &&
+            formStateSubjectRef.current.next(isWatched ? {} : state)
+          );
         }
 
         formStateSubjectRef.current.next({
