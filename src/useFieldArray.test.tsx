@@ -3532,7 +3532,7 @@ describe('useFieldArray', () => {
   });
 
   describe('move', () => {
-    it.each(['dirty'])(
+    it.each(['isDirty', 'dirty'])(
       'should move dirty into pointed position when formState.%s is defined',
       () => {
         const { result } = renderHook(() => {
