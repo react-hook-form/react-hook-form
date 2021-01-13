@@ -437,7 +437,7 @@ export const useFieldArray = <
     return () => {
       tearDown.unsubscribe();
       resetFields();
-      unset(fieldArrayValuesRef, name as InternalFieldName);
+      unset(fieldArrayValuesRef.current, name as InternalFieldName);
       fieldArrayNamesRef.current.delete(name as InternalFieldName);
     };
   }, []);
