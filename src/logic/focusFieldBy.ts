@@ -1,13 +1,15 @@
 import isUndefined from '../utils/isUndefined';
 import { FieldRefs } from '../types';
 import isObject from '../utils/isObject';
+import { get } from '../utils';
 
 const focusFieldBy = (
   fields: FieldRefs,
   callback: (name: string) => boolean,
+  fieldsNames?: Record<string, any>,
 ) => {
-  for (const key in fields) {
-    const field = fields[key];
+  for (const key in fieldsNames || fields) {
+    const field = get(fields, key);
 
     if (field) {
       const { __field, ...current } = field;

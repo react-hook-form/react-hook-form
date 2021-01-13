@@ -100,7 +100,7 @@ describe('useFieldArray', () => {
       expect(JSON.parse($state.text())).to.be.deep.equal({}),
     );
 
-    cy.get('#renderCount').contains('38');
+    cy.get('#renderCount').contains('39');
   });
 
   it('should behaviour correctly with defaultValue', () => {
@@ -246,13 +246,13 @@ describe('useFieldArray', () => {
 
     cy.get('#append').click();
 
-    cy.get('ul > li').eq(0).find('input').should('have.value', '36');
+    cy.get('ul > li').eq(0).find('input').should('have.value', '37');
 
     cy.get('#prepend').click();
 
-    cy.get('ul > li').eq(0).find('input').should('have.value', '38');
+    cy.get('ul > li').eq(0).find('input').should('have.value', '39');
 
-    cy.get('#renderCount').contains('39');
+    cy.get('#renderCount').contains('40');
   });
 
   it('should behaviour correctly with defaultValue and without auto focus', () => {
@@ -398,13 +398,13 @@ describe('useFieldArray', () => {
 
     cy.get('#append').click();
 
-    cy.get('ul > li').eq(0).find('input').should('have.value', '33');
+    cy.get('ul > li').eq(0).find('input').should('have.value', '34');
 
     cy.get('#prepend').click();
 
-    cy.get('ul > li').eq(0).find('input').should('have.value', '34');
+    cy.get('ul > li').eq(0).find('input').should('have.value', '35');
 
-    cy.get('#renderCount').contains('35');
+    cy.get('#renderCount').contains('36');
   });
 
   it('should display the correct dirty value with default value', () => {

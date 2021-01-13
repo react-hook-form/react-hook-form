@@ -81,24 +81,30 @@ export function useForm<
   criteriaMode,
 }: UseFormProps<TFieldValues, TContext> = {}): UseFormMethods<TFieldValues> {
   const fieldsRef = React.useRef<FieldRefs>({});
+  const fieldsNamesRef = React.useRef<Partial<Record<string, any>>>({});
   const formStateSubjectRef = React.useRef(
     new Subject<Partial<FormState<TFieldValues>>>(),
   );
   const watchSubjectRef = React.useRef(
     new Subject<{
-      inputName?: string;
-      inputValue?: unknown;
+      name?: string;
+      value?: unknown;
     }>(),
   );
   const controllerSubjectRef = React.useRef(
     new Subject<DefaultValues<TFieldValues>>(),
   );
-  const useFieldArraySubjectRef = React.useRef(new Subject<any>());
-  const useFieldArrayStateRef = React.useRef({
-    name: false,
-    fields: false,
-    defaultValues: {},
-  });
+  const fieldArraySubjectRef = React.useRef(
+    new Subject<{
+      name?: string;
+      fields: any;
+      isReset?: boolean;
+    }>(),
+  );
+  const fieldArrayStateRef = React.useRef<{
+    name?: string;
+    fields?: any[];
+  }>({});
   const fieldArrayValuesRef = React.useRef<FieldArrayDefaultValues>({});
   const watchFieldsRef = React.useRef<InternalNameSet>(new Set());
   const isMountedRef = React.useRef(false);
@@ -463,10 +469,10 @@ export function useForm<
         setInternalValues(name, value, config);
 
         if (fieldArrayNamesRef.current.has(name)) {
-          set(fieldArrayValuesRef.current, name, value);
-
-          useFieldArraySubjectRef.current.next({
-            defaultValues: { ...fieldArrayValuesRef.current },
+          fieldArraySubjectRef.current.next({
+            fields: value,
+            name,
+            isReset: true,
           });
 
           if (
@@ -510,7 +516,7 @@ export function useForm<
   ): void {
     setInternalValue(name, value, config || {});
     isFieldWatched(name) && formStateSubjectRef.current.next({});
-    watchSubjectRef.current.next({ inputName: name, inputValue: value });
+    watchSubjectRef.current.next({ name, value });
   }
 
   const handleChange = React.useCallback(
@@ -564,8 +570,8 @@ export function useForm<
         if (shouldSkipValidation) {
           !isBlurEvent &&
             watchSubjectRef.current.next({
-              inputName: name,
-              inputValue,
+              name,
+              value: inputValue,
             });
           return (
             (!isEmptyObject(state) || (shouldRender && isEmptyObject(state))) &&
@@ -610,8 +616,8 @@ export function useForm<
 
         !isBlurEvent &&
           watchSubjectRef.current.next({
-            inputName: name,
-            inputValue,
+            name,
+            value: inputValue,
           });
         shouldRenderBaseOnError(name, error, shouldRender, state, isValid);
       }
@@ -702,7 +708,7 @@ export function useForm<
       defaultValue?: T,
       isGlobal?: boolean,
     ) => {
-      const { fields, name } = useFieldArrayStateRef.current;
+      const { fields, name } = fieldArrayStateRef.current;
       const isArrayNames = Array.isArray(fieldNames);
       const fieldValues = isMountedRef.current
         ? getFieldsValues(fieldsRef)
@@ -714,8 +720,8 @@ export function useForm<
 
       if (isString(name) && fields) {
         set(fieldValues, name, fields);
-        useFieldArrayStateRef.current.fields = false;
-        useFieldArrayStateRef.current.name = false;
+        fieldArrayStateRef.current.fields = undefined;
+        fieldArrayStateRef.current.name = undefined;
       }
 
       if (isUndefined(fieldNames)) {
@@ -787,8 +793,8 @@ export function useForm<
           updateIsValid();
 
         watchSubjectRef.current.next({
-          inputName,
-          inputValue: '',
+          name: inputName,
+          value: '',
         });
       }
     }
@@ -913,6 +919,7 @@ export function useForm<
       },
     });
     options && set(fieldsWithValidationRef.current, name, true);
+    fieldsNamesRef.current[name] = '';
 
     updateValueAndGetDefault(name);
 
@@ -970,8 +977,10 @@ export function useForm<
         } else {
           onInvalid && (await onInvalid(formStateRef.current.errors, e));
           shouldFocusError &&
-            focusFieldBy(fieldsRef.current, (key: string) =>
-              get(formStateRef.current.errors, key),
+            focusFieldBy(
+              fieldsRef.current,
+              (key: string) => get(formStateRef.current.errors, key),
+              fieldsNamesRef.current,
             );
         }
       } finally {
@@ -1049,11 +1058,12 @@ export function useForm<
     } as DefaultValues<TFieldValues>);
 
     watchSubjectRef.current.next({
-      inputValue: { ...defaultValuesRef.current },
+      value: { ...defaultValuesRef.current },
     });
 
-    useFieldArraySubjectRef.current.next({
-      defaultValues: { ...defaultValuesRef.current },
+    fieldArraySubjectRef.current.next({
+      fields: { ...defaultValuesRef.current },
+      isReset: true,
     });
 
     resetRefs(omitResetState);
@@ -1077,11 +1087,11 @@ export function useForm<
       },
     });
 
-    const useFieldArraySubjectTearDown = useFieldArraySubjectRef.current.subscribe(
+    const useFieldArraySubjectTearDown = fieldArraySubjectRef.current.subscribe(
       {
         next: (state) => {
           if (state.fields && state.name) {
-            useFieldArrayStateRef.current = state;
+            fieldArrayStateRef.current = state;
           }
         },
       },
@@ -1107,7 +1117,7 @@ export function useForm<
         watchFieldsRef,
         isFormDirty,
         formStateSubjectRef,
-        useFieldArraySubjectRef,
+        fieldArraySubjectRef,
         controllerSubjectRef,
         watchSubjectRef,
         watchInternal,
