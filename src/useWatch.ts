@@ -76,7 +76,7 @@ export function useWatch<TFieldValues>({
     const tearDown = watchSubjectRef.current.subscribe({
       next: ({ name: inputName, value }) => {
         updateValue(
-          isString(name) && name === inputName && !isUndefined(value)
+          name === inputName && !isUndefined(value)
             ? value
             : watchInternal(name as string, defaultValue),
         );
