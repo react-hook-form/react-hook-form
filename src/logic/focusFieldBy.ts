@@ -1,12 +1,12 @@
 import isUndefined from '../utils/isUndefined';
-import { FieldRefs } from '../types';
 import isObject from '../utils/isObject';
 import { get } from '../utils';
+import { FieldRefs, InternalFieldName } from '../types';
 
 const focusFieldBy = (
   fields: FieldRefs,
   callback: (name: string) => boolean,
-  fieldsNames?: Record<string, any>,
+  fieldsNames?: Partial<Record<InternalFieldName, string>>,
 ) => {
   for (const key in fieldsNames || fields) {
     const field = get(fields, key);

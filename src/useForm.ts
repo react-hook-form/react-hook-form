@@ -81,7 +81,9 @@ export function useForm<
   criteriaMode,
 }: UseFormProps<TFieldValues, TContext> = {}): UseFormMethods<TFieldValues> {
   const fieldsRef = React.useRef<FieldRefs>({});
-  const fieldsNamesRef = React.useRef<Partial<Record<string, any>>>({});
+  const fieldsNamesRef = React.useRef<
+    Partial<Record<InternalFieldName, string>>
+  >({});
   const formStateSubjectRef = React.useRef(
     new Subject<Partial<FormState<TFieldValues>>>(),
   );
