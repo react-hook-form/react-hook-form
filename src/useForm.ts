@@ -678,9 +678,9 @@ export function useForm<
     name?: FieldName<TFieldValues> | FieldName<TFieldValues>[],
   ): void {
     name &&
-      (Array.isArray(name) ? name : [name]).forEach((inputName) => {
-        unset(formStateRef.current.errors, inputName);
-      });
+      (Array.isArray(name) ? name : [name]).forEach((inputName) =>
+        unset(formStateRef.current.errors, inputName),
+      );
 
     formStateSubjectRef.current.next({
       errors: name ? formStateRef.current.errors : {},
@@ -712,7 +712,7 @@ export function useForm<
     ) => {
       const { fields, name } = fieldArrayStateRef.current;
       const isArrayNames = Array.isArray(fieldNames);
-      const fieldValues = isMountedRef.current
+      let fieldValues = isMountedRef.current
         ? getFieldsValues(fieldsRef)
         : isUndefined(defaultValue)
         ? defaultValuesRef.current
@@ -720,10 +720,13 @@ export function useForm<
         ? defaultValue || {}
         : { [fieldNames as string]: defaultValue };
 
-      if (isString(name) && fields) {
-        set(fieldValues, name, fields);
-        fieldArrayStateRef.current.fields = undefined;
-        fieldArrayStateRef.current.name = undefined;
+      if (fields) {
+        name ? set(fieldValues, name, fields) : (fieldValues = fields);
+
+        fieldArrayStateRef.current = {
+          fields: undefined,
+          name: undefined,
+        };
       }
 
       if (isUndefined(fieldNames)) {
