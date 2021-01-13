@@ -126,15 +126,17 @@ export const useFieldArray = <
   const setFieldAndValidState = (
     fieldsValues: Partial<FieldArrayWithId<TFieldValues, TName, TKeyName>>[],
   ) => {
+    const fields = omitKey(fieldsValues);
+
     setFields(mapIds(fieldsValues, keyName));
     fieldArraySubjectRef.current.next({
       name,
-      fields: omitKey(fieldsValues),
+      fields,
     });
 
     if (readFormStateRef.current.isValid) {
       const values = getValues();
-      set(values, name as InternalFieldName, omitKey(fieldsValues));
+      set(values, name as InternalFieldName, fields);
       updateIsValid(values);
     }
   };
