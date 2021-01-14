@@ -10,6 +10,7 @@ import {
   UnpackNestedValue,
   Control,
   FieldPath,
+  InternalFieldName,
 } from './types';
 
 export function useWatch<
@@ -76,8 +77,10 @@ export function useWatch<TFieldValues>({
     const tearDown = watchSubjectRef.current.subscribe({
       next: ({ name: inputName, value }) => {
         updateValue(
-          name === inputName && !isUndefined(value)
+          isString(inputName) && name === inputName && !isUndefined(value)
             ? value
+            : name && value
+            ? get(value, name as InternalFieldName, defaultValue)
             : watchInternal(name as string, defaultValue),
         );
       },
