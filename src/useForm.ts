@@ -96,7 +96,7 @@ export function useForm<
   );
   const fieldArraySubjectRef = React.useRef(
     new Subject<{
-      name?: string;
+      name?: InternalFieldName;
       fields: any;
       isReset?: boolean;
     }>(),
@@ -264,7 +264,10 @@ export function useForm<
   );
 
   const isFormDirty = React.useCallback(
-    (name?: string, data?: unknown[]): boolean => {
+    <TName extends InternalFieldName, TData>(
+      name?: TName,
+      data?: TData,
+    ): boolean => {
       if (readFormStateRef.current.isDirty) {
         const formValues = getValues();
 

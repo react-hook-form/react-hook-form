@@ -93,7 +93,7 @@ export const useFieldArray = <
   ) => fields.map(({ [keyName]: omitted, ...rest } = {}) => rest);
 
   const getCurrentFieldsValues = () => {
-    const values = get(getValues(), name, []);
+    const values = get(getValues(), name as InternalFieldName, []);
 
     return mapIds<TFieldValues, TKeyName>(
       get(fieldArrayValuesRef.current, name as InternalFieldName, []).map(
@@ -106,7 +106,10 @@ export const useFieldArray = <
     );
   };
 
-  const getFocusDetail = (index: number, options?: FieldArrayMethodsOption) => {
+  const getFocusDetail = (
+    index: number,
+    options?: FieldArrayMethodsOption,
+  ): string => {
     if (options) {
       if (!isUndefined(options.focusIndex)) {
         return `${name}.${options.focusIndex}`;
@@ -121,12 +124,12 @@ export const useFieldArray = <
     return `${name}.${index}`;
   };
 
-  const resetFields = () => unset(fieldsRef.current, name);
+  const resetFields = () => unset(fieldsRef.current, name as InternalFieldName);
 
   const setFieldAndValidState = (
     fieldsValues: Partial<FieldArrayWithId<TFieldValues, TName, TKeyName>>[],
   ) => {
-    const fields = omitKey(fieldsValues);
+    const fields = omitKey([...fieldsValues]);
 
     setFields(mapIds(fieldsValues, keyName));
     fieldArraySubjectRef.current.next({
@@ -368,13 +371,13 @@ export const useFieldArray = <
       fieldValues,
       false,
     );
-    setFieldAndValidState([...fieldValues]);
+    setFieldAndValidState(fieldValues);
   };
 
   const move = (from: number, to: number) => {
     const fieldValues = getCurrentFieldsValues();
     moveArrayAt(fieldValues, from, to);
-    setFieldAndValidState([...fieldValues]);
+    setFieldAndValidState(fieldValues);
     batchStateUpdate(
       moveArrayAt,
       {
@@ -427,7 +430,7 @@ export const useFieldArray = <
             set(fieldArrayValuesRef.current, name, fields);
             setFieldAndValidState(get(value, name));
           } else {
-            fieldArrayValuesRef.current = { ...fields };
+            fieldArrayValuesRef.current = fields;
             setFieldAndValidState(get(fields, name));
           }
         }

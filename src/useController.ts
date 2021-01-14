@@ -70,8 +70,9 @@ export function useController<TFieldValues extends FieldValues = FieldValues>({
     if (get(fieldsRef.current, name)) {
       get(fieldsRef.current, name).__field.value = getInitialValue();
     }
+
     const tearDown = controllerSubjectRef.current.subscribe({
-      next: (values) => setInputStateValue(get(values, name, '')),
+      next: (values) => setInputStateValue(get(values, name)),
     });
 
     return () => tearDown.unsubscribe();

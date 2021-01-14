@@ -163,7 +163,10 @@ type UseFormCommonMethods<TFieldValues extends FieldValues = FieldValues> = {
 export type Control<TFieldValues extends FieldValues = FieldValues> = {
   isWatchAllRef: React.MutableRefObject<boolean>;
   watchFieldsRef: React.MutableRefObject<InternalNameSet>;
-  isFormDirty: (name?: string, data?: unknown[]) => boolean;
+  isFormDirty: <TName extends InternalFieldName, TData>(
+    name?: TName,
+    data?: TData,
+  ) => boolean;
   fieldArrayValuesRef: FieldArrayDefaultValues;
   formStateRef: React.MutableRefObject<FormState<TFieldValues>>;
   formStateSubjectRef: React.MutableRefObject<
@@ -181,7 +184,7 @@ export type Control<TFieldValues extends FieldValues = FieldValues> = {
   fieldArraySubjectRef: React.MutableRefObject<
     SubjectType<{
       name?: string;
-      fields: any;
+      fields: unknown;
       isReset?: boolean;
     }>
   >;
@@ -195,7 +198,7 @@ export type Control<TFieldValues extends FieldValues = FieldValues> = {
   readFormStateRef: React.MutableRefObject<ReadFormState>;
   defaultValuesRef: React.MutableRefObject<DefaultValues<TFieldValues>>;
   watchInternal: <T>(
-    fieldNames?: string | string[],
+    fieldNames?: InternalFieldName | InternalFieldName[],
     defaultValue?: T,
     isGlobal?: boolean,
   ) => unknown;
