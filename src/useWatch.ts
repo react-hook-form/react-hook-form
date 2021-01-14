@@ -3,6 +3,7 @@ import { useFormContext } from './useFormContext';
 import isUndefined from './utils/isUndefined';
 import isString from './utils/isString';
 import get from './utils/get';
+import isObject from './utils/isObject';
 import {
   DeepPartial,
   UseWatchProps,
@@ -79,7 +80,7 @@ export function useWatch<TFieldValues>({
         updateValue(
           isString(inputName) && name === inputName && !isUndefined(value)
             ? value
-            : name && value
+            : name && isObject(value)
             ? get(value, name as InternalFieldName, defaultValue)
             : watchInternal(name as string, defaultValue),
         );

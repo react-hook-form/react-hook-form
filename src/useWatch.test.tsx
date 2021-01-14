@@ -303,7 +303,7 @@ describe('useWatch', () => {
         },
       });
 
-      await wait(() => expect(renderCount.current.Parent).toBeRenderedTimes(1));
+      await wait(() => expect(renderCount.current.Parent).toBeRenderedTimes(2));
     });
 
     it('should not throw error when null or undefined is set', () => {
