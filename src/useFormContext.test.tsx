@@ -1,6 +1,11 @@
 import * as React from 'react';
 import { renderHook, act } from '@testing-library/react-hooks';
+import { render } from '@testing-library/react';
 import { FormProvider, useFormContext } from './useFormContext';
+import { useForm } from './useForm';
+import { useController } from './useController';
+import { useWatch } from './useWatch';
+import { useFormState } from './useFormState';
 
 describe('FormProvider', () => {
   beforeEach(() => {
@@ -23,5 +28,45 @@ describe('FormProvider', () => {
     });
 
     expect(mockRegister).toHaveBeenCalled();
+  });
+
+  it('should work correctly with Controller, useWatch, useFormState.', () => {
+    const TestComponent = () => {
+      const { field } = useController({
+        name: 'test',
+        defaultValue: '',
+      });
+      return <input {...field} />;
+    };
+
+    const TestWatch = () => {
+      const value = useWatch({
+        name: 'test',
+      });
+
+      // todo: fix type
+      return <p>{value as string}</p>;
+    };
+
+    const TestFormState = () => {
+      const { isDirty } = useFormState();
+
+      return <div>{isDirty ? 'yes' : 'no'}</div>;
+    };
+
+    const Component = () => {
+      const methods = useForm();
+      return (
+        <FormProvider {...methods}>
+          <TestComponent />
+          <TestWatch />
+          <TestFormState />
+        </FormProvider>
+      );
+    };
+
+    const { asFragment } = render(<Component />);
+
+    expect(asFragment()).toMatchSnapshot();
   });
 });

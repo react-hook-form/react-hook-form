@@ -1,5 +1,4 @@
 import * as React from 'react';
-import { NativeSyntheticEvent } from 'react-native';
 import {
   DeepPartial,
   DeepMap,
@@ -17,7 +16,6 @@ import {
 } from './fields';
 import { ErrorOption, FieldErrors } from './errors';
 import { RegisterOptions } from './validator';
-import { ControllerEvent } from './controller';
 import { FieldArrayDefaultValues } from './fieldArray';
 import { SubjectType } from '../utils/Subject';
 
@@ -47,8 +45,6 @@ export type DefaultValues<TFieldValues> = UnpackNestedValue<
 
 export type InternalNameSet = Set<InternalFieldName>;
 
-export type RecordInternalNameSet = Record<string, InternalNameSet>;
-
 export type ValidationMode = {
   onBlur: 'onBlur';
   onChange: 'onChange';
@@ -74,9 +70,7 @@ export type SetValueConfig = Partial<{
   shouldDirty: boolean;
 }>;
 
-export type HandleChange = (
-  event: Event | NativeSyntheticEvent<any> | ControllerEvent,
-) => Promise<void | boolean>;
+export type HandleChange = (event: any) => Promise<void | boolean>;
 
 export type UseFormProps<
   TFieldValues extends FieldValues = FieldValues,
@@ -169,8 +163,10 @@ type UseFormCommonMethods<TFieldValues extends FieldValues = FieldValues> = {
 export type Control<TFieldValues extends FieldValues = FieldValues> = {
   isWatchAllRef: React.MutableRefObject<boolean>;
   watchFieldsRef: React.MutableRefObject<InternalNameSet>;
-  isFormDirty: (name?: string, data?: unknown[]) => boolean;
-  fieldArrayDefaultValuesRef: FieldArrayDefaultValues;
+  isFormDirty: <TName extends InternalFieldName, TData>(
+    name?: TName,
+    data?: TData,
+  ) => boolean;
   fieldArrayValuesRef: FieldArrayDefaultValues;
   formStateRef: React.MutableRefObject<FormState<TFieldValues>>;
   formStateSubjectRef: React.MutableRefObject<
@@ -178,12 +174,19 @@ export type Control<TFieldValues extends FieldValues = FieldValues> = {
   >;
   watchSubjectRef: React.MutableRefObject<
     SubjectType<{
-      inputName?: string;
-      inputValue?: unknown;
+      name?: string;
+      value?: unknown;
     }>
   >;
   controllerSubjectRef: React.MutableRefObject<
     SubjectType<DefaultValues<TFieldValues>>
+  >;
+  fieldArraySubjectRef: React.MutableRefObject<
+    SubjectType<{
+      name?: string;
+      fields: unknown;
+      isReset?: boolean;
+    }>
   >;
   updateIsValid: (fieldsValues: FieldValues) => void;
   validFieldsRef: React.MutableRefObject<FieldNamesMarkedBoolean<TFieldValues>>;
@@ -191,14 +194,11 @@ export type Control<TFieldValues extends FieldValues = FieldValues> = {
     FieldNamesMarkedBoolean<TFieldValues>
   >;
   fieldsRef: React.MutableRefObject<FieldRefs>;
-  resetFieldArrayFunctionRef: React.MutableRefObject<
-    Record<InternalFieldName, () => void>
-  >;
   fieldArrayNamesRef: React.MutableRefObject<InternalNameSet>;
   readFormStateRef: React.MutableRefObject<ReadFormState>;
   defaultValuesRef: React.MutableRefObject<DefaultValues<TFieldValues>>;
   watchInternal: <T>(
-    fieldNames?: string | string[],
+    fieldNames?: InternalFieldName | InternalFieldName[],
     defaultValue?: T,
     isGlobal?: boolean,
   ) => unknown;
@@ -246,9 +246,9 @@ export type UseFormMethods<TFieldValues extends FieldValues = FieldValues> = {
   control: Control<TFieldValues>;
 } & UseFormCommonMethods<TFieldValues>;
 
-export type UseFormStateProps<TFieldValues> = {
-  control: Control<TFieldValues>;
-};
+export type UseFormStateProps<TFieldValues> = Partial<{
+  control?: Control<TFieldValues>;
+}>;
 
 export type UseFormStateMethods<TFieldValues> = FormState<TFieldValues>;
 

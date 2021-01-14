@@ -22,10 +22,12 @@ describe('validateField', () => {
     expect(
       await validateField(
         {
-          name: 'test',
-          ref: { type: 'text', value: '', name: 'test' },
-          required: true,
-          value: '',
+          __field: {
+            name: 'test',
+            ref: { type: 'text', value: '', name: 'test' },
+            required: true,
+            value: '',
+          },
         },
         false,
       ),
@@ -40,45 +42,10 @@ describe('validateField', () => {
     expect(
       await validateField(
         {
-          name: 'test',
-          ref: { type: 'text', value: '', name: 'test' },
-          required: 'required',
-        },
-        false,
-      ),
-    ).toEqual({
-      test: {
-        ref: { type: 'text', value: '', name: 'test' },
-        message: 'required',
-        type: 'required',
-      },
-    });
-
-    expect(
-      await validateField(
-        {
-          name: 'test',
-          ref: { type: 'text', value: '', name: 'test' },
-          required: 'required',
-        },
-        false,
-      ),
-    ).toEqual({
-      test: {
-        ref: { type: 'text', value: '', name: 'test' },
-        message: 'required',
-        type: 'required',
-      },
-    });
-
-    expect(
-      await validateField(
-        {
-          name: 'test',
-          ref: { type: 'text', value: '', name: 'test' },
-          required: {
-            value: true,
-            message: 'required',
+          __field: {
+            name: 'test',
+            ref: { type: 'text', value: '', name: 'test' },
+            required: 'required',
           },
         },
         false,
@@ -94,11 +61,10 @@ describe('validateField', () => {
     expect(
       await validateField(
         {
-          name: 'test',
-          ref: { type: 'text', value: '', name: 'test' },
-          required: {
-            value: true,
-            message: 'required',
+          __field: {
+            name: 'test',
+            ref: { type: 'text', value: '', name: 'test' },
+            required: 'required',
           },
         },
         false,
@@ -114,11 +80,57 @@ describe('validateField', () => {
     expect(
       await validateField(
         {
-          name: 'test',
-          ref: { type: 'text', value: '', name: 'test' },
-          required: {
-            value: false,
-            message: 'required',
+          __field: {
+            name: 'test',
+            ref: { type: 'text', value: '', name: 'test' },
+            required: {
+              value: true,
+              message: 'required',
+            },
+          },
+        },
+        false,
+      ),
+    ).toEqual({
+      test: {
+        ref: { type: 'text', value: '', name: 'test' },
+        message: 'required',
+        type: 'required',
+      },
+    });
+
+    expect(
+      await validateField(
+        {
+          __field: {
+            name: 'test',
+            ref: { type: 'text', value: '', name: 'test' },
+            required: {
+              value: true,
+              message: 'required',
+            },
+          },
+        },
+        false,
+      ),
+    ).toEqual({
+      test: {
+        ref: { type: 'text', value: '', name: 'test' },
+        message: 'required',
+        type: 'required',
+      },
+    });
+
+    expect(
+      await validateField(
+        {
+          __field: {
+            name: 'test',
+            ref: { type: 'text', value: '', name: 'test' },
+            required: {
+              value: false,
+              message: 'required',
+            },
           },
         },
         false,
@@ -128,9 +140,11 @@ describe('validateField', () => {
     expect(
       await validateField(
         {
-          name: 'test',
-          ref: { type: 'radio', name: 'test' },
-          required: true,
+          __field: {
+            name: 'test',
+            ref: { type: 'radio', name: 'test' },
+            required: true,
+          },
         },
         false,
       ),
@@ -145,9 +159,11 @@ describe('validateField', () => {
     expect(
       await validateField(
         {
-          name: 'test',
-          ref: { type: 'text', value: '', name: 'test' },
-          required: 'test',
+          __field: {
+            name: 'test',
+            ref: { type: 'text', value: '', name: 'test' },
+            required: 'test',
+          },
         },
         false,
       ),
@@ -162,9 +178,11 @@ describe('validateField', () => {
     expect(
       await validateField(
         {
-          name: 'test',
-          ref: { type: 'radio', value: '', name: 'test' },
-          required: 'test',
+          __field: {
+            name: 'test',
+            ref: { type: 'radio', value: '', name: 'test' },
+            required: 'test',
+          },
         },
         false,
       ),
@@ -179,9 +197,11 @@ describe('validateField', () => {
     expect(
       await validateField(
         {
-          name: 'test',
-          ref: { type: 'checkbox', name: 'test' },
-          required: 'test',
+          __field: {
+            name: 'test',
+            ref: { type: 'checkbox', name: 'test' },
+            required: 'test',
+          },
         },
         false,
       ),
@@ -200,9 +220,11 @@ describe('validateField', () => {
     expect(
       await validateField(
         {
-          name: 'test',
-          ref: { type: 'checkbox', name: 'test' },
-          required: 'test',
+          __field: {
+            name: 'test',
+            ref: { type: 'checkbox', name: 'test' },
+            required: 'test',
+          },
         },
         false,
       ),
@@ -213,11 +235,13 @@ describe('validateField', () => {
     expect(
       await validateField(
         {
-          name: 'test',
-          ref: { type: 'number', name: 'test', valueAsNumber: 10 },
-          value: 10,
-          required: true,
-          max: 0,
+          __field: {
+            name: 'test',
+            ref: { type: 'number', name: 'test', valueAsNumber: 10 },
+            value: 10,
+            required: true,
+            max: 0,
+          },
         },
         false,
       ),
@@ -232,13 +256,15 @@ describe('validateField', () => {
     expect(
       await validateField(
         {
-          name: 'test',
-          ref: { type: 'number', name: 'test', valueAsNumber: 10 },
-          value: 10,
-          required: true,
-          max: {
-            value: 0,
-            message: 'max',
+          __field: {
+            name: 'test',
+            ref: { type: 'number', name: 'test', valueAsNumber: 10 },
+            value: 10,
+            required: true,
+            max: {
+              value: 0,
+              message: 'max',
+            },
           },
         },
         false,
@@ -254,14 +280,16 @@ describe('validateField', () => {
     expect(
       await validateField(
         {
-          name: 'test',
-          ref: { type: 'number', name: 'test', valueAsNumber: 10 },
-          required: true,
-          max: {
-            value: 0,
-            message: 'max',
+          __field: {
+            name: 'test',
+            ref: { type: 'number', name: 'test', valueAsNumber: 10 },
+            required: true,
+            max: {
+              value: 0,
+              message: 'max',
+            },
+            value: 10,
           },
-          value: 10,
         },
         false,
       ),
@@ -276,11 +304,13 @@ describe('validateField', () => {
     expect(
       await validateField(
         {
-          name: 'test',
-          ref: { type: 'number', name: 'test', valueAsNumber: 8 },
-          value: 8,
-          required: true,
-          max: 8,
+          __field: {
+            name: 'test',
+            ref: { type: 'number', name: 'test', valueAsNumber: 8 },
+            value: 8,
+            required: true,
+            max: 8,
+          },
         },
         false,
       ),
@@ -289,10 +319,12 @@ describe('validateField', () => {
     expect(
       await validateField(
         {
-          name: 'test',
-          ref: { type: 'number', name: 'test', valueAsNumber: 10 },
-          value: 10,
-          max: 8,
+          __field: {
+            name: 'test',
+            ref: { type: 'number', name: 'test', valueAsNumber: 10 },
+            value: 10,
+            max: 8,
+          },
         },
         true,
       ),
@@ -310,10 +342,12 @@ describe('validateField', () => {
     expect(
       await validateField(
         {
-          name: 'test',
-          ref: { type: 'custom', name: 'test', valueAsNumber: NaN },
-          value: '',
-          required: true,
+          __field: {
+            name: 'test',
+            ref: { type: 'custom', name: 'test', valueAsNumber: NaN },
+            value: '',
+            required: true,
+          },
         },
         false,
       ),
@@ -328,14 +362,16 @@ describe('validateField', () => {
     expect(
       await validateField(
         {
-          name: 'test',
-          ref: {
-            type: 'custom',
+          __field: {
             name: 'test',
-            valueAsNumber: NaN,
+            ref: {
+              type: 'custom',
+              name: 'test',
+              valueAsNumber: NaN,
+            },
+            value: undefined,
+            required: true,
           },
-          value: undefined,
-          required: true,
         },
         false,
       ),
@@ -355,14 +391,16 @@ describe('validateField', () => {
     expect(
       await validateField(
         {
-          name: 'test',
-          ref: {
-            type: 'custom',
+          __field: {
             name: 'test',
-            valueAsNumber: NaN,
+            ref: {
+              type: 'custom',
+              name: 'test',
+              valueAsNumber: NaN,
+            },
+            value: null,
+            required: true,
           },
-          value: null,
-          required: true,
         },
         false,
       ),
@@ -377,10 +415,12 @@ describe('validateField', () => {
     expect(
       await validateField(
         {
-          name: 'test',
-          ref: { type: 'custom', name: 'test' },
-          required: true,
-          value: 'ok',
+          __field: {
+            name: 'test',
+            ref: { type: 'custom', name: 'test' },
+            required: true,
+            value: 'ok',
+          },
         },
         false,
       ),
@@ -389,14 +429,16 @@ describe('validateField', () => {
     expect(
       await validateField(
         {
-          name: 'test',
-          ref: {
-            type: 'date',
+          __field: {
             name: 'test',
+            ref: {
+              type: 'date',
+              name: 'test',
+            },
+            value: '2019-2-13',
+            required: true,
+            max: '2019-1-12',
           },
-          value: '2019-2-13',
-          required: true,
-          max: '2019-1-12',
         },
         false,
       ),
@@ -416,11 +458,13 @@ describe('validateField', () => {
     expect(
       await validateField(
         {
-          name: 'test',
-          ref: { type: 'number', name: 'test', valueAsNumber: -1 },
-          value: -1,
-          required: true,
-          min: 0,
+          __field: {
+            name: 'test',
+            ref: { type: 'number', name: 'test', valueAsNumber: -1 },
+            value: -1,
+            required: true,
+            min: 0,
+          },
         },
         false,
       ),
@@ -435,13 +479,15 @@ describe('validateField', () => {
     expect(
       await validateField(
         {
-          name: 'test',
-          ref: { type: 'number', name: 'test', valueAsNumber: -1 },
-          value: -1,
-          required: true,
-          min: {
-            value: 0,
-            message: 'min',
+          __field: {
+            name: 'test',
+            ref: { type: 'number', name: 'test', valueAsNumber: -1 },
+            value: -1,
+            required: true,
+            min: {
+              value: 0,
+              message: 'min',
+            },
           },
         },
         false,
@@ -457,13 +503,15 @@ describe('validateField', () => {
     expect(
       await validateField(
         {
-          name: 'test',
-          ref: { type: 'number', name: 'test', valueAsNumber: -1 },
-          value: -1,
-          required: true,
-          min: {
-            value: 0,
-            message: 'min',
+          __field: {
+            name: 'test',
+            ref: { type: 'number', name: 'test', valueAsNumber: -1 },
+            value: -1,
+            required: true,
+            min: {
+              value: 0,
+              message: 'min',
+            },
           },
         },
         false,
@@ -479,11 +527,13 @@ describe('validateField', () => {
     expect(
       await validateField(
         {
-          name: 'test',
-          ref: { type: 'number', name: 'test', valueAsNumber: 10 },
-          value: 10,
-          required: true,
-          min: 12,
+          __field: {
+            name: 'test',
+            ref: { type: 'number', name: 'test', valueAsNumber: 10 },
+            value: 10,
+            required: true,
+            min: 12,
+          },
         },
         false,
       ),
@@ -498,15 +548,17 @@ describe('validateField', () => {
     expect(
       await validateField(
         {
-          name: 'test',
-          ref: {
-            type: 'date',
+          __field: {
             name: 'test',
-            valueAsDate: new Date('2019-2-12'),
+            ref: {
+              type: 'date',
+              name: 'test',
+              valueAsDate: new Date('2019-2-12'),
+            },
+            value: '2019-2-12',
+            required: true,
+            min: '2019-3-12',
           },
-          value: '2019-2-12',
-          required: true,
-          min: '2019-3-12',
         },
         false,
       ),
@@ -525,16 +577,18 @@ describe('validateField', () => {
     expect(
       await validateField(
         {
-          name: 'test',
-          ref: {
-            type: 'date',
+          __field: {
             name: 'test',
-          },
-          value: '2019-2-12',
-          required: true,
-          min: {
-            value: '2019-3-12',
-            message: 'min',
+            ref: {
+              type: 'date',
+              name: 'test',
+            },
+            value: '2019-2-12',
+            required: true,
+            min: {
+              value: '2019-3-12',
+              message: 'min',
+            },
           },
         },
         false,
@@ -553,17 +607,19 @@ describe('validateField', () => {
     expect(
       await validateField(
         {
-          name: 'test',
-          ref: {
-            type: 'date',
+          __field: {
             name: 'test',
-            valueAsDate: new Date('2019-2-12'),
-          },
-          value: '2019-2-12',
-          required: true,
-          min: {
-            value: '2019-3-12',
-            message: 'min',
+            ref: {
+              type: 'date',
+              name: 'test',
+              valueAsDate: new Date('2019-2-12'),
+            },
+            value: '2019-2-12',
+            required: true,
+            min: {
+              value: '2019-3-12',
+              message: 'min',
+            },
           },
         },
         false,
@@ -585,11 +641,13 @@ describe('validateField', () => {
     expect(
       await validateField(
         {
-          name: 'test',
-          ref: { type: '', name: 'test' },
-          value: '1',
-          required: true,
-          min: '4',
+          __field: {
+            name: 'test',
+            ref: { type: '', name: 'test' },
+            value: '1',
+            required: true,
+            min: '4',
+          },
         },
         false,
       ),
@@ -604,11 +662,13 @@ describe('validateField', () => {
     expect(
       await validateField(
         {
-          name: 'test',
-          ref: { type: '', name: 'test' },
-          value: '4',
-          required: true,
-          max: '2',
+          __field: {
+            name: 'test',
+            ref: { type: '', name: 'test' },
+            value: '4',
+            required: true,
+            max: '2',
+          },
         },
         false,
       ),
@@ -623,15 +683,17 @@ describe('validateField', () => {
     expect(
       await validateField(
         {
-          name: 'test',
-          ref: {
-            type: '',
+          __field: {
             name: 'test',
-            valueAsDate: new Date('2019-2-12'),
+            ref: {
+              type: '',
+              name: 'test',
+              valueAsDate: new Date('2019-2-12'),
+            },
+            value: '2019-2-12',
+            required: true,
+            max: '2019-1-12',
           },
-          value: '2019-2-12',
-          required: true,
-          max: '2019-1-12',
         },
         false,
       ),
@@ -652,14 +714,16 @@ describe('validateField', () => {
     expect(
       await validateField(
         {
-          name: 'test',
-          ref: {
-            type: 'text',
+          __field: {
             name: 'test',
+            ref: {
+              type: 'text',
+              name: 'test',
+            },
+            value: 'This is a long text input',
+            required: true,
+            maxLength: 12,
           },
-          value: 'This is a long text input',
-          required: true,
-          maxLength: 12,
         },
         false,
       ),
@@ -677,16 +741,18 @@ describe('validateField', () => {
     expect(
       await validateField(
         {
-          name: 'test',
-          ref: {
-            type: 'text',
+          __field: {
             name: 'test',
-          },
-          value: 'This is a long text input',
-          required: true,
-          maxLength: {
-            value: 12,
-            message: 'maxLength',
+            ref: {
+              type: 'text',
+              name: 'test',
+            },
+            value: 'This is a long text input',
+            required: true,
+            maxLength: {
+              value: 12,
+              message: 'maxLength',
+            },
           },
         },
         false,
@@ -705,16 +771,18 @@ describe('validateField', () => {
     expect(
       await validateField(
         {
-          name: 'test',
-          ref: {
-            type: 'text',
+          __field: {
             name: 'test',
-          },
-          value: 'This is a long text input',
-          required: true,
-          maxLength: {
-            value: 12,
-            message: 'maxLength',
+            ref: {
+              type: 'text',
+              name: 'test',
+            },
+            value: 'This is a long text input',
+            required: true,
+            maxLength: {
+              value: 12,
+              message: 'maxLength',
+            },
           },
         },
         false,
@@ -735,14 +803,16 @@ describe('validateField', () => {
     expect(
       await validateField(
         {
-          name: 'test',
-          ref: {
-            type: 'text',
+          __field: {
             name: 'test',
+            ref: {
+              type: 'text',
+              name: 'test',
+            },
+            value: 'This is a long text input',
+            required: true,
+            minLength: 200,
           },
-          value: 'This is a long text input',
-          required: true,
-          minLength: 200,
         },
         false,
       ),
@@ -760,16 +830,18 @@ describe('validateField', () => {
     expect(
       await validateField(
         {
-          name: 'test',
-          ref: {
-            type: 'text',
+          __field: {
             name: 'test',
-          },
-          value: 'This is a long text input',
-          required: true,
-          minLength: {
-            value: 200,
-            message: 'minLength',
+            ref: {
+              type: 'text',
+              name: 'test',
+            },
+            value: 'This is a long text input',
+            required: true,
+            minLength: {
+              value: 200,
+              message: 'minLength',
+            },
           },
         },
         false,
@@ -788,16 +860,18 @@ describe('validateField', () => {
     expect(
       await validateField(
         {
-          name: 'test',
-          ref: {
-            type: 'text',
+          __field: {
             name: 'test',
-          },
-          value: 'This is a long text input',
-          required: true,
-          minLength: {
-            value: 200,
-            message: 'minLength',
+            ref: {
+              type: 'text',
+              name: 'test',
+            },
+            value: 'This is a long text input',
+            required: true,
+            minLength: {
+              value: 200,
+              message: 'minLength',
+            },
           },
         },
         false,
@@ -820,14 +894,16 @@ describe('validateField', () => {
     expect(
       await validateField(
         {
-          name: 'test',
-          ref: {
-            type: 'text',
+          __field: {
             name: 'test',
+            ref: {
+              type: 'text',
+              name: 'test',
+            },
+            value: 'This is a long text input',
+            required: true,
+            pattern: emailRegex,
           },
-          value: 'This is a long text input',
-          required: true,
-          pattern: emailRegex,
         },
         false,
       ),
@@ -845,16 +921,18 @@ describe('validateField', () => {
     expect(
       await validateField(
         {
-          name: 'test',
-          ref: {
-            type: 'text',
+          __field: {
             name: 'test',
-          },
-          required: true,
-          value: 'This is a long text input',
-          pattern: {
-            value: emailRegex,
-            message: 'regex failed',
+            ref: {
+              type: 'text',
+              name: 'test',
+            },
+            required: true,
+            value: 'This is a long text input',
+            pattern: {
+              value: emailRegex,
+              message: 'regex failed',
+            },
           },
         },
         false,
@@ -873,16 +951,18 @@ describe('validateField', () => {
     expect(
       await validateField(
         {
-          name: 'test',
-          ref: {
-            type: 'text',
+          __field: {
             name: 'test',
-          },
-          value: 'This is a long text input',
-          required: true,
-          pattern: {
-            value: emailRegex,
-            message: 'regex failed',
+            ref: {
+              type: 'text',
+              name: 'test',
+            },
+            value: 'This is a long text input',
+            required: true,
+            pattern: {
+              value: emailRegex,
+              message: 'regex failed',
+            },
           },
         },
         false,
@@ -901,14 +981,16 @@ describe('validateField', () => {
     expect(
       await validateField(
         {
-          name: 'test',
-          ref: {
-            type: 'text',
+          __field: {
             name: 'test',
+            ref: {
+              type: 'text',
+              name: 'test',
+            },
+            value: 'test@test.com',
+            required: true,
+            pattern: emailRegex,
           },
-          value: 'test@test.com',
-          required: true,
-          pattern: emailRegex,
         },
         false,
       ),
@@ -917,14 +999,16 @@ describe('validateField', () => {
     expect(
       await validateField(
         {
-          name: 'test',
-          ref: {
-            type: 'text',
+          __field: {
             name: 'test',
+            ref: {
+              type: 'text',
+              name: 'test',
+            },
+            value: null,
+            required: false,
+            pattern: emailRegex,
           },
-          value: null,
-          required: false,
-          pattern: emailRegex,
         },
         false,
       ),
@@ -935,14 +1019,16 @@ describe('validateField', () => {
     expect(
       await validateField(
         {
-          name: 'test',
-          ref: {
-            type: 'text',
+          __field: {
             name: 'test',
+            ref: {
+              type: 'text',
+              name: 'test',
+            },
+            value: 'This is a long text input',
+            required: true,
+            validate: (value) => value.toString().length > 3,
           },
-          value: 'This is a long text input',
-          required: true,
-          validate: (value) => value.toString().length > 3,
         },
         false,
       ),
@@ -951,14 +1037,16 @@ describe('validateField', () => {
     expect(
       await validateField(
         {
-          name: 'test',
-          ref: {
-            type: 'text',
+          __field: {
             name: 'test',
+            ref: {
+              type: 'text',
+              name: 'test',
+            },
+            value: 'This is a long text input',
+            required: true,
+            validate: (value) => value.toString().length < 3,
           },
-          value: 'This is a long text input',
-          required: true,
-          validate: (value) => value.toString().length < 3,
         },
         false,
       ),
@@ -976,16 +1064,18 @@ describe('validateField', () => {
     expect(
       await validateField(
         {
-          name: 'test',
-          ref: {
-            type: 'text',
+          __field: {
             name: 'test',
-          },
-          value: 'This is a long text input',
-          required: true,
-          validate: {
-            test: (value) => value.toString().length < 3,
-            test1: (value) => value.toString().length > 10,
+            ref: {
+              type: 'text',
+              name: 'test',
+            },
+            value: 'This is a long text input',
+            required: true,
+            validate: {
+              test: (value) => value.toString().length < 3,
+              test1: (value) => value.toString().length > 10,
+            },
           },
         },
         false,
@@ -1011,15 +1101,17 @@ describe('validateField', () => {
     expect(
       await validateField(
         {
-          name: 'test',
-          ref: {
-            type: 'text',
+          __field: {
             name: 'test',
-          },
-          value: 'This is a long text input!',
-          validate: {
-            test: (value) => value.toString().length < 3,
-            test1: (value) => value.toString().length > 10,
+            ref: {
+              type: 'text',
+              name: 'test',
+            },
+            value: 'This is a long text input!',
+            validate: {
+              test: (value) => value.toString().length < 3,
+              test1: (value) => value.toString().length > 10,
+            },
           },
         },
         false,
@@ -1038,17 +1130,19 @@ describe('validateField', () => {
     expect(
       await validateField(
         {
-          name: 'test',
-          ref: {
-            type: 'radio',
+          __field: {
             name: 'test',
+            ref: {
+              type: 'radio',
+              name: 'test',
+            },
+            value: 'This is a long text input!',
+            validate: {
+              test: (value) => value.toString().length < 3,
+              test1: (value) => value.toString().length > 10,
+            },
+            refs: [{ type: 'data' } as HTMLInputElement],
           },
-          value: 'This is a long text input!',
-          validate: {
-            test: (value) => value.toString().length < 3,
-            test1: (value) => value.toString().length > 10,
-          },
-          refs: [{ type: 'data' } as HTMLInputElement],
         },
         false,
       ),
@@ -1063,20 +1157,22 @@ describe('validateField', () => {
     expect(
       await validateField(
         {
-          name: 'test',
-          ref: {
-            type: 'radio',
+          __field: {
             name: 'test',
+            ref: {
+              type: 'radio',
+              name: 'test',
+            },
+            value: 'This is a long text input!',
+            validate: {
+              test: () => true,
+            },
+            refs: [
+              {
+                type: 'data',
+              } as HTMLInputElement,
+            ],
           },
-          value: 'This is a long text input!',
-          validate: {
-            test: () => true,
-          },
-          refs: [
-            {
-              type: 'data',
-            } as HTMLInputElement,
-          ],
         },
         false,
       ),
@@ -1087,18 +1183,20 @@ describe('validateField', () => {
     expect(
       await validateField(
         {
-          name: 'test',
-          ref: {
-            type: 'text',
+          __field: {
             name: 'test',
-          },
-          value: 'This is a long text input',
-          validate: {
-            test: (value) => {
-              if (value.toString().length > 3) {
-                return 'max 3';
-              }
-              return true;
+            ref: {
+              type: 'text',
+              name: 'test',
+            },
+            value: 'This is a long text input',
+            validate: {
+              test: (value) => {
+                if (value.toString().length > 3) {
+                  return 'max 3';
+                }
+                return true;
+              },
             },
           },
         },
@@ -1118,18 +1216,20 @@ describe('validateField', () => {
     expect(
       await validateField(
         {
-          name: 'test',
-          ref: {
-            type: 'text',
+          __field: {
             name: 'test',
-          },
-          value: 'This is a long text input',
-          validate: {
-            test: (value) => {
-              if (value.toString().length > 3) {
-                return 'max 3';
-              }
-              return true;
+            ref: {
+              type: 'text',
+              name: 'test',
+            },
+            value: 'This is a long text input',
+            validate: {
+              test: (value) => {
+                if (value.toString().length > 3) {
+                  return 'max 3';
+                }
+                return true;
+              },
             },
           },
         },
@@ -1151,13 +1251,15 @@ describe('validateField', () => {
     expect(
       await validateField(
         {
-          name: 'test',
-          ref: {
-            type: 'text',
+          __field: {
             name: 'test',
+            ref: {
+              type: 'text',
+              name: 'test',
+            },
+            value: 'This is a long text input',
+            validate: (value) => value.toString().length < 3 || 'bill',
           },
-          value: 'This is a long text input',
-          validate: (value) => value.toString().length < 3 || 'bill',
         },
         false,
       ),
@@ -1175,13 +1277,15 @@ describe('validateField', () => {
     expect(
       await validateField(
         {
-          name: 'test',
-          ref: {
-            type: 'text',
+          __field: {
             name: 'test',
+            ref: {
+              type: 'text',
+              name: 'test',
+            },
+            value: 'This is a long text input',
+            validate: (value) => value.toString().length < 3 || 'bill',
           },
-          value: 'This is a long text input',
-          validate: (value) => value.toString().length < 3 || 'bill',
         },
         false,
       ),
@@ -1201,13 +1305,15 @@ describe('validateField', () => {
     expect(
       await validateField(
         {
-          name: 'test',
-          ref: {
-            type: 'text',
+          __field: {
             name: 'test',
+            ref: {
+              type: 'text',
+              name: 'test',
+            },
+            value: 'This is a long text input',
+            validate: () => undefined,
           },
-          value: 'This is a long text input',
-          validate: () => undefined,
         },
         false,
       ),
@@ -1218,14 +1324,16 @@ describe('validateField', () => {
     expect(
       await validateField(
         {
-          name: 'test',
-          ref: {
-            type: 'text',
+          __field: {
             name: 'test',
+            ref: {
+              type: 'text',
+              name: 'test',
+            },
+            value: 'This is a long text input',
+            // @ts-expect-error
+            validate: 'validate',
           },
-          value: 'This is a long text input',
-          // @ts-expect-error
-          validate: 'validate',
         },
         false,
       ),
@@ -1239,13 +1347,15 @@ describe('validateField', () => {
     expect(
       await validateField(
         {
-          name: 'test',
-          ref: { type: 'text', name: 'test' },
-          value: '',
-          required: true,
-          minLength: 10,
-          pattern: /d/i,
-          validate: (value) => value === 'test',
+          __field: {
+            name: 'test',
+            ref: { type: 'text', name: 'test' },
+            value: '',
+            required: true,
+            minLength: 10,
+            pattern: /d/i,
+            validate: (value) => value === 'test',
+          },
         },
         true,
       ),
@@ -1254,13 +1364,15 @@ describe('validateField', () => {
     expect(
       await validateField(
         {
-          name: 'test',
-          ref: { type: 'text', name: 'test' },
-          value: '123',
-          required: true,
-          minLength: 10,
-          pattern: /d/i,
-          validate: (value) => value === 'test',
+          __field: {
+            name: 'test',
+            ref: { type: 'text', name: 'test' },
+            value: '123',
+            required: true,
+            minLength: 10,
+            pattern: /d/i,
+            validate: (value) => value === 'test',
+          },
         },
         true,
       ),
@@ -1274,47 +1386,24 @@ describe('validateField', () => {
     expect(
       await validateField(
         {
-          name: 'test',
-          ref: { type: 'text', name: 'test' },
-          value: '',
-          required: 'test',
-          minLength: {
-            value: 10,
-            message: 'minLength',
-          },
-          pattern: {
-            value: /d/i,
-            message: 'pattern',
-          },
-          validate: {
-            test: (value) => value === 'test',
-            test1: (value) => value == 'test' || 'Luo',
-            test2: (value) => value == 'test' || 'Bill',
-          },
-        },
-        true,
-      ),
-    ).toMatchSnapshot();
-
-    expect(
-      await validateField(
-        {
-          name: 'test',
-          ref: { type: 'text', name: 'test' },
-          value: 'bil',
-          required: 'test',
-          minLength: {
-            value: 10,
-            message: 'minLength',
-          },
-          pattern: {
-            value: /d/i,
-            message: 'pattern',
-          },
-          validate: {
-            test: (value) => value === 'test',
-            test1: (value) => value == 'test' || 'Luo',
-            test2: (value) => value == 'test' || 'Bill',
+          __field: {
+            name: 'test',
+            ref: { type: 'text', name: 'test' },
+            value: '',
+            required: 'test',
+            minLength: {
+              value: 10,
+              message: 'minLength',
+            },
+            pattern: {
+              value: /d/i,
+              message: 'pattern',
+            },
+            validate: {
+              test: (value) => value === 'test',
+              test1: (value) => value == 'test' || 'Luo',
+              test2: (value) => value == 'test' || 'Bill',
+            },
           },
         },
         true,
@@ -1324,22 +1413,51 @@ describe('validateField', () => {
     expect(
       await validateField(
         {
-          name: 'test',
-          ref: { type: 'text', name: 'test' },
-          value: 'bil',
-          required: 'test',
-          minLength: {
-            value: 10,
-            message: 'minLength',
+          __field: {
+            name: 'test',
+            ref: { type: 'text', name: 'test' },
+            value: 'bil',
+            required: 'test',
+            minLength: {
+              value: 10,
+              message: 'minLength',
+            },
+            pattern: {
+              value: /d/i,
+              message: 'pattern',
+            },
+            validate: {
+              test: (value) => value === 'test',
+              test1: (value) => value == 'test' || 'Luo',
+              test2: (value) => value == 'test' || 'Bill',
+            },
           },
-          pattern: {
-            value: /d/i,
-            message: 'pattern',
-          },
-          validate: {
-            test: (value) => value === 'test',
-            test1: (value) => value == 'test' || 'Luo',
-            test2: (value) => value == 'test' || 'Bill',
+        },
+        true,
+      ),
+    ).toMatchSnapshot();
+
+    expect(
+      await validateField(
+        {
+          __field: {
+            name: 'test',
+            ref: { type: 'text', name: 'test' },
+            value: 'bil',
+            required: 'test',
+            minLength: {
+              value: 10,
+              message: 'minLength',
+            },
+            pattern: {
+              value: /d/i,
+              message: 'pattern',
+            },
+            validate: {
+              test: (value) => value === 'test',
+              test1: (value) => value == 'test' || 'Luo',
+              test2: (value) => value == 'test' || 'Bill',
+            },
           },
         },
         true,

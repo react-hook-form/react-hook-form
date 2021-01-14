@@ -1,0 +1,14 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`FormProvider should work correctly with Controller, useWatch, useFormState. 1`] = `
+<DocumentFragment>
+  <input
+    name="test"
+    value=""
+  />
+  <p />
+  <div>
+    no
+  </div>
+</DocumentFragment>
+`;
