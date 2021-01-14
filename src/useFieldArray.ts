@@ -107,17 +107,14 @@ export const useFieldArray = <
     fieldArrayValuesRef,
   } = control || methods.control;
 
+  const getDefaultValues = <T>(values: T) =>
+    get(shouldUnregister ? values : shallowFieldsStateRef.current, name, []);
+
   const fieldArrayParentName = getFieldArrayParentName(name);
   const memoizedDefaultValues = React.useRef<Partial<TFieldArrayValues>[]>([
     ...(get(fieldArrayDefaultValuesRef.current, fieldArrayParentName)
-      ? get(fieldArrayDefaultValuesRef.current, name, [])
-      : get(
-          shouldUnregister
-            ? defaultValuesRef.current
-            : shallowFieldsStateRef.current,
-          name,
-          [],
-        )),
+      ? getDefaultValues(fieldArrayDefaultValuesRef.current)
+      : getDefaultValues(defaultValuesRef.current)),
   ]);
   const [fields, setFields] = React.useState<
     Partial<ArrayField<TFieldArrayValues, TKeyName>>[]
