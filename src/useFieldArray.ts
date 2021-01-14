@@ -446,12 +446,17 @@ export const useFieldArray = <
   }, []);
 
   return {
-    swap: React.useCallback(swap, [name]),
-    move: React.useCallback(move, [name]),
-    prepend: React.useCallback(prepend, [name]),
-    append: React.useCallback(append, [name]),
-    remove: React.useCallback(remove, [name]),
-    insert: React.useCallback(insert, [name]),
+    ...React.useMemo(
+      () => ({
+        swap,
+        move,
+        prepend,
+        append,
+        remove,
+        insert,
+      }),
+      [name],
+    ),
     fields: fields as FieldArrayWithId<TFieldValues, TName, TKeyName>,
   };
 };
