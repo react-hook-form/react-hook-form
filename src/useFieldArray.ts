@@ -403,7 +403,7 @@ export const useFieldArray = <
       formStateSubjectRef.current.next({});
     } else {
       for (const watchField of watchFieldsRef.current) {
-        if (watchField.startsWith(name as InternalFieldName)) {
+        if (name.startsWith(watchField)) {
           formStateSubjectRef.current.next({});
           break;
         }

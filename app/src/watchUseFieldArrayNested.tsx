@@ -1,10 +1,5 @@
 import * as React from 'react';
-import {
-  Controller,
-  useFieldArray,
-  useForm,
-  Control,
-} from 'react-hook-form';
+import { Controller, useFieldArray, useForm, Control } from 'react-hook-form';
 
 type FormValues = {
   test: {
@@ -140,13 +135,12 @@ export default () => {
     },
   );
   const renderCountRef = React.useRef(0);
-  const [result, setResult] = React.useState({});
   renderCountRef.current++;
 
-  console.log(watch('test'));
+  const result = watch('test');
 
   return (
-    <form onSubmit={handleSubmit((e) => setResult(e))}>
+    <form onSubmit={handleSubmit((e) => console.log(e))}>
       {fields.map((item, index) => {
         return (
           <div key={item.id}>
