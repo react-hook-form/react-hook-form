@@ -3,7 +3,7 @@ import { View, Text, TextInput, Button } from 'react-native';
 import { useForm } from './useForm';
 import { Controller } from './controller';
 import { render, fireEvent, wait } from '@testing-library/react-native';
-import * as focusOnErrorField from './logic/focusOnErrorField';
+import * as focusOnErrorField from './logic/focusFieldBy';
 
 describe('Controller with React Native', () => {
   afterEach(() => {
@@ -63,7 +63,7 @@ describe('Controller with React Native', () => {
 
     fireEvent.press(getByText('reset'));
 
-    expect(input.props.value).toBe('');
+    expect(input.props.value).toBeUndefined();
     expect(queryByText('required')).toBeNull();
   });
 });

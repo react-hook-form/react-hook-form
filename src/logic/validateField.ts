@@ -18,17 +18,19 @@ import { Field, Message, FieldError, InternalFieldErrors } from '../types';
 
 export default async (
   {
-    ref,
-    refs,
-    required,
-    maxLength,
-    minLength,
-    min,
-    max,
-    pattern,
-    validate,
-    name,
-    value: inputValue,
+    __field: {
+      ref,
+      refs,
+      required,
+      maxLength,
+      minLength,
+      min,
+      max,
+      pattern,
+      validate,
+      name,
+      value: inputValue,
+    },
   }: Field,
   validateAllFieldCriteria: boolean,
 ): Promise<InternalFieldErrors> => {

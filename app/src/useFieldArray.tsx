@@ -4,7 +4,8 @@ import { useForm, useFieldArray, Controller } from 'react-hook-form';
 let renderCount = 0;
 
 const UseFieldArray: React.FC = (props: any) => {
-  const withoutFocus = props.match.params.mode === 'defaultAndWithoutFocus';
+  const withoutFocus: boolean =
+    props.match.params.mode === 'defaultAndWithoutFocus';
   const {
     control,
     handleSubmit,
@@ -85,7 +86,14 @@ const UseFieldArray: React.FC = (props: any) => {
       <button
         id="append"
         type="button"
-        onClick={() => append({ name: renderCount.toString() }, !withoutFocus)}
+        onClick={() =>
+          append(
+            { name: renderCount.toString() },
+            {
+              shouldFocus: !withoutFocus,
+            },
+          )
+        }
       >
         append
       </button>
@@ -93,7 +101,14 @@ const UseFieldArray: React.FC = (props: any) => {
       <button
         id="prepend"
         type="button"
-        onClick={() => prepend({ name: renderCount.toString() }, !withoutFocus)}
+        onClick={() =>
+          prepend(
+            { name: renderCount.toString() },
+            {
+              shouldFocus: !withoutFocus,
+            },
+          )
+        }
       >
         prepend
       </button>
@@ -110,7 +125,13 @@ const UseFieldArray: React.FC = (props: any) => {
         id="insert"
         type="button"
         onClick={() =>
-          insert(1, { name: renderCount.toString() }, !withoutFocus)
+          insert(
+            1,
+            { name: renderCount.toString() },
+            {
+              shouldFocus: !withoutFocus,
+            },
+          )
         }
       >
         insert
@@ -122,6 +143,18 @@ const UseFieldArray: React.FC = (props: any) => {
 
       <button id="removeAll" type="button" onClick={() => remove()}>
         remove all
+      </button>
+
+      <button
+        id="reset"
+        type="button"
+        onClick={() => {
+          reset({
+            data: [{ name: 'test' }, { name: 'test1' }, { name: 'test2' }],
+          });
+        }}
+      >
+        reset
       </button>
 
       <button id="submit">Submit</button>

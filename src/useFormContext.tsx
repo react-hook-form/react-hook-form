@@ -8,15 +8,13 @@ FormContext.displayName = 'RHFContext';
 export const useFormContext = <
   TFieldValues extends FieldValues
 >(): UseFormMethods<TFieldValues> =>
-  // @ts-ignore
-  React.useContext(FormContext) as UseFormMethods<TFieldValues>;
+  (React.useContext(FormContext) as unknown) as UseFormMethods<TFieldValues>;
 
 export const FormProvider = <TFieldValues extends FieldValues>({
   children,
   ...props
 }: FormProviderProps<TFieldValues>) => (
-  // @ts-ignore
-  <FormContext.Provider value={props as UseFormMethods}>
+  <FormContext.Provider value={(props as unknown) as UseFormMethods}>
     {children}
   </FormContext.Provider>
 );
