@@ -246,9 +246,9 @@ export type UseFormMethods<TFieldValues extends FieldValues = FieldValues> = {
   control: Control<TFieldValues>;
 } & UseFormCommonMethods<TFieldValues>;
 
-export type UseFormStateProps<TFieldValues> = {
-  control: Control<TFieldValues>;
-};
+export type UseFormStateProps<TFieldValues> = Partial<{
+  control?: Control<TFieldValues>;
+}>;
 
 export type UseFormStateMethods<TFieldValues> = FormState<TFieldValues>;
 

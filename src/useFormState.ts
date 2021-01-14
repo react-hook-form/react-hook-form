@@ -13,7 +13,7 @@ import {
 
 function useFormState<TFieldValues extends FieldValues = FieldValues>({
   control,
-}: UseFormStateProps<TFieldValues>): UseFormStateMethods<TFieldValues> {
+}: UseFormStateProps<TFieldValues> = {}): UseFormStateMethods<TFieldValues> {
   const methods = useFormContext();
 
   if (process.env.NODE_ENV !== 'production') {
@@ -27,14 +27,12 @@ function useFormState<TFieldValues extends FieldValues = FieldValues>({
   const { formStateRef, formStateSubjectRef, readFormStateRef } =
     control || methods.control;
 
-  const [formState, updateFormState] = React.useState<FormState<TFieldValues>>(
-    formStateRef.current,
-  );
+  const [formState, updateFormState] = React.useState(formStateRef.current);
   const readFormState = React.useRef(cloneObject(readFormStateRef.current));
 
   React.useEffect(() => {
     const tearDown = formStateSubjectRef.current.subscribe({
-      next: (formState: Partial<FormState<TFieldValues>>) => {
+      next: (formState) => {
         if (shouldRenderFormState(formState, readFormState.current)) {
           updateFormState({
             ...formStateRef.current,
@@ -49,7 +47,7 @@ function useFormState<TFieldValues extends FieldValues = FieldValues>({
 
   return getProxyFormState<TFieldValues>(
     isProxyEnabled,
-    formState,
+    formState as FormState<TFieldValues>,
     readFormStateRef,
     readFormState,
     false,
