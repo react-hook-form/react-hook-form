@@ -32,7 +32,6 @@ import isRadioOrCheckboxFunction from './utils/isRadioOrCheckbox';
 import isWeb from './utils/isWeb';
 import isHTMLElement from './utils/isHTMLElement';
 import { EVENTS, UNDEFINED, VALIDATION_MODE } from './constants';
-import { NativeSyntheticEvent } from 'react-native';
 import {
   UseFormMethods,
   FieldValues,
@@ -59,7 +58,6 @@ import {
   SetFieldValue,
   FieldArrayDefaultValues,
   RegisterMethods,
-  ControllerEvent,
   FieldPath,
   WatchCallback,
   FieldPathValue,
@@ -406,15 +404,15 @@ export function useForm<
         : Array.isArray(name)
         ? name
         : [name];
-      let schemaValidationResult;
+      let isValid;
 
       formStateSubjectRef.current.next({
         isValidating: true,
       });
 
       if (resolver) {
-        schemaValidationResult = await executeSchemaOrResolverValidation(
-          fields,
+        isValid = isEmptyObject(
+          await executeSchemaOrResolverValidation(fields),
         );
       } else {
         isUndefined(name)
@@ -427,9 +425,7 @@ export function useForm<
       formStateSubjectRef.current.next({
         errors: formStateRef.current.errors,
         isValidating: false,
-        isValid: resolver
-          ? isEmptyObject(schemaValidationResult)
-          : getIsValid(),
+        isValid: resolver ? isEmptyObject(isValid) : getIsValid(),
       });
     },
     [executeSchemaOrResolverValidation, executeValidation],
@@ -522,27 +518,18 @@ export function useForm<
   }
 
   const handleChange = React.useCallback(
-    async (
-      event: Event | ControllerEvent | NativeSyntheticEvent<any>,
-    ): Promise<void | boolean> => {
-      const {
-        type,
-        target,
-        // @ts-ignore
-        target: { value, type: inputType },
-      } = event;
+    async ({
+      type,
+      target,
+      target: { value, type: inputType },
+    }: any): Promise<void | boolean> => {
       let name = (target as Ref)!.name;
-      const field = get(fieldsRef.current, name) as Field;
       let error;
       let isValid;
-      let inputValue;
+      const field = get(fieldsRef.current, name) as Field;
 
       if (field) {
-        inputValue = inputType ? getFieldValue(field) : value;
-        if (!isUndefined(inputValue)) {
-          field.__field.value = inputValue;
-        }
-
+        const inputValue = inputType ? getFieldValue(field) : value;
         const isBlurEvent = type === EVENTS.BLUR;
         const shouldSkipValidation = skipValidation({
           isBlurEvent,
@@ -554,18 +541,20 @@ export function useForm<
         });
         const isWatched =
           !isBlurEvent && isFieldWatched(name as FieldName<TFieldValues>);
-        let state = updateAndGetDirtyState(name, false);
+
+        if (!isUndefined(inputValue)) {
+          field.__field.value = inputValue;
+        }
+
+        const state = updateAndGetDirtyState(name, false);
 
         if (
           isBlurEvent &&
-          !get(formStateRef.current.touched, name) &&
-          readFormStateRef.current.touched
+          readFormStateRef.current.touched &&
+          !get(formStateRef.current.touched, name)
         ) {
           set(formStateRef.current.touched, name, true);
-          state = {
-            ...state,
-            touched: formStateRef.current.touched,
-          };
+          state.touched = formStateRef.current.touched;
         }
 
         let shouldRender = !isEmptyObject(state) || isWatched;
@@ -595,7 +584,7 @@ export function useForm<
           const previousFormIsValid = formStateRef.current.isValid;
           error = get(errors, name);
 
-          if (isCheckBoxInput(target as Ref) && !error && resolverRef.current) {
+          if (isCheckBoxInput(target as Ref) && !error) {
             const parentNodeName = getNodeParentName(name);
             const currentError = get(errors, parentNodeName, {});
             currentError.type && currentError.message && (error = currentError);

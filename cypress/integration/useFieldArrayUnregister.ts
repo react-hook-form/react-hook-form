@@ -1,6 +1,5 @@
 describe('useFieldArrayUnregister', () => {
-  // todo: useFieldArray conditional input fix
-  it.skip('should behaviour correctly', () => {
+  it.only('should behaviour correctly', () => {
     cy.visit('http://localhost:3000/UseFieldArrayUnregister');
 
     cy.get('#field0').clear().type('bill');
@@ -54,7 +53,7 @@ describe('useFieldArrayUnregister', () => {
     cy.get('#dirtyFields').should(($state) =>
       expect(JSON.parse($state.text())).to.be.deep.equal({
         data: [
-          { name: true, conditional: true },
+          { name: true },
           { conditional: true },
           { name: true, conditional: true },
           { name: true },
@@ -79,7 +78,7 @@ describe('useFieldArrayUnregister', () => {
     cy.get('#dirtyFields').should(($state) =>
       expect(JSON.parse($state.text())).to.be.deep.equal({
         data: [
-          { name: true, conditional: true },
+          { name: true },
           { name: true, conditional: true },
           { name: true, conditional: true },
           { name: true, conditional: true },
@@ -108,7 +107,7 @@ describe('useFieldArrayUnregister', () => {
     cy.get('#dirtyFields').should(($state) =>
       expect(JSON.parse($state.text())).to.be.deep.equal({
         data: [
-          { name: true, conditional: true },
+          { name: true },
           { name: true, conditional: true },
           { name: true, conditional: true },
           { name: true, conditional: true },
@@ -134,49 +133,49 @@ describe('useFieldArrayUnregister', () => {
 
     cy.get('#submit').click();
 
-    // cy.get('#result').should(($state) =>
-    //   expect(JSON.parse($state.text())).to.be.deep.equal({
-    //     data: [
-    //       { name: '5' },
-    //       { name: 'bill', conditional: 'test' },
-    //       { name: '8', conditional: '' },
-    //       { name: 'test1' },
-    //       { name: 'test2' },
-    //     ],
-    //   }),
-    // );
+    cy.get('#result').should(($state) =>
+      expect(JSON.parse($state.text())).to.be.deep.equal({
+        data: [
+          { name: '5' },
+          { name: 'bill', conditional: 'test' },
+          { name: '10' },
+          { name: 'test1' },
+          { name: 'test2' },
+        ],
+      }),
+    );
 
-    // cy.get('input[name="data.3.name"]').type('test');
-    //
-    // cy.get('#submit').click();
-    //
-    // cy.get('#result').should(($state) =>
-    //   expect(JSON.parse($state.text())).to.be.deep.equal({
-    //     data: [
-    //       { name: '5' },
-    //       { name: 'bill', conditional: 'test' },
-    //       { name: '10' },
-    //       { name: 'test1test' },
-    //       { name: 'test2' },
-    //     ],
-    //   }),
-    // );
-    //
-    // cy.get('#delete3').click();
-    //
-    // cy.get('#submit').click();
-    //
-    // cy.get('#result').should(($state) =>
-    //   expect(JSON.parse($state.text())).to.be.deep.equal({
-    //     data: [
-    //       { name: '5' },
-    //       { name: 'bill', conditional: 'test' },
-    //       { name: '10' },
-    //       { name: 'test2' },
-    //     ],
-    //   }),
-    // );
-    //
-    // cy.get('#renderCount').contains('31');
+    cy.get('input[name="data.3.name"]').type('test');
+
+    cy.get('#submit').click();
+
+    cy.get('#result').should(($state) =>
+      expect(JSON.parse($state.text())).to.be.deep.equal({
+        data: [
+          { name: '5' },
+          { name: 'bill', conditional: 'test' },
+          { name: '10' },
+          { name: 'test1test' },
+          { name: 'test2' },
+        ],
+      }),
+    );
+
+    cy.get('#delete3').click();
+
+    cy.get('#submit').click();
+
+    cy.get('#result').should(($state) =>
+      expect(JSON.parse($state.text())).to.be.deep.equal({
+        data: [
+          { name: '5' },
+          { name: 'bill', conditional: 'test' },
+          { name: '10' },
+          { name: 'test2' },
+        ],
+      }),
+    );
+
+    cy.get('#renderCount').contains('31');
   });
 });

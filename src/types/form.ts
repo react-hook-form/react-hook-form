@@ -1,5 +1,4 @@
 import * as React from 'react';
-import { NativeSyntheticEvent } from 'react-native';
 import {
   DeepPartial,
   DeepMap,
@@ -17,7 +16,6 @@ import {
 } from './fields';
 import { ErrorOption, FieldErrors } from './errors';
 import { RegisterOptions } from './validator';
-import { ControllerEvent } from './controller';
 import { FieldArrayDefaultValues } from './fieldArray';
 import { SubjectType } from '../utils/Subject';
 
@@ -47,8 +45,6 @@ export type DefaultValues<TFieldValues> = UnpackNestedValue<
 
 export type InternalNameSet = Set<InternalFieldName>;
 
-export type RecordInternalNameSet = Record<string, InternalNameSet>;
-
 export type ValidationMode = {
   onBlur: 'onBlur';
   onChange: 'onChange';
@@ -74,9 +70,7 @@ export type SetValueConfig = Partial<{
   shouldDirty: boolean;
 }>;
 
-export type HandleChange = (
-  event: Event | NativeSyntheticEvent<any> | ControllerEvent,
-) => Promise<void | boolean>;
+export type HandleChange = (event: any) => Promise<void | boolean>;
 
 export type UseFormProps<
   TFieldValues extends FieldValues = FieldValues,
