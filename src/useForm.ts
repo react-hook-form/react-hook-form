@@ -88,6 +88,7 @@ export function useForm<
   const watchSubjectRef = React.useRef(
     new Subject<{
       name?: string;
+      type?: string;
       value?: unknown;
     }>(),
   );
@@ -566,6 +567,7 @@ export function useForm<
           !isBlurEvent &&
             watchSubjectRef.current.next({
               name,
+              type,
               value: inputValue,
             });
           return (
@@ -612,6 +614,7 @@ export function useForm<
         !isBlurEvent &&
           watchSubjectRef.current.next({
             name,
+            type,
             value: inputValue,
           });
         shouldRenderBaseOnError(name, error, shouldRender, state, isValid);
@@ -706,7 +709,7 @@ export function useForm<
       const { fields, name } = fieldArrayStateRef.current;
       const isArrayNames = Array.isArray(fieldNames);
       let fieldValues = isMountedRef.current
-        ? getFieldsValues(fieldsRef)
+        ? (getValues() as any)
         : isUndefined(defaultValue)
         ? defaultValuesRef.current
         : isArrayNames
@@ -761,7 +764,7 @@ export function useForm<
   ): any {
     if (isFunction(fieldName)) {
       return watchSubjectRef.current.subscribe({
-        next: () => fieldName(watchInternal(undefined, defaultValue)),
+        next: (info) => fieldName(watchInternal(undefined, defaultValue), info),
       });
     } else {
       return watchInternal(fieldName as string | string[], defaultValue, true);
@@ -1106,7 +1109,6 @@ export function useForm<
   }, []);
 
   const commonProps = {
-    getValues: React.useCallback(getValues, []),
     register: React.useCallback(register, [defaultValuesRef.current]),
     unregister: React.useCallback(unregister, []),
   };
@@ -1143,6 +1145,7 @@ export function useForm<
     ),
     trigger,
     setValue: React.useCallback(setValue, [setInternalValue, trigger]),
+    getValues: React.useCallback(getValues, []),
     handleSubmit,
     reset: React.useCallback(reset, []),
     clearErrors: React.useCallback(clearErrors, []),

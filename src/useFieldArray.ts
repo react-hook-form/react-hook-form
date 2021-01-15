@@ -15,6 +15,7 @@ import fillEmptyArray from './utils/fillEmptyArray';
 import compact from './utils/compact';
 import isUndefined from './utils/isUndefined';
 import focusFieldBy from './logic/focusFieldBy';
+import getFieldsValues from './logic/getFieldsValues';
 import {
   FieldValues,
   UseFieldArrayProps,
@@ -66,7 +67,6 @@ export const useFieldArray = <
     fieldsWithValidationRef,
     fieldArrayValuesRef,
     updateIsValid,
-    getValues,
   } = control || methods.control;
 
   const [fields, setFields] = React.useState<
@@ -93,7 +93,11 @@ export const useFieldArray = <
   ) => fields.map(({ [keyName]: omitted, ...rest } = {}) => rest);
 
   const getCurrentFieldsValues = () => {
-    const values = get(getValues(), name as InternalFieldName, []);
+    const values = get(
+      getFieldsValues(fieldsRef),
+      name as InternalFieldName,
+      [],
+    );
 
     return mapIds<TFieldValues, TKeyName>(
       get(fieldArrayValuesRef.current, name as InternalFieldName, []).map(
@@ -138,7 +142,7 @@ export const useFieldArray = <
     });
 
     if (readFormStateRef.current.isValid) {
-      const values = getValues();
+      const values = getFieldsValues(fieldsRef);
       set(values, name as InternalFieldName, fields);
       updateIsValid(values);
     }
@@ -425,7 +429,7 @@ export const useFieldArray = <
       next: ({ name: inputName, fields, isReset }) => {
         if (isReset) {
           if (inputName) {
-            const value = getValues();
+            const value = getFieldsValues(fieldsRef);
             set(value, inputName, fields);
             set(fieldArrayValuesRef.current, name, fields);
             setFieldAndValidState(get(value, name));

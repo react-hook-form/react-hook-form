@@ -150,16 +150,6 @@ type UseFormCommonMethods<TFieldValues extends FieldValues = FieldValues> = {
   unregister: (
     name: FieldPath<TFieldValues> | FieldPath<TFieldValues>[],
   ) => void;
-  getValues: {
-    (): UnpackNestedValue<TFieldValues>;
-    <TName extends FieldPath<TFieldValues>>(fieldName: TName): FieldPathValue<
-      TFieldValues,
-      TName
-    >;
-    <TName extends FieldPath<TFieldValues>[]>(
-      fieldNames: TName,
-    ): FieldPathValues<TFieldValues, TName>;
-  };
 };
 
 export type Control<TFieldValues extends FieldValues = FieldValues> = {
@@ -208,6 +198,11 @@ export type Control<TFieldValues extends FieldValues = FieldValues> = {
 
 export type WatchCallback = <TFieldValues>(
   value: UnpackNestedValue<TFieldValues>,
+  info: {
+    name?: string;
+    type?: string;
+    value?: unknown;
+  },
 ) => void;
 
 export type UseFormMethods<TFieldValues extends FieldValues = FieldValues> = {
@@ -225,6 +220,16 @@ export type UseFormMethods<TFieldValues extends FieldValues = FieldValues> = {
       callback: WatchCallback,
       defaultValues?: UnpackNestedValue<DeepPartial<TFieldValues>>,
     ): void;
+  };
+  getValues: {
+    (): UnpackNestedValue<TFieldValues>;
+    <TName extends FieldPath<TFieldValues>>(fieldName: TName): FieldPathValue<
+      TFieldValues,
+      TName
+    >;
+    <TName extends FieldPath<TFieldValues>[]>(
+      fieldNames: TName,
+    ): FieldPathValues<TFieldValues, TName>;
   };
   setError: (name: FieldName<TFieldValues>, error: ErrorOption) => void;
   clearErrors: (
