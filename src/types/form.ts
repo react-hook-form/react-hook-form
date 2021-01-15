@@ -239,7 +239,7 @@ export type UseFormMethods<TFieldValues extends FieldValues = FieldValues> = {
   formState: FormState<TFieldValues>;
   reset: (
     values?: UnpackNestedValue<DeepPartial<TFieldValues>>,
-    omitResetState?: KeepStateOptions,
+    keepStateOptions?: KeepStateOptions,
   ) => void;
   handleSubmit: <TSubmitFieldValues extends FieldValues = TFieldValues>(
     onValid: SubmitHandler<TSubmitFieldValues>,

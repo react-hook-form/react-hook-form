@@ -1050,11 +1050,12 @@ export function useForm<
       }
     }
 
-    !keepStateOptions.keepValues && (fieldsRef.current = {});
     !keepStateOptions.keepDefaultValues &&
       (defaultValuesRef.current = updatedValues);
 
     if (!keepStateOptions.keepValues) {
+      fieldsRef.current = {};
+
       controllerSubjectRef.current.next(updatedValues);
 
       watchSubjectRef.current.next({
