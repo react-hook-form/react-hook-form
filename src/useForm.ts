@@ -1029,7 +1029,7 @@ export function useForm<
     values?: DefaultValues<TFieldValues>,
     keepStateOptions: KeepStateOptions = {},
   ): void => {
-    const updatedValues = { ...(values || defaultValuesRef.current) };
+    const updatedValues = values || defaultValuesRef.current;
 
     if (isWeb && !keepStateOptions.keepValues) {
       for (const field of Object.values(fieldsRef.current)) {
@@ -1051,19 +1051,19 @@ export function useForm<
     }
 
     !keepStateOptions.keepDefaultValues &&
-      (defaultValuesRef.current = updatedValues);
+      (defaultValuesRef.current = { ...updatedValues });
 
     if (!keepStateOptions.keepValues) {
       fieldsRef.current = {};
 
-      controllerSubjectRef.current.next(updatedValues);
+      controllerSubjectRef.current.next({ ...updatedValues });
 
       watchSubjectRef.current.next({
-        value: updatedValues,
+        value: { ...updatedValues },
       });
 
       fieldArraySubjectRef.current.next({
-        fields: updatedValues,
+        fields: { ...updatedValues },
         isReset: true,
       });
     }
