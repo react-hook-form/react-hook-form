@@ -1,46 +1,35 @@
 {
   "name": "react-hook-form-automation-server",
   "version": "0.1.0",
-  "private": true,
   "dependencies": {
     "@hookform/resolvers": "^1.0.0",
     "@material-ui/core": "^4.8.0",
-    "@types/jest": "26.0.15",
-    "@types/node": "14.14.2",
-    "@types/react": "16.9.53",
-    "@types/react-dom": "16.9.8",
-    "@types/react-router-dom": "^5.1.6",
-    "@types/react-select": "^3.0.22",
-    "@types/yup": "^0.29.8",
     "joi": "^17.3.0",
     "react": "^17.0.1",
     "react-dom": "^17.0.1",
     "react-hook-form": "^6.9.6",
     "react-router-dom": "^5.1.2",
-    "react-scripts": "^3.4.0",
     "react-select": "^3.0.8",
-    "typescript": "4.2.0-dev.20210101",
     "yup": "^0.29.3"
   },
   "scripts": {
-    "start": "react-scripts start",
-    "build": "react-scripts build",
-    "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "start": "react-scripts start"
   },
   "eslintConfig": {
     "extends": "react-app"
   },
+  "devDependencies": {
+    "react-scripts": "^3.4.0",
+    "@types/react": "16.9.53",
+    "@types/react-dom": "16.9.8",
+    "@types/react-router-dom": "^5.1.6",
+    "@types/react-select": "^3.0.22",
+    "@types/yup": "^0.29.8",
+    "typescript": "4.2.0-dev.20210101"
+  },
   "browserslist": {
-    "production": [
-      ">0.2%",
-      "not dead",
-      "not op_mini all"
-    ],
     "development": [
-      "last 1 chrome version",
-      "last 1 firefox version",
-      "last 1 safari version"
+      "last 1 chrome version"
     ]
   }
 }

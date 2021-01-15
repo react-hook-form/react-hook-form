@@ -45,7 +45,6 @@ import {
   SubmitHandler,
   ReadFormState,
   Ref,
-  OmitResetState,
   SetValueConfig,
   ErrorOption,
   FormState,
@@ -62,6 +61,7 @@ import {
   WatchCallback,
   FieldPathValue,
   FieldPathValues,
+  KeepStateOptions,
 } from './types';
 
 const isWindowUndefined = typeof window === UNDEFINED;
@@ -996,15 +996,15 @@ export function useForm<
   );
 
   const resetRefs = ({
-    errors,
-    isDirty,
-    isSubmitted,
-    touched,
-    isValid,
-    submitCount,
-    dirty,
-  }: OmitResetState) => {
-    if (!isValid) {
+    keepErrors,
+    keepIsDirty,
+    keepIsSubmitted,
+    keepTouched,
+    keepIsValid,
+    keepSubmitCount,
+    keepDirty,
+  }: KeepStateOptions) => {
+    if (!keepIsValid) {
       validFieldsRef.current = {};
       fieldsWithValidationRef.current = {};
     }
@@ -1013,13 +1013,13 @@ export function useForm<
     isWatchAllRef.current = false;
 
     formStateSubjectRef.current.next({
-      submitCount: submitCount ? formStateRef.current.submitCount : 0,
-      isDirty: isDirty ? formStateRef.current.isDirty : false,
-      isSubmitted: isSubmitted ? formStateRef.current.isSubmitted : false,
-      isValid: isValid ? formStateRef.current.isValid : !isOnSubmit,
-      dirty: dirty ? formStateRef.current.dirty : {},
-      touched: touched ? formStateRef.current.touched : {},
-      errors: errors ? formStateRef.current.errors : {},
+      submitCount: keepSubmitCount ? formStateRef.current.submitCount : 0,
+      isDirty: keepIsDirty ? formStateRef.current.isDirty : false,
+      isSubmitted: keepIsSubmitted ? formStateRef.current.isSubmitted : false,
+      isValid: keepIsValid ? formStateRef.current.isValid : !isOnSubmit,
+      dirty: keepDirty ? formStateRef.current.dirty : {},
+      touched: keepTouched ? formStateRef.current.touched : {},
+      errors: keepErrors ? formStateRef.current.errors : {},
       isSubmitting: false,
       isSubmitSuccessful: false,
     });
@@ -1027,9 +1027,11 @@ export function useForm<
 
   const reset = (
     values?: DefaultValues<TFieldValues>,
-    omitResetState: OmitResetState = {},
+    keepStateOptions: KeepStateOptions = {},
   ): void => {
-    if (isWeb) {
+    const updatedValues = values || defaultValuesRef.current;
+
+    if (isWeb && !keepStateOptions.keepValues) {
       for (const field of Object.values(fieldsRef.current)) {
         if (field && field.__field) {
           const { ref, refs } = field.__field;
@@ -1048,23 +1050,25 @@ export function useForm<
       }
     }
 
-    fieldsRef.current = {};
-    defaultValuesRef.current = { ...(values || defaultValuesRef.current) };
+    !keepStateOptions.keepDefaultValues &&
+      (defaultValuesRef.current = { ...updatedValues });
 
-    controllerSubjectRef.current.next({
-      ...defaultValuesRef.current,
-    } as DefaultValues<TFieldValues>);
+    if (!keepStateOptions.keepValues) {
+      fieldsRef.current = {};
 
-    watchSubjectRef.current.next({
-      value: { ...defaultValuesRef.current },
-    });
+      controllerSubjectRef.current.next({ ...updatedValues });
 
-    fieldArraySubjectRef.current.next({
-      fields: { ...defaultValuesRef.current },
-      isReset: true,
-    });
+      watchSubjectRef.current.next({
+        value: { ...updatedValues },
+      });
 
-    resetRefs(omitResetState);
+      fieldArraySubjectRef.current.next({
+        fields: { ...updatedValues },
+        isReset: true,
+      });
+    }
+
+    resetRefs(keepStateOptions);
   };
 
   React.useEffect(() => {
