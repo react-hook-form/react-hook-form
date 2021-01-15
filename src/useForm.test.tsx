@@ -769,13 +769,13 @@ describe('useForm', () => {
         result.current.reset(
           { test: '' },
           {
-            errors: true,
-            isDirty: true,
-            isSubmitted: true,
-            touched: true,
-            isValid: true,
-            submitCount: true,
-            dirty: true,
+            keepErrors: true,
+            keepIsDirty: true,
+            keepIsSubmitted: true,
+            keepTouched: true,
+            keepIsValid: true,
+            keepSubmitCount: true,
+            keepDirty: true,
           },
         ),
       );
