@@ -742,6 +742,105 @@ describe('useForm', () => {
       act(() => result.current.reset({ test: 'test' }));
     });
 
+    it('should not reset form values when keepValues is specified', () => {
+      const Component = () => {
+        const { register, reset } = useForm();
+
+        return (
+          <>
+            <input {...register('test')} />
+            <button
+              type={'button'}
+              onClick={() =>
+                reset(undefined, {
+                  keepValues: true,
+                })
+              }
+            >
+              reset
+            </button>
+          </>
+        );
+      };
+
+      render(<Component />);
+
+      fireEvent.change(screen.getByRole('textbox'), {
+        target: {
+          value: 'test',
+        },
+      });
+
+      fireEvent.click(screen.getByRole('button'));
+
+      expect((screen.getByRole('textbox') as HTMLInputElement).value).toEqual(
+        'test',
+      );
+    });
+
+    it('should not reset form defaultValues when keepDefaultValues is specified', () => {
+      const Component = () => {
+        const {
+          register,
+          reset,
+          formState: { isDirty },
+        } = useForm({
+          defaultValues: {
+            test: 'test1',
+          },
+        });
+
+        return (
+          <>
+            <input {...register('test')} />
+            <p>{isDirty ? 'dirty' : ''}</p>
+            <button
+              type={'button'}
+              onClick={() =>
+                reset(undefined, {
+                  keepValues: true,
+                })
+              }
+            >
+              reset
+            </button>
+          </>
+        );
+      };
+
+      render(<Component />);
+
+      fireEvent.change(screen.getByRole('textbox'), {
+        target: {
+          value: 'test',
+        },
+      });
+
+      fireEvent.click(screen.getByRole('button'));
+
+      expect((screen.getByRole('textbox') as HTMLInputElement).value).toEqual(
+        'test',
+      );
+
+      fireEvent.change(screen.getByRole('textbox'), {
+        target: {
+          value: 'test2',
+        },
+      });
+
+      act(() => {
+        screen.getByText('dirty');
+      });
+
+      fireEvent.change(screen.getByRole('textbox'), {
+        target: {
+          value: 'test1',
+        },
+      });
+
+      expect(screen.queryByText('dirty')).toBeNull();
+    });
+
     it('should not reset if keepStateOption is specified', async () => {
       const { result } = renderHook(() => useForm<{ test: string }>());
 
