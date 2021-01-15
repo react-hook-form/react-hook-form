@@ -115,14 +115,16 @@ export type FormState<TFieldValues> = {
   errors: FieldErrors<TFieldValues>;
 };
 
-export type OmitResetState = Partial<{
-  errors: boolean;
-  isDirty: boolean;
-  isSubmitted: boolean;
-  touched: boolean;
-  isValid: boolean;
-  submitCount: boolean;
-  dirty: boolean;
+export type KeepStateOptions = Partial<{
+  keepErrors: boolean;
+  keepIsDirty: boolean;
+  keepValues: boolean;
+  keepDefaultValues: boolean;
+  keepIsSubmitted: boolean;
+  keepTouched: boolean;
+  keepIsValid: boolean;
+  keepSubmitCount: boolean;
+  keepDirty: boolean;
 }>;
 
 export type SetFieldValue<TFieldValues> =
@@ -237,7 +239,7 @@ export type UseFormMethods<TFieldValues extends FieldValues = FieldValues> = {
   formState: FormState<TFieldValues>;
   reset: (
     values?: UnpackNestedValue<DeepPartial<TFieldValues>>,
-    omitResetState?: OmitResetState,
+    omitResetState?: KeepStateOptions,
   ) => void;
   handleSubmit: <TSubmitFieldValues extends FieldValues = TFieldValues>(
     onValid: SubmitHandler<TSubmitFieldValues>,
