@@ -742,12 +742,11 @@ describe('useForm', () => {
       act(() => result.current.reset({ test: 'test' }));
     });
 
-    it('should not reset if OmitResetState is specified', async () => {
+    it('should not reset if keepStateOption is specified', async () => {
       const { result } = renderHook(() => useForm<{ test: string }>());
 
       result.current.register('test');
 
-      // check only public variables
       result.current.formState.errors = {
         test: {
           type: 'test',
