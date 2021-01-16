@@ -436,8 +436,7 @@ describe('useWatch', () => {
       expect(await screen.findByText('default')).toBeDefined();
     });
 
-    // todo: fix the tests
-    describe.only('with useFieldArray', () => {
+    describe('with useFieldArray', () => {
       // issue: https://github.com/react-hook-form/react-hook-form/issues/2229
       it('should return current value with radio type', async () => {
         let watchedValue: any;
@@ -491,13 +490,9 @@ describe('useWatch', () => {
           },
         });
 
-        expect(watchedValue).toEqual({
-          options: [{ option: '' }, { option: '' }],
-        });
-
         actComponent(() => {
           expect(watchedValue).toEqual({
-            options: [{ option: '' }, { option: '' }],
+            options: [{ option: 'test' }, { option: 'test1' }],
           });
         });
       });

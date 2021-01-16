@@ -3,6 +3,7 @@ import { useFormContext } from './useFormContext';
 import isUndefined from './utils/isUndefined';
 import isString from './utils/isString';
 import get from './utils/get';
+import isObject from './utils/isObject';
 import {
   DeepPartial,
   UseWatchProps,
@@ -10,6 +11,7 @@ import {
   UnpackNestedValue,
   Control,
   FieldPath,
+  InternalFieldName,
 } from './types';
 
 export function useWatch<
@@ -74,10 +76,12 @@ export function useWatch<TFieldValues>({
     }
 
     const tearDown = watchSubjectRef.current.subscribe({
-      next: ({ inputName, inputValue }) => {
+      next: ({ name: inputName, value }) => {
         updateValue(
-          isString(name) && name === inputName && !isUndefined(inputValue)
-            ? inputValue
+          isString(inputName) && name === inputName && !isUndefined(value)
+            ? value
+            : name && isObject(value)
+            ? get(value, name as InternalFieldName, defaultValue)
             : watchInternal(name as string, defaultValue),
         );
       },
