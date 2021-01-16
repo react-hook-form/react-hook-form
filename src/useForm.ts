@@ -1,5 +1,4 @@
 import * as React from 'react';
-import Subject from './utils/Subject';
 import focusFieldBy from './logic/focusFieldBy';
 import setFieldArrayDirtyFields from './logic/setFieldArrayDirtyFields';
 import shouldRenderFormState from './logic/shouldRenderFormState';
@@ -12,6 +11,7 @@ import getNodeParentName from './logic/getNodeParentName';
 import deepEqual from './utils/deepEqual';
 import isNameInFieldArray from './logic/isNameInFieldArray';
 import getProxyFormState from './logic/getProxyFormState';
+import Subject, { Subscription } from './utils/Subject';
 import isProxyEnabled from './utils/isProxyEnabled';
 import isCheckBoxInput from './utils/isCheckBoxInput';
 import isEmptyObject from './utils/isEmptyObject';
@@ -756,7 +756,7 @@ export function useForm<
   function watch(
     callback: WatchCallback,
     defaultValues?: UnpackNestedValue<DeepPartial<TFieldValues>>,
-  ): void;
+  ): Subscription;
   function watch(
     fieldName?:
       | FieldPath<TFieldValues>
@@ -1105,6 +1105,7 @@ export function useForm<
     );
 
     return () => {
+      watchSubjectRef.current.unsubscribe();
       formStateSubjectTearDown.unsubscribe();
       useFieldArraySubjectTearDown.unsubscribe();
     };
@@ -1116,7 +1117,6 @@ export function useForm<
   };
 
   return {
-    watch,
     control: React.useMemo(
       () => ({
         isWatchAllRef,
@@ -1146,6 +1146,7 @@ export function useForm<
       readFormStateRef,
     ),
     trigger,
+    watch: React.useCallback(watch, []),
     setValue: React.useCallback(setValue, [setInternalValue, trigger]),
     getValues: React.useCallback(getValues, []),
     handleSubmit,

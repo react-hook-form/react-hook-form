@@ -17,7 +17,7 @@ import {
 import { ErrorOption, FieldErrors } from './errors';
 import { RegisterOptions } from './validator';
 import { FieldArrayDefaultValues } from './fieldArray';
-import { SubjectType } from '../utils/Subject';
+import { SubjectType, Subscription } from '../utils/Subject';
 
 declare const $NestedValue: unique symbol;
 
@@ -219,7 +219,7 @@ export type UseFormMethods<TFieldValues extends FieldValues = FieldValues> = {
     (
       callback: WatchCallback,
       defaultValues?: UnpackNestedValue<DeepPartial<TFieldValues>>,
-    ): void;
+    ): Subscription;
   };
   getValues: {
     (): UnpackNestedValue<TFieldValues>;

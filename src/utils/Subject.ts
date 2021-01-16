@@ -2,7 +2,7 @@ export type Observer<T> = {
   next: (value: T) => void;
 };
 
-type TearDown = () => void;
+export type TearDown = () => void;
 
 export type SubjectType<T> = {
   next: (value: T) => void;
@@ -61,5 +61,9 @@ export default class Subject<T> {
     this.observers.push(subscriber);
 
     return subscription;
+  }
+
+  unsubscribe() {
+    this.observers = [];
   }
 }

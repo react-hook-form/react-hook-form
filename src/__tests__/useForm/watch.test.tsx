@@ -136,4 +136,56 @@ describe('watch', () => {
 
     expect(result.current.watch()).toEqual({ test: 'data1', test1: 'data2' });
   });
+
+  it('should watch the entire field array with callback', () => {
+    const output: any[] = [];
+
+    const Component = () => {
+      const { watch, register } = useForm();
+
+      React.useEffect(() => {
+        const subscription = watch((data) => {
+          output.push(data);
+        });
+
+        return () => {
+          subscription.unsubscribe();
+        };
+      }, [watch]);
+
+      return <input {...register('test')} />;
+    };
+
+    render(<Component />);
+
+    fireEvent.change(screen.getByRole('textbox'), {
+      target: {
+        value: 'test',
+      },
+    });
+
+    fireEvent.change(screen.getByRole('textbox'), {
+      target: {
+        value: 'test1',
+      },
+    });
+
+    fireEvent.change(screen.getByRole('textbox'), {
+      target: {
+        value: 'test2',
+      },
+    });
+
+    expect(output).toEqual([
+      {
+        test: 'test',
+      },
+      {
+        test: 'test1',
+      },
+      {
+        test: 'test2',
+      },
+    ]);
+  });
 });
