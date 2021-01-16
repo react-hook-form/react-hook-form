@@ -104,7 +104,7 @@ export function useForm<
   );
   const fieldArrayStateRef = React.useRef<{
     name?: string;
-    fields?: any[];
+    fields?: any;
   }>({});
   const fieldArrayValuesRef = React.useRef<FieldArrayDefaultValues>({});
   const watchFieldsRef = React.useRef<InternalNameSet>(new Set());
@@ -711,7 +711,7 @@ export function useForm<
       const { fields, name } = fieldArrayStateRef.current;
       const isArrayNames = Array.isArray(fieldNames);
       let fieldValues = isMountedRef.current
-        ? (getValues() as any)
+        ? getValues()
         : isUndefined(defaultValue)
         ? defaultValuesRef.current
         : isArrayNames
