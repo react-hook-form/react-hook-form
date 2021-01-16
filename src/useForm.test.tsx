@@ -2316,6 +2316,32 @@ describe('useForm', () => {
   });
 
   describe('getValues', () => {
+    it('should return defaultValues before inputs mounted', () => {
+      let values;
+
+      const Component = () => {
+        const { getValues } = useForm({
+          defaultValues: {
+            test: 'test',
+          },
+        });
+
+        values = getValues();
+
+        return null;
+      };
+
+      const { rerender } = render(<Component />);
+
+      expect(values).toEqual({
+        test: 'test',
+      });
+
+      rerender(<Component />);
+
+      expect(values).toEqual({});
+    });
+
     it('should call getFieldsValues and return all values', () => {
       const { result } = renderHook(() => useForm<{ test: string }>());
       result.current.register('test');

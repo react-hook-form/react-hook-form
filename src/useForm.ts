@@ -633,7 +633,9 @@ export function useForm<
   function getValues(
     fieldNames?: FieldPath<TFieldValues> | FieldPath<TFieldValues>[],
   ): unknown {
-    const values = getFieldsValues(fieldsRef);
+    const values = isMountedRef.current
+      ? getFieldsValues(fieldsRef)
+      : defaultValues;
 
     if (isUndefined(fieldNames)) {
       return values;
