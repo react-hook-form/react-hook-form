@@ -19,6 +19,16 @@ describe('setFieldArrayDirtyFields', () => {
     ]);
   });
 
+  it('should not set dirty fields for nested input data which are deep equal', () => {
+    expect(
+      setFieldArrayDirtyFields(
+        [{ data: 'luo', data1: 'luo1' }],
+        [{ data: 'luo', data1: 'luo1' }],
+        [],
+      ),
+    ).toEqual([]);
+  });
+
   it('should unset dirty fields when value matches', () => {
     expect(
       setFieldArrayDirtyFields(
