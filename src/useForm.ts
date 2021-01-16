@@ -1,5 +1,4 @@
 import * as React from 'react';
-import Subject from './utils/Subject';
 import focusFieldBy from './logic/focusFieldBy';
 import setFieldArrayDirtyFields from './logic/setFieldArrayDirtyFields';
 import shouldRenderFormState from './logic/shouldRenderFormState';
@@ -12,6 +11,7 @@ import getNodeParentName from './logic/getNodeParentName';
 import deepEqual from './utils/deepEqual';
 import isNameInFieldArray from './logic/isNameInFieldArray';
 import getProxyFormState from './logic/getProxyFormState';
+import Subject, { Subscription } from './utils/Subject';
 import isProxyEnabled from './utils/isProxyEnabled';
 import isCheckBoxInput from './utils/isCheckBoxInput';
 import isEmptyObject from './utils/isEmptyObject';
@@ -756,7 +756,7 @@ export function useForm<
   function watch(
     callback: WatchCallback,
     defaultValues?: UnpackNestedValue<DeepPartial<TFieldValues>>,
-  ): void;
+  ): Subscription;
   function watch(
     fieldName?:
       | FieldPath<TFieldValues>
@@ -1082,7 +1082,7 @@ export function useForm<
 
   React.useEffect(() => {
     isMountedRef.current = true;
-    const formStateSubjectTearDown = formStateSubjectRef.current.subscribe({
+    const formStateSubscription = formStateSubjectRef.current.subscribe({
       next: (formState: Partial<FormState<TFieldValues>> = {}) => {
         if (shouldRenderFormState(formState, readFormStateRef.current, true)) {
           formStateRef.current = {
@@ -1094,19 +1094,18 @@ export function useForm<
       },
     });
 
-    const useFieldArraySubjectTearDown = fieldArraySubjectRef.current.subscribe(
-      {
-        next: (state) => {
-          if (state.fields && state.name) {
-            fieldArrayStateRef.current = state;
-          }
-        },
+    const useFieldArraySubscription = fieldArraySubjectRef.current.subscribe({
+      next: (state) => {
+        if (state.fields && state.name) {
+          fieldArrayStateRef.current = state;
+        }
       },
-    );
+    });
 
     return () => {
-      formStateSubjectTearDown.unsubscribe();
-      useFieldArraySubjectTearDown.unsubscribe();
+      watchSubjectRef.current.unsubscribe();
+      formStateSubscription.unsubscribe();
+      useFieldArraySubscription.unsubscribe();
     };
   }, []);
 
@@ -1116,7 +1115,6 @@ export function useForm<
   };
 
   return {
-    watch,
     control: React.useMemo(
       () => ({
         isWatchAllRef,
@@ -1146,6 +1144,7 @@ export function useForm<
       readFormStateRef,
     ),
     trigger,
+    watch: React.useCallback(watch, []),
     setValue: React.useCallback(setValue, [setInternalValue, trigger]),
     getValues: React.useCallback(getValues, []),
     handleSubmit,

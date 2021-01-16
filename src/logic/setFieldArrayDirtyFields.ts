@@ -1,6 +1,7 @@
 import { get } from '../utils';
 import set from '../utils/set';
 import { deepMerge } from '../utils/deepMerge';
+import deepEqual from '../utils/deepEqual';
 
 function setDirtyFields<
   T extends Record<string, unknown>[],
@@ -28,7 +29,7 @@ function setDirtyFields<
           key,
         );
       } else {
-        get(defaultValues[index] || {}, key) === values[index][key]
+        deepEqual(get(defaultValues[index] || {}, key), values[index][key])
           ? set(dirty[index] || {}, key)
           : (dirty[index] = {
               ...dirty[index],

@@ -75,7 +75,7 @@ export function useWatch<TFieldValues>({
       }
     }
 
-    const tearDown = watchSubjectRef.current.subscribe({
+    const watchSubscription = watchSubjectRef.current.subscribe({
       next: ({ name: inputName, value }) => {
         updateValue(
           isString(inputName) && name === inputName && !isUndefined(value)
@@ -87,7 +87,7 @@ export function useWatch<TFieldValues>({
       },
     });
 
-    return () => tearDown.unsubscribe();
+    return () => watchSubscription.unsubscribe();
   }, [name]);
 
   return value;

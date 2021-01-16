@@ -1,0 +1,63 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`useFieldArray array of array fields should populate all array fields correctly with setValue 1`] = `
+<DocumentFragment>
+  <div>
+    <div>
+      <input
+        name="nest.0.value"
+        value="1"
+      />
+      <div>
+        <input
+          name="nest.0.nestedArray.0.value"
+          value="1"
+        />
+      </div>
+    </div>
+    <div>
+      <input
+        name="nest.1.value"
+        value="2"
+      />
+      <div>
+        <input
+          name="nest.1.nestedArray.0.value"
+          value="1"
+        />
+      </div>
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`useFieldArray array of array fields should populate all array fields with setValue when name match Field Array 1`] = `
+<DocumentFragment>
+  <div>
+    <div>
+      <input
+        name="nest.0.value"
+        value="1"
+      />
+      <div>
+        <input
+          name="nest.0.nestedArray.0.value"
+          value="1"
+        />
+      </div>
+    </div>
+    <div>
+      <input
+        name="nest.1.value"
+        value="2"
+      />
+      <div>
+        <input
+          name="nest.1.nestedArray.0.value"
+          value="1"
+        />
+      </div>
+    </div>
+  </div>
+</DocumentFragment>
+`;
