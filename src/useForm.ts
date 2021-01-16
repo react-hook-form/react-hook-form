@@ -338,11 +338,25 @@ export function useForm<
   );
 
   const executeSchemaOrResolverValidation = React.useCallback(
-    async (names: InternalFieldName[]) => {
+    async (
+      names: InternalFieldName[],
+      currentNames: FieldName<TFieldValues>[] = [],
+    ) => {
+      const currentFields: Field[] = [];
+      for (const name of currentNames) {
+        const field = fieldsRef.current[name];
+        if (field) {
+          currentFields.push(field);
+        }
+      }
+
       const { errors } = await resolverRef.current!(
         getValues(),
         contextRef.current,
-        { criteriaMode },
+        {
+          criteriaMode,
+          fields: currentFields.length ? currentFields : undefined,
+        },
       );
 
       for (const name of names) {
@@ -373,6 +387,7 @@ export function useForm<
       if (resolver) {
         schemaValidationResult = await executeSchemaOrResolverValidation(
           fields,
+          isUndefined(name) ? undefined : (fields as FieldName<TFieldValues>[]),
         );
       } else {
         await Promise.all(
@@ -544,7 +559,7 @@ export function useForm<
           const { errors } = await resolverRef.current(
             getValues(),
             contextRef.current,
-            { criteriaMode },
+            { criteriaMode, fields: [field] },
           );
           const previousFormIsValid = formStateRef.current.isValid;
           error = get(errors, name);

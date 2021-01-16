@@ -18,8 +18,8 @@ export type ResolverResult<TFieldValues extends FieldValues = FieldValues> =
   | ResolverError<TFieldValues>;
 
 export interface ResolverOptions {
-  criteriaMode: CriteriaMode | undefined;
-  field?: Field;
+  criteriaMode?: CriteriaMode;
+  fields?: Field[];
 }
 
 export type Resolver<

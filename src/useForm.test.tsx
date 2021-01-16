@@ -3211,12 +3211,10 @@ describe('useForm', () => {
 
     describe('with resolver', () => {
       it('should contain error if value is invalid with resolver', async () => {
-        const mockResolver = jest.fn();
-        const resolver = async (data: any) => {
+        const resolver = jest.fn(async (data: any) => {
           if (data.test) {
             return { values: data, errors: {} };
           }
-          mockResolver();
           return {
             values: data,
             errors: {
@@ -3225,7 +3223,7 @@ describe('useForm', () => {
               },
             },
           };
-        };
+        });
 
         render(<Component resolver={resolver} mode="onChange" />);
 
@@ -3246,7 +3244,7 @@ describe('useForm', () => {
           });
         });
 
-        await waitFor(() => expect(mockResolver).toHaveBeenCalled());
+        await waitFor(() => expect(resolver).toHaveBeenCalled());
         expect(screen.getByRole('alert').textContent).toBe('resolver error');
         expect(methods.formState.isValid).toBeFalsy();
         await wait(() =>
@@ -3255,12 +3253,10 @@ describe('useForm', () => {
       });
 
       it('with sync resolver it should contain error if value is invalid with resolver', async () => {
-        const mockResolver = jest.fn();
-        const resolver = (data: any) => {
+        const resolver = jest.fn((data: any) => {
           if (data.test) {
             return { values: data, errors: {} };
           }
-          mockResolver();
           return {
             values: data,
             errors: {
@@ -3269,7 +3265,7 @@ describe('useForm', () => {
               },
             },
           };
-        };
+        });
 
         render(<Component resolver={resolver} mode="onChange" />);
 
@@ -3288,7 +3284,7 @@ describe('useForm', () => {
           target: { name: 'test', value: '' },
         });
 
-        await waitFor(() => expect(mockResolver).toHaveBeenCalled());
+        await waitFor(() => expect(resolver).toHaveBeenCalled());
         expect(screen.getByRole('alert').textContent).toBe('resolver error');
         expect(methods.formState.isValid).toBeFalsy();
         await wait(() =>
@@ -3297,12 +3293,11 @@ describe('useForm', () => {
       });
 
       it('should make isValid change to false if it contain error that is not related name with onChange mode', async () => {
-        const mockResolver = jest.fn();
-        const resolver = async (data: any) => {
+        const resolver = jest.fn(async (data: any) => {
           if (data.test) {
             return { values: data, errors: {} };
           }
-          mockResolver();
+
           return {
             values: data,
             errors: {
@@ -3311,7 +3306,7 @@ describe('useForm', () => {
               },
             },
           };
-        };
+        });
 
         render(<Component resolver={resolver} mode="onChange" />);
 
@@ -3330,12 +3325,126 @@ describe('useForm', () => {
           target: { name: 'test', value: '' },
         });
 
-        await waitFor(() => expect(mockResolver).toHaveBeenCalled());
+        await waitFor(() => expect(resolver).toHaveBeenCalled());
         expect(screen.getByRole('alert').textContent).toBe('');
         expect(methods.formState.isValid).toBeFalsy();
         await wait(() =>
           expect(renderCount.current.Component).toBeRenderedTimes(3),
         );
+      });
+
+      it("should call the resolver with the field being validated when an input's value change", async () => {
+        const resolver = jest.fn((values: any) => ({ values, errors: {} }));
+
+        render(<Component resolver={resolver} mode="onChange" />);
+        expect(resolver).not.toHaveBeenCalled();
+
+        await actComponent(async () => {
+          await fireEvent.input(screen.getByRole('textbox'), {
+            target: { name: 'test', value: 'test' },
+          });
+        });
+
+        expect(resolver.mock.calls).toMatchInlineSnapshot(`
+          Array [
+            Array [
+              Object {
+                "test": "test",
+              },
+              undefined,
+              Object {
+                "criteriaMode": undefined,
+                "fields": Array [
+                  Object {
+                    "name": "test",
+                    "ref": <input
+                      name="test"
+                      type="text"
+                    />,
+                    "value": "test",
+                  },
+                ],
+              },
+            ],
+          ]
+        `);
+
+        await actComponent(async () => {
+          await fireEvent.click(screen.getByText(/button/i));
+        });
+        expect(resolver).toHaveBeenNthCalledWith(
+          2,
+          { test: 'test' },
+          undefined,
+          { criteriaMode: undefined },
+        );
+      });
+
+      it('should call the resolver with the field being validated when `trigger` is called', async () => {
+        const resolver = jest.fn((values: any) => ({ values, errors: {} }));
+        const defaultValues = { test: 'test', test1: 'test1' };
+
+        const { result } = renderHook(() =>
+          useForm<{ test: string; test1: string }>({
+            mode: VALIDATION_MODE.onChange,
+            resolver,
+            defaultValues,
+          }),
+        );
+
+        expect(resolver).not.toHaveBeenCalled();
+
+        await act(async () => {
+          await result.current.register('test');
+          await result.current.register('test1');
+        });
+
+        // `trigger` called with a field name
+        await act(async () => {
+          result.current.trigger('test');
+        });
+
+        expect(resolver).toHaveBeenCalledWith(defaultValues, undefined, {
+          criteriaMode: undefined,
+          fields: [
+            {
+              name: 'test',
+              ref: { name: 'test', value: 'test' },
+              value: 'test',
+            },
+          ],
+        });
+
+        // `trigger` to validate all field
+        await act(async () => {
+          result.current.trigger();
+        });
+
+        expect(resolver).toHaveBeenNthCalledWith(2, defaultValues, undefined, {
+          criteriaMode: undefined,
+          field: undefined,
+        });
+
+        // `trigger` to validate all field
+        await act(async () => {
+          result.current.trigger(['test', 'test1']);
+        });
+
+        expect(resolver).toHaveBeenNthCalledWith(3, defaultValues, undefined, {
+          criteriaMode: undefined,
+          fields: [
+            {
+              name: 'test',
+              ref: { name: 'test', value: 'test' },
+              value: 'test',
+            },
+            {
+              name: 'test1',
+              ref: { name: 'test1', value: 'test1' },
+              value: 'test1',
+            },
+          ],
+        });
       });
     });
   });
