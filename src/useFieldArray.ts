@@ -425,7 +425,7 @@ export const useFieldArray = <
   }, [fields, name]);
 
   React.useEffect(() => {
-    const tearDown = fieldArraySubjectRef.current.subscribe({
+    const fieldArraySubscription = fieldArraySubjectRef.current.subscribe({
       next: ({ name: inputName, fields, isReset }) => {
         if (isReset) {
           if (inputName) {
@@ -442,7 +442,7 @@ export const useFieldArray = <
     });
 
     return () => {
-      tearDown.unsubscribe();
+      fieldArraySubscription.unsubscribe();
       resetFields();
       unset(fieldArrayValuesRef.current, name as InternalFieldName);
       fieldArrayNamesRef.current.delete(name as InternalFieldName);

@@ -2,7 +2,7 @@ export type Observer<T> = {
   next: (value: T) => void;
 };
 
-export type TearDown = () => void;
+type TearDown = () => void;
 
 export type SubjectType<T> = {
   next: (value: T) => void;

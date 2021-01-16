@@ -1082,7 +1082,7 @@ export function useForm<
 
   React.useEffect(() => {
     isMountedRef.current = true;
-    const formStateSubjectTearDown = formStateSubjectRef.current.subscribe({
+    const formStateSubscription = formStateSubjectRef.current.subscribe({
       next: (formState: Partial<FormState<TFieldValues>> = {}) => {
         if (shouldRenderFormState(formState, readFormStateRef.current, true)) {
           formStateRef.current = {
@@ -1094,20 +1094,18 @@ export function useForm<
       },
     });
 
-    const useFieldArraySubjectTearDown = fieldArraySubjectRef.current.subscribe(
-      {
-        next: (state) => {
-          if (state.fields && state.name) {
-            fieldArrayStateRef.current = state;
-          }
-        },
+    const useFieldArraySubscription = fieldArraySubjectRef.current.subscribe({
+      next: (state) => {
+        if (state.fields && state.name) {
+          fieldArrayStateRef.current = state;
+        }
       },
-    );
+    });
 
     return () => {
       watchSubjectRef.current.unsubscribe();
-      formStateSubjectTearDown.unsubscribe();
-      useFieldArraySubjectTearDown.unsubscribe();
+      formStateSubscription.unsubscribe();
+      useFieldArraySubscription.unsubscribe();
     };
   }, []);
 

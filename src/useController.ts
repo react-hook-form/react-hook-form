@@ -71,11 +71,11 @@ export function useController<TFieldValues extends FieldValues = FieldValues>({
       get(fieldsRef.current, name).__field.value = getInitialValue();
     }
 
-    const tearDown = controllerSubjectRef.current.subscribe({
+    const controllerSubscription = controllerSubjectRef.current.subscribe({
       next: (values) => setInputStateValue(get(values, name)),
     });
 
-    return () => tearDown.unsubscribe();
+    return () => controllerSubscription.unsubscribe();
   }, []);
 
   return {
