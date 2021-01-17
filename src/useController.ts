@@ -107,6 +107,7 @@ export function useController<TFieldValues extends FieldValues = FieldValues>({
       invalid: !!get(errors, name),
       isDirty: !!get(dirty, name),
       isTouched: !!get(touched, name),
+      error: get(errors, name),
       isValidating,
     },
   };

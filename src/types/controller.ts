@@ -5,6 +5,7 @@ import {
   Control,
   FieldPath,
   InternalFieldName,
+  FieldError,
 } from './';
 import { RegisterOptions } from './validator';
 
@@ -13,6 +14,7 @@ export type ControllerMeta = {
   isTouched: boolean;
   isDirty: boolean;
   isValidating: boolean;
+  error: FieldError;
 };
 
 export type ControllerRenderProps<
