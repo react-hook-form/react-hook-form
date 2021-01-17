@@ -9,10 +9,10 @@ const ConditionalField: React.FC = () => {
     handleSubmit,
     watch,
     formState: {
-      dirty,
+      dirtyFields,
       isSubmitted,
       submitCount,
-      touched,
+      touchedFields,
       isDirty,
       isSubmitting,
       isSubmitSuccessful,
@@ -93,8 +93,8 @@ const ConditionalField: React.FC = () => {
           isSubmitting,
           isSubmitSuccessful,
           isValid,
-          touched: Object.keys(touched),
-          dirty: Object.keys(dirty),
+          touched: Object.keys(touchedFields),
+          dirty: Object.keys(dirtyFields),
         })}
       </div>
       <div id="result">{JSON.stringify(result)}</div>
