@@ -298,7 +298,6 @@ describe('useFieldArray', () => {
                 {...control.register(
                   `test.${index}.nestedArray.${i}.value` as const,
                 )}
-                // @ts-ignore
                 defaultValue={item.value}
               />
             ))}
@@ -552,15 +551,24 @@ describe('useFieldArray', () => {
     });
 
     it('should reset with async', async () => {
+      type FormValues = {
+        test: {
+          value: string;
+          nestedArray: {
+            value: string;
+          }[];
+        }[];
+      };
+
       const Nested = ({
         index,
         control,
       }: {
-        control: Control;
+        control: Control<FormValues>;
         index: number;
       }) => {
-        const { fields } = useFieldArray({
-          name: `test.${index}.nestedArray`,
+        const { fields } = useFieldArray<FormValues>({
+          name: `test.${index}.nestedArray` as const,
           control,
         });
 
@@ -569,8 +577,9 @@ describe('useFieldArray', () => {
             {fields.map((item, i) => (
               <input
                 key={item.id}
-                {...control.register(`test.${index}.nestedArray.${i}.value`)}
-                // @ts-ignore
+                {...control.register(
+                  `test.${index}.nestedArray.${i}.value` as const,
+                )}
                 defaultValue={item.value}
               />
             ))}
@@ -579,7 +588,7 @@ describe('useFieldArray', () => {
       };
 
       const Component = () => {
-        const { register, reset, control } = useForm();
+        const { register, reset, control } = useForm<FormValues>();
         const { fields } = useFieldArray({
           name: 'test',
           control,
@@ -601,8 +610,7 @@ describe('useFieldArray', () => {
             {fields.map((item, i) => (
               <fieldset key={item.id}>
                 <input
-                  {...register(`test.${i}.value`)}
-                  // @ts-ignore
+                  {...register(`test.${i}.value` as const)}
                   defaultValue={item.value}
                 />
 
@@ -768,25 +776,30 @@ describe('useFieldArray', () => {
 
       function NestedArray({
         control,
-        name,
+        index,
       }: {
         control: Control<FormValues>;
-        name: string;
+        index: number;
       }) {
-        // @ts-ignore
-        const { fields } = useFieldArray({ name, control });
+        const { fields } = useFieldArray<FormValues>({
+          name: `test.${index}.keyValue` as const,
+          control,
+        });
 
         return (
           <ul>
-            {fields.map((item, index) => (
+            {fields.map((item, i) => (
               <Controller
                 key={item.id}
                 render={({ field }) => (
-                  <input {...field} aria-label={`${name}.${index}.name`} />
+                  <input
+                    {...field}
+                    aria-label={`test.${index}.keyValue.${i}.name`}
+                  />
                 )}
-                name={`${name}.${index}.name` as any}
+                name={`test.${index}.keyValue.${i}.name` as const}
                 control={control}
-                // @ts-ignore todo: how to fix this when pass name down as prop
+                // @ts-ignore todo: nested value
                 defaultValue={item.name}
               />
             ))}
@@ -821,10 +834,7 @@ describe('useFieldArray', () => {
                     defaultValue={`${item.firstName}`}
                     {...register(`test.${index}.firstName` as const)}
                   />
-                  <NestedArray
-                    control={control}
-                    name={`test.${index}.keyValue`}
-                  />
+                  <NestedArray control={control} index={index} />
                 </div>
               );
             })}
@@ -856,6 +866,15 @@ describe('useFieldArray', () => {
 
   describe('array of array fields', () => {
     it('should remove correctly with nested field array and set shouldUnregister to false', () => {
+      type FormValues = {
+        fieldArray: {
+          value: string;
+          nestedFieldArray: {
+            value: string;
+          }[];
+        }[];
+      };
+
       const ArrayField = ({
         arrayIndex,
         arrayField,
@@ -867,25 +886,23 @@ describe('useFieldArray', () => {
         arrayField: Partial<FieldValues>;
         control: Control;
       }) => {
-        const { fields, append, remove } = useFieldArray({
-          name: `fieldArray[${arrayIndex}].nestedFieldArray`,
+        const { fields, append, remove } = useFieldArray<FormValues>({
+          name: `fieldArray.${arrayIndex}.nestedFieldArray` as const,
           control,
         });
 
         return (
           <div>
             <input
-              {...register(`fieldArray[${arrayIndex}].value`)}
+              {...register(`fieldArray.${arrayIndex}.value` as const)}
               defaultValue={arrayField.value}
             />
-            <br />
             {fields.map((nestedField, index) => (
               <div key={nestedField.id}>
                 <input
                   {...register(
-                    `fieldArray[${arrayIndex}].nestedFieldArray.${index}.value`,
+                    `fieldArray.${arrayIndex}.nestedFieldArray.${index}.value` as const,
                   )}
-                  // @ts-ignore
                   defaultValue={nestedField.value}
                 />
                 <button type="button" onClick={() => remove(index)}>
@@ -897,7 +914,7 @@ describe('useFieldArray', () => {
               type="button"
               onClick={() => {
                 append({
-                  value: `fieldArray[${arrayIndex}].nestedFieldArray[${fields.length}].value`,
+                  value: `fieldArray.${arrayIndex}.nestedFieldArray.${fields.length}.value` as const,
                 });
               }}
             >
@@ -975,7 +992,6 @@ describe('useFieldArray', () => {
       expect(screen.getAllByRole('textbox').length).toEqual(1);
     });
 
-    // todo: issue: type issue with nested field array
     it('should prepend correctly with default values on nested array fields', () => {
       type FormInputs = {
         nest: {
@@ -993,8 +1009,7 @@ describe('useFieldArray', () => {
         control: Control<FormInputs>;
         index: number;
       }) => {
-        const { fields } = useFieldArray({
-          // @ts-ignore
+        const { fields } = useFieldArray<FormInputs>({
           name: `nest.test.${index}.nestedArray` as const,
           control,
         });
@@ -1003,12 +1018,10 @@ describe('useFieldArray', () => {
           <>
             {fields.map((item, i) => (
               <input
-                // @ts-ignore
                 key={item.id}
                 {...control.register(
                   `nest.test.${index}.nestedArray.${i}.value` as const,
                 )}
-                // @ts-ignore
                 defaultValue={item.value}
               />
             ))}
@@ -1095,7 +1108,6 @@ describe('useFieldArray', () => {
                 {...control.register(
                   `nest.test.${index}.nestedArray.${i}.value` as const,
                 )}
-                // @ts-ignore
                 defaultValue={item.value}
               />
             ))}
@@ -1190,7 +1202,6 @@ describe('useFieldArray', () => {
                 {...control.register(
                   `nest.${index}.nestedArray.${i}.value` as const,
                 )}
-                // @ts-ignore
                 defaultValue={item.value}
               />
             ))}
@@ -1248,15 +1259,22 @@ describe('useFieldArray', () => {
     });
 
     it('should populate all array fields correctly with setValue', async () => {
+      type FormValues = {
+        nest: {
+          value: string;
+          nestedArray: { value: string }[];
+        }[];
+      };
+
       const ChildComponent = ({
         index,
         control,
       }: {
-        control: Control;
+        control: Control<FormValues>;
         index: number;
       }) => {
-        const { fields } = useFieldArray({
-          name: `nest.${index}.nestedArray`,
+        const { fields } = useFieldArray<FormValues>({
+          name: `nest.${index}.nestedArray` as const,
           control,
         });
 
@@ -1265,8 +1283,9 @@ describe('useFieldArray', () => {
             {fields.map((item, i) => (
               <input
                 key={item.id}
-                {...control.register(`nest.${index}.nestedArray.${i}.value`)}
-                // @ts-ignore
+                {...control.register(
+                  `nest.${index}.nestedArray.${i}.value` as const,
+                )}
                 defaultValue={item.value}
               />
             ))}
@@ -1275,7 +1294,7 @@ describe('useFieldArray', () => {
       };
 
       const Component = () => {
-        const { register, control, setValue } = useForm();
+        const { register, control, setValue } = useForm<FormValues>();
         const { fields } = useFieldArray({
           name: 'nest',
           control,
@@ -1311,8 +1330,7 @@ describe('useFieldArray', () => {
             {fields.map((item, i) => (
               <div key={item.id}>
                 <input
-                  {...register(`nest.${i}.value`)}
-                  // @ts-ignore
+                  {...register(`nest.${i}.value` as const)}
                   defaultValue={item.value}
                 />
 
