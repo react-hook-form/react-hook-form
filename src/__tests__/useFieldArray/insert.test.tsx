@@ -95,7 +95,7 @@ describe('insert', () => {
       });
 
       result.current.formState.isDirty;
-      result.current.formState.dirty;
+      result.current.formState.dirtyFields;
 
       act(() => {
         result.current.append({ value: '2' });
@@ -106,7 +106,7 @@ describe('insert', () => {
       });
 
       expect(result.current.formState.isDirty).toBeTruthy();
-      expect(result.current.formState.dirty).toEqual({
+      expect(result.current.formState.dirtyFields).toEqual({
         test: [undefined, { value: true, value1: true }, { value: true }],
       });
     },
@@ -130,7 +130,7 @@ describe('insert', () => {
       });
 
       result.current.formState.isDirty;
-      result.current.formState.dirty;
+      result.current.formState.dirtyFields;
 
       act(() => {
         result.current.append({ value: '2' });
@@ -141,7 +141,7 @@ describe('insert', () => {
       });
 
       expect(result.current.formState.isDirty).toBeTruthy();
-      expect(result.current.formState.dirty).toEqual({
+      expect(result.current.formState.dirtyFields).toEqual({
         test: [
           undefined,
           { value1: true, value: true },
@@ -163,7 +163,7 @@ describe('insert', () => {
         name: 'test',
       });
 
-      touched = formState.touched;
+      touched = formState.touchedFields;
 
       return (
         <form>
@@ -207,7 +207,7 @@ describe('insert', () => {
         name: 'test',
       });
 
-      touched = formState.touched;
+      touched = formState.touchedFields;
 
       return (
         <form>

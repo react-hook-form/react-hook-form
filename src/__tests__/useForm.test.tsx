@@ -110,7 +110,7 @@ describe('useForm', () => {
         }>();
         formState = tempFormState;
 
-        formState.touched;
+        formState.touchedFields;
 
         return (
           <div>
@@ -126,16 +126,16 @@ describe('useForm', () => {
         },
       });
 
-      expect(formState.touched.test).toBeDefined();
+      expect(formState.touchedFields.test).toBeDefined();
       expect(formState.isDirty).toBeFalsy();
 
       unmount();
 
-      expect(formState.touched.test).toBeDefined();
+      expect(formState.touchedFields.test).toBeDefined();
       expect(formState.isDirty).toBeFalsy();
     });
 
-    it('should update dirty during unregister', () => {
+    it('should update dirtyFields during unregister', () => {
       let formState: any;
       const Component = () => {
         const { register, formState: tempFormState } = useForm<{
@@ -155,12 +155,12 @@ describe('useForm', () => {
         },
       });
 
-      expect(formState.dirty.test).toBeDefined();
+      expect(formState.dirtyFields.test).toBeDefined();
       expect(formState.isDirty).toBeTruthy();
 
       unmount();
 
-      expect(formState.dirty.test).toBeDefined();
+      expect(formState.dirtyFields.test).toBeDefined();
       expect(formState.isDirty).toBeTruthy();
     });
   });
@@ -365,10 +365,10 @@ describe('useForm', () => {
         );
       });
 
-      it('should set name to formState.touched when formState.touched is defined', async () => {
+      it('should set name to formState.touchedFields when formState.touchedFields is defined', async () => {
         render(<Component rules={{}} />);
 
-        methods.formState.touched;
+        methods.formState.touchedFields;
 
         await actComponent(async () => {
           await fireEvent.click(screen.getByRole('button'));
@@ -379,7 +379,7 @@ describe('useForm', () => {
         });
 
         await waitFor(() =>
-          expect(methods.formState.touched).toEqual({
+          expect(methods.formState.touchedFields).toEqual({
             test: true,
           }),
         );

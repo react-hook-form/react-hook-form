@@ -241,12 +241,12 @@ describe('Controller', () => {
     expect(errors.test).toBeDefined();
   });
 
-  it('should set field to formState.touched', async () => {
+  it('should set field to formState.touchedFields', async () => {
     let touched: any;
     const Component = () => {
       const { control, formState } = useForm({ mode: 'onBlur' });
 
-      touched = formState.touched;
+      touched = formState.touchedFields;
 
       return (
         <Controller

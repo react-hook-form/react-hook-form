@@ -14,15 +14,15 @@ describe('useFormState', () => {
         test: string;
       }>;
     }) => {
-      const { isDirty, dirty, touched } = useFormState({
+      const { isDirty, dirtyFields, touchedFields } = useFormState({
         control,
       });
 
       return (
         <>
           <div>{isDirty ? 'isDirty' : ''}</div>
-          <div>{dirty['test'] ? 'dirty field' : ''}</div>
-          <div>{touched['test'] ? 'isTouched' : ''}</div>
+          <div>{dirtyFields['test'] ? 'dirty field' : ''}</div>
+          <div>{touchedFields['test'] ? 'isTouched' : ''}</div>
         </>
       );
     };
@@ -121,7 +121,7 @@ describe('useFormState', () => {
     let test1Count = 0;
 
     const Test1 = ({ control }: { control: Control }) => {
-      const { isDirty, dirty } = useFormState({
+      const { isDirty, dirtyFields } = useFormState({
         control,
       });
 
@@ -129,14 +129,16 @@ describe('useFormState', () => {
 
       return (
         <>
-          <div>{dirty['test'] ? 'hasDirtyField' : 'notHasDirtyField'}</div>
+          <div>
+            {dirtyFields['test'] ? 'hasDirtyField' : 'notHasDirtyField'}
+          </div>
           <div>{isDirty ? 'isDirty' : 'notDirty'}</div>
         </>
       );
     };
 
     const Test = ({ control }: { control: Control }) => {
-      const { touched } = useFormState({
+      const { touchedFields } = useFormState({
         control,
       });
 
@@ -144,7 +146,7 @@ describe('useFormState', () => {
 
       return (
         <>
-          <div>{touched['test'] ? 'isTouched' : 'notTouched'}</div>
+          <div>{touchedFields['test'] ? 'isTouched' : 'notTouched'}</div>
         </>
       );
     };

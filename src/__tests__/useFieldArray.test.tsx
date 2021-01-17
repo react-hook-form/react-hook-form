@@ -622,7 +622,7 @@ describe('useFieldArray', () => {
   });
 
   describe('with setValue', () => {
-    it.each(['isDirty', 'dirty'])(
+    it.each(['isDirty', 'dirtyFields'])(
       'should set name to dirtyFieldRef if array field values are different with default value when formState.%s is defined',
       (property) => {
         let setValue: any;
@@ -677,14 +677,14 @@ describe('useFieldArray', () => {
           );
         });
 
-        expect(formState.dirty).toEqual({
+        expect(formState.dirtyFields).toEqual({
           test: [{ name: true }],
         });
         expect(formState.isDirty).toBeTruthy();
       },
     );
 
-    it.each(['isDirty', 'dirty'])(
+    it.each(['isDirty', 'dirtyFields'])(
       'should unset name from dirtyFieldRef if array field values are not different with default value when formState.%s is defined',
       (property) => {
         let setValue: any;
@@ -737,7 +737,7 @@ describe('useFieldArray', () => {
           );
         });
 
-        expect(formState.dirty).toEqual({
+        expect(formState.dirtyFields).toEqual({
           test: [{ name: true }],
         });
         expect(formState.isDirty).toBeTruthy();
@@ -750,7 +750,7 @@ describe('useFieldArray', () => {
           );
         });
 
-        expect(formState.dirty).toEqual({
+        expect(formState.dirtyFields).toEqual({
           test: [],
         });
         expect(formState.isDirty).toBeFalsy();
