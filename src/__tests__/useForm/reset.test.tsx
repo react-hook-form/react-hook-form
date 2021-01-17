@@ -285,7 +285,7 @@ describe('reset', () => {
       test: true,
     };
 
-    result.current.formState.touched = { test: true };
+    result.current.formState.touchedFields = { test: true };
     result.current.formState.isDirty = true;
     result.current.formState.isSubmitted = true;
 
@@ -310,7 +310,7 @@ describe('reset', () => {
         message: 'something wrong',
       },
     });
-    expect(result.current.formState.touched).toEqual({
+    expect(result.current.formState.touchedFields).toEqual({
       test: true,
     });
     expect(result.current.control.validFieldsRef.current).toEqual({

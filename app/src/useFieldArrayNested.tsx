@@ -30,7 +30,7 @@ function NestedArray({
       control,
     },
   );
-  const { touched, dirty } = useFormState({
+  const { touchedFields, dirtyFields } = useFormState({
     control,
   });
   const renderCountRef = React.useRef(0);
@@ -52,8 +52,8 @@ function NestedArray({
         ))}
       </ul>
 
-      <div id={`dirty-nested-${index}`}>{JSON.stringify(dirty)}</div>
-      <div id={`touched-nested-${index}`}>{JSON.stringify(touched)}</div>
+      <div id={`dirty-nested-${index}`}>{JSON.stringify(dirtyFields)}</div>
+      <div id={`touched-nested-${index}`}>{JSON.stringify(touchedFields)}</div>
 
       <button
         id={`nest-append-${index}`}

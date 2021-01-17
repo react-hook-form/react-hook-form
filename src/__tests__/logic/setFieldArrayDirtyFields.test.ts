@@ -19,7 +19,7 @@ describe('setFieldArrayDirtyFields', () => {
     ]);
   });
 
-  it('should not set dirty fields for nested input data which are deep equal', () => {
+  it('should not set dirtyFields fields for nested input data which are deep equal', () => {
     expect(
       setFieldArrayDirtyFields(
         [{ data: 'luo', data1: 'luo1' }],
@@ -29,7 +29,7 @@ describe('setFieldArrayDirtyFields', () => {
     ).toEqual([]);
   });
 
-  it('should unset dirty fields when value matches', () => {
+  it('should unset dirtyFields fields when value matches', () => {
     expect(
       setFieldArrayDirtyFields(
         [{ data: 'bill' }, { data: 'luo2', data1: 'luo1' }],
@@ -46,7 +46,7 @@ describe('setFieldArrayDirtyFields', () => {
     ]);
   });
 
-  it('should works in reverse dirty fields check', () => {
+  it('should works in reverse dirtyFields fields check', () => {
     expect(
       setFieldArrayDirtyFields(
         [{ data: 'bill1' }, { data: 'luo2' }],
@@ -125,7 +125,7 @@ describe('setFieldArrayDirtyFields', () => {
     ]);
   });
 
-  it('should unset nested dirty fields when value matches', () => {
+  it('should unset nested dirtyFields fields when value matches', () => {
     expect(
       setFieldArrayDirtyFields(
         [
@@ -158,7 +158,7 @@ describe('setFieldArrayDirtyFields', () => {
     ]);
   });
 
-  it('should reset dirty fields', () => {
+  it('should reset dirtyFields fields', () => {
     expect(
       setFieldArrayDirtyFields(
         [{ data: 'bill' }],

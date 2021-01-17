@@ -104,7 +104,7 @@ describe('prepend', () => {
   });
 
   it.each(['isDirty', 'dirtyFields'])(
-    'should be dirty when value is prepended with %s',
+    'should be dirtyFields when value is prepended with %s',
     () => {
       const { result } = renderHook(() => {
         const { register, formState, control } = useForm();
@@ -117,7 +117,7 @@ describe('prepend', () => {
       });
 
       result.current.formState.isDirty;
-      result.current.formState.dirty;
+      result.current.formState.dirtyFields;
 
       act(() => {
         result.current.prepend({ value: 'test' });
@@ -132,13 +132,13 @@ describe('prepend', () => {
       });
 
       expect(result.current.formState.isDirty).toBeTruthy();
-      expect(result.current.formState.dirty).toEqual({
+      expect(result.current.formState.dirtyFields).toEqual({
         test: [{ value: true }, { value: true }, { value: true }],
       });
     },
   );
 
-  it('should set prepended values to formState.touched', () => {
+  it('should set prepended values to formState.touchedFields', () => {
     let touched: any;
 
     const Component = () => {
@@ -148,7 +148,7 @@ describe('prepend', () => {
         name: 'test',
       });
 
-      touched = formState.touched;
+      touched = formState.touchedFields;
 
       return (
         <form>

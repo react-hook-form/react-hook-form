@@ -48,7 +48,7 @@ export function useController<TFieldValues extends FieldValues = FieldValues>({
       : get(fieldsRef.current, name).__field.value;
 
   const [value, setInputStateValue] = React.useState(getInitialValue());
-  const { errors, dirty, touched, isValidating } = useFormState({
+  const { errors, dirtyFields, touchedFields, isValidating } = useFormState({
     control: control || methods.control,
   });
 
@@ -105,8 +105,8 @@ export function useController<TFieldValues extends FieldValues = FieldValues>({
     },
     meta: {
       invalid: !!get(errors, name),
-      isDirty: !!get(dirty, name),
-      isTouched: !!get(touched, name),
+      isDirty: !!get(dirtyFields, name),
+      isTouched: !!get(touchedFields, name),
       error: get(errors, name),
       isValidating,
     },

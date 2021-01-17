@@ -21,13 +21,13 @@ describe('append', () => {
     process.env.NODE_ENV = nodeEnv;
   });
 
-  it('should append dirty fields correctly', async () => {
+  it('should append dirtyFields fields correctly', async () => {
     let dirtyInputs = {};
     const Component = () => {
       const {
         register,
         control,
-        formState: { dirty },
+        formState: { dirtyFields },
       } = useForm<{
         test: { value: string }[];
       }>({
@@ -44,7 +44,7 @@ describe('append', () => {
         name: 'test',
       });
 
-      dirtyInputs = dirty;
+      dirtyInputs = dirtyFields;
 
       return (
         <form>
@@ -58,7 +58,7 @@ describe('append', () => {
           <button type="button" onClick={() => append({ value: '' })}>
             append
           </button>
-          {dirty.test?.length && 'dirty'}
+          {dirtyFields.test?.length && 'dirty'}
         </form>
       );
     };
@@ -158,7 +158,7 @@ describe('append', () => {
   });
 
   it.each(['isDirty', 'dirtyFields'])(
-    'should be dirty when value is appended with %s',
+    'should be dirtyFields when value is appended with %s',
     () => {
       let isDirtyValue;
       let dirtyValue;
@@ -167,7 +167,7 @@ describe('append', () => {
         const {
           register,
           control,
-          formState: { isDirty, dirty },
+          formState: { isDirty, dirtyFields },
         } = useForm<{
           test: { test: string }[];
         }>();
@@ -177,7 +177,7 @@ describe('append', () => {
         });
 
         isDirtyValue = isDirty;
-        dirtyValue = dirty;
+        dirtyValue = dirtyFields;
 
         return (
           <form>

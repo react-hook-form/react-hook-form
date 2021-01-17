@@ -159,12 +159,12 @@ export const useFieldArray = <
   ) =>
     updatedFieldArrayValues &&
     set(
-      formStateRef.current.dirty,
+      formStateRef.current.dirtyFields,
       name as InternalFieldName,
       setFieldArrayDirtyFields(
         omitKey(updatedFieldArrayValues),
         get(defaultValuesRef.current, name as InternalFieldName, []),
-        get(formStateRef.current.dirty, name as InternalFieldName, []),
+        get(formStateRef.current.dirtyFields, name as InternalFieldName, []),
       ),
     );
 
@@ -207,31 +207,38 @@ export const useFieldArray = <
     }
 
     if (
-      readFormStateRef.current.touched &&
-      get(formStateRef.current.touched, name as InternalFieldName)
+      readFormStateRef.current.touchedFields &&
+      get(formStateRef.current.touchedFields, name as InternalFieldName)
     ) {
       const output = method(
-        get(formStateRef.current.touched, name as InternalFieldName),
+        get(formStateRef.current.touchedFields, name as InternalFieldName),
         args.argA,
         args.argB,
       );
       shouldSet &&
-        set(formStateRef.current.touched, name as InternalFieldName, output);
-      cleanup(formStateRef.current.touched);
+        set(
+          formStateRef.current.touchedFields,
+          name as InternalFieldName,
+          output,
+        );
+      cleanup(formStateRef.current.touchedFields);
     }
 
-    if (readFormStateRef.current.dirty || readFormStateRef.current.isDirty) {
+    if (
+      readFormStateRef.current.dirtyFields ||
+      readFormStateRef.current.isDirty
+    ) {
       set(
-        formStateRef.current.dirty,
+        formStateRef.current.dirtyFields,
         name as InternalFieldName,
         setFieldArrayDirtyFields(
           omitKey(updatedFormValues),
           get(defaultValuesRef.current, name as InternalFieldName, []),
-          get(formStateRef.current.dirty, name as InternalFieldName, []),
+          get(formStateRef.current.dirtyFields, name as InternalFieldName, []),
         ),
       );
       updateDirtyFieldsWithDefaultValues(updatedFieldValues);
-      cleanup(formStateRef.current.dirty);
+      cleanup(formStateRef.current.dirtyFields);
     }
 
     if (shouldUpdateValid && readFormStateRef.current.isValid) {
@@ -277,13 +284,16 @@ export const useFieldArray = <
     const updatedFieldValues = [...getCurrentFieldsValues(), ...appendValue];
     setFieldAndValidState(updatedFieldValues);
 
-    if (readFormStateRef.current.dirty || readFormStateRef.current.isDirty) {
+    if (
+      readFormStateRef.current.dirtyFields ||
+      readFormStateRef.current.isDirty
+    ) {
       updateDirtyFieldsWithDefaultValues(updatedFieldValues);
 
       formStateSubjectRef.current.next({
         isDirty: true,
         // @ts-ignore
-        dirty: formStateRef.current.dirty,
+        dirtyFields: formStateRef.current.dirtyFields,
       });
     }
 
