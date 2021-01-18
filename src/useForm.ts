@@ -103,11 +103,11 @@ export function useForm<
       isReset?: boolean;
     }>(),
   );
-  const fieldArrayStateRef = React.useRef<{
+  const fieldArrayUpdatedValuesRef = React.useRef<{
     name?: InternalFieldName;
     fields?: DeepPartial<TFieldValues>;
   }>({});
-  const fieldArrayValuesRef = React.useRef<FieldArrayDefaultValues>({});
+  const fieldArrayDefaultValuesRef = React.useRef<FieldArrayDefaultValues>({});
   const watchFieldsRef = React.useRef<InternalNameSet>(new Set());
   const isMountedRef = React.useRef(false);
   const fieldsWithValidationRef = React.useRef<
@@ -711,7 +711,7 @@ export function useForm<
       defaultValue?: T,
       isGlobal?: boolean,
     ) => {
-      const { fields, name } = fieldArrayStateRef.current;
+      const { fields, name } = fieldArrayUpdatedValuesRef.current;
       const isArrayNames = Array.isArray(fieldNames);
       let fieldValues = isMountedRef.current
         ? getValues()
@@ -724,7 +724,7 @@ export function useForm<
       if (fields) {
         name ? set(fieldValues, name, fields) : (fieldValues = fields);
 
-        fieldArrayStateRef.current = {
+        fieldArrayUpdatedValuesRef.current = {
           fields: undefined,
           name: undefined,
         };
@@ -1106,7 +1106,7 @@ export function useForm<
     const useFieldArraySubscription = fieldArraySubjectRef.current.subscribe({
       next(state) {
         if (state.fields && state.name) {
-          fieldArrayStateRef.current = state;
+          fieldArrayUpdatedValuesRef.current = state;
         }
       },
     });
@@ -1142,7 +1142,7 @@ export function useForm<
         readFormStateRef,
         formStateRef,
         defaultValuesRef,
-        fieldArrayValuesRef,
+        fieldArrayDefaultValuesRef,
         ...commonProps,
       }),
       [defaultValuesRef.current, watchInternal],

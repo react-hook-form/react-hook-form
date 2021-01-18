@@ -185,7 +185,7 @@ export type Control<TFieldValues extends FieldValues = FieldValues> = {
     name?: TName,
     data?: TData,
   ) => boolean;
-  fieldArrayValuesRef: FieldArrayDefaultValues;
+  fieldArrayDefaultValuesRef: FieldArrayDefaultValues;
   formStateRef: React.MutableRefObject<FormState<TFieldValues>>;
   formStateSubjectRef: React.MutableRefObject<
     SubjectType<Partial<FormState<TFieldValues>>>
