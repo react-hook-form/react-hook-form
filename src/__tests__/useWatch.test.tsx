@@ -377,7 +377,7 @@ describe.skip('useWatch', () => {
       };
 
       function Watcher({ control }: { control: Control<FormValues> }) {
-        const testField = useWatch<FormValues, string>({
+        const testField = useWatch<FormValues>({
           name: 'test',
           control: control,
         });
@@ -412,12 +412,9 @@ describe.skip('useWatch', () => {
         const { register, reset, control } = useForm<{
           test: string;
         }>();
-        const test = useWatch<
-          {
-            test: string;
-          },
-          string
-        >({ name: 'test', control });
+        const test = useWatch<{
+          test: string;
+        }>({ name: 'test', control });
 
         React.useEffect(() => {
           reset({ test: 'default' });
@@ -557,13 +554,11 @@ describe.skip('useWatch', () => {
           const { register, reset, control } = useForm<{
             test: string;
           }>();
-          const test = useWatch<
-            {
-              test: string;
-            },
-            string
-          >({
+          const test = useWatch<{
+            test: string;
+          }>({
             name: 'test',
+            defaultValue: 'test',
             control,
           });
 
@@ -595,12 +590,9 @@ describe.skip('useWatch', () => {
           const { register, reset, control } = useForm<{
             test: string;
           }>();
-          const test = useWatch<
-            {
-              test: string;
-            },
-            string
-          >({ name: 'test', control });
+          const test = useWatch<{
+            test: string;
+          }>({ name: 'test', control });
 
           React.useEffect(() => {
             register('test');
@@ -625,7 +617,7 @@ describe.skip('useWatch', () => {
       it('should return default value', async () => {
         const Component = () => {
           const { register, reset, control } = useForm<{ test: string }>();
-          const test = useWatch<{ test: string }, string>({
+          const test = useWatch<{ test: string }>({
             name: 'test',
             defaultValue: 'test',
             control,
@@ -656,7 +648,7 @@ describe.skip('useWatch', () => {
   describe('formContext', () => {
     it('should work with form context', async () => {
       const Component = () => {
-        const test = useWatch<{ test: string }, string>({ name: 'test' });
+        const test = useWatch<{ test: string }>({ name: 'test' });
         return <div>{test}</div>;
       };
 
