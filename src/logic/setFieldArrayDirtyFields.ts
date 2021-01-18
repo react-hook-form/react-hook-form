@@ -1,6 +1,7 @@
 import { get } from '../utils';
 import set from '../utils/set';
 import { deepMerge } from '../utils/deepMerge';
+import deepEqual from '../utils/deepEqual';
 
 function setDirtyFields<
   T extends Record<string, unknown>[],
@@ -9,7 +10,7 @@ function setDirtyFields<
 >(
   values: T,
   defaultValues: U,
-  dirty: Record<string, boolean | []>[],
+  dirtyFields: Record<string, boolean | []>[],
   parentNode?: K,
   parentName?: keyof K,
 ) {
@@ -18,37 +19,39 @@ function setDirtyFields<
   while (++index < values.length) {
     for (const key in values[index]) {
       if (Array.isArray(values[index][key])) {
-        !dirty[index] && (dirty[index] = {});
-        dirty[index][key] = [];
+        !dirtyFields[index] && (dirtyFields[index] = {});
+        dirtyFields[index][key] = [];
         setDirtyFields(
           values[index][key] as T,
           get(defaultValues[index] || {}, key, []),
-          dirty[index][key] as [],
-          dirty[index],
+          dirtyFields[index][key] as [],
+          dirtyFields[index],
           key,
         );
       } else {
-        get(defaultValues[index] || {}, key) === values[index][key]
-          ? set(dirty[index] || {}, key)
-          : (dirty[index] = {
-              ...dirty[index],
+        deepEqual(get(defaultValues[index] || {}, key), values[index][key])
+          ? set(dirtyFields[index] || {}, key)
+          : (dirtyFields[index] = {
+              ...dirtyFields[index],
               [key]: true,
             });
       }
     }
 
-    parentNode && !dirty.length && delete parentNode[parentName as keyof K];
+    parentNode &&
+      !dirtyFields.length &&
+      delete parentNode[parentName as keyof K];
   }
 
-  return dirty;
+  return dirtyFields;
 }
 
 export default <T extends U, U extends Record<string, unknown>[]>(
   values: T,
   defaultValues: U,
-  dirty: Record<string, boolean | []>[],
+  dirtyFields: Record<string, boolean | []>[],
 ) =>
   deepMerge(
-    setDirtyFields(values, defaultValues, dirty.slice(0, values.length)),
-    setDirtyFields(defaultValues, values, dirty.slice(0, values.length)),
+    setDirtyFields(values, defaultValues, dirtyFields.slice(0, values.length)),
+    setDirtyFields(defaultValues, values, dirtyFields.slice(0, values.length)),
   );

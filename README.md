@@ -43,8 +43,6 @@ English | <a href="./docs/README.zh-TW.md">繁中</a> | <a href="./docs/README.z
 
 ## Links
 
-- [Motivation](https://medium.com/@bruce1049/form-validation-with-hook-in-3kb-c5414edf7d64)
-- [Video tutorial](https://www.youtube.com/watch?v=-mFXqOaqgZk&t)
 - [Get started](https://react-hook-form.com/get-started)
 - [API](https://react-hook-form.com/api)
 - [Examples](https://github.com/bluebill1049/react-hook-form/tree/master/examples)
@@ -59,18 +57,20 @@ import React from 'react';
 import { useForm } from 'react-hook-form';
 
 function App() {
-  const { register, handleSubmit, errors } = useForm(); // initialize the hook
-  const onSubmit = (data) => {
-    console.log(data);
-  };
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm();
+  const onSubmit = (data) => console.log(data);
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
-      <input name="firstname" ref={register} /> {/* register an input */}
-      <input name="lastname" ref={register({ required: true })} />
-      {errors.lastname && 'Last name is required.'}
-      <input name="age" ref={register({ pattern: /\d+/ })} />
-      {errors.age && 'Please enter number for age.'}
+      <input {...register('firstname')} /> {/* register an input */}
+      <input {...register('lastname', { required: true })} />
+      {errors.lastname && <p>Last name is required.</p>}
+      <input {...register('age', { pattern: /\d+/ })} />
+      {errors.age && <p>Please enter number for age.</p>}
       <input type="submit" />
     </form>
   );

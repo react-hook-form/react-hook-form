@@ -17,7 +17,33 @@ import {
 import { ErrorOption, FieldErrors } from './errors';
 import { RegisterOptions } from './validator';
 import { FieldArrayDefaultValues } from './fieldArray';
-import { SubjectType } from '../utils/Subject';
+import { SubjectType, Subscription } from '../utils/Subject';
+
+export type EventType =
+  | 'focus'
+  | 'blur'
+  | 'change'
+  | 'changeText'
+  | 'valueChange'
+  | 'contentSizeChange'
+  | 'endEditing'
+  | 'keyPress'
+  | 'submitEditing'
+  | 'layout'
+  | 'selectionChange'
+  | 'longPress'
+  | 'press'
+  | 'pressIn'
+  | 'pressOut'
+  | 'momentumScrollBegin'
+  | 'momentumScrollEnd'
+  | 'scroll'
+  | 'scrollBeginDrag'
+  | 'scrollEndDrag'
+  | 'load'
+  | 'error'
+  | 'progress'
+  | 'custom';
 
 declare const $NestedValue: unique symbol;
 
@@ -95,8 +121,8 @@ export type FieldNamesMarkedBoolean<TFieldValues extends FieldValues> = DeepMap<
 export type FormStateProxy<TFieldValues extends FieldValues = FieldValues> = {
   isDirty: boolean;
   isValidating: boolean;
-  dirty: FieldNamesMarkedBoolean<TFieldValues>;
-  touched: FieldNamesMarkedBoolean<TFieldValues>;
+  dirtyFields: FieldNamesMarkedBoolean<TFieldValues>;
+  touchedFields: FieldNamesMarkedBoolean<TFieldValues>;
   isSubmitting: boolean;
   errors: boolean;
   isValid: boolean;
@@ -106,25 +132,27 @@ export type ReadFormState = { [K in keyof FormStateProxy]: boolean | 'all' };
 
 export type FormState<TFieldValues> = {
   isDirty: boolean;
-  dirty: FieldNamesMarkedBoolean<TFieldValues>;
+  dirtyFields: FieldNamesMarkedBoolean<TFieldValues>;
   isSubmitted: boolean;
   isSubmitSuccessful: boolean;
   submitCount: number;
-  touched: FieldNamesMarkedBoolean<TFieldValues>;
+  touchedFields: FieldNamesMarkedBoolean<TFieldValues>;
   isSubmitting: boolean;
   isValidating: boolean;
   isValid: boolean;
   errors: FieldErrors<TFieldValues>;
 };
 
-export type OmitResetState = Partial<{
-  errors: boolean;
-  isDirty: boolean;
-  isSubmitted: boolean;
-  touched: boolean;
-  isValid: boolean;
-  submitCount: boolean;
-  dirty: boolean;
+export type KeepStateOptions = Partial<{
+  keepErrors: boolean;
+  keepIsDirty: boolean;
+  keepValues: boolean;
+  keepDefaultValues: boolean;
+  keepIsSubmitted: boolean;
+  keepTouched: boolean;
+  keepIsValid: boolean;
+  keepSubmitCount: boolean;
+  keepDirty: boolean;
 }>;
 
 export type SetFieldValue<TFieldValues> =
@@ -150,16 +178,6 @@ type UseFormCommonMethods<TFieldValues extends FieldValues = FieldValues> = {
   unregister: (
     name: FieldPath<TFieldValues> | FieldPath<TFieldValues>[],
   ) => void;
-  getValues: {
-    (): UnpackNestedValue<TFieldValues>;
-    <TName extends FieldPath<TFieldValues>>(fieldName: TName): FieldPathValue<
-      TFieldValues,
-      TName
-    >;
-    <TName extends FieldPath<TFieldValues>[]>(
-      fieldNames: TName,
-    ): FieldPathValues<TFieldValues, TName>;
-  };
 };
 
 export type Control<TFieldValues extends FieldValues = FieldValues> = {
@@ -169,14 +187,14 @@ export type Control<TFieldValues extends FieldValues = FieldValues> = {
     name?: TName,
     data?: TData,
   ) => boolean;
-  fieldArrayValuesRef: FieldArrayDefaultValues;
+  fieldArrayDefaultValuesRef: FieldArrayDefaultValues;
   formStateRef: React.MutableRefObject<FormState<TFieldValues>>;
   formStateSubjectRef: React.MutableRefObject<
     SubjectType<Partial<FormState<TFieldValues>>>
   >;
   watchSubjectRef: React.MutableRefObject<
     SubjectType<{
-      name?: string;
+      name?: InternalFieldName;
       value?: unknown;
     }>
   >;
@@ -206,8 +224,13 @@ export type Control<TFieldValues extends FieldValues = FieldValues> = {
   ) => unknown;
 } & UseFormCommonMethods<TFieldValues>;
 
-export type WatchCallback = <TFieldValues>(
+export type WatchObserver = <TFieldValues>(
   value: UnpackNestedValue<TFieldValues>,
+  info: {
+    name?: string;
+    type?: EventType;
+    value?: unknown;
+  },
 ) => void;
 
 export type UseFormMethods<TFieldValues extends FieldValues = FieldValues> = {
@@ -222,9 +245,19 @@ export type UseFormMethods<TFieldValues extends FieldValues = FieldValues> = {
       defaultValue?: FieldPathValues<TFieldValues, TName>,
     ): FieldPathValues<TFieldValues, TName>;
     (
-      callback: WatchCallback,
+      callback: WatchObserver,
       defaultValues?: UnpackNestedValue<DeepPartial<TFieldValues>>,
-    ): void;
+    ): Subscription;
+  };
+  getValues: {
+    (): UnpackNestedValue<TFieldValues>;
+    <TName extends FieldPath<TFieldValues>>(fieldName: TName): FieldPathValue<
+      TFieldValues,
+      TName
+    >;
+    <TName extends FieldPath<TFieldValues>[]>(
+      fieldNames: TName,
+    ): FieldPathValues<TFieldValues, TName>;
   };
   setError: (name: FieldName<TFieldValues>, error: ErrorOption) => void;
   clearErrors: (
@@ -239,7 +272,7 @@ export type UseFormMethods<TFieldValues extends FieldValues = FieldValues> = {
   formState: FormState<TFieldValues>;
   reset: (
     values?: UnpackNestedValue<DeepPartial<TFieldValues>>,
-    omitResetState?: OmitResetState,
+    keepStateOptions?: KeepStateOptions,
   ) => void;
   handleSubmit: <TSubmitFieldValues extends FieldValues = TFieldValues>(
     onValid: SubmitHandler<TSubmitFieldValues>,

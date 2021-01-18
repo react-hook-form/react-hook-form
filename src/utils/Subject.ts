@@ -62,4 +62,8 @@ export default class Subject<T> {
 
     return subscription;
   }
+
+  unsubscribe() {
+    this.observers = [];
+  }
 }
