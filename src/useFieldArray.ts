@@ -65,7 +65,7 @@ export const useFieldArray = <
     readFormStateRef,
     validFieldsRef,
     fieldsWithValidationRef,
-    fieldArrayValuesRef,
+    fieldArrayDefaultValuesRef,
     updateIsValid,
   } = control || methods.control;
 
@@ -74,16 +74,18 @@ export const useFieldArray = <
   >(
     mapIds(
       get(
-        fieldArrayValuesRef.current,
+        fieldArrayDefaultValuesRef.current,
         getFieldArrayParentName(name as InternalFieldName),
       )
-        ? get(fieldArrayValuesRef.current, name as InternalFieldName, [])
+        ? get(fieldArrayDefaultValuesRef.current, name as InternalFieldName, [])
         : get(defaultValuesRef.current, name as InternalFieldName, []),
       keyName,
     ),
   );
 
-  set(fieldArrayValuesRef.current, name as InternalFieldName, [...fields]);
+  set(fieldArrayDefaultValuesRef.current, name as InternalFieldName, [
+    ...fields,
+  ]);
   fieldArrayNamesRef.current.add(name as InternalFieldName);
 
   const omitKey = <
@@ -100,12 +102,14 @@ export const useFieldArray = <
     );
 
     return mapIds<TFieldValues, TKeyName>(
-      get(fieldArrayValuesRef.current, name as InternalFieldName, []).map(
-        (item: Partial<TFieldValues>, index: number) => ({
-          ...item,
-          ...values[index],
-        }),
-      ),
+      get(
+        fieldArrayDefaultValuesRef.current,
+        name as InternalFieldName,
+        [],
+      ).map((item: Partial<TFieldValues>, index: number) => ({
+        ...item,
+        ...values[index],
+      })),
       keyName,
     );
   };
@@ -436,15 +440,15 @@ export const useFieldArray = <
 
   React.useEffect(() => {
     const fieldArraySubscription = fieldArraySubjectRef.current.subscribe({
-      next: ({ name: inputName, fields, isReset }) => {
+      next({ name: inputName, fields, isReset }) {
         if (isReset) {
           if (inputName) {
             const value = getFieldsValues(fieldsRef);
             set(value, inputName, fields);
-            set(fieldArrayValuesRef.current, name, fields);
+            set(fieldArrayDefaultValuesRef.current, name, fields);
             setFieldAndValidState(get(value, name));
           } else {
-            fieldArrayValuesRef.current = fields;
+            fieldArrayDefaultValuesRef.current = fields;
             setFieldAndValidState(get(fields, name));
           }
         }
@@ -454,7 +458,7 @@ export const useFieldArray = <
     return () => {
       fieldArraySubscription.unsubscribe();
       resetFields();
-      unset(fieldArrayValuesRef.current, name as InternalFieldName);
+      unset(fieldArrayDefaultValuesRef.current, name as InternalFieldName);
       fieldArrayNamesRef.current.delete(name as InternalFieldName);
     };
   }, []);
