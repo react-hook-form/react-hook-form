@@ -348,7 +348,7 @@ describe('swap', () => {
           test: [{ value: '2' }, { value: '1' }],
         },
         undefined,
-        false,
+        { criteriaMode: undefined },
       );
     });
 

@@ -352,11 +352,11 @@ export function useForm<
       names: InternalFieldName[],
       currentNames: FieldName<TFieldValues>[] = [],
     ) => {
-      const currentFields: Field[] = [];
+      const currentFields: Field['__field'][] = [];
       for (const name of currentNames) {
         const field = fieldsRef.current[name];
         if (field) {
-          currentFields.push(field);
+          currentFields.push(field.__field);
         }
       }
 
@@ -606,7 +606,7 @@ export function useForm<
           const { errors } = await resolverRef.current(
             getValues(),
             contextRef.current,
-            { criteriaMode, fields: [field] },
+            { criteriaMode, fields: [field.__field] },
           );
           const previousFormIsValid = formStateRef.current.isValid;
           error = get(errors, name);

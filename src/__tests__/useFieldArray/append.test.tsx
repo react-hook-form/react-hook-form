@@ -397,7 +397,7 @@ describe('append', () => {
           test: [{ value: '1' }],
         },
         undefined,
-        false,
+        { criteriaMode: undefined },
       );
     });
 

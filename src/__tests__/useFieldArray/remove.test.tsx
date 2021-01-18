@@ -946,7 +946,7 @@ describe('remove', () => {
           test: [],
         },
         undefined,
-        false,
+        { criteriaMode: undefined },
       );
     });
 

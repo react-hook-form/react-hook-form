@@ -542,7 +542,7 @@ describe('insert', () => {
           test: [{ value: '1' }],
         },
         undefined,
-        false,
+        { criteriaMode: undefined },
       );
     });
 
