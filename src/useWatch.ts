@@ -42,7 +42,7 @@ export function useWatch<TFieldValues>({
   control,
   name,
   defaultValue,
-}: UseWatchProps<TFieldValues>): unknown {
+}: UseWatchProps<TFieldValues>) {
   const methods = useFormContext();
 
   if (process.env.NODE_ENV !== 'production') {
