@@ -436,7 +436,7 @@ export const useFieldArray = <
 
   React.useEffect(() => {
     const fieldArraySubscription = fieldArraySubjectRef.current.subscribe({
-      next: ({ name: inputName, fields, isReset }) => {
+      next({ name: inputName, fields, isReset }) {
         if (isReset) {
           if (inputName) {
             const value = getFieldsValues(fieldsRef);

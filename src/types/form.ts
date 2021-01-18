@@ -19,6 +19,32 @@ import { RegisterOptions } from './validator';
 import { FieldArrayDefaultValues } from './fieldArray';
 import { SubjectType, Subscription } from '../utils/Subject';
 
+export type EventType =
+  | 'focus'
+  | 'blur'
+  | 'change'
+  | 'changeText'
+  | 'valueChange'
+  | 'contentSizeChange'
+  | 'endEditing'
+  | 'keyPress'
+  | 'submitEditing'
+  | 'layout'
+  | 'selectionChange'
+  | 'longPress'
+  | 'press'
+  | 'pressIn'
+  | 'pressOut'
+  | 'momentumScrollBegin'
+  | 'momentumScrollEnd'
+  | 'scroll'
+  | 'scrollBeginDrag'
+  | 'scrollEndDrag'
+  | 'load'
+  | 'error'
+  | 'progress'
+  | 'custom';
+
 declare const $NestedValue: unique symbol;
 
 export type NestedValue<
@@ -166,7 +192,7 @@ export type Control<TFieldValues extends FieldValues = FieldValues> = {
   >;
   watchSubjectRef: React.MutableRefObject<
     SubjectType<{
-      name?: string;
+      name?: InternalFieldName;
       value?: unknown;
     }>
   >;
@@ -196,11 +222,11 @@ export type Control<TFieldValues extends FieldValues = FieldValues> = {
   ) => unknown;
 } & UseFormCommonMethods<TFieldValues>;
 
-export type WatchCallback = <TFieldValues>(
+export type WatchObserver = <TFieldValues>(
   value: UnpackNestedValue<TFieldValues>,
   info: {
     name?: string;
-    type?: string;
+    type?: EventType;
     value?: unknown;
   },
 ) => void;
@@ -217,7 +243,7 @@ export type UseFormMethods<TFieldValues extends FieldValues = FieldValues> = {
       defaultValue?: FieldPathValues<TFieldValues, TName>,
     ): FieldPathValues<TFieldValues, TName>;
     (
-      callback: WatchCallback,
+      callback: WatchObserver,
       defaultValues?: UnpackNestedValue<DeepPartial<TFieldValues>>,
     ): Subscription;
   };
