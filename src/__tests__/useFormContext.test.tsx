@@ -8,10 +8,6 @@ import { useWatch } from '../useWatch';
 import { useFormState } from '../useFormState';
 
 describe('FormProvider', () => {
-  beforeEach(() => {
-    jest.resetAllMocks();
-  });
-
   it('should have access to all methods with useFormContext', () => {
     const mockRegister = jest.fn();
     const { result } = renderHook(() => useFormContext(), {

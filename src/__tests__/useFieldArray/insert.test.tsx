@@ -21,8 +21,6 @@ describe('insert', () => {
   });
 
   afterEach(() => {
-    jest.resetAllMocks();
-    jest.restoreAllMocks();
     process.env.NODE_ENV = nodeEnv;
   });
 

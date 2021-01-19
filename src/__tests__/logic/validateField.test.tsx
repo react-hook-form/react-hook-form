@@ -6,10 +6,6 @@ jest.mock('../../logic/getRadioValue');
 jest.mock('../../logic/getCheckboxValue');
 
 describe('validateField', () => {
-  beforeEach(() => {
-    jest.resetAllMocks();
-  });
-
   it('should return required true when input not filled with required', async () => {
     (getRadioValue as jest.Mock<any>).mockImplementation(() => ({
       value: '2',

@@ -11,11 +11,6 @@ import {
 import { VALIDATION_MODE } from '../../constants';
 
 describe('trigger', () => {
-  afterEach(() => {
-    jest.resetAllMocks();
-    jest.restoreAllMocks();
-  });
-
   it('should console warn when field is not found', async () => {
     jest.spyOn(console, 'warn').mockImplementation(() => {});
 

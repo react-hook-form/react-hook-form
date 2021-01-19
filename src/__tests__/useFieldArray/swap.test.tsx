@@ -22,8 +22,6 @@ describe('swap', () => {
   });
 
   afterEach(() => {
-    jest.resetAllMocks();
-    jest.restoreAllMocks();
     process.env.NODE_ENV = nodeEnv;
   });
 
