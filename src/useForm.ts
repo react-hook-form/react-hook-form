@@ -354,7 +354,7 @@ export function useForm<
     ) => {
       const currentFields: Field['__field'][] = [];
       for (const name of currentNames) {
-        const field = fieldsRef.current[name];
+        const field = get(fieldsRef.current, name);
         if (field) {
           currentFields.push(field.__field);
         }

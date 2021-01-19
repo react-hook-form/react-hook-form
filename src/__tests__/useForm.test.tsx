@@ -835,12 +835,12 @@ describe('useForm', () => {
         );
       });
 
-      it.only('should call the resolver with the field being validated when `trigger` is called', async () => {
+      it('should call the resolver with the field being validated when `trigger` is called', async () => {
         const resolver = jest.fn((values: any) => ({ values, errors: {} }));
-        const defaultValues = { test: 'test', test1: 'test1' };
+        const defaultValues = { test: { sub: 'test' }, test1: 'test1' };
 
         const { result } = renderHook(() =>
-          useForm<{ test: string; test1: string }>({
+          useForm<typeof defaultValues>({
             mode: VALIDATION_MODE.onChange,
             resolver,
             defaultValues,
@@ -850,21 +850,21 @@ describe('useForm', () => {
         expect(resolver).not.toHaveBeenCalled();
 
         await act(async () => {
-          await result.current.register('test');
+          await result.current.register('test.sub');
           await result.current.register('test1');
         });
 
         // `trigger` called with a field name
         await act(async () => {
-          result.current.trigger('test');
+          result.current.trigger('test.sub');
         });
 
         expect(resolver).toHaveBeenCalledWith(defaultValues, undefined, {
           criteriaMode: undefined,
           fields: [
             {
-              name: 'test',
-              ref: { name: 'test', value: 'test' },
+              name: 'test.sub',
+              ref: { name: 'test.sub', value: 'test' },
               value: 'test',
             },
           ],
@@ -882,15 +882,15 @@ describe('useForm', () => {
 
         // `trigger` to validate all field
         await act(async () => {
-          result.current.trigger(['test', 'test1']);
+          result.current.trigger(['test.sub', 'test1']);
         });
 
         expect(resolver).toHaveBeenNthCalledWith(3, defaultValues, undefined, {
           criteriaMode: undefined,
           fields: [
             {
-              name: 'test',
-              ref: { name: 'test', value: 'test' },
+              name: 'test.sub',
+              ref: { name: 'test.sub', value: 'test' },
               value: 'test',
             },
             {
