@@ -22,23 +22,21 @@ const ConditionField = <T extends any[]>({
   index: number;
   fields: T;
 }) => {
-  const output = useWatch({
+  const output = useWatch<FormInputs>({
     name: 'data',
     control,
-    // @ts-ignore
     defaultValue: fields,
   });
 
   React.useEffect(() => {
     return () => {
-      control.unregister(`data[${index}].conditional` as any);
+      control.unregister(`data.${index}.conditional` as const);
     };
   }, [control, index]);
 
-  // @ts-ignore
   return output[index]?.name === 'bill' ? (
     <input
-      {...control.register(`data.${index}.conditional` as any)}
+      {...control.register(`data.${index}.conditional`)}
       defaultValue={fields[index].conditional}
     />
   ) : null;
@@ -58,19 +56,12 @@ const UseFieldArrayUnregister: React.FC = () => {
     },
     mode: 'onSubmit',
   });
-  const {
-    fields,
-    append,
-    prepend,
-    swap,
-    move,
-    insert,
-    remove,
-    // @ts-ignore
-  } = useFieldArray({
-    control,
-    name: 'data',
-  });
+  const { fields, append, prepend, swap, move, insert, remove } = useFieldArray<FormInputs>(
+    {
+      control,
+      name: 'data',
+    },
+  );
   const [data, setData] = React.useState([]);
   const onSubmit = (data: any) => {
     setData(data);
@@ -91,7 +82,7 @@ const UseFieldArrayUnregister: React.FC = () => {
                 id={`field${index}`}
                 defaultValue={data.name}
                 data-order={index}
-                {...register(`data.${index}.name` as any, {
+                {...register(`data.${index}.name`, {
                   required: 'This is required',
                 })}
               />
@@ -104,7 +95,7 @@ const UseFieldArrayUnregister: React.FC = () => {
                 rules={{
                   required: 'This is required',
                 }}
-                name={`data.${index}.name` as any}
+                name={`data.${index}.name`}
                 defaultValue={data.name}
                 data-order={index}
               />
