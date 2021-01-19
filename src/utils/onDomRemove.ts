@@ -10,7 +10,10 @@ export default function onDomRemove<TFieldValues>(
   ) => void,
 ): MutationObserver {
   const observer = new MutationObserver((): void => {
-    for (const field of Object.values(fieldsRef.current)) {
+    const fields = Object.keys(fieldsRef.current).map(
+      (value) => fieldsRef.current[value],
+    );
+    for (const field of fields) {
       if (field && field.options) {
         for (const option of field.options) {
           if (option && option.ref && isDetached(option.ref)) {
