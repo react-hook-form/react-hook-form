@@ -66,7 +66,6 @@ export const useFieldArray = <
     validFieldsRef,
     fieldsWithValidationRef,
     fieldArrayDefaultValuesRef,
-    updateIsValid,
   } = control || methods.control;
 
   const [fields, setFields] = React.useState<
@@ -134,22 +133,14 @@ export const useFieldArray = <
 
   const resetFields = () => unset(fieldsRef.current, name as InternalFieldName);
 
-  const setFieldAndValidState = (
+  const setFieldsAndNotify = (
     fieldsValues: Partial<FieldArrayWithId<TFieldValues, TName, TKeyName>>[],
   ) => {
-    const fields = omitKey([...fieldsValues]);
-
     setFields(mapIds(fieldsValues, keyName));
     fieldArraySubjectRef.current.next({
       name,
-      fields,
+      fields: omitKey([...fieldsValues]),
     });
-
-    if (readFormStateRef.current.isValid) {
-      const values = getFieldsValues(fieldsRef);
-      set(values, name as InternalFieldName, fields);
-      updateIsValid(values);
-    }
   };
 
   const cleanup = <T>(ref: T) =>
@@ -286,7 +277,7 @@ export const useFieldArray = <
   ) => {
     const appendValue = Array.isArray(value) ? value : [value];
     const updatedFieldValues = [...getCurrentFieldsValues(), ...appendValue];
-    setFieldAndValidState(updatedFieldValues);
+    setFieldsAndNotify(updatedFieldValues);
 
     if (
       readFormStateRef.current.dirtyFields ||
@@ -317,7 +308,7 @@ export const useFieldArray = <
       getCurrentFieldsValues(),
       Array.isArray(value) ? value : [value],
     );
-    setFieldAndValidState(updatedFieldArrayValues);
+    setFieldsAndNotify(updatedFieldArrayValues);
     batchStateUpdate(
       prependAt,
       {
@@ -345,7 +336,7 @@ export const useFieldArray = <
       true,
       true,
     );
-    setFieldAndValidState(updatedFieldValues);
+    setFieldsAndNotify(updatedFieldValues);
   };
 
   const insert = (
@@ -362,7 +353,7 @@ export const useFieldArray = <
       Array.isArray(value) ? value : [value],
     );
 
-    setFieldAndValidState(updatedFieldArrayValues);
+    setFieldsAndNotify(updatedFieldArrayValues);
     batchStateUpdate(
       insertAt,
       {
@@ -389,13 +380,13 @@ export const useFieldArray = <
       fieldValues,
       false,
     );
-    setFieldAndValidState(fieldValues);
+    setFieldsAndNotify(fieldValues);
   };
 
   const move = (from: number, to: number) => {
     const fieldValues = getCurrentFieldsValues();
     moveArrayAt(fieldValues, from, to);
-    setFieldAndValidState(fieldValues);
+    setFieldsAndNotify(fieldValues);
     batchStateUpdate(
       moveArrayAt,
       {
@@ -446,10 +437,10 @@ export const useFieldArray = <
             const value = getFieldsValues(fieldsRef);
             set(value, inputName, fields);
             set(fieldArrayDefaultValuesRef.current, name, fields);
-            setFieldAndValidState(get(value, name));
+            setFieldsAndNotify(get(value, name));
           } else {
             fieldArrayDefaultValuesRef.current = fields;
-            setFieldAndValidState(get(fields, name));
+            setFieldsAndNotify(get(fields, name));
           }
         }
       },

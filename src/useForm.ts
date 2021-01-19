@@ -1107,6 +1107,12 @@ export function useForm<
       next(state) {
         if (state.fields && state.name) {
           fieldArrayUpdatedValuesRef.current = state;
+
+          if (readFormStateRef.current.isValid) {
+            const values = getFieldsValues(fieldsRef);
+            set(values, state.name, state.fields);
+            updateIsValid(values);
+          }
         }
       },
     });
@@ -1134,7 +1140,6 @@ export function useForm<
         controllerSubjectRef,
         watchSubjectRef,
         watchInternal,
-        updateIsValid,
         fieldsRef,
         validFieldsRef,
         fieldsWithValidationRef,
