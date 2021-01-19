@@ -781,8 +781,8 @@ describe('useFieldArray', () => {
         control: Control<FormValues>;
         index: number;
       }) {
-        const { fields } = useFieldArray<FormValues>({
-          name: `test.${index}.keyValue` as const,
+        const { fields } = useFieldArray<FormValues, 'test.0.keyValue'>({
+          name: `test.${index}.keyValue` as 'test.0.keyValue',
           control,
         });
 
@@ -799,7 +799,6 @@ describe('useFieldArray', () => {
                 )}
                 name={`test.${index}.keyValue.${i}.name` as const}
                 control={control}
-                // @ts-ignore todo: nested value
                 defaultValue={item.name}
               />
             ))}

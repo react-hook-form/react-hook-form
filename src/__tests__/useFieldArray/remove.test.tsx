@@ -9,7 +9,7 @@ import {
 } from '@testing-library/react';
 import { act, renderHook } from '@testing-library/react-hooks';
 import { VALIDATION_MODE } from '../../constants';
-import { Control, DeepMap, FieldError, UseFormMethods } from '../../types';
+import { Control, DeepMap, FieldError } from '../../types';
 import * as React from 'react';
 import { Controller } from '../../controller';
 import { mockGenerateId } from '../useFieldArray.test';
@@ -531,27 +531,31 @@ describe('remove', () => {
     };
 
     let mockKey = 0;
+    const callback = jest.fn();
+
     const Nested = ({
-      register,
       errors,
       control,
       index,
     }: {
-      register: UseFormMethods['register'];
       control: Control<FormValues>;
       errors: DeepMap<Record<string, any>, FieldError>;
       index: number;
     }) => {
-      const { fields, append, remove } = useFieldArray({
-        name: `test.${index}.nested` as any,
+      const { fields, append, remove } = useFieldArray<
+        FormValues,
+        'test.0.nested'
+      >({
+        name: `test.${index}.nested` as 'test.0.nested',
         control,
       });
+
       return (
         <fieldset>
           {fields.map((field, i) => (
             <div key={field.id}>
               <input
-                {...register(`test.${index}.nested.${i}.test`, {
+                {...control.register(`test.${index}.nested.${i}.test`, {
                   required: 'required',
                 })}
               />
@@ -571,10 +575,9 @@ describe('remove', () => {
         </fieldset>
       );
     };
-    const callback = jest.fn();
+
     const Component = () => {
       const {
-        register,
         formState: { errors },
         handleSubmit,
         control,
@@ -584,13 +587,12 @@ describe('remove', () => {
         },
       });
       const { fields } = useFieldArray({ name: 'test', control });
+
       return (
         <form onSubmit={handleSubmit(callback)}>
           {fields.map((_, i) => (
             <Nested
               key={i.toString()}
-              // @ts-ignore
-              register={register}
               errors={errors}
               control={control}
               index={i}
