@@ -1329,8 +1329,8 @@ describe('useFieldArray', () => {
     });
   });
 
-  describe.skip('submit form', () => {
-    it('should leave defaultValues as empty array when shouldUnregister set to false', async () => {
+  describe('submit form', () => {
+    it('should not leave defaultValues as empty array', async () => {
       let submitData: any;
       type FormValues = {
         test: {
@@ -1366,9 +1366,7 @@ describe('useFieldArray', () => {
         await fireEvent.click(screen.getByRole('button'));
       });
 
-      expect(submitData).toEqual({
-        test: [],
-      });
+      expect(submitData).toEqual({});
     });
   });
 });

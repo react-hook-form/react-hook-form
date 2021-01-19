@@ -23,7 +23,7 @@ const mockGenerateId = () => {
 
 let nodeEnv: string | undefined;
 
-describe.skip('useWatch', () => {
+describe('useWatch', () => {
   beforeEach(() => {
     mockGenerateId();
     nodeEnv = process.env.NODE_ENV;
