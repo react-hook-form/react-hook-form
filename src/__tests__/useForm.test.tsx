@@ -917,19 +917,18 @@ describe('useForm', () => {
     });
 
     it('should be called resolver with default values if default value is defined', async () => {
-      let resolverData: any;
-      const resolver = async (data: any) => {
-        resolverData = data;
+      const defaultValues = { test: 'default' };
+      const resolver = jest.fn(async (data: any) => {
         return {
           values: data,
           errors: {},
         };
-      };
+      });
 
       const { result } = renderHook(() =>
         useForm({
           resolver,
-          defaultValues: { test: 'default' },
+          defaultValues,
         }),
       );
 
@@ -946,20 +945,18 @@ describe('useForm', () => {
         await result.current.control.updateIsValid({});
       });
 
-      expect(resolverData).toEqual({
-        test: 'default',
+      expect(resolver).toHaveBeenCalledWith(defaultValues, undefined, {
+        criteriaMode: undefined,
       });
     });
 
     it('should be called resolver with field values if value is undefined', async () => {
-      let resolverData: any;
-      const resolver = async (data: any) => {
-        resolverData = data;
+      const resolver = jest.fn(async (data: any) => {
         return {
           values: data,
           errors: {},
         };
-      };
+      });
 
       const { result } = renderHook(() =>
         useForm<{
@@ -977,7 +974,9 @@ describe('useForm', () => {
         result.current.control.updateIsValid({});
       });
 
-      expect(resolverData).toEqual({ test: 'value' });
+      expect(resolver).toHaveBeenCalledWith({ test: 'value' }, undefined, {
+        criteriaMode: undefined,
+      });
     });
   });
 
