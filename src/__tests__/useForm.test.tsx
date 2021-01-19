@@ -110,7 +110,7 @@ describe('useForm', () => {
         }>();
         formState = tempFormState;
 
-        formState.touched;
+        formState.touchedFields;
 
         return (
           <div>
@@ -126,16 +126,16 @@ describe('useForm', () => {
         },
       });
 
-      expect(formState.touched.test).toBeDefined();
+      expect(formState.touchedFields.test).toBeDefined();
       expect(formState.isDirty).toBeFalsy();
 
       unmount();
 
-      expect(formState.touched.test).toBeDefined();
+      expect(formState.touchedFields.test).toBeDefined();
       expect(formState.isDirty).toBeFalsy();
     });
 
-    it('should update dirty during unregister', () => {
+    it('should update dirtyFields during unregister', () => {
       let formState: any;
       const Component = () => {
         const { register, formState: tempFormState } = useForm<{
@@ -155,12 +155,12 @@ describe('useForm', () => {
         },
       });
 
-      expect(formState.dirty.test).toBeDefined();
+      expect(formState.dirtyFields.test).toBeDefined();
       expect(formState.isDirty).toBeTruthy();
 
       unmount();
 
-      expect(formState.dirty.test).toBeDefined();
+      expect(formState.dirtyFields.test).toBeDefined();
       expect(formState.isDirty).toBeTruthy();
     });
   });
@@ -365,10 +365,10 @@ describe('useForm', () => {
         );
       });
 
-      it('should set name to formState.touched when formState.touched is defined', async () => {
+      it('should set name to formState.touchedFields when formState.touchedFields is defined', async () => {
         render(<Component rules={{}} />);
 
-        methods.formState.touched;
+        methods.formState.touchedFields;
 
         await actComponent(async () => {
           await fireEvent.click(screen.getByRole('button'));
@@ -379,7 +379,7 @@ describe('useForm', () => {
         });
 
         await waitFor(() =>
-          expect(methods.formState.touched).toEqual({
+          expect(methods.formState.touchedFields).toEqual({
             test: true,
           }),
         );
@@ -797,22 +797,13 @@ describe('useForm', () => {
   });
 
   describe('updateIsValid', () => {
-    it('should be defined when resolver is defined', () => {
-      const resolver = async (data: any) => {
-        return {
-          values: data,
-          errors: {},
-        };
+    it('should be called resolver with default values if default value is defined', async () => {
+      type FormValues = {
+        test: string;
       };
 
-      const { result } = renderHook(() => useForm({ resolver }));
-
-      expect(result.current.control.updateIsValid).toBeDefined();
-    });
-
-    it('should be called resolver with default values if default value is defined', async () => {
-      let resolverData: any;
-      const resolver = async (data: any) => {
+      let resolverData;
+      const resolver = async (data: FormValues) => {
         resolverData = data;
         return {
           values: data,
@@ -821,7 +812,7 @@ describe('useForm', () => {
       };
 
       const { result } = renderHook(() =>
-        useForm({
+        useForm<FormValues>({
           resolver,
           defaultValues: { test: 'default' },
         }),
@@ -837,7 +828,7 @@ describe('useForm', () => {
         });
 
       await act(async () => {
-        await result.current.control.updateIsValid({});
+        await result.current.trigger();
       });
 
       expect(resolverData).toEqual({
@@ -846,8 +837,12 @@ describe('useForm', () => {
     });
 
     it('should be called resolver with field values if value is undefined', async () => {
-      let resolverData: any;
-      const resolver = async (data: any) => {
+      type FormValues = {
+        test: string;
+      };
+
+      let resolverData;
+      const resolver = async (data: FormValues) => {
         resolverData = data;
         return {
           values: data,
@@ -856,9 +851,7 @@ describe('useForm', () => {
       };
 
       const { result } = renderHook(() =>
-        useForm<{
-          test: string;
-        }>({
+        useForm<FormValues>({
           resolver,
         }),
       );
@@ -867,9 +860,7 @@ describe('useForm', () => {
 
       result.current.setValue('test', 'value');
 
-      await act(async () => {
-        result.current.control.updateIsValid({});
-      });
+      result.current.trigger();
 
       expect(resolverData).toEqual({ test: 'value' });
     });

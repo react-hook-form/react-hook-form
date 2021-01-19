@@ -228,7 +228,7 @@ describe('remove', () => {
   });
 
   it.each(['isDirty', 'dirtyFields'])(
-    'should be dirty when value is remove with %s',
+    'should be dirtyFields when value is remove with %s',
     () => {
       const { result } = renderHook(() => {
         const { register, formState, control } = useForm({
@@ -245,7 +245,7 @@ describe('remove', () => {
       });
 
       result.current.formState.isDirty;
-      result.current.formState.dirty;
+      result.current.formState.dirtyFields;
 
       act(() => {
         result.current.append({ value: 'test' });
@@ -260,7 +260,7 @@ describe('remove', () => {
       });
 
       expect(result.current.formState.isDirty).toBeTruthy();
-      expect(result.current.formState.dirty).toEqual({
+      expect(result.current.formState.dirtyFields).toEqual({
         test: [{ value: true }, { value: true }],
       });
 
@@ -269,13 +269,13 @@ describe('remove', () => {
       });
 
       expect(result.current.formState.isDirty).toBeTruthy();
-      expect(result.current.formState.dirty).toEqual({
+      expect(result.current.formState.dirtyFields).toEqual({
         test: [{ value: true }],
       });
     },
   );
 
-  it('should remove values from formState.touched', () => {
+  it('should remove values from formState.touchedFields', () => {
     let touched: any;
 
     const Component = () => {
@@ -285,7 +285,7 @@ describe('remove', () => {
         name: 'test',
       });
 
-      touched = formState.touched;
+      touched = formState.touchedFields;
 
       return (
         <form>
@@ -744,7 +744,7 @@ describe('remove', () => {
     );
   });
 
-  it('should remove dirty fields with nested field inputs', () => {
+  it('should remove dirtyFields fields with nested field inputs', () => {
     const { result } = renderHook(() => {
       const { register, formState, control } = useForm({
         defaultValues: {
@@ -761,7 +761,7 @@ describe('remove', () => {
       return { register, formState, fields, append, remove };
     });
 
-    result.current.formState.dirty as Record<string, any>;
+    result.current.formState.dirtyFields as Record<string, any>;
     result.current.formState.isDirty;
 
     act(() => {
@@ -769,7 +769,7 @@ describe('remove', () => {
     });
 
     expect(result.current.formState.isDirty).toBeTruthy();
-    expect(result.current.formState.dirty).toEqual({
+    expect(result.current.formState.dirtyFields).toEqual({
       test: { data: [undefined, { value: true }] },
     });
 
@@ -778,7 +778,7 @@ describe('remove', () => {
     });
 
     expect(result.current.formState.isDirty).toBeFalsy();
-    expect(result.current.formState.dirty).toEqual({});
+    expect(result.current.formState.dirtyFields).toEqual({});
   });
 
   it('should remove Controller by index without error', () => {

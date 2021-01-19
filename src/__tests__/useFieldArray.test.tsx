@@ -630,7 +630,7 @@ describe('useFieldArray', () => {
   });
 
   describe('with setValue', () => {
-    it.each(['isDirty', 'dirty'])(
+    it.each(['isDirty', 'dirtyFields'])(
       'should set name to dirtyFieldRef if array field values are different with default value when formState.%s is defined',
       (property) => {
         let setValue: any;
@@ -685,14 +685,14 @@ describe('useFieldArray', () => {
           );
         });
 
-        expect(formState.dirty).toEqual({
+        expect(formState.dirtyFields).toEqual({
           test: [{ name: true }],
         });
         expect(formState.isDirty).toBeTruthy();
       },
     );
 
-    it.each(['isDirty', 'dirty'])(
+    it.each(['isDirty', 'dirtyFields'])(
       'should unset name from dirtyFieldRef if array field values are not different with default value when formState.%s is defined',
       (property) => {
         let setValue: any;
@@ -745,7 +745,7 @@ describe('useFieldArray', () => {
           );
         });
 
-        expect(formState.dirty).toEqual({
+        expect(formState.dirtyFields).toEqual({
           test: [{ name: true }],
         });
         expect(formState.isDirty).toBeTruthy();
@@ -758,7 +758,7 @@ describe('useFieldArray', () => {
           );
         });
 
-        expect(formState.dirty).toEqual({
+        expect(formState.dirtyFields).toEqual({
           test: [],
         });
         expect(formState.isDirty).toBeFalsy();
@@ -1347,8 +1347,8 @@ describe('useFieldArray', () => {
     });
   });
 
-  describe.skip('submit form', () => {
-    it('should leave defaultValues as empty array when shouldUnregister set to false', async () => {
+  describe('submit form', () => {
+    it('should not leave defaultValues as empty array', async () => {
       let submitData: any;
       type FormValues = {
         test: {
@@ -1384,9 +1384,7 @@ describe('useFieldArray', () => {
         await fireEvent.click(screen.getByRole('button'));
       });
 
-      expect(submitData).toEqual({
-        test: [],
-      });
+      expect(submitData).toEqual({});
     });
   });
 });

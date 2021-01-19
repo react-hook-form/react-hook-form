@@ -241,12 +241,12 @@ describe('Controller', () => {
     expect(errors.test).toBeDefined();
   });
 
-  it('should set field to formState.touched', async () => {
+  it('should set field to formState.touchedFields', async () => {
     let touched: any;
     const Component = () => {
       const { control, formState } = useForm({ mode: 'onBlur' });
 
-      touched = formState.touched;
+      touched = formState.touchedFields;
 
       return (
         <Controller
@@ -966,6 +966,37 @@ describe('Controller', () => {
     });
 
     await waitFor(async () => screen.queryByText('Input is dirty.'));
+  });
+
+  it('should display input error.', async () => {
+    const Component = () => {
+      const { control } = useForm({
+        mode: 'onChange',
+      });
+
+      return (
+        <Controller
+          defaultValue=""
+          name="test"
+          render={({ field: props, meta }) => (
+            <>
+              <input {...props} />
+              {meta.error && <p>{meta.error.message}</p>}
+            </>
+          )}
+          control={control}
+          rules={{
+            required: 'This is required',
+          }}
+        />
+      );
+    };
+
+    render(<Component />);
+
+    fireEvent.blur(screen.getByRole('textbox'));
+
+    await waitFor(async () => screen.queryByText('This is required'));
   });
 
   it('should not trigger extra-render while not subscribed to any input state', () => {

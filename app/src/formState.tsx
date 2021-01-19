@@ -16,10 +16,10 @@ const FormState = (props: {
     register,
     handleSubmit,
     formState: {
-      dirty,
+      dirtyFields,
       isSubmitted,
       submitCount,
-      touched,
+      touchedFields,
       isDirty,
       isSubmitting,
       isSubmitSuccessful,
@@ -67,8 +67,8 @@ const FormState = (props: {
           isSubmitting,
           isSubmitSuccessful,
           isValid,
-          touched: Object.keys(touched),
-          dirty: Object.keys(dirty),
+          touched: Object.keys(touchedFields),
+          dirty: Object.keys(dirtyFields),
         })}
       </div>
       <select {...register('select')} defaultValue="test">

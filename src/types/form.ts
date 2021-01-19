@@ -19,6 +19,32 @@ import { RegisterOptions } from './validator';
 import { FieldArrayDefaultValues } from './fieldArray';
 import { SubjectType, Subscription } from '../utils/Subject';
 
+export type EventType =
+  | 'focus'
+  | 'blur'
+  | 'change'
+  | 'changeText'
+  | 'valueChange'
+  | 'contentSizeChange'
+  | 'endEditing'
+  | 'keyPress'
+  | 'submitEditing'
+  | 'layout'
+  | 'selectionChange'
+  | 'longPress'
+  | 'press'
+  | 'pressIn'
+  | 'pressOut'
+  | 'momentumScrollBegin'
+  | 'momentumScrollEnd'
+  | 'scroll'
+  | 'scrollBeginDrag'
+  | 'scrollEndDrag'
+  | 'load'
+  | 'error'
+  | 'progress'
+  | 'custom';
+
 declare const $NestedValue: unique symbol;
 
 export type NestedValue<
@@ -93,8 +119,8 @@ export type FieldNamesMarkedBoolean<TFieldValues extends FieldValues> = DeepMap<
 export type FormStateProxy<TFieldValues extends FieldValues = FieldValues> = {
   isDirty: boolean;
   isValidating: boolean;
-  dirty: FieldNamesMarkedBoolean<TFieldValues>;
-  touched: FieldNamesMarkedBoolean<TFieldValues>;
+  dirtyFields: FieldNamesMarkedBoolean<TFieldValues>;
+  touchedFields: FieldNamesMarkedBoolean<TFieldValues>;
   isSubmitting: boolean;
   errors: boolean;
   isValid: boolean;
@@ -104,11 +130,11 @@ export type ReadFormState = { [K in keyof FormStateProxy]: boolean | 'all' };
 
 export type FormState<TFieldValues> = {
   isDirty: boolean;
-  dirty: FieldNamesMarkedBoolean<TFieldValues>;
+  dirtyFields: FieldNamesMarkedBoolean<TFieldValues>;
   isSubmitted: boolean;
   isSubmitSuccessful: boolean;
   submitCount: number;
-  touched: FieldNamesMarkedBoolean<TFieldValues>;
+  touchedFields: FieldNamesMarkedBoolean<TFieldValues>;
   isSubmitting: boolean;
   isValidating: boolean;
   isValid: boolean;
@@ -159,14 +185,14 @@ export type Control<TFieldValues extends FieldValues = FieldValues> = {
     name?: TName,
     data?: TData,
   ) => boolean;
-  fieldArrayValuesRef: FieldArrayDefaultValues;
+  fieldArrayDefaultValuesRef: FieldArrayDefaultValues;
   formStateRef: React.MutableRefObject<FormState<TFieldValues>>;
   formStateSubjectRef: React.MutableRefObject<
     SubjectType<Partial<FormState<TFieldValues>>>
   >;
   watchSubjectRef: React.MutableRefObject<
     SubjectType<{
-      name?: string;
+      name?: InternalFieldName;
       value?: unknown;
     }>
   >;
@@ -180,7 +206,6 @@ export type Control<TFieldValues extends FieldValues = FieldValues> = {
       isReset?: boolean;
     }>
   >;
-  updateIsValid: (fieldsValues: FieldValues) => void;
   validFieldsRef: React.MutableRefObject<FieldNamesMarkedBoolean<TFieldValues>>;
   fieldsWithValidationRef: React.MutableRefObject<
     FieldNamesMarkedBoolean<TFieldValues>
@@ -196,11 +221,11 @@ export type Control<TFieldValues extends FieldValues = FieldValues> = {
   ) => unknown;
 } & UseFormCommonMethods<TFieldValues>;
 
-export type WatchCallback = <TFieldValues>(
+export type WatchObserver = <TFieldValues>(
   value: UnpackNestedValue<TFieldValues>,
   info: {
     name?: string;
-    type?: string;
+    type?: EventType;
     value?: unknown;
   },
 ) => void;
@@ -217,7 +242,7 @@ export type UseFormMethods<TFieldValues extends FieldValues = FieldValues> = {
       defaultValue?: FieldPathValues<TFieldValues, TName>,
     ): FieldPathValues<TFieldValues, TName>;
     (
-      callback: WatchCallback,
+      callback: WatchObserver,
       defaultValues?: UnpackNestedValue<DeepPartial<TFieldValues>>,
     ): Subscription;
   };

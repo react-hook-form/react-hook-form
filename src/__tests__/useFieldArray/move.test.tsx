@@ -27,8 +27,8 @@ describe('swap', () => {
     process.env.NODE_ENV = nodeEnv;
   });
 
-  it.each(['isDirty', 'dirty'])(
-    'should move dirty into pointed position when formState.%s is defined',
+  it.each(['isDirty', 'dirtyFields'])(
+    'should move dirtyFields into pointed position when formState.%s is defined',
     () => {
       const { result } = renderHook(() => {
         const { formState, control } = useForm({
@@ -45,7 +45,7 @@ describe('swap', () => {
       });
 
       result.current.formState.isDirty;
-      result.current.formState.dirty;
+      result.current.formState.dirtyFields;
 
       act(() => {
         result.current.append({ value: '2' });
@@ -60,7 +60,7 @@ describe('swap', () => {
       });
 
       expect(result.current.formState.isDirty).toBeTruthy();
-      expect(result.current.formState.dirty).toEqual({
+      expect(result.current.formState.dirtyFields).toEqual({
         test: [{ value: true }, { value: true }, { value: true }],
       });
     },
@@ -126,7 +126,7 @@ describe('swap', () => {
         name: 'test',
       });
 
-      touched = formState.touched;
+      touched = formState.touchedFields;
 
       return (
         <form>

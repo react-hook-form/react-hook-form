@@ -65,8 +65,7 @@ export const useFieldArray = <
     readFormStateRef,
     validFieldsRef,
     fieldsWithValidationRef,
-    fieldArrayValuesRef,
-    updateIsValid,
+    fieldArrayDefaultValuesRef,
   } = control || methods.control;
 
   const [fields, setFields] = React.useState<
@@ -74,16 +73,18 @@ export const useFieldArray = <
   >(
     mapIds(
       get(
-        fieldArrayValuesRef.current,
+        fieldArrayDefaultValuesRef.current,
         getFieldArrayParentName(name as InternalFieldName),
       )
-        ? get(fieldArrayValuesRef.current, name as InternalFieldName, [])
+        ? get(fieldArrayDefaultValuesRef.current, name as InternalFieldName, [])
         : get(defaultValuesRef.current, name as InternalFieldName, []),
       keyName,
     ),
   );
 
-  set(fieldArrayValuesRef.current, name as InternalFieldName, [...fields]);
+  set(fieldArrayDefaultValuesRef.current, name as InternalFieldName, [
+    ...fields,
+  ]);
   fieldArrayNamesRef.current.add(name as InternalFieldName);
 
   const omitKey = <
@@ -100,12 +101,14 @@ export const useFieldArray = <
     );
 
     return mapIds<TFieldValues, TKeyName>(
-      get(fieldArrayValuesRef.current, name as InternalFieldName, []).map(
-        (item: Partial<TFieldValues>, index: number) => ({
-          ...item,
-          ...values[index],
-        }),
-      ),
+      get(
+        fieldArrayDefaultValuesRef.current,
+        name as InternalFieldName,
+        [],
+      ).map((item: Partial<TFieldValues>, index: number) => ({
+        ...item,
+        ...values[index],
+      })),
       keyName,
     );
   };
@@ -130,22 +133,14 @@ export const useFieldArray = <
 
   const resetFields = () => unset(fieldsRef.current, name as InternalFieldName);
 
-  const setFieldAndValidState = (
+  const setFieldsAndNotify = (
     fieldsValues: Partial<FieldArrayWithId<TFieldValues, TName, TKeyName>>[],
   ) => {
-    const fields = omitKey([...fieldsValues]);
-
     setFields(mapIds(fieldsValues, keyName));
     fieldArraySubjectRef.current.next({
       name,
-      fields,
+      fields: omitKey([...fieldsValues]),
     });
-
-    if (readFormStateRef.current.isValid) {
-      const values = getFieldsValues(fieldsRef);
-      set(values, name as InternalFieldName, fields);
-      updateIsValid(values);
-    }
   };
 
   const cleanup = <T>(ref: T) =>
@@ -159,12 +154,12 @@ export const useFieldArray = <
   ) =>
     updatedFieldArrayValues &&
     set(
-      formStateRef.current.dirty,
+      formStateRef.current.dirtyFields,
       name as InternalFieldName,
       setFieldArrayDirtyFields(
         omitKey(updatedFieldArrayValues),
         get(defaultValuesRef.current, name as InternalFieldName, []),
-        get(formStateRef.current.dirty, name as InternalFieldName, []),
+        get(formStateRef.current.dirtyFields, name as InternalFieldName, []),
       ),
     );
 
@@ -207,31 +202,38 @@ export const useFieldArray = <
     }
 
     if (
-      readFormStateRef.current.touched &&
-      get(formStateRef.current.touched, name as InternalFieldName)
+      readFormStateRef.current.touchedFields &&
+      get(formStateRef.current.touchedFields, name as InternalFieldName)
     ) {
       const output = method(
-        get(formStateRef.current.touched, name as InternalFieldName),
+        get(formStateRef.current.touchedFields, name as InternalFieldName),
         args.argA,
         args.argB,
       );
       shouldSet &&
-        set(formStateRef.current.touched, name as InternalFieldName, output);
-      cleanup(formStateRef.current.touched);
+        set(
+          formStateRef.current.touchedFields,
+          name as InternalFieldName,
+          output,
+        );
+      cleanup(formStateRef.current.touchedFields);
     }
 
-    if (readFormStateRef.current.dirty || readFormStateRef.current.isDirty) {
+    if (
+      readFormStateRef.current.dirtyFields ||
+      readFormStateRef.current.isDirty
+    ) {
       set(
-        formStateRef.current.dirty,
+        formStateRef.current.dirtyFields,
         name as InternalFieldName,
         setFieldArrayDirtyFields(
           omitKey(updatedFormValues),
           get(defaultValuesRef.current, name as InternalFieldName, []),
-          get(formStateRef.current.dirty, name as InternalFieldName, []),
+          get(formStateRef.current.dirtyFields, name as InternalFieldName, []),
         ),
       );
       updateDirtyFieldsWithDefaultValues(updatedFieldValues);
-      cleanup(formStateRef.current.dirty);
+      cleanup(formStateRef.current.dirtyFields);
     }
 
     if (shouldUpdateValid && readFormStateRef.current.isValid) {
@@ -275,15 +277,18 @@ export const useFieldArray = <
   ) => {
     const appendValue = Array.isArray(value) ? value : [value];
     const updatedFieldValues = [...getCurrentFieldsValues(), ...appendValue];
-    setFieldAndValidState(updatedFieldValues);
+    setFieldsAndNotify(updatedFieldValues);
 
-    if (readFormStateRef.current.dirty || readFormStateRef.current.isDirty) {
+    if (
+      readFormStateRef.current.dirtyFields ||
+      readFormStateRef.current.isDirty
+    ) {
       updateDirtyFieldsWithDefaultValues(updatedFieldValues);
 
       formStateSubjectRef.current.next({
         isDirty: true,
         // @ts-ignore
-        dirty: formStateRef.current.dirty,
+        dirtyFields: formStateRef.current.dirtyFields,
       });
     }
 
@@ -303,7 +308,7 @@ export const useFieldArray = <
       getCurrentFieldsValues(),
       Array.isArray(value) ? value : [value],
     );
-    setFieldAndValidState(updatedFieldArrayValues);
+    setFieldsAndNotify(updatedFieldArrayValues);
     batchStateUpdate(
       prependAt,
       {
@@ -331,7 +336,7 @@ export const useFieldArray = <
       true,
       true,
     );
-    setFieldAndValidState(updatedFieldValues);
+    setFieldsAndNotify(updatedFieldValues);
   };
 
   const insert = (
@@ -348,7 +353,7 @@ export const useFieldArray = <
       Array.isArray(value) ? value : [value],
     );
 
-    setFieldAndValidState(updatedFieldArrayValues);
+    setFieldsAndNotify(updatedFieldArrayValues);
     batchStateUpdate(
       insertAt,
       {
@@ -375,13 +380,13 @@ export const useFieldArray = <
       fieldValues,
       false,
     );
-    setFieldAndValidState(fieldValues);
+    setFieldsAndNotify(fieldValues);
   };
 
   const move = (from: number, to: number) => {
     const fieldValues = getCurrentFieldsValues();
     moveArrayAt(fieldValues, from, to);
-    setFieldAndValidState(fieldValues);
+    setFieldsAndNotify(fieldValues);
     batchStateUpdate(
       moveArrayAt,
       {
@@ -426,16 +431,16 @@ export const useFieldArray = <
 
   React.useEffect(() => {
     const fieldArraySubscription = fieldArraySubjectRef.current.subscribe({
-      next: ({ name: inputName, fields, isReset }) => {
+      next({ name: inputName, fields, isReset }) {
         if (isReset) {
           if (inputName) {
             const value = getFieldsValues(fieldsRef);
             set(value, inputName, fields);
-            set(fieldArrayValuesRef.current, name, fields);
-            setFieldAndValidState(get(value, name));
+            set(fieldArrayDefaultValuesRef.current, name, fields);
+            setFieldsAndNotify(get(value, name));
           } else {
-            fieldArrayValuesRef.current = fields;
-            setFieldAndValidState(get(fields, name));
+            fieldArrayDefaultValuesRef.current = fields;
+            setFieldsAndNotify(get(fields, name));
           }
         }
       },
@@ -444,7 +449,7 @@ export const useFieldArray = <
     return () => {
       fieldArraySubscription.unsubscribe();
       resetFields();
-      unset(fieldArrayValuesRef.current, name as InternalFieldName);
+      unset(fieldArrayDefaultValuesRef.current, name as InternalFieldName);
       fieldArrayNamesRef.current.delete(name as InternalFieldName);
     };
   }, []);
