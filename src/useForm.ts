@@ -778,6 +778,10 @@ export function useForm<
 
   function unregister(
     name: FieldPath<TFieldValues> | FieldPath<TFieldValues>[],
+    optinos?: Pick<
+      KeepStateOptions,
+      'keepErrors' | 'keepTouched' | 'keepDirty'
+    >,
   ): void {
     for (const inputName of Array.isArray(name) ? name : [name]) {
       const field = get(fieldsRef.current, inputName) as Field;
@@ -785,25 +789,36 @@ export function useForm<
       if (field) {
         unset(validFieldsRef.current, inputName);
         unset(fieldsWithValidationRef.current, inputName);
-        unset(formStateRef.current.errors, inputName);
         unset(fieldsRef.current, inputName);
-
-        formStateSubjectRef.current.next({
-          ...formStateRef.current,
-          isDirty: isFormDirty(),
-          isValid: getIsValid(),
-        });
-
-        readFormStateRef.current.isValid &&
-          resolverRef.current &&
-          updateIsValid();
+        unset(
+          optinos && optinos.keepErrors ? {} : formStateRef.current.errors,
+          inputName,
+        );
+        unset(
+          optinos && optinos.keepDirty ? {} : formStateRef.current.dirtyFields,
+          inputName,
+        );
+        unset(
+          optinos && optinos.keepTouched
+            ? {}
+            : formStateRef.current.touchedFields,
+          inputName,
+        );
 
         watchSubjectRef.current.next({
           name: inputName,
-          value: '',
+          value: null,
         });
       }
     }
+
+    formStateSubjectRef.current.next({
+      ...formStateRef.current,
+      isDirty: isFormDirty(),
+      isValid: getIsValid(),
+    });
+
+    readFormStateRef.current.isValid && resolverRef.current && updateIsValid();
   }
 
   function updateValueAndGetDefault(name: InternalFieldName) {
