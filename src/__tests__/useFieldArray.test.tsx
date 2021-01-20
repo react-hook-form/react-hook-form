@@ -781,7 +781,7 @@ describe('useFieldArray', () => {
         control: Control<FormValues>;
         index: number;
       }) {
-        const { fields } = useFieldArray<FormValues, 'test.0.keyValue'>({
+        const { fields } = useFieldArray({
           name: `test.${index}.keyValue` as 'test.0.keyValue',
           control,
         });
