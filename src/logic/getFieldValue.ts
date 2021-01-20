@@ -47,7 +47,9 @@ export default function getFieldValue<TFieldValues extends FieldValues>(
     }
 
     return valueAsNumber
-      ? +value
+      ? value === ''
+        ? NaN
+        : +value
       : valueAsDate
       ? (ref as HTMLInputElement).valueAsDate
       : setValueAs
