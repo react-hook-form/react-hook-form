@@ -175,10 +175,7 @@ type UseFormCommonMethods<TFieldValues extends FieldValues = FieldValues> = {
   ) => RegisterMethods;
   unregister: (
     name: FieldPath<TFieldValues> | FieldPath<TFieldValues>[],
-    options?: Pick<
-      KeepStateOptions,
-      'keepErrors' | 'keepTouched' | 'keepDirty'
-    >,
+    options?: Pick<KeepStateOptions, 'keepTouched' | 'keepDirty'>,
   ) => void;
 };
 

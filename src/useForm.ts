@@ -778,10 +778,7 @@ export function useForm<
 
   function unregister(
     name: FieldPath<TFieldValues> | FieldPath<TFieldValues>[],
-    optinos?: Pick<
-      KeepStateOptions,
-      'keepErrors' | 'keepTouched' | 'keepDirty'
-    >,
+    options?: Pick<KeepStateOptions, 'keepTouched' | 'keepDirty'>,
   ): void {
     for (const inputName of Array.isArray(name) ? name : [name]) {
       const field = get(fieldsRef.current, inputName) as Field;
@@ -790,16 +787,13 @@ export function useForm<
         unset(validFieldsRef.current, inputName);
         unset(fieldsWithValidationRef.current, inputName);
         unset(fieldsRef.current, inputName);
+        unset(formStateRef.current.errors, inputName);
         unset(
-          optinos && optinos.keepErrors ? {} : formStateRef.current.errors,
+          options && options.keepDirty ? {} : formStateRef.current.dirtyFields,
           inputName,
         );
         unset(
-          optinos && optinos.keepDirty ? {} : formStateRef.current.dirtyFields,
-          inputName,
-        );
-        unset(
-          optinos && optinos.keepTouched
+          options && options.keepTouched
             ? {}
             : formStateRef.current.touchedFields,
           inputName,
@@ -807,7 +801,6 @@ export function useForm<
 
         watchSubjectRef.current.next({
           name: inputName,
-          value: null,
         });
       }
     }
