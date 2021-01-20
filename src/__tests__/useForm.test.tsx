@@ -903,22 +903,12 @@ describe('useForm', () => {
   });
 
   describe('updateIsValid', () => {
-    it('should be defined when resolver is defined', () => {
-      const resolver = async (data: any) => {
-        return {
-          values: data,
-          errors: {},
-        };
+    it('should be called resolver with default values if default value is defined', async () => {
+      type FormValues = {
+        test: string;
       };
 
-      const { result } = renderHook(() => useForm({ resolver }));
-
-      expect(result.current.control.updateIsValid).toBeDefined();
-    });
-
-    it('should be called resolver with default values if default value is defined', async () => {
-      const defaultValues = { test: 'default' };
-      const resolver = jest.fn(async (data: any) => {
+      const resolver = jest.fn(async (data: FormValues) => {
         return {
           values: data,
           errors: {},
@@ -926,9 +916,9 @@ describe('useForm', () => {
       });
 
       const { result } = renderHook(() =>
-        useForm({
+        useForm<FormValues>({
           resolver,
-          defaultValues,
+          defaultValues: { test: 'default' },
         }),
       );
 
@@ -942,16 +932,26 @@ describe('useForm', () => {
         });
 
       await act(async () => {
-        await result.current.control.updateIsValid({});
+        await result.current.trigger();
       });
 
-      expect(resolver).toHaveBeenCalledWith(defaultValues, undefined, {
-        criteriaMode: undefined,
-      });
+      expect(resolver).toHaveBeenCalledWith(
+        {
+          test: 'default',
+        },
+        undefined,
+        {
+          criteriaMode: undefined,
+        },
+      );
     });
 
     it('should be called resolver with field values if value is undefined', async () => {
-      const resolver = jest.fn(async (data: any) => {
+      type FormValues = {
+        test: string;
+      };
+
+      const resolver = jest.fn(async (data: FormValues) => {
         return {
           values: data,
           errors: {},
@@ -959,9 +959,7 @@ describe('useForm', () => {
       });
 
       const { result } = renderHook(() =>
-        useForm<{
-          test: string;
-        }>({
+        useForm<FormValues>({
           resolver,
         }),
       );
@@ -970,9 +968,7 @@ describe('useForm', () => {
 
       result.current.setValue('test', 'value');
 
-      await act(async () => {
-        result.current.control.updateIsValid({});
-      });
+      result.current.trigger();
 
       expect(resolver).toHaveBeenCalledWith({ test: 'value' }, undefined, {
         criteriaMode: undefined,
