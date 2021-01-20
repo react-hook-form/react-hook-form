@@ -808,10 +808,8 @@ export function useForm<
     formStateSubjectRef.current.next({
       ...formStateRef.current,
       isDirty: isFormDirty(),
-      isValid: getIsValid(),
+      isValid: !!updateIsValid(),
     });
-
-    readFormStateRef.current.isValid && resolverRef.current && updateIsValid();
   }
 
   function updateValueAndGetDefault(name: InternalFieldName) {
