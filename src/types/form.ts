@@ -174,7 +174,7 @@ type UseFormCommonMethods<TFieldValues extends FieldValues = FieldValues> = {
     options?: RegisterOptions,
   ) => RegisterMethods;
   unregister: (
-    name: FieldPath<TFieldValues> | FieldPath<TFieldValues>[],
+    name?: FieldPath<TFieldValues> | FieldPath<TFieldValues>[],
     options?: Pick<KeepStateOptions, 'keepTouched' | 'keepDirty'>,
   ) => void;
 };
@@ -264,7 +264,7 @@ export type UseFormMethods<TFieldValues extends FieldValues = FieldValues> = {
   setValue: (
     name: FieldName<TFieldValues>,
     value: SetFieldValue<TFieldValues>,
-    config?: SetValueConfig,
+    options?: SetValueConfig,
   ) => void;
   trigger: (name?: FieldName<TFieldValues> | FieldName<TFieldValues>[]) => void;
   formState: FormState<TFieldValues>;

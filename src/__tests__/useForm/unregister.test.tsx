@@ -32,4 +32,23 @@ describe('unregister', () => {
 
     expect(result.current.getValues()).toEqual({});
   });
+
+  it('should unregister all inputs', async () => {
+    const { result } = renderHook(() =>
+      useForm<{
+        input: string;
+        input2: string;
+      }>(),
+    );
+
+    result.current.register('input');
+    result.current.register('input');
+    result.current.register('input2');
+
+    await act(async () => {
+      await result.current.unregister();
+    });
+
+    expect(result.current.getValues()).toEqual({});
+  });
 });
