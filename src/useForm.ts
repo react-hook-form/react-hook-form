@@ -916,45 +916,48 @@ export function useForm<
     }
   }
 
-  function register<Path extends FieldPath<TFieldValues>>(
-    name: Path,
-    options?: RegisterOptions,
-  ): RegisterMethods {
-    if (process.env.NODE_ENV !== 'production') {
-      if (isUndefined(name)) {
-        throw new Error(
-          '📋 `name` prop is missing during register: https://react-hook-form.com/api#register',
-        );
-      }
-    }
-
-    set(fieldsRef.current, name, {
-      __field: {
-        ...(get(fieldsRef.current, name)
-          ? {
-              ref: get(fieldsRef.current, name).__field.ref,
-              ...get(fieldsRef.current, name).__field,
-            }
-          : { ref: { name } }),
-        name,
-        ...options,
-      },
-    });
-    options && set(fieldsWithValidationRef.current, name, true);
-    fieldsNamesRef.current[name] = '';
-
-    updateValueAndGetDefault(name);
-
-    return !isWindowUndefined
-      ? {
-          name: name as InternalFieldName,
-          onChange: handleChange,
-          onBlur: handleChange,
-          ref: (ref: HTMLInputElement | null) =>
-            ref && registerFieldRef(name, ref, options),
+  const register = React.useCallback(
+    <Path extends FieldPath<TFieldValues>>(
+      name: Path,
+      options?: RegisterOptions,
+    ): RegisterMethods => {
+      if (process.env.NODE_ENV !== 'production') {
+        if (isUndefined(name)) {
+          throw new Error(
+            '📋 `name` prop is missing during register: https://react-hook-form.com/api#register',
+          );
         }
-      : ({} as RegisterMethods);
-  }
+      }
+
+      set(fieldsRef.current, name, {
+        __field: {
+          ...(get(fieldsRef.current, name)
+            ? {
+                ref: get(fieldsRef.current, name).__field.ref,
+                ...get(fieldsRef.current, name).__field,
+              }
+            : { ref: { name } }),
+          name,
+          ...options,
+        },
+      });
+      options && set(fieldsWithValidationRef.current, name, true);
+      fieldsNamesRef.current[name] = '';
+
+      updateValueAndGetDefault(name);
+
+      return !isWindowUndefined
+        ? {
+            name: name as InternalFieldName,
+            onChange: handleChange,
+            onBlur: handleChange,
+            ref: (ref: HTMLInputElement | null) =>
+              ref && registerFieldRef(name, ref, options),
+          }
+        : ({} as RegisterMethods);
+    },
+    [defaultValuesRef.current],
+  );
 
   const handleSubmit = React.useCallback(
     <TSubmitFieldValues extends FieldValues = TFieldValues>(
@@ -1136,13 +1139,10 @@ export function useForm<
     };
   }, []);
 
-  const commonProps = {
-    register: React.useCallback(register, [defaultValuesRef.current]),
-  };
-
   return {
     control: React.useMemo(
       () => ({
+        register,
         isWatchAllRef,
         watchFieldsRef,
         isFormDirty,
@@ -1159,7 +1159,6 @@ export function useForm<
         formStateRef,
         defaultValuesRef,
         fieldArrayDefaultValuesRef,
-        ...commonProps,
       }),
       [defaultValuesRef.current, watchInternal],
     ),
@@ -1169,6 +1168,7 @@ export function useForm<
       readFormStateRef,
     ),
     trigger,
+    register,
     watch: React.useCallback(watch, []),
     setValue: React.useCallback(setValue, [setInternalValue, trigger]),
     getValues: React.useCallback(getValues, []),
@@ -1177,6 +1177,5 @@ export function useForm<
     clearErrors: React.useCallback(clearErrors, []),
     unregister: React.useCallback(unregister, []),
     setError: React.useCallback(setError, []),
-    ...commonProps,
   };
 }
