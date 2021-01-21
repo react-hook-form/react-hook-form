@@ -9,14 +9,23 @@ import {
 import { Controller } from '../controller';
 import { useFieldArray } from '../useFieldArray';
 import { useForm } from '../useForm';
+import { ControllerRenderProps } from '../types';
 
-const Input = ({ onChange, onBlur, placeholder }: any) => (
-  <input
-    placeholder={placeholder}
-    onChange={() => onChange?.(1, 2)}
-    onBlur={() => onBlur?.(1, 2)}
-  />
-);
+function Input<TFieldValues>({
+  onChange,
+  onBlur,
+  placeholder,
+}: Pick<ControllerRenderProps<TFieldValues>, 'onChange' | 'onBlur'> & {
+  placeholder?: string;
+}) {
+  return (
+    <input
+      placeholder={placeholder}
+      onChange={() => onChange(1)}
+      onBlur={() => onBlur()}
+    />
+  );
+}
 
 let nodeEnv: string | undefined;
 
@@ -361,7 +370,9 @@ describe('Controller', () => {
   it('should invoke custom onChange method', () => {
     const onChange = jest.fn();
     const Component = () => {
-      const { control } = useForm();
+      const { control } = useForm<{
+        test: string;
+      }>();
       return (
         <>
           <Controller

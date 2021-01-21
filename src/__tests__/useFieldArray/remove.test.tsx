@@ -884,8 +884,8 @@ describe('remove', () => {
                   <Controller
                     name={`test.${index}.lastName` as const}
                     control={control}
-                    defaultValue={item.lastName} // make sure to set up defaultValue
-                    render={(props: any) => <input {...props} />}
+                    defaultValue={item.lastName}
+                    render={({ field }) => <input {...field} />}
                   />
                   <button type="button" onClick={() => remove(index)}>
                     Delete
