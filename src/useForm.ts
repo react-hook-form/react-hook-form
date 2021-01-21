@@ -1138,7 +1138,6 @@ export function useForm<
 
   const commonProps = {
     register: React.useCallback(register, [defaultValuesRef.current]),
-    unregister: React.useCallback(unregister, []),
   };
 
   return {
@@ -1176,6 +1175,7 @@ export function useForm<
     handleSubmit,
     reset: React.useCallback(reset, []),
     clearErrors: React.useCallback(clearErrors, []),
+    unregister: React.useCallback(unregister, []),
     setError: React.useCallback(setError, []),
     ...commonProps,
   };

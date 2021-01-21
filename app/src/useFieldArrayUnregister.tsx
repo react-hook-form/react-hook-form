@@ -5,6 +5,7 @@ import {
   useFieldArray,
   Controller,
   Control,
+  UseFormMethods,
 } from 'react-hook-form';
 
 let renderCount = 0;
@@ -17,8 +18,10 @@ const ConditionField = <T extends any[]>({
   control,
   index,
   fields,
+  unregister,
 }: {
   control: Control<FormInputs>;
+  unregister: UseFormMethods<FormInputs>['unregister'];
   index: number;
   fields: T;
 }) => {
@@ -30,12 +33,12 @@ const ConditionField = <T extends any[]>({
 
   React.useEffect(() => {
     return () => {
-      control.unregister(`data.${index}.conditional` as const, {
+      unregister(`data.${index}.conditional` as const, {
         keepDirty: true,
         keepTouched: true,
       });
     };
-  }, [control, index]);
+  }, [unregister, index]);
 
   return output[index]?.name === 'bill' ? (
     <input
@@ -50,6 +53,7 @@ const UseFieldArrayUnregister: React.FC = () => {
     control,
     handleSubmit,
     register,
+    unregister,
     setValue,
     getValues,
     formState: { isDirty, touchedFields, dirtyFields, errors },
@@ -59,12 +63,18 @@ const UseFieldArrayUnregister: React.FC = () => {
     },
     mode: 'onSubmit',
   });
-  const { fields, append, prepend, swap, move, insert, remove } = useFieldArray<FormInputs>(
-    {
-      control,
-      name: 'data',
-    },
-  );
+  const {
+    fields,
+    append,
+    prepend,
+    swap,
+    move,
+    insert,
+    remove,
+  } = useFieldArray<FormInputs>({
+    control,
+    name: 'data',
+  });
   const [data, setData] = React.useState([]);
   const onSubmit = (data: any) => {
     setData(data);
@@ -107,7 +117,12 @@ const UseFieldArrayUnregister: React.FC = () => {
               <p id={`error${index}`}>{errors.data[index]!.name!.message}</p>
             )}
 
-            <ConditionField control={control} index={index} fields={fields} />
+            <ConditionField
+              control={control}
+              index={index}
+              fields={fields}
+              unregister={unregister}
+            />
 
             <button id={`delete${index}`} onClick={() => remove(index)}>
               Delete
