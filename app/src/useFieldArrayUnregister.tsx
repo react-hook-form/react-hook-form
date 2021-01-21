@@ -30,7 +30,7 @@ const ConditionField = <T extends any[]>({
 
   React.useEffect(() => {
     return () => {
-      control.unregister(`data[${index}].conditional` as const, {
+      control.unregister(`data.${index}.conditional` as const, {
         keepDirty: true,
         keepTouched: true,
       });
