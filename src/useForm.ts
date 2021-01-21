@@ -458,16 +458,16 @@ export function useForm<
     (
       name: FieldName<TFieldValues>,
       value: SetFieldValue<TFieldValues>,
-      config: SetValueConfig,
+      options: SetValueConfig,
     ) => {
       const field = get(fieldsRef.current, name);
 
       if (field && field.__field) {
         setFieldValue(name, value);
-        config.shouldDirty && updateAndGetDirtyState(name);
-        config.shouldValidate && trigger(name as FieldName<TFieldValues>);
+        options.shouldDirty && updateAndGetDirtyState(name);
+        options.shouldValidate && trigger(name as FieldName<TFieldValues>);
       } else {
-        setInternalValues(name, value, config);
+        setInternalValues(name, value, options);
 
         if (fieldArrayNamesRef.current.has(name)) {
           fieldArraySubjectRef.current.next({
@@ -479,7 +479,7 @@ export function useForm<
           if (
             (readFormStateRef.current.isDirty ||
               readFormStateRef.current.dirtyFields) &&
-            config.shouldDirty
+            options.shouldDirty
           ) {
             set(
               formStateRef.current.dirtyFields,
@@ -513,9 +513,9 @@ export function useForm<
   function setValue(
     name: FieldName<TFieldValues>,
     value: SetFieldValue<TFieldValues>,
-    config?: SetValueConfig,
+    options?: SetValueConfig,
   ): void {
-    setInternalValue(name, value, config || {});
+    setInternalValue(name, value, options || {});
     isFieldWatched(name) && formStateSubjectRef.current.next({});
     watchSubjectRef.current.next({ name, value });
   }
@@ -777,33 +777,45 @@ export function useForm<
   }
 
   function unregister(
-    name: FieldPath<TFieldValues> | FieldPath<TFieldValues>[],
+    name?: FieldPath<TFieldValues> | FieldPath<TFieldValues>[],
+    options?: Pick<KeepStateOptions, 'keepTouched' | 'keepDirty'>,
   ): void {
-    for (const inputName of Array.isArray(name) ? name : [name]) {
+    for (const inputName of name
+      ? Array.isArray(name)
+        ? name
+        : [name]
+      : Object.keys(fieldsNamesRef.current)) {
       const field = get(fieldsRef.current, inputName) as Field;
 
       if (field) {
         unset(validFieldsRef.current, inputName);
         unset(fieldsWithValidationRef.current, inputName);
-        unset(formStateRef.current.errors, inputName);
         unset(fieldsRef.current, inputName);
-
-        formStateSubjectRef.current.next({
-          ...formStateRef.current,
-          isDirty: isFormDirty(),
-          isValid: getIsValid(),
-        });
-
-        readFormStateRef.current.isValid &&
-          resolverRef.current &&
-          updateIsValid();
+        unset(formStateRef.current.errors, inputName);
+        unset(
+          options && options.keepDirty ? {} : formStateRef.current.dirtyFields,
+          inputName,
+        );
+        unset(
+          options && options.keepTouched
+            ? {}
+            : formStateRef.current.touchedFields,
+          inputName,
+        );
 
         watchSubjectRef.current.next({
           name: inputName,
-          value: '',
         });
       }
     }
+
+    formStateSubjectRef.current.next({
+      ...formStateRef.current,
+      isDirty: isFormDirty(),
+      ...(resolver ? {} : { isValid: getIsValid() }),
+    });
+
+    updateIsValid();
   }
 
   function updateValueAndGetDefault(name: InternalFieldName) {
@@ -1007,7 +1019,7 @@ export function useForm<
     [shouldFocusError, isValidateAllFieldCriteria],
   );
 
-  const resetRefs = ({
+  const resetFromState = ({
     keepErrors,
     keepIsDirty,
     keepIsSubmitted,
@@ -1082,7 +1094,7 @@ export function useForm<
       });
     }
 
-    resetRefs(keepStateOptions);
+    resetFromState(keepStateOptions);
   };
 
   React.useEffect(() => {
