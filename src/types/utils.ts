@@ -216,6 +216,14 @@ export type FieldPathValue<
       : TFieldValues[Key] extends (infer U)[]
       ? U
       : never
+    : Key extends Digits
+    ? Key & number extends keyof TFieldValues
+      ? Rest extends FieldPath<TFieldValues[Key & number]>
+        ? FieldPathValue<TFieldValues[Key & number], Rest>
+        : TFieldValues[Key] extends (infer U)[]
+        ? U
+        : never
+      : never
     : never
   : TPath extends keyof TFieldValues
   ? TFieldValues[TPath]

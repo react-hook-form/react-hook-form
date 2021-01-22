@@ -173,10 +173,6 @@ type UseFormCommonMethods<TFieldValues extends FieldValues = FieldValues> = {
     name: FieldPath<TFieldValues>,
     options?: RegisterOptions,
   ) => RegisterMethods;
-  unregister: (
-    name?: FieldPath<TFieldValues> | FieldPath<TFieldValues>[],
-    options?: Pick<KeepStateOptions, 'keepTouched' | 'keepDirty'>,
-  ) => void;
 };
 
 export type Control<TFieldValues extends FieldValues = FieldValues> = {
@@ -276,6 +272,10 @@ export type UseFormMethods<TFieldValues extends FieldValues = FieldValues> = {
     onValid: SubmitHandler<TSubmitFieldValues>,
     onInvalid?: SubmitErrorHandler<TFieldValues>,
   ) => (e?: React.BaseSyntheticEvent) => Promise<void>;
+  unregister: (
+    name?: FieldPath<TFieldValues> | FieldPath<TFieldValues>[],
+    options?: Pick<KeepStateOptions, 'keepTouched' | 'keepDirty'>,
+  ) => void;
   control: Control<TFieldValues>;
 } & UseFormCommonMethods<TFieldValues>;
 
