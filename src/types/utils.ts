@@ -18,8 +18,6 @@ export type LiteralUnion<T extends U, U extends Primitive> =
   | T
   | (U & { _?: never });
 
-export type Assign<T extends object, U extends object> = T & Omit<U, keyof T>;
-
 export type DeepPartial<T> = T extends Array<infer U>
   ? Array<DeepPartial<U>>
   : T extends ReadonlyArray<infer U>
