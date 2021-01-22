@@ -40,7 +40,7 @@ const FormState = (props: {
       lastName: '',
       select: '',
       checkbox: false,
-      radio: '',
+      radio: undefined,
       'checkbox-checked': true,
     },
   });

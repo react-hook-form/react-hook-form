@@ -2,12 +2,12 @@ import { RadioOrCheckboxOption } from '../types';
 
 type RadioFieldResult = {
   isValid: boolean;
-  value: number | string;
+  value?: number | string;
 };
 
 const defaultReturn: RadioFieldResult = {
   isValid: false,
-  value: '',
+  value: undefined,
 };
 
 export default (options?: RadioOrCheckboxOption[]): RadioFieldResult =>

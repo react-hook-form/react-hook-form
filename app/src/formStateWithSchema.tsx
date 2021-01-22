@@ -42,7 +42,7 @@ const FormStateWithSchema: React.FC = (props: any) => {
       lastName: '',
       select: '',
       checkbox: false,
-      radio: '',
+      radio: undefined,
     },
   });
   const onSubmit = () => {};
