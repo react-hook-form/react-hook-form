@@ -18,32 +18,7 @@ import { ErrorOption, FieldErrors } from './errors';
 import { RegisterOptions } from './validator';
 import { FieldArrayDefaultValues } from './fieldArray';
 import { SubjectType, Subscription } from '../utils/Subject';
-
-export type EventType =
-  | 'focus'
-  | 'blur'
-  | 'change'
-  | 'changeText'
-  | 'valueChange'
-  | 'contentSizeChange'
-  | 'endEditing'
-  | 'keyPress'
-  | 'submitEditing'
-  | 'layout'
-  | 'selectionChange'
-  | 'longPress'
-  | 'press'
-  | 'pressIn'
-  | 'pressOut'
-  | 'momentumScrollBegin'
-  | 'momentumScrollEnd'
-  | 'scroll'
-  | 'scrollBeginDrag'
-  | 'scrollEndDrag'
-  | 'load'
-  | 'error'
-  | 'progress'
-  | 'custom';
+import { EventType } from './events';
 
 declare const $NestedValue: unique symbol;
 
@@ -54,8 +29,6 @@ export type NestedValue<
 > = {
   [$NestedValue]: never;
 } & TValue;
-
-export type Message = string;
 
 export type UnpackNestedValue<T> = T extends NestedValue<infer U>
   ? U
@@ -209,6 +182,33 @@ export type UseFormReset<TFieldValues extends FieldValues> = (
   keepStateOptions?: KeepStateOptions,
 ) => void;
 
+export type UseFormWatch<TFieldValues> = {
+  (): UnpackNestedValue<TFieldValues>;
+  <TName extends FieldPath<TFieldValues>>(
+    fieldName: TName,
+    defaultValue?: FieldPathValue<TFieldValues, TName>,
+  ): FieldPathValue<TFieldValues, TName>;
+  <TName extends FieldPath<TFieldValues>[]>(
+    fieldName: TName,
+    defaultValue?: FieldPathValues<TFieldValues, TName>,
+  ): FieldPathValues<TFieldValues, TName>;
+  (
+    callback: WatchObserver,
+    defaultValues?: UnpackNestedValue<DeepPartial<TFieldValues>>,
+  ): Subscription;
+};
+
+export type WatchInternal = <T>(
+  fieldNames?: InternalFieldName | InternalFieldName[],
+  defaultValue?: T,
+  isGlobal?: boolean,
+) => unknown;
+
+export type GetFormIsDirty = <TName extends InternalFieldName, TData>(
+  name?: TName,
+  data?: TData,
+) => boolean;
+
 type UseFormCommonMethods<TFieldValues extends FieldValues = FieldValues> = {
   register: UseFormRegister<TFieldValues>;
 };
@@ -216,10 +216,7 @@ type UseFormCommonMethods<TFieldValues extends FieldValues = FieldValues> = {
 export type Control<TFieldValues extends FieldValues = FieldValues> = {
   isWatchAllRef: React.MutableRefObject<boolean>;
   watchFieldsRef: React.MutableRefObject<InternalNameSet>;
-  isFormDirty: <TName extends InternalFieldName, TData>(
-    name?: TName,
-    data?: TData,
-  ) => boolean;
+  getFormIsDirty: GetFormIsDirty;
   fieldArrayDefaultValuesRef: FieldArrayDefaultValues;
   formStateRef: React.MutableRefObject<FormState<TFieldValues>>;
   formStateSubjectRef: React.MutableRefObject<
@@ -249,11 +246,7 @@ export type Control<TFieldValues extends FieldValues = FieldValues> = {
   fieldArrayNamesRef: React.MutableRefObject<InternalNameSet>;
   readFormStateRef: React.MutableRefObject<ReadFormState>;
   defaultValuesRef: React.MutableRefObject<DefaultValues<TFieldValues>>;
-  watchInternal: <T>(
-    fieldNames?: InternalFieldName | InternalFieldName[],
-    defaultValue?: T,
-    isGlobal?: boolean,
-  ) => unknown;
+  watchInternal: WatchInternal;
 } & UseFormCommonMethods<TFieldValues>;
 
 export type WatchObserver = <TFieldValues>(

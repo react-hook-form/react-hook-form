@@ -38,11 +38,10 @@ const GrandChild = ({
 const GrandChild1 = ({
   control,
 }: {
-  control: Control<{ test: string; test1: string }>;
+  control: Control<FormInputs>;
 }) => {
   const counter = useRef(0);
-  // todo: fix useWatch type issue
-  const output: any = useWatch<{ test: string; test1: string }>({
+  const output: any = useWatch<FormInputs>({
     name: ['test', 'test1'],
     control,
     defaultValue: { test: '', test1: '' },

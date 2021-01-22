@@ -68,6 +68,8 @@ import {
   UseFormRegister,
   UseFormHandleSubmit,
   UseFormReset,
+  WatchInternal,
+  GetFormIsDirty,
 } from './types';
 
 const isWindowUndefined = typeof window === UNDEFINED;
@@ -265,23 +267,17 @@ export function useForm<
     [],
   );
 
-  const isFormDirty = React.useCallback(
-    <TName extends InternalFieldName, TData>(
-      name?: TName,
-      data?: TData,
-    ): boolean => {
-      if (readFormStateRef.current.isDirty) {
-        const formValues = getValues();
+  const getFormIsDirty: GetFormIsDirty = React.useCallback((name, data) => {
+    if (readFormStateRef.current.isDirty) {
+      const formValues = getValues();
 
-        name && data && set(formValues, name, data);
+      name && data && set(formValues, name, data);
 
-        return !deepEqual(formValues, defaultValuesRef.current);
-      }
+      return !deepEqual(formValues, defaultValuesRef.current);
+    }
 
-      return false;
-    },
-    [],
-  );
+    return false;
+  }, []);
 
   const updateAndGetDirtyState = React.useCallback(
     (
@@ -306,7 +302,7 @@ export function useForm<
           : unset(formStateRef.current.dirtyFields, name);
 
         const state = {
-          isDirty: isFormDirty(),
+          isDirty: getFormIsDirty(),
           dirtyFields: formStateRef.current.dirtyFields,
         };
 
@@ -702,12 +698,8 @@ export function useForm<
     error.shouldFocus && ref && ref.focus && ref.focus();
   };
 
-  const watchInternal = React.useCallback(
-    <T>(
-      fieldNames?: string | string[],
-      defaultValue?: T,
-      isGlobal?: boolean,
-    ) => {
+  const watchInternal: WatchInternal = React.useCallback(
+    (fieldNames, defaultValue, isGlobal) => {
       const { fields, name } = fieldArrayUpdatedValuesRef.current;
       const isArrayNames = Array.isArray(fieldNames);
       let fieldValues = isMountedRef.current
@@ -805,7 +797,7 @@ export function useForm<
 
     formStateSubjectRef.current.next({
       ...formStateRef.current,
-      isDirty: isFormDirty(),
+      isDirty: getFormIsDirty(),
       ...(resolver ? {} : { isValid: getIsValid() }),
     });
 
@@ -1130,7 +1122,7 @@ export function useForm<
         register,
         isWatchAllRef,
         watchFieldsRef,
-        isFormDirty,
+        getFormIsDirty,
         formStateSubjectRef,
         fieldArraySubjectRef,
         controllerSubjectRef,
