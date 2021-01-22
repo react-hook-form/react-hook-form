@@ -182,22 +182,6 @@ export type UseFormReset<TFieldValues extends FieldValues> = (
   keepStateOptions?: KeepStateOptions,
 ) => void;
 
-export type UseFormWatch<TFieldValues> = {
-  (): UnpackNestedValue<TFieldValues>;
-  <TName extends FieldPath<TFieldValues>>(
-    fieldName: TName,
-    defaultValue?: FieldPathValue<TFieldValues, TName>,
-  ): FieldPathValue<TFieldValues, TName>;
-  <TName extends FieldPath<TFieldValues>[]>(
-    fieldName: TName,
-    defaultValue?: FieldPathValues<TFieldValues, TName>,
-  ): FieldPathValues<TFieldValues, TName>;
-  (
-    callback: WatchObserver,
-    defaultValues?: UnpackNestedValue<DeepPartial<TFieldValues>>,
-  ): Subscription;
-};
-
 export type WatchInternal = <T>(
   fieldNames?: InternalFieldName | InternalFieldName[],
   defaultValue?: T,

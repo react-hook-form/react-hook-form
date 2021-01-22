@@ -70,6 +70,7 @@ import {
   UseFormReset,
   WatchInternal,
   GetFormIsDirty,
+  HandleChange,
 } from './types';
 
 const isWindowUndefined = typeof window === UNDEFINED;
@@ -515,12 +516,8 @@ export function useForm<
     watchSubjectRef.current.next({ name, value });
   };
 
-  const handleChange = React.useCallback(
-    async ({
-      type,
-      target,
-      target: { value, type: inputType },
-    }: any): Promise<void | boolean> => {
+  const handleChange: HandleChange = React.useCallback(
+    async ({ type, target, target: { value, type: inputType } }) => {
       let name = (target as Ref)!.name;
       let error;
       let isValid;

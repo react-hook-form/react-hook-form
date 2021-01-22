@@ -41,7 +41,7 @@ const GrandChild1 = ({
   control: Control<FormInputs>;
 }) => {
   const counter = useRef(0);
-  const output: any = useWatch<FormInputs>({
+  const output = useWatch<FormInputs>({
     name: ['test', 'test1'],
     control,
     defaultValue: { test: '', test1: '' },
