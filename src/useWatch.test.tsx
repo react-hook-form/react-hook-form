@@ -471,7 +471,7 @@ describe('useWatch', () => {
         });
 
         expect(watchedValue).toEqual({
-          options: [{ option: 'no' }, { option: '' }],
+          options: [{ option: 'no' }, { option: null }],
         });
       });
 
