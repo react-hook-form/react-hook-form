@@ -32,7 +32,7 @@ const FormStateWithSchema: React.FC = (props: any) => {
     firstName: string;
     lastName: string;
     select: string;
-    radio: string;
+    radio: string | null;
     checkbox: boolean;
   }>({
     resolver: yupResolver(validationSchema),
@@ -42,7 +42,7 @@ const FormStateWithSchema: React.FC = (props: any) => {
       lastName: '',
       select: '',
       checkbox: false,
-      radio: undefined,
+      radio: null,
     },
   });
   const onSubmit = () => {};

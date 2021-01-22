@@ -151,8 +151,7 @@ describe('useForm', () => {
         await waitFor(() =>
           expect(callback).toHaveBeenCalledWith(
             {
-              test:
-                type === 'checkbox' ? [] : type === 'radio' ? undefined : '',
+              test: type === 'checkbox' ? [] : type === 'radio' ? null : '',
             },
             expect.any(Object),
           ),
@@ -550,17 +549,17 @@ describe('useForm', () => {
       result.current.register({
         type: 'radio',
         name: 'test',
-        value: undefined,
+        value: null,
       });
       result.current.register({
         type: 'radio',
         name: 'test1',
-        value: undefined,
+        value: null,
       });
 
       expect(result.current.watch()).toEqual({
-        test: undefined,
-        test1: undefined,
+        test: null,
+        test1: null,
       });
     });
   });
