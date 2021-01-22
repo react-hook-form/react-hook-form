@@ -40,8 +40,7 @@ describe('FormProvider', () => {
         name: 'test',
       });
 
-      // todo: fix type
-      return <p>{value as string}</p>;
+      return <p>{value}</p>;
     };
 
     const TestFormState = () => {

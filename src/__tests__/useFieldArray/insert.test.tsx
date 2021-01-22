@@ -539,8 +539,8 @@ describe('insert', () => {
         {
           test: [{ value: '1' }],
         },
-        { criteriaMode: undefined, fields: {} },
         undefined,
+        { criteriaMode: undefined, fields: {} },
       );
     });
 

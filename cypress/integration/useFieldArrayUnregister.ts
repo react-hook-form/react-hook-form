@@ -176,6 +176,6 @@ describe('useFieldArrayUnregister', () => {
       }),
     );
 
-    cy.get('#renderCount').contains('31');
+    cy.get('#renderCount').contains('32');
   });
 });

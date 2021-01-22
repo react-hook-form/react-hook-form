@@ -22,14 +22,13 @@ function NestedArray({
   control: Control<FormValues>;
   index: number;
 }) {
-  // @ts-ignore
-  const { fields, append, prepend, swap, move, remove, insert } = useFieldArray(
-    {
-      // @ts-ignore
-      name: `test.${index}.keyValue` as const,
-      control,
-    },
-  );
+  const { fields, append, prepend, swap, move, remove, insert } = useFieldArray<
+    FormValues,
+    'test.0.keyValue'
+  >({
+    name: `test.${index}.keyValue` as 'test.0.keyValue',
+    control,
+  });
   const value = useWatch({
     name: 'test',
     control,
@@ -42,12 +41,10 @@ function NestedArray({
       <ul>
         {fields.map((item, i) => (
           <Controller
-            // @ts-ignore
             key={item.id}
             render={({ field }) => <input {...field} aria-label={'name'} />}
-            name={`test.${index}.keyValue.${i}.name` as any}
+            name={`test.${index}.keyValue.${i}.name`}
             control={control}
-            // @ts-ignore
             defaultValue={item.name}
           />
         ))}
@@ -56,7 +53,6 @@ function NestedArray({
       <button
         id={`nest-append-${index}`}
         type="button"
-        // @ts-ignore
         onClick={() => append({ name: 'append' })}
       >
         append
@@ -65,7 +61,6 @@ function NestedArray({
       <button
         id={`nest-prepend-${index}`}
         type="button"
-        // @ts-ignore
         onClick={() => prepend({ name: 'prepend' })}
       >
         prepend
@@ -90,10 +85,7 @@ function NestedArray({
       <button
         id={`nest-insert-${index}`}
         type="button"
-        onClick={() =>
-          // @ts-ignore
-          insert(1, { name: 'insert' })
-        }
+        onClick={() => insert(1, { name: 'insert' })}
       >
         insert
       </button>

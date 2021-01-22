@@ -475,7 +475,7 @@ describe('setValue', () => {
       expect(result.current.formState.errors?.test?.message).toBe('min');
     });
 
-    it('should not be called trigger method if config is empty', async () => {
+    it('should not be called trigger method if options is empty', async () => {
       const { result } = renderHook(() => useForm<{ test: string }>());
 
       result.current.register('test', {
@@ -519,7 +519,7 @@ describe('setValue', () => {
       expect(result.current.formState.errors?.test?.[2]?.message).toBe('min');
     });
 
-    it('should not be called trigger method if config is empty and field value is array', async () => {
+    it('should not be called trigger method if options is empty and field value is array', async () => {
       const { result } = renderHook(() =>
         useForm<{
           test: string[];

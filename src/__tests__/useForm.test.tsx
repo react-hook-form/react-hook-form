@@ -848,47 +848,33 @@ describe('useForm', () => {
           },
         };
 
-        expect(resolver).toHaveBeenCalledWith(
-          defaultValues,
-          {
-            criteriaMode: undefined,
-            fields,
-            names: ['test.sub'],
-          },
-          undefined,
-        );
+        expect(resolver).toHaveBeenCalledWith(defaultValues, undefined, {
+          criteriaMode: undefined,
+          fields,
+          names: ['test.sub'],
+        });
 
         // `trigger` called to validate all fields
         await act(async () => {
           result.current.trigger();
         });
 
-        expect(resolver).toHaveBeenNthCalledWith(
-          2,
-          defaultValues,
-          {
-            criteriaMode: undefined,
-            fields,
-            names: [],
-          },
-          undefined,
-        );
+        expect(resolver).toHaveBeenNthCalledWith(2, defaultValues, undefined, {
+          criteriaMode: undefined,
+          fields,
+          names: [],
+        });
 
         // `trigger` called to validate fields
         await act(async () => {
           result.current.trigger(['test.sub', 'test1']);
         });
 
-        expect(resolver).toHaveBeenNthCalledWith(
-          3,
-          defaultValues,
-          {
-            criteriaMode: undefined,
-            fields,
-            names: ['test.sub', 'test1'],
-          },
-          undefined,
-        );
+        expect(resolver).toHaveBeenNthCalledWith(3, defaultValues, undefined, {
+          criteriaMode: undefined,
+          fields,
+          names: ['test.sub', 'test1'],
+        });
       });
     });
   });
@@ -930,6 +916,7 @@ describe('useForm', () => {
         {
           test: 'default',
         },
+        undefined,
         {
           criteriaMode: undefined,
           fields: {
@@ -946,7 +933,6 @@ describe('useForm', () => {
           },
           names: [],
         },
-        undefined,
       );
     });
 
@@ -974,21 +960,17 @@ describe('useForm', () => {
 
       result.current.trigger();
 
-      expect(resolver).toHaveBeenCalledWith(
-        { test: 'value' },
-        {
-          criteriaMode: undefined,
-          fields: {
-            test: {
-              name: 'test',
-              ref: { name: 'test', value: 'value' },
-              value: 'value',
-            },
+      expect(resolver).toHaveBeenCalledWith({ test: 'value' }, undefined, {
+        criteriaMode: undefined,
+        fields: {
+          test: {
+            name: 'test',
+            ref: { name: 'test', value: 'value' },
+            value: 'value',
           },
-          names: [],
         },
-        undefined,
-      );
+        names: [],
+      });
     });
   });
 

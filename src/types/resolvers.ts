@@ -28,6 +28,6 @@ export type Resolver<
   TContext extends object = object
 > = (
   values: UnpackNestedValue<TFieldValues>,
+  context: TContext | undefined,
   options: ResolverOptions<TFieldValues>,
-  context?: TContext,
 ) => Promise<ResolverResult<TFieldValues>> | ResolverResult<TFieldValues>;

@@ -3,6 +3,8 @@ import { useForm, useFieldArray, Controller } from 'react-hook-form';
 
 let renderCount = 0;
 
+type FormValues = { data: { name: string }[] };
+
 const UseFieldArray: React.FC = (props: any) => {
   const withoutFocus: boolean =
     props.match.params.mode === 'defaultAndWithoutFocus';
@@ -12,7 +14,7 @@ const UseFieldArray: React.FC = (props: any) => {
     register,
     formState: { isDirty, touchedFields, isValid, dirtyFields, errors },
     reset,
-  } = useForm<{ data: { name: string }[] }>({
+  } = useForm<FormValues>({
     ...(props.match.params.mode === 'default' || withoutFocus
       ? {
           defaultValues: {
@@ -28,8 +30,8 @@ const UseFieldArray: React.FC = (props: any) => {
       name: 'data',
     },
   );
-  const [data, setData] = React.useState([]);
-  const onSubmit = (data: any) => {
+  const [data, setData] = React.useState<FormValues>();
+  const onSubmit = (data: FormValues) => {
     setData(data);
   };
 
@@ -68,7 +70,7 @@ const UseFieldArray: React.FC = (props: any) => {
                 rules={{
                   required: 'This is required',
                 }}
-                name={`data.${index}.name` as any}
+                name={`data.${index}.name`}
                 defaultValue={data.name}
                 data-order={index}
               />

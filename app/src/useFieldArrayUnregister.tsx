@@ -5,6 +5,7 @@ import {
   useFieldArray,
   Controller,
   Control,
+  UseFormMethods,
 } from 'react-hook-form';
 
 let renderCount = 0;
@@ -17,28 +18,31 @@ const ConditionField = <T extends any[]>({
   control,
   index,
   fields,
+  unregister,
 }: {
   control: Control<FormInputs>;
+  unregister: UseFormMethods<FormInputs>['unregister'];
   index: number;
   fields: T;
 }) => {
-  const output = useWatch({
+  const output = useWatch<FormInputs>({
     name: 'data',
     control,
-    // @ts-ignore
     defaultValue: fields,
   });
 
   React.useEffect(() => {
     return () => {
-      control.unregister(`data[${index}].conditional` as any);
+      unregister(`data.${index}.conditional` as const, {
+        keepDirty: true,
+        keepTouched: true,
+      });
     };
-  }, [control, index]);
+  }, [unregister, index]);
 
-  // @ts-ignore
   return output[index]?.name === 'bill' ? (
     <input
-      {...control.register(`data.${index}.conditional` as any)}
+      {...control.register(`data.${index}.conditional`)}
       defaultValue={fields[index].conditional}
     />
   ) : null;
@@ -49,6 +53,7 @@ const UseFieldArrayUnregister: React.FC = () => {
     control,
     handleSubmit,
     register,
+    unregister,
     setValue,
     getValues,
     formState: { isDirty, touchedFields, dirtyFields, errors },
@@ -66,8 +71,7 @@ const UseFieldArrayUnregister: React.FC = () => {
     move,
     insert,
     remove,
-    // @ts-ignore
-  } = useFieldArray({
+  } = useFieldArray<FormInputs>({
     control,
     name: 'data',
   });
@@ -91,7 +95,7 @@ const UseFieldArrayUnregister: React.FC = () => {
                 id={`field${index}`}
                 defaultValue={data.name}
                 data-order={index}
-                {...register(`data.${index}.name` as any, {
+                {...register(`data.${index}.name`, {
                   required: 'This is required',
                 })}
               />
@@ -104,7 +108,7 @@ const UseFieldArrayUnregister: React.FC = () => {
                 rules={{
                   required: 'This is required',
                 }}
-                name={`data.${index}.name` as any}
+                name={`data.${index}.name`}
                 defaultValue={data.name}
                 data-order={index}
               />
@@ -113,7 +117,12 @@ const UseFieldArrayUnregister: React.FC = () => {
               <p id={`error${index}`}>{errors.data[index]!.name!.message}</p>
             )}
 
-            <ConditionField control={control} index={index} fields={fields} />
+            <ConditionField
+              control={control}
+              index={index}
+              fields={fields}
+              unregister={unregister}
+            />
 
             <button id={`delete${index}`} onClick={() => remove(index)}>
               Delete

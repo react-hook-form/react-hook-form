@@ -1,4 +1,4 @@
-import { Message } from './form';
+import { Message } from './errors';
 
 export type ValidationValue = boolean | number | string | RegExp;
 
