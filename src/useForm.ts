@@ -812,7 +812,7 @@ export function useForm<
     updateIsValid();
   };
 
-  function updateValueAndGetDefault(name: InternalFieldName) {
+  const updateValueAndGetDefault = (name: InternalFieldName) => {
     let defaultValue;
     const isFieldArray = isNameInFieldArray(fieldArrayNamesRef.current, name);
     const field = get(fieldsRef.current, name) as Field;
@@ -832,13 +832,13 @@ export function useForm<
     }
 
     return defaultValue;
-  }
+  };
 
-  function registerFieldRef(
+  const registerFieldRef = (
     name: InternalFieldName,
     ref: HTMLInputElement,
     options?: RegisterOptions,
-  ): ((name: InternalFieldName) => void) | void {
+  ): ((name: InternalFieldName) => void) | void => {
     let field = get(fieldsRef.current, name) as Field;
 
     if (!field) {
@@ -908,7 +908,7 @@ export function useForm<
         });
       }
     }
-  }
+  };
 
   const register: UseFormRegister<TFieldValues> = React.useCallback(
     (name, options) => {
