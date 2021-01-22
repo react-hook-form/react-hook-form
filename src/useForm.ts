@@ -31,6 +31,7 @@ import isNullOrUndefined from './utils/isNullOrUndefined';
 import isRadioOrCheckboxFunction from './utils/isRadioOrCheckbox';
 import isWeb from './utils/isWeb';
 import isHTMLElement from './utils/isHTMLElement';
+import getFields from './logic/getFields';
 import { EVENTS, UNDEFINED, VALIDATION_MODE } from './constants';
 import {
   UseFormMethods,
@@ -352,21 +353,14 @@ export function useForm<
       names: InternalFieldName[],
       currentNames: FieldName<TFieldValues>[] = [],
     ) => {
-      const currentFields: Field['__field'][] = [];
-      for (const name of currentNames) {
-        const field = get(fieldsRef.current, name);
-        if (field) {
-          currentFields.push(field.__field);
-        }
-      }
-
       const { errors } = await resolverRef.current!(
         getValues(),
-        contextRef.current,
         {
           criteriaMode,
-          fields: currentFields.length ? currentFields : undefined,
+          names: currentNames,
+          fields: getFields(fieldsNamesRef.current, fieldsRef.current),
         },
+        contextRef.current,
       );
 
       for (const name of names) {
@@ -605,8 +599,12 @@ export function useForm<
         if (resolverRef.current) {
           const { errors } = await resolverRef.current(
             getValues(),
+            {
+              criteriaMode,
+              fields: getFields(fieldsNamesRef.current, fieldsRef.current),
+              names: [name as FieldName<TFieldValues>],
+            },
             contextRef.current,
-            { criteriaMode, fields: [field.__field] },
           );
           const previousFormIsValid = formStateRef.current.isValid;
           error = get(errors, name);
@@ -678,8 +676,11 @@ export function useForm<
             ...getValues(),
             ...values,
           },
+          {
+            criteriaMode,
+            fields: getFields(fieldsNamesRef.current, fieldsRef.current),
+          },
           contextRef.current,
-          { criteriaMode },
         );
         const isValid = isEmptyObject(errors);
 
@@ -983,8 +984,11 @@ export function useForm<
         if (resolverRef.current) {
           const { errors, values } = await resolverRef.current(
             fieldValues,
+            {
+              criteriaMode,
+              fields: getFields(fieldsNamesRef.current, fieldsRef.current),
+            },
             contextRef.current,
-            { criteriaMode },
           );
           formStateRef.current.errors = errors;
           fieldValues = values;

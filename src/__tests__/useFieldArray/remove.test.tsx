@@ -943,8 +943,8 @@ describe('remove', () => {
         {
           test: [],
         },
+        { criteriaMode: undefined, fields: {} },
         undefined,
-        { criteriaMode: undefined },
       );
     });
 

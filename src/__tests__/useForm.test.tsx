@@ -798,39 +798,12 @@ describe('useForm', () => {
           });
         });
 
-        expect(resolver.mock.calls).toMatchInlineSnapshot(`
-          Array [
-            Array [
-              Object {
-                "test": "test",
-              },
-              undefined,
-              Object {
-                "criteriaMode": undefined,
-                "fields": Array [
-                  Object {
-                    "name": "test",
-                    "ref": <input
-                      name="test"
-                      type="text"
-                    />,
-                    "value": "test",
-                  },
-                ],
-              },
-            ],
-          ]
-        `);
+        expect(resolver.mock.calls).toMatchSnapshot();
 
         await actComponent(async () => {
           await fireEvent.click(screen.getByText(/button/i));
         });
-        expect(resolver).toHaveBeenNthCalledWith(
-          2,
-          { test: 'test' },
-          undefined,
-          { criteriaMode: undefined },
-        );
+        expect(resolver.mock.calls[1]).toMatchSnapshot();
       });
 
       it('should call the resolver with the field being validated when `trigger` is called', async () => {
@@ -857,47 +830,65 @@ describe('useForm', () => {
           result.current.trigger('test.sub');
         });
 
-        expect(resolver).toHaveBeenCalledWith(defaultValues, undefined, {
-          criteriaMode: undefined,
-          fields: [
-            {
+        const fields = {
+          test: {
+            sub: {
               name: 'test.sub',
               ref: { name: 'test.sub', value: 'test' },
               value: 'test',
             },
-          ],
-        });
+          },
+          test1: {
+            name: 'test1',
+            ref: {
+              name: 'test1',
+              value: 'test1',
+            },
+            value: 'test1',
+          },
+        };
 
-        // `trigger` to validate all field
+        expect(resolver).toHaveBeenCalledWith(
+          defaultValues,
+          {
+            criteriaMode: undefined,
+            fields,
+            names: ['test.sub'],
+          },
+          undefined,
+        );
+
+        // `trigger` called to validate all fields
         await act(async () => {
           result.current.trigger();
         });
 
-        expect(resolver).toHaveBeenNthCalledWith(2, defaultValues, undefined, {
-          criteriaMode: undefined,
-          field: undefined,
-        });
+        expect(resolver).toHaveBeenNthCalledWith(
+          2,
+          defaultValues,
+          {
+            criteriaMode: undefined,
+            fields,
+            names: [],
+          },
+          undefined,
+        );
 
-        // `trigger` to validate all field
+        // `trigger` called to validate fields
         await act(async () => {
           result.current.trigger(['test.sub', 'test1']);
         });
 
-        expect(resolver).toHaveBeenNthCalledWith(3, defaultValues, undefined, {
-          criteriaMode: undefined,
-          fields: [
-            {
-              name: 'test.sub',
-              ref: { name: 'test.sub', value: 'test' },
-              value: 'test',
-            },
-            {
-              name: 'test1',
-              ref: { name: 'test1', value: 'test1' },
-              value: 'test1',
-            },
-          ],
-        });
+        expect(resolver).toHaveBeenNthCalledWith(
+          3,
+          defaultValues,
+          {
+            criteriaMode: undefined,
+            fields,
+            names: ['test.sub', 'test1'],
+          },
+          undefined,
+        );
       });
     });
   });
@@ -939,10 +930,23 @@ describe('useForm', () => {
         {
           test: 'default',
         },
-        undefined,
         {
           criteriaMode: undefined,
+          fields: {
+            test: {
+              name: 'test',
+              ref: {
+                target: {
+                  value: '',
+                },
+                value: 'default',
+              },
+              value: 'default',
+            },
+          },
+          names: [],
         },
+        undefined,
       );
     });
 
@@ -970,9 +974,21 @@ describe('useForm', () => {
 
       result.current.trigger();
 
-      expect(resolver).toHaveBeenCalledWith({ test: 'value' }, undefined, {
-        criteriaMode: undefined,
-      });
+      expect(resolver).toHaveBeenCalledWith(
+        { test: 'value' },
+        {
+          criteriaMode: undefined,
+          fields: {
+            test: {
+              name: 'test',
+              ref: { name: 'test', value: 'value' },
+              value: 'value',
+            },
+          },
+          names: [],
+        },
+        undefined,
+      );
     });
   });
 
