@@ -161,18 +161,56 @@ export type SetFieldValue<TFieldValues> =
   | null
   | boolean;
 
-export type RegisterMethods = {
+export type RegisterCallback = {
   onChange: HandleChange;
   onBlur: HandleChange;
   ref: React.Ref<any>;
   name: InternalFieldName;
 };
 
+export type UseFormRegister<TFieldValues extends FieldValues> = (
+  name: FieldPath<TFieldValues>,
+  options?: RegisterOptions,
+) => RegisterCallback;
+
+export type UseFormTrigger<TFieldValues extends FieldValues> = (
+  name?: FieldName<TFieldValues> | FieldName<TFieldValues>[],
+) => void;
+
+export type UseFormClearErrors<TFieldValues extends FieldValues> = (
+  name?: FieldName<TFieldValues> | FieldName<TFieldValues>[],
+) => void;
+
+export type UseFormSetValue<TFieldValues extends FieldValues> = (
+  name: FieldName<TFieldValues>,
+  value: SetFieldValue<TFieldValues>,
+  options?: SetValueConfig,
+) => void;
+
+export type UseFormSetError<TFieldValues extends FieldValues> = (
+  name: FieldName<TFieldValues>,
+  error: ErrorOption,
+) => void;
+
+export type UseFormUnregister<TFieldValues extends FieldValues> = (
+  name?: FieldPath<TFieldValues> | FieldPath<TFieldValues>[],
+  options?: Pick<KeepStateOptions, 'keepTouched' | 'keepDirty'>,
+) => void;
+
+export type UseFormHandleSubmit<TFieldValues extends FieldValues> = <
+  TSubmitFieldValues extends FieldValues = TFieldValues
+>(
+  onValid: SubmitHandler<TSubmitFieldValues>,
+  onInvalid?: SubmitErrorHandler<TFieldValues>,
+) => (e?: React.BaseSyntheticEvent) => Promise<void>;
+
+export type UseFormReset<TFieldValues extends FieldValues> = (
+  values?: DefaultValues<TFieldValues>,
+  keepStateOptions?: KeepStateOptions,
+) => void;
+
 type UseFormCommonMethods<TFieldValues extends FieldValues = FieldValues> = {
-  register: (
-    name: FieldPath<TFieldValues>,
-    options?: RegisterOptions,
-  ) => RegisterMethods;
+  register: UseFormRegister<TFieldValues>;
 };
 
 export type Control<TFieldValues extends FieldValues = FieldValues> = {
@@ -253,29 +291,14 @@ export type UseFormMethods<TFieldValues extends FieldValues = FieldValues> = {
       fieldNames: TName,
     ): FieldPathValues<TFieldValues, TName>;
   };
-  setError: (name: FieldName<TFieldValues>, error: ErrorOption) => void;
-  clearErrors: (
-    name?: FieldName<TFieldValues> | FieldName<TFieldValues>[],
-  ) => void;
-  setValue: (
-    name: FieldName<TFieldValues>,
-    value: SetFieldValue<TFieldValues>,
-    options?: SetValueConfig,
-  ) => void;
-  trigger: (name?: FieldName<TFieldValues> | FieldName<TFieldValues>[]) => void;
+  setError: UseFormSetError<TFieldValues>;
+  clearErrors: UseFormClearErrors<TFieldValues>;
+  setValue: UseFormSetValue<TFieldValues>;
+  trigger: UseFormTrigger<TFieldValues>;
   formState: FormState<TFieldValues>;
-  reset: (
-    values?: UnpackNestedValue<DeepPartial<TFieldValues>>,
-    keepStateOptions?: KeepStateOptions,
-  ) => void;
-  handleSubmit: <TSubmitFieldValues extends FieldValues = TFieldValues>(
-    onValid: SubmitHandler<TSubmitFieldValues>,
-    onInvalid?: SubmitErrorHandler<TFieldValues>,
-  ) => (e?: React.BaseSyntheticEvent) => Promise<void>;
-  unregister: (
-    name?: FieldPath<TFieldValues> | FieldPath<TFieldValues>[],
-    options?: Pick<KeepStateOptions, 'keepTouched' | 'keepDirty'>,
-  ) => void;
+  reset: UseFormReset<TFieldValues>;
+  handleSubmit: UseFormHandleSubmit<TFieldValues>;
+  unregister: UseFormUnregister<TFieldValues>;
   control: Control<TFieldValues>;
 } & UseFormCommonMethods<TFieldValues>;
 

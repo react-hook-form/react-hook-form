@@ -42,13 +42,10 @@ import {
   FieldRefs,
   UseFormProps,
   RegisterOptions,
-  SubmitHandler,
   ReadFormState,
   Ref,
   SetValueConfig,
-  ErrorOption,
   FormState,
-  SubmitErrorHandler,
   FieldNamesMarkedBoolean,
   DeepPartial,
   InternalNameSet,
@@ -56,13 +53,21 @@ import {
   FieldError,
   SetFieldValue,
   FieldArrayDefaultValues,
-  RegisterMethods,
+  RegisterCallback,
   FieldPath,
   WatchObserver,
   FieldPathValue,
   FieldPathValues,
   KeepStateOptions,
   EventType,
+  UseFormTrigger,
+  UseFormSetValue,
+  UseFormUnregister,
+  UseFormClearErrors,
+  UseFormSetError,
+  UseFormRegister,
+  UseFormHandleSubmit,
+  UseFormReset,
 } from './types';
 
 const isWindowUndefined = typeof window === UNDEFINED;
@@ -160,7 +165,7 @@ export function useForm<
   const shouldRenderBaseOnError = React.useCallback(
     (
       name: InternalFieldName,
-      error: FieldError | undefined,
+      error?: FieldError,
       shouldRender: boolean | null = false,
       state: {
         dirty?: FieldNamesMarkedBoolean<TFieldValues>;
@@ -367,9 +372,9 @@ export function useForm<
     [shouldRenderBaseOnError, isValidateAllFieldCriteria],
   );
 
-  const validateForm = async (fieldsRef: React.MutableRefObject<FieldRefs>) => {
-    for (const name in fieldsRef.current) {
-      const field = fieldsRef.current[name];
+  const validateForm = async (fieldsRef: FieldRefs) => {
+    for (const name in fieldsRef) {
+      const field = fieldsRef[name];
 
       if (field) {
         const { __field, ...current } = field;
@@ -393,15 +398,13 @@ export function useForm<
           }
         }
 
-        if (current) {
-          await validateForm({ current });
-        }
+        current && (await validateForm(current));
       }
     }
   };
 
-  const trigger = React.useCallback(
-    async (name?: FieldName<TFieldValues> | FieldName<TFieldValues>[]) => {
+  const trigger: UseFormTrigger<TFieldValues> = React.useCallback(
+    async (name) => {
       const fields = isUndefined(name)
         ? Object.keys(fieldsRef.current)
         : Array.isArray(name)
@@ -419,7 +422,7 @@ export function useForm<
         );
       } else {
         isUndefined(name)
-          ? await validateForm(fieldsRef)
+          ? await validateForm(fieldsRef.current)
           : await Promise.all(
               fields.map(async (data) => await executeValidation(data, null)),
             );
@@ -510,15 +513,11 @@ export function useForm<
     watchFieldsRef.current.has(name) ||
     watchFieldsRef.current.has((name.match(/\w+/) || [])[0]);
 
-  function setValue(
-    name: FieldName<TFieldValues>,
-    value: SetFieldValue<TFieldValues>,
-    options?: SetValueConfig,
-  ): void {
+  const setValue: UseFormSetValue<TFieldValues> = (name, value, options) => {
     setInternalValue(name, value, options || {});
     isFieldWatched(name) && formStateSubjectRef.current.next({});
     watchSubjectRef.current.next({ name, value });
-  }
+  };
 
   const handleChange = React.useCallback(
     async ({
@@ -675,9 +674,7 @@ export function useForm<
     [isValidateAllFieldCriteria],
   );
 
-  function clearErrors(
-    name?: FieldName<TFieldValues> | FieldName<TFieldValues>[],
-  ): void {
+  const clearErrors: UseFormClearErrors<TFieldValues> = (name) => {
     name &&
       (Array.isArray(name) ? name : [name]).forEach((inputName) =>
         unset(formStateRef.current.errors, inputName),
@@ -686,9 +683,9 @@ export function useForm<
     formStateSubjectRef.current.next({
       errors: name ? formStateRef.current.errors : {},
     });
-  }
+  };
 
-  function setError(name: FieldName<TFieldValues>, error: ErrorOption) {
+  const setError: UseFormSetError<TFieldValues> = (name, error) => {
     const ref = ((get(fieldsRef.current, name) as Field) || { __field: {} })
       .__field.ref;
 
@@ -703,7 +700,7 @@ export function useForm<
     });
 
     error.shouldFocus && ref && ref.focus && ref.focus();
-  }
+  };
 
   const watchInternal = React.useCallback(
     <T>(
@@ -776,10 +773,7 @@ export function useForm<
     }
   }
 
-  function unregister(
-    name?: FieldPath<TFieldValues> | FieldPath<TFieldValues>[],
-    options?: Pick<KeepStateOptions, 'keepTouched' | 'keepDirty'>,
-  ): void {
+  const unregister: UseFormUnregister<TFieldValues> = (name, options) => {
     for (const inputName of name
       ? Array.isArray(name)
         ? name
@@ -816,7 +810,7 @@ export function useForm<
     });
 
     updateIsValid();
-  }
+  };
 
   function updateValueAndGetDefault(name: InternalFieldName) {
     let defaultValue;
@@ -916,11 +910,8 @@ export function useForm<
     }
   }
 
-  const register = React.useCallback(
-    <Path extends FieldPath<TFieldValues>>(
-      name: Path,
-      options?: RegisterOptions,
-    ): RegisterMethods => {
+  const register: UseFormRegister<TFieldValues> = React.useCallback(
+    (name, options) => {
       if (process.env.NODE_ENV !== 'production') {
         if (isUndefined(name)) {
           throw new Error(
@@ -954,16 +945,13 @@ export function useForm<
             ref: (ref: HTMLInputElement | null) =>
               ref && registerFieldRef(name, ref, options),
           }
-        : ({} as RegisterMethods);
+        : ({} as RegisterCallback);
     },
     [defaultValuesRef.current],
   );
 
-  const handleSubmit = React.useCallback(
-    <TSubmitFieldValues extends FieldValues = TFieldValues>(
-      onValid: SubmitHandler<TSubmitFieldValues>,
-      onInvalid?: SubmitErrorHandler<TFieldValues>,
-    ) => async (e?: React.BaseSyntheticEvent): Promise<void> => {
+  const handleSubmit: UseFormHandleSubmit<TFieldValues> = React.useCallback(
+    (onValid, onInvalid) => async (e) => {
       if (e && e.preventDefault) {
         e.preventDefault();
         e.persist();
@@ -985,7 +973,7 @@ export function useForm<
           formStateRef.current.errors = errors;
           fieldValues = values;
         } else {
-          await validateForm(fieldsRef);
+          await validateForm(fieldsRef.current);
         }
 
         if (
@@ -1054,10 +1042,7 @@ export function useForm<
     });
   };
 
-  const reset = (
-    values?: DefaultValues<TFieldValues>,
-    keepStateOptions: KeepStateOptions = {},
-  ): void => {
+  const reset: UseFormReset<TFieldValues> = (values, keepStateOptions = {}) => {
     const updatedValues = values || defaultValuesRef.current;
 
     if (isWeb && !keepStateOptions.keepValues) {
