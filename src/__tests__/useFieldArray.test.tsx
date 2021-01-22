@@ -881,9 +881,9 @@ describe('useFieldArray', () => {
         control,
       }: {
         arrayIndex: number;
-        register: UseFormMethods['register'];
+        register: UseFormMethods<FormValues>['register'];
         arrayField: Partial<FieldValues>;
-        control: Control;
+        control: Control<FormValues>;
       }) => {
         const { fields, append, remove } = useFieldArray<FormValues>({
           name: `fieldArray.${arrayIndex}.nestedFieldArray` as const,
@@ -924,7 +924,7 @@ describe('useFieldArray', () => {
       };
 
       const Component = () => {
-        const { register, control } = useForm({});
+        const { register, control } = useForm<FormValues>();
         const { fields, append } = useFieldArray({
           name: 'fieldArray',
           control,

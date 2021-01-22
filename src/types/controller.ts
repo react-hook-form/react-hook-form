@@ -1,12 +1,5 @@
 import * as React from 'react';
-import {
-  FieldValues,
-  FieldName,
-  Control,
-  FieldPath,
-  InternalFieldName,
-  FieldError,
-} from './';
+import { FieldValues, FieldName, Control, FieldPath, FieldError } from './';
 import { RegisterOptions } from './validator';
 
 export type ControllerMeta = {
@@ -55,11 +48,3 @@ export type ControllerProps<TFieldValues extends FieldValues = FieldValues> = {
     meta: ControllerMeta;
   }) => React.ReactElement;
 } & UseControllerProps<TFieldValues>;
-
-export type ControllerEvent = {
-  type?: string;
-  target: {
-    value?: string;
-    name: InternalFieldName;
-  };
-};

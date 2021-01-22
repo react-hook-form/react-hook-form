@@ -1,7 +1,8 @@
 import { DeepMap, LiteralUnion } from './utils';
 import { FieldValues, InternalFieldName, Ref } from './fields';
-import { Message } from './form';
 import { ValidateResult, RegisterOptions } from './validator';
+
+export type Message = string;
 
 export type MultipleFieldErrors = {
   [K in keyof RegisterOptions]?: ValidateResult;
