@@ -141,7 +141,7 @@ describe('register', () => {
       await waitFor(() =>
         expect(callback).toHaveBeenCalledWith(
           {
-            test: type === 'checkbox' ? false : '',
+            test: type === 'checkbox' ? false : type === 'radio' ? null : '',
           },
           expect.any(Object),
         ),
