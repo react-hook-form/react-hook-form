@@ -30,13 +30,13 @@ export default function App() {
     <form onSubmit={onSubmit}>
       <div>
         <label>First Name</label>
-        <input name="firstName" ref={register} />
+        <input {...register('firstName')} />
         {errors?.firstName && <p>{errors.firstName.message}</p>}
       </div>
 
       <div>
         <label>Last Name</label>
-        <input name="lastName" ref={register} />
+        <input {...register('lastName')} />
       </div>
 
       <input type="submit" />

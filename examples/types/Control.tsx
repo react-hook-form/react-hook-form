@@ -24,11 +24,11 @@ export default function App() {
     <form onSubmit={onSubmit}>
       <div>
         <label>First Name</label>
-        <input ref={register} name="firstName" />
+        <input {...register('firstName')} />
       </div>
       <div>
         <label>Last Name</label>
-        <input ref={register} name="lastName" />
+        <input {...register('lastName')} />
       </div>
       <IsolateReRender control={control} />
 

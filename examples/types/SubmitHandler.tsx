@@ -16,17 +16,17 @@ export default function App() {
     <form onSubmit={handleSubmit(onSubmit)}>
       <div>
         <label>First Name</label>
-        <input name="firstName" ref={register} />
+        <input {...register('firstName')} />
       </div>
 
       <div>
         <label>Last Name</label>
-        <input name="lastName" ref={register} />
+        <input {...register('lastName')} />
       </div>
 
       <div>
         <label htmlFor="email">Email</label>
-        <input name="email" type="email" ref={register} />
+        <input type="email" {...register('email')} />
       </div>
 
       <input type="submit" />
