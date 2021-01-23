@@ -1089,7 +1089,7 @@ export function useForm<
           fieldArrayUpdatedValuesRef.current = state;
 
           if (readFormStateRef.current.isValid) {
-            const values = getFieldsValues(fieldsRef);
+            const values = getValues();
             set(values, state.name, state.fields);
             updateIsValid(values);
           }
@@ -1125,7 +1125,7 @@ export function useForm<
         defaultValuesRef,
         fieldArrayDefaultValuesRef,
       }),
-      [defaultValuesRef.current, watchInternal],
+      [],
     ),
     formState: getProxyFormState<TFieldValues>(
       isProxyEnabled,
@@ -1134,10 +1134,10 @@ export function useForm<
     ),
     trigger,
     register,
+    handleSubmit,
     watch: React.useCallback(watch, []),
     setValue: React.useCallback(setValue, [setInternalValue, trigger]),
     getValues: React.useCallback(getValues, []),
-    handleSubmit,
     reset: React.useCallback(reset, []),
     clearErrors: React.useCallback(clearErrors, []),
     unregister: React.useCallback(unregister, []),

@@ -81,8 +81,8 @@ export function useController<TFieldValues extends FieldValues = FieldValues>({
   return {
     field: {
       onChange: (event: any) => {
-        setInputStateValue(getControllerValue(event));
         const value = getControllerValue(event);
+        setInputStateValue(value);
 
         onChange({
           target: {
