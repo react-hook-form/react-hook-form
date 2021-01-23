@@ -10,15 +10,11 @@ const getFieldsValues = (
     const field = fieldsRef.current[name];
 
     if (field) {
-      const { __field, ...current } = field;
+      const { _f, ...current } = field;
       set(
         output,
         name,
-        __field && !__field.ref.disabled
-          ? __field.value
-          : Array.isArray(field)
-          ? []
-          : {},
+        _f && !_f.ref.disabled ? _f.value : Array.isArray(field) ? [] : {},
       );
 
       if (current) {

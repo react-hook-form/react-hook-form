@@ -223,15 +223,15 @@ export function useForm<
 
   const setFieldValue = React.useCallback(
     (name: InternalFieldName, rawValue: SetFieldValue<TFieldValues>) => {
-      const { __field } = get(fieldsRef.current, name) as Field;
+      const { _f } = get(fieldsRef.current, name) as Field;
 
-      if (__field) {
-        const { ref, refs } = __field;
+      if (_f) {
+        const { ref, refs } = _f;
         const value =
           isWeb && isHTMLElement(ref) && isNullOrUndefined(rawValue)
             ? ''
             : rawValue;
-        __field.value = rawValue;
+        _f.value = rawValue;
 
         if (isRadioInput(ref)) {
           (refs || []).forEach(
@@ -372,24 +372,24 @@ export function useForm<
       const field = fieldsRef[name];
 
       if (field) {
-        const { __field, ...current } = field;
+        const { _f, ...current } = field;
 
-        if (__field) {
+        if (_f) {
           const fieldError = await validateField(
             field,
             isValidateAllFieldCriteria,
           );
 
-          if (fieldError[field.__field.name]) {
+          if (fieldError[field._f.name]) {
             set(
               formStateRef.current.errors,
-              field.__field.name,
-              fieldError[field.__field.name],
+              field._f.name,
+              fieldError[field._f.name],
             );
-            unset(validFieldsRef.current, field.__field.name);
-          } else if (get(fieldsWithValidationRef.current, field.__field.name)) {
-            set(validFieldsRef.current, field.__field.name, true);
-            unset(formStateRef.current.errors, field.__field.name);
+            unset(validFieldsRef.current, field._f.name);
+          } else if (get(fieldsWithValidationRef.current, field._f.name)) {
+            set(validFieldsRef.current, field._f.name, true);
+            unset(formStateRef.current.errors, field._f.name);
           }
         }
 
@@ -460,7 +460,7 @@ export function useForm<
     ) => {
       const field = get(fieldsRef.current, name);
 
-      if (field && field.__field) {
+      if (field && field._f) {
         setFieldValue(name, value);
         options.shouldDirty && updateAndGetDirtyState(name);
         options.shouldValidate && trigger(name as FieldName<TFieldValues>);
@@ -537,7 +537,7 @@ export function useForm<
           !isBlurEvent && isFieldWatched(name as FieldName<TFieldValues>);
 
         if (!isUndefined(inputValue)) {
-          field.__field.value = inputValue;
+          field._f.value = inputValue;
         }
 
         const state = updateAndGetDirtyState(name, false);
@@ -674,8 +674,7 @@ export function useForm<
   };
 
   const setError: UseFormSetError<TFieldValues> = (name, error) => {
-    const ref = ((get(fieldsRef.current, name) as Field) || { __field: {} })
-      .__field.ref;
+    const ref = ((get(fieldsRef.current, name) as Field) || { _f: {} })._f.ref;
 
     set(formStateRef.current.errors, name, {
       ...error,
@@ -803,12 +802,11 @@ export function useForm<
 
     if (
       field &&
-      (!isEmptyObject(defaultValuesRef.current) ||
-        !isUndefined(field.__field.value))
+      (!isEmptyObject(defaultValuesRef.current) || !isUndefined(field._f.value))
     ) {
-      defaultValue = isUndefined(field.__field.value)
+      defaultValue = isUndefined(field._f.value)
         ? get(defaultValuesRef.current, name)
-        : field.__field.value;
+        : field._f.value;
 
       if (!isUndefined(defaultValue) && !isFieldArray) {
         setFieldValue(name, defaultValue);
@@ -830,22 +828,22 @@ export function useForm<
 
       if (
         (isRadioOrCheckbox
-          ? Array.isArray(field.__field.refs) &&
-            compact(field.__field.refs).find(
+          ? Array.isArray(field._f.refs) &&
+            compact(field._f.refs).find(
               (option) => ref.value === option.value && option === ref,
             )
-          : ref === field.__field.ref) ||
+          : ref === field._f.ref) ||
         !field
       ) {
         return;
       }
 
       field = {
-        __field: isRadioOrCheckbox
+        _f: isRadioOrCheckbox
           ? {
-              ...field.__field,
+              ...field._f,
               refs: [
-                ...compact(field.__field.refs || []).filter(
+                ...compact(field._f.refs || []).filter(
                   (ref) => isHTMLElement(ref) && document.contains(ref),
                 ),
                 ref,
@@ -853,7 +851,7 @@ export function useForm<
               ref: { type: ref.type, name },
             }
           : {
-              ...field.__field,
+              ...field._f,
               ref,
             },
       };
@@ -864,10 +862,10 @@ export function useForm<
 
       if (
         isRadioOrCheckbox && Array.isArray(defaultValue)
-          ? !deepEqual(get(fieldsRef.current, name).__field.value, defaultValue)
+          ? !deepEqual(get(fieldsRef.current, name)._f.value, defaultValue)
           : true
       ) {
-        get(fieldsRef.current, name).__field.value = getFieldValue(
+        get(fieldsRef.current, name)._f.value = getFieldValue(
           get(fieldsRef.current, name),
         );
       }
@@ -903,11 +901,11 @@ export function useForm<
       }
 
       set(fieldsRef.current, name, {
-        __field: {
+        _f: {
           ...(get(fieldsRef.current, name)
             ? {
-                ref: get(fieldsRef.current, name).__field.ref,
-                ...get(fieldsRef.current, name).__field,
+                ref: get(fieldsRef.current, name)._f.ref,
+                ...get(fieldsRef.current, name)._f,
               }
             : { ref: { name } }),
           name,
@@ -1028,8 +1026,8 @@ export function useForm<
 
     if (isWeb && !keepStateOptions.keepValues) {
       for (const field of Object.values(fieldsRef.current)) {
-        if (field && field.__field) {
-          const { ref, refs } = field.__field;
+        if (field && field._f) {
+          const { ref, refs } = field._f;
           const inputRef = Array.isArray(refs) ? refs[0] : ref;
 
           if (isHTMLElement(inputRef)) {

@@ -11,8 +11,8 @@ export default function getFieldValue(
   field?: Field,
   excludeDisabled?: boolean,
 ) {
-  if (field && field.__field) {
-    const { ref, valueAsNumber, valueAsDate, setValueAs } = field.__field;
+  if (field && field._f) {
+    const { ref, valueAsNumber, valueAsDate, setValueAs } = field._f;
 
     if (ref.disabled && excludeDisabled) {
       return;
@@ -23,7 +23,7 @@ export default function getFieldValue(
     }
 
     if (isRadioInput(ref)) {
-      return getRadioValue(field.__field.refs).value;
+      return getRadioValue(field._f.refs).value;
     }
 
     if (isMultipleSelect(ref)) {
@@ -31,7 +31,7 @@ export default function getFieldValue(
     }
 
     if (isCheckBox(ref)) {
-      return getCheckboxValue(field.__field.refs).value;
+      return getCheckboxValue(field._f.refs).value;
     }
 
     return valueAsNumber

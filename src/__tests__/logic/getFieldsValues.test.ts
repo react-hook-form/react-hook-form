@@ -6,14 +6,14 @@ describe('getFieldsValues', () => {
       getFieldsValues({
         current: {
           test: {
-            __field: {
+            _f: {
               name: 'test',
               ref: { name: 'test' },
               value: 'test',
             },
           },
           test1: {
-            __field: {
+            _f: {
               name: 'test1',
               ref: { name: 'test1' },
               value: 'test',
@@ -32,21 +32,21 @@ describe('getFieldsValues', () => {
       getFieldsValues({
         current: {
           test: {
-            __field: {
+            _f: {
               name: 'test',
               ref: { name: 'test' },
               value: 'test',
             },
           },
           tex: {
-            __field: {
+            _f: {
               name: 'test1',
               ref: { name: 'test1' },
               value: 'test',
             },
           },
           tex123: {
-            __field: {
+            _f: {
               name: 'test123',
               ref: { name: 'test123' },
               value: 'test',
@@ -66,28 +66,28 @@ describe('getFieldsValues', () => {
       getFieldsValues({
         current: {
           test: {
-            __field: {
+            _f: {
               name: 'test',
               ref: { name: 'test' },
               value: 'test',
             },
           },
           tex: {
-            __field: {
+            _f: {
               name: 'tex',
               ref: { name: 'tex' },
               value: 'test',
             },
           },
           whattest123: {
-            __field: {
+            _f: {
               name: 'whattest123',
               ref: { name: 'test123' },
               value: 'test',
             },
           },
           156: {
-            __field: {
+            _f: {
               name: '156',
               ref: { name: 'test1456s' },
               value: 'test',
@@ -108,14 +108,14 @@ describe('getFieldsValues', () => {
       getFieldsValues({
         current: {
           test: {
-            __field: {
+            _f: {
               name: 'test',
               ref: { name: 'test' },
               value: 'test',
             },
           },
           test1: {
-            __field: {
+            _f: {
               name: 'test1',
               ref: {
                 name: 'test1',
@@ -136,14 +136,14 @@ describe('getFieldsValues', () => {
       getFieldsValues({
         current: {
           ['test.test']: {
-            __field: {
+            _f: {
               name: 'test',
               ref: { name: 'test' },
               value: 'test',
             },
           },
           ['test.test1']: {
-            __field: {
+            _f: {
               name: 'test',
               ref: { name: 'test' },
               value: 'test',
@@ -166,14 +166,14 @@ describe('getFieldsValues', () => {
           test2: {
             // @ts-ignore
             test: {
-              __field: {
+              _f: {
                 name: 'test.test',
                 ref: { name: 'test.test' },
                 value: 'test',
               },
             },
             test1: {
-              __field: {
+              _f: {
                 name: 'test.test1',
                 ref: { name: 'test.test1' },
                 value: 'test',
@@ -197,14 +197,14 @@ describe('getFieldsValues', () => {
           // @ts-ignore
           test2: [
             {
-              __field: {
+              _f: {
                 name: 'test.test',
                 ref: { name: 'test.test' },
                 value: 'test',
               },
             },
             {
-              __field: {
+              _f: {
                 name: 'test.test1',
                 ref: { name: 'test.test1' },
                 value: 'test',
