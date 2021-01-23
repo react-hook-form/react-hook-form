@@ -94,7 +94,6 @@ export type FormStateProxy<TFieldValues extends FieldValues = FieldValues> = {
   isValidating: boolean;
   dirtyFields: FieldNamesMarkedBoolean<TFieldValues>;
   touchedFields: FieldNamesMarkedBoolean<TFieldValues>;
-  isSubmitting: boolean;
   errors: boolean;
   isValid: boolean;
 };

@@ -154,6 +154,6 @@ describe('useFormState', () => {
       }),
     );
 
-    cy.get('#renderCount').contains('2');
+    cy.get('#renderCount').contains('4');
   });
 });
