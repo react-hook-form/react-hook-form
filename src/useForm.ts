@@ -399,39 +399,34 @@ export function useForm<
     }
   };
 
-  const trigger: UseFormTrigger<TFieldValues> = React.useCallback(
-    async (name) => {
-      const fields = isUndefined(name)
-        ? Object.keys(fieldsRef.current)
-        : Array.isArray(name)
-        ? name
-        : [name];
-      let isValid;
+  const trigger: UseFormTrigger<TFieldValues> = async (name) => {
+    const fields = isUndefined(name)
+      ? Object.keys(fieldsRef.current)
+      : Array.isArray(name)
+      ? name
+      : [name];
+    let isValid;
 
-      formStateSubjectRef.current.next({
-        isValidating: true,
-      });
+    formStateSubjectRef.current.next({
+      isValidating: true,
+    });
 
-      if (resolver) {
-        isValid = isEmptyObject(
-          await executeSchemaOrResolverValidation(fields),
-        );
-      } else {
-        isUndefined(name)
-          ? await validateForm(fieldsRef.current)
-          : await Promise.all(
-              fields.map(async (data) => await executeValidation(data, null)),
-            );
-      }
+    if (resolver) {
+      isValid = isEmptyObject(await executeSchemaOrResolverValidation(fields));
+    } else {
+      isUndefined(name)
+        ? await validateForm(fieldsRef.current)
+        : await Promise.all(
+            fields.map(async (data) => await executeValidation(data, null)),
+          );
+    }
 
-      formStateSubjectRef.current.next({
-        errors: formStateRef.current.errors,
-        isValidating: false,
-        isValid: resolver ? isEmptyObject(isValid) : getIsValid(),
-      });
-    },
-    [executeSchemaOrResolverValidation, executeValidation],
-  );
+    formStateSubjectRef.current.next({
+      errors: formStateRef.current.errors,
+      isValidating: false,
+      isValid: resolver ? isEmptyObject(isValid) : getIsValid(),
+    });
+  };
 
   const setInternalValues = React.useCallback(
     (
@@ -1125,15 +1120,18 @@ export function useForm<
         defaultValuesRef,
         fieldArrayDefaultValuesRef,
       }),
-      [defaultValuesRef.current, watchInternal],
+      [],
     ),
     formState: getProxyFormState<TFieldValues>(
       isProxyEnabled,
       formState,
       readFormStateRef,
     ),
-    trigger,
     register,
+    trigger: React.useCallback(trigger, [
+      executeSchemaOrResolverValidation,
+      executeValidation,
+    ]),
     watch: React.useCallback(watch, []),
     setValue: React.useCallback(setValue, [setInternalValue, trigger]),
     getValues: React.useCallback(getValues, []),
