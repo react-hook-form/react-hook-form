@@ -663,11 +663,10 @@ export function useForm<
   );
 
   const clearErrors: UseFormClearErrors<TFieldValues> = (name) => {
-    if (name) {
-      for (const inputName of Array.isArray(name) ? name : [name]) {
-        unset(formStateRef.current.errors, inputName);
-      }
-    }
+    name &&
+      (Array.isArray(name) ? name : [name]).forEach((inputName) =>
+        unset(formStateRef.current.errors, inputName),
+      );
 
     formStateSubjectRef.current.next({
       errors: name ? formStateRef.current.errors : {},
