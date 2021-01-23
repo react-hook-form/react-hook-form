@@ -25,6 +25,8 @@ import {
   FieldArray,
   InternalFieldName,
   FieldArrayMethodsOption,
+  FieldErrors,
+  FieldNamesMarkedBoolean,
 } from './types';
 
 export const useFieldArray = <
@@ -263,8 +265,7 @@ export const useFieldArray = <
         name as InternalFieldName,
         omitKey(updatedFormValues),
       ),
-      // @ts-ignore
-      errors: formStateRef.current.errors,
+      errors: formStateRef.current.errors as FieldErrors<TFieldValues>,
       isValid: formStateRef.current.isValid,
     });
   };
@@ -287,8 +288,8 @@ export const useFieldArray = <
 
       formStateSubjectRef.current.next({
         isDirty: true,
-        // @ts-ignore
-        dirtyFields: formStateRef.current.dirtyFields,
+        dirtyFields: formStateRef.current
+          .dirtyFields as FieldNamesMarkedBoolean<TFieldValues>,
       });
     }
 
