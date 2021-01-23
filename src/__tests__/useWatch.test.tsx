@@ -21,18 +21,13 @@ const mockGenerateId = () => {
   jest.spyOn(generateId, 'default').mockImplementation(() => (id++).toString());
 };
 
-let nodeEnv: string | undefined;
-
 describe('useWatch', () => {
   beforeEach(() => {
     mockGenerateId();
-    nodeEnv = process.env.NODE_ENV;
-    process.env.NODE_ENV = 'production';
   });
 
   afterEach(() => {
     (generateId.default as jest.Mock<any>).mockRestore();
-    process.env.NODE_ENV = nodeEnv;
   });
 
   describe('initialize', () => {
@@ -145,51 +140,6 @@ describe('useWatch', () => {
         wrapper: Provider,
       });
       expect(result.error).toBeUndefined();
-    });
-  });
-
-  describe('error handling', () => {
-    it('should output error message when name is empty string in development mode', () => {
-      jest.spyOn(console, 'warn').mockImplementation(() => {});
-      process.env.NODE_ENV = 'development';
-
-      renderHook(() => {
-        const { control } = useForm();
-        useWatch({ control, name: '' });
-      });
-
-      expect(console.warn).toBeCalledTimes(1);
-    });
-
-    it('should not output error message when name is empty string in production mode', () => {
-      jest.spyOn(console, 'warn').mockImplementation(() => {});
-
-      process.env.NODE_ENV = 'production';
-
-      renderHook(() => {
-        const { control } = useForm();
-        useWatch({ control, name: '' });
-      });
-
-      expect(console.warn).not.toBeCalled();
-    });
-
-    it('should throw custom error when control is not defined in development mode', () => {
-      process.env.NODE_ENV = 'development';
-
-      const { result } = renderHook(() => useWatch({ name: 'test' }));
-
-      expect(result.error.message).toBe(
-        '📋 useWatch is missing `control` prop. https://react-hook-form.com/api#useWatch',
-      );
-    });
-
-    it('should throw TypeError when control is not defined in production mode', () => {
-      process.env.NODE_ENV = 'production';
-
-      const { result } = renderHook(() => useWatch({ name: 'test' }));
-
-      expect(result.error.name).toBe(new TypeError().name);
     });
   });
 

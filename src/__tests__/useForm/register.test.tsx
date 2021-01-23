@@ -11,32 +11,7 @@ import {
 } from '@testing-library/react';
 import { VALIDATION_MODE } from '../../constants';
 
-let nodeEnv: string | undefined;
-
 describe('register', () => {
-  beforeEach(() => {
-    nodeEnv = process.env.NODE_ENV;
-    process.env.NODE_ENV = 'production';
-  });
-
-  afterEach(() => {
-    process.env.NODE_ENV = nodeEnv;
-  });
-
-  it('should return throw error when name is missing', () => {
-    process.env.NODE_ENV = 'development';
-    const { result } = renderHook(() => useForm<{ test: string }>());
-
-    // @ts-expect-error
-    const registerCallback = () => result.current.register();
-
-    expect(registerCallback).toThrow(
-      new Error(
-        '📋 `name` prop is missing during register: https://react-hook-form.com/api#register',
-      ),
-    );
-  });
-
   it('should support register passed to ref', async () => {
     const { result } = renderHook(() =>
       useForm<{ test: string }>({

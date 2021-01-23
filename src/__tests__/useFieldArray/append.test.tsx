@@ -6,17 +6,9 @@ import { VALIDATION_MODE } from '../../constants';
 import * as React from 'react';
 import { mockGenerateId } from '../useFieldArray.test';
 
-let nodeEnv: string | undefined;
-
 describe('append', () => {
   beforeEach(() => {
     mockGenerateId();
-    nodeEnv = process.env.NODE_ENV;
-    process.env.NODE_ENV = 'production';
-  });
-
-  afterEach(() => {
-    process.env.NODE_ENV = nodeEnv;
   });
 
   it('should append dirtyFields fields correctly', async () => {

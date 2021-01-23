@@ -327,13 +327,6 @@ export function useForm<
       name: InternalFieldName,
       skipReRender?: boolean | null,
     ): Promise<boolean> => {
-      if (process.env.NODE_ENV !== 'production') {
-        if (!get(fieldsRef.current, name)) {
-          console.warn('📋 Field is missing with `name` attribute: ', name);
-          return false;
-        }
-      }
-
       const error = (
         await validateField(
           get(fieldsRef.current, name) as Field,
@@ -912,14 +905,6 @@ export function useForm<
 
   const register: UseFormRegister<TFieldValues> = React.useCallback(
     (name, options) => {
-      if (process.env.NODE_ENV !== 'production') {
-        if (isUndefined(name)) {
-          throw new Error(
-            '📋 `name` prop is missing during register: https://react-hook-form.com/api#register',
-          );
-        }
-      }
-
       set(fieldsRef.current, name, {
         _f: {
           ...(get(fieldsRef.current, name)

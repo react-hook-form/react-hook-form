@@ -12,17 +12,9 @@ import * as React from 'react';
 import { VALIDATION_MODE } from '../../constants';
 import { mockGenerateId } from '../useFieldArray.test';
 
-let nodeEnv: string | undefined;
-
 describe('prepend', () => {
   beforeEach(() => {
     mockGenerateId();
-    nodeEnv = process.env.NODE_ENV;
-    process.env.NODE_ENV = 'production';
-  });
-
-  afterEach(() => {
-    process.env.NODE_ENV = nodeEnv;
   });
 
   it('should pre-append data into the fields', () => {
