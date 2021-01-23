@@ -426,7 +426,7 @@ export function useForm<
       formStateSubjectRef.current.next({
         errors: formStateRef.current.errors,
         isValidating: false,
-        isValid: resolver ? isEmptyObject(isValid) : getIsValid(),
+        isValid: resolver ? isValid : getIsValid(),
       });
     },
     [executeSchemaOrResolverValidation, executeValidation],
@@ -622,7 +622,7 @@ export function useForm<
   ): FieldPathValues<TFieldValues, TName>;
   function getValues(
     fieldNames?: FieldPath<TFieldValues> | FieldPath<TFieldValues>[],
-  ): unknown {
+  ) {
     const values = isMountedRef.current
       ? getFieldsValues(fieldsRef)
       : defaultValues;
@@ -663,10 +663,11 @@ export function useForm<
   );
 
   const clearErrors: UseFormClearErrors<TFieldValues> = (name) => {
-    name &&
-      (Array.isArray(name) ? name : [name]).forEach((inputName) =>
-        unset(formStateRef.current.errors, inputName),
-      );
+    if (name) {
+      for (const inputName of Array.isArray(name) ? name : [name]) {
+        unset(formStateRef.current.errors, inputName);
+      }
+    }
 
     formStateSubjectRef.current.next({
       errors: name ? formStateRef.current.errors : {},
