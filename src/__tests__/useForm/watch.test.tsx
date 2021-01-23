@@ -10,11 +10,6 @@ import isFunction from '../../utils/isFunction';
 import * as React from 'react';
 
 describe('watch', () => {
-  afterEach(() => {
-    jest.resetAllMocks();
-    jest.restoreAllMocks();
-  });
-
   it('should return undefined when input gets unregister', async () => {
     const Component = () => {
       const { register, watch, unregister } = useForm<{ test: string }>();

@@ -16,8 +16,6 @@ describe('append', () => {
   });
 
   afterEach(() => {
-    jest.resetAllMocks();
-    jest.restoreAllMocks();
     process.env.NODE_ENV = nodeEnv;
   });
 
@@ -397,7 +395,7 @@ describe('append', () => {
           test: [{ value: '1' }],
         },
         undefined,
-        false,
+        { criteriaMode: undefined, fields: {} },
       );
     });
 

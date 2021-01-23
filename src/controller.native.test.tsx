@@ -6,10 +6,6 @@ import { render, fireEvent, wait } from '@testing-library/react-native';
 import * as focusOnErrorField from './logic/focusFieldBy';
 
 describe('Controller with React Native', () => {
-  afterEach(() => {
-    jest.restoreAllMocks();
-  });
-
   it('should not occur error when invoked reset', async () => {
     const mockFocus = jest.spyOn(focusOnErrorField, 'default');
     const callback = jest.fn();

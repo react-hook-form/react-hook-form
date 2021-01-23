@@ -24,8 +24,6 @@ describe('remove', () => {
   });
 
   afterEach(() => {
-    jest.resetAllMocks();
-    jest.restoreAllMocks();
     process.env.NODE_ENV = nodeEnv;
   });
 
@@ -948,7 +946,7 @@ describe('remove', () => {
           test: [],
         },
         undefined,
-        false,
+        { criteriaMode: undefined, fields: {} },
       );
     });
 

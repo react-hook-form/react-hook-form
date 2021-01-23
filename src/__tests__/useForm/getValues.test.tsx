@@ -4,11 +4,6 @@ import { renderHook } from '@testing-library/react-hooks';
 import * as React from 'react';
 
 describe('getValues', () => {
-  afterEach(() => {
-    jest.resetAllMocks();
-    jest.restoreAllMocks();
-  });
-
   it('should return defaultValues before inputs mounted', () => {
     let values;
 

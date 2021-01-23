@@ -3,11 +3,6 @@ import { act, renderHook } from '@testing-library/react-hooks';
 import { useForm } from '../../useForm';
 
 describe('setError', () => {
-  afterEach(() => {
-    jest.resetAllMocks();
-    jest.restoreAllMocks();
-  });
-
   const tests: [string, ErrorOption, DeepMap<any, FieldError>][] = [
     [
       'should only set an error when it is not existed',

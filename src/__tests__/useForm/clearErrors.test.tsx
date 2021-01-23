@@ -9,11 +9,6 @@ import {
 import * as React from 'react';
 
 describe('clearErrors', () => {
-  afterEach(() => {
-    jest.resetAllMocks();
-    jest.restoreAllMocks();
-  });
-
   it('should remove error', () => {
     const { result } = renderHook(() => useForm<{ input: string }>());
     act(() => {

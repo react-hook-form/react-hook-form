@@ -22,8 +22,6 @@ describe('prepend', () => {
   });
 
   afterEach(() => {
-    jest.resetAllMocks();
-    jest.restoreAllMocks();
     process.env.NODE_ENV = nodeEnv;
   });
 
@@ -427,7 +425,7 @@ describe('prepend', () => {
           test: [{ value: '1' }],
         },
         undefined,
-        false,
+        { criteriaMode: undefined, fields: {} },
       );
     });
 

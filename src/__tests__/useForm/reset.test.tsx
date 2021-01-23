@@ -10,11 +10,6 @@ import {
 import { NestedValue, UseFormMethods } from '../../types';
 
 describe('reset', () => {
-  afterEach(() => {
-    jest.resetAllMocks();
-    jest.restoreAllMocks();
-  });
-
   it('should reset the form and re-render the form', async () => {
     const { result } = renderHook(() => useForm<{ test: string }>());
 
