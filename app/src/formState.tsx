@@ -30,7 +30,7 @@ const FormState = (props: {
     firstName: string;
     lastName: string;
     select: string;
-    radio: string;
+    radio: string | null;
     checkbox: boolean;
     ['checkbox-checked']: boolean;
   }>({
@@ -40,7 +40,7 @@ const FormState = (props: {
       lastName: '',
       select: '',
       checkbox: false,
-      radio: '',
+      radio: null,
       'checkbox-checked': true,
     },
   });

@@ -35,7 +35,9 @@ export default function getFieldValue(
     }
 
     return valueAsNumber
-      ? +ref.value
+      ? ref.value === ''
+        ? NaN
+        : +ref.value
       : valueAsDate
       ? (ref as HTMLInputElement).valueAsDate
       : setValueAs

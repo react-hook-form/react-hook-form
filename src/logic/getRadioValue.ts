@@ -1,11 +1,11 @@
 type RadioFieldResult = {
   isValid: boolean;
-  value: number | string;
+  value: number | string | null;
 };
 
 const defaultReturn: RadioFieldResult = {
   isValid: false,
-  value: '',
+  value: null,
 };
 
 export default (options?: HTMLInputElement[]): RadioFieldResult =>
