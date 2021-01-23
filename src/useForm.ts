@@ -150,7 +150,6 @@ export function useForm<
     dirtyFields: !isProxyEnabled,
     touchedFields: !isProxyEnabled || validationMode.isOnTouch,
     isValidating: !isProxyEnabled,
-    isSubmitting: !isProxyEnabled,
     isValid: !isProxyEnabled,
     errors: !isProxyEnabled,
   });
@@ -941,10 +940,9 @@ export function useForm<
       }
       let fieldValues = getFieldsValues(fieldsRef);
 
-      readFormStateRef.current.isSubmitting &&
-        formStateSubjectRef.current.next({
-          isSubmitting: true,
-        });
+      formStateSubjectRef.current.next({
+        isSubmitting: true,
+      });
 
       try {
         if (resolverRef.current) {
