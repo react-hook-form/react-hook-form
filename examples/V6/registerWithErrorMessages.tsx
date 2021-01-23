@@ -4,7 +4,7 @@ import { useForm } from 'react-hook-form';
 
 export default function App() {
   const { register, errors, handleSubmit } = useForm();
-  const onSubmit = (data) => {
+  const onSubmit = data => {
     alert(JSON.stringify(data));
   };
 
@@ -13,8 +13,9 @@ export default function App() {
       <form onSubmit={handleSubmit(onSubmit)}>
         <label htmlFor="firstName">First Name</label>
         <input
+          name="firstName"
           placeholder="Bill"
-          {...register('firstName', {
+          ref={register({
             required: 'this is a required',
             maxLength: {
               value: 2,
@@ -28,8 +29,9 @@ export default function App() {
 
         <label htmlFor="lastName">Last Name</label>
         <input
+          name="lastName"
           placeholder="Luo"
-          {...register('lastName', {
+          ref={register({
             required: 'this is required',
             minLength: {
               value: 2,
@@ -43,9 +45,10 @@ export default function App() {
 
         <label htmlFor="email">Email</label>
         <input
+          name="email"
           placeholder="bluebill1049@hotmail.com"
           type="text"
-          {...register('email', {
+          ref={register({
             required: 'this is required',
             pattern: {
               value: /^[a-zA-Z0-9.!#$%&’*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/,

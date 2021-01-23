@@ -4,7 +4,7 @@ import { useForm } from 'react-hook-form';
 
 export default function App() {
   const { register, handleSubmit, reset } = useForm();
-  const onSumbit = (data) => {
+  const onSumbit = data => {
     alert(JSON.stringify(data));
   };
 
@@ -22,10 +22,10 @@ export default function App() {
     <form onSubmit={handleSubmit(onSumbit)}>
       <h1>Async Set Form Values</h1>
       <label>First name</label>
-      <input {...register('firstName')} />
+      <input name="firstName" ref={register} />
 
       <label>Last name</label>
-      <input {...register('lastName')} />
+      <input name="lastName" ref={register} />
       <input type="submit" />
     </form>
   );

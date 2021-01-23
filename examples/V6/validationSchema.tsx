@@ -5,7 +5,11 @@ import * as yup from 'yup'; // you will have to install yup
 
 const SignupSchema = yup.object().shape({
   firstName: yup.string().required(),
-  age: yup.number().required().positive().integer(),
+  age: yup
+    .number()
+    .required()
+    .positive()
+    .integer(),
   website: yup.string().url(),
 });
 
@@ -13,7 +17,7 @@ export default function App() {
   const { register, handleSubmit, errors } = useForm({
     validationSchema: SignupSchema,
   });
-  const onSubmit = (data) => {
+  const onSubmit = data => {
     alert(JSON.stringify(data));
   };
 
@@ -22,25 +26,25 @@ export default function App() {
       <div>
         <label>Develop?</label>
         Yes
-        <input type="radio" {...register('test')} value="yes" />
+        <input type="radio" name="test" value="yes" ref={register} />
         No
-        <input type="radio" {...register('test')} value="no" />
+        <input type="radio" name="test" value="no" ref={register} />
       </div>
       <div>
         <label>First Name</label>
-        <input type="text" {...register('firstName')} />
+        <input type="text" name="firstName" ref={register} />
       </div>
       <div>
         <label>Last Name</label>
-        <input type="text" {...register('lastName')} />
+        <input type="text" name="lastName" ref={register} />
       </div>
       <div>
         <label>Age</label>
-        <input type="text" {...register('age')} />
+        <input type="text" name="age" ref={register} />
       </div>
       <div>
         <label>Website</label>
-        <input type="text" {...register('website')} />
+        <input type="text" name="website" ref={register} />
       </div>
 
       <div style={{ color: 'red' }}>

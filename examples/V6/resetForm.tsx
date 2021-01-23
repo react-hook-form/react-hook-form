@@ -15,23 +15,27 @@ export default function App() {
     <form onSubmit={handleSubmit(onSubmit)}>
       <div>
         <label>First name</label>
-        <input type="text" ref={register('First name', { required: true })} />
+        <input
+          type="text"
+          name="First name"
+          ref={register({ required: true })}
+        />
       </div>
       <div>
         <label>Last name</label>
-        <input type="text" {...register('Last name')} />
+        <input type="text" name="Last name" ref={register} />
       </div>
       <div>
         <label>Email</label>
-        <input type="text" {...register('"Email"')} />
+        <input type="text" name="Email" ref={register} />
       </div>
       <div>
         <label>Mobile number</label>
-        <input type="tel" {...register('Mobile number')} />
+        <input type="tel" name="Mobile number" ref={register} />
       </div>
       <div>
         <label>Title</label>
-        <select {...register('"Title"')}>
+        <select name="Title" ref={register}>
           <option value="Mr">Mr</option>
           <option value="Mrs">Mrs</option>
           <option value="Miss">Miss</option>
@@ -41,8 +45,8 @@ export default function App() {
 
       <div>
         <label>Are you a developer?</label>
-        <input type="radio" value="Yes" {...register('"developer"')} />
-        <input type="radio" value="No" {...register('"developer"')} />
+        <input name="developer" type="radio" value="Yes" ref={register} />
+        <input name="developer" type="radio" value="No" ref={register} />
       </div>
 
       <input type="submit" />
@@ -60,3 +64,5 @@ export default function App() {
     </form>
   );
 }
+
+ReactDOM.render(<Form />, rootElement);

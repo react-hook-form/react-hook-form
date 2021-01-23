@@ -6,7 +6,7 @@ export default function App() {
   const { register, errors, handleSubmit } = useForm({
     mode: 'onChange',
   });
-  const onSubmit = (data) => {
+  const onSubmit = data => {
     alert(JSON.stringify(data));
   };
 
@@ -16,8 +16,9 @@ export default function App() {
         <div>
           <label htmlFor="firstName">First Name</label>
           <input
+            name="firstName"
             placeholder="bill"
-            {...register('firstName', { required: true })}
+            ref={register({ required: true })}
           />
           {errors.firstName && 'This is required'}
         </div>
@@ -25,8 +26,9 @@ export default function App() {
         <div>
           <label htmlFor="lastName">Last Name</label>
           <input
+            name="lastName"
             placeholder="luo"
-            {...register('lastName', { required: true })}
+            ref={register({ required: true })}
           />
           {errors.lastName && 'This is required'}
         </div>
@@ -35,7 +37,7 @@ export default function App() {
           <label htmlFor="email" placeholder="bluebill1049@hotmail.com">
             Email
           </label>
-          <input {...register('email', { required: true })} />
+          <input name="email" ref={register({ required: true })} />
           {errors.email && 'This is required'}
         </div>
         <button type="submit">Submit</button>
