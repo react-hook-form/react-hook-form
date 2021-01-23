@@ -753,9 +753,9 @@ export function useForm<
       return watchSubjectRef.current.subscribe({
         next: (info) => fieldName(watchInternal(undefined, defaultValue), info),
       });
-    } else {
-      return watchInternal(fieldName as string | string[], defaultValue, true);
     }
+
+    return watchInternal(fieldName as string | string[], defaultValue, true);
   }
 
   const unregister: UseFormUnregister<TFieldValues> = (name, options) => {
