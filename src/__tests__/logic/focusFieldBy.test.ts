@@ -46,7 +46,7 @@ describe('focusFieldBy', () => {
               name: 'test',
             },
             refs: [
-              // @ts-expect-error
+              // @ts-expect-error mock actual radio input ref
               {
                 focus,
               },
