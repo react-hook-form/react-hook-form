@@ -31,6 +31,7 @@ import isNullOrUndefined from './utils/isNullOrUndefined';
 import isRadioOrCheckboxFunction from './utils/isRadioOrCheckbox';
 import isWeb from './utils/isWeb';
 import isHTMLElement from './utils/isHTMLElement';
+import getFields from './logic/getFields';
 import { EVENTS, UNDEFINED, VALIDATION_MODE } from './constants';
 import {
   UseFormMethods,
@@ -348,11 +349,18 @@ export function useForm<
   );
 
   const executeSchemaOrResolverValidation = React.useCallback(
-    async (names: InternalFieldName[]) => {
+    async (
+      names: InternalFieldName[],
+      currentNames: FieldName<TFieldValues>[] = [],
+    ) => {
       const { errors } = await resolverRef.current!(
         getValues(),
         contextRef.current,
-        isValidateAllFieldCriteria,
+        {
+          criteriaMode,
+          names: currentNames,
+          fields: getFields(fieldsNamesRef.current, fieldsRef.current),
+        },
       );
 
       for (const name of names) {
@@ -364,7 +372,7 @@ export function useForm<
 
       return errors;
     },
-    [shouldRenderBaseOnError, isValidateAllFieldCriteria],
+    [shouldRenderBaseOnError, criteriaMode],
   );
 
   const validateForm = async (fieldsRef: FieldRefs) => {
@@ -413,7 +421,12 @@ export function useForm<
 
       if (resolver) {
         isValid = isEmptyObject(
-          await executeSchemaOrResolverValidation(fields),
+          await executeSchemaOrResolverValidation(
+            fields,
+            isUndefined(name)
+              ? undefined
+              : (fields as FieldName<TFieldValues>[]),
+          ),
         );
       } else {
         isUndefined(name)
@@ -574,7 +587,11 @@ export function useForm<
           const { errors } = await resolverRef.current(
             getValues(),
             contextRef.current,
-            isValidateAllFieldCriteria,
+            {
+              criteriaMode,
+              fields: getFields(fieldsNamesRef.current, fieldsRef.current),
+              names: [name as FieldName<TFieldValues>],
+            },
           );
           const previousFormIsValid = formStateRef.current.isValid;
           error = get(errors, name);
@@ -647,7 +664,10 @@ export function useForm<
             ...values,
           },
           contextRef.current,
-          isValidateAllFieldCriteria,
+          {
+            criteriaMode,
+            fields: getFields(fieldsNamesRef.current, fieldsRef.current),
+          },
         );
         const isValid = isEmptyObject(errors);
 
@@ -659,7 +679,7 @@ export function useForm<
         getIsValid();
       }
     },
-    [isValidateAllFieldCriteria],
+    [criteriaMode],
   );
 
   const clearErrors: UseFormClearErrors<TFieldValues> = (name) => {
@@ -949,7 +969,10 @@ export function useForm<
           const { errors, values } = await resolverRef.current(
             fieldValues,
             contextRef.current,
-            isValidateAllFieldCriteria,
+            {
+              criteriaMode,
+              fields: getFields(fieldsNamesRef.current, fieldsRef.current),
+            },
           );
           formStateRef.current.errors = errors;
           fieldValues = values;
@@ -988,7 +1011,7 @@ export function useForm<
         });
       }
     },
-    [shouldFocusError, isValidateAllFieldCriteria],
+    [shouldFocusError, isValidateAllFieldCriteria, criteriaMode],
   );
 
   const resetFromState = ({

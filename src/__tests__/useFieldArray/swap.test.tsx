@@ -22,8 +22,6 @@ describe('swap', () => {
   });
 
   afterEach(() => {
-    jest.resetAllMocks();
-    jest.restoreAllMocks();
     process.env.NODE_ENV = nodeEnv;
   });
 
@@ -348,7 +346,7 @@ describe('swap', () => {
           test: [{ value: '2' }, { value: '1' }],
         },
         undefined,
-        false,
+        { criteriaMode: undefined, fields: {} },
       );
     });
 

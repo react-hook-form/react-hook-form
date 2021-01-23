@@ -54,6 +54,8 @@ export type ValidationMode = {
 
 export type Mode = keyof ValidationMode;
 
+export type CriteriaMode = 'firstError' | 'all';
+
 export type SubmitHandler<TFieldValues extends FieldValues> = (
   data: UnpackNestedValue<TFieldValues>,
   event?: React.BaseSyntheticEvent,
@@ -81,7 +83,7 @@ export type UseFormProps<
   resolver: Resolver<TFieldValues, TContext>;
   context: TContext;
   shouldFocusError: boolean;
-  criteriaMode: 'firstError' | 'all';
+  criteriaMode: CriteriaMode;
 }>;
 
 export type FieldNamesMarkedBoolean<TFieldValues extends FieldValues> = DeepMap<

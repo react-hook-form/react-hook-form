@@ -13,11 +13,6 @@ import {
 import { VALIDATION_MODE } from '../../constants';
 
 describe('setValue', () => {
-  afterEach(() => {
-    jest.resetAllMocks();
-    jest.restoreAllMocks();
-  });
-
   it('should not setValue for unmounted state with shouldUnregister', () => {
     const { result } = renderHook(() => useForm<{ test1: string }>());
 

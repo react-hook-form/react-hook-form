@@ -1,6 +1,6 @@
 import { EmptyObject } from './utils';
-import { UnpackNestedValue } from './form';
-import { FieldValues } from './fields';
+import { CriteriaMode, UnpackNestedValue } from './form';
+import { Field, FieldName, FieldValues, InternalFieldName } from './fields';
 import { FieldErrors } from './errors';
 
 export type ResolverSuccess<TFieldValues extends FieldValues = FieldValues> = {
@@ -17,11 +17,17 @@ export type ResolverResult<TFieldValues extends FieldValues = FieldValues> =
   | ResolverSuccess<TFieldValues>
   | ResolverError<TFieldValues>;
 
+export interface ResolverOptions<TFieldValues> {
+  criteriaMode?: CriteriaMode;
+  fields: Record<InternalFieldName, Field['__field']>;
+  names?: FieldName<TFieldValues>[];
+}
+
 export type Resolver<
   TFieldValues extends FieldValues = FieldValues,
   TContext extends object = object
 > = (
   values: UnpackNestedValue<TFieldValues>,
-  context?: TContext,
-  validateAllFieldCriteria?: boolean,
+  context: TContext | undefined,
+  options: ResolverOptions<TFieldValues>,
 ) => Promise<ResolverResult<TFieldValues>> | ResolverResult<TFieldValues>;

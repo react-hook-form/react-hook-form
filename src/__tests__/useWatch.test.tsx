@@ -32,8 +32,6 @@ describe('useWatch', () => {
 
   afterEach(() => {
     (generateId.default as jest.Mock<any>).mockRestore();
-    jest.resetAllMocks();
-    jest.restoreAllMocks();
     process.env.NODE_ENV = nodeEnv;
   });
 

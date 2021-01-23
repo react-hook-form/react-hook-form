@@ -3,6 +3,9 @@ const { defaults: tsjPresets } = require('ts-jest/presets');
 const jestPresets = require('@testing-library/react-native/jest-preset');
 
 const common = {
+  clearMocks: true,
+  resetMocks: true,
+  restoreMocks: true,
   rootDir: '.',
   roots: ['<rootDir>/src'],
   transform: {

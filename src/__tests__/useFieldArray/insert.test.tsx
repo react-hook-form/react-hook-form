@@ -21,8 +21,6 @@ describe('insert', () => {
   });
 
   afterEach(() => {
-    jest.resetAllMocks();
-    jest.restoreAllMocks();
     process.env.NODE_ENV = nodeEnv;
   });
 
@@ -542,7 +540,7 @@ describe('insert', () => {
           test: [{ value: '1' }],
         },
         undefined,
-        false,
+        { criteriaMode: undefined, fields: {} },
       );
     });
 
