@@ -426,7 +426,7 @@ export function useForm<
       formStateSubjectRef.current.next({
         errors: formStateRef.current.errors,
         isValidating: false,
-        isValid: resolver ? isEmptyObject(isValid) : getIsValid(),
+        isValid: resolver ? isValid : getIsValid(),
       });
     },
     [executeSchemaOrResolverValidation, executeValidation],
@@ -622,7 +622,7 @@ export function useForm<
   ): FieldPathValues<TFieldValues, TName>;
   function getValues(
     fieldNames?: FieldPath<TFieldValues> | FieldPath<TFieldValues>[],
-  ): unknown {
+  ) {
     const values = isMountedRef.current
       ? getFieldsValues(fieldsRef)
       : defaultValues;
@@ -752,9 +752,9 @@ export function useForm<
       return watchSubjectRef.current.subscribe({
         next: (info) => fieldName(watchInternal(undefined, defaultValue), info),
       });
-    } else {
-      return watchInternal(fieldName as string | string[], defaultValue, true);
     }
+
+    return watchInternal(fieldName as string | string[], defaultValue, true);
   }
 
   const unregister: UseFormUnregister<TFieldValues> = (name, options) => {
