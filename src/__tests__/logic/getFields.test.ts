@@ -10,7 +10,7 @@ describe('getFielfs', () => {
     const fieldsRef: any = {
       test: {
         sub: {
-          __field: {
+          _f: {
             ref: { name: 'test.sub', value: 'test' },
             name: 'test.sub',
             value: 'test',
@@ -18,7 +18,7 @@ describe('getFielfs', () => {
         },
       },
       test1: {
-        __field: {
+        _f: {
           ref: { name: 'test1', value: 'test1' },
           name: 'test1',
           value: 'test1',

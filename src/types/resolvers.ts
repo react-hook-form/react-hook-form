@@ -19,7 +19,7 @@ export type ResolverResult<TFieldValues extends FieldValues = FieldValues> =
 
 export interface ResolverOptions<TFieldValues> {
   criteriaMode?: CriteriaMode;
-  fields: Record<InternalFieldName, Field['__field']>;
+  fields: Record<InternalFieldName, Field['_f']>;
   names?: FieldName<TFieldValues>[];
 }
 
