@@ -21,7 +21,7 @@ describe('getFieldValue', () => {
   it('should return correct value when type is radio', () => {
     expect(
       getFieldValue({
-        __field: {
+        _f: {
           name: 'test',
           ref: {
             type: 'radio',
@@ -35,7 +35,7 @@ describe('getFieldValue', () => {
   it('should return the correct select value when type is select-multiple', () => {
     expect(
       getFieldValue({
-        __field: {
+        _f: {
           name: 'test',
           ref: {
             type: 'select-multiple',
@@ -50,7 +50,7 @@ describe('getFieldValue', () => {
   it('should return the correct value when type is checkbox', () => {
     expect(
       getFieldValue({
-        __field: {
+        _f: {
           name: 'test',
           ref: {
             name: 'test',
@@ -64,7 +64,7 @@ describe('getFieldValue', () => {
   it('should return it value for other types', () => {
     expect(
       getFieldValue({
-        __field: {
+        _f: {
           name: 'test',
           ref: {
             type: 'text',
@@ -79,7 +79,7 @@ describe('getFieldValue', () => {
   it('should return empty string when radio input value is not found', () => {
     expect(
       getFieldValue({
-        __field: { ref: {} },
+        _f: { ref: {} },
       } as Field),
     ).toEqual(undefined);
   });
@@ -87,7 +87,7 @@ describe('getFieldValue', () => {
   it('should return files for input type file', () => {
     expect(
       getFieldValue({
-        __field: {
+        _f: {
           name: 'test',
           ref: {
             type: 'file',
@@ -102,7 +102,7 @@ describe('getFieldValue', () => {
   it('should return undefined when input is not found', () => {
     expect(
       getFieldValue({
-        __field: {
+        _f: {
           name: 'test',
           ref: {
             name: 'file',
@@ -122,7 +122,7 @@ describe('getFieldValue', () => {
     expect(
       getFieldValue(
         {
-          __field: {
+          _f: {
             name: 'test',
             ref: {
               name: 'radio',

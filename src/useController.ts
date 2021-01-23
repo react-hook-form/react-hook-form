@@ -40,12 +40,12 @@ export function useController<TFieldValues extends FieldValues = FieldValues>({
   const { onChange, onBlur, ref } = register(name, rules);
   const getInitialValue = () =>
     (get(fieldsRef.current, name) &&
-      isUndefined(get(fieldsRef.current, name).__field.value)) ||
+      isUndefined(get(fieldsRef.current, name)._f.value)) ||
     isNameInFieldArray(fieldArrayNamesRef.current, name)
       ? isUndefined(defaultValue)
         ? get(defaultValuesRef.current, name)
         : defaultValue
-      : get(fieldsRef.current, name).__field.value;
+      : get(fieldsRef.current, name)._f.value;
 
   const [value, setInputStateValue] = React.useState(getInitialValue());
   const { errors, dirtyFields, touchedFields, isValidating } = useFormState({
@@ -68,7 +68,7 @@ export function useController<TFieldValues extends FieldValues = FieldValues>({
     }
 
     if (get(fieldsRef.current, name)) {
-      get(fieldsRef.current, name).__field.value = getInitialValue();
+      get(fieldsRef.current, name)._f.value = getInitialValue();
     }
 
     const controllerSubscription = controllerSubjectRef.current.subscribe({
