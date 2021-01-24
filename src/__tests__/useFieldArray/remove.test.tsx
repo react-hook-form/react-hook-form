@@ -14,17 +14,9 @@ import * as React from 'react';
 import { Controller } from '../../controller';
 import { mockGenerateId } from '../useFieldArray.test';
 
-let nodeEnv: string | undefined;
-
 describe('remove', () => {
   beforeEach(() => {
     mockGenerateId();
-    nodeEnv = process.env.NODE_ENV;
-    process.env.NODE_ENV = 'production';
-  });
-
-  afterEach(() => {
-    process.env.NODE_ENV = nodeEnv;
   });
 
   it('should update isDirty formState when item removed', () => {

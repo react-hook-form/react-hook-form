@@ -20,15 +20,6 @@ export function useController<TFieldValues extends FieldValues = FieldValues>({
   control,
 }: UseControllerProps<TFieldValues>): UseControllerMethods<TFieldValues> {
   const methods = useFormContext<TFieldValues>();
-
-  if (process.env.NODE_ENV !== 'production') {
-    if (!control && !methods) {
-      throw new Error(
-        '📋 Controller is missing `control` prop. https://react-hook-form.com/api#Controller',
-      );
-    }
-  }
-
   const {
     defaultValuesRef,
     register,
@@ -53,20 +44,6 @@ export function useController<TFieldValues extends FieldValues = FieldValues>({
   });
 
   React.useEffect(() => {
-    if (process.env.NODE_ENV !== 'production') {
-      if (!(name as string)) {
-        return console.warn(
-          '📋 Field is missing `name` prop. https://react-hook-form.com/api#Controller',
-        );
-      }
-
-      if (isUndefined(value)) {
-        console.warn(
-          `📋 ${name} is missing in the 'defaultValue' prop of either its Controller (https://react-hook-form.com/api#Controller) or useForm (https://react-hook-form.com/api#useForm)`,
-        );
-      }
-    }
-
     if (get(fieldsRef.current, name)) {
       get(fieldsRef.current, name)._f.value = getInitialValue();
     }

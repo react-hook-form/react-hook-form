@@ -14,18 +14,7 @@ import { useForm } from '../';
 import { VALIDATION_MODE } from '../constants';
 import { NestedValue, UseFormMethods, RegisterOptions } from '../types';
 
-let nodeEnv: string | undefined;
-
 describe('useForm', () => {
-  beforeEach(() => {
-    nodeEnv = process.env.NODE_ENV;
-    process.env.NODE_ENV = 'production';
-  });
-
-  afterEach(() => {
-    process.env.NODE_ENV = nodeEnv;
-  });
-
   describe('when component unMount', () => {
     it('should call unSubscribe', () => {
       const { result, unmount } = renderHook(() => useForm<{ test: string }>());
@@ -436,18 +425,6 @@ describe('useForm', () => {
 
         expect(screen.queryByRole('alert')).toBeInTheDocument();
       });
-
-      it('should not output error message when formState.isValid is called in production environment', () => {
-        jest.spyOn(console, 'warn').mockImplementation(() => {});
-
-        process.env.NODE_ENV = 'production';
-
-        const { result } = renderHook(() => useForm());
-
-        result.current.formState.isValid;
-
-        expect(console.warn).not.toBeCalled();
-      });
     });
 
     describe('onChange', () => {
@@ -494,20 +471,6 @@ describe('useForm', () => {
 
         expect(screen.getByRole('alert').textContent).toBe('');
       });
-
-      it('should not output error message when formState.isValid is called', () => {
-        jest.spyOn(console, 'warn').mockImplementation(() => {});
-
-        process.env.NODE_ENV = 'development';
-
-        const { result } = renderHook(() =>
-          useForm({ mode: VALIDATION_MODE.onChange }),
-        );
-
-        result.current.formState.isValid;
-
-        expect(console.warn).not.toBeCalled();
-      });
     });
 
     describe('onBlur', () => {
@@ -547,20 +510,6 @@ describe('useForm', () => {
         });
 
         expect(screen.getByRole('alert').textContent).toBe('');
-      });
-
-      it('should not output error message when formState.isValid is called', () => {
-        jest.spyOn(console, 'warn').mockImplementation(() => {});
-
-        process.env.NODE_ENV = 'development';
-
-        const { result } = renderHook(() =>
-          useForm({ mode: VALIDATION_MODE.onBlur }),
-        );
-
-        result.current.formState.isValid;
-
-        expect(console.warn).not.toBeCalled();
       });
     });
 

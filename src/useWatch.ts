@@ -45,14 +45,6 @@ export function useWatch<TFieldValues>({
 }: UseWatchProps<TFieldValues>) {
   const methods = useFormContext();
 
-  if (process.env.NODE_ENV !== 'production') {
-    if (!control && !methods) {
-      throw new Error(
-        '📋 useWatch is missing `control` prop. https://react-hook-form.com/api#useWatch',
-      );
-    }
-  }
-
   const { watchInternal, defaultValuesRef, watchSubjectRef } =
     control || methods.control;
   const [value, updateValue] = React.useState<unknown>(
@@ -72,14 +64,6 @@ export function useWatch<TFieldValues>({
   );
 
   React.useEffect(() => {
-    if (process.env.NODE_ENV !== 'production') {
-      if (name === '') {
-        console.warn(
-          '📋 useWatch `name` attribute can not be empty string. https://react-hook-form.com/api#useWatch',
-        );
-      }
-    }
-
     const watchSubscription = watchSubjectRef.current.subscribe({
       next: ({ name: inputName, value }) => {
         updateValue(
