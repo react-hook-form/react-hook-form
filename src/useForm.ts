@@ -776,6 +776,7 @@ export function useForm<
         : [name]
       : Object.keys(fieldsNamesRef.current)) {
       const field = get(fieldsRef.current, inputName) as Field;
+      delete fieldsNamesRef.current[inputName];
 
       if (field) {
         unset(validFieldsRef.current, inputName);
