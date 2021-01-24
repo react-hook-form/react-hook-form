@@ -12,7 +12,8 @@
   "types": "dist/index.d.ts",
   "sideEffects": true,
   "files": [
-    "dist"
+    "dist",
+    "dist/__tests__"
   ],
   "exports": {
     "./package.json": "./package.json",
