@@ -4,7 +4,7 @@ import { useForm } from 'react-hook-form';
 
 export default function App() {
   const { register, handleSubmit, errors } = useForm();
-  const onSubmit = data => {
+  const onSubmit = (data) => {
     alert(JSON.stringify(data));
   };
   const intialValues = {
@@ -21,10 +21,9 @@ export default function App() {
           <label htmlFor="firstName">First Name</label>
           <input
             defaultValue={intialValues.firstName}
-            name="firstName"
             placeholder="bill"
-            ref={register({
-              validate: value => value !== 'bill',
+            {...register('firstName', {
+              validate: (value) => value !== 'bill',
             })}
           />
         </div>
@@ -34,10 +33,9 @@ export default function App() {
           <label htmlFor="lastName">Last Name</label>
           <input
             defaultValue={intialValues.lastName}
-            name="lastName"
             placeholder="luo"
-            ref={register({
-              validate: value => value.length > 3,
+            {...register('lastName', {
+              validate: (value) => value.length > 3,
             })}
           />
         </div>
@@ -47,10 +45,9 @@ export default function App() {
           <label htmlFor="email">Email</label>
           <input
             defaultValue={intialValues.email}
-            name="email"
             placeholder="bluebill1049@hotmail.com"
             type="email"
-            ref={register}
+            {...register('email')}
           />
         </div>
 
@@ -58,13 +55,12 @@ export default function App() {
           <label htmlFor="age">Age</label>
           <input
             defaultValue={intialValues.age}
-            name="age"
             placeholder="0"
             type="text"
-            ref={register({
+            {...register('age', {
               validate: {
-                positiveNumber: value => parseFloat(value) > 0,
-                lessThanHundred: value => parseFloat(value) < 200,
+                positiveNumber: (value) => parseFloat(value) > 0,
+                lessThanHundred: (value) => parseFloat(value) < 200,
               },
             })}
           />

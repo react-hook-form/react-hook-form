@@ -1,13 +1,13 @@
-import React from "react";
-import ReactDOM from "react-dom";
-import { useForm } from "react-hook-form";
+import React from 'react';
+import ReactDOM from 'react-dom';
+import { useForm } from 'react-hook-form';
 
-import "./styles.css";
+import './styles.css';
 
 const defaultValues = {
-  firstName: "bill",
-  lastName: "luo",
-  email: "bluebill1049@hotmail.com"
+  firstName: 'bill',
+  lastName: 'luo',
+  email: 'bluebill1049@hotmail.com',
 };
 
 function App() {
@@ -25,26 +25,23 @@ function App() {
       <label htmlFor="firstName">First Name</label>
       <input
         defaultValue={defaultValues.firstName}
-        name="firstName"
         placeholder="bill"
-        ref={register}
+        {...register('firstName')}
       />
 
       <label htmlFor="lastName">Last Name</label>
       <input
         defaultValue={defaultValues.lastName}
-        name="lastName"
         placeholder="luo"
-        ref={register}
+        {...register('lastName')}
       />
 
       <label htmlFor="email">Email</label>
       <input
         defaultValue={defaultValues.email}
-        name="email"
         placeholder="bluebill1049@hotmail.com"
         type="email"
-        ref={register}
+        {...register('email')}
       />
 
       <input type="submit" />

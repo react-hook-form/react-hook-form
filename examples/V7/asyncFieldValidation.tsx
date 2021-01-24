@@ -2,11 +2,11 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import { useForm } from 'react-hook-form';
 
-const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
+const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
 export default function App() {
   const { register, handleSubmit, errors } = useForm();
-  const onSubmit = data => {
+  const onSubmit = (data) => {
     alert(JSON.stringify(data));
   };
 
@@ -18,10 +18,9 @@ export default function App() {
         <div>
           <label htmlFor="username">User Name</label>
           <input
-            name="username"
             placeholder="Bill"
-            ref={register({
-              validate: async value => {
+            {...register('username', {
+              validate: async (value) => {
                 await sleep(3000);
                 return value === 'bill';
               },
@@ -31,16 +30,15 @@ export default function App() {
 
         <div>
           <label htmlFor="lastName">Last Name</label>
-          <input name="lastName" placeholder="Luo" ref={register} />
+          <input placeholder="Luo" {...register('lastName')} />
         </div>
 
         <div>
           <label htmlFor="email">Email</label>
           <input
-            name="email"
             placeholder="bluebill1049@hotmail.com"
             type="text"
-            ref={register}
+            {...register('email')}
           />
         </div>
 

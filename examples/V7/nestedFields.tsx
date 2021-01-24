@@ -11,16 +11,14 @@ export default function Section1({ register }) {
         <label>First name</label>
         <input
           type="text"
-          name="First name"
-          ref={register({ required: true, maxLength: 80 })}
+          {...register('FirstName', { required: true, maxLength: 80 })}
         />
       </div>
       <div>
         <label>Last name</label>
         <input
           type="text"
-          name="Last name"
-          ref={register({ required: true, maxLength: 100 })}
+          {...register('LastName', { required: true, maxLength: 100 })}
         />
       </div>
     </>
@@ -34,8 +32,7 @@ export default function formSection2({ register }) {
         <label>Email</label>
         <input
           type="text"
-          name="Email"
-          ref={register({
+          {...register('Email', {
             required: true,
             pattern: /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/,
           })}
@@ -45,13 +42,16 @@ export default function formSection2({ register }) {
         <label>Mobile number</label>
         <input
           type="tel"
-          name="Mobile number"
-          ref={register({ required: true, maxLength: 11, minLength: 8 })}
+          {...register('MobileNumber', {
+            required: true,
+            maxLength: 11,
+            minLength: 8,
+          })}
         />
       </div>
       <div>
         <label>Title</label>
-        <select name="Title" ref={register({ required: true })}>
+        <select {...register('Title', { required: true })}>
           <option value="Mr">Mr</option>
           <option value="Mrs">Mrs</option>
           <option value="Miss">Miss</option>
@@ -62,16 +62,14 @@ export default function formSection2({ register }) {
       <div>
         <label>Are you a developer?</label>
         <input
-          name="developer"
           type="radio"
           value="Yes"
-          ref={register({ required: true })}
+          {...register('developer', { required: true })}
         />
         <input
-          name="developer"
           type="radio"
           value="No"
-          ref={register({ required: true })}
+          {...register('developer', { required: true })}
         />
       </div>
     </>
@@ -80,7 +78,7 @@ export default function formSection2({ register }) {
 
 export default function App() {
   const { register, errors, handleSubmit } = useForm();
-  const onSubmit = data => {
+  const onSubmit = (data) => {
     alert(JSON.stringify(data));
   };
   console.log(errors);
