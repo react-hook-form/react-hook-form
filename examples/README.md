@@ -1,7 +1,7 @@
 ## Examples
 
 - V7
-- [V6]("./v6/README.MD")
+- [V6](/v6/README.MD)
 
 You can view the source code for most examples within their folder, or visit Code Sandbox to see how the example works live.
 
