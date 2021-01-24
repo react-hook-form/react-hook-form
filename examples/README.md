@@ -1,7 +1,7 @@
 ## Examples
 
 - V7
-- [V6](/V6)
+- [V6](/examples/V6)
 
 You can view the source code for most examples within their folder, or visit Code Sandbox to see how the example works live.
 
