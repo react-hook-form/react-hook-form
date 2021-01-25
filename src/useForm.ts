@@ -342,15 +342,18 @@ export function useForm<
   const executeSchemaOrResolverValidation = React.useCallback(
     async (
       names: InternalFieldName[],
-      currentNames: FieldName<TFieldValues>[] = [],
+      currentNames?: FieldName<TFieldValues>[],
     ) => {
       const { errors } = await resolverRef.current!(
         getValues(),
         contextRef.current,
         {
           criteriaMode,
-          names: currentNames,
-          fields: getFields(fieldsNamesRef.current, fieldsRef.current),
+          names: currentNames || [],
+          fields: getFields(
+            currentNames || fieldsNamesRef.current,
+            fieldsRef.current,
+          ),
         },
       );
 
