@@ -580,7 +580,7 @@ export function useForm<
             contextRef.current,
             {
               criteriaMode,
-              fields: getFields(fieldsNamesRef.current, fieldsRef.current),
+              fields: getFields([name], fieldsRef.current),
               names: [name as FieldName<TFieldValues>],
             },
           );
