@@ -787,6 +787,14 @@ describe('useForm', () => {
               value: 'test',
             },
           },
+          test1: {
+            name: 'test1',
+            ref: {
+              name: 'test1',
+              value: 'test1',
+            },
+            value: 'test1',
+          },
         };
 
         expect(resolver).toHaveBeenCalledWith(defaultValues, undefined, {
@@ -802,17 +810,7 @@ describe('useForm', () => {
 
         expect(resolver).toHaveBeenNthCalledWith(2, defaultValues, undefined, {
           criteriaMode: undefined,
-          fields: {
-            ...fields,
-            test1: {
-              name: 'test1',
-              ref: {
-                name: 'test1',
-                value: 'test1',
-              },
-              value: 'test1',
-            },
-          },
+          fields,
           names: [],
         });
 
@@ -823,17 +821,7 @@ describe('useForm', () => {
 
         expect(resolver).toHaveBeenNthCalledWith(3, defaultValues, undefined, {
           criteriaMode: undefined,
-          fields: {
-            ...fields,
-            test1: {
-              name: 'test1',
-              ref: {
-                name: 'test1',
-                value: 'test1',
-              },
-              value: 'test1',
-            },
-          },
+          fields,
           names: ['test.sub', 'test1'],
         });
       });
