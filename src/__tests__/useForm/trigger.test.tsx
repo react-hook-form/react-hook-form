@@ -11,22 +11,6 @@ import {
 import { VALIDATION_MODE } from '../../constants';
 
 describe('trigger', () => {
-  afterEach(() => {
-    jest.resetAllMocks();
-    jest.restoreAllMocks();
-  });
-
-  it('should console warn when field is not found', async () => {
-    jest.spyOn(console, 'warn').mockImplementation(() => {});
-
-    process.env.NODE_ENV = 'development';
-
-    const { result } = renderHook(() => useForm<{ test: string }>());
-    expect(await result.current.trigger('test')).toBeFalsy();
-
-    expect(console.warn).toBeCalledTimes(1);
-  });
-
   it('should remove all errors before set new errors when trigger entire form', async () => {
     const Component = () => {
       const [show, setShow] = React.useState(true);

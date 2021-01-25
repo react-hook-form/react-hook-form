@@ -35,7 +35,7 @@ export type FieldElement<TFieldValues extends FieldValues = FieldValues> =
 export type Ref = FieldElement;
 
 export type Field = {
-  __field: {
+  _f: {
     ref: Ref;
     name: InternalFieldName;
     value?: any;

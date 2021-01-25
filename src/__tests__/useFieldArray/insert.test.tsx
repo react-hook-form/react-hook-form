@@ -11,19 +11,9 @@ import * as React from 'react';
 import { VALIDATION_MODE } from '../../constants';
 import { mockGenerateId } from '../useFieldArray.test';
 
-let nodeEnv: string | undefined;
-
 describe('insert', () => {
   beforeEach(() => {
     mockGenerateId();
-    nodeEnv = process.env.NODE_ENV;
-    process.env.NODE_ENV = 'production';
-  });
-
-  afterEach(() => {
-    jest.resetAllMocks();
-    jest.restoreAllMocks();
-    process.env.NODE_ENV = nodeEnv;
   });
 
   it('should insert data at index with single value', () => {
@@ -542,7 +532,7 @@ describe('insert', () => {
           test: [{ value: '1' }],
         },
         undefined,
-        false,
+        { criteriaMode: undefined, fields: {} },
       );
     });
 

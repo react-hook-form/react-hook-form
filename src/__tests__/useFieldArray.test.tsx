@@ -15,8 +15,6 @@ import { FormProvider } from '../useFormContext';
 import { Control, SubmitHandler, UseFormMethods, FieldValues } from '../types';
 import isFunction from '../utils/isFunction';
 
-let nodeEnv: string | undefined;
-
 export const mockGenerateId = () => {
   let id = 0;
   jest.spyOn(generateId, 'default').mockImplementation(() => (id++).toString());
@@ -25,14 +23,6 @@ export const mockGenerateId = () => {
 describe('useFieldArray', () => {
   beforeEach(() => {
     mockGenerateId();
-    nodeEnv = process.env.NODE_ENV;
-    process.env.NODE_ENV = 'production';
-  });
-
-  afterEach(() => {
-    jest.resetAllMocks();
-    jest.restoreAllMocks();
-    process.env.NODE_ENV = nodeEnv;
   });
 
   describe('initialize', () => {
@@ -166,52 +156,6 @@ describe('useFieldArray', () => {
       render(<Component />);
       await waitFor(() => screen.getAllByRole('textbox'));
       await waitFor(() => screen.getByText('not valid'));
-    });
-  });
-
-  describe('error handling', () => {
-    it('should output error message when name is empty string in development mode', () => {
-      jest.spyOn(console, 'warn').mockImplementation(() => {});
-
-      process.env.NODE_ENV = 'development';
-
-      renderHook(() => {
-        const { control } = useForm();
-        useFieldArray({ control, name: '' });
-      });
-
-      expect(console.warn).toBeCalledTimes(1);
-    });
-
-    it('should not output error message when name is empty string in production mode', () => {
-      jest.spyOn(console, 'warn').mockImplementation(() => {});
-
-      process.env.NODE_ENV = 'production';
-
-      renderHook(() => {
-        const { control } = useForm();
-        useFieldArray({ control, name: '' });
-      });
-
-      expect(console.warn).not.toBeCalled();
-    });
-
-    it('should throw custom error when control is not defined in development mode', () => {
-      process.env.NODE_ENV = 'development';
-
-      const { result } = renderHook(() => useFieldArray({ name: 'test' }));
-
-      expect(result.error.message).toBe(
-        '📋 useFieldArray is missing `control` prop. https://react-hook-form.com/api#useFieldArray',
-      );
-    });
-
-    it('should throw TypeError when control is not defined in production mode', () => {
-      process.env.NODE_ENV = 'production';
-
-      const { result } = renderHook(() => useFieldArray({ name: 'test' }));
-
-      expect(result.error.name).toBe(new TypeError().name);
     });
   });
 

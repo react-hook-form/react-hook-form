@@ -1,0 +1,50 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`useForm handleChangeRef with resolver should call the resolver with the field being validated when an input's value change 1`] = `
+Array [
+  Array [
+    Object {
+      "test": "test",
+    },
+    undefined,
+    Object {
+      "criteriaMode": undefined,
+      "fields": Object {
+        "test": Object {
+          "name": "test",
+          "ref": <input
+            name="test"
+            type="text"
+          />,
+          "value": "test",
+        },
+      },
+      "names": Array [
+        "test",
+      ],
+    },
+  ],
+]
+`;
+
+exports[`useForm handleChangeRef with resolver should call the resolver with the field being validated when an input's value change 2`] = `
+Array [
+  Object {
+    "test": "test",
+  },
+  undefined,
+  Object {
+    "criteriaMode": undefined,
+    "fields": Object {
+      "test": Object {
+        "name": "test",
+        "ref": <input
+          name="test"
+          type="text"
+        />,
+        "value": "test",
+      },
+    },
+  },
+]
+`;

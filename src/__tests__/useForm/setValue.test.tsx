@@ -13,11 +13,6 @@ import {
 import { VALIDATION_MODE } from '../../constants';
 
 describe('setValue', () => {
-  afterEach(() => {
-    jest.resetAllMocks();
-    jest.restoreAllMocks();
-  });
-
   it('should not setValue for unmounted state with shouldUnregister', () => {
     const { result } = renderHook(() => useForm<{ test1: string }>());
 
@@ -260,21 +255,21 @@ describe('setValue', () => {
     });
 
     expect(result.current.control.fieldsRef.current['test1']).toEqual({
-      __field: {
+      _f: {
         ref: { name: 'test1', value: ['1', '2', '3'] },
         name: 'test1',
         value: ['1', '2', '3'],
       },
     });
     expect(result.current.control.fieldsRef.current['test2']).toEqual({
-      __field: {
+      _f: {
         ref: { name: 'test2', value: { key1: '1', key2: 2 } },
         name: 'test2',
         value: { key1: '1', key2: 2 },
       },
     });
     expect(result.current.control.fieldsRef.current['test3']).toEqual({
-      __field: {
+      _f: {
         ref: {
           name: 'test3',
           value: [
@@ -309,21 +304,21 @@ describe('setValue', () => {
     act(() => result.current.setValue('test', ['1', '2', '3']));
 
     expect(get(result.current.control.fieldsRef.current, 'test.0')).toEqual({
-      __field: {
+      _f: {
         ref: { name: 'test.0', value: '1' },
         name: 'test.0',
         value: '1',
       },
     });
     expect(get(result.current.control.fieldsRef.current, 'test.1')).toEqual({
-      __field: {
+      _f: {
         ref: { name: 'test.1', value: '2' },
         name: 'test.1',
         value: '2',
       },
     });
     expect(get(result.current.control.fieldsRef.current, 'test.2')).toEqual({
-      __field: {
+      _f: {
         ref: { name: 'test.2', value: '3' },
         name: 'test.2',
         value: '3',
@@ -355,7 +350,7 @@ describe('setValue', () => {
     expect(
       get(result.current.control.fieldsRef.current, 'test.0.test'),
     ).toEqual({
-      __field: {
+      _f: {
         ref: { name: 'test.0.test', value: '1' },
         name: 'test.0.test',
         value: '1',
@@ -364,7 +359,7 @@ describe('setValue', () => {
     expect(
       get(result.current.control.fieldsRef.current, 'test.1.test'),
     ).toEqual({
-      __field: {
+      _f: {
         ref: { name: 'test.1.test', value: '2' },
         name: 'test.1.test',
         value: '2',
@@ -373,7 +368,7 @@ describe('setValue', () => {
     expect(
       get(result.current.control.fieldsRef.current, 'test.2.test'),
     ).toEqual({
-      __field: {
+      _f: {
         ref: { name: 'test.2.test', value: '3' },
         name: 'test.2.test',
         value: '3',
@@ -404,21 +399,21 @@ describe('setValue', () => {
       result.current.setValue('test', { bill: '1', luo: '2', test: '3' }),
     );
     expect(get(result.current.control.fieldsRef.current, 'test.bill')).toEqual({
-      __field: {
+      _f: {
         ref: { name: 'test.bill', value: '1' },
         name: 'test.bill',
         value: '1',
       },
     });
     expect(get(result.current.control.fieldsRef.current, 'test.luo')).toEqual({
-      __field: {
+      _f: {
         ref: { name: 'test.luo', value: '2' },
         name: 'test.luo',
         value: '2',
       },
     });
     expect(get(result.current.control.fieldsRef.current, 'test.test')).toEqual({
-      __field: {
+      _f: {
         ref: { name: 'test.test', value: '3' },
         name: 'test.test',
         value: '3',

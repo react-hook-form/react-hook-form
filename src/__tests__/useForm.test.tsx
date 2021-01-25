@@ -14,20 +14,7 @@ import { useForm } from '../';
 import { VALIDATION_MODE } from '../constants';
 import { NestedValue, UseFormMethods, RegisterOptions } from '../types';
 
-let nodeEnv: string | undefined;
-
 describe('useForm', () => {
-  beforeEach(() => {
-    nodeEnv = process.env.NODE_ENV;
-    process.env.NODE_ENV = 'production';
-  });
-
-  afterEach(() => {
-    jest.resetAllMocks();
-    jest.restoreAllMocks();
-    process.env.NODE_ENV = nodeEnv;
-  });
-
   describe('when component unMount', () => {
     it('should call unSubscribe', () => {
       const { result, unmount } = renderHook(() => useForm<{ test: string }>());
@@ -438,18 +425,6 @@ describe('useForm', () => {
 
         expect(screen.queryByRole('alert')).toBeInTheDocument();
       });
-
-      it('should not output error message when formState.isValid is called in production environment', () => {
-        jest.spyOn(console, 'warn').mockImplementation(() => {});
-
-        process.env.NODE_ENV = 'production';
-
-        const { result } = renderHook(() => useForm());
-
-        result.current.formState.isValid;
-
-        expect(console.warn).not.toBeCalled();
-      });
     });
 
     describe('onChange', () => {
@@ -496,20 +471,6 @@ describe('useForm', () => {
 
         expect(screen.getByRole('alert').textContent).toBe('');
       });
-
-      it('should not output error message when formState.isValid is called', () => {
-        jest.spyOn(console, 'warn').mockImplementation(() => {});
-
-        process.env.NODE_ENV = 'development';
-
-        const { result } = renderHook(() =>
-          useForm({ mode: VALIDATION_MODE.onChange }),
-        );
-
-        result.current.formState.isValid;
-
-        expect(console.warn).not.toBeCalled();
-      });
     });
 
     describe('onBlur', () => {
@@ -549,20 +510,6 @@ describe('useForm', () => {
         });
 
         expect(screen.getByRole('alert').textContent).toBe('');
-      });
-
-      it('should not output error message when formState.isValid is called', () => {
-        jest.spyOn(console, 'warn').mockImplementation(() => {});
-
-        process.env.NODE_ENV = 'development';
-
-        const { result } = renderHook(() =>
-          useForm({ mode: VALIDATION_MODE.onBlur }),
-        );
-
-        result.current.formState.isValid;
-
-        expect(console.warn).not.toBeCalled();
       });
     });
 
@@ -667,12 +614,10 @@ describe('useForm', () => {
 
     describe('with resolver', () => {
       it('should contain error if value is invalid with resolver', async () => {
-        const mockResolver = jest.fn();
-        const resolver = async (data: any) => {
+        const resolver = jest.fn(async (data: any) => {
           if (data.test) {
             return { values: data, errors: {} };
           }
-          mockResolver();
           return {
             values: data,
             errors: {
@@ -681,7 +626,7 @@ describe('useForm', () => {
               },
             },
           };
-        };
+        });
 
         render(<Component resolver={resolver} mode="onChange" />);
 
@@ -702,7 +647,7 @@ describe('useForm', () => {
           });
         });
 
-        await waitFor(() => expect(mockResolver).toHaveBeenCalled());
+        await waitFor(() => expect(resolver).toHaveBeenCalled());
         expect(screen.getByRole('alert').textContent).toBe('resolver error');
         expect(methods.formState.isValid).toBeFalsy();
         await wait(() =>
@@ -711,12 +656,10 @@ describe('useForm', () => {
       });
 
       it('with sync resolver it should contain error if value is invalid with resolver', async () => {
-        const mockResolver = jest.fn();
-        const resolver = (data: any) => {
+        const resolver = jest.fn((data: any) => {
           if (data.test) {
             return { values: data, errors: {} };
           }
-          mockResolver();
           return {
             values: data,
             errors: {
@@ -725,7 +668,7 @@ describe('useForm', () => {
               },
             },
           };
-        };
+        });
 
         render(<Component resolver={resolver} mode="onChange" />);
 
@@ -744,7 +687,7 @@ describe('useForm', () => {
           target: { name: 'test', value: '' },
         });
 
-        await waitFor(() => expect(mockResolver).toHaveBeenCalled());
+        await waitFor(() => expect(resolver).toHaveBeenCalled());
         expect(screen.getByRole('alert').textContent).toBe('resolver error');
         expect(methods.formState.isValid).toBeFalsy();
         await wait(() =>
@@ -753,12 +696,10 @@ describe('useForm', () => {
       });
 
       it('should make isValid change to false if it contain error that is not related name with onChange mode', async () => {
-        const mockResolver = jest.fn();
-        const resolver = async (data: any) => {
+        const resolver = jest.fn(async (data: any) => {
           if (data.test) {
             return { values: data, errors: {} };
           }
-          mockResolver();
           return {
             values: data,
             errors: {
@@ -767,7 +708,7 @@ describe('useForm', () => {
               },
             },
           };
-        };
+        });
 
         render(<Component resolver={resolver} mode="onChange" />);
 
@@ -786,12 +727,103 @@ describe('useForm', () => {
           target: { name: 'test', value: '' },
         });
 
-        await waitFor(() => expect(mockResolver).toHaveBeenCalled());
+        await waitFor(() => expect(resolver).toHaveBeenCalled());
         expect(screen.getByRole('alert').textContent).toBe('');
         expect(methods.formState.isValid).toBeFalsy();
         await wait(() =>
           expect(renderCount.current.Component).toBeRenderedTimes(3),
         );
+      });
+
+      it("should call the resolver with the field being validated when an input's value change", async () => {
+        const resolver = jest.fn((values: any) => ({ values, errors: {} }));
+
+        render(<Component resolver={resolver} mode="onChange" />);
+        expect(resolver).not.toHaveBeenCalled();
+
+        await actComponent(async () => {
+          await fireEvent.input(screen.getByRole('textbox'), {
+            target: { name: 'test', value: 'test' },
+          });
+        });
+
+        expect(resolver.mock.calls).toMatchSnapshot();
+
+        await actComponent(async () => {
+          await fireEvent.click(screen.getByText(/button/i));
+        });
+        expect(resolver.mock.calls[1]).toMatchSnapshot();
+      });
+
+      it('should call the resolver with the field being validated when `trigger` is called', async () => {
+        const resolver = jest.fn((values: any) => ({ values, errors: {} }));
+        const defaultValues = { test: { sub: 'test' }, test1: 'test1' };
+
+        const { result } = renderHook(() =>
+          useForm<typeof defaultValues>({
+            mode: VALIDATION_MODE.onChange,
+            resolver,
+            defaultValues,
+          }),
+        );
+
+        expect(resolver).not.toHaveBeenCalled();
+
+        await act(async () => {
+          await result.current.register('test.sub');
+          await result.current.register('test1');
+        });
+
+        // `trigger` called with a field name
+        await act(async () => {
+          result.current.trigger('test.sub');
+        });
+
+        const fields = {
+          test: {
+            sub: {
+              name: 'test.sub',
+              ref: { name: 'test.sub', value: 'test' },
+              value: 'test',
+            },
+          },
+          test1: {
+            name: 'test1',
+            ref: {
+              name: 'test1',
+              value: 'test1',
+            },
+            value: 'test1',
+          },
+        };
+
+        expect(resolver).toHaveBeenCalledWith(defaultValues, undefined, {
+          criteriaMode: undefined,
+          fields,
+          names: ['test.sub'],
+        });
+
+        // `trigger` called to validate all fields
+        await act(async () => {
+          result.current.trigger();
+        });
+
+        expect(resolver).toHaveBeenNthCalledWith(2, defaultValues, undefined, {
+          criteriaMode: undefined,
+          fields,
+          names: [],
+        });
+
+        // `trigger` called to validate fields
+        await act(async () => {
+          result.current.trigger(['test.sub', 'test1']);
+        });
+
+        expect(resolver).toHaveBeenNthCalledWith(3, defaultValues, undefined, {
+          criteriaMode: undefined,
+          fields,
+          names: ['test.sub', 'test1'],
+        });
       });
     });
   });
@@ -802,14 +834,12 @@ describe('useForm', () => {
         test: string;
       };
 
-      let resolverData;
-      const resolver = async (data: FormValues) => {
-        resolverData = data;
+      const resolver = jest.fn(async (data: FormValues) => {
         return {
           values: data,
           errors: {},
         };
-      };
+      });
 
       const { result } = renderHook(() =>
         useForm<FormValues>({
@@ -831,9 +861,28 @@ describe('useForm', () => {
         await result.current.trigger();
       });
 
-      expect(resolverData).toEqual({
-        test: 'default',
-      });
+      expect(resolver).toHaveBeenCalledWith(
+        {
+          test: 'default',
+        },
+        undefined,
+        {
+          criteriaMode: undefined,
+          fields: {
+            test: {
+              name: 'test',
+              ref: {
+                target: {
+                  value: '',
+                },
+                value: 'default',
+              },
+              value: 'default',
+            },
+          },
+          names: [],
+        },
+      );
     });
 
     it('should be called resolver with field values if value is undefined', async () => {
@@ -841,14 +890,12 @@ describe('useForm', () => {
         test: string;
       };
 
-      let resolverData;
-      const resolver = async (data: FormValues) => {
-        resolverData = data;
+      const resolver = jest.fn(async (data: FormValues) => {
         return {
           values: data,
           errors: {},
         };
-      };
+      });
 
       const { result } = renderHook(() =>
         useForm<FormValues>({
@@ -862,7 +909,17 @@ describe('useForm', () => {
 
       result.current.trigger();
 
-      expect(resolverData).toEqual({ test: 'value' });
+      expect(resolver).toHaveBeenCalledWith({ test: 'value' }, undefined, {
+        criteriaMode: undefined,
+        fields: {
+          test: {
+            name: 'test',
+            ref: { name: 'test', value: 'value' },
+            value: 'value',
+          },
+        },
+        names: [],
+      });
     });
   });
 

@@ -5,10 +5,6 @@ import { useForm } from './useForm';
 import * as focusOnErrorField from './logic/focusFieldBy';
 
 describe('useForm with React Native', () => {
-  afterEach(() => {
-    jest.restoreAllMocks();
-  });
-
   it('should register field', () => {
     let control: any;
     const Component = () => {

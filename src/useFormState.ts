@@ -15,15 +15,6 @@ function useFormState<TFieldValues extends FieldValues = FieldValues>({
   control,
 }: UseFormStateProps<TFieldValues> = {}): UseFormStateMethods<TFieldValues> {
   const methods = useFormContext();
-
-  if (process.env.NODE_ENV !== 'production') {
-    if (!control && !methods) {
-      throw new Error(
-        '📋 useWatch is missing `control` prop. https://react-hook-form.com/api#useWatch',
-      );
-    }
-  }
-
   const { formStateRef, formStateSubjectRef, readFormStateRef } =
     control || methods.control;
 

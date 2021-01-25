@@ -11,7 +11,7 @@ describe('focusFieldBy', () => {
     focusFieldBy(
       {
         test: {
-          __field: {
+          _f: {
             name: 'test',
             ref: {
               name: 'test',
@@ -40,7 +40,7 @@ describe('focusFieldBy', () => {
     focusFieldBy(
       {
         test: {
-          __field: {
+          _f: {
             name: 'test',
             ref: {
               name: 'test',

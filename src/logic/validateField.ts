@@ -18,7 +18,7 @@ import { Field, Message, FieldError, InternalFieldErrors } from '../types';
 
 export default async (
   {
-    __field: {
+    _f: {
       ref,
       refs,
       required,

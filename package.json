@@ -1,7 +1,7 @@
 {
   "name": "react-hook-form",
   "description": "Performant, flexible and extensible forms library for React Hooks",
-  "version": "6.14.2",
+  "version": "7.0.0-alpha.0",
   "main": "dist/index.js",
   "module": "dist/index.esm.js",
   "umd:main": "dist/index.umd.production.min.js",
@@ -12,7 +12,8 @@
   "types": "dist/index.d.ts",
   "sideEffects": true,
   "files": [
-    "dist"
+    "dist",
+    "dist/__tests__"
   ],
   "exports": {
     "./package.json": "./package.json",
