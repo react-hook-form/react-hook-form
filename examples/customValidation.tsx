@@ -64,7 +64,7 @@ export default function App() {
             ref={register({
               validate: {
                 positiveNumber: value => parseFloat(value) > 0,
-                lessThanHundred: value => parseFloat(value) < 150,
+                lessThanHundred: value => parseFloat(value) <= 150,
               },
             })}
           />
