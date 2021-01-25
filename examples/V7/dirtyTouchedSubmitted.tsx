@@ -6,7 +6,7 @@ export default function App() {
   const { register, handleSubmit, formState } = useForm({
     mode: 'onChange',
   });
-  const onSubmit = data => {
+  const onSubmit = (data) => {
     alert(JSON.stringify(data));
   };
 
@@ -16,23 +16,23 @@ export default function App() {
     <form onSubmit={handleSubmit(onSubmit)}>
       <div>
         <label>First name</label>
-        <input type="text" name="First name" ref={register} />
+        <input type="text" {...register('FirstName')} />
       </div>
       <div>
         <label>Last name</label>
-        <input type="text" name="Last name" ref={register} />
+        <input type="text" {...register('LastName')} />
       </div>
       <div>
         <label>Email</label>
-        <input type="text" name="Email" ref={register} />
+        <input type="text" {...register('Email')} />
       </div>
       <div>
         <label>Mobile number</label>
-        <input type="tel" name="Mobile number" ref={register} />
+        <input type="tel" {...register('MobileNumber')} />
       </div>
       <div>
         <label>Title</label>
-        <select name="Title" ref={register}>
+        <select {...register('Title')}>
           <option value="Mr">Mr</option>
           <option value="Mrs">Mrs</option>
           <option value="Miss">Miss</option>
@@ -42,8 +42,8 @@ export default function App() {
 
       <div>
         <label>Are you a developer?</label>
-        <input name="developer" type="radio" value="Yes" ref={register} />
-        <input name="developer" type="radio" value="No" ref={register} />
+        <input type="radio" value="Yes" {...register('developer')} />
+        <input type="radio" value="No" {...register('developer')} />
       </div>
 
       <pre>{JSON.stringify(formState, null, 2)}</pre>
@@ -52,5 +52,3 @@ export default function App() {
     </form>
   );
 }
-
-ReactDOM.render(<Form />, rootElement);

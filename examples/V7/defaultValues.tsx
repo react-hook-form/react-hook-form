@@ -11,7 +11,7 @@ export default function App() {
       isDeveloper: true,
     },
   });
-  const onSubmit = data => {
+  const onSubmit = (data) => {
     alert(JSON.stringify(data));
   };
 
@@ -20,27 +20,26 @@ export default function App() {
       <form onSubmit={handleSubmit(onSubmit)}>
         <div>
           <label htmlFor="firstName">First Name</label>
-          <input name="firstName" placeholder="bill" ref={register} />
+          <input placeholder="bill" {...register('firstName')} />
         </div>
 
         <div>
           <label htmlFor="lastName">Last Name</label>
-          <input name="lastName" placeholder="luo" ref={register} />
+          <input placeholder="luo" {...register('lastName')} />
         </div>
 
         <div>
           <label htmlFor="email">Email</label>
           <input
-            name="email"
             placeholder="bluebill1049@hotmail.com"
             type="email"
-            ref={register}
+            {...register('email')}
           />
         </div>
 
         <div>
           <label>Is developer?</label>
-          <input name="isDeveloper" type="checkbox" ref={register} />
+          <input type="checkbox" {...register('isDeveloper')} />
         </div>
         <button type="submit">Submit</button>
       </form>

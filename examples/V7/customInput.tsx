@@ -11,25 +11,31 @@ const options = [
   { value: 'vanilla', label: 'Vanilla' },
 ];
 
-const MyInput = ({ name, label, register }) => {
+const MyInput = ({ label, name, onChange, onBlur, ref }) => {
   return (
     <>
       <label htmlFor={name}>{label}</label>
-      <input name={name} placeholder="Jane" ref={register} />
+      <input
+        name={name}
+        placeholder="Jane"
+        onChange={onChange}
+        onBlur={onBlur}
+        ref={ref}
+      />
     </>
   );
 };
 
 export default function App() {
   const { register, handleSubmit, setValue } = useForm();
-  const onSubmit = data => {
+  const onSubmit = (data) => {
     alert(JSON.stringify(data, null));
   };
   const [values, setReactSelect] = useState({
     selectedOption: [],
   });
 
-  const handleMultiChange = selectedOption => {
+  const handleMultiChange = (selectedOption) => {
     setValue('reactSelect', selectedOption);
     setReactSelect({ selectedOption });
   };
@@ -77,21 +83,20 @@ export default function App() {
         </div>
 
         <div>
-          <MyInput name="firstName" label="First Name" register={register} />
+          <MyInput label="First Name" {...register('firstName')} />
         </div>
 
         <div>
           <label htmlFor="lastName">Last Name</label>
-          <input name="lastName" placeholder="Luo" ref={register} />
+          <input placeholder="Luo" {...register('lastName')} />
         </div>
 
         <div>
           <label htmlFor="email">Email</label>
           <input
-            name="email"
             placeholder="bluebill1049@hotmail.com"
             type="email"
-            ref={register}
+            {...register('email')}
           />
         </div>
         <button type="submit">Submit</button>
