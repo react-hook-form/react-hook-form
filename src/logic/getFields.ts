@@ -4,12 +4,12 @@ import isKey from '../utils/isKey';
 import set from '../utils/set';
 
 export default function getFields(
-  fieldsNames: Partial<Record<InternalFieldName, string>>,
+  fieldsNames: Set<InternalFieldName>,
   fieldsRefs: FieldRefs,
 ) {
   const currentFields: Record<InternalFieldName, Field['_f']> = {};
 
-  for (const name in fieldsNames) {
+  for (const name of fieldsNames) {
     const field = get(fieldsRefs, name) as Field | undefined;
 
     if (field) {

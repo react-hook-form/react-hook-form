@@ -3,10 +3,7 @@ import getFields from '../../logic/getFields';
 
 describe('getFielfs', () => {
   it('should return fields from `fieldsNames` and `fieldsRef`', () => {
-    const fieldNames: Partial<Record<InternalFieldName, string>> = {
-      'test.sub': '',
-      test1: '',
-    };
+    const fieldNames: Set<InternalFieldName> = new Set(['test.sub', 'test1']);
     const fieldsRef: any = {
       test: {
         sub: {
