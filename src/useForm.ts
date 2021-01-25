@@ -89,9 +89,7 @@ export function useForm<
   criteriaMode,
 }: UseFormProps<TFieldValues, TContext> = {}): UseFormMethods<TFieldValues> {
   const fieldsRef = React.useRef<FieldRefs>({});
-  const fieldsNamesRef = React.useRef<
-    Partial<Record<InternalFieldName, string>>
-  >({});
+  const fieldsNamesRef = React.useRef<Set<InternalFieldName>>(new Set());
   const formStateSubjectRef = React.useRef(
     new Subject<Partial<FormState<TFieldValues>>>(),
   );
@@ -776,7 +774,7 @@ export function useForm<
         : [name]
       : Object.keys(fieldsNamesRef.current)) {
       const field = get(fieldsRef.current, inputName) as Field;
-      delete fieldsNamesRef.current[inputName];
+      fieldsNamesRef.current.delete(inputName);
 
       if (field) {
         unset(validFieldsRef.current, inputName);
@@ -919,7 +917,7 @@ export function useForm<
         },
       });
       options && set(fieldsWithValidationRef.current, name, true);
-      fieldsNamesRef.current[name] = '';
+      fieldsNamesRef.current.add(name);
 
       updateValueAndGetDefault(name);
 

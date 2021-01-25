@@ -6,9 +6,9 @@ import { FieldRefs, InternalFieldName } from '../types';
 const focusFieldBy = (
   fields: FieldRefs,
   callback: (name: string) => boolean,
-  fieldsNames?: Partial<Record<InternalFieldName, string>>,
+  fieldsNames?: Set<InternalFieldName>,
 ) => {
-  for (const key in fieldsNames || fields) {
+  for (const key of fieldsNames || Object.keys(fields)) {
     const field = get(fields, key);
 
     if (field) {
