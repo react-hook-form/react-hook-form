@@ -14,6 +14,7 @@ export default function getFieldValue<TFieldValues extends FieldValues>(
   name: InternalFieldName<TFieldValues>,
   shallowFieldsStateRef?: React.MutableRefObject<Partial<FieldValues>>,
   excludeDisabled?: boolean,
+  shouldKeepRawValue?: boolean,
 ) {
   const field = fieldsRef.current[name]!;
 
@@ -46,7 +47,9 @@ export default function getFieldValue<TFieldValues extends FieldValues>(
       return getCheckboxValue(field.options).value;
     }
 
-    return valueAsNumber
+    return shouldKeepRawValue
+      ? value
+      : valueAsNumber
       ? value === ''
         ? NaN
         : +value
