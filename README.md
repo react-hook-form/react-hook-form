@@ -20,22 +20,19 @@
 <div align="center">
     <p align="center">
         <a href="https://react-hook-form.com" title="React Hook Form - Simple React forms validation">
-            <img src="https://raw.githubusercontent.com/bluebill1049/react-hook-form/master/docs/example.gif" alt="React Hook Form video - React custom hook for form validation" width="100%" />
+            <img src="https://raw.githubusercontent.com/bluebill1049/react-hook-form/master/docs/v7_example.gif" alt="React Hook Form video - React custom hook for form validation" width="100%" />
         </a>
     </p>
 </div>
-
-English | <a href="./docs/README.zh-TW.md">繁中</a> | <a href="./docs/README.zh-CN.md">简中</a> | <a href="./docs/README.ja-JP.md">日本語</a> | <a href="./docs/README.ko-KR.md">한국어</a> | <a href="./docs/README.fr-FR.md">Français</a> | <a href="./docs/README.it-IT.md">Italiano</a> | <a href="./docs/README.pt-BR.md">Português</a> | <a href="./docs/README.es-ES.md">Español</a> | <a href="./docs/README.ru-RU.md">Русский</a> | <a href="./docs/README.de-DE.md">Deutsch</a> | <a href="./docs/README.tr-TR.md">Türkçe</a>
 
 ## Features
 
 - Built with performance and DX in mind
 - Embrace native form validation
-- Simple integration with [UI libraries](https://codesandbox.io/s/react-hook-form-v6-controller-qsd8r)
+- Simple integration with [UI libraries](https://codesandbox.io/s/react-hook-form-v7-controller-5h1q5)
 - [Tiny size](https://bundlephobia.com/result?p=react-hook-form@latest) without any dependency
 - Follows HTML standard for [validation](https://react-hook-form.com/get-started#Applyvalidation)
-- [Resolvers](https://github.com/react-hook-form/resolvers) support [Yup](https://github.com/jquense/yup), [Zod](https://github.com/vriad/zod), [Superstruct](https://github.com/ianstormtaylor/superstruct), [Joi](https://github.com/hapijs/joi) or custom
-- Build forms quickly with [Form Builder](https://react-hook-form.com/form-builder)
+- [Resolvers](https://github.com/react-hook-form/resolvers) support [Yup](https://github.com/jquense/yup), [Zod](https://github.com/vriad/zod), [Superstruct](https://github.com/ianstormtaylor/superstruct), [Joi](https://github.com/hapijs/joi), [Vest](https://github.com/ealush/vest) or custom
 
 ## Install
 
@@ -76,10 +73,6 @@ function App() {
   );
 }
 ```
-
-<a href="https://ui.dev/bytes/?r=bill">
-  <img src="https://raw.githubusercontent.com/react-hook-form/react-hook-form/master/docs/ads-1.jpg" />
-</a>
 
 ## Sponsors
 
@@ -243,6 +236,12 @@ Thanks go to these kind and lovely sponsors (company and individuals)!
     <a href="https://github.com/yjp20"
     ><img
             src="https://avatars3.githubusercontent.com/u/44457064?s=460&u=a55119c84e0167f6a3f830dbad3133b28f0c0a8f&v=4"
+            width="40"
+            height="40"
+    /></a>
+    <a href="https://github.com/samantha-wong"
+    ><img
+            src="https://avatars.githubusercontent.com/u/19571028?s=460&u=7421a02f600646b5836d5973359a257950cae8c4&v=4"
             width="40"
             height="40"
     /></a>
