@@ -64,7 +64,7 @@ export default function App() {
             ref={register({
               validate: {
                 positiveNumber: value => parseFloat(value) > 0,
-                lessThanHundred: value => parseFloat(value) < 200,
+                lessThanHundred: value => parseFloat(value) < 150,
               },
             })}
           />
@@ -73,7 +73,7 @@ export default function App() {
           <p>Your age is invalid</p>
         )}
         {errors.age && errors.age.type === 'lessThanHundred' && (
-          <p>Your age should be greater than 200</p>
+          <p>Your age is higher than 150. No one is that old, are you a vampire?</p>
         )}
 
         <button type="submit">Submit</button>
