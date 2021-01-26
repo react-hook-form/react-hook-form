@@ -35,8 +35,6 @@ export default function getFieldValue(
       return getCheckboxValue(field._f.refs).value;
     }
 
-    return shouldReturnAsValue
-      ? getFieldValueAs(ref.value, field._f)
-      : ref.value;
+    return getFieldValueAs(ref.value, field._f, shouldReturnAsValue);
   }
 }

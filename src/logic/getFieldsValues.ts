@@ -17,9 +17,7 @@ const getFieldsValues = (
         output,
         name,
         _f && !_f.ref.disabled
-          ? shouldReturnAsValue
-            ? getFieldValueAs(_f.value, _f)
-            : _f.value
+          ? getFieldValueAs(_f.value, _f, shouldReturnAsValue)
           : Array.isArray(field)
           ? []
           : {},
