@@ -239,7 +239,7 @@ describe('register', () => {
       expect(output).toEqual({ test: 12345, test1: true });
     });
 
-    it('should only validate input before the process', async () => {
+    it('should validate input before the valueAs', async () => {
       const Component = () => {
         const {
           register,
@@ -294,6 +294,64 @@ describe('register', () => {
       });
 
       screen.getByText('Number length');
+    });
+
+    it('should send valueAs filed to schema validation', () => {
+      let output: any;
+
+      const Component = () => {
+        const { register, trigger } = useForm<{
+          test: number;
+          test1: any;
+          test2: boolean;
+        }>({
+          resolver: (data) => {
+            output = data;
+            return {
+              values: {
+                test: 1,
+                test1: 2,
+                test2: true,
+              },
+              errors: {},
+            };
+          },
+        });
+
+        return (
+          <form>
+            <input {...register('test', { valueAsNumber: true })} />
+            <input {...register('test1', { valueAsDate: true })} />
+            <input
+              {...register('test2', { setValueAs: (data) => data === 'test' })}
+            />
+            <button type="button" onClick={() => trigger()}>
+              trigger
+            </button>
+          </form>
+        );
+      };
+
+      render(<Component />);
+
+      fireEvent.change(screen.getAllByRole('textbox')[0], {
+        target: { value: 1 },
+      });
+      fireEvent.change(screen.getAllByRole('textbox')[1], {
+        target: { value: '1990' },
+      });
+      fireEvent.change(screen.getAllByRole('textbox')[2], {
+        target: { value: 'test' },
+      });
+
+      fireEvent.click(screen.getByRole('button'));
+
+      expect(output).toEqual({
+        test: 1,
+
+        test1: new Date('1990'),
+        test2: true,
+      });
     });
   });
 });

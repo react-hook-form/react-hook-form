@@ -345,7 +345,7 @@ export function useForm<
       currentNames: FieldName<TFieldValues>[] = [],
     ) => {
       const { errors } = await resolverRef.current!(
-        getValues(),
+        getFieldsValues(fieldsRef, true),
         contextRef.current,
         {
           criteriaMode,
