@@ -6,6 +6,7 @@ import isCheckBox from '../utils/isCheckBoxInput';
 import isMultipleSelect from '../utils/isMultipleSelect';
 import getCheckboxValue from './getCheckboxValue';
 import { Field } from '../types';
+import getFieldValueAs from './getFieldValueAs';
 
 export default function getFieldValue(
   field?: Field,
@@ -36,14 +37,6 @@ export default function getFieldValue(
 
     return shouldReturnRawValue
       ? ref.value
-      : valueAsNumber
-      ? ref.value === ''
-        ? NaN
-        : +ref.value
-      : valueAsDate
-      ? (ref as HTMLInputElement).valueAsDate
-      : setValueAs
-      ? setValueAs(ref.value)
-      : ref.value;
+      : getFieldValueAs(ref.value, valueAsNumber, valueAsDate, setValueAs);
   }
 }
