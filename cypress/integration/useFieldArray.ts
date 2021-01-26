@@ -97,7 +97,9 @@ describe('useFieldArray', () => {
 
     cy.get('#submit').click();
     cy.get('#result').should(($state) =>
-      expect(JSON.parse($state.text())).to.be.deep.equal({}),
+      expect(JSON.parse($state.text())).to.be.deep.equal({
+        data: [],
+      }),
     );
 
     cy.get('#renderCount').contains('39');
@@ -241,7 +243,9 @@ describe('useFieldArray', () => {
 
     cy.get('#submit').click();
     cy.get('#result').should(($state) =>
-      expect(JSON.parse($state.text())).to.be.deep.equal({}),
+      expect(JSON.parse($state.text())).to.be.deep.equal({
+        data: [],
+      }),
     );
 
     cy.get('#append').click();
@@ -393,7 +397,9 @@ describe('useFieldArray', () => {
 
     cy.get('#submit').click();
     cy.get('#result').should(($state) =>
-      expect(JSON.parse($state.text())).to.be.deep.equal({}),
+      expect(JSON.parse($state.text())).to.be.deep.equal({
+        data: [],
+      }),
     );
 
     cy.get('#append').click();

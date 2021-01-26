@@ -56,14 +56,14 @@ describe('watchUseFieldArrayNested', () => {
     cy.get('#nest-remove-all-0').click();
 
     cy.get('#result').contains(
-      '[{"firstName":"prepend","keyValue":[]},{"firstName":"insert"},{"firstName":"append"},{"firstName":"Bill"}]',
+      '[{"firstName":"prepend","keyValue":[]},{"firstName":"insert","keyValue":[]},{"firstName":"append","keyValue":[]},{"firstName":"Bill","keyValue":[]}]',
     );
 
     cy.get('#remove').click();
     cy.get('#remove').click();
     cy.get('#remove').click();
 
-    cy.get('#result').contains('[{"firstName":"prepend"}]');
+    cy.get('#result').contains('[{"firstName":"prepend","keyValue":[]}]');
 
     cy.get('#count').contains('33');
 

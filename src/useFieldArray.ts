@@ -112,7 +112,14 @@ export const useFieldArray = <
     return `${name}.${index}`;
   };
 
-  const resetFields = () => unset(fieldsRef.current, name);
+  const resetFields = <T>(index?: T) =>
+    (Array.isArray(index) ? index : [index]).forEach((currentIndex) =>
+      set(
+        fieldsRef.current,
+        `${name}${currentIndex ? `.${currentIndex}` : ''}`,
+        [],
+      ),
+    );
 
   const setFieldsAndNotify = (
     fieldsValues: Partial<FieldArrayWithId<TFieldValues, TName, TKeyName>>[],
@@ -283,7 +290,7 @@ export const useFieldArray = <
     const updatedFieldValues: Partial<
       FieldArrayWithId<TFieldValues, TName, TKeyName>
     >[] = removeArrayAt(fieldValues, index);
-    resetFields();
+    resetFields(index);
     batchStateUpdate(
       removeArrayAt,
       {
@@ -398,7 +405,6 @@ export const useFieldArray = <
 
     return () => {
       fieldArraySubscription.unsubscribe();
-      resetFields();
       unset(fieldArrayDefaultValuesRef.current, name);
       fieldArrayNamesRef.current.delete(name);
     };

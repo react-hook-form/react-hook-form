@@ -320,7 +320,7 @@ describe('useFieldArray', () => {
   });
 
   describe('when component unMount', () => {
-    it('should call removeFieldEventListenerAndRef when field variable is array', () => {
+    it('should keep field array values', () => {
       let getValues: any;
       const Component = () => {
         const { register, control, getValues: tempGetValues } = useForm();
@@ -347,7 +347,9 @@ describe('useFieldArray', () => {
 
       unmount();
 
-      expect(getValues()).toEqual({});
+      expect(getValues()).toEqual({
+        test: [{ value: '' }, { value: '' }, { value: '' }],
+      });
     });
 
     it('should remove reset method when field array is removed', () => {
