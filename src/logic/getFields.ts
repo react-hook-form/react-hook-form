@@ -4,7 +4,7 @@ import isKey from '../utils/isKey';
 import set from '../utils/set';
 
 export default function getFields(
-  fieldsNames: Set<InternalFieldName>,
+  fieldsNames: Set<InternalFieldName> | InternalFieldName[],
   fieldsRefs: FieldRefs,
 ) {
   const currentFields: Record<InternalFieldName, Field['_f']> = {};
