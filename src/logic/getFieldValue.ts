@@ -13,7 +13,7 @@ export default function getFieldValue(
   shouldReturnRawValue?: boolean,
 ) {
   if (field && field._f) {
-    const { ref, valueAsNumber, valueAsDate, setValueAs } = field._f;
+    const { ref } = field._f;
 
     if (ref.disabled) {
       return;
@@ -37,6 +37,6 @@ export default function getFieldValue(
 
     return shouldReturnRawValue
       ? ref.value
-      : getFieldValueAs(ref.value, valueAsNumber, valueAsDate, setValueAs);
+      : getFieldValueAs(ref.value, field._f);
   }
 }

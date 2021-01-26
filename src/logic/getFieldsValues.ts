@@ -18,12 +18,7 @@ const getFieldsValues = (
         name,
         _f && !_f.ref.disabled
           ? shouldReturnSubmitValue
-            ? getFieldValueAs(
-                _f.value,
-                _f.valueAsNumber,
-                _f.valueAsDate,
-                _f.setValueAs,
-              )
+            ? getFieldValueAs(_f.value, _f)
             : _f.value
           : Array.isArray(field)
           ? []

@@ -1,8 +1,8 @@
+import { Field } from '../types';
+
 export default (
   value: any,
-  valueAsNumber?: boolean,
-  valueAsDate?: boolean,
-  setValueAs?: any,
+  { valueAsNumber, valueAsDate, setValueAs }: Field['_f'],
 ) =>
   valueAsNumber
     ? value === ''
