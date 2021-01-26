@@ -523,7 +523,7 @@ export function useForm<
       const field = get(fieldsRef.current, name) as Field;
 
       if (field) {
-        const inputValue = inputType ? getFieldValue(field) : value;
+        const inputValue = inputType ? getFieldValue(field, true) : value;
         const isBlurEvent = type === EVENTS.BLUR;
         const {
           isOnBlur: isReValidateOnBlur,
@@ -576,7 +576,7 @@ export function useForm<
 
         if (resolverRef.current) {
           const { errors } = await resolverRef.current(
-            getValues(),
+            getFieldsValues(fieldsRef, true),
             contextRef.current,
             {
               criteriaMode,
@@ -651,7 +651,7 @@ export function useForm<
       if (resolver) {
         const { errors } = await resolverRef.current!(
           {
-            ...getValues(),
+            ...getFieldsValues(fieldsRef, true),
             ...values,
           },
           contextRef.current,
@@ -879,6 +879,7 @@ export function useForm<
       ) {
         get(fieldsRef.current, name)._f.value = getFieldValue(
           get(fieldsRef.current, name),
+          true,
         );
       }
 
@@ -940,7 +941,7 @@ export function useForm<
         e.preventDefault();
         e.persist();
       }
-      let fieldValues = getFieldsValues(fieldsRef);
+      let fieldValues = getFieldsValues(fieldsRef, true);
 
       formStateSubjectRef.current.next({
         isSubmitting: true,

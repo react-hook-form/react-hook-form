@@ -4,6 +4,7 @@ import { FieldRefs } from '../types';
 
 const getFieldsValues = (
   fieldsRef: React.MutableRefObject<FieldRefs>,
+  shouldReturnSubmitValue?: boolean,
   output: Record<string, any> = {},
 ): any => {
   for (const name in fieldsRef.current) {
@@ -14,7 +15,21 @@ const getFieldsValues = (
       set(
         output,
         name,
-        _f && !_f.ref.disabled ? _f.value : Array.isArray(field) ? [] : {},
+        _f && !_f.ref.disabled
+          ? shouldReturnSubmitValue
+            ? _f.valueAsNumber
+              ? _f.value === ''
+                ? NaN
+                : +_f.value
+              : _f.valueAsDate
+              ? (_f.ref as HTMLInputElement).valueAsDate
+              : _f.setValueAs
+              ? _f.setValueAs(_f.value)
+              : _f.value
+            : _f.value
+          : Array.isArray(field)
+          ? []
+          : {},
       );
 
       if (current) {
@@ -22,6 +37,7 @@ const getFieldsValues = (
           {
             current,
           },
+          shouldReturnSubmitValue,
           output[name],
         );
       }

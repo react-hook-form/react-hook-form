@@ -7,7 +7,10 @@ import isMultipleSelect from '../utils/isMultipleSelect';
 import getCheckboxValue from './getCheckboxValue';
 import { Field } from '../types';
 
-export default function getFieldValue(field?: Field) {
+export default function getFieldValue(
+  field?: Field,
+  shouldReturnRawValue?: boolean,
+) {
   if (field && field._f) {
     const { ref, valueAsNumber, valueAsDate, setValueAs } = field._f;
 
@@ -31,7 +34,9 @@ export default function getFieldValue(field?: Field) {
       return getCheckboxValue(field._f.refs).value;
     }
 
-    return valueAsNumber
+    return shouldReturnRawValue
+      ? ref.value
+      : valueAsNumber
       ? ref.value === ''
         ? NaN
         : +ref.value
