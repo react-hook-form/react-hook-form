@@ -114,6 +114,7 @@ describe('getFieldValue', () => {
   });
 
   it('should return unmount field value when field is not found', () => {
+    expect(getFieldValue(undefined, false)).toBeFalsy();
     expect(getFieldValue(undefined)).toBeFalsy();
   });
 
